@@ -1,6 +1,6 @@
 import { Component } from "@angular/core";
 
-import { Platform } from "@ionic/angular";
+import { Platform, AlertController } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
 import { Router } from "@angular/router";
@@ -15,7 +15,8 @@ export class AppComponent {
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
-    private router: Router
+    private router: Router,
+    private alertController: AlertController
   ) {
     // console.log(this.router.config);
     if (this.platform.is("ios")) {
@@ -29,11 +30,23 @@ export class AppComponent {
 
   initializeApp() {
     this.router.navigate([AppHelper.getRoutePath("")]);
-    this.router.navigate([AppHelper.getRoutePath("account-password")]);
+    // this.router.navigate([AppHelper.getRoutePath("account-password")]);
     // this.router.navigate([AppHelper.getRoutePath("change-password-by-msm-code")]);
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
     });
+    const alert = async msg => {
+      (await this.alertController.create({
+        header: "提示",
+        message: msg,
+        buttons: [
+          {
+            text: "确定"
+          }
+        ]
+      })).present();
+    };
+    window.alert = alert;
   }
 }
