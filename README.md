@@ -1,37 +1,27 @@
-# tianxingwang
+# 手机端架构规划
+## 登录模块
+## 账号管理模块
+## 权限模块
+### 验证是否登录
+### 添加统一的头部信息，如token
+## 多语言模块
+## 工具
+### 通用的方法封装
+## 通用api调用
+## 公共组件模块
+## 插件模块
 
-#### 介绍
-天行网
+登录：
+  1.用户名、密码，如果输错2次，请求验证码(调用api)，不区分大小写
+  2.手机验证码登录,倒计时,如果输错2次，请求验证码
+  3.微信登录、钉钉登录
+  4.设备登录（用于自动登录）
 
-#### 软件架构
-软件架构说明
-
-
-#### 安装教程
-
-1. xxxx
-2. xxxx
-3. xxxx
-
-#### 使用说明
-
-1. xxxx
-2. xxxx
-3. xxxx
-
-#### 参与贡献
-
-1. Fork 本仓库
-2. 新建 Feat_xxx 分支
-3. 提交代码
-4. 新建 Pull Request
-
-
-#### 码云特技
-
-1. 使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2. 码云官方博客 [blog.gitee.com](https://blog.gitee.com)
-3. 你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解码云上的优秀开源项目
-4. [GVP](https://gitee.com/gvp) 全称是码云最有价值开源项目，是码云综合评定出的优秀开源项目
-5. 码云官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6. 码云封面人物是一档用来展示码云会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+## 开发阶段，改变localhost:4200为指定的域名地址
+  `ng serve --host 域名 --port 端口号 --open` 其中的默认端口号是4200
+  例如：
+  `ng serve --host dev.app.beeant.com --port 4500 --open`
+## 关于路由的简单逻辑
+1. 路由跳转，如果有定义这个路由，说明页面存在，或者，如果新增某个风格的页面，路由也是存在的，所以，一旦路由不存在，则跳转到默认路由
+2. 路由的路径统一跳转，需要注意格式，每个路由定义的规则是，标准路由名称_style_language，即，标准路由名称定义第一个，后面是不同风格和语言的路由定义
+3. 路径统一由AppHelper.getRoutePath(标准模块的路由)

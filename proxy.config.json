@@ -1,0 +1,7 @@
+{
+  "/home": {
+    "target": "http://test.app.testskytrip.com",
+    "source": false,
+    "changeOrigin": true
+  }
+}

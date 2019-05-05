@@ -1,0 +1,94 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start' (click)='goBack()'>
+      <ion-button size='large' fill='clear'>
+        <ion-icon name='ios-arrow-back' slot='icon-only'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>选择城市</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-toolbar class='seg'>
+  <ion-segment color='primary' mode='md'>
+    <ion-segment-button checked value='domestic'>国内(含港澳台)</ion-segment-button>
+    <ion-segment-button value='overseas' class='overseas'>海外</ion-segment-button>
+  </ion-segment>
+</ion-toolbar>
+<ion-header class='nav-links' id='links'>
+  <div class='nav'>
+    <ion-text *ngFor='let nav of cities' [style.display]="(nav?.link=='history')&&historyCities.length==0?'none':'block'"
+      text-center class="{{nav?.link}}-link">
+      <a (click)='$event.preventDefault();'>{{nav?.displayName}}</a>
+    </ion-text>
+  </div>
+</ion-header>
+<ion-content #cnt id='mainCnt' scroll-y='true' force-overscroll='false'>
+  <ion-text class='curTargetNav' [style.display]='(isMovingSj|async)?"flex":"none"' slot='fixed'  color='light'>
+    <!-- <app-toast-msg [message]="curTargetNavSj|async"></app-toast-msg> -->
+    <h1 #curNavText id='curNavText' style='color:white'></h1>
+  </ion-text>
+
+  <section class='cities'>
+    <ion-list class='cur-class'>
+      <ion-item-divider color='light'>
+        <ion-label color='dark'>
+          <h6>当前位置</h6>
+        </ion-label>
+      </ion-item-divider>
+      <ion-item>
+        <ion-icon slot='start' color='primary' name='md-checkmark'></ion-icon>
+        <ion-label color='primary'>
+          <h2>当前位置：<ion-text>{{(curPos$|async)?.address}}</ion-text>
+            <ion-spinner name="circles" *ngIf='!((curPos$|async)?.address)'></ion-spinner>
+          </h2>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-icon slot='start' color='primary' name='md-checkmark' style='visibility: collapse'>
+        </ion-icon>
+
+      </ion-item>
+    </ion-list>
+    <ion-list class='history-class' [style.display]='historyCities.length>0?"block":"none"'>
+      <ion-item-divider color='light'>
+        <ion-label color='dark'>
+          <h6>历史</h6>
+        </ion-label>
+      </ion-item-divider>
+      <div class='history-cites'>
+        <ion-chip color='light' *ngFor='let city of historyCities' (click)='onCitySelected(city,true,true)'>
+          <ion-label [color]='city?.selected?"primary":"dark"'>{{city?.CityName}}</ion-label>
+        </ion-chip>
+      </div>
+    </ion-list>
+    <ion-list class='hot-class'>
+      <ion-item-divider color='light'>
+        <ion-label color='dark'>
+          <h6>热门城市</h6>
+        </ion-label>
+      </ion-item-divider>
+      <ion-grid padding-end>
+        <ion-row wrap>
+          <ion-col size='3' *ngFor='let city of hotCities'>
+            <ion-chip (click)='onCitySelected(city,false,true)' [class.city-selected]='city?.selected'>
+              <ion-label>{{city?.CityName}}</ion-label>
+            </ion-chip>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-list>
+    <ion-list *ngFor='let nav of cities' class='{{nav.link}}-class' [style.display]='nav?.link!=="cur"&&nav?.link!=="history"&&nav?.link!=="hot"?"block":"none"'>
+      <ion-item-divider color='light' sticky>
+        <ion-label color='dark'>
+          <h6>{{nav?.link}}</h6>
+        </ion-label>
+      </ion-item-divider>
+      <div margin-start padding-end (click)='onCitySelected(item,false,true)' *ngFor='let item of nav?.items;let i= index;trackBy:i'>
+        <h6>
+          <ion-text [color]="item?.selected?'primary':'dark'">{{item?.Nickname}}</ion-text>
+        </h6>
+      </div>
+    </ion-list>
+  </section>
+
+</ion-content>

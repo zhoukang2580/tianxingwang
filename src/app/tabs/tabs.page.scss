@@ -1,0 +1,14 @@
+ion-tabs {
+  ion-tab-bar {
+    [class*='icon'] {
+      font-size: 1.7rem;
+    }
+    .icon-my {
+      font-size: 1.5rem;
+      padding-top: 0.2em;
+    }
+    ion-label {
+      font-size: 0.8rem;
+    }
+  }
+}

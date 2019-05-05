@@ -1,0 +1,24 @@
+<!--服务-->
+     <add key="PresentationServiceVersionUrl" value="http://version.sky-trip.com/"/>
+     <!--API-->
+     <add key="PresentationApiHomeUrl" value="http://api.sky-trip.com"/>
+     <add key="PresentationApiLoginUrl" value="http://login.Api.sky-trip.com/"/>
+     <add key="PresentationApiAccountUrl" value="http://account.Api.sky-trip.com/"/>
+     <add key="PresentationApiCallCenterUrl" value="http://callcenter.Api.sky-trip.com/"/>
+
+     
+
+     <!--云服务-->
+     <add key="CloudAgentApiUrl" value="http://api.agent.sky-trip.com"/>
+     <add key="CloudAgentApiHotelUrl" value="http://hotel.api.agent.sky-trip.com"/>
+     <add key="CloudAgentApiTrainUrl" value="http://train.api.agent.sky-trip.com"/>
+     <add key="CloudAgentApiFlightUrl" value="http://flight.api.agent.sky-trip.com"/>
+     <add key="CloudAgentApiOrderUrl" value="http://order.api.agent.sky-trip.com"/>
+     
+     <add key="CloudHrApiUrl" value="http://api.hr.sky-trip.com"/>
+
+     <add key="CloudTmcApiUrl" value="http://api.ct.sky-trip.com"/>
+     <add key="CloudTmcApiHotelUrl" value="http://hotel.api.ct.sky-trip.com"/>
+     <add key="CloudTmcApiTrainUrl" value="http://train.api.ct.sky-trip.com"/>
+     <add key="CloudTmcApiFlightUrl" value="http://flight.api.ct.sky-trip.com"/>
+     <add key="CloudTmcApiOrderUrl" value="http://order.api.ct.sky-trip.com"/>

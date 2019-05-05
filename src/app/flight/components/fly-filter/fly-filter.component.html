@@ -1,0 +1,52 @@
+<ion-content>
+  <form (ngSubmit)="onSearch()" [formGroup]='sForm'>
+    <ion-toolbar slot='fixed'>
+      <section>
+        <ion-button color='medium' fill='clear' (click)='onCancel()'>
+          取消
+        </ion-button>
+        <ion-button color='medium' fill='clear' (click)='onReset()'>
+          重置
+        </ion-button>
+        <ion-button color='primary' fill='clear' type='submit'>
+          确定
+        </ion-button>
+      </section>
+    </ion-toolbar>
+    <ion-list lines='none' no-margin>
+      <ion-item>
+        <ion-label>仅直达</ion-label>
+        <ion-toggle formControlName='onlyDirect'></ion-toggle>
+      </ion-item>
+    </ion-list>
+    <section class="search-cond">
+      <article class="left">
+        <div class='tab' [class.active]='tab===1' [class.user-op]='userOps.timespanOp' (click)='onTabClick(1)'>
+          <span>起飞时段</span>
+        </div>
+        <div class='tab' [class.active]='tab===2' [class.user-op]='userOps.airCompanyOp' (click)='onTabClick(2)'>
+          <span>航空公司</span>
+        </div>
+        <div class='tab' [class.active]='tab===3' [class.user-op]='userOps.airportOp' (click)='onTabClick(3)'>
+          <span>机场</span>
+        </div>
+        <div class='tab' [class.active]='tab===4' [class.user-op]='userOps.airTypeOp' (click)='onTabClick(4)'>
+          <span>机型</span>
+        </div>
+        <div class='tab' [class.active]='tab===5' [class.user-op]='userOps.cabinOp' (click)='onTabClick(5)'>
+          <span>仓位</span>
+        </div>
+      </article>
+      <article class="right">
+        <app-take-off-timespan *ngIf='tab===1' (sCond)='onTimeSpanSCond($event)' [resetSj]='resetSj' (userOp)="userOps.timespanOp=$event;"></app-take-off-timespan>
+        <app-aircompany [flights]='flights' [resetSj]='resetSj' *ngIf='tab===2' (userOp)='userOps.airCompanyOp=$event;'
+          (sCond)='onAirCompanySCond($event)'></app-aircompany>
+        <app-airports [flights]='flights' [resetSj]='resetSj' *ngIf='tab===3' (userOp)='userOps.airportOp=$event;'
+          (sCond)='onAirportSCond($event)' [toCityName]='toCityName'></app-airports>
+        <app-airtype [flights]='flights' [resetSj]='resetSj' *ngIf='tab===4' (userOp)='userOps.airTypeOp=$event;'
+          (sCond)='onAirTypeSCond($event)'></app-airtype>
+        <app-cabin [flights]='flights' [resetSj]='resetSj' *ngIf='tab===5' (userOp)='userOps.cabinOp=$event;' (sCond)='onCabinSCond($event)'></app-cabin>
+      </article>
+    </section>
+  </form>
+</ion-content>

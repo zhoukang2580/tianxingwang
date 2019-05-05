@@ -1,0 +1,94 @@
+ion-content {
+  background-image: url(/assets/images/airplane-l.jpg);
+  background-position: center;
+  background-attachment: scroll;
+  ion-toolbar {
+    --background: transparent;
+  }
+  ion-card {
+    --background: white;
+  }
+  .go-and-back {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-around;
+    &::after {
+      content: "";
+      position: absolute;
+      left: -1rem;
+      right: -1rem;
+      display: block;
+      border: 0.6px solid rgba(0, 0, 0, 0.12);
+      bottom: 0;
+    }
+    ion-button {
+      position: relative;
+      --opacity: 0.8;
+      &.active {
+        --opacity: 1;
+      }
+      &.active::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 2px solid var(--ion-color-primary);
+        border-radius: 10px;
+      }
+    }
+  }
+  .flight-date {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .date-week {
+      display: flex;
+      align-items: flex-end;
+      margin: 0 0.5rem;
+      h2 {
+        font-size: 1.2rem;
+      }
+      h6 {
+        margin-left: 0.5rem;
+        font-size: 0.7rem;
+      }
+    }
+  }
+
+  ion-button.search {
+    margin: 3rem 0.5rem 2rem;
+    --opacity: 1;
+  }
+  .tabs {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    width: 100%;
+    ion-button {
+      --height: auto;
+      --padding-start: 0;
+      --padding-end: 0;
+      --border-radius: 0;
+      --opacity: 1;
+      ion-label {
+        margin: 0;
+        h6 {
+          font-size: 0.7rem;
+        }
+      }
+      &.button-ios {
+        ion-icon[name="airplane"] {
+          transform: rotateZ(-30deg);
+        }
+      }
+      &.button-md {
+        ion-icon[name="airplane"] {
+          transform: rotateZ(72deg);
+        }
+      }
+    }
+  }
+}

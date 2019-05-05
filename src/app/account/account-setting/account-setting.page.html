@@ -1,0 +1,19 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>设置</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item detail (click)="accountSecurityPage()">
+      <ion-label>账号与安全</ion-label>
+    </ion-item>
+  </ion-list>
+ 
+  <ion-list (click)="logout()">
+    <ion-item detail>
+      <ion-label>退出</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

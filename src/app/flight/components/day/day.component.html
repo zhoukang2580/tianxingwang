@@ -1,0 +1,41 @@
+<div class='day' (click)="toggleSelected()" 
+  [class.hasToolTip]='dayModel?.hasToolTip'
+  [attr.toolTipMsg]="dayModel?.toolTipMsg"
+  [attr.toolTipPos]="dayModel?.toolTipPos"
+  [hidden]="dayModel?.isLastMonthDay"
+   >
+  <div class='top' [style.visibility]="dayModel?.dayoff
+  ||dayModel?.descPos=='top'?'visible':'collapse'">
+    <ion-label no-margin no-padding text-start *ngIf="dayModel?.descPos!='top'" >
+      <h6>
+        <ion-text color='medium'>
+         
+        </ion-text>
+      </h6>
+    </ion-label>
+    <ion-label no-margin no-padding text-center *ngIf="dayModel?.desc&&dayModel?.descPos=='top'" >
+      <h6>
+        <ion-text [color]='dayModel?.descColor'>
+          {{dayModel?.desc}}
+        </ion-text>
+      </h6>
+    </ion-label>
+
+    <ion-label no-margin no-padding text-end *ngIf="dayModel?.descPos!='top'">
+      <h6>
+        <ion-text [color]='dayModel?.isToday?"light":"danger"' class='dayoff'>休</ion-text>
+      </h6>
+    </ion-label>
+  </div>
+  <ion-text class='content' [color]='dayModel?.color'>
+    {{dayModel?.day}}
+  </ion-text>
+  <div class='bottom' [style.visibility]="dayModel?.desc?'visible':'collapse'">
+      <ion-label no-margin no-padding text-center *ngIf='dayModel?.descPos=="bottom"'>
+          <h6>
+              <ion-text
+               [color]='dayModel?.descColor'>{{dayModel?.desc}}</ion-text>
+          </h6>
+      </ion-label>
+  </div>
+</div>

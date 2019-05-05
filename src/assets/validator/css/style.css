@@ -1,0 +1,5 @@
+.validctrlerror{ border:1px solid #FF0000;}
+.validctrlsucess{ border:1px solid #00CC00;}
+.validerrormess{ background:url(../img/error.gif) no-repeat; color:Red; padding-left:20px;}
+.validsucessmess{ background:url(../img/success.gif) no-repeat;}
+.validshowmess{color:#c0c0c0; padding-left:20px;}

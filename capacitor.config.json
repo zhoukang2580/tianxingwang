@@ -1,0 +1,6 @@
+{
+  "appId": "com.dm.online",
+  "appName": "东美在线",
+  "bundledWebRuntime": false,
+  "webDir": "www"
+}

@@ -1,0 +1,10 @@
+<ion-list lines='none'>
+  <ion-item>
+    <ion-label>不限</ion-label>
+    <ion-radio [checked]='onUnlimit()' #unlimitRadio></ion-radio>
+  </ion-item>
+  <ion-item *ngFor="let entry of airtypes">
+    <ion-label>{{entry?.label||entry?.id}}</ion-label>
+    <ion-checkbox #cbox slot="end" [(ngModel)]="entry.isChecked"></ion-checkbox>
+  </ion-item>
+</ion-list>

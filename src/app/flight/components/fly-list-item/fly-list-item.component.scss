@@ -1,0 +1,102 @@
+.fly-ico-to {
+  flex: 2;
+  position: relative;
+  width: 50%; //   background: skyblue;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-flow: row nowrap;
+  &::after,
+  &::before {
+    position: absolute;
+    content: "";
+    display: inline-block;
+    display: inline-block;
+    border-top: 2px dotted rgba(0, 0, 0, 0.5);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  &::after {
+    align-self: flex-end;
+    right: 1rem;
+    left: 55%;
+  }
+  &::before {
+    align-self: flex-start;
+    left: 1rem;
+    right: 55%;
+  }
+}
+
+.fly-item {
+  background-color: white;
+  padding: 0.5rem;
+  margin: 0.5rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.6rem;
+  ion-text {
+    white-space: nowrap;
+    color: var(--ion-color-medium);
+  }
+  section {
+    display: flex;
+    flex-flow: column nowrap;
+    width: 100%;
+    article {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      &.date-week {
+        color: var(--ion-color-primary);
+      }
+      &.price {
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: center;
+        margin-left: auto;
+      }
+      &.time {
+        margin: 0.2rem 0;
+        font-size: 1rem;
+        .end-time {
+          margin-left: auto;
+        }
+      }
+      &.logo-airline {
+        margin-top: .2rem;
+        ion-avatar {
+          width: 1rem;
+          height: 1rem;
+          margin-right: .3rem;
+        }
+      }
+      &.c-to-c {
+        margin: 0.3rem 0;
+        .to-city {
+          margin-left: auto;
+        }
+      }
+    }
+  }
+  section.price {
+    flex: 1;
+    align-self: center;
+    padding-left:1rem;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: flex-end;
+    ion-text.jiage {
+      font-weight: bolder;
+      font-size: 0.8rem;
+      margin-bottom: 0.2rem;
+      color: var(--ion-color-danger);
+    }
+    article.desc {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}

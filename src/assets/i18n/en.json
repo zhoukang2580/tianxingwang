@@ -1,0 +1,11 @@
+{
+  "TABS":{
+    "ME":"me"
+  },
+  "LANGUAGES":"languages",
+  "ZH-CN":"Chinese",
+  "EN":"English",
+  "SETTINGS":"settings",
+  "LOGIN":"login",
+  "LOGOUT":"logout"
+}

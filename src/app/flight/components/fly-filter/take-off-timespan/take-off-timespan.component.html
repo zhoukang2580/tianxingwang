@@ -1,0 +1,22 @@
+<section class="time-types">
+  <article>
+    <ion-button size='small' fill='outline' [class.active]='time==="forenoon"' (click)='onTimeSelect("forenoon")'>
+      <span>上午</span>
+    </ion-button>
+  </article>
+  <article>
+    <ion-button size='small' fill='outline' [class.active]='time==="afternoon"' (click)='onTimeSelect("afternoon")'>
+      <span>下午</span>
+    </ion-button>
+  </article>
+  <article>
+    <ion-button size='small' fill='outline' [class.active]='time==="night"' (click)='onTimeSelect("night")'>
+      <span>夜间</span>
+    </ion-button>
+  </article>
+</section>
+<ion-list>
+  <ion-item>
+    <ion-range #range mode='ios' pin='true' dualKnobs="true" min="0" max="24" step="1" snaps="false" name='time'></ion-range>
+  </ion-item>
+</ion-list>

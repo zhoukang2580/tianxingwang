@@ -1,0 +1,30 @@
+<div class='fly-item' (click)='onItemClick()'>
+<section>
+  <span *ngIf='showIndex'>第【{{itmIndex+1}}】项</span>
+ <article class="date-week">{{getDateWeek()}}</article>
+  <article class='time'>
+    <strong class='start-time'>{{flightSegment?.TakeoffTime?.substring("2018-10-22T".length,"2018-10-22T21:20".length)}}</strong>
+    <section class="fly-ico-to">
+      <ion-icon name='airplane' mode='ios' color='primary'></ion-icon>
+    </section>
+    <strong class='end-time'>{{flightSegment?.ArrivalTime?.substring("2018-10-22T".length,"2018-10-22T21:20".length)}}</strong>
+  </article>
+  <article class="c-to-c">
+    <ion-text text-start class="from-city">{{flightSegment?.FromAirportName}}{{flightSegment?.FromTerminal}}</ion-text>
+    <ion-text text-end class="to-city">{{flightSegment?.ToAirportName}}{{flightSegment?.ToTerminal}}</ion-text>
+  </article>
+  <article class="logo-airline">
+      <ion-avatar>
+        <img src='/assets/icon/favicon.png'/>
+      </ion-avatar>
+      <ion-text>{{flightSegment?.AirlineName}}{{flightSegment?.Number}}</ion-text>
+    </article>
+</section>
+<section class="price">
+  <ion-text class='jiage'>￥{{flightSegment?.LowestFare}}起</ion-text>
+  <article class="desc">
+    <ion-text>{{flightSegment?.LowestCabinType|cabintype}}</ion-text>
+    <ion-text *ngIf='flightSegment?.LowestDiscount'>{{flightSegment?.LowestDiscount|discount}}</ion-text>
+  </article>
+</section>
+</div>

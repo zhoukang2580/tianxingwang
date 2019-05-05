@@ -1,0 +1,12 @@
+<section class="days">
+  <article *ngFor='let item of days' [class.active]='item.selected' 
+   (click)='onDaySelected(item)'>
+    <ion-text>{{item?.desc}}</ion-text>
+    <ion-text text-nowrap>{{item?.date?.substring("2018-".length,"2018-10-21".length)}}</ion-text>
+    <ion-text>￥890</ion-text>
+  </article>
+</section>
+<section class="calendar" (click)='onCalendar()'>
+  <ion-icon color='light' size='large' name='calendar'></ion-icon>
+  <ion-text color='light'>日历</ion-text>
+</section>

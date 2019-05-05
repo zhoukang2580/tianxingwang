@@ -1,0 +1,67 @@
+<ion-header>
+  <!-- <ion-toolbar>
+    <ion-title>首页</ion-title>
+  </ion-toolbar> -->
+  <ion-toolbar class="img">
+    <img src="assets/images/home_top_bg.png" />
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <div class="item" [routerLink]="['/book-flight']">
+          <ion-label color="primary">
+            <i class="icon-plane"></i>
+          </ion-label>
+          <ion-text color="primary">国内机票</ion-text>
+          <ion-ripple-effect></ion-ripple-effect>
+        </div>
+      </ion-col>
+      <ion-col [routerLink]="['/book-hotel']">
+        <div class="item">
+          <ion-label color="primary">
+            <i class="icon-hotel"></i>
+          </ion-label>
+          <ion-text color="primary">国内酒店</ion-text>
+        </div>
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-col>
+      <ion-col [routerLink]="['/book-train']">
+        <div class="item">
+          <ion-label color="primary">
+            <i class="icon-train"></i>
+          </ion-label>
+          <ion-text color="primary">火车票</ion-text>
+          <ion-ripple-effect></ion-ripple-effect>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <div margin>
+    <ion-text>{{ aliPayResult$ | async | json }}</ion-text>
+    <ion-button (click)="accountSecurityEn()" expand="block"
+      >account-security-en，已经定义</ion-button
+    >
+    <ion-button (click)="aliPay()" expand="block"
+      >跳转到setting-en，当前未定义该页面</ion-button
+    >
+    <ion-button [routerLink]="['/bind_en']" expand="block"
+      >bind-en，当前未定义该页面</ion-button
+    >
+    <ion-button [routerLink]="['/login_en']" expand="block"
+      >login-en，当前未定义该页面</ion-button
+    >
+    <ion-button (click)="wxPay()" expand="block">微信支付</ion-button>
+    <ion-text>{{ wxPayResult$ | async | json }}</ion-text>
+  </div>
+  <!-- <ion-item class='hat' no-padding no-margin lines='none'>
+    <ion-thumbnail class='left' (click)='testAction()'>
+      <img src='/assets/images/hotel.jpg'>
+    </ion-thumbnail>
+    <div class='ta'>
+      <img src='/assets/images/airplane.jpg'>
+      <img src='/assets/images/train.jpg'>
+    </div>
+  </ion-item> -->
+</ion-content>

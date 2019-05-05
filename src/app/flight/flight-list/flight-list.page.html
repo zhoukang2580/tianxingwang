@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-toolbar color='primary'>
+    <ion-title text-center [routerLink]="['/book-flight']">{{ (vmFromCity$ | async)?.CityName }}--{{
+      (vmToCity$ | async)?.CityName
+      }}</ion-title>
+  </ion-toolbar>
+  <ion-toolbar color="primary" class="fly-days">
+    <app-fly-days-calendar (itemSelected)="onChangedDay($event)" 
+    (calenderClick)="onCalenderClick()"></app-fly-days-calendar>
+  </ion-toolbar>
+</ion-header>
+<ion-content #cnt>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="下拉刷新" refreshingSpinner="circles" refreshingText="正在加载...">
+    </ion-refresher-content>
+  </ion-refresher>
+  <app-no-more-data [hasDataObs]="hasDataSj"></app-no-more-data>
+  <app-fly-list-item *ngFor="let flyseg of vmFlights; let i = index" [flightSegment]="flyseg" (itemClick)="onItemClick($event)"
+    [itmIndex]="i"></app-fly-list-item>
+  <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="正在加载..."></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>
+<ion-footer color="light" [@showFooterAnimate]="!(isMoving$ | async)">
+  <div class="tabs">
+    <div class="tab" [class.active]="activeTab === 'filter'" (click)="onFilter()">
+      <ion-icon name="funnel"></ion-icon>
+      <ion-note>筛选</ion-note>
+    </div>
+    <div class="tab" [class.active]="activeTab === 'time'" (click)="onTimeOrder()">
+      <ion-icon name="time"></ion-icon>
+      <ion-note *ngIf="activeTab !== 'time'">时间</ion-note>
+      <ion-note *ngIf="activeTab === 'time' && timeOrdM2N">从早到晚</ion-note>
+      <ion-note *ngIf="activeTab === 'time' && !timeOrdM2N">从晚到早</ion-note>
+    </div>
+    <div class="tab" [class.active]="activeTab === 'price'" (click)="onPriceOrder()">
+      <ion-icon name="logo-usd"></ion-icon>
+      <ion-note *ngIf="activeTab !== 'price'">价格</ion-note>
+      <ion-note *ngIf="activeTab === 'price' && priceOrdL2H">从低到高</ion-note>
+      <ion-note *ngIf="activeTab === 'price' && !priceOrdL2H">从高到低</ion-note>
+    </div>
+  </div>
+</ion-footer>
+<app-fly-filter class="ion-page" [flights]="flights" [@showAdvSearchPage]="showAdvSearchPage$ | async" [toCityName]="toCityName"></app-fly-filter>
+<app-select-fly-days [isRoundTrip]="isRoundTrip" class="ion-page" [@showFlyDaySelectPage]="showFlyDaySelectPage$ | async"></app-select-fly-days>

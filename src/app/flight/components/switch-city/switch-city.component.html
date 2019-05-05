@@ -1,0 +1,13 @@
+
+ <div class='flight-cities' [attr.mode]='mode'>
+    <ion-text (click)="onSelectCity(true)"   >
+      <h2 [class.left]='!toggleCities' [class.right]='toggleCities' [style.transform]='toggleCities?"translateX(150%)":"translateX(0)"'>{{vmFromCity?.CityName}}</h2>
+    </ion-text>
+    <div class='toogle-icon' (click)='onRotateIcon()'>
+      <ion-icon name='airplane' color='primary'></ion-icon>
+      <ion-icon name='ios-sync' [@rotateIcon]='rotateIcon' (@rotateIcon.done)='onRotateIconDone($event)' color='primary'></ion-icon>
+    </div>
+    <ion-text (click)='onSelectCity(false)'  >
+      <h2 [class.left]='toggleCities' [class.right]='!toggleCities' [style.transform]='!toggleCities?"translateX(0)":"translateX(-150%)"'>{{vmToCity?.CityName}}</h2>
+    </ion-text>
+  </div>

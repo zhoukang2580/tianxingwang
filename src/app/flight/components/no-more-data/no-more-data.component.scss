@@ -1,0 +1,24 @@
+section {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem auto;
+  color: rgba(var(--ion-color-dark-rgb), 0.35);
+  &::after,
+  &::before {
+    position: absolute;
+    content: "";
+    top: 50%;
+    transform: translateY(-50%);
+    border-top: 0.7px solid rgba(var(--ion-color-dark-rgb), 0.35);
+  }
+  &::before {
+    left: 1rem;
+    right: 60%;
+  }
+  &::after {
+    left: 60%;
+    right: 1rem;
+  }
+}
