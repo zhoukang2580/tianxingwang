@@ -39,7 +39,10 @@ export class AppComponent {
     const alert = async msg => {
       (await this.alertController.create({
         header: "提示",
-        message: typeof msg==="string"?msg:msg instanceof Error?msg.message:JSON.stringify(msg) ,
+        message: typeof msg === "string" ? msg
+          : msg instanceof Error ? msg.message
+            : typeof msg === 'object' && msg.message ? msg.message
+              : JSON.stringify(msg),
         buttons: [
           {
             text: "确定"
