@@ -77,6 +77,9 @@ export class LoginPage implements OnInit {
   }
   switchLoginType(type: string) {
     this.loginType = type;
+    this.form.patchValue({
+      ImageCode:''
+    });
   }
 
   async login() {

@@ -18,6 +18,7 @@ import { ExceptionEntity } from "../log/exception.entity";
 import { Router } from "@angular/router";
 import { IdentityEntity } from "../identity/identity.entity";
 import { IdentityService } from "../identity/identity.service";
+import { LoadingController } from '@ionic/angular';
 
 @Injectable({
   providedIn: "root"
@@ -27,7 +28,8 @@ export class ApiService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private identityService: IdentityService
+    private identityService: IdentityService,
+    private loadingCtrl: LoadingController
   ) {
     this.loadingSubject = new BehaviorSubject(false);
   }
@@ -35,6 +37,22 @@ export class ApiService {
     return this.loadingSubject.asObservable();
   }
   setLoading(loading: boolean) {
+    if(loading)
+    {
+      this.loadingCtrl.getTop().then((t)=>{
+          t.dismiss();
+      });
+      this.loadingCtrl.create().then((t)=>{
+        t.present();
+      });
+    }
+    else{
+      setTimeout(() => {
+        this.loadingCtrl.getTop().then((t)=>{
+          t.dismiss();
+      });
+      }, 100);
+    }
     this.loadingSubject.next(loading);
   }
   send<T>(method: string, data: any, version: string = "1.0") {
