@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 
 import { BaseRequest } from "./BaseRequest";
 import { AppHelper } from "../../appHelper";
-import { map, tap, catchError, finalize, switchMap } from "rxjs/operators";
+import { map, tap, catchError, finalize, switchMap ,timeout} from "rxjs/operators";
 import { IResponse } from "./IResponse";
 import {
   of,
@@ -11,9 +11,9 @@ import {
   BehaviorSubject,
   throwError,
   from,
-  Observable
+  Observable,
+  TimeoutError
 } from "rxjs";
-import { LogService } from "../log/log.service";
 import { ExceptionEntity } from "../log/exception.entity";
 import { Router } from "@angular/router";
 import { IdentityEntity } from "../identity/identity.entity";
@@ -109,12 +109,14 @@ export class ApiService {
       .join("&");
     this.setLoading(true);
     const url = req.Url || AppHelper.getApiUrl() + "/Home/Proxy";
+    const due = 10*1000;
     return this.http
       .post(url, formObj, {
         headers: { "content-type": "application/x-www-form-urlencoded" },
         observe: "body"
       })
       .pipe(
+        timeout(due),
         tap(r => console.log(r)),
         map(r => r as any),
         switchMap((r:IResponse<any>) => {
@@ -132,7 +134,11 @@ export class ApiService {
           const entity = new ExceptionEntity();
           entity.Error = error;
           entity.Method = req.Method;
-          entity.Message = "接口请求错误";
+          entity.Message = "接口调用异常";
+          if(error instanceof TimeoutError){
+            entity.Message="请求超时";
+            alert("请求超时");
+          }
           return throwError(error);
         }),
         finalize(() => {
