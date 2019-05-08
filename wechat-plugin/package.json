@@ -1,0 +1,22 @@
+{
+  "name": "cordova-wechat-plugin",
+  "version": "1.0.0",
+  "description": "Cordova Wechat Plugin",
+  "cordova": {
+    "id": "cordova-wechat-plugin",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "keywords": [
+    "cordova",
+    "Wechat",
+    "weixin",
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios"
+  ],
+  "author": "",
+  "license": "Apache 2.0"
+}
