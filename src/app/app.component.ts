@@ -37,6 +37,14 @@ export class AppComponent {
       this.splashScreen.hide();
     });
     const alert = async msg => {
+      try{
+        const t =await this.alertController.getTop();
+        if(t){
+          t.dismiss();
+        }
+      }catch(e){
+        console.error(e);
+      }
       (await this.alertController.create({
         header: "提示",
         message: typeof msg === "string" ? msg

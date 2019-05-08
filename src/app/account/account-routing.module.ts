@@ -1,8 +1,6 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule, Routes } from "@angular/router";
-import { AuthorityGuard } from "../guards/authority.guard";
-import { AppHelper } from "../appHelper";
 import { BindModule } from "./account-bind/account-bind.module";
 
 const routes: Routes = [
@@ -51,9 +49,9 @@ const routes: Routes = [
       "./account-pay-password/account-pay-password.module#AccountPayPasswordPageModule"
   },
   {
-    path: "change-password-by-msm-code",
+    path: "account-password-by-msm-code",
     loadChildren:
-      "./change-password-by-msm-code/change-password-by-msm-code.module#ChangePasswordByMsmCodePageModule"
+    './account-password-by-msm-code/account-password-by-msm-code.module#AccountPasswordByMsmCodePageModule'
   }
 ];
 @NgModule({

@@ -83,7 +83,7 @@ export class LoginService {
     return merge(of("assets/images/loading.gif"),
       this.http.get(`${AppHelper.getApiUrl()}/Home/CreateCode`).pipe(
         map((r: IResponse<{ Code: string; Value: string }>) => {
-          console.log(r);
+          console.log("code: "+r.Data.Code+" value: "+r.Data.Value);
           if (r.Data) {
             this.ImageValue = r.Data.Value;
             return `${AppHelper.getApiUrl()}/Home/ImageCode?code=${r.Data.Code}`;
@@ -114,7 +114,8 @@ export class LoginService {
     const req = new BaseRequest();
     req.Method = method;
     req.ImageCode = imageCode;
-    req.ImageValue = this.ImageValue;
+    // req.ImageValue ='alJY/2H+aws='|| this.ImageValue;
+    req.ImageValue=encodeURIComponent(this.ImageValue);// 避免+号丢失
     req.Data = JSON.stringify({
       Name: name,
       Password: password
@@ -139,7 +140,7 @@ export class LoginService {
         }),
         tap(rid => {
           const id: IdentityEntity = new IdentityEntity();
-          id.Name = rid.Name;
+          id.Name = name;
           id.Ticket = rid.Ticket;
           id.IsShareTicket = rid.IsShareTicket;
           id.Numbers = rid.Numbers;

@@ -110,7 +110,7 @@ export class ApiService {
     this.setLoading(true);
     const url = req.Url || AppHelper.getApiUrl() + "/Home/Proxy";
     return this.http
-      .post(url, encodeURI(formObj), {
+      .post(url, formObj, {
         headers: { "content-type": "application/x-www-form-urlencoded" },
         observe: "body"
       })

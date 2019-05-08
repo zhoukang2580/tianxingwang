@@ -1,17 +1,17 @@
-import { AppHelper } from './../../appHelper';
+import { AppHelper } from '../../appHelper';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { interval } from 'rxjs';
-import { LoginService } from './../../services/login/login.service';
+import { LoginService } from '../../services/login/login.service';
 import { AlertController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-change-password-by-msm-code',
-  templateUrl: './change-password-by-msm-code.page.html',
-  styleUrls: ['./change-password-by-msm-code.page.scss'],
+  templateUrl: './account-password-by-msm-code.page.html',
+  styleUrls: ['./account-password-by-msm-code.page.scss'],
 })
-export class ChangePasswordByMsmCodePage implements OnInit {
+export class AccountPasswordByMsmCodePage implements OnInit {
   mobile: string;
   smsCode: string; // 验证码
   downCount = 0;

@@ -5,12 +5,12 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { ChangePasswordByMsmCodePage } from './change-password-by-msm-code.page';
+import { AccountPasswordByMsmCodePage } from './account-password-by-msm-code.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: ChangePasswordByMsmCodePage
+    component: AccountPasswordByMsmCodePage
   }
 ];
 
@@ -21,6 +21,6 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [ChangePasswordByMsmCodePage]
+  declarations: [AccountPasswordByMsmCodePage]
 })
-export class ChangePasswordByMsmCodePageModule {}
+export class AccountPasswordByMsmCodePageModule {}
