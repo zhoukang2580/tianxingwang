@@ -1,10 +1,18 @@
 import { ErrorHandler } from '@angular/core';
 import { LogService } from './services/log/log.service';
 import { environment } from 'src/environments/environment';
+import { LoadingController } from '@ionic/angular';
 
 export class AppErrorHandler implements ErrorHandler {
-    constructor(private logService: LogService) { }
+    constructor(private logService: LogService,private loadingCtrl: LoadingController) { }
     handleError(error: any) {
+        setTimeout(() => {
+            this.loadingCtrl.getTop().then((t) => {
+                if (t) {
+                t.dismiss();
+              }
+            });
+          }, 5000);
         if(environment.production){
             this.logService.sendException({
                 Message: "应用内部错误",

@@ -183,7 +183,7 @@ export class LoginPage implements OnInit {
       return;
     }
     if (
-      this.phoneErrorCount > this.validImageCodeCount &&
+      this.phoneErrorCount >= this.validImageCodeCount &&
       !this.form.value.ImageCode
     ) {
       this.message = LoginLanguage.getImageCodeTip();

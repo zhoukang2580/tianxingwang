@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 
 import { BaseRequest } from "./BaseRequest";
 import { AppHelper } from "../../appHelper";
-import { map, tap, catchError, finalize, switchMap ,timeout} from "rxjs/operators";
+import { map, tap, catchError, finalize, switchMap, timeout } from "rxjs/operators";
 import { IResponse } from "./IResponse";
 import {
   of,
@@ -19,6 +19,7 @@ import { Router } from "@angular/router";
 import { IdentityEntity } from "../identity/identity.entity";
 import { IdentityService } from "../identity/identity.service";
 import { LoadingController } from '@ionic/angular';
+import { ApiLanguage } from './api.language';
 
 @Injectable({
   providedIn: "root"
@@ -36,22 +37,27 @@ export class ApiService {
   getLoading() {
     return this.loadingSubject.asObservable();
   }
-  setLoading(loading: boolean) {
-    if(loading)
-    {
-      this.loadingCtrl.getTop().then((t)=>{
+  setLoading(loading: boolean,isShowLoading:boolean) {
+    if (loading && isShowLoading) {
+      this.loadingCtrl.getTop().then((t) => {
+        if (t) {
           t.dismiss();
+        }
       });
-      this.loadingCtrl.create().then((t)=>{
-        t.present();
+      this.loadingCtrl.create().then((t) => {
+        if (t) {
+          t.present();
+        }
       });
     }
-    else{
+    if (!loading) {
       setTimeout(() => {
-        this.loadingCtrl.getTop().then((t)=>{
-          t.dismiss();
-      });
-      }, 100);
+        this.loadingCtrl.getTop().then((t) => {
+          if (t) {
+            t.dismiss();
+          }
+        });
+      }, 1000);
     }
     this.loadingSubject.next(loading);
   }
@@ -81,43 +87,43 @@ export class ApiService {
       .map(k => `${k}=${req[k]}`)
       .join("&");
     const url = req.Url || AppHelper.getApiUrl() + "/Home/Proxy";
-    return new Promise((resolve,reject)=>{
-     const subscribtion= this.http
-      .post(url, formObj, {
-        headers: { "content-type": "application/x-www-form-urlencoded" },
-        observe: "body"
-      })
-      .pipe(
-        map(r => r as any),
-        switchMap((r:IResponse<any>) => {
-          if (r.Status && !r.Data) {
-            const id: IdentityEntity = new IdentityEntity();
-            id.Name = r.Data.Name;
-            id.Ticket = r.Data.Ticket;
-            id.IsShareTicket = r.Data.IsShareTicket;
-            id.Numbers = r.Data.Numbers;
-            id.Id = r.Data.Id;
-            this.identityService.setIdentity(id);
-            return this.sendRequest(orgReq, false);
-          }
-          // this.router.navigate([AppHelper.getRoutePath("login")]);
-          return of(r);
+    return new Promise((resolve, reject) => {
+      const subscribtion = this.http
+        .post(url, formObj, {
+          headers: { "content-type": "application/x-www-form-urlencoded" },
+          observe: "body"
         })
-      ).subscribe(r=>{
-        resolve(r);
-      },e=>{
-        reject(e);
-      },()=>{
-        setTimeout(() => {
-          if(subscribtion){
-            subscribtion.unsubscribe();
-          }
-        }, 10);
-      });
+        .pipe(
+          map(r => r as any),
+          switchMap((r: IResponse<any>) => {
+            if (r.Status && !r.Data) {
+              const id: IdentityEntity = new IdentityEntity();
+              id.Name = r.Data.Name;
+              id.Ticket = r.Data.Ticket;
+              id.IsShareTicket = r.Data.IsShareTicket;
+              id.Numbers = r.Data.Numbers;
+              id.Id = r.Data.Id;
+              this.identityService.setIdentity(id);
+              return this.sendRequest(orgReq, false);
+            }
+            // this.router.navigate([AppHelper.getRoutePath("login")]);
+            return of(r);
+          })
+        ).subscribe(r => {
+          resolve(r);
+        }, e => {
+          reject(e);
+        }, () => {
+          setTimeout(() => {
+            if (subscribtion) {
+              subscribtion.unsubscribe();
+            }
+          }, 10);
+        });
     });
   }
 
-  private sendRequest(req: BaseRequest, isCheckLogin: boolean):Observable<IResponse<any>> {
+  private sendRequest(req: BaseRequest, isCheckLogin: boolean): Observable<IResponse<any>> {
     req.Timestamp = Math.floor(Date.now() / 1000);
     req.Language = AppHelper.getLanguage();
     req.Ticket = AppHelper.getTicket();
@@ -125,9 +131,9 @@ export class ApiService {
     const formObj = Object.keys(req)
       .map(k => `${k}=${req[k]}`)
       .join("&");
-    this.setLoading(true);
+    this.setLoading(true,req.IsShowLoading);
     const url = req.Url || AppHelper.getApiUrl() + "/Home/Proxy";
-    const due = 10*1000;
+    const due = 10 * 1000;
     return this.http
       .post(url, formObj, {
         headers: { "content-type": "application/x-www-form-urlencoded" },
@@ -137,13 +143,13 @@ export class ApiService {
         timeout(due),
         tap(r => console.log(r)),
         map(r => r as any),
-        switchMap((r:IResponse<any>) => {
+        switchMap((r: IResponse<any>) => {
           if (isCheckLogin && r.Code && r.Code.toUpperCase() === "NOLOGIN") {
             return from(this.tryAutoLogin(req));
           } else if (r.Code && r.Code.toUpperCase() === "NOLOGIN") {
             this.router.navigate([AppHelper.getRoutePath("login")]);
           }
-          if(!r.Status){
+          if (!r.Status) {
             return throwError(r.Message);
           }
           return of(r);
@@ -152,17 +158,17 @@ export class ApiService {
           const entity = new ExceptionEntity();
           entity.Error = error;
           entity.Method = req.Method;
-          entity.Message = "接口调用异常";
-          if(error instanceof TimeoutError){
-            entity.Message="请求超时";
-            alert("请求超时");
+          entity.Message = ApiLanguage.getExceptionTip();
+          if (error instanceof TimeoutError) {
+            entity.Message = ApiLanguage.getTimeoutTip();
+            alert(ApiLanguage.getTimeoutTip());
           }
           return throwError(error);
         }),
         finalize(() => {
-          this.setLoading(false);
+          this.setLoading(false,req.IsShowLoading);
         }),
-        map(r=>r as any)
+        map(r => r as any)
       );
   }
 }

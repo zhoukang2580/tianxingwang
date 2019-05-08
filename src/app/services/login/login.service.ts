@@ -23,8 +23,7 @@ export class LoginService {
     private router: Router,
     private apiService: ApiService,
     private platService: Platform,
-    private http: HttpClient,
-    private loadingCtrl: LoadingController
+    private http: HttpClient
   ) { }
   setToPageRouter(pageRouter: string) {
     this._toPageRouter = pageRouter;
@@ -163,16 +162,17 @@ export class LoginService {
     }
   }
   async autoLogin() {
-    const loading = await this.loadingCtrl.create();
+
     if (AppHelper.getStorage<string>("loginName")) {
       const name = AppHelper.getStorage<string>("loginName");
       const req = new BaseRequest();
+      req.IsShowLoading=true;
       req.Method = "ApiLoginUrl-Home-DeviceLogin";
       req.Data = JSON.stringify({
         Name: name,
         Password: await AppHelper.getUUID()
       });
-      loading.present();
+
       return new Promise<boolean>((resolve, reject) => {
         this.apiService
           .getResponse<{
@@ -184,7 +184,6 @@ export class LoginService {
           }>(req)
           .pipe(
             finalize(() => {
-              loading.dismiss();
             })
           )
           .subscribe(

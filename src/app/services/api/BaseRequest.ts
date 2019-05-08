@@ -10,4 +10,5 @@ export class BaseRequest {
   Language?: string;
   Url?: string;
   Data: string;
+  IsShowLoading?:boolean
 }
