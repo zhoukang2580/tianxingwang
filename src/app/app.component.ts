@@ -5,6 +5,7 @@ import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
 import { Router } from "@angular/router";
 import { AppHelper } from "./appHelper";
+import { ConfigService } from './services/config/config.service';
 
 @Component({
   selector: "app-root",
@@ -16,6 +17,7 @@ export class AppComponent {
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
     private router: Router,
+    private config: ConfigService,
     private alertController: AlertController
   ) {
     // console.log(this.router.config);
@@ -29,6 +31,7 @@ export class AppComponent {
   }
 
   initializeApp() {
+    this.config.get();
     this.router.navigate([AppHelper.getRoutePath("")]);
     // this.router.navigate([AppHelper.getRoutePath("account-password")]);
     // this.router.navigate([AppHelper.getRoutePath("change-password-by-msm-code")]);
