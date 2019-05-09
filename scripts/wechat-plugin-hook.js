@@ -53,7 +53,7 @@ module.exports = function (context) {
     packageName = packageName && packageName.includes('=') && packageName.split("=")[1];
     packageName=packageName&&packageName.replace(/"/g,'');
     if (packageName) {
-        console.log(packageName);
+        console.log("packageName ",packageName);
         var checkFilePath =path.join(platformRoot,'app','src','main','java');
         packageName.split(".").forEach(p=>{
             checkFilePath = path.join(checkFilePath,p);
@@ -79,7 +79,7 @@ module.exports = function (context) {
                     if(fs.existsSync(distPath)){
                       const distFile =   fs.readFileSync(distPath,{encoding:"utf8"});
                       if(distFile){
-                         const str= distFile.replace(/^package.*;$/g,"package "+packageName+".wxapi;");
+                         const str= distFile.replace(/^package.*;/g,"package "+packageName+".wxapi;");
                          console.log(str);
                           fs.writeFileSync(distPath,str,{encoding:"utf8"});
                       }

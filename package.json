@@ -88,8 +88,8 @@
       "cordova-wechat-plugin": {}
     },
     "platforms": [
-      "android",
-      "ios"
+      "ios",
+      "android"
     ]
   }
 }

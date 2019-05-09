@@ -1,4 +1,4 @@
-package com.skytrip.dmonline.wxapi;
+package com.beeant.wechatplugin.wxapi;
 
 import android.app.Activity;
 import android.os.Bundle;
