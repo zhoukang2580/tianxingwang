@@ -1,11 +1,13 @@
 import { Component } from "@angular/core";
 
-import { Platform, AlertController } from "@ionic/angular";
+import { Platform, AlertController, ToastController, IonApp, ActionSheetController, LoadingController } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
 import { Router } from "@angular/router";
 import { AppHelper } from "./appHelper";
 import { ConfigService } from './services/config/config.service';
+import { ApiLanguage } from './services/api/api.language';
+import { ViewController } from '@ionic/core';
 
 @Component({
   selector: "app-root",
@@ -18,7 +20,10 @@ export class AppComponent {
     private statusBar: StatusBar,
     private router: Router,
     private config: ConfigService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private toastController: ToastController,
+    private actionSheetCtrl: ActionSheetController,
+    private loadingCtrl: LoadingController
   ) {
     // console.log(this.router.config);
     if (this.platform.is("ios")) {
@@ -39,13 +44,29 @@ export class AppComponent {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
     });
+    this.extMethod();
+    this.backButtonAction();
+  }
+  private extMethod() {
+    const toast = async msg => {
+      const t = await this.toastController.create({
+        message: typeof msg === "string" ? msg
+          : msg instanceof Error ? msg.message
+            : typeof msg === 'object' && msg.message ? msg.message
+              : JSON.stringify(msg), position: "middle", duration: 1400
+      });
+      if (t) {
+        t.present();
+      }
+    };
+    window['toast'] = toast;
     const alert = async msg => {
-      try{
-        const t =await this.alertController.getTop();
-        if(t){
+      try {
+        const t = await this.alertController.getTop();
+        if (t) {
           t.dismiss();
         }
-      }catch(e){
+      } catch (e) {
         console.error(e);
       }
       (await this.alertController.create({
@@ -62,5 +83,43 @@ export class AppComponent {
       })).present();
     };
     window.alert = alert;
+  }
+  private backButtonAction() {
+    let lastClickTime = 0;
+    this.platform.backButton.subscribe(() => {
+
+      console.log("backbutton url = " + this.router.url);
+      this.platform.backButton.subscribe(async () => {
+        try {
+          const element = await this.actionSheetCtrl.getTop();
+          const aEle = await this.alertController.getTop();
+          const lEle = await this.loadingCtrl.getTop();
+          if (element) {
+            element.dismiss();
+            return;
+          }
+          if (aEle) {
+            aEle.dismiss();
+            return;
+          }
+          if (lEle) {
+            lEle.dismiss();
+            return;
+          }
+        } catch (error) {
+          console.error(error);
+        }
+        if (this.router.url.includes("login") || this.router.url.includes("tabs")) {
+          if (Date.now() - lastClickTime <= 2000) {
+            navigator['app'].exitApp();
+          }else{
+            window['toast'](ApiLanguage.getDoubleClickExit());
+            lastClickTime=Date.now();
+          }
+        } else {
+          window.history.back();
+        }
+      })
+    });
   }
 }
