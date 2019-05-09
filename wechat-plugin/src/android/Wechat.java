@@ -47,6 +47,7 @@ public class Wechat extends CordovaPlugin {
                     callbackContext.error("appId 不能空");
                     return true;
                 }
+                regToWx(appId);
                 String partnerId = jsonObject.optString("partnerId");
                 if (TextUtils.isEmpty(partnerId)) {
                     callbackContext.error("partnerId 不能空");
