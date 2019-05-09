@@ -30,6 +30,7 @@ export class HomePage implements OnInit {
   accountSecurityEn() {
     this.router.navigate(["account-security_en"]);
   }
+  
   aliPay() {
     this.router.navigate(["setting_en"]);
     // tslint:disable-next-line:max-line-length

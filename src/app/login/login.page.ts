@@ -64,6 +64,16 @@ export class LoginPage implements OnInit {
     });
     this.initPage();
   }
+  getWechatCode(){
+    const wechat=window['wechat'];
+    if(wechat){
+      wechat.getCode('wx0839a418ccafdf36').then(code=>{
+        alert('获取到的code'+code);
+      }).catch(e=>{
+        alert(e);
+      });
+    }
+  }
   initPage() {
     this.refreshImageCode();
     this.configService.get().then(r => {

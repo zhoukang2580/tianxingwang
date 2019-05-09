@@ -1,11 +1,20 @@
 var exec = require('cordova/exec');
 
-exports.getOpenId = (appId) => {
+exports.getCode = (appId) => {
     return new Promise((resolve, reject) => {
         exec(openId => {
             resolve(openId);
         }, error => {
             reject(error)
-        }, 'Wechat', 'getOpenId', [appId]);
+        }, 'Wechat', 'getCode', [appId]);
+    });
+};
+exports.pay = (payInfo) => {
+    return new Promise((resolve, reject) => {
+        exec(() => {
+            resolve();
+        }, error => {
+            reject(error)
+        }, 'Wechat', 'pay', [payInfo]);
     });
 };

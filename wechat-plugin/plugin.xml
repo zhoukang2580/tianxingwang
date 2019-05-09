@@ -16,7 +16,7 @@
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="Wechat">
-                <param name="android-package" value="com.beeant.app.wechat.Wechat"/>
+                <param name="android-package" value="com.beeant.plugin.wechat.Wechat"/>
             </feature>
         </config-file>
         <!-- 微信接受消息、发送消息给微信的配置  start-->
@@ -33,7 +33,7 @@
             <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
             <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
         </config-file>
-        <source-file src="src/android/Wechat.java" target-dir="src/com/beeant/app/wechat" />
+        <source-file src="src/android/Wechat.java" target-dir="src/com/beeant/plugin/wechat" />
         <framework src="com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+" />
     </platform>
 
