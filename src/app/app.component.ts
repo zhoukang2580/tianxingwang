@@ -86,9 +86,7 @@ export class AppComponent {
   }
   private backButtonAction() {
     let lastClickTime = 0;
-    this.platform.backButton.subscribe(() => {
-
-      console.log("backbutton url = " + this.router.url);
+    console.log("backbutton url = " + this.router.url);
       this.platform.backButton.subscribe(async () => {
         try {
           const element = await this.actionSheetCtrl.getTop();
@@ -96,14 +94,17 @@ export class AppComponent {
           const lEle = await this.loadingCtrl.getTop();
           if (element) {
             element.dismiss();
+            console.log("关闭actionsheet");
             return;
           }
           if (aEle) {
             aEle.dismiss();
+            console.log("关闭alert");
             return;
           }
           if (lEle) {
             lEle.dismiss();
+            console.log("关闭loading");
             return;
           }
         } catch (error) {
@@ -119,7 +120,6 @@ export class AppComponent {
         } else {
           window.history.back();
         }
-      })
-    });
+      });
   }
 }
