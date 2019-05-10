@@ -1,2 +1,2 @@
 
-/// <reference path="../wechat-plugin/types/index.d.ts"/>
+/// <reference path="../cordova-wechat-plugin/types/index.d.ts"/>
