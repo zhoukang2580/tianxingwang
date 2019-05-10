@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" 
+    xmlns:rim="http://www.blackberry.com/ns/widgets" 
+    xmlns:android="http://schemas.android.com/apk/res/android" id="cordova-wechat-plugin" version="1.0.0">
+    <name>Wechat</name>
+    <description>Cordova Wechat Plugin</description>
+    <license>Apache 2.0</license>
+    <keywords>cordova,Wechat,weixin</keywords>
+    <!-- <repo>https://git-wip-us.apache.org/repos/asf/cordova-plugin-device.git</repo> -->
+
+    <js-module src="www/wechat.js" name="wechat">
+        <clobbers target="wechat" />
+    </js-module>
+
+    <!-- android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="Wechat">
+                <param name="android-package" value="com.beeant.plugin.wechat.Wechat"/>
+            </feature>
+        </config-file>
+        <!-- 微信接受消息、发送消息给微信的配置  start-->
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <activity android:name=".wxapi.WXEntryActivity" android:label="@string/app_name" android:theme="@android:style/Theme.Translucent.NoTitleBar" android:exported="true" android:taskAffinity="net.sourceforge.simcpux" android:launchMode="singleTask">
+            </activity>
+        </config-file>
+        <!-- 微信接受消息、发送消息给微信的配置  end -->
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.INTERNET" />
+
+            <!-- for mta statistics, not necessary-->
+            <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+            <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+        </config-file>
+        <source-file src="src/android/Wechat.java" target-dir="src/com/beeant/plugin/wechat" />
+        <framework src="com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+" />
+    </platform>
+
+    <!-- ios -->
+    <platform name="ios">
+        <preferance name='WECHATAPPID' default='test'/>
+        <config-file target="config.xml" parent="/*">
+            <feature name="Wechat">
+                <param name="ios-package" value="CDVWechat"/>
+            </feature>
+        </config-file>
+        <config-file target="*-Info.plist" parent="LSApplicationQueriesSchemes">
+            <array>
+                <string>weixin</string>
+                <string>wechat</string>
+            </array>
+        </config-file>
+
+        <config-file target="*-Info.plist" parent="NSAppTransportSecurity">
+            <dict>
+                <key>NSAllowsArbitraryLoads</key>
+                <true/>
+            </dict>
+        </config-file>
+
+
+        <config-file target="*-Info.plist" parent="CFBundleURLTypes">
+            <array>
+                <dict>
+                    <key>CFBundleURLName</key>
+                    <string>weixin</string>
+                    <key>CFBundleURLSchemes</key>
+                    <array>
+                        <string>$WECHATAPPID</string>
+                    </array>
+                </dict>
+            </array>
+        </config-file>
+        <!-- 微信sdk start-->
+        <header-file src="src/ios/CDVWechat.h" />
+        <source-file src="src/ios/CDVWechat.m" />
+        <source-file src='src/ios/WeChatSDK1.8.4/libWeChatSDK.a' framework='true'/>
+        <header-file src='src/ios/WeChatSDK1.8.4/WechatAuthSDK.h'/>
+        <header-file src='src/ios/WeChatSDK1.8.4/WXApi.h'/>
+        <header-file src='src/ios/WeChatSDK1.8.4/WXApiObject.h'/>
+        <!-- 微信sdk end -->
+        <!-- Other required frameworks -->
+        <framework src="libz.tbd" />
+        <framework src="libsqlite3.0.tbd" />
+        <framework src="CoreTelephony.framework" />
+        <framework src="SystemConfiguration.framework" />
+        <framework src="Security.framework" />
+        <framework src="CFNetwork.framework" />
+        <framework src="libc++.1.tbd" />
+    </platform>
+</plugin>
