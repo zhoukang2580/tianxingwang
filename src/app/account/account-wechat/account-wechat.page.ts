@@ -1,15 +1,72 @@
-import { Component, OnInit } from '@angular/core';
-
+import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
+import { IonList } from '@ionic/angular';
+import { ApiService } from 'src/app/services/api/api.service';
+import { Observable, merge, of, Subscription } from 'rxjs';
+import { BaseRequest } from 'src/app/services/api/BaseRequest';
+import { map, switchMap } from 'rxjs/operators';
+type Item = {
+  Id: string;
+  Name: string;
+};
 @Component({
-  selector: 'app-account-wechat',
-  templateUrl: './account-wechat.page.html',
-  styleUrls: ['./account-wechat.page.scss'],
+  selector: "app-account-Wechat",
+  templateUrl: "./account-Wechat.page.html",
+  styleUrls: ["./account-Wechat.page.scss"]
 })
-export class AccountWechatPage implements OnInit {
+export class AccountWechatPage implements OnInit, OnDestroy {
+  toggleChecked = false;
+  items: Item[] = [];
+  @ViewChild('List') deviceList: IonList;
+  constructor(private apiService: ApiService) {
 
-  constructor() { }
-
-  ngOnInit() {
   }
 
+  ngOnInit() {
+    this.load();
+  }
+  load() {
+    const req = new BaseRequest();
+    req.Method = "ApiPasswordUrl-Wechat-List";
+    req.IsShowLoading=true;
+    let deviceSubscription = this.apiService.getResponse<Item[]>(req).pipe(map(r => r.Data)).subscribe(r => {
+      this.items = r;
+    },()=>{
+      if(deviceSubscription)
+      {
+        deviceSubscription.unsubscribe();
+      }
+    });
+  }
+  delete(item: Item) {
+    const req = new BaseRequest();
+    req.Method = "ApiPasswordUrl-Wechat-Remove";
+    req.IsShowLoading=true;
+    req.Data={
+      Id:item.Id
+    };
+    let deviceSubscription = this.apiService.getResponse<{}>(req).subscribe(s => {
+      this.items=this.items.filter(it=>it!=item);
+    }, n => {
+      alert(n);
+    },()=>{
+      if(deviceSubscription)
+      {
+        deviceSubscription.unsubscribe();
+      }
+    });
+  }
+  itemClick() {
+
+  }
+  ngOnDestroy() {
+  }
+  toggleDeleteButton() {
+    this.deviceList.closeSlidingItems();
+    setTimeout(() => {
+      this.toggleChecked = !this.toggleChecked;
+    }, this.toggleChecked ? 300 : 0);
+  }
+  onSlidingItemDrag() {
+    this.toggleChecked = false;
+  }
 }

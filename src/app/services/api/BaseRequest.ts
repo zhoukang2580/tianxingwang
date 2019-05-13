@@ -9,6 +9,6 @@ export class BaseRequest {
   Version?: string;
   Language?: string;
   Url?: string;
-  Data: string;
+  Data: any;
   IsShowLoading?:boolean
 }

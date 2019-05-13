@@ -28,7 +28,19 @@ export class AppHelper {
     }
     return this._deviceName; // 返回ios或android
   }
+  static isApp() {
+    return window["cordova"];
+  }
   static isH5() {
+    return !window["cordova"];
+  }
+  static isWechatH5() {
+    return !window["cordova"];
+  }
+  static isDingtalkH5() {
+    return !window["cordova"];
+  }
+  static isWechatMini() {
     return !window["cordova"];
   }
   static getStyle() {
