@@ -2,43 +2,35 @@
   <ion-toolbar>
     <ion-title>login-device-management</ion-title>
     <ion-buttons slot="end">
-      <ion-button
-        fill="clear"
-        color="primary"
-        (click)="toggle.checked = !toggle.checked"
-        >编辑</ion-button
-      >
+      <ion-button fill="clear" color="primary" (click)="toggle.checked = !toggle.checked">编辑</ion-button>
       <input #toggle type="radio" hidden checked="false" />
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content>
   <ion-toolbar>
-    <ion-text
-      >最近登录设备：您可以删除列表中的设备，删除后在该设备登录应用需要进行身份验证。</ion-text
-    >
+    <ion-text>最近登录设备：您可以删除列表中的设备，删除后在该设备登录应用需要进行身份验证。</ion-text>
   </ion-toolbar>
   <ion-list>
-    <ion-item
-      (click)="itemClick()"
-      [attr.detail]="toggle.checked"
-      *ngFor="
-        let item of [
-          '我的iphone',
-          'Tina的Mac',
-          '公司电脑',
-          '公司的Mac',
-          '老张的Mac'
-        ]
-      "
-    >
-      <ion-label>{{ item }}</ion-label>
-      <ion-button
-        color="danger"
-        *ngIf="!toggle.checked"
-        (click)="delteDevice(item)"
-        >删除</ion-button
-      >
-    </ion-item>
+    <ion-item-sliding (click)="itemClick()" [attr.detail]="toggle.checked" *ngFor="
+    let item of [
+      '我的iphone',
+      'Tina的Mac',
+      '公司电脑',
+      '公司的Mac',
+      '老张的Mac'
+    ]
+  ">
+      <ion-item>
+        <ion-label>{{ item }}</ion-label>
+        <ion-button color="danger" size='small' *ngIf="!toggle.checked" (click)="delteDevice(item)">删除</ion-button>
+      </ion-item>
+      <ion-item-options side='end'>
+        <ion-item-option color="danger" (click)="delteDevice(item)">
+          删除
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+
   </ion-list>
 </ion-content>
