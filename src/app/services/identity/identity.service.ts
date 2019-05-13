@@ -24,6 +24,7 @@ export class IdentityService {
       this.identity = info;
       AppHelper.setCookie("ticket", info.Ticket);
       AppHelper.setStorage("loginname", info.Name);
+      AppHelper.setStorage("identityId", info.Id);
     }
   }
   removeIdentity() {

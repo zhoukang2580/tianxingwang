@@ -1,48 +1,64 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
 import { IonList } from '@ionic/angular';
 import { ApiService } from 'src/app/services/api/api.service';
-import { Observable, merge, of } from 'rxjs';
+import { Observable, merge, of, Subscription } from 'rxjs';
 import { BaseRequest } from 'src/app/services/api/BaseRequest';
-import { map } from 'rxjs/operators';
-type DeviceItem = {
-  deviceId: string;
-  deviceName: string;
+import { map, switchMap } from 'rxjs/operators';
+type Item = {
+  Id: string;
+  Name: string;
 };
 @Component({
   selector: "app-account-device",
   templateUrl: "./account-device.page.html",
   styleUrls: ["./account-device.page.scss"]
 })
-export class AccountDevicePage implements OnInit {
+export class AccountDevicePage implements OnInit, OnDestroy {
   toggleChecked = false;
-  devices$: Observable<DeviceItem[]>;
-  @ViewChild('deviceList') deviceList: IonList;
+  items: Item[] = [];
+  @ViewChild('List') deviceList: IonList;
   constructor(private apiService: ApiService) {
 
   }
 
   ngOnInit() {
-this.loadDevices();
+    this.load();
   }
-  loadDevices() {
+  load() {
     const req = new BaseRequest();
-    this.devices$ = merge(of([
+    req.Method = "ApiPasswordUrl-Device-List";
+    req.IsShowLoading=true;
+    let deviceSubscription = this.apiService.getResponse<Item[]>(req).pipe(map(r => r.Data)).subscribe(r => {
+      this.items = r;
+    },()=>{
+      if(deviceSubscription)
       {
-        deviceId: '1',
-        deviceName: "mac"
-      },
-      {
-        deviceId: '2',
-        deviceName: "Iphone"
+        deviceSubscription.unsubscribe();
       }
-    ]),
-      this.apiService.getResponse<DeviceItem[]>(req).pipe(map(r => r.Data)));
+    });
   }
-  delteDevice() {
-
+  delete(item: Item) {
+    const req = new BaseRequest();
+    req.Method = "ApiPasswordUrl-Device-Remove";
+    req.IsShowLoading=true;
+    req.Data={
+      Id:item.Id
+    };
+    let deviceSubscription = this.apiService.getResponse<{}>(req).subscribe(s => {
+      this.items=this.items.filter(it=>it!=item);
+    }, n => {
+      alert(n);
+    },()=>{
+      if(deviceSubscription)
+      {
+        deviceSubscription.unsubscribe();
+      }
+    });
   }
   itemClick() {
 
+  }
+  ngOnDestroy() {
   }
   toggleDeleteButton() {
     this.deviceList.closeSlidingItems();

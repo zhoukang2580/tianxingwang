@@ -1,9 +1,25 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>account-weixin</ion-title>
+    <ion-title>微信维护</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear"  (click)="toggleDeleteButton()">编辑</ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
-
 <ion-content>
 
+  <ion-list #List (ionDrag)='onSlidingItemDrag()'>
+    <ion-item-sliding (click)="itemClick()" *ngFor="let item of items">
+      <ion-item>
+        <ion-label>{{ item?.Name }}</ion-label>
+        <ion-button color="danger" size='small' *ngIf="toggleChecked" (click)="delete(item)">删除</ion-button>
+      </ion-item>
+      <ion-item-options side='end'>
+        <ion-item-option color="danger" (click)="delete(item)">
+          删除
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+
+  </ion-list>
 </ion-content>

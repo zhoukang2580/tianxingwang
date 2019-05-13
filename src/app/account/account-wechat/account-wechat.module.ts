@@ -23,4 +23,4 @@ const routes: Routes = [
   ],
   declarations: [AccountWechatPage]
 })
-export class AccountWeixinPageModule {}
+export class AccountWechatPageModule {}

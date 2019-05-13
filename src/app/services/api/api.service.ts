@@ -72,17 +72,44 @@ export class ApiService {
     return this.sendRequest(req, true);
   }
   async tryAutoLogin(orgReq: BaseRequest) {
-    const uuid = await AppHelper.getUUID();
     const req = new BaseRequest();
-    req.Method = "ApiLoginUrl-Home-DeviceLogin";
     req.Timestamp = Math.floor(Date.now() / 1000);
     req.Language = AppHelper.getLanguage();
     req.Ticket = AppHelper.getTicket();
     req.Domain = AppHelper.getDomain();
-    req.Data = JSON.stringify({
-      Name: AppHelper.getStorage<string>("loginName"),
-      Password: uuid
-    });
+    if(AppHelper.isApp())
+    {
+      const uuid = await AppHelper.getUUID();
+      req.Method = "ApiLoginUrl-Home-DeviceLogin";
+      req.Data = JSON.stringify({
+        Id: AppHelper.getStorage<string>("identityId"),
+        Device: uuid
+      });
+    }
+    else if(AppHelper.isWechatH5())
+    {
+      const code ="";
+      req.Method = "ApiLoginUrl-Home-WechatLogin";
+      req.Data = JSON.stringify({
+        Code:code
+      });
+    }
+    else if(AppHelper.isWechatMini())
+    {
+      const code ="";
+      req.Method = "ApiLoginUrl-Home-WechatLogin";
+      req.Data = JSON.stringify({
+        Code:code
+      });
+    }
+    else if(AppHelper.isDingtalkH5())
+    {
+      const code ="";
+      req.Method = "ApiLoginUrl-Home-DingtalkLogin";
+      req.Data = JSON.stringify({
+        Code:code
+      });
+    }
     const formObj = Object.keys(req)
       .map(k => `${k}=${req[k]}`)
       .join("&");
@@ -106,7 +133,8 @@ export class ApiService {
               this.identityService.setIdentity(id);
               return this.sendRequest(orgReq, false);
             }
-            // this.router.navigate([AppHelper.getRoutePath("login")]);
+            this.identityService.removeIdentity();
+            this.router.navigate([AppHelper.getRoutePath("login")]);
             return of(r);
           })
         ).subscribe(r => {
@@ -128,12 +156,16 @@ export class ApiService {
     req.Language = AppHelper.getLanguage();
     req.Ticket = AppHelper.getTicket();
     req.Domain = AppHelper.getDomain();
+    if(typeof req.Data!='string')
+    {
+      req.Data=JSON.stringify(req.Data);
+    }
     const formObj = Object.keys(req)
       .map(k => `${k}=${req[k]}`)
       .join("&");
     this.setLoading(true,req.IsShowLoading);
     const url = req.Url || AppHelper.getApiUrl() + "/Home/Proxy";
-    const due = 10 * 1000;
+    const due = 30 * 1000;
     return this.http
       .post(url, formObj, {
         headers: { "content-type": "application/x-www-form-urlencoded" },

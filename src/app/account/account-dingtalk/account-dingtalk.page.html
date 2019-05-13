@@ -1,45 +1,25 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>钉钉</ion-title>
+    <ion-title>钉钉维护</ion-title>
     <ion-buttons slot="end">
-        <ion-button
-          fill="clear"
-          color="primary"
-          (click)="toggle.checked = !toggle.checked"
-          >编辑</ion-button
-        >
-        <input #toggle type="radio" hidden checked="false" />
-      </ion-buttons>
+      <ion-button fill="clear"  (click)="toggleDeleteButton()">编辑</ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
-
 <ion-content>
-    <ion-toolbar>
-        <ion-text
-          >最近登录设备：您可以删除列表中的设备，删除后在该设备登录应用需要进行身份验证。</ion-text
-        >
-      </ion-toolbar>
-      <ion-list>
-        <ion-item
-          (click)="itemClick()"
-          [attr.detail]="toggle.checked"
-          *ngFor="
-            let item of [
-              '我的iphone',
-              'Tina的Mac',
-              '公司电脑',
-              '公司的Mac',
-              '老张的Mac'
-            ]
-          "
-        >
-          <ion-label>{{ item }}</ion-label>
-          <ion-button
-            color="danger"
-            *ngIf="!toggle.checked"
-            (click)="delteDingDingAccount(item)"
-            >删除</ion-button
-          >
-        </ion-item>
-      </ion-list>
+
+  <ion-list #List (ionDrag)='onSlidingItemDrag()'>
+    <ion-item-sliding (click)="itemClick()" *ngFor="let item of items">
+      <ion-item>
+        <ion-label>{{ item?.Name }}</ion-label>
+        <ion-button color="danger" size='small' *ngIf="toggleChecked" (click)="delete(item)">删除</ion-button>
+      </ion-item>
+      <ion-item-options side='end'>
+        <ion-item-option color="danger" (click)="delete(item)">
+          删除
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+
+  </ion-list>
 </ion-content>
