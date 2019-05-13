@@ -12,7 +12,10 @@ import { TranslateModule } from '@ngx-translate/core';
     CommonModule,
     FormsModule,
     TranslateModule.forChild(),
-    RouterModule.forChild([{ path: '', component: MyPage }])
+    RouterModule.forChild([
+      { path: '', component: MyPage },
+      { path: 'my-detail', loadChildren: "./my-detail/my-detail.module#MyDetailPageModule" },
+    ])
   ],
   declarations: [MyPage]
 })

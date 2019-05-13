@@ -5,7 +5,21 @@
 </ion-header>
 
 <ion-content>
-  <ion-list >
+  <ion-list lines='none'>
+    <ion-item detail (click)='goToMyDetail()'>
+      <ion-thumbnail>
+        <img src="assets/images/airplane-l.jpg" alt="头像">
+      </ion-thumbnail>
+      <ion-label padding-start>
+        <h3>黄满标<ion-note class='account-type'>普通账号</ion-note>
+        </h3>
+        <h4>
+          <ion-note>账号: {{identity?.Name}}</ion-note>
+        </h4>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-list>
     <ion-item (click)="onSettings()" detail>
       <ion-icon name="cog" color="primary"></ion-icon>
       <ion-label padding-start>设置</ion-label>

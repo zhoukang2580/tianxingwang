@@ -11,7 +11,7 @@ import { ViewController } from '@ionic/core';
 
 @Component({
   selector: "app-root",
-  templateUrl: "app.component.html"
+  templateUrl: "app.component.html",
 })
 export class AppComponent {
   constructor(
@@ -40,7 +40,7 @@ export class AppComponent {
     this.router.navigate([AppHelper.getRoutePath("")]);
     // this.router.navigate([AppHelper.getRoutePath("account-password")]);
     // this.router.navigate([AppHelper.getRoutePath("change-password-by-msm-code")]);
-    // this.router.navigate([AppHelper.getRoutePath("account-security")]);
+    this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();

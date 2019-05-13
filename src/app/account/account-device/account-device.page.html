@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title>login-device-management</ion-title>
     <ion-buttons slot="end">
-      <ion-button fill="clear" color="primary" (click)="toggleDeleteButton()">编辑</ion-button>
+      <ion-button fill="clear"  (click)="toggleDeleteButton()">编辑</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -20,7 +20,7 @@
       '老张的Mac'
     ]
   ">
-      <ion-item [attr.detail]="!toggleChecked">
+      <ion-item >
         <ion-label>{{ item }}</ion-label>
         <ion-button color="danger" size='small' *ngIf="toggleChecked" (click)="delteDevice(item)">删除</ion-button>
       </ion-item>

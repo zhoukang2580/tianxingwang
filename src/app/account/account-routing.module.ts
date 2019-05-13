@@ -25,14 +25,14 @@ const routes: Routes = [
       "./account-device/account-device.module#AccountDevicePageModule"
   },
   {
-    path: "account-dingding",
+    path: "account-dingtalk",
     loadChildren:
-      "./account-dingding/account-dingding.module#AccountDingdingPageModule"
+      "./account-dingtalk/account-dingtalk.module#AccountDingtalkPageModule"
   },
   {
-    path: "account-weixin",
+    path: "account-wechat",
     loadChildren:
-      "./account-weixin/account-weixin.module#AccountWeixinPageModule"
+      "./account-wechat/account-wechat.module#AccountWechatPageModule"
   },
   {
     path: "account-email",
