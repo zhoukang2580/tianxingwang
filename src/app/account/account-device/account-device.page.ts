@@ -1,4 +1,5 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
+import { IonList } from '@ionic/angular';
 
 @Component({
   selector: "app-account-device",
@@ -6,9 +7,20 @@ import { Component, OnInit } from "@angular/core";
   styleUrls: ["./account-device.page.scss"]
 })
 export class AccountDevicePage implements OnInit {
-  constructor() {}
+  toggleChecked = false;
+  @ViewChild('deviceList') deviceList: IonList;
+  constructor() { }
 
-  ngOnInit() {}
-  delteDevice() {}
-  itemClick() {}
+  ngOnInit() { }
+  delteDevice() { }
+  itemClick() { }
+  toggleDeleteButton() {
+    this.deviceList.closeSlidingItems();
+    setTimeout(() => {
+      this.toggleChecked = !this.toggleChecked;
+    }, this.toggleChecked ? 300 : 0);
+  }
+  onSlidingItemDrag(){
+    this.toggleChecked=false;
+  }
 }

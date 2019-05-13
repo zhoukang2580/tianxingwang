@@ -5,16 +5,10 @@
 </ion-header>
 
 <ion-content>
-  <ion-list>
+  <ion-list lines>
     <ion-item>
       <ion-label>账号</ion-label>
       <ion-label no-margin slot="end">{{identityEntity?.Name}}</ion-label>
-    </ion-item>
-    <ion-item detail (click)='modifyPassword()'>
-      <ion-label>密码修改</ion-label>
-    </ion-item>
-    <ion-item detail>
-      <ion-label>支付密码</ion-label>
     </ion-item>
     <ion-item detail (click)="bindMobile()">
       <ion-label>手机号</ion-label>
@@ -32,6 +26,19 @@
     <ion-item detail (click)="goToDingding()">
       <ion-label>钉钉</ion-label>
     </ion-item>
+  </ion-list>
+  <ion-list>
+
+    <ion-item detail (click)='modifyPassword()'>
+      <ion-label>密码修改</ion-label>
+    </ion-item>
+    <ion-item detail>
+      <ion-label>支付密码</ion-label>
+    </ion-item>
+
+
+  </ion-list>
+  <ion-list>
     <ion-item detail (click)="loginDeviceManagement()">
       <ion-label>设备管理</ion-label>
     </ion-item>

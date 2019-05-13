@@ -6,8 +6,8 @@ ion-content {
     &:first-child {
       margin-top: 0;
     }
-    &:last-child ion-item,
-    &:first-child ion-item,
+    // &:last-child ion-item,
+    // &:first-child ion-item,
     ion-item:last-child {
       --inner-border-width: 0;
     }
