@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{title}}</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar debounce="500" animated (ionChange)='onIonChange()'></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor='let item of items' (click)='onItemClick(item)'>
+      {{item[displayField]}}
+    </ion-item>
+  </ion-list>
+</ion-content>
