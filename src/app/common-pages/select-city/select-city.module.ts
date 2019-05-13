@@ -21,6 +21,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [SelectCityPage]
+  declarations: [SelectCityPage],
+  exports: [SelectCityPage]
 })
-export class SelectCityPageModule {}
+export class SelectCityPageModule { }

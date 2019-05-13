@@ -1,4 +1,6 @@
-import { Component, OnInit, Input ,EventEmitter, Output} from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { SelectCityService } from './select-city.service';
 
 @Component({
   selector: 'app-select-city',
@@ -6,25 +8,29 @@ import { Component, OnInit, Input ,EventEmitter, Output} from '@angular/core';
   styleUrls: ['./select-city.page.scss'],
 })
 export class SelectCityPage implements OnInit {
-  @Input()
   title: string;
-  @Input()
-  displayField: string;
-  @Input()
-  items: any[];
-  @Output()
-  itemClick:EventEmitter<any>;
-  constructor() {
-    this.itemClick=new EventEmitter();
+  items: any[] = [];
+  viewModelItems: any[];
+  constructor(private route: ActivatedRoute, private cityService: SelectCityService) {
+    this.title = this.cityService.extra && this.cityService.extra.title;
   }
 
   ngOnInit() {
-    
+    this.items = this.cityService.getCities();
+    this.viewModelItems = this.items;
   }
   onItemClick(item: any) {
-    this.itemClick.emit(item);
+    this.cityService.setSelectedItem(item);
+    window.history.back();
   }
-  onIonChange(evt: any) {
-    console.log(evt);
+  onIonChange(evt: CustomEvent) {
+    if (this.items) {
+      if (evt.detail.value) {
+        this.viewModelItems = this.items.filter(itm => `${itm[this.cityService.extra.displayField]}`
+          .toLowerCase().includes(`${evt.detail.value}`.toLowerCase()));
+      } else {
+        this.viewModelItems = this.items;
+      }
+    }
   }
 }

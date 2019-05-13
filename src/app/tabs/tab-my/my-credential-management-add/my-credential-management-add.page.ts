@@ -1,5 +1,10 @@
+import { AppHelper } from 'src/app/appHelper';
+import { ApiService } from 'src/app/services/api/api.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
+import { TabsLanguage } from '../../tabs.language';
+import { SelectCityService } from 'src/app/common-pages/select-city/select-city.service';
 
 @Component({
   selector: 'app-my-credential-management-add',
@@ -9,8 +14,23 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class MyCredentialManagementAddPage implements OnInit {
   identityTypes: { name: string; value: string; id: string; }[] = [];
   formGroup: FormGroup;
-  nationalities: {name:string}[];
-  constructor(private fb: FormBuilder) { }
+  identityNationality: any;
+  issueNationality: any;
+  requestCode: "issueNationality" | "identityNationality";
+  title = "选择国家";
+  constructor(
+    private fb: FormBuilder,
+    private cityService: SelectCityService,
+    private apiService: ApiService, private router: Router) {
+    this.cityService.getSelectedItemObservable().subscribe(cityItem => {
+      if (this.requestCode === "identityNationality") {
+        this.identityNationality = cityItem;
+      }
+      if (this.requestCode === 'issueNationality') {
+        this.issueNationality = cityItem;
+      }
+    })
+  }
 
   ngOnInit() {
     this.identityTypes = [
@@ -63,15 +83,28 @@ export class MyCredentialManagementAddPage implements OnInit {
   }
   addCredential() {
     if (this.formGroup.invalid) {
-      alert("请完善信息");
+      alert(TabsLanguage.getCompleteInfo());
+      return;
+    }
+    if (!this.identityNationality) {
+      alert(TabsLanguage.getIdentityNationality());
+      return;
+    }
+    if (!this.issueNationality) {
+      alert(TabsLanguage.getIdentityNationality());
       return;
     }
   }
-  selectIdentityNationality(){
-    
-  }
-  selectIssueNationality(){
 
+  selectIdentityNationality() {
+    this.requestCode = "identityNationality";
+    this.cityService.extra = { title: this.title, displayField: "Name" };
+    this.router.navigate([AppHelper.getRoutePath("select-city")]);
+  }
+  selectIssueNationality() {
+    this.cityService.extra = { title: this.title, displayField: "Name" };
+    this.requestCode = "issueNationality";
+    this.router.navigate([AppHelper.getRoutePath("select-city")]);
   }
 
 }

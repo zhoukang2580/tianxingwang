@@ -9,21 +9,16 @@ import { TabsPage } from "./tabs/tabs.page";
 import { TabsPageModule } from './tabs/tabs.page.module';
 
 const routes: Routes = [
-  {
-    path: "guard-page",
-    loadChildren: "./pages/guardpage/guardpage.module#GuardpagePageModule",
-    canActivate: [AuthorityGuard]
-  },
+  { path: 'select-city', loadChildren: './common-pages/select-city/select-city.module#SelectCityPageModule' },
   {
     path: "",
     component: TabsPage,
     pathMatch: "full"
   },
   {
-    loadChildren: "./page404/page404.module#Page404PageModule",
+    loadChildren: "./Fpage404/page404.module#Page404PageModule",
     matcher: AppHelper.matchDefaultRoute
   },
-  { path: 'select-city', loadChildren: './common-pages/select-city/select-city.module#SelectCityPageModule' }
 ];
 @NgModule({
   imports: [
