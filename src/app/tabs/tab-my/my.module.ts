@@ -15,6 +15,9 @@ import { TranslateModule } from '@ngx-translate/core';
     RouterModule.forChild([
       { path: '', component: MyPage },
       { path: 'my-detail', loadChildren: "./my-detail/my-detail.module#MyDetailPageModule" },
+      { path: 'my-credential-management', loadChildren: "./my-credential-management/my-credential-management.module#MyCredentialManagementPageModule" },
+  { path: 'my-credential-management-add', loadChildren: "./my-credential-management-add/my-credential-management-add.module#MyCredentialManagementAddPageModule" },
+
     ])
   ],
   declarations: [MyPage]

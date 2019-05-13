@@ -40,7 +40,8 @@ export class AppComponent {
     this.router.navigate([AppHelper.getRoutePath("")]);
     // this.router.navigate([AppHelper.getRoutePath("account-password")]);
     // this.router.navigate([AppHelper.getRoutePath("change-password-by-msm-code")]);
-    this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
+    // this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
+    this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management')]);
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
