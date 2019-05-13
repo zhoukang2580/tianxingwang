@@ -11,7 +11,7 @@ export class SelectCityPage implements OnInit {
   title: string;
   items: any[] = [];
   viewModelItems: any[];
-  constructor(private route: ActivatedRoute, private cityService: SelectCityService) {
+  constructor(private router: Router, private route: ActivatedRoute, private cityService: SelectCityService) {
     this.title = this.cityService.extra && this.cityService.extra.title;
   }
 
@@ -21,7 +21,8 @@ export class SelectCityPage implements OnInit {
   }
   onItemClick(item: any) {
     this.cityService.setSelectedItem(item);
-    window.history.back();
+    console.log(this.cityService.extra);
+    this.router.navigate([this.cityService.extra.backRoute]);
   }
   onIonChange(evt: CustomEvent) {
     if (this.items) {

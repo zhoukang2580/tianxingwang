@@ -98,11 +98,11 @@ export class MyCredentialManagementAddPage implements OnInit {
 
   selectIdentityNationality() {
     this.requestCode = "identityNationality";
-    this.cityService.extra = { title: this.title, displayField: "Name" };
+    this.cityService.extra = { title: this.title, displayField: "Name", backRoute: this.router.url };
     this.router.navigate([AppHelper.getRoutePath("select-city")]);
   }
   selectIssueNationality() {
-    this.cityService.extra = { title: this.title, displayField: "Name" };
+    this.cityService.extra = { title: this.title, displayField: "Name",backRoute: this.router.url };
     this.requestCode = "issueNationality";
     this.router.navigate([AppHelper.getRoutePath("select-city")]);
   }
