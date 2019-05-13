@@ -1,24 +1,32 @@
-ion-col{
-  align-self: center;
-}
-.down-count{
-  position: relative;
-  &::before{
-    display: block;
-    content: " ";
-    left: -0.5em;
-    top: 20%;
-    bottom: 20%;
-    width: 1px;
-    background-color: var(--ion-color-medium);
-    position: absolute;
+ion-content{
+  --background:white;
+  ion-col{
+    align-self: center;
   }
-}
-ion-col.image-code{
-  img{
-    max-height: 2em;
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
+  .down-count{
+    position: relative;
+    &::before{
+      display: block;
+      content: " ";
+      left: -0.5em;
+      top: 20%;
+      bottom: 20%;
+      width: 1px;
+      background-color: var(--ion-color-medium);
+      position: absolute;
+    }
+  }
+  ion-col.image-code{
+    img{
+      max-height: 2em;
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .third-party-logo{
+    display: flex;
+    justify-content: flex-end;
+    width: 90%;
   }
 }

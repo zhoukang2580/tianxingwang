@@ -25,6 +25,9 @@ export class MyPage implements OnDestroy, OnInit {
       this.identity = await this.identityService.getIdentity();
     }, 0);
   }
+  credentialManagement(){
+    this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management')]);
+  }
   ngOnDestroy() {
   }
   goToMyDetail(){
