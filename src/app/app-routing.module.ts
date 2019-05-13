@@ -22,7 +22,8 @@ const routes: Routes = [
   {
     loadChildren: "./page404/page404.module#Page404PageModule",
     matcher: AppHelper.matchDefaultRoute
-  }
+  },
+  { path: 'select-city', loadChildren: './common-pages/select-city/select-city.module#SelectCityPageModule' }
 ];
 @NgModule({
   imports: [
