@@ -1,4 +1,3 @@
-import { AppHelper } from "./appHelper";
 
 export class LanguageHelper {
   static getLoginImageCodeTip() {

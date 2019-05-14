@@ -3,15 +3,11 @@ import { Component, OnInit, NgZone } from "@angular/core";
 import { Router } from "@angular/router";
 import { LoginEntity } from "src/app/services/login/login.entity";
 import { FormBuilder, FormGroup } from "@angular/forms";
-import { Observable, interval } from "rxjs";
-import { finalize } from "rxjs/operators";
+import { Observable, interval, Subscription } from "rxjs";
 import { AppHelper } from "../appHelper";
 import { LanguageHelper } from "../LanguageHelper";
 import { ConfigEntity } from "../services/config/config.entity";
 import { ConfigService } from "../services/config/config.service";
-import { strict } from 'assert';
-import { stringify } from 'querystring';
-import { min } from 'moment';
 
 @Component({
   selector: "app-login",
@@ -24,6 +20,7 @@ export class LoginPage implements OnInit {
   form: FormGroup;
   validImageCodeCount: number = 0;
   private _phoneErrorCount: number = 0;
+  loginSubscription=Subscription.EMPTY;
   get phoneErrorCount() {
     return this._phoneErrorCount;
   }
@@ -136,7 +133,7 @@ export class LoginPage implements OnInit {
           this.message = LanguageHelper.getLoginImageCodeTip();
           return;
         }
-        this.loginService.userLogin(this.loginEntity).subscribe(r => {
+        this.loginSubscription=  this.loginService.userLogin(this.loginEntity).subscribe(r => {
           if (!r.Ticket) {
             this.userErrorCount++;
           } else {
@@ -153,7 +150,7 @@ export class LoginPage implements OnInit {
           this.message = LanguageHelper.getLoginMobileCodeTip();
           return;
         }
-        this.loginService
+        this.loginSubscription=  this.loginService
           .mobileLogin(this.loginEntity)
           .subscribe(r => {
             if (!r.Ticket) {
@@ -164,21 +161,21 @@ export class LoginPage implements OnInit {
           });
         break;
       case "dingtalk":
-        this.loginService.dingtalkLogin(this.loginEntity).subscribe(r => {
+       this.loginSubscription= this.loginService.dingtalkLogin(this.loginEntity).subscribe(r => {
           if (r.Ticket) {
             this.jump();
           }
         });
         break;
       case "wechat":
-        this.loginService.wechatLogin(this.loginEntity).subscribe(r => {
+      this.loginSubscription=  this.loginService.wechatLogin(this.loginEntity).subscribe(r => {
           if (r.Ticket) {
             this.jump();
           }
         });
         break;
       case "device":
-        this.loginService.deviceLogin(this.loginEntity).subscribe(r => {
+      this.loginSubscription=  this.loginService.deviceLogin(this.loginEntity).subscribe(r => {
           if (!r.Ticket) {
             this.loginType = "user";
           } else {

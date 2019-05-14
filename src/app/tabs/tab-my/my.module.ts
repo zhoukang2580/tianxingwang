@@ -16,7 +16,7 @@ const routes: Route[] = [
   {
     path: 'my-credential-management-add',
     loadChildren: "./my-credential-management-add/my-credential-management-add.module#MyCredentialManagementAddPageModule"
-  },
+  }
 
 ];
 @NgModule({
