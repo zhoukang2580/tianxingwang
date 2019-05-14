@@ -7,7 +7,7 @@ import { Router } from "@angular/router";
 import { AppHelper } from "./appHelper";
 import { ConfigService } from './services/config/config.service';
 import { ApiLanguage } from './services/api/api.language';
-import { ViewController } from '@ionic/core';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: "app-root",
@@ -23,7 +23,8 @@ export class AppComponent {
     private alertController: AlertController,
     private toastController: ToastController,
     private actionSheetCtrl: ActionSheetController,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private http:HttpClient
   ) {
     // console.log(this.router.config);
     if (this.platform.is("ios")) {
@@ -32,17 +33,20 @@ export class AppComponent {
     if (this.platform.is("android")) {
       AppHelper.setDeviceName("android");
     }
+    AppHelper.setHttpClient(this.http);
     this.initializeApp();
   }
 
   initializeApp() {
+    
+    
     this.config.get();
     this.router.navigate([AppHelper.getRoutePath("")]);
     // this.router.navigate([AppHelper.getRoutePath("account-password")]);
     // this.router.navigate([AppHelper.getRoutePath("change-password-by-msm-code")]);
     // this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
-    this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management')]);
-    this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management-add')]);
+    // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management')]);
+    // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management-add')]);
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();

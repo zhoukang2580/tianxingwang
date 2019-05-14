@@ -2,6 +2,7 @@ import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule, Routes } from "@angular/router";
 import { BindModule } from "./account-bind/account-bind.module";
+import { AuthorityGuard } from '../guards/authority.guard';
 
 const routes: Routes = [
   {
@@ -51,12 +52,13 @@ const routes: Routes = [
   {
     path: "account-password-by-msm-code",
     loadChildren:
-    './account-password-by-msm-code/account-password-by-msm-code.module#AccountPasswordByMsmCodePageModule'
+      './account-password-by-msm-code/account-password-by-msm-code.module#AccountPasswordByMsmCodePageModule'
   }
 ];
 @NgModule({
   declarations: [],
-  imports: [CommonModule, BindModule, RouterModule.forChild(routes)],
+  imports: [CommonModule, BindModule, RouterModule.forChild(routes
+    .map(r => ({ ...r, canActivate: [AuthorityGuard] })))],
   exports: [RouterModule]
 })
-export class AccountRoutingModule {}
+export class AccountRoutingModule { }

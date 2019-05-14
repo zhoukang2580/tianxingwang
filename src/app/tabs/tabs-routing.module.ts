@@ -22,7 +22,6 @@ const routes: Routes = [
       },
       {
         path: "my",
-
         loadChildren: "./tab-my/my.module#MyPageModule"
       },
       {

@@ -2,8 +2,13 @@ import * as md5 from "md5";
 import * as moment from "moment";
 import { environment } from "src/environments/environment";
 import { UrlSegment, UrlSegmentGroup, Route } from "@angular/router";
+import { HttpClient } from '@angular/common/http';
 export class AppHelper {
+  private static httpClient: HttpClient;
   private static _deviceName: string;
+  static setHttpClient(httpClient: HttpClient) {
+    this.httpClient = httpClient;
+  }
   static getUUID() {
     return new Promise<string>((resolve, reject) => {
       if (this.isH5()) {
@@ -18,6 +23,48 @@ export class AppHelper {
         false
       );
     });
+  }
+  static getWechatAppId() {
+    if (this.httpClient) {
+      return new Promise((resolve, reject) => {
+        const subscription = this.httpClient.get('assets/config.xml', { responseType: "arraybuffer" })
+          .subscribe(r => {
+            // console.log(r);
+            const fr = new FileReader();
+            fr.readAsText(new Blob([r]));
+            fr.onerror = (e) => {
+              // console.error("读取出错");
+              reject(e);
+            }
+            fr.onload = () => {
+              // console.log("读取完成", fr.result);
+              if (fr.result) {
+                const configXmlStr = fr.result as string;
+                if (configXmlStr.split('variable').find(item => item.includes("WECHATAPPID")) &&
+                  configXmlStr.split('variable').find(item => item.includes("WECHATAPPID")).split(" ").find(item => item.includes("value")).includes("=")) {
+                  const appid = configXmlStr.split('variable').find(item => item.includes("WECHATAPPID")).split(" ").find(item => item.includes("value")).split("=")[1].replace(/"/g, "");
+                  resolve(appid);
+                } else {
+                  reject("variable WECHATAPPID can not be found");
+                }
+              } else {
+                reject("config.xml file does not exist");
+              }
+            }
+          }, e => {
+            // console.error(e);
+            reject(e);
+          }, () => {
+            setTimeout(() => {
+              if (subscription) {
+                subscription.unsubscribe();
+              }
+            }, 888);
+          });
+      });
+
+    }
+    return Promise.reject("httpclient is null");
   }
   static setDeviceName(name: string) {
     this._deviceName = name;
@@ -79,7 +126,7 @@ export class AppHelper {
    * @param value 
    */
   static setStorage<T>(key: string, value: T) {
-    if(!key){
+    if (!key) {
       return;
     }
     if (value) {
