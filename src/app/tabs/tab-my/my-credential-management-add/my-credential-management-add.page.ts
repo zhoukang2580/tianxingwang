@@ -4,7 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TabsLanguage } from '../../tabs.language';
-import { SelectCityService } from 'src/app/common-pages/select-city/select-city.service';
+import { SelectCityService } from 'src/app/pages/select-city/select-city.service';
 
 @Component({
   selector: 'app-my-credential-management-add',

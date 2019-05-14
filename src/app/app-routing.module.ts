@@ -9,14 +9,14 @@ import { TabsPage } from "./tabs/tabs.page";
 import { TabsPageModule } from './tabs/tabs.page.module';
 
 const routes: Routes = [
-  { path: 'select-city', loadChildren: './common-pages/select-city/select-city.module#SelectCityPageModule' },
+  { path: 'select-city', loadChildren: './pages/select-city/select-city.module#SelectCityPageModule' },
   {
     path: "",
     component: TabsPage,
     pathMatch: "full"
   },
   {
-    loadChildren: "./Fpage404/page404.module#Page404PageModule",
+    loadChildren: "./page404/page404.module#Page404PageModule",
     matcher: AppHelper.matchDefaultRoute
   },
 ];
