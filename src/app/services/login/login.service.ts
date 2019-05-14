@@ -166,7 +166,6 @@ export class LoginService {
     if (AppHelper.getStorage<string>("loginName")) {
       const name = AppHelper.getStorage<string>("loginName");
       const req = new BaseRequest();
-      req.IsShowLoading=true;
       req.Method = "ApiLoginUrl-Home-DeviceLogin";
       req.Data = JSON.stringify({
         Name: name,

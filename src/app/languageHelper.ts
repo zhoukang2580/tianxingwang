@@ -1,20 +1,20 @@
-import { AppHelper } from "../appHelper";
+import { AppHelper } from "./appHelper";
 
-export class LoginLanguage {
-  static getImageCodeTip() {
+export class LanguageHelper {
+  static getLoginImageCodeTip() {
     // if(AppHelper.getLanguage())
     return "请输入验证码";
   }
-  static getNameTip() {
+  static getLoginNameTip() {
     return "请输入登入名";
   }
-  static getPasswordTip() {
+  static getLoginPasswordTip() {
     return "请输入登入密码";
   }
-  static getMobileTip() {
+  static getLoginMobileTip() {
     return "请输入手机号码";
   }
-  static getMobileCodeTip() {
+  static getLoginMobileCodeTip() {
     return "请输入手机收到的验证码";
   }
 }

@@ -6,9 +6,12 @@ import { FormBuilder, FormGroup } from "@angular/forms";
 import { Observable, interval } from "rxjs";
 import { finalize } from "rxjs/operators";
 import { AppHelper } from "../appHelper";
-import { LoginLanguage } from "./login.language";
+import { LanguageHelper } from "../LanguageHelper";
 import { ConfigEntity } from "../services/config/config.entity";
 import { ConfigService } from "../services/config/config.service";
+import { strict } from 'assert';
+import { stringify } from 'querystring';
+import { min } from 'moment';
 
 @Component({
   selector: "app-login",
@@ -40,6 +43,7 @@ export class LoginPage implements OnInit {
   imgSrc$: Observable<any>;
   loading$: Observable<boolean>;
   isMobileNumberOk = false;
+  isApp:boolean;
   constructor(
     private loginService: LoginService,
     private configService: ConfigService,
@@ -47,6 +51,7 @@ export class LoginPage implements OnInit {
     private router: Router
   ) {
     this.loading$ = this.loginService.getLoading();
+    this.isApp=AppHelper.isApp();
   }
   ngOnInit() {
     this.loginEntity = new LoginEntity();
@@ -64,21 +69,34 @@ export class LoginPage implements OnInit {
     });
     this.initPage();
   }
-  getWechatCode(){
-    const wechat=window['wechat'];
-    if(wechat){
-      wechat.getCode('wx0839a418ccafdf36').then(code=>{
-        alert('获取到的code'+code);
-      }).catch(e=>{
-        alert(e);
-      });
+  async loginByWechat() {
+    if (AppHelper.isApp()) {
+      var code = null;
+      var promise = this.getWechatCode();
+      if (promise) {
+        var code = await this.getWechatCode().catch(it => {
+          return null;
+        });
+      }
+      if (code) {
+        this.loginType = "wechat";
+        this.form.patchValue({ WechatCode: code });
+        this.login();
+      }
     }
+  }
+  getWechatCode() {
+    const wechat = window['wechat'];
+    if (wechat) {
+      return wechat.getCode('wx0839a418ccafdf36');
+    }
+    return null;
   }
   initPage() {
     this.refreshImageCode();
     this.configService.get().then(r => {
       this.pageInfo = r;
-    }).catch(e=>{
+    }).catch(e => {
       console.error(e);
     });
   }
@@ -88,15 +106,12 @@ export class LoginPage implements OnInit {
   switchLoginType(type: string) {
     this.loginType = type;
     this.form.patchValue({
-      ImageCode:''
+      ImageCode: ''
     });
   }
 
   async login() {
-    // 以下指示给出如何获取某个值做验证，后面再做界面上的反馈
-    if (this.form.invalid) {
-      return "表单无效";
-    }
+
     this.loginEntity.Name = this.form.value.Name;
     this.loginEntity.Password = this.form.value.Password;
     this.loginEntity.ImageCode = this.form.value.ImageCode;
@@ -108,18 +123,18 @@ export class LoginPage implements OnInit {
     switch (this.loginType) {
       case "user":
         if (!this.loginEntity.Name) {
-          this.message = LoginLanguage.getNameTip();
+          this.message = LanguageHelper.getLoginNameTip();
           return;
         }
         if (!this.loginEntity.Password) {
-          this.message = LoginLanguage.getPasswordTip();
+          this.message = LanguageHelper.getLoginPasswordTip();
           return;
         }
         if (
           this.userErrorCount >= this.validImageCodeCount &&
           !this.loginEntity.ImageCode
         ) {
-          this.message = LoginLanguage.getImageCodeTip();
+          this.message = LanguageHelper.getLoginImageCodeTip();
           return;
         }
         this.loginService.userLogin(this.loginEntity).subscribe(r => {
@@ -132,11 +147,11 @@ export class LoginPage implements OnInit {
         break;
       case "mobile":
         if (!this.loginEntity.Mobile) {
-          this.message = LoginLanguage.getMobileTip();
+          this.message = LanguageHelper.getLoginMobileTip();
           return;
         }
         if (!this.loginEntity.MobileCode) {
-          this.message = LoginLanguage.getMobileCodeTip();
+          this.message = LanguageHelper.getLoginMobileCodeTip();
           return;
         }
         this.loginService
@@ -177,10 +192,10 @@ export class LoginPage implements OnInit {
   // 发生手机验证码
   startCountDonw(count: number) {
     this.countDown = count;
-    const intervalSubscribtion=interval(1000).subscribe(v=>{
+    const intervalSubscribtion = interval(1000).subscribe(v => {
       this.countDown--;
       if (this.countDown <= 0) {
-        this.countDown =0;
+        this.countDown = 0;
         if (intervalSubscribtion) {
           intervalSubscribtion.unsubscribe();
         }
@@ -189,14 +204,14 @@ export class LoginPage implements OnInit {
   }
   sendLoginMobileCode() {
     if (!this.form.value.Mobile) {
-      this.message = LoginLanguage.getMobileTip();
+      this.message = LanguageHelper.getLoginMobileTip();
       return;
     }
     if (
       this.phoneErrorCount >= this.validImageCodeCount &&
       !this.form.value.ImageCode
     ) {
-      this.message = LoginLanguage.getImageCodeTip();
+      this.message = LanguageHelper.getLoginImageCodeTip();
       return;
     }
     this.loginService
@@ -204,7 +219,7 @@ export class LoginPage implements OnInit {
       .subscribe(r => {
         if (r.Data) {
           this.startCountDonw(r.Data.SendInterval);
-        } 
+        }
         this.message = r.Message;
       }, e => {
         this.message = e instanceof Error ? e.message : typeof e === 'string' ? e : e;
