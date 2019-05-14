@@ -1,22 +1,17 @@
 import { BehaviorSubject } from 'rxjs';
 import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { ApiService } from 'src/app/services/api/api.service';
+import { BaseRequest } from 'src/app/services/api/BaseRequest';
+import { map } from 'rxjs/operators';
 export type CityItem = ({ Name: string; Id: string; } & any);
 @Injectable({ providedIn: "root" })
 export class SelectCityService {
     extra: any = {};
     private cities: CityItem[];
     private _selectedItemSubject: Subject<CityItem>;
-    setSelectedItem(item: CityItem) {
-        this._selectedItemSubject.next(item);
-    }
-    getSelectedItemObservable() {
-        return this._selectedItemSubject.asObservable();
-    }
-    getCities() {
-        return this.cities;
-    }
-    constructor() {
+    
+    constructor(private apiService:ApiService) {
         this.cities = [
             {
                 Name: "中国(CN)",
@@ -40,5 +35,17 @@ export class SelectCityService {
             },
         ];
         this._selectedItemSubject = new BehaviorSubject(null);
+    }
+    setSelectedItem(item: CityItem) {
+        this._selectedItemSubject.next(item);
+    }
+    getSelectedItemObservable() {
+        return this._selectedItemSubject.asObservable();
+    }
+    getCities() {
+        const req = new BaseRequest();
+        req.Method='';
+        this.apiService.getResponse<any>(req).pipe(map(r=>r.Data));
+        return this.cities;
     }
 }
