@@ -16,7 +16,13 @@ import { IResponse } from "../api/IResponse";
   providedIn: "root"
 })
 export class LoginService {
-  private ImageValue: string;
+  private _imageValue: string;
+  set ImageValue(value:string){
+    this._imageValue=value;
+  }
+  get ImageValue(){
+    return encodeURIComponent(this._imageValue);
+  }
   private _toPageRouter: string; // 因要授权而不能跳转的页面
   constructor(
     private identityService: IdentityService,
@@ -114,7 +120,7 @@ export class LoginService {
     req.Method = method;
     req.ImageCode = imageCode;
     // req.ImageValue ='alJY/2H+aws='|| this.ImageValue;
-    req.ImageValue=encodeURIComponent(this.ImageValue);// 避免+号丢失
+    req.ImageValue=this.ImageValue;
     req.Data = JSON.stringify({
       Name: name,
       Password: password

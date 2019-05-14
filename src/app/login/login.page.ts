@@ -64,6 +64,8 @@ export class LoginPage implements OnInit ,OnDestroy{
     this.form.controls["Mobile"].valueChanges.subscribe((m: string) => {
       this.isMobileNumberOk = `${m}`.length >= 11;
     });
+  }
+  ionViewWillEnter(){
     this.initPage();
   }
   async loginByWechat() {
@@ -105,7 +107,7 @@ export class LoginPage implements OnInit ,OnDestroy{
       ImageCode: ''
     });
   }
-
+  
   async login() {
 
     this.loginEntity.Name = this.form.value.Name;
@@ -139,6 +141,8 @@ export class LoginPage implements OnInit ,OnDestroy{
           } else {
             this.jump();
           }
+        },e=>{
+          alert(e);
         });
         break;
       case "mobile":
@@ -158,6 +162,8 @@ export class LoginPage implements OnInit ,OnDestroy{
             } else {
               this.jump();
             }
+          },e=>{
+            this.message=e;
           });
         break;
       case "dingtalk":
