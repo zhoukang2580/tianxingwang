@@ -8,13 +8,13 @@
   <ion-list lines='none'>
     <ion-item detail (click)='goToMyDetail()'>
       <ion-thumbnail>
-        <img src="assets/images/airplane-l.jpg" alt="头像">
+        <img [src]="Model?.HeadUrl" alt="头像">
       </ion-thumbnail>
       <ion-label padding-start>
-        <h3>黄满标<ion-note class='account-type'>普通账号</ion-note>
+        <h3>{{Model?.RealName}}<ion-note class='account-type'></ion-note>
         </h3>
         <h4>
-          <ion-note>账号: {{identity?.Name}}</ion-note>
+          <ion-note>账号: {{Model?.Name || Model?.Mobile}}</ion-note>
         </h4>
       </ion-label>
     </ion-item>

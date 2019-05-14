@@ -166,10 +166,7 @@ export class AppHelper {
   }
   static getApiUrl() {
     if (!environment.production) {
-      if (environment.localhost) {
-        return "http://dev.app.beeant.com";
-      }
-      return "http://test.app.testskytrip.com";
+      return "http://dev.app.beeant.com";
     }
     if (environment.production) {
       return "https://app.sky-trip.com";
