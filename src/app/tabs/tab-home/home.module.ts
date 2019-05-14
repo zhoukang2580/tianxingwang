@@ -5,6 +5,7 @@ import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { HomePage } from "./home.page";
 import { TmcGuard } from 'src/app/guards/tmc.guard';
+import { AppcomponentsModule } from 'src/app/components/appcomponents.module';
 
 @NgModule({
   imports: [
@@ -13,7 +14,8 @@ import { TmcGuard } from 'src/app/guards/tmc.guard';
     FormsModule,
     RouterModule.forChild([
       { path: "", component: HomePage, canActivate: [TmcGuard] },
-    ])
+    ]),
+    AppcomponentsModule
   ],
   declarations: [HomePage]
 })
