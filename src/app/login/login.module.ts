@@ -9,7 +9,7 @@ import { RouterModule } from "@angular/router";
     CommonModule,
     RouterModule.forChild([
       { path: "login", loadChildren: "./login.page.module#LoginPageModule" }
-    ])
+    ]),
   ],
   exports: [RouterModule]
 })

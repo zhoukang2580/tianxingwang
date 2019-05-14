@@ -26,36 +26,3 @@ ion-content {
         }
     }
 }
-
-.or {
-    --border-color : #d6d6d6;
-    display        : flex;
-    position       : relative;
-    justify-content: center;
-    align-items    : center;
-    color          : var(--border-color);
-    font-style     : normal;
-    font-size      : 0.8rem;
-
-    &::before,
-    &::after {
-        padding-left    : 0.5em;
-        padding-right   : 0.5em;
-        display         : inline-block;
-        content         : " ";
-        background-color: var(--border-color);
-        height          : 1px;
-        position        : absolute;
-        margin-left     : 1em;
-        margin-right    : 1em;
-        padding         : 0 4em;
-    }
-
-    &::before {
-        left: 1em;
-    }
-
-    &::after {
-        right: 1em;
-    }
-}
