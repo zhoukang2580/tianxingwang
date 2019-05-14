@@ -50,7 +50,7 @@ export class MyDetailPage implements OnInit {
     });
 
     const req1 = new BaseRequest();
-    req.Method = "HrApiUrl-Staff-Get";
+    req1.Method = "HrApiUrl-Staff-Get";
     let deviceSubscription1 = this.apiService.getResponse<PageModel>(req1).pipe(map(r => r.Data)).subscribe(r => {
       this.Model.StaffNumber = r.StaffNumber;
       this.Model.CostCenterName = r.CostCenterName;
@@ -58,6 +58,7 @@ export class MyDetailPage implements OnInit {
       this.Model.OrganizationName = r.OrganizationName;
       this.Model.BookTypeName = r.BookTypeName;
     }, () => {
+      debugger;
       if (deviceSubscription1) {
         deviceSubscription1.unsubscribe();
       }
