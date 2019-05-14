@@ -38,7 +38,9 @@
       </ion-col>
     </ion-row>
   </ion-grid>
-  <div margin>
+  <app-crop-image-comp></app-crop-image-comp>
+
+  <!-- <div margin>
     
     <ion-text>{{ aliPayResult$ | async | json }}</ion-text>
     <ion-button (click)="accountSecurityEn()" expand="block"
@@ -55,7 +57,7 @@
     >
     <ion-button (click)="wxPay()" expand="block">微信支付</ion-button>
     <ion-text>{{ wxPayResult$ | async | json }}</ion-text>
-  </div>
+  </div> -->
   <!-- <ion-item class='hat' no-padding no-margin lines='none'>
     <ion-thumbnail class='left' (click)='testAction()'>
       <img src='/assets/images/hotel.jpg'>
