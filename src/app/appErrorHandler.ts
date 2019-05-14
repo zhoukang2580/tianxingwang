@@ -2,7 +2,7 @@ import { ErrorHandler } from '@angular/core';
 import { LogService } from './services/log/log.service';
 import { environment } from 'src/environments/environment';
 import { LoadingController } from '@ionic/angular';
-import { ApiLanguage } from './services/api/api.language';
+import { LanguageHelper } from './languageHelper';
 
 export class AppErrorHandler implements ErrorHandler {
     constructor(private logService: LogService,private loadingCtrl: LoadingController) { }
@@ -16,7 +16,7 @@ export class AppErrorHandler implements ErrorHandler {
           }, 5000);
         if(environment.production){
             this.logService.sendException({
-                Message: ApiLanguage.getMobileAppError(),
+                Message: LanguageHelper.getApiMobileAppError(),
                 Method: "AppErrorHandler",
                 Error: error
             });

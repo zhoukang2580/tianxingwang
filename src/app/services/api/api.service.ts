@@ -19,8 +19,7 @@ import { Router } from "@angular/router";
 import { IdentityEntity } from "../identity/identity.entity";
 import { IdentityService } from "../identity/identity.service";
 import { LoadingController } from '@ionic/angular';
-import { ApiLanguage } from './api.language';
-
+import { LanguageHelper } from 'src/app/languageHelper';
 @Injectable({
   providedIn: "root"
 })
@@ -190,10 +189,10 @@ export class ApiService {
           const entity = new ExceptionEntity();
           entity.Error = error;
           entity.Method = req.Method;
-          entity.Message = ApiLanguage.getExceptionTip();
+          entity.Message = LanguageHelper.getApiExceptionTip();
           if (error instanceof TimeoutError) {
-            entity.Message = ApiLanguage.getTimeoutTip();
-            alert(ApiLanguage.getTimeoutTip());
+            entity.Message = LanguageHelper.getApiTimeoutTip();
+            alert(LanguageHelper.getApiTimeoutTip());
           }
           return throwError(error);
         }),

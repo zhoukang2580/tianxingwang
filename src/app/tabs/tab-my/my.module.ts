@@ -6,7 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MyPage } from './my.page';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthorityGuard } from 'src/app/guards/authority.guard';
-const routes: Route[] = [
+let routes: Route[] = [
   { path: '', component: MyPage },
   { path: 'my-detail', loadChildren: "./my-detail/my-detail.module#MyDetailPageModule" },
   {
@@ -19,6 +19,24 @@ const routes: Route[] = [
   }
 
 ];
+(()=>{
+  routes=routes.map(r => {
+    if (r.loadChildren) {
+      return {
+        ...r,
+        canLoad: [AuthorityGuard]
+      }
+    }
+    if(r.component){
+      return {
+        ...r,
+        canActivate:[AuthorityGuard]
+      }
+    }
+    return r;
+  });
+})()
+// .map(r => ({ ...r, canLoad: [AuthorityGuard] }));
 @NgModule({
   imports: [
     IonicModule,
@@ -26,7 +44,7 @@ const routes: Route[] = [
     FormsModule,
     ReactiveFormsModule,
     TranslateModule.forChild(),
-    RouterModule.forChild(routes.map(r => ({ ...r, canActivate: [AuthorityGuard] })))
+    RouterModule.forChild(routes)
   ],
   declarations: [MyPage]
 })

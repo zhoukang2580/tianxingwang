@@ -1,11 +1,11 @@
 import { LoginService } from "../services/login/login.service";
-import { Component, OnInit, NgZone } from "@angular/core";
+import { Component, OnInit, NgZone, OnDestroy } from "@angular/core";
 import { Router } from "@angular/router";
 import { LoginEntity } from "src/app/services/login/login.entity";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { Observable, interval, Subscription } from "rxjs";
 import { AppHelper } from "../appHelper";
-import { LanguageHelper } from "../LanguageHelper";
+import { LanguageHelper } from "../languageHelper";
 import { ConfigEntity } from "../services/config/config.entity";
 import { ConfigService } from "../services/config/config.service";
 
@@ -14,7 +14,7 @@ import { ConfigService } from "../services/config/config.service";
   templateUrl: "./login.page.html",
   styleUrls: ["./login.page.scss"]
 })
-export class LoginPage implements OnInit {
+export class LoginPage implements OnInit ,OnDestroy{
   loginEntity: LoginEntity;
   pageInfo: ConfigEntity;
   form: FormGroup;
@@ -210,7 +210,7 @@ export class LoginPage implements OnInit {
       this.message = LanguageHelper.getLoginImageCodeTip();
       return;
     }
-    this.loginService
+   const subscription= this.loginService
       .sendMobileCode(this.form.value.Mobile, this.form.value.ImageCode)
       .subscribe(r => {
         if (r.Data) {
@@ -219,6 +219,12 @@ export class LoginPage implements OnInit {
         this.message = r.Message;
       }, e => {
         this.message = e instanceof Error ? e.message : typeof e === 'string' ? e : e;
+      },()=>{
+        setTimeout(() => {
+          if(subscription){
+            subscription.unsubscribe();
+          }
+        }, 100);
       });
   }
   jump() // 跳转
@@ -229,5 +235,8 @@ export class LoginPage implements OnInit {
     // 如果加了autorityguard才会校验
     const toPageRouter = this.loginService.getToPageRouter() || "";
     this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
+  }
+  ngOnDestroy(){
+    this.loginSubscription.unsubscribe();
   }
 }

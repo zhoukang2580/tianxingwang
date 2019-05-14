@@ -6,8 +6,8 @@ import { StatusBar } from "@ionic-native/status-bar/ngx";
 import { Router } from "@angular/router";
 import { AppHelper } from "./appHelper";
 import { ConfigService } from './services/config/config.service';
-import { ApiLanguage } from './services/api/api.language';
 import { HttpClient } from '@angular/common/http';
+import { LanguageHelper } from './languageHelper';
 
 @Component({
   selector: "app-root",
@@ -121,7 +121,7 @@ export class AppComponent {
           if (Date.now() - lastClickTime <= 2000) {
             navigator['app'].exitApp();
           }else{
-            window['toast'](ApiLanguage.getDoubleClickExit());
+            window['toast'](LanguageHelper.getAppDoubleClickExit());
             lastClickTime=Date.now();
           }
         } else {
