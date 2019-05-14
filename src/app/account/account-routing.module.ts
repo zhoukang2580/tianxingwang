@@ -1,10 +1,9 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule, Route } from "@angular/router";
-import { BindModule } from "./account-bind/account-bind.module";
 import { AuthorityGuard } from '../guards/authority.guard';
 
- let routes: Route[] = [
+let routes: Route[] = [
   {
     path: "account-setting",
     loadChildren:
@@ -53,20 +52,24 @@ import { AuthorityGuard } from '../guards/authority.guard';
     path: "account-password-by-msm-code",
     loadChildren:
       './account-password-by-msm-code/account-password-by-msm-code.module#AccountPasswordByMsmCodePageModule'
+  },
+  {
+    path: "account-bind",
+    loadChildren: "./account-bind/account-bind.page.module#AccountBindPageModule"
   }
 ];
-(()=>{
-  routes=routes.map(r => {
+(() => {
+  routes = routes.map(r => {
     if (r.loadChildren) {
       return {
         ...r,
         canLoad: [AuthorityGuard]
       }
     }
-    if(r.component){
+    if (r.component) {
       return {
         ...r,
-        canActivate:[AuthorityGuard]
+        canActivate: [AuthorityGuard]
       }
     }
     return r;
@@ -74,7 +77,7 @@ import { AuthorityGuard } from '../guards/authority.guard';
 })()
 @NgModule({
   declarations: [],
-  imports: [CommonModule, BindModule, RouterModule.forChild(routes)],
+  imports: [CommonModule, RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
 export class AccountRoutingModule { }

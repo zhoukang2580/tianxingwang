@@ -5,13 +5,14 @@ import { Routes, RouterModule } from "@angular/router";
 
 import { IonicModule } from "@ionic/angular";
 
-import { BindPage } from "./account-bind.page";
+import { AccountBindPage } from "./account-bind.page";
 import { AuthorityGuard } from 'src/app/guards/authority.guard';
 
 const routes: Routes = [
   {
     path: "",
-    component: BindPage
+    component: AccountBindPage,
+    canActivate:[AuthorityGuard]
   }
 ];
 
@@ -23,7 +24,7 @@ const routes: Routes = [
     ReactiveFormsModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [BindPage],
+  declarations: [AccountBindPage],
   exports: []
 })
-export class BindPageModule {}
+export class AccountBindPageModule {}

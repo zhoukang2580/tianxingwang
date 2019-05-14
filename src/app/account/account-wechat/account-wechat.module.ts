@@ -6,11 +6,13 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { AccountWechatPage } from './account-wechat.page';
+import { AuthorityGuard } from 'src/app/guards/authority.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: AccountWechatPage
+    component: AccountWechatPage,
+    canActivate:[AuthorityGuard]
   }
 ];
 

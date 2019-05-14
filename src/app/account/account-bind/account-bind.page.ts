@@ -9,7 +9,7 @@ import { Observable } from "rxjs";
   templateUrl: "./account-bind.page.html",
   styleUrls: ["./account-bind.page.scss"]
 })
-export class BindPage implements OnInit {
+export class AccountBindPage implements OnInit {
   phoneErrorCount = 0;
   countDown = 0;
   validImageCodeCount = 0;

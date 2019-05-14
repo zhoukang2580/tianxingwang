@@ -6,11 +6,13 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { AccountPasswordByMsmCodePage } from './account-password-by-msm-code.page';
+import { AuthorityGuard } from 'src/app/guards/authority.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: AccountPasswordByMsmCodePage
+    component: AccountPasswordByMsmCodePage,
+    canActivate:[AuthorityGuard]
   }
 ];
 

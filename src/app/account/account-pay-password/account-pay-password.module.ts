@@ -6,11 +6,13 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { AccountPayPasswordPage } from './account-pay-password.page';
+import { AuthorityGuard } from 'src/app/guards/authority.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: AccountPayPasswordPage
+    component: AccountPayPasswordPage,
+    canActivate:[AuthorityGuard]
   }
 ];
 

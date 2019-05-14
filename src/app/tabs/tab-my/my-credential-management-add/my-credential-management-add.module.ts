@@ -6,11 +6,13 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { MyCredentialManagementAddPage } from './my-credential-management-add.page';
+import { AuthorityGuard } from 'src/app/guards/authority.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: MyCredentialManagementAddPage
+    component: MyCredentialManagementAddPage,
+    canActivate:[AuthorityGuard]
   }
 ];
 

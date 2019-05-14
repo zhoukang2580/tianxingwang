@@ -6,11 +6,13 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { MyDetailPage } from './my-detail.page';
+import { AuthorityGuard } from 'src/app/guards/authority.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: MyDetailPage
+    component: MyDetailPage,
+    canActivate:[AuthorityGuard]
   }
 ];
 

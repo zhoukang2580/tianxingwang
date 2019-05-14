@@ -6,11 +6,13 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { AccountDevicePage } from './account-device.page';
+import { AuthorityGuard } from 'src/app/guards/authority.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: AccountDevicePage
+    component: AccountDevicePage,
+    canActivate:[AuthorityGuard]
   }
 ];
 

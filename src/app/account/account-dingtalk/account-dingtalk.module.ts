@@ -6,11 +6,13 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import {  AccountDingtalkPage } from './account-dingtalk.page';
+import { AuthorityGuard } from 'src/app/guards/authority.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: AccountDingtalkPage
+    component: AccountDingtalkPage,
+    canActivate:[AuthorityGuard]
   }
 ];
 
