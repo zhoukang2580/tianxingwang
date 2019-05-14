@@ -29,4 +29,7 @@ ion-content{
     justify-content: flex-end;
     width: 90%;
   }
+  ion-thumbnail{
+    --size:4em;
+  }
 }
