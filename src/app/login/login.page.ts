@@ -70,27 +70,26 @@ export class LoginPage implements OnInit {
     this.initPage();
   }
   async loginByWechat() {
-    if (AppHelper.isApp()) {
-      var code = null;
-      var promise = this.getWechatCode();
-      if (promise) {
-        var code = await this.getWechatCode().catch(it => {
-          return null;
-        });
+    try{
+      if (AppHelper.isApp()) {
+        const appId = await AppHelper.getWechatAppId();
+        const code = await this.getWechatCode(appId).catch(() => null);
+        if (code) {
+          this.loginType = "wechat";
+          this.form.patchValue({ WechatCode: code });
+          this.login();
+        }
       }
-      if (code) {
-        this.loginType = "wechat";
-        this.form.patchValue({ WechatCode: code });
-        this.login();
-      }
+    }catch(e){
+      alert(e);
     }
   }
-  getWechatCode() {
+  getWechatCode(appId:string) {
     const wechat = window['wechat'];
     if (wechat) {
-      return wechat.getCode('wx0839a418ccafdf36');
+      return wechat.getCode(appId);
     }
-    return null;
+    return Promise.reject("cordova wechat plugin is unavailable");
   }
   initPage() {
     this.refreshImageCode();

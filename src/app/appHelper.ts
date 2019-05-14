@@ -26,7 +26,7 @@ export class AppHelper {
   }
   static getWechatAppId() {
     if (this.httpClient) {
-      return new Promise((resolve, reject) => {
+      return new Promise<string>((resolve, reject) => {
         const subscription = this.httpClient.get('assets/config.xml', { responseType: "arraybuffer" })
           .subscribe(r => {
             // console.log(r);
