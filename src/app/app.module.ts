@@ -15,6 +15,7 @@ import { LogService } from "./services/log/log.service";
 import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
 import { environment } from "src/environments/environment";
 import { TranslateHttpLoader } from "@ngx-translate/http-loader";
+import { AppcomponentsModule } from './components/appcomponents.module';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -30,7 +31,8 @@ import { TranslateHttpLoader } from "@ngx-translate/http-loader";
         deps: [HttpClient]
       }
     }),
-    AppRoutingModule
+    AppRoutingModule,
+    AppcomponentsModule
   ],
   providers: [
     StatusBar,

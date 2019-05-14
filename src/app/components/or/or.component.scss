@@ -1,0 +1,27 @@
+.or {
+    --border-color : #d6d6d6;
+    position       : relative;
+    display        : flex;
+    align-items    : center;
+    justify-content: center;
+    font-size      : .8rem;
+    color          : var(--border-color);
+
+    .left,
+    .right {
+        position        : absolute;
+        display         : inline-block;
+        height          : 1px;
+        background-color: var(--border-color);
+    }
+
+    .left {
+        left : 1em;
+        right: 60%;
+    }
+
+    .right {
+        right: 1em;
+        left : 60%;
+    }
+}
