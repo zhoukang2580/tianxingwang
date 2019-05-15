@@ -41,6 +41,9 @@
               },
               {
                 "input": "src/assets/iconfonts/style.css"
+              },
+              {
+                "input": "node_modules/cropperjs/dist/cropper.css"
               }
             ],
             "scripts": [

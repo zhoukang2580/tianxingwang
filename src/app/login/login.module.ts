@@ -2,6 +2,7 @@ import { AppHelper } from "src/app/appHelper";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule } from "@angular/router";
+import { AppcomponentsModule } from '../components/appcomponents.module';
 
 @NgModule({
   declarations: [],
@@ -10,6 +11,7 @@ import { RouterModule } from "@angular/router";
     RouterModule.forChild([
       { path: "login", loadChildren: "./login.page.module#LoginPageModule" }
     ]),
+    AppcomponentsModule
   ],
   exports: [RouterModule]
 })
