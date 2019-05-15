@@ -82,13 +82,33 @@ export class AppHelper {
     return !window["cordova"];
   }
   static isWechatH5() {
-    return !window["cordova"];
+    var ua = window.navigator.userAgent.toLowerCase();
+    if (ua.includes('micromessenger')) {    //判断是否是微信环境
+      return true;
+    }
+    return false;
   }
   static isDingtalkH5() {
-    return !window["cordova"];
+    var ua = window.navigator.userAgent.toLowerCase();
+    if (ua.includes('dingtalk')) {
+      return true;
+    } else {
+      return false;
+    }
   }
   static isWechatMini() {
-    return !window["cordova"];
+    var ua = window.navigator.userAgent.toLowerCase();
+    if (ua.includes('micromessenger')) {    //判断是否是微信环境
+      // wx.miniProgram.getEnv(function (res) {
+      //   wx.miniProgram.getEnv((res) => {
+      //     if (res.miniprogram) {//在小程序中
+      //       return true;
+      //     }
+      //   });
+      // })
+      return true;
+    }
+    return false;
   }
   static getStyle() {
     return AppHelper.getCookie("style") || "";
@@ -105,9 +125,9 @@ export class AppHelper {
     return "";
   }
   static setCookie(name: string, value: string, time: number = 0) {
-    console.log("AppHelper.getDomain=" + AppHelper.getDomain());
+
     const exp = moment(+moment() + time);
-    document.cookie = `${name}=${escape(value)};path=/;expires=${moment
+    document.cookie = `${name}=${escape(value)};domain=.${AppHelper.getDomain()};path=/;expires=${moment
       .utc(exp)
       .toDate()}`;
   }
@@ -158,12 +178,39 @@ export class AppHelper {
   static getTicket() {
     return AppHelper.getQueryString("ticket") || AppHelper.getCookie("ticket");
   }
+  static _domain = "";
   static getDomain() {
-    if (AppHelper.isH5()) {
-      return AppHelper.getQueryString("domain");
+    AppHelper._domain = AppHelper._domain || AppHelper.getQueryString("domain");
+    if (AppHelper._domain) {
+      return AppHelper._domain;
     }
-    return ""; // 插件获取
+    if (AppHelper.isH5()) {
+      let key  = `mh_${Math.random()}`;
+      let keyR = new RegExp( `(^|;)\\s*${key}=12345` );
+      let expiredTime = new Date( 0 );
+      let domain = document.domain;
+      let domainList = domain.split( '.' );
+      let urlItems   = [];
+      urlItems.unshift( domainList.pop() );
+      while( domainList.length ) {
+        urlItems.unshift( domainList.pop() );
+        let mainHost = urlItems.join( '.' );
+        let cookie   = `${key}=${12345};domain=.${mainHost}`;
+        document.cookie = cookie;
+        if ( keyR.test( document.cookie ) ) {
+          document.cookie = `${cookie};expires=${expiredTime}`;
+          return mainHost;
+        }
+      }
+    }
+    if (!environment.production) {
+      return "beeant.com";
+    }
+    if (environment.production) {
+      return "sky-trip.com";
+    }
   }
+
   static getApiUrl() {
     if (!environment.production) {
       return "http://dev.app.beeant.com";

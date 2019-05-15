@@ -24,7 +24,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.isShowBindButton = AppHelper.isApp() || AppHelper.isWechatH5();
+    this.isShowBindButton =AppHelper.isApp() || AppHelper.isWechatH5();
     this.load();
   }
   async bind() {
@@ -34,7 +34,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
         const code = await this.getWechatCode(appId).catch(() => null);
         if (code) {
           const req = new BaseRequest();
-          req.Method = "ApiPasswordUrl-Wechat-Bind";
+          req.Method = "ApiPasswordUrl-Wechat-BindCode";
           req.IsShowLoading = true;
           req.Data = {
             Code: code
@@ -53,7 +53,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
         }
       }
       else if (AppHelper.isWechatH5()) {
-
+          window.location.href=AppHelper.getApiUrl()+"/home/BindWechat?domain="+AppHelper.getDomain()+"&ticket="+AppHelper.getTicket();
       }
     } catch (e) {
       alert(e);
@@ -70,7 +70,6 @@ export class AccountWechatPage implements OnInit, OnDestroy {
   load() {
     const req = new BaseRequest();
     req.Method = "ApiPasswordUrl-Wechat-List";
-    req.IsShowLoading = true;
     let deviceSubscription = this.apiService.getResponse<Item[]>(req).pipe(map(r => r.Data)).subscribe(r => {
       this.items = r;
     }, () => {

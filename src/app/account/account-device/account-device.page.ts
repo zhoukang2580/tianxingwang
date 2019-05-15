@@ -27,7 +27,6 @@ export class AccountDevicePage implements OnInit, OnDestroy {
   load() {
     const req = new BaseRequest();
     req.Method = "ApiPasswordUrl-Device-List";
-    req.IsShowLoading=true;
     let deviceSubscription = this.apiService.getResponse<Item[]>(req).pipe(map(r => r.Data)).subscribe(r => {
       this.items = r;
     },()=>{

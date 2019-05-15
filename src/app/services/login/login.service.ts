@@ -169,12 +169,12 @@ export class LoginService {
   }
   async autoLogin() {
 
-    if (AppHelper.getStorage<string>("loginName")) {
-      const name = AppHelper.getStorage<string>("loginName");
+    if (AppHelper.getStorage<string>("identityId")) {
+      const id = AppHelper.getStorage<string>("identityId");
       const req = new BaseRequest();
       req.Method = "ApiLoginUrl-Home-DeviceLogin";
       req.Data = JSON.stringify({
-        Name: name,
+        Id: id,
         Password: await AppHelper.getUUID()
       });
 

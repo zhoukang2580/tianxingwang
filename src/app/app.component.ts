@@ -39,7 +39,7 @@ export class AppComponent {
 
   initializeApp() {
     
-    
+    AppHelper.getDomain();// 
     this.config.get();
     this.router.navigate([AppHelper.getRoutePath("")]);
     // this.router.navigate([AppHelper.getRoutePath("account-password")]);

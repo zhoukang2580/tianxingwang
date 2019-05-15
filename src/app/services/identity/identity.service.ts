@@ -23,7 +23,6 @@ export class IdentityService {
     if (info && info.Ticket) {
       this.identity = info;
       AppHelper.setCookie("ticket", info.Ticket);
-      AppHelper.setStorage("loginname", info.Name);
       AppHelper.setStorage("identityId", info.Id);
     }
   }
@@ -32,8 +31,7 @@ export class IdentityService {
     AppHelper.setCookie("ticket", "", -1);
   }
   getIdentity(): Promise<IdentityEntity> {
-    console.log("getIdentity ", this.identity);
-    if (this.identity && this.identity.Ticket) {
+    if (this.identity && this.identity.Ticket && this.identity.Id) {
       return Promise.resolve(this.identity);
     }
     return new Promise<IdentityEntity>((resolve, reject) => {
@@ -42,7 +40,7 @@ export class IdentityService {
           if (identityEntity && identityEntity.Ticket) {
             resolve(identityEntity);
           } else {
-            reject("需要重新登录");
+            reject("");
           }
         },
         error => {
@@ -81,6 +79,7 @@ export class IdentityService {
           map((r: IResponse<IdentityEntity>) => r),
           switchMap(r => {
             if (r.Status) {
+              this.setIdentity(r.Data);
               return of(r.Data);
             }
             return throwError(r.Message);
@@ -88,6 +87,7 @@ export class IdentityService {
         );
     }
     this.identity.Ticket = null;
+    this.identity.Id = null;
     return of(this.identity);
   }
 }

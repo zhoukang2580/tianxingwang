@@ -139,6 +139,7 @@ export class LoginPage implements OnInit ,OnDestroy{
           if (!r.Ticket) {
             this.userErrorCount++;
           } else {
+            AppHelper.setStorage("loginname", this.loginEntity.Name);
             this.jump();
           }
         },e=>{
