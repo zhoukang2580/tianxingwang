@@ -40,21 +40,12 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
     console.log("state", state, "next", next);
-    return this.identityService.getIdentity()
-      .then(identity => {
-        if(identity&&identity.Id&&identity.Ticket){
-          return true;
-        }
-        // console.log("需要登录");
-        this.loginService.setToPageRouter(state.url);
-        this.router.navigate([AppHelper.getRoutePath("login")]);
-        return false;
-      })
-      .catch((err) => {
-        // console.error(err);
-        this.router.navigate([AppHelper.getRoutePath("login")])
-        return false;
-      });
+    const ticket = AppHelper.getTicket();
+    if (ticket) {
+      return true;
+    }
+    this.loginService.setToPageRouter(state.url);
+    this.router.navigate([AppHelper.getRoutePath("login")]);
   }
   // check() {
   //   //  return Promise.resolve(true);
