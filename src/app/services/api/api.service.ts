@@ -155,7 +155,7 @@ export class ApiService {
     req.Language = AppHelper.getLanguage();
     req.Ticket = AppHelper.getTicket();
     req.Domain = AppHelper.getDomain();
-    if(typeof req.Data!='string')
+    if(req.Data && typeof req.Data!='string')
     {
       req.Data=JSON.stringify(req.Data);
     }

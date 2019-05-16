@@ -41,7 +41,16 @@ export class AppComponent {
     
     AppHelper.getDomain();// 
     this.config.get();
-    this.router.navigate([AppHelper.getRoutePath("")]);
+    debugger;
+    var path=AppHelper.getQueryString("path");
+    if(path)
+    {
+      this.router.navigate([AppHelper.getRoutePath(path)]);
+    }
+    else
+    {
+      this.router.navigate([AppHelper.getRoutePath("")]);
+    }
     // this.router.navigate([AppHelper.getRoutePath("account-password")]);
     // this.router.navigate([AppHelper.getRoutePath("change-password-by-msm-code")]);
     // this.router.navigate([AppHelper.getRoutePath("tabs/my")]);

@@ -24,7 +24,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.isShowBindButton =AppHelper.isApp() || AppHelper.isWechatH5();
+    this.isShowBindButton =true;//AppHelper.isApp() || AppHelper.isWechatH5();
     this.load();
   }
   async bind() {
@@ -52,9 +52,11 @@ export class AccountWechatPage implements OnInit, OnDestroy {
           });
         }
       }
-      else if (AppHelper.isWechatH5()) {
-          window.location.href=AppHelper.getApiUrl()+"/home/BindWechat?domain="+AppHelper.getDomain()+"&ticket="+AppHelper.getTicket();
-      }
+      //else if (AppHelper.isWechatH5()) {
+        var url=AppHelper.getApiUrl()+"/home/BindWechat?domain="+AppHelper.getDomain()+"&ticket="+AppHelper.getTicket()
+        +"&path="+encodeURIComponent(AppHelper.getApiUrl()+"?path=account-wechat");
+          window.location.href=url;
+      //}
     } catch (e) {
       alert(e);
     }

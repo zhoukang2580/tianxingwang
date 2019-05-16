@@ -127,7 +127,7 @@ export class AppHelper {
   static setCookie(name: string, value: string, time: number = 0) {
 
     const exp = moment(+moment() + time);
-    document.cookie = `${name}=${escape(value)};domain=.${AppHelper.getDomain()};path=/;expires=${moment
+    document.cookie = `${name}=${escape(value)};path=/;expires=${moment
       .utc(exp)
       .toDate()}`;
   }

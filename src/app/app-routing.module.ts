@@ -27,7 +27,8 @@ const routes: Routes = [
     TabsPageModule,
     RouterModule.forRoot(routes, {
       preloadingStrategy: PreloadAllModules,
-      enableTracing: !true
+      enableTracing: !true,
+      useHash:true
     })
   ],
   exports: [RouterModule]
