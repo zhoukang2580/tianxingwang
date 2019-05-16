@@ -42,7 +42,8 @@ export class LoginService {
       "ApiLoginUrl-Home-Login",
       entity.Name,
       entity.Password,
-      entity.ImageCode
+      entity.ImageCode,
+      this.ImageValue
     );
   }
   deviceLogin(entity: LoginEntity) {
@@ -52,7 +53,8 @@ export class LoginService {
           "ApiLoginUrl-Home-DeviceLogin",
           entity.Name,
           (entity.UUID = uuid),
-          entity.ImageCode
+          "",
+          ""
         )
       )
     );
@@ -62,7 +64,8 @@ export class LoginService {
       "ApiLoginUrl-Home-MobileLogin",
       entity.Mobile,
       entity.MobileCode,
-      entity.ImageCode
+      entity.ImageCode,
+      this.ImageValue
     );
   }
   wechatLogin(entity: LoginEntity) {
@@ -70,7 +73,8 @@ export class LoginService {
       "ApiLoginUrl-Home-WechatLogin",
       "",
       entity.WechatCode,
-      entity.ImageCode
+      "",
+     ""
     );
   }
   dingtalkLogin(entity: LoginEntity) {
@@ -78,7 +82,8 @@ export class LoginService {
       "ApiLoginUrl-Home-DingTalkLogin",
       "",
       entity.DingtalkCode,
-      entity.ImageCode
+      "",
+      ""
     );
   }
   getImage() {
@@ -115,12 +120,11 @@ export class LoginService {
   getLoading() {
     return this.apiService.getLoading();
   }
-  login(method: string, name: string, password: string, imageCode: string) {
+  login(method: string, name: string, password: string, imageCode: string, imageValue: string) {
     const req = new BaseRequest();
     req.Method = method;
     req.ImageCode = imageCode;
-    // req.ImageValue ='alJY/2H+aws='|| this.ImageValue;
-    req.ImageValue=this.ImageValue;
+    req.ImageValue=imageValue;
     req.Data = JSON.stringify({
       Name: name,
       Password: password

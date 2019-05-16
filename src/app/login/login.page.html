@@ -95,7 +95,7 @@
       </ion-button>
     </ion-item>
     <app-or-comp>第三方登陆</app-or-comp>
-    <ion-item (click)='loginByWechat()' lines='none' text-center *ngIf="!isApp">
+    <ion-item (click)='loginByWechat()' lines='none' text-center *ngIf="isShowWechatLogin">
       <div class='third-party-logo'>
         <ion-thumbnail>
           <img src="assets/images/weixin-logo.png" alt="微信图标">

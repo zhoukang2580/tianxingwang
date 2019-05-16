@@ -40,6 +40,7 @@ export class AppComponent {
   initializeApp() {
     this.getConfigInfo();
     AppHelper.getDomain();// 
+    AppHelper.setQueryParamers();
     var path=AppHelper.getQueryString("path");
     if(path)
     {

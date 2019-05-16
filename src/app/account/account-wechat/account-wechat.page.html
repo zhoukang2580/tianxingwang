@@ -25,8 +25,7 @@
     </ion-item-sliding>
 
   </ion-list>
- 
+ <section class="bottom">
+  <ion-button (click)="bind()" *ngIf='isShowBindButton'>绑定微信</ion-button>
+ </section>
 </ion-content>
-<ion-footer text-center *ngIf="isShowBindButton">
-    <ion-button (click)="bind()">绑定微信</ion-button>
-  </ion-footer>

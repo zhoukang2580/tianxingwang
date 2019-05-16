@@ -18,6 +18,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
   toggleChecked = false;
   items: Item[] = [];
   isShowBindButton: boolean;
+
   @ViewChild('List') deviceList: IonList;
   constructor(private apiService: ApiService) {
 
@@ -26,6 +27,14 @@ export class AccountWechatPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.isShowBindButton =true;//AppHelper.isApp() || AppHelper.isWechatH5();
     this.load();
+    var paramters=AppHelper.getQueryParamers();
+    if(paramters.path=="account-wechat")
+    {
+      if(paramters.message)
+      {
+        alert(paramters.message);
+      }
+    }
   }
   async bind() {
     try {
@@ -52,11 +61,11 @@ export class AccountWechatPage implements OnInit, OnDestroy {
           });
         }
       }
-      //else if (AppHelper.isWechatH5()) {
+      else if (AppHelper.isWechatH5()) {
         var url=AppHelper.getApiUrl()+"/home/BindWechat?domain="+AppHelper.getDomain()+"&ticket="+AppHelper.getTicket()
-        +"&path="+encodeURIComponent(AppHelper.getApiUrl()+"?path=account-wechat");
+        +"&path="+encodeURIComponent(AppHelper.getApiUrl()+"/index.html?path=account-wechat");
           window.location.href=url;
-      //}
+      }
     } catch (e) {
       alert(e);
     }

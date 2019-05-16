@@ -40,7 +40,7 @@ export class LoginPage implements OnInit ,OnDestroy{
   imgSrc$: Observable<any>;
   loading$: Observable<boolean>;
   isMobileNumberOk = false;
-  isApp:boolean;
+  isShowWechatLogin:boolean;
   constructor(
     private loginService: LoginService,
     private configService: ConfigService,
@@ -48,7 +48,7 @@ export class LoginPage implements OnInit ,OnDestroy{
     private router: Router
   ) {
     this.loading$ = this.loginService.getLoading();
-    this.isApp=AppHelper.isApp();
+    this.isShowWechatLogin=true;//AppHelper.isApp() || AppHelper.isWechatH5();
   }
   ngOnInit() {
     this.loginEntity = new LoginEntity();
@@ -78,6 +78,12 @@ export class LoginPage implements OnInit ,OnDestroy{
           this.form.patchValue({ WechatCode: code });
           this.login();
         }
+      }
+      else if(AppHelper.isWechatH5())
+      {
+        var url=AppHelper.getApiUrl()+"/home/WechatLogin?domain="+AppHelper.getDomain()
+        +"&path="+encodeURIComponent(AppHelper.getApiUrl()+"/index.html?path=");
+          window.location.href=url;
       }
     }catch(e){
       alert(e);

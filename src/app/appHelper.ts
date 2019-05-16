@@ -185,19 +185,19 @@ export class AppHelper {
       return AppHelper._domain;
     }
     if (AppHelper.isH5()) {
-      let key  = `mh_${Math.random()}`;
-      let keyR = new RegExp( `(^|;)\\s*${key}=12345` );
-      let expiredTime = new Date( 0 );
+      let key = `mh_${Math.random()}`;
+      let keyR = new RegExp(`(^|;)\\s*${key}=12345`);
+      let expiredTime = new Date(0);
       let domain = document.domain;
-      let domainList = domain.split( '.' );
-      let urlItems   = [];
-      urlItems.unshift( domainList.pop() );
-      while( domainList.length ) {
-        urlItems.unshift( domainList.pop() );
-        let mainHost = urlItems.join( '.' );
-        let cookie   = `${key}=${12345};domain=.${mainHost}`;
+      let domainList = domain.split('.');
+      let urlItems = [];
+      urlItems.unshift(domainList.pop());
+      while (domainList.length) {
+        urlItems.unshift(domainList.pop());
+        let mainHost = urlItems.join('.');
+        let cookie = `${key}=${12345};domain=.${mainHost}`;
         document.cookie = cookie;
-        if ( keyR.test( document.cookie ) ) {
+        if (keyR.test(document.cookie)) {
           document.cookie = `${cookie};expires=${expiredTime}`;
           return mainHost;
         }
@@ -265,5 +265,25 @@ export class AppHelper {
       return `${md5(content)}`.toLowerCase();
     }
     return md5(content);
+  }
+  static _queryParamers={};
+  static setQueryParamers() {
+    let name:string="";
+    let value:string="";
+    var str = location.href;
+    var num = str.indexOf("?");
+    str = str.substr(num + 1);
+    var arr = str.split("&");
+    for (var i = 0; i < arr.length; i++) {
+      num = arr[i].indexOf("=");
+      if (num > 0) {
+        name = arr[i].substring(0, num);
+        value = arr[i].substr(num + 1);
+        this._queryParamers[name]=decodeURIComponent(value);
+      }
+    }
+  }
+  static getQueryParamers() {
+    return this._queryParamers as any;
   }
 }
