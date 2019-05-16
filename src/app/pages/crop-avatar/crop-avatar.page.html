@@ -1,1 +1,8 @@
-<app-crop-image-comp [avatar]='"assets/images/testcrop.jpg"' (croppedEvent)='onCropper($event)'></app-crop-image-comp>
+<div class='cropper-container'>
+    <ion-button color='light' fill='clear' class="cancel-btn" size='small' (click)='cancel()'>取消</ion-button>
+    <ion-button color='light' fill='clear' class="rotate-btn" size='small' (click)='rotate()'>旋转</ion-button>
+    <ion-button color='light' fill='clear' class="ok-btn" size='small' (click)='ok()'>完成</ion-button>
+  <img src="" [class.hidden]='!showCropBox' id='image' alt="初始化的图片">
+</div>
+<input type="file" id='file' hidden #file>
+<button type='button' id='button' (click)='file.click()'   hidden></button>

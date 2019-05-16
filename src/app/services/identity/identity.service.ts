@@ -37,10 +37,10 @@ export class IdentityService {
     return new Promise<IdentityEntity>((resolve, reject) => {
       const subscribtion = this.loadIdentityEntity().subscribe(
         identityEntity => {
-          if (identityEntity && identityEntity.Ticket) {
+          if (identityEntity && identityEntity.Ticket&&identityEntity.Id) {
             resolve(identityEntity);
           } else {
-            reject("");
+            reject("get identity failed");
           }
         },
         error => {
@@ -60,6 +60,7 @@ export class IdentityService {
     const ticket = AppHelper.getTicket();
     if (ticket) {
       const req = new BaseRequest();
+      req.IsShowLoading=true;
       req.Method = "ApiHomeUrl-Identity-Get";
       req.Data = JSON.stringify({ Ticket: ticket });
       req.Timestamp = Math.floor(Date.now() / 1000);

@@ -40,9 +40,9 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
     console.log("state", state, "next", next);
-    return this.check()
-      .then(r => {
-        if (r) {
+    return this.identityService.getIdentity()
+      .then(identity => {
+        if(identity&&identity.Id&&identity.Ticket){
           return true;
         }
         // console.log("需要登录");
@@ -56,10 +56,10 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
         return false;
       });
   }
-  check() {
-    //  return Promise.resolve(true);
-    return this.loginService.checkIdentity().catch(() => false);
-  }
+  // check() {
+  //   //  return Promise.resolve(true);
+  //   return this.loginService.checkIdentity().catch(() => false);
+  // }
 
   canLoad(route: Route) {
     console.log("canload route ,", route);

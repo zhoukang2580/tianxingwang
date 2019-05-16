@@ -19,7 +19,7 @@ export class AppComponent {
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
     private router: Router,
-    private config: ConfigService,
+    private configService: ConfigService,
     private alertController: AlertController,
     private toastController: ToastController,
     private actionSheetCtrl: ActionSheetController,
@@ -38,10 +38,8 @@ export class AppComponent {
   }
 
   initializeApp() {
-    
+    this.getConfigInfo();
     AppHelper.getDomain();// 
-    this.config.get();
-    debugger;
     var path=AppHelper.getQueryString("path");
     if(path)
     {
@@ -63,6 +61,9 @@ export class AppComponent {
     });
     this.extMethod();
     this.backButtonAction();
+  }
+  private getConfigInfo(){
+    this.configService.get();    
   }
   private extMethod() {
     const toast = async msg => {

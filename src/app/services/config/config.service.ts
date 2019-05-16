@@ -1,5 +1,5 @@
 import { LoginEntity } from "../login/login.entity";
-import { ConfigEntity} from "./config.entity";
+import { ConfigEntity } from "./config.entity";
 import { BaseRequest } from "../api/BaseRequest";
 import { ApiService } from "../api/api.service";
 import { Injectable } from "@angular/core";
@@ -11,31 +11,37 @@ import { switchMap, tap, map } from "rxjs/operators";
   providedIn: "root"
 })
 export class ConfigService {
-  private router: ConfigEntity;
+  private config: ConfigEntity;
 
   constructor(private apiService: ApiService) {
-    this.router = new ConfigEntity();
-    this.router.Status = false;
+    this.config = new ConfigEntity();
+    this.config.Status = false;
   }
 
   get(): Promise<ConfigEntity> {
-    if (this.router.Status) {
-      return Promise.resolve(this.router);
+    if (this.config.Status) {
+      return Promise.resolve(this.config);
     }
     return new Promise((resolve, reject) => {
-      this.load().subscribe(
+      const subscription = this.load().subscribe(
         router => {
           resolve(router);
         },
         error => {
           reject(error);
+        }, () => {
+          setTimeout(() => {
+            if (subscription) {
+              subscription.unsubscribe();
+            }
+          }, 100);
         }
       );
     });
   }
   load() {
-    if (this.router.Status) {
-      return of(this.router);
+    if (this.config.Status) {
+      return of(this.config);
     }
     const data = { domain: AppHelper.getDomain() };
     return this.apiService
@@ -49,16 +55,16 @@ export class ConfigService {
       }>("ApiHomeUrl-Router-Get", data)
       .pipe(
         map(r => {
-          this.router.Status = true;
           if (r.Data) {
-            this.router.DefaultImageUrl = r.Data.DefaultImageUrl;
-            this.router.FaviconImageUrl = r.Data.FaviconImageUrl;
-            this.router.PrerenderImageUrl = r.Data.PrerenderImageUrl;
-            this.router.LogoImageUrl = r.Data.LogoImageUrl;
-            this.router.Icp = r.Data.Icp;
-            this.router.Style = r.Data.Style;
+            this.config.Status = true;
+            this.config.DefaultImageUrl = r.Data.DefaultImageUrl;
+            this.config.FaviconImageUrl = r.Data.FaviconImageUrl;
+            this.config.PrerenderImageUrl = r.Data.PrerenderImageUrl;
+            this.config.LogoImageUrl = r.Data.LogoImageUrl;
+            this.config.Icp = r.Data.Icp;
+            this.config.Style = r.Data.Style;
           }
-          return this.router;
+          return this.config;
         })
       );
   }
