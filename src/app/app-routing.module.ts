@@ -9,6 +9,7 @@ import { TabsPageModule } from './tabs/tabs.page.module';
 
 const routes: Routes = [
   { path: 'select-city', loadChildren: './pages/select-city/select-city.module#SelectCityPageModule' },
+  { path: 'crop-avatar', loadChildren: './pages/crop-avatar/crop-avatar.module#CropAvatarPageModule' },
   {
     path: "",
     component: TabsPage,

@@ -1,4 +1,7 @@
 <ion-header>
+  <ion-buttons slot="start">
+    <ion-back-button></ion-back-button>
+  </ion-buttons>
   <ion-toolbar color="primary">
     <ion-title>登录</ion-title>
   </ion-toolbar>
@@ -94,11 +97,10 @@
     <app-or-comp>第三方登陆</app-or-comp>
     <ion-item (click)='loginByWechat()' lines='none' text-center *ngIf="!isApp">
       <div class='third-party-logo'>
-        <ion-thumbnail >
+        <ion-thumbnail>
           <img src="assets/images/weixin-logo.png" alt="微信图标">
         </ion-thumbnail>
       </div>
     </ion-item>
-    <!-- <app-crop-image-comp></app-crop-image-comp> -->
   </form>
 </ion-content>
