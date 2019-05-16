@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 
 import { BaseRequest } from "./BaseRequest";
 import { AppHelper } from "../../appHelper";
-import { map, tap, catchError, finalize, switchMap, timeout } from "rxjs/operators";
+import { map, tap, catchError, finalize, switchMap, timeout, delay } from "rxjs/operators";
 import { IResponse } from "./IResponse";
 import {
   of,
@@ -34,7 +34,7 @@ export class ApiService {
     this.loadingSubject = new BehaviorSubject(false);
   }
   getLoading() {
-    return this.loadingSubject.asObservable();
+    return this.loadingSubject.asObservable().pipe(delay(0));
   }
   setLoading(loading: boolean,isShowLoading:boolean) {
     if (loading && isShowLoading) {

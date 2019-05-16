@@ -39,3 +39,8 @@ ion-content {
 .hidden {
     display: none !important;
 }
+
+ion-icon[name=arrow-back] {
+    --icon-font-size: 1.85em;
+    font-size: var(--icon-font-size);
+}
