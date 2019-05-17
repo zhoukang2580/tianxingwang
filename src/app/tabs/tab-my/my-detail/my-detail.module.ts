@@ -7,6 +7,8 @@ import { IonicModule } from '@ionic/angular';
 
 import { MyDetailPage } from './my-detail.page';
 import { AuthorityGuard } from 'src/app/guards/authority.guard';
+import { DirectivesModule } from 'src/app/directives/directives.module';
+import { CropAvatarDirective } from 'src/app/directives/crop-avatar.directive';
 
 const routes: Routes = [
   {
@@ -21,8 +23,9 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    // DirectivesModule
   ],
-  declarations: [MyDetailPage]
+  declarations: [MyDetailPage,CropAvatarDirective]
 })
 export class MyDetailPageModule {}

@@ -1,3 +1,13 @@
+<ion-header [class.hidden]='!uploaded||showCropBox'>
+  <ion-toolbar color='primary'>
+    <ion-buttons slot='start' (click)='goBack()'>
+      <ion-nav-pop>
+        <ion-icon name='arrow-back'></ion-icon>
+      </ion-nav-pop>
+    </ion-buttons>
+    <ion-title>头像</ion-title>
+  </ion-toolbar>
+</ion-header>
 <div class='cropper-container' [class.hidden]='!showCropBox'>
   <ion-button color='light' fill='clear' class="cancel-btn" size='small' (click)='cancel()'>取消</ion-button>
   <ion-button color='light' fill='clear' class="rotate-btn" size='small' (click)='rotate()'>旋转</ion-button>
@@ -5,7 +15,7 @@
   <img src="" id='image' alt="初始化的图片">
 </div>
 <div *ngIf='uploaded' class='result-image'>
-  <pinch-zoom zoom-button='true'>
+  <pinch-zoom height="600">
     <img [src]="avatar" alt="裁切后的头像">
   </pinch-zoom>
 </div>

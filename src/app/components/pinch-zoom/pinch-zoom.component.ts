@@ -7,7 +7,8 @@ import {
     ViewChild,
     Input,
     EventEmitter,
-    Output
+    Output,
+    Renderer2
 } from '@angular/core';
 
 type EventType = 'swipe' | 'pinch' | 'horizontal-swipe' | 'vertical-swipe' | 'touchend';
@@ -15,7 +16,7 @@ type EventType = 'swipe' | 'pinch' | 'horizontal-swipe' | 'vertical-swipe' | 'to
 @Component({
     selector: 'pinch-zoom, [pinch-zoom]',
     templateUrl: './pinch-zoom.component.html',
-    styleUrls: ['./pinch-zoom.component.css']
+    styleUrls: ['./pinch-zoom.component.scss']
 })
 
 export class PinchZoomComponent implements OnInit {
@@ -60,7 +61,7 @@ export class PinchZoomComponent implements OnInit {
 
     @ViewChild('content') contentElement: ElementRef;
 
-    constructor(private elementRef: ElementRef) { }
+    constructor(private elementRef: ElementRef,private render:Renderer2) { }
 
     ngOnInit() {
         this.element = this.contentElement.nativeElement;
@@ -407,16 +408,15 @@ export class PinchZoomComponent implements OnInit {
     }
 
     setBasicStyles(): void {
-        this.element.style.display = 'flex';
-        this.element.style.height = '100%';
-        this.element.style.alignItems = 'center';
-        this.element.style.justifyContent = 'center';
-        this.element.style.transformOrigin = '0 0';
-
+        this.render.setStyle(this.element,'display','flex');
+        this.render.setStyle(this.element,'height','100%');
+        this.render.setStyle(this.element,'alignItems','center');
+        this.render.setStyle(this.element,'justifyContent','center');
+        this.render.setStyle(this.element,'transformOrigin','0 0');
         this.hostDisplay = 'block';
         this.hostOverflow = 'hidden';
         this.hostHeight = this.containerHeight;
-
+        
         this.setImageWidth();
     }
 

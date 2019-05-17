@@ -51,6 +51,12 @@
                 <string>wechat</string>
             </array>
         </config-file>
+        <config-file target="*-Info.plist" parent="NSPhotoLibraryUsageDescription">
+            <string>允许使用相册选择图片</string>
+        </config-file>
+        <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
+            <string>允许使用相机拍照</string>
+        </config-file>
 
         <config-file target="*-Info.plist" parent="NSAppTransportSecurity">
             <dict>

@@ -88,7 +88,4 @@
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.1.3" />
     <plugin name="cordova-plugin-app-update" spec="~2.0.2" />
     <plugin name="cordova-plugin-console" spec="~1.1.0" />
-    <plugin name="cordova-wechat-plugin" spec="/Users/dongmeizaixian/Desktop/tianxingwang/node_modules/cordova-wechat-plugin">
-        <variable name="WECHATAPPID" value="wx0839a418ccafdf36" />
-    </plugin>
 </widget>

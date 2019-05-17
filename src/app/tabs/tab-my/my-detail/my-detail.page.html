@@ -9,7 +9,7 @@
 
 <ion-content>
   <ion-list>
-    <ion-item detail (click)='croppImage()'>
+    <ion-item detail cropAvatar>
       <ion-label>头像</ion-label>
       <ion-thumbnail slot='end'>
         <img [src]="Model?.HeadUrl" alt="头像">
@@ -44,4 +44,3 @@
 
   </ion-list>
 </ion-content>
-<input type="file" id='file' hidden>

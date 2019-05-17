@@ -26,11 +26,15 @@ export class CropAvatarPage implements OnInit {
 
   ngOnInit() {
   }
+  goBack(){
+    this.navCtrl.back();
+  }
   ngAfterViewInit() {
     this.croppedImage = document.getElementById('image') as HTMLImageElement;
     this.route.paramMap.subscribe(d=>{
-      if(d&&d.get('file')){
-        this.croppedImage.src=d.get("file");
+      if(d&&d.get('cropAvatar')){
+        this.croppedImage.src=AppHelper.getRouteData();
+        AppHelper.setRouteData(null);
         this.reset();
       }
     });
@@ -50,8 +54,8 @@ export class CropAvatarPage implements OnInit {
       this.showCropBox = false;
     }, 0);
     this.avatar = this.resultImageUrl = this.cropper.getCroppedCanvas({
-      maxWidth: 800,
-      maxHeight: 800
+      maxWidth: 1000,
+      maxHeight: 1000
     }).toDataURL();
     this.uploadImage(this.avatar);
 
@@ -84,6 +88,7 @@ export class CropAvatarPage implements OnInit {
       minCanvasHeight: this.plt.height(),
       minContainerHeight: this.plt.height(),
       minContainerWidth: this.plt.width(),
+      
       aspectRatio: 4 / 3,
       viewMode: 2,
       initialAspectRatio: 3,

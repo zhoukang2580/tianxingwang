@@ -3,13 +3,14 @@
 
     /* Limit image width to avoid overflow the container */
     img {
-        max-width: 100%;
+        max-width: 200%;
+        width: 150%;
         /* This rule is very important, please do not ignore this! */
     }
 
     ion-button {
         position: absolute;
-        top     : .5em;
+        top     : 1em;
         z-index : 1;
 
         &.cancel-btn {
@@ -39,8 +40,6 @@
 
 img {
     object-fit: cover;
-    width     : 100%;
-    height    : 100%;
 }
 
 :host.backdrop {

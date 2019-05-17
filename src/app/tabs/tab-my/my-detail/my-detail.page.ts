@@ -35,23 +35,7 @@ export class MyDetailPage implements OnInit {
     } as any;
     this.load();
   }
-  croppImage(){
-    const fileEle = document.getElementById("file") as HTMLInputElement;
-    if(fileEle){
-      fileEle.click();
-      fileEle.onchange=(evt)=>{
-        const files = (evt.target as HTMLInputElement).files;
-        const file = files[0];
-        if(file){
-          const fr = new FileReader();
-          fr.onload=()=>{
-            this.router.navigate([AppHelper.getRoutePath('crop-avatar'),{file:fr.result}]);
-          }
-          fr.readAsDataURL(file);
-        }
-      }
-    }
-  }
+  
   load() {
     const req = new BaseRequest();
     req.Method = "ApiMemberUrl-Home-Get";

@@ -6,6 +6,13 @@ import { HttpClient } from '@angular/common/http';
 export class AppHelper {
   private static httpClient: HttpClient;
   private static _deviceName: string;
+  private static _routeData:any;
+  static setRouteData(data:any){
+    this._routeData=data;
+  }
+  static getRouteData(){
+    return this._routeData;
+  }
   static setHttpClient(httpClient: HttpClient) {
     this.httpClient = httpClient;
   }
@@ -225,7 +232,7 @@ export class AppHelper {
       path && path.length > 0
         ? `${path}${style ? "_" + style : ""}`
         : path;
-    console.log(`get style=${style} Route Path=`, path);
+    console.log(`get style=${style}, Route Path=`, path);
     if (path) {
       return `/${path}`;
     }
