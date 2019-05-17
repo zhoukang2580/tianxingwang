@@ -38,27 +38,35 @@ export class ApiService {
   }
   setLoading(loading: boolean,isShowLoading:boolean) {
     if (loading && isShowLoading) {
+     this.showLoadingView();
+    }
+    if (!loading) {
+     this.hideLoadingView();
+    }
+    this.loadingSubject.next(loading);
+  }
+  showLoadingView()
+  {
+    this.loadingCtrl.getTop().then((t) => {
+      if (t) {
+        t.dismiss();
+      }
+    });
+    this.loadingCtrl.create().then((t) => {
+      if (t) {
+        t.present();
+      }
+    });
+  }
+  hideLoadingView()
+  {
+    setTimeout(() => {
       this.loadingCtrl.getTop().then((t) => {
         if (t) {
           t.dismiss();
         }
       });
-      this.loadingCtrl.create().then((t) => {
-        if (t) {
-          t.present();
-        }
-      });
-    }
-    if (!loading) {
-      setTimeout(() => {
-        this.loadingCtrl.getTop().then((t) => {
-          if (t) {
-            t.dismiss();
-          }
-        });
-      }, 1000);
-    }
-    this.loadingSubject.next(loading);
+    }, 1000);
   }
   send<T>(method: string, data: any, version: string = "1.0") {
     const req = new BaseRequest();

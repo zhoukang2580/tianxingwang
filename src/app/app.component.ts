@@ -42,9 +42,14 @@ export class AppComponent {
     AppHelper.getDomain();// 
     AppHelper.setQueryParamers();
     var path=AppHelper.getQueryString("path");
-    if(path)
+    var unloginPath=AppHelper.getQueryString("unloginpath");
+    if(AppHelper.getTicket() && path)
     {
       this.router.navigate([AppHelper.getRoutePath(path)]);
+    }
+    if(!AppHelper.getTicket() && unloginPath)
+    {
+      this.router.navigate([AppHelper.getRoutePath(unloginPath)]);
     }
     else
     {

@@ -22,7 +22,7 @@ import { AppcomponentsModule } from './components/appcomponents.module';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    IonicModule.forRoot({swipeBackEnabled:true,backButtonText:""}),
+    IonicModule.forRoot({swipeBackEnabled:true,backButtonText:"",loadingSpinner:"crescent"}),
     HttpClientModule,
     TranslateModule.forRoot({
       loader: {
