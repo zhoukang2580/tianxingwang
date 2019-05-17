@@ -1,11 +1,10 @@
-import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit } from "@angular/core";
+import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
 import { IonList } from '@ionic/angular';
 import { ApiService } from 'src/app/services/api/api.service';
 import { Observable, merge, of, Subscription } from 'rxjs';
 import { BaseRequest } from 'src/app/services/api/BaseRequest';
 import { map, switchMap } from 'rxjs/operators';
 import { AppHelper } from 'src/app/appHelper';
-import { DomSanitizer } from '@angular/platform-browser';
 type Item = {
   Id: string;
   Name: string;
@@ -15,35 +14,27 @@ type Item = {
   templateUrl: "./account-Wechat.page.html",
   styleUrls: ["./account-Wechat.page.scss"]
 })
-export class AccountWechatPage implements OnInit,AfterViewInit, OnDestroy {
+export class AccountWechatPage implements OnInit, OnDestroy {
   toggleChecked = false;
   items: Item[] = [];
   isShowBindButton: boolean;
-  isShowIframe:boolean;
+
   @ViewChild('List') deviceList: IonList;
-  constructor(private apiService: ApiService,private sanitizer:DomSanitizer) {
+  constructor(private apiService: ApiService) {
 
   }
-  ngAfterViewInit(){
-    if(this.isShowIframe)
-    {  
-      window.addEventListener("message",evt=>{
-        this.apiService.hideLoadingView();
-        if(evt.data&& typeof evt.data==='string')
-        {
-          var json=JSON.parse(evt.data);
-          if(json && json.Channel=="Bind" && json.Message)
-          {
-            alert(json.Message);
-          }
-        }
-      });
-    }
-  }
+
   ngOnInit() {
-    this.isShowBindButton =true;//AppHelper.isApp() || AppHelper.isWechatH5();
-    this.isShowIframe=true;//AppHelper.isWechatH5() || AppHelper.isH5();
+    this.isShowBindButton =AppHelper.isApp() || AppHelper.isWechatH5();
     this.load();
+    var paramters=AppHelper.getQueryParamers();
+    if(paramters.path=="account-wechat")
+    {
+      if(paramters.message)
+      {
+        alert(paramters.message);
+      }
+    }
   }
   async bind() {
     try {
@@ -70,15 +61,11 @@ export class AccountWechatPage implements OnInit,AfterViewInit, OnDestroy {
           });
         }
       }
-      //else if (AppHelper.isWechatH5()) {
-        this.apiService.showLoadingView();
-        var iframe=document.getElementById("iframe") as HTMLIFrameElement;
-        var url=AppHelper.getApiUrl()+"/home/BindWechat?domain="+AppHelper.getDomain()+"&ticket="+AppHelper.getTicket();
-          iframe.src=url;
-          setTimeout(()=>{
-            this.apiService.hideLoadingView();
-          },10000);
-      //}
+      else if (AppHelper.isWechatH5()) {
+        var url=AppHelper.getApiUrl()+"/home/BindWechat?domain="+AppHelper.getDomain()+"&ticket="+AppHelper.getTicket()
+        +"&path="+encodeURIComponent(AppHelper.getApiUrl()+"/index.html?path=account-wechat");
+          window.location.href=url;
+      }
     } catch (e) {
       alert(e);
     }
