@@ -44,7 +44,7 @@ let routes: Route[] = [
     FormsModule,
     ReactiveFormsModule,
     TranslateModule.forChild(),
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
   ],
   declarations: [MyPage]
 })

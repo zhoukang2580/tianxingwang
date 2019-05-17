@@ -43,11 +43,14 @@ export class MyDetailPage implements OnInit {
         const files = (evt.target as HTMLInputElement).files;
         const file = files[0];
         if(file){
-          console.log(file);
+          const fr = new FileReader();
+          fr.onload=()=>{
+            this.router.navigate([AppHelper.getRoutePath('crop-avatar'),{file:fr.result}]);
+          }
+          fr.readAsDataURL(file);
         }
       }
     }
-    this.router.navigate([AppHelper.getRoutePath('crop-avatar')]);
   }
   load() {
     const req = new BaseRequest();
@@ -71,7 +74,6 @@ export class MyDetailPage implements OnInit {
       this.Model.OrganizationName = r.OrganizationName;
       this.Model.BookTypeName = r.BookTypeName;
     }, () => {
-      debugger;
       if (deviceSubscription1) {
         deviceSubscription1.unsubscribe();
       }

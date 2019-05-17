@@ -1,8 +1,8 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit,HostBinding } from '@angular/core';
 import { NavController, Platform } from '@ionic/angular';
 import { AppHelper } from 'src/app/appHelper';
 import Cropper from 'cropperjs';
-
+import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-crop-avatar',
   templateUrl: './crop-avatar.page.html',
@@ -11,13 +11,16 @@ import Cropper from 'cropperjs';
 export class CropAvatarPage implements OnInit {
   cropper: Cropper;
   showCropBox = false;
+  @HostBinding("class.backdrop")
+  uploaded=false;
   resultImageUrl: string;
   isH5 = true || AppHelper.isH5();
-  inputFileEle: HTMLInputElement;
   fileReader: FileReader;
   avatar: string;
   croppedImage: HTMLImageElement;
-  constructor(private navCtrl: NavController, private plt: Platform, private ngZone: NgZone) {
+  constructor(private navCtrl: NavController, 
+    private router:Router,
+    private plt: Platform, private route: ActivatedRoute) {
     this.fileReader = new FileReader();
   }
 
@@ -25,22 +28,12 @@ export class CropAvatarPage implements OnInit {
   }
   ngAfterViewInit() {
     this.croppedImage = document.getElementById('image') as HTMLImageElement;
-    this.initCropper();
-    this.inputFileEle = document.getElementById("file") as HTMLInputElement;
-    this.inputFileEle.click();
-    if (this.inputFileEle) {
-      this.inputFileEle.onchange = (evt) => {
-        const files: FileList = evt.target['files'];
-        const file = files[0];
-        this.fileReader.readAsDataURL(file);
-        this.fileReader.onload = () => {
-          this.croppedImage.src = this.fileReader.result as string;
-          this.showCropBox = true;
-          this.reset();
-        }
+    this.route.paramMap.subscribe(d=>{
+      if(d&&d.get('file')){
+        this.croppedImage.src=d.get("file");
+        this.reset();
       }
-    }
-    this.startCropImage();
+    });
   }
   rotate() {
     if (this.cropper) {
@@ -51,26 +44,31 @@ export class CropAvatarPage implements OnInit {
     // this.showCropBox = false;
     this.navCtrl.back();
   }
-  startCropImage() {
-    if (this.isH5) {
-      if (this.inputFileEle) {
-        document.getElementById("button").click();
-      }
-    }
-  }
+
   ok() {
-    this.showCropBox = false;
+    setTimeout(() => {
+      this.showCropBox = false;
+    }, 0);
     this.avatar = this.resultImageUrl = this.cropper.getCroppedCanvas({
       maxWidth: 800,
       maxHeight: 800
     }).toDataURL();
+    this.uploadImage(this.avatar);
+
   }
   reset() {
     if (this.cropper) {
       this.cropper.destroy();
-      this.initCropper();
-      this.showCropBox = true;
     }
+    this.initCropper();
+    setTimeout(() => {
+      this.showCropBox = true;
+    }, 0);
+  }
+  uploadImage(avatarBase64Str:string){
+    this.uploaded=true;
+    setTimeout(() => {
+    }, 100);
   }
   initCropper() {
     // ios设备的内存限制，最好在裁切前将图片缩小到1024px以内
