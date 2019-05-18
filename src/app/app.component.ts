@@ -47,7 +47,7 @@ export class AppComponent {
     {
       this.router.navigate([AppHelper.getRoutePath(path)]);
     }
-    if(!AppHelper.getTicket() && unloginPath)
+    else if(!AppHelper.getTicket() && unloginPath)
     {
       this.router.navigate([AppHelper.getRoutePath(unloginPath)]);
     }

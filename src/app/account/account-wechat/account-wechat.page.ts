@@ -18,7 +18,6 @@ export class AccountWechatPage implements OnInit, OnDestroy {
   toggleChecked = false;
   items: Item[] = [];
   isShowBindButton: boolean;
-
   @ViewChild('List') deviceList: IonList;
   constructor(private apiService: ApiService) {
 
