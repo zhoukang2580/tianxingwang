@@ -1,5 +1,5 @@
 import { Component, OnInit,HostBinding } from '@angular/core';
-import { NavController, Platform } from '@ionic/angular';
+import { NavController, Platform, Config } from '@ionic/angular';
 import { AppHelper } from 'src/app/appHelper';
 import Cropper from 'cropperjs';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,8 +20,10 @@ export class CropAvatarPage implements OnInit {
   croppedImage: HTMLImageElement;
   constructor(private navCtrl: NavController, 
     private router:Router,
+    private config: Config,
     private plt: Platform, private route: ActivatedRoute) {
     this.fileReader = new FileReader();
+    this.config.set("swipeBackEnabled",false);
   }
 
   ngOnInit() {
