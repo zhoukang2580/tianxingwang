@@ -64,6 +64,7 @@ export class LoginPage implements OnInit ,OnDestroy{
     this.form.controls["Mobile"].valueChanges.subscribe((m: string) => {
       this.isMobileNumberOk = `${m}`.length >= 11;
     });
+    // this.jump();
   }
   ionViewWillEnter(){
     this.initPage();
@@ -242,12 +243,17 @@ export class LoginPage implements OnInit ,OnDestroy{
   }
   jump() // 跳转
   {
-    console.log("Jump");
-    // 空会默认重定向到首页
-    // 如果首页添加了guard守卫，则会校验，校验不通过，自动重定向到login
-    // 如果加了autorityguard才会校验
-    const toPageRouter = this.loginService.getToPageRouter() || "";
-    this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
+   this.loginService.checkIsDeviceBinded("12345").subscribe(res=>{
+    // 需要绑定
+    this.router.navigate([AppHelper.getRoutePath("account-bind"),{
+      IsActiveMobile:res.Data.IsActiveMobile,
+      Mobile:res.Data.Mobile
+    }]);
+   },e=>{
+     console.error(e);// 无需绑定
+     const toPageRouter = this.loginService.getToPageRouter() || "";
+     this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
+   });
   }
   ngOnDestroy(){
     this.loginSubscription.unsubscribe();

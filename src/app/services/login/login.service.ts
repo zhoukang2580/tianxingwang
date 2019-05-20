@@ -17,10 +17,10 @@ import { IResponse } from "../api/IResponse";
 })
 export class LoginService {
   private _imageValue: string;
-  set ImageValue(value:string){
-    this._imageValue=value;
+  set ImageValue(value: string) {
+    this._imageValue = value;
   }
-  get ImageValue(){
+  get ImageValue() {
     return encodeURIComponent(this._imageValue);
   }
   private _toPageRouter: string; // 因要授权而不能跳转的页面
@@ -45,6 +45,18 @@ export class LoginService {
       entity.ImageCode,
       this.ImageValue
     );
+  }
+  checkIsDeviceBinded(deviceNumber: string) {
+    const req = new BaseRequest();
+    req.IsShowLoading = true;
+    req.Method = 'ApiPasswordUrl-Device-Check';
+    req.Data = {
+      DeviceNumber: deviceNumber
+    };
+    return this.apiService.getResponse<{
+      IsActiveMobile: boolean;
+      Mobile: string;
+    }>(req);
   }
   deviceLogin(entity: LoginEntity) {
     return from(AppHelper.getUUID()).pipe(
@@ -74,7 +86,7 @@ export class LoginService {
       "",
       entity.WechatCode,
       "",
-     ""
+      ""
     );
   }
   dingtalkLogin(entity: LoginEntity) {
@@ -93,7 +105,7 @@ export class LoginService {
     return merge(of("assets/images/loading.gif"),
       this.http.get(`${AppHelper.getApiUrl()}/Home/CreateCode`).pipe(
         map((r: IResponse<{ Code: string; Value: string }>) => {
-          console.log("code: "+r.Data.Code+" value: "+r.Data.Value);
+          console.log("code: " + r.Data.Code + " value: " + r.Data.Value);
           if (r.Data) {
             this.ImageValue = r.Data.Value;
             return `${AppHelper.getApiUrl()}/Home/ImageCode?code=${r.Data.Code}`;
@@ -124,7 +136,7 @@ export class LoginService {
     const req = new BaseRequest();
     req.Method = method;
     req.ImageCode = imageCode;
-    req.ImageValue=imageValue;
+    req.ImageValue = imageValue;
     req.Data = JSON.stringify({
       Name: name,
       Password: password
