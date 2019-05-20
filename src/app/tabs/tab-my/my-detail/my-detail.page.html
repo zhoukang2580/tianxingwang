@@ -12,7 +12,7 @@
     <ion-item detail cropAvatar>
       <ion-label>头像</ion-label>
       <ion-thumbnail slot='end'>
-        <img [src]="Model?.HeadUrl" alt="头像">
+        <img [src]="Model?.HeadUrl || defaultAvatar" alt="头像">
       </ion-thumbnail>
     </ion-item>
     <ion-item>

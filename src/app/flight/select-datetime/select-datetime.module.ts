@@ -9,10 +9,10 @@ import { SelectDatetimePage } from './select-datetime.page';
 import { AppComponentsModule } from './../components/components.module';
 
 const routes: Routes = [
-  // {
-  //   path: '',
-  //   component: SelectDatetimePage
-  // }
+  {
+    path: '',
+    component: SelectDatetimePage
+  }
 ];
 
 @NgModule({

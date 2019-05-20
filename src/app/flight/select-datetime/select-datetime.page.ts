@@ -101,25 +101,20 @@ export class SelectDatetimePage implements OnInit, AfterContentInit, OnDestroy, 
     // });
     console.log("window.performance.now", window.performance.now());
     let startTime = Date.now();
-    this.generateCalendar().then(d => {
-      this.availableDate = d;
-      if (!environment.production) {
-        console.log("生成日历耗时：" + (Date.now() - startTime) + " ms");
-      }
-      startTime = Date.now();
-      this.initialSeletedDaysView();
-      if (!environment.production) {
-        console.log(
-          "初始化后，",
-          this.selectedDays,
-          "耗时" + (Date.now() - startTime) + " ms"
-        );
-      }
-      this.calendars=this.availableDate.slice(0, 2);
-      setTimeout(() => {
-        this.calendars = this.calendars.concat(this.availableDate.slice(2));
-      }, 1000);
-    });
+    this.availableDate =this.generateCalendar();
+    if (!environment.production) {
+      console.log("生成日历耗时：" + (Date.now() - startTime) + " ms");
+    }
+    startTime = Date.now();
+    this.initialSeletedDaysView();
+    if (!environment.production) {
+      console.log(
+        "初始化后，",
+        this.selectedDays,
+        "耗时" + (Date.now() - startTime) + " ms"
+      );
+    }
+    this.calendars=this.availableDate;
   }
   ngAfterContentInit() {
     console.log("ngAfterContentInit");
@@ -238,7 +233,7 @@ export class SelectDatetimePage implements OnInit, AfterContentInit, OnDestroy, 
       }
     }
   }
-  generateCalendar(): Promise<AvailableDate[]> {
+  generateCalendar() {
     const availableDate = [];
     const curM = moment().month();
     let curWeek = moment().weekday(); // 0星期天 1~6 分别为星期一到星期六
@@ -309,11 +304,7 @@ export class SelectDatetimePage implements OnInit, AfterContentInit, OnDestroy, 
         dayList
       });
     }
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve(availableDate);
-      }, 0);
-    });
+    return availableDate;
   }
   onDaySelected(selectedDay: DayModel) {
     // 注意，该方法不要在程序中调用，需要由用户点击选择触发

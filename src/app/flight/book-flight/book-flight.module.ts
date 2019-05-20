@@ -24,7 +24,7 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     AppComponentsModule
   ],
-  declarations: [BookFlightPage],
-  entryComponents:[BookFlightPage]
+  declarations: [BookFlightPage,SelectDatetimePage],
+  entryComponents:[BookFlightPage,SelectDatetimePage]
 })
 export class BookFlightPageModule {}

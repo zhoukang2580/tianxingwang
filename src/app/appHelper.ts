@@ -10,6 +10,9 @@ export class AppHelper {
   static setRouteData(data:any){
     this._routeData=data;
   }
+  static getDefaultAvatar(){
+    return "assets/images/defaultavatar.jpg";
+  }
   static getRouteData(){
     return this._routeData;
   }

@@ -87,7 +87,9 @@
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-app-update": {},
       "cordova-plugin-console": {},
-      "cordova-wechat-plugin": {}
+      "cordova-wechat-plugin": {
+        "WECHATAPPID": "wx0839a418ccafdf36"
+      }
     },
     "platforms": [
       "android",

@@ -24,6 +24,7 @@ type PageModel = {
 export class MyPage implements OnDestroy, OnInit {
   identity: IdentityEntity;
   Model: PageModel;
+  defaultAvatar=AppHelper.getDefaultAvatar();
   constructor(
     private router: Router, private identityService: IdentityService,
     private route: ActivatedRoute,

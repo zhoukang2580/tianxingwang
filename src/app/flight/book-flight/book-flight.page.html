@@ -1,14 +1,15 @@
-<ion-content>
-  <ion-toolbar>
-    <ion-buttons slot="start" (click)="goBack()">
-      <ion-button fill="clear" size="large" color="light">
-        <ion-icon name="ios-arrow-back"></ion-icon>
-      </ion-button>
+<ion-header>
+  <ion-toolbar color='primary'>
+    <ion-buttons slot='start'>
+      <ion-back-button></ion-back-button>
     </ion-buttons>
+    <ion-title>机票查询</ion-title>
   </ion-toolbar>
+</ion-header>
+<ion-content>
   <ion-card>
     <ion-card-content>
-      <div class="go-and-back">
+      <div class="round-trip">
         <ion-button
           text-center
           expand="block"

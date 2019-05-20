@@ -72,11 +72,11 @@ export class SelectFlyDaysPage implements OnInit,OnDestroy {
       this.selectedDays = sDays;
     });
     this.isRoundTrip=this.multi;
-    this.yms = this.flydSer.generateCanlender(2);
-    setTimeout(() => {
-      this.yms=this.yms.concat(this.flydSer.generateCanlender(9).slice(2));
-      this.initialSeletedDaysView();
-    }, 1000);
+    this.yms = this.flydSer.generateCanlender(3);
+    // setTimeout(() => {
+    //   this.yms=this.yms.concat(this.flydSer.generateCanlender(3).slice(2));
+    //   this.initialSeletedDaysView();
+    // }, 1000);
   }
   displayYm(ym: string) {
     return moment(ym, "YYYY-MM-DD").format("YYYY年M月");

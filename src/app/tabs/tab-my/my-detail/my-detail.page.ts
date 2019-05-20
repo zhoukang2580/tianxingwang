@@ -26,6 +26,7 @@ type PageModel = {
 export class MyDetailPage implements OnInit {
   Model: PageModel;
   identity: IdentityEntity;
+  defaultAvatar=AppHelper.getDefaultAvatar();
   constructor(private identityService: IdentityService, private router: Router, private configService: ConfigService, private apiService: ApiService) { }
 
   async ngOnInit() {

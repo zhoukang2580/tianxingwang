@@ -8,24 +8,27 @@ ion-content {
   ion-card {
     --background: white;
   }
-  .go-and-back {
+  .round-trip{
     position: relative;
     display: flex;
     align-items: center;
     width: 100%;
     justify-content: space-around;
     &::after {
+      --border-color    : #d6d6d6;
       content: "";
       position: absolute;
       left: -1rem;
       right: -1rem;
       display: block;
-      border: 0.6px solid rgba(0, 0, 0, 0.12);
+      border: 0.6px solid var(--border-color);
       bottom: 0;
     }
     ion-button {
       position: relative;
+      margin-bottom: -1.1px;
       --opacity: 0.8;
+      z-index: 1;
       &.active {
         --opacity: 1;
       }
