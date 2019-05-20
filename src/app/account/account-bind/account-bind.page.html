@@ -18,14 +18,14 @@
           <ion-input placeholder="手机号" formControlName="Mobile" type="number" min="11"
             [readonly]='bindMobileInfo?.IsActiveMobile'></ion-input>
         </ion-col>
-        <ion-col size="4" *ngIf="!isDisableSendMobileCode; else countdown">
+        <ion-col size="4" *ngIf="countDown==0; else countdown">
           <ion-button size="small" fill="outline" color="primary" [disabled]="!isMobileNumberOk"
-            (click)="startCountDonw(60)">
+            (click)="sendSmsCode()">
             <span [style.font-size.rem]="0.8">发送验证码</span>
           </ion-button>
         </ion-col>
         <ng-template #countdown>
-          <ion-col class="down-count" size="1.5">
+          <ion-col class="down-count" size="2">
             <ion-label color="medium">{{ countDown }} s</ion-label>
           </ion-col>
         </ng-template>
@@ -47,13 +47,18 @@
           <ion-label position="floating">短信验证码</ion-label>
         </ion-col>
         <ion-col>
-          <ion-input placeholder="请输入收到短信验证码" formControlName="MobileCode"></ion-input>
+          <ion-input placeholder="请输入收到短信验证码" formControlName="MobileCode" (blur)="bind()"></ion-input>
         </ion-col>
       </ion-row>
+    
       <ion-row text-center>
         <ion-col>
-          <ion-button fill='clear' [routerLink]='["../"]' color='primary' text-end>跳过</ion-button>
+          <ion-button fill='clear' (click)='jump()' color='primary' text-end>跳过</ion-button>
         </ion-col>
+        <ion-col>
+          <ion-button fill='clear' (click)='bind()' color='primary' text-end>下一步</ion-button>
+        </ion-col>
+       
       </ion-row>
     </section>
   </form>

@@ -51,6 +51,7 @@ export class LoginPage implements OnInit ,OnDestroy{
     this.isShowWechatLogin=AppHelper.isApp() || AppHelper.isWechatH5();
   }
   ngOnInit() {
+   
     this.loginEntity = new LoginEntity();
     this.form = this.fb.group({
       Name: [AppHelper.getStorage<string>("loginName")],
@@ -64,7 +65,12 @@ export class LoginPage implements OnInit ,OnDestroy{
     this.form.controls["Mobile"].valueChanges.subscribe((m: string) => {
       this.isMobileNumberOk = `${m}`.length >= 11;
     });
-    // this.jump();
+ //if(AppHelper.isApp())
+ {
+  debugger;
+  this.loginType="device";
+  this.login();
+}
   }
   ionViewWillEnter(){
     this.initPage();
@@ -147,7 +153,7 @@ export class LoginPage implements OnInit ,OnDestroy{
             this.userErrorCount++;
           } else {
             AppHelper.setStorage("loginname", this.loginEntity.Name);
-            this.jump();
+            this.jump(true);
           }
         },e=>{
           alert(e);
@@ -159,7 +165,7 @@ export class LoginPage implements OnInit ,OnDestroy{
           return;
         }
         if (!this.loginEntity.MobileCode) {
-          this.message = LanguageHelper.getLoginMobileCodeTip();
+          this.message = LanguageHelper.getMobileCodeTip();
           return;
         }
         this.loginSubscription=  this.loginService
@@ -168,7 +174,7 @@ export class LoginPage implements OnInit ,OnDestroy{
             if (!r.Ticket) {
               this.userErrorCount++;
             } else {
-              this.jump();
+              this.jump(true);
             }
           },e=>{
             this.message=e;
@@ -177,14 +183,14 @@ export class LoginPage implements OnInit ,OnDestroy{
       case "dingtalk":
        this.loginSubscription= this.loginService.dingtalkLogin(this.loginEntity).subscribe(r => {
           if (r.Ticket) {
-            this.jump();
+            this.jump(true);
           }
         });
         break;
       case "wechat":
       this.loginSubscription=  this.loginService.wechatLogin(this.loginEntity).subscribe(r => {
           if (r.Ticket) {
-            this.jump();
+            this.jump(true);
           }
         });
         break;
@@ -193,8 +199,10 @@ export class LoginPage implements OnInit ,OnDestroy{
           if (!r.Ticket) {
             this.loginType = "user";
           } else {
-            this.jump();
+            this.jump(false);
           }
+        },()=>{
+          this.loginType = "user";
         });
         break;
     }
@@ -241,19 +249,27 @@ export class LoginPage implements OnInit ,OnDestroy{
         }, 100);
       });
   }
-  jump() // 跳转
+  async jump(isCheckDevice:boolean) // 跳转
   {
-   this.loginService.checkIsDeviceBinded("12345").subscribe(res=>{
-    // 需要绑定
-    this.router.navigate([AppHelper.getRoutePath("account-bind"),{
-      IsActiveMobile:res.Data.IsActiveMobile,
-      Mobile:res.Data.Mobile
-    }]);
-   },e=>{
-     console.error(e);// 无需绑定
-     const toPageRouter = this.loginService.getToPageRouter() || "";
-     this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
-   });
+    const toPageRouter = this.loginService.getToPageRouter() || "";
+    if(isCheckDevice )//&& AppHelper.isApp())
+    {
+      var uuid= await AppHelper.getUUID();
+      this.loginService.checkIsDeviceBinded(uuid).subscribe(res=>{
+        // 需要绑定
+        this.router.navigate([AppHelper.getRoutePath("account-bind"),{
+          IsActiveMobile:res.Data.IsActiveMobile,
+          Mobile:res.Data.Mobile,
+          Path:toPageRouter
+        }]);
+       },e=>{
+         this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
+       });
+    }
+    else
+    {
+      this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
+    }
   }
   ngOnDestroy(){
     this.loginSubscription.unsubscribe();

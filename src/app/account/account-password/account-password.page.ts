@@ -6,11 +6,25 @@ import { Component, OnInit,OnDestroy } from "@angular/core";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { Router } from "@angular/router";
-import { PasswordModel } from "src/app/flight/models/PasswordModel";
+
 import { AccountService } from "../account.service";
 import { tap } from "rxjs/operators";
 import { Subscription, Observable } from 'rxjs';
 import { ApiService } from 'src/app/services/api/api.service';
+class PasswordModel {
+  /// <summary>
+  /// 老密码
+  /// </summary>
+  OldPassword: string;
+  /// <summary>
+  /// 新密码
+  /// </summary>
+  NewPassword: string;
+  /// <summary>
+  /// 确认密码
+  /// </summary>
+  SurePassword: string;
+}
 
 @Component({
   selector: "app-account-password",

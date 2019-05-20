@@ -22,7 +22,7 @@ export class AppHelper {
   static getUUID() {
     return new Promise<string>((resolve, reject) => {
       if (this.isH5()) {
-        resolve("");
+        resolve("12345");
       }
       document.addEventListener(
         "deviceready",
