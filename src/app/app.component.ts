@@ -1,6 +1,6 @@
 import { Component } from "@angular/core";
 
-import { Platform, AlertController, ToastController, IonApp, ActionSheetController, LoadingController } from "@ionic/angular";
+import { Platform, AlertController, ToastController, IonApp, ActionSheetController, LoadingController, NavController } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
 import { Router } from "@angular/router";
@@ -24,7 +24,7 @@ export class AppComponent {
     private toastController: ToastController,
     private actionSheetCtrl: ActionSheetController,
     private loadingCtrl: LoadingController,
-    private http:HttpClient
+    private http:HttpClient,
   ) {
     // console.log(this.router.config);
     if (this.platform.is("ios")) {
@@ -45,7 +45,9 @@ export class AppComponent {
     var unloginPath=AppHelper.getQueryString("unloginpath");
     if(AppHelper.getTicket() && path)
     {
-      this.router.navigate([AppHelper.getRoutePath(path)]);
+      this.jumpToRoute("/tabs/my").then(()=>{
+        this.jumpToRoute(path);
+      });
     }
     else if(!AppHelper.getTicket() && unloginPath)
     {
@@ -70,6 +72,9 @@ export class AppComponent {
   }
   private getConfigInfo(){
     this.configService.get();    
+  }
+  private jumpToRoute(route:string){
+   return this.router.navigate([AppHelper.getRoutePath(route)]);
   }
   private extMethod() {
     const toast = async msg => {

@@ -48,7 +48,7 @@ export class LoginPage implements OnInit ,OnDestroy{
     private router: Router
   ) {
     this.loading$ = this.loginService.getLoading();
-    this.isShowWechatLogin=true;//AppHelper.isApp() || AppHelper.isWechatH5();
+    this.isShowWechatLogin=AppHelper.isApp() || AppHelper.isWechatH5();
   }
   ngOnInit() {
     this.loginEntity = new LoginEntity();
