@@ -13,7 +13,7 @@ export class LanguageHelper {
     static getLoginMobileTip() {
       return "请输入手机号码";
     }
-    static getLoginMobileCodeTip() {
+    static getMobileCodeTip() {
       return "请输入手机收到的验证码";
     }
     static getApiExceptionTip() {

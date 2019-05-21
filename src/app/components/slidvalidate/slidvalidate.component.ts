@@ -1,4 +1,5 @@
 import { Component, OnInit, AfterViewInit, Renderer2 } from '@angular/core';
+import { AppHelper } from 'src/app/appHelper';
 
 @Component({
   selector: 'app-slidvalidate-com',
@@ -64,7 +65,7 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
       onload();
     };
     tempImage.onerror = () => {
-      tempImage.src = this.getRandomImgSrc();
+      tempImage.src = this.getRandomImgSrc(true);
     }
     tempImage.src = this.getRandomImgSrc();
     return tempImage;
@@ -84,8 +85,12 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     this.render.removeClass(tag, className);
   }
 
-  getRandomImgSrc() {
-    return `//picsum.photos/${this.w}/150/?image=` + this.getRandomNumberByRange(0, 1084);
+  getRandomImgSrc(defaultImage: boolean = false) {
+    if (defaultImage) {
+      return 'assets/images/train.jpg';
+    }
+    return AppHelper.getApiUrl() + "/imageCode?width=" + this.w + "&height=" + this.h;
+    // return `//picsum.photos/${this.w}/150/?image=` + this.getRandomNumberByRange(0, 1084);
     // const images = ['airplane-l.jpg', 'airplane.jpg', 'train.jpg'];
     // return "assets/images/" + images[Math.floor(Math.random() * images.length)];
   }
@@ -100,8 +105,8 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     ctx.lineTo(x, y + this.l);
     ctx.arc(x + this.r - 2, y + this.l / 2, this.r + 0.4, 2.76 * this.PI, 1.24 * this.PI, true);
     ctx.lineTo(x, y);
-    ctx.shadowBlur = 1;
-    ctx.shadowColor = 'rgba(255, 255, 255, 0.3)';
+    // ctx.shadowBlur = 1;
+    // ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
     ctx.lineWidth = 2;
     ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
@@ -120,9 +125,9 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
 
 
   init() {
-    this.initDOM()
-    this.initImg()
-    this.bindEvents()
+    this.initDOM();
+    this.initImg();
+    this.bindEvents();
   }
 
   initDOM() {
@@ -143,20 +148,21 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
   }
   initImg() {
     const img = this.createImg(() => {
-      this.draw()
+      this.draw();
+      // this.drawGrayLayer();
       this.canvasCtx.drawImage(img, 0, 0, this.w, this.h);
       this.blockCtx.drawImage(img, 0, 0, this.w, this.h);
-      const y = this.y - this.r * 2 - 1
+      const y = this.y - this.r * 2 - 1;
       const ImageData = this.blockCtx.getImageData(this.x - 3, y, this.L, this.L);
       this.block.width = this.L;
       this.blockCtx.putImageData(ImageData, 0, y);
     })
-    this.img = img
+    this.img = img;
   }
-  drawPicScale(img:HTMLImageElement, ctx: CanvasRenderingContext2D,width:number=300,height:number=200) {
+  drawPicScale(img: HTMLImageElement, ctx: CanvasRenderingContext2D, width: number = 300, height: number = 200) {
     var w = img.width;
     var h = img.height;
-    var dw = width / w ;         //canvas与图片的宽高比
+    var dw = width / w;         //canvas与图片的宽高比
     var dh = height / h;
     var ratio
     // 裁剪图片中间部分
@@ -181,11 +187,14 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     // 随机创建滑块的位置
     this.x = this.getRandomNumberByRange(this.L + 10, this.w - (this.L + 10));
     this.y = this.getRandomNumberByRange(10 + this.r * 2, this.h - (this.L + 10));
+    this.drawPic(this.canvasCtx, this.x, this.y, 'fill')
+    this.drawPic(this.blockCtx, this.x, this.y, 'clip')
+  }
+  drawGrayLayer() {
+    this.canvasCtx.restore();
     this.canvasCtx.fillStyle = 'rgba(0,0,0,.5)';
     this.canvasCtx.fillRect(0, 0, this.w, this.h);
     this.canvasCtx.restore();
-    this.drawPic(this.canvasCtx, this.x, this.y, 'fill')
-    this.drawPic(this.blockCtx, this.x, this.y, 'clip')
   }
 
   clean() {
@@ -270,7 +279,7 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     const stddev = Math.sqrt(deviations.map(this.square).reduce(this.sum) / arr.length);
     const left = parseInt(this.block.style.left);
     return {
-      spliced: Math.abs(left - Math.abs(this.x)) <= 3,
+      spliced: Math.abs(left - Math.abs(this.x)) <= 6,
       verified: stddev !== 0, // 简单验证下拖动轨迹，为零时表示Y轴上下没有波动，可能非人为操作
     }
   }
@@ -281,6 +290,7 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     this.render.setStyle(this.slider, 'left', 0);
     this.render.setStyle(this.sliderMask, 'width', 0);
     this.clean();
+    // this.drawGrayLayer();
     this.img.src = this.getRandomImgSrc();
   }
 }

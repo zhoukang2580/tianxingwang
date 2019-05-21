@@ -14,7 +14,8 @@ import {
 import { Observable, of } from "rxjs";
 import { IdentityService } from "../services/identity/identity.service";
 import { AlertController, LoadingController } from "@ionic/angular";
-import { finalize } from "rxjs/operators";
+import { finalize, switchMap, map } from "rxjs/operators";
+import { LoginEntity } from '../services/login/login.entity';
 
 @Injectable({
   providedIn: "root"
@@ -45,11 +46,7 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
       return true;
     }
     this.loginService.setToPageRouter(state.url);
-    if(AppHelper.isApp())
-    {
-
-    }
-    else if(AppHelper.isWechatH5())
+    if(AppHelper.isWechatH5())
     {
       var url=AppHelper.getApiUrl()+"/home/WechatLogin?domain="+AppHelper.getDomain()
         +"&path="+encodeURIComponent(AppHelper.getApiUrl()+"/index.html?path="+(AppHelper.getQueryParamers().path||"")+"&unloginpath=login");

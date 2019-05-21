@@ -63,8 +63,8 @@ export class LoginService {
       switchMap(uuid =>
         this.login(
           "ApiLoginUrl-Home-DeviceLogin",
-          entity.Name,
-          (entity.UUID = uuid),
+          AppHelper.getStorage("identityId"),
+          uuid,
           "",
           ""
         )
@@ -142,7 +142,6 @@ export class LoginService {
       Password: password
     });
     AppHelper.setStorage("loginName", name);
-
     return this.apiService
       .getResponse<{
         Ticket: string; // "";
@@ -171,8 +170,47 @@ export class LoginService {
       );
   }
   logout() {
-    this.identityService.removeIdentity();
-    this.router.navigate([AppHelper.getRoutePath("login")]);
+    debugger;
+    const ticket = AppHelper.getTicket();
+    if (ticket) {
+      const req = new BaseRequest();
+      req.IsShowLoading=true;
+      req.Method = "ApiLoginUrl-Home-Logout";
+      req.Data = JSON.stringify({ Ticket: ticket });
+      req.Timestamp = Math.floor(Date.now() / 1000);
+      req.Language = AppHelper.getLanguage();
+      req.Ticket = AppHelper.getTicket();
+      req.Domain = AppHelper.getDomain();
+      const formObj = Object.keys(req)
+        .map(k => `${k}=${req[k]}`)
+        .join("&");
+      const url = req.Url || AppHelper.getApiUrl() + "/Home/Proxy";
+      return this.http
+        .post(url, formObj, {
+          headers: { "content-type": "application/x-www-form-urlencoded" },
+          observe: "body"
+        })
+        .pipe(
+          map((r: IResponse<IdentityEntity>) => r)
+        ).subscribe(r => {
+          if (r.Status) {
+            this.identityService.removeIdentity();
+            this.router.navigate([AppHelper.getRoutePath("login")]);
+            return of(r.Data);
+          }
+          else if(r.Code.toUpperCase()=="NOLOGIN")
+          {
+            this.identityService.removeIdentity();
+            this.router.navigate([AppHelper.getRoutePath("login")]);
+          }
+        });
+    }
+    else
+    {
+      this.identityService.removeIdentity();
+      this.router.navigate([AppHelper.getRoutePath("login")]);
+    }
+
   }
   async checkIdentity() {
     const result = await this.identityService.getIdentity();
