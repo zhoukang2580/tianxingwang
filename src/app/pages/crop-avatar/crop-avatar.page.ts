@@ -3,6 +3,8 @@ import { NavController, Platform, Config } from '@ionic/angular';
 import { AppHelper } from 'src/app/appHelper';
 import Cropper from 'cropperjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ApiService } from 'src/app/services/api/api.service';
+import { BaseRequest } from 'src/app/services/api/BaseRequest';
 @Component({
   selector: 'app-crop-avatar',
   templateUrl: './crop-avatar.page.html',
@@ -20,6 +22,7 @@ export class CropAvatarPage implements OnInit {
   croppedImage: HTMLImageElement;
   constructor(private navCtrl: NavController, 
     private router:Router,
+    private apiService:ApiService,
     private config: Config,
     private plt: Platform, private route: ActivatedRoute) {
     this.fileReader = new FileReader();
@@ -72,9 +75,26 @@ export class CropAvatarPage implements OnInit {
     }, 0);
   }
   uploadImage(avatarBase64Str:string){
-    this.uploaded=true;
-    setTimeout(() => {
-    }, 100);
+    const req = new BaseRequest();
+    req.Method="ApiMemberUrl-Home-UploadHeadImage";
+    req.Data={
+      fileName:Date.now(),
+      fileValue:avatarBase64Str
+    }
+   const uploadSubscription= this.apiService.getResponse<any>(req).subscribe(uploadRes=>{
+      this.uploaded=true;
+      this.showCropBox = false;
+    },e=>{
+      this.uploaded=false;
+      this.showCropBox = true;
+      alert(e);
+    },()=>{
+      if(uploadSubscription){
+        setTimeout(() => {
+          uploadSubscription.unsubscribe();
+        }, 10);
+      }
+    });
   }
   initCropper() {
     // ios设备的内存限制，最好在裁切前将图片缩小到1024px以内

@@ -1,0 +1,290 @@
+import { Component, OnInit, AfterViewInit, Renderer2 } from '@angular/core';
+
+@Component({
+  selector: 'app-slidvalidate-com',
+  templateUrl: './slidvalidate.component.html',
+  styleUrls: ['./slidvalidate.component.scss'],
+})
+export class SlidvalidateComponent implements OnInit, AfterViewInit {
+  l = 42; // 滑块边长
+  r = 9; // 滑块半径
+  w = 310; // canvas宽度
+  h = 155; // canvas高度
+  PI = Math.PI
+  L = this.l + this.r * 2 + 3; // 滑块实际边长
+  isIE = window.navigator.userAgent.indexOf('Trident') > -1;
+  el: HTMLElement;
+  canvasCtx: CanvasRenderingContext2D;
+  blockCtx: CanvasRenderingContext2D;
+  canvas: HTMLCanvasElement; // 画布
+  block: HTMLCanvasElement;
+  sliderContainer;
+  refreshIcon;
+  sliderMask;
+  slider;
+  sliderIcon;
+  text;
+  y = 0;
+  img;
+  x = 0;
+  trail: number[] = [];
+  constructor(private render: Renderer2) { }
+  ngOnInit() {
+  }
+  ngAfterViewInit() {
+    this.el = document.getElementById("pic");
+    // this.w = this.el.clientWidth;
+    // this.h = this.el.clientHeight;
+    console.dir(this.el);
+    this.init();
+  }
+  getRandomNumberByRange(start, end) {
+    return Math.round(Math.random() * (end - start) + start)
+  }
+  onSuccess() {
+
+  }
+  onFail() {
+
+  }
+  onRefresh() {
+
+  };
+  createCanvas(width, height) {
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+    return canvas
+  }
+
+  createImg(onload: () => any) {
+    const tempImage = new Image();
+    tempImage.crossOrigin = "Anonymous";
+    tempImage.onload = () => {
+      onload();
+    };
+    tempImage.onerror = () => {
+      tempImage.src = this.getRandomImgSrc();
+    }
+    tempImage.src = this.getRandomImgSrc();
+    return tempImage;
+  }
+
+  createElement(tagName, className) {
+    const el = document.createElement(tagName);
+    this.render.addClass(el, className);
+    return el;
+  }
+
+  addClass(tag: HTMLElement, className) {
+    this.render.addClass(tag, className);
+  }
+
+  removeClass(tag: HTMLElement, className) {
+    this.render.removeClass(tag, className);
+  }
+
+  getRandomImgSrc() {
+    return `//picsum.photos/${this.w}/150/?image=` + this.getRandomNumberByRange(0, 1084);
+    // const images = ['airplane-l.jpg', 'airplane.jpg', 'train.jpg'];
+    // return "assets/images/" + images[Math.floor(Math.random() * images.length)];
+  }
+
+  drawPic(ctx: CanvasRenderingContext2D, x, y, operation) {
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.arc(x + this.l / 2, y - this.r + 2, this.r, 0.72 * this.PI, 2.26 * this.PI);
+    ctx.lineTo(x + this.l, y);
+    ctx.arc(x + this.l + this.r - 2, y + this.l / 2, this.r, 1.21 * this.PI, 2.78 * this.PI);
+    ctx.lineTo(x + this.l, y + this.l);
+    ctx.lineTo(x, y + this.l);
+    ctx.arc(x + this.r - 2, y + this.l / 2, this.r + 0.4, 2.76 * this.PI, 1.24 * this.PI, true);
+    ctx.lineTo(x, y);
+    ctx.shadowBlur = 1;
+    ctx.shadowColor = 'rgba(255, 255, 255, 0.3)';
+    ctx.lineWidth = 2;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.stroke();
+    ctx[operation]();
+    ctx.globalCompositeOperation = this.isIE ? 'xor' : 'overlay';
+  }
+
+  sum(x, y) {
+    return x + y
+  }
+
+  square(x) {
+    return x * x
+  }
+
+
+  init() {
+    this.initDOM()
+    this.initImg()
+    this.bindEvents()
+  }
+
+  initDOM() {
+    this.render.setStyle(this.el, 'width', this.w + "px");
+    this.canvas = document.getElementById("canvas") as HTMLCanvasElement;//this.createCanvas(this.w, this.h) // 画布
+    this.canvas.width = this.w;
+    this.canvas.height = this.h;
+    this.block = document.getElementById("block") as HTMLCanvasElement; // 拼图部分
+    this.sliderContainer = document.querySelector(".sliderContainer");//  this.createElement('div','sliderContainer');
+    this.refreshIcon = document.querySelector(".refreshIcon");// this.createElement('div', 'refreshIcon')
+    this.sliderMask = document.querySelector(".sliderMask");// this.createElement('div', 'sliderMask')
+    this.slider = document.querySelector(".slider");//this.createElement('div', 'slider')
+    this.sliderIcon = document.querySelector(".sliderIcon");//this.createElement('span', 'sliderIcon')
+    this.text = document.querySelector(".sliderText");// this.createElement('span', 'sliderText')
+    this.text.innerHTML = '向右滑动填充拼图'
+    this.canvasCtx = this.canvas.getContext('2d');
+    this.blockCtx = this.block.getContext('2d');
+  }
+  initImg() {
+    const img = this.createImg(() => {
+      this.draw()
+      this.canvasCtx.drawImage(img, 0, 0, this.w, this.h);
+      this.blockCtx.drawImage(img, 0, 0, this.w, this.h);
+      const y = this.y - this.r * 2 - 1
+      const ImageData = this.blockCtx.getImageData(this.x - 3, y, this.L, this.L);
+      this.block.width = this.L;
+      this.blockCtx.putImageData(ImageData, 0, y);
+    })
+    this.img = img
+  }
+  drawPicScale(img:HTMLImageElement, ctx: CanvasRenderingContext2D,width:number=300,height:number=200) {
+    var w = img.width;
+    var h = img.height;
+    var dw = width / w ;         //canvas与图片的宽高比
+    var dh = height / h;
+    var ratio
+    // 裁剪图片中间部分
+    if (w > width && h > height || w < width && h < height) {
+      if (dw > dh) {
+        ctx.drawImage(img, 0, (h - height / dw) / 2, w, height / dw, 0, 0, width, height)
+      } else {
+        ctx.drawImage(img, (w - width / dh) / 2, 0, width / dh, h, 0, 0, width, height)
+      }
+    }
+    // 拉伸图片
+    else {
+      if (w < width) {
+        ctx.drawImage(img, 0, (h - height / dw) / 2, w, height / dw, 0, 0, width, height)
+      } else {
+        ctx.drawImage(img, (w - width / dh) / 2, 0, width / dh, h, 0, 0, width, height)
+      }
+    }
+  }
+
+  draw() {
+    // 随机创建滑块的位置
+    this.x = this.getRandomNumberByRange(this.L + 10, this.w - (this.L + 10));
+    this.y = this.getRandomNumberByRange(10 + this.r * 2, this.h - (this.L + 10));
+    this.canvasCtx.fillStyle = 'rgba(0,0,0,.5)';
+    this.canvasCtx.fillRect(0, 0, this.w, this.h);
+    this.canvasCtx.restore();
+    this.drawPic(this.canvasCtx, this.x, this.y, 'fill')
+    this.drawPic(this.blockCtx, this.x, this.y, 'clip')
+  }
+
+  clean() {
+    this.canvasCtx.clearRect(0, 0, this.w, this.h);
+    this.blockCtx.clearRect(0, 0, this.w, this.h);
+    this.block.width = this.w;
+  }
+
+  bindEvents() {
+    // this.el.onselectstart = () => false;
+    this.refreshIcon.onclick = () => {
+      this.reset();
+      this.onRefresh();
+    }
+
+    let originX, originY, trail = [], isMouseDown = false;
+
+    const handleDragStart = (e) => {
+      originX = e.clientX || e.touches[0].clientX;
+      originY = e.clientY || e.touches[0].clientY;
+      isMouseDown = true;
+    }
+
+    const handleDragMove = (e) => {
+      if (!isMouseDown) return false
+      const eventX = e.clientX || e.touches[0].clientX
+      const eventY = e.clientY || e.touches[0].clientY
+      const moveX = eventX - originX
+      const moveY = eventY - originY
+      if (moveX < 0 || moveX + 38 >= this.w) return false;
+      this.render.setStyle(this.slider, 'left', moveX + 'px');
+      const blockLeft = (this.w - 40 - 20) / (this.w - 40) * moveX;
+      this.render.setStyle(this.block, 'left', blockLeft + "px");
+      this.addClass(this.sliderContainer, 'sliderContainer_active');
+      this.render.setStyle(this.sliderMask, 'width', moveX + 'px');
+      trail.push(moveY)
+    }
+
+    const handleDragEnd = (e) => {
+      if (!isMouseDown) return false
+      isMouseDown = false
+      const eventX = e.clientX || e.changedTouches[0].clientX
+      if (eventX == originX) return false
+      this.removeClass(this.sliderContainer, 'sliderContainer_active')
+      this.trail = trail;
+      const { spliced, verified } = this.verify();
+      if (spliced) {
+        if (verified) {
+          this.addClass(this.sliderContainer, 'sliderContainer_success')
+          this.onSuccess()
+        } else {
+          this.addClass(this.sliderContainer, 'sliderContainer_fail')
+          this.text.innerHTML = '再试一次'
+          this.reset()
+        }
+      } else {
+        this.addClass(this.sliderContainer, 'sliderContainer_fail')
+        this.onFail()
+        setTimeout(() => {
+          this.reset()
+        }, 1000)
+      }
+    }
+    this.slider.addEventListener('mousedown', handleDragStart.bind(this));
+    this.slider.addEventListener('touchstart', handleDragStart.bind(this));
+    this.slider.addEventListener('mousemove', handleDragMove.bind(this));
+    this.slider.addEventListener('touchmove', handleDragMove.bind(this));
+    this.slider.addEventListener('mouseup', handleDragEnd.bind(this));
+    this.slider.addEventListener('touchend', handleDragEnd.bind(this));
+  }
+
+  verify() {
+    const arr = this.trail // 拖动时y轴的移动距离
+    if (arr.length == 0) {
+      return {
+        spliced: false,
+        verified: false
+      }
+    }
+    const average = arr.reduce(this.sum) / arr.length;
+    const deviations = arr.map(x => x - average);
+    const stddev = Math.sqrt(deviations.map(this.square).reduce(this.sum) / arr.length);
+    const left = parseInt(this.block.style.left);
+    return {
+      spliced: Math.abs(left - Math.abs(this.x)) <= 3,
+      verified: stddev !== 0, // 简单验证下拖动轨迹，为零时表示Y轴上下没有波动，可能非人为操作
+    }
+  }
+
+  reset() {
+    this.sliderContainer.className = 'sliderContainer';
+    this.render.setStyle(this.block, 'left', 0);
+    this.render.setStyle(this.slider, 'left', 0);
+    this.render.setStyle(this.sliderMask, 'width', 0);
+    this.clean();
+    this.img.src = this.getRandomImgSrc();
+  }
+}
+
+
+
+

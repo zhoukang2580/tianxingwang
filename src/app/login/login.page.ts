@@ -1,5 +1,5 @@
 import { LoginService } from "../services/login/login.service";
-import { Component, OnInit, NgZone, OnDestroy } from "@angular/core";
+import { Component, OnInit, NgZone, OnDestroy, AfterViewInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { LoginEntity } from "src/app/services/login/login.entity";
 import { FormBuilder, FormGroup } from "@angular/forms";
@@ -14,13 +14,13 @@ import { ConfigService } from "../services/config/config.service";
   templateUrl: "./login.page.html",
   styleUrls: ["./login.page.scss"]
 })
-export class LoginPage implements OnInit ,OnDestroy{
+export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   loginEntity: LoginEntity;
   pageInfo: ConfigEntity;
   form: FormGroup;
   validImageCodeCount: number = 0;
   private _phoneErrorCount: number = 0;
-  loginSubscription=Subscription.EMPTY;
+  loginSubscription = Subscription.EMPTY;
   get phoneErrorCount() {
     return this._phoneErrorCount;
   }
@@ -40,7 +40,7 @@ export class LoginPage implements OnInit ,OnDestroy{
   imgSrc$: Observable<any>;
   loading$: Observable<boolean>;
   isMobileNumberOk = false;
-  isShowWechatLogin:boolean;
+  isShowWechatLogin: boolean;
   constructor(
     private loginService: LoginService,
     private configService: ConfigService,
@@ -48,7 +48,10 @@ export class LoginPage implements OnInit ,OnDestroy{
     private router: Router
   ) {
     this.loading$ = this.loginService.getLoading();
-    this.isShowWechatLogin=AppHelper.isApp() || AppHelper.isWechatH5();
+    this.isShowWechatLogin = AppHelper.isApp() || AppHelper.isWechatH5();
+  }
+  ngAfterViewInit() {
+    
   }
   ngOnInit() {
     this.loginEntity = new LoginEntity();
@@ -66,11 +69,11 @@ export class LoginPage implements OnInit ,OnDestroy{
     });
     // this.jump();
   }
-  ionViewWillEnter(){
+  ionViewWillEnter() {
     this.initPage();
   }
   async loginByWechat() {
-    try{
+    try {
       if (AppHelper.isApp()) {
         const appId = await AppHelper.getWechatAppId();
         const code = await this.getWechatCode(appId).catch(() => null);
@@ -80,17 +83,16 @@ export class LoginPage implements OnInit ,OnDestroy{
           this.login();
         }
       }
-      else if(AppHelper.isWechatH5())
-      {
-        var url=AppHelper.getApiUrl()+"/home/WechatLogin?domain="+AppHelper.getDomain()
-        +"&path="+encodeURIComponent(AppHelper.getApiUrl()+"/index.html?path=&unloginpath=login");
-          window.location.href=url;
+      else if (AppHelper.isWechatH5()) {
+        var url = AppHelper.getApiUrl() + "/home/WechatLogin?domain=" + AppHelper.getDomain()
+          + "&path=" + encodeURIComponent(AppHelper.getApiUrl() + "/index.html?path=&unloginpath=login");
+        window.location.href = url;
       }
-    }catch(e){
+    } catch (e) {
       alert(e);
     }
   }
-  getWechatCode(appId:string) {
+  getWechatCode(appId: string) {
     const wechat = window['wechat'];
     if (wechat) {
       return wechat.getCode(appId);
@@ -114,7 +116,7 @@ export class LoginPage implements OnInit ,OnDestroy{
       ImageCode: ''
     });
   }
-  
+
   async login() {
 
     this.loginEntity.Name = this.form.value.Name;
@@ -142,14 +144,14 @@ export class LoginPage implements OnInit ,OnDestroy{
           this.message = LanguageHelper.getLoginImageCodeTip();
           return;
         }
-        this.loginSubscription=  this.loginService.userLogin(this.loginEntity).subscribe(r => {
+        this.loginSubscription = this.loginService.userLogin(this.loginEntity).subscribe(r => {
           if (!r.Ticket) {
             this.userErrorCount++;
           } else {
             AppHelper.setStorage("loginname", this.loginEntity.Name);
             this.jump();
           }
-        },e=>{
+        }, e => {
           alert(e);
         });
         break;
@@ -162,7 +164,7 @@ export class LoginPage implements OnInit ,OnDestroy{
           this.message = LanguageHelper.getLoginMobileCodeTip();
           return;
         }
-        this.loginSubscription=  this.loginService
+        this.loginSubscription = this.loginService
           .mobileLogin(this.loginEntity)
           .subscribe(r => {
             if (!r.Ticket) {
@@ -170,26 +172,26 @@ export class LoginPage implements OnInit ,OnDestroy{
             } else {
               this.jump();
             }
-          },e=>{
-            this.message=e;
+          }, e => {
+            this.message = e;
           });
         break;
       case "dingtalk":
-       this.loginSubscription= this.loginService.dingtalkLogin(this.loginEntity).subscribe(r => {
+        this.loginSubscription = this.loginService.dingtalkLogin(this.loginEntity).subscribe(r => {
           if (r.Ticket) {
             this.jump();
           }
         });
         break;
       case "wechat":
-      this.loginSubscription=  this.loginService.wechatLogin(this.loginEntity).subscribe(r => {
+        this.loginSubscription = this.loginService.wechatLogin(this.loginEntity).subscribe(r => {
           if (r.Ticket) {
             this.jump();
           }
         });
         break;
       case "device":
-      this.loginSubscription=  this.loginService.deviceLogin(this.loginEntity).subscribe(r => {
+        this.loginSubscription = this.loginService.deviceLogin(this.loginEntity).subscribe(r => {
           if (!r.Ticket) {
             this.loginType = "user";
           } else {
@@ -224,7 +226,7 @@ export class LoginPage implements OnInit ,OnDestroy{
       this.message = LanguageHelper.getLoginImageCodeTip();
       return;
     }
-   const subscription= this.loginService
+    const subscription = this.loginService
       .sendMobileCode(this.form.value.Mobile, this.form.value.ImageCode)
       .subscribe(r => {
         if (r.Data) {
@@ -233,9 +235,9 @@ export class LoginPage implements OnInit ,OnDestroy{
         this.message = r.Message;
       }, e => {
         this.message = e instanceof Error ? e.message : typeof e === 'string' ? e : e;
-      },()=>{
+      }, () => {
         setTimeout(() => {
-          if(subscription){
+          if (subscription) {
             subscription.unsubscribe();
           }
         }, 100);
@@ -243,19 +245,19 @@ export class LoginPage implements OnInit ,OnDestroy{
   }
   jump() // 跳转
   {
-   this.loginService.checkIsDeviceBinded("12345").subscribe(res=>{
-    // 需要绑定
-    this.router.navigate([AppHelper.getRoutePath("account-bind"),{
-      IsActiveMobile:res.Data.IsActiveMobile,
-      Mobile:res.Data.Mobile
-    }]);
-   },e=>{
-     console.error(e);// 无需绑定
-     const toPageRouter = this.loginService.getToPageRouter() || "";
-     this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
-   });
+    this.loginService.checkIsDeviceBinded("12345").subscribe(res => {
+      // 需要绑定
+      this.router.navigate([AppHelper.getRoutePath("account-bind"), {
+        IsActiveMobile: res.Data.IsActiveMobile,
+        Mobile: res.Data.Mobile
+      }]);
+    }, e => {
+      console.error(e);// 无需绑定
+      const toPageRouter = this.loginService.getToPageRouter() || "";
+      this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
+    });
   }
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.loginSubscription.unsubscribe();
   }
 }
