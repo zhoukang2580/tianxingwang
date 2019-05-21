@@ -118,7 +118,7 @@ export class LoginService {
   }
   sendMobileCode(mobile: string, imageCode: string = null) {
     const req = new BaseRequest();
-    req.Url = AppHelper.getApiUrl() + "/Home/SendMobileCode";
+    req.Url = AppHelper.getApiUrl() + "/Home/SendLoginMobileCode";
     if (imageCode) {
       req.ImageCode = imageCode;
       req.ImageValue = this.ImageValue;

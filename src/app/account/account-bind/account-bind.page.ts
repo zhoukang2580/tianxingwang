@@ -111,11 +111,13 @@ export class AccountBindPage implements OnInit, OnDestroy {
     });;
     return sub;
   }
-  bindDevice()
+  async bindDevice()
   {
+    var uuid=await AppHelper.getUUID();
+    var name= await AppHelper.getDeviceName();
     const req = new BaseRequest();
     req.Method = "ApiPasswordUrl-Device-Bind";
-    req.Data = { Mobile: this.form.value.Mobile,MobileCode:this.form.value.MobileCode};
+    req.Data = { Mobile: this.form.value.Mobile,MobileCode:this.form.value.MobileCode,DeviceNumber:uuid,DeviceName:name};
     const sub= this.apiService.getResponse<{
       SendInterval: number;
       ExpiredInterval: number;

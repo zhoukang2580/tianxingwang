@@ -186,7 +186,6 @@ export class ApiService {
           if (isCheckLogin && r.Code && r.Code.toUpperCase() === "NOLOGIN") {
             return from(this.tryAutoLogin(req));
           } else if (r.Code && r.Code.toUpperCase() === "NOLOGIN") {
-            debugger;
             this.router.navigate([AppHelper.getRoutePath("login")]);
           }
           if (!r.Status) {
@@ -201,7 +200,7 @@ export class ApiService {
           entity.Message = LanguageHelper.getApiExceptionTip();
           if (error instanceof TimeoutError) {
             entity.Message = LanguageHelper.getApiTimeoutTip();
-            alert(LanguageHelper.getApiTimeoutTip());
+            //alert(LanguageHelper.getApiTimeoutTip());
           }
           return throwError(error);
         }),

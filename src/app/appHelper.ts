@@ -34,6 +34,7 @@ export class AppHelper {
       );
     });
   }
+  
   static getWechatAppId() {
     if (this.httpClient) {
       return new Promise<string>((resolve, reject) => {
@@ -83,7 +84,19 @@ export class AppHelper {
     if (this.isH5()) {
       return "H5";
     }
-    return this._deviceName; // 返回ios或android
+    return new Promise<string>((resolve, reject) => {
+      if (this.isH5()) {
+        resolve("12345");
+      }
+      document.addEventListener(
+        "deviceready",
+        () => {
+          const Device = window["device"]; // 插件获取
+          resolve(Device.model);
+        },
+        false
+      );
+    });
   }
   static isApp() {
     return !!window["cordova"];

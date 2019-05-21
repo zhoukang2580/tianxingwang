@@ -65,12 +65,11 @@ export class LoginPage implements OnInit ,OnDestroy{
     this.form.controls["Mobile"].valueChanges.subscribe((m: string) => {
       this.isMobileNumberOk = `${m}`.length >= 11;
     });
- //if(AppHelper.isApp())
- {
-  debugger;
-  this.loginType="device";
-  this.login();
-}
+   if(AppHelper.isApp() && this.loginService.getToPageRouter())
+   {
+     this.loginType="device";
+     this.login();
+    }
   }
   ionViewWillEnter(){
     this.initPage();
@@ -202,6 +201,7 @@ export class LoginPage implements OnInit ,OnDestroy{
             this.jump(false);
           }
         },()=>{
+          this.form.value.Name=[AppHelper.getStorage<string>("loginName")];
           this.loginType = "user";
         });
         break;
@@ -251,6 +251,7 @@ export class LoginPage implements OnInit ,OnDestroy{
   }
   async jump(isCheckDevice:boolean) // 跳转
   {
+    this.loginType="user";
     const toPageRouter = this.loginService.getToPageRouter() || "";
     if(isCheckDevice )//&& AppHelper.isApp())
     {

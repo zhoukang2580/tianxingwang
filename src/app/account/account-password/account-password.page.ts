@@ -75,31 +75,7 @@ export class AccountPasswordPage implements OnInit,OnDestroy {
     });
   }
   forgetOriginalPassword() {
-    this.alertCtrl
-      .create({
-        message:
-          "你的账号当前已经绑定手机号，可以通过短信验证码重置登录密码，是否发送验证码到 18817392136 ?",
-        buttons: [
-          {
-            text: "取消",
-            role: "cancel"
-          },
-          {
-            text: "发送",
-            handler: () => {
-              this.sendMsmCode();
-            }
-          }
-        ]
-      })
-      .then(a => {
-        a.present();
-        a.onDidDismiss().then(data => {
-          if (data) {
-            console.log(data);
-          }
-        });
-      });
+    this.router.navigate([AppHelper.getRoutePath("password-code"),{Id:this.identityEntity.Id}]);
   }
   done() {
     if (!this.validatedBySmsCode) {

@@ -49,11 +49,6 @@ let routes: Route[] = [
       "./account-pay-password/account-pay-password.module#AccountPayPasswordPageModule"
   },
   {
-    path: "account-password-by-msm-code",
-    loadChildren:
-      './account-password-by-msm-code/account-password-by-msm-code.module#AccountPasswordByMsmCodePageModule'
-  },
-  {
     path: "account-bind",
     loadChildren: "./account-bind/account-bind.page.module#AccountBindPageModule"
   }
