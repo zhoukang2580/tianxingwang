@@ -2,7 +2,6 @@ import { AppHelper } from "./appHelper";
 import { NgModule, ErrorHandler } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { RouteReuseStrategy, Router } from "@angular/router";
-
 import { IonicModule, IonicRouteStrategy, LoadingController } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
@@ -16,6 +15,10 @@ import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
 import { environment } from "src/environments/environment";
 import { TranslateHttpLoader } from "@ngx-translate/http-loader";
 import { AppcomponentsModule } from './components/appcomponents.module';
+import { Zip } from '@ionic-native/zip/ngx';
+import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
+import { Device } from '@ionic-native/device/ngx';
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -42,7 +45,10 @@ import { AppcomponentsModule } from './components/appcomponents.module';
       provide: ErrorHandler,
       useClass: AppErrorHandler,
       deps: [LogService,LoadingController]
-    }
+    },
+    Zip,
+    BarcodeScanner,
+    Device
   ],
   bootstrap: [AppComponent]
 })

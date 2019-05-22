@@ -1,11 +1,19 @@
-<div id="pic">
+<div id="pic" (click)='refreshIconClick()'>
   <canvas id='canvas'></canvas>
-  <div class='refreshIcon'></div>
+  <div class='refreshIcon' >
+    <!-- <ion-button color='primary' fill='outline'> -->
+      <!-- <ion-icon name="refresh" color='primary'></ion-icon> -->
+    <!-- </ion-button> -->
+  </div>
   <canvas id='block' class="block"></canvas>
   <div class='sliderContainer'>
     <div class='sliderMask'>
       <div class='slider'>
-        <div class='sliderIcon'></div>
+        <div class='sliderIcon' >
+            <ion-icon name="arrow-forward" mode='md' *ngIf='!failed&&!slideValid'></ion-icon>
+            <ion-icon name="close" mode='md'  *ngIf='failed'></ion-icon>
+            <ion-icon name="checkmark" mode='md' *ngIf='!failed&&slideValid'></ion-icon>
+        </div>
       </div>
     </div>
     <span class='sliderText'></span>

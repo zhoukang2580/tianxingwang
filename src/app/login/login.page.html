@@ -1,13 +1,19 @@
 <ion-header>
-  <!-- <ion-buttons slot="start">
-    <ion-back-button></ion-back-button>
-  </ion-buttons> -->
   <ion-toolbar color="primary">
+    <ion-buttons slot="start" (click)='onScan()'>
+      <ion-button>扫一扫</ion-button>
+    </ion-buttons>
     <ion-title>登录</ion-title>
+    <ion-buttons slot="start" (click)='deviceName()'>
+      <ion-button>设备名</ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
+  <p *ngIf='deviceInfo'>
+    {{deviceInfo|json}}
+  </p>
   <form [formGroup]="form">
     <section *ngIf="loginType == 'user'">
       <ion-row>
@@ -99,7 +105,7 @@
         >
       </h6>
     </ion-item>
-    <app-slidvalidate-com></app-slidvalidate-com>
+    <app-slidvalidate-com (slideEvent)='onSlideEvent($event)'></app-slidvalidate-com>
     <app-or-comp>第三方登陆</app-or-comp>
     <ion-item (click)='loginByWechat()' lines='none' text-center *ngIf="isShowWechatLogin">
       <div class='third-party-logo'>

@@ -1,0 +1,17 @@
+{
+  "name": "cordova-hcp-plugin",
+  "version": "1.0.0",
+  "description": "",
+  "cordova": {
+    "id": "cordova-hcp-plugin",
+    "platforms": [
+      "android"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "author": "",
+  "license": "ISC"
+}

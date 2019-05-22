@@ -1,10 +1,25 @@
-:host{
-    min-width: 80vw;
+:host {
+    top                          : 0;
+    left                         : 0;
+    right                        : 0;
+    bottom                       : 0;
+    height                       : 100vh;
+    width                        : 100vw;
+    -webkit-overflow-scrolling   : touch;
+    position                     : fixed;
+    z-index                      : 100;
+    user-select                  : none;
+    background-color             : white;
+    // pointer-events            : none;
+    margin                       : 0;
 }
+
 #pic {
-    position: relative;
-    margin  : 0;
-    width   : 100%;
+    top      : 30%;
+    transform: translateY(-30%);
+    position : relative;
+    margin   : 0;
+    width    : 100%;
 }
 
 .block {
@@ -16,7 +31,7 @@
 .sliderContainer {
     position   : relative;
     text-align : center;
-    width      : 310px;
+    width      : 100%;
     height     : 40px;
     line-height: 40px;
     margin-top : 15px;
@@ -28,7 +43,7 @@
 .sliderContainer_active .slider {
     height: 38px;
     top   : -1px;
-    border: 1px solid #1991FA;
+    border: 1px solid var(--ion-color-primary);
 }
 
 .sliderContainer_active .sliderMask {
@@ -39,14 +54,14 @@
 .sliderContainer_success .slider {
     height          : 38px;
     top             : -1px;
-    border          : 1px solid #52CCBA;
-    background-color: #52CCBA !important;
+    border          : 1px solid var(--ion-color-success);
+    background-color: var(--ion-color-success) !important;
 }
 
 .sliderContainer_success .sliderMask {
     height          : 38px;
-    border          : 1px solid #52CCBA;
-    background-color: #D2F4EF;
+    border          : 1px solid var(--ion-color-success);
+    background-color: rgba(var(--ion-color-success-rgb), .5);
 }
 
 .sliderContainer_success .sliderIcon {
@@ -56,14 +71,14 @@
 .sliderContainer_fail .slider {
     height          : 38px;
     top             : -1px;
-    border          : 1px solid #f57a7a;
-    background-color: #f57a7a !important;
+    border          : 1px solid var(--ion-color-danger);
+    background-color: var(--ion-color-danger) !important;
 }
 
 .sliderContainer_fail .sliderMask {
     height          : 38px;
-    border          : 1px solid #f57a7a;
-    background-color: #fce1e1;
+    border          : 1px solid var(--ion-color-danger);
+    background-color: rgba(var(--ion-color-danger-rgb), .5);
 }
 
 .sliderContainer_fail .sliderIcon {
@@ -82,24 +97,25 @@
     left      : 0;
     top       : 0;
     height    : 40px;
-    border    : 0 solid #1991FA;
-    background: #D1E9FE;
+    border    : 0 solid var(--ion-color-primary);
+    background: rgba(var(--ion-color-primary-rgb), .3);
 }
 
 .slider {
-    position  : absolute;
-    top       : 0;
-    left      : 0;
-    width     : 40px;
-    height    : 40px;
-    background: #fff;
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
-    cursor    : pointer;
-    transition: background .2s linear;
+    position      : absolute;
+    top           : 0;
+    left          : 0;
+    width         : 40px;
+    height        : 40px;
+    background    : #fff;
+    box-shadow    : 0 0 3px rgba(0, 0, 0, 0.3);
+    cursor        : pointer;
+    transition    : background .2s linear;
+    pointer-events: initial;
 }
 
 .slider:hover {
-    background: #1991FA;
+    background: var(--ion-color-primary);
 }
 
 .slider:hover .sliderIcon {
@@ -107,23 +123,36 @@
 }
 
 .sliderIcon {
-    position       : absolute;
-    top            : 15px;
-    left           : 13px;
-    width          : 14px;
-    height         : 12px;
-    background     : url(http://cstaticdun.126.net//2.6.3/images/icon_light.f13cff3.png) 0 -26px;
-    background-size: 34px 471px;
+    pointer-events : initial;
+    display        : flex;
+    align-items    : center;
+    justify-content: center;
+    font-size      : 1.6em;
+    height         : 100%;
+}
+
+.sliderContainer_active .sliderIcon {
+    color           : var(--ion-color-light);
+    background-color: var(--ion-color-primary);
+}
+
+.sliderContainer_success,
+.sliderContainer_fail {
+    .sliderIcon {
+        color: var(--ion-color-light);
+    }
 }
 
 .refreshIcon {
-    z-index        : 1;
-    position       : absolute;
-    right          : 0;
-    top            : 0;
-    width          : 34px;
-    height         : 34px;
-    cursor         : pointer;
-    background     : url(http://cstaticdun.126.net//2.6.3/images/icon_light.f13cff3.png) 0 -437px;
-    background-size: 34px 471px;
+    z-index           : 101;
+    position          : absolute;
+    right             : .5em;
+    top               : .5em;
+    width             : 34px;
+    height            : 34px;
+    cursor            : pointer;
+    font-size         : 1.5em;
+    font-weight       : bolder;
+    // background     : url(http://cstaticdun.126.net//2.6.3/images/icon_light.f13cff3.png) 0 -437px;
+    background-size   : 34px 471px;
 }

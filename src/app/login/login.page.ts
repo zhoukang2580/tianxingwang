@@ -8,6 +8,8 @@ import { AppHelper } from "../appHelper";
 import { LanguageHelper } from "../languageHelper";
 import { ConfigEntity } from "../services/config/config.entity";
 import { ConfigService } from "../services/config/config.service";
+import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
+import { Device } from "@ionic-native/device/ngx";
 
 @Component({
   selector: "app-login",
@@ -18,6 +20,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   loginEntity: LoginEntity;
   pageInfo: ConfigEntity;
   form: FormGroup;
+  deviceInfo: any;
   validImageCodeCount: number = 0;
   private _phoneErrorCount: number = 0;
   loginSubscription = Subscription.EMPTY;
@@ -45,16 +48,25 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     private loginService: LoginService,
     private configService: ConfigService,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private barcodeScanner: BarcodeScanner,
+    private device: Device
   ) {
     this.loading$ = this.loginService.getLoading();
     this.isShowWechatLogin = AppHelper.isApp() || AppHelper.isWechatH5();
   }
   ngAfterViewInit() {
-    
+
+  }
+  onSlideEvent(valid:boolean){
+    if(valid){
+      // 验证通过
+    }else{
+      
+    }
   }
   ngOnInit() {
-   
+
     this.loginEntity = new LoginEntity();
     this.form = this.fb.group({
       Name: [AppHelper.getStorage<string>("loginName")],
@@ -68,11 +80,33 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.form.controls["Mobile"].valueChanges.subscribe((m: string) => {
       this.isMobileNumberOk = `${m}`.length >= 11;
     });
-   if(AppHelper.isApp() && this.loginService.getToPageRouter())
-   {
-     this.loginType="device";
-     this.login();
+    //if(AppHelper.isApp())
+    {
+      // debugger;
+      this.loginType = "device";
+      this.login();
     }
+  }
+  async deviceName() {
+    this.deviceInfo ={
+      cordova:this.device.cordova,
+      isVirtual:this.device.isVirtual,
+      manufacturer:this.device.manufacturer,
+      model:this.device.model,
+      platform:this.device.platform,
+      serial:this.device.serial,
+      uuid:this.device.uuid,
+      version:this.device.version,
+    }
+
+  }
+  onScan() {
+    this.barcodeScanner.scan().then(res => {
+      alert("扫描结果： " + res.text);
+    }).catch(e => {
+      alert("扫描出错： ");
+      alert(e);
+    });
   }
   ionViewWillEnter() {
     this.initPage();
@@ -202,8 +236,12 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           } else {
             this.jump(false);
           }
+<<<<<<< Updated upstream
         },()=>{
           this.form.value.Name=[AppHelper.getStorage<string>("loginName")];
+=======
+        }, () => {
+>>>>>>> Stashed changes
           this.loginType = "user";
         });
         break;
@@ -251,26 +289,25 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         }, 100);
       });
   }
-  async jump(isCheckDevice:boolean) // 跳转
+  async jump(isCheckDevice: boolean) // 跳转
   {
     this.loginType="user";
     const toPageRouter = this.loginService.getToPageRouter() || "";
-    if(isCheckDevice )//&& AppHelper.isApp())
+    if (isCheckDevice)//&& AppHelper.isApp())
     {
-      var uuid= await AppHelper.getUUID();
-      this.loginService.checkIsDeviceBinded(uuid).subscribe(res=>{
+      var uuid = await AppHelper.getUUID();
+      this.loginService.checkIsDeviceBinded(uuid).subscribe(res => {
         // 需要绑定
-        this.router.navigate([AppHelper.getRoutePath("account-bind"),{
-          IsActiveMobile:res.Data.IsActiveMobile,
-          Mobile:res.Data.Mobile,
-          Path:toPageRouter
+        this.router.navigate([AppHelper.getRoutePath("account-bind"), {
+          IsActiveMobile: res.Data.IsActiveMobile,
+          Mobile: res.Data.Mobile,
+          Path: toPageRouter
         }]);
-       },e=>{
-         this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
-       });
+      }, e => {
+        this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
+      });
     }
-    else
-    {
+    else {
       this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
     }
   }

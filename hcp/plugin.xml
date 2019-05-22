@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="cordova-hcp-plugin" version="1.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>hcp</name>
+    <js-module name="hcp" src="www/hcp.js">
+        <clobbers target="hcp" />
+    </js-module>
+     <!-- android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="Hcp">
+                <param name="android-package" value="com.beeant.plugin.hcp.Hcp"/>
+            </feature>
+        </config-file>
+        <source-file src="src/android/Hcp.java" target-dir="src/com/beeant/plugin/hcp" />
+    </platform>
+</plugin>

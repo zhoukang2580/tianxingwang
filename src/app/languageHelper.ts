@@ -29,4 +29,7 @@ export class LanguageHelper {
       static getAppDoubleClickExit() {
         return "再按一次退出应用";
       }
+      static slideValidateUseTime() {
+        return "验证成功";
+      }
   }

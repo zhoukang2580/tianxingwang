@@ -1,5 +1,7 @@
-import { Component, OnInit, AfterViewInit, Renderer2 } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Renderer2, EventEmitter, Output } from '@angular/core';
 import { AppHelper } from 'src/app/appHelper';
+import { Platform, ToastController } from '@ionic/angular';
+import { LanguageHelper } from 'src/app/languageHelper';
 
 @Component({
   selector: 'app-slidvalidate-com',
@@ -11,7 +13,7 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
   r = 9; // 滑块半径
   w = 310; // canvas宽度
   h = 155; // canvas高度
-  PI = Math.PI
+  PI = Math.PI;
   L = this.l + this.r * 2 + 3; // 滑块实际边长
   isIE = window.navigator.userAgent.indexOf('Trident') > -1;
   el: HTMLElement;
@@ -29,8 +31,16 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
   img;
   x = 0;
   trail: number[] = [];
-  constructor(private render: Renderer2) { }
+  failed:boolean;
+  slideValid:boolean=false;
+  timeUsed:number;
+  @Output()  slideEvent:EventEmitter<boolean>;
+  constructor(private render: Renderer2, private plt: Platform,private toastCtrl:ToastController) { 
+    this.slideEvent=new EventEmitter();
+  }
   ngOnInit() {
+    this.w = this.plt.width();
+    this.h = Math.floor(this.plt.height() * 0.4);
   }
   ngAfterViewInit() {
     this.el = document.getElementById("pic");
@@ -40,16 +50,29 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     this.init();
   }
   getRandomNumberByRange(start, end) {
-    return Math.round(Math.random() * (end - start) + start)
+    return Math.round(Math.random() * (end - start) + start);
   }
   onSuccess() {
-
+    this.failed=false;
+    this.slideValid=true;
+    this.slideEvent.emit(true);
+    if(+(this.timeUsed/1000).toFixed(2)>=0){
+      this.toastCtrl.create({
+        position:"middle",
+        duration:1000,
+        message:LanguageHelper.slideValidateUseTime()
+        // +` ${(this.timeUsed/1000).toFixed(2)}s`
+      }).then(t=>t.present());
+    }
   }
   onFail() {
-
+    this.failed=true;
+    this.slideValid=false;
+    this.slideEvent.emit(false);
   }
   onRefresh() {
-
+    this.failed=false;
+    this.slideValid=false;
   };
   createCanvas(width, height) {
     const canvas = document.createElement('canvas')
@@ -89,7 +112,7 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     if (defaultImage) {
       return 'assets/images/train.jpg';
     }
-    return AppHelper.getApiUrl() + "/imageCode?width=" + this.w + "&height=" + this.h;
+    return AppHelper.getApiUrl() + "/home/ImageCodeUrl?width=" + this.w + "&height=" + this.h;
     // return `//picsum.photos/${this.w}/150/?image=` + this.getRandomNumberByRange(0, 1084);
     // const images = ['airplane-l.jpg', 'airplane.jpg', 'train.jpg'];
     // return "assets/images/" + images[Math.floor(Math.random() * images.length)];
@@ -116,11 +139,11 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
   }
 
   sum(x, y) {
-    return x + y
+    return x + y;
   }
 
   square(x) {
-    return x * x
+    return x * x;
   }
 
 
@@ -136,13 +159,15 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     this.canvas.width = this.w;
     this.canvas.height = this.h;
     this.block = document.getElementById("block") as HTMLCanvasElement; // 拼图部分
+    this.block.width=this.w;
+    this.block.height=this.h;
     this.sliderContainer = document.querySelector(".sliderContainer");//  this.createElement('div','sliderContainer');
     this.refreshIcon = document.querySelector(".refreshIcon");// this.createElement('div', 'refreshIcon')
     this.sliderMask = document.querySelector(".sliderMask");// this.createElement('div', 'sliderMask')
     this.slider = document.querySelector(".slider");//this.createElement('div', 'slider')
     this.sliderIcon = document.querySelector(".sliderIcon");//this.createElement('span', 'sliderIcon')
     this.text = document.querySelector(".sliderText");// this.createElement('span', 'sliderText')
-    this.text.innerHTML = '向右滑动填充拼图'
+    this.text.innerHTML = '向右滑动填充拼图';
     this.canvasCtx = this.canvas.getContext('2d');
     this.blockCtx = this.block.getContext('2d');
   }
@@ -202,23 +227,23 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     this.blockCtx.clearRect(0, 0, this.w, this.h);
     this.block.width = this.w;
   }
-
+  refreshIconClick() {
+    this.reset();
+    this.onRefresh();
+  }
   bindEvents() {
-    // this.el.onselectstart = () => false;
-    this.refreshIcon.onclick = () => {
-      this.reset();
-      this.onRefresh();
-    }
-
     let originX, originY, trail = [], isMouseDown = false;
-
     const handleDragStart = (e) => {
+      this.timeUsed=Date.now();
       originX = e.clientX || e.touches[0].clientX;
       originY = e.clientY || e.touches[0].clientY;
       isMouseDown = true;
     }
-
+    let lastTime = Date.now();
     const handleDragMove = (e) => {
+      if (Date.now() - lastTime <= 32) {
+        return;
+      }
       if (!isMouseDown) return false
       const eventX = e.clientX || e.touches[0].clientX
       const eventY = e.clientY || e.touches[0].clientY
@@ -230,10 +255,11 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
       this.render.setStyle(this.block, 'left', blockLeft + "px");
       this.addClass(this.sliderContainer, 'sliderContainer_active');
       this.render.setStyle(this.sliderMask, 'width', moveX + 'px');
-      trail.push(moveY)
+      trail.push(moveY);
     }
 
     const handleDragEnd = (e) => {
+      this.timeUsed=Date.now()-this.timeUsed;
       if (!isMouseDown) return false
       isMouseDown = false
       const eventX = e.clientX || e.changedTouches[0].clientX
@@ -292,6 +318,7 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     this.clean();
     // this.drawGrayLayer();
     this.img.src = this.getRandomImgSrc();
+    this.onRefresh();
   }
 }
 
