@@ -3,7 +3,6 @@ import { IdentityService } from 'src/app/services/identity/identity.service';
 import { Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api/api.service';
 import { BaseRequest } from 'src/app/services/api/BaseRequest';
-import { AppHelper } from 'src/app/appHelper';
 import { FormGroup, FormBuilder } from '@angular/forms';
 
 @Component({
@@ -109,5 +108,8 @@ export class AccountMobilePage implements OnInit {
         }
       }, 100);
     });
+  }
+  bind(){
+
   }
 }
