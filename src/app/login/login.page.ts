@@ -236,12 +236,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           } else {
             this.jump(false);
           }
-<<<<<<< Updated upstream
-        },()=>{
-          this.form.value.Name=[AppHelper.getStorage<string>("loginName")];
-=======
         }, () => {
->>>>>>> Stashed changes
           this.loginType = "user";
         });
         break;
