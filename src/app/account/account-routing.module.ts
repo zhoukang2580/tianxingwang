@@ -51,7 +51,8 @@ let routes: Route[] = [
   {
     path: "account-bind",
     loadChildren: "./account-bind/account-bind.page.module#AccountBindPageModule"
-  }
+  },  { path: 'account-mobile', loadChildren: './account-mobile/account-mobile.module#AccountMobilePageModule' }
+
 ];
 (() => {
   routes = routes.map(r => {

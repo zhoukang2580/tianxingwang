@@ -93,6 +93,11 @@
         <span *ngIf="loginType == 'user'" (click)="switchLoginType('mobile')">手机号登录</span>
         <span *ngIf="loginType != 'user'" (click)="switchLoginType('user')">用户名登录</span>
       </ion-button>
+      <h6 text-end *ngIf="!validatedBySmsCode">
+        <ion-note color="primary" (click)="forgetOriginalPassword()"
+          >忘记密码？</ion-note
+        >
+      </h6>
     </ion-item>
     <app-slidvalidate-com></app-slidvalidate-com>
     <app-or-comp>第三方登陆</app-or-comp>

@@ -55,7 +55,7 @@ export class AccountSecurityPage implements OnInit {
     this.router.navigate([AppHelper.getRoutePath("account-dingtalk")]);
   }
   bindMobile() {
-    this.router.navigate([AppHelper.getRoutePath("bind-mobile")]);
+    this.router.navigate([AppHelper.getRoutePath("account-mobile")]);
   }
   modifyPassword(){
     this.router.navigate([AppHelper.getRoutePath("account-password")]);

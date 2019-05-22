@@ -7,10 +7,11 @@ import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { Router } from "@angular/router";
 
-import { AccountService } from "../account.service";
+
 import { tap } from "rxjs/operators";
 import { Subscription, Observable } from 'rxjs';
 import { ApiService } from 'src/app/services/api/api.service';
+import { BaseRequest } from 'src/app/services/api/BaseRequest';
 class PasswordModel {
   /// <summary>
   /// 老密码
@@ -44,7 +45,6 @@ export class AccountPasswordPage implements OnInit,OnDestroy {
     private loginService: LoginService,
     private router: Router,
     private route: ActivatedRoute,
-    private accountService: AccountService,
     private apiService:ApiService
   ) {
     identityService.getIdentity().then(id => {
@@ -61,19 +61,7 @@ export class AccountPasswordPage implements OnInit,OnDestroy {
     );
     this.passwordModel = new PasswordModel();
   }
-  sendMsmCode() {
-    this.loginService.sendMobileCode("18817392136").subscribe(res => {
-      const { SendInterval, ExpiredInterval } = res.Data;
-      this.router.navigate([
-        AppHelper.getRoutePath("account-password-by-msm-code"),
-        {
-          SendInterval,
-          ExpiredInterval,
-          receiveSmsCodeTime: Math.floor(Date.now() / 1000)
-        }
-      ]);
-    });
-  }
+
   forgetOriginalPassword() {
     this.router.navigate([AppHelper.getRoutePath("password-code"),{Id:this.identityEntity.Id}]);
   }
@@ -93,7 +81,7 @@ export class AccountPasswordPage implements OnInit,OnDestroy {
       return;
     }
     this.modifyPasswordSubscription.unsubscribe();
-    this.modifyPasswordSubscription = this.accountService
+    this.modifyPasswordSubscription = this
       .modifyPassword(this.passwordModel)
       .pipe(tap(a => console.log(a)))
       .subscribe(
@@ -112,5 +100,12 @@ export class AccountPasswordPage implements OnInit,OnDestroy {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.
     this.modifyPasswordSubscription.unsubscribe();
+  }
+
+  modifyPassword(passwordModel: PasswordModel) {
+    const req = new BaseRequest();
+    req.Data = JSON.stringify(passwordModel);
+    req.Method=`ApiPasswordUrl-Password-Modify`;
+    return this.apiService.getResponse(req);
   }
 }
