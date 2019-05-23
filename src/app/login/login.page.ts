@@ -56,8 +56,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.isShowWechatLogin = AppHelper.isApp() || AppHelper.isWechatH5();
   }
   ngAfterViewInit() {
-    AppHelper.alert("e");
-    AppHelper.alert("e",true);
+
   }
   onSlideEvent(valid: boolean) {
     if (valid) {
@@ -81,9 +80,8 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.form.controls["Mobile"].valueChanges.subscribe((m: string) => {
       this.isMobileNumberOk = `${m}`.length >= 11;
     });
-    //if(AppHelper.isApp())
+    if(AppHelper.isApp())
     {
-      // debugger;
       this.loginType = "device";
       this.login();
     }

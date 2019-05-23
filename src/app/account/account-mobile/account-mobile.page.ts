@@ -57,6 +57,13 @@ export class AccountMobilePage implements OnInit {
      .subscribe(r=>{
       if(r.Status && r.Data)
       {
+        if((r.Data.Action as string).toLowerCase()=="finish")
+        {
+          AppHelper.alert(LanguageHelper.getBindMobileSuccess(),true).then(()=>{
+            this.navController.back();
+          });
+          return ;
+        }
         r.Data.Mobile="";
         this.form.patchValue({Code:""});
       }
@@ -73,19 +80,13 @@ export class AccountMobilePage implements OnInit {
   {
     if(r.Status && r.Data)
     {
+    
       this.isActiveMobile=r.Data.IsActiveMobile;
       this.form.patchValue({Mobile:r.Data.Mobile});
       this.action=r.Data.Action;
       this.isFinish=(r.Data.Action as string).toLowerCase()=="bind";
       this.isModiy=this.isFinish || !this.isActiveMobile;
       this.countDown=0;
-      if((r.Data.Action as string).toLowerCase()=="finish")
-      {
-        AppHelper.alert(LanguageHelper.getBindMobileSuccess(),true).then(()=>{
-          this.navController.back();
-        });
-  
-      }
     }
   }
   private startCountDonw(countdownTime: number) {

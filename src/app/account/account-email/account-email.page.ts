@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { ApiService } from 'src/app/services/api/api.service';
 import { IdentityService } from 'src/app/services/identity/identity.service';
+import { AppHelper } from 'src/app/appHelper';
 
 @Component({
   selector: "app-account-email",
@@ -16,78 +17,73 @@ import { IdentityService } from 'src/app/services/identity/identity.service';
   styleUrls: ["./account-email.page.scss"]
 })
 export class AccountEmailPage implements OnInit {
-  action:string;
-  isActiveMobile?:boolean;
-  isFinish:boolean;
-  isModiy:boolean;
+  action: string;
+  isActiveEmail?: boolean;
+  isFinish: boolean;
+  isModiy: boolean;
   countDown = 0;
   form: FormGroup;
   countDownInterval: any;
   constructor(private fb: FormBuilder, private identityService: IdentityService,
     private router: Router,
-    private navController:NavController,
+    private navController: NavController,
     private apiService: ApiService) { }
 
   ngOnInit() {
     this.form = this.fb.group({
-      Mobile: [],
+      Email: [],
       Code: []
     });
     this.load();
   }
-  load()
-  {
+  load() {
     const req = new BaseRequest();
-    req.Method=`ApiPasswordUrl-Mobile-Load`;
-     const scription=this.apiService.getResponse<{Action:string,Mobile:string,IsActiveMobile?:boolean}>(req)
-     .subscribe(r=>{
-      this.setResult(r);
-     },(e)=>{
+    req.Method = `ApiPasswordUrl-Email-Load`;
+    const scription = this.apiService.getResponse<{ Action: string, Email: string, IsActiveEmail?: boolean }>(req)
+      .subscribe(r => {
+        this.setResult(r);
+      }, (e) => {
 
-     },()=>{
-      scription.unsubscribe();
-     });
+      }, () => {
+        scription.unsubscribe();
+      });
 
   }
-  sendAction()
-  {
+  sendAction() {
     const req = new BaseRequest();
-    req.Method=`ApiPasswordUrl-Mobile-Action`;
-    req.IsShowLoading=true;
-    req.Data = { Mobile: this.form.value.Mobile,Code: this.form.value.Code,Action:this.action };
-     const scription=this.apiService.getResponse<{Action:string,Mobile:string,IsActiveMobile?:boolean}>(req)
-     .subscribe(r=>{
-      if(r.Status && r.Data)
-      {
-        r.Data.Mobile="";
-        this.form.patchValue({Code:""});
-      }
-      this.setResult(r);
+    req.Method = `ApiPasswordUrl-Email-Action`;
+    req.IsShowLoading = true;
+    req.Data = { Email: this.form.value.Email, Code: this.form.value.Code, Action: this.action };
+    const scription = this.apiService.getResponse<{ Action: string, Email: string, IsActiveEmail?: boolean }>(req)
+      .subscribe(r => {
+        if (r.Status && r.Data) {
+          if ((r.Data.Action as string).toLowerCase() == "finish") {
+            AppHelper.alert(LanguageHelper.getBindEmailSuccess(), true).then(() => {
+              this.navController.back();
+            });
+            return;
+          }
+          r.Data.Email = "";
+          this.form.patchValue({ Code: "" });
+        }
+        this.setResult(r);
 
-     },(e)=>{
-
-    },()=>{
-     scription.unsubscribe();
-    });
+      }, (e) => {
+        debugger;
+      }, () => {
+        scription.unsubscribe();
+      });
 
   }
-  setResult(r:any)
-  {
-    if(r.Status && r.Data)
-    {
-      this.isActiveMobile=r.Data.IsActiveMobile;
-      this.form.patchValue({Mobile:r.Data.Mobile});
-      this.action=r.Data.Action;
-      this.isFinish=(r.Data.Action as string).toLowerCase()=="bind";
-      this.isModiy=this.isFinish || !this.isActiveMobile;
-      this.countDown=0;
-      if((r.Data.Action as string).toLowerCase()=="finish")
-      {
-        alert(LanguageHelper.getBindEmailSuccess(),true).then(()=>{
-          this.navController.back();
-        });
-  
-      }
+  setResult(r: any) {
+    if (r.Status && r.Data) {
+
+      this.isActiveEmail = r.Data.IsActiveEmail;
+      this.form.patchValue({ Email: r.Data.Email });
+      this.action = r.Data.Action;
+      this.isFinish = (r.Data.Action as string).toLowerCase() == "bind";
+      this.isModiy = this.isFinish || !this.isActiveEmail;
+      this.countDown = 0;
     }
   }
   private startCountDonw(countdownTime: number) {
@@ -97,31 +93,30 @@ export class AccountEmailPage implements OnInit {
     }
     this.countDownInterval = window.setInterval(() => {
       this.countDown = this.countDown <= 0 ? 0 : this.countDown - 1;
-      if(this.countDown==0){
+      if (this.countDown == 0) {
         clearInterval(this.countDownInterval);
       }
     }, 1000);
   }
-  sendMobileCode()
-  {
+  sendEmailCode() {
     const req = new BaseRequest();
-    req.Method = "ApiPasswordUrl-Mobile-SendCode";
-    req.IsShowLoading=true;
-    req.Data = { Mobile: this.form.value.Mobile,Action:this.action };
-    const sub= this.apiService.getResponse<{
+    req.Method = "ApiPasswordUrl-Email-SendCode";
+    req.IsShowLoading = true;
+    req.Data = { Email: this.form.value.Email, Action: this.action };
+    const sub = this.apiService.getResponse<{
       SendInterval: number;
       ExpiredInterval: number;
-    }>(req).subscribe(res=>{
+    }>(req).subscribe(res => {
       this.startCountDonw(res.Data.SendInterval);
-    },e=>{
+    }, e => {
       alert(e);
-    },()=>{
+    }, () => {
       setTimeout(() => {
-        if(sub){
+        if (sub) {
           sub.unsubscribe();
         }
       }, 100);
     });
   }
- 
+
 }

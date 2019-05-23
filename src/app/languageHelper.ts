@@ -16,6 +16,7 @@ export class LanguageHelper {
   static getMobileCodeTip() {
     return "请输入手机收到的验证码";
   }
+  
   static getApiExceptionTip() {
     // if(AppHelper.getLanguage())
     return "接口调用异常";

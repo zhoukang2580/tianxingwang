@@ -188,8 +188,8 @@ export class ApiService {
           } else if (r.Code && r.Code.toUpperCase() === "NOLOGIN") {
             this.router.navigate([AppHelper.getRoutePath("login")]);
           }
-          if (!r.Status) {
-            return throwError(r.Message);
+          if (!r.Status && r.Message) {
+            return AppHelper.alert(r.Message);
           }
           return of(r);
         }),
