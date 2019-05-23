@@ -7,6 +7,7 @@ import { IonicModule } from "@ionic/angular";
 
 import { AccountBindPage } from "./account-bind.page";
 import { AuthorityGuard } from 'src/app/guards/authority.guard';
+import { AppcomponentsModule } from 'src/app/components/appcomponents.module';
 
 const routes: Routes = [
   {
@@ -22,7 +23,8 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    AppcomponentsModule
   ],
   declarations: [AccountBindPage],
   exports: []

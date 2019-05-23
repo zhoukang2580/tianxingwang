@@ -135,8 +135,10 @@ export class LoginService {
   login(method: string, name: string, password: string, imageCode: string, imageValue: string) {
     const req = new BaseRequest();
     req.Method = method;
-    req.ImageCode = imageCode;
-    req.ImageValue = imageValue;
+    if (imageCode) {
+      req.ImageCode = imageCode;
+      req.ImageValue = this.ImageValue;
+    }
     req.Data = JSON.stringify({
       Name: name,
       Password: password

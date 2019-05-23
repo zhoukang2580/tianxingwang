@@ -26,6 +26,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
   path:string;
   form: FormGroup;
   imgSrc$: Observable<string>;
+  isShowImageCode:boolean;
   bindMobileInfo: {
     Mobile: string;
     IsActiveMobile: boolean;
@@ -42,6 +43,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
       MobileCode: []
     });
     this.paramsSubscription = this.route.paramMap.subscribe(p => {
+      debugger;
       if (p) {
         this.bindMobileInfo.IsActiveMobile = p.get("IsActiveMobile") == 'true';
         this.bindMobileInfo.Mobile = p.get("Mobile");
@@ -60,6 +62,12 @@ export class AccountBindPage implements OnInit, OnDestroy {
   }
   refreshImageCode() {
     this.imgSrc$ = this.loginService.getImage();
+  }
+  onSlideEvent(valid: boolean) {
+    if (valid) {
+      this.isShowImageCode=false;
+     this.sendSmsCode();
+    } 
   }
   sendSmsCode(){
     const req = new BaseRequest();
@@ -146,5 +154,10 @@ export class AccountBindPage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.paramsSubscription.unsubscribe();
     this.mobileChangeSubscription.unsubscribe();
+  }
+  showImageCode(type:string)
+  {
+
+    this.isShowImageCode=true;
   }
 }

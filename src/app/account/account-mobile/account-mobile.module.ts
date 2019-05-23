@@ -6,6 +6,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { AccountMobilePage } from './account-mobile.page';
+import { AppcomponentsModule } from 'src/app/components/appcomponents.module';
 
 const routes: Routes = [
   {
@@ -20,7 +21,8 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     ReactiveFormsModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    AppcomponentsModule
   ],
   declarations: [AccountMobilePage]
 })

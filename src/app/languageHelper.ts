@@ -4,6 +4,10 @@ export class LanguageHelper {
     // if(AppHelper.getLanguage())
     return "请输入验证码";
   }
+  static getSlidvalidateInnerTip()
+  {
+    return "向右滑动填充拼图";
+  }
   static getLoginNameTip() {
     return "请输入登入名";
   }

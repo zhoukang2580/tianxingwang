@@ -24,6 +24,7 @@ export class AccountEmailPage implements OnInit {
   countDown = 0;
   form: FormGroup;
   countDownInterval: any;
+  isShowImageCode: boolean;
   constructor(private fb: FormBuilder, private identityService: IdentityService,
     private router: Router,
     private navController: NavController,
@@ -98,6 +99,12 @@ export class AccountEmailPage implements OnInit {
       }
     }, 1000);
   }
+  onSlideEvent(valid: boolean) {
+    if (valid) {
+      this.isShowImageCode = false;
+      this.sendEmailCode();
+    }
+  }
   sendEmailCode() {
     const req = new BaseRequest();
     req.Method = "ApiPasswordUrl-Email-SendCode";
@@ -118,5 +125,8 @@ export class AccountEmailPage implements OnInit {
       }, 100);
     });
   }
+  showImageCode(type: string) {
 
+    this.isShowImageCode = true;
+  }
 }

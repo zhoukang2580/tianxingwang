@@ -56,14 +56,14 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     this.failed=false;
     this.slideValid=true;
     this.slideEvent.emit(true);
-    if(+(this.timeUsed/1000).toFixed(2)>=0){
-      this.toastCtrl.create({
-        position:"middle",
-        duration:1000,
-        message:LanguageHelper.slideValidateUseTime()
-        // +` ${(this.timeUsed/1000).toFixed(2)}s`
-      }).then(t=>t.present());
-    }
+    // if(+(this.timeUsed/1000).toFixed(2)>=0){
+    //   this.toastCtrl.create({
+    //     position:"middle",
+    //     duration:1000,
+    //     message:LanguageHelper.slideValidateUseTime()
+    //     // +` ${(this.timeUsed/1000).toFixed(2)}s`
+    //   }).then(t=>t.present());
+    // }
   }
   onFail() {
     this.failed=true;
@@ -167,7 +167,7 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     this.slider = document.querySelector(".slider");//this.createElement('div', 'slider')
     this.sliderIcon = document.querySelector(".sliderIcon");//this.createElement('span', 'sliderIcon')
     this.text = document.querySelector(".sliderText");// this.createElement('span', 'sliderText')
-    this.text.innerHTML = '向右滑动填充拼图';
+    this.text.innerHTML = LanguageHelper.getSlidvalidateInnerTip();
     this.canvasCtx = this.canvas.getContext('2d');
     this.blockCtx = this.block.getContext('2d');
   }
@@ -273,7 +273,7 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
           this.onSuccess()
         } else {
           this.addClass(this.sliderContainer, 'sliderContainer_fail')
-          this.text.innerHTML = '再试一次'
+          this.text.innerHTML = ''
           this.reset()
         }
       } else {

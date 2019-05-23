@@ -21,6 +21,7 @@ export class AccountMobilePage implements OnInit {
   countDown = 0;
   form: FormGroup;
   countDownInterval: any;
+  isShowImageCode:boolean;
   constructor(private fb: FormBuilder, private identityService: IdentityService,
     private router: Router,
     private navController:NavController,
@@ -101,6 +102,12 @@ export class AccountMobilePage implements OnInit {
       }
     }, 1000);
   }
+  onSlideEvent(valid: boolean) {
+    if (valid) {
+      this.isShowImageCode=false;
+     this.sendMobileCode();
+    } 
+  }
   sendMobileCode()
   {
     const req = new BaseRequest();
@@ -122,5 +129,9 @@ export class AccountMobilePage implements OnInit {
       }, 100);
     });
   }
- 
+  showImageCode(type:string)
+  {
+
+    this.isShowImageCode=true;
+  }
 }

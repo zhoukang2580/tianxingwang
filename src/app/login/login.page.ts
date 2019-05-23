@@ -10,6 +10,7 @@ import { ConfigEntity } from "../services/config/config.entity";
 import { ConfigService } from "../services/config/config.service";
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import { Device } from "@ionic-native/device/ngx";
+import { ENTER_SELECTOR } from '@angular/animations/browser/src/util';
 
 @Component({
   selector: "app-login",
@@ -21,29 +22,16 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   pageInfo: ConfigEntity;
   form: FormGroup;
   deviceInfo: any;
-  validImageCodeCount: number = 0;
-  private _phoneErrorCount: number = 0;
   loginSubscription = Subscription.EMPTY;
-  get phoneErrorCount() {
-    return this._phoneErrorCount;
-  }
-  set phoneErrorCount(value: number) {
-    this._phoneErrorCount = value;
-  }
-  private _userErrorCount: number = 0;
-  get userErrorCount() {
-    return this._userErrorCount;
-  }
-  set userErrorCount(value) {
-    this._userErrorCount = value;
-  }
   message: string;
   countDown: number;
   loginType: string = "user";
-  imgSrc$: Observable<any>;
   loading$: Observable<boolean>;
   isMobileNumberOk = false;
+  isLoginOk=false;
   isShowWechatLogin: boolean;
+  isShowImageCode:boolean;
+  SlideEventType:string;
   constructor(
     private loginService: LoginService,
     private configService: ConfigService,
@@ -60,10 +48,16 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   }
   onSlideEvent(valid: boolean) {
     if (valid) {
-      // 验证通过
-    } else {
-
-    }
+      if(this.SlideEventType=="login")
+      {
+        this.login();
+      }
+      else if(this.SlideEventType=="sendmobilecode")
+      {
+        this.sendLoginMobileCode();
+      }
+      this.isShowImageCode=false;
+    } 
   }
   ngOnInit() {
 
@@ -71,7 +65,6 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.form = this.fb.group({
       Name: [AppHelper.getStorage<string>("loginName")],
       Password: [null],
-      ImageCode: [null], // 验证码，图片验证码，
       MobileCode: [null], // 手机验证码
       Mobile: [null], // 手机号
       WechatCode: [null],
@@ -80,10 +73,31 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.form.controls["Mobile"].valueChanges.subscribe((m: string) => {
       this.isMobileNumberOk = `${m}`.length >= 11;
     });
+    this.form.controls["Name"].valueChanges.subscribe((m: string) => {
+      this.setLoginButton();
+    });
+    this.form.controls["Password"].valueChanges.subscribe((m: string) => {
+     this.setLoginButton();
+    });
+    this.form.controls["MobileCode"].valueChanges.subscribe((m: string) => {
+      this.setLoginButton();
+     });
+    this.setLoginButton();
     if(AppHelper.isApp())
     {
       this.loginType = "device";
       this.login();
+    }
+  }
+  setLoginButton()
+  {
+    if(this.loginType=="user")
+    {
+      this.isLoginOk = this.form.value.Name && this.form.value.Password;
+    }
+    else if(this.loginType=="mobile")
+    {
+      this.isLoginOk = this.form.value.MobileCode;
     }
   }
   async deviceName() {
@@ -138,28 +152,35 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     return Promise.reject("cordova wechat plugin is unavailable");
   }
   initPage() {
-    this.refreshImageCode();
     this.configService.get().then(r => {
       this.pageInfo = r;
     }).catch(e => {
       console.error(e);
     });
   }
-  refreshImageCode() {
-    this.imgSrc$ = this.loginService.getImage();
-  }
   switchLoginType(type: string) {
     this.loginType = type;
-    this.form.patchValue({
-      ImageCode: ''
-    });
-  }
 
+  }
+  showImageCode(type:string)
+  {
+    this.SlideEventType=type;
+    this.isShowImageCode=true;
+  }
+  onLoginButton(type:string)
+  {
+    if(this.loginType=="user")
+    {
+      this.showImageCode(type);
+    }
+    else{
+      this.login();
+    }
+  }
   async login() {
 
     this.loginEntity.Name = this.form.value.Name;
     this.loginEntity.Password = this.form.value.Password;
-    this.loginEntity.ImageCode = this.form.value.ImageCode;
     this.loginEntity.Mobile = this.form.value.Mobile;
     this.loginEntity.MobileCode = this.form.value.MobileCode;
     this.loginEntity.DingtalkCode = this.form.value.DingtalkCode;
@@ -175,16 +196,8 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           this.message = LanguageHelper.getLoginPasswordTip();
           return;
         }
-        if (
-          this.userErrorCount >= this.validImageCodeCount &&
-          !this.loginEntity.ImageCode
-        ) {
-          this.message = LanguageHelper.getLoginImageCodeTip();
-          return;
-        }
         this.loginSubscription = this.loginService.userLogin(this.loginEntity).subscribe(r => {
           if (!r.Ticket) {
-            this.userErrorCount++;
           } else {
             AppHelper.setStorage("loginname", this.loginEntity.Name);
             this.jump(true);
@@ -205,9 +218,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         this.loginSubscription = this.loginService
           .mobileLogin(this.loginEntity)
           .subscribe(r => {
-            if (!r.Ticket) {
-              this.userErrorCount++;
-            } else {
+            if (r.Ticket) {
               this.jump(true);
             }
           }, e => {
@@ -259,15 +270,8 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       this.message = LanguageHelper.getLoginMobileTip();
       return;
     }
-    if (
-      this.phoneErrorCount >= this.validImageCodeCount &&
-      !this.form.value.ImageCode
-    ) {
-      this.message = LanguageHelper.getLoginImageCodeTip();
-      return;
-    }
     const subscription = this.loginService
-      .sendMobileCode(this.form.value.Mobile, this.form.value.ImageCode)
+      .sendMobileCode(this.form.value.Mobile)
       .subscribe(r => {
         if (r.Data) {
           this.startCountDonw(r.Data.SendInterval);
@@ -287,16 +291,19 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   {
     this.loginType = "user";
     const toPageRouter = this.loginService.getToPageRouter() || "";
-    if (isCheckDevice)//&& AppHelper.isApp())
+    if (isCheckDevice && AppHelper.isApp())
     {
       var uuid = await AppHelper.getUUID();
       this.loginService.checkIsDeviceBinded(uuid).subscribe(res => {
         // 需要绑定
-        this.router.navigate([AppHelper.getRoutePath("account-bind"), {
-          IsActiveMobile: res.Data.IsActiveMobile,
-          Mobile: res.Data.Mobile,
-          Path: toPageRouter
-        }]);
+        if(res.Data)
+        {
+          this.router.navigate([AppHelper.getRoutePath("account-bind"), {
+            IsActiveMobile: res.Data.IsActiveMobile,
+            Mobile: res.Data.Mobile,
+            Path: toPageRouter
+          }]);
+        }
       }, e => {
         this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
       });
