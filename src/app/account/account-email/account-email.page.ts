@@ -5,6 +5,10 @@ import { Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
 import { LanguageHelper } from 'src/app/languageHelper';
 import { BaseRequest } from 'src/app/services/api/BaseRequest';
+import { Router } from '@angular/router';
+import { NavController } from '@ionic/angular';
+import { ApiService } from 'src/app/services/api/api.service';
+import { IdentityService } from 'src/app/services/identity/identity.service';
 
 @Component({
   selector: "app-account-email",
