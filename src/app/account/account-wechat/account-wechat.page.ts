@@ -31,7 +31,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
     {
       if(paramters.message)
       {
-        alert(paramters.message);
+        AppHelper.alert(paramters.message);
       }
     }
   }
@@ -52,7 +52,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
               this.load();
             }
           }, n => {
-            alert(n);
+            AppHelper.alert(n);
           }, () => {
             if (deviceSubscription) {
               deviceSubscription.unsubscribe();
@@ -66,7 +66,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
           window.location.href=url;
       }
     } catch (e) {
-      alert(e);
+      AppHelper.alert(e);
     }
   }
 
@@ -98,7 +98,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
     let deviceSubscription = this.apiService.getResponse<{}>(req).subscribe(s => {
       this.items = this.items.filter(it => it != item);
     }, n => {
-      alert(n);
+      AppHelper.alert(n);
     }, () => {
       if (deviceSubscription) {
         deviceSubscription.unsubscribe();

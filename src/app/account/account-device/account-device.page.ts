@@ -4,6 +4,7 @@ import { ApiService } from 'src/app/services/api/api.service';
 import { Observable, merge, of, Subscription } from 'rxjs';
 import { BaseRequest } from 'src/app/services/api/BaseRequest';
 import { map, switchMap } from 'rxjs/operators';
+import { AppHelper } from 'src/app/appHelper';
 type Item = {
   Id: string;
   Name: string;
@@ -46,7 +47,7 @@ export class AccountDevicePage implements OnInit, OnDestroy {
     let deviceSubscription = this.apiService.getResponse<{}>(req).subscribe(s => {
       this.items=this.items.filter(it=>it!=item);
     }, n => {
-      alert(n);
+      AppHelper.alert(n);
     },()=>{
       if(deviceSubscription)
       {

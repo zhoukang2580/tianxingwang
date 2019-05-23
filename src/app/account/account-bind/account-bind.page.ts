@@ -71,7 +71,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
     }>(req).subscribe(res=>{
       this.startCountDonw(res.Data.SendInterval);
     },e=>{
-      alert(e);
+      AppHelper.alert(e);
     },()=>{
       setTimeout(() => {
         if(sub){
@@ -84,7 +84,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
     debugger;
     if(!this.form.value.MobileCode)
     {
-      alert(LanguageHelper.getMobileCodeTip());
+      AppHelper.alert(LanguageHelper.getMobileCodeTip());
       return;
     }
     if(this.bindMobileInfo.IsActiveMobile)

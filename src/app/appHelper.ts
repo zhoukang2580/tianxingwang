@@ -3,17 +3,91 @@ import * as moment from "moment";
 import { environment } from "src/environments/environment";
 import { UrlSegment, UrlSegmentGroup, Route } from "@angular/router";
 import { HttpClient } from '@angular/common/http';
+import { AlertController, ToastController } from '@ionic/angular';
+import { LanguageHelper } from './languageHelper';
 export class AppHelper {
   private static httpClient: HttpClient;
   private static _deviceName: string;
-  private static _routeData:any;
-  static setRouteData(data:any){
-    this._routeData=data;
+  private static _routeData: any;
+  private static toastController: ToastController;
+  private static alertController: AlertController;
+  static setToastController(toastController: ToastController) {
+    this.toastController = toastController;
   }
-  static getDefaultAvatar(){
+  static setAlertController(alertController: AlertController) {
+    this.alertController = alertController;
+  }
+  static setRouteData(data: any) {
+    this._routeData = data;
+  }
+  static toast(msg: any, duration = 1400, position?: 'top' | 'bottom' | 'middle') {
+    return new Promise<any>(async (resolve, reject) => {
+      try {
+        this.toastController.getTop().then(t => {
+          if (t) {
+            t.dismiss();
+          }
+        }).catch();
+      } catch (e) {
+
+      }
+      const t = await this.toastController.create({
+        message: typeof msg === "string" ? msg
+          : msg instanceof Error ? msg.message
+            : typeof msg === 'object' && msg.message ? msg.message
+              : JSON.stringify(msg),
+        position: position as any,
+        duration: duration
+      });
+      if (t) {
+        t.present();
+      }
+    });
+  }
+  static alert(msg: any, userOp: boolean = false) {
+
+    return new Promise<boolean>(async (resolve, reject) => {
+      try {
+        const t = await this.alertController.getTop();
+        if (t) {
+          t.dismiss();
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      return new Promise<any>(async (resolve, reject) => {
+        const buttons = [
+          {
+            text: LanguageHelper.getConfirmTip(),
+            handler: () => {
+              resolve(true);
+            }
+          }
+        ];
+        if (userOp) {
+          buttons.push({
+            text: LanguageHelper.getCancelTip(),
+            handler: () => {
+              resolve(false);
+            }
+          });
+        }
+        (await this.alertController.create({
+          header: LanguageHelper.getMsgTip(),
+          message: typeof msg === "string" ? msg
+            : msg instanceof Error ? msg.message
+              : typeof msg === 'object' && msg.message ? msg.message
+                : JSON.stringify(msg),
+          backdropDismiss: !userOp,
+          buttons
+        })).present();
+      });
+    });
+  }
+  static getDefaultAvatar() {
     return "assets/images/defaultavatar.jpg";
   }
-  static getRouteData(){
+  static getRouteData() {
     return this._routeData;
   }
   static setHttpClient(httpClient: HttpClient) {
@@ -34,7 +108,7 @@ export class AppHelper {
       );
     });
   }
-  
+
   static getWechatAppId() {
     if (this.httpClient) {
       return new Promise<string>((resolve, reject) => {
@@ -289,10 +363,10 @@ export class AppHelper {
     }
     return md5(content);
   }
-  static _queryParamers={};
+  static _queryParamers = {};
   static setQueryParamers() {
-    let name:string="";
-    let value:string="";
+    let name: string = "";
+    let value: string = "";
     var str = location.href;
     var num = str.indexOf("?");
     str = str.substr(num + 1);
@@ -302,7 +376,7 @@ export class AppHelper {
       if (num > 0) {
         name = arr[i].substring(0, num);
         value = arr[i].substr(num + 1);
-        this._queryParamers[name]=decodeURIComponent(value);
+        this._queryParamers[name] = decodeURIComponent(value);
       }
     }
   }

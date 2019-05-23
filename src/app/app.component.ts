@@ -35,6 +35,8 @@ export class AppComponent {
       AppHelper.setDeviceName("android");
     }
     AppHelper.setHttpClient(this.http);
+    AppHelper.setAlertController(this.alertController);
+    AppHelper.setToastController(this.toastController);
     this.initializeApp();
   }
 
@@ -65,7 +67,6 @@ export class AppComponent {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
     });
-    this.extMethod();
     this.backButtonAction();
   }
   private getConfigInfo() {
@@ -75,67 +76,7 @@ export class AppComponent {
     return this.router.navigate([AppHelper.getRoutePath(route)]);
   }
 
-  private extMethod() {
-    this.extTostMethod();
-    this.extAlertMethod();
-  }
-  private extTostMethod() {
-    const toast = async (msg: any, duration: number = 1400, position?: string) => {
-      const t = await this.toastController.create({
 
-        message: typeof msg === "string" ? msg
-          : msg instanceof Error ? msg.message
-            : typeof msg === 'object' && msg.message ? msg.message
-              : JSON.stringify(msg),
-        position: "middle",
-        duration
-      });
-      if (t) {
-        t.present();
-      }
-    };
-    window['toast'] = toast;
-  }
-  private extAlertMethod() {
-    const alert = async (msg, userOp: boolean = false) => {
-      try {
-        const t = await this.alertController.getTop();
-        if (t) {
-          t.dismiss();
-        }
-      } catch (e) {
-        console.error(e);
-      }
-      return new Promise<any>(async (resolve, reject) => {
-        const buttons = [
-          {
-            text: LanguageHelper.getConfirmTip(),
-            handler: () => {
-              resolve(true);
-            }
-          }
-        ];
-        if (userOp) {
-          buttons.push({
-            text: LanguageHelper.getCancelTip(),
-            handler: () => {
-              resolve(false);
-            }
-          });
-        }
-        (await this.alertController.create({
-          header: LanguageHelper.getMsgTip(),
-          message: typeof msg === "string" ? msg
-            : msg instanceof Error ? msg.message
-              : typeof msg === 'object' && msg.message ? msg.message
-                : JSON.stringify(msg),
-          backdropDismiss: !userOp,
-          buttons
-        })).present();
-      });
-    };
-    window.alert = alert;
-  }
   private backButtonAction() {
     let lastClickTime = 0;
     console.log("backbutton url = " + this.router.url);
@@ -166,7 +107,7 @@ export class AppComponent {
         if (Date.now() - lastClickTime <= 2000) {
           navigator['app'].exitApp();
         } else {
-          toast(LanguageHelper.getAppDoubleClickExit());
+          AppHelper.toast(LanguageHelper.getAppDoubleClickExit());
           lastClickTime = Date.now();
         }
       } else {

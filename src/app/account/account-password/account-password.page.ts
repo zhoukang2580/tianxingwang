@@ -68,16 +68,16 @@ export class AccountPasswordPage implements OnInit,OnDestroy {
   done() {
     if (!this.validatedBySmsCode) {
       if (!this.passwordModel.OldPassword) {
-        alert("原密码不能为空");
+        AppHelper.alert("原密码不能为空");
         return;
       }
     }
     if (!this.passwordModel.NewPassword) {
-      alert("请输入新密码");
+      AppHelper.alert("请输入新密码");
       return;
     }
     if (this.passwordModel.NewPassword !== this.passwordModel.SurePassword) {
-      alert("两次输入的密码不一致");
+      AppHelper.alert("两次输入的密码不一致");
       return;
     }
     this.modifyPasswordSubscription.unsubscribe();
@@ -87,12 +87,12 @@ export class AccountPasswordPage implements OnInit,OnDestroy {
       .subscribe(
         res => {
           if (res.Status) {
-            alert("密码修改成功");
+            AppHelper.alert("密码修改成功");
           } else {
-            alert(res.Message);
+            AppHelper.alert(res.Message);
           }
         },
-        e => alert(e)
+        e => AppHelper.alert(e)
       );
   }
   ngOnInit() { }

@@ -56,10 +56,8 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.isShowWechatLogin = AppHelper.isApp() || AppHelper.isWechatH5();
   }
   ngAfterViewInit() {
-    const alert =window.alert as any;
-    alert("aaa", true).then(ok => {
-      alert("aa");
-    });
+    AppHelper.alert("e");
+    AppHelper.alert("e",true);
   }
   onSlideEvent(valid: boolean) {
     if (valid) {
@@ -107,8 +105,8 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.barcodeScanner.scan().then(res => {
       alert("扫描结果： " + res.text);
     }).catch(e => {
-      alert("扫描出错： ");
-      alert(e);
+      AppHelper.alert("扫描出错： ");
+      AppHelper.alert(e);
     });
   }
   ionViewWillEnter() {
@@ -131,7 +129,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         window.location.href = url;
       }
     } catch (e) {
-      alert(e);
+      AppHelper.alert(e);
     }
   }
   getWechatCode(appId: string) {
@@ -194,7 +192,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
             this.jump(true);
           }
         }, e => {
-          alert(e);
+          AppHelper.alert(e);
         });
         break;
       case "mobile":

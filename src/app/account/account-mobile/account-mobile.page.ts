@@ -6,6 +6,7 @@ import { BaseRequest } from 'src/app/services/api/BaseRequest';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { NavController } from '@ionic/angular';
 import { LanguageHelper } from 'src/app/languageHelper';
+import { AppHelper } from 'src/app/appHelper';
 
 @Component({
   selector: 'app-account-mobile',
@@ -80,7 +81,7 @@ export class AccountMobilePage implements OnInit {
       this.countDown=0;
       if((r.Data.Action as string).toLowerCase()=="finish")
       {
-        alert(LanguageHelper.getBindMobileSuccess(),true).then(()=>{
+        AppHelper.alert(LanguageHelper.getBindMobileSuccess(),true).then(()=>{
           this.navController.back();
         });
   
@@ -111,7 +112,7 @@ export class AccountMobilePage implements OnInit {
     }>(req).subscribe(res=>{
       this.startCountDonw(res.Data.SendInterval);
     },e=>{
-      alert(e);
+      AppHelper.alert(e);
     },()=>{
       setTimeout(() => {
         if(sub){

@@ -31,7 +31,7 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
     {
       if(paramters.message)
       {
-        alert(paramters.message);
+        AppHelper.alert(paramters.message);
       }
     }
   }
@@ -71,7 +71,7 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
     let deviceSubscription = this.apiService.getResponse<{}>(req).subscribe(s => {
       this.items = this.items.filter(it => it != item);
     }, n => {
-      alert(n);
+      AppHelper.alert(n);
     }, () => {
       if (deviceSubscription) {
         deviceSubscription.unsubscribe();

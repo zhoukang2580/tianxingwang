@@ -125,7 +125,7 @@ export class MapService {
         // tslint:disable-next-line:max-line-length
         // addComp = rs.addressComponents;addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber
         if (result) {
-          //   alert(result.address);
+          //   AppHelper.alert(result.address);
           point.address = result.address;
           obs.next(point);
           obs.complete();

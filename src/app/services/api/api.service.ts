@@ -200,7 +200,7 @@ export class ApiService {
           entity.Message = LanguageHelper.getApiExceptionTip();
           if (error instanceof TimeoutError) {
             entity.Message = LanguageHelper.getApiTimeoutTip();
-            //alert(LanguageHelper.getApiTimeoutTip());
+            //AppHelper.alert(LanguageHelper.getApiTimeoutTip());
           }
           return throwError(error);
         }),

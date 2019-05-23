@@ -87,7 +87,7 @@ export class CropAvatarPage implements OnInit {
     },e=>{
       this.uploaded=false;
       this.showCropBox = true;
-      alert(e);
+      AppHelper.alert(e);
     },()=>{
       if(uploadSubscription){
         setTimeout(() => {

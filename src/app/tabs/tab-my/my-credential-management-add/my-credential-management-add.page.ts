@@ -83,15 +83,15 @@ export class MyCredentialManagementAddPage implements OnInit {
   }
   addCredential() {
     if (this.formGroup.invalid) {
-      alert(TabsLanguage.getCompleteInfo());
+      AppHelper.alert(TabsLanguage.getCompleteInfo());
       return;
     }
     if (!this.identityNationality) {
-      alert(TabsLanguage.getIdentityNationality());
+      AppHelper.alert(TabsLanguage.getIdentityNationality());
       return;
     }
     if (!this.issueNationality) {
-      alert(TabsLanguage.getIdentityNationality());
+      AppHelper.alert(TabsLanguage.getIdentityNationality());
       return;
     }
   }

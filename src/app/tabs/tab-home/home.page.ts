@@ -84,26 +84,5 @@ export class HomePage implements OnInit {
   //     });
   //   });
   // }
-  testAction() {
-    console.log(this.route.snapshot.outlet, this.route);
-    this.alertCtrl.getTop().then(alert => {
-      console.log("alert存在？" + !!alert);
-      if (alert) {
-        alert.dismiss();
-        return true;
-      } else {
-        this.modalCtrl.getTop().then(modal => {
-          console.log("modal存在？" + !!modal);
-          if (modal) {
-            this.modalCtrl.dismiss();
-            return true;
-          } else {
-            console.log("返回上一级");
-          }
-          return false;
-        });
-      }
-      return false;
-    });
-  }
+  
 }
