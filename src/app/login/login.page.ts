@@ -56,10 +56,10 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.isShowWechatLogin = AppHelper.isApp() || AppHelper.isWechatH5();
   }
   ngAfterViewInit() {
-    // const alert =window.alert as any;
-    // alert("aaa", true).then(ok => {
-    //   alert("aa");
-    // });
+    const alert =window.alert as any;
+    alert("aaa", true).then(ok => {
+      alert("aa");
+    });
   }
   onSlideEvent(valid: boolean) {
     if (valid) {
