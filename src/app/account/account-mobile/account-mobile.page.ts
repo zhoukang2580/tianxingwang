@@ -121,7 +121,5 @@ export class AccountMobilePage implements OnInit {
       }, 100);
     });
   }
-  bind(){
-
-  }
+ 
 }

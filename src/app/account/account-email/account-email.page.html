@@ -3,74 +3,48 @@
       <ion-buttons slot="start">
           <ion-back-button></ion-back-button>
         </ion-buttons>
-    <ion-title>邮箱</ion-title>
+    <ion-title>邮箱绑定</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <form [formGroup]="form">
-    <section>
-      <ion-row>
+    <form [formGroup]='form'>
+    <ion-row>
         <ion-col size="3">
-          <ion-label position="floating">邮箱</ion-label>
+          <ion-label position="floating">
+              <ion-label *ngIf="isFinish">绑定邮箱</ion-label>
+              <ion-label *ngIf="!isFinish">邮箱地址</ion-label>
+            </ion-label>
         </ion-col>
         <ion-col>
-          <ion-input
-            placeholder="邮箱"
-            formControlName="Email"
-            type="email"
-            min="11"
-          ></ion-input>
+          <ion-input placeholder="手机号" formControlName="Mobile" type="number" min="11"
+            [readonly]='!isModiy'></ion-input>
         </ion-col>
-        <ion-col size="4" *ngIf="!isDisableSendMobileCode; else countdown">
-          <ion-button
-            size="small"
-            fill="outline"
-            color="primary"
-            [disabled]="!isMobileNumberOk"
-            (click)="startCountDonw(60)"
-          >
+        <ion-col size="4" *ngIf="countDown==0; else countdown">
+          <ion-button size="small" fill="outline" color="primary" 
+            (click)="sendMobileCode()">
             <span [style.font-size.rem]="0.8">发送验证码</span>
           </ion-button>
         </ion-col>
         <ng-template #countdown>
-          <ion-col class="down-count" size="1.5">
+          <ion-col class="down-count" size="2">
             <ion-label color="medium">{{ countDown }} s</ion-label>
           </ion-col>
         </ng-template>
       </ion-row>
-
-      <ion-row *ngIf="phoneErrorCount >= validImageCodeCount">
-        <ion-col>
-          <ion-label position="floating">验证码</ion-label>
-        </ion-col>
-        <ion-col>
-          <ion-input
-            type="text"
-            text-uppercase
-            formControlName="ImageCode"
-            placeholder="右边图片内容"
-          ></ion-input>
-        </ion-col>
-        <ion-col
-          *ngIf="(imgSrc$ | async) as url"
-          class="image-code"
-          text-center
-        >
-          <img [src]="url" alt="{{ url }}" (click)="refreshImageCode()" />
-        </ion-col>
-      </ion-row>
       <ion-row>
-        <ion-col size="4">
-          <ion-label position="floating">短信验证码</ion-label>
-        </ion-col>
-        <ion-col>
-          <ion-input
-            placeholder="请输入收到短信验证码"
-            formControlName="MobileCode"
-          ></ion-input>
-        </ion-col>
-      </ion-row>
-    </section>
+          <ion-col size="4">
+            <ion-label position="floating">邮箱验证码</ion-label>
+          </ion-col>
+          <ion-col>
+            <ion-input placeholder="请输入收到邮箱验证码" formControlName="Code" (blur)="bind()"></ion-input>
+          </ion-col>
+        </ion-row>
+  <ion-row>
+      <ion-button (click)="sendAction()">
+        <ion-label *ngIf="isFinish">绑定</ion-label>
+        <ion-label *ngIf="!isFinish">下一步</ion-label>
+       </ion-button>
+  </ion-row>
   </form>
 </ion-content>
