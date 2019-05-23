@@ -55,33 +55,31 @@ export class AppHelper {
       } catch (e) {
         console.error(e);
       }
-      return new Promise<any>(async (resolve, reject) => {
-        const buttons = [
-          {
-            text: LanguageHelper.getConfirmTip(),
-            handler: () => {
-              resolve(true);
-            }
+      const buttons = [
+        {
+          text: LanguageHelper.getConfirmTip(),
+          handler: () => {
+            resolve(true);
           }
-        ];
-        if (userOp) {
-          buttons.push({
-            text: LanguageHelper.getCancelTip(),
-            handler: () => {
-              resolve(false);
-            }
-          });
         }
-        (await this.alertController.create({
-          header: LanguageHelper.getMsgTip(),
-          message: typeof msg === "string" ? msg
-            : msg instanceof Error ? msg.message
-              : typeof msg === 'object' && msg.message ? msg.message
-                : JSON.stringify(msg),
-          backdropDismiss: !userOp,
-          buttons
-        })).present();
-      });
+      ];
+      if (userOp) {
+        buttons.push({
+          text: LanguageHelper.getCancelTip(),
+          handler: () => {
+            resolve(false);
+          }
+        });
+      }
+      (await this.alertController.create({
+        header: LanguageHelper.getMsgTip(),
+        message: typeof msg === "string" ? msg
+          : msg instanceof Error ? msg.message
+            : typeof msg === 'object' && msg.message ? msg.message
+              : JSON.stringify(msg),
+        backdropDismiss: !userOp,
+        buttons
+      })).present();
     });
   }
   static getDefaultAvatar() {
