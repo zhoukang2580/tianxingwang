@@ -56,13 +56,16 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.isShowWechatLogin = AppHelper.isApp() || AppHelper.isWechatH5();
   }
   ngAfterViewInit() {
-
+    // const alert =window.alert as any;
+    // alert("aaa", true).then(ok => {
+    //   alert("aa");
+    // });
   }
-  onSlideEvent(valid:boolean){
-    if(valid){
+  onSlideEvent(valid: boolean) {
+    if (valid) {
       // 验证通过
-    }else{
-      
+    } else {
+
     }
   }
   ngOnInit() {
@@ -88,15 +91,15 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   async deviceName() {
-    this.deviceInfo ={
-      cordova:this.device.cordova,
-      isVirtual:this.device.isVirtual,
-      manufacturer:this.device.manufacturer,
-      model:this.device.model,
-      platform:this.device.platform,
-      serial:this.device.serial,
-      uuid:this.device.uuid,
-      version:this.device.version,
+    this.deviceInfo = {
+      cordova: this.device.cordova,
+      isVirtual: this.device.isVirtual,
+      manufacturer: this.device.manufacturer,
+      model: this.device.model,
+      platform: this.device.platform,
+      serial: this.device.serial,
+      uuid: this.device.uuid,
+      version: this.device.version,
     }
 
   }
@@ -286,7 +289,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   }
   async jump(isCheckDevice: boolean) // 跳转
   {
-    this.loginType="user";
+    this.loginType = "user";
     const toPageRouter = this.loginService.getToPageRouter() || "";
     if (isCheckDevice)//&& AppHelper.isApp())
     {
@@ -306,7 +309,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
     }
   }
-  forgetOriginalPassword(){
+  forgetOriginalPassword() {
     this.router.navigate([AppHelper.getRoutePath("password-check")]);
   }
   ngOnDestroy() {

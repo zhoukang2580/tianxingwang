@@ -1,15 +1,26 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="cordova-hcp-plugin" version="1.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<plugin id="cordova-hcp-plugin" version="1.0.0" 
+    xmlns="http://apache.org/cordova/ns/plugins/1.0" 
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <name>hcp</name>
     <js-module name="hcp" src="www/hcp.js">
         <clobbers target="hcp" />
     </js-module>
-     <!-- android -->
+    <!-- android -->
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="Hcp">
                 <param name="android-package" value="com.beeant.plugin.hcp.Hcp"/>
+                 <param name="onload" value="true" />
             </feature>
+        </config-file>
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+            <uses-permission android:name="android.permission.REPLACE_EXISTING_PACKAGE"/>
+            <!-- 8.0 必要权限  -->
+            <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
         </config-file>
         <source-file src="src/android/Hcp.java" target-dir="src/com/beeant/plugin/hcp" />
     </platform>

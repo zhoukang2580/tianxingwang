@@ -291,3 +291,4 @@ Session.vim
 *~
 
 dist/
+.angulardoc.json

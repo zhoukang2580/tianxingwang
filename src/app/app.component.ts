@@ -8,6 +8,7 @@ import { AppHelper } from "./appHelper";
 import { ConfigService } from './services/config/config.service';
 import { HttpClient } from '@angular/common/http';
 import { LanguageHelper } from './languageHelper';
+import { AlertButton } from '@ionic/core';
 
 @Component({
   selector: "app-root",
@@ -24,7 +25,7 @@ export class AppComponent {
     private toastController: ToastController,
     private actionSheetCtrl: ActionSheetController,
     private loadingCtrl: LoadingController,
-    private http:HttpClient,
+    private http: HttpClient,
   ) {
     // console.log(this.router.config);
     if (this.platform.is("ios")) {
@@ -41,20 +42,17 @@ export class AppComponent {
     this.getConfigInfo();
     AppHelper.getDomain();// 
     AppHelper.setQueryParamers();
-    var path=AppHelper.getQueryString("path");
-    var unloginPath=AppHelper.getQueryString("unloginpath");
-    if(AppHelper.getTicket() && path)
-    {
-      this.jumpToRoute("/tabs/my").then(()=>{
+    var path = AppHelper.getQueryString("path");
+    var unloginPath = AppHelper.getQueryString("unloginpath");
+    if (AppHelper.getTicket() && path) {
+      this.jumpToRoute("/tabs/my").then(() => {
         this.jumpToRoute(path);
       });
     }
-    else if(!AppHelper.getTicket() && unloginPath)
-    {
+    else if (!AppHelper.getTicket() && unloginPath) {
       this.router.navigate([AppHelper.getRoutePath(unloginPath)]);
     }
-    else
-    {
+    else {
       this.router.navigate([AppHelper.getRoutePath("")]);
     }
     // this.router.navigate([AppHelper.getRoutePath("account-password")]);
@@ -70,26 +68,29 @@ export class AppComponent {
     this.extMethod();
     this.backButtonAction();
   }
-  private getConfigInfo(){
-    this.configService.get();    
+  private getConfigInfo() {
+    this.configService.get();
   }
-  private jumpToRoute(route:string){
-   return this.router.navigate([AppHelper.getRoutePath(route)]);
+  private jumpToRoute(route: string) {
+    return this.router.navigate([AppHelper.getRoutePath(route)]);
   }
   private extMethod() {
-    const toast = async msg => {
+    const toast = async (msg: any, duration: number = 1400, position?: string) => {
       const t = await this.toastController.create({
+
         message: typeof msg === "string" ? msg
           : msg instanceof Error ? msg.message
             : typeof msg === 'object' && msg.message ? msg.message
-              : JSON.stringify(msg), position: "middle", duration: 1400
+              : JSON.stringify(msg),
+        position: "middle",
+        duration
       });
       if (t) {
         t.present();
       }
     };
     window['toast'] = toast;
-    const alert = async msg => {
+    const alert = async (msg, userOp: boolean = false) => {
       try {
         const t = await this.alertController.getTop();
         if (t) {
@@ -98,57 +99,72 @@ export class AppComponent {
       } catch (e) {
         console.error(e);
       }
-      (await this.alertController.create({
-        header: "提示",
-        message: typeof msg === "string" ? msg
-          : msg instanceof Error ? msg.message
-            : typeof msg === 'object' && msg.message ? msg.message
-              : JSON.stringify(msg),
-        buttons: [
+      return new Promise<any>(async (resolve, reject) => {
+        const buttons = [
           {
-            text: "确定"
+            text: LanguageHelper.getConfirmTip(),
+            handler: () => {
+              resolve();
+            }
           }
-        ]
-      })).present();
+        ];
+        if (userOp) {
+          buttons.push({
+            text: LanguageHelper.getCancelTip(),
+            handler: () => {
+              // reject();
+            }
+          });
+        }
+        (await this.alertController.create({
+          header: LanguageHelper.getMsgTip(),
+          message: typeof msg === "string" ? msg
+            : msg instanceof Error ? msg.message
+              : typeof msg === 'object' && msg.message ? msg.message
+                : JSON.stringify(msg),
+          backdropDismiss: !userOp,
+          buttons
+        })).present();
+      });
     };
     window.alert = alert;
   }
   private backButtonAction() {
     let lastClickTime = 0;
     console.log("backbutton url = " + this.router.url);
-      this.platform.backButton.subscribe(async () => {
-        try {
-          const element = await this.actionSheetCtrl.getTop();
-          const aEle = await this.alertController.getTop();
-          const lEle = await this.loadingCtrl.getTop();
-          if (element) {
-            element.dismiss();
-            console.log("关闭actionsheet");
-            return;
-          }
-          if (aEle) {
-            aEle.dismiss();
-            console.log("关闭alert");
-            return;
-          }
-          if (lEle) {
-            lEle.dismiss();
-            console.log("关闭loading");
-            return;
-          }
-        } catch (error) {
-          console.error(error);
+    this.platform.backButton.subscribe(async () => {
+      try {
+        const element = await this.actionSheetCtrl.getTop();
+        const aEle = await this.alertController.getTop();
+        const lEle = await this.loadingCtrl.getTop();
+        if (element) {
+          element.dismiss();
+          console.log("关闭actionsheet");
+          return;
         }
-        if (this.router.url.includes("login") || this.router.url.includes("tabs")) {
-          if (Date.now() - lastClickTime <= 2000) {
-            navigator['app'].exitApp();
-          }else{
-            window['toast'](LanguageHelper.getAppDoubleClickExit());
-            lastClickTime=Date.now();
-          }
+        if (aEle) {
+          aEle.dismiss();
+          console.log("关闭alert");
+          return;
+        }
+        if (lEle) {
+          lEle.dismiss();
+          console.log("关闭loading");
+          return;
+        }
+      } catch (error) {
+        console.error(error);
+      }
+      if (this.router.url.includes("login") || this.router.url.includes("tabs")) {
+        if (Date.now() - lastClickTime <= 2000) {
+          navigator['app'].exitApp();
         } else {
-          window.history.back();
+          toast(LanguageHelper.getAppDoubleClickExit());
+          lastClickTime = Date.now();
         }
-      });
+      } else {
+        window.history.back();
+      }
+    });
   }
 }
