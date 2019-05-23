@@ -29,9 +29,13 @@ export class LanguageHelper {
   static getMsgTip() {
     return "提示";
   }
-      static getBindMobileSuccess() {
-        return "手机绑定成功";
-      }
+  static getBindMobileSuccess() {
+     return "手机绑定成功";
+  }
+  static getBindEmailSuccess()
+  {
+    return "邮箱绑定成功";
+  }
   static getCancelTip() {
     return "取消";
   }
