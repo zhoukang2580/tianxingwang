@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api/api.service';
 import { BaseRequest } from 'src/app/services/api/BaseRequest';
 import { FormGroup, FormBuilder } from '@angular/forms';
+import { NavController } from '@ionic/angular';
+import { LanguageHelper } from 'src/app/languageHelper';
 
 @Component({
   selector: 'app-account-mobile',
@@ -20,6 +22,7 @@ export class AccountMobilePage implements OnInit {
   countDownInterval: any;
   constructor(private fb: FormBuilder, private identityService: IdentityService,
     private router: Router,
+    private navController:NavController,
     private apiService: ApiService) { }
 
   ngOnInit() {
@@ -54,6 +57,7 @@ export class AccountMobilePage implements OnInit {
       if(r.Status && r.Data)
       {
         r.Data.Mobile="";
+        this.form.patchValue({Code:""});
       }
       this.setResult(r);
 
@@ -71,9 +75,16 @@ export class AccountMobilePage implements OnInit {
       this.isActiveMobile=r.Data.IsActiveMobile;
       this.form.patchValue({Mobile:r.Data.Mobile});
       this.action=r.Data.Action;
-      this.isModiy=r.Data.Action=="bind" || !this.isActiveMobile;
-      this.isFinish=r.Data.Action=="bind";
-       this.countDown=0;
+      this.isFinish=(r.Data.Action as string).toLowerCase()=="bind";
+      this.isModiy=this.isFinish || !this.isActiveMobile;
+      this.countDown=0;
+      if((r.Data.Action as string).toLowerCase()=="finish")
+      {
+        alert(LanguageHelper.getBindMobileSuccess(),true).then(()=>{
+          this.navController.back();
+        });
+  
+      }
     }
   }
   private startCountDonw(countdownTime: number) {

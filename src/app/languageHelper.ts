@@ -29,9 +29,9 @@ export class LanguageHelper {
   static getMsgTip() {
     return "提示";
   }
-  static getConfirmTip() {
-    return "确定";
-  }
+      static getBindMobileSuccess() {
+        return "手机绑定成功";
+      }
   static getCancelTip() {
     return "取消";
   }
@@ -41,4 +41,8 @@ export class LanguageHelper {
   static slideValidateUseTime() {
     return "验证成功";
   }
+<<<<<<< .mine
 }
+=======
+
+>>>>>>> .theirs

@@ -74,7 +74,12 @@ export class AppComponent {
   private jumpToRoute(route: string) {
     return this.router.navigate([AppHelper.getRoutePath(route)]);
   }
+
   private extMethod() {
+    this.extTostMethod();
+    this.extAlertMethod();
+  }
+  private extTostMethod() {
     const toast = async (msg: any, duration: number = 1400, position?: string) => {
       const t = await this.toastController.create({
 
@@ -90,6 +95,8 @@ export class AppComponent {
       }
     };
     window['toast'] = toast;
+  }
+  private extAlertMethod() {
     const alert = async (msg, userOp: boolean = false) => {
       try {
         const t = await this.alertController.getTop();
@@ -104,7 +111,7 @@ export class AppComponent {
           {
             text: LanguageHelper.getConfirmTip(),
             handler: () => {
-              resolve();
+              resolve(true);
             }
           }
         ];
@@ -112,7 +119,7 @@ export class AppComponent {
           buttons.push({
             text: LanguageHelper.getCancelTip(),
             handler: () => {
-              // reject();
+              resolve(false);
             }
           });
         }
