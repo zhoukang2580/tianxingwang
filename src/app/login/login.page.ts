@@ -10,7 +10,7 @@ import { ConfigEntity } from "../services/config/config.entity";
 import { ConfigService } from "../services/config/config.service";
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import { Device } from "@ionic-native/device/ngx";
-import { ENTER_SELECTOR } from '@angular/animations/browser/src/util';
+import { Config } from '@ionic/angular';
 
 @Component({
   selector: "app-login",
@@ -38,8 +38,10 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     private fb: FormBuilder,
     private router: Router,
     private barcodeScanner: BarcodeScanner,
-    private device: Device
+    private device: Device,
+    private config:Config
   ) {
+    this.config.set('swipeBackEnabled',false);
     this.loading$ = this.loginService.getLoading();
     this.isShowWechatLogin = AppHelper.isApp() || AppHelper.isWechatH5();
   }

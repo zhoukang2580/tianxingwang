@@ -8,7 +8,8 @@ log.txt
 *.sublime-workspace
 .vscode/
 npm-debug.log*
-
+/**/*.7z
+/**/*.zip
 .idea/
 .ionic/
 .sourcemaps/
@@ -17,7 +18,7 @@ npm-debug.log*
 .versions/
 coverage/
 www/
-!hcp/**/www/
+!hcp/www/
 !*-plugin*/www/
 node_modules/
 tmp/
