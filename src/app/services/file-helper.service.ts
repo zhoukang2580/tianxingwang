@@ -102,7 +102,7 @@ export class FileHelperService {
             console.log(`解压进度成功!`);
             // 删除下载的压缩包
             this.removeFile(`${this.file.dataDirectory}${this.updateDirectoryName}`, this.updateZipFileName);
-            obs.next({ canUpdate: true, nativeURL: destPath, unZipComplete: true} as HcpUpdateModel);
+            obs.next({ canUpdate: true, nativeURL: destPath, unZipComplete: true,taskDesc:LanguageHelper.getHcpUnZipCompleteTip()} as HcpUpdateModel);
             obs.complete();
           } else {
             console.log(`解压失败!`);
@@ -209,7 +209,7 @@ export class FileHelperService {
                 this.listDirFiles(path+"/"+versionDir, this.www);
                 const fileUrl = r.nativeURL;
                 console.log("文件NativeUrl" + r.nativeURL);
-                return { canUpdate: true, unZipComplete: true, nativeURL: fileUrl, total: 1, loaded: 1 } as HcpUpdateModel;
+                return { canUpdate: true,taskDesc:LanguageHelper.getHcpCreateVersionFileTip(), unZipComplete: true, nativeURL: fileUrl, total: 1, loaded: 1 } as HcpUpdateModel;
               })
           );
         }

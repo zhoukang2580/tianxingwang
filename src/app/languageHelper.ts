@@ -9,6 +9,12 @@ export class LanguageHelper {
   static getHcpUnZipTip() {
     return "正在解压文件...";
   }
+  static getHcpUnZipCompleteTip() {
+    return "完成文件解压...";
+  }
+  static getHcpCreateVersionFileTip() {
+    return "成功标记热更版本";
+  }
   static getLoginImageCodeTip() {
     // if(AppHelper.getLanguage())
     return "请输入验证码";
