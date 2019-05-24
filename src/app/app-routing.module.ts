@@ -20,6 +20,7 @@ const routes: Routes = [
     loadChildren: "./page404/page404.module#Page404PageModule",
     matcher: AppHelper.matchDefaultRoute
   }
+
 ];
 @NgModule({
   imports: [

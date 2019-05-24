@@ -22,7 +22,7 @@
         </ion-col>
         <ion-col size="4" *ngIf="countDown==0; else countdown">
           <ion-button size="small" fill="outline" color="primary" 
-            (click)="showImageCode()">
+            (click)="sendEmailCode()">
             <span [style.font-size.rem]="0.8">发送验证码</span>
           </ion-button>
         </ion-col>
@@ -46,6 +46,5 @@
         <ion-label *ngIf="!isFinish">下一步</ion-label>
        </ion-button>
   </ion-row>
-  <app-slidvalidate-com *ngIf="isShowImageCode" [class.hidden]="isShowWechatLogin" (slideEvent)='onSlideEvent($event)'></app-slidvalidate-com>
   </form>
 </ion-content>

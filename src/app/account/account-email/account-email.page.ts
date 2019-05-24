@@ -99,12 +99,7 @@ export class AccountEmailPage implements OnInit {
       }
     }, 1000);
   }
-  onSlideEvent(valid: boolean) {
-    if (valid) {
-      this.isShowImageCode = false;
-      this.sendEmailCode();
-    }
-  }
+ 
   sendEmailCode() {
     const req = new BaseRequest();
     req.Method = "ApiPasswordUrl-Email-SendCode";
@@ -125,8 +120,5 @@ export class AccountEmailPage implements OnInit {
       }, 100);
     });
   }
-  showImageCode(type: string) {
 
-    this.isShowImageCode = true;
-  }
 }

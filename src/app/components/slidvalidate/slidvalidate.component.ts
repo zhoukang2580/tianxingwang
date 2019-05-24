@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, Renderer2, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Renderer2, EventEmitter, Output, ViewChild, ElementRef } from '@angular/core';
 import { AppHelper } from 'src/app/appHelper';
 import { Platform, ToastController } from '@ionic/angular';
 import { LanguageHelper } from 'src/app/languageHelper';
@@ -16,9 +16,15 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
   PI = Math.PI;
   L = this.l + this.r * 2 + 3; // 滑块实际边长
   isIE = window.navigator.userAgent.indexOf('Trident') > -1;
-  el: HTMLElement;
+  @ViewChild('pic')
+  pic: ElementRef;
+  el:HTMLElement;
   canvasCtx: CanvasRenderingContext2D;
   blockCtx: CanvasRenderingContext2D;
+  @ViewChild('canvas')
+  canvasEl: ElementRef; // 画布
+  @ViewChild('blockcanvas')
+  blockCanvasEl: ElementRef;
   canvas: HTMLCanvasElement; // 画布
   block: HTMLCanvasElement;
   sliderContainer;
@@ -43,9 +49,11 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     this.h = Math.floor(this.plt.height() * 0.4);
   }
   ngAfterViewInit() {
-    this.el = document.getElementById("pic");
     // this.w = this.el.clientWidth;
     // this.h = this.el.clientHeight;
+    this.el = this.pic.nativeElement;
+    this.block=this.blockCanvasEl.nativeElement;
+    this.canvas=this.canvasEl.nativeElement;
     console.dir(this.el);
     this.init();
   }
@@ -155,18 +163,18 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
 
   initDOM() {
     this.render.setStyle(this.el, 'width', this.w + "px");
-    this.canvas = document.getElementById("canvas") as HTMLCanvasElement;//this.createCanvas(this.w, this.h) // 画布
+    // this.canvas = document.getElementById("canvas") as HTMLCanvasElement;//this.createCanvas(this.w, this.h) // 画布
     this.canvas.width = this.w;
     this.canvas.height = this.h;
-    this.block = document.getElementById("block") as HTMLCanvasElement; // 拼图部分
+    // this.block = document.getElementById("block") as HTMLCanvasElement; // 拼图部分
     this.block.width=this.w;
     this.block.height=this.h;
-    this.sliderContainer = document.querySelector(".sliderContainer");//  this.createElement('div','sliderContainer');
-    this.refreshIcon = document.querySelector(".refreshIcon");// this.createElement('div', 'refreshIcon')
-    this.sliderMask = document.querySelector(".sliderMask");// this.createElement('div', 'sliderMask')
-    this.slider = document.querySelector(".slider");//this.createElement('div', 'slider')
-    this.sliderIcon = document.querySelector(".sliderIcon");//this.createElement('span', 'sliderIcon')
-    this.text = document.querySelector(".sliderText");// this.createElement('span', 'sliderText')
+    this.sliderContainer = this.el.querySelector(".sliderContainer");//  this.createElement('div','sliderContainer');
+    this.refreshIcon = this.el.querySelector(".refreshIcon");// this.createElement('div', 'refreshIcon')
+    this.sliderMask = this.el.querySelector(".sliderMask");// this.createElement('div', 'sliderMask')
+    this.slider = this.el.querySelector(".slider");//this.createElement('div', 'slider')
+    this.sliderIcon = this.el.querySelector(".sliderIcon");//this.createElement('span', 'sliderIcon')
+    this.text = this.el.querySelector(".sliderText");// this.createElement('span', 'sliderText')
     this.text.innerHTML = LanguageHelper.getSlidvalidateInnerTip();
     this.canvasCtx = this.canvas.getContext('2d');
     this.blockCtx = this.block.getContext('2d');

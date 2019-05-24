@@ -1,22 +1,22 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PasswordCodePage } from './password-code.page';
+import { PasswordValidPage } from './password-valid.page';
 
-describe('PasswordCodePage', () => {
-  let component: PasswordCodePage;
-  let fixture: ComponentFixture<PasswordCodePage>;
+describe('PasswordValidPage', () => {
+  let component: PasswordValidPage;
+  let fixture: ComponentFixture<PasswordValidPage>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PasswordCodePage ],
+      declarations: [ PasswordValidPage ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PasswordCodePage);
+    fixture = TestBed.createComponent(PasswordValidPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

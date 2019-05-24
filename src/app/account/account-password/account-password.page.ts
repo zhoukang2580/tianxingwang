@@ -62,8 +62,8 @@ export class AccountPasswordPage implements OnInit,OnDestroy {
     this.passwordModel = new PasswordModel();
   }
 
-  forgetOriginalPassword() {
-    this.router.navigate([AppHelper.getRoutePath("password-code"),{Id:this.identityEntity.Id}]);
+  forgetPassword() {
+    this.router.navigate([AppHelper.getRoutePath("password-check"),{Id:this.identityEntity.Id}]);
   }
   done() {
     if (!this.validatedBySmsCode) {

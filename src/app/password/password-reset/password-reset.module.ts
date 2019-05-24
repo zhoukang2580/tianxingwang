@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
+import { Config } from '@ionic/angular';
 
 import { IonicModule } from '@ionic/angular';
 
@@ -23,4 +24,8 @@ const routes: Routes = [
   ],
   declarations: [PasswordResetPage]
 })
-export class PasswordResetPageModule {}
+export class PasswordResetPageModule {
+  constructor(ioniConfig:Config){
+    ioniConfig.set("swipeBackEnabled",false);
+  }
+}

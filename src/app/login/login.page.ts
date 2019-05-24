@@ -324,7 +324,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
     }
   }
-  forgetOriginalPassword() {
+  forgetPassword() {
     this.router.navigate([AppHelper.getRoutePath("password-check")]);
   }
   ngOnDestroy() {

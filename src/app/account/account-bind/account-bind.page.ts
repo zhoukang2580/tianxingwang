@@ -25,7 +25,6 @@ export class AccountBindPage implements OnInit, OnDestroy {
   isMobileNumberOk = false;
   path:string;
   form: FormGroup;
-  imgSrc$: Observable<string>;
   isShowImageCode:boolean;
   bindMobileInfo: {
     Mobile: string;
@@ -52,7 +51,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
         this.isMobileNumberOk = !!this.bindMobileInfo.Mobile;
       }
     });
-    this.refreshImageCode();
+
     this.mobileChangeSubscription = this.form.controls['Mobile'].valueChanges.subscribe(v => {
       if (v && v.length >= 11) {
         this.isMobileNumberOk = true;
@@ -60,16 +59,9 @@ export class AccountBindPage implements OnInit, OnDestroy {
     });
     // this.startCountDonw(160);
   }
-  refreshImageCode() {
-    this.imgSrc$ = this.loginService.getImage();
-  }
-  onSlideEvent(valid: boolean) {
-    if (valid) {
-      this.isShowImageCode=false;
-     this.sendSmsCode();
-    } 
-  }
-  sendSmsCode(){
+
+  
+  sendMobileCode(){
     const req = new BaseRequest();
     req.Url = AppHelper.getApiUrl() + "/Home/SendIdentityMobileCode";
     req.Data = JSON.stringify({ Mobile: this.form.value.Mobile });
@@ -155,9 +147,5 @@ export class AccountBindPage implements OnInit, OnDestroy {
     this.paramsSubscription.unsubscribe();
     this.mobileChangeSubscription.unsubscribe();
   }
-  showImageCode(type:string)
-  {
-
-    this.isShowImageCode=true;
-  }
+ 
 }
