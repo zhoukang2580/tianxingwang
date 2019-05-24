@@ -1,5 +1,14 @@
 
 export class LanguageHelper {
+  static getHcpDownloadingTip() {
+    return "正在更新数据...";
+  }
+  static getWritingFileTip() {
+    return "正在写入文件...";
+  }
+  static getHcpUnZipTip() {
+    return "正在解压文件...";
+  }
   static getLoginImageCodeTip() {
     // if(AppHelper.getLanguage())
     return "请输入验证码";

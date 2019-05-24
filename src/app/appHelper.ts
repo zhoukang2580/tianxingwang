@@ -305,9 +305,9 @@ export class AppHelper {
       return "sky-trip.com";
     }
   }
-
   static getApiUrl() {
     if (!environment.production) {
+      return "http://test.app.testskytrip.com";
       return "http://dev.app.beeant.com";
     }
     if (environment.production) {

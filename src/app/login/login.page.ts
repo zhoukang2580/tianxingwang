@@ -11,6 +11,7 @@ import { ConfigService } from "../services/config/config.service";
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import { Device } from "@ionic-native/device/ngx";
 import { Config } from '@ionic/angular';
+import { FileHelperService } from '../services/file-helper.service';
 
 @Component({
   selector: "app-login",
@@ -32,6 +33,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   isShowWechatLogin: boolean;
   isShowImageCode:boolean;
   SlideEventType:string;
+  fileInfo:any={};
   constructor(
     private loginService: LoginService,
     private configService: ConfigService,
@@ -39,14 +41,15 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private barcodeScanner: BarcodeScanner,
     private device: Device,
-    private config:Config
+    private config:Config,
+    private fileService:FileHelperService
   ) {
     this.config.set('swipeBackEnabled',false);
     this.loading$ = this.loginService.getLoading();
     this.isShowWechatLogin = AppHelper.isApp() || AppHelper.isWechatH5();
   }
   ngAfterViewInit() {
-
+   
   }
   onSlideEvent(valid: boolean) {
     if (valid) {
@@ -61,8 +64,15 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       this.isShowImageCode=false;
     } 
   }
-  ngOnInit() {
-
+  ngOnInit() {  
+    // this.fileInfo=this.fileService.fileInfo;
+    this.fileService.checkHcpUpdate().subscribe(r=>{
+      console.log(JSON.stringify(r));
+      this.fileInfo.msg = r.taskDesc;
+      this.fileInfo.progress=Math.floor(r.loaded/(r.total||1)*100).toFixed(2)+"%";
+    },e=>{
+      console.error(e);
+    })
     this.loginEntity = new LoginEntity();
     this.form = this.fb.group({
       Name: [AppHelper.getStorage<string>("loginName")],

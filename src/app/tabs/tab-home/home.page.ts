@@ -3,11 +3,11 @@ import { Observable, of, Subject, BehaviorSubject, throwError } from "rxjs";
 import * as moment from "moment";
 import { catchError } from "rxjs/operators";
 import {
-  ToastController,
   AlertController,
   ModalController
 } from "@ionic/angular";
 import { ActivatedRoute, Router } from "@angular/router";
+import { FileHelperService } from 'src/app/services/file-helper.service';
 @Component({
   selector: "app-home",
   templateUrl: "home.page.html",
@@ -25,7 +25,8 @@ export class HomePage implements OnInit {
     private alertCtrl: AlertController,
     private modalCtrl: ModalController,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private fileService:FileHelperService
   ) {}
   accountSecurityEn() {
     this.router.navigate(["account-security_en"]);
@@ -49,7 +50,13 @@ export class HomePage implements OnInit {
     //   })
     // );
   }
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.fileService.checkHcpUpdate().subscribe(r=>{
+      console.log(r);
+    },e=>{
+      console.error(e);
+    })
+  }
   // selectDate() {
   // this.router.navigate([{outlets:{selectDatetime:['select-datetime']}}]);
   //   if (!this.day1.date) {

@@ -11,8 +11,8 @@
 </ion-header>
 
 <ion-content padding>
-  <p *ngIf='deviceInfo'>
-    {{deviceInfo|json}}
+  <p *ngIf='fileInfo'>
+    {{fileInfo|json}}
   </p>
   <form [formGroup]="form">
     <section *ngIf="loginType == 'user'">
