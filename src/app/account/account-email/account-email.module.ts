@@ -23,8 +23,7 @@ const routes: Routes = [
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    RouterModule.forChild(routes),
-    AppcomponentsModule
+    RouterModule.forChild(routes)
   ],
   declarations: [AccountEmailPage]
 })

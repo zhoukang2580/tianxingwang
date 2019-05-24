@@ -3,6 +3,9 @@ import { IdentityService } from 'src/app/services/identity/identity.service';
 import { Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api/api.service';
 import { BaseRequest } from 'src/app/services/api/BaseRequest';
+import { AppHelper } from 'src/app/appHelper';
+import { tap, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-password-check',
@@ -10,51 +13,69 @@ import { BaseRequest } from 'src/app/services/api/BaseRequest';
   styleUrls: ['./password-check.page.scss'],
 })
 export class PasswordCheckPage implements OnInit {
-
+  isShowImageCode:boolean;
+  message:string;
+  name:string;
   constructor(    
     private identityService: IdentityService,
     private router: Router,
     private apiService: ApiService) { }
 
   ngOnInit() {
+   this.identityService.getIdentity().then(r=>{
+     if(r && r.Id)
+     {
+      this.check();
+     }
+   });
+
+  }
+  showImageCode(type:string)
+  {
+    
+    this.isShowImageCode=true;
+  }
+  onSlideEvent(valid: boolean) {
+    if (valid) {
+      this.check();
+      this.isShowImageCode=false;
+    } 
   }
 
   check()
   {
-    // const req = new BaseRequest();
-    // req.Method = "method";
-    // req.ImageCode = imageCode;
-    // req.ImageValue = imageValue;
-    // req.Data = JSON.stringify({
-    //   Name: name,
-    //   Password: password
-    // });
-    // AppHelper.setStorage("loginName", name);
-    // return this.apiService
-    //   .getResponse<{
-    //     Ticket: string; // "";
-    //     Id: string; // ;
-    //     Name: string; // "";
-    //     IsShareTicket: boolean; // false;
-    //     Numbers: { [key: string]: string };
-    //   }>(req)
-    //   .pipe(
-    //     tap(r => console.log("Login", r)),
-    //     switchMap(r => {
-    //       if (!r.Status) {
-    //         return throwError(r.Message);
-    //       }
-    //       return of(r.Data);
-    //     }),
-    //     tap(rid => {
-    //       const id: IdentityEntity = new IdentityEntity();
-    //       id.Name = name;
-    //       id.Ticket = rid.Ticket;
-    //       id.IsShareTicket = rid.IsShareTicket;
-    //       id.Numbers = rid.Numbers;
-    //       id.Id = rid.Id;
-    //       this.identityService.setIdentity(id);
-    //     })
-    //   );
+    debugger;
+    const req = new BaseRequest();
+    req.Method = "ApiPasswordUrl-Home-Action";
+    req.Data = JSON.stringify({
+      Name: this.name,
+      Action:"Check"
+    });
+    const des= this.apiService
+      .getResponse<{
+        ValidTypes: []; // "";
+        AccountId: string; // ;
+
+      }>(req)
+      .pipe(
+        switchMap(r => {
+          if (!r.Status) {
+            this.message=r.Message;
+            return of(r.Data);
+          }
+          if(r.Data)
+          {
+            this.router.navigate([AppHelper.getRoutePath("password-valid"),{Name: this.name, ValidTypes:JSON.stringify(r.Data.ValidTypes)}]);
+          }
+          return of(r.Data);
+        }),
+        tap(rid => {
+        
+        })
+      ).subscribe(r=>{},
+        (e)=>{},
+        ()=>{
+        des.unsubscribe();
+      });
   }
 }

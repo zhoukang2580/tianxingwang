@@ -25,7 +25,7 @@ import { Device } from '@ionic-native/device/ngx';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    IonicModule.forRoot({swipeBackEnabled:true,backButtonText:"",loadingSpinner:"crescent"}),
+    IonicModule.forRoot({swipeBackEnabled:!true,backButtonText:"",loadingSpinner:"crescent"}),
     HttpClientModule,
     TranslateModule.forRoot({
       loader: {

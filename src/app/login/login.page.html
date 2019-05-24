@@ -74,12 +74,12 @@
         <span *ngIf="loginType != 'user'" (click)="switchLoginType('user')">用户名登录</span>
       </ion-button>
       <h6 text-end *ngIf="!validatedBySmsCode">
-        <ion-note color="primary" (click)="forgetOriginalPassword()"
+        <ion-note color="primary" (click)="forgetPassword()"
           >忘记密码？</ion-note
         >
       </h6>
     </ion-item>
-    <app-slidvalidate-com *ngIf="isShowImageCode" [class.hidden]="isShowWechatLogin" (slideEvent)='onSlideEvent($event)'></app-slidvalidate-com>
+    <app-slidvalidate-com  *ngIf="isShowImageCode" (slideEvent)='onSlideEvent($event)'></app-slidvalidate-com>
     <app-or-comp>第三方登陆</app-or-comp>
     <ion-item (click)='loginByWechat()' lines='none' text-center >
       <div class='third-party-logo'>
