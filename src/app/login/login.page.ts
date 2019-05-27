@@ -29,11 +29,11 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   loginType: string = "user";
   loading$: Observable<boolean>;
   isMobileNumberOk = false;
-  isLoginOk=false;
+  isLoginOk = false;
   isShowWechatLogin: boolean;
-  isShowImageCode:boolean;
-  SlideEventType:string;
-  fileInfo:any={};
+  isShowImageCode: boolean;
+  SlideEventType: string;
+  fileInfo: any = {};
   constructor(
     private loginService: LoginService,
     private configService: ConfigService,
@@ -41,37 +41,47 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private barcodeScanner: BarcodeScanner,
     private device: Device,
-    private config:Config,
-    private fileService:FileHelperService
+    private config: Config,
+    private fileService: FileHelperService
   ) {
-    this.config.set('swipeBackEnabled',false);
+    this.config.set('swipeBackEnabled', false);
     this.loading$ = this.loginService.getLoading();
     this.isShowWechatLogin = AppHelper.isApp() || AppHelper.isWechatH5();
   }
   ngAfterViewInit() {
-   
+
   }
   onSlideEvent(valid: boolean) {
     if (valid) {
-      if(this.SlideEventType=="login")
-      {
+      if (this.SlideEventType == "login") {
         this.login();
       }
-      else if(this.SlideEventType=="sendmobilecode")
-      {
+      else if (this.SlideEventType == "sendmobilecode") {
         this.sendLoginMobileCode();
       }
-      this.isShowImageCode=false;
-    } 
+      this.isShowImageCode = false;
+    }
   }
-  ngOnInit() {  
+  ngOnInit() {
     // this.fileInfo=this.fileService.fileInfo;
-    this.fileService.checkHcpUpdate().subscribe(r=>{
-      console.log(JSON.stringify(r));
+    this.fileService.checkHcpUpdate(r => {
       this.fileInfo.msg = r.taskDesc;
-      this.fileInfo.progress=Math.floor(r.loaded/(r.total||1)*100).toFixed(2)+"%";
-    },e=>{
-      console.error(e);
+      this.fileInfo.progress = Math.floor(r.loaded / (r.total || 1) * 100).toFixed(2) + "%";
+    })
+    .then(nativeURL=>{
+      AppHelper.alert('是否打开新版本？' + nativeURL, true).then(ok => {
+        if (ok) {
+          window['hcp'] && window['hcp'].openHcpPage(nativeURL).then(res => {
+            console.log(res);
+          }).catch(e => {
+            AppHelper.alert(e);
+          });
+        }
+      });
+    })
+    .catch(e => {
+      AppHelper.alert(e);
+      console.log(JSON.stringify(e, null, 2));
     })
     this.loginEntity = new LoginEntity();
     this.form = this.fb.group({
@@ -89,26 +99,22 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       this.setLoginButton();
     });
     this.form.controls["Password"].valueChanges.subscribe((m: string) => {
-     this.setLoginButton();
+      this.setLoginButton();
     });
     this.form.controls["MobileCode"].valueChanges.subscribe((m: string) => {
       this.setLoginButton();
-     });
+    });
     this.setLoginButton();
-    if(AppHelper.isApp())
-    {
+    if (AppHelper.isApp()) {
       this.loginType = "device";
       this.login();
     }
   }
-  setLoginButton()
-  {
-    if(this.loginType=="user")
-    {
+  setLoginButton() {
+    if (this.loginType == "user") {
       this.isLoginOk = this.form.value.Name && this.form.value.Password;
     }
-    else if(this.loginType=="mobile")
-    {
+    else if (this.loginType == "mobile") {
       this.isLoginOk = this.form.value.MobileCode;
     }
   }
@@ -174,18 +180,15 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.loginType = type;
 
   }
-  showImageCode(type:string)
-  {
-    this.SlideEventType=type;
-    this.isShowImageCode=true;
+  showImageCode(type: string) {
+    this.SlideEventType = type;
+    this.isShowImageCode = true;
   }
-  onLoginButton(type:string)
-  {
-    if(this.loginType=="user")
-    {
+  onLoginButton(type: string) {
+    if (this.loginType == "user") {
       this.showImageCode(type);
     }
-    else{
+    else {
       this.login();
     }
   }
@@ -303,13 +306,11 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   {
     this.loginType = "user";
     const toPageRouter = this.loginService.getToPageRouter() || "";
-    if (isCheckDevice && AppHelper.isApp())
-    {
+    if (isCheckDevice && AppHelper.isApp()) {
       var uuid = await AppHelper.getUUID();
       this.loginService.checkIsDeviceBinded(uuid).subscribe(res => {
         // 需要绑定
-        if(res.Data)
-        {
+        if (res.Data) {
           this.router.navigate([AppHelper.getRoutePath("account-bind"), {
             IsActiveMobile: res.Data.IsActiveMobile,
             Mobile: res.Data.Mobile,

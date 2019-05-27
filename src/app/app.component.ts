@@ -65,7 +65,7 @@ export class AppComponent {
     // this.router.navigate([AppHelper.getRoutePath('account-bind')]);
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
-      this.splashScreen.hide();
+      // this.splashScreen.hide();
     });
     this.backButtonAction();
   }

@@ -51,11 +51,6 @@ export class HomePage implements OnInit {
     // );
   }
   ngOnInit(): void {
-    this.fileService.checkHcpUpdate().subscribe(r=>{
-      console.log(r);
-    },e=>{
-      console.error(e);
-    })
   }
   // selectDate() {
   // this.router.navigate([{outlets:{selectDatetime:['select-datetime']}}]);

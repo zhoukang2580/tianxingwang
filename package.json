@@ -71,6 +71,7 @@
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^10.12.29",
     "codelyzer": "~4.5.0",
+    "compressing": "^1.4.0",
     "fs-readdir-recursive": "^1.1.0",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
@@ -90,7 +91,6 @@
       "cordova-plugin-whitelist": {},
       "cordova-plugin-statusbar": {},
       "cordova-plugin-device": {},
-      "cordova-plugin-splashscreen": {},
       "cordova-plugin-ionic-webview": {
         "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
       },
@@ -103,8 +103,8 @@
       "phonegap-plugin-barcodescanner": {
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
       },
-      "cordova-hcp-plugin": {},
-      "cordova-plugin-app-version": {}
+      "cordova-plugin-app-version": {},
+      "cordova-hcp-plugin": {}
     },
     "platforms": [
       "ios",

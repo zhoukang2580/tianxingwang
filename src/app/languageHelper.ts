@@ -1,5 +1,8 @@
 
 export class LanguageHelper {
+  static getHcpValidatingFileTip() {
+    return "正在校验文件完整性";
+  }
   static getHcpDownloadingTip() {
     return "正在更新数据...";
   }

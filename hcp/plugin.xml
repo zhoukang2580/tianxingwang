@@ -23,5 +23,21 @@
             <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
         </config-file>
         <source-file src="src/android/Hcp.java" target-dir="src/com/beeant/plugin/hcp" />
+        <source-file src="src/android/utils/MD5.java" target-dir="src/com/beeant/plugin/hcp/utils" />
     </platform>
+    <platform name="ios">
+    <!-- Plugin inclusion in Cordova config.xml -->
+    <config-file parent="/*" target="config.xml">
+      <feature name="Hcp">
+        <param name="ios-package" value="HCPPlugin"/>
+        <param name="onload" value="true"/>
+      </feature>
+    </config-file>
+    <!-- Plugin source code -->
+    <source-file src="src/ios/HCPPlugin.m"/>
+    <header-file src="src/ios/HCPPlugin.h"/>
+    <!-- sources for Utils folder -->
+    <source-file src="src/ios/Utils/NSData+HCPMD5.m" target-dir="Utils/"/>
+    <header-file src="src/ios/Utils/NSData+HCPMD5.h" target-dir="Utils/"/>
+  </platform>
 </plugin>

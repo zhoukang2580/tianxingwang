@@ -1,15 +1,21 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { File } from "@ionic-native/file/ngx";
+import { File, FileEntry, DirectoryEntry, Entry } from "@ionic-native/file/ngx";
 import { Platform } from '@ionic/angular';
 import { Zip } from '@ionic-native/zip/ngx';
-import { Observable, throwError, of, from } from 'rxjs';
-import { switchMap, map, tap, finalize } from 'rxjs/operators';
 import { ApiService } from './api/api.service';
 import { BaseRequest } from './api/BaseRequest';
 import { AppVersion } from '@ionic-native/app-version/ngx';
 import { AppHelper } from '../appHelper';
 import { LanguageHelper } from '../languageHelper';
+interface Hcp {
+  getHash: (filePath: string) => Promise<string>;
+  openHcpPage: (filePath: string) => Promise<any>;
+}
+type md5JsonFileType = {
+  file: string;
+  hash: string;
+}
 type UpdateList = {
   Url: string;
   Version: {
@@ -33,16 +39,20 @@ type HcpUpdateModel = {
   taskDesc?: string;
   nativeURL?: string;
   unZipComplete?: boolean;
+  hcpUpdateComplete?: boolean;
 };
 @Injectable({
   providedIn: 'root'
 })
 export class FileHelperService {
   private readonly updateZipFileName: string = "DongmeiIonic.zip";
-  private readonly updateDirectoryName: string = "updateWwwDirectory";//
+  private readonly updateDirectoryName: string = "update";//
   private readonly www = "www";
+  private readonly md5JsonFileName = "filesHash.json";
   private localVersion: string = AppHelper.isApp() ? null : "1.0.0";
-  private serverVersion:string;
+  private serverVersion: string;
+  private dataDirectory: string;
+  private hcpPlugin: Hcp;
   fileInfo: any = {};
   constructor(private file: File,
     private httpClient: HttpClient,
@@ -51,8 +61,10 @@ export class FileHelperService {
     private plt: Platform,
     private zip: Zip) {
     this.plt.ready().then(async () => {
+      this.hcpPlugin = window['hcp'];
       this.localVersion = await this.appVersion.getVersionNumber();
       this.fileInfo.dataDrectory = this.file.dataDirectory;
+      this.fileInfo.externalDataDirectory = this.file.externalDataDirectory;
       this.fileInfo.cacheDirector = this.file.cacheDirectory;
       this.fileInfo.tempDirectory = this.file.tempDirectory;
       this.fileInfo.documentsDirectory = this.file.documentsDirectory;
@@ -61,17 +73,18 @@ export class FileHelperService {
       this.fileInfo.applicationStorageDirectory = this.file.applicationStorageDirectory;
       this.fileInfo.externalApplicationStorageDirectory = this.file.externalApplicationStorageDirectory;
       this.fileInfo.externalRootDirectory = this.file.externalRootDirectory;
-      console.log(JSON.stringify(this.fileInfo));
+      console.log(JSON.stringify(this.fileInfo, null, 2));
+      this.dataDirectory = this.file.dataDirectory;
       this.createUpdateWwwDirectory();
     });
   }
   private async createUpdateWwwDirectory() {
     try {
       this.plt.ready().then(() => {
-        return this.checkDirExists(this.file.dataDirectory, this.updateDirectoryName);
+        return this.checkDirExists(this.dataDirectory, this.updateDirectoryName);
       }).then(exist => {
         if (!exist) {
-          return this.createDir(this.file.dataDirectory, this.updateDirectoryName);
+          return this.createDir(this.dataDirectory, this.updateDirectoryName);
         }
       });
     } catch (e) {
@@ -79,169 +92,194 @@ export class FileHelperService {
       return Promise.resolve(null);
     }
   }
-  private createDir(path: string, dirName: string) {
-    console.log(`创建文件夹 ${path}${dirName}`);
-    return this.file.createDir(path, dirName, false)
+  private async createDir(path: string, dirName: string) {
+    console.log(`开始创建文件夹 ${path}/${dirName}`);
+    return this.file.createDir(path, dirName, true)
       .then(diren => {
-        console.log(`创建文件夹成功${path}${dirName}`);
+        console.log(`创建文件夹成功${path}/${dirName}`);
         return diren;
       })
       .catch(e => {
         console.log(`创建文件夹失败` + JSON.stringify(e, null, 2));
+        return null as DirectoryEntry;
       });
   }
-  private unZip(filePath: string, destPath: string): Observable<HcpUpdateModel> {
-    return new Observable(obs => {
-      this.plt.ready().then(() => {
-        console.log(`开始解压文件 ${filePath} 到 ${destPath}`);
-        this.zip.unzip(filePath, destPath, (progress: { loaded: number; total: number }) => {
-          obs.next({ loaded: progress.loaded, total: progress.total, canUpdate: true, taskDesc: LanguageHelper.getHcpUnZipTip() } as HcpUpdateModel);
-          console.log(`解压进度 ${Math.floor(100 * progress.loaded / progress.total)}%`);
-        }).then((status) => {
-          if (status === 0) {
-            console.log(`解压进度成功!`);
-            // 删除下载的压缩包
-            this.removeFile(`${this.file.dataDirectory}${this.updateDirectoryName}`, this.updateZipFileName);
-            obs.next({ canUpdate: true, nativeURL: destPath, unZipComplete: true,taskDesc:LanguageHelper.getHcpUnZipCompleteTip()} as HcpUpdateModel);
-            obs.complete();
-          } else {
-            console.log(`解压失败!`);
-            obs.error("解压失败");
-          }
-        }).catch(e => {
-          obs.error(e);
-          console.log("解压异常，" + JSON.stringify(e, null, 2));
-        })
+  private getServerVersion() {
+    return new Promise<UpdateList>((resove, reject) => {
+      const req = new BaseRequest();
+      req.Method = "ServiceVersionUrl-Home-Index";
+      req.Data = { "Product": "DongmeiIonicAndroid" };
+      const sub = this.apiService.getResponse<UpdateList>(req).subscribe(r => {
+        if (r.Status && r.Data) {
+          resove(r.Data);
+        } else {
+          reject(r.Message);
+        }
+      }, e => {
+        reject(e);
+      }, () => {
+        if (sub) {
+          console.log("sub.unsubscribe()");
+          sub.unsubscribe();
+        }
       });
     });
   }
-  checkHcpUpdate() {
-    const req = new BaseRequest();
-    req.Method = "ServiceVersionUrl-Home-Index";
-    req.Data = { "Product": "DongmeiIonicAndroid" };
-    return from(this.plt.ready().then(async () => {
-      await this.createUpdateWwwDirectory();
-      if (!this.localVersion) {
-        this.localVersion = await this.appVersion.getVersionNumber();
-      }
-      console.log(`获取到的localVersion=${this.localVersion}`);
-    })).pipe(
-      // 获取服务器版本
-      switchMap(() => {
-        return this.apiService.getResponse<UpdateList>(req)
-          .pipe(
-            switchMap(res => {
-              if (res.Status) {
-                return of(res.Data);
-              } else {
-                return throwError(res.Message);
-              }
-            })
-          );
-      }),
-      // 判断是否需要热更
-      switchMap(res => {
-        if (!res.Version ||
-          res.Version.length === 0 ||
-          !res.Version[0].Hotfix ||
-          res.Version[0].Hotfix.length === 0 ||
-          !res.Version[0].Hotfix[0]
-        ) {
-          return of({
-            canUpdate: false
-          } as HcpUpdateModel);
+  checkHcpUpdate(onprogress: (hcp: HcpUpdateModel) => void) {
+    return new Promise<string>(async (resolve, reject) => {
+      try {
+        await this.plt.ready();
+        await this.createUpdateWwwDirectory();
+        if (!this.localVersion) {
+          this.localVersion = await this.appVersion.getVersionNumber();
         }
-        this.serverVersion=res.Version[0].Value;
+        await this.listDirFiles(`${this.dataDirectory}`, `${this.updateDirectoryName}`);
+        const updateList = await this.getServerVersion();
+        this.serverVersion = updateList.Version[0].Value;
         // 根据版本判断，是否需要热更新
-        const versionUpdate = this.checkIfHcpUpdateByVersion(res.Version[0].Value, this.localVersion);
+        const versionUpdate = this.checkIfHcpUpdateByVersion(this.serverVersion, this.localVersion);
         if (!versionUpdate) {
-          return of({
-            canUpdate: false
+          reject("版本无需热更");
+          return false;
+        }
+        const localExists = await this.checkLocalExists(this.serverVersion);
+        console.log(`检查本地是否存在服务器热更版本 ${localExists ? "存在" : "不存在"}`);
+        if (localExists) {
+          reject("本地已经存在热更版本");
+          return false;
+        }
+        const url =
+          // AppHelper.isApp() ? `${data.url}/${data.folder}` :
+          `assets/${this.updateZipFileName}`;
+        const zipFile = await this.downloadZipFile(url, onprogress);
+        const zipFileExists = await this.checkFileExists(`${this.dataDirectory}${this.updateDirectoryName}`, this.updateZipFileName);
+        if (!zipFileExists) {
+          // reject(`zipFile是否存在 ${zipFileExists ? "存在" : "不存在"}`)
+          console.log(`zipFile是否存在 ${zipFileExists ? "存在" : "不存在"}`)
+          // return false;
+        }
+        const path = `${this.dataDirectory}${this.updateDirectoryName}`;
+        const serverVersionDirectory = `${this.www}_${this.serverVersion}`.replace(/\./g, "_");
+        await this.removeRecursively(path, serverVersionDirectory);
+        const direntry = await this.createDir(path, serverVersionDirectory);
+        if (!direntry) {
+          reject(`${path}/${serverVersionDirectory}创建失败`);
+          return false;
+        }
+        const unZipOk = await this.zip.unzip(zipFile.nativeURL, direntry.nativeURL, evt => {
+          onprogress({
+            total: evt.total,
+            loaded: evt.loaded,
+            taskDesc: LanguageHelper.getHcpUnZipTip()
+          } as HcpUpdateModel);
+        });
+        if (unZipOk !== 0) {
+          reject(`解压文件失败`);
+          return false;
+        }
+        const checkResult = await this.checkUnZipFilesMd5(onprogress);
+        if (!checkResult) {
+          // reject(`文件校验失败`);
+          // return false;
+          console.log(`文件校验失败`);
+
+        }
+        const versionFile = await this.createFile(direntry.nativeURL, `${serverVersionDirectory}.log`, true);
+        if (!versionFile) {
+          reject(`创建${serverVersionDirectory}.log 失败`);
+          // console.log(`创建${serverVersionDirectory}.log 失败`);
+          return false;
+        }
+        const ok = await this.checkFileExists(direntry.nativeURL, `${serverVersionDirectory}.log`);
+        console.log(`创建${serverVersionDirectory}.log ${ok ? "成功" : "失败"}`);
+        await this.listDirFiles(direntry.toURL(), `${this.www}`);
+        resolve(versionFile.toURL());
+      } catch (e) {
+        console.log(`热更失败${JSON.stringify(e, null, 2)}`);
+        reject(e);
+        return false;
+      }
+    });
+  }
+  private async getMd5JsonFile() {
+    const path = `${this.dataDirectory}${this.updateDirectoryName}`;
+    const versionDir = `${this.www}_${this.serverVersion}`.replace(/\./g, "_");
+    const json = await this.readFileAsString(`${path}/${versionDir}/${this.www}`, this.md5JsonFileName);
+    if (json) {
+      return JSON.parse(json) as md5JsonFileType[];
+    }
+    return "";
+  }
+  private downloadZipFile(url: string, onprogress: (hcp: HcpUpdateModel) => void) {
+    return new Promise<HcpUpdateModel>((resove, rejcet) => {
+      const sub = this.httpClient.get(url, { observe: "events", responseType: "arraybuffer", reportProgress: true }).subscribe(async (evt: any) => {
+        if (evt.total) {
+          console.log(`正在下载zip文件 ${Math.floor(evt.loaded / evt.total * 100).toFixed(2)}%`);
+          onprogress({
+            total: evt.total,
+            loaded: evt.loaded,
+            taskDesc: LanguageHelper.getHcpDownloadingTip()
           } as HcpUpdateModel);
         }
-        // 判断本地是否存在
-        // path/www_1_1_0
-        return from(
-          this.checkLocalExists(res.Version[0].Value)
-        )
-          .pipe(map(exists => (
-            {
-              ...res,
-              canUpdate: !exists,// 本地无有效的版本，则需要热更
-              url: res.Url,
-              folder: res.Version[0].Hotfix[0].Folder,
-              serverVersion: res.Version[0].Value,
-              loaded: 0,
-              total: 1
-            })));
-      }),
-      // 开始执行热更（如果需要的话）
-      switchMap(r => {
-        if (!r.canUpdate) {
-          return of(r);
+        if (evt instanceof HttpResponse) {
+          const fileEntry = await this.createFile(`${this.dataDirectory}${this.updateDirectoryName}`, this.updateZipFileName, true);
+          if (!fileEntry) {
+            rejcet(`${this.updateZipFileName}文件创建失败`);
+            return;
+          }
+          fileEntry.createWriter(fw => {
+            fw.onerror = err => {
+              rejcet(err);
+            };
+            fw.onprogress = fwevt => {
+              onprogress({
+                total: fwevt.total,
+                loaded: fwevt.loaded,
+                taskDesc: LanguageHelper.getWritingFileTip()
+              } as HcpUpdateModel);
+            };
+            fw.onwriteend = fwevt => {
+              console.log(`${this.updateZipFileName}写入本地已经完成,${fileEntry.toURL()}`);
+              resove({
+                hcpUpdateComplete: true,
+                nativeURL: fileEntry.toURL()
+              } as HcpUpdateModel);
+            }
+            fw.write(evt.body);
+          });
         }
-        return this.execHcpUpdate(r);
-      }),
-      // 开始解压文件
-      switchMap(response => {
-        if (!response.canUpdate || !response.nativeURL) {
-          return of(response);
+      }, e => {
+        rejcet(e);
+      }, () => {
+        if (sub) {
+          sub.unsubscribe();
         }
-        const path = `${this.file.dataDirectory}${this.updateDirectoryName}`;
-        const versionDir = `${this.www}_${this.serverVersion}`.replace(/\./g, "_");
-        return this.unZip(response.nativeURL, `${path}/${versionDir}`);
-      }),
-      // 解压完成后，生成一个文件，标记改版本可用
-      switchMap(r => {
-        if (r.unZipComplete) {
-          const path = `${this.file.dataDirectory}${this.updateDirectoryName}`;
-          const versionDir = `${this.www}_${this.serverVersion}`.replace(/\./g, "_");
-          console.log(`解压完成，开始创建标记文件${this.serverVersion},${versionDir}`);
-          return from(
-            this.createFile(`${path}/${versionDir}`, `${versionDir}.log`, true)
-              .then(r => {
-                if (!r) {
-                  console.log("创建标记文件失败");
-                  return { canUpdate: false, nativeURL: null } as HcpUpdateModel;
-                }
-                console.log("创建标记文件成功");
-                this.listDirFiles(path, versionDir);
-                this.listDirFiles(path+"/"+versionDir, this.www);
-                const fileUrl = r.nativeURL;
-                console.log("文件NativeUrl" + r.nativeURL);
-                return { canUpdate: true,taskDesc:LanguageHelper.getHcpCreateVersionFileTip(), unZipComplete: true, nativeURL: fileUrl, total: 1, loaded: 1 } as HcpUpdateModel;
-              })
-          );
-        }
-        return of(r);
-      }),
-      finalize(() => {
-        this.listDirFiles(this.file.dataDirectory, this.updateDirectoryName);
-        // 删除下载的压缩包
-        this.removeFile(`${this.file.dataDirectory}${this.updateDirectoryName}`, this.updateZipFileName);
-      })
-    );
+      });
+    });
   }
+
   /**
    *  检查 服务器版本是否已经下载到本地，或者，本地是否存在一个有效的服务器版本
    *  // path/www_1_1_0
    * @param serverVersion 
    */
   private checkLocalExists(serverVersion: string) {
-    console.log(`checkLocalExists,serverVersion=${serverVersion}`)
-    return this.checkDirExists(`${this.file.dataDirectory}${this.updateDirectoryName}`,
+    console.log(`checkLocalExists,serverVersion=${serverVersion}`);
+    return this.checkDirExists(`${this.dataDirectory}${this.updateDirectoryName}`,
       `${this.www}_${serverVersion}`.replace(/\./g, "_"))
       .then(exists => {
+        console.log(`checkLocalExists 路径检查结果` + exists);
         if (exists) {
           // 存在，判断文件夹内是否存在 www_1_1_0.log 文件
-          const path = `${this.file.dataDirectory}${this.updateDirectoryName}`;
+          const path = `${this.dataDirectory}${this.updateDirectoryName}`;
           const versionDir = `${this.www}_${serverVersion}`.replace(/\./g, "_");
-          return this.checkFile(`${path}/${versionDir}`, `${versionDir}.log`)
+          return this.checkFileExists(`${path}/${versionDir}`, `${versionDir}.log`)
             .then(fileExists => {
+              console.log(`checkLocalExists 检查是否存在 【${versionDir}.log】 文件 ` + fileExists);
               if (!fileExists) {
                 // 本地的版本是无效的
                 // 删除文件夹
-                this.clearVersionDirectory(serverVersion);
+                return this.clearVersionDirectory(serverVersion).then(() => fileExists);
               }
               return fileExists;
             });
@@ -263,7 +301,7 @@ export class FileHelperService {
     return this.file.listDir(path, dir).then(en => {
       console.log(`列出文件夹${path}/${dir}下面的所有文件：`);
       en.forEach(item => {
-        console.log(`【${item.name}】\t\r\n`);
+        console.log(`【${item.name}】`);
       });
       return en;
     }).catch(e => {
@@ -271,81 +309,21 @@ export class FileHelperService {
       return [];
     });
   }
-  private execHcpUpdate(data: HcpUpdateModel) {
-    const url =
-      // AppHelper.isApp() ? `${data.url}/${data.folder}` :
-      `assets/${this.updateZipFileName}`;
-    console.log(`获取【${url}】服务器的文件`);
-    return this.httpClient.get(url, { observe: "events", responseType: "arraybuffer", reportProgress: true }).pipe(
-      switchMap((evt: any) => {
-        console.log(evt);
-        return new Observable<HcpUpdateModel>(obs => {
-          if (evt.total) {
-            obs.next({
-              ...data,
-              canUpdate: true,
-              total: evt.total,
-              loaded: evt.loaded,
-              taskDesc: LanguageHelper.getHcpDownloadingTip()
-            } as HcpUpdateModel);
-          } else if (evt instanceof HttpResponse) {
-            console.log(`文件下载完成，开始创建zip文件`);
-            this.createFile(`${this.file.dataDirectory}${this.updateDirectoryName}`, this.updateZipFileName, true).then(fileEntry => {
-              if (!fileEntry) {
-                console.log(`创建zip文件失败`);
-                obs.error("文件下载失败");
-                // this.removeRecursively();
-                this.clearVersionDirectory(this.serverVersion);
-                this.removeFile(`${this.file.dataDirectory}${this.updateDirectoryName}`, this.updateZipFileName);
-              } else {
-                fileEntry.createWriter(fw => {
-                  fw.onprogress = (ev => {
-                    console.log(`正在写入文件${Math.floor(ev.loaded / ev.total * 100)}%`);
-                    obs.next({
-                      canUpdate: true,
-                      loaded: ev.loaded,
-                      // lengthComputable: ev.lengthComputable,
-                      taskDesc: LanguageHelper.getWritingFileTip(),
-                      total: ev.total
-                    } as HcpUpdateModel);
-                  });
-                  fw.onerror = e => {
-                    console.log(`文件写入失败${JSON.stringify(e, null, 2)}`);
-                    obs.error(e);
-                  };
-                  fw.onwriteend = (ev) => {
-                    // console.log(`文件写入完成:${ev.total},fullPath=${fileEntry.fullPath}`);
-                    // console.log(`文件写入完成:${ev.total},nativeURL=${fileEntry.nativeURL}`);
-                    // console.log(`文件写入完成:${ev.total},toURL=${fileEntry.toURL()}`);
-                    // console.log(`文件写入完成:${ev.total},toInternalURL=${fileEntry.toInternalURL()}`);
-                    obs.next({ canUpdate: true, total: ev.total, loaded: ev.loaded, nativeURL: fileEntry.nativeURL, serverVersion: this.serverVersion } as HcpUpdateModel);
-                    obs.complete();
-                  }
-                  fw.write(evt.body);
-                });
-              }
-            });
-          } else {
-            obs.next(evt as any);
-          }
-        });
-      })
-    );
-  }
+
   private clearVersionDirectory(version: string) {
-    const path = `${this.file.dataDirectory}${this.updateDirectoryName}`;
+    const path = `${this.dataDirectory}${this.updateDirectoryName}`;
     const versionDir = `${this.www}_${version}`.replace(/\./g, "_");
-    console.log(`开始清楚版本${version},${path}/${versionDir}`);
+    console.log(`开始删除版本${version},${path} / ${versionDir}`);
     return this.removeRecursively(path, versionDir).then(r => {
-      console.log(`完成清楚版本${version},${path}/${versionDir}`);
+      console.log(`完成删除版本${version},${path} / ${versionDir}`);
       return r;
     });
   }
   private createFile(path: string, fileName: string, replace: boolean) {
-    console.log(`创建文件${path}/${fileName}`);
+    console.log(`创建文件${path}  /  ${fileName}`);
     return this.file.createFile(path, fileName, replace).catch(e => {
       console.log(`创建文件失败${JSON.stringify(e, null, 2)}`);
-      return null;
+      return null as FileEntry;
     });
   }
   /**
@@ -354,15 +332,13 @@ export class FileHelperService {
    * @param directoryName 
    */
   private removeRecursively(path: string, directoryName: string) {
-    try {
-      return this.file.removeRecursively(path, directoryName);
-    } catch (e) {
+    return this.file.removeRecursively(path, directoryName).catch(e => {
       console.log(`递归删除文件夹失败` + JSON.stringify(e, null, 2));
       return Promise.resolve({
         success: false,
         fileRemoved: null
       });
-    }
+    });
   }
   /**
    *  
@@ -371,6 +347,7 @@ export class FileHelperService {
    * @returns 返回 true 表示要更新，false不需要更新 
    */
   private checkIfHcpUpdateByVersion(serverVersion: string, localVersion: string) {
+    console.log(`比较热更版本 server:${serverVersion} <===> localversion ${localVersion}`);
     if (!serverVersion || !localVersion) {
       return false;
     }
@@ -409,30 +386,159 @@ export class FileHelperService {
     // 主版本不等或者次版本不等
     return smain != lmain || sMinor != lMinor;
   }
-  private checkFile(path: string, fileName: string) {
-    console.log(`检查文件${path}/${fileName}是否存在`);
+  private checkFileExists(path: string, fileName: string) {
+    console.log(`检查文件${path} / ${fileName}是否存在`);
     return this.file.checkFile(path, fileName)
+      .then(en => {
+        console.log(`文件${path} / ${fileName}【存在】`);
+        return en;
+      })
       .catch(e => {
-        console.log(`检查文件${path}/${fileName} 是否存在出现异常 ${JSON.stringify(e, null, 2)}`);
+        console.log(`文件${path} / ${fileName}【不存在】${JSON.stringify(e, null, 2)}`);
+        // console.log(`检查文件${path}/${fileName} 是否存在出现异常 ${JSON.stringify(e, null, 2)}`);
         return false;
       })
   }
   private checkDirExists(path: string, dirName: string) {
-    console.log(`检查路径${path}目录${dirName}是否存在`);
-    return new Promise<boolean>((resolve, reject) => {
-      this.file.checkDir(path, dirName)
-        .then(_ => {
-          console.log(`检查路径${path}目录${dirName}存在`);
-          resolve(true);
-        }).catch(e => {
-          reject(e);
-        });
-    }).catch(e => {
-      console.log(`检查路径异常，` + JSON.stringify(e, null, 2));
+    console.log(`检查路径${path} / ${dirName}是否存在`);
+    return this.file.checkDir(path, dirName)
+      .then(_ => {
+        console.log(`路径${path}/${dirName}【存在】`);
+        return true;
+      }).catch(e => {
+        console.log(`路径${path}/${dirName}【不存在】${JSON.stringify(e, null, 2)}`);
+        return false;
+      });
+  }
+  private async checkUnZipFilesMd5(onprogress: (hcp: HcpUpdateModel) => void) {
+    try {
+      const md5JsonFile = await this.getMd5JsonFile();
+      // console.log(`md5jsonFile,${JSON.stringify(md5JsonFile)}`);
+      if (!md5JsonFile) {
+        return false;
+      }
+      const path = `${this.dataDirectory}${this.updateDirectoryName}`;
+      const versionDir = `${this.www}_${this.serverVersion}`.replace(/\./g, "_");
+      let files = await this.getDirectoryFilesRecursively(`${path}/${versionDir}`, this.www, []);
+      files = files.filter(item => !item.toURL().includes(".zip") || !item.toURL().includes(this.md5JsonFileName));// 调试阶段多了一个zip文件
+      console.log(`-----------${md5JsonFile.length}】个原始文件与${files.length}个解压文件进行校验-----------`);
+      // if (files.length !== md5JsonFile.length) {
+      //   return false;
+      // }
+      const checkMd5Failures: {
+        file: string;
+        md5: string;
+        downloadMd5: string;
+        err: string;
+      }[] = [];
+      for (let i = 0; i < files.length; i++) {
+        onprogress({
+          total: files.length,
+          loaded: i + 1,
+          taskDesc: LanguageHelper.getHcpValidatingFileTip()
+        } as HcpUpdateModel);
+        const f = files[i];
+        const dirEntry = await this.getParent(f);
+        if (!dirEntry) {
+          checkMd5Failures.push({
+            file: f.toURL(),
+            md5: null,
+            downloadMd5: null,
+            err: "文件所在目录不存在"
+          });
+          continue;
+        }
+        // 路径从www目录开始计算
+        // 比如Android中，
+        // file:///data/user/0/com.skytrip.dmonline/files/update/www_1_0_1/www/assets/images/call_center_hot_problem_hotel_scene_icon.png
+        const filePath = f.toURL().substring(f.toURL().indexOf('www/') + "www/".length);
+        const originFile = md5JsonFile.find(item => item.file == filePath);
+        if (!originFile) {
+          checkMd5Failures.push({
+            file: f.toURL(),
+            md5: null,
+            downloadMd5: null,
+            err: `md5JsonFile 找不到对应的文件 ${filePath}`
+          });
+          continue;
+        }
+        const origiFileMd5 = originFile.hash;
+        const path = dirEntry.nativeURL.endsWith("/") ? dirEntry.nativeURL.substring(0, dirEntry.nativeURL.lastIndexOf("/")) : dirEntry.nativeURL;
+        const donwloadmd5 = await this.getFileMd5(path, f.name);
+        if (!donwloadmd5) {
+          checkMd5Failures.push({
+            file: f.toURL(),
+            md5: null,
+            downloadMd5: null,
+            err: `${f.name}文件md5计算出错`
+          });
+          continue;
+        }
+        if (origiFileMd5 !== donwloadmd5) {
+          checkMd5Failures.push({
+            file: f.toURL(),
+            md5: origiFileMd5,
+            downloadMd5: donwloadmd5,
+            err: `文件【${f.name}】和原始文件【${originFile.file}】的md5校验失败`
+          });
+        }
+      }
+      console.log(`-----------完成文件校验-----------`);
+      console.log(`总共有${checkMd5Failures.filter(item => !item.downloadMd5 || !item.md5).length}个文件md5不存在`);
+      console.log(`总共校验${files.length}个文件，其中${checkMd5Failures.length}个校验失败，校验详细结果:${JSON.stringify(checkMd5Failures, null, 2)}`);
+      return checkMd5Failures.length === 0;
+    } catch (e) {
+      console.log(`文件校验异常${JSON.stringify(e, null, 2)}`);
       return false;
+    }
+  }
+
+  private readFileAsString(path: string, file: string) {
+    return this.file.readAsText(path, file).catch(() => "");
+  }
+  private getParent(f: Entry) {
+    return new Promise<DirectoryEntry>((s, rej) => {
+      f.getParent(dirEntry => {
+        s(dirEntry);
+      }, err => {
+        console.log(`f entry getParent 失败${JSON.stringify(err, null, 2)}`);
+        s(null);
+      });
     });
   }
-  downloadFile(url: string, destPath: string) {
-
+  private async getFileMd5(path: string, file: string) {
+    if (this.hcpPlugin) {
+      return await this.hcpPlugin.getHash(`${path}/${file}`).catch(e => {
+        console.log(`计算${file} hash 出错,${JSON.stringify(e, null, 2)}`);
+        return "";
+      });
+    }
+    return "";
+  }
+  private async getDirectoryFilesRecursively(path: string, dir: string, entries: Entry[]) {
+    const tempEntry = await this.getDirectoryFiles(path, dir);
+    for (let i = 0; i < tempEntry.length; i++) {
+      const item = tempEntry[i];
+      if (item.isFile) {
+        entries.push(item);
+      } else {
+        const p = await this.getParent(item);
+        console.log(`读取目录${p.toURL()},【${item.name}】下的文件`);
+        const itemPath = p.toURL().endsWith("/") ? p.toURL().substring(0, p.toURL().lastIndexOf('/')) : p.toURL();
+        console.log(`【${item.name}】有${(await this.file.listDir(itemPath, item.name)).length}个文件【${item.isDirectory ? "夹" : ""}】`);
+        await this.getDirectoryFilesRecursively(`${itemPath}`, item.name, entries);
+      }
+    }
+    console.log(`entries当前大小：${entries.length}个文件`);
+    return entries;
+  }
+  private async getDirectoryFiles(path: string, dir: string) {
+    try {
+      const files = await this.file.listDir(path, dir);
+      return files;
+    } catch (e) {
+      console.log(`读取目录【${dir}】 下的文件异常,: ${JSON.stringify(e, null, 2)}`);
+      return [];
+    }
   }
 }
