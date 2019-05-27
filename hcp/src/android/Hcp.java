@@ -15,8 +15,13 @@ import org.apache.cordova.CordovaWebView;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class Hcp extends CordovaPlugin {
     private final String TAG = "HCP";
@@ -35,16 +40,17 @@ public class Hcp extends CordovaPlugin {
     @Override
     public void onResume(boolean multitasking) {
         super.onResume(multitasking);
-        String path = this.preferences.getString("loadIndexPagePath", null);
-        Log.d("Hcp", "热更插件加载页面 " + path);
-        if (path != null) {
-            openHcpPage(path, mMallbackContext);
-        }
+
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        String path = this.preferences.getString("loadIndexPagePath", null);
+        Log.d("Hcp", "热更插件加载页面 " + path);
+        if (path != null) {
+            openHcpPage(path, mMallbackContext);
+        }
     }
 
     @Override
@@ -90,13 +96,18 @@ public class Hcp extends CordovaPlugin {
                     Log.d(TAG,"indexfile 不存在");
                     return;
                 }
+
+                Log.d(TAG,"index.html 文件内容"+getFileAsString(indexFile));
                 try {
+                    String loadurl =FILE_PREFIX+indexFile.getAbsolutePath();
                     preferences.edit().putString("loadIndexPagePath", path).apply();
                     Log.d(TAG, "loadUrlIntoView indexFile.getAbsolutePath()=" + indexFile.getAbsolutePath());
-                    Log.d(TAG, "loadUrlIntoView FILE_PREFIX+indexFile.getAbsolutePath()=" + FILE_PREFIX+indexFile.getAbsolutePath());
+                    Log.d(TAG, "loadUrlIntoView loadurl=" +loadurl);
+                    File f3=resourceApi.mapUriToFile(getUriForArg(loadurl));
+                    Log.d(TAG,"f3 exists="+f3.exists());
                     cordova.getActivity().runOnUiThread(()->{
                         webView.clearHistory();
-                        webView.loadUrlIntoView(FILE_PREFIX+indexFile.getAbsolutePath(), false);
+                        webView.loadUrlIntoView(FILE_PREFIX+f3.getAbsolutePath(), false);
                     });
                 } catch (Exception e) {
                     cordova.getActivity().runOnUiThread(()->{
@@ -108,6 +119,23 @@ public class Hcp extends CordovaPlugin {
                 }
             }
         });
+    }
+    private  String getFileAsString(File file){
+        StringBuilder sb = new StringBuilder();
+        try {
+            FileReader fr = new FileReader(file);
+            BufferedReader bfr = new BufferedReader(fr);
+            String line;
+            while ((line=bfr.readLine())!=null){
+                sb.append(line);
+            }
+            return sb.toString();
+        } catch (FileNotFoundException e) {
+            Log.d(TAG,e.getMessage());
+        } catch (IOException e) {
+            Log.d(TAG,e.getMessage());
+        }
+        return null;
     }
     private  void getHash(String path,CallbackContext callbackContext){
 
