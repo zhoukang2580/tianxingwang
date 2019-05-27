@@ -79,8 +79,8 @@ export class FileHelperService {
     });
   }
   private async createUpdateWwwDirectory() {
-    if(!AppHelper.isApp()){
-      return Promise.resolve(true);
+    if (!AppHelper.isApp()) {
+      return Promise.resolve({});
     }
     try {
       this.plt.ready().then(() => {
@@ -129,8 +129,8 @@ export class FileHelperService {
     });
   }
   checkHcpUpdate(onprogress: (hcp: HcpUpdateModel) => void) {
-    if(!AppHelper.isApp()){
-      return Promise.resolve(true);
+    if (!AppHelper.isApp()) {
+      return Promise.resolve({});
     }
     return new Promise<string>(async (resolve, reject) => {
       try {
@@ -218,49 +218,54 @@ export class FileHelperService {
   }
   private downloadZipFile(url: string, onprogress: (hcp: HcpUpdateModel) => void) {
     return new Promise<HcpUpdateModel>((resove, rejcet) => {
-      const sub = this.httpClient.get(url, { observe: "events", responseType: "arraybuffer", reportProgress: true }).subscribe(async (evt: any) => {
-        if (evt.total) {
-          console.log(`正在下载zip文件 ${Math.floor(evt.loaded / evt.total * 100).toFixed(2)}%`);
-          onprogress({
-            total: evt.total,
-            loaded: evt.loaded,
-            taskDesc: LanguageHelper.getHcpDownloadingTip()
-          } as HcpUpdateModel);
-        }
-        if (evt instanceof HttpResponse) {
-          const fileEntry = await this.createFile(`${this.dataDirectory}${this.updateDirectoryName}`, this.updateZipFileName, true);
-          if (!fileEntry) {
-            rejcet(`${this.updateZipFileName}文件创建失败`);
-            return;
+      const sub = this.httpClient.get(url, {
+        observe: "events",
+        responseType: "arraybuffer",
+        reportProgress: true
+      })
+        .subscribe(async (evt: any) => {
+          if (evt.total) {
+            console.log(`正在下载zip文件 ${Math.floor(evt.loaded / evt.total * 100).toFixed(2)}%`);
+            onprogress({
+              total: evt.total,
+              loaded: evt.loaded,
+              taskDesc: LanguageHelper.getHcpDownloadingTip()
+            } as HcpUpdateModel);
           }
-          fileEntry.createWriter(fw => {
-            fw.onerror = err => {
-              rejcet(err);
-            };
-            fw.onprogress = fwevt => {
-              onprogress({
-                total: fwevt.total,
-                loaded: fwevt.loaded,
-                taskDesc: LanguageHelper.getWritingFileTip()
-              } as HcpUpdateModel);
-            };
-            fw.onwriteend = fwevt => {
-              console.log(`${this.updateZipFileName}写入本地已经完成,${fileEntry.toURL()}`);
-              resove({
-                hcpUpdateComplete: true,
-                nativeURL: fileEntry.toURL()
-              } as HcpUpdateModel);
+          if (evt instanceof HttpResponse) {
+            const fileEntry = await this.createFile(`${this.dataDirectory}${this.updateDirectoryName}`, this.updateZipFileName, true);
+            if (!fileEntry) {
+              rejcet(`${this.updateZipFileName}文件创建失败`);
+              return;
             }
-            fw.write(evt.body);
-          });
-        }
-      }, e => {
-        rejcet(e);
-      }, () => {
-        if (sub) {
-          sub.unsubscribe();
-        }
-      });
+            fileEntry.createWriter(fw => {
+              fw.onerror = err => {
+                rejcet(err);
+              };
+              fw.onprogress = fwevt => {
+                onprogress({
+                  total: fwevt.total,
+                  loaded: fwevt.loaded,
+                  taskDesc: LanguageHelper.getWritingFileTip()
+                } as HcpUpdateModel);
+              };
+              fw.onwriteend = fwevt => {
+                console.log(`${this.updateZipFileName}写入本地已经完成,${fileEntry.toURL()}`);
+                resove({
+                  hcpUpdateComplete: true,
+                  nativeURL: fileEntry.toURL()
+                } as HcpUpdateModel);
+              }
+              fw.write(evt.body);
+            });
+          }
+        }, e => {
+          rejcet(e);
+        }, () => {
+          if (sub) {
+            sub.unsubscribe();
+          }
+        });
     });
   }
 

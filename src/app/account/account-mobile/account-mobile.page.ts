@@ -17,7 +17,7 @@ export class AccountMobilePage implements OnInit {
   action:string;
   isActiveMobile?:boolean;
   isFinish:boolean;
-  isModiy:boolean;
+  isModiy=true;
   countDown = 0;
   form: FormGroup;
   countDownInterval: any;

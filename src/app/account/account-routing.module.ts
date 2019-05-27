@@ -51,26 +51,11 @@ let routes: Route[] = [
   {
     path: "account-bind",
     loadChildren: "./account-bind/account-bind.page.module#AccountBindPageModule"
-  },  { path: 'account-mobile', loadChildren: './account-mobile/account-mobile.module#AccountMobilePageModule' }
+  },
+  { path: 'account-mobile', loadChildren: './account-mobile/account-mobile.module#AccountMobilePageModule' }
 
 ];
-(() => {
-  routes = routes.map(r => {
-    if (r.loadChildren) {
-      return {
-        ...r,
-        canLoad: [AuthorityGuard]
-      }
-    }
-    if (r.component) {
-      return {
-        ...r,
-        canActivate: [AuthorityGuard]
-      }
-    }
-    return r;
-  });
-})()
+
 @NgModule({
   declarations: [],
   imports: [CommonModule, RouterModule.forChild(routes)],

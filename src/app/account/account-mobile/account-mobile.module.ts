@@ -1,3 +1,4 @@
+import { AuthorityGuard } from 'src/app/guards/authority.guard';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -10,7 +11,8 @@ import { AccountMobilePage } from './account-mobile.page';
 const routes: Routes = [
   {
     path: '',
-    component: AccountMobilePage
+    component: AccountMobilePage,
+    canActivate:[AuthorityGuard]
   }
 ];
 
