@@ -33,7 +33,6 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   isShowWechatLogin: boolean;
   isShowImageCode: boolean;
   SlideEventType: string;
-  fileInfo: any = {};
   constructor(
     private loginService: LoginService,
     private configService: ConfigService,
@@ -41,8 +40,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private barcodeScanner: BarcodeScanner,
     private device: Device,
-    private config: Config,
-    private fileService: FileHelperService
+    private config: Config
   ) {
     this.config.set('swipeBackEnabled', false);
     this.loading$ = this.loginService.getLoading();
@@ -53,10 +51,10 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   }
   onSlideEvent(valid: boolean) {
     if (valid) {
-      if (this.SlideEventType == "login") {
+      if (this.SlideEventType === "login") {
         this.login();
       }
-      else if (this.SlideEventType == "sendmobilecode") {
+      else if (this.SlideEventType === "sendmobilecode") {
         this.sendLoginMobileCode();
       }
       this.isShowImageCode = false;
@@ -64,25 +62,6 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   }
   ngOnInit() {
     // this.fileInfo=this.fileService.fileInfo;
-    this.fileService.checkHcpUpdate(r => {
-      this.fileInfo.msg = r.taskDesc;
-      this.fileInfo.progress = Math.floor(r.loaded / (r.total || 1) * 100).toFixed(2) + "%";
-    })
-    .then(nativeURL=>{
-      AppHelper.alert('是否打开新版本？' + nativeURL, true).then(ok => {
-        if (ok) {
-          window['hcp'] && window['hcp'].openHcpPage(nativeURL).then(res => {
-            console.log(res);
-          }).catch(e => {
-            AppHelper.alert(e);
-          });
-        }
-      });
-    })
-    .catch(e => {
-      AppHelper.alert(e);
-      console.log(JSON.stringify(e, null, 2));
-    })
     this.loginEntity = new LoginEntity();
     this.form = this.fb.group({
       Name: [AppHelper.getStorage<string>("loginName")],

@@ -1,19 +1,16 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-buttons slot="start" (click)='onScan()'>
+    <!-- <ion-buttons slot="start" (click)='onScan()'>
       <ion-button>扫一扫</ion-button>
-    </ion-buttons>
+    </ion-buttons> -->
     <ion-title>登录</ion-title>
-    <ion-buttons slot="start" (click)='deviceName()'>
+    <!-- <ion-buttons slot="start" (click)='deviceName()'>
       <ion-button>设备名</ion-button>
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
-  <p *ngIf='fileInfo'>
-    {{fileInfo|json}}
-  </p>
   <form [formGroup]="form">
     <section *ngIf="loginType == 'user'">
       <ion-row>

@@ -79,6 +79,9 @@ export class FileHelperService {
     });
   }
   private async createUpdateWwwDirectory() {
+    if(!AppHelper.isApp()){
+      return Promise.resolve(true);
+    }
     try {
       this.plt.ready().then(() => {
         return this.checkDirExists(this.dataDirectory, this.updateDirectoryName);
@@ -126,6 +129,9 @@ export class FileHelperService {
     });
   }
   checkHcpUpdate(onprogress: (hcp: HcpUpdateModel) => void) {
+    if(!AppHelper.isApp()){
+      return Promise.resolve(true);
+    }
     return new Promise<string>(async (resolve, reject) => {
       try {
         await this.plt.ready();

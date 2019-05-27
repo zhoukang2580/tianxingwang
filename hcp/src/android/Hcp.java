@@ -172,4 +172,19 @@ public class Hcp extends CordovaPlugin {
         return resourceApi.remapUri(
                 tmpTarget.getScheme() != null ? tmpTarget : Uri.fromFile(new File(arg)));
     }
+    static void copyAssets(String fromDir, String destRootDir, AssetManager manager) throws IOException {
+        String[] fs = manager.list(fromDir);
+        if (fs != null) {
+            if (fs.length > 0) {
+//                Log.d(HCPHelper.TAG, "目录" + fromDir + " 文件数量" + fs.length);
+                for (String s : fs) {
+                    String tgt = destRootDir + File.separator + s;
+//                    Log.d(HCPHelper.TAG, "原目录：" + fromDir + File.separator + s + "=>目的目录：" + tgt);
+                    copyAssets(fromDir + File.separator + s, tgt, manager);
+                }
+            } else {
+                copyAssetFile(fromDir, destRootDir, manager);
+            }
+        }
+    }
 }
