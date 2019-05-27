@@ -42,7 +42,6 @@ export class AccountBindPage implements OnInit, OnDestroy {
       MobileCode: []
     });
     this.paramsSubscription = this.route.paramMap.subscribe(p => {
-      debugger;
       if (p) {
         this.bindMobileInfo.IsActiveMobile = p.get("IsActiveMobile") == 'true';
         this.bindMobileInfo.Mobile = p.get("Mobile");
@@ -81,7 +80,6 @@ export class AccountBindPage implements OnInit, OnDestroy {
     });
   }
   bind(){
-    debugger;
     if(!this.form.value.MobileCode)
     {
       AppHelper.alert(LanguageHelper.getMobileCodeTip());
@@ -141,7 +139,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
     }, 1000);
   }
   jump() { 
-    this.router.navigate([AppHelper.getRoutePath(this.path)]);
+    this.router.navigate([AppHelper.getRoutePath(this.path||"")]);
   }
   ngOnDestroy() {
     this.paramsSubscription.unsubscribe();

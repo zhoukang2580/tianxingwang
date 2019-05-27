@@ -1,6 +1,7 @@
 package com.beeant.plugin.hcp;
 
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
@@ -15,13 +16,17 @@ import org.apache.cordova.CordovaWebView;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 
 public class Hcp extends CordovaPlugin {
     private final String TAG = "HCP";
@@ -34,7 +39,31 @@ public class Hcp extends CordovaPlugin {
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
         preferences = cordova.getActivity().getPreferences(0);
-
+        cordova.getThreadPool().execute(()->{
+            try {
+                String path=cordova.getActivity().getFilesDir()+File.separator+
+                        "update";
+                Log.d(TAG,"目的路径： "+new File(
+                        path,
+                        "www_1_0_1")
+                        .getAbsolutePath()+File.separator+"www");
+                copyAssets("www",new File(
+                        path,
+                        "www_1_0_1")
+                        .getAbsolutePath()+File.separator+"www",
+                        cordova.getContext().getAssets());
+                Log.d(TAG,"拷贝资源文件完成");
+                if(new File(path).exists()){
+                    Log.d(TAG,"打开路径: "+new File(path).getAbsolutePath());
+                    cordova.getActivity().runOnUiThread(()->{
+                        webView.loadUrlIntoView("file://"+new File(path).getAbsolutePath(),false);
+                    });
+                }
+            } catch (IOException e) {
+                Log.d(TAG,e.getMessage());
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override
@@ -63,7 +92,7 @@ public class Hcp extends CordovaPlugin {
         if (TextUtils.equals("getHash", action)) {
             mMallbackContext = callbackContext;
             cordova.getThreadPool().execute(()->{
-             this.getHash(args.optString(0),callbackContext);
+                this.getHash(args.optString(0),callbackContext);
             });
             return true;
         }
@@ -161,7 +190,7 @@ public class Hcp extends CordovaPlugin {
             return ;
         }
         if(!file.exists()){
-             Log.d(TAG,"文件不存在 path= "+file.getAbsolutePath());
+            Log.d(TAG,"文件不存在 path= "+file.getAbsolutePath());
             callbackContext.error("文件不存在");
             return;
         }
@@ -172,11 +201,11 @@ public class Hcp extends CordovaPlugin {
         return resourceApi.remapUri(
                 tmpTarget.getScheme() != null ? tmpTarget : Uri.fromFile(new File(arg)));
     }
-    static void copyAssets(String fromDir, String destRootDir, AssetManager manager) throws IOException {
+    private void copyAssets(String fromDir, String destRootDir, AssetManager manager) throws IOException {
         String[] fs = manager.list(fromDir);
         if (fs != null) {
             if (fs.length > 0) {
-//                Log.d(HCPHelper.TAG, "目录" + fromDir + " 文件数量" + fs.length);
+//                Log.d(TAG, "目录" + fromDir + " 文件数量" + fs.length);
                 for (String s : fs) {
                     String tgt = destRootDir + File.separator + s;
 //                    Log.d(HCPHelper.TAG, "原目录：" + fromDir + File.separator + s + "=>目的目录：" + tgt);
@@ -185,6 +214,76 @@ public class Hcp extends CordovaPlugin {
             } else {
                 copyAssetFile(fromDir, destRootDir, manager);
             }
+        }
+    }
+    private  void copyAssetFile(String fileName, String toFilePath, AssetManager manager) throws IOException {
+        File file = new File(toFilePath);
+        boolean d = deleteFile(file);
+        Log.d(TAG, "删除file ok? " + d + " file exists " + file.exists());
+        File toFile = new File(file.getParentFile(), file.getName());
+        ensureDirectoryExists(toFile.getParentFile());
+        boolean b = toFile.createNewFile();
+        Log.d(TAG, toFile.getName() + " 创建是否成功？" + b + " toFile 是否存在 " + toFile.exists());
+        InputStream in = new BufferedInputStream(manager.open(fileName));
+        OutputStream out = new BufferedOutputStream(new FileOutputStream(toFile, false));
+        // Transfer bytes from in to out
+        byte[] buf = new byte[1024];
+        int len;
+        while ((len = in.read(buf)) > 0) {
+            out.write(buf, 0, len);
+        }
+        out.flush();
+        in.close();
+        out.close();
+    }
+    public  String readAssetFile(String assetFile, AssetManager am) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        final InputStreamReader streamReader = new InputStreamReader(am.open(assetFile));
+        final BufferedReader bufferedReader = new BufferedReader(streamReader);
+
+        final char data[] = new char[1024];
+        int count;
+        while ((count = bufferedReader.read(data)) != -1) {
+            sb.append(data, 0, count);
+        }
+        bufferedReader.close();
+        return sb.toString();
+    }
+    /**
+     * Delete file object.
+     * If it is a folder - it will be deleted recursively will all content.
+     *
+     * @param fileOrDirectory file/directory to delete
+     */
+    public  boolean deleteFile(File fileOrDirectory) {
+        if (!fileOrDirectory.exists()) {
+            return true;
+        }
+
+        if (fileOrDirectory.isDirectory()) {
+            File[] filesList = fileOrDirectory.listFiles();
+            for (File child : filesList) {
+                deleteFile(child);
+            }
+        }
+
+        final File to = new File(fileOrDirectory.getAbsolutePath() + System.currentTimeMillis());
+        fileOrDirectory.renameTo(to);
+        return to.delete();
+
+        //fileOrDirectory.delete();
+    }
+    public  boolean ensureFileExists(String file) throws IOException {
+        File tgt = new File(file);
+        ensureDirectoryExists(tgt.getParentFile());
+        if (!tgt.exists() || tgt.isDirectory()) {
+            return tgt.createNewFile();
+        }
+        return false;
+    }
+    public  void ensureDirectoryExists(File tgt) {
+        if (!tgt.exists() || !tgt.isDirectory()) {
+            tgt.mkdirs();
         }
     }
 }

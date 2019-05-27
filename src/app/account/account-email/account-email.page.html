@@ -1,50 +1,50 @@
 <ion-header>
   <ion-toolbar>
-      <ion-buttons slot="start">
-          <ion-back-button></ion-back-button>
-        </ion-buttons>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
     <ion-title>邮箱绑定</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-    <form [formGroup]='form'>
+<ion-content padding>
+  <form [formGroup]='form'>
     <ion-row>
-        <ion-col size="3">
-          <ion-label position="floating">
-              <ion-label *ngIf="isFinish">绑定邮箱</ion-label>
-              <ion-label *ngIf="!isFinish">邮箱地址</ion-label>
-            </ion-label>
+      <ion-col size="3">
+        <ion-label position="floating">
+          <ion-label *ngIf="isFinish">绑定邮箱</ion-label>
+          <ion-label *ngIf="!isFinish">邮箱地址</ion-label>
+        </ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-input placeholder="邮箱地址" formControlName="Email" type="text" [readonly]='!isModiy'></ion-input>
+      </ion-col>
+      <ion-col size="4" *ngIf="countDown==0; else countdown">
+        <ion-button size="small" fill="outline" color="primary" (click)="sendEmailCode()">
+          <span [style.font-size.rem]="0.8">发送验证码</span>
+        </ion-button>
+      </ion-col>
+      <ng-template #countdown>
+        <ion-col class="down-count" size="2">
+          <ion-label color="medium">{{ countDown }} s</ion-label>
         </ion-col>
-        <ion-col>
-          <ion-input placeholder="邮箱地址" formControlName="Email" type="text" 
-            [readonly]='!isModiy'></ion-input>
-        </ion-col>
-        <ion-col size="4" *ngIf="countDown==0; else countdown">
-          <ion-button size="small" fill="outline" color="primary" 
-            (click)="sendEmailCode()">
-            <span [style.font-size.rem]="0.8">发送验证码</span>
-          </ion-button>
-        </ion-col>
-        <ng-template #countdown>
-          <ion-col class="down-count" size="2">
-            <ion-label color="medium">{{ countDown }} s</ion-label>
-          </ion-col>
-        </ng-template>
-      </ion-row>
-      <ion-row>
-          <ion-col size="4">
-            <ion-label position="floating">邮箱验证码</ion-label>
-          </ion-col>
-          <ion-col>
-            <ion-input placeholder="请输入收到邮箱验证码" formControlName="Code" (blur)="bind()"></ion-input>
-          </ion-col>
-        </ion-row>
-  <ion-row>
-      <ion-button (click)="sendAction()">
-        <ion-label *ngIf="isFinish">绑定</ion-label>
-        <ion-label *ngIf="!isFinish">下一步</ion-label>
-       </ion-button>
-  </ion-row>
+      </ng-template>
+    </ion-row>
+    <ion-row>
+      <ion-col size="4">
+        <ion-label position="floating">邮箱验证码</ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-input placeholder="请输入收到邮箱验证码" formControlName="Code" (blur)="sendAction()"></ion-input>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col push='8'>
+        <ion-button (click)="sendAction()"  fill='clear'>
+          <ion-label *ngIf="isFinish" color='primary'>绑定</ion-label>
+          <ion-label *ngIf="!isFinish" color='primary'>下一步</ion-label>
+        </ion-button>
+      </ion-col>
+    </ion-row>
   </form>
 </ion-content>

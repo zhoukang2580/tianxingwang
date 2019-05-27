@@ -26,7 +26,6 @@ export class HomePage implements OnInit {
     private modalCtrl: ModalController,
     private route: ActivatedRoute,
     private router: Router,
-    private fileService:FileHelperService
   ) {}
   accountSecurityEn() {
     this.router.navigate(["account-security_en"]);

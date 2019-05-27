@@ -20,7 +20,7 @@ export class AccountEmailPage implements OnInit {
   action: string;
   isActiveEmail?: boolean;
   isFinish: boolean;
-  isModiy: boolean;
+  isModiy: boolean = true;
   countDown = 0;
   form: FormGroup;
   countDownInterval: any;
@@ -70,7 +70,6 @@ export class AccountEmailPage implements OnInit {
         this.setResult(r);
 
       }, (e) => {
-        debugger;
       }, () => {
         scription.unsubscribe();
       });
@@ -99,7 +98,7 @@ export class AccountEmailPage implements OnInit {
       }
     }, 1000);
   }
- 
+
   sendEmailCode() {
     const req = new BaseRequest();
     req.Method = "ApiPasswordUrl-Email-SendCode";
@@ -111,7 +110,7 @@ export class AccountEmailPage implements OnInit {
     }>(req).subscribe(res => {
       this.startCountDonw(res.Data.SendInterval);
     }, e => {
-      alert(e);
+      AppHelper.alert(e);
     }, () => {
       setTimeout(() => {
         if (sub) {
