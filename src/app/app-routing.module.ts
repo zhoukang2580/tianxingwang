@@ -11,6 +11,7 @@ import { PasswordModule } from './password/password.module';
 const routes: Routes = [
   { path: 'select-city', loadChildren: './pages/select-city/select-city.module#SelectCityPageModule' },
   { path: 'crop-avatar', loadChildren: './pages/crop-avatar/crop-avatar.module#CropAvatarPageModule' },
+  { path: 'avatar-crop', loadChildren: './pages/avatar-crop/avatar-crop.module#AvatarCropPageModule' },
   {
     path: "",
     component: TabsPage,
@@ -19,7 +20,8 @@ const routes: Routes = [
   {
     loadChildren: "./page404/page404.module#Page404PageModule",
     matcher: AppHelper.matchDefaultRoute
-  }
+  },
+
 
 ];
 @NgModule({

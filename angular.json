@@ -52,6 +52,12 @@
               },
               {
                 "input": "src/assets/validator/winner.validator.js"
+              },
+              {
+                "input": "src/assets/exif.min.js"
+              },
+              {
+                "input": "src/assets/imagecutor/winner.imagecutor.js"
               }
             ]
           },

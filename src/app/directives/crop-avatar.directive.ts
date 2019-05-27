@@ -27,7 +27,7 @@ export class CropAvatarDirective {
           const fr = new FileReader();
           fr.onload = () => {
             AppHelper.setRouteData(fr.result);
-            this.navCtrl.navigateForward([AppHelper.getRoutePath('crop-avatar'),{'cropAvatar':"cropAvatar"}],{animated:false}).then(() => {
+            this.navCtrl.navigateForward([AppHelper.getRoutePath('avatar-crop'),{'cropAvatar':"cropAvatar"}],{animated:false}).then(() => {
               fileEle.value = null;
             });
           }

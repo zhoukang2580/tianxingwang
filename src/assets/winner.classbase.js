@@ -189,15 +189,24 @@ Winner.ClassBase.prototype =
     GetDto: function (content) {
         var result = (result == undefined ? {} : result);
         $(content).find("input,select,textarea").each(function () {
-            if (this.type == "radio" || this.type == "checkbox")
-                return null;
-            if ($(this).attr("disabled") == "disabled")
+            if ($(this).attr("disabled") == "disabled" || this.type == "radio" || this.type =="checkbox")
                 return null;
             var name = $(this).attr("name");
-            if (name != undefined && name!="") {
-                var value = $(this).val() == $(this).attr("ShowValue") || $(this).val() == "" ? "" : $(this).val();
-                value = $.trim(value);
-                eval("result." + name + "=value;");
+            if (name != undefined && name != "") {
+                if ($(this).attr("ismul") != "true") {
+                    var value = $(this).val();
+                    eval("result." + name + "=value;");
+                } else {
+                    var vals = [];
+                    $(content).find('*[name=' + name + '],').each(function (index, sender) {
+                        if ($(this).attr("disabled") == "disabled")
+                            return;
+                        vals.push($.trim(this.value));
+                    });
+                    var value = vals.join(",");
+                    eval("result." + name + "=value;");
+                }
+              
             }
         });
         $(content).find("input[type=radio]").each(function () {
@@ -221,6 +230,8 @@ Winner.ClassBase.prototype =
             if (name != undefined && name != "") {
                 var vals = [];
                 $(content).find('input[name=' + name + ']').each(function (index, sender) {
+                    if($(this).attr("disabled") == "disabled")
+                        return ;
                     if (this.value == "on") {
                         vals.push(this.checked);
                         return;
@@ -236,13 +247,22 @@ Winner.ClassBase.prototype =
                 eval("result." + name + "=value;");
             }
         });
+       
         return result;
     },
     SetDto: function (content, data) {
         var setVal = function (ctrl, con) {
             if (ctrl.attr("ShowValue") != undefined && (data[con] == null || data[con] == "")) {
                 ctrl.val(ctrl.attr("ShowValue"));
-            } else {
+            } else if (ctrl.attr("ismul") == "true") {
+                var vals = data[con].toString().split(',');
+                for (var i = 0; i < ctrl.length; i++) {
+                    if (i < vals.length) {
+                        $(ctrl[i]).val(vals[i]);
+                    }
+                }
+            }
+            else {
                 ctrl.val(data[con]);
             }
         }
@@ -279,15 +299,23 @@ Winner.ClassBase.prototype =
     GetForm: function (content) {
         var form = new FormData();
         $(content).find("input,select,textarea").each(function () {
-            if (this.type == "radio" || this.type == "checkbox")
-                return;
-            if ($(this).attr("disabled") == "disabled")
+            if ($(this).attr("disabled") == "disabled" || this.type == "radio" || this.type == "checkbox")
                 return null;
             var name = $(this).attr("name");
             if (name != undefined && name != "") {
-                var value = $(this).val() == $(this).attr("ShowValue") || $(this).val() == "" ? "" : $(this).val();
-                value = $.trim(value);
-                form.append(name, value);
+                if ($(this).attr("ismul") != "true") {
+                    var value = $(this).val();
+                    form.append(name, $.trim(value));
+                } else {
+                    var vals = [];
+                    $(content).find('*[name="' + name + '"]').each(function (index, sender) {
+                        var val = $(this).val();
+                        vals.push($.trim(val));
+                    });
+                    var value = vals.join(",");
+                    form.append(name, value);
+                }
+              
             }
         });
         var names = [];
@@ -299,7 +327,7 @@ Winner.ClassBase.prototype =
                 return null;
             names.push(name);
             if (name != undefined && name != "") {
-                $(content).find('input:radio[name=' + name + ']').each(function (index, sender) {
+                $(content).find('input:radio[name="' + name + '"]').each(function (index, sender) {
                     if (this.checked) {
                         form.append(name, $.trim(this.value));
                         return false;
@@ -318,6 +346,8 @@ Winner.ClassBase.prototype =
             if (name != undefined && name != "") {
                 var vals = [];
                 $(content).find('input[name="' + name + '"]').each(function (index, sender) {
+                    if ($(this).attr("disabled") == "disabled")
+                        return ;
                     if (this.value == "on") {
                         vals.push(this.checked);
                         return;
@@ -339,7 +369,15 @@ Winner.ClassBase.prototype =
         var setVal = function (ctrl, form) {
             if (ctrl.attr("ShowValue") != undefined && (form.value == null || form.value == "")) {
                 ctrl.val(ctrl.attr("ShowValue"));
-            } else {
+            } else if (ctrl.attr("ismul") == "true") {
+                var vals = form.value.toString().split(',');
+                for (var i = 0; i < ctrl.length; i++) {
+                    if (i < vals.length) {
+                        $(ctrl[i]).val(vals[i]);
+                    }
+                }
+            }
+            else {
                 ctrl.val(form.value);
             }
         }
