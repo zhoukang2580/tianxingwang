@@ -8,34 +8,25 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AuthorityGuard } from 'src/app/guards/authority.guard';
 let routes: Route[] = [
   { path: '', component: MyPage },
-  { path: 'my-detail', loadChildren: "./my-detail/my-detail.module#MyDetailPageModule" },
-  {
-    path: 'my-credential-management',
-    loadChildren: "./my-credential-management/my-credential-management.module#MyCredentialManagementPageModule"
-  },
-  {
-    path: 'my-credential-management-add',
-    loadChildren: "./my-credential-management-add/my-credential-management-add.module#MyCredentialManagementAddPageModule"
-  }
 
 ];
-(()=>{
-  routes=routes.map(r => {
-    if (r.loadChildren) {
-      return {
-        ...r,
-        canLoad: [AuthorityGuard]
-      }
-    }
-    if(r.component){
-      return {
-        ...r,
-        canActivate:[AuthorityGuard]
-      }
-    }
-    return r;
-  });
-})()
+// (()=>{
+//   routes=routes.map(r => {
+//     if (r.loadChildren) {
+//       return {
+//         ...r,
+//         canLoad: [AuthorityGuard]
+//       }
+//     }
+//     if(r.component){
+//       return {
+//         ...r,
+//         canActivate:[AuthorityGuard]
+//       }
+//     }
+//     return r;
+//   });
+// })()
 // .map(r => ({ ...r, canLoad: [AuthorityGuard] }));
 @NgModule({
   imports: [

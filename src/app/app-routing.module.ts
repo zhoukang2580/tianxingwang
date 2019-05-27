@@ -7,11 +7,11 @@ import { AccountModule } from "./account/account.module";
 import { TabsPage } from "./tabs/tabs.page";
 import { TabsPageModule } from './tabs/tabs.page.module';
 import { PasswordModule } from './password/password.module';
+import { MemberModule } from './member/member.module';
 
 const routes: Routes = [
   { path: 'select-city', loadChildren: './pages/select-city/select-city.module#SelectCityPageModule' },
   { path: 'crop-avatar', loadChildren: './pages/crop-avatar/crop-avatar.module#CropAvatarPageModule' },
-  { path: 'avatar-crop', loadChildren: './pages/avatar-crop/avatar-crop.module#AvatarCropPageModule' },
   {
     path: "",
     component: TabsPage,
@@ -31,6 +31,7 @@ const routes: Routes = [
     AccountModule,
     PasswordModule,
     TabsPageModule,
+    MemberModule,
     RouterModule.forRoot(routes, {
       preloadingStrategy: PreloadAllModules,
       enableTracing: !true,

@@ -3,7 +3,7 @@ import { ApiService } from 'src/app/services/api/api.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { TabsLanguage } from '../../tabs.language';
+import { LanguageHelper } from 'src/app/languageHelper';
 import { SelectCityService } from 'src/app/pages/select-city/select-city.service';
 
 @Component({
@@ -82,18 +82,18 @@ export class MyCredentialManagementAddPage implements OnInit {
     });
   }
   addCredential() {
-    if (this.formGroup.invalid) {
-      AppHelper.alert(TabsLanguage.getCompleteInfo());
-      return;
-    }
-    if (!this.identityNationality) {
-      AppHelper.alert(TabsLanguage.getIdentityNationality());
-      return;
-    }
-    if (!this.issueNationality) {
-      AppHelper.alert(TabsLanguage.getIdentityNationality());
-      return;
-    }
+    // if (this.formGroup.invalid) {
+    //   AppHelper.alert(LanguageHelper.getCompleteInfo());
+    //   return;
+    // }
+    // if (!this.identityNationality) {
+    //   AppHelper.alert(LanguageHelper.getIdentityNationality());
+    //   return;
+    // }
+    // if (!this.issueNationality) {
+    //   AppHelper.alert(LanguageHelper.getIdentityNationality());
+    //   return;
+    // }
   }
 
   selectIdentityNationality() {

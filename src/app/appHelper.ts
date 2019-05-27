@@ -381,4 +381,33 @@ export class AppHelper {
   static getQueryParamers() {
     return this._queryParamers as any;
   }
+
+  static _events:{name:string,handle:(name:string,data:any)=>void}[]=[];
+  static registerEvent(name:string,handle:(name:string,data:any)=>void)
+  {
+    this._events.push({name,handle});
+  }
+  static triggerEvent(name:string,data:any)
+  {
+    this._events.forEach((item,index)=>{
+      if(item.name==name && item.handle)
+      {
+        item.handle(name,data);
+      }
+    })
+  }
+
+  static _callbackHandle:(name:string,data:any)=>void;
+  static setCallback(callbackHandle:(name:string,data:any)=>void)
+  {
+   this._callbackHandle=callbackHandle;
+  }
+  static executeCallback(name:string,data:any)
+  {
+    if(this._callbackHandle)
+    {
+      this._callbackHandle(name,data);
+    }
+  }
+
 }

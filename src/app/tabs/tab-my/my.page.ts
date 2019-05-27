@@ -67,11 +67,11 @@ export class MyPage implements OnDestroy, OnInit {
 
   }
   credentialManagement() {
-    this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management')]);
+    this.router.navigate([AppHelper.getRoutePath('my-credential-management')]);
   }
   ngOnDestroy() {
   }
   goToMyDetail() {
-    this.router.navigate([AppHelper.getRoutePath("/tabs/my/my-detail")]);
+    this.router.navigate([AppHelper.getRoutePath("my-detail")]);
   }
 }

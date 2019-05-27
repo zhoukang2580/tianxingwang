@@ -20,24 +20,30 @@ export class CropAvatarPage implements OnInit {
   fileReader: FileReader;
   avatar: string;
   croppedImage: HTMLImageElement;
+  method:string;
+  fileName:string;
+  public static UploadSuccessEvent:string="CropAvatarPage.UploadSuccessEvent";
   constructor(private navCtrl: NavController, 
     private router:Router,
     private apiService:ApiService,
     private config: Config,
-    private plt: Platform, private route: ActivatedRoute) {
+    private plt: Platform, private activatedRoute: ActivatedRoute) {
     this.fileReader = new FileReader();
     this.config.set("swipeBackEnabled",false);
   }
 
   ngOnInit() {
+
   }
   goBack(){
     this.navCtrl.back();
   }
   ngAfterViewInit() {
     this.croppedImage = document.getElementById('image') as HTMLImageElement;
-    this.route.paramMap.subscribe(d=>{
+    this.activatedRoute.paramMap.subscribe(d=>{
       if(d&&d.get('cropAvatar')){
+        this.method=d.get("method");
+        this.fileName=d.get("fileName");
         this.croppedImage.src=AppHelper.getRouteData();
         AppHelper.setRouteData(null);
         this.reset();
@@ -59,8 +65,10 @@ export class CropAvatarPage implements OnInit {
       this.showCropBox = false;
     }, 0);
     this.avatar = this.resultImageUrl = this.cropper.getCroppedCanvas({
-      maxWidth: 1000,
-      maxHeight: 1000
+      maxWidth: 800,
+      maxHeight: 800,
+      minWidth:800,
+      minHeight:800,
     }).toDataURL();
     this.uploadImage(this.avatar);
 
@@ -76,14 +84,21 @@ export class CropAvatarPage implements OnInit {
   }
   uploadImage(avatarBase64Str:string){
     const req = new BaseRequest();
-    req.Method="ApiMemberUrl-Home-UploadHeadImage";
+    const vals=avatarBase64Str.split(',');
+    req.Method=this.method;
+    req.IsShowLoading=true;
     req.Data={
-      fileName:Date.now(),
-      fileValue:avatarBase64Str
+      FileName:this.fileName
     }
+    req.FileValue=encodeURIComponent(vals[1]);
    const uploadSubscription= this.apiService.getResponse<any>(req).subscribe(uploadRes=>{
       this.uploaded=true;
       this.showCropBox = false;
+      if(uploadRes.Status)
+      {
+        AppHelper.executeCallback(CropAvatarPage.UploadSuccessEvent,uploadRes.Data);
+        this.goBack();
+      }
     },e=>{
       this.uploaded=false;
       this.showCropBox = true;
@@ -107,13 +122,13 @@ export class CropAvatarPage implements OnInit {
       background: false,
       dragMode: "move" as any,
       minCanvasWidth: this.plt.width(),
+      minCropBoxWidth: this.plt.width(),
       minCanvasHeight: this.plt.height(),
       minContainerHeight: this.plt.height(),
       minContainerWidth: this.plt.width(),
-      
-      aspectRatio: 4 / 3,
-      viewMode: 2,
-      initialAspectRatio: 3,
+      responsive:true,
+      aspectRatio: 1 / 1,
+      viewMode: 0,
       crop(event) {
         // console.log(event.detail.x);
         // console.log(event.detail.y);

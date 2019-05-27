@@ -7,6 +7,7 @@ import { BaseRequest } from 'src/app/services/api/BaseRequest';
 import { ConfigService } from 'src/app/services/config/config.service';
 import { ApiService } from 'src/app/services/api/api.service';
 import { map } from 'rxjs/operators';
+import { CropAvatarPage } from 'src/app/pages/crop-avatar/crop-avatar.page';
 type PageModel = {
   Name: string;
   RealName: string;
@@ -35,6 +36,12 @@ export class MyDetailPage implements OnInit {
       HeadUrl: (await this.configService.get()).DefaultImageUrl
     } as any;
     this.load();
+    AppHelper.setCallback((name:string,data:any)=>{
+      if(name==CropAvatarPage.UploadSuccessEvent && data && data.HeadUrl)
+      {
+        this.Model.HeadUrl=data.HeadUrl+"?v="+Date.now();
+      }
+    })
   }
   
   load() {

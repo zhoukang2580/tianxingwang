@@ -1,4 +1,4 @@
-import { Directive, HostListener } from '@angular/core';
+import { Directive, HostListener, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { AppHelper } from '../appHelper';
 import { NavController } from '@ionic/angular';
@@ -8,7 +8,8 @@ import { NavController } from '@ionic/angular';
 })
 export class CropAvatarDirective {
 
-  constructor(private navCtrl: NavController) {
+  constructor(private navCtrl: NavController,private sender:ElementRef) {
+    console.dir(sender);
   }
   @HostListener("click", ['$event'])
   onHostClick(evt: MouseEvent) {
@@ -16,7 +17,9 @@ export class CropAvatarDirective {
     evt.preventDefault();
     return false;
   }
+
   croppImage() {
+    const self=this;
     const fileEle = document.getElementById("file") as HTMLInputElement;
     if (fileEle) {
       fileEle.click();
@@ -27,7 +30,8 @@ export class CropAvatarDirective {
           const fr = new FileReader();
           fr.onload = () => {
             AppHelper.setRouteData(fr.result);
-            this.navCtrl.navigateForward([AppHelper.getRoutePath('avatar-crop'),{'cropAvatar':"cropAvatar"}],{animated:false}).then(() => {
+            const method=self.sender.nativeElement.attributes["upload-method"].value;
+            this.navCtrl.navigateForward([AppHelper.getRoutePath('crop-avatar'),{'cropAvatar':"cropAvatar","method":method,"fileName":file.name}],{animated:false}).then(() => {
               fileEle.value = null;
             });
           }

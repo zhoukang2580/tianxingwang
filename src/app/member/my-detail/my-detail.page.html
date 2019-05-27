@@ -9,7 +9,7 @@
 
 <ion-content>
   <ion-list>
-    <ion-item detail cropAvatar>
+    <ion-item detail cropAvatar upload-method="ApiMemberUrl-Home-UploadHeadImage">
       <ion-label>头像</ion-label>
       <ion-thumbnail slot='end'>
         <img [src]="Model?.HeadUrl || defaultAvatar" alt="头像">
