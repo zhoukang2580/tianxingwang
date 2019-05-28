@@ -76,7 +76,10 @@ static NSString *const DEFAULT_STARTING_PAGE = @"index.html";
     NSString* filePath= [command argumentAtIndex:0];
       NSString *path= [self pathForURL:filePath];
     [self testFileExists:path :command];
-    [self loadURL:path];
+     NSFileManager* fMgr = [NSFileManager defaultManager];
+    NSString* p = [@"file://" stringByAppendingString:path];
+    NSLog(@"打开的路径：%@",p);
+    [self loadURL:p];
     
 }
 -(void) sendErrorResult:(NSString*)reason : (CDVInvokedUrlCommand*)command{

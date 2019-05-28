@@ -37,13 +37,13 @@ export class FunctionTestPage implements OnInit {
       .then(nativeURL => {
         AppHelper.alert('数据加载完成，重新打开以生效？' + nativeURL, true).then(ok => {
           if (ok) {
-            // this.hcp.openHcpPage(nativeURL).then(res => {
-            //   console.log(res);
-            // }).catch(e => {
-            //   AppHelper.alert(e);
-            // });
+            this.hcp.openHcpPage(nativeURL).then(res => {
+              console.log(res);
+            }).catch(e => {
+              AppHelper.alert(e);
+            });
             // this.app.clearHistory();
-            this.app.loadUrl(nativeURL);
+            // this.app.loadUrl(nativeURL);
             // this.app.exitApp();
           }
         });

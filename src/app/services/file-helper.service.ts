@@ -225,8 +225,8 @@ export class FileHelperService {
       //  console.log(`fe.toURL()=${fe.toURL()}`);
       //  console.log(`fe.filesystem.name=${fe.filesystem.name}`);
       //  console.log(`fe.filesystem.toJSON()=${fe.filesystem.toJSON()}`);
-       AppHelper.setStorage("newversionurl",fe.toInternalURL());
-        resolve(fe.toInternalURL());
+      //  AppHelper.setStorage("newversionurl",fe.toInternalURL());
+        resolve(fe.toURL());
       } catch (e) {
         console.log(`热更失败${JSON.stringify(e, null, 2)}`);
         reject(e);

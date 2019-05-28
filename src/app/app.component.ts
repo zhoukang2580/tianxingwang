@@ -84,14 +84,14 @@ export class AppComponent {
     // this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
     // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management')]);
     // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management-add')]);
-    // this.router.navigate([AppHelper.getRoutePath('function-test')]);
+    this.router.navigate([AppHelper.getRoutePath('function-test')]);
     this.platform.ready().then(() => {
       this.app=navigator['app'];
       this.statusBar.styleDefault();
-      if(AppHelper.getStorage("newVersionURL")&&AppHelper.isApp()){
-        // this.app.clearHistory();
-        this.app.loadUrl(AppHelper.getStorage("newversionurl"));
-      }
+      // if(AppHelper.getStorage("newVersionURL")&&AppHelper.isApp()){
+      //   // this.app.clearHistory();
+      //   this.app.loadUrl(AppHelper.getStorage("newversionurl"));
+      // }
       // this.splashScreen.hide();
     });
     this.backButtonAction();
