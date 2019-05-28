@@ -25,6 +25,15 @@ module.exports = async function(ctx) {
     console.log("www目录不存在");
     return;
   }
+  if(fs.existsSync(path.join(wwwPath,'filesHash.json'))){
+    console.log("删除旧的 filesHash.json");
+    fs.unlinkSync(path.join(wwwPath,'filesHash.json'));
+  }
+  const destZipFilePath = path.join(wwwPath, "assets", "DongmeiIonic.zip");
+  if(fs.existsSync(destZipFilePath)){
+    console.log(`删除旧 DongmeiIonic.zip`);
+    fs.unlinkSync(destZipFilePath);
+  }
   var files = fread(
     wwwPath,
     p => !p.includes("DongmeiIonic.zip") || !p.includes("filesHash.json")
@@ -51,10 +60,9 @@ module.exports = async function(ctx) {
   var compressingComplete = false;
   var s = Date.now();
   await compressing.zip
-    .compressDir(wwwPath, "DongmeiIonic.zip")
+    .compressDir(wwwPath, path.join(ctx.opts.projectRoot, "DongmeiIonic.zip"))
     .then(() => {
       console.log("压缩文件 success");
-      const destZipFilePath = path.join(wwwPath, "assets", "DongmeiIonic.zip");
       if (fs.existsSync(destZipFilePath)) {
         fs.unlinkSync(destZipFilePath);
         console.log(`成功删除文件${destZipFilePath}`);

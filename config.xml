@@ -11,7 +11,7 @@
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
-    <allow-navigation href="file:*" />
+    <allow-navigation href="cdvfile:*" />
     <allow-navigation href="content:*" />
     <allow-navigation href="data:*" />
     <preference name="ScrollEnabled" value="false" />
@@ -22,6 +22,8 @@
     <preference name="SplashShowOnlyFirstTime" value="false" />
     <preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="3000" />
+    <preference name="LogLevel" value="VERBOSE" />
+    <preference name="FullscreenNotImmersive" value="true" />
     <hook src="scripts/zipfile_before_build.js" type="before_build" />
     <platform name="android">
         <hook src="scripts/wechat-plugin-hook.js" type="before_build" />

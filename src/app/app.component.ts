@@ -12,12 +12,29 @@ import { ConfigService } from './services/config/config.service';
 import { HttpClient } from '@angular/common/http';
 import { LanguageHelper } from './languageHelper';
 import { AlertButton } from '@ionic/core';
-
+export interface App {
+  loadUrl: (
+    url: string,
+    prams?: {
+      wait?: number;
+      openexternal?: boolean;
+      clearhistory?: boolean;// 不能为true，否则Android抛异常
+    }) => void;
+    show:()=>void;
+    cancelLoadUrl:()=>void;
+    overrideButton:(btn:"volumeup"|"volumedown"|"menubutton",override?:boolean)=>void;
+    overrideBackbutton:(override?:boolean)=>void;
+    clearCache:()=>void;
+    clearHistory:()=>void;
+    backHistory:()=>void;
+    exitApp:()=>void;
+};
 @Component({
   selector: "app-root",
   templateUrl: "app.component.html",
 })
 export class AppComponent {
+  app:App;
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
@@ -69,7 +86,12 @@ export class AppComponent {
     // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management-add')]);
     // this.router.navigate([AppHelper.getRoutePath('function-test')]);
     this.platform.ready().then(() => {
+      this.app=navigator['app'];
       this.statusBar.styleDefault();
+      if(AppHelper.getStorage("newVersionURL")&&AppHelper.isApp()){
+        // this.app.clearHistory();
+        this.app.loadUrl(AppHelper.getStorage("newversionurl"));
+      }
       // this.splashScreen.hide();
     });
     this.backButtonAction();

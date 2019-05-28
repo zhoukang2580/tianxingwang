@@ -39,7 +39,7 @@ public class Hcp extends CordovaPlugin {
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
         preferences = cordova.getActivity().getPreferences(0);
-        this.initwww();
+        // this.initwww();
     }
     private  void initwww(){
         String p = this.preferences.getString("loadIndexPagePath", null);

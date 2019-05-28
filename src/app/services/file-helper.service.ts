@@ -1,5 +1,5 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { File, FileEntry, DirectoryEntry, Entry } from "@ionic-native/file/ngx";
 import { Platform } from '@ionic/angular';
 import { Zip } from '@ionic-native/zip/ngx';
@@ -37,7 +37,7 @@ type HcpUpdateModel = {
   total: number;
   loaded: number;
   taskDesc?: string;
-  nativeURL?: string;
+  nativePath?: string;
   unZipComplete?: boolean;
   hcpUpdateComplete?: boolean;
 };
@@ -54,7 +54,9 @@ export class FileHelperService {
   private dataDirectory: string;
   private hcpPlugin: Hcp;
   fileInfo: any = {};
-  constructor(private file: File,
+  constructor(
+    private ngZone: NgZone,
+    private file: File,
     private httpClient: HttpClient,
     private apiService: ApiService,
     private appVersion: AppVersion,
@@ -180,12 +182,14 @@ export class FileHelperService {
           reject(`${path}/${serverVersionDirectory}创建失败`);
           return false;
         }
-        const unZipOk = !AppHelper.isApp() ? 0 : await this.zip.unzip(zipFile.nativeURL, direntry.nativeURL, evt => {
-          onprogress({
-            total: evt.total,
-            loaded: evt.loaded,
-            taskDesc: LanguageHelper.getHcpUnZipTip()
-          } as HcpUpdateModel);
+        const unZipOk = !AppHelper.isApp() ? 0 : await this.zip.unzip(zipFile.nativePath, direntry.toInternalURL(), evt => {
+          this.ngZone.run(() => {
+            onprogress({
+              total: evt.total,
+              loaded: evt.loaded,
+              taskDesc: LanguageHelper.getHcpUnZipTip()
+            } as HcpUpdateModel);
+          });
         });
         if (unZipOk !== 0) {
           reject(`解压文件失败`);
@@ -193,21 +197,36 @@ export class FileHelperService {
         }
         const checkResult = await this.checkUnZipFilesMd5(onprogress);
         if (!checkResult) {
-          // reject(`文件校验失败`);
-          // return false;
+          reject(`文件校验失败`);
           console.log(`文件校验失败`);
-
+          return false;
         }
-        const versionFile = await this.createFile(direntry.nativeURL, `${serverVersionDirectory}.log`, true);
+        const versionFile = await this.createFile(direntry.toInternalURL(), `${serverVersionDirectory}.log`, true);
         if (!versionFile) {
           reject(`创建${serverVersionDirectory}.log 失败`);
           // console.log(`创建${serverVersionDirectory}.log 失败`);
           return false;
         }
-        const ok = await this.checkFileExists(direntry.nativeURL, `${serverVersionDirectory}.log`);
+        const ok = await this.checkFileExists(direntry.toInternalURL(), `${serverVersionDirectory}.log`);
         console.log(`创建${serverVersionDirectory}.log ${ok ? "成功" : "失败"}`);
         await this.listDirFiles(direntry.toURL(), `${this.www}`);
-        resolve(versionFile.toURL());
+        const vp = await this.getParent(versionFile);
+        if (!vp) {
+          reject(`创建${serverVersionDirectory}.log 失败`);
+          return;
+        }
+        const vpPath = `${vp.toURL()}${this.www}/index.html`;
+       const fe =  await this.file.resolveLocalFilesystemUrl(vpPath);
+      //  console.log(`fe.fullPath=${fe.fullPath}`);
+      //  console.log(`vpPath=${vpPath}`);
+      //  console.log(`fe.name=${fe.name}`);
+      //  console.log(`fe.nativeURL=${fe.nativeURL}`);
+      //  console.log(`fe.toInternalURL()=${fe.toInternalURL()}`);
+      //  console.log(`fe.toURL()=${fe.toURL()}`);
+      //  console.log(`fe.filesystem.name=${fe.filesystem.name}`);
+      //  console.log(`fe.filesystem.toJSON()=${fe.filesystem.toJSON()}`);
+       AppHelper.setStorage("newversionurl",fe.toInternalURL());
+        resolve(fe.toInternalURL());
       } catch (e) {
         console.log(`热更失败${JSON.stringify(e, null, 2)}`);
         reject(e);
@@ -261,7 +280,7 @@ export class FileHelperService {
                 console.log(`${this.updateZipFileName}写入本地已经完成,${fileEntry.toURL()}`);
                 resove({
                   hcpUpdateComplete: true,
-                  nativeURL: fileEntry.toURL()
+                  nativePath: fileEntry.toURL()
                 } as HcpUpdateModel);
               }
               fw.write(evt.body);
@@ -457,11 +476,14 @@ export class FileHelperService {
       const path = `${this.dataDirectory}${this.updateDirectoryName}`;
       const versionDir = `${this.www}_${this.serverVersion}`.replace(/\./g, "_");
       let files = await this.getDirectoryFilesRecursively(`${path}/${versionDir}`, this.www, []);
-      files = files.filter(item => !item.toURL().includes(".zip") || !item.toURL().includes(this.md5JsonFileName));// 调试阶段多了一个zip文件
+      console.log(`解压后的总文件数量：${files.length}个，md5JsonFile记录${md5JsonFile.length}个文件`);
+      files = files.filter(item => !item.toURL().includes(".zip") && !item.toURL().includes(this.md5JsonFileName));// 调试阶段多了一个zip文件
       console.log(`-----------${md5JsonFile.length}】个原始文件与${files.length}个解压文件进行校验-----------`);
-      // if (files.length !== md5JsonFile.length) {
-      //   return false;
-      // }
+      if (files.length !== md5JsonFile.length) {
+        console.log(`文件数量不一致，完整性校验失败`);
+
+        return false;
+      }
       const checkMd5Failures: {
         file: string;
         md5: string;
@@ -500,7 +522,7 @@ export class FileHelperService {
           continue;
         }
         const origiFileMd5 = originFile.hash;
-        const path = dirEntry.nativeURL.endsWith("/") ? dirEntry.nativeURL.substring(0, dirEntry.nativeURL.lastIndexOf("/")) : dirEntry.nativeURL;
+        const path = dirEntry.toInternalURL().endsWith("/") ? dirEntry.toInternalURL().substring(0, dirEntry.toInternalURL().lastIndexOf("/")) : dirEntry.toInternalURL();
         const donwloadmd5 = await this.getFileMd5(path, f.name);
         if (!donwloadmd5) {
           checkMd5Failures.push({

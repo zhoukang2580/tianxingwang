@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { AppHelper } from 'src/app/appHelper';
-import { Platform } from '@ionic/angular';
+import { Platform, IonApp } from '@ionic/angular';
 import { FileHelperService } from 'src/app/services/file-helper.service';
+import { App } from 'src/app/app.component';
 type Hcp = {
   openHcpPage: (url: string) => Promise<any>;
 };
+
 @Component({
   selector: 'app-function-test',
   templateUrl: './function-test.page.html',
@@ -13,16 +15,19 @@ type Hcp = {
 export class FunctionTestPage implements OnInit {
   info: any = {};
   hcp: Hcp;
-  constructor(private fileService: FileHelperService, private plt: Platform) {
+  app: App;
+  constructor(private fileService: FileHelperService,
+    private plt: Platform) {
     this.plt.ready().then(() => {
       this.hcp = window['hcp'];
+      this.app = navigator['app'];
     });
   }
   showModal() {
     AppHelper.showConfirmPage("确定", "取消")
-    .then(data => {
-      console.log(data);
-    });
+      .then(data => {
+        console.log(data);
+      });
   }
   testHcp() {
     this.fileService.checkHcpUpdate(r => {
@@ -30,13 +35,16 @@ export class FunctionTestPage implements OnInit {
       this.info.progress = Math.floor(r.loaded / (r.total || 1) * 100).toFixed(2) + "%";
     }, `assets/${this.fileService.updateZipFileName}`)
       .then(nativeURL => {
-        AppHelper.alert('是否打开新版本？' + nativeURL, true).then(ok => {
+        AppHelper.alert('数据加载完成，重新打开以生效？' + nativeURL, true).then(ok => {
           if (ok) {
-            this.hcp.openHcpPage(nativeURL).then(res => {
-              console.log(res);
-            }).catch(e => {
-              AppHelper.alert(e);
-            });
+            // this.hcp.openHcpPage(nativeURL).then(res => {
+            //   console.log(res);
+            // }).catch(e => {
+            //   AppHelper.alert(e);
+            // });
+            // this.app.clearHistory();
+            this.app.loadUrl(nativeURL);
+            // this.app.exitApp();
           }
         });
       })
