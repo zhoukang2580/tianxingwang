@@ -267,6 +267,10 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     const subscription = this.loginService
       .sendMobileCode(this.form.value.Mobile)
       .subscribe(r => {
+        if (!r.Status && r.Message) {
+          AppHelper.alert(r.Message);
+          return;
+        }
         if (r.Data) {
           this.startCountDonw(r.Data.SendInterval);
         }
@@ -306,6 +310,9 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   }
   forgetPassword() {
     this.router.navigate([AppHelper.getRoutePath("password-check")]);
+  }
+  register() {
+    this.router.navigate([AppHelper.getRoutePath("register")]);
   }
   ngOnDestroy() {
     this.loginSubscription.unsubscribe();

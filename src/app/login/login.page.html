@@ -71,9 +71,8 @@
         <span *ngIf="loginType != 'user'" (click)="switchLoginType('user')">用户名登录</span>
       </ion-button>
       <h6 text-end *ngIf="!validatedBySmsCode">
-        <ion-note color="primary" (click)="forgetPassword()"
-          >忘记密码？</ion-note
-        >
+        <ion-note color="primary" (click)="forgetPassword()">忘记密码？</ion-note>
+        <ion-note color="primary" (click)="register()">注册</ion-note>
       </h6>
     </ion-item>
     <app-slidvalidate-com  *ngIf="isShowImageCode" (slideEvent)='onSlideEvent($event)'></app-slidvalidate-com>

@@ -113,6 +113,11 @@ export class AccountMobilePage implements OnInit {
       SendInterval: number;
       ExpiredInterval: number;
     }>(req).subscribe(res=>{
+      if(!res.Status && res.Message)
+      {
+        AppHelper.alert(res.Message);
+        return;
+      }
       this.startCountDonw(res.Data.SendInterval);
     },e=>{
       AppHelper.alert(e);

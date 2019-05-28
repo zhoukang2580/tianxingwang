@@ -12,6 +12,7 @@ import { tap } from "rxjs/operators";
 import { Subscription, Observable } from 'rxjs';
 import { ApiService } from 'src/app/services/api/api.service';
 import { BaseRequest } from 'src/app/services/api/BaseRequest';
+import { LanguageHelper } from 'src/app/languageHelper';
 class PasswordModel {
   /// <summary>
   /// 老密码
@@ -68,16 +69,16 @@ export class AccountPasswordPage implements OnInit,OnDestroy {
   done() {
     if (!this.validatedBySmsCode) {
       if (!this.passwordModel.OldPassword) {
-        AppHelper.alert("原密码不能为空");
+        AppHelper.alert(LanguageHelper.OldPasswordNullTip);
         return;
       }
     }
     if (!this.passwordModel.NewPassword) {
-      AppHelper.alert("请输入新密码");
+      AppHelper.alert(LanguageHelper.NewPasswordNullTip);
       return;
     }
     if (this.passwordModel.NewPassword !== this.passwordModel.SurePassword) {
-      AppHelper.alert("两次输入的密码不一致");
+      AppHelper.alert(LanguageHelper.TwicePasswordNotEqualTip);
       return;
     }
     this.modifyPasswordSubscription.unsubscribe();

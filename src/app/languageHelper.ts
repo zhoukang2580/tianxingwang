@@ -71,4 +71,13 @@ export class LanguageHelper {
   static slideValidateUseTime() {
     return "验证成功";
   }
+  static OldPasswordNullTip() {
+    return "原密码不能为空";
+  }
+  static NewPasswordNullTip() {
+    return "请输入新密码";
+  }
+  static TwicePasswordNotEqualTip() {
+    return "两次输入的密码不一致";
+  }
 }

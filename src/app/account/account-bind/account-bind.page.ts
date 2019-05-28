@@ -15,10 +15,8 @@ import { LanguageHelper } from 'src/app/languageHelper';
   styleUrls: ["./account-bind.page.scss"]
 })
 export class AccountBindPage implements OnInit, OnDestroy {
-  phoneErrorCount = 0;
   countDown = 0;
   countDownInterval: any;
-  validImageCodeCount = 0;
   isDisableSendMobileCode = false;
   paramsSubscription = Subscription.EMPTY;
   mobileChangeSubscription = Subscription.EMPTY;
@@ -68,6 +66,11 @@ export class AccountBindPage implements OnInit, OnDestroy {
       SendInterval: number;
       ExpiredInterval: number;
     }>(req).subscribe(res=>{
+      if(!res.Status && res.Message)
+      {
+        AppHelper.alert(res.Message);
+        return;
+      }
       this.startCountDonw(res.Data.SendInterval);
     },e=>{
       AppHelper.alert(e);
@@ -106,6 +109,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
           
     },e=>{
     },()=>{
+      sub.unsubscribe();
     });;
     return sub;
   }
@@ -123,6 +127,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
           
     },e=>{
     },()=>{
+      sub.unsubscribe();
     });;
     return sub;
   }
