@@ -142,7 +142,7 @@ export class ScanComponent implements OnInit {
     const id = await this.identityService.getIdentity();
     if (!id || !id.Id || !id.Ticket) {
       this.router.navigate([AppHelper.getRoutePath('login')]);
-      return;
+      return Promise.reject("未登录");
     }
     if (AppHelper.isWechatH5()) {
       this.wechatH5Scan().then(r => {
@@ -172,7 +172,7 @@ export class ScanComponent implements OnInit {
     const ok = await this.wxReady().catch(e => false);
     if (!ok) {
       this.showConfirmPage = false;
-      return Promise.reject("");
+      return Promise.reject(LanguageHelper.getJSSDKScanErrorTip());
     }
     return new Promise<string>((resolve, reject) => {
       this.wx.scanQRCode({
