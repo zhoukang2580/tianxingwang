@@ -1,12 +1,14 @@
-ion-toolbar {
-  &.img {
+ion-header {
+  .img {
     --background: white;
     --border-width: 0;
+    position: relative;
   }
   img {
     object-fit: cover;
     -o-object-fit: cover;
     transform: scale(1.03);
+    max-height: 50vh;
   }
 }
 ion-grid ion-row ion-col {

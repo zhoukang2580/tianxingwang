@@ -29,6 +29,7 @@ export class ConfigService {
         },
         error => {
           reject(error);
+          subscription.unsubscribe();
         }, () => {
           setTimeout(() => {
             if (subscription) {

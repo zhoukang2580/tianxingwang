@@ -1,3 +1,4 @@
+import { AppHelper } from 'src/app/appHelper';
 import { Component, OnInit } from "@angular/core";
 import { Observable, of, Subject, BehaviorSubject, throwError } from "rxjs";
 import * as moment from "moment";
@@ -26,11 +27,15 @@ export class HomePage implements OnInit {
     private modalCtrl: ModalController,
     private route: ActivatedRoute,
     private router: Router,
-  ) {}
+  ) { }
   accountSecurityEn() {
     this.router.navigate(["account-security_en"]);
   }
-  
+  onScan(scanResult: string) {
+    AppHelper.showConfirmPage("确定", "取消").then((confirm: boolean) => {
+
+    });
+  }
   aliPay() {
     this.router.navigate(["setting_en"]);
     // tslint:disable-next-line:max-line-length
@@ -85,5 +90,5 @@ export class HomePage implements OnInit {
   //     });
   //   });
   // }
-  
+
 }

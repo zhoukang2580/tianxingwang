@@ -1,0 +1,12 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>function-test</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-button (click)='testHcp()'>测试更新</ion-button>
+  <ion-button (click)='showModal()'>显示确认页面</ion-button>
+  <p *ngIf='info.msg'>{{info|json}}</p>
+  <app-scan-comp></app-scan-comp>
+</ion-content>

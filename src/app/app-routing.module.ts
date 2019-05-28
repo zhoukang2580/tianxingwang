@@ -13,6 +13,7 @@ import { RegisterModule } from './register/register.module';
 const routes: Routes = [
   { path: 'select-city', loadChildren: './pages/select-city/select-city.module#SelectCityPageModule' },
   { path: 'crop-avatar', loadChildren: './pages/crop-avatar/crop-avatar.module#CropAvatarPageModule' },
+  { path: 'function-test', loadChildren: './pages/function-test/function-test.module#FunctionTestPageModule' },
   {
     path: "",
     component: TabsPage,
@@ -23,6 +24,7 @@ const routes: Routes = [
     matcher: AppHelper.matchDefaultRoute
   },
  
+
 
 
 ];

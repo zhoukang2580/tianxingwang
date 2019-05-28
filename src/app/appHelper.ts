@@ -3,14 +3,19 @@ import * as moment from "moment";
 import { environment } from "src/environments/environment";
 import { UrlSegment, UrlSegmentGroup, Route } from "@angular/router";
 import { HttpClient } from '@angular/common/http';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController, ToastController, ModalController } from '@ionic/angular';
 import { LanguageHelper } from './languageHelper';
+import { ConfirmComponent } from './components/confirm/confirm.component';
 export class AppHelper {
   private static httpClient: HttpClient;
   private static _deviceName: string;
   private static _routeData: any;
   private static toastController: ToastController;
   private static alertController: AlertController;
+  private static modalController: ModalController;
+  static setModalController(modalController: ModalController) {
+    this.modalController = modalController;
+  }
   static setToastController(toastController: ToastController) {
     this.toastController = toastController;
   }
@@ -22,15 +27,7 @@ export class AppHelper {
   }
   static toast(msg: any, duration = 1400, position?: 'top' | 'bottom' | 'middle') {
     return new Promise<any>(async (resolve, reject) => {
-      try {
-        this.toastController.getTop().then(t => {
-          if (t) {
-            t.dismiss();
-          }
-        }).catch();
-      } catch (e) {
-
-      }
+      this.dismissLayer();
       const t = await this.toastController.create({
         message: typeof msg === "string" ? msg
           : msg instanceof Error ? msg.message
@@ -47,14 +44,7 @@ export class AppHelper {
   static alert(msg: any, userOp: boolean = false) {
 
     return new Promise<boolean>(async (resolve, reject) => {
-      try {
-        const t = await this.alertController.getTop();
-        if (t) {
-          t.dismiss();
-        }
-      } catch (e) {
-        console.error(e);
-      }
+      this.dismissLayer();
       const buttons = [
         {
           text: LanguageHelper.getConfirmTip(),
@@ -106,7 +96,39 @@ export class AppHelper {
       );
     });
   }
-
+  static async showConfirmPage(confirmBtnText: string, cancelBtnText: string) {
+    this.dismissLayer();
+    const m = await this.modalController.create({
+      component: ConfirmComponent,
+      componentProps: {
+        confirmText: confirmBtnText,
+        cancelText: cancelBtnText
+      }
+    });
+    m.present();
+    return await m.onDidDismiss().then(data => {
+      console.log(data);
+      return data.data;
+    });
+  }
+  private static async dismissLayer() {
+    try {
+      const a = await this.alertController.getTop();
+      const t = await this.toastController.getTop();
+      const m = await this.modalController.getTop();
+      if (m) {
+        m.dismiss();
+      }
+      if (a) {
+        a.dismiss();
+      }
+      if (t) {
+        t.dismiss();
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
   static getWechatAppId() {
     if (this.httpClient) {
       return new Promise<string>((resolve, reject) => {
@@ -382,31 +404,25 @@ export class AppHelper {
     return this._queryParamers as any;
   }
 
-  static _events:{name:string,handle:(name:string,data:any)=>void}[]=[];
-  static registerEvent(name:string,handle:(name:string,data:any)=>void)
-  {
-    this._events.push({name,handle});
+  static _events: { name: string, handle: (name: string, data: any) => void }[] = [];
+  static registerEvent(name: string, handle: (name: string, data: any) => void) {
+    this._events.push({ name, handle });
   }
-  static triggerEvent(name:string,data:any)
-  {
-    this._events.forEach((item,index)=>{
-      if(item.name==name && item.handle)
-      {
-        item.handle(name,data);
+  static triggerEvent(name: string, data: any) {
+    this._events.forEach((item, index) => {
+      if (item.name == name && item.handle) {
+        item.handle(name, data);
       }
     })
   }
 
-  static _callbackHandle:(name:string,data:any)=>void;
-  static setCallback(callbackHandle:(name:string,data:any)=>void)
-  {
-   this._callbackHandle=callbackHandle;
+  static _callbackHandle: (name: string, data: any) => void;
+  static setCallback(callbackHandle: (name: string, data: any) => void) {
+    this._callbackHandle = callbackHandle;
   }
-  static executeCallback(name:string,data:any)
-  {
-    if(this._callbackHandle)
-    {
-      this._callbackHandle(name,data);
+  static executeCallback(name: string, data: any) {
+    if (this._callbackHandle) {
+      this._callbackHandle(name, data);
     }
   }
 

@@ -20,14 +20,14 @@ type PageModel = {
   BookTypeName: string;
 }
 @Component({
-  selector: 'app-my-detail',
-  templateUrl: './my-detail.page.html',
-  styleUrls: ['./my-detail.page.scss'],
+  selector: 'app-member-detail',
+  templateUrl: './member-detail.page.html',
+  styleUrls: ['./member-detail.page.scss'],
 })
-export class MyDetailPage implements OnInit {
+export class MemberDetailPage implements OnInit {
   Model: PageModel;
   identity: IdentityEntity;
-  defaultAvatar=AppHelper.getDefaultAvatar();
+  defaultAvatar = AppHelper.getDefaultAvatar();
   constructor(private identityService: IdentityService, private router: Router, private configService: ConfigService, private apiService: ApiService) { }
 
   async ngOnInit() {
@@ -36,14 +36,13 @@ export class MyDetailPage implements OnInit {
       HeadUrl: (await this.configService.get()).DefaultImageUrl
     } as any;
     this.load();
-    AppHelper.setCallback((name:string,data:any)=>{
-      if(name==CropAvatarPage.UploadSuccessEvent && data && data.HeadUrl)
-      {
-        this.Model.HeadUrl=data.HeadUrl+"?v="+Date.now();
+    AppHelper.setCallback((name: string, data: any) => {
+      if (name == CropAvatarPage.UploadSuccessEvent && data && data.HeadUrl) {
+        this.Model.HeadUrl = data.HeadUrl + "?v=" + Date.now();
       }
     })
   }
-  
+
   load() {
     const req = new BaseRequest();
     req.Method = "ApiMemberUrl-Home-Get";

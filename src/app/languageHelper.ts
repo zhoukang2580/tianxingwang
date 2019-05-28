@@ -1,5 +1,14 @@
 
 export class LanguageHelper {
+  static getJSSDKScanTextTip() {
+    return "扫一扫";
+  }
+  static getJSSDKScanErrorTip() {
+    return "扫码功能出错";
+  }
+  static getJSSDKNotExistsTip() {
+    return "JSSDK加载失败";
+  }
   static getHcpValidatingFileTip() {
     return "正在校验文件完整性";
   }

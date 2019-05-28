@@ -2,14 +2,14 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
 const routes: Routes = [
-  { path: 'my-detail', loadChildren: "./my-detail/my-detail.module#MyDetailPageModule"},
+  { path: 'member-detail', loadChildren: "./member-detail/member-detail.module#MemberDetailPageModule"},
   {
-    path: 'my-credential-management',
-    loadChildren: "./my-credential-management/my-credential-management.module#MyCredentialManagementPageModule"
+    path: 'member-credential-management',
+    loadChildren: "./member-credential-management/member-credential-management.module#MemberCredentialManagementPageModule"
   },
   {
-    path: 'my-credential-management-add',
-    loadChildren: "./my-credential-management-add/my-credential-management-add.module#MyCredentialManagementAddPageModule"
+    path: 'member-credential-management-add',
+    loadChildren: "./member-credential-management-add/member-credential-management-add.module#MemberCredentialManagementAddPageModule"
   }
 ];
 @NgModule({

@@ -1,6 +1,9 @@
 import { Component } from "@angular/core";
 
-import { Platform, AlertController, ToastController, IonApp, ActionSheetController, LoadingController, NavController } from "@ionic/angular";
+import {
+  Platform, AlertController, ToastController,
+  IonApp, ActionSheetController, LoadingController, NavController, ModalController
+} from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
 import { Router } from "@angular/router";
@@ -18,6 +21,7 @@ export class AppComponent {
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
+    private modalController: ModalController,
     private statusBar: StatusBar,
     private router: Router,
     private configService: ConfigService,
@@ -37,6 +41,7 @@ export class AppComponent {
     AppHelper.setHttpClient(this.http);
     AppHelper.setAlertController(this.alertController);
     AppHelper.setToastController(this.toastController);
+    AppHelper.setModalController(this.modalController);
     this.initializeApp();
   }
 
@@ -44,8 +49,8 @@ export class AppComponent {
     this.getConfigInfo();
     AppHelper.getDomain();// 
     AppHelper.setQueryParamers();
-    var path = AppHelper.getQueryString("path");
-    var unloginPath = AppHelper.getQueryString("unloginpath");
+    const path = AppHelper.getQueryString("path");
+    const unloginPath = AppHelper.getQueryString("unloginpath");
     if (AppHelper.getTicket() && path) {
       this.jumpToRoute("/tabs/my").then(() => {
         this.jumpToRoute(path);
@@ -62,7 +67,7 @@ export class AppComponent {
     // this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
     // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management')]);
     // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management-add')]);
-    this.router.navigate([AppHelper.getRoutePath('account-email')]);
+    // this.router.navigate([AppHelper.getRoutePath('function-test')]);
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
       // this.splashScreen.hide();

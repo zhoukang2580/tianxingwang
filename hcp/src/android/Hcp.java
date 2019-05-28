@@ -39,33 +39,54 @@ public class Hcp extends CordovaPlugin {
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
         preferences = cordova.getActivity().getPreferences(0);
-        cordova.getThreadPool().execute(()->{
+        this.initwww();
+    }
+    private  void initwww(){
+        String p = this.preferences.getString("loadIndexPagePath", null);
+        if(null!=p){
+            openHcpPage(p,null);
+            return;
+        }
+        cordova.getThreadPool().execute(() -> {
             try {
-                String path=cordova.getActivity().getFilesDir()+File.separator+
-                        "update";
-                Log.d(TAG,"目的路径： "+new File(
-                        path,
-                        "www_1_0_1")
-                        .getAbsolutePath()+File.separator+"www");
-                copyAssets("www",new File(
-                        path,
-                        "www_1_0_1")
-                        .getAbsolutePath()+File.separator+"www",
-                        cordova.getContext().getAssets());
-                Log.d(TAG,"拷贝资源文件完成");
-                if(new File(path).exists()){
-                    Log.d(TAG,"打开路径: "+new File(path).getAbsolutePath());
-                    cordova.getActivity().runOnUiThread(()->{
-                        webView.loadUrlIntoView("file://"+new File(path).getAbsolutePath(),false);
+                String path = cordova.getActivity().getFilesDir() + File.separator +
+                        "update"+File.separator+"www_1_0_1"+File.separator+"www";// files/update/www
+                File file =  new File(path);
+                Log.d(TAG, "目的路径： " +file.getAbsolutePath());
+                copyAssets("www",file.getAbsolutePath() , cordova.getContext().getAssets());
+                Log.d(TAG, "拷贝资源文件完成，index.html存在？="+new File(path,"index.html").exists());
+//                for (File f:file.listFiles()
+//                     ) {
+//                    Log.d(TAG,"update/www/目录下的文件【"+f.getName()+"】是否是文件夹？"+f.isDirectory());
+//                }
+                if (new File(path,"index.html").exists()) {
+                    Log.d(TAG, "打开路径: " + "file://" + new File(file.getAbsolutePath(),"index.html").getAbsolutePath());
+                    cordova.getActivity().runOnUiThread(() -> {
+                        webView.clearHistory();
+//                        webView.loadUrlIntoView("file://" +new File(file
+//                                .getAbsolutePath() ,"index.html").getAbsolutePath(), false);
+                        Log.d(TAG,"webView.getUrl()="+webView.getUrl());
+                        Log.d(TAG,"webView.canGoBack="+webView.canGoBack());
+                        preferences.edit().putString("loadIndexPagePath",
+                                new File(file.getParent(),"www_1_0_1.log").getAbsolutePath())
+                                .apply();
+                        webView.loadUrlIntoView("file://" +new File(file
+                                .getAbsolutePath() ,"index.html").getAbsolutePath(), false);
+                    });
+                    Thread.sleep(2000);
+                    cordova.getActivity().runOnUiThread(() -> {
+                        webView.getEngine().goBack();
                     });
                 }
             } catch (IOException e) {
-                Log.d(TAG,e.getMessage());
+                Log.d(TAG, e.getMessage());
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                Log.d(TAG, e.getMessage());
                 e.printStackTrace();
             }
         });
     }
-
     @Override
     public void onResume(boolean multitasking) {
         super.onResume(multitasking);
@@ -91,14 +112,13 @@ public class Hcp extends CordovaPlugin {
         }
         if (TextUtils.equals("getHash", action)) {
             mMallbackContext = callbackContext;
-            cordova.getThreadPool().execute(()->{
-                this.getHash(args.optString(0),callbackContext);
+            cordova.getThreadPool().execute(() -> {
+                this.getHash(args.optString(0), callbackContext);
             });
             return true;
         }
         return super.execute(action, args, callbackContext);
     }
-
 
 
     private void openHcpPage(String path, CallbackContext callbackContext) {
@@ -111,35 +131,34 @@ public class Hcp extends CordovaPlugin {
                     return;
                 }
                 CordovaResourceApi resourceApi = webView.getResourceApi();
-                File f= resourceApi.mapUriToFile(getUriForArg(path));
+                File f = resourceApi.mapUriToFile(getUriForArg(path));
                 Log.d(TAG, "是否是文件夹 " + f.isDirectory() + " 文件是否存在 " + f.exists());
                 if (!f.exists()) {
                     if (null != callbackContext) {
                         callbackContext.error("index.html文件不存在，路径" + FILE_PREFIX + f.getPath());
                     }
-                    Log.d(TAG,"index.html文件不存在，路径" + FILE_PREFIX + f.getPath());
+                    Log.d(TAG, "index.html文件不存在，路径" + FILE_PREFIX + f.getPath());
                     return;
                 }
-                File indexFile = new File(new File(f.getParent(),"www").getAbsoluteFile(),"index.html");
-                if(!indexFile.exists()){
-                    Log.d(TAG,"indexfile 不存在");
+                File indexFile = new File(new File(f.getParent(), "www").getAbsoluteFile(), "index.html");
+                if (!indexFile.exists()) {
+                    Log.d(TAG, "indexfile 不存在");
                     return;
                 }
 
-                Log.d(TAG,"index.html 文件内容"+getFileAsString(indexFile));
+                Log.d(TAG, "index.html 文件内容" + getFileAsString(indexFile));
                 try {
-                    String loadurl =FILE_PREFIX+indexFile.getAbsolutePath();
+                    String loadurl = FILE_PREFIX + indexFile.getAbsolutePath();
                     preferences.edit().putString("loadIndexPagePath", path).apply();
                     Log.d(TAG, "loadUrlIntoView indexFile.getAbsolutePath()=" + indexFile.getAbsolutePath());
-                    Log.d(TAG, "loadUrlIntoView loadurl=" +loadurl);
-                    File f3=resourceApi.mapUriToFile(getUriForArg(loadurl));
-                    Log.d(TAG,"f3 exists="+f3.exists());
-                    cordova.getActivity().runOnUiThread(()->{
-                        webView.clearHistory();
-                        webView.loadUrlIntoView(FILE_PREFIX+f3.getAbsolutePath(), false);
+                    Log.d(TAG, "loadUrlIntoView loadurl=" + loadurl);
+                    File f3 = resourceApi.mapUriToFile(getUriForArg(loadurl));
+                    Log.d(TAG, "f3 exists=" + f3.exists());
+                    cordova.getActivity().runOnUiThread(() -> {
+                        webView.loadUrlIntoView(FILE_PREFIX + f3.getAbsolutePath(), false);
                     });
                 } catch (Exception e) {
-                    cordova.getActivity().runOnUiThread(()->{
+                    cordova.getActivity().runOnUiThread(() -> {
                         preferences.edit().putString("loadIndexPagePath", null).apply();
                         Log.e(TAG, e.getMessage());
                         webView.loadUrl(LOCAL_ASSETS_FOLDER + File.separator + "index.html");
@@ -149,32 +168,34 @@ public class Hcp extends CordovaPlugin {
             }
         });
     }
-    private  String getFileAsString(File file){
+
+    private String getFileAsString(File file) {
         StringBuilder sb = new StringBuilder();
         try {
             FileReader fr = new FileReader(file);
             BufferedReader bfr = new BufferedReader(fr);
             String line;
-            while ((line=bfr.readLine())!=null){
+            while ((line = bfr.readLine()) != null) {
                 sb.append(line);
             }
             return sb.toString();
         } catch (FileNotFoundException e) {
-            Log.d(TAG,e.getMessage());
+            Log.d(TAG, e.getMessage());
         } catch (IOException e) {
-            Log.d(TAG,e.getMessage());
+            Log.d(TAG, e.getMessage());
         }
         return null;
     }
-    private  void getHash(String path,CallbackContext callbackContext){
 
-        this.checkPathOrFileExists(path,callbackContext);
+    private void getHash(String path, CallbackContext callbackContext) {
+
+        this.checkPathOrFileExists(path, callbackContext);
         CordovaResourceApi resourceApi = webView.getResourceApi();
-        File file= resourceApi.mapUriToFile(getUriForArg(path));
-        cordova.getThreadPool().execute(()->{
+        File file = resourceApi.mapUriToFile(getUriForArg(path));
+        cordova.getThreadPool().execute(() -> {
             MD5 md5 = MD5.getInstance();
             try {
-                String hash= md5.getHash(file.getAbsolutePath());
+                String hash = md5.getHash(file.getAbsolutePath());
                 callbackContext.success(hash);
             } catch (IOException e) {
                 callbackContext.error(e.getMessage());
@@ -182,25 +203,28 @@ public class Hcp extends CordovaPlugin {
             }
         });
     }
-    private void checkPathOrFileExists(String path,CallbackContext callbackContext){
+
+    private void checkPathOrFileExists(String path, CallbackContext callbackContext) {
         CordovaResourceApi resourceApi = webView.getResourceApi();
-        File file= resourceApi.mapUriToFile(getUriForArg(path));
-        if(TextUtils.isEmpty(path)){
+        File file = resourceApi.mapUriToFile(getUriForArg(path));
+        if (TextUtils.isEmpty(path)) {
             callbackContext.error("路径不能为空");
-            return ;
+            return;
         }
-        if(!file.exists()){
-            Log.d(TAG,"文件不存在 path= "+file.getAbsolutePath());
+        if (!file.exists()) {
+            Log.d(TAG, "文件不存在 path= " + file.getAbsolutePath());
             callbackContext.error("文件不存在");
             return;
         }
     }
+
     private Uri getUriForArg(String arg) {
         CordovaResourceApi resourceApi = webView.getResourceApi();
         Uri tmpTarget = Uri.parse(arg);
         return resourceApi.remapUri(
                 tmpTarget.getScheme() != null ? tmpTarget : Uri.fromFile(new File(arg)));
     }
+
     private void copyAssets(String fromDir, String destRootDir, AssetManager manager) throws IOException {
         String[] fs = manager.list(fromDir);
         if (fs != null) {
@@ -216,7 +240,8 @@ public class Hcp extends CordovaPlugin {
             }
         }
     }
-    private  void copyAssetFile(String fileName, String toFilePath, AssetManager manager) throws IOException {
+
+    private void copyAssetFile(String fileName, String toFilePath, AssetManager manager) throws IOException {
         File file = new File(toFilePath);
         boolean d = deleteFile(file);
         Log.d(TAG, "删除file ok? " + d + " file exists " + file.exists());
@@ -236,7 +261,8 @@ public class Hcp extends CordovaPlugin {
         in.close();
         out.close();
     }
-    public  String readAssetFile(String assetFile, AssetManager am) throws IOException {
+
+    public String readAssetFile(String assetFile, AssetManager am) throws IOException {
         StringBuilder sb = new StringBuilder();
         final InputStreamReader streamReader = new InputStreamReader(am.open(assetFile));
         final BufferedReader bufferedReader = new BufferedReader(streamReader);
@@ -249,13 +275,14 @@ public class Hcp extends CordovaPlugin {
         bufferedReader.close();
         return sb.toString();
     }
+
     /**
      * Delete file object.
      * If it is a folder - it will be deleted recursively will all content.
      *
      * @param fileOrDirectory file/directory to delete
      */
-    public  boolean deleteFile(File fileOrDirectory) {
+    public boolean deleteFile(File fileOrDirectory) {
         if (!fileOrDirectory.exists()) {
             return true;
         }
@@ -273,7 +300,8 @@ public class Hcp extends CordovaPlugin {
 
         //fileOrDirectory.delete();
     }
-    public  boolean ensureFileExists(String file) throws IOException {
+
+    public boolean ensureFileExists(String file) throws IOException {
         File tgt = new File(file);
         ensureDirectoryExists(tgt.getParentFile());
         if (!tgt.exists() || tgt.isDirectory()) {
@@ -281,7 +309,8 @@ public class Hcp extends CordovaPlugin {
         }
         return false;
     }
-    public  void ensureDirectoryExists(File tgt) {
+
+    public void ensureDirectoryExists(File tgt) {
         if (!tgt.exists() || !tgt.isDirectory()) {
             tgt.mkdirs();
         }

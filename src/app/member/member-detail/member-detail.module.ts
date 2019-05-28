@@ -1,17 +1,18 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { MyCredentialManagementAddPage } from './my-credential-management-add.page';
+import { MemberDetailPage } from './member-detail.page';
 import { AuthorityGuard } from 'src/app/guards/authority.guard';
+import { DirectivesModule } from 'src/app/directives/directives.module';
 
 const routes: Routes = [
   {
     path: '',
-    component: MyCredentialManagementAddPage,
+    component: MemberDetailPage,
     canActivate:[AuthorityGuard]
   }
 ];
@@ -20,10 +21,10 @@ const routes: Routes = [
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     IonicModule,
     RouterModule.forChild(routes),
+    DirectivesModule
   ],
-  declarations: [MyCredentialManagementAddPage]
+  declarations: [MemberDetailPage]
 })
-export class MyCredentialManagementAddPageModule {}
+export class MemberDetailPageModule {}

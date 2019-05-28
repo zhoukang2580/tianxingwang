@@ -1,22 +1,22 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MyCredentialManagementPage } from './my-credential-management.page';
+import { ConfirmComponent } from './confirm.component';
 
-describe('MyCredentialManagementPage', () => {
-  let component: MyCredentialManagementPage;
-  let fixture: ComponentFixture<MyCredentialManagementPage>;
+describe('ConfirmComponent', () => {
+  let component: ConfirmComponent;
+  let fixture: ComponentFixture<ConfirmComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MyCredentialManagementPage ],
+      declarations: [ ConfirmComponent ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MyCredentialManagementPage);
+    fixture = TestBed.createComponent(ConfirmComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

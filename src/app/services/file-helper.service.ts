@@ -45,8 +45,8 @@ type HcpUpdateModel = {
   providedIn: 'root'
 })
 export class FileHelperService {
-  private readonly updateZipFileName: string = "DongmeiIonic.zip";
-  private readonly updateDirectoryName: string = "update";//
+  readonly updateZipFileName: string = "DongmeiIonic.zip";
+  private readonly updateDirectoryName: string = "update";
   private readonly www = "www";
   private readonly md5JsonFileName = "filesHash.json";
   private localVersion: string = AppHelper.isApp() ? null : "1.0.0";
@@ -97,6 +97,9 @@ export class FileHelperService {
   }
   private async createDir(path: string, dirName: string) {
     console.log(`开始创建文件夹 ${path}/${dirName}`);
+    if (!AppHelper.isApp()) {
+      return Promise.resolve({ nativeURL: null } as DirectoryEntry);
+    }
     return this.file.createDir(path, dirName, true)
       .then(diren => {
         console.log(`创建文件夹成功${path}/${dirName}`);
@@ -107,11 +110,14 @@ export class FileHelperService {
         return null as DirectoryEntry;
       });
   }
-  private getServerVersion() {
+  private getServerVersion(test: boolean = false) {
     return new Promise<UpdateList>((resove, reject) => {
       const req = new BaseRequest();
       req.Method = "ServiceVersionUrl-Home-Index";
       req.Data = { "Product": "DongmeiIonicAndroid" };
+      if (test) {
+        req.Url = "http://test.app.testskytrip.com/home/proxy";
+      }
       const sub = this.apiService.getResponse<UpdateList>(req).subscribe(r => {
         if (r.Status && r.Data) {
           resove(r.Data);
@@ -128,10 +134,10 @@ export class FileHelperService {
       });
     });
   }
-  checkHcpUpdate(onprogress: (hcp: HcpUpdateModel) => void) {
-    if (!AppHelper.isApp()) {
-      return Promise.resolve({});
-    }
+  checkHcpUpdate(onprogress: (hcp: HcpUpdateModel) => void, hcpResourceUrl: string = ""): Promise<string> {
+    // if (!AppHelper.isApp()) {
+    //   return Promise.resolve("");
+    // }
     return new Promise<string>(async (resolve, reject) => {
       try {
         await this.plt.ready();
@@ -140,7 +146,7 @@ export class FileHelperService {
           this.localVersion = await this.appVersion.getVersionNumber();
         }
         await this.listDirFiles(`${this.dataDirectory}`, `${this.updateDirectoryName}`);
-        const updateList = await this.getServerVersion();
+        const updateList = await this.getServerVersion(!!hcpResourceUrl);
         this.serverVersion = updateList.Version[0].Value;
         // 根据版本判断，是否需要热更新
         const versionUpdate = this.checkIfHcpUpdateByVersion(this.serverVersion, this.localVersion);
@@ -154,9 +160,11 @@ export class FileHelperService {
           reject("本地已经存在热更版本");
           return false;
         }
-        const url =
-          // AppHelper.isApp() ? `${data.url}/${data.folder}` :
-          `assets/${this.updateZipFileName}`;
+        const hcpRes = updateList.Version[0].Hotfix && updateList.Version[0].Hotfix[0] && updateList.Version[0].Hotfix[0].Folder;
+        if (!hcpRes) {
+          reject("没有热更版本");
+        }
+        const url = hcpResourceUrl || `${updateList.Url}/${hcpRes}`;
         const zipFile = await this.downloadZipFile(url, onprogress);
         const zipFileExists = await this.checkFileExists(`${this.dataDirectory}${this.updateDirectoryName}`, this.updateZipFileName);
         if (!zipFileExists) {
@@ -172,7 +180,7 @@ export class FileHelperService {
           reject(`${path}/${serverVersionDirectory}创建失败`);
           return false;
         }
-        const unZipOk = await this.zip.unzip(zipFile.nativeURL, direntry.nativeURL, evt => {
+        const unZipOk = !AppHelper.isApp() ? 0 : await this.zip.unzip(zipFile.nativeURL, direntry.nativeURL, evt => {
           onprogress({
             total: evt.total,
             loaded: evt.loaded,
@@ -275,6 +283,9 @@ export class FileHelperService {
    * @param serverVersion 
    */
   private checkLocalExists(serverVersion: string) {
+    if (!AppHelper.isApp()) {
+      return false;
+    }
     console.log(`checkLocalExists,serverVersion=${serverVersion}`);
     return this.checkDirExists(`${this.dataDirectory}${this.updateDirectoryName}`,
       `${this.www}_${serverVersion}`.replace(/\./g, "_"))
@@ -309,6 +320,9 @@ export class FileHelperService {
     })
   }
   private listDirFiles(path: string, dir: string) {
+    if (!AppHelper.isApp()) {
+      return Promise.resolve([]);
+    }
     return this.file.listDir(path, dir).then(en => {
       console.log(`列出文件夹${path}/${dir}下面的所有文件：`);
       en.forEach(item => {
@@ -330,7 +344,10 @@ export class FileHelperService {
       return r;
     });
   }
-  private createFile(path: string, fileName: string, replace: boolean) {
+  private createFile(path: string, fileName: string, replace: boolean): Promise<FileEntry> {
+    if (!AppHelper.isApp()) {
+      return Promise.resolve({ toURL: () => "", nativeURL: null } as any);
+    }
     console.log(`创建文件${path}  /  ${fileName}`);
     return this.file.createFile(path, fileName, replace).catch(e => {
       console.log(`创建文件失败${JSON.stringify(e, null, 2)}`);
@@ -343,6 +360,9 @@ export class FileHelperService {
    * @param directoryName 
    */
   private removeRecursively(path: string, directoryName: string) {
+    if (!AppHelper.isApp()) {
+      return Promise.resolve({});
+    }
     return this.file.removeRecursively(path, directoryName).catch(e => {
       console.log(`递归删除文件夹失败` + JSON.stringify(e, null, 2));
       return Promise.resolve({
@@ -397,7 +417,10 @@ export class FileHelperService {
     // 主版本不等或者次版本不等
     return smain != lmain || sMinor != lMinor;
   }
-  private checkFileExists(path: string, fileName: string) {
+  private checkFileExists(path: string, fileName: string): Promise<boolean> {
+    if (!AppHelper.isApp()) {
+      return Promise.resolve(true);
+    }
     console.log(`检查文件${path} / ${fileName}是否存在`);
     return this.file.checkFile(path, fileName)
       .then(en => {
@@ -422,6 +445,9 @@ export class FileHelperService {
       });
   }
   private async checkUnZipFilesMd5(onprogress: (hcp: HcpUpdateModel) => void) {
+    if (!AppHelper.isApp()) {
+      return Promise.resolve(true);
+    }
     try {
       const md5JsonFile = await this.getMd5JsonFile();
       // console.log(`md5jsonFile,${JSON.stringify(md5JsonFile)}`);

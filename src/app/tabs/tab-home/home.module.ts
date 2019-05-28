@@ -13,10 +13,13 @@ import { AppcomponentsModule } from 'src/app/components/appcomponents.module';
     CommonModule,
     FormsModule,
     RouterModule.forChild([
-      { path: "", component: HomePage, canActivate: [TmcGuard] },
+      {
+        path: "", component: HomePage,
+        canActivate: [TmcGuard]
+      },
     ]),
     AppcomponentsModule
   ],
   declarations: [HomePage]
 })
-export class HomePageModule {}
+export class HomePageModule { }

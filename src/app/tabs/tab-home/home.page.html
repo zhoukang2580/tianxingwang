@@ -1,12 +1,17 @@
 <ion-header>
-  <!-- <ion-toolbar>
+  <ion-toolbar color='primary'>
+    <ion-buttons slot='start'>
+      <ion-button>
+        <app-scan-comp (scan)='onScan($event)'></app-scan-comp>
+      </ion-button>
+    </ion-buttons>
     <ion-title>首页</ion-title>
-  </ion-toolbar> -->
-  <ion-toolbar class="img">
-    <img src="assets/images/home_top_bg.png" />
   </ion-toolbar>
 </ion-header>
 <ion-content>
+  <div class="img">
+    <img src="assets/images/home_top_bg.png" />
+  </div>
   <ion-grid>
     <ion-row>
       <ion-col>

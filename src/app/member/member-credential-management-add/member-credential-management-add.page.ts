@@ -7,11 +7,11 @@ import { LanguageHelper } from 'src/app/languageHelper';
 import { SelectCityService } from 'src/app/pages/select-city/select-city.service';
 
 @Component({
-  selector: 'app-my-credential-management-add',
-  templateUrl: './my-credential-management-add.page.html',
-  styleUrls: ['./my-credential-management-add.page.scss'],
+  selector: 'app-member-credential-management-add',
+  templateUrl: './member-credential-management-add.page.html',
+  styleUrls: ['./member-credential-management-add.page.scss'],
 })
-export class MyCredentialManagementAddPage implements OnInit {
+export class MemberCredentialManagementAddPage implements OnInit {
   identityTypes: { name: string; value: string; id: string; }[] = [];
   formGroup: FormGroup;
   identityNationality: any;

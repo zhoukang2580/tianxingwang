@@ -16,10 +16,20 @@
   <!-- add to homescreen for ios -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <script type="text/javascript" src="http://res2.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
 </head>
 
 <body>
   <app-root></app-root>
+  <script>
+  window.onerror=(e)=>{
+    try{
+      console.log(JSON.stringify(e,null,2));
+    }catch(e){
+      console.error("index.html ",e);
+    }
+  }
+  </script>
 </body>
 
 </html>

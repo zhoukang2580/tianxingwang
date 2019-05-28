@@ -1,3 +1,4 @@
+import { AppcomponentsModule } from 'src/app/components/appcomponents.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -5,14 +6,12 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { MyCredentialManagementPage } from './my-credential-management.page';
-import { AuthorityGuard } from 'src/app/guards/authority.guard';
+import { FunctionTestPage } from './function-test.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: MyCredentialManagementPage,
-    canActivate:[AuthorityGuard]
+    component: FunctionTestPage
   }
 ];
 
@@ -21,8 +20,9 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    AppcomponentsModule
   ],
-  declarations: [MyCredentialManagementPage]
+  declarations: [FunctionTestPage]
 })
-export class MyCredentialManagementPageModule {}
+export class FunctionTestPageModule {}
