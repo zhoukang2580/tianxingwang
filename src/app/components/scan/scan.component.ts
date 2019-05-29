@@ -12,7 +12,7 @@ interface JssdkResult {
   noncestr:string;// "40354f68401a44b697f1e746bfc90390"
   signature:string;// "39a2d6e18fe3a19110897d116755e588173b49a5"
   timestamp:string;// "636946736617144771"
-};
+}
 const jsApiList = [
   'updateAppMessageShareData',
   'updateTimelineShareData',
@@ -97,7 +97,7 @@ export class ScanComponent implements OnInit {
         timestamp: info.timestamp, // 必填，生成签名的时间戳
         nonceStr: info.noncestr, // 必填，生成签名的随机串
         signature: info.signature,// 必填，签名
-        jsApiList: jsApiList// 必填，需要使用的JS接口列表
+        jsApiList: ["scanQRCode"]// 必填，需要使用的JS接口列表
       });
       // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，
       // config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，
