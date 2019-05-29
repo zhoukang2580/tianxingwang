@@ -36,17 +36,16 @@ export class ApiService {
   getLoading() {
     return this.loadingSubject.asObservable().pipe(delay(0));
   }
-  setLoading(loading: boolean,isShowLoading:boolean) {
+  setLoading(loading: boolean, isShowLoading: boolean) {
     if (loading && isShowLoading) {
-     this.showLoadingView();
+      this.showLoadingView();
     }
     if (!loading) {
-     this.hideLoadingView();
+      this.hideLoadingView();
     }
     this.loadingSubject.next(loading);
   }
-  showLoadingView()
-  {
+  showLoadingView() {
     this.loadingCtrl.getTop().then((t) => {
       if (t) {
         t.dismiss();
@@ -58,8 +57,7 @@ export class ApiService {
       }
     });
   }
-  hideLoadingView()
-  {
+  hideLoadingView() {
     setTimeout(() => {
       this.loadingCtrl.getTop().then((t) => {
         if (t) {
@@ -68,11 +66,12 @@ export class ApiService {
       });
     }, 1000);
   }
-  send<T>(method: string, data: any, version: string = "1.0") {
+  send<T>(method: string, data: any, version: string = "1.0", showLoading: boolean = false) {
     const req = new BaseRequest();
     req.Method = method;
     req.Version = version;
-    if (!data) req.Data = JSON.stringify(data);
+    if (data) { req.Data = JSON.stringify(data); }
+    req.IsShowLoading = showLoading;
     return this.getResponse<T>(req);
   }
   getResponse<T>(req: BaseRequest): Observable<IResponse<T>> {
@@ -84,8 +83,7 @@ export class ApiService {
     req.Language = AppHelper.getLanguage();
     req.Ticket = AppHelper.getTicket();
     req.Domain = AppHelper.getDomain();
-    if(AppHelper.isApp())
-    {
+    if (AppHelper.isApp()) {
       const uuid = await AppHelper.getUUID();
       req.Method = "ApiLoginUrl-Home-DeviceLogin";
       req.Data = JSON.stringify({
@@ -93,28 +91,25 @@ export class ApiService {
         Device: uuid
       });
     }
-    else if(AppHelper.isWechatH5())
-    {
-      const code ="";
+    else if (AppHelper.isWechatH5()) {
+      const code = "";
       req.Method = "ApiLoginUrl-Home-WechatLogin";
       req.Data = JSON.stringify({
-        Code:code
+        Code: code
       });
     }
-    else if(AppHelper.isWechatMini())
-    {
-      const code ="";
+    else if (AppHelper.isWechatMini()) {
+      const code = "";
       req.Method = "ApiLoginUrl-Home-WechatLogin";
       req.Data = JSON.stringify({
-        Code:code
+        Code: code
       });
     }
-    else if(AppHelper.isDingtalkH5())
-    {
-      const code ="";
+    else if (AppHelper.isDingtalkH5()) {
+      const code = "";
       req.Method = "ApiLoginUrl-Home-DingtalkLogin";
       req.Data = JSON.stringify({
-        Code:code
+        Code: code
       });
     }
     const formObj = Object.keys(req)
@@ -163,14 +158,13 @@ export class ApiService {
     req.Language = AppHelper.getLanguage();
     req.Ticket = AppHelper.getTicket();
     req.Domain = AppHelper.getDomain();
-    if(req.Data && typeof req.Data!='string')
-    {
-      req.Data=JSON.stringify(req.Data);
+    if (req.Data && typeof req.Data != 'string') {
+      req.Data = JSON.stringify(req.Data);
     }
     const formObj = Object.keys(req)
       .map(k => `${k}=${req[k]}`)
       .join("&");
-    this.setLoading(true,req.IsShowLoading);
+    this.setLoading(true, req.IsShowLoading);
     const url = req.Url || AppHelper.getApiUrl() + "/Home/Proxy";
     const due = 30 * 1000;
     return this.http
@@ -205,7 +199,7 @@ export class ApiService {
           return throwError(error);
         }),
         finalize(() => {
-          this.setLoading(false,req.IsShowLoading);
+          this.setLoading(false, req.IsShowLoading);
         }),
         map(r => r as any)
       );
