@@ -82,7 +82,7 @@ export class ScanComponent implements OnInit, AfterViewInit {
     this.canShow = AppHelper.isApp() || AppHelper.isWechatH5();
   }
   async onScan() {
-    console.log("onScan", JSON.stringify(this.jssdkUrlConfig, null, 2));
+    // console.log("onScan", JSON.stringify(this.jssdkUrlConfig, null, 2));
     const id = await this.identityService.getIdentity();
     if (!id || !id.Id || !id.Ticket) {
       this.router.navigate([AppHelper.getRoutePath('login')]);

@@ -1,16 +1,14 @@
 <ion-header>
   <ion-toolbar color='light'>
-    <ion-buttons>
-      <ion-button slot='start'>
-        <ion-icon name='close'></ion-icon>
-      </ion-button>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <main *ngIf='isShowConfirm||isShowIframe||isShowText'>
-    <ion-icon color='medium' class='close' name="close"></ion-icon>
+    <!-- <ion-icon color='medium' class='close' name="close"></ion-icon> -->
     <div class='confirm' *ngIf="isShowConfirm">
       <ion-button [style.width.vw]='65' expand='block' (click)="onConfirm()">{{confirmText}}</ion-button>
       <ion-button color='medium' [style.width.vw]='40' size='samll' margin-top (click)='onCancel()'>
