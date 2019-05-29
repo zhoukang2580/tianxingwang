@@ -45,8 +45,8 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     this.slideEvent = new EventEmitter();
   }
   ngOnInit() {
-    this.w = this.plt.width() - 2 * 16;
-    this.h = Math.floor(this.plt.height() * 0.4);
+    this.w = this.plt.width() - 5 * 16;
+    this.h = Math.floor(this.plt.height() * 0.3);
   }
   ngAfterViewInit() {
     // this.w = this.el.clientWidth;
