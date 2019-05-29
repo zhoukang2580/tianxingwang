@@ -5,7 +5,6 @@ import { UrlSegment, UrlSegmentGroup, Route } from "@angular/router";
 import { HttpClient } from '@angular/common/http';
 import { AlertController, ToastController, ModalController } from '@ionic/angular';
 import { LanguageHelper } from './languageHelper';
-import { ConfirmComponent } from './components/confirm/confirm.component';
 export class AppHelper {
   private static httpClient: HttpClient;
   private static _deviceName: string;
@@ -96,21 +95,7 @@ export class AppHelper {
       );
     });
   }
-  static async showConfirmPage(confirmBtnText: string, cancelBtnText: string) {
-    this.dismissLayer();
-    const m = await this.modalController.create({
-      component: ConfirmComponent,
-      componentProps: {
-        confirmText: confirmBtnText,
-        cancelText: cancelBtnText
-      }
-    });
-    m.present();
-    return await m.onDidDismiss().then(data => {
-      console.log(data);
-      return data.data;
-    });
-  }
+
   private static async dismissLayer() {
     try {
       const a = await this.alertController.getTop();

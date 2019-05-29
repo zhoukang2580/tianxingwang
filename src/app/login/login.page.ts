@@ -110,14 +110,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     }
 
   }
-  onScan() {
-    this.barcodeScanner.scan().then(res => {
-      alert("扫描结果： " + res.text);
-    }).catch(e => {
-      AppHelper.alert("扫描出错： ");
-      AppHelper.alert(e);
-    });
-  }
+
   ionViewWillEnter() {
     this.initPage();
   }

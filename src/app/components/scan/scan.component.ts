@@ -5,7 +5,7 @@ import { BaseRequest } from 'src/app/services/api/BaseRequest';
 import { ApiService } from './../../services/api/api.service';
 import { LanguageHelper } from 'src/app/languageHelper';
 import { AppHelper } from './../../appHelper';
-import { Component, OnInit, EventEmitter, Output, HostBinding } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, HostBinding, Input } from '@angular/core';
 import { Platform } from '@ionic/angular';
 interface JssdkResult {
   appid: string;// ""
@@ -61,16 +61,21 @@ export class ScanComponent implements OnInit {
   canShow = true;
   scanText = LanguageHelper.getJSSDKScanTextTip();
   // @HostBinding('class.showConfirm')
+  isShowConfirm=false;
   showConfirmPage = true;
-  @Output()
-  scan: EventEmitter<string>;
+  result:string;
+  @Input()
+  confirmText: string;
+  @Input()
+  cancelText: string;
+  @Input()
+  description: string;
   constructor(
     private apiService: ApiService,
     private plt: Platform,
     private barcodeScanner: BarcodeScanner,
     private identityService: IdentityService,
     private router: Router) {
-    this.scan = new EventEmitter();
   }
 
   ngOnInit() {
@@ -151,12 +156,12 @@ export class ScanComponent implements OnInit {
     const id = await this.identityService.getIdentity();
     if (!id || !id.Id || !id.Ticket) {
       this.router.navigate([AppHelper.getRoutePath('login')]);
-      return Promise.reject("未登录");
+      return Promise.reject("");
     }
     if (AppHelper.isWechatH5()) {
       this.wechatH5Scan().then(r => {
         this.showConfirmPage = true;
-        this.scan.emit(r);
+        this.scan(r);
       })
         .catch(err => {
           this.showConfirmPage = false;
@@ -166,7 +171,7 @@ export class ScanComponent implements OnInit {
     if (AppHelper.isApp()) {
       this.appScan().then(r => {
         this.showConfirmPage = true;
-        this.scan.emit(r);
+        this.scan(r);
       }).catch(e => {
         this.showConfirmPage = false;
         AppHelper.alert(e || LanguageHelper.getJSSDKScanErrorTip());
@@ -196,6 +201,22 @@ export class ScanComponent implements OnInit {
         }
       });
     });
+
+  }
+
+
+  onConfirm() {
+   
+  }
+  onCancel() {
+    
+  }
+  scan(r:any)
+  {
+    this.result=r;
+  }
+  handle()
+  {
 
   }
 }

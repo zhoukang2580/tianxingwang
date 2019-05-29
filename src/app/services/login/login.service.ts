@@ -43,7 +43,7 @@ export class LoginService {
       entity.Name,
       entity.Password,
       entity.ImageCode,
-      this.ImageValue
+      this.ImageValue,true
     );
   }
   checkIsDeviceBinded(deviceNumber: string) {
@@ -66,7 +66,7 @@ export class LoginService {
           AppHelper.getStorage("identityId"),
           uuid,
           "",
-          ""
+          "",false
         )
       )
     );
@@ -77,7 +77,7 @@ export class LoginService {
       entity.Mobile,
       entity.MobileCode,
       entity.ImageCode,
-      this.ImageValue
+      this.ImageValue,true
     );
   }
   wechatLogin(entity: LoginEntity) {
@@ -86,7 +86,7 @@ export class LoginService {
       "",
       entity.WechatCode,
       "",
-      ""
+      "",true
     );
   }
   dingtalkLogin(entity: LoginEntity) {
@@ -95,7 +95,7 @@ export class LoginService {
       "",
       entity.DingtalkCode,
       "",
-      ""
+      "",true
     );
   }
   getImage() {
@@ -132,12 +132,16 @@ export class LoginService {
   getLoading() {
     return this.apiService.getLoading();
   }
-  login(method: string, name: string, password: string, imageCode: string, imageValue: string) {
+  login(method: string, name: string, password: string, imageCode: string, imageValue: string,isShowLoading:boolean) {
     const req = new BaseRequest();
     req.Method = method;
     if (imageCode) {
       req.ImageCode = imageCode;
       req.ImageValue = this.ImageValue;
+    }
+    if(isShowLoading)
+    {
+      req.IsShowLoading=true;
     }
     req.Data = JSON.stringify({
       Name: name,

@@ -3,7 +3,7 @@
   </ion-icon>
   <ion-label>{{scanText}}</ion-label>
 </div>
-<!-- <div class='ion-page showConfirm' *ngIf='showConfirmPage'>
-  <ion-button padding color='success' expend='block' (click)='onConfirm()'>确定</ion-button>
-  <ion-button padding margin-top color='medium' expend='block' (click)='onCancel()'>取消</ion-button>
-</div> -->
+<div class='confirm' *ngIf="isShowConfirm">
+  <ion-button color='success' [style.width.vw]='65' expand='block' (click)="onConfirm()">{{confirmText}}</ion-button>
+  <ion-button color='medium' [style.width.vw]='40' size='samll' margin-top  (click)='onCancel()'>{{cancelText}}</ion-button>
+</div>

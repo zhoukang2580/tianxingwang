@@ -9,6 +9,7 @@ import {
 } from "@ionic/angular";
 import { ActivatedRoute, Router } from "@angular/router";
 import { FileHelperService } from 'src/app/services/file-helper.service';
+import { LanguageHelper } from 'src/app/languageHelper';
 @Component({
   selector: "app-home",
   templateUrl: "home.page.html",
@@ -31,11 +32,7 @@ export class HomePage implements OnInit {
   accountSecurityEn() {
     this.router.navigate(["account-security_en"]);
   }
-  onScan(scanResult: string) {
-    AppHelper.showConfirmPage("确定", "取消").then((confirm: boolean) => {
 
-    });
-  }
   aliPay() {
     this.router.navigate(["setting_en"]);
     // tslint:disable-next-line:max-line-length
