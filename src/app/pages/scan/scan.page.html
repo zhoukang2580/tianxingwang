@@ -1,25 +1,18 @@
-<ion-header>
-  <ion-toolbar color='light'>
-    <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+
 
 <ion-content>
   <main *ngIf='isShowConfirm||isShowIframe||isShowText'>
-    <!-- <ion-icon color='medium' class='close' name="close"></ion-icon> -->
     <div class='confirm' *ngIf="isShowConfirm">
       <ion-button [style.width.vw]='65' expand='block' (click)="onConfirm()">{{confirmText}}</ion-button>
-      <ion-button color='medium' [style.width.vw]='40' size='samll' margin-top (click)='onCancel()'>
-        <ion-text color='light'>{{cancelText}}</ion-text>
+      <ion-button color='medium' fill='clear' [style.width.vw]='40' size='samll' margin-top (click)='onCancel()'>
+        <ion-text color='secondary' >{{cancelText}}</ion-text>
       </ion-button>
     </div>
     <div *ngIf='isShowIframe' class='iframe-wrapper'>
       <iframe [src]="iframeSrc" frameborder="0"></iframe>
     </div>
     <ion-item lines='none' padding *ngIf='isShowText'>
-      <ion-textarea disabled readonly value="{{result}}"></ion-textarea>
+      <ion-textarea  color='dark' readonly value="{{result}}"></ion-textarea>
     </ion-item>
   </main>
 </ion-content>

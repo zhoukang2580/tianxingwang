@@ -311,9 +311,9 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     const average = arr.reduce(this.sum) / arr.length;
     const deviations = arr.map(x => x - average);
     const stddev = Math.sqrt(deviations.map(this.square).reduce(this.sum) / arr.length);
-    const left = parseInt(this.block.style.left);
+    const left = parseInt(this.block.style.left, 10);
     return {
-      spliced: Math.abs(left - Math.abs(this.x)) <= 6,
+      spliced: Math.abs(left - Math.abs(this.x)) <= 15,
       verified: stddev !== 0, // 简单验证下拖动轨迹，为零时表示Y轴上下没有波动，可能非人为操作
     }
   }

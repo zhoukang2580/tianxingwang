@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { AppHelper } from 'src/app/appHelper';
 import { Platform, IonApp } from '@ionic/angular';
@@ -17,6 +18,7 @@ export class FunctionTestPage implements OnInit {
   hcp: Hcp;
   app: App;
   constructor(private fileService: FileHelperService,
+    private router:Router,
     private plt: Platform) {
     this.plt.ready().then(() => {
       this.hcp = window['hcp'];
@@ -24,7 +26,7 @@ export class FunctionTestPage implements OnInit {
     });
   }
   showModal() {
-
+    this.router.navigate([AppHelper.getRoutePath('scan')]);
   }
   testHcp() {
     this.fileService.checkHcpUpdate(r => {

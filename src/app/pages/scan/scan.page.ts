@@ -41,11 +41,7 @@ export class ScanPage implements OnInit, OnDestroy {
   }
   showIframePage(src: string) {
     this._iframeSrc = src;
-    alert(this._iframeSrc);
-    setTimeout(() => {
-
-      this.isShowIframe = true;
-    }, 1000);
+    this.isShowIframe = true;
   }
   hideIframePage() {
 
