@@ -1,6 +1,6 @@
 ion-content {
     --border-color    : #d6d6d6;
-    --background      : var(--ion-color-light);
+    --background      : #f2f2f2;
     --ion-color-medium: var(--ion-color-medium);
 
     ion-list.list-ios,
@@ -36,13 +36,19 @@ ion-content {
     }
 }
 ion-header ion-toolbar{
-    --background : var(--ion-color-light);
+    --background : var(--ion-color-primary);
 }
 .hidden {
     display: none !important;
 }
-
+ion-button{
+    --background:var(--ion-color-success);
+    --color:var(--ion-color-light);
+}
 ion-icon[name=arrow-back] {
     --icon-font-size: 1.85em;
     font-size: var(--icon-font-size);
+}
+.alert-wrapper .alert-button-group button{
+   color:var(--ion-color-dark);
 }
