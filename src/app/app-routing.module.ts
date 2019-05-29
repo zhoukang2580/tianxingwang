@@ -14,6 +14,8 @@ const routes: Routes = [
   { path: 'select-city', loadChildren: './pages/select-city/select-city.module#SelectCityPageModule' },
   { path: 'crop-avatar', loadChildren: './pages/crop-avatar/crop-avatar.module#CropAvatarPageModule' },
   { path: 'function-test', loadChildren: './pages/function-test/function-test.module#FunctionTestPageModule' },
+  { path: 'scan', loadChildren: './pages/scan/scan.module#ScanPageModule' },
+
   {
     path: "",
     component: TabsPage,
@@ -22,12 +24,7 @@ const routes: Routes = [
   {
     loadChildren: "./page404/page404.module#Page404PageModule",
     matcher: AppHelper.matchDefaultRoute
-  },  { path: 'scan', loadChildren: './pages/scan/scan.module#ScanPageModule' },
-
- 
-
-
-
+  },
 ];
 @NgModule({
   imports: [
@@ -41,9 +38,9 @@ const routes: Routes = [
     RouterModule.forRoot(routes, {
       preloadingStrategy: PreloadAllModules,
       enableTracing: !true,
-      useHash:true
+      useHash: true
     })
   ],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

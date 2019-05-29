@@ -79,16 +79,17 @@ export class ScanComponent implements OnInit, AfterViewInit {
     this.getAndCacheJssdkInfo();
   }
   ngOnInit() {
-
+    this.canShow = AppHelper.isApp() || AppHelper.isWechatH5();
   }
   async onScan() {
+    console.log("onScan", JSON.stringify(this.jssdkUrlConfig, null, 2));
     const id = await this.identityService.getIdentity();
     if (!id || !id.Id || !id.Ticket) {
       this.router.navigate([AppHelper.getRoutePath('login')]);
       return Promise.reject("");
     }
     if (AppHelper.isWechatH5()) {
-      this.wechatH5Scan();
+      await this.wechatH5Scan();
     }
     if (AppHelper.isApp()) {
       this.appScan().then(r => {
@@ -103,7 +104,11 @@ export class ScanComponent implements OnInit, AfterViewInit {
     return this.barcodeScanner.scan().then(r => r.text);
   }
   private async wechatH5Scan() {
-    const ok = await this.wxReady().catch(e => false);
+    const ok = await this.wxReady().catch(e => {
+      console.log(e);
+      return false;
+    });
+    console.log("this.wxReady() 返回：", ok);
     if (!ok) {
       return;
     }
@@ -115,24 +120,29 @@ export class ScanComponent implements OnInit, AfterViewInit {
         return false;
       },
       fail: (err) => {
+        AppHelper.alert(err);
         return false;
       }
     });
 
   }
   private scan(r: any) {
-    this.router.navigate([AppHelper.getRoutePath(''), { scanResult: r }]);
+    this.router.navigate([AppHelper.getRoutePath('scan'), { scanResult: r }]);
   }
   private async getAndCacheJssdkInfo() {
     if (!this.jssdkUrlConfig.find(item => item.pageUrlHash == this.getHashedCurPageUrl())) {
+      console.log("接口获取");
       const jssdkInfo = await this.getJssdkInfo();
       if (jssdkInfo) {
+        this.jssdkUrlConfig = this.jssdkUrlConfig.filter(item => item.pageUrlHash !== this.getHashedCurPageUrl());
         this.jssdkUrlConfig.push({ pageUrlHash: this.getHashedCurPageUrl(), config: jssdkInfo });
         return jssdkInfo;
       }
       return Promise.reject("");
     } else {
-      return Promise.resolve(this.jssdkUrlConfig[this.getHashedCurPageUrl()].config);
+      console.log("直接返回");
+      console.log(this.jssdkUrlConfig[this.getHashedCurPageUrl()], this.jssdkUrlConfig, this.getHashedCurPageUrl());
+      return Promise.resolve(this.jssdkUrlConfig.find(item => item.pageUrlHash == this.getHashedCurPageUrl()).config);
     }
   }
   private async wxReady() {
@@ -141,13 +151,14 @@ export class ScanComponent implements OnInit, AfterViewInit {
       return Promise.reject(LanguageHelper.getJSSDKNotExistsTip());
     }
     const info = await this.getAndCacheJssdkInfo();
+    console.log(this.jssdkUrlConfig[this.getHashedCurPageUrl()], info);
     if (!info) {
       console.log("接口请求错误");
       return Promise.reject("");
     }
-    return new Promise<boolean>((resove, reject) => {
+    return new Promise<boolean>((resove) => {
       this.wx.config({
-        debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        debug: !false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
         appId: info.appid, // 必填，公众号的唯一标识
         timestamp: info.timestamp, // 必填，生成签名的时间戳
         nonceStr: info.noncestr, // 必填，生成签名的随机串
@@ -173,7 +184,8 @@ export class ScanComponent implements OnInit, AfterViewInit {
       this.wx.error((err) => {
         // config信息验证失败会执行error函数，如签名过期导致验证失败，
         // 具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
-        reject(err);
+        resove(false);
+        AppHelper.alert(err);
       });
     });
   }
