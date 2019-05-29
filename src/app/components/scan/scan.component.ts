@@ -5,8 +5,9 @@ import { BaseRequest } from 'src/app/services/api/BaseRequest';
 import { ApiService } from './../../services/api/api.service';
 import { LanguageHelper } from 'src/app/languageHelper';
 import { AppHelper } from './../../appHelper';
-import { Component, OnInit, EventEmitter, Output, HostBinding, Input } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Platform } from '@ionic/angular';
+import { DomSanitizer } from '@angular/platform-browser';
 interface JssdkResult {
   appid: string;// ""
   noncestr: string;// "40354f68401a44b697f1e746bfc90390"
@@ -61,25 +62,49 @@ export class ScanComponent implements OnInit {
   canShow = true;
   scanText = LanguageHelper.getJSSDKScanTextTip();
   // @HostBinding('class.showConfirm')
-  isShowConfirm=false;
+  isShowConfirm = false;
   showConfirmPage = true;
-  result:string;
+  result: string = "测试文本";
   @Input()
   confirmText: string;
   @Input()
   cancelText: string;
   @Input()
   description: string;
+  openIframe = false;// 是否用iframe打开
+  showScanResultText = !false;// 是否显示扫码文本
+  private _iframeSrc: any;
+  get iframeSrc() {
+    return this.sanitizer.bypassSecurityTrustResourceUrl(this._iframeSrc);
+  }
   constructor(
     private apiService: ApiService,
     private plt: Platform,
+    private sanitizer: DomSanitizer,
     private barcodeScanner: BarcodeScanner,
     private identityService: IdentityService,
     private router: Router) {
   }
 
   ngOnInit() {
-    this.canShow = AppHelper.isApp() || ((AppHelper.isWechatH5() || AppHelper.isWechatMini()));
+    // this.canShow = AppHelper.isApp() || ((AppHelper.isWechatH5() || AppHelper.isWechatMini()));
+    this.hideIframePage();
+    this.hideResultTextPage();
+  }
+  showIframePage(src: string) {
+    this._iframeSrc = src;
+    this.openIframe = true;
+  }
+  hideIframePage() {
+    this.openIframe = false;
+    this._iframeSrc = null;
+  }
+  showResultTextPage(text: string) {
+    this.result = text;
+    this.showScanResultText = true;
+  }
+  hideResultTextPage() {
+    this.showScanResultText = false;
   }
   private async wxReady() {
     if (!this.wx) {
@@ -206,17 +231,15 @@ export class ScanComponent implements OnInit {
 
 
   onConfirm() {
-   
+
   }
   onCancel() {
-    
+
   }
-  scan(r:any)
-  {
-    this.result=r;
+  scan(r: any) {
+    this.result = r;
   }
-  handle()
-  {
+  handle() {
 
   }
 }

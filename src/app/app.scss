@@ -1,7 +1,7 @@
 ion-content {
     --border-color    : #d6d6d6;
-    --background      : #ededed;
-    --ion-color-medium: #bdbdbd;
+    --background      : var(--ion-color-light);
+    --ion-color-medium: var(--ion-color-medium);
 
     ion-list.list-ios,
     ion-list.list-md {
@@ -35,7 +35,9 @@ ion-content {
         }
     }
 }
-
+ion-header ion-toolbar{
+    --background : var(--ion-color-light);
+}
 .hidden {
     display: none !important;
 }

@@ -24,10 +24,7 @@ export class FunctionTestPage implements OnInit {
     });
   }
   showModal() {
-    AppHelper.showConfirmPage("确定", "取消")
-      .then(data => {
-        console.log(data);
-      });
+
   }
   testHcp() {
     this.fileService.checkHcpUpdate(r => {

@@ -1,9 +1,18 @@
-<div *ngIf='canShow'>
+<div *ngIf='canShow' class='scan-comp'>
   <ion-icon name='qr-scanner' mode='ios' (click)='onScan()'>
   </ion-icon>
   <ion-label>{{scanText}}</ion-label>
 </div>
-<div class='confirm' *ngIf="isShowConfirm">
-  <ion-button color='success' [style.width.vw]='65' expand='block' (click)="onConfirm()">{{confirmText}}</ion-button>
-  <ion-button color='medium' [style.width.vw]='40' size='samll' margin-top  (click)='onCancel()'>{{cancelText}}</ion-button>
-</div>
+<main [class.full-page]='isShowConfirm||openIframe||(result&&showScanResultText)'>
+  <div class='confirm' *ngIf="isShowConfirm&&(!iframeSrc||!openIframe)&&!showScanResultText">
+    <ion-button color='success' [style.width.vw]='65' expand='block' (click)="onConfirm()">{{confirmText}}</ion-button>
+    <ion-button color='medium' [style.width.vw]='40' size='samll' margin-top (click)='onCancel()'>{{cancelText}}
+    </ion-button>
+  </div>
+  <div *ngIf='!confirm&&iframeSrc&&openIframe&&!showScanResultText' class='iframe-wrapper'>
+    <iframe [src]="iframeSrc" frameborder="0"></iframe>
+  </div>
+  <ion-item lines='none' padding *ngIf='result&&!confirm&&showScanResultText&&!openIframe' >
+      <ion-textarea  disabled readonly value="{{result}}"></ion-textarea>
+  </ion-item>
+</main>
