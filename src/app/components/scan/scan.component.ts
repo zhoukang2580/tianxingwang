@@ -99,8 +99,7 @@ export class ScanComponent implements OnInit {
     this.openIframe = false;
     this._iframeSrc = null;
   }
-  showResultTextPage(text: string) {
-    this.result = text;
+  showResultTextPage() {
     this.showScanResultText = true;
   }
   hideResultTextPage() {
@@ -233,15 +232,48 @@ export class ScanComponent implements OnInit {
 
 
   onConfirm() {
+    this.handle();
     this.hideConfirmPage();
   }
   onCancel() {
     this.hideConfirmPage();
+    this.hideIframePage();
+    this.hideResultTextPage();
   }
   scan(r: any) {
     this.result = r;
+    if(this.result && this.result.toLowerCase() && this.result.includes("/home/setidentity?key="))
+    {
+      this.showConfirmPage();
+    }
+    else
+    {
+      this.handle();
+    }
   }
   handle() {
-
+    if(this.result && (this.result.toLowerCase().startsWith("http://") || this.result.toLowerCase().startsWith("https://")))
+    {
+      if(this.result.includes("/home/setidentity?key="))
+      {
+        this.identityService.getIdentity().then(r=>{
+          this.result=this.result+"&ticket="+r.Ticket;
+          this.showIframePage(this.result);
+        });
+      }
+      else
+      {
+        this.showIframePage(this.result);
+      }
+    }
+    else{
+      this.showResultTextPage();
+    }
+  }
+  close()
+  {
+    this.hideConfirmPage();
+    this.hideIframePage();
+    this.hideResultTextPage();
   }
 }
