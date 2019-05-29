@@ -1,4 +1,4 @@
-export class IdentityEntity {
+export class ValidatorEntity {
   Name: string;
   Ticket: string; // 获取是否有效
   Id?: string;

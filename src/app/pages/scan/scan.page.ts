@@ -5,6 +5,10 @@ import { IdentityService } from 'src/app/services/identity/identity.service';
 import { LanguageHelper } from 'src/app/languageHelper';
 import { Subscription } from 'rxjs';
 
+import { AppHelper } from 'src/app/appHelper';
+import { HttpClient } from '@angular/common/http';
+import { map, switchMap } from 'rxjs/operators';
+
 @Component({
   selector: 'app-scan',
   templateUrl: './scan.page.html',
@@ -17,27 +21,22 @@ export class ScanPage implements OnInit, OnDestroy {
   result: string;
   isShowConfirm = false;
   isShowIframe = false;// 是否用iframe打开
-  isShowText = !false;// 是否显示扫码文本
+  isShowText = false;// 是否显示扫码文本
   private _iframeSrc: any;
   subscription = Subscription.EMPTY;
   get iframeSrc() {
     return this.sanitizer.bypassSecurityTrustResourceUrl(this._iframeSrc);
   }
-  constructor(private sanitizer: DomSanitizer, private identityService: IdentityService, activatedRoute: ActivatedRoute) {
+  constructor(private sanitizer: DomSanitizer, private identityService: IdentityService, private http: HttpClient, activatedRoute: ActivatedRoute) {
     this.subscription = activatedRoute.paramMap.subscribe(p => {
-      this.result = p.get("scanResult");
-      this.handle();
+      this.scan(p.get("scanResult"));
     });
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
   ngOnInit() {
-    // this.canShow = AppHelper.isApp() || ((AppHelper.isWechatH5() || AppHelper.isWechatMini()));
-    this.close();
-    setTimeout(() => {
-      this.handle();
-    }, 100);
+    
   }
   showIframePage(src: string) {
     this._iframeSrc = src;
@@ -63,39 +62,51 @@ export class ScanPage implements OnInit, OnDestroy {
 
   onConfirm() {
     this.handle();
-    this.hideConfirmPage();
   }
   onCancel() {
-    this.hideConfirmPage();
-    this.hideIframePage();
-    this.hideResultTextPage();
+    this.close();
+
   }
   scan(r: any) {
     this.result = r;
 
-    if (this.result && this.result.toLowerCase() && this.result.includes("/home/setidentity?key=")) {
+    if (this.checkLogin()) {
       this.showConfirmPage();
     }
     else {
       this.handle();
     }
   }
+  checkUrl()
+  {
+    return this.result && (this.result.toLowerCase().startsWith("http://") || this.result.toLowerCase().startsWith("https://"));
+  }
+  checkLogin()
+  {
+    return this.checkUrl() && this.result.toLowerCase().includes("/home/setidentity?key=");
+  }
   handle() {
 
-    if (this.result && (this.result.toLowerCase().startsWith("http://") || this.result.toLowerCase().startsWith("https://"))) {
-
-      if (this.result.toLowerCase().includes("/home/setidentity?key=")) {
-
-        this.identityService.getIdentity().then(r => {
-          this.result = this.result + "&ticket=" + r.Ticket;
-          this.showIframePage(this.result);
-        }).catch(e => {
-
-        });
-      }
-      else {
-        this.showIframePage(this.result);
-      }
+    if (this.checkLogin()) {
+      this.identityService.getIdentity().then(r => {
+        const subscribtion = this.http
+          .get(this.result + "&ticket=" + r.Ticket+"&datatype=json").subscribe((s: any) => {
+            r.WebTicket = s.TicketId;
+            this.close();
+          }, e => {
+            AppHelper.alert(e);
+          }, () => {
+            
+            setTimeout(() => {
+              if (subscribtion) {
+                subscribtion.unsubscribe();
+              }
+            }, 10);
+          });
+      });
+    }
+    else if (this.checkUrl()) {
+      this.showIframePage(this.result);
     }
     else {
       this.showTextPage();
@@ -105,5 +116,6 @@ export class ScanPage implements OnInit, OnDestroy {
     this.hideConfirmPage();
     this.hideIframePage();
     this.hideResultTextPage();
+    window.history.back();
   }
 }
