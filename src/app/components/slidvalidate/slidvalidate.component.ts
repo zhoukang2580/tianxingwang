@@ -120,8 +120,8 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     if (defaultImage) {
       return 'assets/images/train.jpg';
     }
-    // return AppHelper.getApiUrl() + "/home/ImageCodeUrl?width=" + this.w + "&height=" + this.h;
-    return `//picsum.photos/${this.w}/150/?image=` + this.getRandomNumberByRange(0, 1084);
+    return AppHelper.getApiUrl() + "/home/ImageCodeUrl?width=" + this.w + "&height=" + this.h;
+    // return `//picsum.photos/${this.w}/150/?image=` + this.getRandomNumberByRange(0, 1084);
     // const images = ['airplane-l.jpg', 'airplane.jpg', 'train.jpg'];
     // return "assets/images/" + images[Math.floor(Math.random() * images.length)];
   }
