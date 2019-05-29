@@ -18,7 +18,7 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
   isIE = window.navigator.userAgent.indexOf('Trident') > -1;
   @ViewChild('pic')
   pic: ElementRef;
-  el:HTMLElement;
+  el: HTMLElement;
   canvasCtx: CanvasRenderingContext2D;
   blockCtx: CanvasRenderingContext2D;
   @ViewChild('canvas')
@@ -37,32 +37,32 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
   img;
   x = 0;
   trail: number[] = [];
-  failed:boolean;
-  slideValid:boolean=false;
-  timeUsed:number;
-  @Output()  slideEvent:EventEmitter<boolean>;
-  constructor(private render: Renderer2, private plt: Platform,private toastCtrl:ToastController) { 
-    this.slideEvent=new EventEmitter();
+  failed: boolean;
+  slideValid: boolean = false;
+  timeUsed: number;
+  @Output() slideEvent: EventEmitter<boolean>;
+  constructor(private render: Renderer2, private plt: Platform, private toastCtrl: ToastController) {
+    this.slideEvent = new EventEmitter();
   }
   ngOnInit() {
-    this.w = this.plt.width();
+    this.w = this.plt.width() - 2 * 16;
     this.h = Math.floor(this.plt.height() * 0.4);
   }
   ngAfterViewInit() {
     // this.w = this.el.clientWidth;
     // this.h = this.el.clientHeight;
     this.el = this.pic.nativeElement;
-    this.block=this.blockCanvasEl.nativeElement;
-    this.canvas=this.canvasEl.nativeElement;
-    console.dir(this.el);
+    this.block = this.blockCanvasEl.nativeElement;
+    this.canvas = this.canvasEl.nativeElement;
+    // console.dir(this.el);
     this.init();
   }
   getRandomNumberByRange(start, end) {
     return Math.round(Math.random() * (end - start) + start);
   }
   onSuccess() {
-    this.failed=false;
-    this.slideValid=true;
+    this.failed = false;
+    this.slideValid = true;
     this.slideEvent.emit(true);
     // if(+(this.timeUsed/1000).toFixed(2)>=0){
     //   this.toastCtrl.create({
@@ -74,13 +74,13 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     // }
   }
   onFail() {
-    this.failed=true;
-    this.slideValid=false;
+    this.failed = true;
+    this.slideValid = false;
     this.slideEvent.emit(false);
   }
   onRefresh() {
-    this.failed=false;
-    this.slideValid=false;
+    this.failed = false;
+    this.slideValid = false;
   };
   createCanvas(width, height) {
     const canvas = document.createElement('canvas')
@@ -120,8 +120,8 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     if (defaultImage) {
       return 'assets/images/train.jpg';
     }
-    return AppHelper.getApiUrl() + "/home/ImageCodeUrl?width=" + this.w + "&height=" + this.h;
-    // return `//picsum.photos/${this.w}/150/?image=` + this.getRandomNumberByRange(0, 1084);
+    // return AppHelper.getApiUrl() + "/home/ImageCodeUrl?width=" + this.w + "&height=" + this.h;
+    return `//picsum.photos/${this.w}/150/?image=` + this.getRandomNumberByRange(0, 1084);
     // const images = ['airplane-l.jpg', 'airplane.jpg', 'train.jpg'];
     // return "assets/images/" + images[Math.floor(Math.random() * images.length)];
   }
@@ -167,8 +167,8 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     this.canvas.width = this.w;
     this.canvas.height = this.h;
     // this.block = document.getElementById("block") as HTMLCanvasElement; // 拼图部分
-    this.block.width=this.w;
-    this.block.height=this.h;
+    this.block.width = this.w;
+    this.block.height = this.h;
     this.sliderContainer = this.el.querySelector(".sliderContainer");//  this.createElement('div','sliderContainer');
     this.refreshIcon = this.el.querySelector(".refreshIcon");// this.createElement('div', 'refreshIcon')
     this.sliderMask = this.el.querySelector(".sliderMask");// this.createElement('div', 'sliderMask')
@@ -242,7 +242,7 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
   bindEvents() {
     let originX, originY, trail = [], isMouseDown = false;
     const handleDragStart = (e) => {
-      this.timeUsed=Date.now();
+      this.timeUsed = Date.now();
       originX = e.clientX || e.touches[0].clientX;
       originY = e.clientY || e.touches[0].clientY;
       isMouseDown = true;
@@ -267,7 +267,7 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     }
 
     const handleDragEnd = (e) => {
-      this.timeUsed=Date.now()-this.timeUsed;
+      this.timeUsed = Date.now() - this.timeUsed;
       if (!isMouseDown) return false
       isMouseDown = false
       const eventX = e.clientX || e.changedTouches[0].clientX

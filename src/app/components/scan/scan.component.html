@@ -4,7 +4,7 @@
   <ion-label>{{scanText}}</ion-label>
 </div>
 <main *ngIf='isShowConfirm||openIframe||(result&&showScanResultText)'>
-  <ion-icon color='medium' class='close' name="close" (click)='close()'></ion-icon>
+  <ion-icon color='medium' class='close' name="close" ></ion-icon>
   <div class='confirm' *ngIf="isShowConfirm&&(!iframeSrc||!openIframe)&&!showScanResultText">
     <ion-button  [style.width.vw]='65' expand='block' (click)="onConfirm()">{{confirmText}}</ion-button>
     <ion-button color='medium' [style.width.vw]='40' size='samll' margin-top (click)='onCancel()'>

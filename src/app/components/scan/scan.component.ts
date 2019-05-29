@@ -1,3 +1,4 @@
+import { AfterViewInit } from '@angular/core';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import { Router } from '@angular/router';
 import { IdentityService } from './../../services/identity/identity.service';
@@ -8,6 +9,7 @@ import { AppHelper } from './../../appHelper';
 import { Component, OnInit, Input } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { DomSanitizer } from '@angular/platform-browser';
+import * as md5 from 'md5';
 interface JssdkResult {
   appid: string;// ""
   noncestr: string;// "40354f68401a44b697f1e746bfc90390"
@@ -57,7 +59,7 @@ const jsApiList = [
   templateUrl: './scan.component.html',
   styleUrls: ['./scan.component.scss'],
 })
-export class ScanComponent implements OnInit {
+export class ScanComponent implements OnInit, AfterViewInit {
   wx = window['wx'];
   canShow = true;
   scanText = LanguageHelper.getJSSDKScanTextTip();
@@ -76,6 +78,10 @@ export class ScanComponent implements OnInit {
   get iframeSrc() {
     return this.sanitizer.bypassSecurityTrustResourceUrl(this._iframeSrc);
   }
+  private jssdkUrlConfig: {
+    pageUrlHash: string;
+    config: JssdkResult
+  }[] = [];
   constructor(
     private apiService: ApiService,
     private plt: Platform,
@@ -84,7 +90,9 @@ export class ScanComponent implements OnInit {
     private identityService: IdentityService,
     private router: Router) {
   }
-
+  async ngAfterViewInit() {
+    this.getAndCacheJssdkInfo();
+  }
   ngOnInit() {
     // this.canShow = AppHelper.isApp() || ((AppHelper.isWechatH5() || AppHelper.isWechatMini()));
     this.hideIframePage();
@@ -111,19 +119,27 @@ export class ScanComponent implements OnInit {
   hideConfirmPage() {
     this.isShowConfirm = false;
   }
+  private async getAndCacheJssdkInfo() {
+    if (!this.jssdkUrlConfig.find(item => item.pageUrlHash == this.getHashedCurPageUrl())) {
+      const jssdkInfo = await this.getJssdkInfo();
+      if (jssdkInfo) {
+        this.jssdkUrlConfig.push({ pageUrlHash: this.getHashedCurPageUrl(), config: jssdkInfo });
+        return jssdkInfo;
+      }
+      return Promise.reject("");
+    } else {
+      return Promise.resolve(this.jssdkUrlConfig[this.getHashedCurPageUrl()].config);
+    }
+  }
   private async wxReady() {
     if (!this.wx) {
       console.log("jssdk加载失败，wx对象不存在");
       return Promise.reject(LanguageHelper.getJSSDKNotExistsTip());
     }
-    let err;
-    const info = await this.getJssdkInfo().catch(e => {
-      // AppHelper.alert(e || LanguageHelper.getJSSDKScanErrorTip());
-      err = e;
-    });
-    if (err || !info) {
+    const info = await this.getAndCacheJssdkInfo();
+    if (!info) {
       console.log("接口请求错误");
-      return Promise.reject(err);
+      return Promise.reject("");
     }
     return new Promise<boolean>((resove, reject) => {
       this.wx.config({
@@ -157,13 +173,16 @@ export class ScanComponent implements OnInit {
       });
     });
   }
+  private getHashedCurPageUrl() {
+    return md5(encodeURIComponent(window.location.href.substring(0, window.location.href.indexOf("#"))));
+  }
   private getJssdkInfo() {
     const req = new BaseRequest();
+    const pageUrl = encodeURIComponent(window.location.href.substring(0, window.location.href.indexOf("#")));
     req.Method = "ApiPasswordUrl-wechat-jssdk";
     req.Data = {
-      Url: encodeURIComponent(window.location.href.substring(0, window.location.href.indexOf("#")))
+      Url: pageUrl
     };
-
     return new Promise<JssdkResult>((resolve, reject) => {
       const sub = this.apiService.getResponse<JssdkResult>(req).subscribe(rs => {
         if (!rs.Status || !rs.Data) {
@@ -215,10 +234,9 @@ export class ScanComponent implements OnInit {
       success: (res) => {
         this.scan(res.resultStr);
         alert(res.resultStr);
-       // const result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+        // const result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
         //resolve(result);
         //window['scan'](res.resultStr);
-        alert(res.resultStr);
         return false;
       },
       fail: (err) => {
@@ -227,8 +245,6 @@ export class ScanComponent implements OnInit {
     });
 
   }
-
-
   onConfirm() {
     this.handle();
     this.hideConfirmPage();
@@ -240,40 +256,34 @@ export class ScanComponent implements OnInit {
   }
   scan(r: any) {
     this.result = r;
-    
-    if(this.result && this.result.toLowerCase() && this.result.includes("/home/setidentity?key="))
-    {
+
+    if (this.result && this.result.toLowerCase() && this.result.includes("/home/setidentity?key=")) {
       this.showConfirmPage();
     }
-    else
-    {
+    else {
       this.handle();
     }
   }
   handle() {
-  
-    if(this.result && (this.result.toLowerCase().startsWith("http://") || this.result.toLowerCase().startsWith("https://")))
-    {
-    
-      if(this.result.includes("/home/setidentity?key="))
-      {
-        this.identityService.getIdentity().then(r=>{
-          alert(this.result+"&ticket="+r.Ticket);
-          this.result=this.result+"&ticket="+r.Ticket;
+
+    if (this.result && (this.result.toLowerCase().startsWith("http://") || this.result.toLowerCase().startsWith("https://"))) {
+
+      if (this.result.includes("/home/setidentity?key=")) {
+        this.identityService.getIdentity().then(r => {
+          alert(this.result + "&ticket=" + r.Ticket);
+          this.result = this.result + "&ticket=" + r.Ticket;
           this.showIframePage(this.result);
         });
       }
-      else
-      {
+      else {
         this.showIframePage(this.result);
       }
     }
-    else{
+    else {
       this.showResultTextPage();
     }
   }
-  close()
-  {
+  close() {
     this.hideConfirmPage();
     this.hideIframePage();
     this.hideResultTextPage();
