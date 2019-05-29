@@ -127,7 +127,7 @@ export class ScanComponent implements OnInit {
     }
     return new Promise<boolean>((resove, reject) => {
       this.wx.config({
-        debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
         appId: info.appid, // 必填，公众号的唯一标识
         timestamp: info.timestamp, // 必填，生成签名的时间戳
         nonceStr: info.noncestr, // 必填，生成签名的随机串
@@ -189,13 +189,7 @@ export class ScanComponent implements OnInit {
       return Promise.reject("");
     }
     if (AppHelper.isWechatH5()) {
-      this.wechatH5Scan().then(r => {
-        // 
-        this.scan(r);
-      })
-        .catch(err => {
-          AppHelper.alert(err || LanguageHelper.getJSSDKScanErrorTip());
-        });
+      this.wechatH5Scan();
     }
     if (AppHelper.isApp()) {
       this.appScan().then(r => {
@@ -214,18 +208,22 @@ export class ScanComponent implements OnInit {
     if (!ok) {
       return Promise.reject(LanguageHelper.getJSSDKScanErrorTip());
     }
-    return new Promise<string>((resolve, reject) => {
-      this.wx.scanQRCode({
-        needResult: 0, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
-        scanType: ["qrCode", "barCode"], // 可以指定扫二维码还是一维码，默认二者都有
-        success: (res) => {
-          const result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
-          resolve(result);
-        },
-        fail: (err) => {
-          reject(err);
-        }
-      });
+
+    this.wx.scanQRCode({
+      needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+      scanType: ["qrCode", "barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+      success: (res) => {
+        this.scan(res.resultStr);
+        alert(res.resultStr);
+       // const result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+        //resolve(result);
+        //window['scan'](res.resultStr);
+        alert(res.resultStr);
+        return false;
+      },
+      fail: (err) => {
+        return false;
+      }
     });
 
   }
@@ -242,6 +240,7 @@ export class ScanComponent implements OnInit {
   }
   scan(r: any) {
     this.result = r;
+    
     if(this.result && this.result.toLowerCase() && this.result.includes("/home/setidentity?key="))
     {
       this.showConfirmPage();
@@ -252,11 +251,14 @@ export class ScanComponent implements OnInit {
     }
   }
   handle() {
+  
     if(this.result && (this.result.toLowerCase().startsWith("http://") || this.result.toLowerCase().startsWith("https://")))
     {
+    
       if(this.result.includes("/home/setidentity?key="))
       {
         this.identityService.getIdentity().then(r=>{
+          alert(this.result+"&ticket="+r.Ticket);
           this.result=this.result+"&ticket="+r.Ticket;
           this.showIframePage(this.result);
         });
