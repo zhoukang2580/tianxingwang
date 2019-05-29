@@ -34,7 +34,7 @@ export class FunctionTestPage implements OnInit {
       .then(nativeURL => {
         AppHelper.alert('数据加载完成，重新打开以生效？' + nativeURL, true).then(ok => {
           if (ok) {
-            this.hcp.openHcpPage(nativeURL).then(res => {
+            this.hcp.openHcpPage("file:///android_asset/www/index.html").then(res => {
               console.log(res);
             }).catch(e => {
               AppHelper.alert(e);
