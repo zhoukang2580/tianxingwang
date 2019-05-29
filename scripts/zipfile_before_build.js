@@ -46,7 +46,7 @@ module.exports = async function(ctx) {
     const hashEnd = Date.now();
     console.log(`处理 ${i + 1}/${files.length} 个文件`);
     md5JsonFiles.push({
-      file: file,
+      file: file.replace(/\\/g,"/"),
       // size: bs.length,
       hash: hash,
       // hashTime: hashEnd - hashStart

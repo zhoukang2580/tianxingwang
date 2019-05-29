@@ -34,6 +34,7 @@
     "@ngx-translate/http-loader": "^4.0.0",
     "ajv": "^6.10.0",
     "cordova-android": "^8.0.0",
+    "cordova-hcp-plugin": "file:hcp",
     "cordova-ios": "5.0.1",
     "cordova-plugin-add-swift-support": "2.0.2",
     "cordova-plugin-app-version": "0.1.9",
@@ -103,7 +104,8 @@
       "phonegap-plugin-barcodescanner": {
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
       },
-      "cordova-plugin-app-version": {}
+      "cordova-plugin-app-version": {},
+      "cordova-hcp-plugin": {}
     },
     "platforms": [
       "ios",
