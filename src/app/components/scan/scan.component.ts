@@ -63,12 +63,11 @@ export class ScanComponent implements OnInit {
   scanText = LanguageHelper.getJSSDKScanTextTip();
   // @HostBinding('class.showConfirm')
   isShowConfirm = false;
-  showConfirmPage = true;
-  result: string = "测试文本";
+  result: string;
   @Input()
-  confirmText: string;
+  confirmText: string = LanguageHelper.getConfirmTip();
   @Input()
-  cancelText: string;
+  cancelText: string = LanguageHelper.getCancelTip();
   @Input()
   description: string;
   openIframe = false;// 是否用iframe打开
@@ -90,6 +89,7 @@ export class ScanComponent implements OnInit {
     // this.canShow = AppHelper.isApp() || ((AppHelper.isWechatH5() || AppHelper.isWechatMini()));
     this.hideIframePage();
     this.hideResultTextPage();
+    this.showConfirmPage();
   }
   showIframePage(src: string) {
     this._iframeSrc = src;
@@ -105,6 +105,12 @@ export class ScanComponent implements OnInit {
   }
   hideResultTextPage() {
     this.showScanResultText = false;
+  }
+  showConfirmPage() {
+    this.isShowConfirm = true;
+  }
+  hideConfirmPage() {
+    this.isShowConfirm = false;
   }
   private async wxReady() {
     if (!this.wx) {
@@ -185,20 +191,17 @@ export class ScanComponent implements OnInit {
     }
     if (AppHelper.isWechatH5()) {
       this.wechatH5Scan().then(r => {
-        this.showConfirmPage = true;
+        // 
         this.scan(r);
       })
         .catch(err => {
-          this.showConfirmPage = false;
           AppHelper.alert(err || LanguageHelper.getJSSDKScanErrorTip());
         });
     }
     if (AppHelper.isApp()) {
       this.appScan().then(r => {
-        this.showConfirmPage = true;
         this.scan(r);
       }).catch(e => {
-        this.showConfirmPage = false;
         AppHelper.alert(e || LanguageHelper.getJSSDKScanErrorTip());
       });
     }
@@ -210,7 +213,6 @@ export class ScanComponent implements OnInit {
   private async wechatH5Scan() {
     const ok = await this.wxReady().catch(e => false);
     if (!ok) {
-      this.showConfirmPage = false;
       return Promise.reject(LanguageHelper.getJSSDKScanErrorTip());
     }
     return new Promise<string>((resolve, reject) => {
@@ -231,10 +233,10 @@ export class ScanComponent implements OnInit {
 
 
   onConfirm() {
-
+    this.hideConfirmPage();
   }
   onCancel() {
-
+    this.hideConfirmPage();
   }
   scan(r: any) {
     this.result = r;

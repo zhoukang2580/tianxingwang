@@ -5,8 +5,9 @@
 </div>
 <main [class.full-page]='isShowConfirm||openIframe||(result&&showScanResultText)'>
   <div class='confirm' *ngIf="isShowConfirm&&(!iframeSrc||!openIframe)&&!showScanResultText">
-    <ion-button color='success' [style.width.vw]='65' expand='block' (click)="onConfirm()">{{confirmText}}</ion-button>
-    <ion-button color='medium' [style.width.vw]='40' size='samll' margin-top (click)='onCancel()'>{{cancelText}}
+    <ion-button  [style.width.vw]='65' expand='block' (click)="onConfirm()">{{confirmText}}</ion-button>
+    <ion-button color='medium' [style.width.vw]='40' size='samll' margin-top (click)='onCancel()'>
+      <ion-text color='light'>{{cancelText}}</ion-text>
     </ion-button>
   </div>
   <div *ngIf='!confirm&&iframeSrc&&openIframe&&!showScanResultText' class='iframe-wrapper'>
