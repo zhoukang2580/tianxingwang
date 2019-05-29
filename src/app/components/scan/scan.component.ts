@@ -64,21 +64,6 @@ export class ScanComponent implements OnInit, AfterViewInit {
   canShow = true;
   scanText = LanguageHelper.getJSSDKScanTextTip();
   // @HostBinding('class.showConfirm')
-
-  result: string;
-  @Input()
-  confirmText: string = LanguageHelper.getConfirmTip();
-  @Input()
-  cancelText: string = LanguageHelper.getCancelTip();
-  @Input()
-  description: string;
-  isShowConfirm = false;
-  isShowIframe = false;// 是否用iframe打开
-  isShowText = !false;// 是否显示扫码文本
-  private _iframeSrc: any;
-  get iframeSrc() {
-    return this.sanitizer.bypassSecurityTrustResourceUrl(this._iframeSrc);
-  }
   private jssdkUrlConfig: {
     pageUrlHash: string;
     config: JssdkResult
@@ -86,7 +71,6 @@ export class ScanComponent implements OnInit, AfterViewInit {
   constructor(
     private apiService: ApiService,
     private plt: Platform,
-    private sanitizer: DomSanitizer,
     private barcodeScanner: BarcodeScanner,
     private identityService: IdentityService,
     private router: Router) {
@@ -95,35 +79,49 @@ export class ScanComponent implements OnInit, AfterViewInit {
     this.getAndCacheJssdkInfo();
   }
   ngOnInit() {
-    // this.canShow = AppHelper.isApp() || ((AppHelper.isWechatH5() || AppHelper.isWechatMini()));
-    this.hideIframePage();
-    this.hideResultTextPage();
-    this.showConfirmPage();
+
   }
-  showIframePage(src: string) {
-    this._iframeSrc = src; 
-    alert(this._iframeSrc);
-    setTimeout(() => {
-      
-      this.isShowIframe = true;
-    }, 1000);
+  async onScan() {
+    const id = await this.identityService.getIdentity();
+    if (!id || !id.Id || !id.Ticket) {
+      this.router.navigate([AppHelper.getRoutePath('login')]);
+      return Promise.reject("");
+    }
+    if (AppHelper.isWechatH5()) {
+      this.wechatH5Scan();
+    }
+    if (AppHelper.isApp()) {
+      this.appScan().then(r => {
+        this.scan(r);
+      }).catch(e => {
+        AppHelper.alert(e || LanguageHelper.getJSSDKScanErrorTip());
+      });
+    }
   }
-  hideIframePage() {
-    
-    this.isShowIframe = false;
-    this._iframeSrc = null;
+  private async appScan() {
+    await this.plt.ready();
+    return this.barcodeScanner.scan().then(r => r.text);
   }
-  showTextPage() {
-    this.isShowText = true;
+  private async wechatH5Scan() {
+    const ok = await this.wxReady().catch(e => false);
+    if (!ok) {
+      return;
+    }
+    this.wx.scanQRCode({
+      needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+      scanType: ["qrCode", "barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+      success: (res) => {
+        this.scan(res.resultStr);
+        return false;
+      },
+      fail: (err) => {
+        return false;
+      }
+    });
+
   }
-  hideResultTextPage() {
-    this.isShowText = false;
-  }
-  showConfirmPage() {
-    this.isShowConfirm = true;
-  }
-  hideConfirmPage() {
-    this.isShowConfirm = false;
+  private scan(r: any) {
+    this.router.navigate([AppHelper.getRoutePath(''), { scanResult: r }]);
   }
   private async getAndCacheJssdkInfo() {
     if (!this.jssdkUrlConfig.find(item => item.pageUrlHash == this.getHashedCurPageUrl())) {
@@ -206,91 +204,5 @@ export class ScanComponent implements OnInit, AfterViewInit {
         }
       });
     });
-  }
-  async onScan() {
-    const id = await this.identityService.getIdentity();
-    if (!id || !id.Id || !id.Ticket) {
-      this.router.navigate([AppHelper.getRoutePath('login')]);
-      return Promise.reject("");
-    }
-    if (AppHelper.isWechatH5()) {
-      this.wechatH5Scan();
-    }
-    if (AppHelper.isApp()) {
-      this.appScan().then(r => {
-        this.scan(r);
-      }).catch(e => {
-        AppHelper.alert(e || LanguageHelper.getJSSDKScanErrorTip());
-      });
-    }
-  }
-  private async appScan() {
-    await this.plt.ready();
-    return this.barcodeScanner.scan().then(r => r.text);
-  }
-  private async wechatH5Scan() {
-    const ok = await this.wxReady().catch(e => false);
-    if (!ok) {
-      return;
-    }
-    this.wx.scanQRCode({
-      needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
-      scanType: ["qrCode", "barCode"], // 可以指定扫二维码还是一维码，默认二者都有
-      success: (res) => {
-        this.scan(res.resultStr);
-        return false;
-      },
-      fail: (err) => {
-        return false;
-      }
-    });
-
-  }
-  onConfirm() {
-    this.handle();
-    this.hideConfirmPage();
-  }
-  onCancel() {
-    this.hideConfirmPage();
-    this.hideIframePage();
-    this.hideResultTextPage();
-  }
-  scan(r: any) {
-    this.result = r;
-
-    if (this.result && this.result.toLowerCase() && this.result.includes("/home/setidentity?key=")) {
-      this.showConfirmPage();
-    }
-    else {
-      this.handle();
-    }
-  }
-  handle() {
-   
-    if(this.result && (this.result.toLowerCase().startsWith("http://") || this.result.toLowerCase().startsWith("https://")))
-    {
-    
-      if(this.result.toLowerCase().includes("/home/setidentity?key="))
-      {
-     
-        this.identityService.getIdentity().then(r=>{
-          this.result=this.result+"&ticket="+r.Ticket;
-          this.showIframePage(this.result);
-        }).catch(e=>{
-
-        });
-      }
-      else {
-        this.showIframePage(this.result);
-      }
-    }
-    else {
-      this.showTextPage();
-    }
-  }
-  close() {
-    this.hideConfirmPage();
-    this.hideIframePage();
-    this.hideResultTextPage();
   }
 }
