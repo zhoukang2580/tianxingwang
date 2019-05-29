@@ -62,7 +62,7 @@ export class ScanComponent implements OnInit {
   canShow = true;
   scanText = LanguageHelper.getJSSDKScanTextTip();
   // @HostBinding('class.showConfirm')
-  isShowConfirm = false;
+
   result: string;
   @Input()
   confirmText: string = LanguageHelper.getConfirmTip();
@@ -70,8 +70,9 @@ export class ScanComponent implements OnInit {
   cancelText: string = LanguageHelper.getCancelTip();
   @Input()
   description: string;
-  openIframe = false;// 是否用iframe打开
-  showScanResultText = !false;// 是否显示扫码文本
+  isShowConfirm = false;
+  isShowIframe = false;// 是否用iframe打开
+  isShowText = !false;// 是否显示扫码文本
   private _iframeSrc: any;
   get iframeSrc() {
     return this.sanitizer.bypassSecurityTrustResourceUrl(this._iframeSrc);
@@ -92,18 +93,23 @@ export class ScanComponent implements OnInit {
     this.showConfirmPage();
   }
   showIframePage(src: string) {
-    this._iframeSrc = src;
-    this.openIframe = true;
+    this._iframeSrc = src; 
+    alert(this._iframeSrc);
+    setTimeout(() => {
+      
+      this.isShowIframe = true;
+    }, 1000);
   }
   hideIframePage() {
-    this.openIframe = false;
+    
+    this.isShowIframe = false;
     this._iframeSrc = null;
   }
-  showResultTextPage() {
-    this.showScanResultText = true;
+  showTextPage() {
+    this.isShowText = true;
   }
   hideResultTextPage() {
-    this.showScanResultText = false;
+    this.isShowText = false;
   }
   showConfirmPage() {
     this.isShowConfirm = true;
@@ -206,19 +212,13 @@ export class ScanComponent implements OnInit {
   private async wechatH5Scan() {
     const ok = await this.wxReady().catch(e => false);
     if (!ok) {
-      return Promise.reject(LanguageHelper.getJSSDKScanErrorTip());
+      return;
     }
-
     this.wx.scanQRCode({
       needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
       scanType: ["qrCode", "barCode"], // 可以指定扫二维码还是一维码，默认二者都有
       success: (res) => {
         this.scan(res.resultStr);
-        alert(res.resultStr);
-       // const result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
-        //resolve(result);
-        //window['scan'](res.resultStr);
-        alert(res.resultStr);
         return false;
       },
       fail: (err) => {
@@ -251,16 +251,18 @@ export class ScanComponent implements OnInit {
     }
   }
   handle() {
-  
+   
     if(this.result && (this.result.toLowerCase().startsWith("http://") || this.result.toLowerCase().startsWith("https://")))
     {
     
-      if(this.result.includes("/home/setidentity?key="))
+      if(this.result.toLowerCase().includes("/home/setidentity?key="))
       {
+     
         this.identityService.getIdentity().then(r=>{
-          alert(this.result+"&ticket="+r.Ticket);
           this.result=this.result+"&ticket="+r.Ticket;
           this.showIframePage(this.result);
+        }).catch(e=>{
+
         });
       }
       else
@@ -269,7 +271,7 @@ export class ScanComponent implements OnInit {
       }
     }
     else{
-      this.showResultTextPage();
+      this.showTextPage();
     }
   }
   close()

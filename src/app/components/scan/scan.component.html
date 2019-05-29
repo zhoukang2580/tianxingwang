@@ -3,18 +3,18 @@
   </ion-icon>
   <ion-label>{{scanText}}</ion-label>
 </div>
-<main *ngIf='isShowConfirm||openIframe||(result&&showScanResultText)'>
+<main *ngIf='isShowConfirm||isShowIframe||isShowText'>
   <ion-icon color='medium' class='close' name="close" (click)='close()'></ion-icon>
-  <div class='confirm' *ngIf="isShowConfirm&&(!iframeSrc||!openIframe)&&!showScanResultText">
+  <div class='confirm' *ngIf="isShowConfirm">
     <ion-button  [style.width.vw]='65' expand='block' (click)="onConfirm()">{{confirmText}}</ion-button>
     <ion-button color='medium' [style.width.vw]='40' size='samll' margin-top (click)='onCancel()'>
       <ion-text color='light'>{{cancelText}}</ion-text>
     </ion-button>
   </div>
-  <div *ngIf='!confirm&&iframeSrc&&openIframe&&!showScanResultText' class='iframe-wrapper'>
+  <div *ngIf='isShowIframe' class='iframe-wrapper'>
     <iframe [src]="iframeSrc" frameborder="0"></iframe>
   </div>
-  <ion-item lines='none' padding *ngIf='result&&!confirm&&showScanResultText&&!openIframe' >
+  <ion-item lines='none' padding *ngIf='isShowText' >
       <ion-textarea  disabled readonly value="{{result}}"></ion-textarea>
   </ion-item>
 </main>
