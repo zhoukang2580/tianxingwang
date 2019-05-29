@@ -1,6 +1,8 @@
-<ion-icon name='qr-scanner' mode='ios'  *ngIf='canShow' (click)='onScan()'>
-</ion-icon>
-<ion-label>{{scanText}}</ion-label>
+<div *ngIf='canShow'>
+  <ion-icon name='qr-scanner' mode='ios' (click)='onScan()'>
+  </ion-icon>
+  <ion-label>{{scanText}}</ion-label>
+</div>
 <!-- <div class='ion-page showConfirm' *ngIf='showConfirmPage'>
   <ion-button padding color='success' expend='block' (click)='onConfirm()'>确定</ion-button>
   <ion-button padding margin-top color='medium' expend='block' (click)='onCancel()'>取消</ion-button>
