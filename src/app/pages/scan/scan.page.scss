@@ -7,13 +7,7 @@
     width: 100%;
   }
   main{
-    position: relative;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    z-index: 101;
-    background: white;
+   height: 100vh;
     .close{
       display: block;
       position: absolute;
@@ -32,5 +26,8 @@
       &::-webkit-scrollbar {
         display: none;
       }
+    }
+    ion-textarea{
+     user-select: initial;   
     }
   }

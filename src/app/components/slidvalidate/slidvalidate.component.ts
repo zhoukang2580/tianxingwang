@@ -45,8 +45,8 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     this.slideEvent = new EventEmitter();
   }
   ngOnInit() {
-    this.w = this.plt.width() - 2 * 16;
-    this.h = Math.floor(this.plt.height() * 0.4);
+    this.w = this.plt.width() - 5 * 16;
+    this.h = Math.floor(this.plt.height() * 0.3);
   }
   ngAfterViewInit() {
     // this.w = this.el.clientWidth;
@@ -311,9 +311,9 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
     const average = arr.reduce(this.sum) / arr.length;
     const deviations = arr.map(x => x - average);
     const stddev = Math.sqrt(deviations.map(this.square).reduce(this.sum) / arr.length);
-    const left = parseInt(this.block.style.left);
+    const left = parseInt(this.block.style.left, 10);
     return {
-      spliced: Math.abs(left - Math.abs(this.x)) <= 6,
+      spliced: Math.abs(left - Math.abs(this.x)) <= 15,
       verified: stddev !== 0, // 简单验证下拖动轨迹，为零时表示Y轴上下没有波动，可能非人为操作
     }
   }
