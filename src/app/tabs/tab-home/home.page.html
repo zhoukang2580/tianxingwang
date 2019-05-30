@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar color='primary'>
     <ion-buttons slot='start'>
-      <ion-button>
+      <ion-button fill='clear'>
         <app-scan-comp></app-scan-comp>
       </ion-button>
     </ion-buttons>
@@ -16,28 +16,28 @@
     <ion-row>
       <ion-col>
         <div class="item" [routerLink]="['/book-flight']">
-          <ion-label color="primary">
+          <ion-label >
             <i class="icon-plane"></i>
           </ion-label>
-          <ion-text color="primary">国内机票</ion-text>
+          <ion-text >国内机票</ion-text>
           <ion-ripple-effect></ion-ripple-effect>
         </div>
       </ion-col>
       <ion-col [routerLink]="['/book-hotel']">
         <div class="item">
-          <ion-label color="primary">
+          <ion-label >
             <i class="icon-hotel"></i>
           </ion-label>
-          <ion-text color="primary">国内酒店</ion-text>
+          <ion-text >国内酒店</ion-text>
         </div>
         <ion-ripple-effect></ion-ripple-effect>
       </ion-col>
       <ion-col [routerLink]="['/book-train']">
         <div class="item">
-          <ion-label color="primary">
+          <ion-label >
             <i class="icon-train"></i>
           </ion-label>
-          <ion-text color="primary">火车票</ion-text>
+          <ion-text >火车票</ion-text>
           <ion-ripple-effect></ion-ripple-effect>
         </div>
       </ion-col>

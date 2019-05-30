@@ -1,54 +1,63 @@
 ion-content {
-    --border-color    : #d6d6d6;
-    --background      : #f2f2f2;
-    --ion-color-medium: var(--ion-color-medium);
+  --border-color: #d6d6d6;
+  --background: #f2f2f2;
+  --ion-color-medium: var(--ion-color-medium);
 
-    ion-list.list-ios,
-    ion-list.list-md {
-        margin: 1em 0;
+  ion-list.list-ios,
+  ion-list.list-md {
+    margin: 1em 0;
 
-        &:first-child {
-            margin-top: 0;
-        }
-
-        ion-item {
-            margin : 0;
-            padding: 0;
-
-        }
-
-        // &:first-child ion-item:first-child {
-        //     padding: 0.5em 0;
-        // }
-
-        ion-item:last-child {
-            --inner-border-width: 0;
-        }
+    &:first-child {
+      margin-top: 0;
     }
 
-    .image-code {
-        img {
-            max-height: 2em;
-            object-fit: cover;
-            width     : 100%;
-            height    : 100%;
-        }
+    ion-item {
+      margin: 0;
+      padding: 0;
     }
+
+    // &:first-child ion-item:first-child {
+    //     padding: 0.5em 0;
+    // }
+
+    ion-item:last-child {
+      --inner-border-width: 0;
+    }
+  }
+
+  .image-code {
+    img {
+      max-height: 2em;
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+    }
+  }
 }
-ion-header ion-toolbar{
-    --background : var(--ion-color-primary);
+ion-header ion-toolbar {
+  --background: var(--ion-color-primary);
 }
 .hidden {
-    display: none !important;
+  display: none !important;
 }
-ion-button{
-    --background:var(--ion-color-success);
-    --color:var(--ion-color-light);
+.can-go-back > ion-header ion-buttons ion-back-button {
+  // --background:var(--ion-color-secondary);
+  --color: rgba(var(--ion-color-dark-rgb), 0.5);
 }
-ion-icon[name=arrow-back] {
-    --icon-font-size: 1.85em;
-    font-size: var(--icon-font-size);
+ion-button {
+//   --background: rgba(var(--ion-color-dark-rgb), 0.5);
 }
-.alert-wrapper .alert-button-group button{
-   color:var(--ion-color-dark);
+ion-alert {
+  --ion-color-primary: var(--ion-color-success);
+}
+ion-icon[name="arrow-back"] {
+  --icon-font-size: 1.85em;
+  font-size: var(--icon-font-size);
+}
+.alert-wrapper .alert-button-group button {
+  color: var(--ion-color-dark);
+}
+form{
+    background: var(--ion-color-light);
+    padding: 0 1em;
 }

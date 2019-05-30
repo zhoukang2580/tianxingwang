@@ -8,9 +8,9 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding>
-  <form [formGroup]="form">
-    <section *ngIf="loginType == 'user'">
+<ion-content>
+  <form [formGroup]="form" padding>
+    <section [class.hidden]="loginType == 'user'">
       <ion-row>
         <ion-col size="4">
           <ion-label position="floating">用户名</ion-label>
@@ -29,7 +29,7 @@
       </ion-row>
      
     </section>
-    <section *ngIf="loginType == 'mobile'">
+    <section [class.hidden]="loginType == 'mobile'">
       <ion-row>
         <ion-col size="3">
           <ion-label position="floating">手机号</ion-label>
@@ -38,7 +38,7 @@
           <ion-input placeholder="手机号" formControlName="Mobile" type="number" min="11"></ion-input>
         </ion-col>
         <ion-col size="4" *ngIf="!countDown || countDown <= 0; else countdownEle">
-          <ion-button size="small" fill="outline" color="primary" [disabled]="!isMobileNumberOk"
+          <ion-button size="small" fill="outline" color="dark" [disabled]="!isMobileNumberOk"
             (click)="showImageCode('sendmobilecode')">
             <span [style.font-size.rem]="0.8">发送验证码</span>
           </ion-button>
@@ -61,16 +61,16 @@
       </ion-row>
     </section>
     <!-- <ion-button expand='block' (click)='getWechatCode()'>获取微信登陆code</ion-button> -->
-    <ion-button (click)="onLoginButton('login')" [disabled]="form.invalid || (loading$ | async) || !isLoginOk" expand="block" color='success'> 登录</ion-button>
+    <ion-button (click)="onLoginButton('login')" class='btn-primary' [disabled]="form.invalid || (loading$ | async) || !isLoginOk" expand="block" color='primary'> 登录</ion-button>
     <ion-item lines='none'>
       <ion-note color="danger" *ngIf="message">{{ message }}</ion-note>
-      <ion-button size="small" color="success" slot="end">
+      <ion-button size="small" class='btn-primary' color="primary" slot="end">
         <span *ngIf="loginType == 'user'" (click)="switchLoginType('mobile')">手机号登录</span>
         <span *ngIf="loginType != 'user'" (click)="switchLoginType('user')">用户名登录</span>
       </ion-button>
       <h6 text-end>
-        <ion-note color="success" (click)="forgetPassword()">忘记密码？</ion-note>
-        <ion-note color="success" (click)="register()">注册</ion-note>
+        <ion-note color="dark" (click)="forgetPassword()">忘记密码？</ion-note>
+        <ion-note color="dark" (click)="register()">注册</ion-note>
       </h6>
     </ion-item>
     <app-slidvalidate-com  *ngIf="isShowImageCode" (slideEvent)='onSlideEvent($event)'></app-slidvalidate-com>

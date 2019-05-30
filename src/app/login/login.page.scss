@@ -1,5 +1,4 @@
 ion-content{
-  --background:white;
   ion-col{
     align-self: center;
   }
@@ -23,5 +22,8 @@ ion-content{
   }
   ion-thumbnail{
     --size:4em;
+  }
+  form{
+    background:white;
   }
 }
