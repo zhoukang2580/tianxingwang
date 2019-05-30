@@ -1,26 +1,30 @@
 import { AppHelper } from 'src/app/appHelper';
 import { ApiService } from 'src/app/services/api/api.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LanguageHelper } from 'src/app/languageHelper';
 import { SelectCityService } from 'src/app/pages/select-city/select-city.service';
+import { ValidatorService } from 'src/app/services/validator/validator.service';
 
 @Component({
   selector: 'app-member-credential-management-add',
   templateUrl: './member-credential-management-add.page.html',
   styleUrls: ['./member-credential-management-add.page.scss'],
 })
-export class MemberCredentialManagementAddPage implements OnInit {
+export class MemberCredentialManagementAddPage implements OnInit, AfterViewInit{
   identityTypes: { name: string; value: string; id: string; }[] = [];
   formGroup: FormGroup;
   identityNationality: any;
   issueNationality: any;
   requestCode: "issueNationality" | "identityNationality";
   title = "选择国家";
+  @ViewChild("f")
+  formEle:ElementRef<HTMLFormElement>;
   constructor(
     private fb: FormBuilder,
     private cityService: SelectCityService,
+    private validatorService:ValidatorService,
     private apiService: ApiService, private router: Router) {
     this.cityService.getSelectedItemObservable().subscribe(cityItem => {
       if (this.requestCode === "identityNationality") {
@@ -33,6 +37,7 @@ export class MemberCredentialManagementAddPage implements OnInit {
   }
 
   ngOnInit() {
+ 
     this.identityTypes = [
       {
         id: "1",
@@ -95,7 +100,10 @@ export class MemberCredentialManagementAddPage implements OnInit {
     //   return;
     // }
   }
-
+  ngAfterViewInit(){
+    debugger;
+    this.validatorService.initialize("Beeant.Domain.Entities.Member.CredentialsEntity","Add",this.formEle.nativeElement);
+  }
   selectIdentityNationality() {
     this.requestCode = "identityNationality";
     this.cityService.extra = { title: this.title, displayField: "Name", backRoute: this.router.url };
