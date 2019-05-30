@@ -127,7 +127,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       }
       else if (AppHelper.isWechatH5()) {
         var url = AppHelper.getApiUrl() + "/home/WechatLogin?domain=" + AppHelper.getDomain()
-          + "&path=" + encodeURIComponent(AppHelper.getApiUrl() + "/www/index.html?path=&unloginpath=login");
+          + "&path=" + encodeURIComponent(AppHelper.getRedirectUrl() + "/www/index.html?path=&unloginpath=login");
         window.location.href = url;
       }
     } catch (e) {

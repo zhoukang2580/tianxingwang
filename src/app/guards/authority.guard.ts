@@ -46,16 +46,16 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
       return true;
     }
     this.loginService.setToPageRouter(state.url);
-    // if (AppHelper.isWechatH5()) {
-    //   const url = AppHelper.getApiUrl() + "/home/WechatLogin?domain=" + AppHelper.getDomain()
-    //     + "&path=" + encodeURIComponent(AppHelper.getApiUrl() + "/www/index.html?path=" + (AppHelper.getQueryParamers().path || "") + "&unloginpath=login");
-    //   window.location.href = url;
-    // }
-    // else if (AppHelper.isDingtalkH5()) {
-    //   const url = AppHelper.getApiUrl() + "/home/DingtalkLogin?domain=" + AppHelper.getDomain()
-    //     + "&path=" + encodeURIComponent(AppHelper.getApiUrl() + "/www/index.html?path=" + (AppHelper.getQueryParamers().path || "") + "&unloginpath=login");
-    //   window.location.href = url;
-    // }
+    if (AppHelper.isWechatH5()) {
+      const url = AppHelper.getApiUrl() + "/home/WechatLogin?domain=" + AppHelper.getDomain()
+        + "&path=" + encodeURIComponent(AppHelper.getRedirectUrl() + "/www/index.html?path=" + (AppHelper.getQueryParamers().path || "") + "&unloginpath=login");
+      window.location.href = url;
+    }
+    else if (AppHelper.isDingtalkH5()) {
+      const url = AppHelper.getApiUrl() + "/home/DingtalkLogin?domain=" + AppHelper.getDomain()
+        + "&path=" + encodeURIComponent(AppHelper.getRedirectUrl() + "/www/index.html?path=" + (AppHelper.getQueryParamers().path || "") + "&unloginpath=login");
+      window.location.href = url;
+    }
     this.router.navigate([AppHelper.getRoutePath("login")]);
   }
   // check() {

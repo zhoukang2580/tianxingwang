@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="cordova-ali-plugin" version="1.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>cordova-ali-plugin</name>
+    <js-module name="cordova-ali-plugin" src="www/cordova-ali-plugin.js">
+        <clobbers target="cordova.plugins.cordova-ali-plugin" />
+    </js-module>
+</plugin>
