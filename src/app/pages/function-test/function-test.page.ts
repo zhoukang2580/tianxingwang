@@ -29,6 +29,7 @@ export class FunctionTestPage implements OnInit {
     this.router.navigate([AppHelper.getRoutePath('scan')]);
   }
   testHcp() {
+
     this.fileService.checkHcpUpdate(r => {
       this.info.msg = r.taskDesc;
       this.info.progress = Math.floor(r.loaded / (r.total || 1) * 100).toFixed(2) + "%";
@@ -36,6 +37,7 @@ export class FunctionTestPage implements OnInit {
       .then(nativeURL => {
         AppHelper.alert('数据加载完成，重新打开以生效？' + nativeURL, true).then(ok => {
           if (ok) {
+            if(this.plt.is('ios'))
             this.hcp.openHcpPage("file:///android_asset/www/index.html").then(res => {
               console.log(res);
             }).catch(e => {
@@ -43,7 +45,10 @@ export class FunctionTestPage implements OnInit {
             });
             // this.app.clearHistory();
             // this.app.loadUrl(nativeURL);
-            // this.app.loadUrl("file:///android_asset/www/index.html");
+            if(this.plt.is('android')){
+              this.app.clearCache();
+              this.app.loadUrl(nativeURL);
+            }
             // this.app.exitApp();
           }
         });
