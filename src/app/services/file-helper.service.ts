@@ -147,7 +147,7 @@ export class FileHelperService {
         if (!this.localVersion) {
           this.localVersion = await this.appVersion.getVersionNumber();
         }
-        await this.listDirFiles(`${this.dataDirectory}`, `${this.updateDirectoryName}`);
+        // await this.listDirFiles(`${this.dataDirectory}`, `${this.updateDirectoryName}`);
         const updateList = await this.getServerVersion(!!hcpResourceUrl);
         this.serverVersion = updateList.Version[0].Value;
         // 根据版本判断，是否需要热更新
@@ -209,14 +209,14 @@ export class FileHelperService {
         }
         const ok = await this.checkFileExists(direntry.toInternalURL(), `${serverVersionDirectory}.log`);
         console.log(`创建${serverVersionDirectory}.log ${ok ? "成功" : "失败"}`);
-        await this.listDirFiles(direntry.toURL(), `${this.www}`);
+        // await this.listDirFiles(direntry.toURL(), `${this.www}`);
         const vp = await this.getParent(versionFile);
         if (!vp) {
           reject(`创建${serverVersionDirectory}.log 失败`);
           return;
         }
         const vpPath = `${vp.toURL()}${this.www}/index.html`;
-       const fe =  await this.file.resolveLocalFilesystemUrl(vpPath);
+      //  const fe =  await this.file.resolveLocalFilesystemUrl(vpPath);
       //  console.log(`fe.fullPath=${fe.fullPath}`);
       //  console.log(`vpPath=${vpPath}`);
       //  console.log(`fe.name=${fe.name}`);
@@ -226,7 +226,7 @@ export class FileHelperService {
       //  console.log(`fe.filesystem.name=${fe.filesystem.name}`);
       //  console.log(`fe.filesystem.toJSON()=${fe.filesystem.toJSON()}`);
       //  AppHelper.setStorage("newversionurl",fe.toInternalURL());
-        resolve(fe.toURL());
+        resolve(vpPath);
       } catch (e) {
         console.log(`热更失败${JSON.stringify(e, null, 2)}`);
         reject(e);

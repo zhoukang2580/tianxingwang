@@ -162,6 +162,11 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
   }
 
   initDOM() {
+    if (AppHelper.isApp()) {
+      this.w = this.plt.width() - 2*16;
+      this.render.setStyle(this.pic.nativeElement, 'left', '1em');
+      this.render.setStyle(this.pic.nativeElement, 'right', '1em');
+    }
     this.render.setStyle(this.el, 'width', this.w + "px");
     // this.canvas = document.getElementById("canvas") as HTMLCanvasElement;//this.createCanvas(this.w, this.h) // 画布
     this.canvas.width = this.w;

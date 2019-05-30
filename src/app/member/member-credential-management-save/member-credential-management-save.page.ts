@@ -1,3 +1,4 @@
+import { QueryList, ViewChildren } from '@angular/core';
 import { AppHelper } from 'src/app/appHelper';
 import { ApiService } from 'src/app/services/api/api.service';
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
@@ -8,11 +9,11 @@ import { SelectCityService } from 'src/app/pages/select-city/select-city.service
 import { ValidatorService } from 'src/app/services/validator/validator.service';
 
 @Component({
-  selector: 'app-member-credential-management-add',
-  templateUrl: './member-credential-management-add.page.html',
-  styleUrls: ['./member-credential-management-add.page.scss'],
+  selector: 'app-member-credential-management-save',
+  templateUrl: './member-credential-management-save.page.html',
+  styleUrls: ['./member-credential-management-save.page.scss'],
 })
-export class MemberCredentialManagementAddPage implements OnInit, AfterViewInit{
+export class MemberCredentialManagementSavePage implements OnInit, AfterViewInit {
   identityTypes: { name: string; value: string; id: string; }[] = [];
   formGroup: FormGroup;
   identityNationality: any;
@@ -20,11 +21,13 @@ export class MemberCredentialManagementAddPage implements OnInit, AfterViewInit{
   requestCode: "issueNationality" | "identityNationality";
   title = "选择国家";
   @ViewChild("f")
-  formEle:ElementRef<HTMLFormElement>;
+  formEle: ElementRef<HTMLFormElement>;
+  @ViewChildren("input")
+  inputs:QueryList<HTMLInputElement>;
   constructor(
     private fb: FormBuilder,
     private cityService: SelectCityService,
-    private validatorService:ValidatorService,
+    private validatorService: ValidatorService,
     private apiService: ApiService, private router: Router) {
     this.cityService.getSelectedItemObservable().subscribe(cityItem => {
       if (this.requestCode === "identityNationality") {
@@ -37,7 +40,6 @@ export class MemberCredentialManagementAddPage implements OnInit, AfterViewInit{
   }
 
   ngOnInit() {
- 
     this.identityTypes = [
       {
         id: "1",
@@ -100,9 +102,12 @@ export class MemberCredentialManagementAddPage implements OnInit, AfterViewInit{
     //   return;
     // }
   }
-  ngAfterViewInit(){
-    debugger;
-    this.validatorService.initialize("Beeant.Domain.Entities.Member.CredentialsEntity","Add",this.formEle.nativeElement);
+  ngAfterViewInit() {
+    console.log("viewinit");
+    this.initializeValidate();
+  }
+  initializeValidate() {
+    this.validatorService.initialize("Beeant.Domain.Entities.Member.CredentialsEntity", "Add", this.formEle.nativeElement);
   }
   selectIdentityNationality() {
     this.requestCode = "identityNationality";
@@ -110,7 +115,7 @@ export class MemberCredentialManagementAddPage implements OnInit, AfterViewInit{
     this.router.navigate([AppHelper.getRoutePath("select-city")]);
   }
   selectIssueNationality() {
-    this.cityService.extra = { title: this.title, displayField: "Name",backRoute: this.router.url };
+    this.cityService.extra = { title: this.title, displayField: "Name", backRoute: this.router.url };
     this.requestCode = "issueNationality";
     this.router.navigate([AppHelper.getRoutePath("select-city")]);
   }

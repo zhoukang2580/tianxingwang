@@ -5,13 +5,13 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import {  MemberCredentialManagementAddPage } from './member-credential-management-add.page';
+import {  MemberCredentialManagementSavePage } from './member-credential-management-save.page';
 import { AuthorityGuard } from 'src/app/guards/authority.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: MemberCredentialManagementAddPage,
+    component: MemberCredentialManagementSavePage,
     canActivate:[AuthorityGuard]
   }
 ];
@@ -24,6 +24,6 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes),
   ],
-  declarations: [MemberCredentialManagementAddPage]
+  declarations: [MemberCredentialManagementSavePage]
 })
-export class MemberCredentialManagementAddPageModule {}
+export class MemberCredentialManagementSavePageModule {}

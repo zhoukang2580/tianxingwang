@@ -2,7 +2,7 @@
 Winner.Validator = function (config) {
     this.Base = new Winner.ClassBase();
     this.Validations = []; //[{Control:[],Handles:[{Function:null,Message:""}],Message:"",Content:[]}]
-    this.StyleFile = "/assets/validator/css/style.css";
+    this.StyleFile = "";//"/assets/validator/css/style.css";
     this.PropertyName = "ValidateName";
     this.IsShowMessage = true;
     if (config != undefined) {

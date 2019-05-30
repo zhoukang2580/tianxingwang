@@ -18,7 +18,7 @@ export class FunctionTestPage implements OnInit {
   hcp: Hcp;
   app: App;
   constructor(private fileService: FileHelperService,
-    private router:Router,
+    private router: Router,
     private plt: Platform) {
     this.plt.ready().then(() => {
       this.hcp = window['hcp'];
@@ -37,17 +37,20 @@ export class FunctionTestPage implements OnInit {
       .then(nativeURL => {
         AppHelper.alert('数据加载完成，重新打开以生效？' + nativeURL, true).then(ok => {
           if (ok) {
-            if(this.plt.is('ios'))
-            this.hcp.openHcpPage("file:///android_asset/www/index.html").then(res => {
-              console.log(res);
-            }).catch(e => {
-              AppHelper.alert(e);
-            });
+            if (this.plt.is('ios'))
+              this.hcp.openHcpPage("file:///android_asset/www/index.html").then(res => {
+                console.log(res);
+              }).catch(e => {
+                AppHelper.alert(e);
+              });
             // this.app.clearHistory();
             // this.app.loadUrl(nativeURL);
-            if(this.plt.is('android')){
-              this.app.clearCache();
-              this.app.loadUrl(nativeURL);
+            if (this.plt.is('android')) {
+              this.hcp.openHcpPage(nativeURL).then(res => {
+                console.log("res" + res);
+              }).catch(e => {
+                AppHelper.alert(e);
+              })
             }
             // this.app.exitApp();
           }

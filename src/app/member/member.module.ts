@@ -8,8 +8,8 @@ const routes: Routes = [
     loadChildren: "./member-credential-management/member-credential-management.module#MemberCredentialManagementPageModule"
   },
   {
-    path: 'member-credential-management-add',
-    loadChildren: "./member-credential-management-add/member-credential-management-add.module#MemberCredentialManagementAddPageModule"
+    path: 'member-credential-management-save',
+    loadChildren: "./member-credential-management-save/member-credential-management-save.module#MemberCredentialManagementSavePageModule"
   }
 ];
 @NgModule({

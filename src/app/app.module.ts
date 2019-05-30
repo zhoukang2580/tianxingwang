@@ -27,7 +27,11 @@ import { AppVersion } from '@ionic-native/app-version/ngx';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    IonicModule.forRoot({swipeBackEnabled:!true,backButtonText:"",loadingSpinner:"crescent"}),
+    IonicModule.forRoot({
+      backButtonIcon: "arrow-back",
+      backButtonText: "",
+      loadingSpinner: "crescent"
+    }),
     HttpClientModule,
     TranslateModule.forRoot({
       loader: {
@@ -46,7 +50,7 @@ import { AppVersion } from '@ionic-native/app-version/ngx';
     {
       provide: ErrorHandler,
       useClass: AppErrorHandler,
-      deps: [LogService,LoadingController]
+      deps: [LogService, LoadingController]
     },
     Zip,
     BarcodeScanner,

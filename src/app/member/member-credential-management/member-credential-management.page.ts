@@ -14,6 +14,6 @@ export class MemberCredentialManagementPage implements OnInit {
   ngOnInit() {
   }
   addCredential(){
-    this.router.navigate([AppHelper.getRoutePath("member-credential-management-add")]);
+    this.router.navigate([AppHelper.getRoutePath("member-credential-management-save")]);
   }
 }

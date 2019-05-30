@@ -7,19 +7,16 @@ import { ApiService } from '../api/api.service';
   providedIn: "root"
 })
 export class ValidatorService {
-  private infos: {name:string,saveType:string,rule:any,validator:any}[]= [];
+  private infos: {name:string,saveType:string,rule:any}[]= [];
   constructor(private apiService: ApiService) {
    
   }
   initialize(name:string,saveType:string,container:HTMLElement,isShowMessage:boolean=false)
   {
     this.get(name,saveType).then(r=>{
-      if(!r.validator)
-      {
-        r.validator=new window["Winner"].Validator({IsShowMessage:isShowMessage,Style:""});
-        r.validator.Initialize();
-        r.validator.InitializeControl(r.rule, container);
-      }
+        let validator=new window["Winner"].Validator({IsShowMessage:isShowMessage,Style:""});
+        validator.Initialize();
+        validator.InitializeControl(r.rule, container);
     });
   }
   get(name:string,saveType:string)
