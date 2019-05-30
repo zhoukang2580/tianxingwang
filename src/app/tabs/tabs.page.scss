@@ -1,5 +1,7 @@
 ion-tabs {
   ion-tab-bar {
+    --color-selected:var(--ion-color-success);
+    --color:var(--ion-color-dark);
     [class*='icon'] {
       font-size: 1.7rem;
     }
