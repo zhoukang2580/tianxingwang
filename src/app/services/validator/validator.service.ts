@@ -11,14 +11,14 @@ export class ValidatorService {
   constructor(private apiService: ApiService) {
    
   }
-  initialize(name:string,saveType:string,container:HTMLElement)
+  initialize(name:string,saveType:string,container:HTMLElement,isShowMessage:boolean=false)
   {
     this.get(name,saveType).then(r=>{
       if(!r.validator)
       {
-        r.validator=new window["Winner"].Validator({IsShowMessage:true});
+        r.validator=new window["Winner"].Validator({IsShowMessage:isShowMessage,Style:""});
         r.validator.Initialize();
-        r.validator.InitializeControl(r, container);
+        r.validator.InitializeControl(r.rule, container);
       }
     });
   }
