@@ -1,0 +1,25 @@
+{
+  "name": "cordova-ali-plugin",
+  "version": "1.0.0",
+  "description": "",
+  "cordova": {
+    "id": "cordova-ali-plugin",
+    "platforms": [
+      "android",
+      "ios",
+      "windows",
+      "browser",
+      "osx"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios",
+    "cordova-windows",
+    "cordova-browser",
+    "cordova-osx"
+  ],
+  "author": "",
+  "license": "ISC"
+}

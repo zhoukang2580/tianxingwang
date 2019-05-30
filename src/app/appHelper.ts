@@ -312,6 +312,17 @@ export class AppHelper {
       return "sky-trip.com";
     }
   }
+  static getRedirectUrl()
+  {
+    var url=this.getApiUrl();
+    var domain=this.getDomain();
+    if (!environment.production) {
+      return url.replace("beeant.com",domain);
+    }
+    if (environment.production) {
+      return url.replace("sky-trip.com",domain);
+    }
+  }
   static getApiUrl() {
     if (!environment.production) {
       //return "http://test.app.testskytrip.com";
