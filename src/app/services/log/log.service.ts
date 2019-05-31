@@ -1,6 +1,6 @@
 import { throwError } from "rxjs";
 import { Injectable } from "@angular/core";
-import { BaseRequest } from "../api/BaseRequest";
+import { RequestEntity } from "../api/Request.entity";
 import { AppHelper } from "../../appHelper";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { ExceptionEntity } from "./exception.entity";
@@ -18,7 +18,7 @@ export class LogService {
   async sendException(ex: ExceptionEntity) {
     try {
       const identity = await this.identityService.getIdentity();
-      const req = new BaseRequest();
+      const req = new RequestEntity();
       req.Timestamp = Math.floor(Date.now() / 1000);
       req.Domain = AppHelper.getDomain();
       req.Method = "ApiLogUrl-Error-Add";

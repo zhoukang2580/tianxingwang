@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { IdentityService } from 'src/app/services/identity/identity.service';
 import { Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api/api.service';
-import { BaseRequest } from 'src/app/services/api/BaseRequest';
+import { RequestEntity } from 'src/app/services/api/Request.entity';
 import { AppHelper } from 'src/app/appHelper';
 import { tap, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -45,7 +45,7 @@ export class PasswordCheckPage implements OnInit {
   check()
   {
     debugger;
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Home-Action";
     req.Data = JSON.stringify({
       Name: this.name,

@@ -2,7 +2,7 @@ import { AfterViewInit } from '@angular/core';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import { Router } from '@angular/router';
 import { IdentityService } from './../../services/identity/identity.service';
-import { BaseRequest } from 'src/app/services/api/BaseRequest';
+import { RequestEntity } from 'src/app/services/api/Request.entity';
 import { ApiService } from './../../services/api/api.service';
 import { LanguageHelper } from 'src/app/languageHelper';
 import { AppHelper } from './../../appHelper';
@@ -193,7 +193,7 @@ export class ScanComponent implements OnInit, AfterViewInit {
     return md5(encodeURIComponent(window.location.href.substring(0, window.location.href.indexOf("#"))));
   }
   private getJssdkInfo() {
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     const pageUrl = encodeURIComponent(window.location.href.substring(0, window.location.href.indexOf("#")));
     req.Method = "ApiPasswordUrl-wechat-jssdk";
     req.Data = {

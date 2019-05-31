@@ -5,7 +5,7 @@ import { OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IdentityService } from 'src/app/services/identity/identity.service';
 import { IdentityEntity } from 'src/app/services/identity/identity.entity';
-import { BaseRequest } from 'src/app/services/api/BaseRequest';
+import { RequestEntity } from 'src/app/services/api/Request.entity';
 import { map } from 'rxjs/operators';
 import { ApiService } from 'src/app/services/api/api.service';
 import { ConfigService } from 'src/app/services/config/config.service';
@@ -50,7 +50,7 @@ export class MyPage implements OnDestroy, OnInit {
   }
 
   load() {
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = "ApiMemberUrl-Home-Get";
     let deviceSubscription = this.apiService.getResponse<PageModel>(req).pipe(map(r => r.Data)).subscribe(r => {
       this.Model = r;

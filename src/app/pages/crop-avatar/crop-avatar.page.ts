@@ -4,7 +4,7 @@ import { AppHelper } from 'src/app/appHelper';
 import Cropper from 'cropperjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api/api.service';
-import { BaseRequest } from 'src/app/services/api/BaseRequest';
+import { RequestEntity } from 'src/app/services/api/Request.entity';
 @Component({
   selector: 'app-crop-avatar',
   templateUrl: './crop-avatar.page.html',
@@ -83,7 +83,7 @@ export class CropAvatarPage implements OnInit {
     }, 0);
   }
   uploadImage(avatarBase64Str:string){
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     const vals=avatarBase64Str.split(',');
     req.Method=this.method;
     req.IsShowLoading=true;

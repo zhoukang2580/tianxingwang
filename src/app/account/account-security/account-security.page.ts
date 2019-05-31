@@ -4,7 +4,7 @@ import { Router } from "@angular/router";
 import { IdentityService } from 'src/app/services/identity/identity.service';
 import { IdentityEntity } from 'src/app/services/identity/identity.entity';
 import { ApiService } from 'src/app/services/api/api.service';
-import { BaseRequest } from 'src/app/services/api/BaseRequest';
+import { RequestEntity } from 'src/app/services/api/Request.entity';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 type Item={
@@ -34,7 +34,7 @@ export class AccountSecurityPage implements OnInit {
     this.load();
   }
   load() {
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = "ApiAccountUrl-Home-Get";
     let deviceSubscription = this.apiService.getResponse<Item>(req).pipe(map(r => r.Data)).subscribe(r => {
       this.accountInfo = r;

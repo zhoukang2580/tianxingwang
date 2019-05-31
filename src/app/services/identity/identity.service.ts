@@ -1,5 +1,5 @@
 import { IdentityEntity } from "./identity.entity";
-import { BaseRequest } from "../api/BaseRequest";
+import { RequestEntity } from "../api/Request.entity";
 import { Injectable } from "@angular/core";
 import { of, throwError } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
@@ -59,7 +59,7 @@ export class IdentityService {
   loadIdentityEntity() {
     const ticket = AppHelper.getTicket();
     if (ticket) {
-      const req = new BaseRequest();
+      const req = new RequestEntity();
       req.IsShowLoading=true;
       req.Method = "ApiHomeUrl-Identity-Get";
       req.Data = JSON.stringify({ Ticket: ticket });

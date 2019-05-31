@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
 import { IonList } from '@ionic/angular';
 import { ApiService } from 'src/app/services/api/api.service';
 import { Observable, merge, of, Subscription } from 'rxjs';
-import { BaseRequest } from 'src/app/services/api/BaseRequest';
+import { RequestEntity } from 'src/app/services/api/Request.entity';
 import { map, switchMap } from 'rxjs/operators';
 import { AppHelper } from 'src/app/appHelper';
 type Item = {
@@ -26,7 +26,7 @@ export class AccountDevicePage implements OnInit, OnDestroy {
     this.load();
   }
   load() {
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Device-List";
     let deviceSubscription = this.apiService.getResponse<Item[]>(req).pipe(map(r => r.Data)).subscribe(r => {
       this.items = r;
@@ -38,7 +38,7 @@ export class AccountDevicePage implements OnInit, OnDestroy {
     });
   }
   delete(item: Item) {
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Device-Remove";
     req.IsShowLoading=true;
     req.Data={

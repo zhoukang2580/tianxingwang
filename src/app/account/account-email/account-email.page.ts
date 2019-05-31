@@ -4,7 +4,7 @@ import { FormBuilder } from "@angular/forms";
 import { Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
 import { LanguageHelper } from 'src/app/languageHelper';
-import { BaseRequest } from 'src/app/services/api/BaseRequest';
+import { RequestEntity } from 'src/app/services/api/Request.entity';
 import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { ApiService } from 'src/app/services/api/api.service';
@@ -38,7 +38,7 @@ export class AccountEmailPage implements OnInit {
     this.load();
   }
   load() {
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = `ApiPasswordUrl-Email-Load`;
     const scription = this.apiService.getResponse<{ Action: string, Email: string, IsActiveEmail?: boolean }>(req)
       .subscribe(r => {
@@ -51,7 +51,7 @@ export class AccountEmailPage implements OnInit {
 
   }
   sendAction() {
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = `ApiPasswordUrl-Email-Action`;
     req.IsShowLoading = true;
     req.Data = { Email: this.form.value.Email, Code: this.form.value.Code, Action: this.action };
@@ -100,7 +100,7 @@ export class AccountEmailPage implements OnInit {
   }
 
   sendEmailCode() {
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Email-SendCode";
     req.IsShowLoading = true;
     req.Data = { Email: this.form.value.Email, Action: this.action };

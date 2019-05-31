@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { BaseRequest } from 'src/app/services/api/BaseRequest';
+import { RequestEntity } from 'src/app/services/api/Request.entity';
 import { AppHelper } from 'src/app/appHelper';
 import { ApiService } from 'src/app/services/api/api.service';
 import { Subscription } from 'rxjs';
@@ -60,7 +60,7 @@ export class RegisterPage implements OnInit {
   }
   sendMobileCode(){
     debugger;
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.IsShowLoading=true;
     req.Method = "ApiRegisterUrl-Home-SendMobileCode";
     req.Data = JSON.stringify({ Mobile: this.form.value.Mobile });
@@ -89,7 +89,7 @@ export class RegisterPage implements OnInit {
       AppHelper.alert(LanguageHelper.TwicePasswordNotEqualTip);
       return;
     }
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.IsShowLoading=true;
     req.Method = "ApiRegisterUrl-Home-RegisterMobile";
     req.Data = { Mobile: this.form.value.Mobile,MobileCode:this.form.value.MobileCode,Password:this.form.value.Password,SurePassword:this.form.value.SurePassword};
@@ -138,7 +138,7 @@ export class RegisterPage implements OnInit {
   {
     var uuid=await AppHelper.getUUID();
     var name= await AppHelper.getDeviceName();
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Device-Bind";
     req.Data = { Mobile: this.form.value.Mobile,MobileCode:this.form.value.MobileCode,DeviceNumber:uuid,DeviceName:name};
     const sub= this.apiService.getResponse<{

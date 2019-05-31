@@ -1,5 +1,5 @@
 
-import { BaseRequest } from "../api/BaseRequest";
+import { RequestEntity } from "../api/Request.entity";
 import { Injectable } from "@angular/core";
 import { ApiService } from '../api/api.service';
 
@@ -53,7 +53,7 @@ export class ValidatorService {
 
   load(name:string,saveType:string) {
 
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = "ApiHomeUrl-Home-GetValidateRule";
     req.Data = JSON.stringify({ Name: name,SaveType:saveType });
     return this.apiService

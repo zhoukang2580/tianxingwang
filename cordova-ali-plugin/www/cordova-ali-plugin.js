@@ -1,6 +1,6 @@
 var exec = require('cordova/exec');
 
-exports.alipay = function (arg0, success, error) {
+exports.pay = function (arg0, success, error) {
     return new Promise((resolve,reject)=>{
         exec(resource => {
             resolve(resource);

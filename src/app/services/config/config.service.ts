@@ -1,6 +1,6 @@
 import { LoginEntity } from "../login/login.entity";
 import { ConfigEntity } from "./config.entity";
-import { BaseRequest } from "../api/BaseRequest";
+import { RequestEntity } from "../api/Request.entity";
 import { ApiService } from "../api/api.service";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, from, of } from "rxjs";

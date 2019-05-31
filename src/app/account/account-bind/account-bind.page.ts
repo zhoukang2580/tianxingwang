@@ -6,7 +6,7 @@ import { Observable, Subscription, interval } from "rxjs";
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppHelper } from 'src/app/appHelper';
 import { ApiService } from 'src/app/services/api/api.service';
-import { BaseRequest } from 'src/app/services/api/BaseRequest';
+import { RequestEntity } from 'src/app/services/api/Request.entity';
 import { LanguageHelper } from 'src/app/languageHelper';
 
 @Component({
@@ -59,7 +59,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
 
   
   sendMobileCode(){
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Url = AppHelper.getApiUrl() + "/Home/SendIdentityMobileCode";
     req.Data = JSON.stringify({ Mobile: this.form.value.Mobile });
     const sub= this.apiService.getResponse<{
@@ -99,7 +99,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
   }
   bindMobile()
   {
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Mobile-Bind";
     req.Data = { Mobile: this.form.value.Mobile,MobileCode:this.form.value.MobileCode};
     const sub= this.apiService.getResponse<{
@@ -117,7 +117,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
   {
     var uuid=await AppHelper.getUUID();
     var name= await AppHelper.getDeviceName();
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Device-Bind";
     req.Data = { Mobile: this.form.value.Mobile,MobileCode:this.form.value.MobileCode,DeviceNumber:uuid,DeviceName:name};
     const sub= this.apiService.getResponse<{

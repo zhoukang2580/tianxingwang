@@ -11,7 +11,7 @@ import { Router } from "@angular/router";
 import { tap } from "rxjs/operators";
 import { Subscription, Observable } from 'rxjs';
 import { ApiService } from 'src/app/services/api/api.service';
-import { BaseRequest } from 'src/app/services/api/BaseRequest';
+import { RequestEntity } from 'src/app/services/api/Request.entity';
 import { LanguageHelper } from 'src/app/languageHelper';
 class PasswordModel {
   /// <summary>
@@ -104,7 +104,7 @@ export class AccountPasswordPage implements OnInit,OnDestroy {
   }
 
   modifyPassword(passwordModel: PasswordModel) {
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Data = JSON.stringify(passwordModel);
     req.Method=`ApiPasswordUrl-Password-Modify`;
     return this.apiService.getResponse(req);

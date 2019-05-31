@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { ApiService } from 'src/app/services/api/api.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { BaseRequest } from 'src/app/services/api/BaseRequest';
+import { RequestEntity } from 'src/app/services/api/Request.entity';
 import { switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -27,7 +27,7 @@ export class PasswordResetPage implements OnInit {
   }
   finish()
   {
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Home-Action";
     req.Data = JSON.stringify({
       Name: this.name,

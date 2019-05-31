@@ -4,7 +4,7 @@ import { File, FileEntry, DirectoryEntry, Entry } from "@ionic-native/file/ngx";
 import { Platform } from '@ionic/angular';
 import { Zip } from '@ionic-native/zip/ngx';
 import { ApiService } from './api/api.service';
-import { BaseRequest } from './api/BaseRequest';
+import { RequestEntity } from './api/Request.entity';
 import { AppVersion } from '@ionic-native/app-version/ngx';
 import { AppHelper } from '../appHelper';
 import { LanguageHelper } from '../languageHelper';
@@ -114,7 +114,7 @@ export class FileHelperService {
   }
   private getServerVersion(test: boolean = false) {
     return new Promise<UpdateList>((resove, reject) => {
-      const req = new BaseRequest();
+      const req = new RequestEntity();
       req.Method = "ServiceVersionUrl-Home-Index";
       req.Data = { "Product": "DongmeiIonicAndroid" };
       if (test) {

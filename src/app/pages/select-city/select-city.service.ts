@@ -2,7 +2,7 @@ import { BehaviorSubject } from 'rxjs';
 import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { ApiService } from 'src/app/services/api/api.service';
-import { BaseRequest } from 'src/app/services/api/BaseRequest';
+import { RequestEntity } from 'src/app/services/api/Request.entity';
 import { map } from 'rxjs/operators';
 export type CityItem = ({ Name: string; Id: string; } & any);
 @Injectable({ providedIn: "root" })
@@ -43,7 +43,7 @@ export class SelectCityService {
         return this._selectedItemSubject.asObservable();
     }
     getCities() {
-        const req = new BaseRequest();
+        const req = new RequestEntity();
         req.Method='';
         this.apiService.getResponse<any>(req).pipe(map(r=>r.Data));
         return this.cities;

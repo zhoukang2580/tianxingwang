@@ -1,4 +1,4 @@
-export class BaseRequest {
+export class RequestEntity {
   Ticket?: string;
   Domain?: string;
   ImageCode?: string;

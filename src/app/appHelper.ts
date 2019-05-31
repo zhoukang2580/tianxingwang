@@ -317,10 +317,10 @@ export class AppHelper {
     var url=this.getApiUrl();
     var domain=this.getDomain();
     if (!environment.production) {
-      return url.replace("beeant.com",domain);
+      return url.replace("beeant.com",domain)+"/www/index.html";
     }
     if (environment.production) {
-      return url.replace("sky-trip.com",domain);
+      return url.replace("sky-trip.com",domain)+"/www/index.html";
     }
   }
   static getApiUrl() {

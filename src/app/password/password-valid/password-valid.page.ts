@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BaseRequest } from 'src/app/services/api/BaseRequest';
+import { RequestEntity } from 'src/app/services/api/Request.entity';
 import { ApiService } from 'src/app/services/api/api.service';
 import { switchMap } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -34,7 +34,7 @@ export class PasswordValidPage implements OnInit {
   }
   check()
   {
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Home-Action";
     req.Data = JSON.stringify({
       Name: this.name,
@@ -84,7 +84,7 @@ export class PasswordValidPage implements OnInit {
   sendMobileCode()
   {
     
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Home-SendCode";
     req.IsShowLoading=true;
     req.Data = { ValidateType:this.model,Name:this.name};

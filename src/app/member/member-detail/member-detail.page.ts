@@ -3,7 +3,7 @@ import { IdentityService } from 'src/app/services/identity/identity.service';
 import { IdentityEntity } from 'src/app/services/identity/identity.entity';
 import { Router } from '@angular/router';
 import { AppHelper } from 'src/app/appHelper';
-import { BaseRequest } from 'src/app/services/api/BaseRequest';
+import { RequestEntity } from 'src/app/services/api/Request.entity';
 import { ConfigService } from 'src/app/services/config/config.service';
 import { ApiService } from 'src/app/services/api/api.service';
 import { map } from 'rxjs/operators';
@@ -44,7 +44,7 @@ export class MemberDetailPage implements OnInit {
   }
 
   load() {
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = "ApiMemberUrl-Home-Get";
     let deviceSubscription = this.apiService.getResponse<PageModel>(req).pipe(map(r => r.Data)).subscribe(r => {
       this.Model.Name = r.Name;
@@ -56,7 +56,7 @@ export class MemberDetailPage implements OnInit {
       }
     });
 
-    const req1 = new BaseRequest();
+    const req1 = new RequestEntity();
     req1.Method = "HrApiUrl-Staff-Get";
     let deviceSubscription1 = this.apiService.getResponse<PageModel>(req1).pipe(map(r => r.Data)).subscribe(r => {
       this.Model.StaffNumber = r.StaffNumber;

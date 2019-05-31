@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IdentityService } from 'src/app/services/identity/identity.service';
 import { Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api/api.service';
-import { BaseRequest } from 'src/app/services/api/BaseRequest';
+import { RequestEntity } from 'src/app/services/api/Request.entity';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { NavController } from '@ionic/angular';
 import { LanguageHelper } from 'src/app/languageHelper';
@@ -37,7 +37,7 @@ export class AccountMobilePage implements OnInit, OnDestroy {
     this.load();
   }
   load() {
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = `ApiPasswordUrl-Mobile-Load`;
     const scription = this.apiService.getResponse<{ Action: string, Mobile: string, IsActiveMobile?: boolean }>(req)
       .subscribe(r => {
@@ -50,7 +50,7 @@ export class AccountMobilePage implements OnInit, OnDestroy {
 
   }
   sendAction() {
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = `ApiPasswordUrl-Mobile-Action`;
     req.IsShowLoading = true;
     req.Data = { Mobile: this.form.value.Mobile, Code: this.form.value.Code, Action: this.action };
@@ -103,7 +103,7 @@ export class AccountMobilePage implements OnInit, OnDestroy {
     if (this.senSmsCodeSubscription) {
       this.senSmsCodeSubscription.unsubscribe();
     }
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Mobile-SendCode";
     req.IsShowLoading = true;
     req.Data = { Mobile: this.form.value.Mobile, Action: this.action };

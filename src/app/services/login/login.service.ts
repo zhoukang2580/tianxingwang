@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { IdentityEntity } from "../identity/identity.entity";
-import { BaseRequest } from "../api/BaseRequest";
+import { RequestEntity } from "../api/Request.entity";
 import { ApiService } from "../api/api.service";
 import { IdentityService } from "../identity/identity.service";
 import { Injectable } from "@angular/core";
@@ -47,7 +47,7 @@ export class LoginService {
     );
   }
   checkIsDeviceBinded(deviceNumber: string) {
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = 'ApiPasswordUrl-Device-Check';
     req.Data = {
@@ -99,7 +99,7 @@ export class LoginService {
     );
   }
   getImage() {
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = "Home-CreateCode";
     req.Url = AppHelper.getApiUrl();
     return merge(of("assets/images/loading.gif"),
@@ -117,7 +117,7 @@ export class LoginService {
     );
   }
   sendMobileCode(mobile: string, imageCode: string = null) {
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Url = AppHelper.getApiUrl() + "/Home/SendLoginMobileCode";
     if (imageCode) {
       req.ImageCode = imageCode;
@@ -133,7 +133,7 @@ export class LoginService {
     return this.apiService.getLoading();
   }
   login(method: string, name: string, password: string, imageCode: string, imageValue: string,isShowLoading:boolean) {
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = method;
     if (imageCode) {
       req.ImageCode = imageCode;
@@ -179,7 +179,7 @@ export class LoginService {
     debugger;
     const ticket = AppHelper.getTicket();
     if (ticket) {
-      const req = new BaseRequest();
+      const req = new RequestEntity();
       req.IsShowLoading=true;
       req.Method = "ApiLoginUrl-Home-Logout";
       req.Data = JSON.stringify({ Ticket: ticket });
@@ -231,7 +231,7 @@ export class LoginService {
 
     if (AppHelper.getStorage<string>("identityId")) {
       const id = AppHelper.getStorage<string>("identityId");
-      const req = new BaseRequest();
+      const req = new RequestEntity();
       req.Method = "ApiLoginUrl-Home-DeviceLogin";
       req.Data = JSON.stringify({
         Id: id,

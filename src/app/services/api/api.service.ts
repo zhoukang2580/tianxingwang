@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 
-import { BaseRequest } from "./BaseRequest";
+import { RequestEntity } from "./Request.entity";
 import { AppHelper } from "../../appHelper";
 import { map, tap, catchError, finalize, switchMap, timeout, delay } from "rxjs/operators";
 import { IResponse } from "./IResponse";
@@ -67,22 +67,27 @@ export class ApiService {
     }, 1000);
   }
   send<T>(method: string, data: any, version: string = "1.0", showLoading: boolean = false) {
-    const req = new BaseRequest();
+    const req = new RequestEntity();
     req.Method = method;
     req.Version = version;
     if (data) { req.Data = JSON.stringify(data); }
     req.IsShowLoading = showLoading;
     return this.getResponse<T>(req);
   }
-  getResponse<T>(req: BaseRequest): Observable<IResponse<T>> {
+  getResponse<T>(req: RequestEntity): Observable<IResponse<T>> {
     return this.sendRequest(req, true);
   }
-  async tryAutoLogin(orgReq: BaseRequest) {
-    const req = new BaseRequest();
+  createRequest()
+  {
+    const req = new RequestEntity();
     req.Timestamp = Math.floor(Date.now() / 1000);
     req.Language = AppHelper.getLanguage();
     req.Ticket = AppHelper.getTicket();
     req.Domain = AppHelper.getDomain();
+    return req;
+  }
+  async tryAutoLogin(orgReq: RequestEntity) {
+    const req = this.createRequest();
     if (AppHelper.isApp()) {
       const uuid = await AppHelper.getUUID();
       req.Method = "ApiLoginUrl-Home-DeviceLogin";
@@ -153,7 +158,7 @@ export class ApiService {
     });
   }
 
-  private sendRequest(req: BaseRequest, isCheckLogin: boolean): Observable<IResponse<any>> {
+  private sendRequest(req: RequestEntity, isCheckLogin: boolean): Observable<IResponse<any>> {
     req.Timestamp = Math.floor(Date.now() / 1000);
     req.Language = AppHelper.getLanguage();
     req.Ticket = AppHelper.getTicket();
