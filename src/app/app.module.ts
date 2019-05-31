@@ -20,6 +20,8 @@ import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import { Device } from '@ionic-native/device/ngx';
 import { File } from '@ionic-native/file/ngx';
 import { AppVersion } from '@ionic-native/app-version/ngx';
+import { WebView } from '@ionic-native/ionic-webview/ngx';
+
 
 @NgModule({
   declarations: [AppComponent],
@@ -56,7 +58,8 @@ import { AppVersion } from '@ionic-native/app-version/ngx';
     BarcodeScanner,
     Device,
     File,
-    AppVersion
+    AppVersion,
+    WebView
   ],
   bootstrap: [AppComponent]
 })

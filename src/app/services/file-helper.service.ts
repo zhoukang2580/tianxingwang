@@ -4,29 +4,31 @@ import { File, FileEntry, DirectoryEntry, Entry } from "@ionic-native/file/ngx";
 import { Platform } from '@ionic/angular';
 import { Zip } from '@ionic-native/zip/ngx';
 import { ApiService } from './api/api.service';
-import { RequestEntity } from './api/Request.entity';
+import { BaseRequest } from './api/BaseRequest';
 import { AppVersion } from '@ionic-native/app-version/ngx';
 import { AppHelper } from '../appHelper';
 import { LanguageHelper } from '../languageHelper';
+import { WebView } from '@ionic-native/ionic-webview/ngx';
 interface Hcp {
   getHash: (filePath: string) => Promise<string>;
   openHcpPage: (filePath: string) => Promise<any>;
+  saveHcpPath: (serverVersion: string) => Promise<any>;
 }
 type md5JsonFileType = {
   file: string;
   hash: string;
 }
 type UpdateList = {
-  Url: string;
   Version: {
+    DownloadUrl: string;
     Folder: string;
     Value: string;// 版本
     Ignore: boolean;// 是否可以忽略
     Remove: boolean;// 是否清除基础数据,
     Hotfix: {
-      Folder: string;
-      Md5: string;
-    }[]
+      DownloadUrl: string;
+      Ignore: boolean;// 是否可以忽略
+    }
   }[];
 };
 type HcpUpdateModel = {
@@ -55,6 +57,7 @@ export class FileHelperService {
   private hcpPlugin: Hcp;
   fileInfo: any = {};
   constructor(
+    private webView: WebView,
     private ngZone: NgZone,
     private file: File,
     private httpClient: HttpClient,
@@ -113,8 +116,8 @@ export class FileHelperService {
       });
   }
   private getServerVersion(test: boolean = false) {
-    return new Promise<UpdateList>((resove, reject) => {
-      const req = new RequestEntity();
+    return new Promise<UpdateList>((resolve, reject) => {
+      const req = new BaseRequest();
       req.Method = "ServiceVersionUrl-Home-Index";
       req.Data = { "Product": "DongmeiIonicAndroid" };
       if (test) {
@@ -122,7 +125,7 @@ export class FileHelperService {
       }
       const sub = this.apiService.getResponse<UpdateList>(req).subscribe(r => {
         if (r.Status && r.Data) {
-          resove(r.Data);
+          resolve(r.Data);
         } else {
           reject(r.Message);
         }
@@ -136,7 +139,19 @@ export class FileHelperService {
       });
     });
   }
-  checkHcpUpdate(onprogress: (hcp: HcpUpdateModel) => void, hcpResourceUrl: string = ""): Promise<string> {
+  async checkHcpUpdate():Promise<{isHcpUpdate:boolean;ignore?:boolean;}> {
+    const up = await this.getServerVersion().catch(e=>null as UpdateList);
+    if(!up||!up.Version||up.Version.length==0||!up.Version[0].Hotfix||!up.Version[0].Hotfix.DownloadUrl){
+      return {isHcpUpdate: false};
+    }
+    this.serverVersion =up.Version[0].Value;
+    this.localVersion= await this.appVersion.getVersionNumber();
+    return {
+      isHcpUpdate:this.checkIfHcpUpdateByVersion(this.serverVersion,this.localVersion),
+      ignore:up.Version[0].Hotfix.Ignore
+    };
+  }
+  private hcpUpdate(onprogress: (hcp: HcpUpdateModel) => void, hcpResourceUrl: string = ""): Promise<string> {
     // if (!AppHelper.isApp()) {
     //   return Promise.resolve("");
     // }
@@ -156,7 +171,7 @@ export class FileHelperService {
           reject("版本无需热更");
           return false;
         }
-        const localExists = await this.checkLocalExists(this.serverVersion);
+        const localExists = this.checkLocalExists(this.serverVersion);
         console.log(`检查本地是否存在服务器热更版本 ${localExists ? "存在" : "不存在"}`);
         if (localExists) {
           reject("本地已经存在热更版本");
@@ -216,23 +231,22 @@ export class FileHelperService {
           return;
         }
         const vpPath = `${vp.toURL()}${this.www}/index.html`;
-      //  const fe =  await this.file.resolveLocalFilesystemUrl(vpPath);
-      //  console.log(`fe.fullPath=${fe.fullPath}`);
-      //  console.log(`vpPath=${vpPath}`);
-      //  console.log(`fe.name=${fe.name}`);
-      //  console.log(`fe.nativeURL=${fe.nativeURL}`);
-      //  console.log(`fe.toInternalURL()=${fe.toInternalURL()}`);
-      //  console.log(`fe.toURL()=${fe.toURL()}`);
-      //  console.log(`fe.filesystem.name=${fe.filesystem.name}`);
-      //  console.log(`fe.filesystem.toJSON()=${fe.filesystem.toJSON()}`);
-      //  AppHelper.setStorage("newversionurl",fe.toInternalURL());
-        resolve(vpPath);
+        console.log(`webView.convertFileSrc=${this.webView.convertFileSrc(vpPath)}`);
+        this.cacheHcpVersionToLoacal(this.serverVersion);
+        resolve(this.webView.convertFileSrc(vpPath));
       } catch (e) {
         console.log(`热更失败${JSON.stringify(e, null, 2)}`);
         reject(e);
         return false;
       }
     });
+  }
+  private getLocalHcpVersion() {
+    console.log(`apphcpversion=${AppHelper.getStorage<string>("apphcpversion")}`);
+    return (AppHelper.getStorage<string>("apphcpversion") || "").trim();
+  }
+  private cacheHcpVersionToLoacal(version: string) {
+    AppHelper.setStorage('apphcpversion', version);
   }
   private async getMd5JsonFile() {
     const path = `${this.dataDirectory}${this.updateDirectoryName}`;
@@ -305,28 +319,7 @@ export class FileHelperService {
     if (!AppHelper.isApp()) {
       return false;
     }
-    console.log(`checkLocalExists,serverVersion=${serverVersion}`);
-    return this.checkDirExists(`${this.dataDirectory}${this.updateDirectoryName}`,
-      `${this.www}_${serverVersion}`.replace(/\./g, "_"))
-      .then(exists => {
-        console.log(`checkLocalExists 路径检查结果` + exists);
-        if (exists) {
-          // 存在，判断文件夹内是否存在 www_1_1_0.log 文件
-          const path = `${this.dataDirectory}${this.updateDirectoryName}`;
-          const versionDir = `${this.www}_${serverVersion}`.replace(/\./g, "_");
-          return this.checkFileExists(`${path}/${versionDir}`, `${versionDir}.log`)
-            .then(fileExists => {
-              console.log(`checkLocalExists 检查是否存在 【${versionDir}.log】 文件 ` + fileExists);
-              if (!fileExists) {
-                // 本地的版本是无效的
-                // 删除文件夹
-                return this.clearVersionDirectory(serverVersion).then(() => fileExists);
-              }
-              return fileExists;
-            });
-        }
-        return false;
-      })
+    return serverVersion == this.getLocalHcpVersion();
   }
   private removeFile(path: string, file: string) {
     console.log(`删除文件${path}/${file}`);

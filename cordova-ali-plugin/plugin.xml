@@ -17,7 +17,7 @@
     </platform>
 
     <!-- ios -->
-    <platform name="ios">
+    <!-- <platform name="ios">
         <config-file target="config.xml" parent="/*">
             <feature name="Device">
                 <param name="ios-package" value="CDVDevice"/>
@@ -26,7 +26,7 @@
 
         <header-file src="src/ios/CDVDevice.h" />
         <source-file src="src/ios/CDVDevice.m" />
-    </platform>
+    </platform> -->
 
     <!-- windows -->
     <platform name="windows">

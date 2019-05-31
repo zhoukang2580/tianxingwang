@@ -35,23 +35,13 @@ export class FunctionTestPage implements OnInit {
       this.info.progress = Math.floor(r.loaded / (r.total || 1) * 100).toFixed(2) + "%";
     }, `assets/${this.fileService.updateZipFileName}`)
       .then(nativeURL => {
-        AppHelper.alert('数据加载完成，重新打开以生效？' + nativeURL, true).then(ok => {
+        AppHelper.alert('数据加载完成，重新打开以生效？', true).then(ok => {
           if (ok) {
-            if (this.plt.is('ios'))
-              this.hcp.openHcpPage("file:///android_asset/www/index.html").then(res => {
-                console.log(res);
-              }).catch(e => {
-                AppHelper.alert(e);
-              });
-            // this.app.clearHistory();
-            // this.app.loadUrl(nativeURL);
-            if (this.plt.is('android')) {
-              this.hcp.openHcpPage(nativeURL).then(res => {
-                console.log("res" + res);
-              }).catch(e => {
-                AppHelper.alert(e);
-              })
-            }
+            this.hcp.openHcpPage(nativeURL).then(res => {
+              console.log("res" + res);
+            }).catch(e => {
+              AppHelper.alert(e);
+            })
             // this.app.exitApp();
           }
         });

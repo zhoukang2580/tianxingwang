@@ -34,59 +34,19 @@ public class Hcp extends CordovaPlugin {
     private static final String LOCAL_ASSETS_FOLDER = "file:///android_asset/www";
     SharedPreferences preferences;
     CallbackContext mMallbackContext;
-
+    private boolean isReload =false;
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
         preferences = cordova.getActivity().getPreferences(0);
-        // this.initwww();
-    }
-    private  void initwww(){
-        String p = this.preferences.getString("loadIndexPagePath", null);
-        if(null!=p){
-            openHcpPage(p,null);
-            return;
+        String path = this.preferences.getString("loadIndexPagePath", null);
+        Log.d("Hcp", "热更插件加载页面 " + path);
+        if (path != null) {
+            isReload =true;
+            openHcpPage(path, mMallbackContext);
         }
-        cordova.getThreadPool().execute(() -> {
-            try {
-                String path = cordova.getActivity().getFilesDir() + File.separator +
-                        "update"+File.separator+"www_1_0_1"+File.separator+"www";// files/update/www
-                File file =  new File(path);
-                Log.d(TAG, "目的路径： " +file.getAbsolutePath());
-                copyAssets("www",file.getAbsolutePath() , cordova.getContext().getAssets());
-                Log.d(TAG, "拷贝资源文件完成，index.html存在？="+new File(path,"index.html").exists());
-//                for (File f:file.listFiles()
-//                     ) {
-//                    Log.d(TAG,"update/www/目录下的文件【"+f.getName()+"】是否是文件夹？"+f.isDirectory());
-//                }
-                if (new File(path,"index.html").exists()) {
-                    Log.d(TAG, "打开路径: " + "file://" + new File(file.getAbsolutePath(),"index.html").getAbsolutePath());
-                    cordova.getActivity().runOnUiThread(() -> {
-                        webView.clearHistory();
-//                        webView.loadUrlIntoView("file://" +new File(file
-//                                .getAbsolutePath() ,"index.html").getAbsolutePath(), false);
-                        Log.d(TAG,"webView.getUrl()="+webView.getUrl());
-                        Log.d(TAG,"webView.canGoBack="+webView.canGoBack());
-                        preferences.edit().putString("loadIndexPagePath",
-                                new File(file.getParent(),"www_1_0_1.log").getAbsolutePath())
-                                .apply();
-                        webView.loadUrlIntoView("file://" +new File(file
-                                .getAbsolutePath() ,"index.html").getAbsolutePath(), false);
-                    });
-                    Thread.sleep(2000);
-                    cordova.getActivity().runOnUiThread(() -> {
-                        webView.getEngine().goBack();
-                    });
-                }
-            } catch (IOException e) {
-                Log.d(TAG, e.getMessage());
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                Log.d(TAG, e.getMessage());
-                e.printStackTrace();
-            }
-        });
     }
+
     @Override
     public void onResume(boolean multitasking) {
         super.onResume(multitasking);
@@ -98,9 +58,15 @@ public class Hcp extends CordovaPlugin {
         super.onStart();
         String path = this.preferences.getString("loadIndexPagePath", null);
         Log.d("Hcp", "热更插件加载页面 " + path);
-        if (path != null) {
+        if (path != null&&!this.isReload) {
             openHcpPage(path, mMallbackContext);
         }
+    }
+
+    @Override
+    public void onPause(boolean multitasking) {
+        super.onPause(multitasking);
+        this.isReload =false;
     }
 
     @Override
@@ -108,6 +74,14 @@ public class Hcp extends CordovaPlugin {
         if (TextUtils.equals("openHcpPage", action)) {
             mMallbackContext = callbackContext;
             this.openHcpPage(args.optString(0), callbackContext);
+            return true;
+        }
+        if (TextUtils.equals("saveHcpPath", action)) {
+            if(TextUtils.isEmpty(args.optString(0))){
+                callbackContext.error("路径不存在");
+                return true;
+            }
+            this.saveHcpPath(args.optString(0),callbackContext);
             return true;
         }
         if (TextUtils.equals("getHash", action)) {
@@ -120,7 +94,10 @@ public class Hcp extends CordovaPlugin {
         return super.execute(action, args, callbackContext);
     }
 
-
+    private  void saveHcpPath(String path, CallbackContext callbackContext){
+        preferences.edit().putString("loadIndexPagePath",path).apply();
+        callbackContext.success();
+    }
     private void openHcpPage(String path, CallbackContext callbackContext) {
         cordova.getThreadPool().execute(new Runnable() {
             @Override
@@ -130,41 +107,10 @@ public class Hcp extends CordovaPlugin {
                         callbackContext.error("路径不存在");
                     return;
                 }
-                CordovaResourceApi resourceApi = webView.getResourceApi();
-                File f = resourceApi.mapUriToFile(getUriForArg(path));
-                Log.d(TAG, "是否是文件夹 " + f.isDirectory() + " 文件是否存在 " + f.exists());
-                if (!f.exists()) {
-                    if (null != callbackContext) {
-                        callbackContext.error("index.html文件不存在，路径" + FILE_PREFIX + f.getPath());
-                    }
-                    Log.d(TAG, "index.html文件不存在，路径" + FILE_PREFIX + f.getPath());
-                    return;
-                }
-                File indexFile = new File(new File(f.getParent(), "www").getAbsoluteFile(), "index.html");
-                if (!indexFile.exists()) {
-                    Log.d(TAG, "indexfile 不存在");
-                    return;
-                }
-
-                Log.d(TAG, "index.html 文件内容" + getFileAsString(indexFile));
-                try {
-                    String loadurl = FILE_PREFIX + indexFile.getAbsolutePath();
-                    preferences.edit().putString("loadIndexPagePath", path).apply();
-                    Log.d(TAG, "loadUrlIntoView indexFile.getAbsolutePath()=" + indexFile.getAbsolutePath());
-                    Log.d(TAG, "loadUrlIntoView loadurl=" + loadurl);
-                    File f3 = resourceApi.mapUriToFile(getUriForArg(loadurl));
-                    Log.d(TAG, "f3 exists=" + f3.exists());
-                    cordova.getActivity().runOnUiThread(() -> {
-                        webView.loadUrlIntoView(FILE_PREFIX + f3.getAbsolutePath(), false);
-                    });
-                } catch (Exception e) {
-                    cordova.getActivity().runOnUiThread(() -> {
-                        preferences.edit().putString("loadIndexPagePath", null).apply();
-                        Log.e(TAG, e.getMessage());
-                        webView.loadUrl(LOCAL_ASSETS_FOLDER + File.separator + "index.html");
-                    });
-
-                }
+                preferences.edit().putString("loadIndexPagePath",path).apply();
+                cordova.getActivity().runOnUiThread(() -> {
+                    webView.loadUrlIntoView(path, false);
+                });
             }
         });
     }
