@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-module.exports = function(ctx) {
+module.exports = function (ctx) {
   if (ctx.opts.platforms.includes("android")) {
     const projectRoot = ctx.opts.projectRoot;
     const tgtXmlPath = path.resolve(
@@ -14,10 +14,16 @@ module.exports = function(ctx) {
       "network_security_config.xml"
     );
     console.log("路径：", tgtXmlPath);
+    // <files-path name="name" path="path" /> 物理路径相当于Context.getFilesDir() + /path/
+    // <cache-path name="name" path="path" /> 物理路径相当于Context.getCacheDir() + /path/
+    // <external-path name="name" path="path" /> 物理路径相当于Environment.getExternalStorageDirectory() + /path/
+    // <external-files-path name="name" path="path" /> 物理路径相当于Context.getExternalFilesDir(String) + /path/
+    // <external-cache-path name="name" path="path" /> 物理路径相当于Context.getExternalCacheDir() + /path/
     const xml = `
          <?xml version='1.0' encoding='utf-8'?>
           <resources>
             <cache-path path="" name="download"/>
+            <files-path path="" name="update"/>
           </resources>
       `.trim();
     const network_security_configxml = `
@@ -26,18 +32,7 @@ module.exports = function(ctx) {
           <base-config cleartextTrafficPermitted="true" />
       </network-security-config>
       `.trim();
-    if (!fs.existsSync(tgtXmlPath)) {
-      fs.writeFileSync(tgtXmlPath, xml);
-    } else {
-      // <files-path name="name" path="path" /> 物理路径相当于Context.getFilesDir() + /path/
-      // <cache-path name="name" path="path" /> 物理路径相当于Context.getCacheDir() + /path/
-      // <external-path name="name" path="path" /> 物理路径相当于Environment.getExternalStorageDirectory() + /path/
-      // <external-files-path name="name" path="path" /> 物理路径相当于Context.getExternalFilesDir(String) + /path/
-      // <external-cache-path name="name" path="path" /> 物理路径相当于Context.getExternalCacheDir() + /path/
-      let str = fs.readFileSync(tgtXmlPath, { encoding: "utf8" });
-      if (!str.includes('<cache-path path="" name="download"/>')) {
-      }
-    }
+    fs.writeFileSync(tgtXmlPath, xml);
 
     // fs.writeFileSync(
     //   network_security_configxmlPath,

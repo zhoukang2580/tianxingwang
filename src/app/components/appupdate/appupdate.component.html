@@ -1,0 +1,13 @@
+<!-- <ion-backdrop></ion-backdrop> -->
+<!-- <ion-button (click)='testHcp()' [disabled]='updateInfo?.loaded!==updateInfo?.total'>测试更新</ion-button> -->
+<!-- Other types -->
+<!-- Circles -->
+<ion-label margin-bottom>
+  <ion-spinner name="circles" color='success' *ngIf='updateInfo?.loaded!=updateInfo?.total'></ion-spinner>
+</ion-label>
+<ion-label color='primary' margin-bottom>
+  {{updateInfo?.taskDesc}}
+  <ion-note color='success'>{{updateInfo?.progress}}</ion-note>
+</ion-label>
+<!-- <ion-progress-bar color="secondary" [value]="updateInfo?.loaded" [buffer]='updateInfo?.total'>
+</ion-progress-bar> -->

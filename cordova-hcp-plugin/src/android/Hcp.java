@@ -1,8 +1,12 @@
 package com.beeant.plugin.hcp;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.net.Uri;
+import android.os.Build;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -34,6 +38,7 @@ public class Hcp extends CordovaPlugin {
     private static final String LOCAL_ASSETS_FOLDER = "file:///android_asset/www";
     SharedPreferences preferences;
     CallbackContext mMallbackContext;
+
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
@@ -75,11 +80,11 @@ public class Hcp extends CordovaPlugin {
             return true;
         }
         if (TextUtils.equals("saveHcpPath", action)) {
-            if(TextUtils.isEmpty(args.optString(0))){
+            if (TextUtils.isEmpty(args.optString(0))) {
                 callbackContext.error("路径不存在");
                 return true;
             }
-            this.saveHcpPath(args.optString(0),callbackContext);
+            this.saveHcpPath(args.optString(0), callbackContext);
             return true;
         }
         if (TextUtils.equals("getHash", action)) {
@@ -89,13 +94,60 @@ public class Hcp extends CordovaPlugin {
             });
             return true;
         }
+        if (TextUtils.equals("checkPathOrFileExists", action)) {
+            mMallbackContext = callbackContext;
+            checkPathOrFileExists(args.optString(0), callbackContext);
+            return true;
+        }
+        if (TextUtils.equals("openAPK", action)) {
+            if (TextUtils.isEmpty(args.optString(0)))
+                return true;
+            cordova.getThreadPool().execute(() -> {
+                CordovaResourceApi resourceApi = webView.getResourceApi();
+                File file = resourceApi.mapUriToFile(getUriForArg(args.optString(0)));
+                this.openAPK(file.getAbsolutePath(), cordova.getActivity(), callbackContext);
+            });
+            return true;
+        }
         return super.execute(action, args, callbackContext);
     }
 
-    private  void saveHcpPath(String path, CallbackContext callbackContext){
-        preferences.edit().putString("loadIndexPagePath",path).apply();
+
+    private void saveHcpPath(String path, CallbackContext callbackContext) {
+        preferences.edit().putString("loadIndexPagePath", path).apply();
         callbackContext.success();
     }
+
+    private void openAPK(String fileSavePath, Activity activity, CallbackContext callbackContext) {
+        try {
+            File file = new File(fileSavePath);
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            // 由于没有在Activity环境下启动Activity,设置下面的标签
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            Log.d(TAG, " Build.VERSION SDK_INT= " + Build.VERSION.SDK_INT);
+            if (Build.VERSION.SDK_INT >= 24) { //判读版本是否在7.0以上
+                //参数1 上下文, 参数2 Provider主机地址 和配置文件中保持一致   参数3  共享的文件
+                Uri apkUri =
+                        FileProvider.getUriForFile(activity, cordova.getActivity().getPackageName() + ".fileprovider", file);
+                //添加这一句表示对目标应用临时授权该Uri所代表的文件
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+
+            } else {
+                intent.setDataAndType(Uri.fromFile(file),
+                        "application/vnd.android.package-archive");
+            }
+            callbackContext.success();
+            Thread.sleep(500);
+            cordova.getActivity().runOnUiThread(() -> {
+                activity.startActivity(intent);
+            });
+        } catch (Exception e) {
+            callbackContext.error(e.getMessage());
+        }
+
+    }
+
     private void openHcpPage(String path, CallbackContext callbackContext) {
         cordova.getThreadPool().execute(new Runnable() {
             @Override
@@ -105,7 +157,7 @@ public class Hcp extends CordovaPlugin {
                         callbackContext.error("路径不存在");
                     return;
                 }
-                preferences.edit().putString("loadIndexPagePath",path).apply();
+                preferences.edit().putString("loadIndexPagePath", path).apply();
                 cordova.getActivity().runOnUiThread(() -> {
                     webView.loadUrlIntoView(path, false);
                 });
@@ -149,17 +201,23 @@ public class Hcp extends CordovaPlugin {
     }
 
     private void checkPathOrFileExists(String path, CallbackContext callbackContext) {
-        CordovaResourceApi resourceApi = webView.getResourceApi();
-        File file = resourceApi.mapUriToFile(getUriForArg(path));
-        if (TextUtils.isEmpty(path)) {
-            callbackContext.error("路径不能为空");
-            return;
+        try {
+            CordovaResourceApi resourceApi = webView.getResourceApi();
+            File file = resourceApi.mapUriToFile(getUriForArg(path));
+            if (TextUtils.isEmpty(path)) {
+                callbackContext.error("路径不能为空");
+                return;
+            }
+            if (!file.exists()) {
+                Log.d(TAG, "文件不存在 path= " + file.getAbsolutePath());
+                callbackContext.error("文件不存在");
+                return;
+            }
+            callbackContext.success();
+        } catch (Exception e) {
+            callbackContext.error(e.getMessage());
         }
-        if (!file.exists()) {
-            Log.d(TAG, "文件不存在 path= " + file.getAbsolutePath());
-            callbackContext.error("文件不存在");
-            return;
-        }
+
     }
 
     private Uri getUriForArg(String arg) {

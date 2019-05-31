@@ -1,4 +1,4 @@
-import { HcpupdateComponent } from './hcpupdate/hcpupdate.component';
+import { AppUpdateComponent } from './appupdate/appupdate.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
@@ -7,12 +7,12 @@ import { PinchZoomComponent } from './pinch-zoom/pinch-zoom.component';
 import { SlidvalidateComponent } from './slidvalidate/slidvalidate.component';
 import { ScanComponent } from './scan/scan.component';
 @NgModule({
-  declarations: [OrComponent, PinchZoomComponent, SlidvalidateComponent, ScanComponent,HcpupdateComponent],
+  declarations: [OrComponent, PinchZoomComponent, SlidvalidateComponent, ScanComponent,AppUpdateComponent],
   imports: [
     CommonModule,
     IonicModule,
   ],
-  exports: [OrComponent, PinchZoomComponent, SlidvalidateComponent, ScanComponent,HcpupdateComponent],
+  exports: [OrComponent, PinchZoomComponent, SlidvalidateComponent, ScanComponent,AppUpdateComponent],
   entryComponents:[]
 })
 export class AppcomponentsModule { }

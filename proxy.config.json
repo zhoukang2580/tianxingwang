@@ -1,4 +1,9 @@
 {
+  "/McDonald": {
+    "target": "http://103.231.68.98",
+    "source": false,
+    "changeOrigin": true
+  },
   "/home": {
     "target": "http://test.app.testskytrip.com",
     "source": false,

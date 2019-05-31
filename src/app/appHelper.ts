@@ -334,7 +334,7 @@ export class AppHelper {
   }
   static getApiUrl() {
     if (!environment.production) {
-      //return "http://test.app.testskytrip.com";
+      return "http://test.app.testskytrip.com";
       return "http://dev.app.beeant.com";
     }
     if (environment.production) {

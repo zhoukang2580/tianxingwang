@@ -1,5 +1,14 @@
 
 export class LanguageHelper {
+  static getApkUpdateMessageTip(): any {
+    throw "应用有升级更新，是否立即升级更新？";
+  }
+  static getApkDownloadedTip() {
+    return "应用下载完成...";
+  }
+  static getApkDownloadingTip() {
+    return "正在下载应用...";
+  }
   static getHcpFetchServerVersionTip(): string {
     return "正在获取服务器数据...";
   }
@@ -32,6 +41,9 @@ export class LanguageHelper {
   }
   static getHcpDownloadingTip() {
     return "正在更新数据...";
+  }
+  static getFileDownloadingTip() {
+    return "正在下载...";
   }
   static getWritingFileTip() {
     return "正在写入文件...";

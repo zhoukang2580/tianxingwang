@@ -13,6 +13,8 @@ interface Hcp {
   getHash: (filePath: string) => Promise<string>;
   openHcpPage: (filePath: string) => Promise<any>;
   saveHcpPath: (serverVersion: string) => Promise<any>;
+  openApk: (apkFilePath: string) => Promise<any>;
+  checkPathOrFileExists: (filePath: string) => Promise<void>;
 }
 interface IMd5JsonFile {
   file: string;
@@ -209,7 +211,7 @@ export class FileHelperService {
         const zipFile = await this.downloadZipFile(url, onprogress);
         const f = await this.file.resolveLocalFilesystemUrl(zipFile.nativePath);
         const zp = await this.getParent(f);
-        const zipFileExists = await this.checkFileExists(zp.nativeURL, this.updateZipFileName);
+        const zipFileExists = await this.checkPathFileExists(zp.nativeURL, this.updateZipFileName);
         this.logMessage(`zipFile 是否存在 ${zipFileExists ? "存在" : "不存在"}`)
         if (!zipFileExists) {
           // reject(`zipFile是否存在 ${zipFileExists ? "存在" : "不存在"}`)
@@ -266,7 +268,7 @@ export class FileHelperService {
   }
   private async getLocalVersionNumber() {
     if (!AppHelper.isApp()) {
-      return `1.0.0`;
+      return `1.0`;
     }
     return await this.appVersion.getVersionNumber();
   }
@@ -277,10 +279,12 @@ export class FileHelperService {
       // 列出 update 下面的文件夹
       const versionFiles = await this.listDirFiles(this.dataDirectory, this.updateDirectoryName);
       const curUsingVersionDir = `${this.www}_${this.getLocalHcpVersion()}`.replace(/\./g, "_");
+      const downloadedLatestApk = `${this.serverVersion}`.replace(/\./g, "_") + ".apk";
       for (let i = 0; i < versionFiles.length; i++) {
         const versionDir = versionFiles[i].name;
         this.logMessage(`${this.updateDirectoryName}/${versionDir}`);
-        if (versionDir === curUsingVersionDir) {
+        // apk不要删除
+        if (versionDir === curUsingVersionDir || versionDir === downloadedLatestApk) {
           continue;
         }
         await this.removeRecursively(path, versionDir);
@@ -305,7 +309,14 @@ export class FileHelperService {
     }
     return "";
   }
-  private downloadZipFile(url: string, onprogress: (hcp: IHcpUpdateModel) => void) {
+  /**
+   * 下载文件
+   * @param url 下载文件的服务器地址
+   * @param destFilePathDir 下载到本地的文件夹路径
+   * @param fileName 文件名称
+   * @param onprogress 下载进度回调函数
+   */
+  private downLoadFile(url: string, destFilePathDir: string, fileName: string, onprogress: (hcp: IHcpUpdateModel) => void) {
     return new Promise<IHcpUpdateModel>((resove, rejcet) => {
       const sub = this.httpClient.get(url, {
         observe: "events",
@@ -314,15 +325,23 @@ export class FileHelperService {
       })
         .subscribe(async (evt: any) => {
           if (evt.total) {
-            this.logMessage(`正在下载zip文件 ${Math.floor(evt.loaded / evt.total * 100).toFixed(2)}%`);
+            this.logMessage(`正在下载文件 ${Math.floor(evt.loaded / evt.total * 100).toFixed(2)}%`);
             onprogress({
               total: evt.total,
               loaded: evt.loaded,
-              taskDesc: LanguageHelper.getHcpDownloadingTip()
+              taskDesc: LanguageHelper.getFileDownloadingTip()
             } as IHcpUpdateModel);
           }
           if (evt instanceof HttpResponse) {
-            const fileEntry = await this.createFile(`${this.dataDirectory}${this.updateDirectoryName}`, this.updateZipFileName, true);
+            if (!AppHelper.isApp()) {
+              console.log(evt);
+              resove({
+                hcpUpdateComplete: true,
+                nativePath: ``
+              } as IHcpUpdateModel);
+              return;
+            }
+            const fileEntry = await this.createFile(destFilePathDir, fileName, true);
             if (!fileEntry) {
               rejcet(`【${this.updateZipFileName}】文件创建失败`);
               return;
@@ -356,6 +375,85 @@ export class FileHelperService {
           }
         });
     });
+  }
+  private downloadZipFile(url: string, onprogress: (hcp: IHcpUpdateModel) => void) {
+    return this.downLoadFile(url, `${this.dataDirectory}${this.updateDirectoryName}`, this.updateZipFileName, onprogress);
+  }
+  /**
+   * 检查是否有新apk要更新
+   * @param onprogress 
+   */
+  async checkAppUpdate(onprogress: (hcp: IHcpUpdateModel) => void): Promise<{ isCanUpdate: boolean; ignore: boolean; }> {
+    const up = await this.getServerVersion(onprogress);
+    this.localVersion = await this.getLocalVersionNumber();
+    if (!up || !up.Version || up.Version.length === 0 || !up.Version[0].DownloadUrl || !up.Version[0].Value) {
+      return {
+        isCanUpdate: false,
+        ignore: true
+      };
+    }
+    this.serverVersion = up.Version[0].Value;
+    if (!this.checkIfUpdateAppByVersion(this.serverVersion, this.localVersion)) {
+      this.logMessage(`无需更新`);
+      return {
+        isCanUpdate: false,
+        ignore: true
+      };;
+    }
+    return {
+      isCanUpdate: false,
+      ignore: up.Version[0].Ignore
+    };;
+  }
+  /**
+   * 更新 apk，仅 Android 平台能够在应用内更新，ios需要到App Store 下载更新
+   * @param onprogress 
+   */
+  updateApk(onprogress: (hcp: IHcpUpdateModel) => void) {
+    return new Promise<string>(async (resolve, reject) => {
+      const up = await this.getServerVersion(onprogress);
+      this.localVersion = await this.getLocalVersionNumber();
+      if (!up || !up.Version || up.Version.length === 0 || !up.Version[0].DownloadUrl || !up.Version[0].Value) {
+        reject("更新失败");
+        return false;
+      }
+      this.serverVersion = up.Version[0].Value;
+      if (!this.checkIfUpdateAppByVersion(this.serverVersion, this.localVersion)) {
+        this.logMessage(`无需更新`);
+        resolve("");
+        return false;
+      }
+      const newApkPath = await this.downloadApk(`${up.Version[0].DownloadUrl}/${up.Version[0].Folder}`, onprogress);
+      resolve(newApkPath);
+    }).catch(err => {
+      this.logError(`updateApk 出错`, err);
+      return "";
+    });
+  }
+  private async downloadApk(apkUrl: string, onprogress: (hcp: IHcpUpdateModel) => void) {
+    const apkPath = `${this.dataDirectory}${this.updateDirectoryName}/${this.serverVersion.replace(/\./g, "_")}.apk`;
+    onprogress({ total: 100, loaded: 90, taskDesc: LanguageHelper.getApkDownloadingTip() } as IHcpUpdateModel);
+    const apkExists = await this.checkPathOrFileExists(apkPath);
+    this.logMessage(`apkpath = ${apkPath} ${apkExists ? "存在" : "不存在"}`);
+    if (apkExists) {
+      onprogress({ total: 100, loaded: 100, taskDesc: LanguageHelper.getApkDownloadedTip() } as IHcpUpdateModel);
+      return apkPath;
+    }
+    return this.downLoadFile(
+      apkUrl,
+      `${this.dataDirectory}${this.updateDirectoryName}`,
+      `${this.serverVersion.replace(/\./g, "_")}.apk`, onprogress).then(file => {
+        return file.nativePath;
+      });
+  }
+  private async checkPathOrFileExists(filePath: string) {
+    if (!AppHelper.isApp()) {
+      return false;
+    }
+    return await this.hcpPlugin.checkPathOrFileExists(filePath).then(_ => true).catch(_ => false);
+  }
+  openApk(apkFilePath: string) {
+    return this.hcpPlugin.openApk(apkFilePath);
   }
   private logMessage(msg: string, data?: any) {
     try {
@@ -488,6 +586,7 @@ export class FileHelperService {
  * @returns 返回 true 表示要更新，false不需要更新 
  */
   private checkIfUpdateAppByVersion(serverVersion: string, localVersion: string) {
+    this.logMessage(`比较应用主版本，判断是否需要升级,serverVersion=${serverVersion}<=>localVersion=${localVersion}`);
     if (!serverVersion || !localVersion) {
       return true;
     }
@@ -503,7 +602,7 @@ export class FileHelperService {
     // 主版本不等或者次版本不等
     return smain != lmain || sMinor != lMinor;
   }
-  private checkFileExists(path: string, fileName: string): Promise<boolean> {
+  private checkPathFileExists(path: string, fileName: string): Promise<boolean> {
     if (!AppHelper.isApp()) {
       return Promise.resolve(true);
     }
