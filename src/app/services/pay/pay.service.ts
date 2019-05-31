@@ -1,8 +1,7 @@
 import { AppHelper } from './../../appHelper';
 import { Platform } from '@ionic/angular';
-
-import { RequestEntity } from "../api/BaseRequest";
 import { Injectable } from "@angular/core";
+import { RequestEntity } from '../api/Request.entity';
 import { ApiService } from '../api/api.service';
 interface Ali {
   pay: (payInfo: string) => Promise<any>;
@@ -42,7 +41,9 @@ export class PayService {
             else {
               reject(r.Message);
             }
-          }, e => { }, () => {
+          }, e => {
+            reject(e);
+          }, () => {
             sub.unsubscribe();
           });
       }).catch(() => null);
@@ -75,12 +76,12 @@ export class PayService {
                 resolve(n);
               }).catch(e => {
                 reject(e);
-              })
+              });
             }
             else {
               reject(r.Message);
             }
-          }, e => { }, () => {
+          }, e => { reject(e); }, () => {
             sub.unsubscribe();
           });
       }).catch(() => null);
@@ -113,7 +114,9 @@ export class PayService {
           else {
             reject(r.Message);
           }
-        }, e => { }, () => {
+        }, e => { 
+          reject(e);
+        }, () => {
           sub.unsubscribe();
         });
     }).catch(() => null);

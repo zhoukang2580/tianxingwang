@@ -11,7 +11,6 @@ import { AppHelper } from "./appHelper";
 import { ConfigService } from './services/config/config.service';
 import { HttpClient } from '@angular/common/http';
 import { LanguageHelper } from './languageHelper';
-import { AlertButton } from '@ionic/core';
 export interface App {
   loadUrl: (
     url: string,

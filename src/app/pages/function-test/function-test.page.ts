@@ -4,6 +4,7 @@ import { AppHelper } from 'src/app/appHelper';
 import { Platform, IonApp } from '@ionic/angular';
 import { FileHelperService } from 'src/app/services/file-helper.service';
 import { App } from 'src/app/app.component';
+import { LanguageHelper } from 'src/app/languageHelper';
 type Hcp = {
   openHcpPage: (url: string) => Promise<any>;
 };
@@ -17,6 +18,7 @@ export class FunctionTestPage implements OnInit {
   info: any = {};
   hcp: Hcp;
   app: App;
+  showHcp: boolean = true;
   constructor(private fileService: FileHelperService,
     private router: Router,
     private plt: Platform) {
@@ -26,31 +28,11 @@ export class FunctionTestPage implements OnInit {
     });
   }
   showModal() {
-    this.router.navigate([AppHelper.getRoutePath('scan')]);
+    // this.router.navigate([AppHelper.getRoutePath('scan')]);
+    this.showHcp = !this.showHcp;
   }
-  testHcp() {
+  async testHcp() {
 
-    this.fileService.checkHcpUpdate(r => {
-      this.info.msg = r.taskDesc;
-      this.info.progress = Math.floor(r.loaded / (r.total || 1) * 100).toFixed(2) + "%";
-    }, `assets/${this.fileService.updateZipFileName}`)
-      .then(nativeURL => {
-        AppHelper.alert('数据加载完成，重新打开以生效？', true).then(ok => {
-          if (ok) {
-            this.hcp.openHcpPage(nativeURL).then(res => {
-              console.log("res" + res);
-            }).catch(e => {
-              AppHelper.alert(e);
-            })
-            // this.app.exitApp();
-          }
-        });
-      })
-      .catch(e => {
-        this.info = {};
-        AppHelper.alert(e);
-        console.log(JSON.stringify(e, null, 2));
-      });
   }
   ngOnInit() {
   }

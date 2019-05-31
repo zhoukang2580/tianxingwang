@@ -44,7 +44,7 @@ module.exports = async function(ctx) {
     const hashStart = Date.now();
     const hash = await hashFile(path.join(wwwPath, file));
     const hashEnd = Date.now();
-    console.log(`处理 ${i + 1}/${files.length} 个文件`);
+    // console.log(`处理 ${i + 1}/${files.length} 个文件`);
     md5JsonFiles.push({
       file: file.replace(/\\/g,"/"),
       // size: bs.length,
@@ -67,12 +67,12 @@ module.exports = async function(ctx) {
         fs.unlinkSync(destZipFilePath);
         console.log(`成功删除文件${destZipFilePath}`);
       }
-      s = Date.now();
-      fs.copyFileSync(
-        path.join(ctx.opts.projectRoot, "DongmeiIonic.zip"),
-        destZipFilePath
-      );
-      console.log(`拷贝zip文件完成，耗时：【${Date.now() - s}】ms`);
+      // s = Date.now();
+      // fs.copyFileSync(
+      //   path.join(ctx.opts.projectRoot, "DongmeiIonic.zip"),
+      //   destZipFilePath
+      // );
+      // console.log(`拷贝zip文件完成，耗时：【${Date.now() - s}】ms`);
       compressingComplete = true;
     })
     .catch(err => {

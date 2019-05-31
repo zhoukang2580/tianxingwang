@@ -11,5 +11,5 @@ export class RequestEntity {
   Url?: string;
   Data: any;
   FileValue?: string;
-  IsShowLoading?:boolean
+  IsShowLoading?: boolean;
 }

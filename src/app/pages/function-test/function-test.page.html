@@ -5,11 +5,11 @@
 </ion-header>
 
 <ion-content>
-  <ion-button (click)='testHcp()'>测试更新</ion-button>
-  <ion-button (click)='showModal()'>显示</ion-button>
+  <ion-button (click)='showModal()' color='success'>测试更新</ion-button>
   <p *ngIf='info.msg'>{{info|json}}</p>
+  <app-hcpupdate-comp *ngIf='showHcp'></app-hcpupdate-comp>
   <!-- <app-slidvalidate-com></app-slidvalidate-com> -->
   <!-- <app-scan-comp></app-scan-comp> -->
-  <img src="assets/11.jpg" alt="weixin图标">
-  <img src="assets/12.jpg" alt="weixin图标">
+  <!-- <img src="assets/11.jpg" alt="weixin图标">
+  <img src="assets/12.jpg" alt="weixin图标"> -->
 </ion-content>

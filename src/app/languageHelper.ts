@@ -1,5 +1,20 @@
 
 export class LanguageHelper {
+  static getHcpFetchServerVersionTip(): string {
+    return "正在获取服务器数据...";
+  }
+  static getHcpUpdateErrorTip() {
+    return "更新失败";
+  }
+  static getUpdateTip() {
+    return "更新";
+  }
+  static getIgnoreTip() {
+    return "忽略";
+  }
+  static gethcpUpdateBaseDataTip() {
+    return "是否立即更新重要基础数据？";
+  }
   static getJSSDKScanTextTip() {
     return "扫一扫";
   }
@@ -34,8 +49,7 @@ export class LanguageHelper {
     // if(AppHelper.getLanguage())
     return "请输入验证码";
   }
-  static getSlidvalidateInnerTip()
-  {
+  static getSlidvalidateInnerTip() {
     return "向右滑动填充拼图";
   }
   static getLoginNameTip() {
@@ -50,7 +64,7 @@ export class LanguageHelper {
   static getMobileCodeTip() {
     return "请输入手机收到的验证码";
   }
-  
+
   static getApiExceptionTip() {
     // if(AppHelper.getLanguage())
     return "接口调用异常";
@@ -65,10 +79,9 @@ export class LanguageHelper {
     return "提示";
   }
   static getBindMobileSuccess() {
-     return "手机绑定成功";
+    return "手机绑定成功";
   }
-  static getBindEmailSuccess()
-  {
+  static getBindEmailSuccess() {
     return "邮箱绑定成功";
   }
   static getCancelTip() {

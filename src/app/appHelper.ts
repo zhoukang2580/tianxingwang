@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { AlertController, ToastController, ModalController } from '@ionic/angular';
 import { LanguageHelper } from './languageHelper';
 export class AppHelper {
+
   private static httpClient: HttpClient;
   private static _deviceName: string;
   private static _routeData: any;
@@ -40,13 +41,18 @@ export class AppHelper {
       }
     });
   }
-  static alert(msg: any, userOp: boolean = false) {
+  static isFunction(fun: any) {
+    return typeof fun === 'function';
+  }
+  static alert(msg: any, userOp: boolean = false,
+    confirmText: string = LanguageHelper.getConfirmTip(),
+    cancelText: string = LanguageHelper.getCancelTip()) {
 
     return new Promise<boolean>(async (resolve, reject) => {
       this.dismissLayer();
       const buttons = [
         {
-          text: LanguageHelper.getConfirmTip(),
+          text: confirmText,
           handler: () => {
             resolve(true);
           }
@@ -54,7 +60,7 @@ export class AppHelper {
       ];
       if (userOp) {
         buttons.push({
-          text: LanguageHelper.getCancelTip(),
+          text: cancelText,
           handler: () => {
             resolve(false);
           }
@@ -165,7 +171,7 @@ export class AppHelper {
     }
     return new Promise<string>((resolve, reject) => {
       if (this.isH5()) {
-        resolve("12345");
+        resolve("");
       }
       document.addEventListener(
         "deviceready",
@@ -312,15 +318,18 @@ export class AppHelper {
       return "sky-trip.com";
     }
   }
-  static getRedirectUrl()
-  {
-    var url=this.getApiUrl();
-    var domain=this.getDomain();
+  static getRedirectUrl() {
+    var url = this.getApiUrl();
+    var domain = this.getDomain();
     if (!environment.production) {
       return url.replace("beeant.com",domain)+"/www/index.html";
     }
     if (environment.production) {
       return url.replace("sky-trip.com",domain)+"/www/index.html";
+      return url.replace("beeant.com", domain);
+    }
+    if (environment.production) {
+      return url.replace("sky-trip.com", domain);
     }
   }
   static getApiUrl() {

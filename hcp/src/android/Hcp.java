@@ -34,17 +34,16 @@ public class Hcp extends CordovaPlugin {
     private static final String LOCAL_ASSETS_FOLDER = "file:///android_asset/www";
     SharedPreferences preferences;
     CallbackContext mMallbackContext;
-    private boolean isReload =false;
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
         preferences = cordova.getActivity().getPreferences(0);
-        String path = this.preferences.getString("loadIndexPagePath", null);
-        Log.d("Hcp", "热更插件加载页面 " + path);
-        if (path != null) {
-            isReload =true;
-            openHcpPage(path, mMallbackContext);
-        }
+//        String path = this.preferences.getString("loadIndexPagePath", null);
+//        Log.d("Hcp initialize", "热更插件加载页面 " + path);
+//        if (path != null) {
+//            isReload =true;
+//            openHcpPage(path, mMallbackContext);
+//        }
     }
 
     @Override
@@ -58,7 +57,7 @@ public class Hcp extends CordovaPlugin {
         super.onStart();
         String path = this.preferences.getString("loadIndexPagePath", null);
         Log.d("Hcp", "热更插件加载页面 " + path);
-        if (path != null&&!this.isReload) {
+        if (path != null) {
             openHcpPage(path, mMallbackContext);
         }
     }
@@ -66,7 +65,6 @@ public class Hcp extends CordovaPlugin {
     @Override
     public void onPause(boolean multitasking) {
         super.onPause(multitasking);
-        this.isReload =false;
     }
 
     @Override

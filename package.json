@@ -103,11 +103,11 @@
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
       },
       "cordova-plugin-app-version": {},
-      "cordova-hcp-plugin": {},
       "cordova-ali-plugin": {},
       "cordova-plugin-ionic-webview": {
         "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
-      }
+      },
+      "cordova-hcp-plugin": {}
     },
     "platforms": [
       "ios",

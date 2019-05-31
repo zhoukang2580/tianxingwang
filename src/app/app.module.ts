@@ -22,7 +22,6 @@ import { File } from '@ionic-native/file/ngx';
 import { AppVersion } from '@ionic-native/app-version/ngx';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
 
-
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -59,7 +58,7 @@ import { WebView } from '@ionic-native/ionic-webview/ngx';
     Device,
     File,
     AppVersion,
-    WebView
+    WebView,
   ],
   bootstrap: [AppComponent]
 })
