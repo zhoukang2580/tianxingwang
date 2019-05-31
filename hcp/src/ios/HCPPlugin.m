@@ -22,7 +22,7 @@ static NSString *const DEFAULT_STARTING_PAGE = @"index.html";
 #pragma mark Lifecycle
 
 -(void)pluginInitialize {
-    
+    [self onResume:nil];
 }
 
 - (void)onAppTerminate {
@@ -47,40 +47,69 @@ static NSString *const DEFAULT_STARTING_PAGE = @"index.html";
     return path;
 }
 - (void)getHash:(CDVInvokedUrlCommand *)command{
-     NSString* filePath= [command argumentAtIndex:0];
-   NSString *path= [self pathForURL:filePath];
-     [self testFileExists:path :command];
+    NSString* filePath= [command argumentAtIndex:0];
+    NSString *path= [self pathForURL:filePath];
+    BOOL exists= [self testFileExists:path];
+    if(!exists){
+        [self sendErrorResult:@"路径不存在" :command];
+        return ;
+    }
     @autoreleasepool {
         NSString *fileMD5 = [[NSData dataWithContentsOfFile:path] md5];
         [self sendSuccessStringResult:fileMD5 :command];
     }
 }
-- (void)onResume:(NSNotification *)notification {
+- (void)onReset{
+    NSLog(@"onReset");
 }
-- (void)testFileExists :(NSString*)argPath : (CDVInvokedUrlCommand*)command
+- (void)onResume:(NSNotification *)notification {
+    NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
+    NSString* path = [userDefault objectForKey: @"openHcpPage"];
+    NSLog(@"userDefault path =%@",path);
+    BOOL exists= [self testFileExists:path];
+    if(!exists){
+        return ;
+    }
+    NSLog(@"loadURL,path = %@",path);
+    [self loadURL:path];
+}
+- (BOOL)testFileExists :(NSString*)argPath
 {
     // Get the file manager
     NSFileManager* fMgr = [NSFileManager defaultManager];
     NSString* appFile = argPath; // [ self getFullPath: argPath];
     NSLog(@"输入的文件路径%@",argPath);
-    BOOL bExists = [fMgr fileExistsAtPath:appFile];
-//    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:(bExists ? 1 : 0)];
-//
-    if(!bExists){
-        [self sendErrorResult:@"文件不存在" :command];
-        return;
-    }
+    BOOL bExists=NO;
+    bExists =(appFile!=nil||[appFile length]!=0) && [fMgr fileExistsAtPath:appFile];
+    //    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:(bExists ? 1 : 0)];
+    //
+    NSLog(@"输入的文件路径是否存在 %@",bExists?@"YES":@"NO");
+    return bExists;
     
 }
+
 - (void)openHcpPage:(CDVInvokedUrlCommand *)command{
     NSString* filePath= [command argumentAtIndex:0];
-      NSString *path= [self pathForURL:filePath];
-    [self testFileExists:path :command];
-     NSFileManager* fMgr = [NSFileManager defaultManager];
-    NSString* p = [@"file://" stringByAppendingString:path];
-    NSLog(@"打开的路径：%@",p);
-    [self loadURL:p];
-    
+    NSLog(@"打开的路径：%@",filePath);
+    if(filePath==nil ||[filePath length]==0){
+        [self sendErrorResult:@"路径不存在" :command];
+        return ;
+    }
+    NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
+    [userDefault setObject:filePath forKey:@"openHcpPage"];
+    [self sendSuccessStringResult:@"ok" :command];
+    [self loadURL:filePath];
+}
+- (void)saveHcpPath:(CDVInvokedUrlCommand *)command{
+    NSString* filePath= [command argumentAtIndex:0];
+    NSLog(@"保存的路径=%@",filePath);
+    if(filePath==nil ||[filePath length]==0){
+        [self sendErrorResult:@"路径不存在" :command];
+        return ;
+    }
+    NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
+    [userDefault setObject:filePath forKey:@"openHcpPage"];
+    [self sendSuccessStringResult:@"ok" :command];
 }
 -(void) sendErrorResult:(NSString*)reason : (CDVInvokedUrlCommand*)command{
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:reason];
@@ -116,4 +145,5 @@ static NSString *const DEFAULT_STARTING_PAGE = @"index.html";
 
 
 @end
+
 

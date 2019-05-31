@@ -18,3 +18,12 @@ exports.getHash = function (arg0) {
      }, 'Hcp', 'getHash', [arg0]);
     });
  };
+exports.saveHcpPath = function (arg0) {
+    return new Promise((resolve,reject)=>{
+     exec(openId => {
+         resolve(openId);
+     }, error => {
+         reject(error)
+     }, 'Hcp', 'saveHcpPath', [arg0]);
+    });
+ };

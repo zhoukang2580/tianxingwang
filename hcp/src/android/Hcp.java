@@ -130,41 +130,10 @@ public class Hcp extends CordovaPlugin {
                         callbackContext.error("路径不存在");
                     return;
                 }
-                CordovaResourceApi resourceApi = webView.getResourceApi();
-                File f = resourceApi.mapUriToFile(getUriForArg(path));
-                Log.d(TAG, "是否是文件夹 " + f.isDirectory() + " 文件是否存在 " + f.exists());
-                if (!f.exists()) {
-                    if (null != callbackContext) {
-                        callbackContext.error("index.html文件不存在，路径" + FILE_PREFIX + f.getPath());
-                    }
-                    Log.d(TAG, "index.html文件不存在，路径" + FILE_PREFIX + f.getPath());
-                    return;
-                }
-                File indexFile = new File(new File(f.getParent(), "www").getAbsoluteFile(), "index.html");
-                if (!indexFile.exists()) {
-                    Log.d(TAG, "indexfile 不存在");
-                    return;
-                }
-
-                Log.d(TAG, "index.html 文件内容" + getFileAsString(indexFile));
-                try {
-                    String loadurl = FILE_PREFIX + indexFile.getAbsolutePath();
-                    preferences.edit().putString("loadIndexPagePath", path).apply();
-                    Log.d(TAG, "loadUrlIntoView indexFile.getAbsolutePath()=" + indexFile.getAbsolutePath());
-                    Log.d(TAG, "loadUrlIntoView loadurl=" + loadurl);
-                    File f3 = resourceApi.mapUriToFile(getUriForArg(loadurl));
-                    Log.d(TAG, "f3 exists=" + f3.exists());
-                    cordova.getActivity().runOnUiThread(() -> {
-                        webView.loadUrlIntoView(FILE_PREFIX + f3.getAbsolutePath(), false);
-                    });
-                } catch (Exception e) {
-                    cordova.getActivity().runOnUiThread(() -> {
-                        preferences.edit().putString("loadIndexPagePath", null).apply();
-                        Log.e(TAG, e.getMessage());
-                        webView.loadUrl(LOCAL_ASSETS_FOLDER + File.separator + "index.html");
-                    });
-
-                }
+                preferences.edit().putString("loadIndexPagePath",path).apply();
+                cordova.getActivity().runOnUiThread(() -> {
+                    webView.loadUrlIntoView(path, false);
+                });
             }
         });
     }

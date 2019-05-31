@@ -9,6 +9,9 @@ export class LanguageHelper {
   static getJSSDKNotExistsTip() {
     return "JSSDK加载失败";
   }
+  static getHcpReloadToEffectTip() {
+    return "数据加载完成，重新打开以生效？";
+  }
   static getHcpValidatingFileTip() {
     return "正在校验文件完整性";
   }

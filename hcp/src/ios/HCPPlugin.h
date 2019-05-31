@@ -19,6 +19,7 @@
 
 
 - (void)openHcpPage:(CDVInvokedUrlCommand *)command;
+- (void)saveHcpPath:(CDVInvokedUrlCommand *)command;
 
 
 
