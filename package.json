@@ -9,7 +9,8 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "build:apk:prod": "ionic cordova build android --prod --release"
   },
   "private": true,
   "dependencies": {
@@ -35,7 +36,7 @@
     "@ngx-translate/http-loader": "^4.0.0",
     "ajv": "^6.10.0",
     "cordova-ali-plugin": "file:cordova-ali-plugin",
-    "cordova-android": "8.0.0",
+    "cordova-android": "^8.0.0",
     "cordova-hcp-plugin": "file:cordova-hcp-plugin",
     "cordova-ios": "5.0.1",
     "cordova-plugin-add-swift-support": "2.0.2",
@@ -110,8 +111,7 @@
       "cordova-hcp-plugin": {}
     },
     "platforms": [
-      "ios",
-      "android"
+      "ios"
     ]
   }
 }

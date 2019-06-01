@@ -13,7 +13,7 @@ interface Hcp {
   getHash: (filePath: string) => Promise<string>;
   openHcpPage: (filePath: string) => Promise<any>;
   saveHcpPath: (serverVersion: string) => Promise<any>;
-  openApk: (apkFilePath: string) => Promise<any>;
+  openAPK: (apkFilePath: string) => Promise<any>;
   checkPathOrFileExists: (filePath: string) => Promise<void>;
 }
 interface IMd5JsonFile {
@@ -22,14 +22,14 @@ interface IMd5JsonFile {
 }
 interface IUpdateList {
   Version: {
-    DownloadUrl: string;
-    Folder: string;
-    Value: string;// 版本
-    Ignore: boolean;// 是否可以忽略
-    Remove: boolean;// 是否清除基础数据,
-    Hotfix: {
-      DownloadUrl: string;
-      Ignore: boolean;// 是否可以忽略
+    DownloadUrl?: string;
+    Folder?: string;
+    Value?: string;// 版本
+    Ignore?: boolean;// 是否可以忽略
+    Remove?: boolean;// 是否清除基础数据,
+    Hotfix?: {
+      DownloadUrl?: string;
+      Ignore?: boolean;// 是否可以忽略
     }
   }[];
 }
@@ -268,7 +268,7 @@ export class FileHelperService {
   }
   private async getLocalVersionNumber() {
     if (!AppHelper.isApp()) {
-      return `1.0`;
+      return `2.0.0`;
     }
     return await this.appVersion.getVersionNumber();
   }
@@ -398,7 +398,7 @@ export class FileHelperService {
       return {
         isCanUpdate: false,
         ignore: true
-      };;
+      };
     }
     return {
       isCanUpdate: false,
@@ -423,7 +423,8 @@ export class FileHelperService {
         resolve("");
         return false;
       }
-      const newApkPath = await this.downloadApk(`${up.Version[0].DownloadUrl}/${up.Version[0].Folder}`, onprogress);
+      const apkUrl ="assets/app-debug.apk"|| `${up.Version[0].DownloadUrl}/${up.Version[0].Folder}`;
+      const newApkPath = await this.downloadApk(apkUrl, onprogress);
       resolve(newApkPath);
     }).catch(err => {
       this.logError(`updateApk 出错`, err);
@@ -453,7 +454,14 @@ export class FileHelperService {
     return await this.hcpPlugin.checkPathOrFileExists(filePath).then(_ => true).catch(_ => false);
   }
   openApk(apkFilePath: string) {
-    return this.hcpPlugin.openApk(apkFilePath);
+    this.logMessage(`open apk path = ${apkFilePath}`);
+    return this.hcpPlugin.openAPK(apkFilePath)
+    .then(ok=>{
+      this.logMessage(`openapk ok `);
+    })
+    .catch(e=>{
+      this.logError('openapk error',e);
+    });
   }
   private logMessage(msg: string, data?: any) {
     try {
@@ -517,9 +525,9 @@ export class FileHelperService {
   private clearVersionDirectory(version: string) {
     const path = `${this.dataDirectory}${this.updateDirectoryName}`;
     const versionDir = `${this.www}_${version}`.replace(/\./g, "_");
-    this.logMessage(`开始删除版本${version},${path} / ${versionDir}`);
+    this.logMessage(`开始删除版本${version},${path}/${versionDir}`);
     return this.removeRecursively(path, versionDir).then(r => {
-      this.logMessage(`完成删除版本${version},${path} / ${versionDir}`);
+      this.logMessage(`完成删除版本${version},${path}/${versionDir}`);
       return r;
     });
   }
@@ -527,7 +535,7 @@ export class FileHelperService {
     if (!AppHelper.isApp()) {
       return Promise.resolve(null);
     }
-    this.logMessage(`创建文件${path}  /  ${fileName}`);
+    this.logMessage(`创建文件${path}/${fileName}`);
     return this.file.createFile(path, fileName, replace).catch(e => {
       this.logMessage(`创建文件失败${JSON.stringify(e, null, 2)}`);
       return null as FileEntry;
@@ -586,6 +594,7 @@ export class FileHelperService {
  * @returns 返回 true 表示要更新，false不需要更新 
  */
   private checkIfUpdateAppByVersion(serverVersion: string, localVersion: string) {
+    return true;
     this.logMessage(`比较应用主版本，判断是否需要升级,serverVersion=${serverVersion}<=>localVersion=${localVersion}`);
     if (!serverVersion || !localVersion) {
       return true;
@@ -600,7 +609,7 @@ export class FileHelperService {
     const lmain = lVs[0];
     const lMinor = lVs[1];
     // 主版本不等或者次版本不等
-    return smain != lmain || sMinor != lMinor;
+    return smain !== lmain || sMinor !== lMinor;
   }
   private checkPathFileExists(path: string, fileName: string): Promise<boolean> {
     if (!AppHelper.isApp()) {

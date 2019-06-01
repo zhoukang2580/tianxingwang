@@ -40,6 +40,7 @@ public class Ali extends CordovaPlugin {
                     return;
                 }
                 for (String k : result.keySet()) {
+                    Log.d(TAG,"key="+k+", value="+result.get(k));
                     res.put(k,result.get(k));
                 }
                 callbackContext.success(res);

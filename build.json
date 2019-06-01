@@ -1,0 +1,18 @@
+{
+    "android": {
+        "debug": {
+            "keystore": "dmapk.jks",
+            "storePassword": "estskytrip",
+            "alias": "dmapk",
+            "password": "estskytrip",
+            "keystoreType": ""
+        },
+        "release": {
+            "keystore": "dmapk.jks",
+            "storePassword": "estskytrip",
+            "alias": "dmapk",
+            "password": "estskytrip",
+            "keystoreType": ""
+        }
+    }
+}

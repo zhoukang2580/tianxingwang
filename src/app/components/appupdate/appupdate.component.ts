@@ -35,7 +35,7 @@ export class AppUpdateComponent implements OnInit {
       const res = await this.fileService.checkHcpUpdate();
       if (res.isHcpCanUpdate) {
         this.isCanIgnore = res.ignore;
-        if (res.ignore&&!silence) {// 如果静默安装，就不提示用户
+        if (res.ignore && !silence) {// 如果静默安装，就不提示用户
           const ok = await AppHelper.alert(LanguageHelper.gethcpUpdateBaseDataTip(),
             true,
             LanguageHelper.getUpdateTip(),
@@ -44,7 +44,7 @@ export class AppUpdateComponent implements OnInit {
         } else {
           this.forceUpdate = true;
         }
-        if(silence){
+        if (silence) {
           this.forceUpdate = false;
         }
         const filePath = await this.fileService.hcpUpdate(evt => {
@@ -92,9 +92,11 @@ export class AppUpdateComponent implements OnInit {
       });
       this.isCanIgnore = res.ignore;
       if (res.ignore) {
-        const ok = await AppHelper.alert(LanguageHelper.getApkUpdateMessageTip(), true, LanguageHelper.getUpdateTip(), LanguageHelper.getIgnoreTip());
+        const ok = await AppHelper.alert(
+          LanguageHelper.getApkUpdateMessageTip(),
+          true, LanguageHelper.getUpdateTip(), LanguageHelper.getIgnoreTip());
         if (!ok) {
-          silence=true;// 用户选择静默安装
+          silence = true;// 用户选择静默安装
           // 静默安装
           this.hcpUpdate(true);
         } else {
@@ -115,8 +117,12 @@ export class AppUpdateComponent implements OnInit {
           };
         });
       });
+      console.log(`AppUpdateComponent appUpdate apkPath=${apkPath} ${apkPath && apkPath.includes(".apk")}`);
       if (apkPath && apkPath.includes(".apk")) {
-        await this.fileService.openApk(apkPath);
+        const ok = await AppHelper.alert(LanguageHelper.getApkReadyToBeInstalledTip(), true);
+        if (ok) {
+          await this.fileService.openApk(apkPath);
+        }
       } else {
         this.hcpUpdate(silence);
       }
@@ -124,7 +130,9 @@ export class AppUpdateComponent implements OnInit {
     } catch (e) {
       this.forceUpdate = false;
       AppHelper.alert(e);
-      this.hcpUpdate(silence);
+      setTimeout(() => {
+        this.hcpUpdate(silence);
+      }, 1400);
     }
   }
   iosUpdate() {

@@ -1,7 +1,10 @@
 
 export class LanguageHelper {
+  static getApkReadyToBeInstalledTip(): any {
+    return "App 下载完毕，立即安装更新？";
+  }
   static getApkUpdateMessageTip(): any {
-    throw "应用有升级更新，是否立即升级更新？";
+    return "应用有升级更新，是否立即升级更新？";
   }
   static getApkDownloadedTip() {
     return "应用下载完成...";

@@ -46,25 +46,25 @@ export class AppHelper {
   }
   static alert(msg: any, userOp: boolean = false,
     confirmText: string = LanguageHelper.getConfirmTip(),
-    cancelText: string = LanguageHelper.getCancelTip()) {
+    cancelText: string = "") {
 
     return new Promise<boolean>(async (resolve, reject) => {
       this.dismissLayer();
-      const buttons = [
-        {
-          text: confirmText,
-          handler: () => {
-            resolve(true);
-          }
+      const buttons = [{
+        text: confirmText,
+        handler: () => {
+          resolve(true);
         }
-      ];
+      }];
       if (userOp) {
-        buttons.push({
-          text: cancelText,
-          handler: () => {
-            resolve(false);
-          }
-        });
+        if (cancelText) {
+          buttons.push({
+            text: cancelText,
+            handler: () => {
+              resolve(false);
+            }
+          });
+        }
       }
       (await this.alertController.create({
         header: LanguageHelper.getMsgTip(),
@@ -322,10 +322,10 @@ export class AppHelper {
     var url = this.getApiUrl();
     var domain = this.getDomain();
     if (!environment.production) {
-      return url.replace("beeant.com",domain)+"/www/index.html";
+      return url.replace("beeant.com", domain) + "/www/index.html";
     }
     if (environment.production) {
-      return url.replace("sky-trip.com",domain)+"/www/index.html";
+      return url.replace("sky-trip.com", domain) + "/www/index.html";
       return url.replace("beeant.com", domain);
     }
     if (environment.production) {
@@ -334,7 +334,7 @@ export class AppHelper {
   }
   static getApiUrl() {
     if (!environment.production) {
-      // return "http://test.app.testskytrip.com";
+      return "http://test.app.testskytrip.com";
       return "http://dev.app.beeant.com";
     }
     if (environment.production) {
