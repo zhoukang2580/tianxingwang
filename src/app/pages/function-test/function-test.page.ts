@@ -18,7 +18,7 @@ export class FunctionTestPage implements OnInit {
   info: any = {};
   hcp: Hcp;
   app: App;
-  showHcp: boolean = true;
+  showHcp: boolean = false;
   constructor(private fileService: FileHelperService,
     private router: Router,
     private plt: Platform) {

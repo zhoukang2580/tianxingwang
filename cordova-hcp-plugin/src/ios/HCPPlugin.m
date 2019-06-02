@@ -73,6 +73,15 @@ static NSString *const DEFAULT_STARTING_PAGE = @"index.html";
     NSLog(@"loadURL,path = %@",path);
     [self loadURL:path];
 }
+-(void)checkPathOrFileExists:(CDVInvokedUrlCommand*) command{
+    NSString* filePath = [command argumentAtIndex:0];
+    BOOL exists = [self testFileExists:filePath];
+    if(exists){
+        [self sendSuccessResult:nil : command];
+    }else{
+        [self sendErrorResult:[NSString stringWithFormat:@"路径不存在 path=%@",filePath] :command];
+    }
+}
 - (BOOL)testFileExists :(NSString*)argPath
 {
     // Get the file manager

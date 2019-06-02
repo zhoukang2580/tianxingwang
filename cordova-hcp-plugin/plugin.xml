@@ -23,7 +23,7 @@
       <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
     </config-file>
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
-      <provider android:name="android.support.v4.content.FileProvider" android:authorities="${applicationId}.fileprovider" android:exported="false" android:grantUriPermissions="true">
+      <provider android:name="android.support.v4.content.FileProvider" android:authorities="com.skytrip.dmonline.fileprovider" android:exported="false" android:grantUriPermissions="true">
         <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths" />
       </provider>
     </config-file>

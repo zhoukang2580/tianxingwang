@@ -54,6 +54,11 @@ public class Hcp extends CordovaPlugin {
     @Override
     public void onResume(boolean multitasking) {
         super.onResume(multitasking);
+//        String path = this.preferences.getString("loadIndexPagePath", null);
+//        Log.d("Hcp", "热更插件加载页面 " + path);
+//        if (path != null) {
+//            webView.loadUrlIntoView(path, false);
+//        }
 
     }
 
@@ -63,7 +68,7 @@ public class Hcp extends CordovaPlugin {
         String path = this.preferences.getString("loadIndexPagePath", null);
         Log.d("Hcp", "热更插件加载页面 " + path);
         if (path != null) {
-            openHcpPage(path, mMallbackContext);
+            webView.loadUrlIntoView(path, false);
         }
     }
 

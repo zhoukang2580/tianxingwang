@@ -4,6 +4,8 @@ import { Component, OnInit, HostBinding } from '@angular/core';
 import { AppHelper } from 'src/app/appHelper';
 import { LanguageHelper } from 'src/app/languageHelper';
 import { Platform } from '@ionic/angular';
+import { LogService } from 'src/app/services/log/log.service';
+import { ExceptionEntity } from 'src/app/services/log/exception.entity';
 
 @Component({
   selector: 'app-update-comp',
@@ -19,9 +21,10 @@ export class AppUpdateComponent implements OnInit {
   };
   @HostBinding('class.forceUpdate')
   forceUpdate: boolean;
-  isCanIgnore: boolean = true;
-  isAndroidUpdating: boolean = true;// 是否正更新android apk
-  constructor(private fileService: FileHelperService, private ngZone: NgZone, private plt: Platform) { }
+  isCanIgnore: boolean;
+  constructor(private fileService: FileHelperService,
+    private logService: LogService,
+    private ngZone: NgZone, private plt: Platform) { }
   async ngOnInit() {
     this.appUpdate();
   }
@@ -31,7 +34,6 @@ export class AppUpdateComponent implements OnInit {
    */
   async hcpUpdate(silence: boolean = false) {
     try {
-      this.isAndroidUpdating = false;
       const res = await this.fileService.checkHcpUpdate();
       if (res.isHcpCanUpdate) {
         this.isCanIgnore = res.ignore;
@@ -63,7 +65,7 @@ export class AppUpdateComponent implements OnInit {
         this.forceUpdate = false;
       }
     } catch (e) {
-      console.log(`热更新失败，${JSON.stringify(e, null, 2)}`);
+      this.sendError('热更失败', e);
       this.forceUpdate = false;
       if (!this.isCanIgnore) {
         AppHelper.alert(LanguageHelper.getHcpUpdateErrorTip());
@@ -74,11 +76,6 @@ export class AppUpdateComponent implements OnInit {
    * apk 主版本升级,完成后执行热更新
    */
   async appUpdate() {
-    if (this.plt.is("ios")) {
-      this.iosUpdate();
-      return false;
-    }
-    let silence;
     try {
       const res = await this.fileService.checkAppUpdate(evt => {
         this.ngZone.run(() => {
@@ -91,51 +88,73 @@ export class AppUpdateComponent implements OnInit {
         });
       });
       this.isCanIgnore = res.ignore;
+      // 如果主版本不更新，检查热更
+      if (!res.isCanUpdate) {
+        this.hcpUpdate();
+        return;
+      }
       if (res.ignore) {
+        this.forceUpdate = false;
         const ok = await AppHelper.alert(
           LanguageHelper.getApkUpdateMessageTip(),
           true, LanguageHelper.getUpdateTip(), LanguageHelper.getIgnoreTip());
-        if (!ok) {
-          silence = true;// 用户选择静默安装
-          // 静默安装
-          this.hcpUpdate(true);
-        } else {
-          this.forceUpdate = true;
-        }
+        this.forceUpdate = ok;
       } else {
         this.forceUpdate = true;
       }
-      this.isAndroidUpdating = true;
-      const apkPath = await this.fileService.updateApk(evt => {
-        const progress = `${(evt.loaded * 100 / evt.total).toFixed(2)}%`;
-        this.ngZone.run(() => {
-          this.updateInfo = {
-            total: evt.total,
-            loaded: evt.loaded,
-            taskDesc: evt.taskDesc,
-            progress
-          };
-        });
-      });
-      console.log(`AppUpdateComponent appUpdate apkPath=${apkPath} ${apkPath && apkPath.includes(".apk")}`);
-      if (apkPath && apkPath.includes(".apk")) {
-        const ok = await AppHelper.alert(LanguageHelper.getApkReadyToBeInstalledTip(), true);
-        if (ok) {
-          await this.fileService.openApk(apkPath);
+      // 如果强制更新 app 
+      if (this.forceUpdate) {
+        if (this.plt.is("ios")) {
+          this.iosUpdate();
+          return;
         }
-      } else {
-        this.hcpUpdate(silence);
+        const apkPath = await this.fileService.updateApk(evt => {
+          const progress = `${(evt.loaded * 100 / evt.total).toFixed(2)}%`;
+          this.ngZone.run(() => {
+            this.updateInfo = {
+              total: evt.total,
+              loaded: evt.loaded,
+              taskDesc: evt.taskDesc,
+              progress
+            };
+          });
+        });
+        console.log(`AppUpdateComponent appUpdate apkPath=${apkPath} ${apkPath && apkPath.includes(".apk")}`);
+        if (apkPath && apkPath.includes(".apk")) {
+          const ok = await AppHelper.alert(LanguageHelper.getApkReadyToBeInstalledTip(), true);
+          if (ok) {
+            await this.fileService.openApk(apkPath);
+          }
+        }
+        this.forceUpdate = false;
       }
-      this.forceUpdate = false;
     } catch (e) {
       this.forceUpdate = false;
-      AppHelper.alert(e);
-      setTimeout(() => {
-        this.hcpUpdate(silence);
-      }, 1400);
+      if (!this.isCanIgnore) {
+        AppHelper.alert(e);
+      }
+      this.sendError("Android app 更新失败", e);
     }
   }
-  iosUpdate() {
-    //TODO:
+  async iosUpdate() {
+    try {
+      await AppHelper.alert(`ios 更新需要跳转到 App Store，尚未完成该功能`, true);
+      //TODO:ios 跳转页面更新 app
+    } catch (e) {
+      this.forceUpdate = false;
+      this.sendError(`ios app 更新失败`, e);
+    }
+  }
+  sendError(msg: string, e: any) {
+    try {
+      const ex = new ExceptionEntity();
+      ex.Error = e instanceof Error ? e.name : e;
+      ex.Message = `${msg}, ${e instanceof Error ? e.message : typeof e === 'string' ? e : JSON.stringify(e)}`;
+      ex.Method = "app update";
+      this.logService.sendException(ex);
+    } catch (e) {
+      console.error(e);
+    }
+
   }
 }

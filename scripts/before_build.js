@@ -113,19 +113,19 @@ module.exports = function (ctx) {
     var config = new ConfigParser(
       path.join(ctx.opts.projectRoot, "config.xml")
     );
-    console.log(config.getPlugin("wechat"));
-    const wechatPlugin = config.getPlugin("wechat");
+    // console.log(config);
+    const wechatPlugin = config.getPlugin("cordova-wechat-plugin");
     if (wechatPlugin) {
       const appid = wechatPlugin.variables["WECHATAPPID"];
       if (appid) {
         var pluginXmlStr = fs.readFileSync(
-          path.join(ctx.opts.projectRoot, "wechat", "plugin.xml"),
+          path.join(ctx.opts.projectRoot, "cordova-wechat-plugin", "plugin.xml"),
           { encoding: "utf8" }
         );
         if (pluginXmlStr) {
-          pluginXmlStr = pluginXmlStr.replace(/\$WECHATAPPID/, appid);
+          pluginXmlStr = pluginXmlStr.replace(/<preferance name='WECHATAPPID' default='test'\/>/, `<preferance name='WECHATAPPID' default='${appid}'/>`);
           fs.writeFileSync(
-            path.join(ctx.opts.projectRoot, "wechat", "plugin.xml"),
+            path.join(ctx.opts.projectRoot, "cordova-wechat-plugin", "plugin.xml"),
             pluginXmlStr,
             { encoding: "utf8" }
           );
@@ -133,12 +133,12 @@ module.exports = function (ctx) {
         }
       } else {
         throw new Error(
-          "请先执行 sudo ionic cordova plugin save ./wechat --variable WECHATAPPID=微信appid"
+          "请先执行 sudo ionic cordova plugin save ./cordova-wechat-plugin --variable WECHATAPPID=微信appid"
         );
       }
     } else {
       throw new Error(
-        "请先执行 sudo ionic cordova plugin save ./wechat --variable WECHATAPPID=微信appid"
+        "请先执行 sudo ionic cordova plugin save ./cordova-wechat-plugin --variable WECHATAPPID=微信appid"
       );
     }
     // throw 'error';

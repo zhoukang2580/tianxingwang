@@ -1,13 +1,24 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>function-test</ion-title>
+    <ion-title>功能测试页面</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-button (click)='showModal()' color='success'>测试更新</ion-button>
+  <ion-button (click)='showModal()' *ngIf='showHcp' color='"dark"'>点击测试更新</ion-button>
+  <ion-button (click)='showModal()' *ngIf='!showHcp' color='success'>测试更新</ion-button>
+  <ion-button >测试1</ion-button>
+  <ion-button color='secondary'>测试2</ion-button>
+  <ion-button color='tertiary'>测试3</ion-button>
+  <ion-button color='success'>测试4</ion-button> 
+  <ion-button color='warning'>测试5</ion-button> 
+  <ion-button color='warning'>测试5</ion-button> 
+  <ion-button color='warning'>测试5</ion-button> 
+  <ion-button color='warning'>测试5</ion-button> 
+  <ion-button color='warning'>测试5</ion-button> 
+  <ion-button color='warning'>测试5</ion-button> 
   <p *ngIf='info.msg'>{{info|json}}</p>
-  <!-- <app-hcpupdate-comp *ngIf='showHcp'></app-hcpupdate-comp> -->
+  <app-update-comp *ngIf='showHcp'></app-update-comp>
   <!-- <app-slidvalidate-com></app-slidvalidate-com> -->
   <!-- <app-scan-comp></app-scan-comp> -->
   <!-- <img src="assets/11.jpg" alt="weixin图标">
