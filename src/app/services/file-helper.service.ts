@@ -70,6 +70,7 @@ export class FileHelperService {
     private zip: Zip) {
     this.plt.ready().then(async () => {
       this.hcpPlugin = window['hcp'];
+      await this.clearLocalHcpVersionIfAppUpdated();
       this.localVersion = await this.getLocalVersionNumber();
       this.fileInfo.dataDrectory = this.file.dataDirectory;
       this.fileInfo.externalDataDirectory = this.file.externalDataDirectory;
@@ -85,6 +86,22 @@ export class FileHelperService {
       this.dataDirectory = this.file.dataDirectory;
       this.createUpdateWwwDirectory();
     });
+  }
+  private async clearLocalHcpVersionIfAppUpdated() {
+    if (AppHelper.isApp()) {
+      const curRunningVersionStr = await this.getLocalVersionNumber();
+      const hcpVersionStr = this.getLocalHcpVersion();
+      if (curRunningVersionStr && hcpVersionStr) {
+        const curRunningVersion = curRunningVersionStr.split(".");
+        curRunningVersion.pop();
+        const hcpVersion = curRunningVersionStr.split(".");
+        hcpVersion.pop();
+        if (hcpVersion !== curRunningVersion) {
+          this.logMessage(`clearLocalHcpVersionIfAppUpdated app 已经安装了新版本，本地hcp版本记录清空`);
+          this.setHcpVersionToLoacal('');
+        }
+      }
+    }
   }
   private async createUpdateWwwDirectory() {
     await this.plt.ready();
@@ -259,7 +276,7 @@ export class FileHelperService {
           reject("热更失败");
           return false;
         }
-        this.cacheHcpVersionToLoacal(this.serverVersion);
+        this.setHcpVersionToLoacal(this.serverVersion);
         // await this.listDirFiles(this.dataDirectory, this.updateDirectoryName);
         await this.clearUnUseVersions();
         await this.listDirFiles(this.dataDirectory, this.updateDirectoryName);
@@ -332,7 +349,7 @@ export class FileHelperService {
     this.logMessage(`apphcpversion=${AppHelper.getStorage<string>("apphcpversion")}`);
     return (AppHelper.getStorage<string>("apphcpversion") || "").trim();
   }
-  private cacheHcpVersionToLoacal(version: string) {
+  private setHcpVersionToLoacal(version: string) {
     AppHelper.setStorage('apphcpversion', version);
   }
   private async getMd5JsonFile() {
@@ -470,6 +487,7 @@ export class FileHelperService {
       const up = await this.getServerVersion(onprogress);
       this.logMessage(`updateApk`, up);
       this.localVersion = await this.getLocalVersionNumber();
+
       if (!up || !up.Version || up.Version.length === 0 || !up.Version[0].DownloadUrl || !up.Version[0].Value) {
         reject("更新失败");
         return false;
@@ -482,7 +500,7 @@ export class FileHelperService {
       }
       const apkUrl = `${up.Version[0].DownloadUrl}/${up.Version[0].Folder}`;
       this.logMessage(`apkurl =${apkUrl}`);
-      const newApkPath = await this.downloadApk(apkUrl, onprogress,up.Version[0].Md5);
+      const newApkPath = await this.downloadApk(apkUrl, onprogress, up.Version[0].Md5);
       resolve(newApkPath);
     }).catch(err => {
       this.logError(`updateApk 出错`, err);
@@ -506,7 +524,7 @@ export class FileHelperService {
       return {};
     });
   }
-  private async downloadApk(apkUrl: string, onprogress: (hcp: IHcpUpdateModel) => void,Md5:string) {
+  private async downloadApk(apkUrl: string, onprogress: (hcp: IHcpUpdateModel) => void, Md5: string) {
     this.logMessage(`要下载的应用地址: ` + apkUrl);
     const apkPath = `${this.dataDirectory}${this.updateDirectoryName}/${this.serverVersion.replace(/\./g, "_")}.apk`;
     onprogress({ total: 100, loaded: 90, taskDesc: LanguageHelper.getApkDownloadingTip() } as IHcpUpdateModel);
