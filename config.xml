@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.skytrip.dmonline" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.skytrip.dmonline" version="1.0.0" 
+    xmlns="http://www.w3.org/ns/widgets" 
+    xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>MyApp</name>
     <description>An awesome Ionic/Cordova app.</description>
     <author email="hi@ionicframework" href="http://ionicframework.com/">Ionic Framework Team</author>
@@ -26,6 +28,7 @@
     <preference name="FullscreenNotImmersive" value="true" />
     <hook src="scripts/before_build.js" type="before_build" />
     <hook src="scripts/zipfile_before_build.js" type="before_build" />
+    <hook src="scripts/after_build.js" type="after_build" />
     <platform name="android">
         <hook src="scripts/wechat-plugin-hook.js" type="before_build" />
         <allow-intent href="market:*" />
@@ -49,7 +52,6 @@
         <splash density="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
     </platform>
     <platform name="ios">
-        <hook src="scripts/after_build.js" type="after_build" />
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
         <icon height="57" src="resources/ios/icon/icon.png" width="57" />

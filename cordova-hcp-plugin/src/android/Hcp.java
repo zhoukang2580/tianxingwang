@@ -38,6 +38,7 @@ public class Hcp extends CordovaPlugin {
     private static final String LOCAL_ASSETS_FOLDER = "file:///android_asset/www";
     SharedPreferences preferences;
     CallbackContext mMallbackContext;
+    private boolean destroyed;
 
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
@@ -66,9 +67,11 @@ public class Hcp extends CordovaPlugin {
     public void onStart() {
         super.onStart();
         String path = this.preferences.getString("loadIndexPagePath", null);
-        Log.d("Hcp", "热更插件加载页面 " + path);
+        Log.d("Hcp", "热更插件加载页面 " + path + " webView url " + webView.getUrl());
+        Log.d("Hcp", "destroyed||webView.getUrl().contains(LOCAL_ASSETS_FOLDER)" + (destroyed || webView.getUrl().contains(LOCAL_ASSETS_FOLDER)));
         if (path != null) {
-            webView.loadUrlIntoView(path, false);
+            if (destroyed || webView.getUrl().contains(LOCAL_ASSETS_FOLDER))
+                webView.loadUrlIntoView(path, false);
         }
     }
 
@@ -78,8 +81,14 @@ public class Hcp extends CordovaPlugin {
     }
 
     @Override
+    public void onDestroy() {
+        destroyed = true;
+        super.onDestroy();
+    }
+
+    @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-        Log.d(TAG,"execute action = "+action);
+        Log.d(TAG, "execute action = " + action);
         if (TextUtils.equals("openHcpPage", action)) {
             mMallbackContext = callbackContext;
             this.openHcpPage(args.optString(0), callbackContext);
@@ -102,11 +111,11 @@ public class Hcp extends CordovaPlugin {
         }
         if (TextUtils.equals("checkPathOrFileExists", action)) {
             mMallbackContext = callbackContext;
-            checkPathOrFileExists(args.optString(0),callbackContext);
+            checkPathOrFileExists(args.optString(0), callbackContext);
             return true;
         }
         if (TextUtils.equals("openAPK", action)) {
-            Log.d(TAG,"openAPK "+args.optString(0));
+            Log.d(TAG, "openAPK " + args.optString(0));
             if (TextUtils.isEmpty(args.optString(0)))
                 return true;
             cordova.getThreadPool().execute(() -> {
@@ -131,7 +140,7 @@ public class Hcp extends CordovaPlugin {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             // 由于没有在Activity环境下启动Activity,设置下面的标签
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            Log.d(TAG, " Build.VERSION SDK_INT= " + Build.VERSION.SDK_INT+" activity.getPackageName() "+activity.getPackageName());
+            Log.d(TAG, " Build.VERSION SDK_INT= " + Build.VERSION.SDK_INT + " activity.getPackageName() " + activity.getPackageName());
             if (Build.VERSION.SDK_INT >= 24) { //判读版本是否在7.0以上
                 //参数1 上下文, 参数2 Provider主机地址 和配置文件中保持一致   参数3  共享的文件
                 Uri apkUri =
@@ -150,7 +159,7 @@ public class Hcp extends CordovaPlugin {
                 activity.startActivity(intent);
             });
         } catch (Exception e) {
-            Log.d(TAG,"openApk error "+e.getMessage());
+            Log.d(TAG, "openApk error " + e.getMessage());
             callbackContext.error(e.getMessage());
         }
 
@@ -207,23 +216,23 @@ public class Hcp extends CordovaPlugin {
     }
 
     private void checkPathOrFileExists(String path, CallbackContext callbackContext) {
-        cordova.getThreadPool().execute(()->{
+        cordova.getThreadPool().execute(() -> {
             try {
                 if (TextUtils.isEmpty(path)) {
                     callbackContext.error("文件路径不能空");
-                    return ;
+                    return;
                 }
                 CordovaResourceApi resourceApi = webView.getResourceApi();
                 File file = resourceApi.mapUriToFile(getUriForArg(path));
                 if (!file.exists()) {
                     Log.d(TAG, "checkPathOrFileExists 文件不存在 path= " + file.getAbsolutePath());
                     callbackContext.error("文件不存在");
-                    return ;
+                    return;
                 }
                 Log.d(TAG, "checkPathOrFileExists 存在 path= " + file.getAbsolutePath());
                 callbackContext.success();
             } catch (Exception e) {
-                Log.d(TAG,"checkPathOrFileExists error "+e.getMessage());
+                Log.d(TAG, "checkPathOrFileExists error " + e.getMessage());
                 callbackContext.error(e.getMessage());
             }
         });

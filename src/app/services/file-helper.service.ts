@@ -27,6 +27,7 @@ interface IUpdateList {
     Value?: string;// 版本
     Ignore?: boolean;// 是否可以忽略
     Remove?: boolean;// 是否清除基础数据,
+    Md5?: string;// apk Md5,
     Hotfix?: {
       DownloadUrl?: string;
       Ignore?: boolean;// 是否可以忽略
@@ -271,7 +272,7 @@ export class FileHelperService {
     });
   }
   private async getFileEntry(filePath: string) {
-    if(!AppHelper.isApp()){
+    if (!AppHelper.isApp()) {
       return Promise.resolve({} as Entry);
     }
     return await this.file.resolveLocalFilesystemUrl(filePath)
@@ -481,7 +482,7 @@ export class FileHelperService {
       }
       const apkUrl = `${up.Version[0].DownloadUrl}/${up.Version[0].Folder}`;
       this.logMessage(`apkurl =${apkUrl}`);
-      const newApkPath = await this.downloadApk(apkUrl, onprogress);
+      const newApkPath = await this.downloadApk(apkUrl, onprogress,up.Version[0].Md5);
       resolve(newApkPath);
     }).catch(err => {
       this.logError(`updateApk 出错`, err);
@@ -490,8 +491,8 @@ export class FileHelperService {
   }
   private getFileMeta(filePath: string): Promise<any> {
     return new Promise(async (resolve, rej) => {
-      const exists =  await this.checkPathOrFileExists(filePath);
-      if(!exists){
+      const exists = await this.checkPathOrFileExists(filePath);
+      if (!exists) {
         return resolve({});
       }
       const f = await this.getFileEntry(filePath);
@@ -505,15 +506,13 @@ export class FileHelperService {
       return {};
     });
   }
-  private async downloadApk(apkUrl: string, onprogress: (hcp: IHcpUpdateModel) => void) {
+  private async downloadApk(apkUrl: string, onprogress: (hcp: IHcpUpdateModel) => void,Md5:string) {
     this.logMessage(`要下载的应用地址: ` + apkUrl);
     const apkPath = `${this.dataDirectory}${this.updateDirectoryName}/${this.serverVersion.replace(/\./g, "_")}.apk`;
     onprogress({ total: 100, loaded: 90, taskDesc: LanguageHelper.getApkDownloadingTip() } as IHcpUpdateModel);
-    let apkExists,fileMetaData={} as any;
-    if(await this.checkPathOrFileExists(apkPath) ){
-      // todo 改为校验md5
-      fileMetaData = await this.getFileMeta(apkPath);
-      apkExists = fileMetaData && fileMetaData.size > 1024 * 1024 * 5;// apk大于xxMB
+    let apkExists, fileMetaData = {} as any;
+    if (await this.checkPathOrFileExists(apkPath)) {
+      apkExists = await this.checkApkMd5(apkPath, Md5);
     }
     this.logMessage(`apk metadata = modificationTime=${fileMetaData.modificationTime},size=${fileMetaData.size}`);
     this.logMessage(`apk exists = ${apkPath} ${apkExists ? "存在" : "不存在"}`);
@@ -533,6 +532,9 @@ export class FileHelperService {
       `${this.serverVersion.replace(/\./g, "_")}.apk`, onprogress).then(file => {
         return file.nativePath;
       });
+  }
+  private async checkApkMd5(apkPath: string, serverMd5: string) {
+    return (await this.hcpPlugin.getHash(apkPath)) == serverMd5;
   }
   private async checkPathOrFileExists(filePath: string) {
     if (!AppHelper.isApp()) {
