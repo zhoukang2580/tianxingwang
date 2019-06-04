@@ -259,6 +259,8 @@ export class AppHelper {
     }
     if (value) {
       window.localStorage.setItem(key.toLowerCase(), JSON.stringify(value));
+    }else{
+      window.localStorage.setItem(key.toLowerCase(), null);
     }
   }
   /**

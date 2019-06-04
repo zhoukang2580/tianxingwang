@@ -31,7 +31,8 @@ import { WebView } from '@ionic-native/ionic-webview/ngx';
     IonicModule.forRoot({
       backButtonIcon: "arrow-back",
       backButtonText: "",
-      loadingSpinner: "crescent"
+      loadingSpinner: "crescent",
+      swipeBackEnabled:false
     }),
     HttpClientModule,
     TranslateModule.forRoot({

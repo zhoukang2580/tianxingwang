@@ -9,6 +9,7 @@ import { AppHelper } from '../appHelper';
 import { LanguageHelper } from '../languageHelper';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { RequestEntity } from './api/Request.entity';
+import { App } from '../app.component';
 interface Hcp {
   getHash: (filePath: string) => Promise<string>;
   openHcpPage: (filePath: string) => Promise<any>;
@@ -50,6 +51,7 @@ interface IHcpUpdateModel {
   providedIn: 'root'
 })
 export class FileHelperService {
+  app: App;
   readonly updateZipFileName: string = "DongmeiIonic.zip";
   private readonly updateDirectoryName: string = "update";
   private readonly www = "www";
@@ -68,8 +70,27 @@ export class FileHelperService {
     private appVersion: AppVersion,
     private plt: Platform,
     private zip: Zip) {
+
     this.plt.ready().then(async () => {
+      // const onResume = async (evt) => {
+      //   this.logMessage(`app resume `, evt);
+      //   // TODO: do your thing!
+      //   if (this.plt.is("ios")) {
+      //     if (this.getLocalHcpVersion()) {
+      //       const indexHtmlFile = `${this.dataDirectory}${this.updateDirectoryName}/www_${this.getLocalHcpVersion().replace(/\./g, "_")}/${this.www}/index.html`;
+      //       const f = await this.getFileEntry(indexHtmlFile);
+      //       const p = await this.getParent(f);
+      //       const indexHtml = await this.readFileAsString(p.nativeURL, f.name);
+      //       this.logMessage(`index.html 文件内容${indexHtml}`);
+      //       this.openNewVersion(
+      //         this.webView.convertFileSrc(f.nativeURL));
+      //     }
+      //   }
+      // }
+      // document.addEventListener("resume", onResume, false);
       this.hcpPlugin = window['hcp'];
+      this.app = navigator['app'];
+      this.dataDirectory = this.file.dataDirectory;
       await this.clearLocalHcpVersionIfAppUpdated();
       this.localVersion = await this.getLocalVersionNumber();
       this.fileInfo.dataDrectory = this.file.dataDirectory;
@@ -82,23 +103,25 @@ export class FileHelperService {
       this.fileInfo.applicationStorageDirectory = this.file.applicationStorageDirectory;
       this.fileInfo.externalApplicationStorageDirectory = this.file.externalApplicationStorageDirectory;
       this.fileInfo.externalRootDirectory = this.file.externalRootDirectory;
-      this.logMessage(JSON.stringify(this.fileInfo, null, 2));
-      this.dataDirectory = this.file.dataDirectory;
+      // this.logMessage(JSON.stringify(this.fileInfo, null, 2));
       this.createUpdateWwwDirectory();
     });
   }
   private async clearLocalHcpVersionIfAppUpdated() {
     if (AppHelper.isApp()) {
       const curRunningVersionStr = await this.getLocalVersionNumber();
+      this.logMessage(`clearLocalHcpVersionIfAppUpdated,curRunningVersionStr=${curRunningVersionStr}`);
       const hcpVersionStr = this.getLocalHcpVersion();
+      this.logMessage(`clearLocalHcpVersionIfAppUpdated,hcpVersionStr=${hcpVersionStr}`);
       if (curRunningVersionStr && hcpVersionStr) {
         const curRunningVersion = curRunningVersionStr.split(".");
         curRunningVersion.pop();
         const hcpVersion = curRunningVersionStr.split(".");
         hcpVersion.pop();
-        if (hcpVersion !== curRunningVersion) {
+        if (hcpVersion.join("_") !== curRunningVersion.join("_")) {
           this.logMessage(`clearLocalHcpVersionIfAppUpdated app 已经安装了新版本，本地hcp版本记录清空`);
           this.setHcpVersionToLoacal('');
+          await this.hcpPlugin.saveHcpPath("");
         }
       }
     }
@@ -228,7 +251,8 @@ export class FileHelperService {
         if (!hcpRes) {
           reject("没有热更版本");
         }
-        const url = hcpRes;
+        const url = `${hcpRes}?v=${Date.now()}`;
+        this.logMessage(`下载的热更zip 文件URL ${url}`);
         const zipFile = await this.downloadZipFile(url, onprogress);
         const f = await this.getFileEntry(zipFile.nativePath);
         const zp = await this.getParent(f);
@@ -345,7 +369,7 @@ export class FileHelperService {
       this.logMessage(`clearUnUseVersions error ${JSON.stringify(e, null, 2)}`);
     }
   }
-  private getLocalHcpVersion() {
+   getLocalHcpVersion() {
     this.logMessage(`apphcpversion=${AppHelper.getStorage<string>("apphcpversion")}`);
     return (AppHelper.getStorage<string>("apphcpversion") || "").trim();
   }
@@ -578,7 +602,11 @@ export class FileHelperService {
         console.log(`${msg}`);
       }
     } catch (e) {
-      console.log(`logMessage,${JSON.stringify(e, null, 2)}`);
+      try {
+        console.log(`logMessage,${JSON.stringify(e, null, 2)}`);
+      } catch (e) {
+        console.error('logMessage', e);
+      }
     }
   }
   private logError(msg: string, err: any) {
@@ -589,7 +617,11 @@ export class FileHelperService {
         console.log(`${msg}`);
       }
     } catch (e) {
-      console.log(`logError,${JSON.stringify(e, null, 2)}`);
+      try {
+        console.log(`logError,${JSON.stringify(e, null, 2)}`);
+      } catch (e) {
+        console.error('logError', e);
+      }
     }
   }
   /**
@@ -837,7 +869,10 @@ export class FileHelperService {
   }
 
   private readFileAsString(path: string, file: string) {
-    return this.file.readAsText(path, file).catch(() => "");
+    return this.file.readAsText(path, file).catch((e) => {
+      this.logError(`readFileAsString error `, e);
+      return "";
+    });
   }
   private getParent(f: Entry) {
     return new Promise<DirectoryEntry>((s, rej) => {

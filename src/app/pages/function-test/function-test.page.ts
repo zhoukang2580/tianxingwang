@@ -5,6 +5,7 @@ import { Platform, IonApp } from '@ionic/angular';
 import { FileHelperService } from 'src/app/services/file-helper.service';
 import { App } from 'src/app/app.component';
 import { LanguageHelper } from 'src/app/languageHelper';
+import { AppVersion } from '@ionic-native/app-version/ngx';
 type Hcp = {
   openHcpPage: (url: string) => Promise<any>;
 };
@@ -17,14 +18,18 @@ type Hcp = {
 export class FunctionTestPage implements OnInit {
   info: any = {};
   hcp: Hcp;
+  curVersion:string;
   app: App;
   showHcp: boolean = false;
+  color:string;
+  colors=["primary","secondary","tertiary","warning","mediun","dark","light","danger"];
   constructor(private fileService: FileHelperService,
     private router: Router,
     private plt: Platform) {
-    this.plt.ready().then(() => {
+    this.plt.ready().then(async() => {
       this.hcp = window['hcp'];
       this.app = navigator['app'];
+      this.curVersion=fileService.getLocalHcpVersion();
     });
   }
   showModal() {
@@ -35,6 +40,7 @@ export class FunctionTestPage implements OnInit {
 
   }
   ngOnInit() {
+    this.color=this.colors[Math.floor(Math.random()*this.colors.length)];
   }
 
 }
