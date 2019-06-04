@@ -1,34 +1,66 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="cordova-ali-plugin" version="1.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<plugin id="cordova-ali-plugin" version="1.0.0" 
+    xmlns="http://apache.org/cordova/ns/plugins/1.0" 
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <name>cordova-ali-plugin</name>
     <js-module name="cordova-ali-plugin" src="www/cordova-ali-plugin.js">
         <clobbers target="ali" />
     </js-module>
 
-     <!-- android -->
+    <!-- android -->
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
-            <feature name="Ali" >
+            <feature name="Ali">
                 <param name="android-package" value="com.beeant.plugin.ali.Ali"/>
             </feature>
         </config-file>
 
         <source-file src="src/android/Ali.java" target-dir="src/com/beeant/plugin/ali" />
+        <framework src="src/android/alipay.gradle" custom="true" type="gradleReference"/>
+        <lib-file src="src/android/alipaySdk-15.6.2-20190416165100-noUtdid.aar"/>
     </platform>
 
     <!-- ios -->
-    <!-- <platform name="ios">
+    <platform name="ios">
         <config-file target="config.xml" parent="/*">
-            <feature name="Device">
-                <param name="ios-package" value="CDVDevice"/>
+            <feature name="Ali">
+                <param name="ios-package" value="CDVAli"/>
             </feature>
         </config-file>
-
-        <header-file src="src/ios/CDVDevice.h" />
-        <source-file src="src/ios/CDVDevice.m" />
-    </platform> -->
+        <config-file target="*-Info.plist" parent="CFBundleURLTypes">
+            <array>
+                <dict>
+                    <key>CFBundleURLName</key>
+                    <string>skytripAlipay</string>
+                    <key>CFBundleURLSchemes</key>
+                    <array>
+                        <string>skytripAlipay</string>
+                    </array>
+                </dict>
+            </array>
+        </config-file>
+        <header-file src="src/ios/CDVAli.h" />
+        <source-file src="src/ios/CDVAli.m" />
+        <!-- ali 支付sdk -->
+        <!-- <framework src="src/ios/libs/AlipaySDK.framework" custom="true"/>
+        <resource-file src="src/ios/libs/AlipaySDK.bundle"/> -->
+        <source-file src='src/ios/libs/AlipaySDK.bundle' framework='true'/>
+        <framework src="src/ios/libs/AlipaySDK.framework" custom='true'/>
+        <!-- ios 框架 -->
+        <framework src="libc++.1.tbd" />
+        <framework src="libz.tbd" />
+        <framework src="SystemConfiguration.framework" />
+        <framework src="CoreTelephony.framework" />
+        <framework src="QuartzCore.framework" />
+        <framework src="CoreText.framework" />
+        <framework src="CoreGraphics.framework" />
+        <framework src="UIKit.framework" />
+        <framework src="Foundation.framework" />
+        <framework src="CFNetwork.framework" />
+        <framework src="CoreMotion.framework" />
+    </platform>
 
     <!-- windows -->
-    
+
 
 </plugin>

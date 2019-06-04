@@ -28,8 +28,10 @@ NSString* _appId;
         SendAuthReq *req = [[SendAuthReq alloc] init];
         req.state = @"wx_oauth_authorization_state";//用于保持请求和回调的状态，授权请求或原样带回
         req.scope = @"snsapi_userinfo";//授权作用域：获取用户个人信息
+        dispatch_async(dispatch_get_main_queue(), ^{
+           [WXApi sendReq:req];//发起微信授权请求
+        });
         
-        [WXApi sendReq:req];//发起微信授权请求
         // Some blocking logic...
         //        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:payload];
         //        The sendPluginResult method is thread-safe.

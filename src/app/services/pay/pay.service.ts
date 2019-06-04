@@ -3,8 +3,39 @@ import { Platform } from '@ionic/angular';
 import { Injectable } from "@angular/core";
 import { RequestEntity } from '../api/Request.entity';
 import { ApiService } from '../api/api.service';
-interface Ali {
-  pay: (payInfo: string) => Promise<any>;
+export interface Ali {
+  pay: (payInfo: string) => Promise<{
+    memo: string;
+    result: {
+      alipay_trade_app_pay_response: {
+        code: string;//10000,
+        msg: string;// Success,
+        app_id: string;// 2014072300007148,
+        out_trade_no: string;// 081622560194853,
+        trade_no: string;//2016081621001004400236957647,
+        total_amount: string;// 0.01,
+        seller_id: string;// 2088702849871851,
+        charset: string;// utf-8,
+        timestamp: string;// 2016-10-11 17:43:36
+        sub_code?:string;
+        sub_msg?:string;
+      },
+      sign: string;// ********,
+      sign_type: string;// RSA2
+    },
+    /**
+     * 返回码	 含义
+        9000	订单支付成功
+        8000	正在处理中，支付结果未知（有可能已经支付成功），请查询商户订单列表中订单的支付状态
+        4000	订单支付失败
+        5000	重复请求
+        6001	用户中途取消
+        6002	网络连接出错
+        6004	支付结果未知（有可能已经支付成功），请查询商户订单列表中订单的支付状态
+        其它	 其它支付错误
+     */
+    resultStatus: "9000"|"8000"|"4000"|"5000"|"6001"|"6002"|"6004"|"其它";// 9000
+  }>;
 }
 interface Wechat {
   pay: (payInfo: any) => Promise<any>;
@@ -49,7 +80,7 @@ export class PayService {
       }).catch(() => null);
     }
     else if (AppHelper.isH5() && AppHelper.isWechatMini()) {
-      this.paybyh5(method,data,path);
+      this.paybyh5(method, data, path);
     }
 
   }
@@ -87,18 +118,16 @@ export class PayService {
       }).catch(() => null);
     }
     else if (AppHelper.isH5() && AppHelper.isWechatMini()) {
-      this.paybyh5(method,data,path);
+      this.paybyh5(method, data, path);
     }
   }
-  paybyh5(method: string, data: any, path: string)
-  {
-    var url = AppHelper.getApiUrl() + "/home/Pay?method="+method+"&path=" + encodeURIComponent(AppHelper.getRedirectUrl() + "?path=" + path)
-    +"&data="+JSON.stringify(data);
-    const req=this.apiService.createRequest();
-      for(let r in req)
-      {
-        url+="&"+r+"="+req[r];
-      }
+  paybyh5(method: string, data: any, path: string) {
+    var url = AppHelper.getApiUrl() + "/home/Pay?method=" + method + "&path=" + encodeURIComponent(AppHelper.getRedirectUrl() + "?path=" + path)
+      + "&data=" + JSON.stringify(data);
+    const req = this.apiService.createRequest();
+    for (let r in req) {
+      url += "&" + r + "=" + req[r];
+    }
     window.location.href = url;
   }
   process(method: string, data: any) {
@@ -114,7 +143,7 @@ export class PayService {
           else {
             reject(r.Message);
           }
-        }, e => { 
+        }, e => {
           reject(e);
         }, () => {
           sub.unsubscribe();

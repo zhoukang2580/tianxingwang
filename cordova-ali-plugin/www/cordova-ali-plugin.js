@@ -4,6 +4,10 @@ exports.pay = function(arg0) {
   return new Promise((resolve, reject) => {
     exec(
       resource => {
+        // console.log(`ali resource`,resource);
+        if(resource.result&&typeof resource.result==='string'){
+          resource.result=JSON.parse(resource.result);
+        }
         resolve(resource);
       },
       error => {

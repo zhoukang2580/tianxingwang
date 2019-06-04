@@ -104,6 +104,7 @@ export class AppComponent {
 
 
   private backButtonAction() {
+    
     let lastClickTime = 0;
     console.log("backbutton url = " + this.router.url);
     this.platform.backButton.subscribe(async () => {

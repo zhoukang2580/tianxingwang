@@ -39,10 +39,10 @@ public class Ali extends CordovaPlugin {
                     callbackContext.error("支付失败，返回的支付对象为空");
                     return;
                 }
-                for (String k : result.keySet()) {
-                    Log.d(TAG,"key="+k+", value="+result.get(k));
-                    res.put(k,result.get(k));
-                }
+//                for (String k : result.keySet()) {
+//                    Log.d(TAG,"key="+k+", value="+result.get(k));
+//                    res.put(k,result.get(k));
+//                }
                 callbackContext.success(res);
             } catch (Exception e) {
                 Log.d(TAG, e.getMessage());
