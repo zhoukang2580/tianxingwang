@@ -106,10 +106,10 @@
       "cordova-plugin-ionic-webview": {
         "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
       },
-      "cordova-hcp-plugin": {},
       "cordova-plugin-zip": {},
       "cordova-plugin-file": {},
-      "cordova-ali-plugin": {}
+      "cordova-ali-plugin": {},
+      "cordova-hcp-plugin": {}
     },
     "platforms": [
       "android",

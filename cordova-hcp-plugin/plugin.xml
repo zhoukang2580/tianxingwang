@@ -11,7 +11,7 @@
     <config-file target="res/xml/config.xml" parent="/*">
       <feature name="Hcp">
         <param name="android-package" value="com.beeant.plugin.hcp.Hcp"/>
-        <param name="onload" value="true" />
+        <!-- <param name="onload" value="true" /> -->
       </feature>
     </config-file>
     <config-file target="AndroidManifest.xml" parent="/manifest">

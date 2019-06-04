@@ -1,5 +1,19 @@
 var exec = require("cordova/exec");
-
+exports.loadHcpPage = function(arg0) {
+  return new Promise((resolve, reject) => {
+    exec(
+      openId => {
+        resolve(openId);
+      },
+      error => {
+        reject(error);
+      },
+      "Hcp",
+      "loadHcpPage",
+      [arg0]
+    );
+  });
+};
 exports.openHcpPage = function(arg0) {
   return new Promise((resolve, reject) => {
     exec(

@@ -15,6 +15,7 @@ interface Hcp {
   openHcpPage: (filePath: string) => Promise<any>;
   saveHcpPath: (serverVersion: string) => Promise<any>;
   openAPK: (apkFilePath: string) => Promise<any>;// 仅Android可用
+  loadHcpPage: () => Promise<any>;// 仅Android可用
   checkPathOrFileExists: (filePath: string) => Promise<void>;
 }
 interface IMd5JsonFile {
@@ -72,24 +73,9 @@ export class FileHelperService {
     private zip: Zip) {
 
     this.plt.ready().then(async () => {
-      // const onResume = async (evt) => {
-      //   this.logMessage(`app resume `, evt);
-      //   // TODO: do your thing!
-      //   if (this.plt.is("ios")) {
-      //     if (this.getLocalHcpVersion()) {
-      //       const indexHtmlFile = `${this.dataDirectory}${this.updateDirectoryName}/www_${this.getLocalHcpVersion().replace(/\./g, "_")}/${this.www}/index.html`;
-      //       const f = await this.getFileEntry(indexHtmlFile);
-      //       const p = await this.getParent(f);
-      //       const indexHtml = await this.readFileAsString(p.nativeURL, f.name);
-      //       this.logMessage(`index.html 文件内容${indexHtml}`);
-      //       this.openNewVersion(
-      //         this.webView.convertFileSrc(f.nativeURL));
-      //     }
-      //   }
-      // }
-      // document.addEventListener("resume", onResume, false);
       this.hcpPlugin = window['hcp'];
       this.app = navigator['app'];
+      this.hcpPlugin.loadHcpPage();
       this.dataDirectory = this.file.dataDirectory;
       await this.clearLocalHcpVersionIfAppUpdated();
       this.localVersion = await this.getLocalVersionNumber();
