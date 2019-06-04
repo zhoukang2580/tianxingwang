@@ -37,6 +37,7 @@ export class AppComponent {
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
+    private navCtrl:NavController,
     private modalController: ModalController,
     private statusBar: StatusBar,
     private router: Router,
@@ -87,11 +88,7 @@ export class AppComponent {
     this.platform.ready().then(() => {
       this.app=navigator['app'];
       this.statusBar.styleDefault();
-      // if(AppHelper.getStorage("newVersionURL")&&AppHelper.isApp()){
-      //   // this.app.clearHistory();
-      //   this.app.loadUrl(AppHelper.getStorage("newversionurl"));
-      // }
-      // this.splashScreen.hide();
+      this.splashScreen.hide();
     });
     this.backButtonAction();
   }
@@ -104,7 +101,7 @@ export class AppComponent {
 
 
   private backButtonAction() {
-    
+
     let lastClickTime = 0;
     console.log("backbutton url = " + this.router.url);
     this.platform.backButton.subscribe(async () => {
@@ -138,7 +135,8 @@ export class AppComponent {
           lastClickTime = Date.now();
         }
       } else {
-        window.history.back();
+        this.navCtrl.back();
+        // window.history.back();
       }
     });
   }

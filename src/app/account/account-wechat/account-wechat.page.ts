@@ -24,7 +24,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.isShowBindButton =AppHelper.isApp() || AppHelper.isWechatH5();
+    this.isShowBindButton =!AppHelper.isApp() && AppHelper.isWechatH5();
     this.load();
     var paramters=AppHelper.getQueryParamers();
     if(paramters.path=="account-wechat")
