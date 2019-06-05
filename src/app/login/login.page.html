@@ -73,8 +73,8 @@
         <span *ngIf="loginType != 'user'" (click)="switchLoginType('user')">用户名登录</span>
       </ion-button>
     </ion-item>
-    <ion-item lines='none'>
-      <ion-note color="danger">{{ message||'*ngIf="message"' }}</ion-note>
+    <ion-item lines='none' *ngIf="message">
+      <ion-note color="danger">{{ message }}</ion-note>
     </ion-item>
     <app-slidvalidate-com *ngIf="isShowImageCode" (slideEvent)='onSlideEvent($event)'></app-slidvalidate-com>
     <app-or-comp>第三方登陆</app-or-comp>
