@@ -57,7 +57,7 @@ CDVInvokedUrlCommand *cdvCommand;
 }
 - (void)handleOpenURL:(NSNotification *)notification{
     NSURL* url = [notification object];
-    if ([url.host isEqualToString:@"skytripAlipay"]) {
+    if ([url.host isEqualToString:@"safepay"]) {
         //跳转支付宝钱包进行支付，处理支付结果
         [[AlipaySDK defaultService]
          processOrderWithPaymentResult:url

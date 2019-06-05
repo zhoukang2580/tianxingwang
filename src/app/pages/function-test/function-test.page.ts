@@ -52,7 +52,7 @@ export class FunctionTestPage implements OnInit {
       if(res.resultStatus=="9000"){
         AppHelper.alert("支付成功");
       }else{
-        AppHelper.alert("支付失败，"+JSON.stringify(res.result.alipay_trade_app_pay_response));
+        AppHelper.alert("支付失败，"+JSON.stringify(res.result.alipay_trade_app_pay_response.sub_msg));
       }
     }).catch(e => {
       console.log("接口调用失败"+JSON.stringify(e,null,2));

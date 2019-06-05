@@ -64,7 +64,7 @@
     <ion-button (click)="onLoginButton('login')" class='btn-primary' [disabled]="form.invalid || (loading$ | async) || !isLoginOk" expand="block" color='primary'> 登录</ion-button>
     <ion-item lines='none'>
       <ion-note color="danger" *ngIf="message">{{ message }}</ion-note>
-      <ion-button size="small" class='btn-primary' color="primary" slot="end">
+      <ion-button  class='btn-primary' color="primary" slot="end">
         <span *ngIf="loginType == 'user'" (click)="switchLoginType('mobile')">手机号登录</span>
         <span *ngIf="loginType != 'user'" (click)="switchLoginType('user')">用户名登录</span>
       </ion-button>
