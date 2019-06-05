@@ -75,7 +75,9 @@ export class FileHelperService {
     this.plt.ready().then(async () => {
       this.hcpPlugin = window['hcp'];
       this.app = navigator['app'];
-      this.hcpPlugin.loadHcpPage();
+      if(AppHelper.isApp()){
+        this.hcpPlugin.loadHcpPage();
+      }
       this.dataDirectory = this.file.dataDirectory;
       await this.clearLocalHcpVersionIfAppUpdated();
       this.localVersion = await this.getLocalVersionNumber();
@@ -330,7 +332,7 @@ export class FileHelperService {
   private async getLocalVersionNumber() {
     await this.plt.ready();
     if (!AppHelper.isApp()) {
-      return `2.0.0`;
+      return `1.0.0`;
     }
     return await this.appVersion.getVersionNumber();
   }

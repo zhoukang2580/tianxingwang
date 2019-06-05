@@ -139,6 +139,7 @@ export class AppUpdateComponent implements OnInit {
   async iosUpdate() {
     try {
       await AppHelper.alert(`ios 更新需要跳转到 App Store，尚未完成该功能`, true);
+      this.forceUpdate=false;
       //TODO:ios 跳转页面更新 app
     } catch (e) {
       this.forceUpdate = false;

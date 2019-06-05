@@ -2,6 +2,11 @@ ion-content{
   ion-col{
     align-self: center;
   }
+  ion-item.btns{
+    ion-button{
+      margin: 0;
+    }
+  }
   .down-count{
     position: relative;
     &::before{

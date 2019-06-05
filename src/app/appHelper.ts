@@ -27,7 +27,7 @@ export class AppHelper {
   }
   static toast(msg: any, duration = 1400, position?: 'top' | 'bottom' | 'middle') {
     return new Promise<any>(async (resolve, reject) => {
-      this.dismissLayer();
+     await this.dismissLayer();
       const t = await this.toastController.create({
         message: typeof msg === "string" ? msg
           : msg instanceof Error ? msg.message
@@ -49,7 +49,7 @@ export class AppHelper {
     cancelText: string = "") {
 
     return new Promise<boolean>(async (resolve, reject) => {
-      this.dismissLayer();
+      await this.dismissLayer();
       const buttons = [{
         text: confirmText,
         handler: () => {
@@ -102,7 +102,7 @@ export class AppHelper {
     });
   }
 
-  private static async dismissLayer() {
+   static async dismissLayer() {
     try {
       const a = await this.alertController.getTop();
       const t = await this.toastController.getTop();
@@ -259,7 +259,7 @@ export class AppHelper {
     }
     if (value) {
       window.localStorage.setItem(key.toLowerCase(), JSON.stringify(value));
-    }else{
+    } else {
       window.localStorage.setItem(key.toLowerCase(), null);
     }
   }

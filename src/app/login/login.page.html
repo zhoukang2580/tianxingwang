@@ -27,7 +27,7 @@
           <ion-input type="password" placeholder="密码" formControlName="Password"></ion-input>
         </ion-col>
       </ion-row>
-     
+
     </section>
     <section [class.hidden]="loginType != 'mobile'">
       <ion-row>
@@ -50,7 +50,7 @@
         </ng-template>
       </ion-row>
 
-     
+
       <ion-row>
         <ion-col size="4">
           <ion-label position="floating">短信验证码</ion-label>
@@ -61,21 +61,24 @@
       </ion-row>
     </section>
     <!-- <ion-button expand='block' (click)='getWechatCode()'>获取微信登陆code</ion-button> -->
-    <ion-button (click)="onLoginButton('login')" class='btn-primary' [disabled]="form.invalid || (loading$ | async) || !isLoginOk" expand="block" color='primary'> 登录</ion-button>
-    <ion-item lines='none'>
-      <ion-note color="danger" *ngIf="message">{{ message }}</ion-note>
-      <ion-button  class='btn-primary' color="primary" slot="end">
+    <ion-button (click)="onLoginButton('login')" [disabled]="form.invalid || (loading$ | async) || !isLoginOk"
+      expand="block" color='primary'> 登录</ion-button>
+    <ion-item lines='none' class='btns'>
+      <section slot="start">
+        <ion-note color="dark" (click)="forgetPassword()">忘记密码？</ion-note>
+        <ion-note color="dark" (click)="register()">注册</ion-note>
+      </section>
+      <ion-button size='' color="dark" slot="end" fill='clear'>
         <span *ngIf="loginType == 'user'" (click)="switchLoginType('mobile')">手机号登录</span>
         <span *ngIf="loginType != 'user'" (click)="switchLoginType('user')">用户名登录</span>
       </ion-button>
-      <h6 text-end>
-        <ion-note color="dark" (click)="forgetPassword()">忘记密码？</ion-note>
-        <ion-note color="dark" (click)="register()">注册</ion-note>
-      </h6>
     </ion-item>
-    <app-slidvalidate-com  *ngIf="isShowImageCode" (slideEvent)='onSlideEvent($event)'></app-slidvalidate-com>
+    <ion-item lines='none'>
+      <ion-note color="danger">{{ message||'*ngIf="message"' }}</ion-note>
+    </ion-item>
+    <app-slidvalidate-com *ngIf="isShowImageCode" (slideEvent)='onSlideEvent($event)'></app-slidvalidate-com>
     <app-or-comp>第三方登陆</app-or-comp>
-    <ion-item (click)='loginByWechat()' lines='none' text-center >
+    <ion-item (click)='loginByWechat()' lines='none' text-center>
       <div class='third-party-logo'>
         <ion-thumbnail>
           <img src="assets/images/weixin-logo.png" alt="微信图标">
