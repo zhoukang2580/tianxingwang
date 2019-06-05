@@ -26,7 +26,9 @@ export class AppUpdateComponent implements OnInit {
     private logService: LogService,
     private ngZone: NgZone, private plt: Platform) { }
   async ngOnInit() {
-    this.appUpdate();
+    if(AppHelper.isApp()){
+      this.appUpdate();
+    }
   }
   /**
    * 
