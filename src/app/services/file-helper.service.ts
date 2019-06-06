@@ -10,6 +10,7 @@ import { LanguageHelper } from '../languageHelper';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { RequestEntity } from './api/Request.entity';
 import { App } from '../app.component';
+import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 interface Hcp {
   getHash: (filePath: string) => Promise<string>;
   openHcpPage: (filePath: string) => Promise<any>;
@@ -70,6 +71,7 @@ export class FileHelperService {
     private apiService: ApiService,
     private appVersion: AppVersion,
     private plt: Platform,
+    private splashScreen: SplashScreen,
     private zip: Zip) {
 
     this.plt.ready().then(async () => {
@@ -77,6 +79,7 @@ export class FileHelperService {
       this.app = navigator['app'];
       if(AppHelper.isApp()){
         this.hcpPlugin.loadHcpPage();
+        this.splashScreen.show();
       }
       this.dataDirectory = this.file.dataDirectory;
       await this.clearLocalHcpVersionIfAppUpdated();

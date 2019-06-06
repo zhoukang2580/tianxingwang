@@ -1,4 +1,3 @@
-import { Device } from '@ionic-native/device/ngx';
 import { HttpClient } from "@angular/common/http";
 import { IdentityEntity } from "../identity/identity.entity";
 import { RequestEntity } from "../api/Request.entity";
@@ -39,13 +38,15 @@ export class LoginService {
     return this._toPageRouter || "";
   }
   userLogin(entity: LoginEntity) {
-    return this.login(
+    return from(AppHelper.getUUID()).pipe(switchMap(uuid=> this.login(
       "ApiLoginUrl-Home-Login",
       entity.Name,
       entity.Password,
       entity.ImageCode,
-      this.ImageValue,true
-    );
+      this.ImageValue,
+      true,
+      uuid
+    )));
   }
   checkIsDeviceBinded(deviceNumber: string) {
     const req = new RequestEntity();
@@ -65,9 +66,11 @@ export class LoginService {
         this.login(
           "ApiLoginUrl-Home-DeviceLogin",
           AppHelper.getStorage("identityId"),
-          uuid,
           "",
-          "",false
+          "",
+          "",
+          false,
+          uuid
         )
       )
     );
@@ -133,7 +136,7 @@ export class LoginService {
   getLoading() {
     return this.apiService.getLoading();
   }
-  async login(method: string, name: string, password: string, imageCode: string, imageValue: string,isShowLoading:boolean) {
+ login(method: string, name: string, password: string, imageCode: string, imageValue: string,isShowLoading:boolean,uuid?:string) {
     const req = new RequestEntity();
     req.Method = method;
     if (imageCode) {
@@ -147,7 +150,7 @@ export class LoginService {
     req.Data = JSON.stringify({
       Name: name,
       Password: password,
-      Device:await AppHelper.getUUID()
+      Device:uuid
     });
     AppHelper.setStorage("loginName", name);
     return this.apiService

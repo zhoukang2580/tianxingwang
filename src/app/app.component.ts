@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, AfterViewInit } from "@angular/core";
 
 import {
   Platform, AlertController, ToastController,
@@ -34,7 +34,7 @@ export interface App {
   selector: "app-root",
   templateUrl: "app.component.html",
 })
-export class AppComponent {
+export class AppComponent implements AfterViewInit{
   app:App;
   constructor(
     private platform: Platform,
@@ -65,6 +65,9 @@ export class AppComponent {
     AppHelper.setToastController(this.toastController);
     AppHelper.setModalController(this.modalController);
     this.initializeApp();
+  }
+  ngAfterViewInit(){
+    this.splashScreen.hide();
   }
   checkWechatOpenId()
   {
