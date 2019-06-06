@@ -85,7 +85,7 @@ export class PayService {
       }).catch(() => null);
     }
     else if (AppHelper.isH5()) {
-     this.payh5(req);
+     this.payh5(req,path);
     }
 
   }
@@ -146,11 +146,11 @@ export class PayService {
     }
      else if(AppHelper.isH5())
      {
-      this.payh5(req);
+      this.payh5(req,path);
      }
   }
 
-   payh5(req: RequestEntity)
+   payh5(req: RequestEntity,path:string)
    {
     let url = AppHelper.getApiUrl() + "/home/Pay?path=" + encodeURIComponent(AppHelper.getRedirectUrl() + "?path=" + path);
     for (let r in req) {
