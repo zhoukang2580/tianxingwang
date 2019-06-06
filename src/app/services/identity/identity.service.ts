@@ -23,7 +23,7 @@ export class IdentityService {
     if (info && info.Ticket) {
       this.identity = info;
       AppHelper.setCookie("ticket", info.Ticket);
-      AppHelper.setStorage("identityId", info.Id);
+      AppHelper.setStorage("loginToken", info.Token);
     }
   }
   removeIdentity() {

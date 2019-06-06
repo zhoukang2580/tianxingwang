@@ -11,6 +11,8 @@ import { AppHelper } from "./appHelper";
 import { ConfigService } from './services/config/config.service';
 import { HttpClient } from '@angular/common/http';
 import { LanguageHelper } from './languageHelper';
+import { wechatHelper } from './wechatHelper';
+import { DingtalkHelper } from './dingtalkHelper';
 export interface App {
   loadUrl: (
     url: string,
@@ -48,7 +50,10 @@ export class AppComponent {
     private loadingCtrl: LoadingController,
     private http: HttpClient,
   ) {
+    debugger;
     // console.log(this.router.config);
+    if(!this.checkWechatOpenId() || !this.checkDingtalkUnionid())
+      return;
     if (this.platform.is("ios")) {
       AppHelper.setDeviceName("ios");
     }
@@ -61,15 +66,43 @@ export class AppComponent {
     AppHelper.setModalController(this.modalController);
     this.initializeApp();
   }
-
+  checkWechatOpenId()
+  {
+    
+    if(AppHelper.isWechatH5() || AppHelper.isWechatMini())
+    {
+      if(!AppHelper.checkQueryString("openid"))
+      {
+        window.location.href=AppHelper.getApiUrl()+"/home/GetWechatUser?path="+ AppHelper.getRedirectUrl()+"&domain="+ AppHelper.getDomain();
+        return false;
+      }
+      wechatHelper.openId=AppHelper.getQueryString("openid");
+      wechatHelper.unionId=AppHelper.getQueryString("unionId");
+   }
+   return true;
+  }
+  checkDingtalkUnionid()
+  {
+    if(AppHelper.isDingtalkH5())
+    {
+      if(!AppHelper.checkQueryString("unionid"))
+      {
+        window.location.href=AppHelper.getApiUrl()+"/home/GetDingtalkUser?path="+ AppHelper.getRedirectUrl()+"&domain="+ AppHelper.getDomain();
+        return false;
+      }
+      DingtalkHelper.unionId=AppHelper.getQueryString("unionid");
+   }
+   return true;
+  }
   initializeApp() {
+ 
     this.getConfigInfo();
     AppHelper.getDomain();// 
     AppHelper.setQueryParamers();
     const path = AppHelper.getQueryString("path");
     const unloginPath = AppHelper.getQueryString("unloginpath");
     if (AppHelper.getTicket() && path) {
-      this.jumpToRoute("/tabs/my").then(() => {
+      this.jumpToRoute("/tabs/home").then(() => {
         this.jumpToRoute(path);
       });
     }
@@ -77,7 +110,7 @@ export class AppComponent {
       this.router.navigate([AppHelper.getRoutePath(unloginPath)]);
     }
     else {
-      this.router.navigate([AppHelper.getRoutePath("")]);
+      this.router.navigate([AppHelper.getRoutePath("login")]);
     }
     // this.router.navigate([AppHelper.getRoutePath("account-password")]);
     // this.router.navigate([AppHelper.getRoutePath("change-password-by-msm-code")]);

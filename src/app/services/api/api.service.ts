@@ -90,10 +90,11 @@ export class ApiService {
     const req = this.createRequest();
     if (AppHelper.isApp()) {
       const uuid = await AppHelper.getUUID();
-      req.Method = "ApiLoginUrl-Home-DeviceLogin";
+      req.Method = "ApiLoginUrl-Home-TokenLogin";
       req.Data = JSON.stringify({
-        Id: AppHelper.getStorage<string>("identityId"),
-        Device: uuid
+        Name: uuid,
+        Password: AppHelper.getStorage("loginToken"),
+        Device:uuid
       });
     }
     else if (AppHelper.isWechatH5()) {
@@ -209,4 +210,5 @@ export class ApiService {
         map(r => r as any)
       );
   }
+  
 }

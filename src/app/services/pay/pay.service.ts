@@ -1,8 +1,11 @@
+import { App } from './../../app.component';
 import { AppHelper } from './../../appHelper';
 import { Platform } from '@ionic/angular';
 import { Injectable } from "@angular/core";
 import { RequestEntity } from '../api/Request.entity';
 import { ApiService } from '../api/api.service';
+import { LanguageHelper } from 'src/app/languageHelper';
+import { wechatHelper } from 'src/app/wechatHelper';
 export interface Ali {
   pay: (payInfo: string) => Promise<{
     memo: string;
@@ -46,19 +49,21 @@ interface Wechat {
 export class PayService {
   ali: Ali;
   wechat: Wechat;
+  iframe:HTMLIFrameElement;
+  wx = window['wx'];
   constructor(private apiService: ApiService, private plt: Platform) {
     plt.ready().then(() => {
       this.ali = window['ali'];
       this.wechat = window['wechat'];
     });
+    this.iframe=document.createElement("iframe");
+    this.iframe.style.display="none";
+    document.body.append(this.iframe);
   }
 
-  alipay(method: string, data: any, path: string) {
+  alipay(req: RequestEntity, path: string) {
     if (AppHelper.isApp()) {
-      const req = new RequestEntity();
-      req.Method = method;
-      req.Data = data;
-      req.Data.IsApp = true;
+      req.IsShowLoading=true;
       return new Promise<any>((resolve, reject) => {
         const sub = this.apiService
           .getResponse<{ Body: string, out_trade_no: string }>(req).subscribe(r => {
@@ -79,35 +84,57 @@ export class PayService {
           });
       }).catch(() => null);
     }
-    else if (AppHelper.isH5() && AppHelper.isWechatMini()) {
-      this.paybyh5(method, data, path);
+    else if (AppHelper.isH5()) {
+     this.payh5(req);
     }
 
   }
-  wechatpay(method: string, data: any, path: string) {
-    const req = new RequestEntity();
-    if (AppHelper.isApp()) {
-      req.Method = method;
-      req.Data = data;
-      req.Data.IsApp = true;
+  wechatpay(req: RequestEntity, path: string) {
+    if (AppHelper.isApp() || AppHelper.isWechatMini() || AppHelper.isWechatH5()) {
+      req.Data.OpenId=wechatHelper.openId;
+      req.IsShowLoading=true;
       return new Promise<any>((resolve, reject) => {
         const sub = this.apiService
-          .getResponse<{ appid: string, noncestr: string, package: string, partnerid: string, prepayid: string, timestamp: string, sign: string }>(req).subscribe(r => {
+          .getResponse<any>(req).subscribe(async r => {
             if (r.Status && r.Data) {
-              const payInfo = {
-                appId: r.Data.appid,
-                partnerId: r.Data.partnerid,
-                prepayId: r.Data.prepayid,
-                packageValue: r.Data.package,
-                nonceStr: r.Data.noncestr,
-                timeStamp: r.Data.timestamp,
-                sign: r.Data.sign,
+              if(AppHelper.isWechatH5() || AppHelper.isWechatMini())
+              {
+                const ok = await wechatHelper.ready().catch(e => {
+                  return false;
+                });
+                if (!ok) {
+                  return;
+                }
+                alert(JSON.stringify(r.Data));
+                wechatHelper.wx.chooseWXPay({
+                  timestamp: r.Data.timeStamp, 
+                  nonceStr: r.Data.nonceStr, // 支付签名随机串，不长于 32 位
+                  package: r.Data.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
+                  signType: r.Data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                  paySign: r.Data.paySign, // 支付签名
+                  success: function (res) {
+                  // 支付成功后的回调函数
+                  }
+                  });;
               }
-              this.ali.pay(payInfo as any).then(n => {
-                resolve(n);
-              }).catch(e => {
-                reject(e);
-              });
+              else
+              {
+                const payInfo = {
+                  appId: r.Data.appid,
+                  partnerId: r.Data.partnerid,
+                  prepayId: r.Data.prepayid,
+                  packageValue: r.Data.package,
+                  nonceStr: r.Data.noncestr,
+                  timeStamp: r.Data.timestamp,
+                  sign: r.Data.sign,
+                }
+                this.ali.pay(payInfo as any).then(n => {
+                  resolve(n);
+                }).catch(e => {
+                  reject(e);
+                });
+              }
+            
             }
             else {
               reject(r.Message);
@@ -117,19 +144,21 @@ export class PayService {
           });
       }).catch(() => null);
     }
-    else if (AppHelper.isH5() && AppHelper.isWechatMini()) {
-      this.paybyh5(method, data, path);
-    }
+     else if(AppHelper.isH5())
+     {
+      this.payh5(req);
+     }
   }
-  paybyh5(method: string, data: any, path: string) {
-    var url = AppHelper.getApiUrl() + "/home/Pay?method=" + method + "&path=" + encodeURIComponent(AppHelper.getRedirectUrl() + "?path=" + path)
-      + "&data=" + JSON.stringify(data);
-    const req = this.apiService.createRequest();
+
+   payh5(req: RequestEntity)
+   {
+    let url = AppHelper.getApiUrl() + "/home/Pay?path=" + encodeURIComponent(AppHelper.getRedirectUrl() + "?path=" + path);
     for (let r in req) {
-      url += "&" + r + "=" + req[r];
+      url += "&" + r + "=" + (typeof req[r]=="string"?req[r]:JSON.stringify(req[r]));
     }
     window.location.href = url;
-  }
+   }
+
   process(method: string, data: any) {
     const req = new RequestEntity();
     req.Method = method;
@@ -150,5 +179,7 @@ export class PayService {
         });
     }).catch(() => null);
   }
+
+
 
 }

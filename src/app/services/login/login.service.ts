@@ -1,3 +1,4 @@
+import { Device } from '@ionic-native/device/ngx';
 import { HttpClient } from "@angular/common/http";
 import { IdentityEntity } from "../identity/identity.entity";
 import { RequestEntity } from "../api/Request.entity";
@@ -132,7 +133,7 @@ export class LoginService {
   getLoading() {
     return this.apiService.getLoading();
   }
-  login(method: string, name: string, password: string, imageCode: string, imageValue: string,isShowLoading:boolean) {
+  async login(method: string, name: string, password: string, imageCode: string, imageValue: string,isShowLoading:boolean) {
     const req = new RequestEntity();
     req.Method = method;
     if (imageCode) {
@@ -145,7 +146,8 @@ export class LoginService {
     }
     req.Data = JSON.stringify({
       Name: name,
-      Password: password
+      Password: password,
+      Device:await AppHelper.getUUID()
     });
     AppHelper.setStorage("loginName", name);
     return this.apiService
@@ -229,13 +231,13 @@ export class LoginService {
   }
   async autoLogin() {
 
-    if (AppHelper.getStorage<string>("identityId")) {
-      const id = AppHelper.getStorage<string>("identityId");
+    if (AppHelper.getStorage<string>("loginToken")) {
       const req = new RequestEntity();
-      req.Method = "ApiLoginUrl-Home-DeviceLogin";
+      req.Method = "ApiLoginUrl-Home-TokenLogin";
       req.Data = JSON.stringify({
-        Id: id,
-        Password: await AppHelper.getUUID()
+        Name: await AppHelper.getUUID(),
+        Password: AppHelper.getStorage("loginToken"),
+        Device:await AppHelper.getUUID()
       });
 
       return new Promise<boolean>((resolve, reject) => {

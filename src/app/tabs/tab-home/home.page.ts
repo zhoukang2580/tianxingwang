@@ -1,8 +1,9 @@
+import { ApiService } from './../../services/api/api.service';
 import { AppHelper } from 'src/app/appHelper';
 import { Component, OnInit } from "@angular/core";
 import { Observable, of, Subject, BehaviorSubject, throwError } from "rxjs";
 import * as moment from "moment";
-import { catchError } from "rxjs/operators";
+import { catchError, switchMap } from "rxjs/operators";
 import {
   AlertController,
   ModalController
@@ -10,6 +11,8 @@ import {
 import { ActivatedRoute, Router } from "@angular/router";
 import { FileHelperService } from 'src/app/services/file-helper.service';
 import { LanguageHelper } from 'src/app/languageHelper';
+import { RequestEntity } from 'src/app/services/api/Request.entity';
+import { PayService } from 'src/app/services/pay/pay.service';
 @Component({
   selector: "app-home",
   templateUrl: "home.page.html",
@@ -28,6 +31,8 @@ export class HomePage implements OnInit {
     private modalCtrl: ModalController,
     private route: ActivatedRoute,
     private router: Router,
+    private apiService: ApiService,
+    private payService: PayService,
   ) { }
   accountSecurityEn() {
     this.router.navigate(["account-security_en"]);
@@ -87,5 +92,32 @@ export class HomePage implements OnInit {
   //     });
   //   });
   // }
-
+    wechatpay()
+    {
+      debugger;
+      let req=this.apiService.createRequest();
+      req.Method="TmcApiOrderUrl-Pay-Create";
+      req.Version="2.0";
+      req.Data={
+        Channel: "App",
+        Type: "3",
+        OrderId:"190000035629",
+      }
+      this.payService.wechatpay(req,"");
+     
+    }
+    alipay()
+    {
+      debugger;
+      let req=this.apiService.createRequest();
+      req.Method="TmcApiOrderUrl-Pay-Create";
+      req.Version="2.0";
+      req.Data={
+        Channel: "App",
+        Type: "3",
+        IsApp:false,
+        OrderId:"190000035629",
+      }
+      this.payService.alipay(req,"");
+    }
 }

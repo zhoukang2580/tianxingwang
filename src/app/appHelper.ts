@@ -6,8 +6,8 @@ import { HttpClient } from '@angular/common/http';
 import { AlertController, ToastController, ModalController } from '@ionic/angular';
 import { LanguageHelper } from './languageHelper';
 export class AppHelper {
-
-  private static httpClient: HttpClient;
+ 
+  static httpClient: HttpClient;
   private static _deviceName: string;
   private static _routeData: any;
   private static toastController: ToastController;
@@ -89,7 +89,7 @@ export class AppHelper {
   static getUUID() {
     return new Promise<string>((resolve, reject) => {
       if (this.isH5()) {
-        resolve("12345");
+        resolve("");
       }
       document.addEventListener(
         "deviceready",
@@ -224,6 +224,14 @@ export class AppHelper {
   static getLanguage() {
     return AppHelper.getCookie("language");
   }
+  static checkQueryString(name) {
+    const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+    const r = window.location.search && window.location.search.substr(1) && window.location.search.substr(1).match(reg);
+    if (r) {
+      return true;
+    }
+    return false;
+  }
   static getQueryString(name) {
     const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
     const r = window.location.search && window.location.search.substr(1) && window.location.search.substr(1).match(reg);
@@ -288,7 +296,8 @@ export class AppHelper {
   static getTicket() {
     return AppHelper.getQueryString("ticket") || AppHelper.getCookie("ticket");
   }
-  static _domain = "";
+  static _appDomain="sky-trip.com" ;
+  static _domain ;
   static getDomain() {
     AppHelper._domain = AppHelper._domain || AppHelper.getQueryString("domain");
     if (AppHelper._domain) {
@@ -313,34 +322,19 @@ export class AppHelper {
         }
       }
     }
-    if (!environment.production) {
-      return "beeant.com";
-    }
-    if (environment.production) {
-      return "sky-trip.com";
-    }
+    return this._appDomain;
   }
   static getRedirectUrl() {
     var url = this.getApiUrl();
     var domain = this.getDomain();
-    if (!environment.production) {
-      return url.replace("beeant.com", domain) + "/www/index.html";
-    }
-    if (environment.production) {
-      return url.replace("sky-trip.com", domain) + "/www/index.html";
-      return url.replace("beeant.com", domain);
-    }
-    if (environment.production) {
-      return url.replace("sky-trip.com", domain);
-    }
+    return url.replace(this._appDomain, domain) + "/www/index.html";
   }
   static getApiUrl() {
     if (!environment.production) {
-      return "http://test.app.testskytrip.com";
-      return "http://dev.app.beeant.com";
+      return "http://dev.app."+this._appDomain;
     }
     if (environment.production) {
-      return "https://app.sky-trip.com";
+      return "https://app."+this._appDomain;
     }
   }
   static getRoutePath(path: string) {
