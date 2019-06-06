@@ -30,7 +30,7 @@ const routes: Routes = [
   imports: [
     RegisterModule,
     LoginModule,
-    // FlightModule,
+    FlightModule,
     AccountModule,
     PasswordModule,
     TabsPageModule,

@@ -1,4 +1,19 @@
 var exec = require("cordova/exec");
+exports.getUUID = function(arg0) {
+  return new Promise((resolve, reject) => {
+    exec(
+      uuid => {
+        resolve(uuid);
+      },
+      error => {
+        reject(error);
+      },
+      "Hcp",
+      "getUUID",
+      [arg0]
+    );
+  });
+};
 exports.loadHcpPage = function(arg0) {
   return new Promise((resolve, reject) => {
     exec(

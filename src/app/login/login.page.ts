@@ -1,5 +1,5 @@
 import { LoginService } from "../services/login/login.service";
-import { Component, OnInit, NgZone, OnDestroy, AfterViewInit } from "@angular/core";
+import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { LoginEntity } from "src/app/services/login/login.entity";
 import { FormBuilder, FormGroup } from "@angular/forms";
@@ -8,10 +8,7 @@ import { AppHelper } from "../appHelper";
 import { LanguageHelper } from "../languageHelper";
 import { ConfigEntity } from "../services/config/config.entity";
 import { ConfigService } from "../services/config/config.service";
-import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
-import { Device } from "@ionic-native/device/ngx";
 import { Config } from '@ionic/angular';
-import { FileHelperService } from '../services/file-helper.service';
 
 @Component({
   selector: "app-login",
@@ -38,8 +35,6 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     private configService: ConfigService,
     private fb: FormBuilder,
     private router: Router,
-    private barcodeScanner: BarcodeScanner,
-    private device: Device,
     private config: Config
   ) {
     this.config.set('swipeBackEnabled', false);
@@ -97,19 +92,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       this.isLoginOk = this.form.value.MobileCode;
     }
   }
-  async deviceName() {
-    this.deviceInfo = {
-      cordova: this.device.cordova,
-      isVirtual: this.device.isVirtual,
-      manufacturer: this.device.manufacturer,
-      model: this.device.model,
-      platform: this.device.platform,
-      serial: this.device.serial,
-      uuid: this.device.uuid,
-      version: this.device.version,
-    }
 
-  }
 
   ionViewWillEnter() {
     this.initPage();
@@ -187,6 +170,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           if (!r.Ticket) {
           } else {
             AppHelper.setStorage("loginname", this.loginEntity.Name);
+            console.log("login success"+JSON.stringify(r,null,2));
             this.jump(true);
           }
         }, e => {
@@ -280,18 +264,23 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   }
   async jump(isCheckDevice: boolean) // 跳转
   {
+    console.log(`jump,loginType=${this.loginType},isCheckDevice=${isCheckDevice},toPageRouter=${this.loginService.getToPageRouter()}`);
     this.loginType = "user";
     const toPageRouter = this.loginService.getToPageRouter() || "";
     if (isCheckDevice && AppHelper.isApp()) {
       var uuid = await AppHelper.getUUID();
+      console.log('uuid '+uuid);
       this.loginService.checkIsDeviceBinded(uuid).subscribe(res => {
+        console.log("checkIsDeviceBinded "+JSON.stringify(res,null,2));
         // 需要绑定
-        if (res.Data) {
+        if (res.Status) {
           this.router.navigate([AppHelper.getRoutePath("account-bind"), {
             IsActiveMobile: res.Data.IsActiveMobile,
             Mobile: res.Data.Mobile,
             Path: toPageRouter
           }]);
+        }else{
+          this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
         }
       }, e => {
         this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);

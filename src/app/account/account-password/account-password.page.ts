@@ -38,7 +38,6 @@ export class AccountPasswordPage implements OnInit,OnDestroy {
   passwordModel: PasswordModel;
   confirmNewPassword: string;
   modifyPasswordSubscription = Subscription.EMPTY;
-  validatedBySmsCode = false; // 是否已经通过手机验证码验证，不需要输入原密码
   loading$:Observable<boolean>;
   constructor(
     identityService: IdentityService,
@@ -53,13 +52,6 @@ export class AccountPasswordPage implements OnInit,OnDestroy {
     });
     this.loading$=this.apiService.getLoading();
     console.log("account-password constructor");
-    this.route.params.subscribe(
-      (data: { validatedBySmsCode: "false" | "validatedBySmsCode" }) => {
-        console.log(data);
-        this.validatedBySmsCode =
-          data.validatedBySmsCode === "validatedBySmsCode";
-      }
-    );
     this.passwordModel = new PasswordModel();
   }
 
@@ -67,12 +59,6 @@ export class AccountPasswordPage implements OnInit,OnDestroy {
     this.router.navigate([AppHelper.getRoutePath("password-check"),{Id:this.identityEntity.Id}]);
   }
   done() {
-    if (!this.validatedBySmsCode) {
-      if (!this.passwordModel.OldPassword) {
-        AppHelper.alert(LanguageHelper.OldPasswordNullTip);
-        return;
-      }
-    }
     if (!this.passwordModel.NewPassword) {
       AppHelper.alert(LanguageHelper.NewPasswordNullTip);
       return;

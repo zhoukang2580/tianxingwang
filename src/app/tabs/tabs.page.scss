@@ -2,15 +2,12 @@ ion-tabs {
   ion-tab-bar {
     --color-selected:var(--ion-color-success);
     --color:var(--ion-color-dark);
+    padding-top: .2em;
     [class*='icon'] {
-      font-size: 1.7rem;
-    }
-    .icon-my {
       font-size: 1.5rem;
-      padding-top: 0.2em;
     }
     ion-label {
-      font-size: 0.8rem;
+      font-size: 0.7rem;
     }
   }
 }

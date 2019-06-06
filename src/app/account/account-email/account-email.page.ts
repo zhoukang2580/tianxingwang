@@ -1,5 +1,5 @@
 import { LoginService } from "./../../services/login/login.service";
-import { FormGroup } from "@angular/forms";
+import { FormGroup, Validators } from "@angular/forms";
 import { FormBuilder } from "@angular/forms";
 import { Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
@@ -32,8 +32,8 @@ export class AccountEmailPage implements OnInit {
 
   ngOnInit() {
     this.form = this.fb.group({
-      Email: [],
-      Code: []
+      Email: [null,Validators.required],
+      Code: [null]
     });
     this.load();
   }

@@ -61,7 +61,7 @@
       </ion-row>
     </section>
     <!-- <ion-button expand='block' (click)='getWechatCode()'>获取微信登陆code</ion-button> -->
-    <ion-button (click)="onLoginButton('login')" [disabled]="form.invalid || (loading$ | async) || !isLoginOk"
+    <ion-button (click)="onLoginButton('login')" [disabled]="form.invalid || (false&&(loading$ | async) )|| !isLoginOk"
       expand="block" color='primary'> 登录</ion-button>
     <ion-item lines='none' class='btns'>
       <section slot="start">

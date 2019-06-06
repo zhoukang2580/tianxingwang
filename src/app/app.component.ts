@@ -112,7 +112,14 @@ export class AppComponent {
     else {
       this.router.navigate([AppHelper.getRoutePath("login")]);
     }
+    // this.router.navigate([AppHelper.getRoutePath("register")]);
     // this.router.navigate([AppHelper.getRoutePath("account-password")]);
+    // this.router.navigate([AppHelper.getRoutePath("account-email")]);
+    // this.router.navigate([AppHelper.getRoutePath("account-dingtalk")]);
+    // this.router.navigate([AppHelper.getRoutePath("account-wechat")]);
+    // this.router.navigate([AppHelper.getRoutePath("account-bind")]);
+    // this.router.navigate([AppHelper.getRoutePath("account-mobile")]);
+    // this.router.navigate([AppHelper.getRoutePath("account-device")]);
     // this.router.navigate([AppHelper.getRoutePath("change-password-by-msm-code")]);
     // this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
     // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management')]);

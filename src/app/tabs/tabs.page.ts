@@ -42,5 +42,8 @@ export class TabsPage implements OnInit {
     // this.tab = "home";
   }
   ngOnInit() {}
-  activeTab(tab: string) {}
+  onIonTabsWillChange(evt:{tab:string}){
+    console.log(evt);
+    this.tab=evt.tab;
+  }
 }

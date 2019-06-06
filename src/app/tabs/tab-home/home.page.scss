@@ -1,6 +1,6 @@
 
 ion-content{
-  --background: white;
+  // --background: white;
 }
 ion-header {
   .img {
@@ -26,18 +26,18 @@ ion-grid ion-row ion-col {
       margin-top: 0.5rem;
     }
     ion-label {
-      background: var(--ion-color-primary);
-      padding: 0;
-      margin: 0;
-      width: 4rem;
-      height: 4rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
+      // background: var(--ion-color-primary);
+      // padding: 0;
+      // margin: 0;
+      // width: 4rem;
+      // height: 4rem;
+      // display: flex;
+      // align-items: center;
+      // justify-content: center;
+      // border-radius: 50%;
       [class*=icon-] {
         font-size: 2.5rem;
-        color: var(--ion-color-dark);
+        color: var(--ion-color-secondary);
       }
     }
   }

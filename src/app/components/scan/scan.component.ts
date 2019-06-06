@@ -55,7 +55,11 @@ export class ScanComponent implements OnInit, AfterViewInit {
   }
   private async appScan() {
     await this.plt.ready();
-    return this.barcodeScanner.scan().then(r => r.text);
+    return this.barcodeScanner.scan({
+      resultDisplayDuration: 0,
+      showTorchButton: true,
+      showFlipCameraButton: true
+    }).then(r => r.text);
   }
   private async wechatH5Scan() {
     const ok = await wechatHelper.ready().catch(e => {
@@ -80,6 +84,11 @@ export class ScanComponent implements OnInit, AfterViewInit {
 
   }
   private scan(r: any) {
+    if (!r) {
+      if (AppHelper.isApp()) {
+        return;
+      }
+    }
     this.router.navigate([AppHelper.getRoutePath('scan'), { scanResult: r }]);
   }
  

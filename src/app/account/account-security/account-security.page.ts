@@ -62,7 +62,7 @@ export class AccountSecurityPage implements OnInit {
   }
   loginDeviceManagement() {
     this.router.navigate([
-      AppHelper.getRoutePath("login-device-management")
+      AppHelper.getRoutePath("account-device")
     ]);
   }
 }

@@ -27,7 +27,7 @@ export class AppHelper {
   }
   static toast(msg: any, duration = 1400, position?: 'top' | 'bottom' | 'middle') {
     return new Promise<any>(async (resolve, reject) => {
-     await this.dismissLayer();
+      await this.dismissLayer();
       const t = await this.toastController.create({
         message: typeof msg === "string" ? msg
           : msg instanceof Error ? msg.message
@@ -93,16 +93,34 @@ export class AppHelper {
       }
       document.addEventListener(
         "deviceready",
-        () => {
-          const Device = window["device"]; // 插件获取
-          resolve(Device.uuid);
+        async () => {
+          try {
+            const hcp = window["hcp"]; // 插件获取
+            if (!hcp) {
+              reject("hcp 未安装");
+              return;
+            }
+            const uuid = await hcp.getUUID().catch(e => {
+              if (AppHelper._deviceName == "ios") {
+                throw e;
+              }
+              return e;
+            });
+            if(uuid){
+              resolve(`${uuid}`.replace(/-/g, '').toLowerCase());
+            }else{
+              reject("can't get uuid");
+            }
+          } catch (e) {
+            reject(e);
+          }
         },
         false
       );
     });
   }
 
-   static async dismissLayer() {
+  static async dismissLayer() {
     try {
       const a = await this.alertController.getTop();
       const t = await this.toastController.getTop();

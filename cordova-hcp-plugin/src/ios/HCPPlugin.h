@@ -21,6 +21,6 @@
 - (void)openHcpPage:(CDVInvokedUrlCommand *)command;
 - (void)saveHcpPath:(CDVInvokedUrlCommand *)command;
 
-
+- (void)getUUID:(CDVInvokedUrlCommand *)command;
 
 @end

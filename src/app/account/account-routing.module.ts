@@ -20,7 +20,7 @@ let routes: Route[] = [
   //     "./account-security/en/account-security-en.module#AccountSecurityEnPageModule"
   // },
   {
-    path: "login-device-management",
+    path: "account-device",
     loadChildren:
       "./account-device/account-device.module#AccountDevicePageModule"
   },

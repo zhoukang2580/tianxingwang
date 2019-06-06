@@ -1,5 +1,6 @@
-<div *ngIf='canShow' class='scan-comp'>
-  <ion-icon name='qr-scanner' mode='ios' (click)='onScan()'>
-  </ion-icon>
+<div *ngIf='canShow' class='scan-comp' (click)='onScan()'>
+  <!-- <ion-icon name='qr-scanner' mode='ios' (click)='onScan()'>
+  </ion-icon> -->
+  <i class='icon icon-scan' ></i>
   <ion-label>{{scanText}}</ion-label>
 </div>

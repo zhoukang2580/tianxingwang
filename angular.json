@@ -40,10 +40,10 @@
                 "input": "src/global.scss"
               },
               {
-                "input": "src/assets/iconfonts/style.css"
+                "input": "node_modules/cropperjs/dist/cropper.css"
               },
               {
-                "input": "node_modules/cropperjs/dist/cropper.css"
+                "input": "src/assets/iconfont/font.css"
               }
             ],
             "scripts": [

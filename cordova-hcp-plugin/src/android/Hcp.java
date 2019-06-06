@@ -1,12 +1,16 @@
 package com.beeant.plugin.hcp;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.net.Uri;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
@@ -103,11 +107,11 @@ public class Hcp extends CordovaPlugin {
             checkPathOrFileExists(args.optString(0), callbackContext);
             return true;
         }
-        if (TextUtils.equals("loadHcpPage", action)) {
-            loadHcpPage();
+        if (TextUtils.equals("openAPK", action)) {
+        if (TextUtils.equals("getUUID", action)) {
+            this.getUUID(callbackContext);
             return true;
         }
-        if (TextUtils.equals("openAPK", action)) {
             Log.d(TAG, "openAPK " + args.optString(0));
             if (TextUtils.isEmpty(args.optString(0)))
                 return true;
@@ -120,8 +124,40 @@ public class Hcp extends CordovaPlugin {
         }
         return super.execute(action, args, callbackContext);
     }
+    /**
+     * Get the device's Universally Unique Identifier (UUID).
+     *
+     * @return
+     */
+    public String getUuid() {
+        String uuid = Settings.Secure.getString(this.cordova.getActivity().getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+        return uuid;
+    }
+    public void getUUID(CallbackContext callbackContext) {
 
-
+        String macAddress = null ;
+        WifiManager wifiManager =
+                (WifiManager)cordova.getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        WifiInfo info = ( null == wifiManager ? null : wifiManager.getConnectionInfo());
+        if(null==wifiManager){
+            callbackContext.error(getUuid());
+            return;
+        }
+        if (!wifiManager.isWifiEnabled())
+        {
+            //必须先打开，才能获取到MAC地址
+            wifiManager.setWifiEnabled( true );
+            wifiManager.setWifiEnabled( false );
+        }
+        if ( null != info) {
+            macAddress = info.getMacAddress();
+        }
+        if(TextUtils.isEmpty(macAddress)){
+            callbackContext.error(getUuid());
+        }else{
+            callbackContext.success(macAddress);
+        }
+    }
     private void loadHcpPage() {
         cordova.getActivity().runOnUiThread(() -> {
             try {

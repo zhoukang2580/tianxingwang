@@ -21,15 +21,15 @@ export class AccountBindPage implements OnInit, OnDestroy {
   paramsSubscription = Subscription.EMPTY;
   mobileChangeSubscription = Subscription.EMPTY;
   isMobileNumberOk = false;
-  path:string;
+  path: string;
   form: FormGroup;
-  isShowImageCode:boolean;
+  isShowImageCode: boolean;
   bindMobileInfo: {
     Mobile: string;
     IsActiveMobile: boolean;
   } = {} as any;
-  constructor(private fb: FormBuilder,   private router: Router,private loginService: LoginService,private apiService: ApiService,
-     private route: ActivatedRoute) {
+  constructor(private fb: FormBuilder, private router: Router, private loginService: LoginService, private apiService: ApiService,
+    private route: ActivatedRoute) {
 
   }
   ngOnInit() {
@@ -43,112 +43,110 @@ export class AccountBindPage implements OnInit, OnDestroy {
       if (p) {
         this.bindMobileInfo.IsActiveMobile = p.get("IsActiveMobile") == 'true';
         this.bindMobileInfo.Mobile = p.get("Mobile");
-        this.path=p.get("Path");
+        this.path = p.get("Path");
         this.form.patchValue({ Mobile: this.bindMobileInfo.Mobile });
         this.isMobileNumberOk = !!this.bindMobileInfo.Mobile;
       }
     });
 
     this.mobileChangeSubscription = this.form.controls['Mobile'].valueChanges.subscribe(v => {
-      if (v && v.length >= 11) {
+      if (v && `${v}`.length >= 11) {
         this.isMobileNumberOk = true;
       }
     });
     // this.startCountDonw(160);
   }
 
-  
-  sendMobileCode(){
+
+  sendMobileCode() {
     const req = new RequestEntity();
     req.Url = AppHelper.getApiUrl() + "/Home/SendIdentityMobileCode";
     req.Data = JSON.stringify({ Mobile: this.form.value.Mobile });
-    const sub= this.apiService.getResponse<{
+    const sub = this.apiService.getResponse<{
       SendInterval: number;
       ExpiredInterval: number;
-    }>(req).subscribe(res=>{
-      if(!res.Status && res.Message)
-      {
+    }>(req).subscribe(res => {
+      if (!res.Status && res.Message) {
         AppHelper.alert(res.Message);
         return;
       }
       this.startCountDonw(res.Data.SendInterval);
-    },e=>{
+    }, e => {
       AppHelper.alert(e);
-    },()=>{
+    }, () => {
       setTimeout(() => {
-        if(sub){
+        if (sub) {
           sub.unsubscribe();
         }
       }, 100);
     });
   }
-  bind(){
-    if(!this.form.value.MobileCode)
-    {
+  bind() {
+    if (!this.form.value.MobileCode) {
       AppHelper.alert(LanguageHelper.getMobileCodeTip());
       return;
     }
-    if(this.bindMobileInfo.IsActiveMobile)
-    {
-        this.bindDevice();
+    if (this.bindMobileInfo.IsActiveMobile) {
+      this.bindDevice();
     }
-    else{
-        this.bindMobile();
-        this.bindDevice();
+    else {
+      this.bindMobile();
+      this.bindDevice();
     }
   }
-  bindMobile()
-  {
+  bindMobile() {
     const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Mobile-Bind";
-    req.Data = { Mobile: this.form.value.Mobile,MobileCode:this.form.value.MobileCode};
-    const sub= this.apiService.getResponse<{
+    req.Data = { Mobile: this.form.value.Mobile, MobileCode: this.form.value.MobileCode };
+    const sub = this.apiService.getResponse<{
       SendInterval: number;
       ExpiredInterval: number;
-    }>(req).subscribe(res=>{
-          
-    },e=>{
-    },()=>{
+    }>(req).subscribe(res => {
+      if (!res.Status) {
+        AppHelper.alert(res.Message);
+      }
+    }, e => {
+      AppHelper.alert(e);
+    }, () => {
       sub.unsubscribe();
     });;
     return sub;
   }
-  async bindDevice()
-  {
-    var uuid=await AppHelper.getUUID();
-    var name= await AppHelper.getDeviceName();
+  async bindDevice() {
+    var uuid = await AppHelper.getUUID();
+    var name = await AppHelper.getDeviceName();
     const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Device-Bind";
-    req.Data = { Mobile: this.form.value.Mobile,MobileCode:this.form.value.MobileCode,DeviceNumber:uuid,DeviceName:name};
-    const sub= this.apiService.getResponse<{
+    req.Data = { Mobile: this.form.value.Mobile, MobileCode: this.form.value.MobileCode, DeviceNumber: uuid, DeviceName: name };
+    const sub = this.apiService.getResponse<{
       SendInterval: number;
       ExpiredInterval: number;
-    }>(req).subscribe(res=>{
-          
-    },e=>{
-    },()=>{
+    }>(req).subscribe(res => {
+      
+    }, e => {
+    }, () => {
       sub.unsubscribe();
     });;
     return sub;
   }
- private startCountDonw(countdownTime: number) {
+  private startCountDonw(countdownTime: number) {
     this.countDown = countdownTime;
     if (this.countDownInterval) {
       clearInterval(this.countDownInterval);
     }
     this.countDownInterval = window.setInterval(() => {
       this.countDown = this.countDown <= 0 ? 0 : this.countDown - 1;
-      if(this.countDown==0){
+      if (this.countDown == 0) {
         clearInterval(this.countDownInterval);
       }
     }, 1000);
   }
-  jump() { 
-    this.router.navigate([AppHelper.getRoutePath(this.path||"")]);
+  jump() {
+    this.router.navigate([AppHelper.getRoutePath(this.path || "")]);
   }
   ngOnDestroy() {
     this.paramsSubscription.unsubscribe();
     this.mobileChangeSubscription.unsubscribe();
   }
- 
+
 }

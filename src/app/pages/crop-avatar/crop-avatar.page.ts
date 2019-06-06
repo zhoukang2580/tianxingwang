@@ -24,12 +24,9 @@ export class CropAvatarPage implements OnInit {
   fileName:string;
   public static UploadSuccessEvent:string="CropAvatarPage.UploadSuccessEvent";
   constructor(private navCtrl: NavController, 
-    private router:Router,
     private apiService:ApiService,
-    private config: Config,
     private plt: Platform, private activatedRoute: ActivatedRoute) {
     this.fileReader = new FileReader();
-    this.config.set("swipeBackEnabled",false);
   }
 
   ngOnInit() {
@@ -45,8 +42,12 @@ export class CropAvatarPage implements OnInit {
         this.method=d.get("method");
         this.fileName=d.get("fileName");
         this.croppedImage.src=AppHelper.getRouteData();
-        AppHelper.setRouteData(null);
-        this.reset();
+        if(this.croppedImage){
+          AppHelper.setRouteData(null);
+          this.reset();
+        }else{
+          this.navCtrl.back();
+        }
       }
     });
   }

@@ -1,15 +1,15 @@
-<ion-tabs color='primary'>
+<ion-tabs color='primary' (ionTabsWillChange)='onIonTabsWillChange($event)'>
   <ion-tab-bar slot="bottom">
     <ion-tab-button tab="home">
-      <i class='icon-home'></i>
+      <i class='icon icon-home{{tab==="home"?"-fill":""}}'></i>
       <ion-label>首页</ion-label>
     </ion-tab-button>
     <ion-tab-button tab="trip">
-      <i class='icon-trip'></i>
+      <i class='icon icon-trip{{tab==="trip"?"-fill":""}}'></i>
       <ion-label>行程</ion-label>
     </ion-tab-button>
     <ion-tab-button tab="my">
-      <i class='icon-my'></i>
+      <i class='icon icon-my{{tab==="my"?"-fill":""}}'></i>
       <ion-label>我的</ion-label>
     </ion-tab-button>
   </ion-tab-bar>

@@ -3,11 +3,12 @@ import { IdentityService } from 'src/app/services/identity/identity.service';
 import { Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api/api.service';
 import { RequestEntity } from 'src/app/services/api/Request.entity';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular';
 import { LanguageHelper } from 'src/app/languageHelper';
 import { AppHelper } from 'src/app/appHelper';
 import { Subscription } from 'rxjs';
+import { IResponse } from 'src/app/services/api/IResponse';
 
 @Component({
   selector: 'app-account-mobile',
@@ -31,8 +32,8 @@ export class AccountMobilePage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.form = this.fb.group({
-      Mobile: [],
-      Code: []
+      Mobile: [null, Validators.required],
+      Code: [null, Validators.required]
     });
     this.load();
   }
@@ -55,10 +56,10 @@ export class AccountMobilePage implements OnInit, OnDestroy {
     req.IsShowLoading = true;
     req.Data = { Mobile: this.form.value.Mobile, Code: this.form.value.Code, Action: this.action };
     const scription = this.apiService.getResponse<{ Action: string, Mobile: string, IsActiveMobile?: boolean }>(req)
-      .subscribe(r => {
+      .subscribe( r => {
         if (r.Status && r.Data) {
           if ((r.Data.Action as string).toLowerCase() == "finish") {
-            AppHelper.alert(LanguageHelper.getBindMobileSuccess(), true).then(() => {
+             AppHelper.alert(LanguageHelper.getBindMobileSuccess(), true).then(() => {
               this.navController.back();
             });
             return;
@@ -75,7 +76,7 @@ export class AccountMobilePage implements OnInit, OnDestroy {
       });
 
   }
-  setResult(r: any) {
+  setResult(r: IResponse<{ Action: string, Mobile: string, IsActiveMobile?: boolean }>) {
     if (r.Status && r.Data) {
 
       this.isActiveMobile = r.Data.IsActiveMobile;
@@ -111,7 +112,7 @@ export class AccountMobilePage implements OnInit, OnDestroy {
       SendInterval: number;
       ExpiredInterval: number;
     }>(req).subscribe(res => {
-      if (!res.Status && res.Message) {
+      if (!res.Status&&res.Message) {
         AppHelper.alert(res.Message);
         return;
       }

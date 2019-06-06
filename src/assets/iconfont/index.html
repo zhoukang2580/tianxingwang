@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>iconfont</title>
+    <link rel="stylesheet" href="font.css">
+    <style>
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        ul li {
+            font-size: 40px;
+            float: left;
+            width: 120px;
+            text-align: center;
+            margin: 20px;
+        }
+
+        ul li p {
+            font-size: 14px;
+            margin-top: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <ul>
+        <ul id="wrap"></ul>
+    </ul>
+    <script>
+        var xhr = new XMLHttpRequest(),
+            method = "GET",
+            url = "/geticonfont";
+
+        xhr.open(method, url, true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                console.log(xhr.responseText);
+                const result = JSON.parse(xhr.responseText);
+                if(result.data){
+                    const wrap = document.getElementById("wrap");
+                    var arr = [];
+                    for (var i = 0; i < result.data.length; i++) {
+                        arr.push('<li><i class="icon icon-' + result.data[i] + '"></i><p>icon-' + result.data[i] + '</p></li>')
+                    }
+                    wrap.innerHTML=arr.join("");
+                }
+            }
+        }
+        xhr.send();
+    </script>
+</body>

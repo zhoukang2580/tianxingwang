@@ -7,19 +7,19 @@ ion-content{
   ion-col{
     align-self: center;
   }
-  .down-count{
-    position: relative;
-    &::before{
-      display: block;
-      content: " ";
-      left: -0.5em;
-      top: 20%;
-      bottom: 20%;
-      width: 1px;
-      background-color: var(--ion-color-medium);
-      position: absolute;
-    }
-  }
+  // .down-count{
+  //   position: relative;
+  //   &::before{
+  //     display: block;
+  //     content: " ";
+  //     left: -0.5em;
+  //     top: 20%;
+  //     bottom: 20%;
+  //     width: 1px;
+  //     background-color: var(--ion-color-medium);
+  //     position: absolute;
+  //   }
+  // }
   .third-party-logo{
     display: flex;
     justify-content: flex-end;
@@ -27,5 +27,8 @@ ion-content{
   }
   ion-thumbnail{
     --size:4em;
+  }
+  ion-label.email-address{
+    --ion-color-primary:var(--ion-color-dark);
   }
 }

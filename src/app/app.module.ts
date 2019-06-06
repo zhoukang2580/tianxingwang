@@ -17,7 +17,6 @@ import { TranslateHttpLoader } from "@ngx-translate/http-loader";
 import { AppcomponentsModule } from './components/appcomponents.module';
 import { Zip } from '@ionic-native/zip/ngx';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
-import { Device } from '@ionic-native/device/ngx';
 import { File } from '@ionic-native/file/ngx';
 import { AppVersion } from '@ionic-native/app-version/ngx';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
@@ -56,7 +55,6 @@ import { WebView } from '@ionic-native/ionic-webview/ngx';
     },
     Zip,
     BarcodeScanner,
-    Device,
     File,
     AppVersion,
     WebView,
