@@ -1,3 +1,4 @@
+import { AppHelper } from 'src/app/appHelper';
 import { CityService } from "./../select-city/city.service";
 import { TrafficlineModel } from "./../models/flight/TrafficlineModel";
 import { animate } from "@angular/animations";
@@ -45,10 +46,15 @@ import { CabinTypeEnum } from '../models/flight/CabinTypeEnum';
       state("false", style({ transform: "scale(0)" })),
       transition("false<=>true", animate("200ms ease-in-out"))
     ]),
-    trigger("showFlyDaySelectPage", [
+    trigger("showSelectFlyDayPage", [
       state("true", style({ transform: "scale(1)" })),
       state("false", style({ transform: "scale(0)" })),
       transition("false<=>true", animate("200ms ease-in-out"))
+    ]),
+    trigger('openClose', [
+      state('true', style({ height: '*' })),
+      state('false', style({ height: '0px' })),
+      transition('false <=> true', animate(500))
     ])
   ]
 })
@@ -76,7 +82,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   isMoving$: Observable<boolean>;
   hasDataSj: Subject<boolean>;
   showAdvSearchPage$: Observable<boolean>;
-  showFlyDaySelectPage$: Observable<boolean>;
+  showSelectFlyDayPage$: Observable<boolean>;
   private autoRefreshSj: Subject<boolean>;
   constructor(
     private route: ActivatedRoute,
@@ -108,11 +114,14 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       }
       // console.log(this.s);
     });
-    this.showAdvSearchPage$ = this.flyService.getShowAdvSearchCond();
-    this.showFlyDaySelectPage$ = this.flyDayService.getShowFlyDaySelectPage();
+    this.showAdvSearchPage$ = this.flyService.getShowAdvSearchConditions();
+    this.showSelectFlyDayPage$ = this.flyDayService.getShowSelectFlyDayPage();
   }
   onCalenderClick() {
     this.flyDayService.setShowFlyDaySelectPage(true);
+  }
+  bookFlight(){
+    this.router.navigate([AppHelper.getRoutePath("book-flight")]);
   }
   onChangedDay(day: DayModel) {
     if (!day) {
@@ -270,7 +279,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
   ngOnInit() {
     this.activeTab = "filter";
-    this.advSCondSub = this.flyService.getAdvSCond().subscribe(advScond => {
+    this.advSCondSub = this.flyService.getAdvSConditions().subscribe(advScond => {
       this.s.AdvSCon = advScond;
       if (this.s.AdvSCon) {
         console.log("高阶查询", this.s.AdvSCon);
@@ -332,7 +341,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
   onFilter() {
     this.activeTab = "filter";
-    this.flyService.setShowAdvSearchCond(true);
+    this.flyService.setShowAdvSearchConditions(true);
   }
   onTimeOrder() {
     this.activeTab = "time";

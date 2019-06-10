@@ -6,6 +6,9 @@
     height: 2.5rem;
     position: relative;
     visibility: inherit;
+    // [invisable]{
+    //     visibility: collapse;
+    // }
     &.hasToolTip[toolTipPos=start]::before{
         content: attr(toolTipMsg);
         width: 5rem;

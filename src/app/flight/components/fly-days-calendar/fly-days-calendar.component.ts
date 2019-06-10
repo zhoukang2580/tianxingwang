@@ -1,3 +1,4 @@
+import { Platform } from '@ionic/angular';
 import { DayModel } from "./../../models/DayModel";
 import {
   Component,
@@ -24,7 +25,8 @@ export class FlyDaysCalendarComponent implements OnInit, AfterViewInit {
   days: DayModel[];
   constructor(
     private dayService: SelectDateService,
-    private render: Renderer2
+    private render: Renderer2,
+    private plt: Platform
   ) {
     this.days = [];
     this.itemSelected = new EventEmitter();
@@ -44,7 +46,7 @@ export class FlyDaysCalendarComponent implements OnInit, AfterViewInit {
   onCalendar() {
     this.calenderClick.emit();
   }
-  ngAfterViewInit() {}
+  ngAfterViewInit() { }
   onDaySelected(day: DayModel) {
     day.selected = true;
     let index = 0;
@@ -59,11 +61,19 @@ export class FlyDaysCalendarComponent implements OnInit, AfterViewInit {
       }
     }
     setTimeout(() => {
-      const selectedEle = document.querySelector(".active") as HTMLElement;
-      selectedEle.scrollIntoView();
-      // const daysEle = document.querySelector(".days");
-      // const scrollLeft = daysEle.scrollLeft;
-      // const width = window.innerWidth;
+      const daysEle = document.querySelector(".days");
+      const selectedEle = daysEle.querySelector(".active") as HTMLElement;
+      if (daysEle && selectedEle) {
+        const clientRect = selectedEle.getBoundingClientRect();
+        // console.dir(daysEle);
+        const dist = (clientRect.width / 2 + clientRect.left - this.plt.width() / 2);
+        // console.dir(dist);
+        daysEle.scrollBy({
+          left: dist,
+          top: 0,
+          behavior: "smooth"
+        });
+      }
     }, 100);
     this.itemSelected.emit(day);
   }

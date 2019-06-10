@@ -4,65 +4,73 @@ import { Subscription } from "rxjs";
 import * as moment from "moment";
 import { AvailableDate } from '../models/AvailableDate';
 import { DayModel } from '../models/DayModel';
+import { LanguageHelper } from 'src/app/languageHelper';
 @Component({
   selector: "app-select-fly-days",
   templateUrl: "./select-fly-days.page.html",
   styleUrls: ["./select-fly-days.page.scss"]
 })
-export class SelectFlyDaysPage implements OnInit,OnDestroy {
+export class SelectFlyDaysPage implements OnInit, OnDestroy {
   wks: { week: string; color?: string }[] = [
     {
-      week: "日",
-      color: "primary"
+      week: LanguageHelper.getSundayTip(),
+      color: "danger"
     },
     {
-      week: "一"
+      week: LanguageHelper.getMondayTip()
     },
     {
-      week: "二"
+      week: LanguageHelper.getTuesdayTip()
     },
     {
-      week: "三"
+      week: LanguageHelper.getWednesdayTip()
     },
     {
-      week: "四"
+      week: LanguageHelper.getThursdayTip()
     },
     {
-      week: "五"
+      week: LanguageHelper.getFridayTip()
     },
     {
-      week: "六",
-      color: "primary"
+      week: LanguageHelper.getSaturdayTip(),
+      color: "danger"
     }
   ];
-  constructor(private flydSer: FlydayService) {}
+  constructor(private flydSer: FlydayService) { }
   yms: AvailableDate[];
+
   selectedDays: DayModel[];
   dayInfo1: any;
   dayInfo2: any;
-  multi:boolean;// 是否多选
-  multiSub=Subscription.EMPTY;
+  multi: boolean;// 是否多选
+  multiSub = Subscription.EMPTY;
   selectedSub = Subscription.EMPTY;
   @Input()
   isRoundTrip: boolean;
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.multiSub.unsubscribe();
   }
+  getMonth(ym: string) {
+    if (!ym) {
+      return "";
+    }
+    return +ym.substring('2019-'.length);
+  }
   ngOnInit() {
-    this.multiSub=this.flydSer.getFlyDayMulti().subscribe(multi=>{
-      this.multi=multi;
-      if(multi){
+    this.multiSub = this.flydSer.getFlyDayMulti().subscribe(multi => {
+      this.multi = multi;
+      if (multi) {
         this.dayInfo1 = {
           hasToolTip: true,
-          toolTipMsg: "请选择返程日期",
-          desc: "返程",
+          toolTipMsg: LanguageHelper.getBackDateTip(),
+          desc: LanguageHelper.getReturnTripTip(),
           descPos: "bottom",
           color: "light"
         };
         this.dayInfo2 = {
           hasToolTip: true,
           toolTipMsg: "",
-          desc: "返程",
+          desc: LanguageHelper.getReturnTripTip(),
           descPos: "bottom",
           color: "light"
         };
@@ -71,7 +79,7 @@ export class SelectFlyDaysPage implements OnInit,OnDestroy {
     this.selectedSub = this.flydSer.getSelectedFlyDays().subscribe(sDays => {
       this.selectedDays = sDays;
     });
-    this.isRoundTrip=this.multi;
+    this.isRoundTrip = this.multi;
     this.yms = this.flydSer.generateCanlender(3);
     // setTimeout(() => {
     //   this.yms=this.yms.concat(this.flydSer.generateCanlender(3).slice(2));
@@ -79,35 +87,36 @@ export class SelectFlyDaysPage implements OnInit,OnDestroy {
     // }, 1000);
   }
   displayYm(ym: string) {
-    return moment(ym, "YYYY-MM-DD").format("YYYY年M月");
+    return moment(ym, "YYYY-MM-DD").format(`YYYY${LanguageHelper.getYearTip()}M${LanguageHelper.getMonthTip()}`);
   }
   cancel() {
     this.flydSer.setSelectedFlyDays(this.selectedDays);
     this.flydSer.setShowFlyDaySelectPage(false);
   }
   onDaySelected(d: DayModel) {
-    if(!d.enabled){
-      return ;
+    console.log("onDaySelected",d)
+    if (!d.enabled) {
+      return;
     }
-    d.selected=true;
-    d.desc="去程";
-    d.descPos='top';
-    d.descColor='light';
-    d.firstSelected=true;
-    d.lastSelected=true;
-    this.yms.map(item=>{
-      item.dayList.forEach(dt=>{
-        if(dt.date!==d.date){
-          dt.selected=false;
-          dt.lastSelected=false;
-          dt.firstSelected=false;
-          dt.desc=null;
-          dt.descColor=null;
-          dt.descPos=null;
+    d.selected = true;
+    d.desc = LanguageHelper.getDepartureTip();
+    d.descPos = 'top';
+    d.descColor = 'light';
+    d.firstSelected = true;
+    d.lastSelected = true;
+    this.yms.map(item => {
+      item.dayList.forEach(dt => {
+        if (dt.date !== d.date) {
+          dt.selected = false;
+          dt.lastSelected = false;
+          dt.firstSelected = false;
+          dt.desc = null;
+          dt.descColor = null;
+          dt.descPos = null;
         }
       })
     });
-    this.selectedDays=[d];
+    this.selectedDays = [d];
     setTimeout(() => {
       this.cancel();
     }, 100);

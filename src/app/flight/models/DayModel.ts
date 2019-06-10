@@ -39,4 +39,5 @@ export class DayModel {
     | "light"
     | "medium"
     | "dark";
+
 }

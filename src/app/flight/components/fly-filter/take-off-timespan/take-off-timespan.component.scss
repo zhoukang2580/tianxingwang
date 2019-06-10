@@ -1,4 +1,5 @@
 section.time-types {
+  --ion-color-primary:var(--ion-color-secondary);
   width: 100%;
   display: flex;
   align-items: center;
@@ -22,4 +23,5 @@ section.time-types {
 }
 ion-range {
   --knob-size: 1.3rem;
+  --bar-background-active: var(--ion-color-secondary);
 }

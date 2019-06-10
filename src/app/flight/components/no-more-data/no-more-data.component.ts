@@ -1,4 +1,4 @@
-import { map, tap } from "rxjs/operators";
+import { map, tap,delay } from "rxjs/operators";
 import { Component, OnInit, Input } from "@angular/core";
 import { Observable, combineLatest, of } from "rxjs";
 import { ApiService } from '../../../services/api/api.service';
@@ -19,7 +19,8 @@ export class NoMoreDataComponent implements OnInit {
       tap(([hasData, loading]) => {
         console.log(hasData, loading);
       }),
-      map(([hasData, loading]) => !hasData && !loading)
+      map(([hasData, loading]) => !hasData && !loading),
+      delay(0)
     );
   }
 }

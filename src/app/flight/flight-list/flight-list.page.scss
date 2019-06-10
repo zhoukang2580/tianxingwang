@@ -1,9 +1,9 @@
 ion-toolbar.fly-days {
   margin-top: -1px;
 }
-ion-content {
-  --background: var(--ion-color-light);
-}
+// ion-content {
+//   --background: var(--ion-color-light);
+// }
 .tabs {
   display: flex;
   align-items: center;
@@ -24,10 +24,10 @@ ion-content {
     &.active {
       --opacity: 1;
       ion-icon{
-        color: var(--ion-color-primary);
+        color: var(--ion-color-secondary);
       }
       ion-note{
-        color:var(--ion-color-primary);
+        color:var(--ion-color-secondary);
       }
     }
   }

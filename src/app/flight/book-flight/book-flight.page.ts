@@ -1,3 +1,4 @@
+import { AppHelper } from 'src/app/appHelper';
 import { SelectDatetimePage } from "./../select-datetime/select-datetime.page";
 import { CityService } from "../select-city/city.service";
 import { Router, ActivatedRoute } from "@angular/router";
@@ -108,7 +109,7 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     s.FromAsAirport = this.fromCity.Tag === "Airport"; // 以出发 机场 查询
     s.isRoundTrip=!this.single;
     this.router.navigate([
-      "/flight-list",
+      AppHelper.getRoutePath("flight-list"),
       {
         data: JSON.stringify(s)
       }

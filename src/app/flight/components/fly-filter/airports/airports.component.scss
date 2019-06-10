@@ -1,6 +1,10 @@
 .item-radio-checked,
 .item-checkbox-checked {
   ion-label {
-    color: var(--ion-color-primary);
+    color: var(--ion-color-secondary);
   }
+}
+ion-radio,
+ion-checkbox {
+  --ion-color-primary: var(--ion-color-secondary);
 }
