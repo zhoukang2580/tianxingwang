@@ -114,7 +114,7 @@ export class HomePage implements OnInit {
       req.Version="2.0";
       req.Data={
         Channel: "App",
-        Type: "3",
+        Type: "2",
         IsApp:false,
         OrderId:"190000035629",
       }

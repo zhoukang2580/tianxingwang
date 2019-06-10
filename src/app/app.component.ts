@@ -76,7 +76,9 @@ export class AppComponent implements AfterViewInit{
     {
       if(!AppHelper.checkQueryString("openid"))
       {
-        window.location.href=AppHelper.getApiUrl()+"/home/GetWechatUser?path="+ AppHelper.getRedirectUrl()+"&domain="+ AppHelper.getDomain();
+        const url =AppHelper.getApiUrl()+"/home/GetWechatUser?path="+ AppHelper.getRedirectUrl()+"&domain="+ AppHelper.getDomain()
+        +"&ticket="+AppHelper.getTicket();
+        AppHelper.redirect(url);
         return false;
       }
       wechatHelper.openId=AppHelper.getQueryString("openid");
@@ -90,7 +92,9 @@ export class AppComponent implements AfterViewInit{
     {
       if(!AppHelper.checkQueryString("unionid"))
       {
-        window.location.href=AppHelper.getApiUrl()+"/home/GetDingtalkUser?path="+ AppHelper.getRedirectUrl()+"&domain="+ AppHelper.getDomain();
+        const url=AppHelper.getApiUrl()+"/home/GetDingtalkUser?path="+ AppHelper.getRedirectUrl()+"&domain="+ AppHelper.getDomain()
+        ;
+        AppHelper.redirect(url);
         return false;
       }
       DingtalkHelper.unionId=AppHelper.getQueryString("unionid");
@@ -98,22 +102,25 @@ export class AppComponent implements AfterViewInit{
    return true;
   }
   initializeApp() {
- 
+   
     this.getConfigInfo();
     AppHelper.getDomain();// 
     AppHelper.setQueryParamers();
     const path = AppHelper.getQueryString("path");
     const unloginPath = AppHelper.getQueryString("unloginpath");
+    alert("跳转 getTicket="+AppHelper.getTicket()+" path="+path+" unloginpath="+unloginPath);
     if (AppHelper.getTicket() && path) {
-      this.jumpToRoute("/tabs/home").then(() => {
-        this.jumpToRoute(path);
+      this.jumpToRoute("login").then(() => {
+        this.jumpToRoute("").then(() => {
+          this.jumpToRoute(path);
+        });
       });
     }
     else if (!AppHelper.getTicket() && unloginPath) {
       this.router.navigate([AppHelper.getRoutePath(unloginPath)]);
     }
     else {
-      this.router.navigate([AppHelper.getRoutePath("login")]);
+      this.router.navigate([AppHelper.getRoutePath("")]);
     }
     // this.router.navigate([AppHelper.getRoutePath("register")]);
     // this.router.navigate([AppHelper.getRoutePath("account-password")]);

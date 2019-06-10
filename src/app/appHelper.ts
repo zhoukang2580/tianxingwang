@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { AlertController, ToastController, ModalController } from '@ionic/angular';
 import { LanguageHelper } from './languageHelper';
 export class AppHelper {
- 
+
   static httpClient: HttpClient;
   private static _deviceName: string;
   private static _routeData: any;
@@ -106,9 +106,9 @@ export class AppHelper {
               }
               return e;
             });
-            if(uuid){
+            if (uuid) {
               resolve(`${uuid}`.replace(/-/g, '').toLowerCase());
-            }else{
+            } else {
               reject("can't get uuid");
             }
           } catch (e) {
@@ -312,10 +312,11 @@ export class AppHelper {
     return result;
   }
   static getTicket() {
-    return AppHelper.getQueryString("ticket") || AppHelper.getCookie("ticket");
+    var ticket= AppHelper.getQueryString("ticket") || AppHelper.getCookie("ticket");
+    return ticket=="null"?null:ticket;
   }
-  static _appDomain="sky-trip.com" ;
-  static _domain ;
+  static _appDomain = "sky-trip.com";
+  static _domain;
   static getDomain() {
     AppHelper._domain = AppHelper._domain || AppHelper.getQueryString("domain");
     if (AppHelper._domain) {
@@ -349,10 +350,10 @@ export class AppHelper {
   }
   static getApiUrl() {
     if (!environment.production) {
-      return "http://dev.app."+this._appDomain;
+      return "http://app." + this._appDomain;
     }
     if (environment.production) {
-      return "https://app."+this._appDomain;
+      return "https://app." + this._appDomain;
     }
   }
   static getRoutePath(path: string) {
@@ -445,4 +446,7 @@ export class AppHelper {
     }
   }
 
+  static redirect(url) {
+   window.location.href=url;
+  }
 }

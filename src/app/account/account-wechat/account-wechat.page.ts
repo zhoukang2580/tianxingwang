@@ -63,7 +63,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
       else if (AppHelper.isWechatH5() || AppHelper.isWechatMini()) {
         var url=AppHelper.getApiUrl()+"/home/BindWechat?domain="+AppHelper.getDomain()+"&ticket="+AppHelper.getTicket()
         +"&path="+encodeURIComponent(AppHelper.getRedirectUrl()+"?path=account-wechat");
-          window.location.href=url;
+          AppHelper.redirect(url);
       }
     } catch (e) {
       AppHelper.alert(e);

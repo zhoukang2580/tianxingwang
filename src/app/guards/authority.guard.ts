@@ -49,12 +49,12 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
     if (AppHelper.isWechatH5()) {
       const url = AppHelper.getApiUrl() + "/home/WechatLogin?domain=" + AppHelper.getDomain()
         + "&path=" + encodeURIComponent(AppHelper.getRedirectUrl() + "?path=" + (AppHelper.getQueryParamers().path || "") + "&unloginpath=login");
-      window.location.href = url;
+        AppHelper.redirect(url);
     }
     else if (AppHelper.isDingtalkH5()) {
       const url = AppHelper.getApiUrl() + "/home/DingtalkLogin?domain=" + AppHelper.getDomain()
         + "&path=" + encodeURIComponent(AppHelper.getRedirectUrl() + "?path=" + (AppHelper.getQueryParamers().path || "") + "&unloginpath=login");
-      window.location.href = url;
+        AppHelper.redirect(url);
     }
     this.router.navigate([AppHelper.getRoutePath("login")]);
   }

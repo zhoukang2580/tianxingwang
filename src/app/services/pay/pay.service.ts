@@ -85,6 +85,7 @@ export class PayService {
       }).catch(() => null);
     }
     else if (AppHelper.isH5()) {
+      req.Data.CreateType="Mobile";
      this.payh5(req,path);
     }
 
@@ -93,6 +94,11 @@ export class PayService {
     if (AppHelper.isApp() || AppHelper.isWechatMini() || AppHelper.isWechatH5()) {
       req.Data.OpenId=wechatHelper.openId;
       req.IsShowLoading=true;
+      if( AppHelper.isWechatMini() || AppHelper.isWechatH5())
+      {
+        req.Data.CreateType="JsSdk";
+        req.Data.DataType="json";
+      }
       return new Promise<any>((resolve, reject) => {
         const sub = this.apiService
           .getResponse<any>(req).subscribe(async r => {
@@ -146,6 +152,7 @@ export class PayService {
     }
      else if(AppHelper.isH5())
      {
+      req.Data.CreateType="H5";
       this.payh5(req,path);
      }
   }
