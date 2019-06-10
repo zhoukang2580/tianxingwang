@@ -1,5 +1,50 @@
 
 export class LanguageHelper {
+  static getYearTip() {
+   return "年";
+  }
+  static getMonthTip() {
+    return "月";
+  }
+  static getDepartureTip(): string {
+    return "去程";
+  }
+  static getReturnTripTip() {
+    return "返程";
+  }
+  static getBackDateTip() {
+    return "请选择返程日期";
+  }
+  static getSundayTip() {
+    return "周日";
+  }
+  static getMondayTip() {
+    return "周一";
+  }
+  static getTuesdayTip() {
+    return "周二";
+  }
+  static getWednesdayTip() {
+    return "周三";
+  }
+  static getThursdayTip() {
+    return "周四";
+  }
+  static getFridayTip() {
+    return "周五";
+  }
+  static getSaturdayTip() {
+    return "周六";
+  }
+  static getTodayTip() {
+    return "今天";
+  }
+  static getTomorrowTip() {
+    return "明天";
+  }
+  static getTheDayAfterTomorrowTip() {
+    return "后天";
+  }
   static getApkReadyToBeInstalledTip(): any {
     return "App 下载完毕，立即安装更新？";
   }

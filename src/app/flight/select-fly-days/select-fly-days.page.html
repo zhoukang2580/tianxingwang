@@ -1,20 +1,18 @@
 <ion-header>
-  <ion-toolbar color='primary'>
+  <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button fill="clear" color="primary" color="light" (click)="cancel()"
-        >取消</ion-button
-      >
+      <ion-button fill="clear" (click)="cancel()">取消</ion-button>
     </ion-buttons>
-    <ion-title color="light" text-center>日历</ion-title>
+    <ion-title text-center>日历</ion-title>
     <ion-buttons slot="end" hidden-btn>
-      <ion-button fill="clear" color="primary">取消</ion-button>
+      <ion-button fill="clear" color="secondary">取消</ion-button>
     </ion-buttons>
   </ion-toolbar>
-  <ion-toolbar color="light">
+  <ion-toolbar color="primary">
     <ion-grid no-padding>
       <ion-row>
-        <ion-col  *ngFor="let w of wks" no-padding text-center>
-          <ion-text> {{ w.week }} </ion-text>
+        <ion-col *ngFor="let w of wks;" no-padding text-center>
+          <ion-text color='{{w.color||"secondary"}}'> {{ w.week }} </ion-text>
         </ion-col>
       </ion-row>
     </ion-grid>
@@ -24,28 +22,16 @@
 <ion-content>
   <ion-list class="week-of-year-month" *ngFor="let ym of yms">
     <ion-item-divider color="light">
-      <ion-label text-center
-        >{{displayYm(ym.yearMonth)}}</ion-label
-      >
+      <ion-label text-center>{{displayYm(ym.yearMonth)}}</ion-label>
     </ion-item-divider>
     <ion-grid>
-      <ion-row>
-        <ion-col
-          text-center
-          [class.selected]="day?.selected"
-          [class.today]="day?.isToday"
-          [class.between-selected-days]="day?.isBetweenDays"
-          [attr.first-selected-day]="day?.firstSelected"
-          [attr.last-selected-day]="day?.lastSelected"
-          [class.hidden]="day?.isLastMonthDay"
-          *ngFor="let day of ym.dayList; let first = first; let last = last"
-          [class.not-enabled]="!day?.enabled"
-          size='1.71'
-        >
-          <app-day
-            [dayModel]="day"
-            (daySelected)="onDaySelected($event, true)"
-          ></app-day>
+      <ion-row [attr.month]='getMonth(ym.yearMonth)'>
+        <ion-col *ngFor="let day of ym.dayList; let first = first; let last = last" text-center
+          [class.selected]="day?.selected" [class.today]="day?.isToday"
+          [class.between-selected-days]="day?.isBetweenDays" [attr.first-selected-day]="day?.firstSelected"
+          [attr.last-selected-day]="day?.lastSelected" [class.invisable]="day?.isLastMonthDay"
+          [class.not-enabled]="!day?.enabled" size='1.71'>
+          <app-day [dayModel]="day" (daySelected)="onDaySelected($event, true)"></app-day>
         </ion-col>
       </ion-row>
     </ion-grid>

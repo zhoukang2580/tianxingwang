@@ -1,3 +1,4 @@
+import { LanguageHelper } from 'src/app/languageHelper';
 import { BehaviorSubject, Subject } from "rxjs";
 import { Injectable } from "@angular/core";
 import * as moment from "moment";
@@ -9,13 +10,13 @@ export class SelectDateService {
   private selectedDays$: Subject<DayModel[]>;
   private title$: Subject<string>;
   private dayOfWeekNames = {
-    0: "周日",
-    1: "周一",
-    2: "周二",
-    3: "周三",
-    4: "周四",
-    5: "周五",
-    6: "周六"
+    0: LanguageHelper.getSundayTip(),
+    1: LanguageHelper.getMondayTip(),
+    2: LanguageHelper.getTuesdayTip(),
+    3: LanguageHelper.getWednesdayTip(),
+    4: LanguageHelper.getThursdayTip(),
+    5: LanguageHelper.getFridayTip(),
+    6: LanguageHelper.getSaturdayTip()
   };
   constructor() {
     this.selectedDays$ = new BehaviorSubject([]);
@@ -41,14 +42,14 @@ export class SelectDateService {
     // console.log(d.date);
     switch (d.date) {
       case this.generateDayModel(curDay).date: {
-        return "今天";
+        return LanguageHelper.getTodayTip();
       }
 
       case this.generateDayModel(curDay.add(1, "days")).date: {
-        return "明天";
+        return LanguageHelper.getTomorrowTip();
       }
       case this.generateDayModel(curDay.add(1, "days")).date: {
-        return "后天";
+        return LanguageHelper.getTheDayAfterTomorrowTip();
       }
 
       default:

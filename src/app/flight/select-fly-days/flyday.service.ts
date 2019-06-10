@@ -4,37 +4,38 @@ import * as moment from "moment";
 import { environment } from "../../../environments/environment";
 import { DayModel } from '../models/DayModel';
 import { AvailableDate } from '../models/AvailableDate';
+import { LanguageHelper } from 'src/app/languageHelper';
 @Injectable({
   providedIn: "root"
 })
 export class FlydayService {
   private _showFlyDaySelectPageSource: Subject<boolean>;
   private _selectedSource: Subject<DayModel[]>;
-  private _multiFlyDaySource:Subject<boolean>;
+  private _multiFlyDaySource: Subject<boolean>;
   private dayOfWeekNames = {
-    0: "周日",
-    1: "周一",
-    2: "周二",
-    3: "周三",
-    4: "周四",
-    5: "周五",
-    6: "周六"
+    0: LanguageHelper.getSundayTip(),
+    1: LanguageHelper.getMondayTip(),
+    2: LanguageHelper.getTuesdayTip(),
+    3: LanguageHelper.getWednesdayTip(),
+    4: LanguageHelper.getThursdayTip(),
+    5: LanguageHelper.getFridayTip(),
+    6: LanguageHelper.getSaturdayTip()
   };
   constructor() {
     this._selectedSource = new BehaviorSubject([]);
     this._showFlyDaySelectPageSource = new BehaviorSubject(false);
     this._multiFlyDaySource = new BehaviorSubject(false);
   }
-  getShowFlyDaySelectPage() {
+  getShowSelectFlyDayPage() {
     return this._showFlyDaySelectPageSource.asObservable();
   }
   setShowFlyDaySelectPage(show: boolean) {
     this._showFlyDaySelectPageSource.next(show);
   }
-  setFlyDayMulti(multi:boolean){
+  setFlyDayMulti(multi: boolean) {
     this._multiFlyDaySource.next(multi);
   }
-  getFlyDayMulti(){
+  getFlyDayMulti() {
     return this._multiFlyDaySource.asObservable();
   }
   getSelectedFlyDays() {
@@ -51,14 +52,14 @@ export class FlydayService {
     // console.log(d.date);
     switch (d.date) {
       case this.generateDayModel(curDay).date: {
-        return "今天";
+        return LanguageHelper.getTodayTip();
       }
 
       case this.generateDayModel(curDay.add(1, "days")).date: {
-        return "明天";
+        return LanguageHelper.getTomorrowTip();
       }
       case this.generateDayModel(curDay.add(1, "days")).date: {
-        return "后天";
+        return LanguageHelper.getTheDayAfterTomorrowTip();
       }
 
       default:
@@ -95,7 +96,7 @@ export class FlydayService {
     const st = Date.now();
     const calender: AvailableDate[] = [];
     for (let i = 0; i < months; i++) {
-      const iM = moment().add(i,"months"); // 第i个月
+      const iM = moment().add(i, "months"); // 第i个月
       const item: AvailableDate = {
         dayList: [],
         disabled: false,
@@ -121,12 +122,12 @@ export class FlydayService {
           .subtract(1, "days") // 上个月的最后一天
           .date();
         // console.log(lastMDay);
-        for (let d = lastMDay, j = curWeek; j > 0; d--, j--) {
+        for (let d = lastMDay, j = curWeek; j > 0; d-- , j--) {
           const date = curMFistDate
             .subtract(1, "days") // 应该是上个月的日期
             .date(d);
-            const lsmd = this.generateDayModel(date);
-            lsmd.isLastMonthDay=true;// 是上个月的日期
+          const lsmd = this.generateDayModel(date);
+          lsmd.isLastMonthDay = true;// 是上个月的日期
           item.dayList.unshift(lsmd);
         }
         // console.log(dayList);

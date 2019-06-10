@@ -2,13 +2,13 @@
   <form (ngSubmit)="onSearch()" [formGroup]='sForm'>
     <ion-toolbar slot='fixed'>
       <section>
-        <ion-button color='medium' fill='clear' (click)='onCancel()'>
+        <ion-button color='dark' fill='clear' (click)='onCancel()'>
           取消
         </ion-button>
-        <ion-button color='medium' fill='clear' (click)='onReset()'>
+        <ion-button color='dark' fill='clear' (click)='onReset()'>
           重置
         </ion-button>
-        <ion-button color='primary' fill='clear' type='submit'>
+        <ion-button color='secondary' fill='clear' type='submit'>
           确定
         </ion-button>
       </section>
@@ -38,14 +38,14 @@
         </div>
       </article>
       <article class="right">
-        <app-take-off-timespan *ngIf='tab===1' (sCond)='onTimeSpanSCond($event)' [resetSj]='resetSj' (userOp)="userOps.timespanOp=$event;"></app-take-off-timespan>
-        <app-aircompany [flights]='flights' [resetSj]='resetSj' *ngIf='tab===2' (userOp)='userOps.airCompanyOp=$event;'
+        <app-take-off-timespan [class.hidden]='tab!==1' (sCond)='onTimeSpanSCond($event)' [resetSj]='resetSj' (userOp)="userOps.timespanOp=$event;"></app-take-off-timespan>
+        <app-aircompany [flights]='flights' [resetSj]='resetSj' [class.hidden]='tab!==2' (userOp)='userOps.airCompanyOp=$event;'
           (sCond)='onAirCompanySCond($event)'></app-aircompany>
-        <app-airports [flights]='flights' [resetSj]='resetSj' *ngIf='tab===3' (userOp)='userOps.airportOp=$event;'
+        <app-airports [flights]='flights' [resetSj]='resetSj' [class.hidden]='tab!==3' (userOp)='userOps.airportOp=$event;'
           (sCond)='onAirportSCond($event)' [toCityName]='toCityName'></app-airports>
-        <app-airtype [flights]='flights' [resetSj]='resetSj' *ngIf='tab===4' (userOp)='userOps.airTypeOp=$event;'
+        <app-airtype [flights]='flights' [resetSj]='resetSj' [class.hidden]='tab!==4' (userOp)='userOps.airTypeOp=$event;'
           (sCond)='onAirTypeSCond($event)'></app-airtype>
-        <app-cabin [flights]='flights' [resetSj]='resetSj' *ngIf='tab===5' (userOp)='userOps.cabinOp=$event;' (sCond)='onCabinSCond($event)'></app-cabin>
+        <app-cabin [flights]='flights' [resetSj]='resetSj' [class.hidden]='tab!==5' (userOp)='userOps.cabinOp=$event;' (sCond)='onCabinSCond($event)'></app-cabin>
       </article>
     </section>
   </form>

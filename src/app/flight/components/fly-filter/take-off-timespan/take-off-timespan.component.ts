@@ -17,7 +17,7 @@ import { IonRange } from "@ionic/angular";
 })
 export class TakeOffTimespanComponent
   implements OnInit, AfterViewInit, OnDestroy {
-  time: "forenoon"  | "afternoon" | "none"|"night";
+  time: "forenoon" | "afternoon" | "none" | "night";
   @Output()
   userOp: EventEmitter<boolean>; // 用户是否点击过
   @Output()
@@ -50,7 +50,7 @@ export class TakeOffTimespanComponent
   ngOnDestroy() {
     this.resetSub.unsubscribe();
   }
-  onTimeSelect(time: "forenoon" | "afternoon" | "none"|"night") {
+  onTimeSelect(time: "forenoon" | "afternoon" | "none" | "night") {
     this.time = time;
     switch (this.time) {
       case "forenoon": {
@@ -70,7 +70,7 @@ export class TakeOffTimespanComponent
       }
       default: {
         this.range.value = { lower: 0, upper: 24 };
-        this.changeView();
+        // this.changeView();
         break;
       }
     }
@@ -110,7 +110,7 @@ export class TakeOffTimespanComponent
             }
           }
         }
-      }, 888);
+      }, 188);
     }
   }
 }

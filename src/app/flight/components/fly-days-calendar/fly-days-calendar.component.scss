@@ -10,6 +10,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: all ease-in-out 100ms;
   article {
     display: flex;
     flex-flow: column nowrap;
@@ -18,8 +19,14 @@
     font-size: 0.6rem;
     transform: translateX(0);
     transition: all 300ms ease-in-out;
+    .price{
+      color:var(--ion-color-danger);
+    }
     &.active {
-      background-color: var(--ion-color-light);
+      background-color: var(--ion-color-secondary);
+      .price{
+        color:var(--ion-color-primary);
+      }
       color: var(--ion-color-primary);
       border-radius: 3px;
     }
@@ -42,6 +49,6 @@
     top: 25%;
     bottom: 25%;
     left: 0;
-    border: 0.6px solid rgba(var(--ion-color-light-rgb), 0.6);
+    border: 0.6px solid rgba(var(--ion-color-dark-rgb), 0.6);
   }
 }

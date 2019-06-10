@@ -15,26 +15,26 @@ import { IResponse } from '../services/api/IResponse';
   providedIn: "root"
 })
 export class FlightService {
-  private advSearchShowSj: Subject<boolean>;
-  private advSearchCondSj: Subject<AdvSearchCondModel>;
-  private resetAdvSCondSj:Subject<boolean>;
+  private advSearchShowSources: Subject<boolean>;
+  private advSearchCondSources: Subject<AdvSearchCondModel>;
+  private resetAdvSCondSources: Subject<boolean>;
   constructor(
     private apiService: ApiService,
     private dbService: DbService
   ) {
-    this.advSearchShowSj = new BehaviorSubject(false);
-    this.resetAdvSCondSj = new BehaviorSubject(false);
-    this.advSearchCondSj = new BehaviorSubject(new AdvSearchCondModel());
+    this.advSearchShowSources = new BehaviorSubject(false);
+    this.resetAdvSCondSources = new BehaviorSubject(true);
+    this.advSearchCondSources = new BehaviorSubject(new AdvSearchCondModel());
   }
-  getResetAdvSCondSj(){
-    return this.resetAdvSCondSj;
+  getResetAdvSCondSources() {
+    return this.resetAdvSCondSources;
   }
-  setResetAdvCond(reset:boolean){
-    this.resetAdvSCondSj.next(reset);
+  setResetAdvCond(reset: boolean) {
+    this.resetAdvSCondSources.next(reset);
   }
   getFlyCityByCode(cityCode: string) {
     return this.dbService.executeSql(`select * from t_trafficline where Code='${cityCode}'`).pipe(
-      map((res:any) => {
+      map((res: any) => {
         if (res.rows.length > 0) {
           const m = new TrafficlineModel();
           const row = res.rows.item(0);
@@ -59,22 +59,22 @@ export class FlightService {
       })
     );
   }
-  setAdvSCond(advSCond: AdvSearchCondModel) {
-    this.advSearchCondSj.next(advSCond);
+  setAdvSConditions(advSCond: AdvSearchCondModel) {
+    this.advSearchCondSources.next(advSCond);
   }
-  getAdvSCond() {
-    return this.advSearchCondSj.asObservable();
+  getAdvSConditions() {
+    return this.advSearchCondSources.asObservable();
   }
-  setShowAdvSearchCond(show: boolean) {
-    this.advSearchShowSj.next(show);
+  setShowAdvSearchConditions(show: boolean) {
+    this.advSearchShowSources.next(show);
   }
-  getShowAdvSearchCond() {
-    return this.advSearchShowSj.asObservable();
+  getShowAdvSearchConditions() {
+    return this.advSearchShowSources.asObservable();
   }
   searchFlightList(data: SearchFlightModel) {
     const local = window.localStorage.getItem("this.apiService.flightsApi");
     // console.log("local",local);
-    if (local&&!environment.production) {
+    if (local && !environment.production) {
       return merge(
         of(JSON.parse(local) as FlightJouneyModel[]),
         // this.unifyServic
@@ -143,7 +143,7 @@ export class FlightService {
         const s1 = r1.FlightSegments[0];
         const s2 = r2.FlightSegments[0];
         if (s1 && s2) {
-          let sub = +moment(s1.TakeoffTime,"YYYY-MM-DDTHH:mm:ss") - +moment(s2.TakeoffTime,"YYYY-MM-DDTHH:mm:ss");
+          let sub = +moment(s1.TakeoffTime, "YYYY-MM-DDTHH:mm:ss") - +moment(s2.TakeoffTime, "YYYY-MM-DDTHH:mm:ss");
           sub = sub === 0 ? 0 : sub > 0 ? 1 : -1;
           return l2h ? sub : -sub;
         }
