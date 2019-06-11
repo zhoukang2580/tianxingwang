@@ -69,7 +69,7 @@ export class LoginService {
           "",
           "",
           "",
-          false,
+          true,
           uuid
         )
       )

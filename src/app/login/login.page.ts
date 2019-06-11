@@ -9,6 +9,7 @@ import { LanguageHelper } from "../languageHelper";
 import { ConfigEntity } from "../services/config/config.entity";
 import { ConfigService } from "../services/config/config.service";
 import { Config } from '@ionic/angular';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: "app-login",
@@ -211,7 +212,11 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         });
         break;
       case "device":
-        this.loginSubscription = this.loginService.deviceLogin(this.loginEntity).subscribe(r => {
+        this.loginSubscription = this.loginService.deviceLogin(this.loginEntity).pipe(
+          finalize(() => {
+            this.loginType = "user";
+          })
+        ).subscribe(r => {
           if (!r.Ticket) {
             this.loginType = "user";
           } else {

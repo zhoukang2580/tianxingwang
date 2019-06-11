@@ -118,8 +118,8 @@ export class PayService {
                   package: r.Data.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
                   signType: r.Data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
                   paySign: r.Data.paySign, // 支付签名
-                  success: function (res) {
-                  // 支付成功后的回调函数
+                  success: (res)=> {
+                    resolve(res);
                   }
                   });;
               }

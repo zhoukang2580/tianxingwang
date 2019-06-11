@@ -103,7 +103,7 @@ export class HomePage implements OnInit {
         Type: "3",
         OrderId:"190000035629",
       }
-      this.payService.wechatpay(req,"");
+      this.payService.wechatpay(req,"").then((r)=>{}).catch(r=>{});
      
     }
     alipay()
@@ -118,6 +118,6 @@ export class HomePage implements OnInit {
         IsApp:false,
         OrderId:"190000035629",
       }
-      this.payService.alipay(req,"");
+      this.payService.alipay(req,"").then((r)=>{}).catch(r=>{});
     }
 }

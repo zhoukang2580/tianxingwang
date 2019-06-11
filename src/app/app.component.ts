@@ -108,7 +108,11 @@ export class AppComponent implements AfterViewInit{
     AppHelper.setQueryParamers();
     const path = AppHelper.getQueryString("path");
     const unloginPath = AppHelper.getQueryString("unloginpath");
-    alert("跳转 getTicket="+AppHelper.getTicket()+" path="+path+" unloginpath="+unloginPath);
+    var hash=window.location.hash;
+    if(hash)
+    {
+      hash=hash.replace("#","");
+    }
     if (AppHelper.getTicket() && path) {
       this.jumpToRoute("login").then(() => {
         this.jumpToRoute("").then(() => {
@@ -118,6 +122,14 @@ export class AppComponent implements AfterViewInit{
     }
     else if (!AppHelper.getTicket() && unloginPath) {
       this.router.navigate([AppHelper.getRoutePath(unloginPath)]);
+    }
+    else if(hash)
+    {
+      this.jumpToRoute("login").then(() => {
+        this.jumpToRoute("").then(() => {
+          this.jumpToRoute(hash);
+        });
+      });
     }
     else {
       this.router.navigate([AppHelper.getRoutePath("")]);

@@ -315,7 +315,7 @@ export class AppHelper {
     var ticket= AppHelper.getQueryString("ticket") || AppHelper.getCookie("ticket");
     return ticket=="null"?null:ticket;
   }
-  static _appDomain = "sky-trip.com";
+  static _appDomain = "beeant.com";
   static _domain;
   static getDomain() {
     AppHelper._domain = AppHelper._domain || AppHelper.getQueryString("domain");
@@ -349,12 +349,7 @@ export class AppHelper {
     return url.replace(this._appDomain, domain) + "/www/index.html";
   }
   static getApiUrl() {
-    if (!environment.production) {
-      return "http://app." + this._appDomain;
-    }
-    if (environment.production) {
-      return "https://app." + this._appDomain;
-    }
+    return "http://dev.app." + this._appDomain;
   }
   static getRoutePath(path: string) {
     const style = AppHelper.getStyle() || "";
