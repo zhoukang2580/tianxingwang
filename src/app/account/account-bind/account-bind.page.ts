@@ -113,7 +113,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
     return sub;
   }
   async bindDevice() {
-    var uuid = await AppHelper.getUUID();
+    var uuid = await AppHelper.getDeviceId();
     var name = await AppHelper.getDeviceName();
     const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Device-Bind";

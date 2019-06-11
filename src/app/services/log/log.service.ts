@@ -35,7 +35,7 @@ export class LogService {
         Message: ex.Message,
         Detail: detail,
         AccountId: !identity ? identity.Id : "",
-        Device: await AppHelper.getUUID()
+        Device: await AppHelper.getDeviceId()
       });
       const formObj = Object.keys(req)
         .map(k => `${k}=${req[k]}`)

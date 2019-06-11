@@ -4,7 +4,6 @@ import { RequestEntity } from "../api/Request.entity";
 import { ApiService } from "../api/api.service";
 import { IdentityService } from "../identity/identity.service";
 import { Injectable } from "@angular/core";
-import { LoginEntity } from "./login.entity";
 import { Router } from "@angular/router";
 import { tap, switchMap, map, finalize } from "rxjs/operators";
 import { of, throwError, from, merge } from "rxjs";
@@ -37,17 +36,7 @@ export class LoginService {
   getToPageRouter() {
     return this._toPageRouter || "";
   }
-  userLogin(entity: LoginEntity) {
-    return from(AppHelper.getUUID()).pipe(switchMap(uuid=> this.login(
-      "ApiLoginUrl-Home-Login",
-      entity.Name,
-      entity.Password,
-      entity.ImageCode,
-      this.ImageValue,
-      true,
-      uuid
-    )));
-  }
+
   checkIsDeviceBinded(deviceNumber: string) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
@@ -60,66 +49,7 @@ export class LoginService {
       Mobile: string;
     }>(req);
   }
-  deviceLogin(entity: LoginEntity) {
-    return from(AppHelper.getUUID()).pipe(
-      switchMap(uuid =>
-        this.login(
-          "ApiLoginUrl-Home-DeviceLogin",
-          AppHelper.getStorage("identityId"),
-          "",
-          "",
-          "",
-          true,
-          uuid
-        )
-      )
-    );
-  }
-  mobileLogin(entity: LoginEntity) {
-    return this.login(
-      "ApiLoginUrl-Home-MobileLogin",
-      entity.Mobile,
-      entity.MobileCode,
-      entity.ImageCode,
-      this.ImageValue,true
-    );
-  }
-  wechatLogin(entity: LoginEntity) {
-    return this.login(
-      "ApiLoginUrl-Home-WechatLogin",
-      "",
-      entity.WechatCode,
-      "",
-      "",true
-    );
-  }
-  dingtalkLogin(entity: LoginEntity) {
-    return this.login(
-      "ApiLoginUrl-Home-DingTalkLogin",
-      "",
-      entity.DingtalkCode,
-      "",
-      "",true
-    );
-  }
-  getImage() {
-    const req = new RequestEntity();
-    req.Method = "Home-CreateCode";
-    req.Url = AppHelper.getApiUrl();
-    return merge(of("assets/images/loading.gif"),
-      this.http.get(`${AppHelper.getApiUrl()}/Home/CreateCode`).pipe(
-        map((r: IResponse<{ Code: string; Value: string }>) => {
-          console.log("code: " + r.Data.Code + " value: " + r.Data.Value);
-          if (r.Data) {
-            this.ImageValue = r.Data.Value;
-            return `${AppHelper.getApiUrl()}/Home/ImageCode?code=${r.Data.Code}`;
-          }
-          this.ImageValue = null;
-          return r.Message || "网络错误";
-        })
-      )
-    );
-  }
+  
   sendMobileCode(mobile: string, imageCode: string = null) {
     const req = new RequestEntity();
     req.Url = AppHelper.getApiUrl() + "/Home/SendLoginMobileCode";
@@ -136,23 +66,8 @@ export class LoginService {
   getLoading() {
     return this.apiService.getLoading();
   }
- login(method: string, name: string, password: string, imageCode: string, imageValue: string,isShowLoading:boolean,uuid?:string) {
-    const req = new RequestEntity();
+ login(method: string,req:RequestEntity) {
     req.Method = method;
-    if (imageCode) {
-      req.ImageCode = imageCode;
-      req.ImageValue = this.ImageValue;
-    }
-    if(isShowLoading)
-    {
-      req.IsShowLoading=true;
-    }
-    req.Data = JSON.stringify({
-      Name: name,
-      Password: password,
-      Device:uuid
-    });
-    AppHelper.setStorage("loginName", name);
     return this.apiService
       .getResponse<{
         Ticket: string; // "";
@@ -238,9 +153,8 @@ export class LoginService {
       const req = new RequestEntity();
       req.Method = "ApiLoginUrl-Home-TokenLogin";
       req.Data = JSON.stringify({
-        Name: await AppHelper.getUUID(),
-        Password: AppHelper.getStorage("loginToken"),
-        Device:await AppHelper.getUUID()
+        UUID: await AppHelper.getDeviceId(),
+        Token: AppHelper.getStorage("loginToken")
       });
 
       return new Promise<boolean>((resolve, reject) => {

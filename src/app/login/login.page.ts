@@ -1,7 +1,6 @@
 import { LoginService } from "../services/login/login.service";
 import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import { Router } from "@angular/router";
-import { LoginEntity } from "src/app/services/login/login.entity";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { Observable, interval, Subscription } from "rxjs";
 import { AppHelper } from "../appHelper";
@@ -10,6 +9,8 @@ import { ConfigEntity } from "../services/config/config.entity";
 import { ConfigService } from "../services/config/config.service";
 import { Config } from '@ionic/angular';
 import { finalize } from 'rxjs/operators';
+import { RequestEntity } from '../services/api/Request.entity';
+import { wechatHelper } from '../wechatHelper';
 
 @Component({
   selector: "app-login",
@@ -17,7 +18,7 @@ import { finalize } from 'rxjs/operators';
   styleUrls: ["./login.page.scss"]
 })
 export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
-  loginEntity: LoginEntity;
+  loginEntity: RequestEntity;
   pageInfo: ConfigEntity;
   form: FormGroup;
   deviceInfo: any;
@@ -58,13 +59,15 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   }
   ngOnInit() {
     // this.fileInfo=this.fileService.fileInfo;
-    this.loginEntity = new LoginEntity();
+    this.loginEntity = new RequestEntity();
+    this.loginEntity.Data={};
     this.form = this.fb.group({
       Name: [AppHelper.getStorage<string>("loginName")],
       Password: [null],
       MobileCode: [null], // 手机验证码
       Mobile: [null], // 手机号
       WechatCode: [null],
+      WechatSdkType: [null],
       DingtalkCode: [null]
     });
     this.form.controls["Mobile"].valueChanges.subscribe((m: string) => {
@@ -84,6 +87,16 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       this.loginType = "device";
       this.login();
     }
+    else if (AppHelper.isWechatMini()) {
+      wechatHelper.wx.miniProgram.navigateTo({url: "pages/login/index"});
+      var paramters=AppHelper.getQueryParamers();
+      if(paramters.wechatminicode)
+      {
+        this.loginType = "wechat";
+        this.form.patchValue({ WechatCode: paramters.wechatminicode,WechatSdkType:"Mini" });
+        this.login();
+      }
+    }
   }
   setLoginButton() {
     if (this.loginType == "user") {
@@ -99,6 +112,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.initPage();
   }
   async loginByWechat() {
+    debugger;
     try {
       if (AppHelper.isApp()) {
         const appId = await AppHelper.getWechatAppId();
@@ -108,6 +122,9 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           this.form.patchValue({ WechatCode: code });
           this.login();
         }
+      }
+      else if (AppHelper.isWechatMini()) {
+        wechatHelper.wx.miniProgram.navigateTo({url: "pages/login/index"});
       }
       else if (AppHelper.isWechatH5()) {
         var url = AppHelper.getApiUrl() + "/home/WechatLogin?domain=" + AppHelper.getDomain()
@@ -131,6 +148,18 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     }).catch(e => {
       console.error(e);
     });
+    if(AppHelper.isWechatMini())
+    {
+      wechatHelper.wx.login({
+        success: (res)=> {
+          if (res.code) {
+            this.loginType = "wechat";
+            this.form.patchValue({ WechatCode: res.code,WechatSdkType:"Mini" });
+            this.login();
+          } 
+        }
+      })
+    }
   }
   switchLoginType(type: string) {
     this.loginType = type;
@@ -149,28 +178,30 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   async login() {
-
-    this.loginEntity.Name = this.form.value.Name;
-    this.loginEntity.Password = this.form.value.Password;
-    this.loginEntity.Mobile = this.form.value.Mobile;
-    this.loginEntity.MobileCode = this.form.value.MobileCode;
-    this.loginEntity.DingtalkCode = this.form.value.DingtalkCode;
-    this.loginEntity.WechatCode = this.form.value.WechatCode;
-    this.loginEntity.UUID = await AppHelper.getUUID();
+    this.loginEntity.Data.Name = this.form.value.Name;
+    this.loginEntity.Data.Password = this.form.value.Password;
+    this.loginEntity.Data.Mobile = this.form.value.Mobile;
+    this.loginEntity.Data.MobileCode = this.form.value.MobileCode;
+    this.loginEntity.Data.DingtalkCode = this.form.value.DingtalkCode;
+    this.loginEntity.Data.WechatCode = this.form.value.WechatCode;
+    this.loginEntity.Data.WechatSdkType = this.form.value.WechatSdkType;
+    this.loginEntity.Data.Device = await AppHelper.getDeviceId();
+    this.loginEntity.Data.DeviceName = await AppHelper.getDeviceName();
+    this.loginEntity.Data.Token = AppHelper.getStorage("loginToken");
     switch (this.loginType) {
       case "user":
-        if (!this.loginEntity.Name) {
+        if (!this.loginEntity.Data.Name) {
           this.message = LanguageHelper.getLoginNameTip();
           return;
         }
-        if (!this.loginEntity.Password) {
+        if (!this.loginEntity.Data.Password) {
           this.message = LanguageHelper.getLoginPasswordTip();
           return;
         }
-        this.loginSubscription = this.loginService.userLogin(this.loginEntity).subscribe(r => {
+        this.loginSubscription = this.loginService.login("ApiLoginUrl-Home-Login",this.loginEntity).subscribe(r => {
           if (!r.Ticket) {
           } else {
-            AppHelper.setStorage("loginname", this.loginEntity.Name);
+            AppHelper.setStorage("loginname", this.loginEntity.Data.Name);
             console.log("login success"+JSON.stringify(r,null,2));
             this.jump(true);
           }
@@ -179,16 +210,16 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         });
         break;
       case "mobile":
-        if (!this.loginEntity.Mobile) {
+        if (!this.loginEntity.Data.Mobile) {
           this.message = LanguageHelper.getLoginMobileTip();
           return;
         }
-        if (!this.loginEntity.MobileCode) {
+        if (!this.loginEntity.Data.MobileCode) {
           this.message = LanguageHelper.getMobileCodeTip();
           return;
         }
         this.loginSubscription = this.loginService
-          .mobileLogin(this.loginEntity)
+          .login("ApiLoginUrl-Home-MobileLogin",this.loginEntity)
           .subscribe(r => {
             if (r.Ticket) {
               this.jump(true);
@@ -198,21 +229,29 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           });
         break;
       case "dingtalk":
-        this.loginSubscription = this.loginService.dingtalkLogin(this.loginEntity).subscribe(r => {
+        this.loginSubscription = this.loginService.login("ApiLoginUrl-Home-DingTalkLogin",this.loginEntity).pipe(
+          finalize(() => {
+            this.loginType = "user";
+          })
+        ).subscribe(r => {
           if (r.Ticket) {
             this.jump(true);
           }
         });
         break;
       case "wechat":
-        this.loginSubscription = this.loginService.wechatLogin(this.loginEntity).subscribe(r => {
+        this.loginSubscription = this.loginService.login("ApiLoginUrl-Home-WechatLogin",this.loginEntity).pipe(
+          finalize(() => {
+            this.loginType = "user";
+          })
+        ).subscribe(r => {
           if (r.Ticket) {
             this.jump(true);
           }
         });
         break;
       case "device":
-        this.loginSubscription = this.loginService.deviceLogin(this.loginEntity).pipe(
+        this.loginSubscription = this.loginService.login("ApiLoginUrl-Home-DeviceLogin",this.loginEntity).pipe(
           finalize(() => {
             this.loginType = "user";
           })
@@ -273,7 +312,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.loginType = "user";
     const toPageRouter = this.loginService.getToPageRouter() || "";
     if (isCheckDevice && AppHelper.isApp()) {
-      var uuid = await AppHelper.getUUID();
+      var uuid = await AppHelper.getDeviceId();
       console.log('uuid '+uuid);
       this.loginService.checkIsDeviceBinded(uuid).subscribe(res => {
         console.log("checkIsDeviceBinded "+JSON.stringify(res,null,2));

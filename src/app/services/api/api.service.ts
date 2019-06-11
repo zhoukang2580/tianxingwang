@@ -89,12 +89,11 @@ export class ApiService {
   async tryAutoLogin(orgReq: RequestEntity) {
     const req = this.createRequest();
     if (AppHelper.isApp()) {
-      const uuid = await AppHelper.getUUID();
-      req.Method = "ApiLoginUrl-Home-TokenLogin";
+      const device = await AppHelper.getDeviceId();
+      req.Method = "ApiLoginUrl-Home-DeviceLogin";
       req.Data = JSON.stringify({
-        Name: uuid,
-        Password: AppHelper.getStorage("loginToken"),
-        Device:uuid
+        Device: device,
+        Token: AppHelper.getStorage("loginToken")
       });
     }
     else if (AppHelper.isWechatH5()) {
@@ -108,7 +107,8 @@ export class ApiService {
       const code = "";
       req.Method = "ApiLoginUrl-Home-WechatLogin";
       req.Data = JSON.stringify({
-        Code: code
+        Code: code,
+        SdkType:"Mini"
       });
     }
     else if (AppHelper.isDingtalkH5()) {

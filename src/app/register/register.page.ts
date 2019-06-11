@@ -8,7 +8,7 @@ import { NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { LanguageHelper } from 'src/app/languageHelper';
 import { LoginService } from '../services/login/login.service';
-import { LoginEntity } from '../services/login/login.entity';
+
 
 @Component({
   selector: 'app-register',
@@ -117,13 +117,14 @@ export class RegisterPage implements OnInit {
   }
   login()
   { 
-    const loginEntity = new LoginEntity();
-    loginEntity.Name = this.form.value.Mobile;
-    loginEntity.Password = this.form.value.Password;
-    var sub= this.loginService.userLogin(loginEntity).subscribe(r => {
+    const loginEntity = new RequestEntity();
+    loginEntity.Data={};
+    loginEntity.Data.Name = this.form.value.Mobile;
+    loginEntity.Data.Password = this.form.value.Password;
+    var sub= this.loginService.login("ApiLoginUrl-Home-Login",loginEntity).subscribe(r => {
       if (!r.Ticket) {
       } else {
-        AppHelper.setStorage("loginname", loginEntity.Mobile);
+        AppHelper.setStorage("loginname", loginEntity.Data.Name);
         this.router.navigate([AppHelper.getRoutePath("")]);
       }
     }, e => {
@@ -136,7 +137,7 @@ export class RegisterPage implements OnInit {
   }
   async bindDevice()
   {
-    var uuid=await AppHelper.getUUID();
+    var uuid=await AppHelper.getDeviceId();
     var name= await AppHelper.getDeviceName();
     const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Device-Bind";

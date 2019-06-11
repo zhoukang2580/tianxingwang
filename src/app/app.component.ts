@@ -13,6 +13,7 @@ import { HttpClient } from '@angular/common/http';
 import { LanguageHelper } from './languageHelper';
 import { wechatHelper } from './wechatHelper';
 import { DingtalkHelper } from './dingtalkHelper';
+import { RequestEntity } from './services/api/Request.entity';
 export interface App {
   loadUrl: (
     url: string,
@@ -71,13 +72,16 @@ export class AppComponent implements AfterViewInit{
   }
   checkWechatOpenId()
   {
-    
     if(AppHelper.isWechatH5() || AppHelper.isWechatMini())
     {
       if(!AppHelper.checkQueryString("openid"))
       {
-        const url =AppHelper.getApiUrl()+"/home/GetWechatUser?path="+ AppHelper.getRedirectUrl()+"&domain="+ AppHelper.getDomain()
+        let url =AppHelper.getApiUrl()+"/home/GetWechatUser?path="+ AppHelper.getRedirectUrl()+"&domain="+ AppHelper.getDomain()
         +"&ticket="+AppHelper.getTicket();
+        if(AppHelper.isWechatMini())
+        {
+           url=url+"&SdkType=Mini";
+        }
         AppHelper.redirect(url);
         return false;
       }

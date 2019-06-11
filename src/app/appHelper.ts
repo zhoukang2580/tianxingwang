@@ -5,6 +5,7 @@ import { UrlSegment, UrlSegmentGroup, Route } from "@angular/router";
 import { HttpClient } from '@angular/common/http';
 import { AlertController, ToastController, ModalController } from '@ionic/angular';
 import { LanguageHelper } from './languageHelper';
+import { TimeoutError } from 'rxjs';
 export class AppHelper {
 
   static httpClient: HttpClient;
@@ -86,7 +87,7 @@ export class AppHelper {
   static setHttpClient(httpClient: HttpClient) {
     this.httpClient = httpClient;
   }
-  static getUUID() {
+  static getDeviceId() {
     return new Promise<string>((resolve, reject) => {
       if (this.isH5()) {
         resolve("");
@@ -208,8 +209,9 @@ export class AppHelper {
     return !window["cordova"];
   }
   static isWechatH5() {
+    return false;
     var ua = window.navigator.userAgent.toLowerCase();
-    if (ua.includes('micromessenger')) {    //判断是否是微信环境
+    if (ua.includes('micromessenger') && !ua.includes(' miniprogram ')) {    //判断是否是微信环境
       return true;
     }
     return false;
@@ -223,15 +225,9 @@ export class AppHelper {
     }
   }
   static isWechatMini() {
+    return true;
     var ua = window.navigator.userAgent.toLowerCase();
-    if (ua.includes('micromessenger')) {    //判断是否是微信环境
-      // wx.miniProgram.getEnv(function (res) {
-      //   wx.miniProgram.getEnv((res) => {
-      //     if (res.miniprogram) {//在小程序中
-      //       return true;
-      //     }
-      //   });
-      // })
+    if (ua.includes('micromessenger') &&  ua.includes(' miniprogram ')) {    //判断是否是微信环境
       return true;
     }
     return false;

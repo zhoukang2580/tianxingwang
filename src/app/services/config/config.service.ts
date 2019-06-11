@@ -1,4 +1,4 @@
-import { LoginEntity } from "../login/login.entity";
+
 import { ConfigEntity } from "./config.entity";
 import { RequestEntity } from "../api/Request.entity";
 import { ApiService } from "../api/api.service";

@@ -15,7 +15,7 @@ import { Observable, of } from "rxjs";
 import { IdentityService } from "../services/identity/identity.service";
 import { AlertController, LoadingController } from "@ionic/angular";
 import { finalize, switchMap, map } from "rxjs/operators";
-import { LoginEntity } from '../services/login/login.entity';
+
 
 @Injectable({
   providedIn: "root"

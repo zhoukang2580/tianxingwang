@@ -94,7 +94,12 @@ export class PayService {
     if (AppHelper.isApp() || AppHelper.isWechatMini() || AppHelper.isWechatH5()) {
       req.Data.OpenId=wechatHelper.openId;
       req.IsShowLoading=true;
-      if( AppHelper.isWechatMini() || AppHelper.isWechatH5())
+      if( AppHelper.isWechatMini())
+      {
+        req.Data.CreateType="Mini";
+        req.Data.DataType="json";
+      }
+      else if(AppHelper.isWechatH5())
       {
         req.Data.CreateType="JsSdk";
         req.Data.DataType="json";
@@ -103,7 +108,11 @@ export class PayService {
         const sub = this.apiService
           .getResponse<any>(req).subscribe(async r => {
             if (r.Status && r.Data) {
-              if(AppHelper.isWechatH5() || AppHelper.isWechatMini())
+              if(AppHelper.isWechatMini())
+              {
+                wechatHelper.wx.miniProgram.navigateTo({url: "pages/login/pay?data="+JSON.stringify(r.Data)});
+              }
+              else if(AppHelper.isWechatH5())
               {
                 const ok = await wechatHelper.ready().catch(e => {
                   return false;
@@ -111,7 +120,6 @@ export class PayService {
                 if (!ok) {
                   return;
                 }
-                alert(JSON.stringify(r.Data));
                 wechatHelper.wx.chooseWXPay({
                   timestamp: r.Data.timeStamp, 
                   nonceStr: r.Data.nonceStr, // 支付签名随机串，不长于 32 位
@@ -121,7 +129,7 @@ export class PayService {
                   success: (res)=> {
                     resolve(res);
                   }
-                  });;
+                  });
               }
               else
               {

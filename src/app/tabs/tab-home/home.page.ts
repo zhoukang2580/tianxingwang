@@ -101,7 +101,7 @@ export class HomePage implements OnInit {
       req.Data={
         Channel: "App",
         Type: "3",
-        OrderId:"190000035629",
+        OrderId:"190000047130",
       }
       this.payService.wechatpay(req,"").then((r)=>{}).catch(r=>{});
      
@@ -116,7 +116,7 @@ export class HomePage implements OnInit {
         Channel: "App",
         Type: "2",
         IsApp:false,
-        OrderId:"190000035629",
+        OrderId:"190000047130",
       }
       this.payService.alipay(req,"").then((r)=>{}).catch(r=>{});
     }
