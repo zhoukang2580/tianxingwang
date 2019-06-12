@@ -209,7 +209,7 @@ export class AppHelper {
     return !window["cordova"];
   }
   static isWechatH5() {
-    return false;
+    return true;
     var ua = window.navigator.userAgent.toLowerCase();
     if (ua.includes('micromessenger') && !ua.includes(' miniprogram ')) {    //判断是否是微信环境
       return true;
@@ -225,7 +225,7 @@ export class AppHelper {
     }
   }
   static isWechatMini() {
-    return true;
+    return false;
     var ua = window.navigator.userAgent.toLowerCase();
     if (ua.includes('micromessenger') &&  ua.includes(' miniprogram ')) {    //判断是否是微信环境
       return true;
@@ -342,7 +342,7 @@ export class AppHelper {
   static getRedirectUrl() {
     var url = this.getApiUrl();
     var domain = this.getDomain();
-    return url.replace(this._appDomain, domain) + "/www/index.html";
+    return url.replace(this._appDomain, domain) ;
   }
   static getApiUrl() {
     return "http://dev.app." + this._appDomain;

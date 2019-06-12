@@ -10,7 +10,9 @@ import { ConfigService } from "../services/config/config.service";
 import { Config } from '@ionic/angular';
 import { finalize } from 'rxjs/operators';
 import { RequestEntity } from '../services/api/Request.entity';
-import { wechatHelper } from '../wechatHelper';
+import { WechatHelper } from '../wechatHelper';
+import { IdentityService } from '../services/identity/identity.service';
+import { DingtalkHelper } from '../dingtalkHelper';
 
 @Component({
   selector: "app-login",
@@ -34,6 +36,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   SlideEventType: string;
   constructor(
     private loginService: LoginService,
+    private identityService: IdentityService,
     private configService: ConfigService,
     private fb: FormBuilder,
     private router: Router,
@@ -60,7 +63,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     // this.fileInfo=this.fileService.fileInfo;
     this.loginEntity = new RequestEntity();
-    this.loginEntity.Data={};
+    this.loginEntity.Data = {};
     this.form = this.fb.group({
       Name: [AppHelper.getStorage<string>("loginName")],
       Password: [null],
@@ -82,21 +85,51 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.form.controls["MobileCode"].valueChanges.subscribe((m: string) => {
       this.setLoginButton();
     });
+
     this.setLoginButton();
-    if (AppHelper.isApp()) {
-      this.loginType = "device";
-      this.login();
-    }
-    else if (AppHelper.isWechatMini()) {
-      wechatHelper.wx.miniProgram.navigateTo({url: "pages/login/index"});
-      var paramters=AppHelper.getQueryParamers();
-      if(paramters.wechatminicode)
-      {
-        this.loginType = "wechat";
-        this.form.patchValue({ WechatCode: paramters.wechatminicode,WechatSdkType:"Mini" });
-        this.login();
+    this.autoLogin();
+  }
+  autoLogin() {
+    this.identityService.getIdentity().then(r => {
+      debugger;
+      const paramters = AppHelper.getQueryParamers();
+      if (!r || !r.Ticket) {
+        if (AppHelper.isApp()) {
+          this.loginType = "device";
+          this.login();
+        }
+        else if (!paramters.IsReturnUser && paramters.wechatcode) {
+          this.loginType = "wechat";
+          this.form.patchValue({ WechatCode: paramters.wechatcode });
+          this.login();
+        }
+        else if (!paramters.IsReturnUser && paramters.wechatminicode) {
+          this.loginType = "wechat";
+          this.form.patchValue({ WechatCode: paramters.wechatcode, WechatSdkType: "Mini" });
+          this.login();
+        }
+        else if (paramters.dingtalkcode) {
+          this.loginType = "dingtalk";
+          this.form.patchValue({ DingtalkCode: paramters.dingtalkcode });
+          this.login();
+        }
+        else if (AppHelper.isWechatMini()) {
+          WechatHelper.wx.miniProgram.navigateTo({ url: "/pages/login/index?openid="+WechatHelper.openId });
+        }
+        else if (AppHelper.isWechatH5()) {
+         
+          let url = AppHelper.getApiUrl() + "/home/GetWechatCode?path=" + AppHelper.getRedirectUrl() + "&domain=" + AppHelper.getDomain()
+            + "&ticket=" + AppHelper.getTicket()+"&openid="+WechatHelper.openId;
+          AppHelper.redirect(url);
+        }
+        else if (AppHelper.isDingtalkH5()) {
+          let url = AppHelper.getApiUrl() + "/home/GetDingtalkCode?path=" + AppHelper.getRedirectUrl() + "&domain=" + AppHelper.getDomain()
+            + "&ticket=" + AppHelper.getTicket()+"&unionId="+DingtalkHelper.unionId;
+          AppHelper.redirect(url);
+        }
       }
-    }
+    })
+
   }
   setLoginButton() {
     if (this.loginType == "user") {
@@ -112,7 +145,6 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.initPage();
   }
   async loginByWechat() {
-    debugger;
     try {
       if (AppHelper.isApp()) {
         const appId = await AppHelper.getWechatAppId();
@@ -124,11 +156,11 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         }
       }
       else if (AppHelper.isWechatMini()) {
-        wechatHelper.wx.miniProgram.navigateTo({url: "pages/login/index"});
+        WechatHelper.wx.miniProgram.navigateTo({ url: "/pages/login/index?openid=" + WechatHelper.openId });
       }
       else if (AppHelper.isWechatH5()) {
-        var url = AppHelper.getApiUrl() + "/home/WechatLogin?domain=" + AppHelper.getDomain()
-          + "&path=" + encodeURIComponent(AppHelper.getRedirectUrl() + "?path=&unloginpath=login");
+        var url = AppHelper.getApiUrl() + "/home/GetWechatCode?domain=" + AppHelper.getDomain()
+          + "&path=" + encodeURIComponent(AppHelper.getRedirectUrl() + "?path=&unloginpath=login&openid=" + WechatHelper.openId);
         window.location.href = url;
       }
     } catch (e) {
@@ -148,18 +180,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     }).catch(e => {
       console.error(e);
     });
-    if(AppHelper.isWechatMini())
-    {
-      wechatHelper.wx.login({
-        success: (res)=> {
-          if (res.code) {
-            this.loginType = "wechat";
-            this.form.patchValue({ WechatCode: res.code,WechatSdkType:"Mini" });
-            this.login();
-          } 
-        }
-      })
-    }
+
   }
   switchLoginType(type: string) {
     this.loginType = type;
@@ -178,18 +199,10 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   async login() {
-    this.loginEntity.Data.Name = this.form.value.Name;
-    this.loginEntity.Data.Password = this.form.value.Password;
-    this.loginEntity.Data.Mobile = this.form.value.Mobile;
-    this.loginEntity.Data.MobileCode = this.form.value.MobileCode;
-    this.loginEntity.Data.DingtalkCode = this.form.value.DingtalkCode;
-    this.loginEntity.Data.WechatCode = this.form.value.WechatCode;
-    this.loginEntity.Data.WechatSdkType = this.form.value.WechatSdkType;
-    this.loginEntity.Data.Device = await AppHelper.getDeviceId();
-    this.loginEntity.Data.DeviceName = await AppHelper.getDeviceName();
-    this.loginEntity.Data.Token = AppHelper.getStorage("loginToken");
     switch (this.loginType) {
       case "user":
+        this.loginEntity.Data.Name = this.form.value.Name;
+        this.loginEntity.Data.Password = this.form.value.Password;
         if (!this.loginEntity.Data.Name) {
           this.message = LanguageHelper.getLoginNameTip();
           return;
@@ -198,11 +211,11 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           this.message = LanguageHelper.getLoginPasswordTip();
           return;
         }
-        this.loginSubscription = this.loginService.login("ApiLoginUrl-Home-Login",this.loginEntity).subscribe(r => {
+        this.loginSubscription = this.loginService.login("ApiLoginUrl-Home-Login", this.loginEntity).subscribe(r => {
           if (!r.Ticket) {
           } else {
             AppHelper.setStorage("loginname", this.loginEntity.Data.Name);
-            console.log("login success"+JSON.stringify(r,null,2));
+            console.log("login success" + JSON.stringify(r, null, 2));
             this.jump(true);
           }
         }, e => {
@@ -210,6 +223,8 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         });
         break;
       case "mobile":
+        this.loginEntity.Data.Mobile = this.form.value.Mobile;
+        this.loginEntity.Data.Code = this.form.value.MobileCode;
         if (!this.loginEntity.Data.Mobile) {
           this.message = LanguageHelper.getLoginMobileTip();
           return;
@@ -219,7 +234,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           return;
         }
         this.loginSubscription = this.loginService
-          .login("ApiLoginUrl-Home-MobileLogin",this.loginEntity)
+          .login("ApiLoginUrl-Home-MobileLogin", this.loginEntity)
           .subscribe(r => {
             if (r.Ticket) {
               this.jump(true);
@@ -229,7 +244,8 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           });
         break;
       case "dingtalk":
-        this.loginSubscription = this.loginService.login("ApiLoginUrl-Home-DingTalkLogin",this.loginEntity).pipe(
+        this.loginEntity.Data.Code = this.form.value.DingtalkCode;
+        this.loginSubscription = this.loginService.login("ApiLoginUrl-Home-DingTalkLogin", this.loginEntity).pipe(
           finalize(() => {
             this.loginType = "user";
           })
@@ -240,7 +256,9 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         });
         break;
       case "wechat":
-        this.loginSubscription = this.loginService.login("ApiLoginUrl-Home-WechatLogin",this.loginEntity).pipe(
+        this.loginEntity.Data.SdkType = this.form.value.WechatSdkType;
+        this.loginEntity.Data.Code = this.form.value.WechatCode;
+        this.loginSubscription = this.loginService.login("ApiLoginUrl-Home-WechatLogin", this.loginEntity).pipe(
           finalize(() => {
             this.loginType = "user";
           })
@@ -251,7 +269,10 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         });
         break;
       case "device":
-        this.loginSubscription = this.loginService.login("ApiLoginUrl-Home-DeviceLogin",this.loginEntity).pipe(
+        this.loginEntity.Data.Device = await AppHelper.getDeviceId();
+        this.loginEntity.Data.DeviceName = await AppHelper.getDeviceName();
+        this.loginEntity.Data.Token = AppHelper.getStorage("loginToken");
+        this.loginSubscription = this.loginService.login("ApiLoginUrl-Home-DeviceLogin", this.loginEntity).pipe(
           finalize(() => {
             this.loginType = "user";
           })
@@ -313,9 +334,9 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     const toPageRouter = this.loginService.getToPageRouter() || "";
     if (isCheckDevice && AppHelper.isApp()) {
       var uuid = await AppHelper.getDeviceId();
-      console.log('uuid '+uuid);
+      console.log('uuid ' + uuid);
       this.loginService.checkIsDeviceBinded(uuid).subscribe(res => {
-        console.log("checkIsDeviceBinded "+JSON.stringify(res,null,2));
+        console.log("checkIsDeviceBinded " + JSON.stringify(res, null, 2));
         // 需要绑定
         if (res.Status) {
           this.router.navigate([AppHelper.getRoutePath("account-bind"), {
@@ -323,7 +344,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
             Mobile: res.Data.Mobile,
             Path: toPageRouter
           }]);
-        }else{
+        } else {
           this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
         }
       }, e => {

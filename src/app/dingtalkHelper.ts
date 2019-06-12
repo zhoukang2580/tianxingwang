@@ -13,6 +13,6 @@ export class DingtalkHelper {
   
 
   static unionId:string;
-  
+
   
 }

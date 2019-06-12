@@ -1,3 +1,4 @@
+import { DingtalkHelper } from './../../dingtalkHelper';
 import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
 import { IonList } from '@ionic/angular';
 import { ApiService } from 'src/app/services/api/api.service';
@@ -25,24 +26,41 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.isShowBindButton = AppHelper.isDingtalkH5();
+    var paramters = AppHelper.getQueryParamers();
     this.load();
-    var paramters=AppHelper.getQueryParamers();
-    if(paramters.path=="account-dingtalk")
-    {
-      if(paramters.message)
-      {
-        AppHelper.alert(paramters.message);
+    if (paramters.path == "account-dingtalk") {
+      if (!paramters.IsReturnUser && paramters.dingtalkcode) {
+        const data = {
+          Code: paramters.dingtalkcode
+        };
+        this.bindCode(data);
       }
     }
   }
   async bind() {
     if (AppHelper.isDingtalkH5()) {
-      var url=AppHelper.getApiUrl()+"/home/BindDingTalk?domain="+AppHelper.getDomain()+"&ticket="+AppHelper.getTicket()
-      +"&path="+encodeURIComponent(AppHelper.getApiUrl()+"/index.html?path=account-dingtalk");
+      var url = AppHelper.getApiUrl() + "/home/GetDingTalkCode?domain=" + AppHelper.getDomain() + "&ticket=" + AppHelper.getTicket()
+        + "&path=" + encodeURIComponent(AppHelper.getApiUrl() + "/index.html?path=account-dingtalk&unionid=" + DingtalkHelper.unionId);
       AppHelper.redirect(url);
     }
   }
-
+  bindCode(data) {
+    const req = new RequestEntity();
+    req.Method = "ApiPasswordUrl-DingTalk-Bind";
+    req.IsShowLoading = true;
+    req.Data = data;
+    let deviceSubscription = this.apiService.getResponse<{}>(req).subscribe(s => {
+      if (s.Status) {
+        this.load();
+      }
+    }, n => {
+      AppHelper.alert(n);
+    }, () => {
+      if (deviceSubscription) {
+        deviceSubscription.unsubscribe();
+      }
+    });
+  }
   // getDingTalkCode(appId: string) {
   //   const DingTalk = window['DingTalk'];
   //   if (DingTalk) {

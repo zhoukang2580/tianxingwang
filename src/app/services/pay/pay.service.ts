@@ -5,7 +5,7 @@ import { Injectable } from "@angular/core";
 import { RequestEntity } from '../api/Request.entity';
 import { ApiService } from '../api/api.service';
 import { LanguageHelper } from 'src/app/languageHelper';
-import { wechatHelper } from 'src/app/wechatHelper';
+import { WechatHelper } from 'src/app/wechatHelper';
 export interface Ali {
   pay: (payInfo: string) => Promise<{
     memo: string;
@@ -92,7 +92,7 @@ export class PayService {
   }
   wechatpay(req: RequestEntity, path: string) {
     if (AppHelper.isApp() || AppHelper.isWechatMini() || AppHelper.isWechatH5()) {
-      req.Data.OpenId=wechatHelper.openId;
+      req.Data.OpenId=WechatHelper.openId;
       req.IsShowLoading=true;
       if( AppHelper.isWechatMini())
       {
@@ -110,17 +110,17 @@ export class PayService {
             if (r.Status && r.Data) {
               if(AppHelper.isWechatMini())
               {
-                wechatHelper.wx.miniProgram.navigateTo({url: "pages/login/pay?data="+JSON.stringify(r.Data)});
+                WechatHelper.wx.miniProgram.navigateTo({url: "pages/login/pay?data="+JSON.stringify(r.Data)});
               }
               else if(AppHelper.isWechatH5())
               {
-                const ok = await wechatHelper.ready().catch(e => {
+                const ok = await WechatHelper.ready().catch(e => {
                   return false;
                 });
                 if (!ok) {
                   return;
                 }
-                wechatHelper.wx.chooseWXPay({
+                WechatHelper.wx.chooseWXPay({
                   timestamp: r.Data.timeStamp, 
                   nonceStr: r.Data.nonceStr, // 支付签名随机串，不长于 32 位
                   package: r.Data.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）

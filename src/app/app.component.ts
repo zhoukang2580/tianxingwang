@@ -1,3 +1,4 @@
+
 import { Component, AfterViewInit } from "@angular/core";
 
 import {
@@ -11,9 +12,10 @@ import { AppHelper } from "./appHelper";
 import { ConfigService } from './services/config/config.service';
 import { HttpClient } from '@angular/common/http';
 import { LanguageHelper } from './languageHelper';
-import { wechatHelper } from './wechatHelper';
+import { WechatHelper } from './wechatHelper';
 import { DingtalkHelper } from './dingtalkHelper';
 import { RequestEntity } from './services/api/Request.entity';
+import { finalize } from 'rxjs/operators';
 export interface App {
   loadUrl: (
     url: string,
@@ -22,25 +24,25 @@ export interface App {
       openexternal?: boolean;
       clearhistory?: boolean;// 不能为true，否则Android抛异常
     }) => void;
-    show:()=>void;
-    cancelLoadUrl:()=>void;
-    overrideButton:(btn:"volumeup"|"volumedown"|"menubutton",override?:boolean)=>void;
-    overrideBackbutton:(override?:boolean)=>void;
-    clearCache:()=>void;
-    clearHistory:()=>void;
-    backHistory:()=>void;
-    exitApp:()=>void;
+  show: () => void;
+  cancelLoadUrl: () => void;
+  overrideButton: (btn: "volumeup" | "volumedown" | "menubutton", override?: boolean) => void;
+  overrideBackbutton: (override?: boolean) => void;
+  clearCache: () => void;
+  clearHistory: () => void;
+  backHistory: () => void;
+  exitApp: () => void;
 };
 @Component({
   selector: "app-root",
   templateUrl: "app.component.html",
 })
-export class AppComponent implements AfterViewInit{
-  app:App;
+export class AppComponent implements AfterViewInit {
+  app: App;
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
-    private navCtrl:NavController,
+    private navCtrl: NavController,
     private modalController: ModalController,
     private statusBar: StatusBar,
     private router: Router,
@@ -51,10 +53,7 @@ export class AppComponent implements AfterViewInit{
     private loadingCtrl: LoadingController,
     private http: HttpClient,
   ) {
-    debugger;
-    // console.log(this.router.config);
-    if(!this.checkWechatOpenId() || !this.checkDingtalkUnionid())
-      return;
+  
     if (this.platform.is("ios")) {
       AppHelper.setDeviceName("ios");
     }
@@ -67,55 +66,59 @@ export class AppComponent implements AfterViewInit{
     AppHelper.setModalController(this.modalController);
     this.initializeApp();
   }
-  ngAfterViewInit(){
+  ngAfterViewInit() {
     this.splashScreen.hide();
   }
-  checkWechatOpenId()
-  {
-    if(AppHelper.isWechatH5() || AppHelper.isWechatMini())
+  checkWechatOpenId() {
+    var paramters = AppHelper.getQueryParamers();
+    if(paramters.openid)
     {
-      if(!AppHelper.checkQueryString("openid"))
-      {
-        let url =AppHelper.getApiUrl()+"/home/GetWechatUser?path="+ AppHelper.getRedirectUrl()+"&domain="+ AppHelper.getDomain()
-        +"&ticket="+AppHelper.getTicket();
-        if(AppHelper.isWechatMini())
-        {
-           url=url+"&SdkType=Mini";
-        }
+      alert(paramters.openid);
+      WechatHelper.openId=paramters.openid;
+    }
+    else if (AppHelper.isWechatMini()) {
+      WechatHelper.wx.miniProgram.navigateTo({url: "/pages/login/index?IsReturnUser=true"});
+      return false;
+    }
+    else if (AppHelper.isWechatH5()) {
+      if (!AppHelper.checkQueryString("openid")) {
+        let url = AppHelper.getApiUrl() + "/home/GetWechatCode?IsReturnUser=true&path=" + AppHelper.getRedirectUrl() + "&domain=" + AppHelper.getDomain()
+          + "&ticket=" + AppHelper.getTicket();
         AppHelper.redirect(url);
         return false;
       }
-      wechatHelper.openId=AppHelper.getQueryString("openid");
-      wechatHelper.unionId=AppHelper.getQueryString("unionId");
-   }
-   return true;
+    }
+    return true;
   }
-  checkDingtalkUnionid()
-  {
-    if(AppHelper.isDingtalkH5())
+  checkDingtalkUnionid() {
+    var paramters = AppHelper.getQueryParamers();
+    if(paramters.unionId)
     {
-      if(!AppHelper.checkQueryString("unionid"))
-      {
-        const url=AppHelper.getApiUrl()+"/home/GetDingtalkUser?path="+ AppHelper.getRedirectUrl()+"&domain="+ AppHelper.getDomain()
-        ;
+      DingtalkHelper.unionId = paramters.unionId;
+    }
+    else if (AppHelper.isDingtalkH5()) {
+      if (!AppHelper.checkQueryString("unionid")) {
+        const url = AppHelper.getApiUrl() + "/home/GetDingtalkCode?IsReturnUser=true&path=" + AppHelper.getRedirectUrl() + "&domain=" + AppHelper.getDomain()
+          ;
         AppHelper.redirect(url);
         return false;
       }
-      DingtalkHelper.unionId=AppHelper.getQueryString("unionid");
-   }
-   return true;
+    }
+    return true;
   }
   initializeApp() {
-   
+
     this.getConfigInfo();
     AppHelper.getDomain();// 
     AppHelper.setQueryParamers();
+    debugger;
+    if (!this.checkWechatOpenId() || !this.checkDingtalkUnionid())
+      return;
     const path = AppHelper.getQueryString("path");
     const unloginPath = AppHelper.getQueryString("unloginpath");
-    var hash=window.location.hash;
-    if(hash)
-    {
-      hash=hash.replace("#","");
+    var hash = window.location.hash;
+    if (hash) {
+      hash = hash.replace("#", "");
     }
     if (AppHelper.getTicket() && path) {
       this.jumpToRoute("login").then(() => {
@@ -127,8 +130,7 @@ export class AppComponent implements AfterViewInit{
     else if (!AppHelper.getTicket() && unloginPath) {
       this.router.navigate([AppHelper.getRoutePath(unloginPath)]);
     }
-    else if(hash)
-    {
+    else if (hash) {
       this.jumpToRoute("login").then(() => {
         this.jumpToRoute("").then(() => {
           this.jumpToRoute(hash);
@@ -152,7 +154,7 @@ export class AppComponent implements AfterViewInit{
     // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management-add')]);
     // this.router.navigate([AppHelper.getRoutePath('function-test')]);
     this.platform.ready().then(() => {
-      this.app=navigator['app'];
+      this.app = navigator['app'];
       this.statusBar.styleDefault();
       this.splashScreen.hide();
     });

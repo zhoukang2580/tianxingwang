@@ -52,7 +52,7 @@ const jsApiList = [
   'addCard',
   'chooseCard',
   'openCard'];
-export class wechatHelper {
+export class WechatHelper {
   static jssdkUrlConfig: {
     pageUrlHash: string;
     config: JssdkResult
@@ -61,7 +61,6 @@ export class wechatHelper {
   static wx = window['wx'];
 
   static openId:string;
-  static unionId:string;
   static getHashedCurPageUrl() {
     return md5(encodeURIComponent(window.location.href.substring(0, window.location.href.indexOf("#"))));
   }

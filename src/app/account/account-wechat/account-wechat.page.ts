@@ -5,6 +5,7 @@ import { Observable, merge, of, Subscription } from 'rxjs';
 import { RequestEntity } from 'src/app/services/api/Request.entity';
 import { map, switchMap } from 'rxjs/operators';
 import { AppHelper } from 'src/app/appHelper';
+import { WechatHelper } from 'src/app/wechatHelper';
 type Item = {
   Id: string;
   Name: string;
@@ -24,14 +25,22 @@ export class AccountWechatPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.isShowBindButton =!AppHelper.isApp() && AppHelper.isWechatH5();
+    this.isShowBindButton = !AppHelper.isApp() && AppHelper.isWechatH5();
     this.load();
-    var paramters=AppHelper.getQueryParamers();
-    if(paramters.path=="account-wechat")
-    {
-      if(paramters.message)
-      {
-        AppHelper.alert(paramters.message);
+    var paramters = AppHelper.getQueryParamers();
+    if (paramters.path == "account-wechat") {
+      if (!paramters.IsReturnUser && paramters.wechatcode) {
+        const data = {
+          Code: paramters.wechatcode
+        };
+        this.bindCode(data);
+      }
+      else if (!paramters.IsReturnUser && paramters.wechatminicode) {
+        const data = {
+          Code: paramters.wechatminicode,
+          WechatSdkType: "Mini"
+        };
+        this.bindCode(data);
       }
     }
   }
@@ -41,35 +50,42 @@ export class AccountWechatPage implements OnInit, OnDestroy {
         const appId = await AppHelper.getWechatAppId();
         const code = await this.getWechatCode(appId).catch(() => null);
         if (code) {
-          const req = new RequestEntity();
-          req.Method = "ApiPasswordUrl-Wechat-BindCode";
-          req.IsShowLoading = true;
-          req.Data = {
-            Code: code
+          const data = {
+            Code: code,
+            WechatSdkType: "App"
           };
-          let deviceSubscription = this.apiService.getResponse<{}>(req).subscribe(s => {
-            if (s.Status) {
-              this.load();
-            }
-          }, n => {
-            AppHelper.alert(n);
-          }, () => {
-            if (deviceSubscription) {
-              deviceSubscription.unsubscribe();
-            }
-          });
+          this.bindCode(data);
         }
       }
-      else if (AppHelper.isWechatH5() || AppHelper.isWechatMini()) {
-        var url=AppHelper.getApiUrl()+"/home/BindWechat?domain="+AppHelper.getDomain()+"&ticket="+AppHelper.getTicket()
-        +"&path="+encodeURIComponent(AppHelper.getRedirectUrl()+"?path=account-wechat");
-          AppHelper.redirect(url);
+      else if (AppHelper.isWechatMini()) {
+        WechatHelper.wx.miniProgram.navigateTo({ url: "/pages/login/index?path=account-wechat&openid" + WechatHelper.openId });
+      }
+      else if (AppHelper.isWechatH5()) {
+        var url = AppHelper.getApiUrl() + "/home/GetWechatCode?domain=" + AppHelper.getDomain() + "&ticket=" + AppHelper.getTicket()
+          + "&path=" + encodeURIComponent(AppHelper.getRedirectUrl() + "?path=account-wechat&openid=" + WechatHelper.openId);
+        AppHelper.redirect(url);
       }
     } catch (e) {
       AppHelper.alert(e);
     }
   }
-
+  bindCode(data) {
+    const req = new RequestEntity();
+    req.Method = "ApiPasswordUrl-Wechat-Bind";
+    req.IsShowLoading = true;
+    req.Data = data;
+    let deviceSubscription = this.apiService.getResponse<{}>(req).subscribe(s => {
+      if (s.Status) {
+        this.load();
+      }
+    }, n => {
+      AppHelper.alert(n);
+    }, () => {
+      if (deviceSubscription) {
+        deviceSubscription.unsubscribe();
+      }
+    });
+  }
   getWechatCode(appId: string) {
     const wechat = window['wechat'];
     if (wechat) {

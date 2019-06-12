@@ -10,7 +10,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { DomSanitizer } from '@angular/platform-browser';
 import * as md5 from 'md5';
-import { wechatHelper } from 'src/app/wechatHelper';
+import { WechatHelper } from 'src/app/wechatHelper';
 
 @Component({
   selector: 'app-scan-comp',
@@ -30,7 +30,7 @@ export class ScanComponent implements OnInit, AfterViewInit {
     private router: Router) {
   }
   async ngAfterViewInit() {
-    wechatHelper.getJssdk();
+    WechatHelper.getJssdk();
   }
   ngOnInit() {
     this.canShow = AppHelper.isApp() || AppHelper.isWechatH5();
@@ -62,14 +62,14 @@ export class ScanComponent implements OnInit, AfterViewInit {
     }).then(r => r.text);
   }
   private async wechatH5Scan() {
-    const ok = await wechatHelper.ready().catch(e => {
+    const ok = await WechatHelper.ready().catch(e => {
       console.log(e);
       return false;
     });
     if (!ok) {
       return;
     }
-    wechatHelper.wx.scanQRCode({
+    WechatHelper.wx.scanQRCode({
       needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
       scanType: ["qrCode", "barCode"], // 可以指定扫二维码还是一维码，默认二者都有
       success: (res) => {
