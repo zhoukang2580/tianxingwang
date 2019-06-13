@@ -105,7 +105,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         }
         else if (!paramters.IsReturnUser && paramters.wechatminicode) {
           this.loginType = "wechat";
-          this.form.patchValue({ WechatCode: paramters.wechatcode, WechatSdkType: "Mini" });
+          this.form.patchValue({ WechatCode: paramters.wechatminicode, WechatSdkType: "Mini" });
           this.login();
         }
         else if (paramters.dingtalkcode) {
@@ -113,13 +113,13 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           this.form.patchValue({ DingtalkCode: paramters.dingtalkcode });
           this.login();
         }
-        else if (AppHelper.isWechatMini()) {
-          WechatHelper.wx.miniProgram.navigateTo({ url: "/pages/login/index?openid="+WechatHelper.openId });
+        else if (AppHelper.isWechatMini() && WechatHelper.openId) {
+          WechatHelper.wx.miniProgram.navigateTo({ url: "/pages/login/index?openid="+(WechatHelper.openId||"") });
         }
-        else if (AppHelper.isWechatH5()) {
+        else if (AppHelper.isWechatH5() && WechatHelper.openId) {
          
           let url = AppHelper.getApiUrl() + "/home/GetWechatCode?path=" + AppHelper.getRedirectUrl() + "&domain=" + AppHelper.getDomain()
-            + "&ticket=" + AppHelper.getTicket()+"&openid="+WechatHelper.openId;
+            + "&ticket=" + AppHelper.getTicket()+"&openid="+(WechatHelper.openId||"");
           AppHelper.redirect(url);
         }
         else if (AppHelper.isDingtalkH5()) {
@@ -155,12 +155,12 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           this.login();
         }
       }
-      else if (AppHelper.isWechatMini()) {
-        WechatHelper.wx.miniProgram.navigateTo({ url: "/pages/login/index?openid=" + WechatHelper.openId });
+      else if (AppHelper.isWechatMini() && WechatHelper.openId) {
+        WechatHelper.wx.miniProgram.navigateTo({ url: "/pages/login/index?openid=" + (WechatHelper.openId||"") });
       }
-      else if (AppHelper.isWechatH5()) {
+      else if (AppHelper.isWechatH5() && WechatHelper.openId) {
         var url = AppHelper.getApiUrl() + "/home/GetWechatCode?domain=" + AppHelper.getDomain()
-          + "&path=" + encodeURIComponent(AppHelper.getRedirectUrl() + "?path=&unloginpath=login&openid=" + WechatHelper.openId);
+          + "&path=" + encodeURIComponent(AppHelper.getRedirectUrl() + "?path=&unloginpath=login&openid=" + (WechatHelper.openId||""));
         window.location.href = url;
       }
     } catch (e) {
@@ -199,6 +199,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   async login() {
+    this.loginEntity.IsShowLoading=true;
     switch (this.loginType) {
       case "user":
         this.loginEntity.Data.Name = this.form.value.Name;

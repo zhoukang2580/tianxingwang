@@ -40,7 +40,7 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
   async bind() {
     if (AppHelper.isDingtalkH5()) {
       var url = AppHelper.getApiUrl() + "/home/GetDingTalkCode?domain=" + AppHelper.getDomain() + "&ticket=" + AppHelper.getTicket()
-        + "&path=" + encodeURIComponent(AppHelper.getApiUrl() + "/index.html?path=account-dingtalk&unionid=" + DingtalkHelper.unionId);
+        + "&path=" + encodeURIComponent(AppHelper.getApiUrl() + "/index.html?path=account-dingtalk&unionid=" + (DingtalkHelper.unionId||""));
       AppHelper.redirect(url);
     }
   }

@@ -104,7 +104,6 @@ export class WechatHelper {
         headers: { "content-type": "application/x-www-form-urlencoded" },
         observe: "body"
       }).subscribe((r: any) => {
-        alert(r.Data.appid);
         if (!r.Status || !r.Data) {
           return reject(r.Message || r.Code);
         }

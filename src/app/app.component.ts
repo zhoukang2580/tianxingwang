@@ -73,11 +73,10 @@ export class AppComponent implements AfterViewInit {
     var paramters = AppHelper.getQueryParamers();
     if(paramters.openid)
     {
-      alert(paramters.openid);
-      WechatHelper.openId=paramters.openid;
+      WechatHelper.openId=paramters.openid||"";
     }
     else if (AppHelper.isWechatMini()) {
-      WechatHelper.wx.miniProgram.navigateTo({url: "/pages/login/index?IsReturnUser=true"});
+      WechatHelper.wx.miniProgram.navigateTo({url: "/pages/login/index?IsReturnUser=true&domain="+AppHelper.getDomain()+"&getUrl="+encodeURIComponent(AppHelper.getApiUrl()+"/home/GetWechatUser")});
       return false;
     }
     else if (AppHelper.isWechatH5()) {
@@ -94,7 +93,7 @@ export class AppComponent implements AfterViewInit {
     var paramters = AppHelper.getQueryParamers();
     if(paramters.unionId)
     {
-      DingtalkHelper.unionId = paramters.unionId;
+      DingtalkHelper.unionId = paramters.unionId || "";
     }
     else if (AppHelper.isDingtalkH5()) {
       if (!AppHelper.checkQueryString("unionid")) {
@@ -111,7 +110,6 @@ export class AppComponent implements AfterViewInit {
     this.getConfigInfo();
     AppHelper.getDomain();// 
     AppHelper.setQueryParamers();
-    debugger;
     if (!this.checkWechatOpenId() || !this.checkDingtalkUnionid())
       return;
     const path = AppHelper.getQueryString("path");

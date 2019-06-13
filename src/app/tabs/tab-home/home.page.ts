@@ -94,7 +94,7 @@ export class HomePage implements OnInit {
   // }
     wechatpay()
     {
-      debugger;
+
       let req=this.apiService.createRequest();
       req.Method="TmcApiOrderUrl-Pay-Create";
       req.Version="2.0";
@@ -108,7 +108,7 @@ export class HomePage implements OnInit {
     }
     alipay()
     {
-      debugger;
+
       let req=this.apiService.createRequest();
       req.Method="TmcApiOrderUrl-Pay-Create";
       req.Version="2.0";

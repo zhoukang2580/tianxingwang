@@ -25,7 +25,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.isShowBindButton = !AppHelper.isApp() && AppHelper.isWechatH5();
+    this.isShowBindButton = AppHelper.isApp() || AppHelper.isWechatH5() || AppHelper.isWechatMini();
     this.load();
     var paramters = AppHelper.getQueryParamers();
     if (paramters.path == "account-wechat") {
@@ -38,7 +38,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
       else if (!paramters.IsReturnUser && paramters.wechatminicode) {
         const data = {
           Code: paramters.wechatminicode,
-          WechatSdkType: "Mini"
+          SdkType: "Mini"
         };
         this.bindCode(data);
       }
@@ -58,11 +58,11 @@ export class AccountWechatPage implements OnInit, OnDestroy {
         }
       }
       else if (AppHelper.isWechatMini()) {
-        WechatHelper.wx.miniProgram.navigateTo({ url: "/pages/login/index?path=account-wechat&openid" + WechatHelper.openId });
+        WechatHelper.wx.miniProgram.navigateTo({ url: "/pages/login/index?path=account-wechat&openid=" + (WechatHelper.openId||"")});
       }
       else if (AppHelper.isWechatH5()) {
         var url = AppHelper.getApiUrl() + "/home/GetWechatCode?domain=" + AppHelper.getDomain() + "&ticket=" + AppHelper.getTicket()
-          + "&path=" + encodeURIComponent(AppHelper.getRedirectUrl() + "?path=account-wechat&openid=" + WechatHelper.openId);
+          + "&path=" + encodeURIComponent(AppHelper.getRedirectUrl() + "?path=account-wechat&openid=" + (WechatHelper.openId||""));
         AppHelper.redirect(url);
       }
     } catch (e) {
@@ -77,6 +77,10 @@ export class AccountWechatPage implements OnInit, OnDestroy {
     let deviceSubscription = this.apiService.getResponse<{}>(req).subscribe(s => {
       if (s.Status) {
         this.load();
+      }
+      else if(s.Message)
+      {
+        AppHelper.alert(s.Message);
       }
     }, n => {
       AppHelper.alert(n);
