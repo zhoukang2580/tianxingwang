@@ -75,13 +75,17 @@ export class AppComponent implements AfterViewInit {
     {
       WechatHelper.openId=paramters.openid||"";
     }
+    else if(paramters.IsOpen)
+    {
+      return true;
+    }
     else if (AppHelper.isWechatMini()) {
-      WechatHelper.wx.miniProgram.navigateTo({url: "/pages/login/index?IsReturnUser=true&domain="+AppHelper.getDomain()+"&getUrl="+encodeURIComponent(AppHelper.getApiUrl()+"/home/GetWechatUser")});
+      WechatHelper.wx.miniProgram.navigateTo({url: "/pages/login/index?IsLogin=true&IsOpen=true&domain="+AppHelper.getDomain()+"&getUrl="+encodeURIComponent(AppHelper.getApiUrl()+"/home/GetWechatUser")});
       return false;
     }
     else if (AppHelper.isWechatH5()) {
       if (!AppHelper.checkQueryString("openid")) {
-        let url = AppHelper.getApiUrl() + "/home/GetWechatCode?IsReturnUser=true&path=" + AppHelper.getRedirectUrl() + "&domain=" + AppHelper.getDomain()
+        let url = AppHelper.getApiUrl() + "/home/GetWechatCode?IsLogin=true&IsOpen=true&path=" + AppHelper.getRedirectUrl() + "&domain=" + AppHelper.getDomain()
           + "&ticket=" + AppHelper.getTicket();
         AppHelper.redirect(url);
         return false;
@@ -91,13 +95,13 @@ export class AppComponent implements AfterViewInit {
   }
   checkDingtalkUnionid() {
     var paramters = AppHelper.getQueryParamers();
-    if(paramters.unionId)
+    if(paramters.IsOpen)
     {
-      DingtalkHelper.unionId = paramters.unionId || "";
+      return true;
     }
     else if (AppHelper.isDingtalkH5()) {
       if (!AppHelper.checkQueryString("unionid")) {
-        const url = AppHelper.getApiUrl() + "/home/GetDingtalkCode?IsReturnUser=true&path=" + AppHelper.getRedirectUrl() + "&domain=" + AppHelper.getDomain()
+        const url = AppHelper.getApiUrl() + "/home/GetDingtalkCode?IsLogin=true&IsOpen=true&path=" + AppHelper.getRedirectUrl() + "&domain=" + AppHelper.getDomain()
           ;
         AppHelper.redirect(url);
         return false;
@@ -106,7 +110,7 @@ export class AppComponent implements AfterViewInit {
     return true;
   }
   initializeApp() {
-
+debugger;
     this.getConfigInfo();
     AppHelper.getDomain();// 
     AppHelper.setQueryParamers();
@@ -119,20 +123,16 @@ export class AppComponent implements AfterViewInit {
       hash = hash.replace("#", "");
     }
     if (AppHelper.getTicket() && path) {
-      this.jumpToRoute("login").then(() => {
-        this.jumpToRoute("").then(() => {
-          this.jumpToRoute(path);
-        });
+      this.jumpToRoute("").then(() => {
+        this.jumpToRoute(path);
       });
     }
     else if (!AppHelper.getTicket() && unloginPath) {
       this.router.navigate([AppHelper.getRoutePath(unloginPath)]);
     }
     else if (hash) {
-      this.jumpToRoute("login").then(() => {
-        this.jumpToRoute("").then(() => {
-          this.jumpToRoute(hash);
-        });
+      this.jumpToRoute("").then(() => {
+        this.jumpToRoute(path);
       });
     }
     else {

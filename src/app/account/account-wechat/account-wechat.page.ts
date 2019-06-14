@@ -29,13 +29,13 @@ export class AccountWechatPage implements OnInit, OnDestroy {
     this.load();
     var paramters = AppHelper.getQueryParamers();
     if (paramters.path == "account-wechat") {
-      if (!paramters.IsReturnUser && paramters.wechatcode) {
+      if (paramters.wechatcode) {
         const data = {
           Code: paramters.wechatcode
         };
         this.bindCode(data);
       }
-      else if (!paramters.IsReturnUser && paramters.wechatminicode) {
+      else if (paramters.wechatminicode) {
         const data = {
           Code: paramters.wechatminicode,
           SdkType: "Mini"
@@ -58,7 +58,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
         }
       }
       else if (AppHelper.isWechatMini()) {
-        WechatHelper.wx.miniProgram.navigateTo({ url: "/pages/login/index?path=account-wechat&openid=" + (WechatHelper.openId||"")});
+        WechatHelper.wx.miniProgram.navigateTo({ url: "/pages/login/index?ticket="+AppHelper.getTicket()+"&path=account-wechat&openid=" + (WechatHelper.openId||"")});
       }
       else if (AppHelper.isWechatH5()) {
         var url = AppHelper.getApiUrl() + "/home/GetWechatCode?domain=" + AppHelper.getDomain() + "&ticket=" + AppHelper.getTicket()

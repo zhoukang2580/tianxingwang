@@ -29,7 +29,7 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
     var paramters = AppHelper.getQueryParamers();
     this.load();
     if (paramters.path == "account-dingtalk") {
-      if (!paramters.IsReturnUser && paramters.dingtalkcode) {
+      if (paramters.dingtalkcode) {
         const data = {
           Code: paramters.dingtalkcode
         };
@@ -40,7 +40,7 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
   async bind() {
     if (AppHelper.isDingtalkH5()) {
       var url = AppHelper.getApiUrl() + "/home/GetDingTalkCode?domain=" + AppHelper.getDomain() + "&ticket=" + AppHelper.getTicket()
-        + "&path=" + encodeURIComponent(AppHelper.getApiUrl() + "/index.html?path=account-dingtalk&unionid=" + (DingtalkHelper.unionId||""));
+        + "&path=" + encodeURIComponent(AppHelper.getApiUrl() + "/index.html?path=account-dingtalk" );
       AppHelper.redirect(url);
     }
   }

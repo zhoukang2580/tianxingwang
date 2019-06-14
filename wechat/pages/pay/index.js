@@ -2,8 +2,7 @@
 //获取应用实例
 const app = getApp()
 
-Page(
-  {
+Page({
   data: {
     motto: 'Hello World',
     userInfo: {},
@@ -16,13 +15,32 @@ Page(
       url: '../logs/logs'
     })
   },
-  onLoad: function () {
+  onLoad: function(args) {
+    if (args) {
+      wx.requestPayment({
+        timeStamp: args.timeStamp,
+        nonceStr: args.nonceStr,
+        package: decodeURIComponent(args.package),
+        signType: args.signType,
+        paySign: args.paySign,
+        success: (res) => {
+          //var payResult = res.errMsg == "requestPayment:ok" ? "success" : res.errMsg;
+          wx.setStorageSync("args", {
+            wechatPayResultNumber: args.number,
+            openid: args.openid,
+            ticket: args.ticket,
+            path: args.path
+          });
+          wx.navigateBack();
+        }
+      })
+    }
     if (app.globalData.userInfo) {
       this.setData({
         userInfo: app.globalData.userInfo,
         hasUserInfo: true
       })
-    } else if (this.data.canIUse){
+    } else if (this.data.canIUse) {
       // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
       // 所以此处加入 callback 以防止这种情况
       app.userInfoReadyCallback = res => {

@@ -57,6 +57,18 @@ export class HomePage implements OnInit {
     // );
   }
   ngOnInit(): void {
+    var paramters = AppHelper.getQueryParamers();
+    if(paramters.wechatPayResultNumber)
+    {
+      let req1=this.apiService.createRequest();
+      req1.Method="TmcApiOrderUrl-Pay-Process";
+      req1.Version="2.0";
+      req1.Data={
+        OutTradeNo: paramters.wechatPayResultNumber,
+        Type: "3"
+      }
+      this.payService.process(req1);
+    }
   }
   // selectDate() {
   // this.router.navigate([{outlets:{selectDatetime:['select-datetime']}}]);
@@ -101,9 +113,18 @@ export class HomePage implements OnInit {
       req.Data={
         Channel: "App",
         Type: "3",
-        OrderId:"190000047130",
+        OrderId:"190000047133",
       }
-      this.payService.wechatpay(req,"").then((r)=>{}).catch(r=>{});
+      this.payService.wechatpay(req,"").then((r)=>{
+        let req1=this.apiService.createRequest();
+        req1.Method="TmcApiOrderUrl-Pay-Process";
+        req1.Version="2.0";
+        req1.Data={
+          OutTradeNo: r,
+          Type: "3"
+        }
+        this.payService.process(req1);
+      }).catch(r=>{});
      
     }
     alipay()
@@ -116,7 +137,7 @@ export class HomePage implements OnInit {
         Channel: "App",
         Type: "2",
         IsApp:false,
-        OrderId:"190000047130",
+        OrderId:"190000047133",
       }
       this.payService.alipay(req,"").then((r)=>{}).catch(r=>{});
     }

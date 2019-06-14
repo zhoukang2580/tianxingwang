@@ -18,19 +18,18 @@ Page(
   },
 
   onLoad: function (args) {
-    debugger;
     wx.login({
       success:(res)=>
       {
          
-        if (args && args.IsReturnUser)
+        if (args && args.IsLogin)
         {
           var geturl = decodeURIComponent(args.getUrl);
           var domain=args.domain;
           var code = res.code
           wx.request({
             url: geturl,
-            data: { domain: args.domain, code: res.code, SdkType:"Mini"},
+            data: {IsLogin:true, domain: args.domain, code: res.code, SdkType:"Mini"},
             header: {},
             method: 'GET',
             dataType: 'json',
@@ -41,7 +40,7 @@ Page(
             },
             complete: (r)=> {
               if (r && r.data && r.data.Data) {
-                wx.setStorageSync("args", { IsReturnUser: true, wechatminicode: res.code, openid: r.data.Data.openid});
+                wx.setStorageSync("args", { IsOpen: true, ticket: r.data.Data.Ticket, openid: r.data.Data.OpenId});
                 wx.navigateBack();
               }
             },

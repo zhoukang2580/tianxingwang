@@ -12,7 +12,7 @@ import { RequestEntity } from './services/api/Request.entity';
 export class DingtalkHelper {
   
 
-  static unionId:string;
+ 
 
   
 }

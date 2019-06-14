@@ -209,9 +209,8 @@ export class AppHelper {
     return !window["cordova"];
   }
   static isWechatH5() {
-    return false;
     var ua = window.navigator.userAgent.toLowerCase();
-    if (ua.includes('micromessenger') && !ua.includes(' miniprogram ')) {    //判断是否是微信环境
+    if (ua.includes('micromessenger') &&  window["__wxjs_environment"] != 'miniprogram') {    //判断是否是微信环境
       return true;
     }
     return false;
@@ -225,9 +224,8 @@ export class AppHelper {
     }
   }
   static isWechatMini() {
-    return true;
     var ua = window.navigator.userAgent.toLowerCase();
-    if (ua.includes('micromessenger') &&  ua.includes(' miniprogram ')) {    //判断是否是微信环境
+    if (ua.includes('micromessenger') &&  window["__wxjs_environment"] === 'miniprogram') {    //判断是否是微信环境
       return true;
     }
     return false;

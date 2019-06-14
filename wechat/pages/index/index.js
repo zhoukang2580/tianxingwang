@@ -16,24 +16,30 @@ Page({
     })
   },
   onShow: function() {
-    debugger;
     var args = wx.getStorageSync("args");
     var url = "http://app.sky-trip.com";
-    if (args && args.wechatminicode) {
-      url += "?wechatminicode=" + args.wechatminicode;
-      if (args.IsReturnUser) {
-        url += "&IsReturnUser=" + args.IsReturnUser;
+    if (args) {
+      if (args.wechatminicode)
+      {
+        url += (url.includes("?") ? "&" : "?") + "wechatminicode=" + args.wechatminicode;
+      }
+      if (args.IsOpen) {
+        url += (url.includes("?") ? "&" : "?")+"IsOpen=" + args.IsOpen;
       }
       if (args.openid) {
-        url += "&openid=" + args.openid;
+        url += (url.includes("?") ? "&" : "?") +"openid=" + args.openid;
       }
       if (args.ticket) {
-        url += "&ticket=" + args.ticket;
+        url += (url.includes("?") ? "&" : "?") +"ticket=" + args.ticket;
       }
       if (args.path) {
-        url += "&path=" + args.path;
+        url += (url.includes("?") ? "&" : "?") +"path=" + args.path;
+      }
+      if (args.wechatPayResult) {
+        url += (url.includes("?") ? "&" : "?") + "wechatPayResult=" + args.wechatPayResult;
       }
     }
+   
     this.setData({
       url: url
     });

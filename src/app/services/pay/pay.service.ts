@@ -49,16 +49,12 @@ interface Wechat {
 export class PayService {
   ali: Ali;
   wechat: Wechat;
-  iframe:HTMLIFrameElement;
   wx = window['wx'];
   constructor(private apiService: ApiService, private plt: Platform) {
     plt.ready().then(() => {
       this.ali = window['ali'];
       this.wechat = window['wechat'];
     });
-    this.iframe=document.createElement("iframe");
-    this.iframe.style.display="none";
-    document.body.append(this.iframe);
   }
 
   alipay(req: RequestEntity, path: string) {
@@ -110,7 +106,10 @@ export class PayService {
             if (r.Status && r.Data) {
               if(AppHelper.isWechatMini())
               {
-                WechatHelper.wx.miniProgram.navigateTo({url: "pages/login/pay?data="+JSON.stringify(r.Data)});
+                const url="/pages/pay/index?timeStamp="+r.Data.timeStamp+"&nonceStr="+r.Data.nonceStr
+                +"&package="+encodeURIComponent(r.Data.package)+"&signType="+r.Data.signType+"&paySign="+r.Data.paySign
+                +"&openid="+WechatHelper.openId+"&ticket="+AppHelper.getTicket()+"&path="+path+"&number="+r.Data.number;
+                WechatHelper.wx.miniProgram.navigateTo({url:url });
               }
               else if(AppHelper.isWechatH5())
               {
@@ -127,7 +126,14 @@ export class PayService {
                   signType: r.Data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
                   paySign: r.Data.paySign, // 支付签名
                   success: (res)=> {
-                    resolve(res);
+                    resolve(r.Data.number);
+                  //  if(res.errMsg=="chooseWXPay:ok")
+                  //  {
+                  //     resolve("success");
+                  //  }
+                  //  else{
+                  //     reject(res.errMsg);
+                  //  }
                   }
                   });
               }
@@ -167,17 +173,15 @@ export class PayService {
 
    payh5(req: RequestEntity,path:string)
    {
-    let url = AppHelper.getApiUrl() + "/home/Pay?path=" + encodeURIComponent(AppHelper.getRedirectUrl() + "?path=" + path);
+    let url = AppHelper.getApiUrl() + "/home/Pay?path=" + encodeURIComponent(AppHelper.getRedirectUrl() + "?path=" + path
+    +"&ticket="+AppHelper.getTicket()+"&openid"+(WechatHelper.openId||""));
     for (let r in req) {
       url += "&" + r + "=" + (typeof req[r]=="string"?req[r]:JSON.stringify(req[r]));
     }
     window.location.href = url;
    }
 
-  process(method: string, data: any) {
-    const req = new RequestEntity();
-    req.Method = method;
-    req.Data = data;
+  process(req: RequestEntity) {
     return new Promise<any>((resolve, reject) => {
       const sub = this.apiService
         .getResponse<{}>(req).subscribe(r => {
