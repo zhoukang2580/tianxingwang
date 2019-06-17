@@ -9,8 +9,7 @@ import {
   animate
 } from "@angular/animations";
 import { Subscription } from "rxjs";
-import { FlyCityItemModel } from '../../select-city/models/CityItemModel';
-import { CityService } from '../../select-city/city.service';
+import { FlyCityItemModel } from '../select-city/models/CityItemModel';
 
 @Component({
   selector: "app-switch-city-comp",
@@ -55,7 +54,7 @@ export class SwitchCityComponent implements OnInit {
   eFromCity: EventEmitter<FlyCityItemModel>;
   @Output()
   eToCity: EventEmitter<FlyCityItemModel>;
-  constructor(private cityService: CityService, plt: Platform) {
+  constructor( plt: Platform) {
     this.mode = plt.is("ios") ? "ios" : plt.is("android") ? "md" : "";
     this.eFromCity = new EventEmitter();
     this.eToCity = new EventEmitter();
@@ -83,29 +82,7 @@ export class SwitchCityComponent implements OnInit {
     }
   }
   ngOnInit() {
-    this.selectCitySub = this.cityService.getSelectedCity().subscribe(city => {
-      console.log("返回选择的城市 " + (city && city.CityName));
-      if (city) {
-        if (this.isSelectFromCity) {
-          this.vmFromCity = city;
-        } else {
-          this.vmToCity = city;
-        }
-      }
-      if (!this.toggleCities) {
-        this.fromCity = this.vmFromCity;
-        this.toCity = this.vmToCity;
-      } else {
-        this.fromCity = this.vmToCity;
-        this.toCity = this.vmFromCity;
-      }
-      if (this.fromCity) {
-        this.eFromCity.emit(this.fromCity);
-      }
-      if (this.toCity) {
-        this.eToCity.emit(this.toCity);
-      }
-    });
+    
   }
   onSelectCity(fromCity: boolean) {
     console.log(this.isMoving);
@@ -114,11 +91,5 @@ export class SwitchCityComponent implements OnInit {
       return;
     }
     this.isSelectFromCity = fromCity;
-    this.cityService.setSelectedCity(
-      this.isSelectFromCity
-        ? { ...this.vmFromCity, selected: true }
-        : { ...this.vmToCity, selected: true }
-    );
-    this.cityService.setShowPage(true);
   }
 }

@@ -23,7 +23,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes),
     AppcomponentsModule,
-    ComponentsModule
+    ComponentsModule,
   ],
   declarations: [FunctionTestPage]
 })

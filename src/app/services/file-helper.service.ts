@@ -13,6 +13,7 @@ import { App } from '../app.component';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 interface Hcp {
   getHash: (filePath: string) => Promise<string>;
+  getUUID: () => Promise<string>;
   openHcpPage: (filePath: string) => Promise<any>;
   saveHcpPath: (serverVersion: string) => Promise<any>;
   openAPK: (apkFilePath: string) => Promise<any>;// 仅Android可用
@@ -80,6 +81,7 @@ export class FileHelperService {
       if(AppHelper.isApp()){
         this.hcpPlugin.loadHcpPage();
         this.splashScreen.show();
+        this.logMessage(`uuid = ${await AppHelper.getDeviceId()}`);
       }
       this.dataDirectory = this.file.dataDirectory;
       await this.clearLocalHcpVersionIfAppUpdated();

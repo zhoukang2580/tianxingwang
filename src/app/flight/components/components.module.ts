@@ -18,6 +18,7 @@ import { NoMoreDataComponent } from "./no-more-data/no-more-data.component";
 import { SelectDateComponent } from "./select-date/select-date.component";
 import { FlyTimelineComponent } from "./fly-timeline/fly-timeline.component";
 import { FlyTimelineItemComponent } from "./fly-timeline-item/fly-timeline-item.component";
+import { SelectCityComponent } from './select-city/select-city.page';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { FlyTimelineItemComponent } from "./fly-timeline-item/fly-timeline-item.
     NoMoreDataComponent,
     SelectDateComponent,
     FlyTimelineComponent,
-    FlyTimelineItemComponent
+    FlyTimelineItemComponent,
+    SelectCityComponent
   ],
   imports: [
     CommonModule,
@@ -59,7 +61,8 @@ import { FlyTimelineItemComponent } from "./fly-timeline-item/fly-timeline-item.
     CabinComponent,
     PipesModule,
     FlyTimelineComponent,
-    FlyTimelineItemComponent
+    FlyTimelineItemComponent,
+    SelectCityComponent
   ],
   entryComponents: [FlyFilterComponent]
 })

@@ -1,6 +1,5 @@
 import { AppHelper } from 'src/app/appHelper';
 import { SelectDatetimePage } from "./../select-datetime/select-datetime.page";
-import { CityService } from "../select-city/city.service";
 import { Router, ActivatedRoute } from "@angular/router";
 import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import * as moment from "moment";
@@ -8,8 +7,7 @@ import { Subscription } from "rxjs";
 import { DayModel } from "../models/DayModel";
 import { SelectDateService } from "../select-datetime/select-date.service";
 import { SearchFlightModel } from "../models/flight/SearchFlightModel";
-import { FlyCityItemModel } from "../select-city/models/CityItemModel";
-import { AlertController } from '@ionic/angular';
+import { FlyCityItemModel } from "../components/select-city/models/CityItemModel";
 import { ModalController } from '@ionic/angular';
 @Component({
   selector: "app-book-flight",
@@ -34,7 +32,6 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
   toCity: FlyCityItemModel; // 切换后，真实的目的城市
   constructor(
     private router: Router,
-    private cityService: CityService,
     private dayService: SelectDateService,
     private modalCtrl: ModalController,
     private route: ActivatedRoute

@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 public class Hcp extends CordovaPlugin {
     private final String TAG = "HCP";
@@ -108,13 +109,11 @@ public class Hcp extends CordovaPlugin {
             return true;
         }
         if (TextUtils.equals("openAPK", action)) {
-        if (TextUtils.equals("getUUID", action)) {
-            this.getUUID(callbackContext);
-            return true;
-        }
             Log.d(TAG, "openAPK " + args.optString(0));
-            if (TextUtils.isEmpty(args.optString(0)))
+            if (TextUtils.isEmpty(args.optString(0))) {
+                callbackContext.error("apk 路径不存在");
                 return true;
+            }
             cordova.getThreadPool().execute(() -> {
                 CordovaResourceApi resourceApi = webView.getResourceApi();
                 File file = resourceApi.mapUriToFile(getUriForArg(args.optString(0)));
@@ -122,42 +121,36 @@ public class Hcp extends CordovaPlugin {
             });
             return true;
         }
+        if (TextUtils.equals("getUUID", action)) {
+            this.getUUID(callbackContext);
+            return true;
+        }
         return super.execute(action, args, callbackContext);
     }
+
     /**
      * Get the device's Universally Unique Identifier (UUID).
      *
      * @return
      */
-    public String getUuid() {
-        String uuid = Settings.Secure.getString(this.cordova.getActivity().getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+    private String getUuid() {
+        String uuid = Settings.System.getString(this.cordova.getActivity().getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+        Log.d(TAG,"getUuid "+uuid);
         return uuid;
     }
-    public void getUUID(CallbackContext callbackContext) {
 
-        String macAddress = null ;
-        WifiManager wifiManager =
-                (WifiManager)cordova.getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        WifiInfo info = ( null == wifiManager ? null : wifiManager.getConnectionInfo());
-        if(null==wifiManager){
-            callbackContext.error(getUuid());
-            return;
-        }
-        if (!wifiManager.isWifiEnabled())
-        {
-            //必须先打开，才能获取到MAC地址
-            wifiManager.setWifiEnabled( true );
-            wifiManager.setWifiEnabled( false );
-        }
-        if ( null != info) {
-            macAddress = info.getMacAddress();
-        }
-        if(TextUtils.isEmpty(macAddress)){
-            callbackContext.error(getUuid());
-        }else{
-            callbackContext.success(macAddress);
-        }
+    public void getUUID(CallbackContext callbackContext) {
+        String uuid = getUuid()+Build.FINGERPRINT;
+        Log.d(TAG,"Build.FINGERPRINT: "+Build.FINGERPRINT+" uuid "+uuid);
+        MD5 md5 = MD5.getInstance();
+        md5.write(uuid.getBytes(StandardCharsets.UTF_8), uuid.getBytes(StandardCharsets.UTF_8).length);
+        String hash = md5.calculateHash();
+        Log.d(TAG,"hash = "+hash);
+        callbackContext.success(hash);
+
+
     }
+
     private void loadHcpPage() {
         cordova.getActivity().runOnUiThread(() -> {
             try {

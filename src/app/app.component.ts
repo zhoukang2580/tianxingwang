@@ -113,7 +113,6 @@ export class AppComponent implements AfterViewInit {
     return true;
   }
   initializeApp() {
-debugger;
     this.getConfigInfo();
     AppHelper.getDomain();// 
     AppHelper.setQueryParamers();
@@ -154,11 +153,15 @@ debugger;
     // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management')]);
     // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management-add')]);
     // this.router.navigate([AppHelper.getRoutePath('function-test')]);
-    this.router.navigate([AppHelper.getRoutePath('book-flight')]);
     this.platform.ready().then(() => {
       this.app = navigator['app'];
       this.statusBar.styleDefault();
-      this.splashScreen.hide();
+      if(AppHelper.isApp()&&this.platform.is("android")){
+        setTimeout(async () => {
+          this.splashScreen.hide();
+          // console.log(`uuid = ${await AppHelper.getUUID()}`);
+        }, 5000);
+      }
     });
     this.backButtonAction();
   }
