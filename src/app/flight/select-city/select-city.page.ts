@@ -120,7 +120,7 @@ export class SelectCityPage implements OnInit, AfterViewInit {
         }
       );
   }
-  initHostCities(cities: ListCityModel[]) {
+  initHostCities(cities: any[]) {
     if (!cities) {
       return;
     }
