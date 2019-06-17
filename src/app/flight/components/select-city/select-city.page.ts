@@ -13,7 +13,6 @@ import {
   Subscription
 } from "rxjs";
 import { ListCityModel } from "./models/ListCityModel";
-import { FlyCityItemModel } from "./models/CityItemModel";
 import { citiesData as MOCK_CITI_DATA } from './cities.data';
 @Component({
   selector: "app-select-city-comp",
@@ -21,12 +20,12 @@ import { citiesData as MOCK_CITI_DATA } from './cities.data';
   styleUrls: ["./select-city.page.scss"]
 })
 export class SelectCityComponent implements OnInit, AfterViewInit {
-  @Input() cityData:FlyCityItemModel[];
-  hotCities: FlyCityItemModel[] = [];
+  @Input() cityData:any[];
+  hotCities: any[] = [];
   @ViewChild("cnt")
   content: IonContent;
-  selectedCity: FlyCityItemModel;
-  historyCities: FlyCityItemModel[] = [];
+  selectedCity: any;
+  historyCities: any[] = [];
   cities: ListCityModel[] = [];
   citySub = Subscription.EMPTY;
   cnt: HTMLElement;
@@ -67,7 +66,7 @@ export class SelectCityComponent implements OnInit, AfterViewInit {
     return false;
   }
   initListCity() {
-   this.cities=MOCK_CITI_DATA;
+   this.cities=MOCK_CITI_DATA as any;
   }
   showCurTargetNavEle(show:boolean){
     this.render.setStyle(this.curTargetNavEle,'display',`${show?"flex":"none"}`);
@@ -175,20 +174,20 @@ export class SelectCityComponent implements OnInit, AfterViewInit {
   goBack() {
   }
   onCitySelected(
-    city: FlyCityItemModel,
+    city: any,
     keepPos?: boolean,
     isUserSelect?: boolean
   ) {
     const st = Date.now();
     city.selected = true;
     this.selectedCity = city;
-    this.cities.map(c => {
-      if (c.items) {
-        c.items.forEach(sub => {
-          sub.selected = city.Code === sub.Code;
-        });
-      }
-    });
+    // this.cities.map(c => {
+    //   if (c.items) {
+    //     c.items.forEach(sub => {
+    //       sub.selected = city.Code === sub.Code;
+    //     });
+    //   }
+    // });
     this.hotCities.map(hc => {
       hc.selected = hc.Code === city.Code;
     });
