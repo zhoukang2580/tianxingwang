@@ -16,7 +16,6 @@ import {
   Subject,
   Subscription
 } from "rxjs";
-import { ListCityModel } from "./models/ListCityModel";
 import { CityService } from "./city.service";
 import { MapService } from '../../services/map/map.service';
 @Component({
@@ -32,7 +31,7 @@ export class SelectCityPage implements OnInit, AfterViewInit {
   content: IonContent;
   selectedCity: any;
   historyCities: any[] = [];
-  cities: ListCityModel[] = [];
+  cities: any[] = [];
   citySub = Subscription.EMPTY;
   cnt: HTMLElement;
   curNavText: HTMLElement;

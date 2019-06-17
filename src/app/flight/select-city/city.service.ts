@@ -1,4 +1,3 @@
-import { ListCityModel } from "./models/ListCityModel";
 import { BehaviorSubject, of, merge, throwError } from "rxjs";
 import { Subject } from "rxjs";
 import { Injectable } from "@angular/core";
@@ -51,7 +50,7 @@ export class CityService {
         return Object.keys(obj)
           .sort((k1, k2) => k1.charCodeAt(0) - k2.charCodeAt(0))
           .map(k => {
-            const lcm = new ListCityModel();
+            const lcm = {}  as any;
             lcm.link = k;
             lcm.items = obj[k].sort(
               (sub1, sub2) => sub1.Sequence - sub2.Sequence
