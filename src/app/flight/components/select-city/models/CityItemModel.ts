@@ -1,4 +1,5 @@
 
-export class FlyCityItemModel extends TrafficlineModel {
+export class FlyCityItemModel {
   selected: boolean;
+  CityName:string;
 }
