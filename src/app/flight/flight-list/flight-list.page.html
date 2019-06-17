@@ -15,6 +15,7 @@
       refreshingText="正在加载...">
     </ion-refresher-content>
   </ion-refresher>
+  <app-fly-timeline></app-fly-timeline>
   <app-no-more-data [hasDataObs]="hasDataSj"></app-no-more-data>
   <app-fly-list-item *ngFor="let flyseg of vmFlights; let i = index" [flightSegment]="flyseg"
     (itemClick)="onItemClick($event)" [itmIndex]="i"></app-fly-list-item>

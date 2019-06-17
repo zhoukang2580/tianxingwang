@@ -7,7 +7,7 @@
         <ion-thumbnail>
             <img [src]="entry.icon" alt="logo">
         </ion-thumbnail>
-        <ion-label>{{entry.label}}</ion-label>
+        <ion-label text-wrap>{{entry.label}}</ion-label>
         <ion-checkbox #cbox slot="end" [(ngModel)]="entry.isChecked"></ion-checkbox>
     </ion-item>
 </ion-list>

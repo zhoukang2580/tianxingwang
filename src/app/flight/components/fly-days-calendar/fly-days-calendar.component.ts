@@ -1,4 +1,4 @@
-import { Platform } from '@ionic/angular';
+import { Platform } from "@ionic/angular";
 import { DayModel } from "./../../models/DayModel";
 import {
   Component,
@@ -11,7 +11,7 @@ import {
   EventEmitter
 } from "@angular/core";
 import * as moment from "moment";
-import { SelectDateService } from '../../select-datetime/select-date.service';
+import { SelectDateService } from "../../select-datetime/select-date.service";
 @Component({
   selector: "app-fly-days-calendar",
   templateUrl: "./fly-days-calendar.component.html",
@@ -34,11 +34,12 @@ export class FlyDaysCalendarComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    for (let i = 1; i < 30; i++) {
+    for (let i = 0; i < 30; i++) {
       const nextDay = moment().add(i, "days");
       const day = this.dayService.generateDayModel(nextDay);
       day.dayOfWeekName = this.dayService.getWeekName(day);
       day.desc = this.dayService.getDescOfDay(day);
+      day.selected = i == 0;
       this.days.push(day);
     }
     // console.log(this.days);
@@ -46,7 +47,7 @@ export class FlyDaysCalendarComponent implements OnInit, AfterViewInit {
   onCalendar() {
     this.calenderClick.emit();
   }
-  ngAfterViewInit() { }
+  ngAfterViewInit() {}
   onDaySelected(day: DayModel) {
     day.selected = true;
     let index = 0;
@@ -66,7 +67,8 @@ export class FlyDaysCalendarComponent implements OnInit, AfterViewInit {
       if (daysEle && selectedEle) {
         const clientRect = selectedEle.getBoundingClientRect();
         // console.dir(daysEle);
-        const dist = (clientRect.width / 2 + clientRect.left - this.plt.width() / 2);
+        const dist =
+          clientRect.width / 2 + clientRect.left - this.plt.width() / 2;
         // console.dir(dist);
         daysEle.scrollBy({
           left: dist,

@@ -1,4 +1,3 @@
-import { FlightJouneyModel } from "./../../../models/flight/FlightJouneyModel";
 import {
   Component,
   OnInit,
@@ -14,6 +13,7 @@ import {
 import { IonCheckbox, IonRadio } from "@ionic/angular";
 import { Subscription, Subject } from "rxjs";
 import { SearchTypeModel } from "../../../models/flight/advanced-search-cond/SearchTypeModel";
+import { FlightJourneyEntity } from 'src/app/flight/models/flight/FlightJourneyEntity';
 
 @Component({
   selector: "app-aircompany",
@@ -22,7 +22,7 @@ import { SearchTypeModel } from "../../../models/flight/advanced-search-cond/Sea
 })
 export class AircompanyComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input()
-  flights: FlightJouneyModel[];
+  flights: FlightJourneyEntity[];
   @Input()
   resetSj: Subject<boolean>;
   resetSub = Subscription.EMPTY;

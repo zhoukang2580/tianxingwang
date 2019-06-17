@@ -1,5 +1,4 @@
 import { ListCityModel } from "./models/ListCityModel";
-import { FlyCityItemModel } from "./models/CityItemModel";
 import { BehaviorSubject, of, merge, throwError } from "rxjs";
 import { Subject } from "rxjs";
 import { Injectable } from "@angular/core";
@@ -9,12 +8,11 @@ import * as jsPy from "js-pinyin";
 import { ApiService } from '../../services/api/api.service';
 import { DbService } from 'src/app/services/db/db.service';
 import { IResponse } from 'src/app/services/api/IResponse';
-import { TrafficlineModel } from '../models/flight/TrafficlineModel';
 @Injectable({
   providedIn: "root"
 })
 export class CityService {
-  private selectedCity$: Subject<FlyCityItemModel>;
+  private selectedCity$: Subject<any>;
   private showPageSj: Subject<boolean>;
   constructor(
     private dbService: DbService,
@@ -29,7 +27,7 @@ export class CityService {
   getShowPage() {
     return this.showPageSj.asObservable();
   }
-  setSelectedCity(city: FlyCityItemModel) {
+  setSelectedCity(city: any) {
     this.selectedCity$.next(city);
   }
   getSelectedCity() {
@@ -41,7 +39,7 @@ export class CityService {
   getListCity() {
     return this.getDomesticAirports().pipe(
       map(trafficLines => {
-        const obj: { [key: string]: FlyCityItemModel[] } = {};
+        const obj: { [key: string]: any[] } = {};
         trafficLines.forEach(t => {
           const k = this.pyfl(t.CityName);
           if (obj[k]) {
@@ -94,7 +92,7 @@ export class CityService {
             })
             .pipe(
               map(
-                (r: IResponse<{ Trafficlines: TrafficlineModel[] }>) =>
+                (r: IResponse<{ Trafficlines: any[] }>) =>
                   r
               ),
               tap(r => {
@@ -115,7 +113,7 @@ export class CityService {
     );
   }
   private updateLocalTrafficLines(
-    data: TrafficlineModel[],
+    data: any[],
     LastUpdateTime: number
   ) {
     const sqls = data.map(t => {
@@ -174,11 +172,11 @@ export class CityService {
   private getLocalTrafficLines() {
     return this.dbService.executeSql(`select * from t_trafficline`).pipe(
       map(res => {
-        const result: TrafficlineModel[] = [];
+        const result: any[] = [];
         if (res.rows.length > 0) {
           for (let i = 0; i < res.rows.length; i++) {
             const row = res.rows.item(i);
-            const t = new TrafficlineModel();
+            const t : any={};
             t.AirportCityCode = row["AirportCityCode"];
             t.Code = row["CityCode"];
             t.CityName = row["CityName"];

@@ -3,8 +3,6 @@ import { Observable, from, of } from "rxjs";
 import { map, switchMap, catchError } from "rxjs/operators";
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { MapPointModel } from '../../flight/models/MapPointModel';
-import { AMapResultModel } from '../../flight/models/AMapResultModel';
 import { ConfigService } from '../config/config.service';
 
 @Injectable({
@@ -15,17 +13,16 @@ export class MapService {
   private BMap: any = window["BMap"];
   private AMap: any = window["AMap"]; // 高德地图
   private _ak = "v7ZHTrOQZqCV2iDbQnkHoOeVEkrn8ktE";
-  constructor(private http: HttpClient, private plt: Platform,private appRouterService: ConfigService) {
-    appRouterService.get().then(r=>{
-      if(!r.BaiduMapAk)
-      {
-        this._ak=r.BaiduMapAk;
+  constructor(private http: HttpClient, private plt: Platform, private appRouterService: ConfigService) {
+    appRouterService.get().then(r => {
+      if (!r.BaiduMapAk) {
+        this._ak = r.BaiduMapAk;
       }
     });
     //   console.log(this.BMap);
   }
   getCurAMapPos() {
-    return new Observable<MapPointModel>(obs => {
+    return new Observable<any>(obs => {
       if (!this.AMap || this.AMap.Map) {
         obs.error("定位出错啦");
         return;
@@ -50,8 +47,8 @@ export class MapService {
         this.AMap.event.addListener(
           geolocation,
           "complete",
-          (result: AMapResultModel) => {
-            const p = new MapPointModel();
+          (result: any) => {
+            const p: any = {};
             p.lat = result.position.lat;
             p.lng = result.position.lng;
             p.address = result.formattedAddress;
@@ -69,7 +66,7 @@ export class MapService {
     })
       .pipe(
         catchError(e => {
-          const p = new MapPointModel();
+          const p: any = {};
           p.address = e;
           p.curCity = "定位出错";
           return of(p);
@@ -78,7 +75,7 @@ export class MapService {
       ;
   }
   getCurBMapPos() {
-    return new Observable<MapPointModel>(obs => {
+    return new Observable<any>(obs => {
       if (!this.BMap || !this.BMap.Geolocation) {
         obs.error("无法定位");
         return;
@@ -87,7 +84,7 @@ export class MapService {
       geolocation.getCurrentPosition(
         r => {
           if (geolocation.getStatus() === window["BMAP_STATUS_SUCCESS"]) {
-            const point = new MapPointModel();
+            const point: any = {};
             point.lat = r.point.lat;
             point.lng = r.point.lng;
             console.log(r); // 121.48789949,31.24916171
@@ -105,7 +102,7 @@ export class MapService {
           coords: [{ lat: p.lat, lng: p.lng }]
         }).pipe(
           switchMap(point => {
-            return new Observable<MapPointModel>(obs => {
+            return new Observable<any>(obs => {
               obs.next(point[0]);
               obs.complete();
             });
@@ -114,9 +111,9 @@ export class MapService {
       )
     );
   }
-  getAMapGeocoder(point: MapPointModel) { }
-  getBMapGeocoder(point: MapPointModel) {
-    return new Observable<MapPointModel>(obs => {
+  getAMapGeocoder(point: any) { }
+  getBMapGeocoder(point: any) {
+    return new Observable<any>(obs => {
       // 创建地理编码实例
       const myGeo = new this.BMap.Geocoder();
       // 根据坐标得到地址描述
@@ -191,7 +188,7 @@ export class MapService {
             console.log(r);
             if (r.status === 0) {
               const ps = r.result.map(item => {
-                const p = new MapPointModel();
+                const p: any = {};
                 p.lng = item.x;
                 p.lat = item.y;
                 return p;

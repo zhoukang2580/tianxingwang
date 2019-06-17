@@ -16,6 +16,8 @@ import { AirtypeComponent } from "./fly-filter/airtype/airtype.component";
 import { CabinComponent } from "./fly-filter/cabin/cabin.component";
 import { NoMoreDataComponent } from "./no-more-data/no-more-data.component";
 import { SelectDateComponent } from "./select-date/select-date.component";
+import { FlyTimelineComponent } from "./fly-timeline/fly-timeline.component";
+import { FlyTimelineItemComponent } from "./fly-timeline-item/fly-timeline-item.component";
 
 @NgModule({
   declarations: [
@@ -31,15 +33,16 @@ import { SelectDateComponent } from "./select-date/select-date.component";
     AirtypeComponent,
     CabinComponent,
     NoMoreDataComponent,
-    SelectDateComponent
+    SelectDateComponent,
+    FlyTimelineComponent,
+    FlyTimelineItemComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
     PipesModule,
-    ReactiveFormsModule,
-    PipesModule
+    ReactiveFormsModule
   ],
   exports: [
     DayComponent,
@@ -53,8 +56,11 @@ import { SelectDateComponent } from "./select-date/select-date.component";
     AircompanyComponent,
     AirportsComponent,
     AirtypeComponent,
-    CabinComponent
+    CabinComponent,
+    PipesModule,
+    FlyTimelineComponent,
+    FlyTimelineItemComponent
   ],
   entryComponents: [FlyFilterComponent]
 })
-export class AppComponentsModule {}
+export class ComponentsModule {}

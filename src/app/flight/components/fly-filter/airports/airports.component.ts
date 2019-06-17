@@ -1,6 +1,5 @@
 import { FormGroup, FormBuilder, FormControl } from "@angular/forms";
 import { Subscription, from, Subject } from "rxjs";
-import { FlightJouneyModel } from "./../../../models/flight/FlightJouneyModel";
 import {
   Component,
   OnInit,
@@ -15,6 +14,7 @@ import {
 import { IonRadio, IonCheckbox } from "@ionic/angular";
 import { QueryList } from "@angular/core";
 import { SearchTypeModel } from "../../../models/flight/advanced-search-cond/SearchTypeModel";
+import { FlightJourneyEntity } from 'src/app/flight/models/flight/FlightJourneyEntity';
 
 @Component({
   selector: "app-airports",
@@ -23,7 +23,7 @@ import { SearchTypeModel } from "../../../models/flight/advanced-search-cond/Sea
 })
 export class AirportsComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input()
-  flights: FlightJouneyModel[];
+  flights: FlightJourneyEntity[];
   @Input()
   toCityName: string;
   @Input()

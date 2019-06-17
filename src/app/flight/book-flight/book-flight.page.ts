@@ -72,7 +72,9 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
   }
   initFlightDays() {
     this.flyDate=this.dayService.generateDayModel(moment()
-    .add(1, "days"));// 默认第二天
+    // 默认第二天
+    // .add(1, "days")
+    );
     this.flyDate.hasToolTip = false;
     this.flyDate.desc = "去程";
     this.flyDate.descPos = "top";

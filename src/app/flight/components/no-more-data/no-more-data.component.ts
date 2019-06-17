@@ -17,7 +17,7 @@ export class NoMoreDataComponent implements OnInit {
   ngOnInit() {
     this.show$ = combineLatest(this.hasDataObs, this.apiService.getLoading()).pipe(
       tap(([hasData, loading]) => {
-        console.log(hasData, loading);
+        // console.log(hasData, loading);
       }),
       map(([hasData, loading]) => !hasData && !loading),
       delay(0)

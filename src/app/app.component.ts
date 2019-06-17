@@ -54,6 +54,9 @@ export class AppComponent implements AfterViewInit {
     private http: HttpClient,
   ) {
   
+    // console.log(this.router.config);
+    if(!this.checkWechatOpenId() || !this.checkDingtalkUnionid())
+      return;
     if (this.platform.is("ios")) {
       AppHelper.setDeviceName("ios");
     }
@@ -151,6 +154,7 @@ debugger;
     // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management')]);
     // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management-add')]);
     // this.router.navigate([AppHelper.getRoutePath('function-test')]);
+    this.router.navigate([AppHelper.getRoutePath('book-flight')]);
     this.platform.ready().then(() => {
       this.app = navigator['app'];
       this.statusBar.styleDefault();

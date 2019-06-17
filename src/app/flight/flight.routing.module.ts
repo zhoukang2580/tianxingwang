@@ -7,14 +7,19 @@ const routes: Routes = [
     loadChildren: './book-flight/book-flight.module#BookFlightPageModule',
     canActivate: [TmcGuard]
   },
-  // {
-  //   path: "select-fly-day",
-  //   loadChildren: "./select-fly-days/select-fly-days.module#SelectFlyDaysPageModule",
-  //   canActivate: [TmcGuard]
-  // },
+  {
+    path: "select-fly-day",
+    loadChildren: "./select-fly-days/select-fly-days.module#SelectFlyDaysPageModule",
+    canActivate: [TmcGuard]
+  },
   {
     path: "flight-list",
     loadChildren: "./flight-list/flight-list.module#FlightListPageModule",
+    canActivate: [TmcGuard]
+  },
+  {
+    path: "flight-detail",
+    loadChildren: "./flight-detail/flight-detail.module#FlightDetailPageModule",
     canActivate: [TmcGuard]
   }
 ];

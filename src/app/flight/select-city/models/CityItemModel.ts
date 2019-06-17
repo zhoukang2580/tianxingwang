@@ -1,5 +1,9 @@
-import { TrafficlineModel } from '../../models/flight/TrafficlineModel';
 
-export class FlyCityItemModel extends TrafficlineModel {
-  selected: boolean;
+export class FlyCityItemModel  {
+  Selected: boolean;
+  Sequence: number;
+  Code: string;
+  IsHot: boolean;
+  CityName: string;
+  Tag: string;
 }

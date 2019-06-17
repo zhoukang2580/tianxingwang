@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform, Injectable } from '@angular/core';
-import { CabinTypeEnum } from '../models/flight/CabinTypeEnum';
+import { FlightCabinType } from '../models/flight/FlightCabinType';
 
 @Injectable({providedIn:'root'})
 @Pipe({
@@ -9,23 +9,22 @@ export class CabintypePipe implements PipeTransform {
 
   transform(value: number, args?: any): any {
     switch (value) {
-      case CabinTypeEnum.Y:
+      case FlightCabinType.Y:
         return "经济舱";
-      case CabinTypeEnum.C:
+      case FlightCabinType.C:
         return "公务舱";
-      case CabinTypeEnum.F:
+      case FlightCabinType.F:
         return "头等舱";
-      case CabinTypeEnum.SeniorY:
+      case FlightCabinType.SeniorY:
         return "高端经济舱";
-      case CabinTypeEnum.DiscountC:
+      case FlightCabinType.DiscountC:
         return "折扣公务舱";
-      case CabinTypeEnum.DiscountF:
+      case FlightCabinType.DiscountF:
         return "折扣头等舱";
-      case CabinTypeEnum.SuperF:
+      case FlightCabinType.SuperF:
         return "超级头等舱";
       default: return value;
     }
-    return null;
   }
 
 }

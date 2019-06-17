@@ -1,5 +1,8 @@
 
 export class LanguageHelper {
+  static getDayTip() {
+    return "天";
+  }
   static getYearTip() {
    return "年";
   }

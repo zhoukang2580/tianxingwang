@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from "@angular/core";
-import { FlightSegmentModel } from "../../models/flight/FlightSegmentModel";
+import { FlightSegmentEntity } from '../../models/flight/FlightSegmentEntity';
 
 @Component({
   selector: "app-flight-dynamic",
@@ -8,7 +8,7 @@ import { FlightSegmentModel } from "../../models/flight/FlightSegmentModel";
 })
 export class FlightDynamicComponent implements OnInit {
   @Input()
-  fly: FlightSegmentModel;
+  fly: FlightSegmentEntity;
   constructor() {}
 
   ngOnInit() {}

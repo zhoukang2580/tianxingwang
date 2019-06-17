@@ -6,7 +6,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { BookFlightPage } from './book-flight.page';
-import { AppComponentsModule } from '../components/components.module';
+import { ComponentsModule } from '../components/components.module';
 import { SelectDatetimePage } from '../select-datetime/select-datetime.page';
 
 const routes: Routes = [
@@ -22,7 +22,7 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    AppComponentsModule
+    ComponentsModule
   ],
   declarations: [BookFlightPage],
   entryComponents:[BookFlightPage]

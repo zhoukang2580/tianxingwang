@@ -1,4 +1,3 @@
-import { CabinTypeEnum } from "./../../../models/flight/CabinTypeEnum";
 import {
   Component,
   OnInit,
@@ -10,10 +9,11 @@ import {
   AfterViewInit
 } from "@angular/core";
 import { IonRadio } from "@ionic/angular";
-import { FlightJouneyModel } from "../../../models/flight/FlightJouneyModel";
 import { Subscription, Subject } from "rxjs";
 import { CabintypePipe } from "../../../pipes/cabintype.pipe";
-import { SearchTypeModel } from "../../../models/flight/advanced-search-cond/SearchTypeModel";
+import { FlightJourneyEntity } from 'src/app/flight/models/flight/FlightJourneyEntity';
+import { FlightCabinType } from 'src/app/flight/models/flight/FlightCabinType';
+import { SearchTypeModel } from 'src/app/flight/models/flight/advanced-search-cond/SearchTypeModel';
 
 @Component({
   selector: "app-cabin",
@@ -25,7 +25,7 @@ export class CabinComponent implements OnInit, OnDestroy, AfterViewInit {
   resetSj: Subject<boolean>;
   resetSub = Subscription.EMPTY;
   @Input()
-  flights: FlightJouneyModel[];
+  flights: FlightJourneyEntity[];
   @ViewChild("unlimitRadio")
   unlimitRadio: IonRadio;
   unlimitRadioSub = Subscription.EMPTY;
@@ -50,10 +50,10 @@ export class CabinComponent implements OnInit, OnDestroy, AfterViewInit {
       f.FlightRoutes.forEach(r => {
         r.FlightSegments.forEach(s => {
           if (
-            !this.cabins.find(a => CabinTypeEnum[a.id] === s.LowestCabinType)
+            !this.cabins.find(a =>FlightCabinType[a.id] === s.LowestCabinType)
           ) {
             this.cabins.push({
-              id: CabinTypeEnum[s.LowestCabinType],
+              id: FlightCabinType[s.LowestCabinType],
               label: this.cabinPipe.transform(s.LowestCabinType),
               isChecked: false
             });

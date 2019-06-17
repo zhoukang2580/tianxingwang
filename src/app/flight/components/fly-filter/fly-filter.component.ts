@@ -1,10 +1,9 @@
-import { BehaviorSubject, Subject } from "rxjs";
-import { ModalController } from "@ionic/angular";
+import { Subject } from "rxjs";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { Component, OnInit, Input } from "@angular/core";
-import { FlightJouneyModel } from "../../models/flight/FlightJouneyModel";
 import { SearchTypeModel } from "../../models/flight/advanced-search-cond/SearchTypeModel";
-import { FlightService } from '../../flight.service';
+import { FlightService } from "../../flight.service";
+import { FlightJourneyEntity } from "../../models/flight/FlightJourneyEntity";
 
 @Component({
   selector: "app-fly-filter",
@@ -13,7 +12,7 @@ import { FlightService } from '../../flight.service';
 })
 export class FlyFilterComponent implements OnInit {
   @Input()
-  flights: FlightJouneyModel[];
+  flights: FlightJourneyEntity[];
   sForm: FormGroup;
   tab: number;
   resetSj: Subject<boolean>;
@@ -46,6 +45,31 @@ export class FlyFilterComponent implements OnInit {
   }
   onTabClick(tab: number) {
     this.tab = tab;
+  }
+  changetimespanOp(evt: boolean) {
+    setTimeout(() => {
+      this.userOps.timespanOp = evt;
+    }, 0);
+  }
+  changeairportOp(evt: boolean) {
+    setTimeout(() => {
+      this.userOps.airportOp = evt;
+    }, 0);
+  }
+  changeairCompanyOp(evt: boolean) {
+    setTimeout(() => {
+      this.userOps.airCompanyOp = evt;
+    }, 0);
+  }
+  changeairTypeOp(evt: boolean) {
+    setTimeout(() => {
+      this.userOps.airTypeOp = evt;
+    }, 0);
+  }
+  changecabinOp(evt: boolean) {
+    setTimeout(() => {
+      this.userOps.cabinOp = evt;
+    }, 0);
   }
   onCancel() {
     // this.onReset();

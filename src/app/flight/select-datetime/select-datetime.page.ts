@@ -5,7 +5,6 @@ import { SelectDateService } from "./select-date.service";
 import { ModalController } from "@ionic/angular";
 import { DayModel } from "../models/DayModel";
 import { environment } from "../../../environments/environment";
-import { AvailableDate } from "../models/AvailableDate";
 @Component({
   selector: "app-select-datetime",
   templateUrl: "./select-datetime.page.html",

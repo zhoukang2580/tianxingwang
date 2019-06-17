@@ -18,8 +18,6 @@ import {
 } from "rxjs";
 import { ListCityModel } from "./models/ListCityModel";
 import { CityService } from "./city.service";
-import { FlyCityItemModel } from "./models/CityItemModel";
-import { MapPointModel } from '../models/MapPointModel';
 import { MapService } from '../../services/map/map.service';
 @Component({
   selector: "app-select-city",
@@ -27,14 +25,13 @@ import { MapService } from '../../services/map/map.service';
   styleUrls: ["./select-city.page.scss"]
 })
 export class SelectCityPage implements OnInit, AfterViewInit {
-  curPos$: Observable<MapPointModel>;
-  hotCities: FlyCityItemModel[] = [];
+  hotCities: any[] = [];
   // curTargetNavSj: Subject<string>;
   isMovingSj: Subject<boolean>;
   @ViewChild("cnt")
   content: IonContent;
-  selectedCity: FlyCityItemModel;
-  historyCities: FlyCityItemModel[] = [];
+  selectedCity: any;
+  historyCities: any[] = [];
   cities: ListCityModel[] = [];
   citySub = Subscription.EMPTY;
   cnt: HTMLElement;
@@ -50,7 +47,6 @@ export class SelectCityPage implements OnInit, AfterViewInit {
     // this.curTargetNavSj = new BehaviorSubject(null);
   }
   ngOnInit() {
-    this.curPos$ = this.mapSer.getCurAMapPos().pipe(map(p => p));
     this.initHistoryCities();
     this.initListCity();
     this.citySub = this.cityService.getSelectedCity().subscribe(city => {
@@ -64,7 +60,7 @@ export class SelectCityPage implements OnInit, AfterViewInit {
             });
             console.log("匹配到的城市：", sc);
             if (sc) {
-              sc.selected = true;
+              sc.Selected = true;
               this.selectedCity = sc;
               this.onCitySelected(sc, true);
               break;
@@ -77,7 +73,7 @@ export class SelectCityPage implements OnInit, AfterViewInit {
   initHistoryCities() {
     const hisC = window.localStorage.getItem("historyCities");
     if (hisC) {
-      const hcs = JSON.parse(hisC) as FlyCityItemModel[];
+      const hcs = JSON.parse(hisC) as any[];
       // console.log(hcs);
       this.selectedCity = hcs.find(item => item.selected) || this.selectedCity;
       this.historyCities = hcs;
@@ -245,7 +241,7 @@ export class SelectCityPage implements OnInit, AfterViewInit {
     this.cityService.setShowPage(false);
   }
   onCitySelected(
-    city: FlyCityItemModel,
+    city: any,
     keepPos?: boolean,
     isUserSelect?: boolean
   ) {
@@ -255,7 +251,7 @@ export class SelectCityPage implements OnInit, AfterViewInit {
     this.cities.map(c => {
       if (c.items) {
         c.items.forEach(sub => {
-          sub.selected = city.Code === sub.Code;
+          sub.Selected = city.Code === sub.Code;
         });
       }
     });

@@ -7,6 +7,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { FunctionTestPage } from './function-test.page';
+import { ComponentsModule } from 'src/app/flight/components/components.module';
 
 const routes: Routes = [
   {
@@ -21,7 +22,8 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    AppcomponentsModule
+    AppcomponentsModule,
+    ComponentsModule
   ],
   declarations: [FunctionTestPage]
 })

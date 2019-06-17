@@ -1,4 +1,3 @@
-import { FlightJouneyModel } from "./../../../models/flight/FlightJouneyModel";
 import {
   Component,
   OnInit,
@@ -14,6 +13,7 @@ import {
 import { IonRadio } from "@ionic/angular";
 import { Subscription, Subject } from "rxjs";
 import { SearchTypeModel } from "../../../models/flight/advanced-search-cond/SearchTypeModel";
+import { FlightJourneyEntity } from 'src/app/flight/models/flight/FlightJourneyEntity';
 
 @Component({
   selector: "app-airtype",
@@ -22,7 +22,7 @@ import { SearchTypeModel } from "../../../models/flight/advanced-search-cond/Sea
 })
 export class AirtypeComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input()
-  flights: FlightJouneyModel[];
+  flights: FlightJourneyEntity[];
   @Input()
   resetSj: Subject<boolean>;
   resetSub = Subscription.EMPTY;
@@ -67,7 +67,7 @@ export class AirtypeComponent implements OnInit, OnDestroy, AfterViewInit {
           if (!this.airtypes.find(a => a.id === s.PlaneType)) {
             this.airtypes.push({
               id: s.PlaneType,
-              label: s.PlaneTypeName,
+              label: s.PlaneTypeDescribe,
               isChecked: false
             });
           }

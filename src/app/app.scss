@@ -87,6 +87,12 @@ ion-alert,
 ion-loading,
 ion-radio {
   --ion-color-primary: var(--ion-color-success);
+  .loading-spinner{
+    --spinner-color:var(--ion-color-success);
+  }
+}
+ion-checkbox{
+  --checkmark-color:var(--ion-color-light);
 }
 
 ion-icon[name="arrow-back"] {

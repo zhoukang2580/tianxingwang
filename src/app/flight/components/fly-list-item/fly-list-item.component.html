@@ -1,30 +1,36 @@
 <div class='fly-item' (click)='onItemClick()'>
 <section>
-  <span *ngIf='showIndex'>第【{{itmIndex+1}}】项</span>
+  <!-- <span *ngIf='showIndex'>第【{{itmIndex+1}}】项</span> -->
  <article class="date-week">{{getDateWeek()}}</article>
   <article class='time'>
     <strong class='start-time'>{{flightSegment?.TakeoffTime?.substring("2018-10-22T".length,"2018-10-22T21:20".length)}}</strong>
     <section class="fly-ico-to">
-      <ion-icon name='airplane' mode='ios' color='primary'></ion-icon>
+      <ion-icon name='airplane' mode='ios' color='secondary' *ngIf='!flightSegment?.IsStop'></ion-icon>
+      <ion-text color='secondary' *ngIf='flightSegment?.IsStop'>停</ion-text>
     </section>
-    <strong class='end-time'>{{flightSegment?.ArrivalTime?.substring("2018-10-22T".length,"2018-10-22T21:20".length)}}</strong>
+    <strong class='end-time' [attr.addoneday]='addoneday()'>{{flightSegment?.ArrivalTime?.substring("2018-10-22T".length,"2018-10-22T21:20".length)}}</strong>
   </article>
   <article class="c-to-c">
-    <ion-text text-start class="from-city">{{flightSegment?.FromAirportName}}{{flightSegment?.FromTerminal}}</ion-text>
-    <ion-text text-end class="to-city">{{flightSegment?.ToAirportName}}{{flightSegment?.ToTerminal}}</ion-text>
+    <ion-text text-nowrap color='medium' class="from-city">{{flightSegment?.FromAirportName}}<br/>{{flightSegment?.FromTerminal}}</ion-text>
+    <ion-text text-nowrap color='medium' class="to-city">{{flightSegment?.ToAirportName}}<br/>{{flightSegment?.ToTerminal}}</ion-text>
   </article>
   <article class="logo-airline">
       <ion-avatar>
         <img src='/assets/icon/favicon.png'/>
       </ion-avatar>
-      <ion-text>{{flightSegment?.AirlineName}}{{flightSegment?.Number}}</ion-text>
+      <ion-text text-wrap color='medium'>{{flightSegment?.AirlineName}} {{flightSegment?.Number}}</ion-text>
+      <span class='seperator'>|</span>
+      <ion-text>{{flightSegment?.FlyTimeName}}</ion-text>
     </article>
 </section>
 <section class="price">
-  <ion-text class='jiage'>￥{{flightSegment?.LowestFare}}起</ion-text>
+  <ion-text class='jiage'>￥{{flightSegment?.LowestFare|flightprice}}起</ion-text>
   <article class="desc">
-    <ion-text>{{flightSegment?.LowestCabinType|cabintype}}</ion-text>
-    <ion-text *ngIf='flightSegment?.LowestDiscount'>{{flightSegment?.LowestDiscount|discount}}</ion-text>
+    <ion-text color='medium'>{{flightSegment?.LowestCabinType|cabintype}}</ion-text>
+    <ion-text *ngIf='flightSegment?.LowestDiscount' color='medium'>{{flightSegment?.LowestDiscount|discount}}</ion-text>
   </article>
+  <ion-button color='danger' margin-top  expand='block' size='small'>
+    <ion-text>预定</ion-text>
+  </ion-button>
 </section>
 </div>
