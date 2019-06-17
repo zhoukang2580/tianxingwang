@@ -101,7 +101,7 @@ export class AppHelper {
               reject("hcp 未安装");
               return;
             }
-            const uuid = await hcp.getUUID()
+            const uuid = await hcp.getUUID();
             if (uuid) {
               resolve(`${uuid}`.replace(/-/g, '').toLowerCase());
             } else {

@@ -7,7 +7,6 @@ import { Subscription } from "rxjs";
 import { DayModel } from "../models/DayModel";
 import { SelectDateService } from "../select-datetime/select-date.service";
 import { SearchFlightModel } from "../models/flight/SearchFlightModel";
-import { FlyCityItemModel } from "../components/select-city/models/CityItemModel";
 import { ModalController } from '@ionic/angular';
 @Component({
   selector: "app-book-flight",
@@ -26,10 +25,10 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
   selectDaySub = Subscription.EMPTY;
   selectCitySub = Subscription.EMPTY;
   isMoving: boolean;
-  vmFromCity: FlyCityItemModel; // 城市切换后，真实的出发城市
-  vmToCity: FlyCityItemModel; // 切换后，真实的目的城市
-  fromCity: FlyCityItemModel; // 城市切换后，真实的出发城市
-  toCity: FlyCityItemModel; // 切换后，真实的目的城市
+  vmFromCity: any; // 城市切换后，真实的出发城市
+  vmToCity: any; // 切换后，真实的目的城市
+  fromCity: any; // 城市切换后，真实的出发城市
+  toCity: any; // 切换后，真实的目的城市
   constructor(
     private router: Router,
     private dayService: SelectDateService,
@@ -54,11 +53,11 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.initFlightCities();
     this.initFlightDays();
   }
-  onSelectToCity(toCity: FlyCityItemModel) {
+  onSelectToCity(toCity: any) {
     this.toCity = toCity;
     console.log("目的城市 " + toCity.CityName);
   }
-  onSelectFromCity(city: FlyCityItemModel) {
+  onSelectFromCity(city: any) {
     console.log("出发城市 =>" + city.CityName);
     this.fromCity = city;
   }
@@ -86,10 +85,10 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.selectDaySub = this.dayService.getSelectedDays().subscribe(days => {});
   }
   initFlightCities() {
-    this.fromCity = this.vmFromCity = new FlyCityItemModel();
+    this.fromCity = this.vmFromCity = {};
     this.fromCity.CityName = this.vmFromCity.CityName = "北京";
     this.vmFromCity.Code = this.fromCity.Code = "BJS";
-    this.toCity = this.vmToCity = new FlyCityItemModel();
+    this.toCity = this.vmToCity = {};
     this.toCity.CityName = this.vmToCity.CityName = "上海";
     this.vmToCity.Code = this.toCity.Code = "SHA";
     this.fromCity.Tag = this.toCity.Tag = "AirportCity"; // 出发城市，不是出发城市的那个机场

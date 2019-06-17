@@ -91,7 +91,9 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   }
   autoLogin() {
     this.identityService.getIdentity().then(r => {
+
       if (!r || !r.Ticket) {
+        alert(AppHelper.isApp());
         if (AppHelper.isApp()) {
           this.loginType = "device";
           this.login();
@@ -124,7 +126,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         const code = await this.getWechatCode(appId).catch(() => null);
         if (code) {
           this.loginType = "wechat";
-          this.form.patchValue({ WechatCode: code });
+          this.form.patchValue({ WechatCode: code,WechatSdkType:"App" });
           this.login();
         }
       }
@@ -237,6 +239,8 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       case "device":
         this.loginEntity.Data.Device = await AppHelper.getDeviceId();
         this.loginEntity.Data.DeviceName = await AppHelper.getDeviceName();
+        alert(this.loginEntity.Data.Device);
+        alert(this.loginEntity.Data.DeviceName);
         this.loginEntity.Data.Token = AppHelper.getStorage("loginToken");
         this.loginSubscription = this.loginService.login("ApiLoginUrl-Home-DeviceLogin", this.loginEntity).pipe(
           finalize(() => {
@@ -295,7 +299,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   }
   async jump(isCheckDevice: boolean) // 跳转
   {
-    console.log(`jump,loginType=${this.loginType},isCheckDevice=${isCheckDevice},toPageRouter=${this.loginService.getToPageRouter()}`);
+
     this.loginType = "user";
     const toPageRouter = this.loginService.getToPageRouter() || "";
     if (isCheckDevice && AppHelper.isApp()) {
