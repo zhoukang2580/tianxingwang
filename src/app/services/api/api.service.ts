@@ -75,7 +75,7 @@ export class ApiService {
     return this.getResponse<T>(req);
   }
   getResponse<T>(req: RequestEntity): Observable<IResponse<T>> {
-    return this.sendRequest(req, true);
+    return this.sendRequest({...req}, true);
   }
   createRequest()
   {
@@ -188,9 +188,6 @@ export class ApiService {
           } else if (r.Code && r.Code.toUpperCase() === "NOLOGIN") {
             this.router.navigate([AppHelper.getRoutePath("login")]);
           }
-          // if (!r.Status ) {
-          //   return AppHelper.alert(r.Message);
-          // }
           return of(r);
         }),
         catchError((error: Error | any) => {
@@ -200,7 +197,6 @@ export class ApiService {
           entity.Message = LanguageHelper.getApiExceptionTip();
           if (error instanceof TimeoutError) {
             entity.Message = LanguageHelper.getApiTimeoutTip();
-            //AppHelper.alert(LanguageHelper.getApiTimeoutTip());
           }
           return throwError(error);
         }),
