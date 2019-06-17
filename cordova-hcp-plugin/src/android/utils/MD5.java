@@ -37,7 +37,7 @@ public class MD5 {
      * @param bytes  bytes
      * @param length number of bytes to take
      */
-    private void write(byte[] bytes, int length) {
+    public void write(byte[] bytes, int length) {
         if (digest == null) {
             return;
         }
@@ -50,7 +50,7 @@ public class MD5 {
      *
      * @return md5 hash string
      */
-    private String calculateHash() {
+    public String calculateHash() {
         if (digest == null) {
             return "";
         }
