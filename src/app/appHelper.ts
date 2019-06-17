@@ -113,6 +113,8 @@ export class AppHelper {
         },
         false
       );
+    }).catch(ex=>{
+      return "";
     });
   }
 
@@ -195,6 +197,9 @@ export class AppHelper {
         },
         false
       );
+    }).catch(ex=>{
+      // this.alert(JSON.stringify(ex));
+      return "";
     });
   }
   static isApp() {

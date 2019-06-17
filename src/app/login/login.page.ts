@@ -239,8 +239,6 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       case "device":
         this.loginEntity.Data.Device = await AppHelper.getDeviceId();
         this.loginEntity.Data.DeviceName = await AppHelper.getDeviceName();
-        alert(this.loginEntity.Data.Device);
-        alert(this.loginEntity.Data.DeviceName);
         this.loginEntity.Data.Token = AppHelper.getStorage("loginToken");
         this.loginSubscription = this.loginService.login("ApiLoginUrl-Home-DeviceLogin", this.loginEntity).pipe(
           finalize(() => {
