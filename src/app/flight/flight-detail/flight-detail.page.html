@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-text>{{flightSegment?.FromCityName}}</ion-text>
+      <span>--</span>
+      <ion-text>{{flightSegment?.ToCityName}}</ion-text>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item>
+      <app-fly-timeline>
+        <h3 no-margin>首都国际机场</h3>
+        <app-fly-timeline-item>测试节点</app-fly-timeline-item>
+        <app-fly-timeline-item>测试节点2</app-fly-timeline-item>
+        <app-fly-timeline-item>测试节点3</app-fly-timeline-item>
+        <app-fly-timeline-item>测试节点4</app-fly-timeline-item>
+        <app-fly-timeline-item>测试节点5</app-fly-timeline-item>
+        <app-fly-timeline-item>测试节点6</app-fly-timeline-item>
+        <h3 no-margin>上海虹桥</h3>
+      </app-fly-timeline>
+    </ion-item>
+  </ion-list>
+</ion-content>

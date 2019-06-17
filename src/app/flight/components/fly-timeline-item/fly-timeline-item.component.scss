@@ -1,0 +1,37 @@
+.timeline-item {
+  $ion-circle-size: 10px;
+  position: relative;
+  width: 100%;
+  padding:0 0 0.5em 0;
+  .timeline-item-head {
+    position: absolute;
+    min-width: $ion-circle-size;
+    min-height: $ion-circle-size;
+    width: $ion-circle-size;
+    height: $ion-circle-size;
+    background-color: white;
+    border: 2px solid var(--ion-color-secondary);
+    border-radius: 100px;
+  }
+  &:not(.last) .timeline-item-tail {
+    position: absolute;
+    top: $ion-circle-size;
+    left: 4px;
+    bottom: 0;
+    border-left: 2px solid var(--ion-color-medium);
+  }
+  .timeline-item-content {
+    font-size: 0.9rem;
+    margin: 0 0 0 18px;
+    padding-top: 2px;
+    position: relative;
+    top: calc(-10px / 2 + 1px);
+    text-align: left;
+  }
+}
+ul,
+li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
