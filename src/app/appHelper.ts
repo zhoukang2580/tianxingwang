@@ -255,6 +255,7 @@ export class AppHelper {
   static setCookie(name: string, value: string, time: number = 0) {
 
     const exp = moment(+moment() + time);
+    this.alert(exp);
     document.cookie = `${name}=${escape(value)};path=/;expires=${moment
       .utc(exp)
       .toDate()}`;
@@ -307,7 +308,7 @@ export class AppHelper {
   }
   static getTicket() {
     var ticket= AppHelper.getQueryString("ticket") || AppHelper.getCookie("ticket");
-    return ticket=="null"?null:ticket;
+    return ticket=="null"?"":ticket;
   }
   static _appDomain = "beeant.com";
   static _domain;
