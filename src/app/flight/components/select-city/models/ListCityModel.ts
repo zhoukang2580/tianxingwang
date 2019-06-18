@@ -1,4 +1,4 @@
-import { FlyCityItemModel } from "./CityItemModel";
+import { FlyCityItemModel } from "./FlyCityItemModel";
 
 
 export class ListCityModel {

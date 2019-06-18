@@ -159,7 +159,8 @@ export class ApiService {
     });
   }
 
-  private sendRequest(req: RequestEntity, isCheckLogin: boolean): Observable<IResponse<any>> {
+  private sendRequest(request: RequestEntity, isCheckLogin: boolean): Observable<IResponse<any>> {
+   const  req={...request};
     req.Timestamp = Math.floor(Date.now() / 1000);
     req.Language = AppHelper.getLanguage();
     req.Ticket = AppHelper.getTicket();

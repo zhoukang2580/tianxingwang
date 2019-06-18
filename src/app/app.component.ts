@@ -152,8 +152,10 @@ export class AppComponent implements AfterViewInit {
     // this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
     // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management')]);
     // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management-add')]);
-    // this.router.navigate([AppHelper.getRoutePath('function-test')]);
     //this.router.navigate([AppHelper.getRoutePath('book-flight')]);
+    setTimeout(() => {
+      this.router.navigate([AppHelper.getRoutePath('function-test')]);
+    }, 100);
     this.platform.ready().then(() => {
       this.app = navigator['app'];
       this.statusBar.styleDefault();
@@ -209,7 +211,7 @@ export class AppComponent implements AfterViewInit {
           lastClickTime = Date.now();
         }
       } else {
-        this.navCtrl.back();
+        // this.navCtrl.back();
         // window.history.back();
       }
     });

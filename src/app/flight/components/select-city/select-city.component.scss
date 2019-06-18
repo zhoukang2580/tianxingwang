@@ -1,0 +1,193 @@
+#cities {
+  overflow-y                : auto;
+  overflow-x                : hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+ion-segment-button {
+  &.overseas {
+    position: relative;
+
+    &::before {
+      content    : "";
+      position   : absolute;
+      left       : 0;
+      top        : 25%;
+      bottom     : 25%;
+      display    : block;
+      border-left: 1px solid rgba(0, 0, 0, 0.22);
+    }
+  }
+
+  &.active {
+    color: var(--ion-color-secondary);
+  }
+}
+
+ion-toolbar.seg {
+  --background: white;
+}
+
+:host {
+  position    : fixed;
+  height      : 100vh;
+  top         : 0;
+  width       : 100vw;
+  --background: white;
+  background  : white;
+  bottom      : 0;
+  left        : 0;
+  right       : 0;
+  z-index     : 1000;
+}
+
+ion-content {
+
+  // ion-spinner{
+  //   width : 0.5rem;
+  //   height: 0.5rem;
+  // }
+  &#mainCnt {
+    &::-webkit-scrollbar {
+      display   : none;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    overflow-y: scroll;
+    /* has to be scroll, not auto */
+    -webkit-overflow-scrolling:touch;
+    scroll-behavior           : smooth; // -webkit-overflow-scrolling: touch;
+    // width                  : 90%;
+    // border-right           : 1px solid tomato;
+  }
+
+  .history-cites {
+    display        : flex;
+    align-items    : center;
+    justify-content: flex-start; // margin-bottom: 0.5rem;
+    padding        : 0.5rem;
+  }
+
+  #cur ion-label h2 {
+    display    : flex;
+    align-items: center;
+  }
+
+  --background: var(--ion-color-light);
+
+  ion-chip {
+    // padding     : 0.4rem 0.71rem;
+    // max-width   : 5rem;
+    display        : flex;
+    justify-content: center;
+    align-items    : center;
+
+    box-sizing  : content-box;
+    text-align  : center;
+    margin-right: 0.5rem;
+    border      : 1px solid var(--ion-color-dark);
+
+    &.city-selected {
+      --color     : var(--ion-color-secondary);
+      border-color: var(--ion-color-secondary);
+      --background: var(--ion-color-primary);
+    }
+  }
+
+  .curTargetNav {
+    display: none;
+
+    &.show {
+      display: flex;
+    }
+
+    transition     : all ease-in-out 300ms;
+    font-size      : 2rem;
+    position       : absolute;
+    width          : 5rem;
+    height         : 5rem;
+    border-radius  : 4px;
+    background     : rgba(0, 0, 0, 0.4);
+    left           : 50%;
+    top            : 30vh;
+    transform      : translate(-50%, -50%);
+    z-index        : 999;
+    align-items    : center;
+    justify-content: center;
+
+    h1 {
+      font-size : 2rem;
+      margin    : 0;
+      padding   : 0;
+      text-align: center;
+    }
+  }
+
+  section.cities {
+    display  : flex;
+    flex-flow: column nowrap;
+
+    ion-list {
+      margin-bottom: 1rem;
+    }
+
+    width: 100%;
+  }
+}
+
+ul.nav-headers,
+ul.c-items {
+  list-style: none;
+}
+
+.c-header {
+  position        : sticky;
+  top             : 0;
+  background-color: var(--ion-color-primary);
+}
+
+.nav-links {
+  position                  : fixed;
+  z-index                   : 2000;
+  top                       : 6rem;
+  width                     : 2rem;
+  -webkit-overflow-scrolling: touch;
+  right                     : 0.1em;
+  bottom                    : 2em;
+
+  .nav {
+    -webkit-overflow-scrolling: touch;
+    position                  : absolute;
+    background                : var(--ion-color-light);
+    right                     : 0;
+    top                       : 0;
+    bottom                    : 0;
+    font-size                 : .9rem;
+    width                     : 10vw;
+    height                    : auto;
+    min-height                : 10rem;
+    color                     : var(--ion-color-secondary);
+    z-index                   : 2001;
+    display                   : flex;
+    flex-flow                 : column nowrap;
+    align-items               : center;
+    justify-content           : space-between;
+
+    ion-text {
+      display        : flex;
+      align-items    : center;
+      justify-content: center;
+
+      a {
+        background     : white;
+        color          : inherit;
+        text-decoration: none;
+      }
+
+      position: relative;
+      width   : 100%;
+      height  : 100%; // border: red .5px solid;
+    }
+  }
+}

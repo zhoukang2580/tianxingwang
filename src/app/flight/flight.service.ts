@@ -18,15 +18,23 @@ import { FlightSegmentEntity } from "./models/flight/FlightSegmentEntity";
 })
 export class FlightService {
   private advSearchShowSources: Subject<boolean>;
+  private openCloseSelectCitySources: Subject<boolean>;
   private advSearchCondSources: Subject<AdvSearchCondModel>;
   private resetAdvSCondSources: Subject<boolean>;
   constructor(private apiService: ApiService) {
     this.advSearchShowSources = new BehaviorSubject(false);
     this.resetAdvSCondSources = new BehaviorSubject(true);
+    this.openCloseSelectCitySources = new BehaviorSubject(false);
     this.advSearchCondSources = new BehaviorSubject(new AdvSearchCondModel());
   }
   getResetAdvSCondSources() {
     return this.resetAdvSCondSources;
+  }
+  getOpenCloseSelectCityPageSources(){
+   return this.openCloseSelectCitySources.asObservable();
+  }
+  showSelectCityPage(open:boolean){
+    this.openCloseSelectCitySources.next(open);
   }
   setResetAdvCond(reset: boolean) {
     this.resetAdvSCondSources.next(reset);

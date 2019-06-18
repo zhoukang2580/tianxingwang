@@ -9,7 +9,7 @@ import {
   animate
 } from "@angular/animations";
 import { Subscription } from "rxjs";
-import { FlyCityItemModel } from '../select-city/models/CityItemModel';
+import { FlyCityItemModel } from '../select-city/models/FlyCityItemModel';
 
 @Component({
   selector: "app-switch-city-comp",
