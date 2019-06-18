@@ -93,14 +93,12 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.identityService.getIdentity().then(r => {
 
       if (!r || !r.Ticket) {
-        // alert(AppHelper.isApp());
         if (AppHelper.isApp()) {
           this.loginType = "device";
           this.login();
         }
       }
-      else
-      {
+      else {
         this.jump(true);
       }
     })
@@ -126,7 +124,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         const code = await this.getWechatCode(appId).catch(() => null);
         if (code) {
           this.loginType = "wechat";
-          this.form.patchValue({ WechatCode: code,WechatSdkType:"App" });
+          this.form.patchValue({ WechatCode: code, WechatSdkType: "App" });
           this.login();
         }
       }
@@ -166,7 +164,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   async login() {
-    this.loginEntity.IsShowLoading=true;
+    this.loginEntity.IsShowLoading = true;
     switch (this.loginType) {
       case "user":
         this.loginEntity.Data.Name = this.form.value.Name;
@@ -224,25 +222,32 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         });
         break;
       case "wechat":
-        this.loginEntity.Data.SdkType = this.form.value.WechatSdkType;
-        this.loginEntity.Data.Code = this.form.value.WechatCode;
-        this.loginSubscription = this.loginService.login("ApiLoginUrl-Home-WechatLogin", this.loginEntity).pipe(
-          finalize(() => {
-            this.loginType = "user";
-          })
-        ).subscribe(r => {
-          if (r.Ticket) {
-            this.jump(true);
-          }
-        });
-        break;
+        {
+          this.loginEntity.Data.SdkType = this.form.value.WechatSdkType;
+          this.loginEntity.Data.Code = this.form.value.WechatCode;
+          this.loginSubscription = this.loginService.login("ApiLoginUrl-Home-WechatLogin", this.loginEntity).pipe(
+            finalize(() => {
+              this.loginType = "user";
+            })
+          ).subscribe(r => {
+            AppHelper.alert("wechat登录，" + JSON.stringify(r));
+            if (r.Ticket) {
+              this.jump(true);
+            }
+          }, e => {
+            AppHelper.alert("wechat登录失败，" + JSON.stringify(e));
+          });
+          break;
+        }
       case "device":
         this.loginEntity.Data.Device = await AppHelper.getDeviceId();
         this.loginEntity.Data.DeviceName = await AppHelper.getDeviceName();
         this.loginEntity.Data.Token = AppHelper.getStorage("loginToken");
         this.loginSubscription = this.loginService.login("ApiLoginUrl-Home-DeviceLogin", this.loginEntity).pipe(
           finalize(() => {
-            this.loginType = "user";
+            setTimeout(() => {
+              this.loginType = "user";
+            }, 100);
           })
         ).subscribe(r => {
           if (!r.Ticket) {
