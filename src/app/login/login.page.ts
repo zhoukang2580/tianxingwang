@@ -93,7 +93,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.identityService.getIdentity().then(r => {
 
       if (!r || !r.Ticket) {
-        alert(AppHelper.isApp());
+        // alert(AppHelper.isApp());
         if (AppHelper.isApp()) {
           this.loginType = "device";
           this.login();

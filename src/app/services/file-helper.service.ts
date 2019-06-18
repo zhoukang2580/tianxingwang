@@ -79,7 +79,9 @@ export class FileHelperService {
       this.hcpPlugin = window['hcp'];
       this.app = navigator['app'];
       if(AppHelper.isApp()){
-        this.hcpPlugin.loadHcpPage();
+        if(this.plt.is('android')){
+          this.hcpPlugin.loadHcpPage();
+        }
         this.splashScreen.show();
         this.logMessage(`uuid = ${await AppHelper.getDeviceId()}`);
       }

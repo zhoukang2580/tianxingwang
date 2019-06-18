@@ -7,6 +7,10 @@ import {
   AfterViewInit,
   Renderer2,
   Input,
+  HostBinding,
+  OnDestroy,
+  Output,
+  EventEmitter
 } from "@angular/core";
 import {
   fromEvent,
@@ -14,35 +18,61 @@ import {
 } from "rxjs";
 import { ListCityModel } from "./models/ListCityModel";
 import { citiesData as MOCK_CITI_DATA } from './cities.data';
+import { FlyCityItemModel } from './models/FlyCityItemModel';
+import { trigger, state, style, animate, transition } from '@angular/animations';
+import { FlightService } from '../../flight.service';
 @Component({
   selector: "app-select-city-comp",
-  templateUrl: "./select-city.page.html",
-  styleUrls: ["./select-city.page.scss"]
+  templateUrl: "./select-city.component.html",
+  styleUrls: ["./select-city.component.scss"],
+  animations: [
+    trigger("openclose", [
+      state("true", style({ transform: "scale(1)" })),
+      state("false", style({ transform: "scale(0)" })),
+      transition('true<=>false', animate('300ms ease-in-out'))
+    ])
+  ]
 })
-export class SelectCityComponent implements OnInit, AfterViewInit {
-  @Input() cityData:any[];
-  hotCities: any[] = [];
+export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
+  @Input() cities: FlyCityItemModel[] = [];
+  hotCities: FlyCityItemModel[] = [];
   @ViewChild("cnt")
   content: IonContent;
-  selectedCity: any;
-  historyCities: any[] = [];
-  cities: ListCityModel[] = [];
-  citySub = Subscription.EMPTY;
+  selectedCity: FlyCityItemModel;
+  historyCities: FlyCityItemModel[] = [];
+  listCities: ListCityModel[] = [];
+  subscription = Subscription.EMPTY;
+  openCloseSubscription = Subscription.EMPTY;
   cnt: HTMLElement;
-  curTargetNavEle:HTMLElement;
+  linksNavEle: HTMLElement;
+  curTargetNavEle: HTMLElement;
   curNavTextEle: HTMLElement;
   isUserSelect: boolean;
+  @HostBinding('@openclose') openclose = true;
+  @Output() selectcity: EventEmitter<any>;
   constructor(
     private plt: Platform,
-    private render: Renderer2
+    private render: Renderer2,
+    private flightService: FlightService
   ) {
+    this.selectcity = new EventEmitter();
   }
   ngOnInit() {
     this.initHistoryCities();
     this.initListCity();
+    this.openCloseSubscription = this.flightService.getOpenCloseSelectCityPageSources().subscribe(open => {
+      this.openclose = open;
+    });
+  }
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+    this.openCloseSubscription.unsubscribe();
   }
   initHistoryCities() {
-    this.historyCities=this.cityData.filter(c=>c.IsHot);
+    const hcs = window.localStorage.getItem("historyCities");
+    if (hcs) {
+      this.historyCities = JSON.parse(hcs);
+    }
   }
   goToCity(nav: {
     link: string;
@@ -50,12 +80,13 @@ export class SelectCityComponent implements OnInit, AfterViewInit {
     rect?: DOMRect | ClientRect;
     offsetTop?: number;
   }) {
+    this.showCurTargetNavEle(true);
     // console.log(`开始查找元素[data-id=${nav.link}]`);
     let sT = Date.now();
     this.content.scrollToPoint(0, Math.floor(nav.offsetTop));
-    console.log(
-      `完成${nav.link},${nav.offsetTop}滚动耗时 ${Date.now() - sT} ms`
-    );
+    // console.log(
+    //   `完成${nav.link},${nav.offsetTop}滚动耗时 ${Date.now() - sT} ms`
+    // );
     sT = Date.now();
     // this.isMovingSj.next(true);
 
@@ -66,19 +97,35 @@ export class SelectCityComponent implements OnInit, AfterViewInit {
     return false;
   }
   initListCity() {
-   this.cities=MOCK_CITI_DATA as any;
+    this.listCities = MOCK_CITI_DATA.map(c => {
+      return {
+        ...c,
+        items: c.items.map(i => {
+          const item: FlyCityItemModel = new FlyCityItemModel();
+          item.CityName = i.cityName;
+          item.Code = i.cityId + "";
+          item.Selected = i.selected;
+          item.IsHot = Math.floor((Math.random() * 10000)) % 2 == 0;
+          return item;
+        })
+      }
+    });
   }
-  showCurTargetNavEle(show:boolean){
-    this.render.setStyle(this.curTargetNavEle,'display',`${show?"flex":"none"}`);
+  showCurTargetNavEle(show: boolean) {
+    if (show) {
+      this.render.addClass(this.curTargetNavEle, 'show');
+    } else {
+      this.render.removeClass(this.curTargetNavEle, 'show');
+    }
   }
   ngAfterViewInit() {
     this.cnt = document.getElementById("mainCnt");
     this.curNavTextEle = document.getElementById("curNavText");
-    this.curTargetNavEle=document.querySelector(".curTargetNav");
+    this.curTargetNavEle = document.querySelector(".curTargetNav");
     if (this.plt.is("ios")) {
-      this.render.setStyle(this.cnt, "width", "90%");
+      this.render.setStyle(this.cnt, "width", "90vw");
     }
-    const nav = document.getElementById("links"); // 这里是右边的字母
+    const nav = this.linksNavEle = document.getElementById("links"); // 这里是右边的字母
     let lastTime = Date.now();
     if (!nav) {
       return;
@@ -89,7 +136,7 @@ export class SelectCityComponent implements OnInit, AfterViewInit {
           this.showCurTargetNavEle(true);
           lastTime = Date.now();
           let tempc = [];
-          this.cities.map(c => {
+          this.listCities.map(c => {
             tempc = [...tempc, ...c.items];
             const el = document.querySelector(`.${c.link}-link`); // 导航用的link
             const ele = document.querySelector(
@@ -109,9 +156,9 @@ export class SelectCityComponent implements OnInit, AfterViewInit {
         }),
         switchMap(() =>
           fromEvent(nav, "touchmove").pipe(
-            // tap(evt => {
-            //   this.isMovingSj.next(true);
-            // }),
+            tap(evt => {
+              this.showCurTargetNavEle(true);
+            }),
             takeUntil(
               fromEvent(nav, "touchend").pipe(
                 tap((evt: TouchEvent) => {
@@ -126,21 +173,21 @@ export class SelectCityComponent implements OnInit, AfterViewInit {
                     //     this.goToCity(c);
                     //   }
                     // });
-                    const ele = document.elementFromPoint(
-                      touch.pageX,
-                      touch.pageY
-                    );
-                    if (ele && ele.tagName === "A") {
-                      this.cities.map(el => {
-                        // console.log(el.link);
-                        if (
-                          el.link === ele.innerHTML ||
-                          el.displayName === ele.innerHTML
-                        ) {
-                          this.goToCity(el);
-                        }
-                      });
-                    }
+                    // const ele = document.elementFromPoint(
+                    //   touch.pageX,
+                    //   touch.pageY
+                    // );
+                    // if (ele && ele.tagName === "A") {
+                    //   this.listCities.map(el => {
+                    //     // console.log(el.link);
+                    //     if (
+                    //       el.link === ele.innerHTML ||
+                    //       el.displayName === ele.innerHTML
+                    //     ) {
+                    //       this.goToCity(el);
+                    //     }
+                    //   });
+                    // }
                   }
                   setTimeout(() => {
                     this.showCurTargetNavEle(false);
@@ -159,7 +206,7 @@ export class SelectCityComponent implements OnInit, AfterViewInit {
         lastTime = Date.now();
         if (evt.touches && evt.touches.length) {
           const touch = evt.touches[0];
-          this.cities.map(c => {
+          this.listCities.map(c => {
             if (
               c.rect &&
               touch.pageY >= c.rect.top &&
@@ -172,14 +219,25 @@ export class SelectCityComponent implements OnInit, AfterViewInit {
       });
   }
   goBack() {
+    this.selectcity.emit(this.selectedCity);
+    this.flightService.showSelectCityPage(false);
+  }
+  onNavLickClick(link: string) {
+    this.listCities.map(el => {
+      // console.log(el.link);
+      if (el.link === link) {
+        this.goToCity(el);
+      }
+    });
   }
   onCitySelected(
-    city: any,
+    city: FlyCityItemModel,
     keepPos?: boolean,
     isUserSelect?: boolean
   ) {
     const st = Date.now();
-    city.selected = true;
+
+    city.Selected = true;
     this.selectedCity = city;
     // this.cities.map(c => {
     //   if (c.items) {
@@ -189,7 +247,7 @@ export class SelectCityComponent implements OnInit, AfterViewInit {
     //   }
     // });
     this.hotCities.map(hc => {
-      hc.selected = hc.Code === city.Code;
+      hc.Selected = hc.Code === city.Code;
     });
     if (!keepPos) {
       // 保持历史选择城市位置不变
@@ -197,7 +255,7 @@ export class SelectCityComponent implements OnInit, AfterViewInit {
         city,
         ...this.historyCities
           .map(hc => {
-            return { ...hc, selected: false };
+            return { ...hc, Selected: false };
           })
           .filter(c => !(c.Code === city.Code))
           // 取消前三个用于显示 hot history cur 的元素
@@ -207,7 +265,7 @@ export class SelectCityComponent implements OnInit, AfterViewInit {
       this.historyCities = this.historyCities.map(hisc => {
         return {
           ...hisc,
-          selected: hisc.Code === city.Code
+          Selected: hisc.Code === city.Code
         };
       });
     }
