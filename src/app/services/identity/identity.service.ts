@@ -22,13 +22,13 @@ export class IdentityService {
   setIdentity(info: IdentityEntity) {
     if (info && info.Ticket) {
       this.identity = info;
-      AppHelper.setCookie("ticket", info.Ticket);
+      AppHelper.setStorage("ticket", info.Ticket);
       AppHelper.setStorage("loginToken", info.Token);
     }
   }
   removeIdentity() {
     this.identity = null;
-    AppHelper.setCookie("ticket", "", -1);
+    AppHelper.setStorage("ticket", "");
   }
   getIdentity(): Promise<IdentityEntity> {
     if (this.identity && this.identity.Ticket && this.identity.Id) {

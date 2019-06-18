@@ -12,7 +12,63 @@
 
 @implementation CDVWechat
  CDVInvokedUrlCommand* cdvInvokedUrlCommand;
+ CDVInvokedUrlCommand* cdvPayInvokedUrlCommand;
 NSString* _appId;
+-(void)pay:(CDVInvokedUrlCommand *)command{
+    @try {
+        cdvPayInvokedUrlCommand=command;
+        NSDictionary* info= [command argumentAtIndex:0];
+        NSLog(@"info,%@",info);
+        if(info==nil){
+            [self FailureResult:command :@"参数错误"];
+            return;
+        }
+        [self.commandDelegate runInBackground:^{
+            _appId=[info objectForKey:@"appId"];
+//             NSLog(@"appid %@",_appId);
+            [WXApi registerApp:_appId];
+            // 调起微信支付
+            PayReq *request = [[PayReq alloc] init];
+            /** 微信分配的公众账号ID -> APPID */
+            request.partnerId = [info objectForKey:@"partnerId"];
+//             NSLog(@"request.partnerId %@",request.partnerId);
+            /** 预支付订单 从服务器获取 */
+            request.prepayId = [info objectForKey:@"prepayId"];// @"1101000000140415649af9fc314aa427";
+//             NSLog(@"request.prepayId %@",request.prepayId);
+            /** 商家根据财付通文档填写的数据和签名 <暂填写固定值Sign=WXPay>*/
+            request.package =[info objectForKey:@"packageValue"];
+//             NSLog(@"request. package %@",request.package);
+            /** 随机串，防重发 */
+            request.nonceStr=[info objectForKey:@"nonceStr"];// @"a462b76e7436e98e0ed6e13c64b4fd1c";
+//            NSLog(@"request. nonceStr %@",request.nonceStr);
+            /** 时间戳，防重发 */
+            NSString* timestamp = [info objectForKey:@"timeStamp"];
+            request.timeStamp=(UInt32)[timestamp integerValue] ;//  @“1397527777";
+//            NSLog(@"request. timeStamp %d ",request.timeStamp);
+            /** 商家根据微信开放平台文档对数据做的签名, 可从服务器获取，也可本地生成*/
+            request.sign=[info objectForKey:@"sign"];// @"582282D72DD2B03AD892830965F428CB16E7A256";
+//                 NSLog(@"request. sign %@ ",request.sign);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                /* 调起支付 */
+                if ([WXApi sendReq:request])
+                {
+//                    NSLog(@"OK ");
+                    // save the callback id
+                    self.currentCallbackId = command.callbackId;
+                }
+                else
+                {
+                    [self FailureResult:command:@"发送请求失败"];
+                }
+            });
+            
+        }];
+    } @catch (NSException *exception) {
+        [self FailureResult:command :[NSString stringWithFormat:@"支付出错，%@",[exception reason]]];
+    } @finally {
+        
+    }
+}
 -(void)getCode:(CDVInvokedUrlCommand *)command{
     cdvInvokedUrlCommand=command;
     NSString* appId = [command argumentAtIndex:0];
@@ -47,8 +103,15 @@ NSString* _appId;
     {
         [WXApi handleOpenURL:url delegate:self];
     }
+    if ([url.host isEqualToString:@"pay"]) {
+         [WXApi handleOpenURL:url delegate:self];
+    }
 }
-- (void)SuccessResult:(CDVInvokedUrlCommand*)command :(NSString*)result
+-(void) sendSuccessResult:(NSDictionary *)data : (CDVInvokedUrlCommand*)command{
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:data];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+- (void)senSuccessResultWithString:(CDVInvokedUrlCommand*)command :(NSString*)result
 {
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:result];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -63,16 +126,37 @@ NSString* _appId;
 }
 -(void)onResp:(BaseResp *)resp{
     if([resp isKindOfClass:[SendAuthResp class]]){//判断是否为授权登录类
-        
         SendAuthResp *res = (SendAuthResp *)resp;
         if(cdvInvokedUrlCommand!=nil){
             if([res.state isEqualToString:@"wx_oauth_authorization_state"]){//微信授权成功
                 
-                [self SuccessResult: cdvInvokedUrlCommand:res.code];
+                [self senSuccessResultWithString: cdvInvokedUrlCommand:res.code];
             }else{
                 [self FailureResult:cdvInvokedUrlCommand :[NSString stringWithFormat:@"%d",res.errCode]];
             }
         }
     }
+    if([resp isKindOfClass:[PayResp class]]){
+         NSLog(@"支付结果返回,%d",resp.errCode);
+        switch (resp.errCode) {
+            case WXSuccess:{
+                NSLog(@"支付成功,%@",resp);
+                // 发通知带出支付成功结果
+                if(nil!=cdvPayInvokedUrlCommand){
+                    [self senSuccessResultWithString:cdvPayInvokedUrlCommand :[NSString stringWithFormat:@"支付成功，code=%d",resp.errCode]];
+                }
+                break;
+            }
+            default:{
+                NSLog(@"支付失败:%d",resp.errCode);
+                // 发通知带出支付失败结果
+                [self FailureResult:cdvPayInvokedUrlCommand :[NSString stringWithFormat:@"支付失败,%@",resp.errStr]];
+              break;
+            }
+                
+        }
+    }
 }
+
+
 @end

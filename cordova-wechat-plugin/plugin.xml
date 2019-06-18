@@ -24,6 +24,11 @@
             <activity android:name=".wxapi.WXEntryActivity" android:label="@string/app_name" android:theme="@android:style/Theme.Translucent.NoTitleBar" android:exported="true" android:taskAffinity="net.sourceforge.simcpux" android:launchMode="singleTask">
             </activity>
         </config-file>
+        <!-- 微信支付回调  start-->
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <activity android:name=".wxapi.WXPayEntryActivity" android:label="@string/app_name" android:theme="@android:style/Theme.Translucent.NoTitleBar" android:exported="true" android:taskAffinity="net.sourceforge.simcpux" android:launchMode="singleTask">
+            </activity>
+        </config-file>
         <!-- 微信接受消息、发送消息给微信的配置  end -->
         <config-file target="AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.INTERNET" />

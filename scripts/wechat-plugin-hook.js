@@ -72,16 +72,30 @@ module.exports = function (context) {
             const wechatPluginDirName = context.opts.cordova.plugins.find(item=>item.includes("wechat-plugin"));
             if(context.opts.cordova.plugins&&wechatPluginDirName){
                 const srcPath = path.join(projectRoot,'plugins',wechatPluginDirName,'src','android','wxapi','WXEntryActivity.java');
-                const distPath = path.join(checkFilePath,'WXEntryActivity.java');
+                const srcPayPath = path.join(projectRoot,'plugins',wechatPluginDirName,'src','android','wxapi','WXPayEntryActivity.java');
+                const distPath1 = path.join(checkFilePath,'WXEntryActivity.java');
+                const distpayPath = path.join(checkFilePath,'WXPayEntryActivity.java');
                 if(fs.existsSync(srcPath)){
                     console.log("srcPath",srcPath);
-                    fs.copyFileSync(srcPath,distPath);
-                    if(fs.existsSync(distPath)){
-                      const distFile =   fs.readFileSync(distPath,{encoding:"utf8"});
+                    fs.copyFileSync(srcPath,distPath1);
+                    if(fs.existsSync(distPath1)){
+                      const distFile =   fs.readFileSync(distPath1,{encoding:"utf8"});
                       if(distFile){
                          const str= distFile.replace(/^package.*;/g,"package "+packageName+".wxapi;");
                          console.log(str);
-                          fs.writeFileSync(distPath,str,{encoding:"utf8"});
+                          fs.writeFileSync(distPath1,str,{encoding:"utf8"});
+                      }
+                    }
+                }
+                if(fs.existsSync(srcPayPath)){
+                    console.log("srcPayPath",srcPayPath);
+                    fs.copyFileSync(srcPayPath,distpayPath);
+                    if(fs.existsSync(distpayPath)){
+                      const distFile =   fs.readFileSync(distpayPath,{encoding:"utf8"});
+                      if(distFile){
+                         const str= distFile.replace(/^package.*;/g,"package "+packageName+".wxapi;");
+                         console.log(str);
+                          fs.writeFileSync(distpayPath,str,{encoding:"utf8"});
                       }
                     }
                 }

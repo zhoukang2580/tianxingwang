@@ -154,7 +154,7 @@ export class AppComponent implements AfterViewInit {
     // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management-add')]);
     //this.router.navigate([AppHelper.getRoutePath('book-flight')]);
     setTimeout(() => {
-      this.router.navigate([AppHelper.getRoutePath('function-test')]);
+      // this.router.navigate([AppHelper.getRoutePath('function-test')]);
     }, 100);
     this.platform.ready().then(() => {
       this.app = navigator['app'];
@@ -205,13 +205,17 @@ export class AppComponent implements AfterViewInit {
       }
       if (this.router.url.includes("login") || this.router.url.includes("tabs")) {
         if (Date.now() - lastClickTime <= 2000) {
-          navigator['app'].exitApp();
+          AppHelper.alert("退出应用？",true,'退出',"取消").then(ok=>{
+            if(ok){
+              navigator['app'].exitApp();
+            }
+          })
         } else {
           AppHelper.toast(LanguageHelper.getAppDoubleClickExit());
           lastClickTime = Date.now();
         }
       } else {
-        // this.navCtrl.back();
+        this.navCtrl.back();
         // window.history.back();
       }
     });

@@ -231,10 +231,10 @@ export class AppHelper {
     return false;
   }
   static getStyle() {
-    return AppHelper.getCookie("style") || "";
+    return AppHelper.getStorage("style") || "";
   }
   static getLanguage() {
-    return AppHelper.getCookie("language");
+    return AppHelper.getStorage<string>("language");
   }
   static checkQueryString(name) {
     const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
@@ -252,23 +252,7 @@ export class AppHelper {
     }
     return "";
   }
-  static setCookie(name: string, value: string, time: number = 0) {
-
-    const exp = moment(+moment() + time);
-    this.alert(exp);
-    document.cookie = `${name}=${escape(value)};path=/;expires=${moment
-      .utc(exp)
-      .toDate()}`;
-  }
-  static getCookie(name) {
-    const arr = document.cookie && document.cookie.match(
-      new RegExp("(^|)" + name + "=([^;]*)(;|$)")
-    );
-    if (arr) {
-      return unescape(arr[2]);
-    }
-    return null;
-  }
+  
   /**
    * 
    * @param key 不区分大小写
@@ -307,7 +291,7 @@ export class AppHelper {
     return result;
   }
   static getTicket() {
-    var ticket= AppHelper.getQueryString("ticket") || AppHelper.getCookie("ticket");
+    var ticket= AppHelper.getQueryString("ticket") || AppHelper.getStorage("ticket");
     return ticket=="null"?"":ticket;
   }
   static _appDomain = "beeant.com";
