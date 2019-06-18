@@ -62,12 +62,12 @@ export class PayService {
       req.IsShowLoading=true;
       return new Promise<any>((resolve, reject) => {
         const sub = this.apiService
-          .getResponse<{ Body: string, out_trade_no: string }>(req).subscribe(r => {
+          .getResponse<{ Body: string, Number: string }>(req).subscribe(r => {
             if (r.Status && r.Data) {
               this.ali.pay(r.Data.Body).then(n => {
-                resolve(n);
+                resolve(r.Data.Number);
               }).catch(e => {
-                reject(e);
+                resolve(r.Data.Number);
               })
             }
             else {
@@ -108,7 +108,7 @@ export class PayService {
               {
                 const url="/pages/pay/index?timeStamp="+r.Data.timeStamp+"&nonceStr="+r.Data.nonceStr
                 +"&package="+encodeURIComponent(r.Data.package)+"&signType="+r.Data.signType+"&paySign="+r.Data.paySign
-                +"&openid="+WechatHelper.openId+"&ticket="+AppHelper.getTicket()+"&path="+path+"&number="+r.Data.number;
+                +"&openid="+WechatHelper.openId+"&ticket="+AppHelper.getTicket()+"&path="+path+"&number="+r.Data.Number;
                 WechatHelper.wx.miniProgram.navigateTo({url:url });
               }
               else if(AppHelper.isWechatH5())
@@ -126,7 +126,7 @@ export class PayService {
                   signType: r.Data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
                   paySign: r.Data.paySign, // 支付签名
                   success: (res)=> {
-                    resolve(r.Data.number);
+                    resolve(r.Data.Number);
                   //  if(res.errMsg=="chooseWXPay:ok")
                   //  {
                   //     resolve("success");
@@ -148,10 +148,11 @@ export class PayService {
                   timeStamp: r.Data.timestamp,
                   sign: r.Data.sign,
                 }
-                this.ali.pay(payInfo as any).then(n => {
-                  resolve(n);
+                this.wechat.pay(payInfo as any).then(n => {
+                  alert('wechat 支付成功返回结果：'+JSON.stringify(n));
+                  resolve(r.Data.Number);
                 }).catch(e => {
-                  reject(e);
+                  resolve(r.Data.Number);
                 });
               }
             

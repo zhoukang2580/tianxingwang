@@ -114,6 +114,7 @@ export class HomePage implements OnInit {
         Channel: "App",
         Type: "3",
         OrderId:"190000047133",
+        IsApp:AppHelper.isApp()
       }
       this.payService.wechatpay(req,"").then((r)=>{
         let req1=this.apiService.createRequest();
@@ -136,9 +137,20 @@ export class HomePage implements OnInit {
       req.Data={
         Channel: "App",
         Type: "2",
-        IsApp:false,
+        IsApp:AppHelper.isApp(),
         OrderId:"190000047133",
       }
-      this.payService.alipay(req,"").then((r)=>{}).catch(r=>{});
+      this.payService.alipay(req,"").then((r)=>{
+        let req1=this.apiService.createRequest();
+        req1.Method="TmcApiOrderUrl-Pay-Process";
+        req1.Version="2.0";
+        req1.Data={
+          OutTradeNo: r,
+          Type: "2"
+        }
+        this.payService.process(req1);
+      }).catch(r=>{
+        AppHelper.alert(r);
+      });
     }
 }

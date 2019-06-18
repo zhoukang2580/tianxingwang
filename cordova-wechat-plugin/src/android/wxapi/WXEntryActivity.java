@@ -1,4 +1,4 @@
-package com.beeant.wechatplugin.wxapi;
+package com.skytrip.dmonline.wxapi;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -23,6 +23,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        Log.d("WXEntryActivity", "onRestoreInstanceState mWxApi != null" + (mWxApi != null));
         if (mWxApi != null) {
             boolean ok = mWxApi.handleIntent(getIntent(), this);
             Log.d("WXEntryActivity", "处理是否ok=" + ok);
@@ -32,6 +33,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("WXEntryActivity", "onCreate mWxApi != null" + (mWxApi != null));
         if (mWxApi != null) {
             boolean ok = mWxApi.handleIntent(getIntent(), this);
             Log.d("WXEntryActivity", "处理是否ok=" + ok);
@@ -45,6 +47,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 
     @Override
     public void onResp(BaseResp baseResp) {
+        Log.d("WXEntryActivity", "onResp mCallbackContext != null" + (mCallbackContext != null));
         if (null != mCallbackContext) {
             if (baseResp.getType() == ConstantsAPI.COMMAND_SENDAUTH) {
                 if (baseResp.errCode == BaseResp.ErrCode.ERR_OK) {

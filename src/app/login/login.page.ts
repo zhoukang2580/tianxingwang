@@ -230,7 +230,6 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
               this.loginType = "user";
             })
           ).subscribe(r => {
-            AppHelper.alert("wechat登录，" + JSON.stringify(r));
             if (r.Ticket) {
               this.jump(true);
             }

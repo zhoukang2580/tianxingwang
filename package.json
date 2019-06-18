@@ -108,10 +108,10 @@
         "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
       },
       "cordova-plugin-file": {},
-      "cordova-ali-plugin": {},
       "cordova-plugin-zip": {},
       "cordova-hcp-plugin": {},
-      "cordova-plugin-device": {}
+      "cordova-plugin-device": {},
+      "cordova-ali-plugin": {}
     },
     "platforms": [
       "ios",
