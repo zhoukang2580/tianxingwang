@@ -9,6 +9,7 @@ import { TabsPageModule } from './tabs/tabs.page.module';
 import { PasswordModule } from './password/password.module';
 import { MemberModule } from './member/member.module';
 import { RegisterModule } from './register/register.module';
+import { HrModule } from './hr/hr.module';
 
 const routes: Routes = [
   { path: 'select-city', loadChildren: './pages/select-city/select-city.module#SelectCityPageModule' },
@@ -26,6 +27,7 @@ const routes: Routes = [
     matcher: AppHelper.matchDefaultRoute
   }
 
+
 ];
 @NgModule({
   imports: [
@@ -35,6 +37,7 @@ const routes: Routes = [
     AccountModule,
     PasswordModule,
     TabsPageModule,
+    HrModule,
     MemberModule,
     RouterModule.forRoot(routes, {
       preloadingStrategy: PreloadAllModules,

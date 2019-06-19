@@ -52,6 +52,9 @@
               },
               {
                 "input": "src/assets/validator/winner.validator.js"
+              },
+              {
+                "input": "src/assets/imagerecover/winner.imagerecover.js"
               }
             ]
           },

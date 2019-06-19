@@ -16,6 +16,8 @@ import { WechatHelper } from './wechatHelper';
 import { DingtalkHelper } from './dingtalkHelper';
 import { RequestEntity } from './services/api/Request.entity';
 import { finalize } from 'rxjs/operators';
+import { ImageRecoverService } from './services/imagerecover/imageRecover.service';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 export interface App {
   loadUrl: (
     url: string,
@@ -52,6 +54,7 @@ export class AppComponent implements AfterViewInit {
     private actionSheetCtrl: ActionSheetController,
     private loadingCtrl: LoadingController,
     private http: HttpClient,
+    private imageRecoverService: ImageRecoverService
   ) {
   
     // console.log(this.router.config);
@@ -113,7 +116,7 @@ export class AppComponent implements AfterViewInit {
     return true;
   }
   initializeApp() {
-    this.getConfigInfo();
+    this.initializeInfo();
     AppHelper.getDomain();// 
     AppHelper.setQueryParamers();
     if (!this.checkWechatOpenId() || !this.checkDingtalkUnionid())
@@ -168,8 +171,9 @@ export class AppComponent implements AfterViewInit {
     });
     this.backButtonAction();
   }
-  private getConfigInfo() {
+  private initializeInfo() {
     this.configService.get();
+    this.imageRecoverService.get();
   }
   private jumpToRoute(route: string) {
     return this.router.navigate([AppHelper.getRoutePath(route)]);

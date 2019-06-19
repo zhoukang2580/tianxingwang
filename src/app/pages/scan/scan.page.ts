@@ -1,4 +1,4 @@
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { IdentityService } from 'src/app/services/identity/identity.service';
@@ -27,7 +27,7 @@ export class ScanPage implements OnInit, OnDestroy {
   get iframeSrc() {
     return this.sanitizer.bypassSecurityTrustResourceUrl(this._iframeSrc);
   }
-  constructor(private sanitizer: DomSanitizer, private identityService: IdentityService, private http: HttpClient, activatedRoute: ActivatedRoute) {
+  constructor(private sanitizer: DomSanitizer,private router: Router,private identityService: IdentityService, private http: HttpClient, activatedRoute: ActivatedRoute) {
     this.subscription = activatedRoute.paramMap.subscribe(p => {
       this.scan(p.get("scanResult"));
     });
@@ -85,6 +85,10 @@ export class ScanPage implements OnInit, OnDestroy {
   {
     return this.checkUrl() && this.result.toLowerCase().includes("/home/setidentity?key=");
   }
+  checkInvitation()
+  {
+    return this.checkUrl() && this.result.toLowerCase().includes("/www/index.html?path=hr-invitation");
+  }
   handle() {
 
     if (this.checkLogin()) {
@@ -104,6 +108,10 @@ export class ScanPage implements OnInit, OnDestroy {
             }, 10);
           });
       });
+    }
+    else if(this.checkInvitation())
+    {
+      this.router.navigate([AppHelper.getRoutePath("hr-invitation")]);
     }
     else if (this.checkUrl()) {
       this.showIframePage(this.result);
