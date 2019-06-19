@@ -42,7 +42,7 @@ import { WebView } from '@ionic-native/ionic-webview/ngx';
       }
     }),
     AppRoutingModule,
-    AppcomponentsModule
+    AppcomponentsModule,
   ],
   providers: [
     StatusBar,

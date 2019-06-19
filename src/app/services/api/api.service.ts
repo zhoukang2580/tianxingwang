@@ -3,7 +3,15 @@ import { Injectable } from "@angular/core";
 
 import { RequestEntity } from "./Request.entity";
 import { AppHelper } from "../../appHelper";
-import { map, tap, catchError, finalize, switchMap, timeout, delay } from "rxjs/operators";
+import {
+  map,
+  tap,
+  catchError,
+  finalize,
+  switchMap,
+  timeout,
+  delay
+} from "rxjs/operators";
 import { IResponse } from "./IResponse";
 import {
   of,
@@ -18,8 +26,8 @@ import { ExceptionEntity } from "../log/exception.entity";
 import { Router } from "@angular/router";
 import { IdentityEntity } from "../identity/identity.entity";
 import { IdentityService } from "../identity/identity.service";
-import { LoadingController } from '@ionic/angular';
-import { LanguageHelper } from 'src/app/languageHelper';
+import { LoadingController } from "@ionic/angular";
+import { LanguageHelper } from "src/app/languageHelper";
 @Injectable({
   providedIn: "root"
 })
@@ -36,49 +44,56 @@ export class ApiService {
   getLoading() {
     return this.loadingSubject.asObservable().pipe(delay(0));
   }
-  setLoading(loading: boolean, isShowLoading: boolean) {
+  async setLoading(loading: boolean, isShowLoading: boolean) {
     if (loading && isShowLoading) {
-      this.showLoadingView();
+      await this.showLoadingView();
     }
     if (!loading) {
-      this.hideLoadingView();
+      await this.hideLoadingView();
     }
     this.loadingSubject.next(loading);
   }
-  showLoadingView() {
-    this.loadingCtrl.getTop().then((t) => {
-      if (t) {
-        t.dismiss();
-      }
-    });
-    this.loadingCtrl.create().then((t) => {
-      if (t) {
-        t.present();
-      }
-    });
+  async showLoadingView() {
+    console.log("showLoadingView");
+    const l = document.querySelector("ion-loading");
+    console.log("showLoadingView", l);
+    if (l) {
+      await this.loadingCtrl.dismiss();
+    }
+    const t = await this.loadingCtrl.create();
+    if (t) {
+      await t.present();
+    }
   }
-  hideLoadingView() {
-    setTimeout(() => {
-      this.loadingCtrl.getTop().then((t) => {
-        if (t) {
-          t.dismiss();
-        }
+  async hideLoadingView() {
+    const l = document.querySelector("ion-loading");
+    const lc = document.querySelector("ion-loading-controller");
+    console.log("hideLoadingView", lc, l);
+    if (lc) {
+      await lc.dismiss().catch(e => {
+        console.log("hideLoadingView lc", e);
       });
-    }, 1000);
+    }
   }
-  send<T>(method: string, data: any, version: string = "1.0", showLoading: boolean = false) {
+  send<T>(
+    method: string,
+    data: any,
+    version: string = "1.0",
+    showLoading: boolean = false
+  ) {
     const req = new RequestEntity();
     req.Method = method;
     req.Version = version;
-    if (data) { req.Data = JSON.stringify(data); }
+    if (data) {
+      req.Data = JSON.stringify(data);
+    }
     req.IsShowLoading = showLoading;
     return this.getResponse<T>(req);
   }
   getResponse<T>(req: RequestEntity): Observable<IResponse<T>> {
-    return this.sendRequest({...req}, true);
+    return this.sendRequest({ ...req }, true);
   }
-  createRequest()
-  {
+  createRequest() {
     const req = new RequestEntity();
     req.Timestamp = Math.floor(Date.now() / 1000);
     req.Language = AppHelper.getLanguage();
@@ -95,23 +110,20 @@ export class ApiService {
         Device: device,
         Token: AppHelper.getStorage("loginToken")
       });
-    }
-    else if (AppHelper.isWechatH5()) {
+    } else if (AppHelper.isWechatH5()) {
       const code = "";
       req.Method = "ApiLoginUrl-Home-WechatLogin";
       req.Data = JSON.stringify({
         Code: code
       });
-    }
-    else if (AppHelper.isWechatMini()) {
+    } else if (AppHelper.isWechatMini()) {
       const code = "";
       req.Method = "ApiLoginUrl-Home-WechatLogin";
       req.Data = JSON.stringify({
         Code: code,
-        SdkType:"Mini"
+        SdkType: "Mini"
       });
-    }
-    else if (AppHelper.isDingtalkH5()) {
+    } else if (AppHelper.isDingtalkH5()) {
       const code = "";
       req.Method = "ApiLoginUrl-Home-DingtalkLogin";
       req.Data = JSON.stringify({
@@ -145,27 +157,35 @@ export class ApiService {
             this.router.navigate([AppHelper.getRoutePath("login")]);
             return of(r);
           })
-        ).subscribe(r => {
-          resolve(r);
-        }, e => {
-          reject(e);
-        }, () => {
-          setTimeout(() => {
-            if (subscribtion) {
-              subscribtion.unsubscribe();
-            }
-          }, 10);
-        });
+        )
+        .subscribe(
+          r => {
+            resolve(r);
+          },
+          e => {
+            reject(e);
+          },
+          () => {
+            setTimeout(() => {
+              if (subscribtion) {
+                subscribtion.unsubscribe();
+              }
+            }, 10);
+          }
+        );
     });
   }
 
-  private sendRequest(request: RequestEntity, isCheckLogin: boolean): Observable<IResponse<any>> {
-   const  req={...request};
+  private sendRequest(
+    request: RequestEntity,
+    isCheckLogin: boolean
+  ): Observable<IResponse<any>> {
+    const req = { ...request };
     req.Timestamp = Math.floor(Date.now() / 1000);
     req.Language = AppHelper.getLanguage();
     req.Ticket = AppHelper.getTicket();
     req.Domain = AppHelper.getDomain();
-    if (req.Data && typeof req.Data != 'string') {
+    if (req.Data && typeof req.Data != "string") {
       req.Data = JSON.stringify(req.Data);
     }
     const formObj = Object.keys(req)
@@ -207,5 +227,4 @@ export class ApiService {
         map(r => r as any)
       );
   }
-  
 }

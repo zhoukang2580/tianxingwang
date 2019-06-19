@@ -1,6 +1,7 @@
-import { ComponentsModule } from './components/components.module';
+import { FlightService } from "src/app/flight/flight.service";
+import { ComponentsModule } from "./components/components.module";
 import { NgModule } from "@angular/core";
-import { FlightRoutingModule } from './flight.routing.module';
+import { FlightRoutingModule } from "./flight.routing.module";
 import { CommonModule } from "@angular/common";
 
 @NgModule({
@@ -8,4 +9,6 @@ import { CommonModule } from "@angular/common";
   imports: [CommonModule, ComponentsModule, FlightRoutingModule],
   exports: [ComponentsModule]
 })
-export class FlightModule { }
+export class FlightModule {
+  constructor(private flightService: FlightService) {}
+}

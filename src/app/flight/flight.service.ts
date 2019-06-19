@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
-import { map, tap } from "rxjs/operators";
+import { map, tap, switchMap } from "rxjs/operators";
 
 import { environment } from "../../environments/environment";
-import { of, merge, Subject, BehaviorSubject } from "rxjs";
+import { of, merge, Subject, BehaviorSubject, throwError } from "rxjs";
 
 import * as moment from "moment";
 import { ApiService } from "../services/api/api.service";
@@ -12,7 +12,24 @@ import { SearchFlightModel } from "./models/flight/SearchFlightModel";
 import { TestTmcData } from "./testTmcData";
 import { FlightJourneyEntity } from "./models/flight/FlightJourneyEntity";
 import { FlightSegmentEntity } from "./models/flight/FlightSegmentEntity";
-
+import { RequestEntity } from "../services/api/Request.entity";
+type Trafficline = {
+  Id: string; //;// long
+  Tag: string; //;// 标签（Airport 机场，AirportCity 机场城市，Train 火车站）
+  Code: string; // 代码（三字码）
+  Name: string; // 名称
+  Nickname: string; // 简称
+  Pinyin: string; // 拼音
+  Initial: string; // 拼音简写
+  AirportCityCode: string; // 机场城市代码（航空系统特有）
+  CityCode: string; // 城市代码
+  CityName: string; // 城市名称
+  Description: string; // 描述
+  IsHot: boolean; // 热点描述
+  CountryCode: string; // 国籍代码
+  Sequence: string; // Int 排序号
+  EnglishName: string; // 英文名称
+};
 @Injectable({
   providedIn: "root"
 })
@@ -21,6 +38,10 @@ export class FlightService {
   private openCloseSelectCitySources: Subject<boolean>;
   private advSearchCondSources: Subject<AdvSearchCondModel>;
   private resetAdvSCondSources: Subject<boolean>;
+  private LastUpdateTime: number = 0;
+  private InternationalLastUpdateTime: number = 0;
+  private internationalAirports: Trafficline[] = [];
+  private domesticAirports: Trafficline[] = [];
   constructor(private apiService: ApiService) {
     this.advSearchShowSources = new BehaviorSubject(false);
     this.resetAdvSCondSources = new BehaviorSubject(true);
@@ -30,10 +51,10 @@ export class FlightService {
   getResetAdvSCondSources() {
     return this.resetAdvSCondSources;
   }
-  getOpenCloseSelectCityPageSources(){
-   return this.openCloseSelectCitySources.asObservable();
+  getOpenCloseSelectCityPageSources() {
+    return this.openCloseSelectCitySources.asObservable();
   }
-  showSelectCityPage(open:boolean){
+  showSelectCityPage(open: boolean) {
     this.openCloseSelectCitySources.next(open);
   }
   setResetAdvCond(reset: boolean) {
@@ -54,9 +75,60 @@ export class FlightService {
   getShowAdvSearchConditions() {
     return this.advSearchShowSources.asObservable();
   }
+  getDomesticAirports() {
+    const req = new RequestEntity();
+    req.Method = `ApiHomeUrl-Resource-Airport`;
+    req.Data = {
+      LastUpdateTime: this.LastUpdateTime
+    };
+    req.IsShowLoading = true;
+    return merge(
+      of(this.domesticAirports),
+      this.apiService.getResponse<Trafficline[]>(req).pipe(
+        tap(() => {
+          this.LastUpdateTime = Math.floor(Date.now() / 1000);
+        }),
+        switchMap(r => {
+          if (r.Status) {
+            return of(r.Data);
+          }
+          return throwError(r.Message);
+        }),
+        map(r => {
+          this.domesticAirports = [...this.domesticAirports, ...r];
+          return this.domesticAirports;
+        })
+      )
+    );
+  }
+  getInternationalAirports() {
+    const req = new RequestEntity();
+    req.Method = `ApiHomeUrl-Resource-InternationalAirport `;
+    req.Data = {
+      LastUpdateTime: this.InternationalLastUpdateTime
+    };
+    req.IsShowLoading = true;
+    return merge(
+      of(this.internationalAirports),
+      this.apiService.getResponse<Trafficline[]>(req).pipe(
+        tap(() => {
+          this.InternationalLastUpdateTime = Math.floor(Date.now() / 1000);
+        }),
+        switchMap(r => {
+          if (r.Status) {
+            return of(r.Data);
+          }
+          return throwError(r.Message);
+        }),
+        map(r => {
+          this.internationalAirports = [...this.internationalAirports, ...r];
+          return this.internationalAirports;
+        })
+      )
+    );
+  }
   searchFlightList(data: SearchFlightModel) {
-    const local =
-      window.localStorage.getItem("this.apiService.flightsApi");
+    const local = window.localStorage.getItem("this.apiService.flightsApi");
     // console.log("local",local);
     if (local && !environment.production) {
       // console.log(new Array(10).fill(0).map(_=>TestTmcData.FlightData));
@@ -100,10 +172,13 @@ export class FlightService {
       (arr, journey) => {
         arr = [
           ...arr,
-          ...journey.FlightRoutes.reduce((segs, route) => {
-            segs = [...segs, ...route.FlightSegments];
-            return segs;
-          }, [] as FlightSegmentEntity[])
+          ...journey.FlightRoutes.reduce(
+            (segs, route) => {
+              segs = [...segs, ...route.FlightSegments];
+              return segs;
+            },
+            [] as FlightSegmentEntity[]
+          )
         ];
         return arr;
       },

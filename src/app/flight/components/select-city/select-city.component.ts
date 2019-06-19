@@ -12,15 +12,18 @@ import {
   Output,
   EventEmitter
 } from "@angular/core";
-import {
-  fromEvent,
-  Subscription
-} from "rxjs";
+import { fromEvent, Subscription } from "rxjs";
 import { ListCityModel } from "./models/ListCityModel";
-import { citiesData as MOCK_CITI_DATA } from './cities.data';
-import { FlyCityItemModel } from './models/FlyCityItemModel';
-import { trigger, state, style, animate, transition } from '@angular/animations';
-import { FlightService } from '../../flight.service';
+import { citiesData as MOCK_CITI_DATA } from "./cities.data";
+import { FlyCityItemModel } from "./models/FlyCityItemModel";
+import {
+  trigger,
+  state,
+  style,
+  animate,
+  transition
+} from "@angular/animations";
+import { FlightService } from "../../flight.service";
 @Component({
   selector: "app-select-city-comp",
   templateUrl: "./select-city.component.html",
@@ -29,7 +32,7 @@ import { FlightService } from '../../flight.service';
     trigger("openclose", [
       state("true", style({ transform: "scale(1)" })),
       state("false", style({ transform: "scale(0)" })),
-      transition('true<=>false', animate('300ms ease-in-out'))
+      transition("true<=>false", animate("300ms ease-in-out"))
     ])
   ]
 })
@@ -42,13 +45,17 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   historyCities: FlyCityItemModel[] = [];
   listCities: ListCityModel[] = [];
   subscription = Subscription.EMPTY;
+  domesticAirportsSubscription = Subscription.EMPTY;
+  internationnalAirportsSubscription = Subscription.EMPTY;
   openCloseSubscription = Subscription.EMPTY;
   cnt: HTMLElement;
   linksNavEle: HTMLElement;
   curTargetNavEle: HTMLElement;
   curNavTextEle: HTMLElement;
   isUserSelect: boolean;
-  @HostBinding('@openclose') openclose = true;
+  @Input()
+  @HostBinding("@openclose")
+  openclose = true;
   @Output() selectcity: EventEmitter<any>;
   constructor(
     private plt: Platform,
@@ -58,11 +65,15 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     this.selectcity = new EventEmitter();
   }
   ngOnInit() {
+    this.loadDomesticAirports();
+    this.loadInternationalAirports();
     this.initHistoryCities();
     this.initListCity();
-    this.openCloseSubscription = this.flightService.getOpenCloseSelectCityPageSources().subscribe(open => {
-      this.openclose = open;
-    });
+    this.openCloseSubscription = this.flightService
+      .getOpenCloseSelectCityPageSources()
+      .subscribe(open => {
+        this.openclose = open;
+      });
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();
@@ -105,18 +116,38 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
           item.CityName = i.cityName;
           item.Code = i.cityId + "";
           item.Selected = i.selected;
-          item.IsHot = Math.floor((Math.random() * 10000)) % 2 == 0;
+          item.IsHot = Math.floor(Math.random() * 10000) % 2 == 0;
           return item;
         })
-      }
+      };
     });
   }
   showCurTargetNavEle(show: boolean) {
     if (show) {
-      this.render.addClass(this.curTargetNavEle, 'show');
+      this.render.addClass(this.curTargetNavEle, "show");
     } else {
-      this.render.removeClass(this.curTargetNavEle, 'show');
+      this.render.removeClass(this.curTargetNavEle, "show");
     }
+  }
+  loadDomesticAirports() {
+    this.domesticAirportsSubscription = this.flightService
+      .getDomesticAirports()
+      .subscribe(
+        airports => {
+          console.log(airports);
+        },
+        e => {}
+      );
+  }
+  loadInternationalAirports() {
+    this.internationnalAirportsSubscription = this.flightService
+      .getDomesticAirports()
+      .subscribe(
+        airports => {
+          console.log(airports);
+        },
+        e => {}
+      );
   }
   ngAfterViewInit() {
     this.cnt = document.getElementById("mainCnt");
@@ -125,7 +156,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.plt.is("ios")) {
       this.render.setStyle(this.cnt, "width", "90vw");
     }
-    const nav = this.linksNavEle = document.getElementById("links"); // 这里是右边的字母
+    const nav = (this.linksNavEle = document.getElementById("links")); // 这里是右边的字母
     let lastTime = Date.now();
     if (!nav) {
       return;

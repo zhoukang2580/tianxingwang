@@ -60,6 +60,7 @@ import { FlightCabinType } from "../models/flight/FlightCabinType";
 })
 export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   sortCondition: SearchFlightModel;
+  openSelectCity$: Observable<boolean>;
   @ViewChild("cnt")
   cnt: IonContent;
   flights: FlightJourneyEntity[]; // 保持和后台返回的数据一致
@@ -91,6 +92,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     private ngZone: NgZone,
     private flyDayService: FlydayService
   ) {
+    this.openSelectCity$ = flyService.getOpenCloseSelectCityPageSources();
     this.hasDataSj = new BehaviorSubject(false);
     this.autoRefreshSj = new BehaviorSubject(false);
     this.vmFlights = [];
@@ -255,7 +257,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
 
   onItemClick(f: FlightSegmentEntity) {
     // console.log(f);
-    this.router.navigate([AppHelper.getRoutePath("flight-detail"),{flightSegment:JSON.stringify(f)}]);
+    this.router.navigate([
+      AppHelper.getRoutePath("flight-detail"),
+      { flightSegment: JSON.stringify(f) }
+    ]);
   }
   private advSearch(flys: FlightJourneyEntity[], data: SearchFlightModel) {
     let result = flys;
