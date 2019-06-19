@@ -55,6 +55,12 @@ export class ApiService {
     this.loadingSubject.next(loading);
   }
   async showLoadingView() {
+    console.log("showLoadingView");
+    const l = document.querySelector("ion-loading");
+    console.log("showLoadingView", l);
+    if (l) {
+      await this.loadingCtrl.dismiss();
+    }
     const t = await this.loadingCtrl.create();
     if (t) {
       await t.present();
