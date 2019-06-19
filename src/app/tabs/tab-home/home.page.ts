@@ -1,24 +1,31 @@
-import { ApiService } from './../../services/api/api.service';
-import { AppHelper } from 'src/app/appHelper';
+import { IdentityEntity } from "src/app/services/identity/identity.entity";
+import { IdentityService } from "src/app/services/identity/identity.service";
+import { ApiService } from "./../../services/api/api.service";
+import { AppHelper } from "src/app/appHelper";
 import { Component, OnInit } from "@angular/core";
-import { Observable, of, Subject, BehaviorSubject, throwError } from "rxjs";
+import {
+  Observable,
+  of,
+  Subject,
+  BehaviorSubject,
+  throwError,
+  from
+} from "rxjs";
 import * as moment from "moment";
 import { catchError, switchMap } from "rxjs/operators";
-import {
-  AlertController,
-  ModalController
-} from "@ionic/angular";
+import { AlertController, ModalController } from "@ionic/angular";
 import { ActivatedRoute, Router } from "@angular/router";
-import { FileHelperService } from 'src/app/services/file-helper.service';
-import { LanguageHelper } from 'src/app/languageHelper';
-import { RequestEntity } from 'src/app/services/api/Request.entity';
-import { PayService } from 'src/app/services/pay/pay.service';
+import { FileHelperService } from "src/app/services/file-helper.service";
+import { LanguageHelper } from "src/app/languageHelper";
+import { RequestEntity } from "src/app/services/api/Request.entity";
+import { PayService } from "src/app/services/pay/pay.service";
 @Component({
   selector: "app-home",
   templateUrl: "home.page.html",
   styleUrls: ["home.page.scss"]
 })
 export class HomePage implements OnInit {
+  identity$: Observable<IdentityEntity>;
   aliPayResult$: Observable<any>;
   wxPayResult$: Observable<any>;
   exitAppSub: Subject<number> = new BehaviorSubject(null);
@@ -27,13 +34,14 @@ export class HomePage implements OnInit {
   constructor(
     // private appSer: AppCommonService,
     // private pay: PayService,
+    private identityService: IdentityService,
     private alertCtrl: AlertController,
     private modalCtrl: ModalController,
     private route: ActivatedRoute,
     private router: Router,
     private apiService: ApiService,
-    private payService: PayService,
-  ) { }
+    private payService: PayService
+  ) {}
   accountSecurityEn() {
     this.router.navigate(["account-security_en"]);
   }
@@ -58,17 +66,20 @@ export class HomePage implements OnInit {
   }
   ngOnInit(): void {
     var paramters = AppHelper.getQueryParamers();
-    if(paramters.wechatPayResultNumber)
-    {
-      let req1=this.apiService.createRequest();
-      req1.Method="TmcApiOrderUrl-Pay-Process";
-      req1.Version="2.0";
-      req1.Data={
+    if (paramters.wechatPayResultNumber) {
+      let req1 = this.apiService.createRequest();
+      req1.Method = "TmcApiOrderUrl-Pay-Process";
+      req1.Version = "2.0";
+      req1.Data = {
         OutTradeNo: paramters.wechatPayResultNumber,
         Type: "3"
-      }
+      };
       this.payService.process(req1);
     }
+    this.identity$ = from(this.identityService.getIdentity());
+  }
+  onSwitchCustomer() {
+    this.router.navigate([AppHelper.getRoutePath("select-customer")]);
   }
   // selectDate() {
   // this.router.navigate([{outlets:{selectDatetime:['select-datetime']}}]);
@@ -104,53 +115,54 @@ export class HomePage implements OnInit {
   //     });
   //   });
   // }
-    wechatpay()
-    {
-
-      let req=this.apiService.createRequest();
-      req.Method="TmcApiOrderUrl-Pay-Create";
-      req.Version="2.0";
-      req.Data={
-        Channel: "App",
-        Type: "3",
-        OrderId:"190000047133",
-        IsApp:AppHelper.isApp()
-      }
-      this.payService.wechatpay(req,"").then((r)=>{
-        let req1=this.apiService.createRequest();
-        req1.Method="TmcApiOrderUrl-Pay-Process";
-        req1.Version="2.0";
-        req1.Data={
+  wechatpay() {
+    let req = this.apiService.createRequest();
+    req.Method = "TmcApiOrderUrl-Pay-Create";
+    req.Version = "2.0";
+    req.Data = {
+      Channel: "App",
+      Type: "3",
+      OrderId: "190000047133",
+      IsApp: AppHelper.isApp()
+    };
+    this.payService
+      .wechatpay(req, "")
+      .then(r => {
+        let req1 = this.apiService.createRequest();
+        req1.Method = "TmcApiOrderUrl-Pay-Process";
+        req1.Version = "2.0";
+        req1.Data = {
           OutTradeNo: r,
           Type: "3"
-        }
+        };
         this.payService.process(req1);
-      }).catch(r=>{});
-     
-    }
-    alipay()
-    {
-
-      let req=this.apiService.createRequest();
-      req.Method="TmcApiOrderUrl-Pay-Create";
-      req.Version="2.0";
-      req.Data={
-        Channel: "App",
-        Type: "2",
-        IsApp:AppHelper.isApp(),
-        OrderId:"190000047133",
-      }
-      this.payService.alipay(req,"").then((r)=>{
-        let req1=this.apiService.createRequest();
-        req1.Method="TmcApiOrderUrl-Pay-Process";
-        req1.Version="2.0";
-        req1.Data={
+      })
+      .catch(r => {});
+  }
+  alipay() {
+    let req = this.apiService.createRequest();
+    req.Method = "TmcApiOrderUrl-Pay-Create";
+    req.Version = "2.0";
+    req.Data = {
+      Channel: "App",
+      Type: "2",
+      IsApp: AppHelper.isApp(),
+      OrderId: "190000047133"
+    };
+    this.payService
+      .alipay(req, "")
+      .then(r => {
+        let req1 = this.apiService.createRequest();
+        req1.Method = "TmcApiOrderUrl-Pay-Process";
+        req1.Version = "2.0";
+        req1.Data = {
           OutTradeNo: r,
           Type: "2"
-        }
+        };
         this.payService.process(req1);
-      }).catch(r=>{
+      })
+      .catch(r => {
         AppHelper.alert(r);
       });
-    }
+  }
 }

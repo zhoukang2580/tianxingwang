@@ -6,6 +6,13 @@
       </ion-button>
     </ion-buttons>
     <ion-title>首页</ion-title>
+    <ion-buttons slot='end' *ngIf='(identity$|async)?.Numbers?.AgentId'>
+      <ion-button fill='clear' size='small' (click)='onSwitchCustomer()'>
+        <ion-chip color='success'>
+          <ion-label>切换客户</ion-label>
+        </ion-chip>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -16,46 +23,46 @@
     <ion-row>
       <ion-col>
         <div class="item" [routerLink]="['/book-flight']">
-          <ion-label >
+          <ion-label>
             <i class="icon icon-plane"></i>
           </ion-label>
-          <ion-text >国内机票</ion-text>
+          <ion-text>国内机票</ion-text>
           <ion-ripple-effect></ion-ripple-effect>
         </div>
       </ion-col>
       <ion-col [routerLink]="['/book-hotel']">
         <div class="item">
-          <ion-label >
+          <ion-label>
             <i class="icon icon-hotel"></i>
           </ion-label>
-          <ion-text >国内酒店</ion-text>
+          <ion-text>国内酒店</ion-text>
         </div>
         <ion-ripple-effect></ion-ripple-effect>
       </ion-col>
       <ion-col [routerLink]="['/book-train']">
         <div class="item">
-          <ion-label >
+          <ion-label>
             <i class="icon icon-train"></i>
           </ion-label>
-          <ion-text >火车票</ion-text>
+          <ion-text>火车票</ion-text>
           <ion-ripple-effect></ion-ripple-effect>
         </div>
       </ion-col>
-      <ion-col >
+      <ion-col>
         <div class="item" (click)="wechatpay()">
-          <ion-label >
+          <ion-label>
             <i class="icon-train"></i>
           </ion-label>
-          <ion-text >微信支付</ion-text>
+          <ion-text>微信支付</ion-text>
           <ion-ripple-effect></ion-ripple-effect>
         </div>
       </ion-col>
-      <ion-col >
+      <ion-col>
         <div class="item" (click)="alipay()">
-          <ion-label >
+          <ion-label>
             <i class="icon-train"></i>
           </ion-label>
-          <ion-text >支付宝支付</ion-text>
+          <ion-text>支付宝支付</ion-text>
           <ion-ripple-effect></ion-ripple-effect>
         </div>
       </ion-col>

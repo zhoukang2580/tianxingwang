@@ -5,17 +5,27 @@ import { LoginModule } from "./login/login.module";
 import { FlightModule } from "./flight/flight.module";
 import { AccountModule } from "./account/account.module";
 import { TabsPage } from "./tabs/tabs.page";
-import { TabsPageModule } from './tabs/tabs.page.module';
-import { PasswordModule } from './password/password.module';
-import { MemberModule } from './member/member.module';
-import { RegisterModule } from './register/register.module';
-import { HrModule } from './hr/hr.module';
+import { TabsPageModule } from "./tabs/tabs.page.module";
+import { PasswordModule } from "./password/password.module";
+import { MemberModule } from "./member/member.module";
+import { RegisterModule } from "./register/register.module";
+import { AgentModule } from "./agent/agent.module";
 
 const routes: Routes = [
-  { path: 'select-city', loadChildren: './pages/select-city/select-city.module#SelectCityPageModule' },
-  { path: 'crop-avatar', loadChildren: './pages/crop-avatar/crop-avatar.module#CropAvatarPageModule' },
-  { path: 'function-test', loadChildren: './pages/function-test/function-test.module#FunctionTestPageModule' },
-  { path: 'scan', loadChildren: './pages/scan/scan.module#ScanPageModule' },
+  {
+    path: "select-city",
+    loadChildren: "./pages/select-city/select-city.module#SelectCityPageModule"
+  },
+  {
+    path: "crop-avatar",
+    loadChildren: "./pages/crop-avatar/crop-avatar.module#CropAvatarPageModule"
+  },
+  {
+    path: "function-test",
+    loadChildren:
+      "./pages/function-test/function-test.module#FunctionTestPageModule"
+  },
+  { path: "scan", loadChildren: "./pages/scan/scan.module#ScanPageModule" },
 
   {
     path: "",
@@ -26,8 +36,6 @@ const routes: Routes = [
     loadChildren: "./page404/page404.module#Page404PageModule",
     matcher: AppHelper.matchDefaultRoute
   }
-
-
 ];
 @NgModule({
   imports: [
@@ -37,8 +45,8 @@ const routes: Routes = [
     AccountModule,
     PasswordModule,
     TabsPageModule,
-    HrModule,
     MemberModule,
+    AgentModule,
     RouterModule.forRoot(routes, {
       preloadingStrategy: PreloadAllModules,
       enableTracing: !true,
@@ -47,4 +55,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

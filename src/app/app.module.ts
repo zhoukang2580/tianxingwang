@@ -1,8 +1,13 @@
+import { ComponentsModule } from './flight/components/components.module';
 import { AppHelper } from "./appHelper";
 import { NgModule, ErrorHandler } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { RouteReuseStrategy, Router } from "@angular/router";
-import { IonicModule, IonicRouteStrategy, LoadingController } from "@ionic/angular";
+import {
+  IonicModule,
+  IonicRouteStrategy,
+  LoadingController
+} from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
@@ -14,12 +19,12 @@ import { LogService } from "./services/log/log.service";
 import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
 import { environment } from "src/environments/environment";
 import { TranslateHttpLoader } from "@ngx-translate/http-loader";
-import { AppcomponentsModule } from './components/appcomponents.module';
-import { Zip } from '@ionic-native/zip/ngx';
-import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
-import { File } from '@ionic-native/file/ngx';
-import { AppVersion } from '@ionic-native/app-version/ngx';
-import { WebView } from '@ionic-native/ionic-webview/ngx';
+import { AppcomponentsModule } from "./components/appcomponents.module";
+import { Zip } from "@ionic-native/zip/ngx";
+import { BarcodeScanner } from "@ionic-native/barcode-scanner/ngx";
+import { File } from "@ionic-native/file/ngx";
+import { AppVersion } from "@ionic-native/app-version/ngx";
+import { WebView } from "@ionic-native/ionic-webview/ngx";
 
 @NgModule({
   declarations: [AppComponent],
@@ -31,7 +36,8 @@ import { WebView } from '@ionic-native/ionic-webview/ngx';
       backButtonIcon: "arrow-back",
       backButtonText: "",
       loadingSpinner: "crescent",
-      swipeBackEnabled:false
+      swipeBackEnabled: false,
+      hardwareBackButton: true
     }),
     HttpClientModule,
     TranslateModule.forRoot({
@@ -43,6 +49,7 @@ import { WebView } from '@ionic-native/ionic-webview/ngx';
     }),
     AppRoutingModule,
     AppcomponentsModule,
+    ComponentsModule
   ],
   providers: [
     StatusBar,
@@ -57,7 +64,7 @@ import { WebView } from '@ionic-native/ionic-webview/ngx';
     BarcodeScanner,
     File,
     AppVersion,
-    WebView,
+    WebView
   ],
   bootstrap: [AppComponent]
 })

@@ -2,14 +2,15 @@ import { AuthorityGuard } from "../guards/authority.guard";
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes, Router } from "@angular/router";
 import { TabsPage } from "./tabs.page";
-import { IonicModule } from '@ionic/angular';
-import { CommonModule } from '@angular/common';
+import { IonicModule } from "@ionic/angular";
+import { CommonModule } from "@angular/common";
+import { AgentGuard } from "../guards/agent.guard";
 
 const routes: Routes = [
   {
     path: "tabs",
     component: TabsPage,
-    canActivateChild: [AuthorityGuard],
+    canActivateChild: [AuthorityGuard, AgentGuard],
     children: [
       {
         path: "",
@@ -35,11 +36,11 @@ const routes: Routes = [
     path: "",
     redirectTo: "/tabs/home",
     pathMatch: "full"
-  },
+  }
 ];
 
 @NgModule({
-  imports: [IonicModule, CommonModule,RouterModule.forChild(routes)],
+  imports: [IonicModule, CommonModule, RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
 export class TabsRoutingModule {

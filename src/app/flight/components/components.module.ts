@@ -19,6 +19,7 @@ import { SelectDateComponent } from "./select-date/select-date.component";
 import { FlyTimelineComponent } from "./fly-timeline/fly-timeline.component";
 import { FlyTimelineItemComponent } from "./fly-timeline-item/fly-timeline-item.component";
 import { SelectCityComponent } from './select-city/select-city.component';
+import { DirectivesModule } from '../directives/directives.module';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { SelectCityComponent } from './select-city/select-city.component';
     IonicModule,
     PipesModule,
     ReactiveFormsModule,
+    DirectivesModule
   ],
   exports: [
     DayComponent,

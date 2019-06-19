@@ -28,6 +28,7 @@ import { IdentityEntity } from "../identity/identity.entity";
 import { IdentityService } from "../identity/identity.service";
 import { LoadingController } from "@ionic/angular";
 import { LanguageHelper } from "src/app/languageHelper";
+import { environment } from "src/environments/environment";
 @Injectable({
   providedIn: "root"
 })
@@ -54,26 +55,20 @@ export class ApiService {
     this.loadingSubject.next(loading);
   }
   async showLoadingView() {
-    console.log("showLoadingView");
-    const l = document.querySelector("ion-loading");
-    console.log("showLoadingView", l);
-    if (l) {
-      await this.loadingCtrl.dismiss();
-    }
     const t = await this.loadingCtrl.create();
     if (t) {
       await t.present();
     }
   }
   async hideLoadingView() {
-    const l = document.querySelector("ion-loading");
-    const lc = document.querySelector("ion-loading-controller");
-    console.log("hideLoadingView", lc, l);
-    if (lc) {
-      await lc.dismiss().catch(e => {
-        console.log("hideLoadingView lc", e);
-      });
-    }
+    return new Promise(s => {
+      setTimeout(() => {
+        this.loadingCtrl.dismiss().catch(_ => {
+          console.log("hideLoadingView", _);
+        });
+        s();
+      }, 1000);
+    });
   }
   send<T>(
     method: string,
@@ -92,6 +87,32 @@ export class ApiService {
   }
   getResponse<T>(req: RequestEntity): Observable<IResponse<T>> {
     return this.sendRequest({ ...req }, true);
+  }
+  getPromiseResponse<T>(req: RequestEntity): Promise<T> {
+    return new Promise((resolve, reject) => {
+      const sub = this.getResponse<T>(req).subscribe(
+        r => {
+          if (r.Status) {
+            resolve(r.Data);
+          } else {
+            reject(r.Message);
+          }
+        },
+        e => {
+          reject(e);
+        },
+        () => {
+          setTimeout(() => {
+            if (sub) {
+              if (environment.production) {
+                console.log("接口调用 sub.unsubscribe();");
+              }
+              sub.unsubscribe();
+            }
+          }, 500);
+        }
+      );
+    });
   }
   createRequest() {
     const req = new RequestEntity();

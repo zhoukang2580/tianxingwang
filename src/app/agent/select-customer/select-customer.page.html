@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>选择客户</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <!-- Searchbar with a custom debounce -->
+    <ion-searchbar debounce="300" animated placeholder="搜索" (ionChange)='onSearch()' [(ngModel)]='keyword'>
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh()">
+    <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="下拉刷新" refreshingSpinner="circles"
+      refreshingText="正在加载...">
+    </ion-refresher-content>
+  </ion-refresher>
+  <ion-list *ngIf='!loading;else loadingTemp'>
+    <ng-container *ngIf='customers.length;else nodata'>
+      <ion-item *ngFor='let item of customers' detail (click)='onSelect(item)'>
+        <ion-label text-wrap>
+          <ion-text color='medium'>{{item?.GroupCompanyName}}--</ion-text>
+          {{item?.Name}}
+        </ion-label>
+      </ion-item>
+    </ng-container>
+    <ng-template #nodata>
+      <app-or-comp>无数据</app-or-comp>
+    </ng-template>
+  </ion-list>
+  <ng-template #loadingTemp>
+    正在加载...
+  </ng-template>
+</ion-content>

@@ -54,7 +54,7 @@ export class FlightService {
   getOpenCloseSelectCityPageSources() {
     return this.openCloseSelectCitySources.asObservable();
   }
-  showSelectCityPage(open: boolean) {
+  setOpenCloseSelectCityPageSources(open: boolean) {
     this.openCloseSelectCitySources.next(open);
   }
   setResetAdvCond(reset: boolean) {
@@ -81,7 +81,7 @@ export class FlightService {
     req.Data = {
       LastUpdateTime: this.LastUpdateTime
     };
-    req.IsShowLoading = true;
+    // req.IsShowLoading = true;
     return merge(
       of(this.domesticAirports),
       this.apiService.getResponse<Trafficline[]>(req).pipe(
@@ -107,7 +107,7 @@ export class FlightService {
     req.Data = {
       LastUpdateTime: this.InternationalLastUpdateTime
     };
-    req.IsShowLoading = true;
+    // req.IsShowLoading = true;
     return merge(
       of(this.internationalAirports),
       this.apiService.getResponse<Trafficline[]>(req).pipe(

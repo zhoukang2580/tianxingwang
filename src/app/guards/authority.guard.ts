@@ -21,6 +21,11 @@ import { finalize, switchMap, map } from "rxjs/operators";
   providedIn: "root"
 })
 export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
+  constructor(
+    private identityService: IdentityService,
+    private loginService: LoginService,
+    private router: Router
+  ) { }
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
@@ -31,11 +36,7 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
     | Promise<boolean | UrlTree> {
     return this.canActivate(childRoute, state);
   }
-  constructor(
-    private identityService: IdentityService,
-    private loginService: LoginService,
-    private router: Router
-  ) { }
+
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot

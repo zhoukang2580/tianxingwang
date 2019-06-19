@@ -109,7 +109,8 @@
       "cordova-hcp-plugin": {},
       "cordova-plugin-device": {},
       "cordova-ali-plugin": {},
-      "cordova-wechat-plugin": {}
+      "cordova-wechat-plugin": {},
+      "cordova-plugin-splashscreen": {}
     },
     "platforms": [
       "ios",

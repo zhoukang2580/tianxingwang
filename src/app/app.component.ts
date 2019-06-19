@@ -1,5 +1,13 @@
+import { FlightService } from "./flight/flight.service";
 
-import { Component, AfterViewInit } from "@angular/core";
+import {
+  Component,
+  AfterViewInit,
+  ContentChildren,
+  QueryList,
+  AfterContentInit,
+  OnChanges
+} from "@angular/core";
 
 import {
   Platform,
@@ -18,6 +26,7 @@ import { ConfigService } from "./services/config/config.service";
 import { HttpClient } from "@angular/common/http";
 import { LanguageHelper } from "./languageHelper";
 import { WechatHelper } from "./wechatHelper";
+import { Observable } from "rxjs";
 export interface App {
   loadUrl: (
     url: string,
@@ -43,8 +52,11 @@ export interface App {
   selector: "app-root",
   templateUrl: "app.component.html"
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent
+  implements AfterViewInit, AfterContentInit, OnChanges {
   app: App;
+  openSelectCity$: Observable<boolean>;
+  @ContentChildren("img") images: QueryList<HTMLImageElement>;
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
@@ -58,9 +70,11 @@ export class AppComponent implements AfterViewInit {
     private actionSheetCtrl: ActionSheetController,
     private loadingCtrl: LoadingController,
     private http: HttpClient,
+    flightService: FlightService
   ) {
     // console.log(this.router.config);
-    if (!this.checkWechatOpenId() || !this.checkDingtalkUnionid()) return;
+    this.openSelectCity$ = flightService.getOpenCloseSelectCityPageSources();
+    // if (!this.checkWechatOpenId() || !this.checkDingtalkUnionid()) return;
     if (this.platform.is("ios")) {
       AppHelper.setDeviceName("ios");
     }
@@ -73,11 +87,20 @@ export class AppComponent implements AfterViewInit {
     AppHelper.setModalController(this.modalController);
     this.initializeApp();
   }
+  ngOnChanges() {
+    console.log("ngOnChanges", this.images);
+  }
   ngAfterViewInit() {
     this.splashScreen.hide();
   }
+  ngAfterContentInit() {
+    console.log(this.images);
+    this.images.changes.subscribe(d => {
+      console.log("ngAfterContentInit", d);
+    });
+  }
   checkWechatOpenId() {
-    var paramters = AppHelper.getQueryParamers();
+    const paramters = AppHelper.getQueryParamers();
     if (paramters.openid) {
       WechatHelper.openId = paramters.openid || "";
     } else if (paramters.IsOpen) {
@@ -108,7 +131,7 @@ export class AppComponent implements AfterViewInit {
     return true;
   }
   checkDingtalkUnionid() {
-    var paramters = AppHelper.getQueryParamers();
+    const paramters = AppHelper.getQueryParamers();
     if (paramters.IsOpen) {
       return true;
     } else if (AppHelper.isDingtalkH5()) {
@@ -126,13 +149,16 @@ export class AppComponent implements AfterViewInit {
     return true;
   }
   initializeApp() {
+    this.backButtonAction();
     this.getConfigInfo();
     AppHelper.getDomain(); //
     AppHelper.setQueryParamers();
-    if (!this.checkWechatOpenId() || !this.checkDingtalkUnionid()) return;
+    if (!this.checkWechatOpenId() || !this.checkDingtalkUnionid()) {
+      return;
+    }
     const path = AppHelper.getQueryString("path");
     const unloginPath = AppHelper.getQueryString("unloginpath");
-    var hash = window.location.hash;
+    let hash = window.location.hash;
     if (hash) {
       hash = hash.replace("#", "");
     }
@@ -149,24 +175,9 @@ export class AppComponent implements AfterViewInit {
     } else {
       this.router.navigate([AppHelper.getRoutePath("")]);
     }
-    // this.router.navigate([AppHelper.getRoutePath("register")]);
-    // this.router.navigate([AppHelper.getRoutePath("account-password")]);
-    // this.router.navigate([AppHelper.getRoutePath("account-email")]);
-    // this.router.navigate([AppHelper.getRoutePath("account-dingtalk")]);
-    // this.router.navigate([AppHelper.getRoutePath("account-wechat")]);
-    // this.router.navigate([AppHelper.getRoutePath("account-bind")]);
-    // this.router.navigate([AppHelper.getRoutePath("account-mobile")]);
-    // this.router.navigate([AppHelper.getRoutePath("account-device")]);
-    // this.router.navigate([AppHelper.getRoutePath("change-password-by-msm-code")]);
-    // this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
-    // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management')]);
-    // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management-add')]);
-    //this.router.navigate([AppHelper.getRoutePath('book-flight')]);
-    setTimeout(() => {
-      // this.router.navigate([AppHelper.getRoutePath('function-test')]);
-      this.router.navigate([AppHelper.getRoutePath("function-test")]);
-    }, 100);
     this.platform.ready().then(() => {
+      this.splashScreen.show();
+      console.log(`platform ready`);
       this.app = navigator["app"];
       this.statusBar.styleDefault();
       if (AppHelper.isApp() && this.platform.is("android")) {
@@ -176,13 +187,27 @@ export class AppComponent implements AfterViewInit {
         }, 5000);
       }
     });
-    this.backButtonAction();
   }
   private getConfigInfo() {
     this.configService.get();
   }
   private jumpToRoute(route: string) {
-    return this.router.navigate([AppHelper.getRoutePath(route)]);
+    return this.router.navigate([AppHelper.getRoutePath(route)]).then(() => {
+      // this.router.navigate([AppHelper.getRoutePath("register")]);
+      // this.router.navigate([AppHelper.getRoutePath("account-password")]);
+      // this.router.navigate([AppHelper.getRoutePath("account-email")]);
+      // this.router.navigate([AppHelper.getRoutePath("account-dingtalk")]);
+      // this.router.navigate([AppHelper.getRoutePath("account-wechat")]);
+      // this.router.navigate([AppHelper.getRoutePath("account-bind")]);
+      // this.router.navigate([AppHelper.getRoutePath("account-mobile")]);
+      // this.router.navigate([AppHelper.getRoutePath("account-device")]);
+      // this.router.navigate([AppHelper.getRoutePath("change-password-by-msm-code")]);
+      // this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
+      // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management')]);
+      // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management-add')]);
+      // this.router.navigate([AppHelper.getRoutePath('book-flight')]);
+      // this.router.navigate([AppHelper.getRoutePath("select-customer")]);
+    });
   }
 
   private backButtonAction() {
@@ -216,9 +241,9 @@ export class AppComponent implements AfterViewInit {
         this.router.url.includes("tabs")
       ) {
         if (Date.now() - lastClickTime <= 2000) {
-          AppHelper.alert("退出应用？",true,'退出',"取消").then(ok=>{
-            if(ok){
-              navigator['app'].exitApp();
+          AppHelper.alert("退出应用？", true, "退出", "取消").then(ok => {
+            if (ok) {
+              navigator["app"].exitApp();
             }
           });
         } else {
@@ -226,7 +251,7 @@ export class AppComponent implements AfterViewInit {
           lastClickTime = Date.now();
         }
       } else {
-        this.navCtrl.pop();
+        // this.navCtrl.pop();
         // window.history.back();
       }
     });

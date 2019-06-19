@@ -32,8 +32,7 @@
       <app-switch-city-comp
         [vmFromCity]="vmFromCity"
         [vmToCity]="vmToCity"
-        (eToCity)="onSelectToCity($event)"
-        (eFromCity)="onSelectFromCity($event)"
+        appSelectCity
       ></app-switch-city-comp>
       <section class="flight-date">
         <div class="date-week" text-start (click)="onSelecFlyDate(true)">
