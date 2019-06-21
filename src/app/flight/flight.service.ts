@@ -80,7 +80,7 @@ export class FlightService {
   }
   getDomesticAirports(forceFetch: boolean = false) {
     const req = new RequestEntity();
-    req.IsForward = true;
+    // req.IsForward = true;
     req.Method = `ApiHomeUrl-Resource-Airport`;
     if (!this.localDomesticAirports) {
       this.localDomesticAirports =
@@ -119,7 +119,7 @@ export class FlightService {
   getInternationalAirports(forceFetch: boolean = false) {
     const req = new RequestEntity();
     req.Method = `ApiHomeUrl-Resource-InternationalAirport`;
-    req.IsForward = true;
+    // req.IsForward = true;
     if (!this.localInternationAirports) {
       this.localInternationAirports =
         AppHelper.getStorage<LocalStorageAirport>(req.Method) ||

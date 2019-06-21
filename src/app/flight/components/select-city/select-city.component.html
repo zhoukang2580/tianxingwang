@@ -30,18 +30,19 @@
 
   <section class='cities'>
     <ion-list class='history-class' [style.display]='historyCities.length>0?"block":"none"'>
-      <ion-item-divider color='light'>
+      <ion-item-divider color='primary' sticky>
         <ion-label color='dark'>
           <h6>历史</h6>
         </ion-label>
       </ion-item-divider>
       <div class='history-cites'>
-        <ion-grid padding-end>
+        <ion-grid padding-end margin-end>
           <ion-row wrap>
             <ion-col size='4' *ngFor='let city of historyCities'>
-              <ion-button szie='small' fill='outline' color='{{city?.Selected?"secondary":"dark"}}'
-                (click)='onCitySelected(city,true)'>
-                {{city?.Nickname}}
+              <ion-button szie='small' expand='block' fill='outline' color='{{city?.Selected?"secondary":"medium"}}'>
+                <ion-label color='{{city?.Selected?"secondary":"medium"}}' (click)='onCitySelected(city,true)'>
+                  {{city?.Nickname}}
+                </ion-label>
               </ion-button>
             </ion-col>
           </ion-row>
@@ -49,17 +50,17 @@
       </div>
     </ion-list>
     <ion-list class='hot-class'>
-      <ion-item-divider color='primary'>
+      <ion-item-divider color='primary' sticky>
         <ion-label color='dark'>
           <h6>热门城市</h6>
         </ion-label>
       </ion-item-divider>
-      <ion-grid padding-end>
+      <ion-grid padding-end margin-end>
         <ion-row wrap>
           <ion-col size='4' *ngFor='let city of hotCities'>
-            <ion-button szie='small' fill='outline' color='{{city?.Selected?"secondary":"dark"}}'
+            <ion-button szie='small' expand='block' fill='outline' color='{{city?.Selected?"secondary":"medium"}}'
               (click)='onCitySelected(city,true)'>
-              {{city?.Nickname}}
+              <ion-label> {{city?.Nickname}}</ion-label>
             </ion-button>
           </ion-col>
         </ion-row>
@@ -75,7 +76,7 @@
       <div margin-start padding-end (click)='onCitySelected(item,true)'
         *ngFor='let item of nav?.items;let i= index;trackBy:i'>
         <h6>
-          <ion-text [color]="item?.selected?'primary':'dark'">{{item?.Nickname}}</ion-text>
+          <ion-text [color]="item?.Selected?'secondary':'dark'">{{item?.Nickname}}</ion-text>
         </h6>
       </div>
     </ion-list>

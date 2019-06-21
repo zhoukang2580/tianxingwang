@@ -74,6 +74,10 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   ) {
     this.selectcity = new EventEmitter();
   }
+  ionViewWillEnter() {
+    this.initHistoryCities();
+    console.log(this.domesticAirports.length);
+  }
   ngOnInit() {
     this.openCloseSubscription = this.flightService
       .getOpenCloseSelectCityPageSources()
@@ -90,7 +94,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     this.initHotCities();
     await this.initDomesticListCity();
     console.timeEnd("initDomesticListCity");
-    console.log("listCitiesViewModel", this.listCitiesViewModel);
+    // console.log("listCitiesViewModel", this.listCitiesViewModel);
     return true;
   }
   ngOnDestroy() {
@@ -111,6 +115,18 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   private initHistoryCities() {
     const hcs = AppHelper.getStorage<TrafficlineModel[]>("historyCities") || [];
     this.historyCities = hcs;
+    let lm = this.listCitiesViewModel.find(l => l.link == "history");
+    if (!lm) {
+      lm = new ListCityModel();
+      if (this.historyCities.length) {
+        lm.link = "history";
+        lm.displayName = LanguageHelper.getHistoryCitiesTip();
+        lm.items = this.historyCities;
+        this.listCitiesViewModel.unshift(lm);
+      }
+    } else {
+      lm.items = this.historyCities || [];
+    }
   }
   goToCity(nav: {
     link: string;
@@ -138,9 +154,9 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     return new Promise(done => {
       let cities: Trafficline[] = [];
       if (this.segmentValue == "domestic") {
-        cities = [...this.domesticAirports];
+        cities = this.domesticAirports;
       } else {
-        cities = [...this.internationalAirports];
+        cities = this.internationalAirports;
       }
       const listCities: ListCityModel[] = [];
       // console.time("计算 listCities");
@@ -215,8 +231,8 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     this.cnt = document.getElementById("mainCnt");
     this.curNavTextEle = document.getElementById("curNavText");
     this.curTargetNavEle = document.querySelector(".curTargetNav");
-    if (this.plt.is("ios")) {
-      this.render.setStyle(this.cnt, "width", "90vw");
+    if (true || this.plt.is("ios")) {
+      // this.render.setStyle(this.cnt, "width", "90vw");
     }
     const nav = (this.linksNavEle = document.getElementById("links")); // 这里是右边的字母
     console.timeEnd("ngAfterViewInit");
@@ -228,6 +244,9 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     fromEvent(nav, "touchstart")
       .pipe(
         tap(() => {
+          if (!nav.classList.contains("moving")) {
+            this.render.addClass(nav, "moving");
+          }
           this.showCurTargetNavEle(true);
           lastTime = Date.now();
           let tempc = [];
@@ -257,6 +276,9 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
             takeUntil(
               fromEvent(nav, "touchend").pipe(
                 tap((evt: TouchEvent) => {
+                  if (nav.classList.contains("moving")) {
+                    this.render.removeClass(nav, "moving");
+                  }
                   setTimeout(() => {
                     this.showCurTargetNavEle(false);
                   }, 1400);
@@ -299,18 +321,23 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
   onCitySelected(city: TrafficlineModel, isUserSelect?: boolean) {
+    for (let i = 0; i < this.listCitiesViewModel.length; i++) {
+      const item = this.listCitiesViewModel[i];
+      const lastSelectedCity = item.items.find(
+        c => c.Id == (this.selectedCity && this.selectedCity.Id)
+      );
+      if (lastSelectedCity) {
+        lastSelectedCity.Selected = false;
+        break;
+      }
+    }
     city.Selected = true;
     this.selectedCity = city;
     this.hotCities.map(hc => {
       hc.Selected = hc.Id === city.Id;
     });
-    this.listCities.forEach(item => {
-      item.items.forEach(c => {
-        c.Selected = c.Id == city.Id;
-      });
-    });
     this.historyCities.forEach(item => {
-      item.Selected = false;
+      item.Selected = item.Id === city.Id;
       if (!this.historyCities.find(item => item.Id === city.Id)) {
         this.historyCities.unshift(city);
       }

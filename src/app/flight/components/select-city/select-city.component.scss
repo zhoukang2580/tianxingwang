@@ -149,16 +149,19 @@ ul.c-items {
 .nav-links {
   position: fixed;
   z-index: 2000;
-  top: 8rem;
+  top: 6rem;
   width: 2rem;
   -webkit-overflow-scrolling: touch;
   right: 0.1em;
   bottom: 2em;
-
+  background: transparent;
+  &.moving {
+    background: rgba(var(--ion-color-medium-rgb), 0.2);
+  }
   .nav {
     -webkit-overflow-scrolling: touch;
     position: absolute;
-    background: var(--ion-color-light);
+    padding: 0.5em 0;
     right: 0;
     top: 0;
     bottom: 0;
@@ -172,27 +175,19 @@ ul.c-items {
     flex-flow: column nowrap;
     align-items: center;
     justify-content: space-between;
-
     ion-text {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
       a {
-        background: white;
         color: inherit;
         text-decoration: none;
       }
-
-      position: relative;
-      width: 100%;
-      height: 100%; // border: red .5px solid;
     }
   }
 }
 ion-row ion-col {
   ion-button {
     width: 100%;
-    font-size: 0.8rem;
+    margin: 0;
+    font-size: 0.7rem;
+    padding: 0;
   }
 }
