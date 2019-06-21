@@ -27,6 +27,7 @@ import { HttpClient } from "@angular/common/http";
 import { LanguageHelper } from "./languageHelper";
 import { WechatHelper } from "./wechatHelper";
 import { Observable } from "rxjs";
+import { ApiService } from './services/api/api.service';
 export interface App {
   loadUrl: (
     url: string,
@@ -65,6 +66,7 @@ export class AppComponent
     private statusBar: StatusBar,
     private router: Router,
     private configService: ConfigService,
+    private apiService: ApiService,
     private alertController: AlertController,
     private toastController: ToastController,
     private actionSheetCtrl: ActionSheetController,
@@ -151,6 +153,7 @@ export class AppComponent
   initializeApp() {
     this.backButtonAction();
     this.getConfigInfo();
+    
     AppHelper.getDomain(); //
     AppHelper.setQueryParamers();
     if (!this.checkWechatOpenId() || !this.checkDingtalkUnionid()) {
@@ -190,6 +193,7 @@ export class AppComponent
   }
   private getConfigInfo() {
     this.configService.get();
+    this.apiService.loadUrls();
   }
   private jumpToRoute(route: string) {
     return this.router.navigate([AppHelper.getRoutePath(route)]).then(() => {

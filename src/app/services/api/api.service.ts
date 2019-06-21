@@ -34,6 +34,7 @@ import { environment } from "src/environments/environment";
 })
 export class ApiService {
   private loadingSubject: Subject<boolean>;
+  public Urls:{key:string,value:string}[];
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -128,6 +129,21 @@ export class ApiService {
     req.Domain = AppHelper.getDomain();
     return req;
   }
+  getUrl(req:RequestEntity)
+  {
+    req.Url=req.Url || AppHelper.getApiUrl() + "/Home/Proxy"
+    if(this.Urls && !req.IsForward && req.Method)
+    {
+       const urls=req.Method.split('-');
+       const url=this.Urls.find(r=>r.key==urls[0]);
+       if(url)
+       {
+          req.Url=url.value+"/"+urls[1]+"/"+urls[2];
+       }
+    }
+    return req.Url;
+
+  }
   async tryAutoLogin(orgReq: RequestEntity) {
     const req = this.createRequest();
     if (AppHelper.isApp()) {
@@ -160,7 +176,8 @@ export class ApiService {
     const formObj = Object.keys(req)
       .map(k => `${k}=${req[k]}`)
       .join("&");
-    const url = req.Url || AppHelper.getApiUrl() + "/Home/Proxy";
+      
+    const url = this.getUrl(req);
     return new Promise((resolve, reject) => {
       const subscribtion = this.http
         .post(url, formObj, {
@@ -220,7 +237,7 @@ export class ApiService {
       .map(k => `${k}=${req[k]}`)
       .join("&");
     this.setLoading(true, req.IsShowLoading);
-    let url = req.Url || AppHelper.getApiUrl() + "/Home/Proxy";
+    let url = this.getUrl(req);
     const due = 30 * 1000;
     return this.http
       .post(url, formObj, {
@@ -238,6 +255,50 @@ export class ApiService {
             this.router.navigate([AppHelper.getRoutePath("login")]);
           }
           return of(r);
+        }),
+        catchError((error: Error | any) => {
+          const entity = new ExceptionEntity();
+          entity.Error = error;
+          entity.Method = req.Method;
+          entity.Message = LanguageHelper.getApiExceptionTip();
+          if (error instanceof TimeoutError) {
+            entity.Message = LanguageHelper.getApiTimeoutTip();
+          }
+          return throwError(error);
+        }),
+        finalize(() => {
+          this.setLoading(false, req.IsShowLoading);
+        }),
+        map(r => r as any)
+      );
+  }
+
+   loadUrls(): Observable<IResponse<any>> {
+    const req = this.createRequest();
+    req.Timestamp = Math.floor(Date.now() / 1000);
+    req.Language = AppHelper.getLanguage();
+    req.Ticket = AppHelper.getTicket();
+    req.Domain = AppHelper.getDomain();
+    if (req.Data && typeof req.Data != "string") {
+      req.Data = JSON.stringify(req.Data);
+    }
+    const formObj = Object.keys(req)
+      .map(k => `${k}=${req[k]}`)
+      .join("&");
+    this.setLoading(true, req.IsShowLoading);
+    let url = req.Url || AppHelper.getApiUrl() + "/Home/Urls";
+    const due = 30 * 1000;
+    return this.http
+      .post(url, formObj, {
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        observe: "body"
+      })
+      .pipe(
+        timeout(due),
+        tap(r => console.log(r)),
+        map(r => r as any),
+        switchMap((r: IResponse<any>) => {
+           this.Urls=r.Data;
         }),
         catchError((error: Error | any) => {
           const entity = new ExceptionEntity();
