@@ -1,3 +1,4 @@
+import { FlightService } from 'src/app/flight/flight.service';
 import { EventEmitter, Output } from "@angular/core";
 import { Platform } from "@ionic/angular";
 import { Component, OnInit, Input } from "@angular/core";
@@ -9,7 +10,7 @@ import {
   animate
 } from "@angular/animations";
 import { Subscription } from "rxjs";
-import { FlyCityItemModel } from '../select-city/models/FlyCityItemModel';
+import { FlyCityItemModel } from '../select-city/models/TrafficlineModel';
 
 @Component({
   selector: "app-switch-city-comp",
@@ -54,7 +55,7 @@ export class SwitchCityComponent implements OnInit {
   eFromCity: EventEmitter<FlyCityItemModel>;
   @Output()
   eToCity: EventEmitter<FlyCityItemModel>;
-  constructor( plt: Platform) {
+  constructor( plt: Platform,private flightService:FlightService) {
     this.mode = plt.is("ios") ? "ios" : plt.is("android") ? "md" : "";
     this.eFromCity = new EventEmitter();
     this.eToCity = new EventEmitter();
@@ -85,11 +86,12 @@ export class SwitchCityComponent implements OnInit {
     
   }
   onSelectCity(fromCity: boolean) {
-    console.log(this.isMoving);
+    // console.log(this.isMoving);
     if (this.isMoving) {
       // 如果切换城市的动画还在进行
       return;
     }
+    this.flightService.setOpenCloseSelectCityPageSources(true);
     this.isSelectFromCity = fromCity;
   }
 }

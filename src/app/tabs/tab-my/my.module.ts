@@ -6,6 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MyPage } from './my.page';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthorityGuard } from 'src/app/guards/authority.guard';
+import { DirectivesModule } from 'src/app/directives/directives.module';
 let routes: Route[] = [
   { path: '', component: MyPage },
 
@@ -36,6 +37,7 @@ let routes: Route[] = [
     ReactiveFormsModule,
     TranslateModule.forChild(),
     RouterModule.forChild(routes),
+    DirectivesModule
   ],
   declarations: [MyPage]
 })

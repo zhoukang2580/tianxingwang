@@ -2,12 +2,15 @@ import * as md5 from "md5";
 import * as moment from "moment";
 import { environment } from "src/environments/environment";
 import { UrlSegment, UrlSegmentGroup, Route } from "@angular/router";
-import { HttpClient } from '@angular/common/http';
-import { AlertController, ToastController, ModalController } from '@ionic/angular';
-import { LanguageHelper } from './languageHelper';
-import { TimeoutError } from 'rxjs';
+import { HttpClient } from "@angular/common/http";
+import {
+  AlertController,
+  ToastController,
+  ModalController
+} from "@ionic/angular";
+import { LanguageHelper } from "./languageHelper";
+import { TimeoutError } from "rxjs";
 export class AppHelper {
-
   static httpClient: HttpClient;
   private static _deviceName: string;
   private static _routeData: any;
@@ -26,14 +29,22 @@ export class AppHelper {
   static setRouteData(data: any) {
     this._routeData = data;
   }
-  static toast(msg: any, duration = 1400, position?: 'top' | 'bottom' | 'middle') {
+  static toast(
+    msg: any,
+    duration = 1400,
+    position?: "top" | "bottom" | "middle"
+  ) {
     return new Promise<any>(async (resolve, reject) => {
       await this.dismissLayer();
       const t = await this.toastController.create({
-        message: typeof msg === "string" ? msg
-          : msg instanceof Error ? msg.message
-            : typeof msg === 'object' && msg.message ? msg.message
-              : JSON.stringify(msg),
+        message:
+          typeof msg === "string"
+            ? msg
+            : msg instanceof Error
+            ? msg.message
+            : typeof msg === "object" && msg.message
+            ? msg.message
+            : JSON.stringify(msg),
         position: position as any,
         duration: duration
       });
@@ -43,20 +54,24 @@ export class AppHelper {
     });
   }
   static isFunction(fun: any) {
-    return typeof fun === 'function';
+    return typeof fun === "function";
   }
-  static alert(msg: any, userOp: boolean = false,
+  static alert(
+    msg: any,
+    userOp: boolean = false,
     confirmText: string = LanguageHelper.getConfirmTip(),
-    cancelText: string = "") {
-
+    cancelText: string = ""
+  ) {
     return new Promise<boolean>(async (resolve, reject) => {
       await this.dismissLayer();
-      const buttons = [{
-        text: confirmText,
-        handler: () => {
-          resolve(true);
+      const buttons = [
+        {
+          text: confirmText,
+          handler: () => {
+            resolve(true);
+          }
         }
-      }];
+      ];
       if (userOp) {
         if (cancelText) {
           buttons.push({
@@ -69,10 +84,14 @@ export class AppHelper {
       }
       (await this.alertController.create({
         header: LanguageHelper.getMsgTip(),
-        message: typeof msg === "string" ? msg
-          : msg instanceof Error ? msg.message
-            : typeof msg === 'object' && msg.message ? msg.message
-              : JSON.stringify(msg),
+        message:
+          typeof msg === "string"
+            ? msg
+            : msg instanceof Error
+            ? msg.message
+            : typeof msg === "object" && msg.message
+            ? msg.message
+            : JSON.stringify(msg),
         backdropDismiss: !userOp,
         buttons
       })).present();
@@ -80,6 +99,9 @@ export class AppHelper {
   }
   static getDefaultAvatar() {
     return "assets/images/defaultavatar.jpg";
+  }
+  static getDefaultLoadingImage() {
+    return "assets/images/loading.gif";
   }
   static getRouteData() {
     return this._routeData;
@@ -103,7 +125,7 @@ export class AppHelper {
             }
             const uuid = await hcp.getUUID();
             if (uuid) {
-              resolve(`${uuid}`.replace(/-/g, '').toLowerCase());
+              resolve(`${uuid}`.replace(/-/g, "").toLowerCase());
             } else {
               reject("can't get uuid");
             }
@@ -113,7 +135,7 @@ export class AppHelper {
         },
         false
       );
-    }).catch(ex=>{
+    }).catch(ex => {
       return "";
     });
   }
@@ -139,42 +161,61 @@ export class AppHelper {
   static getWechatAppId() {
     if (this.httpClient) {
       return new Promise<string>((resolve, reject) => {
-        const subscription = this.httpClient.get('assets/config.xml', { responseType: "arraybuffer" })
-          .subscribe(r => {
-            // console.log(r);
-            const fr = new FileReader();
-            fr.readAsText(new Blob([r]));
-            fr.onerror = (e) => {
-              // console.error("读取出错");
-              reject(e);
-            }
-            fr.onload = () => {
-              // console.log("读取完成", fr.result);
-              if (fr.result) {
-                const configXmlStr = fr.result as string;
-                if (configXmlStr.split('variable').find(item => item.includes("WECHATAPPID")) &&
-                  configXmlStr.split('variable').find(item => item.includes("WECHATAPPID")).split(" ").find(item => item.includes("value")).includes("=")) {
-                  const appid = configXmlStr.split('variable').find(item => item.includes("WECHATAPPID")).split(" ").find(item => item.includes("value")).split("=")[1].replace(/"/g, "");
-                  resolve(appid);
+        const subscription = this.httpClient
+          .get("assets/config.xml", { responseType: "arraybuffer" })
+          .subscribe(
+            r => {
+              // console.log(r);
+              const fr = new FileReader();
+              fr.readAsText(new Blob([r]));
+              fr.onerror = e => {
+                // console.error("读取出错");
+                reject(e);
+              };
+              fr.onload = () => {
+                // console.log("读取完成", fr.result);
+                if (fr.result) {
+                  const configXmlStr = fr.result as string;
+                  if (
+                    configXmlStr
+                      .split("variable")
+                      .find(item => item.includes("WECHATAPPID")) &&
+                    configXmlStr
+                      .split("variable")
+                      .find(item => item.includes("WECHATAPPID"))
+                      .split(" ")
+                      .find(item => item.includes("value"))
+                      .includes("=")
+                  ) {
+                    const appid = configXmlStr
+                      .split("variable")
+                      .find(item => item.includes("WECHATAPPID"))
+                      .split(" ")
+                      .find(item => item.includes("value"))
+                      .split("=")[1]
+                      .replace(/"/g, "");
+                    resolve(appid);
+                  } else {
+                    reject("variable WECHATAPPID can not be found");
+                  }
                 } else {
-                  reject("variable WECHATAPPID can not be found");
+                  reject("config.xml file does not exist");
                 }
-              } else {
-                reject("config.xml file does not exist");
-              }
+              };
+            },
+            e => {
+              // console.error(e);
+              reject(e);
+            },
+            () => {
+              setTimeout(() => {
+                if (subscription) {
+                  subscription.unsubscribe();
+                }
+              }, 888);
             }
-          }, e => {
-            // console.error(e);
-            reject(e);
-          }, () => {
-            setTimeout(() => {
-              if (subscription) {
-                subscription.unsubscribe();
-              }
-            }, 888);
-          });
+          );
       });
-
     }
     return Promise.reject("httpclient is null");
   }
@@ -197,7 +238,7 @@ export class AppHelper {
         },
         false
       );
-    }).catch(ex=>{
+    }).catch(ex => {
       // this.alert(JSON.stringify(ex));
       return "";
     });
@@ -210,14 +251,18 @@ export class AppHelper {
   }
   static isWechatH5() {
     var ua = window.navigator.userAgent.toLowerCase();
-    if (ua.includes('micromessenger') &&  window["__wxjs_environment"] != 'miniprogram') {    //判断是否是微信环境
+    if (
+      ua.includes("micromessenger") &&
+      window["__wxjs_environment"] != "miniprogram"
+    ) {
+      //判断是否是微信环境
       return true;
     }
     return false;
   }
   static isDingtalkH5() {
     var ua = window.navigator.userAgent.toLowerCase();
-    if (ua.includes('dingtalk')) {
+    if (ua.includes("dingtalk")) {
       return true;
     } else {
       return false;
@@ -225,7 +270,11 @@ export class AppHelper {
   }
   static isWechatMini() {
     var ua = window.navigator.userAgent.toLowerCase();
-    if (ua.includes('micromessenger') &&  window["__wxjs_environment"] === 'miniprogram') {    //判断是否是微信环境
+    if (
+      ua.includes("micromessenger") &&
+      window["__wxjs_environment"] === "miniprogram"
+    ) {
+      //判断是否是微信环境
       return true;
     }
     return false;
@@ -238,7 +287,10 @@ export class AppHelper {
   }
   static checkQueryString(name) {
     const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-    const r = window.location.search && window.location.search.substr(1) && window.location.search.substr(1).match(reg);
+    const r =
+      window.location.search &&
+      window.location.search.substr(1) &&
+      window.location.search.substr(1).match(reg);
     if (r) {
       return true;
     }
@@ -246,30 +298,36 @@ export class AppHelper {
   }
   static getQueryString(name) {
     const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-    const r = window.location.search && window.location.search.substr(1) && window.location.search.substr(1).match(reg);
+    const r =
+      window.location.search &&
+      window.location.search.substr(1) &&
+      window.location.search.substr(1).match(reg);
     if (r) {
       return unescape(r[2]);
     }
     return "";
   }
-  
+
   /**
-   * 
+   *
    * @param key 不区分大小写
-   * @param value 
+   * @param value
    */
   static setStorage<T>(key: string, value: T) {
     if (!key) {
       return;
     }
     if (value) {
-      window.localStorage.setItem(key.toLowerCase(), JSON.stringify(value));
+      window.localStorage.setItem(
+        key.toLowerCase(),
+        JSON.stringify(value)
+      );
     } else {
       window.localStorage.setItem(key.toLowerCase(), null);
     }
   }
   /**
-   * 
+   *
    * @param key 不区分大小写
    */
   static getStorage<T>(key: string) {
@@ -291,8 +349,9 @@ export class AppHelper {
     return result;
   }
   static getTicket() {
-    var ticket= AppHelper.getQueryString("ticket") || AppHelper.getStorage("ticket");
-    return ticket=="null"?"":ticket;
+    var ticket =
+      AppHelper.getQueryString("ticket") || AppHelper.getStorage("ticket");
+    return ticket == "null" ? "" : ticket;
   }
   static _appDomain = "beeant.com";
   static _domain;
@@ -306,12 +365,12 @@ export class AppHelper {
       let keyR = new RegExp(`(^|;)\\s*${key}=12345`);
       let expiredTime = new Date(0);
       let domain = document.domain;
-      let domainList = domain.split('.');
+      let domainList = domain.split(".");
       let urlItems = [];
       urlItems.unshift(domainList.pop());
       while (domainList.length) {
         urlItems.unshift(domainList.pop());
-        let mainHost = urlItems.join('.');
+        let mainHost = urlItems.join(".");
         let cookie = `${key}=${12345};domain=.${mainHost}`;
         document.cookie = cookie;
         if (keyR.test(document.cookie)) {
@@ -325,7 +384,7 @@ export class AppHelper {
   static getRedirectUrl() {
     var url = this.getApiUrl();
     var domain = this.getDomain();
-    return url.replace(this._appDomain, domain).replace("dev.", "") ;
+    return url.replace(this._appDomain, domain).replace("dev.", "");
   }
   static getApiUrl() {
     return "http://dev.app." + this._appDomain;
@@ -333,9 +392,7 @@ export class AppHelper {
   static getRoutePath(path: string) {
     const style = AppHelper.getStyle() || "";
     path =
-      path && path.length > 0
-        ? `${path}${style ? "_" + style : ""}`
-        : path;
+      path && path.length > 0 ? `${path}${style ? "_" + style : ""}` : path;
     console.log(`get style=${style}, Route Path=`, path);
     if (path) {
       return `/${path}`;
@@ -361,15 +418,14 @@ export class AppHelper {
       console.log("matchDefaultRoute path after", path);
       return path && url[0].path.match(new RegExp(`${path}_*`, "gi"))
         ? (route.redirectTo = `/${path}`) && {
-          consumed: [new UrlSegment(path, {})]
-        }
+            consumed: [new UrlSegment(path, {})]
+          }
         : {
-          consumed: [new UrlSegment("", {})]
-        };
+            consumed: [new UrlSegment("", {})]
+          };
     } catch (e) {
       console.error("matchDefaultRoute", e);
     }
-
   }
   static md5Digest(content: string, toLowerCase: boolean = true) {
     if (toLowerCase) {
@@ -398,8 +454,14 @@ export class AppHelper {
     return this._queryParamers as any;
   }
 
-  static _events: { name: string, handle: (name: string, data: any) => void }[] = [];
-  static registerEvent(name: string, handle: (name: string, data: any) => void) {
+  static _events: {
+    name: string;
+    handle: (name: string, data: any) => void;
+  }[] = [];
+  static registerEvent(
+    name: string,
+    handle: (name: string, data: any) => void
+  ) {
     this._events.push({ name, handle });
   }
   static triggerEvent(name: string, data: any) {
@@ -407,7 +469,7 @@ export class AppHelper {
       if (item.name == name && item.handle) {
         item.handle(name, data);
       }
-    })
+    });
   }
 
   static _callbackHandle: (name: string, data: any) => void;
@@ -421,6 +483,6 @@ export class AppHelper {
   }
 
   static redirect(url) {
-   window.location.href=url;
+    window.location.href = url;
   }
 }

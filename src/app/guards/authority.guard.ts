@@ -41,7 +41,7 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
-    console.log("state", state, "next", next);
+    // console.log("state", state, "next", next);
     const ticket = AppHelper.getTicket();
     if (ticket) {
       return true;
@@ -49,13 +49,8 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
     this.loginService.setToPageRouter(state.url);
     this.router.navigate([AppHelper.getRoutePath("login")]);
   }
-  // check() {
-  //   //  return Promise.resolve(true);
-  //   return this.loginService.checkIdentity().catch(() => false);
-  // }
-
   canLoad(route: Route) {
-    console.log("canload route ,", route);
+    // console.log("canload route ,", route);
     return true;
   }
 }

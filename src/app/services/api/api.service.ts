@@ -92,7 +92,7 @@ export class ApiService {
     return this.getResponse<T>(req);
   }
   getResponse<T>(req: RequestEntity): Observable<IResponse<T>> {
-    return this.sendRequest({ ...req }, true);
+    return this.sendRequest(req, true);
   }
   getPromiseResponse<T>(req: RequestEntity): Promise<T> {
     return new Promise((resolve, reject) => {
@@ -215,11 +215,12 @@ export class ApiService {
     if (req.Data && typeof req.Data != "string") {
       req.Data = JSON.stringify(req.Data);
     }
+
     const formObj = Object.keys(req)
       .map(k => `${k}=${req[k]}`)
       .join("&");
     this.setLoading(true, req.IsShowLoading);
-    const url = req.Url || AppHelper.getApiUrl() + "/Home/Proxy";
+    let url = req.Url || AppHelper.getApiUrl() + "/Home/Proxy";
     const due = 30 * 1000;
     return this.http
       .post(url, formObj, {

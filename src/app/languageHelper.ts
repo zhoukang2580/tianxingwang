@@ -1,10 +1,15 @@
-
 export class LanguageHelper {
+  static getHistoryCitiesTip(): string {
+    return "历史";
+  }
+  static getHotCitiesTip(): string {
+    return "热门";
+  }
   static getDayTip() {
     return "天";
   }
   static getYearTip() {
-   return "年";
+    return "年";
   }
   static getMonthTip() {
     return "月";

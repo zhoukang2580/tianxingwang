@@ -1,3 +1,4 @@
+import { DirectivesModule } from '../../directives/directives.module';
 import { IonicModule } from "@ionic/angular";
 import { RouterModule } from "@angular/router";
 import { NgModule } from "@angular/core";
@@ -18,7 +19,8 @@ import { AppcomponentsModule } from 'src/app/components/appcomponents.module';
         canActivate: [TmcGuard]
       },
     ]),
-    AppcomponentsModule
+    AppcomponentsModule,
+    DirectivesModule
   ],
   declarations: [HomePage]
 })

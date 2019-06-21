@@ -241,11 +241,7 @@ export class AppComponent
         this.router.url.includes("tabs")
       ) {
         if (Date.now() - lastClickTime <= 2000) {
-          AppHelper.alert("退出应用？", true, "退出", "取消").then(ok => {
-            if (ok) {
-              navigator["app"].exitApp();
-            }
-          });
+          navigator["app"].exitApp();
         } else {
           AppHelper.toast(LanguageHelper.getAppDoubleClickExit());
           lastClickTime = Date.now();

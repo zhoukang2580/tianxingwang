@@ -12,4 +12,5 @@ export class RequestEntity {
   Data: any;
   FileValue?: string;
   IsShowLoading?: boolean;
+  IsForward?: boolean;
 }

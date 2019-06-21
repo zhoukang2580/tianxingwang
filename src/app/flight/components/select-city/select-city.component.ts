@@ -1,4 +1,6 @@
-import { IonContent, Platform } from "@ionic/angular";
+import { LanguageHelper } from "./../../../languageHelper";
+import { AppHelper } from "src/app/appHelper";
+import { IonContent, Platform, IonRefresher } from "@ionic/angular";
 import { takeUntil, tap, switchMap } from "rxjs/operators";
 import {
   Component,
@@ -10,12 +12,13 @@ import {
   HostBinding,
   OnDestroy,
   Output,
-  EventEmitter
+  EventEmitter,
+  NgZone
 } from "@angular/core";
 import { fromEvent, Subscription } from "rxjs";
 import { ListCityModel } from "./models/ListCityModel";
-import { citiesData as MOCK_CITI_DATA } from "./cities.data";
-import { FlyCityItemModel } from "./models/FlyCityItemModel";
+import * as jsPy from "js-pinyin";
+import { FlyCityItemModel as TrafficlineModel } from "./models/TrafficlineModel";
 import {
   trigger,
   state,
@@ -23,7 +26,7 @@ import {
   animate,
   transition
 } from "@angular/animations";
-import { FlightService } from "../../flight.service";
+import { FlightService, Trafficline } from "../../flight.service";
 @Component({
   selector: "app-select-city-comp",
   templateUrl: "./select-city.component.html",
@@ -37,22 +40,28 @@ import { FlightService } from "../../flight.service";
   ]
 })
 export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input() cities: FlyCityItemModel[] = [];
-  hotCities: FlyCityItemModel[] = [];
+  @Input() cities: TrafficlineModel[] = [];
+  hotCities: TrafficlineModel[] = [];
+  // @ViewChild(IonRefresher)  ionRefresher: IonRefresher;
   @ViewChild("cnt")
   content: IonContent;
-  selectedCity: FlyCityItemModel;
-  historyCities: FlyCityItemModel[] = [];
+  selectedCity: TrafficlineModel;
+  historyCities: TrafficlineModel[] = [];
   listCities: ListCityModel[] = [];
+  listCitiesViewModel: ListCityModel[] = [];
+  pageSize = 100;
+  currentPage = 1;
   subscription = Subscription.EMPTY;
-  domesticAirportsSubscription = Subscription.EMPTY;
-  internationnalAirportsSubscription = Subscription.EMPTY;
+  domesticAirportSbuscription = Subscription.EMPTY;
   openCloseSubscription = Subscription.EMPTY;
   cnt: HTMLElement;
   linksNavEle: HTMLElement;
   curTargetNavEle: HTMLElement;
   curNavTextEle: HTMLElement;
   isUserSelect: boolean;
+  private domesticAirports: Trafficline[] = [];
+  private internationalAirports: Trafficline[] = [];
+  segmentValue: "domestic" | "overseas" = "domestic";
   @Input()
   @HostBinding("@openclose")
   openclose = true;
@@ -60,30 +69,48 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private plt: Platform,
     private render: Renderer2,
+    // private ngZone: NgZone,
     private flightService: FlightService
   ) {
     this.selectcity = new EventEmitter();
   }
   ngOnInit() {
-    this.loadDomesticAirports();
-    this.loadInternationalAirports();
-    this.initHistoryCities();
-    this.initListCity();
     this.openCloseSubscription = this.flightService
       .getOpenCloseSelectCityPageSources()
-      .subscribe(open => {
+      .subscribe(async open => {
         this.openclose = open;
       });
+    this.flightService.getInternationalAirports(true).subscribe();
+    this.initData();
+  }
+  async initData(forceRefresh: boolean = false) {
+    this.initHistoryCities();
+    this.domesticAirports = await this.loadDomesticAirports(forceRefresh);
+    console.time("initDomesticListCity");
+    this.initHotCities();
+    await this.initDomesticListCity();
+    console.timeEnd("initDomesticListCity");
+    console.log("listCitiesViewModel", this.listCitiesViewModel);
+    return true;
   }
   ngOnDestroy() {
+    console.log("onDestroy");
     this.subscription.unsubscribe();
+    this.domesticAirportSbuscription.unsubscribe();
     this.openCloseSubscription.unsubscribe();
   }
-  initHistoryCities() {
-    const hcs = window.localStorage.getItem("historyCities");
-    if (hcs) {
-      this.historyCities = JSON.parse(hcs);
+  private initHotCities() {
+    if (this.segmentValue === "domestic") {
+      this.hotCities = this.domesticAirports
+        .filter(item => item.IsHot)
+        .sort((c1, c2) => +c1.Sequence - +c2.Sequence);
+    } else {
+      this.hotCities = this.internationalAirports.filter(item => item.IsHot);
     }
+  }
+  private initHistoryCities() {
+    const hcs = AppHelper.getStorage<TrafficlineModel[]>("historyCities") || [];
+    this.historyCities = hcs;
   }
   goToCity(nav: {
     link: string;
@@ -107,20 +134,60 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     return false;
   }
-  initListCity() {
-    this.listCities = MOCK_CITI_DATA.map(c => {
-      return {
-        ...c,
-        items: c.items.map(i => {
-          const item: FlyCityItemModel = new FlyCityItemModel();
-          item.CityName = i.cityName;
-          item.Code = i.cityId + "";
-          item.Selected = i.selected;
-          item.IsHot = Math.floor(Math.random() * 10000) % 2 == 0;
-          return item;
-        })
-      };
+  initDomesticListCity() {
+    return new Promise(done => {
+      let cities: Trafficline[] = [];
+      if (this.segmentValue == "domestic") {
+        cities = [...this.domesticAirports];
+      } else {
+        cities = [...this.internationalAirports];
+      }
+      const listCities: ListCityModel[] = [];
+      // console.time("计算 listCities");
+      cities.forEach(c => {
+        const pyFl = `${jsPy.getFullChars(c.Nickname)}`.charAt(0);
+        // console.log(pyFl + " -- " + c.Nickname);
+        let lm = listCities.find(item => item.link === pyFl);
+        // console.log("lm", lm);
+        if (!lm) {
+          lm = new ListCityModel();
+          lm.link = pyFl;
+          lm.displayName = pyFl.toUpperCase();
+          lm.items = [c];
+          listCities.push(lm);
+        } else {
+          if (!lm.items.find(it => it.CityCode === c.CityCode)) {
+            lm.items.push(c);
+          }
+        }
+      });
+      listCities.sort((a, b) => a.link.charCodeAt(0) - b.link.charCodeAt(0));
+      if (this.hotCities.length) {
+        const lm = new ListCityModel();
+        lm.link = "hot";
+        lm.displayName = LanguageHelper.getHotCitiesTip();
+        lm.items = this.hotCities;
+        listCities.unshift(lm);
+      }
+      if (this.historyCities.length) {
+        const lm = new ListCityModel();
+        lm.link = "history";
+        lm.displayName = LanguageHelper.getHistoryCitiesTip();
+        lm.items = this.historyCities;
+        listCities.unshift(lm);
+      }
+      this.listCitiesViewModel = this.listCities = listCities;
+      done();
     });
+  }
+  segmentChanged(evt: CustomEvent) {
+    // console.log(evt);
+    if (evt.detail) {
+      this.segmentValue = evt.detail.value;
+    }
+    console.time("initListCity");
+    this.initDomesticListCity();
+    console.timeEnd("initListCity");
   }
   showCurTargetNavEle(show: boolean) {
     if (show) {
@@ -129,27 +196,22 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
       this.render.removeClass(this.curTargetNavEle, "show");
     }
   }
-  loadDomesticAirports() {
-    this.domesticAirportsSubscription = this.flightService
-      .getDomesticAirports()
-      .subscribe(
-        airports => {
-          console.log(airports);
-        },
-        e => {}
-      );
-  }
-  loadInternationalAirports() {
-    this.internationnalAirportsSubscription = this.flightService
-      .getDomesticAirports()
-      .subscribe(
-        airports => {
-          console.log(airports);
-        },
-        e => {}
-      );
+  loadDomesticAirports(forceRefresh: boolean = false) {
+    return new Promise<Trafficline[]>(s => {
+      this.domesticAirportSbuscription = this.flightService
+        .getDomesticAirports(forceRefresh)
+        .subscribe(
+          airports => {
+            s(airports);
+          },
+          e => {
+            s(this.domesticAirports);
+          }
+        );
+    });
   }
   ngAfterViewInit() {
+    console.time("ngAfterViewInit");
     this.cnt = document.getElementById("mainCnt");
     this.curNavTextEle = document.getElementById("curNavText");
     this.curTargetNavEle = document.querySelector(".curTargetNav");
@@ -157,6 +219,8 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
       this.render.setStyle(this.cnt, "width", "90vw");
     }
     const nav = (this.linksNavEle = document.getElementById("links")); // 这里是右边的字母
+    console.timeEnd("ngAfterViewInit");
+
     let lastTime = Date.now();
     if (!nav) {
       return;
@@ -193,33 +257,6 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
             takeUntil(
               fromEvent(nav, "touchend").pipe(
                 tap((evt: TouchEvent) => {
-                  if (evt.changedTouches && evt.changedTouches.length) {
-                    const touch = evt.changedTouches[0];
-                    // this.cities.map(c => {
-                    //   if (
-                    //     c.rect &&
-                    //     c.rect.top <= touch.pageY &&
-                    //     touch.pageY >= c.rect.bottom
-                    //   ) {
-                    //     this.goToCity(c);
-                    //   }
-                    // });
-                    // const ele = document.elementFromPoint(
-                    //   touch.pageX,
-                    //   touch.pageY
-                    // );
-                    // if (ele && ele.tagName === "A") {
-                    //   this.listCities.map(el => {
-                    //     // console.log(el.link);
-                    //     if (
-                    //       el.link === ele.innerHTML ||
-                    //       el.displayName === ele.innerHTML
-                    //     ) {
-                    //       this.goToCity(el);
-                    //     }
-                    //   });
-                    // }
-                  }
                   setTimeout(() => {
                     this.showCurTargetNavEle(false);
                   }, 1400);
@@ -261,53 +298,29 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
   }
-  onCitySelected(
-    city: FlyCityItemModel,
-    keepPos?: boolean,
-    isUserSelect?: boolean
-  ) {
-    const st = Date.now();
-
+  onCitySelected(city: TrafficlineModel, isUserSelect?: boolean) {
     city.Selected = true;
     this.selectedCity = city;
-    // this.cities.map(c => {
-    //   if (c.items) {
-    //     c.items.forEach(sub => {
-    //       sub.selected = city.Code === sub.Code;
-    //     });
-    //   }
-    // });
     this.hotCities.map(hc => {
-      hc.Selected = hc.Code === city.Code;
+      hc.Selected = hc.Id === city.Id;
     });
-    if (!keepPos) {
-      // 保持历史选择城市位置不变
-      this.historyCities = [
-        city,
-        ...this.historyCities
-          .map(hc => {
-            return { ...hc, Selected: false };
-          })
-          .filter(c => !(c.Code === city.Code))
-          // 取消前三个用于显示 hot history cur 的元素
-          .slice(0, 3)
-      ];
-    } else {
-      this.historyCities = this.historyCities.map(hisc => {
-        return {
-          ...hisc,
-          Selected: hisc.Code === city.Code
-        };
+    this.listCities.forEach(item => {
+      item.items.forEach(c => {
+        c.Selected = c.Id == city.Id;
       });
-    }
-    window.localStorage.setItem(
-      "historyCities",
-      JSON.stringify(this.historyCities)
-    );
+    });
+    this.historyCities.forEach(item => {
+      item.Selected = false;
+      if (!this.historyCities.find(item => item.Id === city.Id)) {
+        this.historyCities.unshift(city);
+      }
+    });
+
+    this.historyCities = this.historyCities.slice(0, 9);
+    AppHelper.setStorage("historyCities", this.historyCities);
     if (isUserSelect) {
       this.goBack();
     }
-    console.log("选择某个城市耗时：" + (Date.now() - st) + " ms");
     return false;
   }
 }

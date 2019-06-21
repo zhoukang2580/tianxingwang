@@ -8,7 +8,7 @@
   <ion-list lines='none'>
     <ion-item detail (click)='goToMyDetail()'>
       <ion-thumbnail>
-        <img [src]="Model?.HeadUrl||defaultAvatar" alt="头像">
+        <img alt="头像" appLazyloadimage [lazyloadImage]="Model?.HeadUrl">
       </ion-thumbnail>
       <ion-label padding-start>
         <h3>{{Model?.RealName}}<ion-note class='account-type'></ion-note>
