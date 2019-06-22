@@ -27,7 +27,7 @@ import { HttpClient } from "@angular/common/http";
 import { LanguageHelper } from "./languageHelper";
 import { WechatHelper } from "./wechatHelper";
 import { Observable } from "rxjs";
-import { ApiService } from './services/api/api.service';
+import { ApiService } from "./services/api/api.service";
 export interface App {
   loadUrl: (
     url: string,
@@ -72,7 +72,8 @@ export class AppComponent
     private actionSheetCtrl: ActionSheetController,
     private loadingCtrl: LoadingController,
     private http: HttpClient,
-    flightService: FlightService
+    flightService: FlightService,
+    
   ) {
     // console.log(this.router.config);
     this.openSelectCity$ = flightService.getOpenCloseSelectCityPageSources();
@@ -94,6 +95,10 @@ export class AppComponent
   }
   ngAfterViewInit() {
     this.splashScreen.hide();
+    console.log(
+      `白屏时间：${window.performance.timing.domComplete -
+        window.performance.timeOrigin}`
+    );
   }
   ngAfterContentInit() {
     console.log(this.images);
@@ -152,8 +157,6 @@ export class AppComponent
   }
   initializeApp() {
     this.backButtonAction();
-    this.getConfigInfo();
-    
     AppHelper.getDomain(); //
     AppHelper.setQueryParamers();
     if (!this.checkWechatOpenId() || !this.checkDingtalkUnionid()) {
@@ -190,10 +193,6 @@ export class AppComponent
         }, 5000);
       }
     });
-  }
-  private getConfigInfo() {
-    this.configService.get();
-    this.apiService.loadUrls();
   }
   private jumpToRoute(route: string) {
     return this.router.navigate([AppHelper.getRoutePath(route)]).then(() => {

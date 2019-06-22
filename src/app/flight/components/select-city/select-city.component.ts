@@ -49,10 +49,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   historyCities: TrafficlineModel[] = [];
   listCities: ListCityModel[] = [];
   listCitiesViewModel: ListCityModel[] = [];
-  pageSize = 100;
-  currentPage = 1;
   subscription = Subscription.EMPTY;
-  domesticAirportSbuscription = Subscription.EMPTY;
   openCloseSubscription = Subscription.EMPTY;
   cnt: HTMLElement;
   linksNavEle: HTMLElement;
@@ -62,6 +59,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   private domesticAirports: Trafficline[] = [];
   private internationalAirports: Trafficline[] = [];
   segmentValue: "domestic" | "overseas" = "domestic";
+  private isDataInit = false;
   @Input()
   @HostBinding("@openclose")
   openclose = true;
@@ -76,16 +74,23 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   ionViewWillEnter() {
     this.initHistoryCities();
-    console.log(this.domesticAirports.length);
+    // console.log(this.domesticAirports.length);
   }
   ngOnInit() {
     this.openCloseSubscription = this.flightService
       .getOpenCloseSelectCityPageSources()
       .subscribe(async open => {
+        if (open) {
+          if (!this.isDataInit) {
+            this.isDataInit = await this.initData();
+          }
+          this.ionViewWillEnter();
+        }
         this.openclose = open;
       });
-    this.flightService.getInternationalAirports(true).subscribe();
-    this.initData();
+  }
+  async loadInternationalAirports() {
+    this.flightService.getInternationalAirports(true);
   }
   async initData(forceRefresh: boolean = false) {
     this.initHistoryCities();
@@ -93,6 +98,21 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     console.time("initDomesticListCity");
     this.initHotCities();
     await this.initDomesticListCity();
+    this.listCities.sort((a, b) => a.link.charCodeAt(0) - b.link.charCodeAt(0));
+    if (this.hotCities.length) {
+      const lm = new ListCityModel();
+      lm.link = "hot";
+      lm.displayName = LanguageHelper.getHotCitiesTip();
+      lm.items = this.hotCities;
+      this.listCities.unshift(lm);
+    }
+    if (this.historyCities.length) {
+      const lm = new ListCityModel();
+      lm.link = "history";
+      lm.displayName = LanguageHelper.getHistoryCitiesTip();
+      lm.items = this.historyCities;
+      this.listCities.unshift(lm);
+    }
     console.timeEnd("initDomesticListCity");
     // console.log("listCitiesViewModel", this.listCitiesViewModel);
     return true;
@@ -100,7 +120,6 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy() {
     console.log("onDestroy");
     this.subscription.unsubscribe();
-    this.domesticAirportSbuscription.unsubscribe();
     this.openCloseSubscription.unsubscribe();
   }
   private initHotCities() {
@@ -128,7 +147,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
       lm.items = this.historyCities || [];
     }
   }
-  goToCity(nav: {
+  goToLink(nav: {
     link: string;
     displayName?: string;
     rect?: DOMRect | ClientRect;
@@ -137,63 +156,71 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     this.showCurTargetNavEle(true);
     // console.log(`开始查找元素[data-id=${nav.link}]`);
     let sT = Date.now();
-    this.content.scrollToPoint(0, Math.floor(nav.offsetTop));
-    // console.log(
-    //   `完成${nav.link},${nav.offsetTop}滚动耗时 ${Date.now() - sT} ms`
-    // );
+    window.requestAnimationFrame(() => {
+      sT = Date.now();
+      this.content.scrollToPoint(0, Math.floor(nav.offsetTop));
+      console.log(`完成${nav.link},滚动耗时 ${Date.now() - sT} ms`);
+    });
     sT = Date.now();
     // this.isMovingSj.next(true);
-
-    // this.curTargetNavSj.next(nav.displayName);
-    if (this.curNavTextEle) {
-      this.curNavTextEle.textContent = nav.displayName;
-    }
+    window.requestAnimationFrame(() => {
+      if (this.curNavTextEle) {
+        this.curNavTextEle.textContent = nav.displayName;
+      }
+    });
     return false;
   }
   initDomesticListCity() {
     return new Promise(done => {
       let cities: Trafficline[] = [];
       if (this.segmentValue == "domestic") {
-        cities = this.domesticAirports;
+        cities = this.domesticAirports.slice(0);
       } else {
-        cities = this.internationalAirports;
+        cities = this.internationalAirports.slice(0);
       }
-      const listCities: ListCityModel[] = [];
+      this.listCitiesViewModel = this.listCities = [];
+      let temp = 0;
       // console.time("计算 listCities");
-      cities.forEach(c => {
-        const pyFl = `${jsPy.getFullChars(c.Nickname)}`.charAt(0);
-        // console.log(pyFl + " -- " + c.Nickname);
-        let lm = listCities.find(item => item.link === pyFl);
-        // console.log("lm", lm);
-        if (!lm) {
-          lm = new ListCityModel();
-          lm.link = pyFl;
-          lm.displayName = pyFl.toUpperCase();
-          lm.items = [c];
-          listCities.push(lm);
-        } else {
-          if (!lm.items.find(it => it.CityCode === c.CityCode)) {
-            lm.items.push(c);
-          }
+      const once = 1000;
+      let count = 0;
+      const loop = () => {
+        const st = window.performance.now();
+        const tempc = cities.splice(0, once);
+        if (tempc.length) {
+          tempc.forEach(c => {
+            temp++;
+            const pyFl = `${jsPy.getFullChars(c.Nickname)}`.charAt(0);
+            // console.log(pyFl + " -- " + c.Nickname);
+            let lm = this.listCities.find(item => item.link === pyFl);
+            // console.log("lm", lm);
+            if (!lm) {
+              lm = new ListCityModel();
+              lm.link = pyFl;
+              lm.displayName = pyFl.toUpperCase();
+              lm.items = [c];
+              this.listCities.push(lm);
+            } else {
+              if (!lm.items.find(it => it.CityCode === c.CityCode)) {
+                lm.items.push(c);
+              }
+            }
+          });
         }
-      });
-      listCities.sort((a, b) => a.link.charCodeAt(0) - b.link.charCodeAt(0));
-      if (this.hotCities.length) {
-        const lm = new ListCityModel();
-        lm.link = "hot";
-        lm.displayName = LanguageHelper.getHotCitiesTip();
-        lm.items = this.hotCities;
-        listCities.unshift(lm);
-      }
-      if (this.historyCities.length) {
-        const lm = new ListCityModel();
-        lm.link = "history";
-        lm.displayName = LanguageHelper.getHistoryCitiesTip();
-        lm.items = this.historyCities;
-        listCities.unshift(lm);
-      }
-      this.listCitiesViewModel = this.listCities = listCities;
-      done();
+        console.log(
+          `完成 ${tempc.length} 个元素处理,${window.performance.now() - st} ms`
+        );
+        this.listCities.sort(
+          (a, b) => a.link.charCodeAt(0) - b.link.charCodeAt(0)
+        );
+        if (cities.length) {
+          console.log(`第${++count}次循环`);
+          window.requestAnimationFrame(loop);
+        } else {
+          console.log(`【loop】完成,${temp} 个城市`);
+          done();
+        }
+      };
+      loop();
     });
   }
   segmentChanged(evt: CustomEvent) {
@@ -206,25 +233,18 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     console.timeEnd("initListCity");
   }
   showCurTargetNavEle(show: boolean) {
-    if (show) {
-      this.render.addClass(this.curTargetNavEle, "show");
-    } else {
-      this.render.removeClass(this.curTargetNavEle, "show");
-    }
+    window.requestAnimationFrame(() => {
+      if (show) {
+        if (!this.curTargetNavEle.classList.contains("show")) {
+          this.render.addClass(this.curTargetNavEle, "show");
+        }
+      } else if (this.curTargetNavEle.classList.contains("show")) {
+        this.render.removeClass(this.curTargetNavEle, "show");
+      }
+    });
   }
   loadDomesticAirports(forceRefresh: boolean = false) {
-    return new Promise<Trafficline[]>(s => {
-      this.domesticAirportSbuscription = this.flightService
-        .getDomesticAirports(forceRefresh)
-        .subscribe(
-          airports => {
-            s(airports);
-          },
-          e => {
-            s(this.domesticAirports);
-          }
-        );
-    });
+    return this.flightService.getDomesticAirports(forceRefresh);
   }
   ngAfterViewInit() {
     console.time("ngAfterViewInit");
@@ -249,9 +269,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
           }
           this.showCurTargetNavEle(true);
           lastTime = Date.now();
-          let tempc = [];
           this.listCities.map(c => {
-            tempc = [...tempc, ...c.items];
             const el = document.querySelector(`.${c.link}-link`); // 导航用的link
             const ele = document.querySelector(
               `.${c.link}-class`
@@ -265,7 +283,8 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
             }
           });
           console.log(
-            `完成${tempc.length}个元素位置初始化耗時：${Date.now() - lastTime}`
+            `完成${this.listCities.length}个link位置初始化耗時：${Date.now() -
+              lastTime}`
           );
         }),
         switchMap(() =>
@@ -302,7 +321,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
               touch.pageY >= c.rect.top &&
               touch.pageY <= c.rect.bottom
             ) {
-              this.goToCity(c);
+              this.goToLink(c);
             }
           });
         }
@@ -316,7 +335,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     this.listCities.map(el => {
       // console.log(el.link);
       if (el.link === link) {
-        this.goToCity(el);
+        this.goToLink(el);
       }
     });
   }

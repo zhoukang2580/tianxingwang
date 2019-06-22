@@ -10,6 +10,7 @@ export class RequestEntity {
   Language?: string;
   Url?: string;
   Data: any;
+  Token?: string;
   FileValue?: string;
   IsShowLoading?: boolean;
   IsForward?: boolean;

@@ -1,4 +1,3 @@
-
 import { ConfigEntity } from "./config.entity";
 import { RequestEntity } from "../api/Request.entity";
 import { ApiService } from "../api/api.service";
@@ -16,6 +15,7 @@ export class ConfigService {
   constructor(private apiService: ApiService) {
     this.config = new ConfigEntity();
     this.config.Status = false;
+    this.get();
   }
 
   get(): Promise<ConfigEntity> {
@@ -30,7 +30,8 @@ export class ConfigService {
         error => {
           reject(error);
           subscription.unsubscribe();
-        }, () => {
+        },
+        () => {
           setTimeout(() => {
             if (subscription) {
               subscription.unsubscribe();
@@ -40,7 +41,7 @@ export class ConfigService {
       );
     });
   }
-  load() {
+  private load() {
     if (this.config.Status) {
       return of(this.config);
     }

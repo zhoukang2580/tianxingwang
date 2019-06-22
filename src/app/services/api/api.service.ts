@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-
+import * as md5 from "md5";
 import { RequestEntity } from "./Request.entity";
 import { AppHelper } from "../../appHelper";
 import {
@@ -10,7 +10,8 @@ import {
   finalize,
   switchMap,
   timeout,
-  delay
+  delay,
+  exhaust
 } from "rxjs/operators";
 import { IResponse } from "./IResponse";
 import {
@@ -29,12 +30,16 @@ import { IdentityService } from "../identity/identity.service";
 import { LoadingController } from "@ionic/angular";
 import { LanguageHelper } from "src/app/languageHelper";
 import { environment } from "src/environments/environment";
+interface ApiConfig {
+  Urls: { [key: string]: string };
+  Token: string;
+}
 @Injectable({
   providedIn: "root"
 })
 export class ApiService {
   private loadingSubject: Subject<boolean>;
-  public Urls:{key:string,value:string}[];
+  public apiConfig: ApiConfig;
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -42,6 +47,7 @@ export class ApiService {
     private loadingCtrl: LoadingController
   ) {
     this.loadingSubject = new BehaviorSubject(false);
+    this.loadApiConfig();
   }
   getLoading() {
     return this.loadingSubject.asObservable().pipe(delay(0));
@@ -127,22 +133,24 @@ export class ApiService {
     req.Language = AppHelper.getLanguage();
     req.Ticket = AppHelper.getTicket();
     req.Domain = AppHelper.getDomain();
+    if (this.apiConfig) {
+      req.Token = this.apiConfig.Token;
+    }
     return req;
   }
-  getUrl(req:RequestEntity)
-  {
-    req.Url=req.Url || AppHelper.getApiUrl() + "/Home/Proxy"
-    if(this.Urls && !req.IsForward && req.Method)
-    {
-       const urls=req.Method.split('-');
-       const url=this.Urls.find(r=>r.key==urls[0]);
-       if(url)
-       {
-          req.Url=url.value+"/"+urls[1]+"/"+urls[2];
-       }
+  async getUrl(req: RequestEntity) {
+    req.Url = req.Url || AppHelper.getApiUrl() + "/Home/Proxy";
+    if (!req.IsForward && !this.apiConfig) {
+      await this.loadApiConfig();
+    }
+    if (this.apiConfig && !req.IsForward && req.Method) {
+      const urls = req.Method.split("-");
+      const url = this.apiConfig.Urls[urls[0]];
+      if (url) {
+        req.Url = url + "/" + urls[1] + "/" + urls[2];
+      }
     }
     return req.Url;
-
   }
   async tryAutoLogin(orgReq: RequestEntity) {
     const req = this.createRequest();
@@ -176,8 +184,8 @@ export class ApiService {
     const formObj = Object.keys(req)
       .map(k => `${k}=${req[k]}`)
       .join("&");
-      
-    const url = this.getUrl(req);
+
+    const url = await this.getUrl(req);
     return new Promise((resolve, reject) => {
       const subscribtion = this.http
         .post(url, formObj, {
@@ -233,87 +241,92 @@ export class ApiService {
       req.Data = JSON.stringify(req.Data);
     }
 
-    const formObj = Object.keys(req)
-      .map(k => `${k}=${req[k]}`)
-      .join("&");
     this.setLoading(true, req.IsShowLoading);
-    let url = this.getUrl(req);
     const due = 30 * 1000;
-    return this.http
-      .post(url, formObj, {
-        headers: { "content-type": "application/x-www-form-urlencoded" },
-        observe: "body"
-      })
-      .pipe(
-        timeout(due),
-        tap(r => console.log(r)),
-        map(r => r as any),
-        switchMap((r: IResponse<any>) => {
-          if (isCheckLogin && r.Code && r.Code.toUpperCase() === "NOLOGIN") {
-            return from(this.tryAutoLogin(req));
-          } else if (r.Code && r.Code.toUpperCase() === "NOLOGIN") {
-            this.router.navigate([AppHelper.getRoutePath("login")]);
-          }
-          return of(r);
-        }),
-        catchError((error: Error | any) => {
-          const entity = new ExceptionEntity();
-          entity.Error = error;
-          entity.Method = req.Method;
-          entity.Message = LanguageHelper.getApiExceptionTip();
-          if (error instanceof TimeoutError) {
-            entity.Message = LanguageHelper.getApiTimeoutTip();
-          }
-          return throwError(error);
-        }),
-        finalize(() => {
-          this.setLoading(false, req.IsShowLoading);
-        }),
-        map(r => r as any)
-      );
+    return from(this.loadApiConfig()).pipe(
+      switchMap(config => {
+        if (!config) {
+          return throwError("api config error");
+        }
+        return from(this.getUrl(req));
+      }),
+      switchMap(url => {
+        req.Token = this.apiConfig.Token;
+        const formObj = Object.keys(req)
+          .map(k => `${k}=${req[k]}`)
+          .join("&");
+        return this.http.post(url, `${formObj}&Sign=${this.getSign(req)}`, {
+          headers: { "content-type": "application/x-www-form-urlencoded" },
+          observe: "body"
+        });
+      }),
+      timeout(due),
+      tap(r => console.log(r)),
+      map(r => r as any),
+      switchMap((r: IResponse<any>) => {
+        if (isCheckLogin && r.Code && r.Code.toUpperCase() === "NOLOGIN") {
+          return from(this.tryAutoLogin(req));
+        } else if (r.Code && r.Code.toUpperCase() === "NOLOGIN") {
+          this.router.navigate([AppHelper.getRoutePath("login")]);
+        }
+        return of(r);
+      }),
+      catchError((error: Error | any) => {
+        const entity = new ExceptionEntity();
+        entity.Error = error;
+        entity.Method = req.Method;
+        entity.Message = LanguageHelper.getApiExceptionTip();
+        if (error instanceof TimeoutError) {
+          entity.Message = LanguageHelper.getApiTimeoutTip();
+        }
+        return throwError(error);
+      }),
+      finalize(() => {
+        this.setLoading(false, req.IsShowLoading);
+      }),
+      map(r => r as any)
+    );
   }
 
-   loadUrls(): Observable<IResponse<any>> {
-    const req = this.createRequest();
-    req.Timestamp = Math.floor(Date.now() / 1000);
-    req.Language = AppHelper.getLanguage();
-    req.Ticket = AppHelper.getTicket();
-    req.Domain = AppHelper.getDomain();
-    if (req.Data && typeof req.Data != "string") {
-      req.Data = JSON.stringify(req.Data);
+  async loadApiConfig(): Promise<ApiConfig> {
+    if (this.apiConfig) {
+      return Promise.resolve(this.apiConfig);
     }
-    const formObj = Object.keys(req)
-      .map(k => `${k}=${req[k]}`)
-      .join("&");
-    this.setLoading(true, req.IsShowLoading);
-    let url = req.Url || AppHelper.getApiUrl() + "/Home/Urls";
+    const url = AppHelper.getApiUrl() + "/Home/ApiConfig";
     const due = 30 * 1000;
-    return this.http
-      .post(url, formObj, {
-        headers: { "content-type": "application/x-www-form-urlencoded" },
-        observe: "body"
-      })
-      .pipe(
-        timeout(due),
-        tap(r => console.log(r)),
-        map(r => r as any),
-        switchMap((r: IResponse<any>) => {
-           this.Urls=r.Data;
-        }),
-        catchError((error: Error | any) => {
-          const entity = new ExceptionEntity();
-          entity.Error = error;
-          entity.Method = req.Method;
-          entity.Message = LanguageHelper.getApiExceptionTip();
-          if (error instanceof TimeoutError) {
-            entity.Message = LanguageHelper.getApiTimeoutTip();
+    return new Promise<ApiConfig>(s => {
+      const sub = this.http
+        .get(url)
+        .pipe(
+          timeout(due),
+          finalize(() => {
+            setTimeout(() => {
+              if (sub) {
+                console.log("loadUrls unsubscribe");
+                sub.unsubscribe();
+              }
+            }, 3000);
+          })
+        )
+        .subscribe(
+          (r: IResponse<ApiConfig>) => {
+            if (r.Data) {
+              this.apiConfig = r.Data;
+              s(this.apiConfig);
+            }
+            s(null);
+          },
+          e => {
+            s(null);
           }
-          return throwError(error);
-        }),
-        finalize(() => {
-          this.setLoading(false, req.IsShowLoading);
-        }),
-        map(r => r as any)
-      );
+        );
+    });
+  }
+  getSign(req: RequestEntity) {
+    return md5(
+      `${typeof req.Data === "string" ? req.Data : JSON.stringify(req.Data)}${
+        req.Timestamp
+      }${req.Token}`
+    ) as string;
   }
 }
