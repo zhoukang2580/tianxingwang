@@ -15,7 +15,15 @@ export class ConfigService {
   constructor(private apiService: ApiService) {
     this.config = new ConfigEntity();
     this.config.Status = false;
-    this.get();
+    setTimeout(() => {
+      this.get()
+        .then(_ => {
+          console.log("get ConfigService complete");
+        })
+        .catch(e => {
+          console.log("ConfigService get error", e);
+        });
+    }, 0);
   }
 
   get(): Promise<ConfigEntity> {

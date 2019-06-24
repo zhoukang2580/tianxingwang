@@ -47,7 +47,16 @@ export class ApiService {
     private loadingCtrl: LoadingController
   ) {
     this.loadingSubject = new BehaviorSubject(false);
-    this.loadApiConfig();
+    setTimeout(() => {
+      console.log("loadApiConfig");
+      this.loadApiConfig()
+        .then(_ => {
+          console.log("loadApiConfig complete");
+        })
+        .catch(e => {
+          console.log("loadApiConfig error", e);
+        });
+    }, 0);
   }
   getLoading() {
     return this.loadingSubject.asObservable().pipe(delay(0));
