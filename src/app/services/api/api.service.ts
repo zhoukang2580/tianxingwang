@@ -62,35 +62,37 @@ export class ApiService {
     return this.loadingSubject.asObservable().pipe(delay(0));
   }
   async setLoading(loading: boolean, isShowLoading: boolean) {
-    if (loading && isShowLoading) {
-      await this.showLoadingView();
-    }
-    if (!loading) {
-      await this.hideLoadingView();
-    }
-    this.loadingSubject.next(loading);
+    // if (loading && isShowLoading) {
+    //    this.showLoadingView();
+    // }
+    // if (!loading) {
+    //    this.hideLoadingView();
+    // }
+    this.loadingSubject.next(loading && isShowLoading);
   }
-  async showLoadingView() {
-    console.log("showLoadingView");
-    const l = document.querySelector("ion-loading");
-    console.log("showLoadingView", l);
-    if (l) {
-      await this.loadingCtrl.dismiss();
-    }
-    const t = await this.loadingCtrl.create();
-    if (t) {
-      await t.present();
-    }
+   showLoadingView() {
+    // console.log("showLoadingView");
+    // const l = document.querySelector("ion-loading");
+    // console.log("showLoadingView", l);
+    // if (l) {
+    //   await this.loadingCtrl.dismiss();
+    // }
+    // const t = await this.loadingCtrl.create();
+    // if (t) {
+    //   await t.present();
+    // }
+    this.loadingSubject.next(true);
   }
-  async hideLoadingView() {
-    return new Promise(s => {
-      setTimeout(() => {
-        this.loadingCtrl.dismiss().catch(_ => {
-          console.log("hideLoadingView", _);
-        });
-        s();
-      }, 1000);
-    });
+   hideLoadingView() {
+    // return new Promise(s => {
+    //   setTimeout(() => {
+    //     this.loadingCtrl.dismiss().catch(_ => {
+    //       console.log("hideLoadingView", _);
+    //     });
+    //     s();
+    //   }, 1000);
+    // });
+    this.loadingSubject.next(false);
   }
   send<T>(
     method: string,

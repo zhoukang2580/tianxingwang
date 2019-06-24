@@ -57,6 +57,7 @@ export class AppComponent
   implements AfterViewInit, AfterContentInit, OnChanges {
   app: App;
   openSelectCity$: Observable<boolean>;
+  loading$: Observable<boolean>;
   @ContentChildren("img") images: QueryList<HTMLImageElement>;
   constructor(
     private platform: Platform,
@@ -72,11 +73,11 @@ export class AppComponent
     private actionSheetCtrl: ActionSheetController,
     private loadingCtrl: LoadingController,
     private http: HttpClient,
-    flightService: FlightService,
-    
+    flightService: FlightService
   ) {
     // console.log(this.router.config);
     this.openSelectCity$ = flightService.getOpenCloseSelectCityPageSources();
+    this.loading$=apiService.getLoading();
     // if (!this.checkWechatOpenId() || !this.checkDingtalkUnionid()) return;
     if (this.platform.is("ios")) {
       AppHelper.setDeviceName("ios");

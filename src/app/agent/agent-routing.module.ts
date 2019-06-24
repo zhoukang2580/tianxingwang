@@ -6,7 +6,8 @@ const routes: Routes = [
     path: "select-customer",
     loadChildren:
       "./select-customer/select-customer.module#SelectCustomerPageModule"
-  }
+  },
+
 ];
 @NgModule({
   imports: [RouterModule.forChild(routes)],

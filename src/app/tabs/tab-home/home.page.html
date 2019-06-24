@@ -5,23 +5,39 @@
         <app-scan-comp></app-scan-comp>
       </ion-button>
     </ion-buttons>
-    <ion-title>首页</ion-title>
-    <ion-buttons slot='end' *ngIf='(identity$|async)?.Numbers?.AgentId'>
+    <ion-title text-center appShowtip>
+      <ion-text *ngIf='selectedCompany$|async as company'>{{company}}</ion-text>
+      {{(identity$|async)?.Name}}
+    </ion-title>
+    <ion-buttons slot='end' *ngIf='(identity$|async)?.Numbers?.AgentId;else selectCompany'>
       <ion-button fill='clear' size='small' (click)='onSwitchCustomer()'>
         <ion-chip color='success'>
           <ion-label>切换客户</ion-label>
         </ion-chip>
       </ion-button>
     </ion-buttons>
+    <ng-template #selectCompany>
+      <ion-buttons slot='end' *ngIf="companies?.length">
+        <ion-button fill='clear' size='small' (click)='onSwitchCompany()'>
+          <ion-chip color='success'>
+            <ion-label>切换公司</ion-label>
+          </ion-chip>
+        </ion-button>
+      </ion-buttons>
+    </ng-template>
   </ion-toolbar>
 </ion-header>
 <ion-content>
+  <ion-toolbar>
+    <div class="marquee">common.js:290 Native: tried calling SplashScreen.hide, but Cordova is not available. Make sure
+      to include cordova.js or run in a device/simulator</div>
+  </ion-toolbar>
   <div class="img">
     <img appLazyloadimage [lazyloadImage]='"assets/images/home_top_bg.png"' />
   </div>
   <ion-grid>
-    <ion-row>
-      <ion-col>
+    <ion-row wrap>
+      <ion-col size="4">
         <div class="item" [routerLink]="['/book-flight']">
           <ion-label>
             <i class="icon icon-plane"></i>
@@ -30,7 +46,7 @@
           <ion-ripple-effect></ion-ripple-effect>
         </div>
       </ion-col>
-      <ion-col [routerLink]="['/book-hotel']">
+      <ion-col [routerLink]="['/book-hotel']" size="4">
         <div class="item">
           <ion-label>
             <i class="icon icon-hotel"></i>
@@ -39,7 +55,7 @@
         </div>
         <ion-ripple-effect></ion-ripple-effect>
       </ion-col>
-      <ion-col [routerLink]="['/book-train']">
+      <ion-col [routerLink]="['/book-train']" size="4">
         <div class="item">
           <ion-label>
             <i class="icon icon-train"></i>
@@ -48,7 +64,8 @@
           <ion-ripple-effect></ion-ripple-effect>
         </div>
       </ion-col>
-      <ion-col>
+
+      <!-- <ion-col>
         <div class="item" (click)="wechatpay()">
           <ion-label>
             <i class="icon-train"></i>
@@ -63,6 +80,19 @@
             <i class="icon-train"></i>
           </ion-label>
           <ion-text>支付宝支付</ion-text>
+          <ion-ripple-effect></ion-ripple-effect>
+        </div>
+      </ion-col> -->
+    </ion-row>
+  </ion-grid>
+  <ion-grid margin-top>
+    <ion-row>
+      <ion-col (click)='goToBulletinList()' size="4">
+        <div class="item">
+          <ion-label>
+            <i class="icon icon-train"></i>
+          </ion-label>
+          <ion-text>公告</ion-text>
           <ion-ripple-effect></ion-ripple-effect>
         </div>
       </ion-col>

@@ -10,6 +10,7 @@ import {
   UrlTree
 } from "@angular/router";
 import { Observable } from "rxjs";
+import { LoginService } from '../services/login/login.service';
 
 @Injectable({
   providedIn: "root"
@@ -17,6 +18,7 @@ import { Observable } from "rxjs";
 export class AgentGuard implements CanActivate, CanActivateChild {
   constructor(
     private identityService: IdentityService,
+    private loginService: LoginService,
     private router: Router
   ) {}
   canActivateChild(
@@ -37,6 +39,7 @@ export class AgentGuard implements CanActivate, CanActivateChild {
       .getIdentity()
       .then(id => {
         if (id && id.Numbers.AgentId && !id.Numbers.TmcId) {
+          this.loginService.setToPageRouter(state.url);
           this.router.navigate([AppHelper.getRoutePath("select-customer")]);
           return false;
         }

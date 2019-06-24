@@ -10,6 +10,8 @@ import { PasswordModule } from "./password/password.module";
 import { MemberModule } from "./member/member.module";
 import { RegisterModule } from "./register/register.module";
 import { AgentModule } from "./agent/agent.module";
+import { BulletinModule } from "./bulletin/bulletin.module";
+import { TmcModule } from './tmc/tmc.module';
 
 const routes: Routes = [
   {
@@ -26,6 +28,7 @@ const routes: Routes = [
       "./pages/function-test/function-test.module#FunctionTestPageModule"
   },
   { path: "scan", loadChildren: "./pages/scan/scan.module#ScanPageModule" },
+
 
   {
     path: "",
@@ -47,6 +50,8 @@ const routes: Routes = [
     TabsPageModule,
     MemberModule,
     AgentModule,
+    BulletinModule,
+    TmcModule,
     RouterModule.forRoot(routes, {
       preloadingStrategy: PreloadAllModules,
       enableTracing: !true,

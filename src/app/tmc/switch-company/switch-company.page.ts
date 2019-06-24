@@ -6,33 +6,28 @@ import { ApiService } from "src/app/services/api/api.service";
 import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { AppHelper } from "src/app/appHelper";
-import { TmcService } from "src/app/tmc/tmc.service";
-type TmcEntity = {
-  GroupCompanyName: string; // "爱普科斯";
-  Id: string; // 1;
-  Name: string; // "爱普科斯（上海）产品服务有限公司";
-};
+interface TcmCompany {
+  Id: string;
+  Name: string;
+}
 @Component({
-  selector: "app-select-customer",
-  templateUrl: "./select-customer.page.html",
-  styleUrls: ["./select-customer.page.scss"]
+  selector: "app-switch-company",
+  templateUrl: "./switch-company.page.html",
+  styleUrls: ["./switch-company.page.scss"]
 })
-export class SelectCustomerPage implements OnInit {
+export class SwitchCompanyPage implements OnInit {
   keyword: string = "";
   customers: any[] = [];
   loading: boolean;
-  selectedItem: TmcEntity;
   @ViewChild(IonRefresher) ionrefresher: IonRefresher;
   constructor(
     private apiService: ApiService,
     private identityService: IdentityService,
-    private router: Router,
-    private tmcService: TmcService
+    private router: Router
   ) {}
 
   ngOnInit() {}
-  async onSelect(item: TmcEntity) {
-    this.selectedItem = item;
+  async onSelect(item: TcmCompany) {
     const req = new RequestEntity();
     req.Method = "AgentApiHomeUrl-Home-SelectTmc";
     req.Data = {
@@ -51,14 +46,13 @@ export class SelectCustomerPage implements OnInit {
         ...origalIdentity,
         ...result
       });
-      this.tmcService.setSelectedCompany(this.selectedItem.Name);
       this.router.navigate([AppHelper.getRoutePath("")]);
     }
   }
   async doRefresh() {
     this.customers = [];
     if (this.ionrefresher) {
-      if (this.keyword.trim()) {
+      if (this.keyword) {
         await this.onSearch();
       }
       // console.log(this.ionrefresher);
@@ -74,10 +68,10 @@ export class SelectCustomerPage implements OnInit {
     const req = new RequestEntity();
     req.Method = "AgentApiHomeUrl-Home-QueryTmc";
     req.Data = {
-      Name: this.keyword.trim()
+      Name: this.keyword
     };
     try {
-      return await this.apiService.getPromiseResponse<TmcEntity[]>(req);
+      return await this.apiService.getPromiseResponse<TcmCompany[]>(req);
     } catch (e) {
       console.error(e);
       return [];

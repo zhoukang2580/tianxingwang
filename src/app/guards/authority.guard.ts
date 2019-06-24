@@ -16,7 +16,6 @@ import { IdentityService } from "../services/identity/identity.service";
 import { AlertController, LoadingController } from "@ionic/angular";
 import { finalize, switchMap, map } from "rxjs/operators";
 
-
 @Injectable({
   providedIn: "root"
 })
@@ -25,7 +24,7 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
     private identityService: IdentityService,
     private loginService: LoginService,
     private router: Router
-  ) { }
+  ) {}
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
@@ -42,12 +41,25 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
     // console.log("state", state, "next", next);
-    const ticket = AppHelper.getTicket();
-    if (ticket) {
-      return true;
-    }
-    this.loginService.setToPageRouter(state.url);
-    this.router.navigate([AppHelper.getRoutePath("login")]);
+    // const ticket = AppHelper.getTicket();
+    // if (ticket) {
+    //   return true;
+    // }
+    return this.identityService
+      .getIdentity()
+      .then(id => {
+        if (!id || !id.Ticket) {
+          this.loginService.setToPageRouter(state.url);
+          this.router.navigate([AppHelper.getRoutePath("login")]);
+          return false;
+        }
+        return true;
+      })
+      .catch(_ => {
+        this.loginService.setToPageRouter(state.url);
+        this.router.navigate([AppHelper.getRoutePath("login")]);
+        return false;
+      });
   }
   canLoad(route: Route) {
     // console.log("canload route ,", route);

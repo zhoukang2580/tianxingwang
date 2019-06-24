@@ -7,12 +7,12 @@ import { AppHelper } from "../appHelper";
 import { LanguageHelper } from "../languageHelper";
 import { ConfigEntity } from "../services/config/config.entity";
 import { ConfigService } from "../services/config/config.service";
-import { Config } from '@ionic/angular';
-import { finalize } from 'rxjs/operators';
-import { RequestEntity } from '../services/api/Request.entity';
-import { WechatHelper } from '../wechatHelper';
-import { IdentityService } from '../services/identity/identity.service';
-import { DingtalkHelper } from '../dingtalkHelper';
+import { Config } from "@ionic/angular";
+import { finalize } from "rxjs/operators";
+import { RequestEntity } from "../services/api/Request.entity";
+import { WechatHelper } from "../wechatHelper";
+import { IdentityService } from "../services/identity/identity.service";
+import { DingtalkHelper } from "../dingtalkHelper";
 
 @Component({
   selector: "app-login",
@@ -42,19 +42,16 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private config: Config
   ) {
-    this.config.set('swipeBackEnabled', false);
+    this.config.set("swipeBackEnabled", false);
     this.loading$ = this.loginService.getLoading();
     this.isShowWechatLogin = AppHelper.isApp();
   }
-  ngAfterViewInit() {
-
-  }
+  ngAfterViewInit() {}
   onSlideEvent(valid: boolean) {
     if (valid) {
       if (this.SlideEventType === "login") {
         this.login();
-      }
-      else if (this.SlideEventType === "sendmobilecode") {
+      } else if (this.SlideEventType === "sendmobilecode") {
         this.sendLoginMobileCode();
       }
       this.isShowImageCode = false;
@@ -91,28 +88,23 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   }
   autoLogin() {
     this.identityService.getIdentity().then(r => {
-
       if (!r || !r.Ticket) {
         if (AppHelper.isApp()) {
           this.loginType = "device";
           this.login();
         }
-      }
-      else {
+      } else {
         this.jump(true);
       }
-    })
-
+    });
   }
   setLoginButton() {
     if (this.loginType == "user") {
       this.isLoginOk = this.form.value.Name && this.form.value.Password;
-    }
-    else if (this.loginType == "mobile") {
+    } else if (this.loginType == "mobile") {
       this.isLoginOk = this.form.value.MobileCode;
     }
   }
-
 
   ionViewWillEnter() {
     this.initPage();
@@ -133,23 +125,24 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   getWechatCode(appId: string) {
-    const wechat = window['wechat'];
+    const wechat = window["wechat"];
     if (wechat) {
       return wechat.getCode(appId);
     }
     return Promise.reject("cordova wechat plugin is unavailable");
   }
   initPage() {
-    this.configService.get().then(r => {
-      this.pageInfo = r;
-    }).catch(e => {
-      console.error(e);
-    });
-
+    this.configService
+      .get()
+      .then(r => {
+        this.pageInfo = r;
+      })
+      .catch(e => {
+        console.error(e);
+      });
   }
   switchLoginType(type: string) {
     this.loginType = type;
-
   }
   showImageCode(type: string) {
     this.SlideEventType = type;
@@ -158,8 +151,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   onLoginButton(type: string) {
     if (this.loginType == "user") {
       this.showImageCode(type);
-    }
-    else {
+    } else {
       this.login();
     }
   }
@@ -177,16 +169,21 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           this.message = LanguageHelper.getLoginPasswordTip();
           return;
         }
-        this.loginSubscription = this.loginService.login("ApiLoginUrl-Home-Login", this.loginEntity).subscribe(r => {
-          if (!r.Ticket) {
-          } else {
-            AppHelper.setStorage("loginname", this.loginEntity.Data.Name);
-            console.log("login success" + JSON.stringify(r, null, 2));
-            this.jump(true);
-          }
-        }, e => {
-          AppHelper.alert(e);
-        });
+        this.loginSubscription = this.loginService
+          .login("ApiLoginUrl-Home-Login", this.loginEntity)
+          .subscribe(
+            r => {
+              if (!r.Ticket) {
+              } else {
+                AppHelper.setStorage("loginname", this.loginEntity.Data.Name);
+                console.log("login success" + JSON.stringify(r, null, 2));
+                this.jump(true);
+              }
+            },
+            e => {
+              AppHelper.alert(e);
+            }
+          );
         break;
       case "mobile":
         this.loginEntity.Data.Mobile = this.form.value.Mobile;
@@ -201,62 +198,79 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         }
         this.loginSubscription = this.loginService
           .login("ApiLoginUrl-Home-MobileLogin", this.loginEntity)
+          .subscribe(
+            r => {
+              if (r.Ticket) {
+                this.jump(true);
+              }
+            },
+            e => {
+              this.message = e;
+            }
+          );
+        break;
+      case "dingtalk":
+        this.loginEntity.Data.Code = this.form.value.DingtalkCode;
+        this.loginSubscription = this.loginService
+          .login("ApiLoginUrl-Home-DingTalkLogin", this.loginEntity)
+          .pipe(
+            finalize(() => {
+              this.loginType = "user";
+            })
+          )
           .subscribe(r => {
             if (r.Ticket) {
               this.jump(true);
             }
-          }, e => {
-            this.message = e;
           });
         break;
-      case "dingtalk":
-        this.loginEntity.Data.Code = this.form.value.DingtalkCode;
-        this.loginSubscription = this.loginService.login("ApiLoginUrl-Home-DingTalkLogin", this.loginEntity).pipe(
-          finalize(() => {
-            this.loginType = "user";
-          })
-        ).subscribe(r => {
-          if (r.Ticket) {
-            this.jump(true);
-          }
-        });
-        break;
-      case "wechat":
-        {
-          this.loginEntity.Data.SdkType = this.form.value.WechatSdkType;
-          this.loginEntity.Data.Code = this.form.value.WechatCode;
-          this.loginSubscription = this.loginService.login("ApiLoginUrl-Home-WechatLogin", this.loginEntity).pipe(
+      case "wechat": {
+        this.loginEntity.Data.SdkType = this.form.value.WechatSdkType;
+        this.loginEntity.Data.Code = this.form.value.WechatCode;
+        this.loginSubscription = this.loginService
+          .login("ApiLoginUrl-Home-WechatLogin", this.loginEntity)
+          .pipe(
             finalize(() => {
               this.loginType = "user";
             })
-          ).subscribe(r => {
-            if (r.Ticket) {
-              this.jump(true);
+          )
+          .subscribe(
+            r => {
+              if (r.Ticket) {
+                this.jump(true);
+              }
+            },
+            e => {
+              AppHelper.alert("wechat登录失败，" + JSON.stringify(e));
             }
-          }, e => {
-            AppHelper.alert("wechat登录失败，" + JSON.stringify(e));
-          });
-          break;
-        }
+          );
+        break;
+      }
       case "device":
         this.loginEntity.Data.Device = await AppHelper.getDeviceId();
         this.loginEntity.Data.DeviceName = await AppHelper.getDeviceName();
         this.loginEntity.Data.Token = AppHelper.getStorage("loginToken");
-        this.loginSubscription = this.loginService.login("ApiLoginUrl-Home-DeviceLogin", this.loginEntity).pipe(
-          finalize(() => {
-            setTimeout(() => {
+        this.loginSubscription = this.loginService
+          .login("ApiLoginUrl-Home-DeviceLogin", this.loginEntity)
+          .pipe(
+            finalize(() => {
+              setTimeout(() => {
+                this.loginType = "user";
+              }, 100);
+            })
+          )
+          .subscribe(
+            r => {
+              if (!r.Ticket) {
+                this.loginType = "user";
+              } else {
+                this.jump(false);
+              }
+            },
+            () => {
               this.loginType = "user";
-            }, 100);
-          })
-        ).subscribe(r => {
-          if (!r.Ticket) {
-            this.loginType = "user";
-          } else {
-            this.jump(false);
-          }
-        }, () => {
-          this.loginType = "user";
-        });
+            }
+          );
         break;
     }
   }
@@ -280,52 +294,66 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     }
     const subscription = this.loginService
       .sendMobileCode(this.form.value.Mobile)
-      .subscribe(r => {
-        if (!r.Status && r.Message) {
-          AppHelper.alert(r.Message);
-          return;
-        }
-        if (r.Data) {
-          this.startCountDonw(r.Data.SendInterval);
-        }
-        this.message = r.Message;
-      }, e => {
-        this.message = e instanceof Error ? e.message : typeof e === 'string' ? e : e;
-      }, () => {
-        setTimeout(() => {
-          if (subscription) {
-            subscription.unsubscribe();
+      .subscribe(
+        r => {
+          if (!r.Status && r.Message) {
+            AppHelper.alert(r.Message);
+            return;
           }
-        }, 100);
-      });
+          if (r.Data) {
+            this.startCountDonw(r.Data.SendInterval);
+          }
+          this.message = r.Message;
+        },
+        e => {
+          this.message =
+            e instanceof Error ? e.message : typeof e === "string" ? e : e;
+        },
+        () => {
+          setTimeout(() => {
+            if (subscription) {
+              subscription.unsubscribe();
+            }
+          }, 100);
+        }
+      );
   }
-  async jump(isCheckDevice: boolean) // 跳转
-  {
-
+  async jump(
+    isCheckDevice: boolean // 跳转
+  ) {
     this.loginType = "user";
     const toPageRouter = this.loginService.getToPageRouter() || "";
     if (isCheckDevice && AppHelper.isApp()) {
-      var uuid = await AppHelper.getDeviceId();
-      console.log('uuid ' + uuid);
-      this.loginService.checkIsDeviceBinded(uuid).subscribe(res => {
+      this.checkIsDeviceBinded();
+    } else {
+      this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
+    }
+  }
+  async checkIsDeviceBinded() {
+    const toPageRouter = this.loginService.getToPageRouter() || "";
+    const uuid = await AppHelper.getDeviceId();
+    console.log("uuid " + uuid);
+    this.loginService.checkIsDeviceBinded(uuid).subscribe(
+      res => {
         console.log("checkIsDeviceBinded " + JSON.stringify(res, null, 2));
         // 需要绑定
         if (res.Status) {
-          this.router.navigate([AppHelper.getRoutePath("account-bind"), {
-            IsActiveMobile: res.Data.IsActiveMobile,
-            Mobile: res.Data.Mobile,
-            Path: toPageRouter
-          }]);
+          this.router.navigate([
+            AppHelper.getRoutePath("account-bind"),
+            {
+              IsActiveMobile: res.Data.IsActiveMobile,
+              Mobile: res.Data.Mobile,
+              Path: toPageRouter
+            }
+          ]);
         } else {
           this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
         }
-      }, e => {
+      },
+      e => {
         this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
-      });
-    }
-    else {
-      this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
-    }
+      }
+    );
   }
   forgetPassword() {
     this.router.navigate([AppHelper.getRoutePath("password-check")]);
