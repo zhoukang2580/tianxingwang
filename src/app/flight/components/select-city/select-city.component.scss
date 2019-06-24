@@ -158,6 +158,9 @@ ul.c-items {
   &.moving {
     background: rgba(var(--ion-color-medium-rgb), 0.1);
   }
+  &.ios{
+    top:5em;
+  }
   .nav {
     -webkit-overflow-scrolling: touch;
     position: absolute;

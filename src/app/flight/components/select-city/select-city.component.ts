@@ -263,25 +263,12 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit() {
     this.curTargetNavEle = this.content["el"].querySelector(".curTargetNav");
     this.curNavTextEle = this.curTargetNavEle.querySelector("h1");
-    console.dir(this.header["el"]);
-    console.log(
-      `this.header["el"].clientHeight`,
-      this.header["el"].clientHeight
-    );
-    setTimeout(() => {
-      console.log(
-        `sss this.header["el"].clientHeight`,
-        this.header["el"].clientHeight
-      );
-      if (this.plt.is("ios")) {
-        this.render.setStyle(this.content["el"], "width", "93vw");
-        this.render.setStyle(
-          this.links["el"],
-          "top",
-          this.header["el"].clientHeight + 32
-        );
-      }
-    }, 3000);
+    if (this.plt.is("ios")) {
+      this.render.setStyle(this.content["el"], "width", "93vw");
+    }
+    if (this.plt.is("ios")) {
+      this.render.addClass(this.links["el"], "ios");
+    }
     const nav = this.links["el"];
 
     let lastTime = Date.now();
