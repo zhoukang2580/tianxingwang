@@ -1,6 +1,6 @@
 import { LanguageHelper } from "./../../../languageHelper";
 import { AppHelper } from "src/app/appHelper";
-import { IonContent, Platform, IonRefresher } from "@ionic/angular";
+import { IonContent, Platform, IonRefresher, IonHeader } from "@ionic/angular";
 import { takeUntil, tap, switchMap } from "rxjs/operators";
 import {
   Component,
@@ -45,16 +45,16 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   // @ViewChild(IonRefresher)  ionRefresher: IonRefresher;
   @ViewChild("cnt")
   content: IonContent;
+  @ViewChild("header") header: IonHeader;
   selectedCity: TrafficlineModel;
   historyCities: TrafficlineModel[] = [];
   listCities: ListCityModel[] = [];
   listCitiesViewModel: ListCityModel[] = [];
   subscription = Subscription.EMPTY;
   openCloseSubscription = Subscription.EMPTY;
-  cnt: HTMLElement;
-  linksNavEle: HTMLElement;
+  @ViewChild("links") links: IonHeader; // 这里是右边的字母
+  @ViewChild("curNavText") curNavTextEle: HTMLElement;
   curTargetNavEle: HTMLElement;
-  curNavTextEle: HTMLElement;
   isUserSelect: boolean;
   private domesticAirports: Trafficline[] = [];
   private internationalAirports: Trafficline[] = [];
@@ -114,7 +114,6 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
       this.listCities.unshift(lm);
     }
     console.timeEnd("initDomesticListCity");
-    // console.log("listCitiesViewModel", this.listCitiesViewModel);
     return true;
   }
   ngOnDestroy() {
@@ -179,6 +178,22 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
         cities = this.internationalAirports.slice(0);
       }
       this.listCitiesViewModel = this.listCities = [];
+      cities.forEach(c => {
+        const pyFl = `${jsPy.getFullChars(c.Nickname)}`.charAt(0);
+        // console.log(pyFl + " -- " + c.Nickname);
+        let lm = this.listCities.find(item => item.link === pyFl);
+        // console.log("lm", lm);
+        if (!lm) {
+          lm = new ListCityModel();
+          lm.link = pyFl;
+          lm.displayName = pyFl.toUpperCase();
+          lm.items = [];
+          this.listCities.push(lm);
+        }
+      });
+      this.listCities.sort(
+        (a, b) => a.link.charCodeAt(0) - b.link.charCodeAt(0)
+      );
       let temp = 0;
       // console.time("计算 listCities");
       const once = 1000;
@@ -209,9 +224,6 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
         console.log(
           `完成 ${tempc.length} 个元素处理,${window.performance.now() - st} ms`
         );
-        this.listCities.sort(
-          (a, b) => a.link.charCodeAt(0) - b.link.charCodeAt(0)
-        );
         if (cities.length) {
           console.log(`第${++count}次循环`);
           window.requestAnimationFrame(loop);
@@ -220,7 +232,9 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
           done();
         }
       };
-      loop();
+      setTimeout(() => {
+        loop();
+      }, 0);
     });
   }
   segmentChanged(evt: CustomEvent) {
@@ -247,15 +261,28 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.flightService.getDomesticAirports(forceRefresh);
   }
   ngAfterViewInit() {
-    console.time("ngAfterViewInit");
-    this.cnt = document.getElementById("mainCnt");
-    this.curNavTextEle = document.getElementById("curNavText");
-    this.curTargetNavEle = document.querySelector(".curTargetNav");
-    if (true || this.plt.is("ios")) {
-      // this.render.setStyle(this.cnt, "width", "90vw");
-    }
-    const nav = (this.linksNavEle = document.getElementById("links")); // 这里是右边的字母
-    console.timeEnd("ngAfterViewInit");
+    this.curTargetNavEle = this.content["el"].querySelector(".curTargetNav");
+    this.curNavTextEle = this.curTargetNavEle.querySelector("h1");
+    console.dir(this.header["el"]);
+    console.log(
+      `this.header["el"].clientHeight`,
+      this.header["el"].clientHeight
+    );
+    setTimeout(() => {
+      console.log(
+        `sss this.header["el"].clientHeight`,
+        this.header["el"].clientHeight
+      );
+      if (this.plt.is("ios")) {
+        this.render.setStyle(this.content["el"], "width", "93vw");
+        this.render.setStyle(
+          this.links["el"],
+          "top",
+          this.header["el"].clientHeight + 32
+        );
+      }
+    }, 3000);
+    const nav = this.links["el"];
 
     let lastTime = Date.now();
     if (!nav) {

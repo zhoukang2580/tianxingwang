@@ -46,7 +46,7 @@ ion-content {
   //   width : 0.5rem;
   //   height: 0.5rem;
   // }
-  &#mainCnt {
+  &.mainCnt {
     &::-webkit-scrollbar {
       display: none;
       overflow-x: hidden;
@@ -149,14 +149,14 @@ ul.c-items {
 .nav-links {
   position: fixed;
   z-index: 2000;
-  top: 6rem;
+  top: 3rem;
   width: 2rem;
   -webkit-overflow-scrolling: touch;
   right: 0.1em;
   bottom: 2em;
   background: transparent;
   &.moving {
-    background: rgba(var(--ion-color-medium-rgb), 0.2);
+    background: rgba(var(--ion-color-medium-rgb), 0.1);
   }
   .nav {
     -webkit-overflow-scrolling: touch;

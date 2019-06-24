@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header #header>
   <ion-toolbar>
     <ion-buttons slot='start' (click)='goBack()'>
       <ion-button fill='clear'>
@@ -14,7 +14,7 @@
     <ion-segment-button value='overseas' class='overseas'>海外</ion-segment-button>
   </ion-segment>
 </ion-toolbar> -->
-<ion-header class='nav-links' color='dark' id='links'>
+<ion-header class='nav-links' color='dark' #links>
   <div class='nav'>
     <ion-text *ngFor='let nav of listCitiesViewModel' (click)='onNavLickClick(nav.link)'
       [style.display]="(nav?.link=='history')&&historyCities.length==0?'none':'block'" text-center
@@ -23,9 +23,9 @@
     </ion-text>
   </div>
 </ion-header>
-<ion-content #cnt id='mainCnt' scroll-y='true' force-overscroll='false'>
+<ion-content #cnt class='mainCnt' scroll-y='true' force-overscroll='false'>
   <ion-text class='curTargetNav' slot='fixed' color='light'>
-    <h1 #curNavText id='curNavText'></h1>
+    <h1 #curNavText></h1>
   </ion-text>
 
   <section class='cities'>
