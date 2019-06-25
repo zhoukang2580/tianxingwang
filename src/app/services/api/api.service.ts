@@ -1,3 +1,4 @@
+import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import * as md5 from "md5";
@@ -25,7 +26,6 @@ import {
 } from "rxjs";
 import { ExceptionEntity } from "../log/exception.entity";
 import { Router } from "@angular/router";
-import { IdentityEntity } from "../identity/identity.entity";
 import { IdentityService } from "../identity/identity.service";
 import { LoadingController } from "@ionic/angular";
 import { LanguageHelper } from "src/app/languageHelper";
@@ -40,6 +40,7 @@ interface ApiConfig {
 export class ApiService {
   private loadingSubject: Subject<boolean>;
   public apiConfig: ApiConfig;
+  identityEntity: IdentityEntity;
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -47,6 +48,9 @@ export class ApiService {
     private loadingCtrl: LoadingController
   ) {
     this.loadingSubject = new BehaviorSubject(false);
+    this.identityService.getIdentity().subscribe(identity => {
+      this.identityEntity = identity;
+    });
     setTimeout(() => {
       console.log("loadApiConfig");
       this.loadApiConfig()
@@ -61,37 +65,13 @@ export class ApiService {
   getLoading() {
     return this.loadingSubject.asObservable().pipe(delay(0));
   }
-  async setLoading(loading: boolean, isShowLoading: boolean) {
-    // if (loading && isShowLoading) {
-    //    this.showLoadingView();
-    // }
-    // if (!loading) {
-    //    this.hideLoadingView();
-    // }
+  setLoading(loading: boolean, isShowLoading: boolean) {
     this.loadingSubject.next(loading && isShowLoading);
   }
-   showLoadingView() {
-    // console.log("showLoadingView");
-    // const l = document.querySelector("ion-loading");
-    // console.log("showLoadingView", l);
-    // if (l) {
-    //   await this.loadingCtrl.dismiss();
-    // }
-    // const t = await this.loadingCtrl.create();
-    // if (t) {
-    //   await t.present();
-    // }
+  showLoadingView() {
     this.loadingSubject.next(true);
   }
-   hideLoadingView() {
-    // return new Promise(s => {
-    //   setTimeout(() => {
-    //     this.loadingCtrl.dismiss().catch(_ => {
-    //       console.log("hideLoadingView", _);
-    //     });
-    //     s();
-    //   }, 1000);
-    // });
+  hideLoadingView() {
     this.loadingSubject.next(false);
   }
   send<T>(
@@ -323,6 +303,10 @@ export class ApiService {
           (r: IResponse<ApiConfig>) => {
             if (r.Data) {
               this.apiConfig = r.Data;
+              if (this.identityEntity) {
+                this.identityEntity.Token = r.Data.Token;
+                this.identityService.setIdentity(this.identityEntity);
+              }
               s(this.apiConfig);
             }
             s(null);

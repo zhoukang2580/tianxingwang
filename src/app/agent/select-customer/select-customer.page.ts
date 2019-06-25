@@ -3,10 +3,11 @@ import { Router } from "@angular/router";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { ApiService } from "src/app/services/api/api.service";
-import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
+import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { AppHelper } from "src/app/appHelper";
 import { TmcService } from "src/app/tmc/tmc.service";
+import { Subscription } from "rxjs";
 type TmcEntity = {
   GroupCompanyName: string; // "爱普科斯";
   Id: string; // 1;
@@ -17,19 +18,29 @@ type TmcEntity = {
   templateUrl: "./select-customer.page.html",
   styleUrls: ["./select-customer.page.scss"]
 })
-export class SelectCustomerPage implements OnInit {
+export class SelectCustomerPage implements OnInit, OnDestroy {
   keyword: string = "";
   customers: any[] = [];
   loading: boolean;
   selectedItem: TmcEntity;
+  identityEntity: IdentityEntity;
+  identitySubscription = Subscription.EMPTY;
   @ViewChild(IonRefresher) ionrefresher: IonRefresher;
   constructor(
     private apiService: ApiService,
     private identityService: IdentityService,
     private router: Router,
     private tmcService: TmcService
-  ) {}
-
+  ) {
+    this.identitySubscription = this.identityService
+      .getIdentity()
+      .subscribe(id => {
+        this.identityEntity = id;
+      });
+  }
+  ngOnDestroy() {
+    this.identitySubscription.unsubscribe();
+  }
   ngOnInit() {}
   async onSelect(item: TmcEntity) {
     this.selectedItem = item;
@@ -46,9 +57,8 @@ export class SelectCustomerPage implements OnInit {
         return null;
       });
     if (result && result.Numbers && result.Numbers.TmcId) {
-      const origalIdentity = await this.identityService.getIdentity();
       this.identityService.setIdentity({
-        ...origalIdentity,
+        ...this.identityEntity,
         ...result
       });
       this.tmcService.setSelectedCompany(this.selectedItem.Name);

@@ -2,17 +2,16 @@ import { ActivatedRoute } from "@angular/router";
 import { AppHelper } from "./../../appHelper";
 import { LoginService } from "./../../services/login/login.service";
 import { AlertController } from "@ionic/angular";
-import { Component, OnInit,OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { Router } from "@angular/router";
 
-
 import { tap } from "rxjs/operators";
-import { Subscription, Observable } from 'rxjs';
-import { ApiService } from 'src/app/services/api/api.service';
-import { RequestEntity } from 'src/app/services/api/Request.entity';
-import { LanguageHelper } from 'src/app/languageHelper';
+import { Subscription, Observable } from "rxjs";
+import { ApiService } from "src/app/services/api/api.service";
+import { RequestEntity } from "src/app/services/api/Request.entity";
+import { LanguageHelper } from "src/app/languageHelper";
 class PasswordModel {
   /// <summary>
   /// 老密码
@@ -33,30 +32,31 @@ class PasswordModel {
   templateUrl: "./account-password.page.html",
   styleUrls: ["./account-password.page.scss"]
 })
-export class AccountPasswordPage implements OnInit,OnDestroy {
+export class AccountPasswordPage implements OnInit, OnDestroy {
   identityEntity: IdentityEntity;
   passwordModel: PasswordModel;
   confirmNewPassword: string;
   modifyPasswordSubscription = Subscription.EMPTY;
-  loading$:Observable<boolean>;
+  identitySubscription = Subscription.EMPTY;
+  loading$: Observable<boolean>;
   constructor(
     identityService: IdentityService,
-    private alertCtrl: AlertController,
-    private loginService: LoginService,
     private router: Router,
-    private route: ActivatedRoute,
-    private apiService:ApiService
+    private apiService: ApiService
   ) {
-    identityService.getIdentity().then(id => {
+    this.identitySubscription = identityService.getIdentity().subscribe(id => {
       this.identityEntity = id;
     });
-    this.loading$=this.apiService.getLoading();
+    this.loading$ = this.apiService.getLoading();
     console.log("account-password constructor");
     this.passwordModel = new PasswordModel();
   }
 
   forgetPassword() {
-    this.router.navigate([AppHelper.getRoutePath("password-check"),{Id:this.identityEntity.Id}]);
+    this.router.navigate([
+      AppHelper.getRoutePath("password-check"),
+      { Id: this.identityEntity.Id }
+    ]);
   }
   done() {
     if (!this.passwordModel.NewPassword) {
@@ -68,8 +68,7 @@ export class AccountPasswordPage implements OnInit,OnDestroy {
       return;
     }
     this.modifyPasswordSubscription.unsubscribe();
-    this.modifyPasswordSubscription = this
-      .modifyPassword(this.passwordModel)
+    this.modifyPasswordSubscription = this.modifyPassword(this.passwordModel)
       .pipe(tap(a => console.log(a)))
       .subscribe(
         res => {
@@ -82,17 +81,16 @@ export class AccountPasswordPage implements OnInit,OnDestroy {
         e => AppHelper.alert(e)
       );
   }
-  ngOnInit() { }
+  ngOnInit() {}
   ngOnDestroy(): void {
-    //Called once, before the instance is destroyed.
-    //Add 'implements OnDestroy' to the class.
+    this.identitySubscription.unsubscribe();
     this.modifyPasswordSubscription.unsubscribe();
   }
 
   modifyPassword(passwordModel: PasswordModel) {
     const req = new RequestEntity();
     req.Data = JSON.stringify(passwordModel);
-    req.Method=`ApiPasswordUrl-Password-Modify`;
+    req.Method = `ApiPasswordUrl-Password-Modify`;
     return this.apiService.getResponse(req);
   }
 }

@@ -4,7 +4,7 @@ import { ApiService } from "../api/api.service";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, from, of } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
-import { switchMap, tap, map } from "rxjs/operators";
+import { switchMap, tap, map, finalize } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root"
@@ -31,22 +31,26 @@ export class ConfigService {
       return Promise.resolve(this.config);
     }
     return new Promise((resolve, reject) => {
-      const subscription = this.load().subscribe(
-        router => {
-          resolve(router);
-        },
-        error => {
-          reject(error);
-          subscription.unsubscribe();
-        },
-        () => {
-          setTimeout(() => {
-            if (subscription) {
-              subscription.unsubscribe();
-            }
-          }, 100);
-        }
-      );
+      const subscription = this.load()
+        .pipe(
+          finalize(() => {
+            setTimeout(() => {
+              if (subscription) {
+                subscription.unsubscribe();
+              }
+            }, 3000);
+          })
+        )
+        .subscribe(
+          router => {
+            resolve(router);
+          },
+          error => {
+            reject(error);
+            subscription.unsubscribe();
+          },
+          () => {}
+        );
     });
   }
   private load() {

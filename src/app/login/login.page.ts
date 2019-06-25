@@ -1,3 +1,4 @@
+import { IdentityEntity } from "./../services/identity/identity.entity";
 import { LoginService } from "../services/login/login.service";
 import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import { Router } from "@angular/router";
@@ -25,6 +26,8 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   form: FormGroup;
   deviceInfo: any;
   loginSubscription = Subscription.EMPTY;
+  identitySubscription = Subscription.EMPTY;
+  identity: IdentityEntity;
   message: string;
   countDown: number;
   loginType: string = "user";
@@ -58,6 +61,11 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   ngOnInit() {
+    this.identitySubscription = this.identityService
+      .getIdentity()
+      .subscribe(r => {
+        this.identity = r;
+      });
     // this.fileInfo=this.fileService.fileInfo;
     this.loginEntity = new RequestEntity();
     this.loginEntity.Data = {};
@@ -87,16 +95,14 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.autoLogin();
   }
   autoLogin() {
-    this.identityService.getIdentity().then(r => {
-      if (!r || !r.Ticket) {
-        if (AppHelper.isApp()) {
-          this.loginType = "device";
-          this.login();
-        }
-      } else {
-        this.jump(true);
+    if (!this.identity || !this.identity.Ticket) {
+      if (AppHelper.isApp()) {
+        this.loginType = "device";
+        this.login();
       }
-    });
+    } else {
+      this.jump(true);
+    }
   }
   setLoginButton() {
     if (this.loginType == "user") {
@@ -363,5 +369,6 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   }
   ngOnDestroy() {
     this.loginSubscription.unsubscribe();
+    this.identitySubscription.unsubscribe();
   }
 }

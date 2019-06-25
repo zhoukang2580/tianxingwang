@@ -8,6 +8,7 @@ import { LoadingController } from "@ionic/angular";
 import { ActivatedRoute, Router, NavigationEnd } from "@angular/router";
 import { PayService } from "src/app/services/pay/pay.service";
 import { TmcService } from "src/app/tmc/tmc.service";
+import { tap } from "rxjs/operators";
 @Component({
   selector: "app-home",
   templateUrl: "home.page.html",
@@ -54,15 +55,21 @@ export class HomePage implements OnInit {
       };
       this.payService.process(req1);
     }
-    this.identity$ = from(this.identityService.getIdentity());
+    this.getIdentity();
     this.router.events.subscribe(evt => {
       // console.log(evt);
       if (evt instanceof NavigationEnd) {
         if (evt.url.includes("tabs/home")) {
           this.check();
+          this.getIdentity();
         }
       }
     });
+  }
+  async getIdentity() {
+    this.identity$ =  this.identityService.getIdentity().pipe(tap(id=>{
+      console.log("get identity ", id);
+    }));
   }
   async check() {
     console.log("ionViewDidEnter");

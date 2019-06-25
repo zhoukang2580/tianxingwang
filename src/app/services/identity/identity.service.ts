@@ -1,7 +1,7 @@
 import { IdentityEntity } from "./identity.entity";
 import { RequestEntity } from "../api/Request.entity";
 import { Injectable } from "@angular/core";
-import { of, throwError } from "rxjs";
+import { of, throwError, Observable, Subject, BehaviorSubject } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { map, catchError, finalize, switchMap } from "rxjs/operators";
@@ -12,55 +12,41 @@ import { ExceptionEntity } from "../log/exception.entity";
   providedIn: "root"
 })
 export class IdentityService {
-  private identity: IdentityEntity;
+  private _IdentityEntity: IdentityEntity;
+  private identitySource: Subject<IdentityEntity>;
   constructor(private http: HttpClient) {
-    this.identity = new IdentityEntity();
-    this.identity.Ticket = AppHelper.getTicket();
-    this.identity.Name = AppHelper.getStorage("loginname");
-    this.setIdentity(this.identity);
+    this._IdentityEntity = new IdentityEntity();
+    this._IdentityEntity.Ticket = AppHelper.getTicket();
+    this._IdentityEntity.Name = AppHelper.getStorage("loginname");
+    this.identitySource = new BehaviorSubject(this._IdentityEntity);
   }
   setIdentity(info: IdentityEntity) {
-    if (info && info.Ticket) {
-      this.identity = info;
-      AppHelper.setStorage("ticket", info.Ticket);
-      AppHelper.setStorage("loginToken", info.Token);
-    }
+    this._IdentityEntity = info;
+    AppHelper.setStorage("ticket", info.Ticket);
+    AppHelper.setStorage("loginToken", info.Token);
+    this.identitySource.next(this._IdentityEntity);
   }
   removeIdentity() {
-    this.identity = null;
+    this._IdentityEntity.Ticket = null;
+    this._IdentityEntity.Id = null;
     AppHelper.setStorage("ticket", "");
+    this.setIdentity(this._IdentityEntity);
   }
-  getIdentity(): Promise<IdentityEntity> {
-    if (this.identity && this.identity.Ticket && this.identity.Id) {
-      return Promise.resolve(this.identity);
-    }
-    return new Promise<IdentityEntity>((resolve, reject) => {
-      const subscribtion = this.loadIdentityEntity().subscribe(
-        identityEntity => {
-          if (identityEntity && identityEntity.Ticket&&identityEntity.Id) {
-            resolve(identityEntity);
-          } else {
-            reject("get identity failed");
-          }
-        },
-        error => {
-          reject(error);
-        },
-        () => {
-          setTimeout(() => {
-            if (subscribtion) {
-              subscribtion.unsubscribe();
-            }
-          }, 0);
+  getIdentity(): Observable<IdentityEntity> {
+    return this.identitySource.asObservable().pipe(
+      switchMap(r => {
+        if (!r || !r.Ticket || !r.Id) {
+          return this.loadIdentityEntity();
         }
-      );
-    }).catch(e => null);
+        return of(r);
+      })
+    );
   }
   loadIdentityEntity() {
     const ticket = AppHelper.getTicket();
     if (ticket) {
       const req = new RequestEntity();
-      req.IsShowLoading=true;
+      req.IsShowLoading = true;
       req.Method = "ApiHomeUrl-Identity-Get";
       req.Data = JSON.stringify({ Ticket: ticket });
       req.Timestamp = Math.floor(Date.now() / 1000);
@@ -80,15 +66,14 @@ export class IdentityService {
           map((r: IResponse<IdentityEntity>) => r),
           switchMap(r => {
             if (r.Status) {
-              this.setIdentity(r.Data);
               return of(r.Data);
             }
             return throwError(r.Message);
           })
         );
     }
-    this.identity.Ticket = null;
-    this.identity.Id = null;
-    return of(this.identity);
+    this._IdentityEntity.Ticket = null;
+    this._IdentityEntity.Id = null;
+    return of(this._IdentityEntity);
   }
 }

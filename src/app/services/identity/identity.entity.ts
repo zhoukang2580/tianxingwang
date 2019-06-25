@@ -6,10 +6,4 @@ export class IdentityEntity {
   Token?: string;
   WebTicket?: string;
   Numbers?: any;
-  public getNumber(name: string) {
-    if (!this.Numbers) {
-      return null;
-    }
-    return this.Numbers[name];
-  }
 }

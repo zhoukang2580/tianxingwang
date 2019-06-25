@@ -1,8 +1,9 @@
+import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { throwError } from "rxjs";
 import { Injectable } from "@angular/core";
 import { RequestEntity } from "../api/Request.entity";
 import { AppHelper } from "../../appHelper";
-import { HttpClient, HttpParams } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { ExceptionEntity } from "./exception.entity";
 import { IdentityService } from "../../services/identity/identity.service";
 import { catchError } from "rxjs/operators";
@@ -10,14 +11,19 @@ import { catchError } from "rxjs/operators";
   providedIn: "root"
 })
 export class LogService {
+  identityEntity: IdentityEntity;
   constructor(
     private http: HttpClient,
     private identityService: IdentityService
-  ) {}
+  ) {
+    identityService.getIdentity().subscribe(r => {
+      this.identityEntity = r;
+    });
+  }
 
   async sendException(ex: ExceptionEntity) {
     try {
-      const identity = await this.identityService.getIdentity();
+      const identity = this.identityEntity;
       const req = new RequestEntity();
       req.Timestamp = Math.floor(Date.now() / 1000);
       req.Domain = AppHelper.getDomain();
@@ -54,7 +60,7 @@ export class LogService {
         .subscribe(
           () => {},
           e => {
-            console.error("sendException",e);
+            console.error("sendException", e);
           }
         );
     } catch (err) {

@@ -15,6 +15,7 @@ import { IResponse } from "../api/IResponse";
   providedIn: "root"
 })
 export class LoginService {
+  identity: IdentityEntity;
   private _imageValue: string;
   set ImageValue(value: string) {
     this._imageValue = value;
@@ -27,9 +28,12 @@ export class LoginService {
     private identityService: IdentityService,
     private router: Router,
     private apiService: ApiService,
-    private platService: Platform,
     private http: HttpClient
-  ) { }
+  ) {
+    this.identityService.getIdentity().subscribe(id => {
+      this.identity = id;
+    });
+  }
   setToPageRouter(pageRouter: string) {
     this._toPageRouter = pageRouter;
   }
@@ -40,7 +44,7 @@ export class LoginService {
   checkIsDeviceBinded(deviceNumber: string) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
-    req.Method = 'ApiPasswordUrl-Device-Check';
+    req.Method = "ApiPasswordUrl-Device-Check";
     req.Data = {
       DeviceNumber: deviceNumber
     };
@@ -49,7 +53,7 @@ export class LoginService {
       Mobile: string;
     }>(req);
   }
-  
+
   sendMobileCode(mobile: string, imageCode: string = null) {
     const req = new RequestEntity();
     req.Url = AppHelper.getApiUrl() + "/Home/SendLoginMobileCode";
@@ -66,7 +70,7 @@ export class LoginService {
   getLoading() {
     return this.apiService.getLoading();
   }
- login(method: string,req:RequestEntity) {
+  login(method: string, req: RequestEntity) {
     req.Method = method;
     return this.apiService
       .getResponse<{
@@ -85,22 +89,15 @@ export class LoginService {
           return of(r.Data);
         }),
         tap(rid => {
-          const id: IdentityEntity = new IdentityEntity();
-          id.Name = name;
-          id.Ticket = rid.Ticket;
-          id.IsShareTicket = rid.IsShareTicket;
-          id.Numbers = rid.Numbers;
-          id.Id = rid.Id;
-          this.identityService.setIdentity(id);
+          this.identityService.setIdentity(rid);
         })
       );
   }
   logout() {
-    debugger;
     const ticket = AppHelper.getTicket();
     if (ticket) {
       const req = new RequestEntity();
-      req.IsShowLoading=true;
+      req.IsShowLoading = true;
       req.Method = "ApiLoginUrl-Home-Logout";
       req.Data = JSON.stringify({ Ticket: ticket });
       req.Timestamp = Math.floor(Date.now() / 1000);
@@ -116,31 +113,23 @@ export class LoginService {
           headers: { "content-type": "application/x-www-form-urlencoded" },
           observe: "body"
         })
-        .pipe(
-          map((r: IResponse<IdentityEntity>) => r)
-        ).subscribe(r => {
+        .pipe(map((r: IResponse<IdentityEntity>) => r))
+        .subscribe(r => {
           if (r.Status) {
             this.identityService.removeIdentity();
             this.router.navigate([AppHelper.getRoutePath("login")]);
-            return of(r.Data);
-          }
-          else if(r.Code.toUpperCase()=="NOLOGIN")
-          {
+          } else if (r.Code.toUpperCase() == "NOLOGIN") {
             this.identityService.removeIdentity();
             this.router.navigate([AppHelper.getRoutePath("login")]);
           }
         });
-    }
-    else
-    {
+    } else {
       this.identityService.removeIdentity();
       this.router.navigate([AppHelper.getRoutePath("login")]);
     }
-
   }
   async checkIdentity() {
-    const result = await this.identityService.getIdentity();
-    if (!result) {
+    if (!this.identity) {
       const r = await this.autoLogin();
       return r;
     } else {
@@ -148,7 +137,6 @@ export class LoginService {
     }
   }
   async autoLogin() {
-
     if (AppHelper.getStorage<string>("loginToken")) {
       const req = new RequestEntity();
       req.Method = "ApiLoginUrl-Home-TokenLogin";
@@ -158,7 +146,7 @@ export class LoginService {
       });
 
       return new Promise<boolean>((resolve, reject) => {
-        this.apiService
+       const sub =  this.apiService
           .getResponse<{
             Ticket: string; // "";
             Id: string; // ;
@@ -166,10 +154,13 @@ export class LoginService {
             IsShareTicket: boolean; // false;
             Numbers: { [key: string]: string };
           }>(req)
-          .pipe(
-            finalize(() => {
-            })
-          )
+          .pipe(finalize(() => {
+            setTimeout(() => {
+              if(sub){
+                sub.unsubscribe();
+              }
+            }, 3000);
+          }))
           .subscribe(
             rid => {
               if (!rid) {

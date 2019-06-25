@@ -1,3 +1,4 @@
+import { IdentityEntity } from "./../services/identity/identity.entity";
 import { AppHelper } from "src/app/appHelper";
 import { LoginService } from "./../services/login/login.service";
 import { Injectable } from "@angular/core";
@@ -20,11 +21,16 @@ import { finalize, switchMap, map } from "rxjs/operators";
   providedIn: "root"
 })
 export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
+  // private identity: IdentityEntity;
   constructor(
     private identityService: IdentityService,
     private loginService: LoginService,
     private router: Router
-  ) {}
+  ) {
+    // this.identityService.getIdentity().subscribe(identity => {
+    //   this.identity = identity;
+    // });
+  }
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
@@ -45,21 +51,23 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
     // if (ticket) {
     //   return true;
     // }
-    return this.identityService
-      .getIdentity()
-      .then(id => {
-        if (!id || !id.Ticket) {
+    // if (!this.identity || !this.identity.Ticket) {
+    //   this.loginService.setToPageRouter(state.url);
+    //   this.router.navigate([AppHelper.getRoutePath("login")]);
+    //   return false;
+    // }
+    // return true;
+    return this.identityService.getIdentity().pipe(
+      map(identity => {
+        // console.log("canload route ,", route);
+        if (!identity || !identity.Ticket) {
           this.loginService.setToPageRouter(state.url);
           this.router.navigate([AppHelper.getRoutePath("login")]);
           return false;
         }
         return true;
       })
-      .catch(_ => {
-        this.loginService.setToPageRouter(state.url);
-        this.router.navigate([AppHelper.getRoutePath("login")]);
-        return false;
-      });
+    );
   }
   canLoad(route: Route) {
     // console.log("canload route ,", route);

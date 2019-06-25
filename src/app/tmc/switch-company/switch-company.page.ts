@@ -1,9 +1,16 @@
+import { Subscription } from "rxjs";
 import { IonRefresher } from "@ionic/angular";
 import { Router } from "@angular/router";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { ApiService } from "src/app/services/api/api.service";
-import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  OnDestroy
+} from "@angular/core";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { AppHelper } from "src/app/appHelper";
 interface TcmCompany {
@@ -15,17 +22,25 @@ interface TcmCompany {
   templateUrl: "./switch-company.page.html",
   styleUrls: ["./switch-company.page.scss"]
 })
-export class SwitchCompanyPage implements OnInit {
+export class SwitchCompanyPage implements OnInit, OnDestroy {
   keyword: string = "";
   customers: any[] = [];
   loading: boolean;
+  identitySubscription = Subscription.EMPTY;
+  identity: IdentityEntity;
   @ViewChild(IonRefresher) ionrefresher: IonRefresher;
   constructor(
     private apiService: ApiService,
     private identityService: IdentityService,
     private router: Router
   ) {}
-
+  ngOnDestroy() {
+    this.identitySubscription = this.identityService
+      .getIdentity()
+      .subscribe(id => {
+        this.identity = id;
+      });
+  }
   ngOnInit() {}
   async onSelect(item: TcmCompany) {
     const req = new RequestEntity();
@@ -41,9 +56,8 @@ export class SwitchCompanyPage implements OnInit {
         return null;
       });
     if (result && result.Numbers && result.Numbers.TmcId) {
-      const origalIdentity = await this.identityService.getIdentity();
       this.identityService.setIdentity({
-        ...origalIdentity,
+        ...this.identity,
         ...result
       });
       this.router.navigate([AppHelper.getRoutePath("")]);

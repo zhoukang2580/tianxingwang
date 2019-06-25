@@ -10,6 +10,7 @@ import { map } from "rxjs/operators";
 import { ApiService } from "src/app/services/api/api.service";
 import { ConfigService } from "src/app/services/config/config.service";
 import { NavController } from "@ionic/angular";
+import { Subscription } from "rxjs";
 type PageModel = {
   Name: string;
   RealName: string;
@@ -25,25 +26,26 @@ export class MyPage implements OnDestroy, OnInit {
   identity: IdentityEntity;
   Model: PageModel;
   defaultAvatar = AppHelper.getDefaultAvatar();
+  subscription = Subscription.EMPTY;
   constructor(
     private router: Router,
     private identityService: IdentityService,
-    private route: ActivatedRoute,
-    private navCtrl: NavController,
     private configService: ConfigService,
     private apiService: ApiService
   ) {}
   onSettings() {
     this.router.navigate([AppHelper.getRoutePath("account-setting")]);
   }
-  async ngOnInit() {
+  ngOnInit() {
     this.Model = {
       Name: "",
       RealName: "",
       Mobile: "",
       HeadUrl: ""
     };
-    this.identity = await this.identityService.getIdentity();
+    this.subscription = this.identityService.getIdentity().subscribe(r => {
+      this.identity = r;
+    });
     this.load();
   }
 
@@ -74,7 +76,9 @@ export class MyPage implements OnDestroy, OnInit {
       AppHelper.getRoutePath("member-credential-management")
     ]);
   }
-  ngOnDestroy() {}
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
   goToMyDetail() {
     this.router.navigate([AppHelper.getRoutePath("member-detail")]);
   }
