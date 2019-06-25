@@ -15,6 +15,7 @@ export class BulletinListPage implements OnInit {
   bulletines: Notice[] = [];
   bulletinType: string;
   currentPage = 0;
+  loading = true;
   constructor(
     private cmsService: CmsService,
     route: ActivatedRoute,
@@ -40,6 +41,7 @@ export class BulletinListPage implements OnInit {
     }
   }
   doRefresh() {
+    this.loading = true;
     if (this.scroller) {
       this.scroller.disabled = false;
     }
@@ -49,7 +51,7 @@ export class BulletinListPage implements OnInit {
   }
   async loadMore() {
     const notices =
-      this.bulletinType == "notice"
+      this.bulletinType === "notice"
         ? await this.cmsService.getNotices(this.currentPage)
         : await this.cmsService.getAgentNotices(this.currentPage);
     if (notices.length) {
@@ -65,6 +67,7 @@ export class BulletinListPage implements OnInit {
       this.scroller.disabled = notices.length === 0;
       this.scroller.complete();
     }
+    this.loading = false;
     // console.log(this.bulletines);
   }
 }
