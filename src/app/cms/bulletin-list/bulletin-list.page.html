@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>公告</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="下拉刷新" refreshingSpinner="circles"
+      refreshingText="正在加载...">
+    </ion-refresher-content>
+  </ion-refresher>
+  <ion-list *ngIf='!loading else loadingTemp'>
+      <ng-container *ngIf='bulletines.length;else nomoredata'>
+        <ion-item *ngFor='let notice of bulletines' [attr.detail]='notice?.Url' (click)='viewNoticeUrl(notice)'>
+          <ion-label text-nowrap>{{notice?.Title}}</ion-label>
+        </ion-item>
+        <ng-template #nomoredata>
+          <app-or-comp>暂无数据</app-or-comp>
+        </ng-template>
+      </ng-container>
+  </ion-list>
+  <ng-template #loadingTemp>
+    正在加载...
+  </ng-template>
+  <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="正在加载..."></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>

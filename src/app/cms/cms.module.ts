@@ -5,6 +5,10 @@ export const routes: Routes = [
   {
     path: "bulletin-list",
     loadChildren: "./bulletin-list/bulletin-list.module#BulletinListPageModule"
+  },
+  {
+    path: "view-bulletin-detail",
+    loadChildren: "./view-detail/view-detail.module#ViewDetailPageModule"
   }
 ];
 @NgModule({
@@ -12,4 +16,4 @@ export const routes: Routes = [
   imports: [CommonModule, RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class BulletinModule {}
+export class CmsModule {}

@@ -8,7 +8,7 @@ import { LoadingController } from "@ionic/angular";
 import { ActivatedRoute, Router, NavigationEnd } from "@angular/router";
 import { PayService } from "src/app/services/pay/pay.service";
 import { TmcService } from "src/app/tmc/tmc.service";
-import { tap } from "rxjs/operators";
+import { tap, shareReplay } from "rxjs/operators";
 @Component({
   selector: "app-home",
   templateUrl: "home.page.html",
@@ -40,8 +40,10 @@ export class HomePage implements OnInit {
   accountSecurityEn() {
     this.router.navigate(["account-security_en"]);
   }
-  goToBulletinList() {
-    this.router.navigate([AppHelper.getRoutePath("bulletin-list")]);
+  goToBulletinList(noticeType?: string) {
+    this.router.navigate([AppHelper.getRoutePath("bulletin-list")], {
+      queryParams: { bulletinType: noticeType }
+    });
   }
   ngOnInit(): void {
     const paramters = AppHelper.getQueryParamers();
@@ -55,24 +57,25 @@ export class HomePage implements OnInit {
       };
       this.payService.process(req1);
     }
-    this.getIdentity();
+    this.identity$ = this.identityService.getIdentity().pipe(
+      shareReplay(),
+      tap(id => {
+        console.log("get identity ", id);
+      })
+    );
+    this.check();
     this.router.events.subscribe(evt => {
       // console.log(evt);
       if (evt instanceof NavigationEnd) {
         if (evt.url.includes("tabs/home")) {
+          console.log(evt);
           this.check();
-          this.getIdentity();
         }
       }
     });
   }
-  async getIdentity() {
-    this.identity$ =  this.identityService.getIdentity().pipe(tap(id=>{
-      console.log("get identity ", id);
-    }));
-  }
+
   async check() {
-    console.log("ionViewDidEnter");
     const staff = await this.tmcService.getStaff();
     this.companies = await this.tmcService.getCompanies();
     // this.apiService.showLoadingView();
