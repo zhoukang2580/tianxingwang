@@ -31,14 +31,8 @@ export class BulletinListPage implements OnInit {
     this.doRefresh();
   }
   viewNoticeUrl(notice: Notice) {
-    this.router.navigate([AppHelper.getRoutePath("view-bulletin-detail")], {
-      queryParams: { title: notice.Title, url: "https://www.baidu.com" }
-    });
-    if (notice.Url) {
-      this.router.navigate([AppHelper.getRoutePath("view-bulletin-detail")], {
-        queryParams: { title: notice.Title, url: notice.Url }
-      });
-    }
+    this.cmsService.setSelectedNotice(notice);
+    this.router.navigate([AppHelper.getRoutePath("view-bulletin-detail")]);
   }
   doRefresh() {
     this.loading = true;

@@ -6,6 +6,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { ComfirmInformationPage } from './confirm-information.page';
+import { TmcPipeModule } from '../pipe/pipe.module';
 
 const routes: Routes = [
   {
@@ -19,7 +20,8 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    RouterModule.forChild(routes)
+    TmcPipeModule,
+    RouterModule.forChild(routes),
   ],
   declarations: [ComfirmInformationPage]
 })

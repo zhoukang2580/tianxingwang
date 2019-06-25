@@ -1,3 +1,5 @@
+import { HrService } from "./../../hr/hr.service";
+import { Notice, CmsService } from "./../../cms/cms.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { ApiService } from "./../../services/api/api.service";
@@ -21,12 +23,15 @@ export class HomePage implements OnInit {
   exitAppSub: Subject<number> = new BehaviorSubject(null);
   selectedCompany$: Observable<string>;
   companies: any[];
+  agentNotices: Notice[];
   constructor(
     private identityService: IdentityService,
     private router: Router,
     private tmcService: TmcService,
     private apiService: ApiService,
     private payService: PayService,
+    private cmsService: CmsService,
+    private hrService: HrService,
     route: ActivatedRoute
   ) {
     this.selectedCompany$ = tmcService.getSelectedCompany();
@@ -73,13 +78,19 @@ export class HomePage implements OnInit {
         }
       }
     });
+    this.getAgentNotices();
   }
-
+  async getAgentNotices() {
+    this.agentNotices = await this.cmsService.getAgentNotices(0);
+  }
   async check() {
-    const staff = await this.tmcService.getStaff();
-    this.companies = await this.tmcService.getCompanies();
-    // this.apiService.showLoadingView();
-    // loading.dismiss();
+    try {
+      this.apiService.showLoadingView();
+      this.companies = await this.tmcService.getCompanies();
+      this.apiService.hideLoadingView();
+    } catch (e) {
+      this.apiService.hideLoadingView();
+    }
   }
   onSwitchCustomer() {
     this.router.navigate([AppHelper.getRoutePath("select-customer")]);

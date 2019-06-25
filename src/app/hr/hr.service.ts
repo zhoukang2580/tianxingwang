@@ -5,6 +5,12 @@ export interface StaffEntity {
   IsConfirmInfo: boolean;
   IsModifyPassword: boolean;
   BookType: string;
+  StaffNumber: string;
+  CostCenterName: string;
+  CostCenterCode: string;
+  OrganizationName: string;
+  BookTypeName: string;
+  Password: string;
 }
 export interface HrEntity {
   Account: {
@@ -59,9 +65,34 @@ export class HrService {
       return Promise.resolve(this.staff);
     }
     const req = new RequestEntity();
-    req.Method = "TmcApiHomeUrl-Hr-GetStaff";
-    return await this.apiService
-      .getPromiseResponse<StaffEntity>(req)
-      .catch(_ => null);
+    req.Method = "HrApiUrl-Staff-Get";
+    return this.apiService.getPromiseResponse<StaffEntity>(req).catch(_ => {
+      console.error(_);
+      return null;
+    });
+  }
+  async comfirmInfo(data: {
+    IsModifyPassword: boolean;
+    IsModifyCredentials: boolean;
+  }) {
+    const req = new RequestEntity();
+    req.Method = "HrApiUrl-Staff-ComfirmInfo";
+    req.Data = data;
+    return this.apiService
+      .getPromiseResponse<any>(req)
+      .then(_ => true)
+      .catch(_ => false);
+  }
+  async comfirmInfoModifyPassword() {
+    return this.comfirmInfo({
+      IsModifyPassword: true,
+      IsModifyCredentials: false
+    });
+  }
+  async comfirmInfoModifyCredentials() {
+    return this.comfirmInfo({
+      IsModifyPassword: false,
+      IsModifyCredentials: true
+    });
   }
 }

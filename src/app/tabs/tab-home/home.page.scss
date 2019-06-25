@@ -62,7 +62,7 @@ ion-grid ion-row ion-col {
 }
 @keyframes marqueeanimation {
   from {
-    transform: translateX(103%);
+    transform: translateX(100%);
   }
   to {
     transform: translateX(-203%);
@@ -72,4 +72,7 @@ ion-grid ion-row ion-col {
   width: 100%;
   white-space: nowrap;
   animation: 15s linear 0s infinite normal both marqueeanimation;
+  ion-text{
+    margin-left: 0.5em;
+  }
 }

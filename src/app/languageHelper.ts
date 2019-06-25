@@ -1,4 +1,28 @@
 export class LanguageHelper {
+  static getIdCardTip(): any {
+    return "身份证";
+  }
+  static getPassportTip(): any {
+    return "护照";
+  }
+  static getHmPassTip(): any {
+    return "港澳通行证";
+  }
+  static getTwPassTip(): any {
+    return "台湾通行证";
+  }
+  static getTaiwanTip(): any {
+    return "台胞证";
+  }
+  static getHvPassTip(): any {
+    return "回乡证";
+  }
+  static getOtherTip(): any {
+    return "其他证件";
+  }
+  static getTaiwanEpTip(): any {
+    return "入台证";
+  }
   static getCloseTip(): string {
     return "X";
   }
@@ -134,6 +158,9 @@ export class LanguageHelper {
   }
   static getMobileCodeTip() {
     return "请输入手机收到的验证码";
+  }
+  static getEnterPasswordTip() {
+    return "请输入密码";
   }
 
   static getApiExceptionTip() {

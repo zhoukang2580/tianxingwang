@@ -1,7 +1,9 @@
-import { DomSanitizer } from '@angular/platform-browser';
-import { ActivatedRoute } from "@angular/router";
+import { environment } from 'src/environments/environment';
+import { CmsService, Notice } from "./../cms.service";
+import { DomSanitizer } from "@angular/platform-browser";
 import { Component, OnInit } from "@angular/core";
-import { Subject, BehaviorSubject } from "rxjs";
+import { Observable } from "rxjs";
+import { map, tap } from "rxjs/operators";
 
 @Component({
   selector: "app-view-detail",
@@ -9,17 +11,28 @@ import { Subject, BehaviorSubject } from "rxjs";
   styleUrls: ["./view-detail.page.scss"]
 })
 export class ViewDetailPage implements OnInit {
-  title: string;
-  url$: Subject<any>;
-  constructor(route: ActivatedRoute,sanitizer:DomSanitizer) {
-    this.url$ = new BehaviorSubject(null);
-    route.queryParamMap.subscribe(p => {
-      this.title = p.get("title");
-      if(p.get("url")){
-        this.url$.next(sanitizer.bypassSecurityTrustResourceUrl(p.get("url")));
-      }
-    });
-  }
+  notice$: Observable<Notice>;
+  constructor(
+    private cmsService: CmsService,
+    private sanitizer: DomSanitizer
+  ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.notice$ = this.cmsService.getSelectedNotice().pipe(
+      tap(n=>{
+        if(!environment.production){
+          console.log(n);
+        }
+      }),
+      map(n => {
+        if (n && n.Url) {
+          return {
+            ...n,
+            Url: this.sanitizer.bypassSecurityTrustResourceUrl(n.Url) as string
+          };
+        }
+        return n;
+      })
+    );
+  }
 }

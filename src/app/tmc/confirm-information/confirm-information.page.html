@@ -1,29 +1,58 @@
 <ion-header>
   <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
     <ion-title>信息确认</ion-title>
+    <ion-buttons slot='end'>
+      <ion-button fill='clear' color='secondary' expand='block'>确认证件</ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  请核对您的证件信息：请及时核对您的证件信息，避免耽误行程预订，谢谢！
-<ion-row>
-  <ion-col>姓名：</ion-col>
-  <ion-col>白文静</ion-col>
-</ion-row>
-<ion-row>
-  <ion-col>登机名：</ion-col>
-  <ion-col>白文静</ion-col>
-</ion-row>
-<ion-row>
-  <ion-col>证件类型：</ion-col>
-  <ion-col>身份证</ion-col>
-</ion-row>
-<ion-row>
-  <ion-col>姓名：</ion-col>
-  <ion-col>白文静</ion-col>
-</ion-row>
-<ion-row>
-  <ion-col>姓名：</ion-col>
-  <ion-col>白文静</ion-col>
-</ion-row>
+  <ion-toolbar padding-start padding-end>请核对您的证件信息：请及时核对您的证件信息，避免耽误行程预订，谢谢！</ion-toolbar>
+  <ion-toolbar padding-start padding-end *ngIf='staff?.IsModifyPassword'>
+    <ion-text color='danger'>您的密码还是初始密码，请及时修改。</ion-text>
+    <ion-item>
+      <ion-label position='floating' color='dark'>请输入新密码</ion-label>
+      <ion-input [(ngModel)]='password' placeholder=""></ion-input>
+    </ion-item>
+    <ion-button color='secondary' expand='block' fill='clear' (click)='confirmPassword()'>确认密码</ion-button>
+  </ion-toolbar>
+
+  <ion-grid margin-top *ngFor='let c of credentials;'>
+    <ion-row>
+      <ion-col>姓名：</ion-col>
+      <ion-col>{{c.LastName}}{{c.FirstName}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>登机名：</ion-col>
+      <ion-col>{{c.CheckName}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>证件类型：</ion-col>
+      <ion-col>{{c.Type|credential}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>证件号码：</ion-col>
+      <ion-col>{{c.Number}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>出生年月：</ion-col>
+      <ion-col>{{c.Birthday}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>证件到期日期</ion-col>
+      <ion-col>{{c.ExpirationDate}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>国籍</ion-col>
+      <ion-col>{{c.Country}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>发证国籍</ion-col>
+      <ion-col>{{c.IssueCountry}}</ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>

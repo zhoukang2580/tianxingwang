@@ -45,7 +45,7 @@ export class SelectCustomerPage implements OnInit, OnDestroy {
   async onSelect(item: TmcEntity) {
     this.selectedItem = item;
     const req = new RequestEntity();
-    req.Method = "AgentApiHomeUrl-Home-SelectTmc";
+    req.Method = "TmcApiHomeUrl-Agent-SelectTmc";
     req.Data = {
       TmcId: item.Id
     };
@@ -82,7 +82,7 @@ export class SelectCustomerPage implements OnInit, OnDestroy {
   }
   async loadMoreData() {
     const req = new RequestEntity();
-    req.Method = "AgentApiHomeUrl-Home-QueryTmc";
+    req.Method = "TmcApiHomeUrl-Agent-QueryTmc";
     req.Data = {
       Name: this.keyword.trim()
     };

@@ -1,3 +1,4 @@
+import { Subject, BehaviorSubject } from "rxjs";
 import { ApiService } from "src/app/services/api/api.service";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { Injectable } from "@angular/core";
@@ -11,16 +12,17 @@ export interface Notice {
   providedIn: "root"
 })
 export class CmsService {
-  constructor(private apiService: ApiService) {}
+  private selectedNoticeSource: Subject<Notice>;
+  constructor(private apiService: ApiService) {
+    this.selectedNoticeSource = new BehaviorSubject(null);
+  }
   async getNotices(PageIndex: number): Promise<Notice[]> {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Cms-Notice";
     req.Data = {
       PageIndex
     };
-    return  this.apiService
-      .getPromiseResponse<Notice[]>(req)
-      .catch(_ => []);
+    return this.apiService.getPromiseResponse<Notice[]>(req).catch(_ => []);
   }
   async getAgentNotices(PageIndex: number): Promise<Notice[]> {
     const req = new RequestEntity();
@@ -28,8 +30,12 @@ export class CmsService {
       PageIndex
     };
     req.Method = "TmcApiHomeUrl-Cms-AgentNotice";
-    return  this.apiService
-      .getPromiseResponse<Notice[]>(req)
-      .catch(_ => []);
+    return this.apiService.getPromiseResponse<Notice[]>(req).catch(_ => []);
+  }
+  getSelectedNotice() {
+    return this.selectedNoticeSource.asObservable();
+  }
+  setSelectedNotice(n: Notice) {
+    this.selectedNoticeSource.next(n);
   }
 }

@@ -3,12 +3,12 @@
     <ion-buttons slot='start'>
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-title>{{title}}</ion-title>
+    <ion-title>{{(notice$|async)?.Title}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <div class='wrapper' *ngIf='url$|async as url'>
+  <div class='wrapper' *ngIf='(notice$|async)?.Url as url'>
     <iframe [src]="url"></iframe>
   </div>
 </ion-content>
