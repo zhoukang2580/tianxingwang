@@ -1,4 +1,7 @@
 export class LanguageHelper {
+  static getCloseTip(): string {
+    return "X";
+  }
   static getHistoryCitiesTip(): string {
     return "历史";
   }
