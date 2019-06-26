@@ -250,7 +250,7 @@ export class AppHelper {
     return !window["cordova"];
   }
   static isWechatH5() {
-    var ua = window.navigator.userAgent.toLowerCase();
+    const ua = window.navigator.userAgent.toLowerCase();
     if (
       ua.includes("micromessenger") &&
       window["__wxjs_environment"] != "miniprogram"
@@ -261,7 +261,7 @@ export class AppHelper {
     return false;
   }
   static isDingtalkH5() {
-    var ua = window.navigator.userAgent.toLowerCase();
+    const ua = window.navigator.userAgent.toLowerCase();
     if (ua.includes("dingtalk")) {
       return true;
     } else {
@@ -269,7 +269,7 @@ export class AppHelper {
     }
   }
   static isWechatMini() {
-    var ua = window.navigator.userAgent.toLowerCase();
+    const ua = window.navigator.userAgent.toLowerCase();
     if (
       ua.includes("micromessenger") &&
       window["__wxjs_environment"] === "miniprogram"
@@ -318,10 +318,7 @@ export class AppHelper {
       return;
     }
     if (value) {
-      window.localStorage.setItem(
-        key.toLowerCase(),
-        JSON.stringify(value)
-      );
+      window.localStorage.setItem(key.toLowerCase(), JSON.stringify(value));
     } else {
       window.localStorage.setItem(key.toLowerCase(), null);
     }
@@ -349,7 +346,7 @@ export class AppHelper {
     return result;
   }
   static getTicket() {
-    var ticket =
+    const ticket =
       AppHelper.getQueryString("ticket") || AppHelper.getStorage("ticket");
     return ticket == "null" ? "" : ticket;
   }
@@ -382,8 +379,8 @@ export class AppHelper {
     return this._appDomain;
   }
   static getRedirectUrl() {
-    var url = this.getApiUrl();
-    var domain = this.getDomain();
+    const url = this.getApiUrl();
+    const domain = this.getDomain();
     return url.replace(this._appDomain, domain).replace("dev.", "");
   }
   static getApiUrl() {
@@ -437,11 +434,11 @@ export class AppHelper {
   static setQueryParamers() {
     let name: string = "";
     let value: string = "";
-    var str = location.href;
-    var num = str.indexOf("?");
+    let str = location.href;
+    let num = str.indexOf("?");
     str = str.substr(num + 1);
-    var arr = str.split("&");
-    for (var i = 0; i < arr.length; i++) {
+    const arr = str.split("&");
+    for (let i = 0; i < arr.length; i++) {
       num = arr[i].indexOf("=");
       if (num > 0) {
         name = arr[i].substring(0, num);

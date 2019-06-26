@@ -40,12 +40,13 @@ export class TmcGuard implements CanActivate, CanActivateChild {
       .then(s => {
         console.log("tmc guard staff ", s);
         if (s) {
-          if (s.IsConfirmInfo || !s.IsModifyPassword) {
+          if (!s.IsConfirmInfo || !s.IsModifyPassword) {
             this.router.navigate([
               AppHelper.getRoutePath("comfirm-information")
             ]);
             return false;
           }
+          return true;
         }
         return true;
       })

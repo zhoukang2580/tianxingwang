@@ -63,6 +63,7 @@ export interface Credentials {
 export class TmcService {
   private selectedCompanySource: BehaviorSubject<string>;
   private identity: IdentityEntity;
+  private companies: Company[];
   constructor(
     private apiService: ApiService,
     private identityService: IdentityService
@@ -78,11 +79,17 @@ export class TmcService {
   setSelectedCompany(company: string) {
     this.selectedCompanySource.next(company);
   }
-  getCompanies(): Promise<Company[]> {
+  async getCompanies(): Promise<Company[]> {
+    if (this.companies) {
+      return Promise.resolve(this.companies);
+    }
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Tmc-GetIdentityCompany";
     req.Data = {};
-    return this.apiService.getPromiseResponse<Company[]>(req).catch(_ => []);
+    this.companies = await this.apiService
+      .getPromiseResponse<Company[]>(req)
+      .catch(_ => []);
+    return this.companies;
   }
   getCredentials(): Promise<Credentials[]> {
     const req = new RequestEntity();

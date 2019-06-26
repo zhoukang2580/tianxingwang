@@ -17,7 +17,7 @@
       </ion-button>
     </ion-buttons>
     <ng-template #selectCompany>
-      <ion-buttons slot='end' *ngIf="companies?.length">
+      <ion-buttons slot='end' *ngIf="companies?.length>1">
         <ion-button fill='clear' size='small' (click)='onSwitchCompany()'>
           <ion-chip color='success'>
             <ion-label>切换公司</ion-label>

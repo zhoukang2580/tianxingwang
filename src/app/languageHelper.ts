@@ -1,4 +1,22 @@
 export class LanguageHelper {
+  static getSelectCountryTip(): any {
+    return "选择国籍";
+  }
+  static getSelectIssueCountryTip(): any {
+    return "选择发证国籍";
+  }
+  static getComfirmInfoModifyPasswordSuccessTip(): any {
+    return "确认密码成功";
+  }
+  static getComfirmInfoModifyCredentialsSuccessTip(): any {
+    return "确认证件成功";
+  }
+  static getComfirmInfoModifyCredentialsFailureTip(): any {
+    return "确认证件失败";
+  }
+  static getComfirmInfoModifyPasswordFailureTip(): any {
+    return "密码确认失败";
+  }
   static getIdCardTip(): any {
     return "身份证";
   }

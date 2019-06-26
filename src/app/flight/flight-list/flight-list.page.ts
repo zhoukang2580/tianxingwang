@@ -1,5 +1,4 @@
 import { AppHelper } from "src/app/appHelper";
-import { CityService } from "./../select-city/city.service";
 import { animate } from "@angular/animations";
 import { trigger, state, style, transition } from "@angular/animations";
 import { IonContent, IonRefresher, IonInfiniteScroll } from "@ionic/angular";

@@ -5,26 +5,34 @@
     </ion-buttons>
     <ion-title>信息确认</ion-title>
     <ion-buttons slot='end'>
-      <ion-button fill='clear' color='secondary' expand='block'>确认证件</ion-button>
+      <ion-button color='secondary' fill='clear' (click)='maintainCredentials()'>
+        <ion-label>证件维护</ion-label>
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-toolbar padding-start padding-end>请核对您的证件信息：请及时核对您的证件信息，避免耽误行程预订，谢谢！</ion-toolbar>
-  <ion-toolbar padding-start padding-end *ngIf='staff?.IsModifyPassword'>
+  <ion-toolbar padding-start padding-end *ngIf='!staff?.IsModifyPassword'>
     <ion-text color='danger'>您的密码还是初始密码，请及时修改。</ion-text>
     <ion-item>
-      <ion-label position='floating' color='dark'>请输入新密码</ion-label>
-      <ion-input [(ngModel)]='password' placeholder=""></ion-input>
+      <ion-label position='floating' class='label-password'>
+        请输入新密码
+      </ion-label>
+      <ion-input [(ngModel)]='password' type='password'></ion-input>
     </ion-item>
-    <ion-button color='secondary' expand='block' fill='clear' (click)='confirmPassword()'>确认密码</ion-button>
+    <ion-button [style.width.%]='100' color='secondary' expand='block' fill='clear' (click)='confirmPassword()'>确认密码
+    </ion-button>
   </ion-toolbar>
-
+  <ion-toolbar>
+    <ion-row>
+      <ion-col>请核对您的证件信息：请及时核对您的证件信息，避免耽误行程预订，谢谢！</ion-col>
+    </ion-row>
+  </ion-toolbar>
   <ion-grid margin-top *ngFor='let c of credentials;'>
     <ion-row>
       <ion-col>姓名：</ion-col>
-      <ion-col>{{c.LastName}}{{c.FirstName}}</ion-col>
+      <ion-col>{{c.FirstName}}{{c.LastName}}</ion-col>
     </ion-row>
     <ion-row>
       <ion-col>登机名：</ion-col>
@@ -40,11 +48,11 @@
     </ion-row>
     <ion-row>
       <ion-col>出生年月：</ion-col>
-      <ion-col>{{c.Birthday}}</ion-col>
+      <ion-col>{{c.Birthday.substring(0,c?.Birthday.indexOf("T"))}}</ion-col>
     </ion-row>
     <ion-row>
       <ion-col>证件到期日期</ion-col>
-      <ion-col>{{c.ExpirationDate}}</ion-col>
+      <ion-col>{{c.ExpirationDate.substring(0,c?.ExpirationDate.indexOf("T"))}}</ion-col>
     </ion-row>
     <ion-row>
       <ion-col>国籍</ion-col>
@@ -55,4 +63,11 @@
       <ion-col>{{c.IssueCountry}}</ion-col>
     </ion-row>
   </ion-grid>
+  <ion-row>
+    <ion-col text-center>
+      <ion-button margin-top margin-bottom color='secondary' (click)='confirmCredentials()' *ngIf='credentials?.length'>
+        确认证件
+      </ion-button>
+    </ion-col>
+  </ion-row>
 </ion-content>

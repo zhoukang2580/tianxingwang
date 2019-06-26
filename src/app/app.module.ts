@@ -37,7 +37,7 @@ import { IonicStorageModule } from '@ionic/storage';
       backButtonText: "",
       loadingSpinner: "crescent",
       swipeBackEnabled: false,
-      hardwareBackButton: true
+      hardwareBackButton: !true
     }),
     HttpClientModule,
     TranslateModule.forRoot({

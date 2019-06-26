@@ -60,16 +60,22 @@ export interface HrEntity {
 export class HrService {
   private staff: StaffEntity;
   constructor(private apiService: ApiService) {}
-  async getStaff(): Promise<StaffEntity> {
-    if (this.staff) {
+  async getStaff(forceRefresh: boolean = false): Promise<StaffEntity> {
+    if (this.staff && !forceRefresh) {
       return Promise.resolve(this.staff);
     }
     const req = new RequestEntity();
     req.Method = "HrApiUrl-Staff-Get";
-    return this.apiService.getPromiseResponse<StaffEntity>(req).catch(_ => {
-      console.error(_);
-      return null;
-    });
+    return this.apiService
+      .getPromiseResponse<StaffEntity>(req)
+      .then(s => {
+        this.staff = s;
+        return s;
+      })
+      .catch(_ => {
+        console.error(_);
+        return null;
+      });
   }
   async comfirmInfo(data: {
     IsModifyPassword: boolean;
@@ -78,6 +84,7 @@ export class HrService {
     const req = new RequestEntity();
     req.Method = "HrApiUrl-Staff-ComfirmInfo";
     req.Data = data;
+    req.IsShowLoading = true;
     return this.apiService
       .getPromiseResponse<any>(req)
       .then(_ => true)

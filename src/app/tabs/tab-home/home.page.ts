@@ -5,8 +5,7 @@ import { IdentityService } from "src/app/services/identity/identity.service";
 import { ApiService } from "./../../services/api/api.service";
 import { AppHelper } from "src/app/appHelper";
 import { Component, OnInit } from "@angular/core";
-import { Observable, Subject, BehaviorSubject, from } from "rxjs";
-import { LoadingController } from "@ionic/angular";
+import { Observable, Subject, BehaviorSubject } from "rxjs";
 import { ActivatedRoute, Router, NavigationEnd } from "@angular/router";
 import { PayService } from "src/app/services/pay/pay.service";
 import { TmcService } from "src/app/tmc/tmc.service";
@@ -36,7 +35,8 @@ export class HomePage implements OnInit {
   ) {
     this.selectedCompany$ = tmcService.getSelectedCompany();
     route.paramMap.subscribe(p => {
-      console.log(p.keys);
+      // console.log("返回到首页 ",p.keys);
+      this.check();
       if (p.get("selectedCompany")) {
         this.tmcService.setSelectedCompany(p.get("selectedCompany"));
       }
@@ -65,25 +65,26 @@ export class HomePage implements OnInit {
     this.identity$ = this.identityService.getIdentity().pipe(
       shareReplay(),
       tap(id => {
-        console.log("get identity ", id);
+        console.log("home page get identity ", id);
       })
     );
-    this.check();
-    this.router.events.subscribe(evt => {
-      // console.log(evt);
-      if (evt instanceof NavigationEnd) {
-        if (evt.url.includes("tabs/home")) {
-          console.log(evt);
-          this.check();
-        }
-      }
-    });
+    // this.check();
+    // this.router.events.subscribe(evt => {
+    // console.log(evt);
+    //   if (evt instanceof NavigationEnd) {
+    //     if (evt.url.includes("tabs/home")) {
+    //       console.log(evt);
+    //       this.check();
+    //     }
+    //   }
+    // });
     this.getAgentNotices();
   }
   async getAgentNotices() {
     this.agentNotices = await this.cmsService.getAgentNotices(0);
   }
   async check() {
+    console.log("home check");
     try {
       this.apiService.showLoadingView();
       this.companies = await this.tmcService.getCompanies();

@@ -11,16 +11,17 @@ import { MemberModule } from "./member/member.module";
 import { RegisterModule } from "./register/register.module";
 import { AgentModule } from "./agent/agent.module";
 import { TmcModule } from "./tmc/tmc.module";
-import { CmsModule } from './cms/cms.module';
+import { CmsModule } from "./cms/cms.module";
 
 const routes: Routes = [
   {
-    path: "select-city",
-    loadChildren: "./pages/select-city/select-city.module#SelectCityPageModule"
-  },
-  {
     path: "crop-avatar",
     loadChildren: "./pages/crop-avatar/crop-avatar.module#CropAvatarPageModule"
+  },
+  {
+    path: "select-country",
+    loadChildren:
+      "./pages/select-country/select-country.module#SelectCountryPageModule"
   },
   {
     path: "function-test",

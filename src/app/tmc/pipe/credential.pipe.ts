@@ -1,6 +1,6 @@
 import { LanguageHelper } from "./../../languageHelper";
 import { Pipe, PipeTransform } from "@angular/core";
-enum CredentialsType {
+export enum CredentialsType {
   /// <summary>
   /// 身份证
   /// </summary>

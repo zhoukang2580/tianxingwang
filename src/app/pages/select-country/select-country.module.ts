@@ -1,3 +1,4 @@
+import { AppcomponentsModule } from './../../components/appcomponents.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -5,13 +6,12 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { SelectCityPage } from './select-city.page';
-import { ComponentsModule } from './../components/components.module';
+import { SelectCountryPage } from './select-country.page';
 
 const routes: Routes = [
   {
-    path: 'select-city',
-    component: SelectCityPage
+    path: '',
+    component: SelectCountryPage
   }
 ];
 
@@ -21,10 +21,8 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    ComponentsModule
+    AppcomponentsModule
   ],
-  declarations: [SelectCityPage],
-  exports:[SelectCityPage],
-  entryComponents:[SelectCityPage]
+  declarations: [SelectCountryPage]
 })
-export class SelectCityPageModule {}
+export class SelectCountryPageModule {}

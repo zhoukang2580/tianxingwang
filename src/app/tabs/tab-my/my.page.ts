@@ -6,7 +6,7 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { RequestEntity } from "src/app/services/api/Request.entity";
-import { map } from "rxjs/operators";
+import { map, finalize } from "rxjs/operators";
 import { ApiService } from "src/app/services/api/api.service";
 import { ConfigService } from "src/app/services/config/config.service";
 import { NavController } from "@ionic/angular";
@@ -52,23 +52,30 @@ export class MyPage implements OnDestroy, OnInit {
   load() {
     const req = new RequestEntity();
     req.Method = "ApiMemberUrl-Home-Get";
-    let deviceSubscription = this.apiService
+    const deviceSubscription = this.apiService
       .getResponse<PageModel>(req)
-      .pipe(map(r => r.Data))
+      .pipe(
+        map(r => r.Data),
+        finalize(() => {
+          if (deviceSubscription) {
+            setTimeout(() => {
+              deviceSubscription.unsubscribe();
+            }, 1000);
+          }
+        })
+      )
       .subscribe(
         r => {
-          this.Model = r;
-          this.configService.get().then(r => {
-            if (this.Model && !this.Model.HeadUrl) {
-              this.Model.HeadUrl = r.DefaultImageUrl;
-            }
-          });
-        },
-        () => {
-          if (deviceSubscription) {
-            deviceSubscription.unsubscribe();
+          if (r) {
+            this.Model = r;
+            this.configService.get().then(r => {
+              if (this.Model && !this.Model.HeadUrl) {
+                this.Model.HeadUrl = r.DefaultImageUrl;
+              }
+            });
           }
-        }
+        },
+        () => {}
       );
   }
   credentialManagement() {

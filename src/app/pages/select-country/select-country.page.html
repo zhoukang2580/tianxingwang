@@ -1,27 +1,31 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot='start'>
+    <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-title>公告</ion-title>
+    <ion-title>{{title}}</ion-title>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-searchbar debounce="300" [(ngModel)]='keyword' animated (ionChange)='onIonChange()'></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh()">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh(true)">
     <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="下拉刷新" refreshingSpinner="circles"
       refreshingText="正在加载...">
     </ion-refresher-content>
   </ion-refresher>
   <ion-list *ngIf='!loading else loadingTemp'>
-      <ng-container *ngIf='bulletines.length;else nomoredata'>
-        <ion-item *ngFor='let notice of bulletines' [attr.detail]='notice?.Url' (click)='viewNoticeUrl(notice)'>
-          <ion-label text-nowrap>{{notice?.Title}}</ion-label>
-        </ion-item>
-        <ng-template #nomoredata>
-          <app-or-comp>暂无数据</app-or-comp>
-        </ng-template>
-      </ng-container>
+    <ng-container *ngIf='viewModelItems.length else nodata'>
+      <ion-item *ngFor='let item of viewModelItems;' (click)='onItemClick(item)' detail>
+        {{item?.Name}}
+      </ion-item>
+    </ng-container>
+    <ng-template #nodata>
+      <app-or-comp>暂无数据</app-or-comp>
+    </ng-template>
   </ion-list>
   <ng-template #loadingTemp>
     正在加载...

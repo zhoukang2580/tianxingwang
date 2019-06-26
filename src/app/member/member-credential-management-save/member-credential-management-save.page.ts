@@ -1,20 +1,26 @@
-import { QueryList, ViewChildren } from '@angular/core';
-import { AppHelper } from 'src/app/appHelper';
-import { ApiService } from 'src/app/services/api/api.service';
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
-import { LanguageHelper } from 'src/app/languageHelper';
-import { SelectCityService } from 'src/app/pages/select-city/select-city.service';
-import { ValidatorService } from 'src/app/services/validator/validator.service';
+import { QueryList, ViewChildren } from "@angular/core";
+import { AppHelper } from "src/app/appHelper";
+import { ApiService } from "src/app/services/api/api.service";
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  AfterViewInit
+} from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { Router, ActivatedRoute } from "@angular/router";
+import { LanguageHelper } from "src/app/languageHelper";
+import { ValidatorService } from "src/app/services/validator/validator.service";
 
 @Component({
-  selector: 'app-member-credential-management-save',
-  templateUrl: './member-credential-management-save.page.html',
-  styleUrls: ['./member-credential-management-save.page.scss'],
+  selector: "app-member-credential-management-save",
+  templateUrl: "./member-credential-management-save.page.html",
+  styleUrls: ["./member-credential-management-save.page.scss"]
 })
-export class MemberCredentialManagementSavePage implements OnInit, AfterViewInit {
-  identityTypes: { name: string; value: string; id: string; }[] = [];
+export class MemberCredentialManagementSavePage
+  implements OnInit, AfterViewInit {
+  identityTypes: { name: string; value: string; id: string }[] = [];
   formGroup: FormGroup;
   identityNationality: any;
   issueNationality: any;
@@ -23,21 +29,13 @@ export class MemberCredentialManagementSavePage implements OnInit, AfterViewInit
   @ViewChild("f")
   formEle: ElementRef<HTMLFormElement>;
   @ViewChildren("input")
-  inputs:QueryList<HTMLInputElement>;
+  inputs: QueryList<HTMLInputElement>;
   constructor(
     private fb: FormBuilder,
-    private cityService: SelectCityService,
     private validatorService: ValidatorService,
-    private apiService: ApiService, private router: Router) {
-    this.cityService.getSelectedItemObservable().subscribe(cityItem => {
-      if (this.requestCode === "identityNationality") {
-        this.identityNationality = cityItem;
-      }
-      if (this.requestCode === 'issueNationality') {
-        this.issueNationality = cityItem;
-      }
-    })
-  }
+    private apiService: ApiService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.identityTypes = [
@@ -80,12 +78,12 @@ export class MemberCredentialManagementSavePage implements OnInit, AfterViewInit
         id: "8",
         name: "其他",
         value: "其他"
-      },
-    ]
+      }
+    ];
     this.formGroup = this.fb.group({
       identityType: [null, Validators.required],
       identityNationality: [null, Validators.required],
-      issueNationality: [null, Validators.required],
+      issueNationality: [null, Validators.required]
     });
   }
   addCredential() {
@@ -107,17 +105,18 @@ export class MemberCredentialManagementSavePage implements OnInit, AfterViewInit
     this.initializeValidate();
   }
   initializeValidate() {
-    this.validatorService.initialize("Beeant.Domain.Entities.Member.CredentialsEntity", "Add", this.formEle.nativeElement);
+    this.validatorService.initialize(
+      "Beeant.Domain.Entities.Member.CredentialsEntity",
+      "Add",
+      this.formEle.nativeElement
+    );
   }
   selectIdentityNationality() {
     this.requestCode = "identityNationality";
-    this.cityService.extra = { title: this.title, displayField: "Name", backRoute: this.router.url };
     this.router.navigate([AppHelper.getRoutePath("select-city")]);
   }
   selectIssueNationality() {
-    this.cityService.extra = { title: this.title, displayField: "Name", backRoute: this.router.url };
     this.requestCode = "issueNationality";
     this.router.navigate([AppHelper.getRoutePath("select-city")]);
   }
-
 }

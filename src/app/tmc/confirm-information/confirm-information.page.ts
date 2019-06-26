@@ -6,6 +6,7 @@ import { HrService, StaffEntity } from "./../../hr/hr.service";
 import { Component, OnInit } from "@angular/core";
 import { Credentials } from "../tmc.service";
 import { AppHelper } from "src/app/appHelper";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-comfirm-info",
@@ -19,7 +20,8 @@ export class ComfirmInformationPage implements OnInit {
   constructor(
     private hrService: HrService,
     private apiService: ApiService,
-    private tmcService: TmcService
+    private tmcService: TmcService,
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -36,8 +38,25 @@ export class ComfirmInformationPage implements OnInit {
       AppHelper.alert(LanguageHelper.getEnterPasswordTip());
       return;
     }
+    const ok = await this.modifyPassword({
+      OldPassword: this.staff.Password,
+      NewPassword: this.password,
+      SurePassword: this.password
+    });
+    if (ok) {
+      const r = await this.hrService.comfirmInfoModifyPassword();
+      if (r) {
+        AppHelper.toast(
+          LanguageHelper.getComfirmInfoModifyPasswordSuccessTip()
+        );
+      } else {
+        AppHelper.toast(
+          LanguageHelper.getComfirmInfoModifyPasswordFailureTip()
+        );
+      }
+    }
   }
-  modifyPassword(passwordModel: {
+  private modifyPassword(passwordModel: {
     /// <summary>
     /// 老密码
     /// </summary>
@@ -54,6 +73,51 @@ export class ComfirmInformationPage implements OnInit {
     const req = new RequestEntity();
     req.Data = JSON.stringify(passwordModel);
     req.Method = `ApiPasswordUrl-Password-Modify`;
-    return this.apiService.getPromiseResponse(req).catch(_ => false);
+    return this.apiService
+      .getPromiseResponse(req)
+      .then(_ => {
+        return true;
+      })
+      .catch(e => {
+        AppHelper.alert(e);
+        return false;
+      });
+  }
+  async confirmCredentials() {
+    try {
+      const ok = await this.hrService.comfirmInfoModifyCredentials();
+      if (ok) {
+        this.staff = await this.hrService.getStaff(true);
+        if (
+          this.staff &&
+          this.staff.IsConfirmInfo &&
+          this.staff.IsModifyPassword
+        ) {
+          AppHelper.alert(
+            LanguageHelper.getComfirmInfoModifyCredentialsSuccessTip(),
+            true,
+            LanguageHelper.getConfirmTip(),
+          ).then(confirm => {
+            if (confirm) {
+              this.router.navigate([""]); // 回到首页
+            }
+          });
+        }
+      } else {
+        AppHelper.alert(
+          LanguageHelper.getComfirmInfoModifyCredentialsFailureTip()
+        );
+      }
+    } catch {}
+  }
+  maintainCredentials() {
+    this.router.navigate([
+      AppHelper.getRoutePath("member-credential-management")
+    ]);
+    // if (this.credentials.length) {
+    //   this.router.navigate([AppHelper.getRoutePath("")]);
+    // } else {
+    //   this.router.navigate([AppHelper.getRoutePath("member-credential-management")]);
+    // }
   }
 }

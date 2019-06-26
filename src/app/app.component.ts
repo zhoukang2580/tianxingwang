@@ -77,7 +77,7 @@ export class AppComponent
   ) {
     // console.log(this.router.config);
     this.openSelectCity$ = flightService.getOpenCloseSelectCityPageSources();
-    this.loading$=apiService.getLoading();
+    this.loading$ = apiService.getLoading();
     // if (!this.checkWechatOpenId() || !this.checkDingtalkUnionid()) return;
     if (this.platform.is("ios")) {
       AppHelper.setDeviceName("ios");
@@ -207,7 +207,9 @@ export class AppComponent
       // this.router.navigate([AppHelper.getRoutePath("account-device")]);
       // this.router.navigate([AppHelper.getRoutePath("change-password-by-msm-code")]);
       // this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
-      // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management')]);
+      this.router.navigate([
+        AppHelper.getRoutePath("member-credential-management")
+      ]);
       // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management-add')]);
       // this.router.navigate([AppHelper.getRoutePath('book-flight')]);
       // this.router.navigate([AppHelper.getRoutePath("select-customer")]);
@@ -218,28 +220,8 @@ export class AppComponent
     let lastClickTime = 0;
     console.log("backbutton url = " + this.router.url);
     this.platform.backButton.subscribe(async () => {
-      try {
-        const element = await this.actionSheetCtrl.getTop();
-        const aEle = await this.alertController.getTop();
-        const lEle = await this.loadingCtrl.getTop();
-        if (element) {
-          element.dismiss();
-          console.log("关闭actionsheet");
-          return;
-        }
-        if (aEle) {
-          aEle.dismiss();
-          console.log("关闭alert");
-          return;
-        }
-        if (lEle) {
-          lEle.dismiss();
-          console.log("关闭loading");
-          return;
-        }
-      } catch (error) {
-        console.error(error);
-      }
+      await AppHelper.dismissLayer();
+      this.apiService.hideLoadingView();
       if (
         this.router.url.includes("login") ||
         this.router.url.includes("tabs")
@@ -251,7 +233,7 @@ export class AppComponent
           lastClickTime = Date.now();
         }
       } else {
-        // this.navCtrl.pop();
+        this.navCtrl.back();
         // window.history.back();
       }
     });

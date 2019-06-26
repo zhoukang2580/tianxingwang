@@ -66,7 +66,12 @@ export class ApiService {
     return this.loadingSubject.asObservable().pipe(delay(0));
   }
   setLoading(loading: boolean, isShowLoading: boolean) {
-    this.loadingSubject.next(loading && isShowLoading);
+    this.loadingSubject.next(loading);
+    if (loading && isShowLoading) {
+      this.showLoadingView();
+    } else {
+      this.hideLoadingView();
+    }
   }
   showLoadingView() {
     this.loadingSubject.next(true);

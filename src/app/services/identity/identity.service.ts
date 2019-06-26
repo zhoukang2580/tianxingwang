@@ -4,7 +4,7 @@ import { Injectable } from "@angular/core";
 import { of, throwError, Observable, Subject, BehaviorSubject } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { map, catchError, finalize, switchMap } from "rxjs/operators";
+import { map, catchError, finalize, switchMap, tap } from "rxjs/operators";
 import { IResponse } from "../api/IResponse";
 import { ExceptionEntity } from "../log/exception.entity";
 
@@ -33,10 +33,21 @@ export class IdentityService {
     this.setIdentity(this._IdentityEntity);
   }
   getIdentity(): Observable<IdentityEntity> {
+    if (
+      this._IdentityEntity &&
+      this._IdentityEntity.Id &&
+      this._IdentityEntity.Ticket
+    ) {
+      return of(this._IdentityEntity);
+    }
     return this.identitySource.asObservable().pipe(
       switchMap(r => {
         if (!r || !r.Ticket || !r.Id) {
-          return this.loadIdentityEntity();
+          return this.loadIdentityEntity().pipe(
+            tap(r => {
+              this._IdentityEntity = r;
+            })
+          );
         }
         return of(r);
       })

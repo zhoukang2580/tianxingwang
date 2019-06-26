@@ -15,7 +15,7 @@ import {
 import { Observable, of } from "rxjs";
 import { IdentityService } from "../services/identity/identity.service";
 import { AlertController, LoadingController } from "@ionic/angular";
-import { finalize, switchMap, map } from "rxjs/operators";
+import { finalize, switchMap, map, catchError } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root"
@@ -58,7 +58,8 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
     // }
     // return true;
     return this.identityService.getIdentity().pipe(
-      map(identity => {
+      catchError(e => of(null)),
+      map((identity: IdentityEntity) => {
         // console.log("canload route ,", route);
         if (!identity || !identity.Ticket) {
           this.loginService.setToPageRouter(state.url);
