@@ -20,7 +20,7 @@
   <ion-list *ngIf='!loading else loadingTemp'>
     <ng-container *ngIf='viewModelItems.length else nodata'>
       <ion-item *ngFor='let item of viewModelItems;' (click)='onItemClick(item)' detail>
-        {{item?.Name}}
+        {{item?.Name}}--<ion-text>{{item?.Code}}</ion-text>
       </ion-item>
     </ng-container>
     <ng-template #nodata>

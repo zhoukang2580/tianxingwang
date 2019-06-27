@@ -1,44 +1,53 @@
 export class LanguageHelper {
-  static getSelectCountryTip(): any {
+  static getModifyUnSavedTip() {
+    return "修改尚未保存，是否确定离开？";
+  }
+  static getValidateRulesEmptyTip(): string {
+    return "验证规则不存在";
+  }
+  static getSelectCountryTip(): string {
     return "选择国籍";
   }
-  static getSelectIssueCountryTip(): any {
+  static getSelectIssueCountryTip(): string {
     return "选择发证国籍";
   }
-  static getComfirmInfoModifyPasswordSuccessTip(): any {
+  static getInfoModifySuccessTip(): string {
+    return "信息修改成功";
+  }
+  static getComfirmInfoModifyPasswordSuccessTip(): string {
     return "确认密码成功";
   }
-  static getComfirmInfoModifyCredentialsSuccessTip(): any {
+  static getComfirmInfoModifyCredentialsSuccessTip(): string {
     return "确认证件成功";
   }
-  static getComfirmInfoModifyCredentialsFailureTip(): any {
+  static getComfirmInfoModifyCredentialsFailureTip(): string {
     return "确认证件失败";
   }
-  static getComfirmInfoModifyPasswordFailureTip(): any {
+  static getComfirmInfoModifyPasswordFailureTip(): string {
     return "密码确认失败";
   }
-  static getIdCardTip(): any {
+  static getIdCardTip(): string {
     return "身份证";
   }
-  static getPassportTip(): any {
+  static getPassportTip(): string {
     return "护照";
   }
-  static getHmPassTip(): any {
+  static getHmPassTip(): string {
     return "港澳通行证";
   }
-  static getTwPassTip(): any {
+  static getTwPassTip(): string {
     return "台湾通行证";
   }
-  static getTaiwanTip(): any {
+  static getTaiwanTip(): string {
     return "台胞证";
   }
-  static getHvPassTip(): any {
+  static getHvPassTip(): string {
     return "回乡证";
   }
-  static getOtherTip(): any {
+  static getOtherTip(): string {
     return "其他证件";
   }
-  static getTaiwanEpTip(): any {
+  static getTaiwanEpTip(): string {
     return "入台证";
   }
   static getCloseTip(): string {
@@ -98,10 +107,10 @@ export class LanguageHelper {
   static getTheDayAfterTomorrowTip() {
     return "后天";
   }
-  static getApkReadyToBeInstalledTip(): any {
+  static getApkReadyToBeInstalledTip(): string {
     return "App 下载完毕，立即安装更新？";
   }
-  static getApkUpdateMessageTip(): any {
+  static getApkUpdateMessageTip(): string {
     return "应用有升级更新，是否立即升级更新？";
   }
   static getApkDownloadedTip() {
@@ -205,6 +214,9 @@ export class LanguageHelper {
   }
   static getConfirmTip() {
     return "确定";
+  }
+  static getDeleteTip() {
+    return "确定删除";
   }
   static getAppDoubleClickExit() {
     return "再按一次退出应用";

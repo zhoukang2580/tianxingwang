@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{message?.Title}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ng-container *ngIf='!showDetail;else detailTempl'>
+    <ion-label>
+      标题：{{message?.Title}}
+    </ion-label>
+    <ion-label text-wrap>{{message?.Detail}}</ion-label>
+    <ion-button color='secondary' *ngIf='message?.Url' expand='block' (click)="onShowDetail()">显示详情</ion-button>
+  </ng-container>
+  <ng-template #detailTempl>
+    <div class='wrapper' *ngIf='(url$|async) as url'>
+      <iframe [src]="url"></iframe>
+    </div>
+  </ng-template>
+</ion-content>

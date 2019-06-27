@@ -5,12 +5,13 @@ import { TabsPage } from "./tabs.page";
 import { IonicModule } from "@ionic/angular";
 import { CommonModule } from "@angular/common";
 import { AgentGuard } from "../guards/agent.guard";
+import { TmcGuard } from '../guards/tmc.guard';
 
 const routes: Routes = [
   {
     path: "tabs",
     component: TabsPage,
-    canActivateChild: [AuthorityGuard, AgentGuard],
+    canActivateChild: [AuthorityGuard, AgentGuard,TmcGuard],
     children: [
       {
         path: "",

@@ -9,6 +9,7 @@ import { ScanComponent } from "./scan/scan.component";
 import { LoadingComponent } from "./loading/loading.component";
 import { TimelineComponent } from "./timeline/timeline.component";
 import { TimelineItemComponent } from "./timeline-item/timeline-item.component";
+import { MessageComponent } from './message/message.component';
 @NgModule({
   declarations: [
     OrComponent,
@@ -18,10 +19,12 @@ import { TimelineItemComponent } from "./timeline-item/timeline-item.component";
     AppUpdateComponent,
     TimelineComponent,
     TimelineItemComponent,
-    LoadingComponent
+    LoadingComponent,
+    MessageComponent
   ],
   imports: [CommonModule, IonicModule],
   exports: [
+    MessageComponent,
     OrComponent,
     PinchZoomComponent,
     SlidvalidateComponent,

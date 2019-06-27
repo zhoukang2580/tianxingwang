@@ -9,6 +9,7 @@ interface Company {
   Name: string;
 }
 export interface Credentials {
+  isModified?: boolean;
   Id: string; //
   AccountId: string; //
   /// <summary>
@@ -93,6 +94,7 @@ export class TmcService {
   }
   getCredentials(): Promise<Credentials[]> {
     const req = new RequestEntity();
+    req.IsShowLoading=true;
     req.Method = "TmcApiHomeUrl-Credentials-List";
     req.Data = {
       accountId: (this.identity && this.identity.Id) || ""
@@ -101,5 +103,26 @@ export class TmcService {
       .getPromiseResponse<{ Credentials: Credentials[] }>(req)
       .then(r => r.Credentials)
       .catch(_ => []);
+  }
+  addCredentials(c: Credentials) {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = "TmcApiHomeUrl-Credentials-Add";
+    req.Data = c;
+    return this.apiService.getPromiseResponse<any>(req);
+  }
+  modifyCredentials(c: Credentials) {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = "TmcApiHomeUrl-Credentials-Modify";
+    req.Data = c;
+    return this.apiService.getPromiseResponse<any>(req);
+  }
+  removeCredentials(c: Credentials) {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = "TmcApiHomeUrl-Credentials-Remove";
+    req.Data = c;
+    return this.apiService.getPromiseResponse<any>(req);
   }
 }

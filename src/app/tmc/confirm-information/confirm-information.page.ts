@@ -27,25 +27,25 @@ export class ComfirmInformationPage implements OnInit {
   async ngOnInit() {
     this.staff = await this.hrService.getStaff();
     this.credentials = await this.tmcService.getCredentials();
-    // this.credentials = [
-    //   ...this.credentials,
-    //   ...this.credentials,
-    //   ...this.credentials
-    // ];
+    console.log("ComfirmInformationPage",this.staff);
   }
   async confirmPassword() {
     if (!this.password) {
       AppHelper.alert(LanguageHelper.getEnterPasswordTip());
       return;
     }
+    if (!this.staff) {
+      this.staff = await this.hrService.getStaff(true);
+    }
     const ok = await this.modifyPassword({
-      OldPassword: this.staff.Password,
+      OldPassword: this.staff && this.staff.Password || "",
       NewPassword: this.password,
       SurePassword: this.password
     });
     if (ok) {
       const r = await this.hrService.comfirmInfoModifyPassword();
       if (r) {
+        this.staff = await this.hrService.getStaff(true);
         AppHelper.toast(
           LanguageHelper.getComfirmInfoModifyPasswordSuccessTip()
         );
@@ -71,8 +71,9 @@ export class ComfirmInformationPage implements OnInit {
     SurePassword: string;
   }) {
     const req = new RequestEntity();
-    req.Data = JSON.stringify(passwordModel);
+    req.Data = passwordModel;
     req.Method = `ApiPasswordUrl-Password-Modify`;
+    req.IsShowLoading = true;
     return this.apiService
       .getPromiseResponse(req)
       .then(_ => {
@@ -96,7 +97,7 @@ export class ComfirmInformationPage implements OnInit {
           AppHelper.alert(
             LanguageHelper.getComfirmInfoModifyCredentialsSuccessTip(),
             true,
-            LanguageHelper.getConfirmTip(),
+            LanguageHelper.getConfirmTip()
           ).then(confirm => {
             if (confirm) {
               this.router.navigate([""]); // 回到首页

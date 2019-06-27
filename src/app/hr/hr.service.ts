@@ -66,9 +66,11 @@ export class HrService {
     }
     const req = new RequestEntity();
     req.Method = "HrApiUrl-Staff-Get";
+    req.IsShowLoading=true;
     return this.apiService
       .getPromiseResponse<StaffEntity>(req)
       .then(s => {
+        console.log('staff ',s);
         this.staff = s;
         return s;
       })

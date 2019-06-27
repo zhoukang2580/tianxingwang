@@ -62,12 +62,13 @@
       <ion-col>发证国籍</ion-col>
       <ion-col>{{c.IssueCountry}}</ion-col>
     </ion-row>
+    <ion-row>
+        <ion-col text-center>
+          <ion-button margin-top margin-bottom color='secondary' (click)='confirmCredentials(c)' *ngIf='credentials?.length'>
+            确认证件
+          </ion-button>
+        </ion-col>
+      </ion-row>
   </ion-grid>
-  <ion-row>
-    <ion-col text-center>
-      <ion-button margin-top margin-bottom color='secondary' (click)='confirmCredentials()' *ngIf='credentials?.length'>
-        确认证件
-      </ion-button>
-    </ion-col>
-  </ion-row>
+  
 </ion-content>

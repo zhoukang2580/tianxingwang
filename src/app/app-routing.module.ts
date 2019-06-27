@@ -15,6 +15,16 @@ import { CmsModule } from "./cms/cms.module";
 
 const routes: Routes = [
   {
+    path: "message-list",
+    loadChildren:
+      "./pages/message-list/message-list.module#MessageListPageModule"
+  },
+  {
+    path: "message-detail",
+    loadChildren:
+      "./pages/message-detail/message-detail.module#MessageDetailPageModule"
+  },
+  {
     path: "crop-avatar",
     loadChildren: "./pages/crop-avatar/crop-avatar.module#CropAvatarPageModule"
   },

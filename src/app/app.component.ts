@@ -1,3 +1,7 @@
+import {
+  MessageModel,
+  MessageService
+} from "./services/message/message.service";
 import { FlightService } from "./flight/flight.service";
 
 import {
@@ -56,6 +60,7 @@ export interface App {
 export class AppComponent
   implements AfterViewInit, AfterContentInit, OnChanges {
   app: App;
+  message$: Observable<MessageModel>;
   openSelectCity$: Observable<boolean>;
   loading$: Observable<boolean>;
   @ContentChildren("img") images: QueryList<HTMLImageElement>;
@@ -73,9 +78,11 @@ export class AppComponent
     private actionSheetCtrl: ActionSheetController,
     private loadingCtrl: LoadingController,
     private http: HttpClient,
-    flightService: FlightService
+    flightService: FlightService,
+    messageService: MessageService
   ) {
     // console.log(this.router.config);
+    this.message$ = messageService.getMessage();
     this.openSelectCity$ = flightService.getOpenCloseSelectCityPageSources();
     this.loading$ = apiService.getLoading();
     // if (!this.checkWechatOpenId() || !this.checkDingtalkUnionid()) return;
@@ -90,6 +97,18 @@ export class AppComponent
     AppHelper.setToastController(this.toastController);
     AppHelper.setModalController(this.modalController);
     this.initializeApp();
+    this.platform.ready().then(() => {
+      this.splashScreen.show();
+      console.log(`platform ready`);
+      this.app = navigator["app"];
+      this.statusBar.styleDefault();
+      if (AppHelper.isApp() && this.platform.is("android")) {
+        setTimeout(async () => {
+          this.splashScreen.hide();
+          // console.log(`uuid = ${await AppHelper.getUUID()}`);
+        }, 5000);
+      }
+    });
   }
   ngOnChanges() {
     console.log("ngOnChanges", this.images);
@@ -182,18 +201,6 @@ export class AppComponent
     } else {
       this.router.navigate([AppHelper.getRoutePath("")]);
     }
-    this.platform.ready().then(() => {
-      this.splashScreen.show();
-      console.log(`platform ready`);
-      this.app = navigator["app"];
-      this.statusBar.styleDefault();
-      if (AppHelper.isApp() && this.platform.is("android")) {
-        setTimeout(async () => {
-          this.splashScreen.hide();
-          // console.log(`uuid = ${await AppHelper.getUUID()}`);
-        }, 5000);
-      }
-    });
   }
   private jumpToRoute(route: string) {
     return this.router.navigate([AppHelper.getRoutePath(route)]).then(() => {
@@ -208,7 +215,7 @@ export class AppComponent
       // this.router.navigate([AppHelper.getRoutePath("change-password-by-msm-code")]);
       // this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
       this.router.navigate([
-        AppHelper.getRoutePath("member-credential-management")
+        // AppHelper.getRoutePath("member-credential-management")
       ]);
       // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management-add')]);
       // this.router.navigate([AppHelper.getRoutePath('book-flight')]);
