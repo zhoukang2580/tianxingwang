@@ -19,7 +19,8 @@ export class MessageDetailPage implements OnInit {
       const m = p.get("message");
       if (m) {
         this.message = JSON.parse(m);
-        if (this.message.Url) {
+        if (this.message&&this.message.Url) {
+          this.showDetail=false;
           this.message.Url = this.message.Url.includes("?")
             ? `${this.message.Url}&ticket=${AppHelper.getTicket()}`
             : `${this.message.Url}?ticket=${AppHelper.getTicket()}`;

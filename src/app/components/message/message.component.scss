@@ -1,4 +1,5 @@
 :host {
+  transform: translateY(calc(10px + var(--ion-safe-area-bottom, 0px)));
   &.open {
     border: 1px solid transparent;
     padding: 0.5em 1em;
@@ -6,13 +7,23 @@
   }
   height: 4em;
   max-height: 5em;
-  background-color: rgba(0, 0, 0, 0.72);
-  color: white;
-  border-radius: 4px;
+  background-color: #f2f2f2cc;
+  color: #262626;
+  border-radius: 1em;
   position: fixed;
   top: 0;
   padding: 0 1em;
   left: 1em;
   right: 1em;
   z-index: 400002;
+}
+.detail{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width:100%;
+}
+ion-item {
+  --background: transparent;
+  background-color: transparent;
 }

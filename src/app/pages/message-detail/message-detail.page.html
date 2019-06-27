@@ -9,11 +9,13 @@
 
 <ion-content>
   <ng-container *ngIf='!showDetail;else detailTempl'>
-    <ion-label>
+    <h5>
       标题：{{message?.Title}}
-    </ion-label>
-    <ion-label text-wrap>{{message?.Detail}}</ion-label>
-    <ion-button color='secondary' *ngIf='message?.Url' expand='block' (click)="onShowDetail()">显示详情</ion-button>
+    </h5>
+    <div class='detail'>
+        {{message?.Detail}}
+    </div>
+    <ion-button margin-top color='secondary' *ngIf='message?.Url' expand='block' (click)="onShowDetail()">显示详情</ion-button>
   </ng-container>
   <ng-template #detailTempl>
     <div class='wrapper' *ngIf='(url$|async) as url'>

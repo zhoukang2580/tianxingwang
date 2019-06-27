@@ -18,7 +18,6 @@ import {
   transition,
   animate
 } from "@angular/animations";
-import { Subject, BehaviorSubject } from "rxjs";
 
 @Component({
   selector: "app-message",
@@ -36,12 +35,14 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
   timeoutid: any;
   @HostBinding("@openclose")
   @HostBinding("class.open")
-  open=false;
+  open = false;
   @Input() message: MessageModel;
   constructor(private router: Router) {}
-  ngOnInit() {}
+  ngOnInit() {
+  }
   @HostListener("click")
   goToDetail() {
+    this.open=false;
     this.router.navigate([AppHelper.getRoutePath("message-detail")], {
       queryParams: { message: JSON.stringify(this.message) }
     });
