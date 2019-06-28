@@ -9,7 +9,7 @@ const app = new koa();
 app.use(koa_static('.'));
  
 router.get('/geticonfont', function (ctx, next){
-    let arr = fs.readdirSync(path.join(__dirname,'../','../','../','resources','svgs'));
+    let arr = fs.readdirSync(path.join(__dirname,'../../../gulp-iconfont-gen/svgs'));
     let tmp = [];
     arr.forEach(item=>{
         tmp.push(item.split('.')[0])
@@ -24,5 +24,5 @@ router.get('/geticonfont', function (ctx, next){
 app.use(router.routes()).use(router.allowedMethods());
  
 app.listen('8097', function (){
-    console.log('listening 8097');
+    console.log('listening on http://localhost:8097');
 })
