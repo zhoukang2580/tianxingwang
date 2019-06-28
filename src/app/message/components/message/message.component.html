@@ -1,0 +1,22 @@
+<div *ngIf='open' class="toast-wrapper">
+  <ion-item lines='none'>
+    <ion-label no-margin no-padding>
+      <h4>
+        <ion-icon name="notifications" color='secondary'></ion-icon>
+        {{message?.Title}}
+        <ion-text margin-start>{{message?.InsertTime}}</ion-text>
+      </h4>
+      <p>
+        {{message?.Detail}}
+      </p>
+    </ion-label>
+  </ion-item>
+  <!-- <div class="toast-wrapper toast-bottom"
+    style="transform: translateY(calc(10px + var(--ion-safe-area-bottom, 0px))) ;">
+    <div class="toast-container">
+      <div class="toast-content">
+        <div class="toast-message">this.message.Detail</div>
+      </div>
+    </div>
+  </div> -->
+</div>

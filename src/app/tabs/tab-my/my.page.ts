@@ -1,3 +1,4 @@
+import { MessageService } from "./../../message/message.service";
 import { AppHelper } from "src/app/appHelper";
 import { Component, OnInit } from "@angular/core";
 
@@ -10,7 +11,7 @@ import { map, finalize } from "rxjs/operators";
 import { ApiService } from "src/app/services/api/api.service";
 import { ConfigService } from "src/app/services/config/config.service";
 import { NavController } from "@ionic/angular";
-import { Subscription } from "rxjs";
+import { Subscription, Observable } from "rxjs";
 type PageModel = {
   Name: string;
   RealName: string;
@@ -27,15 +28,26 @@ export class MyPage implements OnDestroy, OnInit {
   Model: PageModel;
   defaultAvatar = AppHelper.getDefaultAvatar();
   subscription = Subscription.EMPTY;
+  msgCount$: Observable<number>;
   constructor(
     private router: Router,
     private identityService: IdentityService,
     private configService: ConfigService,
-    private apiService: ApiService
-  ) {}
+    private apiService: ApiService,
+    route: ActivatedRoute,
+    messageService: MessageService
+  ) {
+    route.paramMap.subscribe(_ => {
+      this.msgCount$ = messageService.getMsgCount();
+    });
+  }
   onSettings() {
     this.router.navigate([AppHelper.getRoutePath("account-setting")]);
   }
+  goTomessageList() {
+    this.router.navigate([AppHelper.getRoutePath("message-list")]);
+  }
+
   ngOnInit() {
     this.Model = {
       Name: "",

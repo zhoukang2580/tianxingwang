@@ -34,6 +34,13 @@
     </ion-item>
   </ion-list>
   <ion-list>
+    <ion-item (click)="goTomessageList()" detail>
+      <ion-icon name="cog" color="dark"></ion-icon>
+      <ion-label>消息</ion-label>
+      <ion-badge color="danger" *ngIf='msgCount$|async as count'>{{count}}</ion-badge>
+    </ion-item>
+  </ion-list>
+  <ion-list>
     <ion-item (click)="onSettings()" detail>
       <ion-icon name="cog" color="dark"></ion-icon>
       <ion-label>设置</ion-label>

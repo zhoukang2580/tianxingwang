@@ -68,4 +68,4 @@ import { DirectivesModule } from '../directives/directives.module';
   ],
   entryComponents: [FlyFilterComponent]
 })
-export class ComponentsModule {}
+export class FlightComponentsModule {}

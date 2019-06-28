@@ -7,15 +7,17 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content padding>
   <ng-container *ngIf='!showDetail;else detailTempl'>
-    <h5>
-      标题：{{message?.Title}}
-    </h5>
+    <h3 padding-start no-margin>
+      {{message?.Title}}
+    </h3>
+    <h6 padding-start>{{message?.InsertTime}}</h6>
     <div class='detail'>
-        {{message?.Detail}}
+      {{message?.Detail}}
     </div>
-    <ion-button margin-top color='secondary' *ngIf='message?.Url' expand='block' (click)="onShowDetail()">显示详情</ion-button>
+    <ion-button margin-top color='secondary' *ngIf='message?.Url' expand='block' (click)="onShowDetail()">显示详情
+    </ion-button>
   </ng-container>
   <ng-template #detailTempl>
     <div class='wrapper' *ngIf='(url$|async) as url'>

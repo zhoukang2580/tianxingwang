@@ -1,7 +1,7 @@
 import {
   MessageModel,
   MessageService
-} from "./services/message/message.service";
+} from "./message/message.service";
 import { FlightService } from "./flight/flight.service";
 
 import {
@@ -215,7 +215,7 @@ export class AppComponent
       // this.router.navigate([AppHelper.getRoutePath("change-password-by-msm-code")]);
       // this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
       this.router.navigate([
-        // AppHelper.getRoutePath("member-credential-management")
+        AppHelper.getRoutePath("message-detail")
       ]);
       // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management-add')]);
       // this.router.navigate([AppHelper.getRoutePath('book-flight')]);

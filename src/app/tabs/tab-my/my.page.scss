@@ -3,7 +3,7 @@ ion-thumbnail {
 }
 
 .account-type {
-  font-size   : 0.7rem;
+  font-size: 0.7rem;
   padding-left: 0.5em;
 }
 
@@ -11,9 +11,13 @@ ion-list {
   &:first-child ion-item {
     padding: 0.5em 0;
   }
-  ion-item{
-    ion-icon + ion-label{
+  ion-item {
+    ion-icon + ion-label {
       padding-left: 1em;
     }
   }
+}
+
+ion-badge {
+  color: white;
 }

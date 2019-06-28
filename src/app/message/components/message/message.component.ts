@@ -1,6 +1,7 @@
-import { AppHelper } from "./../../appHelper";
+import { AppHelper } from "../../../appHelper";
 import { Router } from "@angular/router";
-import { MessageModel } from "./../../services/message/message.service";
+import { MessageModel } from "../../message.service";
+import * as moment from "moment";
 import {
   Component,
   OnInit,
@@ -38,11 +39,10 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
   open = false;
   @Input() message: MessageModel;
   constructor(private router: Router) {}
-  ngOnInit() {
-  }
+  ngOnInit() {}
   @HostListener("click")
   goToDetail() {
-    this.open=false;
+    this.open = false;
     this.router.navigate([AppHelper.getRoutePath("message-detail")], {
       queryParams: { message: JSON.stringify(this.message) }
     });
@@ -59,6 +59,15 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
         }, 3 * 1000);
       }
     }
+    // this.message = {
+    //   Title: "测试标题",
+    //   Detail:
+    //     "单身快乐军付付付付付付付付付付付付付付付付付付付付付付付付付付付付付付付付付付付寻错木吧吧吧吧吧吧吧吧吧吧吧吧吧吧吧吧吧吧吧不是圣诞节里看风景的三轮车下拉框句",
+    //   Url: "https://www.baidu.com",
+    //   InsertTime: moment().format("YYYY-MM-DD HH:mm"),
+    //   Id: "aaaa",
+    //   IsRead: false
+    // };
   }
   ngOnDestroy() {}
 }

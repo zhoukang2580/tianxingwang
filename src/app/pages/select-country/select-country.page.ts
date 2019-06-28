@@ -23,8 +23,8 @@ export class SelectCountryPage implements OnInit {
   viewModelItems: Country[];
   currentPage = 1;
   pageSize = 10;
-  keyword = "";
   loading = false;
+  keyword = "";
   @ViewChild(IonRefresher) refresher: IonRefresher;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   constructor(

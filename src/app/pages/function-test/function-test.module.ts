@@ -7,7 +7,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { FunctionTestPage } from './function-test.page';
-import { ComponentsModule } from 'src/app/flight/components/components.module';
+import { FlightComponentsModule } from 'src/app/flight/components/components.module';
 
 const routes: Routes = [
   {
@@ -23,7 +23,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes),
     AppcomponentsModule,
-    ComponentsModule,
+    FlightComponentsModule,
   ],
   declarations: [FunctionTestPage]
 })

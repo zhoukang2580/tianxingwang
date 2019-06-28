@@ -12,18 +12,9 @@ import { RegisterModule } from "./register/register.module";
 import { AgentModule } from "./agent/agent.module";
 import { TmcModule } from "./tmc/tmc.module";
 import { CmsModule } from "./cms/cms.module";
+import { MessageModule } from "./message/message.module";
 
 const routes: Routes = [
-  {
-    path: "message-list",
-    loadChildren:
-      "./pages/message-list/message-list.module#MessageListPageModule"
-  },
-  {
-    path: "message-detail",
-    loadChildren:
-      "./pages/message-detail/message-detail.module#MessageDetailPageModule"
-  },
   {
     path: "crop-avatar",
     loadChildren: "./pages/crop-avatar/crop-avatar.module#CropAvatarPageModule"
@@ -62,12 +53,13 @@ const routes: Routes = [
     AgentModule,
     CmsModule,
     TmcModule,
+    MessageModule,
     RouterModule.forRoot(routes, {
       preloadingStrategy: PreloadAllModules,
       enableTracing: !true,
       useHash: true
     })
   ],
-  exports: [RouterModule]
+  exports: [RouterModule, MessageModule, FlightModule]
 })
 export class AppRoutingModule {}

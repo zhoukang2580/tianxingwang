@@ -1,4 +1,4 @@
-import { ComponentsModule } from 'src/app/flight/components/components.module';
+import { FlightComponentsModule } from 'src/app/flight/components/components.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -21,7 +21,7 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    ComponentsModule
+    FlightComponentsModule
   ],
   declarations: [FlightDetailPage]
 })

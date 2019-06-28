@@ -1,4 +1,3 @@
-import { ComponentsModule } from './flight/components/components.module';
 import { AppHelper } from "./appHelper";
 import { NgModule, ErrorHandler } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
@@ -25,7 +24,7 @@ import { BarcodeScanner } from "@ionic-native/barcode-scanner/ngx";
 import { File } from "@ionic-native/file/ngx";
 import { AppVersion } from "@ionic-native/app-version/ngx";
 import { WebView } from "@ionic-native/ionic-webview/ngx";
-import { IonicStorageModule } from '@ionic/storage';
+import { IonicStorageModule } from "@ionic/storage";
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -49,7 +48,6 @@ import { IonicStorageModule } from '@ionic/storage';
     }),
     AppRoutingModule,
     AppcomponentsModule,
-    ComponentsModule,
     IonicStorageModule.forRoot()
   ],
   providers: [

@@ -1,15 +1,17 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { TmcGuard } from '../guards/tmc.guard';
+import { NgModule } from "@angular/core";
+import { RouterModule, Routes } from "@angular/router";
+import { TmcGuard } from "../guards/tmc.guard";
+import { FlightComponentsModule } from './components/components.module';
 const routes: Routes = [
   {
-    path: 'book-flight',
-    loadChildren: './book-flight/book-flight.module#BookFlightPageModule',
+    path: "book-flight",
+    loadChildren: "./book-flight/book-flight.module#BookFlightPageModule",
     canActivate: [TmcGuard]
   },
   {
     path: "select-fly-day",
-    loadChildren: "./select-fly-days/select-fly-days.module#SelectFlyDaysPageModule",
+    loadChildren:
+      "./select-fly-days/select-fly-days.module#SelectFlyDaysPageModule",
     canActivate: [TmcGuard]
   },
   {
@@ -24,9 +26,7 @@ const routes: Routes = [
   }
 ];
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  imports: [FlightComponentsModule, RouterModule.forChild(routes)],
+  exports: [RouterModule, FlightComponentsModule]
 })
-export class FlightRoutingModule {
-
-}
+export class FlightRoutingModule {}
