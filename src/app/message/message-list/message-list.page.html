@@ -42,7 +42,7 @@
           <ion-item-option *ngIf='!item?.IsRead' (click)="markRead(item)" color='success'>
             <ion-text color='light'>标记已读</ion-text>
           </ion-item-option>
-          <ion-item-option (click)="onRemove(item)" color='danger'>
+          <ion-item-option expandable='true' (click)="onRemove(item)" color='danger'>
             <ion-text color='light'>删除</ion-text>
           </ion-item-option>
         </ion-item-options>

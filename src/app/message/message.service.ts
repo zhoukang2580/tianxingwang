@@ -124,7 +124,7 @@ export class MessageService {
       console.log("启动自动推送消息");
       this.started = true;
       this.ngZone.runOutsideAngular(() => {
-        this.intervalSubscription = interval(4 * 1000)
+        this.intervalSubscription = interval(15 * 1000)
           .pipe(
             // takeUntil(
             //   this.stopPop$.pipe(

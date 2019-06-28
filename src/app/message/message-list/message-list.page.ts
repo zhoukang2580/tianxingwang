@@ -68,6 +68,7 @@ export class MessageListPage implements OnInit {
     this.isSelectAll = false;
   }
   onItemClick(item: MessageModel) {
+    console.log("onItemClick");
     if (this.open) {
       item.IsSelected = !item.IsSelected;
       return;
