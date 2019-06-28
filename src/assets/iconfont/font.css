@@ -1,0 +1,82 @@
+@font-face {
+	font-family: "iconfont";
+	src: url('./iconfont.eot');
+	src: url('./iconfont.eot?#iefix') format('eot'),
+		url('./iconfont.woff2') format('woff2'),
+		url('./iconfont.woff') format('woff'),
+		url('./iconfont.ttf') format('truetype'),
+		url('./iconfont.svg#iconfont') format('svg');
+}
+
+.icon:before {
+	font-family: "iconfont";
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: normal;
+	/* speak: none; only necessary if not using the private unicode range (firstGlyph option) */
+	text-decoration: none;
+	text-transform: none;
+}
+
+
+.icon-home-hotel:before {
+	content: "\E001";
+}
+
+.icon-home-plane:before {
+	content: "\E002";
+}
+
+.icon-home-train:before {
+	content: "\E003";
+}
+
+.icon-lock:before {
+	content: "\E004";
+}
+
+.icon-mobile:before {
+	content: "\E005";
+}
+
+.icon-my:before {
+	content: "\E006";
+}
+
+.icon-plane-flight:before {
+	content: "\E007";
+}
+
+.icon-scan:before {
+	content: "\E008";
+}
+
+.icon-tab-home-fill:before {
+	content: "\E009";
+}
+
+.icon-tab-home:before {
+	content: "\E00A";
+}
+
+.icon-tab-my-fill:before {
+	content: "\E00B";
+}
+
+.icon-tab-my:before {
+	content: "\E00C";
+}
+
+.icon-tab-trip-fill:before {
+	content: "\E00D";
+}
+
+.icon-tab-trip:before {
+	content: "\E00E";
+}
+
+.icon-verify:before {
+	content: "\E00F";
+}

@@ -25,7 +25,7 @@ const path = require("path");
 // }
 gulp.task("iconfont", async () => {
   let fontName = "iconfont";
-  let svg = path.join(__dirname, "../src/assets/svgs", "svgs/*.svg");
+  let svg = path.join(__dirname, "./svgs/*.svg");
   const dist = path.join(__dirname, "../src", "assets", "iconfont");
   console.log(dist);
   await gulp
