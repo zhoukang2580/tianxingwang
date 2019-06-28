@@ -1,9 +1,17 @@
+import { IdentityService } from "src/app/services/identity/identity.service";
 import { AppHelper } from "src/app/appHelper";
-import { catchError } from "rxjs/operators";
+import { catchError, takeUntil, filter, tap } from "rxjs/operators";
 import { ToastController } from "@ionic/angular";
 import { ApiService } from "../services/api/api.service";
 import { Injectable, NgZone } from "@angular/core";
-import { interval, Subject, BehaviorSubject, of } from "rxjs";
+import {
+  interval,
+  Subject,
+  BehaviorSubject,
+  of,
+  Observable,
+  Subscription
+} from "rxjs";
 import { RequestEntity } from "../services/api/Request.entity";
 import { Router } from "@angular/router";
 import { map } from "rxjs/operators";
@@ -21,14 +29,28 @@ export interface MessageModel {
 })
 export class MessageService {
   private messageSource: Subject<MessageModel>;
+  private started = false;
+  private intervalSubscription = Subscription.EMPTY;
+  private stopPop$: Observable<boolean>;
   constructor(
     private apiService: ApiService,
     private toastCtrl: ToastController,
     private router: Router,
+    identityService: IdentityService,
     private ngZone: NgZone
   ) {
     this.messageSource = new BehaviorSubject(null);
-    this.autoPopMessages();
+    this.stopPop$ = identityService.getIdentity().pipe(
+      map(r => {
+        if (r && r.Id && r.Ticket) {
+          this.autoPopMessages();
+          return true;
+        }
+        // this.started = false;
+        return false;
+      })
+    );
+   this. autoPopMessages() ;
   }
   getMsgCount() {
     const req = new RequestEntity();
@@ -94,17 +116,37 @@ export class MessageService {
     return this.apiService.getPromiseResponse<MessageModel>(req);
   }
   private autoPopMessages() {
-    this.ngZone.runOutsideAngular(() => {
-      interval(4 * 1000).subscribe(async _ => {
-        const message = await this.popMessage().catch(
-          _ => null as MessageModel
-        );
-        if (message) {
-          this.ngZone.run(() => {
-            this.messageSource.next(message);
+    console.log("autoPopMessages");
+    if (!this.started) {
+      if (this.intervalSubscription) {
+        this.intervalSubscription.unsubscribe();
+      }
+      console.log("启动自动推送消息");
+      this.started = true;
+      this.ngZone.runOutsideAngular(() => {
+        this.intervalSubscription = interval(4 * 1000)
+          .pipe(
+            // takeUntil(
+            //   this.stopPop$.pipe(
+            //     filter(r => !r),
+            //     tap(r => {
+            //       console.log("停止自动推送消息");
+            //       this.started = false;
+            //     })
+            //   )
+            // )
+          )
+          .subscribe(async _ => {
+            const message = await this.popMessage().catch(
+              _ => null as MessageModel
+            );
+            if (message) {
+              this.ngZone.run(() => {
+                this.messageSource.next(message);
+              });
+            }
           });
-        }
       });
-    });
+    }
   }
 }

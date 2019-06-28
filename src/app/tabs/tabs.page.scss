@@ -1,9 +1,9 @@
 ion-tabs {
   ion-tab-bar {
-    --color-selected:var(--ion-color-success);
-    --color:var(--ion-color-dark);
-    padding-top: .2em;
-    [class*='icon'] {
+    --color-selected: var(--ion-color-secondary);
+    --color: var(--ion-color-dark);
+    padding-top: 0.2em;
+    [class*="icon"] {
       font-size: 1.5rem;
     }
     ion-label {

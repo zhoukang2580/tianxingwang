@@ -1,15 +1,19 @@
 <ion-tabs color='primary' (ionTabsWillChange)='onIonTabsWillChange($event)'>
   <ion-tab-bar slot="bottom">
     <ion-tab-button tab="home">
-      <i class='icon icon-home{{tab==="home"?"-fill":""}}'></i>
+      <!-- <i class='icon icon-tab-home {{tab==="home"?"active":""}}'></i> -->
+      <i class='icon icon-tab-home'></i>
+      <!-- <img src="assets/svgs/tab-home.svg" appLazyloadimage alt="首页"> -->
       <ion-label>首页</ion-label>
     </ion-tab-button>
     <ion-tab-button tab="trip">
-      <i class='icon icon-trip{{tab==="trip"?"-fill":""}}'></i>
+      <i class='icon icon-tab-trip'></i>
+      <!-- <img src="assets/svgs/tab-trip.svg" appLazyloadimage alt="首页"> -->
       <ion-label>行程</ion-label>
     </ion-tab-button>
     <ion-tab-button tab="my">
-      <i class='icon icon-my{{tab==="my"?"-fill":""}}'></i>
+      <i class='icon icon-tab-my'></i>
+      <!-- <img src="assets/svgs/tab-my.svg" appLazyloadimage alt="首页"> -->
       <ion-label>我的</ion-label>
     </ion-tab-button>
   </ion-tab-bar>
