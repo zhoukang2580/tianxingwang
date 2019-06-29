@@ -2,6 +2,9 @@ ion-content {
   background-image: url(/assets/images/airplane-l.jpg);
   background-position: center;
   background-attachment: scroll;
+  ion-segment {
+    --indicator-color: var(--ion-color-medium);
+  }
   ion-toolbar {
     --background: transparent;
   }

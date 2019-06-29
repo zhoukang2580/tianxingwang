@@ -21,50 +21,54 @@
 }
 
 
-.icon-flight-plane:before {
+.icon-calendar:before {
 	content: "\E001";
 }
 
-.icon-home-hotel:before {
+.icon-flight-plane:before {
 	content: "\E002";
 }
 
-.icon-home-plane:before {
+.icon-home-hotel:before {
 	content: "\E003";
 }
 
-.icon-home-train:before {
+.icon-home-plane:before {
 	content: "\E004";
 }
 
-.icon-hotel:before {
+.icon-home-train:before {
 	content: "\E005";
 }
 
-.icon-lock:before {
+.icon-hotel:before {
 	content: "\E006";
 }
 
-.icon-mobile:before {
+.icon-lock:before {
 	content: "\E007";
 }
 
-.icon-person:before {
+.icon-mobile:before {
 	content: "\E008";
 }
 
-.icon-tab-home:before {
+.icon-person:before {
 	content: "\E009";
 }
 
-.icon-tab-my:before {
+.icon-tab-home:before {
 	content: "\E00A";
 }
 
-.icon-tab-trip:before {
+.icon-tab-my:before {
 	content: "\E00B";
 }
 
-.icon-verify:before {
+.icon-tab-trip:before {
 	content: "\E00C";
+}
+
+.icon-verify:before {
+	content: "\E00D";
 }

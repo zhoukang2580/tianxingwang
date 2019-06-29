@@ -7,9 +7,17 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-card>
+  <ion-card padding>
     <ion-card-content>
-      <div class="round-trip">
+      <ion-segment (ionChange)="segmentChanged($event)" value="single" color='secondary'>
+        <ion-segment-button value="single">
+          <ion-label><strong>单程</strong></ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="roundtrip">
+          <ion-label><strong>往返</strong></ion-label>
+        </ion-segment-button>
+      </ion-segment>
+      <!-- <div class="round-trip">
         <ion-button
           text-center
           expand="block"
@@ -28,14 +36,13 @@
           (click)="onRoundTrip(false)"
           >往返</ion-button
         >
-      </div>
-      <app-switch-city-comp
-        [vmFromCity]="vmFromCity"
-        [vmToCity]="vmToCity"
-        appSelectCity
-      ></app-switch-city-comp>
+      </div> -->
+      <app-switch-city-comp [vmFromCity]="vmFromCity" [vmToCity]="vmToCity" appSelectCity></app-switch-city-comp>
       <section class="flight-date">
-        <div class="date-week" text-start (click)="onSelecFlyDate(true)">
+        <app-search-day-comp  [day]='flyDate'></app-search-day-comp>
+        <div *ngIf="!single">{{ totalFlyDays }}天</div>
+        <app-search-day-comp  *ngIf="!single" [day]='backDate'></app-search-day-comp>
+        <!-- <div class="date-week" text-start (click)="onSelecFlyDate(true)">
           <h2>{{ getMonth(flyDate) }}月{{ flyDate.day }}日</h2>
           <h6>{{ getDayDesc(flyDate) }}</h6>
         </div>
@@ -48,16 +55,10 @@
         >
           <h2>{{ getMonth(backDate) }}月{{ backDate.day }}日</h2>
           <h6>{{ getDayDesc(backDate) }}</h6>
-        </div>
+        </div> -->
       </section>
-      <ion-button
-        class="search"
-        (click)="searchFlight()"
-        fill="solid"
-        color="secondary"
-        expand="block"
-        >开始查询</ion-button
-      >
+      <ion-button class="search" (click)="searchFlight()" fill="solid" color="secondary" expand="block">查询航班
+      </ion-button>
     </ion-card-content>
   </ion-card>
   <!-- <ion-card>

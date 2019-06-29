@@ -1,0 +1,17 @@
+section {
+  display: flex;
+  align-items: center;
+  .day {
+    margin: 0 0.2em;
+    font-family: sans-serif;
+    font-size: 1.5rem;
+  }
+  ion-text {
+    font-size: 1.5rem;
+  }
+  h5 {
+    margin: 0;
+    padding: 0;
+    font-size: 0.7rem;
+  }
+}

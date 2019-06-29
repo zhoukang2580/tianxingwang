@@ -20,6 +20,7 @@ import { FlyTimelineComponent } from "./fly-timeline/fly-timeline.component";
 import { FlyTimelineItemComponent } from "./fly-timeline-item/fly-timeline-item.component";
 import { SelectCityComponent } from './select-city/select-city.component';
 import { DirectivesModule } from '../directives/directives.module';
+import { SearchDayComponent } from './search-day/search-day.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { DirectivesModule } from '../directives/directives.module';
     SelectDateComponent,
     FlyTimelineComponent,
     FlyTimelineItemComponent,
-    SelectCityComponent
+    SelectCityComponent,
+    SearchDayComponent
   ],
   imports: [
     CommonModule,
@@ -49,6 +51,7 @@ import { DirectivesModule } from '../directives/directives.module';
     DirectivesModule
   ],
   exports: [
+    SearchDayComponent,
     DayComponent,
     FlightDynamicComponent,
     SwitchCityComponent,

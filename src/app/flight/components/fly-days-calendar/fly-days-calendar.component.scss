@@ -40,6 +40,10 @@
   align-items: center;
   justify-content: center;
   flex-flow: column nowrap;
+  .icon-calendar{
+    font-size: 1.5rem;
+    color:var(--ion-color-secondary);
+  }
   ion-text {
     font-size: 0.8rem;
   }

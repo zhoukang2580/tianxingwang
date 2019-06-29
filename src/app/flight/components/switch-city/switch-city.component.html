@@ -1,16 +1,18 @@
-
- <div class='flight-cities' [attr.mode]='mode'>
-    <ion-text (click)="onSelectCity(true)"  color='dark' >
-      <h2 [class.left]='!toggleCities' [class.right]='toggleCities' [style.transform]='toggleCities?"translateX(160%)":"translateX(0)"'>{{vmFromCity?.CityName}}</h2>
+<div class='flight-cities' [attr.mode]='mode'>
+  <ion-text (click)="onSelectCity(true)" color='dark'>
+    <h2 [class.left]='!toggleCities' [class.right]='toggleCities'
+      [style.transform]='toggleCities?"translateX(400%)":"translateX(0)"'>{{vmFromCity?.CityName}}</h2>
+  </ion-text>
+  <div class='toogle-icon' (click)='onRotateIcon()'>
+    <ion-text color='secondary' class="airplane">
+      <i class='icon icon-flight-plane'></i>
     </ion-text>
-    <div class='toogle-icon' (click)='onRotateIcon()'>
-      <ion-text color='secondary' class="airplane">
-        <i class='icon icon-flight-plane' ></i>
-      </ion-text>
-      <!-- <ion-icon name='airplane' color='secondary'></ion-icon>-->
-      <ion-icon name='ios-sync' [@rotateIcon]='rotateIcon' (@rotateIcon.done)='onRotateIconDone($event)' color='secondary'></ion-icon> 
-    </div>
-    <ion-text (click)='onSelectCity(false)' color='dark' >
-      <h2 [class.left]='toggleCities' [class.right]='!toggleCities' [style.transform]='!toggleCities?"translateX(0)":"translateX(-160%)"'>{{vmToCity?.CityName}}</h2>
-    </ion-text>
+    <!-- <ion-icon name='airplane' color='secondary'></ion-icon>-->
+    <ion-icon name='ios-sync' [@rotateIcon]='rotateIcon' (@rotateIcon.done)='onRotateIconDone($event)'
+      color='secondary'></ion-icon>
   </div>
+  <ion-text (click)='onSelectCity(false)' color='dark'>
+    <h2 [class.left]='toggleCities' [class.right]='!toggleCities'
+      [style.transform]='!toggleCities?"translateX(0)":"translateX(-400%)"'>{{vmToCity?.CityName}}</h2>
+  </ion-text>
+</div>
