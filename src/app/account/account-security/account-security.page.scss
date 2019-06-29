@@ -1,8 +1,8 @@
 ion-content {
   // --background: #eee;
-
+  --background: #f2f2f2;
   ion-list {
-    margin    : 0;
+    margin: 0;
     margin-top: 0.5em;
 
     &:first-child {
@@ -17,13 +17,13 @@ ion-content {
 
     ion-item {
       ion-label {
-        &:first-child{
+        &:first-child {
           max-width: 20vw;
         }
         &:not(:first-child) {
           justify-content: flex-end;
-          display        : flex;
-          align-items    : center;
+          display: flex;
+          align-items: center;
         }
 
         ion-icon {
@@ -32,9 +32,8 @@ ion-content {
         }
 
         ion-note {
-
           text-overflow: ellipsis;
-          overflow     : hidden;
+          overflow: hidden;
         }
       }
     }

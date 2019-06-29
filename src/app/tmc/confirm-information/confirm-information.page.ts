@@ -6,7 +6,7 @@ import { HrService, StaffEntity } from "./../../hr/hr.service";
 import { Component, OnInit } from "@angular/core";
 import { Credentials } from "../tmc.service";
 import { AppHelper } from "src/app/appHelper";
-import { Router } from "@angular/router";
+import { Router, ActivatedRoute } from "@angular/router";
 
 @Component({
   selector: "app-comfirm-info",
@@ -21,14 +21,17 @@ export class ComfirmInformationPage implements OnInit {
     private hrService: HrService,
     private apiService: ApiService,
     private tmcService: TmcService,
-    private router: Router
-  ) {}
-
-  async ngOnInit() {
-    this.staff = await this.hrService.getStaff();
-    this.credentials = await this.tmcService.getCredentials();
-    console.log("ComfirmInformationPage",this.staff);
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
+    route.paramMap.subscribe(async p => {
+      this.staff = await this.hrService.getStaff();
+      this.credentials = await this.tmcService.getCredentials();
+      console.log("ComfirmInformationPage", this.staff);
+    });
   }
+
+  async ngOnInit() {}
   async confirmPassword() {
     if (!this.password) {
       AppHelper.alert(LanguageHelper.getEnterPasswordTip());
@@ -38,7 +41,7 @@ export class ComfirmInformationPage implements OnInit {
       this.staff = await this.hrService.getStaff(true);
     }
     const ok = await this.modifyPassword({
-      OldPassword: this.staff && this.staff.Password || "",
+      OldPassword: (this.staff && this.staff.Password) || "",
       NewPassword: this.password,
       SurePassword: this.password
     });

@@ -43,8 +43,9 @@ export class ShowtipDirective {
           message: this.el.nativeElement.innerText,
           position: "middle",
           // showCloseButton: true,
-          // mode:"ios",
+          // mode:"md",
           keyboardClose: true,
+          translucent:true,
           closeButtonText: LanguageHelper.getCloseTip(),
           duration: Math.min(duration || 2000, 10 * 1000)
         })).present();

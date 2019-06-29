@@ -161,7 +161,10 @@ export class MemberCredentialManagementPage
     console.log("credentials", this.credentials);
   }
   addCredential() {
-    const item: Credentials = {} as any;
+    const item: Credentials = {
+      Gender: "M",
+      Type: CredentialsType.IdCard
+    } as any;
     this.newCredentials.push(item);
   }
   initializeValidateAdd(el: HTMLFormElement) {
@@ -312,7 +315,7 @@ export class MemberCredentialManagementPage
             if (input) {
               setTimeout(() => {
                 input.focus();
-              }, 800);
+              }, 300);
             }
           });
         }

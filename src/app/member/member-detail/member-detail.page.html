@@ -31,15 +31,15 @@
     </ion-item>
     <ion-item *ngIf="Model?.CostCenterCode">
       <ion-label>成本中心/编码</ion-label>
-      <ion-label slot='end'>{{Model?.CostCenterName}}/{{Model?.CostCenterCode}}</ion-label>
+      <ion-label slot='end' appShowtip>{{Model?.CostCenterName}}/{{Model?.CostCenterCode}}</ion-label>
     </ion-item>
     <ion-item *ngIf="Model?.OrganizationName">
       <ion-label>所在部门</ion-label>
-      <ion-label slot='end'>{{Model?.OrganizationName}}</ion-label>
+      <ion-label slot='end' appShowtip>{{Model?.OrganizationName}}</ion-label>
     </ion-item>
     <ion-item *ngIf="Model?.BookTypeName">
       <ion-label>预定方式</ion-label>
-      <ion-label slot='end'>{{Model?.BookTypeName}}</ion-label>
+      <ion-label slot='end' appShowtip>{{Model?.BookTypeName}}</ion-label>
     </ion-item>
 
   </ion-list>

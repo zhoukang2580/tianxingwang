@@ -24,7 +24,7 @@
     <ion-button [style.width.%]='100' color='secondary' expand='block' fill='clear' (click)='confirmPassword()'>确认密码
     </ion-button>
   </ion-toolbar>
-  <ion-toolbar>
+  <ion-toolbar *ngIf='credentials?.length'>
     <ion-row>
       <ion-col>请核对您的证件信息：请及时核对您的证件信息，避免耽误行程预订，谢谢！</ion-col>
     </ion-row>
@@ -38,6 +38,10 @@
       <ion-col>登机名：</ion-col>
       <ion-col>{{c.CheckName}}</ion-col>
     </ion-row>
+    <ion-row>
+        <ion-col>性别：</ion-col>
+        <ion-col>{{c.Gender=="M"?"男":"女"}}</ion-col>
+      </ion-row>
     <ion-row>
       <ion-col>证件类型：</ion-col>
       <ion-col>{{c.Type|credential}}</ion-col>
