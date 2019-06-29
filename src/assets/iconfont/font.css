@@ -41,38 +41,30 @@
 	content: "\E005";
 }
 
-.icon-hotel111:before {
+.icon-lock:before {
 	content: "\E006";
 }
 
-.icon-hotel222:before {
+.icon-mobile:before {
 	content: "\E007";
 }
 
-.icon-lock:before {
+.icon-person:before {
 	content: "\E008";
 }
 
-.icon-mobile:before {
+.icon-tab-home:before {
 	content: "\E009";
 }
 
-.icon-person:before {
+.icon-tab-my:before {
 	content: "\E00A";
 }
 
-.icon-tab-home:before {
+.icon-tab-trip:before {
 	content: "\E00B";
 }
 
-.icon-tab-my:before {
-	content: "\E00C";
-}
-
-.icon-tab-trip:before {
-	content: "\E00D";
-}
-
 .icon-verify:before {
-	content: "\E00E";
+	content: "\E00C";
 }

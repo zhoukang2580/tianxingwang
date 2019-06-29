@@ -1,11 +1,79 @@
-<ion-header>
+<!-- <ion-header>
   <ion-toolbar>
     <ion-title>登录</ion-title>
   </ion-toolbar>
-</ion-header>
+</ion-header> -->
 
-<ion-content>
-  <form [formGroup]="form" padding>
+<ion-content padding>
+  <ion-toolbar text-center>
+    <img src="assets/images/defaultavatar.jpg" alt="公司logo" class='logo'>
+  </ion-toolbar>
+  <form [formGroup]='form' padding>
+    <ion-segment (ionChange)="segmentChanged($event)" value="user" color='secondary'>
+      <ion-segment-button value="user">
+        <ion-label><strong>账号密码登录</strong></ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="mobile">
+        <ion-label><strong>手机快捷登录</strong></ion-label>
+      </ion-segment-button>
+    </ion-segment>
+    <ng-container *ngIf='loginType=="user" else mobilelogintemp'>
+      <ion-list>
+        <ion-item>
+          <ion-label color='secondary'>
+            <i class='icon icon-person'></i>
+          </ion-label>
+          <ion-input type='text' placeholder='请输入用户名/手机号' formControlName="Name"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label color='secondary'>
+            <i class='icon icon-lock'></i>
+          </ion-label>
+          <ion-input type='password' placeholder='请输入密码' formControlName="Password"></ion-input>
+        </ion-item>
+        <ion-item [style.height]='0'></ion-item>
+      </ion-list>
+    </ng-container>
+    <ng-template #mobilelogintemp>
+      <ion-list>
+        <ion-item>
+          <ion-label color='secondary'>
+            <i class='icon icon-mobile'></i>
+          </ion-label>
+          <ion-input placeholder='请输手机号' formControlName="Mobile" type="number" min="11"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label color='secondary'>
+            <i class='icon icon-verify'></i>
+          </ion-label>
+          <ion-input type='text' placeholder='请输验证码' [maxlength]='6' formControlName="MobileCode"></ion-input>
+          <ion-button slot='end' color='secondary' fill='outline' *ngIf='!countDown||countDown <= 0' 
+           (click)="showImageCode('sendmobilecode')">发送验证码</ion-button>
+          <ion-button slot='end' fill='outline' [disabled]='true' color='medium' *ngIf='countDown'>{{countDown}} <span text-lowercase>s</span> 重新发送</ion-button>
+        </ion-item>
+        <ion-item [style.height]='0'></ion-item>
+      </ion-list>
+    </ng-template>
+    <ion-item lines='none' *ngIf="message" class='err-msg'>
+      <ion-label color="danger">{{ message }}</ion-label>
+    </ion-item>
+    <ion-button color='secondary' class='login-btn' expand='block' strong='true' (click)="onLoginButton('login')"
+      [disabled]="form.invalid || ((loading$ | async) )|| !isLoginOk">登录</ion-button>
+    <section class='register-forgetpassword'>
+      <ion-button fill='clear' color='secondary' strong='true' (click)="forgetPassword()">忘记密码</ion-button>
+      <span class='line'></span>
+      <ion-button fill='clear' color='secondary' strong='true' (click)="register()">注册账号</ion-button>
+    </section>
+    <app-or-comp *ngIf="isShowWechatLogin">第三方登陆</app-or-comp>
+    <ion-item *ngIf="isShowWechatLogin" (click)='loginByWechat()' lines='none' text-center>
+      <div class='third-party-logo'>
+        <ion-thumbnail>
+          <img src="assets/images/weixin-logo.png" alt="微信图标">
+        </ion-thumbnail>
+      </div>
+    </ion-item>
+  </form>
+  <!-- <form [formGroup]="form" padding>
     <section [class.hidden]="loginType != 'user'">
       <ion-row>
         <ion-col size="4">
@@ -56,7 +124,6 @@
         </ion-col>
       </ion-row>
     </section>
-    <!-- <ion-button expand='block' (click)='getWechatCode()'>获取微信登陆code</ion-button> -->
     <ion-button (click)="onLoginButton('login')" [disabled]="form.invalid || (false&&(loading$ | async) )|| !isLoginOk"
       expand="block" color='primary'> 登录</ion-button>
     <ion-item lines='none' class='btns'>
@@ -81,5 +148,6 @@
         </ion-thumbnail>
       </div>
     </ion-item>
-  </form>
+  </form> -->
 </ion-content>
+<app-slidvalidate-com *ngIf="isShowImageCode" (slideEvent)='onSlideEvent($event)'></app-slidvalidate-com>

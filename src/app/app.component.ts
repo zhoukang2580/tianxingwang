@@ -1,7 +1,4 @@
-import {
-  MessageModel,
-  MessageService
-} from "./message/message.service";
+import { MessageModel, MessageService } from "./message/message.service";
 import { FlightService } from "./flight/flight.service";
 
 import {
@@ -214,9 +211,7 @@ export class AppComponent
       // this.router.navigate([AppHelper.getRoutePath("account-device")]);
       // this.router.navigate([AppHelper.getRoutePath("change-password-by-msm-code")]);
       // this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
-      // this.router.navigate([
-      //   AppHelper.getRoutePath("login")
-      // ]);
+      this.router.navigate([AppHelper.getRoutePath("register")]);
       // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management-add')]);
       // this.router.navigate([AppHelper.getRoutePath('book-flight')]);
       // this.router.navigate([AppHelper.getRoutePath("select-customer")]);

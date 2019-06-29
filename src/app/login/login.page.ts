@@ -115,6 +115,10 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   ionViewWillEnter() {
     this.initPage();
   }
+  segmentChanged(evt: CustomEvent) {
+    // console.log(evt);
+    this.switchLoginType(evt.detail.value);
+  }
   async loginByWechat() {
     try {
       if (AppHelper.isApp()) {
@@ -155,6 +159,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.isShowImageCode = true;
   }
   onLoginButton(type: string) {
+    console.log("onLoginButton login type " + type);
     if (this.loginType == "user") {
       this.showImageCode(type);
     } else {

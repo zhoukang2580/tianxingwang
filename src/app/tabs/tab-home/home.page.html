@@ -28,14 +28,15 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
+
+  <div class="img">
+    <img appLazyloadimage [lazyloadImage]='"assets/images/home_top_bg.png"'  />
+  </div>
   <ion-toolbar (click)='goToBulletinList("agentNotice")'>
     <div class="marquee">
       <ion-text *ngFor='let notice of agentNotices;let index = index;'>{{index+1}}.{{notice?.Title}}</ion-text>
     </div>
   </ion-toolbar>
-  <div class="img">
-    <img appLazyloadimage [lazyloadImage]='"assets/images/home_top_bg.png"' />
-  </div>
   <ion-grid>
     <ion-row wrap>
       <ion-col size="4">
@@ -51,7 +52,7 @@
       <ion-col [routerLink]="['/book-hotel']" size="4">
         <div class="item">
           <ion-label>
-              <img src="assets/svgs/hotel.svg" appLazyloadimage alt="酒店">
+            <img src="assets/svgs/hotel.svg" appLazyloadimage alt="酒店" [style.height.em]='3'>
             <!-- <i class="icon icon-hotel"></i> -->
           </ion-label>
           <ion-text>国内酒店</ion-text>
@@ -61,7 +62,7 @@
       <ion-col [routerLink]="['/book-train']" size="4">
         <div class="item">
           <ion-label>
-              <!-- <img src="assets/svgs/home-train.svg" appLazyloadimage alt="火车票"> -->
+            <!-- <img src="assets/svgs/home-train.svg" appLazyloadimage alt="火车票"> -->
             <i class="icon icon-home-train"></i>
           </ion-label>
           <ion-text>火车票</ion-text>
@@ -94,7 +95,7 @@
       <ion-col (click)='goToBulletinList()' size="4">
         <div class="item">
           <ion-label>
-              <!-- <img src="assets/svgs/home-train.svg" appLazyloadimage alt="火车票"> -->
+            <!-- <img src="assets/svgs/home-train.svg" appLazyloadimage alt="火车票"> -->
             <i class="icon icon-home-train"></i>
           </ion-label>
           <ion-text>公告</ion-text>
