@@ -1,24 +1,33 @@
+import { ActivatedRoute } from "@angular/router";
+import { LanguageHelper } from "src/app/languageHelper";
 import { Observable, of, Subscription, BehaviorSubject } from "rxjs";
-import { Component, OnInit, AfterContentInit, OnDestroy, AfterViewInit, NgZone } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  AfterContentInit,
+  OnDestroy,
+  AfterViewInit,
+  NgZone
+} from "@angular/core";
 import * as moment from "moment";
 import { SelectDateService } from "./select-date.service";
-import { ModalController } from "@ionic/angular";
+import { ModalController, NavController } from "@ionic/angular";
 import { DayModel } from "../models/DayModel";
 import { environment } from "../../../environments/environment";
 @Component({
-  selector: "app-select-datetime",
-  templateUrl: "./select-datetime.page.html",
-  styleUrls: ["./select-datetime.page.scss"]
+  selector: "app-select-date",
+  templateUrl: "./select-date.page.html",
+  styleUrls: ["./select-date.page.scss"]
 })
-export class SelectDatetimePage implements OnInit, AfterContentInit, OnDestroy, AfterViewInit {
+export class SelectDatetimePage
+  implements OnInit, AfterContentInit, OnDestroy, AfterViewInit {
   private titleSub = Subscription.EMPTY;
   private selectDaysSub = Subscription.EMPTY;
-  calendars:
-    {
-      disabled: boolean; // 是否禁用
-      yearMonth: string; // 2018-09
-      dayList: DayModel[];
-    }[];
+  calendars: {
+    disabled: boolean; // 是否禁用
+    yearMonth: string; // 2018-09
+    dayList: DayModel[];
+  }[];
   title: string;
   type: "酒店" | "机票";
   dayInfo1: {
@@ -37,22 +46,22 @@ export class SelectDatetimePage implements OnInit, AfterContentInit, OnDestroy, 
     color: any;
   };
   weeks = [
-    { text: "日", color: "warning" },
-    { text: "一", color: "dark" },
-    { text: "二", color: "dark" },
-    { text: "三", color: "dark" },
-    { text: "四", color: "dark" },
-    { text: "五", color: "dark" },
-    { text: "六", color: "warning" }
+    { text: LanguageHelper.getSaturdayTip(), color: "warning" },
+    { text: LanguageHelper.getMondayTip(), color: "dark" },
+    { text: LanguageHelper.getTuesdayTip(), color: "dark" },
+    { text: LanguageHelper.getWednesdayTip(), color: "dark" },
+    { text: LanguageHelper.getThursdayTip(), color: "dark" },
+    { text: LanguageHelper.getFridayTip(), color: "dark" },
+    { text: LanguageHelper.getSaturdayTip(), color: "warning" }
   ];
   dayOfWeekNames = {
-    0: "周日",
-    1: "周一",
-    2: "周二",
-    3: "周三",
-    4: "周四",
-    5: "周五",
-    6: "周六"
+    0: LanguageHelper.getSaturdayTip(),
+    1: LanguageHelper.getMondayTip(),
+    2: LanguageHelper.getTuesdayTip(),
+    3: LanguageHelper.getWednesdayTip(),
+    4: LanguageHelper.getThursdayTip(),
+    5: LanguageHelper.getFridayTip(),
+    6: LanguageHelper.getSaturdayTip()
   };
   mutiSelect = true; // 是否多选
   selectedDays: DayModel[] = [];
@@ -66,10 +75,22 @@ export class SelectDatetimePage implements OnInit, AfterContentInit, OnDestroy, 
   userSelected: boolean; // 是否是初始化还是用户做出了选择
   constructor(
     private modalCtrl: ModalController,
-    private dayService: SelectDateService,
-    // private ngZone: NgZone
+    private dayService: SelectDateService, // private ngZone: NgZone
+    route: ActivatedRoute,
+    private navCtrl: NavController
   ) {
-    this.calendars=[];
+    this.calendars = [];
+    route.queryParamMap.subscribe(p => {
+      if (p.get("dayInfo1")) {
+        this.dayInfo1 = JSON.parse(p.get("dayInfo1"));
+      }
+      if (p.get("dayInfo2")) {
+        this.dayInfo2 = JSON.parse(p.get("dayInfo2"));
+      }
+      if (p.get("title")) {
+        this.title = p.get("title");
+      }
+    });
   }
   ngOnInit() {
     if (!this.title) {
@@ -100,7 +121,7 @@ export class SelectDatetimePage implements OnInit, AfterContentInit, OnDestroy, 
     // });
     console.log("window.performance.now", window.performance.now());
     let startTime = Date.now();
-    this.availableDate =this.generateCalendar();
+    this.generateCalendar();
     if (!environment.production) {
       console.log("生成日历耗时：" + (Date.now() - startTime) + " ms");
     }
@@ -113,7 +134,7 @@ export class SelectDatetimePage implements OnInit, AfterContentInit, OnDestroy, 
         "耗时" + (Date.now() - startTime) + " ms"
       );
     }
-    this.calendars=this.availableDate;
+    this.calendars = this.availableDate;
   }
   ngAfterContentInit() {
     console.log("ngAfterContentInit");
@@ -233,13 +254,14 @@ export class SelectDatetimePage implements OnInit, AfterContentInit, OnDestroy, 
     }
   }
   generateCalendar() {
-    const availableDate = [];
+    this.availableDate = [];
     const curM = moment().month();
     let curWeek = moment().weekday(); // 0星期天 1~6 分别为星期一到星期六
-    for (let m = 0; m < 6; m++) {
+    let m = 0;
+    const loop = () => {
       // 将来六个月内的日历
       const nextMonth = curM + m; // 下一个月
-      const curMoment = moment().add(m, 'months'); // 递增每一个月份
+      const curMoment = moment().add(m, "months"); // 递增每一个月份
       const daysOfM = moment(curMoment)
         .startOf("month")
         .date(1) // 每月的一号
@@ -262,7 +284,7 @@ export class SelectDatetimePage implements OnInit, AfterContentInit, OnDestroy, 
           .subtract(1, "days") // 上个月的最后一天
           .date();
         // console.log(lastMDay);
-        for (let d = lastMDay, j = curWeek; j > 0; d-- , j--) {
+        for (let d = lastMDay, j = curWeek; j > 0; d--, j--) {
           const date = curMFistDate
             .subtract(1, "days") // 应该是上个月的日期
             .date(d);
@@ -294,7 +316,7 @@ export class SelectDatetimePage implements OnInit, AfterContentInit, OnDestroy, 
         });
         // console.log(nextMonth, date);
       }
-      availableDate.push({
+      this.availableDate.push({
         disabled: false,
         yearMonth:
           curMoment.year() +
@@ -302,8 +324,11 @@ export class SelectDatetimePage implements OnInit, AfterContentInit, OnDestroy, 
           (nextMonth < 12 ? nextMonth + 1 : nextMonth - 11), // 2018-9
         dayList
       });
-    }
-    return availableDate;
+      if (++m < 6) {
+        window.requestAnimationFrame(loop);
+      }
+    };
+    loop();
   }
   onDaySelected(selectedDay: DayModel) {
     // 注意，该方法不要在程序中调用，需要由用户点击选择触发
@@ -466,7 +491,7 @@ export class SelectDatetimePage implements OnInit, AfterContentInit, OnDestroy, 
         this.selectedDays.push(selectedDay);
         selectedDay.toolTipMsg = `共 ${this.selectedDays.length - 1} ${
           this.unit
-          }`; // 离店那天不算
+        }`; // 离店那天不算
         this.goback();
       }
     }
@@ -477,17 +502,10 @@ export class SelectDatetimePage implements OnInit, AfterContentInit, OnDestroy, 
     this.selectedDays = this.selectedDays.sort(
       (d1, d2) => d1.timeStamp - d2.timeStamp
     );
-    this.modalCtrl.getTop().then(modal => {
-      if (modal && modal.dismiss) {
-        setTimeout(() => {
-          modal.dismiss(this.selectedDays.map(d => d));
-        }, duration);
-      } else {
-        // console.log("返回上一级", this.selectedDays);
-        this.dayService.setSelectedDays(this.selectedDays);
-        window.history.back();
-      }
-    });
+    this.dayService.setSelectedDays(this.selectedDays);
+    setTimeout(() => {
+      this.navCtrl.back();
+    }, duration);
   }
   ngOnDestroy() {
     // console.log("destroyed");

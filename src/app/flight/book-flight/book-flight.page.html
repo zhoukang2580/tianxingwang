@@ -17,45 +17,11 @@
           <ion-label><strong>往返</strong></ion-label>
         </ion-segment-button>
       </ion-segment>
-      <!-- <div class="round-trip">
-        <ion-button
-          text-center
-          expand="block"
-          fill="clear"
-          color='secondary'
-          [class.active]="single"
-          (click)="onRoundTrip(true)"
-          >单程</ion-button
-        >
-        <ion-button
-          text-center
-          expand="block"
-          color='secondary'
-          fill="clear"
-          [class.active]="!single"
-          (click)="onRoundTrip(false)"
-          >往返</ion-button
-        >
-      </div> -->
       <app-switch-city-comp [vmFromCity]="vmFromCity" [vmToCity]="vmToCity" appSelectCity></app-switch-city-comp>
       <section class="flight-date">
-        <app-search-day-comp  [day]='flyDate'></app-search-day-comp>
+        <app-search-day-comp [day]='flyDate' (click)="onSelecFlyDate(true)"></app-search-day-comp>
         <div *ngIf="!single">{{ totalFlyDays }}天</div>
-        <app-search-day-comp  *ngIf="!single" [day]='backDate'></app-search-day-comp>
-        <!-- <div class="date-week" text-start (click)="onSelecFlyDate(true)">
-          <h2>{{ getMonth(flyDate) }}月{{ flyDate.day }}日</h2>
-          <h6>{{ getDayDesc(flyDate) }}</h6>
-        </div>
-        <div *ngIf="!single">{{ totalFlyDays }}天</div>
-        <div
-          class="date-week"
-          *ngIf="!single"
-          text-end
-          (click)="onSelecFlyDate(false)"
-        >
-          <h2>{{ getMonth(backDate) }}月{{ backDate.day }}日</h2>
-          <h6>{{ getDayDesc(backDate) }}</h6>
-        </div> -->
+        <app-search-day-comp *ngIf="!single" [day]='backDate' (click)="onSelecFlyDate(false)"></app-search-day-comp>
       </section>
       <ion-button class="search" (click)="searchFlight()" fill="solid" color="secondary" expand="block">查询航班
       </ion-button>

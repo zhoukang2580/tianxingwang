@@ -122,11 +122,8 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       // console.log(this.s);
     });
     this.showAdvSearchPage$ = this.flyService.getShowAdvSearchConditions();
-    this.showSelectFlyDayPage$ = this.flyDayService.getShowSelectFlyDayPage();
   }
-  onCalenderClick() {
-    this.flyDayService.setShowFlyDaySelectPage(true);
-  }
+  onCalenderClick() {}
   bookFlight() {
     this.router.navigate([AppHelper.getRoutePath("book-flight")]);
   }
@@ -357,18 +354,20 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.selectedFlyDaysSub = this.flyDayService
       .getSelectedFlyDays()
       .subscribe(days => {
-        console.log("选择的日期", days);
-        if (this.isRoundTrip) {
+        if (days && days.length) {
+          console.log("选择的日期", days);
+          if (this.isRoundTrip) {
+          }
+          const day = days[0];
+          if (!day) {
+            return;
+          }
+          this.sortCondition.Date = day.date;
+          this.vmFlights = [];
+          this.doRefresh({
+            target: this.refresher
+          } as any);
         }
-        const day = days[0];
-        if (!day) {
-          return;
-        }
-        this.sortCondition.Date = day.date;
-        this.vmFlights = [];
-        this.doRefresh({
-          target: this.refresher
-        } as any);
       });
   }
   ngOnDestroy() {

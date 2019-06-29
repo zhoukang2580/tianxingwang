@@ -1,13 +1,14 @@
+import { FlydayService } from "./../select-fly-days/flyday.service";
 import { AppHelper } from "src/app/appHelper";
-import { SelectDatetimePage } from "./../select-datetime/select-datetime.page";
 import { Router, ActivatedRoute } from "@angular/router";
 import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import * as moment from "moment";
 import { Subscription } from "rxjs";
 import { DayModel } from "../models/DayModel";
-import { SelectDateService } from "../select-datetime/select-date.service";
+import { SelectDateService } from "../select-date/select-date.service";
 import { SearchFlightModel } from "../models/flight/SearchFlightModel";
 import { ModalController, NavController } from "@ionic/angular";
+import { Storage } from "@ionic/storage";
 @Component({
   selector: "app-book-flight",
   templateUrl: "./book-flight.page.html",
@@ -16,13 +17,13 @@ import { ModalController, NavController } from "@ionic/angular";
 export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
   toggleCities = false; // 没有切换城市顺序
   rotateIcon = false;
-  single: boolean;
+  isSingle: boolean;
   isSelectFromCity: boolean;
   isSelectFlyDate: boolean;
   flyDate: DayModel;
   backDate: DayModel;
   totalFlyDays: number;
-  selectDaySub = Subscription.EMPTY;
+  selectDaySubscription = Subscription.EMPTY;
   selectCitySub = Subscription.EMPTY;
   isMoving: boolean;
   vmFromCity: any; // 城市切换后，真实的出发城市
@@ -32,15 +33,15 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private router: Router,
     private dayService: SelectDateService,
-    private modalCtrl: ModalController,
     private route: ActivatedRoute,
-    private navCtrl:NavController
+    private navCtrl: NavController,
+    private flydayService: FlydayService
   ) {}
   goBack() {
     this.navCtrl.back();
   }
   private onRoundTrip(single: boolean) {
-    this.single = single;
+    this.isSingle = single;
   }
   getMonth(d: DayModel) {
     return +this.dayService.getMonth(d);
@@ -55,6 +56,22 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.onRoundTrip(true);
     this.initFlightCities();
     this.initFlightDays();
+    this.selectDaySubscription = this.flydayService
+      .getSelectedFlyDays()
+      .subscribe(days => {
+        if (days && days.length) {
+          if (this.isSingle) {
+            if (this.isSelectFlyDate) {
+              this.flyDate = days[0];
+            } else {
+              this.backDate = days[0];
+            }
+          } else {
+            this.flyDate = days[0];
+            this.backDate = days[1];
+          }
+        }
+      });
   }
   onSelectToCity(toCity: any) {
     this.toCity = toCity;
@@ -67,7 +84,7 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy(): void {
     console.log("on destroyed");
     this.selectCitySub.unsubscribe();
-    this.selectDaySub.unsubscribe();
+    this.selectDaySubscription.unsubscribe();
   }
   initFlightDays() {
     this.flyDate = this.dayService.generateDayModel(
@@ -76,18 +93,17 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
       // .add(1, "days")
     );
     this.flyDate.hasToolTip = false;
+    this.flyDate.enabled = true;
     this.flyDate.desc = "去程";
     this.flyDate.descPos = "top";
     this.backDate = this.dayService.generateDayModel(moment().add(4, "days"));
     this.backDate.hasToolTip = false;
+    this.backDate.enabled = true;
     this.backDate.desc = "返程";
     this.backDate.descPos = "bottom";
-    // this.dayService.getWeekName(this.flyDate);
-    // this.dayService.getWeekName(this.backDate);
     this.totalFlyDays = 4;
-    this.selectDaySub = this.dayService.getSelectedDays().subscribe(days => {});
   }
-  initFlightCities() {
+  async initFlightCities() {
     this.fromCity = this.vmFromCity = {};
     this.fromCity.CityName = this.vmFromCity.CityName = "北京";
     this.vmFromCity.Code = this.fromCity.Code = "BJS";
@@ -108,7 +124,7 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     s.ToCode = this.toCity.Code;
     s.ToAsAirport = this.toCity.Tag === "Airport"; // 以到达 机场 查询
     s.FromAsAirport = this.fromCity.Tag === "Airport"; // 以出发 机场 查询
-    s.isRoundTrip = !this.single;
+    s.isRoundTrip = !this.isSingle;
     this.router.navigate([
       AppHelper.getRoutePath("flight-list"),
       {
@@ -121,48 +137,17 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
   }
   onSelecFlyDate(flyTo: boolean) {
     this.isSelectFlyDate = flyTo;
-    if (this.single) {
-      if (this.isSelectFlyDate) {
-        this.dayService.setSelectedDays([this.flyDate]);
-      } else {
-        this.dayService.setSelectedDays([this.backDate]);
-      }
-    } else {
-      this.dayService.setSelectedDays([this.flyDate, this.backDate]);
-      this.dayService.setTitle("请选择去程日期");
-    }
-    this.modalCtrl
-      .create({
-        component: SelectDatetimePage,
-        componentProps: {
-          selectedDays: [this.flyDate, this.backDate],
-          title: "请选择去程日期",
-          canSelectSameDay: true,
-          mutiSelect: !this.single,
-          unit: "日"
-        }
-      })
-      .then(modal => {
-        if (modal) {
-          modal.present();
-          modal.onWillDismiss().then(res => {
-            const days = res.data as DayModel[];
-            if (days.length > 0) {
-              if (this.single) {
-                if (this.isSelectFlyDate) {
-                  this.flyDate = days[0];
-                } else {
-                  this.backDate = days[0];
-                }
-              } else {
-                // 往返
-                this.flyDate = days[0];
-                this.backDate = days[days.length - 1];
-                this.totalFlyDays = days.length;
-              }
-            }
-          });
-        }
-      });
+    // if (this.isSingle) {
+    //   if (this.isSelectFlyDate) {
+    //     this.dayService.setSelectedDays([this.flyDate]);
+    //   } else {
+    //     this.dayService.setSelectedDays([this.backDate]);
+    //   }
+    // } else {
+    //   this.dayService.setSelectedDays([this.flyDate, this.backDate]);
+    //   this.dayService.setTitle("请选择去程日期");
+    // }
+    this.flydayService.setFlyDayMulti(!this.isSingle);
+    this.router.navigate([AppHelper.getRoutePath("select-fly-day")]);
   }
 }

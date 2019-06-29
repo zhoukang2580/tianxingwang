@@ -1,10 +1,11 @@
+import { NavController } from "@ionic/angular";
 import { FlydayService } from "./flyday.service";
 import { Component, OnInit, Input, OnDestroy } from "@angular/core";
 import { Subscription } from "rxjs";
 import * as moment from "moment";
-import { AvailableDate } from '../models/AvailableDate';
-import { DayModel } from '../models/DayModel';
-import { LanguageHelper } from 'src/app/languageHelper';
+import { AvailableDate } from "../models/AvailableDate";
+import { DayModel } from "../models/DayModel";
+import { LanguageHelper } from "src/app/languageHelper";
 @Component({
   selector: "app-select-fly-days",
   templateUrl: "./select-fly-days.page.html",
@@ -36,13 +37,16 @@ export class SelectFlyDaysPage implements OnInit, OnDestroy {
       color: "danger"
     }
   ];
-  constructor(private flydSer: FlydayService) { }
+  constructor(
+    private flydService: FlydayService,
+    private navCtrl: NavController
+  ) {}
   yms: AvailableDate[];
 
   selectedDays: DayModel[];
   dayInfo1: any;
   dayInfo2: any;
-  multi: boolean;// 是否多选
+  multi: boolean; // 是否多选
   multiSub = Subscription.EMPTY;
   selectedSub = Subscription.EMPTY;
   @Input()
@@ -54,10 +58,10 @@ export class SelectFlyDaysPage implements OnInit, OnDestroy {
     if (!ym) {
       return "";
     }
-    return +ym.substring('2019-'.length);
+    return +ym.substring("2019-".length);
   }
   ngOnInit() {
-    this.multiSub = this.flydSer.getFlyDayMulti().subscribe(multi => {
+    this.multiSub = this.flydService.getFlyDayMulti().subscribe(multi => {
       this.multi = multi;
       if (multi) {
         this.dayInfo1 = {
@@ -76,32 +80,36 @@ export class SelectFlyDaysPage implements OnInit, OnDestroy {
         };
       }
     });
-    this.selectedSub = this.flydSer.getSelectedFlyDays().subscribe(sDays => {
-      this.selectedDays = sDays;
-    });
+    this.selectedSub = this.flydService
+      .getSelectedFlyDays()
+      .subscribe(sDays => {
+        this.selectedDays = sDays;
+      });
     this.isRoundTrip = this.multi;
-    this.yms = this.flydSer.generateCanlender(3);
+    this.yms = this.flydService.generateCanlender(3);
     // setTimeout(() => {
     //   this.yms=this.yms.concat(this.flydSer.generateCanlender(3).slice(2));
     //   this.initialSeletedDaysView();
     // }, 1000);
   }
   displayYm(ym: string) {
-    return moment(ym, "YYYY-MM-DD").format(`YYYY${LanguageHelper.getYearTip()}M${LanguageHelper.getMonthTip()}`);
+    return moment(ym, "YYYY-MM-DD").format(
+      `YYYY${LanguageHelper.getYearTip()}M${LanguageHelper.getMonthTip()}`
+    );
   }
   cancel() {
-    this.flydSer.setSelectedFlyDays(this.selectedDays);
-    this.flydSer.setShowFlyDaySelectPage(false);
+    this.flydService.setSelectedFlyDays(this.selectedDays);
+    this.navCtrl.back();
   }
   onDaySelected(d: DayModel) {
-    console.log("onDaySelected",d)
+    console.log("onDaySelected", d);
     if (!d.enabled) {
       return;
     }
     d.selected = true;
     d.desc = LanguageHelper.getDepartureTip();
-    d.descPos = 'top';
-    d.descColor = 'light';
+    d.descPos = "top";
+    d.descColor = "light";
     d.firstSelected = true;
     d.lastSelected = true;
     this.yms.map(item => {
@@ -114,7 +122,7 @@ export class SelectFlyDaysPage implements OnInit, OnDestroy {
           dt.descColor = null;
           dt.descPos = null;
         }
-      })
+      });
     });
     this.selectedDays = [d];
     setTimeout(() => {

@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 import * as moment from "moment";
 import { environment } from 'src/environments/environment';
-import { SelectDateService } from '../../select-datetime/select-date.service';
+import { SelectDateService } from '../../select-date/select-date.service';
 import { FlightSegmentEntity } from '../../models/flight/FlightSegmentEntity';
 import { LanguageHelper } from 'src/app/languageHelper';
 

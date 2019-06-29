@@ -7,7 +7,6 @@ import { IonicModule } from '@ionic/angular';
 
 import { BookFlightPage } from './book-flight.page';
 import { FlightComponentsModule } from '../components/components.module';
-import { SelectDatetimePage } from '../select-datetime/select-datetime.page';
 import { DirectivesModule } from 'src/app/directives/directives.module';
 
 const routes: Routes = [

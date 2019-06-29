@@ -95,7 +95,6 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   async initData(forceRefresh: boolean = false) {
     this.initHistoryCities();
     this.domesticAirports = await this.loadDomesticAirports(forceRefresh);
-    console.time("initDomesticListCity");
     this.initHotCities();
     await this.initDomesticListCity();
     this.listCities.sort((a, b) => a.link.charCodeAt(0) - b.link.charCodeAt(0));
@@ -113,7 +112,6 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
       lm.items = this.historyCities;
       this.listCities.unshift(lm);
     }
-    console.timeEnd("initDomesticListCity");
     return true;
   }
   ngOnDestroy() {

@@ -5,13 +5,13 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { SelectDatetimePage } from './select-datetime.page';
-import { FlightComponentsModule } from './../components/components.module';
+import { SelectDatetimePage as SelectDatePage } from './select-date.page';
+import { FlightComponentsModule } from '../components/components.module';
 
 const routes: Routes = [
   {
     path: '',
-    component: SelectDatetimePage
+    component: SelectDatePage
   }
 ];
 
@@ -23,9 +23,9 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     FlightComponentsModule
   ],
-  declarations: [SelectDatetimePage],
+  declarations: [SelectDatePage],
   entryComponents:[
-    SelectDatetimePage
+    SelectDatePage
   ]
 })
-export class SelectDatetimePageModule {}
+export class SelectDatePageModule {}

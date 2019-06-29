@@ -15,7 +15,6 @@ import { AirportsComponent } from "./fly-filter/airports/airports.component";
 import { AirtypeComponent } from "./fly-filter/airtype/airtype.component";
 import { CabinComponent } from "./fly-filter/cabin/cabin.component";
 import { NoMoreDataComponent } from "./no-more-data/no-more-data.component";
-import { SelectDateComponent } from "./select-date/select-date.component";
 import { FlyTimelineComponent } from "./fly-timeline/fly-timeline.component";
 import { FlyTimelineItemComponent } from "./fly-timeline-item/fly-timeline-item.component";
 import { SelectCityComponent } from './select-city/select-city.component';
@@ -36,7 +35,6 @@ import { SearchDayComponent } from './search-day/search-day.component';
     AirtypeComponent,
     CabinComponent,
     NoMoreDataComponent,
-    SelectDateComponent,
     FlyTimelineComponent,
     FlyTimelineItemComponent,
     SelectCityComponent,

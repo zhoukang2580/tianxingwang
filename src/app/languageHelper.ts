@@ -1,4 +1,7 @@
 export class LanguageHelper {
+  static getSelectOtherFlyDayTip() {
+    return "请选择其他日期";
+  }
   static getModifyUnSavedTip() {
     return "修改尚未保存，是否确定离开？";
   }

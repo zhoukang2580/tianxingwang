@@ -11,7 +11,7 @@ import {
   EventEmitter
 } from "@angular/core";
 import * as moment from "moment";
-import { SelectDateService } from "../../select-datetime/select-date.service";
+import { SelectDateService } from "../../select-date/select-date.service";
 @Component({
   selector: "app-fly-days-calendar",
   templateUrl: "./fly-days-calendar.component.html",

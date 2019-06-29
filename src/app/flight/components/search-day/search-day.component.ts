@@ -13,6 +13,9 @@ export class SearchDayComponent implements OnInit {
 
   ngOnInit() {}
   getYearMonth() {
+    if (!this.day) {
+      return "";
+    }
     return moment(this.day.date).format("YYYY.MM");
   }
 }

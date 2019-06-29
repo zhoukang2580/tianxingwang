@@ -23,14 +23,7 @@ export class FlydayService {
   };
   constructor() {
     this._selectedSource = new BehaviorSubject([]);
-    this._showFlyDaySelectPageSource = new BehaviorSubject(false);
     this._multiFlyDaySource = new BehaviorSubject(false);
-  }
-  getShowSelectFlyDayPage() {
-    return this._showFlyDaySelectPageSource.asObservable();
-  }
-  setShowFlyDaySelectPage(show: boolean) {
-    this._showFlyDaySelectPageSource.next(show);
   }
   setFlyDayMulti(multi: boolean) {
     this._multiFlyDaySource.next(multi);
