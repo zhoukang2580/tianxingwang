@@ -1,4 +1,4 @@
-export class FlyCityItemModel {
+export class TrafficlineModel {
   Selected?: boolean;
   Sequence?: string;
   IsHot?: boolean;
@@ -15,6 +15,7 @@ export class FlyCityItemModel {
   Nickname?: string; //"阿尔泰";
   Pinyin?: string; // "altai";
   Code: string; //"LUM"
+
   //   AirportCityCode: "LUM"
   // CityCode: "5331"
   // CityName: "芒市"

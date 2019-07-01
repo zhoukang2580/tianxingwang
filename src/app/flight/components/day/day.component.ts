@@ -27,7 +27,7 @@ export class DayComponent implements OnInit {
     const curDate = moment().format("YYYY-MM-DD");
     // console.log(curDate,this.dayModel.date);
     if (curDate === this.dayModel.date) {
-      this.dayModel.day = "今天";
+      // this.dayModel.day = "今天";
       this.dayModel.color = this.dayModel.color || "light";
       // this.dayModel.selected = true;
       this.dayModel.isToday = true;

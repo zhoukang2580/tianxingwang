@@ -3,7 +3,9 @@
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
 }
-
+.icon-back {
+  --color: rgba(var(--ion-color-dark-rgb), 0.5);
+}
 ion-segment-button {
   &.overseas {
     position: relative;
@@ -158,8 +160,8 @@ ul.c-items {
   &.moving {
     background: rgba(var(--ion-color-medium-rgb), 0.1);
   }
-  &.ios{
-    top:5em;
+  &.ios {
+    top: 5em;
   }
   .nav {
     -webkit-overflow-scrolling: touch;

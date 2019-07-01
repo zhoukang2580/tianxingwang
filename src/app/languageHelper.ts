@@ -1,4 +1,7 @@
 export class LanguageHelper {
+  static getSelectFlyBackDate() {
+    return "请选择返程日期";
+  }
   static getSelectOtherFlyDayTip() {
     return "请选择其他日期";
   }

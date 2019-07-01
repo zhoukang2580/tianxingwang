@@ -1,3 +1,4 @@
+import { AppHelper } from "./../../appHelper";
 import { NavController } from "@ionic/angular";
 import { FlydayService } from "./flyday.service";
 import { Component, OnInit, Input, OnDestroy } from "@angular/core";
@@ -42,15 +43,15 @@ export class SelectFlyDaysPage implements OnInit, OnDestroy {
     private navCtrl: NavController
   ) {}
   yms: AvailableDate[];
-
-  selectedDays: DayModel[];
+  fakeItems: {
+    dayList: any[];
+  }[];
+  selectedDays: DayModel[] = [];
   dayInfo1: any;
   dayInfo2: any;
-  multi: boolean; // 是否多选
+  isMulti: boolean; // 是否多选
   multiSub = Subscription.EMPTY;
   selectedSub = Subscription.EMPTY;
-  @Input()
-  isRoundTrip: boolean;
   ngOnDestroy() {
     this.multiSub.unsubscribe();
   }
@@ -61,8 +62,19 @@ export class SelectFlyDaysPage implements OnInit, OnDestroy {
     return +ym.substring("2019-".length);
   }
   ngOnInit() {
+    this.fakeItems = [
+      {
+        dayList: new Array(35).fill(0)
+      },
+      {
+        dayList: new Array(35).fill(0)
+      },
+      {
+        dayList: new Array(35).fill(0)
+      }
+    ];
     this.multiSub = this.flydService.getFlyDayMulti().subscribe(multi => {
-      this.multi = multi;
+      this.isMulti = multi;
       if (multi) {
         this.dayInfo1 = {
           hasToolTip: true,
@@ -80,17 +92,7 @@ export class SelectFlyDaysPage implements OnInit, OnDestroy {
         };
       }
     });
-    this.selectedSub = this.flydService
-      .getSelectedFlyDays()
-      .subscribe(sDays => {
-        this.selectedDays = sDays;
-      });
-    this.isRoundTrip = this.multi;
     this.yms = this.flydService.generateCanlender(3);
-    // setTimeout(() => {
-    //   this.yms=this.yms.concat(this.flydSer.generateCanlender(3).slice(2));
-    //   this.initialSeletedDaysView();
-    // }, 1000);
   }
   displayYm(ym: string) {
     return moment(ym, "YYYY-MM-DD").format(
@@ -112,25 +114,47 @@ export class SelectFlyDaysPage implements OnInit, OnDestroy {
     d.descColor = "light";
     d.firstSelected = true;
     d.lastSelected = true;
+    if (this.isMulti && this.selectedDays.length) {
+      if (d.timeStamp < this.selectedDays[0].timeStamp) {
+        d.desc = LanguageHelper.getDepartureTip();
+        this.selectedDays = [d];
+        AppHelper.toast(LanguageHelper.getSelectFlyBackDate(), 1000, "top");
+      } else {
+        d.desc = LanguageHelper.getReturnTripTip();
+        this.selectedDays.push(d);
+      }
+    } else {
+      this.selectedDays.push(d);
+    }
     this.yms.map(item => {
-      item.dayList.forEach(dt => {
-        if (dt.date !== d.date) {
+      item.dayList
+        .filter(itm => !this.selectedDays.some(it => it.date === itm.date))
+        .forEach(dt => {
           dt.selected = false;
           dt.lastSelected = false;
           dt.firstSelected = false;
           dt.desc = null;
           dt.descColor = null;
           dt.descPos = null;
-        }
-      });
+        });
     });
-    this.selectedDays = [d];
-    setTimeout(() => {
-      this.cancel();
-    }, 100);
+    if (!this.isMulti) {
+      setTimeout(() => {
+        this.cancel();
+      }, 300);
+    } else {
+      if (this.selectedDays.length == 1) {
+        AppHelper.toast(LanguageHelper.getSelectFlyBackDate(), 1400, "top");
+      }
+      if (this.selectedDays.length == 2) {
+        setTimeout(() => {
+          this.cancel();
+        }, 300);
+      }
+    }
   }
   initialSeletedDaysView() {
-    if (!this.isRoundTrip && this.selectedDays.length > 1) {
+    if (!this.isMulti && this.selectedDays.length > 1) {
       this.selectedDays = [this.selectedDays[0]];
     }
     const validDays = this.selectedDays.filter(item => !!item.date);
@@ -139,7 +163,7 @@ export class SelectFlyDaysPage implements OnInit, OnDestroy {
       this.selectedDays = [];
     } else {
       let first = this.selectedDays[0];
-      this.dayInfo1 = {
+      this.dayInfo2 = {
         hasToolTip: first.hasToolTip,
         toolTipMsg: first.toolTipMsg || "请选择返程日期",
         desc: first.desc || "返程",
@@ -147,7 +171,7 @@ export class SelectFlyDaysPage implements OnInit, OnDestroy {
         color: first.descColor || "light"
       };
       let last = this.selectedDays[this.selectedDays.length - 1];
-      this.dayInfo2 = {
+      this.dayInfo1 = {
         hasToolTip: last.hasToolTip,
         toolTipMsg: "",
         desc: last.desc || "去程",

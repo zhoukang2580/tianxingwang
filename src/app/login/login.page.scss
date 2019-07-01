@@ -1,6 +1,6 @@
 ion-content {
   ion-toolbar:first-child {
-    margin:4vh auto 3vh;
+    margin: 4vh auto 3vh;
   }
   .err-msg {
     ion-label {
@@ -15,7 +15,7 @@ ion-content {
   }
 
   img.logo {
-    width: 8em;
+    width: 6em;
   }
   form {
     margin-top: 1em;
@@ -24,7 +24,12 @@ ion-content {
     margin-bottom: 0;
   }
   ion-segment {
-    --indicator-color: var(--ion-color-medium);
+    --indicator-color: rgba(0, 0, 0, 0.13);
+    ion-segment-button {
+      ion-label {
+        font-size: 1rem;
+      }
+    }
   }
   ion-row {
     border-bottom: 1px solid var(--ion-color-medium);
@@ -32,7 +37,7 @@ ion-content {
       align-self: center;
     }
   }
-  .login-btn{
+  .login-btn {
     margin-top: 2em;
   }
   .register-forgetpassword {

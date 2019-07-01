@@ -10,15 +10,12 @@ import {
   Renderer2,
   Input,
   HostBinding,
-  OnDestroy,
-  Output,
-  EventEmitter,
-  NgZone
+  OnDestroy
 } from "@angular/core";
 import { fromEvent, Subscription } from "rxjs";
 import { ListCityModel } from "./models/ListCityModel";
 import * as jsPy from "js-pinyin";
-import { FlyCityItemModel as TrafficlineModel } from "./models/TrafficlineModel";
+import { TrafficlineModel } from "./models/TrafficlineModel";
 import {
   trigger,
   state,
@@ -63,15 +60,12 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input()
   @HostBinding("@openclose")
   openclose = true;
-  @Output() selectcity: EventEmitter<any>;
   constructor(
     private plt: Platform,
     private render: Renderer2,
     // private ngZone: NgZone,
     private flightService: FlightService
-  ) {
-    this.selectcity = new EventEmitter();
-  }
+  ) {}
   ionViewWillEnter() {
     this.initHistoryCities();
     // console.log(this.domesticAirports.length);
@@ -340,7 +334,6 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
   goBack() {
-    this.selectcity.emit(this.selectedCity);
     this.flightService.setOpenCloseSelectCityPageSources(false);
   }
   onNavLickClick(link: string) {
@@ -364,12 +357,13 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     city.Selected = true;
     this.selectedCity = city;
+    this.flightService.setSelectedCity(this.selectedCity);
     this.hotCities.map(hc => {
       hc.Selected = hc.Id === city.Id;
     });
     this.historyCities.forEach(item => {
       item.Selected = item.Id === city.Id;
-      if (!this.historyCities.find(item => item.Id === city.Id)) {
+      if (!this.historyCities.find(itm => itm.Id === city.Id)) {
         this.historyCities.unshift(city);
       }
     });

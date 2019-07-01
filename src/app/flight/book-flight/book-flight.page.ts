@@ -1,3 +1,5 @@
+import { FlightService } from "src/app/flight/flight.service";
+import { TrafficlineModel } from "./../components/select-city/models/TrafficlineModel";
 import { FlydayService } from "./../select-fly-days/flyday.service";
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
@@ -17,30 +19,31 @@ import { Storage } from "@ionic/storage";
 export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
   toggleCities = false; // 没有切换城市顺序
   rotateIcon = false;
-  isSingle: boolean;
-  isSelectFromCity: boolean;
+  isSingle = true;
   isSelectFlyDate: boolean;
   flyDate: DayModel;
   backDate: DayModel;
   totalFlyDays: number;
   selectDaySubscription = Subscription.EMPTY;
-  selectCitySub = Subscription.EMPTY;
+  selectCitySubscription = Subscription.EMPTY;
   isMoving: boolean;
-  vmFromCity: any; // 城市切换后，真实的出发城市
-  vmToCity: any; // 切换后，真实的目的城市
-  fromCity: any; // 城市切换后，真实的出发城市
-  toCity: any; // 切换后，真实的目的城市
+  vmFromCity: TrafficlineModel; // 界面上显示的城市
+  vmToCity: TrafficlineModel; // 界面上显示的城市
+  fromCity: TrafficlineModel; // 城市切换后，真实的出发城市
+  toCity: TrafficlineModel; // 切换后，真实的目的城市
   constructor(
     private router: Router,
     private dayService: SelectDateService,
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private flydayService: FlydayService
+    private flydayService: FlydayService,
+    private flightService: FlightService
   ) {}
   goBack() {
     this.navCtrl.back();
   }
   private onRoundTrip(single: boolean) {
+    // console.log("onRoundTrip isSingle", single);
     this.isSingle = single;
   }
   getMonth(d: DayModel) {
@@ -50,10 +53,10 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     console.log("ngAfterViewInit");
   }
   segmentChanged(evt: CustomEvent) {
+    // console.log("evt.detail.value", evt.detail.value);
     this.onRoundTrip(evt.detail.value == "single");
   }
   ngOnInit() {
-    this.onRoundTrip(true);
     this.initFlightCities();
     this.initFlightDays();
     this.selectDaySubscription = this.flydayService
@@ -73,17 +76,8 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
         }
       });
   }
-  onSelectToCity(toCity: any) {
-    this.toCity = toCity;
-    console.log("目的城市 " + toCity.CityName);
-  }
-  onSelectFromCity(city: any) {
-    console.log("出发城市 =>" + city.CityName);
-    this.fromCity = city;
-  }
   ngOnDestroy(): void {
     console.log("on destroyed");
-    this.selectCitySub.unsubscribe();
     this.selectDaySubscription.unsubscribe();
   }
   initFlightDays() {
@@ -104,13 +98,27 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.totalFlyDays = 4;
   }
   async initFlightCities() {
-    this.fromCity = this.vmFromCity = {};
-    this.fromCity.CityName = this.vmFromCity.CityName = "北京";
-    this.vmFromCity.Code = this.fromCity.Code = "BJS";
-    this.toCity = this.vmToCity = {};
-    this.toCity.CityName = this.vmToCity.CityName = "上海";
-    this.vmToCity.Code = this.toCity.Code = "SHA";
-    this.fromCity.Tag = this.toCity.Tag = "AirportCity"; // 出发城市，不是出发城市的那个机场
+    const cities = await this.flightService.getAllLocalAirports();
+    if (cities && cities.length) {
+      this.vmFromCity = this.fromCity = cities.find(
+        c => c.Code.toUpperCase() == "BJS"
+      );
+      this.vmToCity = this.toCity = cities.find(
+        c => c.Code.toUpperCase() == "SHA"
+      );
+      console.log("from city ", this.fromCity);
+      console.log("to city ", this.toCity);
+    } else {
+      this.fromCity = this.vmFromCity = {} as any;
+      this.fromCity.CityName = this.vmFromCity.CityName = "北京";
+      this.vmFromCity.Code = this.fromCity.Code = "BJS";
+      this.toCity = this.vmToCity = {} as any;
+      this.toCity.CityName = this.vmToCity.CityName = "上海";
+      this.vmToCity.Code = this.toCity.Code = "SHA";
+      this.fromCity.Tag = this.toCity.Tag = "AirportCity"; // 出发城市，不是出发城市的那个机场
+    }
+    this.flightService.setSelectedCity(this.fromCity);
+    this.flightService.setSelectedCity(this.toCity);
   }
   searchFlight() {
     console.log(
@@ -125,29 +133,30 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     s.ToAsAirport = this.toCity.Tag === "Airport"; // 以到达 机场 查询
     s.FromAsAirport = this.fromCity.Tag === "Airport"; // 以出发 机场 查询
     s.isRoundTrip = !this.isSingle;
-    this.router.navigate([
-      AppHelper.getRoutePath("flight-list"),
-      {
-        data: JSON.stringify(s)
+    this.router.navigate([AppHelper.getRoutePath("flight-list")], {
+      queryParams: {
+        searchFlightModel: JSON.stringify(s),
+        fromCity:JSON.stringify(this.fromCity),
+        toCity:JSON.stringify(this.toCity)
       }
-    ]);
+    });
   }
   getDayDesc(d: DayModel) {
     return this.dayService.getDescOfDay(d);
   }
   onSelecFlyDate(flyTo: boolean) {
     this.isSelectFlyDate = flyTo;
-    // if (this.isSingle) {
-    //   if (this.isSelectFlyDate) {
-    //     this.dayService.setSelectedDays([this.flyDate]);
-    //   } else {
-    //     this.dayService.setSelectedDays([this.backDate]);
-    //   }
-    // } else {
-    //   this.dayService.setSelectedDays([this.flyDate, this.backDate]);
-    //   this.dayService.setTitle("请选择去程日期");
-    // }
     this.flydayService.setFlyDayMulti(!this.isSingle);
     this.router.navigate([AppHelper.getRoutePath("select-fly-day")]);
+  }
+  onFromCitySelected(city: TrafficlineModel) {
+    if (city) {
+      this.fromCity = city;
+    }
+  }
+  onToCitySelected(city: TrafficlineModel) {
+    if (city) {
+      this.toCity = city;
+    }
   }
 }

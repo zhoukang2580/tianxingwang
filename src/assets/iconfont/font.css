@@ -57,18 +57,30 @@
 	content: "\E009";
 }
 
-.icon-tab-home:before {
+.icon-tab-home-fill:before {
 	content: "\E00A";
 }
 
-.icon-tab-my:before {
+.icon-tab-home:before {
 	content: "\E00B";
 }
 
-.icon-tab-trip:before {
+.icon-tab-my-fill:before {
 	content: "\E00C";
 }
 
-.icon-verify:before {
+.icon-tab-my:before {
 	content: "\E00D";
+}
+
+.icon-tab-trip-fill:before {
+	content: "\E00E";
+}
+
+.icon-tab-trip:before {
+	content: "\E00F";
+}
+
+.icon-verify:before {
+	content: "\E010";
 }

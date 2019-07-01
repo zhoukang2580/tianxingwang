@@ -30,6 +30,7 @@ import { IdentityService } from "../identity/identity.service";
 import { LoadingController } from "@ionic/angular";
 import { LanguageHelper } from "src/app/languageHelper";
 import { environment } from "src/environments/environment";
+import { Storage } from "@ionic/storage";
 interface ApiConfig {
   Urls: { [key: string]: string };
   Token: string;
@@ -45,7 +46,8 @@ export class ApiService {
     private http: HttpClient,
     private router: Router,
     private identityService: IdentityService,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private storage: Storage
   ) {
     this.loadingSubject = new BehaviorSubject(false);
     this.identityService.getIdentity().subscribe(identity => {
@@ -53,7 +55,7 @@ export class ApiService {
     });
     setTimeout(() => {
       console.log("loadApiConfig");
-      this.loadApiConfig()
+      this.loadApiConfig(true)
         .then(_ => {
           console.log("loadApiConfig complete");
         })
@@ -285,9 +287,14 @@ export class ApiService {
     );
   }
 
-  async loadApiConfig(): Promise<ApiConfig> {
-    if (this.apiConfig) {
-      return Promise.resolve(this.apiConfig);
+  async loadApiConfig(forceRefresh = false): Promise<ApiConfig> {
+    if (!forceRefresh) {
+      if (!this.apiConfig) {
+        this.apiConfig = await this.storage.get(`KEY_API_CONFIG`);
+      }
+      if (this.apiConfig) {
+        return Promise.resolve(this.apiConfig);
+      }
     }
     const url = AppHelper.getApiUrl() + "/Home/ApiConfig";
     const due = 30 * 1000;
@@ -306,8 +313,9 @@ export class ApiService {
           })
         )
         .subscribe(
-          (r: IResponse<ApiConfig>) => {
+          async (r: IResponse<ApiConfig>) => {
             if (r.Data) {
+              await this.storage.set(`KEY_API_CONFIG`, r.Data);
               this.apiConfig = r.Data;
               if (this.identityEntity) {
                 this.identityEntity.Token = r.Data.Token;

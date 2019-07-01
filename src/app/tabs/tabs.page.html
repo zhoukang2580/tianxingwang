@@ -2,17 +2,17 @@
   <ion-tab-bar slot="bottom">
     <ion-tab-button tab="home">
       <!-- <i class='icon icon-tab-home {{tab==="home"?"active":""}}'></i> -->
-      <i class='icon icon-tab-home'></i>
+      <i class='icon icon-tab-home{{tab==="home"?"-fill":""}}'></i>
       <!-- <img src="assets/svgs/tab-home.svg" appLazyloadimage alt="首页"> -->
       <ion-label>首页</ion-label>
     </ion-tab-button>
     <ion-tab-button tab="trip">
-      <i class='icon icon-tab-trip'></i>
+      <i class='icon icon-tab-trip{{tab==="trip"?"-fill":""}}'></i>
       <!-- <img src="assets/svgs/tab-trip.svg" appLazyloadimage alt="首页"> -->
       <ion-label>行程</ion-label>
     </ion-tab-button>
     <ion-tab-button tab="my">
-      <i class='icon icon-tab-my'></i>
+      <i class='icon icon-tab-my{{tab==="my"?"-fill":""}}'></i>
       <!-- <img src="assets/svgs/tab-my.svg" appLazyloadimage alt="首页"> -->
       <ion-label>我的</ion-label>
     </ion-tab-button>

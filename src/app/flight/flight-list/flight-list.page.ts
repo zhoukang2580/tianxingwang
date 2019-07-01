@@ -26,7 +26,7 @@ import { FlydayService } from "../select-fly-days/flyday.service";
 import { SearchFlightModel } from "../models/flight/SearchFlightModel";
 import { AdvSearchCondModel } from "../models/flight/advanced-search-cond/AdvSearchCondModel";
 import { DayModel } from "../models/DayModel";
-import { FlightService } from "../flight.service";
+import { FlightService, Trafficline } from "../flight.service";
 import { FlightSegmentEntity } from "../models/flight/FlightSegmentEntity";
 import { FlightJourneyEntity } from "../models/flight/FlightJourneyEntity";
 import { FlightCabinType } from "../models/flight/FlightCabinType";
@@ -65,8 +65,8 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   flights: FlightJourneyEntity[]; // 保持和后台返回的数据一致
   vmFlights: FlightSegmentEntity[]; // 用于视图展示
   toCityName: string; // 到达城市名称
-  vmToCity$: Observable<any>;
-  vmFromCity$: Observable<any>;
+  vmToCity: Trafficline;
+  vmFromCity: Trafficline;
   flightsSub = Subscription.EMPTY;
   flyCitiesSub = Subscription.EMPTY;
   advSCondSub = Subscription.EMPTY;
@@ -96,28 +96,21 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.autoRefreshSj = new BehaviorSubject(false);
     this.vmFlights = [];
     this.flights = [];
-    this.route.params.subscribe(d => {
-      if (d && d.data) {
-        // console.log("路由参数：",d.data);
-        this.sortCondition = JSON.parse(d.data);
+    this.route.queryParamMap.subscribe(async d => {
+      if (d.get("searchFlightModel")) {
+        // console.log("路由参数：",d.get("searchFlightModel"));
+        this.sortCondition = JSON.parse(d.get("searchFlightModel"));
         this.sortCondition.curPage = 1;
         this.sortCondition.pageSize = 5;
         this.isRoundTrip = this.sortCondition.isRoundTrip;
-        this.vmFromCity$ = this.flyService
-          .getFlyCityByCode(this.sortCondition.FromCode)
-          .pipe(
-            tap(c => {
-              console.log("出发城市：" + (c && c.CityName));
-            })
-          );
-        this.vmToCity$ = this.flyService
-          .getFlyCityByCode(this.sortCondition.ToCode)
-          .pipe(
-            tap(t => {
-              console.log("到达城市" + (t && t.CityName));
-              this.toCityName = t && t.CityName;
-            })
-          );
+      }
+      if (d.get("fromCity")) {
+        // console.log("路由参数：",d.data);
+        this.vmFromCity = JSON.parse(d.get("fromCity"));
+      }
+      if (d.get("toCity")) {
+        // console.log("路由参数：",d.data);
+        this.vmFromCity = JSON.parse(d.get("toCity"));
       }
       // console.log(this.s);
     });

@@ -293,6 +293,7 @@ export class SelectDatetimePage
             day: date.date() + "",
             enabled: Math.floor(+date / 1000) >= Math.floor(+moment() / 1000),
             color: "medium",
+            displayName: `${date.date()}`,
             isLastMonthDay: true,
             timeStamp: Math.floor(+date / 1000),
             toolTipPos: "center",
@@ -307,7 +308,8 @@ export class SelectDatetimePage
         // 每个月的每一天
         const date = tempCurM.date(d); // 每个月的每一天日期
         dayList.push({
-          day: date.date() + "",
+          day: `${date.date()}`,
+          displayName: `${date.date()}`,
           date: date.format("YYYY-MM-DD"),
           enabled: Math.floor(+date / 1000) >= Math.floor(+moment() / 1000),
           timeStamp: Math.floor(+date / 1000),

@@ -4,10 +4,10 @@ ion-toolbar {
     // color: var(--ion-color-light);
     --opacity: 1;
   }
-  ion-buttons{
+  ion-buttons {
     &[hidden-btn] {
-        visibility: collapse;
-      }
+      visibility: collapse;
+    }
   }
   & ~ & {
     margin-top: -1px;
@@ -33,7 +33,7 @@ ion-list.week-of-year-month {
 ion-row {
   display: flex;
   position: relative;
-  &::after{
+  &::after {
     position: absolute;
     left: 50%;
     top: 50%;
@@ -55,7 +55,7 @@ ion-col {
   &.not-enabled,
   &.invisable {
     background-color: rgba(var(--ion-color-medium-rgb), 0.05);
-    color:var(--ion-color-light);
+    color: var(--ion-color-light);
   }
   &.selected {
     background-color: var(--ion-color-secondary);

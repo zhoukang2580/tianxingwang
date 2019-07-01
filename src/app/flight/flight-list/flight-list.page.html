@@ -1,8 +1,14 @@
 <ion-header>
-  <ion-toolbar color='secondary'>
-    <ion-title text-center (click)='bookFlight()'>{{ (vmFromCity$ | async)?.CityName }}--{{
-      (vmToCity$ | async)?.CityName
-      }}</ion-title>
+  <ion-toolbar>
+    <ion-title color='secondary' text-center>
+      <ion-button fill='clear'>
+        <ion-text>{{vmFromCity?.CityName}}</ion-text>
+      </ion-button>
+      <ion-text>--</ion-text>
+      <ion-button fill='clear'>
+        <ion-text>{{ vmToCity?.CityName}}</ion-text>
+      </ion-button>
+    </ion-title>
   </ion-toolbar>
   <ion-toolbar class="fly-days">
     <app-fly-days-calendar (itemSelected)="onChangedDay($event)" (calenderClick)="onCalenderClick()">

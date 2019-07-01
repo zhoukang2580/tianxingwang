@@ -2,9 +2,9 @@ import { Subject, BehaviorSubject } from "rxjs";
 import { Injectable } from "@angular/core";
 import * as moment from "moment";
 import { environment } from "../../../environments/environment";
-import { DayModel } from '../models/DayModel';
-import { AvailableDate } from '../models/AvailableDate';
-import { LanguageHelper } from 'src/app/languageHelper';
+import { DayModel } from "../models/DayModel";
+import { AvailableDate } from "../models/AvailableDate";
+import { LanguageHelper } from "src/app/languageHelper";
 @Injectable({
   providedIn: "root"
 })
@@ -63,12 +63,15 @@ export class FlydayService {
     const retD = new DayModel();
     retD.date = d.format("YYYY-MM-DD");
     retD.day = d.date() + "";
+    retD.displayName = retD.day;
     retD.timeStamp = Math.floor(+d / 1000);
     retD.enabled = Math.floor(+d / 1000) >= Math.floor(+moment() / 1000);
     if (retD.date === moment().format("YYYY-MM-DD")) {
       // console.log("今天 "+ retD.date);
       retD.color = "primary";
       retD.isToday = true;
+      retD.enabled = true;
+      retD.displayName = LanguageHelper.getTodayTip();
     }
     retD.toolTipPos = "center";
     this.setWeekName(retD);
@@ -86,9 +89,10 @@ export class FlydayService {
     return wn;
   }
   generateCanlender(months: number) {
-    const st = Date.now();
     const calender: AvailableDate[] = [];
-    for (let i = 0; i < months; i++) {
+    let i = 0;
+    const loop = (isFirst = false) => {
+      const st = Date.now();
       const iM = moment().add(i, "months"); // 第i个月
       const item: AvailableDate = {
         dayList: [],
@@ -115,12 +119,12 @@ export class FlydayService {
           .subtract(1, "days") // 上个月的最后一天
           .date();
         // console.log(lastMDay);
-        for (let d = lastMDay, j = curWeek; j > 0; d-- , j--) {
+        for (let d = lastMDay, j = curWeek; j > 0; d--, j--) {
           const date = curMFistDate
             .subtract(1, "days") // 应该是上个月的日期
             .date(d);
           const lsmd = this.generateDayModel(date);
-          lsmd.isLastMonthDay = true;// 是上个月的日期
+          lsmd.isLastMonthDay = true; // 是上个月的日期
           item.dayList.unshift(lsmd);
         }
         // console.log(dayList);
@@ -130,10 +134,16 @@ export class FlydayService {
         const dayOfiM = iM.startOf("month").date(j); // 每月的j号
         item.dayList.push(this.generateDayModel(dayOfiM));
       }
-    }
-    if (!environment.production) {
-      console.log("生成日历耗时：" + (Date.now() - st) + " ms");
-    }
+      console.log(`第${i}个月日期生成耗时：${Date.now() - st} ms`);
+      i++;
+      if (!isFirst && i <= months - 1) {
+        window.requestAnimationFrame(() => loop(false));
+      }
+    };
+    // loop(true);
+    setTimeout(() => {
+      loop();
+    }, 1000);
     return calender;
   }
 }

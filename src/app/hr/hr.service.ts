@@ -61,16 +61,20 @@ export class HrService {
   private staff: StaffEntity;
   constructor(private apiService: ApiService) {}
   async getStaff(forceRefresh: boolean = false): Promise<StaffEntity> {
+    forceRefresh =
+      forceRefresh ||
+      (this.staff && !this.staff.IsConfirmInfo) ||
+      (this.staff && !this.staff.IsModifyPassword);
     if (this.staff && !forceRefresh) {
       return Promise.resolve(this.staff);
     }
     const req = new RequestEntity();
     req.Method = "HrApiUrl-Staff-Get";
-    req.IsShowLoading=true;
+    req.IsShowLoading = true;
     return this.apiService
       .getPromiseResponse<StaffEntity>(req)
       .then(s => {
-        console.log('staff ',s);
+        console.log("staff ", s);
         this.staff = s;
         return s;
       })

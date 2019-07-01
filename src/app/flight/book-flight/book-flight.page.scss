@@ -3,7 +3,7 @@ ion-content {
   background-position: center;
   background-attachment: scroll;
   ion-segment {
-    --indicator-color: var(--ion-color-medium);
+    --indicator-color: rgba(0, 0, 0, 0.13);
   }
   ion-toolbar {
     --background: transparent;

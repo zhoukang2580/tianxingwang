@@ -20,20 +20,37 @@
 </ion-header>
 
 <ion-content>
-  <ion-list class="week-of-year-month" *ngFor="let ym of yms">
-    <ion-item-divider color="light">
-      <ion-label text-center>{{displayYm(ym.yearMonth)}}</ion-label>
-    </ion-item-divider>
-    <ion-grid>
-      <ion-row [attr.month]='getMonth(ym.yearMonth)'>
-        <ion-col *ngFor="let day of ym.dayList; let first = first; let last = last" text-center
-          [class.selected]="day?.selected" [class.today]="day?.isToday"
-          [class.between-selected-days]="day?.isBetweenDays" [attr.first-selected-day]="day?.firstSelected"
-          [attr.last-selected-day]="day?.lastSelected" [class.invisable]="day?.isLastMonthDay"
-          [class.not-enabled]="!day?.enabled" size='1.71'>
-          <app-day [dayModel]="day" (daySelected)="onDaySelected($event, true)"></app-day>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </ion-list>
+  <ng-container *ngIf='yms.length else fakeyms'>
+    <ion-list class="week-of-year-month" *ngFor="let ym of yms">
+      <ion-item-divider color="light">
+        <ion-label text-center>{{displayYm(ym.yearMonth)}}</ion-label>
+      </ion-item-divider>
+      <ion-grid>
+        <ion-row [attr.month]='getMonth(ym.yearMonth)'>
+          <ion-col *ngFor="let day of ym.dayList; let first = first; let last = last" text-center
+            [class.selected]="day?.selected" [class.today]="day?.isToday"
+            [class.between-selected-days]="day?.isBetweenDays" [attr.first-selected-day]="day?.firstSelected"
+            [attr.last-selected-day]="day?.lastSelected" [class.invisable]="day?.isLastMonthDay"
+            [class.not-enabled]="!day?.enabled" size='1.71'>
+            <app-day [dayModel]="day" (daySelected)="onDaySelected($event, true)"></app-day>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-list>
+  </ng-container>
+  <ng-template #fakeyms>
+    <ion-list class="week-of-year-month" *ngFor="let ym of fakeItems">
+      <ion-item-divider color="light">
+        <ion-skeleton-text animated ></ion-skeleton-text>
+      </ion-item-divider>
+      <ion-grid>
+        <ion-row>
+          <ion-col *ngFor="let day of ym.dayList; let first = first; let last = last" text-center size='1.71'>
+            <ion-skeleton-text animated></ion-skeleton-text>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-list>
+  </ng-template>
+
 </ion-content>

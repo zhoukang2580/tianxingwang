@@ -7,6 +7,8 @@
   height: 100%;
   padding: 1.5rem 0;
   ion-text {
+    max-width: 30vw;
+    transition: all ease-out 500ms;
     h2 {
       &.left {
         text-align: left;
@@ -14,11 +16,12 @@
       &.right {
         text-align: right;
       }
-      transition: all ease-out 500ms;
-      font-size: 1.7rem;
+      // font-size: 1.5rem;
     }
   }
   .toogle-icon {
+    position: relative;
+    min-width: 4em;
     display: flex;
     align-items: center;
     .airplane {
@@ -26,7 +29,7 @@
       position: absolute;
       margin: 0;
       padding: 0;
-      left: 50%;
+      left: 45%;
       transform: translateX(-50%);
     }
     ion-icon[name="ios-sync"] {

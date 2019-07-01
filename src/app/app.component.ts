@@ -75,7 +75,7 @@ export class AppComponent
     private actionSheetCtrl: ActionSheetController,
     private loadingCtrl: LoadingController,
     private http: HttpClient,
-    flightService: FlightService,
+    private flightService: FlightService,
     messageService: MessageService
   ) {
     // console.log(this.router.config);
@@ -222,7 +222,9 @@ export class AppComponent
     let lastClickTime = 0;
     console.log("backbutton url = " + this.router.url);
     this.platform.backButton.subscribe(async () => {
+      let count = 1;
       await AppHelper.dismissLayer();
+      this.flightService.setOpenCloseSelectCityPageSources(false);
       this.apiService.hideLoadingView();
       if (
         this.router.url.includes("login") ||
@@ -236,6 +238,8 @@ export class AppComponent
         }
       } else {
         this.navCtrl.back();
+        count++;
+        console.log(`backbutton back count=${count}`);
         // window.history.back();
       }
     });
