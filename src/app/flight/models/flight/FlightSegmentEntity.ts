@@ -48,6 +48,7 @@ export class FlightSegmentEntity {
     ///航空公司
     /// </summary>
     Airline: string;
+    AirlineSrc: string;
     /// <summary>
     /// 航空公司名称
     /// </summary>

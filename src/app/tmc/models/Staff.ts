@@ -1,3 +1,5 @@
+import { StaffBookType } from './StaffBookType';
+
 export class Staff {
   Id: string; // Long Id
   TmcId: string; // Long 客户 id
@@ -22,6 +24,6 @@ export class Staff {
   CostCenterName: string; // String 成本中心名称
   CredentialsInfo: string; // String 证件信息
   IsUsed: boolean; // 是否启用
-  BookType: string; // int 预订类型
+  BookType: StaffBookType; // int 预订类型
   BookCodes: string; // String 预订代码
 }

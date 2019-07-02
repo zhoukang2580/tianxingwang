@@ -1,10 +1,11 @@
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
 import { Injectable } from "@angular/core";
+import { StaffBookType } from "../tmc/models/StaffBookType";
 export interface StaffEntity {
   IsConfirmInfo: boolean;
   IsModifyPassword: boolean;
-  BookType: string;
+  BookType: StaffBookType;
   StaffNumber: string;
   CostCenterName: string;
   CostCenterCode: string;

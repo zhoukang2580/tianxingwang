@@ -4,7 +4,7 @@
   -webkit-overflow-scrolling: touch;
 }
 .icon-back {
-  --color: rgba(var(--ion-color-dark-rgb), 0.5);
+  color: rgba(var(--ion-color-dark-rgb), 0.5);
 }
 ion-segment-button {
   &.overseas {

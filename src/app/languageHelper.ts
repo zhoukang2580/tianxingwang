@@ -1,4 +1,7 @@
 export class LanguageHelper {
+  static getSelectPassengersTip() {
+    return "请选择乘客";
+  }
   static getSelectFlyBackDate() {
     return "请选择返程日期";
   }

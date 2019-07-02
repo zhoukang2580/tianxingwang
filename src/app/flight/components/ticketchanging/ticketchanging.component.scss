@@ -1,0 +1,21 @@
+ion-grid {
+  ion-col {
+    align-self: center;
+  }
+  ion-row + ion-row {
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+  }
+  ion-col + ion-col {
+    border-left: 1px solid rgba(0, 0, 0, 0.12);
+  }
+}
+:host {
+  overflow: auto;
+}
+ion-header {
+  position: sticky;
+  top: 0;
+}
+ion-col div {
+  text-indent: 1em;
+}

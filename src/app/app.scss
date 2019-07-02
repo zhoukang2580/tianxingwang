@@ -78,8 +78,6 @@ ion-header {
   --color: rgba(var(--ion-color-dark-rgb), 0.5);
 }
 
-
-
 ion-alert,
 ion-loading,
 ion-radio {
@@ -153,4 +151,8 @@ input {
   text-align: justify;
   display: inline-block;
 }
-
+ion-modal.ticket-changing {
+  --width: 90%;
+  --max-height: 65%;
+  --border-radius: .5em;
+}

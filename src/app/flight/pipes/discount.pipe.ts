@@ -10,7 +10,7 @@ export class DiscountPipe implements PipeTransform {
       return value;
     }
     if (v < 1) {
-      return `${v * 10}`.substr(0, 3) + "折";
+      return `${v * 100}`.substr(0, 2) + " 折";
     }
     return "全价";
   }

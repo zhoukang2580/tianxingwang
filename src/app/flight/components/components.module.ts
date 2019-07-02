@@ -17,9 +17,10 @@ import { CabinComponent } from "./fly-filter/cabin/cabin.component";
 import { NoMoreDataComponent } from "./no-more-data/no-more-data.component";
 import { FlyTimelineComponent } from "./fly-timeline/fly-timeline.component";
 import { FlyTimelineItemComponent } from "./fly-timeline-item/fly-timeline-item.component";
-import { SelectCityComponent } from './select-city/select-city.component';
-import { DirectivesModule } from '../directives/directives.module';
-import { SearchDayComponent } from './search-day/search-day.component';
+import { SelectCityComponent } from "./select-city/select-city.component";
+import { DirectivesModule } from "../directives/directives.module";
+import { SearchDayComponent } from "./search-day/search-day.component";
+import { TicketchangingComponent } from "./ticketchanging/ticketchanging.component";
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { SearchDayComponent } from './search-day/search-day.component';
     FlyTimelineComponent,
     FlyTimelineItemComponent,
     SelectCityComponent,
-    SearchDayComponent
+    SearchDayComponent,
+    TicketchangingComponent
   ],
   imports: [
     CommonModule,
@@ -65,8 +67,9 @@ import { SearchDayComponent } from './search-day/search-day.component';
     PipesModule,
     FlyTimelineComponent,
     FlyTimelineItemComponent,
-    SelectCityComponent
+    SelectCityComponent,
+    TicketchangingComponent
   ],
-  entryComponents: [FlyFilterComponent]
+  entryComponents: [FlyFilterComponent,TicketchangingComponent]
 })
 export class FlightComponentsModule {}

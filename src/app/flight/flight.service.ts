@@ -1,3 +1,5 @@
+import { IdentityService } from "./../services/identity/identity.service";
+import { HrService, StaffEntity } from "./../hr/hr.service";
 import { AppHelper } from "src/app/appHelper";
 import { Injectable } from "@angular/core";
 import { map, tap, switchMap } from "rxjs/operators";
@@ -16,8 +18,38 @@ import { FlightSegmentEntity } from "./models/flight/FlightSegmentEntity";
 import { RequestEntity } from "../services/api/Request.entity";
 import { Storage } from "@ionic/storage";
 import { TrafficlineModel } from "./components/select-city/models/TrafficlineModel";
+import { StaffBookType } from "../tmc/models/StaffBookType";
+import { IdentityEntity } from "../services/identity/identity.entity";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
+export interface FlightSegmentModel {
+  AirlineName; // String 航空公司名称
+  Number; // String 航班号
+  TakeoffTime; // Datetime 起飞时间
+  FlyTime; // Int 飞行时间（分钟）
+  LowestFare; // Decimal 最低价
+  LowestCabinCode; // String 最低价舱位
+  LowestDiscount; // Decimal 最低价折扣
+  IsStop: boolean; // Bool 是否经停
+}
+export interface FlightPolicy {
+  FlightNo: string; // String Yes 航班号
+  CabinCode: string; // string Yes 舱位代码
+  IsAllowBook: string; // Bool Yes 是否可预订
+  Discount: string; // Decimal Yes 折扣率
+  LowerSegment: {
+    // No 低价航班
+    AirlineName; // String 航空公司名称
+    Number; // String 航班号
+    TakeoffTime; // Datetime 起飞时间
+    FlyTime; // Int 飞行时间（分钟）
+    LowestFare; // Decimal 最低价
+    LowestCabinCode; // String 最低价舱位
+    LowestDiscount; // Decimal 最低价折扣
+    IsStop: boolean; // Bool 是否经停
+  }[];
+  Rules: string[]; // List<string> No 违反的差标信息
+}
 export interface Trafficline {
   Id: string; // long
   Tag: string; // 标签（Airport 机场，AirportCity 机场城市，Train 火车站）
@@ -50,12 +82,25 @@ export class FlightService {
   private localInternationAirports: LocalStorageAirport;
   private localDomesticAirports: LocalStorageAirport;
   private _selectedCitySource: Subject<TrafficlineModel>;
-  constructor(private apiService: ApiService, private storage: Storage) {
+  private selectedCutomers: any[];
+  constructor(
+    private apiService: ApiService,
+    private storage: Storage,
+    private hrService: HrService,
+    private identityService: IdentityService
+  ) {
     this._selectedCitySource = new BehaviorSubject(null);
+    this.selectedCutomers = [];
     this.advSearchShowSources = new BehaviorSubject(false);
     this.resetAdvSCondSources = new BehaviorSubject(true);
     this.openCloseSelectCitySources = new BehaviorSubject(false);
     this.advSearchCondSources = new BehaviorSubject(new AdvSearchCondModel());
+  }
+  getSelectedCutomers() {
+    return this.selectedCutomers;
+  }
+  setSelectedCutomers(customers: any[]) {
+    this.selectedCutomers = customers;
   }
   getSelectedCity() {
     return this._selectedCitySource.asObservable();
@@ -159,46 +204,50 @@ export class FlightService {
     console.log(`本地化国际机票耗时：${window.performance.now() - st} ms`);
     return airports;
   }
-
-  searchFlightList(data: SearchFlightModel) {
-    const local = window.localStorage.getItem("this.apiService.flightsApi");
-    // console.log("local",local);
-    if (local && !environment.production) {
-      // console.log(new Array(10).fill(0).map(_=>TestTmcData.FlightData));
-      return merge(
-        of({
-          Data: new Array(100).fill(0).map(_ => TestTmcData.getFlightData()[0])
-        } as IResponse<FlightJourneyEntity[]>)
-        // this.apiService
-        //   .getResponse<FlightJourneyEntity[]>({
-        //     Method: "TmcApiFlightUrl-Home-Index",
-        //     Data: data
-        //   })
-      ).pipe(map(r => r.Data || []));
+  async flightPolicy(Flights: string, Passengers: string[] = []) {
+    const staff = await this.hrService.getStaff();
+    if (staff.BookType == StaffBookType.Self) {
+      const id = await this.identityService.getIdentityPromise();
+      Passengers = [id.Id];
     }
-    return this.apiService
-      .getResponse<FlightJourneyEntity[]>({
-        Method: "TmcApiFlightUrl-Home-Index",
-        Data: {
-          Date: data.Date, //  Yes 航班日期（yyyy-MM-dd）
-          FromCode: data.FromCode, //  Yes 三字代码
-          ToCode: data.ToCode, //  Yes 三字代码
-          FromAsAirport: data.FromAsAirport, //  No 始发以机场查询
-          ToAsAirport: data.ToAsAirport //  No 到达以机场查询
-        },
-        Version: "1.0",
-        IsShowLoading: true
-      })
-      .pipe(
-        tap(r => console.log(r)),
-        map((r: IResponse<FlightJourneyEntity[]>) => r.Data || []),
-        tap(r => {
-          // window.localStorage.setItem(
-          //   "this.apis.flightsApi",
-          //   JSON.stringify(r)
-          // );
-        })
-      );
+    const req = new RequestEntity();
+    req.Method = `TmcApiFlightUrl-Home-Policy`;
+    req.Data = {
+      Flights,
+      Passengers
+    };
+    return this.apiService.getPromiseResponse<
+      {
+        PassengerKey: string;
+        FlightPolicies: FlightPolicy[];
+      }[]
+    >(req);
+  }
+  async searchFlightDetailList(data: SearchFlightModel) {
+    const local = await this.storage.get("TestTmcData.FlightData");
+    console.log("local", local);
+    if (local && !environment.production && local.length) {
+      // console.log(new Array(10).fill(0).map(_=>TestTmcData.FlightData));
+      return local;
+    }
+    const req = new RequestEntity();
+    req.Method = "TmcApiFlightUrl-Home-Detail ";
+    req.Data = {
+      Date: data.Date, //  Yes 航班日期（yyyy-MM-dd）
+      FromCode: data.FromCode, //  Yes 三字代码
+      ToCode: data.ToCode, //  Yes 三字代码
+      FromAsAirport: data.FromAsAirport, //  No 始发以机场查询
+      ToAsAirport: data.ToAsAirport //  No 到达以机场查询
+    };
+    req.Version = "1.0";
+    req.IsShowLoading = true;
+    const serverFlights = await this.apiService
+      .getPromiseResponse<FlightJourneyEntity[]>(req)
+      .catch(_ => [] as FlightJourneyEntity[]);
+    if (serverFlights.length) {
+      await this.storage.set("TestTmcData.FlightData", serverFlights);
+    }
+    return serverFlights;
   }
   getTotalFlySegments(flyJourneys: FlightJourneyEntity[]) {
     return flyJourneys.reduce(

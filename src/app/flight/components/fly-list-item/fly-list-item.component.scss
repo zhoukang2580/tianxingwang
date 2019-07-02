@@ -1,19 +1,24 @@
-
-.fly-ico-to {
-  flex: 2;
-  position: relative;
-  width: 50%; //   background: skyblue;
+ion-item ion-label:first-child {
+  margin-right: 0.5em;
+}
+.airports {
+  font-size: 0.8rem;
+}
+.air,
+.airports,
+.time {
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-flow: row nowrap;
-  ion-text{
-    // color:var(--ion-color-secondary);
-    font-size: 0.7rem;
-  }
-  ion-icon {
-    transform: rotate(-40deg);
-  }
+}
+.air {
+  font-size: 0.7rem;
+}
+.airports,
+.time {
+  justify-content: space-between;
+}
+.time {
+  position: relative;
   &::after,
   &::before {
     position: absolute;
@@ -26,103 +31,60 @@
   }
   &::after {
     align-self: flex-end;
-    right: 0.5em;
-    left: 60%;
+    right: 21%;
+    left: 55%;
   }
   &::before {
     align-self: flex-start;
-    left: 0.5em;
-    right: 60%;
+    left: 21%;
+    right: 55%;
   }
 }
-
-.fly-item {
-  background-color: white;
-  padding: 0.5rem;
-  margin: 0.5rem;
-  display: flex;
-  align-items: center;
-  font-size: 0.8rem;
-  // ion-text {
-  //   white-space: nowrap;
-  //   color: var(--ion-color-medium);
-  // }
-  section {
-    display: flex;
-    flex-flow: column nowrap;
-    width: 100%;
-    article {
-      display: flex;
-      width: 100%;
-      align-items: center;
-      &.date-week {
-        color: var(--ion-color-secondary);
-      }
-      &.price {
-        display: flex;
-        flex-flow: column nowrap;
-        align-items: center;
-        margin-left: auto;
-      }
-      &.time {
-        margin: 0.2rem 0;
-        font-size: 1rem;
-        .end-time {
-          margin-left: auto;
-          position: relative;
-          &[addoneday]::before {
-            position: absolute;
-            top: -1em;
-            width: 100%;
-            color: var(--ion-color-secondary);
-            font-size: 0.7rem;
-            content: attr(addoneday);
-          }
-        }
-      }
-      &.logo-airline {
-        margin-top: 0.2rem;
-        ion-avatar {
-          min-width: 1rem;
-          min-height: 1rem;
-          width: 1.2em;
-          margin-right: 0.3rem;
-          height: 1.2em;
-        }
-        .seperator{
-          margin: 0 0.5em;
-        }
-      }
-      &.c-to-c {
-        margin: 0.3rem 0;
-        .to-city {
-          margin-left: 2em;
-        }
-      }
-    }
+.discount {
+  ion-text + ion-text {
+    margin-left: 0.5em;
   }
-  section.price {
-    align-self: center;
-    padding-left: 1rem;
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: center;
-    justify-content: flex-end;
-    min-width: 15vw;
-    ion-text.jiage {
-      font-weight: bolder;
-      font-size: 0.8rem;
-      margin-bottom: 0.2rem;
-      color: var(--ion-color-danger);
+}
+.seperator {
+  margin: 0 0.2em;
+  color: var(--ion-color-medium);
+}
+.end-time {
+  position: relative;
+  &[addoneday]::before {
+    position: absolute;
+    top: -1em;
+    width: 100%;
+    color: var(--ion-color-secondary);
+    font-size: 0.7rem;
+    content: attr(addoneday);
+  }
+}
+.jiage {
+  font-size: 0.8rem;
+}
+.price {
+  max-width: 5em;
+}
+ion-thumbnail {
+  --size: 1em;
+  margin-right: 0.2em;
+}
+
+ion-list.cabins {
+  margin: 0;
+  margin-bottom: 1em;
+  ion-item {
+    h2 {
+      font-size: 0.9rem;
     }
-    ion-button ion-text{
-      color: var(--ion-color-primary);
-    }
-    article.desc {
+    .book {
+      justify-content: flex-end;
       display: flex;
       align-items: center;
-      justify-content: center;
-      flex-flow: column nowrap;
+      ion-button {
+        margin: 0 0 0 1em;
+      }
     }
   }
 }

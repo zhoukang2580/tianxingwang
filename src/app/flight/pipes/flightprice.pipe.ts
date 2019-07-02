@@ -9,7 +9,7 @@ export class FlightpricePipe implements PipeTransform {
     if(!value||!(+value)){
       return value;
     }
-    return (+value).toFixed(2);
+    return (+value).toFixed(0);
   }
 
 }

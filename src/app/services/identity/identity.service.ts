@@ -32,6 +32,28 @@ export class IdentityService {
     AppHelper.setStorage("ticket", "");
     this.setIdentity(this._IdentityEntity);
   }
+  getIdentityPromise(): Promise<IdentityEntity> {
+    if (
+      this._IdentityEntity &&
+      this._IdentityEntity.Id &&
+      this._IdentityEntity.Ticket
+    ) {
+      return Promise.resolve(this._IdentityEntity);
+    }
+    return new Promise(s => {
+      const sub = this.loadIdentityEntity()
+        .pipe(
+          finalize(() => {
+            setTimeout(() => {
+              sub.unsubscribe();
+            }, 300);
+          })
+        )
+        .subscribe(r => {
+          s(r);
+        });
+    });
+  }
   getIdentity(): Observable<IdentityEntity> {
     if (
       this._IdentityEntity &&

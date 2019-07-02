@@ -132,6 +132,16 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
           } else {
             this.vmToCity = c;
           }
+          if (this.vmFromCity) {
+            this.eFromCity.emit(
+              this.toggleCities ? this.vmToCity : this.vmFromCity
+            );
+          }
+          if (this.vmToCity) {
+            this.eToCity.emit(
+              this.toggleCities ? this.vmFromCity : this.vmToCity
+            );
+          }
         }
       });
   }
