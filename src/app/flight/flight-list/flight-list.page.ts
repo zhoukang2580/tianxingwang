@@ -25,14 +25,7 @@ import {
   OnDestroy,
   NgZone
 } from "@angular/core";
-import {
-  tap,
-  takeUntil,
-  switchMap,
-  delay,
-  finalize,
-  filter
-} from "rxjs/operators";
+import { tap, takeUntil, switchMap, delay } from "rxjs/operators";
 import * as moment from "moment";
 import { FlydayService } from "../select-fly-days/flyday.service";
 import { SearchFlightModel } from "../models/flight/SearchFlightModel";
@@ -78,9 +71,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   vmFlights: FlightSegmentEntity[]; // 用于视图展示
   vmToCity: Trafficline;
   vmFromCity: Trafficline;
-  flightsSub = Subscription.EMPTY;
   advSCondSub = Subscription.EMPTY;
-  intervalSub = Subscription.EMPTY;
   selectedFlyDaysSub = Subscription.EMPTY;
   vmFlightJourneys: FlightJourneyEntity[];
   totalFilteredSegments: FlightSegmentEntity[];
@@ -161,7 +152,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     // console.log("active tab", this.activeTab);
     this.sortCondition.Date = day.date;
     this.vmFlights = [];
-    this.doRefresh(true);
+    setTimeout(() => {
+      this.doRefresh(true);
+    }, 500);
   }
   async onBookTicket(evt: {
     cabin: FlightCabinEntity;
@@ -217,37 +210,28 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     }
     this.searchFlys();
   }
-  stopAutoRefresh() {
-    this.autoRefreshSources.next(true);
-    console.log("【停止了】自动刷新");
-    this.intervalSub.unsubscribe();
-  }
-  startAutoRefresh() {
-    console.log("【启动】自动刷新");
-    this.intervalSub = interval(5 * 1000)
-      .pipe(
-        takeUntil(this.autoRefreshSources.asObservable().pipe(filter(r => !!r)))
-      )
-      .subscribe(() => {
-        // 五秒钟自动刷新一遍
-        console.log("自动刷新航班列表");
-        this.doRefresh(true);
-      });
-  }
+
   loadMore() {
-    const slice = this.totalFilteredSegments.slice(
-      (this.sortCondition.curPage - 1) * this.sortCondition.pageSize,
-      this.sortCondition.curPage * this.sortCondition.pageSize
-    );
-    this.vmFlights = [...this.vmFlights, ...slice];
-    // console.log("vmflights ", this.vmFlights);
+    const loop = () => {
+      const slice = this.totalFilteredSegments.slice(
+        (this.sortCondition.curPage - 1) * this.sortCondition.pageSize,
+        this.sortCondition.curPage * this.sortCondition.pageSize
+      );
+      slice.forEach(item => {
+        this.vmFlights.push(item);
+      });
+      if (this.vmFlights.length < this.totalFilteredSegments.length) {
+        this.sortCondition.curPage++;
+        window.requestAnimationFrame(loop);
+      }
+    };
+    loop();
     if (this.scroller) {
-      this.scroller.complete();
-      this.scroller.disabled = slice.length === 0;
+      setTimeout(() => {
+        this.scroller.complete();
+      }, 300);
+      this.scroller.disabled = true;
     }
-    this.sortCondition.curPage = slice.length
-      ? this.sortCondition.curPage + 1
-      : this.sortCondition.curPage;
   }
   private async searchPolicy() {
     const flys = await this.flightService.searchFlightJourneyDetailList(
@@ -263,7 +247,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
   private async searchFlys() {
     console.log("高阶查询", this.sortCondition.AdvSCon);
-    this.stopAutoRefresh(); // 停止自动刷新
     const flys = await this.searchPolicy();
     this.vmFlightJourneys = flys.map(f => {
       f.FlightRoutes = f.FlightRoutes.map(r => {
@@ -279,7 +262,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     }
     this.flights = JSON.parse(JSON.stringify(flys)); // 深拷贝对象，数组
     const vmFlights = this.advSearch(flys, this.sortCondition);
-    this.totalFilteredSegments = this.flightService.getTotalFlySegments(vmFlights);
+    this.totalFilteredSegments = this.flightService.getTotalFlySegments(
+      vmFlights
+    );
     vmFlights.forEach(vf => {
       this.hasDataSj.next(
         vf.FlightRoutes.some(r => r.FlightSegments.length > 0)
@@ -295,7 +280,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.refresher.complete();
     }
     this.loadMore();
-    this.startAutoRefresh(); // 启动自动刷新
   }
 
   onItemClick(f: FlightSegmentEntity) {
@@ -380,7 +364,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     // console.log(result);
     return result;
   }
-  
   ngOnInit() {
     this.activeTab = "filter";
     this.advSCondSub = this.flightService
@@ -398,7 +381,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           this.searchFlys();
         }
       });
-    this.startAutoRefresh();
     this.selectedFlyDaysSub = this.flyDayService
       .getSelectedFlyDays()
       .subscribe(days => {
@@ -412,17 +394,13 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           }
           this.sortCondition.Date = day.date;
           this.vmFlights = [];
-          this.doRefresh({
-            target: this.refresher
-          } as any);
+          this.doRefresh(null);
         }
       });
   }
   ngOnDestroy() {
     this.selectedFlyDaysSub.unsubscribe();
     this.advSCondSub.unsubscribe();
-    this.intervalSub.unsubscribe();
-    this.flightsSub.unsubscribe();
   }
 
   ngAfterViewInit() {
@@ -472,7 +450,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.sortFlights("price");
   }
   sortFlights(key: "price" | "time") {
-    this.stopAutoRefresh();
     this.sortCondition.curPage = 1;
     this.sortCondition.pageSize = 5;
     this.vmFlights = [];
@@ -498,6 +475,5 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         this.cnt.scrollToTop(300);
       }
     }, 300);
-    this.startAutoRefresh();
   }
 }

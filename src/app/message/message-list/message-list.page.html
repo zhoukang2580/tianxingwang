@@ -1,4 +1,4 @@
-<ion-header>
+<!-- <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
       <ion-back-button></ion-back-button>
@@ -11,7 +11,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh(true)">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh()">
     <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="下拉刷新" refreshingSpinner="circles"
       refreshingText="正在加载...">
     </ion-refresher-content>
@@ -74,4 +74,41 @@
     <ion-button (click)='onReadAll()' fill='clear' color='success' size='small'>标记已读</ion-button>
     <ion-button (click)='onReadAll()' fill='clear' color='danger' size='small'>删除</ion-button>
   </ion-buttons>
-</ion-footer>
+</ion-footer> -->
+
+<ion-list >
+    <ng-container *ngIf='messages.length else nodata'>
+      <ion-item-sliding *ngFor='let item of messages'>
+        <ion-item detail>
+          <ng-container *ngIf='open' slot='start'>
+            <ion-icon name="radio-button-off" mode='ios' *ngIf='!item?.IsSelected' (click)='onSelect(item)'></ion-icon>
+            <ion-icon name="checkmark-circle" mode='ios' color='success' *ngIf='item?.IsSelected'
+              (click)='onUnSelect(item)'>
+            </ion-icon>
+          </ng-container>
+          <ion-label (click)='onItemClick(item)'>
+            <h2>{{item?.Title}}</h2>
+            <h3>
+              <ion-note>
+                {{item?.InsertTime}}
+              </ion-note>
+              <ion-note margin-start *ngIf='!item?.IsRead' color='success'>未读</ion-note>
+            </h3>
+            <p>{{item?.Detail}}</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item-options side="end">
+          <ion-item-option *ngIf='!item?.IsRead' (click)="markRead(item)" color='success'>
+            <ion-text color='light'>标记已读</ion-text>
+          </ion-item-option>
+          <ion-item-option expandable='true' (click)="onRemove(item)" color='danger'>
+            <ion-text color='light'>删除</ion-text>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ng-container>
+    <ng-template #nodata>
+      <app-or-comp>暂无数据</app-or-comp>
+    </ng-template>
+  </ion-list>

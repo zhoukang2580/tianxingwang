@@ -43,7 +43,7 @@ import { TicketchangingComponent } from "../ticketchanging/ticketchanging.compon
     trigger("openclose", [
       state("true", style({ height: "*" })),
       state("false", style({ height: "0" })),
-      transition("true<=>false", animate("200ms"))
+      transition("true<=>false", animate("500ms"))
     ])
   ]
 })

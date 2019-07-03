@@ -24,19 +24,23 @@
   </ion-toolbar>
 </ion-header>
 <ion-content #cnt>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh(false)">
     <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="下拉刷新" refreshingSpinner="circles"
       refreshingText="正在加载...">
     </ion-refresher-content>
   </ion-refresher>
   <app-no-more-data [hasDataObs]="hasDataSj"></app-no-more-data>
-  <app-fly-list-item *ngFor='let s of vmFlights' [flightSegment]="s" (bookTicket)="onBookTicket($event)">
-  </app-fly-list-item>
-  <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+  <ion-list>
+    <ion-item *ngFor='let s of vmFlights' margin-bottom>
+      <app-fly-list-item  [flightSegment]="s" (bookTicket)="onBookTicket($event)">
+      </app-fly-list-item>
+    </ion-item>
+  </ion-list>
+  <ion-infinite-scroll (ionInfinite)="loadMore()">
     <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="正在加载..."></ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>
-<ion-footer color="primary" [@showFooterAnimate]="!(isMoving$ | async)">
+<ion-footer color="primary">
   <div class="tabs">
     <div class="tab" [class.active]="activeTab === 'filter'" (click)="onFilter()">
       <ion-icon name="funnel"></ion-icon>

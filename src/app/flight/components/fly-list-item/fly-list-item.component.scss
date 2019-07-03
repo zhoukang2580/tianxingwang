@@ -1,5 +1,14 @@
-ion-item ion-label:first-child {
-  margin-right: 0.5em;
+:host {
+  width: 100%;
+}
+.fly-item {
+  padding: 0.5em 0;
+  display: flex;
+  align-items: center;
+  ion-label:first-child {
+    flex: 1;
+    margin-right: 0.5em;
+  }
 }
 .airports {
   font-size: 0.8rem;
@@ -46,7 +55,7 @@ ion-item ion-label:first-child {
   }
 }
 .seperator {
-  margin: 0 0.2em;
+  margin: 0 0.3em;
   color: var(--ion-color-medium);
 }
 .end-time {
@@ -64,17 +73,24 @@ ion-item ion-label:first-child {
   font-size: 0.8rem;
 }
 .price {
-  max-width: 5em;
+  margin-left: auto;
 }
 ion-thumbnail {
   --size: 1em;
   margin-right: 0.2em;
 }
 
-ion-list.cabins {
+.cabins {
+  width: 100%;
   margin: 0;
-  margin-bottom: 1em;
-  ion-item {
+  .cabin-item {
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    padding: 0.5em;
+    ion-label {
+      flex: 1;
+    }
+    display: flex;
+    align-items: center;
     h2 {
       font-size: 0.9rem;
     }

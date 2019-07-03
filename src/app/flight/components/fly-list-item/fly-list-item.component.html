@@ -1,4 +1,4 @@
-<ion-item (click)='open.checked=!open.checked'>
+<div class='fly-item' (click)='open.checked=!open.checked' no-margin no-padding>
   <ion-label>
     <h2 class='time'>
       <strong>{{flightSegment?.TakeoffTime?.substring("2018-10-22T".length,"2018-10-22T21:20".length)}}</strong>
@@ -25,17 +25,12 @@
         <ion-img [src]='flightSegment?.AirlineSrc'></ion-img>
       </ion-thumbnail>
       <ion-text text-wrap color='medium'>{{flightSegment?.AirlineName}} {{flightSegment?.Number}}</ion-text>
-
       <span class='seperator'>|</span>
       <ion-text color='medium'>{{flightSegment?.PlaneType}}</ion-text>
-      <ng-container *ngIf='flightSegment?.CodeShareNumber else flytimetemp'>
-        <ion-text color='secondary'>&nbsp;共享{{flightSegment?.CodeShareNumber}}</ion-text>
-      </ng-container>
-      <ng-template #flytimetemp>
-        <span class='seperator'>|</span>
-        <ion-text color='medium'>{{flightSegment?.FlyTimeName}}</ion-text>
-      </ng-template>
-
+      <span class='seperator'>|</span>
+      <ion-text color='medium'>{{flightSegment?.FlyTimeName}}</ion-text>
+      <ion-text color='secondary' *ngIf='flightSegment?.CodeShareNumber'><span
+          class='seperator'>|</span>共享{{flightSegment?.CodeShareNumber}}</ion-text>
     </h4>
   </ion-label>
   <ion-label slot='end' class="price" no-margin no-padding text-center>
@@ -48,29 +43,27 @@
       <input type="checkbox" hidden #open [checked]='false'>
     </h3>
   </ion-label>
-</ion-item>
-<ion-list class='cabins' *ngIf='open.checked'>
-  <ng-container >
-    <ion-item *ngFor='let cabin of flightSegment?.Cabins'>
-      <ion-label (click)='openrules(cabin)'>
-        <h2 class='discount'>
-          <ion-text color='dark'>{{cabin?.Type|cabintype}}</ion-text>
-          <ion-text color='dark'>{{cabin?.Discount|discount}}
-          </ion-text>
-        </h2>
-        <h2>
-          <ion-text color='secondary'>退改签政策详情&nbsp;> </ion-text>
-        </h2>
-        <h2>余票：{{cabin?.Count}}&nbsp;张</h2>
-      </ion-label>
-      <ion-label slot='end'>
-        <h2 text-end class='book'>
-          <ion-text>￥{{cabin?.TicketPrice}}</ion-text>
-          <ion-button color='danger' margin-top expand='block' size='small' (click)='onBookTicket(cabin)'>
-            <ion-text color='light'>预定</ion-text>
-          </ion-button>
-        </h2>
-      </ion-label>
-    </ion-item>
-  </ng-container>
-</ion-list>
+</div>
+<div class='cabins' [@openclose]='open.checked'>
+  <div *ngFor='let cabin of flightSegment?.Cabins' class='cabin-item'>
+    <ion-label (click)='openrules(cabin)'>
+      <h2 class='discount'>
+        <ion-text color='dark'>{{cabin?.Type|cabintype}}</ion-text>
+        <ion-text color='dark'>{{cabin?.Discount|discount}}
+        </ion-text>
+      </h2>
+      <h2>
+        <ion-text color='secondary'>退改签政策详情&nbsp;> </ion-text>
+      </h2>
+      <h2>余票：{{cabin?.Count}}&nbsp;张</h2>
+    </ion-label>
+    <ion-label slot='end'>
+      <h2 text-end class='book'>
+        <ion-text>￥{{cabin?.TicketPrice}}</ion-text>
+        <ion-button color='danger' margin-top expand='block' size='small' (click)='onBookTicket(cabin)'>
+          <ion-text color='light'>预定</ion-text>
+        </ion-button>
+      </h2>
+    </ion-label>
+  </div>
+</div>
