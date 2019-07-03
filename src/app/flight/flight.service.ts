@@ -37,17 +37,7 @@ export interface FlightPolicy {
   CabinCode: string; // string Yes 舱位代码
   IsAllowBook: string; // Bool Yes 是否可预订
   Discount: string; // Decimal Yes 折扣率
-  LowerSegment: {
-    // No 低价航班
-    AirlineName; // String 航空公司名称
-    Number; // String 航班号
-    TakeoffTime; // Datetime 起飞时间
-    FlyTime; // Int 飞行时间（分钟）
-    LowestFare; // Decimal 最低价
-    LowestCabinCode; // String 最低价舱位
-    LowestDiscount; // Decimal 最低价折扣
-    IsStop: boolean; // Bool 是否经停
-  }[];
+  LowerSegment: FlightSegmentModel;
   Rules: string[]; // List<string> No 违反的差标信息
 }
 export interface Trafficline {
@@ -81,7 +71,7 @@ export class FlightService {
   private resetAdvSCondSources: Subject<boolean>;
   private localInternationAirports: LocalStorageAirport;
   private localDomesticAirports: LocalStorageAirport;
-  private _selectedCitySource: Subject<TrafficlineModel>;
+  private selectedCitySource: Subject<TrafficlineModel>;
   private selectedCutomers: any[];
   constructor(
     private apiService: ApiService,
@@ -89,24 +79,24 @@ export class FlightService {
     private hrService: HrService,
     private identityService: IdentityService
   ) {
-    this._selectedCitySource = new BehaviorSubject(null);
+    this.selectedCitySource = new BehaviorSubject(null);
     this.selectedCutomers = [];
     this.advSearchShowSources = new BehaviorSubject(false);
     this.resetAdvSCondSources = new BehaviorSubject(true);
     this.openCloseSelectCitySources = new BehaviorSubject(false);
     this.advSearchCondSources = new BehaviorSubject(new AdvSearchCondModel());
   }
-  getSelectedCutomers() {
+  getSelectedPassengers() {
     return this.selectedCutomers;
   }
   setSelectedCutomers(customers: any[]) {
-    this.selectedCutomers = customers;
+    this.selectedCutomers = [...customers];
   }
   getSelectedCity() {
-    return this._selectedCitySource.asObservable();
+    return this.selectedCitySource.asObservable();
   }
   setSelectedCity(_selectedCity: TrafficlineModel) {
-    this._selectedCitySource.next({ ..._selectedCity });
+    this.selectedCitySource.next({ ..._selectedCity });
   }
   getResetAdvSCondSources() {
     return this.resetAdvSCondSources;
@@ -204,50 +194,52 @@ export class FlightService {
     console.log(`本地化国际机票耗时：${window.performance.now() - st} ms`);
     return airports;
   }
-  async flightPolicy(Flights: string, Passengers: string[] = []) {
-    const staff = await this.hrService.getStaff();
-    if (staff.BookType == StaffBookType.Self) {
-      const id = await this.identityService.getIdentityPromise();
-      Passengers = [id.Id];
+  async policyflights(
+    Flights: FlightJourneyEntity[],
+    Passengers: string[]
+  ): Promise<
+    {
+      PassengerKey: string;
+      FlightPolicies: FlightPolicy[];
+    }[]
+  > {
+    const local = await this.storage.get(
+      "TestTmcData.TmcApiFlightUrl-Home-Policy"
+    );
+    console.log("local", local);
+    if (
+      !environment.production &&
+      local &&
+      local.FlightPolicy &&
+      local.FlightPolicy.length &&
+      Date.now() - local.lastUpdateTime <=
+        (+moment().add(30, "seconds") - +moment()) * 1000
+    ) {
+      // console.log(new Array(10).fill(0).map(_=>TestTmcData.FlightData));
+      return local.FlightPolicy;
     }
     const req = new RequestEntity();
     req.Method = `TmcApiFlightUrl-Home-Policy`;
-    req.Data = {
-      Flights,
-      Passengers
-    };
-    return this.apiService.getPromiseResponse<
-      {
-        PassengerKey: string;
-        FlightPolicies: FlightPolicy[];
-      }[]
-    >(req);
-  }
-  async searchFlightDetailList(data: SearchFlightModel) {
-    const local = await this.storage.get("TestTmcData.FlightData");
-    console.log("local", local);
-    if (local && !environment.production && local.length) {
-      // console.log(new Array(10).fill(0).map(_=>TestTmcData.FlightData));
-      return local;
-    }
-    const req = new RequestEntity();
-    req.Method = "TmcApiFlightUrl-Home-Detail ";
-    req.Data = {
-      Date: data.Date, //  Yes 航班日期（yyyy-MM-dd）
-      FromCode: data.FromCode, //  Yes 三字代码
-      ToCode: data.ToCode, //  Yes 三字代码
-      FromAsAirport: data.FromAsAirport, //  No 始发以机场查询
-      ToAsAirport: data.ToAsAirport //  No 到达以机场查询
-    };
     req.Version = "1.0";
-    req.IsShowLoading = true;
-    const serverFlights = await this.apiService
-      .getPromiseResponse<FlightJourneyEntity[]>(req)
-      .catch(_ => [] as FlightJourneyEntity[]);
-    if (serverFlights.length) {
-      await this.storage.set("TestTmcData.FlightData", serverFlights);
+    req.Data = {
+      Flights: JSON.stringify(Flights),
+      Passengers: Passengers.join(",")
+    };
+    const res = await this.apiService
+      .getPromiseResponse<
+        {
+          PassengerKey: string;
+          FlightPolicies: FlightPolicy[];
+        }[]
+      >(req)
+      .catch(_ => []);
+    if (res.length) {
+      await this.storage.set("TestTmcData.TmcApiFlightUrl-Home-Policy", {
+        lastUpdateTime: Date.now(),
+        FlightPolicy: res
+      });
     }
-    return serverFlights;
+    return res;
   }
   getTotalFlySegments(flyJourneys: FlightJourneyEntity[]) {
     return flyJourneys.reduce(
@@ -267,8 +259,46 @@ export class FlightService {
       [] as FlightSegmentEntity[]
     );
   }
-  public sortedFlightSegments(
-    flysegs: FlightSegmentEntity[],
+  async searchFlightJourneyDetailList(
+    data: SearchFlightModel
+  ): Promise<FlightJourneyEntity[]> {
+    const local = await this.storage.get("TestTmcData.FlightData");
+    console.log("local", local);
+    if (
+      !environment.production &&
+      local &&
+      local.serverFlights &&
+      local.serverFlights.length &&
+      Date.now() - local.lastUpdateTime <=
+        (+moment().add(30, "seconds") - +moment()) * 1000
+    ) {
+      // console.log(new Array(10).fill(0).map(_=>TestTmcData.FlightData));
+      return local.serverFlights;
+    }
+    const req = new RequestEntity();
+    req.Method = "TmcApiFlightUrl-Home-Detail ";
+    req.Data = {
+      Date: data.Date, //  Yes 航班日期（yyyy-MM-dd）
+      FromCode: data.FromCode, //  Yes 三字代码
+      ToCode: data.ToCode, //  Yes 三字代码
+      FromAsAirport: data.FromAsAirport, //  No 始发以机场查询
+      ToAsAirport: data.ToAsAirport //  No 到达以机场查询
+    };
+    req.Version = "1.0";
+    req.IsShowLoading = true;
+    const serverFlights = await this.apiService
+      .getPromiseResponse<FlightJourneyEntity[]>(req)
+      .catch(_ => [] as FlightJourneyEntity[]);
+    if (serverFlights.length) {
+      await this.storage.set("TestTmcData.FlightData", {
+        serverFlights,
+        lastUpdateTime: Date.now()
+      });
+    }
+    return serverFlights;
+  }
+  public sortedFlightJourneys(
+    flysegs: FlightJourneyEntity[],
     data: SearchFlightModel
   ) {
     if (data.PriceFromL2H !== void 0) {
@@ -283,21 +313,30 @@ export class FlightService {
     }
     return flysegs;
   }
-  private sortByPrice(arr: FlightSegmentEntity[], l2h: boolean) {
-    return arr.sort((s1, s2) => {
-      let sub = +s1.LowestFare - +s2.LowestFare;
-      sub = sub === 0 ? 0 : sub > 0 ? 1 : -1;
-      return l2h ? sub : -sub;
+  private sortByPrice(arr: FlightJourneyEntity[], l2h: boolean) {
+    return arr.map(item => {
+      item.FlightRoutes = item.FlightRoutes.map(r => {
+        r.FlightSegments.sort((s1, s2) => {
+          let sub = +s1.LowestFare - +s2.LowestFare;
+          sub = sub === 0 ? 0 : sub > 0 ? 1 : -1;
+          return l2h ? sub : -sub;
+        });
+        return r;
+      });
+      return item;
     });
   }
-  private sortByTime(arr: FlightSegmentEntity[], l2h: boolean) {
-    return arr.sort((s1, s2) => {
-      let sub =
-        +moment(s1.TakeoffTime, "YYYY-MM-DDTHH:mm:ss") -
-        +moment(s2.TakeoffTime, "YYYY-MM-DDTHH:mm:ss");
-      sub = sub === 0 ? 0 : sub > 0 ? 1 : -1;
-      // console.log("时间排序，l2h",sub);
-      return l2h ? sub : -sub;
+  private sortByTime(arr: FlightJourneyEntity[], l2h: boolean) {
+    return arr.map(item => {
+      item.FlightRoutes = item.FlightRoutes.sort((s1, s2) => {
+        let sub =
+          +moment(s1.FirstTime, "YYYY-MM-DDTHH:mm:ss") -
+          +moment(s2.FirstTime, "YYYY-MM-DDTHH:mm:ss");
+        sub = sub === 0 ? 0 : sub > 0 ? 1 : -1;
+        // console.log("时间排序，l2h",sub);
+        return l2h ? sub : -sub;
+      });
+      return item;
     });
   }
   async getLocalHomeAirports(): Promise<Trafficline[]> {
@@ -331,8 +370,10 @@ export class FlightService {
     ).Trafficlines;
   }
   async getAllLocalAirports() {
-    const h = await this.getLocalHomeAirports();
+    this.apiService.showLoadingView();
+    const h = await this.getDomesticAirports();
     const i = await this.getInternationalAirports();
+    this.apiService.hideLoadingView();
     return [...h, ...i];
   }
 }

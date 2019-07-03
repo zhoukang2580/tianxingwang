@@ -1,7 +1,7 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { TmcGuard } from "../guards/tmc.guard";
-import { FlightComponentsModule } from './components/components.module';
+import { FlightComponentsModule } from "./components/components.module";
 const routes: Routes = [
   {
     path: "select-date",
@@ -28,6 +28,11 @@ const routes: Routes = [
     path: "flight-detail",
     loadChildren: "./flight-detail/flight-detail.module#FlightDetailPageModule",
     canActivate: [TmcGuard]
+  },
+  {
+    path: "select-passenger",
+    loadChildren:
+      "./select-passenger/select-passenger.module#SelectPassengerPageModule"
   }
 ];
 @NgModule({

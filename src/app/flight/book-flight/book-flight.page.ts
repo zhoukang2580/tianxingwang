@@ -34,11 +34,15 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private router: Router,
     private dayService: SelectDateService,
-    private route: ActivatedRoute,
+    route: ActivatedRoute,
     private navCtrl: NavController,
     private flydayService: FlydayService,
     private flightService: FlightService
-  ) {}
+  ) {
+    route.queryParamMap.subscribe(p => {
+      this.initFlightCities();
+    });
+  }
   goBack() {
     this.navCtrl.back();
   }
@@ -100,6 +104,7 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
   async initFlightCities() {
     const cities = await this.flightService.getAllLocalAirports();
     if (cities && cities.length) {
+      // console.log(cities);
       this.vmFromCity = this.fromCity = cities.find(
         c => c.Code.toUpperCase() == "BJS"
       );
@@ -117,8 +122,6 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
       this.vmToCity.Code = this.toCity.Code = "SHA";
       this.fromCity.Tag = this.toCity.Tag = "AirportCity"; // 出发城市，不是出发城市的那个机场
     }
-    this.flightService.setSelectedCity(this.fromCity);
-    this.flightService.setSelectedCity(this.toCity);
   }
   searchFlight() {
     console.log(
@@ -136,8 +139,8 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate([AppHelper.getRoutePath("flight-list")], {
       queryParams: {
         searchFlightModel: JSON.stringify(s),
-        fromCity:JSON.stringify(this.fromCity),
-        toCity:JSON.stringify(this.toCity)
+        fromCity: JSON.stringify(this.fromCity),
+        toCity: JSON.stringify(this.toCity)
       }
     });
   }

@@ -1,0 +1,13 @@
+<ion-header>
+  <ion-title>已选择乘客</ion-title>
+</ion-header>
+<ion-list>
+  <ion-item *ngFor='let p of passengers'>
+    <ion-label>
+      <h2>
+        姓名：{{p?.Name}}({{p?.Nickname}})
+      </h2>
+      <h2>证件号：{{p?.Number}}</h2>
+    </ion-label>
+  </ion-item>
+</ion-list>

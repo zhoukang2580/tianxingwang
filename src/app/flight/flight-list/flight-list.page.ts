@@ -1,3 +1,7 @@
+import { FlightPolicy } from "./../flight.service";
+import { IdentityService } from "src/app/services/identity/identity.service";
+import { IdentityEntity } from "./../../services/identity/identity.entity";
+import { StaffBookType } from "./../../tmc/models/StaffBookType";
 import { HrService, StaffEntity } from "./../../hr/hr.service";
 import { AppHelper } from "src/app/appHelper";
 import { animate } from "@angular/animations";
@@ -21,7 +25,14 @@ import {
   OnDestroy,
   NgZone
 } from "@angular/core";
-import { tap, takeUntil, switchMap, delay, finalize } from "rxjs/operators";
+import {
+  tap,
+  takeUntil,
+  switchMap,
+  delay,
+  finalize,
+  filter
+} from "rxjs/operators";
 import * as moment from "moment";
 import { FlydayService } from "../select-fly-days/flyday.service";
 import { SearchFlightModel } from "../models/flight/SearchFlightModel";
@@ -62,8 +73,7 @@ import { LanguageHelper } from "src/app/languageHelper";
 })
 export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   sortCondition: SearchFlightModel;
-  @ViewChild("cnt")
-  cnt: IonContent;
+  @ViewChild("cnt") cnt: IonContent;
   flights: FlightJourneyEntity[]; // 保持和后台返回的数据一致
   vmFlights: FlightSegmentEntity[]; // 用于视图展示
   vmToCity: Trafficline;
@@ -72,18 +82,19 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   advSCondSub = Subscription.EMPTY;
   intervalSub = Subscription.EMPTY;
   selectedFlyDaysSub = Subscription.EMPTY;
-  totalFlySegments: FlightSegmentEntity[];
+  vmFlightJourneys: FlightJourneyEntity[];
+  totalFilteredSegments: FlightSegmentEntity[];
   priceOrdL2H: boolean; // 价格从低到高
   timeOrdM2N: boolean; // 时间从早到晚
   isRoundTrip: boolean; // 是否是往返
-  refresher: IonRefresher;
-  scroller: IonInfiniteScroll;
+  @ViewChild(IonRefresher) refresher: IonRefresher;
+  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   activeTab: "filter" | "time" | "price" | "none"; // 当前激活的tab
   isMoving$: Observable<boolean>;
   hasDataSj: Subject<boolean>;
   showAdvSearchPage$: Observable<boolean>;
   showSelectFlyDayPage$: Observable<boolean>;
-  private autoRefreshSj: Subject<boolean>;
+  private autoRefreshSources: Subject<boolean>;
   private staff: StaffEntity;
   constructor(
     private route: ActivatedRoute,
@@ -91,10 +102,11 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     private flightService: FlightService,
     private ngZone: NgZone,
     private flyDayService: FlydayService,
-    private hrService: HrService
+    private hrService: HrService,
+    private identityService: IdentityService
   ) {
     this.hasDataSj = new BehaviorSubject(false);
-    this.autoRefreshSj = new BehaviorSubject(false);
+    this.autoRefreshSources = new BehaviorSubject(false);
     this.vmFlights = [];
     this.flights = [];
     this.sortCondition = new SearchFlightModel();
@@ -120,6 +132,12 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     });
     this.showAdvSearchPage$ = this.flightService.getShowAdvSearchConditions();
   }
+  async isStaffTypeSelf() {
+    const s = await this.hrService.getStaff();
+    return (
+      s.BookType != StaffBookType.All && s.BookType != StaffBookType.Secretary
+    );
+  }
   onCalenderClick() {}
   bookFlight() {
     this.router.navigate([AppHelper.getRoutePath("book-flight")]);
@@ -143,33 +161,43 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     // console.log("active tab", this.activeTab);
     this.sortCondition.Date = day.date;
     this.vmFlights = [];
-    this.doRefresh(
-      {
-        target: this.refresher
-      } as any,
-      true
-    );
+    this.doRefresh(true);
   }
   async onBookTicket(evt: {
     cabin: FlightCabinEntity;
     flightSegment: FlightSegmentEntity;
   }) {
-    if (this.flightService.getSelectedCutomers.length === 0) {
-      const ok = await AppHelper.alert(
-        LanguageHelper.getSelectPassengersTip(),
-        true,
-        LanguageHelper.getConfirmTip()
-      );
-      if(ok){
-
+    this.staff = await this.hrService.getStaff();
+    if (!this.isStaffTypeSelf()) {
+      if (this.flightService.getSelectedPassengers.length === 0) {
+        const ok = await AppHelper.alert(
+          LanguageHelper.getSelectPassengersTip(),
+          true,
+          LanguageHelper.getConfirmTip()
+        );
+        if (ok) {
+          this.goToSelectPassengerPage();
+        }
+      } else {
+        const ok = await AppHelper.alert(
+          LanguageHelper.getSelectPassengersTip(),
+          true,
+          LanguageHelper.getConfirmTip(),
+          LanguageHelper.getCancelTip()
+        );
+        if (ok) {
+          this.goToSelectPassengerPage();
+        }
       }
+    } else {
     }
   }
-  async doRefresh(evt: CustomEvent, keepSearchCondition?: boolean) {
+  goToSelectPassengerPage() {
+    this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
+  }
+  async doRefresh(keepSearchCondition?: boolean) {
     // console.log(evt);
-    this.staff = await this.hrService.getStaff();
     this.flightService.setResetAdvCond(!keepSearchCondition);
-    this.refresher = evt && ((evt.target as any) as IonRefresher);
     this.sortCondition = {
       ...this.sortCondition,
       AdvSCon: keepSearchCondition
@@ -187,30 +215,27 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         this.activeTab = "none";
       }, 0);
     }
-    this.searchFlys(true);
+    this.searchFlys();
   }
   stopAutoRefresh() {
-    this.autoRefreshSj.next(true);
+    this.autoRefreshSources.next(true);
     console.log("【停止了】自动刷新");
     this.intervalSub.unsubscribe();
   }
   startAutoRefresh() {
     console.log("【启动】自动刷新");
-    this.intervalSub = interval(1 * 1000)
-      .pipe(takeUntil(this.autoRefreshSj.asObservable()))
+    this.intervalSub = interval(5 * 1000)
+      .pipe(
+        takeUntil(this.autoRefreshSources.asObservable().pipe(filter(r => !!r)))
+      )
       .subscribe(() => {
         // 五秒钟自动刷新一遍
-        this.doRefresh(null);
+        console.log("自动刷新航班列表");
+        this.doRefresh(true);
       });
   }
-  loadMore(evt: CustomEvent) {
-    console.log(
-      "loadmore",
-      "curPage " + this.sortCondition.curPage,
-      "totalFlySegments " + this.totalFlySegments.length
-    );
-    this.scroller = evt && ((evt.target as any) as IonInfiniteScroll);
-    const slice = this.totalFlySegments.slice(
+  loadMore() {
+    const slice = this.totalFilteredSegments.slice(
       (this.sortCondition.curPage - 1) * this.sortCondition.pageSize,
       this.sortCondition.curPage * this.sortCondition.pageSize
     );
@@ -224,38 +249,53 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       ? this.sortCondition.curPage + 1
       : this.sortCondition.curPage;
   }
-  private searchFlys(forceUpdate = false) {
+  private async searchPolicy() {
+    const flys = await this.flightService.searchFlightJourneyDetailList(
+      this.sortCondition
+    );
+    if (this.isStaffTypeSelf()) {
+      const identity = await this.identityService.getIdentityPromise();
+      const policyFlights = await this.flightService.policyflights(flys, [
+        identity.Id
+      ]);
+    }
+    return flys;
+  }
+  private async searchFlys() {
     console.log("高阶查询", this.sortCondition.AdvSCon);
     this.stopAutoRefresh(); // 停止自动刷新
-    this.flightService.searchFlightDetailList(this.sortCondition).then(flys => {
-      if (this.scroller) {
-        this.scroller.complete();
-      }
-      if (this.refresher) {
-        this.refresher.complete();
-      }
-      this.flights = JSON.parse(JSON.stringify(flys)); // 深拷贝对象，数组
-      const vmFlights = this.advSearch(flys, this.sortCondition);
-      this.totalFlySegments = this.flightService.getTotalFlySegments(vmFlights);
-      vmFlights.forEach(vf => {
-        this.hasDataSj.next(
-          vf.FlightRoutes.some(r => r.FlightSegments.length > 0)
-        );
+    const flys = await this.searchPolicy();
+    this.vmFlightJourneys = flys.map(f => {
+      f.FlightRoutes = f.FlightRoutes.map(r => {
+        return r;
       });
-
-      setTimeout(() => {
-        if (this.cnt) {
-          this.cnt.scrollToTop(300);
-        }
-      }, 300);
-      if (this.refresher) {
-        this.refresher.complete();
-      }
-      this.loadMore({
-        target: this.scroller
-      } as any);
-      this.startAutoRefresh(); // 启动自动刷新
+      return f;
     });
+    if (this.scroller) {
+      this.scroller.complete();
+    }
+    if (this.refresher) {
+      this.refresher.complete();
+    }
+    this.flights = JSON.parse(JSON.stringify(flys)); // 深拷贝对象，数组
+    const vmFlights = this.advSearch(flys, this.sortCondition);
+    this.totalFilteredSegments = this.flightService.getTotalFlySegments(vmFlights);
+    vmFlights.forEach(vf => {
+      this.hasDataSj.next(
+        vf.FlightRoutes.some(r => r.FlightSegments.length > 0)
+      );
+    });
+
+    setTimeout(() => {
+      if (this.cnt) {
+        this.cnt.scrollToTop(300);
+      }
+    }, 300);
+    if (this.refresher) {
+      this.refresher.complete();
+    }
+    this.loadMore();
+    this.startAutoRefresh(); // 启动自动刷新
   }
 
   onItemClick(f: FlightSegmentEntity) {
@@ -321,7 +361,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       result = result.map(fly => {
         fly.FlightRoutes = fly.FlightRoutes.map(r => {
           r.FlightSegments = r.FlightSegments.filter(s => {
-            console.log(moment(s.TakeoffTime).hour());
+            // console.log(moment(s.TakeoffTime).hour());
             return (
               data.AdvSCon.takeOffTimeSpan.lower <=
                 moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() &&
@@ -340,6 +380,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     // console.log(result);
     return result;
   }
+  
   ngOnInit() {
     this.activeTab = "filter";
     this.advSCondSub = this.flightService
@@ -447,13 +488,11 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.sortCondition.PriceFromL2H = void 0;
     }
     const vmFlights = this.advSearch(this.flights, this.sortCondition);
-    this.totalFlySegments = this.flightService.sortedFlightSegments(
-      this.flightService.getTotalFlySegments(vmFlights),
+    this.vmFlightJourneys = this.flightService.sortedFlightJourneys(
+      vmFlights,
       this.sortCondition
     );
-    this.loadMore({
-      target: this.scroller
-    } as any);
+    this.loadMore();
     setTimeout(() => {
       if (this.cnt) {
         this.cnt.scrollToTop(300);

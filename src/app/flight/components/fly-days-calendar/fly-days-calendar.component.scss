@@ -1,5 +1,6 @@
 :host {
   display: flex;
+  padding: 0 0 0 0.5em;
 }
 .days {
   overflow-x: auto;
@@ -19,13 +20,13 @@
     font-size: 0.6rem;
     transform: translateX(0);
     transition: all 300ms ease-in-out;
-    .price{
-      color:var(--ion-color-danger);
+    .price {
+      color: var(--ion-color-danger);
     }
     &.active {
       background-color: var(--ion-color-secondary);
-      .price{
-        color:var(--ion-color-primary);
+      .price {
+        color: var(--ion-color-primary);
       }
       color: var(--ion-color-primary);
       border-radius: 3px;
@@ -40,9 +41,9 @@
   align-items: center;
   justify-content: center;
   flex-flow: column nowrap;
-  .icon-calendar{
+  .icon-calendar {
     font-size: 1.5rem;
-    color:var(--ion-color-secondary);
+    color: var(--ion-color-secondary);
   }
   ion-text {
     font-size: 0.8rem;

@@ -49,9 +49,9 @@
     </h3>
   </ion-label>
 </ion-item>
-<ion-list class='cabins'>
-  <ng-container *ngIf='open.checked'>
-    <ion-item [@myInsertRemoveTrigger] *ngFor='let cabin of flightSegment?.Cabins'>
+<ion-list class='cabins' *ngIf='open.checked'>
+  <ng-container >
+    <ion-item *ngFor='let cabin of flightSegment?.Cabins'>
       <ion-label (click)='openrules(cabin)'>
         <h2 class='discount'>
           <ion-text color='dark'>{{cabin?.Type|cabintype}}</ion-text>

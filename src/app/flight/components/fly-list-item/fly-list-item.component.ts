@@ -34,7 +34,10 @@ import { TicketchangingComponent } from "../ticketchanging/ticketchanging.compon
       ]),
       transition(":leave", [
         style({ opacity: 1, transform: "translateX(-10%)" }),
-        animate("200ms", style({ opacity: 0, transform: "translateX(100%)" }))
+        animate(
+          "100ms",
+          style({ opacity: 0, height: "0", transform: "translateX(100%)" })
+        )
       ])
     ]),
     trigger("openclose", [

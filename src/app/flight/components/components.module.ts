@@ -21,6 +21,7 @@ import { SelectCityComponent } from "./select-city/select-city.component";
 import { DirectivesModule } from "../directives/directives.module";
 import { SearchDayComponent } from "./search-day/search-day.component";
 import { TicketchangingComponent } from "./ticketchanging/ticketchanging.component";
+import { SelectedPassengersComponent } from "./selected-passengers/selected-passengers.component";
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { TicketchangingComponent } from "./ticketchanging/ticketchanging.compone
     FlyTimelineItemComponent,
     SelectCityComponent,
     SearchDayComponent,
-    TicketchangingComponent
+    TicketchangingComponent,
+    SelectedPassengersComponent,
   ],
   imports: [
     CommonModule,
@@ -68,8 +70,13 @@ import { TicketchangingComponent } from "./ticketchanging/ticketchanging.compone
     FlyTimelineComponent,
     FlyTimelineItemComponent,
     SelectCityComponent,
-    TicketchangingComponent
+    TicketchangingComponent,
+    SelectedPassengersComponent,
   ],
-  entryComponents: [FlyFilterComponent,TicketchangingComponent]
+  entryComponents: [
+    FlyFilterComponent,
+    TicketchangingComponent,
+    SelectedPassengersComponent
+  ]
 })
 export class FlightComponentsModule {}
