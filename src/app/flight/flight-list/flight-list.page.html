@@ -30,15 +30,34 @@
     </ion-refresher-content>
   </ion-refresher>
   <app-no-more-data [hasDataObs]="hasDataSj"></app-no-more-data>
-  <ion-list>
-    <ion-item *ngFor='let s of vmFlights' margin-bottom>
-      <app-fly-list-item  [flightSegment]="s" (bookTicket)="onBookTicket($event)">
+  <ion-list [style.display]='loading ?"none":"initial"' lines='none'>
+    <ion-item *ngFor='let s of vmFlights; let i=index;'>
+      <!-- <span>{{i+1}}</span> -->
+      <app-fly-list-item [flightSegment]="s" (bookTicket)="onBookTicket($event)">
       </app-fly-list-item>
     </ion-item>
   </ion-list>
-  <ion-infinite-scroll (ionInfinite)="loadMore()">
+  <ion-list *ngIf='loading'>
+    <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8]'>
+      <ion-label style="flex: 1">
+        <h2>
+          <ion-skeleton-text animated style='width: 90%'></ion-skeleton-text>
+        </h2>
+        <h2>
+          <ion-skeleton-text animated style='width: 90%'></ion-skeleton-text>
+        </h2>
+        <h2>
+          <ion-skeleton-text animated style='width: 90%'></ion-skeleton-text>
+        </h2>
+      </ion-label>
+      <ion-label>
+        <ion-skeleton-text animated style='width: 20%'></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <!-- <ion-infinite-scroll (ionInfinite)="loadMore()">
     <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="正在加载..."></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
+  </ion-infinite-scroll> -->
 </ion-content>
 <ion-footer color="primary">
   <div class="tabs">
@@ -61,7 +80,5 @@
   </div>
 </ion-footer>
 
-<app-fly-filter class="ion-page" [flights]="flights" [@showAdvSearchPage]="showAdvSearchPage$ | async"
-  [toCityName]="vmToCity?.CityName"></app-fly-filter>
-<!-- <app-select-city-comp [openclose]='openSelectCity$|async'></app-select-city-comp> -->
-<!-- <app-select-fly-days [isRoundTrip]="isRoundTrip" class="ion-page" *ngIf="showSelectFlyDayPage$|async"></app-select-fly-days> -->
+<!-- <app-fly-filter class="ion-page" [flights]="flights" [@showAdvSearchPage]="showAdvSearchPage$ | async"
+  [toCityName]="vmToCity?.CityName"></app-fly-filter> -->

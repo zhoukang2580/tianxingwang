@@ -13,8 +13,7 @@ import {
   of,
   fromEvent,
   Subject,
-  BehaviorSubject,
-  interval
+  BehaviorSubject
 } from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
@@ -29,7 +28,6 @@ import { tap, takeUntil, switchMap, delay } from "rxjs/operators";
 import * as moment from "moment";
 import { FlydayService } from "../select-fly-days/flyday.service";
 import { SearchFlightModel } from "../models/flight/SearchFlightModel";
-import { AdvSearchCondModel } from "../models/flight/advanced-search-cond/AdvSearchCondModel";
 import { DayModel } from "../models/DayModel";
 import { FlightService, Trafficline } from "../flight.service";
 import { FlightSegmentEntity } from "../models/flight/FlightSegmentEntity";
@@ -37,6 +35,7 @@ import { FlightJourneyEntity } from "../models/flight/FlightJourneyEntity";
 import { FlightCabinType } from "../models/flight/FlightCabinType";
 import { FlightCabinEntity } from "../models/flight/FlightCabinEntity";
 import { LanguageHelper } from "src/app/languageHelper";
+import { FilterConditionModel } from "../models/flight/advanced-search-cond/FilterConditionModel";
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -65,27 +64,26 @@ import { LanguageHelper } from "src/app/languageHelper";
   ]
 })
 export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
-  sortCondition: SearchFlightModel;
+  searchFlightCondition: SearchFlightModel;
+  filterCondition: FilterConditionModel;
   @ViewChild("cnt") cnt: IonContent;
-  flights: FlightJourneyEntity[]; // 保持和后台返回的数据一致
+  flightJourneyList: FlightJourneyEntity[]; // 保持和后台返回的数据一致
   vmFlights: FlightSegmentEntity[]; // 用于视图展示
   vmToCity: Trafficline;
   vmFromCity: Trafficline;
   advSCondSub = Subscription.EMPTY;
   selectedFlyDaysSub = Subscription.EMPTY;
-  vmFlightJourneys: FlightJourneyEntity[];
+  vmFlightJourneyList: FlightJourneyEntity[];
   totalFilteredSegments: FlightSegmentEntity[];
   priceOrdL2H: boolean; // 价格从低到高
   timeOrdM2N: boolean; // 时间从早到晚
   isRoundTrip: boolean; // 是否是往返
+  loading = true;
   @ViewChild(IonRefresher) refresher: IonRefresher;
-  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   activeTab: "filter" | "time" | "price" | "none"; // 当前激活的tab
-  isMoving$: Observable<boolean>;
   hasDataSj: Subject<boolean>;
   showAdvSearchPage$: Observable<boolean>;
   showSelectFlyDayPage$: Observable<boolean>;
-  private autoRefreshSources: Subject<boolean>;
   private staff: StaffEntity;
   constructor(
     private route: ActivatedRoute,
@@ -97,19 +95,16 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     private identityService: IdentityService
   ) {
     this.hasDataSj = new BehaviorSubject(false);
-    this.autoRefreshSources = new BehaviorSubject(false);
     this.vmFlights = [];
-    this.flights = [];
-    this.sortCondition = new SearchFlightModel();
+    this.flightJourneyList = [];
+    this.searchFlightCondition = new SearchFlightModel();
     this.route.queryParamMap.subscribe(async d => {
       this.staff = await this.hrService.getStaff();
       console.log("staff ", this.staff);
       console.log("路由参数：", d);
       if (d.get("searchFlightModel")) {
-        this.sortCondition = JSON.parse(d.get("searchFlightModel"));
-        this.sortCondition.curPage = 1;
-        this.sortCondition.pageSize = 5;
-        this.isRoundTrip = this.sortCondition.isRoundTrip;
+        this.searchFlightCondition = JSON.parse(d.get("searchFlightModel"));
+        this.isRoundTrip = this.searchFlightCondition.IsRoundTrip;
       }
       if (d.get("fromCity")) {
         // console.log("路由参数：",d.data);
@@ -121,40 +116,38 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       }
       // console.log(this.s);
     });
-    this.showAdvSearchPage$ = this.flightService.getShowAdvSearchConditions();
+    this.showAdvSearchPage$ = this.flightService.getFilterPanelShow();
   }
   async isStaffTypeSelf() {
     const s = await this.hrService.getStaff();
-    return (
-      s.BookType != StaffBookType.All && s.BookType != StaffBookType.Secretary
-    );
+    return s.BookType == StaffBookType.Self;
   }
   onCalenderClick() {}
   bookFlight() {
     this.router.navigate([AppHelper.getRoutePath("book-flight")]);
   }
   onChangedDay(day: DayModel) {
-    if (!day || this.sortCondition.Date == day.date) {
+    if (!day || this.searchFlightCondition.Date == day.date || this.loading) {
       return;
     }
-    this.sortCondition.PriceFromL2H = void 0;
-    this.sortCondition.TimeFromM2N = void 0;
+    this.filterCondition.priceFromL2H = "initial";
+    this.filterCondition.timeFromM2N = "initial";
     this.activeTab =
-      this.sortCondition.AdvSCon &&
-      Object.keys(this.sortCondition.AdvSCon).some(
-        key =>
-          this.sortCondition.AdvSCon[key] ||
-          (this.sortCondition.AdvSCon[key] instanceof Array &&
-            this.sortCondition.AdvSCon[key].length)
-      )
+      this.filterCondition &&
+      Object.keys(this.filterCondition)
+        .filter(key => key != "priceFromL2H" && key != "timeFromM2N")
+        .some(
+          key =>
+            this.filterCondition[key] ||
+            (this.filterCondition[key] instanceof Array &&
+              this.filterCondition[key].length)
+        )
         ? "filter"
         : "none";
     // console.log("active tab", this.activeTab);
-    this.sortCondition.Date = day.date;
+    this.searchFlightCondition.Date = day.date;
     this.vmFlights = [];
-    setTimeout(() => {
-      this.doRefresh(true);
-    }, 500);
+    this.doRefresh(true);
   }
   async onBookTicket(evt: {
     cabin: FlightCabinEntity;
@@ -190,98 +183,113 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async doRefresh(keepSearchCondition?: boolean) {
     // console.log(evt);
-    this.flightService.setResetAdvCond(!keepSearchCondition);
-    this.sortCondition = {
-      ...this.sortCondition,
-      AdvSCon: keepSearchCondition
-        ? this.sortCondition.AdvSCon
-        : new AdvSearchCondModel()
-    };
-    this.sortCondition.curPage = 1;
-    this.sortCondition.pageSize = 10;
-    this.vmFlights = [];
-    if (this.scroller) {
-      this.scroller.disabled = false;
-    }
+    this.flightService.setResetFilerCondition(!keepSearchCondition);
     if (!keepSearchCondition) {
+      this.filterCondition = new FilterConditionModel();
       setTimeout(() => {
         this.activeTab = "none";
       }, 0);
     }
-    this.searchFlys();
-  }
-
-  loadMore() {
-    const loop = () => {
-      const slice = this.totalFilteredSegments.slice(
-        (this.sortCondition.curPage - 1) * this.sortCondition.pageSize,
-        this.sortCondition.curPage * this.sortCondition.pageSize
-      );
-      slice.forEach(item => {
-        this.vmFlights.push(item);
-      });
-      if (this.vmFlights.length < this.totalFilteredSegments.length) {
-        this.sortCondition.curPage++;
-        window.requestAnimationFrame(loop);
-      }
-    };
-    loop();
-    if (this.scroller) {
-      setTimeout(() => {
-        this.scroller.complete();
-      }, 300);
-      this.scroller.disabled = true;
-    }
-  }
-  private async searchPolicy() {
-    const flys = await this.flightService.searchFlightJourneyDetailList(
-      this.sortCondition
-    );
-    if (this.isStaffTypeSelf()) {
-      const identity = await this.identityService.getIdentityPromise();
-      const policyFlights = await this.flightService.policyflights(flys, [
-        identity.Id
-      ]);
-    }
-    return flys;
-  }
-  private async searchFlys() {
-    console.log("高阶查询", this.sortCondition.AdvSCon);
-    const flys = await this.searchPolicy();
-    this.vmFlightJourneys = flys.map(f => {
-      f.FlightRoutes = f.FlightRoutes.map(r => {
-        return r;
-      });
-      return f;
-    });
-    if (this.scroller) {
-      this.scroller.complete();
-    }
+    this.vmFlights = [];
+    const data = await this.loadData();
+    this.loading = true;
+    await this.renderView(data);
+    this.loading = false;
+    this.hasDataSj.next(!!this.vmFlights.length);
     if (this.refresher) {
       this.refresher.complete();
     }
-    this.flights = JSON.parse(JSON.stringify(flys)); // 深拷贝对象，数组
-    const vmFlights = this.advSearch(flys, this.sortCondition);
-    this.totalFilteredSegments = this.flightService.getTotalFlySegments(
-      vmFlights
-    );
-    vmFlights.forEach(vf => {
-      this.hasDataSj.next(
-        vf.FlightRoutes.some(r => r.FlightSegments.length > 0)
-      );
-    });
-
+  }
+  private scrollToTop() {
     setTimeout(() => {
       if (this.cnt) {
         this.cnt.scrollToTop(300);
       }
     }, 300);
-    if (this.refresher) {
-      this.refresher.complete();
-    }
-    this.loadMore();
   }
-
+  private async loadData() {
+    const flightJourneyList = (this.flightJourneyList = await this.flightService.searchFlightJourneyDetailList(
+      this.searchFlightCondition
+    ));
+    const filteredFlightJourneyList = await this.filterFlightJourneyList(
+      flightJourneyList
+    );
+    if (this.isStaffTypeSelf()) {
+      const identity = await this.identityService.getIdentityPromise();
+      const flights = await this.flightService.policyflights(
+        filteredFlightJourneyList,
+        [identity.Id]
+      );
+      if (flights.length) {
+        this.flightJourneyList = await this.replaceCabinInfo(
+          flights[0].FlightPolicies,
+          this.flightJourneyList
+        );
+      }
+    }
+    return filteredFlightJourneyList;
+  }
+  private async renderView(filteredFlightJourneyList: FlightJourneyEntity[]) {
+    return new Promise(s => {
+      this.loading = true;
+      const st = Date.now();
+      const pageSize = 5;
+      const totalFilteredSegments = this.flightService.getTotalFlySegments(
+        filteredFlightJourneyList
+      );
+      console.log(
+        `totalFilteredSegments.length=${totalFilteredSegments.length}`
+      );
+      const loop = () => {
+        const slice = totalFilteredSegments.splice(0, pageSize);
+        slice.forEach(item => {
+          this.vmFlights.push(item);
+        });
+        console.log(
+          `looping , ${Date.now() - st} ms `,
+          this.vmFlights.length,
+          totalFilteredSegments.length
+        );
+        if (totalFilteredSegments.length) {
+          window.requestAnimationFrame(loop);
+        } else {
+          console.log(`loopEnd ,总耗时： ${Date.now() - st} ms `);
+          s(true);
+        }
+      };
+      loop();
+    });
+  }
+  private async replaceCabinInfo(
+    flightPolicies: FlightPolicy[],
+    flights: FlightJourneyEntity[]
+  ) {
+    if (flightPolicies && flightPolicies.length && flights && flights.length) {
+      flights.forEach(f => {
+        f.FlightRoutes.forEach(r => {
+          r.FlightSegments.forEach(s => {
+            const cabins = flightPolicies.filter(fp => fp.FlightNo == s.Number);
+            if (cabins.length) {
+              cabins.forEach(c => {
+                s.Cabins.forEach(sc => {
+                  if (sc.Code == c.CabinCode) {
+                    sc.Discount = c.Discount;
+                    sc.IsAllowOrder = c.IsAllowBook;
+                    sc.LowerSegment = {
+                      ...sc.LowerSegment,
+                      ...c.LowerSegment
+                    };
+                    // sc.Rules = c.Rules;
+                  }
+                });
+              });
+            }
+          });
+        });
+      });
+    }
+    return flights;
+  }
   onItemClick(f: FlightSegmentEntity) {
     // console.log(f);
     this.router.navigate([
@@ -289,49 +297,58 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       { flightSegment: JSON.stringify(f) }
     ]);
   }
-  private advSearch(flys: FlightJourneyEntity[], data: SearchFlightModel) {
+  private filterFlightJourneyList(flys: FlightJourneyEntity[]) {
     let result = flys;
-    if (!data.AdvSCon) {
+    if (!this.filterCondition) {
       return result;
     }
-    if (data.AdvSCon.airCompanies && data.AdvSCon.airCompanies.length > 0) {
+    if (
+      this.filterCondition.airCompanies &&
+      this.filterCondition.airCompanies.length > 0
+    ) {
       result = result.map(fly => {
         fly.FlightRoutes = fly.FlightRoutes.map(r => {
           r.FlightSegments = r.FlightSegments.filter(s =>
-            data.AdvSCon.airCompanies.some(a => a.id === s.Airline)
+            this.filterCondition.airCompanies.some(a => a.id === s.Airline)
           );
           return r;
         });
         return fly;
       });
     }
-    if (data.AdvSCon.airports && data.AdvSCon.airports.length > 0) {
+    if (
+      this.filterCondition.airports &&
+      this.filterCondition.airports.length > 0
+    ) {
       result = result.map(fly => {
         fly.FlightRoutes = fly.FlightRoutes.map(r => {
           r.FlightSegments = r.FlightSegments.filter(s =>
-            data.AdvSCon.airports.some(a => a.id === s.ToAirport)
+            this.filterCondition.airports.some(a => a.id === s.ToAirport)
           );
           return r;
         });
         return fly;
       });
     }
-    if (data.AdvSCon.airTypes && data.AdvSCon.airTypes.length > 0) {
+    if (
+      this.filterCondition.airTypes &&
+      this.filterCondition.airTypes.length > 0
+    ) {
       result = result.map(fly => {
         fly.FlightRoutes = fly.FlightRoutes.map(r => {
           r.FlightSegments = r.FlightSegments.filter(s =>
-            data.AdvSCon.airTypes.some(a => a.id === s.PlaneType)
+            this.filterCondition.airTypes.some(a => a.id === s.PlaneType)
           );
           return r;
         });
         return fly;
       });
     }
-    if (data.AdvSCon.cabins && data.AdvSCon.cabins.length > 0) {
+    if (this.filterCondition.cabins && this.filterCondition.cabins.length > 0) {
       result = result.map(fly => {
         fly.FlightRoutes = fly.FlightRoutes.map(r => {
           r.FlightSegments = r.FlightSegments.filter(s =>
-            data.AdvSCon.cabins.some(
+            this.filterCondition.cabins.some(
               a => FlightCabinType[a.id] === s.LowestCabinType
             )
           );
@@ -340,19 +357,19 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         return fly;
       });
     }
-    if (data.AdvSCon.takeOffTimeSpan) {
-      console.log(data.AdvSCon.takeOffTimeSpan);
+    if (this.filterCondition.takeOffTimeSpan) {
+      console.log(this.filterCondition.takeOffTimeSpan);
       result = result.map(fly => {
         fly.FlightRoutes = fly.FlightRoutes.map(r => {
           r.FlightSegments = r.FlightSegments.filter(s => {
             // console.log(moment(s.TakeoffTime).hour());
             return (
-              data.AdvSCon.takeOffTimeSpan.lower <=
+              this.filterCondition.takeOffTimeSpan.lower <=
                 moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() &&
               (moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() <
-                data.AdvSCon.takeOffTimeSpan.upper ||
+                this.filterCondition.takeOffTimeSpan.upper ||
                 (moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() ==
-                  data.AdvSCon.takeOffTimeSpan.upper &&
+                  this.filterCondition.takeOffTimeSpan.upper &&
                   moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").minutes() == 0))
             );
           });
@@ -367,18 +384,13 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.activeTab = "filter";
     this.advSCondSub = this.flightService
-      .getAdvSConditions()
-      .subscribe(advScond => {
-        this.sortCondition.AdvSCon = advScond || new AdvSearchCondModel();
-        if (this.sortCondition.AdvSCon) {
-          console.log("高阶查询", this.sortCondition.AdvSCon);
-          this.sortCondition.curPage = 1;
-          this.sortCondition.pageSize = 5;
+      .getFilterCondition()
+      .subscribe(filterCondition => {
+        console.log("高阶查询", filterCondition);
+        this.filterCondition = filterCondition || new FilterConditionModel();
+        if (this.filterCondition) {
           this.vmFlights = [];
-          if (this.scroller) {
-            this.scroller.disabled = false;
-          }
-          this.searchFlys();
+          // this.filterFlightJourneyList();
         }
       });
     this.selectedFlyDaysSub = this.flyDayService
@@ -392,7 +404,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           if (!day) {
             return;
           }
-          this.sortCondition.Date = day.date;
+          this.searchFlightCondition.Date = day.date;
           this.vmFlights = [];
           this.doRefresh(null);
         }
@@ -419,9 +431,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
               this.cnt.ionScrollEnd.pipe(
                 tap(() => {
                   console.log("滚动停止");
-                  this.ngZone.run(() => {
-                    this.isMoving$ = of(false);
-                  });
+                  this.ngZone.run(() => {});
                 })
               )
             )
@@ -430,14 +440,13 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       )
       .subscribe(() => {
         this.ngZone.run(() => {
-          this.isMoving$ = of(true);
           console.log("正在滚动");
         });
       });
   }
   onFilter() {
     this.activeTab = "filter";
-    this.flightService.setShowAdvSearchConditions(true);
+    this.flightService.setFilterPanelShow(true);
   }
   onTimeOrder() {
     this.activeTab = "time";
@@ -449,31 +458,67 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.priceOrdL2H = !this.priceOrdL2H;
     this.sortFlights("price");
   }
-  sortFlights(key: "price" | "time") {
-    this.sortCondition.curPage = 1;
-    this.sortCondition.pageSize = 5;
+  private sortFlights(key: "price" | "time") {
     this.vmFlights = [];
-    if (this.scroller) {
-      this.scroller.disabled = false;
-    }
     if (key === "price") {
-      this.sortCondition.PriceFromL2H = this.priceOrdL2H;
-      this.sortCondition.TimeFromM2N = void 0;
+      this.filterCondition.priceFromL2H = this.priceOrdL2H
+        ? "low2Height"
+        : "height2Low";
+      this.filterCondition.timeFromM2N = "initial";
     }
     if (key === "time") {
-      this.sortCondition.TimeFromM2N = this.timeOrdM2N;
-      this.sortCondition.PriceFromL2H = void 0;
+      this.filterCondition.timeFromM2N = this.timeOrdM2N ? "am2pm" : "pm2am";
+      this.filterCondition.priceFromL2H = "initial";
     }
-    const vmFlights = this.advSearch(this.flights, this.sortCondition);
-    this.vmFlightJourneys = this.flightService.sortedFlightJourneys(
+    const vmFlights = this.filterFlightJourneyList(this.flightJourneyList);
+    this.vmFlightJourneyList = this.getSortedFlightJourneys(
       vmFlights,
-      this.sortCondition
+      this.filterCondition
     );
-    this.loadMore();
     setTimeout(() => {
       if (this.cnt) {
         this.cnt.scrollToTop(300);
       }
     }, 300);
+  }
+  private getSortedFlightJourneys(
+    flysegs: FlightJourneyEntity[],
+    data: FilterConditionModel
+  ) {
+    if (data.priceFromL2H !== "initial") {
+      // 按照价格排序
+      return this.sortByPrice(flysegs, data.priceFromL2H == "low2Height");
+    }
+    if (data.timeFromM2N !== "initial") {
+      // 按照时间排序
+      return this.sortByTime(flysegs, data.timeFromM2N == "am2pm");
+    }
+    return flysegs;
+  }
+  private sortByPrice(arr: FlightJourneyEntity[], l2h: boolean) {
+    return arr.map(item => {
+      item.FlightRoutes = item.FlightRoutes.map(r => {
+        r.FlightSegments.sort((s1, s2) => {
+          let sub = +s1.LowestFare - +s2.LowestFare;
+          sub = sub === 0 ? 0 : sub > 0 ? 1 : -1;
+          return l2h ? sub : -sub;
+        });
+        return r;
+      });
+      return item;
+    });
+  }
+  private sortByTime(arr: FlightJourneyEntity[], l2h: boolean) {
+    return arr.map(item => {
+      item.FlightRoutes = item.FlightRoutes.sort((s1, s2) => {
+        let sub =
+          +moment(s1.FirstTime, "YYYY-MM-DDTHH:mm:ss") -
+          +moment(s2.FirstTime, "YYYY-MM-DDTHH:mm:ss");
+        sub = sub === 0 ? 0 : sub > 0 ? 1 : -1;
+        // console.log("时间排序，l2h",sub);
+        return l2h ? sub : -sub;
+      });
+      return item;
+    });
   }
 }

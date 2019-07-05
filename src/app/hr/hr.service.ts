@@ -1,3 +1,4 @@
+import { IdentityService } from "src/app/services/identity/identity.service";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
 import { Injectable } from "@angular/core";
@@ -60,8 +61,16 @@ export interface HrEntity {
 })
 export class HrService {
   private staff: StaffEntity;
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    private identityService: IdentityService
+  ) {}
   async getStaff(forceRefresh: boolean = false): Promise<StaffEntity> {
+    this.identityService.getIdentity().subscribe(id => {
+      if (!id || !id.Id || !id.Ticket) {
+        this.staff = null;
+      }
+    });
     forceRefresh =
       forceRefresh ||
       (this.staff && !this.staff.IsConfirmInfo) ||

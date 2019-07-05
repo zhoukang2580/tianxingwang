@@ -1,3 +1,4 @@
+import { AppcomponentsModule } from './../../components/appcomponents.module';
 import { IonicModule } from "@ionic/angular";
 import { NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -50,7 +51,8 @@ import { SelectedPassengersComponent } from "./selected-passengers/selected-pass
     IonicModule,
     PipesModule,
     ReactiveFormsModule,
-    DirectivesModule
+    DirectivesModule,
+    AppcomponentsModule
   ],
   exports: [
     SearchDayComponent,

@@ -5,7 +5,12 @@ import {
   Input,
   Output,
   EventEmitter,
-  Renderer2
+  Renderer2,
+  AfterViewInit,
+  OnChanges,
+  SimpleChanges,
+  ViewChild,
+  ElementRef
 } from "@angular/core";
 import * as moment from "moment";
 import { environment } from "src/environments/environment";
@@ -19,13 +24,15 @@ import {
   transition,
   animate
 } from "@angular/animations";
-import { ModalController } from "@ionic/angular";
+import { ModalController, DomController } from "@ionic/angular";
 import { TicketchangingComponent } from "../ticketchanging/ticketchanging.component";
+import { ChangeDetectionStrategy } from "@angular/core";
 
 @Component({
   selector: "app-fly-list-item",
   templateUrl: "./fly-list-item.component.html",
   styleUrls: ["./fly-list-item.component.scss"],
+  // changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger("myInsertRemoveTrigger", [
       transition(":enter", [
@@ -35,38 +42,56 @@ import { TicketchangingComponent } from "../ticketchanging/ticketchanging.compon
       transition(":leave", [
         style({ opacity: 1, transform: "translateX(-10%)" }),
         animate(
-          "100ms",
+          "200ms",
           style({ opacity: 0, height: "0", transform: "translateX(100%)" })
         )
       ])
     ]),
     trigger("openclose", [
-      state("true", style({ height: "*" })),
-      state("false", style({ height: "0" })),
-      transition("true<=>false", animate("500ms"))
+      state(
+        "true",
+        style({ transform: "scaleY(1)", height: "*", opacity: "1" })
+      ),
+      state(
+        "false",
+        style({ transform: "scaleY(0)", height: "0", opacity: "0" })
+      ),
+      transition("false <=> true", animate("200ms"))
     ])
   ]
 })
-export class FlyListItemComponent implements OnInit {
-  @Input()
-  flightSegment: FlightSegmentEntity;
-  @Input()
-  itmIndex: number;
-  @Output()
-  bookTicket: EventEmitter<{
+export class FlyListItemComponent implements OnInit, AfterViewInit, OnChanges {
+  opened: boolean;
+  showHide: boolean;
+  @ViewChild("cabins") cabinsEle: ElementRef<HTMLElement>;
+  @Input() flightSegment: FlightSegmentEntity;
+  @Input() itmIndex: number;
+  @Output() bookTicket: EventEmitter<{
     cabin: FlightCabinEntity;
     flightSegment: FlightSegmentEntity;
   }>;
+  animationEventDone = true;
   showIndex = !environment.production;
   constructor(
     private dayService: SelectDateService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private render: Renderer2,
+    private domCtrl: DomController
   ) {
     this.bookTicket = new EventEmitter();
   }
-  hasStopCities() {
-    return this.flightSegment.StopCities.length > 0;
+
+  onAnimationEventStart(event: AnimationEvent) {
+    this.animationEventDone = false;
   }
+  onAnimationEventDone(event: AnimationEvent) {
+    this.animationEventDone = true;
+  }
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes && changes.flightSegment) {
+    }
+  }
+  ngAfterViewInit() {}
   onBookTicket(cabin: any) {
     this.bookTicket.emit({
       cabin,
@@ -100,5 +125,23 @@ export class FlyListItemComponent implements OnInit {
     });
     m.backdropDismiss = false;
     await m.present();
+  }
+  toggle() {
+    if (!this.opened) {
+      this.opened = true;
+    }
+    // if (!this.animationEventDone) {
+    //   return false;
+    // }
+    this.showHide = !this.showHide;
+    if (this.cabinsEle && this.cabinsEle.nativeElement) {
+      this.domCtrl.write(() => {
+        this.render.setStyle(
+          this.cabinsEle.nativeElement,
+          "height",
+          `${this.showHide ? "initial" : "0"}`
+        );
+      });
+    }
   }
 }

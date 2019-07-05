@@ -27,7 +27,7 @@ export class FlyFilterComponent implements OnInit {
     cabinOp: false
   };
   constructor(private fb: FormBuilder, private flyService: FlightService) {
-    this.resetSj = this.flyService.getResetAdvSCondSources();
+    this.resetSj = this.flyService.getResetFilterCondSources();
   }
 
   ngOnInit() {
@@ -73,11 +73,11 @@ export class FlyFilterComponent implements OnInit {
   }
   onCancel() {
     // this.onReset();
-    this.flyService.setShowAdvSearchConditions(false);
+    this.flyService.setFilterPanelShow(false);
   }
   onSearch() {
     // console.log(this.sForm.value);
-    this.flyService.setAdvSConditions(this.sForm.value);
+    this.flyService.setFilterCondition(this.sForm.value);
     this.onCancel();
   }
   onReset() {

@@ -2,13 +2,13 @@ export enum StaffBookType {
   /// <summary>
   /// 秘书
   /// </summary>
-  Secretary = 1,
+  Secretary = "Secretary",
   /// <summary>
   /// 自己
   /// </summary>
-  Self = 2,
+  Self = "Self",
   /// <summary>
   /// 全部
   /// </summary>
-  All = 3
+  All = "All"
 }

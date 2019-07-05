@@ -1,25 +1,19 @@
+import { FilterConditionModel } from "./models/flight/advanced-search-cond/FilterConditionModel";
 import { IdentityService } from "./../services/identity/identity.service";
-import { HrService, StaffEntity } from "./../hr/hr.service";
-import { AppHelper } from "src/app/appHelper";
+import { HrService } from "./../hr/hr.service";
 import { Injectable } from "@angular/core";
-import { map, tap, switchMap } from "rxjs/operators";
 
 import { environment } from "../../environments/environment";
-import { of, merge, Subject, BehaviorSubject, throwError, from } from "rxjs";
+import { Subject, BehaviorSubject } from "rxjs";
 
 import * as moment from "moment";
 import { ApiService } from "../services/api/api.service";
-import { IResponse } from "../services/api/IResponse";
-import { AdvSearchCondModel } from "./models/flight/advanced-search-cond/AdvSearchCondModel";
 import { SearchFlightModel } from "./models/flight/SearchFlightModel";
-import { TestTmcData } from "./testTmcData";
 import { FlightJourneyEntity } from "./models/flight/FlightJourneyEntity";
 import { FlightSegmentEntity } from "./models/flight/FlightSegmentEntity";
 import { RequestEntity } from "../services/api/Request.entity";
 import { Storage } from "@ionic/storage";
 import { TrafficlineModel } from "./components/select-city/models/TrafficlineModel";
-import { StaffBookType } from "../tmc/models/StaffBookType";
-import { IdentityEntity } from "../services/identity/identity.entity";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 export interface FlightSegmentModel {
@@ -35,7 +29,7 @@ export interface FlightSegmentModel {
 export interface FlightPolicy {
   FlightNo: string; // String Yes 航班号
   CabinCode: string; // string Yes 舱位代码
-  IsAllowBook: string; // Bool Yes 是否可预订
+  IsAllowBook: boolean; // Bool Yes 是否可预订
   Discount: string; // Decimal Yes 折扣率
   LowerSegment: FlightSegmentModel;
   Rules: string[]; // List<string> No 违反的差标信息
@@ -65,26 +59,21 @@ interface LocalStorageAirport {
   providedIn: "root"
 })
 export class FlightService {
-  private advSearchShowSources: Subject<boolean>;
+  private filterPanelShowHideSource: Subject<boolean>;
   private openCloseSelectCitySources: Subject<boolean>;
-  private advSearchCondSources: Subject<AdvSearchCondModel>;
-  private resetAdvSCondSources: Subject<boolean>;
+  private filterCondSources: Subject<FilterConditionModel>;
+  private resetFilterCondSources: Subject<boolean>;
   private localInternationAirports: LocalStorageAirport;
   private localDomesticAirports: LocalStorageAirport;
   private selectedCitySource: Subject<TrafficlineModel>;
   private selectedCutomers: any[];
-  constructor(
-    private apiService: ApiService,
-    private storage: Storage,
-    private hrService: HrService,
-    private identityService: IdentityService
-  ) {
+  constructor(private apiService: ApiService, private storage: Storage) {
     this.selectedCitySource = new BehaviorSubject(null);
     this.selectedCutomers = [];
-    this.advSearchShowSources = new BehaviorSubject(false);
-    this.resetAdvSCondSources = new BehaviorSubject(true);
+    this.filterPanelShowHideSource = new BehaviorSubject(false);
+    this.resetFilterCondSources = new BehaviorSubject(true);
     this.openCloseSelectCitySources = new BehaviorSubject(false);
-    this.advSearchCondSources = new BehaviorSubject(new AdvSearchCondModel());
+    this.filterCondSources = new BehaviorSubject(null);
   }
   getSelectedPassengers() {
     return this.selectedCutomers;
@@ -98,8 +87,8 @@ export class FlightService {
   setSelectedCity(_selectedCity: TrafficlineModel) {
     this.selectedCitySource.next({ ..._selectedCity });
   }
-  getResetAdvSCondSources() {
-    return this.resetAdvSCondSources;
+  getResetFilterCondSources() {
+    return this.resetFilterCondSources;
   }
   getOpenCloseSelectCityPageSources() {
     return this.openCloseSelectCitySources.asObservable();
@@ -107,21 +96,21 @@ export class FlightService {
   setOpenCloseSelectCityPageSources(open: boolean) {
     this.openCloseSelectCitySources.next(open);
   }
-  setResetAdvCond(reset: boolean) {
-    this.resetAdvSCondSources.next(reset);
+  setResetFilerCondition(reset: boolean) {
+    this.resetFilterCondSources.next(reset);
   }
 
-  setAdvSConditions(advSCond: AdvSearchCondModel) {
-    this.advSearchCondSources.next(advSCond);
+  setFilterCondition(advSCond: FilterConditionModel) {
+    this.filterCondSources.next(advSCond);
   }
-  getAdvSConditions() {
-    return this.advSearchCondSources.asObservable();
+  getFilterCondition() {
+    return this.filterCondSources.asObservable();
   }
-  setShowAdvSearchConditions(show: boolean) {
-    this.advSearchShowSources.next(show);
+  setFilterPanelShow(show: boolean) {
+    this.filterPanelShowHideSource.next(show);
   }
-  getShowAdvSearchConditions() {
-    return this.advSearchShowSources.asObservable();
+  getFilterPanelShow() {
+    return this.filterPanelShowHideSource.asObservable();
   }
   async getDomesticAirports(forceFetch: boolean = false) {
     // return this.getInternationalAirports(forceFetch);
@@ -147,7 +136,9 @@ export class FlightService {
       Trafficlines: Trafficline[];
     }>(req);
     const airports = [
-      ...this.localDomesticAirports.Trafficlines,
+      ...this.localDomesticAirports.Trafficlines.filter(
+        item => !r.Trafficlines.some(i => i.Id == item.Id)
+      ),
       ...r.Trafficlines
     ];
     this.localDomesticAirports.LastUpdateTime = Math.floor(Date.now() / 1000);
@@ -179,7 +170,9 @@ export class FlightService {
       Trafficlines: Trafficline[];
     }>(req);
     const airports = [
-      ...this.localInternationAirports.Trafficlines,
+      ...this.localInternationAirports.Trafficlines.filter(
+        item => !r.Trafficlines.some(i => i.Id == item.Id)
+      ),
       ...r.Trafficlines
     ];
     this.localInternationAirports.LastUpdateTime = Math.floor(
@@ -297,48 +290,7 @@ export class FlightService {
     }
     return serverFlights;
   }
-  public sortedFlightJourneys(
-    flysegs: FlightJourneyEntity[],
-    data: SearchFlightModel
-  ) {
-    if (data.PriceFromL2H !== void 0) {
-      console.log("按照价格从低到高 " + data.PriceFromL2H);
-      // 按照价格排序
-      return this.sortByPrice(flysegs, data.PriceFromL2H);
-    }
-    if (data.TimeFromM2N !== void 0) {
-      // 按照时间排序
-      console.log("按照时间从早到晚排序 " + data.TimeFromM2N);
-      return this.sortByTime(flysegs, data.TimeFromM2N);
-    }
-    return flysegs;
-  }
-  private sortByPrice(arr: FlightJourneyEntity[], l2h: boolean) {
-    return arr.map(item => {
-      item.FlightRoutes = item.FlightRoutes.map(r => {
-        r.FlightSegments.sort((s1, s2) => {
-          let sub = +s1.LowestFare - +s2.LowestFare;
-          sub = sub === 0 ? 0 : sub > 0 ? 1 : -1;
-          return l2h ? sub : -sub;
-        });
-        return r;
-      });
-      return item;
-    });
-  }
-  private sortByTime(arr: FlightJourneyEntity[], l2h: boolean) {
-    return arr.map(item => {
-      item.FlightRoutes = item.FlightRoutes.sort((s1, s2) => {
-        let sub =
-          +moment(s1.FirstTime, "YYYY-MM-DDTHH:mm:ss") -
-          +moment(s2.FirstTime, "YYYY-MM-DDTHH:mm:ss");
-        sub = sub === 0 ? 0 : sub > 0 ? 1 : -1;
-        // console.log("时间排序，l2h",sub);
-        return l2h ? sub : -sub;
-      });
-      return item;
-    });
-  }
+
   async getLocalHomeAirports(): Promise<Trafficline[]> {
     if (
       this.localDomesticAirports &&
@@ -372,7 +324,7 @@ export class FlightService {
   async getAllLocalAirports() {
     this.apiService.showLoadingView();
     const h = await this.getDomesticAirports();
-    const i = await this.getInternationalAirports();
+    const i = [] || (await this.getInternationalAirports());
     this.apiService.hideLoadingView();
     return [...h, ...i];
   }

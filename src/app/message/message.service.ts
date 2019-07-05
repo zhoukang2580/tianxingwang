@@ -30,27 +30,30 @@ export interface MessageModel {
 export class MessageService {
   private messageSource: Subject<MessageModel>;
   private started = false;
-  private intervalSubscription = Subscription.EMPTY;
-  private stopPop$: Observable<boolean>;
+  private intervalId: any;
   constructor(
     private apiService: ApiService,
-    private toastCtrl: ToastController,
-    private router: Router,
-    identityService: IdentityService,
-    private ngZone: NgZone
+    identityService: IdentityService
   ) {
     this.messageSource = new BehaviorSubject(null);
-    this.stopPop$ = identityService.getIdentity().pipe(
+    identityService.getIdentity().pipe(
       map(r => {
         if (r && r.Id && r.Ticket) {
           this.autoPopMessages();
           return true;
+        } else {
+          if (this.intervalId) {
+            clearInterval(this.intervalId);
+          }
+          if (this.started) {
+            console.log("停止消息轮询");
+            this.started = false;
+          }
         }
         // this.started = false;
         return false;
       })
     );
-   this. autoPopMessages() ;
   }
   getMsgCount() {
     const req = new RequestEntity();
@@ -118,35 +121,19 @@ export class MessageService {
   private autoPopMessages() {
     console.log("autoPopMessages");
     if (!this.started) {
-      if (this.intervalSubscription) {
-        this.intervalSubscription.unsubscribe();
+      if (this.intervalId) {
+        clearInterval(this.intervalId);
       }
       console.log("启动自动推送消息");
+      setInterval(async () => {
+        const message = await this.popMessage().catch(
+          _ => null as MessageModel
+        );
+        if (message) {
+          this.messageSource.next(message);
+        }
+      }, 15 * 1000);
       this.started = true;
-      this.ngZone.runOutsideAngular(() => {
-        this.intervalSubscription = interval(15 * 1000)
-          .pipe(
-            // takeUntil(
-            //   this.stopPop$.pipe(
-            //     filter(r => !r),
-            //     tap(r => {
-            //       console.log("停止自动推送消息");
-            //       this.started = false;
-            //     })
-            //   )
-            // )
-          )
-          .subscribe(async _ => {
-            const message = await this.popMessage().catch(
-              _ => null as MessageModel
-            );
-            if (message) {
-              this.ngZone.run(() => {
-                this.messageSource.next(message);
-              });
-            }
-          });
-      });
     }
   }
 }

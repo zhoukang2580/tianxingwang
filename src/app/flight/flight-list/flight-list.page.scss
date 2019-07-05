@@ -1,6 +1,5 @@
-
 ion-content {
-  --background  : #f2f2f2;
+  --background: #f2f2f2;
 }
 .tabs {
   display: flex;
@@ -11,25 +10,28 @@ ion-content {
     flex-flow: column nowrap;
     align-items: center;
     padding: 0.5rem;
-    ion-icon{
+    ion-icon {
       font-size: 1.3rem;
       --opacity: 0.6;
       color: var(--ion-color-medium);
     }
-    ion-note{
+    ion-note {
       font-size: 0.7rem;
     }
     &.active {
       --opacity: 1;
-      ion-icon{
+      ion-icon {
         color: var(--ion-color-secondary);
       }
-      ion-note{
-        color:var(--ion-color-secondary);
+      ion-note {
+        color: var(--ion-color-secondary);
       }
     }
   }
 }
-ion-list{
+ion-list {
   background: #f2f2f2;
+  ion-item + ion-item {
+    margin-top: 1em;
+  }
 }
