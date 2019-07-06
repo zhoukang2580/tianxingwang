@@ -1,3 +1,7 @@
+import { IonRadio } from "@ionic/angular";
+import { Subscription } from "rxjs";
+import { FilterConditionModel } from "./../../../models/flight/advanced-search-cond/FilterConditionModel";
+import { FlightService } from "src/app/flight/flight.service";
 import {
   Component,
   OnInit,
@@ -6,84 +10,76 @@ import {
   Output,
   EventEmitter,
   OnDestroy,
-  AfterViewInit
+  AfterViewInit,
+  OnChanges,
+  SimpleChanges
 } from "@angular/core";
-import { IonRadio } from "@ionic/angular";
-import { Subscription, Subject } from "rxjs";
 import { CabintypePipe } from "../../../pipes/cabintype.pipe";
-import { FlightJourneyEntity } from 'src/app/flight/models/flight/FlightJourneyEntity';
-import { FlightCabinType } from 'src/app/flight/models/flight/FlightCabinType';
-import { SearchTypeModel } from 'src/app/flight/models/flight/advanced-search-cond/SearchTypeModel';
+import { FlightJourneyEntity } from "src/app/flight/models/flight/FlightJourneyEntity";
+import { FlightCabinType } from "src/app/flight/models/flight/FlightCabinType";
+import { SearchTypeModel } from "src/app/flight/models/flight/advanced-search-cond/SearchTypeModel";
 
 @Component({
   selector: "app-cabin",
   templateUrl: "./cabin.component.html",
   styleUrls: ["./cabin.component.scss"]
 })
-export class CabinComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input()
-  resetSj: Subject<boolean>;
-  resetSub = Subscription.EMPTY;
-  @Input()
-  flights: FlightJourneyEntity[];
-  @ViewChild("unlimitRadio")
-  unlimitRadio: IonRadio;
-  unlimitRadioSub = Subscription.EMPTY;
-  cabins: SearchTypeModel[];
-  @Output()
-  userOp: EventEmitter<boolean>; // 用户是否点击过
-  @Output()
-  sCond: EventEmitter<any>; //  搜索条件
+export class CabinComponent
+  implements OnInit, OnDestroy, AfterViewInit, OnChanges {
+  @Input() flights: FlightJourneyEntity[];
+  @Output() sCond: EventEmitter<any>; // 搜索条件
+  cabins: SearchTypeModel[] = [];
+  isUnlimitRadioChecked = true;
   constructor(private cabinPipe: CabintypePipe) {
-    // console.log("cabinPip",this.cabinPipe);
-    this.userOp = new EventEmitter();
     this.sCond = new EventEmitter();
   }
   onUnlimit() {
-    this.userOp.emit(this.cabins.some(a => a.isChecked));
-    this.sCond.emit(this.cabins.filter(c=>c.isChecked));// 返回选中的
+    this.reset();
     return this.cabins.every(a => !a.isChecked);
   }
-  init() {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.flights && changes.flights.currentValue) {
+      this.init();
+    }
+  }
+  reset() {
+    if (this.cabins) {
+      this.cabins.forEach(c => {
+        c.isChecked = false;
+      });
+      this.onSearch();
+    }
+  }
+  onionChange() {
+    this.isUnlimitRadioChecked = !this.cabins.some(item => item.isChecked);
+    this.onSearch();
+  }
+  onSearch() {
+    this.sCond.emit(this.cabins.filter(t => t.isChecked));
+  }
+  private init() {
     this.cabins = [];
     this.flights.forEach(f => {
       f.FlightRoutes.forEach(r => {
         r.FlightSegments.forEach(s => {
-          if (
-            !this.cabins.find(a =>FlightCabinType[a.id] === s.LowestCabinType)
-          ) {
-            this.cabins.push({
-              id: FlightCabinType[s.LowestCabinType],
-              label: this.cabinPipe.transform(s.LowestCabinType),
-              isChecked: false
-            });
-          }
+          s.Cabins.forEach(c => {
+            if (
+              !this.cabins.find(
+                a => a.label == this.cabinPipe.transform(c.Type)
+              )
+            ) {
+              this.cabins.push({
+                id: FlightCabinType[c.Type],
+                label: this.cabinPipe.transform(c.Type),
+                isChecked: false
+              });
+            }
+          });
         });
       });
     });
   }
-  ngAfterViewInit() {
-    this.unlimitRadioSub = this.unlimitRadio.ionSelect.subscribe(
-      (c: CustomEvent) => {
-        // console.log(c);
-        if (c.detail.checked) {
-          this.cabins.forEach(a => {
-            a.isChecked = false;
-          });
-        }
-      }
-    );
-  }
-  ngOnDestroy() {
-    this.unlimitRadioSub.unsubscribe();
-    this.resetSub.unsubscribe();
-  }
-  ngOnInit() {
-    this.resetSub = this.resetSj.subscribe(reset => {
-      if (reset) {
-        this.init();
-      }
-    });
-    this.init();
-  }
+  ngAfterViewInit() {}
+  ngOnDestroy() {}
+  ngOnInit() {}
 }

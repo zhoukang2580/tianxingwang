@@ -1,4 +1,3 @@
-import { Subject, Subscription } from "rxjs";
 import {
   Component,
   OnInit,
@@ -6,10 +5,10 @@ import {
   AfterViewInit,
   EventEmitter,
   Output,
-  Input,
   OnDestroy
 } from "@angular/core";
-import { IonRange } from "@ionic/angular";
+import { IonRange, DomController } from "@ionic/angular";
+import { FilterConditionModel } from "src/app/flight/models/flight/advanced-search-cond/FilterConditionModel";
 @Component({
   selector: "app-take-off-timespan",
   templateUrl: "./take-off-timespan.component.html",
@@ -18,38 +17,31 @@ import { IonRange } from "@ionic/angular";
 export class TakeOffTimespanComponent
   implements OnInit, AfterViewInit, OnDestroy {
   time: "forenoon" | "afternoon" | "none" | "night";
-  @Output()
-  userOp: EventEmitter<boolean>; // 用户是否点击过
-  @Output()
-  sCond: EventEmitter<any>; // 用户是否点击过
-  @Input()
-  resetSj: Subject<boolean>;
-  resetSub = Subscription.EMPTY;
-  @ViewChild("range")
-  range: IonRange;
-  timeSpan: { lower: number; upper: number };
-  constructor() {
-    this.userOp = new EventEmitter();
+  @Output() sCond: EventEmitter<any>;
+  @ViewChild("range") range: IonRange;
+  timeSpan: { lower: number; upper: number } = {
+    lower: 0,
+    upper: 24
+  };
+  filterCondition: FilterConditionModel;
+  constructor(private domCtrl: DomController) {
     this.sCond = new EventEmitter();
   }
-
   onSearch() {
     this.sCond.emit(this.timeSpan);
   }
-  ngOnInit() {
-    this.onTimeSelect("none");
-    this.resetSub = this.resetSj.subscribe(reset => {
-      if (reset) {
-        this.onTimeSelect("none");
-        setTimeout(() => {
-          this.userOp.emit(false);
-        }, 100);
-      }
-    });
+  ngOnInit() {}
+  reset() {
+    this.init();
   }
-  ngOnDestroy() {
-    this.resetSub.unsubscribe();
+  private init() {
+    setTimeout(() => {
+      this.onTimeSelect("none");
+      this.changeView();
+      this.onSearch();
+    }, 100);
   }
+  ngOnDestroy() {}
   onTimeSelect(time: "forenoon" | "afternoon" | "none" | "night") {
     this.time = time;
     switch (this.time) {
@@ -70,25 +62,27 @@ export class TakeOffTimespanComponent
       }
       default: {
         this.range.value = { lower: 0, upper: 24 };
-        // this.changeView();
+        this.changeView();
         break;
       }
     }
+    this.onSearch();
   }
   ngAfterViewInit() {
+    this.init();
     this.range.ionChange.subscribe((v: CustomEvent) => {
       // console.dir(v.detail.value);
-      this.timeSpan = v.detail.value;
-      this.changeView();
-      this.userOp.emit(true);
+      this.timeSpan.lower = v.detail.value.lower;
+      this.timeSpan.upper = v.detail.value.upper;
+      // this.changeView();
       this.onSearch();
     });
   }
   changeView() {
-    const r = document.querySelector("ion-range");
-    // console.log("r", r);
-    if (r) {
-      setTimeout(() => {
+    this.domCtrl.write(() => {
+      const r = document.querySelector("ion-range");
+      // console.log("r", r);
+      if (r) {
         const s = r.shadowRoot.querySelector(".range-slider");
         // console.log("s", s);
         if (s) {
@@ -110,7 +104,7 @@ export class TakeOffTimespanComponent
             }
           }
         }
-      }, 188);
-    }
+      }
+    });
   }
 }

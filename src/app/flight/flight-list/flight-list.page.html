@@ -1,35 +1,33 @@
-<ion-header>
+<ion-header text-center>
   <ion-toolbar>
     <ion-buttons slot='start'>
       <ion-back-button></ion-back-button>
     </ion-buttons>
     <ion-title color='secondary' text-center>
-      <ion-button fill='clear' color='secondary'>
-        <ion-text>{{vmFromCity?.Nickname}}</ion-text>
-      </ion-button>
-      <ion-button fill='clear' color='secondary'>
-        <i class='icon icon-flight-plane'></i>
-      </ion-button>
-      <ion-button fill='clear' color='secondary'>
-        <ion-text>{{ vmToCity?.Nickname}}</ion-text>
-      </ion-button>
+      <ion-text>{{vmFromCity?.Nickname}}</ion-text>
+      <i class='icon icon-flight-plane'></i>
+      <ion-text>{{ vmToCity?.Nickname}}</ion-text>
     </ion-title>
     <ion-buttons slot='end'>
       <ion-button fill='clear' color='secondary' size='small'>添加旅客</ion-button>
     </ion-buttons>
   </ion-toolbar>
+  <ion-label style="font-size: 0.8rem;">
+    {{searchFlightCondition?.Date}}共{{vmFlights?.length}}个航班
+    <ion-text color='danger' *ngIf='isFiltered'>(过滤后)</ion-text>
+  </ion-label>
   <ion-toolbar class="fly-days">
     <app-fly-days-calendar (itemSelected)="onChangedDay($event)" (calenderClick)="onCalenderClick()">
     </app-fly-days-calendar>
   </ion-toolbar>
 </ion-header>
 <ion-content #cnt>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh(false)">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh(true,false)" pullFactor="0.8" pullMin="100" pullMax="200">
     <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="下拉刷新" refreshingSpinner="circles"
       refreshingText="正在加载...">
     </ion-refresher-content>
   </ion-refresher>
-  <app-no-more-data [hasDataObs]="hasDataSj"></app-no-more-data>
+  <app-no-more-data [hasDataObs]="hasDataSource"></app-no-more-data>
   <ion-list [style.display]='loading ?"none":"initial"' lines='none'>
     <ion-item *ngFor='let s of vmFlights; let i=index;'>
       <!-- <span>{{i+1}}</span> -->
@@ -60,25 +58,27 @@
   </ion-infinite-scroll> -->
 </ion-content>
 <ion-footer color="primary">
-  <div class="tabs">
-    <div class="tab" [class.active]="activeTab === 'filter'" (click)="onFilter()">
-      <ion-icon name="funnel"></ion-icon>
-      <ion-note>筛选</ion-note>
+  <ion-toolbar>
+    <div class="tabs">
+      <div class="tab" [class.active]="activeTab === 'filter'" (click)="onFilter()">
+        <ion-icon name="funnel"></ion-icon>
+        <ion-note>筛选</ion-note>
+      </div>
+      <div class="tab" [class.active]="activeTab === 'time'" (click)="onTimeOrder()">
+        <ion-icon name="time"></ion-icon>
+        <ion-note *ngIf="activeTab !== 'time'">时间</ion-note>
+        <ion-note *ngIf="activeTab === 'time' && timeOrdM2N">从早到晚</ion-note>
+        <ion-note *ngIf="activeTab === 'time' && !timeOrdM2N">从晚到早</ion-note>
+      </div>
+      <div class="tab" [class.active]="activeTab === 'price'" (click)="onPriceOrder()">
+        <ion-icon name="logo-usd"></ion-icon>
+        <ion-note *ngIf="activeTab !== 'price'">价格</ion-note>
+        <ion-note *ngIf="activeTab === 'price' && priceOrdL2H">从低到高</ion-note>
+        <ion-note *ngIf="activeTab === 'price' && !priceOrdL2H">从高到低</ion-note>
+      </div>
     </div>
-    <div class="tab" [class.active]="activeTab === 'time'" (click)="onTimeOrder()">
-      <ion-icon name="time"></ion-icon>
-      <ion-note *ngIf="activeTab !== 'time'">时间</ion-note>
-      <ion-note *ngIf="activeTab === 'time' && timeOrdM2N">从早到晚</ion-note>
-      <ion-note *ngIf="activeTab === 'time' && !timeOrdM2N">从晚到早</ion-note>
-    </div>
-    <div class="tab" [class.active]="activeTab === 'price'" (click)="onPriceOrder()">
-      <ion-icon name="logo-usd"></ion-icon>
-      <ion-note *ngIf="activeTab !== 'price'">价格</ion-note>
-      <ion-note *ngIf="activeTab === 'price' && priceOrdL2H">从低到高</ion-note>
-      <ion-note *ngIf="activeTab === 'price' && !priceOrdL2H">从高到低</ion-note>
-    </div>
-  </div>
+  </ion-toolbar>
 </ion-footer>
 
-<!-- <app-fly-filter class="ion-page" [flights]="flights" [@showAdvSearchPage]="showAdvSearchPage$ | async"
-  [toCityName]="vmToCity?.CityName"></app-fly-filter> -->
+<app-fly-filter class="ion-page" [flights]="flightJourneyList" [@showAdvSearchPage]="showAdvSearchPage$ | async"
+  [toCityName]="vmToCity?.CityName"></app-fly-filter>

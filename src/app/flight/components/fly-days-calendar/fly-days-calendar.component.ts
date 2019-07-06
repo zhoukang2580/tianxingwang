@@ -8,7 +8,9 @@ import {
   ViewChild,
   ElementRef,
   Output,
-  EventEmitter
+  EventEmitter,
+  QueryList,
+  ViewChildren
 } from "@angular/core";
 import * as moment from "moment";
 import { SelectDateService } from "../../select-date/select-date.service";
@@ -18,10 +20,10 @@ import { SelectDateService } from "../../select-date/select-date.service";
   styleUrls: ["./fly-days-calendar.component.scss"]
 })
 export class FlyDaysCalendarComponent implements OnInit, AfterViewInit {
-  @Output()
-  itemSelected: EventEmitter<DayModel>;
-  @Output()
-  calenderClick: EventEmitter<any>;
+  @Output() itemSelected: EventEmitter<DayModel>;
+  @Output() calenderClick: EventEmitter<any>;
+  @ViewChild("daysContainer") daysEle: ElementRef<HTMLElement>;
+  @ViewChildren("dayItem") dayItems: QueryList<ElementRef<HTMLElement>>;
   days: DayModel[];
   constructor(
     private dayService: SelectDateService,
@@ -61,22 +63,43 @@ export class FlyDaysCalendarComponent implements OnInit, AfterViewInit {
         index = i;
       }
     }
-    setTimeout(() => {
-      const daysEle = document.querySelector(".days");
-      const selectedEle = daysEle.querySelector(".active") as HTMLElement;
-      if (daysEle && selectedEle) {
-        const clientRect = selectedEle.getBoundingClientRect();
-        // console.dir(daysEle);
-        const dist =
-          clientRect.width / 2 + clientRect.left - this.plt.width() / 2;
-        // console.dir(dist);
-        daysEle.scrollBy({
-          left: dist,
-          top: 0,
-          behavior: "smooth"
-        });
+    if (!this.daysEle || !this.daysEle.nativeElement) {
+      // 如果这里的日历找不到对应的日期，结束
+      if (!this.days.find(item => item.date == day.date)) {
+        const ele = this.daysEle.nativeElement.querySelector(".active");
+        // console.log("日期变更停止",ele);
+        if (ele) {
+          this.render.removeClass(ele, "active");
+        }
       }
-    }, 100);
+      return;
+    }
+    const daysEle = this.daysEle.nativeElement;
+    let selectedEle;
+    // console.dir(this.dayItems);
+    if (this.dayItems && this.dayItems.length) {
+      this.dayItems.forEach(item => {
+        // console.log(item.nativeElement.getAttribute("date"));
+        if (item.nativeElement.getAttribute("date") == day.date) {
+          selectedEle = item.nativeElement;
+          this.render.addClass(item.nativeElement, "active");
+        } else {
+          this.render.removeClass(item.nativeElement, "active");
+        }
+      });
+    }
+    if (daysEle && selectedEle) {
+      const clientRect = selectedEle.getBoundingClientRect();
+      // console.dir(daysEle);
+      const dist =
+        clientRect.width / 2 + clientRect.left - this.plt.width() / 2;
+      // console.dir(dist);
+      daysEle.scrollBy({
+        left: dist,
+        top: 0,
+        behavior: "smooth"
+      });
+    }
     this.itemSelected.emit(day);
   }
 }

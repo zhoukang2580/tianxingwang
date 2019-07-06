@@ -1,23 +1,35 @@
-import { Subject } from "rxjs";
+import { AircompanyComponent } from "./aircompany/aircompany.component";
+import { AirportsComponent } from "./airports/airports.component";
+import { AirtypeComponent } from "./airtype/airtype.component";
+import { CabinComponent } from "./cabin/cabin.component";
 import { FormBuilder, FormGroup } from "@angular/forms";
-import { Component, OnInit, Input } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  Input,
+  ViewChild,
+  OnDestroy,
+  AfterViewInit
+} from "@angular/core";
 import { SearchTypeModel } from "../../models/flight/advanced-search-cond/SearchTypeModel";
 import { FlightService } from "../../flight.service";
 import { FlightJourneyEntity } from "../../models/flight/FlightJourneyEntity";
-
+import { TakeOffTimespanComponent } from "./take-off-timespan/take-off-timespan.component";
 @Component({
   selector: "app-fly-filter",
   templateUrl: "./fly-filter.component.html",
   styleUrls: ["./fly-filter.component.scss"]
 })
-export class FlyFilterComponent implements OnInit {
-  @Input()
-  flights: FlightJourneyEntity[];
+export class FlyFilterComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild(TakeOffTimespanComponent) timeComp: TakeOffTimespanComponent;
+  @ViewChild(CabinComponent) cabinComp: CabinComponent;
+  @ViewChild(AirtypeComponent) airTypeComp: AirtypeComponent;
+  @ViewChild(AirportsComponent) airportsComp: AirportsComponent;
+  @ViewChild(AircompanyComponent) airCompanyComp: AircompanyComponent;
+  @Input() flights: FlightJourneyEntity[];
+  @Input() toCityName: string; // 比如上海
   sForm: FormGroup;
   tab: number;
-  resetSj: Subject<boolean>;
-  @Input()
-  toCityName: string; // 比如上海
   userOps = {
     // 用户是否对某类型的选项做出改变
     timespanOp: false,
@@ -26,11 +38,8 @@ export class FlyFilterComponent implements OnInit {
     airTypeOp: false,
     cabinOp: false
   };
-  constructor(private fb: FormBuilder, private flyService: FlightService) {
-    this.resetSj = this.flyService.getResetFilterCondSources();
-  }
-
-  ngOnInit() {
+  constructor(private fb: FormBuilder, private flightService: FlightService) {
+    console.log("FlyFilterComponent constructor execute");
     this.sForm = this.fb.group({
       cabins: [], // 舱位
       onlyDirect: [false], // 仅直达
@@ -39,6 +48,10 @@ export class FlyFilterComponent implements OnInit {
       airports: [], // 机场
       airTypes: [] // 机型
     });
+  }
+  ngOnDestroy() {}
+  ngAfterViewInit() {}
+  ngOnInit() {
     // console.dir(this.flights);
     console.log("初始化");
     this.tab = 1;
@@ -46,67 +59,50 @@ export class FlyFilterComponent implements OnInit {
   onTabClick(tab: number) {
     this.tab = tab;
   }
-  changetimespanOp(evt: boolean) {
-    setTimeout(() => {
-      this.userOps.timespanOp = evt;
-    }, 0);
-  }
-  changeairportOp(evt: boolean) {
-    setTimeout(() => {
-      this.userOps.airportOp = evt;
-    }, 0);
-  }
-  changeairCompanyOp(evt: boolean) {
-    setTimeout(() => {
-      this.userOps.airCompanyOp = evt;
-    }, 0);
-  }
-  changeairTypeOp(evt: boolean) {
-    setTimeout(() => {
-      this.userOps.airTypeOp = evt;
-    }, 0);
-  }
-  changecabinOp(evt: boolean) {
-    setTimeout(() => {
-      this.userOps.cabinOp = evt;
-    }, 0);
-  }
   onCancel() {
     // this.onReset();
-    this.flyService.setFilterPanelShow(false);
+    this.flightService.setFilterPanelShow(false);
   }
   onSearch() {
     // console.log(this.sForm.value);
-    this.flyService.setFilterCondition(this.sForm.value);
+    this.flightService.setFilterCondition(this.sForm.value);
     this.onCancel();
   }
   onReset() {
     this.sForm.reset();
-    this.resetSj.next(true);
+    this.airCompanyComp.reset();
+    this.airTypeComp.reset();
+    this.timeComp.reset();
+    this.cabinComp.reset();
   }
   onTimeSpanSCond(sCond: { lower: number; upper: number }) {
     this.sForm.patchValue({
       takeOffTimeSpan: sCond
     });
+    this.userOps.timespanOp = !(sCond && sCond.lower == 0 && sCond.upper == 24);
   }
   onAirCompanySCond(sCond: SearchTypeModel[]) {
     this.sForm.patchValue({
       airCompanies: sCond
     });
+    this.userOps.airCompanyOp = sCond && sCond.length > 0;
   }
   onAirportSCond(sCond: SearchTypeModel[]) {
     this.sForm.patchValue({
       airports: sCond
     });
+    this.userOps.airportOp = sCond && sCond.length > 0;
   }
   onAirTypeSCond(sCond: SearchTypeModel[]) {
     this.sForm.patchValue({
       airTypes: sCond
     });
+    this.userOps.airTypeOp = sCond && sCond.length > 0;
   }
   onCabinSCond(sCond: SearchTypeModel[]) {
     this.sForm.patchValue({
       cabins: sCond
     });
+    this.userOps.cabinOp = sCond && sCond.length > 0;
   }
 }

@@ -8,59 +8,56 @@ import {
   QueryList,
   ViewChild,
   Output,
-  OnDestroy
+  OnDestroy,
+  OnChanges,
+  SimpleChanges
 } from "@angular/core";
-import { IonCheckbox, IonRadio } from "@ionic/angular";
+import { IonCheckbox, IonRadio, DomController } from "@ionic/angular";
 import { Subscription, Subject } from "rxjs";
 import { SearchTypeModel } from "../../../models/flight/advanced-search-cond/SearchTypeModel";
-import { FlightJourneyEntity } from 'src/app/flight/models/flight/FlightJourneyEntity';
+import { FlightJourneyEntity } from "src/app/flight/models/flight/FlightJourneyEntity";
+import { FilterConditionModel } from "src/app/flight/models/flight/advanced-search-cond/FilterConditionModel";
 
 @Component({
   selector: "app-aircompany",
   templateUrl: "./aircompany.component.html",
   styleUrls: ["./aircompany.component.scss"]
 })
-export class AircompanyComponent implements OnInit, AfterViewInit, OnDestroy {
+export class AircompanyComponent
+  implements OnInit, AfterViewInit, OnDestroy, OnChanges {
   @Input()
   flights: FlightJourneyEntity[];
-  @Input()
-  resetSj: Subject<boolean>;
-  resetSub = Subscription.EMPTY;
-  @ViewChild("unlimitRadio")
-  unlimitRadio: IonRadio;
-  unlimitRadioSub = Subscription.EMPTY;
-  @Output()
-  userOp: EventEmitter<boolean>;
-  @Output()
-  sCond: EventEmitter<any>;
+  isUnlimitRadioChecked = true;
+  @Output() sCond: EventEmitter<any>;
   aircompanies: SearchTypeModel[];
+  filterCondition: FilterConditionModel;
   constructor() {
-    this.userOp = new EventEmitter();
     this.sCond = new EventEmitter();
   }
-  onUnlimit() {
-    this.userOp.emit(this.aircompanies.some(a => a.isChecked));
-    this.sCond.emit(this.aircompanies.filter(c => c.isChecked));
-    return this.aircompanies.every(a => !a.isChecked);
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.flights && changes.flights.currentValue) {
+      this.init();
+    }
   }
-  ngOnDestroy(): void {
-    this.unlimitRadioSub.unsubscribe();
-    this.resetSub.unsubscribe();
-  }
-  ngAfterViewInit() {
-    this.unlimitRadioSub = this.unlimitRadio.ionSelect.subscribe(
-      (c: CustomEvent) => {
-        // console.log(c);
-        if (c.detail.checked) {
-          this.aircompanies.forEach(a => {
-            a.isChecked = false;
-          });
-        }
-      }
+  onionChange() {
+    this.isUnlimitRadioChecked = !this.aircompanies.some(
+      item => item.isChecked
     );
+    this.sCond.emit(this.aircompanies.filter(c => c.isChecked));
   }
-  init() {
+  reset() {
+    if (this.aircompanies) {
+      this.aircompanies.forEach(c => {
+        c.isChecked = false;
+      });
+      this.sCond.emit(this.aircompanies.filter(c => c.isChecked));
+    }
+  }
+  ngOnDestroy(): void {}
+  ngAfterViewInit() {}
+  private init() {
     this.aircompanies = [];
+    const st = Date.now();
     this.flights.forEach(f => {
       f.FlightRoutes.forEach(r => {
         r.FlightSegments.forEach(s => {
@@ -69,19 +66,13 @@ export class AircompanyComponent implements OnInit, AfterViewInit, OnDestroy {
               id: s.Airline,
               label: s.AirlineName,
               isChecked: false,
-              icon: "assets/icon/favicon.png"
+              icon: s.AirlineSrc
             });
           }
         });
       });
     });
+    console.log(`重置aircompany 条件 ${Date.now() - st} ms`, this.aircompanies);
   }
-  ngOnInit() {
-    this.init();
-    this.resetSub = this.resetSj.subscribe(reset => {
-      if (reset) {
-        this.init();
-      }
-    });
-  }
+  ngOnInit() {}
 }

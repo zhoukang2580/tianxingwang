@@ -1,25 +1,31 @@
 <ion-content>
   <form (ngSubmit)="onSearch()" [formGroup]='sForm'>
-    <ion-toolbar slot='fixed'>
-      <section>
-        <ion-button color='dark' fill='clear' (click)='onCancel()'>
-          取消
-        </ion-button>
-        <ion-button color='dark' fill='clear' (click)='onReset()'>
-          重置
-        </ion-button>
-        <ion-button color='secondary' fill='clear' type='submit'>
-          确定
-        </ion-button>
-      </section>
+    <ion-toolbar slot='fixed' #toolbar>
+      <ion-row text-center>
+        <ion-col>
+          <ion-button color='dark' fill='outline' size='small' (click)='onCancel()'>
+            取消
+          </ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button color='dark' fill='outline' size='small' (click)='onReset()'>
+            重置
+          </ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button color='secondary' size='small' fill='outline' type='submit'>
+            确定
+          </ion-button>
+        </ion-col>
+      </ion-row>
     </ion-toolbar>
-    <ion-list lines='none' no-margin>
+    <ion-list lines='none' no-margin #ionlist>
       <ion-item>
         <ion-label>仅直达</ion-label>
         <ion-toggle formControlName='onlyDirect'></ion-toggle>
       </ion-item>
     </ion-list>
-    <section class="search-cond">
+    <section class="search-cond" #searchcondition>
       <article class="left">
         <div class='tab' [class.active]='tab===1' [class.user-op]='userOps.timespanOp' (click)='onTabClick(1)'>
           <span>起飞时段</span>
@@ -27,9 +33,9 @@
         <div class='tab' [class.active]='tab===2' [class.user-op]='userOps.airCompanyOp' (click)='onTabClick(2)'>
           <span>航空公司</span>
         </div>
-        <div class='tab' [class.active]='tab===3' [class.user-op]='userOps.airportOp' (click)='onTabClick(3)'>
+        <!-- <div class='tab' [class.active]='tab===3' [class.user-op]='userOps.airportOp' (click)='onTabClick(3)'>
           <span>机场</span>
-        </div>
+        </div> -->
         <div class='tab' [class.active]='tab===4' [class.user-op]='userOps.airTypeOp' (click)='onTabClick(4)'>
           <span>机型</span>
         </div>
@@ -37,15 +43,14 @@
           <span>仓位</span>
         </div>
       </article>
-      <article class="right">
-        <app-take-off-timespan [class.hidden]='tab!==1' (sCond)='onTimeSpanSCond($event)' [resetSj]='resetSj' (userOp)="userOps.timespanOp=$event;"></app-take-off-timespan>
-        <app-aircompany [flights]='flights' [resetSj]='resetSj' [class.hidden]='tab!==2' (userOp)='userOps.airCompanyOp=$event;'
-          (sCond)='onAirCompanySCond($event)'></app-aircompany>
-        <app-airports [flights]='flights' [resetSj]='resetSj' [class.hidden]='tab!==3' (userOp)='userOps.airportOp=$event;'
-          (sCond)='onAirportSCond($event)' [toCityName]='toCityName'></app-airports>
-        <app-airtype [flights]='flights' [resetSj]='resetSj' [class.hidden]='tab!==4' (userOp)='userOps.airTypeOp=$event;'
-          (sCond)='onAirTypeSCond($event)'></app-airtype>
-        <app-cabin [flights]='flights' [resetSj]='resetSj' [class.hidden]='tab!==5' (userOp)='userOps.cabinOp=$event;' (sCond)='onCabinSCond($event)'></app-cabin>
+      <article class="right" #rightpanel>
+        <app-take-off-timespan [class.hidden]='tab!==1' (sCond)='onTimeSpanSCond($event)'></app-take-off-timespan>
+        <app-aircompany [flights]='flights' [class.hidden]='tab!==2' (sCond)='onAirCompanySCond($event)'>
+        </app-aircompany>
+        <!-- <app-airports [flights]='flights' [class.hidden]='tab!==3' (sCond)='onAirportSCond($event)'
+          [toCityName]='toCityName'></app-airports> -->
+        <app-airtype [flights]='flights' [class.hidden]='tab!==4' (sCond)='onAirTypeSCond($event)'></app-airtype>
+        <app-cabin [flights]='flights' [class.hidden]='tab!==5' (sCond)='onCabinSCond($event)'></app-cabin>
       </article>
     </section>
   </form>

@@ -14,7 +14,8 @@ import {
 import { IonRadio, IonCheckbox } from "@ionic/angular";
 import { QueryList } from "@angular/core";
 import { SearchTypeModel } from "../../../models/flight/advanced-search-cond/SearchTypeModel";
-import { FlightJourneyEntity } from 'src/app/flight/models/flight/FlightJourneyEntity';
+import { FlightJourneyEntity } from "src/app/flight/models/flight/FlightJourneyEntity";
+import { FilterConditionModel } from "src/app/flight/models/flight/advanced-search-cond/FilterConditionModel";
 
 @Component({
   selector: "app-airports",
@@ -26,28 +27,29 @@ export class AirportsComponent implements OnInit, AfterViewInit, OnDestroy {
   flights: FlightJourneyEntity[];
   @Input()
   toCityName: string;
-  @Input()
-  resetSj: Subject<boolean>;
-  resetSub = Subscription.EMPTY;
-  @ViewChild("unlimitRadio")
-  unlimitRadio: IonRadio;
-  unlimitRadioSub = Subscription.EMPTY;
+  isUnlimitRadioChecked = true;
   airports: SearchTypeModel[];
   @Output()
-  userOp: EventEmitter<boolean>; // 用户是否点击过
-  @Output()
   sCond: EventEmitter<any>;
+  filterCondition: FilterConditionModel;
   constructor() {
-    this.userOp = new EventEmitter();
     this.sCond = new EventEmitter();
   }
-  onUnlimit() {
-    this.userOp.emit(this.airports.some(a => a.isChecked));
+  
+  onionChange() {
+    this.isUnlimitRadioChecked = !this.airports.some(item => item.isChecked);
     this.sCond.emit(this.airports.filter(a => a.isChecked));
-    return this.airports.every(a => !a.isChecked);
   }
-  init() {
+  reset() {
+    if (this.airports) {
+      this.airports.forEach(c => {
+        c.isChecked = false;
+      });
+    }
+  }
+ private init() {
     this.airports = [];
+    const st = Date.now();
     this.flights.forEach(f => {
       f.FlightRoutes.forEach(r => {
         r.FlightSegments.forEach(s => {
@@ -61,6 +63,7 @@ export class AirportsComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       });
     });
+    console.log(`重置 airports 条件 ${Date.now() - st} ms`);
     // console.log(this.flights,this.airports);
     //  this.airports = [
     //   {
@@ -74,27 +77,7 @@ export class AirportsComponent implements OnInit, AfterViewInit, OnDestroy {
     // ];
   }
   ngOnInit() {
-    this.resetSub = this.resetSj.subscribe(reset => {
-      if (reset) {
-        this.init();
-      }
-    });
-    this.init();
   }
-  ngAfterViewInit() {
-    this.unlimitRadioSub = this.unlimitRadio.ionSelect.subscribe(
-      (c: CustomEvent) => {
-        // console.log(c);
-        if (c.detail.checked) {
-          this.airports.forEach(a => {
-            a.isChecked = false;
-          });
-        }
-      }
-    );
-  }
-  ngOnDestroy() {
-    this.unlimitRadioSub.unsubscribe();
-    this.resetSub.unsubscribe();
-  }
+  ngAfterViewInit() {}
+  ngOnDestroy() {}
 }

@@ -1,4 +1,4 @@
-import { LanguageHelper } from 'src/app/languageHelper';
+import { LanguageHelper } from "src/app/languageHelper";
 import { BehaviorSubject, Subject } from "rxjs";
 import { Injectable } from "@angular/core";
 import * as moment from "moment";
@@ -55,6 +55,10 @@ export class SelectDateService {
       default:
         return d.dayOfWeekName;
     }
+  }
+  generateDayModelByDate(date: string) {
+    const m = moment(date);
+    return this.generateDayModel(m);
   }
   generateDayModel(d: moment.Moment) {
     const retD = new DayModel();

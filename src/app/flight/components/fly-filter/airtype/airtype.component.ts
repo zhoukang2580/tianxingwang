@@ -8,59 +8,55 @@ import {
   OnDestroy,
   AfterViewInit,
   Output,
-  EventEmitter
+  EventEmitter,
+  OnChanges,
+  SimpleChange,
+  SimpleChanges
 } from "@angular/core";
 import { IonRadio } from "@ionic/angular";
 import { Subscription, Subject } from "rxjs";
 import { SearchTypeModel } from "../../../models/flight/advanced-search-cond/SearchTypeModel";
-import { FlightJourneyEntity } from 'src/app/flight/models/flight/FlightJourneyEntity';
+import { FlightJourneyEntity } from "src/app/flight/models/flight/FlightJourneyEntity";
+import { FilterConditionModel } from "src/app/flight/models/flight/advanced-search-cond/FilterConditionModel";
 
 @Component({
   selector: "app-airtype",
   templateUrl: "./airtype.component.html",
   styleUrls: ["./airtype.component.scss"]
 })
-export class AirtypeComponent implements OnInit, OnDestroy, AfterViewInit {
+export class AirtypeComponent
+  implements OnInit, OnDestroy, AfterViewInit, OnChanges {
   @Input()
   flights: FlightJourneyEntity[];
-  @Input()
-  resetSj: Subject<boolean>;
-  resetSub = Subscription.EMPTY;
-  @ViewChild("unlimitRadio")
-  unlimitRadio: IonRadio;
-  unlimitRadioSub = Subscription.EMPTY;
+  isUnlimitRadioChecked = true;
   airtypes: SearchTypeModel[];
-  @Output()
-  userOp: EventEmitter<boolean>; // 用户是否点击过
-  @Output()
-  sCond: EventEmitter<any>; // 搜索条件
+  @Output() sCond: EventEmitter<any>; // 搜索条件
+  filterCondition: FilterConditionModel;
   constructor() {
-    this.userOp = new EventEmitter();
     this.sCond = new EventEmitter();
   }
-  onUnlimit() {
-    this.userOp.emit(this.airtypes.some(a => a.isChecked));
-    this.onSearch();
-    return this.airtypes.every(a => !a.isChecked);
+  reset() {
+    if (this.airtypes) {
+      this.airtypes.forEach(c => {
+        c.isChecked = false;
+      });
+      this.sCond.emit(this.airtypes.filter(c => c.isChecked));
+    }
   }
-  ngAfterViewInit() {
-    this.unlimitRadioSub = this.unlimitRadio.ionSelect.subscribe(
-      (c: CustomEvent) => {
-        // console.log(c);
-        if (c.detail.checked) {
-          this.airtypes.forEach(a => {
-            a.isChecked = false;
-          });
-        }
-      }
-    );
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.flights && changes.flights.currentValue) {
+      this.init();
+    }
   }
-  ngOnDestroy() {
-    this.unlimitRadioSub.unsubscribe();
-    this.resetSub.unsubscribe();
+  onionChange() {
+    this.isUnlimitRadioChecked = !this.airtypes.some(item => item.isChecked);
+    this.sCond.emit(this.airtypes.filter(c => c.isChecked));
   }
-  init() {
+  ngAfterViewInit() {}
+  ngOnDestroy() {}
+  private init() {
     this.airtypes = [];
+    const st = Date.now();
     this.flights.forEach(f => {
       f.FlightRoutes.forEach(r => {
         r.FlightSegments.forEach(s => {
@@ -74,16 +70,10 @@ export class AirtypeComponent implements OnInit, OnDestroy, AfterViewInit {
         });
       });
     });
+    console.log(`初始化 airtype ${Date.now() - st} ms`);
   }
   onSearch() {
-    this.sCond.emit(this.airtypes.filter(t=>t.isChecked));
+    this.sCond.emit(this.airtypes.filter(t => t.isChecked));
   }
-  ngOnInit() {
-    this.resetSub = this.resetSj.subscribe(reset => {
-      if (reset) {
-        this.init();
-      }
-    });
-    this.init();
-  }
+  ngOnInit() {}
 }

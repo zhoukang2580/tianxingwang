@@ -1,55 +1,33 @@
 import { IdentityService } from "src/app/services/identity/identity.service";
-import { StaffBookType } from "./../../tmc/models/StaffBookType";
 import { ApiService } from "./../../services/api/api.service";
 import { ActivatedRoute } from "@angular/router";
-import { FlightService } from "src/app/flight/flight.service";
+import {
+  FlightService,
+  Passenger,
+  PassengerFlightSegments
+} from "src/app/flight/flight.service";
 import { SelectedPassengersComponent } from "./../components/selected-passengers/selected-passengers.component";
 import { Component, OnInit, ViewChild } from "@angular/core";
 import {
   PopoverController,
   IonInfiniteScroll,
-  IonRefresher
+  IonRefresher,
+  NavController
 } from "@ionic/angular";
 import { RequestEntity } from "src/app/services/api/Request.entity";
-export interface Staff {
-  Id: string; // Long Id
-  TmcId: string; // Long 客户 id
-  AccountId: string; // Long 帐号 id
-  OrganizationId: string; // Long 所属部门 Id
-  OrganizationCode: string; // String 所属部门
-  OrganizationName: string; // String 所属部门
-  Number: string; // String 工号
-  Name: string; // String 姓名
-  Nickname: string; // String 昵称
-  Email: string; //String 邮箱
-  Mobile: string; // String 手机号码
-  ExtensionNumber: string; // String 分机号
-  CcQueue: string; // Datetime 队列
-  Penalty: string; // Int 优先级
-  OutNumber: string; // String 外部编号
-  IsVip: boolean; // 是否 Vip
-  IsConfirmInfo: boolean; // 是否确认信息
-  IsModifyPassword: boolean; // 是否修改密码
-  CostCenterId: string; // Long 成本中心 Id
-  CostCenterCode: string; // String 成本中心代码
-  CostCenterName: string; // String 成本中心名称
-  CredentialsInfo: string; // String 证件信息
-  IsUsed: boolean; // 是否启用
-  BookType: StaffBookType; // int 预订类型
-  BookCodes: string; // String 预订代码
-}
+
 @Component({
   selector: "app-select-passenger",
   templateUrl: "./select-passenger.page.html",
   styleUrls: ["./select-passenger.page.scss"]
 })
 export class SelectPassengerPage implements OnInit {
-  passengers: any[];
+  passengerFlightSegments: PassengerFlightSegments[];
   keyword: string;
-  staffs: Staff[];
+  passengers: Passenger[];
   currentPage = 1;
   pageSize = 10;
-  vmStaffs: Staff[];
+  vmStaffs: Passenger[];
   loading = false;
   @ViewChild(IonRefresher) ionrefresher: IonRefresher;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
@@ -57,11 +35,12 @@ export class SelectPassengerPage implements OnInit {
     public popoverController: PopoverController,
     private flightService: FlightService,
     route: ActivatedRoute,
+    private navCtrl: NavController,
     private apiService: ApiService,
     private identityService: IdentityService
   ) {
     route.queryParamMap.subscribe(p => {
-      this.passengers = this.flightService.getSelectedPassengers();
+      this.passengerFlightSegments = this.flightService.getPassengerFlightSegments();
     });
   }
 
@@ -71,7 +50,9 @@ export class SelectPassengerPage implements OnInit {
       component: SelectedPassengersComponent,
       translucent: true,
       showBackdrop: true,
-      componentProps: { passengers: this.flightService.getSelectedPassengers() }
+      componentProps: {
+        passengers: this.flightService.getPassengerFlightSegments()
+      }
     });
     popover.present();
   }
@@ -97,25 +78,31 @@ export class SelectPassengerPage implements OnInit {
       LastUpdateTime: 0,
       TmcId: identity.Numbers.TmcId
     };
-    this.staffs = await this.apiService
-      .getPromiseResponse<Staff[]>(req)
+    this.passengers = await this.apiService
+      .getPromiseResponse<Passenger[]>(req)
       .catch(_ => []);
     this.loading = false;
-    return this.staffs;
+    return this.passengers;
   }
-  onSelect(s: Staff) {
-    const p = this.flightService.getSelectedPassengers();
-    p.push(s);
-    this.flightService.setSelectedCutomers(p);
+  onSelect(s: Passenger) {
+    const item: PassengerFlightSegments = {
+      passenger: s,
+      flightSegments: []
+    };
+    this.flightService.addPassengerFlightSegments(item);
+    this.back();
+  }
+  back() {
+    this.navCtrl.back();
   }
   async loadMore() {
-    if (!this.staffs||this.staffs.length===0) {
+    if (!this.passengers || this.passengers.length === 0) {
       await this.loadStaffs();
     }
-    let filteredStaffs = this.staffs;
+    let filteredStaffs = this.passengers;
     if (this.keyword && this.keyword.trim()) {
       this.keyword = this.keyword.trim();
-      filteredStaffs = this.staffs.filter(
+      filteredStaffs = this.passengers.filter(
         s =>
           s.Name.includes(this.keyword) ||
           s.Nickname.includes(this.keyword) ||

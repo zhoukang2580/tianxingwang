@@ -1,3 +1,4 @@
+import { StaffBookType } from "./../tmc/models/StaffBookType";
 import { FilterConditionModel } from "./models/flight/advanced-search-cond/FilterConditionModel";
 import { IdentityService } from "./../services/identity/identity.service";
 import { HrService } from "./../hr/hr.service";
@@ -16,6 +17,37 @@ import { Storage } from "@ionic/storage";
 import { TrafficlineModel } from "./components/select-city/models/TrafficlineModel";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
+export interface Passenger {
+  Id: string; // Long Id
+  TmcId: string; // Long 客户 id
+  AccountId: string; // Long 帐号 id
+  OrganizationId: string; // Long 所属部门 Id
+  OrganizationCode: string; // String 所属部门
+  OrganizationName: string; // String 所属部门
+  Number: string; // String 工号
+  Name: string; // String 姓名
+  Nickname: string; // String 昵称
+  Email: string; // String 邮箱
+  Mobile: string; // String 手机号码
+  ExtensionNumber: string; // String 分机号
+  CcQueue: string; // Datetime 队列
+  Penalty: string; // Int 优先级
+  OutNumber: string; // String 外部编号
+  IsVip: boolean; // 是否 Vip
+  IsConfirmInfo: boolean; // 是否确认信息
+  IsModifyPassword: boolean; // 是否修改密码
+  CostCenterId: string; // Long 成本中心 Id
+  CostCenterCode: string; // String 成本中心代码
+  CostCenterName: string; // String 成本中心名称
+  CredentialsInfo: string; // String 证件信息
+  IsUsed: boolean; // 是否启用
+  BookType: StaffBookType; // int 预订类型
+  BookCodes: string; // String 预订代码
+}
+export interface PassengerFlightSegments {
+  passenger: Passenger;
+  flightSegments: FlightSegmentEntity[];
+}
 export interface FlightSegmentModel {
   AirlineName; // String 航空公司名称
   Number; // String 航班号
@@ -62,24 +94,30 @@ export class FlightService {
   private filterPanelShowHideSource: Subject<boolean>;
   private openCloseSelectCitySources: Subject<boolean>;
   private filterCondSources: Subject<FilterConditionModel>;
-  private resetFilterCondSources: Subject<boolean>;
   private localInternationAirports: LocalStorageAirport;
   private localDomesticAirports: LocalStorageAirport;
   private selectedCitySource: Subject<TrafficlineModel>;
-  private selectedCutomers: any[];
+  private passengerFlightSegments: PassengerFlightSegments[]; // 记录乘客及其研究选择的航班
   constructor(private apiService: ApiService, private storage: Storage) {
     this.selectedCitySource = new BehaviorSubject(null);
-    this.selectedCutomers = [];
+    this.passengerFlightSegments = [];
     this.filterPanelShowHideSource = new BehaviorSubject(false);
-    this.resetFilterCondSources = new BehaviorSubject(true);
     this.openCloseSelectCitySources = new BehaviorSubject(false);
     this.filterCondSources = new BehaviorSubject(null);
   }
-  getSelectedPassengers() {
-    return this.selectedCutomers;
+  getPassengerFlightSegments() {
+    return this.passengerFlightSegments || [];
   }
-  setSelectedCutomers(customers: any[]) {
-    this.selectedCutomers = [...customers];
+  setPassengerFlightSegments(args: PassengerFlightSegments[]) {
+    this.passengerFlightSegments = [...args];
+  }
+  addPassengerFlightSegments(arg: PassengerFlightSegments) {
+    this.passengerFlightSegments = [...this.getPassengerFlightSegments(), arg];
+  }
+  removePassengerFlightSegments(arg: PassengerFlightSegments) {
+    this.passengerFlightSegments = this.getPassengerFlightSegments().filter(
+      item => item !== arg
+    );
   }
   getSelectedCity() {
     return this.selectedCitySource.asObservable();
@@ -87,19 +125,12 @@ export class FlightService {
   setSelectedCity(_selectedCity: TrafficlineModel) {
     this.selectedCitySource.next({ ..._selectedCity });
   }
-  getResetFilterCondSources() {
-    return this.resetFilterCondSources;
-  }
   getOpenCloseSelectCityPageSources() {
     return this.openCloseSelectCitySources.asObservable();
   }
   setOpenCloseSelectCityPageSources(open: boolean) {
     this.openCloseSelectCitySources.next(open);
   }
-  setResetFilerCondition(reset: boolean) {
-    this.resetFilterCondSources.next(reset);
-  }
-
   setFilterCondition(advSCond: FilterConditionModel) {
     this.filterCondSources.next(advSCond);
   }
@@ -252,7 +283,7 @@ export class FlightService {
       [] as FlightSegmentEntity[]
     );
   }
-  async searchFlightJourneyDetailList(
+  async getFlightJourneyDetailList(
     data: SearchFlightModel
   ): Promise<FlightJourneyEntity[]> {
     const local = await this.storage.get("TestTmcData.FlightData");

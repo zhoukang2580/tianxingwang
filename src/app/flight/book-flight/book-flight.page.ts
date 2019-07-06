@@ -105,11 +105,11 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
   }
   async initFlightCities() {
     const cities = await this.flightService.getAllLocalAirports();
-    this.vmFromCity = this.fromCity = await this.storage.get("fromCity");
-    this.vmToCity = this.toCity = await this.storage.get("toCity");
-    console.log("from city ", this.fromCity);
-    console.log("to city ", this.toCity);
+    const lastSelectedFromCity = await this.storage.get("fromCity");
+    const lastSelectedToCity = await this.storage.get("toCity");
     if (!this.fromCity || !this.toCity) {
+      this.vmFromCity = this.fromCity = lastSelectedFromCity;
+      this.vmToCity = this.toCity = lastSelectedToCity;
       if (cities && cities.length) {
         // console.log(cities);
         this.vmFromCity = this.fromCity = cities.find(

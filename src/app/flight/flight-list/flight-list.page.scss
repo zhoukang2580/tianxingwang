@@ -1,6 +1,17 @@
 ion-content {
   --background: #f2f2f2;
 }
+ion-title {
+  ion-text {
+    font-size: 0.8rem;
+    font-weight: bolder;
+  }
+  .icon {
+    font-size: 0.9rem;
+    margin: 0 0.5em;
+  }
+}
+
 .tabs {
   display: flex;
   align-items: center;
