@@ -1,4 +1,4 @@
-<div class='fly-item' (click)='toggle()' no-margin no-padding>
+<div class='fly-item' no-margin no-padding>
   <div class='info'>
     <h3 class='time'>
       <strong>{{flightSegment?.TakeoffTime?.substring("2018-10-22T".length,"2018-10-22T21:20".length)}}</strong>
@@ -22,47 +22,25 @@
     </h3>
     <h4 class='air'>
       <ion-thumbnail size='small'>
-        <ion-img [src]='flightSegment?.AirlineSrc' ></ion-img>
+        <ion-img [src]='flightSegment?.AirlineSrc'></ion-img>
       </ion-thumbnail>
       <ion-text text-nowrap color='medium'>{{flightSegment?.AirlineName}} {{flightSegment?.Number}}</ion-text>
-      <span class='seperator'>|</span>
-      <ion-text color='medium'>{{flightSegment?.PlaneType}}</ion-text>
-      <span class='seperator'>|</span>
-      <ion-text color='medium'>{{flightSegment?.FlyTimeName}}</ion-text>
+      <ion-text color='medium'> <span class='seperator'>|</span>{{flightSegment?.PlaneType}}</ion-text>
+      <ion-text color='medium' *ngIf='showDetails'> <span class='seperator'>|</span>{{flightSegment?.FlyTimeName}}
+      </ion-text>
       <ion-text color='secondary' *ngIf='flightSegment?.CodeShareNumber'><span
           class='seperator'>|</span>共享{{flightSegment?.CodeShareNumber}}</ion-text>
+      <!-- <ion-text color='secondary' *ngIf='flightSegment?.Meal&&showDetails'><span
+          class='seperator'>|</span>{{flightSegment?.MealType|flightMealType}}
+      </ion-text> -->
+      <ion-text color='secondary' *ngIf='flightSegment?.Meal&&showDetails'><span
+          class='seperator'>|</span>有餐食
+      </ion-text>
     </h4>
   </div>
-  <div class="price" no-margin no-padding text-center>
+  <div class="price" no-margin no-padding text-center *ngIf='!showDetails'>
     <h3>
       <ion-text class='jiage'>￥{{flightSegment?.LowestFare|flightprice}}</ion-text>
     </h3>
-    <h3>
-      <ion-icon name="arrow-down" mode='ios' *ngIf='!showHide'></ion-icon>
-      <ion-icon name="arrow-up" mode='ios' *ngIf='showHide'></ion-icon>
-    </h3>
-  </div>
-</div>
-<div class='cabins' #cabins *ngIf='opened'>
-  <div *ngFor='let cabin of flightSegment?.Cabins' class='cabin-item'>
-    <ion-label (click)='openrules(cabin)'>
-      <h3 class='discount'>
-        <ion-text color='dark'>{{cabin?.Type|cabintype}}</ion-text>
-        <ion-text color='dark'>{{cabin?.Discount|discount}}
-        </ion-text>
-      </h3>
-      <h3>
-        <ion-text color='secondary'>退改签政策详情&nbsp;> </ion-text>
-      </h3>
-      <h3>余票：{{cabin?.Count}}&nbsp;张</h3>
-    </ion-label>
-    <ion-label slot='end'>
-      <h3 text-end class='book'>
-        <ion-text>￥{{cabin?.TicketPrice}}</ion-text>
-        <ion-button color='danger' margin-top expand='block' size='small' (click)='onBookTicket(cabin)'>
-          <ion-text color='light'>预定</ion-text>
-        </ion-button>
-      </h3>
-    </ion-label>
   </div>
 </div>

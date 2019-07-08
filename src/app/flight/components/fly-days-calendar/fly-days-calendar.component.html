@@ -1,9 +1,14 @@
 <section class="days" #daysContainer>
-  <article *ngFor='let item of days' [attr.date]='item?.date' #dayItem [class.active]='item.selected' 
-   (click)='onDaySelected(item)'>
+  <article *ngFor='let item of days' [attr.date]='item?.date' #dayItem [class.active]='item.selected'
+    (click)='onDaySelected(item)'>
     <ion-text>{{item?.desc}}</ion-text>
     <ion-text text-nowrap>{{item?.date?.substring("2018-".length,"2018-10-21".length)}}</ion-text>
-    <ion-text class='price' *ngIf='item?.price'>￥{{item?.price}}</ion-text>
+    <ion-text class='price' color='danger' *ngIf='item?.price'>
+      ￥{{item?.price}}
+    </ion-text>
+    <ion-text class='price' color='dark' *ngIf='!item?.price'>
+        查价
+    </ion-text>
   </article>
 </section>
 <section class="calendar" (click)='onCalendar()'>

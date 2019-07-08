@@ -1,4 +1,4 @@
-import { Platform } from "@ionic/angular";
+import { Platform, DomController } from "@ionic/angular";
 import { DayModel } from "./../../models/DayModel";
 import {
   Component,
@@ -28,7 +28,8 @@ export class FlyDaysCalendarComponent implements OnInit, AfterViewInit {
   constructor(
     private dayService: SelectDateService,
     private render: Renderer2,
-    private plt: Platform
+    private plt: Platform,
+    private domCtrl: DomController
   ) {
     this.days = [];
     this.itemSelected = new EventEmitter();
@@ -36,7 +37,7 @@ export class FlyDaysCalendarComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 7; i++) {
       const nextDay = moment().add(i, "days");
       const day = this.dayService.generateDayModel(nextDay);
       day.dayOfWeekName = this.dayService.getWeekName(day);
@@ -63,43 +64,45 @@ export class FlyDaysCalendarComponent implements OnInit, AfterViewInit {
         index = i;
       }
     }
-    if (!this.daysEle || !this.daysEle.nativeElement) {
-      // 如果这里的日历找不到对应的日期，结束
-      if (!this.days.find(item => item.date == day.date)) {
-        const ele = this.daysEle.nativeElement.querySelector(".active");
-        // console.log("日期变更停止",ele);
-        if (ele) {
-          this.render.removeClass(ele, "active");
+    this.domCtrl.write(ts => {
+      if (!this.daysEle || !this.daysEle.nativeElement) {
+        // 如果这里的日历找不到对应的日期，结束
+        if (!this.days.find(item => item.date == day.date)) {
+          const ele = this.daysEle.nativeElement.querySelector(".active");
+          // console.log("日期变更停止",ele);
+          if (ele) {
+            this.render.removeClass(ele, "active");
+          }
         }
+        return;
       }
-      return;
-    }
-    const daysEle = this.daysEle.nativeElement;
-    let selectedEle;
-    // console.dir(this.dayItems);
-    if (this.dayItems && this.dayItems.length) {
-      this.dayItems.forEach(item => {
-        // console.log(item.nativeElement.getAttribute("date"));
-        if (item.nativeElement.getAttribute("date") == day.date) {
-          selectedEle = item.nativeElement;
-          this.render.addClass(item.nativeElement, "active");
-        } else {
-          this.render.removeClass(item.nativeElement, "active");
-        }
-      });
-    }
-    if (daysEle && selectedEle) {
-      const clientRect = selectedEle.getBoundingClientRect();
-      // console.dir(daysEle);
-      const dist =
-        clientRect.width / 2 + clientRect.left - this.plt.width() / 2;
-      // console.dir(dist);
-      daysEle.scrollBy({
-        left: dist,
-        top: 0,
-        behavior: "smooth"
-      });
-    }
+      const daysEle = this.daysEle.nativeElement;
+      let selectedEle;
+      // console.dir(this.dayItems);
+      if (this.dayItems && this.dayItems.length) {
+        this.dayItems.forEach(item => {
+          // console.log(item.nativeElement.getAttribute("date"));
+          if (item.nativeElement.getAttribute("date") == day.date) {
+            selectedEle = item.nativeElement;
+            this.render.addClass(item.nativeElement, "active");
+          } else {
+            this.render.removeClass(item.nativeElement, "active");
+          }
+        });
+      }
+      if (daysEle && selectedEle) {
+        const clientRect = selectedEle.getBoundingClientRect();
+        // console.dir(daysEle);
+        const dist =
+          clientRect.width / 2 + clientRect.left - this.plt.width() / 2;
+        // console.dir(dist);
+        daysEle.scrollBy({
+          left: dist,
+          top: 0,
+          behavior: "smooth"
+        });
+      }
+    });
     this.itemSelected.emit(day);
   }
 }

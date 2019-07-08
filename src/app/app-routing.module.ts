@@ -39,7 +39,8 @@ const routes: Routes = [
   {
     loadChildren: "./page404/page404.module#Page404PageModule",
     matcher: AppHelper.matchDefaultRoute
-  }
+  },  { path: 'flight-item-cabins', loadChildren: './flight/flight-item-cabins/flight-item-cabins.module#FlightItemCabinsPageModule' }
+
 ];
 @NgModule({
   imports: [

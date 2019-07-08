@@ -1,3 +1,4 @@
+import { FlightCabinEntity } from "./models/flight/FlightCabinEntity";
 import { StaffBookType } from "./../tmc/models/StaffBookType";
 import { FilterConditionModel } from "./models/flight/advanced-search-cond/FilterConditionModel";
 import { IdentityService } from "./../services/identity/identity.service";
@@ -59,6 +60,7 @@ export interface FlightSegmentModel {
   IsStop: boolean; // Bool 是否经停
 }
 export interface FlightPolicy {
+  Cabin: FlightCabinEntity;
   FlightNo: string; // String Yes 航班号
   CabinCode: string; // string Yes 舱位代码
   IsAllowBook: boolean; // Bool Yes 是否可预订
@@ -227,21 +229,22 @@ export class FlightService {
       FlightPolicies: FlightPolicy[];
     }[]
   > {
-    const local = await this.storage.get(
-      "TestTmcData.TmcApiFlightUrl-Home-Policy"
-    );
+    let local;
+    if (!environment.production) {
+      local = await this.storage.get("TestTmcData.TmcApiFlightUrl-Home-Policy");
+    }
     console.log("local", local);
     if (
       !environment.production &&
       local &&
       local.FlightPolicy &&
       local.FlightPolicy.length &&
-      Date.now() - local.lastUpdateTime <=
-        (+moment().add(30, "seconds") - +moment()) * 1000
+      Date.now() - local.lastUpdateTime <= 60 * 1000
     ) {
       // console.log(new Array(10).fill(0).map(_=>TestTmcData.FlightData));
       return local.FlightPolicy;
     }
+    console.log(`重新获取航班数据`);
     const req = new RequestEntity();
     req.Method = `TmcApiFlightUrl-Home-Policy`;
     req.Version = "1.0";
@@ -257,7 +260,7 @@ export class FlightService {
         }[]
       >(req)
       .catch(_ => []);
-    if (res.length) {
+    if (res.length && !environment.production) {
       await this.storage.set("TestTmcData.TmcApiFlightUrl-Home-Policy", {
         lastUpdateTime: Date.now(),
         FlightPolicy: res
@@ -286,15 +289,17 @@ export class FlightService {
   async getFlightJourneyDetailList(
     data: SearchFlightModel
   ): Promise<FlightJourneyEntity[]> {
-    const local = await this.storage.get("TestTmcData.FlightData");
+    let local;
+    if (!environment.production) {
+      local = await this.storage.get("TestTmcData.FlightData");
+    }
     console.log("local", local);
     if (
       !environment.production &&
       local &&
       local.serverFlights &&
       local.serverFlights.length &&
-      Date.now() - local.lastUpdateTime <=
-        (+moment().add(30, "seconds") - +moment()) * 1000
+      Date.now() - local.lastUpdateTime <= 60 * 1000
     ) {
       // console.log(new Array(10).fill(0).map(_=>TestTmcData.FlightData));
       return local.serverFlights;
@@ -313,7 +318,7 @@ export class FlightService {
     const serverFlights = await this.apiService
       .getPromiseResponse<FlightJourneyEntity[]>(req)
       .catch(_ => [] as FlightJourneyEntity[]);
-    if (serverFlights.length) {
+    if (serverFlights.length && !environment.production) {
       await this.storage.set("TestTmcData.FlightData", {
         serverFlights,
         lastUpdateTime: Date.now()

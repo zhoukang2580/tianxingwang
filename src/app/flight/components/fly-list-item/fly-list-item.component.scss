@@ -62,7 +62,7 @@
   }
 }
 .seperator {
-  margin: 0 0.3em;
+  margin: 0 0.1em;
   color: var(--ion-color-medium);
 }
 .end-time {
@@ -90,7 +90,8 @@ ion-thumbnail {
 .cabins {
   width: 100%;
   margin: 0;
-  transition: opacity ease-in-out 500ms;
+  // transition: opacity ease-in-out 500ms;
+  contain: layout;
   .cabin-item {
     border-top: 1px solid rgba(0, 0, 0, 0.12);
     padding: 0.5em;

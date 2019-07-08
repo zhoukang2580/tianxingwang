@@ -12,7 +12,7 @@
       <ion-button fill='clear' color='secondary' size='small'>添加旅客</ion-button>
     </ion-buttons>
   </ion-toolbar>
-  <ion-label style="font-size: 0.8rem;">
+  <ion-label class='total-flights' [style.visibility]="!loading?'initial':'collapse'">
     {{searchFlightCondition?.Date}}共{{vmFlights?.length}}个航班
     <ion-text color='danger' *ngIf='isFiltered'>(过滤后)</ion-text>
   </ion-label>
@@ -27,35 +27,40 @@
       refreshingText="正在加载...">
     </ion-refresher-content>
   </ion-refresher>
-  <app-no-more-data [hasDataObs]="hasDataSource"></app-no-more-data>
-  <ion-list [style.display]='loading ?"none":"initial"' lines='none'>
-    <ion-item *ngFor='let s of vmFlights; let i=index;'>
-      <!-- <span>{{i+1}}</span> -->
-      <app-fly-list-item [flightSegment]="s" (bookTicket)="onBookTicket($event)">
-      </app-fly-list-item>
-    </ion-item>
-  </ion-list>
-  <ion-list *ngIf='loading'>
-    <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8]'>
-      <ion-label style="flex: 1">
-        <h2>
-          <ion-skeleton-text animated style='width: 90%'></ion-skeleton-text>
-        </h2>
-        <h2>
-          <ion-skeleton-text animated style='width: 90%'></ion-skeleton-text>
-        </h2>
-        <h2>
-          <ion-skeleton-text animated style='width: 90%'></ion-skeleton-text>
-        </h2>
-      </ion-label>
-      <ion-label>
-        <ion-skeleton-text animated style='width: 20%'></ion-skeleton-text>
-      </ion-label>
-    </ion-item>
-  </ion-list>
-  <!-- <ion-infinite-scroll (ionInfinite)="loadMore()">
-    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="正在加载..."></ion-infinite-scroll-content>
-  </ion-infinite-scroll> -->
+  <app-or-comp *ngIf='loading'>
+    <span >数据即将加载完成</span>
+  </app-or-comp>
+  <app-or-comp *ngIf='!loading&&vmFlights?.length==0'>
+    <span >暂无数据</span>
+  </app-or-comp>
+  <ng-container *ngIf='!loading else fakeList'>
+    <ion-list>
+      <ion-item *ngFor='let s of vmFlights' detail (click)="goToFlightCabinsDetails(s)">
+        <app-fly-list-item [flightSegment]="s" >
+        </app-fly-list-item>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+  <ng-template #fakeList>
+    <ion-virtual-scroll [items]="[1,2,3,4,5,6,7,8,9,10]" approxItemHeight="60px">
+      <ion-item *virtualItem='let item'>
+        <ion-label style="flex: 1">
+          <h2>
+            <ion-skeleton-text animated style='width: 90%'></ion-skeleton-text>
+          </h2>
+          <h2>
+            <ion-skeleton-text  style='width: 90%'></ion-skeleton-text>
+          </h2>
+          <h2>
+            <ion-skeleton-text  style='width: 90%'></ion-skeleton-text>
+          </h2>
+        </ion-label>
+        <ion-label>
+          <ion-skeleton-text animated style='width: 20%'></ion-skeleton-text>
+        </ion-label>
+      </ion-item>
+    </ion-virtual-scroll>
+  </ng-template>
 </ion-content>
 <ion-footer color="primary">
   <ion-toolbar>

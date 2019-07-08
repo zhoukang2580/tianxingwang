@@ -1,17 +1,16 @@
 import { Subject, BehaviorSubject } from "rxjs";
 import { Injectable } from "@angular/core";
 import * as moment from "moment";
-import { environment } from "../../../environments/environment";
-import { DayModel } from "../models/DayModel";
-import { AvailableDate } from "../models/AvailableDate";
 import { LanguageHelper } from "src/app/languageHelper";
+import { DayModel } from "./models/DayModel";
+import { AvailableDate } from "./models/AvailableDate";
 @Injectable({
   providedIn: "root"
 })
 export class FlydayService {
-  private _showFlyDaySelectPageSource: Subject<boolean>;
-  private _selectedSource: Subject<DayModel[]>;
-  private _multiFlyDaySource: Subject<boolean>;
+  private selectedSource: Subject<DayModel[]>;
+  private multiFlyDaySource: Subject<boolean>;
+  private showFlyDayPageSource: Subject<boolean>;
   private dayOfWeekNames = {
     0: LanguageHelper.getSundayTip(),
     1: LanguageHelper.getMondayTip(),
@@ -22,20 +21,27 @@ export class FlydayService {
     6: LanguageHelper.getSaturdayTip()
   };
   constructor() {
-    this._selectedSource = new BehaviorSubject([]);
-    this._multiFlyDaySource = new BehaviorSubject(false);
+    this.selectedSource = new BehaviorSubject([]);
+    this.multiFlyDaySource = new BehaviorSubject(false);
+    this.showFlyDayPageSource = new BehaviorSubject(false);
+  }
+  showFlyDayPage(show: boolean) {
+    this.showFlyDayPageSource.next(show);
+  }
+  getShowFlyDayPageSource() {
+    return this.showFlyDayPageSource.asObservable();
   }
   setFlyDayMulti(multi: boolean) {
-    this._multiFlyDaySource.next(multi);
+    this.multiFlyDaySource.next(multi);
   }
   getFlyDayMulti() {
-    return this._multiFlyDaySource.asObservable();
+    return this.multiFlyDaySource.asObservable();
   }
   getSelectedFlyDays() {
-    return this._selectedSource.asObservable();
+    return this.selectedSource.asObservable();
   }
   setSelectedFlyDays(days: DayModel[]) {
-    this._selectedSource.next(days);
+    this.selectedSource.next(days);
   }
   getMonth(d: DayModel) {
     return d.date.substring("2018-".length + 1, "2018-11".length);
@@ -58,6 +64,9 @@ export class FlydayService {
       default:
         return d.dayOfWeekName;
     }
+  }
+  generateDayModelByDate(date: string) {
+    return this.generateDayModel(moment(date));
   }
   generateDayModel(d: moment.Moment) {
     const retD = new DayModel();
@@ -143,7 +152,7 @@ export class FlydayService {
     // loop(true);
     setTimeout(() => {
       loop();
-    }, 1000);
+    }, 0);
     return calender;
   }
 }

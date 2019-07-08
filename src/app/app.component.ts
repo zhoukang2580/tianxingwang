@@ -1,3 +1,4 @@
+import { FlydayService } from "./flight/flyday.service";
 import { MessageModel, MessageService } from "./message/message.service";
 import { FlightService } from "./flight/flight.service";
 
@@ -29,6 +30,7 @@ import { LanguageHelper } from "./languageHelper";
 import { WechatHelper } from "./wechatHelper";
 import { Observable } from "rxjs";
 import { ApiService } from "./services/api/api.service";
+import { trigger, style, state, transition, animate } from "@angular/animations";
 export interface App {
   loadUrl: (
     url: string,
@@ -52,13 +54,21 @@ export interface App {
 }
 @Component({
   selector: "app-root",
-  templateUrl: "app.component.html"
+  templateUrl: "app.component.html",
+  animations: [
+    trigger("openclose", [
+      state("true", style({ transform: "scale(1)" })),
+      state("false", style({ transform: "scale(0)" })),
+      transition("true<=>false", animate("300ms ease-in-out"))
+    ])
+  ]
 })
 export class AppComponent
   implements AfterViewInit, AfterContentInit, OnChanges {
   app: App;
   message$: Observable<MessageModel>;
   openSelectCity$: Observable<boolean>;
+  showFlyDayPage$: Observable<boolean>;
   loading$: Observable<boolean>;
   @ContentChildren("img") images: QueryList<HTMLImageElement>;
   constructor(
@@ -76,11 +86,13 @@ export class AppComponent
     private loadingCtrl: LoadingController,
     private http: HttpClient,
     private flightService: FlightService,
+    private flydayService: FlydayService,
     messageService: MessageService
   ) {
     // console.log(this.router.config);
     this.message$ = messageService.getMessage();
     this.openSelectCity$ = flightService.getOpenCloseSelectCityPageSources();
+    this.showFlyDayPage$ = flydayService.getShowFlyDayPageSource();
     this.loading$ = apiService.getLoading();
     // if (!this.checkWechatOpenId() || !this.checkDingtalkUnionid()) return;
     if (this.platform.is("ios")) {
@@ -225,6 +237,7 @@ export class AppComponent
       let count = 1;
       await AppHelper.dismissLayer();
       this.flightService.setOpenCloseSelectCityPageSources(false);
+      this.flydayService.showFlyDayPage(false);
       this.apiService.hideLoadingView();
       if (
         this.router.url.includes("login") ||

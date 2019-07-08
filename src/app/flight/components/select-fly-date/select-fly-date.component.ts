@@ -1,18 +1,31 @@
-import { AppHelper } from "./../../appHelper";
-import { NavController } from "@ionic/angular";
-import { FlydayService } from "./flyday.service";
-import { Component, OnInit, Input, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Subscription } from "rxjs";
 import * as moment from "moment";
-import { AvailableDate } from "../models/AvailableDate";
-import { DayModel } from "../models/DayModel";
 import { LanguageHelper } from "src/app/languageHelper";
+import { DayModel } from "../../models/DayModel";
+import { AvailableDate } from "../../models/AvailableDate";
+import { FlydayService } from "../../flyday.service";
+import { AppHelper } from "src/app/appHelper";
+import {
+  trigger,
+  state,
+  style,
+  animate,
+  transition
+} from "@angular/animations";
 @Component({
-  selector: "app-select-fly-days",
-  templateUrl: "./select-fly-days.page.html",
-  styleUrls: ["./select-fly-days.page.scss"]
+  selector: "app-select-fly-date-comp",
+  templateUrl: "./select-fly-date.component.html",
+  styleUrls: ["./select-fly-date.component.scss"],
+  animations: [
+    trigger("openclose", [
+      state("true", style({ transform: "scale(1)" })),
+      state("false", style({ transform: "scale(0)" })),
+      transition("true<=>false", animate("300ms ease-in-out"))
+    ])
+  ]
 })
-export class SelectFlyDaysPage implements OnInit, OnDestroy {
+export class SelectFlyDateComponent implements OnInit, OnDestroy {
   wks: { week: string; color?: string }[] = [
     {
       week: LanguageHelper.getSundayTip(),
@@ -38,14 +51,8 @@ export class SelectFlyDaysPage implements OnInit, OnDestroy {
       color: "danger"
     }
   ];
-  constructor(
-    private flydService: FlydayService,
-    private navCtrl: NavController
-  ) {}
+  constructor(private flyDayService: FlydayService) {}
   yms: AvailableDate[];
-  fakeItems: {
-    dayList: any[];
-  }[];
   selectedDays: DayModel[] = [];
   dayInfo1: any;
   dayInfo2: any;
@@ -62,18 +69,8 @@ export class SelectFlyDaysPage implements OnInit, OnDestroy {
     return +ym.substring("2019-".length);
   }
   ngOnInit() {
-    this.fakeItems = [
-      {
-        dayList: new Array(35).fill(0)
-      },
-      {
-        dayList: new Array(35).fill(0)
-      },
-      {
-        dayList: new Array(35).fill(0)
-      }
-    ];
-    this.multiSub = this.flydService.getFlyDayMulti().subscribe(multi => {
+    this.multiSub = this.flyDayService.getFlyDayMulti().subscribe(multi => {
+      this.selectedDays = [];
       this.isMulti = multi;
       if (multi) {
         this.dayInfo1 = {
@@ -92,7 +89,9 @@ export class SelectFlyDaysPage implements OnInit, OnDestroy {
         };
       }
     });
-    this.yms = this.flydService.generateCanlender(3);
+    setTimeout(() => {
+      this.yms = this.flyDayService.generateCanlender(3);
+    }, 8 * 1000);
   }
   displayYm(ym: string) {
     return moment(ym, "YYYY-MM-DD").format(
@@ -100,12 +99,13 @@ export class SelectFlyDaysPage implements OnInit, OnDestroy {
     );
   }
   cancel() {
-    this.flydService.setSelectedFlyDays(this.selectedDays);
-    this.navCtrl.back();
+    this.flyDayService.setSelectedFlyDays(this.selectedDays);
+    this.flyDayService.showFlyDayPage(false);
   }
   onDaySelected(d: DayModel) {
     console.log("onDaySelected", d);
     if (!d.enabled) {
+      AppHelper.toast(LanguageHelper.getSelectOtherFlyDayTip(), 1000, "middle");
       return;
     }
     d.selected = true;
@@ -128,12 +128,16 @@ export class SelectFlyDaysPage implements OnInit, OnDestroy {
     }
     this.yms.map(item => {
       item.dayList
-        .filter(itm => !this.selectedDays.some(it => it.date === itm.date))
+        // .filter(itm => !this.selectedDays.some(it => it.date === itm.date))
         .forEach(dt => {
-          dt.selected = false;
+          dt.selected = this.isMulti
+            ? this.selectedDays.some(it => it.date === dt.date)
+            : dt.date === d.date;
           dt.lastSelected = false;
           dt.firstSelected = false;
-          dt.desc = null;
+          if (!dt.selected) {
+            dt.desc = null;
+          }
           dt.descColor = null;
           dt.descPos = null;
         });
@@ -143,10 +147,10 @@ export class SelectFlyDaysPage implements OnInit, OnDestroy {
         this.cancel();
       }, 300);
     } else {
-      if (this.selectedDays.length == 1) {
+      if (this.selectedDays.length === 1) {
         AppHelper.toast(LanguageHelper.getSelectFlyBackDate(), 1400, "top");
       }
-      if (this.selectedDays.length == 2) {
+      if (this.selectedDays.length === 2) {
         setTimeout(() => {
           this.cancel();
         }, 300);
@@ -165,8 +169,8 @@ export class SelectFlyDaysPage implements OnInit, OnDestroy {
       let first = this.selectedDays[0];
       this.dayInfo2 = {
         hasToolTip: first.hasToolTip,
-        toolTipMsg: first.toolTipMsg || "请选择返程日期",
-        desc: first.desc || "返程",
+        toolTipMsg: first.toolTipMsg || LanguageHelper.getSelectFlyBackDate(),
+        desc: first.desc || LanguageHelper.getReturnTripTip(),
         descPos: first.descPos || "bottom",
         color: first.descColor || "light"
       };
@@ -174,7 +178,7 @@ export class SelectFlyDaysPage implements OnInit, OnDestroy {
       this.dayInfo1 = {
         hasToolTip: last.hasToolTip,
         toolTipMsg: "",
-        desc: last.desc || "去程",
+        desc: last.desc || LanguageHelper.getDepartureTip(),
         descPos: last.descPos || "bottom",
         color: last.descColor || "light"
       };

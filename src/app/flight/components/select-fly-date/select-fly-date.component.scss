@@ -1,0 +1,86 @@
+:host{
+    height: 100vh;
+    width: 100vw;
+    z-index: 999;
+}
+ion-toolbar {
+    // --background: var(--ion-color-secondary);
+    ion-button {
+      // color: var(--ion-color-light);
+      --opacity: 1;
+    }
+    ion-buttons {
+      &[hidden-btn] {
+        visibility: collapse;
+      }
+    }
+    & ~ & {
+      margin-top: -1px;
+    }
+  }
+  ion-list.week-of-year-month {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    // background: white;
+    ion-grid {
+      background: inherit;
+    }
+    &:last-child{
+        margin-bottom: 6em;
+    }
+  }
+  ion-row {
+    display: flex;
+    position: relative;
+    &::after {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      content: attr(month);
+      color: black;
+      opacity: 0.12;
+      font-size: 17rem;
+      z-index: 1;
+    }
+  }
+  ion-col {
+    z-index: 10;
+    border-radius: 0;
+    &.invisable {
+      visibility: collapse;
+    }
+  
+    &.not-enabled,
+    &.invisable {
+      background-color: rgba(var(--ion-color-medium-rgb), 0.05);
+      color: var(--ion-color-light);
+    }
+    &.selected {
+      background-color: var(--ion-color-secondary);
+      color: var(--ion-color-light);
+    }
+    &.today {
+      background-color: rgba(var(--ion-color-secondary-rgb), 0.7);
+      color: var(--ion-color-primary);
+    }
+    &.selected.today {
+      background-color: var(--ion-color-secondary);
+      color: var(--ion-color-light);
+    }
+    &[last-selected-day="true"] {
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+    }
+    &[first-selected-day="true"] {
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px;
+    }
+    &.selected.between-selected-days,
+    &.selected.between-selected-days.not-enabled {
+      background-color: rgba(var(--ion-color-secondary-rgb), 0.5);
+      color: var(--ion-color-light);
+    }
+  }
+  

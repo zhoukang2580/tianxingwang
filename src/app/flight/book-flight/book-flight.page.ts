@@ -1,6 +1,6 @@
 import { FlightService } from "src/app/flight/flight.service";
 import { TrafficlineModel } from "./../components/select-city/models/TrafficlineModel";
-import { FlydayService } from "./../select-fly-days/flyday.service";
+import { FlydayService } from "../flyday.service";
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
 import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
@@ -64,7 +64,9 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.onRoundTrip(evt.detail.value == "single");
   }
   ngOnInit() {
-    this.initFlightDays();
+    setTimeout(() => {
+      this.initFlightDays();
+    }, 300);
     this.selectDaySubscription = this.flydayService
       .getSelectedFlyDays()
       .subscribe(days => {
@@ -104,12 +106,17 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.totalFlyDays = 4;
   }
   async initFlightCities() {
-    const cities = await this.flightService.getAllLocalAirports();
+    this.fromCity = this.vmFromCity = {} as any;
+    this.fromCity.CityName = this.vmFromCity.CityName = "北京";
+    this.vmFromCity.Code = this.fromCity.Code = "BJS";
+    this.toCity = this.vmToCity = {} as any;
+    this.toCity.CityName = this.vmToCity.CityName = "上海";
+    this.vmToCity.Code = this.toCity.Code = "SHA";
+    this.fromCity.Tag = this.toCity.Tag = "AirportCity"; // 出发城市，不是出发城市的那个机场
     const lastSelectedFromCity = await this.storage.get("fromCity");
     const lastSelectedToCity = await this.storage.get("toCity");
-    if (!this.fromCity || !this.toCity) {
-      this.vmFromCity = this.fromCity = lastSelectedFromCity;
-      this.vmToCity = this.toCity = lastSelectedToCity;
+    if (!lastSelectedToCity || !lastSelectedFromCity) {
+      const cities = await this.flightService.getAllLocalAirports();
       if (cities && cities.length) {
         // console.log(cities);
         this.vmFromCity = this.fromCity = cities.find(
@@ -118,14 +125,6 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
         this.vmToCity = this.toCity = cities.find(
           c => c.Code.toUpperCase() == "SHA"
         );
-      } else {
-        this.fromCity = this.vmFromCity = {} as any;
-        this.fromCity.CityName = this.vmFromCity.CityName = "北京";
-        this.vmFromCity.Code = this.fromCity.Code = "BJS";
-        this.toCity = this.vmToCity = {} as any;
-        this.toCity.CityName = this.vmToCity.CityName = "上海";
-        this.vmToCity.Code = this.toCity.Code = "SHA";
-        this.fromCity.Tag = this.toCity.Tag = "AirportCity"; // 出发城市，不是出发城市的那个机场
       }
     }
   }
@@ -158,7 +157,7 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
   onSelecFlyDate(flyTo: boolean) {
     this.isSelectFlyDate = flyTo;
     this.flydayService.setFlyDayMulti(!this.isSingle);
-    this.router.navigate([AppHelper.getRoutePath("select-fly-day")]);
+    this.flydayService.showFlyDayPage(true);
   }
   onFromCitySelected(city: TrafficlineModel) {
     if (city) {

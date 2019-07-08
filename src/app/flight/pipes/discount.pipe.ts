@@ -1,3 +1,4 @@
+import { LanguageHelper } from "./../../languageHelper";
 import { Pipe, PipeTransform } from "@angular/core";
 
 @Pipe({
@@ -10,8 +11,10 @@ export class DiscountPipe implements PipeTransform {
       return value;
     }
     if (v < 1) {
-      return `${v * 100}`.substr(0, 2) + " 折";
+      return `${(v * 10)
+        .toString()
+        .substr(0, 3)}${LanguageHelper.getDiscountTip()}`;
     }
-    return "全价";
+    return LanguageHelper.getFullPriceTip();
   }
 }

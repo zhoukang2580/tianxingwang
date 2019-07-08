@@ -1,4 +1,84 @@
 export class LanguageHelper {
+
+  static FlightMealType = {
+    /// <summary>
+    /// 不特定餐食
+    /// </summary>
+    // M = 1,
+    getMTip: () => {
+      return "不特定餐食";
+    },
+    /// <summary>
+    /// 早餐
+    /// </summary>
+    // B = 2,
+    getBTip: () => {
+      return "早餐";
+    },
+    /// <summary>
+    /// 午餐
+    /// </summary>
+    // L = 3,
+    getLTip: () => {
+      return "午餐";
+    },
+    /// <summary>
+    /// 免费酒精饮料
+    /// </summary>
+    // C = 4,
+    getCTip: () => {
+      return "免费酒精饮料";
+    },
+    /// <summary>
+    /// 大陆式早餐
+    /// </summary>
+    // K = 5,
+    getKTip: () => {
+      return "大陆式早餐";
+    },
+
+    /// <summary>
+    /// 晚餐
+    /// </summary>
+    // D = 6,
+    getDTip: () => {
+      return "晚餐";
+    },
+    /// <summary>
+    /// 点心或早午餐
+    /// </summary>
+    // S = 7,
+    getSTip: () => {
+      return "点心或早午餐";
+    },
+    /// <summary>
+    /// 冷食
+    /// </summary>
+    // O = 8,
+    getOTip: () => {
+      return "冷食";
+    },
+    /// <summary>
+    /// 热食
+    /// </summary>
+    // H = 9,
+    getHTip: () => {
+      return "热食";
+    },
+    /// <summary>
+    /// 茶点或小吃
+    /// </summary>
+    // R = 10
+    getRTip: () => {
+      return "茶点或小吃";
+    }
+  };
+  static getDiscountTip() {
+    return "折";
+  }
+  static getFullPriceTip() {
+    return "全价";
+  }
   static getSelectPassengersTip() {
     return "请添加乘客";
   }

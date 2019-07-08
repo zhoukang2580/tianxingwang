@@ -14,14 +14,13 @@ const routes: Routes = [
     canActivate: [TmcGuard]
   },
   {
-    path: "select-fly-day",
-    loadChildren:
-      "./select-fly-days/select-fly-days.module#SelectFlyDaysPageModule",
+    path: "flight-list",
+    loadChildren: "./flight-list/flight-list.module#FlightListPageModule",
     canActivate: [TmcGuard]
   },
   {
-    path: "flight-list",
-    loadChildren: "./flight-list/flight-list.module#FlightListPageModule",
+    path: "flight-item-cabins",
+    loadChildren: "./flight-item-cabins/flight-item-cabins.module#FlightItemCabinsPageModule",
     canActivate: [TmcGuard]
   },
   {
