@@ -28,19 +28,17 @@
     </ion-refresher-content>
   </ion-refresher>
   <app-or-comp *ngIf='loading'>
-    <span >数据即将加载完成</span>
+    <span>数据即将加载完成</span>
   </app-or-comp>
   <app-or-comp *ngIf='!loading&&vmFlights?.length==0'>
-    <span >暂无数据</span>
+    <span>暂无数据</span>
   </app-or-comp>
-  <ng-container *ngIf='!loading else fakeList'>
-    <ion-list>
-      <ion-item *ngFor='let s of vmFlights' detail (click)="goToFlightCabinsDetails(s)">
-        <app-fly-list-item [flightSegment]="s" >
-        </app-fly-list-item>
-      </ion-item>
-    </ion-list>
-  </ng-container>
+  <ion-list *ngIf='!loading else fakeList'>
+    <ion-item *ngFor='let s of vmFlights' detail (click)="goToFlightCabinsDetails(s)">
+      <app-fly-list-item [flightSegment]="s">
+      </app-fly-list-item>
+    </ion-item>
+  </ion-list>
   <ng-template #fakeList>
     <ion-virtual-scroll [items]="[1,2,3,4,5,6,7,8,9,10]" approxItemHeight="60px">
       <ion-item *virtualItem='let item'>
@@ -49,10 +47,10 @@
             <ion-skeleton-text animated style='width: 90%'></ion-skeleton-text>
           </h2>
           <h2>
-            <ion-skeleton-text  style='width: 90%'></ion-skeleton-text>
+            <ion-skeleton-text style='width: 90%'></ion-skeleton-text>
           </h2>
           <h2>
-            <ion-skeleton-text  style='width: 90%'></ion-skeleton-text>
+            <ion-skeleton-text style='width: 90%'></ion-skeleton-text>
           </h2>
         </ion-label>
         <ion-label>

@@ -106,26 +106,25 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.totalFlyDays = 4;
   }
   async initFlightCities() {
-    this.fromCity = this.vmFromCity = {} as any;
-    this.fromCity.CityName = this.vmFromCity.CityName = "北京";
-    this.vmFromCity.Code = this.fromCity.Code = "BJS";
-    this.toCity = this.vmToCity = {} as any;
-    this.toCity.CityName = this.vmToCity.CityName = "上海";
-    this.vmToCity.Code = this.toCity.Code = "SHA";
-    this.fromCity.Tag = this.toCity.Tag = "AirportCity"; // 出发城市，不是出发城市的那个机场
-    const lastSelectedFromCity = await this.storage.get("fromCity");
-    const lastSelectedToCity = await this.storage.get("toCity");
-    if (!lastSelectedToCity || !lastSelectedFromCity) {
-      const cities = await this.flightService.getAllLocalAirports();
-      if (cities && cities.length) {
-        // console.log(cities);
-        this.vmFromCity = this.fromCity = cities.find(
-          c => c.Code.toUpperCase() == "BJS"
-        );
-        this.vmToCity = this.toCity = cities.find(
-          c => c.Code.toUpperCase() == "SHA"
-        );
-      }
+    this.fromCity = this.vmFromCity = await this.storage.get("fromCity");
+    this.toCity = this.vmToCity = await this.storage.get("toCity");
+    const cities = await this.flightService.getAllLocalAirports();
+    if (cities && cities.length) {
+      // console.log(cities);
+      this.vmFromCity = this.fromCity = cities.find(
+        c => c.Code.toUpperCase() == "BJS"
+      );
+      this.vmToCity = this.toCity = cities.find(
+        c => c.Code.toUpperCase() == "SHA"
+      );
+    } else {
+      this.fromCity = this.vmFromCity = {} as any;
+      this.fromCity.CityName = this.vmFromCity.CityName = "北京";
+      this.vmFromCity.Code = this.fromCity.Code = "BJS";
+      this.toCity = this.vmToCity = {} as any;
+      this.toCity.CityName = this.vmToCity.CityName = "上海";
+      this.vmToCity.Code = this.toCity.Code = "SHA";
+      this.fromCity.Tag = this.toCity.Tag = "AirportCity"; // 出发城市，不是出发城市的那个机场
     }
   }
   searchFlight() {
