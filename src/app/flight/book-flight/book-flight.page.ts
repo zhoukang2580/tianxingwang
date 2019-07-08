@@ -20,6 +20,7 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
   toggleCities = false; // 没有切换城市顺序
   rotateIcon = false;
   isSingle = true;
+  private isLoading = false;
   isSelectFlyDate: boolean;
   flyDate: DayModel;
   backDate: DayModel;
@@ -40,10 +41,10 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     private flightService: FlightService,
     private storage: Storage
   ) {
-    route.queryParamMap.subscribe(p => {
-      setTimeout(() => {
-        this.initFlightCities();
-      }, 300);
+    route.queryParamMap.subscribe(async p => {
+      this.isLoading = true;
+      await this.initFlightCities();
+      this.isLoading = false;
     });
   }
   goBack() {
