@@ -20,7 +20,7 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
   toggleCities = false; // 没有切换城市顺序
   rotateIcon = false;
   isSingle = true;
-  private isLoading = false;
+  isLoading = false;
   isSelectFlyDate: boolean;
   flyDate: DayModel;
   backDate: DayModel;
