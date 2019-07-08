@@ -252,6 +252,7 @@ export class FlightService {
       Flights: JSON.stringify(Flights),
       Passengers: Passengers.join(",")
     };
+    req.IsShowLoading=true;
     const res = await this.apiService
       .getPromiseResponse<
         {
