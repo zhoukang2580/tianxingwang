@@ -1,5 +1,5 @@
 <!-- Backdrop that sets dynamic properties -->
-<ion-backdrop [tappable]="false" [visible]="true" [stopPropagation]="true">
+<ion-backdrop [tappable]="false" [visible]="true" *ngIf='loading' [stopPropagation]="true">
 </ion-backdrop>
 <ion-card>
   <div class='loading'>

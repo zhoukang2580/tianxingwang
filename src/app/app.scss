@@ -81,9 +81,9 @@ ion-header {
 ion-alert,
 ion-loading,
 ion-radio {
-  --ion-color-primary: var(--ion-color-success);
+  --ion-color-primary: var(--ion-color-secondary);
   .loading-spinner {
-    --spinner-color: var(--ion-color-success);
+    --spinner-color: var(--ion-color-secondary);
   }
 }
 ion-checkbox {
@@ -141,7 +141,7 @@ input {
 }
 
 .validsucessmess {
-  //   background: url(assets/validator/img/success.gif) no-repeat;
+  //   background: url(assets/validator/img/secondary.gif) no-repeat;
   font-size: 0.7rem;
 }
 
