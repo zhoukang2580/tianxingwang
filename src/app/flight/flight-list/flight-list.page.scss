@@ -10,8 +10,8 @@ ion-title {
     font-size: 0.9rem;
     margin: 0 0.5em;
   }
-  .total-flights{
-    font-size: .8rem;
+  .total-flights {
+    font-size: 0.8rem;
   }
 }
 
@@ -43,9 +43,47 @@ ion-title {
     }
   }
 }
-// ion-list {
-//   background: #f2f2f2;
-//   ion-item + ion-item {
-//     margin-top: 1em;
-//   }
-// }
+.info {
+  width: 100%;
+}
+.info .row {
+  .row:first-child{
+    width: 67%;
+  }
+  .row:last-child{
+    width: 33%;
+  }
+  .time {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1rem;
+    margin-bottom: 0;
+    .line {
+      font-size: 0.6rem;
+    }
+  }
+  .price {
+    align-self: center;
+  }
+  img {
+    max-width: 1em;
+    min-width: 1em;
+    width: 1em;
+    margin: 0 0.3em 0 0;
+  }
+  .airports {
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+  }
+  .desc {
+    .code-share-number {
+      color: var(--ion-color-secondary);
+    }
+    font-size: 0.7rem;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+  }
+}

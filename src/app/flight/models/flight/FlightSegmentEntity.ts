@@ -171,4 +171,7 @@ export class FlightSegmentEntity {
   /// </summary>
   Cabins: FlightCabinEntity[];
   PoliciedCabins: FlightPolicy[];
+  TrackById: number;
+  TakeoffTimeStamp: number;
+  ArrivalTimeStamp: number;
 }

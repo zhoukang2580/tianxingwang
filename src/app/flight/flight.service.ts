@@ -100,12 +100,19 @@ export class FlightService {
   private localDomesticAirports: LocalStorageAirport;
   private selectedCitySource: Subject<TrafficlineModel>;
   private passengerFlightSegments: PassengerFlightSegments[]; // 记录乘客及其研究选择的航班
+  currentViewtFlightSegment: FlightSegmentEntity;
   constructor(private apiService: ApiService, private storage: Storage) {
     this.selectedCitySource = new BehaviorSubject(null);
     this.passengerFlightSegments = [];
     this.filterPanelShowHideSource = new BehaviorSubject(false);
     this.openCloseSelectCitySources = new BehaviorSubject(false);
     this.filterCondSources = new BehaviorSubject(null);
+  }
+  getCurrentViewtFlightSegment(): FlightSegmentEntity {
+    return this.currentViewtFlightSegment;
+  }
+  setCurrentViewtFlightSegment(s: FlightSegmentEntity) {
+    this.currentViewtFlightSegment = s;
   }
   getPassengerFlightSegments() {
     return this.passengerFlightSegments || [];
@@ -239,7 +246,10 @@ export class FlightService {
       local &&
       local.FlightPolicy &&
       local.FlightPolicy.length &&
-      Date.now() - local.lastUpdateTime <= 60 * 1000
+      Date.now() - local.lastUpdateTime <= 3 * 60 * 1000 &&
+      local.date == Flights &&
+      Flights[0] &&
+      Flights[0].Date
     ) {
       // console.log(new Array(10).fill(0).map(_=>TestTmcData.FlightData));
       return local.FlightPolicy;
@@ -252,7 +262,7 @@ export class FlightService {
       Flights: JSON.stringify(Flights),
       Passengers: Passengers.join(",")
     };
-    req.IsShowLoading=true;
+    req.IsShowLoading = true;
     const res = await this.apiService
       .getPromiseResponse<
         {
@@ -276,7 +286,15 @@ export class FlightService {
           ...arr,
           ...journey.FlightRoutes.reduce(
             (segs, route) => {
-              segs = [...segs, ...route.FlightSegments];
+              segs = [
+                ...segs,
+                ...route.FlightSegments.map(s => {
+                  s.TrackById = segs.length;
+                  s.TakeoffTimeStamp = +moment(s.TakeoffTime);
+                  s.ArrivalTimeStamp = +moment(s.ArrivalTime);
+                  return s;
+                })
+              ];
               return segs;
             },
             [] as FlightSegmentEntity[]
@@ -300,7 +318,8 @@ export class FlightService {
       local &&
       local.serverFlights &&
       local.serverFlights.length &&
-      Date.now() - local.lastUpdateTime <= 60 * 1000
+      Date.now() - local.lastUpdateTime <= 3 * 60 * 1000 &&
+      local.date == data.Date
     ) {
       // console.log(new Array(10).fill(0).map(_=>TestTmcData.FlightData));
       return local.serverFlights;
@@ -322,7 +341,8 @@ export class FlightService {
     if (serverFlights.length && !environment.production) {
       await this.storage.set("TestTmcData.FlightData", {
         serverFlights,
-        lastUpdateTime: Date.now()
+        lastUpdateTime: Date.now(),
+        date: data.Date
       });
     }
     return serverFlights;

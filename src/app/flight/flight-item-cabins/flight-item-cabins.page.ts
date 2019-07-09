@@ -24,9 +24,7 @@ export class FlightItemCabinsPage implements OnInit {
     private hrService: HrService
   ) {
     activatedRoute.queryParamMap.subscribe(async p => {
-      if (p.get("flightSegment")) {
-        this.flightSegment = JSON.parse(p.get("flightSegment"));
-      }
+      this.flightSegment = flightService.getCurrentViewtFlightSegment();
       this.staff = await this.hrService.getStaff();
     });
   }

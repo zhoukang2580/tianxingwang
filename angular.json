@@ -44,6 +44,9 @@
               },
               {
                 "input": "src/assets/iconfont/font.css"
+              },
+              {
+                "input": "src/app/flight/flight-list/style.css"
               }
             ],
             "scripts": [
