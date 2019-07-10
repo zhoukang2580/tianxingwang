@@ -1,3 +1,4 @@
+import { AppHelper } from "src/app/appHelper";
 import { FlightCabinEntity } from "./models/flight/FlightCabinEntity";
 import { StaffBookType } from "./../tmc/models/StaffBookType";
 import { FilterConditionModel } from "./models/flight/advanced-search-cond/FilterConditionModel";
@@ -16,37 +17,15 @@ import { FlightSegmentEntity } from "./models/flight/FlightSegmentEntity";
 import { RequestEntity } from "../services/api/Request.entity";
 import { Storage } from "@ionic/storage";
 import { TrafficlineModel } from "./components/select-city/models/TrafficlineModel";
+import { LanguageHelper } from "../languageHelper";
+import { Staff } from "../tmc/models/Staff";
+import { HttpClient } from "@angular/common/http";
+
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
-export interface Passenger {
-  Id: string; // Long Id
-  TmcId: string; // Long 客户 id
-  AccountId: string; // Long 帐号 id
-  OrganizationId: string; // Long 所属部门 Id
-  OrganizationCode: string; // String 所属部门
-  OrganizationName: string; // String 所属部门
-  Number: string; // String 工号
-  Name: string; // String 姓名
-  Nickname: string; // String 昵称
-  Email: string; // String 邮箱
-  Mobile: string; // String 手机号码
-  ExtensionNumber: string; // String 分机号
-  CcQueue: string; // Datetime 队列
-  Penalty: string; // Int 优先级
-  OutNumber: string; // String 外部编号
-  IsVip: boolean; // 是否 Vip
-  IsConfirmInfo: boolean; // 是否确认信息
-  IsModifyPassword: boolean; // 是否修改密码
-  CostCenterId: string; // Long 成本中心 Id
-  CostCenterCode: string; // String 成本中心代码
-  CostCenterName: string; // String 成本中心名称
-  CredentialsInfo: string; // String 证件信息
-  IsUsed: boolean; // 是否启用
-  BookType: StaffBookType; // int 预订类型
-  BookCodes: string; // String 预订代码
-}
+
 export interface PassengerFlightSegments {
-  passenger: Passenger;
+  passenger: Staff;
   flightSegments: FlightSegmentEntity[];
 }
 export interface FlightSegmentModel {
@@ -93,6 +72,7 @@ interface LocalStorageAirport {
   providedIn: "root"
 })
 export class FlightService {
+  private worker = null;
   private filterPanelShowHideSource: Subject<boolean>;
   private openCloseSelectCitySources: Subject<boolean>;
   private filterCondSources: Subject<FilterConditionModel>;
@@ -101,12 +81,14 @@ export class FlightService {
   private selectedCitySource: Subject<TrafficlineModel>;
   private passengerFlightSegments: PassengerFlightSegments[]; // 记录乘客及其研究选择的航班
   currentViewtFlightSegment: FlightSegmentEntity;
+
   constructor(private apiService: ApiService, private storage: Storage) {
     this.selectedCitySource = new BehaviorSubject(null);
     this.passengerFlightSegments = [];
     this.filterPanelShowHideSource = new BehaviorSubject(false);
     this.openCloseSelectCitySources = new BehaviorSubject(false);
     this.filterCondSources = new BehaviorSubject(null);
+    this.worker = window["Worker"] ? new Worker("assets/worker.js") : null;
   }
   getCurrentViewtFlightSegment(): FlightSegmentEntity {
     return this.currentViewtFlightSegment;
@@ -270,7 +252,10 @@ export class FlightService {
           FlightPolicies: FlightPolicy[];
         }[]
       >(req)
-      .catch(_ => []);
+      .catch(_ => {
+        AppHelper.alert(_);
+        return [];
+      });
     if (res.length && !environment.production) {
       await this.storage.set("TestTmcData.TmcApiFlightUrl-Home-Policy", {
         lastUpdateTime: Date.now(),
@@ -278,6 +263,82 @@ export class FlightService {
       });
     }
     return res;
+  }
+  async sortByPrice(segments: FlightSegmentEntity[], l2h: boolean) {
+    if (true || !this.worker) {
+      return segments.sort((s1, s2) => {
+        let sub = +s1.LowestFare - +s2.LowestFare;
+        sub = sub === 0 ? 0 : sub > 0 ? 1 : -1;
+        return l2h ? sub : -sub;
+      });
+    }
+    return new Promise<FlightSegmentEntity[]>(s => {
+      this.worker.postMessage({ message: "sortByPrice", segments, l2h });
+      this.worker.onmessage = evt => {
+        // console.log("evt", evt);
+        if (evt && evt.data && evt.data.message == "sortByPrice") {
+          s(evt.data.segments);
+        }
+      };
+    });
+  }
+  async sortByTime(segments: FlightSegmentEntity[], l2h: boolean) {
+    if (true || !this.worker) {
+      return segments.sort((s1, s2) => {
+        let sub = +s1.TakeoffTimeStamp - +s2.TakeoffTimeStamp;
+        sub = sub === 0 ? 0 : sub > 0 ? 1 : -1;
+        return l2h ? sub : -sub;
+      });
+    }
+
+    return new Promise<FlightSegmentEntity[]>(s => {
+      this.worker.postMessage({ message: "sortByTime", segments, l2h });
+      this.worker.onmessage = evt => {
+        // console.log("evt", evt);
+        if (evt && evt.data && evt.data.message == "sortByTime") {
+          s(evt.data.segments);
+        }
+      };
+    });
+  }
+  private replaceStr<T>(template: string, item: T) {
+    const arr = template.match(/@\S+@/gi);
+    const keys = (arr || []).map(itm =>
+      itm.replace(/@Name=/g, "").replace(/@/g, "")
+    );
+    if (keys.length === 0) {
+      return template;
+    }
+    keys.map(k => {
+      const p = new RegExp(k, "g");
+      template = template.replace(p, item[k]);
+    });
+  }
+  async getHtmlTemplate<T>(array: T[], template: string) {
+    if (!this.worker) {
+      return array.map(s => {
+        return { item: s, templateHtmlString: this.replaceStr(template, s) };
+      });
+    }
+    return new Promise<{ item: T; templateHtmlString: string }[]>(s => {
+      this.worker.postMessage({
+        message: "getHtmlTemplate",
+        array,
+        template
+      });
+      this.worker.onmessage = evt => {
+        if (evt && evt.data && evt.data.message == "getHtmlTemplate") {
+          s(evt.data.data);
+        }
+      };
+    });
+  }
+  private addoneday(s: FlightSegmentEntity) {
+    const addDay =
+      moment(s.ArrivalTime, "YYYY-MM-DDTHH:mm:ss").date() -
+      moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").date();
+    // console.log(addDay);
+    return addDay > 0 ? "+" + addDay + LanguageHelper.getDayTip() : "";
   }
   getTotalFlySegments(flyJourneys: FlightJourneyEntity[]) {
     return flyJourneys.reduce(
@@ -290,8 +351,23 @@ export class FlightService {
                 ...segs,
                 ...route.FlightSegments.map(s => {
                   s.TrackById = segs.length;
-                  s.TakeoffTimeStamp = +moment(s.TakeoffTime);
-                  s.ArrivalTimeStamp = +moment(s.ArrivalTime);
+                  s.TakeoffTimeStamp = +moment(
+                    s.TakeoffTime,
+                    "YYYY-MM-DDTHH:mm:ss"
+                  );
+                  s.ArrivalTimeStamp = +moment(
+                    s.ArrivalTime,
+                    "YYYY-MM-DDTHH:mm:ss"
+                  );
+                  s.TakeoffShortTime = moment(
+                    s.TakeoffTime,
+                    "YYYY-MM-DDTHH:mm:ss"
+                  ).format("HH:mm");
+                  s.ArrivalShortTime = moment(
+                    s.ArrivalTime,
+                    "YYYY-MM-DDTHH:mm:ss"
+                  ).format("HH:mm");
+                  s.AddOneDayTip = this.addoneday(s);
                   return s;
                 })
               ];
@@ -337,7 +413,10 @@ export class FlightService {
     req.IsShowLoading = true;
     const serverFlights = await this.apiService
       .getPromiseResponse<FlightJourneyEntity[]>(req)
-      .catch(_ => [] as FlightJourneyEntity[]);
+      .catch(_ => {
+        AppHelper.alert(_);
+        return [] as FlightJourneyEntity[];
+      });
     if (serverFlights.length && !environment.production) {
       await this.storage.set("TestTmcData.FlightData", {
         serverFlights,

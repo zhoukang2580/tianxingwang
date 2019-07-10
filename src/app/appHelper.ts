@@ -17,6 +17,16 @@ export class AppHelper {
   private static toastController: ToastController;
   private static alertController: AlertController;
   private static modalController: ModalController;
+  static _appDomain = "beeant.com";
+  static _domain;
+  static _queryParamers = {};
+
+  static _events: {
+    name: string;
+    handle: (name: string, data: any) => void;
+  }[] = [];
+
+  static _callbackHandle: (name: string, data: any) => void;
   static setModalController(modalController: ModalController) {
     this.modalController = modalController;
   }
@@ -350,8 +360,6 @@ export class AppHelper {
       AppHelper.getQueryString("ticket") || AppHelper.getStorage("ticket");
     return ticket == "null" ? "" : ticket;
   }
-  static _appDomain = "beeant.com";
-  static _domain;
   static getDomain() {
     AppHelper._domain = AppHelper._domain || AppHelper.getQueryString("domain");
     if (AppHelper._domain) {
@@ -430,7 +438,6 @@ export class AppHelper {
     }
     return md5(content);
   }
-  static _queryParamers = {};
   static setQueryParamers() {
     let name: string = "";
     let value: string = "";
@@ -450,11 +457,6 @@ export class AppHelper {
   static getQueryParamers() {
     return this._queryParamers as any;
   }
-
-  static _events: {
-    name: string;
-    handle: (name: string, data: any) => void;
-  }[] = [];
   static registerEvent(
     name: string,
     handle: (name: string, data: any) => void
@@ -468,8 +470,6 @@ export class AppHelper {
       }
     });
   }
-
-  static _callbackHandle: (name: string, data: any) => void;
   static setCallback(callbackHandle: (name: string, data: any) => void) {
     this._callbackHandle = callbackHandle;
   }
@@ -481,5 +481,51 @@ export class AppHelper {
 
   static redirect(url) {
     window.location.href = url;
+  }
+  static getJsonHtml(name: string, data: any, html: string) {
+    // 得到HTML
+    if (Object.prototype.toString.apply(data) === "[object Array]") {
+      const el = document.createElement("div");
+      el.innerText = "<div>" + html + "</div>";
+      const arrayHtmls = el.querySelectorAll(
+        "[DataLoaderArray='@" + name + "']"
+      );
+      for (let i = 0; i < arrayHtmls.length; i++) {
+        let replaceHtml = "";
+        const arrayHtml = arrayHtmls[i].outerHTML;
+        if (data && data.length > 0) {
+          for (let j = 0; j < data.length; j++) {
+            replaceHtml += this.getJsonHtml(name, data[j], arrayHtml);
+          }
+        }
+        html = html.replace(arrayHtml, replaceHtml);
+      }
+    } else if (Object.prototype.toString.apply(data) === "[object Object]") {
+      for (const d in data) {
+        const nextName = name == "" ? d : name + "." + d;
+        let replaceName = "@" + nextName;
+        if (typeof data[d] === "object" && !data[d]) {
+          html = this.replaceAll(html, replaceName, data[d]);
+        } else if (
+          typeof data[d] === "object" ||
+          Object.prototype.toString.apply(data[d]) === "[object Array]"
+        ) {
+          html = this.getJsonHtml(
+            nextName,
+            data[d] == null ? [] : data[d],
+            html
+          );
+        } else {
+          html = this.replaceAll(html, replaceName, data[d]);
+        }
+      }
+    }
+    return html;
+  }
+  static replaceAll(source: string, oldString: string, newString: string) {
+    //替换所有
+    newString = !newString ? "" : newString;
+    const reg = new RegExp("\\" + oldString, "g");
+    return source.replace(reg, newString);
   }
 }

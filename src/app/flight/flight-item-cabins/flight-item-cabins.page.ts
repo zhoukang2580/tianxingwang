@@ -3,7 +3,7 @@ import { DayModel } from "./../models/DayModel";
 import { FlydayService } from "./../flyday.service";
 import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
 import { ActivatedRoute } from "@angular/router";
-import { FlightService } from "src/app/flight/flight.service";
+import { FlightService, FlightPolicy } from "src/app/flight/flight.service";
 import { Component, OnInit } from "@angular/core";
 import { ModalController, DomController } from "@ionic/angular";
 import { TicketchangingComponent } from "../components/ticketchanging/ticketchanging.component";
@@ -15,7 +15,9 @@ import * as moment from "moment";
 })
 export class FlightItemCabinsPage implements OnInit {
   flightSegment: FlightSegmentEntity;
+  vmCabins: FlightPolicy[] = [];
   staff: StaffEntity;
+  loading = true;
   constructor(
     private flightService: FlightService,
     private activatedRoute: ActivatedRoute,
@@ -57,5 +59,21 @@ export class FlightItemCabinsPage implements OnInit {
     }
     return "success";
   }
-  ngOnInit() {}
+  ngOnInit() {
+    if (this.flightSegment) {
+      this.loading = true;
+      const cabins = (this.flightSegment.PoliciedCabins || []).slice(0);
+      const loop = () => {
+        if (cabins.length) {
+          this.vmCabins.push(...cabins.splice(0, 1));
+          window.requestAnimationFrame(loop);
+        } else {
+          this.loading = false;
+        }
+      };
+      setTimeout(() => {
+        loop();
+      }, 500);
+    }
+  }
 }

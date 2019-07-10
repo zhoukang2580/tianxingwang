@@ -1,6 +1,6 @@
 import { ApiService } from "src/app/services/api/api.service";
 import { FlyFilterComponent } from "./../components/fly-filter/fly-filter.component";
-import { FlightPolicy, Passenger } from "./../flight.service";
+import { FlightPolicy } from "./../flight.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { IdentityEntity } from "./../../services/identity/identity.entity";
 import { StaffBookType } from "./../../tmc/models/StaffBookType";
@@ -76,9 +76,9 @@ import { FlyDaysCalendarComponent } from "../components/fly-days-calendar/fly-da
   ]
 })
 export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
+  private refMap = new WeakMap<FlightSegmentEntity, any>();
   searchFlightCondition: SearchFlightModel;
   filterCondition: FilterConditionModel;
-  @ViewChildren("flyItem") items: QueryList<ElementRef<HTMLElement>>;
   @ViewChild("cnt") cnt: IonContent;
   @ViewChild("list") list: ElementRef<HTMLElement>;
   flightJourneyList: FlightJourneyEntity[]; // 保持和后台返回的数据一致
@@ -89,10 +89,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   selectDaySubscription = Subscription.EMPTY;
   vmFlightJourneyList: FlightJourneyEntity[];
   totalFilteredSegments: FlightSegmentEntity[];
-  priceOrdL2H: boolean; // 价格从低到高
+  priceOrderL2H: boolean; // 价格从低到高
   timeOrdM2N: boolean; // 时间从早到晚
   isRoundTrip: boolean; // 是否是往返
-  private isRenderingView: boolean;
   loading = true;
   isFiltered = false;
   st = 0;
@@ -121,13 +120,15 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.flightJourneyList = [];
     this.searchFlightCondition = new SearchFlightModel();
     this.route.queryParamMap.subscribe(async d => {
+      this.flightService.setFilterPanelShow(false);
       this.staff = await this.hrService.getStaff();
       if (
-        !this.isStaffTypeSelf() &&
-        this.flightService.getPassengerFlightSegments().length === 0
+        !this.isStaffTypeSelf()
+        //  &&        this.flightService.getPassengerFlightSegments().length === 0
       ) {
         // 必须先选择一个客户
-        this.router.navigate([AppHelper.getRoutePath("select-passengers")]);
+        console.log("goToSelectPassengerPage ");
+        this.goToSelectPassengerPage();
         return;
       }
       console.log("staff ", this.staff);
@@ -150,7 +151,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async isStaffTypeSelf() {
     const s = await this.hrService.getStaff();
-    return s.BookType == StaffBookType.Self;
+    return s.BookType && s.BookType == StaffBookType.Self;
   }
   onCalenderClick() {
     this.flyDayService.setFlyDayMulti(false);
@@ -246,7 +247,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     );
     this.st = Date.now();
     this.vmFlights = segments;
-    this.renderFlightListItem(this.vmFlights);
+    this.renderFlightList2(segments);
     this.loading = false;
     this.hasDataSource.next(!!this.vmFlights.length && !this.loading);
     if (this.refresher) {
@@ -257,9 +258,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   private scrollToTop() {
     setTimeout(() => {
       if (this.cnt) {
-        this.cnt.scrollToTop(300);
+        this.cnt.scrollToTop(100);
       }
-    }, 300);
+    }, 100);
   }
   private async loadPolicyedFlights() {
     // 先获取最新的数据
@@ -365,7 +366,8 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     ]);
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    // this.goToSelectPassengerPage();
     this.activeTab = "filter";
     this.filterConditionSubscription = this.flightService
       .getFilterCondition()
@@ -395,7 +397,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
             }
           }
           this.searchFlightCondition.Date = day.date;
-          if(this.loading){
+          if (this.loading) {
             return;
           }
           this.doRefresh(true, false);
@@ -409,13 +411,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.items.changes.subscribe(itms => {
-      console.log(
-        "完成渲染：",
-        itms.length,
-        "耗时：" + (Date.now() - this.st) + " ms"
-      );
-    });
     this.apiService.showLoadingView();
     if (this.searchFlightCondition && this.searchFlightCondition.Date) {
       if (this.flyDaysCalendarComp) {
@@ -463,81 +458,97 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.flightService.setFilterPanelShow(true);
   }
   async onTimeOrder() {
+    console.time("time");
+    this.loading = true;
     this.activeTab = "time";
     this.timeOrdM2N = !this.timeOrdM2N;
     await this.sortFlights("time");
+    this.loading = false;
+    console.timeEnd("time");
   }
   async onPriceOrder() {
+    console.time("price");
     this.loading = true;
     this.activeTab = "price";
-    this.priceOrdL2H = !this.priceOrdL2H;
+    this.priceOrderL2H = !this.priceOrderL2H;
     await this.sortFlights("price");
     this.loading = false;
+    console.timeEnd("price");
   }
   private async sortFlights(key: "price" | "time") {
     this.st = Date.now();
     if (key === "price") {
-      this.filterCondition.priceFromL2H = this.priceOrdL2H
+      this.filterCondition.priceFromL2H = this.priceOrderL2H
         ? "low2Height"
         : "height2Low";
       this.filterCondition.timeFromM2N = "initial";
-      this.domCtrl.write(() => {
-        console.time("price");
-        console.dir(this.vmFlights);
-        this.vmFlights.sort((s1, s2) => {
-          let sub = +s1.LowestFare - +s2.LowestFare;
-          sub = sub === 0 ? 0 : sub > 0 ? 1 : -1;
-          return this.priceOrdL2H ? sub : -sub;
-        });
-        this.renderFlightListItem(this.vmFlights);
-        console.timeEnd("price");
-        this.scrollToTop();
-      });
+      const segments = await this.flightService.sortByPrice(
+        this.vmFlights,
+        this.priceOrderL2H
+      );
+      let isRerender = false;
+      for (let i = 0; i < segments.length; i++) {
+        const s = segments[i];
+        const li = this.refMap.get(s);
+        if (!li) {
+          isRerender = true;
+          break;
+        }
+        if (this.list) {
+          const old = this.list.nativeElement.childNodes[i];
+          this.list.nativeElement.insertBefore(li, old);
+        }
+      }
+      if (isRerender) {
+        console.log(`重新渲染整个列表`);
+        this.renderFlightList2(segments);
+      }
+      // this.renderFlightList2(segments);
+      this.scrollToTop();
     }
     if (key === "time") {
       this.filterCondition.timeFromM2N = this.timeOrdM2N ? "am2pm" : "pm2am";
       this.filterCondition.priceFromL2H = "initial";
-      this.domCtrl.write(() => {
-        console.time("time");
-        console.dir(this.vmFlights);
-        this.vmFlights.sort((s1, s2) => {
-          let sub = s1.TakeoffTimeStamp - s2.TakeoffTimeStamp;
-          sub = sub === 0 ? 0 : sub > 0 ? 1 : -1;
-          // console.log("时间排序，l2h",sub);
-          return this.timeOrdM2N ? sub : -sub;
-        });
-        this.renderFlightListItem(this.vmFlights);
-        console.timeEnd("time");
-        this.scrollToTop();
-      });
+      const segments = await this.flightService.sortByTime(
+        this.vmFlights,
+        this.timeOrdM2N
+      );
+      let isRerender = false;
+      for (let i = 0; i < segments.length; i++) {
+        const s = segments[i];
+        const li = this.refMap.get(s);
+        if (!li) {
+          isRerender = true;
+          break;
+        }
+        if (this.list) {
+          const old = this.list.nativeElement.childNodes[i];
+          this.list.nativeElement.insertBefore(li, old);
+        }
+      }
+      if (isRerender) {
+        console.log(`重新渲染整个列表`);
+        this.renderFlightList2(segments);
+      }
+      this.scrollToTop();
     }
   }
-  private addoneday(s: FlightSegmentEntity) {
-    const addDay = moment(s.ArrivalTime).date() - moment(s.TakeoffTime).date();
-    // console.log(addDay);
-    return addDay > 0 ? "+" + addDay + LanguageHelper.getDayTip() : "";
-  }
-  private renderFlightListItem(s: FlightSegmentEntity[]) {
-    if (this.list) {
-      this.list.nativeElement.innerHTML = "";
-    }
-    s.forEach(s => {
-      const li = document.createElement("li");
-      li.onclick = () => {
-        this.goToFlightCabinsDetails(s);
-      };
-      const addonday = this.addoneday(s);
-      li.classList.add("list-item");
-      li.innerHTML = `
-      <div class='left'>
+
+  private async renderFlightList2(fs: FlightSegmentEntity[]) {
+    console.time("renderFlightList2");
+    this.loading = true;
+    const segments = fs.map((s, i) => {
+      const template = `<div class='left'>
           <h4 class="time">
-              <strong>${moment(s.TakeoffTime).format("HH:MM")}</strong>
+    <strong>${s.TakeoffShortTime}</strong>
               <span class="line">-----&nbsp;${
                 s.IsStop ? `经停` : `直飞`
               }&nbsp;-----</span>
-              <strong>${moment(s.ArrivalTime).format("HH:MM")}
+              <strong>${s.ArrivalShortTime}
                 ${
-                  addonday ? `<span class='addoneday'>${addonday}天</span>` : ``
+                  s.AddOneDayTip
+                    ? `<span class='addoneday'>${s.AddOneDayTip}</span>`
+                    : ``
                 }
               </strong>
           </h4>
@@ -556,7 +567,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
               <label>|${s.PlaneType}</label>
               ${
                 s.CodeShareNumber
-                  ? `<span class='code-share-number'>|${
+                  ? `|<span class='code-share-number'>共享${
                       s.CodeShareNumber
                     }</span>`
                   : ``
@@ -566,25 +577,32 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       <div class="price">
           ￥${s.LowestFare}
       </div>`;
+      return {
+        item: s,
+        templateHtmlString: template
+      };
+    });
+    //  segments = await this.flightService.getHtmlTemplate(fs, "");
+    // console.log("getHtmlTemplate", segments);
+    if (this.list) {
+      this.list.nativeElement.innerHTML = "";
+    }
+    this.refMap = new WeakMap<FlightSegmentEntity, any>();
+    segments.forEach(s => {
+      const li = document.createElement("li");
+      li.onclick = () => {
+        this.goToFlightCabinsDetails(s.item);
+      };
+      li.classList.add("list-item");
+      li.innerHTML = s.templateHtmlString;
+      this.refMap.set(s.item, li);
       if (this.list) {
         this.list.nativeElement.appendChild(li);
       }
     });
-  }
-  private sortByPrice(l2h: boolean) {
-    return this.vmFlights.sort((s1, s2) => {
-      let sub = +s1.LowestFare - +s2.LowestFare;
-      sub = sub === 0 ? 0 : sub > 0 ? 1 : -1;
-      return l2h ? sub : -sub;
-    });
-  }
-  private sortByTime(l2h: boolean) {
-    return this.vmFlights.sort((s1, s2) => {
-      let sub = +moment(s1.TakeoffTime) - +moment(s2.TakeoffTime);
-      sub = sub === 0 ? 0 : sub > 0 ? 1 : -1;
-      // console.log("时间排序，l2h",sub);
-      return l2h ? sub : -sub;
-    });
+    this.loading = false;
+    this.scrollToTop();
+    console.timeEnd("renderFlightList2");
   }
   private filterFlightJourneyList(flys: FlightJourneyEntity[]) {
     console.log(
@@ -669,12 +687,12 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
             // console.log(moment(s.TakeoffTime).hour());
             return (
               this.filterCondition.takeOffTimeSpan.lower <=
-                moment(s.TakeoffTime).hour() &&
-              (moment(s.TakeoffTime).hour() <
+                moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() &&
+              (moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() <
                 this.filterCondition.takeOffTimeSpan.upper ||
-                (moment(s.TakeoffTime).hour() ==
+                (moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() ==
                   this.filterCondition.takeOffTimeSpan.upper &&
-                  moment(s.TakeoffTime).minutes() == 0))
+                  moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").minutes() == 0))
             );
           });
           return r;

@@ -13,7 +13,7 @@
   padding: 0.5em 1em;
 }
 .flight .list-item {
-  margin-bottom: 0.5em;
+  border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.13);
 }
 .flight .list-item .left .airports,
 .flight .list-item,
@@ -53,6 +53,7 @@
 
 .flight .list-item .price {
   align-items: center;
+  color: var(--ion-color-danger);
 }
 
 .flight .list-item .addoneday {
@@ -60,4 +61,5 @@
   right: 0.2em;
   bottom: 0.5em;
   font-size: 0.6rem;
+  color: var(--ion-color-secondary);
 }

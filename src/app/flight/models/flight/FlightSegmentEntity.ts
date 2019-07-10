@@ -103,10 +103,12 @@ export class FlightSegmentEntity {
   /// 起飞时间
   /// </summary>
   TakeoffTime: string;
+  TakeoffShortTime: string;
   /// <summary>
   /// 到达时间
   /// </summary>
   ArrivalTime: string;
+  ArrivalShortTime: string;
   /// <summary>
   /// 始发航站楼
   /// </summary>
@@ -174,4 +176,5 @@ export class FlightSegmentEntity {
   TrackById: number;
   TakeoffTimeStamp: number;
   ArrivalTimeStamp: number;
+  AddOneDayTip: string;
 }

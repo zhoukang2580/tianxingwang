@@ -14,4 +14,5 @@ export class RequestEntity {
   FileValue?: string;
   IsShowLoading?: boolean;
   IsForward?: boolean;
+  Timeout?: number;
 }

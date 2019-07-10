@@ -1,24 +1,27 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Routes, RouterModule } from '@angular/router';
+import { AgentGuard } from './../../guards/agent.guard';
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { Routes, RouterModule } from "@angular/router";
 
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from "@ionic/angular";
 
-import { BookFlightPage } from './book-flight.page';
-import { FlightComponentsModule } from '../components/components.module';
-import { DirectivesModule } from 'src/app/directives/directives.module';
+import { BookFlightPage } from "./book-flight.page";
+import { FlightComponentsModule } from "../components/components.module";
+import { DirectivesModule } from "src/app/directives/directives.module";
+import { TmcGuard } from "src/app/guards/tmc.guard";
 
 const routes: Routes = [
   {
-    path: '',
+    path: "",
     component: BookFlightPage,
+    canActivate: [AgentGuard]
   }
 ];
 
 @NgModule({
   imports: [
-  CommonModule,
+    CommonModule,
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
@@ -26,6 +29,6 @@ const routes: Routes = [
     DirectivesModule
   ],
   declarations: [BookFlightPage],
-  entryComponents:[BookFlightPage]
+  entryComponents: [BookFlightPage]
 })
 export class BookFlightPageModule {}

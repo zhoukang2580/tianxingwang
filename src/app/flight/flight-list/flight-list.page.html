@@ -94,26 +94,34 @@
       </div>
     </li> -->
   </ul>
-  <ng-template #fakeList>
-    <ion-virtual-scroll [items]="[1,2,3,4,5,6,7,8,9,10]" approxItemHeight="60px">
-      <ion-item *virtualItem='let item'>
-        <ion-label style="flex: 1">
-          <h2>
-            <ion-skeleton-text animated style='width: 90%'></ion-skeleton-text>
-          </h2>
-          <h2>
-            <ion-skeleton-text style='width: 90%'></ion-skeleton-text>
-          </h2>
-          <h2>
-            <ion-skeleton-text style='width: 90%'></ion-skeleton-text>
-          </h2>
-        </ion-label>
-        <ion-label>
-          <ion-skeleton-text animated style='width: 20%'></ion-skeleton-text>
-        </ion-label>
+  <ng-container #fakeList *ngIf='loading'>
+    <ion-list>
+      <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8]'>
+        <div style='width: 100%;'>
+          <ion-row>
+            <ion-col size='10'>
+              <ion-label>
+                <h2>
+                  <ion-skeleton-text animated style='width: 100%'></ion-skeleton-text>
+                </h2>
+                <h2>
+                  <ion-skeleton-text style='width: 100%'></ion-skeleton-text>
+                </h2>
+                <div style='display: flex;align-items: center;'>
+                  <ion-skeleton-text animated style="width: 1.2em;height:1.2em;border-radius:100%;margin-right: 0.5em;">
+                  </ion-skeleton-text>
+                  <ion-skeleton-text style='width: 90%'></ion-skeleton-text>
+                </div>
+              </ion-label>
+            </ion-col>
+            <ion-col size='2' style="align-self: center;">
+              <ion-skeleton-text animated style='width: 100%'></ion-skeleton-text>
+            </ion-col>
+          </ion-row>
+        </div>
       </ion-item>
-    </ion-virtual-scroll>
-  </ng-template>
+    </ion-list>
+  </ng-container>
 </ion-content>
 <ion-footer color="primary">
   <ion-toolbar>
@@ -131,8 +139,8 @@
       <div class="tab" [class.active]="activeTab === 'price'" (click)="onPriceOrder()">
         <ion-icon name="logo-usd"></ion-icon>
         <ion-note *ngIf="activeTab !== 'price'">价格</ion-note>
-        <ion-note *ngIf="activeTab === 'price' && priceOrdL2H">从低到高</ion-note>
-        <ion-note *ngIf="activeTab === 'price' && !priceOrdL2H">从高到低</ion-note>
+        <ion-note *ngIf="activeTab === 'price' && priceOrderL2H">从低到高</ion-note>
+        <ion-note *ngIf="activeTab === 'price' && !priceOrderL2H">从高到低</ion-note>
       </div>
     </div>
   </ion-toolbar>

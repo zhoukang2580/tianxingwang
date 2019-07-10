@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { Passenger } from "../../flight.service";
+import { Staff } from 'src/app/tmc/models/Staff';
 
 @Component({
   selector: "app-selected-passengers",
@@ -7,7 +7,7 @@ import { Passenger } from "../../flight.service";
   styleUrls: ["./selected-passengers.component.scss"]
 })
 export class SelectedPassengersComponent implements OnInit {
-  passengers: Passenger[];
+  passengers: Staff[];
   constructor() {}
 
   ngOnInit() {}

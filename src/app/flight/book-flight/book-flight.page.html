@@ -24,8 +24,11 @@
         <div *ngIf="!isSingle">{{ totalFlyDays }}天</div>
         <app-search-day-comp *ngIf="!isSingle" [day]='backDate' (click)="onSelecFlyDate(false)"></app-search-day-comp>
       </section>
-      <ion-button (click)="searchFlight()" [disabled]='!vmFromCity||!vmToCity&&isLoading' color="secondary" expand="block">查询航班
-      </ion-button>
+      <ion-item lines='none'>
+        <ion-button style='width: 100%' size='md' (click)="searchFlight()" [disabled]='!vmFromCity||!vmToCity&&isLoading' color="secondary"
+          expand="block">查询航班
+        </ion-button>
+      </ion-item>
     </ion-card-content>
   </ion-card>
   <!-- <ion-card>
