@@ -3,7 +3,7 @@ import { FlightCabinEntity } from "./models/flight/FlightCabinEntity";
 import { StaffBookType } from "./../tmc/models/StaffBookType";
 import { FilterConditionModel } from "./models/flight/advanced-search-cond/FilterConditionModel";
 import { IdentityService } from "./../services/identity/identity.service";
-import { HrService } from "./../hr/hr.service";
+import { HrService, StaffEntity } from "./../hr/hr.service";
 import { Injectable } from "@angular/core";
 
 import { environment } from "../../environments/environment";
@@ -18,15 +18,17 @@ import { RequestEntity } from "../services/api/Request.entity";
 import { Storage } from "@ionic/storage";
 import { TrafficlineModel } from "./components/select-city/models/TrafficlineModel";
 import { LanguageHelper } from "../languageHelper";
-import { Staff } from "../tmc/models/Staff";
-import { HttpClient } from "@angular/common/http";
 
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
-
+export interface PassengerFlightSelectedInfo {
+  flightSegment: FlightSegmentEntity;
+  flightPolicy: FlightPolicy;
+  reset?: boolean;
+}
 export interface PassengerFlightSegments {
-  passenger: Staff;
-  flightSegments: FlightSegmentEntity[];
+  passenger: StaffEntity;
+  selectedInfo: PassengerFlightSelectedInfo[];
 }
 export interface FlightSegmentModel {
   AirlineName; // String 航空公司名称
@@ -39,7 +41,7 @@ export interface FlightSegmentModel {
   IsStop: boolean; // Bool 是否经停
 }
 export interface FlightPolicy {
-  Cabin: FlightCabinEntity;
+  Cabin: FlightCabinEntity; // 记录原始的cabin
   FlightNo: string; // String Yes 航班号
   CabinCode: string; // string Yes 舱位代码
   IsAllowBook: boolean; // Bool Yes 是否可预订
@@ -80,9 +82,16 @@ export class FlightService {
   private localDomesticAirports: LocalStorageAirport;
   private selectedCitySource: Subject<TrafficlineModel>;
   private passengerFlightSegments: PassengerFlightSegments[]; // 记录乘客及其研究选择的航班
-  currentViewtFlightSegment: FlightSegmentEntity;
+  currentViewtFlightSegment: {
+    flightSegment: FlightSegmentEntity;
+    flightSegments: FlightSegmentEntity[];
+  };
 
-  constructor(private apiService: ApiService, private storage: Storage) {
+  constructor(
+    private apiService: ApiService,
+    private hrService: HrService,
+    private storage: Storage
+  ) {
     this.selectedCitySource = new BehaviorSubject(null);
     this.passengerFlightSegments = [];
     this.filterPanelShowHideSource = new BehaviorSubject(false);
@@ -90,24 +99,33 @@ export class FlightService {
     this.filterCondSources = new BehaviorSubject(null);
     this.worker = window["Worker"] ? new Worker("assets/worker.js") : null;
   }
-  getCurrentViewtFlightSegment(): FlightSegmentEntity {
+  getCurrentViewtFlightSegment() {
     return this.currentViewtFlightSegment;
   }
-  setCurrentViewtFlightSegment(s: FlightSegmentEntity) {
-    this.currentViewtFlightSegment = s;
+  setCurrentViewtFlightSegment(
+    s: FlightSegmentEntity,
+    fs: FlightSegmentEntity[]
+  ) {
+    this.currentViewtFlightSegment = {
+      flightSegment: s,
+      flightSegments: fs
+    };
   }
   getPassengerFlightSegments() {
     return this.passengerFlightSegments || [];
   }
-  setPassengerFlightSegments(args: PassengerFlightSegments[]) {
-    this.passengerFlightSegments = [...args];
-  }
+  // setPassengerFlightSegments(args: PassengerFlightSegments[]) {
+  //   this.passengerFlightSegments = [...args];
+  // }
   addPassengerFlightSegments(arg: PassengerFlightSegments) {
     this.passengerFlightSegments = [...this.getPassengerFlightSegments(), arg];
   }
-  removePassengerFlightSegments(arg: PassengerFlightSegments) {
+  removeAllPassengerFlightSegments() {
+    this.passengerFlightSegments = [];
+  }
+  removePassengerFlightSegments(arg: PassengerFlightSegments[]) {
     this.passengerFlightSegments = this.getPassengerFlightSegments().filter(
-      item => item !== arg
+      item => !arg.some(it => it == item)
     );
   }
   getSelectedCity() {
@@ -245,6 +263,7 @@ export class FlightService {
       Passengers: Passengers.join(",")
     };
     req.IsShowLoading = true;
+    req.Timeout = 60;
     const res = await this.apiService
       .getPromiseResponse<
         {
@@ -411,6 +430,7 @@ export class FlightService {
     };
     req.Version = "1.0";
     req.IsShowLoading = true;
+    req.Timeout = 60;
     const serverFlights = await this.apiService
       .getPromiseResponse<FlightJourneyEntity[]>(req)
       .catch(_ => {

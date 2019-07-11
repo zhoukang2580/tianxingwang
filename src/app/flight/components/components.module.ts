@@ -1,4 +1,4 @@
-import { AppcomponentsModule } from './../../components/appcomponents.module';
+import { AppcomponentsModule } from "./../../components/appcomponents.module";
 import { IonicModule } from "@ionic/angular";
 import { NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -22,7 +22,9 @@ import { DirectivesModule } from "../directives/directives.module";
 import { SearchDayComponent } from "./search-day/search-day.component";
 import { TicketchangingComponent } from "./ticketchanging/ticketchanging.component";
 import { SelectedPassengersComponent } from "./selected-passengers/selected-passengers.component";
-import { SelectFlyDateComponent } from './select-fly-date/select-fly-date.component';
+import { SelectFlyDateComponent } from "./select-fly-date/select-fly-date.component";
+import { SelectedFlightsegmentInfoComponent } from "./selected-flightsegment-info/selected-flightsegment-info.component";
+import { SelectFlightsegmentCabinComponent } from './select-flightsegment-cabin/select-flightsegment-cabin.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +45,9 @@ import { SelectFlyDateComponent } from './select-fly-date/select-fly-date.compon
     SearchDayComponent,
     TicketchangingComponent,
     SelectedPassengersComponent,
-    SelectFlyDateComponent
+    SelectFlyDateComponent,
+    SelectedFlightsegmentInfoComponent,
+    SelectFlightsegmentCabinComponent
   ],
   imports: [
     CommonModule,
@@ -79,7 +83,9 @@ import { SelectFlyDateComponent } from './select-fly-date/select-fly-date.compon
   entryComponents: [
     FlyFilterComponent,
     TicketchangingComponent,
-    SelectedPassengersComponent
+    SelectedPassengersComponent,
+    SelectedFlightsegmentInfoComponent,
+    SelectFlightsegmentCabinComponent
   ]
 })
 export class FlightComponentsModule {}

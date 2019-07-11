@@ -1,5 +1,12 @@
 export class LanguageHelper {
-
+  static CurrencySymbols = {
+    Yuan: () => {
+      return "￥";
+    },
+    USD: () => {
+      return "$";
+    }
+  };
   static FlightMealType = {
     /// <summary>
     /// 不特定餐食
@@ -71,6 +78,23 @@ export class LanguageHelper {
     // R = 10
     getRTip: () => {
       return "茶点或小吃";
+    }
+  };
+  static Flight = {
+    getTheLowestSegmentNotFoundTip: () => {
+      return `更低价航班未找到`;
+    },
+    getTheLowestCabinNotFoundTip: () => {
+      return `航班仓位未找到`;
+    },
+    getHasLowerSegmentTip: () => {
+      return `您指定的航班前后60分钟内有更低价航班`;
+    },
+    getSelectTheSegmentTip: () => {
+      return `选择该航班`;
+    },
+    getReChooseTip() {
+      return "重新选择航班?";
     }
   };
   static getDiscountTip() {
@@ -220,6 +244,9 @@ export class LanguageHelper {
   static getIgnoreTip() {
     return "忽略";
   }
+  static getNegativeTip() {
+    return "否";
+  }
   static gethcpUpdateBaseDataTip() {
     return "是否立即更新重要基础数据？";
   }
@@ -278,7 +305,6 @@ export class LanguageHelper {
   static getEnterPasswordTip() {
     return "请输入密码";
   }
-
   static getApiExceptionTip() {
     // if(AppHelper.getLanguage())
     return "接口调用异常";

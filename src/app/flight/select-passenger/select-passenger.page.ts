@@ -14,7 +14,7 @@ import {
   NavController
 } from "@ionic/angular";
 import { RequestEntity } from "src/app/services/api/Request.entity";
-import { Staff } from "src/app/tmc/models/Staff";
+import { StaffEntity } from "src/app/hr/hr.service";
 
 @Component({
   selector: "app-select-passenger",
@@ -24,10 +24,10 @@ import { Staff } from "src/app/tmc/models/Staff";
 export class SelectPassengerPage implements OnInit {
   passengerFlightSegments: PassengerFlightSegments[];
   keyword: string;
-  passengers: Staff[];
+  passengers: StaffEntity[];
   currentPage = 1;
   pageSize = 10;
-  vmStaffs: Staff[];
+  vmStaffs: StaffEntity[];
   loading = false;
   @ViewChild(IonRefresher) ionrefresher: IonRefresher;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
@@ -73,7 +73,7 @@ export class SelectPassengerPage implements OnInit {
     this.loading = true;
     const identity = await this.identityService.getIdentityPromise();
     const req = new RequestEntity();
-    req.Method = "TmcApiHomeUrl-Home-Staff";
+    req.Method = "TmcApiHomeUrl-Home-StaffEntity";
     req.Version = "1.0";
     req.Data = {
       LastUpdateTime: 0,
@@ -85,7 +85,7 @@ export class SelectPassengerPage implements OnInit {
         CostCenters: any;
         IllegalReasons: any;
         Organizations: any;
-        Staffs: Staff[];
+        Staffs: StaffEntity[];
         Tmcs: any;
         TravelForms: any;
       }>(req)
@@ -94,10 +94,10 @@ export class SelectPassengerPage implements OnInit {
     this.loading = false;
     return this.passengers;
   }
-  onSelect(s: Staff) {
+  onSelect(s: StaffEntity) {
     const item: PassengerFlightSegments = {
       passenger: s,
-      flightSegments: []
+      selectedInfo: []
     };
     this.flightService.addPassengerFlightSegments(item);
     this.back();

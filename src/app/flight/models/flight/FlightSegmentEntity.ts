@@ -177,4 +177,5 @@ export class FlightSegmentEntity {
   TakeoffTimeStamp: number;
   ArrivalTimeStamp: number;
   AddOneDayTip: string;
+  PassengerKeys: string[];
 }

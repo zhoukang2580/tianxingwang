@@ -5,15 +5,32 @@
     </ion-buttons>
     <ion-text>{{getMothDay()}}</ion-text>
   </ion-toolbar>
+
 </ion-header>
 <ion-content>
   <ion-toolbar text-center>
     <ion-label no-margin no-padding>
-      <strong>{{flightSegment?.FromCityName}} 到 {{flightSegment?.ToCityName}}</strong>
+      <strong>{{vmFlightSegment?.FromCityName}} 到 {{vmFlightSegment?.ToCityName}}</strong>
     </ion-label>
     <ion-item lines='none'>
-      <app-fly-list-item [flightSegment]='flightSegment' [showDetails]='true'></app-fly-list-item>
+      <app-fly-list-item [flightSegment]='vmFlightSegment' [showDetails]='true'></app-fly-list-item>
     </ion-item>
+  </ion-toolbar>
+  <ion-toolbar style='font-size: .6rem;padding:0 1em;'>
+    <div>
+      过滤差标：
+    </div>
+    <ion-label color='success' margin-start>
+      绿色代表符合差标
+    </ion-label>
+    <div>
+      <ion-label margin-start color='warning'>
+        黄色代表违规可以预订
+      </ion-label>
+    </div>
+    <ion-label color='danger' margin-start>
+      红色代表违规不可预订
+    </ion-label>
   </ion-toolbar>
   <ion-list margin-top *ngIf='!loading else fakeList'>
     <ion-item *ngFor='let cabin of vmCabins'>
@@ -35,10 +52,10 @@
           <ion-col size='4'>
             <ion-label>
               <h3 text-end class='book'>
-                <ion-text>￥{{cabin?.Cabin?.SalesPrice}}</ion-text>
+                <ion-text color='danger'>￥{{cabin?.Cabin?.SalesPrice}}</ion-text>
                 <ion-button [color]='bookColor(cabin)' margin-top expand='block' [disabled]='!cabin?.IsAllowBook'
                   (click)='onBookTicket(cabin)'>
-                  <ion-text color='light'>预定</ion-text><br />
+                  <ion-text [color]='bookColor(cabin)=="primary"?"dark":"light"'>预定</ion-text>
                 </ion-button>
               </h3>
             </ion-label>

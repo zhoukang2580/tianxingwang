@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { Staff } from 'src/app/tmc/models/Staff';
+import { StaffEntity } from 'src/app/hr/hr.service';
 
 @Component({
   selector: "app-selected-passengers",
@@ -7,7 +7,7 @@ import { Staff } from 'src/app/tmc/models/Staff';
   styleUrls: ["./selected-passengers.component.scss"]
 })
 export class SelectedPassengersComponent implements OnInit {
-  passengers: Staff[];
+  passengers: StaffEntity[];
   constructor() {}
 
   ngOnInit() {}

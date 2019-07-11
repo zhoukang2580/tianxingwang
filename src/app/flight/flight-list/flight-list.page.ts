@@ -234,9 +234,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       data = await this.loadPolicyedFlights();
     }
     // 根据筛选条件过滤航班信息：
-    const filteredFlightJourenyList = this.filterFlightJourneyList(
-      JSON.parse(JSON.stringify(data))
-    );
+    const filteredFlightJourenyList = this.filterFlightJourneyList(data);
     this.isFiltered =
       this.filterComp &&
       Object.keys(this.filterComp.userOps).some(
@@ -283,7 +281,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         );
         if (flights.length) {
           this.flightJourneyList = await this.replaceCabinInfo(
-            flights[0].FlightPolicies,
+            flights,
             this.flightJourneyList
           );
         }
@@ -292,8 +290,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       // 角色： 代理和秘书、特殊
       const passengerFlightSegments = this.flightService.getPassengerFlightSegments();
       if (passengerFlightSegments.length) {
+        // 过滤未选择航班的乘客
         const unSelectFlightSegmentPassengers = passengerFlightSegments
-          .filter(pf => pf.flightSegments.length === 0)
+          .filter(pf => pf.selectedInfo.length === 0)
           .map(pf => pf.passenger);
         if (unSelectFlightSegmentPassengers.length) {
           const flights = await this.flightService.policyflights(
@@ -302,7 +301,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           );
           if (flights.length) {
             this.flightJourneyList = await this.replaceCabinInfo(
-              flights[0].FlightPolicies,
+              flights,
               this.flightJourneyList
             );
           }
@@ -316,7 +315,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           );
           if (flights.length) {
             this.flightJourneyList = await this.replaceCabinInfo(
-              flights[0].FlightPolicies,
+              flights,
               this.flightJourneyList
             );
           }
@@ -328,33 +327,62 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     return this.flightJourneyList;
   }
   goToFlightCabinsDetails(fs: FlightSegmentEntity) {
-    this.flightService.setCurrentViewtFlightSegment(fs);
+    this.flightService.setCurrentViewtFlightSegment(
+      fs,
+      this.flightService.getTotalFlySegments(this.flightJourneyList)
+    );
     this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
   }
 
   private async replaceCabinInfo(
-    flightPolicies: FlightPolicy[],
+    passengerPolicyflights: {
+      PassengerKey: string;
+      FlightPolicies: FlightPolicy[];
+    }[],
     flights: FlightJourneyEntity[]
   ) {
-    if (flightPolicies && flightPolicies.length && flights && flights.length) {
+    console.time("replaceCabinInfo");
+    if (passengerPolicyflights && flights) {
+      const passengerKeyFlightNoCabins = passengerPolicyflights.map(pf => {
+        return {
+          PassengerKey: pf.PassengerKey,
+          FlightPolicy: pf.FlightPolicies.reduce(
+            (obj, item) => {
+              if (!obj[item.FlightNo]) {
+                obj[item.FlightNo] = [item];
+              } else {
+                obj[item.FlightNo].push(item);
+              }
+              return obj;
+            },
+            {} as { [key: string]: FlightPolicy[] }
+          )
+        };
+      });
       flights.forEach(f => {
         f.FlightRoutes.forEach(r => {
           r.FlightSegments.forEach(s => {
-            const cabins = flightPolicies.filter(fp => fp.FlightNo == s.Number);
-            if (cabins.length) {
-              cabins.forEach(c => {
-                s.Cabins.forEach(sc => {
-                  if (sc.Code == c.CabinCode) {
-                    // console.log("替换cabin ", sc, c);
-                    c.Cabin = sc;
+            passengerKeyFlightNoCabins.forEach(item => {
+              s.PassengerKeys = s.PassengerKeys || [];
+              if (!s.PassengerKeys.find(k => k == item.PassengerKey)) {
+                s.PassengerKeys.push(item.PassengerKey);
+              }
+              if (item.FlightPolicy[s.Number]) {
+                s.PoliciedCabins = item.FlightPolicy[s.Number];
+                s.PoliciedCabins.forEach(pc => {
+                  const sc = s.Cabins.find(
+                    scabin => scabin.Code == pc.CabinCode
+                  );
+                  if (sc) {
+                    pc.Cabin = sc;
                   }
                 });
-              });
-            }
-            s.PoliciedCabins = cabins;
+              }
+            });
           });
         });
       });
+      console.timeEnd("replaceCabinInfo");
     }
     return flights;
   }
