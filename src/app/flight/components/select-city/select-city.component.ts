@@ -15,7 +15,6 @@ import {
 import { fromEvent, Subscription } from "rxjs";
 import { ListCityModel } from "./models/ListCityModel";
 import * as jsPy from "js-pinyin";
-import { TrafficlineModel } from "./models/TrafficlineModel";
 import {
   trigger,
   state,
@@ -37,14 +36,14 @@ import { FlightService, Trafficline } from "../../flight.service";
   ]
 })
 export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input() cities: TrafficlineModel[] = [];
-  hotCities: TrafficlineModel[] = [];
+  @Input() cities: Trafficline[] = [];
+  hotCities: Trafficline[] = [];
   // @ViewChild(IonRefresher)  ionRefresher: IonRefresher;
   @ViewChild("cnt")
   content: IonContent;
   @ViewChild("header") header: IonHeader;
-  selectedCity: TrafficlineModel;
-  historyCities: TrafficlineModel[] = [];
+  selectedCity: Trafficline;
+  historyCities: Trafficline[] = [];
   listCities: ListCityModel[] = [];
   listCitiesViewModel: ListCityModel[] = [];
   subscription = Subscription.EMPTY;
@@ -123,7 +122,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   private initHistoryCities() {
-    const hcs = AppHelper.getStorage<TrafficlineModel[]>("historyCities") || [];
+    const hcs = AppHelper.getStorage<Trafficline[]>("historyCities") || [];
     this.historyCities = hcs;
     let lm = this.listCitiesViewModel.find(l => l.link == "history");
     if (!lm) {
@@ -344,7 +343,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
   }
-  onCitySelected(city: TrafficlineModel, isUserSelect?: boolean) {
+  onCitySelected(city: Trafficline, isUserSelect?: boolean) {
     for (let i = 0; i < this.listCitiesViewModel.length; i++) {
       const item = this.listCitiesViewModel[i];
       const lastSelectedCity = item.items.find(

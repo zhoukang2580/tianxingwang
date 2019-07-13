@@ -12,3 +12,11 @@ section {
     font-size: 0.7rem;
   }
 }
+:host.disabled {
+  section {
+    color: var(--ion-color-medium);
+    i{
+      color: var(--ion-color-medium);
+    }
+  }
+}

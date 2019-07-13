@@ -1,11 +1,23 @@
 .detail {
   width: 100%;
 }
-.info{
+.date {
+  margin-top: 0.5em;
+  margin-bottom: -1em;
+}
+.date,
+.info {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.rules{
+.rules {
   font-size: 0.8rem;
+}
+.reset {
+  display: flex;
+  justify-content: flex-end;
+}
+.back-icon{
+  --color: rgba(var(--ion-color-dark-rgb), 0.5);
 }

@@ -3,7 +3,8 @@ import { ApiService } from "./../../services/api/api.service";
 import { ActivatedRoute } from "@angular/router";
 import {
   FlightService,
-  PassengerFlightSegments
+  PassengerFlightSegments,
+  TripType
 } from "src/app/flight/flight.service";
 import { SelectedPassengersComponent } from "./../components/selected-passengers/selected-passengers.component";
 import { Component, OnInit, ViewChild } from "@angular/core";
@@ -97,7 +98,7 @@ export class SelectPassengerPage implements OnInit {
   onSelect(s: StaffEntity) {
     const item: PassengerFlightSegments = {
       passenger: s,
-      selectedInfo: []
+      selectedInfo: [],
     };
     this.flightService.addPassengerFlightSegments(item);
     this.back();

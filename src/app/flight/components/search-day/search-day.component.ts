@@ -1,5 +1,5 @@
 import { DayModel } from "./../../models/DayModel";
-import { Component, OnInit, Input } from "@angular/core";
+import { Component, OnInit, Input,HostBinding } from "@angular/core";
 import * as moment from "moment";
 
 @Component({
@@ -9,6 +9,10 @@ import * as moment from "moment";
 })
 export class SearchDayComponent implements OnInit {
   @Input() day: DayModel;
+  @Input()
+  @HostBinding("class.disabled") 
+  disabled: boolean;
+
   constructor() {}
 
   ngOnInit() {}

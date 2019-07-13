@@ -83,19 +83,28 @@ export class HrService {
   constructor(
     private apiService: ApiService,
     private identityService: IdentityService
-  ) {}
-  async getStaff(forceRefresh: boolean = false): Promise<StaffEntity> {
+  ) {
     this.identityService.getIdentity().subscribe(id => {
       if (!id || !id.Id || !id.Ticket) {
         this.staff = null;
       }
     });
+  }
+  async getStaff(forceRefresh: boolean = false): Promise<StaffEntity> {
+    const id = await this.identityService.getIdentityPromise();
+    if (!id || !id.Id || !id.Ticket) {
+      this.staff = null;
+    }
     forceRefresh =
       forceRefresh ||
       (this.staff && !this.staff.IsConfirmInfo) ||
       (this.staff && !this.staff.IsModifyPassword);
     if (this.staff && !forceRefresh) {
-      return Promise.resolve(this.staff);
+      if (this.staff.BookType == StaffBookType.Self) {
+        this.staff.AccountId = this.staff.AccountId || id.Id;
+        this.staff.Name = this.staff.Name || id.Name;
+      }
+      return this.staff;
     }
     const req = new RequestEntity();
     req.Method = "HrApiUrl-Staff-Get";
@@ -105,6 +114,10 @@ export class HrService {
       .then(s => {
         console.log("staff ", s);
         this.staff = s;
+        if (this.staff.BookType == StaffBookType.Self) {
+          this.staff.AccountId = this.staff.AccountId || id.Id;
+          this.staff.Name = this.staff.Name || id.Name;
+        }
         return s;
       })
       .catch(_ => {

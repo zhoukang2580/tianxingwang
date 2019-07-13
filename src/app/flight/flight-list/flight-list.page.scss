@@ -1,6 +1,9 @@
 ion-content {
   --background: #f2f2f2;
 }
+.xs-font-size {
+  font-size: 0.7rem;
+}
 ion-title {
   ion-text {
     font-size: 0.8rem;
@@ -10,9 +13,7 @@ ion-title {
     font-size: 0.9rem;
     margin: 0 0.5em;
   }
-  .total-flights {
-    font-size: 0.8rem;
-  }
+
 }
 
 .tabs {

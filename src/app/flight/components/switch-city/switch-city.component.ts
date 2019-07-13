@@ -1,4 +1,4 @@
-import { FlightService } from "src/app/flight/flight.service";
+import { FlightService, Trafficline } from "src/app/flight/flight.service";
 import {
   EventEmitter,
   Output,
@@ -17,7 +17,6 @@ import {
   animate
 } from "@angular/animations";
 import { Subscription } from "rxjs";
-import { TrafficlineModel } from "../select-city/models/TrafficlineModel";
 
 @Component({
   selector: "app-switch-city-comp",
@@ -50,14 +49,15 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
   @ViewChild("toCityEle") toCityEle: IonText;
   toggleCities = false; // 没有切换城市顺序
   rotateIcon = false;
-  @Input() vmFromCity: TrafficlineModel; // 界面上显示的出发城市
-  @Input() vmToCity: TrafficlineModel; // 界面上显示的目的城市
+  @Input() disabled: boolean = false; // 界面上显示的出发城市
+  @Input() vmFromCity: Trafficline; // 界面上显示的出发城市
+  @Input() vmToCity: Trafficline; // 界面上显示的目的城市
   isSelectFromCity: boolean;
   isMoving: boolean;
   selectCitySubscription = Subscription.EMPTY;
   mode: string;
-  @Output() eFromCity: EventEmitter<TrafficlineModel>;
-  @Output() eToCity: EventEmitter<TrafficlineModel>;
+  @Output() eFromCity: EventEmitter<Trafficline>;
+  @Output() eToCity: EventEmitter<Trafficline>;
   constructor(
     plt: Platform,
     private flightService: FlightService,
@@ -97,22 +97,29 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
       // console.log(this.fromCityEle, this.toCityEle);
       const fEle = this.fromCityEle["el"];
       const tEle = this.toCityEle["el"];
-      const moveFromEleDetal =
-        tEle.getClientRects()[0].left - fEle.getClientRects()[0].left;
-      const moveToEleDetal =
-        tEle.getClientRects()[0].left - fEle.getClientRects()[0].left;
-      // console.log(`fele`, moveFromEleDetal);
-      // console.log(`tele`, moveToEleDetal);
-      this.render.setStyle(
-        fEle,
-        "transform",
-        `translateX(${this.toggleCities ? moveFromEleDetal : 0}px)`
-      );
-      this.render.setStyle(
-        tEle,
-        "transform",
-        `translateX(${this.toggleCities ? -moveToEleDetal : 0}px)`
-      );
+      if (
+        fEle &&
+        tEle &&
+        tEle.getClientRects()[0] &&
+        tEle.getClientRects()[0]
+      ) {
+        const moveFromEleDetal =
+          tEle.getClientRects()[0].left - fEle.getClientRects()[0].left;
+        const moveToEleDetal =
+          tEle.getClientRects()[0].left - fEle.getClientRects()[0].left;
+        // console.log(`fele`, moveFromEleDetal);
+        // console.log(`tele`, moveToEleDetal);
+        this.render.setStyle(
+          fEle,
+          "transform",
+          `translateX(${this.toggleCities ? moveFromEleDetal : 0}px)`
+        );
+        this.render.setStyle(
+          tEle,
+          "transform",
+          `translateX(${this.toggleCities ? -moveToEleDetal : 0}px)`
+        );
+      }
     }
   }
   ngOnDestroy() {

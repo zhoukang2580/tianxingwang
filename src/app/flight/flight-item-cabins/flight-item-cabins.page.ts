@@ -4,13 +4,19 @@ import { HrService, StaffEntity } from "./../../hr/hr.service";
 import { DayModel } from "./../models/DayModel";
 import { FlydayService } from "./../flyday.service";
 import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
-import { ActivatedRoute } from "@angular/router";
-import { FlightService, FlightPolicy } from "src/app/flight/flight.service";
+import { ActivatedRoute, Router } from "@angular/router";
+import {
+  FlightService,
+  FlightPolicy,
+  PassengerFlightSelectedInfo,
+  TripType,
+  CheckSelfSelectedInfoType
+} from "src/app/flight/flight.service";
 import { Component, OnInit } from "@angular/core";
 import {
   ModalController,
-  DomController,
-  AlertController
+  AlertController,
+  NavController
 } from "@ionic/angular";
 import { TicketchangingComponent } from "../components/ticketchanging/ticketchanging.component";
 import * as moment from "moment";
@@ -40,7 +46,9 @@ export class FlightItemCabinsPage implements OnInit {
     private flydayService: FlydayService,
     private hrService: HrService,
     private alertCtrl: AlertController,
-    private identityService: IdentityService
+    private identityService: IdentityService,
+    private navCtrl: NavController,
+    private router: Router
   ) {
     activatedRoute.queryParamMap.subscribe(async p => {
       this.flightSegment = flightService.getCurrentViewtFlightSegment();
@@ -76,97 +84,85 @@ export class FlightItemCabinsPage implements OnInit {
       "cabin",
       cabin
     );
-    if (this.staff.BookType == StaffBookType.Self) {
-      selectedInfos = selectedInfos.filter(info => info.selectedInfo.length);
-      // if (
-      //   selectedInfos.length &&
-      //   selectedInfos.some(info => info.selectedInfo.length > 0)
-      // ) {
-      //   const one = selectedInfos.find(info => info.selectedInfo.length > 0);
-      //   const identity = await this.identityService.getIdentityPromise();
-      //   if (!one.passenger.Name) {
-      //     one.passenger.Name = identity.Name;
-      //   }
-      //   const step = await this.showSelectedInfos();
-      //   await this.process(step);
-      // }
-      if (cabin && cabin.LowerSegment) {
-        const a = await this.alertCtrl.create({
-          message: `${LanguageHelper.Flight.getHasLowerSegmentTip()} ${
-            cabin.LowerSegment.Number
-          } ${moment(cabin.LowerSegment.TakeoffTime).format(
-            "HH:mm"
-          )} ${LanguageHelper.CurrencySymbols.Yuan()}${
-            cabin.LowerSegment.LowestFare
-          }`,
-          subHeader: LanguageHelper.Flight.getSelectTheSegmentTip(),
-          buttons: [
-            {
-              text: LanguageHelper.getConfirmTip(),
-              handler: async () => {
-                await this.onSelectLowestSegment(
-                  cabin,
-                  cabin.LowerSegment.LowestCabinCode
-                );
-              }
-            },
-            {
-              text: LanguageHelper.getNegativeTip(),
-              handler: async () => {
-                this.flightService.addPassengerFlightSegments({
-                  passenger: this.staff,
-                  selectedInfo: [
-                    {
-                      flightPolicy: cabin,
-                      flightSegment: this.flightSegment.flightSegment
-                    }
-                  ]
-                });
-                const step = await this.showSelectedInfos();
-                await this.process(step);
-              },
-              role: "cancel"
-            }
-          ]
-        });
-        a.backdropDismiss = false;
-        await a.present();
+    if (cabin && cabin.LowerSegment) {
+      const ok = await this.showSelectLowesetAlert(cabin);
+      if (ok) {
+        await this.onSelectLowestSegment(
+          cabin,
+          cabin.LowerSegment.LowestCabinCode
+        );
       } else {
-        const identity = await this.identityService.getIdentityPromise();
-        if (!this.staff.Name) {
-          this.staff.Name = identity.Name;
-        }
-        this.flightService.removeAllPassengerFlightSegments();
-        this.flightService.addPassengerFlightSegments({
+        const result = await this.flightService.addPassengerFlightSegments({
           passenger: this.staff,
           selectedInfo: [
             {
               flightPolicy: cabin,
-              flightSegment: this.flightSegment.flightSegment
+              flightSegment: this.flightSegment.flightSegment,
+              tripType: TripType.departureTrip
             }
           ]
         });
         const step = await this.showSelectedInfos();
-        await this.process(step);
       }
     } else {
-      // this.flightService
+      const result = await this.flightService.addPassengerFlightSegments({
+        passenger: this.staff,
+        selectedInfo: [
+          {
+            flightPolicy: cabin,
+            flightSegment: this.flightSegment.flightSegment,
+            tripType: TripType.departureTrip
+          }
+        ]
+      });
+      const step = await this.showSelectedInfos();
     }
   }
-  async process(step: "reset" | "nextStep" | "goBack") {
-    if (step == "goBack") {
-      return step;
+  async reelect(passenger: StaffEntity, item: PassengerFlightSelectedInfo) {
+    await this.flightService.reselectPassengerFlightSegments(item.tripType);
+  }
+  private showSelectLowesetAlert(cabin: FlightPolicy) {
+    return new Promise(async s => {
+      const a = await this.alertCtrl.create({
+        message: `${LanguageHelper.Flight.getHasLowerSegmentTip()} ${
+          cabin.LowerSegment.Number
+        } ${moment(cabin.LowerSegment.TakeoffTime).format(
+          "HH:mm"
+        )} ${LanguageHelper.CurrencySymbols.Yuan()}${
+          cabin.LowerSegment.LowestFare
+        }`,
+        subHeader: LanguageHelper.Flight.getSelectTheSegmentTip(),
+        buttons: [
+          {
+            text: LanguageHelper.getConfirmTip(),
+            handler: () => {
+              s(true);
+            }
+          },
+          {
+            text: LanguageHelper.getNegativeTip(),
+            handler: async () => {
+              s(false);
+            },
+            role: "cancel"
+          }
+        ]
+      });
+      a.backdropDismiss = false;
+      await a.present();
+    });
+  }
+  private async onSelectTripType(): Promise<TripType> {
+    const ok = await AppHelper.alert(
+      LanguageHelper.Flight.getTripTypeTip(),
+      true,
+      LanguageHelper.getReturnTripTip(),
+      LanguageHelper.getDepartureTip()
+    );
+    if (ok) {
+      return TripType.returnTrip;
     }
-    if (step == "reset") {
-      this.flightService.removePassengerFlightSegments(
-        this.flightService
-          .getPassengerFlightSegments()
-          .filter(item => item.selectedInfo.some(info => info.reset))
-      );
-    }
-    if (step == "nextStep") {
-      this.modalCtrl.dismiss().catch(_ => {});
-    }
+    return TripType.departureTrip;
   }
   async onSelectLowestSegment(cabin: FlightPolicy, lowestCabinCode: string) {
     const flightSegment = this.flightSegment.flightSegments.find(item => {
@@ -179,7 +175,9 @@ export class FlightItemCabinsPage implements OnInit {
         c => c.CabinCode == lowestCabinCode
       );
       if (!lowestCabin) {
-        AppHelper.alert(LanguageHelper.Flight.getTheLowestCabinNotFoundTip());
+        await AppHelper.alert(
+          LanguageHelper.Flight.getTheLowestCabinNotFoundTip()
+        );
         return "reset";
       }
       const m = await this.modalCtrl.create({
@@ -195,10 +193,11 @@ export class FlightItemCabinsPage implements OnInit {
       if (result.data) {
         const cbin = result.data;
         if (!cbin) {
-          AppHelper.alert(LanguageHelper.Flight.getTheLowestCabinNotFoundTip());
+          await AppHelper.alert(
+            LanguageHelper.Flight.getTheLowestCabinNotFoundTip()
+          );
         } else {
-          this.flightService.removeAllPassengerFlightSegments();
-          this.flightService.addPassengerFlightSegments({
+          const res = await this.flightService.addPassengerFlightSegments({
             passenger: this.staff,
             selectedInfo: [
               {
@@ -207,30 +206,21 @@ export class FlightItemCabinsPage implements OnInit {
               }
             ]
           });
-          const step = await this.showSelectedInfos();
-          await this.process(step);
+          console.log(
+            "onSelectLowestSegment addPassengerFlightSegments result",
+            res
+          );
         }
       }
+      const step = await this.showSelectedInfos();
     }
   }
-  async showSelectedInfos(): Promise<"reset" | "nextStep" | "goBack"> {
+  async showSelectedInfos() {
     const modal = await this.modalCtrl.create({
-      component: SelectedFlightsegmentInfoComponent,
-      componentProps: {
-        selectedInfos: this.flightService.getPassengerFlightSegments()
-      }
+      component: SelectedFlightsegmentInfoComponent
     });
     await modal.present();
-    const result = await modal.onDidDismiss();
-    if (result.data) {
-      if (result.data.reset) {
-        this.flightService.removeAllPassengerFlightSegments();
-        return "reset";
-      }
-      if (result.data.nextStep) {
-        return "nextStep";
-      }
-    }
+    await modal.onDidDismiss();
     return "goBack";
   }
   async openrules(cabin: any) {

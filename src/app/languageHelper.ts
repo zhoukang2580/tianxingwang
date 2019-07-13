@@ -81,6 +81,30 @@ export class LanguageHelper {
     }
   };
   static Flight = {
+    getBackDateCannotBeforeGoDateTip: () => {
+      return `回程日期必须在去程之后`;
+    },
+    getSelectedFlightInvalideTip: () => {
+      return `无效的航班信息`;
+    },
+    getSelectReturnTripTip: () => {
+      return `已选去程，是否选择返程？`;
+    },
+    getTripTypeTip: () => {
+      return `请选择去程或者返程`;
+    },
+    getIsReselectReturnTripTip: () => {
+      return `是否更新 [回程]？`;
+    },
+    getIsReSelectDepartureTip: () => {
+      return `是否更新 [去程]？`;
+    },
+    getCannotBookMoreFlightSegmentTip: () => {
+      return `不能预订更多航班`;
+    },
+    getConfirmRemoveFlightSegmentTip: () => {
+      return `确定删除该航班？`;
+    },
     getTheLowestSegmentNotFoundTip: () => {
       return `更低价航班未找到`;
     },
@@ -93,7 +117,7 @@ export class LanguageHelper {
     getSelectTheSegmentTip: () => {
       return `选择该航班`;
     },
-    getReChooseTip() {
+    getReselectFlightSegmentTip() {
       return "重新选择航班?";
     }
   };
@@ -332,6 +356,9 @@ export class LanguageHelper {
   }
   static getDeleteTip() {
     return "确定删除";
+  }
+  static getHintTip(): string {
+    return "提示";
   }
   static getAppDoubleClickExit() {
     return "再按一次退出应用";

@@ -1,3 +1,4 @@
+import { FlightService, TripType } from "src/app/flight/flight.service";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Subscription } from "rxjs";
 import * as moment from "moment";
@@ -51,7 +52,10 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
       color: "danger"
     }
   ];
-  constructor(private flyDayService: FlydayService) {}
+  constructor(
+    private flyDayService: FlydayService,
+    private flightService: FlightService
+  ) {}
   yms: AvailableDate[];
   selectedDays: DayModel[] = [];
   dayInfo1: any;
@@ -92,6 +96,34 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.yms = this.flyDayService.generateCanlender(3);
     }, 8 * 1000);
+    this.flightService.getSearchFlightModelSource().subscribe(s => {
+      if (s && s.tripType == TripType.returnTrip) {
+        const goFlight = this.flightService.getPassengerFlightSegments();
+        if (
+          goFlight.length &&
+          goFlight[0].selectedInfo &&
+          goFlight[0].selectedInfo.length &&
+          goFlight[0].selectedInfo.find(
+            item => item.tripType == TripType.departureTrip
+          )
+        ) {
+          const goDate = moment(
+            goFlight[0].selectedInfo.find(
+              item => item.tripType == TripType.departureTrip
+            ).flightSegment.ArrivalTime
+          ).add(3, "hours");
+          if (this.yms.length) {
+            this.yms.forEach(day => {
+              day.dayList.forEach(d => {
+                d.enabled =
+                  goDate.format("YYYY-MM-DD") == d.date ||
+                  +moment(d.date) >= +goDate;
+              });
+            });
+          }
+        }
+      }
+    });
   }
   displayYm(ym: string) {
     return moment(ym, "YYYY-MM-DD").format(

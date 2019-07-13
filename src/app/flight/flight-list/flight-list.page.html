@@ -9,15 +9,20 @@
       <ion-text>{{ vmToCity?.Nickname}}</ion-text>
     </ion-title>
     <ion-buttons slot='end'>
-      <ion-button fill='clear' color='secondary' size='small'>添加旅客</ion-button>
+      <ion-button fill='clear' color='secondary' size='small'>
+        <ion-text class='xs-font-size'>添加旅客</ion-text>
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
-  <ion-label class='total-flights' [style.visibility]="!loading?'initial':'collapse'">
-    {{searchFlightCondition?.Date}}共{{vmFlights?.length}}个航班
+  <ion-label class='xs-font-size' [style.visibility]="!loading?'initial':'collapse'">
+    {{searchFlightModel?.Date}}共{{vmFlights?.length}}个航班
     <ion-text color='danger' *ngIf='isFiltered'>(过滤后)</ion-text>
   </ion-label>
+  <ion-label class='xs-font-size' margin-start color='secondary' *ngIf='goDate$|async as goArrivalDate'>
+    去程到达时间：{{goArrivalDate}}
+  </ion-label>
   <ion-toolbar class="fly-days">
-    <app-fly-days-calendar (itemSelected)="onChangedDay($event)" (calenderClick)="onCalenderClick()">
+    <app-fly-days-calendar (itemSelected)="onChangedDay($event,true)" (calenderClick)="onCalenderClick()">
     </app-fly-days-calendar>
   </ion-toolbar>
 </ion-header>

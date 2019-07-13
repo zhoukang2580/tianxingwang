@@ -2,20 +2,28 @@
   <ion-toolbar>
     <ion-buttons slot='start'>
       <ion-button (click)='back()'>
-        <ion-icon name='arrow-back'></ion-icon>
+        <ion-icon class='back-icon' name='arrow-back'></ion-icon>
       </ion-button>
     </ion-buttons>
+    <ion-title>当前已选择航班信息</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-item-group *ngFor='let info of selectedInfos'>
-    <ion-item-divider color='primary'>
+  <ion-item-group *ngFor='let info of selectedInfos$|async'>
+    <ion-item-divider color='primary' sticky>
       <ion-label color='dark'>{{info?.passenger?.Name}}</ion-label>
       <!-- <ion-button expand='block' color='secondary' slot='end' padding-end>重选</ion-button> -->
     </ion-item-divider>
     <ng-container *ngFor='let s of info.selectedInfo'>
       <ion-item *ngIf='!s?.reset'>
         <div class='detail'>
+          <div class='date'>
+            <strong>{{getDate(s?.flightSegment)}} <ion-text color='secondary'>{{getTripTip(s)}}</ion-text></strong>
+            <ion-button fill='clear' size='small' (click)='remove(info.passenger,s)'>
+              <ion-icon name="trash" color='danger' mode='ios'>
+              </ion-icon>
+            </ion-button>
+          </div>
           <app-fly-list-item [flightSegment]='s.flightSegment' [showDetails]='true'></app-fly-list-item>
           <div class='info'>
             <ion-label text-wrap>税:￥{{s.flightSegment?.Tax}}</ion-label>
@@ -24,10 +32,16 @@
           <ion-label class='rules' color='danger' text-wrap>
             {{s.flightPolicy?.Rules?.join("; ")}}
           </ion-label>
-          <div>
-            <ion-button expand='block' color='secondary' size='small' (click)='reset(s)'>重选</ion-button>
+          <div class='reset'>
+            <ion-button expand='block' color='secondary' size='small' (click)='reelect(info.passenger,s)'>重选
+            </ion-button>
           </div>
         </div>
+      </ion-item>
+      <ion-item lines='none' *ngIf='showSelectReturnTripButton'>
+        <ion-button slot='end' expand='block' color='secondary' (click)='onSelectReturnTrip()'>
+          选择回程
+        </ion-button>
       </ion-item>
     </ng-container>
   </ion-item-group>

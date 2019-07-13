@@ -1,4 +1,16 @@
 .flight-cities {
+  &.hide {
+    display: none;
+  }
+  &.disabled {
+    color: var(--ion-color-medium);
+    .toogle-icon {
+      i,
+      ion-icon.rotate-icon {
+        color: var(--ion-color-medium);
+      }
+    }
+  }
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -24,6 +36,7 @@
     min-width: 4em;
     display: flex;
     align-items: center;
+
     .airplane {
       font-size: 0.8rem;
       position: absolute;

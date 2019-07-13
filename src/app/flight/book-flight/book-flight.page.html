@@ -9,7 +9,8 @@
 <ion-content>
   <ion-card padding>
     <ion-card-content>
-      <ion-segment (ionChange)="segmentChanged($event)" value="single" color='secondary'>
+      <ion-segment (ionChange)="segmentChanged($event)" value="single" color='secondary' *ngIf='showReturnTrip'
+        [disabled]='disabled'>
         <ion-segment-button value="single">
           <ion-label><strong>单程</strong></ion-label>
         </ion-segment-button>
@@ -18,14 +19,17 @@
         </ion-segment-button>
       </ion-segment>
       <app-switch-city-comp [vmFromCity]="vmFromCity" (eToCity)='onToCitySelected($event)'
-        (eFromCity)='onFromCitySelected($event)' [vmToCity]="vmToCity" appSelectCity></app-switch-city-comp>
+        (eFromCity)='onFromCitySelected($event)' [vmToCity]="vmToCity" appSelectCity [disabled]='disabled'>
+      </app-switch-city-comp>
       <section class="flight-date">
-        <app-search-day-comp [day]='flyDate' (click)="onSelecFlyDate(true)"></app-search-day-comp>
+        <app-search-day-comp [day]='flyDate' (click)="onSelecFlyDate(true,false)" [disabled]='disabled'>
+        </app-search-day-comp>
         <div *ngIf="!isSingle">{{ totalFlyDays }}天</div>
-        <app-search-day-comp *ngIf="!isSingle" [day]='backDate' (click)="onSelecFlyDate(false)"></app-search-day-comp>
+        <app-search-day-comp *ngIf="!isSingle" [day]='backDate' (click)="onSelecFlyDate(false,true)">
+        </app-search-day-comp>
       </section>
-      <ion-button style='width: 100%'  (click)="searchFlight()" [disabled]='!vmFromCity||!vmToCity&&isLoading' color="secondary"
-        expand="block">查询航班
+      <ion-button style='width: 100%' (click)="searchFlight()" [disabled]='!vmFromCity||!vmToCity&&isLoading'
+        color="secondary" expand="block">查询航班
       </ion-button>
     </ion-card-content>
   </ion-card>
