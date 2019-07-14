@@ -1,6 +1,6 @@
 import { IdentityService } from "./../../services/identity/identity.service";
 import { StaffBookType } from "./../../tmc/models/StaffBookType";
-import { HrService, StaffEntity } from "./../../hr/hr.service";
+import { HrService, StaffEntity } from "../../hr/staff.service";
 import { DayModel } from "./../models/DayModel";
 import { FlydayService } from "./../flyday.service";
 import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
@@ -53,7 +53,7 @@ export class FlightItemCabinsPage implements OnInit {
     activatedRoute.queryParamMap.subscribe(async p => {
       this.flightSegment = flightService.getCurrentViewtFlightSegment();
       this.vmFlightSegment = this.flightSegment.flightSegment;
-      const identity = await this.identityService.getIdentityPromise();
+      const identity = await this.identityService.getIdentityAsync();
       this.staff = await this.hrService.getStaff();
       if (
         this.staff &&

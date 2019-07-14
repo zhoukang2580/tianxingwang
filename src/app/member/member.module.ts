@@ -11,11 +11,6 @@ const routes: Routes = [
     path: "member-credential-management",
     loadChildren:
       "./member-credential-management/member-credential-management.module#MemberCredentialManagementPageModule"
-  },
-  {
-    path: "member-credential-management-save",
-    loadChildren:
-      "./member-credential-management-save/member-credential-management-save.module#MemberCredentialManagementSavePageModule"
   }
 ];
 @NgModule({

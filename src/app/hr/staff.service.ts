@@ -91,7 +91,7 @@ export class HrService {
     });
   }
   async getStaff(forceRefresh: boolean = false): Promise<StaffEntity> {
-    const id = await this.identityService.getIdentityPromise();
+    const id = await this.identityService.getIdentityAsync();
     if (!id || !id.Id || !id.Ticket) {
       this.staff = null;
     }
@@ -110,7 +110,7 @@ export class HrService {
     req.Method = "HrApiUrl-Staff-Get";
     req.IsShowLoading = true;
     return this.apiService
-      .getPromiseResponse<StaffEntity>(req)
+      .getResponseAsync<StaffEntity>(req)
       .then(s => {
         console.log("staff ", s);
         this.staff = s;
@@ -134,7 +134,7 @@ export class HrService {
     req.Data = data;
     req.IsShowLoading = true;
     return this.apiService
-      .getPromiseResponse<any>(req)
+      .getResponseAsync<any>(req)
       .then(_ => true)
       .catch(_ => false);
   }

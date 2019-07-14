@@ -1,4 +1,4 @@
-import { AgentGuard } from './../../guards/agent.guard';
+import { AgentGuard } from "./../../guards/agent.guard";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -15,7 +15,7 @@ const routes: Routes = [
   {
     path: "",
     component: BookFlightPage,
-    canActivate: [AgentGuard]
+    canActivate: [TmcGuard]
   }
 ];
 

@@ -115,7 +115,7 @@ export class SelectCountryPage implements OnInit {
     };
     req.IsShowLoading = true;
     const countries = await this.apiService
-      .getPromiseResponse<{ Countries: Country[] }>(req)
+      .getResponseAsync<{ Countries: Country[] }>(req)
       .then(r => r.Countries)
       .catch(_ => [] as Country[]);
     countries.sort((c1, c2) => +c1.Sequence - +c2.Sequence);

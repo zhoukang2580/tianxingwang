@@ -6,7 +6,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { ComfirmInformationPage } from './confirm-information.page';
-import { TmcPipeModule } from '../pipe/pipe.module';
+import { TmcPipeModule } from '../../member/pipe/pipe.module';
 
 const routes: Routes = [
   {

@@ -15,7 +15,7 @@ import {
   NavController
 } from "@ionic/angular";
 import { RequestEntity } from "src/app/services/api/Request.entity";
-import { StaffEntity } from "src/app/hr/hr.service";
+import { StaffEntity } from "src/app/hr/staff.service";
 
 @Component({
   selector: "app-select-passenger",
@@ -72,7 +72,7 @@ export class SelectPassengerPage implements OnInit {
   }
   private async loadStaffs() {
     this.loading = true;
-    const identity = await this.identityService.getIdentityPromise();
+    const identity = await this.identityService.getIdentityAsync();
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-StaffEntity";
     req.Version = "1.0";
@@ -81,7 +81,7 @@ export class SelectPassengerPage implements OnInit {
       TmcId: identity.Numbers.TmcId
     };
     this.passengers = await this.apiService
-      .getPromiseResponse<{
+      .getResponseAsync<{
         ApprovalInfo: any;
         CostCenters: any;
         IllegalReasons: any;

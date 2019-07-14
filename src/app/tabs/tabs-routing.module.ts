@@ -12,7 +12,7 @@ const routes: Routes = [
   {
     path: "tabs",
     component: TabsPage,
-    canActivateChild: [AuthorityGuard, AgentGuard,TmcGuard],
+    canActivateChild: [AuthorityGuard],
     children: [
       {
         path: "",

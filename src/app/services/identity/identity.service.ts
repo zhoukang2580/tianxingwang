@@ -32,7 +32,7 @@ export class IdentityService {
     AppHelper.setStorage("ticket", "");
     this.setIdentity(this._IdentityEntity);
   }
-  getIdentityPromise(): Promise<IdentityEntity> {
+  getIdentityAsync(): Promise<IdentityEntity> {
     if (
       this._IdentityEntity &&
       this._IdentityEntity.Id &&

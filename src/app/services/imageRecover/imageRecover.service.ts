@@ -1,24 +1,22 @@
-
 import { RequestEntity } from "../api/Request.entity";
 import { Injectable } from "@angular/core";
-import { ApiService } from '../api/api.service';
+import { ApiService } from "../api/api.service";
 
 @Injectable({
   providedIn: "root"
 })
 export class ImageRecoverService {
-
+  Failover: any;
   imageRecover: any;
   constructor(private apiService: ApiService) {
-
+    this.get();
   }
   initialize(container: HTMLElement) {
     if (!this.imageRecover) {
       this.get().then(r => {
         this.imageRecover.Initialize(container);
       });
-    }
-    else {
+    } else {
       this.imageRecover.Initialize(container);
     }
   }
@@ -30,6 +28,7 @@ export class ImageRecoverService {
       const subscribtion = this.load().subscribe(
         r => {
           if (r.Status && r.Data) {
+            this.Failover = r.Data;
             this.imageRecover = new window["Winner"].ImageRecover(r.Data);
             resolve(this.imageRecover);
           }
@@ -53,7 +52,6 @@ export class ImageRecoverService {
     const req = new RequestEntity();
     req.Method = "ApiHomeUrl-Home-GetImageRecoverAddress";
     req.Data = JSON.stringify({});
-    return this.apiService
-      .getResponse<any>(req)
+    return this.apiService.getResponse<any>(req);
   }
 }

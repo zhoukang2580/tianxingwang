@@ -1,4 +1,4 @@
-import { LanguageHelper } from "./../../languageHelper";
+import { LanguageHelper } from "../../languageHelper";
 import { Pipe, PipeTransform } from "@angular/core";
 export enum CredentialsType {
   /// <summary>

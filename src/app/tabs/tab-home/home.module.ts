@@ -1,12 +1,13 @@
-import { DirectivesModule } from '../../directives/directives.module';
+import { AgentGuard } from "./../../guards/agent.guard";
+import { DirectivesModule } from "../../directives/directives.module";
 import { IonicModule } from "@ionic/angular";
 import { RouterModule } from "@angular/router";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { HomePage } from "./home.page";
-import { TmcGuard } from 'src/app/guards/tmc.guard';
-import { AppcomponentsModule } from 'src/app/components/appcomponents.module';
+import { TmcGuard } from "src/app/guards/tmc.guard";
+import { AppcomponentsModule } from "src/app/components/appcomponents.module";
 
 @NgModule({
   imports: [
@@ -15,13 +16,14 @@ import { AppcomponentsModule } from 'src/app/components/appcomponents.module';
     FormsModule,
     RouterModule.forChild([
       {
-        path: "", component: HomePage,
+        path: "",
+        component: HomePage,
         canActivate: [TmcGuard]
-      },
+      }
     ]),
     AppcomponentsModule,
     DirectivesModule
   ],
   declarations: [HomePage]
 })
-export class HomePageModule { }
+export class HomePageModule {}

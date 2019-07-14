@@ -1,4 +1,4 @@
-import { HrService } from "./../hr/hr.service";
+import { HrService } from "../hr/staff.service";
 import { Injectable } from "@angular/core";
 import {
   CanActivate,
@@ -11,45 +11,49 @@ import {
 import { Observable } from "rxjs";
 import { IdentityService } from "../services/identity/identity.service";
 import { AppHelper } from "../appHelper";
+import { LoginService } from "../services/login/login.service";
+import { IdentityEntity } from "../services/identity/identity.entity";
 
 @Injectable({
   providedIn: "root"
 })
 export class TmcGuard implements CanActivate, CanActivateChild {
+  identityEntity: IdentityEntity;
   constructor(
     private identityService: IdentityService,
-    private router: Router,
-    private hrService: HrService
-  ) {}
+    private loginService: LoginService,
+    private router: Router
+  ) {
+    this.identityService.getIdentity().subscribe(id => {
+      this.identityEntity = id;
+    });
+  }
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ):
-    | boolean
-    | UrlTree
-    | Observable<boolean | UrlTree>
-    | Promise<boolean | UrlTree> {
+    |boolean|UrlTree|Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
     return this.canActivate(childRoute, state);
   }
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
-    return this.hrService
-      .getStaff()
-      .then(s => {
-        console.log("tmc guard staff ", s);
-        if (s && s.StaffNumber) {
-          if (!s.IsConfirmInfo || !s.IsModifyPassword) {
-            this.router.navigate([
-              AppHelper.getRoutePath("comfirm-information")
-            ]);
-            return false;
-          }
-          return true;
-        }
-        return true;
-      })
-      .catch(_ => true);
+    if (
+      this.identityEntity &&
+      this.identityEntity.Numbers &&
+      (this.identityEntity.Numbers.AgentId || this.identityEntity.Numbers.TmcId)
+    ) {
+      if (
+        this.identityEntity.Numbers.AgentId &&
+        !this.identityEntity.Numbers.TmcId
+      ) {
+        this.router.navigate([AppHelper.getRoutePath("select-customer")]);
+        return false;
+      }
+      return true;
+    }
+    this.loginService.setToPageRouter(state.url);
+    return false;
   }
 }

@@ -2,11 +2,12 @@ import { RequestEntity } from "./../../services/api/Request.entity";
 import { ApiService } from "./../../services/api/api.service";
 import { LanguageHelper } from "./../../languageHelper";
 import { TmcService } from "./../tmc.service";
-import { HrService, StaffEntity } from "./../../hr/hr.service";
+import { HrService, StaffEntity } from "../../hr/staff.service";
 import { Component, OnInit } from "@angular/core";
-import { Credentials } from "../tmc.service";
+
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
+import {  MemberCredentials } from 'src/app/member/member.service';
 
 @Component({
   selector: "app-comfirm-info",
@@ -14,7 +15,7 @@ import { Router, ActivatedRoute } from "@angular/router";
   styleUrls: ["./confirm-information.page.scss"]
 })
 export class ComfirmInformationPage implements OnInit {
-  credentials: Credentials[];
+  credentials: MemberCredentials[];
   staff: StaffEntity;
   password: string;
   constructor(
@@ -78,7 +79,7 @@ export class ComfirmInformationPage implements OnInit {
     req.Method = `ApiPasswordUrl-Password-Modify`;
     req.IsShowLoading = true;
     return this.apiService
-      .getPromiseResponse(req)
+      .getResponseAsync(req)
       .then(_ => {
         return true;
       })

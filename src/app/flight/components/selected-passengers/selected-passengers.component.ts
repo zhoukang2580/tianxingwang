@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { StaffEntity } from 'src/app/hr/hr.service';
+import { StaffEntity } from 'src/app/hr/staff.service';
 
 @Component({
   selector: "app-selected-passengers",

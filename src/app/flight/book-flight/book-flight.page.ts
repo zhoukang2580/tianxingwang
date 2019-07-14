@@ -1,6 +1,6 @@
 import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
 import { TripType } from "./../flight.service";
-import { HrService } from "./../../hr/hr.service";
+import { HrService } from "../../hr/staff.service";
 import {
   FlightService,
   SearchFlightModel,

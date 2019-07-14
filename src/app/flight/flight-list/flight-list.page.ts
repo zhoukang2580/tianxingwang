@@ -4,7 +4,7 @@ import { FlyFilterComponent } from "./../components/fly-filter/fly-filter.compon
 import { FlightPolicy, SearchFlightModel, TripType } from "./../flight.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { StaffBookType } from "./../../tmc/models/StaffBookType";
-import { HrService } from "./../../hr/hr.service";
+import { HrService } from "../../hr/staff.service";
 import { AppHelper } from "src/app/appHelper";
 import { animate } from "@angular/animations";
 import { trigger, state, style, transition } from "@angular/animations";
@@ -79,6 +79,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   filterConditionSubscription = Subscription.EMPTY;
   searchConditionSubscription = Subscription.EMPTY;
   selectDaySubscription = Subscription.EMPTY;
+  loadDataSubscription = Subscription.EMPTY;
   vmFlightJourneyList: FlightJourneyEntity[];
   totalFilteredSegments: FlightSegmentEntity[];
   priceOrderL2H: boolean; // 价格从低到高
@@ -310,70 +311,103 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     }, 100);
   }
   private async loadPolicyedFlights() {
-    // 先获取最新的数据
-    this.flightJourneyList = await this.flightService.getFlightJourneyDetailList(
-      this.searchFlightModel
-    );
-    console.log(
-      `${this.searchFlightModel.Date} 共 ${
-        this.flightService.getTotalFlySegments(this.flightJourneyList).length
-      }个航班`
-    );
-    // 配置差标
-    if (this.isStaffTypeSelf()) {
-      // 个人差标
-      if (this.flightJourneyList.length) {
-        const identity = await this.identityService.getIdentityPromise();
-        const flights = await this.flightService.policyflights(
-          this.flightJourneyList,
-          [identity.Id]
-        );
-        if (flights.length) {
-          this.flightJourneyList = await this.replaceCabinInfo(
-            flights,
-            this.flightJourneyList
-          );
-        }
-      }
-    } else {
-      // 角色： 代理和秘书、特殊
-      const passengerFlightSegments = this.flightService.getPassengerFlightSegments();
-      if (passengerFlightSegments.length) {
-        // 过滤未选择航班的乘客
-        const unSelectFlightSegmentPassengers = passengerFlightSegments
-          .filter(pf => pf.selectedInfo.length === 0)
-          .map(pf => pf.passenger);
-        if (unSelectFlightSegmentPassengers.length) {
-          const flights = await this.flightService.policyflights(
-            this.flightJourneyList,
-            unSelectFlightSegmentPassengers.map(p => p.AccountId)
-          );
-          if (flights.length) {
-            this.flightJourneyList = await this.replaceCabinInfo(
-              flights,
-              this.flightJourneyList
-            );
-          }
-        } else {
-          // 重新获取全部人员的差标信息
-          const flights = await this.flightService.policyflights(
-            this.flightJourneyList,
-            passengerFlightSegments
-              .map(item => item.passenger)
-              .map(p => p.AccountId)
-          );
-          if (flights.length) {
-            this.flightJourneyList = await this.replaceCabinInfo(
-              flights,
-              this.flightJourneyList
-            );
-          }
-        }
-      } else {
-        this.goToSelectPassengerPage();
-      }
+    if (this.loadDataSubscription) {
+      this.loadDataSubscription.unsubscribe();
     }
-    return this.flightJourneyList;
+    return new Promise<FlightJourneyEntity[]>(async s => {
+      // 先获取最新的数据
+      const isStaffTypeSelf = await this.isStaffTypeSelf();
+      const identity = await this.identityService.getIdentityAsync();
+      if (isStaffTypeSelf) {
+        this.loadDataSubscription = this.flightService
+          .getFlightJourneyDetailList(this.searchFlightModel)
+          .pipe(
+            switchMap(flightJourneyList => {
+              return this.flightService
+                .policyflights(flightJourneyList, [identity.Id])
+                .pipe(map(flights => ({ flights, flightJourneyList })));
+            })
+          )
+          .subscribe(
+             ({ flights, flightJourneyList }) => {
+              // 个人差标
+              if (flights.length) {
+                this.flightJourneyList = this.replaceCabinInfo(
+                  flights,
+                  flightJourneyList
+                );
+                s(flightJourneyList);
+              } else {
+                this.flightJourneyList = [];
+                s([]);
+              }
+              console.log(
+                `${this.searchFlightModel.Date} 共 ${
+                  this.flightService.getTotalFlySegments(flightJourneyList)
+                    .length
+                }个航班`
+              );
+            },
+            _ => {
+              this.flightJourneyList = [];
+              s([]);
+            }
+          );
+      } else {
+        this.loadDataSubscription = this.flightService
+          .getFlightJourneyDetailList(this.searchFlightModel)
+          .subscribe(
+            async res => {
+              // 角色： 代理和秘书、特殊
+              const passengerFlightSegments = this.flightService.getPassengerFlightSegments();
+              if (passengerFlightSegments.length) {
+                // 过滤未选择航班的乘客
+                const unSelectFlightSegmentPassengers = passengerFlightSegments
+                  .filter(pf => pf.selectedInfo.length === 0)
+                  .map(pf => pf.passenger);
+                if (unSelectFlightSegmentPassengers.length) {
+                  const flights = await this.flightService.policyflightsAsync(
+                    this.flightJourneyList,
+                    unSelectFlightSegmentPassengers.map(p => p.AccountId)
+                  );
+                  if (flights.length) {
+                    this.flightJourneyList = await this.replaceCabinInfo(
+                      flights,
+                      this.flightJourneyList
+                    );
+                  }
+                } else {
+                  // 重新获取全部人员的差标信息
+                  const flights = await this.flightService.policyflightsAsync(
+                    this.flightJourneyList,
+                    passengerFlightSegments
+                      .map(item => item.passenger)
+                      .map(p => p.AccountId)
+                  );
+                  if (flights.length) {
+                    this.flightJourneyList = await this.replaceCabinInfo(
+                      flights,
+                      this.flightJourneyList
+                    );
+                  }
+                }
+              } else {
+                this.goToSelectPassengerPage();
+              }
+              s(res);
+              console.log(
+                `${this.searchFlightModel.Date} 共 ${
+                  this.flightService.getTotalFlySegments(this.flightJourneyList)
+                    .length
+                }个航班`
+              );
+            },
+            _ => {
+              s([]);
+            }
+          );
+      }
+    });
   }
   async goToFlightCabinsDetails(fs: FlightSegmentEntity) {
     const validate = await this.flightService.validateReturnTripFlightSegment(
@@ -394,7 +428,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
   }
 
-  private async replaceCabinInfo(
+  private replaceCabinInfo(
     passengerPolicyflights: {
       PassengerKey: string;
       FlightPolicies: FlightPolicy[];
@@ -580,6 +614,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     console.timeEnd("price");
   }
   private async sortFlights(key: "price" | "time") {
+    if (!this.filterCondition) {
+      this.filterCondition = FilterConditionModel.init();
+    }
     this.st = Date.now();
     if (key === "price") {
       this.filterCondition.priceFromL2H = this.priceOrderL2H

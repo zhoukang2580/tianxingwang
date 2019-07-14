@@ -1,8 +1,6 @@
-import { ApiService } from "./../../services/api/api.service";
 import { Country } from "./../../pages/select-country/select-country.page";
 import { LanguageHelper } from "./../../languageHelper";
 import { IonRefresher, IonGrid } from "@ionic/angular";
-import { Credentials, TmcService } from "./../../tmc/tmc.service";
 import {
   Component,
   OnInit,
@@ -16,9 +14,11 @@ import {
 import { Router, ActivatedRoute } from "@angular/router";
 import { AppHelper } from "src/app/appHelper";
 import { ValidatorService } from "src/app/services/validator/validator.service";
-import { CredentialsType } from "src/app/tmc/pipe/credential.pipe";
+import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import * as moment from "moment";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
+import { MemberCredentials, MemberService } from "../member.service";
+import { IdentityService } from "src/app/services/identity/identity.service";
 @Component({
   selector: "app-member-credential-management",
   templateUrl: "./member-credential-management.page.html",
@@ -27,22 +27,23 @@ import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 export class MemberCredentialManagementPage
   implements OnInit, AfterViewInit, CanComponentDeactivate {
   identityTypes: { key: string; value: string }[];
-  credentials: Credentials[];
-  newCredentials: Credentials[] = []; // 新增的证件
+  credentials: MemberCredentials[];
+  newCredentials: MemberCredentials[] = []; // 新增的证件
   loading = false;
   isModify = false;
   isCanDeactive = false;
   requestCode: "issueNationality" | "identityNationality";
-  currentModifyItem: Credentials;
+  currentModifyItem: MemberCredentials;
   @ViewChild("f") formEle: ElementRef<HTMLFormElement>;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   @ViewChildren("addForm") addForm: QueryList<IonGrid>;
   constructor(
     private router: Router,
     private validatorService: ValidatorService,
-    private tmcService: TmcService,
+    private memberService: MemberService,
     private route: ActivatedRoute,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private identityService: IdentityService
   ) {
     route.queryParamMap.subscribe(p => {
       this.isCanDeactive = false;
@@ -101,7 +102,7 @@ export class MemberCredentialManagementPage
       }
     });
   }
-  async removeExistCredential(c: Credentials) {
+  async removeExistCredential(c: MemberCredentials) {
     const comfirmDel = await AppHelper.alert(
       LanguageHelper.getDeleteTip(),
       true,
@@ -109,7 +110,7 @@ export class MemberCredentialManagementPage
       LanguageHelper.getCancelTip()
     );
     if (comfirmDel) {
-      const result = await this.tmcService
+      const result = await this.memberService
         .removeCredentials(c)
         .then(_ => true)
         .catch(e => {
@@ -121,12 +122,12 @@ export class MemberCredentialManagementPage
       }
     }
   }
-  async saveModify(c: Credentials, el: HTMLElement) {
+  async saveModify(c: MemberCredentials, el: HTMLElement) {
     const valid = await this.validateCredential(c, el);
     if (!valid) {
       return;
     }
-    this.tmcService
+    this.memberService
       .modifyCredentials(c)
       .then(_ => {
         AppHelper.alert(LanguageHelper.getInfoModifySuccessTip());
@@ -144,7 +145,8 @@ export class MemberCredentialManagementPage
   }
   async getCredentials() {
     this.loading = true;
-    const credentials = await this.tmcService.getCredentials();
+    const identity = await this.identityService.getIdentityAsync();
+    const credentials = await this.memberService.getCredentials(identity.Id);
     this.credentials = credentials.map(c => {
       return {
         isModified: false,
@@ -161,7 +163,7 @@ export class MemberCredentialManagementPage
     console.log("credentials", this.credentials);
   }
   addCredential() {
-    const item: Credentials = {
+    const item: MemberCredentials = {
       Gender: "M",
       Type: CredentialsType.IdCard
     } as any;
@@ -174,7 +176,7 @@ export class MemberCredentialManagementPage
       el
     );
   }
-  selectIdentityNationality(item: Credentials) {
+  selectIdentityNationality(item: MemberCredentials) {
     this.currentModifyItem = item;
     this.requestCode = "identityNationality";
     this.isCanDeactive = true;
@@ -185,7 +187,7 @@ export class MemberCredentialManagementPage
       }
     });
   }
-  selectIssueNationality(item: Credentials) {
+  selectIssueNationality(item: MemberCredentials) {
     this.isCanDeactive = true;
     this.currentModifyItem = item;
     this.requestCode = "issueNationality";
@@ -196,7 +198,7 @@ export class MemberCredentialManagementPage
       }
     });
   }
-  removeAdd(c: Credentials) {
+  removeAdd(c: MemberCredentials) {
     AppHelper.alert(
       LanguageHelper.getDeleteTip(),
       true,
@@ -208,11 +210,11 @@ export class MemberCredentialManagementPage
       }
     });
   }
-  async saveAdd(c: Credentials, container: HTMLElement) {
+  async saveAdd(c: MemberCredentials, container: HTMLElement) {
     const ok = await this.validateCredential(c, container);
     console.log("validateCredential", ok);
     if (ok) {
-      const result = await this.tmcService
+      const result = await this.memberService
         .addCredentials(c)
         .then(_ => true)
         .catch(e => {
@@ -226,11 +228,11 @@ export class MemberCredentialManagementPage
       }
     }
   }
-  dataModified(c: Credentials) {
+  dataModified(c: MemberCredentials) {
     console.log("aaaaa");
     c.isModified = true;
   }
-  async validateCredential(c: Credentials, container: HTMLElement) {
+  async validateCredential(c: MemberCredentials, container: HTMLElement) {
     if (!c) {
       return Promise.resolve(false);
     }
@@ -327,7 +329,7 @@ export class MemberCredentialManagementPage
       return false;
     }
   }
-  togleModify(item: Credentials) {
+  togleModify(item: MemberCredentials) {
     this.currentModifyItem = item;
     this.isModify = !this.isModify;
     this.initializeValidate();

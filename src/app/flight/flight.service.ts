@@ -4,11 +4,11 @@ import { FlightCabinEntity } from "./models/flight/FlightCabinEntity";
 import { StaffBookType } from "./../tmc/models/StaffBookType";
 import { FilterConditionModel } from "./models/flight/advanced-search-cond/FilterConditionModel";
 import { IdentityService } from "./../services/identity/identity.service";
-import { HrService, StaffEntity } from "./../hr/hr.service";
+import { HrService, StaffEntity } from "../hr/staff.service";
 import { Injectable } from "@angular/core";
 
 import { environment } from "../../environments/environment";
-import { Subject, BehaviorSubject, from } from "rxjs";
+import { Subject, BehaviorSubject, from, Observable, of } from "rxjs";
 
 import * as moment from "moment";
 import { ApiService } from "../services/api/api.service";
@@ -18,7 +18,7 @@ import { RequestEntity } from "../services/api/Request.entity";
 import { Storage } from "@ionic/storage";
 import { LanguageHelper } from "../languageHelper";
 import { combineLatest } from "rxjs";
-import { map, tap, filter } from "rxjs/operators";
+import { map, tap, filter, last, switchMap, catchError } from "rxjs/operators";
 import { Router } from "@angular/router";
 
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
@@ -353,6 +353,12 @@ export class FlightService {
       const toCode = goFlight.ToAirport;
       const toCity = citites.find(c => c.Code == toCode);
       const fromCity = citites.find(c => c.Code == fromCode);
+      const arrivalDate = moment(goFlight.ArrivalTime)
+        .add(3, "hours")
+        .format("YYYY-MM-DD");
+      if (+moment(s.BackDate) < +moment(arrivalDate)) {
+        s.BackDate = arrivalDate;
+      }
       s.FromCode = toCode;
       s.fromCity = toCity;
       s.Date = s.BackDate;
@@ -499,7 +505,7 @@ export class FlightService {
     req.Data = {
       LastUpdateTime: this.localDomesticAirports.LastUpdateTime
     };
-    const r = await this.apiService.getPromiseResponse<{
+    const r = await this.apiService.getResponseAsync<{
       HotelCities: any[];
       Trafficlines: Trafficline[];
     }>(req);
@@ -533,7 +539,7 @@ export class FlightService {
       LastUpdateTime: this.localInternationAirports.LastUpdateTime
     };
     let st = window.performance.now();
-    const r = await this.apiService.getPromiseResponse<{
+    const r = await this.apiService.getResponseAsync<{
       HotelCities: any[];
       Trafficlines: Trafficline[];
     }>(req);
@@ -555,7 +561,92 @@ export class FlightService {
     console.log(`本地化国际机票耗时：${window.performance.now() - st} ms`);
     return airports;
   }
-  async policyflights(
+  policyflights(
+    Flights: FlightJourneyEntity[],
+    Passengers: string[]
+  ): Observable<
+    {
+      PassengerKey: string;
+      FlightPolicies: FlightPolicy[];
+    }[]
+  > {
+    return from(
+      Promise.resolve().then(async _ => {
+        let local;
+        if (!environment.production) {
+          local = await this.storage.get(
+            "TestTmcData.TmcApiFlightUrl-Home-Policy"
+          );
+          if (local) {
+            console.log(
+              "policyflights local",
+              local,
+              `缓存是否过期 ${Date.now() - local.lastUpdateTime >=
+                debugCacheTime}`
+            );
+          }
+        }
+        if (
+          !environment.production &&
+          local &&
+          local.FlightPolicy &&
+          local.FlightPolicy.length &&
+          Date.now() - local.lastUpdateTime <= debugCacheTime &&
+          local.toCode == (Flights && Flights[0] && Flights[0].ToCity) &&
+          local.fromCode == (Flights && Flights[0] && Flights[0].FromCity) &&
+          local.date == (Flights && Flights[0] && Flights[0].Date)
+        ) {
+          // console.log(new Array(10).fill(0).map(_=>TestTmcData.FlightData));
+          return local.FlightPolicy;
+        }
+        return [];
+      })
+    ).pipe(
+      switchMap(local => {
+        if (local && local.length) {
+          return of(local);
+        }
+        console.log(`重新获取航班数据`);
+        const req = new RequestEntity();
+        req.Method = `TmcApiFlightUrl-Home-Policy`;
+        req.Version = "1.0";
+        req.Data = {
+          Flights: JSON.stringify(Flights),
+          Passengers: Passengers.join(",")
+        };
+        req.IsShowLoading = true;
+        req.Timeout = 60;
+        return this.apiService
+          .getResponse<
+            {
+              PassengerKey: string;
+              FlightPolicies: FlightPolicy[];
+            }[]
+          >(req)
+          .pipe(
+            map(res => res.Data || []),
+            switchMap(res => {
+              if (res.length && !environment.production) {
+                return from(
+                  this.storage.set("TestTmcData.TmcApiFlightUrl-Home-Policy", {
+                    lastUpdateTime: Date.now(),
+                    FlightPolicy: res,
+                    fromCode: Flights && Flights[0] && Flights[0].FromCity,
+                    toCode: Flights && Flights[0] && Flights[0].ToCity
+                  })
+                ).pipe(map(_ => res));
+              }
+              return of(res);
+            }),
+            catchError(_ => {
+              AppHelper.alert(_);
+              return [];
+            })
+          );
+      })
+    );
+  }
+  async policyflightsAsync(
     Flights: FlightJourneyEntity[],
     Passengers: string[]
   ): Promise<
@@ -599,7 +690,7 @@ export class FlightService {
     req.IsShowLoading = true;
     req.Timeout = 60;
     const res = await this.apiService
-      .getPromiseResponse<
+      .getResponseAsync<
         {
           PassengerKey: string;
           FlightPolicies: FlightPolicy[];
@@ -736,7 +827,7 @@ export class FlightService {
       [] as FlightSegmentEntity[]
     );
   }
-  async getFlightJourneyDetailList(
+  private async getFlightJourneyDetailListAsync(
     data: SearchFlightModel
   ): Promise<FlightJourneyEntity[]> {
     let local;
@@ -776,7 +867,7 @@ export class FlightService {
     req.IsShowLoading = true;
     req.Timeout = 60;
     const serverFlights = await this.apiService
-      .getPromiseResponse<FlightJourneyEntity[]>(req)
+      .getResponseAsync<FlightJourneyEntity[]>(req)
       .catch(_ => {
         AppHelper.alert(_);
         return [] as FlightJourneyEntity[];
@@ -791,6 +882,77 @@ export class FlightService {
       });
     }
     return serverFlights;
+  }
+  getFlightJourneyDetailList(
+    data: SearchFlightModel
+  ): Observable<FlightJourneyEntity[]> {
+    return from(
+      Promise.resolve().then(async _ => {
+        let local;
+        if (!environment.production) {
+          local = await this.storage.get("TestTmcData.FlightData");
+          if (local) {
+            console.log(
+              "getFlightJourneyDetailList local",
+              local,
+              `缓存是否过期 ${Date.now() - local.lastUpdateTime >=
+                debugCacheTime}`
+            );
+          }
+        }
+        if (
+          !environment.production &&
+          local &&
+          local.serverFlights &&
+          local.serverFlights.length &&
+          local.toCode == data.ToCode &&
+          local.fromCode == data.FromCode &&
+          Date.now() - local.lastUpdateTime <= debugCacheTime &&
+          local.date == data.Date
+        ) {
+          // console.log(new Array(10).fill(0).map(_=>TestTmcData.FlightData));
+          return local.serverFlights;
+        }
+        return [];
+      })
+    ).pipe(
+      switchMap(localFlights => {
+        if (localFlights && localFlights.length) {
+          return of(localFlights);
+        }
+        const req = new RequestEntity();
+        req.Method = "TmcApiFlightUrl-Home-Detail ";
+        req.Data = {
+          Date: data.Date, //  Yes 航班日期（yyyy-MM-dd）
+          FromCode: data.FromCode, //  Yes 三字代码
+          ToCode: data.ToCode, //  Yes 三字代码
+          FromAsAirport: data.FromAsAirport, //  No 始发以机场查询
+          ToAsAirport: data.ToAsAirport //  No 到达以机场查询
+        };
+        req.Version = "1.0";
+        req.IsShowLoading = true;
+        req.Timeout = 60;
+        return this.apiService.getResponse<FlightJourneyEntity[]>(req).pipe(
+          map(r => r.Data),
+          map(serverFlights => {
+            if (serverFlights.length && !environment.production) {
+              this.storage.set("TestTmcData.FlightData", {
+                serverFlights,
+                lastUpdateTime: Date.now(),
+                date: data.Date,
+                fromCode: data.FromCode,
+                toCode: data.ToCode
+              });
+            }
+            return serverFlights;
+          }),
+          catchError(_ => {
+            AppHelper.alert(_);
+            return [] as FlightJourneyEntity[];
+          })
+        );
+      })
+    );
   }
 
   async getLocalHomeAirports(): Promise<Trafficline[]> {

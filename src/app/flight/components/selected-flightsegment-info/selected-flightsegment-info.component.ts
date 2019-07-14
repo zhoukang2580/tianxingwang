@@ -2,9 +2,9 @@ import { Observable } from "rxjs";
 import { Router } from "@angular/router";
 import { FlydayService } from "./../../flyday.service";
 import { AppHelper } from "./../../../appHelper";
-import { StaffEntity } from "src/app/hr/hr.service";
+import { StaffEntity } from "src/app/hr/staff.service";
 import { StaffBookType } from "./../../../tmc/models/StaffBookType";
-import { HrService } from "./../../../hr/hr.service";
+import { HrService } from "../../../hr/staff.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import {
   ModalController,

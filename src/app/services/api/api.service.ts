@@ -99,7 +99,7 @@ export class ApiService {
   getResponse<T>(req: RequestEntity): Observable<IResponse<T>> {
     return this.sendRequest(req, true);
   }
-  getPromiseResponse<T>(req: RequestEntity): Promise<T> {
+  getResponseAsync<T>(req: RequestEntity): Promise<T> {
     return new Promise((resolve, reject) => {
       const sub = this.getResponse<T>(req).subscribe(
         r => {

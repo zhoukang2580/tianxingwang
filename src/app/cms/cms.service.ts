@@ -22,7 +22,7 @@ export class CmsService {
     req.Data = {
       PageIndex
     };
-    return this.apiService.getPromiseResponse<Notice[]>(req).catch(_ => []);
+    return this.apiService.getResponseAsync<Notice[]>(req).catch(_ => []);
   }
   async getAgentNotices(PageIndex: number): Promise<Notice[]> {
     const req = new RequestEntity();
@@ -30,7 +30,7 @@ export class CmsService {
       PageIndex
     };
     req.Method = "TmcApiHomeUrl-Cms-AgentNotice";
-    return this.apiService.getPromiseResponse<Notice[]>(req).catch(_ => []);
+    return this.apiService.getResponseAsync<Notice[]>(req).catch(_ => []);
   }
   getSelectedNotice() {
     return this.selectedNoticeSource.asObservable();

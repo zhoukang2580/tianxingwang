@@ -31,10 +31,7 @@ export class AgentGuard implements CanActivate, CanActivateChild {
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ):
-    | boolean
-    | UrlTree
-    | Observable<boolean | UrlTree>
-    | Promise<boolean | UrlTree> {
+    | boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
     return this.canActivate(childRoute, state);
   }
   canActivate(
@@ -44,13 +41,12 @@ export class AgentGuard implements CanActivate, CanActivateChild {
     if (
       this.identityEntity &&
       this.identityEntity.Numbers &&
-      this.identityEntity.Numbers.AgentId &&
-      !this.identityEntity.Numbers.TmcId
+      this.identityEntity.Numbers.AgentId
     ) {
-      this.loginService.setToPageRouter(state.url);
-      this.router.navigate([AppHelper.getRoutePath("select-customer")]);
-      return false;
+      return true;
     }
-    return true;
+    this.loginService.setToPageRouter(state.url);
+    // this.router.navigate([AppHelper.getRoutePath("")]);
+    return false;
   }
 }

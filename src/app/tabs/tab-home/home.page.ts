@@ -1,4 +1,4 @@
-import { HrService } from "./../../hr/hr.service";
+import { HrService } from "../../hr/staff.service";
 import { Notice, CmsService } from "./../../cms/cms.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { IdentityService } from "src/app/services/identity/identity.service";

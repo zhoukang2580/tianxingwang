@@ -27,9 +27,6 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
     private loginService: LoginService,
     private router: Router
   ) {
-    // this.identityService.getIdentity().subscribe(identity => {
-    //   this.identity = identity;
-    // });
   }
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,
