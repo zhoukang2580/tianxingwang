@@ -86,6 +86,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   timeOrdM2N: boolean; // 时间从早到晚
   loading = false;
   isFiltered = false;
+  isLeavePage = false;
   st = 0;
   goDate$: Observable<string>;
   @ViewChild(FlyFilterComponent) filterComp: FlyFilterComponent;
@@ -135,6 +136,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       })
     );
     this.route.queryParamMap.subscribe(async () => {
+      this.isLeavePage=false;
       this.flightService.setFilterPanelShow(false);
       if (!this.isStaffTypeSelf()) {
         // 必须先选择一个客户
@@ -246,10 +248,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async doRefresh(loadDataFromServer: boolean, keepSearchCondition: boolean) {
     try {
-      this.moveDayToSearchDate();
-      if (this.loading) {
+      if (this.isLeavePage) {
         return;
       }
+      this.moveDayToSearchDate();
       this.apiService.showLoadingView();
       // 如果不是个人，则必须先选择一个客户
       if (
@@ -274,7 +276,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.hasDataSource.next(false);
       if (loadDataFromServer) {
         // 强制从服务器端返回新数据
-        this.loading = true;
         data = await this.loadPolicyedFlights();
       }
       // 根据筛选条件过滤航班信息：
@@ -329,7 +330,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
             })
           )
           .subscribe(
-             ({ flights, flightJourneyList }) => {
+            ({ flights, flightJourneyList }) => {
               // 个人差标
               if (flights.length) {
                 this.flightJourneyList = this.replaceCabinInfo(
@@ -426,6 +427,8 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.flightService.getTotalFlySegments(this.flightJourneyList)
     );
     this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
+    this.loadDataSubscription.unsubscribe();
+    this.isLeavePage = true;
   }
 
   private replaceCabinInfo(
