@@ -237,7 +237,7 @@ export class AppComponent
       let count = 1;
       await AppHelper.dismissLayer();
       this.flightService.setOpenCloseSelectCityPageSources(false);
-      this.flydayService.showFlyDayPage(false);
+      this.flydayService.showSelectFlyDatePage(false);
       this.apiService.hideLoadingView();
       if (
         this.router.url.includes("login") ||

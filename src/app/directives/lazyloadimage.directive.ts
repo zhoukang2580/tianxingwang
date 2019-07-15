@@ -72,6 +72,11 @@ export class LazyloadimageDirective implements OnChanges, OnDestroy, OnInit {
   }
   async setLoadImage(changes: SimpleChanges) {
     if (changes.lazyloadImage && changes.lazyloadImage.currentValue) {
+      console.log(
+        "LazyloadimageDirective image",
+        this.image,
+        this.lazyloadImage
+      );
       if (this.image) {
         this.image.src = this.loadingImage;
         this.Initialize(this.image.parentElement);

@@ -1,7 +1,7 @@
 import { IdentityEntity } from "./../services/identity/identity.entity";
 import { LoginService } from "../services/login/login.service";
 import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
-import { Router } from "@angular/router";
+import { Router, ActivatedRoute } from "@angular/router";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { Observable, interval, Subscription } from "rxjs";
 import { AppHelper } from "../appHelper";
@@ -43,7 +43,8 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     private configService: ConfigService,
     private fb: FormBuilder,
     private router: Router,
-    private config: Config
+    private config: Config,
+    route: ActivatedRoute
   ) {
     this.config.set("swipeBackEnabled", false);
     this.loading$ = this.loginService.getLoading();

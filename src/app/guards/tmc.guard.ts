@@ -1,4 +1,4 @@
-import { HrService } from "../hr/staff.service";
+import { StaffService } from "../hr/staff.service";
 import { Injectable } from "@angular/core";
 import {
   CanActivate,
@@ -18,42 +18,43 @@ import { IdentityEntity } from "../services/identity/identity.entity";
   providedIn: "root"
 })
 export class TmcGuard implements CanActivate, CanActivateChild {
-  identityEntity: IdentityEntity;
   constructor(
     private identityService: IdentityService,
     private loginService: LoginService,
     private router: Router
-  ) {
-    this.identityService.getIdentity().subscribe(id => {
-      this.identityEntity = id;
-    });
-  }
+  ) {}
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ):
-    |boolean|UrlTree|Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
+    | boolean
+    | UrlTree
+    | Observable<boolean | UrlTree>
+    | Promise<boolean | UrlTree> {
     return this.canActivate(childRoute, state);
   }
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
-    if (
-      this.identityEntity &&
-      this.identityEntity.Numbers &&
-      (this.identityEntity.Numbers.AgentId || this.identityEntity.Numbers.TmcId)
-    ) {
-      if (
-        this.identityEntity.Numbers.AgentId &&
-        !this.identityEntity.Numbers.TmcId
-      ) {
-        this.router.navigate([AppHelper.getRoutePath("select-customer")]);
+    return this.identityService
+      .getIdentityAsync()
+      .then(identity => {
+        if (
+          identity &&
+          identity.Numbers &&
+          (identity.Numbers.AgentId || identity.Numbers.TmcId)
+        ) {
+          console.log("tmc guard", identity);
+          if (identity.Numbers.AgentId && !identity.Numbers.TmcId) {
+            this.router.navigate([AppHelper.getRoutePath("select-customer")]);
+            return false;
+          }
+          return true;
+        }
+        this.loginService.setToPageRouter(state.url);
         return false;
-      }
-      return true;
-    }
-    this.loginService.setToPageRouter(state.url);
-    return false;
+      })
+      .catch(_ => false);
   }
 }

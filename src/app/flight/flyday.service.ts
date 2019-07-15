@@ -25,7 +25,7 @@ export class FlydayService {
     this.multiFlyDaySource = new BehaviorSubject(false);
     this.showFlyDayPageSource = new BehaviorSubject(false);
   }
-  showFlyDayPage(show: boolean) {
+  showSelectFlyDatePage(show: boolean) {
     this.showFlyDayPageSource.next(show);
   }
   getShowFlyDayPageSource() {

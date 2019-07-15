@@ -12,12 +12,12 @@ import { ApiService } from "src/app/services/api/api.service";
 import { ConfigService } from "src/app/services/config/config.service";
 import { NavController } from "@ionic/angular";
 import { Subscription, Observable } from "rxjs";
-type PageModel = {
+interface PageModel {
   Name: string;
   RealName: string;
   Mobile: string;
   HeadUrl: string;
-};
+}
 @Component({
   selector: "app-my",
   templateUrl: "my.page.html",
@@ -35,11 +35,9 @@ export class MyPage implements OnDestroy, OnInit {
     private configService: ConfigService,
     private apiService: ApiService,
     route: ActivatedRoute,
-    messageService: MessageService
+    private messageService: MessageService
   ) {
-    route.paramMap.subscribe(_ => {
-      this.msgCount$ = messageService.getMsgCount();
-    });
+    route.paramMap.subscribe(_ => {});
   }
   onSettings() {
     this.router.navigate([AppHelper.getRoutePath("account-setting")]);
@@ -49,6 +47,7 @@ export class MyPage implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
+    this.msgCount$ = this.messageService.getMsgCount();
     this.Model = {
       Name: "",
       RealName: "",
@@ -61,34 +60,18 @@ export class MyPage implements OnDestroy, OnInit {
     this.load();
   }
 
-  load() {
+  async load() {
     const req = new RequestEntity();
     req.Method = "ApiMemberUrl-Home-Get";
-    const deviceSubscription = this.apiService
-      .getResponse<PageModel>(req)
-      .pipe(
-        map(r => r.Data),
-        finalize(() => {
-          if (deviceSubscription) {
-            setTimeout(() => {
-              deviceSubscription.unsubscribe();
-            }, 1000);
-          }
-        })
-      )
-      .subscribe(
-        r => {
-          if (r) {
-            this.Model = r;
-            this.configService.get().then(r => {
-              if (this.Model && !this.Model.HeadUrl) {
-                this.Model.HeadUrl = r.DefaultImageUrl;
-              }
-            });
-          }
-        },
-        () => {}
-      );
+    const r = await this.apiService.getResponseAsync<PageModel>(req);
+    if (r) {
+      this.Model = r;
+      this.configService.get().then(r => {
+        if (this.Model && !this.Model.HeadUrl) {
+          this.Model.HeadUrl = r.DefaultImageUrl;
+        }
+      });
+    }
   }
   credentialManagement() {
     this.router.navigate([

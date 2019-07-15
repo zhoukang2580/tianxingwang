@@ -30,7 +30,6 @@ export class SelectFlightsegmentCabinComponent implements OnInit {
   }
   ngOnInit() {}
   async openrules(cabin: any) {
-    this.modalCtrl.dismiss().catch(_ => {});
     const m = await this.modalCtrl.create({
       component: TicketchangingComponent,
       componentProps: { cabin: cabin.Cabin },
@@ -43,8 +42,8 @@ export class SelectFlightsegmentCabinComponent implements OnInit {
   async onBookTicket(cabin: any) {
     const t = await this.modalCtrl.getTop();
     if (t) {
-      t.dismiss(cabin);
-      this.selectcabin.emit(cabin);
+     this.selectcabin.emit(cabin);
+     await t.dismiss(cabin);
     }
   }
 }

@@ -1,3 +1,5 @@
+import { StaffBookType } from "./../../tmc/models/StaffBookType";
+import { StaffService } from "./../../hr/staff.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { ApiService } from "./../../services/api/api.service";
 import { ActivatedRoute } from "@angular/router";
@@ -12,10 +14,14 @@ import {
   PopoverController,
   IonInfiniteScroll,
   IonRefresher,
-  NavController
+  NavController,
+  ModalController
 } from "@ionic/angular";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { StaffEntity } from "src/app/hr/staff.service";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
+import { LanguageHelper } from "src/app/languageHelper";
 
 @Component({
   selector: "app-select-passenger",
@@ -25,21 +31,26 @@ import { StaffEntity } from "src/app/hr/staff.service";
 export class SelectPassengerPage implements OnInit {
   passengerFlightSegments: PassengerFlightSegments[];
   keyword: string;
-  passengers: StaffEntity[];
+  selectedPasengers$: Observable<number>;
   currentPage = 1;
-  pageSize = 10;
+  pageSize = 15;
   vmStaffs: StaffEntity[];
+  vmStaff: StaffEntity;
   loading = false;
   @ViewChild(IonRefresher) ionrefresher: IonRefresher;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   constructor(
-    public popoverController: PopoverController,
+    public modalController: ModalController,
     private flightService: FlightService,
     route: ActivatedRoute,
     private navCtrl: NavController,
     private apiService: ApiService,
-    private identityService: IdentityService
+    private identityService: IdentityService,
+    private staffService: StaffService
   ) {
+    this.selectedPasengers$ = flightService
+      .getSelectedPasengerSource()
+      .pipe(map(items => items.length));
     route.queryParamMap.subscribe(p => {
       this.passengerFlightSegments = this.flightService.getPassengerFlightSegments();
     });
@@ -47,15 +58,10 @@ export class SelectPassengerPage implements OnInit {
 
   ngOnInit() {}
   async onShow() {
-    const popover = await this.popoverController.create({
-      component: SelectedPassengersComponent,
-      translucent: true,
-      showBackdrop: true,
-      componentProps: {
-        passengers: this.flightService.getPassengerFlightSegments()
-      }
+    const m = await this.modalController.create({
+      component: SelectedPassengersComponent
     });
-    popover.present();
+    await m.present();
   }
   doRefresh(keyword) {
     this.currentPage = 1;
@@ -67,20 +73,21 @@ export class SelectPassengerPage implements OnInit {
     this.loadMore();
   }
   onSearch() {
+    this.vmStaff = null;
     this.loading = true;
-    this.doRefresh(this.keyword.trim());
+    this.doRefresh((this.keyword || "").trim());
   }
-  private async loadStaffs() {
+  private async loadMore() {
     this.loading = true;
     const identity = await this.identityService.getIdentityAsync();
     const req = new RequestEntity();
-    req.Method = "TmcApiHomeUrl-Home-StaffEntity";
-    req.Version = "1.0";
+    req.Method = "TmcApiHomeUrl-Home-Staff";
+    req.Version = "2.0";
     req.Data = {
-      LastUpdateTime: 0,
+      Name: this.keyword.trim(),
       TmcId: identity.Numbers.TmcId
     };
-    this.passengers = await this.apiService
+    this.vmStaffs = await this.apiService
       .getResponseAsync<{
         ApprovalInfo: any;
         CostCenters: any;
@@ -92,51 +99,28 @@ export class SelectPassengerPage implements OnInit {
       }>(req)
       .then(res => res.Staffs || [])
       .catch(_ => []);
+    const staff = await this.staffService.getStaff();
+    if (staff.BookType == StaffBookType.All) {
+      const item = new StaffEntity();
+      item.AccountId = "0";
+      item.CredentialsInfo = LanguageHelper.Flight.getNotWhitelistingTip();
+      this.vmStaffs.unshift(item);
+    }
     this.loading = false;
-    return this.passengers;
   }
-  onSelect(s: StaffEntity) {
+  async onSelect(s: StaffEntity) {
+    this.vmStaff = s;
+  }
+  onAdd() {
     const item: PassengerFlightSegments = {
-      passenger: s,
-      selectedInfo: [],
+      passenger: this.vmStaff,
+      selectedInfo: []
     };
+    this.flightService.addSelectedPassengers(this.vmStaff);
     this.flightService.addPassengerFlightSegments(item);
     this.back();
   }
   back() {
     this.navCtrl.back();
-  }
-  async loadMore() {
-    if (!this.passengers || this.passengers.length === 0) {
-      await this.loadStaffs();
-    }
-    let filteredStaffs = this.passengers;
-    if (this.keyword && this.keyword.trim()) {
-      this.keyword = this.keyword.trim();
-      filteredStaffs = this.passengers.filter(
-        s =>
-          s.Name.includes(this.keyword) ||
-          s.Nickname.includes(this.keyword) ||
-          s.Number.includes(this.keyword) ||
-          s.Email.includes(this.keyword)
-      );
-    }
-    const slice = filteredStaffs.slice(
-      (this.currentPage - 1) * this.pageSize,
-      this.currentPage * this.pageSize
-    );
-    this.vmStaffs = [...this.vmStaffs, ...slice];
-
-    if (slice.length) {
-      this.currentPage++;
-    }
-    if (this.ionrefresher) {
-      this.ionrefresher.complete();
-    }
-    if (this.scroller) {
-      this.scroller.disabled = slice.length === 0;
-      this.scroller.complete();
-    }
-    this.loading = false;
   }
 }

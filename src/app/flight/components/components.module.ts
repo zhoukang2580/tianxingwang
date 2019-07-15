@@ -24,7 +24,7 @@ import { TicketchangingComponent } from "./ticketchanging/ticketchanging.compone
 import { SelectedPassengersComponent } from "./selected-passengers/selected-passengers.component";
 import { SelectFlyDateComponent } from "./select-fly-date/select-fly-date.component";
 import { SelectedFlightsegmentInfoComponent } from "./selected-flightsegment-info/selected-flightsegment-info.component";
-import { SelectFlightsegmentCabinComponent } from './select-flightsegment-cabin/select-flightsegment-cabin.component';
+import { SelectFlightsegmentCabinComponent } from "./select-flightsegment-cabin/select-flightsegment-cabin.component";
 
 @NgModule({
   declarations: [

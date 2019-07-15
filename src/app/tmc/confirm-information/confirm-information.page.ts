@@ -2,7 +2,7 @@ import { RequestEntity } from "./../../services/api/Request.entity";
 import { ApiService } from "./../../services/api/api.service";
 import { LanguageHelper } from "./../../languageHelper";
 import { TmcService } from "./../tmc.service";
-import { HrService, StaffEntity } from "../../hr/staff.service";
+import { StaffService, StaffEntity } from "../../hr/staff.service";
 import { Component, OnInit } from "@angular/core";
 
 import { AppHelper } from "src/app/appHelper";
@@ -19,14 +19,14 @@ export class ComfirmInformationPage implements OnInit {
   staff: StaffEntity;
   password: string;
   constructor(
-    private hrService: HrService,
+    private staffService: StaffService,
     private apiService: ApiService,
     private tmcService: TmcService,
     private router: Router,
     private route: ActivatedRoute
   ) {
     route.paramMap.subscribe(async p => {
-      this.staff = await this.hrService.getStaff();
+      this.staff = await this.staffService.getStaff();
       this.credentials = await this.tmcService.getCredentials();
       console.log("ComfirmInformationPage", this.staff);
     });
@@ -39,7 +39,7 @@ export class ComfirmInformationPage implements OnInit {
       return;
     }
     if (!this.staff) {
-      this.staff = await this.hrService.getStaff(true);
+      this.staff = await this.staffService.getStaff(true);
     }
     const ok = await this.modifyPassword({
       OldPassword: (this.staff && this.staff.Password) || "",
@@ -47,9 +47,9 @@ export class ComfirmInformationPage implements OnInit {
       SurePassword: this.password
     });
     if (ok) {
-      const r = await this.hrService.comfirmInfoModifyPassword();
+      const r = await this.staffService.comfirmInfoModifyPassword();
       if (r) {
-        this.staff = await this.hrService.getStaff(true);
+        this.staff = await this.staffService.getStaff(true);
         AppHelper.toast(
           LanguageHelper.getComfirmInfoModifyPasswordSuccessTip()
         );
@@ -90,9 +90,9 @@ export class ComfirmInformationPage implements OnInit {
   }
   async confirmCredentials() {
     try {
-      const ok = await this.hrService.comfirmInfoModifyCredentials();
+      const ok = await this.staffService.comfirmInfoModifyCredentials();
       if (ok) {
-        this.staff = await this.hrService.getStaff(true);
+        this.staff = await this.staffService.getStaff(true);
         if (
           this.staff &&
           this.staff.IsConfirmInfo &&

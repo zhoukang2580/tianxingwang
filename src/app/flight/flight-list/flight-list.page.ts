@@ -4,11 +4,11 @@ import { FlyFilterComponent } from "./../components/fly-filter/fly-filter.compon
 import { FlightPolicy, SearchFlightModel, TripType } from "./../flight.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { StaffBookType } from "./../../tmc/models/StaffBookType";
-import { HrService } from "../../hr/staff.service";
+import { StaffService } from "../../hr/staff.service";
 import { AppHelper } from "src/app/appHelper";
 import { animate } from "@angular/animations";
 import { trigger, state, style, transition } from "@angular/animations";
-import { IonContent, IonRefresher } from "@ionic/angular";
+import { IonContent, IonRefresher, ModalController } from "@ionic/angular";
 import {
   Observable,
   Subscription,
@@ -39,6 +39,7 @@ import { LanguageHelper } from "src/app/languageHelper";
 import { FilterConditionModel } from "../models/flight/advanced-search-cond/FilterConditionModel";
 import { FlyDaysCalendarComponent } from "../components/fly-days-calendar/fly-days-calendar.component";
 import { Storage } from "@ionic/storage";
+import { SelectedFlightsegmentInfoComponent } from "../components/selected-flightsegment-info/selected-flightsegment-info.component";
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -88,7 +89,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   isFiltered = false;
   isLeavePage = false;
   st = 0;
-  goDate$: Observable<string>;
+  goFlightDate$: Observable<string>;
   @ViewChild(FlyFilterComponent) filterComp: FlyFilterComponent;
   @ViewChild(FlyDaysCalendarComponent)
   flyDaysCalendarComp: FlyDaysCalendarComponent;
@@ -103,17 +104,18 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     private flightService: FlightService,
     private ngZone: NgZone,
     private flyDayService: FlydayService,
-    private hrService: HrService,
+    private staffService: StaffService,
     private apiService: ApiService,
-    private identityService: IdentityService
+    private identityService: IdentityService,
+    private modalCtrl: ModalController
   ) {
     this.hasDataSource = new BehaviorSubject(false);
     this.vmFlights = [];
     this.flightJourneyList = [];
     this.searchFlightModel = new SearchFlightModel();
-    this.goDate$ = flightService.getPassengerFlightSegmentSource().pipe(
+    this.goFlightDate$ = flightService.getPassengerFlightSegmentSource().pipe(
       switchMap(item =>
-        from(hrService.getStaff()).pipe(map(r => ({ staff: r, pfs: item })))
+        from(staffService.getStaff()).pipe(map(r => ({ staff: r, pfs: item })))
       ),
       map(({ staff, pfs }) => {
         if (
@@ -136,37 +138,53 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       })
     );
     this.route.queryParamMap.subscribe(async () => {
-      this.isLeavePage=false;
+      if (this.searchConditionSubscription) {
+        this.searchConditionSubscription.unsubscribe();
+      }
+      this.searchConditionSubscription = this.flightService
+        .getSearchFlightModelSource()
+        .subscribe(s => {
+          console.log("flight-list page getSearchFlightModelSource", s);
+          this.searchFlightModel = s;
+          if (this.searchFlightModel) {
+            // this.isRoundTrip = this.searchFlightModel.IsRoundTrip;
+            this.vmFromCity = this.searchFlightModel.fromCity;
+            this.vmToCity = this.searchFlightModel.toCity;
+            this.moveDayToSearchDate(
+              this.flyDayService.generateDayModelByDate(
+                this.searchFlightModel.Date
+              )
+            );
+          }
+        });
+      this.isLeavePage = false;
       this.flightService.setFilterPanelShow(false);
-      if (!this.isStaffTypeSelf()) {
+      if (
+        !this.isStaffTypeSelf() &&
+        flightService.getSelectedPasengers().length == 0
+      ) {
         // 必须先选择一个客户
         console.log("goToSelectPassengerPage ");
         this.goToSelectPassengerPage();
         return;
       }
+      console.log("this.route.queryParamMap", this.searchFlightModel);
+      if (this.searchFlightModel && this.searchFlightModel.Date) {
+        this.doRefresh(true, true);
+      }
     });
     this.showAdvSearchPage$ = this.flightService.getFilterPanelShow();
-    this.searchConditionSubscription = flightService
-      .getSearchFlightModelSource()
-      .subscribe(s => {
-        this.searchFlightModel = s;
-        if (this.searchFlightModel) {
-          // this.isRoundTrip = this.searchFlightModel.IsRoundTrip;
-          this.vmFromCity = this.searchFlightModel.fromCity;
-          this.vmToCity = this.searchFlightModel.toCity;
-          if (!this.loading) {
-            this.doRefresh(true, true);
-          }
-        }
-      });
   }
   async isStaffTypeSelf() {
-    const s = await this.hrService.getStaff();
+    const s = await this.staffService.getStaff();
     return s.BookType && s.BookType == StaffBookType.Self;
   }
   onCalenderClick() {
     this.flyDayService.setFlyDayMulti(false);
-    this.flyDayService.showFlyDayPage(true);
+    this.flyDayService.showSelectFlyDatePage(true);
+  }
+  back() {
+    this.isLeavePage = true;
   }
   bookFlight() {
     this.router.navigate([AppHelper.getRoutePath("book-flight")]);
@@ -174,6 +192,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   async onChangedDay(day: DayModel, byUser: boolean) {
     if (
       byUser &&
+      !this.isLeavePage &&
       (!day || this.searchFlightModel.Date == day.date || this.loading)
     ) {
       return;
@@ -217,6 +236,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         : "none";
     this.searchFlightModel.Date = day.date;
     this.flightService.setSearchFlightModel(this.searchFlightModel);
+    this.doRefresh(true, true);
   }
   async onBookTicket() {
     if (!this.isStaffTypeSelf()) {
@@ -248,7 +268,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async doRefresh(loadDataFromServer: boolean, keepSearchCondition: boolean) {
     try {
-      if (this.isLeavePage) {
+      if (this.isLeavePage || this.loading) {
         return;
       }
       this.moveDayToSearchDate();
@@ -313,6 +333,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
   private async loadPolicyedFlights() {
     if (this.loadDataSubscription) {
+      if (this.list) {
+        this.list.nativeElement.innerHTML = "";
+      }
       this.loadDataSubscription.unsubscribe();
     }
     return new Promise<FlightJourneyEntity[]>(async s => {
@@ -364,7 +387,12 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
               if (passengerFlightSegments.length) {
                 // 过滤未选择航班的乘客
                 const unSelectFlightSegmentPassengers = passengerFlightSegments
-                  .filter(pf => pf.selectedInfo.length === 0)
+                  .filter(
+                    pf =>
+                      pf.selectedInfo.length === 0 &&
+                      pf.passenger.AccountId &&
+                      pf.passenger.AccountId != "0"
+                  )
                   .map(pf => pf.passenger);
                 if (unSelectFlightSegmentPassengers.length) {
                   const flights = await this.flightService.policyflightsAsync(
@@ -411,7 +439,19 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     });
   }
   async goToFlightCabinsDetails(fs: FlightSegmentEntity) {
-    const validate = await this.flightService.validateReturnTripFlightSegment(
+    const canbookMore = await this.flightService.validateCanBookMoreFlightSegment(
+      fs
+    );
+    if (!canbookMore) {
+      await AppHelper.alert(
+        LanguageHelper.Flight.getCannotBookMoreFlightSegmentTip(),
+        true,
+        LanguageHelper.getConfirmTip()
+      );
+      await this.showSelectedInfos();
+      return;
+    }
+    const validate = await this.flightService.validateCanBookReturnTripFlightSegment(
       fs
     );
     if (!validate) {
@@ -428,9 +468,17 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     );
     this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
     this.loadDataSubscription.unsubscribe();
+    this.searchConditionSubscription.unsubscribe();
     this.isLeavePage = true;
   }
-
+  async showSelectedInfos() {
+    const modal = await this.modalCtrl.create({
+      component: SelectedFlightsegmentInfoComponent
+    });
+    await modal.present();
+    await modal.onDidDismiss();
+    return "ok";
+  }
   private replaceCabinInfo(
     passengerPolicyflights: {
       PassengerKey: string;
@@ -507,18 +555,17 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.selectDaySubscription = this.flyDayService
       .getSelectedFlyDays()
       .subscribe(async days => {
-        if (days && days.length) {
+        if (days && days.length == 1) {
           console.log("选择的日期", days);
           const day = days[0];
           if (!day) {
             return;
           }
           if (this.searchFlightModel.tripType == TripType.returnTrip) {
-            const goDay = this.flyDayService.generateDayModelByDate(
-              this.searchFlightModel.Date
+            const validate = await this.flightService.validateReturnTripDate(
+              day.date
             );
-            const backDay = day;
-            if (backDay.timeStamp < goDay.timeStamp) {
+            if (!validate) {
               await AppHelper.toast(
                 LanguageHelper.Flight.getBackDateCannotBeforeGoDateTip(),
                 1000,
@@ -530,12 +577,22 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           }
           if (this.searchFlightModel.Date != day.date) {
             this.searchFlightModel.Date = day.date;
-            if (this.flyDaysCalendarComp) {
-              this.flyDaysCalendarComp.onDaySelected(day);
-            }
+            this.moveDayToSearchDate();
           }
           this.searchFlightModel.Date = day.date;
-          if (this.loading) {
+          if (this.loading && this.isLeavePage) {
+            return;
+          }
+          console.log(
+            `isLeavePage,${this.isLeavePage},cur route url = ${
+              this.router.routerState.snapshot.url
+            }`
+          );
+          if (
+            this.isLeavePage ||
+            !this.router.routerState.snapshot.url.includes("flight-list")
+          ) {
+            console.log("当前路由不在航班列表页面");
             return;
           }
           this.doRefresh(true, false);
@@ -552,9 +609,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.apiService.showLoadingView();
     if (this.searchFlightModel && this.searchFlightModel.Date) {
       this.moveDayToSearchDate();
-      setTimeout(() => {
-        this.doRefresh(true, false);
-      }, 1000);
     }
     // console.dir(this.cnt);
 
@@ -566,8 +620,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         d ||
         this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date);
       setTimeout(() => {
-        this.flyDaysCalendarComp.onDaySelected(day);
-      }, 1200);
+        if (this.flyDaysCalendarComp) {
+          this.flyDaysCalendarComp.onDaySelected(day);
+        }
+      }, 1000);
     }
   }
   controlFooterShowHide() {

@@ -24,6 +24,7 @@ export class IdentityService {
     this._IdentityEntity = info;
     AppHelper.setStorage("ticket", info.Ticket);
     AppHelper.setStorage("loginToken", info.Token);
+    // console.log("set identity ",info);
     this.identitySource.next(this._IdentityEntity);
   }
   removeIdentity() {

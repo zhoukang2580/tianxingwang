@@ -4,7 +4,7 @@ import { FlightCabinEntity } from "./models/flight/FlightCabinEntity";
 import { StaffBookType } from "./../tmc/models/StaffBookType";
 import { FilterConditionModel } from "./models/flight/advanced-search-cond/FilterConditionModel";
 import { IdentityService } from "./../services/identity/identity.service";
-import { HrService, StaffEntity } from "../hr/staff.service";
+import { StaffService, StaffEntity } from "../hr/staff.service";
 import { Injectable } from "@angular/core";
 
 import { environment } from "../../environments/environment";
@@ -20,6 +20,7 @@ import { LanguageHelper } from "../languageHelper";
 import { combineLatest } from "rxjs";
 import { map, tap, filter, last, switchMap, catchError } from "rxjs/operators";
 import { Router } from "@angular/router";
+import { SelectedFlightsegmentInfoComponent } from "./components/selected-flightsegment-info/selected-flightsegment-info.component";
 
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
@@ -103,11 +104,12 @@ const debugCacheTime = 5 * 60 * 1000;
 export class FlightService {
   private worker = null;
 
-  private selectedPassengers: StaffEntity[];
+  private selectedPassengers: StaffEntity[]=[];
   private searchFlightModelSource: Subject<SearchFlightModel>;
   private passengerFlightSegmentSource: Subject<PassengerFlightSegments[]>;
   private searchFlightModel: SearchFlightModel;
   private filterPanelShowHideSource: Subject<boolean>;
+  private selectedPassengerSource: Subject<StaffEntity[]>;
   private openCloseSelectCitySources: Subject<boolean>;
   private filterCondSources: Subject<FilterConditionModel>;
   private localInternationAirports: LocalStorageAirport;
@@ -121,13 +123,14 @@ export class FlightService {
 
   constructor(
     private apiService: ApiService,
-    private hrService: HrService,
+    private staffService: StaffService,
     private storage: Storage,
     private modalCtrl: ModalController,
     private router: Router,
     private navCtrl: NavController
   ) {
     this.selectedCitySource = new BehaviorSubject(null);
+    this.selectedPassengerSource = new BehaviorSubject([]);
     this.searchFlightModelSource = new BehaviorSubject(null);
     this.passengerFlightSegments = [];
     this.passengerFlightSegmentSource = new BehaviorSubject(
@@ -139,15 +142,15 @@ export class FlightService {
     this.worker = window["Worker"] ? new Worker("assets/worker.js") : null;
   }
   addSelectedPassengers(p: StaffEntity) {
-    if (
-      p &&
-      !this.selectedPassengers.find(item => item.AccountId == p.AccountId)
-    ) {
-      this.selectedPassengers.push(p);
-    }
+    this.selectedPassengers.push(p);
+    this.selectedPassengerSource.next(this.selectedPassengers);
   }
   getSelectedPasengers() {
-    return this.selectedPassengers || [];
+    this.selectedPassengers = this.selectedPassengers || [];
+    return this.selectedPassengers;
+  }
+  getSelectedPasengerSource() {
+    return this.selectedPassengerSource.asObservable();
   }
   clearAllSelectedPassengers() {
     this.selectedPassengers = [];
@@ -170,9 +173,7 @@ export class FlightService {
     return this.searchFlightModel;
   }
   getSearchFlightModelSource() {
-    return this.searchFlightModelSource
-      .asObservable()
-      .pipe(filter(item => !!item));
+    return this.searchFlightModelSource.asObservable();
   }
   setCurrentViewtFlightSegment(
     s: FlightSegmentEntity,
@@ -197,7 +198,9 @@ export class FlightService {
         if (itm) {
           itm.selectedInfo = itm.selectedInfo || [];
           item.selectedInfo.forEach(i => {
-            itm.selectedInfo.push(i);
+            if (!itm.selectedInfo.find(j => j == i)) {
+              itm.selectedInfo.push(i);
+            }
           });
         } else {
           arr.push(item);
@@ -209,15 +212,15 @@ export class FlightService {
     console.log("passengerFlightSegments ", this.passengerFlightSegments);
     return this.passengerFlightSegments;
   }
-  async validateReturnTripFlightSegment(flightSegment: FlightSegmentEntity) {
-    if (
-      !flightSegment ||
-      this.searchFlightModel.tripType !== TripType.returnTrip
-    ) {
+  async validateReturnTripDate(backDate: string) {
+    if (!backDate || this.searchFlightModel.tripType !== TripType.returnTrip) {
       return true;
     }
-    const staff = await this.hrService.getStaff();
-    if (staff.BookType == StaffBookType.Self) {
+    const staff = await this.staffService.getStaff();
+    if (
+      staff.BookType == StaffBookType.Self &&
+      this.searchFlightModel.IsRoundTrip
+    ) {
       const info = this.getPassengerFlightSegments().find(
         item => item.passenger.AccountId == staff.AccountId
       );
@@ -227,7 +230,7 @@ export class FlightService {
         );
         if (goFlight) {
           if (
-            +moment(flightSegment.TakeoffTime) <=
+            +moment(backDate) <=
             +moment(goFlight.flightSegment.ArrivalTime).add(3, "hours")
           ) {
             return false;
@@ -237,16 +240,72 @@ export class FlightService {
     }
     return true;
   }
-  private async validateReturnTripBackDate(arg: PassengerFlightSegments) {
+  async validateCanBookReturnTripFlightSegment(
+    flightSegment: FlightSegmentEntity
+  ) {
     if (
-      !arg ||
-      !arg.selectedInfo ||
-      (arg.selectedInfo[0].tripType || this.searchFlightModel.tripType) !=
-        TripType.returnTrip
+      !flightSegment ||
+      this.searchFlightModel.tripType !== TripType.returnTrip
     ) {
       return true;
     }
-    const staff = await this.hrService.getStaff();
+    const staff = await this.staffService.getStaff();
+    if (staff.BookType == StaffBookType.Self) {
+      if (this.searchFlightModel.IsRoundTrip) {
+        const info = this.getPassengerFlightSegments().find(
+          item => item.passenger.AccountId == staff.AccountId
+        );
+        if (info) {
+          const goFlight = info.selectedInfo.find(
+            item => item.tripType == TripType.departureTrip
+          );
+          if (goFlight) {
+            if (
+              +moment(flightSegment.TakeoffTime) <=
+              +moment(goFlight.flightSegment.ArrivalTime).add(3, "hours")
+            ) {
+              return false;
+            }
+          }
+        }
+      } else {
+        return !this.checkIfExcessMaxLimitedBookTickets(1);
+      }
+    } else {
+      return !this.checkIfExcessMaxLimitedBookTickets(9);
+    }
+    return true;
+  }
+  async validateCanBookMoreFlightSegment(flightSegment: FlightSegmentEntity) {
+    if (!flightSegment) {
+      return true;
+    }
+    const staff = await this.staffService.getStaff();
+    if (staff.BookType == StaffBookType.Self) {
+      return !this.checkIfExcessMaxLimitedBookTickets(1);
+    } else {
+      return !this.checkIfExcessMaxLimitedBookTickets(9);
+    }
+  }
+  private checkIfExcessMaxLimitedBookTickets(max: number) {
+    return (
+      this.getPassengerFlightSegments().reduce((arr, item) => {
+        arr += item.selectedInfo.length;
+        return arr;
+      }, 0) >= max
+    );
+  }
+  private async validateReturnTripBackDate(arg: PassengerFlightSegments) {
+    if (
+      !arg.selectedInfo ||
+      !arg ||
+      !this.searchFlightModel ||
+      ((arg.selectedInfo.length && arg.selectedInfo[0].tripType) ||
+        this.searchFlightModel.tripType) != TripType.returnTrip
+    ) {
+      return true;
+    }
+    const staff = await this.staffService.getStaff();
     if (staff.BookType == StaffBookType.Self) {
       const info = this.getPassengerFlightSegments().find(
         item => item.passenger.AccountId == staff.AccountId
@@ -281,13 +340,8 @@ export class FlightService {
   ): Promise<string> {
     console.log("addPassengerFlightSegments", arg);
     let result = "";
-    const s = await this.hrService.getStaff();
-    if (
-      !arg ||
-      !arg.passenger ||
-      !arg.selectedInfo ||
-      arg.selectedInfo.length === 0
-    ) {
+    const s = await this.staffService.getStaff();
+    if (!arg || !arg.passenger || !arg.selectedInfo) {
       await AppHelper.alert(
         LanguageHelper.Flight.getSelectedFlightInvalideTip()
       );
@@ -299,7 +353,7 @@ export class FlightService {
         true,
         LanguageHelper.getConfirmTip()
       );
-      return result;
+      return (result = LanguageHelper.Flight.getBackDateCannotBeforeGoDateTip());
     }
     if (s.BookType === StaffBookType.Self) {
       result = await this.bookTypeSelfAddPassengerFlightSegments(arg);
@@ -328,20 +382,20 @@ export class FlightService {
       "this.router.routerState.snapshot.url=",
       this.router.routerState.snapshot.url
     );
-    const staff = await this.hrService.getStaff();
+    const staff = await this.staffService.getStaff();
     const s = this.getSearchFlightModel();
     if (
       tripeType == TripType.returnTrip &&
       staff.BookType == StaffBookType.Self
     ) {
-      const exists = this.getPassengerFlightSegments().find(
+      const currents = this.getPassengerFlightSegments().find(
         item => item.passenger.AccountId == staff.AccountId
       );
-      const g = exists.selectedInfo.find(
+      const g = currents.selectedInfo.find(
         item => item.tripType == TripType.departureTrip
       );
-      exists.selectedInfo = [g];
-      this.passengerFlightSegments = [exists];
+      currents.selectedInfo = [g];
+      this.passengerFlightSegments = [currents];
     } else {
       this.passengerFlightSegments = [];
     }
@@ -399,7 +453,7 @@ export class FlightService {
   private async bookTypeSelfAddPassengerFlightSegments(
     arg: PassengerFlightSegments
   ): Promise<string> {
-    const s = await this.hrService.getStaff();
+    const s = await this.staffService.getStaff();
     const one = this.getPassengerFlightSegments().find(
       itm => itm.passenger.AccountId == s.AccountId
     );
@@ -425,6 +479,11 @@ export class FlightService {
           this.passengerFlightSegments = [exists, arg];
         }
       } else {
+        await AppHelper.alert(
+          LanguageHelper.Flight.getCannotBookMoreFlightSegmentTip(),
+          true,
+          LanguageHelper.getConfirmTip()
+        );
         return LanguageHelper.Flight.getIsReSelectDepartureTip();
       }
     }
@@ -433,11 +492,55 @@ export class FlightService {
   private async bookTypeSecretaryAddPassengerFlightSegments(
     arg: PassengerFlightSegments
   ) {
+    const excess = await this.checkIfExcessMaxLimitedBookTickets(9);
+    if (excess) {
+      await AppHelper.alert(
+        LanguageHelper.Flight.getCannotBookMoreFlightSegmentTip(),
+        true,
+        LanguageHelper.getConfirmTip()
+      );
+    }
+    if (arg && arg.passenger && arg.selectedInfo) {
+      const current = this.getPassengerFlightSegments().find(
+        item => item.passenger.AccountId == arg.passenger.AccountId
+      );
+      if (!current) {
+        this.passengerFlightSegments.push(arg);
+      } else {
+        arg.selectedInfo.forEach(item => {
+          if (!current.selectedInfo.find(i => i == item)) {
+            current.selectedInfo.push(item);
+          }
+        });
+      }
+    }
     return "";
   }
   private async bookTypeAllAddPassengerFlightSegments(
     arg: PassengerFlightSegments
   ) {
+    const excess = await this.checkIfExcessMaxLimitedBookTickets(9);
+    if (excess) {
+      await AppHelper.alert(
+        LanguageHelper.Flight.getCannotBookMoreFlightSegmentTip(),
+        true,
+        LanguageHelper.getConfirmTip()
+      );
+    }
+    if (arg && arg.passenger && arg.selectedInfo) {
+      const current = this.getPassengerFlightSegments().find(
+        item => item.passenger.AccountId == arg.passenger.AccountId
+      );
+      if (!current) {
+        this.passengerFlightSegments.push(arg);
+      } else {
+        arg.selectedInfo.forEach(item => {
+          if (!current.selectedInfo.find(i => i == item)) {
+            current.selectedInfo.push(item);
+          }
+        });
+      }
+    }
     return "";
   }
   removeAllPassengerFlightSegments() {

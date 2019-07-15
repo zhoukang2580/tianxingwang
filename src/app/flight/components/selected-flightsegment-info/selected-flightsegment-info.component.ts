@@ -4,7 +4,7 @@ import { FlydayService } from "./../../flyday.service";
 import { AppHelper } from "./../../../appHelper";
 import { StaffEntity } from "src/app/hr/staff.service";
 import { StaffBookType } from "./../../../tmc/models/StaffBookType";
-import { HrService } from "../../../hr/staff.service";
+import { StaffService } from "../../../hr/staff.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import {
   ModalController,
@@ -38,7 +38,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit {
     private flightService: FlightService,
     private alertController: AlertController,
     private flydayService: FlydayService,
-    private hrService: HrService,
+    private staffService: StaffService,
     private router: Router,
     private navCtrl: NavController
   ) {}
@@ -48,7 +48,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit {
       .getPassengerFlightSegmentSource()
       .pipe(
         tap(async info => {
-          const s = await this.hrService.getStaff();
+          const s = await this.staffService.getStaff();
           if (s.BookType == StaffBookType.Self) {
             const one = info.find(item => item.passenger == s);
             if (one) {

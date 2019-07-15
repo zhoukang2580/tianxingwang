@@ -9,14 +9,15 @@
         <!-- <ion-icon name="contacts" mode='ios'></ion-icon> -->
         已选乘客
         <ion-badge color='danger'>
-          <ion-text color='light'>5</ion-text>
+          <ion-text color='light'>{{selectedPasengers$|async}}</ion-text>
         </ion-badge>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
   <ion-toolbar>
     <!-- Searchbar with a custom debounce -->
-    <ion-searchbar debounce="300" animated placeholder="搜索" (ionChange)='onSearch()' [(ngModel)]='keyword'>
+    <ion-searchbar debounce="300" animated placeholder="员工号、姓名、手机号、空格键 开始查询" (ionChange)='onSearch()'
+      [(ngModel)]='keyword'>
     </ion-searchbar>
   </ion-toolbar>
 </ion-header>
@@ -27,23 +28,24 @@
       refreshingText="正在加载...">
     </ion-refresher-content>
   </ion-refresher>
-  <ion-list *ngIf='!loading;else loadingTemp'>
-    <ng-container *ngIf='vmStaffs?.length;else nodata'>
-      <ion-item *ngFor='let item of vmStaffs' detail (click)='onSelect(item)'>
-        <ion-label text-wrap>
-          {{item?.Name}}
-          <ion-text color='medium'>{{item?.Nickname}}|{{item?.Number}}</ion-text>
-        </ion-label>
-      </ion-item>
-    </ng-container>
-    <ng-template #nodata>
-      <app-or-comp>暂无数据</app-or-comp>
+  <ng-container *ngIf='!vmStaff else addTempl'>
+    <ion-list *ngIf='!loading;else loadingTemp'>
+      <ng-container *ngIf='vmStaffs?.length;else nodata'>
+        <ion-item *ngFor='let item of vmStaffs' detail (click)='onSelect(item)'>
+          <ion-label>
+            {{item?.CredentialsInfo}}
+          </ion-label>
+        </ion-item>
+      </ng-container>
+      <ng-template #nodata>
+        <app-or-comp>暂无数据</app-or-comp>
+      </ng-template>
+    </ion-list>
+    <ng-template #loadingTemp>
+      正在加载...
     </ng-template>
-  </ion-list>
-  <ng-template #loadingTemp>
-    正在加载...
+  </ng-container>
+  <ng-template #addTempl>
+
   </ng-template>
-  <ion-infinite-scroll (ionInfinite)="loadMore()">
-    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="正在加载..."></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
 </ion-content>

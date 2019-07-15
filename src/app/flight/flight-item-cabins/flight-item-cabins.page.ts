@@ -1,6 +1,6 @@
 import { IdentityService } from "./../../services/identity/identity.service";
 import { StaffBookType } from "./../../tmc/models/StaffBookType";
-import { HrService, StaffEntity } from "../../hr/staff.service";
+import { StaffService, StaffEntity } from "../../hr/staff.service";
 import { DayModel } from "./../models/DayModel";
 import { FlydayService } from "./../flyday.service";
 import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
@@ -44,7 +44,7 @@ export class FlightItemCabinsPage implements OnInit {
     activatedRoute: ActivatedRoute,
     private modalCtrl: ModalController,
     private flydayService: FlydayService,
-    private hrService: HrService,
+    private staffService: StaffService,
     private alertCtrl: AlertController,
     private identityService: IdentityService,
     private navCtrl: NavController,
@@ -54,7 +54,7 @@ export class FlightItemCabinsPage implements OnInit {
       this.flightSegment = flightService.getCurrentViewtFlightSegment();
       this.vmFlightSegment = this.flightSegment.flightSegment;
       const identity = await this.identityService.getIdentityAsync();
-      this.staff = await this.hrService.getStaff();
+      this.staff = await this.staffService.getStaff();
       if (
         this.staff &&
         this.staff.BookType == StaffBookType.Self &&

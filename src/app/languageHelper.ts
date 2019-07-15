@@ -81,6 +81,9 @@ export class LanguageHelper {
     }
   };
   static Flight = {
+    getNotWhitelistingTip: () => {
+      return `非白名单`;
+    },
     getBackDateCannotBeforeGoDateTip: () => {
       return `回程日期必须在去程之后`;
     },

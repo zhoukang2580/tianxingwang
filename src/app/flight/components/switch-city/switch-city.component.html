@@ -7,12 +7,11 @@
       <ion-skeleton-text style='width: 20%' animated *ngIf='!vmFromCity'></ion-skeleton-text>
     </ion-text>
     <div class='toogle-icon' [class.disabled]='disabled'>
-      <ion-text color='secondary' class="airplane">
+      <ion-text  class="airplane">
         <i class='icon icon-flight-plane'></i>
       </ion-text>
       <!-- <ion-icon name='airplane' color='secondary'></ion-icon>-->
-      <ion-icon name='ios-sync' class='rotate-icon' [@rotateIcon]='rotateIcon' (@rotateIcon.done)='onRotateIconDone($event)'
-        color='secondary'></ion-icon>
+      <ion-icon name='ios-sync' class='rotate-icon' [@rotateIcon]='rotateIcon' (@rotateIcon.done)='onRotateIconDone($event)'></ion-icon>
     </div>
     <ion-text color='medium' text-wrap #toCityEle>
       <h2 [class.left]='toggleCities' [class.right]='!toggleCities' *ngIf='vmToCity'>{{vmToCity?.CityName}}<ion-text

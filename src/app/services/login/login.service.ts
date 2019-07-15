@@ -114,19 +114,38 @@ export class LoginService {
           observe: "body"
         })
         .pipe(map((r: IResponse<IdentityEntity>) => r))
-        .subscribe(r => {
-          if (r.Status) {
-            this.identityService.removeIdentity();
-            this.router.navigate([AppHelper.getRoutePath("login")]);
-          } else if (r.Code.toUpperCase() == "NOLOGIN") {
-            this.identityService.removeIdentity();
-            this.router.navigate([AppHelper.getRoutePath("login")]);
+        .subscribe(
+          r => {
+            if (r.Status) {
+              this.identityService.removeIdentity();
+              this.router
+                .navigate([AppHelper.getRoutePath("login")])
+                .then(() => {
+                  this.reloadApp();
+                });
+            } else if (r.Code.toUpperCase() == "NOLOGIN") {
+              this.identityService.removeIdentity();
+              this.router
+                .navigate([AppHelper.getRoutePath("login")])
+                .then(() => {
+                  this.reloadApp();
+                });
+            }
+          },
+          _ => {
+            this.reloadApp();
           }
-        });
+        );
     } else {
       this.identityService.removeIdentity();
-      this.router.navigate([AppHelper.getRoutePath("login")]);
+      this.router.navigate([AppHelper.getRoutePath("login")]).then(() => {
+        this.reloadApp();
+      });
     }
+  }
+  reloadApp() {
+    console.log("重新刷新应用");
+    window.location.reload();
   }
   async checkIdentity() {
     if (!this.identity) {
@@ -146,7 +165,7 @@ export class LoginService {
       });
 
       return new Promise<boolean>((resolve, reject) => {
-       const sub =  this.apiService
+        const sub = this.apiService
           .getResponse<{
             Ticket: string; // "";
             Id: string; // ;
@@ -154,13 +173,15 @@ export class LoginService {
             IsShareTicket: boolean; // false;
             Numbers: { [key: string]: string };
           }>(req)
-          .pipe(finalize(() => {
-            setTimeout(() => {
-              if(sub){
-                sub.unsubscribe();
-              }
-            }, 3000);
-          }))
+          .pipe(
+            finalize(() => {
+              setTimeout(() => {
+                if (sub) {
+                  sub.unsubscribe();
+                }
+              }, 3000);
+            })
+          )
           .subscribe(
             rid => {
               if (!rid) {

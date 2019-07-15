@@ -1,7 +1,7 @@
 <ion-header text-center>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <ion-back-button></ion-back-button>
+      <ion-back-button (click)='back()'></ion-back-button>
     </ion-buttons>
     <ion-title color='secondary' text-center>
       <ion-text>{{vmFromCity?.Nickname}}</ion-text>
@@ -16,10 +16,8 @@
   </ion-toolbar>
   <ion-label class='xs-font-size' [style.visibility]="!loading?'initial':'collapse'">
     {{searchFlightModel?.Date}}共{{vmFlights?.length}}个航班
-    <ion-text color='danger' *ngIf='isFiltered'>(过滤后)</ion-text>
-  </ion-label>
-  <ion-label class='xs-font-size' margin-start color='secondary' *ngIf='goDate$|async as goArrivalDate'>
-    去程到达时间：{{goArrivalDate}}
+    <ion-text color='danger' *ngIf='isFiltered'>(筛选后)</ion-text>
+    <ion-text color='danger' *ngIf='goFlightDate$|async as goArrivalDate'>已选去程到达时间:{{goArrivalDate}}</ion-text>
   </ion-label>
   <ion-toolbar class="fly-days">
     <app-fly-days-calendar (itemSelected)="onChangedDay($event,true)" (calenderClick)="onCalenderClick()">

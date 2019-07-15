@@ -1,6 +1,8 @@
+import { ApiService } from 'src/app/services/api/api.service';
+import { StaffEntity } from "src/app/hr/staff.service";
 import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
 import { TripType } from "./../flight.service";
-import { HrService } from "../../hr/staff.service";
+import { StaffService } from "../../hr/staff.service";
 import {
   FlightService,
   SearchFlightModel,
@@ -62,28 +64,36 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
   toCity: Trafficline; // 切换后，真实的目的城市
   showReturnTrip: boolean;
   disabled = false;
+  selectedPassengers: number;
+  staff: StaffEntity;
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private dayService: SelectDateService,
     private navCtrl: NavController,
     private flydayService: FlydayService,
     private flightService: FlightService,
     private storage: Storage,
-    private hrService: HrService,
-    private ngZone: NgZone
+    private staffService: StaffService,
+    private apiService:ApiService
   ) {
-    this.searchConditionSubscription = this.flightService
-      .getSearchFlightModelSource()
-      .subscribe(async s => {
-        console.log("book-flights", s);
-        const staff = await this.hrService.getStaff();
-        this.showReturnTrip = staff.BookType == StaffBookType.Self;
-        if (s) {
-          this.ngZone.run(() => {
+    route.queryParamMap.subscribe(async _ => {
+      this.staff = await this.staffService.getStaff();
+      this.selectedPassengers = flightService.getSelectedPasengers().length;
+      if (this.searchConditionSubscription) {
+        this.searchConditionSubscription.unsubscribe();
+      }
+      this.searchConditionSubscription = this.flightService
+        .getSearchFlightModelSource()
+        .subscribe(async s => {
+          console.log("book-flights", s);
+          const staff = await this.staffService.getStaff();
+          this.showReturnTrip = staff.BookType == StaffBookType.Self;
+          if (s) {
             this.disabled =
+              s.IsRoundTrip &&
               s.tripType == TripType.returnTrip &&
               staff.BookType == StaffBookType.Self;
-
             this.fromCity = s.fromCity;
             this.toCity = s.toCity;
             this.vmFromCity = s.fromCity;
@@ -94,9 +104,9 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
               s.BackDate
             );
             this.isSingle = !s.IsRoundTrip;
-          });
-        }
-      });
+          }
+        });
+    });
   }
 
   goBack() {
@@ -117,32 +127,49 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.onRoundTrip(evt.detail.value == "single");
   }
   async ngOnInit() {
-    const s = await this.hrService.getStaff();
-    this.showReturnTrip = s.BookType == StaffBookType.Self;
-    setTimeout(() => {
-      this.initFlightDays();
-      this.initFlightCities();
-    }, 300);
     this.selectDaySubscription = this.flydayService
       .getSelectedFlyDays()
-      .subscribe(async days => {
+      .subscribe(days => {
         if (days && days.length) {
-          if (this.isSingle) {
-            if (this.isSelectFlyDate) {
-              this.flyDate = days[0];
-            } else {
+          if (days.length == 1) {
+            if (this.disabled) {
               this.backDate = days[0];
+            } else {
+              this.flyDate = days[0];
+              this.flyDate = days[0];
+              this.backDate = this.flydayService.generateDayModel(
+                moment(this.flyDate.date).add(1, "days")
+              );
             }
           } else {
-            if (!this.disabled) {
+            if (this.isSingle) {
+              if (this.isSelectFlyDate) {
+                this.flyDate = days[0];
+              } else {
+                this.backDate = days[0];
+              }
+            } else {
               this.flyDate = days[0];
               this.backDate = days[1];
-            } else {
-              this.backDate = days[0];
             }
+          }
+          if (this.flyDate.timeStamp > this.backDate.timeStamp) {
+            this.flyDate = this.flydayService.generateDayModel(moment());
           }
         }
       });
+    this.apiService.showLoadingView();
+    const s = await this.staffService.getStaff();
+    this.showReturnTrip = s.BookType == StaffBookType.Self;
+    this.initFlightDays();
+    this.initFlightCities();
+    this.apiService.hideLoadingView();
+  }
+  mustAddPassenger() {
+    return this.staff && this.staff.BookType !== StaffBookType.Self;
+  }
+  onSelectPassenger(){
+    this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
   }
   ngOnDestroy(): void {
     console.log("on destroyed");
@@ -202,7 +229,7 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.storage.set("toCity", this.toCity);
     const s: SearchFlightModel = new SearchFlightModel();
     s.tripType = TripType.departureTrip;
-    const staff = await this.hrService.getStaff();
+    const staff = await this.staffService.getStaff();
     if (staff.BookType == StaffBookType.Self) {
       const exists = this.flightService.getPassengerFlightSegments();
       let goFlight: FlightSegmentEntity;
@@ -221,14 +248,13 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
         s.tripType = TripType.departureTrip;
       }
       if (s.tripType == TripType.returnTrip && goFlight) {
-        console.log("ssssssss",moment(goFlight.ArrivalTime).format("YYYY-MM-DD"));
+        const arrivalDate = moment(goFlight.ArrivalTime).add(3, "hours");
+        console.log("ssssssss", arrivalDate.format("YYYY-MM-DD"));
         if (
           +moment(this.backDate.date) <
-          +moment(goFlight.ArrivalTime).add(3, "hours")
+          +moment(arrivalDate.format("YYYY-MM-DD"))
         ) {
-          this.backDate = this.flydayService.generateDayModel(
-            moment(goFlight.ArrivalTime).add(3, "hours")
-          );
+          this.backDate = this.flydayService.generateDayModel(arrivalDate);
         }
       }
     }
@@ -241,6 +267,13 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     s.fromCity = this.fromCity;
     s.toCity = this.toCity;
     s.BackDate = this.backDate.date;
+    if (this.disabled) {
+      s.Date = s.BackDate;
+    }
+    if (!s.IsRoundTrip) {
+      s.tripType = TripType.departureTrip;
+    }
+    console.log("book-flight", s);
     this.flightService.setSearchFlightModel(s);
     this.router.navigate([AppHelper.getRoutePath("flight-list")]);
   }
@@ -253,7 +286,7 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     }
     this.isSelectFlyDate = flyTo;
     this.flydayService.setFlyDayMulti(!this.isSingle && !this.disabled);
-    this.flydayService.showFlyDayPage(true);
+    this.flydayService.showSelectFlyDatePage(true);
   }
   onFromCitySelected(city: Trafficline) {
     if (city) {

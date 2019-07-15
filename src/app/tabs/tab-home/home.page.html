@@ -7,9 +7,9 @@
     </ion-buttons>
     <ion-title text-center appShowtip>
       <ion-text *ngIf='selectedCompany$|async as company'>{{company}}</ion-text>
-      {{(identity$|async)?.Name}}
+      {{identity?.Name}}
     </ion-title>
-    <ion-buttons slot='end' *ngIf='(identity$|async)?.Numbers?.AgentId;else selectCompany'>
+    <ion-buttons slot='end' *ngIf='identity?.Numbers?.AgentId;else selectCompany'>
       <ion-button fill='clear' size='small' (click)='onSwitchCustomer()'>
         <ion-chip color='success'>
           <ion-label>切换客户</ion-label>

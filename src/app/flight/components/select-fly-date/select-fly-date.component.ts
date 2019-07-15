@@ -95,29 +95,41 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
     });
     setTimeout(() => {
       this.yms = this.flyDayService.generateCanlender(3);
-    }, 8 * 1000);
+    }, 5 * 1000);
     this.flightService.getSearchFlightModelSource().subscribe(s => {
-      if (s && s.tripType == TripType.returnTrip) {
-        const goFlight = this.flightService.getPassengerFlightSegments();
-        if (
-          goFlight.length &&
-          goFlight[0].selectedInfo &&
-          goFlight[0].selectedInfo.length &&
-          goFlight[0].selectedInfo.find(
-            item => item.tripType == TripType.departureTrip
-          )
-        ) {
-          const goDate = moment(
+      if (s) {
+        if (s.tripType == TripType.returnTrip) {
+          const goFlight = this.flightService.getPassengerFlightSegments();
+          if (
+            goFlight.length &&
+            goFlight[0].selectedInfo &&
+            goFlight[0].selectedInfo.length &&
             goFlight[0].selectedInfo.find(
               item => item.tripType == TripType.departureTrip
-            ).flightSegment.ArrivalTime
-          ).add(3, "hours");
-          if (this.yms.length) {
+            )
+          ) {
+            const goDate = moment(
+              goFlight[0].selectedInfo.find(
+                item => item.tripType == TripType.departureTrip
+              ).flightSegment.ArrivalTime
+            ).add(3, "hours");
+            if (this.yms.length) {
+              this.yms.forEach(day => {
+                day.dayList.forEach(d => {
+                  d.enabled =
+                    goDate.format("YYYY-MM-DD") == d.date ||
+                    +moment(d.date) >= +goDate;
+                });
+              });
+            }
+          }
+        } else {
+          if (this.yms && this.yms.length) {
+            const today = this.flyDayService.generateDayModel(moment());
             this.yms.forEach(day => {
               day.dayList.forEach(d => {
                 d.enabled =
-                  goDate.format("YYYY-MM-DD") == d.date ||
-                  +moment(d.date) >= +goDate;
+                  d.timeStamp > today.timeStamp || d.date == today.date;
               });
             });
           }
@@ -132,7 +144,7 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
   }
   cancel() {
     this.flyDayService.setSelectedFlyDays(this.selectedDays);
-    this.flyDayService.showFlyDayPage(false);
+    this.flyDayService.showSelectFlyDatePage(false);
   }
   onDaySelected(d: DayModel) {
     console.log("onDaySelected", d);
@@ -146,17 +158,21 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
     d.descColor = "light";
     d.firstSelected = true;
     d.lastSelected = true;
-    if (this.isMulti && this.selectedDays.length) {
-      if (d.timeStamp < this.selectedDays[0].timeStamp) {
-        d.desc = LanguageHelper.getDepartureTip();
-        this.selectedDays = [d];
-        AppHelper.toast(LanguageHelper.getSelectFlyBackDate(), 1000, "top");
+    if (this.isMulti) {
+      if (this.selectedDays.length) {
+        if (d.timeStamp < this.selectedDays[0].timeStamp) {
+          d.desc = LanguageHelper.getDepartureTip();
+          this.selectedDays = [d];
+          AppHelper.toast(LanguageHelper.getSelectFlyBackDate(), 1000, "top");
+        } else {
+          d.desc = LanguageHelper.getReturnTripTip();
+          this.selectedDays.push(d);
+        }
       } else {
-        d.desc = LanguageHelper.getReturnTripTip();
-        this.selectedDays.push(d);
+        this.selectedDays = [d];
       }
     } else {
-      this.selectedDays.push(d);
+      this.selectedDays = [d];
     }
     this.yms.map(item => {
       item.dayList
@@ -177,7 +193,7 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
     if (!this.isMulti) {
       setTimeout(() => {
         this.cancel();
-      }, 300);
+      }, 200);
     } else {
       if (this.selectedDays.length === 1) {
         AppHelper.toast(LanguageHelper.getSelectFlyBackDate(), 1400, "top");
@@ -185,7 +201,7 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
       if (this.selectedDays.length === 2) {
         setTimeout(() => {
           this.cancel();
-        }, 300);
+        }, 200);
       }
     }
   }

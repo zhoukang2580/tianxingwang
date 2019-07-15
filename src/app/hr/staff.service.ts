@@ -3,7 +3,7 @@ import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
 import { Injectable } from "@angular/core";
 import { StaffBookType } from "../tmc/models/StaffBookType";
-export interface StaffEntity {
+export class StaffEntity {
   StaffNumber: string;
   BookTypeName: string;
   Password: string;
@@ -78,7 +78,7 @@ export interface HrEntity {
 @Injectable({
   providedIn: "root"
 })
-export class HrService {
+export class StaffService {
   private staff: StaffEntity;
   constructor(
     private apiService: ApiService,

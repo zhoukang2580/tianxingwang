@@ -1,4 +1,4 @@
-import { HrService } from "../../hr/staff.service";
+import { StaffService } from "../../hr/staff.service";
 import { Notice, CmsService } from "./../../cms/cms.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { IdentityService } from "src/app/services/identity/identity.service";
@@ -16,7 +16,7 @@ import { tap, shareReplay } from "rxjs/operators";
   styleUrls: ["home.page.scss"]
 })
 export class HomePage implements OnInit {
-  identity$: Observable<IdentityEntity>;
+  identity: IdentityEntity;
   aliPayResult$: Observable<any>;
   wxPayResult$: Observable<any>;
   exitAppSub: Subject<number> = new BehaviorSubject(null);
@@ -30,7 +30,7 @@ export class HomePage implements OnInit {
     private apiService: ApiService,
     private payService: PayService,
     private cmsService: CmsService,
-    private hrService: HrService,
+    private staffService: StaffService,
     route: ActivatedRoute
   ) {
     this.selectedCompany$ = tmcService.getSelectedCompany();
@@ -62,22 +62,6 @@ export class HomePage implements OnInit {
       };
       this.payService.process(req1);
     }
-    this.identity$ = this.identityService.getIdentity().pipe(
-      shareReplay(),
-      tap(id => {
-        console.log("home page get identity ", id);
-      })
-    );
-    // this.check();
-    // this.router.events.subscribe(evt => {
-    // console.log(evt);
-    //   if (evt instanceof NavigationEnd) {
-    //     if (evt.url.includes("tabs/home")) {
-    //       console.log(evt);
-    //       this.check();
-    //     }
-    //   }
-    // });
     this.getAgentNotices();
   }
   async getAgentNotices() {
@@ -87,6 +71,9 @@ export class HomePage implements OnInit {
     console.log("home check");
     try {
       this.apiService.showLoadingView();
+      this.identityService.getIdentityAsync().then(identity => {
+        this.identity = identity;
+      });
       this.companies = await this.tmcService.getCompanies();
       this.apiService.hideLoadingView();
     } catch (e) {
