@@ -21,6 +21,11 @@ export class TmcService {
     private identityService: IdentityService,
     private memberService: MemberService
   ) {
+    this.identityService.getIdentity().subscribe(id => {
+      if (!id || !id.Ticket) {
+        this.companies = null;
+      }
+    });
     this.selectedCompanySource = new BehaviorSubject(null);
   }
   getSelectedCompany() {
@@ -30,7 +35,7 @@ export class TmcService {
     this.selectedCompanySource.next(company);
   }
   async getCompanies(): Promise<Company[]> {
-    if (this.companies) {
+    if (this.companies && this.companies.length) {
       return Promise.resolve(this.companies);
     }
     const req = new RequestEntity();

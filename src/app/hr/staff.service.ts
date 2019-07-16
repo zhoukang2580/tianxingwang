@@ -94,7 +94,12 @@ export class StaffService {
     const id = await this.identityService.getIdentityAsync();
     if (!id || !id.Id || !id.Ticket) {
       this.staff = null;
+      return this.staff;
     }
+    // if (id.Numbers.AgentId) {
+    //   this.staff = {} as any;
+    //   return this.staff;
+    // }
     forceRefresh =
       forceRefresh ||
       (this.staff && !this.staff.IsConfirmInfo) ||

@@ -8,7 +8,7 @@ import { IonicModule } from "@ionic/angular";
 
 import { AuthorityGuard } from "src/app/guards/authority.guard";
 import { MemberCredentialManagementPage } from "./member-credential-management.page";
-import { TmcPipeModule } from "src/app/member/pipe/pipe.module";
+import { MemberPipesModule } from "src/app/member/pipe/pipe.module";
 
 const routes: Routes = [
   {
@@ -24,7 +24,7 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    TmcPipeModule,
+    MemberPipesModule,
     RouterModule.forChild(routes)
   ],
   declarations: [MemberCredentialManagementPage]

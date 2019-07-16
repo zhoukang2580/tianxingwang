@@ -1,3 +1,5 @@
+import { IdentityService } from "src/app/services/identity/identity.service";
+import { LoginService } from "./../login/login.service";
 import { ConfigEntity } from "./config.entity";
 import { RequestEntity } from "../api/Request.entity";
 import { ApiService } from "../api/api.service";
@@ -12,9 +14,11 @@ import { switchMap, tap, map, finalize } from "rxjs/operators";
 export class ConfigService {
   private config: ConfigEntity;
 
-  constructor(private apiService: ApiService) {
-    this.config = new ConfigEntity();
-    this.config.Status = false;
+  constructor(
+    private apiService: ApiService,
+    identityService: IdentityService
+  ) {
+    this.disposal();
     this.get()
       .then(_ => {
         console.log("get ConfigService complete");
@@ -22,8 +26,16 @@ export class ConfigService {
       .catch(e => {
         console.log("ConfigService get error", e);
       });
+    identityService.getIdentity().subscribe(identity => {
+      if (!identity || !identity.Ticket) {
+        this.disposal();
+      }
+    });
   }
-
+  disposal() {
+    this.config = new ConfigEntity();
+    this.config.Status = false;
+  }
   get(): Promise<ConfigEntity> {
     if (this.config.Status) {
       return Promise.resolve(this.config);

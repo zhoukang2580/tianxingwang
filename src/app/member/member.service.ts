@@ -1,14 +1,16 @@
 import { ApiService } from "./../services/api/api.service";
 import { Injectable } from "@angular/core";
 import { RequestEntity } from "../services/api/Request.entity";
-export interface MemberCredentials {
+import { CredentialsType } from "./pipe/credential.pipe";
+export class MemberCredential {
   isModified?: boolean;
+  variables: any;
   Id: string; //
   AccountId: string; //
   /// <summary>
   /// 类型
   /// </summary>
-  Type: string; //
+  Type: CredentialsType; //
   Number: string; //
   /// <summary>
   /// 姓
@@ -37,11 +39,11 @@ export interface MemberCredentials {
   /// <summary>
   /// 国家
   /// </summary>
-  Country: string; //
+  Country: any; //
   /// <summary>
   /// 发证国家
   /// </summary>
-  IssueCountry: string; //
+  IssueCountry: any; //
   /// <summary>
   /// 出生日期
   /// </summary>
@@ -56,7 +58,7 @@ export interface MemberCredentials {
 })
 export class MemberService {
   constructor(private apiService: ApiService) {}
-  async getCredentials(accountId: string): Promise<MemberCredentials[]> {
+  async getCredentials(accountId: string): Promise<MemberCredential[]> {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Credentials-List";
@@ -64,25 +66,25 @@ export class MemberService {
       accountId
     };
     return this.apiService
-      .getResponseAsync<{ Credentials: MemberCredentials[] }>(req)
+      .getResponseAsync<{ Credentials: MemberCredential[] }>(req)
       .then(r => r.Credentials)
       .catch(_ => []);
   }
-  addCredentials(c: MemberCredentials) {
+  addCredentials(c: MemberCredential) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Credentials-Add";
     req.Data = c;
     return this.apiService.getResponseAsync<any>(req);
   }
-  modifyCredentials(c: MemberCredentials) {
+  modifyCredentials(c: MemberCredential) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Credentials-Modify";
     req.Data = c;
     return this.apiService.getResponseAsync<any>(req);
   }
-  removeCredentials(c: MemberCredentials) {
+  removeCredentials(c: MemberCredential) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Credentials-Remove";

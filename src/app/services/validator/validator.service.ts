@@ -55,9 +55,9 @@ export class ValidatorService {
         .subscribe(
           r => {
             if (r.Status && r.Data) {
-              const info = { name, saveType, rule: r.Data, validator: null };
-              this.infos.push(info);
-              resolve(info);
+              const result = { name, saveType, rule: r.Data, validator: null };
+              this.infos.push(result);
+              resolve(result);
             }
             reject("");
           },

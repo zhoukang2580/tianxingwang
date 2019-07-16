@@ -56,25 +56,26 @@ export class IdentityService {
     });
   }
   getIdentity(): Observable<IdentityEntity> {
-    if (
-      this._IdentityEntity &&
-      this._IdentityEntity.Id &&
-      this._IdentityEntity.Ticket
-    ) {
-      return of(this._IdentityEntity);
-    }
-    return this.identitySource.asObservable().pipe(
-      switchMap(r => {
-        if (!r || !r.Ticket || !r.Id) {
-          return this.loadIdentityEntity().pipe(
-            tap(r => {
-              this._IdentityEntity = r;
-            })
-          );
-        }
-        return of(r);
-      })
-    );
+    // if (
+    //   this._IdentityEntity &&
+    //   this._IdentityEntity.Id &&
+    //   this._IdentityEntity.Ticket
+    // ) {
+    //   return of(this._IdentityEntity);
+    // }
+    // return this.identitySource.asObservable().pipe(
+    //   switchMap(r => {
+    //     if (!r || !r.Ticket || !r.Id) {
+    //       return this.loadIdentityEntity().pipe(
+    //         tap(r => {
+    //           this._IdentityEntity = r;
+    //         })
+    //       );
+    //     }
+    //     return of(r);
+    //   })
+    // );
+    return this.identitySource.asObservable();
   }
   loadIdentityEntity() {
     const ticket = AppHelper.getTicket();

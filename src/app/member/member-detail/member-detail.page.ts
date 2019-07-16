@@ -28,10 +28,11 @@ type PageModel = {
 export class MemberDetailPage implements OnInit, OnDestroy {
   Model: PageModel;
   identity: IdentityEntity;
+  staff: any;
   defaultAvatar = AppHelper.getDefaultAvatar();
-  identitySubscription = Subscription.EMPTY;
   deviceSubscription = Subscription.EMPTY;
   staffSubscription = Subscription.EMPTY;
+  identitySubscription = Subscription.EMPTY;
   constructor(
     private identityService: IdentityService,
     private router: Router,
@@ -40,16 +41,19 @@ export class MemberDetailPage implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
+    console.log("member detail ngOnInit");
     this.identitySubscription = this.identityService
       .getIdentity()
-      .subscribe(id => {
-        this.identity = id;
+      .subscribe(identity => {
+        this.identity = identity;
+        if (!identity || !identity.Ticket) {
+          this.Model = null;
+          this.staff = null;
+        }
       });
-    this.Model = {
-      HeadUrl: (await this.configService.get()).DefaultImageUrl
-    } as any;
     this.load();
     AppHelper.setCallback((name: string, data: any) => {
+      console.log("helper callback");
       if (name == CropAvatarPage.UploadSuccessEvent && data && data.HeadUrl) {
         this.Model.HeadUrl = data.HeadUrl + "?v=" + Date.now();
       }
@@ -58,21 +62,30 @@ export class MemberDetailPage implements OnInit, OnDestroy {
 
   load() {
     const req = new RequestEntity();
+    if (this.Model) {
+      return;
+    }
     req.Method = "ApiMemberUrl-Home-Get";
     this.deviceSubscription = this.apiService
       .getResponse<PageModel>(req)
       .pipe(map(r => r.Data))
       .subscribe(
-        r => {
+        async r => {
           if (r) {
-            this.Model.Name = r.Name;
-            this.Model.RealName = r.RealName;
-            this.Model.HeadUrl = r.HeadUrl || this.Model.HeadUrl;
+            this.Model = {
+              ...this.Model,
+              Name: r.Name,
+              RealName: r.RealName,
+              HeadUrl:
+                r.HeadUrl || (await this.configService.get()).DefaultImageUrl
+            } as any;
           }
         },
         () => {}
       );
-
+    if (this.staff) {
+      return;
+    }
     const req1 = new RequestEntity();
     req1.Method = "HrApiUrl-Staff-Get";
     this.staffSubscription = this.apiService
@@ -81,14 +94,11 @@ export class MemberDetailPage implements OnInit, OnDestroy {
       .subscribe(
         r => {
           if (r) {
-            this.Model.StaffNumber = r.StaffNumber;
-            this.Model.CostCenterName = r.CostCenterName;
-            this.Model.CostCenterCode = r.CostCenterCode;
-            this.Model.OrganizationName = r.OrganizationName;
-            this.Model.BookTypeName = r.BookTypeName;
+            this.staff = r;
+            this.Model = { ...this.Model, ...r };
           }
         },
-        () => {}
+        e => {}
       );
   }
   ngOnDestroy() {

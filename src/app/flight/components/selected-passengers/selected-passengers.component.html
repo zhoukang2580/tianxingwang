@@ -1,10 +1,19 @@
 <ion-header>
-  <ion-title>已选择乘客</ion-title>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-button (click)='back()'> 
+        <ion-icon class='back-icon' name='arrow-back'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>当前已选择的乘客信息</ion-title>
+  </ion-toolbar>
 </ion-header>
-<ion-list>
-  <ion-item *ngFor='let s of passengers$|async'>
-    <ion-label>
-      {{s?.CredentialsInfo}}
-    </ion-label>
-  </ion-item>
-</ion-list>
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor='let s of passengers$|async'>
+      <ion-label>
+        {{s?.CredentialsInfo}}
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

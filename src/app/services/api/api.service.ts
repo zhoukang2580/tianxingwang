@@ -41,7 +41,6 @@ interface ApiConfig {
 export class ApiService {
   private loadingSubject: Subject<boolean>;
   public apiConfig: ApiConfig;
-  identityEntity: IdentityEntity;
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -50,9 +49,6 @@ export class ApiService {
     private storage: Storage
   ) {
     this.loadingSubject = new BehaviorSubject(false);
-    this.identityService.getIdentity().subscribe(identity => {
-      this.identityEntity = identity;
-    });
     setTimeout(() => {
       console.log("loadApiConfig");
       this.loadApiConfig(true)
@@ -318,9 +314,10 @@ export class ApiService {
             if (r.Data) {
               await this.storage.set(`KEY_API_CONFIG`, r.Data);
               this.apiConfig = r.Data;
-              if (this.identityEntity) {
-                this.identityEntity.Token = r.Data.Token;
-                this.identityService.setIdentity(this.identityEntity);
+              const identityEntity = await this.identityService.getIdentityAsync();
+              if (identityEntity) {
+                identityEntity.Token = r.Data.Token;
+                this.identityService.setIdentity(identityEntity);
               }
               s(this.apiConfig);
             }

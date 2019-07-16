@@ -104,7 +104,7 @@ const debugCacheTime = 5 * 60 * 1000;
 export class FlightService {
   private worker = null;
 
-  private selectedPassengers: StaffEntity[]=[];
+  private selectedPassengers: StaffEntity[] = [];
   private searchFlightModelSource: Subject<SearchFlightModel>;
   private passengerFlightSegmentSource: Subject<PassengerFlightSegments[]>;
   private searchFlightModel: SearchFlightModel;
@@ -127,7 +127,8 @@ export class FlightService {
     private storage: Storage,
     private modalCtrl: ModalController,
     private router: Router,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    identityService: IdentityService
   ) {
     this.selectedCitySource = new BehaviorSubject(null);
     this.selectedPassengerSource = new BehaviorSubject([]);
@@ -140,6 +141,16 @@ export class FlightService {
     this.openCloseSelectCitySources = new BehaviorSubject(false);
     this.filterCondSources = new BehaviorSubject(null);
     this.worker = window["Worker"] ? new Worker("assets/worker.js") : null;
+    identityService.getIdentity().subscribe(res => {
+      if (!res || !res.Ticket) {
+        this.disposal();
+      }
+    });
+  }
+  disposal() {
+    this.setSearchFlightModel(new SearchFlightModel());
+    this.removeAllPassengerFlightSegments();
+    this.clearAllSelectedPassengers();
   }
   addSelectedPassengers(p: StaffEntity) {
     this.selectedPassengers.push(p);

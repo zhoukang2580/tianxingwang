@@ -6,9 +6,8 @@ import { IdentityService } from "../identity/identity.service";
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { tap, switchMap, map, finalize } from "rxjs/operators";
-import { of, throwError, from, merge } from "rxjs";
+import { of, throwError } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
-import { Platform, LoadingController } from "@ionic/angular";
 import { IResponse } from "../api/IResponse";
 
 @Injectable({
@@ -118,34 +117,21 @@ export class LoginService {
           r => {
             if (r.Status) {
               this.identityService.removeIdentity();
-              this.router
-                .navigate([AppHelper.getRoutePath("login")])
-                .then(() => {
-                  this.reloadApp();
-                });
+              this.router.navigate([AppHelper.getRoutePath("login")]);
             } else if (r.Code.toUpperCase() == "NOLOGIN") {
               this.identityService.removeIdentity();
-              this.router
-                .navigate([AppHelper.getRoutePath("login")])
-                .then(() => {
-                  this.reloadApp();
-                });
+              this.router.navigate([AppHelper.getRoutePath("login")]);
             }
           },
           _ => {
-            this.reloadApp();
+            this.identityService.removeIdentity();
+            this.router.navigate([AppHelper.getRoutePath("login")]);
           }
         );
     } else {
       this.identityService.removeIdentity();
-      this.router.navigate([AppHelper.getRoutePath("login")]).then(() => {
-        this.reloadApp();
-      });
+      this.router.navigate([AppHelper.getRoutePath("login")]);
     }
-  }
-  reloadApp() {
-    console.log("重新刷新应用");
-    window.location.reload();
   }
   async checkIdentity() {
     if (!this.identity) {

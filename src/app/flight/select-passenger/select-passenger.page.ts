@@ -1,44 +1,93 @@
+import { MemberService, MemberCredential } from "./../../member/member.service";
+import { CanComponentDeactivate } from "./../../guards/candeactivate.guard";
 import { StaffBookType } from "./../../tmc/models/StaffBookType";
 import { StaffService } from "./../../hr/staff.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { ApiService } from "./../../services/api/api.service";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import {
   FlightService,
   PassengerFlightSegments,
   TripType
 } from "src/app/flight/flight.service";
 import { SelectedPassengersComponent } from "./../components/selected-passengers/selected-passengers.component";
-import { Component, OnInit, ViewChild } from "@angular/core";
 import {
-  PopoverController,
+  Component,
+  OnInit,
+  ViewChild,
+  AfterViewInit,
+  ViewChildren,
+  QueryList,
+  NgZone,
+  Renderer2,
+  ElementRef
+} from "@angular/core";
+import {
   IonInfiniteScroll,
   IonRefresher,
   NavController,
-  ModalController
+  ModalController,
+  IonGrid,
+  DomController,
+  IonToolbar
 } from "@ionic/angular";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { StaffEntity } from "src/app/hr/staff.service";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { LanguageHelper } from "src/app/languageHelper";
-
+import { CredentialsType } from "src/app/member/pipe/credential.pipe";
+import { Country } from "src/app/pages/select-country/select-country.page";
+import { AppHelper } from "src/app/appHelper";
+import { ValidatorService } from "src/app/services/validator/validator.service";
+import * as moment from "moment";
+import {
+  trigger,
+  state,
+  style,
+  transition,
+  animate
+} from "@angular/animations";
 @Component({
   selector: "app-select-passenger",
   templateUrl: "./select-passenger.page.html",
-  styleUrls: ["./select-passenger.page.scss"]
+  styleUrls: ["./select-passenger.page.scss"],
+  animations: [
+    trigger("openclose", [
+      state("true", style({ height: "*", opacity: "1" })),
+      state("false", style({ height: "0", opacity: "0" })),
+      transition("true<=>false", animate("200ms"))
+    ])
+  ]
 })
-export class SelectPassengerPage implements OnInit {
+export class SelectPassengerPage
+  implements OnInit, CanComponentDeactivate, AfterViewInit {
   passengerFlightSegments: PassengerFlightSegments[];
-  keyword: string;
+  vmKeyword: string;
+  selectedCredentialId: string;
+  private keyword: string;
   selectedPasengers$: Observable<number>;
   currentPage = 1;
   pageSize = 15;
   vmStaffs: StaffEntity[];
-  vmStaff: StaffEntity;
+  private selectedPassenger: StaffEntity;
+  vmNewCredential: MemberCredential;
+  private newCredential: MemberCredential;
   loading = false;
+  openclose = true;
+  isCanDeactive = true;
+  staffCredentails: MemberCredential[] = [];
+  frequentPassengers: MemberCredential[];
+  identityTypes: { key: string; value: string }[];
+  passengerTypes: {
+    key: string;
+    value: string;
+  }[];
+  requestCode: "issueNationality" | "identityNationality";
   @ViewChild(IonRefresher) ionrefresher: IonRefresher;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
+  @ViewChildren("addForm") addForm: QueryList<IonGrid>;
+  @ViewChild("toolbar") toolbar: IonToolbar;
   constructor(
     public modalController: ModalController,
     private flightService: FlightService,
@@ -46,17 +95,101 @@ export class SelectPassengerPage implements OnInit {
     private navCtrl: NavController,
     private apiService: ApiService,
     private identityService: IdentityService,
-    private staffService: StaffService
+    private staffService: StaffService,
+    private memberService: MemberService,
+    private router: Router,
+    private validatorService: ValidatorService,
+    private domCtrl: DomController,
+    private renderer2: Renderer2
   ) {
     this.selectedPasengers$ = flightService
       .getSelectedPasengerSource()
       .pipe(map(items => items.length));
     route.queryParamMap.subscribe(p => {
       this.passengerFlightSegments = this.flightService.getPassengerFlightSegments();
+      this.isCanDeactive = false;
+      const country: Country = AppHelper.getRouteData();
+      if (country && country.Code) {
+        this.vmNewCredential.isModified = true;
+        console.log(this.vmNewCredential, this.requestCode);
+        if (this.requestCode === "issueNationality") {
+          this.vmNewCredential.IssueCountry = country;
+        }
+        if (this.requestCode === "identityNationality") {
+          this.vmNewCredential.Country = country;
+        }
+        AppHelper.setRouteData(null);
+      }
     });
   }
-
-  ngOnInit() {}
+  onScroll(evt: any) {
+    this.domCtrl.read(async _ => {
+      const scrollEle = (await evt.target.getScrollElement()) as HTMLElement;
+      const delta = this.toolbar["el"].clientHeight - scrollEle.scrollTop;
+      if (scrollEle.scrollTop) {
+        this.domCtrl.write(_ => {
+          this.renderer2.setStyle(
+            this.toolbar["el"],
+            "height",
+            delta <= 0 ? 0 : delta
+          );
+        });
+      }
+    });
+  }
+  getIdentityTypes() {
+    this.identityTypes = Object.keys(CredentialsType)
+      .filter(k => +k)
+      .map(k => {
+        return {
+          key: k,
+          value: CredentialsType[k]
+        };
+      });
+    console.log(this.identityTypes);
+  }
+  compareFn(t1, t2) {
+    return t1 == t2;
+  }
+  ngAfterViewInit() {
+    console.log("toolbar", this.toolbar);
+    this.addForm.changes.subscribe(_ => {
+      console.log("this.addForm.changes ", this.addForm.last);
+      if (this.addForm.last) {
+        this.initializeValidateAdd(this.addForm.last["el"]);
+      }
+    });
+  }
+  async ngOnInit() {
+    this.getIdentityTypes();
+    this.passengerTypes = [
+      {
+        key: "1",
+        value: LanguageHelper.Flight.getPassengerTypeCustomerTip()
+      },
+      {
+        key: "2",
+        value: LanguageHelper.Flight.getPassengerTypeSupplierTip()
+      },
+      {
+        key: "3",
+        value: LanguageHelper.Flight.getPassengerTypeEmployeeTip()
+      },
+      {
+        key: "4",
+        value: LanguageHelper.Flight.getPassengerTypeOtherTip()
+      }
+    ];
+  }
+  async canAddNotWhiteListCredential() {
+    // 代理和特殊可以新增证件
+    const identity = await this.identityService.getIdentityAsync();
+    const can =
+      !!(identity.Numbers && identity.Numbers.AgentId) ||
+      (await this.staffService.getStaff()).BookType == StaffBookType.All;
+    console.log("can add not whitelist ", can);
+    return can;
+  }
   async onShow() {
     const m = await this.modalController.create({
       component: SelectedPassengersComponent
@@ -64,6 +197,9 @@ export class SelectPassengerPage implements OnInit {
     await m.present();
   }
   doRefresh(keyword) {
+    this.domCtrl.write(_ => {
+      this.openclose = true;
+    });
     this.currentPage = 1;
     this.vmStaffs = [];
     this.keyword = keyword || "";
@@ -72,55 +208,196 @@ export class SelectPassengerPage implements OnInit {
     }
     this.loadMore();
   }
-  onSearch() {
-    this.vmStaff = null;
+  onSearch(event: any) {
+    console.log("onSearch", event);
     this.loading = true;
-    this.doRefresh((this.keyword || "").trim());
+    this.staffCredentails = [];
+    this.doRefresh((this.vmKeyword || "").trim());
   }
   private async loadMore() {
     this.loading = true;
-    const identity = await this.identityService.getIdentityAsync();
     const req = new RequestEntity();
-    req.Method = "TmcApiHomeUrl-Home-Staff";
-    req.Version = "2.0";
+    req.Method = "TmcApiHomeUrl-Staff-List";
     req.Data = {
-      Name: this.keyword.trim(),
-      TmcId: identity.Numbers.TmcId
+      Name: this.keyword.trim()
     };
-    this.vmStaffs = await this.apiService
-      .getResponseAsync<{
-        ApprovalInfo: any;
-        CostCenters: any;
-        IllegalReasons: any;
-        Organizations: any;
-        Staffs: StaffEntity[];
-        Tmcs: any;
-        TravelForms: any;
-      }>(req)
-      .then(res => res.Staffs || [])
+    const staffs: StaffEntity[] = await this.apiService
+      .getResponseAsync<StaffEntity[]>(req)
+      .then(res => res || [])
       .catch(_ => []);
-    const staff = await this.staffService.getStaff();
-    if (staff.BookType == StaffBookType.All) {
+    if (this.ionrefresher) {
+      this.ionrefresher.complete();
+    }
+    // 代理或者特殊，显示白名单
+    if (await this.canAddNotWhiteListCredential()) {
       const item = new StaffEntity();
       item.AccountId = "0";
       item.CredentialsInfo = LanguageHelper.Flight.getNotWhitelistingTip();
-      this.vmStaffs.unshift(item);
+      staffs.unshift(item);
     }
+    this.vmStaffs = staffs;
     this.loading = false;
   }
   async onSelect(s: StaffEntity) {
-    this.vmStaff = s;
+    this.vmStaffs = null;
+    this.newCredential = null;
+    this.vmNewCredential = null;
+    this.selectedPassenger = s;
+    this.selectedCredentialId = null;
+    console.log("onSelect", s);
+    if (s.AccountId != "0") {
+      this.staffCredentails = await this.getCredentials(s.AccountId);
+    }
+    if (await this.canAddNotWhiteListCredential()) {
+      this.vmNewCredential = new MemberCredential();
+      this.vmNewCredential.variables = "OtherCredential";
+      this.vmNewCredential.Type = CredentialsType.IdCard;
+      this.vmNewCredential.Gender = "M";
+      this.vmNewCredential.IssueCountry = { Code: "CN", Name: "中国" };
+      this.vmNewCredential.Country = { Code: "CN", Name: "中国" };
+    }
+  }
+  onSelectCredential(credentialId: string) {
+    this.selectedCredentialId = credentialId;
   }
   onAdd() {
     const item: PassengerFlightSegments = {
-      passenger: this.vmStaff,
+      passenger: new StaffEntity(),
       selectedInfo: []
     };
-    this.flightService.addSelectedPassengers(this.vmStaff);
+    this.flightService.addSelectedPassengers(item.passenger);
     this.flightService.addPassengerFlightSegments(item);
     this.back();
   }
+  onAddPassenger() {
+    let selectedCredential: MemberCredential;
+    if (!this.selectedCredentialId) {
+      AppHelper.alert(
+        LanguageHelper.Flight.getMustSelectOneCredentialTip(),
+        true,
+        LanguageHelper.getConfirmTip(),
+        LanguageHelper.getCancelTip()
+      );
+      return;
+    }
+    selectedCredential = this.staffCredentails
+      .concat(this.frequentPassengers)
+      .find(c => c.Id == this.selectedCredentialId);
+    if (!selectedCredential) {
+      AppHelper.alert(
+        LanguageHelper.Flight.getMustSelectOneCredentialTip(),
+        true,
+        LanguageHelper.getConfirmTip(),
+        LanguageHelper.getCancelTip()
+      );
+      return;
+    }
+    if (selectedCredential == this.vmNewCredential) {
+      this.newCredential = {
+        ...this.vmNewCredential,
+        Country: this.vmNewCredential.Country.Code,
+        IssueCountry: this.vmNewCredential.IssueCountry.Code
+      };
+    }
+    if (this.selectedCredentialId == "0") {
+      selectedCredential = this.vmNewCredential;
+    } else {
+    }
+    console.log(selectedCredential);
+  }
   back() {
     this.navCtrl.back();
+  }
+  async canDeactivate() {
+    if (this.isCanDeactive) {
+      return true;
+    }
+    return await AppHelper.alert(
+      LanguageHelper.getModifyUnSavedTip(),
+      true,
+      LanguageHelper.getConfirmTip(),
+      LanguageHelper.getCancelTip()
+    );
+  }
+  private async getCredentials(accountId: string) {
+    this.loading = true;
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = "TmcApiHomeUrl-Staff-Credentials";
+    req.Data = {
+      AccountId: accountId
+    };
+    const credentials = await this.apiService
+      .getResponseAsync<MemberCredential[]>(req)
+      .then(res => res || [])
+      .catch(_ => []);
+    if (await this.canAddNotWhiteListCredential()) {
+      this.frequentPassengers = await this.getPassengers(accountId);
+    }
+    this.loading = false;
+    return credentials;
+  }
+  async getPassengers(accountId: string): Promise<MemberCredential[]> {
+    this.loading = true;
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = "TmcApiHomeUrl-Staff-Passengers";
+    req.Data = {
+      AccountId: accountId
+    };
+    const passengers: any[] = await this.apiService
+      .getResponseAsync<
+        {
+          Id: string;
+          Number: string;
+          CredentialsType: string;
+          CredentialsTypeName: string;
+          FirstName: string;
+          LastName: string;
+          CheckName: string;
+          CheckFirstName: string;
+          CheckLastName: string;
+          Country: string;
+          IssueCountry: string;
+          Birthday: string;
+          ExpirationDate: string;
+          Gender: string;
+        }[]
+      >(req)
+      .then(res => res || [])
+      .catch(_ => []);
+    return passengers.map(r => ({
+      ...r,
+      Type: r.CredentialsType,
+      TypeName: r.CredentialsTypeName,
+      variables: "FrequentPassenger"
+    }));
+  }
+  initializeValidateAdd(el: HTMLElement) {
+    this.validatorService.initialize(
+      "Beeant.Domain.Entities.Member.CredentialsEntity",
+      "Add",
+      el
+    );
+  }
+  selectIdentityNationality() {
+    this.requestCode = "identityNationality";
+    this.isCanDeactive = true;
+    this.router.navigate([AppHelper.getRoutePath("select-country")], {
+      queryParams: {
+        requestCode: this.requestCode,
+        title: LanguageHelper.getSelectCountryTip()
+      }
+    });
+  }
+  selectIssueNationality() {
+    this.isCanDeactive = true;
+    this.requestCode = "issueNationality";
+    this.router.navigate([AppHelper.getRoutePath("select-country")], {
+      queryParams: {
+        requestCode: this.requestCode,
+        title: LanguageHelper.getSelectIssueCountryTip()
+      }
+    });
   }
 }

@@ -1,3 +1,4 @@
+import { CandeactivateGuard } from './../../guards/candeactivate.guard';
 import { AppcomponentsModule } from 'src/app/components/appcomponents.module';
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
@@ -9,12 +10,14 @@ import { IonicModule } from "@ionic/angular";
 import { SelectPassengerPage } from "./select-passenger.page";
 import { TmcGuard } from "src/app/guards/tmc.guard";
 import { AuthorityGuard } from "src/app/guards/authority.guard";
+import { MemberPipesModule } from 'src/app/member/pipe/pipe.module';
 
 const routes: Routes = [
   {
     path: "",
     component: SelectPassengerPage,
-    canActivate: [AuthorityGuard, TmcGuard]
+    canActivate: [AuthorityGuard, TmcGuard],
+    canDeactivate:[CandeactivateGuard]
   }
 ];
 
@@ -24,7 +27,8 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     AppcomponentsModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    MemberPipesModule
   ],
   declarations: [SelectPassengerPage]
 })

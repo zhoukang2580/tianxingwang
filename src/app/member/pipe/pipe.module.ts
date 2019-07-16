@@ -7,4 +7,4 @@ import { CredentialPipe } from "./credential.pipe";
   imports: [CommonModule],
   exports: [CredentialPipe]
 })
-export class TmcPipeModule {}
+export class MemberPipesModule {}

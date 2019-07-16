@@ -73,7 +73,7 @@ export class LazyloadimageDirective implements OnChanges, OnDestroy, OnInit {
   async setLoadImage(changes: SimpleChanges) {
     if (changes.lazyloadImage && changes.lazyloadImage.currentValue) {
       console.log(
-        "LazyloadimageDirective image",
+        "setLoadImage LazyloadimageDirective image",
         this.image,
         this.lazyloadImage
       );
@@ -98,19 +98,18 @@ export class LazyloadimageDirective implements OnChanges, OnDestroy, OnInit {
     }
   }
   BindErrorEvent(img: HTMLImageElement) {
-    if (!img.onerror) {
-      const tempImg = document.createElement("img");
-      tempImg.onload = () => {
-        img.src = tempImg.src;
-      };
-      img.onerror = () => {
-        this.Replace(img);
-      };
-      tempImg.onerror = () => {
-        this.Replace(img);
-      };
-      tempImg.src = this.lazyloadImage;
-    }
+    console.log("BindErrorEvent");
+    const tempImg = document.createElement("img");
+    tempImg.onload = () => {
+      img.src = tempImg.src;
+    };
+    img.onerror = () => {
+      this.Replace(img);
+    };
+    tempImg.onerror = () => {
+      this.Replace(img);
+    };
+    tempImg.src = this.lazyloadImage;
   }
   Replace(img: HTMLImageElement) {
     if (

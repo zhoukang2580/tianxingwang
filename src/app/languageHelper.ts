@@ -81,6 +81,21 @@ export class LanguageHelper {
     }
   };
   static Flight = {
+    getMustSelectOneCredentialTip: () => {
+      return `请选择一个证件`;
+    },
+    getPassengerTypeEmployeeTip: () => {
+      return `员工`;
+    },
+    getPassengerTypeSupplierTip: () => {
+      return `供应商`;
+    },
+    getPassengerTypeCustomerTip: () => {
+      return `客户`;
+    },
+    getPassengerTypeOtherTip: () => {
+      return `其它乘客类别`;
+    },
     getNotWhitelistingTip: () => {
       return `非白名单`;
     },

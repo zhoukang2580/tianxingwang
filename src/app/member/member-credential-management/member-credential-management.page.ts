@@ -17,7 +17,7 @@ import { ValidatorService } from "src/app/services/validator/validator.service";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import * as moment from "moment";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
-import { MemberCredentials, MemberService } from "../member.service";
+import { MemberCredential, MemberService } from "../member.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 @Component({
   selector: "app-member-credential-management",
@@ -27,13 +27,13 @@ import { IdentityService } from "src/app/services/identity/identity.service";
 export class MemberCredentialManagementPage
   implements OnInit, AfterViewInit, CanComponentDeactivate {
   identityTypes: { key: string; value: string }[];
-  credentials: MemberCredentials[];
-  newCredentials: MemberCredentials[] = []; // 新增的证件
+  credentials: MemberCredential[];
+  newCredentials: MemberCredential[] = []; // 新增的证件
   loading = false;
   isModify = false;
   isCanDeactive = false;
   requestCode: "issueNationality" | "identityNationality";
-  currentModifyItem: MemberCredentials;
+  currentModifyItem: MemberCredential;
   @ViewChild("f") formEle: ElementRef<HTMLFormElement>;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   @ViewChildren("addForm") addForm: QueryList<IonGrid>;
@@ -102,7 +102,7 @@ export class MemberCredentialManagementPage
       }
     });
   }
-  async removeExistCredential(c: MemberCredentials) {
+  async removeExistCredential(c: MemberCredential) {
     const comfirmDel = await AppHelper.alert(
       LanguageHelper.getDeleteTip(),
       true,
@@ -122,7 +122,7 @@ export class MemberCredentialManagementPage
       }
     }
   }
-  async saveModify(c: MemberCredentials, el: HTMLElement) {
+  async saveModify(c: MemberCredential, el: HTMLElement) {
     const valid = await this.validateCredential(c, el);
     if (!valid) {
       return;
@@ -163,7 +163,7 @@ export class MemberCredentialManagementPage
     console.log("credentials", this.credentials);
   }
   addCredential() {
-    const item: MemberCredentials = {
+    const item: MemberCredential = {
       Gender: "M",
       Type: CredentialsType.IdCard
     } as any;
@@ -176,7 +176,7 @@ export class MemberCredentialManagementPage
       el
     );
   }
-  selectIdentityNationality(item: MemberCredentials) {
+  selectIdentityNationality(item: MemberCredential) {
     this.currentModifyItem = item;
     this.requestCode = "identityNationality";
     this.isCanDeactive = true;
@@ -187,7 +187,7 @@ export class MemberCredentialManagementPage
       }
     });
   }
-  selectIssueNationality(item: MemberCredentials) {
+  selectIssueNationality(item: MemberCredential) {
     this.isCanDeactive = true;
     this.currentModifyItem = item;
     this.requestCode = "issueNationality";
@@ -198,7 +198,7 @@ export class MemberCredentialManagementPage
       }
     });
   }
-  removeAdd(c: MemberCredentials) {
+  removeAdd(c: MemberCredential) {
     AppHelper.alert(
       LanguageHelper.getDeleteTip(),
       true,
@@ -210,7 +210,7 @@ export class MemberCredentialManagementPage
       }
     });
   }
-  async saveAdd(c: MemberCredentials, container: HTMLElement) {
+  async saveAdd(c: MemberCredential, container: HTMLElement) {
     const ok = await this.validateCredential(c, container);
     console.log("validateCredential", ok);
     if (ok) {
@@ -228,11 +228,11 @@ export class MemberCredentialManagementPage
       }
     }
   }
-  dataModified(c: MemberCredentials) {
+  dataModified(c: MemberCredential) {
     console.log("aaaaa");
     c.isModified = true;
   }
-  async validateCredential(c: MemberCredentials, container: HTMLElement) {
+  async validateCredential(c: MemberCredential, container: HTMLElement) {
     if (!c) {
       return Promise.resolve(false);
     }
@@ -329,7 +329,7 @@ export class MemberCredentialManagementPage
       return false;
     }
   }
-  togleModify(item: MemberCredentials) {
+  togleModify(item: MemberCredential) {
     this.currentModifyItem = item;
     this.isModify = !this.isModify;
     this.initializeValidate();

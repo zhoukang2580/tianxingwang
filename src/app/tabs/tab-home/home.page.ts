@@ -71,10 +71,15 @@ export class HomePage implements OnInit {
     console.log("home check");
     try {
       this.apiService.showLoadingView();
-      this.identityService.getIdentityAsync().then(identity => {
-        this.identity = identity;
-      });
+      this.identity = await this.identityService.getIdentityAsync();
       this.companies = await this.tmcService.getCompanies();
+      if (
+        this.identity.Numbers &&
+        this.identity.Numbers.AgentId &&
+        this.identity.Numbers.TmcId
+      ) {
+        console.log(this.companies);
+      }
       this.apiService.hideLoadingView();
     } catch (e) {
       this.apiService.hideLoadingView();

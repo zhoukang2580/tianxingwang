@@ -1,3 +1,4 @@
+import { IdentityService } from "./../identity/identity.service";
 import { RequestEntity } from "../api/Request.entity";
 import { Injectable } from "@angular/core";
 import { ApiService } from "../api/api.service";
@@ -8,8 +9,20 @@ import { ApiService } from "../api/api.service";
 export class ImageRecoverService {
   Failover: any;
   imageRecover: any;
-  constructor(private apiService: ApiService) {
+  constructor(
+    private apiService: ApiService,
+    identityService: IdentityService
+  ) {
+    identityService.getIdentity().subscribe(identity => {
+      if (!identity || !identity.Ticket) {
+        this.disposal();
+      }
+    });
     this.get();
+  }
+  disposal() {
+    this.Failover = null;
+    this.imageRecover = null;
   }
   initialize(container: HTMLElement) {
     if (!this.imageRecover) {

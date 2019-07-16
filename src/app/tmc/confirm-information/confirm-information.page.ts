@@ -7,7 +7,7 @@ import { Component, OnInit } from "@angular/core";
 
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
-import {  MemberCredentials } from 'src/app/member/member.service';
+import {  MemberCredential } from 'src/app/member/member.service';
 
 @Component({
   selector: "app-comfirm-info",
@@ -15,7 +15,7 @@ import {  MemberCredentials } from 'src/app/member/member.service';
   styleUrls: ["./confirm-information.page.scss"]
 })
 export class ComfirmInformationPage implements OnInit {
-  credentials: MemberCredentials[];
+  credentials: MemberCredential[];
   staff: StaffEntity;
   password: string;
   constructor(

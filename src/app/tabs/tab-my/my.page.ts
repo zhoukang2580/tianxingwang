@@ -5,12 +5,9 @@ import { Component, OnInit } from "@angular/core";
 import { OnDestroy } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
 import { IdentityService } from "src/app/services/identity/identity.service";
-import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { RequestEntity } from "src/app/services/api/Request.entity";
-import { map, finalize } from "rxjs/operators";
 import { ApiService } from "src/app/services/api/api.service";
 import { ConfigService } from "src/app/services/config/config.service";
-import { NavController } from "@ionic/angular";
 import { Subscription, Observable } from "rxjs";
 interface PageModel {
   Name: string;
@@ -24,10 +21,10 @@ interface PageModel {
   styleUrls: ["my.page.scss"]
 })
 export class MyPage implements OnDestroy, OnInit {
-  identity: IdentityEntity;
   Model: PageModel;
   defaultAvatar = AppHelper.getDefaultAvatar();
   subscription = Subscription.EMPTY;
+  identitySubscription = Subscription.EMPTY;
   msgCount$: Observable<number>;
   constructor(
     private router: Router,
@@ -37,7 +34,17 @@ export class MyPage implements OnDestroy, OnInit {
     route: ActivatedRoute,
     private messageService: MessageService
   ) {
-    route.paramMap.subscribe(_ => {});
+    this.identitySubscription = this.identityService
+      .getIdentity()
+      .subscribe(identity => {
+        if (!identity || !identity.Ticket) {
+          console.log("my page identity ", identity);
+          this.Model = null;
+        }
+      });
+    route.paramMap.subscribe(async _ => {
+      this.load();
+    });
   }
   onSettings() {
     this.router.navigate([AppHelper.getRoutePath("account-setting")]);
@@ -48,29 +55,28 @@ export class MyPage implements OnDestroy, OnInit {
 
   ngOnInit() {
     this.msgCount$ = this.messageService.getMsgCount();
-    this.Model = {
-      Name: "",
-      RealName: "",
-      Mobile: "",
-      HeadUrl: ""
-    };
-    this.subscription = this.identityService.getIdentity().subscribe(r => {
-      this.identity = r;
-    });
-    this.load();
+    console.log("my ngOnInit");
+    // this.Model = {
+    //   Name: "",
+    //   RealName: "",
+    //   Mobile: "",
+    //   HeadUrl: ""
+    // };
   }
 
   async load() {
+    console.log("my load this.model", this.Model);
     const req = new RequestEntity();
+    if (this.Model) {
+      return this.Model;
+    }
     req.Method = "ApiMemberUrl-Home-Get";
     const r = await this.apiService.getResponseAsync<PageModel>(req);
-    if (r) {
-      this.Model = r;
-      this.configService.get().then(r => {
-        if (this.Model && !this.Model.HeadUrl) {
-          this.Model.HeadUrl = r.DefaultImageUrl;
-        }
-      });
+    const config = await this.configService.get();
+    console.log("my load ApiMemberUrl-Home-Get", r);
+    this.Model = { ...this.Model, ...r };
+    if (this.Model && !this.Model.HeadUrl) {
+      this.Model.HeadUrl = config.DefaultImageUrl;
     }
   }
   credentialManagement() {
@@ -80,6 +86,7 @@ export class MyPage implements OnDestroy, OnInit {
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();
+    this.identitySubscription.unsubscribe();
   }
   goToMyDetail() {
     this.router.navigate([AppHelper.getRoutePath("member-detail")]);
