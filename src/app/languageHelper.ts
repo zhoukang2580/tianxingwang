@@ -81,6 +81,12 @@ export class LanguageHelper {
     }
   };
   static Flight = {
+    getAddMorePassengersTip: () => {
+      return `继续添加乘客？`;
+    },
+    getMustSelectPassengerTypeTip: () => {
+      return `请选择乘客类型`;
+    },
     getMustSelectOneCredentialTip: () => {
       return `请选择一个证件`;
     },

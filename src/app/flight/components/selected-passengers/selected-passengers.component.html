@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <ion-button (click)='back()'> 
+      <ion-button (click)='back()'>
         <ion-icon class='back-icon' name='arrow-back'></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -9,11 +9,42 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-list>
-    <ion-item *ngFor='let s of passengers$|async'>
-      <ion-label>
-        {{s?.CredentialsInfo}}
-      </ion-label>
+  <ion-item-group *ngFor='let s of passengers$|async' margin-bottom>
+    <ion-item-divider >
+      <ion-text appShowtip>{{s?.credential?.FirstName}}{{s?.credential?.LastName}} {{s?.credential?.Number}}</ion-text>
+      <ion-button fill='clear'  slot='end' (click)='remove(s)'>
+        <ion-icon name="trash" color='danger' mode='ios'>
+        </ion-icon>
+      </ion-button>
+    </ion-item-divider>
+
+    <ion-item>
+      <ion-label>证件号:</ion-label>
+      <ion-label appShowtip>{{s?.credential?.Number}} </ion-label>
     </ion-item>
-  </ion-list>
+    <ion-item>
+      <ion-label> 证件姓名:</ion-label>
+      <ion-label appShowtip> {{s?.credential?.FirstName}}{{s?.credential?.LastName}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>登机名:</ion-label>
+      <ion-label appShowtip> {{s?.credential?.CheckName}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>国籍:</ion-label>
+      <ion-label>{{s?.credential?.Country}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>出生年月:</ion-label>
+      <ion-label>{{s?.credential?.Birthday}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label> 到期日期:</ion-label>
+      <ion-label>{{s?.credential?.ExpirationDate}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>性别:</ion-label>
+      <ion-label>{{s?.credential?.Gender=="F"?"女":s?.credential?.Gender=="M"?"男":"未知"}}</ion-label>
+    </ion-item>
+  </ion-item-group>
 </ion-content>

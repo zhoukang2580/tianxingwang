@@ -1,3 +1,4 @@
+import { MemberCredential } from "./../../member/member.service";
 import { IdentityService } from "./../../services/identity/identity.service";
 import { StaffBookType } from "./../../tmc/models/StaffBookType";
 import { StaffService, StaffEntity } from "../../hr/staff.service";
@@ -94,6 +95,7 @@ export class FlightItemCabinsPage implements OnInit {
       } else {
         const result = await this.flightService.addPassengerFlightSegments({
           passenger: this.staff,
+          credential: new MemberCredential(),
           selectedInfo: [
             {
               flightPolicy: cabin,
@@ -107,6 +109,7 @@ export class FlightItemCabinsPage implements OnInit {
     } else {
       const result = await this.flightService.addPassengerFlightSegments({
         passenger: this.staff,
+        credential: new MemberCredential(),
         selectedInfo: [
           {
             flightPolicy: cabin,
@@ -199,6 +202,7 @@ export class FlightItemCabinsPage implements OnInit {
         } else {
           const res = await this.flightService.addPassengerFlightSegments({
             passenger: this.staff,
+            credential: new MemberCredential(),
             selectedInfo: [
               {
                 flightPolicy: cbin,

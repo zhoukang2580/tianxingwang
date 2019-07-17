@@ -14,20 +14,20 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh(null)">
+    <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="下拉刷新" refreshingSpinner="circles"
+      refreshingText="正在加载...">
+    </ion-refresher-content>
+  </ion-refresher>
   <ion-toolbar #toolbar>
     <!-- Searchbar with a custom debounce -->
     <ion-searchbar debounce="700" animated placeholder="员工号、姓名、手机号、空格键 开始查询" (ionChange)='onSearch($event)'
       [(ngModel)]='vmKeyword'>
     </ion-searchbar>
   </ion-toolbar>
-</ion-header>
-
-<ion-content  (ionScroll)='onScroll($event)'>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh(null)">
-    <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="下拉刷新" refreshingSpinner="circles"
-      refreshingText="正在加载...">
-    </ion-refresher-content>
-  </ion-refresher>
   <ng-container *ngIf='vmStaffs else addTempl'>
     <ion-list *ngIf='!loading;else loadingTemp'>
       <ng-container *ngIf='vmStaffs?.length;else nodata'>
@@ -129,11 +129,31 @@
               <ion-text *ngIf='staffCredentails&&staffCredentails.length>1'>此人其他证件：</ion-text>
               <ion-text *ngIf='staffCredentails&&staffCredentails.length<=1'>证件：</ion-text>
             </ion-label>
-            <ion-radio slot='end' name='credentialType' value="0" [checked]='"0"==selectedCredentialId'
-              (ionSelect)='onSelectCredential("0")'></ion-radio>
+            <ion-radio slot='end' name='credentialType' value="vmNewCredentialId"
+              [checked]='"vmNewCredentialId"==selectedCredentialId'
+              (ionSelect)='onSelectCredential("vmNewCredentialId")'></ion-radio>
           </ion-item>
         </ion-item-divider>
         <ion-grid #addForm>
+          <ion-row>
+            <ion-col no-margin no-padding class="id-type">
+              <ion-item lines='none' no-margin no-padding>
+                <ion-label>证件类型</ion-label>
+                <ion-select [(ngModel)]='vmNewCredential.Type' name='Type' okText="确定" cancelText="取消"
+                  [compareWith]='compareFn'>
+                  <ion-select-option [value]="opt.key" *ngFor='let opt of identityTypes'>{{opt.key|credential}}
+                  </ion-select-option>
+                </ion-select>
+                <input type="text" value="{{vmNewCredential.Type}}" hidden ValidateName="Type">
+              </ion-item>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>证件号码：</ion-col>
+            <ion-col>
+              <input type="text" [(ngModel)]='vmNewCredential.Number' name='Number' ValidateName="Number">
+            </ion-col>
+          </ion-row>
           <ion-row>
             <ion-col>姓：</ion-col>
             <ion-col>
@@ -160,50 +180,6 @@
                 name='CheckLastName'>
             </ion-col>
           </ion-row>
-          <ion-row>
-            <ion-col>性别：</ion-col>
-            <ion-col>
-              <ion-radio-group no-margin no-padding [(ngModel)]='vmNewCredential.Gender' name='Gender' class='gender'>
-                <ion-radio value="M" [checked]='vmNewCredential.Gender=="M"'></ion-radio>
-                <ion-label slot='start'>男</ion-label>
-                <ion-label margin-start padding-start></ion-label>
-                <ion-radio value="F"></ion-radio>
-                <ion-label>女</ion-label>
-              </ion-radio-group>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col no-margin no-padding class="id-type">
-              <ion-item lines='none' no-margin no-padding>
-                <ion-label>证件类型</ion-label>
-                <ion-select [(ngModel)]='vmNewCredential.Type' name='Type' okText="确定" cancelText="取消"
-                  [compareWith]='compareFn'>
-                  <ion-select-option [value]="opt.key" *ngFor='let opt of identityTypes'>{{opt.key|credential}}
-                  </ion-select-option>
-                </ion-select>
-                <input type="text" value="{{vmNewCredential.Type}}" hidden ValidateName="Type">
-              </ion-item>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col>证件号码：</ion-col>
-            <ion-col>
-              <input type="text" [(ngModel)]='vmNewCredential.Number' name='Number' ValidateName="Number">
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col>出生年月：</ion-col>
-            <ion-col>
-              <input type="date" [(ngModel)]='vmNewCredential.Birthday' name='Birthday' ValidateName="Birthday">
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col>证件到期日期</ion-col>
-            <ion-col>
-              <input type="date" [(ngModel)]='vmNewCredential.ExpirationDate' name='ExpirationDate'
-                ValidateName="ExpirationDate">
-            </ion-col>
-          </ion-row>
           <ion-row (click)='selectIdentityNationality()'>
             <ion-col>
               <ion-label>国籍</ion-label>
@@ -228,6 +204,49 @@
             </ion-col>
             <ion-col size='1' class='arrow-forward' text-end>
               <ion-icon name='arrow-forward' size='small' color='medium' mode='ios'></ion-icon>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>性别：</ion-col>
+            <ion-col>
+              <ion-radio-group no-margin no-padding [(ngModel)]='vmNewCredential.Gender' name='Gender' class='gender'>
+                <ion-radio value="M" [checked]='vmNewCredential.Gender=="M"'></ion-radio>
+                <ion-label slot='start'>男</ion-label>
+                <ion-label margin-start padding-start></ion-label>
+                <ion-radio value="F"></ion-radio>
+                <ion-label>女</ion-label>
+              </ion-radio-group>
+            </ion-col>
+          </ion-row>
+
+
+          <ion-row>
+            <ion-col>出生年月：</ion-col>
+            <ion-col>
+              <input type="date" [(ngModel)]='vmNewCredential.Birthday' name='Birthday' ValidateName="Birthday">
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>证件到期日期</ion-col>
+            <ion-col>
+              <input type="date" [(ngModel)]='vmNewCredential.ExpirationDate' name='ExpirationDate'
+                ValidateName="ExpirationDate">
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <ion-item no-margin no-padding lines='none'>
+                乘客类别：
+              </ion-item>
+            </ion-col>
+            <ion-col size='7'>
+              <ion-radio-group class='credentials-remark' no-margin no-padding [(ngModel)]='vmNewCredential.CredentialsRemark'
+                name='CredentialsRemark'>
+                <ion-item *ngFor='let r of credentialsRemarks'>
+                  <ion-label>{{r.value}}</ion-label>
+                  <ion-radio value="{{r.value}}" [checked]='r.key=="客户"'></ion-radio>
+                </ion-item>
+              </ion-radio-group>
             </ion-col>
           </ion-row>
         </ion-grid>

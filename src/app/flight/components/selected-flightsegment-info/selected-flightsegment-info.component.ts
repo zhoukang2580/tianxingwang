@@ -126,6 +126,25 @@ export class SelectedFlightsegmentInfoComponent implements OnInit {
         : LanguageHelper.getReturnTripTip()
     }]`;
   }
+  private reduceSelectedInfo(args: PassengerFlightSegments[]) {
+    return args.reduce(
+      (arr, item) => {
+        const itm = arr.find(i => i.passenger == item.passenger);
+        if (itm) {
+          itm.selectedInfo = itm.selectedInfo || [];
+          item.selectedInfo.forEach(i => {
+            if (!itm.selectedInfo.find(j => j == i)) {
+              itm.selectedInfo.push(i);
+            }
+          });
+        } else {
+          arr.push(item);
+        }
+        return arr;
+      },
+      [] as PassengerFlightSegments[]
+    );
+  }
   async onSelectReturnTrip() {
     console.log("onSelectReturnTrip");
     const s = this.flightService.getSearchFlightModel();

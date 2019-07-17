@@ -7,4 +7,4 @@ import { SelectCityDirective } from "./select-city.directive";
   imports: [CommonModule],
   exports: [SelectCityDirective]
 })
-export class DirectivesModule {}
+export class FlightDirectivesModule {}

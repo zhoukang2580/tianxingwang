@@ -64,6 +64,7 @@ export class SelectPassengerPage
   implements OnInit, CanComponentDeactivate, AfterViewInit {
   passengerFlightSegments: PassengerFlightSegments[];
   vmKeyword: string;
+  credentialsRemarks: { key: string; value: string }[];
   selectedCredentialId: string;
   private keyword: string;
   selectedPasengers$: Observable<number>;
@@ -87,7 +88,6 @@ export class SelectPassengerPage
   @ViewChild(IonRefresher) ionrefresher: IonRefresher;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChildren("addForm") addForm: QueryList<IonGrid>;
-  @ViewChild("toolbar") toolbar: IonToolbar;
   constructor(
     public modalController: ModalController,
     private flightService: FlightService,
@@ -100,7 +100,8 @@ export class SelectPassengerPage
     private router: Router,
     private validatorService: ValidatorService,
     private domCtrl: DomController,
-    private renderer2: Renderer2
+    private renderer2: Renderer2,
+    private ngZone: NgZone
   ) {
     this.selectedPasengers$ = flightService
       .getSelectedPasengerSource()
@@ -122,21 +123,6 @@ export class SelectPassengerPage
       }
     });
   }
-  onScroll(evt: any) {
-    this.domCtrl.read(async _ => {
-      const scrollEle = (await evt.target.getScrollElement()) as HTMLElement;
-      const delta = this.toolbar["el"].clientHeight - scrollEle.scrollTop;
-      if (scrollEle.scrollTop) {
-        this.domCtrl.write(_ => {
-          this.renderer2.setStyle(
-            this.toolbar["el"],
-            "height",
-            delta <= 0 ? 0 : delta
-          );
-        });
-      }
-    });
-  }
   getIdentityTypes() {
     this.identityTypes = Object.keys(CredentialsType)
       .filter(k => +k)
@@ -152,7 +138,6 @@ export class SelectPassengerPage
     return t1 == t2;
   }
   ngAfterViewInit() {
-    console.log("toolbar", this.toolbar);
     this.addForm.changes.subscribe(_ => {
       console.log("this.addForm.changes ", this.addForm.last);
       if (this.addForm.last) {
@@ -177,6 +162,24 @@ export class SelectPassengerPage
       },
       {
         key: "4",
+        value: LanguageHelper.Flight.getPassengerTypeOtherTip()
+      }
+    ];
+    this.credentialsRemarks = [
+      {
+        key: "客户",
+        value: LanguageHelper.Flight.getPassengerTypeCustomerTip()
+      },
+      {
+        key: "供应商",
+        value: LanguageHelper.Flight.getPassengerTypeSupplierTip()
+      },
+      {
+        key: "员工",
+        value: LanguageHelper.Flight.getPassengerTypeEmployeeTip()
+      },
+      {
+        key: "其它乘客类别",
         value: LanguageHelper.Flight.getPassengerTypeOtherTip()
       }
     ];
@@ -239,11 +242,12 @@ export class SelectPassengerPage
     this.loading = false;
   }
   async onSelect(s: StaffEntity) {
-    this.vmStaffs = null;
+    this.vmStaffs = null; // 是否显示搜索列表
     this.newCredential = null;
-    this.vmNewCredential = null;
+    this.vmNewCredential = null; // 页面上显示新增此人其他证件
     this.selectedPassenger = s;
-    this.selectedCredentialId = null;
+    this.selectedCredentialId = null; // 所选择的证件
+    this.frequentPassengers = null; // 是否显示常旅客
     console.log("onSelect", s);
     if (s.AccountId != "0") {
       this.staffCredentails = await this.getCredentials(s.AccountId);
@@ -251,7 +255,9 @@ export class SelectPassengerPage
     if (await this.canAddNotWhiteListCredential()) {
       this.vmNewCredential = new MemberCredential();
       this.vmNewCredential.variables = "OtherCredential";
+      this.vmNewCredential.CredentialsRemark = "客户";
       this.vmNewCredential.Type = CredentialsType.IdCard;
+      this.vmNewCredential.Id = "vmNewCredentialId";
       this.vmNewCredential.Gender = "M";
       this.vmNewCredential.IssueCountry = { Code: "CN", Name: "中国" };
       this.vmNewCredential.Country = { Code: "CN", Name: "中国" };
@@ -260,16 +266,7 @@ export class SelectPassengerPage
   onSelectCredential(credentialId: string) {
     this.selectedCredentialId = credentialId;
   }
-  onAdd() {
-    const item: PassengerFlightSegments = {
-      passenger: new StaffEntity(),
-      selectedInfo: []
-    };
-    this.flightService.addSelectedPassengers(item.passenger);
-    this.flightService.addPassengerFlightSegments(item);
-    this.back();
-  }
-  onAddPassenger() {
+  async onAddPassenger() {
     let selectedCredential: MemberCredential;
     if (!this.selectedCredentialId) {
       AppHelper.alert(
@@ -280,8 +277,9 @@ export class SelectPassengerPage
       );
       return;
     }
-    selectedCredential = this.staffCredentails
-      .concat(this.frequentPassengers)
+    selectedCredential = (this.staffCredentails || [])
+      .concat(this.frequentPassengers || [])
+      .concat(this.vmNewCredential)
       .find(c => c.Id == this.selectedCredentialId);
     if (!selectedCredential) {
       AppHelper.alert(
@@ -298,12 +296,139 @@ export class SelectPassengerPage
         Country: this.vmNewCredential.Country.Code,
         IssueCountry: this.vmNewCredential.IssueCountry.Code
       };
+      const validate = await this.validateCredential(
+        this.vmNewCredential,
+        this.addForm && this.addForm.last && this.addForm.last["el"]
+      );
+      if (!validate) {
+        return;
+      }
     }
-    if (this.selectedCredentialId == "0") {
-      selectedCredential = this.vmNewCredential;
-    } else {
+    const item: PassengerFlightSegments = {
+      credential: selectedCredential,
+      passenger: this.selectedPassenger,
+      selectedInfo: []
+    };
+    this.flightService.addSelectedPassengers(item.passenger);
+    this.flightService.addPassengerFlightSegments(item);
+    this.isCanDeactive = true;
+    const ok = await AppHelper.alert(
+      LanguageHelper.Flight.getAddMorePassengersTip(),
+      true,
+      LanguageHelper.getConfirmTip(),
+      LanguageHelper.getCancelTip()
+    );
+    if (!ok) {
+      this.back();
+    }else{
+      this.doRefresh("");
     }
-    console.log(selectedCredential);
+  }
+  async validateCredential(c: MemberCredential, container: HTMLElement) {
+    if (!c || !container) {
+      return Promise.resolve(false);
+    }
+    const info = await this.validatorService
+      .get("Beeant.Domain.Entities.Member.CredentialsEntity", "Add")
+      .catch(e => {
+        AppHelper.alert(e);
+        return { rule: [] };
+      });
+    console.log(info);
+    if (!info || !info.rule) {
+      AppHelper.alert(LanguageHelper.getValidateRulesEmptyTip());
+      return true;
+    }
+    const rules = info.rule;
+    if (!c.Type) {
+      return this.checkProperty(c, "Type", rules, container);
+    }
+    if (!c.Number) {
+      return this.checkProperty(c, "Number", rules, container);
+    }
+    if (!c.FirstName) {
+      return this.checkProperty(c, "FirstName", rules, container);
+    }
+    if (!c.LastName) {
+      return this.checkProperty(c, "LastName", rules, container);
+    }
+    if (!c.CheckFirstName) {
+      return this.checkProperty(c, "CheckFirstName", rules, container);
+    }
+    if (!c.CheckLastName) {
+      return this.checkProperty(c, "CheckLastName", rules, container);
+    }
+    if (!c.Country) {
+      return this.checkProperty(c, "Country", rules, container);
+    }
+    if (!c.IssueCountry) {
+      return this.checkProperty(c, "IssueCountry", rules, container);
+    }
+    if (!c.Gender) {
+      return this.checkProperty(c, "Gender", rules, container);
+    }
+
+    if (!c.Birthday) {
+      return this.checkProperty(c, "Birthday", rules, container);
+    }
+    this.ngZone.runOutsideAngular(() => {
+      c.Birthday = moment(c.Birthday).format("YYYY-MM-DD");
+    });
+    console.log(c.Birthday);
+    if (!c.ExpirationDate) {
+      return this.checkProperty(c, "ExpirationDate", rules, container);
+    }
+    this.ngZone.runOutsideAngular(() => {
+      c.ExpirationDate = moment(c.ExpirationDate).format("YYYY-MM-DD");
+    });
+    console.log(c.ExpirationDate);
+    if (!c.CredentialsRemark) {
+      return this.checkProperty(c, "CredentialsRemark", rules, container);
+    }
+    return true;
+  }
+  private checkProperty(
+    obj: any,
+    pro: string,
+    rules: { Name: string; Message }[],
+    container: HTMLElement
+  ) {
+    try {
+      if (!obj) {
+        return false;
+      }
+      if (pro == "CredentialsRemark" && !obj[pro]) {
+        AppHelper.alert(
+          LanguageHelper.Flight.getMustSelectPassengerTypeTip(),
+          true
+        );
+        return false;
+      }
+      if (!obj[pro]) {
+        const rule = rules.find(
+          it => it.Name.toLowerCase() == pro.toLowerCase()
+        );
+        const input = container.querySelector(
+          `input[ValidateName=${pro}]`
+        ) as HTMLInputElement;
+        console.log(`input[ValidateName=${pro}]`, input);
+
+        if (rule) {
+          AppHelper.alert(rule.Message, true).then(_ => {
+            if (input) {
+              setTimeout(() => {
+                input.focus();
+              }, 300);
+            }
+          });
+        }
+        return false;
+      }
+      return true;
+    } catch (e) {
+      AppHelper.alert(e);
+      return false;
+    }
   }
   back() {
     this.navCtrl.back();
@@ -337,7 +462,7 @@ export class SelectPassengerPage
     this.loading = false;
     return credentials;
   }
-  async getPassengers(accountId: string): Promise<MemberCredential[]> {
+  private async getPassengers(accountId: string): Promise<MemberCredential[]> {
     this.loading = true;
     const req = new RequestEntity();
     req.IsShowLoading = true;

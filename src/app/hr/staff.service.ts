@@ -4,6 +4,7 @@ import { ApiService } from "src/app/services/api/api.service";
 import { Injectable } from "@angular/core";
 import { StaffBookType } from "../tmc/models/StaffBookType";
 export class StaffEntity {
+  TempId: string;
   StaffNumber: string;
   BookTypeName: string;
   Password: string;
@@ -96,20 +97,25 @@ export class StaffService {
       this.staff = null;
       return this.staff;
     }
-    // if (id.Numbers.AgentId) {
-    //   this.staff = {} as any;
-    //   return this.staff;
-    // }
     forceRefresh =
       forceRefresh ||
-      (this.staff && !this.staff.IsConfirmInfo) ||
-      (this.staff && !this.staff.IsModifyPassword);
-    if (this.staff && !forceRefresh) {
-      if (this.staff.BookType == StaffBookType.Self) {
-        this.staff.AccountId = this.staff.AccountId || id.Id;
-        this.staff.Name = this.staff.Name || id.Name;
+      (this.staff &&
+        (!(this.staff.IsConfirmInfo === undefined) &&
+          !this.staff.IsConfirmInfo)) ||
+      (this.staff &&
+        (!(this.staff.IsModifyPassword === undefined) &&
+          !this.staff.IsModifyPassword));
+    if (this.staff) {
+      if (
+        !forceRefresh ||
+        (this.staff.BookType === undefined && id.Numbers.AgentId)
+      ) {
+        if (this.staff.BookType == StaffBookType.Self) {
+          this.staff.AccountId = this.staff.AccountId || id.Id;
+          this.staff.Name = this.staff.Name || id.Name;
+        }
+        return this.staff;
       }
-      return this.staff;
     }
     const req = new RequestEntity();
     req.Method = "HrApiUrl-Staff-Get";

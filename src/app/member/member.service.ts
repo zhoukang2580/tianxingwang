@@ -5,6 +5,7 @@ import { CredentialsType } from "./pipe/credential.pipe";
 export class MemberCredential {
   isModified?: boolean;
   variables: any;
+  CredentialsRemark: any;
   Id: string; //
   AccountId: string; //
   /// <summary>

@@ -1,3 +1,4 @@
+import { DirectivesModule } from 'src/app/directives/directives.module';
 import { AppcomponentsModule } from "./../../components/appcomponents.module";
 import { IonicModule } from "@ionic/angular";
 import { NgModule } from "@angular/core";
@@ -18,7 +19,7 @@ import { CabinComponent } from "./fly-filter/cabin/cabin.component";
 import { FlyTimelineComponent } from "./fly-timeline/fly-timeline.component";
 import { FlyTimelineItemComponent } from "./fly-timeline-item/fly-timeline-item.component";
 import { SelectCityComponent } from "./select-city/select-city.component";
-import { DirectivesModule } from "../directives/directives.module";
+import { FlightDirectivesModule } from "../directives/directives.module";
 import { SearchDayComponent } from "./search-day/search-day.component";
 import { TicketchangingComponent } from "./ticketchanging/ticketchanging.component";
 import { SelectedPassengersComponent } from "./selected-passengers/selected-passengers.component";
@@ -55,10 +56,13 @@ import { SelectFlightsegmentCabinComponent } from "./select-flightsegment-cabin/
     IonicModule,
     FlightPipesModule,
     ReactiveFormsModule,
+    FlightDirectivesModule,
     DirectivesModule,
     AppcomponentsModule
   ],
   exports: [
+    DirectivesModule,
+    FlightDirectivesModule,
     AppcomponentsModule,
     SearchDayComponent,
     DayComponent,
