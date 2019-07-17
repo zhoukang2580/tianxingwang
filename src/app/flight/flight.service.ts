@@ -17,10 +17,8 @@ import { FlightSegmentEntity } from "./models/flight/FlightSegmentEntity";
 import { RequestEntity } from "../services/api/Request.entity";
 import { Storage } from "@ionic/storage";
 import { LanguageHelper } from "../languageHelper";
-import { combineLatest } from "rxjs";
-import { map, tap, filter, last, switchMap, catchError } from "rxjs/operators";
+import { map, switchMap, catchError } from "rxjs/operators";
 import { Router } from "@angular/router";
-import { SelectedFlightsegmentInfoComponent } from "./components/selected-flightsegment-info/selected-flightsegment-info.component";
 import { MemberCredential } from "../member/member.service";
 
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
@@ -35,11 +33,16 @@ export enum TripType {
   departureTrip = "departureTrip",
   returnTrip = "returnTrip"
 }
+export interface PassengerPolicyFlights {
+  PassengerKey: string; // accountId
+  FlightPolicies: FlightPolicy[];
+}
+
 export interface PassengerFlightSegments {
   passenger: StaffEntity;
   credential: MemberCredential;
   selectedInfo: PassengerFlightSelectedInfo[];
-  Id?: number;
+  Id?: string;
 }
 export interface FlightSegmentModel {
   AirlineName; // String 航空公司名称
@@ -97,6 +100,11 @@ export interface Trafficline {
   EnglishName: string; // 英文名称
   Selected?: boolean;
 }
+export interface CurrentViewtFlightSegment {
+  flightSegment: FlightSegmentEntity;
+  flightSegments: FlightSegmentEntity[];
+  policyFlights: PassengerPolicyFlights[];
+}
 interface LocalStorageAirport {
   LastUpdateTime: number;
   Trafficlines: Trafficline[];
@@ -120,10 +128,7 @@ export class FlightService {
   private localDomesticAirports: LocalStorageAirport;
   private selectedCitySource: Subject<Trafficline>;
   private passengerFlightSegments: PassengerFlightSegments[]; // 记录乘客及其研究选择的航班
-  currentViewtFlightSegment: {
-    flightSegment: FlightSegmentEntity;
-    flightSegments: FlightSegmentEntity[];
-  };
+  currentViewtFlightSegment: CurrentViewtFlightSegment;
 
   constructor(
     private apiService: ApiService,
@@ -161,7 +166,7 @@ export class FlightService {
   }
   addSelectedPassengers(p: StaffEntity) {
     if (p) {
-      p.TempId = this.selectedPassengers.length + "";
+      p.TempId = AppHelper.uuid();
       this.selectedPassengers.push(p);
       this.selectedPassengerSource.next(this.selectedPassengers);
     }
@@ -200,11 +205,13 @@ export class FlightService {
   }
   setCurrentViewtFlightSegment(
     s: FlightSegmentEntity,
-    fs: FlightSegmentEntity[]
+    fs: FlightSegmentEntity[],
+    policyFlights: PassengerPolicyFlights[]
   ) {
     this.currentViewtFlightSegment = {
       flightSegment: s,
-      flightSegments: fs
+      flightSegments: fs,
+      policyFlights
     };
   }
   private setPassengerFlightSegmentSource(args: PassengerFlightSegments[]) {
@@ -396,7 +403,7 @@ export class FlightService {
         LanguageHelper.getConfirmTip()
       );
     }
-    arg.Id = this.passengerFlightSegments.length;
+    arg.Id = AppHelper.uuid();
     this.passengerFlightSegments.push(arg);
     return "";
   }
@@ -523,7 +530,7 @@ export class FlightService {
         LanguageHelper.getConfirmTip()
       );
     }
-    arg.Id = this.passengerFlightSegments.length;
+    arg.Id = `${this.passengerFlightSegments.length}`;
     this.passengerFlightSegments.push(arg);
     return "";
   }
@@ -538,13 +545,30 @@ export class FlightService {
         LanguageHelper.getConfirmTip()
       );
     }
-    arg.Id = this.passengerFlightSegments.length;
+    arg.Id = `${this.passengerFlightSegments.length}`;
     this.passengerFlightSegments.push(arg);
     return "";
   }
   removeAllPassengerFlightSegments() {
     this.passengerFlightSegments = [];
     this.setPassengerFlightSegmentSource(this.getPassengerFlightSegments());
+  }
+  replacePassengerFlightSelectedInfo(
+    passenger: StaffEntity,
+    old: PassengerFlightSelectedInfo,
+    newInfo: PassengerFlightSelectedInfo
+  ) {
+    const arr = this.getPassengerFlightSegments();
+    const one = arr.find(
+      item => item.passenger.AccountId == passenger.AccountId
+    );
+    if (one) {
+      one.selectedInfo = one.selectedInfo.filter(item => item.Id != old.Id);
+      newInfo.Id = old.Id;
+      one.selectedInfo.push(newInfo);
+      this.passengerFlightSegments = arr;
+      this.setPassengerFlightSegmentSource(this.getPassengerFlightSegments());
+    }
   }
   removePassengerFlightSelectedInfo(
     passenger: StaffEntity,
@@ -558,7 +582,7 @@ export class FlightService {
         itm => !args.some(i => i.Id == itm.Id)
       );
     }
-    this.setPassengerFlightSegmentSource(this.getPassengerFlightSegments());
+    this.setPassengerFlightSegmentSource(this.passengerFlightSegments);
   }
   removePassengerFlightSegments(arg: PassengerFlightSegments[]) {
     this.passengerFlightSegments = this.getPassengerFlightSegments().filter(
@@ -668,12 +692,7 @@ export class FlightService {
   policyflights(
     Flights: FlightJourneyEntity[],
     Passengers: string[]
-  ): Observable<
-    {
-      PassengerKey: string;
-      FlightPolicies: FlightPolicy[];
-    }[]
-  > {
+  ): Observable<PassengerPolicyFlights[]> {
     return from(
       Promise.resolve().then(async _ => {
         let local;
@@ -750,7 +769,7 @@ export class FlightService {
       })
     );
   }
-  async policyflightsAsync(
+  async getPolicyflightsAsync(
     Flights: FlightJourneyEntity[],
     Passengers: string[]
   ): Promise<
@@ -931,7 +950,7 @@ export class FlightService {
       [] as FlightSegmentEntity[]
     );
   }
-  private async getFlightJourneyDetailListAsync(
+  async getFlightJourneyDetailListAsync(
     data: SearchFlightModel
   ): Promise<FlightJourneyEntity[]> {
     let local;

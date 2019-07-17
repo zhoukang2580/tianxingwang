@@ -14,10 +14,16 @@
 .rules {
   font-size: 0.8rem;
 }
+.lowest-segment{
+  font-size: 0.9rem;
+}
 .reset {
   display: flex;
   justify-content: flex-end;
 }
 .back-icon {
   color: rgba(var(--ion-color-dark-rgb), 0.5);
+}
+ion-item-divider{
+  border-left: 4px solid var(--ion-color-secondary);
 }

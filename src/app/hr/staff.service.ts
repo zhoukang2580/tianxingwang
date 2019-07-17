@@ -87,7 +87,7 @@ export class StaffService {
   ) {
     this.identityService.getIdentity().subscribe(id => {
       if (!id || !id.Id || !id.Ticket) {
-        this.staff = null;
+        this.staff = {} as any;
       }
     });
   }

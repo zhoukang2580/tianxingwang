@@ -26,6 +26,7 @@ import { SelectedPassengersComponent } from "./selected-passengers/selected-pass
 import { SelectFlyDateComponent } from "./select-fly-date/select-fly-date.component";
 import { SelectedFlightsegmentInfoComponent } from "./selected-flightsegment-info/selected-flightsegment-info.component";
 import { SelectFlightsegmentCabinComponent } from "./select-flightsegment-cabin/select-flightsegment-cabin.component";
+import { SelectedPassengersPopoverComponent } from './selected-passengers-popover/selected-passengers-popover.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import { SelectFlightsegmentCabinComponent } from "./select-flightsegment-cabin/
     SelectedPassengersComponent,
     SelectFlyDateComponent,
     SelectedFlightsegmentInfoComponent,
-    SelectFlightsegmentCabinComponent
+    SelectFlightsegmentCabinComponent,
+    SelectedPassengersPopoverComponent
   ],
   imports: [
     CommonModule,
@@ -89,7 +91,8 @@ import { SelectFlightsegmentCabinComponent } from "./select-flightsegment-cabin/
     TicketchangingComponent,
     SelectedPassengersComponent,
     SelectedFlightsegmentInfoComponent,
-    SelectFlightsegmentCabinComponent
+    SelectFlightsegmentCabinComponent,
+    SelectedPassengersPopoverComponent
   ]
 })
 export class FlightComponentsModule {}
