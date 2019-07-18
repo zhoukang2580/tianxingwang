@@ -77,7 +77,7 @@ export class MessageService {
       Id: msgIds.join(",")
     };
     return this.apiService
-      .getResponseAsync(req)
+      .getPromiseData(req)
       .then(_ => true)
       .catch(_ => {
         AppHelper.alert(_);
@@ -92,7 +92,7 @@ export class MessageService {
       Id: msgIds.join(",")
     };
     return this.apiService
-      .getResponseAsync(req)
+      .getPromiseData(req)
       .then(_ => true)
       .catch(_ => {
         AppHelper.alert(_);
@@ -110,13 +110,13 @@ export class MessageService {
       PageSize: pageSize
     };
     return this.apiService
-      .getResponseAsync<MessageModel[]>(req)
+      .getPromiseData<MessageModel[]>(req)
       .catch(_ => []);
   }
   private popMessage(): Promise<MessageModel> {
     const req = new RequestEntity();
     req.Method = "ApiAccountUrl-Message-Pop";
-    return this.apiService.getResponseAsync<MessageModel>(req);
+    return this.apiService.getPromiseData<MessageModel>(req);
   }
   private autoPopMessages() {
     console.log("autoPopMessages");

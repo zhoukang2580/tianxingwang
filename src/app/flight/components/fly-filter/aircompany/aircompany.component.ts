@@ -25,8 +25,7 @@ import { FilterConditionModel } from "src/app/flight/models/flight/advanced-sear
 })
 export class AircompanyComponent
   implements OnInit, AfterViewInit, OnDestroy, OnChanges {
-  @Input()
-  flights: FlightJourneyEntity[];
+  @Input()  flights: FlightJourneyEntity[];
   isUnlimitRadioChecked = true;
   @Output() sCond: EventEmitter<any>;
   aircompanies: SearchTypeModel[];

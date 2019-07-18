@@ -75,14 +75,24 @@ export class SelectedFlightsegmentInfoComponent implements OnInit {
       t.dismiss().catch(_ => {});
     }
   }
+  getTime(takofftime: string) {
+    if (takofftime && takofftime.includes("T")) {
+      return moment(takofftime).format(" HH:mm ");
+    }
+    return takofftime;
+  }
   async nextStep() {}
   async reelect(passenger: StaffEntity, item: PassengerFlightSelectedInfo) {
-    await this.flightService.reselectPassengerFlightSegments(passenger,item);
+    await this.flightService.reselectPassengerFlightSegments(passenger, item);
   }
   async onSelectLowestSegment(
     info: PassengerFlightSegments,
     data: PassengerFlightSelectedInfo
   ) {
+    if (data.selectedLowerSegment) {
+      AppHelper.alert("已经选择过更低航班");
+      return;
+    }
     const flights = this.currentViewtFlightSegment.flightSegments;
     const onePolicyFlights = this.currentViewtFlightSegment.totalPolicyFlights.find(
       item => item.PassengerKey == info.passenger.AccountId
@@ -127,7 +137,9 @@ export class SelectedFlightsegmentInfoComponent implements OnInit {
           const newOne: PassengerFlightSelectedInfo = {
             flightPolicy: cbin,
             flightSegment: lowestFlightSegment,
-            tripType:TripType.departureTrip
+            tripType: TripType.departureTrip,
+            Id: AppHelper.uuid(),
+            selectedLowerSegment: true
           };
           this.flightService.replacePassengerFlightSelectedInfo(
             info.passenger,

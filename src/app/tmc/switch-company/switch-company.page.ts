@@ -50,7 +50,7 @@ export class SwitchCompanyPage implements OnInit, OnDestroy {
     };
     req.IsShowLoading = true;
     const result = await this.apiService
-      .getResponseAsync<IdentityEntity>(req)
+      .getPromiseData<IdentityEntity>(req)
       .catch(e => {
         console.log(e);
         return null;
@@ -85,7 +85,7 @@ export class SwitchCompanyPage implements OnInit, OnDestroy {
       Name: this.keyword
     };
     try {
-      return await this.apiService.getResponseAsync<TcmCompany[]>(req);
+      return await this.apiService.getPromiseData<TcmCompany[]>(req);
     } catch (e) {
       console.error(e);
       return [];

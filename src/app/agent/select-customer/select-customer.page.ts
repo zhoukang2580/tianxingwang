@@ -51,7 +51,7 @@ export class SelectCustomerPage implements OnInit, OnDestroy {
     };
     req.IsShowLoading = true;
     const result = await this.apiService
-      .getResponseAsync<IdentityEntity>(req)
+      .getPromiseData<IdentityEntity>(req)
       .catch(e => {
         console.log(e);
         return null;
@@ -87,7 +87,7 @@ export class SelectCustomerPage implements OnInit, OnDestroy {
       Name: this.keyword.trim()
     };
     try {
-      return await this.apiService.getResponseAsync<TmcEntity[]>(req);
+      return await this.apiService.getPromiseData<TmcEntity[]>(req);
     } catch (e) {
       console.error(e);
       return [];

@@ -2,7 +2,8 @@ import { SearchTypeModel } from "./SearchTypeModel";
 export class FilterConditionModel {
   airCompanies: SearchTypeModel[];
   airTypes: SearchTypeModel[];
-  airports: SearchTypeModel[];
+  fromAirports: SearchTypeModel[];
+  toAirports: SearchTypeModel[];
   cabins: SearchTypeModel[];
   onlyDirect: boolean;
   takeOffTimeSpan: {
@@ -15,9 +16,11 @@ export class FilterConditionModel {
     const condition = new FilterConditionModel();
     condition.airCompanies = [];
     condition.airTypes = [];
-    condition.airports = [];
+    condition.fromAirports = [];
     condition.cabins = [];
     condition.onlyDirect = false;
+    condition.fromAirports = [];
+    condition.toAirports = [];
     condition.takeOffTimeSpan = {
       lower: 0,
       upper: 24

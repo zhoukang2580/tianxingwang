@@ -225,7 +225,7 @@ export class SelectPassengerPage
       Name: this.keyword.trim()
     };
     const staffs: StaffEntity[] = await this.apiService
-      .getResponseAsync<StaffEntity[]>(req)
+      .getPromiseData<StaffEntity[]>(req)
       .then(res => res || [])
       .catch(_ => []);
     if (this.ionrefresher) {
@@ -458,7 +458,7 @@ export class SelectPassengerPage
       AccountId: accountId
     };
     const credentials = await this.apiService
-      .getResponseAsync<MemberCredential[]>(req)
+      .getPromiseData<MemberCredential[]>(req)
       .then(res => res || [])
       .catch(_ => []);
     if (await this.canAddNotWhiteListCredential()) {
@@ -476,7 +476,7 @@ export class SelectPassengerPage
       AccountId: accountId
     };
     const passengers: any[] = await this.apiService
-      .getResponseAsync<
+      .getPromiseData<
         {
           Id: string;
           Number: string;

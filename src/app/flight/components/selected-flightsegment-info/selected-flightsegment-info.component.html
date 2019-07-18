@@ -32,10 +32,11 @@
           {{s.flightPolicy?.Rules?.join("; ")}}
         </ion-label>
         <ion-label class='rules' text-wrap color='dark' (click)='onSelectLowestSegment(info,s)'
-          *ngIf='s?.flightPolicy?.LowerSegment'>
-          您指定的航班前后60分钟内有更低价航班:{{s?.flightPolicy?.LowerSegment?.Number}}
-          {{s?.flightPolicy?.LowerSegment?.TakeoffTime}},价格:￥{{s.flightPolicy?.Cabin?.TicketPrice}}
+          *ngIf='s.flightPolicy?.LowerSegment&& !s.selectedLowerSegment'>
+          当前航班前后60分钟内有更低价航班:{{s.flightPolicy?.LowerSegment?.Number}}&nbsp;
+          {{getTime(s.flightPolicy?.LowerSegment?.TakeoffTime)}},价格:￥{{s.flightPolicy?.LowerSegment?.LowestFare}}
           <ion-button color='secondary' fill='clear'>选择该航班</ion-button>
+          <!-- <ion-label text-wrap>{{s.flightPolicy?.LowerSegment|json}}</ion-label> -->
         </ion-label>
         <div class='reset'>
           <ion-button expand='block' color='secondary' size='small' (click)='reelect(info.passenger,s)'>重选

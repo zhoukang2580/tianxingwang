@@ -42,7 +42,7 @@ export class TmcService {
     req.Method = "TmcApiHomeUrl-Tmc-GetIdentityCompany";
     req.Data = {};
     this.companies = await this.apiService
-      .getResponseAsync<Company[]>(req)
+      .getPromiseData<Company[]>(req)
       .catch(_ => []);
     return this.companies;
   }

@@ -67,7 +67,7 @@ export class MemberService {
       accountId
     };
     return this.apiService
-      .getResponseAsync<{ Credentials: MemberCredential[] }>(req)
+      .getPromiseData<{ Credentials: MemberCredential[] }>(req)
       .then(r => r.Credentials)
       .catch(_ => []);
   }
@@ -76,20 +76,20 @@ export class MemberService {
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Credentials-Add";
     req.Data = c;
-    return this.apiService.getResponseAsync<any>(req);
+    return this.apiService.getPromiseData<any>(req);
   }
   modifyCredentials(c: MemberCredential) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Credentials-Modify";
     req.Data = c;
-    return this.apiService.getResponseAsync<any>(req);
+    return this.apiService.getPromiseData<any>(req);
   }
   removeCredentials(c: MemberCredential) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Credentials-Remove";
     req.Data = c;
-    return this.apiService.getResponseAsync<any>(req);
+    return this.apiService.getPromiseData<any>(req);
   }
 }

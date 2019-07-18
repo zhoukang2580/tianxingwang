@@ -33,9 +33,12 @@
         <div class='tab' [class.active]='tab===2' [class.user-op]='userOps.airCompanyOp' (click)='onTabClick(2)'>
           <span>航空公司</span>
         </div>
-        <!-- <div class='tab' [class.active]='tab===3' [class.user-op]='userOps.airportOp' (click)='onTabClick(3)'>
-          <span>机场</span>
-        </div> -->
+        <div class='tab' [class.active]='tab===3' [class.user-op]='userOps.fromAirportOp' (click)='onTabClick(3)'>
+          <span>起飞机场</span>
+        </div>
+        <div class='tab' [class.active]='tab===6' [class.user-op]='userOps.toAirportOp' (click)='onTabClick(6)'>
+          <span>到达机场</span>
+        </div>
         <div class='tab' [class.active]='tab===4' [class.user-op]='userOps.airTypeOp' (click)='onTabClick(4)'>
           <span>机型</span>
         </div>
@@ -47,8 +50,10 @@
         <app-take-off-timespan [class.hidden]='tab!==1' (sCond)='onTimeSpanSCond($event)'></app-take-off-timespan>
         <app-aircompany [flights]='flights' [class.hidden]='tab!==2' (sCond)='onAirCompanySCond($event)'>
         </app-aircompany>
-        <!-- <app-airports [flights]='flights' [class.hidden]='tab!==3' (sCond)='onAirportSCond($event)'
-          [toCityName]='toCityName'></app-airports> -->
+        <app-airports [flights]='flights' [class.hidden]='tab!==3' [cityName]='fromCityName' #fromAirports
+          (sCond)='onFromAirportSCond($event)'></app-airports>
+        <app-airports [flights]='flights' [isFromAirports]='false' [cityName]='toCityName' #toAirports
+          [class.hidden]='tab!==6' (sCond)='onToAirportSCond($event)'></app-airports>
         <app-airtype [flights]='flights' [class.hidden]='tab!==4' (sCond)='onAirTypeSCond($event)'></app-airtype>
         <app-cabin [flights]='flights' [class.hidden]='tab!==5' (sCond)='onCabinSCond($event)'></app-cabin>
       </article>

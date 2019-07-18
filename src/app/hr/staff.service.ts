@@ -87,7 +87,7 @@ export class StaffService {
   ) {
     this.identityService.getIdentity().subscribe(id => {
       if (!id || !id.Id || !id.Ticket) {
-        this.staff = {} as any;
+        this.staff = null;
       }
     });
   }
@@ -121,7 +121,7 @@ export class StaffService {
     req.Method = "HrApiUrl-Staff-Get";
     req.IsShowLoading = true;
     return this.apiService
-      .getResponseAsync<StaffEntity>(req)
+      .getPromiseData<StaffEntity>(req)
       .then(s => {
         console.log("staff ", s);
         this.staff = s;
@@ -145,7 +145,7 @@ export class StaffService {
     req.Data = data;
     req.IsShowLoading = true;
     return this.apiService
-      .getResponseAsync<any>(req)
+      .getPromiseData<any>(req)
       .then(_ => true)
       .catch(_ => false);
   }

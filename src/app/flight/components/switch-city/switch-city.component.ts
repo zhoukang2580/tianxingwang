@@ -49,7 +49,7 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
   @ViewChild("toCityEle") toCityEle: IonText;
   toggleCities = false; // 没有切换城市顺序
   rotateIcon = false;
-  @Input() disabled: boolean = false; // 界面上显示的出发城市
+  @Input() disabled = false; // 界面上显示的出发城市
   @Input() vmFromCity: Trafficline; // 界面上显示的出发城市
   @Input() vmToCity: Trafficline; // 界面上显示的目的城市
   isSelectFromCity: boolean;
@@ -85,7 +85,7 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
       fromCity = toCity;
       toCity = temp;
     }
-    if(!fromCity||!toCity){
+    if (!fromCity || !toCity) {
       return;
     }
     if (this.vmFromCity) {
@@ -129,7 +129,7 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
     this.selectCitySubscription.unsubscribe();
   }
   ngOnChanges(changes: SimpleChanges) {
-    console.log("changes.fromCity", changes.vmFromCity);
+    console.log("changes", changes);
     console.log("changes.toCity", changes.vmToCity);
   }
   ngOnInit() {

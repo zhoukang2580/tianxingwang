@@ -1,6 +1,6 @@
 <ion-list lines='none' *ngIf='airports?.length'>
   <ion-list-header color='light' no-margin>
-    <ion-label>{{toCityName}}降落</ion-label>
+    <ion-label>{{cityName}}{{isFromAirports?"起飞":"降落"}}</ion-label> 
   </ion-list-header>
   <ion-item>
     <ion-label>不限</ion-label>
@@ -10,4 +10,4 @@
     <ion-label>{{entry?.label}}</ion-label>
     <ion-checkbox #cbox slot="end" [(ngModel)]="entry.isChecked" (ionChange)='onionChange()'></ion-checkbox>
   </ion-item>
-</ion-list> 
+</ion-list>

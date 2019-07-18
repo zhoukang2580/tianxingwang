@@ -1,4 +1,4 @@
-import { ApiService } from 'src/app/services/api/api.service';
+import { ApiService } from "src/app/services/api/api.service";
 import { StaffEntity } from "src/app/hr/staff.service";
 import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
 import { TripType } from "./../flight.service";
@@ -16,8 +16,6 @@ import {
   OnInit,
   OnDestroy,
   AfterViewInit,
-  ViewChild,
-  NgZone
 } from "@angular/core";
 import * as moment from "moment";
 import { Subscription, Observable } from "rxjs";
@@ -38,7 +36,6 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
   toggleCities = false; // 没有切换城市顺序
   rotateIcon = false;
   isSingle = true;
-  isLoading = false;
   isSelectFlyDate: boolean;
   flyDate: DayModel;
   backDate: DayModel;
@@ -75,10 +72,17 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     private flightService: FlightService,
     private storage: Storage,
     private staffService: StaffService,
-    private apiService:ApiService
+    private apiService: ApiService
   ) {
     route.queryParamMap.subscribe(async _ => {
+      console.log(
+        "getAllLocalAirports",
+        (await flightService.getAllLocalAirports()).filter(c =>
+          c.Name.includes("上海")
+        )
+      );
       this.staff = await this.staffService.getStaff();
+      this.showReturnTrip = this.staff.BookType == StaffBookType.Self;
       this.selectedPassengers = flightService.getSelectedPasengers().length;
       if (this.searchConditionSubscription) {
         this.searchConditionSubscription.unsubscribe();
@@ -168,7 +172,7 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
   mustAddPassenger() {
     return this.staff && this.staff.BookType !== StaffBookType.Self;
   }
-  onSelectPassenger(){
+  onSelectPassenger() {
     this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
   }
   ngOnDestroy(): void {
@@ -196,22 +200,22 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.fromCity = this.vmFromCity = {} as any;
     this.fromCity.Nickname = this.fromCity.CityName = this.vmFromCity.CityName =
       "北京";
-    this.vmFromCity.Code = this.fromCity.Code = "BJS";
+    this.vmFromCity.Code = this.fromCity.Code = "SHA";
     this.toCity = this.vmToCity = {} as any;
     this.toCity.Nickname = this.toCity.CityName = this.vmToCity.CityName =
       "上海";
-    this.vmToCity.Code = this.toCity.Code = "SHA";
+    this.vmToCity.Code = this.toCity.Code = "BJS";
     this.fromCity.Tag = this.toCity.Tag = "AirportCity"; // 出发城市，不是出发城市的那个机场
     const lastFromCity = await this.storage.get("fromCity");
     const lastToCity = await this.storage.get("toCity");
     if (!lastFromCity || !lastToCity) {
       const cities = await this.flightService.getAllLocalAirports();
       if (cities && cities.length) {
-        this.vmFromCity = this.fromCity = cities.find(
-          c => c.Code.toUpperCase() == "BJS"
+        const vmFromCity = this.fromCity = cities.find(
+          c => c.Code.toUpperCase() == this.fromCity.Code
         );
-        this.vmToCity = this.toCity = cities.find(
-          c => c.Code.toUpperCase() == "SHA"
+        const vmToCity = this.toCity = cities.find(
+          c => c.Code.toUpperCase() == this.toCity.Code
         );
       }
     } else {
@@ -261,8 +265,8 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     s.Date = this.flyDate.date;
     s.FromCode = this.fromCity.Code;
     s.ToCode = this.toCity.Code;
-    s.ToAsAirport = this.toCity.Tag === "Airport"; // 以到达 机场 查询
-    s.FromAsAirport = this.fromCity.Tag === "Airport"; // 以出发 机场 查询
+    s.ToAsAirport = this.toCity.Tag === "Airport"; // Airport 以到达 机场 查询;AirportCity 以城市查询
+    s.FromAsAirport = this.fromCity.Tag === "Airport"; // Airport 以出发 机场 查询
     s.IsRoundTrip = !this.isSingle;
     s.fromCity = this.fromCity;
     s.toCity = this.toCity;

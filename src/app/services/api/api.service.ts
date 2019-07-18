@@ -95,7 +95,7 @@ export class ApiService {
   getResponse<T>(req: RequestEntity): Observable<IResponse<T>> {
     return this.sendRequest(req, true);
   }
-  getResponseAsync<T>(req: RequestEntity): Promise<T> {
+   getPromiseData<T>(req: RequestEntity): Promise<T> {
     return new Promise((resolve, reject) => {
       const sub = this.getResponse<T>(req).subscribe(
         r => {
@@ -104,6 +104,28 @@ export class ApiService {
           } else {
             reject(r.Message);
           }
+        },
+        e => {
+          reject(e);
+        },
+        () => {
+          setTimeout(() => {
+            if (sub) {
+              if (environment.production) {
+                console.log("接口调用 sub.unsubscribe();");
+              }
+              sub.unsubscribe();
+            }
+          }, 500);
+        }
+      );
+    });
+  }
+  getPromise<T>(req: RequestEntity): Promise<IResponse<T>> {
+    return new Promise((resolve, reject) => {
+      const sub = this.getResponse<T>(req).subscribe(
+        r => {
+          resolve(r);
         },
         e => {
           reject(e);

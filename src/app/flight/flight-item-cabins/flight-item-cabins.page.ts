@@ -80,7 +80,7 @@ export class FlightItemCabinsPage implements OnInit {
     return `${t && t.format("MM月DD日")} ${d && d.dayOfWeekName} `;
   }
   async onBookTicket(flightCabin: FlightCabinEntity) {
-    await this.addToUnselectOrReselecteInfos(flightCabin);
+    await this.flightService.addToUnselectOrReselecteInfos(flightCabin);
     await this.showSelectedInfos();
   }
   async filterPolicyFlights() {
@@ -107,9 +107,6 @@ export class FlightItemCabinsPage implements OnInit {
     } else {
       this.showPolicyCabins = false;
     }
-  }
-  private async addToUnselectOrReselecteInfos(cabin: FlightCabinEntity) {
-    this.flightService.addOrReplaceSelectedInfos(cabin);
   }
   async showSelectedInfos() {
     const modal = await this.modalCtrl.create({

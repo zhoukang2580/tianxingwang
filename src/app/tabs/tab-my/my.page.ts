@@ -71,7 +71,7 @@ export class MyPage implements OnDestroy, OnInit {
       return this.Model;
     }
     req.Method = "ApiMemberUrl-Home-Get";
-    const r = await this.apiService.getResponseAsync<PageModel>(req);
+    const r = await this.apiService.getPromiseData<PageModel>(req);
     const config = await this.configService.get();
     console.log("my load ApiMemberUrl-Home-Get", r);
     this.Model = { ...this.Model, ...r };

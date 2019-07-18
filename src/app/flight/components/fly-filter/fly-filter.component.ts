@@ -24,16 +24,19 @@ export class FlyFilterComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(TakeOffTimespanComponent) timeComp: TakeOffTimespanComponent;
   @ViewChild(CabinComponent) cabinComp: CabinComponent;
   @ViewChild(AirtypeComponent) airTypeComp: AirtypeComponent;
-  @ViewChild(AirportsComponent) airportsComp: AirportsComponent;
+  @ViewChild("fromAirports") fromAirportsComp: AirportsComponent;
+  @ViewChild("toAirports") toAirportsComp: AirportsComponent;
   @ViewChild(AircompanyComponent) airCompanyComp: AircompanyComponent;
   @Input() flights: FlightJourneyEntity[];
   @Input() toCityName: string; // 比如上海
+  @Input() fromCityName: string; // 比如上海
   sForm: FormGroup;
   tab: number;
   userOps = {
     // 用户是否对某类型的选项做出改变
     timespanOp: false,
-    airportOp: false,
+    fromAirportOp: false,
+    toAirportOp: false,
     airCompanyOp: false,
     airTypeOp: false,
     cabinOp: false
@@ -45,7 +48,8 @@ export class FlyFilterComponent implements OnInit, OnDestroy, AfterViewInit {
       onlyDirect: [false], // 仅直达
       takeOffTimeSpan: [{ lower: 0, upper: 24 }], // 起飞时段
       airCompanies: [], // 航空公司
-      airports: [], // 机场
+      fromAirports: [], // 起飞机场
+      toAirports: [], // 到达机场
       airTypes: [] // 机型
     });
   }
@@ -87,11 +91,23 @@ export class FlyFilterComponent implements OnInit, OnDestroy, AfterViewInit {
     });
     this.userOps.airCompanyOp = sCond && sCond.length > 0;
   }
-  onAirportSCond(sCond: SearchTypeModel[]) {
+  onFromAirportSCond(evt: {
+    isFromAirports: boolean;
+    airports: SearchTypeModel[];
+  }) {
     this.sForm.patchValue({
-      airports: sCond
+      fromAirports: evt.airports
     });
-    this.userOps.airportOp = sCond && sCond.length > 0;
+    this.userOps.fromAirportOp = evt && evt.airports.length > 0;
+  }
+  onToAirportSCond(evt: {
+    isFromAirports: boolean;
+    airports: SearchTypeModel[];
+  }) {
+    this.sForm.patchValue({
+      toAirports: evt.airports
+    });
+    this.userOps.toAirportOp = evt && evt.airports.length > 0;
   }
   onAirTypeSCond(sCond: SearchTypeModel[]) {
     this.sForm.patchValue({

@@ -79,7 +79,7 @@ export class ComfirmInformationPage implements OnInit {
     req.Method = `ApiPasswordUrl-Password-Modify`;
     req.IsShowLoading = true;
     return this.apiService
-      .getResponseAsync(req)
+      .getPromiseData(req)
       .then(_ => {
         return true;
       })

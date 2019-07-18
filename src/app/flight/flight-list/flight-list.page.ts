@@ -17,7 +17,8 @@ import {
   IonContent,
   IonRefresher,
   ModalController,
-  PopoverController
+  PopoverController,
+  DomController
 } from "@ionic/angular";
 import {
   Observable,
@@ -120,6 +121,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     private staffService: StaffService,
     private apiService: ApiService,
     private identityService: IdentityService,
+    private domCtrl: DomController,
     private modalCtrl: ModalController,
     private popoverController: PopoverController
   ) {
@@ -287,7 +289,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       }
       this.vmFlights = [];
       this.loading = true;
-      let data = this.flightJourneyList;
+      let data = JSON.parse(JSON.stringify(this.flightJourneyList));
       this.hasDataSource.next(false);
       if (loadDataFromServer) {
         // 强制从服务器端返回新数据
@@ -331,11 +333,16 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }, 100);
   }
-  private async loadPolicyedFlightsAsync(passengerId?: string) {
+  private async loadPolicyedFlightsAsync(
+    passengerId?: string
+  ): Promise<FlightJourneyEntity[]> {
     // 先获取最新的数据
     let flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync(
       this.searchFlightModel
     );
+    if (flightJourneyList.length == 0) {
+      return [];
+    }
     let passengerIds = this.getUnSelectFlightSegmentPassengerIds();
     if (passengerIds.length == 0) {
       passengerIds = this.flightService
@@ -354,6 +361,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       flightJourneyList,
       passengerId ? [passengerId] : passengerIds
     );
+    if (this.policyflights.length !== passengerIds.length) {
+      flightJourneyList = [];
+      this.policyflights = [];
+    }
     if (passengerId) {
       flightJourneyList = this.replaceCabinInfo(
         this.policyflights,
@@ -565,16 +576,20 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     // this.controlFooterShowHide();
   }
   private moveDayToSearchDate(d?: DayModel) {
-    if (this.flyDaysCalendarComp) {
-      const day =
-        d ||
-        this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date);
-      setTimeout(() => {
-        if (this.flyDaysCalendarComp) {
-          this.flyDaysCalendarComp.onDaySelected(day);
-        }
-      }, 1000);
-    }
+    this.domCtrl.write(_ => {
+      if (this.flyDaysCalendarComp) {
+        const day =
+          d ||
+          this.flyDayService.generateDayModelByDate(
+            this.searchFlightModel.Date
+          );
+        setTimeout(() => {
+          if (this.flyDaysCalendarComp) {
+            this.flyDaysCalendarComp.onDaySelected(day);
+          }
+        }, 1000);
+      }
+    });
   }
   controlFooterShowHide() {
     const cnt = document.querySelector("ion-content");
@@ -764,6 +779,17 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     if (!this.filterCondition) {
       return result;
     }
+    result = this.filterByFlightDirect(result);
+    result = this.filterByFromAirports(result);
+    result = this.filterByToAirports(result);
+    result = this.filterByAirportCompanies(result);
+    result = this.filterByAirTypes(result);
+    result = this.filterByCabins(result);
+    result = this.filterByTakeOffTimeSpan(result);
+    return result;
+  }
+  private filterByFlightDirect(flys: FlightJourneyEntity[]) {
+    let result = flys;
     if (this.filterCondition.onlyDirect) {
       result = result.map(f => {
         f.FlightRoutes = f.FlightRoutes.map(r => {
@@ -773,6 +799,52 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         return f;
       });
     }
+    return result;
+  }
+  private filterByFromAirports(
+    flys: FlightJourneyEntity[]
+  ): FlightJourneyEntity[] {
+    let result = flys;
+    if (
+      this.filterCondition.fromAirports &&
+      this.filterCondition.fromAirports.length
+    ) {
+      result = result.map(fly => {
+        fly.FlightRoutes = fly.FlightRoutes.map(r => {
+          r.FlightSegments = r.FlightSegments.filter(s =>
+            this.filterCondition.fromAirports.some(a => a.id === s.FromAirport)
+          );
+          return r;
+        });
+        return fly;
+      });
+    }
+    return result;
+  }
+  private filterByToAirports(
+    flys: FlightJourneyEntity[]
+  ): FlightJourneyEntity[] {
+    let result = flys;
+    if (
+      this.filterCondition.toAirports &&
+      this.filterCondition.toAirports.length
+    ) {
+      result = result.map(fly => {
+        fly.FlightRoutes = fly.FlightRoutes.map(r => {
+          r.FlightSegments = r.FlightSegments.filter(s =>
+            this.filterCondition.toAirports.some(a => a.id === s.ToAirport)
+          );
+          return r;
+        });
+        return fly;
+      });
+    }
+    return result;
+  }
+  private filterByAirportCompanies(
+    flys: FlightJourneyEntity[]
+  ): FlightJourneyEntity[] {
+    let result = flys;
     if (
       this.filterCondition.airCompanies &&
       this.filterCondition.airCompanies.length > 0
@@ -787,20 +859,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         return fly;
       });
     }
-    if (
-      this.filterCondition.airports &&
-      this.filterCondition.airports.length > 0
-    ) {
-      result = result.map(fly => {
-        fly.FlightRoutes = fly.FlightRoutes.map(r => {
-          r.FlightSegments = r.FlightSegments.filter(s =>
-            this.filterCondition.airports.some(a => a.id === s.ToAirport)
-          );
-          return r;
-        });
-        return fly;
-      });
-    }
+    return result;
+  }
+  private filterByAirTypes(flys: FlightJourneyEntity[]): FlightJourneyEntity[] {
+    let result = flys;
     if (
       this.filterCondition.airTypes &&
       this.filterCondition.airTypes.length > 0
@@ -815,6 +877,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         return fly;
       });
     }
+    return result;
+  }
+  private filterByCabins(flys: FlightJourneyEntity[]): FlightJourneyEntity[] {
+    let result = flys;
     if (this.filterCondition.cabins && this.filterCondition.cabins.length > 0) {
       result = result.map(fly => {
         fly.FlightRoutes = fly.FlightRoutes.map(r => {
@@ -828,6 +894,12 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         return fly;
       });
     }
+    return result;
+  }
+  private filterByTakeOffTimeSpan(
+    flys: FlightJourneyEntity[]
+  ): FlightJourneyEntity[] {
+    let result = flys;
     if (this.filterCondition.takeOffTimeSpan) {
       // console.log(this.filterCondition.takeOffTimeSpan);
       result = result.map(fly => {
@@ -849,7 +921,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         return fly;
       });
     }
-    // console.log(result);
     return result;
   }
 }

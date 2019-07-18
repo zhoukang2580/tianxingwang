@@ -26,7 +26,7 @@
         </ion-segment-button>
       </ion-segment>
       <app-switch-city-comp [vmFromCity]="vmFromCity" (eToCity)='onToCitySelected($event)'
-        (eFromCity)='onFromCitySelected($event)' [vmToCity]="vmToCity" appSelectCity [disabled]='disabled'>
+        (eFromCity)='onFromCitySelected($event)' [vmToCity]="vmToCity" [disabled]='disabled'>
       </app-switch-city-comp>
       <section class="flight-date">
         <app-search-day-comp [day]='flyDate' (click)="onSelecFlyDate(true,false)" [disabled]='disabled'>
@@ -36,7 +36,7 @@
         </app-search-day-comp>
       </section>
       <ion-button style='width: 100%' (click)="searchFlight()"
-        [disabled]='!vmFromCity||!vmToCity&&isLoading||mustAddPassenger() && selectedPassengers==0' color="secondary"
+        [disabled]='!vmFromCity||!vmToCity||mustAddPassenger() && selectedPassengers==0' color="secondary"
         expand="block">
         <ion-text *ngIf='!(mustAddPassenger() && selectedPassengers==0)'>查询航班</ion-text>
         <ion-text *ngIf='mustAddPassenger() && selectedPassengers==0'>请添加乘客</ion-text>
