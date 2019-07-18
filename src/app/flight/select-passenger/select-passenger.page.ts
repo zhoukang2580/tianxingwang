@@ -251,6 +251,11 @@ export class SelectPassengerPage
     console.log("onSelect", s);
     if (s.AccountId != "0") {
       this.staffCredentails = await this.getCredentials(s.AccountId);
+    } else {
+      this.staffCredentails = [];
+    }
+    if (s.CredentialsInfo == LanguageHelper.Flight.getNotWhitelistingTip()) {
+      this.staffCredentails = [];
     }
     if (await this.canAddNotWhiteListCredential()) {
       this.vmNewCredential = new MemberCredential();
@@ -320,7 +325,7 @@ export class SelectPassengerPage
     );
     if (!ok) {
       this.back();
-    }else{
+    } else {
       this.doRefresh("");
     }
   }

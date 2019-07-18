@@ -77,26 +77,26 @@ export class SelectedFlightsegmentInfoComponent implements OnInit {
   }
   async nextStep() {}
   async reelect(passenger: StaffEntity, item: PassengerFlightSelectedInfo) {
-    await this.flightService.reselectPassengerFlightSegments(item.tripType);
+    await this.flightService.reselectPassengerFlightSegments(passenger,item);
   }
   async onSelectLowestSegment(
     info: PassengerFlightSegments,
     data: PassengerFlightSelectedInfo
   ) {
     const flights = this.currentViewtFlightSegment.flightSegments;
-    const onePolicyFlights = this.currentViewtFlightSegment.policyFlights.find(
+    const onePolicyFlights = this.currentViewtFlightSegment.totalPolicyFlights.find(
       item => item.PassengerKey == info.passenger.AccountId
     );
-    const flightSegment = flights.find(
+    const lowestFlightSegment = flights.find(
       fs => fs.Number == data.flightPolicy.LowerSegment.Number
     );
-    if (!flightSegment || !onePolicyFlights) {
+    if (!lowestFlightSegment || !onePolicyFlights) {
       AppHelper.alert(LanguageHelper.Flight.getTheLowestSegmentNotFoundTip());
     } else {
       const lowestCabin = onePolicyFlights.FlightPolicies.find(
         c =>
           c.CabinCode == data.flightPolicy.LowerSegment.LowestCabinCode &&
-          c.FlightNo == flightSegment.Number
+          c.FlightNo == lowestFlightSegment.Number
       );
       if (!lowestCabin) {
         await AppHelper.alert(
@@ -104,14 +104,14 @@ export class SelectedFlightsegmentInfoComponent implements OnInit {
         );
         return "";
       }
-      lowestCabin.Cabin = flightSegment.Cabins.find(
+      lowestCabin.Cabin = lowestFlightSegment.Cabins.find(
         c => c.Code == lowestCabin.CabinCode
       );
       const m = await this.modalCtrl.create({
         component: SelectFlightsegmentCabinComponent,
         componentProps: {
           policiedCabins: [lowestCabin],
-          flightSegment
+          flightSegment: lowestFlightSegment
         }
       });
       m.backdropDismiss = false;
@@ -126,7 +126,8 @@ export class SelectedFlightsegmentInfoComponent implements OnInit {
         } else {
           const newOne: PassengerFlightSelectedInfo = {
             flightPolicy: cbin,
-            flightSegment: flightSegment
+            flightSegment: lowestFlightSegment,
+            tripType:TripType.departureTrip
           };
           this.flightService.replacePassengerFlightSelectedInfo(
             info.passenger,
@@ -151,15 +152,12 @@ export class SelectedFlightsegmentInfoComponent implements OnInit {
         {
           text: LanguageHelper.getConfirmTip(),
           handler: () => {
-            if (item.tripType == TripType.departureTrip) {
-              this.reelect(passenger, item);
-            } else {
-              this.flightService.removePassengerFlightSelectedInfo(passenger, [
-                item
-              ]);
-              if (al) {
-                al.dismiss();
-              }
+            this.flightService.removePassengerFlightSelectedInfo(
+              passenger,
+              item
+            );
+            if (al) {
+              al.dismiss();
             }
           }
         },

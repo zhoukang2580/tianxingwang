@@ -80,7 +80,7 @@ export class FlightItemCabinsPage implements OnInit {
     return `${t && t.format("MM月DD日")} ${d && d.dayOfWeekName} `;
   }
   async onBookTicket(flightCabin: FlightCabinEntity) {
-    await this.addCabinToUnSelectedFlightSegmentPassengers(flightCabin);
+    await this.addToUnselectOrReselecteInfos(flightCabin);
     await this.showSelectedInfos();
   }
   async filterPolicyFlights() {
@@ -92,7 +92,7 @@ export class FlightItemCabinsPage implements OnInit {
     await popover.present();
     const d = await popover.onDidDismiss();
     if (d && d.data) {
-      const one = this.currentViewtFlightSegment.policyFlights.find(
+      const one = this.currentViewtFlightSegment.totalPolicyFlights.find(
         item => item.PassengerKey == d.data
       );
       if (one) {
@@ -108,85 +108,9 @@ export class FlightItemCabinsPage implements OnInit {
       this.showPolicyCabins = false;
     }
   }
-  private async addCabinToUnSelectedFlightSegmentPassengers(
-    flightCabin: FlightCabinEntity
-  ) {
-    const unselects = this.flightService
-      .getPassengerFlightSegments()
-      .filter(p => p.selectedInfo.length == 0);
-    unselects.forEach(p => {
-      const itemPolicy = this.currentViewtFlightSegment.policyFlights.find(
-        itm => itm.PassengerKey == p.passenger.AccountId
-      );
-      if (itemPolicy) {
-        const cabin = itemPolicy.FlightPolicies.find(
-          item =>
-            item.CabinCode == flightCabin.Code &&
-            item.FlightNo == flightCabin.FlightNumber
-        );
-        cabin.Cabin =
-          cabin.Cabin ||
-          this.currentViewtFlightSegment.flightSegment.Cabins.find(
-            c => c.Code == cabin.CabinCode
-          );
-        if (cabin) {
-          p.selectedInfo.push({
-            flightSegment: this.currentViewtFlightSegment.flightSegment,
-            flightPolicy: cabin,
-            tripType: TripType.departureTrip
-          });
-        }
-      }
-    });
-    const step = await this.showSelectedInfos();
+  private async addToUnselectOrReselecteInfos(cabin: FlightCabinEntity) {
+    this.flightService.addOrReplaceSelectedInfos(cabin);
   }
-  async reelect(passenger: StaffEntity, item: PassengerFlightSelectedInfo) {
-    await this.flightService.reselectPassengerFlightSegments(item.tripType);
-  }
-  private showSelectLowesetAlert(cabin: FlightPolicy) {
-    return new Promise(async s => {
-      const a = await this.alertCtrl.create({
-        message: `${LanguageHelper.Flight.getHasLowerSegmentTip()} ${
-          cabin.LowerSegment.Number
-        } ${moment(cabin.LowerSegment.TakeoffTime).format(
-          "HH:mm"
-        )} ${LanguageHelper.CurrencySymbols.Yuan()}${
-          cabin.LowerSegment.LowestFare
-        }`,
-        subHeader: LanguageHelper.Flight.getSelectTheSegmentTip(),
-        buttons: [
-          {
-            text: LanguageHelper.getConfirmTip(),
-            handler: () => {
-              s(true);
-            }
-          },
-          {
-            text: LanguageHelper.getNegativeTip(),
-            handler: async () => {
-              s(false);
-            },
-            role: "cancel"
-          }
-        ]
-      });
-      a.backdropDismiss = false;
-      await a.present();
-    });
-  }
-  private async onSelectTripType(): Promise<TripType> {
-    const ok = await AppHelper.alert(
-      LanguageHelper.Flight.getTripTypeTip(),
-      true,
-      LanguageHelper.getReturnTripTip(),
-      LanguageHelper.getDepartureTip()
-    );
-    if (ok) {
-      return TripType.returnTrip;
-    }
-    return TripType.departureTrip;
-  }
-
   async showSelectedInfos() {
     const modal = await this.modalCtrl.create({
       component: SelectedFlightsegmentInfoComponent

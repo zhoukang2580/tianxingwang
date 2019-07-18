@@ -200,6 +200,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.flyDayService.setFlyDayMulti(false);
     this.flyDayService.showSelectFlyDatePage(true);
   }
+
   back() {
     this.isLeavePage = true;
   }
@@ -340,6 +341,14 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       passengerIds = this.flightService
         .getSelectedPasengers()
         .map(p => p.AccountId);
+    }
+    const hasreselect = this.flightService
+      .getPassengerFlightSegments()
+      .find(item => item.isReselect);
+    if (hasreselect) {
+      if (!passengerIds.find(id => id == hasreselect.passenger.AccountId)) {
+        passengerIds.push(hasreselect.passenger.AccountId);
+      }
     }
     this.policyflights = await this.flightService.getPolicyflightsAsync(
       flightJourneyList,

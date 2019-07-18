@@ -126,8 +126,8 @@
         <ion-item-divider color='primary'>
           <ion-item slot='start' style='width: 100%' lines='none'>
             <ion-label>
-              <ion-text *ngIf='staffCredentails&&staffCredentails.length>1'>此人其他证件：</ion-text>
-              <ion-text *ngIf='staffCredentails&&staffCredentails.length<=1'>证件：</ion-text>
+              <ion-text *ngIf='staffCredentails&&staffCredentails.length>=1'>此人其他证件：</ion-text>
+              <ion-text *ngIf='staffCredentails&&staffCredentails.length==0'>证件：</ion-text>
             </ion-label>
             <ion-radio slot='end' name='credentialType' value="vmNewCredentialId"
               [checked]='"vmNewCredentialId"==selectedCredentialId'
