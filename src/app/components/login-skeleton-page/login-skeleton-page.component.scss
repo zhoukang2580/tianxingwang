@@ -1,0 +1,22 @@
+ion-item {
+  ion-label {
+    display: flex;
+    align-items: center;
+  }
+}
+.logo,
+.register-forgetpassword,
+.third-party-logo {
+  align-items: center;
+  display: flex;
+  justify-content: space-evenly;
+}
+.third-party-logo {
+  width: 100%;
+  justify-content: flex-end;
+}
+.logo {
+  width: 100%;
+  margin: 0 auto;
+  justify-content: center;
+}

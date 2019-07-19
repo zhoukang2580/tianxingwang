@@ -95,7 +95,7 @@ export class ApiService {
   getResponse<T>(req: RequestEntity): Observable<IResponse<T>> {
     return this.sendRequest(req, true);
   }
-   getPromiseData<T>(req: RequestEntity): Promise<T> {
+  getPromiseData<T>(req: RequestEntity): Promise<T> {
     return new Promise((resolve, reject) => {
       const sub = this.getResponse<T>(req).subscribe(
         r => {
@@ -281,10 +281,12 @@ export class ApiService {
       tap(r => console.log(r)),
       map(r => r as any),
       switchMap((r: IResponse<any>) => {
+        console.log("Apiservice get response ",r);
         if (isCheckLogin && r.Code && r.Code.toUpperCase() === "NOLOGIN") {
           return from(this.tryAutoLogin(req));
         } else if (r.Code && r.Code.toUpperCase() === "NOLOGIN") {
-          this.router.navigate([AppHelper.getRoutePath("login")]);
+          this.identityService.removeIdentity();
+          // this.router.navigate([AppHelper.getRoutePath("login")]);
         }
         return of(r);
       }),
@@ -342,8 +344,9 @@ export class ApiService {
                 this.identityService.setIdentity(identityEntity);
               }
               s(this.apiConfig);
+            } else {
+              s(null);
             }
-            s(null);
           },
           e => {
             s(null);

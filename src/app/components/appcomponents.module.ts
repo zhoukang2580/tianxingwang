@@ -9,6 +9,7 @@ import { ScanComponent } from "./scan/scan.component";
 import { LoadingComponent } from "./loading/loading.component";
 import { TimelineComponent } from "./timeline/timeline.component";
 import { TimelineItemComponent } from "./timeline-item/timeline-item.component";
+import { LoginSkeletonPageComponent } from './login-skeleton-page/login-skeleton-page.component';
 @NgModule({
   declarations: [
     OrComponent,
@@ -19,6 +20,7 @@ import { TimelineItemComponent } from "./timeline-item/timeline-item.component";
     TimelineComponent,
     TimelineItemComponent,
     LoadingComponent,
+    LoginSkeletonPageComponent
   ],
   imports: [CommonModule, IonicModule],
   exports: [
@@ -31,6 +33,6 @@ import { TimelineItemComponent } from "./timeline-item/timeline-item.component";
     TimelineItemComponent,
     TimelineComponent
   ],
-  entryComponents: []
+  entryComponents: [LoginSkeletonPageComponent]
 })
 export class AppcomponentsModule {}

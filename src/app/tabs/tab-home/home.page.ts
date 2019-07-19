@@ -73,7 +73,7 @@ export class HomePage implements OnInit {
       this.apiService.showLoadingView();
       this.identity = await this.identityService.getIdentityAsync();
       this.companies = await this.tmcService.getCompanies();
-      if (
+      if (this.identity&&
         this.identity.Numbers &&
         this.identity.Numbers.AgentId &&
         this.identity.Numbers.TmcId

@@ -146,7 +146,7 @@ export class MemberCredentialManagementPage
   async getCredentials() {
     this.loading = true;
     const identity = await this.identityService.getIdentityAsync();
-    const credentials = await this.memberService.getCredentials(identity.Id);
+    const credentials = await this.memberService.getCredentials(identity&&identity.Id);
     this.credentials = credentials.map(c => {
       return {
         isModified: false,

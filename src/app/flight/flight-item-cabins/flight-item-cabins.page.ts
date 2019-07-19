@@ -65,7 +65,7 @@ export class FlightItemCabinsPage implements OnInit {
         this.staff.BookType == StaffBookType.Self &&
         !this.staff.Name
       ) {
-        this.staff.Name = identity.Name;
+        this.staff.Name = identity&&identity.Name;
       }
     });
   }

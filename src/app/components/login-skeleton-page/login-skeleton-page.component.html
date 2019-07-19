@@ -1,0 +1,50 @@
+<!-- <ion-header>
+  <ion-toolbar>
+    <ion-title>登录</ion-title>
+  </ion-toolbar>
+</ion-header> -->
+
+<ion-content padding>
+  <div class='logo'>
+    <ion-skeleton-text style="width: 5em;height:5em;" animated></ion-skeleton-text>
+  </div>
+  <form padding>
+      <section class='register-forgetpassword'>
+          <ion-skeleton-text style="width: 30%;height:.5em;" animated></ion-skeleton-text>
+          <span class='line'></span>
+          <ion-skeleton-text style="width: 30%;height:.5em;" animated></ion-skeleton-text>
+        </section>
+    <ion-list>
+      <ion-item>
+        <ion-label>
+          <ion-skeleton-text style="width: 1em;height:1em;" animated></ion-skeleton-text>
+          <ion-skeleton-text style="width: 80%;height:1.5em;margin-left:1em;" animated></ion-skeleton-text>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>
+          <ion-skeleton-text style="width: 1em;height:1em;" animated></ion-skeleton-text>
+          <ion-skeleton-text style="width: 80%;height:1.5em; margin-left:1em;" animated></ion-skeleton-text>
+        </ion-label>
+      </ion-item>
+      <ion-item [style.height]='0'></ion-item>
+    </ion-list>
+    <ion-button fill='clear' expand='block'>
+      <ion-skeleton-text style="width: 100%;height:2em;" animated></ion-skeleton-text>
+    </ion-button>
+    <section class='register-forgetpassword'>
+      <ion-skeleton-text style="width: 30%;height:1em;" animated></ion-skeleton-text>
+      <span class='line'></span>
+      <ion-skeleton-text style="width: 30%;height:1em;" animated></ion-skeleton-text>
+    </section>
+    <app-or-comp>第三方登陆</app-or-comp>
+    <ion-item lines='none' text-center>
+      <div class='third-party-logo'>
+        <ion-thumbnail>
+          <ion-skeleton-text style="width: 3em;height:3em;" animated></ion-skeleton-text>
+        </ion-thumbnail>
+      </div>
+    </ion-item>
+  </form>
+</ion-content>
+<!-- <app-loading-comp [loading]='true'></app-loading-comp> -->

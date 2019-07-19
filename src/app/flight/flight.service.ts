@@ -392,7 +392,7 @@ export class FlightService {
     if (s.BookType === StaffBookType.Secretary) {
       result = await this.bookTypeSecretaryAddPassengerFlightSegments(arg);
     }
-    if (!s.BookType && identity && identity.Numbers.AgentId) {
+    if (!s.BookType && identity &&identity.Numbers&& identity.Numbers.AgentId) {
       result = await this.agentAddPassengerFlightSegments(arg);
     }
     this.setPassengerFlightSegmentSource(this.getPassengerFlightSegments());

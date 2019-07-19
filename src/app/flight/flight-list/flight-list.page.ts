@@ -83,6 +83,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   private refMap = new WeakMap<FlightSegmentEntity, any>();
   searchFlightModel: SearchFlightModel;
   filterCondition: FilterConditionModel;
+  showAddPassenger = false;
   @ViewChild("cnt") cnt: IonContent;
   @ViewChild("list") list: ElementRef<HTMLElement>;
   flightJourneyList: FlightJourneyEntity[]; // 保持和后台返回的数据一致
@@ -92,7 +93,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   filterConditionSubscription = Subscription.EMPTY;
   searchConditionSubscription = Subscription.EMPTY;
   selectDaySubscription = Subscription.EMPTY;
-  loadDataSubscription = Subscription.EMPTY;
   vmFlightJourneyList: FlightJourneyEntity[];
   totalFilteredSegments: FlightSegmentEntity[];
   policyflights: PassengerPolicyFlights[];
@@ -157,6 +157,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       })
     );
     this.route.queryParamMap.subscribe(async () => {
+      const identity = await this.identityService.getIdentityAsync();
+      this.showAddPassenger =
+        (identity && identity.Numbers && identity.Numbers.AgentId) ||
+        (await this.staffService.getStaff()).BookType != StaffBookType.Self;
       if (this.searchConditionSubscription) {
         this.searchConditionSubscription.unsubscribe();
       }
@@ -357,6 +361,12 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         passengerIds.push(hasreselect.passenger.AccountId);
       }
     }
+    if(passengerIds.length==0){
+      if(await this.isStaffTypeSelf()){
+        const s = await this.staffService.getStaff();
+        passengerIds.push(s.AccountId);
+      }
+    }
     this.policyflights = await this.flightService.getPolicyflightsAsync(
       flightJourneyList,
       passengerId ? [passengerId] : passengerIds
@@ -422,7 +432,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.policyflights
     );
     this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
-    this.loadDataSubscription.unsubscribe();
     this.searchConditionSubscription.unsubscribe();
     this.isLeavePage = true;
   }

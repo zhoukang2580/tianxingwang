@@ -188,7 +188,7 @@ export class SelectPassengerPage
     // 代理和特殊可以新增证件
     const identity = await this.identityService.getIdentityAsync();
     const can =
-      !!(identity.Numbers && identity.Numbers.AgentId) ||
+      !!(identity&&identity.Numbers && identity.Numbers.AgentId) ||
       (await this.staffService.getStaff()).BookType == StaffBookType.All;
     console.log("can add not whitelist ", can);
     return can;
