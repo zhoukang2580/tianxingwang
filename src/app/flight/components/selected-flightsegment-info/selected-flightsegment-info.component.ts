@@ -224,7 +224,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
 
   async onSelectReturnTrip() {
     console.log("onSelectReturnTrip");
-    const s = this.flightService.getSearchFlightModel();
+    const s = {...this.flightService.getSearchFlightModel()};
     const airports = await this.flightService.getAllLocalAirports();
     const selectedInfos = this.flightService.getPassengerFlightSegments()[0]
       .selectedInfo;
@@ -255,7 +255,8 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
         FromAsAirport: s.ToAsAirport,
         fromCity: s.toCity,
         toCity: s.fromCity,
-        Date: s.BackDate
+        Date: s.BackDate,
+        tripType:TripType.returnTrip
       });
     });
   }

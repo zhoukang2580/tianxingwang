@@ -204,7 +204,7 @@ export class FlightService {
     this.searchFlightModelSource.next(m);
   }
   getSearchFlightModel() {
-    return this.searchFlightModel || new SearchFlightModel();
+    return { ...(this.searchFlightModel || new SearchFlightModel()) };
   }
   getSearchFlightModelSource() {
     return this.searchFlightModelSource.asObservable();
@@ -489,6 +489,10 @@ export class FlightService {
       this.router.navigate([AppHelper.getRoutePath("flight-list")]).then(_ => {
         this.setSearchFlightModel(s);
       });
+    } else {
+      this.router.navigate([AppHelper.getRoutePath("book-flight")]).then(_ => {
+        this.setSearchFlightModel(s);
+      });
     }
   }
   private async reselectNotSelfBookTypeSegments(
@@ -536,8 +540,8 @@ export class FlightService {
       p => p.selectedInfo.length == 0
     );
     let selfUnselects = [];
+    const s = this.getSearchFlightModel();
     if (await this.staffService.isStaffTypeSelf()) {
-      const s = this.getSearchFlightModel();
       if (s.IsRoundTrip && s.tripType == TripType.returnTrip) {
         if (unselectSegments.length == 0) {
           selfUnselects = this.getPassengerFlightSegments();
@@ -562,15 +566,31 @@ export class FlightService {
             this.currentViewtFlightSegment.flightSegment.Cabins.find(
               c => c.Code == cabin.CabinCode
             );
-          p.selectedInfo.push({
-            flightSegment: this.currentViewtFlightSegment.flightSegment,
-            flightPolicy: cabin,
-            tripType: this.getSearchFlightModel().IsRoundTrip
-              ? this.getSearchFlightModel().tripType
-              : TripType.departureTrip,
-            Id: AppHelper.uuid(),
-            resetId: null
-          });
+          if (await this.staffService.isStaffTypeSelf()) {
+            if (
+              !this.getPassengerFlightSegments().find(item => item.isReselect)
+            ) {
+              p.selectedInfo.push({
+                flightSegment: this.currentViewtFlightSegment.flightSegment,
+                flightPolicy: cabin,
+                tripType: this.getSearchFlightModel().IsRoundTrip
+                  ? this.getSearchFlightModel().tripType
+                  : TripType.departureTrip,
+                Id: AppHelper.uuid(),
+                resetId: null
+              });
+            }
+          } else {
+            p.selectedInfo.push({
+              flightSegment: this.currentViewtFlightSegment.flightSegment,
+              flightPolicy: cabin,
+              tripType: this.getSearchFlightModel().IsRoundTrip
+                ? this.getSearchFlightModel().tripType
+                : TripType.departureTrip,
+              Id: AppHelper.uuid(),
+              resetId: null
+            });
+          }
         }
       }
     }
@@ -593,7 +613,9 @@ export class FlightService {
         );
         const newOne: PassengerFlightSelectedInfo = {
           Id: AppHelper.uuid(),
-          tripType: TripType.departureTrip,
+          tripType: this.getSearchFlightModel().IsRoundTrip
+          ? this.getSearchFlightModel().tripType
+          : TripType.departureTrip,
           flightSegment: this.currentViewtFlightSegment.flightSegment,
           flightPolicy: cabin,
           resetId: null
