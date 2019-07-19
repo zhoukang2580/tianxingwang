@@ -91,10 +91,14 @@ export class StaffService {
       }
     });
   }
+  async isStaffTypeSelf() {
+    const s = await this.getStaff();
+    return s && s.BookType && s.BookType == StaffBookType.Self;
+  }
   async getStaff(forceRefresh: boolean = false): Promise<StaffEntity> {
     const id = await this.identityService.getIdentityAsync();
     if (!id || !id.Id || !id.Ticket) {
-      this.staff = null;
+      this.staff = {} as any;
       return this.staff;
     }
     forceRefresh =

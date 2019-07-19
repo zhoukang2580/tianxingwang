@@ -199,8 +199,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.showAdvSearchPage$ = this.flightService.getFilterPanelShow();
   }
   async isStaffTypeSelf() {
-    const s = await this.staffService.getStaff();
-    return s.BookType && s.BookType == StaffBookType.Self;
+    return await this.staffService.isStaffTypeSelf();
   }
   onCalenderClick() {
     this.flyDayService.setFlyDayMulti(false);
@@ -361,12 +360,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         passengerIds.push(hasreselect.passenger.AccountId);
       }
     }
-    if(passengerIds.length==0){
-      if(await this.isStaffTypeSelf()){
-        const s = await this.staffService.getStaff();
-        passengerIds.push(s.AccountId);
-      }
-    }
     this.policyflights = await this.flightService.getPolicyflightsAsync(
       flightJourneyList,
       passengerId ? [passengerId] : passengerIds
@@ -374,8 +367,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     if (this.policyflights.length !== passengerIds.length) {
       flightJourneyList = [];
       this.policyflights = [];
+      return [];
     }
-    if (passengerId) {
+    if (passengerId || (await this.isStaffTypeSelf())) {
       flightJourneyList = this.replaceCabinInfo(
         this.policyflights,
         flightJourneyList

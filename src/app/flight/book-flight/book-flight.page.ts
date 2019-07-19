@@ -1,7 +1,9 @@
+import { IdentityService } from "./../../services/identity/identity.service";
+import { MemberCredential, MemberService } from "./../../member/member.service";
 import { ApiService } from "src/app/services/api/api.service";
 import { StaffEntity } from "src/app/hr/staff.service";
 import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
-import { TripType } from "./../flight.service";
+import { TripType, PassengerFlightSegments } from "./../flight.service";
 import { StaffService } from "../../hr/staff.service";
 import {
   FlightService,
@@ -11,12 +13,7 @@ import {
 import { FlydayService } from "../flyday.service";
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
-import {
-  Component,
-  OnInit,
-  OnDestroy,
-  AfterViewInit,
-} from "@angular/core";
+import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import * as moment from "moment";
 import { Subscription, Observable } from "rxjs";
 import { DayModel } from "../models/DayModel";
@@ -72,17 +69,33 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     private flightService: FlightService,
     private storage: Storage,
     private staffService: StaffService,
+    private identityService: IdentityService,
     private apiService: ApiService
   ) {
     route.queryParamMap.subscribe(async _ => {
-      console.log(
-        "getAllLocalAirports",
-        (await flightService.getAllLocalAirports()).filter(c =>
-          c.Name.includes("上海")
-        )
-      );
       this.staff = await this.staffService.getStaff();
-      this.showReturnTrip = this.staff.BookType == StaffBookType.Self;
+      if (await this.isStaffTypeSelf()) {
+        if (
+          this.flightService.getPassengerFlightSegments().length == 0 ||
+          this.flightService.getSelectedPasengers().length == 0
+        ) {
+          if (this.staff && !this.staff.Name) {
+            const identity = await this.identityService.getIdentityAsync();
+            this.staff.Name = identity && identity.Name;
+          }
+          const item: PassengerFlightSegments = {
+            credential: new MemberCredential(),
+            passenger: this.staff,
+            selectedInfo: []
+          };
+          this.flightService.addSelectedPassengers(item.passenger);
+          const searchModel = this.flightService.getSearchFlightModel();
+          searchModel.tripType = TripType.departureTrip;
+          this.flightService.setSearchFlightModel(searchModel);
+          this.flightService.addPassengerFlightSegments(item);
+        }
+      }
+      this.showReturnTrip = await this.isStaffTypeSelf();
       this.selectedPassengers = flightService.getSelectedPasengers().length;
       if (this.searchConditionSubscription) {
         this.searchConditionSubscription.unsubscribe();
@@ -97,6 +110,7 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
             this.disabled =
               s.IsRoundTrip &&
               s.tripType == TripType.returnTrip &&
+              staff &&
               staff.BookType == StaffBookType.Self;
             this.fromCity = s.fromCity;
             this.toCity = s.toCity;
@@ -129,6 +143,9 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
   segmentChanged(evt: CustomEvent) {
     // console.log("evt.detail.value", evt.detail.value);
     this.onRoundTrip(evt.detail.value == "single");
+  }
+  async isStaffTypeSelf() {
+    return await this.staffService.isStaffTypeSelf();
   }
   async ngOnInit() {
     this.selectDaySubscription = this.flydayService
@@ -175,6 +192,7 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
   onSelectPassenger() {
     this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
   }
+
   ngOnDestroy(): void {
     console.log("on destroyed");
     this.selectDaySubscription.unsubscribe();
@@ -211,12 +229,12 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     if (!lastFromCity || !lastToCity) {
       const cities = await this.flightService.getAllLocalAirports();
       if (cities && cities.length) {
-        const vmFromCity = this.fromCity = cities.find(
+        const vmFromCity = (this.fromCity = cities.find(
           c => c.Code.toUpperCase() == this.fromCity.Code
-        );
-        const vmToCity = this.toCity = cities.find(
+        ));
+        const vmToCity = (this.toCity = cities.find(
           c => c.Code.toUpperCase() == this.toCity.Code
-        );
+        ));
       }
     } else {
       this.fromCity = this.vmFromCity = lastFromCity;

@@ -40,7 +40,7 @@ export class FlightItemCabinsPage implements OnInit {
   currentViewtFlightSegment: CurrentViewtFlightSegment;
   vmCabins: FlightCabinEntity[] = [];
   vmPolicyCabins: FlightPolicy[] = [];
-  showPolicyCabins = false;
+  isShowPolicyCabins = false;
   staff: StaffEntity;
   loading = true;
   constructor(
@@ -65,7 +65,7 @@ export class FlightItemCabinsPage implements OnInit {
         this.staff.BookType == StaffBookType.Self &&
         !this.staff.Name
       ) {
-        this.staff.Name = identity&&identity.Name;
+        this.staff.Name = identity && identity.Name;
       }
     });
   }
@@ -80,7 +80,7 @@ export class FlightItemCabinsPage implements OnInit {
     return `${t && t.format("MM月DD日")} ${d && d.dayOfWeekName} `;
   }
   async onBookTicket(flightCabin: FlightCabinEntity) {
-    await this.flightService.addToUnselectOrReselecteInfos(flightCabin);
+    await this.flightService.addOrReselecteInfos(flightCabin);
     await this.showSelectedInfos();
   }
   async filterPolicyFlights() {
@@ -103,9 +103,9 @@ export class FlightItemCabinsPage implements OnInit {
       } else {
         this.vmPolicyCabins = [];
       }
-      this.showPolicyCabins = true;
+      this.isShowPolicyCabins = true;
     } else {
-      this.showPolicyCabins = false;
+      this.isShowPolicyCabins = false;
     }
   }
   async showSelectedInfos() {
@@ -139,7 +139,35 @@ export class FlightItemCabinsPage implements OnInit {
     }
     return "primary";
   }
-  ngOnInit() {
+  async ngOnInit() {
+    if (await this.staffService.isStaffTypeSelf()) {
+      this.isShowPolicyCabins = true;
+      this.showPolicyCabins();
+    } else {
+      this.isShowPolicyCabins = false;
+      this.showFlightCabins();
+    }
+  }
+  showPolicyCabins() {
+    if (this.currentViewtFlightSegment) {
+      this.loading = true;
+      const cabins = (
+        this.currentViewtFlightSegment.flightSegment.PoliciedCabins || []
+      ).slice(0);
+      const loop = () => {
+        if (cabins.length) {
+          this.vmPolicyCabins.push(...cabins.splice(0, 1));
+          window.requestAnimationFrame(loop);
+        } else {
+          this.loading = false;
+        }
+      };
+      setTimeout(() => {
+        loop();
+      }, 500);
+    }
+  }
+  showFlightCabins() {
     if (this.currentViewtFlightSegment) {
       this.loading = true;
       const cabins = (

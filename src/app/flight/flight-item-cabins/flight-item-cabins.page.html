@@ -37,9 +37,9 @@
       红色代表违规不可预订
     </ion-label>
   </ion-toolbar>
-  <app-or-comp *ngIf='showPolicyCabins&&vmPolicyCabins?.length==0'>暂无符合差标数据</app-or-comp>
+  <app-or-comp *ngIf='isShowPolicyCabins&&vmPolicyCabins?.length==0'>暂无符合差标数据</app-or-comp>
   <ion-list margin-top *ngIf='!loading else fakeList'>
-    <ng-container *ngIf='showPolicyCabins else vmCabinsTempl'>
+    <ng-container *ngIf='isShowPolicyCabins else vmCabinsTempl'>
       <ion-item *ngFor='let cabin of vmPolicyCabins'>
         <div class='cabin-item'>
           <ion-row margin-top>

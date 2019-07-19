@@ -1,5 +1,8 @@
-import { CurrentViewtFlightSegment } from "./../../flight.service";
-import { Observable } from "rxjs";
+import {
+  CurrentViewtFlightSegment,
+  SearchFlightModel
+} from "./../../flight.service";
+import { Observable, Subscription } from "rxjs";
 import { Router } from "@angular/router";
 import { FlydayService } from "./../../flyday.service";
 import { AppHelper } from "./../../../appHelper";
@@ -20,7 +23,7 @@ import {
   TripType
 } from "src/app/flight/flight.service";
 import { FlightSegmentEntity } from "./../../models/flight/FlightSegmentEntity";
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { LanguageHelper } from "src/app/languageHelper";
 import * as moment from "moment";
 import { tap, map } from "rxjs/operators";
@@ -31,9 +34,11 @@ import { SelectFlightsegmentCabinComponent } from "../select-flightsegment-cabin
   templateUrl: "./selected-flightsegment-info.component.html",
   styleUrls: ["./selected-flightsegment-info.component.scss"]
 })
-export class SelectedFlightsegmentInfoComponent implements OnInit {
+export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
   selectedInfos$: Observable<PassengerFlightSegments[]>;
   // selectedInfos: PassengerFlightSelectedInfo[];
+  searchModel: SearchFlightModel;
+  searchModelSubscrition = Subscription.EMPTY;
   identity: IdentityEntity;
   showSelectReturnTripButton = false;
   currentViewtFlightSegment: CurrentViewtFlightSegment;
@@ -46,8 +51,15 @@ export class SelectedFlightsegmentInfoComponent implements OnInit {
     private router: Router,
     private navCtrl: NavController
   ) {}
-
+  ngOnDestroy() {
+    this.searchModelSubscrition.unsubscribe();
+  }
   async ngOnInit() {
+    this.searchModelSubscrition = this.flightService
+      .getSearchFlightModelSource()
+      .subscribe(m => {
+        this.searchModel = m;
+      });
     this.currentViewtFlightSegment = this.flightService.getCurrentViewtFlightSegment();
     this.selectedInfos$ = this.flightService
       .getPassengerFlightSegmentSource()
@@ -55,14 +67,15 @@ export class SelectedFlightsegmentInfoComponent implements OnInit {
         tap(async info => {
           const s = await this.staffService.getStaff();
           if (s.BookType == StaffBookType.Self) {
-            const one = info.find(item => item.passenger == s);
+            const one = info.find(
+              item => item.passenger.AccountId == s.AccountId
+            );
+            // console.log("showSelectReturnTripButton",one);
             this.showSelectReturnTripButton =
               one &&
               this.flightService.getSearchFlightModel().IsRoundTrip &&
-              one.selectedInfo.length < 2 &&
-              !one.selectedInfo.find(
-                item => item.tripType == TripType.returnTrip
-              );
+              one.selectedInfo.length == 1 &&
+              one.selectedInfo[0].tripType == TripType.departureTrip;
           } else {
             this.showSelectReturnTripButton = false;
           }
@@ -84,6 +97,20 @@ export class SelectedFlightsegmentInfoComponent implements OnInit {
   async nextStep() {}
   async reelect(passenger: StaffEntity, item: PassengerFlightSelectedInfo) {
     await this.flightService.reselectPassengerFlightSegments(passenger, item);
+  }
+  showLowerSegment(
+    info: PassengerFlightSegments,
+    s: PassengerFlightSelectedInfo
+  ) {
+    return (
+      s &&
+      s.flightPolicy &&
+      s.flightPolicy.LowerSegment &&
+      !s.selectedLowerSegment &&
+      ((info.selectedInfo.length == 1 &&
+        this.searchModel.tripType !== TripType.returnTrip) ||
+        s.tripType == TripType.returnTrip)
+    );
   }
   async onSelectLowestSegment(
     info: PassengerFlightSegments,
