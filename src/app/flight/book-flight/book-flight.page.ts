@@ -75,6 +75,9 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     route.queryParamMap.subscribe(async _ => {
       this.staff = await this.staffService.getStaff();
       if (await this.isStaffTypeSelf()) {
+        this.disabled =
+          this.flightService.getPassengerFlightSegments().length == 0 ||
+          this.flightService.getPassengerFlightSegments().length == 2;
         if (
           this.flightService.getPassengerFlightSegments().length == 0 ||
           this.flightService.getSelectedPasengers().length == 0
@@ -111,11 +114,7 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
               s.IsRoundTrip &&
               s.tripType == TripType.returnTrip &&
               staff &&
-              staff.BookType == StaffBookType.Self &&
-              !(
-                this.flightService.getPassengerFlightSegments().length == 0 ||
-                this.flightService.getPassengerFlightSegments().length == 2
-              );
+              staff.BookType == StaffBookType.Self;
             this.fromCity = s.fromCity;
             this.toCity = s.toCity;
             this.vmFromCity = s.fromCity;
