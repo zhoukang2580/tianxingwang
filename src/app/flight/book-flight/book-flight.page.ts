@@ -111,7 +111,11 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
               s.IsRoundTrip &&
               s.tripType == TripType.returnTrip &&
               staff &&
-              staff.BookType == StaffBookType.Self;
+              staff.BookType == StaffBookType.Self &&
+              !(
+                this.flightService.getPassengerFlightSegments().length == 0 ||
+                this.flightService.getPassengerFlightSegments().length == 2
+              );
             this.fromCity = s.fromCity;
             this.toCity = s.toCity;
             this.vmFromCity = s.fromCity;
