@@ -611,7 +611,7 @@ export class FlightService {
         cabin.Cabin = this.currentViewtFlightSegment.flightSegment.Cabins.find(
           c => c.Code == cabin.CabinCode
         );
-        const newOne: PassengerFlightSelectedInfo = {
+        const newOne: PassengerFlightSelectedInfo = { 
           Id: AppHelper.uuid(),
           tripType: this.getSearchFlightModel().IsRoundTrip
           ? this.getSearchFlightModel().tripType

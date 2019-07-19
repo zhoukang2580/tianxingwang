@@ -164,7 +164,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
           const newOne: PassengerFlightSelectedInfo = {
             flightPolicy: cbin,
             flightSegment: lowestFlightSegment,
-            tripType: TripType.departureTrip,
+            tripType: data.tripType || TripType.departureTrip,
             Id: AppHelper.uuid(),
             selectedLowerSegment: true
           };
@@ -224,7 +224,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
 
   async onSelectReturnTrip() {
     console.log("onSelectReturnTrip");
-    const s = {...this.flightService.getSearchFlightModel()};
+    const s = { ...this.flightService.getSearchFlightModel() };
     const airports = await this.flightService.getAllLocalAirports();
     const selectedInfos = this.flightService.getPassengerFlightSegments()[0]
       .selectedInfo;
@@ -256,7 +256,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
         fromCity: s.toCity,
         toCity: s.fromCity,
         Date: s.BackDate,
-        tripType:TripType.returnTrip
+        tripType: TripType.returnTrip
       });
     });
   }
