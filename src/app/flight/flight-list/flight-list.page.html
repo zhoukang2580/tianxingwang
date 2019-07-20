@@ -166,5 +166,5 @@
   </ion-toolbar>
 </ion-footer>
 
-<app-fly-filter class="ion-page" [flights]="flightJourneyList" [fromCityName]='vmFromCity?.CityName'
+<app-fly-filter [class.ion-page]="showAdvSearchPage$ | async" [flights]="flightJourneyList" [fromCityName]='vmFromCity?.CityName'
   [@showAdvSearchPage]="showAdvSearchPage$ | async" [toCityName]="vmToCity?.CityName"></app-fly-filter>
