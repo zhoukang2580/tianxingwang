@@ -324,19 +324,11 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           s.PoliciedCabins.some(pc => pc.Rules.length == 0)
         );
         if (segments.length == 0) {
-          // 需要考虑非白名单的情况
-          const ps = this.flightService.getPassengerFlightSegments();
-          const one = ps.find(p =>
-            p.credential.Id.toLowerCase().includes("notwhitelist")
-          );
-          // 存在某个非白名单的证件去订票，非个人的情况下才存在
-          if (!(await this.isStaffTypeSelf()) && one) {
-            if (passengerId == one.passenger.AccountId) {
-              // 非白名单的是可以选择所有的航班
-              segments = this.flightService.getTotalFlySegments(
-                filteredFlightJourenyList
-              );
-            }
+          if (passengerId == "0") {
+            // 非白名单的是可以选择所有的航班
+            segments = this.flightService.getTotalFlySegments(
+              filteredFlightJourenyList
+            );
           }
         }
       }
@@ -387,10 +379,28 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         passengerIds.push(hasreselect.passenger.AccountId);
       }
     }
-    this.policyflights = await this.flightService.getPolicyflightsAsync(
-      flightJourneyList,
-      passengerId ? [passengerId] : passengerIds
-    );
+    const hasNotWhitelist = passengerIds.find(id => id == "0");
+    if (hasNotWhitelist) {
+      let policyflights = [];
+      const ids = passengerIds.filter(id => id != "0");
+      if (ids.length > 0) {
+        policyflights = await this.flightService.getPolicyflightsAsync(
+          flightJourneyList,
+          passengerId ? [passengerId] : passengerIds.filter(id => id != "0")
+        );
+      }
+      const notWhitelistPolicyflights = await this.flightService.getPolicyflightsAsync(
+        flightJourneyList,
+        ["0"]
+      );
+      this.policyflights = policyflights.concat(notWhitelistPolicyflights);
+      console.log(this.policyflights);
+    } else {
+      this.policyflights = await this.flightService.getPolicyflightsAsync(
+        flightJourneyList,
+        passengerId ? [passengerId] : passengerIds
+      );
+    }
     if (this.policyflights.length !== passengerIds.length) {
       flightJourneyList = [];
       this.policyflights = [];
