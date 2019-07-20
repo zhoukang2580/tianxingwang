@@ -281,7 +281,7 @@ export class ApiService {
             observe: "body"
           });
         }
-        return new Observable(obs => {
+        return new Observable<any>(obs => {
           this.worker.postMessage({
             message: "fetch",
             url,
