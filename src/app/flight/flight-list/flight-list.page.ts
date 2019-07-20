@@ -389,9 +389,8 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           passengerId ? [passengerId] : passengerIds.filter(id => id != "0")
         );
       }
-      const notWhitelistPolicyflights = await this.flightService.getPolicyflightsAsync(
-        flightJourneyList,
-        ["0"]
+      const notWhitelistPolicyflights = this.getNotWhitelistCabins(
+        flightJourneyList
       );
       this.policyflights = policyflights.concat(notWhitelistPolicyflights);
       console.log(this.policyflights);
@@ -401,7 +400,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         passengerId ? [passengerId] : passengerIds
       );
     }
-    if (this.policyflights.length !== passengerIds.length) {
+    if (this.policyflights.length ===0) {
       flightJourneyList = [];
       this.policyflights = [];
       return [];
@@ -413,6 +412,35 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       );
     }
     return (this.flightJourneyList = flightJourneyList);
+  }
+  private getNotWhitelistCabins(
+    flightJ: FlightJourneyEntity[]
+  ): {
+    PassengerKey: string;
+    FlightPolicies: FlightPolicy[];
+  } {
+    const FlightPolicies: FlightPolicy[] = [];
+    flightJ.forEach(item => {
+      item.FlightRoutes.forEach(r => {
+        r.FlightSegments.forEach(s => {
+          s.Cabins.forEach(c => {
+            FlightPolicies.push({
+              Cabin: c,
+              FlightNo: c.FlightNumber,
+              CabinCode: c.Code,
+              IsAllowBook: true, // 非白名单全部可预订
+              Discount: c.Discount,
+              LowerSegment: null,
+              Rules: []
+            });
+          });
+        });
+      });
+    });
+    return {
+      PassengerKey: "0",
+      FlightPolicies
+    };
   }
   onSelectPassenger() {
     this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
