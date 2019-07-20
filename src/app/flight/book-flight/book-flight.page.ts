@@ -76,8 +76,7 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
       this.staff = await this.staffService.getStaff();
       if (await this.isStaffTypeSelf()) {
         this.disabled =
-          this.flightService.getPassengerFlightSegments().length == 0 ||
-          this.flightService.getPassengerFlightSegments().length == 2;
+          this.searchFlightModel && this.searchFlightModel.isLocked;
         if (
           this.flightService.getPassengerFlightSegments().length == 0 ||
           this.flightService.getSelectedPasengers().length == 0
@@ -110,11 +109,7 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
           const staff = await this.staffService.getStaff();
           this.showReturnTrip = staff.BookType == StaffBookType.Self;
           if (s) {
-            this.disabled =
-              s.IsRoundTrip &&
-              s.tripType == TripType.returnTrip &&
-              staff &&
-              staff.BookType == StaffBookType.Self;
+            this.disabled = s.isLocked;
             this.fromCity = s.fromCity;
             this.toCity = s.toCity;
             this.vmFromCity = s.fromCity;

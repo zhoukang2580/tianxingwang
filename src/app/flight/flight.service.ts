@@ -77,6 +77,7 @@ export class SearchFlightModel {
   fromCity: Trafficline;
   toCity: Trafficline;
   tripType: TripType;
+  isLocked?: boolean;
 }
 export enum CheckSelfSelectedInfoType {
   AddOne = "AddOne",
@@ -200,8 +201,22 @@ export class FlightService {
     return this.currentViewtFlightSegment;
   }
   setSearchFlightModel(m: SearchFlightModel) {
-    this.searchFlightModel = m;
-    this.searchFlightModelSource.next(m);
+    if (m) {
+      this.searchFlightModel = { ...m };
+      if (m.IsRoundTrip) {
+        const arr = this.getPassengerFlightSegments();
+        if (m.tripType == TripType.returnTrip) {
+          if (!arr.find(item => item.isReselect)) {
+            this.searchFlightModel.isLocked = true;
+          }
+        } else {
+          this.searchFlightModel.isLocked = false;
+        }
+      } else {
+        this.searchFlightModel.isLocked = false;
+      }
+      this.searchFlightModelSource.next(this.searchFlightModel);
+    }
   }
   getSearchFlightModel() {
     return { ...(this.searchFlightModel || new SearchFlightModel()) };
@@ -611,11 +626,11 @@ export class FlightService {
         cabin.Cabin = this.currentViewtFlightSegment.flightSegment.Cabins.find(
           c => c.Code == cabin.CabinCode
         );
-        const newOne: PassengerFlightSelectedInfo = { 
+        const newOne: PassengerFlightSelectedInfo = {
           Id: AppHelper.uuid(),
           tripType: this.getSearchFlightModel().IsRoundTrip
-          ? this.getSearchFlightModel().tripType
-          : TripType.departureTrip,
+            ? this.getSearchFlightModel().tripType
+            : TripType.departureTrip,
           flightSegment: this.currentViewtFlightSegment.flightSegment,
           flightPolicy: cabin,
           resetId: null
