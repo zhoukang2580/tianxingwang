@@ -64,6 +64,7 @@ export class SelectPassengerPage
   implements OnInit, CanComponentDeactivate, AfterViewInit {
   passengerFlightSegments: PassengerFlightSegments[];
   vmKeyword: string;
+  vmNewCredentialId:string;
   credentialsRemarks: { key: string; value: string }[];
   selectedCredentialId: string;
   private keyword: string;
@@ -107,6 +108,7 @@ export class SelectPassengerPage
       .getSelectedPasengerSource()
       .pipe(map(items => items.length));
     route.queryParamMap.subscribe(p => {
+      this.vmNewCredentialId=`${AppHelper.uuid(5)}NewNotWhitelistCredentialId`;
       this.passengerFlightSegments = this.flightService.getPassengerFlightSegments();
       this.isCanDeactive = false;
       const country: Country = AppHelper.getRouteData();
@@ -262,7 +264,7 @@ export class SelectPassengerPage
       this.vmNewCredential.variables = "OtherCredential";
       this.vmNewCredential.CredentialsRemark = "客户";
       this.vmNewCredential.Type = CredentialsType.IdCard;
-      this.vmNewCredential.Id = "vmNewCredentialId";
+      this.vmNewCredential.Id = this.vmNewCredentialId;
       this.vmNewCredential.Gender = "M";
       this.vmNewCredential.IssueCountry = { Code: "CN", Name: "中国" };
       this.vmNewCredential.Country = { Code: "CN", Name: "中国" };

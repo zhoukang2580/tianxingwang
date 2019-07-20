@@ -41,6 +41,7 @@ interface ApiConfig {
 export class ApiService {
   private loadingSubject: Subject<boolean>;
   public apiConfig: ApiConfig;
+  private worker = null;
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -59,6 +60,7 @@ export class ApiService {
           console.log("loadApiConfig error", e);
         });
     }, 0);
+    // this.worker = window["Worker"] ? new Worker("assets/worker.js") : null;
   }
   getLoading() {
     return this.loadingSubject.asObservable().pipe(delay(0));
@@ -272,16 +274,38 @@ export class ApiService {
         const formObj = Object.keys(req)
           .map(k => `${k}=${req[k]}`)
           .join("&");
-        return this.http.post(url, `${formObj}&Sign=${this.getSign(req)}`, {
-          headers: { "content-type": "application/x-www-form-urlencoded" },
-          observe: "body"
+
+        if (!window["Worker"] || !this.worker) {
+          return this.http.post(url, `${formObj}&Sign=${this.getSign(req)}`, {
+            headers: { "content-type": "application/x-www-form-urlencoded" },
+            observe: "body"
+          });
+        }
+        return new Observable(obs => {
+          this.worker.postMessage({
+            message: "fetch",
+            url,
+            body: `${formObj}&Sign=${this.getSign(req)}`
+          });
+          this.worker.onmessage = evt => {
+            // console.log("evt", evt);
+            if (evt && evt.data && evt.data.message == "fetchresponse") {
+              console.log(evt.data.data);
+              if (evt.data.data && evt.data.data.status) {
+                obs.next(evt.data.data.result);
+                obs.complete();
+              } else {
+                obs.error(evt.data.data.error);
+              }
+            }
+          };
         });
       }),
       timeout(due),
       tap(r => console.log(r)),
       map(r => r as any),
       switchMap((r: IResponse<any>) => {
-        console.log("Apiservice get response ",r);
+        console.log("Apiservice get response ", r);
         if (isCheckLogin && r.Code && r.Code.toUpperCase() === "NOLOGIN") {
           return from(this.tryAutoLogin(req));
         } else if (r.Code && r.Code.toUpperCase() === "NOLOGIN") {

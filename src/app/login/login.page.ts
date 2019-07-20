@@ -8,7 +8,7 @@ import { AppHelper } from "../appHelper";
 import { LanguageHelper } from "../languageHelper";
 import { ConfigEntity } from "../services/config/config.entity";
 import { ConfigService } from "../services/config/config.service";
-import { Config } from "@ionic/angular";
+import { Config, ModalController } from "@ionic/angular";
 import { finalize } from "rxjs/operators";
 import { RequestEntity } from "../services/api/Request.entity";
 import { WechatHelper } from "../wechatHelper";
@@ -44,13 +44,27 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     private fb: FormBuilder,
     private router: Router,
     private config: Config,
-    route: ActivatedRoute
+    route: ActivatedRoute,
+    private modalCtrl: ModalController
   ) {
     this.config.set("swipeBackEnabled", false);
     this.loading$ = this.loginService.getLoading();
     this.isShowWechatLogin = AppHelper.isApp();
   }
-  ngAfterViewInit() {}
+  ngAfterViewInit() {
+    console.log("login page ngAfterViewInit");
+    this.dismissAllOverlayer();
+  }
+  private  async dismissAllOverlayer() {
+    let i = 10;
+    let t = await this.modalCtrl.getTop();
+    while (--i > 0 && t) {
+      t = await this.modalCtrl.getTop();
+      if (t) {
+        await t.dismiss().catch(_ => {});
+      }
+    }
+  }
   onSlideEvent(valid: boolean) {
     if (valid) {
       if (this.SlideEventType === "login") {

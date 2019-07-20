@@ -25,6 +25,11 @@ self.addEventListener(
           });
           break;
         }
+        case "fetch": {
+          fetchData(evt.data.url, evt.data.body);
+
+          break;
+        }
       }
     }
   },
@@ -83,7 +88,7 @@ function replaceStr(template, item) {
 function getHtmlTemplate(array) {
   console.time("getHtmlTemplate");
   const htmlTemplate = array.map(s => {
-    return { item: s, templateHtmlString:generateFlightItem(s) };
+    return { item: s, templateHtmlString: generateFlightItem(s) };
   });
   console.timeEnd("getHtmlTemplate");
   return htmlTemplate;
@@ -107,4 +112,32 @@ function sortByTime(segments, l2h) {
   });
   this.console.timeEnd("sortByTime");
   return segments;
+}
+function fetchData(url, body) {
+  // console.log(url, body);
+  return self
+    .fetch(url, { method: "post", body: body })
+    .then(res => {
+      console.log(res);
+      return res.json();
+    })
+    .then(result => {
+      self.postMessage({
+        message: "fetchresponse",
+        data: {
+          status: true,
+          result
+        }
+      });
+    })
+    .catch(err => {
+      console.error("fetch error ", err);
+      self.postMessage({
+        message: "fetchresponse",
+        data: {
+          error: "服务器请求错误",
+          status: false
+        }
+      });
+    });
 }

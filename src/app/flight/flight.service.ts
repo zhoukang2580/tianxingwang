@@ -212,6 +212,7 @@ export class FlightService {
         } else {
           this.searchFlightModel.isLocked = false;
         }
+        this.searchFlightModel.isLocked = arr.length === 2;
       } else {
         this.searchFlightModel.isLocked = false;
       }
@@ -316,9 +317,29 @@ export class FlightService {
     }
     const staff = await this.staffService.getStaff();
     if (staff && staff.BookType == StaffBookType.Self) {
-      return !this.checkIfExcessMaxLimitedBookTickets(
-        this.getSearchFlightModel().IsRoundTrip ? 2 : 1
-      );
+      if (this.getSearchFlightModel().IsRoundTrip) {
+        const arr = this.getPassengerFlightSegments().find(
+          item => item.passenger.AccountId == staff.AccountId
+        );
+        if (arr) {
+          if (arr.selectedInfo.length == 2) {
+            const g = arr.selectedInfo.find(
+              item => item.tripType == TripType.departureTrip
+            );
+            const b = arr.selectedInfo.find(
+              item => item.tripType == TripType.returnTrip
+            );
+            if (g && b) {
+              return true;
+            } else {
+              return false;
+            }
+          }
+        }
+        return true;
+      } else {
+        return !this.checkIfExcessMaxLimitedBookTickets(1);
+      }
     } else {
       return !this.checkIfExcessMaxLimitedBookTickets(9);
     }
@@ -557,6 +578,36 @@ export class FlightService {
     let selfUnselects = [];
     const s = this.getSearchFlightModel();
     if (await this.staffService.isStaffTypeSelf()) {
+      const staff = await this.staffService.getStaff();
+      const arr = this.getPassengerFlightSegments().find(
+        item => item.passenger.AccountId == staff.AccountId
+      );
+      if (arr) {
+        // 已经选择了来回程，但不是重选
+        if (
+          arr.selectedInfo.length == 2 &&
+          !arr.selectedInfo.find(item => !!item.resetId)
+        ) {
+          const go = arr.selectedInfo.find(
+            item => item.tripType == TripType.departureTrip
+          );
+          const back = arr.selectedInfo.find(
+            item => item.tripType == TripType.returnTrip
+          );
+          if (go && back) {
+            const ok = await AppHelper.alert(
+              LanguageHelper.Flight.getIsReselectReturnTripTip(),
+              true,
+              LanguageHelper.getConfirmTip(),
+              LanguageHelper.getCancelTip()
+            );
+            if (ok) {
+              arr.selectedInfo = [go];
+            } else {
+            }
+          }
+        }
+      }
       if (s.IsRoundTrip && s.tripType == TripType.returnTrip) {
         if (unselectSegments.length == 0) {
           selfUnselects = this.getPassengerFlightSegments();

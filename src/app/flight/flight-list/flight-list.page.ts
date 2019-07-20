@@ -26,7 +26,8 @@ import {
   fromEvent,
   Subject,
   BehaviorSubject,
-  from
+  from,
+  combineLatest
 } from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
@@ -38,7 +39,7 @@ import {
   NgZone,
   ElementRef
 } from "@angular/core";
-import { tap, takeUntil, switchMap, delay, map } from "rxjs/operators";
+import { tap, takeUntil, switchMap, delay, map, filter } from "rxjs/operators";
 import * as moment from "moment";
 import { FlydayService } from "../flyday.service";
 import { DayModel } from "../models/DayModel";
@@ -103,7 +104,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   isLeavePage = false;
   st = 0;
   selectedPassengers$: Observable<number>;
-  goFlightDate$: Observable<string>;
+  goAndBackFlightDateTime$: Observable<{
+    goArrivalDateTime: string;
+    backTakeOffDateTime: string;
+  }>;
   @ViewChild(FlyFilterComponent) filterComp: FlyFilterComponent;
   @ViewChild(FlyDaysCalendarComponent)
   flyDaysCalendarComp: FlyDaysCalendarComponent;
@@ -132,28 +136,35 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.vmFlights = [];
     this.flightJourneyList = [];
     this.searchFlightModel = new SearchFlightModel();
-    this.goFlightDate$ = flightService.getPassengerFlightSegmentSource().pipe(
-      switchMap(item =>
-        from(staffService.getStaff()).pipe(map(r => ({ staff: r, pfs: item })))
+    this.goAndBackFlightDateTime$ = combineLatest([
+      flightService.getPassengerFlightSegmentSource(),
+      from(staffService.getStaff()),
+      from(staffService.isStaffTypeSelf())
+    ]).pipe(
+      filter(([_, staff, isSelfBookType]) => isSelfBookType),
+      map(([arr1, staff]) =>
+        arr1.find(item => item.passenger.AccountId == staff.AccountId)
       ),
-      map(({ staff, pfs }) => {
-        if (
-          staff &&
-          staff.BookType == StaffBookType.Self &&
-          pfs &&
-          pfs[0] &&
-          pfs[0].selectedInfo
-        ) {
-          const goflight = pfs[0].selectedInfo.find(
-            it => it.tripType == TripType.departureTrip
-          );
-          if (goflight && goflight.flightSegment) {
-            return moment(goflight.flightSegment.ArrivalTime).format(
-              "YYYY-MM-DD HH:mm"
-            );
-          }
-        }
-        return "";
+      filter(item => !!item && !!item.selectedInfo.length),
+      map(res => {
+        const goFlight = res.selectedInfo.find(
+          item => item.tripType == TripType.departureTrip
+        );
+        const backFlight = res.selectedInfo.find(
+          item => item.tripType == TripType.returnTrip
+        );
+        return {
+          goArrivalDateTime: goFlight
+            ? moment(goFlight.flightSegment.TakeoffTime).format(
+                "YYYY-MM-DD HH:mm"
+              )
+            : "",
+          backTakeOffDateTime: backFlight
+            ? moment(backFlight.flightSegment.TakeoffTime).format(
+                "YYYY-MM-DD HH:mm"
+              )
+            : ""
+        };
       })
     );
     this.route.queryParamMap.subscribe(async () => {
@@ -312,6 +323,22 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         segments = segments.filter(s =>
           s.PoliciedCabins.some(pc => pc.Rules.length == 0)
         );
+        if (segments.length == 0) {
+          // 需要考虑非白名单的情况
+          const ps = this.flightService.getPassengerFlightSegments();
+          const one = ps.find(p =>
+            p.credential.Id.toLowerCase().includes("notwhitelist")
+          );
+          // 存在某个非白名单的证件去订票，非个人的情况下才存在
+          if (!(await this.isStaffTypeSelf()) && one) {
+            if (passengerId == one.passenger.AccountId) {
+              // 非白名单的是可以选择所有的航班
+              segments = this.flightService.getTotalFlySegments(
+                filteredFlightJourenyList
+              );
+            }
+          }
+        }
       }
       this.st = Date.now();
       this.vmFlights = segments;

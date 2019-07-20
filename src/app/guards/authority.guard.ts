@@ -14,20 +14,26 @@ import {
 } from "@angular/router";
 import { Observable, of } from "rxjs";
 import { IdentityService } from "../services/identity/identity.service";
-import { AlertController, LoadingController } from "@ionic/angular";
+import {
+  AlertController,
+  LoadingController,
+  ModalController
+} from "@ionic/angular";
 import { finalize, switchMap, map, catchError } from "rxjs/operators";
+import { LoginSkeletonPageComponent } from "../components/login-skeleton-page/login-skeleton-page.component";
 
 @Injectable({
   providedIn: "root"
 })
 export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
   // private identity: IdentityEntity;
+  private isShowModel = false;
   constructor(
     private identityService: IdentityService,
     private loginService: LoginService,
-    private router: Router
-  ) {
-  }
+    private router: Router,
+    private modalCtrl: ModalController
+  ) {}
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
@@ -43,22 +49,37 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
-    // console.log("state", state, "next", next);
-    // const ticket = AppHelper.getTicket();
-    // if (ticket) {
-    //   return true;
-    // }
-    // if (!this.identity || !this.identity.Ticket) {
-    //   this.loginService.setToPageRouter(state.url);
-    //   this.router.navigate([AppHelper.getRoutePath("login")]);
-    //   return false;
-    // }
-    // return true;
+    if (!this.isShowModel) {
+      return this.modalCtrl
+        .create({ component: LoginSkeletonPageComponent })
+        .then(async m => {
+          m.backdropDismiss = false;
+          await m.present().catch(_ => {
+            this.isShowModel = true;
+          });
+          setTimeout(() => {
+            m.dismiss().catch(_ => {});
+          }, 5000);
+          this.isShowModel = true;
+          const identity = await this.identityService.getIdentityAsync();
+          console.log("getIdentityAsync", identity);
+          if (!identity || !identity.Ticket || !identity.Id) {
+            this.loginService.setToPageRouter(state.url);
+            this.router.navigate([AppHelper.getRoutePath("login")]);
+            return false;
+          }
+          return true;
+        })
+        .catch(_ => {
+          return false;
+        });
+    }
     return this.identityService.getIdentity().pipe(
       catchError(e => of(null)),
       map((identity: IdentityEntity) => {
+        console.log("getIdentity ", identity);
         // console.log("canload route ,", route);
-        if (!identity || !identity.Ticket) {
+        if (!identity || !identity.Ticket || !identity.Id) {
           this.loginService.setToPageRouter(state.url);
           this.router.navigate([AppHelper.getRoutePath("login")]);
           return false;

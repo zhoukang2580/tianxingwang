@@ -4,6 +4,13 @@ ion-content {
 .xs-font-size {
   font-size: 0.7rem;
 }
+ion-grid,
+ion-row,
+ion-col{
+  margin: 0;
+  padding: 0;
+  color:var(--ion-color-secondary);
+}
 ion-title {
   ion-text {
     font-size: 0.8rem;

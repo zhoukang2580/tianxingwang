@@ -129,9 +129,9 @@
               <ion-text *ngIf='staffCredentails&&staffCredentails.length>=1'>此人其他证件：</ion-text>
               <ion-text *ngIf='staffCredentails&&staffCredentails.length==0'>证件：</ion-text>
             </ion-label>
-            <ion-radio slot='end' name='credentialType' value="vmNewCredentialId"
-              [checked]='"vmNewCredentialId"==selectedCredentialId'
-              (ionSelect)='onSelectCredential("vmNewCredentialId")'></ion-radio>
+            <ion-radio slot='end' name='credentialType' value="{{vmNewCredentialId}}"
+              [checked]='vmNewCredentialId==selectedCredentialId' (ionSelect)='onSelectCredential(vmNewCredentialId)'>
+            </ion-radio>
           </ion-item>
         </ion-item-divider>
         <ion-grid #addForm>
@@ -240,8 +240,8 @@
               </ion-item>
             </ion-col>
             <ion-col size='7'>
-              <ion-radio-group class='credentials-remark' no-margin no-padding [(ngModel)]='vmNewCredential.CredentialsRemark'
-                name='CredentialsRemark'>
+              <ion-radio-group class='credentials-remark' no-margin no-padding
+                [(ngModel)]='vmNewCredential.CredentialsRemark' name='CredentialsRemark'>
                 <ion-item *ngFor='let r of credentialsRemarks'>
                   <ion-label>{{r.value}}</ion-label>
                   <ion-radio value="{{r.value}}" [checked]='r.key=="客户"'></ion-radio>

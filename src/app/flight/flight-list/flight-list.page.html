@@ -8,7 +8,7 @@
       <i class='icon icon-flight-plane'></i>
       <ion-text>{{ vmToCity?.Nickname}}</ion-text>
     </ion-title>
-    <ion-buttons slot='end'  >
+    <ion-buttons slot='end'>
       <ion-button fill='clear' color='secondary' (click)='filterPolicyFlights()' size='small'>
         <ion-text class='xs-font-size'>过滤差标</ion-text>
       </ion-button>
@@ -20,11 +20,22 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-  <ion-label class='xs-font-size' [style.visibility]="!loading?'initial':'collapse'">
-    {{searchFlightModel?.Date}}共{{vmFlights?.length}}个航班
-    <ion-text color='danger' *ngIf='isFiltered'>(筛选后)</ion-text>
-    <ion-text color='danger' *ngIf='goFlightDate$|async as goArrivalDate'>已选去程到达时间:{{goArrivalDate}}</ion-text>
-  </ion-label>
+  <ion-grid class='xs-font-size' [style.visibility]="!loading?'initial':'collapse'">
+    <ion-row >
+      <ion-col>
+        {{searchFlightModel?.Date}}共{{vmFlights?.length}}个航班
+        <ion-text color='danger' *ngIf='isFiltered'>(筛选后)</ion-text>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf='goAndBackFlightDateTime$|async as datetime'>
+      <ion-col *ngIf='datetime?.goArrivalDateTime'>
+        <ion-text>已选去程:{{datetime?.goArrivalDateTime}}</ion-text>
+      </ion-col>
+      <ion-col *ngIf='datetime?.backTakeOffDateTime'>
+        <ion-text>已选返程:{{datetime?.backTakeOffDateTime}}</ion-text>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
   <ion-toolbar class="fly-days">
     <app-fly-days-calendar (itemSelected)="onChangedDay($event,true)" (calenderClick)="onCalenderClick()">
     </app-fly-days-calendar>
@@ -155,5 +166,5 @@
   </ion-toolbar>
 </ion-footer>
 
-<app-fly-filter class="ion-page" [flights]="flightJourneyList" [fromCityName]='vmFromCity?.CityName' [@showAdvSearchPage]="showAdvSearchPage$ | async"
-  [toCityName]="vmToCity?.CityName"></app-fly-filter>
+<app-fly-filter class="ion-page" [flights]="flightJourneyList" [fromCityName]='vmFromCity?.CityName'
+  [@showAdvSearchPage]="showAdvSearchPage$ | async" [toCityName]="vmToCity?.CityName"></app-fly-filter>
