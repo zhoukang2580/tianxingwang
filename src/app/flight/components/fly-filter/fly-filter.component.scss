@@ -1,24 +1,13 @@
-:host {
-  height: 100%;
-  width: 100%;
-  z-index: 100;
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  right: 0;
-  overflow: hidden;
-  // --ion-color-primary: var(--ion-color-secondary);
-  ion-toggle {
-    --background-checked: rgba(var(--ion-color-secondary-rgb), 0.5);
-    // --handle-background:red;
-    --handle-background-checked: var(--ion-color-secondary);
-  }
-  form {
-    background-color: var(--ion-color-light);
-    padding: 0 0em 1em;
-  }
-}
+
+    ion-toggle {
+      --background-checked: rgba(var(--ion-color-secondary-rgb), 0.5);
+      // --handle-background:red;
+      --handle-background-checked: var(--ion-color-secondary);
+    }
+    form {
+      background-color: var(--ion-color-light);
+      padding: 0 0em 1em;
+    }
 
 ion-toolbar {
   // --background: var(--ion-color-light);
