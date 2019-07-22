@@ -9,8 +9,8 @@ const routes: Routes = [
     canActivate: [TmcGuard]
   },
   {
-    path: "book-flight",
-    loadChildren: "./book-flight/book-flight.module#BookFlightPageModule",
+    path: "search-flight",
+    loadChildren: "./search-flight/search-flight.module#SearchFlightPageModule",
     canActivate: [TmcGuard]
   },
   {
@@ -20,7 +20,8 @@ const routes: Routes = [
   },
   {
     path: "flight-item-cabins",
-    loadChildren: "./flight-item-cabins/flight-item-cabins.module#FlightItemCabinsPageModule",
+    loadChildren:
+      "./flight-item-cabins/flight-item-cabins.module#FlightItemCabinsPageModule",
     canActivate: [TmcGuard]
   },
   {
@@ -32,6 +33,10 @@ const routes: Routes = [
     path: "select-passenger",
     loadChildren:
       "./select-passenger/select-passenger.module#SelectPassengerPageModule"
+  },
+  {
+    path: "book",
+    loadChildren: "./book/book.module#BookPageModule"
   }
 ];
 @NgModule({

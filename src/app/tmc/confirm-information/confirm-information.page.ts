@@ -1,3 +1,4 @@
+import { IdentityService } from "src/app/services/identity/identity.service";
 import { RequestEntity } from "./../../services/api/Request.entity";
 import { ApiService } from "./../../services/api/api.service";
 import { LanguageHelper } from "./../../languageHelper";
@@ -7,7 +8,7 @@ import { Component, OnInit } from "@angular/core";
 
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
-import {  MemberCredential } from 'src/app/member/member.service';
+import { MemberCredential } from "src/app/member/member.service";
 
 @Component({
   selector: "app-comfirm-info",
@@ -23,11 +24,15 @@ export class ComfirmInformationPage implements OnInit {
     private apiService: ApiService,
     private tmcService: TmcService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private identityService: IdentityService
   ) {
     route.paramMap.subscribe(async p => {
       this.staff = await this.staffService.getStaff();
-      this.credentials = await this.tmcService.getCredentials();
+      const identity = await this.identityService.getIdentityAsync();
+      this.credentials = await this.tmcService.getCredentials(
+        identity && identity.Id
+      );
       console.log("ComfirmInformationPage", this.staff);
     });
   }

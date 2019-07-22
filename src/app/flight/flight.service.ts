@@ -1,3 +1,4 @@
+import { TmcService } from 'src/app/tmc/tmc.service';
 import { ModalController, NavController } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import { FlightCabinEntity } from "./models/flight/FlightCabinEntity";
@@ -141,7 +142,8 @@ export class FlightService {
     private modalCtrl: ModalController,
     private router: Router,
     private navCtrl: NavController,
-    private identityService: IdentityService
+    private identityService: IdentityService,
+    private tmcService:TmcService
   ) {
     this.searchFlightModel = new SearchFlightModel();
     this.searchFlightModel.tripType = TripType.departureTrip;
@@ -526,9 +528,11 @@ export class FlightService {
         this.setSearchFlightModel(s);
       });
     } else {
-      this.router.navigate([AppHelper.getRoutePath("book-flight")]).then(_ => {
-        this.setSearchFlightModel(s);
-      });
+      this.router
+        .navigate([AppHelper.getRoutePath("search-flight")])
+        .then(_ => {
+          this.setSearchFlightModel(s);
+        });
     }
   }
   private async reselectNotSelfBookTypeSegments(
@@ -553,7 +557,7 @@ export class FlightService {
     this.apiService.showLoadingView();
     await this.dismissAllTopOverlays();
     this.apiService.hideLoadingView();
-    this.router.navigate([AppHelper.getRoutePath("book-flight")]).then(_ => {
+    this.router.navigate([AppHelper.getRoutePath("search-flight")]).then(_ => {
       this.setSearchFlightModel(s);
     });
   }
@@ -1370,5 +1374,13 @@ export class FlightService {
     const i = [] || (await this.getInternationalAirports());
     this.apiService.hideLoadingView();
     return [...h, ...i];
+  }
+  getCredentialStaffs(AccountIds: string[]): Promise<StaffEntity[]> {
+    return this.tmcService.getCredentialStaffs(AccountIds);
+  }
+  async getPassengerCredentials(
+    accountIds: string[]
+  ): Promise<{ [accountId: string]: MemberCredential[] }[]> {
+    return this.tmcService.getPassengerCredentials(accountIds);
   }
 }

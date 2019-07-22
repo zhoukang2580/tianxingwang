@@ -1,4 +1,4 @@
-import { DirectivesModule } from 'src/app/directives/directives.module';
+import { DirectivesModule } from "src/app/directives/directives.module";
 import { AppcomponentsModule } from "./../../components/appcomponents.module";
 import { IonicModule } from "@ionic/angular";
 import { NgModule } from "@angular/core";
@@ -26,7 +26,8 @@ import { SelectedPassengersComponent } from "./selected-passengers/selected-pass
 import { SelectFlyDateComponent } from "./select-fly-date/select-fly-date.component";
 import { SelectedFlightsegmentInfoComponent } from "./selected-flightsegment-info/selected-flightsegment-info.component";
 import { SelectFlightsegmentCabinComponent } from "./select-flightsegment-cabin/select-flightsegment-cabin.component";
-import { SelectedPassengersPopoverComponent } from './selected-passengers-popover/selected-passengers-popover.component';
+import { SelectedPassengersPopoverComponent } from "./selected-passengers-popover/selected-passengers-popover.component";
+import { SearchApprovalComponent } from "./search-approval/search-approval.component";
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { SelectedPassengersPopoverComponent } from './selected-passengers-popove
     SelectFlyDateComponent,
     SelectedFlightsegmentInfoComponent,
     SelectFlightsegmentCabinComponent,
-    SelectedPassengersPopoverComponent
+    SelectedPassengersPopoverComponent,
+    SearchApprovalComponent
   ],
   imports: [
     CommonModule,
@@ -92,7 +94,8 @@ import { SelectedPassengersPopoverComponent } from './selected-passengers-popove
     SelectedPassengersComponent,
     SelectedFlightsegmentInfoComponent,
     SelectFlightsegmentCabinComponent,
-    SelectedPassengersPopoverComponent
+    SelectedPassengersPopoverComponent,
+    SearchApprovalComponent
   ]
 })
 export class FlightComponentsModule {}

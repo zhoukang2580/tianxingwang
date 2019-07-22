@@ -1,9 +1,9 @@
-import { IdentityService } from "./../../services/identity/identity.service";
-import { MemberCredential, MemberService } from "./../../member/member.service";
+import { IdentityService } from "../../services/identity/identity.service";
+import { MemberCredential, MemberService } from "../../member/member.service";
 import { ApiService } from "src/app/services/api/api.service";
 import { StaffEntity } from "src/app/hr/staff.service";
-import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
-import { TripType, PassengerFlightSegments } from "./../flight.service";
+import { FlightSegmentEntity } from "../models/flight/FlightSegmentEntity";
+import { TripType, PassengerFlightSegments } from "../flight.service";
 import { StaffService } from "../../hr/staff.service";
 import {
   FlightService,
@@ -25,11 +25,11 @@ import { tap } from "rxjs/operators";
 import { SwitchCityComponent } from "../components/switch-city/switch-city.component";
 import { LanguageHelper } from "src/app/languageHelper";
 @Component({
-  selector: "app-book-flight",
-  templateUrl: "./book-flight.page.html",
-  styleUrls: ["./book-flight.page.scss"]
+  selector: "app-search-flight",
+  templateUrl: "./search-flight.page.html",
+  styleUrls: ["./search-flight.page.scss"]
 })
-export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
+export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
   toggleCities = false; // 没有切换城市顺序
   rotateIcon = false;
   isSingle = true;
@@ -105,16 +105,13 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
       this.searchConditionSubscription = this.flightService
         .getSearchFlightModelSource()
         .subscribe(async s => {
-          console.log("book-flights", s);
+          console.log("search-flights", s);
           const staff = await this.staffService.getStaff();
           this.showReturnTrip = staff.BookType == StaffBookType.Self;
           if (s) {
             this.disabled = s.isLocked;
-            this.fromCity = s.fromCity;
-            this.toCity = s.toCity;
-            this.vmFromCity = s.fromCity;
-            this.toCity = s.toCity;
-            this.vmToCity = s.toCity;
+            this.fromCity = this.vmFromCity = s.fromCity || this.fromCity;
+            this.toCity = this.vmToCity = s.toCity || this.toCity;
             this.flyDate = this.flydayService.generateDayModelByDate(s.Date);
             this.backDate = this.flydayService.generateDayModelByDate(
               s.BackDate
@@ -233,6 +230,10 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
         const vmToCity = (this.toCity = cities.find(
           c => c.Code.toUpperCase() == this.toCity.Code
         ));
+        if (vmFromCity && vmToCity) {
+          this.fromCity = this.vmFromCity = vmFromCity;
+          this.toCity = this.vmToCity = vmToCity;
+        }
       }
     } else {
       this.fromCity = this.vmFromCity = lastFromCity;
@@ -293,7 +294,7 @@ export class BookFlightPage implements OnInit, OnDestroy, AfterViewInit {
     if (!s.IsRoundTrip) {
       s.tripType = TripType.departureTrip;
     }
-    console.log("book-flight", s);
+    console.log("search-flight", s);
     this.flightService.setSearchFlightModel(s);
     this.router.navigate([AppHelper.getRoutePath("flight-list")]);
   }

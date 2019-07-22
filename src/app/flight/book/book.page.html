@@ -1,0 +1,48 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-button (click)='back()'>
+        <ion-icon class='back-icon' name='arrow-back'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>确认信息</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list *ngFor='let item of passengerSegments'>
+    <ion-item-divider sticky>
+      {{item?.credential?.CheckName}}
+      【{{tmc?.Name}}】
+      [成人]
+      {{item?.credential?.Number}}
+    </ion-item-divider>
+    <ion-item lines='none'>
+      <ion-label>通知语言:</ion-label>
+      <ion-select value="cn" okText="确定" cancelText="取消">
+        <ion-select-option value=''>不发</ion-select-option>
+        <ion-select-option value='cn'>中文</ion-select-option>
+        <ion-select-option value='en'>英文</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item lines='none'>
+      <ion-label>审批人:</ion-label>
+      <ion-input></ion-input>
+    </ion-item>
+    <ion-item lines='none' *ngIf='tmc?.FlightApprovalType!=0 
+    && tmc?.FlightApprovalType!= tmcApprovalTypeNone 
+    && bookTypeNotSelf() 
+    && !identity?.Numbers?.AgentId'>
+      <ion-label>跳过审批:</ion-label>
+      <ion-input hidden value='true'></ion-input>
+    </ion-item>
+    <ion-item lines='none' *ngIf='tmc?.IsShowServiceFee || identity?.Numbers?.AgentId'>
+      <ion-label>服务费:</ion-label>
+      <ion-input hidden value='getServiceFee(item?.credential)'></ion-input>
+    </ion-item>
+    <ion-item lines='none' detail *ngIf='isAllowSelectApprove(item?.passenger?.AccountId,item)' (click)='openApproverModal(item?.credential?.AccountId)'>
+      <ion-label>审批人:{{item?.appovalStaff?.Name}}|{{item?.appovalStaff?.Email}}|{{item?.appovalStaff?.Number}}</ion-label>
+      <ion-input hidden value='getServiceFee(item?.credential)'></ion-input>
+    </ion-item>
+  </ion-list>
+</ion-content>

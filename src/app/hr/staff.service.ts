@@ -1,13 +1,17 @@
+import { MemberCredential } from "src/app/member/member.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
 import { Injectable } from "@angular/core";
 import { StaffBookType } from "../tmc/models/StaffBookType";
+import { TaskType } from "../flight/models/TaskType";
+
 export class StaffEntity {
   TempId: string;
   StaffNumber: string;
   BookTypeName: string;
   Password: string;
+  ApproveId: string; // ApproveId Id
   Id: string; // Long Id
   TmcId: string; // Long 客户 id
   AccountId: string; // Long 帐号 id
@@ -33,6 +37,12 @@ export class StaffEntity {
   IsUsed: boolean; // 是否启用
   BookType: StaffBookType; // int 预订类型
   BookCodes: string; // String 预订代码
+  Setting: string;// json string
+  Approvers: {
+    RealName: string;
+    Tag: string;
+    Type: TaskType;
+  }[];
 }
 export interface HrEntity {
   Account: {
@@ -164,5 +174,16 @@ export class StaffService {
       IsModifyPassword: false,
       IsModifyCredentials: true
     });
+  }
+  async getStaffCredentials(AccountId: string): Promise<MemberCredential[]> {
+    const req = new RequestEntity();
+    req.Method = `TmcApiHomeUrl-Staff-Credentials`;
+    req.IsShowLoading = true;
+    req.Data = {
+      AccountId
+    };
+    return this.apiService
+      .getPromiseData<MemberCredential[]>(req)
+      .catch(_ => [] as MemberCredential[]);
   }
 }

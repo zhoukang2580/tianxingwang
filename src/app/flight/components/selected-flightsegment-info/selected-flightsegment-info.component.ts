@@ -94,7 +94,10 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     }
     return takofftime;
   }
-  async nextStep() {}
+  async nextStep() {
+    this.dismissTop();
+    this.router.navigate([AppHelper.getRoutePath("book")]);
+  }
   async reelect(passenger: StaffEntity, item: PassengerFlightSelectedInfo) {
     await this.flightService.reselectPassengerFlightSegments(passenger, item);
   }

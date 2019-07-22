@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-button (click)='back()'>
+        <ion-icon class='back-icon' name='arrow-back'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>选择审批人</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh()">
+    <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="下拉刷新" refreshingSpinner="circles"
+      refreshingText="正在加载...">
+    </ion-refresher-content>
+  </ion-refresher>
+  <ion-toolbar #toolbar>
+    <!-- Searchbar with a custom debounce -->
+    <ion-searchbar debounce="700" animated placeholder="员工号、姓名、手机号、空格键 开始查询" (ionChange)='doSearch($event)'
+      [(ngModel)]='vmKeyword'>
+    </ion-searchbar>
+  </ion-toolbar>
+  <ion-list *ngIf='!loading;else loadingTemp'>
+    <ng-container *ngIf='approvals?.length;else nodata'>
+      <ion-item *ngFor='let item of approvals' detail (click)='onSelect(item)'>
+        <ion-label color='medium'>
+          {{item?.Text}}
+        </ion-label>
+      </ion-item>
+    </ng-container>
+    <ng-template #nodata>
+      <app-or-comp>暂无数据</app-or-comp>
+    </ng-template>
+  </ion-list>
+  <ng-template #loadingTemp>
+    正在加载...
+  </ng-template>
+</ion-content>

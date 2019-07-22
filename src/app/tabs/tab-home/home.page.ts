@@ -33,7 +33,7 @@ export class HomePage implements OnInit {
     private staffService: StaffService,
     route: ActivatedRoute
   ) {
-    this.selectedCompany$ = tmcService.getSelectedCompany();
+    this.selectedCompany$ = tmcService.getSelectedCompanySource();
     route.paramMap.subscribe(p => {
       // console.log("返回到首页 ",p.keys);
       this.check();
