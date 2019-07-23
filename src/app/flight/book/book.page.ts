@@ -148,9 +148,10 @@ export class BookPage implements OnInit {
     const result = await modal.onDidDismiss();
     if (result && result.data) {
       const res = result.data as { Text: string; Value: string };
-      item.costCenter.code = res.Value;
-      item.costCenter.name =
-        res.Text && res.Text.substring(res.Text.lastIndexOf("-") + 1);
+      item.costCenter = {
+        code: res.Value,
+        name: res.Text && res.Text.substring(res.Text.lastIndexOf("-") + 1)
+      };
     }
   }
   getMothDay(flightSegment: FlightSegmentEntity) {

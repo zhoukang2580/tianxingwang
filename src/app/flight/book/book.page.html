@@ -160,9 +160,9 @@
             </div>
           </div>
           <div>
-            <ion-item detail lines='none' no-margin no-padding (click)='searchCostCenter()'>
+            <ion-item detail lines='none' no-margin no-padding (click)='searchCostCenter(item)'>
               <ion-label>成本中心：</ion-label>
-              <ion-label>{{item?.costCenter?.name}}</ion-label>
+              <ion-label text-end>{{item?.costCenter?.name}}</ion-label>
             </ion-item>
             <ion-item lines='none' no-margin no-padding>
               <ion-label style='margin-right: 0'>其他原因:</ion-label>
