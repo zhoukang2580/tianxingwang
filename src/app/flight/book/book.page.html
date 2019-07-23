@@ -11,13 +11,13 @@
 
 <ion-content>
   <ion-list *ngFor='let item of passengerSegments'>
-    <ion-item-divider sticky>
-      {{item?.credential?.CheckName}}
+    <ion-item-divider color='primary' sticky>
+      {{item?.modal?.credential?.CheckName}}
       【{{tmc?.Name}}】
       [成人]
-      {{item?.credential?.Number}}
+      {{item?.modal?.credential?.Number}}
     </ion-item-divider>
-    <ion-item lines='none'>
+    <ion-item lines='none' class="ion-no-margin">
       <ion-label>通知语言:</ion-label>
       <ion-select value="cn" okText="确定" cancelText="取消">
         <ion-select-option value=''>不发</ion-select-option>
@@ -25,24 +25,156 @@
         <ion-select-option value='en'>英文</ion-select-option>
       </ion-select>
     </ion-item>
-    <ion-item lines='none'>
-      <ion-label>审批人:</ion-label>
-      <ion-input></ion-input>
-    </ion-item>
-    <ion-item lines='none' *ngIf='tmc?.FlightApprovalType!=0 
+    <ion-item lines='none' class="ion-no-margin" *ngIf='tmc?.FlightApprovalType!=0 
     && tmc?.FlightApprovalType!= tmcApprovalTypeNone 
     && bookTypeNotSelf() 
     && !identity?.Numbers?.AgentId'>
       <ion-label>跳过审批:</ion-label>
       <ion-input hidden value='true'></ion-input>
     </ion-item>
-    <ion-item lines='none' *ngIf='tmc?.IsShowServiceFee || identity?.Numbers?.AgentId'>
+    <ion-item lines='none' class="ion-no-margin" *ngIf='tmc?.IsShowServiceFee || identity?.Numbers?.AgentId'>
       <ion-label>服务费:</ion-label>
-      <ion-input hidden value='getServiceFee(item?.credential)'></ion-input>
+      <ion-input hidden value='getServiceFee(item?.modal?.credential)'></ion-input>
     </ion-item>
-    <ion-item lines='none' detail *ngIf='isAllowSelectApprove(item?.passenger?.AccountId,item)' (click)='openApproverModal(item?.credential?.AccountId)'>
-      <ion-label>审批人:{{item?.appovalStaff?.Name}}|{{item?.appovalStaff?.Email}}|{{item?.appovalStaff?.Number}}</ion-label>
-      <ion-input hidden value='getServiceFee(item?.credential)'></ion-input>
+    <ion-item class="ion-no-margin" lines='none' detail
+      *ngIf='isAllowSelectApprove(item?.modal?.passenger?.AccountId,item)' (click)='openApproverModal(item)'>
+      <ion-label>
+        审批人:{{item?.appovalStaff?.Name}}|{{item?.appovalStaff?.Email||item?.appovalStaff?.Account?.Email}}|{{item?.appovalStaff?.Number}}
+      </ion-label>
+    </ion-item>
+    <ion-item *ngFor='let s of item?.modal?.selectedInfo' class='ion-margin-vertical'>
+      <div style='width: 100%' class='detail'>
+        <div class='date'>
+          <strong>{{getDate(s?.flightSegment)}} <ion-text color='secondary'>
+              {{s?.flightSegment?.FromCityName}}
+              <ion-text color='dark' class='small-font'>到</ion-text>
+              {{s?.flightSegment?.ToCityName}}
+              {{getTripTip(s)}}
+              <span class='small-font'>【{{s?.flightPolicy?.Cabin?.Discount|discount}}】</span>
+            </ion-text>
+          </strong>
+        </div>
+        <app-fly-list-item [flightSegment]='s.flightSegment' [showDetails]='true'></app-fly-list-item>
+        <div class='price'>
+          <ion-label color='danger'>￥{{s.flightPolicy?.Cabin?.TicketPrice}}</ion-label>
+          <ion-label color='danger'>税:￥{{s.flightSegment?.Tax}}</ion-label>
+        </div>
+        <ion-button fill='clear' class='change-policy-btn' (click)='onShowFriendlyReminder(item)' color='secondary'>
+          温馨提醒
+          <ion-icon name="arrow-dropdown" *ngIf='item?.showFriendlyReminder'></ion-icon>
+          <ion-icon name="arrow-dropright" *ngIf='!item?.showFriendlyReminder'></ion-icon>
+        </ion-button>
+        <ion-label [@openclose]='item?.showFriendlyReminder' text-wrap color='success' class='small-font'>
+          温馨提醒: 国内廉价航司机票部分舱位不包含免费托运行李服务，免费托运行李相关事宜可以拨打我们客服电话咨询。（例如： 中联航:
+          每位旅客可携带1件免费随身行李，重量不能超过10千克且体积不超过20×30×40厘米。托运行李收费标准：X ≤ 5KG 柜台价格30元； 5KG &lt; X ≤ 10KG 柜台价格60元； 10KG &lt; X ≤
+          15KG
+          柜台价格90元； 15KG &lt; X ≤ 20KG 柜台价格120元；等） </ion-label>
+        <ion-label text-wrap color='danger' class='small-font' *ngIf='s?.flightPolicy?.Rules?.length'>
+          超标：{{s?.flightPolicy?.Rules?.join(",")}}
+        </ion-label>
+        <ion-button fill='clear' class='change-policy-btn' (click)='openrules(item)' color='secondary'>
+          退改签政策
+          <ion-icon name="arrow-dropdown" *ngIf='item?.openrules'></ion-icon>
+          <ion-icon name="arrow-dropright" *ngIf='!item?.openrules'></ion-icon>
+        </ion-button>
+        <div class='refund-change-info' [@openclose]='item?.openrules'>
+          <ion-label text-wrap *ngIf='s?.flightPolicy?.Cabin?.RefundChange?.RefundDetail?.Befores?.length'>
+            退票规则:{{s?.flightPolicy?.Cabin?.RefundChange?.RefundDetail?.Befores?.join("")}}
+          </ion-label>
+          <ion-label text-wrap *ngIf='s?.flightPolicy?.Cabin?.RefundChange?.ChangeDetail?.Befores?.length'>
+            改期规则:{{s?.flightPolicy?.Cabin?.RefundChange?.ChangeDetail?.Befores?.join("")}}
+          </ion-label>
+          <ion-label text-wrap *ngIf='s?.flightPolicy?.Cabin?.RefundChange?.EndorsementDetail?.Endorsements?.length'>
+            其它规则:{{s?.flightPolicy?.Cabin?.RefundChange?.EndorsementDetail?.Endorsements?.join("")}}
+          </ion-label>
+        </div>
+        <div style='width: 100%' *ngIf='item?.vmCredential'>
+          <ion-grid class="id-type" [class.disabled]='!modifyele.checked'>
+            <ion-row>
+              <ion-col>证件:</ion-col>
+              <ion-col text-end>
+                <input class='hidden' type="checkbox" #modifyele>
+                <ion-button fill='clear' color='secondary' size='small' (click)='modifyele.checked=!modifyele.checked'>
+                  <ion-icon name="checkmark" mode='md' size='small' slot='start' color='success'
+                    *ngIf='modifyele.checked'></ion-icon>
+                  <ion-icon name="create" mode='md' size='small' slot='start' *ngIf='!modifyele.checked'></ion-icon>
+                  <ion-text *ngIf='!modifyele.checked'>修改</ion-text>
+                  <ion-text *ngIf='modifyele.checked'>保存</ion-text>
+                </ion-button>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>
+                <ion-item lines='none' no-margin no-padding [disabled]='!modifyele.checked'>
+                  <ion-label>证件类型</ion-label>
+                  <ion-select [(ngModel)]='item.vmCredential' name='Type' okText="确定" cancelText="取消"
+                    selectedText='{{(item?.vmCredential?.Type|credential)}}' [compareWith]='compareFn'>
+                    <ion-select-option [value]="opt" *ngFor='let opt of item?.credentials'>
+                      {{(opt?.Type|credential)}}{{opt?.Number}}
+                    </ion-select-option>
+                  </ion-select>
+                  <input type="text" value="{{item.vmCredential.Type}}" hidden ValidateName="Type">
+                </ion-item>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>证件号码：</ion-col>
+              <ion-col>
+                <input type="text" [disabled]='!modifyele.checked' [(ngModel)]='item.vmCredential.Number' name='Number'
+                  ValidateName="Number">
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>登机姓：</ion-col>
+              <ion-col>
+                <input type="text" [disabled]='!modifyele.checked' [(ngModel)]='item.vmCredential.CheckFirstName'
+                  ValidateName='CheckFirstName' name='CheckFirstName'>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>登机名：</ion-col>
+              <ion-col>
+                <input type="text" [disabled]='!modifyele.checked' [(ngModel)]='item.vmCredential.CheckLastName'
+                  ValidateName='CheckLastName' name='CheckLastName'>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+          <div>
+            <ion-item lines='none' no-margin no-padding>
+              <ion-label>超标原因：</ion-label>
+              <ion-select [disabled]='item?.isOtherIllegalReason'
+                *ngIf='illegalReasons?.length&&s?.flightPolicy?.Rules?.length' [(ngModel)]='item.illegalReason'
+                name='Type' okText="确定" cancelText="取消">
+                <ion-select-option [value]="opt?.Name" *ngFor='let opt of illegalReasons'>
+                  {{opt?.Name}}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+            <div>
+              <ion-item lines='none' no-margin no-padding>
+                <ion-label style='margin-right: 0'>其他原因:</ion-label>
+                <ion-checkbox color="secondary" [(ngModel)]="item.isOtherIllegalReason"></ion-checkbox>
+                <ion-input [disabled]='!item?.isOtherIllegalReason' [(ngModel)]='item.otherIllegalReason'
+                  placeholder='请输入其他原因'></ion-input>
+              </ion-item>
+            </div>
+          </div>
+          <div>
+            <ion-item detail lines='none' no-margin no-padding (click)='searchCostCenter()'>
+              <ion-label>成本中心：</ion-label>
+              <ion-label>{{item?.costCenter?.name}}</ion-label>
+            </ion-item>
+            <ion-item lines='none' no-margin no-padding>
+              <ion-label style='margin-right: 0'>其他原因:</ion-label>
+              <ion-checkbox color="secondary" [(ngModel)]="item.isOtherCostCenter"></ion-checkbox>
+              <ion-input [disabled]='!item?.isOtherCostCenter' [(ngModel)]='item.otherCostCenterName' placeholder='名称'>
+              </ion-input>
+              <ion-input [disabled]='!item?.isOtherCostCenter' [(ngModel)]='item.otherCostCenterCode' placeholder='代码'>
+              </ion-input>
+            </ion-item>
+          </div>
+        </div>
+      </div>
     </ion-item>
   </ion-list>
 </ion-content>

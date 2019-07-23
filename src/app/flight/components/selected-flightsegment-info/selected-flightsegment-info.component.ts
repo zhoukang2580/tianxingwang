@@ -6,8 +6,7 @@ import { Observable, Subscription } from "rxjs";
 import { Router } from "@angular/router";
 import { FlydayService } from "./../../flyday.service";
 import { AppHelper } from "./../../../appHelper";
-import { StaffEntity } from "src/app/hr/staff.service";
-import { StaffBookType } from "./../../../tmc/models/StaffBookType";
+import { StaffEntity, StaffBookType } from "src/app/hr/staff.service";
 import { StaffService } from "../../../hr/staff.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import {

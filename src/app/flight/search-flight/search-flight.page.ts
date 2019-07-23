@@ -1,7 +1,7 @@
 import { IdentityService } from "../../services/identity/identity.service";
 import { MemberCredential, MemberService } from "../../member/member.service";
 import { ApiService } from "src/app/services/api/api.service";
-import { StaffEntity } from "src/app/hr/staff.service";
+import { StaffEntity, StaffBookType } from "src/app/hr/staff.service";
 import { FlightSegmentEntity } from "../models/flight/FlightSegmentEntity";
 import { TripType, PassengerFlightSegments } from "../flight.service";
 import { StaffService } from "../../hr/staff.service";
@@ -20,7 +20,6 @@ import { DayModel } from "../models/DayModel";
 import { SelectDateService } from "../select-date/select-date.service";
 import { ModalController, NavController } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
-import { StaffBookType } from "src/app/tmc/models/StaffBookType";
 import { tap } from "rxjs/operators";
 import { SwitchCityComponent } from "../components/switch-city/switch-city.component";
 import { LanguageHelper } from "src/app/languageHelper";

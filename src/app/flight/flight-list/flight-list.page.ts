@@ -8,8 +8,7 @@ import {
   PassengerPolicyFlights
 } from "./../flight.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
-import { StaffBookType } from "./../../tmc/models/StaffBookType";
-import { StaffService } from "../../hr/staff.service";
+import { StaffService, StaffBookType } from "../../hr/staff.service";
 import { AppHelper } from "src/app/appHelper";
 import { animate } from "@angular/animations";
 import { trigger, state, style, transition } from "@angular/animations";

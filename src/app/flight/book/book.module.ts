@@ -1,3 +1,5 @@
+import { MemberPipesModule } from 'src/app/member/pipe/pipe.module';
+import { FlightComponentsModule } from 'src/app/flight/components/components.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -19,7 +21,9 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    FlightComponentsModule,
+    MemberPipesModule
   ],
   declarations: [BookPage]
 })

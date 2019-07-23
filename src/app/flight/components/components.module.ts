@@ -28,6 +28,7 @@ import { SelectedFlightsegmentInfoComponent } from "./selected-flightsegment-inf
 import { SelectFlightsegmentCabinComponent } from "./select-flightsegment-cabin/select-flightsegment-cabin.component";
 import { SelectedPassengersPopoverComponent } from "./selected-passengers-popover/selected-passengers-popover.component";
 import { SearchApprovalComponent } from "./search-approval/search-approval.component";
+import { SearchCostcenterComponent } from './search-costcenter/search-costcenter.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +53,8 @@ import { SearchApprovalComponent } from "./search-approval/search-approval.compo
     SelectedFlightsegmentInfoComponent,
     SelectFlightsegmentCabinComponent,
     SelectedPassengersPopoverComponent,
-    SearchApprovalComponent
+    SearchApprovalComponent,
+    SearchCostcenterComponent
   ],
   imports: [
     CommonModule,
@@ -95,7 +97,8 @@ import { SearchApprovalComponent } from "./search-approval/search-approval.compo
     SelectedFlightsegmentInfoComponent,
     SelectFlightsegmentCabinComponent,
     SelectedPassengersPopoverComponent,
-    SearchApprovalComponent
+    SearchApprovalComponent,
+    SearchCostcenterComponent
   ]
 })
 export class FlightComponentsModule {}

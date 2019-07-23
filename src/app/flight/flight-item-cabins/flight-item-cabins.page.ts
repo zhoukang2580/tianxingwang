@@ -1,8 +1,7 @@
 import { FlightCabinEntity } from "./../models/flight/FlightCabinEntity";
 import { MemberCredential } from "./../../member/member.service";
 import { IdentityService } from "./../../services/identity/identity.service";
-import { StaffBookType } from "./../../tmc/models/StaffBookType";
-import { StaffService, StaffEntity } from "../../hr/staff.service";
+import { StaffService, StaffEntity, StaffBookType } from "../../hr/staff.service";
 import { DayModel } from "./../models/DayModel";
 import { FlydayService } from "./../flyday.service";
 import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";

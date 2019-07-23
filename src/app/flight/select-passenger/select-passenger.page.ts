@@ -1,7 +1,6 @@
 import { MemberService, MemberCredential } from "./../../member/member.service";
 import { CanComponentDeactivate } from "./../../guards/candeactivate.guard";
-import { StaffBookType } from "./../../tmc/models/StaffBookType";
-import { StaffService } from "./../../hr/staff.service";
+import { StaffService, StaffBookType } from "./../../hr/staff.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { ApiService } from "./../../services/api/api.service";
 import { ActivatedRoute, Router } from "@angular/router";

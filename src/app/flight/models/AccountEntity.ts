@@ -1,4 +1,5 @@
 export class AccountEntity {
+    Id:string;
     /// <summary>
     /// 用户名
     /// </summary>

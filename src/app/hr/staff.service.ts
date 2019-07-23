@@ -3,10 +3,96 @@ import { IdentityService } from "src/app/services/identity/identity.service";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
 import { Injectable } from "@angular/core";
-import { StaffBookType } from "../tmc/models/StaffBookType";
 import { TaskType } from "../flight/models/TaskType";
-
+import { AccountEntity } from "../flight/models/AccountEntity";
+export enum StaffBookType {
+  /// <summary>
+  /// 秘书
+  /// </summary>
+  Secretary = "Secretary",
+  /// <summary>
+  /// 自己
+  /// </summary>
+  Self = "Self",
+  /// <summary>
+  /// 全部
+  /// </summary>
+  All = "All"
+}
+export class OrganizationEntity {
+  Hr: HrEntity;
+  Parent: OrganizationEntity;
+  Code: string;
+  Name: string;
+  Sequence: number;
+  ShortName: string;
+  Children: OrganizationEntity[];
+}
+export class CostCenterEntity {
+  /// <summary>
+  ///
+  /// </summary>
+  Hr: HrEntity;
+  /// <summary>
+  ///名称
+  /// </summary>
+  Name: string;
+  /// <summary>
+  /// 代码
+  /// </summary>
+  Code: string;
+  /// <summary>
+  /// 是否启用
+  /// </summary>
+  IsUsed: boolean;
+  /// <summary>
+  /// 启用状态
+  /// </summary>
+  IsUsedName: string;
+}
+export class PolicyEntity {
+  /// <summary>
+  ///
+  /// </summary>
+  Hr: HrEntity;
+  /// <summary>
+  ///名称
+  /// </summary>
+  Name: string;
+  /// <summary>
+  /// 是否启用
+  /// </summary>
+  IsUsed: boolean;
+  /// <summary>
+  /// 启用状态
+  /// </summary>
+  IsUsedName: string;
+  /// <summary>
+  /// 是需要审批
+  /// </summary>
+  IsNeedAudit: boolean;
+}
 export class StaffEntity {
+  /// <summary>
+  ///
+  /// </summary>
+  Hr: HrEntity;
+  /// <summary>
+  /// 账户
+  /// </summary>
+  Account: AccountEntity;
+  /// <summary>
+  /// 组织
+  /// </summary>
+  Organization: OrganizationEntity;
+  /// <summary>
+  /// 成本中心
+  /// </summary>
+  CostCenter: CostCenterEntity;
+  /// <summary>
+  /// 政策
+  /// </summary>
+  Policy: PolicyEntity;
   TempId: string;
   StaffNumber: string;
   BookTypeName: string;
@@ -37,7 +123,7 @@ export class StaffEntity {
   IsUsed: boolean; // 是否启用
   BookType: StaffBookType; // int 预订类型
   BookCodes: string; // String 预订代码
-  Setting: string;// json string
+  Setting: string; // json string
   Approvers: {
     RealName: string;
     Tag: string;

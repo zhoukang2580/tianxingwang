@@ -1,11 +1,10 @@
-import { TmcService } from 'src/app/tmc/tmc.service';
+import { TmcService } from "src/app/tmc/tmc.service";
 import { ModalController, NavController } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import { FlightCabinEntity } from "./models/flight/FlightCabinEntity";
-import { StaffBookType } from "./../tmc/models/StaffBookType";
 import { FilterConditionModel } from "./models/flight/advanced-search-cond/FilterConditionModel";
 import { IdentityService } from "./../services/identity/identity.service";
-import { StaffService, StaffEntity } from "../hr/staff.service";
+import { StaffService, StaffEntity, StaffBookType } from "../hr/staff.service";
 import { Injectable } from "@angular/core";
 
 import { environment } from "../../environments/environment";
@@ -132,6 +131,7 @@ export class FlightService {
   private localInternationAirports: LocalStorageAirport;
   private localDomesticAirports: LocalStorageAirport;
   private selectedCitySource: Subject<Trafficline>;
+  private allLocalAirports: Trafficline[];
   private passengerFlightSegments: PassengerFlightSegments[]; // 记录乘客及其研究选择的航班
   currentViewtFlightSegment: CurrentViewtFlightSegment;
 
@@ -143,7 +143,7 @@ export class FlightService {
     private router: Router,
     private navCtrl: NavController,
     private identityService: IdentityService,
-    private tmcService:TmcService
+    private tmcService: TmcService
   ) {
     this.searchFlightModel = new SearchFlightModel();
     this.searchFlightModel.tripType = TripType.departureTrip;
@@ -949,86 +949,7 @@ export class FlightService {
     console.log(`本地化国际机票耗时：${window.performance.now() - st} ms`);
     return airports;
   }
-  policyflights(
-    Flights: FlightJourneyEntity[],
-    Passengers: string[]
-  ): Observable<PassengerPolicyFlights[]> {
-    return from(
-      Promise.resolve().then(async _ => {
-        let local;
-        if (!environment.production) {
-          local = await this.storage.get(
-            "TestTmcData.TmcApiFlightUrl-Home-Policy"
-          );
-          if (local) {
-            console.log(
-              "policyflights local",
-              local,
-              `缓存是否过期 ${Date.now() - local.lastUpdateTime >=
-                debugCacheTime}`
-            );
-          }
-        }
-        if (
-          !environment.production &&
-          local &&
-          local.FlightPolicy &&
-          local.FlightPolicy.length &&
-          Date.now() - local.lastUpdateTime <= debugCacheTime &&
-          local.toCode == (Flights && Flights[0] && Flights[0].ToCity) &&
-          local.fromCode == (Flights && Flights[0] && Flights[0].FromCity) &&
-          local.date == (Flights && Flights[0] && Flights[0].Date)
-        ) {
-          // console.log(new Array(10).fill(0).map(_=>TestTmcData.FlightData));
-          return local.FlightPolicy;
-        }
-        return [];
-      })
-    ).pipe(
-      switchMap(local => {
-        if (local && local.length) {
-          return of(local);
-        }
-        console.log(`重新获取航班数据`);
-        const req = new RequestEntity();
-        req.Method = `TmcApiFlightUrl-Home-Policy`;
-        req.Version = "1.0";
-        req.Data = {
-          Flights: JSON.stringify(Flights),
-          Passengers: Passengers.join(",")
-        };
-        req.IsShowLoading = true;
-        req.Timeout = 60;
-        return this.apiService
-          .getResponse<
-            {
-              PassengerKey: string;
-              FlightPolicies: FlightPolicy[];
-            }[]
-          >(req)
-          .pipe(
-            map(res => res.Data || []),
-            switchMap(res => {
-              if (res.length && !environment.production) {
-                return from(
-                  this.storage.set("TestTmcData.TmcApiFlightUrl-Home-Policy", {
-                    lastUpdateTime: Date.now(),
-                    FlightPolicy: res,
-                    fromCode: Flights && Flights[0] && Flights[0].FromCity,
-                    toCode: Flights && Flights[0] && Flights[0].ToCity
-                  })
-                ).pipe(map(_ => res));
-              }
-              return of(res);
-            }),
-            catchError(_ => {
-              AppHelper.alert(_);
-              return [];
-            })
-          );
-      })
-    );
-  }
+
   async getPolicyflightsAsync(
     Flights: FlightJourneyEntity[],
     Passengers: string[]
@@ -1163,14 +1084,17 @@ export class FlightService {
     });
   }
   private addoneday(s: FlightSegmentEntity) {
-    const addDay =
-      moment(s.ArrivalTime, "YYYY-MM-DDTHH:mm:ss").date() -
-      moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").date();
+    // const addDay =
+    //   moment(s.ArrivalTime, "YYYY-MM-DDTHH:mm:ss").date() -
+    //   moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").date();
     // console.log(addDay);
+    const addDay =
+      new Date(s.ArrivalTime).getDate() - new Date(s.TakeoffTime).getDate();
     return addDay > 0 ? "+" + addDay + LanguageHelper.getDayTip() : "";
   }
   getTotalFlySegments(flyJourneys: FlightJourneyEntity[]) {
-    return flyJourneys.reduce(
+    console.time("getTotalFlySegments");
+    const result = flyJourneys.reduce(
       (arr, journey) => {
         arr = [
           ...arr,
@@ -1180,23 +1104,27 @@ export class FlightService {
                 ...segs,
                 ...route.FlightSegments.map(s => {
                   s.TrackById = segs.length;
-                  s.TakeoffTimeStamp = +moment(
-                    s.TakeoffTime,
-                    "YYYY-MM-DDTHH:mm:ss"
-                  );
-                  s.ArrivalTimeStamp = +moment(
-                    s.ArrivalTime,
-                    "YYYY-MM-DDTHH:mm:ss"
-                  );
-                  s.TakeoffShortTime = moment(
-                    s.TakeoffTime,
-                    "YYYY-MM-DDTHH:mm:ss"
-                  ).format("HH:mm");
-                  s.ArrivalShortTime = moment(
-                    s.ArrivalTime,
-                    "YYYY-MM-DDTHH:mm:ss"
-                  ).format("HH:mm");
+                  s.TakeoffTimeStamp = new Date(s.TakeoffTime).getTime();
+                  s.ArrivalTimeStamp = new Date(s.ArrivalTime).getTime();
+                  s.TakeoffShortTime = this.getHHmm(s.TakeoffTime);
+                  s.ArrivalShortTime = this.getHHmm(s.ArrivalTime);
                   s.AddOneDayTip = this.addoneday(s);
+                  const fromCity =
+                    this.allLocalAirports &&
+                    this.allLocalAirports.length &&
+                    this.allLocalAirports.find(c => c.Code == journey.FromCity);
+                  if (fromCity) {
+                    s.FromCity = fromCity;
+                    s.FromCityName = fromCity.CityName;
+                  }
+                  const toCity =
+                    this.allLocalAirports &&
+                    this.allLocalAirports.length &&
+                    this.allLocalAirports.find(c => c.Code == journey.ToCity);
+                  if (toCity) {
+                    s.ToCity = toCity;
+                    s.FromCityName = fromCity.CityName;
+                  }
                   return s;
                 })
               ];
@@ -1209,6 +1137,19 @@ export class FlightService {
       },
       [] as FlightSegmentEntity[]
     );
+    console.timeEnd("getTotalFlySegments");
+    return result;
+  }
+  private getHHmm(datetime: string) {
+    if (datetime && datetime.includes("T")) {
+      const remain = datetime.split("T")[1];
+      if (remain) {
+        const hhmmss = remain.split(":");
+        hhmmss.pop();
+        return hhmmss.join(":");
+      }
+    }
+    return datetime;
   }
   async getFlightJourneyDetailListAsync(
     data: SearchFlightModel
@@ -1266,78 +1207,6 @@ export class FlightService {
     }
     return serverFlights;
   }
-  getFlightJourneyDetailList(
-    data: SearchFlightModel
-  ): Observable<FlightJourneyEntity[]> {
-    return from(
-      Promise.resolve().then(async _ => {
-        let local;
-        if (!environment.production) {
-          local = await this.storage.get("TestTmcData.FlightData");
-          if (local) {
-            console.log(
-              "getFlightJourneyDetailList local",
-              local,
-              `缓存是否过期 ${Date.now() - local.lastUpdateTime >=
-                debugCacheTime}`
-            );
-          }
-        }
-        if (
-          !environment.production &&
-          local &&
-          local.serverFlights &&
-          local.serverFlights.length &&
-          local.toCode == data.ToCode &&
-          local.fromCode == data.FromCode &&
-          Date.now() - local.lastUpdateTime <= debugCacheTime &&
-          local.date == data.Date
-        ) {
-          // console.log(new Array(10).fill(0).map(_=>TestTmcData.FlightData));
-          return local.serverFlights;
-        }
-        return [];
-      })
-    ).pipe(
-      switchMap(localFlights => {
-        if (localFlights && localFlights.length) {
-          return of(localFlights);
-        }
-        const req = new RequestEntity();
-        req.Method = "TmcApiFlightUrl-Home-Detail ";
-        req.Data = {
-          Date: data.Date, //  Yes 航班日期（yyyy-MM-dd）
-          FromCode: data.FromCode, //  Yes 三字代码
-          ToCode: data.ToCode, //  Yes 三字代码
-          FromAsAirport: data.FromAsAirport, //  No 始发以机场查询
-          ToAsAirport: data.ToAsAirport //  No 到达以机场查询
-        };
-        req.Version = "1.0";
-        req.IsShowLoading = true;
-        req.Timeout = 60;
-        return this.apiService.getResponse<FlightJourneyEntity[]>(req).pipe(
-          map(r => r.Data),
-          map(serverFlights => {
-            if (serverFlights.length && !environment.production) {
-              this.storage.set("TestTmcData.FlightData", {
-                serverFlights,
-                lastUpdateTime: Date.now(),
-                date: data.Date,
-                fromCode: data.FromCode,
-                toCode: data.ToCode
-              });
-            }
-            return serverFlights;
-          }),
-          catchError(_ => {
-            AppHelper.alert(_);
-            return [] as FlightJourneyEntity[];
-          })
-        );
-      })
-    );
-  }
-
   async getLocalHomeAirports(): Promise<Trafficline[]> {
     if (
       this.localDomesticAirports &&
@@ -1369,18 +1238,21 @@ export class FlightService {
     ).Trafficlines;
   }
   async getAllLocalAirports() {
+    if (this.allLocalAirports && this.allLocalAirports.length) {
+      return Promise.resolve(this.allLocalAirports);
+    }
     this.apiService.showLoadingView();
     const h = await this.getDomesticAirports();
     const i = [] || (await this.getInternationalAirports());
     this.apiService.hideLoadingView();
-    return [...h, ...i];
+    return (this.allLocalAirports = [...h, ...i]);
   }
   getCredentialStaffs(AccountIds: string[]): Promise<StaffEntity[]> {
     return this.tmcService.getCredentialStaffs(AccountIds);
   }
   async getPassengerCredentials(
     accountIds: string[]
-  ): Promise<{ [accountId: string]: MemberCredential[] }[]> {
+  ): Promise<{ [accountId: string]: MemberCredential[] }> {
     return this.tmcService.getPassengerCredentials(accountIds);
   }
 }

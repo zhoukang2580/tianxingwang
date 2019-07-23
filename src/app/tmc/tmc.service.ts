@@ -46,6 +46,28 @@ export enum TmcTrainFeeType {
   /// </summary>
   TicketFix = 2
 }
+export class IllegalReasonEntity {
+  /// <summary>
+  /// TMC编号
+  /// </summary>
+  Tmc: TmcEntity;
+  /// <summary>
+  /// 标签
+  /// </summary>
+  Tag: string;
+  /// <summary>
+  /// 违规理由
+  /// </summary>
+  Name: string;
+  /// <summary>
+  /// 排序号
+  /// </summary>
+  Sequence: number;
+  /// <summary>
+  /// 实体副本
+  /// </summary>
+  DataEntity: IllegalReasonEntity;
+}
 export enum TmcApprovalType {
   /// <summary>
   /// 不审批
@@ -277,19 +299,6 @@ export class TmcService {
       .getPromiseData<TmcEntity>(req)
       .catch(_ => ({} as TmcEntity));
   }
-  async staffApprover(staffId: string, tmcId: string): Promise<TmcModel> {
-    const req = new RequestEntity();
-    req.Method = "TmcApiBookUrl-Home-StaffApprover";
-    req.Data = {
-      staffId,
-      tmcId
-    };
-    req.IsShowLoading = true;
-    req.Timeout = 60;
-    return this.apiService
-      .getPromiseData<TmcModel>(req)
-      .catch(_ => ({} as TmcModel));
-  }
   async searchApprovals(
     name: string
   ): Promise<{ Text: string; Value: string }[]> {
@@ -310,17 +319,17 @@ export class TmcService {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Home-GetApproverStaffs";
     req.Data = {
-      AccountIds: staffSettingAccountIds
+      AccountIds: staffSettingAccountIds.join(";")
     };
     req.IsShowLoading = true;
     req.Timeout = 60;
     return this.apiService.getPromiseData<StaffEntity[]>(req).catch(_ => []);
   }
-  async getCredentialStaffs(AccountIds: string[]): Promise<StaffEntity[]> {
+  async getCredentialStaffs(accountIds: string[]): Promise<StaffEntity[]> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Home-GetStaffs";
     req.Data = {
-      AccountIds
+      AccountIds: accountIds.join(";")
     };
     req.IsShowLoading = true;
     req.Timeout = 60;
@@ -330,7 +339,7 @@ export class TmcService {
   }
   async getPassengerCredentials(
     accountIds: string[]
-  ): Promise<{ [accountId: string]: MemberCredential[] }[]> {
+  ): Promise<{ [accountId: string]: MemberCredential[] }> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Home-Credentials";
     req.Data = {
@@ -339,7 +348,30 @@ export class TmcService {
     req.IsShowLoading = true;
     req.Timeout = 60;
     return this.apiService
-      .getPromiseData<{ [accountId: string]: MemberCredential[] }[]>(req)
+      .getPromiseData<{ [accountId: string]: MemberCredential[] }>(req)
+      .catch(_ => ({}));
+  }
+  async getIllegalReasons(): Promise<IllegalReasonEntity[]> {
+    const req = new RequestEntity();
+    req.Method = "TmcApiBookUrl-Home-GetIllegalReasons";
+    req.IsShowLoading = true;
+    req.Timeout = 60;
+    return this.apiService
+      .getPromiseData<IllegalReasonEntity[]>(req)
+      .catch(_ => []);
+  }
+  async getCostCenter(
+    name: string
+  ): Promise<{ Text: string; Value: string }[]> {
+    const req = new RequestEntity();
+    req.Method = "TmcApiBookUrl-Home-GetCostCenter";
+    req.Data = {
+      name
+    };
+    req.IsShowLoading = true;
+    req.Timeout = 60;
+    return this.apiService
+      .getPromiseData<{ Text: string; Value: string }[]>(req)
       .catch(_ => []);
   }
 }
