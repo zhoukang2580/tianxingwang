@@ -20,6 +20,8 @@ export enum StaffBookType {
   All = "All"
 }
 export class OrganizationEntity {
+  Id:string;
+  ParentId:string;
   Hr: HrEntity;
   Parent: OrganizationEntity;
   Code: string;

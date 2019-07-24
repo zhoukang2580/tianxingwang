@@ -9,7 +9,8 @@ import { ScanComponent } from "./scan/scan.component";
 import { LoadingComponent } from "./loading/loading.component";
 import { TimelineComponent } from "./timeline/timeline.component";
 import { TimelineItemComponent } from "./timeline-item/timeline-item.component";
-import { LoginSkeletonPageComponent } from './login-skeleton-page/login-skeleton-page.component';
+import { LoginSkeletonPageComponent } from "./login-skeleton-page/login-skeleton-page.component";
+import { TreeNgxModule } from "./tree-ngx/tree-ngx.module";
 @NgModule({
   declarations: [
     OrComponent,
@@ -22,7 +23,7 @@ import { LoginSkeletonPageComponent } from './login-skeleton-page/login-skeleton
     LoadingComponent,
     LoginSkeletonPageComponent
   ],
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, TreeNgxModule],
   exports: [
     OrComponent,
     PinchZoomComponent,
@@ -31,7 +32,8 @@ import { LoginSkeletonPageComponent } from './login-skeleton-page/login-skeleton
     AppUpdateComponent,
     LoadingComponent,
     TimelineItemComponent,
-    TimelineComponent
+    TimelineComponent,
+    TreeNgxModule
   ],
   entryComponents: [LoginSkeletonPageComponent]
 })

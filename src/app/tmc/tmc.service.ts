@@ -1,3 +1,4 @@
+import { OrganizationEntity } from "./../hr/staff.service";
 import { AccountEntity } from "./../flight/models/AccountEntity";
 import { AgentEntity } from "./../flight/models/AgentEntity";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
@@ -372,6 +373,15 @@ export class TmcService {
     req.Timeout = 60;
     return this.apiService
       .getPromiseData<{ Text: string; Value: string }[]>(req)
+      .catch(_ => []);
+  }
+  async getOrganizations(): Promise<OrganizationEntity[]> {
+    const req = new RequestEntity();
+    req.Method = "TmcApiBookUrl-Home-GetOrganizations";
+    // req.IsShowLoading = true;
+    req.Timeout = 60;
+    return this.apiService
+      .getPromiseData<OrganizationEntity[]>(req)
       .catch(_ => []);
   }
 }

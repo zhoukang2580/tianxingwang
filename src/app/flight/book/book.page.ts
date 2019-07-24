@@ -1,3 +1,4 @@
+import { OrganizationComponent } from "./../components/organization/organization.component";
 import { SearchCostcenterComponent } from "./../components/search-costcenter/search-costcenter.component";
 import { FlydayService } from "./../flyday.service";
 import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
@@ -14,7 +15,8 @@ import {
   StaffService,
   StaffEntity,
   StaffBookType,
-  CostCenterEntity
+  CostCenterEntity,
+  OrganizationEntity
 } from "./../../hr/staff.service";
 import {
   PassengerFlightSegments,
@@ -57,6 +59,9 @@ interface CombineedSelectedInfo {
   };
   otherCostCenterName: any;
   otherCostCenterCode: any;
+  isOtherOrganization: boolean;
+  organization: OrganizationEntity;
+  otherOrganizationName: string;
 }
 @Component({
   selector: "app-book",
@@ -151,6 +156,23 @@ export class BookPage implements OnInit {
       item.costCenter = {
         code: res.Value,
         name: res.Text && res.Text.substring(res.Text.lastIndexOf("-") + 1)
+      };
+    }
+  }
+  async searchOrganization(item: CombineedSelectedInfo) {
+    const modal = await this.modalCtrl.create({
+      component: OrganizationComponent
+    });
+    modal.backdropDismiss = false;
+    await modal.present();
+    const result = await modal.onDidDismiss();
+    console.log("organization",result.data);
+    if (result && result.data) {
+      const res = result.data as OrganizationEntity;
+      item.organization = {
+        ...item.organization,
+        Code: res.Code,
+        Name: res.Name
       };
     }
   }
@@ -258,6 +280,11 @@ export class BookPage implements OnInit {
           openrules: false,
           isOtherIllegalReason: false,
           showFriendlyReminder: false,
+          isOtherOrganization: false,
+          organization: {
+            Code: cstaff.Organization && cstaff.Organization.Code,
+            Name: cstaff.Organization && cstaff.Organization.Name
+          },
           costCenter: {
             code: cstaff.CostCenter && cstaff.CostCenter.Code,
             name: cstaff.CostCenter && cstaff.CostCenter.Name

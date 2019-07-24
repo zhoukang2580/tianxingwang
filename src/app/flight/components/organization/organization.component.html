@@ -1,3 +1,31 @@
-<p>
-  organization works!
-</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-button (click)='back()'>
+        <ion-icon class='back-icon' name='arrow-back'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-searchbar mode='ios' debounce="700" animated placeholder="请输入部门名称" (ionChange)='doSearch()'
+      [(ngModel)]='vmKeyword'>
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh()">
+    <!-- <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="下拉刷新" refreshingSpinner="circles"
+      refreshingText="正在加载...">
+    </ion-refresher-content> -->
+  </ion-refresher>
+  <ng-template #loadingTemp>
+    正在加载...
+  </ng-template>
+  <ng-container *ngIf='!isLoading else loadingTemp'>
+    <tree-ngx *ngIf='nodeItems?.length else nodataTemp' [nodeItems]="nodeItems" [filter]='filter'
+      [callbacks]='callbacks'>
+    </tree-ngx>
+    <ng-template #nodataTemp>
+      <app-or-comp>暂无数据</app-or-comp>
+    </ng-template>
+  </ng-container>
+
+</ion-content>
