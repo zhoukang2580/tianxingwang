@@ -355,21 +355,20 @@ export class BookPage implements OnInit, AfterViewInit {
           const tempObj = arr.reduce(
             (obj, it) => {
               if (obj[it.Tag]) {
-                obj.approvers.push(it);
+                obj[it.Tag].push(it);
               } else {
-                obj.Tag = it.Tag;
-                obj.Type = it.Type;
-                obj.approvers = [it];
+                obj[it.Tag] = [it];
               }
               return obj;
             },
-            {} as { Tag: string; Type: TaskType; approvers: StaffApprover[] }
+            {} as { [Tag: string]: StaffApprover[] }
           );
           const credentialStaffApprovers = Object.keys(tempObj).map(key => {
+            const it = tempObj[key][0];
             return {
-              Tag: tempObj.Tag,
-              Type: tempObj.Type,
-              approvers: tempObj.approvers
+              Tag: it && it.Tag,
+              Type: it && it.Type,
+              approvers: tempObj[key]
             };
           });
           // console.log("credentials", credentials, cstaff);
