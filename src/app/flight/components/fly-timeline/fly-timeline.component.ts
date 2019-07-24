@@ -19,7 +19,7 @@ export class FlyTimelineComponent
   @ContentChildren(FlyTimelineItemComponent) timeLineItems: QueryList<
     FlyTimelineItemComponent
   >;
-  @Input() hideLastTimeLineTail: boolean = true;
+  @Input() hideLastTimeLineTail = true;
   constructor() {}
 
   ngOnInit() {}
@@ -37,7 +37,9 @@ export class FlyTimelineComponent
     this.timeLineItems.forEach((item, index) => {
       // console.log(index);
       if (index === this.timeLineItems.length - 1) {
-        item.last = true;
+        setTimeout(() => {
+          item.last = true && this.hideLastTimeLineTail;
+        }, 0);
       }
     });
   }

@@ -42,6 +42,7 @@ export class TreeNgxComponent implements OnInit, OnDestroy, OnChanges {
   @Input() options: TreeOptions = this.defaultOptions;
   @Input() callbacks: TreeCallbacks = this.treeService.callbacks;
   @Input() nodeItems: NodeItem<any>[];
+  @Input() isFlat = true;
   @Input() filter = "";
   @Output() selectedItems = new EventEmitter<any>();
 
@@ -112,8 +113,64 @@ export class TreeNgxComponent implements OnInit, OnDestroy, OnChanges {
   public collapseAll() {
     this.treeService.toggleExpanded(false);
   }
-
+  private buildTree(
+    parent: NodeItem<any>,
+    data: NodeItem<any>[],
+    tree: NodeItem<any>[]
+  ) {
+    const children = data.filter(item => item.parentId == parent.id);
+    children.forEach(c => {
+      const node = {
+        id: c.id,
+        name: c.name,
+        item: c.item,
+        children: [],
+        expanded: false,
+        selected: false
+      };
+      tree.push(node);
+      this.buildTree(c, data, node.children);
+    });
+  }
+  private findRoot(data: NodeItem<any>[]) {
+    let parent: NodeItem<any>;
+    let item: NodeItem<any>;
+    if (!data || data.length == 0) {
+      return null;
+    }
+    item = parent = data[0];
+    while (item) {
+      parent = item;
+      item = data.find(it => it.id == item.parentId);
+    }
+    return parent && parent.parent;
+  }
   public initialize() {
+    if (this.isFlat) {
+      const data = this.nodeItems;
+      this.nodeItems = [];
+      const root = this.findRoot(data);
+      if (root) {
+        const node: NodeItem<any> = {
+          id: root.id,
+          name: root.name,
+          item: root.item,
+          children: [],
+          expanded: false,
+          selected: false
+        };
+        this.nodeItems.push(node);
+        this.buildTree(root, data, node.children);
+        this.nodeItems = this.nodeItems[0].children;
+      } else {
+        this.nodeItems = [
+          {
+            id: "#",
+            name: "不是一棵树"
+          }
+        ];
+      }
+    }
     this.setOptions();
     this.treeService.callbacks = this.callbacks;
     this.treeService.nodeItems = this.nodeItems;

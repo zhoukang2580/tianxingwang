@@ -11,9 +11,15 @@ ion-content {
     padding: 0.3em 0;
     margin: 1em 0;
   }
+  .disabled ion-checkbox + ion-label{
+    opacity: 0.6;
+  }
   .disabled ion-item {
     color: var(--ion-color-medium);
     opacity: 1;
+  }
+  ion-col{
+    align-self: center;
   }
   .id-type.disabled ion-row:not(:first-child) {
     color: var(--ion-color-medium);

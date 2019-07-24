@@ -1,15 +1,16 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform } from "@angular/core";
 
 @Pipe({
-  name: 'flightprice'
+  name: "flightprice"
 })
 export class FlightpricePipe implements PipeTransform {
-
   transform(value: string, args?: any): any {
-    if(!value||!(+value)){
+    if (!value || !+value) {
       return value;
+    }
+    if (+args) {
+      return (+value).toFixed(+args);
     }
     return (+value).toFixed(0);
   }
-
 }

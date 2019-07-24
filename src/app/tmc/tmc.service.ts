@@ -10,6 +10,7 @@ import { Injectable } from "@angular/core";
 import { MemberCredential } from "../member/member.service";
 import { OrderTravelPayType } from "../flight/models/OrderTravelEntity";
 import { StaffEntity } from "../hr/staff.service";
+import { InsuranceResultEntity } from '../flight/models/Insurance/InsuranceResultEntity';
 export class TmcModel {
   Tmcs: any[];
   Staffs: Array<StaffEntity>;
@@ -296,9 +297,7 @@ export class TmcService {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiBookUrl-Home-GetTmc";
-    return this.apiService
-      .getPromiseData<TmcEntity>(req)
-      .catch(_ => ({} as TmcEntity));
+    return this.apiService.getPromiseData<TmcEntity>(req);
   }
   async searchApprovals(
     name: string
@@ -324,7 +323,7 @@ export class TmcService {
     };
     req.IsShowLoading = true;
     req.Timeout = 60;
-    return this.apiService.getPromiseData<StaffEntity[]>(req).catch(_ => []);
+    return this.apiService.getPromiseData<StaffEntity[]>(req);
   }
   async getCredentialStaffs(accountIds: string[]): Promise<StaffEntity[]> {
     const req = new RequestEntity();
@@ -334,9 +333,7 @@ export class TmcService {
     };
     req.IsShowLoading = true;
     req.Timeout = 60;
-    return this.apiService
-      .getPromiseData<StaffEntity[]>(req)
-      .catch(_ => [] as StaffEntity[]);
+    return this.apiService.getPromiseData<StaffEntity[]>(req);
   }
   async getPassengerCredentials(
     accountIds: string[]
@@ -348,18 +345,16 @@ export class TmcService {
     };
     req.IsShowLoading = true;
     req.Timeout = 60;
-    return this.apiService
-      .getPromiseData<{ [accountId: string]: MemberCredential[] }>(req)
-      .catch(_ => ({}));
+    return this.apiService.getPromiseData<{
+      [accountId: string]: MemberCredential[];
+    }>(req);
   }
   async getIllegalReasons(): Promise<IllegalReasonEntity[]> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Home-GetIllegalReasons";
     req.IsShowLoading = true;
     req.Timeout = 60;
-    return this.apiService
-      .getPromiseData<IllegalReasonEntity[]>(req)
-      .catch(_ => []);
+    return this.apiService.getPromiseData<IllegalReasonEntity[]>(req);
   }
   async getCostCenter(
     name: string
@@ -371,9 +366,9 @@ export class TmcService {
     };
     req.IsShowLoading = true;
     req.Timeout = 60;
-    return this.apiService
-      .getPromiseData<{ Text: string; Value: string }[]>(req)
-      .catch(_ => []);
+    return this.apiService.getPromiseData<{ Text: string; Value: string }[]>(
+      req
+    );
   }
   async getOrganizations(): Promise<OrganizationEntity[]> {
     const req = new RequestEntity();
@@ -383,5 +378,11 @@ export class TmcService {
     return this.apiService
       .getPromiseData<OrganizationEntity[]>(req)
       .catch(_ => []);
+  }
+  async getFlightInsurance(): Promise<InsuranceResultEntity> {
+    const req = new RequestEntity();
+    req.Method = "TmcApiBookUrl-Home-GetFlightInsurance";
+    req.Timeout = 60;
+    return this.apiService.getPromiseData<InsuranceResultEntity>(req);
   }
 }

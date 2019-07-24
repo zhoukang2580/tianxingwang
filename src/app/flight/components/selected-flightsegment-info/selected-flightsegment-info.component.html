@@ -23,10 +23,10 @@
             </ion-icon>
           </ion-button>
         </div>
-        <app-fly-list-item [flightSegment]='s.flightSegment' [showDetails]='true'></app-fly-list-item>
+        <app-fly-list-item [flightSegment]='s.flightSegment' [showDetails]='true' [flightPolicy]='s.flightPolicy'></app-fly-list-item>
         <div class='info'>
           <ion-label text-wrap>税:￥{{s.flightSegment?.Tax}}</ion-label>
-          <ion-label color='danger'>￥{{s.flightPolicy?.Cabin?.TicketPrice}}</ion-label>
+          <ion-label color='danger'>￥{{s.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
         </div>
         <ion-label class='rules' color='danger' text-wrap>
           {{s.flightPolicy?.Rules?.join("; ")}}

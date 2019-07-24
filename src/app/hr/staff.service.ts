@@ -20,8 +20,8 @@ export enum StaffBookType {
   All = "All"
 }
 export class OrganizationEntity {
-  Id:string;
-  ParentId:string;
+  Id: string;
+  ParentId: string;
   Hr: HrEntity;
   Parent: OrganizationEntity;
   Code: string;
@@ -52,7 +52,26 @@ export class CostCenterEntity {
   /// </summary>
   IsUsedName: string;
 }
+export enum PolicyType {
+  /// <summary>
+  /// 无需判断
+  /// </summary>
+  None = 1,
+  /// <summary>
+  /// 违规预订
+  /// </summary>
+  IllegalOrder = 2,
+  /// <summary>
+  /// 违规不可预订
+  /// </summary>
+  IllegalUnOrder = 3,
+  /// <summary>
+  /// 不可预订
+  /// </summary>
+  UnOrder = 4
+}
 export class PolicyEntity {
+  Setting: string;
   /// <summary>
   ///
   /// </summary>
@@ -73,6 +92,38 @@ export class PolicyEntity {
   /// 是需要审批
   /// </summary>
   IsNeedAudit: boolean;
+  // ============== 国内机票配置 start============
+  //  机票保险金额
+  FlightInsuranceAmount: number;
+  FlightIsForceInsurance: boolean;
+  FlightIsCabinIllegalBook: boolean;
+  FlightIsMustBookLowestPrice: boolean;
+  FlightDescription: string;
+  FlightType: PolicyType;
+  FlightTypeName: string;
+  // 飞行时间多久升级到F舱
+  FlightFlyTimeToF: number;
+  FlightLowerFare: number;
+  FlightLowerFareStartTime: string;
+  FlightLowerFareEndTime: string;
+  FlightCabinLevel: string;
+  FlightIllegalTip: string;
+  FlightLegalTip: string;
+  FlightAdvanceBook: string;
+  FlightDiscountLimit: string;
+  // ============== 国内机票配置 end ============
+  // ============== 火车站 start ============
+
+  TrainType: PolicyType;
+  TrainDescription: string;
+  // ============== 火车站 end ============
+
+  //
+}
+export class StaffApprover {
+  RealName: string;
+  Tag: string;
+  Type: TaskType;
 }
 export class StaffEntity {
   /// <summary>
@@ -126,11 +177,7 @@ export class StaffEntity {
   BookType: StaffBookType; // int 预订类型
   BookCodes: string; // String 预订代码
   Setting: string; // json string
-  Approvers: {
-    RealName: string;
-    Tag: string;
-    Type: TaskType;
-  }[];
+  Approvers: StaffApprover[];
 }
 export interface HrEntity {
   Account: {

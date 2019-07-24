@@ -1,11 +1,8 @@
-import { InsuranceSupplierType } from "./InsuranceSupplierType";
-import { InsuranceBookType } from "./InsuranceBookType";
-import { OrderInsuranceType } from "./OrderInsuranceType";
+import { InsuranceBookType } from "src/app/insurance/models/InsuranceBookType";
+import { OrderInsuranceType } from "src/app/insurance/models/OrderInsuranceType";
+import { InsuranceSupplierType } from "src/app/insurance/models/InsuranceSupplierType";
 
 export class InsuranceProductEntity {
-  /// <summary>
-  /// 设置
-  /// </summary>
   Variables: string;
   /// <summary>
   /// Flight,Train,Alone

@@ -33,14 +33,13 @@
       <!-- <ion-text color='secondary' *ngIf='flightSegment?.Meal&&showDetails'><span
           class='seperator'>|</span>{{flightSegment?.MealType|flightMealType}}
       </ion-text> -->
-      <ion-text color='secondary' *ngIf='flightSegment?.Meal&&showDetails'><span
-          class='seperator'>|</span>有餐食
+      <ion-text color='secondary' *ngIf='flightSegment?.Meal&&showDetails'><span class='seperator'>|</span>有餐食
       </ion-text>
     </h4>
   </div>
   <div class="price" no-margin no-padding text-center *ngIf='!showDetails'>
     <h3>
-      <ion-text class='jiage'>￥{{flightSegment?.LowestFare|flightprice}}</ion-text>
+      <ion-text class='jiage'>￥{{(flightPolicy?.Cabin?.SalesPrice)|flightprice}}</ion-text>
     </h3>
   </div>
 </div>

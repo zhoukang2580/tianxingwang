@@ -1,17 +1,18 @@
-import { MemberPipesModule } from 'src/app/member/pipe/pipe.module';
-import { FlightComponentsModule } from 'src/app/flight/components/components.module';
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Routes, RouterModule } from '@angular/router';
+import { MemberPipesModule } from "src/app/member/pipe/pipe.module";
+import { FlightComponentsModule } from "src/app/flight/components/components.module";
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { Routes, RouterModule } from "@angular/router";
 
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from "@ionic/angular";
 
-import { BookPage } from './book.page';
+import { BookPage } from "./book.page";
+import { FlightPipesModule } from "../pipes/Pipes.module";
 
 const routes: Routes = [
   {
-    path: '',
+    path: "",
     component: BookPage
   }
 ];
@@ -23,7 +24,8 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes),
     FlightComponentsModule,
-    MemberPipesModule
+    MemberPipesModule,
+    FlightPipesModule
   ],
   declarations: [BookPage]
 })

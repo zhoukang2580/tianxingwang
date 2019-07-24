@@ -1,3 +1,4 @@
+import { FlightPolicy } from './../../flight.service';
 import { FlightCabinEntity } from "./../../models/flight/FlightCabinEntity";
 import {
   Component,
@@ -35,6 +36,7 @@ export class FlyListItemComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() flightSegment: FlightSegmentEntity;
   @Input() showDetails: boolean;
   @Input() itmIndex: number;
+  @Input() flightPolicy: FlightPolicy;
   showIndex = !environment.production;
   constructor(
     private dayService: SelectDateService,
