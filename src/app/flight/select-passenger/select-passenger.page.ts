@@ -310,6 +310,10 @@ export class SelectPassengerPage
         return;
       }
     }
+    if(!selectedCredential.Number){
+      AppHelper.alert(LanguageHelper.getCredentialNumberEmptyTip(),true,LanguageHelper.getConfirmTip(),LanguageHelper.getCancelTip());
+      return;
+    }
     const item: PassengerFlightSegments = {
       credential: selectedCredential,
       passenger: this.selectedPassenger,

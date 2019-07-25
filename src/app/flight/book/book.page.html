@@ -20,7 +20,7 @@
       </ion-item-divider>
       <ion-item lines='none' class="ion-no-margin">
         <ion-label>通知语言:</ion-label>
-        <ion-select value="cn" okText="确定" cancelText="取消">
+        <ion-select value="cn" okText="确定" cancelText="取消" [(ngModel)]='item.notifyLanguage'>
           <ion-select-option value=''>不发</ion-select-option>
           <ion-select-option value='cn'>中文</ion-select-option>
           <ion-select-option value='en'>英文</ion-select-option>
@@ -257,6 +257,79 @@
                 </ion-col>
               </ion-row>
             </div>
+          </div>
+          <div class='outnumber' *ngIf='item?.tmcOutNumberInfos'>
+            <ion-item-group>
+              <ion-item *ngFor='let n of item?.tmcOutNumberInfos' (click)='onSelectTravelNumber(n,item)'>
+                <ion-label>{{n.label}}:</ion-label>
+                <ion-input [disabled]='n.isDisabled' [value]='n.value' placeholder="{{n.label}}"></ion-input>
+              </ion-item>
+            </ion-item-group>
+          </div>
+          <div class='travel-type'>
+            <ion-radio-group [ngModel]='item.travelType'>
+              <ion-item *ngIf='checkOrderTravelType(orderTravelType?.Business)' lines='none'>
+                <ion-label>因公</ion-label>
+                <ion-radio value="{{orderTravelType[orderTravelType?.Business]}}"
+                  [checked]='checkOrderTravelType(orderTravelType?.Business)'></ion-radio>
+              </ion-item>
+
+              <ion-item *ngIf='checkOrderTravelType(orderTravelType?.Person)' lines='none'>
+                <ion-label>因私</ion-label>
+                <ion-radio value="{{orderTravelType[orderTravelType?.Person]}}"
+                  [checked]='!checkOrderTravelType(orderTravelType?.Business)'></ion-radio>
+              </ion-item>
+            </ion-radio-group>
+            <ion-radio-group [ngModel]='item.orderTravelPayType'>
+              <ng-container *ngFor='let pt of orderTravelPayTypes'>
+                <ion-item *ngIf='checkOrderTravelPayType(pt.value)' lines='none'>
+                  <ion-label>{{pt.label}}</ion-label>
+                  <ion-radio value="{{pt}}" [checked]='tmc?.FlightPayType==orderTravelType[pt]'></ion-radio>
+                  <!-- <ion-icon name="checkmark" mode='md' size='small' slot='end' color='success'
+                      *ngIf='true||tmc?.FlightPayType==orderTravelType[pt]'></ion-icon> -->
+                </ion-item>
+              </ng-container>
+            </ion-radio-group>
+          </div>
+          <div class='link-man'>
+            添加联系人:
+            <ion-row *ngFor='let man of item?.addContacts'>
+              <ion-col size='12'>
+                <ion-item lines='none' class="ion-no-margin">
+                  <ion-label>旅客名称:</ion-label>
+                  <ion-input name='name' [(ngModel)]='man.name'></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col size='12'>
+                <ion-item lines='none' class="ion-no-margin">
+                  <ion-label>手机号:</ion-label>
+                  <ion-input name='mobile' [(ngModel)]='man.mobile'></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col size='12'>
+                <ion-item lines='none' class="ion-no-margin">
+                  <ion-label>邮箱:</ion-label>
+                  <ion-input name='email' [(ngModel)]='man.email'></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col size='12'>
+                <ion-item lines='none' class="ion-no-margin">
+                  <ion-label>通知语言:</ion-label>
+                  <ion-select value="cn" okText="确定" cancelText="取消" [(ngModel)]='man.notifyLanguage'>
+                    <ion-select-option value=''>不发</ion-select-option>
+                    <ion-select-option value='cn'>中文</ion-select-option>
+                    <ion-select-option value='en'>英文</ion-select-option>
+                  </ion-select>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>
+                <ion-button fill='outline' expand='block' color='secondary' (click)='onAddContacts(item)'>
+                  <ion-icon name="add-circle-outline" color='secondary' slot='start'></ion-icon> 添加联系人
+                </ion-button>
+              </ion-col>
+            </ion-row>
           </div>
         </div>
       </ion-item>

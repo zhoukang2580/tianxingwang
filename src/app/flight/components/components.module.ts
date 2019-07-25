@@ -30,6 +30,8 @@ import { SelectedPassengersPopoverComponent } from "./selected-passengers-popove
 import { SearchApprovalComponent } from "./search-approval/search-approval.component";
 import { SearchCostcenterComponent } from "./search-costcenter/search-costcenter.component";
 import { OrganizationComponent } from "./organization/organization.component";
+import { SelectTravelNumberPopoverComponent } from './select-travel-number-popover/select-travel-number-popover.component';
+import { AddcontactsModalComponent } from './addcontacts-modal/addcontacts-modal.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +58,9 @@ import { OrganizationComponent } from "./organization/organization.component";
     SelectedPassengersPopoverComponent,
     SearchApprovalComponent,
     SearchCostcenterComponent,
-    OrganizationComponent
+    OrganizationComponent,
+    SelectTravelNumberPopoverComponent,
+    AddcontactsModalComponent
   ],
   imports: [
     CommonModule,
@@ -101,7 +105,9 @@ import { OrganizationComponent } from "./organization/organization.component";
     SelectedPassengersPopoverComponent,
     SearchApprovalComponent,
     SearchCostcenterComponent,
-    OrganizationComponent
+    OrganizationComponent,
+    SelectTravelNumberPopoverComponent,
+    AddcontactsModalComponent
   ]
 })
 export class FlightComponentsModule {}

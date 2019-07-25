@@ -11,22 +11,25 @@ ion-content {
     padding: 0.3em 0;
     margin: 1em 0;
   }
-  .disabled ion-checkbox + ion-label{
-    opacity: 0.6;
+  ion-label {
+    opacity: 0.9;
   }
   .disabled ion-item {
-    color: var(--ion-color-medium);
+    // color: var(--ion-color-medium);
     opacity: 1;
   }
-  ion-col{
+  ion-col {
     align-self: center;
   }
-  .id-type.disabled ion-row:not(:first-child) {
-    color: var(--ion-color-medium);
-
-    input {
-      border: none;
-      background: transparent;
+  .id-type {
+    margin: 0;
+    padding: 0;
+    &.disabled ion-row:not(:first-child) {
+      color: var(--ion-color-medium);
+      input {
+        border: none;
+        background: transparent;
+      }
     }
   }
   .change-policy-btn {
@@ -47,6 +50,9 @@ ion-content {
     display: flex;
     flex-flow: column nowrap;
     align-items: flex-start;
+  }
+  .link-man ion-row{
+    border-top: 1px solid rgba(var(--ion-color-dark-rgb),0.13);
   }
 }
 .small-font {

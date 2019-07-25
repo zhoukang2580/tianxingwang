@@ -151,6 +151,9 @@ export class LanguageHelper {
   static getFullPriceTip() {
     return "全价";
   }
+  static getCredentialNumberEmptyTip() {
+    return "该人员证件号为空，不可添加";
+  }
   static getSelectPassengersTip() {
     return "请添加乘客";
   }

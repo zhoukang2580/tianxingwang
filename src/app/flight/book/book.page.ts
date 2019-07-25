@@ -1,14 +1,23 @@
+import { AddcontactsModalComponent } from "./../components/addcontacts-modal/addcontacts-modal.component";
+import { ActivatedRoute } from "@angular/router";
 import { InsuranceProductEntity } from "./../../insurance/models/InsuranceProductEntity";
 import { OrganizationComponent } from "./../components/organization/organization.component";
 import { SearchCostcenterComponent } from "./../components/search-costcenter/search-costcenter.component";
 import { FlydayService } from "./../flyday.service";
 import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
-import { NavController, ModalController, IonCheckbox } from "@ionic/angular";
+import {
+  NavController,
+  ModalController,
+  IonCheckbox,
+  PopoverController
+} from "@ionic/angular";
 import {
   TmcService,
   TmcEntity,
   TmcApprovalType,
-  IllegalReasonEntity
+  IllegalReasonEntity,
+  TravelFormEntity,
+  TravelUrlInfo
 } from "./../../tmc/tmc.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { MemberCredential } from "./../../member/member.service";
@@ -50,7 +59,31 @@ import { InsuranceResultEntity } from "../models/Insurance/InsuranceResultEntity
 import { Observable, of, Subject, BehaviorSubject } from "rxjs";
 import { map } from "rxjs/operators";
 import { TaskType } from "../models/TaskType";
-
+import { SelectTravelNumberPopoverComponent } from "../components/select-travel-number-popover/select-travel-number-popover.component";
+import {
+  OrderTravelType,
+  OrderTravelPayType
+} from "../models/OrderTravelEntity";
+interface TmcOutNumberInfo {
+  key: string;
+  label: string;
+  required: boolean;
+  value: string;
+  staffOutNumber: string;
+  isTravelNumber: boolean;
+  isLoadNumber: boolean;
+  staffNumber: string;
+  canSelect: boolean;
+  isDisabled: boolean;
+  travelUrlInfos: TravelUrlInfo[];
+}
+class AddContact {
+  notifyLanguage: string;
+  name: string;
+  mobile: string;
+  email: string;
+  accountId: string;
+}
 interface CombineedSelectedInfo {
   vmModal: PassengerFlightSegments;
   modal: PassengerFlightSegments;
@@ -59,6 +92,8 @@ interface CombineedSelectedInfo {
   credentials: MemberCredential[];
   appovalStaff: StaffEntity;
   credentialStaff: StaffEntity;
+  notifyLanguage: string;
+  addContacts: AddContact[];
   credentialStaffMobiles: {
     checked: boolean;
     mobile: string;
@@ -94,6 +129,9 @@ interface CombineedSelectedInfo {
     insuranceResult: InsuranceProductEntity;
     checked: boolean;
   }[];
+  tmcOutNumberInfos: TmcOutNumberInfo[];
+  travelType: string; // 因公、因私
+  orderTravelPayType: string; // OrderTravelPayType
 }
 @Component({
   selector: "app-book",
@@ -109,11 +147,18 @@ interface CombineedSelectedInfo {
 })
 export class BookPage implements OnInit, AfterViewInit {
   errors: any;
+  orderTravelType = OrderTravelType;
+  orderTravelPayType = OrderTravelPayType;
+  orderTravelPayTypes: {
+    label: string;
+    value: OrderTravelPayType;
+  }[];
   totalPriceSource: Subject<number>;
   insuranceResult: InsuranceResultEntity;
   passengerSegments: CombineedSelectedInfo[] = [];
   bookTypeSelfCredentials: MemberCredential[] = [];
   tmc: TmcEntity;
+  travelForm: TravelFormEntity;
   illegalReasons: IllegalReasonEntity[] = [];
   tmcApprovalTypeNone = TmcApprovalType.None;
   selfStaff: StaffEntity;
@@ -134,13 +179,35 @@ export class BookPage implements OnInit, AfterViewInit {
     private tmcService: TmcService,
     private natCtrl: NavController,
     private modalCtrl: ModalController,
-    private flydayService: FlydayService
+    private flydayService: FlydayService,
+    private route: ActivatedRoute,
+    private popoverCtrl: PopoverController
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
 
   ngOnInit() {
-    this.refresh();
+    this.route.queryParamMap.subscribe(p => {
+      this.refresh();
+    });
+  }
+  private initOrderTravelPayTypes() {
+    this.orderTravelPayTypes = [];
+    const langs = {
+      [OrderTravelPayType.Company]: "公付",
+      [OrderTravelPayType.Person]: "个付",
+      [OrderTravelPayType.Credit]: "信用付",
+      [OrderTravelPayType.Balance]: "余额付"
+    };
+    Object.keys(OrderTravelPayType).map(k => {
+      if (typeof k === "number") {
+        this.orderTravelPayTypes.push({
+          label: langs[k],
+          value: k
+        });
+      }
+    });
+    console.log("orderTravelPayTypes", this.orderTravelPayTypes);
   }
   ngAfterViewInit() {
     if (this.checkboxes) {
@@ -156,10 +223,28 @@ export class BookPage implements OnInit, AfterViewInit {
       });
     }
   }
+  private getTravelFormNumber(name: string) {
+    if (!this.travelForm) {
+      return "";
+    }
+    if (name == "TravelNumber") {
+      return this.travelForm.TravelNumber;
+    }
+    if (this.travelForm.Numbers == null) {
+      return "";
+    }
+    const one = this.travelForm.Numbers.find(n => n.Name == name);
+    if (one) {
+      return one.Code;
+    }
+    return "";
+  }
   async refresh() {
     try {
+      this.initOrderTravelPayTypes();
       this.errors = "";
-      this.getTmc();
+      await this.getTmc();
+      this.travelForm = await this.tmcService.getTravelFrom().catch(_ => null);
       this.insuranceResult = await this.tmcService.getFlightInsurance();
       this.illegalReasons = await this.tmcService.getIllegalReasons();
       await this.initSelfBookTypeCredentials(); // 如果是个人，获取个人是证件信息
@@ -178,12 +263,112 @@ export class BookPage implements OnInit, AfterViewInit {
         credentialStaffAppoverIds
       );
       await this.initPassengerSegments();
+      await this.initTmcOutNumberInfos();
     } catch (err) {
-      // this.errors = err || "please retry";
+      this.errors = err || "please retry";
+      console.error(err);
+    }
+  }
+  checkOrderTravelType(type: OrderTravelType) {
+    const Tmc = this.tmc;
+    if (!Tmc || !Tmc.FlightOrderType) {
+      return false;
+    }
+    return !!Tmc.FlightOrderType.split(",").find(
+      it => it == OrderTravelType[type]
+    );
+  }
+  checkOrderTravelPayType(payType: OrderTravelPayType) {
+    const Tmc = this.tmc;
+    if (!Tmc || !Tmc.FlightOrderPayType) {
+      return false;
+    }
+    return !!Tmc.FlightOrderPayType.split(",").find(
+      it => it == OrderTravelPayType[payType]
+    );
+  }
+  private async initTmcOutNumberInfos() {
+    const args: {
+      staffNumber: string;
+      staffOutNumber: string;
+      name: string;
+    }[] = [];
+    this.passengerSegments.forEach(item => {
+      item.tmcOutNumberInfos.forEach(it => {
+        if (true || it.isLoadNumber) {
+          if (
+            it.staffNumber &&
+            !args.find(n => n.staffNumber == it.staffNumber)
+          ) {
+            args.push({
+              staffNumber: it.staffNumber,
+              staffOutNumber: it.staffOutNumber,
+              name: it.value
+            });
+          }
+        }
+      });
+    });
+    const result = await this.tmcService.getTravelUrls(args);
+    if (result) {
+      this.passengerSegments.forEach(item =>
+        item.tmcOutNumberInfos.forEach(info => {
+          info.travelUrlInfos = result[info.staffNumber];
+          if (
+            !info.value &&
+            info.travelUrlInfos &&
+            info.travelUrlInfos.length
+          ) {
+            info.value = info.travelUrlInfos[0].TravelNumber;
+          }
+          info.canSelect = !!(
+            info.travelUrlInfos && info.travelUrlInfos.length
+          ); // && info.canSelect;
+        })
+      );
     }
   }
   onShowFriendlyReminder(item: CombineedSelectedInfo) {
     item.showFriendlyReminder = !item.showFriendlyReminder;
+  }
+  async onSelectTravelNumber(
+    arg: TmcOutNumberInfo,
+    item: CombineedSelectedInfo
+  ) {
+    if (!arg.canSelect) {
+      return;
+    }
+    console.log("on select travel number", arg);
+    const p = await this.popoverCtrl.create({
+      component: SelectTravelNumberPopoverComponent,
+      componentProps: {
+        travelInfos: arg.travelUrlInfos || []
+      },
+      translucent: true,
+      showBackdrop: true
+    });
+    await p.present();
+    const result = await p.onDidDismiss();
+    if (result && result.data) {
+      const data = result.data as TravelUrlInfo;
+      if (data) {
+        if (data.CostCenterCode) {
+          item.costCenter.code = data.CostCenterCode;
+        }
+        if (data.CostCenterName) {
+          item.costCenter.name = data.CostCenterName;
+        }
+        if (data.OrganizationCode) {
+          item.organization.Code = data.OrganizationCode;
+        }
+        if (data.OrganizationName) {
+          item.organization.Name = data.OrganizationName;
+        }
+        if (data.TravelNumber) {
+          arg.value = data.TravelNumber;
+        }
+      }
+    }
   }
   openrules(item: CombineedSelectedInfo) {
     console.log("CombineedSelectedInfo", item);
@@ -341,16 +526,21 @@ export class BookPage implements OnInit, AfterViewInit {
   }
   private async initPassengerSegments() {
     try {
-      this.passengerSegments = this.flightService
-        .getPassengerFlightSegments()
-        .map(item => {
-          const cstaff = this.credentialStaffs.find(
-            it => it.Account.Id == item.passenger.AccountId
-          );
-          const credentials = this.passengerCredentials[
-            item.passenger.AccountId
-          ];
-          const arr = cstaff && cstaff.Approvers && cstaff.Approvers;
+      const pfs = this.flightService.getPassengerFlightSegments();
+      for (let i = 0; i < pfs.length; i++) {
+        const item = pfs[i];
+        const cstaff = this.credentialStaffs.find(
+          it => it.Account.Id == item.passenger.AccountId
+        );
+
+        const credentials = this.passengerCredentials[item.passenger.AccountId];
+        const arr = cstaff && cstaff.Approvers && cstaff.Approvers;
+        let credentialStaffApprovers: {
+          Tag: string;
+          Type: TaskType;
+          approvers: StaffApprover[];
+        }[];
+        if (arr) {
           arr.sort((a, b) => a.Tag && b.Tag && +a.Tag - +b.Tag);
           const tempObj = arr.reduce(
             (obj, it) => {
@@ -363,7 +553,7 @@ export class BookPage implements OnInit, AfterViewInit {
             },
             {} as { [Tag: string]: StaffApprover[] }
           );
-          const credentialStaffApprovers = Object.keys(tempObj).map(key => {
+          credentialStaffApprovers = Object.keys(tempObj).map(key => {
             const it = tempObj[key][0];
             return {
               Tag: it && it.Tag,
@@ -371,83 +561,103 @@ export class BookPage implements OnInit, AfterViewInit {
               approvers: tempObj[key]
             };
           });
-          // console.log("credentials", credentials, cstaff);
           console.log("credentialStaffApprovers", credentialStaffApprovers);
-          if (
-            item.credential &&
-            (!credentials ||
-              !credentials.find(
-                it =>
-                  it.Number == item.credential.Number &&
-                  it.Type == item.credential.Type
-              ))
-          ) {
-            credentials.push(item.credential);
+        }
+        // console.log("credentials", credentials, cstaff);
+        if (
+          item.credential &&
+          (!credentials ||
+            !credentials.find(
+              it =>
+                it.Number == item.credential.Number &&
+                it.Type == item.credential.Type
+            ))
+        ) {
+          credentials.push(item.credential);
+        }
+        if (!item.credential || !item.credential.Number) {
+          if (credentials && credentials.length) {
+            item.credential = credentials[0];
           }
-          if (!item.credential || !item.credential.Number) {
-            if (credentials && credentials.length) {
-              item.credential = credentials[0];
-            }
-          }
-          const insuranceResultProducts =
-            this.insuranceResult &&
-            this.insuranceResult.Products &&
-            this.insuranceResult.Products.filter(
-              product =>
-                !cstaff ||
-                !cstaff.Policy ||
-                (+product.Price > 0 &&
-                  +product.Price < cstaff.Policy.FlightInsuranceAmount)
-            ).map((insurance, i) => {
+        }
+        const insuranceResultProducts =
+          this.insuranceResult &&
+          this.insuranceResult.Products &&
+          this.insuranceResult.Products.filter(
+            product =>
+              !cstaff ||
+              !cstaff.Policy ||
+              (+product.Price > 0 &&
+                +product.Price < cstaff.Policy.FlightInsuranceAmount)
+          ).map((insurance, i) => {
+            return {
+              insuranceResult: insurance,
+              checked: true
+            };
+          });
+        const combineInfo: CombineedSelectedInfo = {
+          vmCredential: item.credential,
+          credentials: credentials || [],
+          openrules: false,
+          credentialStaff: cstaff,
+          isOtherIllegalReason: false,
+          showFriendlyReminder: false,
+          isOtherOrganization: false,
+          insuranceResultProducts: insuranceResultProducts.slice(0, 1),
+          credentialStaffMobiles:
+            cstaff && cstaff.Account && cstaff.Account.Mobile
+              ? cstaff.Account.Mobile.split(",").map((mobile, i) => {
+                  return {
+                    checked: i == 0,
+                    mobile
+                  };
+                })
+              : [],
+          credentialStaffEmails:
+            cstaff && cstaff.Account && cstaff.Account.Email
+              ? cstaff.Account.Email.split(",").map((email, i) => {
+                  return {
+                    checked: i == 0,
+                    email
+                  };
+                })
+              : [],
+          credentialStaffApprovers,
+          organization: {
+            Code: cstaff && cstaff.Organization && cstaff.Organization.Code,
+            Name: cstaff && cstaff.Organization && cstaff.Organization.Name
+          },
+          costCenter: {
+            code: cstaff && cstaff.CostCenter && cstaff.CostCenter.Code,
+            name: cstaff && cstaff.CostCenter && cstaff.CostCenter.Name
+          },
+          modal: item,
+          vmModal: { ...item },
+          appovalStaff: this.settingApprovalStaffs.find(
+            s => s.Account.Id == (cstaff && cstaff.ApproveId)
+          ),
+          tmcOutNumberInfos:
+            this.tmc &&
+            this.tmc.OutNumberNameArray.map(n => {
               return {
-                insuranceResult: insurance,
-                checked: true
-              };
-            });
-
-          return {
-            vmCredential: item.credential,
-            credentials: credentials || [],
-            openrules: false,
-            credentialStaff: cstaff,
-            isOtherIllegalReason: false,
-            showFriendlyReminder: false,
-            isOtherOrganization: false,
-            insuranceResultProducts: insuranceResultProducts.slice(0, 1),
-            credentialStaffMobiles:
-              cstaff && cstaff.Account && cstaff.Account.Mobile
-                ? cstaff.Account.Mobile.split(",").map((mobile, i) => {
-                    return {
-                      checked: i == 0,
-                      mobile
-                    };
-                  })
-                : [],
-            credentialStaffEmails:
-              cstaff && cstaff.Account && cstaff.Account.Email
-                ? cstaff.Account.Email.split(",").map((email, i) => {
-                    return {
-                      checked: i == 0,
-                      email
-                    };
-                  })
-                : [],
-            credentialStaffApprovers,
-            organization: {
-              Code: cstaff && cstaff.Organization && cstaff.Organization.Code,
-              Name: cstaff && cstaff.Organization && cstaff.Organization.Name
-            },
-            costCenter: {
-              code: cstaff && cstaff.CostCenter && cstaff.CostCenter.Code,
-              name: cstaff && cstaff.CostCenter && cstaff.CostCenter.Name
-            },
-            modal: item,
-            vmModal: { ...item },
-            appovalStaff: this.settingApprovalStaffs.find(
-              s => s.Account.Id == (cstaff && cstaff.ApproveId)
-            )
-          } as CombineedSelectedInfo;
-        });
+                label: n,
+                key: n,
+                isLoadNumber: !!(this.tmc && this.tmc.GetTravelNumberUrl),
+                required:
+                  this.tmc &&
+                  this.tmc.OutNumberRequiryNameArray.some(name => name == n),
+                value: this.getTravelFormNumber(n),
+                staffNumber: cstaff && cstaff.Number,
+                staffOutNumber: cstaff && cstaff.OutNumber,
+                isTravelNumber: n == "TravelNumber",
+                canSelect: n == "TravelNumber",
+                isDisabled: !!(this.travelForm && n == "TravelNumber")
+              } as TmcOutNumberInfo;
+            })
+        } as CombineedSelectedInfo;
+        combineInfo.addContacts = [];
+        this.passengerSegments.push(combineInfo);
+      }
       if (!this.passengerSegments || this.passengerSegments.length == 0) {
         this.passengerSegments = await this.storage.get(
           "Flight-Book-Page-Mock-Data"
@@ -460,6 +670,34 @@ export class BookPage implements OnInit, AfterViewInit {
       }
     } catch (e) {
       console.error(e);
+    }
+  }
+  async onAddContacts(item: CombineedSelectedInfo) {
+    if (!item.addContacts) {
+      item.addContacts = [];
+    }
+    const m = await this.modalCtrl.create({
+      component: AddcontactsModalComponent
+    });
+    if (m) {
+      m.backdropDismiss = false;
+      m.present();
+      const result = await m.onDidDismiss();
+      if (result && result.data) {
+        const data = result.data as { Text: string; Value: string };
+        if (data && data.Value) {
+          if (data.Value.includes("|")) {
+            const [email, mobile, accountId] = data.Value.split("|");
+            const man = new AddContact();
+            man.notifyLanguage = "cn";
+            man.name=data.Text;
+            man.email = email;
+            man.mobile = mobile;
+            man.accountId = accountId;
+            item.addContacts.push(man);
+          }
+        }
+      }
     }
   }
   /**
