@@ -1,3 +1,5 @@
+import { TmcService } from "./../../tmc/tmc.service";
+import { AccountEntity } from "./../../tmc/models/AccountEntity";
 import { MemberService, MemberCredential } from "./../../member/member.service";
 import { CanComponentDeactivate } from "./../../guards/candeactivate.guard";
 import { StaffService, StaffBookType } from "./../../hr/staff.service";
@@ -47,6 +49,7 @@ import {
   transition,
   animate
 } from "@angular/animations";
+export const NOT_WHITE_LIST = "notwhitelist";
 @Component({
   selector: "app-select-passenger",
   templateUrl: "./select-passenger.page.html",
@@ -63,7 +66,7 @@ export class SelectPassengerPage
   implements OnInit, CanComponentDeactivate, AfterViewInit {
   passengerFlightSegments: PassengerFlightSegments[];
   vmKeyword: string;
-  vmNewCredentialId:string;
+  vmNewCredentialId: string;
   credentialsRemarks: { key: string; value: string }[];
   selectedCredentialId: string;
   private keyword: string;
@@ -73,7 +76,7 @@ export class SelectPassengerPage
   vmStaffs: StaffEntity[];
   private selectedPassenger: StaffEntity;
   vmNewCredential: MemberCredential;
-  private newCredential: MemberCredential;
+  // private newCredential: MemberCredential;
   loading = false;
   openclose = true;
   isCanDeactive = true;
@@ -101,13 +104,16 @@ export class SelectPassengerPage
     private validatorService: ValidatorService,
     private domCtrl: DomController,
     private renderer2: Renderer2,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private tmcService: TmcService
   ) {
     this.selectedPasengers$ = flightService
       .getSelectedPasengerSource()
       .pipe(map(items => items.length));
     route.queryParamMap.subscribe(p => {
-      this.vmNewCredentialId=`${AppHelper.uuid(5)}NewNotWhitelistCredentialId`;
+      this.vmNewCredentialId = `${AppHelper.uuid(
+        5
+      )}New${NOT_WHITE_LIST}CredentialId`.toLowerCase();
       this.passengerFlightSegments = this.flightService.getPassengerFlightSegments();
       this.isCanDeactive = false;
       const country: Country = AppHelper.getRouteData();
@@ -189,7 +195,7 @@ export class SelectPassengerPage
     // 代理和特殊可以新增证件
     const identity = await this.identityService.getIdentityAsync();
     const can =
-      !!(identity&&identity.Numbers && identity.Numbers.AgentId) ||
+      !!(identity && identity.Numbers && identity.Numbers.AgentId) ||
       (await this.staffService.getStaff()).BookType == StaffBookType.All;
     console.log("can add not whitelist ", can);
     return can;
@@ -235,7 +241,11 @@ export class SelectPassengerPage
     // 代理或者特殊，显示白名单
     if (await this.canAddNotWhiteListCredential()) {
       const item = new StaffEntity();
-      item.AccountId = "0";
+      item.isNotWhiteList = true;
+      item.AccountId = `${AppHelper.uuid(5)}${NOT_WHITE_LIST}`;
+      const tmc = await this.tmcService.getTmc(false).catch(_ => null);
+      item.Account = new AccountEntity();
+      item.Account.Id = tmc && tmc.Account.Id; // 所选的tmcId
       item.CredentialsInfo = LanguageHelper.Flight.getNotWhitelistingTip();
       staffs.unshift(item);
     }
@@ -244,13 +254,13 @@ export class SelectPassengerPage
   }
   async onSelect(s: StaffEntity) {
     this.vmStaffs = null; // 是否显示搜索列表
-    this.newCredential = null;
+    // newCredential = null;
     this.vmNewCredential = null; // 页面上显示新增此人其他证件
     this.selectedPassenger = s;
     this.selectedCredentialId = null; // 所选择的证件
     this.frequentPassengers = null; // 是否显示常旅客
     console.log("onSelect", s);
-    if (s.AccountId != "0") {
+    if (!s.isNotWhiteList) {
       this.staffCredentails = await this.getCredentials(s.AccountId);
     } else {
       this.staffCredentails = [];
@@ -260,16 +270,19 @@ export class SelectPassengerPage
     }
     if (await this.canAddNotWhiteListCredential()) {
       this.vmNewCredential = new MemberCredential();
+      this.vmNewCredential.isNotWhiteList = true;
       this.vmNewCredential.variables = "OtherCredential";
       this.vmNewCredential.CredentialsRemark = "客户";
       this.vmNewCredential.Type = CredentialsType.IdCard;
       this.vmNewCredential.Id = this.vmNewCredentialId;
+      this.vmNewCredential.AccountId = this.vmNewCredentialId;
       this.vmNewCredential.Gender = "M";
       this.vmNewCredential.IssueCountry = { Code: "CN", Name: "中国" };
       this.vmNewCredential.Country = { Code: "CN", Name: "中国" };
     }
   }
   onSelectCredential(credentialId: string) {
+    console.log("onSelectCredential", credentialId);
     this.selectedCredentialId = credentialId;
   }
   async onAddPassenger() {
@@ -296,26 +309,34 @@ export class SelectPassengerPage
       );
       return;
     }
-    if (selectedCredential == this.vmNewCredential) {
-      this.newCredential = {
-        ...this.vmNewCredential,
-        Country: this.vmNewCredential.Country.Code,
-        IssueCountry: this.vmNewCredential.IssueCountry.Code
-      };
+    selectedCredential = {
+      ...selectedCredential,
+      Country: this.vmNewCredential.Country.Code,
+      IssueCountry: this.vmNewCredential.IssueCountry.Code
+    };
+    if (selectedCredential.isNotWhiteList) {
       const validate = await this.validateCredential(
-        this.vmNewCredential,
+        selectedCredential,
         this.addForm && this.addForm.last && this.addForm.last["el"]
       );
       if (!validate) {
         return;
       }
     }
-    if(!selectedCredential.Number){
-      AppHelper.alert(LanguageHelper.getCredentialNumberEmptyTip(),true,LanguageHelper.getConfirmTip(),LanguageHelper.getCancelTip());
+    if (!selectedCredential.Number) {
+      AppHelper.alert(
+        LanguageHelper.getCredentialNumberEmptyTip(),
+        true,
+        LanguageHelper.getConfirmTip(),
+        LanguageHelper.getCancelTip()
+      );
       return;
     }
     const item: PassengerFlightSegments = {
       credential: selectedCredential,
+      isNotWhitelistCredential: `${selectedCredential.AccountId}`
+        .toLowerCase()
+        .includes(NOT_WHITE_LIST)||`${selectedCredential.Id}`.toLowerCase().includes(NOT_WHITE_LIST),
       passenger: this.selectedPassenger,
       selectedInfo: []
     };

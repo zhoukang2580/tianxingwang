@@ -1,8 +1,8 @@
-import { LanguageInfo } from "./../flight/models/LanguageInfo";
+import { LanguageInfo } from "./models/LanguageInfo";
 import { AppHelper } from "./../appHelper";
 import { OrganizationEntity } from "./../hr/staff.service";
-import { AccountEntity } from "./../flight/models/AccountEntity";
-import { AgentEntity } from "./../flight/models/AgentEntity";
+import { AccountEntity } from "./models/AccountEntity";
+import { AgentEntity } from "./models/AgentEntity";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { RequestEntity } from "src/app/services/api/Request.entity";
@@ -10,9 +10,11 @@ import { ApiService } from "src/app/services/api/api.service";
 import { BehaviorSubject, of } from "rxjs";
 import { Injectable } from "@angular/core";
 import { MemberCredential } from "../member/member.service";
-import { OrderTravelPayType } from "../flight/models/OrderTravelEntity";
+import { OrderTravelPayType } from "../order/models/OrderTravelEntity";
 import { StaffEntity } from "../hr/staff.service";
-import { InsuranceResultEntity } from "../flight/models/Insurance/InsuranceResultEntity";
+import { InsuranceResultEntity } from "./models/Insurance/InsuranceResultEntity";
+import { PassengerDto } from "./models/PassengerDto";
+import { OrderBookDto } from "../order/models/OrderBookDto";
 
 @Injectable({
   providedIn: "root"
@@ -20,6 +22,7 @@ import { InsuranceResultEntity } from "../flight/models/Insurance/InsuranceResul
 export class TmcService {
   private selectedCompanySource: BehaviorSubject<string>;
   private companies: GroupCompanyEntity[];
+  private tmc: TmcEntity;
   constructor(
     private apiService: ApiService,
     private identityService: IdentityService
@@ -27,6 +30,7 @@ export class TmcService {
     this.identityService.getIdentity().subscribe(id => {
       if (!id || !id.Ticket) {
         this.companies = null;
+        this.tmc = null;
       }
     });
     this.selectedCompanySource = new BehaviorSubject(null);
@@ -112,11 +116,15 @@ export class TmcService {
       value: TravelUrlInfo[];
     }>(req);
   }
-  async getTmc(): Promise<TmcEntity> {
+  async getTmc(forceFetch = true): Promise<TmcEntity> {
+    if (this.tmc && !forceFetch) {
+      return Promise.resolve(this.tmc);
+    }
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiBookUrl-Home-GetTmc";
-    return this.apiService.getPromiseData<TmcEntity>(req);
+    this.tmc = await this.apiService.getPromiseData<TmcEntity>(req);
+    return this.tmc;
   }
   async searchLinkman(
     name: string
@@ -199,6 +207,15 @@ export class TmcService {
       req
     );
   }
+  async bookFlight(bookDto: OrderBookDto): Promise<any> {
+    const req = new RequestEntity();
+    req.Method = "TmcApiBookUrl-Flight-Book";
+    bookDto.Channel = "Mobile";
+    req.Data = bookDto;
+    req.IsShowLoading = true;
+    req.Timeout = 60;
+    return this.apiService.getPromiseData<any>(req);
+  }
   async getOrganizations(): Promise<OrganizationEntity[]> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Home-GetOrganizations";
@@ -236,11 +253,11 @@ export interface TravelUrlInfo {
 }
 
 export class TravelFormEntity {
-  public Tmc: TmcEntity;
+  Tmc: TmcEntity;
   /// <summary>
   ///
   /// </summary>
-  public Account: AccountEntity;
+  Account: AccountEntity;
   /// <summary>
   /// 员工号
   /// </summary>
@@ -560,6 +577,10 @@ export enum TmcHotelFeeType {
   Order = 2
 }
 export interface TmcEntity {
+  /// <summary>
+  /// 是否可以自定义违规理由
+  /// </summary>
+  IsAllowCustomReason: boolean;
   // ===================== 客户接口对接配置 start ===========
   /// <summary>
   /// 校验行程单

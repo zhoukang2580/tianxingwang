@@ -41,7 +41,7 @@ import {
 import { tap, takeUntil, switchMap, delay, map, filter } from "rxjs/operators";
 import * as moment from "moment";
 import { FlydayService } from "../flyday.service";
-import { DayModel } from "../models/DayModel";
+import { DayModel } from "../../tmc/models/DayModel";
 import { FlightService, Trafficline } from "../flight.service";
 import { FlightSegmentEntity } from "../models/flight/FlightSegmentEntity";
 import { FlightJourneyEntity } from "../models/flight/FlightJourneyEntity";
@@ -52,6 +52,7 @@ import { FlyDaysCalendarComponent } from "../components/fly-days-calendar/fly-da
 import { Storage } from "@ionic/storage";
 import { SelectedFlightsegmentInfoComponent } from "../components/selected-flightsegment-info/selected-flightsegment-info.component";
 import { SelectedPassengersPopoverComponent } from "../components/selected-passengers-popover/selected-passengers-popover.component";
+import { NOT_WHITE_LIST } from "../select-passenger/select-passenger.page";
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -323,7 +324,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           s.PoliciedCabins.some(pc => pc.Rules.length == 0)
         );
         if (segments.length == 0) {
-          if (passengerId == "0") {
+          if (`${passengerId}`.toLowerCase().includes(NOT_WHITE_LIST)) {
             // 非白名单的是可以选择所有的航班
             segments = this.flightService.getTotalFlySegments(
               filteredFlightJourenyList
@@ -368,7 +369,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     if (passengerIds.length == 0) {
       passengerIds = this.flightService
         .getSelectedPasengers()
-        .map(p => p.AccountId);
+        .map(p => `${p.AccountId}`);
     }
     const hasreselect = this.flightService
       .getPassengerFlightSegments()
@@ -378,14 +379,24 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         passengerIds.push(hasreselect.passenger.AccountId);
       }
     }
-    const hasNotWhitelist = passengerIds.find(id => id == "0");
+    const hasNotWhitelist = passengerIds.find(id =>
+      `${id}`.toLowerCase().includes(NOT_WHITE_LIST)
+    );
+    debugger;
+
     if (hasNotWhitelist) {
       let policyflights = [];
-      const ids = passengerIds.filter(id => id != "0");
+      const ids = passengerIds.filter(
+        id => !`${id}`.toLowerCase().includes(NOT_WHITE_LIST)
+      );
       if (ids.length > 0) {
         policyflights = await this.flightService.getPolicyflightsAsync(
           flightJourneyList,
-          passengerId ? [passengerId] : passengerIds.filter(id => id != "0")
+          passengerId
+            ? [passengerId]
+            : passengerIds.filter(
+                id => !`${id}`.toLowerCase().includes(NOT_WHITE_LIST)
+              )
         );
       }
       const notWhitelistPolicyflights = this.getNotWhitelistCabins(
@@ -399,7 +410,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         passengerId ? [passengerId] : passengerIds
       );
     }
-    if (this.policyflights.length ===0) {
+    if (this.policyflights.length === 0) {
       flightJourneyList = [];
       this.policyflights = [];
       return [];

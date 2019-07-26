@@ -43,6 +43,7 @@ export interface PassengerPolicyFlights {
 export interface PassengerFlightSegments {
   passenger: StaffEntity;
   credential: MemberCredential;
+  isNotWhitelistCredential?: boolean;
   selectedInfo: PassengerFlightSelectedInfo[];
   Id?: string;
   isReselect?: boolean;
@@ -583,19 +584,19 @@ export class FlightService {
     const s = this.getSearchFlightModel();
     if (await this.staffService.isStaffTypeSelf()) {
       const staff = await this.staffService.getStaff();
-      const arr = this.getPassengerFlightSegments().find(
+      const pfs = this.getPassengerFlightSegments().find(
         item => item.passenger.AccountId == staff.AccountId
       );
-      if (arr) {
+      if (pfs) {
         // 已经选择了来回程，但不是重选
         if (
-          arr.selectedInfo.length == 2 &&
-          !arr.selectedInfo.find(item => !!item.resetId)
+          pfs.selectedInfo.length == 2 &&
+          !pfs.selectedInfo.find(item => !!item.resetId)
         ) {
-          const go = arr.selectedInfo.find(
+          const go = pfs.selectedInfo.find(
             item => item.tripType == TripType.departureTrip
           );
-          const back = arr.selectedInfo.find(
+          const back = pfs.selectedInfo.find(
             item => item.tripType == TripType.returnTrip
           );
           if (go && back) {
@@ -606,7 +607,7 @@ export class FlightService {
               LanguageHelper.getCancelTip()
             );
             if (ok) {
-              arr.selectedInfo = [go];
+              pfs.selectedInfo = [go];
             } else {
             }
           }
@@ -622,7 +623,9 @@ export class FlightService {
     for (let i = 0; i < unselectSegments.length; i++) {
       const p = unselectSegments[i];
       const passengerPolicies = this.currentViewtFlightSegment.totalPolicyFlights.find(
-        itm => itm.PassengerKey == p.passenger.AccountId
+        itm =>
+          itm.PassengerKey == p.passenger.AccountId ||
+          p.passenger.isNotWhiteList
       );
       if (passengerPolicies) {
         const cabin = passengerPolicies.FlightPolicies.find(
@@ -668,7 +671,9 @@ export class FlightService {
     if (one) {
       const old = one.selectedInfo.find(item => !!item.resetId);
       const onePolicies = this.currentViewtFlightSegment.totalPolicyFlights.find(
-        item => item.PassengerKey == one.passenger.AccountId
+        item =>
+          item.PassengerKey == one.passenger.AccountId ||
+          one.passenger.isNotWhiteList
       );
       const cabin =
         onePolicies &&

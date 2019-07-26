@@ -1,5 +1,5 @@
 import { Platform, DomController } from "@ionic/angular";
-import { DayModel } from "./../../models/DayModel";
+import { DayModel } from "../../../tmc/models/DayModel";
 import {
   Component,
   OnInit,

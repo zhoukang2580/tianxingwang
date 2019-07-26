@@ -2,7 +2,7 @@ import { LanguageHelper } from "src/app/languageHelper";
 import { BehaviorSubject, Subject } from "rxjs";
 import { Injectable } from "@angular/core";
 import * as moment from "moment";
-import { DayModel } from "../models/DayModel";
+import { DayModel } from "../../tmc/models/DayModel";
 @Injectable({
   providedIn: "root"
 })

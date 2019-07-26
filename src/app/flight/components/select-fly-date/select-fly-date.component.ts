@@ -3,8 +3,8 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Subscription } from "rxjs";
 import * as moment from "moment";
 import { LanguageHelper } from "src/app/languageHelper";
-import { DayModel } from "../../models/DayModel";
-import { AvailableDate } from "../../models/AvailableDate";
+import { DayModel } from "../../../tmc/models/DayModel";
+import { AvailableDate } from "../../../tmc/models/AvailableDate";
 import { FlydayService } from "../../flyday.service";
 import { AppHelper } from "src/app/appHelper";
 import {

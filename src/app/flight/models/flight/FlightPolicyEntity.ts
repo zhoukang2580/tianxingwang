@@ -1,4 +1,4 @@
-import { AgentEntity } from '../AgentEntity';
+import { AgentEntity } from '../../../tmc/models/AgentEntity';
 import { FlightMatchDateArrayEntity } from './FlightMatchDateArrayEntity';
 import { FlightMatchRouteEntity } from './FlightMatchRouteEntity';
 

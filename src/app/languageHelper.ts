@@ -81,6 +81,18 @@ export class LanguageHelper {
     }
   };
   static Flight = {
+    getCreditPayTip: () => {
+      return "信用付";
+    },
+    getCompanyPayTip: () => {
+      return "公付";
+    },
+    getPersonPayTip: () => {
+      return "个付";
+    },
+    getBalancePayTip: () => {
+      return "余额付";
+    },
     getAddMorePassengersTip: () => {
       return `继续添加乘客？`;
     },
@@ -143,6 +155,21 @@ export class LanguageHelper {
     },
     getReselectFlightSegmentTip() {
       return "重新选择航班?";
+    },
+    getCheckFirstNameTip() {
+      return "登机名";
+    },
+    getCheckLastNameTip() {
+      return "登机姓";
+    },
+    getIllegalReasonTip() {
+      return "超标原因";
+    },
+    getTravelTypeTip() {
+      return "出差类型";
+    },
+    getrOderTravelPayTypeTip() {
+      return "支付方式";
     }
   };
   static getDiscountTip() {
@@ -210,6 +237,12 @@ export class LanguageHelper {
   }
   static getOtherTip(): string {
     return "其他证件";
+  }
+  static getCredentialTypeTip(): string {
+    return "证件类型";
+  }
+  static getCredentialNumberTip(): string {
+    return "证件号";
   }
   static getTaiwanEpTip(): string {
     return "入台证";
@@ -401,5 +434,8 @@ export class LanguageHelper {
   }
   static TwicePasswordNotEqualTip() {
     return "两次输入的密码不一致";
+  }
+  static getNotifyLanguageTip(): string {
+    return "通知语言";
   }
 }

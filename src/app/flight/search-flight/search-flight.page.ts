@@ -16,7 +16,7 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import * as moment from "moment";
 import { Subscription, Observable } from "rxjs";
-import { DayModel } from "../models/DayModel";
+import { DayModel } from "../../tmc/models/DayModel";
 import { SelectDateService } from "../select-date/select-date.service";
 import { ModalController, NavController } from "@ionic/angular";
 import { Storage } from "@ionic/storage";

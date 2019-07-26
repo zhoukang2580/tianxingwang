@@ -11,7 +11,7 @@
 
 <ion-content>
   <ng-container *ngIf='!errors else errorTemp'>
-    <ion-list *ngFor='let item of passengerSegments'>
+    <ion-list *ngFor='let item of vmCombindInfos'>
       <ion-item-divider color='primary' sticky>
         {{item?.modal?.credential?.CheckName}}
         【{{tmc?.Name}}】
@@ -20,7 +20,7 @@
       </ion-item-divider>
       <ion-item lines='none' class="ion-no-margin">
         <ion-label>通知语言:</ion-label>
-        <ion-select value="cn" okText="确定" cancelText="取消" [(ngModel)]='item.notifyLanguage'>
+        <ion-select value='cn' okText="确定" cancelText="取消" [(ngModel)]='item.notifyLanguage'>
           <ion-select-option value=''>不发</ion-select-option>
           <ion-select-option value='cn'>中文</ion-select-option>
           <ion-select-option value='en'>英文</ion-select-option>
@@ -30,8 +30,8 @@
           && tmc?.FlightApprovalType!= tmcApprovalTypeNone 
           && bookTypeNotSelf() 
           && !identity?.Numbers?.AgentId'>
-        <ion-label>跳过审批:</ion-label>
-        <ion-input hidden value='true'></ion-input>
+        <ion-label style='margin-right: 0.5em'>跳过审批:</ion-label>
+        <ion-checkbox color="secondary" [(ngModel)]='item.isSkipApprove'></ion-checkbox>
       </ion-item>
       <ion-item lines='none' class="ion-no-margin" *ngIf='tmc?.IsShowServiceFee || identity?.Numbers?.AgentId'>
         <ion-label>服务费:</ion-label>
@@ -144,17 +144,18 @@
               </ion-row>
             </ion-grid>
             <div>
-              <ion-item lines='none' no-margin no-padding>
+              <ng-template #exceedReasonTemp>超标原因：</ng-template>
+              <ion-item lines='none' no-margin no-padding
+                *ngIf='illegalReasons?.length&&s?.flightPolicy?.Rules?.length else exceedReasonTemp'>
                 <ion-label>超标原因：</ion-label>
-                <ion-select [disabled]='item?.isOtherIllegalReason'
-                  *ngIf='illegalReasons?.length&&s?.flightPolicy?.Rules?.length' [(ngModel)]='item.illegalReason'
-                  name='Type' okText="确定" cancelText="取消">
+                <ion-select [disabled]='item?.isOtherIllegalReason' [(ngModel)]='item.illegalReason' name='Type'
+                  okText="确定" cancelText="取消">
                   <ion-select-option [value]="opt?.Name" *ngFor='let opt of illegalReasons'>
                     {{opt?.Name}}
                   </ion-select-option>
                 </ion-select>
               </ion-item>
-              <div>
+              <div *ngIf='tmc?.IsAllowCustomReason'>
                 <ion-item lines='none' no-margin no-padding>
                   <ion-label style='margin-right: 0'>其他原因:</ion-label>
                   <ion-checkbox color="secondary" [(ngModel)]="item.isOtherIllegalReason"></ion-checkbox>
@@ -259,6 +260,7 @@
             </div>
           </div>
           <div class='outnumber' *ngIf='item?.tmcOutNumberInfos'>
+            外部编号：
             <ion-item-group>
               <ion-item *ngFor='let n of item?.tmcOutNumberInfos' (click)='onSelectTravelNumber(n,item)'>
                 <ion-label>{{n.label}}:</ion-label>
@@ -267,26 +269,28 @@
             </ion-item-group>
           </div>
           <div class='travel-type'>
-            <ion-radio-group [ngModel]='item.travelType'>
-              <ion-item *ngIf='checkOrderTravelType(orderTravelType?.Business)' lines='none'>
+            <ion-radio-group [(ngModel)]='item.travelType' name='travelType'>
+              <ion-item *ngIf='checkOrderTravelType(orderTravelType.Business)' lines='none'>
                 <ion-label>因公</ion-label>
-                <ion-radio value="{{orderTravelType[orderTravelType?.Business]}}"
-                  [checked]='checkOrderTravelType(orderTravelType?.Business)'></ion-radio>
+                <ion-radio [value]="orderTravelType.Business"
+                  [checked]='checkOrderTravelType(orderTravelType.Business)'></ion-radio>
               </ion-item>
 
-              <ion-item *ngIf='checkOrderTravelType(orderTravelType?.Person)' lines='none'>
+              <ion-item *ngIf='checkOrderTravelType(orderTravelType.Person)' lines='none'>
                 <ion-label>因私</ion-label>
-                <ion-radio value="{{orderTravelType[orderTravelType?.Person]}}"
-                  [checked]='!checkOrderTravelType(orderTravelType?.Business)'></ion-radio>
+                <ion-radio [value]="orderTravelType.Person" [checked]='checkOrderTravelType(orderTravelType.Person)'>
+                </ion-radio>
               </ion-item>
             </ion-radio-group>
-            <ion-radio-group [ngModel]='item.orderTravelPayType'>
+          </div>
+          <div>
+            支付方式：
+            <ion-radio-group [(ngModel)]='item.orderTravelPayType' name='travelPayType'>
               <ng-container *ngFor='let pt of orderTravelPayTypes'>
                 <ion-item *ngIf='checkOrderTravelPayType(pt.value)' lines='none'>
-                  <ion-label>{{pt.label}}</ion-label>
-                  <ion-radio value="{{pt}}" [checked]='tmc?.FlightPayType==orderTravelType[pt]'></ion-radio>
-                  <!-- <ion-icon name="checkmark" mode='md' size='small' slot='end' color='success'
-                      *ngIf='true||tmc?.FlightPayType==orderTravelType[pt]'></ion-icon> -->
+                    <ion-label>{{pt.label}}</ion-label>
+                    <ion-radio [value]="pt.value" [checked]='tmc?.FlightPayType==pt.value'>
+                    </ion-radio>
                 </ion-item>
               </ng-container>
             </ion-radio-group>
@@ -352,7 +356,7 @@
       </ion-button>
     </ion-buttons>
     <ion-buttons slot='end'>
-      <ion-button color='secondary'> 提交</ion-button>
+      <ion-button color='secondary' (click)='bookFlight()'> 提交</ion-button>
     </ion-buttons>
     <ion-buttons slot='end'>
       <ion-button color='secondary'>保存订单</ion-button>

@@ -6,7 +6,7 @@ import { FlightBookType } from './models/flight/FlightBookType';
 import { InsuranceBookType } from '../insurance/models/InsuranceBookType';
 import { OrderInsuranceType } from '../insurance/models/OrderInsuranceType';
 import { InsuranceSupplierType } from '../insurance/models/InsuranceSupplierType';
-import { AgentSmsType } from './models/AgentSmsType';
+import { AgentSmsType } from '../tmc/models/AgentSmsType';
 import { TrainSupplierType } from '../train/models/TrainSupplierType';
 import { HotelSupplierType } from '../hotel/models/HotelSupplierType';
 import * as moment from 'moment';

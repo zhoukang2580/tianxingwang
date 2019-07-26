@@ -12,7 +12,7 @@ import {
 import * as moment from "moment";
 import { SelectDateService } from "./select-date.service";
 import { ModalController, NavController } from "@ionic/angular";
-import { DayModel } from "../models/DayModel";
+import { DayModel } from "../../tmc/models/DayModel";
 import { environment } from "../../../environments/environment";
 @Component({
   selector: "app-select-date",

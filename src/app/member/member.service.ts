@@ -2,12 +2,15 @@ import { ApiService } from "./../services/api/api.service";
 import { Injectable } from "@angular/core";
 import { RequestEntity } from "../services/api/Request.entity";
 import { CredentialsType } from "./pipe/credential.pipe";
+import { AccountEntity } from "../tmc/models/AccountEntity";
 export class MemberCredential {
   isModified?: boolean;
+  isNotWhiteList: boolean;
   variables: any;
   CredentialsRemark: any;
   Id: string; //
   AccountId: string; //
+  Account: AccountEntity;
   /// <summary>
   /// 类型
   /// </summary>

@@ -1,7 +1,7 @@
 import { AppHelper } from "src/app/appHelper";
 import { Component, OnInit, EventEmitter } from "@angular/core";
 import { Input, Output } from "@angular/core";
-import { DayModel } from "../../models/DayModel";
+import { DayModel } from "../../../tmc/models/DayModel";
 import * as moment from "moment";
 import { LanguageHelper } from "src/app/languageHelper";
 @Component({
