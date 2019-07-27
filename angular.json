@@ -58,6 +58,9 @@
               },
               {
                 "input": "src/assets/imagerecover/winner.imagerecover.js"
+              },
+              {
+                "input": "node_modules/vconsole/dist/vconsole.min.js"
               }
             ]
           },

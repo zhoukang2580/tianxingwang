@@ -60,6 +60,7 @@
     "phonegap-plugin-barcodescanner": "8.0.1",
     "rxjs": "^6.5.2",
     "swiper": "^4.5.0",
+    "vconsole": "^3.3.2",
     "zone.js": "~0.8.29"
   },
   "devDependencies": {
