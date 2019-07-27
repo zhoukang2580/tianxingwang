@@ -1,7 +1,9 @@
 <ion-radio-group class='credentials-remark' no-margin no-padding [(ngModel)]='passenger' name='CredentialsRemark'>
-  <ion-item *ngFor='let s of passengers$|async'>
-    <ion-label class='sm-font-size' *ngIf='s?.credential?.FirstName&&s?.credential?.LastName'>{{s?.credential?.FirstName}}{{s?.credential?.LastName}} {{s?.credential?.Number}}</ion-label>
-    <ion-label class='sm-font-size' *ngIf='!(s?.credential?.FirstName&&s?.credential?.LastName)&&s?.Name'>{{s?.Name}} {{s?.credential?.Number}}</ion-label>
+  <ion-item *ngFor='let s of bookInfos$|async'>
+    <ion-label class='sm-font-size' *ngIf='s?.credential?.FirstName&&s?.credential?.LastName'>
+      {{s?.credential?.FirstName}}{{s?.credential?.LastName}} {{s?.credential?.Number}}</ion-label>
+    <ion-label class='sm-font-size' *ngIf='!(s?.credential?.FirstName&&s?.credential?.LastName)&&s?.Name'>{{s?.Name}}
+      {{s?.credential?.Number}}</ion-label>
     <ion-radio [value]="s"></ion-radio>
   </ion-item>
 </ion-radio-group>

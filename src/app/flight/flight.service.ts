@@ -1,3 +1,5 @@
+import { IdentityEntity } from "./../services/identity/identity.entity";
+import { CredentialsEntity } from "./../tmc/models/CredentialsEntity";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { ModalController, NavController } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
@@ -17,19 +19,16 @@ import { FlightSegmentEntity } from "./models/flight/FlightSegmentEntity";
 import { RequestEntity } from "../services/api/Request.entity";
 import { Storage } from "@ionic/storage";
 import { LanguageHelper } from "../languageHelper";
-import { map, switchMap, catchError } from "rxjs/operators";
 import { Router } from "@angular/router";
-import { MemberCredential } from "../member/member.service";
-
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
-export interface PassengerFlightSelectedInfo {
+export interface PassengerFlightSegmentInfo {
   flightSegment: FlightSegmentEntity;
   flightPolicy: FlightPolicy;
   tripType?: TripType;
-  Id?: string;
-  resetId?: string;
-  selectedLowerSegment?: boolean;
+  id?: string;
+  reselectId?: string;
+  hasLowerSegment?: boolean;
 }
 export enum TripType {
   departureTrip = "departureTrip",
@@ -40,12 +39,12 @@ export interface PassengerPolicyFlights {
   FlightPolicies: FlightPolicy[];
 }
 
-export interface PassengerFlightSegments {
+export interface PassengerBookInfo {
   passenger: StaffEntity;
-  credential: MemberCredential;
-  isNotWhitelistCredential?: boolean;
-  selectedInfo: PassengerFlightSelectedInfo[];
-  Id?: string;
+  credential: CredentialsEntity;
+  isNotWhitelist?: boolean;
+  flightSegmentInfo?: PassengerFlightSegmentInfo;
+  id?: string;
   isReselect?: boolean;
 }
 export interface FlightSegmentModel {
@@ -80,13 +79,13 @@ export class SearchFlightModel {
   tripType: TripType;
   isLocked?: boolean;
 }
-export enum CheckSelfSelectedInfoType {
-  AddOne = "AddOne",
-  ReselectDepartureTrip = "ReselectDepartureTrip",
-  ReselectReturnTrip = "ReselectReturnTrip",
-  SelectReturnTrip = "selectReturnTrip",
-  CannotBookMoreFlightSegment = "CannotBookMoreFlightSegment"
-}
+// export enum CheckSelfSelectedInfoType {
+//   AddOne = "AddOne",
+//   ReselectDepartureTrip = "ReselectDepartureTrip",
+//   ReselectReturnTrip = "ReselectReturnTrip",
+//   SelectReturnTrip = "selectReturnTrip",
+//   CannotBookMoreFlightSegment = "CannotBookMoreFlightSegment"
+// }
 export interface Trafficline {
   Id: string; // long
   Tag: string; // 标签（Airport 机场，AirportCity 机场城市，Train 火车站）
@@ -121,19 +120,17 @@ const debugCacheTime = 5 * 60 * 1000;
 export class FlightService {
   private worker = null;
 
-  private selectedPassengers: StaffEntity[] = [];
   private searchFlightModelSource: Subject<SearchFlightModel>;
-  private passengerFlightSegmentSource: Subject<PassengerFlightSegments[]>;
+  private passengerBookInfoSource: Subject<PassengerBookInfo[]>;
   private searchFlightModel: SearchFlightModel;
   private filterPanelShowHideSource: Subject<boolean>;
-  private selectedPassengerSource: Subject<StaffEntity[]>;
   private openCloseSelectCitySources: Subject<boolean>;
   private filterCondSources: Subject<FilterConditionModel>;
   private localInternationAirports: LocalStorageAirport;
   private localDomesticAirports: LocalStorageAirport;
   private selectedCitySource: Subject<Trafficline>;
   private allLocalAirports: Trafficline[];
-  private passengerFlightSegments: PassengerFlightSegments[]; // 记录乘客及其研究选择的航班
+  private passengerBookInfos: PassengerBookInfo[]; // 记录乘客及其研究选择的航班
   currentViewtFlightSegment: CurrentViewtFlightSegment;
 
   constructor(
@@ -149,12 +146,9 @@ export class FlightService {
     this.searchFlightModel = new SearchFlightModel();
     this.searchFlightModel.tripType = TripType.departureTrip;
     this.selectedCitySource = new BehaviorSubject(null);
-    this.selectedPassengerSource = new BehaviorSubject([]);
     this.searchFlightModelSource = new BehaviorSubject(null);
-    this.passengerFlightSegments = [];
-    this.passengerFlightSegmentSource = new BehaviorSubject(
-      this.passengerFlightSegments
-    );
+    this.passengerBookInfos = [];
+    this.passengerBookInfoSource = new BehaviorSubject(this.passengerBookInfos);
     this.filterPanelShowHideSource = new BehaviorSubject(false);
     this.openCloseSelectCitySources = new BehaviorSubject(false);
     this.filterCondSources = new BehaviorSubject(null);
@@ -168,38 +162,13 @@ export class FlightService {
   disposal() {
     this.setSearchFlightModel(new SearchFlightModel());
     this.removeAllPassengerFlightSegments();
-    this.clearAllSelectedPassengers();
     this.selectedCitySource.next(null);
     this.openCloseSelectCitySources.next(false);
     this.setSelectedCity(null);
     this.currentViewtFlightSegment = null;
   }
-  addSelectedPassengers(p: StaffEntity) {
-    if (p) {
-      p.TempId = AppHelper.uuid();
-      this.selectedPassengers.push(p);
-      this.selectedPassengerSource.next(this.selectedPassengers);
-    }
-  }
-  getSelectedPasengers() {
-    this.selectedPassengers = this.selectedPassengers || [];
-    return this.selectedPassengers;
-  }
-  getSelectedPasengerSource() {
-    return this.selectedPassengerSource.asObservable();
-  }
-  clearAllSelectedPassengers() {
-    this.selectedPassengers = [];
-    this.selectedPassengerSource.next(this.getSelectedPasengers());
-  }
-  removeSelectedPassenger(p: StaffEntity) {
-    if (p) {
-      this.selectedPassengers = this.selectedPassengers.filter(
-        item => item.TempId != p.TempId
-      );
-      this.selectedPassengerSource.next(this.getSelectedPasengers());
-    }
-  }
+
+
   getCurrentViewtFlightSegment() {
     return this.currentViewtFlightSegment;
   }
@@ -207,7 +176,7 @@ export class FlightService {
     if (m) {
       this.searchFlightModel = { ...m };
       if (m.IsRoundTrip) {
-        const arr = this.getPassengerFlightSegments();
+        const arr = this.getPassengerBookInfos();
         if (m.tripType == TripType.returnTrip) {
           if (!arr.find(item => item.isReselect)) {
             this.searchFlightModel.isLocked = true;
@@ -239,48 +208,22 @@ export class FlightService {
       totalPolicyFlights: policyFlights
     };
   }
-  private setPassengerFlightSegmentSource(args: PassengerFlightSegments[]) {
-    this.passengerFlightSegmentSource.next(args);
+  private setPassengerBookInfos(args: PassengerBookInfo[]) {
+    this.passengerBookInfos = args || [];
+    this.passengerBookInfoSource.next(this.passengerBookInfos);
   }
-  getPassengerFlightSegmentSource() {
-    return this.passengerFlightSegmentSource.asObservable();
+  // private setPassengerBookInfoSource(args: PassengerBookInfo[]) {
+  //   this.passengerBookInfoSource.next(args);
+  // }
+  getPassengerBookInfoSource() {
+    return this.passengerBookInfoSource.asObservable();
   }
 
-  getPassengerFlightSegments() {
-    this.passengerFlightSegments = this.passengerFlightSegments || [];
-    return this.passengerFlightSegments;
+  getPassengerBookInfos() {
+    this.passengerBookInfos = this.passengerBookInfos || [];
+    return this.passengerBookInfos;
   }
-  async validateReturnTripDate(backDate: string) {
-    if (!backDate || this.searchFlightModel.tripType !== TripType.returnTrip) {
-      return true;
-    }
-    const staff = await this.staffService.getStaff();
-    if (
-      staff.BookType == StaffBookType.Self &&
-      this.searchFlightModel.IsRoundTrip
-    ) {
-      const info = this.getPassengerFlightSegments().find(
-        item => item.passenger.AccountId == staff.AccountId
-      );
-      if (info) {
-        const goFlight = info.selectedInfo.find(
-          item => item.tripType == TripType.departureTrip
-        );
-        if (goFlight) {
-          if (
-            +moment(backDate) <=
-            +moment(goFlight.flightSegment.ArrivalTime).add(3, "hours")
-          ) {
-            return false;
-          }
-        }
-      }
-    }
-    return true;
-  }
-  async validateCanBookReturnTripFlightSegment(
-    flightSegment: FlightSegmentEntity
-  ) {
+  async canBookReturnTripFlightSegment(flightSegment: FlightSegmentEntity) {
     if (
       !flightSegment ||
       this.searchFlightModel.tripType !== TripType.returnTrip
@@ -290,20 +233,26 @@ export class FlightService {
     const staff = await this.staffService.getStaff();
     if (staff.BookType == StaffBookType.Self) {
       if (this.searchFlightModel.IsRoundTrip) {
-        const info = this.getPassengerFlightSegments().find(
-          item => item.passenger.AccountId == staff.AccountId
+        const infos = this.getPassengerBookInfos().filter(
+          item =>
+            item.passenger.AccountId == staff.AccountId &&
+            item.flightSegmentInfo
         );
-        if (info) {
-          const goFlight = info.selectedInfo.find(
-            item => item.tripType == TripType.departureTrip
+        if (infos) {
+          const info = infos.find(
+            item =>
+              item.flightSegmentInfo &&
+              item.flightSegmentInfo.flightSegment &&
+              item.flightSegmentInfo.tripType == TripType.departureTrip
           );
+          const goFlight = info.flightSegmentInfo.flightSegment;
           if (goFlight) {
-            if (
-              +moment(flightSegment.TakeoffTime) <=
-              +moment(goFlight.flightSegment.ArrivalTime).add(3, "hours")
-            ) {
-              return false;
-            }
+            const takeoffTime = moment(flightSegment.TakeoffTime);
+            const arrivalTime = moment(goFlight.ArrivalTime);
+            return (
+              takeoffTime.date() == arrivalTime.date() ||
+              +arrivalTime >= +takeoffTime
+            );
           }
         }
       } else {
@@ -314,32 +263,34 @@ export class FlightService {
     }
     return true;
   }
-  async validateCanBookMoreFlightSegment(flightSegment: FlightSegmentEntity) {
+  async canBookMoreFlightSegment(flightSegment: FlightSegmentEntity) {
     if (!flightSegment) {
       return true;
     }
     const staff = await this.staffService.getStaff();
     if (staff && staff.BookType == StaffBookType.Self) {
       if (this.getSearchFlightModel().IsRoundTrip) {
-        const arr = this.getPassengerFlightSegments().find(
-          item => item.passenger.AccountId == staff.AccountId
+        const arr = this.getPassengerBookInfos().filter(
+          item =>
+            item.passenger.AccountId == staff.AccountId &&
+            item.flightSegmentInfo &&
+            item.flightSegmentInfo.flightPolicy
         );
-        if (arr) {
-          if (arr.selectedInfo.length == 2) {
-            const g = arr.selectedInfo.find(
-              item => item.tripType == TripType.departureTrip
-            );
-            const b = arr.selectedInfo.find(
-              item => item.tripType == TripType.returnTrip
-            );
-            if (g && b) {
-              return true;
-            } else {
-              return false;
-            }
+        if (arr.length == 2) {
+          const g = arr.find(
+            item => item.flightSegmentInfo.tripType == TripType.departureTrip
+          );
+          const b = arr.find(
+            item => item.flightSegmentInfo.tripType == TripType.returnTrip
+          );
+          const hasReselect = arr.find(item => item.isReselect);
+          if (g && b) {
+            return hasReselect;
+          } else {
+            return false;
           }
         }
-        return true;
+        return false;
       } else {
         return !this.checkIfExcessMaxLimitedBookTickets(1);
       }
@@ -349,44 +300,19 @@ export class FlightService {
   }
   private checkIfExcessMaxLimitedBookTickets(max: number) {
     return (
-      this.getPassengerFlightSegments().reduce((arr, item) => {
+      this.getPassengerBookInfos().reduce((sum, item) => {
         if (!item.isReselect) {
-          arr += item.selectedInfo.length;
-        }
-        return arr;
-      }, 0) >= max
-    );
-  }
-  private async validateReturnTripBackDate(arg: PassengerFlightSegments) {
-    if (
-      !arg ||
-      !arg.selectedInfo ||
-      ((arg.selectedInfo.length && arg.selectedInfo[0].tripType) ||
-        !this.searchFlightModel ||
-        this.searchFlightModel.tripType) != TripType.returnTrip
-    ) {
-      return true;
-    }
-    const staff = await this.staffService.getStaff();
-    if (staff && staff.BookType == StaffBookType.Self) {
-      const info = this.getPassengerFlightSegments().find(
-        item => item.passenger.AccountId == staff.AccountId
-      );
-      if (info) {
-        const goFlight = info.selectedInfo.find(
-          item => item.tripType == TripType.departureTrip
-        );
-        if (goFlight) {
           if (
-            +moment(arg.selectedInfo[0].flightSegment.TakeoffTime) <=
-            +moment(goFlight.flightSegment.ArrivalTime).add(3, "hours")
+            item.flightSegmentInfo &&
+            (item.flightSegmentInfo.flightPolicy ||
+              item.flightSegmentInfo.flightSegment)
           ) {
-            return false;
+            sum++;
           }
         }
-      }
-    }
-    return true;
+        return sum;
+      }, 0) >= max
+    );
   }
   async selectTripType(): Promise<TripType> {
     const ok = await AppHelper.alert(
@@ -397,99 +323,38 @@ export class FlightService {
     );
     return ok ? TripType.departureTrip : TripType.returnTrip;
   }
-  async addPassengerFlightSegments(
-    arg: PassengerFlightSegments
-  ): Promise<string> {
+  addPassengerBookInfo(arg: PassengerBookInfo): Promise<string> {
     console.log("addPassengerFlightSegments", arg);
-    let result = "";
-    const s = (await this.staffService.getStaff()) || ({} as any);
-    const identity = await this.identityService.getIdentityAsync();
-    if (!arg || !arg.passenger || !arg.selectedInfo) {
-      await AppHelper.alert(
-        LanguageHelper.Flight.getSelectedFlightInvalideTip()
-      );
+    if (!arg || !arg.passenger) {
+      AppHelper.alert(LanguageHelper.Flight.getSelectedFlightInvalideTip());
+      return;
     }
-    const validation = await this.validateReturnTripBackDate(arg);
-    if (!validation) {
-      await AppHelper.alert(
-        LanguageHelper.Flight.getBackDateCannotBeforeGoDateTip(),
-        true,
-        LanguageHelper.getConfirmTip()
-      );
-      return (result = LanguageHelper.Flight.getBackDateCannotBeforeGoDateTip());
-    }
-    if (s.BookType === StaffBookType.Self) {
-      result = await this.bookTypeSelfAddPassengerFlightSegments(arg);
-      const cur = this.getPassengerFlightSegments().find(
-        item => item.passenger.AccountId == s.AccountId
-      );
-      if (
-        cur &&
-        (cur.selectedInfo.length >= 2 || cur.selectedInfo.length == 0)
-      ) {
-        this.searchFlightModel.tripType = TripType.departureTrip;
-        this.setSearchFlightModel(this.searchFlightModel);
-      }
-    }
-    if (s.BookType === StaffBookType.All) {
-      result = await this.bookTypeAllAddPassengerFlightSegments(arg);
-    }
-    if (s.BookType === StaffBookType.Secretary) {
-      result = await this.bookTypeSecretaryAddPassengerFlightSegments(arg);
-    }
-    if (
-      !s.BookType &&
-      identity &&
-      identity.Numbers &&
-      identity.Numbers.AgentId
-    ) {
-      result = await this.agentAddPassengerFlightSegments(arg);
-    }
-    this.setPassengerFlightSegmentSource(this.getPassengerFlightSegments());
-    return result;
+    const infos = this.getPassengerBookInfos();
+    infos.push(arg);
+    this.setPassengerBookInfos(infos);
   }
-  private async agentAddPassengerFlightSegments(arg: PassengerFlightSegments) {
-    const excess = await this.checkIfExcessMaxLimitedBookTickets(9);
-    if (excess) {
-      await AppHelper.alert(
-        LanguageHelper.Flight.getCannotBookMoreFlightSegmentTip(),
-        true,
-        LanguageHelper.getConfirmTip()
-      );
-    }
-    arg.Id = AppHelper.uuid();
-    this.passengerFlightSegments.push(arg);
-    return "";
-  }
+
   private async reselectSelfBookTypeSegment(
     passenger: StaffEntity,
-    arg: PassengerFlightSelectedInfo
+    arg: PassengerFlightSegmentInfo
   ) {
     const s = this.getSearchFlightModel();
     if (arg.tripType == TripType.returnTrip) {
       // 重选回程
-      const exists = this.getPassengerFlightSegments();
+      const exists = this.getPassengerBookInfos();
       const citites = await this.getAllLocalAirports();
-      const one = exists.find(
+      const goInfo = exists.find(
         item =>
-          !!item.selectedInfo.find(
-            itm => itm.tripType == TripType.departureTrip
-          )
+          item.flightSegmentInfo.tripType == TripType.departureTrip &&
+          item.passenger.AccountId == passenger.AccountId
       );
-      const info =
-        one &&
-        one.selectedInfo &&
-        one.selectedInfo.length &&
-        one.selectedInfo.find(item => item.tripType == TripType.departureTrip);
-      const goFlight = info && info.flightSegment;
+      const goFlight = goInfo && goInfo.flightSegmentInfo.flightSegment;
       if (goFlight) {
         const fromCode = goFlight.FromAirport;
         const toCode = goFlight.ToAirport;
         const toCity = citites.find(c => c.Code == toCode);
         const fromCity = citites.find(c => c.Code == fromCode);
-        const arrivalDate = moment(goFlight.ArrivalTime)
-          .add(3, "hours")
-          .format("YYYY-MM-DD");
+        const arrivalDate = moment(goFlight.ArrivalTime).format("YYYY-MM-DD");
         if (+moment(s.BackDate) < +moment(arrivalDate)) {
           s.BackDate = arrivalDate;
         }
@@ -500,24 +365,24 @@ export class FlightService {
         s.ToCode = fromCode;
         s.tripType = TripType.returnTrip;
       }
-      const arr = this.getPassengerFlightSegments().map(item => {
+      const arr = this.getPassengerBookInfos().map(item => {
         item.isReselect = false;
         if (item.passenger.AccountId == passenger.AccountId) {
           item.isReselect = true;
-          item.selectedInfo = item.selectedInfo.map(it => {
-            it.resetId = it.Id == arg.Id ? arg.Id : null;
-            return it;
-          });
+          item.flightSegmentInfo.reselectId =
+            item.flightSegmentInfo.id == arg.id
+              ? item.flightSegmentInfo.id
+              : null;
         }
         return item;
       });
-      this.passengerFlightSegments = arr;
+      this.passengerBookInfos = arr;
     } else {
       // 重选去程
       s.tripType = TripType.departureTrip;
-      this.passengerFlightSegments = [];
+      this.passengerBookInfos = [];
     }
-    this.setPassengerFlightSegmentSource(this.getPassengerFlightSegments());
+    this.setPassengerBookInfos(this.getPassengerBookInfos());
     this.apiService.showLoadingView();
     await this.dismissAllTopOverlays();
     this.apiService.hideLoadingView();
@@ -538,23 +403,23 @@ export class FlightService {
   }
   private async reselectNotSelfBookTypeSegments(
     passenger: StaffEntity,
-    arg: PassengerFlightSelectedInfo
+    arg: PassengerFlightSegmentInfo
   ) {
     const s = this.getSearchFlightModel();
     s.tripType = TripType.departureTrip;
-    const arr = this.getPassengerFlightSegments().map(item => {
+    const arr = this.getPassengerBookInfos().map(item => {
       item.isReselect = false;
       if (item.passenger.AccountId == passenger.AccountId) {
         item.isReselect = true;
-        item.selectedInfo = item.selectedInfo.map(it => {
-          it.resetId = it.Id == arg.Id ? arg.Id : null;
-          return it;
-        });
+        item.flightSegmentInfo.reselectId =
+          item.flightSegmentInfo.id == arg.id
+            ? item.flightSegmentInfo.id
+            : null;
       }
       return item;
     });
-    this.passengerFlightSegments = arr;
-    this.setPassengerFlightSegmentSource(this.getPassengerFlightSegments());
+    this.passengerBookInfos = arr;
+    this.setPassengerBookInfos(this.getPassengerBookInfos());
     this.apiService.showLoadingView();
     await this.dismissAllTopOverlays();
     this.apiService.hideLoadingView();
@@ -564,7 +429,7 @@ export class FlightService {
   }
   async reselectPassengerFlightSegments(
     passenger: StaffEntity,
-    arg: PassengerFlightSelectedInfo
+    arg: PassengerFlightSegmentInfo
   ) {
     console.log(
       "this.router.routerState.snapshot.url=",
@@ -577,27 +442,34 @@ export class FlightService {
     }
   }
   async addOrReselecteInfos(flightCabin: FlightCabinEntity) {
-    let unselectSegments = this.getPassengerFlightSegments().filter(
-      p => p.selectedInfo.length == 0
+    const bookInfos = this.getPassengerBookInfos();
+    let unselectSegments = bookInfos.filter(
+      p =>
+        !p.flightSegmentInfo ||
+        !p.flightSegmentInfo.flightSegment ||
+        !p.flightSegmentInfo.flightPolicy
     );
     let selfUnselects = [];
     const s = this.getSearchFlightModel();
     if (await this.staffService.isStaffTypeSelf()) {
       const staff = await this.staffService.getStaff();
-      const pfs = this.getPassengerFlightSegments().find(
-        item => item.passenger.AccountId == staff.AccountId
+      const infos = bookInfos.filter(
+        item =>
+          item.passenger.AccountId == staff.AccountId &&
+          item.flightSegmentInfo &&
+          item.flightSegmentInfo.flightPolicy
       );
-      if (pfs) {
+      if (infos.length) {
         // 已经选择了来回程，但不是重选
         if (
-          pfs.selectedInfo.length == 2 &&
-          !pfs.selectedInfo.find(item => !!item.resetId)
+          infos.length == 2 &&
+          !infos.find(item => !!item.isReselect)
         ) {
-          const go = pfs.selectedInfo.find(
-            item => item.tripType == TripType.departureTrip
+          const go = infos.find(
+            item => item.flightSegmentInfo.tripType == TripType.departureTrip
           );
-          const back = pfs.selectedInfo.find(
-            item => item.tripType == TripType.returnTrip
+          const back = infos.find(
+            item => item.flightSegmentInfo.tripType == TripType.returnTrip
           );
           if (go && back) {
             const ok = await AppHelper.alert(
@@ -607,7 +479,8 @@ export class FlightService {
               LanguageHelper.getCancelTip()
             );
             if (ok) {
-              pfs.selectedInfo = [go];
+              this.passengerBookInfos = [go];
+              this.setPassengerBookInfos(this.passengerBookInfos);
             } else {
             }
           }
@@ -615,12 +488,13 @@ export class FlightService {
       }
       if (s.IsRoundTrip && s.tripType == TripType.returnTrip) {
         if (unselectSegments.length == 0) {
-          selfUnselects = this.getPassengerFlightSegments();
+          selfUnselects = this.getPassengerBookInfos();
         }
       }
     }
     unselectSegments = [...unselectSegments, ...selfUnselects];
     for (let i = 0; i < unselectSegments.length; i++) {
+      debugger;
       const p = unselectSegments[i];
       const passengerPolicies = this.currentViewtFlightSegment.totalPolicyFlights.find(
         itm =>
@@ -640,36 +514,37 @@ export class FlightService {
               c => c.Code == cabin.CabinCode
             );
           if (await this.staffService.isStaffTypeSelf()) {
-            if (
-              !this.getPassengerFlightSegments().find(item => item.isReselect)
-            ) {
-              p.selectedInfo.push({
+            if (!this.getPassengerBookInfos().find(item => item.isReselect)) {
+              p.flightSegmentInfo = {
                 flightSegment: this.currentViewtFlightSegment.flightSegment,
                 flightPolicy: cabin,
                 tripType: this.getSearchFlightModel().IsRoundTrip
                   ? this.getSearchFlightModel().tripType
                   : TripType.departureTrip,
-                Id: AppHelper.uuid(),
-                resetId: null
-              });
+                id: AppHelper.uuid(),
+                reselectId: null
+              };
             }
           } else {
-            p.selectedInfo.push({
+            p.flightSegmentInfo = {
               flightSegment: this.currentViewtFlightSegment.flightSegment,
               flightPolicy: cabin,
               tripType: this.getSearchFlightModel().IsRoundTrip
                 ? this.getSearchFlightModel().tripType
                 : TripType.departureTrip,
-              Id: AppHelper.uuid(),
-              resetId: null
-            });
+              id: AppHelper.uuid(),
+              reselectId: null
+            };
           }
         }
       }
     }
-    const one = this.getPassengerFlightSegments().find(item => item.isReselect);
+    const one = bookInfos.find(item => item.isReselect);
     if (one) {
-      const old = one.selectedInfo.find(item => !!item.resetId);
+      const oldBookInfo = bookInfos.find(
+        item => !!item.flightSegmentInfo.reselectId
+      );
+      const old = oldBookInfo && oldBookInfo.flightSegmentInfo;
       const onePolicies = this.currentViewtFlightSegment.totalPolicyFlights.find(
         item =>
           item.PassengerKey == one.passenger.AccountId ||
@@ -686,28 +561,26 @@ export class FlightService {
         cabin.Cabin = this.currentViewtFlightSegment.flightSegment.Cabins.find(
           c => c.Code == cabin.CabinCode
         );
-        const newOne: PassengerFlightSelectedInfo = {
-          Id: AppHelper.uuid(),
+        const newOne: PassengerFlightSegmentInfo = {
+          id: AppHelper.uuid(),
           tripType: this.getSearchFlightModel().IsRoundTrip
             ? this.getSearchFlightModel().tripType
             : TripType.departureTrip,
           flightSegment: this.currentViewtFlightSegment.flightSegment,
           flightPolicy: cabin,
-          resetId: null
+          reselectId: null
         };
         this.replacePassengerFlightSelectedInfo(one.passenger, old, newOne);
       }
     }
-    const arr = this.getPassengerFlightSegments().map(item => {
+    const arr = bookInfos.map(item => {
       item.isReselect = false;
-      item.selectedInfo = item.selectedInfo.map(itm => {
-        itm.resetId = null;
-        return itm;
-      });
+      if(item.flightSegmentInfo){
+        item.flightSegmentInfo.reselectId = null;
+      }
       return item;
     });
-    this.passengerFlightSegments = arr;
-    this.setPassengerFlightSegmentSource(arr);
+    this.setPassengerBookInfos(arr);
   }
   private async dismissAllTopOverlays() {
     console.time("dismissAllTopOverlays");
@@ -721,139 +594,41 @@ export class FlightService {
     console.timeEnd("dismissAllTopOverlays");
     return true;
   }
-  private async bookTypeSelfAddPassengerFlightSegments(
-    arg: PassengerFlightSegments
-  ): Promise<string> {
-    if (!arg || !arg.selectedInfo) {
-      AppHelper.alert(
-        LanguageHelper.Flight.getSelectedFlightInvalideTip(),
-        true,
-        LanguageHelper.getConfirmTip()
-      );
-      return "";
-    }
-    const s = await this.staffService.getStaff();
-    const one = this.getPassengerFlightSegments().find(
-      itm => itm.passenger.AccountId == s.AccountId
-    );
-    if (!one) {
-      // arg.selectedInfo[0].tripType = TripType.departureTrip;
-      this.passengerFlightSegments = [arg];
-    } else {
-      if (this.getSearchFlightModel().IsRoundTrip) {
-        // 往返
-        if (arg.selectedInfo.length) {
-          const backFlight =
-            arg.selectedInfo.find(
-              item => item.tripType == TripType.returnTrip
-            ) || arg.selectedInfo[0];
-          backFlight.tripType = TripType.returnTrip;
-          one.isReselect = false;
-          backFlight.resetId = null;
-          one.selectedInfo = [
-            one.selectedInfo.find(
-              item => item.tripType == TripType.departureTrip
-            ),
-            backFlight
-          ];
-        }
-      } else {
-        // 单程
-        if (one.selectedInfo.length) {
-          AppHelper.alert(
-            LanguageHelper.Flight.getCannotBookMoreFlightSegmentTip(),
-            false,
-            LanguageHelper.getConfirmTip()
-          );
-        } else {
-          if (arg.selectedInfo.length) {
-            const goFlight =
-              arg.selectedInfo.find(
-                item => item.tripType == TripType.departureTrip
-              ) || arg.selectedInfo[0];
-            goFlight.tripType = TripType.departureTrip;
-            one.selectedInfo = [goFlight];
-          }
-        }
-      }
-      this.passengerFlightSegments = [one];
-    }
-    // this.setPassengerFlightSegmentSource(this.getPassengerFlightSegments());
-    return "";
-  }
-  private async bookTypeSecretaryAddPassengerFlightSegments(
-    arg: PassengerFlightSegments
-  ) {
-    const excess = await this.checkIfExcessMaxLimitedBookTickets(9);
-    if (excess) {
-      await AppHelper.alert(
-        LanguageHelper.Flight.getCannotBookMoreFlightSegmentTip(),
-        true,
-        LanguageHelper.getConfirmTip()
-      );
-    }
-    arg.Id = `${this.passengerFlightSegments.length}`;
-    this.passengerFlightSegments.push(arg);
-    return "";
-  }
-  private async bookTypeAllAddPassengerFlightSegments(
-    arg: PassengerFlightSegments
-  ) {
-    const excess = await this.checkIfExcessMaxLimitedBookTickets(9);
-    if (excess) {
-      await AppHelper.alert(
-        LanguageHelper.Flight.getCannotBookMoreFlightSegmentTip(),
-        true,
-        LanguageHelper.getConfirmTip()
-      );
-    }
-    arg.Id = `${this.passengerFlightSegments.length}`;
-    this.passengerFlightSegments.push(arg);
-    return "";
-  }
   removeAllPassengerFlightSegments() {
-    this.passengerFlightSegments = [];
-    this.setPassengerFlightSegmentSource(this.getPassengerFlightSegments());
+    this.passengerBookInfos = [];
+    this.setPassengerBookInfos(this.getPassengerBookInfos());
   }
   replacePassengerFlightSelectedInfo(
     passenger: StaffEntity,
-    old: PassengerFlightSelectedInfo,
-    newInfo: PassengerFlightSelectedInfo
+    old: PassengerFlightSegmentInfo,
+    newInfo: PassengerFlightSegmentInfo
   ) {
-    let arr = this.getPassengerFlightSegments();
+    if (!old || !newInfo || !passenger) {
+      return;
+    }
+    let arr = this.getPassengerBookInfos();
     arr = arr.map(item => {
       if (item.passenger.AccountId == passenger.AccountId) {
-        item.selectedInfo = item.selectedInfo.map(itm => {
-          if (itm.Id == old.Id) {
-            itm = newInfo;
-          }
-          return itm;
-        });
+        if (item.flightSegmentInfo.id == old.id) {
+          item.flightSegmentInfo = newInfo;
+        }
       }
       return item;
     });
-    this.passengerFlightSegments = arr;
-    this.setPassengerFlightSegmentSource(this.passengerFlightSegments);
+    this.passengerBookInfos = arr;
+    this.setPassengerBookInfos(this.passengerBookInfos);
   }
-  removePassengerFlightSelectedInfo(
-    passenger: StaffEntity,
-    arg: PassengerFlightSelectedInfo
-  ) {
-    let arr = this.getPassengerFlightSegments();
-    arr = arr.map(item => {
-      if (item.passenger.AccountId == passenger.AccountId) {
-        item.selectedInfo = item.selectedInfo.filter(it => it.Id !== arg.Id);
-      }
-      return item;
-    });
-    this.passengerFlightSegments = arr;
-    this.setPassengerFlightSegmentSource(arr);
+  removePassengerFlightSegmentInfo(arg: PassengerFlightSegmentInfo) {
+    let arr = this.getPassengerBookInfos();
+    arr = arr.filter(info => info.id != arg.id);
+    this.passengerBookInfos = arr;
+    this.setPassengerBookInfos(arr);
   }
-  removePassengerFlightSegments(args: PassengerFlightSegments[]) {
-    this.passengerFlightSegments = this.getPassengerFlightSegments().filter(
-      item => !args.some(i => i.Id == item.Id)
+  removePassengerBookInfos(args: PassengerBookInfo[]) {
+    this.passengerBookInfos = this.getPassengerBookInfos().filter(
+      item => !args.some(i => i.id == item.id)
     );
-    this.setPassengerFlightSegmentSource(this.getPassengerFlightSegments());
+    this.setPassengerBookInfos(this.passengerBookInfos);
   }
   getSelectedCity() {
     return this.selectedCitySource.asObservable();
@@ -1257,7 +1032,7 @@ export class FlightService {
   }
   async getPassengerCredentials(
     accountIds: string[]
-  ): Promise<{ [accountId: string]: MemberCredential[] }> {
+  ): Promise<{ [accountId: string]: CredentialsEntity[] }> {
     return this.tmcService.getPassengerCredentials(accountIds);
   }
 }

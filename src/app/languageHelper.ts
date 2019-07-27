@@ -93,6 +93,9 @@ export class LanguageHelper {
     getBalancePayTip: () => {
       return "余额付";
     },
+    getPlsSelectGoFlightTip: () => {
+      return `请先选择去程`;
+    },
     getAddMorePassengersTip: () => {
       return `继续添加乘客？`;
     },
@@ -134,6 +137,9 @@ export class LanguageHelper {
     },
     getIsReSelectDepartureTip: () => {
       return `是否更新 [去程]？`;
+    },
+    getCannotBookMorePassengerTip: () => {
+      return `不能添加更多乘客`;
     },
     getCannotBookMoreFlightSegmentTip: () => {
       return `不能预订更多航班`;

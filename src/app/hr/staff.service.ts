@@ -77,7 +77,7 @@ export class PolicyEntity {
   /// </summary>
   Hr: HrEntity;
   /// <summary>
-  ///名称
+  // 名称
   /// </summary>
   Name: string;
   /// <summary>
@@ -147,7 +147,6 @@ export class StaffEntity {
   /// 政策
   /// </summary>
   Policy: PolicyEntity;
-  TempId: string;
   StaffNumber: string;
   BookTypeName: string;
   Password: string;

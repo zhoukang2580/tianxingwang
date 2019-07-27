@@ -9,9 +9,6 @@ import { ActivatedRoute, Router } from "@angular/router";
 import {
   FlightService,
   FlightPolicy,
-  PassengerFlightSelectedInfo,
-  TripType,
-  CheckSelfSelectedInfoType,
   CurrentViewtFlightSegment
 } from "src/app/flight/flight.service";
 import { Component, OnInit } from "@angular/core";

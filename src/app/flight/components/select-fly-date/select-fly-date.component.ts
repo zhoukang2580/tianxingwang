@@ -99,20 +99,17 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
     this.flightService.getSearchFlightModelSource().subscribe(s => {
       if (s) {
         if (s.tripType == TripType.returnTrip) {
-          const goFlight = this.flightService.getPassengerFlightSegments();
-          if (
-            goFlight.length &&
-            goFlight[0].selectedInfo &&
-            goFlight[0].selectedInfo.length &&
-            goFlight[0].selectedInfo.find(
-              item => item.tripType == TripType.departureTrip
-            )
-          ) {
+          const goFlight = this.flightService
+            .getPassengerBookInfos()
+            .find(
+              f =>
+                f.flightSegmentInfo &&
+                f.flightSegmentInfo.tripType == TripType.departureTrip
+            );
+          if (goFlight) {
             const goDate = moment(
-              goFlight[0].selectedInfo.find(
-                item => item.tripType == TripType.departureTrip
-              ).flightSegment.ArrivalTime
-            ).add(3, "hours");
+              goFlight.flightSegmentInfo.flightSegment.ArrivalTime
+            );
             if (this.yms.length) {
               this.yms.forEach(day => {
                 day.dayList.forEach(d => {

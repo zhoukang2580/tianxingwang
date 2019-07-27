@@ -10,15 +10,14 @@
 </ion-header>
 <ion-content>
   <ion-item-group *ngFor='let info of selectedInfos$|async'>
-    <ion-item-divider color='primary' sticky *ngIf='info.selectedInfo?.length'>
+    <ion-item-divider color='primary' sticky >
       <ion-label color='dark'>{{info?.passenger?.Name}}{{info?.credential?.Number}}</ion-label>
-      <!-- <ion-button expand='block' color='secondary' slot='end' padding-end>重选</ion-button> -->
     </ion-item-divider>
-    <ion-item *ngFor='let s of info.selectedInfo'>
+    <ion-item *ngFor='let s of info?.bookInfos'>
       <div class='detail'>
         <div class='date'>
           <strong>{{getDate(s?.flightSegment)}} <ion-text color='secondary'>{{getTripTip(s)}}</ion-text></strong>
-          <ion-button fill='clear' size='small' (click)='remove(info.passenger,s)'>
+          <ion-button fill='clear' size='small' (click)='remove(s)'>
             <ion-icon name="trash" color='danger' mode='ios'>
             </ion-icon>
           </ion-button>

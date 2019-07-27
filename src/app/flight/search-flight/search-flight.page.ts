@@ -3,7 +3,7 @@ import { MemberCredential, MemberService } from "../../member/member.service";
 import { ApiService } from "src/app/services/api/api.service";
 import { StaffEntity, StaffBookType } from "src/app/hr/staff.service";
 import { FlightSegmentEntity } from "../models/flight/FlightSegmentEntity";
-import { TripType, PassengerFlightSegments } from "../flight.service";
+import { TripType, PassengerBookInfo } from "../flight.service";
 import { StaffService } from "../../hr/staff.service";
 import {
   FlightService,
@@ -23,6 +23,7 @@ import { Storage } from "@ionic/storage";
 import { tap } from "rxjs/operators";
 import { SwitchCityComponent } from "../components/switch-city/switch-city.component";
 import { LanguageHelper } from "src/app/languageHelper";
+import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 @Component({
   selector: "app-search-flight",
   templateUrl: "./search-flight.page.html",
@@ -77,27 +78,26 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
         this.disabled =
           this.searchFlightModel && this.searchFlightModel.isLocked;
         if (
-          this.flightService.getPassengerFlightSegments().length == 0 ||
-          this.flightService.getSelectedPasengers().length == 0
+          this.flightService.getPassengerBookInfos().length == 0 ||
+          this.flightService.getPassengerBookInfos().length == 0
         ) {
           if (this.staff && !this.staff.Name) {
             const identity = await this.identityService.getIdentityAsync();
             this.staff.Name = identity && identity.Name;
           }
-          const item: PassengerFlightSegments = {
-            credential: new MemberCredential(),
-            passenger: this.staff,
-            selectedInfo: []
+          const item: PassengerBookInfo = {
+            credential: new CredentialsEntity(),
+            passenger: this.staff
           };
-          this.flightService.addSelectedPassengers(item.passenger);
+          this.flightService.addPassengerBookInfo(item);
           const searchModel = this.flightService.getSearchFlightModel();
           searchModel.tripType = TripType.departureTrip;
           this.flightService.setSearchFlightModel(searchModel);
-          this.flightService.addPassengerFlightSegments(item);
+          this.flightService.addPassengerBookInfo(item);
         }
       }
       this.showReturnTrip = await this.isStaffTypeSelf();
-      this.selectedPassengers = flightService.getSelectedPasengers().length;
+      this.selectedPassengers = flightService.getPassengerBookInfos().length;
       if (this.searchConditionSubscription) {
         this.searchConditionSubscription.unsubscribe();
       }
@@ -251,25 +251,26 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     s.tripType = TripType.departureTrip;
     const staff = await this.staffService.getStaff();
     if (staff.BookType == StaffBookType.Self) {
-      const exists = this.flightService.getPassengerFlightSegments();
+      const exists = this.flightService
+        .getPassengerBookInfos()
+        .filter(
+          item => item.passenger && item.passenger.AccountId == staff.AccountId
+        );
       let goFlight: FlightSegmentEntity;
-      if (
-        exists.length &&
-        exists[0].selectedInfo &&
-        exists[0].selectedInfo.find(
-          item => item.tripType == TripType.departureTrip
-        )
-      ) {
+      const info = exists.find(
+        it =>
+          it.flightSegmentInfo &&
+          it.flightSegmentInfo.tripType == TripType.departureTrip
+      );
+      if (info) {
         s.tripType = TripType.returnTrip;
-        goFlight = exists[0].selectedInfo.find(
-          item => item.tripType == TripType.departureTrip
-        ).flightSegment;
+        goFlight =
+          info.flightSegmentInfo && info.flightSegmentInfo.flightSegment;
       } else {
         s.tripType = TripType.departureTrip;
       }
       if (s.tripType == TripType.returnTrip && goFlight) {
-        const arrivalDate = moment(goFlight.ArrivalTime).add(3, "hours");
-        console.log("ssssssss", arrivalDate.format("YYYY-MM-DD"));
+        const arrivalDate = moment(goFlight.ArrivalTime);
         if (
           +moment(this.backDate.date) <
           +moment(arrivalDate.format("YYYY-MM-DD"))

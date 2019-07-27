@@ -1,3 +1,4 @@
+import { CredentialsEntity } from "./../../tmc/models/CredentialsEntity";
 import { TmcService } from "./../../tmc/tmc.service";
 import { AccountEntity } from "./../../tmc/models/AccountEntity";
 import { MemberService, MemberCredential } from "./../../member/member.service";
@@ -8,8 +9,7 @@ import { ApiService } from "./../../services/api/api.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
   FlightService,
-  PassengerFlightSegments,
-  TripType
+  PassengerBookInfo
 } from "src/app/flight/flight.service";
 import { SelectedPassengersComponent } from "./../components/selected-passengers/selected-passengers.component";
 import {
@@ -64,9 +64,9 @@ export const NOT_WHITE_LIST = "notwhitelist";
 })
 export class SelectPassengerPage
   implements OnInit, CanComponentDeactivate, AfterViewInit {
-  passengerFlightSegments: PassengerFlightSegments[];
+  passengerFlightSegments: PassengerBookInfo[];
   vmKeyword: string;
-  vmNewCredentialId: string;
+  isShowNewCredential = false;
   credentialsRemarks: { key: string; value: string }[];
   selectedCredentialId: string;
   private keyword: string;
@@ -81,7 +81,7 @@ export class SelectPassengerPage
   openclose = true;
   isCanDeactive = true;
   staffCredentails: MemberCredential[] = [];
-  frequentPassengers: MemberCredential[];
+  frqPassengerCredentials: MemberCredential[];
   identityTypes: { key: string; value: string }[];
   passengerTypes: {
     key: string;
@@ -108,13 +108,10 @@ export class SelectPassengerPage
     private tmcService: TmcService
   ) {
     this.selectedPasengers$ = flightService
-      .getSelectedPasengerSource()
+      .getPassengerBookInfoSource()
       .pipe(map(items => items.length));
     route.queryParamMap.subscribe(p => {
-      this.vmNewCredentialId = `${AppHelper.uuid(
-        5
-      )}New${NOT_WHITE_LIST}CredentialId`.toLowerCase();
-      this.passengerFlightSegments = this.flightService.getPassengerFlightSegments();
+      this.passengerFlightSegments = this.flightService.getPassengerBookInfos();
       this.isCanDeactive = false;
       const country: Country = AppHelper.getRouteData();
       if (country && country.Code) {
@@ -238,54 +235,82 @@ export class SelectPassengerPage
     if (this.ionrefresher) {
       this.ionrefresher.complete();
     }
-    // 代理或者特殊，显示白名单
+    // 代理或者特殊，显示可以选择非白名单
     if (await this.canAddNotWhiteListCredential()) {
-      const item = new StaffEntity();
-      item.isNotWhiteList = true;
-      item.AccountId = `${AppHelper.uuid(5)}${NOT_WHITE_LIST}`;
+      const passenger = new StaffEntity();
+      passenger.isNotWhiteList = true;
       const tmc = await this.tmcService.getTmc(false).catch(_ => null);
-      item.Account = new AccountEntity();
-      item.Account.Id = tmc && tmc.Account.Id; // 所选的tmcId
-      item.CredentialsInfo = LanguageHelper.Flight.getNotWhitelistingTip();
-      staffs.unshift(item);
+      passenger.Account = new AccountEntity();
+      passenger.Account.Id = tmc && tmc.Account.Id; // 所选的tmcId
+      passenger.AccountId = passenger.Account.Id;
+      passenger.CredentialsInfo = LanguageHelper.Flight.getNotWhitelistingTip(); // 非白名单
+      staffs.unshift(passenger);
     }
     this.vmStaffs = staffs;
     this.loading = false;
   }
   async onSelect(s: StaffEntity) {
-    this.vmStaffs = null; // 是否显示搜索列表
-    // newCredential = null;
-    this.vmNewCredential = null; // 页面上显示新增此人其他证件
-    this.selectedPassenger = s;
-    this.selectedCredentialId = null; // 所选择的证件
-    this.frequentPassengers = null; // 是否显示常旅客
     console.log("onSelect", s);
+    this.selectedPassenger = s;
+    this.vmStaffs = null; // 是否显示搜索列表
+    this.isShowNewCredential = false; // 页面上显示新增此人其他证件,或者是非白名单的证件
+    this.vmNewCredential = null;
+    this.selectedCredentialId = null; // 所选择的证件Id
+    this.frqPassengerCredentials = null; // 是否显示常旅客
+    // 白名单
     if (!s.isNotWhiteList) {
       this.staffCredentails = await this.getCredentials(s.AccountId);
     } else {
+      // 选择了非白名单，直接新增证件
       this.staffCredentails = [];
     }
-    if (s.CredentialsInfo == LanguageHelper.Flight.getNotWhitelistingTip()) {
-      this.staffCredentails = [];
-    }
+    // 新增的非白名单证件或者新增旅客的其他证件
     if (await this.canAddNotWhiteListCredential()) {
-      this.vmNewCredential = new MemberCredential();
-      this.vmNewCredential.isNotWhiteList = true;
-      this.vmNewCredential.variables = "OtherCredential";
-      this.vmNewCredential.CredentialsRemark = "客户";
-      this.vmNewCredential.Type = CredentialsType.IdCard;
-      this.vmNewCredential.Id = this.vmNewCredentialId;
-      this.vmNewCredential.AccountId = this.vmNewCredentialId;
-      this.vmNewCredential.Gender = "M";
-      this.vmNewCredential.IssueCountry = { Code: "CN", Name: "中国" };
-      this.vmNewCredential.Country = { Code: "CN", Name: "中国" };
+      this.initNewCredential(s);
     }
+  }
+  private initNewCredential(s: StaffEntity) {
+    this.vmNewCredential = new MemberCredential();
+    this.vmNewCredential.isNotWhiteList = s.isNotWhiteList;
+    this.vmNewCredential.variables = s.isNotWhiteList
+      ? NOT_WHITE_LIST
+      : "OtherCredential";
+    this.vmNewCredential.Id = AppHelper.uuid();
+    if (this.staffCredentails.length == 0 || s.isNotWhiteList) {
+      this.selectedCredentialId = this.vmNewCredential.Id;
+    }
+    this.vmNewCredential.CredentialsRemark = "客户";
+    this.vmNewCredential.Type = CredentialsType.IdCard;
+    this.vmNewCredential.Gender = "M";
+    this.vmNewCredential.IssueCountry = { Code: "CN", Name: "中国" };
+    this.vmNewCredential.Country = { Code: "CN", Name: "中国" };
+    this.isShowNewCredential = true;
   }
   onSelectCredential(credentialId: string) {
     console.log("onSelectCredential", credentialId);
     this.selectedCredentialId = credentialId;
   }
+  async checkCanAddMore() {
+    const arr = this.flightService
+      .getPassengerBookInfos()
+      .map(item => item.passenger);
+    if (await this.staffService.isStaffTypeSelf()) {
+      if (arr.length > 1) {
+        return false;
+      }
+    } else {
+      if (arr.length > 9) {
+        return false;
+      }
+    }
+    return true;
+  }
   async onAddPassenger() {
+    const canAdd = await this.checkCanAddMore();
+    if (!canAdd) {
+      AppHelper.alert(LanguageHelper.Flight.getCannotBookMorePassengerTip());
+      return false;
+    }
     let selectedCredential: MemberCredential;
     if (!this.selectedCredentialId) {
       AppHelper.alert(
@@ -297,8 +322,8 @@ export class SelectPassengerPage
       return;
     }
     selectedCredential = (this.staffCredentails || [])
-      .concat(this.frequentPassengers || [])
-      .concat(this.vmNewCredential)
+      .concat(this.frqPassengerCredentials || [])
+      .concat(this.vmNewCredential ? [this.vmNewCredential] : [])
       .find(c => c.Id == this.selectedCredentialId);
     if (!selectedCredential) {
       AppHelper.alert(
@@ -309,12 +334,10 @@ export class SelectPassengerPage
       );
       return;
     }
-    selectedCredential = {
-      ...selectedCredential,
-      Country: this.vmNewCredential.Country.Code,
-      IssueCountry: this.vmNewCredential.IssueCountry.Code
-    };
-    if (selectedCredential.isNotWhiteList) {
+    if (
+      this.vmNewCredential &&
+      selectedCredential.Id == this.vmNewCredential.Id
+    ) {
       const validate = await this.validateCredential(
         selectedCredential,
         this.addForm && this.addForm.last && this.addForm.last["el"]
@@ -322,6 +345,17 @@ export class SelectPassengerPage
       if (!validate) {
         return;
       }
+    }
+    if (
+      selectedCredential &&
+      this.vmNewCredential &&
+      selectedCredential.Id == this.vmNewCredential.Id
+    ) {
+      selectedCredential = {
+        ...selectedCredential,
+        Country: this.vmNewCredential.Country.Code,
+        IssueCountry: this.vmNewCredential.IssueCountry.Code
+      };
     }
     if (!selectedCredential.Number) {
       AppHelper.alert(
@@ -332,16 +366,14 @@ export class SelectPassengerPage
       );
       return;
     }
-    const item: PassengerFlightSegments = {
-      credential: selectedCredential,
-      isNotWhitelistCredential: `${selectedCredential.AccountId}`
-        .toLowerCase()
-        .includes(NOT_WHITE_LIST)||`${selectedCredential.Id}`.toLowerCase().includes(NOT_WHITE_LIST),
-      passenger: this.selectedPassenger,
-      selectedInfo: []
+    const passengerBookInfo: PassengerBookInfo = {
+      credential: ({
+        ...selectedCredential
+      } as any) as CredentialsEntity,
+      isNotWhitelist: this.selectedPassenger.isNotWhiteList,
+      passenger: this.selectedPassenger
     };
-    this.flightService.addSelectedPassengers(item.passenger);
-    this.flightService.addPassengerFlightSegments(item);
+    this.flightService.addPassengerBookInfo(passengerBookInfo);
     this.isCanDeactive = true;
     const ok = await AppHelper.alert(
       LanguageHelper.Flight.getAddMorePassengersTip(),
@@ -488,7 +520,7 @@ export class SelectPassengerPage
       .then(res => res || [])
       .catch(_ => []);
     if (await this.canAddNotWhiteListCredential()) {
-      this.frequentPassengers = await this.getPassengers(accountId);
+      this.frqPassengerCredentials = await this.getPassengers(accountId);
     }
     this.loading = false;
     return credentials;

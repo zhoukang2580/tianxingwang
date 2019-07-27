@@ -15,6 +15,7 @@ import { StaffEntity } from "../hr/staff.service";
 import { InsuranceResultEntity } from "./models/Insurance/InsuranceResultEntity";
 import { PassengerDto } from "./models/PassengerDto";
 import { OrderBookDto } from "../order/models/OrderBookDto";
+import { CredentialsEntity } from './models/CredentialsEntity';
 
 @Injectable({
   providedIn: "root"
@@ -174,7 +175,7 @@ export class TmcService {
   }
   async getPassengerCredentials(
     accountIds: string[]
-  ): Promise<{ [accountId: string]: MemberCredential[] }> {
+  ): Promise<{ [accountId: string]: CredentialsEntity[] }> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Home-Credentials";
     req.Data = {
@@ -183,7 +184,7 @@ export class TmcService {
     req.IsShowLoading = true;
     req.Timeout = 60;
     return this.apiService.getPromiseData<{
-      [accountId: string]: MemberCredential[];
+      [accountId: string]: CredentialsEntity[];
     }>(req);
   }
   async getIllegalReasons(): Promise<IllegalReasonEntity[]> {

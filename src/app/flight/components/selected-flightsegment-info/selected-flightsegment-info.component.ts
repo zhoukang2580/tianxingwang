@@ -1,3 +1,4 @@
+import { CredentialsEntity } from "./../../../tmc/models/CredentialsEntity";
 import {
   CurrentViewtFlightSegment,
   SearchFlightModel
@@ -15,9 +16,8 @@ import {
   NavController
 } from "@ionic/angular";
 import {
-  FlightPolicy,
-  PassengerFlightSegments,
-  PassengerFlightSelectedInfo,
+  PassengerBookInfo,
+  PassengerFlightSegmentInfo,
   FlightService,
   TripType
 } from "src/app/flight/flight.service";
@@ -25,17 +25,20 @@ import { FlightSegmentEntity } from "./../../models/flight/FlightSegmentEntity";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { LanguageHelper } from "src/app/languageHelper";
 import * as moment from "moment";
-import { tap, map } from "rxjs/operators";
-import { MemberCredential } from "src/app/member/member.service";
+import { tap, map, reduce } from "rxjs/operators";
 import { SelectFlightsegmentCabinComponent } from "../select-flightsegment-cabin/select-flightsegment-cabin.component";
+interface PassengerBookInfos {
+  passenger: StaffEntity;
+  credential: CredentialsEntity;
+  bookInfos: PassengerBookInfo[];
+}
 @Component({
   selector: "app-selected-flightsegment-info",
   templateUrl: "./selected-flightsegment-info.component.html",
   styleUrls: ["./selected-flightsegment-info.component.scss"]
 })
 export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
-  selectedInfos$: Observable<PassengerFlightSegments[]>;
-  // selectedInfos: PassengerFlightSelectedInfo[];
+  selectedInfos$: Observable<PassengerBookInfos[]>;
   searchModel: SearchFlightModel;
   searchModelSubscrition = Subscription.EMPTY;
   identity: IdentityEntity;
@@ -60,26 +63,53 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
         this.searchModel = m;
       });
     this.currentViewtFlightSegment = this.flightService.getCurrentViewtFlightSegment();
-    this.selectedInfos$ = this.flightService
-      .getPassengerFlightSegmentSource()
-      .pipe(
-        tap(async info => {
-          const s = await this.staffService.getStaff();
-          if (s.BookType == StaffBookType.Self) {
-            const one = info.find(
-              item => item.passenger.AccountId == s.AccountId
+    this.selectedInfos$ = this.flightService.getPassengerBookInfoSource().pipe(
+      tap(async infos => {
+        const s = await this.staffService.getStaff();
+        if (s.BookType == StaffBookType.Self) {
+          const oneInfos = infos.filter(
+            item => item.passenger.AccountId == s.AccountId
+          );
+          this.showSelectReturnTripButton =
+            this.flightService.getSearchFlightModel().IsRoundTrip &&
+            !!oneInfos.find(
+              info =>
+                info.flightSegmentInfo &&
+                info.flightSegmentInfo.tripType == TripType.departureTrip
             );
-            // console.log("showSelectReturnTripButton",one);
-            this.showSelectReturnTripButton =
-              one &&
-              this.flightService.getSearchFlightModel().IsRoundTrip &&
-              one.selectedInfo.length == 1 &&
-              one.selectedInfo[0].tripType == TripType.departureTrip;
-          } else {
-            this.showSelectReturnTripButton = false;
-          }
-        })
-      );
+        } else {
+          this.showSelectReturnTripButton = false;
+        }
+      }),
+      reduce(
+        (acc, infos) => {
+          const tempObj: { [key: string]: PassengerBookInfo[] } = {} as any;
+          infos.forEach(item => {
+            if (tempObj[item.passenger.AccountId]) {
+              tempObj[item.passenger.AccountId].push(item);
+            } else {
+              tempObj[item.passenger.AccountId] = [item];
+            }
+          });
+          Object.keys(tempObj).map(k => {
+            const one = infos.find(it => it.passenger.AccountId == k);
+            if (one) {
+              acc.push({
+                passenger: one.passenger,
+                credential: one.credential,
+                bookInfos: tempObj[k]
+              });
+            }
+          });
+          console.log("reduce",acc);
+          return acc;
+        },
+        [] as PassengerBookInfos[]
+      ),
+      tap(res => {
+        console.log("bookInfos", res);
+      })
+    );
   }
   async back() {
     const t = await this.modalCtrl.getTop();
@@ -97,28 +127,25 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     this.dismissTop();
     this.router.navigate([AppHelper.getRoutePath("book")]);
   }
-  async reelect(passenger: StaffEntity, item: PassengerFlightSelectedInfo) {
+  async reelect(passenger: StaffEntity, item: PassengerFlightSegmentInfo) {
     await this.flightService.reselectPassengerFlightSegments(passenger, item);
   }
-  showLowerSegment(
-    info: PassengerFlightSegments,
-    s: PassengerFlightSelectedInfo
-  ) {
+  showLowerSegment(info: PassengerBookInfo, s: PassengerFlightSegmentInfo) {
     return (
       s &&
       s.flightPolicy &&
       s.flightPolicy.LowerSegment &&
-      !s.selectedLowerSegment &&
-      ((info.selectedInfo.length == 1 &&
+      !s.hasLowerSegment &&
+      ((info.flightSegmentInfo &&
         this.searchModel.tripType !== TripType.returnTrip) ||
         s.tripType == TripType.returnTrip)
     );
   }
   async onSelectLowestSegment(
-    info: PassengerFlightSegments,
-    data: PassengerFlightSelectedInfo
+    info: PassengerBookInfo,
+    data: PassengerFlightSegmentInfo
   ) {
-    if (data.selectedLowerSegment) {
+    if (data.hasLowerSegment) {
       AppHelper.alert("已经选择过更低航班");
       return;
     }
@@ -163,12 +190,12 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
             LanguageHelper.Flight.getTheLowestCabinNotFoundTip()
           );
         } else {
-          const newOne: PassengerFlightSelectedInfo = {
+          const newOne: PassengerFlightSegmentInfo = {
             flightPolicy: cbin,
             flightSegment: lowestFlightSegment,
             tripType: data.tripType || TripType.departureTrip,
-            Id: AppHelper.uuid(),
-            selectedLowerSegment: true
+            id: AppHelper.uuid(),
+            hasLowerSegment: true
           };
           this.flightService.replacePassengerFlightSelectedInfo(
             info.passenger,
@@ -180,11 +207,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     }
   }
 
-  async remove(
-    passenger: StaffEntity,
-    item: PassengerFlightSelectedInfo,
-    message?: string
-  ) {
+  async remove(item: PassengerFlightSegmentInfo, message?: string) {
     const al = await this.alertController.create({
       header: LanguageHelper.getHintTip(),
       message:
@@ -193,10 +216,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
         {
           text: LanguageHelper.getConfirmTip(),
           handler: () => {
-            this.flightService.removePassengerFlightSelectedInfo(
-              passenger,
-              item
-            );
+            this.flightService.removePassengerFlightSegmentInfo(item);
             if (al) {
               al.dismiss();
             }
@@ -216,7 +236,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     const day = this.flydayService.generateDayModel(moment(s.TakeoffTime));
     return `${day.date} ${day.dayOfWeekName}`;
   }
-  getTripTip(info: PassengerFlightSelectedInfo) {
+  getTripTip(info: PassengerFlightSegmentInfo) {
     return `[${
       info.tripType == TripType.departureTrip
         ? LanguageHelper.getDepartureTip()
@@ -226,22 +246,32 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
 
   async onSelectReturnTrip() {
     console.log("onSelectReturnTrip");
-    const s = { ...this.flightService.getSearchFlightModel() };
+    const s = this.flightService.getSearchFlightModel();
     const airports = await this.flightService.getAllLocalAirports();
-    const selectedInfos = this.flightService.getPassengerFlightSegments()[0]
-      .selectedInfo;
+    const bookInfos = this.flightService.getPassengerBookInfos();
     s.tripType = TripType.returnTrip;
-    const goflight = selectedInfos.find(
-      item => item.tripType == TripType.departureTrip
-    ).flightSegment;
+    const goflightBookInfo = bookInfos.find(
+      item =>
+        item.flightSegmentInfo &&
+        item.flightSegmentInfo.tripType == TripType.departureTrip
+    );
+    if (
+      !goflightBookInfo ||
+      !goflightBookInfo.flightSegmentInfo ||
+      !goflightBookInfo.flightSegmentInfo.flightSegment
+    ) {
+      AppHelper.alert(LanguageHelper.Flight.getPlsSelectGoFlightTip());
+      return;
+    }
+    const goflight = goflightBookInfo.flightSegmentInfo.flightSegment;
     const fromCity = airports.find(c => c.Code == goflight.FromAirport);
     const toCity = airports.find(c => c.Code == goflight.ToAirport);
     s.fromCity = fromCity;
     s.toCity = toCity;
     const goDay = moment(goflight.ArrivalTime);
     let backDay = moment(s.BackDate);
-    if (+backDay < +moment(goDay.add(3, "hours").format("YYYY-MM-DD"))) {
-      backDay = goDay.add(3, "hours");
+    if (+backDay < +moment(goDay.format("YYYY-MM-DD"))) {
+      backDay = goDay;
     }
     s.BackDate = backDay.format("YYYY-MM-DD");
     await this.dismissTop();

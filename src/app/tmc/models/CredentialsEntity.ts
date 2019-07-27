@@ -3,6 +3,7 @@ import { AccountEntity } from "./AccountEntity";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 
 export class CredentialsEntity {
+  Id: string;
   /// <summary>
   /// 账户
   /// </summary>

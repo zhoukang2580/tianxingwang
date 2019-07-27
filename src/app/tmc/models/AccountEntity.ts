@@ -95,7 +95,4 @@ export class AccountEntity {
     /// </summary>
     // public virtual IList<AccountTokenEntity>
     AccountTokens: any;//string;// 
-
-    ModifyMobileEvent: string;// = "Beeant.Domain.Entities.Account.Account.ModifyMobile";
-    ModifyEmailEvent: string;// = "Beeant.Domain.Entities.Account.Account.ModifyEmail";
 }

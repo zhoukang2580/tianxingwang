@@ -8,7 +8,11 @@ import {
   PassengerPolicyFlights
 } from "./../flight.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
-import { StaffService, StaffBookType } from "../../hr/staff.service";
+import {
+  StaffService,
+  StaffBookType,
+  StaffEntity
+} from "../../hr/staff.service";
 import { AppHelper } from "src/app/appHelper";
 import { animate } from "@angular/animations";
 import { trigger, state, style, transition } from "@angular/animations";
@@ -93,6 +97,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   vmFromCity: Trafficline;
   filterConditionSubscription = Subscription.EMPTY;
   searchConditionSubscription = Subscription.EMPTY;
+  selectPassengerSubscription = Subscription.EMPTY;
   selectDaySubscription = Subscription.EMPTY;
   vmFlightJourneyList: FlightJourneyEntity[];
   totalFilteredSegments: FlightSegmentEntity[];
@@ -103,7 +108,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   isFiltered = false;
   isLeavePage = false;
   st = 0;
-  selectedPassengers$: Observable<number>;
+  selectedPassengersNumbers$: Observable<number>;
   goAndBackFlightDateTime$: Observable<{
     goArrivalDateTime: string;
     backTakeOffDateTime: string;
@@ -129,15 +134,25 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     private modalCtrl: ModalController,
     private popoverController: PopoverController
   ) {
-    this.selectedPassengers$ = flightService
-      .getSelectedPasengerSource()
+    this.selectedPassengersNumbers$ = flightService
+      .getPassengerBookInfoSource()
       .pipe(map(item => item.length));
+    this.selectPassengerSubscription = this.flightService
+      .getPassengerBookInfoSource()
+      .subscribe(p => {
+        if (p.length == 0) {
+          if (this.isLeavePage) {
+            return;
+          }
+          this.goToSelectPassengerPage();
+        }
+      });
     this.hasDataSource = new BehaviorSubject(false);
     this.vmFlights = [];
     this.flightJourneyList = [];
     this.searchFlightModel = new SearchFlightModel();
     this.goAndBackFlightDateTime$ = combineLatest([
-      flightService.getPassengerFlightSegmentSource(),
+      flightService.getPassengerBookInfoSource(),
       from(staffService.getStaff()),
       from(staffService.isStaffTypeSelf())
     ]).pipe(
@@ -145,25 +160,26 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       map(([arr1, staff]) =>
         arr1.find(item => item.passenger.AccountId == staff.AccountId)
       ),
-      filter(item => !!item && !!item.selectedInfo.length),
+      filter(
+        item =>
+          !!item &&
+          !!item.flightSegmentInfo &&
+          !!item.flightSegmentInfo.flightSegment
+      ),
       map(res => {
-        const goFlight = res.selectedInfo.find(
-          item => item.tripType == TripType.departureTrip
-        );
-        const backFlight = res.selectedInfo.find(
-          item => item.tripType == TripType.returnTrip
-        );
         return {
-          goArrivalDateTime: goFlight
-            ? moment(goFlight.flightSegment.TakeoffTime).format(
-                "YYYY-MM-DD HH:mm"
-              )
-            : "",
-          backTakeOffDateTime: backFlight
-            ? moment(backFlight.flightSegment.TakeoffTime).format(
-                "YYYY-MM-DD HH:mm"
-              )
-            : ""
+          goArrivalDateTime:
+            res.flightSegmentInfo.tripType == TripType.departureTrip
+              ? moment(res.flightSegmentInfo.flightSegment.TakeoffTime).format(
+                  "YYYY-MM-DD HH:mm"
+                )
+              : "",
+          backTakeOffDateTime:
+            res.flightSegmentInfo.tripType == TripType.returnTrip
+              ? moment(res.flightSegmentInfo.flightSegment.TakeoffTime).format(
+                  "YYYY-MM-DD HH:mm"
+                )
+              : ""
         };
       })
     );
@@ -193,15 +209,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         });
       this.isLeavePage = false;
       this.flightService.setFilterPanelShow(false);
-      if (
-        !this.isStaffTypeSelf() &&
-        flightService.getSelectedPasengers().length == 0
-      ) {
-        // 必须先选择一个客户
-        console.log("goToSelectPassengerPage ");
-        this.goToSelectPassengerPage();
-        return;
-      }
       console.log("this.route.queryParamMap", this.searchFlightModel);
       if (this.searchFlightModel && this.searchFlightModel.Date) {
         this.doRefresh(true, true);
@@ -229,12 +236,16 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     if (this.searchFlightModel.tripType == TripType.returnTrip) {
-      const goFlight = this.flightService.getPassengerFlightSegments()[0];
-      if (goFlight && goFlight.selectedInfo && goFlight.selectedInfo.length) {
-        let goDay = moment(
-          goFlight.selectedInfo.find(i => i.tripType == TripType.departureTrip)
-            .flightSegment.ArrivalTime
-        );
+      const bookInfos = this.flightService.getPassengerBookInfos();
+      const info = bookInfos.find(
+        item =>
+          item &&
+          item.flightSegmentInfo &&
+          item.flightSegmentInfo.tripType == TripType.departureTrip
+      );
+      const goFlight = info && info.flightSegmentInfo.flightSegment;
+      if (goFlight) {
+        let goDay = moment(goFlight.ArrivalTime);
         goDay = moment(goDay.format("YYYY-MM-DD"));
         const backDate = day;
         if (+moment(backDate.date) < +goDay) {
@@ -287,7 +298,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       // 如果不是个人，则必须先选择一个客户
       if (
         !this.isStaffTypeSelf() &&
-        this.flightService.getPassengerFlightSegments().length === 0
+        this.flightService.getPassengerBookInfos().length === 0
       ) {
         this.goToSelectPassengerPage();
         return;
@@ -365,38 +376,30 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     if (flightJourneyList.length == 0) {
       return [];
     }
-    let passengerIds = this.getUnSelectFlightSegmentPassengerIds();
-    if (passengerIds.length == 0) {
-      passengerIds = this.flightService
-        .getSelectedPasengers()
-        .map(p => `${p.AccountId}`);
+    let passengers = this.getUnSelectFlightSegmentPassengers();
+    if (passengers.length == 0) {
+      passengers = this.flightService
+        .getPassengerBookInfos()
+        .map(info => info.passenger);
     }
     const hasreselect = this.flightService
-      .getPassengerFlightSegments()
+      .getPassengerBookInfos()
       .find(item => item.isReselect);
     if (hasreselect) {
-      if (!passengerIds.find(id => id == hasreselect.passenger.AccountId)) {
-        passengerIds.push(hasreselect.passenger.AccountId);
+      if (
+        !passengers.find(p => p.AccountId == hasreselect.passenger.AccountId)
+      ) {
+        passengers.push(hasreselect.passenger);
       }
     }
-    const hasNotWhitelist = passengerIds.find(id =>
-      `${id}`.toLowerCase().includes(NOT_WHITE_LIST)
-    );
-    debugger;
-
+    const hasNotWhitelist = passengers.find(p => p.isNotWhiteList);
     if (hasNotWhitelist) {
       let policyflights = [];
-      const ids = passengerIds.filter(
-        id => !`${id}`.toLowerCase().includes(NOT_WHITE_LIST)
-      );
-      if (ids.length > 0) {
+      const ps = passengers.filter(p => !p.isNotWhiteList);
+      if (ps.length > 0) {
         policyflights = await this.flightService.getPolicyflightsAsync(
           flightJourneyList,
-          passengerId
-            ? [passengerId]
-            : passengerIds.filter(
-                id => !`${id}`.toLowerCase().includes(NOT_WHITE_LIST)
-              )
+          passengerId ? [passengerId] : passengers.map(p => p.AccountId)
         );
       }
       const notWhitelistPolicyflights = this.getNotWhitelistCabins(
@@ -407,7 +410,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.policyflights = await this.flightService.getPolicyflightsAsync(
         flightJourneyList,
-        passengerId ? [passengerId] : passengerIds
+        passengerId ? [passengerId] : passengers.map(p => p.AccountId)
       );
     }
     if (this.policyflights.length === 0) {
@@ -455,26 +458,29 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   onSelectPassenger() {
     this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
   }
-  private getUnSelectFlightSegmentPassengerIds() {
+  private getUnSelectFlightSegmentPassengers() {
     return this.flightService
-      .getPassengerFlightSegments()
-      .filter(item => item.selectedInfo.length == 0)
+      .getPassengerBookInfos()
+      .filter(
+        item =>
+          !item.flightSegmentInfo ||
+          !item.flightSegmentInfo.flightSegment ||
+          !item.flightSegmentInfo.flightPolicy
+      )
       .map(item => item.passenger)
       .reduce(
         (arr, item) => {
-          if (!arr.find(i => i == item.AccountId)) {
-            arr.push(item.AccountId);
+          if (!arr.find(i => i.AccountId == item.AccountId)) {
+            arr.push(item);
           }
           return arr;
         },
-        [] as string[]
+        [] as StaffEntity[]
       );
   }
 
   async goToFlightCabinsDetails(fs: FlightSegmentEntity) {
-    const canbookMore = await this.flightService.validateCanBookMoreFlightSegment(
-      fs
-    );
+    const canbookMore = await this.flightService.canBookMoreFlightSegment(fs);
     if (!canbookMore) {
       await AppHelper.alert(
         LanguageHelper.Flight.getCannotBookMoreFlightSegmentTip(),
@@ -484,7 +490,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       await this.showSelectedInfos();
       return;
     }
-    const validate = await this.flightService.validateCanBookReturnTripFlightSegment(
+    const validate = await this.flightService.canBookReturnTripFlightSegment(
       fs
     );
     if (!validate) {
@@ -600,20 +606,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           if (!day) {
             return;
           }
-          if (this.searchFlightModel.tripType == TripType.returnTrip) {
-            const validate = await this.flightService.validateReturnTripDate(
-              day.date
-            );
-            if (!validate) {
-              await AppHelper.toast(
-                LanguageHelper.Flight.getBackDateCannotBeforeGoDateTip(),
-                1000,
-                "middle"
-              );
-              this.moveDayToSearchDate();
-            }
-            return;
-          }
           if (this.searchFlightModel.Date != day.date) {
             this.searchFlightModel.Date = day.date;
             this.moveDayToSearchDate();
@@ -642,6 +634,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.vmFlights = [];
     this.selectDaySubscription.unsubscribe();
     this.filterConditionSubscription.unsubscribe();
+    this.selectPassengerSubscription.unsubscribe();
   }
 
   ngAfterViewInit() {

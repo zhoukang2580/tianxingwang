@@ -121,16 +121,16 @@
       </ng-container>
 
     </ion-item-group>
-    <ng-container *ngIf='vmNewCredential'>
+    <ng-container *ngIf='isShowNewCredential'>
       <ion-item-group >
         <ion-item-divider color='primary'>
           <ion-item slot='start' style='width: 100%' lines='none'>
             <ion-label>
-              <ion-text *ngIf='staffCredentails&&staffCredentails.length>=1'>此人其他证件：</ion-text>
-              <ion-text *ngIf='staffCredentails&&staffCredentails.length==0'>证件：</ion-text>
+              <ion-text *ngIf='!vmNewCredential?.isNotWhiteList'>此人其他证件：</ion-text>
+              <ion-text *ngIf='vmNewCredential?.isNotWhiteList'>证件：</ion-text>
             </ion-label>
-            <ion-radio slot='end' name='credentialType' value="{{vmNewCredentialId}}"
-              [checked]='vmNewCredentialId==selectedCredentialId' (ionSelect)='onSelectCredential(vmNewCredentialId)'>
+            <ion-radio slot='end' name='credentialType' value="{{vmNewCredential?.Id}}"
+              [checked]='vmNewCredential?.Id==selectedCredentialId' (ionSelect)='onSelectCredential(vmNewCredential?.Id)'>
             </ion-radio>
           </ion-item>
         </ion-item-divider>
@@ -170,14 +170,14 @@
             <ion-col>登机姓：</ion-col>
             <ion-col>
               <input type="text" [(ngModel)]='vmNewCredential.CheckFirstName' ValidateName='CheckFirstName'
-                name='CheckFirstName'>
+                name='CheckFirstName' value="{{vmNewCredential.FirstName}}">
             </ion-col>
           </ion-row>
           <ion-row>
             <ion-col>登机名：</ion-col>
             <ion-col>
               <input type="text" [(ngModel)]='vmNewCredential.CheckLastName' ValidateName='CheckLastName'
-                name='CheckLastName'>
+                name='CheckLastName' value="{{vmNewCredential.LastName}}">
             </ion-col>
           </ion-row>
           <ion-row (click)='selectIdentityNationality()'>
@@ -254,11 +254,11 @@
         </ion-grid>
       </ion-item-group>
     </ng-container>
-    <ng-container *ngIf='frequentPassengers&&frequentPassengers.length'>
+    <ng-container *ngIf='frqPassengerCredentials&&frqPassengerCredentials.length'>
       <ion-item-divider color='primary' margin-top>
         <ion-text color='secondary'>常旅客</ion-text>
       </ion-item-divider>
-      <ion-item-group *ngFor='let item of frequentPassengers'>
+      <ion-item-group *ngFor='let item of frqPassengerCredentials'>
         <ion-item-divider color='primary'>
           <ion-item slot='start' style='width: 100%' lines='none'>
             <ion-label>
