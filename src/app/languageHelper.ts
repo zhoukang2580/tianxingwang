@@ -81,6 +81,9 @@ export class LanguageHelper {
     }
   };
   static Flight = {
+    getApproverTip: () => {
+      return "审批人";
+    },
     getCreditPayTip: () => {
       return "信用付";
     },
@@ -167,6 +170,9 @@ export class LanguageHelper {
     },
     getCheckLastNameTip() {
       return "登机姓";
+    },
+    getMobileTip() {
+      return "手机号";
     },
     getIllegalReasonTip() {
       return "超标原因";

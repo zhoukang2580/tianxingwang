@@ -1,3 +1,4 @@
+import { AccountEntity } from "./../../tmc/models/AccountEntity";
 import { OrderBookDto } from "./../../order/models/OrderBookDto";
 import { AddcontactsModalComponent } from "./../components/addcontacts-modal/addcontacts-modal.component";
 import { ActivatedRoute } from "@angular/router";
@@ -196,7 +197,8 @@ export class BookPage implements OnInit, AfterViewInit {
       this.refresh();
     });
   }
-  private initOrderTravelPayTypes() {
+  private async initOrderTravelPayTypes() {
+    this.tmc = this.tmc || (await this.getTmc());
     this.orderTravelPayTypes = [
       {
         label: LanguageHelper.Flight.getCompanyPayTip(),
@@ -214,7 +216,7 @@ export class BookPage implements OnInit, AfterViewInit {
         label: LanguageHelper.Flight.getBalancePayTip(),
         value: OrderTravelPayType.Balance
       }
-    ];
+    ].filter(t => this.checkOrderTravelPayType(t.value));
   }
   ngAfterViewInit() {
     if (this.checkboxes) {
@@ -248,7 +250,6 @@ export class BookPage implements OnInit, AfterViewInit {
   }
   async refresh() {
     try {
-      this.initOrderTravelPayTypes();
       this.errors = "";
       await this.getTmc();
       this.travelForm = await this.tmcService.getTravelFrom().catch(_ => null);
@@ -279,6 +280,7 @@ export class BookPage implements OnInit, AfterViewInit {
       );
       await this.initCombindInfos();
       await this.initTmcOutNumberInfos();
+      this.initOrderTravelPayTypes();
     } catch (err) {
       this.errors = err || "please retry";
       console.error(err);
@@ -407,6 +409,7 @@ export class BookPage implements OnInit, AfterViewInit {
   private async getTmc() {
     this.tmc = await this.tmcService.getTmc();
     console.log("tmc", this.tmc);
+    return this.tmc;
   }
   async searchCostCenter(item: ICombindInfo) {
     const modal = await this.modalCtrl.create({
@@ -567,83 +570,101 @@ export class BookPage implements OnInit, AfterViewInit {
   private fillBookPassengers(bookDto: OrderBookDto) {
     const showErrorMsg = (msg: string, item: ICombindInfo) => {
       AppHelper.alert(
-        `${item.credentialStaff && item.credentialStaff.Name} 【${item.modal
-          .credential && item.modal.credential.Number}】 ${msg} 信息不能为空`
+        `${(item.credentialStaff && item.credentialStaff.Name) ||
+          (item.modal.credential &&
+            item.modal.credential.CheckFirstName +
+              item.modal.credential.CheckLastName)} 【${item.modal.credential &&
+          item.modal.credential.Number}】 ${msg} 信息不能为空`
       );
     };
     bookDto.Passengers = [];
     for (let i = 0; i < this.vmCombindInfos.length; i++) {
-      const item = this.vmCombindInfos[i];
-      const info = item.modal.flightSegmentInfo;
+      const combindInfo = this.vmCombindInfos[i];
+      if (this.isAllowSelectApprove(combindInfo) && !combindInfo.appovalStaff) {
+        showErrorMsg(LanguageHelper.Flight.getApproverTip(), combindInfo);
+        return;
+      }
+      const info = combindInfo.modal.flightSegmentInfo;
       const p = new PassengerDto();
       p.ApprovalId =
-        (item.appovalStaff && item.appovalStaff.AccountId) ||
-        (item.appovalStaff.Account && item.appovalStaff.Account.Id) ||
+        (combindInfo.appovalStaff &&
+          (combindInfo.appovalStaff.AccountId ||
+            (combindInfo.appovalStaff.Account &&
+              combindInfo.appovalStaff.Account.Id))) ||
         "0";
       if (
         !(
-          item.notifyLanguage == "" ||
-          item.notifyLanguage == "cn" ||
-          item.notifyLanguage == "en"
+          combindInfo.notifyLanguage == "" ||
+          combindInfo.notifyLanguage == "cn" ||
+          combindInfo.notifyLanguage == "en"
         )
       ) {
-        showErrorMsg(LanguageHelper.getNotifyLanguageTip(), item);
+        showErrorMsg(LanguageHelper.getNotifyLanguageTip(), combindInfo);
         return false;
       }
-      p.MessageLang = item.notifyLanguage;
+      p.MessageLang = combindInfo.notifyLanguage;
       p.CardName = "";
       p.CardNumber = "";
       p.TicketNum = "";
       p.Credentials = new CredentialsEntity();
-      if (!item.vmCredential.Type) {
-        showErrorMsg(LanguageHelper.getCredentialTypeTip(), item);
+
+      if (!combindInfo.vmCredential.Type) {
+        showErrorMsg(LanguageHelper.getCredentialTypeTip(), combindInfo);
         return false;
       }
-      p.Credentials.Type = item.vmCredential.Type;
-      if (!item.vmCredential.Number) {
-        showErrorMsg(LanguageHelper.getCredentialNumberTip(), item);
+      p.Credentials.Type = combindInfo.vmCredential.Type;
+      if (!combindInfo.vmCredential.Number) {
+        showErrorMsg(LanguageHelper.getCredentialNumberTip(), combindInfo);
         return false;
       }
-      p.Credentials.Number = item.vmCredential.Number;
-      if (!item.vmCredential.CheckLastName) {
-        showErrorMsg(LanguageHelper.Flight.getCheckLastNameTip(), item);
+      p.Credentials.Number = combindInfo.vmCredential.Number;
+      if (!combindInfo.vmCredential.CheckLastName) {
+        showErrorMsg(LanguageHelper.Flight.getCheckLastNameTip(), combindInfo);
         return false;
       }
-      p.Credentials.CheckFirstName = item.vmCredential.CheckLastName;
-      if (!item.vmCredential.CheckFirstName) {
-        showErrorMsg(LanguageHelper.Flight.getCheckFirstNameTip(), item);
+      p.Credentials.CheckFirstName = combindInfo.vmCredential.CheckLastName;
+      if (!combindInfo.vmCredential.CheckFirstName) {
+        showErrorMsg(LanguageHelper.Flight.getCheckFirstNameTip(), combindInfo);
         return false;
       }
-      p.Credentials.CheckFirstName = item.vmCredential.CheckFirstName;
+      p.Credentials.CheckFirstName = combindInfo.vmCredential.CheckFirstName;
       p.IllegalPolicy =
         (info.flightPolicy &&
           info.flightPolicy.Rules &&
           info.flightPolicy.Rules.join(",")) ||
         "";
       p.Mobile =
-        (item.credentialStaffMobiles &&
-          item.credentialStaffMobiles
+        (combindInfo.credentialStaffMobiles &&
+          combindInfo.credentialStaffMobiles
             .filter(m => m.checked)
             .map(m => m.mobile)
             .join(",")) ||
         "";
-      if (item.credentialStaffOtherMobile) {
-        p.Mobile = `${item.credentialStaffOtherMobile},${p.Mobile}`;
+      if (combindInfo.credentialStaffOtherMobile) {
+        p.Mobile = `${
+          p.Mobile
+            ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
+            : combindInfo.credentialStaffOtherMobile
+        }`;
       }
       p.Email =
-        (item.credentialStaffEmails &&
-          item.credentialStaffEmails
+        (combindInfo.credentialStaffEmails &&
+          combindInfo.credentialStaffEmails
             .filter(e => e.checked)
             .map(m => m.email)
             .join(",")) ||
         "";
-      if (item.credentialStaffOtherEmail) {
-        p.Email = `${item.credentialStaffOtherEmail},${p.Mobile}`;
+      if (combindInfo.credentialStaffOtherEmail) {
+        p.Email = `${
+          p.Email
+            ? p.Email + "," + combindInfo.credentialStaffOtherEmail
+            : combindInfo.credentialStaffOtherEmail
+        }`;
       }
-      if (item.insuranceResultProducts) {
+      if (combindInfo.insuranceResultProducts) {
         p.InsuranceProducts = [];
-        for (let j = 0; j < item.insuranceResultProducts.length; j++) {
-          const it = item.insuranceResultProducts[j];
+        for (let j = 0; j < combindInfo.insuranceResultProducts.length; j++) {
+          const it = combindInfo.insuranceResultProducts[j];
           if (it.checked) {
             if (it.insuranceResult) {
               p.InsuranceProducts.push(it.insuranceResult);
@@ -652,46 +673,65 @@ export class BookPage implements OnInit, AfterViewInit {
         }
       }
       p.IllegalReason =
-        (this.tmc && this.tmc.IsAllowCustomReason && item.otherIllegalReason) ||
-        item.illegalReason ||
+        (this.tmc &&
+          this.tmc.IsAllowCustomReason &&
+          combindInfo.otherIllegalReason) ||
+        combindInfo.illegalReason ||
         "";
-      if (!p.IllegalReason) {
-        showErrorMsg(LanguageHelper.Flight.getIllegalReasonTip(), item);
+      if (!combindInfo.modal.isNotWhitelist) {
+        // 只有白名单的才需要考虑差标
+        if (!p.IllegalReason) {
+          showErrorMsg(
+            LanguageHelper.Flight.getIllegalReasonTip(),
+            combindInfo
+          );
+          return false;
+        }
+      }
+      if (!p.Mobile) {
+        showErrorMsg(LanguageHelper.Flight.getMobileTip(), combindInfo);
         return false;
       }
       p.CostCenterCode =
-        item.otherCostCenterCode ||
-        (item.costCenter && item.costCenter.code) ||
+        combindInfo.otherCostCenterCode ||
+        (combindInfo.costCenter && combindInfo.costCenter.code) ||
         "";
       p.CostCenterName =
-        item.otherCostCenterName ||
-        (item.costCenter && item.costCenter.name) ||
+        combindInfo.otherCostCenterName ||
+        (combindInfo.costCenter && combindInfo.costCenter.name) ||
         "";
       p.OrganizationName =
-        item.otherOrganizationName ||
-        (item.organization && item.organization.Name);
-      p.OrganizationCode = item.otherOrganizationName
+        combindInfo.otherOrganizationName ||
+        (combindInfo.organization && combindInfo.organization.Name);
+      p.OrganizationCode = combindInfo.otherOrganizationName
         ? ""
-        : (item.organization && item.organization.Code) || "";
-      if (item.tmcOutNumberInfos) {
+        : (combindInfo.organization && combindInfo.organization.Code) || "";
+      if (combindInfo.tmcOutNumberInfos) {
         p.OutNumbers = {};
-        item.tmcOutNumberInfos.forEach(it => {
+        combindInfo.tmcOutNumberInfos.forEach(it => {
           p.OutNumbers[it.key] = it.value;
         });
       }
-      if (!item.travelType) {
-        showErrorMsg(LanguageHelper.Flight.getTravelTypeTip(), item);
+      if (!combindInfo.travelType) {
+        showErrorMsg(LanguageHelper.Flight.getTravelTypeTip(), combindInfo);
         return false;
       }
-      if (!item.orderTravelPayType) {
-        showErrorMsg(LanguageHelper.Flight.getrOderTravelPayTypeTip(), item);
+      if (!combindInfo.orderTravelPayType) {
+        showErrorMsg(
+          LanguageHelper.Flight.getrOderTravelPayTypeTip(),
+          combindInfo
+        );
         return false;
       }
       p.Credentials.Account =
-        item.credentialStaff && item.credentialStaff.Account;
-      p.TravelType = item.travelType;
-      p.TravelPayType = item.orderTravelPayType;
-      p.IsSkipApprove = item.isSkipApprove;
+        combindInfo.credentialStaff && combindInfo.credentialStaff.Account;
+      p.Credentials.Account =
+        p.Credentials.Account || combindInfo.modal.credential.Account;
+      p.TravelType = combindInfo.travelType;
+      p.TravelPayType = combindInfo.orderTravelPayType;
+      p.IsSkipApprove = combindInfo.isSkipApprove;
+      p.FlightSegment = combindInfo.modal.flightSegmentInfo.flightSegment;
+      p.FlightCabin=combindInfo.modal.flightSegmentInfo.flightPolicy.Cabin;
       bookDto.Passengers.push(p);
     }
     return true;
@@ -711,6 +751,11 @@ export class BookPage implements OnInit, AfterViewInit {
     if (result && result.data) {
       const res = result.data as { Text: string; Value: string };
       const [name, emmail, mobile] = res.Text.split("|");
+      item.appovalStaff =
+        item.appovalStaff ||
+        ({
+          Account: new AccountEntity()
+        } as any);
       item.appovalStaff.AccountId = item.appovalStaff.Account.Id = res.Value;
       item.appovalStaff.Email = item.appovalStaff.Account.Email = emmail;
       item.appovalStaff.Mobile = item.appovalStaff.Account.Mobile = mobile;

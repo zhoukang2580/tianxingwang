@@ -324,13 +324,18 @@ export class FlightService {
   }
   addPassengerBookInfo(arg: PassengerBookInfo): Promise<string> {
     console.log("addPassengerFlightSegments", arg);
-    if (!arg || !arg.passenger) {
+    if (!arg || !arg.passenger || !arg.credential) {
       AppHelper.alert(LanguageHelper.Flight.getSelectedFlightInvalideTip());
       return;
     }
     const infos = this.getPassengerBookInfos();
     arg.id = AppHelper.uuid();
+    if (!arg.credential.Account || arg.isNotWhitelist) {
+      arg.credential.Account = arg.passenger.Account;
+    }
+    arg.isNotWhitelist = arg.passenger.isNotWhiteList;
     infos.push(arg);
+    console.log("addPassengerFlightSegments added", arg);
     this.setPassengerBookInfos(infos);
   }
 
@@ -401,7 +406,7 @@ export class FlightService {
       return item;
     });
     this.passengerBookInfos = arr;
-    this.setPassengerBookInfos(this.getPassengerBookInfos());
+    this.setPassengerBookInfos(this.passengerBookInfos);
     this.apiService.showLoadingView();
     await this.dismissAllTopOverlays();
     this.apiService.hideLoadingView();
@@ -525,17 +530,32 @@ export class FlightService {
     });
     this.setPassengerBookInfos(arr);
   }
-  private reselecteInfo(bookInfos: PassengerBookInfo[], flightCabin: FlightCabinEntity) {
+  private reselecteInfo(
+    bookInfos: PassengerBookInfo[],
+    flightCabin: FlightCabinEntity
+  ) {
     const one = bookInfos.find(item => item.isReselect);
+    debugger;
     if (one) {
-      const oldBookInfo = bookInfos.find(item => !!item.flightSegmentInfo.reselectId);
-      const onePolicies = this.currentViewtFlightSegment.totalPolicyFlights.find(item => item.PassengerKey == one.passenger.AccountId ||
-        one.passenger.isNotWhiteList);
-      const cabin = onePolicies &&
-        onePolicies.FlightPolicies.find(c => c.FlightNo == this.currentViewtFlightSegment.flightSegment.Number &&
-          c.CabinCode == flightCabin.Code);
+      const oldBookInfo = bookInfos.find(
+        item => !!item.flightSegmentInfo.reselectId
+      );
+      const onePolicies = this.currentViewtFlightSegment.totalPolicyFlights.find(
+        item =>
+          item.PassengerKey == one.passenger.AccountId ||
+          one.passenger.isNotWhiteList
+      );
+      const cabin =
+        onePolicies &&
+        onePolicies.FlightPolicies.find(
+          c =>
+            c.FlightNo == this.currentViewtFlightSegment.flightSegment.Number &&
+            c.CabinCode == flightCabin.Code
+        );
       if (cabin) {
-        cabin.Cabin = this.currentViewtFlightSegment.flightSegment.Cabins.find(c => c.Code == cabin.CabinCode);
+        cabin.Cabin = this.currentViewtFlightSegment.flightSegment.Cabins.find(
+          c => c.Code == cabin.CabinCode
+        );
         if (oldBookInfo) {
           const flightSegmentInfo: PassengerFlightSegmentInfo = {
             id: AppHelper.uuid(),
