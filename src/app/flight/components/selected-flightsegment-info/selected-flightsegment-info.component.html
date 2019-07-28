@@ -9,36 +9,37 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-item-group *ngFor='let info of selectedInfos$|async'>
-    <ion-item-divider color='primary' sticky >
+  <ion-item-group *ngFor='let info of passengerAndBookInfos$|async'>
+    <ion-item-divider color='primary' sticky>
       <ion-label color='dark'>{{info?.passenger?.Name}}{{info?.credential?.Number}}</ion-label>
     </ion-item-divider>
-    <ion-item *ngFor='let s of info?.bookInfos'>
+    <ion-item *ngFor='let bookInfo of info?.bookInfos'>
       <div class='detail'>
         <div class='date'>
-          <strong>{{getDate(s?.flightSegment)}} <ion-text color='secondary'>{{getTripTip(s)}}</ion-text></strong>
-          <ion-button fill='clear' size='small' (click)='remove(s)'>
+          <strong>{{getDate(bookInfo?.flightSegmentInfo?.flightSegment)}} <ion-text color='secondary'>{{getTripTypeTip(bookInfo?.flightSegmentInfo)}}</ion-text></strong>
+          <ion-button fill='clear' size='small' (click)='remove(bookInfo)'>
             <ion-icon name="trash" color='danger' mode='ios'>
             </ion-icon>
           </ion-button>
         </div>
-        <app-fly-list-item [flightSegment]='s.flightSegment' [showDetails]='true' [flightPolicy]='s.flightPolicy'></app-fly-list-item>
+        <app-fly-list-item [flightSegment]='bookInfo?.flightSegmentInfo?.flightSegment' [showDetails]='true' [flightPolicy]='bookInfo?.flightSegmentInfo?.flightPolicy'>
+        </app-fly-list-item>
         <div class='info'>
-          <ion-label text-wrap>税:￥{{s.flightSegment?.Tax}}</ion-label>
-          <ion-label color='danger'>￥{{s.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
+          <ion-label text-wrap>税:￥{{bookInfo?.flightSegmentInfo?.flightSegment?.Tax}}</ion-label>
+          <ion-label color='danger'>￥{{bookInfo?.flightSegmentInfo?.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
         </div>
         <ion-label class='rules' color='danger' text-wrap>
-          {{s.flightPolicy?.Rules?.join("; ")}}
+          {{bookInfo?.flightSegmentInfo?.flightPolicy?.RulebookInfo?.flightSegmentInfo?.join("; ")}}
         </ion-label>
-        <ion-label class='rules' text-wrap color='dark' (click)='onSelectLowestSegment(info,s)'
-          *ngIf='showLowerSegment(info,s)'>
-          当前航班前后60分钟内有更低价航班:{{s.flightPolicy?.LowerSegment?.Number}}&nbsp;
-          {{getTime(s.flightPolicy?.LowerSegment?.TakeoffTime)}},价格:￥{{s.flightPolicy?.LowerSegment?.LowestFare}}
+        <ion-label class='rules' text-wrap color='dark' (click)='onSelectLowestSegment(bookInfo)'
+          *ngIf='showLowerSegment(bookInfo)'>
+          当前航班前后60分钟内有更低价航班:{{bookInfo?.flightSegmentInfo?.flightPolicy?.LowerSegment?.Number}}&nbsp;
+          {{getTime(bookInfo?.flightSegmentInfo?.flightPolicy?.LowerSegment?.TakeoffTime)}},价格:￥{{bookInfo?.flightSegmentInfo?.flightPolicy?.LowerSegment?.LowestFare}}
           <ion-button color='secondary' fill='clear'>选择该航班</ion-button>
-          <!-- <ion-label text-wrap>{{s.flightPolicy?.LowerSegment|json}}</ion-label> -->
+          <!-- <ion-label text-wrap>{{bookInfo?.flightSegmentInfo?.flightPolicy?.LowerSegment|json}}</ion-label> -->
         </ion-label>
         <div class='reset'>
-          <ion-button expand='block' color='secondary' size='small' (click)='reelect(info.passenger,s)'>重选
+          <ion-button expand='block' color='secondary' size='small' (click)='reelect(bookInfo)'>重选
           </ion-button>
         </div>
       </div>

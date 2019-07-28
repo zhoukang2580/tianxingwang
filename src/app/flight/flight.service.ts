@@ -28,7 +28,7 @@ export interface PassengerFlightSegmentInfo {
   tripType?: TripType;
   id?: string;
   reselectId?: string;
-  hasLowerSegment?: boolean;
+  isLowerSegmentSelected?: boolean;
 }
 export enum TripType {
   departureTrip = "departureTrip",
@@ -167,7 +167,6 @@ export class FlightService {
     this.setSelectedCity(null);
     this.currentViewtFlightSegment = null;
   }
-
 
   getCurrentViewtFlightSegment() {
     return this.currentViewtFlightSegment;
@@ -330,23 +329,19 @@ export class FlightService {
       return;
     }
     const infos = this.getPassengerBookInfos();
+    arg.id = AppHelper.uuid();
     infos.push(arg);
     this.setPassengerBookInfos(infos);
   }
 
-  private async reselectSelfBookTypeSegment(
-    passenger: StaffEntity,
-    arg: PassengerFlightSegmentInfo
-  ) {
+  private async reselectSelfBookTypeSegment(arg: PassengerBookInfo) {
     const s = this.getSearchFlightModel();
-    if (arg.tripType == TripType.returnTrip) {
+    if (arg.flightSegmentInfo.tripType == TripType.returnTrip) {
       // 重选回程
       const exists = this.getPassengerBookInfos();
       const citites = await this.getAllLocalAirports();
       const goInfo = exists.find(
-        item =>
-          item.flightSegmentInfo.tripType == TripType.departureTrip &&
-          item.passenger.AccountId == passenger.AccountId
+        item => item.flightSegmentInfo.tripType == TripType.departureTrip
       );
       const goFlight = goInfo && goInfo.flightSegmentInfo.flightSegment;
       if (goFlight) {
@@ -366,14 +361,9 @@ export class FlightService {
         s.tripType = TripType.returnTrip;
       }
       const arr = this.getPassengerBookInfos().map(item => {
-        item.isReselect = false;
-        if (item.passenger.AccountId == passenger.AccountId) {
-          item.isReselect = true;
-          item.flightSegmentInfo.reselectId =
-            item.flightSegmentInfo.id == arg.id
-              ? item.flightSegmentInfo.id
-              : null;
-        }
+        item.isReselect = item.id == arg.id;
+        item.flightSegmentInfo.reselectId =
+          item.id == arg.id ? item.flightSegmentInfo.id : null;
         return item;
       });
       this.passengerBookInfos = arr;
@@ -401,21 +391,13 @@ export class FlightService {
         });
     }
   }
-  private async reselectNotSelfBookTypeSegments(
-    passenger: StaffEntity,
-    arg: PassengerFlightSegmentInfo
-  ) {
+  private async reselectNotSelfBookTypeSegments(arg: PassengerBookInfo) {
     const s = this.getSearchFlightModel();
     s.tripType = TripType.departureTrip;
     const arr = this.getPassengerBookInfos().map(item => {
-      item.isReselect = false;
-      if (item.passenger.AccountId == passenger.AccountId) {
-        item.isReselect = true;
-        item.flightSegmentInfo.reselectId =
-          item.flightSegmentInfo.id == arg.id
-            ? item.flightSegmentInfo.id
-            : null;
-      }
+      item.isReselect = item.id == arg.id;
+      item.flightSegmentInfo.reselectId =
+        item.id == arg.id ? item.flightSegmentInfo.id : null;
       return item;
     });
     this.passengerBookInfos = arr;
@@ -427,19 +409,17 @@ export class FlightService {
       this.setSearchFlightModel(s);
     });
   }
-  async reselectPassengerFlightSegments(
-    passenger: StaffEntity,
-    arg: PassengerFlightSegmentInfo
-  ) {
-    console.log(
-      "this.router.routerState.snapshot.url=",
-      this.router.routerState.snapshot.url
-    );
-    if (await this.staffService.isStaffTypeSelf()) {
-      await this.reselectSelfBookTypeSegment(passenger, arg);
-    } else {
-      await this.reselectNotSelfBookTypeSegments(passenger, arg);
+  async reselectPassengerFlightSegments(arg: PassengerBookInfo) {
+    console.log("reselectPassengerFlightSegments", arg);
+    if (!arg || !arg.flightSegmentInfo) {
+      return false;
     }
+    if (await this.staffService.isStaffTypeSelf()) {
+      await this.reselectSelfBookTypeSegment(arg);
+    } else {
+      await this.reselectNotSelfBookTypeSegments(arg);
+    }
+    console.log("getPassengerBookInfos", this.getPassengerBookInfos());
   }
   async addOrReselecteInfos(flightCabin: FlightCabinEntity) {
     const bookInfos = this.getPassengerBookInfos();
@@ -461,10 +441,7 @@ export class FlightService {
       );
       if (infos.length) {
         // 已经选择了来回程，但不是重选
-        if (
-          infos.length == 2 &&
-          !infos.find(item => !!item.isReselect)
-        ) {
+        if (infos.length == 2 && !infos.find(item => !!item.isReselect)) {
           const go = infos.find(
             item => item.flightSegmentInfo.tripType == TripType.departureTrip
           );
@@ -494,7 +471,6 @@ export class FlightService {
     }
     unselectSegments = [...unselectSegments, ...selfUnselects];
     for (let i = 0; i < unselectSegments.length; i++) {
-      debugger;
       const p = unselectSegments[i];
       const passengerPolicies = this.currentViewtFlightSegment.totalPolicyFlights.find(
         itm =>
@@ -539,49 +515,50 @@ export class FlightService {
         }
       }
     }
-    const one = bookInfos.find(item => item.isReselect);
-    if (one) {
-      const oldBookInfo = bookInfos.find(
-        item => !!item.flightSegmentInfo.reselectId
-      );
-      const old = oldBookInfo && oldBookInfo.flightSegmentInfo;
-      const onePolicies = this.currentViewtFlightSegment.totalPolicyFlights.find(
-        item =>
-          item.PassengerKey == one.passenger.AccountId ||
-          one.passenger.isNotWhiteList
-      );
-      const cabin =
-        onePolicies &&
-        onePolicies.FlightPolicies.find(
-          c =>
-            c.FlightNo == this.currentViewtFlightSegment.flightSegment.Number &&
-            c.CabinCode == flightCabin.Code
-        );
-      if (cabin) {
-        cabin.Cabin = this.currentViewtFlightSegment.flightSegment.Cabins.find(
-          c => c.Code == cabin.CabinCode
-        );
-        const newOne: PassengerFlightSegmentInfo = {
-          id: AppHelper.uuid(),
-          tripType: this.getSearchFlightModel().IsRoundTrip
-            ? this.getSearchFlightModel().tripType
-            : TripType.departureTrip,
-          flightSegment: this.currentViewtFlightSegment.flightSegment,
-          flightPolicy: cabin,
-          reselectId: null
-        };
-        this.replacePassengerFlightSelectedInfo(one.passenger, old, newOne);
-      }
-    }
+    this.reselecteInfo(bookInfos, flightCabin);
     const arr = bookInfos.map(item => {
       item.isReselect = false;
-      if(item.flightSegmentInfo){
+      if (item.flightSegmentInfo) {
         item.flightSegmentInfo.reselectId = null;
       }
       return item;
     });
     this.setPassengerBookInfos(arr);
   }
+  private reselecteInfo(bookInfos: PassengerBookInfo[], flightCabin: FlightCabinEntity) {
+    const one = bookInfos.find(item => item.isReselect);
+    if (one) {
+      const oldBookInfo = bookInfos.find(item => !!item.flightSegmentInfo.reselectId);
+      const onePolicies = this.currentViewtFlightSegment.totalPolicyFlights.find(item => item.PassengerKey == one.passenger.AccountId ||
+        one.passenger.isNotWhiteList);
+      const cabin = onePolicies &&
+        onePolicies.FlightPolicies.find(c => c.FlightNo == this.currentViewtFlightSegment.flightSegment.Number &&
+          c.CabinCode == flightCabin.Code);
+      if (cabin) {
+        cabin.Cabin = this.currentViewtFlightSegment.flightSegment.Cabins.find(c => c.Code == cabin.CabinCode);
+        if (oldBookInfo) {
+          const flightSegmentInfo: PassengerFlightSegmentInfo = {
+            id: AppHelper.uuid(),
+            tripType: this.getSearchFlightModel().IsRoundTrip
+              ? this.getSearchFlightModel().tripType
+              : TripType.departureTrip,
+            flightSegment: this.currentViewtFlightSegment.flightSegment,
+            flightPolicy: cabin,
+            reselectId: null
+          };
+          const newInfo: PassengerBookInfo = {
+            id: AppHelper.uuid(),
+            passenger: oldBookInfo.passenger,
+            credential: oldBookInfo.credential,
+            isNotWhitelist: oldBookInfo.isNotWhitelist,
+            flightSegmentInfo
+          };
+          this.replacePassengerBookInfo(oldBookInfo, newInfo);
+        }
+      }
+    }
+  }
+
   private async dismissAllTopOverlays() {
     console.time("dismissAllTopOverlays");
     let top = await this.modalCtrl.getTop();
@@ -598,20 +575,14 @@ export class FlightService {
     this.passengerBookInfos = [];
     this.setPassengerBookInfos(this.getPassengerBookInfos());
   }
-  replacePassengerFlightSelectedInfo(
-    passenger: StaffEntity,
-    old: PassengerFlightSegmentInfo,
-    newInfo: PassengerFlightSegmentInfo
-  ) {
-    if (!old || !newInfo || !passenger) {
+  replacePassengerBookInfo(old: PassengerBookInfo, newInfo: PassengerBookInfo) {
+    if (!old || !newInfo) {
       return;
     }
     let arr = this.getPassengerBookInfos();
     arr = arr.map(item => {
-      if (item.passenger.AccountId == passenger.AccountId) {
-        if (item.flightSegmentInfo.id == old.id) {
-          item.flightSegmentInfo = newInfo;
-        }
+      if (item.id == old.id) {
+        item = newInfo;
       }
       return item;
     });
@@ -624,9 +595,9 @@ export class FlightService {
     this.passengerBookInfos = arr;
     this.setPassengerBookInfos(arr);
   }
-  removePassengerBookInfos(args: PassengerBookInfo[]) {
+  removePassengerBookInfo(arg: PassengerBookInfo) {
     this.passengerBookInfos = this.getPassengerBookInfos().filter(
-      item => !args.some(i => i.id == item.id)
+      item => item.id != arg.id
     );
     this.setPassengerBookInfos(this.passengerBookInfos);
   }

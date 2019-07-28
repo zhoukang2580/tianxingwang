@@ -338,6 +338,11 @@ export class SelectPassengerPage
       this.vmNewCredential &&
       selectedCredential.Id == this.vmNewCredential.Id
     ) {
+      selectedCredential.CheckFirstName =
+        selectedCredential.CheckFirstName ||
+        this.vmNewCredential.FirstName;
+      selectedCredential.CheckLastName =
+        selectedCredential.CheckLastName || this.vmNewCredential.LastName;
       const validate = await this.validateCredential(
         selectedCredential,
         this.addForm && this.addForm.last && this.addForm.last["el"]

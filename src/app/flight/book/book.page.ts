@@ -476,10 +476,16 @@ export class BookPage implements OnInit, AfterViewInit {
     return `${t && t.format("MM月DD日")} ${d && d.dayOfWeekName} `;
   }
   getDate(s: FlightSegmentEntity) {
+    if (!s) {
+      return "";
+    }
     const day = this.flydayService.generateDayModel(moment(s.TakeoffTime));
     return `${day.date} ${day.dayOfWeekName}`;
   }
   getTripTip(info: PassengerFlightSegmentInfo) {
+    if (!info) {
+      return "";
+    }
     return `[${
       info.tripType == TripType.departureTrip
         ? LanguageHelper.getDepartureTip()

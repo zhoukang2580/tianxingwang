@@ -21,7 +21,7 @@ export class SelectedPassengersComponent implements OnInit {
   }
   async remove(info: PassengerBookInfo) {
     if (info) {
-      this.flightService.removePassengerBookInfos([info]);
+      this.flightService.removePassengerBookInfo(info);
     }
   }
   ngOnInit() {}

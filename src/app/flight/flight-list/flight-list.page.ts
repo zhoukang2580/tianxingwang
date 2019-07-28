@@ -395,14 +395,18 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     const hasNotWhitelist = passengers.find(p => p.isNotWhiteList);
     if (hasNotWhitelist) {
       let policyflights = [];
+      // 白名单的乘客
       const ps = passengers.filter(p => !p.isNotWhiteList);
       if (ps.length > 0) {
         policyflights = await this.flightService.getPolicyflightsAsync(
           flightJourneyList,
-          passengerId ? [passengerId] : passengers.map(p => p.AccountId)
+          passengerId ? [passengerId] : ps.map(p => p.AccountId)
         );
       }
+      // 非白名单可以预订所有的仓位
+
       const notWhitelistPolicyflights = this.getNotWhitelistCabins(
+        hasNotWhitelist.AccountId,
         flightJourneyList
       );
       this.policyflights = policyflights.concat(notWhitelistPolicyflights);
@@ -427,6 +431,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     return (this.flightJourneyList = flightJourneyList);
   }
   private getNotWhitelistCabins(
+    passengerKey: string,
     flightJ: FlightJourneyEntity[]
   ): {
     PassengerKey: string;
@@ -451,7 +456,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       });
     });
     return {
-      PassengerKey: "0",
+      PassengerKey: passengerKey,// 非白名单的账号id 统一为一个，tmc的accountid
       FlightPolicies
     };
   }

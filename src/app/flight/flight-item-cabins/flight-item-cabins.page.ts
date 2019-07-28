@@ -1,7 +1,11 @@
 import { FlightCabinEntity } from "./../models/flight/FlightCabinEntity";
 import { MemberCredential } from "./../../member/member.service";
 import { IdentityService } from "./../../services/identity/identity.service";
-import { StaffService, StaffEntity, StaffBookType } from "../../hr/staff.service";
+import {
+  StaffService,
+  StaffEntity,
+  StaffBookType
+} from "../../hr/staff.service";
 import { DayModel } from "../../tmc/models/DayModel";
 import { FlydayService } from "./../flyday.service";
 import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
@@ -9,7 +13,8 @@ import { ActivatedRoute, Router } from "@angular/router";
 import {
   FlightService,
   FlightPolicy,
-  CurrentViewtFlightSegment
+  CurrentViewtFlightSegment,
+  PassengerBookInfo
 } from "src/app/flight/flight.service";
 import { Component, OnInit } from "@angular/core";
 import {
@@ -88,6 +93,7 @@ export class FlightItemCabinsPage implements OnInit {
     await popover.present();
     const d = await popover.onDidDismiss();
     if (d && d.data) {
+      // console.log("filterPolicyFlights", d.data);
       const one = this.currentViewtFlightSegment.totalPolicyFlights.find(
         item => item.PassengerKey == d.data
       );
