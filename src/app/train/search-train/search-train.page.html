@@ -1,0 +1,82 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>火车票查询</ion-title>
+    <ion-buttons slot='end' *ngIf='mustAddPassenger()'>
+      <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()'>添加乘客<ion-badge
+          color='danger'>
+          <ion-text color='light'>{{selectedPassengers}}</ion-text>
+        </ion-badge>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-card padding>
+    <ion-card-content>
+      <ion-segment (ionChange)="segmentChanged($event)" value="single" color='secondary' *ngIf='showReturnTrip'
+        [disabled]='disabled'>
+        <ion-segment-button value="single">
+          <ion-label><strong>单程</strong></ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="roundtrip">
+          <ion-label><strong>往返</strong></ion-label>
+        </ion-segment-button>
+      </ion-segment>
+      <app-switch-station-comp [vmFromCity]="vmFromCity" (eToCity)='onToCitySelected($event)'
+        (eFromCity)='onFromCitySelected($event)' [vmToCity]="vmToCity" [disabled]='disabled'>
+      </app-switch-station-comp>
+      <!-- <section class="flight-date">
+        <app-search-day-comp [day]='flyDate' (click)="onSelecFlyDate(true,false)" [disabled]='disabled'>
+        </app-search-day-comp>
+        <div *ngIf="!isSingle">{{ totalFlyDays }}天</div>
+        <app-search-day-comp *ngIf="!isSingle" [day]='backDate' (click)="onSelecFlyDate(false,true)">
+        </app-search-day-comp>
+      </section> -->
+      <ion-button style='width: 100%' (click)="searchFlight()"
+        [disabled]='!vmFromCity||!vmToCity||mustAddPassenger() && selectedPassengers==0' color="secondary"
+        expand="block">
+        <ion-text *ngIf='!(mustAddPassenger() && selectedPassengers==0)'>查询航班</ion-text>
+        <ion-text *ngIf='mustAddPassenger() && selectedPassengers==0'>请添加乘客</ion-text>
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+  <!-- <ion-card>
+    <ion-card-content>
+      <div class="tabs">
+        <ion-button fill="clear"    color='secondary' text-center>
+          <ion-label text-center>
+            <ion-icon name="airplane" size="large"></ion-icon>
+            <h6>航班动态</h6>
+          </ion-label>
+        </ion-button>
+        <ion-button fill="clear"  color='secondary' text-center>
+          <ion-label text-center>
+            <ion-icon name="airplane" size="large"></ion-icon>
+            <h6>航班动态</h6>
+          </ion-label>
+        </ion-button>
+        <ion-button fill="clear"  color='secondary' text-center>
+          <ion-label text-center>
+            <ion-icon name="airplane" size="large"></ion-icon>
+            <h6>航班动态</h6>
+          </ion-label>
+        </ion-button>
+        <ion-button fill="clear"  color='secondary' text-center>
+          <ion-label text-center>
+            <ion-icon name="airplane" size="large"></ion-icon>
+            <h6>航班动态</h6>
+          </ion-label>
+        </ion-button>
+        <ion-button fill="clear"  color='secondary' text-center>
+          <ion-label text-center>
+            <ion-icon name="airplane" size="large"></ion-icon>
+            <h6>航班动态</h6>
+          </ion-label>
+        </ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card> -->
+</ion-content>

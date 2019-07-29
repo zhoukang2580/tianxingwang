@@ -1,4 +1,5 @@
-import { FlightService } from "src/app/flight/flight.service";
+import { TrainService } from "../../train.service";
+
 import {
   EventEmitter,
   Output,
@@ -8,7 +9,7 @@ import {
   OnChanges,
   ElementRef
 } from "@angular/core";
-import { Platform, IonText } from "@ionic/angular";
+import { Platform, IonText, ModalController } from "@ionic/angular";
 import { Component, OnInit, Input, Renderer2 } from "@angular/core";
 import {
   trigger,
@@ -18,18 +19,18 @@ import {
   animate
 } from "@angular/animations";
 import { Subscription } from "rxjs";
-import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
-
+import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
+import { SelectTrainStationComponent } from "../select-station/select-station.component";
 @Component({
-  selector: "app-switch-city-comp",
-  templateUrl: "./switch-city.component.html",
-  styleUrls: ["./switch-city.component.scss"],
+  selector: "app-switch-station-comp",
+  templateUrl: "./switch-station.component.html",
+  styleUrls: ["./switch-station.component.scss"],
   animations: [
     trigger("rotateIcon", [
       state(
         "*",
         style({
-          transform: "rotateZ(45deg) scale(1)",
+          transform: "rotateZ(0) scale(1)",
           opacity: 1
         })
       ),
@@ -46,16 +47,15 @@ import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
     ])
   ]
 })
-export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
+export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
   @ViewChild("fromCityEle") fromCityEle: IonText;
   @ViewChild("toCityEle") toCityEle: IonText;
-  @ViewChild("flightcitieEle") flightcitieEle: ElementRef<HTMLElement>;
+  @ViewChild("flightcities") flightcitieEle: ElementRef<HTMLElement>;
   toggleCities = false; // 没有切换城市顺序
   rotateIcon = false;
   @Input() disabled = false; // 界面上显示的出发城市
   @Input() vmFromCity: TrafficlineEntity; // 界面上显示的出发城市
   @Input() vmToCity: TrafficlineEntity; // 界面上显示的目的城市
-  isSelectFromCity: boolean;
   isMoving: boolean;
   selectCitySubscription = Subscription.EMPTY;
   mode: string;
@@ -63,8 +63,9 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
   @Output() eToCity: EventEmitter<TrafficlineEntity>;
   constructor(
     plt: Platform,
-    private flightService: FlightService,
-    private render: Renderer2
+    private render: Renderer2,
+    private trainService: TrainService,
+    private modalCtrl: ModalController
   ) {
     this.mode = plt.is("ios") ? "ios" : plt.is("android") ? "md" : "";
     this.eFromCity = new EventEmitter();
@@ -132,14 +133,14 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
     console.log("changes.toCity", changes.vmToCity);
   }
   ngOnInit() {
-    this.selectCitySubscription = this.flightService
-      .getSelectedCity()
+    this.selectCitySubscription = this.trainService
+      .getSelectedStationSource()
       .subscribe(c => {
         if (c) {
-          if (this.isSelectFromCity) {
-            this.vmFromCity = c;
+          if (c.isSelectFrom) {
+            this.vmFromCity = c.fromStation;
           } else {
-            this.vmToCity = c;
+            this.vmToCity = c.toStation;
           }
           if (this.vmFromCity) {
             this.eFromCity.emit(
@@ -154,13 +155,26 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
         }
       });
   }
-  onSelectCity(fromCity: boolean) {
+  async onSelectCity(fromCity: boolean) {
     // console.log(this.isMoving);
     if (this.isMoving) {
       // 如果切换城市的动画还在进行
       return;
     }
-    this.flightService.setOpenCloseSelectCityPageSources(true);
-    this.isSelectFromCity = fromCity;
+    const m = await this.modalCtrl.create({
+      component: SelectTrainStationComponent
+    });
+    m.backdropDismiss = false;
+    m.present();
+    const result = await m.onDidDismiss();
+    if (result && result.data) {
+      const data = result.data as TrafficlineEntity;
+      this.trainService.setSelectedStation({
+        isSelectFrom: fromCity,
+        isSelectTo: !fromCity,
+        fromStation: fromCity ? data : null,
+        toStation: !fromCity ? data : null
+      });
+    }
   }
 }

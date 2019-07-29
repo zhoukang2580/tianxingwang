@@ -1,4 +1,4 @@
-import { FlightService, TripType } from "src/app/flight/flight.service";
+import { FlightService } from "src/app/flight/flight.service";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Subscription } from "rxjs";
 import * as moment from "moment";
@@ -14,6 +14,7 @@ import {
   animate,
   transition
 } from "@angular/animations";
+import { TripType } from 'src/app/tmc/models/TripType';
 @Component({
   selector: "app-select-fly-date-comp",
   templateUrl: "./select-fly-date.component.html",

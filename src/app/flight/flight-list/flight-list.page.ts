@@ -4,7 +4,6 @@ import { FlyFilterComponent } from "./../components/fly-filter/fly-filter.compon
 import {
   FlightPolicy,
   SearchFlightModel,
-  TripType,
   PassengerPolicyFlights
 } from "./../flight.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
@@ -46,7 +45,7 @@ import { tap, takeUntil, switchMap, delay, map, filter } from "rxjs/operators";
 import * as moment from "moment";
 import { FlydayService } from "../flyday.service";
 import { DayModel } from "../../tmc/models/DayModel";
-import { FlightService, Trafficline } from "../flight.service";
+import { FlightService } from "../flight.service";
 import { FlightSegmentEntity } from "../models/flight/FlightSegmentEntity";
 import { FlightJourneyEntity } from "../models/flight/FlightJourneyEntity";
 import { FlightCabinType } from "../models/flight/FlightCabinType";
@@ -57,6 +56,8 @@ import { Storage } from "@ionic/storage";
 import { SelectedFlightsegmentInfoComponent } from "../components/selected-flightsegment-info/selected-flightsegment-info.component";
 import { SelectedPassengersPopoverComponent } from "../components/selected-passengers-popover/selected-passengers-popover.component";
 import { NOT_WHITE_LIST } from "../select-passenger/select-passenger.page";
+import { TripType } from 'src/app/tmc/models/TripType';
+import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -93,8 +94,8 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("list") list: ElementRef<HTMLElement>;
   flightJourneyList: FlightJourneyEntity[]; // 保持和后台返回的数据一致
   vmFlights: FlightSegmentEntity[]; // 用于视图展示
-  vmToCity: Trafficline;
-  vmFromCity: Trafficline;
+  vmToCity: TrafficlineEntity;
+  vmFromCity: TrafficlineEntity;
   filterConditionSubscription = Subscription.EMPTY;
   searchConditionSubscription = Subscription.EMPTY;
   selectPassengerSubscription = Subscription.EMPTY;
@@ -139,12 +140,20 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       .pipe(map(item => item.length));
     this.selectPassengerSubscription = this.flightService
       .getPassengerBookInfoSource()
-      .subscribe(p => {
+      .subscribe(async p => {
         if (p.length == 0) {
           if (this.isLeavePage) {
             return;
           }
-          this.goToSelectPassengerPage();
+          const ok = await AppHelper.alert(
+            LanguageHelper.Flight.getMustAddOnePassengerTip(),
+            true,
+            LanguageHelper.getConfirmTip(),
+            LanguageHelper.getCancelTip()
+          );
+          if (ok) {
+            this.goToSelectPassengerPage();
+          }
         }
       });
     this.hasDataSource = new BehaviorSubject(false);
@@ -295,14 +304,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       }
       this.moveDayToSearchDate();
       this.apiService.showLoadingView();
-      // 如果不是个人，则必须先选择一个客户
-      if (
-        !this.isStaffTypeSelf() &&
-        this.flightService.getPassengerBookInfos().length === 0
-      ) {
-        this.goToSelectPassengerPage();
-        return;
-      }
       if (!keepSearchCondition) {
         if (this.filterComp) {
           this.filterComp.onReset();
@@ -384,7 +385,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     }
     const hasreselect = this.flightService
       .getPassengerBookInfos()
-      .find(item => item.isReselect);
+      .find(item => item.isReplace);
     if (hasreselect) {
       if (
         !passengers.find(p => p.AccountId == hasreselect.passenger.AccountId)
@@ -393,6 +394,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     const hasNotWhitelist = passengers.find(p => p.isNotWhiteList);
+    const whitelist = passengers.map(p => p.AccountId);
     if (hasNotWhitelist) {
       let policyflights = [];
       // 白名单的乘客
@@ -412,12 +414,14 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.policyflights = policyflights.concat(notWhitelistPolicyflights);
       console.log(this.policyflights);
     } else {
-      this.policyflights = await this.flightService.getPolicyflightsAsync(
-        flightJourneyList,
-        passengerId ? [passengerId] : passengers.map(p => p.AccountId)
-      );
+      if (whitelist.length) {
+        this.policyflights = await this.flightService.getPolicyflightsAsync(
+          flightJourneyList,
+          passengerId ? [passengerId] : whitelist
+        );
+      }
     }
-    if (this.policyflights.length === 0) {
+    if (this.policyflights.length === 0 && whitelist.length) {
       flightJourneyList = [];
       this.policyflights = [];
       return [];
@@ -456,7 +460,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       });
     });
     return {
-      PassengerKey: passengerKey,// 非白名单的账号id 统一为一个，tmc的accountid
+      PassengerKey: passengerKey, // 非白名单的账号id 统一为一个，tmc的accountid
       FlightPolicies
     };
   }
@@ -485,6 +489,18 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async goToFlightCabinsDetails(fs: FlightSegmentEntity) {
+    if (
+      this.flightService.getPassengerBookInfos().map(item => item.passenger)
+        .length == 0
+    ) {
+      await AppHelper.alert(
+        LanguageHelper.Flight.getMustAddOnePassengerTip(),
+        true,
+        LanguageHelper.getConfirmTip()
+      );
+      this.goToSelectPassengerPage();
+      return;
+    }
     const canbookMore = await this.flightService.canBookMoreFlightSegment(fs);
     if (!canbookMore) {
       await AppHelper.alert(
@@ -590,7 +606,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   async ngOnInit() {
-    // this.goToSelectPassengerPage();
     this.activeTab = "filter";
     this.filterConditionSubscription = this.flightService
       .getFilterCondition()

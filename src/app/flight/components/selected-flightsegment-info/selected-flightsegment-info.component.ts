@@ -19,7 +19,6 @@ import {
   PassengerBookInfo,
   PassengerFlightSegmentInfo,
   FlightService,
-  TripType
 } from "src/app/flight/flight.service";
 import { FlightSegmentEntity } from "./../../models/flight/FlightSegmentEntity";
 import { Component, OnInit, OnDestroy } from "@angular/core";
@@ -27,6 +26,7 @@ import { LanguageHelper } from "src/app/languageHelper";
 import * as moment from "moment";
 import { tap, map, reduce } from "rxjs/operators";
 import { SelectFlightsegmentCabinComponent } from "../select-flightsegment-cabin/select-flightsegment-cabin.component";
+import { TripType } from 'src/app/tmc/models/TripType';
 interface PassengerBookInfos {
   passenger: StaffEntity;
   credential: CredentialsEntity;

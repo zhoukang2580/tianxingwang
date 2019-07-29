@@ -292,7 +292,7 @@
             <ion-radio-group [(ngModel)]='combindInfo.orderTravelPayType' name='travelPayType'>
               <ion-item *ngFor='let pt of orderTravelPayTypes' lines='none'>
                 <ion-label>{{pt.label}}</ion-label>
-                <ion-radio [value]="pt.value" [checked]='tmc?.FlightPayType==pt.value'>
+                <ion-radio [value]="pt.value" [checked]='combindInfo.orderTravelPayType==pt.value'>
                 </ion-radio>
               </ion-item>
             </ion-radio-group>

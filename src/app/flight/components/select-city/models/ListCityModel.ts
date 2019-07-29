@@ -1,10 +1,10 @@
-import { Trafficline } from 'src/app/flight/flight.service';
+import { TrafficlineEntity } from './../../../../tmc/models/TrafficlineEntity';
 
 
 export class ListCityModel {
   link: string;
   displayName: string;
-  items?: Trafficline[];
+  items?: TrafficlineEntity[];
   rect?: DOMRect | ClientRect;
   offsetTop?: number;
 }

@@ -20,6 +20,8 @@ import { RequestEntity } from "../services/api/Request.entity";
 import { Storage } from "@ionic/storage";
 import { LanguageHelper } from "../languageHelper";
 import { Router } from "@angular/router";
+import { TripType } from "../tmc/models/TripType";
+import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 export interface PassengerFlightSegmentInfo {
@@ -27,13 +29,9 @@ export interface PassengerFlightSegmentInfo {
   flightPolicy: FlightPolicy;
   tripType?: TripType;
   id?: string;
-  reselectId?: string;
   isLowerSegmentSelected?: boolean;
 }
-export enum TripType {
-  departureTrip = "departureTrip",
-  returnTrip = "returnTrip"
-}
+
 export interface PassengerPolicyFlights {
   PassengerKey: string; // accountId
   FlightPolicies: FlightPolicy[];
@@ -45,7 +43,7 @@ export interface PassengerBookInfo {
   isNotWhitelist?: boolean;
   flightSegmentInfo?: PassengerFlightSegmentInfo;
   id?: string;
-  isReselect?: boolean;
+  isReplace?: boolean;
 }
 export interface FlightSegmentModel {
   AirlineName; // String 航空公司名称
@@ -74,36 +72,29 @@ export class SearchFlightModel {
   FromAsAirport: boolean; //  No 始发以机场查询
   ToAsAirport: boolean; //  No 到达以机场查询
   IsRoundTrip?: boolean; // 是否是往返
-  fromCity: Trafficline;
-  toCity: Trafficline;
+  fromCity: TrafficlineEntity;
+  toCity: TrafficlineEntity;
   tripType: TripType;
   isLocked?: boolean;
 }
-// export enum CheckSelfSelectedInfoType {
-//   AddOne = "AddOne",
-//   ReselectDepartureTrip = "ReselectDepartureTrip",
-//   ReselectReturnTrip = "ReselectReturnTrip",
-//   SelectReturnTrip = "selectReturnTrip",
-//   CannotBookMoreFlightSegment = "CannotBookMoreFlightSegment"
+// export interface TrafficlineEntity {
+//   Id: string; // long
+//   Tag: string; // 标签（Airport 机场，AirportCity 机场城市，Train 火车站）
+//   Code: string; // 代码（三字码）
+//   Name: string; // 名称
+//   Nickname: string; // 简称
+//   Pinyin: string; // 拼音
+//   Initial: string; // 拼音简写
+//   AirportCityCode: string; // 机场城市代码（航空系统特有）
+//   CityCode: string; // 城市代码
+//   CityName: string; // 城市名称
+//   Description: string; // 描述
+//   IsHot: boolean; // 热点描述
+//   CountryCode: string; // 国籍代码
+//   Sequence: string; // Int 排序号
+//   EnglishName: string; // 英文名称
+//   Selected?: boolean;
 // }
-export interface Trafficline {
-  Id: string; // long
-  Tag: string; // 标签（Airport 机场，AirportCity 机场城市，Train 火车站）
-  Code: string; // 代码（三字码）
-  Name: string; // 名称
-  Nickname: string; // 简称
-  Pinyin: string; // 拼音
-  Initial: string; // 拼音简写
-  AirportCityCode: string; // 机场城市代码（航空系统特有）
-  CityCode: string; // 城市代码
-  CityName: string; // 城市名称
-  Description: string; // 描述
-  IsHot: boolean; // 热点描述
-  CountryCode: string; // 国籍代码
-  Sequence: string; // Int 排序号
-  EnglishName: string; // 英文名称
-  Selected?: boolean;
-}
 export interface CurrentViewtFlightSegment {
   flightSegment: FlightSegmentEntity;
   flightSegments: FlightSegmentEntity[];
@@ -111,7 +102,7 @@ export interface CurrentViewtFlightSegment {
 }
 interface LocalStorageAirport {
   LastUpdateTime: number;
-  Trafficlines: Trafficline[];
+  TrafficlineEntitys: TrafficlineEntity[];
 }
 const debugCacheTime = 5 * 60 * 1000;
 @Injectable({
@@ -128,8 +119,8 @@ export class FlightService {
   private filterCondSources: Subject<FilterConditionModel>;
   private localInternationAirports: LocalStorageAirport;
   private localDomesticAirports: LocalStorageAirport;
-  private selectedCitySource: Subject<Trafficline>;
-  private allLocalAirports: Trafficline[];
+  private selectedCitySource: Subject<TrafficlineEntity>;
+  private allLocalAirports: TrafficlineEntity[];
   private passengerBookInfos: PassengerBookInfo[]; // 记录乘客及其研究选择的航班
   currentViewtFlightSegment: CurrentViewtFlightSegment;
 
@@ -177,7 +168,7 @@ export class FlightService {
       if (m.IsRoundTrip) {
         const arr = this.getPassengerBookInfos();
         if (m.tripType == TripType.returnTrip) {
-          if (!arr.find(item => item.isReselect)) {
+          if (!arr.find(item => item.isReplace)) {
             this.searchFlightModel.isLocked = true;
           }
         } else {
@@ -282,7 +273,7 @@ export class FlightService {
           const b = arr.find(
             item => item.flightSegmentInfo.tripType == TripType.returnTrip
           );
-          const hasReselect = arr.find(item => item.isReselect);
+          const hasReselect = arr.find(item => item.isReplace);
           if (g && b) {
             return hasReselect;
           } else {
@@ -300,7 +291,7 @@ export class FlightService {
   private checkIfExcessMaxLimitedBookTickets(max: number) {
     return (
       this.getPassengerBookInfos().reduce((sum, item) => {
-        if (!item.isReselect) {
+        if (!item.isReplace) {
           if (
             item.flightSegmentInfo &&
             (item.flightSegmentInfo.flightPolicy ||
@@ -366,9 +357,7 @@ export class FlightService {
         s.tripType = TripType.returnTrip;
       }
       const arr = this.getPassengerBookInfos().map(item => {
-        item.isReselect = item.id == arg.id;
-        item.flightSegmentInfo.reselectId =
-          item.id == arg.id ? item.flightSegmentInfo.id : null;
+        item.isReplace = item.id == arg.id;
         return item;
       });
       this.passengerBookInfos = arr;
@@ -400,19 +389,17 @@ export class FlightService {
     const s = this.getSearchFlightModel();
     s.tripType = TripType.departureTrip;
     const arr = this.getPassengerBookInfos().map(item => {
-      item.isReselect = item.id == arg.id;
-      item.flightSegmentInfo.reselectId =
-        item.id == arg.id ? item.flightSegmentInfo.id : null;
+      item.isReplace = item.id == arg.id;
       return item;
     });
-    this.passengerBookInfos = arr;
-    this.setPassengerBookInfos(this.passengerBookInfos);
     this.apiService.showLoadingView();
     await this.dismissAllTopOverlays();
     this.apiService.hideLoadingView();
     this.router.navigate([AppHelper.getRoutePath("search-flight")]).then(_ => {
       this.setSearchFlightModel(s);
     });
+    this.passengerBookInfos = arr;
+    this.setPassengerBookInfos(this.passengerBookInfos);
   }
   async reselectPassengerFlightSegments(arg: PassengerBookInfo) {
     console.log("reselectPassengerFlightSegments", arg);
@@ -446,7 +433,7 @@ export class FlightService {
       );
       if (infos.length) {
         // 已经选择了来回程，但不是重选
-        if (infos.length == 2 && !infos.find(item => !!item.isReselect)) {
+        if (infos.length == 2 && !infos.find(item => !!item.isReplace)) {
           const go = infos.find(
             item => item.flightSegmentInfo.tripType == TripType.departureTrip
           );
@@ -495,15 +482,14 @@ export class FlightService {
               c => c.Code == cabin.CabinCode
             );
           if (await this.staffService.isStaffTypeSelf()) {
-            if (!this.getPassengerBookInfos().find(item => item.isReselect)) {
+            if (!this.getPassengerBookInfos().find(item => item.isReplace)) {
               p.flightSegmentInfo = {
                 flightSegment: this.currentViewtFlightSegment.flightSegment,
                 flightPolicy: cabin,
                 tripType: this.getSearchFlightModel().IsRoundTrip
                   ? this.getSearchFlightModel().tripType
                   : TripType.departureTrip,
-                id: AppHelper.uuid(),
-                reselectId: null
+                id: AppHelper.uuid()
               };
             }
           } else {
@@ -513,19 +499,15 @@ export class FlightService {
               tripType: this.getSearchFlightModel().IsRoundTrip
                 ? this.getSearchFlightModel().tripType
                 : TripType.departureTrip,
-              id: AppHelper.uuid(),
-              reselectId: null
+              id: AppHelper.uuid()
             };
           }
         }
       }
     }
     this.reselecteInfo(bookInfos, flightCabin);
-    const arr = bookInfos.map(item => {
-      item.isReselect = false;
-      if (item.flightSegmentInfo) {
-        item.flightSegmentInfo.reselectId = null;
-      }
+    const arr = this.getPassengerBookInfos().map(item => {
+      item.isReplace = false;
       return item;
     });
     this.setPassengerBookInfos(arr);
@@ -534,16 +516,12 @@ export class FlightService {
     bookInfos: PassengerBookInfo[],
     flightCabin: FlightCabinEntity
   ) {
-    const one = bookInfos.find(item => item.isReselect);
-    debugger;
-    if (one) {
-      const oldBookInfo = bookInfos.find(
-        item => !!item.flightSegmentInfo.reselectId
-      );
+    const oldBookInfo = bookInfos.find(item => item.isReplace);
+    if (oldBookInfo) {
       const onePolicies = this.currentViewtFlightSegment.totalPolicyFlights.find(
         item =>
-          item.PassengerKey == one.passenger.AccountId ||
-          one.passenger.isNotWhiteList
+          item.PassengerKey == oldBookInfo.passenger.AccountId ||
+          oldBookInfo.passenger.isNotWhiteList
       );
       const cabin =
         onePolicies &&
@@ -556,25 +534,23 @@ export class FlightService {
         cabin.Cabin = this.currentViewtFlightSegment.flightSegment.Cabins.find(
           c => c.Code == cabin.CabinCode
         );
-        if (oldBookInfo) {
-          const flightSegmentInfo: PassengerFlightSegmentInfo = {
-            id: AppHelper.uuid(),
-            tripType: this.getSearchFlightModel().IsRoundTrip
-              ? this.getSearchFlightModel().tripType
-              : TripType.departureTrip,
-            flightSegment: this.currentViewtFlightSegment.flightSegment,
-            flightPolicy: cabin,
-            reselectId: null
-          };
-          const newInfo: PassengerBookInfo = {
-            id: AppHelper.uuid(),
-            passenger: oldBookInfo.passenger,
-            credential: oldBookInfo.credential,
-            isNotWhitelist: oldBookInfo.isNotWhitelist,
-            flightSegmentInfo
-          };
-          this.replacePassengerBookInfo(oldBookInfo, newInfo);
-        }
+        const flightSegmentInfo: PassengerFlightSegmentInfo = {
+          id: AppHelper.uuid(),
+          tripType: this.getSearchFlightModel().IsRoundTrip
+            ? this.getSearchFlightModel().tripType
+            : TripType.departureTrip,
+          flightSegment: this.currentViewtFlightSegment.flightSegment,
+          flightPolicy: cabin
+        };
+        const newInfo: PassengerBookInfo = {
+          id: AppHelper.uuid(),
+          passenger: oldBookInfo.passenger,
+          credential: oldBookInfo.credential,
+          isNotWhitelist: oldBookInfo.isNotWhitelist,
+          flightSegmentInfo,
+          isReplace: false
+        };
+        this.replacePassengerBookInfo(oldBookInfo, newInfo);
       }
     }
   }
@@ -602,12 +578,11 @@ export class FlightService {
     let arr = this.getPassengerBookInfos();
     arr = arr.map(item => {
       if (item.id == old.id) {
-        item = newInfo;
+        return newInfo;
       }
       return item;
     });
-    this.passengerBookInfos = arr;
-    this.setPassengerBookInfos(this.passengerBookInfos);
+    this.setPassengerBookInfos(arr);
   }
   removePassengerFlightSegmentInfo(arg: PassengerFlightSegmentInfo) {
     let arr = this.getPassengerBookInfos();
@@ -624,7 +599,7 @@ export class FlightService {
   getSelectedCity() {
     return this.selectedCitySource.asObservable();
   }
-  setSelectedCity(_selectedCity: Trafficline) {
+  setSelectedCity(_selectedCity: TrafficlineEntity) {
     this.selectedCitySource.next({ ..._selectedCity });
   }
   getOpenCloseSelectCityPageSources() {
@@ -655,27 +630,32 @@ export class FlightService {
         (await this.storage.get(KEY_HOME_AIRPORTS)) ||
         ({
           LastUpdateTime: 0,
-          Trafficlines: []
+          TrafficlineEntitys: []
         } as LocalStorageAirport);
     }
-    if (!forceFetch && this.localDomesticAirports.Trafficlines.length) {
-      return this.localDomesticAirports.Trafficlines;
+    if (
+      !forceFetch &&
+      this.localDomesticAirports &&
+      this.localDomesticAirports.TrafficlineEntitys &&
+      this.localDomesticAirports.TrafficlineEntitys.length
+    ) {
+      return this.localDomesticAirports.TrafficlineEntitys;
     }
     req.Data = {
       LastUpdateTime: this.localDomesticAirports.LastUpdateTime
     };
     const r = await this.apiService.getPromiseData<{
       HotelCities: any[];
-      Trafficlines: Trafficline[];
+      TrafficlineEntitys: TrafficlineEntity[];
     }>(req);
     const airports = [
-      ...this.localDomesticAirports.Trafficlines.filter(
-        item => !r.Trafficlines.some(i => i.Id == item.Id)
+      ...this.localDomesticAirports.TrafficlineEntitys.filter(
+        item => !r.TrafficlineEntitys.some(i => i.Id == item.Id)
       ),
-      ...r.Trafficlines
+      ...r.TrafficlineEntitys
     ];
     this.localDomesticAirports.LastUpdateTime = Math.floor(Date.now() / 1000);
-    this.localDomesticAirports.Trafficlines = airports;
+    this.localDomesticAirports.TrafficlineEntitys = airports;
     await this.storage.set(KEY_HOME_AIRPORTS, this.localDomesticAirports);
     return airports;
   }
@@ -688,11 +668,14 @@ export class FlightService {
         (await this.storage.get(KEY_INTERNATIONAL_AIRPORTS)) ||
         ({
           LastUpdateTime: 0,
-          Trafficlines: []
+          TrafficlineEntitys: []
         } as LocalStorageAirport);
     }
-    if (!forceFetch && this.localInternationAirports.Trafficlines.length) {
-      return this.localInternationAirports.Trafficlines;
+    if (
+      !forceFetch &&
+      this.localInternationAirports.TrafficlineEntitys.length
+    ) {
+      return this.localInternationAirports.TrafficlineEntitys;
     }
     req.Data = {
       LastUpdateTime: this.localInternationAirports.LastUpdateTime
@@ -700,18 +683,18 @@ export class FlightService {
     let st = window.performance.now();
     const r = await this.apiService.getPromiseData<{
       HotelCities: any[];
-      Trafficlines: Trafficline[];
+      TrafficlineEntitys: TrafficlineEntity[];
     }>(req);
     const airports = [
-      ...this.localInternationAirports.Trafficlines.filter(
-        item => !r.Trafficlines.some(i => i.Id == item.Id)
+      ...this.localInternationAirports.TrafficlineEntitys.filter(
+        item => !r.TrafficlineEntitys.some(i => i.Id == item.Id)
       ),
-      ...r.Trafficlines
+      ...r.TrafficlineEntitys
     ];
     this.localInternationAirports.LastUpdateTime = Math.floor(
       Date.now() / 1000
     );
-    this.localInternationAirports.Trafficlines = airports;
+    this.localInternationAirports.TrafficlineEntitys = airports;
     st = window.performance.now();
     await this.storage.set(
       KEY_INTERNATIONAL_AIRPORTS,
@@ -978,35 +961,35 @@ export class FlightService {
     }
     return serverFlights;
   }
-  async getLocalHomeAirports(): Promise<Trafficline[]> {
+  async getLocalHomeAirports(): Promise<TrafficlineEntity[]> {
     if (
       this.localDomesticAirports &&
-      this.localDomesticAirports.Trafficlines.length
+      this.localDomesticAirports.TrafficlineEntitys.length
     ) {
-      return Promise.resolve(this.localDomesticAirports.Trafficlines);
+      return Promise.resolve(this.localDomesticAirports.TrafficlineEntitys);
     }
     return (
       (await this.storage.get(KEY_HOME_AIRPORTS)) ||
       ({
         LastUpdateTime: 0,
-        Trafficlines: []
+        TrafficlineEntitys: []
       } as LocalStorageAirport)
-    ).Trafficlines;
+    ).TrafficlineEntitys;
   }
-  async getLocalInternationalAirports(): Promise<Trafficline[]> {
+  async getLocalInternationalAirports(): Promise<TrafficlineEntity[]> {
     if (
       this.localInternationAirports &&
-      this.localInternationAirports.Trafficlines.length
+      this.localInternationAirports.TrafficlineEntitys.length
     ) {
-      return Promise.resolve(this.localInternationAirports.Trafficlines);
+      return Promise.resolve(this.localInternationAirports.TrafficlineEntitys);
     }
     return (
       (await this.storage.get(KEY_INTERNATIONAL_AIRPORTS)) ||
       ({
         LastUpdateTime: 0,
-        Trafficlines: []
+        TrafficlineEntitys: []
       } as LocalStorageAirport)
-    ).Trafficlines;
+    ).TrafficlineEntitys;
   }
   async getAllLocalAirports() {
     if (this.allLocalAirports && this.allLocalAirports.length) {

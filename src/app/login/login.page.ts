@@ -30,7 +30,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   identity: IdentityEntity;
   message: string;
   countDown: number;
-  loginType: string = "user";
+  loginType = "user";
   loading$: Observable<boolean>;
   isMobileNumberOk = false;
   isLoginOk = false;
@@ -55,7 +55,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     console.log("login page ngAfterViewInit");
     this.dismissAllOverlayer();
   }
-  private  async dismissAllOverlayer() {
+  private async dismissAllOverlayer() {
     let i = 10;
     let t = await this.modalCtrl.getTop();
     while (--i > 0 && t) {

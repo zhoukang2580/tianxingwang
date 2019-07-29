@@ -22,7 +22,8 @@ import {
   animate,
   transition
 } from "@angular/animations";
-import { FlightService, Trafficline } from "../../flight.service";
+import { FlightService } from "../../flight.service";
+import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
 @Component({
   selector: "app-select-city-comp",
   templateUrl: "./select-city.component.html",
@@ -36,14 +37,14 @@ import { FlightService, Trafficline } from "../../flight.service";
   ]
 })
 export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input() cities: Trafficline[] = [];
-  hotCities: Trafficline[] = [];
+  @Input() cities: TrafficlineEntity[] = [];
+  hotCities: TrafficlineEntity[] = [];
   // @ViewChild(IonRefresher)  ionRefresher: IonRefresher;
   @ViewChild("cnt")
   content: IonContent;
   @ViewChild("header") header: IonHeader;
-  selectedCity: Trafficline;
-  historyCities: Trafficline[] = [];
+  selectedCity: TrafficlineEntity;
+  historyCities: TrafficlineEntity[] = [];
   listCities: ListCityModel[] = [];
   listCitiesViewModel: ListCityModel[] = [];
   subscription = Subscription.EMPTY;
@@ -52,8 +53,8 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("curNavText") curNavTextEle: HTMLElement;
   curTargetNavEle: HTMLElement;
   isUserSelect: boolean;
-  private domesticAirports: Trafficline[] = [];
-  private internationalAirports: Trafficline[] = [];
+  private domesticAirports: TrafficlineEntity[] = [];
+  private internationalAirports: TrafficlineEntity[] = [];
   segmentValue: "domestic" | "overseas" = "domestic";
   private isDataInit = false;
   @Input()
@@ -122,7 +123,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   private initHistoryCities() {
-    const hcs = AppHelper.getStorage<Trafficline[]>("historyCities") || [];
+    const hcs = AppHelper.getStorage<TrafficlineEntity[]>("historyCities") || [];
     this.historyCities = hcs;
     let lm = this.listCitiesViewModel.find(l => l.link == "history");
     if (!lm) {
@@ -162,7 +163,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   initDomesticListCity() {
     return new Promise(done => {
-      let cities: Trafficline[] = [];
+      let cities: TrafficlineEntity[] = [];
       if (this.segmentValue == "domestic") {
         cities = this.domesticAirports.slice(0);
       } else {
@@ -343,7 +344,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
   }
-  onCitySelected(city: Trafficline, isUserSelect?: boolean) {
+  onCitySelected(city: TrafficlineEntity, isUserSelect?: boolean) {
     for (let i = 0; i < this.listCitiesViewModel.length; i++) {
       const item = this.listCitiesViewModel[i];
       const lastSelectedCity = item.items.find(

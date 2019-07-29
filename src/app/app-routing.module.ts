@@ -13,6 +13,7 @@ import { AgentModule } from "./agent/agent.module";
 import { TmcModule } from "./tmc/tmc.module";
 import { CmsModule } from "./cms/cms.module";
 import { MessageModule } from "./message/message.module";
+import { TainRoutingModule } from './train/tain-routing.module';
 
 const routes: Routes = [
   {
@@ -59,6 +60,7 @@ const routes: Routes = [
     CmsModule,
     TmcModule,
     MessageModule,
+    TainRoutingModule,
     RouterModule.forRoot(routes, {
       preloadingStrategy: PreloadAllModules,
       enableTracing: !true,

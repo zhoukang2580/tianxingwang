@@ -81,6 +81,9 @@ export class LanguageHelper {
     }
   };
   static Flight = {
+    getMustAddOnePassengerTip: () => {
+      return "请添加择乘客";
+    },
     getApproverTip: () => {
       return "审批人";
     },

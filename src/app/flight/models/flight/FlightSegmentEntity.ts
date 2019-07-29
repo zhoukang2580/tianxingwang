@@ -1,10 +1,10 @@
-import { Trafficline } from "src/app/flight/flight.service";
 import { FlightCabinType } from "./FlightCabinType";
 import { FlightCabinFareType } from "./FlightCabinFareType";
 import { FlightStopCityEntity } from "./FlightStopCityEntity";
 import { FlightCabinEntity } from "./FlightCabinEntity";
 import { FlightMealType } from "../../pipes/flight-meal-type.pipe";
 import { FlightPolicy } from "../../flight.service";
+import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
 
 export class FlightSegmentEntity {
   /// <summary>
@@ -179,6 +179,6 @@ export class FlightSegmentEntity {
   ArrivalTimeStamp: number;
   AddOneDayTip: string;
   PassengerKeys: string[];
-  FromCity: Trafficline;
-  ToCity: Trafficline;
+  FromCity: TrafficlineEntity;
+  ToCity: TrafficlineEntity;
 }

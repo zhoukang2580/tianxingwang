@@ -32,8 +32,7 @@ import {
 } from "./../../hr/staff.service";
 import {
   PassengerBookInfo,
-  PassengerFlightSegmentInfo,
-  TripType
+  PassengerFlightSegmentInfo
 } from "./../flight.service";
 import { FlightService } from "src/app/flight/flight.service";
 import {
@@ -69,6 +68,8 @@ import { OrderLinkmanDto } from "src/app/order/models/OrderLinkmanDto";
 import { AppHelper } from "src/app/appHelper";
 import { PassengerDto } from "src/app/tmc/models/PassengerDto";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
+import { TripType } from "src/app/tmc/models/TripType";
+import { environment } from "src/environments/environment";
 interface TmcOutNumberInfo {
   key: string;
   label: string;
@@ -137,7 +138,7 @@ interface ICombindInfo {
   }[];
   tmcOutNumberInfos: TmcOutNumberInfo[];
   travelType: OrderTravelType; // 因公、因私
-  orderTravelPayType: number; // OrderTravelPayType
+  orderTravelPayType: OrderTravelPayType; //
 }
 @Component({
   selector: "app-book",
@@ -199,6 +200,9 @@ export class BookPage implements OnInit, AfterViewInit {
   }
   private async initOrderTravelPayTypes() {
     this.tmc = this.tmc || (await this.getTmc());
+    this.identity = await this.identityService
+      .getIdentityAsync()
+      .catch(_ => ({} as any));
     this.orderTravelPayTypes = [
       {
         label: LanguageHelper.Flight.getCompanyPayTip(),
@@ -300,8 +304,14 @@ export class BookPage implements OnInit, AfterViewInit {
     if (!Tmc || !Tmc.FlightOrderPayType) {
       return false;
     }
-    return !!Tmc.FlightOrderPayType.split(",").find(
-      it => it == OrderTravelPayType[payType]
+    return (
+      !!Tmc.FlightOrderPayType.split(",").find(
+        it => it == OrderTravelPayType[payType]
+      ) ||
+      (payType == OrderTravelPayType.Credit &&
+        this.identity &&
+        this.identity.Numbers &&
+        !!this.identity.Numbers.AgentId)
     );
   }
 
@@ -731,7 +741,7 @@ export class BookPage implements OnInit, AfterViewInit {
       p.TravelPayType = combindInfo.orderTravelPayType;
       p.IsSkipApprove = combindInfo.isSkipApprove;
       p.FlightSegment = combindInfo.modal.flightSegmentInfo.flightSegment;
-      p.FlightCabin=combindInfo.modal.flightSegmentInfo.flightPolicy.Cabin;
+      p.FlightCabin = combindInfo.modal.flightSegmentInfo.flightPolicy.Cabin;
       bookDto.Passengers.push(p);
     }
     return true;
@@ -874,7 +884,7 @@ export class BookPage implements OnInit, AfterViewInit {
           isOtherOrganization: false,
           notifyLanguage: "cn",
           travelType: OrderTravelType.Person,
-          // orderTravelPayType:,
+          orderTravelPayType: this.tmc && this.tmc.FlightPayType,
           insuranceResultProducts: insuranceResultProducts.slice(0, 1),
           credentialStaffMobiles:
             cstaff && cstaff.Account && cstaff.Account.Mobile
@@ -930,15 +940,17 @@ export class BookPage implements OnInit, AfterViewInit {
         combineInfo.addContacts = [];
         this.vmCombindInfos.push(combineInfo);
       }
-      if (!this.vmCombindInfos || this.vmCombindInfos.length == 0) {
-        this.vmCombindInfos = await this.storage.get(
-          "Flight-Book-Page-Mock-Data"
-        );
-      } else {
-        await this.storage.set(
-          "Flight-Book-Page-Mock-Data",
-          this.vmCombindInfos
-        );
+      if (!environment.production) {
+        if (!this.vmCombindInfos || this.vmCombindInfos.length == 0) {
+          this.vmCombindInfos = await this.storage.get(
+            "Flight-Book-Page-Mock-Data"
+          );
+        } else {
+          await this.storage.set(
+            "Flight-Book-Page-Mock-Data",
+            this.vmCombindInfos
+          );
+        }
       }
     } catch (e) {
       console.error(e);
