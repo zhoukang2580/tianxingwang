@@ -39,7 +39,7 @@ export class TrainService {
   };
   private searchModel: SearchTrainModel;
   private selectedStationSource: Subject<ISelectedStation>;
-  private bookInfos: TrainBookInfo[];
+  private bookInfos: TrainBookInfo[]=[];
   private bookInfoSource: Subject<TrainBookInfo[]>;
   private searchModelSource: Subject<SearchTrainModel>;
   constructor(private apiService: ApiService, private storage: Storage) {

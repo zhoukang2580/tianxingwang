@@ -117,8 +117,14 @@ export class FlightService {
   private filterPanelShowHideSource: Subject<boolean>;
   private openCloseSelectCitySources: Subject<boolean>;
   private filterCondSources: Subject<FilterConditionModel>;
-  private localInternationAirports: LocalStorageAirport;
-  private localDomesticAirports: LocalStorageAirport;
+  private localInternationAirports: LocalStorageAirport=  {
+    LastUpdateTime: 0,
+    TrafficlineEntitys: []
+  };;
+  private localDomesticAirports: LocalStorageAirport = {
+    LastUpdateTime: 0,
+    TrafficlineEntitys: []
+  };
   private selectedCitySource: Subject<TrafficlineEntity>;
   private allLocalAirports: TrafficlineEntity[];
   private passengerBookInfos: PassengerBookInfo[]; // 记录乘客及其研究选择的航班
@@ -639,25 +645,35 @@ export class FlightService {
       this.localDomesticAirports.TrafficlineEntitys &&
       this.localDomesticAirports.TrafficlineEntitys.length
     ) {
-      return this.localDomesticAirports.TrafficlineEntitys;
+      return Promise.resolve(this.localDomesticAirports.TrafficlineEntitys);
     }
     req.Data = {
       LastUpdateTime: this.localDomesticAirports.LastUpdateTime
     };
-    const r = await this.apiService.getPromiseData<{
-      HotelCities: any[];
-      TrafficlineEntitys: TrafficlineEntity[];
-    }>(req);
+    const r = await this.apiService
+      .getPromiseData<{
+        HotelCities: any[];
+        Trafficlines: TrafficlineEntity[];
+      }>(req)
+      .catch(
+        _ =>
+          ({
+            Trafficlines: []
+          } as {
+            HotelCities: any[];
+            Trafficlines: TrafficlineEntity[];
+          })
+      );
     const airports = [
       ...this.localDomesticAirports.TrafficlineEntitys.filter(
-        item => !r.TrafficlineEntitys.some(i => i.Id == item.Id)
+        item => !r.Trafficlines.some(i => i.Id == item.Id)
       ),
-      ...r.TrafficlineEntitys
+      ...r.Trafficlines
     ];
     this.localDomesticAirports.LastUpdateTime = Math.floor(Date.now() / 1000);
     this.localDomesticAirports.TrafficlineEntitys = airports;
     await this.storage.set(KEY_HOME_AIRPORTS, this.localDomesticAirports);
-    return airports;
+    return airports.filter(item=>!!item);
   }
   async getInternationalAirports(forceFetch: boolean = false) {
     const req = new RequestEntity();
@@ -675,21 +691,23 @@ export class FlightService {
       !forceFetch &&
       this.localInternationAirports.TrafficlineEntitys.length
     ) {
-      return this.localInternationAirports.TrafficlineEntitys;
+      return Promise.resolve(this.localInternationAirports.TrafficlineEntitys);
     }
     req.Data = {
       LastUpdateTime: this.localInternationAirports.LastUpdateTime
     };
     let st = window.performance.now();
-    const r = await this.apiService.getPromiseData<{
-      HotelCities: any[];
-      TrafficlineEntitys: TrafficlineEntity[];
-    }>(req);
+    const r = await this.apiService
+      .getPromiseData<{
+        HotelCities: any[];
+        Trafficlines: TrafficlineEntity[];
+      }>(req)
+      .catch(_ => ({ Trafficlines: [] }));
     const airports = [
       ...this.localInternationAirports.TrafficlineEntitys.filter(
-        item => !r.TrafficlineEntitys.some(i => i.Id == item.Id)
+        item => !r.Trafficlines.some(i => i.Id == item.Id)
       ),
-      ...r.TrafficlineEntitys
+      ...r.Trafficlines
     ];
     this.localInternationAirports.LastUpdateTime = Math.floor(
       Date.now() / 1000

@@ -43,7 +43,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
   }
   selectDaySubscription = Subscription.EMPTY;
   searchConditionSubscription = Subscription.EMPTY;
-  searchFlightModel: SearchTrainModel;
+  searchTrainModel: SearchTrainModel;
   isMoving: boolean;
   vmFromCity: TrafficlineEntity; // 界面上显示的城市
   vmToCity: TrafficlineEntity; // 界面上显示的城市
@@ -68,7 +68,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
       this.staff = await this.staffService.getStaff();
       if (await this.isStaffTypeSelf()) {
         this.disabled =
-          this.searchFlightModel && this.searchFlightModel.isLocked;
+          this.searchTrainModel && this.searchTrainModel.isLocked;
         if (
           this.trainService.getBookInfos().length == 0 ||
           this.trainService.getBookInfos().length == 0
@@ -96,7 +96,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
       this.searchConditionSubscription = this.trainService
         .getSearchTrainModelSource()
         .subscribe(async s => {
-          console.log("search-flights", s);
+          console.log("search-train", s);
           const staff = await this.staffService.getStaff();
           this.showReturnTrip = staff.BookType == StaffBookType.Self;
           if (s) {
@@ -168,8 +168,8 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     this.apiService.showLoadingView();
     const s = await this.staffService.getStaff();
     this.showReturnTrip = s.BookType == StaffBookType.Self;
-    this.initFlightDays();
-    this.initFlightCities();
+    this.initTrainDays();
+    this.initTrainCities();
     this.apiService.hideLoadingView();
   }
   mustAddPassenger() {
@@ -184,7 +184,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     this.selectDaySubscription.unsubscribe();
     this.searchConditionSubscription.unsubscribe();
   }
-  initFlightDays() {
+  initTrainDays() {
     this.flyDate = this.trainDayService.generateDayModel(
       moment()
       // 默认第二天
@@ -200,7 +200,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     this.backDate.desc = "返程";
     this.backDate.descPos = "bottom";
   }
-  async initFlightCities() {
+  async initTrainCities() {
     this.fromCity = this.vmFromCity = {} as any;
     this.fromCity.Nickname = this.fromCity.CityName = this.vmFromCity.CityName =
       "北京";
@@ -231,7 +231,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
       this.toCity = this.vmToCity = lastToCity;
     }
   }
-  async searchFlight() {
+  async searchTrain() {
     console.log(
       `出发城市" + 【${this.fromCity && this.fromCity.CityName}】`,
       `目的城市【${this.toCity && this.toCity.CityName}】`

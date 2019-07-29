@@ -1,3 +1,4 @@
+import { TrainService, TrainBookInfo } from './../train.service';
 import { CredentialsEntity } from "./../../tmc/models/CredentialsEntity";
 import { TmcService } from "./../../tmc/tmc.service";
 import { AccountEntity } from "./../../tmc/models/AccountEntity";
@@ -8,10 +9,6 @@ import { IdentityService } from "src/app/services/identity/identity.service";
 import { ApiService } from "./../../services/api/api.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
-  FlightService,
-  PassengerBookInfo
-} from "src/app/flight/flight.service";
-import {
   Component,
   OnInit,
   ViewChild,
@@ -20,7 +17,6 @@ import {
   QueryList,
   NgZone,
   Renderer2,
-  ElementRef
 } from "@angular/core";
 import {
   IonInfiniteScroll,
@@ -29,7 +25,6 @@ import {
   ModalController,
   IonGrid,
   DomController,
-  IonToolbar
 } from "@ionic/angular";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { StaffEntity } from "src/app/hr/staff.service";
@@ -64,7 +59,7 @@ export const NOT_WHITE_LIST = "notwhitelist";
 })
 export class SelectPassengerPage
   implements OnInit, CanComponentDeactivate, AfterViewInit {
-  bookInfos: PassengerBookInfo[];
+  bookInfos: TrainBookInfo[];
   vmKeyword: string;
   isShowNewCredential = false;
   credentialsRemarks: { key: string; value: string }[];
@@ -93,7 +88,6 @@ export class SelectPassengerPage
   @ViewChildren("addForm") addForm: QueryList<IonGrid>;
   constructor(
     public modalController: ModalController,
-    private flightService: FlightService,
     route: ActivatedRoute,
     private navCtrl: NavController,
     private apiService: ApiService,
@@ -105,13 +99,14 @@ export class SelectPassengerPage
     private domCtrl: DomController,
     private renderer2: Renderer2,
     private ngZone: NgZone,
+    private trainService:TrainService,
     private tmcService: TmcService
   ) {
-    this.selectedPasengers$ = flightService
-      .getPassengerBookInfoSource()
+    this.selectedPasengers$ = trainService
+      .getBookInfoSource()
       .pipe(map(items => items.length));
     route.queryParamMap.subscribe(p => {
-      this.bookInfos = this.flightService.getPassengerBookInfos();
+      this.bookInfos = this.trainService.getBookInfos();
       this.isCanDeactive = false;
       const country: Country = AppHelper.getRouteData();
       if (country && country.Code) {
@@ -291,8 +286,8 @@ export class SelectPassengerPage
     this.selectedCredentialId = credentialId;
   }
   async checkCanAddMore() {
-    const arr = this.flightService
-      .getPassengerBookInfos()
+    const arr = this.trainService
+      .getBookInfos()
       .map(item => item.passenger);
     if (await this.staffService.isStaffTypeSelf()) {
       if (arr.length > 1) {
@@ -370,14 +365,14 @@ export class SelectPassengerPage
       );
       return;
     }
-    const passengerBookInfo: PassengerBookInfo = {
+    const bookInfo: TrainBookInfo = {
       credential: ({
         ...selectedCredential
       } as any) as CredentialsEntity,
       isNotWhitelist: this.selectedPassenger.isNotWhiteList,
       passenger: this.selectedPassenger
     };
-    this.flightService.addPassengerBookInfo(passengerBookInfo);
+    this.trainService.addBookInfo(bookInfo);
     this.isCanDeactive = true;
     const ok = await AppHelper.alert(
       LanguageHelper.Flight.getAddMorePassengersTip(),
