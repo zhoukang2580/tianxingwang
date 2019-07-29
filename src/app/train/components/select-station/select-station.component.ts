@@ -95,6 +95,9 @@ export class SelectTrainStationComponent implements OnInit, AfterViewInit {
     this.activeLetter = letter;
     this.vmStations = this.stations[this.activeLetter];
     this.vmStations.sort((s1, s2) => s1.Sequence - s2.Sequence);
+    this.scrollToTargetLink();
+  }
+  private scrollToTargetLink() {
     if (this.hotEle && this.hotEle["el"]) {
       this.domCtrl.read(_ => {
         const rect = this.hotEle["el"].getBoundingClientRect();
@@ -102,7 +105,7 @@ export class SelectTrainStationComponent implements OnInit, AfterViewInit {
           this.domCtrl.write(_ => {
             this.ionContent.scrollByPoint(
               0,
-              Math.floor(rect.bottom - rect.height / 2),
+              Math.floor(rect.bottom - rect.height / 5),
               100
             );
           });
@@ -152,6 +155,8 @@ export class SelectTrainStationComponent implements OnInit, AfterViewInit {
           (s.CityName && s.CityName.includes(kw))
         );
       });
+      this.vmStations.sort((s1, s2) => s1.Sequence - s2.Sequence);
+      this.scrollToTargetLink();
     }
   }
 }
