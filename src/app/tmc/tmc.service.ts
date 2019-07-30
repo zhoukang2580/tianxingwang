@@ -15,17 +15,35 @@ import { StaffEntity } from "../hr/staff.service";
 import { InsuranceResultEntity } from "./models/Insurance/InsuranceResultEntity";
 import { PassengerDto } from "./models/PassengerDto";
 import { OrderBookDto } from "../order/models/OrderBookDto";
-import { CredentialsEntity } from './models/CredentialsEntity';
-
+import { CredentialsEntity } from "./models/CredentialsEntity";
+import { TrafficlineEntity } from "./models/TrafficlineEntity";
+import { Storage } from "@ionic/storage";
+import * as jsPy from "js-pinyin";
+export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
+export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
+interface LocalStorageAirport {
+  LastUpdateTime: number;
+  Trafficlines: TrafficlineEntity[];
+}
 @Injectable({
   providedIn: "root"
 })
 export class TmcService {
+  private localInternationAirports: LocalStorageAirport = {
+    LastUpdateTime: 0,
+    Trafficlines: []
+  };
+  private localDomesticAirports: LocalStorageAirport = {
+    LastUpdateTime: 0,
+    Trafficlines: []
+  };
   private selectedCompanySource: BehaviorSubject<string>;
   private companies: GroupCompanyEntity[];
   private tmc: TmcEntity;
+  allLocalAirports: TrafficlineEntity[];
   constructor(
     private apiService: ApiService,
+    private storage: Storage,
     private identityService: IdentityService
   ) {
     this.identityService.getIdentity().subscribe(id => {
@@ -36,6 +54,7 @@ export class TmcService {
     });
     this.selectedCompanySource = new BehaviorSubject(null);
   }
+
   getSelectedCompanySource() {
     return this.selectedCompanySource.asObservable();
   }
@@ -172,6 +191,157 @@ export class TmcService {
     req.IsShowLoading = true;
     req.Timeout = 60;
     return this.apiService.getPromiseData<StaffEntity[]>(req);
+  }
+  async getLocalHomeAirports(): Promise<TrafficlineEntity[]> {
+    if (
+      this.localDomesticAirports &&
+      this.localDomesticAirports.Trafficlines.length
+    ) {
+      return Promise.resolve(this.localDomesticAirports.Trafficlines);
+    }
+    return (
+      (await this.storage.get(KEY_HOME_AIRPORTS)) ||
+      ({
+        LastUpdateTime: 0,
+        Trafficlines: []
+      } as LocalStorageAirport)
+    ).TrafficlineEntitys;
+  }
+  async getLocalInternationalAirports(): Promise<TrafficlineEntity[]> {
+    if (
+      this.localInternationAirports &&
+      this.localInternationAirports.Trafficlines.length
+    ) {
+      return Promise.resolve(this.localInternationAirports.Trafficlines);
+    }
+    return (
+      (await this.storage.get(KEY_INTERNATIONAL_AIRPORTS)) ||
+      ({
+        LastUpdateTime: 0,
+        Trafficlines: []
+      } as LocalStorageAirport)
+    ).TrafficlineEntitys;
+  }
+  async getAllLocalAirports(forceFetch = false) {
+    if (!forceFetch && this.allLocalAirports && this.allLocalAirports.length) {
+      return Promise.resolve(this.allLocalAirports);
+    }
+    this.apiService.showLoadingView();
+    const h = await this.getDomesticAirports(forceFetch);
+    const i = await this.getInternationalAirports(forceFetch);
+    this.apiService.hideLoadingView();
+    this.allLocalAirports = [...h, ...i];
+    this.allLocalAirports = this.allLocalAirports.map(a => {
+      a.FirstLetter = this.getFirstLetter(a.CityName);
+      // if (!a.Pinyin) {
+      //   a.FirstLetter = this.getFirstLetter(a.CityName);
+      // } else {
+      //   a.FirstLetter = a.Pinyin.substring(0, 1).toUpperCase();
+      // }
+      return a;
+    });
+    return this.allLocalAirports;
+  }
+  private getFirstLetter(name: string) {
+    const pyFl = `${jsPy.getFullChars(name)}`.charAt(0);
+    return pyFl && pyFl.toUpperCase();
+  }
+  async getDomesticAirports(forceFetch: boolean = false) {
+    const req = new RequestEntity();
+    req.Method = `ApiHomeUrl-Resource-Airport`;
+    if (!this.localDomesticAirports) {
+      this.localDomesticAirports =
+        (await this.storage.get(KEY_HOME_AIRPORTS)) ||
+        ({
+          LastUpdateTime: 0,
+          Trafficlines: []
+        } as LocalStorageAirport);
+    }
+    if (
+      !forceFetch &&
+      this.localDomesticAirports &&
+      this.localDomesticAirports.Trafficlines &&
+      this.localDomesticAirports.Trafficlines.length
+    ) {
+      return Promise.resolve(this.localDomesticAirports.Trafficlines);
+    }
+    req.Data = {
+      LastUpdateTime: this.localDomesticAirports.LastUpdateTime
+    };
+    const r = await this.apiService
+      .getPromiseData<{
+        HotelCities: any[];
+        Trafficlines: TrafficlineEntity[];
+      }>(req)
+      .catch(
+        _ =>
+          ({
+            Trafficlines: []
+          } as {
+            HotelCities: any[];
+            Trafficlines: TrafficlineEntity[];
+          })
+      );
+    const local = this.localDomesticAirports;
+    if (r.Trafficlines && r.Trafficlines.length) {
+      const airports = [
+        ...this.localDomesticAirports.Trafficlines.filter(
+          item => !r.Trafficlines.some(i => i.Id == item.Id)
+        ),
+        ...r.Trafficlines
+      ];
+      this.localDomesticAirports.LastUpdateTime = Math.floor(Date.now() / 1000);
+      local.Trafficlines= this.localDomesticAirports.Trafficlines = airports;
+      await this.storage.set(KEY_HOME_AIRPORTS, this.localDomesticAirports);
+    }
+    return local.Trafficlines;
+  }
+  async getInternationalAirports(forceFetch: boolean = false) {
+    const req = new RequestEntity();
+    req.Method = `ApiHomeUrl-Resource-InternationalAirport`;
+    // req.IsForward = true;
+    if (!this.localInternationAirports) {
+      this.localInternationAirports =
+        (await this.storage.get(KEY_INTERNATIONAL_AIRPORTS)) ||
+        ({
+          LastUpdateTime: 0,
+          Trafficlines: []
+        } as LocalStorageAirport);
+    }
+    if (!forceFetch && this.localInternationAirports.Trafficlines.length) {
+      return Promise.resolve(this.localInternationAirports.Trafficlines);
+    }
+    req.Data = {
+      LastUpdateTime: this.localInternationAirports.LastUpdateTime
+    };
+    let st = window.performance.now();
+    const r = await this.apiService
+      .getPromiseData<{
+        HotelCities: any[];
+        Trafficlines: TrafficlineEntity[];
+      }>(req)
+      .catch(_ => ({ Trafficlines: [] as TrafficlineEntity[] }));
+    const local = this.localInternationAirports;
+    if (r.Trafficlines && r.Trafficlines.length) {
+      const airports = [
+        ...this.localInternationAirports.Trafficlines.filter(
+          item => !r.Trafficlines.some(i => i.Id == item.Id)
+        ),
+        ...r.Trafficlines
+      ];
+      local.Trafficlines = airports;
+      this.localInternationAirports.LastUpdateTime = Math.floor(
+        Date.now() / 1000
+      );
+      this.localInternationAirports.Trafficlines = local.Trafficlines;
+      st = window.performance.now();
+      await this.storage.set(
+        KEY_INTERNATIONAL_AIRPORTS,
+        this.localInternationAirports
+      );
+      console.log(`本地化国际机票耗时：${window.performance.now() - st} ms`);
+    }
+    return local.Trafficlines;
   }
   async getPassengerCredentials(
     accountIds: string[]

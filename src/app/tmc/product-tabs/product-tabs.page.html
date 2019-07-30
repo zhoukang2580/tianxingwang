@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-button color='dark' (click)='back()'>
+        <ion-icon name='arrow-back'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>product-tabs</ion-title>
+    <ion-buttons slot='end'>
+      <ion-button color='primary' (click)='openSearchModal()'>
+        <ion-icon name="search" color='secondary'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar text-center>
+    <div class='tabs'>
+      <ion-button [color]='activeTab==tab.value?"secondary":"dark"' (click)='onTabClick(tab)' *ngFor='let tab of tabs'
+        fill='clear' [class.active]='activeTab==tab.value'>{{tab.label}}
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+</ion-content>

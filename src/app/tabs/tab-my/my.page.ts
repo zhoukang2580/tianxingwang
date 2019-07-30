@@ -9,6 +9,8 @@ import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
 import { ConfigService } from "src/app/services/config/config.service";
 import { Subscription, Observable } from "rxjs";
+import { Platform } from "@ionic/angular";
+import { ProductItem, ProductItemType } from "src/app/tmc/models/ProductItems";
 interface PageModel {
   Name: string;
   RealName: string;
@@ -22,18 +24,22 @@ interface PageModel {
 })
 export class MyPage implements OnDestroy, OnInit {
   Model: PageModel;
+  isIos = false;
   defaultAvatar = AppHelper.getDefaultAvatar();
   subscription = Subscription.EMPTY;
   identitySubscription = Subscription.EMPTY;
   msgCount$: Observable<number>;
+  items: ProductItem[] = [];
   constructor(
     private router: Router,
+    plt: Platform,
     private identityService: IdentityService,
     private configService: ConfigService,
     private apiService: ApiService,
     route: ActivatedRoute,
     private messageService: MessageService
   ) {
+    this.isIos = plt.is("ios");
     this.identitySubscription = this.identityService
       .getIdentity()
       .subscribe(identity => {
@@ -46,6 +52,21 @@ export class MyPage implements OnDestroy, OnInit {
       this.load();
     });
   }
+  private goToProductListPage() {
+    this.router.navigate([AppHelper.getRoutePath(`product-list`)],{queryParams:{tabs:JSON.stringify(this.items)}});
+  }
+  onProductClick(tab: ProductItem) {
+    if (tab.value != ProductItemType.more) {
+      this.goToProductTabsPage(tab);
+    } else {
+      this.goToProductListPage();
+    }
+  }
+  private goToProductTabsPage(tab: ProductItem) {
+    this.router.navigate([AppHelper.getRoutePath(`product-tabs`)], {
+      queryParams: { tabId: tab.value, tabs: JSON.stringify(this.items) }
+    });
+  }
   onSettings() {
     this.router.navigate([AppHelper.getRoutePath("account-setting")]);
   }
@@ -54,6 +75,33 @@ export class MyPage implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
+    this.items = [
+      {
+        label: "机票",
+        value: ProductItemType.plane,
+        imageSrc: "assets/svgs/product-plane.svg"
+      },
+      {
+        label: "酒店",
+        value: ProductItemType.hotel,
+        imageSrc: "assets/svgs/product-hotel.svg"
+      },
+      {
+        label: "火车票",
+        value: ProductItemType.train,
+        imageSrc: "assets/svgs/product-train.svg"
+      },
+      {
+        label: "保险",
+        value: ProductItemType.insurance,
+        imageSrc: "assets/svgs/product-insurance.svg"
+      },
+      {
+        label: "更多",
+        value: ProductItemType.more,
+        imageSrc: "assets/svgs/product-more.svg"
+      }
+    ];
     this.msgCount$ = this.messageService.getMsgCount();
     console.log("my ngOnInit");
     // this.Model = {

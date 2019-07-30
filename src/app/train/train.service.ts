@@ -96,7 +96,7 @@ export class TrainService {
             Trafficlines: TrafficlineEntity[];
           })
       );
-    let arr: CacheTrafficLineModel;
+    let arr: CacheTrafficLineModel = this.localTrafficLine;
     if (result && result.Trafficlines && result.Trafficlines.length) {
       result.Trafficlines = result.Trafficlines.map(item => {
         if (!item.Pinyin) {

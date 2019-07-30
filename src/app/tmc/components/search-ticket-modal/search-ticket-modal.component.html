@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{title||"订单查询条件"}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-list>
+    <ion-item>
+      <ion-label>旅客姓名</ion-label>
+      <ion-input type='text' placeholder='旅客姓名' [(ngModel)]='condition.passengerName'></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>开始日期</ion-label>
+      <ion-input type='date' placeholder='旅客姓名' [(ngModel)]='condition.vmFromDate'></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>结束日期</ion-label>
+      <ion-input type='date' placeholder='旅客姓名' [(ngModel)]='condition.vmToDate'></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>订单编号</ion-label>
+      <ion-input type='text' placeholder='旅客姓名' [(ngModel)]='condition.orderNumber'></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>订单状态</ion-label>
+      <ion-select value="" okText="确定" cancelText="取消" [(ngModel)]='condition.orderStatus'>
+        <ion-select-option [value]="item.value" *ngFor='let item of orderStatus'>{{item.label}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item detail (click)='searchCities(true)'>
+      <ion-label>出发城市</ion-label>
+      <ion-input type='text' placeholder='旅客姓名' readonly [(ngModel)]='condition.fromCity'
+        [value]='condition.fromCity?.Nickname||condition.fromCity?.CityName'></ion-input>
+    </ion-item>
+    <ion-item detail (click)='searchCities(true)'>
+      <ion-label>到达城市</ion-label>
+      <ion-input type='text' placeholder='旅客姓名' readonly [(ngModel)]='condition.toCity'
+        [value]='condition.toCity?.Nickname||condition.toCity?.CityName'></ion-input>
+    </ion-item>
+  </ion-list>
+  <ion-button margin-start margin-end (click)='search()' color='secondary' expand='block'>搜索</ion-button>
+</ion-content>

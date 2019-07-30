@@ -1,0 +1,9 @@
+.tabs {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  .active {
+    --color: var(--ion-color-secondary);
+    border-bottom: solid 2px var(--ion-color-secondary);
+  }
+}

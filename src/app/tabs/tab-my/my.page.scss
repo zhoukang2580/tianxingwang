@@ -24,3 +24,32 @@ ion-list {
 ion-badge {
   color: white;
 }
+.top-panal{
+  padding-bottom: 4em;
+}
+.produc-item{
+  width: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+  padding-top: .5em;
+  ion-avatar{
+    width: 2em;
+    height: 2em;
+    margin-bottom: .5em;
+  }
+  ion-label{
+    font-size: .8rem;
+  }
+}
+ion-card{
+  position: relative;
+  margin-top: -4.8em;
+  &.is-ios{
+    margin-top: -5.2em;
+  }
+}
+ion-card-header{
+  border-bottom: 1px solid rgba(var(--ion-color-dark-rgb),0.12);
+}

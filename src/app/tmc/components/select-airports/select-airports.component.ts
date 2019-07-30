@@ -13,25 +13,23 @@ import {
   Renderer2
 } from "@angular/core";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
-import { TrainService } from "../../train.service";
 import { Storage } from "@ionic/storage";
-const KEY_HISTORIES_STATTIONS = "key_histories_stattions";
+import { TmcService } from "../../tmc.service";
 @Component({
-  selector: "app-select-station",
-  templateUrl: "./select-station.component.html",
-  styleUrls: ["./select-station.component.scss"]
+  selector: "app-select-airports",
+  templateUrl: "./select-airports.component.html",
+  styleUrls: ["./select-airports.component.scss"]
 })
-export class SelectTrainStationComponent implements OnInit, AfterViewInit {
+export class SelectAirportsModalComponent implements OnInit, AfterViewInit {
   vmKeyword = "";
-  histories: TrafficlineEntity[];
-  hotStations: TrafficlineEntity[];
-  stations: { [key: string]: TrafficlineEntity[] } = {};
-  vmStations: TrafficlineEntity[];
-  allStations: TrafficlineEntity[] = [];
+  hots: TrafficlineEntity[];
+  airports: { [key: string]: TrafficlineEntity[] } = {};
+  vmAirports: TrafficlineEntity[];
+  allAirports: TrafficlineEntity[] = [];
   letters: string[];
   activeLetter = "A";
   isLoading = false;
-  selectedStation: TrafficlineEntity;
+  selectedItem: TrafficlineEntity;
   isShowFabButton = false;
   scrollEle: HTMLElement;
   @ViewChild(IonRefresher) refresher: IonRefresher;
@@ -39,16 +37,14 @@ export class SelectTrainStationComponent implements OnInit, AfterViewInit {
   @ViewChild("lettersEle") lettersEle: IonGrid;
   @ViewChild(IonContent) ionContent: IonContent;
   constructor(
-    private trainService: TrainService,
+    private tmcService: TmcService,
     private modalCtrl: ModalController,
     private storage: Storage,
-    private domCtrl: DomController,
-    private render2: Renderer2
+    private domCtrl: DomController
   ) {}
   async ngOnInit() {
-    this.allStations = await this.trainService.getStationsAsync();
-    this.hotStations = this.allStations.filter(s => s.IsHot);
-    this.histories = await this.storage.get(KEY_HISTORIES_STATTIONS);
+    this.allAirports = await this.tmcService.getAllLocalAirports(true);
+    this.hots = this.allAirports.filter(s => s.IsHot);
     this.init();
   }
   async ngAfterViewInit() {
@@ -62,18 +58,36 @@ export class SelectTrainStationComponent implements OnInit, AfterViewInit {
     }
   }
   init() {
-    this.allStations.forEach(s => {
-      if (this.stations[s.FirstLetter]) {
-        this.stations[s.FirstLetter].push(s);
+    console.time("init");
+    this.allAirports.forEach(s => {
+      if (this.airports[s.FirstLetter]) {
+        this.airports[s.FirstLetter].push(s);
       } else {
-        this.stations[s.FirstLetter] = [s];
+        this.airports[s.FirstLetter] = [s];
       }
     });
-    this.letters = Object.keys(this.stations);
+    this.letters = Object.keys(this.airports);
     this.letters.sort((l1, l2) => l1.charCodeAt(0) - l2.charCodeAt(0));
-    this.activeLetter=this.letters[0];
-    this.vmStations = this.stations[this.activeLetter];
-    this.vmStations.sort((s1, s2) => s1.Sequence - s2.Sequence);
+    this.activeLetter = this.letters[0];
+    // console.log(this.airports[this.activeLetter]);
+    this.renderList();
+    console.timeEnd("init");
+  }
+  private renderList() {
+    console.time("renderList");
+    this.vmAirports = [];
+    const airports = this.airports[this.activeLetter].slice(0);
+    airports.sort((s1, s2) => s1.Sequence - s2.Sequence);
+    const loop = () => {
+      airports.splice(0, 50).forEach(a => {
+        this.vmAirports.push(a);
+      });
+      if (airports.length) {
+        window.requestAnimationFrame(loop);
+      }
+    };
+    loop();
+    console.timeEnd("renderList");
   }
   onScroll(evt: any) {
     if (!this.scrollEle) {
@@ -94,8 +108,8 @@ export class SelectTrainStationComponent implements OnInit, AfterViewInit {
   }
   onSelectLetter(letter: string) {
     this.activeLetter = letter;
-    this.vmStations = this.stations[this.activeLetter];
-    this.vmStations.sort((s1, s2) => s1.Sequence - s2.Sequence);
+    console.log(this.vmAirports);
+    this.renderList();
     this.scrollToTargetLink();
   }
   private scrollToTargetLink() {
@@ -116,7 +130,7 @@ export class SelectTrainStationComponent implements OnInit, AfterViewInit {
   }
   async doRefresh() {
     this.isLoading = true;
-    this.allStations = await this.trainService.getStationsAsync(true);
+    this.allAirports = await this.tmcService.getAllLocalAirports();
     this.isLoading = false;
     this.init();
     if (this.refresher) {
@@ -126,28 +140,22 @@ export class SelectTrainStationComponent implements OnInit, AfterViewInit {
   async back() {
     const m = await this.modalCtrl.getTop();
     if (m) {
-      m.dismiss(this.selectedStation).catch(_ => {});
+      m.dismiss(this.selectedItem).catch(_ => {});
     }
   }
-  async onSelectStation(station: TrafficlineEntity) {
-    this.vmStations.forEach(s => (s.Selected = false));
-    this.hotStations.forEach(s => (s.Selected = false));
-    this.histories.forEach(s => (s.Selected = false));
-    station.Selected = true;
-    this.selectedStation = station;
-    this.histories = this.histories || [];
-    if (!this.histories.find(s => s.Code == station.Code)) {
-      this.histories.unshift(station);
-    }
-    this.storage.set(KEY_HISTORIES_STATTIONS, this.histories.slice(0, 9));
+  async onSelectStation(airport: TrafficlineEntity) {
+    this.vmAirports.forEach(s => (s.Selected = false));
+    this.hots.forEach(s => (s.Selected = false));
+    airport.Selected = true;
+    this.selectedItem = airport;
     this.back();
   }
   async doSearch() {
     const kw = this.vmKeyword.trim();
     if (!kw) {
-      this.vmStations = this.stations[this.activeLetter];
+      this.vmAirports = this.airports[this.activeLetter];
     } else {
-      this.vmStations = this.allStations.filter(s => {
+      this.vmAirports = this.allAirports.filter(s => {
         return (
           kw.toUpperCase() == s.FirstLetter ||
           (s.Name && s.Name.includes(kw)) ||
@@ -156,7 +164,7 @@ export class SelectTrainStationComponent implements OnInit, AfterViewInit {
           (s.CityName && s.CityName.includes(kw))
         );
       });
-      this.vmStations.sort((s1, s2) => s1.Sequence - s2.Sequence);
+      this.vmAirports.sort((s1, s2) => s1.Sequence - s2.Sequence);
       this.scrollToTargetLink();
     }
   }

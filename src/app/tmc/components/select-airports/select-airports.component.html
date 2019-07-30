@@ -1,0 +1,56 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-button fill='clear' (click)='back()'>
+        <ion-icon name='arrow-back' color='dark'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-searchbar mode='ios' debounce="700" animated placeholder="输入中文、拼音、首字母、城市代码" (ionChange)='doSearch()'
+      [(ngModel)]='vmKeyword'>
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+<ion-content [scrollEvents]='true' (ionScroll)='onScroll($event)'>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh()">
+  </ion-refresher>
+  <ng-container *ngIf='!isLoading else loadingTemp'>
+    <ion-grid *ngIf='letters&&letters.length' #lettersEle>
+      <ion-row>
+        字母索引
+      </ion-row>
+      <ion-row>
+        <ion-col *ngFor='let letter of letters' (click)='onSelectLetter(letter)' size='1'>
+          <ion-text color='secondary'>
+            {{letter}}
+          </ion-text>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+    <ion-grid *ngIf='hots&&hots.length' #hot>
+      <ion-row>
+        热门
+      </ion-row>
+      <ion-row>
+        <ion-col *ngFor='let h of hots' size='4' (click)='onSelectStation(h)'>
+          <ion-chip [class.selected]='h.Selected'>
+            <ion-label>{{h.CityName}}</ion-label>
+          </ion-chip>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <ul style='list-style-type:none;margin:0;padding:0;'>
+      <li *ngFor='let s of vmAirports' (click)='onSelectStation(s)'>
+        <ion-text [color]='s.Selected?"secondary":""'>{{s.CityName}}</ion-text>
+      </li>
+    </ul>
+  </ng-container>
+  <ng-template #loadingTemp>
+    正在加载...
+  </ng-template>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" [style.display]='isShowFabButton?"initial":"none"'>
+    <ion-fab-button size='small' color="secondary" (click)='scrollTop()'>
+      <ion-icon name="skip-forward"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

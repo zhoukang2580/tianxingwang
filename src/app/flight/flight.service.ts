@@ -18,13 +18,11 @@ import { ApiService } from "../services/api/api.service";
 import { FlightJourneyEntity } from "./models/flight/FlightJourneyEntity";
 import { FlightSegmentEntity } from "./models/flight/FlightSegmentEntity";
 import { RequestEntity } from "../services/api/Request.entity";
-import { Storage } from "@ionic/storage";
 import { LanguageHelper } from "../languageHelper";
 import { Router } from "@angular/router";
 import { TripType } from "../tmc/models/TripType";
 import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
-export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
-export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
+
 export interface PassengerFlightSegmentInfo {
   flightSegment: FlightSegmentEntity;
   flightPolicy: FlightPolicy;
@@ -102,10 +100,7 @@ export interface CurrentViewtFlightSegment {
   flightSegments: FlightSegmentEntity[];
   totalPolicyFlights: PassengerPolicyFlights[];
 }
-interface LocalStorageAirport {
-  LastUpdateTime: number;
-  Trafficlines: TrafficlineEntity[];
-}
+
 const debugCacheTime = 5 * 60 * 1000;
 @Injectable({
   providedIn: "root"
@@ -119,23 +114,14 @@ export class FlightService {
   private filterPanelShowHideSource: Subject<boolean>;
   private openCloseSelectCitySources: Subject<boolean>;
   private filterCondSources: Subject<FilterConditionModel>;
-  private localInternationAirports: LocalStorageAirport = {
-    LastUpdateTime: 0,
-    Trafficlines: []
-  };
-  private localDomesticAirports: LocalStorageAirport = {
-    LastUpdateTime: 0,
-    Trafficlines: []
-  };
+
   private selectedCitySource: Subject<TrafficlineEntity>;
-  private allLocalAirports: TrafficlineEntity[];
   private passengerBookInfos: PassengerBookInfo[]; // 记录乘客及其研究选择的航班
   currentViewtFlightSegment: CurrentViewtFlightSegment;
 
   constructor(
     private apiService: ApiService,
     private staffService: StaffService,
-    private storage: Storage,
     private modalCtrl: ModalController,
     private router: Router,
     private navCtrl: NavController,
@@ -567,96 +553,10 @@ export class FlightService {
     return this.filterPanelShowHideSource.asObservable();
   }
   async getDomesticAirports(forceFetch: boolean = false) {
-    // return this.getInternationalAirports(forceFetch);
-    const req = new RequestEntity();
-    // req.IsForward = true;
-    req.Method = `ApiHomeUrl-Resource-Airport`;
-    if (!this.localDomesticAirports) {
-      this.localDomesticAirports =
-        (await this.storage.get(KEY_HOME_AIRPORTS)) ||
-        ({
-          LastUpdateTime: 0,
-          Trafficlines: []
-        } as LocalStorageAirport);
-    }
-    if (
-      !forceFetch &&
-      this.localDomesticAirports &&
-      this.localDomesticAirports.Trafficlines &&
-      this.localDomesticAirports.Trafficlines.length
-    ) {
-      return Promise.resolve(this.localDomesticAirports.Trafficlines);
-    }
-    req.Data = {
-      LastUpdateTime: this.localDomesticAirports.LastUpdateTime
-    };
-    const r = await this.apiService
-      .getPromiseData<{
-        HotelCities: any[];
-        Trafficlines: TrafficlineEntity[];
-      }>(req)
-      .catch(
-        _ =>
-          ({
-            Trafficlines: []
-          } as {
-            HotelCities: any[];
-            Trafficlines: TrafficlineEntity[];
-          })
-      );
-    const airports = [
-      ...this.localDomesticAirports.Trafficlines.filter(
-        item => !r.Trafficlines.some(i => i.Id == item.Id)
-      ),
-      ...r.Trafficlines
-    ];
-    this.localDomesticAirports.LastUpdateTime = Math.floor(Date.now() / 1000);
-    this.localDomesticAirports.Trafficlines = airports;
-    await this.storage.set(KEY_HOME_AIRPORTS, this.localDomesticAirports);
-    return airports.filter(item => !!item);
+    return this.tmcService.getDomesticAirports(forceFetch);
   }
   async getInternationalAirports(forceFetch: boolean = false) {
-    const req = new RequestEntity();
-    req.Method = `ApiHomeUrl-Resource-InternationalAirport`;
-    // req.IsForward = true;
-    if (!this.localInternationAirports) {
-      this.localInternationAirports =
-        (await this.storage.get(KEY_INTERNATIONAL_AIRPORTS)) ||
-        ({
-          LastUpdateTime: 0,
-          Trafficlines: []
-        } as LocalStorageAirport);
-    }
-    if (!forceFetch && this.localInternationAirports.Trafficlines.length) {
-      return Promise.resolve(this.localInternationAirports.Trafficlines);
-    }
-    req.Data = {
-      LastUpdateTime: this.localInternationAirports.LastUpdateTime
-    };
-    let st = window.performance.now();
-    const r = await this.apiService
-      .getPromiseData<{
-        HotelCities: any[];
-        Trafficlines: TrafficlineEntity[];
-      }>(req)
-      .catch(_ => ({ Trafficlines: [] as TrafficlineEntity[] }));
-    const airports = [
-      ...this.localInternationAirports.Trafficlines.filter(
-        item => !r.Trafficlines.some(i => i.Id == item.Id)
-      ),
-      ...r.Trafficlines
-    ];
-    this.localInternationAirports.LastUpdateTime = Math.floor(
-      Date.now() / 1000
-    );
-    this.localInternationAirports.Trafficlines = airports;
-    st = window.performance.now();
-    await this.storage.set(
-      KEY_INTERNATIONAL_AIRPORTS,
-      this.localInternationAirports
-    );
-    console.log(`本地化国际机票耗时：${window.performance.now() - st} ms`);
-    return airports;
+    return this.tmcService.getInternationalAirports(forceFetch);
   }
 
   async getPolicyflightsAsync(
@@ -784,6 +684,9 @@ export class FlightService {
     console.timeEnd("getTotalFlySegments");
     return result;
   }
+  get allLocalAirports() {
+    return this.tmcService.allLocalAirports || [];
+  }
   private getHHmm(datetime: string) {
     if (datetime && datetime.includes("T")) {
       const remain = datetime.split("T")[1];
@@ -820,44 +723,13 @@ export class FlightService {
     return serverFlights;
   }
   async getLocalHomeAirports(): Promise<TrafficlineEntity[]> {
-    if (
-      this.localDomesticAirports &&
-      this.localDomesticAirports.Trafficlines.length
-    ) {
-      return Promise.resolve(this.localDomesticAirports.Trafficlines);
-    }
-    return (
-      (await this.storage.get(KEY_HOME_AIRPORTS)) ||
-      ({
-        LastUpdateTime: 0,
-        Trafficlines: []
-      } as LocalStorageAirport)
-    ).TrafficlineEntitys;
+    return this.tmcService.getLocalHomeAirports();
   }
   async getLocalInternationalAirports(): Promise<TrafficlineEntity[]> {
-    if (
-      this.localInternationAirports &&
-      this.localInternationAirports.Trafficlines.length
-    ) {
-      return Promise.resolve(this.localInternationAirports.Trafficlines);
-    }
-    return (
-      (await this.storage.get(KEY_INTERNATIONAL_AIRPORTS)) ||
-      ({
-        LastUpdateTime: 0,
-        Trafficlines: []
-      } as LocalStorageAirport)
-    ).TrafficlineEntitys;
+    return this.tmcService.getLocalInternationalAirports();
   }
   async getAllLocalAirports() {
-    if (this.allLocalAirports && this.allLocalAirports.length) {
-      return Promise.resolve(this.allLocalAirports);
-    }
-    this.apiService.showLoadingView();
-    const h = await this.getDomesticAirports();
-    const i = [] || (await this.getInternationalAirports());
-    this.apiService.hideLoadingView();
-    return (this.allLocalAirports = [...h, ...i]);
+    return this.tmcService.getAllLocalAirports();
   }
   getCredentialStaffs(AccountIds: string[]): Promise<StaffEntity[]> {
     return this.tmcService.getCredentialStaffs(AccountIds);
