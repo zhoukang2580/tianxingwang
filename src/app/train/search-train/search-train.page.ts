@@ -131,7 +131,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     this.onRoundTrip(evt.detail.value == "single");
   }
   async isStaffTypeSelf() {
-    return await this.staffService.isStaffTypeSelf();
+    return await this.staffService.checkStaffTypeSelf();
   }
   async ngOnInit() {
     this.selectDaySubscription = this.trainDayService

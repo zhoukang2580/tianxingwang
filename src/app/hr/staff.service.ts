@@ -126,7 +126,7 @@ export class StaffApprover {
   Type: TaskType;
 }
 export class StaffEntity {
-  isNotWhiteList:boolean;
+  isNotWhiteList: boolean;
   /// <summary>
   ///
   /// </summary>
@@ -226,6 +226,7 @@ export interface HrEntity {
 })
 export class StaffService {
   private staff: StaffEntity;
+  isSelfBookType: boolean;
   constructor(
     private apiService: ApiService,
     private identityService: IdentityService
@@ -233,12 +234,14 @@ export class StaffService {
     this.identityService.getIdentity().subscribe(id => {
       if (!id || !id.Id || !id.Ticket) {
         this.staff = null;
+        this.isSelfBookType = false;
       }
     });
   }
-  async isStaffTypeSelf() {
+  async checkStaffTypeSelf() {
     const s = await this.getStaff();
-    return s && s.BookType && s.BookType == StaffBookType.Self;
+    this.isSelfBookType = s && s.BookType && s.BookType == StaffBookType.Self;
+    return this.isSelfBookType;
   }
   async getStaff(forceRefresh: boolean = false): Promise<StaffEntity> {
     const id = await this.identityService.getIdentityAsync();
@@ -278,6 +281,8 @@ export class StaffService {
           this.staff.AccountId = this.staff.AccountId || id.Id;
           this.staff.Name = this.staff.Name || id.Name;
         }
+        this.isSelfBookType =
+          s && s.BookType && s.BookType == StaffBookType.Self;
         return s;
       })
       .catch(_ => {

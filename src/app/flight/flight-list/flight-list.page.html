@@ -20,20 +20,22 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-  <ion-grid class='xs-font-size' [style.visibility]="!loading?'initial':'collapse'">
+  <ion-grid class='xs-font-size' [style.visibility]="!isLoading?'initial':'collapse'">
     <ion-row>
       <ion-col>
         {{searchFlightModel?.Date}}共{{vmFlights?.length}}个航班
         <ion-text color='danger' *ngIf='isFiltered'>(筛选后)</ion-text>
       </ion-col>
     </ion-row>
-    <ion-row *ngIf='goAndBackFlightDateTime$|async as datetime'>
-      <ion-col *ngIf='datetime?.goArrivalDateTime'>
-        <ion-text>已选去程:{{datetime?.goArrivalDateTime}}</ion-text>
-      </ion-col>
-      <ion-col *ngIf='datetime?.backTakeOffDateTime'>
-        <ion-text>已选返程:{{datetime?.backTakeOffDateTime}}</ion-text>
-      </ion-col>
+    <ion-row *ngIf='isSelfBookType'>
+      <ng-container *ngIf='goAndBackFlightDateTime$|async as datetime'>
+        <ion-col *ngIf='datetime?.goArrivalDateTime'>
+          <ion-text>已选去程:{{datetime?.goArrivalDateTime}}</ion-text>
+        </ion-col>
+        <ion-col *ngIf='datetime?.backTakeOffDateTime'>
+          <ion-text>已选返程:{{datetime?.backTakeOffDateTime}}</ion-text>
+        </ion-col>
+      </ng-container>
     </ion-row>
   </ion-grid>
   <ion-toolbar class="fly-days">
@@ -43,17 +45,17 @@
 </ion-header>
 <ion-content #cnt>
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh(true,false)" pullFactor="0.8" pullMin="100" pullMax="200">
-    <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="下拉刷新" refreshingSpinner="circles"
+    <!-- <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="下拉刷新" refreshingSpinner="circles"
       refreshingText="正在加载...">
-    </ion-refresher-content>
+    </ion-refresher-content> -->
   </ion-refresher>
-  <app-or-comp *ngIf='loading'>
+  <app-or-comp *ngIf='isLoading'>
     <span>数据即将加载完成</span>
   </app-or-comp>
-  <app-or-comp *ngIf='!loading&&vmFlights?.length==0'>
+  <app-or-comp *ngIf='!isLoading&&vmFlights?.length==0'>
     <span>暂无数据</span>
   </app-or-comp>
-  <!-- <ion-list *ngIf='!loading else fakeList'>
+  <!-- <ion-list *ngIf='!isLoading else fakeList'>
     <ion-item *ngFor='let s of vmFlights' detail (click)="goToFlightCabinsDetails(s)">
       <app-fly-list-item [flightSegment]="s">
       </app-fly-list-item>
@@ -114,7 +116,7 @@
       </div>
     </li> -->
   </ul>
-  <ng-container #fakeList *ngIf='loading'>
+  <ng-container #fakeList *ngIf='isLoading'>
     <ion-list>
       <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8]'>
         <div style='width: 100%;'>

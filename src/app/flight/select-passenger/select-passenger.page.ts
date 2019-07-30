@@ -294,7 +294,7 @@ export class SelectPassengerPage
     const arr = this.flightService
       .getPassengerBookInfos()
       .map(item => item.passenger);
-    if (await this.staffService.isStaffTypeSelf()) {
+    if (await this.staffService.checkStaffTypeSelf()) {
       if (arr.length > 1) {
         return false;
       }

@@ -18,7 +18,7 @@ import {
 import {
   PassengerBookInfo,
   PassengerFlightSegmentInfo,
-  FlightService,
+  FlightService
 } from "src/app/flight/flight.service";
 import { FlightSegmentEntity } from "./../../models/flight/FlightSegmentEntity";
 import { Component, OnInit, OnDestroy } from "@angular/core";
@@ -26,7 +26,7 @@ import { LanguageHelper } from "src/app/languageHelper";
 import * as moment from "moment";
 import { tap, map, reduce } from "rxjs/operators";
 import { SelectFlightsegmentCabinComponent } from "../select-flightsegment-cabin/select-flightsegment-cabin.component";
-import { TripType } from 'src/app/tmc/models/TripType';
+import { TripType } from "src/app/tmc/models/TripType";
 interface PassengerBookInfos {
   passenger: StaffEntity;
   credential: CredentialsEntity;
@@ -66,19 +66,25 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     this.passengerAndBookInfos$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(
-        tap(async infos => {
-          const s = await this.staffService.getStaff();
-          if (s.BookType == StaffBookType.Self) {
-            const oneInfos = infos.filter(
-              item => item.passenger.AccountId == s.AccountId
+        tap(infos => {
+          if (this.staffService.isSelfBookType) {
+            const goinfo = infos.find(
+              item =>
+                item.flightSegmentInfo &&
+                item.flightSegmentInfo.tripType == TripType.departureTrip
             );
+            const backInfo = infos.find(
+              item =>
+                item.flightSegmentInfo &&
+                item.flightSegmentInfo.tripType == TripType.returnTrip
+            );
+            if (goinfo && backInfo) {
+              this.showSelectReturnTripButton = false;
+            }
             this.showSelectReturnTripButton =
-              this.flightService.getSearchFlightModel().IsRoundTrip &&
-              !!oneInfos.find(
-                info =>
-                  info.flightSegmentInfo &&
-                  info.flightSegmentInfo.tripType == TripType.departureTrip
-              );
+              this.flightService.getSearchFlightModel().isRoundTrip &&
+              goinfo &&
+              !backInfo;
           } else {
             this.showSelectReturnTripButton = false;
           }
@@ -212,7 +218,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     }
   }
 
-  async remove(item: PassengerFlightSegmentInfo, message?: string) {
+  async remove(item: PassengerBookInfo, message?: string) {
     const al = await this.alertController.create({
       header: LanguageHelper.getHintTip(),
       message:
@@ -220,8 +226,8 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
       buttons: [
         {
           text: LanguageHelper.getConfirmTip(),
-          handler: () => {
-            this.flightService.removePassengerFlightSegmentInfo(item);
+          handler: async () => {
+            await this.flightService.removePassengerBookInfo(item);
             if (al) {
               al.dismiss();
             }
@@ -260,6 +266,9 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     const s = this.flightService.getSearchFlightModel();
     const airports = await this.flightService.getAllLocalAirports();
     const bookInfos = this.flightService.getPassengerBookInfos();
+    if (bookInfos.length < 2) {
+      await this.flightService.addOneBookInfoToSelfBookType();
+    }
     s.tripType = TripType.returnTrip;
     const goflightBookInfo = bookInfos.find(
       item =>

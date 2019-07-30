@@ -41,7 +41,15 @@ import {
   NgZone,
   ElementRef
 } from "@angular/core";
-import { tap, takeUntil, switchMap, delay, map, filter } from "rxjs/operators";
+import {
+  tap,
+  takeUntil,
+  switchMap,
+  delay,
+  map,
+  filter,
+  reduce
+} from "rxjs/operators";
 import * as moment from "moment";
 import { FlydayService } from "../flyday.service";
 import { DayModel } from "../../tmc/models/DayModel";
@@ -56,8 +64,8 @@ import { Storage } from "@ionic/storage";
 import { SelectedFlightsegmentInfoComponent } from "../components/selected-flightsegment-info/selected-flightsegment-info.component";
 import { SelectedPassengersPopoverComponent } from "../components/selected-passengers-popover/selected-passengers-popover.component";
 import { NOT_WHITE_LIST } from "../select-passenger/select-passenger.page";
-import { TripType } from 'src/app/tmc/models/TripType';
-import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
+import { TripType } from "src/app/tmc/models/TripType";
+import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -105,9 +113,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   policyflights: PassengerPolicyFlights[];
   priceOrderL2H: boolean; // 价格从低到高
   timeOrdM2N: boolean; // 时间从早到晚
-  loading = false;
+  isLoading = false;
   isFiltered = false;
   isLeavePage = false;
+  isSelfBookType = true;
   st = 0;
   selectedPassengersNumbers$: Observable<number>;
   goAndBackFlightDateTime$: Observable<{
@@ -145,6 +154,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           if (this.isLeavePage) {
             return;
           }
+          if (!(await this.canShowAddPassenger())) {
+            return;
+          }
           const ok = await AppHelper.alert(
             LanguageHelper.Flight.getMustAddOnePassengerTip(),
             true,
@@ -160,43 +172,43 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.vmFlights = [];
     this.flightJourneyList = [];
     this.searchFlightModel = new SearchFlightModel();
-    this.goAndBackFlightDateTime$ = combineLatest([
-      flightService.getPassengerBookInfoSource(),
-      from(staffService.getStaff()),
-      from(staffService.isStaffTypeSelf())
-    ]).pipe(
-      filter(([_, staff, isSelfBookType]) => isSelfBookType),
-      map(([arr1, staff]) =>
-        arr1.find(item => item.passenger.AccountId == staff.AccountId)
-      ),
-      filter(
-        item =>
-          !!item &&
-          !!item.flightSegmentInfo &&
-          !!item.flightSegmentInfo.flightSegment
-      ),
-      map(res => {
-        return {
-          goArrivalDateTime:
-            res.flightSegmentInfo.tripType == TripType.departureTrip
-              ? moment(res.flightSegmentInfo.flightSegment.TakeoffTime).format(
-                  "YYYY-MM-DD HH:mm"
-                )
-              : "",
-          backTakeOffDateTime:
-            res.flightSegmentInfo.tripType == TripType.returnTrip
-              ? moment(res.flightSegmentInfo.flightSegment.TakeoffTime).format(
-                  "YYYY-MM-DD HH:mm"
-                )
-              : ""
-        };
-      })
-    );
+    this.goAndBackFlightDateTime$ = flightService
+      .getPassengerBookInfoSource()
+      .pipe(
+        map(infos => {
+          const goInfo = infos.find(
+            item =>
+              item.flightSegmentInfo &&
+              item.flightSegmentInfo.tripType == TripType.departureTrip
+          );
+          const backInfo = infos.find(
+            item =>
+              item.flightSegmentInfo &&
+              item.flightSegmentInfo.tripType == TripType.returnTrip
+          );
+          return {
+            goArrivalDateTime:
+              goInfo &&
+              goInfo.flightSegmentInfo &&
+              goInfo.flightSegmentInfo.flightSegment
+                ? moment(
+                    goInfo.flightSegmentInfo.flightSegment.TakeoffTime
+                  ).format("YYYY-MM-DD HH:mm")
+                : "",
+            backTakeOffDateTime:
+              backInfo &&
+              backInfo.flightSegmentInfo &&
+              backInfo.flightSegmentInfo.flightSegment &&
+              backInfo.flightSegmentInfo.tripType == TripType.returnTrip
+                ? moment(
+                    backInfo.flightSegmentInfo.flightSegment.TakeoffTime
+                  ).format("YYYY-MM-DD HH:mm")
+                : ""
+          };
+        })
+      );
     this.route.queryParamMap.subscribe(async () => {
-      const identity = await this.identityService.getIdentityAsync();
-      this.showAddPassenger =
-        (identity && identity.Numbers && identity.Numbers.AgentId) ||
-        (await this.staffService.getStaff()).BookType != StaffBookType.Self;
+      this.showAddPassenger = await this.canShowAddPassenger();
       if (this.searchConditionSubscription) {
         this.searchConditionSubscription.unsubscribe();
       }
@@ -205,6 +217,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         .subscribe(s => {
           console.log("flight-list page getSearchFlightModelSource", s);
           this.searchFlightModel = s;
+          this.isSelfBookType = s.isSelfBookType;
           if (this.searchFlightModel) {
             // this.isRoundTrip = this.searchFlightModel.IsRoundTrip;
             this.vmFromCity = this.searchFlightModel.fromCity;
@@ -225,8 +238,15 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     });
     this.showAdvSearchPage$ = this.flightService.getFilterPanelShow();
   }
+  async canShowAddPassenger() {
+    const identity = await this.identityService.getIdentityAsync();
+    this.showAddPassenger =
+      (identity && identity.Numbers && identity.Numbers.AgentId) ||
+      (await !this.staffService.checkStaffTypeSelf());
+    return this.showAddPassenger;
+  }
   async isStaffTypeSelf() {
-    return await this.staffService.isStaffTypeSelf();
+    return await this.staffService.checkStaffTypeSelf();
   }
   onCalenderClick() {
     this.flyDayService.setFlyDayMulti(false);
@@ -240,7 +260,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     if (
       byUser &&
       !this.isLeavePage &&
-      (!day || this.searchFlightModel.Date == day.date || this.loading)
+      (!day || this.searchFlightModel.Date == day.date || this.isLoading)
     ) {
       return;
     }
@@ -267,7 +287,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     } else {
-      if (this.searchFlightModel.IsRoundTrip) {
+      if (this.searchFlightModel.isRoundTrip) {
         if (+moment(day.date) > +moment(this.searchFlightModel.BackDate)) {
           this.searchFlightModel.BackDate = moment(day.date)
             .add(1, "days")
@@ -299,7 +319,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     filterPolicy?: boolean
   ) {
     try {
-      if (this.isLeavePage || this.loading) {
+      if (this.isLeavePage || this.isLoading) {
         return;
       }
       this.moveDayToSearchDate();
@@ -314,7 +334,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         }, 0);
       }
       this.vmFlights = [];
-      this.loading = true;
+      this.isLoading = true;
       let data = JSON.parse(JSON.stringify(this.flightJourneyList));
       this.hasDataSource.next(false);
       if (loadDataFromServer) {
@@ -333,7 +353,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       );
       if (filterPolicy) {
         segments = segments.filter(s =>
-          s.PoliciedCabins.some(pc => pc.Rules.length == 0)
+          s.PoliciedCabins.some(pc => pc.Rules && pc.Rules.length == 0)
         );
         if (segments.length == 0) {
           if (`${passengerId}`.toLowerCase().includes(NOT_WHITE_LIST)) {
@@ -347,17 +367,17 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.st = Date.now();
       this.vmFlights = segments;
       await this.renderFlightList2(segments);
-      this.hasDataSource.next(!!this.vmFlights.length && !this.loading);
+      this.hasDataSource.next(!!this.vmFlights.length && !this.isLoading);
       if (this.refresher) {
         this.refresher.complete();
       }
       this.apiService.hideLoadingView();
-      this.loading = false;
+      this.isLoading = false;
     } catch (e) {
       if (!environment.production) {
         console.error(e);
       }
-      this.loading = false;
+      this.isLoading = false;
     }
   }
   private scrollToTop() {
@@ -371,6 +391,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     passengerId?: string
   ): Promise<FlightJourneyEntity[]> {
     // 先获取最新的数据
+    this.policyflights = [];
     let flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync(
       this.searchFlightModel
     );
@@ -421,7 +442,11 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         );
       }
     }
-    if (this.policyflights.length === 0 && whitelist.length) {
+    if (
+      this.policyflights &&
+      this.policyflights.length === 0 &&
+      whitelist.length
+    ) {
       flightJourneyList = [];
       this.policyflights = [];
       return [];
@@ -489,7 +514,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async goToFlightCabinsDetails(fs: FlightSegmentEntity) {
+    const isSelf = this.flightService.getSearchFlightModel().isSelfBookType;
     if (
+      !isSelf &&
       this.flightService.getPassengerBookInfos().map(item => item.passenger)
         .length == 0
     ) {
@@ -501,7 +528,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.goToSelectPassengerPage();
       return;
     }
-    const canbookMore = await this.flightService.canBookMoreFlightSegment(fs);
+    const canbookMore = this.flightService.canBookMoreFlightSegment(fs);
     if (!canbookMore) {
       await AppHelper.alert(
         LanguageHelper.Flight.getCannotBookMoreFlightSegmentTip(),
@@ -531,7 +558,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.searchConditionSubscription.unsubscribe();
     this.isLeavePage = true;
   }
-  async showSelectedInfos() {
+  private async showSelectedInfos() {
     const modal = await this.modalCtrl.create({
       component: SelectedFlightsegmentInfoComponent
     });
@@ -631,7 +658,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
             this.moveDayToSearchDate();
           }
           this.searchFlightModel.Date = day.date;
-          if (this.loading && this.isLeavePage) {
+          if (this.isLoading && this.isLeavePage) {
             return;
           }
           console.log(
@@ -712,20 +739,20 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async onTimeOrder() {
     console.time("time");
-    this.loading = true;
+    this.isLoading = true;
     this.activeTab = "time";
     this.timeOrdM2N = !this.timeOrdM2N;
     await this.sortFlights("time");
-    this.loading = false;
+    this.isLoading = false;
     console.timeEnd("time");
   }
   async onPriceOrder() {
     console.time("price");
-    this.loading = true;
+    this.isLoading = true;
     this.activeTab = "price";
     this.priceOrderL2H = !this.priceOrderL2H;
     await this.sortFlights("price");
-    this.loading = false;
+    this.isLoading = false;
     console.timeEnd("price");
   }
   private async sortFlights(key: "price" | "time") {
@@ -792,7 +819,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
 
   private async renderFlightList2(fs: FlightSegmentEntity[]) {
     console.time("renderFlightList2");
-    this.loading = true;
+    this.isLoading = true;
     const segments = fs.map(s => {
       const template = `<div class='left'>
           <h4 class="time">

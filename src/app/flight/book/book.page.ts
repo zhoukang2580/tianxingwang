@@ -781,7 +781,7 @@ export class BookPage implements OnInit, AfterViewInit {
     );
   }
   private async initSelfBookTypeCredentials() {
-    if (await this.staffService.isStaffTypeSelf()) {
+    if (await this.staffService.checkStaffTypeSelf()) {
       const identity = await this.identityService.getIdentityAsync();
       const bookTypeSelfCredentials = await this.staffService.getStaffCredentials(
         identity && identity.Id

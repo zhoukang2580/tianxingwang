@@ -81,7 +81,7 @@ export class FlightItemCabinsPage implements OnInit {
     return `${t && t.format("MM月DD日")} ${d && d.dayOfWeekName} `;
   }
   async onBookTicket(flightCabin: FlightCabinEntity) {
-    await this.flightService.addOrReselecteInfos(flightCabin);
+    this.flightService.addOrReplaceSegmentInfo(flightCabin);
     await this.showSelectedInfos();
   }
   async filterPolicyFlights() {
@@ -100,7 +100,8 @@ export class FlightItemCabinsPage implements OnInit {
       if (one) {
         this.vmPolicyCabins = one.FlightPolicies.filter(
           pc =>
-            pc.FlightNo == this.vmFlightSegment.Number && pc.Rules.length == 0
+            pc.FlightNo == this.vmFlightSegment.Number &&
+            (!pc.Rules || pc.Rules.length == 0)
         );
       } else {
         this.vmPolicyCabins = [];
@@ -108,6 +109,10 @@ export class FlightItemCabinsPage implements OnInit {
       this.isShowPolicyCabins = true;
     } else {
       this.isShowPolicyCabins = false;
+      if (this.staffService.isSelfBookType) {
+        this.isShowPolicyCabins = true;
+        this.showPolicyCabins();
+      }
     }
   }
   async showSelectedInfos() {
@@ -142,7 +147,7 @@ export class FlightItemCabinsPage implements OnInit {
     return "primary";
   }
   async ngOnInit() {
-    if (await this.staffService.isStaffTypeSelf()) {
+    if (await this.staffService.checkStaffTypeSelf()) {
       this.isShowPolicyCabins = true;
       this.showPolicyCabins();
     } else {
@@ -150,7 +155,8 @@ export class FlightItemCabinsPage implements OnInit {
       this.showFlightCabins();
     }
   }
-  showPolicyCabins() {
+  private showPolicyCabins() {
+    this.vmPolicyCabins = [];
     if (this.currentViewtFlightSegment) {
       this.loading = true;
       const cabins = (
@@ -169,7 +175,8 @@ export class FlightItemCabinsPage implements OnInit {
       }, 500);
     }
   }
-  showFlightCabins() {
+  private showFlightCabins() {
+    this.vmCabins = [];
     if (this.currentViewtFlightSegment) {
       this.loading = true;
       const cabins = (

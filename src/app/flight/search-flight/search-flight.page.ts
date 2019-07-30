@@ -1,4 +1,4 @@
-import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
+import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { IdentityService } from "../../services/identity/identity.service";
 import { MemberCredential, MemberService } from "../../member/member.service";
 import { ApiService } from "src/app/services/api/api.service";
@@ -8,7 +8,7 @@ import { PassengerBookInfo } from "../flight.service";
 import { StaffService } from "../../hr/staff.service";
 import {
   FlightService,
-  SearchFlightModel,
+  SearchFlightModel
 } from "src/app/flight/flight.service";
 import { FlydayService } from "../flyday.service";
 import { AppHelper } from "src/app/appHelper";
@@ -24,7 +24,7 @@ import { tap } from "rxjs/operators";
 import { SwitchCityComponent } from "../components/switch-city/switch-city.component";
 import { LanguageHelper } from "src/app/languageHelper";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
-import { TripType } from 'src/app/tmc/models/TripType';
+import { TripType } from "src/app/tmc/models/TripType";
 @Component({
   selector: "app-search-flight",
   templateUrl: "./search-flight.page.html",
@@ -75,28 +75,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
   ) {
     route.queryParamMap.subscribe(async _ => {
       this.staff = await this.staffService.getStaff();
-      if (await this.isStaffTypeSelf()) {
-        this.disabled =
-          this.searchFlightModel && this.searchFlightModel.isLocked;
-        if (
-          this.flightService.getPassengerBookInfos().length == 0 ||
-          this.flightService.getPassengerBookInfos().length == 0
-        ) {
-          if (this.staff && !this.staff.Name) {
-            const identity = await this.identityService.getIdentityAsync();
-            this.staff.Name = identity && identity.Name;
-          }
-          const item: PassengerBookInfo = {
-            credential: new CredentialsEntity(),
-            passenger: this.staff
-          };
-          this.flightService.addPassengerBookInfo(item);
-          const searchModel = this.flightService.getSearchFlightModel();
-          searchModel.tripType = TripType.departureTrip;
-          this.flightService.setSearchFlightModel(searchModel);
-          this.flightService.addPassengerBookInfo(item);
-        }
-      }
+      this.disabled = this.searchFlightModel && this.searchFlightModel.isLocked;
       this.showReturnTrip = await this.isStaffTypeSelf();
       this.selectedPassengers = flightService.getPassengerBookInfos().length;
       if (this.searchConditionSubscription) {
@@ -106,8 +85,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
         .getSearchFlightModelSource()
         .subscribe(async s => {
           console.log("search-flights", s);
-          const staff = await this.staffService.getStaff();
-          this.showReturnTrip = staff.BookType == StaffBookType.Self;
+          this.showReturnTrip = this.staffService.isSelfBookType;
           if (s) {
             this.disabled = s.isLocked;
             this.fromCity = this.vmFromCity = s.fromCity || this.fromCity;
@@ -116,7 +94,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
             this.backDate = this.flydayService.generateDayModelByDate(
               s.BackDate
             );
-            this.isSingle = !s.IsRoundTrip;
+            this.isSingle = !s.isRoundTrip;
           }
         });
     });
@@ -140,7 +118,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.onRoundTrip(evt.detail.value == "single");
   }
   async isStaffTypeSelf() {
-    return await this.staffService.isStaffTypeSelf();
+    return await this.staffService.checkStaffTypeSelf();
   }
   async ngOnInit() {
     this.selectDaySubscription = this.flydayService
@@ -285,14 +263,14 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     s.ToCode = this.toCity.Code;
     s.ToAsAirport = this.toCity.Tag === "Airport"; // Airport 以到达 机场 查询;AirportCity 以城市查询
     s.FromAsAirport = this.fromCity.Tag === "Airport"; // Airport 以出发 机场 查询
-    s.IsRoundTrip = !this.isSingle;
+    s.isRoundTrip = !this.isSingle;
     s.fromCity = this.fromCity;
     s.toCity = this.toCity;
     s.BackDate = this.backDate.date;
     if (this.disabled) {
       s.Date = s.BackDate;
     }
-    if (!s.IsRoundTrip) {
+    if (!s.isRoundTrip) {
       s.tripType = TripType.departureTrip;
     }
     console.log("search-flight", s);

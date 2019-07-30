@@ -265,10 +265,10 @@
           </div>
           <div class='outnumber' *ngIf='combindInfo?.tmcOutNumberInfos'>
             外部编号：
-            <ion-item-group>
+            <ion-item-group >
               <ion-item *ngFor='let n of combindInfo?.tmcOutNumberInfos' (click)='onSelectTravelNumber(n,combindInfo)'>
                 <ion-label>{{n.label}}:</ion-label>
-                <ion-input [disabled]='n.isDisabled' [value]='n.value' placeholder="{{n.label}}"></ion-input>
+                <ion-input [disabled]='n.isDisabled' [value]='n.value' [(ngModel)]='n.value' placeholder="{{n.label}}"></ion-input>
               </ion-item>
             </ion-item-group>
           </div>

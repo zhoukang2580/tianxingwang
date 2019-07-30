@@ -39,7 +39,7 @@ export class TrainService {
   };
   private searchModel: SearchTrainModel;
   private selectedStationSource: Subject<ISelectedStation>;
-  private bookInfos: TrainBookInfo[]=[];
+  private bookInfos: TrainBookInfo[] = [];
   private bookInfoSource: Subject<TrainBookInfo[]>;
   private searchModelSource: Subject<SearchTrainModel>;
   constructor(private apiService: ApiService, private storage: Storage) {
@@ -96,6 +96,7 @@ export class TrainService {
             Trafficlines: TrafficlineEntity[];
           })
       );
+    let arr: CacheTrafficLineModel;
     if (result && result.Trafficlines && result.Trafficlines.length) {
       result.Trafficlines = result.Trafficlines.map(item => {
         if (!item.Pinyin) {
@@ -105,11 +106,14 @@ export class TrainService {
         }
         return item;
       });
-      await this.cacheTrafficLinesAsync(result.Trafficlines);
+      arr = await this.cacheTrafficLinesAsync(result.Trafficlines);
     }
     this.localTrafficLine = {
       lastUpdateTime: Math.floor(Date.now() / 1000),
-      TrafficLines: (result && result.Trafficlines) || []
+      TrafficLines:
+        (arr && arr.TrafficLines) ||
+        (this.localTrafficLine && this.localTrafficLine.TrafficLines) ||
+        []
     };
     return this.localTrafficLine.TrafficLines;
   }
@@ -129,14 +133,17 @@ export class TrainService {
   }
   private async cacheTrafficLinesAsync(lines: TrafficlineEntity[]) {
     const now = Math.floor(Date.now() / 1000);
-    await this.storage.set(KEY_TRAIN_TRAFFICLINES_DATA, {
-      lastUpdateTime: now,
-      TrafficLines: lines
-    } as CacheTrafficLineModel);
+    const lastLocal = await this.getCachedTrafficLinesAsync();
     const local: CacheTrafficLineModel = {
       lastUpdateTime: now,
-      TrafficLines: lines
+      TrafficLines: [
+        ...lastLocal.TrafficLines,
+        ...lines.filter(
+          one => !lastLocal.TrafficLines.find(item => item.Code == one.Code)
+        )
+      ]
     };
+    await this.storage.set(KEY_TRAIN_TRAFFICLINES_DATA, local);
     return local;
   }
   private async getCachedTrafficLinesAsync() {
