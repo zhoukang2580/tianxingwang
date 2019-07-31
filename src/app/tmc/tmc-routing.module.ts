@@ -19,30 +19,6 @@ export const routes: Routes = [
   {
     path: "product-tabs",
     loadChildren: "./product-tabs/product-tabs.module#ProductTabsPageModule"
-  },
-  {
-    path: "plane",
-    outlet: "products",
-    loadChildren:
-      "./product-tab-plane/product-tab-plane.module#ProductTabPlanePageModule"
-  },
-  {
-    path: "hotel",
-    outlet: "products",
-    loadChildren:
-      "./product-tab-hotel/product-tab-hotel.module#ProductTabHotelPageModule"
-  },
-  {
-    path: "insurance",
-    outlet: "products",
-    loadChildren:
-      "./product-tab-insurance/product-tab-insurance.module#ProductTabInsurancePageModule"
-  },
-  {
-    path: "train",
-    outlet: "products",
-    loadChildren:
-      "./product-tab-train/product-tab-train.module#ProductTabTrainPageModule"
   }
 ];
 @NgModule({

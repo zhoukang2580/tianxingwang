@@ -11,4 +11,7 @@ export class SearchTicketConditionModel {
   orderStatus: OrderStatusType;
   fromCity: TrafficlineEntity;
   toCity: TrafficlineEntity;
+  fromCityName: string;
+  toCityName: string;
+  pageIndex: number;
 }

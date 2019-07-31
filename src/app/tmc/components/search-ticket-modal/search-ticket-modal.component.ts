@@ -13,7 +13,7 @@ import * as moment from "moment";
 })
 export class SearchTicketModalComponent implements OnInit {
   condition: SearchTicketConditionModel = new SearchTicketConditionModel();
-  type: ProductItem;
+  type: number;
   title: string;
   orderStatus: { label: string; value: OrderStatusType }[] = [];
   constructor(private modalCtrl: ModalController) {}
@@ -25,18 +25,18 @@ export class SearchTicketModalComponent implements OnInit {
     const result = await m.onDidDismiss();
     if (result && result.data) {
       if (isFromCity) {
-        this.condition.fromCity = result.data;
+        this.condition.fromCityName = result.data;
       } else {
-        this.condition.toCity = result.data;
+        this.condition.toCityName = result.data;
       }
     }
   }
   async searchCities(isFromCity = true) {
-    if (this.type.value == ProductItemType.plane) {
-      await this.searchAirports(isFromCity);
+    if (this.type == ProductItemType.plane) {
+      this.searchAirports(isFromCity);
     }
-    if (this.type.value == ProductItemType.train) {
-      await this.searchTrainStations(isFromCity);
+    if (this.type == ProductItemType.train) {
+      this.searchTrainStations(isFromCity);
     }
   }
   private async searchTrainStations(isFromCity = true) {
@@ -46,10 +46,11 @@ export class SearchTicketModalComponent implements OnInit {
     await m.present();
     const result = await m.onDidDismiss();
     if (result && result.data) {
+      debugger;
       if (isFromCity) {
-        this.condition.fromCity = result.data;
+        this.condition.fromCityName = result.data;
       } else {
-        this.condition.toCity = result.data;
+        this.condition.toCityName = result.data;
       }
     }
   }
@@ -58,11 +59,15 @@ export class SearchTicketModalComponent implements OnInit {
       if (t) {
         this.condition.fromDate =
           (this.condition.vmFromDate &&
-            moment(this.condition.vmFromDate).format("YYYY-MM-DD")) ||
+            moment(this.condition.vmFromDate, "YYYY-MM-DD").format(
+              "YYYY-MM-DD"
+            )) ||
           "";
         this.condition.toDate =
           (this.condition.vmToDate &&
-            moment(this.condition.vmToDate).format("YYYY-MM-DD")) ||
+            moment(this.condition.vmToDate, "YYYY-MM-DD").format(
+              "YYYY-MM-DD"
+            )) ||
           "";
         t.dismiss(this.condition).catch(_ => {});
       }
@@ -78,7 +83,7 @@ export class SearchTicketModalComponent implements OnInit {
     ];
     this.condition.vmFromDate = moment()
       .startOf("year")
-      .format("YYYY/MM/DD");
+      .format("YYYY-MM-DD");
     console.log(this.condition);
   }
 }

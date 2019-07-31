@@ -1,4 +1,24 @@
 export class LanguageHelper {
+  static Order = {
+    getStatusCancelTypeTip: () => {
+      return "取消";
+    },
+    getStatusFinishTypeTip: () => {
+      return "完成";
+    },
+    getStatusWaitDeliveryTypeTip: () => {
+      return "待发货";
+    },
+    getStatusWaitHandleTypeTip: () => {
+      return "待处理";
+    },
+    getStatusWaitPayTypeTip: () => {
+      return "待支付";
+    },
+    getStatusWaitSignTypeTip: () => {
+      return "待签收";
+    }
+  };
   static CurrencySymbols = {
     Yuan: () => {
       return "￥";

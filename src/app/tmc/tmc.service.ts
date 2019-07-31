@@ -19,6 +19,8 @@ import { CredentialsEntity } from "./models/CredentialsEntity";
 import { TrafficlineEntity } from "./models/TrafficlineEntity";
 import { Storage } from "@ionic/storage";
 import * as jsPy from "js-pinyin";
+import { OrderModel } from '../order/models/OrderModel';
+import { OrderService } from '../order/order.service';
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface LocalStorageAirport {
@@ -44,7 +46,8 @@ export class TmcService {
   constructor(
     private apiService: ApiService,
     private storage: Storage,
-    private identityService: IdentityService
+    private identityService: IdentityService,
+    private orderService:OrderService
   ) {
     this.identityService.getIdentity().subscribe(id => {
       if (!id || !id.Ticket) {
@@ -54,7 +57,18 @@ export class TmcService {
     });
     this.selectedCompanySource = new BehaviorSubject(null);
   }
-
+  getOrderList(searchCondition: OrderModel) {
+   return this.orderService.getOrderListAsync(searchCondition);
+  }
+  getOrderDetail(id: string) {
+   return this.orderService.getOrderDetailAsync(id);
+  }
+  getOrderTasks(data: OrderModel){
+   return this.orderService.getOrderTasksAsync(data);
+  }
+  getMyTrips(data: OrderModel) {
+    return this.orderService.getMyTripsAsync(data);
+  }
   getSelectedCompanySource() {
     return this.selectedCompanySource.asObservable();
   }

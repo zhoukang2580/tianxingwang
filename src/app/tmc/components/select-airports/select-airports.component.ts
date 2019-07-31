@@ -1,3 +1,4 @@
+import { animate, style } from "@angular/animations";
 import {
   IonRefresher,
   ModalController,
@@ -15,10 +16,18 @@ import {
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { Storage } from "@ionic/storage";
 import { TmcService } from "../../tmc.service";
+import { trigger, state, transition } from "@angular/animations";
 @Component({
   selector: "app-select-airports",
   templateUrl: "./select-airports.component.html",
-  styleUrls: ["./select-airports.component.scss"]
+  styleUrls: ["./select-airports.component.scss"],
+  animations: [
+    trigger("scaleAnimation", [
+      state("true", style({ transform: "scale(1.1)" })),
+      state("false", style({ transform: "scale(0)" })),
+      transition("true<=>false", animate("200ms ease-in-out"))
+    ])
+  ]
 })
 export class SelectAirportsModalComponent implements OnInit, AfterViewInit {
   vmKeyword = "";
@@ -79,15 +88,16 @@ export class SelectAirportsModalComponent implements OnInit, AfterViewInit {
     const airports = this.airports[this.activeLetter].slice(0);
     airports.sort((s1, s2) => s1.Sequence - s2.Sequence);
     const loop = () => {
-      airports.splice(0, 50).forEach(a => {
+      airports.splice(0, 10).forEach(a => {
         this.vmAirports.push(a);
       });
       if (airports.length) {
         window.requestAnimationFrame(loop);
+      }else{
+        console.timeEnd("renderList");
       }
     };
     loop();
-    console.timeEnd("renderList");
   }
   onScroll(evt: any) {
     if (!this.scrollEle) {
@@ -140,7 +150,7 @@ export class SelectAirportsModalComponent implements OnInit, AfterViewInit {
   async back() {
     const m = await this.modalCtrl.getTop();
     if (m) {
-      m.dismiss(this.selectedItem).catch(_ => {});
+      m.dismiss(this.selectedItem&&this.selectedItem.Nickname).catch(_ => {});
     }
   }
   async onSelectStation(airport: TrafficlineEntity) {

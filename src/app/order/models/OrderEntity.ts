@@ -1,155 +1,238 @@
-import { OrderTravelEntity } from './OrderTravelEntity';
-import { AccountEntity } from 'src/app/tmc/models/AccountEntity';
+import { OrderPayCostEntity } from "./OrderPayCostEntity";
+import {
+  OrderTravelEntity,
+  OrderTravelPayType,
+  OrderTravelType
+} from "./OrderTravelEntity";
+import { AccountEntity } from "src/app/tmc/models/AccountEntity";
+import { OrderFlightTicketEntity } from "./OrderFlightTicketEntity";
+import { OrderTrainTicketEntity } from "./OrderTrainTicketEntity";
+import { OrderHotelEntity } from "./OrderHotelEntity";
+import { OrderLinkmanEntity } from "./OrderLinkmanEntity";
+import { OrderPassengerEntity } from "./OrderPassengerEntity";
+import { OrderInsuranceEntity, OrderPayEntity } from "./OrderInsuranceEntity";
+import { AccountItemEntity } from "src/app/account/models/AccountItemEntity";
+import { OrderNoteEntity } from "./OrderNoteEntity";
+import { OrderInvoiceCostEntity } from "./OrderInvoiceCostEntity";
+import { OrderTagEntity } from "./OrderTagEntity";
+import { OrderLockerEntity } from "./OrderLockerEntity";
+import { OrderAttachmentEntity } from "./OrderAttachmentEntity";
+import { OrderExpressEntity } from "./OrderExpressEntity";
+import { OrderCardEntity } from "./OrderCardEntity";
+import { OrderComplaintEntity } from "./OrderComplaintEntity";
+import { OrderInvoiceEntity } from "./OrderInvoiceEntity";
+import { BaseVariablesEntity } from "src/app/tmc/models/BaseVariablesEntity";
+import { OrderProductEntity } from "./OrderProductEntity";
+import { OrderNumberEntity } from "./OrderNumberEntity";
+import { TaskEntity } from 'src/app/workflow/models/TaskEntity';
 
-export class OrderEntity {
+export class OrderEntity extends BaseVariablesEntity {
   Id: string;
-
+  vmIsCheckPay:boolean;
+  /// <summary>
   /// 订单编号
-
+  /// </summary>
   Number: string;
-
+  /// <summary>
   ///来源
-
+  /// </summary>
   Channel: string;
-
+  /// <summary>
   /// 订单类型
-
+  /// </summary>
   Type: string;
-
+  /// <summary>
   /// 下单日期
-
+  /// </summary>
   OrderDate: string;
-
+  /// <summary>
   /// 保留时长
-
+  /// </summary>
   HoldTime: string;
-
+  /// <summary>
   /// 应收金额
-
+  /// </summary>
   TotalAmount: string;
-
+  /// <summary>
   /// 可开具发票金额
-
+  /// </summary>
   TotalInvoiceAmount: string;
-
+  /// <summary>
   /// 总共成本
-
+  /// </summary>
   TotalCostAmount: string;
-
+  /// <summary>
   /// 可开具发票金额
-
+  /// </summary>
   TotalInvoiceCostAmount: string;
-
+  /// <summary>
   /// 实收金额
-
+  /// </summary>
   PayAmount: string;
-
+  /// <summary>
   /// 已开发票金额
-
+  /// </summary>
   PayInvoiceAmount: string;
-
+  /// <summary>
   /// 成本金额
-
+  /// </summary>
   PayCostAmount: string;
-
+  /// <summary>
   /// 已开发票金额
-
+  /// </summary>
   PayInvoiceCostAmount: string;
-
+  /// <summary>
   /// 支付方式
-
+  /// </summary>
   PayTypes: string;
-
+  /// <summary>
   /// 所属账户
-
+  /// </summary>
   Account: AccountEntity;
 
+  /// <summary>
   /// 备注
-
+  /// </summary>
   Remark: string;
+
+  /// <summary>
+  /// 支付方式
+  /// </summary>
   PayTypeArray: string[];
+
+  /// <summary>
+  /// 路由编号
+  /// </summary>
   RouteId: string;
 
+  /// <summary>
   /// 订单明细
-
+  /// </summary>
   OrderItems: OrderItemEntity[];
-
+  /// <summary>
   /// 收款纪录
-
-  OrderPays: any[];
-
+  /// </summary>
+  OrderPays: OrderPayEntity[];
+  /// <summary>
   /// 收款纪录
+  /// </summary>
+  OrderPayCosts: OrderPayCostEntity[];
 
-  OrderPayCosts: any[];
-
+  /// <summary>
   /// 订单发票
-
-  OrderInvoices: any[];
-
+  /// </summary>
+  OrderInvoices: OrderInvoiceEntity[];
+  /// <summary>
   /// 收款纪录
+  /// </summary>
+  OrderInvoiceCosts: OrderInvoiceCostEntity[];
 
-  OrderInvoiceCosts: any[];
-
+  /// <summary>
   /// 维护记录
-
-  OrderNotes: any[];
-
+  /// </summary>
+  OrderNotes: OrderNoteEntity[];
+  /// <summary>
   /// 订单标签
-
-  OrderTags: any[];
-
+  /// </summary>
+  OrderTags: OrderTagEntity[];
+  /// <summary>
   /// 订单锁
+  /// </summary>
+  OrderLockers: OrderLockerEntity[];
 
-  OrderLockers: any[];
-
+  /// <summary>
   /// 附件
-
-  OrderAttachments: any[];
-
+  /// </summary>
+  OrderAttachments: OrderAttachmentEntity[];
+  /// <summary>
   /// 快递信息
-
-  OrderExpresses: any[];
-
+  /// </summary>
+  OrderExpresses: OrderExpressEntity[];
+  /// <summary>
   /// 火车票订单
+  /// </summary>
+  OrderCards: OrderCardEntity[];
 
-  OrderCards: any[];
-
+  /// <summary>
   /// 订单投诉
+  /// </summary>
+  OrderComplaints: OrderComplaintEntity[];
 
-  OrderComplaints: any[];
-
+  /// <summary>
   /// 机票
+  /// </summary>
+  OrderFlightTickets: OrderFlightTicketEntity[];
 
-  OrderFlightTickets: any[];
-
+  /// <summary>
   /// 机票
+  /// </summary>
+  OrderTrainTickets: OrderTrainTicketEntity[];
 
-  OrderTrainTickets: any[];
-
+  /// <summary>
   /// 酒店
-
-  OrderHotels: any[];
-
+  /// </summary>
+  OrderHotels: OrderHotelEntity[];
+  /// <summary>
   /// 订单联系人
-
-  OrderLinkmans: any[];
-
+  /// </summary>
+  OrderLinkmans: OrderLinkmanEntity[];
+  /// <summary>
   /// 乘客信息
+  /// </summary>
+  OrderPassengers: OrderPassengerEntity[];
 
-  OrderPassengers: any[];
-
+  /// <summary>
   /// OrderTravel
-
+  /// </summary>
   OrderTravels: OrderTravelEntity[];
-
+  /// <summary>
   /// OrderInsurances
+  /// </summary>
+  OrderInsurances: OrderInsuranceEntity[];
+  AccountItem: AccountItemEntity;
 
-  OrderInsurances: any[];
-  AccountItem: any[];
-
+  /// <summary>
   /// 原数据
-
+  /// </summary>
   DataEntity: OrderEntity;
+
+  /// <summary>
+  /// 状态
+  /// </summary>
+  Status: OrderStatusType;
+  /// <summary>
+  /// 状态名称
+  /// </summary>
+  StatusName: string;
+  /// <summary>
+  /// 出差类型
+  /// </summary>
+  TravelType: OrderTravelType;
+  /// <summary>
+  /// 支付方式
+  /// </summary>
+  TravelPayType: OrderTravelPayType;
+  /// <summary>
+  /// 是否VIP
+  /// </summary>
+  IsVip: boolean;
+
+  /// <summary>
+  /// 订单商品
+  /// </summary>
+  OrderProducts: OrderProductEntity[];
+
+  /// <summary>
+  /// 订单编号
+  /// </summary>
+  OrderNumbers: OrderNumberEntity[];
+
+  /// <summary>
+  /// 订单任务
+  /// </summary>
+  Tasks: TaskEntity[];
+
+  Queues: any[];
 }
 export class OrderItemEntity {
   /// 订单

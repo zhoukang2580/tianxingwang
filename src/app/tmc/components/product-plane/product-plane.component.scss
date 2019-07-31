@@ -1,0 +1,19 @@
+.order-item {
+  width: 100%;
+  ion-row,
+  ion-col{
+    margin: 0;
+    padding: 0;
+  }
+  ion-row ion-col:not(:first-child){
+    text-align: right;
+  }
+  ion-col {
+    align-self: center;
+    font-size: 0.8rem;
+    ion-label {
+      margin: 0;
+      padding: 0;
+    }
+  }
+}

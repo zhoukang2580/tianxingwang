@@ -58,7 +58,6 @@ import {
 import { InsuranceResultEntity } from "../../tmc/models/Insurance/InsuranceResultEntity";
 import { Observable, of, Subject, BehaviorSubject } from "rxjs";
 import { map } from "rxjs/operators";
-import { TaskType } from "../../tmc/models/TaskType";
 import { SelectTravelNumberPopoverComponent } from "../components/select-travel-number-popover/select-travel-number-popover.component";
 import {
   OrderTravelType,
@@ -70,6 +69,7 @@ import { PassengerDto } from "src/app/tmc/models/PassengerDto";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import { TripType } from "src/app/tmc/models/TripType";
 import { environment } from "src/environments/environment";
+import { TaskType } from 'src/app/workflow/models/TaskType';
 interface TmcOutNumberInfo {
   key: string;
   label: string;

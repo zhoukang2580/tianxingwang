@@ -22,5 +22,15 @@
 </ion-header>
 
 <ion-content>
-
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh()">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <app-product-plane *ngIf='activeTab==productItemType.plane' [orderModel]='orderModel'></app-product-plane>
+  <app-product-hotel *ngIf='activeTab==productItemType.hotel'></app-product-hotel>
+  <app-product-train *ngIf='activeTab==productItemType.train' [orderModel]='orderModel'></app-product-train>
+  <app-product-insurance *ngIf='activeTab==productItemType.insurance'></app-product-insurance>
+  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMore()">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

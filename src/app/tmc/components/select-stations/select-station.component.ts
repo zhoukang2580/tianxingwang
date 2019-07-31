@@ -15,10 +15,19 @@ import {
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { Storage } from "@ionic/storage";
 import { TrainService } from "src/app/train/train.service";
+import { trigger, state, transition ,animate,style} from "@angular/animations";
+
 @Component({
   selector: "app-select-station",
   templateUrl: "./select-station.component.html",
-  styleUrls: ["./select-station.component.scss"]
+  styleUrls: ["./select-station.component.scss"],
+  animations: [
+    trigger("scaleAnimation", [
+      state("true", style({ transform: "scale(1.1)" })),
+      state("false", style({ transform: "scale(0)" })),
+      transition("true<=>false", animate("200ms ease-in-out"))
+    ])
+  ]
 })
 export class SelectTrainStationModalComponent implements OnInit, AfterViewInit {
   vmKeyword = "";
@@ -121,7 +130,7 @@ export class SelectTrainStationModalComponent implements OnInit, AfterViewInit {
   async back() {
     const m = await this.modalCtrl.getTop();
     if (m) {
-      m.dismiss(this.selectedStation).catch(_ => {});
+      m.dismiss(this.selectedStation&&this.selectedStation.CityName).catch(_ => {});
     }
   }
   async onSelectStation(station: TrafficlineEntity) {
