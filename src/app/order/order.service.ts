@@ -8,6 +8,13 @@ import { OrderModel } from "./models/OrderModel";
 })
 export class OrderService {
   constructor(private apiService: ApiService) {}
+  getOrderList(searchCondition: OrderModel) {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Data = searchCondition;
+    req.Method = `TmcApiOrderUrl-Order-List`;
+    return this.apiService.getResponse<OrderModel>(req);
+  }
   getOrderListAsync(searchCondition: OrderModel): Promise<OrderModel> {
     const req = new RequestEntity();
     req.IsShowLoading = true;

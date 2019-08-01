@@ -1,0 +1,38 @@
+.order-item {
+  .agent-book,
+  .agreement {
+    font-size: 0.6rem;
+    color: var(--ion-color-danger);
+  }
+  .order-flight-trip + .order-flight-trip{
+    border-top: 1px dashed rgba(var(--ion-color-dark-rgb),0.12);
+  }
+  width: 100%;
+  ion-row,
+  ion-col {
+    margin: 0;
+    padding: 0;
+  }
+  ion-row {
+    padding: 0.1em 0;
+    &:first-child {
+      margin-top: 0.5em;
+    }
+    &:last-child {
+      margin-bottom: 0.5em;
+    }
+  }
+  ion-row ion-col:not(.non-flex) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  ion-col {
+    align-self: center;
+    font-size: 0.75rem;
+    ion-label {
+      margin: 0;
+      padding: 0;
+    }
+  }
+}

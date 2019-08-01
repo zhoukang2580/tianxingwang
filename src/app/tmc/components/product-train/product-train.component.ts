@@ -8,7 +8,6 @@ import { OrderFlightTripStatusType } from 'src/app/order/models/OrderFlightTripS
 })
 export class ProductTrainComponent implements OnInit {
   @Input() orderModel: OrderModel;
-  OrderFlightTripStatusType=OrderFlightTripStatusType;
   constructor() { }
 
   ngOnInit() {}

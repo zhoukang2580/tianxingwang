@@ -1,43 +1,7 @@
 <ion-list>
-  <ion-item detail *ngFor='let order of orderModel?.Orders'>
-    <div class='order-item'>
-      <ion-row>
-        <ion-col>编号:{{order.Id}}</ion-col>
-        <ion-col>时间:{{order.InsertDateTime}}</ion-col>
-        <ion-col>状态:{{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}}</ion-col>
-      </ion-row>
-      <ion-row *ngFor='let p of order.OrderPassengers'>
-        <ion-col>{{p.CheckName}}</ion-col>
-        <ion-col>{{p.CredentialsNumber}}</ion-col>
-      </ion-row>
-      <ion-row *ngFor='let orderFlightTicket of order.OrderFlightTickets'>
-        <ion-col>
-          <ng-container *ngFor='let orderFlightTrip of orderFlightTicket.OrderFlightTrips'>
-            <ng-container *ngIf='orderFlightTrip.Status==OrderFlightTripStatusType.Normal'>
-              <ion-row>
-                <ion-col>
-                  {{orderFlightTrip.FromCityName}}-->{{orderFlightTrip.ToCityName}}
-                </ion-col>
-                <ion-col>
-                  {{orderFlightTrip.TakeoffShortTime}}--{{orderFlightTrip.ArrivalShortTime}}
-                </ion-col>
-                <ion-col *ngIf='!orderFlightTrip.IsSelfBook'>代订</ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>{{orderFlightTrip.FlightNumber}}</ion-col>
-                <ion-col>{{orderFlightTicket.Passenger?.CheckName}}</ion-col>
-                <ion-col>{{orderFlightTrip.TakeoffDate}}</ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>
-                  ￥{{orderFlightTicket.vmTicketAmount}}<ion-text *ngIf='orderFlightTicket.vmInsuranceAmount'>
-                    (含保险{{orderFlightTicket.vmInsuranceAmount}})</ion-text>
-                </ion-col>
-              </ion-row>
-            </ng-container>
-          </ng-container>
-        </ion-col>
-      </ion-row>
-    </div>
-  </ion-item>
-</ion-list>
+    <ion-item detail *ngFor='let order of orderModel?.Orders'>
+        <app-order-item [order]='order'></app-order-item>
+    </ion-item>
+  <ion-item></ion-item>
+
+  </ion-list>

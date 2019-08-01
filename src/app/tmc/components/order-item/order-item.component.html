@@ -1,0 +1,51 @@
+<div class='order-item'>
+  <ion-row>
+    <ion-col>
+      <strong>{{order.Id}}</strong>
+      <span *ngIf='order.InsertDateTime'>完成时间:{{order.InsertDateTime}}</span>
+      <ion-text color='secondary'>{{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}}</ion-text>
+    </ion-col>
+  </ion-row>
+  <!-- <ion-row *ngFor='let p of order.OrderPassengers'>
+      <ion-col>{{p.CheckName}}</ion-col>
+      <ion-col>{{p.CredentialsNumber}}</ion-col>
+    </ion-row> -->
+  <ion-row *ngFor='let orderFlightTicket of order.OrderFlightTickets' class='order-flight-trip'>
+    <ion-col class='non-flex'>
+      <ng-container *ngFor='let orderFlightTrip of orderFlightTicket.OrderFlightTrips'>
+        <ng-container *ngIf='true||orderFlightTrip.Status==OrderFlightTripStatusType.Normal'>
+          <ion-row >
+            <ion-col>
+              <span>
+                {{orderFlightTrip.FromCityName}}-->{{orderFlightTrip.ToCityName}}
+              </span>
+              <span>
+                {{orderFlightTrip.TakeoffDate}}
+              </span>
+              <span>
+                {{orderFlightTrip.TakeoffShortTime}}--{{orderFlightTrip.ArrivalShortTime}}
+              </span>
+              <span *ngIf='!orderFlightTrip.IsSelfBook' class='agent-book'>代订</span>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <span>
+                {{orderFlightTrip.FlightNumber}}
+              </span>
+              <span>
+                {{orderFlightTicket.Passenger?.CheckName}}
+              </span>
+              <ion-text color='danger'>￥{{orderFlightTicket.vmTicketAmount}}</ion-text>
+              <ion-text color='danger' *ngIf='orderFlightTicket.vmInsuranceAmount'>
+                (含保险{{orderFlightTicket.vmInsuranceAmount}})</ion-text>
+              <span>
+                {{ orderFlightTicket.StatusName}}
+              </span>
+            </ion-col>
+          </ion-row>
+        </ng-container>
+      </ng-container>
+    </ion-col>
+  </ion-row>
+</div>

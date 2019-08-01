@@ -58,6 +58,9 @@ export class TmcService {
     this.selectedCompanySource = new BehaviorSubject(null);
   }
   getOrderList(searchCondition: OrderModel) {
+   return this.orderService.getOrderList(searchCondition);
+  }
+  getOrderListAsync(searchCondition: OrderModel) {
    return this.orderService.getOrderListAsync(searchCondition);
   }
   getOrderDetail(id: string) {

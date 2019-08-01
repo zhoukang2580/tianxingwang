@@ -8,7 +8,7 @@ import {
   IonInfiniteScroll,
   IonRefresher
 } from "@ionic/angular";
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
 import { SearchTicketModalComponent } from "../components/search-ticket-modal/search-ticket-modal.component";
 import { SearchTicketConditionModel } from "../models/SearchTicketConditionModel";
 import { ProductItemType, ProductItem } from "../models/ProductItems";
@@ -18,18 +18,23 @@ import { OrderFlightTicketStatusType } from "src/app/order/models/OrderFlightTic
 import { OrderTrainTicketStatusType } from "src/app/order/models/OrderTrainTicketStatusType";
 import { OrderFlightTicketEntity } from "src/app/order/models/OrderFlightTicketEntity";
 import * as moment from "moment";
+import { Subscription } from "rxjs";
+import { finalize } from "rxjs/operators";
 @Component({
   selector: "app-product-tabs",
   templateUrl: "./product-tabs.page.html",
   styleUrls: ["./product-tabs.page.scss"]
 })
-export class ProductTabsPage implements OnInit {
+export class ProductTabsPage implements OnInit, OnDestroy {
   private condition: SearchTicketConditionModel;
+  loadDataSub = Subscription.EMPTY;
   productItemType = ProductItemType;
   activeTab: ProductItemType;
   tabs: ProductItem[] = [];
   tmc: TmcEntity;
   orderModel: OrderModel;
+  dataCount: number;
+  title = "机票订单";
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
   constructor(
@@ -49,6 +54,9 @@ export class ProductTabsPage implements OnInit {
       }
     });
   }
+  ngOnDestroy() {
+    this.loadDataSub.unsubscribe();
+  }
   loadMore() {
     this.doSearch();
   }
@@ -58,13 +66,13 @@ export class ProductTabsPage implements OnInit {
     if (this.infiniteScroll) {
       this.infiniteScroll.disabled = false;
     }
-    if (!condition) {
-      this.orderModel = null;
-    }
+    this.orderModel = null;
     this.loadMore();
   }
   onTabClick(tab: ProductItem) {
     this.activeTab = tab.value;
+    this.title = tab.label + "订单";
+    this.doRefresh();
   }
   back() {
     this.navCtrl.back();
@@ -80,18 +88,16 @@ export class ProductTabsPage implements OnInit {
     const result = await m.onDidDismiss();
     if (result && result.data) {
       const condition = { ...this.condition, ...result.data };
-      if (
-        JSON.stringify(condition).trim() ==
-        JSON.stringify(this.condition).trim()
-      ) {
-        return;
-      } else {
-        this.doRefresh(condition);
-      }
+      this.doRefresh(condition);
+    }else{
+      this.doRefresh();
     }
   }
   private async doSearch() {
     try {
+      if (this.loadDataSub) {
+        this.loadDataSub.unsubscribe();
+      }
       const m = this.transformSearchCondition(this.condition);
       m.Type =
         this.activeTab == ProductItemType.plane
@@ -101,34 +107,46 @@ export class ProductTabsPage implements OnInit {
           : this.activeTab == ProductItemType.hotel
           ? "hotel"
           : "flight";
-      let orderModel: OrderModel = await this.tmcService
+      this.loadDataSub = this.tmcService
         .getOrderList(m)
-        .catch(_ => null);
-      if (!this.tmc) {
-        this.tmc = await this.tmcService.getTmc();
-      }
-      orderModel = this.combineInfo(orderModel);
-      if (orderModel && orderModel.Orders && orderModel.Orders.length) {
-        this.condition.pageIndex++;
-        if (this.orderModel) {
-          this.orderModel.Orders = [
-            ...this.orderModel.Orders,
-            ...orderModel.Orders
-          ];
-        } else {
-          this.orderModel = orderModel;
-        }
-      }
-      if (this.infiniteScroll) {
-        this.infiniteScroll.disabled =
-          orderModel && orderModel.Orders.length == 0;
-      }
-      if (this.infiniteScroll) {
-        this.infiniteScroll.complete();
-      }
-      if (this.ionRefresher) {
-        this.ionRefresher.complete();
-      }
+        .pipe(
+          finalize(() => {
+            setTimeout(() => {
+              if (this.infiniteScroll) {
+                this.infiniteScroll.complete();
+              }
+              if (this.ionRefresher) {
+                this.ionRefresher.complete();
+              }
+            }, 200);
+          })
+        )
+        .subscribe(
+          async res => {
+            let orderModel: OrderModel = res.Status ? res.Data : null;
+            if (!this.tmc) {
+              this.tmc = await this.tmcService.getTmc();
+            }
+            this.dataCount = orderModel && orderModel.DataCount;
+            orderModel = this.combineInfo(orderModel);
+            if (orderModel && orderModel.Orders && orderModel.Orders.length) {
+              this.condition.pageIndex++;
+              if (this.orderModel) {
+                this.orderModel.Orders = [
+                  ...this.orderModel.Orders,
+                  ...orderModel.Orders
+                ];
+              } else {
+                this.orderModel = orderModel;
+              }
+            }
+            if (this.infiniteScroll) {
+              this.infiniteScroll.disabled =
+                orderModel && orderModel.Orders.length == 0;
+            }
+          },
+          e => {}
+        );
     } catch (e) {
       console.error(e);
     }
@@ -144,7 +162,7 @@ export class ProductTabsPage implements OnInit {
             if (order.InsertTime.includes("T")) {
               const [date, time] = order.InsertTime.split("T");
               order.InsertDateTime =
-                date + time.substring(0, time.lastIndexOf(":"));
+                `${date} ${time.substring(0, time.lastIndexOf(":"))}`;
             } else {
               order.InsertDateTime = order.InsertTime;
             }

@@ -9,6 +9,7 @@ import { ProductInsuranceComponent } from "./product-insurance/product-insurance
 import { ProductHotelComponent } from "./product-hotel/product-hotel.component";
 import { ProductTrainComponent } from "./product-train/product-train.component";
 import { ProductPlaneComponent } from "./product-plane/product-plane.component";
+import { OrderItemComponent } from './order-item/order-item.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { ProductPlaneComponent } from "./product-plane/product-plane.component";
     ProductPlaneComponent,
     ProductTrainComponent,
     ProductHotelComponent,
-    ProductInsuranceComponent
+    ProductInsuranceComponent,
+    OrderItemComponent
   ],
   imports: [CommonModule, IonicModule, FormsModule],
   exports: [
