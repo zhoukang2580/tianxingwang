@@ -1,5 +1,5 @@
 import { DirectivesModule } from "src/app/directives/directives.module";
-import { AppcomponentsModule } from "./../../components/appcomponents.module";
+import { AppComponentsModule } from "./../../components/appcomponents.module";
 import { IonicModule } from "@ionic/angular";
 import { NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -9,15 +9,13 @@ import { FlightDynamicComponent } from "./flight-dynamic/flight-dynamic.componen
 import { SwitchCityComponent } from "./switch-city/switch-city.component";
 import { FlyListItemComponent } from "./fly-list-item/fly-list-item.component";
 import { FlyDaysCalendarComponent } from "./fly-days-calendar/fly-days-calendar.component";
-import { FlightPipesModule } from "../pipes/Pipes.module";
+import { FlightPipesModule } from "../pipes/Pipes.module"; 
 import { FlyFilterComponent } from "./fly-filter/fly-filter.component";
 import { TakeOffTimespanComponent } from "./fly-filter/take-off-timespan/take-off-timespan.component";
 import { AircompanyComponent } from "./fly-filter/aircompany/aircompany.component";
 import { AirportsComponent } from "./fly-filter/airports/airports.component";
 import { AirtypeComponent } from "./fly-filter/airtype/airtype.component";
 import { CabinComponent } from "./fly-filter/cabin/cabin.component";
-import { FlyTimelineComponent } from "./fly-timeline/fly-timeline.component";
-import { FlyTimelineItemComponent } from "./fly-timeline-item/fly-timeline-item.component";
 import { SelectCityComponent } from "./select-city/select-city.component";
 import { FlightDirectivesModule } from "../directives/directives.module";
 import { SearchDayComponent } from "./search-day/search-day.component";
@@ -30,8 +28,8 @@ import { SelectedPassengersPopoverComponent } from "./selected-passengers-popove
 import { SearchApprovalComponent } from "./search-approval/search-approval.component";
 import { SearchCostcenterComponent } from "./search-costcenter/search-costcenter.component";
 import { OrganizationComponent } from "./organization/organization.component";
-import { SelectTravelNumberPopoverComponent } from './select-travel-number-popover/select-travel-number-popover.component';
-import { AddcontactsModalComponent } from './addcontacts-modal/addcontacts-modal.component';
+import { SelectTravelNumberPopoverComponent } from "./select-travel-number-popover/select-travel-number-popover.component";
+import { AddcontactsModalComponent } from "./addcontacts-modal/addcontacts-modal.component";
 
 @NgModule({
   declarations: [
@@ -46,8 +44,6 @@ import { AddcontactsModalComponent } from './addcontacts-modal/addcontacts-modal
     AirportsComponent,
     AirtypeComponent,
     CabinComponent,
-    FlyTimelineComponent,
-    FlyTimelineItemComponent,
     SelectCityComponent,
     SearchDayComponent,
     TicketchangingComponent,
@@ -70,12 +66,12 @@ import { AddcontactsModalComponent } from './addcontacts-modal/addcontacts-modal
     ReactiveFormsModule,
     FlightDirectivesModule,
     DirectivesModule,
-    AppcomponentsModule
+    AppComponentsModule
   ],
   exports: [
     DirectivesModule,
     FlightDirectivesModule,
-    AppcomponentsModule,
+    AppComponentsModule,
     SearchDayComponent,
     DayComponent,
     FlightDynamicComponent,
@@ -89,8 +85,6 @@ import { AddcontactsModalComponent } from './addcontacts-modal/addcontacts-modal
     AirtypeComponent,
     CabinComponent,
     FlightPipesModule,
-    FlyTimelineComponent,
-    FlyTimelineItemComponent,
     SelectCityComponent,
     TicketchangingComponent,
     SelectedPassengersComponent,

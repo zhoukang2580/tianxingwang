@@ -1,5 +1,5 @@
 import { CandeactivateGuard } from './../../guards/candeactivate.guard';
-import { AppcomponentsModule } from 'src/app/components/appcomponents.module';
+import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -26,7 +26,7 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    AppcomponentsModule,
+    AppComponentsModule,
     RouterModule.forChild(routes),
     MemberPipesModule
   ],

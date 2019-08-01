@@ -6,7 +6,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { PasswordCheckPage } from './password-check.page';
-import { AppcomponentsModule } from 'src/app/components/appcomponents.module';
+import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 
 const routes: Routes = [
   {
@@ -21,7 +21,7 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    AppcomponentsModule
+    AppComponentsModule
   ],
   declarations: [PasswordCheckPage]
 })

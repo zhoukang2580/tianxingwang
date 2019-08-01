@@ -19,7 +19,8 @@ export const routes: Routes = [
   {
     path: "product-tabs",
     loadChildren: "./product-tabs/product-tabs.module#ProductTabsPageModule"
-  }
+  },
+  { path: 'order-detail', loadChildren: './order-detail/order-detail.module#OrderDetailPageModule' }
 ];
 @NgModule({
   declarations: [],

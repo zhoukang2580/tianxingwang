@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 
 import { AccountEmailPage } from './account-email.page';
 import { AuthorityGuard } from 'src/app/guards/authority.guard';
-import { AppcomponentsModule } from 'src/app/components/appcomponents.module';
+import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 
 const routes: Routes = [
   {

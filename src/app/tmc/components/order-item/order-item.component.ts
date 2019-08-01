@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from "@angular/core";
 import { OrderEntity } from "src/app/order/models/OrderEntity";
-import { OrderFlightTripStatusType } from 'src/app/order/models/OrderFlightTripStatusType';
+import { OrderFlightTripStatusType } from "src/app/order/models/OrderFlightTripStatusType";
 @Component({
   selector: "app-order-item",
   templateUrl: "./order-item.component.html",
@@ -8,8 +8,8 @@ import { OrderFlightTripStatusType } from 'src/app/order/models/OrderFlightTripS
 })
 export class OrderItemComponent implements OnInit {
   @Input() order: OrderEntity;
-  OrderFlightTripStatusType=OrderFlightTripStatusType;
+  OrderFlightTripStatusType = OrderFlightTripStatusType;
   constructor() {}
- 
+
   ngOnInit() {}
 }

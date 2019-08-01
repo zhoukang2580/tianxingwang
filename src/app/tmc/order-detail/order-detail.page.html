@@ -1,0 +1,124 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-button color='dark' (click)='back()'>
+        <ion-icon name='arrow-back'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{title}}订单详情</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <div class='infos' #infos>
+      <ion-button class='info' [color]='tab.isActive?"secondary":"dark"' #info [class.active]='tab.isActive'
+        fill='clear' [attr.tabid]='tab.value' (click)='onTabActive(tab)' *ngFor='let tab of tabs'>{{tab.label}}
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-header>
+<ion-content #cnt [scrollEvents]='true' (ionScroll)='onScroll()'>
+  <!-- 订单信息 -->
+  <ion-list #link [attr.tabid]='tabs[0].value' lines='none'>
+    <ion-item-divider sticky>
+      <strong>{{tabs[0].label}}</strong>
+    </ion-item-divider>
+    <ion-item>
+      <div style='width: 100%'>
+        <ion-row>
+          <ion-col>订单编号:</ion-col>
+          <ion-col>{{orderDetail?.Order?.Id}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>订单状态:</ion-col>
+          <ion-col>{{orderDetail?.Order?.StatusName == "等待处理" ? "等待审批" : orderDetail?.Order?.StatusName}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>付款方式:</ion-col>
+          <ion-col>{{orderDetail?.Order?.TravelType}}-{{orderDetail?.Order?.TravelType}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>完成时间:</ion-col>
+          <ion-col>{{orderDetail.Order?.InsertDateTime}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>应收金额:</ion-col>
+          <ion-col style='padding-left: 2em;'>{{orderDetail.TotalAmount}}</ion-col>
+          <ion-col size='1'>
+            <ion-icon name="arrow-forward" mode='ios' style='color:rgba(var(--ion-color-dark-rgb),0.3)'></ion-icon>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>已付金额:</ion-col>
+          <ion-col>{{orderDetail.PayAmount}}</ion-col>
+        </ion-row>
+      </div>
+    </ion-item>
+  </ion-list>
+  <!-- 航班信息 -->
+  <ion-list #link [attr.tabid]='tabs[1].value' lines='none'>
+    <ion-item-divider sticky>{{tabs[1].label}} </ion-item-divider>
+    <ion-item *ngFor='let item of items'></ion-item>
+  </ion-list>
+  <!-- 旅客信息 -->
+  <ion-list #link [attr.tabid]='tabs[2].value' lines='none'>
+    <ion-item-divider sticky>{{tabs[2].label}} </ion-item-divider>
+    <ion-item *ngFor='let p of orderDetail.Order?.OrderPassengers'>
+      <div style='width: 100%'>
+        <ion-row>
+          <ion-col>姓名:</ion-col>
+          <ion-col>{{p.Name}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>登机名:</ion-col>
+          <ion-col>{{p.CheckName}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>证件类型:</ion-col>
+          <ion-col>{{p.CredentialsTypeName}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>证件号:</ion-col>
+          <ion-col>{{p.CredentialsNumber}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>性别:</ion-col>
+          <ion-col>{{p.Gender == "F" ? "女" : "男"}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>生日:</ion-col>
+          <ion-col>{{p.Birthday?.substring(0,"yyyy-MM-dd".length)}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>国籍:</ion-col>
+          <ion-col>{{p.IssueCountry}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>证件到期日:</ion-col>
+          <ion-col>{{p.ExpirationDate?.substring(0,"yyyy-MM-dd".length)}}</ion-col>
+        </ion-row>
+      </div>
+    </ion-item>
+  </ion-list>
+  <!-- 保险信息 -->
+  <ion-list #link [attr.tabid]='tabs[3].value' lines='none'>
+    <ion-item-divider sticky>{{tabs[3].label}} </ion-item-divider>
+    <ion-item *ngFor='let item of items'></ion-item>
+  </ion-list>
+  <!-- 审批记录 -->
+  <ion-list #link [attr.tabid]='tabs[4].value' lines='none'>
+    <ion-item-divider sticky>{{tabs[4].label}} </ion-item-divider>
+    <ion-item style='margin-top: 0.5em'>
+      <app-timeline [hideLastTimeLineTail]='false'>
+        <app-timeline-item *ngFor='let history of orderDetail?.Histories'>
+          <div class='approval-info'>
+            <ion-label>审批类型：{{history.Type==1?"所有通过":"任意通过"}}</ion-label>
+            <ion-label>审批人：{{history.Account?.RealName}} <span
+                *ngIf='history.StatusName'>({{history.StatusName}})</span>
+            </ion-label>
+            <ion-label>发起审批时间：{{history?.InsertDateTime}}</ion-label>
+            <ion-label>审批截止时间：{{history?.ExpiredTime}}</ion-label>
+          </div>
+        </app-timeline-item>
+      </app-timeline>
+    </ion-item>
+  </ion-list>
+</ion-content>

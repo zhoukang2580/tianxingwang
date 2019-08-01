@@ -5,7 +5,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { CropAvatarPage } from './crop-avatar.page';
-import { AppcomponentsModule } from 'src/app/components/appcomponents.module';
+import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 
 const routes: Routes = [
   {
@@ -20,7 +20,7 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    AppcomponentsModule
+    AppComponentsModule
   ],
   declarations: [CropAvatarPage]
 })

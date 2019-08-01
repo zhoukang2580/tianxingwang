@@ -1,8 +1,19 @@
+import { OrderEntity } from "src/app/order/models/OrderEntity";
+import { TaskEntity } from "src/app/workflow/models/TaskEntity";
+import { HistoryEntity } from "./models/HistoryEntity";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { Injectable } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
 import { OrderModel } from "./models/OrderModel";
-
+export class OrderDetailModel {
+  Histories: HistoryEntity[];
+  Tasks: TaskEntity[];
+  Order: OrderEntity;
+  TravelPayType: string;
+  TravelType: string;
+  TotalAmount: string;
+  PayAmount: string;
+}
 @Injectable({
   providedIn: "root"
 })
@@ -23,14 +34,14 @@ export class OrderService {
     const result = this.apiService.getPromiseData<OrderModel>(req);
     return result;
   }
-  getOrderDetailAsync(id: string): Promise<OrderModel> {
+  getOrderDetailAsync(id: string): Promise<OrderDetailModel> {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = `TmcApiOrderUrl-Order-Detail`;
     req.Data = {
       Id: id
     };
-    const result = this.apiService.getPromiseData<OrderModel>(req);
+    const result = this.apiService.getPromiseData<OrderDetailModel>(req);
     return result;
   }
   getOrderTasksAsync(data: OrderModel): Promise<OrderModel> {

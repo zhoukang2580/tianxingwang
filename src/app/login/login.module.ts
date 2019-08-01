@@ -2,7 +2,7 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule } from "@angular/router";
-import { AppcomponentsModule } from '../components/appcomponents.module';
+import { AppComponentsModule } from '../components/appcomponents.module';
 
 @NgModule({
   declarations: [],
@@ -11,7 +11,7 @@ import { AppcomponentsModule } from '../components/appcomponents.module';
     RouterModule.forChild([
       { path: "login", loadChildren: "./login.page.module#LoginPageModule" }
     ]),
-    AppcomponentsModule
+    AppComponentsModule
   ],
   exports: [RouterModule]
 })

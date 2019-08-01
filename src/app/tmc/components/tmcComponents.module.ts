@@ -28,7 +28,8 @@ import { OrderItemComponent } from './order-item/order-item.component';
     ProductPlaneComponent,
     ProductTrainComponent,
     ProductHotelComponent,
-    ProductInsuranceComponent
+    ProductInsuranceComponent,
+    OrderItemComponent
   ],
   entryComponents: [
     SearchTicketModalComponent,

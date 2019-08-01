@@ -1,4 +1,4 @@
-import { FlyTimelineItemComponent } from "./../fly-timeline-item/fly-timeline-item.component";
+import { TimelineItemComponent } from "../timeline-item/timeline-item.component"
 import {
   Component,
   OnInit,
@@ -10,14 +10,14 @@ import {
 } from "@angular/core";
 
 @Component({
-  selector: "app-fly-timeline",
-  templateUrl: "./fly-timeline.component.html",
-  styleUrls: ["./fly-timeline.component.scss"]
+  selector: "app-timeline",
+  templateUrl: "./timeline.component.html",
+  styleUrls: ["./timeline.component.scss"]
 })
-export class FlyTimelineComponent
+export class TimelineComponent
   implements OnInit, AfterViewInit, AfterContentInit {
-  @ContentChildren(FlyTimelineItemComponent) timeLineItems: QueryList<
-    FlyTimelineItemComponent
+  @ContentChildren(TimelineItemComponent) timeLineItems: QueryList<
+    TimelineItemComponent
   >;
   @Input() hideLastTimeLineTail = true;
   constructor() {}

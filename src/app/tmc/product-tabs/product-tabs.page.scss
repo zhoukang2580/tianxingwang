@@ -1,9 +1,18 @@
 .tabs {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   .active {
     --color: var(--ion-color-secondary);
     border-bottom: solid 2px var(--ion-color-secondary);
+  }
+}
+ion-content {
+  --background: #f2f2f2;
+}
+ion-list {
+  background: transparent;
+  ion-item {
+    margin-bottom: 0.5em;
   }
 }

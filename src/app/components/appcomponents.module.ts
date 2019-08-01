@@ -9,6 +9,8 @@ import { ScanComponent } from "./scan/scan.component";
 import { LoadingComponent } from "./loading/loading.component";
 import { LoginSkeletonPageComponent } from "./login-skeleton-page/login-skeleton-page.component";
 import { TreeNgxModule } from "./tree-ngx/tree-ngx.module";
+import { TimelineComponent } from "./timeline/timeline.component";
+import { TimelineItemComponent } from "./timeline-item/timeline-item.component";
 @NgModule({
   declarations: [
     OrComponent,
@@ -17,7 +19,9 @@ import { TreeNgxModule } from "./tree-ngx/tree-ngx.module";
     ScanComponent,
     AppUpdateComponent,
     LoadingComponent,
-    LoginSkeletonPageComponent
+    LoginSkeletonPageComponent,
+    TimelineComponent,
+    TimelineItemComponent
   ],
   imports: [CommonModule, IonicModule, TreeNgxModule],
   exports: [
@@ -27,8 +31,10 @@ import { TreeNgxModule } from "./tree-ngx/tree-ngx.module";
     ScanComponent,
     AppUpdateComponent,
     LoadingComponent,
-    TreeNgxModule
+    TreeNgxModule,
+    TimelineComponent,
+    TimelineItemComponent
   ],
   entryComponents: [LoginSkeletonPageComponent]
 })
-export class AppcomponentsModule {}
+export class AppComponentsModule {}

@@ -1,0 +1,36 @@
+ion-item-divider {
+  border-left: 4px solid var(--ion-color-secondary);
+}
+ion-list + ion-list {
+  margin-top: 0.5em;
+}
+ion-list ion-item ion-row + ion-row {
+  margin-top: 0.5em;
+}
+ion-col {
+  align-self: center;
+}
+.infos {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: space-between;
+  overflow: auto;
+  width: 100%;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  .info {
+    margin: 0 1em;
+    color: var(--ion-color-dark);
+    &.active {
+      color: var(--ion-color-secondary);
+      border-bottom: 2px solid var(--ion-color-secondary);
+    }
+  }
+}
+.approval-info {
+  width: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+}

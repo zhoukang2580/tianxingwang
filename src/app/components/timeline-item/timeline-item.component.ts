@@ -7,11 +7,11 @@ import {
 } from "@angular/core";
 
 @Component({
-  selector: "app-fly-timeline-item",
-  templateUrl: "./fly-timeline-item.component.html",
-  styleUrls: ["./fly-timeline-item.component.scss"]
+  selector: "app-timeline-item",
+  templateUrl: "./timeline-item.component.html",
+  styleUrls: ["./timeline-item.component.scss"]
 })
-export class FlyTimelineItemComponent implements OnInit, OnChanges {
+export class TimelineItemComponent implements OnInit, OnChanges {
   last: boolean;
   constructor() {}
   ngOnChanges(changes: SimpleChanges) {

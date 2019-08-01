@@ -1,22 +1,22 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FlyTimelineItemComponent } from './fly-timeline-item.component';
+import { TimelineComponent } from './timeline.component';
 
-describe('FlyTimelineItemComponent', () => {
-  let component: FlyTimelineItemComponent;
-  let fixture: ComponentFixture<FlyTimelineItemComponent>;
+describe('FlyTimelineComponent', () => {
+  let component: TimelineComponent;
+  let fixture: ComponentFixture<TimelineComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FlyTimelineItemComponent ],
+      declarations: [ TimelineComponent ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FlyTimelineItemComponent);
+    fixture = TestBed.createComponent(TimelineComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

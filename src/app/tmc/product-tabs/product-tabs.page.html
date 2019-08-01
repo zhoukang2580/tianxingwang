@@ -25,10 +25,15 @@
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh()">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  <app-product-plane *ngIf='activeTab==productItemType.plane' [orderModel]='orderModel'></app-product-plane>
+  <!-- <app-product-plane *ngIf='activeTab==productItemType.plane' [orderModel]='orderModel'></app-product-plane>
   <app-product-hotel *ngIf='activeTab==productItemType.hotel' [orderModel]='orderModel'></app-product-hotel>
   <app-product-train *ngIf='activeTab==productItemType.train' [orderModel]='orderModel'></app-product-train>
-  <app-product-insurance *ngIf='activeTab==productItemType.insurance'></app-product-insurance>
+  <app-product-insurance *ngIf='activeTab==productItemType.insurance'></app-product-insurance> -->
+  <ion-list lines='none'>
+    <ion-item *ngFor='let order of orderModel?.Orders' (click)='goToDetailPage(order)'>
+      <app-order-item [order]='order'></app-order-item> 
+    </ion-item>
+  </ion-list>
   <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMore()">
     <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
     </ion-infinite-scroll-content>

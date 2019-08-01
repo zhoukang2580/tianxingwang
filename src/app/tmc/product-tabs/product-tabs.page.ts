@@ -1,6 +1,7 @@
+import { AppHelper } from "src/app/appHelper";
 import { OrderModel } from "src/app/order/models/OrderModel";
 import { TmcEntity, TmcService } from "./../tmc.service";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import {
   NavController,
@@ -41,7 +42,8 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     private navCtrl: NavController,
     private modalCtrl: ModalController,
     route: ActivatedRoute,
-    private tmcService: TmcService
+    private tmcService: TmcService,
+    private router: Router
   ) {
     route.queryParamMap.subscribe(d => {
       console.log("product-tabs", d);
@@ -89,9 +91,17 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     if (result && result.data) {
       const condition = { ...this.condition, ...result.data };
       this.doRefresh(condition);
-    }else{
+    } else {
       this.doRefresh();
     }
+  }
+  goToDetailPage(order: OrderEntity) {
+    this.router.navigate([AppHelper.getRoutePath("order-detail")], {
+      queryParams: {
+        tab: JSON.stringify(this.activeTab),
+        orderId: order.Id
+      }
+    });
   }
   private async doSearch() {
     try {
@@ -161,8 +171,10 @@ export class ProductTabsPage implements OnInit, OnDestroy {
           if (order.InsertTime) {
             if (order.InsertTime.includes("T")) {
               const [date, time] = order.InsertTime.split("T");
-              order.InsertDateTime =
-                `${date} ${time.substring(0, time.lastIndexOf(":"))}`;
+              order.InsertDateTime = `${date} ${time.substring(
+                0,
+                time.lastIndexOf(":")
+              )}`;
             } else {
               order.InsertDateTime = order.InsertTime;
             }
