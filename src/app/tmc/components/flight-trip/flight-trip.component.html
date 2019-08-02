@@ -1,0 +1,72 @@
+<div class='flight-info-item' *ngIf='tripAndTicket?.trip as trip'>
+    <ion-row>
+      <ion-col>
+        <span>{{trip.TakeoffDate}}</span>
+        <span>{{trip.FromCityName}}</span>
+        <span style='margin:0 .2em;'>--</span>
+        <span>{{trip.ToCityName}}</span>
+        <span>{{trip.StatusName}}</span>
+        <ion-button style='font-size: 0.7rem;' size='small' color='secondary' fill='clear'>退改签规定</ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col style="justify-content: flex-start">
+        <span>{{trip.CarrierName}}{{trip.FlightNumber}}</span>
+        <span *ngIf='trip.CodeShareNumber'>(实际承运&nbsp;{{trip.CarrierName}}{{trip.CodeShareNumber}})</span>
+      </ion-col>
+    </ion-row>
+    <ion-row> 
+      <ion-col style='justify-content: flex-start;'>
+        <span>{{trip.CabinType|cabintype}}&nbsp;{{trip.ShowCabinCode}}舱</span>
+        <span *ngIf='trip.Discount'>({{trip.Discount|discount}})</span>
+        <span>机型</span>
+        <span>---</span>
+        <span>{{trip.PlaneType}}</span>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <div>
+          <span>{{trip.FromAirportName}}</span>
+          <span *ngIf='trip.FromTerminal'>({{trip.FromTerminal}})</span>
+        </div>
+        <div class='is-stop'>
+          <div *ngIf='trip.IsStop'>------经停------</div>
+          <div *ngIf='!trip.IsStop'>------直飞------</div>
+        </div>
+        <div>
+          <span>{{trip.FromAirportName}}</span>
+          <span *ngIf='trip.ToTerminal'>({{trip.ToTerminal}})</span>
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <div>{{trip.TakeoffShortTime}}</div>
+        <div>{{trip.FlyTime}}</div>
+        <div>{{trip.ArrivalShortTime}}</div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <div *ngIf='tripAndTicket?.ticket?.StatusName=="已出票"||tripAndTicket?.ticket?.StatusName=="预订成功"'>机票费用：{{trip.TicketPrice+trip.Tax}}元。(其中机票款{{trip.TicketPrice}}元，税收{{trip.Tax}}元)</div>
+        <div *ngIf='tripAndTicket?.ticket?.StatusName?.includes("改签")'>改签费用：{{exchangeFee}}元</div>
+        <div *ngIf='tripAndTicket?.ticket?.StatusName?.includes("退票")'>退票费用：{{refundDeductionFee}}元</div>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf='tripAndTicket?.ticket?.LastIssueTime&&!tripAndTicket?.ticket?.LastIssueTime?.startsWith("1800")'>
+      <ion-col>
+        <ion-text color='danger'>最晚保留时间：{{tripAndTicket?.ticket?.LastIssueTime}}</ion-text>
+      </ion-col>
+    </ion-row>
+    <ng-container *ngIf='tripAndTicket?.ticket?.FullTicketNo  as ticketNo'>
+      <ion-row *ngIf='ticketNo!="-"'>
+        <ion-col>
+          <ion-text color='danger'>票号：{{ticketNo}}</ion-text>
+        </ion-col>
+        <ion-col *ngIf='tripAndTicket?.ticket?.StatusName=="已出票"||tripAndTicket?.ticket?.StatusName?.includes("改签")' style='justify-content: flex-end'>
+          <ion-button expand='block' color='secondary'>购买保险</ion-button>
+        </ion-col>
+      </ion-row>
+    </ng-container>
+  </div>

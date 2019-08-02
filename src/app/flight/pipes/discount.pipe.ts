@@ -11,7 +11,7 @@ export class DiscountPipe implements PipeTransform {
       return value;
     }
     if (v < 1) {
-      return `${(v * 10)
+      return `${(v * 100)
         .toString()
         .substr(0, 3)}${LanguageHelper.getDiscountTip()}`;
     }

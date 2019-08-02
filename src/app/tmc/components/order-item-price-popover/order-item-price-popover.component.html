@@ -1,0 +1,12 @@
+<ion-content padding>
+  <ion-row *ngFor='let item of orderItems'>
+    <ion-col>{{item.Name}}</ion-col>
+    <ion-col class='price'>{{item.Amount}}</ion-col>
+    <ion-col>元</ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>总计</ion-col>
+    <ion-col class='price'>{{amount}}</ion-col>
+    <ion-col>元</ion-col>
+  </ion-row>
+</ion-content>

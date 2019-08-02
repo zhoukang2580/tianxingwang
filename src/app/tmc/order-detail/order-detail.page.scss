@@ -34,3 +34,8 @@ ion-col {
   display: flex;
   flex-flow: column nowrap;
 }
+ion-list-header {
+  // justify-content: center;
+  color: var(--ion-color-secondary);
+  border-bottom: 1px dashed var(--ion-color-secondary);
+}

@@ -9,7 +9,10 @@ import { ProductInsuranceComponent } from "./product-insurance/product-insurance
 import { ProductHotelComponent } from "./product-hotel/product-hotel.component";
 import { ProductTrainComponent } from "./product-train/product-train.component";
 import { ProductPlaneComponent } from "./product-plane/product-plane.component";
-import { OrderItemComponent } from './order-item/order-item.component';
+import { OrderItemComponent } from "./order-item/order-item.component";
+import { FlightTripComponent } from "./flight-trip/flight-trip.component";
+import { FlightPipesModule } from "src/app/flight/pipes/Pipes.module";
+import { OrderItemPricePopoverComponent } from './order-item-price-popover/order-item-price-popover.component';
 
 @NgModule({
   declarations: [
@@ -20,21 +23,25 @@ import { OrderItemComponent } from './order-item/order-item.component';
     ProductTrainComponent,
     ProductHotelComponent,
     ProductInsuranceComponent,
-    OrderItemComponent
+    FlightTripComponent,
+    OrderItemComponent,
+    OrderItemPricePopoverComponent
   ],
-  imports: [CommonModule, IonicModule, FormsModule],
+  imports: [CommonModule, IonicModule, FormsModule, FlightPipesModule],
   exports: [
     SearchTicketModalComponent,
     ProductPlaneComponent,
     ProductTrainComponent,
     ProductHotelComponent,
     ProductInsuranceComponent,
-    OrderItemComponent
+    OrderItemComponent,
+    FlightTripComponent
   ],
   entryComponents: [
     SearchTicketModalComponent,
     SelectTrainStationModalComponent,
-    SelectAirportsModalComponent
+    SelectAirportsModalComponent,
+    OrderItemPricePopoverComponent
   ]
 })
 export class TmcComponentsModule {}

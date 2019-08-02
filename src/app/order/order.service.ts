@@ -11,8 +11,6 @@ export class OrderDetailModel {
   Order: OrderEntity;
   TravelPayType: string;
   TravelType: string;
-  TotalAmount: string;
-  PayAmount: string;
 }
 @Injectable({
   providedIn: "root"

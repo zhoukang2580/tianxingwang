@@ -1,16 +1,18 @@
-import { AppComponentsModule } from './../../components/appcomponents.module';
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Routes, RouterModule } from '@angular/router';
+import { TmcComponentsModule } from "./../components/tmcComponents.module";
+import { AppComponentsModule } from "./../../components/appcomponents.module";
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { Routes, RouterModule } from "@angular/router";
 
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from "@ionic/angular";
 
-import { OrderDetailPage } from './order-detail.page';
+import { OrderDetailPage } from "./order-detail.page";
+import { FlightPipesModule } from "src/app/flight/pipes/Pipes.module";
 
 const routes: Routes = [
   {
-    path: '',
+    path: "",
     component: OrderDetailPage
   }
 ];
@@ -21,7 +23,9 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    AppComponentsModule
+    AppComponentsModule,
+    FlightPipesModule,
+    TmcComponentsModule
   ],
   declarations: [OrderDetailPage]
 })

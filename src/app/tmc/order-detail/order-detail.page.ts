@@ -1,11 +1,14 @@
+import { OrderFlightTicketEntity } from "./../../order/models/OrderFlightTicketEntity";
+import { FlydayService } from "./../../flight/flyday.service";
 import { TmcEntity } from "./../tmc.service";
-import { OrderModel } from "src/app/order/models/OrderModel";
 import {
   NavController,
   Platform,
   IonButton,
   IonList,
-  IonContent
+  IonContent,
+  ModalController,
+  PopoverController
 } from "@ionic/angular";
 import {
   Component,
@@ -25,6 +28,24 @@ import { OrderEntity } from "src/app/order/models/OrderEntity";
 import { OrderPayStatusType } from "src/app/order/models/OrderInsuranceEntity";
 import { OrderFlightTripStatusType } from "src/app/order/models/OrderFlightTripStatusType";
 import { OrderFlightTripEntity } from "src/app/order/models/OrderFlightTripEntity";
+import * as moment from "moment";
+import { OrderItemPricePopoverComponent } from "../components/order-item-price-popover/order-item-price-popover.component";
+import { OrderPassengerEntity } from "src/app/order/models/OrderPassengerEntity";
+import { OrderNumberEntity } from "src/app/order/models/OrderNumberEntity";
+import { OrderTrainTicketEntity } from "src/app/order/models/OrderTrainTicketEntity";
+export class OrderTripTicketModel {
+  trip: OrderFlightTripEntity;
+  ticket: OrderFlightTicketEntity;
+  order: OrderEntity;
+  CostCenterName: string;
+  CostCenterCode: string;
+  OrganizationName: string;
+  OrganizationCode: string;
+  IllegalPolicy: string;
+  IllegalReason: string;
+  passenger: OrderPassengerEntity;
+  OutNumbers: OrderNumberEntity[];
+}
 interface TabItem {
   label: string;
   value: number;
@@ -34,7 +55,11 @@ interface TabItem {
   linkEle?: HTMLElement;
 }
 class CombineInfo extends OrderDetailModel {
-  trips: OrderFlightTripEntity[];
+  trips: OrderTripTicketModel[];
+  exchangeFlightTrips: OrderTripTicketModel[];
+  TotalAmount: string;
+  PayAmount: string;
+  insuranceAmount: string;
 }
 @Component({
   selector: "app-order-detail",
@@ -57,23 +82,85 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     private plt: Platform,
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private tmcService: TmcService
+    private tmcService: TmcService,
+    private flydayService: FlydayService,
+    private modalCtrl: ModalController,
+    private popoverCtrl: PopoverController
   ) {}
   scrollTop: number;
-  /// <summary>
-  ///
-  /// </summary>
-  /// <returns></returns>
-  public getTravelFlightTrips(order: OrderEntity) {
-    const trips: OrderFlightTripEntity[] = [];
+  private getOrderNumbers(
+    order: OrderEntity,
+    tag = "TmcOutNumber"
+  ): OrderNumberEntity[] {
+    if (!order || !order.OrderNumbers) {
+      return [];
+    }
+    return order.OrderNumbers.filter(it => it.Tag == tag);
+  }
+  private getTravelFlightTrips(order: OrderEntity) {
+    const trips: OrderTripTicketModel[] = [];
+    const exchangeFlightTrips: OrderTripTicketModel[] = [];
     if (!order || !order.OrderFlightTickets) {
       return trips;
     }
     order.OrderFlightTickets.forEach(ticket => {
-      if (ticket.OrderFlightTrips) {
+      ticket.LastIssueTime = this.transformTime(ticket.LastIssueTime);
+      if (ticket.OrderFlightTrips && order.OrderTravels) {
         ticket.OrderFlightTrips.forEach(trip => {
+          const m = moment(trip.TakeoffTime);
+          const d = this.flydayService.generateDayModel(m);
+          trip.TakeoffDate = `${m.format("YYYY年MM月DD日")}(${
+            d.dayOfWeekName
+          })`;
+          trip.TakeoffShortTime = this.transformTime(trip.TakeoffTime);
+          trip.ArrivalShortTime = this.transformTime(trip.ArrivalTime);
+          const info: OrderTripTicketModel = {
+            passenger:
+              order.OrderPassengers &&
+              order.OrderPassengers.find(
+                p => p.Id == (ticket.Passenger && ticket.Passenger.Id)
+              ),
+            trip,
+            ticket,
+            order,
+            CostCenterName: order.OrderTravels.filter(
+              it => it.Key == ticket.Key
+            )
+              .map(it => it.CostCenterName)
+              .join(","),
+            CostCenterCode: order.OrderTravels.filter(
+              it => it.Key == ticket.Key
+            )
+              .map(it => it.CostCenterCode)
+              .join(","),
+            OrganizationCode: order.OrderTravels.filter(
+              it => it.Key == ticket.Key
+            )
+              .map(it => it.OrganizationCode)
+              .join(","),
+            OrganizationName: order.OrderTravels.filter(
+              it => it.Key == ticket.Key
+            )
+              .map(it => it.OrganizationName)
+              .join(","),
+            IllegalPolicy: order.OrderTravels.filter(it => it.Key == ticket.Key)
+              .map(it => it.IllegalPolicy)
+              .join(","),
+            IllegalReason: order.OrderTravels.filter(it => it.Key == ticket.Key)
+              .map(it => it.IllegalReason)
+              .join(","),
+            OutNumbers: this.getOrderNumbers(order)
+          };
           if (trip.Status == OrderFlightTripStatusType.Normal) {
-            trips.push(trip);
+            trips.push(info);
+          }
+          if (
+            trip.Status == OrderFlightTripStatusType.Exchange &&
+            (new Date(trip.InsertTime).getTime() <
+              new Date(ticket.IssueTime).getTime() ||
+              ticket.IssueTime.startsWith("1800"))
+          ) {
+            exchangeFlightTrips.push(info);
           }
         });
       }
@@ -81,9 +168,46 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
 
     trips.sort(
       (t1, t2) =>
-        new Date(t1.TakeoffTime).getTime() - new Date(t2.TakeoffTime).getTime()
+        new Date(t1.trip.TakeoffTime).getTime() -
+        new Date(t2.trip.TakeoffTime).getTime()
     );
+    this.orderDetail.exchangeFlightTrips = exchangeFlightTrips;
     return trips;
+  }
+  async showPricePopover() {
+    const orderItems =
+      this.orderDetail.Order && this.orderDetail.Order.OrderItems;
+    const p = await this.popoverCtrl.create({
+      component: OrderItemPricePopoverComponent,
+      componentProps: {
+        orderItems,
+        amount:
+          orderItems && orderItems.reduce((acc, it) => (acc += +it.Amount), 0)
+      }
+    });
+    p.present();
+  }
+  getPassengerInfo(passenger: OrderPassengerEntity) {
+    if (!passenger) {
+      return null;
+    }
+    if (
+      this.orderDetail &&
+      this.orderDetail.Order &&
+      this.orderDetail.Order.OrderPassengers
+    ) {
+      const p = this.orderDetail.Order.OrderPassengers.find(
+        it => it.Id == passenger.Id
+      );
+      const t =
+        this.orderDetail.trips &&
+        this.orderDetail.trips.find(t => t.passenger.Id == passenger.Id);
+      return {
+        ...p,
+        ...t
+      };
+    }
+    return null;
   }
   async ngOnInit() {
     this.tabs = [
@@ -198,6 +322,21 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
           .filter(it => !(it.Tag || "").endsWith("Fee"))
           .reduce((acc, it) => (acc += +it.Amount), 0)}`;
     }
+  }
+  private getInsuranceAmount(
+    order: OrderEntity,
+    ticket: OrderTrainTicketEntity
+  ) {
+    if (!order || !order.OrderInsurances) {
+      return 0;
+    }
+    const trainTripkeys = ticket.OrderTrainTrips.map(t => t.Key);
+    const keys = order.OrderInsurances.filter(
+      it => !!trainTripkeys.find(trainKey => trainKey == it.AdditionKey)
+    ).map(it => it.Key);
+    const insuranceAmount = order.OrderItems.filter(it =>
+      keys.find(k => k == it.Key)
+    ).reduce((acc, it) => (acc += +it.Amount), 0);
   }
   private getTotalAmount(order: OrderEntity) {
     const Tmc = this.tmc;
