@@ -1,5 +1,10 @@
 ion-item-divider {
   border-left: 4px solid var(--ion-color-secondary);
+  position: sticky;
+  top: 0;
+}
+ion-list.link {
+  min-height: 80vh;
 }
 ion-list + ion-list {
   margin-top: 0.5em;

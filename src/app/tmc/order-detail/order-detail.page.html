@@ -15,10 +15,10 @@
     </div>
   </ion-toolbar>
 </ion-header>
-<ion-content #cnt [scrollEvents]='true' (ionScroll)='onScroll()'>
+<ion-content #cnt [scrollEvents]='true' (ionScrollEnd)='onScrollEnd()'>
   <!-- 订单信息 -->
   <ion-list #link [attr.tabid]='tabs[0].value' lines='none'>
-    <ion-item-divider sticky>
+    <ion-item-divider>
       <strong>{{tabs[0].label}}</strong>
     </ion-item-divider>
     <ion-item>
@@ -56,7 +56,7 @@
   </ion-list>
   <!-- 航班信息 -->
   <ion-list #link [attr.tabid]='tabs[1].value' lines='none'>
-    <ion-item-divider sticky>{{tabs[1].label}} </ion-item-divider>
+    <ion-item-divider>{{tabs[1].label}} </ion-item-divider>
     <ion-list-header color='primary'>出行航班信息</ion-list-header>
     <ion-item *ngFor='let trip of orderDetail.trips'>
       <app-flight-trip [tripAndTicket]='trip'></app-flight-trip>
@@ -72,7 +72,7 @@
   </ion-list>
   <!-- 旅客信息 -->
   <ion-list #link [attr.tabid]='tabs[2].value' lines='none'>
-    <ion-item-divider sticky>{{tabs[2].label}} </ion-item-divider>
+    <ion-item-divider>{{tabs[2].label}} </ion-item-divider>
     <ng-container *ngFor='let op of orderDetail.Order?.OrderPassengers'>
       <ion-item *ngIf='getPassengerInfo(op) as p'>
         <div style='width: 100%'>
@@ -122,12 +122,12 @@
   </ion-list>
   <!-- 保险信息 -->
   <ion-list #link [attr.tabid]='tabs[3].value' lines='none'>
-    <ion-item-divider sticky>{{tabs[3].label}} </ion-item-divider>
+    <ion-item-divider>{{tabs[3].label}} </ion-item-divider>
     <ion-item *ngFor='let item of items'></ion-item>
   </ion-list>
   <!-- 审批记录 -->
-  <ion-list #link [attr.tabid]='tabs[4].value' lines='none'>
-    <ion-item-divider sticky>{{tabs[4].label}} </ion-item-divider>
+  <ion-list #link class='link' [attr.tabid]='tabs[4].value' lines='none'>
+    <ion-item-divider>{{tabs[4].label}}</ion-item-divider>
     <ion-item style='margin-top: 0.5em'>
       <app-timeline [hideLastTimeLineTail]='false'>
         <app-timeline-item *ngFor='let history of orderDetail?.Histories'>

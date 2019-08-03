@@ -8,7 +8,9 @@ import {
   IonList,
   IonContent,
   ModalController,
-  PopoverController
+  PopoverController,
+  IonHeader,
+  DomController
 } from "@ionic/angular";
 import {
   Component,
@@ -46,7 +48,7 @@ export class OrderTripTicketModel {
   passenger: OrderPassengerEntity;
   OutNumbers: OrderNumberEntity[];
 }
-interface TabItem {
+export interface TabItem {
   label: string;
   value: number;
   isActive?: boolean;
@@ -76,6 +78,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
   @ViewChildren("info") tabEles: QueryList<IonButton>;
   @ViewChildren("link") linkEles: QueryList<IonList>;
   @ViewChild("infos") infosContainer: ElementRef<HTMLElement>;
+  @ViewChild(IonHeader) headerEle: IonHeader;
   @ViewChild("cnt") ionContent: IonContent;
   scrollElement: HTMLElement;
   constructor(
@@ -85,7 +88,8 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     private tmcService: TmcService,
     private flydayService: FlydayService,
     private modalCtrl: ModalController,
-    private popoverCtrl: PopoverController
+    private popoverCtrl: PopoverController,
+    private domCtrl: DomController
   ) {}
   scrollTop: number;
   private getOrderNumbers(
@@ -337,6 +341,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     const insuranceAmount = order.OrderItems.filter(it =>
       keys.find(k => k == it.Key)
     ).reduce((acc, it) => (acc += +it.Amount), 0);
+    return insuranceAmount;
   }
   private getTotalAmount(order: OrderEntity) {
     const Tmc = this.tmc;
@@ -379,18 +384,32 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
           tab.linkEle = l["el"];
         }
       });
+      console.log("ngAfterViewInit", this.tabs);
     }
   }
-  onScroll() {
+  onScrollEnd() {
     if (this.scrollElement) {
-      const scrollTop = (this.scrollTop = this.scrollElement.scrollTop);
-      const activeTab = this.tabs.find(
-        t =>
-          t.linkRect &&
-          t.linkEle &&
-          scrollTop >= t.linkRect.top &&
-          scrollTop < t.linkRect.bottom
-      );
+      const headerHeight =
+        (this.headerEle &&
+          this.headerEle["el"] &&
+          this.headerEle["el"].clientHeight) ||
+        112;
+      const scrollTop =
+        (this.scrollTop = this.scrollElement.scrollTop) + headerHeight;
+      let activeTab: TabItem;
+      const linkEles = this.linkEles.toArray();
+      for (let i = 0; i < linkEles.length; i++) {
+        const el = linkEles[i]["el"];
+        const rect = el && el.getBoundingClientRect();
+        if (el && rect) {
+          if (rect.top - headerHeight >= 0 || rect.bottom - headerHeight >= 0) {
+            activeTab = this.tabs.find(
+              t => t.value == +el.getAttribute("tabid")
+            );
+            break;
+          }
+        }
+      }
       if (activeTab) {
         this.moveTabToCenter(activeTab);
       }
@@ -403,33 +422,48 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       );
       if (activeLink && activeLink["el"]) {
         const rect = activeLink["el"].getBoundingClientRect();
+        const headerHeight =
+          (this.headerEle &&
+            this.headerEle["el"] &&
+            this.headerEle["el"].clientHeight) ||
+          112;
         if (this.ionContent) {
-          this.ionContent.scrollByPoint(0, rect.top, 100);
+          this.ionContent
+            .scrollByPoint(0, rect.top - headerHeight, 100)
+            .then(_ => {
+              // this.onScroll();
+            });
         }
       }
     }
   }
   private moveTabToCenter(tab: TabItem) {
+    // console.log("moveTabToCenter ", tab.label);
     this.tabs.forEach(t => (t.isActive = false));
     tab.isActive = true;
     if (this.infosContainer && this.tabEles) {
-      const el = this.tabEles.find(
-        item => item["el"].getAttribute("tabid") == `${tab.value}`
-      );
-      const activeTabEle = el && el["el"];
-      if (activeTabEle) {
-        const elRect = activeTabEle.getBoundingClientRect();
-        tab.rect = elRect;
-      }
-      if (tab.rect) {
-        const dist = tab.rect.width / 2 + tab.rect.left - this.plt.width() / 2;
-        // console.dir(dist);
-        this.infosContainer.nativeElement.scrollBy({
-          left: dist,
-          top: 0,
-          behavior: "smooth"
+      this.domCtrl.read(_ => {
+        const el = this.tabEles.find(
+          item => item["el"].getAttribute("tabid") == `${tab.value}`
+        );
+        const activeTabEle = el && el["el"];
+        if (activeTabEle) {
+          const elRect = activeTabEle.getBoundingClientRect();
+          tab.rect = elRect;
+        }
+        this.domCtrl.write(_ => {
+          if (tab.rect) {
+            const dist =
+              tab.rect.width / 2 + tab.rect.left - this.plt.width() / 2;
+            // console.dir(dist);
+            this.infosContainer.nativeElement.scrollBy({
+              left: dist,
+              top: 0,
+              behavior: "smooth"
+            });
+          }
         });
-      }
+      });
     }
   }
 }
