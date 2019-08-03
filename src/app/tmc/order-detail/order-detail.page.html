@@ -61,14 +61,6 @@
     <ion-item *ngFor='let trip of orderDetail.trips'>
       <app-flight-trip [tripAndTicket]='trip'></app-flight-trip>
     </ion-item>
-    <ion-list-header>原始航班信息</ion-list-header>
-    <ion-item *ngFor='let it of orderDetail.exchangeFlightTrips'>
-      <app-flight-trip [tripAndTicket]='it'></app-flight-trip>
-    </ion-item>
-    <ion-list-header>原始航班信息</ion-list-header>
-    <ion-item *ngFor='let trip of orderDetail.exchangeFlightTrips'>
-      <app-flight-trip [tripAndTicket]='trip'></app-flight-trip>
-    </ion-item>
   </ion-list>
   <!-- 旅客信息 -->
   <ion-list #link [attr.tabid]='tabs[2].value' lines='none'>
@@ -93,12 +85,12 @@
             <ion-col>{{p.Email}}</ion-col>
           </ion-row>
           <ion-row>
-            <ion-col>成本中心:</ion-col>
-            <ion-col>{{p.CostCenterCode}}{{p.CostCenterName}}</ion-col>
+            <ion-col style='align-self: flex-start;'>成本中心:</ion-col>
+            <ion-col>{{p.CostCenterCode}}-{{p.CostCenterName}}</ion-col>
           </ion-row>
           <ion-row>
-            <ion-col>组织架构:</ion-col>
-            <ion-col>{{p.OrganizationCode}}{{p.OrganizationName}}</ion-col>
+            <ion-col style='align-self: flex-start;'>组织架构:</ion-col>
+            <ion-col>{{p.OrganizationCode}}-{{p.OrganizationName}}</ion-col>
           </ion-row>
           <ion-row>
             <ion-col style='align-self: flex-start;'>外部编号:</ion-col>

@@ -53,8 +53,6 @@ export interface TabItem {
   value: number;
   isActive?: boolean;
   rect?: ClientRect;
-  linkRect?: ClientRect;
-  linkEle?: HTMLElement;
 }
 class CombineInfo extends OrderDetailModel {
   trips: OrderTripTicketModel[];
@@ -62,6 +60,7 @@ class CombineInfo extends OrderDetailModel {
   TotalAmount: string;
   PayAmount: string;
   insuranceAmount: string;
+
 }
 @Component({
   selector: "app-order-detail",
@@ -108,9 +107,16 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       return trips;
     }
     order.OrderFlightTickets.forEach(ticket => {
+      ticket.VariablesJsonObj = ticket.Variables
+        ? JSON.parse(ticket.Variables)
+        : {};
+      ticket.IssueTime = this.transformTime(ticket.IssueTime);
       ticket.LastIssueTime = this.transformTime(ticket.LastIssueTime);
       if (ticket.OrderFlightTrips && order.OrderTravels) {
         ticket.OrderFlightTrips.forEach(trip => {
+          trip.VariablesJsonObj = trip.Variables
+          ? JSON.parse(trip.Variables)
+          : {};
           const m = moment(trip.TakeoffTime);
           const d = this.flydayService.generateDayModel(m);
           trip.TakeoffDate = `${m.format("YYYY年MM月DD日")}(${
@@ -168,6 +174,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
           }
         });
       }
+      ticket.vmInsuranceAmount = this.getInsuranceAmount(order, ticket);
     });
 
     trips.sort(
@@ -329,14 +336,14 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
   }
   private getInsuranceAmount(
     order: OrderEntity,
-    ticket: OrderTrainTicketEntity
+    ticket: OrderFlightTicketEntity
   ) {
     if (!order || !order.OrderInsurances) {
       return 0;
     }
-    const trainTripkeys = ticket.OrderTrainTrips.map(t => t.Key);
+    const flightTripkeys = ticket.OrderFlightTrips.map(t => t.Key);
     const keys = order.OrderInsurances.filter(
-      it => !!trainTripkeys.find(trainKey => trainKey == it.AdditionKey)
+      it => !!flightTripkeys.find(trainKey => trainKey == it.AdditionKey)
     ).map(it => it.Key);
     const insuranceAmount = order.OrderItems.filter(it =>
       keys.find(k => k == it.Key)
@@ -373,18 +380,6 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
   async ngAfterViewInit() {
     if (this.ionContent) {
       this.scrollElement = await this.ionContent.getScrollElement();
-    }
-    if (this.linkEles) {
-      this.linkEles.forEach(l => {
-        const rect = l["el"] && l["el"].getBoundingClientRect();
-        const tabid = l["el"].getAttribute("tabid");
-        const tab = this.tabs.find(t => t.value == +tabid);
-        if (tab) {
-          tab.linkRect = rect;
-          tab.linkEle = l["el"];
-        }
-      });
-      console.log("ngAfterViewInit", this.tabs);
     }
   }
   onScrollEnd() {

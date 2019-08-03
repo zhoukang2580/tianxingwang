@@ -1,0 +1,17 @@
+<ion-item-divider>{{tripDesc}}</ion-item-divider>
+<ion-row>
+  <ion-col>出票时间</ion-col>
+  <ion-col>{{ticket?.IssueTime}}</ion-col>
+  <ion-col>已改签</ion-col>
+</ion-row>
+<ion-row>
+  <ion-col>航班信息</ion-col>
+  <ion-col>2019年6月10日</ion-col>
+  <ion-col>
+    <ion-button style='font-size: 0.7rem;' size='small' color='secondary' fill='clear' (click)='openRulesPopover(trip)'>
+      退改签规定</ion-button>
+  </ion-col>
+</ion-row>
+<ion-row>
+  <ion-col></ion-col>
+</ion-row>
