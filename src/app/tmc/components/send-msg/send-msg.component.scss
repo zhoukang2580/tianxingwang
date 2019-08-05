@@ -1,6 +1,77 @@
-ion-content{
-    font-size: 0.8rem;
-    ion-item.item-has-focus .label-floating{
-        color:var(--ion-color-secondary);
+ion-header ion-row {
+    font-size: 0.6rem;
+  }
+  ion-col {
+    align-self: center;
+  }
+  ion-content {
+    .email-content {
+      transform: scale(0.45);
+      transform-origin: left top;
+      font-size: 1.2rem;
     }
-}
+    font-size: 0.7rem;
+    .emails {
+      margin: 1em 0;
+      padding: 0.5em 0;
+    }
+    .emails,
+    .content,
+    .subject {
+      border-top: 1px solid rgba(var(--ion-color-dark-rgb), 0.12);
+    }
+    .emails,
+    .email-item {
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: flex-start;
+      align-items: center;
+    }
+    .subject {
+      display: flex;
+      align-items: flex-start;
+      ion-input {
+        --padding-top: 0.5em;
+      }
+      ion-label:first-child {
+        padding: 0.5em 0;
+      }
+    }
+    .content textarea {
+      &::-webkit-scrollbar {
+        display: none;
+      }
+      min-height: 20vh;
+      padding: 0.3em 0.5em;
+      width: 100%;
+      border: none;
+      outline: none;
+      &:focus {
+        border: 1px solid var(--ion-color-secondary);
+        border-radius: 4px;
+      }
+    }
+    .email-item {
+      flex: 1;
+      .email {
+        margin: 0.5em;
+        padding: 0.5em 1em;
+        background-color: rgba(var(--ion-color-dark-rgb), 0.12);
+        border-radius: 5em;
+        max-width: 14em;
+        width: 13.5em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        position: relative;
+        .remove-icon {
+          font-size: 1.2rem;
+          position: absolute;
+          top: 50%;
+          right: 0.1em;
+          transform: translate(0, -50%);
+        }
+      }
+    }
+  }
+  
