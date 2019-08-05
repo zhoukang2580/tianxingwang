@@ -1,3 +1,4 @@
+import { SendEmailComponent } from "./../components/send-email/send-email.component";
 import { OrderFlightTicketEntity } from "./../../order/models/OrderFlightTicketEntity";
 import { FlydayService } from "./../../flight/flyday.service";
 import { TmcEntity } from "./../tmc.service";
@@ -35,6 +36,8 @@ import { OrderItemPricePopoverComponent } from "../components/order-item-price-p
 import { OrderPassengerEntity } from "src/app/order/models/OrderPassengerEntity";
 import { OrderNumberEntity } from "src/app/order/models/OrderNumberEntity";
 import { OrderTrainTicketEntity } from "src/app/order/models/OrderTrainTicketEntity";
+import { SendMsgComponent } from "../components/send-msg/send-msg.component";
+import { OrderFlightTicketStatusType } from "src/app/order/models/OrderFlightTicketStatusType";
 export class OrderTripTicketModel {
   trip: OrderFlightTripEntity;
   ticket: OrderFlightTicketEntity;
@@ -60,7 +63,6 @@ class CombineInfo extends OrderDetailModel {
   TotalAmount: string;
   PayAmount: string;
   insuranceAmount: string;
-
 }
 @Component({
   selector: "app-order-detail",
@@ -115,8 +117,8 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       if (ticket.OrderFlightTrips && order.OrderTravels) {
         ticket.OrderFlightTrips.forEach(trip => {
           trip.VariablesJsonObj = trip.Variables
-          ? JSON.parse(trip.Variables)
-          : {};
+            ? JSON.parse(trip.Variables)
+            : {};
           const m = moment(trip.TakeoffTime);
           const d = this.flydayService.generateDayModel(m);
           trip.TakeoffDate = `${m.format("YYYY年MM月DD日")}(${
@@ -184,6 +186,74 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     );
     this.orderDetail.exchangeFlightTrips = exchangeFlightTrips;
     return trips;
+  }
+  canSendEmailMsg(passenger: OrderPassengerEntity) {
+    if (
+      passenger &&
+      this.orderDetail &&
+      this.orderDetail.Order &&
+      this.orderDetail.Order.OrderFlightTickets
+    ) {
+      const trip =
+        this.orderDetail.trips &&
+        this.orderDetail.trips.find(t => t.passenger.Id == passenger.Id);
+      if (trip && trip.ticket) {
+        const ticket = this.orderDetail.Order.OrderFlightTickets.find(
+          t => t.Id == trip.ticket.Id
+        );
+        if (ticket) {
+          return (
+            ticket.Status != OrderFlightTicketStatusType.Abolish &&
+            ticket.Status != OrderFlightTicketStatusType.Abolishing
+          );
+        }
+      }
+    }
+    return false;
+  }
+  async sendMsg(passenger: OrderPassengerEntity) {
+    const trip =
+      this.orderDetail.trips &&
+      this.orderDetail.trips.find(t => t.passenger.Id == passenger.Id);
+    if (trip && trip.ticket) {
+      const ticket = this.orderDetail.Order.OrderFlightTickets.find(
+        t => t.Id == trip.ticket.Id
+      );
+      const p = await this.popoverCtrl.create({
+        component: SendMsgComponent,
+        componentProps: {
+          defaultMobile: passenger.Mobile,
+          orderTicketId: ticket.Id
+        }
+      });
+      await p.present();
+      const result = await p.onDidDismiss();
+      if (result && result.data) {
+        const mobiles = result.data as { mobile: string }[];
+      }
+    }
+  }
+  async sendEmail(passenger: OrderPassengerEntity) {
+    const trip =
+      this.orderDetail.trips &&
+      this.orderDetail.trips.find(t => t.passenger.Id == passenger.Id);
+    if (trip && trip.ticket) {
+      const ticket = this.orderDetail.Order.OrderFlightTickets.find(
+        t => t.Id == trip.ticket.Id
+      );
+      const p = await this.modalCtrl.create({
+        component: SendEmailComponent,
+        componentProps: {
+          defaultEmail: passenger.Email,
+          orderTicketId: ticket.Id
+        }
+      });
+      await p.present();
+      const result = await p.onDidDismiss();
+      if (result && result.data) {
+        const emails = result.data as { email: string }[];
+      }
+    }
   }
   async showPricePopover() {
     const orderItems =

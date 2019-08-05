@@ -19,10 +19,14 @@ import { CredentialsEntity } from "./models/CredentialsEntity";
 import { TrafficlineEntity } from "./models/TrafficlineEntity";
 import { Storage } from "@ionic/storage";
 import * as jsPy from "js-pinyin";
-import { OrderModel } from '../order/models/OrderModel';
-import { OrderService } from '../order/order.service';
+import { OrderModel } from "../order/models/OrderModel";
+import { OrderService } from "../order/order.service";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
+interface SelectItem {
+  Value: string;
+  Text: string;
+}
 interface LocalStorageAirport {
   LastUpdateTime: number;
   Trafficlines: TrafficlineEntity[];
@@ -35,6 +39,8 @@ export class TmcService {
     LastUpdateTime: 0,
     Trafficlines: []
   };
+  emailTemplateSelectItemList: SelectItem[] = [];
+  mobileTemplateSelectItemList: SelectItem[] = [];
   private localDomesticAirports: LocalStorageAirport = {
     LastUpdateTime: 0,
     Trafficlines: []
@@ -47,7 +53,7 @@ export class TmcService {
     private apiService: ApiService,
     private storage: Storage,
     private identityService: IdentityService,
-    private orderService:OrderService
+    private orderService: OrderService
   ) {
     this.identityService.getIdentity().subscribe(id => {
       if (!id || !id.Ticket) {
@@ -58,16 +64,16 @@ export class TmcService {
     this.selectedCompanySource = new BehaviorSubject(null);
   }
   getOrderList(searchCondition: OrderModel) {
-   return this.orderService.getOrderList(searchCondition);
+    return this.orderService.getOrderList(searchCondition);
   }
   getOrderListAsync(searchCondition: OrderModel) {
-   return this.orderService.getOrderListAsync(searchCondition);
+    return this.orderService.getOrderListAsync(searchCondition);
   }
   getOrderDetail(id: string) {
-   return this.orderService.getOrderDetailAsync(id);
+    return this.orderService.getOrderDetailAsync(id);
   }
-  getOrderTasks(data: OrderModel){
-   return this.orderService.getOrderTasksAsync(data);
+  getOrderTasks(data: OrderModel) {
+    return this.orderService.getOrderTasksAsync(data);
   }
   getMyTrips(data: OrderModel) {
     return this.orderService.getMyTripsAsync(data);
@@ -77,6 +83,69 @@ export class TmcService {
   }
   setSelectedCompany(company: string) {
     this.selectedCompanySource.next(company);
+  }
+  async getEmailTemplateSelectItemList() {
+    if (
+      this.emailTemplateSelectItemList &&
+      this.emailTemplateSelectItemList.length
+    ) {
+      return Promise.resolve(this.emailTemplateSelectItemList);
+    }
+    const req = new RequestEntity();
+    req.Method = "TmcApiOrderUrl-Order-getEmailTemplateSelectItemList";
+    this.emailTemplateSelectItemList = await this.apiService
+      .getPromiseData<SelectItem[]>(req)
+      .catch(_ => [] as SelectItem[]);
+    return this.emailTemplateSelectItemList;
+  }
+  async getMobileTemplateSelecItemtList() {
+    if (
+      this.mobileTemplateSelectItemList &&
+      this.mobileTemplateSelectItemList.length
+    ) {
+      return Promise.resolve(this.mobileTemplateSelectItemList);
+    }
+    const req = new RequestEntity();
+    req.Method = "TmcApiOrderUrl-Order-getMobileTemplateSelectItemList";
+    this.mobileTemplateSelectItemList = await this.apiService
+      .getPromiseData<SelectItem[]>(req)
+      .catch(_ => [] as SelectItem[]);
+    return this.mobileTemplateSelectItemList;
+  }
+  async GetFlightEmail(
+    type: string,
+    orderTicketId: string,
+    lang: string
+  ): Promise<{ ToEmails: string[]; Body: string; Subject: string }> {
+    const req = new RequestEntity();
+    req.Data = {
+      type,
+      orderTicketId,
+      lang
+    };
+    req.Method = "TmcApiOrderUrl-Flight-GetFlightEmail";
+    const result = await this.apiService
+      .getPromiseData<{ ToEmails: string[]; Body: string; Subject: string }>(
+        req
+      )
+      .catch(_ => ({ ToEmails: [], Body: "", Subject: "" }));
+    return result;
+  }
+  async getFlightMessage(
+    type: string,
+    orderTicketId: string,
+    lang: string
+  ): Promise<{ ToMobiles: string[]; Body: string }> {
+    const req = new RequestEntity();
+    req.Method = "TmcApiOrderUrl-Flight-GetFlightMessage";
+    req.Data = {
+      type,
+      orderTicketId,
+      lang
+    };
+    return this.apiService
+      .getPromiseData<{ ToMobiles: string[]; Body: string }>(req)
+      .catch(_ => ({ ToMobiles: [], Body: "" }));
   }
   async getCompanies(): Promise<GroupCompanyEntity[]> {
     if (this.companies && this.companies.length) {
@@ -308,7 +377,7 @@ export class TmcService {
         ...r.Trafficlines
       ];
       this.localDomesticAirports.LastUpdateTime = Math.floor(Date.now() / 1000);
-      local.Trafficlines= this.localDomesticAirports.Trafficlines = airports;
+      local.Trafficlines = this.localDomesticAirports.Trafficlines = airports;
       await this.storage.set(KEY_HOME_AIRPORTS, this.localDomesticAirports);
     }
     return local.Trafficlines;

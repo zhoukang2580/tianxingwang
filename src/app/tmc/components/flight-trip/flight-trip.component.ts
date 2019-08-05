@@ -69,7 +69,8 @@ export class FlightTripComponent implements OnInit, OnChanges {
     if (this.tripAndTicket) {
       const ticket = this.tripAndTicket.order.OrderFlightTickets.find(
         it =>
-          it.Id == this.tripAndTicket.trip.VariablesJsonObj["OriginalTicketId"]
+          it.Id ==
+          this.tripAndTicket.ticket.VariablesJsonObj["OriginalTicketId"]
       );
       if (ticket) {
         this.originalTrips = ticket.OrderFlightTrips || [];
@@ -99,11 +100,11 @@ export class FlightTripComponent implements OnInit, OnChanges {
   private getTimeStamp(t: any) {
     return +moment(t);
   }
-  private getDateTime(t: any) {
-    return moment(t).format("YYYY-MM-DD HH:mm");
+  private getDateTime(t: any, year = "-", month = "-", day = "") {
+    return moment(t).format(`YYYY${year}MM${month}DD${day} HH:mm`);
   }
   private initExchangedTrips() {
-    if (this.tripAndTicket) {
+    if (this.tripAndTicket&&this.tripAndTicket.ticket.VariablesJsonObj['OriginalTicketId']) {
       const orderFlight = this.tripAndTicket.ticket;
       const one = (this.tripAndTicket.order.OrderFlightTickets || []).find(
         it => it.Id == orderFlight.Id

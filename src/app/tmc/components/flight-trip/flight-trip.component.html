@@ -6,7 +6,7 @@
       <span style='margin:0 .2em;'>--</span>
       <span>{{trip.ToCityName}}</span>
       <span>{{trip.StatusName}}</span>
-      <ion-button style='font-size: 0.7rem;' size='small' color='secondary' fill='clear'
+      <ion-button no-margin no-padding style='font-size: 0.7rem;' size='small' color='secondary' fill='clear'
         (click)='openRulesPopover(trip)'>退改签规定</ion-button>
     </ion-col>
   </ion-row>
@@ -20,9 +20,11 @@
     <ion-col style='justify-content: flex-start;'>
       <span>{{trip.CabinType|cabintype}}&nbsp;{{trip.ShowCabinCode}}舱</span>
       <span *ngIf='trip.Discount'>({{trip.Discount|discount}})</span>
-      <span>机型</span>
-      <span>---</span>
-      <span>{{trip.PlaneType}}</span>
+      <ng-container *ngIf='trip?.PlaneType'>
+        <span>机型</span>
+        <span>---</span>
+        <span>{{trip?.PlaneType}}</span>
+      </ng-container>
     </ion-col>
   </ion-row>
   <ion-row>
@@ -73,8 +75,14 @@
     </ion-row>
   </ng-container>
   <!-- <ng-container *ngIf='getTicketExistExchanged(tripAndTicket?.ticket)'> -->
-  <app-original-flight-trip [trip]='originalTrip' [tripDesc]='"原始航班信息"' *ngFor='let originalTrip of originalTrips'></app-original-flight-trip>
-  <app-original-flight-trip [trip]='exchangedTrip' [tripDesc]='"改签航班信息"'  *ngFor='let exchangedTrip of exchangedTrips'></app-original-flight-trip>
-  <app-original-flight-trip [trip]='refundTrip' [tripDesc]='"退票航班信息"' *ngFor='let refundTrip of refundTrips'></app-original-flight-trip>
+  <app-original-flight-trip [trip]='originalTrip' [ticket]='tripAndTicket?.ticket' [exchangeFee]='exchangeFee'
+    [refundDeductionFee]='refundDeductionFee' [tripDesc]='"原始航班信息"' *ngFor='let originalTrip of originalTrips'>
+  </app-original-flight-trip>
+  <app-original-flight-trip [trip]='exchangedTrip' [ticket]='tripAndTicket?.ticket' [tripDesc]='"改签航班信息"'
+    [exchangeFee]='exchangeFee' [refundDeductionFee]='refundDeductionFee' [ticket]='tripAndTicket?.ticket'
+    *ngFor='let exchangedTrip of exchangedTrips'></app-original-flight-trip>
+  <app-original-flight-trip [trip]='refundTrip' [ticket]='tripAndTicket?.ticket' [tripDesc]='"退票航班信息"'
+    [exchangeFee]='exchangeFee' [refundDeductionFee]='refundDeductionFee' *ngFor='let refundTrip of refundTrips'>
+  </app-original-flight-trip>
   <!-- </ng-container> -->
 </div>

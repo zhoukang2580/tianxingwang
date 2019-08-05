@@ -108,6 +108,20 @@
             <ion-col style='align-self: flex-start;'>违规原因:</ion-col>
             <ion-col>{{p.IllegalReason}}</ion-col>
           </ion-row>
+          <ion-row *ngIf='canSendEmailMsg(p)'>
+            <ion-col>
+              <ion-button no-margin size='small' color='secondary' (click)='sendMsg(p)'>
+                <ion-icon name="create" mode='ios' slot='start'></ion-icon>
+                发送短信
+              </ion-button>
+            </ion-col>
+            <ion-col>
+              <ion-button no-margin size='small' color='secondary' (click)='sendEmail(p)'>
+                <ion-icon name="mail" mode='ios' slot='start'></ion-icon>
+                发送邮件
+              </ion-button>
+            </ion-col>
+          </ion-row>
         </div>
       </ion-item>
     </ng-container>

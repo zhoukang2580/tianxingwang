@@ -3,6 +3,9 @@ ion-item-divider {
   position: sticky;
   top: 0;
 }
+ion-list ion-item {
+  font-size: .8rem;
+}
 ion-list.link {
   min-height: 80vh;
 }
@@ -42,5 +45,5 @@ ion-col {
 ion-list-header {
   // justify-content: center;
   color: var(--ion-color-secondary);
-  border-bottom: 1px dashed var(--ion-color-secondary);
+  // border-bottom: 1px dashed var(--ion-color-secondary);
 }

@@ -15,6 +15,8 @@ import { FlightTripComponent } from "./flight-trip/flight-trip.component";
 import { FlightPipesModule } from "src/app/flight/pipes/Pipes.module";
 import { OrderItemPricePopoverComponent } from './order-item-price-popover/order-item-price-popover.component';
 import { TripRulePopoverComponent } from './trip-rule-popover/trip-rule-popover.component';
+import { SendEmailComponent } from './send-email/send-email.component';
+import { SendMsgComponent } from './send-msg/send-msg.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +31,9 @@ import { TripRulePopoverComponent } from './trip-rule-popover/trip-rule-popover.
     OrderItemComponent,
     OrderItemPricePopoverComponent,
     TripRulePopoverComponent,
-    OriginalFlightTripComponent
+    OriginalFlightTripComponent,
+    SendEmailComponent,
+    SendMsgComponent,
   ],
   imports: [CommonModule, IonicModule, FormsModule, FlightPipesModule],
   exports: [
@@ -43,6 +47,8 @@ import { TripRulePopoverComponent } from './trip-rule-popover/trip-rule-popover.
     FlightTripComponent
   ],
   entryComponents: [
+    SendMsgComponent,
+    SendEmailComponent,
     SearchTicketModalComponent,
     SelectTrainStationModalComponent,
     SelectAirportsModalComponent,

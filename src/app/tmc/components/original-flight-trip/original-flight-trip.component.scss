@@ -1,0 +1,28 @@
+// .flight-info-item + .flight-info-item {
+//   border-bottom: 1px dashed rgba(var(--ion-color-dark-rgb), 0.12);
+// }
+.flight-info-item {
+  width: 100%;
+  font-size: 0.7rem;
+  .is-stop {
+    line-height: 1;
+  }
+  ion-row {
+    padding: 0.25em 0;
+  }
+  ion-col {
+    align-self: center;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  ion-item-divider {
+    margin-top: 1em;
+    border-top: 1px dashed var(--ion-color-secondary);
+  }
+}
+:host {
+  width: 100%;
+}

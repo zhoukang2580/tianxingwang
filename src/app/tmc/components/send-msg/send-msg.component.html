@@ -1,0 +1,27 @@
+<ion-content padding>
+  <ion-row>
+    <ion-col>
+      短信将发送至下列手机号码：{{defaultMobile}}
+    </ion-col>
+  </ion-row>
+  <ion-row *ngFor='let m of mobiles'>
+    <ion-col>
+      <ion-label>增加手机号码：</ion-label>
+    </ion-col>
+    <ion-col>
+      <ion-input type='tel' placeholder='请输入手机号码' [(ngModel)]='m.mobile'></ion-input>
+    </ion-col>
+  </ion-row>
+  <ion-button fill='outline' color='secondary' expand='block' (click)='addMobile()'>
+    <ion-icon name="add-circle-outline" mode='ios' slot='start'></ion-icon>
+    增加手机号
+  </ion-button>
+
+</ion-content>
+<ion-footer>
+  <ion-buttons slot='end'>
+    <ion-button color='secondary' size='small' (click)='done()'>
+      完成
+    </ion-button>
+  </ion-buttons>
+</ion-footer>
