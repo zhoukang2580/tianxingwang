@@ -27,7 +27,7 @@ import { finalize } from "rxjs/operators";
   styleUrls: ["./product-tabs.page.scss"]
 })
 export class ProductTabsPage implements OnInit, OnDestroy {
-  private condition: SearchTicketConditionModel;
+  private condition: SearchTicketConditionModel = new SearchTicketConditionModel();
   loadDataSub = Subscription.EMPTY;
   productItemType = ProductItemType;
   activeTab: ProductItemType;
