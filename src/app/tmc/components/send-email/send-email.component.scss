@@ -55,11 +55,10 @@ ion-content {
     flex: 1;
     .email {
       margin: 0.5em;
-      padding: 0.5em 1em;
+      padding: 0.5em 2em;
       background-color: rgba(var(--ion-color-dark-rgb), 0.12);
       border-radius: 5em;
       max-width: 14em;
-      width: 13.5em;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;

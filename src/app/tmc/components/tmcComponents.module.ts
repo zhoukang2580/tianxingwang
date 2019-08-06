@@ -1,3 +1,4 @@
+import { DirectivesModule } from './../../directives/directives.module';
 import { OriginalFlightTripComponent } from './original-flight-trip/original-flight-trip.component';
 import { SearchTicketModalComponent } from "./search-ticket-modal/search-ticket-modal.component";
 import { NgModule } from "@angular/core";
@@ -35,7 +36,7 @@ import { SendMsgComponent } from './send-msg/send-msg.component';
     SendEmailComponent,
     SendMsgComponent,
   ],
-  imports: [CommonModule, IonicModule, FormsModule, FlightPipesModule],
+  imports: [CommonModule, IonicModule, FormsModule, FlightPipesModule,DirectivesModule],
   exports: [
     OriginalFlightTripComponent,
     SearchTicketModalComponent,

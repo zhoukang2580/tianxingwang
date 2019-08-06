@@ -11,7 +11,7 @@
 </ion-header>
 <ion-content padding>
 
-  <ng-container *ngIf='!isAddingEmail else addMobileTempl'>
+  <div [style.display]='!isAddingMobile?"initial":"none"'>
     <ion-row>
       <ion-col size='2'>
         语言
@@ -37,7 +37,8 @@
     <div class='emails'>
       <div class='email-item'>
         <ion-label margin-end color='medium'>手机号:</ion-label>
-        <div *ngFor='let m of mobile' class='email'>{{m}}
+        <div *ngFor='let m of mobiles' class='email'>
+          <span (click)='edit(m)'>{{m}}</span>
           <ion-icon name="close-circle" class='remove-icon' color='danger' (click)='remove(m)'></ion-icon>
         </div>
       </div>
@@ -48,23 +49,21 @@
       <ion-label text-wrap>
         <div *ngIf='isLoading'>正在加载...</div>
         <div #content [style.display]='msgContent?"block":"none"' class='email-content'></div>
-        <textarea type='email' placeholder="短信内容" *ngIf='!emailContent' [(ngModel)]='msgContent' appAutoGrow></textarea>
+        <textarea type='email' placeholder="短信内容" *ngIf='!msgContent' [(ngModel)]='msgContent' appAutoGrow></textarea>
       </ion-label>
     </div>
-  </ng-container>
+  </div>
 
-  <ng-template #addMobileTempl>
-    <ion-list *ngIf='isAddingMobile'>
-      <ion-item>
-        <ion-label position='floating'>手机号：</ion-label>
-        <ion-input type='email' placeholder="请输手机号" [(ngModel)]='mobile'></ion-input>
-      </ion-item>
-      <ion-item lines='none'>
-        <ion-button size='small' slot='end' fill='outline' color='secondary' (click)='addMobile()'>
-          添加
-        </ion-button>
-      </ion-item>
-    </ion-list>
-  </ng-template>
+  <ion-list [style.display]='isAddingMobile?"initial":"none"'>
+    <ion-item>
+      <ion-label position='floating'>手机号：</ion-label>
+      <ion-input type='email' placeholder="请输手机号" [(ngModel)]='mobile'></ion-input>
+    </ion-item>
+    <ion-item lines='none'>
+      <ion-button size='small' slot='end' fill='outline' color='secondary' (click)='addMobile()'>
+        添加
+      </ion-button>
+    </ion-item>
+  </ion-list>
 
 </ion-content>

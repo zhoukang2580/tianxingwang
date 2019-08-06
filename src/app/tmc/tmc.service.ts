@@ -84,6 +84,72 @@ export class TmcService {
   setSelectedCompany(company: string) {
     this.selectedCompanySource.next(company);
   }
+  async sendEmail(
+    toEmails: string[],
+    subject: string,
+    content: string,
+    orderId: string
+  ): Promise<{
+    Status: boolean;
+    Id: string;
+    Message: string;
+  }> {
+    const req = new RequestEntity();
+    req.Data = {
+      toEmails: toEmails.join(","),
+      Subject: subject,
+      Id: orderId,
+      body: content
+    };
+    req.Method = "TmcApiOrderUrl-Order-SendEmail";
+    const result = await this.apiService
+      .getPromiseData<{
+        Status: boolean;
+        Id: string;
+        Message: string;
+      }>(req)
+      .catch(
+        e =>
+          ({
+            Status: false,
+            Id: "",
+            Message: e instanceof Error ? e.message : e.error || ""
+          } as any)
+      );
+    return result;
+  }
+  async sendSms(
+    toMobiles: string[],
+    content: string,
+    orderId: string
+  ): Promise<{
+    Status: boolean;
+    Id: string;
+    Message: string;
+  }> {
+    const req = new RequestEntity();
+    req.Data = {
+      toMobiles: toMobiles.join(","),
+      Id: orderId,
+      body: content
+    };
+    req.Method = "TmcApiOrderUrl-Order-SendSms";
+    const result = await this.apiService
+      .getPromiseData<{
+        Status: boolean;
+        Id: string;
+        Message: string;
+      }>(req)
+      .catch(
+        e =>
+          ({
+            Status: false,
+            Id: "",
+            Message: e instanceof Error ? e.message : e.error || ""
+          } as any)
+      );
+    return result;
+  }
   async getEmailTemplateSelectItemList() {
     if (
       this.emailTemplateSelectItemList &&

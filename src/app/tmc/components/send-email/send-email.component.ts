@@ -1,3 +1,4 @@
+import { AppHelper } from "src/app/appHelper";
 import {
   PopoverController,
   ModalController,
@@ -59,7 +60,7 @@ export class SendEmailComponent implements OnInit, AfterViewInit, OnDestroy {
         this.domCtrl.write(_ => {
           this.ionSelects.forEach(el => {
             console.log(el);
-            if (el["el"]&&el['el'].shadowRoot) {
+            if (el["el"] && el["el"].shadowRoot) {
               const textDiv = el["el"].shadowRoot.querySelector(".select-text");
               console.log(textDiv);
               if (textDiv) {
@@ -105,19 +106,40 @@ export class SendEmailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.onChange();
   }
   async done() {
+    this.emails = this.emails && this.emails.filter(e => !!e && !!e.trim());
+    if (!this.emails || this.emails.length == 0) {
+      AppHelper.alert("邮件地址不能为空");
+      return;
+    }
+    if (!this.subject) {
+      AppHelper.alert("邮件标题不能为空");
+      return;
+    }
+    if (!this.emailContent) {
+      AppHelper.alert("邮件内容不能为空");
+      return;
+    }
     const p = await this.modalController.getTop();
     if (p) {
-      await p.dismiss(this.emails.filter(e => !!e && !!e.trim()));
+      await p.dismiss({
+        emails: this.emails,
+        subject: this.subject,
+        content: this.emailContent
+      });
     }
+  }
+  edit(e: string) {
+    this.isAddingEmail = true;
+    this.email = e;
   }
   remove(m: string) {
     this.emails = this.emails.filter(it => it != m);
   }
   addEmail() {
-    if (this.email) {
+    if (this.email && !this.emails.find(it => it == this.email)) {
       this.emails.push(this.email);
-      this.email = "";
     }
+    this.email = "";
     this.isAddingEmail = false;
   }
 }

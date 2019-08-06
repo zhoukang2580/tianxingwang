@@ -38,6 +38,7 @@ import { OrderNumberEntity } from "src/app/order/models/OrderNumberEntity";
 import { OrderTrainTicketEntity } from "src/app/order/models/OrderTrainTicketEntity";
 import { SendMsgComponent } from "../components/send-msg/send-msg.component";
 import { OrderFlightTicketStatusType } from "src/app/order/models/OrderFlightTicketStatusType";
+import { AppHelper } from "src/app/appHelper";
 export class OrderTripTicketModel {
   trip: OrderFlightTripEntity;
   ticket: OrderFlightTicketEntity;
@@ -216,10 +217,12 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       this.orderDetail.trips &&
       this.orderDetail.trips.find(t => t.passenger.Id == passenger.Id);
     if (trip && trip.ticket) {
-      const ticket = this.orderDetail.Order.OrderFlightTickets.find(
-        t => t.Id == trip.ticket.Id
-      );
-      const p = await this.popoverCtrl.create({
+      const ticket =
+        this.orderDetail.Order &&
+        this.orderDetail.Order.OrderFlightTickets.find(
+          t => t.Id == trip.ticket.Id
+        );
+      const p = await this.modalCtrl.create({
         component: SendMsgComponent,
         componentProps: {
           defaultMobile: passenger.Mobile,
@@ -229,7 +232,20 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       await p.present();
       const result = await p.onDidDismiss();
       if (result && result.data) {
-        const mobiles = result.data as { mobile: string }[];
+        const data = result.data as {
+          mobiles: string[];
+          content: string;
+        };
+        const res = await this.tmcService.sendSms(
+          data.mobiles,
+          data.content,
+          this.orderDetail.Order && this.orderDetail.Order.Id
+        );
+        if (res.Status) {
+          AppHelper.alert("短信已发送");
+        } else {
+          AppHelper.alert(res.Message || "短信发送失败");
+        }
       }
     }
   }
@@ -238,9 +254,11 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       this.orderDetail.trips &&
       this.orderDetail.trips.find(t => t.passenger.Id == passenger.Id);
     if (trip && trip.ticket) {
-      const ticket = this.orderDetail.Order.OrderFlightTickets.find(
-        t => t.Id == trip.ticket.Id
-      );
+      const ticket =
+        this.orderDetail.Order &&
+        this.orderDetail.Order.OrderFlightTickets.find(
+          t => t.Id == trip.ticket.Id
+        );
       const p = await this.modalCtrl.create({
         component: SendEmailComponent,
         componentProps: {
@@ -251,7 +269,22 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       await p.present();
       const result = await p.onDidDismiss();
       if (result && result.data) {
-        const emails = result.data as { email: string }[];
+        const data = result.data as {
+          emails: string[];
+          subject: string;
+          content: string;
+        };
+        const res = await this.tmcService.sendEmail(
+          data.emails,
+          data.subject,
+          data.content,
+          this.orderDetail.Order && this.orderDetail.Order.Id
+        );
+        if (res.Status) {
+          AppHelper.alert("邮件已发送");
+        } else {
+          AppHelper.alert(res.Message || "邮件发送失败");
+        }
       }
     }
   }

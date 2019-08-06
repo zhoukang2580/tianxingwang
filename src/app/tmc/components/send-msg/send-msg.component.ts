@@ -1,8 +1,5 @@
-import {
-  IonSelect,
-  ModalController,
-  DomController
-} from "@ionic/angular";
+import { AppHelper } from "src/app/appHelper";
+import { IonSelect, ModalController, DomController } from "@ionic/angular";
 import {
   Component,
   OnInit,
@@ -52,15 +49,17 @@ export class SendMsgComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.ionSelectsSubscribtion.unsubscribe();
   }
+  edit(item: string) {
+    this.isAddingMobile = true;
+    this.mobile = item;
+  }
   ngAfterViewInit() {
     this.ionSelectsSubscribtion = this.ionSelects.changes.subscribe(_ => {
       if (this.ionSelects) {
         this.domCtrl.write(_ => {
           this.ionSelects.forEach(el => {
-            console.log(el);
             if (el["el"] && el["el"].shadowRoot) {
               const textDiv = el["el"].shadowRoot.querySelector(".select-text");
-              console.log(textDiv);
               if (textDiv) {
                 this.renderer.setStyle(textDiv, "display", "flex");
                 this.renderer.setStyle(textDiv, "align-items", "center");
@@ -103,19 +102,31 @@ export class SendMsgComponent implements OnInit, AfterViewInit, OnDestroy {
     this.onChange();
   }
   async done() {
+    this.mobiles = this.mobiles && this.mobiles.filter(e => !!e && !!e.trim());
+    if (!this.mobiles || this.mobiles.length == 0) {
+      AppHelper.alert("发送手机号码不能为空");
+      return;
+    }
+    if (!this.msgContent) {
+      AppHelper.alert("短信内容不能为空");
+      return;
+    }
     const p = await this.modalController.getTop();
     if (p) {
-      await p.dismiss(this.mobiles.filter(e => !!e && !!e.trim()));
+      await p.dismiss({
+        mobiles: this.mobiles,
+        content: this.msgContent
+      });
     }
   }
   remove(m: string) {
     this.mobiles = this.mobiles.filter(it => it != m);
   }
   addMobile() {
-    if (this.mobile) {
+    if (this.mobile && !this.mobiles.find(it => it == this.mobile)) {
       this.mobiles.push(this.mobile);
-      this.mobile = "";
     }
+    this.mobile = "";
     this.isAddingMobile = false;
   }
 }
