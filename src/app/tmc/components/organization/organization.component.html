@@ -8,24 +8,56 @@
     <ion-searchbar mode='ios' debounce="700" animated placeholder="请输入部门名称" (ionChange)='doSearch()'
       [(ngModel)]='vmKeyword'>
     </ion-searchbar>
+    <ion-buttons slot='end'>
+      <ion-button (click)='changeMode()'>
+        <ion-icon name='repeat' color='secondary'></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh()">
-    <!-- <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="下拉刷新" refreshingSpinner="circles"
-      refreshingText="正在加载...">
-    </ion-refresher-content> -->
+  <ion-toolbar class='name-paths' *ngIf='!isTreeMode'>
+    <ion-label text-wrap>
+      <ion-text color='secondary' *ngFor='let node of currentSelectedNodePaths;let last=last;'
+        (click)='onNextHierachy(node)'>
+        {{node.Name}}
+        <ion-text color='medium' *ngIf='!last'>&gt;</ion-text>
+      </ion-text>
+    </ion-label>
+  </ion-toolbar>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh(true)">
   </ion-refresher>
   <ng-template #loadingTemp>
     正在加载...
   </ng-template>
-  <ng-container *ngIf='!isLoading else loadingTemp'>
-    <tree-ngx *ngIf='nodeItems?.length else nodataTemp' [nodeItems]="nodeItems" [filter]='filter'
-      [callbacks]='callbacks'>
-    </tree-ngx>
-    <ng-template #nodataTemp>
-      <app-or-comp>暂无数据</app-or-comp>
-    </ng-template>
+  <ng-container *ngIf='!isTreeMode else treeTempl'>
+    <ng-container *ngIf='!isLoading else loadingTemp'>
+      <ng-container *ngIf='currentSelectedNodeChildren?.length else nodataTemp'>
+        <ion-row *ngFor='let node of currentSelectedNodeChildren' padding-start>
+          <ion-col (click)='onItemSelect(node)'>{{node.Name}}</ion-col>
+          <ng-container *ngIf='!vmKeyword&&getChildren(node).length'>
+            <ion-col size='1.6' class='next-hierarchy' text-end (click)='onNextHierachy(node)'>
+              <ion-text color='secondary'>
+                <i class='icon icon-organization'></i>
+              </ion-text>
+              <ion-text color='secondary'>下级</ion-text>
+            </ion-col>
+            <ion-col size='0.8' style="align-self: center">
+              <ion-icon name='arrow-forward' mode='ios' color='medium' size='small'></ion-icon>
+            </ion-col>
+          </ng-container>
+        </ion-row>
+      </ng-container>
+    </ng-container>
   </ng-container>
-
+  <ng-template #treeTempl>
+    <ng-container *ngIf='!isLoading else loadingTemp'>
+      <tree-ngx *ngIf='nodeItems?.length else nodataTemp' [nodeItems]="nodeItems" [filter]='filter'
+        [callbacks]='callbacks'>
+      </tree-ngx>
+    </ng-container>
+  </ng-template>
+  <ng-template #nodataTemp>
+    <app-or-comp>暂无数据</app-or-comp>
+  </ng-template>
 </ion-content>
