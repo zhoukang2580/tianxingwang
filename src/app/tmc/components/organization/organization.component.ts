@@ -158,7 +158,7 @@ export class OrganizationComponent implements OnInit {
     if (
       !forceFetch &&
       local &&
-      Date.now() - local.lastUpdateTime < 1 * 60 * 1000 &&
+      Date.now() - local.lastUpdateTime < 10 * 60 * 1000 &&
       local.data &&
       local.data.length
     ) {
@@ -172,6 +172,10 @@ export class OrganizationComponent implements OnInit {
           return { ...it, ParentId: it && it.Parent.Id };
         }
       );
+      await this.storage.set(ORGANIZATION_PREFERANCE_KEY, {
+        lastUpdateTime: Date.now(),
+        data: this.originalNodes
+      } as LocalOrganizationEntity);
     }
     this.nodeItems = this.originalNodes.map(item => {
       return {
