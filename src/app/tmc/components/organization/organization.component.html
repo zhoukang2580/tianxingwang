@@ -16,7 +16,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-toolbar class='name-paths' *ngIf='!isTreeMode'>
+  <ion-toolbar class='name-paths' *ngIf='!isTreeMode&&currentSelectedNodePaths?.length'>
     <ion-label text-wrap>
       <ion-text color='secondary' *ngFor='let node of currentSelectedNodePaths;let last=last;'
         (click)='onNextHierachy(node)'>
