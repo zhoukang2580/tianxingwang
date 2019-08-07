@@ -6,7 +6,7 @@ import {
   StaffBookType
 } from "../../hr/staff.service";
 import { DayModel } from "../../tmc/models/DayModel";
-import { FlydayService } from "./../flyday.service";
+import { CalendarService } from "../../tmc/calendar.service";
 import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
 import { ActivatedRoute, Router } from "@angular/router";
 import { FlightService } from "src/app/flight/flight.service";
@@ -43,7 +43,7 @@ export class FlightItemCabinsPage implements OnInit {
     private flightService: FlightService,
     activatedRoute: ActivatedRoute,
     private modalCtrl: ModalController,
-    private flydayService: FlydayService,
+    private flydayService: CalendarService,
     private staffService: StaffService,
     private alertCtrl: AlertController,
     private identityService: IdentityService,

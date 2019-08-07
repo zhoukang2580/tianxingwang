@@ -49,7 +49,7 @@ import {
   reduce
 } from "rxjs/operators";
 import * as moment from "moment";
-import { FlydayService } from "../flyday.service";
+import { CalendarService } from "../../tmc/calendar.service";
 import { DayModel } from "../../tmc/models/DayModel";
 import { FlightService } from "../flight.service";
 import { FlightSegmentEntity } from "../models/flight/FlightSegmentEntity";
@@ -135,7 +135,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private flightService: FlightService,
     private ngZone: NgZone,
-    private flyDayService: FlydayService,
+    private flyDayService: CalendarService,
     private staffService: StaffService,
     private apiService: ApiService,
     private identityService: IdentityService,

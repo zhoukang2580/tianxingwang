@@ -4,7 +4,7 @@ import {
 } from "./../../flight.service";
 import { Observable, Subscription } from "rxjs";
 import { Router } from "@angular/router";
-import { FlydayService } from "./../../flyday.service";
+import { CalendarService } from "../../../tmc/calendar.service";
 import { AppHelper } from "./../../../appHelper";
 import { StaffEntity, StaffBookType } from "src/app/hr/staff.service";
 import { StaffService } from "../../../hr/staff.service";
@@ -47,7 +47,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     private modalCtrl: ModalController,
     private flightService: FlightService,
     private alertController: AlertController,
-    private flydayService: FlydayService,
+    private flydayService: CalendarService,
     private staffService: StaffService,
     private router: Router,
     private navCtrl: NavController

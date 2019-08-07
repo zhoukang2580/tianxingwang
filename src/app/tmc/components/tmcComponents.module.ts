@@ -1,3 +1,4 @@
+import { CalendarComponent } from "./calendar/calendar.component";
 import { MemberPipesModule } from "./../../member/pipe/pipe.module";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
@@ -18,6 +19,7 @@ import { BookIllegalReasonCompComponent } from "./book-illegal-reason-comp/book-
 import { BookCostcenterCompComponent } from "./book-costcenter-comp/book-costcenter-comp.component";
 import { BookOrganizationCompComponent } from "./book-organization-comp/book-organization-comp.component";
 import { BookAddcontactsCompComponent } from "./book-addcontacts-comp/book-addcontacts-comp.component";
+import { DayComponent } from "src/app/tmc/components/day/day.component";
 
 @NgModule({
   declarations: [
@@ -33,7 +35,9 @@ import { BookAddcontactsCompComponent } from "./book-addcontacts-comp/book-addco
     BookCredentialCompComponent,
     BookCostcenterCompComponent,
     BookOrganizationCompComponent,
-    BookAddcontactsCompComponent
+    BookAddcontactsCompComponent,
+    DayComponent,
+    CalendarComponent
   ],
   imports: [
     CommonModule,
@@ -48,7 +52,8 @@ import { BookAddcontactsCompComponent } from "./book-addcontacts-comp/book-addco
     BookIllegalReasonCompComponent,
     BookCostcenterCompComponent,
     BookOrganizationCompComponent,
-    BookAddcontactsCompComponent
+    BookAddcontactsCompComponent,
+    DayComponent
   ],
   entryComponents: [
     AddcontactsModalComponent,
@@ -59,7 +64,8 @@ import { BookAddcontactsCompComponent } from "./book-addcontacts-comp/book-addco
     SelectTravelNumberComponent,
     AddcontactsModalComponent,
     AddcontactsModalComponent,
-    OrganizationComponent
+    OrganizationComponent,
+    CalendarComponent
   ]
 })
 export class TmcComponentsModule {}

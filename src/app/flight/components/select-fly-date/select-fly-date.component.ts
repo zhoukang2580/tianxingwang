@@ -5,7 +5,7 @@ import * as moment from "moment";
 import { LanguageHelper } from "src/app/languageHelper";
 import { DayModel } from "../../../tmc/models/DayModel";
 import { AvailableDate } from "../../../tmc/models/AvailableDate";
-import { FlydayService } from "../../flyday.service";
+import { CalendarService } from "../../../tmc/calendar.service";
 import { AppHelper } from "src/app/appHelper";
 import {
   trigger,
@@ -14,7 +14,7 @@ import {
   animate,
   transition
 } from "@angular/animations";
-import { TripType } from 'src/app/tmc/models/TripType';
+import { TripType } from "src/app/tmc/models/TripType";
 @Component({
   selector: "app-select-fly-date-comp",
   templateUrl: "./select-fly-date.component.html",
@@ -54,7 +54,7 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
     }
   ];
   constructor(
-    private flyDayService: FlydayService,
+    private calendarService: CalendarService,
     private flightService: FlightService
   ) {}
   yms: AvailableDate[];
@@ -67,14 +67,8 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.multiSub.unsubscribe();
   }
-  getMonth(ym: string) {
-    if (!ym) {
-      return "";
-    }
-    return +ym.substring("2019-".length);
-  }
   ngOnInit() {
-    this.multiSub = this.flyDayService.getFlyDayMulti().subscribe(multi => {
+    this.multiSub = this.calendarService.getFlyDayMulti().subscribe(multi => {
       this.selectedDays = [];
       this.isMulti = multi;
       if (multi) {
@@ -95,7 +89,7 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
       }
     });
     setTimeout(() => {
-      this.yms = this.flyDayService.generateCanlender(3);
+      this.yms = this.calendarService.generateCanlender(3);
     }, 5 * 1000);
     this.flightService.getSearchFlightModelSource().subscribe(s => {
       if (s) {
@@ -123,7 +117,7 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
           }
         } else {
           if (this.yms && this.yms.length) {
-            const today = this.flyDayService.generateDayModel(moment());
+            const today = this.calendarService.generateDayModel(moment());
             this.yms.forEach(day => {
               day.dayList.forEach(d => {
                 d.enabled =
@@ -141,8 +135,8 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
     );
   }
   cancel() {
-    this.flyDayService.setSelectedFlyDays(this.selectedDays);
-    this.flyDayService.showSelectFlyDatePage(false);
+    this.calendarService.setSelectedFlyDays(this.selectedDays);
+    this.calendarService.showSelectFlyDatePage(false);
   }
   onDaySelected(d: DayModel) {
     console.log("onDaySelected", d);
@@ -202,6 +196,18 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
         }, 200);
       }
     }
+  }
+  getMonth(ym: string) {
+    if (!ym) {
+      return ym;
+    }
+    if (ym.includes("-")) {
+      const [y, m] = ym.split("-");
+      if (y && y.length == 4) {
+        return +m;
+      }
+    }
+    return ym || "";
   }
   initialSeletedDaysView() {
     if (!this.isMulti && this.selectedDays.length > 1) {

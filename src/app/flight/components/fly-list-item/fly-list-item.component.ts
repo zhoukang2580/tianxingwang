@@ -1,3 +1,4 @@
+import { CalendarService } from 'src/app/tmc/calendar.service';
 import { FlightCabinEntity } from "./../../models/flight/FlightCabinEntity";
 import {
   Component,
@@ -14,7 +15,6 @@ import {
 } from "@angular/core";
 import * as moment from "moment";
 import { environment } from "src/environments/environment";
-import { SelectDateService } from "../../select-date/select-date.service";
 import { FlightSegmentEntity } from "../../models/flight/FlightSegmentEntity";
 import { LanguageHelper } from "src/app/languageHelper";
 import {
@@ -39,7 +39,7 @@ export class FlyListItemComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() flightPolicy: FlightPolicy;
   showIndex = !environment.production;
   constructor(
-    private dayService: SelectDateService,
+    private calendarService: CalendarService,
     private render: Renderer2,
     private domCtrl: DomController
   ) {
@@ -55,13 +55,13 @@ export class FlyListItemComponent implements OnInit, AfterViewInit, OnChanges {
     return addDay > 0 ? "+" + addDay + LanguageHelper.getDayTip() : "";
   }
   getDateWeek() {
-    const d = this.dayService.generateDayModel(
+    const d = this.calendarService.generateDayModel(
       moment(this.flightSegment.TakeoffTime)
     );
     return `${d.date.substring(
       "2018-".length,
       d.date.length
-    )} ${this.dayService.getWeekName(d)}`;
+    )} ${this.calendarService.getWeekName(d)}`;
   }
   ngOnInit() {}
 

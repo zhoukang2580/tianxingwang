@@ -1,6 +1,6 @@
 import { SendEmailComponent } from "../components/send-email/send-email.component";
 import { OrderFlightTicketEntity } from "../models/OrderFlightTicketEntity";
-import { FlydayService } from "../../flight/flyday.service";
+import { CalendarService } from "../../tmc/calendar.service";
 import { TmcEntity } from "../../tmc/tmc.service";
 import {
   NavController,
@@ -87,7 +87,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private navCtrl: NavController,
     private tmcService: TmcService,
-    private flydayService: FlydayService,
+    private flydayService: CalendarService,
     private modalCtrl: ModalController,
     private popoverCtrl: PopoverController,
     private domCtrl: DomController

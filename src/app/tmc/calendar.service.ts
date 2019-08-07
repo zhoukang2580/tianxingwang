@@ -2,12 +2,12 @@ import { Subject, BehaviorSubject } from "rxjs";
 import { Injectable } from "@angular/core";
 import * as moment from "moment";
 import { LanguageHelper } from "src/app/languageHelper";
-import { DayModel } from "../tmc/models/DayModel";
-import { AvailableDate } from "../tmc/models/AvailableDate";
+import { DayModel } from "./models/DayModel";
+import { AvailableDate } from "./models/AvailableDate";
 @Injectable({
   providedIn: "root"
 })
-export class FlydayService {
+export class CalendarService {
   private selectedSource: Subject<DayModel[]>;
   private multiFlyDaySource: Subject<boolean>;
   private showFlyDayPageSource: Subject<boolean>;
@@ -24,6 +24,9 @@ export class FlydayService {
     this.selectedSource = new BehaviorSubject([]);
     this.multiFlyDaySource = new BehaviorSubject(false);
     this.showFlyDayPageSource = new BehaviorSubject(false);
+  }
+  getDayOfWeekNames() {
+    return this.dayOfWeekNames;
   }
   showSelectFlyDatePage(show: boolean) {
     this.showFlyDayPageSource.next(show);

@@ -1,4 +1,4 @@
-import { FlydayService } from "./flight/flyday.service";
+import { CalendarService } from "./tmc/calendar.service";
 import { MessageModel, MessageService } from "./message/message.service";
 import { FlightService } from "./flight/flight.service";
 
@@ -86,7 +86,7 @@ export class AppComponent
     private loadingCtrl: LoadingController,
     private http: HttpClient,
     private flightService: FlightService,
-    private flydayService: FlydayService,
+    private flydayService: CalendarService,
     messageService: MessageService
   ) {
     // console.log(this.router.config);

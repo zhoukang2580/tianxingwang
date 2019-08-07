@@ -9,14 +9,13 @@ import {
   FlightService,
   SearchFlightModel
 } from "src/app/flight/flight.service";
-import { FlydayService } from "../flyday.service";
+import { CalendarService } from "../../tmc/calendar.service";
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
 import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import * as moment from "moment";
 import { Subscription } from "rxjs";
 import { DayModel } from "../../tmc/models/DayModel";
-import { SelectDateService } from "../select-date/select-date.service";
 import {  NavController } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
@@ -59,9 +58,9 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private dayService: SelectDateService,
+    private calendarService: CalendarService,
     private navCtrl: NavController,
-    private flydayService: FlydayService,
+    private flydayService: CalendarService,
     private flightService: FlightService,
     private storage: Storage,
     private staffService: StaffService,
@@ -105,7 +104,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.isSingle = single;
   }
   getMonth(d: DayModel) {
-    return +this.dayService.getMonth(d);
+    return +this.calendarService.getMonth(d);
   }
   ngAfterViewInit(): void {
     console.log("ngAfterViewInit");
@@ -169,7 +168,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.searchConditionSubscription.unsubscribe();
   }
   initFlightDays() {
-    this.flyDate = this.dayService.generateDayModel(
+    this.flyDate = this.calendarService.generateDayModel(
       moment()
       // 默认第二天
       // .add(1, "days")
@@ -178,7 +177,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.flyDate.enabled = true;
     this.flyDate.desc = "去程";
     this.flyDate.descPos = "top";
-    this.backDate = this.dayService.generateDayModel(moment().add(4, "days"));
+    this.backDate = this.calendarService.generateDayModel(moment().add(4, "days"));
     this.backDate.hasToolTip = false;
     this.backDate.enabled = true;
     this.backDate.desc = "返程";
@@ -275,7 +274,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate([AppHelper.getRoutePath("flight-list")]);
   }
   getDayDesc(d: DayModel) {
-    return this.dayService.getDescOfDay(d);
+    return this.calendarService.getDescOfDay(d);
   }
   onSelecFlyDate(flyTo: boolean, backDate: boolean) {
     if (this.disabled && !backDate) {

@@ -1,12 +1,9 @@
-<ion-header>
+<!-- <ion-header>
     <ion-toolbar>
       <ion-buttons slot="start">
         <ion-button fill="clear" color='secondary' (click)="cancel()">取消</ion-button>
       </ion-buttons>
       <ion-title text-center>日历</ion-title>
-      <!-- <ion-buttons slot="end" hidden-btn>
-        <ion-button fill="clear" color="secondary">取消</ion-button>
-      </ion-buttons> -->
     </ion-toolbar>
     <ion-toolbar color="primary">
       <ion-grid no-padding>
@@ -38,4 +35,34 @@
         </ion-grid>
       </ion-list>
     </ng-container>
-  </ion-content>
+  </ion-content> -->
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" color='secondary' (click)="cancel()">取消</ion-button>
+    </ion-buttons>
+    <ion-title text-center>日历</ion-title>
+  </ion-toolbar>
+  <ion-grid class='weeks'>
+    <ion-row>
+      <ion-col *ngFor='let w of wks' size='{{12/7}}'>
+        <ion-text color='{{w.color||"secondary"}}'> {{ w.week }} </ion-text>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-header>
+<ion-content>
+  <ion-grid *ngFor='let ym of yms' class='calendar' [attr.ymonth]='getMonth(ym.yearMonth)'>
+    <ion-row>
+      <ion-col>{{ym.yearMonth}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col *ngFor='let day of ym.dayList' size='{{12/7}}' class='day' [class.active]='day.selected' text-center
+        [class.selected]="day?.selected" [class.today]='day?.isToday' [class.between-selected-days]='day?.isBetweenDays'
+        [attr.first-selected-day]='day?.firstSelected' [attr.last-selected-day]='day?.lastSelected'
+        [class.last-month-day]="day?.isLastMonthDay" [class.not-enabled]='!(day?.enabled)' [class.today]='day.isToday'>
+        <app-day [dayModel]='day' (daySelected)="onDaySelected($event, true)"></app-day>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

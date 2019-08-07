@@ -1,0 +1,21 @@
+<ion-header>
+  <ion-toolbar>日历</ion-toolbar>
+  <ion-grid class='weeks'>
+    <ion-row>
+      <ion-col *ngFor='let w of weeks' size='{{12/7}}'>{{w}}</ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-header>
+<ion-content>
+  <ion-grid *ngFor='let ym of calendars' class='calendar' [attr.ymonth]='getMonth(ym.yearMonth)'>
+    <ion-row>
+      <ion-col>{{ym.yearMonth}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col *ngFor='let day of ym.dayList' size='{{12/7}}' class='day' [class.active]='day.selected'
+        [class.today]='day.isToday'>
+        <app-day [dayModel]='day' (daySelected)='onDaySelected(day)'></app-day>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

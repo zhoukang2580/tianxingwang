@@ -1,0 +1,20 @@
+<div class='day' (click)="toggleSelected()" [class.hasToolTip]='dayModel?.hasToolTip'
+  [attr.toolTipMsg]="dayModel?.toolTipMsg" [attr.toolTipPos]="dayModel?.toolTipPos"
+  [class.is-last-month-day]="dayModel?.isLastMonthDay">
+  <div class='top' *ngIf="dayModel?.dayoff||dayModel?.desc&&dayModel?.descPos=='top'" >
+    <ion-text [color]='dayModel?.isToday?"light":"danger"' class='dayoff'>休
+    </ion-text>
+    <ion-text [color]='dayModel?.descColor' class='desc' *ngIf='dayModel?.desc'>{{dayModel?.desc}}</ion-text>
+  </div>
+  <div class='content' [class.today]='dayModel.isToday'>
+    <ion-text [color]='dayModel?.color' *ngIf='!dayModel?.isToday'>
+      {{dayModel?.day}}
+    </ion-text>
+    <ion-text [color]='dayModel?.color' *ngIf='dayModel?.isToday'>
+      {{dayModel?.displayName}}
+    </ion-text>
+  </div>
+  <div class='bottom' *ngIf='dayModel?.desc&&dayModel?.descPos=="bottom"'>
+    <ion-text [color]='dayModel?.descColor' *ngIf='dayModel?.desc'>{{dayModel?.desc}}</ion-text>
+  </div>
+</div>

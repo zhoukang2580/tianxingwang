@@ -13,7 +13,7 @@ import {
   ViewChildren
 } from "@angular/core";
 import * as moment from "moment";
-import { SelectDateService } from "../../select-date/select-date.service";
+import { CalendarService } from 'src/app/tmc/calendar.service';
 @Component({
   selector: "app-fly-days-calendar",
   templateUrl: "./fly-days-calendar.component.html",
@@ -26,7 +26,7 @@ export class FlyDaysCalendarComponent implements OnInit, AfterViewInit {
   @ViewChildren("dayItem") dayItems: QueryList<ElementRef<HTMLElement>>;
   days: DayModel[];
   constructor(
-    private dayService: SelectDateService,
+    private dayService: CalendarService,
     private render: Renderer2,
     private plt: Platform,
     private domCtrl: DomController

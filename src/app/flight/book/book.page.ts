@@ -4,7 +4,7 @@ import { AddcontactsModalComponent } from "../../tmc/components/addcontacts-moda
 import { ActivatedRoute } from "@angular/router";
 import { InsuranceProductEntity } from "./../../insurance/models/InsuranceProductEntity";
 import { OrganizationComponent } from "../../tmc/components/organization/organization.component";
-import { FlydayService } from "./../flyday.service";
+import { CalendarService } from "../../tmc/calendar.service";
 import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
 import {
   NavController,
@@ -191,7 +191,7 @@ export class BookPage implements OnInit, AfterViewInit {
     private tmcService: TmcService,
     private natCtrl: NavController,
     private modalCtrl: ModalController,
-    private flydayService: FlydayService,
+    private flydayService: CalendarService,
     private route: ActivatedRoute,
     private popoverCtrl: PopoverController,
     private plt: Platform

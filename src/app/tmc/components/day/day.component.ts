@@ -1,9 +1,9 @@
-import { AppHelper } from "src/app/appHelper";
 import { Component, OnInit, EventEmitter } from "@angular/core";
 import { Input, Output } from "@angular/core";
-import { DayModel } from "../../../tmc/models/DayModel";
 import * as moment from "moment";
 import { LanguageHelper } from "src/app/languageHelper";
+import { AppHelper } from "src/app/appHelper";
+import { DayModel } from "../../models/DayModel";
 @Component({
   selector: "app-day",
   templateUrl: "./day.component.html",
@@ -52,6 +52,7 @@ export class DayComponent implements OnInit {
     // console.log(this.dayModel);
     if (!this.dayModel.enabled) {
       AppHelper.toast(LanguageHelper.getSelectOtherFlyDayTip(), 1200, "middle");
+      // alert("请选择其他日期");
       return;
     }
     this.dayModel.selected = !this.dayModel.selected;

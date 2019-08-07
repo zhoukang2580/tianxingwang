@@ -4,7 +4,6 @@ import { IonicModule } from "@ionic/angular";
 import { NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { CommonModule } from "@angular/common";
-import { DayComponent } from "./day/day.component";
 import { FlightDynamicComponent } from "./flight-dynamic/flight-dynamic.component";
 import { SwitchCityComponent } from "./switch-city/switch-city.component";
 import { FlyListItemComponent } from "./fly-list-item/fly-list-item.component";
@@ -30,7 +29,6 @@ import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module
 
 @NgModule({
   declarations: [
-    DayComponent,
     FlightDynamicComponent,
     SwitchCityComponent,
     FlyListItemComponent,
@@ -67,7 +65,6 @@ import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module
     FlightDirectivesModule,
     AppComponentsModule,
     SearchDayComponent,
-    DayComponent,
     FlightDynamicComponent,
     SwitchCityComponent,
     FlyListItemComponent,

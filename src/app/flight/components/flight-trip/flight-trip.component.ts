@@ -1,4 +1,4 @@
-import { FlydayService } from "../../flyday.service";
+import { CalendarService } from "../../../tmc/calendar.service";
 import { OrderFlightTripEntity } from "src/app/order/models/OrderFlightTripEntity";
 import { environment } from "../../../../environments/environment";
 import {
@@ -31,7 +31,7 @@ export class FlightTripComponent implements OnInit, OnChanges {
   refundTrips: OrderFlightTripEntity[]; // 退票航班信息
   constructor(
     private popoverCtrl: PopoverController,
-    private flydayService: FlydayService
+    private flydayService: CalendarService
   ) {}
   async ngOnChanges(change: SimpleChanges) {
     if (change && change.tripAndTicket && change.tripAndTicket.currentValue) {
