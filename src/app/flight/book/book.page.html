@@ -37,7 +37,7 @@
         <ion-label>服务费:</ion-label>
         <ion-input hidden value='getServiceFee(combindInfo?.modal?.credential)'></ion-input>
       </ion-item>
-      <ion-item class="ion-no-margin"  lines='none' detail *ngIf='isAllowSelectApprove(combindInfo)'
+      <ion-item class="ion-no-margin" lines='none' detail *ngIf='isAllowSelectApprove(combindInfo)'
         (click)='openApproverModal(combindInfo)'>
         <ion-label>
           审批人:<ion-text *ngIf='combindInfo?.appovalStaff'>
@@ -99,7 +99,7 @@
               (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo?.credentials'>
             </app-book-credential-comp>
             <div *ngIf='s?.flightPolicy?.Rules?.length'>
-              <app-book-illegal-reason-comp [illegalReasons]='illegalReasons'
+              <app-book-illegal-reason-comp #illegalReasonsEle [illegalReasons]='illegalReasons'
                 [isAllowCustomReason]='tmc?.IsAllowCustomReason' (ionchange)='onIllegalReason($event,combindInfo)'>
               </app-book-illegal-reason-comp>
             </div>
@@ -160,7 +160,7 @@
             </div>
             <div *ngIf="true" class='ion-margin-top'>
               审批人:
-              <ion-row margin-top>
+              <ion-row style='margin-top: .5em;'>
                 <ion-col>
                   <app-timeline [hideLastTimeLineTail]='false'>
                     <app-timeline-item *ngFor='let it of combindInfo?.credentialStaffApprovers'>

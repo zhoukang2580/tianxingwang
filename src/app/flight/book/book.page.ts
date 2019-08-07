@@ -10,7 +10,9 @@ import {
   NavController,
   ModalController,
   IonCheckbox,
-  PopoverController
+  PopoverController,
+  IonContent,
+  Platform
 } from "@ionic/angular";
 import {
   TmcService,
@@ -36,7 +38,9 @@ import {
   OnInit,
   QueryList,
   ViewChildren,
-  AfterViewInit
+  AfterViewInit,
+  ElementRef,
+  ViewChild
 } from "@angular/core";
 import { Storage } from "@ionic/storage";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
@@ -169,6 +173,9 @@ export class BookPage implements OnInit, AfterViewInit {
   credentialStaffs: StaffEntity[] = [];
   private settingApprovalStaffs: StaffEntity[];
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
+  @ViewChild("illegalReasonsEle", { read: ElementRef })
+  illegalReasonsEle: ElementRef<HTMLElement>;
+  @ViewChild(IonContent) private cnt: IonContent;
   appoval: {
     Value: string;
     Text: string;
@@ -186,7 +193,8 @@ export class BookPage implements OnInit, AfterViewInit {
     private modalCtrl: ModalController,
     private flydayService: FlydayService,
     private route: ActivatedRoute,
-    private popoverCtrl: PopoverController
+    private popoverCtrl: PopoverController,
+    private plt: Platform
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -707,6 +715,7 @@ export class BookPage implements OnInit, AfterViewInit {
             LanguageHelper.Flight.getIllegalReasonTip(),
             combindInfo
           );
+          this.moveRequiredEleToViewPort(this.illegalReasonsEle);
           return false;
         }
       }
@@ -762,6 +771,18 @@ export class BookPage implements OnInit, AfterViewInit {
     credentialStaffIds: string[]
   ) {
     return this.tmcService.getSettingAppovalStaffs(credentialStaffIds);
+  }
+  private moveRequiredEleToViewPort(ele: any) {
+    const el: HTMLElement = ele.nativeElement || ele;
+    if (!el) {
+      return;
+    }
+    const rect = el.getBoundingClientRect();
+    if (rect) {
+      if (this.cnt) {
+        this.cnt.scrollByPoint(0, rect.top - this.plt.height() / 2, 100);
+      }
+    }
   }
   async openApproverModal(item: ICombindInfo) {
     const modal = await this.modalCtrl.create({
