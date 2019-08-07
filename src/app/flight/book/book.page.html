@@ -37,7 +37,7 @@
         <ion-label>服务费:</ion-label>
         <ion-input hidden value='getServiceFee(combindInfo?.modal?.credential)'></ion-input>
       </ion-item>
-      <ion-item class="ion-no-margin" lines='none' detail *ngIf='isAllowSelectApprove(combindInfo)'
+      <ion-item class="ion-no-margin"  lines='none' detail *ngIf='isAllowSelectApprove(combindInfo)'
         (click)='openApproverModal(combindInfo)'>
         <ion-label>
           审批人:<ion-text *ngIf='combindInfo?.appovalStaff'>
@@ -45,7 +45,7 @@
           </ion-text>
         </ion-label>
       </ion-item>
-      <ion-item *ngIf='combindInfo?.modal?.flightSegmentInfo as s' margin-top>
+      <ion-item *ngIf='combindInfo?.modal?.flightSegmentInfo as s' class='ion-margin-top'>
         <div style='width: 100%' class='detail'>
           <div class='date'>
             <strong>{{getDate(s?.flightSegment)}} <ion-text color='secondary'>
@@ -158,7 +158,7 @@
                 </ion-label>
               </div>
             </div>
-            <div *ngIf="true">
+            <div *ngIf="true" class='ion-margin-top'>
               审批人:
               <ion-row margin-top>
                 <ion-col>
@@ -174,7 +174,7 @@
               </ion-row>
             </div>
           </div>
-          <div class='outnumber' *ngIf='combindInfo?.tmcOutNumberInfos'>
+          <div class='outnumber ion-margin-top' *ngIf='combindInfo?.tmcOutNumberInfos'>
             外部编号：
             <ion-item-group>
               <ion-item *ngFor='let n of combindInfo?.tmcOutNumberInfos' (click)='onSelectTravelNumber(n,combindInfo)'>
@@ -185,7 +185,7 @@
               <ion-item style='height:0'></ion-item>
             </ion-item-group>
           </div>
-          <div class='travel-type'>
+          <div class='travel-type ion-margin-top'>
             差旅类型:
             <ion-radio-group [(ngModel)]='combindInfo.travelType' name='travelType'>
               <ion-item *ngIf='checkOrderTravelType(orderTravelType.Business)' lines='none'>
@@ -200,7 +200,7 @@
               </ion-item>
             </ion-radio-group>
           </div>
-          <div>
+          <div class='ion-margin-top'>
             支付方式：
             <ion-radio-group [(ngModel)]='combindInfo.orderTravelPayType' name='travelPayType'>
               <ion-item *ngFor='let pt of orderTravelPayTypes' lines='none'>

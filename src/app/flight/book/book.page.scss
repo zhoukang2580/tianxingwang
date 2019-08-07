@@ -18,6 +18,7 @@ ion-content {
   ion-label {
     opacity: 0.9;
   }
+
   .disabled ion-item {
     // color: var(--ion-color-medium);
     opacity: 1;
@@ -25,7 +26,7 @@ ion-content {
   ion-col {
     align-self: center;
   }
- 
+
   .change-policy-btn {
     --padding-start: 0;
     margin-left: 0;
@@ -45,7 +46,12 @@ ion-content {
     flex-flow: column nowrap;
     align-items: flex-start;
   }
- 
+}
+.ion-margin-vertical {
+  margin: 1em 0;
+}
+.ion-margin-top {
+  margin-top: 1em;
 }
 .small-font {
   font-size: 0.8rem;
