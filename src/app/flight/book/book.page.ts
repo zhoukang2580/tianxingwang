@@ -1,10 +1,9 @@
 import { AccountEntity } from "./../../tmc/models/AccountEntity";
 import { OrderBookDto } from "./../../order/models/OrderBookDto";
-import { AddcontactsModalComponent } from "./../components/addcontacts-modal/addcontacts-modal.component";
+import { AddcontactsModalComponent } from "../../tmc/components/addcontacts-modal/addcontacts-modal.component";
 import { ActivatedRoute } from "@angular/router";
 import { InsuranceProductEntity } from "./../../insurance/models/InsuranceProductEntity";
-import { OrganizationComponent } from "./../components/organization/organization.component";
-import { SearchCostcenterComponent } from "./../components/search-costcenter/search-costcenter.component";
+import { OrganizationComponent } from "../../tmc/components/organization/organization.component";
 import { FlydayService } from "./../flyday.service";
 import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
 import {
@@ -19,7 +18,8 @@ import {
   TmcApprovalType,
   IllegalReasonEntity,
   TravelFormEntity,
-  TravelUrlInfo
+  TravelUrlInfo,
+  PassengerBookInfo
 } from "./../../tmc/tmc.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import {
@@ -30,10 +30,6 @@ import {
   OrganizationEntity,
   StaffApprover
 } from "./../../hr/staff.service";
-import {
-  PassengerBookInfo,
-  PassengerFlightSegmentInfo
-} from "./../flight.service";
 import { FlightService } from "src/app/flight/flight.service";
 import {
   Component,
@@ -44,7 +40,6 @@ import {
 } from "@angular/core";
 import { Storage } from "@ionic/storage";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
-import { SearchApprovalComponent } from "../components/search-approval/search-approval.component";
 import * as moment from "moment";
 import { DayModel } from "../../tmc/models/DayModel";
 import { LanguageHelper } from "src/app/languageHelper";
@@ -58,7 +53,6 @@ import {
 import { InsuranceResultEntity } from "../../tmc/models/Insurance/InsuranceResultEntity";
 import { Observable, of, Subject, BehaviorSubject } from "rxjs";
 import { map } from "rxjs/operators";
-import { SelectTravelNumberPopoverComponent } from "../components/select-travel-number-popover/select-travel-number-popover.component";
 import {
   OrderTravelType,
   OrderTravelPayType
@@ -69,7 +63,11 @@ import { PassengerDto } from "src/app/tmc/models/PassengerDto";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import { TripType } from "src/app/tmc/models/TripType";
 import { environment } from "src/environments/environment";
-import { TaskType } from 'src/app/workflow/models/TaskType';
+import { TaskType } from "src/app/workflow/models/TaskType";
+import { SearchCostcenterComponent } from "src/app/tmc/components/search-costcenter/search-costcenter.component";
+import { SearchApprovalComponent } from "src/app/tmc/components/search-approval/search-approval.component";
+import { SelectTravelNumberComponent } from "src/app/tmc/components/select-travel-number-popover/select-travel-number-popover.component";
+import { PassengerFlightSegmentInfo } from "../models/PassengerFlightInfo";
 interface TmcOutNumberInfo {
   key: string;
   label: string;
@@ -83,7 +81,7 @@ interface TmcOutNumberInfo {
   isDisabled: boolean;
   travelUrlInfos: TravelUrlInfo[];
 }
-class AddContact {
+export class AddContact {
   notifyLanguage: string;
   name: string;
   mobile: string;
@@ -359,6 +357,18 @@ export class BookPage implements OnInit, AfterViewInit {
       );
     }
   }
+  onIllegalReason(
+    reason: {
+      isOtherIllegalReason: boolean;
+      otherIllegalReason: string;
+      illegalReason: string;
+    },
+    info: ICombindInfo
+  ) {
+    info.isOtherIllegalReason = reason.isOtherIllegalReason;
+    info.illegalReason = reason.illegalReason;
+    info.otherIllegalReason = reason.otherIllegalReason;
+  }
   onShowFriendlyReminder(item: ICombindInfo) {
     item.showFriendlyReminder = !item.showFriendlyReminder;
   }
@@ -368,7 +378,7 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     console.log("on select travel number", arg);
     const p = await this.popoverCtrl.create({
-      component: SelectTravelNumberPopoverComponent,
+      component: SelectTravelNumberComponent,
       componentProps: {
         travelInfos: arg.travelUrlInfos || []
       },
@@ -421,36 +431,38 @@ export class BookPage implements OnInit, AfterViewInit {
     console.log("tmc", this.tmc);
     return this.tmc;
   }
-  async searchCostCenter(item: ICombindInfo) {
-    const modal = await this.modalCtrl.create({
-      component: SearchCostcenterComponent
-    });
-    modal.backdropDismiss = false;
-    await modal.present();
-    const result = await modal.onDidDismiss();
-    if (result && result.data) {
-      const res = result.data as { Text: string; Value: string };
-      item.costCenter = {
-        code: res.Value,
-        name: res.Text && res.Text.substring(res.Text.lastIndexOf("-") + 1)
-      };
+  onOrganizationChange(
+    data: {
+      isOtherOrganization: boolean;
+      organization: OrganizationEntity;
+      otherOrganizationName: string;
+    },
+    item: ICombindInfo
+  ) {
+    if (item && data.organization) {
+      item.organization = data.organization;
+      item.isOtherOrganization = data.isOtherOrganization;
+      item.otherOrganizationName = data.otherOrganizationName;
     }
   }
-  async searchOrganization(item: ICombindInfo) {
-    const modal = await this.modalCtrl.create({
-      component: OrganizationComponent
-    });
-    modal.backdropDismiss = false;
-    await modal.present();
-    const result = await modal.onDidDismiss();
-    console.log("organization", result.data);
-    if (result && result.data) {
-      const res = result.data as OrganizationEntity;
-      item.organization = {
-        ...item.organization,
-        Code: res.Code,
-        Name: res.Name
+  onCostCenterChange(
+    data: {
+      costCenter: {
+        code: string;
+        name: string;
       };
+      isOtherCostCenter: boolean;
+      otherCostCenterName: string;
+      otherCostCenterCode: string;
+    },
+    item: ICombindInfo
+  ) {
+    console.log("oncostCenterchange", data, item);
+    if (data.costCenter && item) {
+      item.costCenter = data.costCenter;
+      item.isOtherCostCenter = data.isOtherCostCenter;
+      item.otherCostCenterCode = data.otherCostCenterCode;
+      item.otherCostCenterName = data.otherCostCenterName;
     }
   }
   calcTotalPrice() {
@@ -775,11 +787,7 @@ export class BookPage implements OnInit, AfterViewInit {
   bookTypeNotSelf() {
     return this.selfStaff && this.selfStaff.BookType != StaffBookType.Self;
   }
-  compareFn(t1: CredentialsEntity, t2: CredentialsEntity) {
-    return (
-      (t1 && t2 && t1 == t2) || (t1.Type == t2.Type && t1.Number == t2.Number)
-    );
-  }
+
   private async initSelfBookTypeCredentials() {
     if (await this.staffService.checkStaffTypeSelf()) {
       const identity = await this.identityService.getIdentityAsync();
@@ -956,34 +964,17 @@ export class BookPage implements OnInit, AfterViewInit {
       console.error(e);
     }
   }
-  async onAddContacts(item: ICombindInfo) {
-    if (!item.addContacts) {
-      item.addContacts = [];
-    }
-    const m = await this.modalCtrl.create({
-      component: AddcontactsModalComponent
-    });
-    if (m) {
-      m.backdropDismiss = false;
-      m.present();
-      const result = await m.onDidDismiss();
-      if (result && result.data) {
-        const data = result.data as { Text: string; Value: string };
-        if (data && data.Value) {
-          if (data.Value.includes("|")) {
-            const [email, mobile, accountId] = data.Value.split("|");
-            const man = new AddContact();
-            man.notifyLanguage = "cn";
-            man.name = data.Text;
-            man.email = email;
-            man.mobile = mobile;
-            man.accountId = accountId;
-            item.addContacts.push(man);
-          }
-        }
-      }
+  onSavecredential(credential: CredentialsEntity, info: ICombindInfo) {
+    if (info && credential) {
+      info.vmCredential = credential;
     }
   }
+  onContactsChange(contacts: AddContact[], info: ICombindInfo) {
+    if (info && contacts) {
+      info.addContacts = contacts;
+    }
+  }
+
   /**
    *  获取员工的证件列表
    */

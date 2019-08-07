@@ -9,7 +9,7 @@ import { FlightDynamicComponent } from "./flight-dynamic/flight-dynamic.componen
 import { SwitchCityComponent } from "./switch-city/switch-city.component";
 import { FlyListItemComponent } from "./fly-list-item/fly-list-item.component";
 import { FlyDaysCalendarComponent } from "./fly-days-calendar/fly-days-calendar.component";
-import { FlightPipesModule } from "../pipes/Pipes.module"; 
+import { FlightPipesModule } from "../pipes/Pipes.module";
 import { FlyFilterComponent } from "./fly-filter/fly-filter.component";
 import { TakeOffTimespanComponent } from "./fly-filter/take-off-timespan/take-off-timespan.component";
 import { AircompanyComponent } from "./fly-filter/aircompany/aircompany.component";
@@ -20,16 +20,13 @@ import { SelectCityComponent } from "./select-city/select-city.component";
 import { FlightDirectivesModule } from "../directives/directives.module";
 import { SearchDayComponent } from "./search-day/search-day.component";
 import { TicketchangingComponent } from "./ticketchanging/ticketchanging.component";
-import { SelectedPassengersComponent } from "./selected-passengers/selected-passengers.component";
+import { SelectedPassengersComponent } from "../../tmc/components/selected-passengers/selected-passengers.component";
 import { SelectFlyDateComponent } from "./select-fly-date/select-fly-date.component";
 import { SelectedFlightsegmentInfoComponent } from "./selected-flightsegment-info/selected-flightsegment-info.component";
 import { SelectFlightsegmentCabinComponent } from "./select-flightsegment-cabin/select-flightsegment-cabin.component";
-import { SelectedPassengersPopoverComponent } from "./selected-passengers-popover/selected-passengers-popover.component";
-import { SearchApprovalComponent } from "./search-approval/search-approval.component";
-import { SearchCostcenterComponent } from "./search-costcenter/search-costcenter.component";
-import { OrganizationComponent } from "./organization/organization.component";
-import { SelectTravelNumberPopoverComponent } from "./select-travel-number-popover/select-travel-number-popover.component";
-import { AddcontactsModalComponent } from "./addcontacts-modal/addcontacts-modal.component";
+import { FlightTripComponent } from "./flight-trip/flight-trip.component";
+import { OriginalFlightTripComponent } from "./original-flight-trip/original-flight-trip.component";
+import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 
 @NgModule({
   declarations: [
@@ -51,12 +48,8 @@ import { AddcontactsModalComponent } from "./addcontacts-modal/addcontacts-modal
     SelectFlyDateComponent,
     SelectedFlightsegmentInfoComponent,
     SelectFlightsegmentCabinComponent,
-    SelectedPassengersPopoverComponent,
-    SearchApprovalComponent,
-    SearchCostcenterComponent,
-    OrganizationComponent,
-    SelectTravelNumberPopoverComponent,
-    AddcontactsModalComponent
+    FlightTripComponent,
+    OriginalFlightTripComponent
   ],
   imports: [
     CommonModule,
@@ -66,7 +59,8 @@ import { AddcontactsModalComponent } from "./addcontacts-modal/addcontacts-modal
     ReactiveFormsModule,
     FlightDirectivesModule,
     DirectivesModule,
-    AppComponentsModule
+    AppComponentsModule,
+    TmcComponentsModule
   ],
   exports: [
     DirectivesModule,
@@ -88,7 +82,9 @@ import { AddcontactsModalComponent } from "./addcontacts-modal/addcontacts-modal
     SelectCityComponent,
     TicketchangingComponent,
     SelectedPassengersComponent,
-    SelectFlyDateComponent
+    SelectFlyDateComponent,
+    FlightTripComponent,
+    OriginalFlightTripComponent
   ],
   entryComponents: [
     FlyFilterComponent,
@@ -96,12 +92,6 @@ import { AddcontactsModalComponent } from "./addcontacts-modal/addcontacts-modal
     SelectedPassengersComponent,
     SelectedFlightsegmentInfoComponent,
     SelectFlightsegmentCabinComponent,
-    SelectedPassengersPopoverComponent,
-    SearchApprovalComponent,
-    SearchCostcenterComponent,
-    OrganizationComponent,
-    SelectTravelNumberPopoverComponent,
-    AddcontactsModalComponent
   ]
 })
 export class FlightComponentsModule {}

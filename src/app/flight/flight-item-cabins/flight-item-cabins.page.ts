@@ -1,5 +1,4 @@
 import { FlightCabinEntity } from "./../models/flight/FlightCabinEntity";
-import { MemberCredential } from "./../../member/member.service";
 import { IdentityService } from "./../../services/identity/identity.service";
 import {
   StaffService,
@@ -10,12 +9,7 @@ import { DayModel } from "../../tmc/models/DayModel";
 import { FlydayService } from "./../flyday.service";
 import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
 import { ActivatedRoute, Router } from "@angular/router";
-import {
-  FlightService,
-  FlightPolicy,
-  CurrentViewtFlightSegment,
-  PassengerBookInfo
-} from "src/app/flight/flight.service";
+import { FlightService } from "src/app/flight/flight.service";
 import { Component, OnInit } from "@angular/core";
 import {
   ModalController,
@@ -25,11 +19,12 @@ import {
 } from "@ionic/angular";
 import { TicketchangingComponent } from "../components/ticketchanging/ticketchanging.component";
 import * as moment from "moment";
-import { AppHelper } from "src/app/appHelper";
-import { LanguageHelper } from "src/app/languageHelper";
 import { SelectedFlightsegmentInfoComponent } from "../components/selected-flightsegment-info/selected-flightsegment-info.component";
-import { SelectFlightsegmentCabinComponent } from "../components/select-flightsegment-cabin/select-flightsegment-cabin.component";
-import { SelectedPassengersPopoverComponent } from "../components/selected-passengers-popover/selected-passengers-popover.component";
+import { FilterPassengersPolicyComponent } from "../../tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
+import {
+  CurrentViewtFlightSegment,
+  FlightPolicy
+} from "../models/PassengerFlightInfo";
 
 @Component({
   selector: "app-flight-item-cabins",
@@ -86,7 +81,7 @@ export class FlightItemCabinsPage implements OnInit {
   }
   async filterPolicyFlights() {
     const popover = await this.popoverController.create({
-      component: SelectedPassengersPopoverComponent,
+      component: FilterPassengersPolicyComponent,
       translucent: true
       // backdropDismiss: false
     });

@@ -1,17 +1,15 @@
 import { CredentialsType } from "./../member/pipe/credential.pipe";
 import { IdentityEntity } from "./../services/identity/identity.entity";
 import { CredentialsEntity } from "./../tmc/models/CredentialsEntity";
-import { TmcService } from "src/app/tmc/tmc.service";
+import { TmcService, PassengerBookInfo } from "src/app/tmc/tmc.service";
 import { ModalController, NavController } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import { FlightCabinEntity } from "./models/flight/FlightCabinEntity";
 import { FilterConditionModel } from "./models/flight/advanced-search-cond/FilterConditionModel";
 import { IdentityService } from "./../services/identity/identity.service";
-import { StaffService, StaffEntity, StaffBookType } from "../hr/staff.service";
+import { StaffService, StaffEntity } from "../hr/staff.service";
 import { Injectable } from "@angular/core";
-
-import { environment } from "../../environments/environment";
-import { Subject, BehaviorSubject, from, Observable, of } from "rxjs";
+import { Subject, BehaviorSubject } from "rxjs";
 
 import * as moment from "moment";
 import { ApiService } from "../services/api/api.service";
@@ -22,47 +20,8 @@ import { LanguageHelper } from "../languageHelper";
 import { Router } from "@angular/router";
 import { TripType } from "../tmc/models/TripType";
 import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
+import { CurrentViewtFlightSegment, PassengerPolicyFlights, FlightPolicy } from './models/PassengerFlightInfo';
 
-export interface PassengerFlightSegmentInfo {
-  flightSegment: FlightSegmentEntity;
-  flightPolicy: FlightPolicy;
-  tripType?: TripType;
-  id?: string;
-  isLowerSegmentSelected?: boolean;
-}
-
-export interface PassengerPolicyFlights {
-  PassengerKey: string; // accountId
-  FlightPolicies: FlightPolicy[];
-}
-
-export interface PassengerBookInfo {
-  passenger: StaffEntity;
-  credential: CredentialsEntity;
-  isNotWhitelist?: boolean;
-  flightSegmentInfo?: PassengerFlightSegmentInfo;
-  id?: string;
-  isReplace?: boolean;
-}
-export interface FlightSegmentModel {
-  AirlineName; // String 航空公司名称
-  Number; // String 航班号
-  TakeoffTime; // Datetime 起飞时间
-  FlyTime; // Int 飞行时间（分钟）
-  LowestFare; // Decimal 最低价
-  LowestCabinCode; // String 最低价舱位
-  LowestDiscount; // Decimal 最低价折扣
-  IsStop: boolean; // Bool 是否经停
-}
-export interface FlightPolicy {
-  Cabin: FlightCabinEntity; // 记录原始的cabin
-  FlightNo: string; // String Yes 航班号
-  CabinCode: string; // string Yes 舱位代码
-  IsAllowBook: boolean; // Bool Yes 是否可预订
-  Discount: string; // Decimal Yes 折扣率
-  LowerSegment: FlightSegmentModel;
-  Rules: string[]; // List<string> No 违反的差标信息
-}
 export class SearchFlightModel {
   BackDate: string; //  Yes 航班日期（yyyy-MM-dd）
   Date: string; //  Yes 航班日期（yyyy-MM-dd）
@@ -77,31 +36,6 @@ export class SearchFlightModel {
   isLocked?: boolean;
   isSelfBookType?: boolean;
 }
-// export interface TrafficlineEntity {
-//   Id: string; // long
-//   Tag: string; // 标签（Airport 机场，AirportCity 机场城市，Train 火车站）
-//   Code: string; // 代码（三字码）
-//   Name: string; // 名称
-//   Nickname: string; // 简称
-//   Pinyin: string; // 拼音
-//   Initial: string; // 拼音简写
-//   AirportCityCode: string; // 机场城市代码（航空系统特有）
-//   CityCode: string; // 城市代码
-//   CityName: string; // 城市名称
-//   Description: string; // 描述
-//   IsHot: boolean; // 热点描述
-//   CountryCode: string; // 国籍代码
-//   Sequence: string; // Int 排序号
-//   EnglishName: string; // 英文名称
-//   Selected?: boolean;
-// }
-export interface CurrentViewtFlightSegment {
-  flightSegment: FlightSegmentEntity;
-  flightSegments: FlightSegmentEntity[];
-  totalPolicyFlights: PassengerPolicyFlights[];
-}
-
-const debugCacheTime = 5 * 60 * 1000;
 @Injectable({
   providedIn: "root"
 })

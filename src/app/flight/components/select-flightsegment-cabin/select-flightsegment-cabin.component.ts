@@ -1,8 +1,8 @@
 import { FlightSegmentEntity } from "./../../models/flight/FlightSegmentEntity";
 import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
-import { FlightPolicy } from "../../flight.service";
 import { ModalController } from "@ionic/angular";
 import { TicketchangingComponent } from "../ticketchanging/ticketchanging.component";
+import { FlightPolicy } from '../../models/PassengerFlightInfo';
 
 @Component({
   selector: "app-select-flightsegment-cabin",

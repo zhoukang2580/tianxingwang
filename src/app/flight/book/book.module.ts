@@ -9,6 +9,7 @@ import { IonicModule } from "@ionic/angular";
 
 import { BookPage } from "./book.page";
 import { FlightPipesModule } from "../pipes/Pipes.module";
+import { TmcComponentsModule } from 'src/app/tmc/components/tmcComponents.module';
 
 const routes: Routes = [
   {
@@ -25,7 +26,8 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     FlightComponentsModule,
     MemberPipesModule,
-    FlightPipesModule
+    FlightPipesModule,
+    TmcComponentsModule
   ],
   declarations: [BookPage]
 })

@@ -1,60 +1,65 @@
-import { DirectivesModule } from './../../directives/directives.module';
-import { OriginalFlightTripComponent } from './original-flight-trip/original-flight-trip.component';
-import { SearchTicketModalComponent } from "./search-ticket-modal/search-ticket-modal.component";
+import { MemberPipesModule } from "./../../member/pipe/pipe.module";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
+import { IonicModule } from "@ionic/angular";
 import { SelectTrainStationModalComponent } from "./select-stations/select-station.component";
 import { SelectAirportsModalComponent } from "./select-airports/select-airports.component";
-import { IonicModule } from "@ionic/angular";
-import { ProductInsuranceComponent } from "./product-insurance/product-insurance.component";
-import { ProductHotelComponent } from "./product-hotel/product-hotel.component";
-import { ProductTrainComponent } from "./product-train/product-train.component";
-import { ProductPlaneComponent } from "./product-plane/product-plane.component";
-import { OrderItemComponent } from "./order-item/order-item.component";
-import { FlightTripComponent } from "./flight-trip/flight-trip.component";
-import { FlightPipesModule } from "src/app/flight/pipes/Pipes.module";
-import { OrderItemPricePopoverComponent } from './order-item-price-popover/order-item-price-popover.component';
-import { TripRulePopoverComponent } from './trip-rule-popover/trip-rule-popover.component';
-import { SendEmailComponent } from './send-email/send-email.component';
-import { SendMsgComponent } from './send-msg/send-msg.component';
+import { SearchApprovalComponent } from "./search-approval/search-approval.component";
+import { SearchCostcenterComponent } from "./search-costcenter/search-costcenter.component";
+import { OrganizationComponent } from "./organization/organization.component";
+import { SelectTravelNumberComponent } from "./select-travel-number-popover/select-travel-number-popover.component";
+import { AddcontactsModalComponent } from "src/app/tmc/components/addcontacts-modal/addcontacts-modal.component";
+import { FilterPassengersPolicyComponent } from "./filter-passengers-popover/filter-passengers-policy-popover.component";
+import { DirectivesModule } from "src/app/directives/directives.module";
+import { AppComponentsModule } from "src/app/components/appcomponents.module";
+import { BookCredentialCompComponent } from "./book-credential-comp/book-credential-comp.component";
+import { BookIllegalReasonCompComponent } from "./book-illegal-reason-comp/book-illegal-reason-comp.component";
+import { BookCostcenterCompComponent } from "./book-costcenter-comp/book-costcenter-comp.component";
+import { BookOrganizationCompComponent } from "./book-organization-comp/book-organization-comp.component";
+import { BookAddcontactsCompComponent } from "./book-addcontacts-comp/book-addcontacts-comp.component";
 
 @NgModule({
   declarations: [
-    SearchTicketModalComponent,
     SelectTrainStationModalComponent,
+    FilterPassengersPolicyComponent,
     SelectAirportsModalComponent,
-    ProductPlaneComponent,
-    ProductTrainComponent,
-    ProductHotelComponent,
-    ProductInsuranceComponent,
-    FlightTripComponent,
-    OrderItemComponent,
-    OrderItemPricePopoverComponent,
-    TripRulePopoverComponent,
-    OriginalFlightTripComponent,
-    SendEmailComponent,
-    SendMsgComponent,
+    SearchApprovalComponent,
+    SearchCostcenterComponent,
+    OrganizationComponent,
+    SelectTravelNumberComponent,
+    AddcontactsModalComponent,
+    BookIllegalReasonCompComponent,
+    BookCredentialCompComponent,
+    BookCostcenterCompComponent,
+    BookOrganizationCompComponent,
+    BookAddcontactsCompComponent
   ],
-  imports: [CommonModule, IonicModule, FormsModule, FlightPipesModule,DirectivesModule],
+  imports: [
+    CommonModule,
+    IonicModule,
+    FormsModule,
+    DirectivesModule,
+    AppComponentsModule,
+    MemberPipesModule
+  ],
   exports: [
-    OriginalFlightTripComponent,
-    SearchTicketModalComponent,
-    ProductPlaneComponent,
-    ProductTrainComponent,
-    ProductHotelComponent,
-    ProductInsuranceComponent,
-    OrderItemComponent,
-    FlightTripComponent
+    BookCredentialCompComponent,
+    BookIllegalReasonCompComponent,
+    BookCostcenterCompComponent,
+    BookOrganizationCompComponent,
+    BookAddcontactsCompComponent
   ],
   entryComponents: [
-    SendMsgComponent,
-    SendEmailComponent,
-    SearchTicketModalComponent,
+    AddcontactsModalComponent,
     SelectTrainStationModalComponent,
     SelectAirportsModalComponent,
-    OrderItemPricePopoverComponent,
-    TripRulePopoverComponent
+    SearchApprovalComponent,
+    SearchCostcenterComponent,
+    SelectTravelNumberComponent,
+    AddcontactsModalComponent,
+    AddcontactsModalComponent,
+    OrganizationComponent
   ]
 })
 export class TmcComponentsModule {}

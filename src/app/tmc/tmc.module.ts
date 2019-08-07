@@ -1,3 +1,4 @@
+import { TmcComponentsModule } from 'src/app/tmc/components/tmcComponents.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TmcRoutingModule } from './tmc-routing.module';
@@ -6,8 +7,9 @@ import { TmcRoutingModule } from './tmc-routing.module';
   declarations: [],
   imports: [
     CommonModule,
-    TmcRoutingModule
+    TmcRoutingModule,
+    TmcComponentsModule
   ],
-  exports:[TmcRoutingModule]
+  exports:[TmcRoutingModule,TmcComponentsModule]
 })
 export class TmcModule { }

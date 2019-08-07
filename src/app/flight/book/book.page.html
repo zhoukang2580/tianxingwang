@@ -45,7 +45,7 @@
           </ion-text>
         </ion-label>
       </ion-item>
-      <ion-item *ngIf='combindInfo?.modal?.flightSegmentInfo as s' class='ion-margin-vertical'>
+      <ion-item *ngIf='combindInfo?.modal?.flightSegmentInfo as s' margin-top>
         <div style='width: 100%' class='detail'>
           <div class='date'>
             <strong>{{getDate(s?.flightSegment)}} <ion-text color='secondary'>
@@ -95,110 +95,21 @@
             </ion-label>
           </div>
           <div style='width: 100%' *ngIf='combindInfo?.vmCredential'>
-            <ion-grid class="id-type" [class.disabled]='!modifyele.checked'>
-              <ion-row>
-                <ion-col>证件:</ion-col>
-                <ion-col text-end>
-                  <input class='hidden' type="checkbox" #modifyele>
-                  <ion-button fill='clear' color='secondary' size='small'
-                    (click)='modifyele.checked=!modifyele.checked'>
-                    <ion-icon name="checkmark" mode='md' size='small' slot='start' color='success'
-                      *ngIf='modifyele.checked'></ion-icon>
-                    <ion-icon name="create" mode='md' size='small' slot='start' *ngIf='!modifyele.checked'></ion-icon>
-                    <ion-text *ngIf='!modifyele.checked'>修改</ion-text>
-                    <ion-text *ngIf='modifyele.checked'>保存</ion-text>
-                  </ion-button>
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>
-                  <ion-item lines='none' no-margin no-padding [disabled]='!modifyele.checked'>
-                    <ion-label>证件类型</ion-label>
-                    <ion-select [(ngModel)]='combindInfo.vmCredential' name='Type' okText="确定" cancelText="取消"
-                      selectedText='{{(combindInfo?.vmCredential?.Type|credential)}}' [compareWith]='compareFn'>
-                      <ion-select-option [value]="opt" *ngFor='let opt of combindInfo?.credentials'>
-                        {{(opt?.Type|credential)}}{{opt?.Number}}
-                      </ion-select-option>
-                    </ion-select>
-                    <input type="text" value="{{combindInfo.vmCredential.Type}}" hidden ValidateName="Type">
-                  </ion-item>
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>证件号码：</ion-col>
-                <ion-col>
-                  <input type="text" [disabled]='!modifyele.checked' [(ngModel)]='combindInfo.vmCredential.Number'
-                    name='Number' ValidateName="Number">
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>登机姓：</ion-col>
-                <ion-col>
-                  <input type="text" [disabled]='!modifyele.checked'
-                    [(ngModel)]='combindInfo.vmCredential.CheckFirstName' ValidateName='CheckFirstName'
-                    name='CheckFirstName'>
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>登机名：</ion-col>
-                <ion-col>
-                  <input type="text" [disabled]='!modifyele.checked'
-                    [(ngModel)]='combindInfo.vmCredential.CheckLastName' ValidateName='CheckLastName'
-                    name='CheckLastName'>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
+            <app-book-credential-comp [credential]='combindInfo?.vmCredential'
+              (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo?.credentials'>
+            </app-book-credential-comp>
             <div *ngIf='s?.flightPolicy?.Rules?.length'>
-              超标原因：
-              <ion-item lines='none' no-margin no-padding>
-                <ion-label>超标原因：</ion-label>
-                <ion-select [disabled]='combindInfo?.isOtherIllegalReason' [(ngModel)]='combindInfo.illegalReason'
-                  name='Type' okText="确定" cancelText="取消">
-                  <ion-select-option [value]="opt?.Name" *ngFor='let opt of illegalReasons'>
-                    {{opt?.Name}}
-                  </ion-select-option>
-                </ion-select>
-              </ion-item>
-              <div *ngIf='tmc?.IsAllowCustomReason'>
-                <ion-item lines='none' no-margin no-padding>
-                  <ion-label style='margin-right: 0'>其他原因:</ion-label>
-                  <ion-checkbox color="secondary" [(ngModel)]="combindInfo.isOtherIllegalReason"></ion-checkbox>
-                  <ion-input [disabled]='!combindInfo?.isOtherIllegalReason'
-                    [(ngModel)]='combindInfo.otherIllegalReason' placeholder='请输入其他原因'></ion-input>
-                </ion-item>
-              </div>
+              <app-book-illegal-reason-comp [illegalReasons]='illegalReasons'
+                [isAllowCustomReason]='tmc?.IsAllowCustomReason' (ionchange)='onIllegalReason($event,combindInfo)'>
+              </app-book-illegal-reason-comp>
             </div>
-            <div [class.disabled]='combindInfo?.isOtherCostCenter'>
-              <ion-item detail lines='none' [disabled]='combindInfo?.isOtherCostCenter' no-margin no-padding
-                (click)='searchCostCenter(combindInfo)'>
-                <ion-label>成本中心：</ion-label>
-                <ion-label text-end>{{combindInfo?.costCenter?.name}}</ion-label>
-              </ion-item>
-              <ion-item lines='none' no-margin no-padding>
-                <ion-label style='margin-right: 0.5em'>其他:</ion-label>
-                <ion-checkbox color="secondary" [(ngModel)]="combindInfo.isOtherCostCenter"></ion-checkbox>
-                <ion-input [disabled]='!combindInfo?.isOtherCostCenter' [(ngModel)]='combindInfo.otherCostCenterName'
-                  placeholder='名称'>
-                </ion-input>
-                <ion-input [disabled]='!combindInfo?.isOtherCostCenter' [(ngModel)]='combindInfo.otherCostCenterCode'
-                  placeholder='代码'>
-                </ion-input>
-              </ion-item>
-            </div>
-            <div [class.disabled]='combindInfo?.isOtherOrganization'>
-              <ion-item detail lines='none' [disabled]='combindInfo?.isOtherOrganization' no-margin no-padding
-                (click)='searchOrganization(combindInfo)'>
-                <ion-label>部门：</ion-label>
-                <ion-label text-end>{{combindInfo?.organization?.Name}}</ion-label>
-              </ion-item>
-              <ion-item lines='none' no-margin no-padding>
-                <ion-label style='margin-right: 0.5em'>其他:</ion-label>
-                <ion-checkbox color="secondary" [(ngModel)]="combindInfo.isOtherOrganization"></ion-checkbox>
-                <ion-input [disabled]='!combindInfo?.isOtherOrganization'
-                  [(ngModel)]='combindInfo.otherOrganizationName' placeholder='名称'>
-                </ion-input>
-              </ion-item>
-            </div>
+            <app-book-costcenter-comp [isOtherCostCenter]='combindInfo.isOtherCostCenter'
+              [costCenter]='combindInfo.costCenter' [otherCostCenterCode]='combindInfo.otherCostCenterCode'
+              [otherCostCenterName]='combindInfo.otherCostCenterName'
+              (ionChange)='onCostCenterChange($event,combindInfo)'></app-book-costcenter-comp>
+            <app-book-organization-comp (ionChange)='onOrganizationChange($event,combindInfo)'
+              [organization]='combindInfo?.organization' [isOtherOrganization]='combindInfo?.isOtherOrganization'
+              [otherOrganizationName]='combindInfo?.otherOrganizationName'></app-book-organization-comp>
             <div class='mobiles'>
               联系方式:
               <ion-item *ngFor='let mobile of combindInfo?.credentialStaffMobiles'>
@@ -207,7 +118,7 @@
               </ion-item>
               <ion-item>
                 <ion-label style='margin-right: 0.5em'>其他号码：</ion-label>
-                <ion-input [(ngModel)]="combindInfo.credentialStaffOtherMobile"></ion-input>
+                <ion-input [(ngModel)]="combindInfo.credentialStaffOtherMobile" placeholder='请输入其他号码'></ion-input>
               </ion-item>
             </div>
             <div class='emails'>
@@ -217,8 +128,8 @@
                 <ion-label style='margin-left: 0.5em'>{{email.email}}</ion-label>
               </ion-item>
               <ion-item>
-                <ion-label style='margin-right: 0'>其他邮箱</ion-label>
-                <ion-input [(ngModel)]="combindInfo.credentialStaffOtherEmail"></ion-input>
+                <ion-label style='margin-right: 0.5em'>其他邮箱：</ion-label>
+                <ion-input [(ngModel)]="combindInfo.credentialStaffOtherEmail" placeholder='请输入其他邮箱'></ion-input>
               </ion-item>
             </div>
             <div *ngIf='combindInfo?.insuranceResultProducts.length'>
@@ -251,25 +162,27 @@
               审批人:
               <ion-row margin-top>
                 <ion-col>
-                  <app-fly-timeline [hideLastTimeLineTail]='false'>
-                    <app-fly-timeline-item *ngFor='let it of combindInfo?.credentialStaffApprovers'>
+                  <app-timeline [hideLastTimeLineTail]='false'>
+                    <app-timeline-item *ngFor='let it of combindInfo?.credentialStaffApprovers'>
                       第{{it.Tag}}级审批:
                       <ion-label text-wrap *ngFor='let ap of it.approvers;let last'>
                         {{ap.Account?.RealName}}({{it?.Type==1?"所有通过":"任意通过"}})
                       </ion-label>
-                    </app-fly-timeline-item>
-                  </app-fly-timeline>
+                    </app-timeline-item>
+                  </app-timeline>
                 </ion-col>
               </ion-row>
             </div>
           </div>
           <div class='outnumber' *ngIf='combindInfo?.tmcOutNumberInfos'>
             外部编号：
-            <ion-item-group >
+            <ion-item-group>
               <ion-item *ngFor='let n of combindInfo?.tmcOutNumberInfos' (click)='onSelectTravelNumber(n,combindInfo)'>
                 <ion-label>{{n.label}}:</ion-label>
-                <ion-input [disabled]='n.isDisabled' [value]='n.value' [(ngModel)]='n.value' placeholder="{{n.label}}"></ion-input>
+                <ion-input [disabled]='n.isDisabled' [value]='n.value' [(ngModel)]='n.value' placeholder="{{n.label}}">
+                </ion-input>
               </ion-item>
+              <ion-item style='height:0'></ion-item>
             </ion-item-group>
           </div>
           <div class='travel-type'>
@@ -297,46 +210,8 @@
               </ion-item>
             </ion-radio-group>
           </div>
-          <div class='link-man'>
-            添加联系人:
-            <ion-row *ngFor='let man of combindInfo?.addContacts'>
-              <ion-col size='12'>
-                <ion-item lines='none' class="ion-no-margin">
-                  <ion-label>旅客名称:</ion-label>
-                  <ion-input name='name' [(ngModel)]='man.name'></ion-input>
-                </ion-item>
-              </ion-col>
-              <ion-col size='12'>
-                <ion-item lines='none' class="ion-no-margin">
-                  <ion-label>手机号:</ion-label>
-                  <ion-input name='mobile' [(ngModel)]='man.mobile'></ion-input>
-                </ion-item>
-              </ion-col>
-              <ion-col size='12'>
-                <ion-item lines='none' class="ion-no-margin">
-                  <ion-label>邮箱:</ion-label>
-                  <ion-input name='email' [(ngModel)]='man.email'></ion-input>
-                </ion-item>
-              </ion-col>
-              <ion-col size='12'>
-                <ion-item lines='none' class="ion-no-margin">
-                  <ion-label>通知语言:</ion-label>
-                  <ion-select value="cn" okText="确定" cancelText="取消" [(ngModel)]='man.notifyLanguage'>
-                    <ion-select-option value=''>不发</ion-select-option>
-                    <ion-select-option value='cn'>中文</ion-select-option>
-                    <ion-select-option value='en'>英文</ion-select-option>
-                  </ion-select>
-                </ion-item>
-              </ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col>
-                <ion-button fill='outline' expand='block' color='secondary' (click)='onAddContacts(combindInfo)'>
-                  <ion-icon name="add-circle-outline" color='secondary' slot='start'></ion-icon> 添加联系人
-                </ion-button>
-              </ion-col>
-            </ion-row>
-          </div>
+          <app-book-addcontacts-comp [addContacts]='combindInfo?.addContacts'
+            (contactChange)='onContactsChange($event,combindInfo)'></app-book-addcontacts-comp>
         </div>
       </ion-item>
     </ion-list>

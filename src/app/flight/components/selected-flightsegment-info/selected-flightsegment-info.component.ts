@@ -1,6 +1,5 @@
 import { CredentialsEntity } from "./../../../tmc/models/CredentialsEntity";
 import {
-  CurrentViewtFlightSegment,
   SearchFlightModel
 } from "./../../flight.service";
 import { Observable, Subscription } from "rxjs";
@@ -16,8 +15,6 @@ import {
   NavController
 } from "@ionic/angular";
 import {
-  PassengerBookInfo,
-  PassengerFlightSegmentInfo,
   FlightService
 } from "src/app/flight/flight.service";
 import { FlightSegmentEntity } from "./../../models/flight/FlightSegmentEntity";
@@ -27,6 +24,8 @@ import * as moment from "moment";
 import { tap, map, reduce } from "rxjs/operators";
 import { SelectFlightsegmentCabinComponent } from "../select-flightsegment-cabin/select-flightsegment-cabin.component";
 import { TripType } from "src/app/tmc/models/TripType";
+import { PassengerBookInfo } from 'src/app/tmc/tmc.service';
+import { CurrentViewtFlightSegment, PassengerFlightSegmentInfo } from '../../models/PassengerFlightInfo';
 interface PassengerBookInfos {
   passenger: StaffEntity;
   credential: CredentialsEntity;
@@ -131,7 +130,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
   }
   async nextStep() {
     this.dismissTop();
-    this.router.navigate([AppHelper.getRoutePath("book")]);
+    this.router.navigate([AppHelper.getRoutePath("flight-book")]);
   }
   async reelect(info: PassengerBookInfo) {
     await this.flightService.reselectPassengerFlightSegments(info);

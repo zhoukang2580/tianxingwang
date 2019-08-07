@@ -3,7 +3,7 @@
     <ion-buttons slot='start'>
       <ion-back-button (click)='back()'></ion-back-button>
     </ion-buttons>
-    <ion-title color='secondary' text-center>
+    <ion-title color='secondary' [attr.text-start]='showAddPassenger' [attr.text-center]='!showAddPassenger'>
       <ion-text>{{vmFromCity?.CityName}}</ion-text>
       <i class='icon icon-flight-plane'></i>
       <ion-text>{{ vmToCity?.CityName}}</ion-text>

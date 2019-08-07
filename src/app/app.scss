@@ -88,6 +88,11 @@ ion-radio {
 }
 ion-checkbox {
   --checkmark-color: var(--ion-color-light);
+  &.ios {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-left: 0.5em;
+  }
 }
 
 ion-icon[name="arrow-back"] {

@@ -25,17 +25,7 @@ const routes: Routes = [
     canActivate: [TmcGuard]
   },
   {
-    path: "flight-detail",
-    loadChildren: "./flight-detail/flight-detail.module#FlightDetailPageModule",
-    canActivate: [TmcGuard]
-  },
-  {
-    path: "select-passenger",
-    loadChildren:
-      "./select-passenger/select-passenger.module#SelectPassengerPageModule"
-  },
-  {
-    path: "book",
+    path: "flight-book",
     loadChildren: "./book/book.module#BookPageModule"
   }
 ];

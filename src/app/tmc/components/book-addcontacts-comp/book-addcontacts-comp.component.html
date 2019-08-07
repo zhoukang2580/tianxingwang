@@ -1,0 +1,40 @@
+<div class='link-man'>
+    添加联系人:
+    <ion-row *ngFor='let man of addContacts'>
+      <ion-col size='12'>
+        <ion-item lines='none' class="ion-no-margin">
+          <ion-label>旅客名称:</ion-label>
+          <ion-input name='name'  placeholder='请输入' (ionChange)='onChange()' [(ngModel)]='man.name'></ion-input>
+        </ion-item>
+      </ion-col>
+      <ion-col size='12'>
+        <ion-item lines='none' class="ion-no-margin">
+          <ion-label>手机号:</ion-label>
+          <ion-input name='mobile'  placeholder='请输入'(ionChange)='onChange()'  [(ngModel)]='man.mobile'></ion-input>
+        </ion-item>
+      </ion-col>
+      <ion-col size='12'>
+        <ion-item lines='none' class="ion-no-margin">
+          <ion-label>邮箱:</ion-label>
+          <ion-input name='email' [(ngModel)]='man.email' (ionChange)='onChange()' placeholder='请输入' ></ion-input>
+        </ion-item>
+      </ion-col>
+      <ion-col size='12'>
+        <ion-item lines='none' class="ion-no-margin">
+          <ion-label>通知语言:</ion-label>
+          <ion-select value="cn" okText="确定" cancelText="取消" (ionChange)='onChange()' [(ngModel)]='man.notifyLanguage' >
+            <ion-select-option value=''>不发</ion-select-option>
+            <ion-select-option value='cn'>中文</ion-select-option>
+            <ion-select-option value='en'>英文</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-button fill='outline' expand='block' color='secondary' (click)='onAddContacts()'>
+          <ion-icon name="add-circle-outline" color='secondary' slot='start'></ion-icon> 添加联系人
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </div>

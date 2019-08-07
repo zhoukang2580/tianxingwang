@@ -2,9 +2,7 @@ import { environment } from "src/environments/environment";
 import { ApiService } from "src/app/services/api/api.service";
 import { FlyFilterComponent } from "./../components/fly-filter/fly-filter.component";
 import {
-  FlightPolicy,
   SearchFlightModel,
-  PassengerPolicyFlights
 } from "./../flight.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import {
@@ -62,10 +60,11 @@ import { FilterConditionModel } from "../models/flight/advanced-search-cond/Filt
 import { FlyDaysCalendarComponent } from "../components/fly-days-calendar/fly-days-calendar.component";
 import { Storage } from "@ionic/storage";
 import { SelectedFlightsegmentInfoComponent } from "../components/selected-flightsegment-info/selected-flightsegment-info.component";
-import { SelectedPassengersPopoverComponent } from "../components/selected-passengers-popover/selected-passengers-popover.component";
-import { NOT_WHITE_LIST } from "../select-passenger/select-passenger.page";
+import { NOT_WHITE_LIST } from "../../tmc/select-passenger/select-passenger.page";
 import { TripType } from "src/app/tmc/models/TripType";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
+import { FilterPassengersPolicyComponent } from '../../tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component';
+import { PassengerPolicyFlights, FlightPolicy } from '../models/PassengerFlightInfo';
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -620,9 +619,11 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async filterPolicyFlights() {
     const popover = await this.popoverController.create({
-      component: SelectedPassengersPopoverComponent,
+      component: FilterPassengersPolicyComponent,
+      componentProps:{
+        bookInfos$:this.flightService.getPassengerBookInfoSource()
+      },
       translucent: true
-      // backdropDismiss: false
     });
     await popover.present();
     const d = await popover.onDidDismiss();

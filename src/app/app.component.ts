@@ -222,12 +222,13 @@ export class AppComponent
       // this.router.navigate([AppHelper.getRoutePath("account-mobile")]);
       // this.router.navigate([AppHelper.getRoutePath("account-device")]);
       // this.router.navigate([AppHelper.getRoutePath("change-password-by-msm-code")]);
-      this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
+      // this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
       // this.router.navigate([AppHelper.getRoutePath("flight-list")]);
       // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management-add')]);
       // this.router.navigate([AppHelper.getRoutePath('search-flight')]);
       // this.router.navigate([AppHelper.getRoutePath("select-customer")]);
       // this.router.navigate([AppHelper.getRoutePath("search-train")]);
+      this.router.navigate([AppHelper.getRoutePath("flight-book")]);
     });
   }
 

@@ -13,14 +13,10 @@ export const routes: Routes = [
       "./confirm-information/confirm-information.module#ComfirmInformationPageModule"
   },
   {
-    path: "product-list",
-    loadChildren: "./product-list/product-list.module#ProductListPageModule"
+    path: "select-passenger",
+    loadChildren:
+      "./select-passenger/select-passenger.module#SelectPassengerPageModule"
   },
-  {
-    path: "product-tabs",
-    loadChildren: "./product-tabs/product-tabs.module#ProductTabsPageModule"
-  },
-  { path: 'order-detail', loadChildren: './order-detail/order-detail.module#OrderDetailPageModule' }
 ];
 @NgModule({
   declarations: [],

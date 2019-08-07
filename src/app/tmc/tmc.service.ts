@@ -21,6 +21,7 @@ import { Storage } from "@ionic/storage";
 import * as jsPy from "js-pinyin";
 import { OrderModel } from "../order/models/OrderModel";
 import { OrderService } from "../order/order.service";
+import { PassengerFlightSegmentInfo } from '../flight/models/PassengerFlightInfo';
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -30,6 +31,11 @@ interface SelectItem {
 interface LocalStorageAirport {
   LastUpdateTime: number;
   Trafficlines: TrafficlineEntity[];
+}
+export enum FlightHotelTrainType {
+  Flight = 1,
+  Hotel = 2,
+  Train = 3
 }
 @Injectable({
   providedIn: "root"
@@ -48,6 +54,7 @@ export class TmcService {
   private selectedCompanySource: BehaviorSubject<string>;
   private companies: GroupCompanyEntity[];
   private tmc: TmcEntity;
+  private travelType: FlightHotelTrainType;
   allLocalAirports: TrafficlineEntity[];
   constructor(
     private apiService: ApiService,
@@ -62,6 +69,12 @@ export class TmcService {
       }
     });
     this.selectedCompanySource = new BehaviorSubject(null);
+  }
+  setTravelType(type: FlightHotelTrainType) {
+    this.travelType = type;
+  }
+  getTravelType() {
+    return this.travelType;
   }
   getOrderList(searchCondition: OrderModel) {
     return this.orderService.getOrderList(searchCondition);
@@ -1074,4 +1087,12 @@ export interface TmcEntity {
   WechatMiniId: string;
   WechatMiniSecret: string;
   // =============== 微信支付配置 end ======
+}
+export interface PassengerBookInfo {
+  passenger: StaffEntity;
+  credential: CredentialsEntity;
+  isNotWhitelist?: boolean;
+  flightSegmentInfo?: PassengerFlightSegmentInfo;
+  id?: string;
+  isReplace?: boolean;
 }

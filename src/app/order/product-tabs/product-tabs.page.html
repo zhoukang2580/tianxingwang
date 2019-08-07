@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-button color='dark' (click)='back()'>
+        <ion-icon name='arrow-back'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{title}}</ion-title>
+    <ion-buttons slot='end'>
+      <ion-button color='primary' (click)='openSearchModal()'>
+        <ion-icon name="search" color='secondary'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar text-center>
+    <div class='tabs'>
+      <ion-button [color]='activeTab==tab.value?"secondary":"dark"' (click)='onTabClick(tab)' *ngFor='let tab of tabs'
+        fill='clear' [class.active]='activeTab==tab.value'>{{tab.label}}
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh()">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <!-- <app-product-plane *ngIf='activeTab==productItemType.plane' [orderModel]='orderModel'></app-product-plane>
+  <app-product-hotel *ngIf='activeTab==productItemType.hotel' [orderModel]='orderModel'></app-product-hotel>
+  <app-product-train *ngIf='activeTab==productItemType.train' [orderModel]='orderModel'></app-product-train>
+  <app-product-insurance *ngIf='activeTab==productItemType.insurance'></app-product-insurance> -->
+  <ion-list lines='none'>
+    <ion-item *ngFor='let order of orderModel?.Orders' (click)='goToDetailPage(order)'>
+      <app-order-item [order]='order'></app-order-item> 
+    </ion-item> 
+  </ion-list>
+  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMore()">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>
+<ion-footer>
+  <ion-row>
+    <ion-col>
+      <ion-button color='secondary'>
+        全部<span slot='end' *ngIf='dataCount'>({{dataCount}})</span>
+      </ion-button>
+    </ion-col>
+    <ion-col>
+      <ion-button color='secondary'>待出行订单</ion-button>
+    </ion-col>
+    <ion-col>
+      <ion-button color='secondary'>历史订单</ion-button>
+    </ion-col>
+  </ion-row>
+
+</ion-footer>

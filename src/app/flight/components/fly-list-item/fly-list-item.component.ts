@@ -1,4 +1,3 @@
-import { FlightPolicy } from './../../flight.service';
 import { FlightCabinEntity } from "./../../models/flight/FlightCabinEntity";
 import {
   Component,
@@ -26,6 +25,7 @@ import {
   animate
 } from "@angular/animations";
 import { ModalController, DomController } from "@ionic/angular";
+import { FlightPolicy } from '../../models/PassengerFlightInfo';
 
 @Component({
   selector: "app-fly-list-item",

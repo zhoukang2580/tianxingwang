@@ -13,7 +13,8 @@ import { AgentModule } from "./agent/agent.module";
 import { TmcModule } from "./tmc/tmc.module";
 import { CmsModule } from "./cms/cms.module";
 import { MessageModule } from "./message/message.module";
-import { TainRoutingModule } from './train/tain-routing.module';
+import { TainRoutingModule } from "./train/tain-routing.module";
+import { OrderModule } from "./order/order.module";
 
 const routes: Routes = [
   {
@@ -59,6 +60,7 @@ const routes: Routes = [
     AgentModule,
     CmsModule,
     TmcModule,
+    OrderModule,
     MessageModule,
     TainRoutingModule,
     RouterModule.forRoot(routes, {

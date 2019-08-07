@@ -3,8 +3,8 @@ import { FlightCabinFareType } from "./FlightCabinFareType";
 import { FlightStopCityEntity } from "./FlightStopCityEntity";
 import { FlightCabinEntity } from "./FlightCabinEntity";
 import { FlightMealType } from "../../pipes/flight-meal-type.pipe";
-import { FlightPolicy } from "../../flight.service";
 import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
+import { FlightPolicy } from '../PassengerFlightInfo';
 
 export class FlightSegmentEntity {
   /// <summary>

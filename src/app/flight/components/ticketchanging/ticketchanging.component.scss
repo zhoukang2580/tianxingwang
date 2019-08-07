@@ -1,7 +1,7 @@
 ion-grid {
   margin: 0;
   ion-col {
-    align-self: center;
+    align-self: flex-start;
   }
   ion-row + ion-row {
     border-top: 1px solid rgba(0, 0, 0, 0.12);

@@ -1,10 +1,10 @@
-import { OrderEntity } from "src/app/order/models/OrderEntity";
 import { TaskEntity } from "src/app/workflow/models/TaskEntity";
 import { HistoryEntity } from "./models/HistoryEntity";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { Injectable } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
 import { OrderModel } from "./models/OrderModel";
+import { OrderEntity } from './models/OrderEntity';
 export class OrderDetailModel {
   Histories: HistoryEntity[];
   Tasks: TaskEntity[];

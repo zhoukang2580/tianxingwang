@@ -15,7 +15,7 @@ import {
 } from "@angular/core";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { Storage } from "@ionic/storage";
-import { TmcService } from "../../tmc.service";
+import { TmcService } from "../../../tmc/tmc.service";
 import { trigger, state, transition } from "@angular/animations";
 @Component({
   selector: "app-select-airports",
