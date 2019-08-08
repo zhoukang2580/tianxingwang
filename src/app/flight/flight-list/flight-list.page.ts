@@ -119,6 +119,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   isLeavePage = false;
   isSelfBookType = true;
   st = 0;
+  timeoutid: any;
   selectedPassengersNumbers$: Observable<number>;
   goAndBackFlightDateTime$: Observable<{
     goArrivalDateTime: string;
@@ -320,70 +321,75 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     passengerId?: string,
     filterPolicy?: boolean
   ) {
-    try {
-      if (this.isLeavePage || this.isLoading) {
-        return;
-      }
-      this.moveDayToSearchDate();
-      if (this.list) {
-        this.list.nativeElement.innerHTML = "";
-      }
-      if (this.refresher) {
-        this.refresher.complete();
-      }
-      this.apiService.showLoadingView();
-      if (!keepSearchCondition) {
-        if (this.filterComp) {
-          this.filterComp.onReset();
+    if(this.timeoutid){
+      clearTimeout(this.timeoutid);
+    }
+    this.timeoutid = setTimeout(async () => {
+      try {
+        if (this.isLeavePage || this.isLoading) {
+          return;
         }
-        this.filterCondition = FilterConditionModel.init();
-        setTimeout(() => {
-          this.activeTab = "none";
-        }, 0);
-      }
-      this.vmFlights = [];
-      this.isLoading = true;
-      let data = JSON.parse(JSON.stringify(this.flightJourneyList));
-      this.hasDataSource.next(false);
-      if (loadDataFromServer) {
-        // 强制从服务器端返回新数据
-        data = await this.loadPolicyedFlightsAsync(passengerId);
-      }
-      // 根据筛选条件过滤航班信息：
-      const filteredFlightJourenyList = this.filterFlightJourneyList(data);
-      this.isFiltered =
-        this.filterComp &&
-        Object.keys(this.filterComp.userOps).some(
-          k => this.filterComp.userOps[k]
+        this.moveDayToSearchDate();
+        if (this.list) {
+          this.list.nativeElement.innerHTML = "";
+        }
+        if (this.refresher) {
+          this.refresher.complete();
+        }
+        this.apiService.showLoadingView();
+        if (!keepSearchCondition) {
+          if (this.filterComp) {
+            this.filterComp.onReset();
+          }
+          this.filterCondition = FilterConditionModel.init();
+          setTimeout(() => {
+            this.activeTab = "none";
+          }, 0);
+        }
+        this.vmFlights = [];
+        this.isLoading = true;
+        let data = JSON.parse(JSON.stringify(this.flightJourneyList));
+        this.hasDataSource.next(false);
+        if (loadDataFromServer) {
+          // 强制从服务器端返回新数据
+          data = await this.loadPolicyedFlightsAsync(passengerId);
+        }
+        // 根据筛选条件过滤航班信息：
+        const filteredFlightJourenyList = this.filterFlightJourneyList(data);
+        this.isFiltered =
+          this.filterComp &&
+          Object.keys(this.filterComp.userOps).some(
+            k => this.filterComp.userOps[k]
+          );
+        let segments = this.flightService.getTotalFlySegments(
+          filteredFlightJourenyList
         );
-      let segments = this.flightService.getTotalFlySegments(
-        filteredFlightJourenyList
-      );
-      if (filterPolicy) {
-        segments = segments.filter(s =>
-          s.PoliciedCabins.some(pc => pc.Rules && pc.Rules.length == 0)
-        );
-        if (segments.length == 0) {
-          if (`${passengerId}`.toLowerCase().includes(NOT_WHITE_LIST)) {
-            // 非白名单的是可以选择所有的航班
-            segments = this.flightService.getTotalFlySegments(
-              filteredFlightJourenyList
-            );
+        if (filterPolicy) {
+          segments = segments.filter(s =>
+            s.PoliciedCabins.some(pc => pc.Rules && pc.Rules.length == 0)
+          );
+          if (segments.length == 0) {
+            if (`${passengerId}`.toLowerCase().includes(NOT_WHITE_LIST)) {
+              // 非白名单的是可以选择所有的航班
+              segments = this.flightService.getTotalFlySegments(
+                filteredFlightJourenyList
+              );
+            }
           }
         }
+        this.st = Date.now();
+        this.vmFlights = segments;
+        await this.renderFlightList2(segments);
+        this.hasDataSource.next(!!this.vmFlights.length && !this.isLoading);
+        this.apiService.hideLoadingView();
+        this.isLoading = false;
+      } catch (e) {
+        if (!environment.production) {
+          console.error(e);
+        }
+        this.isLoading = false;
       }
-      this.st = Date.now();
-      this.vmFlights = segments;
-      await this.renderFlightList2(segments);
-      this.hasDataSource.next(!!this.vmFlights.length && !this.isLoading);
-      this.apiService.hideLoadingView();
-      this.isLoading = false;
-    } catch (e) {
-      if (!environment.production) {
-        console.error(e);
-      }
-      this.isLoading = false;
-    }
+    }, 200);
   }
   private scrollToTop() {
     setTimeout(() => {
