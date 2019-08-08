@@ -148,10 +148,9 @@ interface ICombindInfo {
   templateUrl: "./book.page.html",
   styleUrls: ["./book.page.scss"],
   animations: [
-    trigger("openclose", [
-      state("true", style({ height: "*" })),
-      state("false", style({ height: "0px" })),
-      transition("false <=> true", animate(200))
+    trigger("showHide", [
+      state("true", style({ display: "initial" })),
+      state("false", style({ display: "none" }))
     ])
   ]
 })

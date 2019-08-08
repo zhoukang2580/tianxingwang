@@ -69,7 +69,7 @@
             <ion-icon name="arrow-dropdown" *ngIf='combindInfo?.showFriendlyReminder'></ion-icon>
             <ion-icon name="arrow-dropright" *ngIf='!combindInfo?.showFriendlyReminder'></ion-icon>
           </ion-button>
-          <ion-label [@openclose]='combindInfo?.showFriendlyReminder' text-wrap color='success' class='small-font'>
+          <ion-label [@showHide]='combindInfo?.showFriendlyReminder' text-wrap color='success' class='small-font'>
             温馨提醒: 国内廉价航司机票部分舱位不包含免费托运行李服务，免费托运行李相关事宜可以拨打我们客服电话咨询。（例如： 中联航:
             每位旅客可携带1件免费随身行李，重量不能超过10千克且体积不超过20×30×40厘米。托运行李收费标准：X ≤ 5KG 柜台价格30元； 5KG &lt; X ≤ 10KG 柜台价格60元； 10KG &lt; X
             ≤
@@ -83,7 +83,7 @@
             <ion-icon name="arrow-dropdown" *ngIf='combindInfo?.openrules'></ion-icon>
             <ion-icon name="arrow-dropright" *ngIf='!combindInfo?.openrules'></ion-icon>
           </ion-button>
-          <div class='refund-change-info' [@openclose]='combindInfo?.openrules'>
+          <div class='refund-change-info' [@showHide]='combindInfo?.openrules'>
             <ion-label text-wrap *ngIf='s?.flightPolicy?.Cabin?.RefundChange?.RefundDetail?.Befores?.length'>
               退票规则:{{s?.flightPolicy?.Cabin?.RefundChange?.RefundDetail?.Befores?.join("")}}
             </ion-label>
@@ -153,7 +153,7 @@
                   </ion-col>
                 </ion-row>
                 <input type="checkbox" #insuranceEle class='hidden'>
-                <ion-label text-wrap class='small-font' [@openclose]='insuranceEle.checked'>
+                <ion-label text-wrap class='small-font' [@showHide]='insuranceEle.checked'>
                   {{insurance.insuranceResult?.Detail}}
                 </ion-label>
               </div>
