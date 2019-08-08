@@ -378,7 +378,7 @@ export class FlightService {
     });
     this.setPassengerBookInfos(arr);
   }
-  private async dismissAllTopOverlays() {
+  async dismissAllTopOverlays() {
     console.time("dismissAllTopOverlays");
     let top = await this.modalCtrl.getTop();
     let i = 10;

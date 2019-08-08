@@ -82,7 +82,10 @@ export class FlightItemCabinsPage implements OnInit {
   async filterPolicyFlights() {
     const popover = await this.popoverController.create({
       component: FilterPassengersPolicyComponent,
-      translucent: true
+      translucent: true,
+      componentProps: {
+        bookInfos$: this.flightService.getPassengerBookInfoSource()
+      }
       // backdropDismiss: false
     });
     await popover.present();
