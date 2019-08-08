@@ -262,6 +262,11 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
 
   async onSelectReturnTrip() {
     console.log("onSelectReturnTrip");
+    if (!this.router.routerState.snapshot.url.includes("flight-list")) {
+      this.navCtrl.back({
+        animated: false
+      });
+    }
     await this.flightService.dismissAllTopOverlays();
     const s = this.flightService.getSearchFlightModel();
     const airports = await this.flightService.getAllLocalAirports();
@@ -299,21 +304,18 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
       "this.router.routerState.snapshot.url " +
         this.router.routerState.snapshot.url
     );
-    // if (!this.router.routerState.snapshot.url.includes("flight-list")) {
-    //   this.navCtrl.back();
-    // }
-    this.router.navigate([AppHelper.getRoutePath("flight-list")]).then(_ => {
-      this.flightService.setSearchFlightModel({
-        ...s,
-        FromCode: goflight.ToAirport,
-        ToCode: goflight.FromAirport,
-        ToAsAirport: s.FromAsAirport,
-        FromAsAirport: s.ToAsAirport,
-        fromCity: s.toCity,
-        toCity: s.fromCity,
-        Date: s.BackDate,
-        tripType: TripType.returnTrip
-      });
+
+    this.flightService.setSearchFlightModel({
+      ...s,
+      FromCode: goflight.ToAirport,
+      ToCode: goflight.FromAirport,
+      ToAsAirport: s.FromAsAirport,
+      FromAsAirport: s.ToAsAirport,
+      fromCity: s.toCity,
+      toCity: s.fromCity,
+      Date: s.BackDate,
+      tripType: TripType.returnTrip
     });
+    this.router.navigate([AppHelper.getRoutePath("flight-list")]).then(_ => {});
   }
 }

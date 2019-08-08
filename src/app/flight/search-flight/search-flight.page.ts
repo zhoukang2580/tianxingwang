@@ -1,4 +1,4 @@
-import { TmcService, FlightHotelTrainType } from 'src/app/tmc/tmc.service';
+import { TmcService, FlightHotelTrainType } from "src/app/tmc/tmc.service";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { IdentityService } from "../../services/identity/identity.service";
 import { ApiService } from "src/app/services/api/api.service";
@@ -16,7 +16,7 @@ import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import * as moment from "moment";
 import { Subscription } from "rxjs";
 import { DayModel } from "../../tmc/models/DayModel";
-import {  NavController } from "@ionic/angular";
+import { NavController } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
 @Component({
@@ -66,7 +66,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     private staffService: StaffService,
     private identityService: IdentityService,
     private apiService: ApiService,
-    private tmcService:TmcService
+    private tmcService: TmcService
   ) {
     route.queryParamMap.subscribe(async _ => {
       this.tmcService.setTravelType(FlightHotelTrainType.Flight);
@@ -150,7 +150,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
       });
     this.apiService.showLoadingView();
     const s = await this.staffService.getStaff();
-    this.showReturnTrip = s.BookType == StaffBookType.Self;
+    this.showReturnTrip = s && s.BookType == StaffBookType.Self;
     this.initFlightDays();
     this.initFlightCities();
     this.apiService.hideLoadingView();
@@ -177,7 +177,9 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.flyDate.enabled = true;
     this.flyDate.desc = "去程";
     this.flyDate.descPos = "top";
-    this.backDate = this.calendarService.generateDayModel(moment().add(4, "days"));
+    this.backDate = this.calendarService.generateDayModel(
+      moment().add(4, "days")
+    );
     this.backDate.hasToolTip = false;
     this.backDate.enabled = true;
     this.backDate.desc = "返程";
