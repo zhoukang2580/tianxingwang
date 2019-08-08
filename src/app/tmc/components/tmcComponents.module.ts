@@ -57,6 +57,7 @@ import { DayComponent } from "src/app/tmc/components/day/day.component";
   ],
   entryComponents: [
     AddcontactsModalComponent,
+    FilterPassengersPolicyComponent,
     SelectTrainStationModalComponent,
     SelectAirportsModalComponent,
     SearchApprovalComponent,

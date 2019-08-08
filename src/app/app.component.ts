@@ -95,7 +95,7 @@ export class AppComponent
     private flydayService: CalendarService,
     messageService: MessageService
   ) {
-    console.log = this.log;
+    // console.log = this.log;
     // console.log(this.router.config);
     this.message$ = messageService.getMessage();
     this.openSelectCity$ = flightService.getOpenCloseSelectCityPageSources();
