@@ -294,12 +294,17 @@ export class FlightService {
     this.apiService.hideLoadingView();
     if (s.tripType == TripType.returnTrip) {
       if (!this.router.routerState.snapshot.url.includes("flight-list")) {
-        this.navCtrl.back();
+        this.navCtrl.back({ animated: false });
       }
       this.router.navigate([AppHelper.getRoutePath("flight-list")]).then(_ => {
         this.setSearchFlightModel(s);
       });
     } else {
+      if (!this.router.routerState.snapshot.url.includes("search-flight")) {
+        this.navCtrl.back({
+          animated: false
+        });
+      }
       this.router
         .navigate([AppHelper.getRoutePath("search-flight")])
         .then(_ => {
@@ -378,11 +383,11 @@ export class FlightService {
     });
     this.setPassengerBookInfos(arr);
   }
-  async dismissTopOverlay(){
+  async dismissTopOverlay() {
     const t = await this.modalCtrl.getTop();
-      if (t) {
-        t.dismiss().catch(_ => 0);
-      }
+    if (t) {
+      t.dismiss().catch(_ => 0);
+    }
   }
   async dismissAllTopOverlays() {
     console.time("dismissAllTopOverlays");

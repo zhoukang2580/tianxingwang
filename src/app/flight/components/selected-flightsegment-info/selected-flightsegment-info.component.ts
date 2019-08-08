@@ -304,18 +304,18 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
       "this.router.routerState.snapshot.url " +
         this.router.routerState.snapshot.url
     );
-
-    this.flightService.setSearchFlightModel({
-      ...s,
-      FromCode: goflight.ToAirport,
-      ToCode: goflight.FromAirport,
-      ToAsAirport: s.FromAsAirport,
-      FromAsAirport: s.ToAsAirport,
-      fromCity: s.toCity,
-      toCity: s.fromCity,
-      Date: s.BackDate,
-      tripType: TripType.returnTrip
+    this.router.navigate([AppHelper.getRoutePath("flight-list")]).then(_ => {
+      this.flightService.setSearchFlightModel({
+        ...s,
+        FromCode: goflight.ToAirport,
+        ToCode: goflight.FromAirport,
+        ToAsAirport: s.FromAsAirport,
+        FromAsAirport: s.ToAsAirport,
+        fromCity: s.toCity,
+        toCity: s.fromCity,
+        Date: s.BackDate,
+        tripType: TripType.returnTrip
+      });
     });
-    this.router.navigate([AppHelper.getRoutePath("flight-list")]).then(_ => {});
   }
 }
