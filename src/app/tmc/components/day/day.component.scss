@@ -3,13 +3,14 @@
   flex-flow: column nowrap;
   align-items: center;
   justify-content: center;
-  padding: 0.5em;
-  height: 100%;
+  padding: 0.8em;
+  height: 3em;
   width: 100%;
   position: relative;
+  $toolTipWidth:7em;
   &.hasToolTip[toolTipPos="start"]::before {
     content: attr(toolTipMsg);
-    width: 5rem;
+    width: $toolTipWidth;
     height: 1.5rem;
     color: white;
     position: absolute;
@@ -27,7 +28,7 @@
   }
   &.hasToolTip[toolTipPos="center"]::before {
     content: attr(toolTipMsg);
-    width: 5rem;
+    width: $toolTipWidth;
     height: 1.5rem;
     color: white;
     position: absolute;
@@ -45,7 +46,7 @@
   }
   &.hasToolTip[toolTipPos="end"]::before {
     content: attr(toolTipMsg);
-    width: 5rem;
+    width: $toolTipWidth;
     height: 1.5rem;
     color: white;
     position: absolute;
@@ -81,11 +82,11 @@
   &.hasToolTip::before {
     z-index: 1000;
   }
-  .desc {
-    margin-left: auto;
-  }
   .dayoff {
     margin-right: auto;
+  }
+  .content.has-top-desc {
+    margin-top: 0.5em;
   }
   .content:not(.today) {
     font-size: 1.1rem;
@@ -94,6 +95,7 @@
     }
   }
   .top {
+    padding: 0 0.2em;
     position: absolute;
     left: 0;
     top: 0;

@@ -24,6 +24,12 @@ ion-grid {
       z-index: -1;
       font-family: serif;
     }
+    ion-row:first-child {
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 100;
+    }
   }
   ion-row ion-col {
     display: flex;
@@ -31,12 +37,12 @@ ion-grid {
     align-items: center;
   }
   ion-row:not(:first-child) ion-col {
-    border-right: 1px solid rgba(var(--ion-color-dark-rgb), 0.15);
-    border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.15);
     border-radius: 0;
-    &.not-enabled,
-    &.last-month-day {
+    &.not-enabled {
       background-color: rgba(var(--ion-color-dark-rgb), 0.15);
+    }
+    &.last-month-day {
+      visibility: collapse;
     }
     &[last-selected-day="true"] {
       border-top-right-radius: 4px;

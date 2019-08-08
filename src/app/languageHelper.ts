@@ -306,6 +306,9 @@ export class LanguageHelper {
   static getReturnTripTip() {
     return "返程";
   }
+  static  getRoundTripTip() {
+    return "往返";
+  }
   static getBackDateTip() {
     return "请选择返程日期";
   }

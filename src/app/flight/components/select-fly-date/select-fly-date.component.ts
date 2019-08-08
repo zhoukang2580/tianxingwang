@@ -58,12 +58,35 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
     private flightService: FlightService
   ) {}
   yms: AvailableDate[];
-  selectedDays: DayModel[] = [];
+  private _selectedDays: DayModel[] = [];
+  timeoutId: any;
+  set selectedDays(days: DayModel[]) {
+    this._selectedDays = days;
+    setTimeout(() => {
+      this._selectedDays.forEach(dt => {
+        dt.firstSelected = true;
+        dt.lastSelected = true;
+      });
+    }, 0);
+    clearTimeout(this.timeoutId);
+    this.timeoutId = setTimeout(() => {
+      this._selectedDays.forEach(dt => {
+        dt.firstSelected = true;
+        dt.lastSelected = true;
+        dt.hasToolTip = false;
+        dt.toolTipMsg = null;
+      });
+    }, 1300);
+  }
+  get selectedDays() {
+    return this._selectedDays;
+  }
   dayInfo1: any;
   dayInfo2: any;
   isMulti: boolean; // 是否多选
   multiSub = Subscription.EMPTY;
   selectedSub = Subscription.EMPTY;
+  delayBackTime = 200;
   ngOnDestroy() {
     this.multiSub.unsubscribe();
   }
@@ -89,7 +112,7 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
       }
     });
     setTimeout(() => {
-      this.yms = this.calendarService.generateCanlender(3);
+      this.yms = this.calendarService.generateCanlender(24);
     }, 5 * 1000);
     this.flightService.getSearchFlightModelSource().subscribe(s => {
       if (s) {
@@ -139,9 +162,12 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
     this.calendarService.showSelectFlyDatePage(false);
   }
   onDaySelected(d: DayModel) {
-    console.log("onDaySelected", d);
+    console.log("onDaySelected", d,this.selectedDays.length);
     if (!d.enabled) {
       AppHelper.toast(LanguageHelper.getSelectOtherFlyDayTip(), 1000, "middle");
+      return;
+    }
+    if (this.selectedDays.length >= 2) {
       return;
     }
     d.selected = true;
@@ -154,16 +180,35 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
       if (this.selectedDays.length) {
         if (d.timeStamp < this.selectedDays[0].timeStamp) {
           d.desc = LanguageHelper.getDepartureTip();
+          d.desc = LanguageHelper.getDepartureTip();
+          d.hasToolTip = true;
+          d.toolTipMsg = LanguageHelper.getSelectFlyBackDate();
           this.selectedDays = [d];
-          AppHelper.toast(LanguageHelper.getSelectFlyBackDate(), 1000, "top");
+          // AppHelper.toast(LanguageHelper.getSelectFlyBackDate(), 1000, "top");
         } else {
-          d.desc = LanguageHelper.getReturnTripTip();
+          d.firstSelected = true;
+          d.lastSelected = true;
+          d.descPos = "top";
+          d.desc =
+            d.timeStamp == this.selectedDays[0].timeStamp
+              ? LanguageHelper.getRoundTripTip()
+              : LanguageHelper.getReturnTripTip();
           this.selectedDays.push(d);
         }
       } else {
+        d.firstSelected = true;
+        d.lastSelected = true;
+        d.descPos = "top";
+        d.desc = LanguageHelper.getDepartureTip();
+        d.hasToolTip = true;
+        d.toolTipMsg = LanguageHelper.getSelectFlyBackDate();
         this.selectedDays = [d];
       }
     } else {
+      d.firstSelected = true;
+      d.lastSelected = true;
+      d.descPos = "top";
+      d.desc = LanguageHelper.getDepartureTip();
       this.selectedDays = [d];
     }
     this.yms.map(item => {
@@ -177,23 +222,25 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
           dt.firstSelected = false;
           if (!dt.selected) {
             dt.desc = null;
+            dt.descColor = null;
+            dt.descPos = null;
+            dt.hasToolTip = false;
+            dt.toolTipMsg = null;
           }
-          dt.descColor = null;
-          dt.descPos = null;
         });
     });
     if (!this.isMulti) {
       setTimeout(() => {
         this.cancel();
-      }, 200);
+      }, this.delayBackTime);
     } else {
-      if (this.selectedDays.length === 1) {
-        AppHelper.toast(LanguageHelper.getSelectFlyBackDate(), 1400, "top");
-      }
+      // if (this.selectedDays.length === 1) {
+      //   AppHelper.toast(LanguageHelper.getSelectFlyBackDate(), 1400, "top");
+      // }
       if (this.selectedDays.length === 2) {
         setTimeout(() => {
           this.cancel();
-        }, 200);
+        }, this.delayBackTime);
       }
     }
   }

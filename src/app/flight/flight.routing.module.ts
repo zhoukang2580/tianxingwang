@@ -4,11 +4,6 @@ import { TmcGuard } from "../guards/tmc.guard";
 import { FlightComponentsModule } from "./components/components.module";
 const routes: Routes = [
   {
-    path: "select-date",
-    loadChildren: "./select-date/select-date.module#SelectDatePageModule",
-    canActivate: [TmcGuard]
-  },
-  {
     path: "search-flight",
     loadChildren: "./search-flight/search-flight.module#SearchFlightPageModule",
     canActivate: [TmcGuard]
