@@ -381,7 +381,11 @@ export class BookPage implements OnInit, AfterViewInit {
     item.showFriendlyReminder = !item.showFriendlyReminder;
   }
   async onSelectTravelNumber(arg: TmcOutNumberInfo, item: ICombindInfo) {
-    if (!arg.canSelect) {
+    if (
+      !arg.canSelect ||
+      !arg.travelUrlInfos ||
+      arg.travelUrlInfos.length == 0
+    ) {
       return;
     }
     console.log("on select travel number", arg);
@@ -972,18 +976,18 @@ export class BookPage implements OnInit, AfterViewInit {
         combineInfo.addContacts = [];
         this.vmCombindInfos.push(combineInfo);
       }
-      if (!environment.production) {
-        if (!this.vmCombindInfos || this.vmCombindInfos.length == 0) {
-          this.vmCombindInfos = await this.storage.get(
-            "Flight-Book-Page-Mock-Data"
-          );
-        } else {
-          await this.storage.set(
-            "Flight-Book-Page-Mock-Data",
-            this.vmCombindInfos
-          );
-        }
-      }
+      // if (!environment.production) {
+      //   if (!this.vmCombindInfos || this.vmCombindInfos.length == 0) {
+      //     this.vmCombindInfos = await this.storage.get(
+      //       "Flight-Book-Page-Mock-Data"
+      //     );
+      //   } else {
+      //     await this.storage.set(
+      //       "Flight-Book-Page-Mock-Data",
+      //       this.vmCombindInfos
+      //     );
+      //   }
+      // }
     } catch (e) {
       console.error(e);
     }

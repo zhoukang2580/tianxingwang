@@ -228,7 +228,7 @@ export class AppComponent
       // this.router.navigate([AppHelper.getRoutePath('search-flight')]);
       // this.router.navigate([AppHelper.getRoutePath("select-customer")]);
       // this.router.navigate([AppHelper.getRoutePath("search-train")]);
-      this.router.navigate([AppHelper.getRoutePath("flight-book")]);
+      // this.router.navigate([AppHelper.getRoutePath("flight-book")]);
     });
   }
 
