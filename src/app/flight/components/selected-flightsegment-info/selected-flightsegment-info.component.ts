@@ -1,7 +1,5 @@
 import { CredentialsEntity } from "./../../../tmc/models/CredentialsEntity";
-import {
-  SearchFlightModel
-} from "./../../flight.service";
+import { SearchFlightModel } from "./../../flight.service";
 import { Observable, Subscription } from "rxjs";
 import { Router } from "@angular/router";
 import { CalendarService } from "../../../tmc/calendar.service";
@@ -14,9 +12,7 @@ import {
   AlertController,
   NavController
 } from "@ionic/angular";
-import {
-  FlightService
-} from "src/app/flight/flight.service";
+import { FlightService } from "src/app/flight/flight.service";
 import { FlightSegmentEntity } from "./../../models/flight/FlightSegmentEntity";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { LanguageHelper } from "src/app/languageHelper";
@@ -24,8 +20,11 @@ import * as moment from "moment";
 import { tap, map, reduce } from "rxjs/operators";
 import { SelectFlightsegmentCabinComponent } from "../select-flightsegment-cabin/select-flightsegment-cabin.component";
 import { TripType } from "src/app/tmc/models/TripType";
-import { PassengerBookInfo } from 'src/app/tmc/tmc.service';
-import { CurrentViewtFlightSegment, PassengerFlightSegmentInfo } from '../../models/PassengerFlightInfo';
+import { PassengerBookInfo } from "src/app/tmc/tmc.service";
+import {
+  CurrentViewtFlightSegment,
+  PassengerFlightSegmentInfo
+} from "../../models/PassengerFlightInfo";
 interface PassengerBookInfos {
   passenger: StaffEntity;
   credential: CredentialsEntity;
@@ -129,7 +128,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     return takofftime;
   }
   async nextStep() {
-    this.dismissTop();
+    this.flightService.dismissAllTopOverlays();
     this.router.navigate([AppHelper.getRoutePath("flight-book")]);
   }
   async reelect(info: PassengerBookInfo) {
@@ -188,6 +187,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
         }
       });
       m.backdropDismiss = false;
+      await this.flightService.dismissTopOverlay();
       await m.present();
       const result = await m.onDidDismiss();
       if (result.data) {
@@ -262,6 +262,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
 
   async onSelectReturnTrip() {
     console.log("onSelectReturnTrip");
+    await this.flightService.dismissAllTopOverlays();
     const s = this.flightService.getSearchFlightModel();
     const airports = await this.flightService.getAllLocalAirports();
     const bookInfos = this.flightService.getPassengerBookInfos();
@@ -293,10 +294,14 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
       backDay = goDay;
     }
     s.BackDate = backDay.format("YYYY-MM-DD");
-    await this.dismissTop();
-    if (!this.router.routerState.snapshot.url.includes("flight-list")) {
-      this.navCtrl.back();
-    }
+    this.flightService.dismissAllTopOverlays();
+    console.log(
+      "this.router.routerState.snapshot.url " +
+        this.router.routerState.snapshot.url
+    );
+    // if (!this.router.routerState.snapshot.url.includes("flight-list")) {
+    //   this.navCtrl.back();
+    // }
     this.router.navigate([AppHelper.getRoutePath("flight-list")]).then(_ => {
       this.flightService.setSearchFlightModel({
         ...s,
@@ -310,16 +315,5 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
         tripType: TripType.returnTrip
       });
     });
-  }
-  private async dismissTop() {
-    let top = await this.modalCtrl.getTop();
-    let i = 10;
-    while (top && --i > 0) {
-      console.log("onSelectReturnTrip", top);
-      await top.dismiss().catch(_ => {});
-      top = await this.modalCtrl.getTop();
-    }
-
-    return true;
   }
 }

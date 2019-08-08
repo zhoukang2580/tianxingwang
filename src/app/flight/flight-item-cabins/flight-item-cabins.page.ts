@@ -65,6 +65,9 @@ export class FlightItemCabinsPage implements OnInit {
       }
     });
   }
+  back() {
+    this.navCtrl.back();
+  }
   getMothDay() {
     const t =
       this.currentViewtFlightSegment &&
@@ -117,6 +120,7 @@ export class FlightItemCabinsPage implements OnInit {
     const modal = await this.modalCtrl.create({
       component: SelectedFlightsegmentInfoComponent
     });
+    await this.flightService.dismissAllTopOverlays();
     await modal.present();
     await modal.onDidDismiss();
     return "goBack";

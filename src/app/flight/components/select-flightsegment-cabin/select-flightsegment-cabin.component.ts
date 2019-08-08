@@ -2,7 +2,7 @@ import { FlightSegmentEntity } from "./../../models/flight/FlightSegmentEntity";
 import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 import { ModalController } from "@ionic/angular";
 import { TicketchangingComponent } from "../ticketchanging/ticketchanging.component";
-import { FlightPolicy } from '../../models/PassengerFlightInfo';
+import { FlightPolicy } from "../../models/PassengerFlightInfo";
 
 @Component({
   selector: "app-select-flightsegment-cabin",
@@ -14,7 +14,7 @@ export class SelectFlightsegmentCabinComponent implements OnInit {
   @Input() flightSegment: FlightSegmentEntity;
   @Output() selectcabin: EventEmitter<any>;
   constructor(private modalCtrl: ModalController) {
-    this.selectcabin=new EventEmitter();
+    this.selectcabin = new EventEmitter();
   }
   bookColor(cabin: any) {
     if (cabin && cabin.Rules) {
@@ -42,8 +42,8 @@ export class SelectFlightsegmentCabinComponent implements OnInit {
   async onBookTicket(cabin: any) {
     const t = await this.modalCtrl.getTop();
     if (t) {
-     this.selectcabin.emit(cabin);
-     await t.dismiss(cabin);
+      this.selectcabin.emit(cabin);
+      await t.dismiss(cabin);
     }
   }
 }
