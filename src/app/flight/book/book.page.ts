@@ -1,7 +1,7 @@
 import { AccountEntity } from "./../../tmc/models/AccountEntity";
 import { OrderBookDto } from "./../../order/models/OrderBookDto";
 import { AddcontactsModalComponent } from "../../tmc/components/addcontacts-modal/addcontacts-modal.component";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { InsuranceProductEntity } from "./../../insurance/models/InsuranceProductEntity";
 import { OrganizationComponent } from "../../tmc/components/organization/organization.component";
 import { CalendarService } from "../../tmc/calendar.service";
@@ -72,6 +72,7 @@ import { SearchCostcenterComponent } from "src/app/tmc/components/search-costcen
 import { SearchApprovalComponent } from "src/app/tmc/components/search-approval/search-approval.component";
 import { SelectTravelNumberComponent } from "src/app/tmc/components/select-travel-number-popover/select-travel-number-popover.component";
 import { PassengerFlightSegmentInfo } from "../models/PassengerFlightInfo";
+import { ProductItemType } from "src/app/tmc/models/ProductItems";
 interface TmcOutNumberInfo {
   key: string;
   label: string;
@@ -194,7 +195,8 @@ export class BookPage implements OnInit, AfterViewInit {
     private flydayService: CalendarService,
     private route: ActivatedRoute,
     private popoverCtrl: PopoverController,
-    private plt: Platform
+    private plt: Platform,
+    private router: Router
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -542,6 +544,11 @@ export class BookPage implements OnInit, AfterViewInit {
         .bookFlight(bookDto)
         .then(res => {
           console.log("下单成功：", res);
+          this.router.navigate([AppHelper.getRoutePath("product-tabs")], {
+            queryParams: {
+              tabId: ProductItemType.plane
+            }
+          });
         })
         .catch(e => {
           AppHelper.alert(e);
