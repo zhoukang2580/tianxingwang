@@ -637,12 +637,13 @@ export class BookPage implements OnInit, AfterViewInit {
       p.CardNumber = "";
       p.TicketNum = "";
       p.Credentials = new CredentialsEntity();
-
+      p.Credentials = { ...combindInfo.vmCredential };
       if (!combindInfo.vmCredential.Type) {
         showErrorMsg(LanguageHelper.getCredentialTypeTip(), combindInfo);
         return false;
       }
       p.Credentials.Type = combindInfo.vmCredential.Type;
+      p.Credentials.Gender = combindInfo.vmCredential.Gender;
       if (!combindInfo.vmCredential.Number) {
         showErrorMsg(LanguageHelper.getCredentialNumberTip(), combindInfo);
         return false;
@@ -740,7 +741,9 @@ export class BookPage implements OnInit, AfterViewInit {
       if (combindInfo.tmcOutNumberInfos) {
         p.OutNumbers = {};
         combindInfo.tmcOutNumberInfos.forEach(it => {
-          p.OutNumbers[it.key] = it.value;
+          if (it.value) {
+            p.OutNumbers[it.key] = it.value;
+          }
         });
       }
       if (!combindInfo.travelType) {
