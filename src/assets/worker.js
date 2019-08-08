@@ -35,6 +35,7 @@ self.addEventListener(
   },
   false
 );
+
 function generateFlightItem(s) {
   return `<div class='left'>
   <h4 class="time">

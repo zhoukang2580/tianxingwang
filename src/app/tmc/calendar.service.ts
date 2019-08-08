@@ -102,8 +102,7 @@ export class CalendarService {
   }
   generateCanlender(months: number) {
     const calender: AvailableDate[] = [];
-    let i = 0;
-    const loop = (isFirst = false) => {
+    for (let i = 0; i < months; i++) {
       const st = Date.now();
       const iM = moment().add(i, "months"); // 第i个月
       const item: AvailableDate = {
@@ -146,16 +145,8 @@ export class CalendarService {
         const dayOfiM = iM.startOf("month").date(j); // 每月的j号
         item.dayList.push(this.generateDayModel(dayOfiM));
       }
-      console.log(`第${i}个月日期生成耗时：${Date.now() - st} ms`);
-      i++;
-      if (!isFirst && i <= months - 1) {
-        window.requestAnimationFrame(() => loop(false));
-      }
-    };
-    // loop(true);
-    setTimeout(() => {
-      loop();
-    }, 0);
-    return calender;
+      // console.log(`第${i}个月日期生成耗时：${Date.now() - st} ms`);
+    }
+    return Promise.resolve(calender);
   }
 }

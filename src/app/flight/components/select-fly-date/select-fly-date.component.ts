@@ -60,6 +60,7 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
   yms: AvailableDate[];
   private _selectedDays: DayModel[] = [];
   timeoutId: any;
+  tripType: TripType;
   set selectedDays(days: DayModel[]) {
     this._selectedDays = days;
     setTimeout(() => {
@@ -111,11 +112,13 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
         };
       }
     });
-    setTimeout(() => {
-      this.yms = this.calendarService.generateCanlender(24);
+    setTimeout(async () => {
+      this.yms = await this.calendarService.generateCanlender(24);
     }, 5 * 1000);
     this.flightService.getSearchFlightModelSource().subscribe(s => {
       if (s) {
+        this.tripType = s.tripType;
+        this.isMulti = s.isRoundTrip;
         if (s.tripType == TripType.returnTrip) {
           const goFlight = this.flightService
             .getPassengerBookInfos()
@@ -162,7 +165,14 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
     this.calendarService.showSelectFlyDatePage(false);
   }
   onDaySelected(d: DayModel) {
-    console.log("onDaySelected", d,this.selectedDays.length);
+    console.log(
+      "onDaySelected",
+      d,
+      this.selectedDays.length,
+      this.tripType,
+      "this.isMulti",
+      this.isMulti
+    );
     if (!d.enabled) {
       AppHelper.toast(LanguageHelper.getSelectOtherFlyDayTip(), 1000, "middle");
       return;
@@ -199,9 +209,15 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
         d.firstSelected = true;
         d.lastSelected = true;
         d.descPos = "top";
-        d.desc = LanguageHelper.getDepartureTip();
-        d.hasToolTip = true;
-        d.toolTipMsg = LanguageHelper.getSelectFlyBackDate();
+        if (this.tripType == TripType.returnTrip) {
+          d.desc = LanguageHelper.getReturnTripTip();
+          d.hasToolTip = false;
+          d.toolTipMsg = null;
+        } else {
+          d.desc = LanguageHelper.getDepartureTip();
+          d.hasToolTip = true;
+          d.toolTipMsg = LanguageHelper.getSelectFlyBackDate();
+        }
         this.selectedDays = [d];
       }
     } else {

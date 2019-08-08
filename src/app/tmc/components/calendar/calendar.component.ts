@@ -13,10 +13,10 @@ export class CalendarComponent implements OnInit {
   weeks: string[];
   constructor(private calendarService: CalendarService) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     const w = this.calendarService.getDayOfWeekNames();
     this.weeks = Object.keys(w).map(k => w[k]);
-    this.calendars = this.calendarService.generateCanlender(12);
+    this.calendars = await this.calendarService.generateCanlender(12);
   }
   getMonth(ym: string) {
     if (!ym) {
