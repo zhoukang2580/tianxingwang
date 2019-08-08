@@ -1,7 +1,9 @@
 <ion-header text-center>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <ion-back-button (click)='back()'></ion-back-button>
+      <ion-button (click)='back()'>
+        <ion-icon color='dark' name='arrow-back'></ion-icon>
+      </ion-button>
     </ion-buttons>
     <ion-title color='secondary' [attr.text-start]='showAddPassenger' [attr.text-center]='!showAddPassenger'>
       <ion-text>{{vmFromCity?.CityName}}</ion-text>
@@ -45,9 +47,7 @@
 </ion-header>
 <ion-content #cnt>
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh(true,false)" pullFactor="0.8" pullMin="100" pullMax="200">
-    <!-- <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="下拉刷新" refreshingSpinner="circles"
-      refreshingText="正在加载...">
-    </ion-refresher-content> -->
+
   </ion-refresher>
   <app-or-comp *ngIf='isLoading'>
     <span>数据即将加载完成</span>
@@ -55,66 +55,9 @@
   <app-or-comp *ngIf='!isLoading&&vmFlights?.length==0'>
     <span>暂无数据</span>
   </app-or-comp>
-  <!-- <ion-list *ngIf='!isLoading else fakeList'>
-    <ion-item *ngFor='let s of vmFlights' detail (click)="goToFlightCabinsDetails(s)">
-      <app-fly-list-item [flightSegment]="s">
-      </app-fly-list-item>
-    </ion-item>
-  </ion-list> -->
-  <!-- <ion-list>
-      <div class='fly-item' #flyItem *ngFor='let s of vmFlights' detail (click)="goToFlightCabinsDetails(s)">
-        <div class='row'>
-          <strong>{{s.TakeoffTime}}</strong>---{{s.IsStop ? "经停" : "直飞"}}---<strong>{{s.ArrivalTime}}</strong>
-        </div>
-        <div class='airports'>
-          <span>{{s.FromAirportName}}({{s.FromTerminal}})</span>
-            <span>{{s.ToAirportName}}({{s.ToTerminal}})</span>
-        </div>
-        <div class='desc'>
-          <img [src]='s.AirlineSrc' class='airlinesrc' />
-          <label>{{s.AirlineName}}</label>
-          <label>|{{s.Number}}</label>
-          <label>|{{s.PlaneType}}</label>
-          <label>|共享{{s.CodeShareNumber}}</label>
-        </div>
-        <div class='price'>￥{{s.LowestFare}}</div>
-      </div>
-  </ion-list> -->
-  <!-- <ion-list>
-    <ion-item *ngFor='let s of vmFlights' #flyItem detail (click)="goToFlightCabinsDetails(s)">
-      <app-fly-list-item [flightSegment]="s">
-      </app-fly-list-item>
-    </ion-item>
-  </ion-list> -->
+
 
   <ul #list class='flight'>
-    <!-- <li *ngFor='let s of vmFlights;' #flyItem detail (click)="goToFlightCabinsDetails(s)">
-      <div class='info'>
-        <ion-row>
-          <ion-col size='9'>
-            <h4 class='time'>
-              <strong>{{s?.TakeoffTime.substring("2018-10-22T".length,"2018-10-22T21:20".length)}}</strong>
-              <span class='line'>-----&nbsp;{{s?.IsStop ? "经停" : "直飞"}}&nbsp;-----</span>
-              <strong>{{s?.ArrivalTime.substring("2018-10-22T".length,"2018-10-22T21:20".length)}}</strong>
-            </h4>
-            <h5 class='airports'>
-              <span>{{s?.FromAirportName}}({{s?.FromTerminal}})</span>
-              <span>{{s?.ToAirportName}}({{s?.ToTerminal}})</span>
-            </h5>
-            <div class='desc'>
-              <ion-img [src]='s?.AirlineSrc' class='airlinesrc'></ion-img>
-              <label>{{s?.AirlineName}}</label>
-              <label>|{{s?.Number}}</label>
-              <label>|{{s?.PlaneType}}</label>
-              <ion-text color='secondary' *ngIf='s?.CodeShareNumber'>|共享{{s?.CodeShareNumber}}</ion-text>
-            </div>
-          </ion-col>
-          <ion-col size='3' class='price'>
-            ￥{{s?.LowestFare}}
-          </ion-col>
-        </ion-row>
-      </div>
-    </li> -->
   </ul>
   <ng-container #fakeList *ngIf='isLoading'>
     <ion-list>

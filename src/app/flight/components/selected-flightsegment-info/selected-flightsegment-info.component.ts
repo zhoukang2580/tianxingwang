@@ -262,11 +262,6 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
 
   async onSelectReturnTrip() {
     console.log("onSelectReturnTrip");
-    if (!this.router.routerState.snapshot.url.includes("flight-list")) {
-      this.navCtrl.back({
-        animated: false
-      });
-    }
     await this.flightService.dismissAllTopOverlays();
     const s = this.flightService.getSearchFlightModel();
     const airports = await this.flightService.getAllLocalAirports();
@@ -300,10 +295,6 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     }
     s.BackDate = backDay.format("YYYY-MM-DD");
     this.flightService.dismissAllTopOverlays();
-    console.log(
-      "this.router.routerState.snapshot.url " +
-        this.router.routerState.snapshot.url
-    );
     this.router.navigate([AppHelper.getRoutePath("flight-list")]).then(_ => {
       this.flightService.setSearchFlightModel({
         ...s,

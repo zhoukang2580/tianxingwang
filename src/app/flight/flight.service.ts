@@ -293,9 +293,6 @@ export class FlightService {
     await this.dismissAllTopOverlays();
     this.apiService.hideLoadingView();
     if (s.tripType == TripType.returnTrip) {
-      if (!this.router.routerState.snapshot.url.includes("flight-list")) {
-        this.navCtrl.back({ animated: false });
-      }
       this.router.navigate([AppHelper.getRoutePath("flight-list")]).then(_ => {
         this.setSearchFlightModel(s);
       });
