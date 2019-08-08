@@ -30,7 +30,13 @@ import { LanguageHelper } from "./languageHelper";
 import { WechatHelper } from "./wechatHelper";
 import { Observable } from "rxjs";
 import { ApiService } from "./services/api/api.service";
-import { trigger, style, state, transition, animate } from "@angular/animations";
+import {
+  trigger,
+  style,
+  state,
+  transition,
+  animate
+} from "@angular/animations";
 export interface App {
   loadUrl: (
     url: string,
@@ -89,6 +95,7 @@ export class AppComponent
     private flydayService: CalendarService,
     messageService: MessageService
   ) {
+    console.log = this.log;
     // console.log(this.router.config);
     this.message$ = messageService.getMessage();
     this.openSelectCity$ = flightService.getOpenCloseSelectCityPageSources();
@@ -122,12 +129,11 @@ export class AppComponent
   ngOnChanges() {
     console.log("ngOnChanges", this.images);
   }
+  log(message?: any, ...optionalParams: any[]) {
+    console.info(message, optionalParams);
+  }
   ngAfterViewInit() {
     this.splashScreen.hide();
-    console.log(
-      `白屏时间：${window.performance.timing.domComplete -
-        window.performance.timeOrigin}`
-    );
   }
   ngAfterContentInit() {
     console.log(this.images);

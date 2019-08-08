@@ -322,6 +322,12 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
       this.moveDayToSearchDate();
+      if (this.list) {
+        this.list.nativeElement.innerHTML = "";
+      }
+      if (this.refresher) {
+        this.refresher.complete();
+      }
       this.apiService.showLoadingView();
       if (!keepSearchCondition) {
         if (this.filterComp) {
@@ -367,9 +373,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.vmFlights = segments;
       await this.renderFlightList2(segments);
       this.hasDataSource.next(!!this.vmFlights.length && !this.isLoading);
-      if (this.refresher) {
-        this.refresher.complete();
-      }
       this.apiService.hideLoadingView();
       this.isLoading = false;
     } catch (e) {
