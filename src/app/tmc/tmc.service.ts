@@ -21,7 +21,7 @@ import { Storage } from "@ionic/storage";
 import * as jsPy from "js-pinyin";
 import { OrderModel } from "../order/models/OrderModel";
 import { OrderService } from "../order/order.service";
-import { PassengerFlightSegmentInfo } from '../flight/models/PassengerFlightInfo';
+import { PassengerFlightSegmentInfo } from "../flight/models/PassengerFlightInfo";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -41,16 +41,10 @@ export enum FlightHotelTrainType {
   providedIn: "root"
 })
 export class TmcService {
-  private localInternationAirports: LocalStorageAirport = {
-    LastUpdateTime: 0,
-    Trafficlines: []
-  };
+  private localInternationAirports: LocalStorageAirport;
   emailTemplateSelectItemList: SelectItem[] = [];
   mobileTemplateSelectItemList: SelectItem[] = [];
-  private localDomesticAirports: LocalStorageAirport = {
-    LastUpdateTime: 0,
-    Trafficlines: []
-  };
+  private localDomesticAirports: LocalStorageAirport;
   private selectedCompanySource: BehaviorSubject<string>;
   private companies: GroupCompanyEntity[];
   private tmc: TmcEntity;
@@ -357,36 +351,6 @@ export class TmcService {
     req.Timeout = 60;
     return this.apiService.getPromiseData<StaffEntity[]>(req);
   }
-  async getLocalHomeAirports(): Promise<TrafficlineEntity[]> {
-    if (
-      this.localDomesticAirports &&
-      this.localDomesticAirports.Trafficlines.length
-    ) {
-      return Promise.resolve(this.localDomesticAirports.Trafficlines);
-    }
-    return (
-      (await this.storage.get(KEY_HOME_AIRPORTS)) ||
-      ({
-        LastUpdateTime: 0,
-        Trafficlines: []
-      } as LocalStorageAirport)
-    ).TrafficlineEntitys;
-  }
-  async getLocalInternationalAirports(): Promise<TrafficlineEntity[]> {
-    if (
-      this.localInternationAirports &&
-      this.localInternationAirports.Trafficlines.length
-    ) {
-      return Promise.resolve(this.localInternationAirports.Trafficlines);
-    }
-    return (
-      (await this.storage.get(KEY_INTERNATIONAL_AIRPORTS)) ||
-      ({
-        LastUpdateTime: 0,
-        Trafficlines: []
-      } as LocalStorageAirport)
-    ).TrafficlineEntitys;
-  }
   async getAllLocalAirports(forceFetch = false) {
     if (!forceFetch && this.allLocalAirports && this.allLocalAirports.length) {
       return Promise.resolve(this.allLocalAirports);
@@ -500,11 +464,13 @@ export class TmcService {
       );
       this.localInternationAirports.Trafficlines = local.Trafficlines;
       st = window.performance.now();
-      await this.storage.set(
-        KEY_INTERNATIONAL_AIRPORTS,
-        this.localInternationAirports
-      );
-      console.log(`本地化国际机票耗时：${window.performance.now() - st} ms`);
+      this.storage
+        .set(KEY_INTERNATIONAL_AIRPORTS, this.localInternationAirports)
+        .then(_ => {
+          console.log(
+            `本地化国际机票耗时：${window.performance.now() - st} ms`
+          );
+        });
     }
     return local.Trafficlines;
   }

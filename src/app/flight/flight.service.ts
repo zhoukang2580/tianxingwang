@@ -20,7 +20,11 @@ import { LanguageHelper } from "../languageHelper";
 import { Router } from "@angular/router";
 import { TripType } from "../tmc/models/TripType";
 import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
-import { CurrentViewtFlightSegment, PassengerPolicyFlights, FlightPolicy } from './models/PassengerFlightInfo';
+import {
+  CurrentViewtFlightSegment,
+  PassengerPolicyFlights,
+  FlightPolicy
+} from "./models/PassengerFlightInfo";
 
 export class SearchFlightModel {
   BackDate: string; //  Yes 航班日期（yyyy-MM-dd）
@@ -657,10 +661,10 @@ export class FlightService {
     return serverFlights;
   }
   async getLocalHomeAirports(): Promise<TrafficlineEntity[]> {
-    return this.tmcService.getLocalHomeAirports();
+    return this.getDomesticAirports();
   }
   async getLocalInternationalAirports(): Promise<TrafficlineEntity[]> {
-    return this.tmcService.getLocalInternationalAirports();
+    return this.getInternationalAirports();
   }
   async getAllLocalAirports() {
     return this.tmcService.getAllLocalAirports();
