@@ -149,13 +149,15 @@ export class FlightItemCabinsPage implements OnInit {
     return "primary";
   }
   async ngOnInit() {
-    if (await this.staffService.checkStaffTypeSelf()) {
-      this.isShowPolicyCabins = true;
-      this.showPolicyCabins();
-    } else {
-      this.isShowPolicyCabins = false;
-      this.showFlightCabins();
-    }
+    setTimeout(async() => {
+      if (await this.staffService.checkStaffTypeSelf()) {
+        this.isShowPolicyCabins = true;
+        this.showPolicyCabins();
+      } else {
+        this.isShowPolicyCabins = false;
+        this.showFlightCabins();
+      }
+    }, 200);
   }
   private showPolicyCabins() {
     this.vmPolicyCabins = [];

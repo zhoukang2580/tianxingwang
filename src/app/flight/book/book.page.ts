@@ -202,7 +202,9 @@ export class BookPage implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.route.queryParamMap.subscribe(p => {
-      this.refresh();
+      setTimeout(() => {
+        this.refresh();
+      }, 200);
     });
   }
   private async initOrderTravelPayTypes() {
