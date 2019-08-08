@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, Output, EventEmitter,Input } from "@angular/core";
 import { AvailableDate } from "../../models/AvailableDate";
 import { CalendarService } from "../../calendar.service";
 import { DayModel } from "../../models/DayModel";
@@ -9,14 +9,21 @@ import { DayModel } from "../../models/DayModel";
   styleUrls: ["./calendar.component.scss"]
 })
 export class CalendarComponent implements OnInit {
-  calendars: AvailableDate[];
+  @Input()calendars: AvailableDate[];
   weeks: string[];
-  constructor(private calendarService: CalendarService) {}
-
+  @Output() back: EventEmitter<any>;
+  @Output() daySelected: EventEmitter<any>;
+  constructor(private calendarService: CalendarService) {
+    this.back = new EventEmitter();
+    this.daySelected = new EventEmitter();
+  }
+  cancel() {
+    this.back.emit();
+  }
   async ngOnInit() {
     const w = this.calendarService.getDayOfWeekNames();
     this.weeks = Object.keys(w).map(k => w[k]);
-    this.calendars = await this.calendarService.generateCanlender(12);
+    // this.calendars = await this.calendarService.generateCanlender(12);
   }
   getMonth(ym: string) {
     if (!ym) {
@@ -36,5 +43,6 @@ export class CalendarComponent implements OnInit {
         d.selected = d.date == day.date;
       });
     });
+    this.daySelected.emit(day);
   }
 }

@@ -30,18 +30,13 @@ ion-toolbar.seg {
   --background: white;
 }
 
-// :host {
-//   position: fixed;
-//   height: 100vh;
-//   top: 0;
-//   width: 100vw;
-//   --background: white;
-//   background: white;
-//   bottom: 0;
-//   left: 0;
-//   right: 0;
-//   z-index: 1000;
-// }
+:host {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
 
 ion-content {
   // ion-spinner{

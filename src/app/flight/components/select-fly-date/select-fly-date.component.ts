@@ -28,31 +28,6 @@ import { TripType } from "src/app/tmc/models/TripType";
   ]
 })
 export class SelectFlyDateComponent implements OnInit, OnDestroy {
-  wks: { week: string; color?: string }[] = [
-    {
-      week: LanguageHelper.getSundayTip(),
-      color: "danger"
-    },
-    {
-      week: LanguageHelper.getMondayTip()
-    },
-    {
-      week: LanguageHelper.getTuesdayTip()
-    },
-    {
-      week: LanguageHelper.getWednesdayTip()
-    },
-    {
-      week: LanguageHelper.getThursdayTip()
-    },
-    {
-      week: LanguageHelper.getFridayTip()
-    },
-    {
-      week: LanguageHelper.getSaturdayTip(),
-      color: "danger"
-    }
-  ];
   constructor(
     private calendarService: CalendarService,
     private flightService: FlightService
@@ -225,6 +200,11 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
       d.lastSelected = true;
       d.descPos = "top";
       d.desc = LanguageHelper.getDepartureTip();
+      if (this.tripType == TripType.returnTrip) {
+        d.desc = LanguageHelper.getReturnTripTip();
+        d.hasToolTip = false;
+        d.toolTipMsg = null;
+      }
       this.selectedDays = [d];
     }
     this.yms.map(item => {

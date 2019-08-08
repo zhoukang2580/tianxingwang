@@ -1,5 +1,10 @@
 <ion-header>
-  <ion-toolbar>日历</ion-toolbar>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" color='secondary' (click)="cancel()">取消</ion-button>
+    </ion-buttons>
+    <ion-title text-center>日历</ion-title>
+  </ion-toolbar>
   <ion-grid class='weeks'>
     <ion-row>
       <ion-col *ngFor='let w of weeks' size='{{12/7}}'>{{w}}</ion-col>
@@ -12,8 +17,10 @@
       <ion-col>{{ym.yearMonth}}</ion-col>
     </ion-row>
     <ion-row>
-      <ion-col *ngFor='let day of ym.dayList' size='{{12/7}}' class='day' [class.active]='day.selected'
-        [class.today]='day.isToday'>
+      <ion-col text-center *ngFor='let day of ym.dayList' size='{{12/7}}' class='day' [class.active]='day.selected'
+        [class.selected]="day?.selected" [class.today]='day?.isToday' [class.between-selected-days]='day?.isBetweenDays'
+        [attr.first-selected-day]='day?.firstSelected' [attr.last-selected-day]='day?.lastSelected'
+        [class.last-month-day]="day?.isLastMonthDay" [class.not-enabled]='!(day?.enabled)' [class.today]='day.isToday'>
         <app-day [dayModel]='day' (daySelected)='onDaySelected(day)'></app-day>
       </ion-col>
     </ion-row>

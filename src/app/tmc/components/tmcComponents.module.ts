@@ -53,7 +53,8 @@ import { DayComponent } from "src/app/tmc/components/day/day.component";
     BookCostcenterCompComponent,
     BookOrganizationCompComponent,
     BookAddcontactsCompComponent,
-    DayComponent
+    DayComponent,
+    CalendarComponent
   ],
   entryComponents: [
     AddcontactsModalComponent,
