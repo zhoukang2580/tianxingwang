@@ -174,8 +174,8 @@ export class BookPage implements OnInit, AfterViewInit {
   credentialStaffs: StaffEntity[] = [];
   private settingApprovalStaffs: StaffEntity[];
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
-  @ViewChild("illegalReasonsEle", { read: ElementRef })
-  illegalReasonsEle: ElementRef<HTMLElement>;
+  @ViewChildren("illegalReasonsEle", { read: ElementRef })
+  illegalReasonsEles: QueryList<ElementRef<HTMLElement>>;
   @ViewChild(IonContent) private cnt: IonContent;
   appoval: {
     Value: string;
@@ -727,7 +727,7 @@ export class BookPage implements OnInit, AfterViewInit {
             LanguageHelper.Flight.getIllegalReasonTip(),
             combindInfo
           );
-          this.moveRequiredEleToViewPort(this.illegalReasonsEle);
+          this.moveRequiredEleToViewPort(this.illegalReasonsEles.first);
           return false;
         }
       }

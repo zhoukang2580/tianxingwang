@@ -30,7 +30,7 @@ ion-toolbar.seg {
   --background: white;
 }
 
-:host {
+:host.show {
   position: absolute;
   top: 0;
   left: 0;
