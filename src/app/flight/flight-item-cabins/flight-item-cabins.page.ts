@@ -176,7 +176,7 @@ export class FlightItemCabinsPage implements OnInit {
       };
       setTimeout(() => {
         loop();
-      }, 500);
+      }, 0);
     }
   }
   private showFlightCabins() {

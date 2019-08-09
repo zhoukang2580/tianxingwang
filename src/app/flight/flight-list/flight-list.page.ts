@@ -392,7 +392,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         }
         this.isLoading = false;
       }
-    }, 1000);
+    }, 0);
   }
   private scrollToTop() {
     setTimeout(() => {
