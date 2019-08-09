@@ -323,6 +323,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     passengerId?: string,
     filterPolicy?: boolean
   ) {
+    this.moveDayToSearchDate();
     if (this.timeoutid) {
       clearTimeout(this.timeoutid);
     }
@@ -391,7 +392,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         }
         this.isLoading = false;
       }
-    }, 0);
+    }, 1000);
   }
   private scrollToTop() {
     setTimeout(() => {
