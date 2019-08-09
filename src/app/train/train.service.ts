@@ -1,3 +1,5 @@
+import { IdentityService } from "./../services/identity/identity.service";
+import { StaffService } from "./../hr/staff.service";
 import { Subject, BehaviorSubject } from "rxjs";
 import { ApiService } from "src/app/services/api/api.service";
 import { Injectable } from "@angular/core";
@@ -9,6 +11,8 @@ import { StaffEntity } from "../hr/staff.service";
 import { CredentialsEntity } from "../tmc/models/CredentialsEntity";
 import { Storage } from "@ionic/storage";
 import * as jsPy from "js-pinyin";
+import { PassengerBookInfo, TmcService } from "../tmc/tmc.service";
+import { CredentialsType } from "../member/pipe/credential.pipe";
 const KEY_TRAIN_TRAFFICLINES_DATA = "train-traficlines-data";
 export class SearchTrainModel {
   TrainCode: string;
@@ -37,15 +41,63 @@ export class TrainService {
     lastUpdateTime: 0,
     TrafficLines: []
   };
+  private selfCredentials: CredentialsEntity[];
   private searchModel: SearchTrainModel;
   private selectedStationSource: Subject<ISelectedStation>;
-  private bookInfos: TrainBookInfo[] = [];
-  private bookInfoSource: Subject<TrainBookInfo[]>;
+  private bookInfos: PassengerBookInfo[] = [];
+  private bookInfoSource: Subject<PassengerBookInfo[]>;
   private searchModelSource: Subject<SearchTrainModel>;
-  constructor(private apiService: ApiService, private storage: Storage) {
+  private currentViewtTainItem: TrainEntity;
+  constructor(
+    private apiService: ApiService,
+    private storage: Storage,
+    private staffService: StaffService,
+    private tmcService: TmcService,
+    private identityService: IdentityService
+  ) {
     this.bookInfoSource = new BehaviorSubject([]);
     this.searchModelSource = new BehaviorSubject(new SearchTrainModel());
     this.selectedStationSource = new BehaviorSubject(null);
+    this.bookInfoSource.subscribe(infos => {
+      this.initSelfBookTypeBookInfos(infos);
+    });
+    identityService.getIdentity().subscribe(res => {
+      if (!res || !res.Ticket || !res.Id) {
+        this.disposal();
+      }
+    });
+  }
+  disposal() {
+    this.setSearchTrainModel(new SearchTrainModel());
+    this.setBookInfoSource([]);
+    this.currentViewtTainItem = null;
+    this.selfCredentials = null;
+  }
+  async initSelfBookTypeBookInfos(infos: PassengerBookInfo[]) {
+    if (infos.length === 0) {
+      let IdCredential: CredentialsEntity;
+      if (this.staffService.isSelfBookType) {
+        const staff = await this.staffService.getStaff();
+        if (!this.selfCredentials || this.selfCredentials.length === 0) {
+          const res = await this.tmcService
+            .getPassengerCredentials([staff.AccountId])
+            .catch(_ => ({ [staff.AccountId]: [] }));
+          this.selfCredentials = res[staff.AccountId];
+        }
+        IdCredential =
+          this.selfCredentials &&
+          this.selfCredentials.find(c => c.Type == CredentialsType.IdCard);
+        this.addBookInfo({
+          passenger: staff,
+          credential:
+            IdCredential ||
+            (this.selfCredentials &&
+              this.selfCredentials.length &&
+              this.selfCredentials[1]) ||
+            new CredentialsEntity()
+        });
+      }
+    }
   }
   setSelectedStation(station: ISelectedStation) {
     this.selectedStationSource.next(station);
@@ -63,7 +115,7 @@ export class TrainService {
     this.searchModel = m || new SearchTrainModel();
     this.searchModelSource.next(this.searchModel);
   }
-  addBookInfo(arg: TrainBookInfo) {
+  addBookInfo(arg: PassengerBookInfo) {
     this.bookInfos.push(arg);
     this.setBookInfoSource(this.bookInfos);
   }
@@ -117,7 +169,7 @@ export class TrainService {
     };
     return this.localTrafficLine.TrafficLines;
   }
-  private setBookInfoSource(infos: TrainBookInfo[]) {
+  private setBookInfoSource(infos: PassengerBookInfo[]) {
     this.bookInfos = infos || [];
     this.bookInfoSource.next(this.bookInfos);
   }
@@ -127,7 +179,7 @@ export class TrainService {
   getBookInfoSource() {
     return this.bookInfoSource.asObservable();
   }
-  removeBookInfo(info: TrainBookInfo) {
+  removeBookInfo(info: PassengerBookInfo) {
     this.bookInfos = this.bookInfos.filter(item => item.id != info.id);
     this.setBookInfoSource(this.bookInfos);
   }
@@ -208,14 +260,6 @@ export interface ITrainInfo {
   tripType?: TripType;
   id?: string;
   isLowerSegmentSelected?: boolean;
-}
-export interface TrainBookInfo {
-  passenger: StaffEntity;
-  credential: CredentialsEntity;
-  isNotWhitelist?: boolean;
-  trainInfo?: ITrainInfo;
-  id?: string;
-  isReplace?: boolean;
 }
 export class TrainPolicyModel {
   /// <summary>

@@ -89,6 +89,7 @@ export class FlightService {
     this.openCloseSelectCitySources.next(false);
     this.setSelectedCity(null);
     this.currentViewtFlightSegment = null;
+    this.selfCredentials = null;
   }
 
   getCurrentViewtFlightSegment() {
@@ -297,8 +298,7 @@ export class FlightService {
       this.router.navigate([AppHelper.getRoutePath("flight-list")]);
     } else {
       this.setSearchFlightModel(s);
-      this.router
-        .navigate([AppHelper.getRoutePath("search-flight")]);
+      this.router.navigate([AppHelper.getRoutePath("search-flight")]);
     }
   }
   private async reselectNotSelfBookTypeSegments(arg: PassengerBookInfo) {
@@ -384,7 +384,7 @@ export class FlightService {
     let i = 10;
     while (top && --i > 0) {
       // console.log("onSelectReturnTrip", top);
-      await top.dismiss().catch(_ => { });
+      await top.dismiss().catch(_ => {});
       top = await this.modalCtrl.getTop();
     }
     console.timeEnd("dismissAllTopOverlays");
@@ -394,7 +394,7 @@ export class FlightService {
     this.passengerBookInfos = [];
     this.setPassengerBookInfos(this.getPassengerBookInfos());
   }
-  removeOneBookInfoFromSelfBookType() { }
+  removeOneBookInfoFromSelfBookType() {}
   async addOneBookInfoToSelfBookType() {
     let IdCredential: CredentialsEntity;
     const staff = await this.staffService.getStaff();

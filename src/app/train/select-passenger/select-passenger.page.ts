@@ -1,6 +1,6 @@
-import { TrainService, TrainBookInfo } from './../train.service';
+import { TrainService } from "./../train.service";
 import { CredentialsEntity } from "./../../tmc/models/CredentialsEntity";
-import { TmcService } from "./../../tmc/tmc.service";
+import { TmcService, PassengerBookInfo } from "./../../tmc/tmc.service";
 import { AccountEntity } from "./../../tmc/models/AccountEntity";
 import { MemberService, MemberCredential } from "./../../member/member.service";
 import { CanComponentDeactivate } from "./../../guards/candeactivate.guard";
@@ -17,6 +17,7 @@ import {
   QueryList,
   NgZone,
   Renderer2,
+  EventEmitter
 } from "@angular/core";
 import {
   IonInfiniteScroll,
@@ -24,7 +25,7 @@ import {
   NavController,
   ModalController,
   IonGrid,
-  DomController,
+  DomController
 } from "@ionic/angular";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { StaffEntity } from "src/app/hr/staff.service";
@@ -32,7 +33,7 @@ import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { LanguageHelper } from "src/app/languageHelper";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
-import { Country } from "src/app/pages/select-country/select-country.page";
+import { Country } from "src/app/tmc/components/select-country/select-country.page";
 import { AppHelper } from "src/app/appHelper";
 import { ValidatorService } from "src/app/services/validator/validator.service";
 import * as moment from "moment";
@@ -43,7 +44,7 @@ import {
   transition,
   animate
 } from "@angular/animations";
-import { SelectedPassengersComponent } from "../components/selected-passengers/selected-passengers.component";
+import { SelectedPassengersComponent } from "src/app/tmc/components/selected-passengers/selected-passengers.component";
 export const NOT_WHITE_LIST = "notwhitelist";
 @Component({
   selector: "app-select-passenger",
@@ -59,7 +60,7 @@ export const NOT_WHITE_LIST = "notwhitelist";
 })
 export class SelectPassengerPage
   implements OnInit, CanComponentDeactivate, AfterViewInit {
-  bookInfos: TrainBookInfo[];
+  bookInfos: PassengerBookInfo[];
   vmKeyword: string;
   isShowNewCredential = false;
   credentialsRemarks: { key: string; value: string }[];
@@ -99,7 +100,7 @@ export class SelectPassengerPage
     private domCtrl: DomController,
     private renderer2: Renderer2,
     private ngZone: NgZone,
-    private trainService:TrainService,
+    private trainService: TrainService,
     private tmcService: TmcService
   ) {
     this.selectedPasengers$ = trainService
@@ -193,10 +194,20 @@ export class SelectPassengerPage
     return can;
   }
   async onShow() {
+    const removeitem: EventEmitter<PassengerBookInfo> = new EventEmitter();
     const m = await this.modalController.create({
-      component: SelectedPassengersComponent
+      component: SelectedPassengersComponent,
+      componentProps: {
+        bookInfos$: this.trainService.getBookInfoSource(),
+        removeitem
+      }
+    });
+    const sub = removeitem.subscribe(info => {
+      this.trainService.removeBookInfo(info);
     });
     await m.present();
+    await m.onDidDismiss();
+    sub.unsubscribe();
   }
   doRefresh(keyword) {
     this.domCtrl.write(_ => {
@@ -286,9 +297,7 @@ export class SelectPassengerPage
     this.selectedCredentialId = credentialId;
   }
   async checkCanAddMore() {
-    const arr = this.trainService
-      .getBookInfos()
-      .map(item => item.passenger);
+    const arr = this.trainService.getBookInfos().map(item => item.passenger);
     if (await this.staffService.checkStaffTypeSelf()) {
       if (arr.length > 1) {
         return false;
@@ -365,7 +374,7 @@ export class SelectPassengerPage
       );
       return;
     }
-    const bookInfo: TrainBookInfo = {
+    const bookInfo: PassengerBookInfo = {
       credential: ({
         ...selectedCredential
       } as any) as CredentialsEntity,

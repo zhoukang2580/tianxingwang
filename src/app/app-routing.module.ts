@@ -22,11 +22,6 @@ const routes: Routes = [
     loadChildren: "./pages/crop-avatar/crop-avatar.module#CropAvatarPageModule"
   },
   {
-    path: "select-country",
-    loadChildren:
-      "./pages/select-country/select-country.module#SelectCountryPageModule"
-  },
-  {
     path: "function-test",
     loadChildren:
       "./pages/function-test/function-test.module#FunctionTestPageModule"

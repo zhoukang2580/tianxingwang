@@ -1,3 +1,5 @@
+import { SelectCountryModal } from "./../components/select-country/select-country.page";
+import { TrainService } from "./../../train/train.service";
 import { FlightHotelTrainType, PassengerBookInfo } from "./../tmc.service";
 import { CredentialsEntity } from "../models/CredentialsEntity";
 import { TmcService } from "../tmc.service";
@@ -34,7 +36,7 @@ import { Observable, Subscription } from "rxjs";
 import { map } from "rxjs/operators";
 import { LanguageHelper } from "src/app/languageHelper";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
-import { Country } from "src/app/pages/select-country/select-country.page";
+import { Country } from "src/app/tmc/components/select-country/select-country.page";
 import { AppHelper } from "src/app/appHelper";
 import { ValidatorService } from "src/app/services/validator/validator.service";
 import * as moment from "moment";
@@ -61,15 +63,17 @@ export const NOT_WHITE_LIST = "notwhitelist";
 export class SelectPassengerPage
   implements OnInit, CanComponentDeactivate, AfterViewInit {
   vmKeyword: string;
+  removeitem: EventEmitter<PassengerBookInfo>;
   isShowNewCredential = false;
   credentialsRemarks: { key: string; value: string }[];
   selectedCredentialId: string;
   private keyword: string;
-  selectedPasengers$: Observable<number>;
+  selectedPasengersNumber$: Observable<number>;
   currentPage = 1;
   pageSize = 15;
   vmStaffs: StaffEntity[];
   private selectedPassenger: StaffEntity;
+  canAddMoreSubscription = Subscription.EMPTY;
   vmNewCredential: MemberCredential;
   loading = false;
   openclose = true;
@@ -81,47 +85,21 @@ export class SelectPassengerPage
     key: string;
     value: string;
   }[];
+  bookInfos$: Observable<PassengerBookInfo[]>;
   requestCode: "issueNationality" | "identityNationality";
   @ViewChild(IonRefresher) ionrefresher: IonRefresher;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChildren("addForm") addForm: QueryList<IonGrid>;
   constructor(
     public modalController: ModalController,
-    route: ActivatedRoute,
     private navCtrl: NavController,
     private apiService: ApiService,
     private identityService: IdentityService,
     private staffService: StaffService,
-    private flightService: FlightService,
     private validatorService: ValidatorService,
     private domCtrl: DomController,
-    private tmcService: TmcService,
-    private router: Router
-  ) {
-    route.queryParamMap.subscribe(p => {
-      this.initSelectedPasengersNumbers(this.tmcService.getTravelType());
-      this.isCanDeactive = false;
-      const country: Country = AppHelper.getRouteData();
-      if (country && country.Code) {
-        this.vmNewCredential.isModified = true;
-        console.log(this.vmNewCredential, this.requestCode);
-        if (this.requestCode === "issueNationality") {
-          this.vmNewCredential.IssueCountry = country;
-        }
-        if (this.requestCode === "identityNationality") {
-          this.vmNewCredential.Country = country;
-        }
-        AppHelper.setRouteData(null);
-      }
-    });
-  }
-  private initSelectedPasengersNumbers(type: FlightHotelTrainType) {
-    if (type == FlightHotelTrainType.Flight) {
-      this.selectedPasengers$ = this.flightService
-        .getPassengerBookInfoSource()
-        .pipe(map(items => items.length));
-    }
-  }
+    private tmcService: TmcService
+  ) {}
   getIdentityTypes() {
     this.identityTypes = Object.keys(CredentialsType)
       .filter(k => +k)
@@ -146,24 +124,30 @@ export class SelectPassengerPage
   }
   async ngOnInit() {
     this.getIdentityTypes();
-    this.passengerTypes = [
-      {
-        key: "1",
-        value: LanguageHelper.Flight.getPassengerTypeCustomerTip()
-      },
-      {
-        key: "2",
-        value: LanguageHelper.Flight.getPassengerTypeSupplierTip()
-      },
-      {
-        key: "3",
-        value: LanguageHelper.Flight.getPassengerTypeEmployeeTip()
-      },
-      {
-        key: "4",
-        value: LanguageHelper.Flight.getPassengerTypeOtherTip()
+    this.initPassengerTypes();
+    this.initCredentialsRemarks();
+    if (this.bookInfos$) {
+      this.selectedPasengersNumber$ = this.bookInfos$.pipe(
+        map(infos => infos.length)
+      );
+    }
+    this.isCanDeactive = false;
+  }
+  private async initStatus() {
+    const country: Country = AppHelper.getRouteData();
+    if (country && country.Code) {
+      this.vmNewCredential.isModified = true;
+      console.log(this.vmNewCredential, this.requestCode);
+      if (this.requestCode === "issueNationality") {
+        this.vmNewCredential.IssueCountry = country;
       }
-    ];
+      if (this.requestCode === "identityNationality") {
+        this.vmNewCredential.Country = country;
+      }
+      AppHelper.setRouteData(null);
+    }
+  }
+  private initCredentialsRemarks() {
     this.credentialsRemarks = [
       {
         key: "客户",
@@ -183,6 +167,26 @@ export class SelectPassengerPage
       }
     ];
   }
+  private initPassengerTypes() {
+    this.passengerTypes = [
+      {
+        key: "1",
+        value: LanguageHelper.Flight.getPassengerTypeCustomerTip()
+      },
+      {
+        key: "2",
+        value: LanguageHelper.Flight.getPassengerTypeSupplierTip()
+      },
+      {
+        key: "3",
+        value: LanguageHelper.Flight.getPassengerTypeEmployeeTip()
+      },
+      {
+        key: "4",
+        value: LanguageHelper.Flight.getPassengerTypeOtherTip()
+      }
+    ];
+  }
   async canAddNotWhiteListCredential() {
     // 代理和特殊可以新增证件
     const identity = await this.identityService.getIdentityAsync();
@@ -193,32 +197,15 @@ export class SelectPassengerPage
     return can;
   }
   async onShow() {
-    let bookInfos$: Observable<PassengerBookInfo[]>;
-    if (this.tmcService.getTravelType() == FlightHotelTrainType.Flight) {
-      bookInfos$ = this.flightService.getPassengerBookInfoSource();
-    }
-    const removeitem: EventEmitter<PassengerBookInfo> = new EventEmitter();
     const m = await this.modalController.create({
       component: SelectedPassengersComponent,
       componentProps: {
-        bookInfos$,
-        removeitem
+        bookInfos$: this.bookInfos$,
+        removeitem: this.removeitem
       }
     });
     await m.present();
-    let subscription = Subscription.EMPTY;
-    subscription = removeitem.subscribe(info => {
-      this.removePassenger(info);
-    });
     await m.onDidDismiss();
-    subscription.unsubscribe();
-  }
-  private removePassenger(info: PassengerBookInfo) {
-    if (info) {
-      if (this.tmcService.getTravelType() == FlightHotelTrainType.Flight) {
-        this.flightService.removePassengerBookInfo(info);
-      }
-    }
   }
   doRefresh(keyword) {
     this.domCtrl.write(_ => {
@@ -315,29 +302,7 @@ export class SelectPassengerPage
     console.log("onSelectCredential", credentialId);
     this.selectedCredentialId = credentialId;
   }
-  async checkCanAddMore() {
-    if (this.tmcService.getTravelType() == FlightHotelTrainType.Flight) {
-      const arr = this.flightService
-        .getPassengerBookInfos()
-        .map(item => item.passenger);
-      if (await this.staffService.checkStaffTypeSelf()) {
-        if (arr.length > 1) {
-          return false;
-        }
-      } else {
-        if (arr.length > 9) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
   async onAddPassenger() {
-    const canAdd = await this.checkCanAddMore();
-    if (!canAdd) {
-      AppHelper.alert(LanguageHelper.Flight.getCannotBookMorePassengerTip());
-      return false;
-    }
     let selectedCredential: MemberCredential;
     if (!this.selectedCredentialId) {
       AppHelper.alert(
@@ -419,8 +384,9 @@ export class SelectPassengerPage
     }
   }
   private async onAddPassengerBookInfo(passengerBookInfo: PassengerBookInfo) {
-    if (this.tmcService.getTravelType() == FlightHotelTrainType.Flight) {
-      this.flightService.addPassengerBookInfo(passengerBookInfo);
+    const m = await this.modalController.getTop();
+    if (m) {
+      m.dismiss(passengerBookInfo);
     }
   }
   async validateCredential(c: MemberCredential, container: HTMLElement) {
@@ -610,14 +576,23 @@ export class SelectPassengerPage
       }
     });
   }
-  selectIssueNationality() {
+  async selectIssueNationality() {
     this.isCanDeactive = true;
     this.requestCode = "issueNationality";
-    this.router.navigate([AppHelper.getRoutePath("select-country")], {
-      queryParams: {
+    const m = await this.modalController.create({
+      component: SelectCountryModal,
+      componentProps: {
         requestCode: this.requestCode,
         title: LanguageHelper.getSelectIssueCountryTip()
       }
     });
+    m.present();
+    const result = await m.onDidDismiss();
+    if (result && result.data) {
+      const data = result.data as {
+        requestCode: string;
+        selectedItem: Country;
+      };
+    }
   }
 }

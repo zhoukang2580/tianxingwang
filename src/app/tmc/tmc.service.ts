@@ -3,7 +3,6 @@ import { AppHelper } from "./../appHelper";
 import { OrganizationEntity } from "./../hr/staff.service";
 import { AccountEntity } from "./models/AccountEntity";
 import { AgentEntity } from "./models/AgentEntity";
-import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
@@ -13,7 +12,6 @@ import { MemberCredential } from "../member/member.service";
 import { OrderTravelPayType } from "../order/models/OrderTravelEntity";
 import { StaffEntity } from "../hr/staff.service";
 import { InsuranceResultEntity } from "./models/Insurance/InsuranceResultEntity";
-import { PassengerDto } from "./models/PassengerDto";
 import { OrderBookDto } from "../order/models/OrderBookDto";
 import { CredentialsEntity } from "./models/CredentialsEntity";
 import { TrafficlineEntity } from "./models/TrafficlineEntity";
@@ -22,6 +20,7 @@ import * as jsPy from "js-pinyin";
 import { OrderModel } from "../order/models/OrderModel";
 import { OrderService } from "../order/order.service";
 import { PassengerFlightSegmentInfo } from "../flight/models/PassengerFlightInfo";
+import { ITrainInfo } from "../train/train.service";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -1059,6 +1058,7 @@ export interface PassengerBookInfo {
   credential: CredentialsEntity;
   isNotWhitelist?: boolean;
   flightSegmentInfo?: PassengerFlightSegmentInfo;
+  trainInfo?: ITrainInfo;
   id?: string;
   isReplace?: boolean;
 }

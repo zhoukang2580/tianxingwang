@@ -1,4 +1,4 @@
-import { Country } from "./../../pages/select-country/select-country.page";
+import { Country } from "../../tmc/components/select-country/select-country.page";
 import { LanguageHelper } from "./../../languageHelper";
 import { IonRefresher, IonGrid, NavController } from "@ionic/angular";
 import {

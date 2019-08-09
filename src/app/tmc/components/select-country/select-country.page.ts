@@ -1,9 +1,14 @@
-import { AppHelper } from "./../../appHelper";
+import { AppHelper } from "../../../appHelper";
 import { ApiService } from "src/app/services/api/api.service";
-import { RequestEntity } from "./../../services/api/Request.entity";
+import { RequestEntity } from "../../../services/api/Request.entity";
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { NavController, IonRefresher, IonInfiniteScroll } from "@ionic/angular";
+import {
+  NavController,
+  IonRefresher,
+  IonInfiniteScroll,
+  ModalController
+} from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 export interface Country {
   Id: string;
@@ -16,7 +21,7 @@ export interface Country {
   templateUrl: "./select-country.page.html",
   styleUrls: ["./select-country.page.scss"]
 })
-export class SelectCountryPage implements OnInit {
+export class SelectCountryModal implements OnInit {
   title: string;
   requestCode: string;
   countries: Country[] = [];
@@ -25,14 +30,15 @@ export class SelectCountryPage implements OnInit {
   pageSize = 10;
   loading = false;
   keyword = "";
+  selectedItem: Country;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private navCtrl: NavController,
     private apiService: ApiService,
-    private storage: Storage
+    private storage: Storage,
+    private modalCtrl: ModalController
   ) {
     route.queryParamMap.subscribe(p => {
       this.title = p.get("title");
@@ -133,11 +139,17 @@ export class SelectCountryPage implements OnInit {
     return local.countries;
   }
   onItemClick(item: Country) {
-    AppHelper.setRouteData(item);
+    this.selectedItem = item;
     this.back();
   }
-  back() {
-    this.navCtrl.back();
+  async back() {
+    const m = await this.modalCtrl.getTop();
+    if (m) {
+      m.dismiss({
+        requestCode: this.requestCode,
+        selectedItem: this.selectedItem
+      });
+    }
   }
   onIonChange() {
     this.doRefresh(false);

@@ -20,7 +20,7 @@ import {
 } from "@angular/animations";
 import { Subscription } from "rxjs";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
-import { SelectTrainStationComponent } from "../select-station/select-station.component";
+import { SelectTrainStationModalComponent } from 'src/app/tmc/components/select-stations/select-station.component';
 @Component({
   selector: "app-switch-station-comp",
   templateUrl: "./switch-station.component.html",
@@ -100,7 +100,12 @@ export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
     }
     console.log("出发城市：", fromCity.Nickname);
     console.log("目的城市：", toCity.Nickname);
-    if (this.fromCityEle && this.toCityEle && this.flightcitieEle&&this.flightcitieEle.nativeElement) {
+    if (
+      this.fromCityEle &&
+      this.toCityEle &&
+      this.flightcitieEle &&
+      this.flightcitieEle.nativeElement
+    ) {
       // console.log(this.fromCityEle, this.toCityEle);
       const rect = this.flightcitieEle.nativeElement.getBoundingClientRect();
       const fEle = this.fromCityEle["el"];
@@ -162,7 +167,7 @@ export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
     const m = await this.modalCtrl.create({
-      component: SelectTrainStationComponent
+      component: SelectTrainStationModalComponent
     });
     m.backdropDismiss = false;
     m.present();

@@ -1,5 +1,5 @@
-import { TrainService, SearchTrainModel } from './../train.service';
-import { TrafficlineEntity } from './../../tmc/models/TrafficlineEntity';
+import { TrainService, SearchTrainModel } from "./../train.service";
+import { TrafficlineEntity } from "./../../tmc/models/TrafficlineEntity";
 import { IdentityService } from "../../services/identity/identity.service";
 import { ApiService } from "src/app/services/api/api.service";
 import { StaffEntity, StaffBookType } from "src/app/hr/staff.service";
@@ -13,10 +13,10 @@ import { DayModel } from "../../tmc/models/DayModel";
 import { ModalController, NavController } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
-import { TripType } from 'src/app/tmc/models/TripType';
-import { TrainBookInfo } from '../train.service';
-import { TrainEntity } from '../models/TrainEntity';
-import { TrainDayService } from '../trainDay.service';
+import { TripType } from "src/app/tmc/models/TripType";
+import { TrainEntity } from "../models/TrainEntity";
+import { CalendarService } from "src/app/tmc/calendar.service";
+import { PassengerBookInfo } from "src/app/tmc/tmc.service";
 @Component({
   selector: "app-search-train",
   templateUrl: "./search-train.page.html",
@@ -29,7 +29,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
   isSelectFlyDate: boolean;
   flyDate: DayModel;
   backDate: DayModel;
-  get totalFlyDays() {
+  get totalDays() {
     if (this.backDate && this.flyDate) {
       const detal = Math.floor(
         this.backDate.timeStamp - this.flyDate.timeStamp
@@ -61,32 +61,13 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     private staffService: StaffService,
     private identityService: IdentityService,
     private apiService: ApiService,
-    private trainService:TrainService,
-    private trainDayService:TrainDayService
+    private trainService: TrainService,
+    private calendarService: CalendarService
   ) {
     route.queryParamMap.subscribe(async _ => {
       this.staff = await this.staffService.getStaff();
       if (await this.isStaffTypeSelf()) {
-        this.disabled =
-          this.searchTrainModel && this.searchTrainModel.isLocked;
-        if (
-          this.trainService.getBookInfos().length == 0 ||
-          this.trainService.getBookInfos().length == 0
-        ) {
-          if (this.staff && !this.staff.Name) {
-            const identity = await this.identityService.getIdentityAsync();
-            this.staff.Name = identity && identity.Name;
-          }
-          const item: TrainBookInfo = {
-            credential: new CredentialsEntity(),
-            passenger: this.staff
-          };
-          this.trainService.addBookInfo(item);
-          const searchModel = this.trainService.getSearchTrainModel();
-          searchModel.tripType = TripType.departureTrip;
-          this.trainService.setSearchTrainModel(searchModel);
-          this.trainService.addBookInfo(item);
-        }
+        this.disabled = this.searchTrainModel && this.searchTrainModel.isLocked;
       }
       this.showReturnTrip = await this.isStaffTypeSelf();
       this.selectedPassengers = trainService.getBookInfos().length;
@@ -103,8 +84,8 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
             this.disabled = s.isLocked;
             this.fromCity = this.vmFromCity = s.fromCity || this.fromCity;
             this.toCity = this.vmToCity = s.toCity || this.toCity;
-            this.flyDate = this.trainDayService.generateDayModelByDate(s.Date);
-            this.backDate = this.trainDayService.generateDayModelByDate(
+            this.flyDate = this.calendarService.generateDayModelByDate(s.Date);
+            this.backDate = this.calendarService.generateDayModelByDate(
               s.BackDate
             );
             this.isSingle = !s.isRoundTrip;
@@ -121,7 +102,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     this.isSingle = single;
   }
   getMonth(d: DayModel) {
-    return +this.trainDayService.getMonth(d);
+    return +this.calendarService.getMonth(d);
   }
   ngAfterViewInit(): void {
     console.log("ngAfterViewInit");
@@ -134,7 +115,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     return await this.staffService.checkStaffTypeSelf();
   }
   async ngOnInit() {
-    this.selectDaySubscription = this.trainDayService
+    this.selectDaySubscription = this.calendarService
       .getSelectedFlyDays()
       .subscribe(days => {
         if (days && days.length) {
@@ -144,7 +125,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
             } else {
               this.flyDate = days[0];
               this.flyDate = days[0];
-              this.backDate = this.trainDayService.generateDayModel(
+              this.backDate = this.calendarService.generateDayModel(
                 moment(this.flyDate.date).add(1, "days")
               );
             }
@@ -161,7 +142,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
             }
           }
           if (this.flyDate.timeStamp > this.backDate.timeStamp) {
-            this.flyDate = this.trainDayService.generateDayModel(moment());
+            this.flyDate = this.calendarService.generateDayModel(moment());
           }
         }
       });
@@ -185,7 +166,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     this.searchConditionSubscription.unsubscribe();
   }
   initTrainDays() {
-    this.flyDate = this.trainDayService.generateDayModel(
+    this.flyDate = this.calendarService.generateDayModel(
       moment()
       // 默认第二天
       // .add(1, "days")
@@ -194,7 +175,9 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     this.flyDate.enabled = true;
     this.flyDate.desc = "去程";
     this.flyDate.descPos = "top";
-    this.backDate = this.trainDayService.generateDayModel(moment().add(4, "days"));
+    this.backDate = this.calendarService.generateDayModel(
+      moment().add(4, "days")
+    );
     this.backDate.hasToolTip = false;
     this.backDate.enabled = true;
     this.backDate.desc = "返程";
@@ -242,7 +225,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     const s = new SearchTrainModel();
     s.tripType = TripType.departureTrip;
     const staff = await this.staffService.getStaff();
-    if (staff.BookType == StaffBookType.Self) {
+    if (this.staffService.isSelfBookType) {
       const exists = this.trainService
         .getBookInfos()
         .filter(
@@ -250,14 +233,11 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
         );
       let goTrain: TrainEntity;
       const info = exists.find(
-        it =>
-          it.trainInfo &&
-          it.trainInfo.tripType == TripType.departureTrip
+        it => it.trainInfo && it.trainInfo.tripType == TripType.departureTrip
       );
       if (info) {
         s.tripType = TripType.returnTrip;
-        goTrain =
-          info.trainInfo && info.trainInfo.trainEntity;
+        goTrain = info.trainInfo && info.trainInfo.trainEntity;
       } else {
         s.tripType = TripType.departureTrip;
       }
@@ -267,7 +247,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
           +moment(this.backDate.date) <
           +moment(arrivalDate.format("YYYY-MM-DD"))
         ) {
-          this.backDate = this.trainDayService.generateDayModel(arrivalDate);
+          this.backDate = this.calendarService.generateDayModel(arrivalDate);
         }
       }
     }
@@ -289,15 +269,15 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate([AppHelper.getRoutePath("train-list")]);
   }
   getDayDesc(d: DayModel) {
-    return this.trainDayService.getDescOfDay(d);
+    return this.calendarService.getDescOfDay(d);
   }
   onSelecFlyDate(flyTo: boolean, backDate: boolean) {
     if (this.disabled && !backDate) {
       return;
     }
     this.isSelectFlyDate = flyTo;
-    this.trainDayService.setFlyDayMulti(!this.isSingle && !this.disabled);
-    this.trainDayService.showSelectFlyDatePage(true);
+    this.calendarService.setFlyDayMulti(!this.isSingle && !this.disabled);
+    this.calendarService.showSelectFlyDatePage(true);
   }
   onFromCitySelected(city: TrafficlineEntity) {
     if (city) {
