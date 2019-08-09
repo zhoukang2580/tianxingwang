@@ -185,7 +185,8 @@ export class CalendarService {
   }
   generateCanlender(months: number) {
     return Promise.resolve().then(_ => {
-      console.time("generateCanlender2");
+      console.log('generateCanlender',months);
+      console.time("generateCanlender");
       const calendar: AvailableDate[] = [];
       for (let i = 0; i < months; i++) {
         const curDate = new Date();
@@ -225,10 +226,10 @@ export class CalendarService {
           // 上一个月的最后那几天
           const lastMDay = new Date(curMFistDate.setSeconds(-1));
 
-          console.log("lastMDay", this.format(lastMDay));
+          // console.log("lastMDay", this.format(lastMDay));
           for (let d = lastMDay.getDate(), j = curWeek; j > 0; d--, j--) {
             const date = new Date(lastMDay.setDate(d));
-            console.log(this.format(date));
+            // console.log(this.format(date));
             const lsmd = this.generateDayModel(date);
             lsmd.isLastMonthDay = true; // 是上个月的日期
             item.dayList.unshift(lsmd);
@@ -239,10 +240,10 @@ export class CalendarService {
           // 第 i 个月的第 j 天
           item.dayList.push(this.generateDayModel(iDate.setDate(j)));
         }
-        console.log(`第${i}个月日期生成耗时：${Date.now() - st} ms`);
+        // console.log(`第${i}个月日期生成耗时：${Date.now() - st} ms`);
       }
-      console.timeEnd("generateCanlender2");
-      console.log(calendar);
+      console.timeEnd("generateCanlender");
+      // console.log(calendar);
       return calendar;
     });
   }
