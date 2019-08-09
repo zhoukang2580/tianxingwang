@@ -1,6 +1,6 @@
 import { AppHelper } from "./../../appHelper";
 import { ActivatedRoute, Router } from "@angular/router";
-import { IonRefresher, IonInfiniteScroll } from "@ionic/angular";
+import { IonRefresher, IonInfiniteScroll, NavController } from "@ionic/angular";
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { CmsService, Notice } from "../cms.service";
 
@@ -19,14 +19,17 @@ export class BulletinListPage implements OnInit {
   constructor(
     private cmsService: CmsService,
     route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private navCtrl: NavController
   ) {
     route.queryParams.subscribe(p => {
       console.log("BulletinListPage ", p);
       this.bulletinType = p.bulletinType || "notice";
     });
   }
-
+  back() {
+    this.navCtrl.back();
+  }
   ngOnInit() {
     this.doRefresh();
   }

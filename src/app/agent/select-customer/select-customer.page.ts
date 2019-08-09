@@ -1,4 +1,4 @@
-import { IonRefresher } from "@ionic/angular";
+import { IonRefresher, NavController } from "@ionic/angular";
 import { Router } from "@angular/router";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
@@ -30,13 +30,17 @@ export class SelectCustomerPage implements OnInit, OnDestroy {
     private apiService: ApiService,
     private identityService: IdentityService,
     private router: Router,
-    private tmcService: TmcService
+    private tmcService: TmcService,
+    private navCtrl: NavController
   ) {
     this.identitySubscription = this.identityService
       .getIdentity()
       .subscribe(id => {
         this.identityEntity = id;
       });
+  }
+  back() {
+    this.navCtrl.back();
   }
   ngOnDestroy() {
     this.identitySubscription.unsubscribe();

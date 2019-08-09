@@ -9,6 +9,7 @@ import { Component, OnInit } from "@angular/core";
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
 import { MemberCredential } from "src/app/member/member.service";
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: "app-comfirm-info",
@@ -22,6 +23,7 @@ export class ComfirmInformationPage implements OnInit {
   constructor(
     private staffService: StaffService,
     private apiService: ApiService,
+    private navCtrl:NavController,
     private tmcService: TmcService,
     private router: Router,
     private route: ActivatedRoute,
@@ -36,7 +38,9 @@ export class ComfirmInformationPage implements OnInit {
       console.log("ComfirmInformationPage", this.staff);
     });
   }
-
+  back(){
+    this.navCtr.back();
+  }
   async ngOnInit() {}
   async confirmPassword() {
     if (!this.password) {

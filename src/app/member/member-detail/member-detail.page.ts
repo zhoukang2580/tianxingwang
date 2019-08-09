@@ -1,3 +1,4 @@
+import { NavController } from "@ionic/angular";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
@@ -37,9 +38,12 @@ export class MemberDetailPage implements OnInit, OnDestroy {
     private identityService: IdentityService,
     private router: Router,
     private configService: ConfigService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private navCtrl: NavController
   ) {}
-
+  back() {
+    this.navCtrl.back();
+  }
   async ngOnInit() {
     console.log("member detail ngOnInit");
     this.identitySubscription = this.identityService

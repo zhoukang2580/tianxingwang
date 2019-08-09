@@ -1,3 +1,4 @@
+import { NavController } from "@ionic/angular";
 import { MessageService } from "./../message.service";
 import { AppHelper } from "../../appHelper";
 import { DomSanitizer } from "@angular/platform-browser";
@@ -27,7 +28,8 @@ export class MessageDetailPage implements OnInit {
   constructor(
     route: ActivatedRoute,
     private sanitizer: DomSanitizer,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private navCtrl: NavController
   ) {
     this.url$ = new BehaviorSubject(null);
     route.queryParamMap.subscribe(p => {
@@ -51,6 +53,9 @@ export class MessageDetailPage implements OnInit {
       }
       console.log(this.message);
     });
+  }
+  back() {
+    this.navCtrl.back();
   }
   onShowDetail() {
     this.showDetail = true;

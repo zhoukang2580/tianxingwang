@@ -29,6 +29,9 @@ export class PasswordResetPage implements OnInit {
       this.name = p.get("Name");
     });
   }
+  back() {
+    this.navController.back();
+  }
   finish() {
     const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Home-Action";

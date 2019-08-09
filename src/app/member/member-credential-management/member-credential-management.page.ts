@@ -1,6 +1,6 @@
 import { Country } from "./../../pages/select-country/select-country.page";
 import { LanguageHelper } from "./../../languageHelper";
-import { IonRefresher, IonGrid } from "@ionic/angular";
+import { IonRefresher, IonGrid, NavController } from "@ionic/angular";
 import {
   Component,
   OnInit,
@@ -43,7 +43,8 @@ export class MemberCredentialManagementPage
     private memberService: MemberService,
     private route: ActivatedRoute,
     private ngZone: NgZone,
-    private identityService: IdentityService
+    private identityService: IdentityService,
+    private navCtrl: NavController
   ) {
     route.queryParamMap.subscribe(p => {
       this.isCanDeactive = false;
@@ -61,7 +62,9 @@ export class MemberCredentialManagementPage
       }
     });
   }
-
+  back() {
+    this.navCtrl.back();
+  }
   ngOnInit() {
     this.doRefresh();
     this.getIdentityTypes();
@@ -146,7 +149,9 @@ export class MemberCredentialManagementPage
   async getCredentials() {
     this.loading = true;
     const identity = await this.identityService.getIdentityAsync();
-    const credentials = await this.memberService.getCredentials(identity&&identity.Id);
+    const credentials = await this.memberService.getCredentials(
+      identity && identity.Id
+    );
     this.credentials = credentials.map(c => {
       return {
         isModified: false,

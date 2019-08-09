@@ -1,3 +1,4 @@
+import { NavController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 import { RequestEntity } from 'src/app/services/api/Request.entity';
 import { ApiService } from 'src/app/services/api/api.service';
@@ -24,13 +25,16 @@ export class PasswordValidPage implements OnInit {
   }[];
   countDown = 0;
   countDownInterval: any;
-  constructor(private apiService: ApiService, private router: Router, private activatedRoute: ActivatedRoute) { }
+  constructor(private apiService: ApiService, private router: Router, private activatedRoute: ActivatedRoute,private navCtrl:NavController) { }
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe(p => {
       this.items = p.get("ValidTypes") && JSON.parse(p.get("ValidTypes")) ;
       this.name = p.get("Name");
     });
+  }
+  back(){
+    this.navCtrl.back();
   }
   check() {
     const req = new RequestEntity();

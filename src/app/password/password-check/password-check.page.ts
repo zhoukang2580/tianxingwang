@@ -7,6 +7,7 @@ import { RequestEntity } from "src/app/services/api/Request.entity";
 import { AppHelper } from "src/app/appHelper";
 import { tap, switchMap, takeLast, exhaustMap } from "rxjs/operators";
 import { of, Subscription } from "rxjs";
+import { NavController } from "@ionic/angular";
 
 @Component({
   selector: "app-password-check",
@@ -22,9 +23,12 @@ export class PasswordCheckPage implements OnInit, OnDestroy {
   constructor(
     private identityService: IdentityService,
     private router: Router,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private navCtrl: NavController
   ) {}
-
+  back() {
+    this.navCtrl.back();
+  }
   ngOnInit() {
     this.subscription = this.check().subscribe();
   }
