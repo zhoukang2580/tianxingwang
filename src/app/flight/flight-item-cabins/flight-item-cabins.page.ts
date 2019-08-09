@@ -157,7 +157,7 @@ export class FlightItemCabinsPage implements OnInit {
         this.isShowPolicyCabins = false;
         this.showFlightCabins();
       }
-    }, 800);
+    }, 1000);
   }
   private showPolicyCabins() {
     this.vmPolicyCabins = [];
