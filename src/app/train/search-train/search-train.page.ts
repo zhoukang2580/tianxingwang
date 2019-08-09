@@ -113,7 +113,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  goBack() {
+  back() {
     this.navCtrl.back();
   }
   private onRoundTrip(single: boolean) {

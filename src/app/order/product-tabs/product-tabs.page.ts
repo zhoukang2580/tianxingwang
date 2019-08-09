@@ -118,7 +118,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
           : this.activeTab == ProductItemType.hotel
           ? "hotel"
           : "flight";
-      this.isLoading = true;
+      this.isLoading = this.condition && this.condition.pageIndex == 0;
       this.loadDataSub = this.tmcService
         .getOrderList(m)
         .pipe(

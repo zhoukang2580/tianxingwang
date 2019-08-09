@@ -134,6 +134,9 @@ export class SelectCountryPage implements OnInit {
   }
   onItemClick(item: Country) {
     AppHelper.setRouteData(item);
+    this.back();
+  }
+  back() {
     this.navCtrl.back();
   }
   onIonChange() {
