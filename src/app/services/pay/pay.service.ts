@@ -82,7 +82,7 @@ export class PayService {
     }
     else if (AppHelper.isH5()) {
       req.Data.CreateType="Mobile";
-     this.payh5(req,path);
+     this.payMobile(req,path);
     }
 
   }
