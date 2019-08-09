@@ -17,7 +17,8 @@ import {
   ModalController,
   PopoverController,
   DomController,
-  Platform
+  Platform,
+  NavController
 } from "@ionic/angular";
 import {
   Observable,
@@ -138,6 +139,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private flightService: FlightService,
     private ngZone: NgZone,
+    private navCtrl:NavController,
     private flyDayService: CalendarService,
     private staffService: StaffService,
     private apiService: ApiService,
@@ -145,7 +147,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     private domCtrl: DomController,
     private modalCtrl: ModalController,
     private popoverController: PopoverController,
-    private plt: Platform
   ) {
     this.selectedPassengersNumbers$ = flightService
       .getPassengerBookInfoSource()
@@ -258,6 +259,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
 
   back() {
     this.isLeavePage = true;
+    this.navCtrl.back();
   }
   async onChangedDay(day: DayModel, byUser: boolean) {
     if (
