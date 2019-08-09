@@ -21,7 +21,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
   isShowBindButton: boolean;
   @ViewChild("List") deviceList: IonList;
   constructor(private apiService: ApiService, private navCtrl: NavController) {}
-  bakc() {
+  back() {
     this.navCtrl.back();
   }
   ngOnInit() {
