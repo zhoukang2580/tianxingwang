@@ -126,6 +126,7 @@ export class OrganizationComponent implements OnInit {
   }
   async changeMode() {
     this.isTreeMode = !this.isTreeMode;
+    await this.storage.set(ORGANIZATION_PREFERANCE_KEY,this.isTreeMode);
     this.doRefresh();
   }
   async ngOnInit() {

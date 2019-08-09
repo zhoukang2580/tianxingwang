@@ -521,7 +521,7 @@ export class TmcService {
   async getOrganizations(): Promise<OrganizationEntity[]> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Home-GetOrganizations";
-    // req.IsShowLoading = true;
+    req.IsShowLoading = true;
     req.Timeout = 60;
     return this.apiService
       .getPromiseData<OrganizationEntity[]>(req)

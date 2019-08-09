@@ -293,20 +293,12 @@ export class FlightService {
     await this.dismissAllTopOverlays();
     this.apiService.hideLoadingView();
     if (s.tripType == TripType.returnTrip) {
-      this.router.navigate([AppHelper.getRoutePath("flight-list")]).then(_ => {
-        this.setSearchFlightModel(s);
-      });
+      this.setSearchFlightModel(s);
+      this.router.navigate([AppHelper.getRoutePath("flight-list")]);
     } else {
-      if (!this.router.routerState.snapshot.url.includes("search-flight")) {
-        this.navCtrl.back({
-          animated: false
-        });
-      }
+      this.setSearchFlightModel(s);
       this.router
-        .navigate([AppHelper.getRoutePath("search-flight")])
-        .then(_ => {
-          this.setSearchFlightModel(s);
-        });
+        .navigate([AppHelper.getRoutePath("search-flight")]);
     }
   }
   private async reselectNotSelfBookTypeSegments(arg: PassengerBookInfo) {
@@ -392,7 +384,7 @@ export class FlightService {
     let i = 10;
     while (top && --i > 0) {
       // console.log("onSelectReturnTrip", top);
-      await top.dismiss().catch(_ => {});
+      await top.dismiss().catch(_ => { });
       top = await this.modalCtrl.getTop();
     }
     console.timeEnd("dismissAllTopOverlays");
@@ -402,7 +394,7 @@ export class FlightService {
     this.passengerBookInfos = [];
     this.setPassengerBookInfos(this.getPassengerBookInfos());
   }
-  removeOneBookInfoFromSelfBookType() {}
+  removeOneBookInfoFromSelfBookType() { }
   async addOneBookInfoToSelfBookType() {
     let IdCredential: CredentialsEntity;
     const staff = await this.staffService.getStaff();
