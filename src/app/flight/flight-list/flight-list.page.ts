@@ -321,7 +321,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     passengerId?: string,
     filterPolicy?: boolean
   ) {
-    if(this.timeoutid){
+    if (this.timeoutid) {
       clearTimeout(this.timeoutid);
     }
     this.timeoutid = setTimeout(async () => {
@@ -389,7 +389,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         }
         this.isLoading = false;
       }
-    }, 200);
+    }, 0);
   }
   private scrollToTop() {
     setTimeout(() => {

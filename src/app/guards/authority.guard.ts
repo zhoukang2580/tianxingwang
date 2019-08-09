@@ -54,16 +54,37 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
         .create({ component: LoginSkeletonPageComponent })
         .then(async m => {
           m.backdropDismiss = false;
-          await m.present().catch(_ => {
-            this.isShowModel = true;
-          });
-          setTimeout(() => {
-            m.dismiss().catch(_ => {});
+          this.isShowModel = await m
+            .present()
+            .then(_ => true)
+            .catch(_ => true);
+          let dismissed = false;
+          const timeoutid = setTimeout(() => {
+            if (!dismissed) {
+              m.dismiss()
+                .then(_ => {
+                  dismissed = true;
+                })
+                .catch(_ => {});
+            }
           }, 5000);
-          this.isShowModel = true;
           const identity = await this.identityService.getIdentityAsync();
-          console.log("getIdentityAsync", identity);
+          if (timeoutid) {
+            clearTimeout(timeoutid);
+          }
+          if (!dismissed) {
+            m.dismiss()
+              .then(_ => {
+                dismissed = true;
+              })
+              .catch(_ => {});
+          }
           if (!identity || !identity.Ticket || !identity.Id) {
+            this.loginService.setToPageRouter(state.url);
+            this.router.navigate([AppHelper.getRoutePath("login")]);
+            return false;
+          }
+          if (!this.identityService.getStatus()) {
             this.loginService.setToPageRouter(state.url);
             this.router.navigate([AppHelper.getRoutePath("login")]);
             return false;
@@ -74,19 +95,12 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
           return false;
         });
     }
-    return this.identityService.getIdentity().pipe(
-      catchError(e => of(null)),
-      map((identity: IdentityEntity) => {
-        console.log("getIdentity ", identity);
-        // console.log("canload route ,", route);
-        if (!identity || !identity.Ticket || !identity.Id) {
-          this.loginService.setToPageRouter(state.url);
-          this.router.navigate([AppHelper.getRoutePath("login")]);
-          return false;
-        }
-        return true;
-      })
-    );
+    if (!this.identityService.getStatus()) {
+      this.loginService.setToPageRouter(state.url);
+      this.router.navigate([AppHelper.getRoutePath("login")]);
+      return false;
+    }
+    return true;
   }
   canLoad(route: Route) {
     // console.log("canload route ,", route);
