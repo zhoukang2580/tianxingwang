@@ -167,12 +167,12 @@ export class PayService {
     }
      else if(AppHelper.isH5())
      {
-      req.Data.CreateType="H5";
-      this.payh5(req,path);
+      req.Data.CreateType="Mobile";
+      this.payMobile(req,path);
      }
   }
 
-   payh5(req: RequestEntity,path:string)
+   payMobile(req: RequestEntity,path:string)
    {
     let url = AppHelper.getApiUrl() + "/home/Pay?path=" + encodeURIComponent(AppHelper.getRedirectUrl() + "?path=" + path
     +"&ticket="+AppHelper.getTicket()+"&openid"+(WechatHelper.openId||""));
