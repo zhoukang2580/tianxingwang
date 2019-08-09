@@ -39,7 +39,7 @@ export class ComfirmInformationPage implements OnInit {
     });
   }
   back(){
-    this.navCtr.back();
+    this.navCtrl.back();
   }
   async ngOnInit() {}
   async confirmPassword() {
