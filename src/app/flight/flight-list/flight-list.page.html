@@ -50,10 +50,10 @@
 
   </ion-refresher>
   <app-or-comp *ngIf='isLoading'>
-    <span>数据即将加载完成</span>
+    <ion-label margin-top>数据即将加载完成</ion-label>
   </app-or-comp>
   <app-or-comp *ngIf='!isLoading&&vmFlights?.length==0'>
-    <span>暂无数据</span>
+    <ion-label margin-top>暂无数据</ion-label>
   </app-or-comp>
 
 

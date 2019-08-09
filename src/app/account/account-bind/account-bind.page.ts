@@ -3,11 +3,12 @@ import { FormBuilder } from "@angular/forms";
 import { FormGroup } from "@angular/forms";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Observable, Subscription, interval } from "rxjs";
-import { ActivatedRoute, Router } from '@angular/router';
-import { AppHelper } from 'src/app/appHelper';
-import { ApiService } from 'src/app/services/api/api.service';
-import { RequestEntity } from 'src/app/services/api/Request.entity';
-import { LanguageHelper } from 'src/app/languageHelper';
+import { ActivatedRoute, Router } from "@angular/router";
+import { AppHelper } from "src/app/appHelper";
+import { ApiService } from "src/app/services/api/api.service";
+import { RequestEntity } from "src/app/services/api/Request.entity";
+import { LanguageHelper } from "src/app/languageHelper";
+import { NavController } from "@ionic/angular";
 
 @Component({
   selector: "app-account-bind",
@@ -28,12 +29,18 @@ export class AccountBindPage implements OnInit, OnDestroy {
     Mobile: string;
     IsActiveMobile: boolean;
   } = {} as any;
-  constructor(private fb: FormBuilder, private router: Router, private loginService: LoginService, private apiService: ApiService,
-    private route: ActivatedRoute) {
-
+  constructor(
+    private fb: FormBuilder,
+    private navCtrl: NavController,
+    private router: Router,
+    private loginService: LoginService,
+    private apiService: ApiService,
+    private route: ActivatedRoute
+  ) {}
+  back() {
+    this.navCtrl.back();
   }
   ngOnInit() {
-
     this.form = this.fb.group({
       Mobile: [],
       ImageCode: [],
@@ -41,7 +48,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
     });
     this.paramsSubscription = this.route.paramMap.subscribe(p => {
       if (p) {
-        this.bindMobileInfo.IsActiveMobile = p.get("IsActiveMobile") == 'true';
+        this.bindMobileInfo.IsActiveMobile = p.get("IsActiveMobile") == "true";
         this.bindMobileInfo.Mobile = p.get("Mobile");
         this.path = p.get("Path");
         this.form.patchValue({ Mobile: this.bindMobileInfo.Mobile });
@@ -49,7 +56,9 @@ export class AccountBindPage implements OnInit, OnDestroy {
       }
     });
 
-    this.mobileChangeSubscription = this.form.controls['Mobile'].valueChanges.subscribe(v => {
+    this.mobileChangeSubscription = this.form.controls[
+      "Mobile"
+    ].valueChanges.subscribe(v => {
       if (v && `${v}`.length >= 11) {
         this.isMobileNumberOk = true;
       }
@@ -57,29 +66,34 @@ export class AccountBindPage implements OnInit, OnDestroy {
     // this.startCountDonw(160);
   }
 
-
   sendMobileCode() {
     const req = new RequestEntity();
     req.Url = AppHelper.getApiUrl() + "/Home/SendIdentityMobileCode";
     req.Data = JSON.stringify({ Mobile: this.form.value.Mobile });
-    const sub = this.apiService.getResponse<{
-      SendInterval: number;
-      ExpiredInterval: number;
-    }>(req).subscribe(res => {
-      if (!res.Status && res.Message) {
-        AppHelper.alert(res.Message);
-        return;
-      }
-      this.startCountDonw(res.Data.SendInterval);
-    }, e => {
-      AppHelper.alert(e);
-    }, () => {
-      setTimeout(() => {
-        if (sub) {
-          sub.unsubscribe();
+    const sub = this.apiService
+      .getResponse<{
+        SendInterval: number;
+        ExpiredInterval: number;
+      }>(req)
+      .subscribe(
+        res => {
+          if (!res.Status && res.Message) {
+            AppHelper.alert(res.Message);
+            return;
+          }
+          this.startCountDonw(res.Data.SendInterval);
+        },
+        e => {
+          AppHelper.alert(e);
+        },
+        () => {
+          setTimeout(() => {
+            if (sub) {
+              sub.unsubscribe();
+            }
+          }, 100);
         }
-      }, 100);
-    });
+      );
   }
   bind() {
     if (!this.form.value.MobileCode) {
@@ -88,8 +102,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
     }
     if (this.bindMobileInfo.IsActiveMobile) {
       this.bindDevice();
-    }
-    else {
+    } else {
       this.bindMobile();
       this.bindDevice();
     }
@@ -97,19 +110,28 @@ export class AccountBindPage implements OnInit, OnDestroy {
   bindMobile() {
     const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Mobile-Bind";
-    req.Data = { Mobile: this.form.value.Mobile, MobileCode: this.form.value.MobileCode };
-    const sub = this.apiService.getResponse<{
-      SendInterval: number;
-      ExpiredInterval: number;
-    }>(req).subscribe(res => {
-      if (!res.Status) {
-        AppHelper.alert(res.Message);
-      }
-    }, e => {
-      AppHelper.alert(e);
-    }, () => {
-      sub.unsubscribe();
-    });;
+    req.Data = {
+      Mobile: this.form.value.Mobile,
+      MobileCode: this.form.value.MobileCode
+    };
+    const sub = this.apiService
+      .getResponse<{
+        SendInterval: number;
+        ExpiredInterval: number;
+      }>(req)
+      .subscribe(
+        res => {
+          if (!res.Status) {
+            AppHelper.alert(res.Message);
+          }
+        },
+        e => {
+          AppHelper.alert(e);
+        },
+        () => {
+          sub.unsubscribe();
+        }
+      );
     return sub;
   }
   async bindDevice() {
@@ -117,16 +139,24 @@ export class AccountBindPage implements OnInit, OnDestroy {
     var name = await AppHelper.getDeviceName();
     const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Device-Bind";
-    req.Data = { Mobile: this.form.value.Mobile, MobileCode: this.form.value.MobileCode, DeviceNumber: uuid, DeviceName: name };
-    const sub = this.apiService.getResponse<{
-      SendInterval: number;
-      ExpiredInterval: number;
-    }>(req).subscribe(res => {
-      
-    }, e => {
-    }, () => {
-      sub.unsubscribe();
-    });;
+    req.Data = {
+      Mobile: this.form.value.Mobile,
+      MobileCode: this.form.value.MobileCode,
+      DeviceNumber: uuid,
+      DeviceName: name
+    };
+    const sub = this.apiService
+      .getResponse<{
+        SendInterval: number;
+        ExpiredInterval: number;
+      }>(req)
+      .subscribe(
+        res => {},
+        e => {},
+        () => {
+          sub.unsubscribe();
+        }
+      );
     return sub;
   }
   private startCountDonw(countdownTime: number) {
@@ -148,5 +178,4 @@ export class AccountBindPage implements OnInit, OnDestroy {
     this.paramsSubscription.unsubscribe();
     this.mobileChangeSubscription.unsubscribe();
   }
-
 }

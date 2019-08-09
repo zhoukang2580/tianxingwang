@@ -1,9 +1,10 @@
-import { environment } from 'src/environments/environment';
+import { environment } from "src/environments/environment";
 import { CmsService, Notice } from "./../cms.service";
 import { DomSanitizer } from "@angular/platform-browser";
 import { Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
 import { map, tap } from "rxjs/operators";
+import { NavController } from "@ionic/angular";
 
 @Component({
   selector: "app-view-detail",
@@ -14,13 +15,16 @@ export class ViewDetailPage implements OnInit {
   notice$: Observable<Notice>;
   constructor(
     private cmsService: CmsService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private navCtrl: NavController
   ) {}
-
+  back() {
+    this.navCtrl.back();
+  }
   ngOnInit() {
     this.notice$ = this.cmsService.getSelectedNotice().pipe(
-      tap(n=>{
-        if(!environment.production){
+      tap(n => {
+        if (!environment.production) {
           console.log(n);
         }
       }),

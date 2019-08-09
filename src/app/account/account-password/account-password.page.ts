@@ -1,7 +1,7 @@
 import { ActivatedRoute } from "@angular/router";
 import { AppHelper } from "./../../appHelper";
 import { LoginService } from "./../../services/login/login.service";
-import { AlertController } from "@ionic/angular";
+import { AlertController, NavController } from "@ionic/angular";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { IdentityService } from "src/app/services/identity/identity.service";
@@ -42,7 +42,8 @@ export class AccountPasswordPage implements OnInit, OnDestroy {
   constructor(
     identityService: IdentityService,
     private router: Router,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private navCtrl:NavController
   ) {
     this.identitySubscription = identityService.getIdentity().subscribe(id => {
       this.identityEntity = id;
@@ -51,7 +52,9 @@ export class AccountPasswordPage implements OnInit, OnDestroy {
     console.log("account-password constructor");
     this.passwordModel = new PasswordModel();
   }
-
+  back(){
+    this.navCtrl.back();
+  }
   forgetPassword() {
     this.router.navigate([
       AppHelper.getRoutePath("password-check"),

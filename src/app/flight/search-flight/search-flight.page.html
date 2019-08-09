@@ -1,7 +1,9 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <ion-back-button></ion-back-button>
+      <ion-button (click)='back()'>
+        <ion-icon color='dark' name='arrow-back'></ion-icon>
+      </ion-button>
     </ion-buttons>
     <ion-title>机票查询</ion-title>
     <ion-buttons slot='end' *ngIf='mustAddPassenger()'>

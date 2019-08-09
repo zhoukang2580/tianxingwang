@@ -1,19 +1,19 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { IdentityService } from 'src/app/services/identity/identity.service';
-import { Router } from '@angular/router';
-import { ApiService } from 'src/app/services/api/api.service';
-import { RequestEntity } from 'src/app/services/api/Request.entity';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { NavController } from '@ionic/angular';
-import { LanguageHelper } from 'src/app/languageHelper';
-import { AppHelper } from 'src/app/appHelper';
-import { Subscription } from 'rxjs';
-import { IResponse } from 'src/app/services/api/IResponse';
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import { IdentityService } from "src/app/services/identity/identity.service";
+import { Router } from "@angular/router";
+import { ApiService } from "src/app/services/api/api.service";
+import { RequestEntity } from "src/app/services/api/Request.entity";
+import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import { NavController } from "@ionic/angular";
+import { LanguageHelper } from "src/app/languageHelper";
+import { AppHelper } from "src/app/appHelper";
+import { Subscription } from "rxjs";
+import { IResponse } from "src/app/services/api/IResponse";
 
 @Component({
-  selector: 'app-account-mobile',
-  templateUrl: './account-mobile.page.html',
-  styleUrls: ['./account-mobile.page.scss'],
+  selector: "app-account-mobile",
+  templateUrl: "./account-mobile.page.html",
+  styleUrls: ["./account-mobile.page.scss"]
 })
 export class AccountMobilePage implements OnInit, OnDestroy {
   action: string;
@@ -25,10 +25,13 @@ export class AccountMobilePage implements OnInit, OnDestroy {
   countDownInterval: any;
   senSmsCodeSubscription = Subscription.EMPTY;
   isShowImageCode: boolean;
-  constructor(private fb: FormBuilder, private identityService: IdentityService,
+  constructor(
+    private fb: FormBuilder,
+    private identityService: IdentityService,
     private router: Router,
     private navController: NavController,
-    private apiService: ApiService) { }
+    private apiService: ApiService
+  ) {}
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -40,45 +43,66 @@ export class AccountMobilePage implements OnInit, OnDestroy {
   load() {
     const req = new RequestEntity();
     req.Method = `ApiPasswordUrl-Mobile-Load`;
-    const scription = this.apiService.getResponse<{ Action: string, Mobile: string, IsActiveMobile?: boolean }>(req)
-      .subscribe(r => {
-        this.setResult(r);
-      }, (e) => {
-
-      }, () => {
-        scription.unsubscribe();
-      });
-
+    const scription = this.apiService
+      .getResponse<{
+        Action: string;
+        Mobile: string;
+        IsActiveMobile?: boolean;
+      }>(req)
+      .subscribe(
+        r => {
+          this.setResult(r);
+        },
+        e => {},
+        () => {
+          scription.unsubscribe();
+        }
+      );
+  }
+  back() {
+    this.navController.back();
   }
   sendAction() {
     const req = new RequestEntity();
     req.Method = `ApiPasswordUrl-Mobile-Action`;
     req.IsShowLoading = true;
-    req.Data = { Mobile: this.form.value.Mobile, Code: this.form.value.Code, Action: this.action };
-    const scription = this.apiService.getResponse<{ Action: string, Mobile: string, IsActiveMobile?: boolean }>(req)
-      .subscribe( r => {
-        if (r.Status && r.Data) {
-          if ((r.Data.Action as string).toLowerCase() == "finish") {
-             AppHelper.alert(LanguageHelper.getBindMobileSuccess(), true).then(() => {
-              this.navController.back();
-            });
-            return;
+    req.Data = {
+      Mobile: this.form.value.Mobile,
+      Code: this.form.value.Code,
+      Action: this.action
+    };
+    const scription = this.apiService
+      .getResponse<{
+        Action: string;
+        Mobile: string;
+        IsActiveMobile?: boolean;
+      }>(req)
+      .subscribe(
+        r => {
+          if (r.Status && r.Data) {
+            if ((r.Data.Action as string).toLowerCase() == "finish") {
+              AppHelper.alert(LanguageHelper.getBindMobileSuccess(), true).then(
+                () => {
+                  this.back();
+                }
+              );
+              return;
+            }
+            r.Data.Mobile = "";
+            this.form.patchValue({ Code: "" });
           }
-          r.Data.Mobile = "";
-          this.form.patchValue({ Code: "" });
+          this.setResult(r);
+        },
+        e => {},
+        () => {
+          scription.unsubscribe();
         }
-        this.setResult(r);
-
-      }, (e) => {
-
-      }, () => {
-        scription.unsubscribe();
-      });
-
+      );
   }
-  setResult(r: IResponse<{ Action: string, Mobile: string, IsActiveMobile?: boolean }>) {
+  setResult(
+    r: IResponse<{ Action: string; Mobile: string; IsActiveMobile?: boolean }>
+  ) {
     if (r.Status && r.Data) {
-
       this.isActiveMobile = r.Data.IsActiveMobile;
       this.form.patchValue({ Mobile: r.Data.Mobile });
       this.action = r.Data.Action;
@@ -108,18 +132,23 @@ export class AccountMobilePage implements OnInit, OnDestroy {
     req.Method = "ApiPasswordUrl-Mobile-SendCode";
     req.IsShowLoading = true;
     req.Data = { Mobile: this.form.value.Mobile, Action: this.action };
-    this.senSmsCodeSubscription = this.apiService.getResponse<{
-      SendInterval: number;
-      ExpiredInterval: number;
-    }>(req).subscribe(res => {
-      if (!res.Status&&res.Message) {
-        AppHelper.alert(res.Message);
-        return;
-      }
-      this.startCountDonw(res.Data.SendInterval);
-    }, e => {
-      AppHelper.alert(e);
-    });
+    this.senSmsCodeSubscription = this.apiService
+      .getResponse<{
+        SendInterval: number;
+        ExpiredInterval: number;
+      }>(req)
+      .subscribe(
+        res => {
+          if (!res.Status && res.Message) {
+            AppHelper.alert(res.Message);
+            return;
+          }
+          this.startCountDonw(res.Data.SendInterval);
+        },
+        e => {
+          AppHelper.alert(e);
+        }
+      );
   }
   ngOnDestroy(): void {
     this.senSmsCodeSubscription.unsubscribe();

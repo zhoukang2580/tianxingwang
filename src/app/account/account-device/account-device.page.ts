@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
-import { IonList } from '@ionic/angular';
-import { ApiService } from 'src/app/services/api/api.service';
-import { Observable, merge, of, Subscription } from 'rxjs';
-import { RequestEntity } from 'src/app/services/api/Request.entity';
-import { map, switchMap } from 'rxjs/operators';
-import { AppHelper } from 'src/app/appHelper';
+import { IonList, NavController } from "@ionic/angular";
+import { ApiService } from "src/app/services/api/api.service";
+import { Observable, merge, of, Subscription } from "rxjs";
+import { RequestEntity } from "src/app/services/api/Request.entity";
+import { map, switchMap } from "rxjs/operators";
+import { AppHelper } from "src/app/appHelper";
 type Item = {
   Id: string;
   Name: string;
@@ -17,54 +17,63 @@ type Item = {
 export class AccountDevicePage implements OnInit, OnDestroy {
   toggleChecked = false;
   items: Item[] = [];
-  @ViewChild('List') deviceList: IonList;
-  constructor(private apiService: ApiService) {
-
-  }
+  @ViewChild("List") deviceList: IonList;
+  constructor(private apiService: ApiService, private navCtrl: NavController) {}
 
   ngOnInit() {
     this.load();
   }
+  back() {
+    this.navCtrl.back();
+  }
   load() {
     const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Device-List";
-    let deviceSubscription = this.apiService.getResponse<Item[]>(req).pipe(map(r => r.Data)).subscribe(r => {
-      this.items = r;
-    },()=>{
-      if(deviceSubscription)
-      {
-        deviceSubscription.unsubscribe();
-      }
-    });
+    let deviceSubscription = this.apiService
+      .getResponse<Item[]>(req)
+      .pipe(map(r => r.Data))
+      .subscribe(
+        r => {
+          this.items = r;
+        },
+        () => {
+          if (deviceSubscription) {
+            deviceSubscription.unsubscribe();
+          }
+        }
+      );
   }
   delete(item: Item) {
     const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Device-Remove";
-    req.IsShowLoading=true;
-    req.Data={
-      Id:item.Id
+    req.IsShowLoading = true;
+    req.Data = {
+      Id: item.Id
     };
-    let deviceSubscription = this.apiService.getResponse<{}>(req).subscribe(s => {
-      this.items=this.items.filter(it=>it!=item);
-    }, n => {
-      AppHelper.alert(n);
-    },()=>{
-      if(deviceSubscription)
-      {
-        deviceSubscription.unsubscribe();
+    let deviceSubscription = this.apiService.getResponse<{}>(req).subscribe(
+      s => {
+        this.items = this.items.filter(it => it != item);
+      },
+      n => {
+        AppHelper.alert(n);
+      },
+      () => {
+        if (deviceSubscription) {
+          deviceSubscription.unsubscribe();
+        }
       }
-    });
+    );
   }
-  itemClick() {
-
-  }
-  ngOnDestroy() {
-  }
+  itemClick() {}
+  ngOnDestroy() {}
   toggleDeleteButton() {
     this.deviceList.closeSlidingItems();
-    setTimeout(() => {
-      this.toggleChecked = !this.toggleChecked;
-    }, this.toggleChecked ? 300 : 0);
+    setTimeout(
+      () => {
+        this.toggleChecked = !this.toggleChecked;
+      },
+      this.toggleChecked ? 300 : 0
+    );
   }
   onSlidingItemDrag() {
     this.toggleChecked = false;

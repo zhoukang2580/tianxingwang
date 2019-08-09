@@ -3,13 +3,13 @@ import { FormGroup, Validators } from "@angular/forms";
 import { FormBuilder } from "@angular/forms";
 import { Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
-import { LanguageHelper } from 'src/app/languageHelper';
-import { RequestEntity } from 'src/app/services/api/Request.entity';
-import { Router } from '@angular/router';
-import { NavController } from '@ionic/angular';
-import { ApiService } from 'src/app/services/api/api.service';
-import { IdentityService } from 'src/app/services/identity/identity.service';
-import { AppHelper } from 'src/app/appHelper';
+import { LanguageHelper } from "src/app/languageHelper";
+import { RequestEntity } from "src/app/services/api/Request.entity";
+import { Router } from "@angular/router";
+import { NavController } from "@ionic/angular";
+import { ApiService } from "src/app/services/api/api.service";
+import { IdentityService } from "src/app/services/identity/identity.service";
+import { AppHelper } from "src/app/appHelper";
 
 @Component({
   selector: "app-account-email",
@@ -25,14 +25,17 @@ export class AccountEmailPage implements OnInit {
   form: FormGroup;
   countDownInterval: any;
   isShowImageCode: boolean;
-  constructor(private fb: FormBuilder, private identityService: IdentityService,
+  constructor(
+    private fb: FormBuilder,
+    private identityService: IdentityService,
     private router: Router,
     private navController: NavController,
-    private apiService: ApiService) { }
+    private apiService: ApiService
+  ) {}
 
   ngOnInit() {
     this.form = this.fb.group({
-      Email: [null,Validators.required],
+      Email: [null, Validators.required],
       Code: [null]
     });
     this.load();
@@ -40,44 +43,60 @@ export class AccountEmailPage implements OnInit {
   load() {
     const req = new RequestEntity();
     req.Method = `ApiPasswordUrl-Email-Load`;
-    const scription = this.apiService.getResponse<{ Action: string, Email: string, IsActiveEmail?: boolean }>(req)
-      .subscribe(r => {
-        this.setResult(r);
-      }, (e) => {
-
-      }, () => {
-        scription.unsubscribe();
-      });
-
+    const scription = this.apiService
+      .getResponse<{ Action: string; Email: string; IsActiveEmail?: boolean }>(
+        req
+      )
+      .subscribe(
+        r => {
+          this.setResult(r);
+        },
+        e => {},
+        () => {
+          scription.unsubscribe();
+        }
+      );
   }
   sendAction() {
     const req = new RequestEntity();
     req.Method = `ApiPasswordUrl-Email-Action`;
     req.IsShowLoading = true;
-    req.Data = { Email: this.form.value.Email, Code: this.form.value.Code, Action: this.action };
-    const scription = this.apiService.getResponse<{ Action: string, Email: string, IsActiveEmail?: boolean }>(req)
-      .subscribe(r => {
-        if (r.Status && r.Data) {
-          if ((r.Data.Action as string).toLowerCase() == "finish") {
-            AppHelper.alert(LanguageHelper.getBindEmailSuccess(), true).then(() => {
-              this.navController.back();
-            });
-            return;
+    req.Data = {
+      Email: this.form.value.Email,
+      Code: this.form.value.Code,
+      Action: this.action
+    };
+    const scription = this.apiService
+      .getResponse<{ Action: string; Email: string; IsActiveEmail?: boolean }>(
+        req
+      )
+      .subscribe(
+        r => {
+          if (r.Status && r.Data) {
+            if ((r.Data.Action as string).toLowerCase() == "finish") {
+              AppHelper.alert(LanguageHelper.getBindEmailSuccess(), true).then(
+                () => {
+                  this.back();
+                }
+              );
+              return;
+            }
+            r.Data.Email = "";
+            this.form.patchValue({ Code: "" });
           }
-          r.Data.Email = "";
-          this.form.patchValue({ Code: "" });
+          this.setResult(r);
+        },
+        e => {},
+        () => {
+          scription.unsubscribe();
         }
-        this.setResult(r);
-
-      }, (e) => {
-      }, () => {
-        scription.unsubscribe();
-      });
-
+      );
+  }
+  back() {
+    this.navController.back();
   }
   setResult(r: any) {
     if (r.Status && r.Data) {
-
       this.isActiveEmail = r.Data.IsActiveEmail;
       this.form.patchValue({ Email: r.Data.Email });
       this.action = r.Data.Action;
@@ -104,25 +123,29 @@ export class AccountEmailPage implements OnInit {
     req.Method = "ApiPasswordUrl-Email-SendCode";
     req.IsShowLoading = true;
     req.Data = { Email: this.form.value.Email, Action: this.action };
-    const sub = this.apiService.getResponse<{
-      SendInterval: number;
-      ExpiredInterval: number;
-    }>(req).subscribe(res => {
-      if(!res.Status && res.Message)
-      {
-        AppHelper.alert(res.Message);
-        return;
-      }
-      this.startCountDonw(res.Data.SendInterval);
-    }, e => {
-      AppHelper.alert(e);
-    }, () => {
-      setTimeout(() => {
-        if (sub) {
-          sub.unsubscribe();
+    const sub = this.apiService
+      .getResponse<{
+        SendInterval: number;
+        ExpiredInterval: number;
+      }>(req)
+      .subscribe(
+        res => {
+          if (!res.Status && res.Message) {
+            AppHelper.alert(res.Message);
+            return;
+          }
+          this.startCountDonw(res.Data.SendInterval);
+        },
+        e => {
+          AppHelper.alert(e);
+        },
+        () => {
+          setTimeout(() => {
+            if (sub) {
+              sub.unsubscribe();
+            }
+          }, 100);
         }
-      }, 100);
-    });
+      );
   }
-
 }

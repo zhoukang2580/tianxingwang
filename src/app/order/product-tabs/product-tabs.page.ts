@@ -35,6 +35,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   tmc: TmcEntity;
   orderModel: OrderModel;
   dataCount: number;
+  isLoading = true;
   title = "机票订单";
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
@@ -117,10 +118,12 @@ export class ProductTabsPage implements OnInit, OnDestroy {
           : this.activeTab == ProductItemType.hotel
           ? "hotel"
           : "flight";
+      this.isLoading = true;
       this.loadDataSub = this.tmcService
         .getOrderList(m)
         .pipe(
           finalize(() => {
+            this.isLoading = false;
             setTimeout(() => {
               if (this.infiniteScroll) {
                 this.infiniteScroll.complete();

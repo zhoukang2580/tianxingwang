@@ -7,6 +7,7 @@ import { ApiService } from "src/app/services/api/api.service";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { Observable, Subscription } from "rxjs";
 import { map } from "rxjs/operators";
+import { NavController } from "@ionic/angular";
 interface Item {
   Name: string;
   RealName: string;
@@ -30,13 +31,17 @@ export class AccountSecurityPage implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private identityService: IdentityService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private navCtrl: NavController
   ) {
     this.identityEntitySubscription = this.identityService
       .getIdentity()
       .subscribe(identity => {
         this.identityEntity = identity;
       });
+  }
+  back() {
+    this.navCtrl.back();
   }
   ngOnInit() {
     this.deviceSubscription = this.load();
