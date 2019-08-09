@@ -139,14 +139,14 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private flightService: FlightService,
     private ngZone: NgZone,
-    private navCtrl:NavController,
+    private navCtrl: NavController,
     private flyDayService: CalendarService,
     private staffService: StaffService,
     private apiService: ApiService,
     private identityService: IdentityService,
     private domCtrl: DomController,
     private modalCtrl: ModalController,
-    private popoverController: PopoverController,
+    private popoverController: PopoverController
   ) {
     this.selectedPassengersNumbers$ = flightService
       .getPassengerBookInfoSource()
@@ -569,6 +569,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.policyflights
     );
     this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
+
     this.searchConditionSubscription.unsubscribe();
     this.isLeavePage = true;
   }
