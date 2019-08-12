@@ -33,7 +33,7 @@ import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { LanguageHelper } from "src/app/languageHelper";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
-import { Country } from "src/app/tmc/components/select-country/select-country.page";
+import { Country } from "src/app/tmc/components/select-country/select-countrymodal.component";
 import { AppHelper } from "src/app/appHelper";
 import { ValidatorService } from "src/app/services/validator/validator.service";
 import * as moment from "moment";

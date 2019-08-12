@@ -18,24 +18,23 @@ export interface Country {
 }
 @Component({
   selector: "app-select-country",
-  templateUrl: "./select-country.page.html",
-  styleUrls: ["./select-country.page.scss"]
+  templateUrl: "./select-countrymodal.component.html",
+  styleUrls: ["./select-countrymodal.component.scss"]
 })
-export class SelectCountryModal implements OnInit {
+export class SelectCountryModalComponent implements OnInit {
   title: string;
   requestCode: string;
   countries: Country[] = [];
   viewModelItems: Country[];
   currentPage = 1;
-  pageSize = 10;
+  pageSize = 15;
   loading = false;
   keyword = "";
   selectedItem: Country;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   constructor(
-    private router: Router,
-    private route: ActivatedRoute,
+    route: ActivatedRoute,
     private apiService: ApiService,
     private storage: Storage,
     private modalCtrl: ModalController

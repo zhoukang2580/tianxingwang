@@ -20,6 +20,7 @@ import { BookCostcenterCompComponent } from "./book-costcenter-comp/book-costcen
 import { BookOrganizationCompComponent } from "./book-organization-comp/book-organization-comp.component";
 import { BookAddcontactsCompComponent } from "./book-addcontacts-comp/book-addcontacts-comp.component";
 import { DayComponent } from "src/app/tmc/components/day/day.component";
+import { SelectCountryModalComponent } from './select-country/select-countrymodal.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { DayComponent } from "src/app/tmc/components/day/day.component";
     BookOrganizationCompComponent,
     BookAddcontactsCompComponent,
     DayComponent,
-    CalendarComponent
+    CalendarComponent,
+    SelectCountryModalComponent
   ],
   imports: [
     CommonModule,
@@ -67,7 +69,8 @@ import { DayComponent } from "src/app/tmc/components/day/day.component";
     AddcontactsModalComponent,
     AddcontactsModalComponent,
     OrganizationComponent,
-    CalendarComponent
+    CalendarComponent,
+    SelectCountryModalComponent
   ]
 })
 export class TmcComponentsModule {}

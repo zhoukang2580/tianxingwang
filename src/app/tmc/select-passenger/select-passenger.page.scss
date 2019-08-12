@@ -1,4 +1,4 @@
-ion-content{
+ion-content {
   --background: #f2f2f2;
 }
 .id-type {
@@ -17,8 +17,13 @@ ion-row ion-col {
   &:not(.arrow-forward) {
     align-self: flex-start;
   }
-  input[readonly] {
+  input.disabled {
     border: none;
+    background: transparent;
+  }
+  input:disabled {
+    background: transparent;
+    border-color: rgba(var(--ion-color-dark-rgb), 0.3);
   }
 }
 .gender {
@@ -38,9 +43,9 @@ form {
 ion-item .credential-item {
   width: 100%;
 }
-ion-item-group ion-item-divider:first-of-type{
+ion-item-group ion-item-divider:first-of-type {
   border-left: 4px solid var(--ion-color-secondary);
 }
-.credentials-remark{
-  width:100%;
+.credentials-remark {
+  width: 100%;
 }

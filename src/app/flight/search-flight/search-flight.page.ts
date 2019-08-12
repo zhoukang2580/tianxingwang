@@ -69,7 +69,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     private tmcService: TmcService
   ) {
     route.queryParamMap.subscribe(async _ => {
-      this.tmcService.setTravelType(FlightHotelTrainType.Flight);
+      this.tmcService.setFlightHotelTrainType(FlightHotelTrainType.Flight);
       this.staff = await this.staffService.getStaff();
       this.disabled = this.searchFlightModel && this.searchFlightModel.isLocked;
       this.showReturnTrip = await this.isStaffTypeSelf();

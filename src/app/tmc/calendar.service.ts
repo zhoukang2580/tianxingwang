@@ -8,9 +8,9 @@ import { AvailableDate } from "./models/AvailableDate";
   providedIn: "root"
 })
 export class CalendarService {
-  private selectedSource: Subject<DayModel[]>;
-  private multiFlyDaySource: Subject<boolean>;
-  private showFlyDayPageSource: Subject<boolean>;
+  private selectedDaysSource: Subject<DayModel[]>;
+  private isMultiDaySource: Subject<boolean>;
+  private showCalendarSource: Subject<boolean>;
   private dayOfWeekNames = {
     0: LanguageHelper.getSundayTip(),
     1: LanguageHelper.getMondayTip(),
@@ -21,30 +21,30 @@ export class CalendarService {
     6: LanguageHelper.getSaturdayTip()
   };
   constructor() {
-    this.selectedSource = new BehaviorSubject([]);
-    this.multiFlyDaySource = new BehaviorSubject(false);
-    this.showFlyDayPageSource = new BehaviorSubject(false);
+    this.selectedDaysSource = new BehaviorSubject([]);
+    this.isMultiDaySource = new BehaviorSubject(false);
+    this.showCalendarSource = new BehaviorSubject(false);
   }
   getDayOfWeekNames() {
     return this.dayOfWeekNames;
   }
   showSelectFlyDatePage(show: boolean) {
-    this.showFlyDayPageSource.next(show);
+    this.showCalendarSource.next(show);
   }
   getShowFlyDayPageSource() {
-    return this.showFlyDayPageSource.asObservable();
+    return this.showCalendarSource.asObservable();
   }
   setFlyDayMulti(multi: boolean) {
-    this.multiFlyDaySource.next(multi);
+    this.isMultiDaySource.next(multi);
   }
   getFlyDayMulti() {
-    return this.multiFlyDaySource.asObservable();
+    return this.isMultiDaySource.asObservable();
   }
   getSelectedFlyDays() {
-    return this.selectedSource.asObservable();
+    return this.selectedDaysSource.asObservable();
   }
   setSelectedFlyDays(days: DayModel[]) {
-    this.selectedSource.next(days);
+    this.selectedDaysSource.next(days);
   }
   getMonth(d: DayModel) {
     return d.date.substring("2018-".length + 1, "2018-11".length);
@@ -183,12 +183,12 @@ export class CalendarService {
     console.timeEnd("generateCanlender");
     return Promise.resolve(calender);
   }
-  generateCanlender(months: number) {
+  generateNthCanlender(nthMonth: number) {
     return Promise.resolve().then(_ => {
-      console.log('generateCanlender',months);
+      console.log("generateCanlender", nthMonth);
       console.time("generateCanlender");
       const calendar: AvailableDate[] = [];
-      for (let i = 0; i < months; i++) {
+      for (let i = 0; i < nthMonth; i++) {
         const curDate = new Date();
         const iDate = new Date(
           curDate.getFullYear(),

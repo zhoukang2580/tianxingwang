@@ -63,10 +63,10 @@ export class TmcService {
     });
     this.selectedCompanySource = new BehaviorSubject(null);
   }
-  setTravelType(type: FlightHotelTrainType) {
+  setFlightHotelTrainType(type: FlightHotelTrainType) {
     this.travelType = type;
   }
-  getTravelType() {
+  getFlightHotelTrainType() {
     return this.travelType;
   }
   getOrderList(searchCondition: OrderModel) {
