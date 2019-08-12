@@ -88,8 +88,8 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
       }
     });
     setTimeout(async () => {
-      this.yms = await this.calendarService.generateNthCanlender(12);
-    }, 1000);
+      this.yms = await this.calendarService.generateNthCanlender(6);
+    }, 5*1000);
     this.flightService.getSearchFlightModelSource().subscribe(s => {
       if (s) {
         this.tripType = s.tripType;
