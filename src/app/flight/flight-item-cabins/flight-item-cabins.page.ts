@@ -149,7 +149,9 @@ export class FlightItemCabinsPage implements OnInit {
     return "primary";
   }
   async ngOnInit() {
-    setTimeout(async() => {
+    console.log(this.currentViewtFlightSegment.totalPolicyFlights);
+    console.log(this.currentViewtFlightSegment.flightSegment.PoliciedCabins);
+    setTimeout(async () => {
       if (await this.staffService.checkStaffTypeSelf()) {
         this.isShowPolicyCabins = true;
         this.showPolicyCabins();
