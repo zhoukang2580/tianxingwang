@@ -601,10 +601,16 @@ export class SelectPassengerPage
     );
   }
   async selectIdentityNationality() {
+    if (this.selectedCredentialId != this.vmNewCredential.Id) {
+      return;
+    }
     this.requestCode = "identityNationality";
     await this.selectCountry();
   }
   async selectIssueNationality() {
+    if (this.selectedCredentialId != this.vmNewCredential.Id) {
+      return;
+    }
     this.requestCode = "issueNationality";
     await this.selectCountry();
   }
