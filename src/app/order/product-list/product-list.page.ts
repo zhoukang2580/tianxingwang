@@ -2,7 +2,8 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { Component, OnInit } from "@angular/core";
 import { ProductItemType, ProductItem } from "../../tmc/models/ProductItems";
 import { NavController } from "@ionic/angular";
-import { AppHelper } from 'src/app/appHelper';
+import { AppHelper } from "src/app/appHelper";
+import { ORDER_TABS } from "../product-tabs/product-tabs.page";
 @Component({
   selector: "app-product-list",
   templateUrl: "./product-list.page.html",
@@ -10,14 +11,16 @@ import { AppHelper } from 'src/app/appHelper';
 })
 export class ProductListPage implements OnInit {
   products: ProductItem[] = [];
-  constructor(route: ActivatedRoute, private navCtrl: NavController,private router:Router) {
+  constructor(
+    route: ActivatedRoute,
+    private navCtrl: NavController,
+    private router: Router
+  ) {
     route.queryParamMap.subscribe(p => {
-      if (p.get("tabs")) {
-        this.products = JSON.parse(p.get("tabs"));
-        this.products = this.products.filter(
-          t => t.value != ProductItemType.more
-        );
-      }
+      this.products = ORDER_TABS;
+      this.products = this.products.filter(
+        t => t.value != ProductItemType.more
+      );
     });
   }
   back() {
@@ -25,7 +28,7 @@ export class ProductListPage implements OnInit {
   }
   goToProductTab(tab: ProductItem) {
     this.router.navigate([AppHelper.getRoutePath(`product-tabs`)], {
-      queryParams: { tabId: tab.value, tabs: JSON.stringify(this.products) }
+      queryParams: { tabId: tab.value }
     });
   }
   ngOnInit() {}

@@ -96,7 +96,8 @@
           </div>
           <div style='width: 100%' *ngIf='combindInfo?.vmCredential'>
             <app-book-credential-comp [credential]='combindInfo?.vmCredential'
-              (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo?.credentials'>
+              (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo?.credentials'
+              (modify)='onModify(combindInfo)'>
             </app-book-credential-comp>
             <div *ngIf='s?.flightPolicy?.Rules?.length'>
               <app-book-illegal-reason-comp #illegalReasonsEle [illegalReasons]='illegalReasons'
@@ -132,9 +133,9 @@
                 <ion-input [(ngModel)]="combindInfo.credentialStaffOtherEmail" placeholder='请输入其他邮箱'></ion-input>
               </ion-item>
             </div>
-            <div *ngIf='combindInfo?.insuranceResultProducts.length'>
+            <div *ngIf='combindInfo?.insuranceProducts?.length'>
               保险:
-              <div *ngFor='let insurance of combindInfo?.insuranceResultProducts?.slice(0,1)'>
+              <div *ngFor='let insurance of combindInfo?.insuranceProducts?.slice(0,1)'>
                 <ion-row>
                   <ion-col size='9'>
                     <ion-item>
@@ -199,7 +200,7 @@
                 </ion-radio>
               </ion-item>
             </ion-radio-group>
-          </div>
+          </div> 
           <div class='ion-margin-top'>
             支付方式：
             <ion-radio-group [(ngModel)]='combindInfo.orderTravelPayType' name='travelPayType'>

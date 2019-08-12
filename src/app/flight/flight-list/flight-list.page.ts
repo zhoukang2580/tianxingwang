@@ -465,7 +465,11 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.policyflights = [];
       return [];
     }
-    if (passengerId || (await this.isStaffTypeSelf())) {
+    if (
+      passengerId ||
+      (await this.isStaffTypeSelf()) ||
+      this.flightService.getPassengerBookInfos().length == 1
+    ) {
       flightJourneyList = this.replaceCabinInfo(
         this.policyflights,
         flightJourneyList

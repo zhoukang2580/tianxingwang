@@ -158,6 +158,7 @@ export class PassengerDto {
   /// 审批人
   /// </summary>
   ApprovalId: string;
+  ClientId: string;
   /// <summary>
   ///
   /// </summary>

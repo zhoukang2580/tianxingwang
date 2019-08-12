@@ -21,6 +21,33 @@ import { OrderFlightTicketEntity } from "src/app/order/models/OrderFlightTicketE
 import * as moment from "moment";
 import { Subscription } from "rxjs";
 import { finalize } from "rxjs/operators";
+export const ORDER_TABS = [
+  {
+    label: "机票",
+    value: ProductItemType.plane,
+    imageSrc: "assets/svgs/product-plane.svg"
+  },
+  {
+    label: "酒店",
+    value: ProductItemType.hotel,
+    imageSrc: "assets/svgs/product-hotel.svg"
+  },
+  {
+    label: "火车票",
+    value: ProductItemType.train,
+    imageSrc: "assets/svgs/product-train.svg"
+  },
+  {
+    label: "保险",
+    value: ProductItemType.insurance,
+    imageSrc: "assets/svgs/product-insurance.svg"
+  },
+  {
+    label: "更多",
+    value: ProductItemType.more,
+    imageSrc: "assets/svgs/product-more.svg"
+  }
+];
 @Component({
   selector: "app-product-tabs",
   templateUrl: "./product-tabs.page.html",
@@ -50,10 +77,6 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       console.log("product-tabs", d);
       if (d && d.get("tabId")) {
         this.activeTab = +d.get("tabId") || ProductItemType.plane;
-      }
-      if (d && d.get("tabs")) {
-        this.tabs = JSON.parse(d.get("tabs"));
-        this.tabs = this.tabs.filter(t => t.value != ProductItemType.more);
       }
     });
   }
@@ -290,6 +313,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   async ngOnInit() {
     this.tmc = await this.tmcService.getTmc(true);
     this.doRefresh();
+    this.tabs = ORDER_TABS.filter(t => t.value != ProductItemType.more);
   }
   getTotalAmount(order: OrderEntity, key: string) {
     console.log("getTotalAmount", order, key);

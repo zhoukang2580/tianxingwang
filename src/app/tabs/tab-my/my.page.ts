@@ -11,6 +11,7 @@ import { ConfigService } from "src/app/services/config/config.service";
 import { Subscription, Observable } from "rxjs";
 import { Platform } from "@ionic/angular";
 import { ProductItem, ProductItemType } from "src/app/tmc/models/ProductItems";
+import { ORDER_TABS } from "src/app/order/product-tabs/product-tabs.page";
 interface PageModel {
   Name: string;
   RealName: string;
@@ -53,7 +54,7 @@ export class MyPage implements OnDestroy, OnInit {
     });
   }
   private goToProductListPage() {
-    this.router.navigate([AppHelper.getRoutePath(`product-list`)],{queryParams:{tabs:JSON.stringify(this.items)}});
+    this.router.navigate([AppHelper.getRoutePath(`product-list`)]);
   }
   onProductClick(tab: ProductItem) {
     if (tab.value != ProductItemType.more) {
@@ -64,7 +65,7 @@ export class MyPage implements OnDestroy, OnInit {
   }
   private goToProductTabsPage(tab: ProductItem) {
     this.router.navigate([AppHelper.getRoutePath(`product-tabs`)], {
-      queryParams: { tabId: tab.value, tabs: JSON.stringify(this.items) }
+      queryParams: { tabId: tab.value }
     });
   }
   onSettings() {
@@ -75,33 +76,7 @@ export class MyPage implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
-    this.items = [
-      {
-        label: "机票",
-        value: ProductItemType.plane,
-        imageSrc: "assets/svgs/product-plane.svg"
-      },
-      {
-        label: "酒店",
-        value: ProductItemType.hotel,
-        imageSrc: "assets/svgs/product-hotel.svg"
-      },
-      {
-        label: "火车票",
-        value: ProductItemType.train,
-        imageSrc: "assets/svgs/product-train.svg"
-      },
-      {
-        label: "保险",
-        value: ProductItemType.insurance,
-        imageSrc: "assets/svgs/product-insurance.svg"
-      },
-      {
-        label: "更多",
-        value: ProductItemType.more,
-        imageSrc: "assets/svgs/product-more.svg"
-      }
-    ];
+    this.items = ORDER_TABS;
     this.msgCount$ = this.messageService.getMsgCount();
     console.log("my ngOnInit");
     // this.Model = {

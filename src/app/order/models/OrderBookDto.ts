@@ -15,7 +15,7 @@ export class OrderBookDto {
   /// 订单来源Identity
   /// </summary>
   Channel: string;
-
+  TravelFormId: string;
   /// <summary>
   /// 订单类型
   /// </summary>

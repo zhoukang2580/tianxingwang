@@ -1,6 +1,6 @@
 import { LanguageInfo } from "./models/LanguageInfo";
 import { AppHelper } from "./../appHelper";
-import { OrganizationEntity } from "./../hr/staff.service";
+import { OrganizationEntity, StaffApprover } from "./../hr/staff.service";
 import { AccountEntity } from "./models/AccountEntity";
 import { AgentEntity } from "./models/AgentEntity";
 import { IdentityService } from "src/app/services/identity/identity.service";
@@ -21,8 +21,10 @@ import { OrderModel } from "../order/models/OrderModel";
 import { OrderService } from "../order/order.service";
 import { PassengerFlightSegmentInfo } from "../flight/models/PassengerFlightInfo";
 import { ITrainInfo } from "../train/train.service";
+import { InsuranceProductEntity } from "../insurance/models/InsuranceProductEntity";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
+
 interface SelectItem {
   Value: string;
   Text: string;
@@ -231,7 +233,7 @@ export class TmcService {
       .catch(_ => []);
     return this.companies;
   }
-  async getCredentials(accountId: string) {
+  async searchPassengerCredentials(accountId: string) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Credentials-List";
@@ -242,12 +244,6 @@ export class TmcService {
       .getPromiseData<{ Credentials: MemberCredential[] }>(req)
       .then(r => r.Credentials)
       .catch(_ => []);
-  }
-  async getLanguageInfos(): Promise<LanguageInfo[]> {
-    const req = new RequestEntity();
-    req.IsShowLoading = true;
-    req.Method = "TmcApiBookUrl-Home-GetTravelUrl";
-    return this.apiService.getPromiseData<LanguageInfo[]>(req);
   }
   async getTravelUrls(
     data: {
@@ -294,16 +290,6 @@ export class TmcService {
       value: TravelUrlInfo[];
     }>(req);
   }
-  async getTmc(forceFetch = true): Promise<TmcEntity> {
-    if (this.tmc && !forceFetch) {
-      return Promise.resolve(this.tmc);
-    }
-    const req = new RequestEntity();
-    req.IsShowLoading = true;
-    req.Method = "TmcApiBookUrl-Home-GetTmc";
-    this.tmc = await this.apiService.getPromiseData<TmcEntity>(req);
-    return this.tmc;
-  }
   async searchLinkman(
     name: string
   ): Promise<{ Text: string; Value: string }[]> {
@@ -327,28 +313,6 @@ export class TmcService {
     return this.apiService
       .getPromiseData<{ Text: string; Value: string }[]>(req)
       .catch(_ => []);
-  }
-  async getSettingAppovalStaffs(
-    staffSettingAccountIds: string[]
-  ): Promise<StaffEntity[]> {
-    const req = new RequestEntity();
-    req.Method = "TmcApiBookUrl-Home-GetApproverStaffs";
-    req.Data = {
-      AccountIds: staffSettingAccountIds.join(";")
-    };
-    req.IsShowLoading = true;
-    req.Timeout = 60;
-    return this.apiService.getPromiseData<StaffEntity[]>(req);
-  }
-  async getCredentialStaffs(accountIds: string[]): Promise<StaffEntity[]> {
-    const req = new RequestEntity();
-    req.Method = "TmcApiBookUrl-Home-GetStaffs";
-    req.Data = {
-      AccountIds: accountIds.join(";")
-    };
-    req.IsShowLoading = true;
-    req.Timeout = 60;
-    return this.apiService.getPromiseData<StaffEntity[]>(req);
   }
   async getAllLocalAirports(forceFetch = false) {
     if (!forceFetch && this.allLocalAirports && this.allLocalAirports.length) {
@@ -473,6 +437,20 @@ export class TmcService {
     }
     return local.Trafficlines;
   }
+  async checkPay(orderId: string): Promise<boolean> {
+    const req = new RequestEntity();
+    req.Method = "TmcApiBookUrl-Home-CheckPay";
+    req.Data = {
+      OrderId: orderId
+    };
+    req.IsShowLoading = true;
+    req.Timeout = 60;
+    return this.apiService
+      .getPromiseData<boolean>(req)
+      .then(_ => true)
+      .catch(_ => false);
+  }
+
   async getPassengerCredentials(
     accountIds: string[]
   ): Promise<{ [accountId: string]: CredentialsEntity[] }> {
@@ -487,12 +465,15 @@ export class TmcService {
       [accountId: string]: CredentialsEntity[];
     }>(req);
   }
-  async getIllegalReasons(): Promise<IllegalReasonEntity[]> {
+  async getTmc(forceFetch = true): Promise<TmcEntity> {
+    if (this.tmc && !forceFetch) {
+      return Promise.resolve(this.tmc);
+    }
     const req = new RequestEntity();
-    req.Method = "TmcApiBookUrl-Home-GetIllegalReasons";
     req.IsShowLoading = true;
-    req.Timeout = 60;
-    return this.apiService.getPromiseData<IllegalReasonEntity[]>(req);
+    req.Method = "TmcApiHomeUrl-Tmc-GetTmc";
+    this.tmc = await this.apiService.getPromiseData<TmcEntity>(req);
+    return this.tmc;
   }
   async getCostCenter(
     name: string
@@ -508,15 +489,6 @@ export class TmcService {
       req
     );
   }
-  async bookFlight(bookDto: OrderBookDto): Promise<any> {
-    const req = new RequestEntity();
-    req.Method = "TmcApiBookUrl-Flight-Book";
-    bookDto.Channel = "Mobile";
-    req.Data = bookDto;
-    req.IsShowLoading = true;
-    req.Timeout = 60;
-    return this.apiService.getPromiseData<any>(req);
-  }
   async getOrganizations(): Promise<OrganizationEntity[]> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Home-GetOrganizations";
@@ -525,23 +497,6 @@ export class TmcService {
     return this.apiService
       .getPromiseData<OrganizationEntity[]>(req)
       .catch(_ => []);
-  }
-  async getFlightInsurance(): Promise<InsuranceResultEntity> {
-    const req = new RequestEntity();
-    req.Method = "TmcApiBookUrl-Home-GetFlightInsurance";
-    req.Timeout = 60;
-    return this.apiService.getPromiseData<InsuranceResultEntity>(req);
-  }
-  async getTravelFrom(): Promise<TravelFormEntity> {
-    const req = new RequestEntity();
-    const travelformid =
-      AppHelper.getQueryParamers && AppHelper.getQueryParamers["travelformid"];
-    req.Method = "TmcApiBookUrl-Home-GetTravelFrom";
-    req.Timeout = 60;
-    req.Data = {
-      travelformid
-    };
-    return this.apiService.getPromiseData<TravelFormEntity>(req);
   }
 }
 export interface TravelUrlInfo {
@@ -1061,4 +1016,29 @@ export interface PassengerBookInfo {
   trainInfo?: ITrainInfo;
   id?: string;
   isReplace?: boolean;
+}
+export class InitialBookDtoModel {
+  ServiceFees: { [clientId: string]: string };
+  Insurances: InsuranceProductEntity[];
+  TravelFrom: TravelFormEntity;
+  Tmc: TmcEntity;
+  IllegalReasons: string[];
+  Staffs: {
+    CredentialStaff: StaffEntity;
+    Account: AccountEntity;
+    CostCenter: {
+      Code: string;
+      Name: string;
+    };
+    Organization: {
+      Code: string;
+      Name: string;
+    };
+    Name: string;
+    Id: string;
+    Number: string;
+    OutNumber: string;
+    DefaultApprover: StaffEntity;
+    Approvers: StaffApprover[];
+  }[];
 }

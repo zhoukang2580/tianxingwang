@@ -1,7 +1,11 @@
 import { CredentialsType } from "./../member/pipe/credential.pipe";
 import { IdentityEntity } from "./../services/identity/identity.entity";
 import { CredentialsEntity } from "./../tmc/models/CredentialsEntity";
-import { TmcService, PassengerBookInfo } from "src/app/tmc/tmc.service";
+import {
+  TmcService,
+  PassengerBookInfo,
+  InitialBookDtoModel
+} from "src/app/tmc/tmc.service";
 import { ModalController, NavController } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import { FlightCabinEntity } from "./models/flight/FlightCabinEntity";
@@ -25,6 +29,7 @@ import {
   PassengerPolicyFlights,
   FlightPolicy
 } from "./models/PassengerFlightInfo";
+import { OrderBookDto } from "../order/models/OrderBookDto";
 
 export class SearchFlightModel {
   BackDate: string; //  Yes 航班日期（yyyy-MM-dd）
@@ -669,12 +674,45 @@ export class FlightService {
   async getAllLocalAirports() {
     return this.tmcService.getAllLocalAirports();
   }
-  getCredentialStaffs(AccountIds: string[]): Promise<StaffEntity[]> {
-    return this.tmcService.getCredentialStaffs(AccountIds);
+  async bookFlight(bookDto: OrderBookDto): Promise<{ TradeNo: string }> {
+    const req = new RequestEntity();
+    req.Method = "TmcApiBookUrl-Flight-Book";
+    bookDto.Channel = "Mobile";
+    req.Data = bookDto;
+    req.IsShowLoading = true;
+    req.Timeout = 60;
+    return this.apiService.getPromiseData<{ TradeNo: string }>(req);
   }
   async getPassengerCredentials(
     accountIds: string[]
   ): Promise<{ [accountId: string]: CredentialsEntity[] }> {
     return this.tmcService.getPassengerCredentials(accountIds);
+  }
+  async getInitializeBookDto(
+    bookDto: OrderBookDto
+  ): Promise<InitialBookDtoModel> {
+    const req = new RequestEntity();
+    req.Method = "TmcApiBookUrl-Flight-Initialize";
+    req.Data = bookDto;
+    req.IsShowLoading = true;
+    req.Timeout = 60;
+    return this.apiService
+      .getPromiseData<InitialBookDtoModel>(req)
+      .then(res => {
+        res.IllegalReasons = res.IllegalReasons || [];
+        res.Insurances = res.Insurances || [];
+        res.ServiceFees = res.ServiceFees || ({} as any);
+        res.Staffs = res.Staffs || [];
+        res.Staffs = res.Staffs.map(it => {
+          return {
+            ...it,
+            CredentialStaff: { ...it } as any
+          };
+        });
+        res.Tmc = res.Tmc || ({} as any);
+        res.TravelFrom = res.TravelFrom || ({} as any);
+
+        return res;
+      });
   }
 }

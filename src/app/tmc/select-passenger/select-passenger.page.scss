@@ -8,7 +8,7 @@ ion-content {
   position: sticky;
   top: 0;
 }
-ion-select.select-disabled,ion-select.select-disabled + ion-label{
+ion-select.select-disabled{
   opacity:0.7;
 }
 ion-row ion-col {
@@ -31,6 +31,7 @@ ion-row ion-col {
   .disabled {
     opacity: 0.7;
   }
+  opacity: 1;
 }
 .gender {
   display: flex;

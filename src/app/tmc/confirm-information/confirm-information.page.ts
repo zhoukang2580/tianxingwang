@@ -32,7 +32,7 @@ export class ComfirmInformationPage implements OnInit {
     route.paramMap.subscribe(async p => {
       this.staff = await this.staffService.getStaff();
       const identity = await this.identityService.getIdentityAsync();
-      this.credentials = await this.tmcService.getCredentials(
+      this.credentials = await this.tmcService.searchPassengerCredentials(
         identity && identity.Id
       );
       console.log("ComfirmInformationPage", this.staff);

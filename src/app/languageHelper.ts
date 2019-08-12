@@ -17,6 +17,9 @@ export class LanguageHelper {
     },
     getStatusWaitSignTypeTip: () => {
       return "待签收";
+    },
+    getBookTicketWaitingTip: () => {
+      return "您的订单正在预定，请稍后到我的订单中支付";
     }
   };
   static CurrencySymbols = {
@@ -306,7 +309,7 @@ export class LanguageHelper {
   static getReturnTripTip() {
     return "返程";
   }
-  static  getRoundTripTip() {
+  static getRoundTripTip() {
     return "往返";
   }
   static getBackDateTip() {

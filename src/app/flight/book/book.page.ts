@@ -21,7 +21,8 @@ import {
   IllegalReasonEntity,
   TravelFormEntity,
   TravelUrlInfo,
-  PassengerBookInfo
+  PassengerBookInfo,
+  InitialBookDtoModel
 } from "./../../tmc/tmc.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import {
@@ -99,6 +100,7 @@ interface ICombindInfo {
   openrules: boolean; // 打开退改签规则
   vmCredential: CredentialsEntity;
   credentials: CredentialsEntity[];
+  credentialsRequested: boolean;
   appovalStaff: StaffEntity;
   credentialStaff: StaffEntity;
   isSkipApprove: boolean;
@@ -135,7 +137,7 @@ interface ICombindInfo {
   isOtherOrganization: boolean;
   organization: OrganizationEntity;
   otherOrganizationName: string;
-  insuranceResultProducts: {
+  insuranceProducts: {
     insuranceResult: InsuranceProductEntity;
     checked: boolean;
   }[];
@@ -155,23 +157,25 @@ interface ICombindInfo {
   ]
 })
 export class BookPage implements OnInit, AfterViewInit {
+  initialBookDtoModel: InitialBookDtoModel;
   errors: any;
   orderTravelType = OrderTravelType;
   orderTravelPayTypes: {
     label: string;
     value: OrderTravelPayType;
   }[];
+  checkPayCount = 5;
+  checkPayCountIntervalTime = 3 * 1000;
+  checkPayCountIntervalId: any;
   totalPriceSource: Subject<number>;
-  insuranceResult: InsuranceResultEntity;
   vmCombindInfos: ICombindInfo[] = [];
   tmc: TmcEntity;
+  bookDto: OrderBookDto;
   travelForm: TravelFormEntity;
   illegalReasons: IllegalReasonEntity[] = [];
   tmcApprovalTypeNone = TmcApprovalType.None;
   selfStaff: StaffEntity;
   identity: IdentityEntity;
-  credentialStaffs: StaffEntity[] = [];
-  private settingApprovalStaffs: StaffEntity[];
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChildren("illegalReasonsEle", { read: ElementRef })
   illegalReasonsEles: QueryList<ElementRef<HTMLElement>>;
@@ -180,9 +184,6 @@ export class BookPage implements OnInit, AfterViewInit {
     Value: string;
     Text: string;
   };
-  passengerCredentials: {
-    [accountId: string]: CredentialsEntity[];
-  } = [] as any;
   constructor(
     private storage: Storage,
     private flightService: FlightService,
@@ -231,6 +232,29 @@ export class BookPage implements OnInit, AfterViewInit {
       }
     ].filter(t => this.checkOrderTravelPayType(t.value));
   }
+  private async initializeBookDto() {
+    this.bookDto = new OrderBookDto();
+    this.bookDto.TravelFormId = AppHelper.getQueryParamers()["travelFormId"];
+    const infos = this.flightService.getPassengerBookInfos();
+    this.bookDto.Passengers = [];
+    infos.forEach(item => {
+      if (item.passenger) {
+        const p = new PassengerDto();
+        p.ClientId = AppHelper.uuid().substr(0, 6);
+        p.FlightSegment = item.flightSegmentInfo.flightSegment;
+        p.FlightCabin = item.flightSegmentInfo.flightPolicy.Cabin;
+        p.Credentials = item.credential;
+        const account = new AccountEntity();
+        account.Id = item.passenger.AccountId;
+        p.Credentials.Account = p.Credentials.Account || account;
+        this.bookDto.Passengers.push(p);
+      }
+    });
+    this.initialBookDtoModel = await this.flightService.getInitializeBookDto(
+      this.bookDto
+    );
+    return this.initialBookDtoModel;
+  }
   ngAfterViewInit() {
     if (this.checkboxes) {
       this.checkboxes.changes.subscribe(cbx => {
@@ -264,16 +288,20 @@ export class BookPage implements OnInit, AfterViewInit {
   async refresh() {
     try {
       this.errors = "";
-      await this.getTmc();
-      this.travelForm = await this.tmcService.getTravelFrom().catch(_ => null);
-      this.insuranceResult = await this.tmcService.getFlightInsurance();
-      this.illegalReasons = await this.tmcService.getIllegalReasons();
-      await this.initSelfBookTypeCredentials(); // 如果是个人，获取个人是证件信息
-      this.credentialStaffs = await this.getCredentialsStaffs().catch(_ => []);
-      this.passengerCredentials = await this.getPassengerCredentials().catch(
-        // 乘客证件列表
-        _ => ({})
+      this.initialBookDtoModel = await this.initializeBookDto();
+      if (!this.initialBookDtoModel) {
+        this.errors = "网络错误";
+      }
+      this.tmc = this.initialBookDtoModel.Tmc;
+      this.travelForm = this.initialBookDtoModel.TravelFrom;
+      this.illegalReasons = (this.initialBookDtoModel.IllegalReasons || []).map(
+        it => {
+          const item = new IllegalReasonEntity();
+          item.Name = it;
+          return item;
+        }
       );
+      await this.initSelfBookTypeCredentials(); // 如果是个人，获取个人是证件信息
       const notWhitelistCredentials = this.flightService
         .getPassengerBookInfos()
         .filter(it => it.isNotWhitelist);
@@ -281,16 +309,6 @@ export class BookPage implements OnInit, AfterViewInit {
         // 处理非白名单的人员证件信息
         console.log("notWhitelistCredentials", notWhitelistCredentials);
       }
-      const credentialStaffAppoverIds = this.credentialStaffs.map(item => {
-        if (item.Setting) {
-          const json = JSON.parse(item.Setting);
-          item.ApproveId = json.ApproveId;
-        }
-        return item.ApproveId;
-      });
-      this.settingApprovalStaffs = await this.getCredentialStaffsSettingAppoval(
-        credentialStaffAppoverIds
-      );
       await this.initCombindInfos();
       await this.initTmcOutNumberInfos();
       this.initOrderTravelPayTypes();
@@ -427,20 +445,6 @@ export class BookPage implements OnInit, AfterViewInit {
     console.log("CombineedSelectedInfo", item);
     item.openrules = !item.openrules;
   }
-  /**
-   * 获取所选乘客的员工信息
-   */
-  private async getCredentialsStaffs() {
-    const accountIds = this.flightService
-      .getPassengerBookInfos()
-      // 白名单
-      .filter(item => !item.passenger.isNotWhiteList)
-      .map(item => item.passenger.AccountId);
-    this.credentialStaffs = await this.flightService.getCredentialStaffs(
-      accountIds
-    );
-    return this.credentialStaffs;
-  }
   private async getTmc() {
     this.tmc = await this.tmcService.getTmc();
     console.log("tmc", this.tmc);
@@ -492,8 +496,8 @@ export class BookPage implements OnInit, AfterViewInit {
           arr +=
             +info.flightPolicy.Cabin.SalesPrice + +info.flightPolicy.Cabin.Tax;
         }
-        if (item.insuranceResultProducts) {
-          arr += item.insuranceResultProducts
+        if (item.insuranceProducts) {
+          arr += item.insuranceProducts
             .filter(it => it.checked)
             .reduce((sum, it) => {
               sum += +it.insuranceResult.Price;
@@ -541,21 +545,53 @@ export class BookPage implements OnInit, AfterViewInit {
     canBook = this.fillBookLinkmans(bookDto);
     canBook = this.fillBookPassengers(bookDto);
     if (canBook) {
-      this.tmcService
-        .bookFlight(bookDto)
-        .then(res => {
-          console.log("下单成功：", res);
-          this.router.navigate([AppHelper.getRoutePath("product-tabs")], {
-            queryParams: {
-              tabId: ProductItemType.plane
-            }
-          });
-        })
-        .catch(e => {
-          AppHelper.alert(e);
-          return e;
-        });
+      const res = await this.flightService.bookFlight(bookDto).catch(e => {
+        AppHelper.alert(e);
+      });
+      if (res) {
+        if (res.TradeNo) {
+          await this.checkPay(res.TradeNo, bookDto);
+        }
+      }
     }
+  }
+  private async checkPay(tradeNo: string, bookDto: OrderBookDto) {
+    let loading = false;
+    this.checkPayCountIntervalId = setInterval(async () => {
+      if (!loading) {
+        loading = true;
+        const result = await this.tmcService.checkPay(tradeNo);
+        loading = false;
+        this.checkPayCount--;
+        if (!result) {
+          if (this.checkPayCount < 0) {
+            clearInterval(this.checkPayCountIntervalId);
+            await AppHelper.alert(
+              LanguageHelper.Order.getBookTicketWaitingTip(),
+              true,
+              LanguageHelper.getConfirmTip()
+            );
+            this.goToMyOrders(ProductItemType.plane);
+          }
+        } else {
+          if (
+            this.staffService.isSelfBookType &&
+            bookDto.Passengers[0].TravelPayType == OrderTravelPayType.Person
+          ) {
+            const res = await this.initialPersonalPay();
+            this.goToMyOrders(ProductItemType.plane);
+          }
+        }
+      }
+    }, this.checkPayCountIntervalTime);
+  }
+  private goToMyOrders(tab: ProductItemType) {
+    this.router.navigate(["product-tabs"], {
+      queryParams: { tabId: tab }
+    });
+  }
+  private async initialPersonalPay() {
+    return true;
   }
   private fillBookLinkmans(bookDto: OrderBookDto) {
     bookDto.Linkmans = [];
@@ -608,6 +644,29 @@ export class BookPage implements OnInit, AfterViewInit {
       }
     }
     return true;
+  }
+  async onModify(item: ICombindInfo) {
+    if (item.modal.isNotWhitelist) {
+      return;
+    }
+    if (!item.credentialsRequested) {
+      const res = await this.tmcService.getPassengerCredentials([
+        item.modal.passenger.AccountId
+      ]);
+      const exist = item.credentials[0];
+      const credentials = res && res[item.modal.passenger.AccountId];
+      item.credentialsRequested = credentials && credentials.length > 0;
+      const one = credentials.find(
+        it => it.Number == exist.Number && exist.Type == it.Type
+      );
+      if (one) {
+        item.credentials = [one, ...credentials.filter(it => it != one)];
+      } else {
+        if (item.credentialsRequested) {
+          item.credentials = credentials;
+        }
+      }
+    }
   }
   private fillBookPassengers(bookDto: OrderBookDto) {
     const showErrorMsg = (msg: string, item: ICombindInfo) => {
@@ -704,10 +763,10 @@ export class BookPage implements OnInit, AfterViewInit {
             : combindInfo.credentialStaffOtherEmail
         }`;
       }
-      if (combindInfo.insuranceResultProducts) {
+      if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
-        for (let j = 0; j < combindInfo.insuranceResultProducts.length; j++) {
-          const it = combindInfo.insuranceResultProducts[j];
+        for (let j = 0; j < combindInfo.insuranceProducts.length; j++) {
+          const it = combindInfo.insuranceProducts[j];
           if (it.checked) {
             if (it.insuranceResult) {
               p.InsuranceProducts.push(it.insuranceResult);
@@ -782,11 +841,6 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     return true;
   }
-  private async getCredentialStaffsSettingAppoval(
-    credentialStaffIds: string[]
-  ) {
-    return this.tmcService.getSettingAppovalStaffs(credentialStaffIds);
-  }
   private moveRequiredEleToViewPort(ele: any) {
     const el: HTMLElement = ele.nativeElement || ele;
     if (!el) {
@@ -820,19 +874,18 @@ export class BookPage implements OnInit, AfterViewInit {
       item.appovalStaff.Name = item.appovalStaff.Account.Name = name;
     }
   }
-  bookTypeNotSelf() {
-    return this.selfStaff && this.selfStaff.BookType != StaffBookType.Self;
-  }
 
-  private async initSelfBookTypeCredentials() {
+  private async initSelfBookTypeCredentials(): Promise<CredentialsEntity[]> {
     if (await this.staffService.checkStaffTypeSelf()) {
       const identity = await this.identityService.getIdentityAsync();
-      const bookTypeSelfCredentials = await this.staffService.getStaffCredentials(
-        identity && identity.Id
-      );
+      const id = (identity && identity.Id) || "";
+      if (!id) {
+        return [];
+      }
+      const res = await this.flightService.getPassengerCredentials([id]);
       let credential: CredentialsEntity;
-      if (bookTypeSelfCredentials.length) {
-        credential = (bookTypeSelfCredentials[0] as any) as CredentialsEntity;
+      if (res && res[id] && res[id].length) {
+        credential = res[id][0];
       }
       this.vmCombindInfos = this.vmCombindInfos.map(item => {
         if (!item.modal.credential || !item.modal.credential.Number) {
@@ -843,20 +896,23 @@ export class BookPage implements OnInit, AfterViewInit {
       });
     }
   }
-  getServiceFee() {
-    return 100;
+  getServiceFee(p: PassengerDto) {
+    return (
+      this.initialBookDtoModel &&
+      this.initialBookDtoModel.ServiceFees &&
+      this.initialBookDtoModel.ServiceFees[p.ClientId]
+    );
   }
   private async initCombindInfos() {
     try {
       const pfs = this.flightService.getPassengerBookInfos();
       for (let i = 0; i < pfs.length; i++) {
         const item = pfs[i];
-
-        const cstaff = this.credentialStaffs.find(
+        const cs = this.initialBookDtoModel.Staffs.find(
           it => it.Account.Id == item.passenger.AccountId
         );
-        const credentials =
-          this.passengerCredentials[item.passenger.AccountId] || [];
+        const cstaff = cs && cs.CredentialStaff;
+        const credentials = [];
         const arr = cstaff && cstaff.Approvers && cstaff.Approvers;
         let credentialStaffApprovers: {
           Tag: string;
@@ -897,26 +953,18 @@ export class BookPage implements OnInit, AfterViewInit {
         ) {
           credentials.push(item.credential);
         }
-        if (!item.credential || !item.credential.Number) {
-          if (credentials && credentials.length) {
-            item.credential = credentials[0];
-          }
-        }
-        const insuranceResultProducts =
-          this.insuranceResult &&
-          this.insuranceResult.Products &&
-          this.insuranceResult.Products.filter(
-            product =>
-              !cstaff ||
-              !cstaff.Policy ||
-              (+product.Price > 0 &&
-                +product.Price < cstaff.Policy.FlightInsuranceAmount)
-          ).map((insurance, i) => {
-            return {
-              insuranceResult: insurance,
-              checked: true
-            };
-          });
+        const insurances = this.initialBookDtoModel.Insurances.filter(
+          product =>
+            !cstaff ||
+            !cstaff.Policy ||
+            (+product.Price > 0 &&
+              +product.Price < cstaff.Policy.FlightInsuranceAmount)
+        ).map(insurance => {
+          return {
+            insuranceResult: insurance,
+            checked: true
+          };
+        });
         const combineInfo: ICombindInfo = {
           vmCredential: item.credential,
           isSkipApprove: true,
@@ -929,7 +977,7 @@ export class BookPage implements OnInit, AfterViewInit {
           notifyLanguage: "cn",
           travelType: OrderTravelType.Person,
           orderTravelPayType: this.tmc && this.tmc.FlightPayType,
-          insuranceResultProducts: insuranceResultProducts.slice(0, 1),
+          insuranceProducts: insurances.slice(0, 1),
           credentialStaffMobiles:
             cstaff && cstaff.Account && cstaff.Account.Mobile
               ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
@@ -959,9 +1007,7 @@ export class BookPage implements OnInit, AfterViewInit {
           },
           modal: item,
           vmModal: { ...item },
-          appovalStaff: this.settingApprovalStaffs.find(
-            s => s.Account.Id == (cstaff && cstaff.ApproveId)
-          ),
+          appovalStaff: cs && cs.DefaultApprover,
           tmcOutNumberInfos:
             this.tmc &&
             this.tmc.OutNumberNameArray.map(n => {
@@ -984,21 +1030,24 @@ export class BookPage implements OnInit, AfterViewInit {
         combineInfo.addContacts = [];
         this.vmCombindInfos.push(combineInfo);
       }
-      // if (!environment.production) {
-      //   if (!this.vmCombindInfos || this.vmCombindInfos.length == 0) {
-      //     this.vmCombindInfos = await this.storage.get(
-      //       "Flight-Book-Page-Mock-Data"
-      //     );
-      //   } else {
-      //     await this.storage.set(
-      //       "Flight-Book-Page-Mock-Data",
-      //       this.vmCombindInfos
-      //     );
-      //   }
-      // }
+      if (!environment.production) {
+        if (!this.vmCombindInfos || this.vmCombindInfos.length == 0) {
+          this.vmCombindInfos = await this.storage.get(
+            "Flight-Book-Page-Mock-Data"
+          );
+        } else {
+          await this.storage.set(
+            "Flight-Book-Page-Mock-Data",
+            this.vmCombindInfos
+          );
+        }
+      }
     } catch (e) {
       console.error(e);
     }
+  }
+  bookTypeNotSelf() {
+    return !this.staffService.isSelfBookType;
   }
   onSavecredential(credential: CredentialsEntity, info: ICombindInfo) {
     if (info && credential) {
@@ -1011,17 +1060,6 @@ export class BookPage implements OnInit, AfterViewInit {
     }
   }
 
-  /**
-   *  获取员工的证件列表
-   */
-  private async getPassengerCredentials() {
-    return this.flightService.getPassengerCredentials(
-      this.flightService
-        .getPassengerBookInfos()
-        .filter(item => !item.isNotWhitelist)
-        .map(item => item.passenger.AccountId)
-    );
-  }
   isShowApprove(item: ICombindInfo) {
     const Tmc = this.tmc;
     if (
