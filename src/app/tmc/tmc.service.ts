@@ -465,7 +465,7 @@ export class TmcService {
       [accountId: string]: CredentialsEntity[];
     }>(req);
   }
-  async getTmc(forceFetch = true): Promise<TmcEntity> {
+  async getTmc(forceFetch = false): Promise<TmcEntity> {
     if (this.tmc && !forceFetch) {
       return Promise.resolve(this.tmc);
     }

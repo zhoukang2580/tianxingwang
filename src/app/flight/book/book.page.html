@@ -28,14 +28,14 @@
       </ion-item>
       <ion-item lines='none' class="ion-no-margin" *ngIf='tmc?.FlightApprovalType!=0 
           && tmc?.FlightApprovalType!= tmcApprovalTypeNone 
-          && bookTypeNotSelf() 
+          && bookTypeNotSelf()  
           && !identity?.Numbers?.AgentId'>
         <ion-label style='margin-right: 0.5em'>跳过审批:</ion-label>
         <ion-checkbox color="secondary" [(ngModel)]='combindInfo.isSkipApprove'></ion-checkbox>
       </ion-item>
       <ion-item lines='none' class="ion-no-margin" *ngIf='tmc?.IsShowServiceFee || identity?.Numbers?.AgentId'>
         <ion-label>服务费:</ion-label>
-        <ion-input hidden value='getServiceFee(combindInfo?.modal?.credential)'></ion-input>
+        <ion-label slot='end'>{{getServiceFee(combindInfo?.modal?.credential)}}</ion-label>
       </ion-item>
       <ion-item class="ion-no-margin" lines='none' detail *ngIf='isAllowSelectApprove(combindInfo)'
         (click)='openApproverModal(combindInfo)'>
@@ -167,7 +167,7 @@
                     <app-timeline-item *ngFor='let it of combindInfo?.credentialStaffApprovers'>
                       第{{it.Tag}}级审批:
                       <ion-label text-wrap *ngFor='let ap of it.approvers;let last'>
-                        {{ap.Account?.RealName}}({{it?.Type==1?"所有通过":"任意通过"}})
+                        {{ap.Name}}({{it?.Type==1?"所有通过":"任意通过"}})
                       </ion-label>
                     </app-timeline-item>
                   </app-timeline>
@@ -200,7 +200,7 @@
                 </ion-radio>
               </ion-item>
             </ion-radio-group>
-          </div> 
+          </div>
           <div class='ion-margin-top'>
             支付方式：
             <ion-radio-group [(ngModel)]='combindInfo.orderTravelPayType' name='travelPayType'>

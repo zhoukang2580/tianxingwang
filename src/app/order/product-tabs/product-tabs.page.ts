@@ -181,7 +181,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
                 orderModel && orderModel.Orders.length == 0;
             }
           },
-          e => {}
+          e => {
+            console.error(e);
+          }
         );
     } catch (e) {
       console.error(e);
@@ -311,9 +313,13 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     return model;
   }
   async ngOnInit() {
-    this.tmc = await this.tmcService.getTmc(true);
-    this.doRefresh();
-    this.tabs = ORDER_TABS.filter(t => t.value != ProductItemType.more);
+    try {
+      this.tmc = await this.tmcService.getTmc(true);
+      this.doRefresh();
+      this.tabs = ORDER_TABS.filter(t => t.value != ProductItemType.more);
+    } catch (e) {
+      console.error(e);
+    }
   }
   getTotalAmount(order: OrderEntity, key: string) {
     console.log("getTotalAmount", order, key);

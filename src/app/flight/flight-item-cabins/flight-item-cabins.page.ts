@@ -149,10 +149,10 @@ export class FlightItemCabinsPage implements OnInit {
     return "primary";
   }
   async ngOnInit() {
-    console.log(this.currentViewtFlightSegment.totalPolicyFlights);
-    console.log(this.currentViewtFlightSegment.flightSegment.PoliciedCabins);
     setTimeout(async () => {
-      if (await this.staffService.checkStaffTypeSelf()) {
+      const bookInfos = this.flightService.getPassengerBookInfos();
+      const showPl = bookInfos.length == 1 && !bookInfos[0].isNotWhitelist;
+      if (this.staffService.isSelfBookType || showPl) {
         this.isShowPolicyCabins = true;
         this.showPolicyCabins();
       } else {

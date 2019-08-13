@@ -240,7 +240,7 @@ export class BookPage implements OnInit, AfterViewInit {
     infos.forEach(item => {
       if (item.passenger) {
         const p = new PassengerDto();
-        p.ClientId = AppHelper.uuid().substr(0, 6);
+        p.ClientId = item.credential.Number;
         p.FlightSegment = item.flightSegmentInfo.flightSegment;
         p.FlightCabin = item.flightSegmentInfo.flightPolicy.Cabin;
         p.Credentials = item.credential;
@@ -896,11 +896,11 @@ export class BookPage implements OnInit, AfterViewInit {
       });
     }
   }
-  getServiceFee(p: PassengerDto) {
+  getServiceFee(c: CredentialsEntity) {
     return (
       this.initialBookDtoModel &&
       this.initialBookDtoModel.ServiceFees &&
-      this.initialBookDtoModel.ServiceFees[p.ClientId]
+      this.initialBookDtoModel.ServiceFees[c.Number]
     );
   }
   private async initCombindInfos() {
