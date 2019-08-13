@@ -7,7 +7,8 @@ import {
   NavController,
   ModalController,
   IonInfiniteScroll,
-  IonRefresher
+  IonRefresher,
+  IonContent
 } from "@ionic/angular";
 import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
 import { SearchTicketModalComponent } from "../components/search-ticket-modal/search-ticket-modal.component";
@@ -64,6 +65,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   dataCount: number;
   isLoading = true;
   title = "机票订单";
+  @ViewChild(IonContent) ionContent: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
   constructor(
@@ -86,6 +88,11 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   loadMore() {
     this.doSearch();
   }
+  private scrollToTop() {
+    if (this.ionContent) {
+      this.ionContent.scrollToTop(100);
+    }
+  }
   doRefresh(condition?: SearchTicketConditionModel) {
     this.condition = condition || new SearchTicketConditionModel();
     this.condition.pageIndex = 0;
@@ -93,6 +100,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       this.infiniteScroll.disabled = false;
     }
     this.orderModel = null;
+    this.scrollToTop();
     this.loadMore();
   }
   onTabClick(tab: ProductItem) {

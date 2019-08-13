@@ -151,7 +151,7 @@ export class FlightItemCabinsPage implements OnInit {
   async ngOnInit() {
     setTimeout(async () => {
       const bookInfos = this.flightService.getPassengerBookInfos();
-      const showPl = bookInfos.length == 1 && !bookInfos[0].isNotWhitelist;
+      const showPl = bookInfos.length == 1;
       if (this.staffService.isSelfBookType || showPl) {
         this.isShowPolicyCabins = true;
         this.showPolicyCabins();

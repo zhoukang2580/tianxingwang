@@ -191,9 +191,9 @@
               <ion-label>国籍：</ion-label>
             </ion-col>
             <ion-col text-end [class.disabled]='vmNewCredential?.Id !=selectedCredentialId'>
-              <input type="text" text-end [class.validctrlsucess]='!!vmNewCredential.Country'
+              <input type="text" style='border: none' text-end [class.validctrlsucess]='!!vmNewCredential.Country'
                 [class.validerrormess]='!vmNewCredential.Country' [class.validctrlerror]='!vmNewCredential.Country'
-                [disabled]='true' [class.disabled]='true'
+                [disabled]='true' [class.disabled]='vmNewCredential?.Id !=selectedCredentialId'
                 value="{{vmNewCredential.Country?.Name}}({{vmNewCredential.Country?.Code}})" name='Country'
                 ValidateName="Country">
             </ion-col>
@@ -206,12 +206,12 @@
             <ion-col>
               <ion-label>发证国籍：</ion-label>
             </ion-col>
-            <ion-col text-end [class.disabled]='vmNewCredential?.Id !=selectedCredentialId'>
+            <ion-col text-end >
               <input type="text" text-end [class.validerrormess]='!vmNewCredential.IssueCountry'
                 [class.validctrlsucess]="!!vmNewCredential.IssueCountry"
-                [class.validctrlerror]='!vmNewCredential.IssueCountry' [class.disabled]='true' [disabled]='true'
+                [class.validctrlerror]='!vmNewCredential.IssueCountry' [class.disabled]='vmNewCredential?.Id !=selectedCredentialId' [disabled]='true'
                 value="{{vmNewCredential.IssueCountry?.Name}}({{vmNewCredential.IssueCountry?.Code}})"
-                name='IssueCountry' ValidateName="IssueCountry">
+                name='IssueCountry' style='border: none' ValidateName="IssueCountry">
             </ion-col>
             <ion-col size='1' class='arrow-forward' text-end
               [class.disabled]='vmNewCredential?.Id !=selectedCredentialId'>

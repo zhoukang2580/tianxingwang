@@ -112,8 +112,12 @@ export class LazyloadimageDirective implements OnChanges, OnDestroy, OnInit {
     tempImg.src = this.lazyloadImage;
   }
   Replace(img: HTMLImageElement) {
+    if (!this.Failover) {
+      return;
+    }
     if (
       img.src &&
+      this.Failover &&
       this.Failover.DefaultUrl &&
       img.src.toLowerCase() == this.Failover.DefaultUrl.toLowerCase()
     ) {
@@ -121,7 +125,7 @@ export class LazyloadimageDirective implements OnChanges, OnDestroy, OnInit {
     }
     const date = new Date();
     const node = this.GetNode(this.lazyloadImage);
-    if (!node && this.Failover.DefaultUrl) {
+    if (!node && this.Failover && this.Failover.DefaultUrl) {
       img.src = this.Failover.DefaultUrl + "?v=" + date;
       return;
     }
@@ -148,6 +152,9 @@ export class LazyloadimageDirective implements OnChanges, OnDestroy, OnInit {
     }
   }
   GetNode(url) {
+    if (!this.Failover || !this.Failover.Nodes) {
+      return;
+    }
     for (let i = 0; i < this.Failover.Nodes.length; i++) {
       if (url.indexOf(this.Failover.Nodes[i].Url) > -1) {
         this.Failover.Nodes[i].IsNormal = false;

@@ -97,6 +97,7 @@ export class AddContact {
 interface ICombindInfo {
   vmModal: PassengerBookInfo;
   modal: PassengerBookInfo;
+  passengerDto: PassengerDto;
   openrules: boolean; // 打开退改签规则
   vmCredential: CredentialsEntity;
   credentials: CredentialsEntity[];
@@ -234,13 +235,14 @@ export class BookPage implements OnInit, AfterViewInit {
   }
   private async initializeBookDto() {
     this.bookDto = new OrderBookDto();
-    this.bookDto.TravelFormId = AppHelper.getQueryParamers()["travelFormId"];
+    this.bookDto.TravelFormId =
+      AppHelper.getQueryParamers()["travelFormId"] || "";
     const infos = this.flightService.getPassengerBookInfos();
     this.bookDto.Passengers = [];
     infos.forEach(item => {
       if (item.passenger) {
         const p = new PassengerDto();
-        p.ClientId = item.credential.Number;
+        p.ClientId = item.id;
         p.FlightSegment = item.flightSegmentInfo.flightSegment;
         p.FlightCabin = item.flightSegmentInfo.flightPolicy.Cabin;
         p.Credentials = item.credential;
@@ -250,6 +252,7 @@ export class BookPage implements OnInit, AfterViewInit {
         this.bookDto.Passengers.push(p);
       }
     });
+    console.log("initializeBookDto", this.bookDto);
     this.initialBookDtoModel = await this.flightService.getInitializeBookDto(
       this.bookDto
     );
@@ -896,11 +899,11 @@ export class BookPage implements OnInit, AfterViewInit {
       });
     }
   }
-  getServiceFee(c: CredentialsEntity) {
+  getServiceFee(item: ICombindInfo) {
     return (
       this.initialBookDtoModel &&
       this.initialBookDtoModel.ServiceFees &&
-      this.initialBookDtoModel.ServiceFees[c.Number]
+      this.initialBookDtoModel.ServiceFees[item.modal.id]
     );
   }
   private async initCombindInfos() {

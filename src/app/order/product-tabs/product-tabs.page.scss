@@ -16,3 +16,16 @@ ion-list {
     margin-bottom: 0.2em;
   }
 }
+ion-footer ion-row ion-col {
+  position: relative;
+  &:not(:last-child)::after {
+    position: absolute;
+    right: 0;
+    top: 30%;
+    bottom: 30%;
+    content: "";
+    display: block;
+    background-color: rgba(var(--ion-color-dark-rgb), 0.13);
+    width: 1px;
+  }
+}

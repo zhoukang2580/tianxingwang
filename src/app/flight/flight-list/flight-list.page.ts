@@ -25,9 +25,7 @@ import {
   Subscription,
   fromEvent,
   Subject,
-  BehaviorSubject,
-  from,
-  combineLatest
+  BehaviorSubject
 } from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
@@ -469,7 +467,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     if (
       passengerId ||
       this.staffService.isSelfBookType ||
-      (bookInfos.length == 1 && !bookInfos[0].isNotWhitelist)
+      bookInfos.length == 1
     ) {
       flightJourneyList = this.replaceCabinInfo(
         this.policyflights,

@@ -315,7 +315,7 @@ export class SelectPassengerPage
     this.vmNewCredential.variables = s.isNotWhiteList
       ? NOT_WHITE_LIST
       : "OtherCredential";
-    this.vmNewCredential.Id = AppHelper.uuid();
+    this.vmNewCredential.Id = this.getNewCredentialId();
     if (this.staffCredentails.length == 0 || s.isNotWhiteList) {
       this.selectedCredentialId = this.vmNewCredential.Id;
     }
@@ -325,6 +325,18 @@ export class SelectPassengerPage
     this.vmNewCredential.IssueCountry = { Code: "CN", Name: "中国" };
     this.vmNewCredential.Country = { Code: "CN", Name: "中国" };
     this.isShowNewCredential = true;
+  }
+  private getNewCredentialId() {
+    const uuid = AppHelper.uuid();
+    const id = uuid
+      .substr(0, 8)
+      .split("")
+      .map(i => {
+        return +i || +i === 0 ? i : i.charCodeAt(0);
+      })
+      .join("");
+    const id2 = uuid.match(/\d+/g) ? uuid.match(/\d+/g).join("") : "";
+    return id2 || id;
   }
   onSelectCredential(credentialId: string) {
     console.log("onSelectCredential", credentialId);
@@ -411,15 +423,34 @@ export class SelectPassengerPage
       this.doRefresh("");
     }
   }
+  private checkNewCredentialId(
+    passengerBookInfo: PassengerBookInfo,
+    bookInfos: PassengerBookInfo[]
+  ) {
+    const action = () => {
+      const one = bookInfos.find(
+        item => item.credential.Id == passengerBookInfo.credential.Id
+      );
+      if (one) {
+        passengerBookInfo.credential.Id = this.getNewCredentialId();
+        action();
+      }
+    };
+    action();
+  }
   private async onAddPassengerBookInfo(passengerBookInfo: PassengerBookInfo) {
     if (
       this.tmcService.getFlightHotelTrainType() == FlightHotelTrainType.Flight
     ) {
+      const bookInfos = this.flightService.getPassengerBookInfos();
+      this.checkNewCredentialId(passengerBookInfo, bookInfos);
       this.flightService.addPassengerBookInfo(passengerBookInfo);
     }
     if (
       this.tmcService.getFlightHotelTrainType() == FlightHotelTrainType.Train
     ) {
+      const bookInfos = this.trainService.getBookInfos();
+      this.checkNewCredentialId(passengerBookInfo, bookInfos);
       this.trainService.addBookInfo(passengerBookInfo);
     }
   }
