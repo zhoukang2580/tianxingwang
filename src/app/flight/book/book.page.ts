@@ -12,7 +12,8 @@ import {
   IonCheckbox,
   PopoverController,
   IonContent,
-  Platform
+  Platform,
+  IonRefresher
 } from "@ionic/angular";
 import {
   TmcService,
@@ -181,6 +182,7 @@ export class BookPage implements OnInit, AfterViewInit {
   @ViewChildren("illegalReasonsEle", { read: ElementRef })
   illegalReasonsEles: QueryList<ElementRef<HTMLElement>>;
   @ViewChild(IonContent) private cnt: IonContent;
+  @ViewChild(IonRefresher) private ionRefresher: IonRefresher;
   appoval: {
     Value: string;
     Text: string;
@@ -290,7 +292,11 @@ export class BookPage implements OnInit, AfterViewInit {
   }
   async refresh() {
     try {
+      if (this.ionRefresher) {
+        this.ionRefresher.complete();
+      }
       this.errors = "";
+      this.vmCombindInfos = [];
       this.initialBookDtoModel = await this.initializeBookDto();
       if (!this.initialBookDtoModel) {
         this.errors = "网络错误";
@@ -1033,18 +1039,18 @@ export class BookPage implements OnInit, AfterViewInit {
         combineInfo.addContacts = [];
         this.vmCombindInfos.push(combineInfo);
       }
-      if (!environment.production) {
-        if (!this.vmCombindInfos || this.vmCombindInfos.length == 0) {
-          this.vmCombindInfos = await this.storage.get(
-            "Flight-Book-Page-Mock-Data"
-          );
-        } else {
-          await this.storage.set(
-            "Flight-Book-Page-Mock-Data",
-            this.vmCombindInfos
-          );
-        }
-      }
+      // if (!environment.production) {
+      //   if (!this.vmCombindInfos || this.vmCombindInfos.length == 0) {
+      //     this.vmCombindInfos = await this.storage.get(
+      //       "Flight-Book-Page-Mock-Data"
+      //     );
+      //   } else {
+      //     await this.storage.set(
+      //       "Flight-Book-Page-Mock-Data",
+      //       this.vmCombindInfos
+      //     );
+      //   }
+      // }
     } catch (e) {
       console.error(e);
     }
@@ -1063,8 +1069,8 @@ export class BookPage implements OnInit, AfterViewInit {
     }
   }
 
-  isShowApprove(item: ICombindInfo) {
-    const Tmc = this.tmc;
+  isShowApprove() {
+    const Tmc = this.initialBookDtoModel && this.initialBookDtoModel.Tmc;
     if (
       !Tmc ||
       Tmc.FlightApprovalType == TmcApprovalType.None ||
@@ -1077,7 +1083,15 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     if (
       Tmc.FlightApprovalType == TmcApprovalType.ExceedPolicyApprover &&
-      item.modal.flightSegmentInfo.flightPolicy.Rules.length > 0
+      this.flightService
+        .getPassengerBookInfos()
+        .some(
+          it =>
+            it.flightSegmentInfo &&
+            it.flightSegmentInfo.flightPolicy &&
+            it.flightSegmentInfo.flightPolicy.Rules &&
+            it.flightSegmentInfo.flightPolicy.Rules.length > 0
+        )
     ) {
       return true;
     }

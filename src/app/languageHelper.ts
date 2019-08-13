@@ -440,6 +440,9 @@ export class LanguageHelper {
   static getApiTimeoutTip() {
     return "请求超时";
   }
+  static getNetworkErrorTip() {
+    return "网络错误";
+  }
   static getMsgTip() {
     return "提示";
   }

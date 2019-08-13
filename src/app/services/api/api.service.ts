@@ -1,5 +1,9 @@
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
-import { HttpClient, HttpParams } from "@angular/common/http";
+import {
+  HttpClient,
+  HttpParams,
+  HttpErrorResponse
+} from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import * as md5 from "md5";
 import { RequestEntity } from "./Request.entity";
@@ -274,31 +278,9 @@ export class ApiService {
         const formObj = Object.keys(req)
           .map(k => `${k}=${req[k]}`)
           .join("&");
-
-        if (!window["Worker"] || !this.worker) {
-          return this.http.post(url, `${formObj}&Sign=${this.getSign(req)}`, {
-            headers: { "content-type": "application/x-www-form-urlencoded" },
-            observe: "body"
-          });
-        }
-        return new Observable<any>(obs => {
-          this.worker.postMessage({
-            message: "fetch",
-            url,
-            body: `${formObj}&Sign=${this.getSign(req)}`
-          });
-          this.worker.onmessage = evt => {
-            // console.log("evt", evt);
-            if (evt && evt.data && evt.data.message == "fetchresponse") {
-              console.log(evt.data.data);
-              if (evt.data.data && evt.data.data.status) {
-                obs.next(evt.data.data.result);
-                obs.complete();
-              } else {
-                obs.error(evt.data.data.error);
-              }
-            }
-          };
+        return this.http.post(url, `${formObj}&Sign=${this.getSign(req)}`, {
+          headers: { "content-type": "application/x-www-form-urlencoded" },
+          observe: "body"
         });
       }),
       timeout(due),
@@ -306,9 +288,9 @@ export class ApiService {
       map(r => r as any),
       switchMap((r: IResponse<any>) => {
         console.log("Apiservice get response ", r);
-        if (isCheckLogin && r.Code && r.Code.toUpperCase() === "NOLOGIN") {
+        if (isCheckLogin && r && r.Code && r.Code.toUpperCase() === "NOLOGIN") {
           return from(this.tryAutoLogin(req));
-        } else if (r.Code && r.Code.toUpperCase() === "NOLOGIN") {
+        } else if (r && r.Code && r.Code.toUpperCase() === "NOLOGIN") {
           this.identityService.removeIdentity();
           // this.router.navigate([AppHelper.getRoutePath("login")]);
         }
@@ -322,6 +304,9 @@ export class ApiService {
         if (error instanceof TimeoutError) {
           entity.Message = LanguageHelper.getApiTimeoutTip();
           return throwError(entity.Message);
+        }
+        if (error instanceof HttpErrorResponse) {
+          return throwError(LanguageHelper.getNetworkErrorTip());
         }
         return throwError(error);
       }),

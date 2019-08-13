@@ -342,11 +342,9 @@ export class FlightService {
         !item.flightSegmentInfo.flightPolicy
     );
     for (let i = 0; i < bookInfos.length; i++) {
-      const p = bookInfos[i];
+      const bookInfo = bookInfos[i];
       const passengerPolicies = this.currentViewtFlightSegment.totalPolicyFlights.find(
-        itm =>
-          itm.PassengerKey == p.passenger.AccountId ||
-          p.passenger.isNotWhiteList
+        itm => itm.PassengerKey == bookInfo.passenger.AccountId
       );
       if (passengerPolicies) {
         const cabin = passengerPolicies.FlightPolicies.find(
@@ -360,7 +358,7 @@ export class FlightService {
             this.currentViewtFlightSegment.flightSegment.Cabins.find(
               c => c.Code == cabin.CabinCode
             );
-          p.flightSegmentInfo = {
+          bookInfo.flightSegmentInfo = {
             flightSegment: this.currentViewtFlightSegment.flightSegment,
             flightPolicy: cabin,
             tripType: this.getSearchFlightModel().isRoundTrip
@@ -377,6 +375,7 @@ export class FlightService {
     });
     this.setPassengerBookInfos(arr);
   }
+
   async dismissTopOverlay() {
     const t = await this.modalCtrl.getTop();
     if (t) {

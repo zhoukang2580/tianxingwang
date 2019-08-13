@@ -25,18 +25,13 @@ import {
   CurrentViewtFlightSegment,
   PassengerFlightSegmentInfo
 } from "../../models/PassengerFlightInfo";
-interface PassengerBookInfos {
-  passenger: StaffEntity;
-  credential: CredentialsEntity;
-  bookInfos: PassengerBookInfo[];
-}
 @Component({
   selector: "app-selected-flightsegment-info",
   templateUrl: "./selected-flightsegment-info.component.html",
   styleUrls: ["./selected-flightsegment-info.component.scss"]
 })
 export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
-  passengerAndBookInfos$: Observable<PassengerBookInfos[]>;
+  passengerAndBookInfos$: Observable<PassengerBookInfo[]>;
   searchModel: SearchFlightModel;
   searchModelSubscrition = Subscription.EMPTY;
   identity: IdentityEntity;
@@ -86,32 +81,6 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
           } else {
             this.showSelectReturnTripButton = false;
           }
-        }),
-        map(infos => {
-          const acc = [] as PassengerBookInfos[];
-          const tempObj: { [key: string]: PassengerBookInfo[] } = {} as any;
-          infos.forEach(item => {
-            if (tempObj[item.passenger.AccountId]) {
-              tempObj[item.passenger.AccountId].push(item);
-            } else {
-              tempObj[item.passenger.AccountId] = [item];
-            }
-          });
-          Object.keys(tempObj).map(k => {
-            const one = infos.find(it => it.passenger.AccountId == k);
-            if (one) {
-              acc.push({
-                passenger: one.passenger,
-                credential: one.credential,
-                bookInfos: tempObj[k]
-              });
-            }
-          });
-          console.log("reduce", acc);
-          return acc;
-        }),
-        tap(res => {
-          console.log("bookInfos", res);
         })
       );
   }

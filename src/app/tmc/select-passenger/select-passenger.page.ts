@@ -498,16 +498,16 @@ export class SelectPassengerPage
       return this.checkProperty(c, "Gender", rules, container);
     }
 
-    if (!c.Birthday) {
-      return this.checkProperty(c, "Birthday", rules, container);
-    }
-    c.Birthday = moment(c.Birthday).format("YYYY-MM-DD");
-    console.log(c.Birthday);
-    if (!c.ExpirationDate) {
-      return this.checkProperty(c, "ExpirationDate", rules, container);
-    }
-    c.ExpirationDate = moment(c.ExpirationDate).format("YYYY-MM-DD");
-    console.log(c.ExpirationDate);
+    // if (!c.Birthday) {
+    //   return this.checkProperty(c, "Birthday", rules, container);
+    // }
+    // c.Birthday = moment(c.Birthday).format("YYYY-MM-DD");
+    // console.log(c.Birthday);
+    // if (!c.ExpirationDate) {
+    //   return this.checkProperty(c, "ExpirationDate", rules, container);
+    // }
+    // c.ExpirationDate = moment(c.ExpirationDate).format("YYYY-MM-DD");
+    // console.log(c.ExpirationDate);
     if (!c.CredentialsRemark) {
       return this.checkProperty(c, "CredentialsRemark", rules, container);
     }
