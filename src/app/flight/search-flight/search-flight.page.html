@@ -31,12 +31,13 @@
         (eFromCity)='onFromCitySelected($event)' [vmToCity]="vmToCity" [disabled]='disabled'>
       </app-switch-city-comp>
       <section class="flight-date">
-        <app-search-day-comp [day]='flyDate' (click)="onSelecFlyDate(true,false)" [disabled]='disabled'>
+        <app-search-day-comp [day]='flyDate' appSelectFlyDate (click)="onSelecFlyDate(true,false)"
+          [disabled]='disabled'>
         </app-search-day-comp>
         <div *ngIf="!isSingle && totalFlyDays > 0">{{ totalFlyDays }}天</div>
-        <app-search-day-comp *ngIf="!isSingle" [day]='backDate' (click)="onSelecFlyDate(false,true)">
+        <app-search-day-comp appSelectFlyDate *ngIf="!isSingle" [day]='backDate' (click)="onSelecFlyDate(false,true)">
         </app-search-day-comp>
-      </section>
+      </section> 
       <ion-button style='width: 100%' (click)="searchFlight()"
         [disabled]='!vmFromCity||!vmToCity||mustAddPassenger() && selectedPassengers==0' color="secondary"
         expand="block">

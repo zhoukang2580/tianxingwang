@@ -149,7 +149,9 @@ input {
   //   background: url(assets/validator/img/secondary.gif) no-repeat;
   font-size: 0.7rem;
 }
-
+.datetimepicker {
+  --ion-color-primary: var(--ion-color-secondary);
+}
 .validshowmess {
   color: var(--ion-color-medium);
   font-size: 0.7rem;
@@ -159,6 +161,6 @@ input {
 ion-modal.ticket-changing {
   --width: 90%;
   --max-height: 65%;
-  --border-radius: .5em;
+  --border-radius: 0.5em;
   --height: 40%;
 }

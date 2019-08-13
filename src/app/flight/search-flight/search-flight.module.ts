@@ -1,4 +1,4 @@
-import { SearchFlightPage } from './../search-flight/search-flight.page';
+import { SearchFlightPage } from "./../search-flight/search-flight.page";
 import { AgentGuard } from "../../guards/agent.guard";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
@@ -7,10 +7,10 @@ import { Routes, RouterModule } from "@angular/router";
 
 import { IonicModule } from "@ionic/angular";
 
-
 import { FlightComponentsModule } from "../components/components.module";
 import { DirectivesModule } from "src/app/directives/directives.module";
 import { TmcGuard } from "src/app/guards/tmc.guard";
+import { FlightDirectivesModule } from "../directives/directives.module";
 
 const routes: Routes = [
   {
@@ -27,6 +27,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes),
     FlightComponentsModule,
+    FlightDirectivesModule,
     DirectivesModule
   ],
   declarations: [SearchFlightPage],

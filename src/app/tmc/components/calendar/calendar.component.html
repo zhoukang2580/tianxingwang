@@ -13,8 +13,14 @@
 </ion-header>
 <ion-content>
   <ion-grid *ngFor='let ym of calendars' class='calendar' [attr.ymonth]='getMonth(ym.yearMonth)'>
-    <ion-row>
-      <ion-col>{{ym.yearMonth}}</ion-col>
+    <ion-row margin-top>
+      <ion-datetime color='secondary' id="dynamicDisabled"  pickerFormat="YYYY MM" style='display: none' [min]='minyear' 
+        max='2119-12-31' [value]="ym.yearMonth"></ion-datetime> 
+      <ion-col class='ym' (click)='showPicker()'>
+        <div class='ym'>{{ym.yearMonth?.substr(0,4)}}年{{getMonth(ym.yearMonth)}}月
+          <ion-icon name="arrow-dropdown" mode='md'></ion-icon>
+        </div>
+      </ion-col>
     </ion-row>
     <ion-row>
       <ion-col text-center *ngFor='let day of ym.dayList' size='{{12/7}}' class='day' [class.active]='day.selected'

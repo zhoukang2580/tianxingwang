@@ -31,18 +31,6 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
   isSelectFlyDate: boolean;
   flyDate: DayModel;
   backDate: DayModel;
-  get totalFlyDays() {
-    if (this.backDate && this.flyDate) {
-      const detal = Math.floor(
-        this.backDate.timeStamp - this.flyDate.timeStamp
-      );
-      if (detal == 0) {
-        return 1;
-      }
-      return (detal / 24 / 3600).toFixed(0);
-    }
-    return 1;
-  }
   selectDaySubscription = Subscription.EMPTY;
   searchConditionSubscription = Subscription.EMPTY;
   searchFlightModel: SearchFlightModel;
@@ -96,6 +84,18 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  get totalFlyDays() {
+    if (this.backDate && this.flyDate) {
+      const detal = Math.floor(
+        this.backDate.timeStamp - this.flyDate.timeStamp
+      );
+      if (detal == 0) {
+        return 1;
+      }
+      return (detal / 24 / 3600).toFixed(0);
+    }
+    return 1;
+  }
   back() {
     this.navCtrl.back();
   }

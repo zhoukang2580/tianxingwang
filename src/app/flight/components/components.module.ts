@@ -89,6 +89,7 @@ import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module
     SelectedPassengersComponent,
     SelectedFlightsegmentInfoComponent,
     SelectFlightsegmentCabinComponent,
+    SelectFlyDateComponent
   ]
 })
 export class FlightComponentsModule {}

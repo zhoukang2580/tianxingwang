@@ -132,6 +132,49 @@ export class CalendarService {
     d.dayOfWeekName = wn;
     return wn;
   }
+  generateYearNthMonthCalendar(year: string, month: number): AvailableDate {
+    const iM = moment(`${year}-${month}-01`, "YYYY-MM-DD"); // 第i个月
+    const calender: AvailableDate = {
+      dayList: [],
+      disabled: false,
+      yearMonth: iM.format("YYYY-MM")
+    };
+    const dayCountOfiM = iM
+      .startOf("month")
+      .date(1) // 每月的一号
+      .add(1, "months") // 下个月的一号
+      .subtract(1, "days") // 这个月的最后一天
+      .date(); // 最后一天是几，代表这个月有几天
+    const curMFistDate = moment(iM)
+      .startOf("month")
+      .date(1);
+    // console.log("curMoment", curMoment.format("YYYY-MM-DD"));
+    const curWeek = curMFistDate.weekday();
+    // console.log(curMFistDate.format("YYYY-MM-DD"), curWeek);
+    if (curWeek !== 0) {
+      // 如果不是从星期天，第一个位置开始，那么前面几个应该是上一个月的日期
+      // 上一个月的最后那几天
+      const lastMDay = curMFistDate
+        .subtract(1, "days") // 上个月的最后一天
+        .date();
+      // console.log(lastMDay);
+      for (let d = lastMDay, j = curWeek; j > 0; d--, j--) {
+        const date = curMFistDate
+          .subtract(1, "days") // 应该是上个月的日期
+          .date(d);
+        const lsmd = this.generateDayModel(date);
+        lsmd.isLastMonthDay = true; // 是上个月的日期
+        calender.dayList.unshift(lsmd);
+      }
+      // console.log(dayList);
+    }
+    for (let j = 1; j <= dayCountOfiM; j++) {
+      // 第 i 个月的第 j 天
+      const dayOfiM = iM.startOf("month").date(j); // 每月的j号
+      calender.dayList.push(this.generateDayModel(dayOfiM));
+    }
+    return calender;
+  }
   generateCanlender2(months: number) {
     console.time("generateCanlender");
     const calender: AvailableDate[] = [];

@@ -1,3 +1,4 @@
+import { ModalController } from "@ionic/angular";
 import { FlightService } from "src/app/flight/flight.service";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Subscription } from "rxjs";
@@ -30,12 +31,15 @@ import { TripType } from "src/app/tmc/models/TripType";
 export class SelectFlyDateComponent implements OnInit, OnDestroy {
   constructor(
     private calendarService: CalendarService,
-    private flightService: FlightService
+    private flightService: FlightService,
+    private modalCtrl: ModalController
   ) {}
   yms: AvailableDate[];
   private _selectedDays: DayModel[] = [];
   timeoutId: any;
   tripType: TripType;
+  curSelectedYear: string;
+  curSelectedMonth: number;
   set selectedDays(days: DayModel[]) {
     this._selectedDays = days;
     setTimeout(() => {
@@ -87,9 +91,6 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
         };
       }
     });
-    setTimeout(async () => {
-      this.yms = await this.calendarService.generateNthCanlender(6);
-    }, 5*1000);
     this.flightService.getSearchFlightModelSource().subscribe(s => {
       if (s) {
         this.tripType = s.tripType;
@@ -117,27 +118,53 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
             }
           }
         } else {
-          if (this.yms && this.yms.length) {
-            const today = this.calendarService.generateDayModel(moment());
-            this.yms.forEach(day => {
-              day.dayList.forEach(d => {
-                d.enabled =
-                  d.timeStamp > today.timeStamp || d.date == today.date;
-              });
-            });
-          }
+          this.checkYms();
         }
       }
     });
+    this.curSelectedYear = new Date().getFullYear() + "";
+    this.curSelectedMonth = new Date().getMonth() + 1;
+    this.generateYearNthMonthCalendar();
+  }
+  checkYms() {
+    if (this.yms && this.yms.length) {
+      const today = this.calendarService.generateDayModel(moment());
+      this.yms.forEach(day => {
+        day.dayList.forEach(d => {
+          d.enabled = d.timeStamp > today.timeStamp || d.date == today.date;
+        });
+      });
+    }
+  }
+  onYearChange(year: string) {
+    this.curSelectedYear = year;
+    this.generateYearNthMonthCalendar();
+  }
+  onMonthChange(month: number) {
+    this.curSelectedMonth = month;
+    this.generateYearNthMonthCalendar();
+  }
+  private generateYearNthMonthCalendar() {
+    this.yms = [
+      this.calendarService.generateYearNthMonthCalendar(
+        this.curSelectedYear,
+        this.curSelectedMonth
+      )
+    ];
+    this.checkYms();
   }
   displayYm(ym: string) {
     return moment(ym, "YYYY-MM-DD").format(
       `YYYY${LanguageHelper.getYearTip()}M${LanguageHelper.getMonthTip()}`
     );
   }
-  cancel() {
+  async cancel() {
     this.calendarService.setSelectedFlyDays(this.selectedDays);
     this.calendarService.showSelectFlyDatePage(false);
+    const m = await this.modalCtrl.getTop();
+    if (m) {
+      m.dismiss().catch(_ => {});
+    }
   }
   onDaySelected(d: DayModel) {
     console.log(

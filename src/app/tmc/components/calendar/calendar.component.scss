@@ -72,6 +72,11 @@ ion-grid {
     color: var(--ion-color-secondary);
   }
 }
+.ym {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .day {
   &.active {
     background-color: var(--ion-color-secondary);
@@ -84,4 +89,8 @@ ion-grid {
       background-color: rgba(var(--ion-color-danger-rgb), 0.9);
     }
   }
+}
+:host {
+  height: 100%;
+  width: 100%;
 }
