@@ -243,11 +243,11 @@ export class FlightService {
   }
   addPassengerBookInfo(arg: PassengerBookInfo): Promise<string> {
     console.log("addPassengerFlightSegments", arg);
+    const infos = this.getPassengerBookInfos();
     if (!arg || !arg.passenger || !arg.credential) {
       AppHelper.alert(LanguageHelper.Flight.getSelectedFlightInvalideTip());
       return;
     }
-    const infos = this.getPassengerBookInfos();
     arg.id = AppHelper.uuid();
     if (!arg.credential.Account || arg.isNotWhitelist) {
       arg.credential.Account = arg.passenger.Account;

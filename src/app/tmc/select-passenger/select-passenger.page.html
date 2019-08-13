@@ -206,10 +206,11 @@
             <ion-col>
               <ion-label>发证国籍：</ion-label>
             </ion-col>
-            <ion-col text-end >
+            <ion-col text-end>
               <input type="text" text-end [class.validerrormess]='!vmNewCredential.IssueCountry'
                 [class.validctrlsucess]="!!vmNewCredential.IssueCountry"
-                [class.validctrlerror]='!vmNewCredential.IssueCountry' [class.disabled]='vmNewCredential?.Id !=selectedCredentialId' [disabled]='true'
+                [class.validctrlerror]='!vmNewCredential.IssueCountry'
+                [class.disabled]='vmNewCredential?.Id !=selectedCredentialId' [disabled]='true'
                 value="{{vmNewCredential.IssueCountry?.Name}}({{vmNewCredential.IssueCountry?.Code}})"
                 name='IssueCountry' style='border: none' ValidateName="IssueCountry">
             </ion-col>
@@ -350,7 +351,8 @@
 <ion-footer>
   <ion-toolbar>
     <ion-buttons slot='end'>
-      <ion-button (click)='onAddPassenger()' fill='clear' color='secondary'>确定</ion-button>
+      <ion-button (click)='onAddPassenger()' fill='clear' color='secondary' [disabled]='!selectedPassenger'>确定
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-footer>

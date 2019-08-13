@@ -245,6 +245,10 @@ export class SelectPassengerPage
     if (this.scroller) {
       this.scroller.disabled = false;
     }
+    this.selectedPassenger = null;
+    this.isShowNewCredential = false; // 页面上显示新增此人其他证件,或者是非白名单的证件
+    this.vmNewCredential = null;
+    this.selectedCredentialId = null; // 所选择的证件Id
     this.loadMore();
   }
   onSearch(event: any) {
@@ -409,8 +413,11 @@ export class SelectPassengerPage
       isNotWhitelist: this.selectedPassenger.isNotWhiteList,
       passenger: this.selectedPassenger
     };
-    await this.onAddPassengerBookInfo(passengerBookInfo);
+    const canAdd = await this.onAddPassengerBookInfo(passengerBookInfo);
     this.isCanDeactive = true;
+    if (!canAdd) {
+      return;
+    }
     const ok = await AppHelper.alert(
       LanguageHelper.Flight.getAddMorePassengersTip(),
       true,
@@ -429,7 +436,9 @@ export class SelectPassengerPage
   ) {
     const action = () => {
       const one = bookInfos.find(
-        item => item.credential.Id == passengerBookInfo.credential.Id
+        item =>
+          item.isNotWhitelist &&
+          item.credential.Id == passengerBookInfo.credential.Id
       );
       if (one) {
         passengerBookInfo.credential.Id = this.getNewCredentialId();
@@ -438,10 +447,22 @@ export class SelectPassengerPage
     };
     action();
   }
+  private canAddMorePassenger(passengerBookInfos: PassengerBookInfo[]) {
+    if (!this.staffService.isSelfBookType && passengerBookInfos.length >= 9) {
+      AppHelper.alert(LanguageHelper.Flight.getCannotBookMorePassengerTip());
+      return false;
+    }
+    return true;
+  }
   private async onAddPassengerBookInfo(passengerBookInfo: PassengerBookInfo) {
     if (
       this.tmcService.getFlightHotelTrainType() == FlightHotelTrainType.Flight
     ) {
+      if (
+        !this.canAddMorePassenger(this.flightService.getPassengerBookInfos())
+      ) {
+        return false;
+      }
       const bookInfos = this.flightService.getPassengerBookInfos();
       this.checkNewCredentialId(passengerBookInfo, bookInfos);
       this.flightService.addPassengerBookInfo(passengerBookInfo);
@@ -449,10 +470,14 @@ export class SelectPassengerPage
     if (
       this.tmcService.getFlightHotelTrainType() == FlightHotelTrainType.Train
     ) {
+      if (!this.canAddMorePassenger(this.trainService.getBookInfos())) {
+        return false;
+      }
       const bookInfos = this.trainService.getBookInfos();
       this.checkNewCredentialId(passengerBookInfo, bookInfos);
       this.trainService.addBookInfo(passengerBookInfo);
     }
+    return true;
   }
   async validateCredential(c: MemberCredential, container: HTMLElement) {
     if (!c || !container) {
