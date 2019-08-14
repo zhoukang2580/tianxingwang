@@ -30,6 +30,7 @@ import {
   FlightPolicy
 } from "./models/PassengerFlightInfo";
 import { OrderBookDto } from "../order/models/OrderBookDto";
+import { SelectFlyDateComponent } from "./components/select-fly-date/select-fly-date.component";
 
 export class SearchFlightModel {
   BackDate: string; //  Yes 航班日期（yyyy-MM-dd）
@@ -257,7 +258,27 @@ export class FlightService {
     console.log("addPassengerFlightSegments added", arg);
     this.setPassengerBookInfos(infos);
   }
-
+  async openCalendar(isMulti: boolean) {
+    const goFlight = this.getPassengerBookInfos().find(
+      f =>
+        f.flightSegmentInfo &&
+        f.flightSegmentInfo.tripType == TripType.departureTrip
+    );
+    const s = this.getSearchFlightModel();
+    const m = await this.modalCtrl.create({
+      component: SelectFlyDateComponent,
+      componentProps: {
+        goFlightArrivalTime:
+          goFlight &&
+          goFlight.flightSegmentInfo &&
+          goFlight.flightSegmentInfo.flightSegment &&
+          goFlight.flightSegmentInfo.flightSegment.ArrivalTime,
+        tripType: s.tripType,
+        isMulti: isMulti
+      }
+    });
+    m.present();
+  }
   private async reselectSelfBookTypeSegment(arg: PassengerBookInfo) {
     const s = this.getSearchFlightModel();
     if (arg.flightSegmentInfo.tripType == TripType.returnTrip) {

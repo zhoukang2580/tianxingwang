@@ -74,7 +74,6 @@ export class AppComponent
   app: App;
   message$: Observable<MessageModel>;
   openSelectCity$: Observable<boolean>;
-  showFlyDayPage$: Observable<boolean>;
   loading$: Observable<boolean>;
   @ContentChildren("img") images: QueryList<HTMLImageElement>;
   constructor(
@@ -99,7 +98,6 @@ export class AppComponent
     // console.log(this.router.config);
     this.message$ = messageService.getMessage();
     this.openSelectCity$ = flightService.getOpenCloseSelectCityPageSources();
-    this.showFlyDayPage$ = flydayService.getShowFlyDayPageSource();
     this.loading$ = apiService.getLoading();
     // if (!this.checkWechatOpenId() || !this.checkDingtalkUnionid()) return;
     if (this.platform.is("ios")) {
@@ -245,7 +243,6 @@ export class AppComponent
       let count = 1;
       await AppHelper.dismissLayer();
       this.flightService.setOpenCloseSelectCityPageSources(false);
-      this.flydayService.showSelectFlyDatePage(false);
       this.apiService.hideLoadingView();
       if (
         this.router.url.includes("login") ||

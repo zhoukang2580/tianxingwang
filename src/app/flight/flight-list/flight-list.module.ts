@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 
 import { FlightListPage } from './flight-list.page';
 import { FlightComponentsModule } from '../components/components.module';
+import { FlightDirectivesModule } from '../directives/directives.module';
 
 const routes: Routes = [
   {
@@ -22,6 +23,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes),
     FlightComponentsModule,
+    FlightDirectivesModule
   ],
   declarations: [FlightListPage]
 })

@@ -1,17 +1,30 @@
 import { IdentityEntity } from "./identity.entity";
 import { RequestEntity } from "../api/Request.entity";
 import { Injectable } from "@angular/core";
-import { of, throwError, Observable, Subject, BehaviorSubject } from "rxjs";
+import {
+  of,
+  throwError,
+  Observable,
+  Subject,
+  BehaviorSubject,
+  TimeoutError
+} from "rxjs";
 import { AppHelper } from "src/app/appHelper";
-import { HttpClient, HttpParams } from "@angular/common/http";
+import {
+  HttpClient,
+  HttpParams,
+  HttpErrorResponse
+} from "@angular/common/http";
 import { map, catchError, finalize, switchMap, tap } from "rxjs/operators";
 import { IResponse } from "../api/IResponse";
+import { ExceptionEntity } from "../log/exception.entity";
+import { LanguageHelper } from "src/app/languageHelper";
 
 @Injectable({
   providedIn: "root"
 })
 export class IdentityService {
-  private status: boolean = false;
+  private status = false;
   private _IdentityEntity: IdentityEntity;
   private identitySource: Subject<IdentityEntity>;
   constructor(private http: HttpClient) {
@@ -54,9 +67,15 @@ export class IdentityService {
             }, 300);
           })
         )
-        .subscribe(r => {
-          s(r);
-        });
+        .subscribe(
+          r => {
+            s(r);
+          },
+          e => {
+            AppHelper.alert(e);
+            s(null);
+          }
+        );
     });
   }
   getIdentity(): Observable<IdentityEntity> {
@@ -89,6 +108,20 @@ export class IdentityService {
               return of(r.Data);
             }
             return of(null);
+          }),
+          catchError((error: Error | any) => {
+            const entity = new ExceptionEntity();
+            entity.Error = error;
+            entity.Method = req.Method;
+            entity.Message = LanguageHelper.getApiExceptionTip();
+            if (error instanceof TimeoutError) {
+              entity.Message = LanguageHelper.getApiTimeoutTip();
+              return throwError(entity.Message);
+            }
+            if (error instanceof HttpErrorResponse) {
+              return throwError(LanguageHelper.getNetworkErrorTip());
+            }
+            return throwError(error);
           })
         );
     }

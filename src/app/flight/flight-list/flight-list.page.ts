@@ -251,8 +251,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     return await this.staffService.checkStaffTypeSelf();
   }
   onCalenderClick() {
-    this.flyDayService.setFlyDayMulti(false);
-    this.flyDayService.showSelectFlyDatePage(true);
+    this.flightService.openCalendar(false);
   }
 
   back() {
@@ -666,7 +665,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         }
       });
     this.selectDaySubscription = this.flyDayService
-      .getSelectedFlyDays()
+      .getSelectedDays()
       .subscribe(async days => {
         if (days && days.length == 1) {
           console.log("选择的日期", days);

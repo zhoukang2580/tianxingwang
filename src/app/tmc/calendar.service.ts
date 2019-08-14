@@ -9,8 +9,6 @@ import { AvailableDate } from "./models/AvailableDate";
 })
 export class CalendarService {
   private selectedDaysSource: Subject<DayModel[]>;
-  private isMultiDaySource: Subject<boolean>;
-  private showCalendarSource: Subject<boolean>;
   private dayOfWeekNames = {
     0: LanguageHelper.getSundayTip(),
     1: LanguageHelper.getMondayTip(),
@@ -22,28 +20,14 @@ export class CalendarService {
   };
   constructor() {
     this.selectedDaysSource = new BehaviorSubject([]);
-    this.isMultiDaySource = new BehaviorSubject(false);
-    this.showCalendarSource = new BehaviorSubject(false);
   }
   getDayOfWeekNames() {
     return this.dayOfWeekNames;
   }
-  showSelectFlyDatePage(show: boolean) {
-    this.showCalendarSource.next(show);
-  }
-  getShowFlyDayPageSource() {
-    return this.showCalendarSource.asObservable();
-  }
-  setFlyDayMulti(multi: boolean) {
-    this.isMultiDaySource.next(multi);
-  }
-  getFlyDayMulti() {
-    return this.isMultiDaySource.asObservable();
-  }
-  getSelectedFlyDays() {
+  getSelectedDays() {
     return this.selectedDaysSource.asObservable();
   }
-  setSelectedFlyDays(days: DayModel[]) {
+  setSelectedDays(days: DayModel[]) {
     this.selectedDaysSource.next(days);
   }
   getMonth(d: DayModel) {

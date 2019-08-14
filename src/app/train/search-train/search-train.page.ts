@@ -116,7 +116,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
   }
   async ngOnInit() {
     this.selectDaySubscription = this.calendarService
-      .getSelectedFlyDays()
+      .getSelectedDays()
       .subscribe(days => {
         if (days && days.length) {
           if (days.length == 1) {
@@ -276,8 +276,6 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     this.isSelectFlyDate = flyTo;
-    this.calendarService.setFlyDayMulti(!this.isSingle && !this.disabled);
-    this.calendarService.showSelectFlyDatePage(true);
   }
   onFromCitySelected(city: TrafficlineEntity) {
     if (city) {

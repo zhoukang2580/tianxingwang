@@ -42,17 +42,17 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
   showReturnTrip: boolean;
   disabled = false;
   selectedPassengers: number;
+  totalFlyDays: string;
   staff: StaffEntity;
   constructor(
     private router: Router,
-    private route: ActivatedRoute,
+    route: ActivatedRoute,
     private calendarService: CalendarService,
     private navCtrl: NavController,
     private flydayService: CalendarService,
     private flightService: FlightService,
     private storage: Storage,
     private staffService: StaffService,
-    private identityService: IdentityService,
     private apiService: ApiService,
     private tmcService: TmcService
   ) {
@@ -84,17 +84,17 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  get totalFlyDays() {
+  private calcTotalFlyDays(): string {
     if (this.backDate && this.flyDate) {
       const detal = Math.floor(
         this.backDate.timeStamp - this.flyDate.timeStamp
       );
       if (detal == 0) {
-        return 1;
+        return `1`;
       }
       return (detal / 24 / 3600).toFixed(0);
     }
-    return 1;
+    return `1`;
   }
   back() {
     this.navCtrl.back();
@@ -118,7 +118,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
   }
   async ngOnInit() {
     this.selectDaySubscription = this.flydayService
-      .getSelectedFlyDays()
+      .getSelectedDays()
       .subscribe(days => {
         if (days && days.length) {
           if (days.length == 1) {
@@ -146,6 +146,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
           if (this.flyDate.timeStamp > this.backDate.timeStamp) {
             this.flyDate = this.flydayService.generateDayModel(moment());
           }
+          this.totalFlyDays = this.calcTotalFlyDays();
         }
       });
     this.apiService.showLoadingView();
@@ -283,8 +284,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     this.isSelectFlyDate = flyTo;
-    this.flydayService.setFlyDayMulti(!this.isSingle && !this.disabled);
-    this.flydayService.showSelectFlyDatePage(true);
+    this.flightService.openCalendar(!this.isSingle && !this.disabled);
   }
   onFromCitySelected(city: TrafficlineEntity) {
     if (city) {
