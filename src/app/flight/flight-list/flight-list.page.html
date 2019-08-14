@@ -22,14 +22,14 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-  <ion-grid class='xs-font-size' [style.visibility]="!isLoading?'initial':'collapse'">
+  <ion-grid class='xs-font-size' [style.visibility]="!isLoading?'initial':'collapse'" (click)='showSelectedBookInfos()'>
     <ion-row>
       <ion-col>
         {{searchFlightModel?.Date}}共{{vmFlights?.length}}个航班
         <ion-text color='danger' *ngIf='isFiltered'>(筛选后)</ion-text>
       </ion-col>
     </ion-row>
-    <ion-row *ngIf='isSelfBookType'>
+    <ion-row *ngIf='isSelfBookType' >
       <ng-container *ngIf='goAndBackFlightDateTime$|async as datetime'>
         <ion-col *ngIf='datetime?.goArrivalDateTime'>
           <ion-text>已选去程:{{datetime?.goArrivalDateTime}}</ion-text>
@@ -41,7 +41,7 @@
     </ion-row>
   </ion-grid>
   <ion-toolbar class="fly-days">
-    <app-fly-days-calendar (itemSelected)="onChangedDay($event,true)"  (calenderClick)="onCalenderClick()">
+    <app-fly-days-calendar (itemSelected)="onChangedDay($event,true)" (calenderClick)="onCalenderClick()">
     </app-fly-days-calendar>
   </ion-toolbar>
 </ion-header>
@@ -50,10 +50,10 @@
 
   </ion-refresher>
   <app-or-comp *ngIf='isLoading'>
-    <ion-label >数据即将加载完成</ion-label>
+    <ion-label>数据即将加载完成</ion-label>
   </app-or-comp>
   <app-or-comp *ngIf='!isLoading&&vmFlights?.length==0'>
-    <ion-label >暂无数据</ion-label>
+    <ion-label>暂无数据</ion-label>
   </app-or-comp>
 
 

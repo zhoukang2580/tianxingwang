@@ -279,6 +279,7 @@ export class FlightService {
     });
     m.present();
   }
+  
   private async reselectSelfBookTypeSegment(arg: PassengerBookInfo) {
     const s = this.getSearchFlightModel();
     if (arg.flightSegmentInfo.tripType == TripType.returnTrip) {

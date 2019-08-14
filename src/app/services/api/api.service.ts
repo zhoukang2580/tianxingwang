@@ -105,10 +105,10 @@ export class ApiService {
     return new Promise((resolve, reject) => {
       const sub = this.getResponse<T>(req).subscribe(
         r => {
-          if (r.Status) {
+          if (r && r.Status) {
             resolve(r.Data);
           } else {
-            reject(r.Message);
+            reject((r && r.Message) || LanguageHelper.getApiExceptionTip());
           }
         },
         e => {
