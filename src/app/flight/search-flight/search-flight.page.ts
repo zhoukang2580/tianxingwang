@@ -42,7 +42,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
   showReturnTrip: boolean;
   disabled = false;
   selectedPassengers: number;
-  totalFlyDays: string;
+  totalFlyDays: number;
   staff: StaffEntity;
   constructor(
     private router: Router,
@@ -146,7 +146,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
           if (this.flyDate.timeStamp > this.backDate.timeStamp) {
             this.flyDate = this.flydayService.generateDayModel(moment());
           }
-          this.totalFlyDays = this.calcTotalFlyDays();
+          this.totalFlyDays = +this.calcTotalFlyDays();
         }
       });
     this.apiService.showLoadingView();

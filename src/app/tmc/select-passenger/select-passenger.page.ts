@@ -73,7 +73,7 @@ export class SelectPassengerPage
   currentPage = 1;
   pageSize = 15;
   vmStaffs: StaffEntity[];
-  private selectedPassenger: StaffEntity;
+  selectedPassenger: StaffEntity;
   removeitemSubscription = Subscription.EMPTY;
   canAddMoreSubscription = Subscription.EMPTY;
   vmNewCredential: MemberCredential;
