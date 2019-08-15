@@ -3,7 +3,7 @@ import { IdentityService } from "./../services/identity/identity.service";
 import { StaffService } from "./../hr/staff.service";
 import { Subject, BehaviorSubject } from "rxjs";
 import { ApiService } from "src/app/services/api/api.service";
-import { Injectable } from "@angular/core";
+import { Injectable, EventEmitter } from "@angular/core";
 import { RequestEntity } from "../services/api/Request.entity";
 import { TripType } from "../tmc/models/TripType";
 import { TrainEntity, TrainSeatType } from "./models/TrainEntity";
@@ -15,6 +15,8 @@ import { PassengerBookInfo, TmcService } from "../tmc/tmc.service";
 import { CredentialsType } from "../member/pipe/credential.pipe";
 import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
 import * as moment from "moment";
+import { SelectedTrainSegmentInfoComponent } from "./components/selected-train-segment-info/selected-train-segment-info.component";
+import { LanguageHelper } from "../languageHelper";
 const KEY_TRAIN_TRAFFICLINES_DATA = "train-traficlines-data";
 export class SearchTrainModel {
   TrainCode: string;
@@ -76,7 +78,7 @@ export class TrainService {
     this.currentViewtTainItem = null;
     this.selfCredentials = null;
   }
-  async initSelfBookTypeBookInfos(infos: PassengerBookInfo[]) {
+  private async initSelfBookTypeBookInfos(infos: PassengerBookInfo[]) {
     if (infos.length === 0) {
       let IdCredential: CredentialsEntity;
       if (this.staffService.isSelfBookType) {
@@ -244,14 +246,41 @@ export class TrainService {
     req.IsShowLoading = true;
     req.Timeout = 60;
     req.Data = condition;
-    return this.apiService.getPromiseData<TrainEntity[]>(req).catch(_ => {
-      return [];
-    });
+    return this.apiService
+      .getPromiseData<TrainEntity[]>(req)
+      .then(res => {
+        let result = res;
+        if (res) {
+          result = res.map(it => {
+            it.ArrivalTimeStamp = Math.floor(
+              new Date(it.ArrivalTime).getTime() / 1000
+            );
+            it.StartTimeStamp = Math.floor(
+              new Date(it.StartTime).getTime() / 1000
+            );
+            it.AddOneDayTip = this.addoneday(it);
+            return it;
+          });
+        }
+        return result;
+      })
+      .catch(_ => {
+        return [];
+      });
   }
+  async dismissAllTopOverlays() {
+    let i = 10;
+    let top = await this.modalCtrl.getTop();
+    while (top && --i > 0) {
+      await top.dismiss().catch(_ => {});
+      top = await this.modalCtrl.getTop();
+    }
+  }
+
   policyAsync(
-    trains: TrainEntity,
+    trains: TrainEntity[],
     passengerIds: string[]
-  ): Promise<PassengerModel[]> {
+  ): Promise<TrainPassengerModel[]> {
     const req = new RequestEntity();
     req.Method = `TmcApiTrainUrl-Home-Policy`;
     req.IsShowLoading = true;
@@ -260,9 +289,19 @@ export class TrainService {
       Passengers: passengerIds.join(","),
       Trains: trains
     };
-    return this.apiService.getPromiseData<PassengerModel[]>(req).catch(_ => {
-      return [];
-    });
+    return this.apiService
+      .getPromiseData<TrainPassengerModel[]>(req)
+      .catch(_ => {
+        return [];
+      });
+  }
+  getTotalSegments(): TrainEntity[] {
+    return [];
+  }
+  private addoneday(s: TrainEntity) {
+    const addDay =
+      new Date(s.ArrivalTime).getDate() - new Date(s.StartTime).getDate();
+    return addDay > 0 ? "+" + addDay + LanguageHelper.getDayTip() : "";
   }
   scheduleAsync(data: SearchTrainModel): Promise<TrainEntity[]> {
     const req = new RequestEntity();
@@ -304,7 +343,7 @@ export class TrainPolicyModel {
   /// </summary>
   Rules: string[];
 }
-export class PassengerModel {
+export class TrainPassengerModel {
   PassengerKey: string;
   TrainPolicies: TrainPolicyModel[];
 }

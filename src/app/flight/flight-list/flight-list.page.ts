@@ -55,7 +55,7 @@ import { FlightJourneyEntity } from "../models/flight/FlightJourneyEntity";
 import { FlightCabinType } from "../models/flight/FlightCabinType";
 import { LanguageHelper } from "src/app/languageHelper";
 import { FilterConditionModel } from "../models/flight/advanced-search-cond/FilterConditionModel";
-import { FlyDaysCalendarComponent } from "../components/fly-days-calendar/fly-days-calendar.component";
+
 import { Storage } from "@ionic/storage";
 import { SelectedFlightsegmentInfoComponent } from "../components/selected-flightsegment-info/selected-flightsegment-info.component";
 import { NOT_WHITE_LIST } from "../../tmc/select-passenger/select-passenger.page";
@@ -66,6 +66,7 @@ import {
   PassengerPolicyFlights,
   FlightPolicy
 } from "../models/PassengerFlightInfo";
+import { DaysCalendarComponent } from 'src/app/tmc/components/days-calendar/days-calendar.component';
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -77,11 +78,6 @@ import {
       transition("false<=>true", animate("100ms ease-in-out"))
     ]),
     trigger("showAdvSearchPage", [
-      state("true", style({ transform: "scale(1)" })),
-      state("false", style({ transform: "scale(0)" })),
-      transition("false<=>true", animate("200ms ease-in-out"))
-    ]),
-    trigger("showSelectFlyDayPage", [
       state("true", style({ transform: "scale(1)" })),
       state("false", style({ transform: "scale(0)" })),
       transition("false<=>true", animate("200ms ease-in-out"))
@@ -125,8 +121,8 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     backTakeOffDateTime: string;
   }>;
   @ViewChild(FlyFilterComponent) filterComp: FlyFilterComponent;
-  @ViewChild(FlyDaysCalendarComponent)
-  flyDaysCalendarComp: FlyDaysCalendarComponent;
+  @ViewChild(DaysCalendarComponent)
+  daysCalendarComp: DaysCalendarComponent;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   activeTab: "filter" | "time" | "price" | "none"; // 当前激活的tab
   hasDataSource: Subject<boolean>;
@@ -614,7 +610,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
               }
               return obj;
             },
-            {} as { [key: string]: FlightPolicy[] }
+            {} as { [FlightNo: string]: FlightPolicy[] }
           )
         };
       });
@@ -724,15 +720,15 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
   private moveDayToSearchDate(d?: DayModel) {
     this.domCtrl.write(_ => {
-      if (this.flyDaysCalendarComp) {
+      if (this.daysCalendarComp) {
         const day =
           d ||
           this.flyDayService.generateDayModelByDate(
             this.searchFlightModel.Date
           );
         setTimeout(() => {
-          if (this.flyDaysCalendarComp) {
-            this.flyDaysCalendarComp.onDaySelected(day);
+          if (this.daysCalendarComp) {
+            this.daysCalendarComp.onDaySelected(day);
           }
         }, 1000);
       }

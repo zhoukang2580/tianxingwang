@@ -6,9 +6,15 @@ import { IonicModule } from "@ionic/angular";
 import { ReactiveFormsModule, FormsModule } from "@angular/forms";
 import { SwitchStationComponent } from "./switch-station/switch-station.component";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
+import { SelectedTrainSegmentInfoComponent } from "./selected-train-segment-info/selected-train-segment-info.component";
+import { TrainListItemComponent } from "./train-list-item/train-list-item.component";
 
 @NgModule({
-  declarations: [SwitchStationComponent],
+  declarations: [
+    SwitchStationComponent,
+    TrainListItemComponent,
+    SelectedTrainSegmentInfoComponent
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -18,7 +24,7 @@ import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module
     AppComponentsModule,
     TmcComponentsModule
   ],
-  exports: [SwitchStationComponent],
-  entryComponents: []
+  exports: [SwitchStationComponent, TrainListItemComponent],
+  entryComponents: [SelectedTrainSegmentInfoComponent]
 })
 export class TrainComponentsModule {}

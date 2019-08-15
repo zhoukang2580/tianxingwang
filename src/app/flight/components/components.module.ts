@@ -7,7 +7,6 @@ import { CommonModule } from "@angular/common";
 import { FlightDynamicComponent } from "./flight-dynamic/flight-dynamic.component";
 import { SwitchCityComponent } from "./switch-city/switch-city.component";
 import { FlyListItemComponent } from "./fly-list-item/fly-list-item.component";
-import { FlyDaysCalendarComponent } from "./fly-days-calendar/fly-days-calendar.component";
 import { FlightPipesModule } from "../pipes/Pipes.module";
 import { FlyFilterComponent } from "./fly-filter/fly-filter.component";
 import { TakeOffTimespanComponent } from "./fly-filter/take-off-timespan/take-off-timespan.component";
@@ -30,7 +29,6 @@ import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module
     FlightDynamicComponent,
     SwitchCityComponent,
     FlyListItemComponent,
-    FlyDaysCalendarComponent,
     FlyFilterComponent,
     TakeOffTimespanComponent,
     AircompanyComponent,
@@ -63,7 +61,6 @@ import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module
     FlightDynamicComponent,
     SwitchCityComponent,
     FlyListItemComponent,
-    FlyDaysCalendarComponent,
     FlyFilterComponent,
     TakeOffTimespanComponent,
     AircompanyComponent,

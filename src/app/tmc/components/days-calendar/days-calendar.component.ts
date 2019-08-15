@@ -1,5 +1,5 @@
 import { Platform, DomController } from "@ionic/angular";
-import { DayModel } from "../../../tmc/models/DayModel";
+import { DayModel } from "../../models/DayModel";
 import {
   Component,
   OnInit,
@@ -15,11 +15,11 @@ import {
 import * as moment from "moment";
 import { CalendarService } from 'src/app/tmc/calendar.service';
 @Component({
-  selector: "app-fly-days-calendar",
-  templateUrl: "./fly-days-calendar.component.html",
-  styleUrls: ["./fly-days-calendar.component.scss"]
+  selector: "app-days-calendar",
+  templateUrl: "./days-calendar.component.html",
+  styleUrls: ["./days-calendar.component.scss"]
 })
-export class FlyDaysCalendarComponent implements OnInit, AfterViewInit {
+export class DaysCalendarComponent implements OnInit, AfterViewInit {
   @Output() itemSelected: EventEmitter<DayModel>;
   @Output() calenderClick: EventEmitter<any>;
   @ViewChild("daysContainer") daysEle: ElementRef<HTMLElement>;

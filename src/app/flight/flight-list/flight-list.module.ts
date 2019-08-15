@@ -1,17 +1,18 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Routes, RouterModule } from '@angular/router';
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { Routes, RouterModule } from "@angular/router";
 
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from "@ionic/angular";
 
-import { FlightListPage } from './flight-list.page';
-import { FlightComponentsModule } from '../components/components.module';
-import { FlightDirectivesModule } from '../directives/directives.module';
+import { FlightListPage } from "./flight-list.page";
+import { FlightComponentsModule } from "../components/components.module";
+import { FlightDirectivesModule } from "../directives/directives.module";
+import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 
 const routes: Routes = [
   {
-    path: '',
+    path: "",
     component: FlightListPage
   }
 ];
@@ -23,7 +24,8 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes),
     FlightComponentsModule,
-    FlightDirectivesModule
+    FlightDirectivesModule,
+    TmcComponentsModule
   ],
   declarations: [FlightListPage]
 })

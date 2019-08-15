@@ -2,8 +2,8 @@ import { InsuranceProductEntity } from "src/app/insurance/models/InsuranceProduc
 import { TrainSeatEntity } from "./TrainSeatEntity";
 import { TrainScheduleEntity } from "./TrainScheduleEntity";
 import { TrainType } from "./TrainType";
-import { TrainBookType } from './TrainBookType';
-import { TrainSupplierType } from 'src/app/train/models/TrainSupplierType';
+import { TrainBookType } from "./TrainBookType";
+import { TrainSupplierType } from "src/app/train/models/TrainSupplierType";
 
 export class TrainEntity {
   BookType: TrainBookType;
@@ -13,6 +13,7 @@ export class TrainEntity {
   /// 开售时间
   /// </summary>
   SaleTime: string;
+  AddOneDayTip: string;
   /// <summary>
   /// 列车从出发站到达目的站的运行天数
   /// 0：当日到达，
@@ -73,6 +74,11 @@ export class TrainEntity {
   /// 到达时间
   /// </summary>
   ArrivalTime: string;
+  StartTimeStamp: number;
+  /// <summary>
+  /// 到达时间
+  /// </summary>
+  ArrivalTimeStamp: number;
   /// <summary>
   /// 行驶里程
   /// </summary>
