@@ -53,7 +53,7 @@ export class SelectWheelComponent
       changes.curSelectedItem.currentValue &&
       this.items
     ) {
-      console.log(changes);
+      // console.log(changes);
       setTimeout(() => {
         this.initCurSelectedView();
       }, 100);
