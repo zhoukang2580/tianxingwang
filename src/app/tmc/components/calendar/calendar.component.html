@@ -16,7 +16,7 @@
     <ion-row style="margin-top: 1em;padding-bottom: 1em;">
       <ion-datetime color='secondary' id="dynamicDisabled" pickerFormat="YYYY MM" style='display: none' [min]='minyear'
         max='2119-12-31' [value]="ym.yearMonth"></ion-datetime>
-      <ion-col class='ym' (click)='showPicker()'>
+      <ion-col class='ym' (click)='showDateSelectWheel()'> 
         <div class='ym'>{{ym.yearMonth?.substr(0,4)}}年{{getMonth(ym.yearMonth)}}月
           <ion-icon name="arrow-dropdown" mode='md'></ion-icon>
         </div>

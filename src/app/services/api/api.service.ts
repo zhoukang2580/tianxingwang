@@ -269,7 +269,7 @@ export class ApiService {
     return from(this.loadApiConfig()).pipe(
       switchMap(config => {
         if (!config) {
-          return throwError("api config error");
+          return throwError(LanguageHelper.getNetworkErrorTip());
         }
         return from(this.getUrl(req));
       }),

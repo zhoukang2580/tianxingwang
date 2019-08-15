@@ -20,7 +20,9 @@ import { BookCostcenterCompComponent } from "./book-costcenter-comp/book-costcen
 import { BookOrganizationCompComponent } from "./book-organization-comp/book-organization-comp.component";
 import { BookAddcontactsCompComponent } from "./book-addcontacts-comp/book-addcontacts-comp.component";
 import { DayComponent } from "src/app/tmc/components/day/day.component";
-import { SelectCountryModalComponent } from './select-country/select-countrymodal.component';
+import { SelectCountryModalComponent } from "./select-country/select-countrymodal.component";
+import { DateSelectWheelPopoverComponent } from "./date-select-wheel-popover/date-select-wheel-popover.component";
+import { SelectWheelComponent } from "./select-wheel/select-wheel.component";
 
 @NgModule({
   declarations: [
@@ -39,7 +41,9 @@ import { SelectCountryModalComponent } from './select-country/select-countrymoda
     BookAddcontactsCompComponent,
     DayComponent,
     CalendarComponent,
-    SelectCountryModalComponent
+    SelectCountryModalComponent,
+    SelectWheelComponent,
+    DateSelectWheelPopoverComponent
   ],
   imports: [
     CommonModule,
@@ -56,7 +60,8 @@ import { SelectCountryModalComponent } from './select-country/select-countrymoda
     BookOrganizationCompComponent,
     BookAddcontactsCompComponent,
     DayComponent,
-    CalendarComponent
+    CalendarComponent,
+    SelectWheelComponent
   ],
   entryComponents: [
     AddcontactsModalComponent,
@@ -70,7 +75,8 @@ import { SelectCountryModalComponent } from './select-country/select-countrymoda
     AddcontactsModalComponent,
     OrganizationComponent,
     CalendarComponent,
-    SelectCountryModalComponent
+    SelectCountryModalComponent,
+    DateSelectWheelPopoverComponent
   ]
 })
 export class TmcComponentsModule {}

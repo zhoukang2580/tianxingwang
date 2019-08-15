@@ -1,0 +1,7 @@
+<div class='wheel-container' #wheelcontainer *ngIf='show'>
+  <ul #scrollEle>
+    <li *ngFor='let item of items' #liEle [attr.data]='item.key' [class.selected]='item.selected'>
+      <span *ngIf='item.value'>{{item.value}}</span>
+    </li>
+  </ul>
+</div>

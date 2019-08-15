@@ -1,0 +1,40 @@
+:host {
+  height: 100%;
+  width: 100%;
+  display: none;
+  &.show {
+    display: initial;
+  }
+}
+.wheel-container {
+  height: 9em;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  ul,
+  li {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    max-height: 100%;
+    width: 100%;
+    overflow: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  li {
+    opacity: 0.5;
+    color: var(--ion-color-medium);
+    &.selected {
+      opacity: 1;
+      color: var(--ion-color-secondary);
+    }
+    text-align: center;
+    height: 3em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
