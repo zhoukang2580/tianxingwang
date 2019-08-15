@@ -1,4 +1,4 @@
-import { DayModel } from "../../../tmc/models/DayModel";
+import { DayModel } from "../../models/DayModel";
 import { Component, OnInit, Input,HostBinding } from "@angular/core";
 import * as moment from "moment";
 

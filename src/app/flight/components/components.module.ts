@@ -17,10 +17,8 @@ import { AirtypeComponent } from "./fly-filter/airtype/airtype.component";
 import { CabinComponent } from "./fly-filter/cabin/cabin.component";
 import { SelectCityComponent } from "./select-city/select-city.component";
 import { FlightDirectivesModule } from "../directives/directives.module";
-import { SearchDayComponent } from "./search-day/search-day.component";
 import { TicketchangingComponent } from "./ticketchanging/ticketchanging.component";
 import { SelectedPassengersComponent } from "../../tmc/components/selected-passengers/selected-passengers.component";
-import { SelectFlyDateComponent } from "./select-fly-date/select-fly-date.component";
 import { SelectedFlightsegmentInfoComponent } from "./selected-flightsegment-info/selected-flightsegment-info.component";
 import { SelectFlightsegmentCabinComponent } from "./select-flightsegment-cabin/select-flightsegment-cabin.component";
 import { FlightTripComponent } from "./flight-trip/flight-trip.component";
@@ -40,10 +38,8 @@ import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module
     AirtypeComponent,
     CabinComponent,
     SelectCityComponent,
-    SearchDayComponent,
     TicketchangingComponent,
     SelectedPassengersComponent,
-    SelectFlyDateComponent,
     SelectedFlightsegmentInfoComponent,
     SelectFlightsegmentCabinComponent,
     FlightTripComponent,
@@ -64,7 +60,6 @@ import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module
     DirectivesModule,
     FlightDirectivesModule,
     AppComponentsModule,
-    SearchDayComponent,
     FlightDynamicComponent,
     SwitchCityComponent,
     FlyListItemComponent,
@@ -79,7 +74,6 @@ import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module
     SelectCityComponent,
     TicketchangingComponent,
     SelectedPassengersComponent,
-    SelectFlyDateComponent,
     FlightTripComponent,
     OriginalFlightTripComponent
   ],
@@ -88,8 +82,7 @@ import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module
     TicketchangingComponent,
     SelectedPassengersComponent,
     SelectedFlightsegmentInfoComponent,
-    SelectFlightsegmentCabinComponent,
-    SelectFlyDateComponent
+    SelectFlightsegmentCabinComponent
   ]
 })
 export class FlightComponentsModule {}

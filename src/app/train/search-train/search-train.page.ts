@@ -1,3 +1,4 @@
+import { FlightHotelTrainType } from "./../../tmc/tmc.service";
 import { TrainService, SearchTrainModel } from "./../train.service";
 import { TrafficlineEntity } from "./../../tmc/models/TrafficlineEntity";
 import { IdentityService } from "../../services/identity/identity.service";
@@ -16,7 +17,7 @@ import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import { TripType } from "src/app/tmc/models/TripType";
 import { TrainEntity } from "../models/TrainEntity";
 import { CalendarService } from "src/app/tmc/calendar.service";
-import { PassengerBookInfo } from "src/app/tmc/tmc.service";
+import { PassengerBookInfo, TmcService } from "src/app/tmc/tmc.service";
 @Component({
   selector: "app-search-train",
   templateUrl: "./search-train.page.html",
@@ -53,18 +54,21 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
   disabled = false;
   selectedPassengers: number;
   staff: StaffEntity;
+  totalFlyDays: number;
   constructor(
     private router: Router,
-    private route: ActivatedRoute,
+    route: ActivatedRoute,
     private navCtrl: NavController,
     private storage: Storage,
     private staffService: StaffService,
     private identityService: IdentityService,
     private apiService: ApiService,
     private trainService: TrainService,
-    private calendarService: CalendarService
+    private calendarService: CalendarService,
+    private tmcService: TmcService
   ) {
     route.queryParamMap.subscribe(async _ => {
+      this.tmcService.setFlightHotelTrainType(FlightHotelTrainType.Train);
       this.staff = await this.staffService.getStaff();
       if (await this.isStaffTypeSelf()) {
         this.disabled = this.searchTrainModel && this.searchTrainModel.isLocked;
@@ -118,6 +122,9 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     this.selectDaySubscription = this.calendarService
       .getSelectedDays()
       .subscribe(days => {
+        if (!this.router.routerState.snapshot.url.includes("search-train")) {
+          return;
+        }
         if (days && days.length) {
           if (days.length == 1) {
             if (this.disabled) {
@@ -139,6 +146,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
             } else {
               this.flyDate = days[0];
               this.backDate = days[1];
+              this.totalFlyDays = +this.calcTotalFlyDays();
             }
           }
           if (this.flyDate.timeStamp > this.backDate.timeStamp) {
@@ -147,11 +155,22 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
         }
       });
     this.apiService.showLoadingView();
-    const s = await this.staffService.getStaff();
-    this.showReturnTrip = s.BookType == StaffBookType.Self;
+    this.showReturnTrip = this.staffService.isSelfBookType;
     this.initTrainDays();
     this.initTrainCities();
     this.apiService.hideLoadingView();
+  }
+  private calcTotalFlyDays(): string {
+    if (this.backDate && this.flyDate) {
+      const detal = Math.floor(
+        this.backDate.timeStamp - this.flyDate.timeStamp
+      );
+      if (detal == 0) {
+        return `1`;
+      }
+      return (detal / 24 / 3600).toFixed(0);
+    }
+    return `1`;
   }
   mustAddPassenger() {
     return this.staff && this.staff.BookType !== StaffBookType.Self;
@@ -276,6 +295,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     this.isSelectFlyDate = flyTo;
+    this.trainService.openCalendar(!this.isSingle && !this.disabled);
   }
   onFromCitySelected(city: TrafficlineEntity) {
     if (city) {

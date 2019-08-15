@@ -1,34 +1,19 @@
 import { ModalController } from "@ionic/angular";
-import { FlightService } from "src/app/flight/flight.service";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Subscription } from "rxjs";
 import * as moment from "moment";
 import { LanguageHelper } from "src/app/languageHelper";
-import { DayModel } from "../../../tmc/models/DayModel";
-import { AvailableDate } from "../../../tmc/models/AvailableDate";
-import { CalendarService } from "../../../tmc/calendar.service";
+import { DayModel } from "../../models/DayModel";
+import { AvailableDate } from "../../models/AvailableDate";
+import { CalendarService } from "../../calendar.service";
 import { AppHelper } from "src/app/appHelper";
-import {
-  trigger,
-  state,
-  style,
-  animate,
-  transition
-} from "@angular/animations";
 import { TripType } from "src/app/tmc/models/TripType";
 @Component({
-  selector: "app-select-fly-date-comp",
-  templateUrl: "./select-fly-date.component.html",
-  styleUrls: ["./select-fly-date.component.scss"],
-  animations: [
-    trigger("openclose", [
-      state("true", style({ transform: "scale(1)" })),
-      state("false", style({ transform: "scale(0)" })),
-      transition("true<=>false", animate("300ms ease-in-out"))
-    ])
-  ]
+  selector: "app-select-date-comp",
+  templateUrl: "./select-date.component.html",
+  styleUrls: ["./select-date.component.scss"]
 })
-export class SelectFlyDateComponent implements OnInit, OnDestroy {
+export class SelectDateComponent implements OnInit, OnDestroy {
   constructor(
     private calendarService: CalendarService,
     private modalCtrl: ModalController
@@ -39,7 +24,7 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
   private tripType: TripType;
   private curSelectedYear: string;
   private curSelectedMonth: number;
-  private goFlightArrivalTime: string;
+  private goArrivalTime: string;
   set selectedDays(days: DayModel[]) {
     this._selectedDays = days;
     setTimeout(() => {
@@ -81,8 +66,8 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
   checkYms() {
     if (this.yms && this.yms.length) {
       if (this.tripType == TripType.returnTrip) {
-        if (this.goFlightArrivalTime) {
-          const goDate = moment(this.goFlightArrivalTime);
+        if (this.goArrivalTime) {
+          const goDate = moment(this.goArrivalTime);
           if (this.yms.length) {
             this.yms.forEach(day => {
               day.dayList.forEach(d => {
@@ -121,6 +106,7 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
     this.checkYms();
   }
   async cancel() {
+    console.log("select date component cancel ");
     this.calendarService.setSelectedDays(this.selectedDays);
     const m = await this.modalCtrl.getTop();
     if (m) {
@@ -128,14 +114,17 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
     }
   }
   onDaySelected(d: DayModel) {
-    console.log(
-      "onDaySelected",
-      d,
-      this.selectedDays.length,
-      this.tripType,
-      "this.isMulti",
-      this.isMulti
-    );
+    // console.log(
+    //   "select date component onDaySelected",
+    //   d,
+    //   this.selectedDays.length,
+    //   this.tripType,
+    //   "this.isMulti",
+    //   this.isMulti
+    // );
+    if (!d || !d.date) {
+      return;
+    }
     if (!d.enabled) {
       AppHelper.toast(LanguageHelper.getSelectOtherFlyDayTip(), 1000, "middle");
       return;
@@ -196,21 +185,20 @@ export class SelectFlyDateComponent implements OnInit, OnDestroy {
       this.selectedDays = [d];
     }
     this.yms.map(item => {
-      item.dayList
-        .forEach(dt => {
-          dt.selected = this.isMulti
-            ? this.selectedDays.some(it => it.date === dt.date)
-            : dt.date === d.date;
-          dt.lastSelected = false;
-          dt.firstSelected = false;
-          if (!dt.selected) {
-            dt.desc = null;
-            dt.descColor = null;
-            dt.descPos = null;
-            dt.hasToolTip = false;
-            dt.toolTipMsg = null;
-          }
-        });
+      item.dayList.forEach(dt => {
+        dt.selected = this.isMulti
+          ? this.selectedDays.some(it => it.date === dt.date)
+          : dt.date === d.date;
+        dt.lastSelected = false;
+        dt.firstSelected = false;
+        if (!dt.selected) {
+          dt.desc = null;
+          dt.descColor = null;
+          dt.descPos = null;
+          dt.hasToolTip = false;
+          dt.toolTipMsg = null;
+        }
+      });
     });
     if (!this.isMulti) {
       setTimeout(() => {

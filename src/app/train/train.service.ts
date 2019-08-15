@@ -1,3 +1,4 @@
+import { ModalController } from "@ionic/angular";
 import { IdentityService } from "./../services/identity/identity.service";
 import { StaffService } from "./../hr/staff.service";
 import { Subject, BehaviorSubject } from "rxjs";
@@ -7,12 +8,13 @@ import { RequestEntity } from "../services/api/Request.entity";
 import { TripType } from "../tmc/models/TripType";
 import { TrainEntity, TrainSeatType } from "./models/TrainEntity";
 import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
-import { StaffEntity } from "../hr/staff.service";
 import { CredentialsEntity } from "../tmc/models/CredentialsEntity";
 import { Storage } from "@ionic/storage";
 import * as jsPy from "js-pinyin";
 import { PassengerBookInfo, TmcService } from "../tmc/tmc.service";
 import { CredentialsType } from "../member/pipe/credential.pipe";
+import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
+import * as moment from "moment";
 const KEY_TRAIN_TRAFFICLINES_DATA = "train-traficlines-data";
 export class SearchTrainModel {
   TrainCode: string;
@@ -47,13 +49,14 @@ export class TrainService {
   private bookInfos: PassengerBookInfo[] = [];
   private bookInfoSource: Subject<PassengerBookInfo[]>;
   private searchModelSource: Subject<SearchTrainModel>;
-  private currentViewtTainItem: TrainEntity;
+  currentViewtTainItem: TrainEntity;
   constructor(
     private apiService: ApiService,
     private storage: Storage,
     private staffService: StaffService,
     private tmcService: TmcService,
-    private identityService: IdentityService
+    private identityService: IdentityService,
+    private modalCtrl: ModalController
   ) {
     this.bookInfoSource = new BehaviorSubject([]);
     this.searchModelSource = new BehaviorSubject(new SearchTrainModel());
@@ -109,7 +112,10 @@ export class TrainService {
     return this.searchModelSource.asObservable();
   }
   getSearchTrainModel() {
-    return this.searchModel || new SearchTrainModel();
+    const s = new SearchTrainModel();
+    s.tripType = TripType.departureTrip;
+    s.Date = moment().format("YYYY-MM-DD");
+    return this.searchModel || s;
   }
   setSearchTrainModel(m: SearchTrainModel) {
     this.searchModel = m || new SearchTrainModel();
@@ -118,6 +124,25 @@ export class TrainService {
   addBookInfo(arg: PassengerBookInfo) {
     this.bookInfos.push(arg);
     this.setBookInfoSource(this.bookInfos);
+  }
+  async openCalendar(isMulti: boolean) {
+    const goTrain = this.getBookInfos().find(
+      f => f.trainInfo && f.trainInfo.tripType == TripType.departureTrip
+    );
+    const s = this.getSearchTrainModel();
+    const m = await this.modalCtrl.create({
+      component: SelectDateComponent,
+      componentProps: {
+        goArrivalTime:
+          goTrain &&
+          goTrain.trainInfo &&
+          goTrain.trainInfo.trainEntity &&
+          goTrain.trainInfo.trainEntity.ArrivalTime,
+        tripType: s.tripType,
+        isMulti: isMulti
+      }
+    });
+    m.present();
   }
   async getStationsAsync(forceUpdate = false): Promise<TrafficlineEntity[]> {
     if (!forceUpdate) {

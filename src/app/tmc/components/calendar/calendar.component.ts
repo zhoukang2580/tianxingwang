@@ -4,14 +4,12 @@ import {
   Output,
   EventEmitter,
   Input,
-  ViewChild,
   AfterViewInit
 } from "@angular/core";
 import { AvailableDate } from "../../models/AvailableDate";
 import { CalendarService } from "../../calendar.service";
 import { DayModel } from "../../models/DayModel";
 import { PopoverController } from "@ionic/angular";
-import { LanguageHelper } from "src/app/languageHelper";
 import { DateSelectWheelPopoverComponent } from "../date-select-wheel-popover/date-select-wheel-popover.component";
 @Component({
   selector: "app-calendar",
@@ -20,7 +18,6 @@ import { DateSelectWheelPopoverComponent } from "../date-select-wheel-popover/da
 })
 export class CalendarComponent implements OnInit, AfterViewInit {
   weeks: string[];
-  minyear = new Date().getFullYear();
   @Input() calendars: AvailableDate[];
   @Output() yearChange: EventEmitter<any>;
   @Output() monthChange: EventEmitter<any>;

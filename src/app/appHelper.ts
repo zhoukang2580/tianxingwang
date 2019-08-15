@@ -153,15 +153,7 @@ export class AppHelper {
 
   static async dismissLayer() {
     try {
-      const a = await this.alertController.getTop();
       const t = await this.toastController.getTop();
-      const m = await this.modalController.getTop();
-      if (m) {
-        m.dismiss();
-      }
-      if (a) {
-        a.dismiss();
-      }
       if (t) {
         t.dismiss();
       }

@@ -30,7 +30,7 @@ import {
   FlightPolicy
 } from "./models/PassengerFlightInfo";
 import { OrderBookDto } from "../order/models/OrderBookDto";
-import { SelectFlyDateComponent } from "./components/select-fly-date/select-fly-date.component";
+import { SelectDateComponent } from '../tmc/components/select-date/select-date.component';
 
 export class SearchFlightModel {
   BackDate: string; //  Yes 航班日期（yyyy-MM-dd）
@@ -266,9 +266,9 @@ export class FlightService {
     );
     const s = this.getSearchFlightModel();
     const m = await this.modalCtrl.create({
-      component: SelectFlyDateComponent,
+      component: SelectDateComponent,
       componentProps: {
-        goFlightArrivalTime:
+        goArrivalTime:
           goFlight &&
           goFlight.flightSegmentInfo &&
           goFlight.flightSegmentInfo.flightSegment &&

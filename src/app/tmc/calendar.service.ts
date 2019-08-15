@@ -1,9 +1,9 @@
 import { Subject, BehaviorSubject } from "rxjs";
 import { Injectable } from "@angular/core";
 import * as moment from "moment";
-import { LanguageHelper } from "src/app/languageHelper";
-import { DayModel } from "./models/DayModel";
 import { AvailableDate } from "./models/AvailableDate";
+import { LanguageHelper } from '../languageHelper';
+import { DayModel } from './models/DayModel';
 @Injectable({
   providedIn: "root"
 })

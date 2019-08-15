@@ -120,6 +120,9 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.selectDaySubscription = this.flydayService
       .getSelectedDays()
       .subscribe(days => {
+        if (!this.router.routerState.snapshot.url.includes("search-flight")) {
+          return;
+        }
         if (days && days.length) {
           if (days.length == 1) {
             if (this.disabled) {

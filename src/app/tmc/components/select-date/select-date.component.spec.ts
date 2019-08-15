@@ -1,22 +1,22 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SelectFlyDateComponent } from './select-fly-date.component';
+import { SelectDateComponent } from './select-date.component';
 
 describe('SelectFlyDateComponent', () => {
-  let component: SelectFlyDateComponent;
-  let fixture: ComponentFixture<SelectFlyDateComponent>;
+  let component: SelectDateComponent;
+  let fixture: ComponentFixture<SelectDateComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SelectFlyDateComponent ],
+      declarations: [ SelectDateComponent ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SelectFlyDateComponent);
+    fixture = TestBed.createComponent(SelectDateComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
