@@ -206,14 +206,13 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     this.fromCity = this.vmFromCity = {} as any;
     this.fromCity.Nickname = this.fromCity.CityName = this.vmFromCity.CityName =
       "北京";
-    this.vmFromCity.Code = this.fromCity.Code = "SHA";
+    this.vmFromCity.Code = this.fromCity.Code = "SHH";
     this.toCity = this.vmToCity = {} as any;
     this.toCity.Nickname = this.toCity.CityName = this.vmToCity.CityName =
       "上海";
-    this.vmToCity.Code = this.toCity.Code = "BJS";
-    this.fromCity.Tag = this.toCity.Tag = "AirportCity"; // 出发城市，不是出发城市的那个机场
-    const lastFromCity = await this.storage.get("fromCity");
-    const lastToCity = await this.storage.get("toCity");
+    this.vmToCity.Code = this.toCity.Code = "BJP";
+    const lastFromCity = await this.storage.get("fromTrainStation");
+    const lastToCity = await this.storage.get("toTrainStation");
     if (!lastFromCity || !lastToCity) {
       const stations = await this.trainService.getStationsAsync();
       if (stations && stations.length) {
@@ -239,8 +238,8 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
       `目的城市【${this.toCity && this.toCity.CityName}】`
     );
     console.log(`启程日期${this.flyDate.date},返程日期：${this.backDate.date}`);
-    this.storage.set("fromCity", this.fromCity);
-    this.storage.set("toCity", this.toCity);
+    this.storage.set("fromTrainStation", this.fromCity);
+    this.storage.set("toTrainStation", this.toCity);
     const s = new SearchTrainModel();
     s.tripType = TripType.departureTrip;
     const staff = await this.staffService.getStaff();
@@ -290,7 +289,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
   getDayDesc(d: DayModel) {
     return this.calendarService.getDescOfDay(d);
   }
-  onSelecFlyDate(flyTo: boolean, backDate: boolean) {
+  onSelecDate(flyTo: boolean, backDate: boolean) {
     if (this.disabled && !backDate) {
       return;
     }

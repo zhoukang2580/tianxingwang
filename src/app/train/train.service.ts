@@ -17,6 +17,7 @@ import { SelectDateComponent } from "../tmc/components/select-date/select-date.c
 import * as moment from "moment";
 import { SelectedTrainSegmentInfoComponent } from "./components/selected-train-segment-info/selected-train-segment-info.component";
 import { LanguageHelper } from "../languageHelper";
+import { CalendarService } from "../tmc/calendar.service";
 const KEY_TRAIN_TRAFFICLINES_DATA = "train-traficlines-data";
 export class SearchTrainModel {
   TrainCode: string;
@@ -58,7 +59,8 @@ export class TrainService {
     private staffService: StaffService,
     private tmcService: TmcService,
     private identityService: IdentityService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private calendarService: CalendarService
   ) {
     this.bookInfoSource = new BehaviorSubject([]);
     this.searchModelSource = new BehaviorSubject(new SearchTrainModel());
@@ -245,7 +247,13 @@ export class TrainService {
     req.Method = `TmcApiTrainUrl-Home-Search`;
     req.IsShowLoading = true;
     req.Timeout = 60;
-    req.Data = condition;
+    req.Data = {
+      Date: condition.Date,
+      FromStation: condition.FromStation,
+      ToStation: condition.ToStation,
+      TrainCode: condition.TrainCode
+    };
+    req.Version = "1.0";
     return this.apiService
       .getPromiseData<TrainEntity[]>(req)
       .then(res => {
@@ -259,6 +267,8 @@ export class TrainService {
               new Date(it.StartTime).getTime() / 1000
             );
             it.AddOneDayTip = this.addoneday(it);
+            it.StartShortTime = this.calendarService.getHHmm(it.StartTime);
+            it.ArrivalShortTime = this.calendarService.getHHmm(it.ArrivalTime);
             return it;
           });
         }
@@ -303,12 +313,20 @@ export class TrainService {
       new Date(s.ArrivalTime).getDate() - new Date(s.StartTime).getDate();
     return addDay > 0 ? "+" + addDay + LanguageHelper.getDayTip() : "";
   }
-  scheduleAsync(data: SearchTrainModel): Promise<TrainEntity[]> {
+
+  scheduleAsync(data: {
+    Date: string;
+    FromStation: string;
+    ToStation: string;
+    TrainNo: string;
+    TrainCode: string;
+  }): Promise<TrainEntity[]> {
     const req = new RequestEntity();
     req.Method = `TmcApiTrainUrl-Home-Schedule`;
     req.IsShowLoading = true;
     req.Timeout = 60;
     req.Data = data;
+    req.Version = "1.0";
     return this.apiService.getPromiseData<TrainEntity[]>(req).catch(_ => {
       return [];
     });

@@ -8,12 +8,14 @@ import { SwitchStationComponent } from "./switch-station/switch-station.componen
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 import { SelectedTrainSegmentInfoComponent } from "./selected-train-segment-info/selected-train-segment-info.component";
 import { TrainListItemComponent } from "./train-list-item/train-list-item.component";
+import { TrainscheduleComponent } from "./trainschedule/trainschedule.component";
 
 @NgModule({
   declarations: [
     SwitchStationComponent,
     TrainListItemComponent,
-    SelectedTrainSegmentInfoComponent
+    SelectedTrainSegmentInfoComponent,
+    TrainscheduleComponent
   ],
   imports: [
     CommonModule,
@@ -24,7 +26,11 @@ import { TrainListItemComponent } from "./train-list-item/train-list-item.compon
     AppComponentsModule,
     TmcComponentsModule
   ],
-  exports: [SwitchStationComponent, TrainListItemComponent],
-  entryComponents: [SelectedTrainSegmentInfoComponent]
+  exports: [
+    SwitchStationComponent,
+    TrainListItemComponent,
+    TrainscheduleComponent
+  ],
+  entryComponents: [SelectedTrainSegmentInfoComponent, TrainscheduleComponent]
 })
 export class TrainComponentsModule {}

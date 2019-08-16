@@ -1,3 +1,4 @@
+import { CalendarService } from "./../tmc/calendar.service";
 import { CredentialsType } from "./../member/pipe/credential.pipe";
 import { IdentityEntity } from "./../services/identity/identity.entity";
 import { CredentialsEntity } from "./../tmc/models/CredentialsEntity";
@@ -30,7 +31,7 @@ import {
   FlightPolicy
 } from "./models/PassengerFlightInfo";
 import { OrderBookDto } from "../order/models/OrderBookDto";
-import { SelectDateComponent } from '../tmc/components/select-date/select-date.component';
+import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
 
 export class SearchFlightModel {
   BackDate: string; //  Yes 航班日期（yyyy-MM-dd）
@@ -70,7 +71,8 @@ export class FlightService {
     private router: Router,
     private navCtrl: NavController,
     private identityService: IdentityService,
-    private tmcService: TmcService
+    private tmcService: TmcService,
+    private calendarService: CalendarService
   ) {
     this.searchFlightModel = new SearchFlightModel();
     this.searchFlightModel.tripType = TripType.departureTrip;
@@ -279,7 +281,7 @@ export class FlightService {
     });
     m.present();
   }
-  
+
   private async reselectSelfBookTypeSegment(arg: PassengerBookInfo) {
     const s = this.getSearchFlightModel();
     if (arg.flightSegmentInfo.tripType == TripType.returnTrip) {
@@ -652,15 +654,7 @@ export class FlightService {
     return this.tmcService.allLocalAirports || [];
   }
   private getHHmm(datetime: string) {
-    if (datetime && datetime.includes("T")) {
-      const remain = datetime.split("T")[1];
-      if (remain) {
-        const hhmmss = remain.split(":");
-        hhmmss.pop();
-        return hhmmss.join(":");
-      }
-    }
-    return datetime;
+    return this.calendarService.getHHmm(datetime);
   }
   async getFlightJourneyDetailListAsync(
     data: SearchFlightModel

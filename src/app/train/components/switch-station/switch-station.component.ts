@@ -20,7 +20,7 @@ import {
 } from "@angular/animations";
 import { Subscription } from "rxjs";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
-import { SelectTrainStationModalComponent } from 'src/app/tmc/components/select-stations/select-station.component';
+import { SelectTrainStationModalComponent } from "src/app/tmc/components/select-stations/select-station.component";
 @Component({
   selector: "app-switch-station-comp",
   templateUrl: "./switch-station.component.html",
@@ -180,6 +180,11 @@ export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
         fromStation: fromCity ? data : null,
         toStation: !fromCity ? data : null
       });
+      if (fromCity) {
+        this.eFromCity.emit(data);
+      } else {
+        this.eToCity.emit(data);
+      }
     }
   }
 }

@@ -1,0 +1,18 @@
+<ion-content>
+  <ion-grid>
+    <ion-row *ngFor='let item of schedules;let i=index;' text-center>
+      <ion-col size='1' text-start>
+        <div class='station-no'>{{item.StationNo}}</div>
+      </ion-col>
+      <ion-col text-start>{{item.StationName}}</ion-col>
+      <ion-col>{{item.ArriveTime}}</ion-col>
+      <ion-col>{{item.StartTime}}</ion-col>
+      <ion-col>{{item.StayTime}}</ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+<ion-footer>
+  <ion-toolbar>
+    <ion-button slot='end' fill='clear' color='secondary' (click)='back()'>返回</ion-button>
+  </ion-toolbar>
+</ion-footer>

@@ -15,7 +15,13 @@ import {
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { Storage } from "@ionic/storage";
 import { TrainService } from "src/app/train/train.service";
-import { trigger, state, transition ,animate,style} from "@angular/animations";
+import {
+  trigger,
+  state,
+  transition,
+  animate,
+  style
+} from "@angular/animations";
 
 @Component({
   selector: "app-select-station",
@@ -75,7 +81,7 @@ export class SelectTrainStationModalComponent implements OnInit, AfterViewInit {
     });
     this.letters = Object.keys(this.stations);
     this.letters.sort((l1, l2) => l1.charCodeAt(0) - l2.charCodeAt(0));
-    this.activeLetter=this.letters[0];
+    this.activeLetter = this.letters[0];
     this.vmStations = this.stations[this.activeLetter];
     this.vmStations.sort((s1, s2) => s1.Sequence - s2.Sequence);
   }
@@ -130,7 +136,7 @@ export class SelectTrainStationModalComponent implements OnInit, AfterViewInit {
   async back() {
     const m = await this.modalCtrl.getTop();
     if (m) {
-      m.dismiss(this.selectedStation&&this.selectedStation.CityName).catch(_ => {});
+      m.dismiss(this.selectedStation).catch(_ => {});
     }
   }
   async onSelectStation(station: TrafficlineEntity) {

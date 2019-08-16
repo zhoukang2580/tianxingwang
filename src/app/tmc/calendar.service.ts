@@ -2,8 +2,8 @@ import { Subject, BehaviorSubject } from "rxjs";
 import { Injectable } from "@angular/core";
 import * as moment from "moment";
 import { AvailableDate } from "./models/AvailableDate";
-import { LanguageHelper } from '../languageHelper';
-import { DayModel } from './models/DayModel';
+import { LanguageHelper } from "../languageHelper";
+import { DayModel } from "./models/DayModel";
 @Injectable({
   providedIn: "root"
 })
@@ -20,6 +20,17 @@ export class CalendarService {
   };
   constructor() {
     this.selectedDaysSource = new BehaviorSubject([]);
+  }
+  getHHmm(datetime: string) {
+    if (datetime && datetime.includes("T")) {
+      const remain = datetime.split("T")[1];
+      if (remain) {
+        const hhmmss = remain.split(":");
+        hhmmss.pop();
+        return hhmmss.join(":");
+      }
+    }
+    return datetime;
   }
   getDayOfWeekNames() {
     return this.dayOfWeekNames;

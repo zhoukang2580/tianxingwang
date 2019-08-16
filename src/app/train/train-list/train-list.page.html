@@ -5,16 +5,18 @@
         <ion-icon color='dark' name='arrow-back'></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title color='secondary' [attr.text-start]='isShowAddPassengerButton' [attr.text-center]='!isShowAddPassengerButton'>
-      <ion-text>{{vmFromCity?.CityName}}</ion-text>
+    <ion-title color='secondary' [attr.text-start]='isShowAddPassengerButton'
+      [attr.text-center]='!isShowAddPassengerButton'>
+      <ion-text>{{vmFromCity?.Nickname}}</ion-text>
       <i class='icon icon-flight-plane'></i>
-      <ion-text>{{ vmToCity?.CityName}}</ion-text>
+      <ion-text>{{ vmToCity?.Nickname}}</ion-text>
     </ion-title>
     <ion-buttons slot='end'>
       <ion-button fill='clear' color='secondary' (click)='filterPolicyTrains()' size='small'>
         <ion-text class='xs-font-size'>过滤差标</ion-text>
       </ion-button>
-      <ion-button fill='clear' *ngIf='isShowAddPassengerButton' color='secondary' size='small' (click)='onSelectPassenger()'>
+      <ion-button fill='clear' *ngIf='isShowAddPassengerButton' color='secondary' size='small'
+        (click)='onSelectPassenger()'>
         <ion-text class='xs-font-size'>添加旅客</ion-text>
         <ion-badge color='danger'>
           <ion-text color='light' class='xs-font-size'>{{selectedPassengersNumbers$|async}}</ion-text>
@@ -29,7 +31,7 @@
         <ion-text color='danger' *ngIf='isFiltered'>(筛选后)</ion-text>
       </ion-col>
     </ion-row>
-    <ion-row *ngIf='isShowRoundtripTip' >
+    <ion-row *ngIf='isShowRoundtripTip'>
       <ng-container *ngIf='goRoundTripDateTime$|async as datetime'>
         <ion-col *ngIf='datetime?.goArrivalDateTime'>
           <ion-text>已选去程:{{datetime?.goArrivalDateTime}}</ion-text>
@@ -49,15 +51,17 @@
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh(true,false)" pullFactor="0.8" pullMin="100" pullMax="200">
   </ion-refresher>
   <app-or-comp *ngIf='isLoading'>
-    <ion-label>数据即将加载完成</ion-label> 
+    <ion-label>数据即将加载完成</ion-label>
   </app-or-comp>
-  <app-or-comp *ngIf='!isLoading&&vmTrainSeats?.length==0'>
+  <app-or-comp *ngIf='!isLoading&&trains?.length==0'>
     <ion-label>暂无数据</ion-label>
   </app-or-comp>
 
-
-  <ul #list class='flight'>
-  </ul>
+  <ul class='train'>
+    <li *ngFor='let item of trains'>
+      <app-train-list-item [train]='item'  (scheduleEmit)='schedules(item)'></app-train-list-item>
+    </li>
+  </ul> 
   <ng-container #fakeList *ngIf='isLoading'>
     <ion-list class='fakelist'>
       <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8]'>

@@ -1,3 +1,4 @@
+import { TrainscheduleComponent } from "./../components/trainschedule/trainschedule.component";
 import { TrainSeatEntity } from "./../models/TrainSeatEntity";
 import { TrainPassengerModel } from "./../train.service";
 import { StaffService, StaffEntity } from "./../../hr/staff.service";
@@ -11,7 +12,13 @@ import {
   TrainPolicyModel
 } from "src/app/train/train.service";
 import { TmcService } from "src/app/tmc/tmc.service";
-import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  OnDestroy
+} from "@angular/core";
 import {
   IonRefresher,
   IonContent,
@@ -26,27 +33,25 @@ import { DayModel } from "src/app/tmc/models/DayModel";
 import { DaysCalendarComponent } from "src/app/tmc/components/days-calendar/days-calendar.component";
 // tslint:disable-next-line: max-line-length
 import { FilterPassengersPolicyComponent } from "src/app/tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
-import { Observable, of } from "rxjs";
+import { Observable, of, Subscription } from "rxjs";
 import { SelectedTrainSegmentInfoComponent } from "../components/selected-train-segment-info/selected-train-segment-info.component";
 import { FilterTrainCondition } from "../models/FilterCondition";
 import { NOT_WHITE_LIST } from "src/app/tmc/select-passenger/select-passenger.page";
-interface TrainSeatViewModal {
-  train: TrainEntity;
-  trainSeat: TrainSeatEntity;
-}
+import { TripType } from "src/app/tmc/models/TripType";
+import * as moment from "moment";
+import { LanguageHelper } from "src/app/languageHelper";
 @Component({
   selector: "app-train-list",
   templateUrl: "./train-list.page.html",
   styleUrls: ["./train-list.page.scss"]
 })
-export class TrainListPage implements OnInit {
+export class TrainListPage implements OnInit, OnDestroy {
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
   @ViewChild(IonContent) cnt: IonContent;
   @ViewChild(DaysCalendarComponent) daysCalendarComp: DaysCalendarComponent;
   @ViewChild("list") list: ElementRef<HTMLElement>;
-  private refMap = new WeakMap<TrainSeatViewModal, any>();
-  trains: TrainEntity[]=[];
-  vmTrainSeats: TrainSeatViewModal[];
+  private refMap = new WeakMap<TrainEntity, any>();
+  trains: TrainEntity[] = [];
   isLoading = false;
   isFiltered = false;
   vmFromCity: TrafficlineEntity;
@@ -66,6 +71,7 @@ export class TrainListPage implements OnInit {
   priceOrderL2H: boolean; // 价格从低到高
   timeOrdM2N: boolean; // 时间从早到晚
   filterCondition: FilterTrainCondition;
+  searchModalSubscription = Subscription.EMPTY;
   constructor(
     private tmcService: TmcService,
     private trainService: TrainService,
@@ -79,6 +85,9 @@ export class TrainListPage implements OnInit {
     private navCtrl: NavController,
     private modalCtrl: ModalController
   ) {}
+  ngOnDestroy() {
+    this.searchModalSubscription.unsubscribe();
+  }
   ngOnInit() {
     this.route.queryParamMap.subscribe(_ => {
       this.onSearchCondition();
@@ -87,6 +96,39 @@ export class TrainListPage implements OnInit {
       this.isLeavePage = false;
     });
     this.doRefresh(true, true);
+    this.searchModalSubscription = this.trainService
+      .getSearchTrainModelSource()
+      .subscribe(modal => {
+        this.searchTrainModel = modal;
+        if (this.searchTrainModel) {
+          this.vmFromCity = this.searchTrainModel.fromCity;
+          this.vmToCity = this.searchTrainModel.toCity;
+          this.moveDayToSearchDate(
+            this.calendarService.generateDayModelByDate(
+              this.searchTrainModel.Date
+            )
+          );
+        }
+      });
+  }
+  async schedules(train: TrainEntity) {
+    const trains = await this.trainService.scheduleAsync({
+      Date: moment(train.StartTime).format("YYYY-MM-DD"),
+      FromStation: train.FromStationCode,
+      ToStation: train.ToStationCode,
+      TrainNo: train.TrainNo,
+      TrainCode: train.TrainCode
+    });
+    if (trains && trains.length) {
+      train.Schedules = trains[0].Schedules;
+    }
+    const m = await this.modalCtrl.create({
+      component: TrainscheduleComponent,
+      componentProps: {
+        schedules: train.Schedules
+      }
+    });
+    m.present();
   }
   private onSearchCondition() {
     this.searchTrainModel = this.trainService.getSearchTrainModel();
@@ -274,65 +316,52 @@ export class TrainListPage implements OnInit {
     toBeFilteredPassengerId?: string,
     filterPolicy?: boolean
   ) {
+    if (this.ionRefresher) {
+      this.ionRefresher.disabled = true;
+      this.ionRefresher.complete();
+    }
     this.moveDayToSearchDate();
     if (this.timeoutid) {
       clearTimeout(this.timeoutid);
     }
-    this.timeoutid = setTimeout(async () => {
-      try {
-        if (this.isLeavePage || this.isLoading) {
-          return;
-        }
-        this.moveDayToSearchDate();
-        if (this.list) {
-          this.list.nativeElement.innerHTML = "";
-        }
-        if (this.ionRefresher) {
-          this.ionRefresher.complete();
-        }
-        this.apiService.showLoadingView();
-        if (!keepSearchCondition) {
-          setTimeout(() => {
-            this.activeTab = "none";
-          }, 0);
-        }
-        this.vmTrainSeats = [];
-        this.isLoading = true;
-        let data: TrainEntity[] = JSON.parse(JSON.stringify(this.trains));
-        if (loadDataFromServer) {
-          // 强制从服务器端返回新数据
-          data = await this.loadPolicyedTrainsAsync(toBeFilteredPassengerId);
-        }
-        // 根据筛选条件过滤航班信息：
-        data = this.filterTrains(data);
-        let segments: TrainSeatViewModal[];
-        if (filterPolicy) {
-          segments = this.getSeats(data);
-          if (segments.length == 0) {
-            if (
-              `${toBeFilteredPassengerId}`
-                .toLowerCase()
-                .includes(NOT_WHITE_LIST)
-            ) {
-              // 非白名单的是可以选择所有的航班
-              segments = this.getSeats(data);
-            }
-          }
-        }
-        this.vmTrainSeats = segments;
-        this.renderList(segments);
-        this.apiService.hideLoadingView();
-        this.isLoading = false;
-      } catch (e) {
-        console.error(e);
-        this.isLoading = false;
+    try {
+      if (this.isLeavePage || this.isLoading) {
+        return;
       }
-    }, 0);
+      this.moveDayToSearchDate();
+
+      this.apiService.showLoadingView();
+      if (!keepSearchCondition) {
+        setTimeout(() => {
+          this.activeTab = "none";
+        }, 0);
+      }
+      this.isLoading = true;
+      let data: TrainEntity[] = JSON.parse(JSON.stringify(this.trains));
+      if (loadDataFromServer) {
+        // 强制从服务器端返回新数据
+        data = await this.loadPolicyedTrainsAsync(toBeFilteredPassengerId);
+      }
+      // 根据筛选条件过滤航班信息：
+      data = this.filterTrains(data);
+      if (filterPolicy) {
+      }
+      this.apiService.hideLoadingView();
+      this.isLoading = false;
+      if (this.ionRefresher) {
+        this.ionRefresher.disabled = true;
+        setTimeout(() => {
+          this.ionRefresher.disabled = false;
+        }, 100);
+      }
+    } catch (e) {
+      console.error(e);
+      this.isLoading = false;
+    }
   }
   onSelectPassenger() {
     this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
   }
-  private renderList(trains: TrainSeatViewModal[]) {}
   private scrollToTop() {
     setTimeout(() => {
       if (this.cnt) {
@@ -344,7 +373,55 @@ export class TrainListPage implements OnInit {
     let result = trains;
     return result;
   }
-  onChangedDay() {}
+  async onChangedDay(day: DayModel, byUser: boolean) {
+    if (
+      byUser &&
+      !this.isLeavePage &&
+      (!day || this.searchTrainModel.Date == day.date || this.isLoading)
+    ) {
+      return;
+    }
+    if (this.searchTrainModel.tripType == TripType.returnTrip) {
+      const bookInfos = this.trainService.getBookInfos();
+      const info = bookInfos.find(
+        item =>
+          item &&
+          item.flightSegmentInfo &&
+          item.flightSegmentInfo.tripType == TripType.departureTrip
+      );
+      const goTrain = info && info.trainInfo && info.trainInfo.trainEntity;
+      if (goTrain) {
+        let goDay = moment(goTrain.ArrivalTime);
+        goDay = moment(goDay.format("YYYY-MM-DD"));
+        const backDate = day;
+        if (+moment(backDate.date) < +goDay) {
+          await AppHelper.toast(
+            LanguageHelper.Flight.getBackDateCannotBeforeGoDateTip(),
+            1000,
+            "middle"
+          );
+          return;
+        }
+      }
+    } else {
+      if (this.searchTrainModel.isRoundTrip) {
+        if (+moment(day.date) > +moment(this.searchTrainModel.BackDate)) {
+          this.searchTrainModel.BackDate = moment(day.date)
+            .add(1, "days")
+            .format("YYYY-MM-DD");
+        }
+      }
+    }
+    if (!this.filterCondition) {
+      this.filterCondition = FilterTrainCondition.init();
+    }
+    this.filterCondition.priceFromL2H = "initial";
+    this.filterCondition.timeFromM2N = "initial";
+    this.activeTab = "none";
+    this.searchTrainModel.Date = day.date;
+    this.trainService.setSearchTrainModel(this.searchTrainModel);
+    this.doRefresh(true, true);
+  }
   onCalenderClick() {
     this.trainService.openCalendar(false);
   }
@@ -362,85 +439,22 @@ export class TrainListPage implements OnInit {
         ? "low2Height"
         : "height2Low";
       this.filterCondition.timeFromM2N = "initial";
-      const segments = this.sortByPrice(this.vmTrainSeats, this.priceOrderL2H);
-      let isRerender = false;
-      for (let i = 0; i < segments.length; i++) {
-        const s = segments[i];
-        const li = this.refMap.get(s);
-        if (!li) {
-          isRerender = true;
-          break;
-        }
-        if (this.list) {
-          const old = this.list.nativeElement.childNodes[i];
-          this.list.nativeElement.insertBefore(li, old);
-        }
-      }
-      if (isRerender) {
-        console.log(`重新渲染整个列表`);
-        this.renderList(segments);
-      }
-      // this.renderFlightList2(segments);
-      this.scrollToTop();
+      const segments = this.sortByPrice(this.priceOrderL2H);
     }
     if (key === "time") {
       this.filterCondition.timeFromM2N = this.timeOrdM2N ? "am2pm" : "pm2am";
       this.filterCondition.priceFromL2H = "initial";
-      const segments = this.sortByTime(this.vmTrainSeats, this.timeOrdM2N);
-      let isRerender = false;
-      for (let i = 0; i < segments.length; i++) {
-        const s = segments[i];
-        const li = this.refMap.get(s);
-        if (!li) {
-          isRerender = true;
-          break;
-        }
-        if (this.list) {
-          const old = this.list.nativeElement.childNodes[i];
-          this.list.nativeElement.insertBefore(li, old);
-        }
-      }
-      if (isRerender) {
-        console.log(`重新渲染整个列表`);
-        this.renderList(segments);
-      }
-      this.scrollToTop();
+      this.sortByTime(this.timeOrdM2N);
     }
+    this.scrollToTop();
   }
-  private sortByTime(seats: TrainSeatViewModal[], timeOrdM2N: Boolean) {
-    seats.sort((a, b) => {
-      const sub =
-        a.train && b.train && a.train.StartTimeStamp - b.train.StartTimeStamp;
-      return timeOrdM2N ? sub : -sub;
-    });
-    return seats;
-  }
-  private sortByPrice(seats: TrainSeatViewModal[], l2h: Boolean) {
-    seats.sort((a, b) => {
-      const sub =
-        a.trainSeat &&
-        b.trainSeat &&
-        +a.trainSeat.TicketPrice - +b.trainSeat.TicketPrice;
-      return l2h ? sub : -sub;
-    });
-    return seats;
-  }
-  private getSeats(trains: TrainEntity[]): TrainSeatViewModal[] {
-    const seats: TrainSeatViewModal[] = [];
-    if (!trains) {
-      return seats;
+  private sortByPrice(priceOrderL2H: boolean) {}
+  private sortByTime(timeOrdM2N: Boolean) {
+    if (this.trains) {
+      this.trains.sort((a, b) => {
+        const sub = a && b && a.StartTimeStamp - b.StartTimeStamp;
+        return timeOrdM2N ? sub : -sub;
+      });
     }
-    trains.forEach(train => {
-      if (train.Seats) {
-        train.Seats.forEach(s => {
-          seats.push({
-            train,
-            trainSeat: s
-          });
-        });
-      }
-      return seats;
-    });
-    return seats;
   }
 }
