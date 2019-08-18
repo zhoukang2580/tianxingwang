@@ -1,5 +1,7 @@
 import { TrainSeatType } from "./TrainEntity";
+import { TrainPolicyModel } from '../train.service';
 export class TrainSeatEntity {
+  Policy: TrainPolicyModel;
   /// <summary>
   /// 座位类型
   /// </summary>

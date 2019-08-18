@@ -26,6 +26,7 @@ export class TrainEntity {
   /// 是否可以预订
   /// </summary>
   IsBook: boolean;
+  IsForceBook: boolean;
   /// <summary>
   ///  车次
   /// </summary>

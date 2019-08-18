@@ -1,6 +1,7 @@
 <ion-content>
   <ion-grid>
-    <ion-row *ngFor='let item of schedules;let i=index;' text-center>
+    <ion-row *ngFor='let item of schedules;let i=index;' text-center
+      [class.time-color]='getTimeColor(item.ArriveTime)||getTimeColor(item.StartTime)'>
       <ion-col size='1' text-start>
         <div class='station-no'>{{item.StationNo}}</div>
       </ion-col>
@@ -9,7 +10,7 @@
       <ion-col>{{item.StartTime}}</ion-col>
       <ion-col>{{item.StayTime}}</ion-col>
     </ion-row>
-  </ion-grid>
+  </ion-grid> 
 </ion-content>
 <ion-footer>
   <ion-toolbar>

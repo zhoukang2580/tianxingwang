@@ -27,7 +27,7 @@
   <ion-grid class='xs-font-size' [style.visibility]="!isLoading?'initial':'collapse'" (click)='showSelectedBookInfos()'>
     <ion-row>
       <ion-col>
-        {{searchTrainModel?.Date}}共{{trains?.length}}趟火车
+        {{searchTrainModel?.Date}}共{{vmTrains?.length}}趟火车
         <ion-text color='danger' *ngIf='isFiltered'>(筛选后)</ion-text>
       </ion-col>
     </ion-row>
@@ -53,12 +53,12 @@
   <app-or-comp *ngIf='isLoading'>
     <ion-label>数据即将加载完成</ion-label>
   </app-or-comp>
-  <app-or-comp *ngIf='!isLoading&&trains?.length==0'>
+  <app-or-comp *ngIf='!isLoading&&vmTrains?.length==0'>
     <ion-label>暂无数据</ion-label>
   </app-or-comp>
 
   <ul class='train'>
-    <li *ngFor='let item of trains'>
+    <li *ngFor='let item of vmTrains'>
       <app-train-list-item [train]='item'  (scheduleEmit)='schedules(item)'></app-train-list-item>
     </li>
   </ul> 

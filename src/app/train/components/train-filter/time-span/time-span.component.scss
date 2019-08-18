@@ -1,0 +1,28 @@
+section.time-types {
+    --ion-color-primary:var(--ion-color-secondary);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    article {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0.5rem;
+      ion-button {
+        --background: transparent;
+        --border-color: var(--ion-color-medium);
+        color: var(--ion-color-medium);
+        &.active {
+          color: var(--ion-color-primary);
+          --border-color: var(--ion-color-primary);
+          --opacity: 1;
+        }
+      }
+    }
+  }
+  ion-range {
+    --knob-size: 1.3rem;
+    --bar-background-active: var(--ion-color-secondary);
+  }
+  

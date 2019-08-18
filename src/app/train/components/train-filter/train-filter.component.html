@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-button color='medium' fill='clear' (click)='reset()'>重置</ion-button>
+    </ion-buttons>
+    <ion-buttons slot='end'>
+      <ion-button color='secondary' fill='clear' (click)='done()'>确定</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-list lines='none'>
+    <ion-list-header>车次类型</ion-list-header>
+    <ion-row>
+      <ion-col size='4' *ngFor='let type of trainTypes' (click)='toggleCheck(type)'>
+        <ion-chip [color]='type.isChecked?"secondary":""'>
+          {{type.label}}</ion-chip>
+      </ion-col>
+    </ion-row>
+  </ion-list>
+  <ion-list lines='none'>
+    <ion-list-header>出发车站</ion-list-header>
+    <ion-row>
+      <ion-col size='4' *ngFor='let type of depatureStations' (click)='toggleCheck(type)'>
+        <ion-chip [color]='type.isChecked?"secondary":""'>
+          {{type.label}}</ion-chip>
+      </ion-col>
+    </ion-row>
+  </ion-list>
+  <ion-list lines='none'>
+    <ion-list-header>到达车站</ion-list-header>
+    <ion-row>
+      <ion-col size='4' *ngFor='let type of arrivalStations' (click)='toggleCheck(type)'>
+        <ion-chip [color]='type.isChecked?"secondary":""'>
+          {{type.label}}</ion-chip>
+      </ion-col>
+    </ion-row>
+  </ion-list>
+  <ion-list>
+    <ion-list-header>出发时间</ion-list-header>
+    <app-time-span (sCond)='onTimeSpan($event)'></app-time-span>
+  </ion-list>
+</ion-content>

@@ -1,7 +1,7 @@
 export class FilterTrainCondition {
-  trainType: "G" | "D" | "Z" | "T";
-  departureTerminals: {}[];
-  arrivalTerminals: {}[];
+  trainTypes: TrainFilterItemModel[];
+  departureStations: TrainFilterItemModel[];
+  arrivalStations:TrainFilterItemModel[];
   departureTimeSpan: {
     lower: number;
     upper: number;
@@ -18,4 +18,9 @@ export class FilterTrainCondition {
     condition.timeFromM2N = "initial";
     return condition;
   }
+}
+export class TrainFilterItemModel {
+  id: string;
+  label: string;
+  isChecked: boolean;
 }

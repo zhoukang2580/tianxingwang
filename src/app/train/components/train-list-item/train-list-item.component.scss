@@ -1,103 +1,91 @@
-.has-add-day-tip {
+.price {
+  margin-left: 1em;
+  color: var(--ion-color-danger);
+  align-self: flex-start;
+}
+.time,
+.station,
+.train-item,
+.seat,
+.seat-item,
+.stop-line-stop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.time {
+  .travel-time-name {
+    font-size: 0.7rem;
+  }
+  strong {
+    font-size: 1.1rem;
+  }
+  .has-add-day-tip {
     position: relative;
+    margin-right: 1.5em;
     &::after {
+      content: attr(adddaytip);
       position: absolute;
-      content: attr(addDayTip);
-      right: 0.5em;
-      top: 0.5em;
+      right: -2.5em;
+      top: -0.5em;
+      font-size: 0.6rem;
     }
   }
-  
-  .travel-time-name,
-  .has-add-day-tip,
-  .station,
+}
+.seat-count {
+  color: var(--ion-color-danger);
+}
+.info {
+  font-size: 0.9rem;
+  flex: 1;
+  * + * {
+    margin-top: 0.15em;
+  }
+}
+.seat {
+  justify-content: flex-start;
+  flex-flow: row wrap;
+  width: 100%;
   .seat-item {
-    font-size: 0.6rem;
-  }
-  .price {
-    margin-left: 1em;
-    color: var(--ion-color-danger);
-    align-self: flex-start;
-  }
-  .time,
-  .station,
-  .train-item,
-  .seat,
-  .stop-line-stop {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .time {
-    strong {
-      font-size: 1.1rem;
-    }
-    .has-add-day-tip {
-      position: relative;
-      margin-right: 1.5em;
-      &::after {
-        content: attr(adddaytip);
-        position: absolute;
-        right: -2.5em;
-        top: -0.5em;
-        font-size: 0.6rem;
-      }
-    }
-  }
-  .seat-count {
-    color: var(--ion-color-danger);
-  }
-  .info {
-    font-size: 0.8rem;
-    flex: 1;
-    * + * {
-      margin-top: 0.15em;
-    }
-  }
-  .seat {
-    flex-flow: row wrap;
+    font-size: 0.9rem;
+    width: 50%;
     justify-content: flex-start;
-    margin: 0.15em 0;
-    .seat-item {
-      width: 25%;
-      text-align: start;
-      margin-right: 0.5em;
-      align-self: flex-start;
-      margin-top: 0.1em;
+    ion-button {
+      padding-left: 0.25em;
     }
   }
-  .stop-line-stop {
+}
+.stop-line-stop {
+  position: relative;
+  margin: 0 1em;
+  padding: 1em 0;
+  justify-content: center;
+  &::after {
+    content: attr(data);
+    top: 0%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%, 0);
+  }
+  .line {
+    background-color: rgba(var(--ion-color-dark-rgb), 0.3);
+    height: 1px;
+    width: 5em;
     position: relative;
-    margin: 0 1em;
-    padding: 1em 0;
-    justify-content: center;
+    top: 0.5em;
     &::after {
-      content: attr(data);
-      top: 0%;
-      left: 50%;
+      content: "";
       position: absolute;
-      transform: translate(-50%, 0);
-    }
-    .line {
-      background-color: rgba(var(--ion-color-dark-rgb), 0.3);
+      right: 0em;
+      top: -0.2em;
+      display: block;
       height: 1px;
-      width: 5em;
-      position: relative;
-      top: 0.5em;
-      &::after {
-        content: "";
-        position: absolute;
-        right: 0em;
-        top: -0.2em;
-        display: block;
-        height: 1px;
-        width: 0.5em;
-        transform: rotate(45deg);
-        background-color: inherit;
-      }
+      width: 0.5em;
+      transform: rotate(45deg);
+      background-color: inherit;
     }
   }
-  :host {
-    width: 100%;
-  }
-  
+}
+:host {
+  width: 100%;
+}

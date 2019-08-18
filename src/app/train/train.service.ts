@@ -356,10 +356,12 @@ export class TrainPolicyModel {
   /// 是否可预订
   /// </summary>
   IsAllowBook: boolean;
+  IsForceBook: boolean;
   /// <summary>
   /// 违反具体的差标
   /// </summary>
   Rules: string[];
+  train: TrainEntity;
 }
 export class TrainPassengerModel {
   PassengerKey: string;

@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, EventEmitter, Output } from "@angular/core";
 import { TrainEntity, TrainSeatType } from "../../models/TrainEntity";
+import { TrainSeatEntity } from "../../models/TrainSeatEntity";
 
 @Component({
   selector: "app-train-list-item",
@@ -19,6 +20,18 @@ export class TrainListItemComponent implements OnInit {
     }
     this.train.Seats.sort((a, b) => +a.SalesPrice - +b.SalesPrice);
     return this.train.Seats[0].SalesPrice;
+  }
+  getBookBtnColor(seat: TrainSeatEntity) {
+    if (seat && seat.Policy) {
+      if (!seat.Policy.IsAllowBook) {
+        return "danger";
+      }
+      if (seat.Policy.Rules && seat.Policy.Rules.length > 0) {
+        return "warning";
+      }
+      return "success";
+    }
+    return "secondary";
   }
   getSeats() {
     if (!this.train || !this.train.Seats || !this.train.Seats.length) {

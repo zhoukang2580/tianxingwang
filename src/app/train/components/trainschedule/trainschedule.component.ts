@@ -17,4 +17,15 @@ export class TrainscheduleComponent implements OnInit {
       t.dismiss();
     });
   }
+  getTimeColor(arrivalTime: number) {
+    const now = new Date();
+    return (
+      Math.floor(Date.now() / 1000) >
+      Math.floor(
+        new Date(
+          `${now.getFullYear}-${now.getMonth() + 1}-${arrivalTime}`
+        ).getTime() / 1000
+      )
+    );
+  }
 }

@@ -9,12 +9,11 @@ import {
 } from "@angular/core";
 import { IonRange, DomController } from "@ionic/angular";
 @Component({
-  selector: "app-take-off-timespan",
-  templateUrl: "./take-off-timespan.component.html",
-  styleUrls: ["./take-off-timespan.component.scss"]
+  selector: 'app-time-span',
+  templateUrl: './time-span.component.html',
+  styleUrls: ['./time-span.component.scss'],
 })
-export class TakeOffTimespanComponent
-  implements OnInit, AfterViewInit, OnDestroy {
+export class TimeSpanComponent implements OnInit, AfterViewInit, OnDestroy {
   time: "forenoon" | "afternoon" | "none" | "night";
   @Output() sCond: EventEmitter<any>;
   @ViewChild("range") range: IonRange;
