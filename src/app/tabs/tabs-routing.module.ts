@@ -7,12 +7,13 @@ import { IonicModule } from "@ionic/angular";
 import { CommonModule } from "@angular/common";
 import { AgentGuard } from "../guards/agent.guard";
 import { TmcGuard } from '../guards/tmc.guard';
+import { ConfirmCredentialInfoGuard } from '../guards/confirm-credential-info.guard';
 
 const routes: Routes = [
   {
     path: "tabs",
     component: TabsPage,
-    canActivateChild: [AuthorityGuard],
+    canActivateChild: [AuthorityGuard,ConfirmCredentialInfoGuard],
     children: [
       {
         path: "",

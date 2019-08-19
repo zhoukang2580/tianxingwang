@@ -1,6 +1,6 @@
-import { Country } from "../../tmc/components/select-country/select-countrymodal.component";
+import { Country, SelectCountryModalComponent } from "../../tmc/components/select-country/select-countrymodal.component";
 import { LanguageHelper } from "./../../languageHelper";
-import { IonRefresher, IonGrid, NavController } from "@ionic/angular";
+import { IonRefresher, IonGrid, NavController, ModalController } from "@ionic/angular";
 import {
   Component,
   OnInit,
@@ -44,7 +44,8 @@ export class MemberCredentialManagementPage
     private route: ActivatedRoute,
     private ngZone: NgZone,
     private identityService: IdentityService,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private modalController:ModalController
   ) {
     route.queryParamMap.subscribe(p => {
       this.isCanDeactive = false;
@@ -181,27 +182,44 @@ export class MemberCredentialManagementPage
       el
     );
   }
-  selectIdentityNationality(item: MemberCredential) {
+  
+  async selectIdentityNationality(item: MemberCredential) {
     this.currentModifyItem = item;
     this.requestCode = "identityNationality";
     this.isCanDeactive = true;
-    this.router.navigate([AppHelper.getRoutePath("select-country")], {
-      queryParams: {
-        requestCode: this.requestCode,
-        title: LanguageHelper.getSelectCountryTip()
-      }
-    });
+    await this.selectCountry();
   }
-  selectIssueNationality(item: MemberCredential) {
+  async selectIssueNationality(item: MemberCredential) {
     this.isCanDeactive = true;
     this.currentModifyItem = item;
     this.requestCode = "issueNationality";
-    this.router.navigate([AppHelper.getRoutePath("select-country")], {
-      queryParams: {
+    await this.selectCountry();
+  }
+  private async selectCountry() {
+    this.isCanDeactive = true;
+    const m = await this.modalController.create({
+      component: SelectCountryModalComponent,
+      componentProps: {
         requestCode: this.requestCode,
         title: LanguageHelper.getSelectIssueCountryTip()
       }
     });
+    m.present();
+    const result = await m.onDidDismiss();
+    if (result && result.data) {
+      const data = result.data as {
+        requestCode: string;
+        selectedItem: Country;
+      };
+      if (data.selectedItem) {
+        if (data.requestCode == "issueNationality") {
+          this.currentModifyItem.IssueCountry = data.selectedItem.Code;
+        }
+        if (data.requestCode == "identityNationality") {
+          this.currentModifyItem.Country = data.selectedItem.Code;
+        }
+      }
+    }
   }
   removeAdd(c: MemberCredential) {
     AppHelper.alert(

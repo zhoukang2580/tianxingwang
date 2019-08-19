@@ -1,7 +1,6 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { Routes, RouterModule } from "@angular/router";
-import { FlightDirectivesModule } from "../flight/directives/directives.module";
 const routes: Routes = [
   {
     path: "member-detail",
@@ -15,7 +14,7 @@ const routes: Routes = [
 ];
 @NgModule({
   declarations: [],
-  imports: [CommonModule, RouterModule.forChild(routes), FlightDirectivesModule],
+  imports: [CommonModule, RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class MemberModule {}
+export class MemberModule { }

@@ -5,13 +5,13 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { ComfirmInformationPage } from './confirm-information.page';
-import { MemberPipesModule } from '../../member/pipe/pipe.module';
+import { ConfirmInformationPage } from './confirm-information.page';
+import { MemberPipesModule } from 'src/app/member/pipe/pipe.module';
 
 const routes: Routes = [
   {
     path: '',
-    component: ComfirmInformationPage
+    component: ConfirmInformationPage
   }
 ];
 
@@ -23,6 +23,6 @@ const routes: Routes = [
     MemberPipesModule,
     RouterModule.forChild(routes),
   ],
-  declarations: [ComfirmInformationPage]
+  declarations: [ConfirmInformationPage]
 })
-export class ComfirmInformationPageModule {}
+export class ConfirmInformationPageModule {}

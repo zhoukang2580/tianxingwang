@@ -1,9 +1,9 @@
 import { IdentityService } from "src/app/services/identity/identity.service";
-import { RequestEntity } from "./../../services/api/Request.entity";
-import { ApiService } from "./../../services/api/api.service";
-import { LanguageHelper } from "./../../languageHelper";
-import { TmcService } from "./../tmc.service";
-import { StaffService, StaffEntity } from "../../hr/staff.service";
+import { RequestEntity } from "../../services/api/Request.entity";
+import { ApiService } from "../../services/api/api.service";
+import { LanguageHelper } from "../../languageHelper";
+import { TmcService } from "../../tmc/tmc.service";
+import { StaffService, StaffEntity } from "../staff.service";
 import { Component, OnInit } from "@angular/core";
 
 import { AppHelper } from "src/app/appHelper";
@@ -16,7 +16,7 @@ import { NavController } from '@ionic/angular';
   templateUrl: "./confirm-information.page.html",
   styleUrls: ["./confirm-information.page.scss"]
 })
-export class ComfirmInformationPage implements OnInit {
+export class ConfirmInformationPage implements OnInit {
   credentials: MemberCredential[];
   staff: StaffEntity;
   password: string;
@@ -35,7 +35,7 @@ export class ComfirmInformationPage implements OnInit {
       this.credentials = await this.tmcService.searchPassengerCredentials(
         identity && identity.Id
       );
-      console.log("ComfirmInformationPage", this.staff);
+      console.log("ConfirmInformationPage", this.staff);
     });
   }
   back(){

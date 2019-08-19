@@ -8,11 +8,6 @@ export const routes: Routes = [
       "./switch-company/switch-company.module#SwitchCompanyPageModule"
   },
   {
-    path: "comfirm-information",
-    loadChildren:
-      "./confirm-information/confirm-information.module#ComfirmInformationPageModule"
-  },
-  {
     path: "select-passenger",
     loadChildren:
       "./select-passenger/select-passenger.module#SelectPassengerPageModule"
@@ -23,4 +18,4 @@ export const routes: Routes = [
   imports: [CommonModule, RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class TmcRoutingModule {}
+export class TmcRoutingModule { }

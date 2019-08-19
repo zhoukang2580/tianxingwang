@@ -188,6 +188,9 @@ export class LanguageHelper {
     getSelectTheSegmentTip: () => {
       return `选择该航班`;
     },
+    getMustSelectOneSegmentTip: () => {
+      return `请选选择航班`;
+    },
     getReselectFlightSegmentTip() {
       return "重新选择航班?";
     },

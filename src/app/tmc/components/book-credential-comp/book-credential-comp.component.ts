@@ -30,5 +30,6 @@ export class BookCredentialCompComponent implements OnInit {
   onSave() {
     this.savecredential.emit(this.credential);
   }
-  ngOnInit() {}
+  ngOnInit() {
+  }
 }
