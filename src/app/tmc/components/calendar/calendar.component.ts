@@ -48,6 +48,7 @@ export class CalendarComponent implements OnInit, AfterViewInit {
       showBackdrop: true,
       translucent: false,
       backdropDismiss: false,
+      animated: false,
       componentProps: {
         isShowDay: false
       }

@@ -103,6 +103,7 @@ export class LoginService {
       req.Language = AppHelper.getLanguage();
       req.Ticket = AppHelper.getTicket();
       req.Domain = AppHelper.getDomain();
+      this.apiService.showLoadingView();
       const formObj = Object.keys(req)
         .map(k => `${k}=${req[k]}`)
         .join("&");
@@ -112,16 +113,16 @@ export class LoginService {
           headers: { "content-type": "application/x-www-form-urlencoded" },
           observe: "body"
         })
-        .pipe(map((r: IResponse<IdentityEntity>) => r))
+        .pipe(
+          map((r: IResponse<IdentityEntity>) => r),
+          finalize(() => {
+            this.apiService.hideLoadingView();
+          })
+        )
         .subscribe(
           r => {
-            if (r.Status) {
-              this.identityService.removeIdentity();
-              this.router.navigate([AppHelper.getRoutePath("login")]);
-            } else if (r.Code.toUpperCase() == "NOLOGIN") {
-              this.identityService.removeIdentity();
-              this.router.navigate([AppHelper.getRoutePath("login")]);
-            }
+            this.identityService.removeIdentity();
+            this.router.navigate([AppHelper.getRoutePath("login")]);
           },
           _ => {
             this.identityService.removeIdentity();

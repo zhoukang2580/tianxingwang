@@ -1,3 +1,4 @@
+import { StaffEntity } from "./../../hr/staff.service";
 import { NavController } from "@ionic/angular";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { IdentityService } from "src/app/services/identity/identity.service";
@@ -31,8 +32,6 @@ export class MemberDetailPage implements OnInit, OnDestroy {
   identity: IdentityEntity;
   staff: any;
   defaultAvatar = AppHelper.getDefaultAvatar();
-  deviceSubscription = Subscription.EMPTY;
-  staffSubscription = Subscription.EMPTY;
   identitySubscription = Subscription.EMPTY;
   constructor(
     private identityService: IdentityService,
@@ -55,7 +54,7 @@ export class MemberDetailPage implements OnInit, OnDestroy {
           this.staff = null;
         }
       });
-    this.load();
+    await this.load();
     AppHelper.setCallback((name: string, data: any) => {
       console.log("helper callback");
       if (name == CropAvatarPage.UploadSuccessEvent && data && data.HeadUrl) {
@@ -64,50 +63,37 @@ export class MemberDetailPage implements OnInit, OnDestroy {
     });
   }
 
-  load() {
+  async load() {
     const req = new RequestEntity();
     if (this.Model) {
       return;
     }
     req.Method = "ApiMemberUrl-Home-Get";
-    this.deviceSubscription = this.apiService
-      .getResponse<PageModel>(req)
-      .pipe(map(r => r.Data))
-      .subscribe(
-        async r => {
-          if (r) {
-            this.Model = {
-              ...this.Model,
-              Name: r.Name,
-              RealName: r.RealName,
-              HeadUrl:
-                r.HeadUrl || (await this.configService.get()).DefaultImageUrl
-            } as any;
-          }
-        },
-        () => {}
-      );
+    const r = await this.apiService.getPromiseData<PageModel>(req);
+    if (r) {
+      this.Model = {
+        ...this.Model,
+        Name: r.Name,
+        RealName: r.RealName,
+        HeadUrl: r.HeadUrl || (await this.configService.get()).DefaultImageUrl
+      } as any;
+    }
     if (this.staff) {
       return;
     }
     const req1 = new RequestEntity();
     req1.Method = "HrApiUrl-Staff-Get";
-    this.staffSubscription = this.apiService
-      .getResponse<PageModel>(req1)
-      .pipe(map(r => r.Data))
-      .subscribe(
-        r => {
-          if (r) {
-            this.staff = r;
-            this.Model = { ...this.Model, ...r };
-          }
-        },
-        e => {}
-      );
+    const staff = await this.apiService.getPromiseData<StaffEntity>(req);
+    this.staff = staff;
+    if (staff) {
+      this.Model = {
+        ...this.Model,
+        ...staff,
+        RealName: staff.Name || staff.Nickname
+      };
+    }
   }
   ngOnDestroy() {
-    this.deviceSubscription.unsubscribe();
-    this.staffSubscription.unsubscribe();
     this.identitySubscription.unsubscribe();
   }
 }
