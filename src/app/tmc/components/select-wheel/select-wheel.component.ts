@@ -78,7 +78,9 @@ export class SelectWheelComponent
     }
   }
   ngAfterViewInit() {
-    this.initCurSelectedView();
+    setTimeout(() => {
+      this.initCurSelectedView();
+    }, 100);
     this.listenEleScroll();
   }
   private onScroll(
