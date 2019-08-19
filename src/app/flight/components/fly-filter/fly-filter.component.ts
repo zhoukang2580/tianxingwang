@@ -14,14 +14,14 @@ import {
 import { SearchTypeModel } from "../../models/flight/advanced-search-cond/SearchTypeModel";
 import { FlightService } from "../../flight.service";
 import { FlightJourneyEntity } from "../../models/flight/FlightJourneyEntity";
-import { TakeOffTimespanComponent } from "./take-off-timespan/take-off-timespan.component";
+import { TakeOffTimeSpanComponent } from "./take-off-timespan/take-off-timespan.component";
 @Component({
   selector: "app-fly-filter",
   templateUrl: "./fly-filter.component.html",
   styleUrls: ["./fly-filter.component.scss"]
 })
 export class FlyFilterComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild(TakeOffTimespanComponent) timeComp: TakeOffTimespanComponent;
+  @ViewChild(TakeOffTimeSpanComponent) timeComp: TakeOffTimeSpanComponent;
   @ViewChild(CabinComponent) cabinComp: CabinComponent;
   @ViewChild(AirtypeComponent) airTypeComp: AirtypeComponent;
   @ViewChild("fromAirports") fromAirportsComp: AirportsComponent;

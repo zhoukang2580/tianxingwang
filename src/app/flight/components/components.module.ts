@@ -9,7 +9,7 @@ import { SwitchCityComponent } from "./switch-city/switch-city.component";
 import { FlyListItemComponent } from "./fly-list-item/fly-list-item.component";
 import { FlightPipesModule } from "../pipes/Pipes.module";
 import { FlyFilterComponent } from "./fly-filter/fly-filter.component";
-import { TakeOffTimespanComponent } from "./fly-filter/take-off-timespan/take-off-timespan.component";
+import { TakeOffTimeSpanComponent } from "./fly-filter/take-off-timespan/take-off-timespan.component";
 import { AircompanyComponent } from "./fly-filter/aircompany/aircompany.component";
 import { AirportsComponent } from "./fly-filter/airports/airports.component";
 import { AirtypeComponent } from "./fly-filter/airtype/airtype.component";
@@ -30,7 +30,7 @@ import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module
     SwitchCityComponent,
     FlyListItemComponent,
     FlyFilterComponent,
-    TakeOffTimespanComponent,
+    TakeOffTimeSpanComponent,
     AircompanyComponent,
     AirportsComponent,
     AirtypeComponent,
@@ -62,7 +62,7 @@ import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module
     SwitchCityComponent,
     FlyListItemComponent,
     FlyFilterComponent,
-    TakeOffTimespanComponent,
+    TakeOffTimeSpanComponent,
     AircompanyComponent,
     AirportsComponent,
     AirtypeComponent,
