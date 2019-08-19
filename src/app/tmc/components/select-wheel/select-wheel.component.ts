@@ -92,7 +92,7 @@ export class SelectWheelComponent
       if (this.lastScroll < Date.now() - 120) {
         this.onScrollEnd(scrollEle, eles);
       }
-    }, 150);
+    }, 100);
   }
   private onScrollEnd(
     scrollEle: ElementRef<HTMLElement>,
@@ -171,11 +171,8 @@ export class SelectWheelComponent
         "scroll"
       ).subscribe(evt => {
         this.onScroll(this.scrollEle, this.liEles);
-        if (Date.now() - this.lastScroll < 32) {
-          evt.preventDefault();
-          evt.stopPropagation();
-          return;
-        }
+        evt.preventDefault();
+        evt.stopPropagation();
         this.lastScroll = Date.now();
       });
     }
