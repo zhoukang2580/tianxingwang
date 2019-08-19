@@ -382,10 +382,10 @@ export class AppHelper {
   static getRedirectUrl() {
     const url = this.getApiUrl();
     const domain = this.getDomain();
-    return url.replace(this._appDomain, domain).replace("dev.", "");
+    return url.replace(this._appDomain, domain).replace("test.", "");
   }
   static getApiUrl() {
-    return "http://dev.app." + this._appDomain;
+    return "http://test.app." + this._appDomain;
   }
   static getRoutePath(path: string) {
     const style = AppHelper.getStyle() || "";
