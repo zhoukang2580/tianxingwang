@@ -241,7 +241,7 @@ export class AppComponent
     console.log("backbutton url = " + this.router.url);
     this.platform.backButton.subscribe(async () => {
       let count = 1;
-      await AppHelper.dismissLayer();
+      await AppHelper.dismissAlertLayer();
       this.flightService.setOpenCloseSelectCityPageSources(false);
       this.apiService.hideLoadingView();
       if (

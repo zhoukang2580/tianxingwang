@@ -156,8 +156,8 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     }
     return Promise.reject("cordova wechat plugin is unavailable");
   }
-  initPage() {
-    this.configService
+  async initPage() {
+   await this.configService
       .get()
       .then(r => {
         this.pageInfo = r;

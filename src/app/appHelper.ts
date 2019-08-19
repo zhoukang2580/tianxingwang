@@ -46,7 +46,7 @@ export class AppHelper {
     position?: "top" | "bottom" | "middle"
   ) {
     return new Promise<any>(async (resolve, reject) => {
-      await this.dismissLayer();
+      await this.dismissAlertLayer();
       const t = await this.toastController.create({
         message:
           typeof msg === "string"
@@ -74,7 +74,7 @@ export class AppHelper {
     cancelText: string = ""
   ) {
     return new Promise<boolean>(async (resolve, reject) => {
-      await this.dismissLayer();
+      await this.dismissAlertLayer();
       const buttons = [
         {
           text: confirmText,
@@ -151,11 +151,13 @@ export class AppHelper {
     });
   }
 
-  static async dismissLayer() {
+  static async dismissAlertLayer() {
     try {
-      const t = await this.toastController.getTop();
-      if (t) {
-        t.dismiss();
+      let i = 3;
+      let a = await this.alertController.getTop();
+      while (a && --i > 0) {
+        await a.dismiss().catch(_ => 0);
+        a = await this.alertController.getTop();
       }
     } catch (e) {
       console.log(e);

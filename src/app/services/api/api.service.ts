@@ -203,6 +203,9 @@ export class ApiService {
         Code: code
       });
     }
+    if (!req.Method) {
+      req.Method = orgReq.Method;
+    }
     const formObj = Object.keys(req)
       .map(k => `${k}=${req[k]}`)
       .join("&");
@@ -217,7 +220,7 @@ export class ApiService {
         .pipe(
           map(r => r as any),
           switchMap((r: IResponse<any>) => {
-            if (r.Status && !r.Data) {
+            if (r && r.Status && !r.Data) {
               const id: IdentityEntity = new IdentityEntity();
               id.Name = r.Data.Name;
               id.Ticket = r.Data.Ticket;
@@ -226,6 +229,9 @@ export class ApiService {
               id.Id = r.Data.Id;
               this.identityService.setIdentity(id);
               return this.sendRequest(orgReq, false);
+            }
+            if (r && !r.Status && r.Code && r.Code.toLowerCase() == "nologin") {
+              AppHelper.alert(r.Message || LanguageHelper.getApiExceptionTip());
             }
             this.identityService.removeIdentity();
             this.router.navigate([AppHelper.getRoutePath("login")]);

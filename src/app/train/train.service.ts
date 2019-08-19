@@ -1,7 +1,7 @@
 import { ModalController } from "@ionic/angular";
 import { IdentityService } from "./../services/identity/identity.service";
 import { StaffService } from "./../hr/staff.service";
-import { Subject, BehaviorSubject } from "rxjs";
+import { Subject, BehaviorSubject, combineLatest } from "rxjs";
 import { ApiService } from "src/app/services/api/api.service";
 import { Injectable, EventEmitter } from "@angular/core";
 import { RequestEntity } from "../services/api/Request.entity";
@@ -15,7 +15,6 @@ import { PassengerBookInfo, TmcService } from "../tmc/tmc.service";
 import { CredentialsType } from "../member/pipe/credential.pipe";
 import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
 import * as moment from "moment";
-import { SelectedTrainSegmentInfoComponent } from "./components/selected-train-segment-info/selected-train-segment-info.component";
 import { LanguageHelper } from "../languageHelper";
 import { CalendarService } from "../tmc/calendar.service";
 const KEY_TRAIN_TRAFFICLINES_DATA = "train-traficlines-data";
@@ -65,8 +64,14 @@ export class TrainService {
     this.bookInfoSource = new BehaviorSubject([]);
     this.searchModelSource = new BehaviorSubject(new SearchTrainModel());
     this.selectedStationSource = new BehaviorSubject(null);
-    this.bookInfoSource.subscribe(infos => {
-      this.initSelfBookTypeBookInfos(infos);
+    combineLatest([
+      this.getBookInfoSource(),
+      this.identityService.getIdentity()
+    ]).subscribe(async ([infos, identity]) => {
+      if (identity && identity.Ticket) {
+        await this.staffService.checkStaffTypeSelf();
+        this.initSelfBookTypeBookInfos(infos);
+      }
     });
     identityService.getIdentity().subscribe(res => {
       if (!res || !res.Ticket || !res.Id) {
@@ -81,6 +86,11 @@ export class TrainService {
     this.selfCredentials = null;
   }
   private async initSelfBookTypeBookInfos(infos: PassengerBookInfo[]) {
+    console.log(
+      "train add bookInfo",
+      infos,
+      "isSelfBookType " + this.staffService.isSelfBookType
+    );
     if (infos.length === 0) {
       let IdCredential: CredentialsEntity;
       if (this.staffService.isSelfBookType) {
@@ -126,6 +136,11 @@ export class TrainService {
     this.searchModelSource.next(this.searchModel);
   }
   addBookInfo(arg: PassengerBookInfo) {
+    console.log(
+      "train add bookInfo",
+      arg,
+      "isSelfBookType " + this.staffService.isSelfBookType
+    );
     this.bookInfos.push(arg);
     this.setBookInfoSource(this.bookInfos);
   }
@@ -294,10 +309,11 @@ export class TrainService {
     const req = new RequestEntity();
     req.Method = `TmcApiTrainUrl-Home-Policy`;
     req.IsShowLoading = true;
+    req.Version = "1.0";
     req.Timeout = 60;
     req.Data = {
       Passengers: passengerIds.join(","),
-      Trains: trains
+      Trains: JSON.stringify(trains)
     };
     return this.apiService
       .getPromiseData<TrainPassengerModel[]>(req)
