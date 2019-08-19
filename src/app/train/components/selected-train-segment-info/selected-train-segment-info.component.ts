@@ -17,6 +17,7 @@ import { LanguageHelper } from "src/app/languageHelper";
 })
 export class SelectedTrainSegmentInfoComponent implements OnInit {
   bookInfos$: Observable<PassengerBookInfo[]>;
+  showSelectReturnTripButton=true;
   private dayOfWeekNames: any;
   constructor(
     private modalCtrl: ModalController,
@@ -32,6 +33,12 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
   ngOnInit() {
     this.dayOfWeekNames = this.calendarService.getDayOfWeekNames();
     this.bookInfos$ = this.trainService.getBookInfoSource();
+  }
+  onSelectReturnTrip(bookInfo:PassengerBookInfo){
+
+  }
+  nextStep(){
+    
   }
   getDate(s: TrainEntity) {
     if (!s) {
@@ -51,4 +58,13 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
     }]`;
   }
   onSelectLowestSegment() {}
+  remove(bookInfo:PassengerBookInfo){
+
+  }
+  showLowerSegment(bookInfo:PassengerBookInfo){
+    return true;
+  }
+  reelect(bookInfo:PassengerBookInfo){
+    return true;
+  }
 }
