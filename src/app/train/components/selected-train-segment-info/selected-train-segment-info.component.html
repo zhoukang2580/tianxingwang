@@ -34,13 +34,12 @@
         <ion-label class='rules' text-wrap color='dark' (click)='onSelectLowestSegment(bookInfo)'
           *ngIf='showLowerSegment(bookInfo)'>
           当前航班前后60分钟内有更低价航班:{{bookInfo?.flightSegmentInfo?.flightPolicy?.LowerSegment?.Number}}&nbsp;
-          {{getTime(bookInfo?.flightSegmentInfo?.flightPolicy?.LowerSegment?.TakeoffTime)}},价格:￥{{bookInfo?.flightSegmentInfo?.flightPolicy?.LowerSegment?.LowestFare}}
           <ion-button color='secondary' fill='clear'>选择该航班</ion-button>
         </ion-label>
         <div class='reset'>
           <ion-button expand='block' color='secondary' size='small' (click)='reelect(bookInfo)'>重选
           </ion-button>
-        </div>
+        </div> 
       </div>
     </ion-item>
     <ion-item lines='none' *ngIf='showSelectReturnTripButton'>
