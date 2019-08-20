@@ -6,10 +6,10 @@
 
 <ion-content padding>
   <ion-toolbar text-center>
-    <img [src]="pageInfo?.LogoImageUrl" appLazyloadimage alt="公司logo" class='logo'>
+    <img appLazyloadimage [lazyloadImage]="pageInfo?.LogoImageUrl" alt="公司logo" class='logo' />
   </ion-toolbar>
   <form [formGroup]='form' padding>
-    <ion-segment  (ionChange)="segmentChanged($event)" value="user" color='secondary'>
+    <ion-segment (ionChange)="segmentChanged($event)" value="user" color='secondary'>
       <ion-segment-button value="user">
         <ion-label>账号密码登录</ion-label>
       </ion-segment-button>
@@ -47,9 +47,10 @@
             <i class='icon icon-verify'></i>
           </ion-label>
           <ion-input type='text' placeholder='请输验证码' [maxlength]='6' formControlName="MobileCode"></ion-input>
-          <ion-button slot='end' color='secondary' fill='outline' *ngIf='!countDown||countDown <= 0' 
-           (click)="showImageCode('sendmobilecode')">发送验证码</ion-button>
-          <ion-button slot='end' fill='outline' [disabled]='true' color='medium' *ngIf='countDown'>{{countDown}} 秒后重发</ion-button>
+          <ion-button slot='end' color='secondary' fill='outline' *ngIf='!countDown||countDown <= 0'
+            (click)="showImageCode('sendmobilecode')">发送验证码</ion-button>
+          <ion-button slot='end' fill='outline' [disabled]='true' color='medium' *ngIf='countDown'>{{countDown}} 秒后重发
+          </ion-button>
         </ion-item>
         <ion-item [style.height]='0'></ion-item>
       </ion-list>

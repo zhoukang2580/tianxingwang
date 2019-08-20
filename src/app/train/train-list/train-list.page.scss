@@ -3,14 +3,23 @@ ul.train {
   padding: 0;
   margin: 0;
   li {
-    margin: .25em .5em;
-    border-radius: .5em;
-    border: 1px solid rgba(var(--ion-color-dark-rgb),.12);
+    margin: 0.25em 0.5em;
+    border-radius: 0.5em;
+    border: 1px solid rgba(var(--ion-color-dark-rgb), 0.12);
     padding: 0.5em;
   }
 }
 ion-content {
   --backround: #f2f2f2;
+}
+ion-title {
+  font-size: 0.9rem;
+  &.text-start {
+    text-align: start;
+  }
+  &.text-center {
+    text-align: center;
+  }
 }
 .tabs {
   display: flex;

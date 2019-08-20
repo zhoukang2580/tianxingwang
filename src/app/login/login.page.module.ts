@@ -1,16 +1,17 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Routes, RouterModule } from '@angular/router';
+import { DirectivesModule } from 'src/app/directives/directives.module';
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { Routes, RouterModule } from "@angular/router";
 
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from "@ionic/angular";
 
-import { LoginPage } from './login.page';
-import { AppComponentsModule } from '../components/appcomponents.module';
+import { LoginPage } from "./login.page";
+import { AppComponentsModule } from "../components/appcomponents.module";
 
 const routes: Routes = [
   {
-    path: '',
+    path: "",
     component: LoginPage
   }
 ];
@@ -22,7 +23,8 @@ const routes: Routes = [
     IonicModule,
     ReactiveFormsModule,
     RouterModule.forChild(routes),
-    AppComponentsModule
+    AppComponentsModule,
+    DirectivesModule
   ],
   declarations: [LoginPage]
 })

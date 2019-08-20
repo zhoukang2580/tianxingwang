@@ -5,8 +5,8 @@
         <ion-icon color='dark' name='arrow-back'></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title color='secondary' [attr.text-start]='isShowAddPassengerButton'
-      [attr.text-center]='!isShowAddPassengerButton'>
+    <ion-title color='secondary' class='xs-font-size' [class.text-start]='isShowAddPassengerButton'
+      [class.text-center]='!isShowAddPassengerButton'>
       <ion-text>{{vmFromCity?.Nickname}}</ion-text>
       <i class='icon icon-flight-plane'></i>
       <ion-text>{{ vmToCity?.Nickname}}</ion-text>
@@ -51,10 +51,10 @@
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh(true,false)" pullFactor="0.8" pullMin="100" pullMax="200">
   </ion-refresher>
   <app-or-comp *ngIf='isLoading'>
-    <ion-label>数据即将加载完成</ion-label>
+    数据即将加载完成
   </app-or-comp>
   <app-or-comp *ngIf='!isLoading&&vmTrains?.length==0'>
-    <ion-label>暂无数据</ion-label>
+    暂无数据
   </app-or-comp>
 
   <ul class='train'>
