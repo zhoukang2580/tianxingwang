@@ -1,4 +1,38 @@
-<div class='train-item'>
+<ng-container *ngIf='!seat else seatTemp'>
+  <div class='train-item'>
+    <div class='info'>
+      <div class='time'>
+        <strong>{{train?.StartShortTime}}</strong>
+        <div class='travel-time-name'>全程{{train?.TravelTimeName?.replace("h","时").replace("m",'分')}}</div>
+        <strong [class.has-add-day-tip]='train?.AddOneDayTip'
+          [attr.adddaytip]='train?.AddOneDayTip'>{{train?.ArrivalShortTime}}</strong>
+      </div>
+      <div class='station'>
+        <div>{{train?.FromStationName}}</div>
+        <div class='stop-line-stop' [attr.data]='train?.TrainCode'>
+          <div class="line"></div>
+        </div>
+        <div>{{train?.ToStationName}}</div>
+      </div>
+    </div>
+    <div>
+      <div class='price'>￥{{getLowestSeatPrice()}}</div>
+      <ion-button (click)='onScheduls()' fill='clear' size='small' style="margin-left: 1em" color='secondary'>经停
+      </ion-button>
+    </div>
+  </div>
+  <div class='seat'>
+    <div class='seat-item' text-nowrap *ngFor='let seat of getSeats()'>
+      <span>{{seat.SeatTypeName}}</span>
+      <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?seat.Count+"张":""}}</span>
+      <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"有":"无"}}票</span>
+      <ion-button size='small' text-start [disabled]='getBookBtnColor(seat)=="danger"' [color]='getBookBtnColor(seat)'
+        (click)='onBookTicket(seat)'>预订
+      </ion-button>
+    </div>
+  </div>
+</ng-container>
+<ng-template #seatTemp>
   <div class='info'>
     <div class='time'>
       <strong>{{train?.StartShortTime}}</strong>
@@ -14,18 +48,12 @@
       <div>{{train?.ToStationName}}</div>
     </div>
   </div>
-  <div>
-    <div class='price'>￥{{getLowestSeatPrice()}}</div>
-    <ion-button (click)='onScheduls()' fill='clear' size='small' style="margin-left: 1em" color='secondary'>经停
-    </ion-button>
+  <div class='seat' *ngIf='seat'>
+    <div class='seat-item'>
+      <span>{{seat.SeatTypeName}}</span>
+      <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?seat.Count+"张":""}}</span>
+      <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"有":"无"}}票</span>
+    </div>
+    <div class='price' style='margin-left: auto'>￥{{seat.SalesPrice}}</div>
   </div>
-</div>
-<div class='seat'>
-  <div class='seat-item' text-nowrap *ngFor='let seat of getSeats()'>
-    <span>{{seat.SeatTypeName}}</span>
-    <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?seat.Count+"张":""}}</span>
-    <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"有":"无"}}票</span>
-    <ion-button size='small' text-start [disabled]='getBookBtnColor(seat)=="danger"' [color]='getBookBtnColor(seat)'>预订
-    </ion-button>
-  </div>
-</div>
+</ng-template>

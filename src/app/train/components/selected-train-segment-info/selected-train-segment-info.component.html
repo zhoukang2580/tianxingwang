@@ -5,7 +5,7 @@
         <ion-icon color='dark' name='arrow-back'></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>当前已选择航班信息</ion-title>
+    <ion-title>当前已选择火车信息</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -16,30 +16,24 @@
     <ion-item *ngIf='bookInfo?.trainInfo'>
       <div class='detail'>
         <div class='date'>
-          <strong>{{getDate(bookInfo?.flightSegmentInfo?.flightSegment)}} <ion-text color='secondary'>
+          <strong>{{getDate(bookInfo?.trainInfo?.trainEntity)}} <ion-text color='secondary'>
               {{getTripTypeTip(bookInfo?.trainInfo)}}</ion-text></strong>
           <ion-button fill='clear' size='small' (click)='remove(bookInfo)'>
             <ion-icon name="trash" color='danger' mode='ios'>
             </ion-icon>
           </ion-button>
         </div>
-        <app-train-list-item [train]='bookInfo?.trainInfo?.trainEntity'></app-train-list-item>
-        <div class='info'>
-          <ion-label text-wrap>税:￥{{bookInfo?.flightSegmentInfo?.flightSegment?.Tax}}</ion-label>
-          <ion-label color='danger'>￥{{bookInfo?.flightSegmentInfo?.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
-        </div>
-        <ion-label class='rules' color='danger' text-wrap>
-          {{bookInfo?.flightSegmentInfo?.flightPolicy?.Rules.join("; ")}}
+        <ion-label class='train-item'>
+          <app-train-list-item [seat]='bookInfo.trainInfo?.selectedSeat' [train]='bookInfo?.trainInfo?.trainEntity'>
+          </app-train-list-item>
         </ion-label>
-        <ion-label class='rules' text-wrap color='dark' (click)='onSelectLowestSegment(bookInfo)'
-          *ngIf='showLowerSegment(bookInfo)'>
-          当前航班前后60分钟内有更低价航班:{{bookInfo?.flightSegmentInfo?.flightPolicy?.LowerSegment?.Number}}&nbsp;
-          <ion-button color='secondary' fill='clear'>选择该航班</ion-button>
+        <ion-label class='rules' color='danger' text-wrap>
+          {{bookInfo?.trainInfo?.trainPolicy?.Rules?.join("; ")}}
         </ion-label>
         <div class='reset'>
           <ion-button expand='block' color='secondary' size='small' (click)='reelect(bookInfo)'>重选
           </ion-button>
-        </div> 
+        </div>
       </div>
     </ion-item>
     <ion-item lines='none' *ngIf='showSelectReturnTripButton'>

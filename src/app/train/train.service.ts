@@ -1,3 +1,4 @@
+import { AppHelper } from "src/app/appHelper";
 import { ModalController } from "@ionic/angular";
 import { IdentityService } from "./../services/identity/identity.service";
 import { StaffService } from "./../hr/staff.service";
@@ -17,6 +18,8 @@ import { SelectDateComponent } from "../tmc/components/select-date/select-date.c
 import * as moment from "moment";
 import { LanguageHelper } from "../languageHelper";
 import { CalendarService } from "../tmc/calendar.service";
+import { TrainSeatEntity } from "./models/TrainSeatEntity";
+import { Router } from "@angular/router";
 const KEY_TRAIN_TRAFFICLINES_DATA = "train-traficlines-data";
 export class SearchTrainModel {
   TrainCode: string;
@@ -37,6 +40,11 @@ export interface ISelectedStation {
   fromStation: TrafficlineEntity;
   toStation: TrafficlineEntity;
 }
+export interface ICurrentViewtTainItem {
+  selectedSeat: TrainSeatEntity;
+  totalPolicies: TrainPassengerModel[];
+  train: TrainEntity;
+}
 @Injectable({
   providedIn: "root"
 })
@@ -51,7 +59,6 @@ export class TrainService {
   private bookInfos: PassengerBookInfo[] = [];
   private bookInfoSource: Subject<PassengerBookInfo[]>;
   private searchModelSource: Subject<SearchTrainModel>;
-  currentViewtTainItem: TrainEntity;
   constructor(
     private apiService: ApiService,
     private storage: Storage,
@@ -59,7 +66,8 @@ export class TrainService {
     private tmcService: TmcService,
     private identityService: IdentityService,
     private modalCtrl: ModalController,
-    private calendarService: CalendarService
+    private calendarService: CalendarService,
+    private router: Router
   ) {
     this.bookInfoSource = new BehaviorSubject([]);
     this.searchModelSource = new BehaviorSubject(new SearchTrainModel());
@@ -79,10 +87,101 @@ export class TrainService {
       }
     });
   }
+  async reelectBookInfo(bookInfo: PassengerBookInfo) {
+    bookInfo.isReplace = true;
+    const m = await this.modalCtrl.getTop();
+    if (m) {
+      m.dismiss();
+    }
+    this.router.navigate([AppHelper.getRoutePath("train-list")]);
+  }
+  checkCanAdd() {
+    if (this.getBookInfos().find(it => it.isReplace)) {
+      return true;
+    }
+    const bookInfos = this.getBookInfos().filter(it => !!it.trainInfo);
+    if (!this.staffService.isSelfBookType) {
+      if (bookInfos.length >= 9) {
+        return false;
+      }
+    }
+    if (this.staffService.isSelfBookType) {
+      if (bookInfos.length == 2 && this.getSearchTrainModel().isRoundTrip) {
+        return false;
+      }
+      if (bookInfos.length == 1 && !this.getSearchTrainModel().isRoundTrip) {
+        return false;
+      }
+    }
+    return true;
+  }
+  addOrReselectBookInfo(currentViewtTainItem: ICurrentViewtTainItem) {
+    console.log("add or reselect book info ", currentViewtTainItem);
+    if (
+      currentViewtTainItem &&
+      currentViewtTainItem.selectedSeat &&
+      currentViewtTainItem.totalPolicies &&
+      currentViewtTainItem.train
+    ) {
+      let infos = this.getBookInfos();
+      infos = infos.map(it => {
+        let tripType = TripType.departureTrip;
+        if (
+          this.staffService.isSelfBookType &&
+          this.getSearchTrainModel().isRoundTrip
+        ) {
+          const go = infos.find(
+            item =>
+              item.trainInfo &&
+              item.trainInfo.tripType == TripType.departureTrip
+          );
+          if (go && !infos.find(item => item.isReplace)) {
+            tripType = TripType.returnTrip;
+          }
+        }
+        if (!currentViewtTainItem.selectedSeat.Policy) {
+          const policy = currentViewtTainItem.totalPolicies.find(
+            k => k.PassengerKey == it.passenger.AccountId
+          );
+          if (policy) {
+            currentViewtTainItem.selectedSeat.Policy = policy.TrainPolicies.find(
+              i => i.TrainNo == currentViewtTainItem.train.TrainNo
+            );
+          }
+        }
+        // 给未选择的乘客选择火车信息
+        if (
+          !it.trainInfo ||
+          !it.trainInfo.trainPolicy ||
+          !it.trainInfo.trainEntity
+        ) {
+          it.trainInfo = {
+            trainEntity: currentViewtTainItem.train,
+            trainPolicy: currentViewtTainItem.selectedSeat.Policy,
+            tripType,
+            id: AppHelper.uuid(),
+            selectedSeat: currentViewtTainItem.selectedSeat
+          };
+        }
+        // 修改重选的火车信息,每次只能重选一个，所以直接覆盖重选的即可
+        if (it.isReplace) {
+          it.trainInfo = {
+            ...it,
+            trainEntity: currentViewtTainItem.train,
+            trainPolicy: currentViewtTainItem.selectedSeat.Policy,
+            tripType: TripType.departureTrip,
+            id: AppHelper.uuid(),
+            selectedSeat: currentViewtTainItem.selectedSeat
+          };
+        }
+        return it;
+      });
+      this.setBookInfoSource(infos);
+    }
+  }
   disposal() {
     this.setSearchTrainModel(new SearchTrainModel());
     this.setBookInfoSource([]);
-    this.currentViewtTainItem = null;
     this.selfCredentials = null;
   }
   private async initSelfBookTypeBookInfos(infos: PassengerBookInfo[]) {
@@ -214,6 +313,7 @@ export class TrainService {
     return this.localTrafficLine.TrafficLines;
   }
   private setBookInfoSource(infos: PassengerBookInfo[]) {
+    console.log("setBookInfoSource", infos);
     this.bookInfos = infos || [];
     this.bookInfoSource.next(this.bookInfos);
   }
@@ -354,6 +454,7 @@ export interface CacheTrafficLineModel {
 }
 export interface ITrainInfo {
   trainEntity: TrainEntity;
+  selectedSeat?: TrainSeatEntity;
   trainPolicy: TrainPolicyModel;
   tripType?: TripType;
   id?: string;

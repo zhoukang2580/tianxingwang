@@ -31,7 +31,7 @@
           <ion-label color='danger'>￥{{bookInfo?.flightSegmentInfo?.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
         </div>
         <ion-label class='rules' color='danger' text-wrap>
-          {{bookInfo?.flightSegmentInfo?.flightPolicy?.Rules.join("; ")}}
+          {{bookInfo?.flightSegmentInfo?.flightPolicy?.Rules?.join("; ")}}
         </ion-label>
         <ion-label class='rules' text-wrap color='dark' (click)='onSelectLowestSegment(bookInfo)'
           *ngIf='showLowerSegment(bookInfo)'>

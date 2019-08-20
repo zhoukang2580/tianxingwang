@@ -59,9 +59,10 @@
 
   <ul class='train'>
     <li *ngFor='let item of vmTrains'>
-      <app-train-list-item [train]='item'  (scheduleEmit)='schedules(item)'></app-train-list-item>
+      <app-train-list-item [train]='item' (bookTicket)='onBookTicket(item,$event)' (scheduleEmit)='schedules(item)'>
+      </app-train-list-item>
     </li>
-  </ul> 
+  </ul>
   <ng-container #fakeList *ngIf='isLoading'>
     <ion-list class='fakelist'>
       <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8]'>
@@ -70,15 +71,13 @@
             <ion-col size='10'>
               <ion-label>
                 <h2>
-                  <ion-skeleton-text animated style='width: 100%'></ion-skeleton-text>
+                  <ion-skeleton-text animated style='width: 80%'></ion-skeleton-text>
                 </h2>
                 <h2>
-                  <ion-skeleton-text style='width: 100%'></ion-skeleton-text>
+                  <ion-skeleton-text style='width: 90%'></ion-skeleton-text>
                 </h2>
                 <div style='display: flex;align-items: center;'>
-                  <ion-skeleton-text animated style="width: 1.2em;height:1.2em;border-radius:100%;margin-right: 0.5em;">
-                  </ion-skeleton-text>
-                  <ion-skeleton-text style='width: 90%'></ion-skeleton-text>
+                  <ion-skeleton-text style='width: 100%'></ion-skeleton-text>
                 </div>
               </ion-label>
             </ion-col>

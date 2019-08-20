@@ -8,11 +8,14 @@ import { TrainSeatEntity } from "../../models/TrainSeatEntity";
   styleUrls: ["./train-list-item.component.scss"]
 })
 export class TrainListItemComponent implements OnInit {
+  @Input() seat: TrainSeatEntity;
   @Input() train: TrainEntity;
   @Output() scheduleEmit: EventEmitter<any>;
+  @Output() bookTicket: EventEmitter<TrainSeatEntity>;
   TrainSeatType = TrainSeatType;
   constructor() {
     this.scheduleEmit = new EventEmitter();
+    this.bookTicket = new EventEmitter();
   }
   getLowestSeatPrice() {
     if (!this.train || !this.train.Seats || !this.train.Seats.length) {
@@ -20,6 +23,9 @@ export class TrainListItemComponent implements OnInit {
     }
     this.train.Seats.sort((a, b) => +a.SalesPrice - +b.SalesPrice);
     return this.train.Seats[0].SalesPrice;
+  }
+  onBookTicket(seat: TrainSeatEntity) {
+    this.bookTicket.emit(seat);
   }
   getBookBtnColor(seat: TrainSeatEntity) {
     if (seat && seat.Policy) {

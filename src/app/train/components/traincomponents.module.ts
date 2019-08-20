@@ -9,8 +9,8 @@ import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module
 import { SelectedTrainSegmentInfoComponent } from "./selected-train-segment-info/selected-train-segment-info.component";
 import { TrainListItemComponent } from "./train-list-item/train-list-item.component";
 import { TrainscheduleComponent } from "./trainschedule/trainschedule.component";
-import { TimeSpanComponent } from './train-filter/time-span/time-span.component';
-import { TrainFilterComponent } from './train-filter/train-filter.component';
+import { TimeSpanComponent } from "./train-filter/time-span/time-span.component";
+import { TrainFilterComponent } from "./train-filter/train-filter.component";
 
 @NgModule({
   declarations: [
@@ -35,8 +35,13 @@ import { TrainFilterComponent } from './train-filter/train-filter.component';
     TrainListItemComponent,
     TrainscheduleComponent,
     TimeSpanComponent,
-    TrainFilterComponent
+    TrainFilterComponent,
+    SelectedTrainSegmentInfoComponent
   ],
-  entryComponents: [SelectedTrainSegmentInfoComponent, TrainscheduleComponent,TrainFilterComponent]
+  entryComponents: [
+    SelectedTrainSegmentInfoComponent,
+    TrainscheduleComponent,
+    TrainFilterComponent
+  ]
 })
 export class TrainComponentsModule {}

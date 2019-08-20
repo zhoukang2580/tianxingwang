@@ -282,7 +282,7 @@ export class ApiService {
       switchMap(url => {
         req.Token = this.apiConfig.Token;
         const formObj = Object.keys(req)
-          .map(k => `${k}=${req[k]}`)
+          .map(k => `${k}=${encodeURIComponent(req[k])}`)
           .join("&");
         return this.http.post(url, `${formObj}&Sign=${this.getSign(req)}`, {
           headers: { "content-type": "application/x-www-form-urlencoded" },

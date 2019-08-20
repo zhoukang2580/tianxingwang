@@ -1,4 +1,5 @@
-import { TrainService } from "./../../train.service";
+import { TrainSeatEntity } from "./../../models/TrainSeatEntity";
+import { TrainService, TrainPolicyModel } from "./../../train.service";
 import { CalendarService } from "./../../../tmc/calendar.service";
 import { ModalController } from "@ionic/angular";
 import { Observable } from "rxjs";
@@ -10,6 +11,7 @@ import { TrainEntity } from "../../models/TrainEntity";
 import { TripType } from "src/app/tmc/models/TripType";
 import { ITrainInfo } from "../../train.service";
 import { LanguageHelper } from "src/app/languageHelper";
+import { tap } from "rxjs/operators";
 @Component({
   selector: "app-selected-train-segment-info",
   templateUrl: "./selected-train-segment-info.component.html",
@@ -17,8 +19,7 @@ import { LanguageHelper } from "src/app/languageHelper";
 })
 export class SelectedTrainSegmentInfoComponent implements OnInit {
   bookInfos$: Observable<PassengerBookInfo[]>;
-  showSelectReturnTripButton=true;
-  private dayOfWeekNames: any;
+  showSelectReturnTripButton = true;
   constructor(
     private modalCtrl: ModalController,
     private calendarService: CalendarService,
@@ -31,21 +32,29 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
     }
   }
   ngOnInit() {
-    this.dayOfWeekNames = this.calendarService.getDayOfWeekNames();
-    this.bookInfos$ = this.trainService.getBookInfoSource();
+    this.bookInfos$ = this.trainService.getBookInfoSource().pipe(
+      tap(infos => {
+        console.log("bookinfos", infos);
+      })
+    );
   }
-  onSelectReturnTrip(bookInfo:PassengerBookInfo){
-
-  }
-  nextStep(){
-    
-  }
+  onSelectReturnTrip(bookInfo: PassengerBookInfo) {}
+  nextStep() {}
   getDate(s: TrainEntity) {
     if (!s) {
       return "";
     }
-    const day = this.calendarService.generateDayModel(moment(s.TravelTime));
+    const day = this.calendarService.generateDayModel(moment(s.StartTime));
     return `${day.date} ${day.dayOfWeekName}`;
+  }
+  getSeatPrice(info: ITrainInfo) {
+    if (info && info.trainEntity && info.trainEntity.Seats) {
+      const s = info.trainEntity.Seats.find(
+        s => s.SeatType == info.trainPolicy.SeatType
+      );
+      return s && s.SalesPrice;
+    }
+    return "";
   }
   getTripTypeTip(info: ITrainInfo) {
     if (!info) {
@@ -57,14 +66,11 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
         : LanguageHelper.getReturnTripTip()
     }]`;
   }
-  onSelectLowestSegment() {}
-  remove(bookInfo:PassengerBookInfo){
-
+  remove(bookInfo: PassengerBookInfo) {
+    this.trainService.removeBookInfo(bookInfo);
   }
-  showLowerSegment(bookInfo:PassengerBookInfo){
-    return true;
-  }
-  reelect(bookInfo:PassengerBookInfo){
+  async reelect(bookInfo: PassengerBookInfo) {
+    await this.trainService.reelectBookInfo(bookInfo);
     return true;
   }
 }
