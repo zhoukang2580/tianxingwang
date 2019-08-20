@@ -335,22 +335,10 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       return 0;
     }
     let amount = 0;
-    if (this.tmc.IsShowServiceFee) {
-      amount = order.OrderItems.filter(it => it.Key == key).reduce(
-        (acc, it) => {
-          acc += +it.Amount;
-          return acc;
-        },
-        0
-      );
-    } else {
-      amount = order.OrderItems.filter(
-        it => it.Key == key && !it.Tag.endsWith("Fee")
-      ).reduce((acc, it) => {
-        acc += +it.Amount;
-        return acc;
-      }, 0);
-    }
+    amount = order.OrderItems.reduce((acc, it) => {
+      acc += +it.Amount;
+      return acc;
+    }, 0);
     return amount;
   }
   private checkPay(order: OrderEntity) {

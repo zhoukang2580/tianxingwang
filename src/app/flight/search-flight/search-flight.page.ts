@@ -14,11 +14,13 @@ import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
 import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import * as moment from "moment";
-import { Subscription } from "rxjs";
+import { Subscription, of } from "rxjs";
 import { DayModel } from "../../tmc/models/DayModel";
-import { NavController } from "@ionic/angular";
+import { NavController, ModalController } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
+import { map } from "rxjs/operators";
+import { SelectedFlightsegmentInfoComponent } from "../components/selected-flightsegment-info/selected-flightsegment-info.component";
 @Component({
   selector: "app-search-flight",
   templateUrl: "./search-flight.page.html",
@@ -44,6 +46,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
   selectedPassengers: number;
   totalFlyDays: number;
   staff: StaffEntity;
+  isShowBookInfos$ = of(false);
   constructor(
     private router: Router,
     route: ActivatedRoute,
@@ -54,7 +57,8 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     private storage: Storage,
     private staffService: StaffService,
     private apiService: ApiService,
-    private tmcService: TmcService
+    private tmcService: TmcService,
+    private modalCtrl: ModalController
   ) {
     route.queryParamMap.subscribe(async _ => {
       this.tmcService.setFlightHotelTrainType(FlightHotelTrainType.Flight);
@@ -116,7 +120,19 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
   async isStaffTypeSelf() {
     return await this.staffService.checkStaffTypeSelf();
   }
+  async showSelectedBookInfos() {
+    const modal = await this.modalCtrl.create({
+      component: SelectedFlightsegmentInfoComponent
+    });
+    await this.flightService.dismissAllTopOverlays();
+    await modal.present();
+    await modal.onDidDismiss();
+    return "goBack";
+  }
   async ngOnInit() {
+    this.isShowBookInfos$ = this.flightService
+      .getPassengerBookInfoSource()
+      .pipe(map(infos => infos.filter(it => !!it.flightSegmentInfo).length > 0));
     this.selectDaySubscription = this.flydayService
       .getSelectedDays()
       .subscribe(days => {

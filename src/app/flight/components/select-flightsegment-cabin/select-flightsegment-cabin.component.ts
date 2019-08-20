@@ -16,6 +16,13 @@ export class SelectFlightsegmentCabinComponent implements OnInit {
   constructor(private modalCtrl: ModalController) {
     this.selectcabin = new EventEmitter();
   }
+  back() {
+    this.modalCtrl.getTop().then(m => {
+      if (m) {
+        m.dismiss();
+      }
+    });
+  }
   bookColor(cabin: any) {
     if (cabin && cabin.Rules) {
       if (cabin.Rules.length) {

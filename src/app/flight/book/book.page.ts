@@ -294,6 +294,10 @@ export class BookPage implements OnInit, AfterViewInit {
     try {
       if (this.ionRefresher) {
         this.ionRefresher.complete();
+        this.ionRefresher.disabled = true;
+        setTimeout(() => {
+          this.ionRefresher.disabled = false;
+        }, 300);
       }
       this.errors = "";
       this.vmCombindInfos = [];
@@ -543,7 +547,7 @@ export class BookPage implements OnInit, AfterViewInit {
       info.tripType == TripType.departureTrip
         ? LanguageHelper.getDepartureTip()
         : LanguageHelper.getReturnTripTip()
-      }]`;
+    }]`;
   }
   back() {
     this.natCtrl.back();
@@ -607,8 +611,8 @@ export class BookPage implements OnInit, AfterViewInit {
     const showErrorMsg = (msg: string, item: ICombindInfo) => {
       AppHelper.alert(
         `联系人${(item.credentialStaff && item.credentialStaff.Name) ||
-        (item.modal.credential &&
-          item.modal.credential.Number)}信息${msg}不能为空`
+          (item.modal.credential &&
+            item.modal.credential.Number)}信息${msg}不能为空`
       );
     };
     for (let i = 0; i < this.vmCombindInfos.length; i++) {
@@ -659,15 +663,17 @@ export class BookPage implements OnInit, AfterViewInit {
     //   return;
     // }
     if (!item.credentialsRequested) {
-      const res: { [accountId: string]: CredentialsEntity[] } = await this.tmcService.getPassengerCredentials([
-        item.modal.passenger.AccountId
-      ]).catch(_ => ({ [item.modal.passenger.AccountId]: [] }));
+      const res: {
+        [accountId: string]: CredentialsEntity[];
+      } = await this.tmcService
+        .getPassengerCredentials([item.modal.passenger.AccountId])
+        .catch(_ => ({ [item.modal.passenger.AccountId]: [] }));
       if (item.credentials.length) {
         const exist = item.credentials[0];
         const credentials = res && res[item.modal.passenger.AccountId];
         item.credentialsRequested = credentials && credentials.length > 0;
         if (credentials) {
-          if(credentials.length){
+          if (credentials.length) {
             const one = credentials.find(
               it => it.Number == exist.Number && exist.Type == it.Type
             );
@@ -678,24 +684,23 @@ export class BookPage implements OnInit, AfterViewInit {
                 item.credentials = credentials;
               }
             }
-          }else{
-            
+          } else {
           }
         }
       }
     }
-    if(item.credentials){
-      item.credentials=item.credentials.filter(it=>!!it.Number);
+    if (item.credentials) {
+      item.credentials = item.credentials.filter(it => !!it.Number);
     }
-    console.log("onModify",item.credentials);
+    console.log("onModify", item.credentials);
   }
   private fillBookPassengers(bookDto: OrderBookDto) {
     const showErrorMsg = (msg: string, item: ICombindInfo) => {
       AppHelper.alert(
         `${(item.credentialStaff && item.credentialStaff.Name) ||
-        (item.modal.credential &&
-          item.modal.credential.CheckFirstName +
-          item.modal.credential.CheckLastName)} 【${item.modal.credential &&
+          (item.modal.credential &&
+            item.modal.credential.CheckFirstName +
+              item.modal.credential.CheckLastName)} 【${item.modal.credential &&
           item.modal.credential.Number}】 ${msg} 信息不能为空`
       );
     };
@@ -768,7 +773,7 @@ export class BookPage implements OnInit, AfterViewInit {
           p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-          }`;
+        }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -782,7 +787,7 @@ export class BookPage implements OnInit, AfterViewInit {
           p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-          }`;
+        }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -1002,20 +1007,20 @@ export class BookPage implements OnInit, AfterViewInit {
           credentialStaffMobiles:
             cstaff && cstaff.Account && cstaff.Account.Mobile
               ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile
-                };
-              })
+                  return {
+                    checked: idx == 0,
+                    mobile
+                  };
+                })
               : [],
           credentialStaffEmails:
             cstaff && cstaff.Account && cstaff.Account.Email
               ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email
-                };
-              })
+                  return {
+                    checked: idx == 0,
+                    email
+                  };
+                })
               : [],
           credentialStaffApprovers,
           organization: {

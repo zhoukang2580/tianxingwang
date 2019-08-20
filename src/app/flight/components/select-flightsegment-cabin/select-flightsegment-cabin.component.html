@@ -1,6 +1,11 @@
 <ion-header text-center>
   <ion-toolbar>
-    <ion-text>请选择仓位</ion-text>
+    <ion-buttons slot='start'>
+      <ion-button (click)='back()'>
+        <ion-icon color='dark' name='arrow-back'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-text>请选择舱位</ion-text>
   </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -50,7 +55,7 @@
               <ion-text color='danger'>￥{{cabin?.Cabin?.SalesPrice}}</ion-text>
               <ion-button [color]='bookColor(cabin)' margin-top expand='block' [disabled]='!cabin?.IsAllowBook'
                 (click)='onBookTicket(cabin)'>
-                <ion-text [color]='bookColor(cabin)=="primary"?"dark":"light"'>预定</ion-text>
+                <ion-text [color]='bookColor(cabin)=="primary"?"dark":"light"'>预订</ion-text>
               </ion-button>
             </h3>
           </ion-label>

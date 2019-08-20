@@ -62,7 +62,7 @@
               <ion-text color='danger'>￥{{cabin?.Cabin?.SalesPrice}}</ion-text>
               <ion-button [color]='bookColor(cabin)' margin-top expand='block' [disabled]='!cabin?.IsAllowBook'
                 (click)='onBookTicket(cabin?.Cabin)'>
-                <ion-text [color]='bookColor(cabin)=="primary"?"dark":"light"'>预定</ion-text>
+                <ion-text [color]='bookColor(cabin)=="primary"?"dark":"light"'>预订</ion-text>
               </ion-button>
             </ion-col>
           </ion-row>
@@ -96,7 +96,7 @@
                 <h3 text-end class='book'>
                   <ion-text color='danger'>￥{{cabin?.SalesPrice}}</ion-text>
                   <ion-button [color]='bookColor(cabin)' margin-top expand='block' (click)='onBookTicket(cabin)'>
-                    <ion-text [color]='bookColor(cabin)=="primary"?"dark":"light"'>预定</ion-text>
+                    <ion-text [color]='bookColor(cabin)=="primary"?"dark":"light"'>预订</ion-text>
                   </ion-button>
                 </h3>
               </ion-label>

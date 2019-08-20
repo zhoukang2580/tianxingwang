@@ -75,9 +75,9 @@
     </ion-row>
   </ng-container>
   <!-- <ng-container *ngIf='getTicketExistExchanged(tripAndTicket?.ticket)'> -->
-  <app-original-flight-trip [trip]='originalTrip' [ticket]='tripAndTicket?.ticket' [exchangeFee]='exchangeFee'
+  <!-- <app-original-flight-trip [trip]='originalTrip' [ticket]='tripAndTicket?.ticket' [exchangeFee]='exchangeFee'
     [refundDeductionFee]='refundDeductionFee' [tripDesc]='"原始航班信息"' *ngFor='let originalTrip of originalTrips'>
-  </app-original-flight-trip>
+  </app-original-flight-trip> -->
   <app-original-flight-trip [trip]='exchangedTrip' [ticket]='tripAndTicket?.ticket' [tripDesc]='"改签航班信息"'
     [exchangeFee]='exchangeFee' [refundDeductionFee]='refundDeductionFee' [ticket]='tripAndTicket?.ticket'
     *ngFor='let exchangedTrip of exchangedTrips'></app-original-flight-trip>

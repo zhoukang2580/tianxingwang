@@ -1,6 +1,14 @@
-import { Country, SelectCountryModalComponent } from "../../tmc/components/select-country/select-countrymodal.component";
+import {
+  Country,
+  SelectCountryModalComponent
+} from "../../tmc/components/select-country/select-countrymodal.component";
 import { LanguageHelper } from "./../../languageHelper";
-import { IonRefresher, IonGrid, NavController, ModalController } from "@ionic/angular";
+import {
+  IonRefresher,
+  IonGrid,
+  NavController,
+  ModalController
+} from "@ionic/angular";
 import {
   Component,
   OnInit,
@@ -45,7 +53,7 @@ export class MemberCredentialManagementPage
     private ngZone: NgZone,
     private identityService: IdentityService,
     private navCtrl: NavController,
-    private modalController:ModalController
+    private modalController: ModalController
   ) {
     route.queryParamMap.subscribe(p => {
       this.isCanDeactive = false;
@@ -182,7 +190,7 @@ export class MemberCredentialManagementPage
       el
     );
   }
-  
+
   async selectIdentityNationality(item: MemberCredential) {
     this.currentModifyItem = item;
     this.requestCode = "identityNationality";
@@ -278,9 +286,11 @@ export class MemberCredentialManagementPage
     if (!c.LastName) {
       return this.checkProperty(c, "LastName", rules, container);
     }
+    c.CheckFirstName = c.CheckFirstName || c.FirstName;
     if (!c.CheckFirstName) {
       return this.checkProperty(c, "CheckFirstName", rules, container);
     }
+    c.CheckLastName = c.CheckLastName || c.LastName;
     if (!c.CheckLastName) {
       return this.checkProperty(c, "CheckLastName", rules, container);
     }

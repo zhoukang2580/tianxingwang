@@ -234,7 +234,7 @@ export class OrderEntity extends BaseVariablesEntity {
 
   Queues: any[];
 }
-export class OrderItemEntity {
+export class OrderItemEntity extends BaseVariablesEntity{
   /// 订单
 
   Order: OrderEntity;

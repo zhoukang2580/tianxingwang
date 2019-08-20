@@ -35,9 +35,10 @@ import { OrderNumberEntity } from "src/app/order/models/OrderNumberEntity";
 import { SendMsgComponent } from "../components/send-msg/send-msg.component";
 import { OrderFlightTicketStatusType } from "src/app/order/models/OrderFlightTicketStatusType";
 import { AppHelper } from "src/app/appHelper";
-import { OrderFlightTripStatusType } from '../models/OrderFlightTripStatusType';
-import { OrderEntity } from '../models/OrderEntity';
-import { OrderFlightTripEntity } from '../models/OrderFlightTripEntity';
+import { OrderFlightTripStatusType } from "../models/OrderFlightTripStatusType";
+import { OrderEntity, OrderItemEntity } from "../models/OrderEntity";
+import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
+import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
 export class OrderTripTicketModel {
   trip: OrderFlightTripEntity;
   ticket: OrderFlightTicketEntity;
@@ -287,20 +288,11 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       }
     }
   }
-  async showPricePopover() {
-    const orderItems =
-      this.orderDetail.Order && this.orderDetail.Order.OrderItems;
-    const p = await this.popoverCtrl.create({
-      component: OrderItemPricePopoverComponent,
-      componentProps: {
-        orderItems,
-        amount:
-          orderItems && orderItems.reduce((acc, it) => (acc += +it.Amount), 0)
-      }
-    });
-    p.present();
-  }
-  getPassengerInfo(passenger: OrderPassengerEntity) {
+
+  getPassengerInfo(
+    passenger: OrderPassengerEntity,
+    ticket: OrderFlightTicketEntity
+  ) {
     if (!passenger) {
       return null;
     }
@@ -314,10 +306,45 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       );
       const t =
         this.orderDetail.trips &&
-        this.orderDetail.trips.find(t => t.passenger.Id == passenger.Id);
+        this.orderDetail.trips.find(trip => trip.passenger.Id == passenger.Id);
+      console.log("getPassengerInfo", p, t);
+      let CostCenterCode;
+      let CostCenterName;
+      let OrganizationCode;
+      let OrganizationName;
+      if (
+        this.orderDetail &&
+        this.orderDetail.Order &&
+        this.orderDetail.Order.OrderTravels
+      ) {
+        CostCenterCode = this.orderDetail.Order.OrderTravels.filter(
+          it => it.Key == ticket.Key
+        )
+          .map(it => it.CostCenterCode)
+          .join(",");
+        CostCenterName = this.orderDetail.Order.OrderTravels.filter(
+          it => it.Key == ticket.Key
+        )
+          .map(it => it.CostCenterName)
+          .join(",");
+        OrganizationCode = this.orderDetail.Order.OrderTravels.filter(
+          it => it.Key == ticket.Key
+        )
+          .map(it => it.OrganizationCode)
+          .join(",");
+        OrganizationName = this.orderDetail.Order.OrderTravels.filter(
+          it => it.Key == ticket.Key
+        )
+          .map(it => it.OrganizationName)
+          .join(",");
+      }
       return {
         ...p,
-        ...t
+        ...t,
+        CostCenterCode,
+        CostCenterName,
+        OrganizationCode,
+        OrganizationName
       };
     }
     return null;
@@ -388,9 +415,13 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
           ? JSON.parse(this.orderDetail.Order.Variables)
           : {};
       }
-      this.orderDetail.TotalAmount = this.getTotalAmount(
-        this.orderDetail.Order
-      );
+      this.orderDetail.TotalAmount =
+        (this.orderDetail &&
+          this.orderDetail.Order.OrderItems &&
+          this.orderDetail.Order.OrderItems.reduce(
+            (acc, item) => (acc += +item.Amount),
+            0
+          )) + "" || "0";
       this.orderDetail.PayAmount = this.getPayAmount(this.orderDetail.Order);
       if (this.orderDetail.Histories) {
         this.orderDetail.Histories = this.orderDetail.Histories.map(h => {
@@ -452,24 +483,27 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     ).reduce((acc, it) => (acc += +it.Amount), 0);
     return insuranceAmount;
   }
-  private getTotalAmount(order: OrderEntity) {
+  async showPricePopover() {
     const Tmc = this.tmc;
-    if (!Tmc || !order) {
+    if (!Tmc) {
       return `0`;
     }
-    let amount = 0;
-    if (Tmc.IsShowServiceFee) {
-      amount = (order.OrderItems || []).reduce(
-        (acc, it) => (acc += +it.Amount),
-        0
-      );
-    } else {
-      amount = (order.OrderItems || [])
-        .filter(it => !(it.Tag || "").endsWith("Fee"))
-        .reduce((acc, it) => (acc += +it.Amount), 0);
+    let orderItems =
+      this.orderDetail.Order && this.orderDetail.Order.OrderItems;
+    if (!Tmc.IsShowServiceFee) {
+      orderItems = orderItems.filter(it => !(it.Tag || "").endsWith("Fee"));
     }
-    return `${amount < 0 ? 0 : amount}`;
+    const p = await this.popoverCtrl.create({
+      component: OrderItemPricePopoverComponent,
+      componentProps: {
+        insurance: this.orderDetail.insuranceAmount,
+        orderItems,
+        amount: orderItems.reduce((acc, item) => (acc += +item.Amount), 0)
+      }
+    });
+    p.present();
   }
+
   back() {
     this.navCtrl.back();
   }

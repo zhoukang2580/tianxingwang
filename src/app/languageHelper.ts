@@ -19,7 +19,7 @@ export class LanguageHelper {
       return "待签收";
     },
     getBookTicketWaitingTip: () => {
-      return "您的订单正在预定，请稍后到我的订单中支付";
+      return "您的订单正在预订，请稍后到我的订单中支付";
     }
   };
   static CurrencySymbols = {
