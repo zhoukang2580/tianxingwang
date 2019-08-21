@@ -238,8 +238,9 @@ export class StaffService {
     });
   }
   async isSelfBookType() {
-    const t = await this.getBookType();
-    return t === StaffBookType.Self;
+    const t = (await this.getBookType()) === StaffBookType.Self;
+    console.log("isSelfbooktype ", await this.getBookType(), t);
+    return t;
   }
   async isAllBookType() {
     const t = await this.getBookType();
@@ -261,6 +262,8 @@ export class StaffService {
     }
     forceRefresh =
       forceRefresh ||
+      !this.staff ||
+      (this.staff.BookType && !(id.Numbers && id.Numbers.AgentId)) ||
       (this.staff &&
         (!(this.staff.IsConfirmInfo === undefined) &&
           !this.staff.IsConfirmInfo)) ||

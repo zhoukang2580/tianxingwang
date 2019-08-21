@@ -442,6 +442,20 @@ export class FlightService {
         .catch(_ => ({ [staff.AccountId]: [] }));
       this.selfCredentials = res[staff.AccountId];
     }
+    // if (!this.selfCredentials || !this.selfCredentials.length) {
+    //   const ok = await AppHelper.alert(
+    //     LanguageHelper.getMaintainCredentialsTip(),
+    //     true,
+    //     LanguageHelper.getConfirmTip(),
+    //     LanguageHelper.getCancelTip()
+    //   );
+    //   if (ok) {
+    //     this.router.navigate([
+    //       AppHelper.getRoutePath("member-credential-management")
+    //     ]);
+    //     return;
+    //   }
+    // }
     IdCredential =
       this.selfCredentials &&
       this.selfCredentials.find(c => c.Type == CredentialsType.IdCard);

@@ -698,6 +698,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           this.doRefresh(true, false);
         }
       });
+      this.doRefresh(true, true);
   }
   ngOnDestroy() {
     this.vmFlights = [];
@@ -707,7 +708,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.apiService.showLoadingView();
     if (this.searchFlightModel && this.searchFlightModel.Date) {
       this.moveDayToSearchDate();
     }

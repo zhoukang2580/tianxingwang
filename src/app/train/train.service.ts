@@ -185,11 +185,7 @@ export class TrainService {
     this.selfCredentials = null;
   }
   private async initSelfBookTypeBookInfos(infos: PassengerBookInfo[]) {
-    console.log(
-      "train add bookInfo",
-      infos,
-      "isSelfBookType " + this.staffService.isSelfBookType
-    );
+    console.log("train add bookInfo", infos);
     if (infos.length === 0) {
       let IdCredential: CredentialsEntity;
       if (this.staffService.isSelfBookType) {

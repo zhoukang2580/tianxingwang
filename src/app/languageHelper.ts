@@ -460,6 +460,9 @@ export class LanguageHelper {
   static getApiTimeoutTip() {
     return "请求超时";
   }
+  static getMaintainCredentialsTip() {
+    return "请先维护证件信息";
+  }
   static getNetworkErrorTip() {
     return "网络错误";
   }
