@@ -37,7 +37,7 @@
         <app-search-day-comp *ngIf="!isSingle" [day]='backDate' (click)="onSelecDate(false,true)">
         </app-search-day-comp>
       </section>
-      <ion-button style='width: 100%' (click)="searchTrain()"
+      <ion-button margin-top style='width: 100%' (click)="searchTrain()"
         [disabled]='!vmFromCity||!vmToCity||mustAddPassenger() && selectedPassengers==0' color="secondary"
         expand="block">
         <ion-text *ngIf='!(mustAddPassenger() && selectedPassengers==0)'>查询航班</ion-text>

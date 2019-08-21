@@ -1,3 +1,4 @@
+import { Subject, from } from "rxjs";
 import { MemberCredential } from "src/app/member/member.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { RequestEntity } from "src/app/services/api/Request.entity";
@@ -226,18 +227,6 @@ export interface HrEntity {
 })
 export class StaffService {
   private staff: StaffEntity;
-  private _isSelfBookType = false;
-  set isSelfBookType(v: boolean) {
-    this._isSelfBookType = v;
-  }
-  get isSelfBookType() {
-    return (
-      (this.staff &&
-        this.staff.BookType &&
-        this.staff.BookType == StaffBookType.Self) ||
-      this._isSelfBookType
-    );
-  }
   constructor(
     private apiService: ApiService,
     private identityService: IdentityService
@@ -245,13 +234,24 @@ export class StaffService {
     this.identityService.getIdentity().subscribe(id => {
       if (!id || !id.Id || !id.Ticket) {
         this.staff = null;
-        this.isSelfBookType = false;
       }
     });
   }
-  async checkStaffTypeSelf() {
+  async isSelfBookType() {
+    const t = await this.getBookType();
+    return t === StaffBookType.Self;
+  }
+  async isAllBookType() {
+    const t = await this.getBookType();
+    return t === StaffBookType.All;
+  }
+  async isSecretaryBookType() {
+    const t = await this.getBookType();
+    return t === StaffBookType.Secretary;
+  }
+  private async getBookType(): Promise<StaffBookType> {
     const s = await this.getStaff();
-    return this.isSelfBookType;
+    return s && s.BookType;
   }
   async getStaff(forceRefresh: boolean = false): Promise<StaffEntity> {
     const id = await this.identityService.getIdentityAsync();
@@ -270,7 +270,7 @@ export class StaffService {
     if (this.staff) {
       if (
         !forceRefresh ||
-        (this.staff.BookType === undefined && id.Numbers.AgentId)
+        (this.staff.BookType === undefined && id.Numbers && id.Numbers.AgentId)
       ) {
         if (this.staff.BookType == StaffBookType.Self) {
           this.staff.AccountId = this.staff.AccountId || id.Id;
@@ -291,12 +291,11 @@ export class StaffService {
           this.staff.AccountId = this.staff.AccountId || id.Id;
           this.staff.Name = this.staff.Name || id.Name;
         }
-        this.isSelfBookType =
-          s && s.BookType && s.BookType == StaffBookType.Self;
         return s;
       })
       .catch(_ => {
         console.error(_);
+        this.staff = {} as any;
         return null;
       });
   }

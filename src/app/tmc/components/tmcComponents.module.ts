@@ -25,7 +25,7 @@ import { DateSelectWheelPopoverComponent } from "./date-select-wheel-popover/dat
 import { SelectWheelComponent } from "./select-wheel/select-wheel.component";
 import { SearchDayComponent } from "./search-day/search-day.component";
 import { SelectDateComponent } from "./select-date/select-date.component";
-import { DaysCalendarComponent } from './days-calendar/days-calendar.component';
+import { DaysCalendarComponent } from "./days-calendar/days-calendar.component";
 
 @NgModule({
   declarations: [

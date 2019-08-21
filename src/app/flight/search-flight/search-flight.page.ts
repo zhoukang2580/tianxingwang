@@ -73,7 +73,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
         .getSearchFlightModelSource()
         .subscribe(async s => {
           console.log("search-flights", s);
-          this.showReturnTrip = this.staffService.isSelfBookType;
+          this.showReturnTrip = await this.staffService.isSelfBookType();
           if (s) {
             this.disabled = s.isLocked;
             this.fromCity = this.vmFromCity = s.fromCity || this.fromCity;
@@ -118,7 +118,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.onRoundTrip(evt.detail.value == "single");
   }
   async isStaffTypeSelf() {
-    return await this.staffService.checkStaffTypeSelf();
+    return await this.staffService.isSelfBookType();
   }
   async showSelectedBookInfos() {
     const modal = await this.modalCtrl.create({
@@ -132,7 +132,9 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
   async ngOnInit() {
     this.isShowBookInfos$ = this.flightService
       .getPassengerBookInfoSource()
-      .pipe(map(infos => infos.filter(it => !!it.flightSegmentInfo).length > 0));
+      .pipe(
+        map(infos => infos.filter(it => !!it.flightSegmentInfo).length > 0)
+      );
     this.selectDaySubscription = this.flydayService
       .getSelectedDays()
       .subscribe(days => {
@@ -176,7 +178,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.apiService.hideLoadingView();
   }
   mustAddPassenger() {
-    return this.staff && this.staff.BookType !== StaffBookType.Self;
+    return !this.staffService.isSelfBookType;
   }
   onSelectPassenger() {
     this.router.navigate([AppHelper.getRoutePath("select-passenger")]);

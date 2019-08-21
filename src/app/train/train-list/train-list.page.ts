@@ -98,10 +98,10 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.changePassengerSubscription.unsubscribe();
   }
   ngOnInit() {
-    this.route.queryParamMap.subscribe(_ => {
+    this.route.queryParamMap.subscribe(async _ => {
       this.onSearchCondition();
       this.isShowAddPassengerButton = !this.staffService.isSelfBookType;
-      this.isShowRoundtripTip = this.staffService.isSelfBookType;
+      this.isShowRoundtripTip = await this.staffService.isSelfBookType();
       this.isLeavePage = false;
     });
     this.changePassengerSubscription = this.trainService

@@ -50,7 +50,8 @@ export class HomePage implements OnInit {
       queryParams: { bulletinType: noticeType }
     });
   }
-  ngOnInit(): void {
+  async ngOnInit() {
+
     const paramters = AppHelper.getQueryParamers();
     if (paramters.wechatPayResultNumber) {
       const req1 = this.apiService.createRequest();
@@ -73,7 +74,8 @@ export class HomePage implements OnInit {
       this.apiService.showLoadingView();
       this.identity = await this.identityService.getIdentityAsync();
       this.companies = await this.tmcService.getCompanies();
-      if (this.identity&&
+      if (
+        this.identity &&
         this.identity.Numbers &&
         this.identity.Numbers.AgentId &&
         this.identity.Numbers.TmcId
@@ -92,7 +94,7 @@ export class HomePage implements OnInit {
     this.router.navigate([AppHelper.getRoutePath("switch-company")]);
   }
   // wechatpay() {
-  //   let req = this.apiService.createRequest();
+  //   const req = new RequestEntity();
   //   req.Method = "TmcApiOrderUrl-Pay-Create";
   //   req.Version = "2.0";
   //   req.Data = {
@@ -104,7 +106,7 @@ export class HomePage implements OnInit {
   //   this.payService
   //     .wechatpay(req, "")
   //     .then(r => {
-  //       let req1 = this.apiService.createRequest();
+  //       const req1 = new RequestEntity();
   //       req1.Method = "TmcApiOrderUrl-Pay-Process";
   //       req1.Version = "2.0";
   //       req1.Data = {
@@ -113,10 +115,12 @@ export class HomePage implements OnInit {
   //       };
   //       this.payService.process(req1);
   //     })
-  //     .catch(r => {});
+  //     .catch(r => {
+  //       AppHelper.alert(r);
+  //     });
   // }
   // alipay() {
-  //   let req = this.apiService.createRequest();
+  //   const req = new RequestEntity();
   //   req.Method = "TmcApiOrderUrl-Pay-Create";
   //   req.Version = "2.0";
   //   req.Data = {
@@ -128,7 +132,7 @@ export class HomePage implements OnInit {
   //   this.payService
   //     .alipay(req, "")
   //     .then(r => {
-  //       let req1 = this.apiService.createRequest();
+  //       const req1 = new RequestEntity();
   //       req1.Method = "TmcApiOrderUrl-Pay-Process";
   //       req1.Version = "2.0";
   //       req1.Data = {

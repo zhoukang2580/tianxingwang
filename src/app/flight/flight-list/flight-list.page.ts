@@ -66,7 +66,7 @@ import {
   PassengerPolicyFlights,
   FlightPolicy
 } from "../models/PassengerFlightInfo";
-import { DaysCalendarComponent } from 'src/app/tmc/components/days-calendar/days-calendar.component';
+import { DaysCalendarComponent } from "src/app/tmc/components/days-calendar/days-calendar.component";
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -212,10 +212,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       }
       this.searchConditionSubscription = this.flightService
         .getSearchFlightModelSource()
-        .subscribe(s => {
+        .subscribe(async s => {
           console.log("flight-list page getSearchFlightModelSource", s);
           this.searchFlightModel = s;
-          this.isSelfBookType = s.isSelfBookType;
+          this.isSelfBookType = await this.staffService.isSelfBookType();
           if (this.searchFlightModel) {
             // this.isRoundTrip = this.searchFlightModel.IsRoundTrip;
             this.vmFromCity = this.searchFlightModel.fromCity;
@@ -230,9 +230,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.isLeavePage = false;
       this.flightService.setFilterPanelShow(false);
       console.log("this.route.queryParamMap", this.searchFlightModel);
-      if (this.searchFlightModel && this.searchFlightModel.Date) {
-        this.doRefresh(true, true);
-      }
     });
     this.showAdvSearchPage$ = this.flightService.getFilterPanelShow();
   }
@@ -249,11 +246,11 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     const identity = await this.identityService.getIdentityAsync();
     this.showAddPassenger =
       (identity && identity.Numbers && identity.Numbers.AgentId) ||
-      (await !this.staffService.checkStaffTypeSelf());
+      (await !this.staffService.isSelfBookType());
     return this.showAddPassenger;
   }
   async isStaffTypeSelf() {
-    return await this.staffService.checkStaffTypeSelf();
+    return await this.staffService.isSelfBookType();
   }
   onCalenderClick() {
     this.flightService.openCalendar(false);
@@ -384,7 +381,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         }
         this.st = Date.now();
         this.vmFlights = segments;
-        await this.renderFlightList2(segments);
+        await this.renderFlightList(segments);
         this.hasDataSource.next(!!this.vmFlights.length && !this.isLoading);
         this.apiService.hideLoadingView();
         this.isLoading = false;
@@ -535,7 +532,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async goToFlightCabinsDetails(fs: FlightSegmentEntity) {
-    const isSelf = this.flightService.getSearchFlightModel().isSelfBookType;
+    const isSelf = await this.staffService.isSelfBookType();
     if (
       !isSelf &&
       this.flightService.getPassengerBookInfos().map(item => item.passenger)
@@ -790,7 +787,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         ? "low2Height"
         : "height2Low";
       this.filterCondition.timeFromM2N = "initial";
-      const segments = await this.flightService.sortByPrice(
+      const segments = this.flightService.sortByPrice(
         this.vmFlights,
         this.priceOrderL2H
       );
@@ -809,7 +806,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       }
       if (isRerender) {
         console.log(`重新渲染整个列表`);
-        this.renderFlightList2(segments);
+        this.renderFlightList(segments);
       }
       // this.renderFlightList2(segments);
       this.scrollToTop();
@@ -817,7 +814,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     if (key === "time") {
       this.filterCondition.timeFromM2N = this.timeOrdM2N ? "am2pm" : "pm2am";
       this.filterCondition.priceFromL2H = "initial";
-      const segments = await this.flightService.sortByTime(
+      const segments = this.flightService.sortByTime(
         this.vmFlights,
         this.timeOrdM2N
       );
@@ -836,13 +833,13 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       }
       if (isRerender) {
         console.log(`重新渲染整个列表`);
-        this.renderFlightList2(segments);
+        await this.renderFlightList(segments);
       }
       this.scrollToTop();
     }
   }
 
-  private async renderFlightList2(fs: FlightSegmentEntity[]) {
+  private async renderFlightList(fs: FlightSegmentEntity[]) {
     console.time("renderFlightList2");
     this.isLoading = true;
     const segments = fs.map(s => {

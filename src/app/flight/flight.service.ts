@@ -14,7 +14,7 @@ import { FilterConditionModel } from "./models/flight/advanced-search-cond/Filte
 import { IdentityService } from "./../services/identity/identity.service";
 import { StaffService, StaffEntity } from "../hr/staff.service";
 import { Injectable } from "@angular/core";
-import { Subject, BehaviorSubject } from "rxjs";
+import { Subject, BehaviorSubject, combineLatest } from "rxjs";
 
 import * as moment from "moment";
 import { ApiService } from "../services/api/api.service";
@@ -45,7 +45,6 @@ export class SearchFlightModel {
   toCity: TrafficlineEntity;
   tripType: TripType;
   isLocked?: boolean;
-  isSelfBookType?: boolean;
 }
 @Injectable({
   providedIn: "root"
@@ -89,8 +88,21 @@ export class FlightService {
         this.disposal();
       }
     });
+    combineLatest([
+      identityService.getIdentity(),
+      this.getPassengerBookInfoSource()
+    ]).subscribe(([identity, infos]) => {
+      if (identity && identity.Id && identity.Ticket && infos.length == 0) {
+        this.initSelfBookTypeBookInfos();
+      }
+    });
   }
-  disposal() {
+  private async initSelfBookTypeBookInfos() {
+    this.apiService.showLoadingView();
+    await this.checkOrAddSelfBookTypeBookInfo();
+    this.apiService.hideLoadingView();
+  }
+  private disposal() {
     this.setSearchFlightModel(new SearchFlightModel());
     this.removeAllPassengerFlightSegments();
     this.selectedCitySource.next(null);
@@ -106,8 +118,7 @@ export class FlightService {
   setSearchFlightModel(m: SearchFlightModel) {
     if (m) {
       this.searchFlightModel = {
-        ...m,
-        isSelfBookType: this.staffService.isSelfBookType
+        ...m
       };
       if (m.isRoundTrip) {
         const arr = this.getPassengerBookInfos();
@@ -351,7 +362,7 @@ export class FlightService {
     if (!arg || !arg.flightSegmentInfo) {
       return false;
     }
-    if (await this.staffService.checkStaffTypeSelf()) {
+    if (await this.staffService.isSelfBookType()) {
       await this.reselectSelfBookTypeSegment(arg);
     } else {
       await this.reselectNotSelfBookTypeSegments(arg);
@@ -422,7 +433,6 @@ export class FlightService {
     this.passengerBookInfos = [];
     this.setPassengerBookInfos(this.getPassengerBookInfos());
   }
-  removeOneBookInfoFromSelfBookType() {}
   async addOneBookInfoToSelfBookType() {
     let IdCredential: CredentialsEntity;
     const staff = await this.staffService.getStaff();
@@ -446,8 +456,10 @@ export class FlightService {
     });
   }
   private async checkOrAddSelfBookTypeBookInfo() {
-    const sm = this.getSearchFlightModel();
-    if (sm.isSelfBookType && this.getPassengerBookInfos().length == 0) {
+    if (
+      (await this.staffService.isSelfBookType()) &&
+      this.getPassengerBookInfos().length === 0
+    ) {
       await this.addOneBookInfoToSelfBookType();
     }
   }
@@ -457,7 +469,7 @@ export class FlightService {
     }
     let arr = this.getPassengerBookInfos();
     arr = arr.map(item => {
-      if (item.id == old.id) {
+      if (item.id === old.id) {
         return newInfo;
       }
       return item;
@@ -465,7 +477,7 @@ export class FlightService {
     this.setPassengerBookInfos(arr);
   }
   async removePassengerBookInfo(arg: PassengerBookInfo) {
-    if (this.searchFlightModel.isSelfBookType) {
+    if (await this.staffService.isSelfBookType()) {
       if (arg.flightSegmentInfo) {
         if (arg.flightSegmentInfo.tripType == TripType.returnTrip) {
           this.passengerBookInfos = this.getPassengerBookInfos().filter(
@@ -556,7 +568,7 @@ export class FlightService {
       });
     return res;
   }
-  async sortByPrice(segments: FlightSegmentEntity[], l2h: boolean) {
+  sortByPrice(segments: FlightSegmentEntity[], l2h: boolean) {
     if (true || !this.worker) {
       return segments.sort((s1, s2) => {
         let sub = +s1.LowestFare - +s2.LowestFare;
@@ -564,17 +576,8 @@ export class FlightService {
         return l2h ? sub : -sub;
       });
     }
-    return new Promise<FlightSegmentEntity[]>(s => {
-      this.worker.postMessage({ message: "sortByPrice", segments, l2h });
-      this.worker.onmessage = evt => {
-        // console.log("evt", evt);
-        if (evt && evt.data && evt.data.message == "sortByPrice") {
-          s(evt.data.segments);
-        }
-      };
-    });
   }
-  async sortByTime(segments: FlightSegmentEntity[], l2h: boolean) {
+  sortByTime(segments: FlightSegmentEntity[], l2h: boolean) {
     if (true || !this.worker) {
       return segments.sort((s1, s2) => {
         let sub = +s1.TakeoffTimeStamp - +s2.TakeoffTimeStamp;
@@ -582,16 +585,6 @@ export class FlightService {
         return l2h ? sub : -sub;
       });
     }
-
-    return new Promise<FlightSegmentEntity[]>(s => {
-      this.worker.postMessage({ message: "sortByTime", segments, l2h });
-      this.worker.onmessage = evt => {
-        // console.log("evt", evt);
-        if (evt && evt.data && evt.data.message == "sortByTime") {
-          s(evt.data.segments);
-        }
-      };
-    });
   }
   private addoneday(s: FlightSegmentEntity) {
     // const addDay =

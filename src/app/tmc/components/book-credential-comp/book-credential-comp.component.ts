@@ -1,3 +1,5 @@
+import { AppHelper } from "src/app/appHelper";
+import { Router } from "@angular/router";
 import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 import { CredentialsEntity } from "../../models/CredentialsEntity";
 
@@ -12,7 +14,7 @@ export class BookCredentialCompComponent implements OnInit {
   @Output() savecredential: EventEmitter<any>;
   @Output() modify: EventEmitter<any>;
   isModified = false;
-  constructor() {
+  constructor(private router: Router) {
     this.savecredential = new EventEmitter();
     this.modify = new EventEmitter();
   }
@@ -27,9 +29,13 @@ export class BookCredentialCompComponent implements OnInit {
       this.modify.emit();
     }
   }
+  onMaintainCredentials() {
+    this.router.navigate([
+      AppHelper.getRoutePath("member-credential-management")
+    ]);
+  }
   onSave() {
     this.savecredential.emit(this.credential);
   }
-  ngOnInit() {
-  }
+  ngOnInit() {}
 }

@@ -116,7 +116,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     this.onRoundTrip(evt.detail.value == "single");
   }
   async isStaffTypeSelf() {
-    return await this.staffService.checkStaffTypeSelf();
+    return await this.staffService.isSelfBookType();
   }
   async ngOnInit() {
     this.selectDaySubscription = this.calendarService
@@ -155,7 +155,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
         }
       });
     this.apiService.showLoadingView();
-    this.showReturnTrip = this.staffService.isSelfBookType;
+    this.showReturnTrip =await this.staffService.isSelfBookType();
     this.initTrainDays();
     this.initTrainCities();
     this.apiService.hideLoadingView();

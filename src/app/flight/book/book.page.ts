@@ -1,9 +1,8 @@
+import { PayService } from "./../../services/pay/pay.service";
 import { AccountEntity } from "./../../tmc/models/AccountEntity";
 import { OrderBookDto } from "./../../order/models/OrderBookDto";
-import { AddcontactsModalComponent } from "../../tmc/components/addcontacts-modal/addcontacts-modal.component";
 import { ActivatedRoute, Router } from "@angular/router";
 import { InsuranceProductEntity } from "./../../insurance/models/InsuranceProductEntity";
-import { OrganizationComponent } from "../../tmc/components/organization/organization.component";
 import { CalendarService } from "../../tmc/calendar.service";
 import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
 import {
@@ -29,7 +28,6 @@ import { IdentityService } from "src/app/services/identity/identity.service";
 import {
   StaffService,
   StaffEntity,
-  StaffBookType,
   CostCenterEntity,
   OrganizationEntity,
   StaffApprover
@@ -49,16 +47,8 @@ import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import * as moment from "moment";
 import { DayModel } from "../../tmc/models/DayModel";
 import { LanguageHelper } from "src/app/languageHelper";
-import {
-  trigger,
-  state,
-  style,
-  transition,
-  animate
-} from "@angular/animations";
-import { InsuranceResultEntity } from "../../tmc/models/Insurance/InsuranceResultEntity";
-import { Observable, of, Subject, BehaviorSubject } from "rxjs";
-import { map } from "rxjs/operators";
+import { trigger, state, style } from "@angular/animations";
+import { Subject, BehaviorSubject } from "rxjs";
 import {
   OrderTravelType,
   OrderTravelPayType
@@ -68,84 +58,18 @@ import { AppHelper } from "src/app/appHelper";
 import { PassengerDto } from "src/app/tmc/models/PassengerDto";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import { TripType } from "src/app/tmc/models/TripType";
-import { environment } from "src/environments/environment";
 import { TaskType } from "src/app/workflow/models/TaskType";
-import { SearchCostcenterComponent } from "src/app/tmc/components/search-costcenter/search-costcenter.component";
 import { SearchApprovalComponent } from "src/app/tmc/components/search-approval/search-approval.component";
 import { SelectTravelNumberComponent } from "src/app/tmc/components/select-travel-number-popover/select-travel-number-popover.component";
 import { PassengerFlightSegmentInfo } from "../models/PassengerFlightInfo";
 import { ProductItemType } from "src/app/tmc/models/ProductItems";
-interface TmcOutNumberInfo {
-  key: string;
-  label: string;
-  required: boolean;
-  value: string;
-  staffOutNumber: string;
-  isTravelNumber: boolean;
-  isLoadNumber: boolean;
-  staffNumber: string;
-  canSelect: boolean;
-  isDisabled: boolean;
-  travelUrlInfos: TravelUrlInfo[];
-}
+import { RequestEntity } from "src/app/services/api/Request.entity";
 export class AddContact {
   notifyLanguage: string;
   name: string;
   mobile: string;
   email: string;
   accountId: string;
-}
-interface ICombindInfo {
-  vmModal: PassengerBookInfo;
-  modal: PassengerBookInfo;
-  passengerDto: PassengerDto;
-  openrules: boolean; // 打开退改签规则
-  vmCredential: CredentialsEntity;
-  credentials: CredentialsEntity[];
-  credentialsRequested: boolean;
-  appovalStaff: StaffEntity;
-  credentialStaff: StaffEntity;
-  isSkipApprove: boolean;
-  notifyLanguage: string;
-  addContacts: AddContact[];
-  credentialStaffMobiles: {
-    checked: boolean;
-    mobile: string;
-  }[];
-  credentialStaffOtherMobile: string;
-  credentialStaffApprovers: {
-    Tag: string;
-    Type: TaskType;
-    approvers: StaffApprover[];
-  }[];
-  credentialStaffEmails: {
-    checked: boolean;
-    email: string;
-  }[];
-  credentialStaffOtherEmail: string;
-  showFriendlyReminder: boolean;
-  costCenters: CostCenterEntity[];
-  selectedCostCenter: CostCenterEntity;
-  illegalReason: any;
-  otherIllegalReason: any;
-  isOtherIllegalReason: boolean;
-  isOtherCostCenter: boolean;
-  costCenter: {
-    code: string;
-    name: string;
-  };
-  otherCostCenterName: any;
-  otherCostCenterCode: any;
-  isOtherOrganization: boolean;
-  organization: OrganizationEntity;
-  otherOrganizationName: string;
-  insuranceProducts: {
-    insuranceResult: InsuranceProductEntity;
-    checked: boolean;
-  }[];
-  tmcOutNumberInfos: TmcOutNumberInfo[];
-  travelType: OrderTravelType; // 因公、因私
-  orderTravelPayType: OrderTravelPayType; //
 }
 @Component({
   selector: "app-book",
@@ -180,15 +104,16 @@ export class BookPage implements OnInit, AfterViewInit {
   identity: IdentityEntity;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChildren("illegalReasonsEle", { read: ElementRef })
-  illegalReasonsEles: QueryList<ElementRef<HTMLElement>>;
-  @ViewChild(IonContent) private cnt: IonContent;
+  @ViewChild(IonContent)
+  private cnt: IonContent;
   @ViewChild(IonRefresher) private ionRefresher: IonRefresher;
+  illegalReasonsEles: QueryList<ElementRef<HTMLElement>>;
+  isCheckingPay: boolean;
   appoval: {
     Value: string;
     Text: string;
   };
   constructor(
-    private storage: Storage,
     private flightService: FlightService,
     private staffService: StaffService,
     private identityService: IdentityService,
@@ -199,13 +124,14 @@ export class BookPage implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private popoverCtrl: PopoverController,
     private plt: Platform,
-    private router: Router
+    private router: Router,
+    private payService: PayService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
 
-  ngOnInit() {
-    this.route.queryParamMap.subscribe(p => {
+  async ngOnInit() {
+    this.route.queryParamMap.subscribe(() => {
       setTimeout(() => {
         this.refresh();
       }, 200);
@@ -262,7 +188,7 @@ export class BookPage implements OnInit, AfterViewInit {
   }
   ngAfterViewInit() {
     if (this.checkboxes) {
-      this.checkboxes.changes.subscribe(cbx => {
+      this.checkboxes.changes.subscribe(() => {
         setTimeout(() => {
           this.calcTotalPrice();
         }, 0);
@@ -555,8 +481,9 @@ export class BookPage implements OnInit, AfterViewInit {
   back() {
     this.natCtrl.back();
   }
-  async bookFlight() {
+  async bookFlight(isSave: boolean = false) {
     const bookDto: OrderBookDto = new OrderBookDto();
+    bookDto.IsFromOffline = isSave;
     let canBook = false;
     canBook = this.fillBookLinkmans(bookDto);
     canBook = this.fillBookPassengers(bookDto);
@@ -566,48 +493,139 @@ export class BookPage implements OnInit, AfterViewInit {
       });
       if (res) {
         if (res.TradeNo) {
-          await this.checkPay(res.TradeNo, bookDto);
+          this.flightService.removeAllPassengerFlightSegments();
+          if (
+            !isSave &&
+            (await this.staffService.isSelfBookType()) &&
+            bookDto.Passengers[0].TravelPayType == OrderTravelPayType.Person
+          ) {
+            const canPay = await this.checkPay(res.TradeNo);
+            if (canPay) {
+              await this.payOrder(res.TradeNo);
+              this.router.navigate([""]); // 回到首页
+            } else {
+              await AppHelper.alert(
+                LanguageHelper.Order.getBookTicketWaitingTip()
+              );
+              this.goToMyOrders(ProductItemType.plane);
+            }
+          } else {
+            await AppHelper.alert(
+              LanguageHelper.Flight.getSaveBookOrderOkTip()
+            );
+            this.router.navigate([""]);
+          }
         }
       }
     }
-  }
-  private async checkPay(tradeNo: string, bookDto: OrderBookDto) {
-    let loading = false;
-    this.checkPayCountIntervalId = setInterval(async () => {
-      if (!loading) {
-        loading = true;
-        const result = await this.tmcService.checkPay(tradeNo);
-        loading = false;
-        this.checkPayCount--;
-        if (!result) {
-          if (this.checkPayCount < 0) {
-            clearInterval(this.checkPayCountIntervalId);
-            await AppHelper.alert(
-              LanguageHelper.Order.getBookTicketWaitingTip(),
-              true,
-              LanguageHelper.getConfirmTip()
-            );
-            this.goToMyOrders(ProductItemType.plane);
-          }
-        } else {
-          if (
-            this.staffService.isSelfBookType &&
-            bookDto.Passengers[0].TravelPayType == OrderTravelPayType.Person
-          ) {
-            const res = await this.initialPersonalPay();
-            this.goToMyOrders(ProductItemType.plane);
-          }
-        }
-      }
-    }, this.checkPayCountIntervalTime);
   }
   private goToMyOrders(tab: ProductItemType) {
     this.router.navigate(["product-tabs"], {
       queryParams: { tabId: tab }
     });
   }
-  private async initialPersonalPay() {
-    return true;
+  private async payOrder(tradeNo: string) {
+    const payWay = await this.payService.selectPayWay();
+    if (!payWay) {
+      const ok = await AppHelper.alert(
+        LanguageHelper.Order.getGiveUpPayTip(),
+        true,
+        LanguageHelper.getYesTip(),
+        LanguageHelper.getNegativeTip()
+      );
+      if (ok) {
+        this.router.navigate([""]);
+      } else {
+        await this.payOrder(tradeNo);
+      }
+    } else {
+      if (payWay.value == "ali") {
+        await this.aliPay(tradeNo);
+      }
+      if (payWay.value == "wechat") {
+        await this.wechatPay(tradeNo);
+      }
+      this.router.navigate([""]);
+    }
+  }
+  private async wechatPay(tradeNo: string) {
+    const req = new RequestEntity();
+    req.Method = "TmcApiOrderUrl-Pay-Create";
+    req.Version = "2.0";
+    req.Data = {
+      Channel: "App",
+      Type: "3",
+      OrderId: "190000047133",
+      IsApp: AppHelper.isApp()
+    };
+    this.payService
+      .wechatpay(req, "")
+      .then(r => {
+        const req1 = new RequestEntity();
+        req1.Method = "TmcApiOrderUrl-Pay-Process";
+        req1.Version = "2.0";
+        req1.Data = {
+          OutTradeNo: r,
+          Type: "3"
+        };
+        this.payService.process(req1);
+      })
+      .catch(r => {
+        AppHelper.alert(r);
+      });
+  }
+  private async aliPay(tradeNo: string) {
+    const req = new RequestEntity();
+    req.Method = "TmcApiOrderUrl-Pay-Create";
+    req.Version = "2.0";
+    req.Data = {
+      Channel: "App",
+      Type: "2",
+      IsApp: AppHelper.isApp(),
+      OrderId: "190000047133"
+    };
+    const r = await this.payService.alipay(req, "").catch(e => {
+      AppHelper.alert(e);
+    });
+    if (r) {
+      const req1 = new RequestEntity();
+      req1.Method = "TmcApiOrderUrl-Pay-Process";
+      req1.Version = "2.0";
+      req1.Data = {
+        OutTradeNo: r,
+        Type: "2"
+      };
+      const result = await this.payService.process(req1).catch(_ => {
+        AppHelper.alert(r);
+      });
+      if (result) {
+      } else {
+      }
+    }
+  }
+  private async checkPay(tradeNo: string) {
+    return new Promise<boolean>(s => {
+      let loading = false;
+      this.isCheckingPay = true;
+      this.checkPayCountIntervalId = setInterval(async () => {
+        if (!loading) {
+          loading = true;
+          const result = await this.tmcService.checkPay(tradeNo);
+          loading = false;
+          this.checkPayCount--;
+          if (!result) {
+            if (this.checkPayCount < 0) {
+              clearInterval(this.checkPayCountIntervalId);
+              s(false);
+              this.isCheckingPay = false;
+            }
+          } else {
+            this.isCheckingPay = false;
+            s(true);
+          }
+        }
+      }, this.checkPayCountIntervalTime);
+    });
   }
   private fillBookLinkmans(bookDto: OrderBookDto) {
     bookDto.Linkmans = [];
@@ -662,9 +680,6 @@ export class BookPage implements OnInit, AfterViewInit {
     return true;
   }
   async onModify(item: ICombindInfo) {
-    // if (item.modal.isNotWhitelist) {
-    //   return;
-    // }
     if (!item.credentialsRequested) {
       const res: {
         [accountId: string]: CredentialsEntity[];
@@ -915,7 +930,7 @@ export class BookPage implements OnInit, AfterViewInit {
   }
 
   private async initSelfBookTypeCredentials(): Promise<CredentialsEntity[]> {
-    if (await this.staffService.checkStaffTypeSelf()) {
+    if (await this.staffService.isSelfBookType()) {
       const identity = await this.identityService.getIdentityAsync();
       const id = (identity && identity.Id) || "";
       if (!id) {
@@ -1171,4 +1186,70 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     return false;
   }
+}
+interface TmcOutNumberInfo {
+  key: string;
+  label: string;
+  required: boolean;
+  value: string;
+  staffOutNumber: string;
+  isTravelNumber: boolean;
+  isLoadNumber: boolean;
+  staffNumber: string;
+  canSelect: boolean;
+  isDisabled: boolean;
+  travelUrlInfos: TravelUrlInfo[];
+}
+
+interface ICombindInfo {
+  vmModal: PassengerBookInfo;
+  modal: PassengerBookInfo;
+  passengerDto: PassengerDto;
+  openrules: boolean; // 打开退改签规则
+  vmCredential: CredentialsEntity;
+  credentials: CredentialsEntity[];
+  credentialsRequested: boolean;
+  appovalStaff: StaffEntity;
+  credentialStaff: StaffEntity;
+  isSkipApprove: boolean;
+  notifyLanguage: string;
+  addContacts: AddContact[];
+  credentialStaffMobiles: {
+    checked: boolean;
+    mobile: string;
+  }[];
+  credentialStaffOtherMobile: string;
+  credentialStaffApprovers: {
+    Tag: string;
+    Type: TaskType;
+    approvers: StaffApprover[];
+  }[];
+  credentialStaffEmails: {
+    checked: boolean;
+    email: string;
+  }[];
+  credentialStaffOtherEmail: string;
+  showFriendlyReminder: boolean;
+  costCenters: CostCenterEntity[];
+  selectedCostCenter: CostCenterEntity;
+  illegalReason: any;
+  otherIllegalReason: any;
+  isOtherIllegalReason: boolean;
+  isOtherCostCenter: boolean;
+  costCenter: {
+    code: string;
+    name: string;
+  };
+  otherCostCenterName: any;
+  otherCostCenterCode: any;
+  isOtherOrganization: boolean;
+  organization: OrganizationEntity;
+  otherOrganizationName: string;
+  insuranceProducts: {
+    insuranceResult: InsuranceProductEntity;
+    checked: boolean;
+  }[];
+  tmcOutNumberInfos: TmcOutNumberInfo[];
+  travelType: OrderTravelType; // 因公、因私
+  orderTravelPayType: OrderTravelPayType; //
 }

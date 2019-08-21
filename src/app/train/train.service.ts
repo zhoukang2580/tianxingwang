@@ -4,7 +4,7 @@ import { IdentityService } from "./../services/identity/identity.service";
 import { StaffService } from "./../hr/staff.service";
 import { Subject, BehaviorSubject, combineLatest } from "rxjs";
 import { ApiService } from "src/app/services/api/api.service";
-import { Injectable, EventEmitter } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { RequestEntity } from "../services/api/Request.entity";
 import { TripType } from "../tmc/models/TripType";
 import { TrainEntity, TrainSeatType } from "./models/TrainEntity";
@@ -77,7 +77,7 @@ export class TrainService {
       this.identityService.getIdentity()
     ]).subscribe(async ([infos, identity]) => {
       if (identity && identity.Ticket) {
-        await this.staffService.checkStaffTypeSelf();
+        await this.staffService.isSelfBookType();
         this.initSelfBookTypeBookInfos(infos);
       }
     });
@@ -235,11 +235,7 @@ export class TrainService {
     this.searchModelSource.next(this.searchModel);
   }
   addBookInfo(arg: PassengerBookInfo) {
-    console.log(
-      "train add bookInfo",
-      arg,
-      "isSelfBookType " + this.staffService.isSelfBookType
-    );
+    console.log("train add bookInfo", arg);
     this.bookInfos.push(arg);
     this.setBookInfoSource(this.bookInfos);
   }

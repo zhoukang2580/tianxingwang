@@ -11,6 +11,7 @@ import { LoginSkeletonPageComponent } from "./login-skeleton-page/login-skeleton
 import { TreeNgxModule } from "./tree-ngx/tree-ngx.module";
 import { TimelineComponent } from "./timeline/timeline.component";
 import { TimelineItemComponent } from "./timeline-item/timeline-item.component";
+import { PayComponent } from './pay/pay.component';
 @NgModule({
   declarations: [
     OrComponent,
@@ -21,7 +22,8 @@ import { TimelineItemComponent } from "./timeline-item/timeline-item.component";
     LoadingComponent,
     LoginSkeletonPageComponent,
     TimelineComponent,
-    TimelineItemComponent
+    TimelineItemComponent,
+    PayComponent
   ],
   imports: [CommonModule, IonicModule, TreeNgxModule],
   exports: [
@@ -33,8 +35,9 @@ import { TimelineItemComponent } from "./timeline-item/timeline-item.component";
     LoadingComponent,
     TreeNgxModule,
     TimelineComponent,
-    TimelineItemComponent
+    TimelineItemComponent,
+    PayComponent
   ],
-  entryComponents: [LoginSkeletonPageComponent]
+  entryComponents: [LoginSkeletonPageComponent, PayComponent]
 })
 export class AppComponentsModule {}

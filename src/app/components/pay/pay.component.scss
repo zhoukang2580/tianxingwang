@@ -1,0 +1,25 @@
+ion-footer ion-row ion-col {
+  position: relative;
+  &:not(:last-child)::after {
+    position: absolute;
+    right: 0;
+    top: 30%;
+    bottom: 30%;
+    content: "";
+    display: block;
+    background-color: rgba(var(--ion-color-dark-rgb), 0.13);
+    width: 1px;
+  }
+}
+ion-title {
+  font-size: 0.8rem;
+}
+.pay-way {
+  ion-icon {
+    font-size: 1.5rem;
+    margin-right: 0.3em;
+  }
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}

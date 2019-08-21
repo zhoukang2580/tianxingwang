@@ -3,6 +3,9 @@ export class LanguageHelper {
     getStatusCancelTypeTip: () => {
       return "取消";
     },
+    getGiveUpPayTip: () => {
+      return "放弃支付?";
+    },
     getStatusFinishTypeTip: () => {
       return "完成";
     },
@@ -106,6 +109,9 @@ export class LanguageHelper {
   static Flight = {
     getMustAddOnePassengerTip: () => {
       return "请添加择乘客";
+    },
+    getSaveBookOrderOkTip: () => {
+      return "您的预订已完成";
     },
     getApproverTip: () => {
       return "审批人";
@@ -211,6 +217,14 @@ export class LanguageHelper {
     },
     getrOderTravelPayTypeTip() {
       return "支付方式";
+    }
+  };
+  static PayWays = {
+    getAliPayTip: () => {
+      return "支付宝支付";
+    },
+    getWechatPayTip: () => {
+      return "微信支付";
     }
   };
   static getDiscountTip() {
@@ -371,6 +385,9 @@ export class LanguageHelper {
   }
   static getIgnoreTip() {
     return "忽略";
+  }
+  static getYesTip() {
+    return "是";
   }
   static getNegativeTip() {
     return "否";
