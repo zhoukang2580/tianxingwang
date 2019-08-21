@@ -288,7 +288,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   //     insuranceAmount = order.OrderItems.filter(
   //       it => !!keys.find(k => k == it.Key)
   //     ).reduce((acc, it) => {
-  //       acc += +it.Amount;
+  //       acc = +it.Amount;
   //       return acc;
   //     }, 0);
   //   }
@@ -303,7 +303,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     }
     return order.OrderItems.filter(
       it => it.Tag == OrderItemHelper.Insurance
-    ).reduce((acc, item) => (acc += +item.Amount), 0);
+    ).reduce((acc, item) => (acc = AppHelper.mathAdd(acc, +item.Amount)), 0);
   }
   private isAllowRefund(order: OrderEntity) {
     return false;
@@ -348,7 +348,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     }
     let amount = 0;
     amount = order.OrderItems.reduce((acc, it) => {
-      acc += +it.Amount;
+      acc = AppHelper.mathAdd(acc, +it.Amount);
       return acc;
     }, 0);
     return amount;

@@ -159,9 +159,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
           : {};
         const m = moment(trip.TakeoffTime);
         const d = this.flydayService.generateDayModel(m);
-        trip.TakeoffDate = `${m.format("YYYY年MM月DD日")}(${
-          d.dayOfWeekName
-        })`;
+        trip.TakeoffDate = `${m.format("YYYY年MM月DD日")}(${d.dayOfWeekName})`;
         trip.TakeoffShortTime = this.transformTime(trip.TakeoffTime);
         trip.ArrivalShortTime = this.transformTime(trip.ArrivalTime);
         const info: OrderTripTicketModel = {
@@ -173,14 +171,10 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
           trip,
           ticket,
           order,
-          CostCenterName: order.OrderTravels.filter(
-            it => it.Key == ticket.Key
-          )
+          CostCenterName: order.OrderTravels.filter(it => it.Key == ticket.Key)
             .map(it => it.CostCenterName)
             .join(","),
-          CostCenterCode: order.OrderTravels.filter(
-            it => it.Key == ticket.Key
-          )
+          CostCenterCode: order.OrderTravels.filter(it => it.Key == ticket.Key)
             .map(it => it.CostCenterCode)
             .join(","),
           OrganizationCode: order.OrderTravels.filter(
@@ -454,7 +448,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
         (this.orderDetail &&
           this.orderDetail.Order.OrderItems &&
           this.orderDetail.Order.OrderItems.reduce(
-            (acc, item) => (acc += +item.Amount),
+            (acc, item) => (acc = AppHelper.mathAdd(acc, +item.Amount)),
             0
           )) + "" || "0";
       this.orderDetail.PayAmount = this.getPayAmount(this.orderDetail.Order);
@@ -488,7 +482,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     if (order.OrderPays) {
       amount = order.OrderPays.filter(
         it => it.Type != "SelfPay" && it.Status == OrderPayStatusType.Effective
-      ).reduce((acc, it) => (acc += +it.Amount), 0);
+      ).reduce((acc, it) => (acc = AppHelper.mathAdd(acc, +it.Amount)), 0);
     }
     if (amount == 0) {
       return `0`;
@@ -499,7 +493,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       return `${amount -
         (order.OrderItems || [])
           .filter(it => !(it.Tag || "").endsWith("Fee"))
-          .reduce((acc, it) => (acc += +it.Amount), 0)}`;
+          .reduce((acc, it) => (acc = AppHelper.mathAdd(acc, +it.Amount)), 0)}`;
     }
   }
   private getInsuranceAmount(
@@ -515,7 +509,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     ).map(it => it.Key);
     const insuranceAmount = order.OrderItems.filter(it =>
       keys.find(k => k == it.Key)
-    ).reduce((acc, it) => (acc += +it.Amount), 0);
+    ).reduce((acc, it) => (acc = AppHelper.mathAdd(acc, +it.Amount)), 0);
     return insuranceAmount;
   }
   async showPricePopover() {
@@ -533,7 +527,10 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       componentProps: {
         insurance: this.orderDetail.insuranceAmount,
         orderItems,
-        amount: orderItems.reduce((acc, item) => (acc += +item.Amount), 0)
+        amount: orderItems.reduce(
+          (acc, item) => (acc = AppHelper.mathAdd(acc, +item.Amount)),
+          0
+        )
       }
     });
     p.present();
