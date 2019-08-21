@@ -314,6 +314,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.doRefresh(true, true);
   }
   goToSelectPassengerPage() {
+    if (this.searchConditionSubscription) {
+      this.searchConditionSubscription.unsubscribe();
+    }
     this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
   }
   async doRefresh(

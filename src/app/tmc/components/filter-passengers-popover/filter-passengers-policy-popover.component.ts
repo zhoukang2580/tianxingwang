@@ -1,7 +1,8 @@
 import { Component, OnInit, Input } from "@angular/core";
 import { Observable } from "rxjs";
 import { PopoverController } from "@ionic/angular";
-import { PassengerBookInfo } from '../../tmc.service';
+import { PassengerBookInfo } from "../../tmc.service";
+import { map } from "rxjs/operators";
 @Component({
   selector: "app-filter-passengers-policy-popover",
   templateUrl: "./filter-passengers-policy-popover.component.html",
@@ -22,5 +23,30 @@ export class FilterPassengersPolicyComponent implements OnInit {
       )
       .catch(_ => void 0);
   }
-  ngOnInit() {}
+  ngOnInit() {
+    if (this.bookInfos$) {
+      this.bookInfos$ = this.bookInfos$.pipe(
+        map(infos => {
+          if (infos && infos.length) {
+            const arr: PassengerBookInfo[] = [];
+            infos.forEach(info => {
+              if (
+                !arr.find(
+                  it =>
+                    (it.credential && it.credential.Number) ==
+                      (info.credential && info.credential.Number) &&
+                    (it.credential && it.credential.Type) ==
+                      (info.credential && info.credential.Type)
+                )
+              ) {
+                arr.push(info);
+              }
+            });
+            return arr;
+          }
+          return infos;
+        })
+      );
+    }
+  }
 }

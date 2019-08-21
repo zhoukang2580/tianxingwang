@@ -116,6 +116,7 @@ export class FlightService {
     return this.currentViewtFlightSegment;
   }
   setSearchFlightModel(m: SearchFlightModel) {
+    console.log("setSearchFlightModel", m);
     if (m) {
       this.searchFlightModel = {
         ...m
