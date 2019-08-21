@@ -500,7 +500,7 @@ export class BookPage implements OnInit, AfterViewInit {
   calcTotalPrice() {
     // console.time("总计");
     if (this.vmCombindInfos) {
-      const totalPrice = this.vmCombindInfos.reduce((arr, item) => {
+      let totalPrice = this.vmCombindInfos.reduce((arr, item) => {
         if (
           item.modal.flightSegmentInfo &&
           item.modal.flightSegmentInfo.flightPolicy
@@ -520,6 +520,9 @@ export class BookPage implements OnInit, AfterViewInit {
         return arr;
       }, 0);
       // console.log("totalPrice ", totalPrice);
+      if (this.bookDto && this.bookDto.ServiceFee) {
+        totalPrice += +this.bookDto.ServiceFee;
+      }
       this.totalPriceSource.next(totalPrice);
     }
     // console.timeEnd("总计");
@@ -806,7 +809,13 @@ export class BookPage implements OnInit, AfterViewInit {
           combindInfo.otherIllegalReason) ||
         combindInfo.illegalReason ||
         "";
-      if (!combindInfo.modal.isNotWhitelist) {
+      if (
+        !combindInfo.modal.isNotWhitelist &&
+        combindInfo.modal.flightSegmentInfo &&
+        combindInfo.modal.flightSegmentInfo.flightPolicy &&
+        combindInfo.modal.flightSegmentInfo.flightPolicy.Rules &&
+        combindInfo.modal.flightSegmentInfo.flightPolicy.Rules.length
+      ) {
         // 只有白名单的才需要考虑差标
         if (!p.IllegalReason) {
           showErrorMsg(
@@ -863,6 +872,10 @@ export class BookPage implements OnInit, AfterViewInit {
       p.IsSkipApprove = combindInfo.isSkipApprove;
       p.FlightSegment = combindInfo.modal.flightSegmentInfo.flightSegment;
       p.FlightCabin = combindInfo.modal.flightSegmentInfo.flightPolicy.Cabin;
+      if (p.FlightCabin) {
+        p.FlightCabin.InsuranceProducts = p.InsuranceProducts;
+        p.InsuranceProducts = null;
+      }
       bookDto.Passengers.push(p);
     }
     return true;

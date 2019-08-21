@@ -4,8 +4,8 @@
     font-size: 0.6rem;
     color: var(--ion-color-danger);
   }
-  .order-flight-trip + .order-flight-trip{
-    border-top: 1px dashed rgba(var(--ion-color-dark-rgb),0.12);
+  .order-flight-trip + .order-flight-trip {
+    border-top: 1px dashed rgba(var(--ion-color-dark-rgb), 0.12);
   }
   width: 100%;
   ion-row,
@@ -36,6 +36,6 @@
     }
   }
 }
-:host{
-    width: 100%;
+:host {
+  width: 100%;
 }

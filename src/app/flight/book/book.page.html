@@ -105,7 +105,7 @@
               (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo?.credentials'
               (modify)='onModify(combindInfo)'>
             </app-book-credential-comp>
-            <div *ngIf='s?.flightPolicy?.Rules?.length'>
+            <div *ngIf='s?.flightPolicy?.Rules?.length && !combindInfo?.modal.isNotWhitelist'>
               <app-book-illegal-reason-comp #illegalReasonsEle [illegalReasons]='illegalReasons'
                 [isAllowCustomReason]='tmc?.IsAllowCustomReason' (ionchange)='onIllegalReason($event,combindInfo)'>
               </app-book-illegal-reason-comp>

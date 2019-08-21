@@ -22,6 +22,7 @@ import { OrderFlightTicketEntity } from "src/app/order/models/OrderFlightTicketE
 import * as moment from "moment";
 import { Subscription } from "rxjs";
 import { finalize } from "rxjs/operators";
+import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
 export const ORDER_TABS = [
   {
     label: "机票",
@@ -218,7 +219,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
           if (order.OrderFlightTickets) {
             order.OrderFlightTickets = order.OrderFlightTickets.map(t => {
               t.vmTicketAmount = this.getTotalAmount(order, t.Key);
-              t.vmInsuranceAmount = this.insuranceAmount(order, t);
+              t.vmInsuranceAmount = this.getInsuranceAmount(order, t);
               t.vmIsAllowExchange = this.isAllowExchange(order);
               t.vmIsAllowRefund = this.isAllowRefund(order);
               if (t.OrderFlightTrips) {
@@ -264,34 +265,45 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     }
     return data;
   }
-  private insuranceAmount(
+  // private insuranceAmount(
+  //   order: OrderEntity,
+  //   orderFlightTicket: OrderFlightTicketEntity
+  // ) {
+  //   if (!order || !orderFlightTicket) {
+  //     return 0;
+  //   }
+  //   let flighttripKeys: string[] = [];
+  //   if (orderFlightTicket && orderFlightTicket.OrderFlightTrips) {
+  //     flighttripKeys = orderFlightTicket.OrderFlightTrips.map(it => it.Key);
+  //   }
+  //   let keys: string[] = [];
+  //   if (order.OrderInsurances) {
+  //     keys = order.OrderInsurances.filter(
+  //       it => !!flighttripKeys.find(fkey => fkey == it.AdditionKey)
+  //     ).map(it => it.Key);
+  //   }
+
+  //   let insuranceAmount = 0;
+  //   if (order.OrderItems) {
+  //     insuranceAmount = order.OrderItems.filter(
+  //       it => !!keys.find(k => k == it.Key)
+  //     ).reduce((acc, it) => {
+  //       acc += +it.Amount;
+  //       return acc;
+  //     }, 0);
+  //   }
+  //   return insuranceAmount;
+  // }
+  private getInsuranceAmount(
     order: OrderEntity,
     orderFlightTicket: OrderFlightTicketEntity
   ) {
-    if (!order || !orderFlightTicket) {
+    if (!order || !orderFlightTicket || !order.OrderItems) {
       return 0;
     }
-    let flighttripKeys: string[] = [];
-    if (orderFlightTicket && orderFlightTicket.OrderFlightTrips) {
-      flighttripKeys = orderFlightTicket.OrderFlightTrips.map(it => it.Key);
-    }
-    let keys: string[] = [];
-    if (order.OrderInsurances) {
-      keys = order.OrderInsurances.filter(
-        it => !!flighttripKeys.find(fkey => fkey == it.AdditionKey)
-      ).map(it => it.Key);
-    }
-
-    let insuranceAmount = 0;
-    if (order.OrderItems) {
-      insuranceAmount = order.OrderItems.filter(
-        it => !!keys.find(k => k == it.Key)
-      ).reduce((acc, it) => {
-        acc += +it.Amount;
-        return acc;
-      }, 0);
-    }
-    return insuranceAmount;
+    return order.OrderItems.filter(
+      it => it.Tag == OrderItemHelper.Insurance
+    ).reduce((acc, item) => (acc += +item.Amount), 0);
   }
   private isAllowRefund(order: OrderEntity) {
     return false;
@@ -330,7 +342,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     }
   }
   getTotalAmount(order: OrderEntity, key: string) {
-    console.log("getTotalAmount", order, key);
+    // console.log("getTotalAmount", order, key);
     if (!order.OrderItems || !this.tmc) {
       return 0;
     }

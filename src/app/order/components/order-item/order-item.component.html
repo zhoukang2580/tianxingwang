@@ -14,7 +14,7 @@
     <ion-col class='non-flex'>
       <ng-container *ngFor='let orderFlightTrip of orderFlightTicket.OrderFlightTrips'>
         <ng-container *ngIf='true||orderFlightTrip.Status==OrderFlightTripStatusType.Normal'>
-          <ion-row >
+          <ion-row>
             <ion-col>
               <span>
                 {{orderFlightTrip.FromCityName}}-->{{orderFlightTrip.ToCityName}}
@@ -36,9 +36,11 @@
               <span>
                 {{orderFlightTicket.Passenger?.CheckName}}
               </span>
-              <ion-text color='danger'>￥{{orderFlightTicket.vmTicketAmount}}</ion-text>
-              <ion-text color='danger' *ngIf='orderFlightTicket.vmInsuranceAmount'>
-                (含保险{{orderFlightTicket.vmInsuranceAmount}})</ion-text>
+              <span>
+                <ion-text color='danger'>￥{{orderFlightTicket.vmTicketAmount}}</ion-text>
+                <ion-text color='danger' *ngIf='orderFlightTicket.vmInsuranceAmount'>
+                  (含保险{{orderFlightTicket.vmInsuranceAmount}})</ion-text>
+              </span>
               <span>
                 {{ orderFlightTicket.StatusName}}
               </span>

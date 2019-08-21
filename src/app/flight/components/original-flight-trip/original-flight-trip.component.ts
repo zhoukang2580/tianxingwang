@@ -23,11 +23,15 @@ export class OriginalFlightTripComponent implements OnInit, OnChanges {
   @Input() ticket: OrderFlightTicketEntity;
   @Input() exchangeFee: string;
   @Input() refundDeductionFee: string;
+  showHide = false;
   OrderFlightTicketStatusType = OrderFlightTicketStatusType;
   ticketIssueDateTime: string;
   takeOffDateTime: string;
   constructor(private popoverCtrl: PopoverController) {}
 
+  onShowHide() {
+    this.showHide = !this.showHide;
+  }
   ngOnInit() {}
   ngOnChanges(change: SimpleChanges) {
     if (change && change.ticket && change.ticket.currentValue) {

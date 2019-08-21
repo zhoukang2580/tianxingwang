@@ -1,7 +1,6 @@
 import { DirectivesModule } from "src/app/directives/directives.module";
 import { FormsModule } from "@angular/forms";
 import { IonicModule } from "@ionic/angular";
-import { FlightComponentsModule } from "src/app/flight/components/components.module";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { OrderItemComponent } from "./order-item/order-item.component";
@@ -13,8 +12,9 @@ import { TripRulePopoverComponent } from "./trip-rule-popover/trip-rule-popover.
 import { FlightModule } from "src/app/flight/flight.module";
 import { ProductHotelComponent } from "./product-hotel/product-hotel.component";
 import { ProductInsuranceComponent } from "./product-insurance/product-insurance.component";
-import { ProductTrainComponent } from './product-train/product-train.component';
-import { ProductPlaneComponent } from './product-plane/product-plane.component';
+import { ProductTrainComponent } from "./product-train/product-train.component";
+import { ProductPlaneComponent } from "./product-plane/product-plane.component";
+import { SelectTicketPopoverComponent } from "./select-ticket-popover/select-ticket-popover.component";
 
 @NgModule({
   declarations: [
@@ -27,7 +27,8 @@ import { ProductPlaneComponent } from './product-plane/product-plane.component';
     ProductHotelComponent,
     ProductInsuranceComponent,
     ProductTrainComponent,
-    ProductPlaneComponent
+    ProductPlaneComponent,
+    SelectTicketPopoverComponent
   ],
   imports: [
     CommonModule,
@@ -39,12 +40,12 @@ import { ProductPlaneComponent } from './product-plane/product-plane.component';
   exports: [OrderItemComponent],
   entryComponents: [
     SearchTicketModalComponent,
-    TripRulePopoverComponent,
     OrderItemPricePopoverComponent,
     SendMsgComponent,
     SendEmailComponent,
     SearchTicketModalComponent,
-    TripRulePopoverComponent
+    TripRulePopoverComponent,
+    SelectTicketPopoverComponent
   ]
 })
 export class OrderComponentsModule {}

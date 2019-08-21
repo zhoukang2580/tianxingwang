@@ -1,3 +1,4 @@
+import { SelectTicketPopoverComponent } from "./../components/select-ticket-popover/select-ticket-popover.component";
 import { SendEmailComponent } from "../components/send-email/send-email.component";
 import { OrderFlightTicketEntity } from "../models/OrderFlightTicketEntity";
 import { CalendarService } from "../../tmc/calendar.service";
@@ -77,6 +78,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
   tabs: TabItem[] = [];
   orderDetail: CombineInfo = new CombineInfo();
   tmc: TmcEntity;
+  selectedTicket: OrderFlightTicketEntity;
   @ViewChildren("info") tabEles: QueryList<IonButton>;
   @ViewChildren("link") linkEles: QueryList<IonList>;
   @ViewChild("infos") infosContainer: ElementRef<HTMLElement>;
@@ -103,6 +105,42 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     }
     return order.OrderNumbers.filter(it => it.Tag == tag);
   }
+  async onSelectTicket() {
+    if (
+      this.orderDetail &&
+      this.orderDetail.Order &&
+      this.orderDetail.Order.OrderFlightTickets &&
+      this.orderDetail.Order.OrderFlightTickets.length > 1
+    ) {
+      const p = await this.popoverCtrl.create({
+        component: SelectTicketPopoverComponent,
+        componentProps: {
+          tickets: this.orderDetail.Order.OrderFlightTickets
+        }
+      });
+      p.present();
+      const result = await p.onDidDismiss();
+      if (result && result.data) {
+        this.selectedTicket = result.data;
+      }
+    }
+  }
+  getTripAndTicket(): OrderTripTicketModel {
+    if (!this.orderDetail.Order.OrderFlightTickets) {
+      return null;
+    }
+    if (!this.selectedTicket) {
+      this.selectedTicket = this.orderDetail.Order.OrderFlightTickets[0];
+    }
+    if (!this.selectedTicket) {
+      return null;
+    }
+    const trips = (this.orderDetail.trips || []).concat(
+      this.orderDetail.exchangeFlightTrips || []
+    );
+    const result = trips.find(it => it.ticket.Id == this.selectedTicket.Id);
+    return result;
+  }
   private getTravelFlightTrips(order: OrderEntity) {
     const trips: OrderTripTicketModel[] = [];
     const exchangeFlightTrips: OrderTripTicketModel[] = [];
@@ -115,68 +153,66 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
         : {};
       ticket.IssueTime = this.transformTime(ticket.IssueTime);
       ticket.LastIssueTime = this.transformTime(ticket.LastIssueTime);
-      if (ticket.OrderFlightTrips && order.OrderTravels) {
-        ticket.OrderFlightTrips.forEach(trip => {
-          trip.VariablesJsonObj = trip.Variables
-            ? JSON.parse(trip.Variables)
-            : {};
-          const m = moment(trip.TakeoffTime);
-          const d = this.flydayService.generateDayModel(m);
-          trip.TakeoffDate = `${m.format("YYYY年MM月DD日")}(${
-            d.dayOfWeekName
-          })`;
-          trip.TakeoffShortTime = this.transformTime(trip.TakeoffTime);
-          trip.ArrivalShortTime = this.transformTime(trip.ArrivalTime);
-          const info: OrderTripTicketModel = {
-            passenger:
-              order.OrderPassengers &&
-              order.OrderPassengers.find(
-                p => p.Id == (ticket.Passenger && ticket.Passenger.Id)
-              ),
-            trip,
-            ticket,
-            order,
-            CostCenterName: order.OrderTravels.filter(
-              it => it.Key == ticket.Key
-            )
-              .map(it => it.CostCenterName)
-              .join(","),
-            CostCenterCode: order.OrderTravels.filter(
-              it => it.Key == ticket.Key
-            )
-              .map(it => it.CostCenterCode)
-              .join(","),
-            OrganizationCode: order.OrderTravels.filter(
-              it => it.Key == ticket.Key
-            )
-              .map(it => it.OrganizationCode)
-              .join(","),
-            OrganizationName: order.OrderTravels.filter(
-              it => it.Key == ticket.Key
-            )
-              .map(it => it.OrganizationName)
-              .join(","),
-            IllegalPolicy: order.OrderTravels.filter(it => it.Key == ticket.Key)
-              .map(it => it.IllegalPolicy)
-              .join(","),
-            IllegalReason: order.OrderTravels.filter(it => it.Key == ticket.Key)
-              .map(it => it.IllegalReason)
-              .join(","),
-            OutNumbers: this.getOrderNumbers(order)
-          };
-          if (trip.Status == OrderFlightTripStatusType.Normal) {
-            trips.push(info);
-          }
-          if (
-            trip.Status == OrderFlightTripStatusType.Exchange &&
-            (new Date(trip.InsertTime).getTime() <
-              new Date(ticket.IssueTime).getTime() ||
-              ticket.IssueTime.startsWith("1800"))
-          ) {
-            exchangeFlightTrips.push(info);
-          }
-        });
-      }
+      ticket.OrderFlightTrips.forEach(trip => {
+        trip.VariablesJsonObj = trip.Variables
+          ? JSON.parse(trip.Variables)
+          : {};
+        const m = moment(trip.TakeoffTime);
+        const d = this.flydayService.generateDayModel(m);
+        trip.TakeoffDate = `${m.format("YYYY年MM月DD日")}(${
+          d.dayOfWeekName
+        })`;
+        trip.TakeoffShortTime = this.transformTime(trip.TakeoffTime);
+        trip.ArrivalShortTime = this.transformTime(trip.ArrivalTime);
+        const info: OrderTripTicketModel = {
+          passenger:
+            order.OrderPassengers &&
+            order.OrderPassengers.find(
+              p => p.Id == (ticket.Passenger && ticket.Passenger.Id)
+            ),
+          trip,
+          ticket,
+          order,
+          CostCenterName: order.OrderTravels.filter(
+            it => it.Key == ticket.Key
+          )
+            .map(it => it.CostCenterName)
+            .join(","),
+          CostCenterCode: order.OrderTravels.filter(
+            it => it.Key == ticket.Key
+          )
+            .map(it => it.CostCenterCode)
+            .join(","),
+          OrganizationCode: order.OrderTravels.filter(
+            it => it.Key == ticket.Key
+          )
+            .map(it => it.OrganizationCode)
+            .join(","),
+          OrganizationName: order.OrderTravels.filter(
+            it => it.Key == ticket.Key
+          )
+            .map(it => it.OrganizationName)
+            .join(","),
+          IllegalPolicy: order.OrderTravels.filter(it => it.Key == ticket.Key)
+            .map(it => it.IllegalPolicy)
+            .join(","),
+          IllegalReason: order.OrderTravels.filter(it => it.Key == ticket.Key)
+            .map(it => it.IllegalReason)
+            .join(","),
+          OutNumbers: this.getOrderNumbers(order)
+        };
+        if (trip.Status == OrderFlightTripStatusType.Normal) {
+          trips.push(info);
+        }
+        if (
+          trip.Status == OrderFlightTripStatusType.Exchange &&
+          (new Date(trip.InsertTime).getTime() <
+            new Date(ticket.IssueTime).getTime() ||
+            ticket.IssueTime.startsWith("1800"))
+        ) {
+          exchangeFlightTrips.push(info);
+        }
+      });
       ticket.vmInsuranceAmount = this.getInsuranceAmount(order, ticket);
     });
 
@@ -307,7 +343,6 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       const t =
         this.orderDetail.trips &&
         this.orderDetail.trips.find(trip => trip.passenger.Id == passenger.Id);
-      console.log("getPassengerInfo", p, t);
       let CostCenterCode;
       let CostCenterName;
       let OrganizationCode;
