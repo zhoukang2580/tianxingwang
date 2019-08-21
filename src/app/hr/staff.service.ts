@@ -263,7 +263,7 @@ export class StaffService {
     forceRefresh =
       forceRefresh ||
       !this.staff ||
-      (this.staff.BookType && !(id.Numbers && id.Numbers.AgentId)) ||
+      (!this.staff.BookType && !(id.Numbers && id.Numbers.AgentId)) ||
       (this.staff &&
         (!(this.staff.IsConfirmInfo === undefined) &&
           !this.staff.IsConfirmInfo)) ||
