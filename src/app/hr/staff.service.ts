@@ -4,7 +4,7 @@ import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
 import { Injectable } from "@angular/core";
 import { AccountEntity } from "../tmc/models/AccountEntity";
-import { TaskType } from '../workflow/models/TaskType';
+import { TaskType } from "../workflow/models/TaskType";
 export enum StaffBookType {
   /// <summary>
   /// 秘书
@@ -226,7 +226,18 @@ export interface HrEntity {
 })
 export class StaffService {
   private staff: StaffEntity;
-  isSelfBookType: boolean;
+  private _isSelfBookType = false;
+  set isSelfBookType(v: boolean) {
+    this._isSelfBookType = v;
+  }
+  get isSelfBookType() {
+    return (
+      (this.staff &&
+        this.staff.BookType &&
+        this.staff.BookType == StaffBookType.Self) ||
+      this._isSelfBookType
+    );
+  }
   constructor(
     private apiService: ApiService,
     private identityService: IdentityService
@@ -240,7 +251,6 @@ export class StaffService {
   }
   async checkStaffTypeSelf() {
     const s = await this.getStaff();
-    this.isSelfBookType = s && s.BookType && s.BookType == StaffBookType.Self;
     return this.isSelfBookType;
   }
   async getStaff(forceRefresh: boolean = false): Promise<StaffEntity> {

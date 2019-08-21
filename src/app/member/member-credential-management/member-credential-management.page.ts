@@ -41,7 +41,7 @@ export class MemberCredentialManagementPage
   isModify = false;
   isCanDeactive = false;
   requestCode: "issueNationality" | "identityNationality";
-  currentModifyItem: MemberCredential;
+  private currentModifyItem: MemberCredential;
   @ViewChild("f") formEle: ElementRef<HTMLFormElement>;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   @ViewChildren("addForm") addForm: QueryList<IonGrid>;
@@ -57,18 +57,6 @@ export class MemberCredentialManagementPage
   ) {
     route.queryParamMap.subscribe(p => {
       this.isCanDeactive = false;
-      const country: Country = AppHelper.getRouteData();
-      if (country && country.Code) {
-        this.currentModifyItem.isModified = true;
-        console.log(this.currentModifyItem, this.requestCode);
-        if (this.requestCode === "issueNationality") {
-          this.currentModifyItem.IssueCountry = country.Code;
-        }
-        if (this.requestCode === "identityNationality") {
-          this.currentModifyItem.Country = country.Code;
-        }
-        AppHelper.setRouteData(null);
-      }
     });
   }
   back() {
@@ -91,12 +79,6 @@ export class MemberCredentialManagementPage
     this.identityTypes = Object.keys(CredentialsType)
       .filter(k => +k)
       .map(k => {
-        // console.dir(CredentialsType[k]);
-        // console.log(
-        //   `key=${k},value=${
-        //     CredentialsType[k]
-        //   },typeof k=${typeof k},typeof value=${typeof CredentialsType[k]}`
-        // );
         return {
           key: k,
           value: CredentialsType[k]
@@ -147,6 +129,7 @@ export class MemberCredentialManagementPage
       .catch(e => {
         AppHelper.alert(e);
       });
+      await this.getCredentials();
   }
   initializeValidate() {
     this.validatorService.initialize(
@@ -253,10 +236,10 @@ export class MemberCredentialManagementPage
           return false;
         });
       if (result) {
-        this.newCredentials = this.newCredentials.filter(it => it !== c);
+        this.newCredentials = this.newCredentials.filter(it => it.Id !== c.Id);
         console.log(this.newCredentials);
-        await this.getCredentials();
       }
+      await this.getCredentials();
     }
   }
   dataModified(c: MemberCredential) {
