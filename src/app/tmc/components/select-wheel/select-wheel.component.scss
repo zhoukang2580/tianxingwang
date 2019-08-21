@@ -27,7 +27,9 @@
   li {
     opacity: 0.5;
     color: var(--ion-color-medium);
+    transform: scale(0.9);
     &.selected {
+      transform: scale(1.1);
       opacity: 1;
       color: var(--ion-color-secondary);
     }
