@@ -1019,7 +1019,7 @@ export interface PassengerBookInfo {
 }
 export class InitialBookDtoModel {
   ServiceFees: { [clientId: string]: string };
-  Insurances: InsuranceProductEntity[];
+  Insurances: { [clientId: string]: InsuranceProductEntity[] };
   TravelFrom: TravelFormEntity;
   Tmc: TmcEntity;
   IllegalReasons: string[];

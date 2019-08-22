@@ -168,7 +168,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           if (this.isLeavePage || this.isLoading) {
             return;
           }
-          this.doRefresh(true, false);
+          setTimeout(() => {
+            this.doRefresh(true, false);
+          }, 100);
         }
       });
     this.hasDataSource = new BehaviorSubject(false);

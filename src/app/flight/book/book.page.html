@@ -29,7 +29,7 @@
       </ion-item>
       <ion-item lines='none' class="ion-no-margin" *ngIf='isCanSkipApproval$|async'>
         <ion-label style='margin-right: 0.5em'>跳过审批:</ion-label>
-        <ion-checkbox color="secondary" [(ngModel)]='combindInfo.isSkipApprove'></ion-checkbox>
+        <ion-checkbox margin-end color="secondary" [(ngModel)]='combindInfo.isSkipApprove'></ion-checkbox>
       </ion-item>
       <ion-item lines='none' class="ion-no-margin" *ngIf='tmc?.IsShowServiceFee || identity?.Numbers?.AgentId'>
         <ion-label>服务费:</ion-label>

@@ -752,12 +752,13 @@ export class BookPage implements OnInit, AfterViewInit {
       }
       const info = combindInfo.modal.flightSegmentInfo;
       const p = new PassengerDto();
-      p.ApprovalId =
-        (combindInfo.appovalStaff &&
-          (combindInfo.appovalStaff.AccountId ||
-            (combindInfo.appovalStaff.Account &&
-              combindInfo.appovalStaff.Account.Id))) ||
-        "0";
+      p.ApprovalId = this.isAllowSelectApprove(combindInfo)
+        ? (combindInfo.appovalStaff &&
+            (combindInfo.appovalStaff.AccountId ||
+              (combindInfo.appovalStaff.Account &&
+                combindInfo.appovalStaff.Account.Id))) ||
+          "0"
+        : null;
       if (
         !(
           combindInfo.notifyLanguage == "" ||
@@ -1030,21 +1031,27 @@ export class BookPage implements OnInit, AfterViewInit {
         ) {
           credentials.push(item.credential);
         }
-        const insurances = this.initialBookDtoModel.Insurances.filter(
-          product =>
-            !cstaff ||
-            !cstaff.Policy ||
-            (+product.Price > 0 &&
-              +product.Price < cstaff.Policy.FlightInsuranceAmount)
-        ).map(insurance => {
-          return {
-            insuranceResult: insurance,
-            checked: true
-          };
-        });
+        const insurances = (
+          (this.initialBookDtoModel.Insurances &&
+            this.initialBookDtoModel.Insurances[item.id]) ||
+          []
+        )
+          .filter(
+            product =>
+              !cstaff ||
+              !cstaff.Policy ||
+              (+product.Price > 0 &&
+                +product.Price < cstaff.Policy.FlightInsuranceAmount)
+          )
+          .map(insurance => {
+            return {
+              insuranceResult: insurance,
+              checked: true
+            };
+          });
         const combineInfo: ICombindInfo = {
           vmCredential: item.credential,
-          isSkipApprove: true,
+          isSkipApprove: false,
           credentials: credentials || [],
           openrules: false,
           credentialStaff: cstaff,
@@ -1054,7 +1061,13 @@ export class BookPage implements OnInit, AfterViewInit {
           notifyLanguage: "cn",
           travelType: OrderTravelType.Person,
           orderTravelPayType: this.tmc && this.tmc.FlightPayType,
-          insuranceProducts: insurances.slice(0, 1),
+          insuranceProducts: this.isShowInsurances(
+            item.flightSegmentInfo &&
+              item.flightSegmentInfo.flightSegment &&
+              item.flightSegmentInfo.flightSegment.TakeoffTime
+          )
+            ? insurances.slice(0, 1)
+            : [],
           credentialStaffMobiles:
             cstaff && cstaff.Account && cstaff.Account.Mobile
               ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
@@ -1122,6 +1135,12 @@ export class BookPage implements OnInit, AfterViewInit {
     } catch (e) {
       console.error(e);
     }
+  }
+  private isShowInsurances(takeoffTime: string) {
+    if (takeoffTime) {
+      return +moment(takeoffTime) > +moment(moment().add(2, "hours"));
+    }
+    return true;
   }
   onSavecredential(credential: CredentialsEntity, info: ICombindInfo) {
     if (info && credential) {
