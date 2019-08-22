@@ -27,10 +27,7 @@
           <ion-select-option value='en'>英文</ion-select-option>
         </ion-select>
       </ion-item>
-      <ion-item lines='none' class="ion-no-margin" *ngIf='tmc?.FlightApprovalType!=0 
-          && tmc?.FlightApprovalType!= tmcApprovalTypeNone 
-          && bookTypeNotSelf()  
-          && !identity?.Numbers?.AgentId'>
+      <ion-item lines='none' class="ion-no-margin" *ngIf='isCanSkipApproval$|async'>
         <ion-label style='margin-right: 0.5em'>跳过审批:</ion-label>
         <ion-checkbox color="secondary" [(ngModel)]='combindInfo.isSkipApprove'></ion-checkbox>
       </ion-item>

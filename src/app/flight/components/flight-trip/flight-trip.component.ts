@@ -9,7 +9,6 @@ import {
   SimpleChange,
   SimpleChanges
 } from "@angular/core";
-import { OrderTripTicketModel } from "../../../order/order-detail/order-detail.page";
 import { OrderItemEntity } from "src/app/order/models/OrderEntity";
 import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
 import { ModalController, PopoverController } from "@ionic/angular";
@@ -23,7 +22,7 @@ import * as moment from "moment";
   styleUrls: ["./flight-trip.component.scss"]
 })
 export class FlightTripComponent implements OnInit, OnChanges {
-  @Input() tripAndTicket: OrderTripTicketModel;
+  @Input() tripAndTicket: any;
   refundDeductionFee: number;
   exchangeFee: number;
   originalTrips: OrderFlightTripEntity[]; // 原始航班信息

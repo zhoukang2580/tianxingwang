@@ -217,6 +217,12 @@ export class SelectPassengerPage
   }
   async canAddNotWhiteListCredential() {
     // 代理和特殊可以新增证件
+    if (
+      (await this.staffService.isSecretaryBookType()) ||
+      (await this.staffService.isSelfBookType())
+    ) {
+      return false;
+    }
     const identity = await this.identityService.getIdentityAsync();
     const can =
       !!(identity && identity.Numbers && identity.Numbers.AgentId) ||

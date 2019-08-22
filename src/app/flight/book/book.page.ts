@@ -30,7 +30,8 @@ import {
   StaffEntity,
   CostCenterEntity,
   OrganizationEntity,
-  StaffApprover
+  StaffApprover,
+  StaffBookType
 } from "./../../hr/staff.service";
 import { FlightService } from "src/app/flight/flight.service";
 import {
@@ -48,7 +49,7 @@ import * as moment from "moment";
 import { DayModel } from "../../tmc/models/DayModel";
 import { LanguageHelper } from "src/app/languageHelper";
 import { trigger, state, style } from "@angular/animations";
-import { Subject, BehaviorSubject } from "rxjs";
+import { Subject, BehaviorSubject, from, combineLatest, of } from "rxjs";
 import {
   OrderTravelType,
   OrderTravelPayType
@@ -64,6 +65,7 @@ import { SelectTravelNumberComponent } from "src/app/tmc/components/select-trave
 import { PassengerFlightSegmentInfo } from "../models/PassengerFlightInfo";
 import { ProductItemType } from "src/app/tmc/models/ProductItems";
 import { RequestEntity } from "src/app/services/api/Request.entity";
+import { map } from "rxjs/operators";
 export class AddContact {
   notifyLanguage: string;
   name: string;
@@ -99,7 +101,6 @@ export class BookPage implements OnInit, AfterViewInit {
   bookDto: OrderBookDto;
   travelForm: TravelFormEntity;
   illegalReasons: IllegalReasonEntity[] = [];
-  tmcApprovalTypeNone = TmcApprovalType.None;
   selfStaff: StaffEntity;
   identity: IdentityEntity;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
@@ -109,6 +110,7 @@ export class BookPage implements OnInit, AfterViewInit {
   @ViewChild(IonRefresher) private ionRefresher: IonRefresher;
   illegalReasonsEles: QueryList<ElementRef<HTMLElement>>;
   isCheckingPay: boolean;
+  isCanSkipApproval$ = of(false);
   appoval: {
     Value: string;
     Text: string;
@@ -131,11 +133,27 @@ export class BookPage implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
+    // 秘书和特殊角色可以跳过审批(如果有审批人)
     this.route.queryParamMap.subscribe(() => {
       setTimeout(() => {
         this.refresh();
       }, 200);
     });
+    this.isCanSkipApproval$ = combineLatest([
+      from(this.tmcService.getTmc()),
+      from(this.staffService.getStaff()),
+      this.identityService.getIdentity()
+    ]).pipe(
+      map(([tmc, staff, identity]) => {
+        return (
+          tmc.FlightApprovalType != 0 &&
+          tmc.FlightApprovalType != TmcApprovalType.None &&
+          ((staff && staff.BookType == StaffBookType.All) ||
+            (staff && staff.BookType == StaffBookType.Secretary)) &&
+          !(identity && identity.Numbers && identity.Numbers.AgentId)
+        );
+      })
+    );
   }
   private async initOrderTravelPayTypes() {
     this.tmc = this.tmc || (await this.getTmc());
@@ -1099,9 +1117,6 @@ export class BookPage implements OnInit, AfterViewInit {
     } catch (e) {
       console.error(e);
     }
-  }
-  bookTypeNotSelf() {
-    return !this.staffService.isSelfBookType;
   }
   onSavecredential(credential: CredentialsEntity, info: ICombindInfo) {
     if (info && credential) {
