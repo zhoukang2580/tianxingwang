@@ -1,3 +1,4 @@
+import { ITicketViewModelItem } from "./../../../order/order-detail/order-detail.page";
 import { CalendarService } from "../../../tmc/calendar.service";
 import { OrderFlightTripEntity } from "src/app/order/models/OrderFlightTripEntity";
 import { environment } from "../../../../environments/environment";
@@ -9,20 +10,21 @@ import {
   SimpleChange,
   SimpleChanges
 } from "@angular/core";
-import { OrderItemEntity } from "src/app/order/models/OrderEntity";
+import { OrderItemEntity, OrderEntity } from "src/app/order/models/OrderEntity";
 import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
 import { ModalController, PopoverController } from "@ionic/angular";
 import { TripRulePopoverComponent } from "../../../order/components/trip-rule-popover/trip-rule-popover.component";
 import { OrderFlightTicketEntity } from "src/app/order/models/OrderFlightTicketEntity";
 import { OrderFlightTripStatusType } from "src/app/order/models/OrderFlightTripStatusType";
 import * as moment from "moment";
+import { AppHelper } from "src/app/appHelper";
 @Component({
   selector: "app-flight-trip",
   templateUrl: "./flight-trip.component.html",
   styleUrls: ["./flight-trip.component.scss"]
 })
 export class FlightTripComponent implements OnInit, OnChanges {
-  @Input() tripAndTicket: any;
+  @Input() viewModel: ITicketViewModelItem;
   refundDeductionFee: number;
   exchangeFee: number;
   originalTrips: OrderFlightTripEntity[]; // 原始航班信息
@@ -33,19 +35,14 @@ export class FlightTripComponent implements OnInit, OnChanges {
     private flydayService: CalendarService
   ) {}
   async ngOnChanges(change: SimpleChanges) {
-    if (change && change.tripAndTicket && change.tripAndTicket.currentValue) {
-      console.log(this.tripAndTicket.trip);
-      if (this.tripAndTicket.order && this.tripAndTicket.order.OrderItems) {
-        const orderItems = this.tripAndTicket.order.OrderItems.filter(
-          it => it.Key == this.tripAndTicket.ticket.Key
-        );
-        this.refundDeductionFee = orderItems
-          .filter(it => it.Tag == OrderItemHelper.FlightTicketRefundDeduction)
-          .reduce((acc, it) => (acc += +it.CostAmount), 0);
-        this.exchangeFee = orderItems
-          .filter(it => it.Tag == OrderItemHelper.FlightTicketExchange)
-          .reduce((acc, it) => (acc += +it.CostAmount), 0);
-      }
+    if (change && change.viewModel && change.viewModel.currentValue) {
+      const orderItems = this.viewModel.orderItems || [];
+      this.refundDeductionFee = orderItems
+        .filter(it => it.Tag == OrderItemHelper.FlightTicketRefundDeduction)
+        .reduce((acc, it) => (acc = AppHelper.mathAdd(acc, +it.CostAmount)), 0);
+      this.exchangeFee = orderItems
+        .filter(it => it.Tag == OrderItemHelper.FlightTicketExchange)
+        .reduce((acc, it) => (acc = AppHelper.mathAdd(acc, +it.CostAmount)), 0);
       this.initOriginalTrips();
       this.initExchangedTrips();
       this.initRefundTrips();
@@ -65,18 +62,26 @@ export class FlightTripComponent implements OnInit, OnChanges {
     }
   }
   private initOriginalTrips() {
-    if (this.tripAndTicket) {
-      const ticket = this.tripAndTicket.order.OrderFlightTickets.find(
-        it =>
+    if (this.viewModel && this.viewModel.orderFlightTicket) {
+      const ticket = (this.viewModel.orderFlightTickets || []).find(it => {
+        if (!this.viewModel.orderFlightTicket.VariablesJsonObj) {
+          this.viewModel.orderFlightTicket.VariablesJsonObj =
+            (this.viewModel.orderFlightTicket.Variables &&
+              JSON.parse(this.viewModel.orderFlightTicket.Variables)) ||
+            {};
+        }
+        return (
           it.Id ==
-          this.tripAndTicket.ticket.VariablesJsonObj["OriginalTicketId"]
-      );
+          this.viewModel.orderFlightTicket.VariablesJsonObj["OriginalTicketId"]
+        );
+      });
       if (ticket) {
         this.originalTrips = ticket.OrderFlightTrips || [];
       } else {
-        this.originalTrips = this.tripAndTicket.ticket.OrderFlightTrips || [];
+        this.originalTrips =
+          this.viewModel.orderFlightTicket.OrderFlightTrips || [];
       }
-      const orderFlightTicket = this.tripAndTicket.ticket;
+      const orderFlightTicket = this.viewModel.orderFlightTicket;
       this.originalTrips = this.originalTrips
         .filter(
           it =>
@@ -103,13 +108,16 @@ export class FlightTripComponent implements OnInit, OnChanges {
     return moment(t).format(`YYYY${year}MM${month}DD${day} HH:mm`);
   }
   private initExchangedTrips() {
-    if (this.tripAndTicket&&this.tripAndTicket.ticket.VariablesJsonObj['OriginalTicketId']) {
-      const orderFlight = this.tripAndTicket.ticket;
-      const one = (this.tripAndTicket.order.OrderFlightTickets || []).find(
-        it => it.Id == orderFlight.Id
-      );
-      if (one) {
-        this.exchangedTrips = (one.OrderFlightTrips || []).map(it => {
+    if (
+      this.viewModel &&
+      this.viewModel.orderFlightTicket &&
+      this.viewModel.orderFlightTicket.OrderFlightTrips
+    ) {
+      this.exchangedTrips = (
+        this.viewModel.orderFlightTicket.OrderFlightTrips || []
+      )
+        .filter(it => it.Status == OrderFlightTripStatusType.Exchange)
+        .map(it => {
           if (it.TakeoffTime) {
             const m = moment(it.TakeoffTime);
             const d = this.flydayService.generateDayModel(m);
@@ -117,12 +125,11 @@ export class FlightTripComponent implements OnInit, OnChanges {
           }
           return it;
         });
-      }
     }
   }
   private initRefundTrips() {
-    if (this.tripAndTicket) {
-      const orderFlightTicket = this.tripAndTicket.ticket;
+    if (this.viewModel && this.viewModel.orderFlightTicket) {
+      const orderFlightTicket = this.viewModel.orderFlightTicket;
       if (orderFlightTicket && orderFlightTicket.OrderFlightTrips) {
         this.refundTrips = orderFlightTicket.OrderFlightTrips.filter(
           orderFlightTrip =>

@@ -65,7 +65,7 @@ import { SelectTravelNumberComponent } from "src/app/tmc/components/select-trave
 import { PassengerFlightSegmentInfo } from "../models/PassengerFlightInfo";
 import { ProductItemType } from "src/app/tmc/models/ProductItems";
 import { RequestEntity } from "src/app/services/api/Request.entity";
-import { map } from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
 export class AddContact {
   notifyLanguage: string;
   name: string;
@@ -103,11 +103,7 @@ export class BookPage implements OnInit, AfterViewInit {
   illegalReasons: IllegalReasonEntity[] = [];
   selfStaff: StaffEntity;
   identity: IdentityEntity;
-  @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
-  @ViewChildren("illegalReasonsEle", { read: ElementRef })
-  @ViewChild(IonContent)
   private cnt: IonContent;
-  @ViewChild(IonRefresher) private ionRefresher: IonRefresher;
   illegalReasonsEles: QueryList<ElementRef<HTMLElement>>;
   isCheckingPay: boolean;
   isCanSkipApproval$ = of(false);
@@ -115,6 +111,11 @@ export class BookPage implements OnInit, AfterViewInit {
     Value: string;
     Text: string;
   };
+  @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
+  @ViewChildren("illegalReasonsEle", { read: ElementRef })
+  @ViewChild(IonContent)
+  @ViewChild(IonRefresher)
+  private ionRefresher: IonRefresher;
   constructor(
     private flightService: FlightService,
     private staffService: StaffService,
@@ -141,17 +142,19 @@ export class BookPage implements OnInit, AfterViewInit {
     });
     this.isCanSkipApproval$ = combineLatest([
       from(this.tmcService.getTmc()),
-      from(this.staffService.getStaff()),
+      from(this.staffService.isSelfBookType()),
       this.identityService.getIdentity()
     ]).pipe(
-      map(([tmc, staff, identity]) => {
+      map(([tmc, isSelfType, identity]) => {
         return (
           tmc.FlightApprovalType != 0 &&
           tmc.FlightApprovalType != TmcApprovalType.None &&
-          ((staff && staff.BookType == StaffBookType.All) ||
-            (staff && staff.BookType == StaffBookType.Secretary)) &&
+          !isSelfType &&
           !(identity && identity.Numbers && identity.Numbers.AgentId)
         );
+      }),
+      tap(can => {
+        console.log("是否可以跳过审批", can);
       })
     );
   }
@@ -855,7 +858,9 @@ export class BookPage implements OnInit, AfterViewInit {
             LanguageHelper.Flight.getIllegalReasonTip(),
             combindInfo
           );
-          this.moveRequiredEleToViewPort(this.illegalReasonsEles.first);
+          if (this.illegalReasonsEles) {
+            this.moveRequiredEleToViewPort(this.illegalReasonsEles.first);
+          }
           return false;
         }
       }

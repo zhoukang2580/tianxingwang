@@ -45,10 +45,12 @@
               </ion-row>
               <ion-row (click)='showPricePopover()'>
                 <ion-col>应收金额:</ion-col>
-                <ion-col style='padding-left: 2em;'>{{getOrderTotalAmount()}} <span
-                    *ngIf='getInsuranceAmount() as insuranceAmount'>(含保险{{insuranceAmount}})</span> </ion-col>
-                <ion-col size='1'>
-                  <ion-icon name="arrow-forward" mode='ios' style='color:rgba(var(--ion-color-dark-rgb),0.3)'>
+                <ion-col class='arrow-forward'>
+                  <div>
+                    {{getOrderTotalAmount()}}
+                    <span *ngIf='getInsuranceAmount() as insuranceAmount'>(含保险{{insuranceAmount}})</span>
+                  </div>
+                  <ion-icon name="arrow-forward" mode='ios'>
                   </ion-icon>
                 </ion-col>
               </ion-row>
@@ -67,10 +69,10 @@
               *ngIf='orderDetail.Order.OrderFlightTickets?.length>1'>
             </ion-icon>
           </ion-list-header>
-          <!-- <ion-item *ngIf='vm'>
-              <app-flight-trip [tripAndTicket]='tripAndTicket'>
-              </app-flight-trip>
-            </ion-item> -->
+          <ion-item *ngIf='vm'>
+            <app-flight-trip [viewModel]='vm'>
+            </app-flight-trip>
+          </ion-item>
         </ion-list>
         <!-- 旅客信息 -->
         <ion-list #link [attr.tabid]='tabs[2].value' lines='none'>
@@ -79,19 +81,20 @@
             <div style='width: 100%'>
               <ion-row>
                 <ion-col>乘客姓名:</ion-col>
-                <ion-col>{{p.CheckName}} <span *ngIf='p.PassengerTypeName'>({{p.PassengerTypeName}})</span> </ion-col>
+                <ion-col>{{p.orderPassenger?.CheckName}} <span
+                    *ngIf='p.PassengerTypeName'>({{p.orderPassenger?.PassengerTypeName}})</span> </ion-col>
               </ion-row>
               <ion-row>
                 <ion-col>证件号码:</ion-col>
-                <ion-col>{{p.CredentialsNumber}}</ion-col>
+                <ion-col>{{p.orderPassenger?.CredentialsNumber}}</ion-col>
               </ion-row>
               <ion-row>
                 <ion-col>联系电话:</ion-col>
-                <ion-col>{{p.Mobile}}</ion-col>
+                <ion-col>{{p.orderPassenger?.Mobile}}</ion-col>
               </ion-row>
               <ion-row>
                 <ion-col>邮箱:</ion-col>
-                <ion-col>{{p.Email}}</ion-col>
+                <ion-col>{{p.orderPassenger?.Email}}</ion-col>
               </ion-row>
               <ion-row>
                 <ion-col style='align-self: flex-start;'>成本中心:</ion-col>
@@ -162,6 +165,6 @@
     </ng-container>
   </ng-container>
   <ng-template #nomoredata>
-    <app-or-comp>正在获取订单详情...</app-or-comp>
+      正在获取订单详情...
   </ng-template>
 </ion-content>

@@ -4,7 +4,7 @@ ion-item-divider {
   top: 0;
 }
 ion-list ion-item {
-  font-size: .8rem;
+  font-size: 0.8rem;
 }
 ion-list.link-has-items {
   min-height: 80vh;
@@ -16,6 +16,14 @@ ion-list ion-item ion-row + ion-row {
   margin-top: 0.5em;
 }
 ion-col {
+  &.arrow-forward {
+    display: flex;
+    align-items: center;
+    ion-icon {
+      color: rgba(var(--ion-color-dark-rgb), 0.3);
+      margin-left: auto;
+    }
+  }
   align-self: center;
 }
 .infos {

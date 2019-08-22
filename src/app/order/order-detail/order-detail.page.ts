@@ -99,7 +99,8 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       const p = await this.popoverCtrl.create({
         component: SelectTicketPopoverComponent,
         componentProps: {
-          tickets: this.orderDetail.Order.OrderFlightTickets
+          tickets: this.orderDetail.Order.OrderFlightTickets,
+          selectedTicket: this.selectedTicket
         }
       });
       p.present();
@@ -236,6 +237,11 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
         this.orderDetail.Order.OrderFlightTickets.length
       ) {
         this.selectedTicket = this.orderDetail.Order.OrderFlightTickets[0];
+      }
+      if (this.orderDetail.Order) {
+        this.orderDetail.Order.InsertDateTime = this.transformTime(
+          this.orderDetail.Order.InsertTime
+        );
       }
       if (this.orderDetail.Histories) {
         this.orderDetail.Histories = this.orderDetail.Histories.map(h => {
@@ -538,6 +544,7 @@ export interface ITicketViewModelItem {
   orderPays: OrderPayEntity[];
   existExchanged: boolean;
   existRefund: boolean;
+  orderFlightTickets: OrderFlightTicketEntity[];
   orderPassengerInfo: {
     orderPassenger: OrderPassengerEntity;
     CostCenterCode: string;

@@ -1,4 +1,4 @@
-<div class='flight-info-item' *ngIf='tripAndTicket?.trip as trip'>
+<!-- <div class='flight-info-item' *ngIf='viewModel'>
   <ion-row>
     <ion-col>
       <span>{{trip.TakeoffDate}}</span>
@@ -52,37 +52,37 @@
   </ion-row>
   <ion-row>
     <ion-col>
-      <div *ngIf='tripAndTicket?.ticket?.StatusName=="已出票"||tripAndTicket?.ticket?.StatusName=="预订成功"'>
+      <div *ngIf='viewModel?.orderFlightTicket.StatusName=="已出票"||viewModel?.orderFlightTicket.StatusName=="预订成功"'>
         机票费用：{{trip.TicketPrice+trip.Tax}}元。(其中机票款{{trip.TicketPrice}}元，税收{{trip.Tax}}元)</div>
-      <div *ngIf='tripAndTicket?.ticket?.StatusName?.includes("改签")'>改签费用：{{exchangeFee}}元</div>
-      <div *ngIf='tripAndTicket?.ticket?.StatusName?.includes("退票")'>退票费用：{{refundDeductionFee}}元</div>
+      <div *ngIf='viewModel?.orderFlightTicket.StatusName?.includes("改签")'>改签费用：{{exchangeFee}}元</div>
+      <div *ngIf='viewModel?.orderFlightTicket.StatusName?.includes("退票")'>退票费用：{{refundDeductionFee}}元</div>
     </ion-col>
   </ion-row>
-  <ion-row *ngIf='tripAndTicket?.ticket?.LastIssueTime&&!tripAndTicket?.ticket?.LastIssueTime?.startsWith("1800")'>
+  <ion-row *ngIf='viewModel?.orderFlightTicket.LastIssueTime&&!viewModel?.orderFlightTicket.LastIssueTime?.startsWith("1800")'>
     <ion-col>
-      <ion-text color='danger'>最晚保留时间：{{tripAndTicket?.ticket?.LastIssueTime}}</ion-text>
+      <ion-text color='danger'>最晚保留时间：{{viewModel?.orderFlightTicket.LastIssueTime}}</ion-text>
     </ion-col>
   </ion-row>
-  <ng-container *ngIf='tripAndTicket?.ticket?.FullTicketNo  as ticketNo'>
+  <ng-container *ngIf='viewModel?.orderFlightTicket.FullTicketNo  as ticketNo'>
     <ion-row *ngIf='ticketNo!="-"'>
       <ion-col>
         <ion-text color='danger'>票号：{{ticketNo}}</ion-text>
       </ion-col>
-      <ion-col *ngIf='tripAndTicket?.ticket?.StatusName=="已出票"||tripAndTicket?.ticket?.StatusName?.includes("改签")'
+      <ion-col *ngIf='viewModel?.orderFlightTicket.StatusName=="已出票"||viewModel?.orderFlightTicket.StatusName?.includes("改签")'
         style='justify-content: flex-end'>
         <ion-button expand='block' color='secondary'>购买保险</ion-button>
       </ion-col>
     </ion-row>
   </ng-container>
-  <!-- <ng-container *ngIf='getTicketExistExchanged(tripAndTicket?.ticket)'> -->
-  <!-- <app-original-flight-trip [trip]='originalTrip' [ticket]='tripAndTicket?.ticket' [exchangeFee]='exchangeFee'
+  <ng-container *ngIf='getTicketExistExchanged(tripAndTicket?.ticket)'>
+  <app-original-flight-trip [trip]='originalTrip' [ticket]='tripAndTicket?.ticket' [exchangeFee]='exchangeFee'
     [refundDeductionFee]='refundDeductionFee' [tripDesc]='"原始航班信息"' *ngFor='let originalTrip of originalTrips'>
-  </app-original-flight-trip> -->
-  <app-original-flight-trip [trip]='exchangedTrip' [ticket]='tripAndTicket?.ticket' [tripDesc]='"改签航班信息"'
+  </app-original-flight-trip>
+  <app-original-flight-trip [trip]='exchangedTrip' [ticket]='viewModel?.orderFlightTicket' [tripDesc]='"改签航班信息"'
     [exchangeFee]='exchangeFee' [refundDeductionFee]='refundDeductionFee' [ticket]='tripAndTicket?.ticket'
     *ngFor='let exchangedTrip of exchangedTrips'></app-original-flight-trip>
-  <app-original-flight-trip [trip]='refundTrip' [ticket]='tripAndTicket?.ticket' [tripDesc]='"退票航班信息"'
+  <app-original-flight-trip [trip]='refundTrip' [ticket]='viewModel?.orderFlightTicket' [tripDesc]='"退票航班信息"'
     [exchangeFee]='exchangeFee' [refundDeductionFee]='refundDeductionFee' *ngFor='let refundTrip of refundTrips'>
   </app-original-flight-trip>
-  <!-- </ng-container> -->
-</div>
+  </ng-container>
+</div> -->

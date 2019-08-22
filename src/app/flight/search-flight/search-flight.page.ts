@@ -14,7 +14,7 @@ import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
 import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import * as moment from "moment";
-import { Subscription, of } from "rxjs";
+import { Subscription, of, from } from "rxjs";
 import { DayModel } from "../../tmc/models/DayModel";
 import { NavController, ModalController } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
@@ -43,10 +43,11 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
   toCity: TrafficlineEntity; // 切换后，真实的目的城市
   showReturnTrip: boolean;
   disabled = false;
-  selectedPassengers: number;
+  selectedPassengers$ = of(0);
   totalFlyDays: number;
   staff: StaffEntity;
   isShowBookInfos$ = of(false);
+  canAddPassengers$ = of(false);
   constructor(
     private router: Router,
     route: ActivatedRoute,
@@ -60,12 +61,19 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     private tmcService: TmcService,
     private modalCtrl: ModalController
   ) {
+    this.canAddPassengers$ = from(staffService.getStaff()).pipe(
+      map(staff => {
+        return staff && staff.BookType != StaffBookType.Self;
+      })
+    );
+    this.selectedPassengers$ = this.flightService
+      .getPassengerBookInfoSource()
+      .pipe(map(infos => infos && infos.length));
     route.queryParamMap.subscribe(async _ => {
       this.tmcService.setFlightHotelTrainType(FlightHotelTrainType.Flight);
       this.staff = await this.staffService.getStaff();
       this.disabled = this.searchFlightModel && this.searchFlightModel.isLocked;
       this.showReturnTrip = await this.isStaffTypeSelf();
-      this.selectedPassengers = flightService.getPassengerBookInfos().length;
       if (this.searchConditionSubscription) {
         this.searchConditionSubscription.unsubscribe();
       }
@@ -176,9 +184,6 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.initFlightDays();
     this.initFlightCities();
     this.apiService.hideLoadingView();
-  }
-  mustAddPassenger() {
-    return !this.staffService.isSelfBookType;
   }
   onSelectPassenger() {
     this.router.navigate([AppHelper.getRoutePath("select-passenger")]);

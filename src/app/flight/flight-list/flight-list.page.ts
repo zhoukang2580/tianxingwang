@@ -164,6 +164,11 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           if (ok) {
             this.goToSelectPassengerPage();
           }
+        } else {
+          if (this.isLeavePage || this.isLoading) {
+            return;
+          }
+          this.doRefresh(true, false);
         }
       });
     this.hasDataSource = new BehaviorSubject(false);
@@ -317,6 +322,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     if (this.searchConditionSubscription) {
       this.searchConditionSubscription.unsubscribe();
     }
+    this.isLeavePage = true;
     this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
   }
   async doRefresh(
@@ -701,7 +707,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           this.doRefresh(true, false);
         }
       });
-      this.doRefresh(true, true);
+    this.doRefresh(true, true);
   }
   ngOnDestroy() {
     this.vmFlights = [];
