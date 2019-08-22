@@ -1035,20 +1035,12 @@ export class BookPage implements OnInit, AfterViewInit {
           (this.initialBookDtoModel.Insurances &&
             this.initialBookDtoModel.Insurances[item.id]) ||
           []
-        )
-          .filter(
-            product =>
-              !cstaff ||
-              !cstaff.Policy ||
-              (+product.Price > 0 &&
-                +product.Price < cstaff.Policy.FlightInsuranceAmount)
-          )
-          .map(insurance => {
-            return {
-              insuranceResult: insurance,
-              checked: true
-            };
-          });
+        ).map(insurance => {
+          return {
+            insuranceResult: insurance,
+            checked: true
+          };
+        });
         const combineInfo: ICombindInfo = {
           vmCredential: item.credential,
           isSkipApprove: false,
@@ -1066,7 +1058,7 @@ export class BookPage implements OnInit, AfterViewInit {
               item.flightSegmentInfo.flightSegment &&
               item.flightSegmentInfo.flightSegment.TakeoffTime
           )
-            ? insurances.slice(0, 1)
+            ? insurances
             : [],
           credentialStaffMobiles:
             cstaff && cstaff.Account && cstaff.Account.Mobile
