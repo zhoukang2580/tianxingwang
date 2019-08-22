@@ -1,7 +1,6 @@
-.ion-grid {
-  display: none;
-  &.show {
-    display: initial;
+ion-grid {
+  &.hide {
+    display: none;
   }
 }
 .change-policy-btn {
@@ -25,10 +24,10 @@
     align-items: center;
     justify-content: space-between;
   }
-  ion-item-divider {
-    margin-top: 1em;
-    border-top: 1px dashed var(--ion-color-secondary);
-  }
+  // ion-item-divider {
+  //   margin-top: 1em;
+  //   border-top: 1px dashed var(--ion-color-secondary);
+  // }
 }
 :host {
   width: 100%;

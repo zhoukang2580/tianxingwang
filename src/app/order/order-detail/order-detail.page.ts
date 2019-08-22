@@ -107,6 +107,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       const result = await p.onDidDismiss();
       if (result && result.data) {
         this.selectedTicket = result.data;
+        console.log("onSelectTicket", this.selectedTicket);
       }
     }
   }
@@ -396,6 +397,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       this.orderDetail.Order.OrderPassengers
     ) {
       result.orderFlightTicket = ticket;
+      result.order = this.orderDetail && this.orderDetail.Order;
       if (this.orderDetail.Order.OrderItems) {
         result.orderItems = this.orderDetail.Order.OrderItems.filter(
           it => it.Key === ticket.Key
@@ -544,7 +546,7 @@ export interface ITicketViewModelItem {
   orderPays: OrderPayEntity[];
   existExchanged: boolean;
   existRefund: boolean;
-  orderFlightTickets: OrderFlightTicketEntity[];
+  order: OrderEntity;
   orderPassengerInfo: {
     orderPassenger: OrderPassengerEntity;
     CostCenterCode: string;

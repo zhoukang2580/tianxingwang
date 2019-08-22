@@ -1,13 +1,12 @@
 <div class='flight-info-item'>
   <ion-item-divider>
-    {{tripDesc}}
-    <ion-button fill='clear' class='change-policy-btn' (click)='onShowHide()' color='secondary'>
-      温馨提醒
-      <ion-icon name="arrow-dropdown" *ngIf='showHide'></ion-icon>
-      <ion-icon name="arrow-dropright" *ngIf='!showHide'></ion-icon>
+    <ion-button fill='clear' class='change-policy-btn' (click)='onToggleShowHide()' color='secondary'>
+      {{tripDesc}}
+      <ion-icon name="arrow-dropdown" size='small' mode='md' *ngIf='isShow'></ion-icon>
+      <ion-icon name="arrow-dropright" size='small' mode='md' *ngIf='!isShow'></ion-icon>
     </ion-button>
   </ion-item-divider>
-  <ion-grid [class.show]='showHide'>
+  <ion-grid [class.hide]='!isShow'>
     <ion-row>
       <ion-col>
         出票时间
@@ -72,17 +71,18 @@
     </ion-row>
     <ion-row>
       <ion-col>
-        <div>{{trip?.TakeoffShortTime}}</div>
+        <div>{{takeOffDateTime}}</div>
         <div>{{trip?.FlyTime}}</div>
-        <div>{{trip?.ArrivalShortTime}}</div>
+        <div>{{arrivalDateTime}}</div>
       </ion-col>
     </ion-row>
     <ion-row>
       <ion-col>
-        <div *ngIf='ticket?.StatusName=="已出票"||ticket?.StatusName=="预订成功"'>
+        <div
+          *ngIf='ticket?.Status==OrderFlightTicketStatusType.Issued||ticket?.Status==OrderFlightTicketStatusType.Booked'>
           机票费用：{{trip?.TicketPrice+trip?.Tax}}元。(其中机票款{{trip?.TicketPrice}}元，税收{{trip?.Tax}}元)</div>
         <div *ngIf='ticket?.StatusName?.includes("改签")'>改签费用：{{exchangeFee}}元</div>
-        <div *ngIf='ticket?.StatusName?.includes("退票")'>退票费用：{{refundDeductionFee}}元</div>
+        <div *ngIf='ticket?.Status==OrderFlightTicketStatusType.Refunded'>退票费用：{{refundDeductionFee}}元</div>
       </ion-col>
     </ion-row>
     <ng-container *ngIf='ticket?.FullTicketNo  as ticketNo'>

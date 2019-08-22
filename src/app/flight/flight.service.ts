@@ -723,7 +723,7 @@ export class FlightService {
       .getPromiseData<InitialBookDtoModel>(req)
       .then(res => {
         res.IllegalReasons = res.IllegalReasons || [];
-        res.Insurances = res.Insurances || [];
+        res.Insurances = res.Insurances || {};
         res.ServiceFees = res.ServiceFees || ({} as any);
         res.Staffs = res.Staffs || [];
         res.Staffs = res.Staffs.map(it => {
