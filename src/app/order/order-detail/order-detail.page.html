@@ -16,8 +16,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content #cnt [scrollEvents]='true' (ionScrollEnd)='onScrollEnd()'>
-  <ng-container
-    *ngIf='orderDetail&&orderDetail.Order&&orderDetail.Order.OrderFlightTickets&&orderDetail.Order.OrderTravels;else nomoredata'>
+  <ng-container *ngIf='getTicketViewModelItem() as vm'>
     <div>
       <!-- 订单信息 -->
       <ion-list #link [attr.tabid]='tabs[0].value' lines='none'>
@@ -66,7 +65,7 @@
           </ion-icon>
         </ion-list-header>
         <ion-item *ngIf='getTripAndTicket() as tripAndTicket'>
-          <app-flight-trip  [tripAndTicket]='tripAndTicket'>
+          <app-flight-trip [tripAndTicket]='tripAndTicket'>
           </app-flight-trip>
         </ion-item>
       </ion-list>

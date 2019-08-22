@@ -1,4 +1,4 @@
-<!-- <ion-header>
+<ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
       <ion-button color='dark' (click)='back()'>
@@ -11,6 +11,7 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
 
 <ion-content>
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh()">
@@ -68,16 +69,16 @@
       </ion-icon>
       <ion-text>取消全选</ion-text>
     </ion-button>
-    <ion-button (click)='onSelectAll()' *ngIf='!isSelectAll' fill='clear' size='small' color='secondary'>
-      <ion-icon name="radio-button-off" mode='ios' color='success' >
+    <ion-text (click)='onSelectAll()' *ngIf='!isSelectAll' fill='clear' size='small' color='secondary'>
+      <ion-icon name="radio-button-off" mode='ios' color='success'>
       </ion-icon>
-      <ion-text >全选</ion-text>
-    </ion-button>
+      <ion-text>全选</ion-text>
+    </ion-text>
     <ion-button (click)='onReadAll()' fill='clear' color='success' size='small'>标记已读</ion-button>
     <ion-button (click)='onReadAll()' fill='clear' color='danger' size='small'>删除</ion-button>
   </ion-buttons>
-</ion-footer> -->
-
+</ion-footer>
+<!-- 
 <ion-list >
     <ng-container *ngIf='messages.length else nodata'>
       <ion-item-sliding *ngFor='let item of messages'>
@@ -113,4 +114,4 @@
     <ng-template #nodata>
       <app-or-comp>暂无数据</app-or-comp>
     </ng-template>
-  </ion-list>
+  </ion-list> -->

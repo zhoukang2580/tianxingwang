@@ -40,6 +40,8 @@ import { OrderFlightTripStatusType } from "../models/OrderFlightTripStatusType";
 import { OrderEntity, OrderItemEntity } from "../models/OrderEntity";
 import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
 import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
+import { OrderPayEntity } from "../models/OrderPayEntity";
+
 export class OrderTripTicketModel {
   trip: OrderFlightTripEntity;
   ticket: OrderFlightTicketEntity;
@@ -535,7 +537,54 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     });
     p.present();
   }
-
+  getTicketViewModelItem(): ITicketViewModelItem {
+    const result: ITicketViewModelItem = {} as any;
+    if (
+      !this.selectedTicket &&
+      this.orderDetail &&
+      this.orderDetail.Order &&
+      this.orderDetail.Order.OrderFlightTickets &&
+      this.orderDetail.Order.OrderFlightTickets.length
+    ) {
+      this.selectedTicket = this.orderDetail.Order.OrderFlightTickets[0];
+    }
+    const ticket = this.selectedTicket;
+    if (
+      ticket &&
+      this.orderDetail &&
+      this.orderDetail.Order &&
+      this.orderDetail.Order.OrderFlightTickets &&
+      this.orderDetail.Order.OrderPassengers
+    ) {
+      result.orderFlightTicket = ticket;
+      if (this.orderDetail.Order.OrderItems) {
+        result.orderItems = this.orderDetail.Order.OrderItems.filter(
+          it => it.Key === ticket.Key
+        );
+      }
+      if (this.orderDetail.Order.OrderPays) {
+        result.orderPays = this.orderDetail.Order.OrderPays.filter(
+          it => it.Key === ticket.Key
+        );
+      }
+      if (!ticket.VariablesJsonObj) {
+        ticket.VariablesJsonObj = JSON.parse(ticket.Variables) || {};
+      }
+      result.existExchanged = !!ticket.VariablesJsonObj["OriginalTicketId"];
+      result.existRefund =
+        ticket.OrderFlightTrips &&
+        ticket.OrderFlightTrips.reduce((acc, it) => {
+          if (it.Status == OrderFlightTripStatusType.Refund) {
+            acc++;
+          }
+          return acc;
+        }, 0) > 0;
+      result.orderPassenger = this.orderDetail.Order.OrderPassengers.find(
+        it => it.Id == (ticket.Passenger && ticket.Passenger.Id)
+      );
+    }
+    return result;
+  }
   back() {
     this.navCtrl.back();
   }
@@ -629,4 +678,12 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       });
     }
   }
+}
+export interface ITicketViewModelItem {
+  orderItems: OrderItemEntity[];
+  orderFlightTicket: OrderFlightTicketEntity;
+  orderPays: OrderPayEntity[];
+  existExchanged: boolean;
+  existRefund: boolean;
+  orderPassenger: OrderPassengerEntity;
 }

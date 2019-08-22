@@ -2,7 +2,12 @@ import { AppHelper } from "src/app/appHelper";
 import { Router } from "@angular/router";
 import { MessageService, MessageModel } from "./../message.service";
 import { Component, OnInit, ViewChild } from "@angular/core";
-import { IonRefresher, IonInfiniteScroll, IonList } from "@ionic/angular";
+import {
+  IonRefresher,
+  IonInfiniteScroll,
+  IonList,
+  NavController
+} from "@ionic/angular";
 import {
   trigger,
   state,
@@ -33,7 +38,11 @@ export class MessageListPage implements OnInit {
   @ViewChild(IonList) ionList: IonList;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
-  constructor(private messageService: MessageService, private router: Router) {}
+  constructor(
+    private messageService: MessageService,
+    private router: Router,
+    private navCtrl: NavController
+  ) {}
   async loadMore() {
     const messages = await this.messageService.loadMoreMessages(
       this.currentPage,
@@ -50,6 +59,9 @@ export class MessageListPage implements OnInit {
     if (this.refresher) {
       this.refresher.complete();
     }
+  }
+  back() {
+    this.navCtrl.back();
   }
   onEdit() {
     this.open = !this.open;
@@ -88,7 +100,7 @@ export class MessageListPage implements OnInit {
     this.loading = false;
   }
   async onRemove(item: MessageModel) {
-    console.log('onRemove');
+    console.log("onRemove");
     const result = await this.messageService.Remove([item.Id]);
     if (result) {
       this.messages = this.messages.filter(it => it.Id !== item.Id);
