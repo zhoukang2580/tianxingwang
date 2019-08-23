@@ -1051,7 +1051,7 @@ export class BookPage implements OnInit, AfterViewInit {
           showFriendlyReminder: false,
           isOtherOrganization: false,
           notifyLanguage: "cn",
-          travelType: OrderTravelType.Person,
+          travelType: OrderTravelType.Business,// 默认全部因公
           orderTravelPayType: this.tmc && this.tmc.FlightPayType,
           insuranceProducts: this.isShowInsurances(
             item.flightSegmentInfo &&

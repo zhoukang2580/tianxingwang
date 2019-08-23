@@ -25,44 +25,40 @@ import { OrderFlightTicketStatusType } from "src/app/order/models/OrderFlightTic
   styleUrls: ["./flight-trip.component.scss"]
 })
 export class FlightTripComponent implements OnInit, OnChanges {
-  @Input() viewModel: ITicketViewModelItem;
+  @Input() trip: OrderFlightTripEntity;
+  @Input() ticket: OrderFlightTicketEntity;
+  @Input() tickets: OrderFlightTicketEntity[];
+  @Input() type: "book" | "exchange" | "refund" | "issue";
+  @Input() orderItems: OrderItemEntity[];
+  @Input() trips: OrderFlightTripEntity[];
   refundDeductionFee: number;
   exchangeFee: number;
-  trips: OrderFlightTripEntity[]; // 原始航班信息
-  constructor(
-    private popoverCtrl: PopoverController,
-    private flydayService: CalendarService
-  ) {}
-  async ngOnChanges(change: SimpleChanges) {
-    if (change && change.viewModel && change.viewModel.currentValue) {
-      const orderItems = this.viewModel.orderItems || [];
-      this.refundDeductionFee = orderItems
-        .filter(it => it.Tag == OrderItemHelper.FlightTicketRefundDeduction)
-        .reduce((acc, it) => (acc = AppHelper.mathAdd(acc, +it.CostAmount)), 0);
-      this.exchangeFee = orderItems
-        .filter(it => it.Tag == OrderItemHelper.FlightTicketExchange)
-        .reduce((acc, it) => (acc = AppHelper.mathAdd(acc, +it.CostAmount)), 0);
-      // this.initOriginalTrips();
-      // this.initExchangedTrips();
-      // this.initRefundTrips();
-      this.initTrips();
+  originalTrips: OrderFlightTripEntity[];
+  constructor(private popoverCtrl: PopoverController) {}
+  getTripDateTime(trip: OrderFlightTripEntity) {
+    if (!trip) {
+      return null;
     }
+    const takeOffDateTime = moment(trip.TakeoffTime).format(
+      "YYYY年MM月DD日 HH:mm"
+    );
+    const arrivalDateTime = moment(trip.ArrivalTime).format(
+      "YYYY年MM月DD日 HH:mm"
+    );
+    return {
+      takeOffDateTime,
+      arrivalDateTime
+    };
   }
-  private initTrips() {
-    if (
-      this.viewModel &&
-      this.viewModel.orderFlightTicket &&
-      this.viewModel.orderFlightTicket.OrderFlightTrips
-    ) {
-      this.trips = this.viewModel.orderFlightTicket.OrderFlightTrips || [];
-      this.trips.concat(this.getOriginalTrips());
+  getHHmm(datetime: string) {
+    if (!datetime) {
+      return null;
     }
+    return moment(datetime).format("HH:mm");
   }
-  getTripDesc() {
-    if (this.viewModel && this.viewModel.orderFlightTicket) {
-      if (this.viewModel.orderFlightTicket.StatusName) {
-        return `${this.viewModel.orderFlightTicket.StatusName}航班信息`;
-      }
+  getTicketIssueDateTime() {
+    if (!this.ticket.IssueTime.startsWith("1800")) {
+      return moment(this.ticket.IssueTime).format("YYYY年MM月DD日 HH:mm");
     }
     return "";
   }
@@ -79,83 +75,63 @@ export class FlightTripComponent implements OnInit, OnChanges {
       p.present();
     }
   }
-  private getOriginalTrips() {
-    let originalTrips: OrderFlightTripEntity[] = [];
-    if (
-      this.viewModel &&
-      this.viewModel.orderFlightTicket &&
-      this.viewModel.order
-    ) {
-      if (!this.viewModel.orderFlightTicket.VariablesJsonObj) {
-        this.viewModel.orderFlightTicket.VariablesJsonObj =
-          (this.viewModel.orderFlightTicket.Variables &&
-            JSON.parse(this.viewModel.orderFlightTicket.Variables)) ||
-          {};
-      }
-      const originalTicketId = this.viewModel.orderFlightTicket
-        .VariablesJsonObj["OriginalTicketId"];
-      const ticket = this.viewModel.order.OrderFlightTickets.find(it => {
-        return it.Id == originalTicketId;
-      });
-      originalTrips = (ticket && ticket.OrderFlightTrips) || [];
-      console.log("原始航班", ticket, originalTrips);
-      originalTrips = originalTrips.map(it => {
-        if (it.TakeoffTime) {
-          const m = moment(it.TakeoffTime);
-          const d = this.flydayService.generateDayModel(m);
-          it.TakeoffDate = m.format(`YYYY年MM月DD日(${d.dayOfWeekName})`);
-        }
-        return it;
-      });
-      originalTrips.sort((a, b) => +a.Id - +b.Id);
-    }
-    return originalTrips;
-  }
+
   private getTimeStamp(t: any) {
     return +moment(t);
   }
   private getDateTime(t: any, year = "-", month = "-", day = "") {
     return moment(t).format(`YYYY${year}MM${month}DD${day} HH:mm`);
   }
-  private getExchangedTrips() {
-    let exchangedTrips: OrderFlightTripEntity[] = [];
-    if (
-      this.viewModel &&
-      this.viewModel.orderFlightTicket &&
-      this.viewModel.orderFlightTicket.OrderFlightTrips
-    ) {
-      exchangedTrips = (this.viewModel.orderFlightTicket.OrderFlightTrips || [])
-        .filter(it => it.Status == OrderFlightTripStatusType.Exchange)
-        .map(it => {
-          if (it.TakeoffTime) {
-            const m = moment(it.TakeoffTime);
-            const d = this.flydayService.generateDayModel(m);
-            it.TakeoffDate = m.format(`YYYY年MM月DD日(${d.dayOfWeekName})`);
-          }
-          return it;
-        });
+  async ngOnChanges(change: SimpleChanges) {
+    if (change && change.orderItems && change.orderItems.currentValue) {
+      const orderItems = this.orderItems || [];
+      this.refundDeductionFee = orderItems
+        .filter(it => it.Tag == OrderItemHelper.FlightTicketRefundDeduction)
+        .reduce((acc, it) => (acc = AppHelper.mathAdd(acc, +it.Amount)), 0);
+      this.exchangeFee = orderItems
+        .filter(
+          it =>
+            it.Tag == OrderItemHelper.FlightTicketExchangeApiFee ||
+            it.Tag == OrderItemHelper.FlightTicketExchangeOfflineFee ||
+            it.Tag == OrderItemHelper.FlightTicketExchangeOnlineFee
+        )
+        .reduce((acc, it) => (acc = AppHelper.mathAdd(acc, +it.Amount)), 0);
     }
-    return exchangedTrips;
-  }
-  private getRefundTrips() {
-    let refundTrips: OrderFlightTripEntity[] = [];
-    if (this.viewModel && this.viewModel.orderFlightTicket) {
-      const orderFlightTicket = this.viewModel.orderFlightTicket;
-      if (orderFlightTicket && orderFlightTicket.OrderFlightTrips) {
-        refundTrips = orderFlightTicket.OrderFlightTrips.filter(
-          orderFlightTrip =>
-            orderFlightTrip.Status == OrderFlightTripStatusType.Refund
-        ).map(it => {
-          if (it.TakeoffTime) {
-            const m = moment(it.TakeoffTime);
-            const d = this.flydayService.generateDayModel(m);
-            it.TakeoffDate = m.format(`YYYY年MM月DD日(${d.dayOfWeekName})`);
-          }
-          return it;
-        });
+    if (change && change.tickets && change.tickets.currentValue) {
+      if (this.ticket) {
+        if (!this.ticket.VariablesJsonObj) {
+          this.ticket.VariablesJsonObj =
+            (this.ticket.Variables && JSON.parse(this.ticket.Variables)) || {};
+        }
       }
+      const originalTicketId =
+        this.ticket && this.ticket.VariablesJsonObj["OriginalTicketId"];
+      const one = this.tickets.find(it => {
+        return it.Id == originalTicketId;
+      });
+      this.originalTrips = (one && one.OrderFlightTrips) || [];
     }
-    return refundTrips;
+  }
+  private getAmount(
+    args: OrderItemHelper | [OrderItemHelper],
+    amountFromVariable?: string
+  ) {
+    if (!args || !this.orderItems) {
+      return 0;
+    }
+    const tags = args instanceof Array ? args : [args];
+    return this.orderItems
+      .filter(it => tags.some(t => t == it.Tag))
+      .reduce((acc, item) => {
+        if (amountFromVariable) {
+          item.VariablesJsonObj =
+            item.VariablesJsonObj || JSON.parse(item.Variables) || {};
+          acc += +item.VariablesJsonObj[amountFromVariable] || 0;
+        } else {
+          acc += +item.Amount || 0;
+        }
+        return acc;
+      }, 0);
   }
   ngOnInit() {}
 }

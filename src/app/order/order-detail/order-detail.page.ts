@@ -62,6 +62,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
   orderDetail: OrderDetailModel;
   tmc: TmcEntity;
   selectedTicket: OrderFlightTicketEntity;
+  viewModel: ITicketViewModelItem;
   @ViewChildren("info") tabEles: QueryList<IonButton>;
   @ViewChildren("link") linkEles: QueryList<IonList>;
   @ViewChild("infos") infosContainer: ElementRef<HTMLElement>;
@@ -89,7 +90,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     }
     return this.orderDetail.Order.OrderNumbers.filter(it => it.Tag == tag);
   }
-  async onSelectTicket() {
+  async onSelectTicket(vm: ITicketViewModelItem) {
     if (
       this.orderDetail &&
       this.orderDetail.Order &&
@@ -107,7 +108,8 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       const result = await p.onDidDismiss();
       if (result && result.data) {
         this.selectedTicket = result.data;
-        console.log("onSelectTicket", this.selectedTicket);
+        this.initViewModel();
+        console.log("onSelectTicket", this.selectedTicket, this.viewModel);
       }
     }
   }
@@ -237,7 +239,17 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
         this.orderDetail.Order.OrderFlightTickets &&
         this.orderDetail.Order.OrderFlightTickets.length
       ) {
-        this.selectedTicket = this.orderDetail.Order.OrderFlightTickets[0];
+        const tickets = this.orderDetail.Order.OrderFlightTickets.slice(0);
+        tickets.sort((ta, tb) => {
+          return (
+            new Date(tb.InsertTime).getTime() -
+            new Date(ta.InsertTime).getTime()
+          );
+        });
+        this.selectedTicket = tickets[0];
+        if (this.selectedTicket) {
+          this.initViewModel();
+        }
       }
       if (this.orderDetail.Order) {
         this.orderDetail.Order.InsertDateTime = this.transformTime(
@@ -386,7 +398,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     }
     return null;
   }
-  getTicketViewModelItem(): ITicketViewModelItem {
+  initViewModel(): ITicketViewModelItem {
     const result: ITicketViewModelItem = {} as any;
     const ticket = this.selectedTicket;
     if (
@@ -444,11 +456,124 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
         };
       }
     }
+    this.viewModel = result;
+    this.initTrips();
     return result;
+  }
+  private initTrips() {
+    let trips =
+      (this.selectedTicket && this.selectedTicket.OrderFlightTrips) || [];
+    console.log("this.selectedTicket.OrderFlightTrips", trips);
+    trips = trips
+      .filter(it => it.Status == OrderFlightTripStatusType.Normal)
+      .map(it => {
+        it.tripDesc = "行程航班信息";
+        return { ...it };
+      });
+    trips.sort((a, b) => +a.Id - +b.Id);
+    if (this.viewModel) {
+      if (this.selectedTicket) {
+        const originalTrips = this.getOriginalTrips();
+        const exchangedTrips = this.getExchangedTrips();
+        const refundTrips = this.getRefundTrips();
+        [...originalTrips, ...exchangedTrips, ...refundTrips].forEach(trip => {
+          if (!trips.find(it => it.Id == trip.Id)) {
+            trips.push(trip);
+          }
+        });
+      }
+      this.viewModel.trips = trips;
+    }
+    console.log("initTrips", trips);
+  }
+  private getExchangedTrips() {
+    let exchangedTrips: OrderFlightTripEntity[] = [];
+    if (
+      this.viewModel &&
+      this.viewModel.orderFlightTicket &&
+      this.viewModel.orderFlightTicket.OrderFlightTrips &&
+      this.viewModel.existExchanged
+    ) {
+      exchangedTrips = this.viewModel.orderFlightTicket.OrderFlightTrips.map(
+        it => {
+          it.tripDesc =
+            it.Status == OrderFlightTripStatusType.Normal
+              ? "行程航班信息"
+              : "改签航班信息";
+          if (it.TakeoffTime) {
+            const m = moment(it.TakeoffTime);
+            const d = this.flydayService.generateDayModel(m);
+            it.TakeoffDate = m.format(`YYYY年MM月DD日(${d.dayOfWeekName})`);
+          }
+          return it;
+        }
+      );
+    }
+    return exchangedTrips;
+  }
+  private getRefundTrips() {
+    let refundTrips: OrderFlightTripEntity[] = [];
+    if (
+      this.viewModel &&
+      this.viewModel.orderFlightTicket &&
+      this.viewModel.existRefund
+    ) {
+      const orderFlightTicket = this.viewModel.orderFlightTicket;
+      if (orderFlightTicket && orderFlightTicket.OrderFlightTrips) {
+        refundTrips = orderFlightTicket.OrderFlightTrips.filter(
+          orderFlightTrip =>
+            orderFlightTrip.Status == OrderFlightTripStatusType.Refund
+        ).map(it => {
+          it.tripDesc = "退票航班信息";
+          if (it.TakeoffTime) {
+            const m = moment(it.TakeoffTime);
+            const d = this.flydayService.generateDayModel(m);
+            it.TakeoffDate = m.format(`YYYY年MM月DD日(${d.dayOfWeekName})`);
+          }
+          return it;
+        });
+      }
+    }
+    return refundTrips;
+  }
+  private getOriginalTrips() {
+    let originalTrips: OrderFlightTripEntity[] = [];
+    if (
+      this.orderDetail &&
+      this.orderDetail.Order &&
+      this.selectedTicket &&
+      this.orderDetail.Order.OrderFlightTickets
+    ) {
+      if (!this.selectedTicket.VariablesJsonObj) {
+        this.selectedTicket.VariablesJsonObj =
+          (this.selectedTicket.Variables &&
+            JSON.parse(this.selectedTicket.Variables)) ||
+          {};
+      }
+      const originalTicketId = this.selectedTicket.VariablesJsonObj[
+        "OriginalTicketId"
+      ];
+      const ticket = this.orderDetail.Order.OrderFlightTickets.find(it => {
+        return it.Id == originalTicketId;
+      });
+      originalTrips = (ticket && ticket.OrderFlightTrips) || [];
+      originalTrips = originalTrips.map(it => {
+        it.tripDesc = "原始航班信息";
+        if (it.TakeoffTime) {
+          const m = moment(it.TakeoffTime);
+          const d = this.flydayService.generateDayModel(m);
+          it.TakeoffDate = m.format(`YYYY年MM月DD日(${d.dayOfWeekName})`);
+        }
+        return it;
+      });
+      originalTrips.sort((a, b) => +a.Id - +b.Id);
+    }
+    return originalTrips;
   }
   back() {
     this.navCtrl.back();
   }
+
   onTabActive(tab: TabItem) {
     this.tabs.forEach(t => (t.isActive = false));
     tab.isActive = true;
@@ -547,6 +672,7 @@ export interface ITicketViewModelItem {
   existExchanged: boolean;
   existRefund: boolean;
   order: OrderEntity;
+  trips: OrderFlightTripEntity[];
   orderPassengerInfo: {
     orderPassenger: OrderPassengerEntity;
     CostCenterCode: string;

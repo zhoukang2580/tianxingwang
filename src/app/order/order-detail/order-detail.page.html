@@ -17,7 +17,7 @@
 </ion-header>
 <ion-content #cnt [scrollEvents]='true' (ionScrollEnd)='onScrollEnd()'>
   <ng-container *ngIf='orderDetail&&orderDetail.Order else nomoredata'>
-    <ng-container *ngIf='getTicketViewModelItem() as vm'>
+    <ng-container *ngIf='viewModel as vm'>
       <div>
         <!-- 订单信息 -->
         <ion-list #link [attr.tabid]='tabs[0].value' lines='none'>
@@ -65,16 +65,15 @@
         <ion-list #link [attr.tabid]='tabs[1].value' lines='none'>
           <ion-item-divider (click)='onSelectTicket()'>{{tabs[1].label}}
             <div *ngIf='orderDetail.Order.OrderFlightTickets?.length>1'>
-              <ion-icon style='margin-right: auto;margin-left: 0.2em;' size='small' name='arrow-dropdown'
+              <!-- <ion-icon style='margin-right: auto;margin-left: 0.2em;' size='small' name='arrow-dropdown'
                 color='secondary' *ngIf='orderDetail.Order.OrderFlightTickets?.length>1'>
-              </ion-icon>
+              </ion-icon> -->
               <ion-badge color='danger' style="color: white">{{orderDetail.Order.OrderFlightTickets.length}}
               </ion-badge>
             </div>
           </ion-item-divider>
           <ion-item *ngIf='vm'>
-            <app-flight-trip [viewModel]='vm'>
-            </app-flight-trip>
+            <app-flight-order-detial [viewModel]='vm'></app-flight-order-detial>
           </ion-item>
         </ion-list>
         <!-- 旅客信息 -->

@@ -215,7 +215,7 @@ export class OrderFlightTripEntity extends BaseVariablesEntity {
   Status: OrderFlightTripStatusType;
 
   StatusName: string; //  Status.GetName();
-
+  tripDesc: string;
   /// <summary>
   /// 起飞城市机场名称
   /// </summary>

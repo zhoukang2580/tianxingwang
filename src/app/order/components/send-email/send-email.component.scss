@@ -59,6 +59,7 @@ ion-content {
       background-color: rgba(var(--ion-color-dark-rgb), 0.12);
       border-radius: 5em;
       max-width: 14em;
+      min-height: 1em;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;

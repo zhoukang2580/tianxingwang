@@ -1,3 +1,120 @@
-<app-original-flight-trip [trip]='trip' [ticket]='viewModel?.orderFlightTicket'
-  [refundDeductionFee]='refundDeductionFee' [tripDesc]='getTripDesc()' *ngFor='let trip of trips'>
-</app-original-flight-trip>
+<div class='flight-info-item'>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <span *ngIf='getTripDateTime(trip?.TakeoffTime) as dt'>
+          {{dt.takeOffDateTime}}
+        </span>
+        {{trip?.FromCityName}}----{{trip?.ToCityName}}
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>机票状态</ion-col>
+      <ion-col>
+        <ion-text color='danger'>
+          {{ticket?.StatusName}}
+        </ion-text>
+      </ion-col>
+      <ion-col>
+        <ion-button no-margin no-padding style='font-size: 0.7rem;' size='small' color='secondary' fill='clear'
+          (click)='openRulesPopover(trip)'>
+          退改签规定</ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col style="justify-content: flex-start">
+        <span>{{trip?.CarrierName}}{{trip?.FlightNumber}}</span>
+        <span *ngIf='trip?.CodeShareNumber'>(实际承运&nbsp;{{trip?.CarrierName}}{{trip?.CodeShareNumber}})</span>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col style='justify-content: flex-start;'>
+        <span>{{trip?.CabinType|cabintype}}&nbsp;{{trip?.ShowCabinCode}}舱</span>
+        <span *ngIf='trip?.Discount'>({{trip?.Discount|discount}})</span>
+        <ng-container *ngIf='trip?.PlaneType'>
+          <span>机型</span>
+          <span>---</span>
+          <span>{{trip?.PlaneType}}</span>
+        </ng-container>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <div>
+          <span>{{trip?.FromAirportName}}</span>
+          <span *ngIf='trip?.FromTerminal'>({{trip?.FromTerminal}})</span>
+        </div>
+        <div class='is-stop'>
+          <div *ngIf='trip?.IsStop'>------经停------</div>
+          <div *ngIf='!trip?.IsStop'>------直飞------</div>
+        </div>
+        <div>
+          <span>{{trip?.FromAirportName}}</span>
+          <span *ngIf='trip?.ToTerminal'>({{trip?.ToTerminal}})</span>
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <span>{{getHHmm(trip?.TakeoffTime)}}</span>
+        <span style='margin: 0 1em;'>{{trip?.FlyTime}}</span>
+        <span>{{getHHmm(trip?.ArrivalTime)}}</span>
+      </ion-col>
+    </ion-row>
+    <ng-container *ngIf='type=="book"'>
+      <ion-row>
+        <ion-col>
+          机票费用：{{trip?.TicketPrice+trip?.Tax||0}}元。(其中机票款{{trip?.TicketPrice}}元，税收{{trip?.Tax}}元)
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf='getTicketIssueDateTime() as TicketIssueDateTime'>
+        <ion-col>
+          <ion-text color='danger'>最晚保留时间</ion-text>
+        </ion-col>
+        <ion-col>
+          <ion-text color='danger'>{{TicketIssueDateTime}}</ion-text>
+        </ion-col>
+      </ion-row>
+    </ng-container>
+
+    <ng-container *ngIf='type=="exchange"'>
+      <ion-row>
+        <ion-col>
+          改签费用{{exchangeFee||0}}元。(其中机票款{{trip?.TicketPrice}}元，税收{{trip?.Tax}}元)
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf='getTicketIssueDateTime() as TicketIssueDateTime'>
+        <ion-col>
+          <ion-text color='danger'>最晚保留时间</ion-text>
+        </ion-col>
+        <ion-col>
+          <ion-text color='danger'>{{TicketIssueDateTime}}</ion-text>
+        </ion-col>
+      </ion-row>
+      <app-flight-original-trip [ticket]='ticket' [trips]='originalTrips'></app-flight-original-trip>
+    </ng-container>
+
+    <ng-container *ngIf='type=="refund"'>
+      <ion-row>
+        <ion-col>
+          退票手续费:{{refundDeductionFee||0}}元。
+        </ion-col>
+      </ion-row>
+      <app-flight-original-trip [ticket]='ticket' [trips]='originalTrips'></app-flight-original-trip>
+    </ng-container>
+
+    <ng-container *ngIf='type=="issue"'>
+      <ion-row>
+        <ion-col>
+          机票费用：{{trip?.TicketPrice+trip?.Tax||0}}元。(其中机票款{{trip?.TicketPrice}}元，税收{{trip?.Tax}}元)
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf='ticket?.TicketNo&&ticket?.TicketNo !="-"'>
+        <ion-col>
+          <ion-text color='danger'>票号：{{ticket?.TicketNo}}</ion-text>
+        </ion-col>
+      </ion-row>
+    </ng-container>
+
+  </ion-grid>
+</div>

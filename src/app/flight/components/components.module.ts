@@ -21,12 +21,14 @@ import { SelectedPassengersComponent } from "../../tmc/components/selected-passe
 import { SelectedFlightsegmentInfoComponent } from "./selected-flightsegment-info/selected-flightsegment-info.component";
 import { SelectFlightsegmentCabinComponent } from "./select-flightsegment-cabin/select-flightsegment-cabin.component";
 import { FlightTripComponent } from "./flight-trip/flight-trip.component";
-import { OriginalFlightTripComponent } from "./original-flight-trip/original-flight-trip.component";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
+import { FlightOrderDetialComponent } from "./flight-order-detial/flight-order-detial.component";
+import { FlightOriginalTripComponent } from "./flight-original-trip/flight-original-trip.component";
 
 @NgModule({
   declarations: [
     FlightDynamicComponent,
+    FlightOrderDetialComponent,
     SwitchCityComponent,
     FlyListItemComponent,
     FlyFilterComponent,
@@ -41,7 +43,7 @@ import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module
     SelectedFlightsegmentInfoComponent,
     SelectFlightsegmentCabinComponent,
     FlightTripComponent,
-    OriginalFlightTripComponent
+    FlightOriginalTripComponent
   ],
   imports: [
     CommonModule,
@@ -72,7 +74,8 @@ import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module
     TicketchangingComponent,
     SelectedPassengersComponent,
     FlightTripComponent,
-    OriginalFlightTripComponent
+    FlightOrderDetialComponent,
+    FlightOriginalTripComponent
   ],
   entryComponents: [
     FlyFilterComponent,
