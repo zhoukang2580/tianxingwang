@@ -22,7 +22,7 @@ import { DingtalkHelper } from "../dingtalkHelper";
 })
 export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   loginEntity: RequestEntity;
-  pageInfo: ConfigEntity;
+  pageInfo$: Observable<ConfigEntity>;
   form: FormGroup;
   deviceInfo: any;
   loginSubscription = Subscription.EMPTY;
@@ -81,6 +81,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       .subscribe(r => {
         this.identity = r;
       });
+    this.pageInfo$ = this.configService.getConfigSource();
     // this.fileInfo=this.fileService.fileInfo;
     this.loginEntity = new RequestEntity();
     this.loginEntity.Data = {};
@@ -126,10 +127,6 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       this.isLoginOk = this.form.value.MobileCode;
     }
   }
-
-  ionViewWillEnter() {
-    this.initPage();
-  }
   segmentChanged(evt: CustomEvent) {
     // console.log(evt);
     this.switchLoginType(evt.detail.value);
@@ -155,16 +152,6 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       return wechat.getCode(appId);
     }
     return Promise.reject("cordova wechat plugin is unavailable");
-  }
-  async initPage() {
-   await this.configService
-      .get()
-      .then(r => {
-        this.pageInfo = r;
-      })
-      .catch(e => {
-        console.error(e);
-      });
   }
   switchLoginType(type: string) {
     this.loginType = type;

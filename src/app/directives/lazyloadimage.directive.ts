@@ -33,7 +33,9 @@ export class LazyloadimageDirective implements OnChanges, OnDestroy, OnInit {
   async ngOnInit() {
     if (!this.Failover) {
       await this.imageRecorver.get();
-      this.Failover = this.imageRecorver.Failover;
+      if (this.imageRecorver) {
+        this.Failover = this.imageRecorver.Failover;
+      }
     }
     console.log("failover", this.Failover);
     await this.initializeDefaultImages();
@@ -56,19 +58,26 @@ export class LazyloadimageDirective implements OnChanges, OnDestroy, OnInit {
     }
   }
   async ngOnChanges(changes: SimpleChanges) {
-    await this.initializeDefaultImages();
-    if (!this.image) {
-      this.image =
-        this.el.nativeElement instanceof HTMLImageElement
-          ? this.el.nativeElement
-          : (this.el.nativeElement as HTMLElement).querySelector("img") ||
-            (this.el.nativeElement.shadowRoot &&
-              this.el.nativeElement.shadowRoot.querySelector("img"));
+    if (
+      changes &&
+      changes.lazyloadImage &&
+      changes.lazyloadImage.currentValue
+    ) {
+      await this.initializeDefaultImages();
+      if (!this.image) {
+        this.image =
+          this.el.nativeElement instanceof HTMLImageElement
+            ? this.el.nativeElement
+            : (this.el.nativeElement as HTMLElement).querySelector("img") ||
+              (this.el.nativeElement.shadowRoot &&
+                this.el.nativeElement.shadowRoot.querySelector("img"));
+      }
+      if (this.image) {
+        this.image.src =
+          this.loadingImage || AppHelper.getDefaultLoadingImage();
+      }
+      this.setLoadImage(changes);
     }
-    if (this.image) {
-      this.image.src = this.loadingImage || AppHelper.getDefaultLoadingImage();
-    }
-    this.setLoadImage(changes);
   }
   async setLoadImage(changes: SimpleChanges) {
     if (changes.lazyloadImage && changes.lazyloadImage.currentValue) {
@@ -79,6 +88,27 @@ export class LazyloadimageDirective implements OnChanges, OnDestroy, OnInit {
       );
       if (this.image) {
         this.image.src = this.loadingImage;
+        const id = setTimeout(() => {
+          if (
+            this.image.src == this.loadingImage &&
+            this.image.src != AppHelper.getDefaultLoadingImage()
+          ) {
+            this.image.src = AppHelper.getDefaultLoadingImage();
+          }
+        }, 1000);
+        this.image.onload = () => {
+          if (this.image.src == this.loadingImage) {
+            clearTimeout(id);
+          }
+        };
+        this.image.onerror = () => {
+          if (
+            this.image.src == this.loadingImage &&
+            this.image.src != AppHelper.getDefaultLoadingImage()
+          ) {
+            this.image.src = AppHelper.getDefaultLoadingImage();
+          }
+        };
         this.Initialize(this.image.parentElement);
       }
     }
@@ -93,6 +123,7 @@ export class LazyloadimageDirective implements OnChanges, OnDestroy, OnInit {
       ? allImages
       : this.el.nativeElement.shadowRoot &&
         this.el.nativeElement.shadowRoot.querySelectorAll("img");
+    console.log("allImages", allImages);
     for (let i = 0; i < allImages.length; i++) {
       this.BindErrorEvent(allImages[i]);
     }

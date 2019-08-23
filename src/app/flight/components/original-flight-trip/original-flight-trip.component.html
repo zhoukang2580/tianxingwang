@@ -19,7 +19,7 @@
       <ion-col>
         状态
       </ion-col>
-      <ion-col>
+      <ion-col text-nowrap>
         <ion-text color='danger'>
           {{ticket?.StatusName}}{{ticket?.VariablesJsonObj['IsScrap']?"【废票】":""}}{{
                 (ticket?.Status==OrderFlightTicketStatusType.Exchanged)?(ticket?.FullTicketNo==ticket.OriginalTicketNo?"【同票号】":"【不同票号】"):""}}

@@ -6,7 +6,7 @@
 
 <ion-content padding>
   <ion-toolbar text-center>
-    <img appLazyloadimage [lazyloadImage]="pageInfo?.LogoImageUrl" alt="公司logo" class='logo' />
+    <img appLazyloadimage [lazyloadImage]="(pageInfo$ |async)?.LogoImageUrl" alt="公司logo" class='logo' />
   </ion-toolbar>
   <form [formGroup]='form' padding>
     <ion-segment (ionChange)="segmentChanged($event)" value="user" color='secondary'>

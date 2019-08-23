@@ -35,8 +35,6 @@ export class FlightTripComponent implements OnInit, OnChanges {
   ) {}
   async ngOnChanges(change: SimpleChanges) {
     if (change && change.viewModel && change.viewModel.currentValue) {
-      // console.log("ngOnChanges", this.viewModel);
-
       const orderItems = this.viewModel.orderItems || [];
       this.refundDeductionFee = orderItems
         .filter(it => it.Tag == OrderItemHelper.FlightTicketRefundDeduction)
@@ -57,9 +55,7 @@ export class FlightTripComponent implements OnInit, OnChanges {
       this.viewModel.orderFlightTicket.OrderFlightTrips
     ) {
       this.trips = this.viewModel.orderFlightTicket.OrderFlightTrips || [];
-      if (this.viewModel.existRefund || this.viewModel.existExchanged) {
-        this.trips.concat(this.getOriginalTrips());
-      }
+      this.trips.concat(this.getOriginalTrips());
     }
   }
   getTripDesc() {
@@ -90,42 +86,27 @@ export class FlightTripComponent implements OnInit, OnChanges {
       this.viewModel.orderFlightTicket &&
       this.viewModel.order
     ) {
-      if (this.viewModel.orderFlightTicket) {
-        if (!this.viewModel.orderFlightTicket.VariablesJsonObj) {
-          this.viewModel.orderFlightTicket.VariablesJsonObj =
-            (this.viewModel.orderFlightTicket.Variables &&
-              JSON.parse(this.viewModel.orderFlightTicket.Variables)) ||
-            {};
-        }
+      if (!this.viewModel.orderFlightTicket.VariablesJsonObj) {
+        this.viewModel.orderFlightTicket.VariablesJsonObj =
+          (this.viewModel.orderFlightTicket.Variables &&
+            JSON.parse(this.viewModel.orderFlightTicket.Variables)) ||
+          {};
       }
-      const ticket = (this.viewModel.order.OrderFlightTickets || []).find(
-        it => {
-          return (
-            it.Id ==
-            this.viewModel.orderFlightTicket.VariablesJsonObj[
-              "OriginalTicketId"
-            ]
-          );
-        }
-      );
+      const originalTicketId = this.viewModel.orderFlightTicket
+        .VariablesJsonObj["OriginalTicketId"];
+      const ticket = this.viewModel.order.OrderFlightTickets.find(it => {
+        return it.Id == originalTicketId;
+      });
       originalTrips = (ticket && ticket.OrderFlightTrips) || [];
-      const orderFlightTicket = this.viewModel.orderFlightTicket;
-      originalTrips = originalTrips
-        // .filter(
-        //   it =>
-        //     this.getTimeStamp(it.InsertTime) <
-        //       this.getTimeStamp(orderFlightTicket.IssueTime) ||
-        //     this.getTimeStamp(orderFlightTicket.IssueTime) <=
-        //       +moment("1800-01-01T00:00:00")
-        // )
-        .map(it => {
-          if (it.TakeoffTime) {
-            const m = moment(it.TakeoffTime);
-            const d = this.flydayService.generateDayModel(m);
-            it.TakeoffDate = m.format(`YYYY年MM月DD日(${d.dayOfWeekName})`);
-          }
-          return it;
-        });
+      console.log("原始航班", ticket, originalTrips);
+      originalTrips = originalTrips.map(it => {
+        if (it.TakeoffTime) {
+          const m = moment(it.TakeoffTime);
+          const d = this.flydayService.generateDayModel(m);
+          it.TakeoffDate = m.format(`YYYY年MM月DD日(${d.dayOfWeekName})`);
+        }
+        return it;
+      });
       originalTrips.sort((a, b) => +a.Id - +b.Id);
     }
     return originalTrips;

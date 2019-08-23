@@ -4,7 +4,7 @@ import { ConfigEntity } from "./config.entity";
 import { RequestEntity } from "../api/Request.entity";
 import { ApiService } from "../api/api.service";
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, from, of } from "rxjs";
+import { BehaviorSubject, from, of, Observable } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
 import { switchMap, tap, map, finalize } from "rxjs/operators";
 
@@ -35,6 +35,9 @@ export class ConfigService {
   disposal() {
     this.config = new ConfigEntity();
     this.config.Status = false;
+  }
+  getConfigSource(): Observable<ConfigEntity> {
+    return this.load();
   }
   get(): Promise<ConfigEntity> {
     if (this.config.Status) {

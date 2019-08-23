@@ -579,7 +579,7 @@ export class BookPage implements OnInit, AfterViewInit {
       OrderId: "190000047133",
       IsApp: AppHelper.isApp()
     };
-    this.payService
+   return this.payService
       .wechatpay(req, "")
       .then(r => {
         const req1 = new RequestEntity();
