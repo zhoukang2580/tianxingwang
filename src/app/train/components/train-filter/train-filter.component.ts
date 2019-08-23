@@ -94,7 +94,7 @@ export class TrainFilterComponent implements OnInit {
           const code = it.TrainCode && it.TrainCode.replace(/\d+/g, "");
           this.trainTypes.push({
             label: code ? `${code}-${it.TrainTypeName}` : it.TrainTypeName,
-            id: it.TrainType + "",
+            id: `${it.TrainType}`,
             isChecked: false
           });
         }

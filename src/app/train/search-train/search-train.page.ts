@@ -9,7 +9,7 @@ import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
 import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import * as moment from "moment";
-import { Subscription, Observable } from "rxjs";
+import { Subscription, Observable, of, from } from "rxjs";
 import { DayModel } from "../../tmc/models/DayModel";
 import { ModalController, NavController } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
@@ -18,6 +18,8 @@ import { TripType } from "src/app/tmc/models/TripType";
 import { TrainEntity } from "../models/TrainEntity";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { PassengerBookInfo, TmcService } from "src/app/tmc/tmc.service";
+import { map } from "rxjs/operators";
+import { SelectedTrainSegmentInfoComponent } from "../components/selected-train-segment-info/selected-train-segment-info.component";
 @Component({
   selector: "app-search-train",
   templateUrl: "./search-train.page.html",
@@ -30,6 +32,8 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
   isSelectFlyDate: boolean;
   flyDate: DayModel;
   backDate: DayModel;
+  isShowSelectedInfos$ = of(false);
+  canAddPassengers$ = of(false);
   get totalDays() {
     if (this.backDate && this.flyDate) {
       const detal = Math.floor(
@@ -65,7 +69,8 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     private apiService: ApiService,
     private trainService: TrainService,
     private calendarService: CalendarService,
-    private tmcService: TmcService
+    private tmcService: TmcService,
+    private modalCtrl: ModalController
   ) {
     route.queryParamMap.subscribe(async _ => {
       this.tmcService.setFlightHotelTrainType(FlightHotelTrainType.Train);
@@ -101,6 +106,12 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
   back() {
     this.navCtrl.back();
   }
+  async onShowSelectedBookInfos() {
+    const m = await this.modalCtrl.create({
+      component: SelectedTrainSegmentInfoComponent
+    });
+    m.present();
+  }
   private onRoundTrip(single: boolean) {
     // console.log("onRoundTrip isSingle", single);
     this.isSingle = single;
@@ -119,6 +130,16 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     return await this.staffService.isSelfBookType();
   }
   async ngOnInit() {
+    this.isShowSelectedInfos$ = this.trainService
+      .getBookInfoSource()
+      .pipe(
+        map(infos => infos && infos.filter(it => !!it.trainInfo).length > 0)
+      );
+    this.canAddPassengers$ = from(this.staffService.isSelfBookType()).pipe(
+      map(isSelf => {
+        return !isSelf;
+      })
+    );
     this.selectDaySubscription = this.calendarService
       .getSelectedDays()
       .subscribe(days => {
@@ -155,7 +176,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
         }
       });
     this.apiService.showLoadingView();
-    this.showReturnTrip =await this.staffService.isSelfBookType();
+    this.showReturnTrip = await this.staffService.isSelfBookType();
     this.initTrainDays();
     this.initTrainCities();
     this.apiService.hideLoadingView();
@@ -172,9 +193,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     }
     return `1`;
   }
-  mustAddPassenger() {
-    return this.staff && this.staff.BookType !== StaffBookType.Self;
-  }
+
   onSelectPassenger() {
     this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
   }

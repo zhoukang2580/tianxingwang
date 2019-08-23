@@ -77,7 +77,6 @@ export class TrainService {
       this.identityService.getIdentity()
     ]).subscribe(async ([infos, identity]) => {
       if (identity && identity.Ticket) {
-        await this.staffService.isSelfBookType();
         this.initSelfBookTypeBookInfos(infos);
       }
     });
@@ -114,6 +113,40 @@ export class TrainService {
       }
     }
     return true;
+  }
+  async selectReturnTrip() {
+    const infos = this.getBookInfos();
+    const s = this.getSearchTrainModel();
+    if (
+      !(await this.staffService.isSelfBookType()) ||
+      infos.length == 0 ||
+      !s.isRoundTrip
+    ) {
+      if (s.isLocked) {
+        this.setSearchTrainModel({
+          ...s,
+          isLocked: false
+        });
+      }
+      return;
+    }
+    const go = infos.find(
+      it => it.trainInfo && it.trainInfo.tripType == TripType.departureTrip
+    );
+    if (go) {
+      const backParams = {
+        ...s
+      };
+      backParams.fromCity = s.toCity;
+      backParams.toCity = s.fromCity;
+      backParams.FromStation = s.ToStation;
+      backParams.ToStation = s.FromStation;
+      backParams.Date = s.BackDate;
+      backParams.isLocked = true;
+      this.setSearchTrainModel(backParams);
+      await this.dismissAllTopOverlays();
+      this.router.navigate([AppHelper.getRoutePath("train-list")]);
+    }
   }
   addOrReselectBookInfo(currentViewtTainItem: ICurrentViewtTainItem) {
     console.log("add or reselect book info ", currentViewtTainItem);
@@ -185,8 +218,7 @@ export class TrainService {
     this.selfCredentials = null;
   }
   private async initSelfBookTypeBookInfos(infos: PassengerBookInfo[]) {
-    console.log("train add bookInfo", infos);
-    if (infos.length === 0) {
+    if (infos.length === 0 && (await this.staffService.isSelfBookType())) {
       let IdCredential: CredentialsEntity;
       if (this.staffService.isSelfBookType) {
         const staff = await this.staffService.getStaff();
@@ -199,7 +231,7 @@ export class TrainService {
         IdCredential =
           this.selfCredentials &&
           this.selfCredentials.find(c => c.Type == CredentialsType.IdCard);
-        this.addBookInfo({
+        const i = {
           passenger: staff,
           credential:
             IdCredential ||
@@ -207,7 +239,13 @@ export class TrainService {
               this.selfCredentials.length &&
               this.selfCredentials[1]) ||
             new CredentialsEntity()
-        });
+        };
+        this.addBookInfo(i);
+        if (this.getSearchTrainModel().isRoundTrip) {
+          this.addBookInfo(i);
+        } else {
+          this.setBookInfoSource([i]);
+        }
       }
     }
   }

@@ -1,8 +1,9 @@
+import { StaffService } from "./../../../hr/staff.service";
 import { TrainSeatEntity } from "./../../models/TrainSeatEntity";
 import { TrainService, TrainPolicyModel } from "./../../train.service";
 import { CalendarService } from "./../../../tmc/calendar.service";
 import { ModalController } from "@ionic/angular";
-import { Observable } from "rxjs";
+import { Observable, of, combineLatest, from } from "rxjs";
 import { EventEmitter } from "@angular/core";
 import { Component, OnInit } from "@angular/core";
 import { PassengerBookInfo } from "src/app/tmc/tmc.service";
@@ -11,7 +12,7 @@ import { TrainEntity } from "../../models/TrainEntity";
 import { TripType } from "src/app/tmc/models/TripType";
 import { ITrainInfo } from "../../train.service";
 import { LanguageHelper } from "src/app/languageHelper";
-import { tap } from "rxjs/operators";
+import { tap, map } from "rxjs/operators";
 @Component({
   selector: "app-selected-train-segment-info",
   templateUrl: "./selected-train-segment-info.component.html",
@@ -19,11 +20,12 @@ import { tap } from "rxjs/operators";
 })
 export class SelectedTrainSegmentInfoComponent implements OnInit {
   bookInfos$: Observable<PassengerBookInfo[]>;
-  showSelectReturnTripButton = true;
+  showSelectReturnTrip$ = of(false);
   constructor(
     private modalCtrl: ModalController,
     private calendarService: CalendarService,
-    private trainService: TrainService
+    private trainService: TrainService,
+    private staffService: StaffService
   ) {}
   async back() {
     const t = await this.modalCtrl.getTop();
@@ -37,8 +39,14 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
         console.log("bookinfos", infos);
       })
     );
+    this.showSelectReturnTrip$ = combineLatest([
+      from(this.staffService.isSelfBookType()),
+      this.trainService.getSearchTrainModelSource()
+    ]).pipe(map(([isSelf, s]) => isSelf && s && s.isRoundTrip));
   }
-  onSelectReturnTrip(bookInfo: PassengerBookInfo) {}
+  async onSelectReturnTrip(bookInfo: PassengerBookInfo) {
+    await this.trainService.selectReturnTrip();
+  }
   nextStep() {}
   getDate(s: TrainEntity) {
     if (!s) {

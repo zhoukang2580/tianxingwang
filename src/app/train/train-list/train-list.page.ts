@@ -1,3 +1,4 @@
+import { StaffBookType } from "src/app/hr/staff.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { TrainFilterComponent } from "./../components/train-filter/train-filter.component";
@@ -36,7 +37,7 @@ import { DayModel } from "src/app/tmc/models/DayModel";
 import { DaysCalendarComponent } from "src/app/tmc/components/days-calendar/days-calendar.component";
 // tslint:disable-next-line: max-line-length
 import { FilterPassengersPolicyComponent } from "src/app/tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
-import { Observable, of, Subscription } from "rxjs";
+import { Observable, of, Subscription, combineLatest, from } from "rxjs";
 import { SelectedTrainSegmentInfoComponent } from "../components/selected-train-segment-info/selected-train-segment-info.component";
 import { FilterTrainCondition } from "../models/FilterCondition";
 import { TripType } from "src/app/tmc/models/TripType";
@@ -63,7 +64,7 @@ export class TrainListPage implements OnInit, OnDestroy {
   searchTrainModel: SearchTrainModel;
   timeoutid: any;
   isLeavePage = false;
-  isShowAddPassengerButton = false;
+  isShowAddPassenger$ = of(false);
   isShowRoundtripTip = false;
   policyTrains: TrainPassengerModel[];
   activeTab: "filter" | "time" | "price" | "none"; // 当前激活的tab
@@ -98,9 +99,11 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.changePassengerSubscription.unsubscribe();
   }
   ngOnInit() {
+    this.isShowAddPassenger$ = from(this.staffService.isSelfBookType()).pipe(
+      map(isSelf => !isSelf)
+    );
     this.route.queryParamMap.subscribe(async _ => {
       this.onSearchCondition();
-      this.isShowAddPassengerButton = !this.staffService.isSelfBookType;
       this.isShowRoundtripTip = await this.staffService.isSelfBookType();
       this.isLeavePage = false;
     });
@@ -334,7 +337,7 @@ export class TrainListPage implements OnInit, OnDestroy {
       const result = await m.onDidDismiss();
       if (result && result.data) {
         this.filterCondition = result.data;
-        this.vmTrains = this.filterTrains(this.trains);
+        this.doRefresh(false, true);
       }
     }
   }
@@ -410,14 +413,15 @@ export class TrainListPage implements OnInit, OnDestroy {
         }, 0);
       }
       this.isLoading = true;
-      let data: TrainEntity[] = this.trains || [];
+      let data: TrainEntity[] = [];
       if (loadDataFromServer) {
         // 强制从服务器端返回新数据
         data = await this.loadPolicyedTrainsAsync();
       }
       // 根据筛选条件过滤航班信息：
-      data = this.filterTrains(data);
       data = this.filterPassengerPolicyTrains(toBeFilteredPassengerId);
+      data = this.filterTrains(data);
+      // console.log("filter", data);
       this.vmTrains = data;
       this.apiService.hideLoadingView();
       this.isLoading = false;
@@ -468,11 +472,13 @@ export class TrainListPage implements OnInit, OnDestroy {
           );
           if (policies) {
             result = [];
-            policies.TrainPolicies.map(it => it.train).forEach(it => {
-              if (!result.find(t => t.TrainNo == it.TrainNo)) {
-                result.push(it);
-              }
-            });
+            policies.TrainPolicies.filter(it => it.IsAllowBook)
+              .map(it => it.train)
+              .forEach(it => {
+                if (!result.find(t => t.TrainNo == it.TrainNo)) {
+                  result.push(it);
+                }
+              });
           }
         } else {
           console.log("没有过滤任何人员的差标");
@@ -485,11 +491,20 @@ export class TrainListPage implements OnInit, OnDestroy {
           it => it.PassengerKey == toBeFilteredPassengerId
         );
         if (p) {
-          result = p.TrainPolicies.map(it => it.train);
+          p.TrainPolicies.filter(it => it.IsAllowBook)
+            .map(it => it.train)
+            .forEach(t => {
+              if (!result.find(tr => tr.TrainNo == t.TrainNo)) {
+                result.push(t);
+              }
+            });
         }
       }
     }
-    return result.filter(it => it.Seats && it.Seats.some(s => +s.Count > 0));
+    if (toBeFilteredPassengerId) {
+      return result.filter(it => it.Seats && it.Seats.some(s => +s.Count > 0));
+    }
+    return result;
   }
   onSelectPassenger() {
     this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
@@ -500,6 +515,7 @@ export class TrainListPage implements OnInit, OnDestroy {
     }
   }
   private filterTrains(trains: TrainEntity[]) {
+    console.log("this.filterCondition", this.filterCondition, trains);
     let result = trains;
     result = this.filterByTrainType(result);
     result = this.filterByDepartureTimespan(result);
@@ -526,11 +542,17 @@ export class TrainListPage implements OnInit, OnDestroy {
     return trains;
   }
   private filterByTrainType(trains: TrainEntity[]) {
-    if (trains && this.filterCondition && this.filterCondition.trainTypes) {
-      return trains.filter(train =>
-        this.filterCondition.trainTypes.some(
-          it => it.id == train.TrainType + ""
-        )
+    if (
+      trains &&
+      this.filterCondition &&
+      this.filterCondition.trainTypes &&
+      this.filterCondition.trainTypes.length
+    ) {
+      return trains.filter(
+        train =>
+          !!this.filterCondition.trainTypes.find(
+            it => it.id == `${train.TrainType}`
+          )
       );
     }
     return trains;
@@ -539,7 +561,8 @@ export class TrainListPage implements OnInit, OnDestroy {
     if (
       trains &&
       this.filterCondition &&
-      this.filterCondition.departureStations
+      this.filterCondition.departureStations &&
+      this.filterCondition.departureStations.length
     ) {
       return trains.filter(train =>
         this.filterCondition.departureStations.some(
@@ -553,7 +576,8 @@ export class TrainListPage implements OnInit, OnDestroy {
     if (
       trains &&
       this.filterCondition &&
-      this.filterCondition.arrivalStations
+      this.filterCondition.arrivalStations &&
+      this.filterCondition.arrivalStations.length
     ) {
       return trains.filter(train =>
         this.filterCondition.arrivalStations.some(
