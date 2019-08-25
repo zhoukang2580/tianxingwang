@@ -262,7 +262,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     const s = new SearchTrainModel();
     s.tripType = TripType.departureTrip;
     const staff = await this.staffService.getStaff();
-    if (this.staffService.isSelfBookType) {
+    if (await this.staffService.isSelfBookType()) {
       const exists = this.trainService
         .getBookInfos()
         .filter(

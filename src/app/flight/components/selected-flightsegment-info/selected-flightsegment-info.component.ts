@@ -59,8 +59,8 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     this.passengerAndBookInfos$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(
-        tap(infos => {
-          if (this.staffService.isSelfBookType) {
+        tap(async infos => {
+          if (await this.staffService.isSelfBookType()) {
             const goinfo = infos.find(
               item =>
                 item.flightSegmentInfo &&

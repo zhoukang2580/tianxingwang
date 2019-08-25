@@ -130,6 +130,10 @@ export class TrainListPage implements OnInit, OnDestroy {
               this.searchTrainModel.Date
             )
           );
+          if (this.isLeavePage || this.isLoading) {
+            return;
+          }
+          this.doRefresh(true, true);
         }
       });
     this.selectedPassengersNumbers$ = this.trainService
@@ -438,7 +442,7 @@ export class TrainListPage implements OnInit, OnDestroy {
     }
   }
   async onBookTicket(train: TrainEntity, seat: TrainSeatEntity) {
-    if (this.trainService.checkCanAdd()) {
+    if (await this.trainService.checkCanAdd()) {
       const currentViewtTainItem: ICurrentViewtTainItem = {
         selectedSeat: seat,
         totalPolicies: this.policyTrains,

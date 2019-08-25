@@ -253,7 +253,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     const identity = await this.identityService.getIdentityAsync();
     this.showAddPassenger =
       (identity && identity.Numbers && identity.Numbers.AgentId) ||
-      (await !this.staffService.isSelfBookType());
+      !(await this.staffService.isSelfBookType());
     return this.showAddPassenger;
   }
   async isStaffTypeSelf() {
@@ -478,7 +478,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     const bookInfos = this.flightService.getPassengerBookInfos();
     if (
       passengerId ||
-      this.staffService.isSelfBookType ||
+      (await this.staffService.isSelfBookType()) ||
       bookInfos.length == 1
     ) {
       flightJourneyList = this.replaceCabinInfo(
@@ -557,7 +557,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.goToSelectPassengerPage();
       return;
     }
-    const canbookMore = this.flightService.canBookMoreFlightSegment(fs);
+    const canbookMore = await this.flightService.canBookMoreFlightSegment(fs);
     if (!canbookMore) {
       await AppHelper.alert(
         LanguageHelper.Flight.getCannotBookMoreFlightSegmentTip(),

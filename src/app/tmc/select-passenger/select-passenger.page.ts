@@ -453,8 +453,11 @@ export class SelectPassengerPage
     };
     action();
   }
-  private canAddMorePassenger(passengerBookInfos: PassengerBookInfo[]) {
-    if (!this.staffService.isSelfBookType && passengerBookInfos.length >= 9) {
+  private async canAddMorePassenger(passengerBookInfos: PassengerBookInfo[]) {
+    if (
+      !(await this.staffService.isSelfBookType()) &&
+      passengerBookInfos.length >= 9
+    ) {
       AppHelper.alert(LanguageHelper.Flight.getCannotBookMorePassengerTip());
       return false;
     }
@@ -464,9 +467,10 @@ export class SelectPassengerPage
     if (
       this.tmcService.getFlightHotelTrainType() == FlightHotelTrainType.Flight
     ) {
-      if (
-        !this.canAddMorePassenger(this.flightService.getPassengerBookInfos())
-      ) {
+      const can = this.canAddMorePassenger(
+        this.flightService.getPassengerBookInfos()
+      );
+      if (!can) {
         return false;
       }
       const bookInfos = this.flightService.getPassengerBookInfos();

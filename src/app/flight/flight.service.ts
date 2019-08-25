@@ -176,7 +176,7 @@ export class FlightService {
     ) {
       return true;
     }
-    if (this.staffService.isSelfBookType) {
+    if (await this.staffService.isSelfBookType()) {
       if (this.searchFlightModel.isRoundTrip) {
         const infos = this.getPassengerBookInfos();
         const info = infos.find(
@@ -203,11 +203,11 @@ export class FlightService {
       return !this.checkIfExcessMaxLimitedBookTickets(9);
     }
   }
-  canBookMoreFlightSegment(flightSegment: FlightSegmentEntity) {
+  async canBookMoreFlightSegment(flightSegment: FlightSegmentEntity) {
     if (!flightSegment) {
       return true;
     }
-    if (this.staffService.isSelfBookType) {
+    if (await this.staffService.isSelfBookType()) {
       if (this.getSearchFlightModel().isRoundTrip) {
         const arr = this.getPassengerBookInfos();
         if (arr.filter(item => !!item.flightSegmentInfo).length == 2) {

@@ -110,7 +110,7 @@ export class FlightItemCabinsPage implements OnInit {
       this.isShowPolicyCabins = true;
     } else {
       this.isShowPolicyCabins = false;
-      if (this.staffService.isSelfBookType) {
+      if (await this.staffService.isSelfBookType()) {
         this.isShowPolicyCabins = true;
         this.showPolicyCabins();
       }
@@ -152,7 +152,7 @@ export class FlightItemCabinsPage implements OnInit {
     setTimeout(async () => {
       const bookInfos = this.flightService.getPassengerBookInfos();
       const showPl = bookInfos.length == 1;
-      if (this.staffService.isSelfBookType || showPl) {
+      if (await this.staffService.isSelfBookType() || showPl) {
         this.isShowPolicyCabins = true;
         this.showPolicyCabins();
       } else {
