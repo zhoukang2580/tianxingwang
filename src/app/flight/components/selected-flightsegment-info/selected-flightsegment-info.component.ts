@@ -37,6 +37,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
   identity: IdentityEntity;
   showSelectReturnTripButton = false;
   currentViewtFlightSegment: CurrentViewtFlightSegment;
+  TripType = TripType;
   constructor(
     private modalCtrl: ModalController,
     private flightService: FlightService,
@@ -45,7 +46,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     private staffService: StaffService,
     private router: Router,
     private navCtrl: NavController
-  ) { }
+  ) {}
   ngOnDestroy() {
     this.searchModelSubscrition.unsubscribe();
   }
@@ -87,7 +88,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
   async back() {
     const t = await this.modalCtrl.getTop();
     if (t) {
-      t.dismiss().catch(_ => { });
+      t.dismiss().catch(_ => {});
     }
   }
   getTime(takofftime: string) {
@@ -98,7 +99,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
   }
   async nextStep() {
     this.flightService.dismissAllTopOverlays();
-    this.router.navigate([AppHelper.getRoutePath("flight-book")]);
+    this.router.navigate([AppHelper.getRoutePath("train-book")]);
   }
   async reelect(info: PassengerBookInfo) {
     await this.flightService.reselectPassengerFlightSegments(info);
@@ -203,7 +204,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
         },
         {
           text: LanguageHelper.getCancelTip(),
-          handler: () => { }
+          handler: () => {}
         }
       ]
     });
@@ -226,7 +227,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
       info.tripType == TripType.departureTrip
         ? LanguageHelper.getDepartureTip()
         : LanguageHelper.getReturnTripTip()
-      }]`;
+    }]`;
   }
 
   async onSelectReturnTrip() {

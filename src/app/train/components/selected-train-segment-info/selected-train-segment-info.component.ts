@@ -21,6 +21,7 @@ import { tap, map } from "rxjs/operators";
 export class SelectedTrainSegmentInfoComponent implements OnInit {
   bookInfos$: Observable<PassengerBookInfo[]>;
   showSelectReturnTrip$ = of(false);
+  TripType = TripType;
   constructor(
     private modalCtrl: ModalController,
     private calendarService: CalendarService,
@@ -41,8 +42,13 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
     );
     this.showSelectReturnTrip$ = combineLatest([
       from(this.staffService.isSelfBookType()),
-      this.trainService.getSearchTrainModelSource()
-    ]).pipe(map(([isSelf, s]) => isSelf && s && s.isRoundTrip));
+      this.trainService.getSearchTrainModelSource(),
+      this.trainService.getBookInfoSource()
+    ]).pipe(
+      map(([isSelf, s, bookInfos]) => {
+        return isSelf && s && s.isRoundTrip && bookInfos.length < 2;
+      })
+    );
   }
   async onSelectReturnTrip(bookInfo: PassengerBookInfo) {
     await this.trainService.selectReturnTrip();

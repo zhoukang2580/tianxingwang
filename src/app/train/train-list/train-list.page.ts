@@ -77,7 +77,6 @@ export class TrainListPage implements OnInit, OnDestroy {
   timeOrdM2N: boolean; // 时间从早到晚
   filterCondition: FilterTrainCondition;
   searchModalSubscription = Subscription.EMPTY;
-  changePassengerSubscription = Subscription.EMPTY;
   constructor(
     private tmcService: TmcService,
     private trainService: TrainService,
@@ -96,7 +95,6 @@ export class TrainListPage implements OnInit, OnDestroy {
   }
   ngOnDestroy() {
     this.searchModalSubscription.unsubscribe();
-    this.changePassengerSubscription.unsubscribe();
   }
   ngOnInit() {
     this.isShowAddPassenger$ = from(this.staffService.isSelfBookType()).pipe(
@@ -106,22 +104,17 @@ export class TrainListPage implements OnInit, OnDestroy {
       this.onSearchCondition();
       this.isShowRoundtripTip = await this.staffService.isSelfBookType();
       this.isLeavePage = false;
+      // if (!this.isLoading) {
+      //   this.doRefresh(true, false);
+      // }
     });
-    this.changePassengerSubscription = this.trainService
-      .getBookInfoSource()
-      .subscribe(infos => {
-        if (infos.length) {
-          if (this.isLeavePage || this.isLoading) {
-            return;
-          }
-          this.doRefresh(true, true);
-        }
-      });
+
     this.doRefresh(true, true);
     this.searchModalSubscription = this.trainService
       .getSearchTrainModelSource()
-      .subscribe(modal => {
+      .subscribe(async modal => {
         this.searchTrainModel = modal;
+        console.log(modal, this.isLeavePage, this.isLoading);
         if (this.searchTrainModel) {
           this.vmFromCity = this.searchTrainModel.fromCity;
           this.vmToCity = this.searchTrainModel.toCity;
@@ -130,10 +123,18 @@ export class TrainListPage implements OnInit, OnDestroy {
               this.searchTrainModel.Date
             )
           );
-          if (this.isLeavePage || this.isLoading) {
-            return;
+          if (
+            modal &&
+            !this.isLeavePage &&
+            !this.isLoading &&
+            modal.isRefreshData
+          ) {
+            this.doRefresh(true, false);
+            this.trainService.setSearchTrainModel({
+              ...modal,
+              isRefreshData: false
+            });
           }
-          this.doRefresh(true, true);
         }
       });
     this.selectedPassengersNumbers$ = this.trainService
@@ -319,7 +320,12 @@ export class TrainListPage implements OnInit, OnDestroy {
     await popover.present();
     const d = await popover.onDidDismiss();
     if (d && d.data) {
-      this.doRefresh(false, false, d.data);
+      // this.doRefresh(false, false, d.data);
+      this.isLoading = true;
+      let data = this.filterPassengerPolicyTrains(d.data);
+      data = this.filterTrains(data);
+      this.vmTrains = data;
+      this.isLoading = false;
     } else {
       this.doRefresh(true, false);
     }
@@ -387,17 +393,16 @@ export class TrainListPage implements OnInit, OnDestroy {
       }
     });
   }
-  async doRefresh(
-    loadDataFromServer: boolean,
-    keepSearchCondition: boolean,
-    toBeFilteredPassengerId?: string
-  ) {
+  async doRefresh(loadDataFromServer: boolean, keepSearchCondition: boolean) {
     if (this.ionRefresher) {
       this.ionRefresher.disabled = true;
       this.ionRefresher.complete();
       setTimeout(() => {
         this.ionRefresher.disabled = false;
       }, 100);
+    }
+    if (this.isLoading || this.isLeavePage) {
+      return;
     }
     this.moveDayToSearchDate();
     if (this.timeoutid) {
@@ -423,7 +428,7 @@ export class TrainListPage implements OnInit, OnDestroy {
         data = await this.loadPolicyedTrainsAsync();
       }
       // 根据筛选条件过滤航班信息：
-      data = this.filterPassengerPolicyTrains(toBeFilteredPassengerId);
+      // data = this.filterPassengerPolicyTrains(toBeFilteredPassengerId);
       data = this.filterTrains(data);
       // console.log("filter", data);
       this.vmTrains = data;
@@ -514,9 +519,11 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
   }
   private scrollToTop() {
-    if (this.cnt) {
-      this.cnt.scrollToTop(100);
-    }
+    setTimeout(() => {
+      if (this.cnt) {
+        this.cnt.scrollToTop(50);
+      }
+    }, 100);
   }
   private filterTrains(trains: TrainEntity[]) {
     console.log("this.filterCondition", this.filterCondition, trains);

@@ -33,6 +33,7 @@ export class SearchTrainModel {
   isLocked?: boolean;
   tripType: TripType;
   isRoundTrip?: boolean; // 是否是往返
+  isRefreshData?: boolean;
 }
 export interface ISelectedStation {
   isSelectFrom: boolean;
@@ -77,7 +78,7 @@ export class TrainService {
       this.identityService.getIdentity()
     ]).subscribe(async ([infos, identity]) => {
       if (identity && identity.Ticket) {
-        this.initSelfBookTypeBookInfos(infos);
+        this.initSelfBookTypeBookInfos();
       }
     });
     identityService.getIdentity().subscribe(res => {
@@ -92,7 +93,15 @@ export class TrainService {
     if (m) {
       m.dismiss();
     }
-    this.router.navigate([AppHelper.getRoutePath("train-list")]);
+    this.setSearchTrainModel({
+      ...this.getSearchTrainModel(),
+      isLocked: false,
+      tripType: TripType.departureTrip
+    });
+    if (await this.staffService.isSelfBookType()) {
+      this.setBookInfoSource([]);
+    }
+    this.router.navigate([AppHelper.getRoutePath("search-train")]);
   }
   async checkCanAdd() {
     if (this.getBookInfos().find(it => it.isReplace)) {
@@ -125,7 +134,8 @@ export class TrainService {
       if (s.isLocked) {
         this.setSearchTrainModel({
           ...s,
-          isLocked: false
+          isLocked: false,
+          isRefreshData: false
         });
       }
       return;
@@ -133,6 +143,12 @@ export class TrainService {
     const go = infos.find(
       it => it.trainInfo && it.trainInfo.tripType == TripType.departureTrip
     );
+    if (infos.length == 1) {
+      this.addBookInfo({
+        ...infos[0],
+        trainInfo: null
+      });
+    }
     if (go) {
       const backParams = {
         ...s
@@ -144,6 +160,7 @@ export class TrainService {
       backParams.Date = s.BackDate;
       backParams.isLocked = true;
       backParams.tripType = TripType.returnTrip;
+      backParams.isRefreshData = true;
       await this.dismissAllTopOverlays();
       await this.router.navigate([AppHelper.getRoutePath("train-list")]);
       this.setSearchTrainModel(backParams);
@@ -151,6 +168,16 @@ export class TrainService {
   }
   async addOrReselectBookInfo(currentViewtTainItem: ICurrentViewtTainItem) {
     console.log("add or reselect book info ", currentViewtTainItem);
+    const isSelftBookType = await this.staffService.isSelfBookType();
+    if (isSelftBookType) {
+      await this.addOrReselectSelfBookTypeBookInfo(currentViewtTainItem);
+    } else {
+      await this.addOrReselectNotSelfBookTypeBookInfo(currentViewtTainItem);
+    }
+  }
+  private async addOrReselectSelfBookTypeBookInfo(
+    currentViewtTainItem: ICurrentViewtTainItem
+  ) {
     if (
       currentViewtTainItem &&
       currentViewtTainItem.selectedSeat &&
@@ -158,19 +185,87 @@ export class TrainService {
       currentViewtTainItem.train
     ) {
       let bookInfos = this.getBookInfos();
-      const isSelftBookType = await this.staffService.isSelfBookType();
-      bookInfos = bookInfos.map(bookInfo => {
-        let tripType = TripType.departureTrip;
-        if (isSelftBookType && this.getSearchTrainModel().isRoundTrip) {
-          const go = bookInfos.find(
-            item =>
-              item.trainInfo &&
-              item.trainInfo.tripType == TripType.departureTrip
+      if (bookInfos && bookInfos.length) {
+        const passenger = bookInfos[0].passenger;
+        const accountId =
+          (passenger && passenger.AccountId) ||
+          (passenger && passenger.Account && passenger.Account.Id);
+        if (!currentViewtTainItem.selectedSeat.Policy) {
+          const policy = currentViewtTainItem.totalPolicies.find(
+            k => k.PassengerKey == accountId
           );
-          if (go && !bookInfos.find(item => item.isReplace)) {
-            tripType = TripType.returnTrip;
+          if (policy) {
+            currentViewtTainItem.selectedSeat.Policy = policy.TrainPolicies.find(
+              i =>
+                i.TrainNo == currentViewtTainItem.train.TrainNo &&
+                i.SeatType == currentViewtTainItem.selectedSeat.SeatType
+            );
           }
         }
+        const trainInfo = {
+          trainEntity: currentViewtTainItem.train,
+          trainPolicy: currentViewtTainItem.selectedSeat.Policy,
+          tripType: TripType.departureTrip,
+          id: AppHelper.uuid(),
+          selectedSeat: currentViewtTainItem.selectedSeat
+        };
+        const s = this.getSearchTrainModel();
+        if (!s.isRoundTrip) {
+          // 单程
+          trainInfo.tripType = TripType.departureTrip;
+          bookInfos = [
+            {
+              ...bookInfos[0],
+              trainInfo,
+              id: AppHelper.uuid()
+            }
+          ];
+        } else {
+          // 往返
+          trainInfo.tripType = TripType.departureTrip;
+          const go = bookInfos.find(
+            it =>
+              it.trainInfo && it.trainInfo.tripType == TripType.departureTrip
+          );
+          if (go) {
+            trainInfo.tripType = TripType.returnTrip;
+            bookInfos = [
+              go,
+              {
+                ...go,
+                trainInfo,
+                id: AppHelper.uuid()
+              }
+            ];
+          } else {
+            bookInfos = [
+              {
+                ...bookInfos[0],
+                trainInfo,
+                id: AppHelper.uuid()
+              }
+            ];
+          }
+        }
+      } else {
+        this.initSelfBookTypeBookInfos();
+      }
+
+      this.setBookInfoSource(bookInfos);
+    }
+  }
+  private async addOrReselectNotSelfBookTypeBookInfo(
+    currentViewtTainItem: ICurrentViewtTainItem
+  ) {
+    if (
+      currentViewtTainItem &&
+      currentViewtTainItem.selectedSeat &&
+      currentViewtTainItem.totalPolicies &&
+      currentViewtTainItem.train
+    ) {
+      let bookInfos = this.getBookInfos();
+      bookInfos = bookInfos.map(bookInfo => {
+        const tripType = TripType.departureTrip;
         if (!currentViewtTainItem.selectedSeat.Policy) {
           const policy = currentViewtTainItem.totalPolicies.find(
             k => k.PassengerKey == bookInfo.passenger.AccountId
@@ -219,7 +314,8 @@ export class TrainService {
     this.setBookInfoSource([]);
     this.selfCredentials = null;
   }
-  private async initSelfBookTypeBookInfos(infos: PassengerBookInfo[]) {
+  private async initSelfBookTypeBookInfos() {
+    const infos = this.getBookInfos();
     if (infos.length === 0 && (await this.staffService.isSelfBookType())) {
       let IdCredential: CredentialsEntity;
       if (await this.staffService.isSelfBookType()) {
@@ -276,8 +372,11 @@ export class TrainService {
   }
   addBookInfo(arg: PassengerBookInfo) {
     console.log("train add bookInfo", arg);
-    this.bookInfos.push(arg);
-    this.setBookInfoSource(this.bookInfos);
+    if (arg) {
+      arg.id = AppHelper.uuid();
+      this.bookInfos.push(arg);
+      this.setBookInfoSource(this.bookInfos);
+    }
   }
   async openCalendar(isMulti: boolean) {
     const goTrain = this.getBookInfos().find(
@@ -360,8 +459,10 @@ export class TrainService {
     return this.bookInfoSource.asObservable();
   }
   removeBookInfo(info: PassengerBookInfo) {
-    this.bookInfos = this.bookInfos.filter(item => item.id != info.id);
-    this.setBookInfoSource(this.bookInfos);
+    if (info) {
+      this.bookInfos = this.bookInfos.filter(item => item.id != info.id);
+      this.setBookInfoSource(this.bookInfos);
+    }
   }
   private async cacheTrafficLinesAsync(lines: TrafficlineEntity[]) {
     const now = Math.floor(Date.now() / 1000);

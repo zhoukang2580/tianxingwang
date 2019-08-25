@@ -15,7 +15,7 @@ import { CmsModule } from "./cms/cms.module";
 import { MessageModule } from "./message/message.module";
 import { TainRoutingModule } from "./train/tain-routing.module";
 import { OrderModule } from "./order/order.module";
-import { HrModule } from './hr/hr.module';
+import { HrModule } from "./hr/hr.module";
 
 const routes: Routes = [
   {

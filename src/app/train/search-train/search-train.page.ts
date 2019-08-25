@@ -261,33 +261,6 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     this.storage.set("toTrainStation", this.toCity);
     const s = new SearchTrainModel();
     s.tripType = TripType.departureTrip;
-    const staff = await this.staffService.getStaff();
-    if (await this.staffService.isSelfBookType()) {
-      const exists = this.trainService
-        .getBookInfos()
-        .filter(
-          item => item.passenger && item.passenger.AccountId == staff.AccountId
-        );
-      let goTrain: TrainEntity;
-      const info = exists.find(
-        it => it.trainInfo && it.trainInfo.tripType == TripType.departureTrip
-      );
-      if (info) {
-        s.tripType = TripType.returnTrip;
-        goTrain = info.trainInfo && info.trainInfo.trainEntity;
-      } else {
-        s.tripType = TripType.departureTrip;
-      }
-      if (s.tripType == TripType.returnTrip && goTrain) {
-        const arrivalDate = moment(goTrain.ArrivalTime);
-        if (
-          +moment(this.backDate.date) <
-          +moment(arrivalDate.format("YYYY-MM-DD"))
-        ) {
-          this.backDate = this.calendarService.generateDayModel(arrivalDate);
-        }
-      }
-    }
     s.Date = this.flyDate.date;
     s.FromStation = this.fromCity.Code;
     s.ToStation = this.toCity.Code;

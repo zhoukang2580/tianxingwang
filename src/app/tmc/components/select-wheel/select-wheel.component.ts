@@ -146,16 +146,20 @@ export class SelectWheelComponent
     liEleHeight: number,
     closestIndex: number
   ) {
-    if (closestIndex < 0 || !scrollEle || !liEleHeight) {
-      return;
-    }
     this.domCtrl.read(_ => {
+      if (closestIndex < 0 || !scrollEle || !liEleHeight) {
+        return;
+      }
       const index = closestIndex > 0 ? closestIndex - 1 : closestIndex;
       const scrollTop = scrollEle.scrollTop;
       const remain = scrollTop % liEleHeight;
       const targetScrollDelta = liEleHeight * index - scrollTop;
       if (remain !== 0 || targetScrollDelta) {
         this.domCtrl.write(_ => {
+          if (!scrollEle) {
+            return;
+          }
+          // console.log("select wheel scrollEle", scrollEle);
           scrollEle.scrollBy({
             top: targetScrollDelta,
             left: 0,

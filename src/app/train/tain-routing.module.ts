@@ -6,7 +6,14 @@ export const routes: Routes = [
     path: "train-list",
     loadChildren: "./train-list/train-list.module#TrainListPageModule"
   },
-  { path: 'search-train', loadChildren: './search-train/search-train.module#SearchTrainPageModule' }
+  {
+    path: "search-train",
+    loadChildren: "./search-train/search-train.module#SearchTrainPageModule"
+  },
+  {
+    path: "train-book",
+    loadChildren: "./train-book/train-book.module#TrainBookPageModule"
+  }
 ];
 @NgModule({
   declarations: [],

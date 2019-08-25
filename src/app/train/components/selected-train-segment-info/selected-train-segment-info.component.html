@@ -13,7 +13,7 @@
     <ion-item-divider color='primary' sticky>
       <ion-label color='dark'>{{bookInfo?.passenger?.Name}}{{bookInfo?.credential?.Number}}</ion-label>
     </ion-item-divider>
-    <ion-item *ngIf='bookInfo?.trainInfo'>
+    <ion-item *ngIf='bookInfo?.trainInfo' lines='none'>
       <div class='detail'>
         <div class='date'>
           <strong>{{getDate(bookInfo?.trainInfo?.trainEntity)}} <ion-text color='secondary'>
@@ -30,13 +30,13 @@
         <ion-label class='rules' color='danger' text-wrap>
           {{bookInfo?.trainInfo?.trainPolicy?.Rules?.join("; ")}}
         </ion-label>
-        <div class='reset'>
+        <div class='reset' *ngIf='bookInfo?.trainInfo?.tripType!=TripType.returnTrip'>
           <ion-button expand='block' color='secondary' size='small' (click)='reelect(bookInfo)'>重选
           </ion-button>
         </div>
       </div>
     </ion-item>
-    <ion-item lines='none' *ngIf='showSelectReturnTrip$|async'>
+    <ion-item lines='none' *ngIf='(showSelectReturnTrip$|async)&&bookInfo?.trainInfo?.tripType!=TripType.returnTrip'>
       <ion-button slot='end' expand='block' color='secondary' (click)='onSelectReturnTrip()'>
         选择回程
       </ion-button>
