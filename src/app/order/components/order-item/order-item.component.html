@@ -3,7 +3,13 @@
     <ion-col>
       <strong>{{order.Id}}</strong>
       <span *ngIf='order.InsertDateTime'>完成时间:{{order.InsertDateTime}}</span>
-      <ion-text color='secondary'>{{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}}</ion-text>
+      <ion-text color='secondary' *ngIf='order?.Status!=OrderStatusType.WaitPay else payTemp'>
+        {{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}}</ion-text>
+      <ng-template #payTemp>
+        <ion-buttons>
+          <ion-button (click)='onPay($event)' size='small' color='secondary'>{{order.StatusName}}</ion-button>
+        </ion-buttons>
+      </ng-template>
     </ion-col>
   </ion-row>
   <!-- <ion-row *ngFor='let p of order.OrderPassengers'>

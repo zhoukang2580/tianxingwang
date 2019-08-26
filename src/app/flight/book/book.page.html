@@ -80,7 +80,7 @@
             超标：{{s?.flightPolicy?.Rules?.join(",")}}
           </ion-label>
           <div>
-            <ion-button fill='clear' class='change-policy-btn' (click)='openrules(combindInfo)' color='secondary'>
+            <ion-button fill='clear' class='change-policy-btn' (click)='onOpenrules(combindInfo)' color='secondary'>
               退改签政策
               <ion-icon name="arrow-dropdown" *ngIf='combindInfo?.openrules'></ion-icon>
               <ion-icon name="arrow-dropright" *ngIf='!combindInfo?.openrules'></ion-icon>

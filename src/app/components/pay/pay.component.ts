@@ -22,12 +22,22 @@ export class PayComponent implements OnInit {
     });
   }
   async onDone() {
-    this.onCandel();
+    this.back();
   }
-  async onCandel() {
+  async onCancel() {
+    if (this.payWays) {
+      this.payWays.forEach(it => {
+        it.isChecked = false;
+      });
+    }
+    this.back();
+  }
+  async back() {
     const t = await this.popoverController.getTop();
     if (t) {
-      t.dismiss(this.payWays.find(it => it.isChecked)).catch(_ => 0);
+      t.dismiss(this.payWays && this.payWays.find(it => it.isChecked)).catch(
+        _ => 0
+      );
     }
   }
   ngOnInit() {
@@ -53,25 +63,24 @@ export class PayComponent implements OnInit {
     if (AppHelper.isWechatH5() || AppHelper.isWechatMini()) {
       this.payWays = [
         {
-          label: LanguageHelper.PayWays.getAliPayTip(),
+          label: LanguageHelper.PayWays.getWechatPayTip(),
           value: "wechat"
         }
       ];
     }
-    if (
-      (!this.payWays || this.payWays.length === 0) &&
-      !environment.production
-    ) {
-      this.payWays = [];
-      this.payWays.push({
-        label: LanguageHelper.PayWays.getAliPayTip(),
-        value: "ali"
-      });
-      this.payWays.push({
-        label: LanguageHelper.PayWays.getWechatPayTip(),
-        value: "wechat"
-      });
-    }
+    // if (
+    //   (!this.payWays || this.payWays.length === 0) && !environment.production
+    // ) {
+    //   this.payWays = [];
+    //   this.payWays.push({
+    //     label: LanguageHelper.PayWays.getAliPayTip(),
+    //     value: "ali"
+    //   });
+    //   this.payWays.push({
+    //     label: LanguageHelper.PayWays.getWechatPayTip(),
+    //     value: "wechat"
+    //   });
+    // }
     if (this.payWays && this.payWays.length) {
       this.payWays[0].isChecked = true;
     }

@@ -13,6 +13,8 @@ import { TripType } from "src/app/tmc/models/TripType";
 import { ITrainInfo } from "../../train.service";
 import { LanguageHelper } from "src/app/languageHelper";
 import { tap, map } from "rxjs/operators";
+import { AppHelper } from "src/app/appHelper";
+import { Router } from "@angular/router";
 @Component({
   selector: "app-selected-train-segment-info",
   templateUrl: "./selected-train-segment-info.component.html",
@@ -26,7 +28,8 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
     private modalCtrl: ModalController,
     private calendarService: CalendarService,
     private trainService: TrainService,
-    private staffService: StaffService
+    private staffService: StaffService,
+    private router: Router
   ) {}
   async back() {
     const t = await this.modalCtrl.getTop();
@@ -53,7 +56,10 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
   async onSelectReturnTrip(bookInfo: PassengerBookInfo) {
     await this.trainService.selectReturnTrip();
   }
-  nextStep() {}
+  nextStep() {
+    this.trainService.dismissAllTopOverlays();
+    this.router.navigate([AppHelper.getRoutePath("train-book")]);
+  }
   getDate(s: TrainEntity) {
     if (!s) {
       return "";

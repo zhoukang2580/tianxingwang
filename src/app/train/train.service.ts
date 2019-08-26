@@ -12,7 +12,7 @@ import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 import { CredentialsEntity } from "../tmc/models/CredentialsEntity";
 import { Storage } from "@ionic/storage";
 import * as jsPy from "js-pinyin";
-import { PassengerBookInfo, TmcService } from "../tmc/tmc.service";
+import { PassengerBookInfo, TmcService, InitialBookDtoModel } from "../tmc/tmc.service";
 import { CredentialsType } from "../member/pipe/credential.pipe";
 import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
 import * as moment from "moment";
@@ -20,6 +20,7 @@ import { LanguageHelper } from "../languageHelper";
 import { CalendarService } from "../tmc/calendar.service";
 import { TrainSeatEntity } from "./models/TrainSeatEntity";
 import { Router } from "@angular/router";
+import { OrderBookDto } from '../order/models/OrderBookDto';
 const KEY_TRAIN_TRAFFICLINES_DATA = "train-traficlines-data";
 export class SearchTrainModel {
   TrainCode: string;
@@ -566,7 +567,32 @@ export class TrainService {
       new Date(s.ArrivalTime).getDate() - new Date(s.StartTime).getDate();
     return addDay > 0 ? "+" + addDay + LanguageHelper.getDayTip() : "";
   }
-
+  async getInitializeBookDto(
+    bookDto: OrderBookDto
+  ): Promise<InitialBookDtoModel> {
+    const req = new RequestEntity();
+    req.Method = "TmcApiBookUrl-Train-Initialize";
+    req.Data = bookDto;
+    req.IsShowLoading = true;
+    req.Timeout = 60;
+    return this.apiService
+      .getPromiseData<InitialBookDtoModel>(req)
+      .then(res => {
+        res.IllegalReasons = res.IllegalReasons || [];
+        res.Insurances = res.Insurances || {};
+        res.ServiceFees = res.ServiceFees || ({} as any);
+        res.Staffs = res.Staffs || [];
+        res.Staffs = res.Staffs.map(it => {
+          return {
+            ...it,
+            CredentialStaff: { ...it } as any
+          };
+        });
+        res.Tmc = res.Tmc || ({} as any);
+        res.TravelFrom = res.TravelFrom || ({} as any);
+        return res;
+      });
+  }
   scheduleAsync(data: {
     Date: string;
     FromStation: string;

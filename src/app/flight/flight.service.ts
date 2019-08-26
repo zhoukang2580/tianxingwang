@@ -45,6 +45,7 @@ export class SearchFlightModel {
   toCity: TrafficlineEntity;
   tripType: TripType;
   isLocked?: boolean;
+  isRefreshData?: boolean;
 }
 @Injectable({
   providedIn: "root"
@@ -155,6 +156,7 @@ export class FlightService {
     };
   }
   private setPassengerBookInfos(args: PassengerBookInfo[]) {
+    console.log("flight setPassengerBookInfos", args);
     this.passengerBookInfos = args || [];
     this.passengerBookInfoSource.next(this.passengerBookInfos);
   }
@@ -460,7 +462,7 @@ export class FlightService {
     IdCredential =
       this.selfCredentials &&
       this.selfCredentials.find(c => c.Type == CredentialsType.IdCard);
-    this.addPassengerBookInfo({
+    const info = {
       passenger: staff,
       credential:
         IdCredential ||
@@ -468,7 +470,8 @@ export class FlightService {
           this.selfCredentials.length &&
           this.selfCredentials[1]) ||
         new CredentialsEntity()
-    });
+    };
+    this.addPassengerBookInfo(info);
   }
   private async checkOrAddSelfBookTypeBookInfo() {
     if (

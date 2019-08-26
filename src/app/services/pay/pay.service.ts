@@ -40,6 +40,7 @@ export class PayService {
   alipay(req: RequestEntity, path: string) {
     if (AppHelper.isApp()) {
       req.IsShowLoading = true;
+      req.Data.DataType = "json";
       return new Promise<any>((resolve, reject) => {
         const sub = this.apiService
           .getResponse<{ Body: string; Number: string }>(req)
@@ -79,7 +80,7 @@ export class PayService {
     ) {
       req.Data.OpenId = WechatHelper.openId;
       req.IsShowLoading = true;
-      if (AppHelper.isWechatMini()) {
+      if (AppHelper.isWechatMini() || AppHelper.isApp()) {
         req.Data.CreateType = "Mini";
         req.Data.DataType = "json";
       } else if (AppHelper.isWechatH5()) {

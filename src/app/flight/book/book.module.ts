@@ -31,4 +31,4 @@ const routes: Routes = [
   ],
   declarations: [BookPage]
 })
-export class BookPageModule {}
+export class FlightBookPageModule {}

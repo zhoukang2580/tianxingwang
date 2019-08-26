@@ -12,7 +12,7 @@ export const routes: Routes = [
   },
   {
     path: "train-book",
-    loadChildren: "./train-book/train-book.module#TrainBookPageModule"
+    loadChildren: "./book/book.module#TrainBookPageModule"
   }
 ];
 @NgModule({

@@ -103,19 +103,17 @@ export class BookPage implements OnInit, AfterViewInit {
   illegalReasons: IllegalReasonEntity[] = [];
   selfStaff: StaffEntity;
   identity: IdentityEntity;
-  private cnt: IonContent;
-  illegalReasonsEles: QueryList<ElementRef<HTMLElement>>;
   isCheckingPay: boolean;
   isCanSkipApproval$ = of(false);
   appoval: {
     Value: string;
     Text: string;
   };
-  @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChildren("illegalReasonsEle", { read: ElementRef })
-  @ViewChild(IonContent)
-  @ViewChild(IonRefresher)
-  private ionRefresher: IonRefresher;
+  illegalReasonsEles: QueryList<ElementRef<HTMLElement>>;
+  @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
+  @ViewChild(IonContent) cnt: IonContent;
+  @ViewChild(IonRefresher) ionRefresher: IonRefresher;
   constructor(
     private flightService: FlightService,
     private staffService: StaffService,
@@ -401,7 +399,7 @@ export class BookPage implements OnInit, AfterViewInit {
       }
     }
   }
-  openrules(item: ICombindInfo) {
+  onOpenrules(item: ICombindInfo) {
     console.log("CombineedSelectedInfo", item);
     item.openrules = !item.openrules;
   }
@@ -511,6 +509,7 @@ export class BookPage implements OnInit, AfterViewInit {
     if (canBook) {
       const res = await this.flightService.bookFlight(bookDto).catch(e => {
         AppHelper.alert(e);
+        return { TradeNo: "" };
       });
       if (res) {
         if (res.TradeNo) {
@@ -520,7 +519,7 @@ export class BookPage implements OnInit, AfterViewInit {
             (await this.staffService.isSelfBookType()) &&
             bookDto.Passengers[0].TravelPayType == OrderTravelPayType.Person
           ) {
-            const canPay = await this.checkPay(res.TradeNo);
+            const canPay = true || (await this.checkPay(res.TradeNo));
             if (canPay) {
               await this.payOrder(res.TradeNo);
               this.router.navigate([""]); // 回到首页
@@ -576,10 +575,10 @@ export class BookPage implements OnInit, AfterViewInit {
     req.Data = {
       Channel: "App",
       Type: "3",
-      OrderId: "190000047133",
+      OrderId: tradeNo,
       IsApp: AppHelper.isApp()
     };
-   return this.payService
+    return this.payService
       .wechatpay(req, "")
       .then(r => {
         const req1 = new RequestEntity();
@@ -603,7 +602,7 @@ export class BookPage implements OnInit, AfterViewInit {
       Channel: "App",
       Type: "2",
       IsApp: AppHelper.isApp(),
-      OrderId: "190000047133"
+      OrderId: tradeNo
     };
     const r = await this.payService.alipay(req, "").catch(e => {
       AppHelper.alert(e);
@@ -752,13 +751,13 @@ export class BookPage implements OnInit, AfterViewInit {
       }
       const info = combindInfo.modal.flightSegmentInfo;
       const p = new PassengerDto();
-      p.ApprovalId = this.isAllowSelectApprove(combindInfo)
-        ? (combindInfo.appovalStaff &&
+      p.ApprovalId =
+        (this.isAllowSelectApprove(combindInfo) &&
+          (combindInfo.appovalStaff &&
             (combindInfo.appovalStaff.AccountId ||
               (combindInfo.appovalStaff.Account &&
-                combindInfo.appovalStaff.Account.Id))) ||
-          "0"
-        : null;
+                combindInfo.appovalStaff.Account.Id)))) ||
+        "0";
       if (
         !(
           combindInfo.notifyLanguage == "" ||
@@ -1051,7 +1050,7 @@ export class BookPage implements OnInit, AfterViewInit {
           showFriendlyReminder: false,
           isOtherOrganization: false,
           notifyLanguage: "cn",
-          travelType: OrderTravelType.Business,// 默认全部因公
+          travelType: OrderTravelType.Business, // 默认全部因公
           orderTravelPayType: this.tmc && this.tmc.FlightPayType,
           insuranceProducts: this.isShowInsurances(
             item.flightSegmentInfo &&

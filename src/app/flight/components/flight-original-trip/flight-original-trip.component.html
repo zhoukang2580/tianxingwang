@@ -22,7 +22,7 @@
       <ion-col style="justify-content: flex-start">
         <span>{{trip?.CarrierName}}{{trip?.FlightNumber}}</span>
         <span *ngIf='trip?.CodeShareNumber'>(实际承运&nbsp;{{trip?.CarrierName}}{{trip?.CodeShareNumber}})</span>
-        <span>{{getHHmm(trip?.TakeoffTime)}}&nbsp;~&nbsp; {{getHHmm(trip?.ArrivalTime)}}</span>
+        <span style='margin: 0 1em;'>{{getHHmm(trip?.TakeoffTime)}}&nbsp;~&nbsp; {{getHHmm(trip?.ArrivalTime)}}</span>
       </ion-col>
     </ion-row>
     <ion-row>

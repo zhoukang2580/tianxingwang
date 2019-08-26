@@ -28,7 +28,6 @@ const routes: Routes = [
       "./pages/function-test/function-test.module#FunctionTestPageModule"
   },
   { path: "scan", loadChildren: "./pages/scan/scan.module#ScanPageModule" },
-
   {
     path: "",
     component: TabsPage,
@@ -37,11 +36,6 @@ const routes: Routes = [
   {
     loadChildren: "./page404/page404.module#Page404PageModule",
     matcher: AppHelper.matchDefaultRoute
-  },
-  {
-    path: "flight-item-cabins",
-    loadChildren:
-      "./flight/flight-item-cabins/flight-item-cabins.module#FlightItemCabinsPageModule"
   }
 ];
 @NgModule({

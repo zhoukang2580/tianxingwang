@@ -16,12 +16,12 @@ const routes: Routes = [
   {
     path: "flight-item-cabins",
     loadChildren:
-      "./flight-item-cabins/flight-item-cabins.module#FlightItemCabinsPageModule",
+      "src/app/flight/flight-item-cabins/flight-item-cabins.module#FlightItemCabinsPageModule",
     canActivate: [TmcGuard]
   },
   {
     path: "flight-book",
-    loadChildren: "./book/book.module#BookPageModule"
+    loadChildren: "src/app/flight/book/book.module#FlightBookPageModule"
   }
 ];
 @NgModule({

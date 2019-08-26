@@ -99,7 +99,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
   }
   async nextStep() {
     this.flightService.dismissAllTopOverlays();
-    this.router.navigate([AppHelper.getRoutePath("train-book")]);
+    this.router.navigate([AppHelper.getRoutePath("flight-book")]);
   }
   async reelect(info: PassengerBookInfo) {
     await this.flightService.reselectPassengerFlightSegments(info);

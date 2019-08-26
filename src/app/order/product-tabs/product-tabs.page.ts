@@ -1,3 +1,6 @@
+import { ApiService } from "./../../services/api/api.service";
+import { StaffService } from "src/app/hr/staff.service";
+import { PayService } from "src/app/services/pay/pay.service";
 import { AppHelper } from "src/app/appHelper";
 import { OrderModel } from "src/app/order/models/OrderModel";
 import { TmcEntity, TmcService } from "../../tmc/tmc.service";
@@ -23,6 +26,8 @@ import * as moment from "moment";
 import { Subscription } from "rxjs";
 import { finalize } from "rxjs/operators";
 import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
+import { RequestEntity } from "src/app/services/api/Request.entity";
+import { LanguageHelper } from "src/app/languageHelper";
 export const ORDER_TABS = [
   {
     label: "机票",
@@ -74,7 +79,10 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     private modalCtrl: ModalController,
     route: ActivatedRoute,
     private tmcService: TmcService,
-    private router: Router
+    private router: Router,
+    private payService: PayService,
+    private staffService: StaffService,
+    private apiService: ApiService
   ) {
     route.queryParamMap.subscribe(d => {
       console.log("product-tabs", d);
@@ -85,6 +93,94 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   }
   ngOnDestroy() {
     this.loadDataSub.unsubscribe();
+  }
+  private async payOrder(tradeNo: string) {
+    const payWay = await this.payService.selectPayWay();
+    if (!payWay) {
+      const ok = await AppHelper.alert(
+        LanguageHelper.Order.getGiveUpPayTip(),
+        true,
+        LanguageHelper.getYesTip(),
+        LanguageHelper.getNegativeTip()
+      );
+      if (ok) {
+        // this.router.navigate([""]);
+      } else {
+        await this.payOrder(tradeNo);
+      }
+    } else {
+      if (payWay.value == "ali") {
+        await this.aliPay(tradeNo);
+      }
+      if (payWay.value == "wechat") {
+        await this.wechatPay(tradeNo);
+      }
+      // this.router.navigate([""]);
+    }
+    this.doRefresh();
+  }
+  private async wechatPay(tradeNo: string) {
+    const req = new RequestEntity();
+    req.Method = "TmcApiOrderUrl-Pay-Create";
+    req.Version = "2.0";
+    req.Data = {
+      Channel: "App",
+      Type: "3",
+      OrderId: tradeNo,
+      IsApp: AppHelper.isApp()
+    };
+    return this.payService
+      .wechatpay(req, "")
+      .then(r => {
+        const req1 = new RequestEntity();
+        req1.Method = "TmcApiOrderUrl-Pay-Process";
+        req1.Version = "2.0";
+        req1.Data = {
+          OutTradeNo: r,
+          Type: "3"
+        };
+        return this.payService.process(req1);
+      })
+      .catch(r => {
+        AppHelper.alert(r);
+      });
+  }
+  private async aliPay(tradeNo: string) {
+    const req = new RequestEntity();
+    req.Method = "TmcApiOrderUrl-Pay-Create";
+    req.Version = "2.0";
+    req.Data = {
+      Channel: "App",
+      Type: "2",
+      IsApp: AppHelper.isApp(),
+      OrderId: tradeNo
+    };
+    const r = await this.payService.alipay(req, "").catch(e => {
+      AppHelper.alert(e);
+    });
+    if (r) {
+      const req1 = new RequestEntity();
+      req1.Method = "TmcApiOrderUrl-Pay-Process";
+      req1.Version = "2.0";
+      req1.Data = {
+        OutTradeNo: r,
+        Type: "2"
+      };
+      return this.payService.process(req1);
+    }
+  }
+  async onPay(order: OrderEntity) {
+    const isSelfBookType = await this.staffService.isSelfBookType();
+    if (order) {
+      if (order.Status == OrderStatusType.WaitPay) {
+        if (
+          order.TravelPayType == OrderTravelPayType.Person &&
+          isSelfBookType
+        ) {
+          const result = await this.payOrder(order.Id);
+        }
+      }
+    }
   }
   loadMore() {
     this.doSearch();

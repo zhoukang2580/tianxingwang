@@ -168,9 +168,15 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           if (this.isLeavePage || this.isLoading) {
             return;
           }
-          setTimeout(() => {
-            this.doRefresh(true, false);
-          }, 100);
+          if (this.flightService.getSearchFlightModel().isRefreshData) {
+            setTimeout(() => {
+              this.doRefresh(true, false);
+              this.flightService.setSearchFlightModel({
+                ...this.flightService.getSearchFlightModel(),
+                isRefreshData: false
+              });
+            }, 10);
+          }
         }
       });
     this.hasDataSource = new BehaviorSubject(false);
@@ -695,9 +701,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
             return;
           }
           console.log(
-            `isLeavePage,${this.isLeavePage},cur route url = ${
-              this.router.routerState.snapshot.url
-            }`
+            `isLeavePage,${this.isLeavePage},cur route url = ${this.router.routerState.snapshot.url}`
           );
           if (
             this.isLeavePage ||
@@ -883,9 +887,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
               <label>|${s.PlaneType}</label>
               ${
                 s.CodeShareNumber
-                  ? `|<span class='code-share-number'>共享${
-                      s.CodeShareNumber
-                    }</span>`
+                  ? `|<span class='code-share-number'>共享${s.CodeShareNumber}</span>`
                   : ``
               }
           </div>

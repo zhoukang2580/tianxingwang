@@ -27,13 +27,13 @@
   <ng-container *ngIf='!isLoading else fakeList'>
     <ion-list lines='none' *ngIf='orderModel?.Orders.length else nomoredate'>
       <ion-item *ngFor='let order of orderModel?.Orders' (click)='goToDetailPage(order)'>
-        <app-order-item [order]='order'></app-order-item>
+        <app-order-item [order]='order' (payaction)='onPay(order)'></app-order-item>
       </ion-item>
     </ion-list>
   </ng-container>
   <ng-template #nomoredate>
     <app-or-comp>
-        暂无数据
+      暂无数据
     </app-or-comp>
   </ng-template>
   <ng-template #fakeList>
