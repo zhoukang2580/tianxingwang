@@ -144,9 +144,8 @@ export class FlightItemCabinsPage implements OnInit {
         }
         return "warning";
       }
-      return "success";
     }
-    return "primary";
+    return "success";
   }
   async ngOnInit() {
     setTimeout(async () => {

@@ -333,13 +333,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.isLeavePage = true;
     this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
   }
-  async doRefresh(
-    loadDataFromServer: boolean,
-    keepSearchCondition: boolean,
-    passengerId?: string,
-    filterPolicy?: boolean
-  ) {
-    this.moveDayToSearchDate();
+  async doRefresh(loadDataFromServer: boolean, keepSearchCondition: boolean) {
     if (this.timeoutid) {
       clearTimeout(this.timeoutid);
     }
@@ -354,6 +348,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         }
         if (this.refresher) {
           this.refresher.complete();
+          this.refresher.disabled = true;
+          setTimeout(() => {
+            this.refresher.disabled = false;
+          }, 100);
         }
         this.apiService.showLoadingView();
         if (!keepSearchCondition) {
@@ -371,7 +369,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         this.hasDataSource.next(false);
         if (loadDataFromServer) {
           // 强制从服务器端返回新数据
-          data = await this.loadPolicyedFlightsAsync(passengerId);
+          data = await this.loadPolicyedFlightsAsync();
         }
         // 根据筛选条件过滤航班信息：
         const filteredFlightJourenyList = this.filterFlightJourneyList(data);
@@ -380,22 +378,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           Object.keys(this.filterComp.userOps).some(
             k => this.filterComp.userOps[k]
           );
-        let segments = this.flightService.getTotalFlySegments(
+        const segments = this.flightService.getTotalFlySegments(
           filteredFlightJourenyList
         );
-        if (filterPolicy) {
-          segments = segments.filter(s =>
-            s.PoliciedCabins.some(pc => pc.Rules && pc.Rules.length == 0)
-          );
-          if (segments.length == 0) {
-            if (`${passengerId}`.toLowerCase().includes(NOT_WHITE_LIST)) {
-              // 非白名单的是可以选择所有的航班
-              segments = this.flightService.getTotalFlySegments(
-                filteredFlightJourenyList
-              );
-            }
-          }
-        }
         this.st = Date.now();
         this.vmFlights = segments;
         await this.renderFlightList(segments);
@@ -417,9 +402,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }, 100);
   }
-  private async loadPolicyedFlightsAsync(
-    passengerId?: string
-  ): Promise<FlightJourneyEntity[]> {
+  private async loadPolicyedFlightsAsync(): Promise<FlightJourneyEntity[]> {
     // 先获取最新的数据
     this.policyflights = [];
     let flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync(
@@ -453,7 +436,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       if (ps.length > 0) {
         policyflights = await this.flightService.getPolicyflightsAsync(
           flightJourneyList,
-          passengerId ? [passengerId] : ps.map(p => p.AccountId)
+          ps.map(p => p.AccountId)
         );
       }
       // 非白名单可以预订所有的仓位
@@ -468,7 +451,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       if (whitelist.length) {
         this.policyflights = await this.flightService.getPolicyflightsAsync(
           flightJourneyList,
-          passengerId ? [passengerId] : whitelist
+          whitelist
         );
       }
     }
@@ -481,17 +464,16 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.policyflights = [];
       return [];
     }
-    const bookInfos = this.flightService.getPassengerBookInfos();
-    if (
-      passengerId ||
-      (await this.staffService.isSelfBookType()) ||
-      bookInfos.length == 1
-    ) {
-      flightJourneyList = this.replaceCabinInfo(
-        this.policyflights,
-        flightJourneyList
+    const arr = passengers.map(it => {
+      const plicies = this.policyflights.find(
+        item => item.PassengerKey == it.AccountId
       );
-    }
+      return {
+        PassengerKey: it.AccountId,
+        FlightPolicies: (plicies && plicies.FlightPolicies) || []
+      };
+    });
+    this.replaceCabinInfo(arr, flightJourneyList);
     return (this.flightJourneyList = flightJourneyList);
   }
   private getNotWhitelistCabins(
@@ -655,7 +637,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     }
     return flights;
   }
-  async filterPolicyFlights() {
+  async selectFilterPolicyPasseger() {
     const popover = await this.popoverController.create({
       component: FilterPassengersPolicyComponent,
       componentProps: {
@@ -665,10 +647,40 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     });
     await popover.present();
     const d = await popover.onDidDismiss();
-    if (d && d.data) {
-      this.doRefresh(true, false, d.data, true);
-    } else {
-      this.doRefresh(true, false);
+    this.filterPassengerPolicyFlights(d && d.data);
+  }
+  private async filterPassengerPolicyFlights(passengerId: string) {
+    if (passengerId) {
+      const filteredFlightJourenyList = this.flightJourneyList.filter(
+        fj =>
+          fj.FlightRoutes &&
+          fj.FlightRoutes.some(
+            fr =>
+              fr.FlightSegments &&
+              fr.FlightSegments.some(
+                s =>
+                  s.PoliciedCabins &&
+                  s.PoliciedCabins.some(pc => !pc.Rules || pc.Rules.length == 0)
+              )
+          )
+      );
+      let segments = this.flightService.getTotalFlySegments(
+        filteredFlightJourenyList
+      );
+      if (segments.length == 0) {
+        if (`${passengerId}`.toLowerCase().includes(NOT_WHITE_LIST)) {
+          // 非白名单的是可以选择所有的航班
+          segments = this.flightService.getTotalFlySegments(
+            this.flightJourneyList
+          );
+        }
+      }
+      this.st = Date.now();
+      this.vmFlights = segments;
+      await this.renderFlightList(segments);
+      this.hasDataSource.next(!!this.vmFlights.length && !this.isLoading);
+      this.apiService.hideLoadingView();
+      this.isLoading = false;
     }
   }
   async ngOnInit() {
