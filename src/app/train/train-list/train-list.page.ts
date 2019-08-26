@@ -236,23 +236,6 @@ export class TrainListPage implements OnInit, OnDestroy {
       policyTrains = await this.trainService
         .policyAsync(trains, ps.map(p => p.AccountId))
         .catch(_ => []);
-      policyTrains = policyTrains.map(it => {
-        it.TrainPolicies = it.TrainPolicies.map(p => {
-          p.train = trains.find(t => t.TrainNo == p.TrainNo);
-          if (p.train) {
-            p.IsForceBook = p.train.IsForceBook =
-              identity && identity.Numbers && identity.Numbers["AgentId"];
-            if (p.train.Seats) {
-              const s = p.train.Seats.find(s => s.SeatType == p.SeatType);
-              if (s) {
-                s.Policy = p;
-              }
-            }
-          }
-          return p;
-        });
-        return it;
-      });
     }
     return policyTrains;
   }
@@ -272,13 +255,9 @@ export class TrainListPage implements OnInit, OnDestroy {
           p.TrainNo = it.TrainNo;
           p.IsForceBook = it.IsForceBook;
           p.SeatType = s.SeatType;
-          p.train = {
-            ...it,
-            IsAllowOrder: true,
-            Rules: null,
-            IsForceBook: false,
-            IsBook: true
-          };
+          p.IsAllowBook = true;
+          p.Rules = null;
+          p.IsForceBook = false;
           s.Policy = p;
           trainPolicie.TrainPolicies.push(p);
         });
@@ -482,7 +461,11 @@ export class TrainListPage implements OnInit, OnDestroy {
           if (policies) {
             result = [];
             policies.TrainPolicies.filter(it => it.IsAllowBook)
-              .map(it => it.train)
+              .map(
+                it =>
+                  this.trains && this.trains.find(t => t.TrainNo == it.TrainNo)
+              )
+              .filter(it => it && !!it.TrainNo)
               .forEach(it => {
                 if (!result.find(t => t.TrainNo == it.TrainNo)) {
                   result.push(it);
@@ -501,7 +484,11 @@ export class TrainListPage implements OnInit, OnDestroy {
         );
         if (p) {
           p.TrainPolicies.filter(it => it.IsAllowBook)
-            .map(it => it.train)
+            .map(
+              it =>
+                this.trains && this.trains.find(t => t.TrainNo == it.TrainNo)
+            )
+            .filter(it => it && it.TrainNo)
             .forEach(t => {
               if (!result.find(tr => tr.TrainNo == t.TrainNo)) {
                 result.push(t);

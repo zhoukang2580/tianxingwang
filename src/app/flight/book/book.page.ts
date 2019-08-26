@@ -66,13 +66,8 @@ import { PassengerFlightSegmentInfo } from "../models/PassengerFlightInfo";
 import { ProductItemType } from "src/app/tmc/models/ProductItems";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { map, tap } from "rxjs/operators";
-export class AddContact {
-  notifyLanguage: string;
-  name: string;
-  mobile: string;
-  email: string;
-  accountId: string;
-}
+import { AddContact } from 'src/app/tmc/models/AddContact';
+
 @Component({
   selector: "app-book",
   templateUrl: "./book.page.html",
@@ -710,39 +705,6 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     return true;
   }
-  async onModify(item: ICombindInfo) {
-    if (!item.credentialsRequested) {
-      const res: {
-        [accountId: string]: CredentialsEntity[];
-      } = await this.tmcService
-        .getPassengerCredentials([item.modal.passenger.AccountId])
-        .catch(_ => ({ [item.modal.passenger.AccountId]: [] }));
-      if (item.credentials.length) {
-        const exist = item.credentials[0];
-        const credentials = res && res[item.modal.passenger.AccountId];
-        item.credentialsRequested = credentials && credentials.length > 0;
-        if (credentials) {
-          if (credentials.length) {
-            const one = credentials.find(
-              it => it.Number == exist.Number && exist.Type == it.Type
-            );
-            if (one) {
-              item.credentials = [one, ...credentials.filter(it => it != one)];
-            } else {
-              if (item.credentialsRequested) {
-                item.credentials = credentials;
-              }
-            }
-          } else {
-          }
-        }
-      }
-    }
-    if (item.credentials) {
-      item.credentials = item.credentials.filter(it => !!it.Number);
-    }
-    console.log("onModify", item.credentials);
-  }
   private fillBookPassengers(bookDto: OrderBookDto) {
     const showErrorMsg = (msg: string, item: ICombindInfo) => {
       AppHelper.alert(
@@ -929,6 +891,40 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     return true;
   }
+  async onModify(item: ICombindInfo) {
+    if (!item.credentialsRequested) {
+      const res: {
+        [accountId: string]: CredentialsEntity[];
+      } = await this.tmcService
+        .getPassengerCredentials([item.modal.passenger.AccountId])
+        .catch(_ => ({ [item.modal.passenger.AccountId]: [] }));
+      if (item.credentials.length) {
+        const exist = item.credentials[0];
+        const credentials = res && res[item.modal.passenger.AccountId];
+        item.credentialsRequested = credentials && credentials.length > 0;
+        if (credentials) {
+          if (credentials.length) {
+            const one = credentials.find(
+              it => it.Number == exist.Number && exist.Type == it.Type
+            );
+            if (one) {
+              item.credentials = [one, ...credentials.filter(it => it != one)];
+            } else {
+              if (item.credentialsRequested) {
+                item.credentials = credentials;
+              }
+            }
+          } else {
+          }
+        }
+      }
+    }
+    if (item.credentials) {
+      item.credentials = item.credentials.filter(it => !!it.Number);
+    }
+    console.log("onModify", item.credentials);
+  }
+ 
   private moveRequiredEleToViewPort(ele: any) {
     const el: HTMLElement = ele.nativeElement || ele;
     if (!el) {

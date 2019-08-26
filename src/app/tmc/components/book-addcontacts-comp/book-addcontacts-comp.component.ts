@@ -1,7 +1,7 @@
 import { ModalController } from "@ionic/angular";
 import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
-import { AddContact } from "src/app/flight/book/book.page";
 import { AddcontactsModalComponent } from "../addcontacts-modal/addcontacts-modal.component";
+import { AddContact } from '../../models/AddContact';
 
 @Component({
   selector: "app-book-addcontacts-comp",

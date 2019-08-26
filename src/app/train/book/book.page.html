@@ -12,10 +12,10 @@
 <ion-content>
   <ng-container *ngIf='!error else retryTempl'>
     <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'></ion-refresher>
-    <ion-item-group *ngFor="let combindInfo of bookModel?.items">
+    <ion-item-group *ngFor="let combindInfo of viewModel?.combindInfos">
       <ion-item-divider color='primary' sticky>
         {{combindInfo?.credential?.CheckName}}
-        【{{bookModel?.tmc?.Name}}】
+        【{{viewModel?.tmc?.Name}}】
         [成人]
         {{combindInfo?.credential?.Number}}
       </ion-item-divider>
@@ -27,12 +27,12 @@
           <ion-select-option value='en'>英文</ion-select-option>
         </ion-select>
       </ion-item>
-      <ion-item lines='none' class="ion-no-margin" *ngIf='bookModel?.isCanSkipApproval$|async'>
+      <ion-item lines='none' class="ion-no-margin" *ngIf='viewModel?.isCanSkipApproval$|async'>
         <ion-label style='margin-right: 0.5em'>跳过审批:</ion-label>
         <ion-checkbox margin-end color="secondary" [(ngModel)]='combindInfo.isSkipApprove'></ion-checkbox>
       </ion-item>
       <ion-item lines='none' class="ion-no-margin"
-        *ngIf='bookModel?.tmc?.IsShowServiceFee || bookModel?.identity?.Numbers?.AgentId'>
+        *ngIf='viewModel?.tmc?.IsShowServiceFee || viewModel?.identity?.Numbers?.AgentId'>
         <ion-label>服务费:</ion-label>
         <ion-label slot='end' text-end padding-end>{{getServiceFee(combindInfo)}}</ion-label>
       </ion-item>
@@ -59,8 +59,9 @@
           (modify)='onModify(combindInfo)'>
         </app-book-credential-comp>
         <div *ngIf='s?.flightPolicy?.Rules?.length && !combindInfo?.modal.isNotWhitelist'>
-          <app-book-illegal-reason-comp #illegalReasonsEle [illegalReasons]='illegalReasons'
-            [isAllowCustomReason]='tmc?.IsAllowCustomReason' (ionchange)='onIllegalReason($event,combindInfo)'>
+          <app-book-illegal-reason-comp #illegalReasonsEle [illegalReasons]='viewModel?.illegalReasons'
+            [isAllowCustomReason]='viewModel?.tmc?.IsAllowCustomReason'
+            (ionchange)='onIllegalReason($event,combindInfo)'>
           </app-book-illegal-reason-comp>
         </div>
         <app-book-costcenter-comp [isOtherCostCenter]='combindInfo.isOtherCostCenter'
@@ -94,7 +95,7 @@
         </div>
         <div *ngIf='combindInfo?.insuranceProducts?.length'>
           保险:
-          <div *ngFor='let insurance of combindInfo?.insuranceProducts?.slice(0,1)'>
+          <div *ngFor='let insurance of combindInfo?.insuranceProducts'>
             <ion-row>
               <ion-col size='9'>
                 <ion-item>
@@ -121,7 +122,7 @@
         <div *ngIf="isShowApprove()" class='ion-margin-top'>
           审批人:
           <ion-row style='margin-top: .5em;'>
-            <ion-col> 
+            <ion-col>
               <app-timeline [hideLastTimeLineTail]='false'>
                 <app-timeline-item *ngFor='let it of combindInfo?.credentialStaffApprovers'>
                   第{{it.Tag}}级审批:
@@ -137,7 +138,7 @@
       <div class='outnumber ion-margin-top' *ngIf='combindInfo?.tmcOutNumberInfos'>
         外部编号：
         <ion-item-group>
-          <ion-item *ngFor='let n of book?.tmcOutNumberInfos' (click)='onSelectTravelNumber(n,combindInfo)'>
+          <ion-item *ngFor='let n of combindInfo?.tmcOutNumberInfos' (click)='onSelectTravelNumber(n,combindInfo)'>
             <ion-label>{{n.label}}:</ion-label>
             <ion-input [disabled]='n.isDisabled' [value]='n.value' [(ngModel)]='n.value' placeholder="{{n.label}}">
             </ion-input>
@@ -145,25 +146,11 @@
           <ion-item style='height:0'></ion-item>
         </ion-item-group>
       </div>
-      <div class='travel-type ion-margin-top' *ngIf='false'>
-        差旅类型:
-        <ion-radio-group [(ngModel)]='combindInfo.travelType' name='travelType'>
-          <ion-item *ngIf='checkOrderTravelType(orderTravelType.Business)' lines='none'>
-            <ion-label>因公</ion-label>
-            <ion-radio [value]="orderTravelType.Business" [checked]='checkOrderTravelType(orderTravelType.Business)'>
-            </ion-radio>
-          </ion-item>
-          <ion-item *ngIf='checkOrderTravelType(orderTravelType.Person)' lines='none'>
-            <ion-label>因私</ion-label>
-            <ion-radio [value]="orderTravelType.Person" [checked]='checkOrderTravelType(orderTravelType.Person)'>
-            </ion-radio>
-          </ion-item>
-        </ion-radio-group>
-      </div>
+
       <div class='ion-margin-top'>
         支付方式：
         <ion-radio-group [(ngModel)]='combindInfo.orderTravelPayType' name='travelPayType'>
-          <ion-item *ngFor='let pt of orderTravelPayTypes' lines='none'>
+          <ion-item *ngFor='let pt of viewModel?.orderTravelPayTypes' lines='none'>
             <ion-label>{{pt.label}}</ion-label>
             <ion-radio [value]="pt.value" [checked]='combindInfo.orderTravelPayType==pt.value'>
             </ion-radio>

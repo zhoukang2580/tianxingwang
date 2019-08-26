@@ -88,6 +88,11 @@ export class TrainService {
       }
     });
   }
+  async getPassengerCredentials(
+    accountIds: string[]
+  ): Promise<{ [accountId: string]: CredentialsEntity[] }> {
+    return this.tmcService.getPassengerCredentials(accountIds);
+  }
   async reelectBookInfo(bookInfo: PassengerBookInfo) {
     bookInfo.isReplace = true;
     const m = await this.modalCtrl.getTop();
@@ -641,7 +646,6 @@ export class TrainPolicyModel {
   /// 违反具体的差标
   /// </summary>
   Rules: string[];
-  train: TrainEntity;
 }
 export class TrainPassengerModel {
   PassengerKey: string;

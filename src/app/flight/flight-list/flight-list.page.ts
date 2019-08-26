@@ -58,7 +58,6 @@ import { FilterConditionModel } from "../models/flight/advanced-search-cond/Filt
 
 import { Storage } from "@ionic/storage";
 import { SelectedFlightsegmentInfoComponent } from "../components/selected-flightsegment-info/selected-flightsegment-info.component";
-import { NOT_WHITE_LIST } from "../../tmc/select-passenger/select-passenger.page";
 import { TripType } from "src/app/tmc/models/TripType";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { FilterPassengersPolicyComponent } from "../../tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
@@ -67,6 +66,7 @@ import {
   FlightPolicy
 } from "../models/PassengerFlightInfo";
 import { DaysCalendarComponent } from "src/app/tmc/components/days-calendar/days-calendar.component";
+import { NOT_WHITE_LIST } from 'src/app/tmc/select-passenger/select-passenger.page';
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
