@@ -69,6 +69,7 @@ export class TrainBookPage implements OnInit {
   error: any;
   identity: IdentityEntity;
   tmc: TmcEntity;
+  private orderBookDto: OrderBookDto;
   constructor(
     private trainService: TrainService,
     private storage: Storage,
@@ -91,21 +92,21 @@ export class TrainBookPage implements OnInit {
     bookDto.TravelFormId = AppHelper.getQueryParamers()["travelFormId"] || "";
     const infos = this.trainService.getBookInfos();
     bookDto.Passengers = [];
-    infos.forEach(item => {
-      if (item.passenger && item.trainInfo) {
+    infos.forEach(bookInfo => {
+      if (bookInfo.passenger && bookInfo.trainInfo) {
         const p = new PassengerDto();
-        p.ClientId = item.id;
-        p.Train = item.trainInfo.trainEntity;
-        p.Train.BookSeatType = item.trainInfo.trainPolicy.SeatType;
-        p.Credentials = item.credential;
+        p.ClientId = bookInfo.id;
+        p.Train = bookInfo.trainInfo.trainEntity;
+        p.Train.BookSeatType = bookInfo.trainInfo.trainPolicy.SeatType;
+        p.Credentials = bookInfo.credential;
         const account = new AccountEntity();
-        account.Id = item.passenger.AccountId;
+        account.Id = bookInfo.passenger.AccountId;
         p.Credentials.Account = p.Credentials.Account || account;
         bookDto.Passengers.push(p);
       }
     });
     this.initialBookDto = await this.trainService.getInitializeBookDto(bookDto);
-    this.viewModel.bookDto = bookDto;
+    this.orderBookDto = bookDto;
     console.log("initializeBookDto", this.initialBookDto);
     await this.storage.set("mock-initialBookDto-train", this.initialBookDto);
     return this.initialBookDto;
@@ -146,6 +147,7 @@ export class TrainBookPage implements OnInit {
   }
   private async initializeViewModel() {
     this.viewModel = {} as any;
+    this.viewModel.bookDto = this.orderBookDto;
     this.viewModel.isCanSkipApproval$ = combineLatest([
       from(this.tmcService.getTmc()),
       from(this.staffService.isSelfBookType()),
@@ -179,13 +181,13 @@ export class TrainBookPage implements OnInit {
   private async initCombindInfos() {
     try {
       this.viewModel.combindInfos = [];
-      const pfs = this.trainService.getBookInfos();
-      for (let i = 0; i < pfs.length; i++) {
-        const item = pfs[i];
+      const bookInfos = this.trainService.getBookInfos();
+      for (let i = 0; i < bookInfos.length; i++) {
+        const bookInfo = bookInfos[i];
         const cs = (
           (this.initialBookDto && this.initialBookDto.Staffs) ||
           []
-        ).find(it => it.Account.Id == item.passenger.AccountId);
+        ).find(it => it.Account.Id == bookInfo.passenger.AccountId);
         const cstaff = cs && cs.CredentialStaff;
         const credentials = [];
         const arr = cstaff && cstaff.Approvers && cstaff.Approvers;
@@ -219,18 +221,18 @@ export class TrainBookPage implements OnInit {
         }
         // console.log("credentials", credentials, cstaff);
         if (
-          item.credential &&
+          bookInfo.credential &&
           !credentials.find(
             it =>
-              it.Number == item.credential.Number &&
-              it.Type == item.credential.Type
+              it.Number == bookInfo.credential.Number &&
+              it.Type == bookInfo.credential.Type
           )
         ) {
-          credentials.push(item.credential);
+          credentials.push(bookInfo.credential);
         }
         const insurances = (
           (this.initialBookDto.Insurances &&
-            this.initialBookDto.Insurances[item.id]) ||
+            this.initialBookDto.Insurances[bookInfo.id]) ||
           []
         ).map(insurance => {
           return {
@@ -239,7 +241,8 @@ export class TrainBookPage implements OnInit {
           };
         });
         const combineInfo: IPassengerBookInfo = {} as any;
-        combineInfo.vmCredential = item.credential;
+        combineInfo.bookInfo = bookInfo;
+        combineInfo.vmCredential = bookInfo.credential;
         combineInfo.isSkipApprove = false;
         combineInfo.credentials = credentials || [];
         combineInfo.isOpenrules = false;
@@ -251,9 +254,9 @@ export class TrainBookPage implements OnInit {
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.orderTravelPayType = this.tmc && this.tmc.FlightPayType;
         combineInfo.insuranceProducts = this.isShowInsurances(
-          item.trainInfo &&
-            item.trainInfo.trainEntity &&
-            item.trainInfo.trainEntity.StartTime
+          bookInfo.trainInfo &&
+            bookInfo.trainInfo.trainEntity &&
+            bookInfo.trainInfo.trainEntity.StartTime
         )
           ? insurances
           : [];
