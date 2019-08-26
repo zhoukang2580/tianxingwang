@@ -40,7 +40,8 @@ export class SelectWheelComponent
   private scrollSubscription = Subscription.EMPTY;
   private watchDog: any;
   private lastScroll = 0;
-  constructor(private domCtrl: DomController) {
+  private initViewTimeoutId: any;
+  constructor() {
     this.itemSelected = new EventEmitter();
   }
   ngOnDestroy() {
@@ -54,9 +55,12 @@ export class SelectWheelComponent
       this.items
     ) {
       // console.log(changes);
-      setTimeout(() => {
+      if (this.initViewTimeoutId) {
+        clearTimeout(this.initViewTimeoutId);
+      }
+      this.initViewTimeoutId = setTimeout(() => {
         this.initCurSelectedView();
-      }, 100);
+      }, 150);
     }
   }
   private initCurSelectedView() {
@@ -71,17 +75,15 @@ export class SelectWheelComponent
         const index = this.items.indexOf(selected) - 1;
         // console.log("item", selected, index);
         const targetScrollTop = h * index;
-        this.domCtrl.write(_ => {
-          this.scrollEle.nativeElement.scrollTop = targetScrollTop;
-        });
+        this.scrollEle.nativeElement.scrollTop = targetScrollTop;
       }
     }
   }
   ngAfterViewInit() {
-    setTimeout(() => {
-      this.initCurSelectedView();
-    }, 100);
     this.listenEleScroll();
+    this.initViewTimeoutId = setTimeout(() => {
+      this.initCurSelectedView();
+    }, 200);
   }
   private onScroll(
     scrollEle: ElementRef<HTMLElement>,
@@ -146,28 +148,24 @@ export class SelectWheelComponent
     liEleHeight: number,
     closestIndex: number
   ) {
-    this.domCtrl.read(_ => {
-      if (closestIndex < 0 || !scrollEle || !liEleHeight) {
+    if (closestIndex < 0 || !scrollEle || !liEleHeight) {
+      return;
+    }
+    const index = closestIndex > 0 ? closestIndex - 1 : closestIndex;
+    const scrollTop = scrollEle.scrollTop;
+    const remain = scrollTop % liEleHeight;
+    const targetScrollDelta = liEleHeight * index - scrollTop;
+    if (remain !== 0 || targetScrollDelta) {
+      if (!scrollEle) {
         return;
       }
-      const index = closestIndex > 0 ? closestIndex - 1 : closestIndex;
-      const scrollTop = scrollEle.scrollTop;
-      const remain = scrollTop % liEleHeight;
-      const targetScrollDelta = liEleHeight * index - scrollTop;
-      if (remain !== 0 || targetScrollDelta) {
-        this.domCtrl.write(_ => {
-          if (!scrollEle) {
-            return;
-          }
-          // console.log("select wheel scrollEle", scrollEle);
-          scrollEle.scrollBy({
-            top: targetScrollDelta,
-            left: 0,
-            behavior: "smooth"
-          });
-        });
-      }
-    });
+      // console.log("select wheel scrollEle", scrollEle);
+      scrollEle.scrollBy({
+        top: targetScrollDelta,
+        left: 0,
+        behavior: "smooth"
+      });
+    }
   }
   ngOnInit() {}
   private listenEleScroll() {
@@ -176,10 +174,10 @@ export class SelectWheelComponent
         this.scrollEle.nativeElement,
         "scroll"
       ).subscribe(evt => {
+        this.lastScroll = Date.now();
         this.onScroll(this.scrollEle, this.liEles);
         evt.preventDefault();
         evt.stopPropagation();
-        this.lastScroll = Date.now();
       });
     }
   }
