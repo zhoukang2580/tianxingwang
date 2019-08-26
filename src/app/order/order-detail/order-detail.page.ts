@@ -274,7 +274,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       this.orderDetail &&
       this.orderDetail.Order.OrderItems &&
       this.orderDetail.Order.OrderItems.reduce(
-        (acc, item) => (acc = AppHelper.mathAdd(acc, +item.Amount)),
+        (acc, item) => (acc = AppHelper.add(acc, +item.Amount)),
         0
       )
     );
@@ -296,7 +296,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     if (this.orderDetail.Order.OrderPays) {
       amount = this.orderDetail.Order.OrderPays.filter(
         it => it.Type != "SelfPay" && it.Status == OrderPayStatusType.Effective
-      ).reduce((acc, it) => (acc = AppHelper.mathAdd(acc, +it.Amount)), 0);
+      ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
     }
     if (amount == 0) {
       return `0`;
@@ -307,7 +307,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       return `${amount -
         (this.orderDetail.Order.OrderItems || [])
           .filter(it => !(it.Tag || "").endsWith("Fee"))
-          .reduce((acc, it) => (acc = AppHelper.mathAdd(acc, +it.Amount)), 0)}`;
+          .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0)}`;
     }
   }
   getInsuranceAmount() {
@@ -326,7 +326,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     ).map(it => it.Key);
     const insuranceAmount = this.orderDetail.Order.OrderItems.filter(it =>
       keys.find(k => k == it.Key)
-    ).reduce((acc, it) => (acc = AppHelper.mathAdd(acc, +it.Amount)), 0);
+    ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
     return insuranceAmount;
   }
   async showPricePopover() {
@@ -345,7 +345,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
         insurance: this.getInsuranceAmount(),
         orderItems,
         amount: orderItems.reduce(
-          (acc, item) => (acc = AppHelper.mathAdd(acc, +item.Amount)),
+          (acc, item) => (acc = AppHelper.add(acc, +item.Amount)),
           0
         )
       }

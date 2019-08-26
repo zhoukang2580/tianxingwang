@@ -399,7 +399,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     }
     return order.OrderItems.filter(
       it => it.Tag == OrderItemHelper.Insurance
-    ).reduce((acc, item) => (acc = AppHelper.mathAdd(acc, +item.Amount)), 0);
+    ).reduce((acc, item) => (acc = AppHelper.add(acc, +item.Amount)), 0);
   }
   private isAllowRefund(order: OrderEntity) {
     return false;
@@ -444,7 +444,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     }
     let amount = 0;
     amount = order.OrderItems.reduce((acc, it) => {
-      acc = AppHelper.mathAdd(acc, +it.Amount);
+      acc = AppHelper.add(acc, +it.Amount);
       return acc;
     }, 0);
     return amount;

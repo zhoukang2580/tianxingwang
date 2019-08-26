@@ -2,9 +2,11 @@
   <ion-label padding-start slot='start'>{{curSelectedYear}}-{{curSelectedMonth}}
     <ion-text *ngIf='isShowDay'>-{{curSelectedDay}}</ion-text>
   </ion-label>
-  <ion-button (click)='backToToday()' class='today' slot='end' size='small' color='secondary'
-    [disabled]='!isShowTodayButton'>
-    今天</ion-button>
+  <ion-buttons style="justify-content: flex-end">
+    <ion-button (click)='backToToday()' class='today' slot='end' size='small' color='secondary'
+      [disabled]='!isShowTodayButton'>
+      当前</ion-button>
+  </ion-buttons>
 </ion-toolbar>
 <div class='wheel-container' #wheelcontainer>
   <app-select-wheel [items]='years' (itemSelected)='onYearChange($event)' [curSelectedItem]='curSelectedYear'>
@@ -18,6 +20,6 @@
 <ion-toolbar>
   <ion-buttons>
     <ion-button (click)='cancel()' color='medium' expand='block'>取消</ion-button>
-    <ion-button (click)='done()' expand='block' color='secondary'>确定</ion-button>
+    <ion-button (click)='done()' size='small' expand='block' fill='solid' color='secondary'>确定</ion-button>
   </ion-buttons>
 </ion-toolbar>

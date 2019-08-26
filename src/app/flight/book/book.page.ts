@@ -451,22 +451,33 @@ export class BookPage implements OnInit, AfterViewInit {
           item.modal.flightSegmentInfo.flightPolicy
         ) {
           const info = item.modal.flightSegmentInfo;
-          arr +=
-            +info.flightPolicy.Cabin.SalesPrice + +info.flightPolicy.Cabin.Tax;
+          arr = AppHelper.add(
+            arr,
+            +info.flightPolicy.Cabin.SalesPrice,
+            +info.flightPolicy.Cabin.Tax
+          );
         }
         if (item.insuranceProducts) {
           arr += item.insuranceProducts
             .filter(it => it.checked)
             .reduce((sum, it) => {
-              sum += +it.insuranceResult.Price;
+              sum = AppHelper.add(+it.insuranceResult.Price, sum);
               return sum;
             }, 0);
         }
         return arr;
       }, 0);
       // console.log("totalPrice ", totalPrice);
-      if (this.bookDto && this.bookDto.ServiceFee) {
-        totalPrice += +this.bookDto.ServiceFee;
+      if (this.initialBookDtoModel && this.initialBookDtoModel.ServiceFees) {
+        const fees = Object.keys(this.initialBookDtoModel.ServiceFees).reduce(
+          (acc, key) => {
+            const fee = +this.initialBookDtoModel.ServiceFees[key];
+            acc = AppHelper.add(fee, acc);
+            return acc;
+          },
+          0
+        );
+        totalPrice = AppHelper.add(fees, totalPrice);
       }
       this.totalPriceSource.next(totalPrice);
     }

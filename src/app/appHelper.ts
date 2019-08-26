@@ -527,18 +527,21 @@ export class AppHelper {
     const uuid = uuidJs.create();
     return `${uuid}`.substring(0, len);
   }
-  static mathAdd(n1: number, n2: number) {
-    if (`${n1}`.includes(".") || `${n2}`.includes(".")) {
-      // console.log("n1", n1, "n2", n2);
-      const arr1 = `${n1}`.split(".");
-      const arr2 = `${n2}`.split(".");
-      const bits1 = arr1.length > 1 ? arr1[1].length : 0;
-      const bits2 = arr2.length > 1 ? arr2[1].length : 0;
-      const bits = bits1 > bits2 ? bits1 : bits2;
-      const base = Math.pow(10, bits);
-      const result = (n1 * base + n2 * base) / base;
-      return result;
+  static add(...args: number[]) {
+    // console.log(args);
+    if (args && args.length) {
+      const maxdigits = args
+        .filter(it => `${it}`.includes("."))
+        .sort((a, b) => `${b}`.length - `${a}`.length)[0];
+      if (maxdigits) {
+        const len = `${maxdigits}`.split(".")[1].length;
+        const base = Math.pow(10, len + 1);
+        const result = args.reduce((acc, n) => (acc += n * base), 0);
+        return result / base;
+      } else {
+        return args.reduce((acc, n) => (acc += n), 0);
+      }
     }
-    return n1 + n2;
+    return 0;
   }
 }

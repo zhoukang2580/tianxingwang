@@ -87,7 +87,7 @@ export class FlightTripComponent implements OnInit, OnChanges {
       const orderItems = this.orderItems || [];
       this.refundDeductionFee = orderItems
         .filter(it => it.Tag == OrderItemHelper.FlightTicketRefundDeduction)
-        .reduce((acc, it) => (acc = AppHelper.mathAdd(acc, +it.Amount)), 0);
+        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
       this.exchangeFee = orderItems
         .filter(
           it =>
@@ -95,7 +95,7 @@ export class FlightTripComponent implements OnInit, OnChanges {
             it.Tag == OrderItemHelper.FlightTicketExchangeOfflineFee ||
             it.Tag == OrderItemHelper.FlightTicketExchangeOnlineFee
         )
-        .reduce((acc, it) => (acc = AppHelper.mathAdd(acc, +it.Amount)), 0);
+        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
     }
     if (change && change.tickets && change.tickets.currentValue) {
       if (this.ticket) {
