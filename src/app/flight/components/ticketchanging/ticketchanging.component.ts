@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from "@angular/core";
-import { ModalController } from "@ionic/angular";
+import {  PopoverController } from "@ionic/angular";
 import { FlightCabinEntity } from '../../models/flight/FlightCabinEntity';
 
 @Component({
@@ -9,9 +9,9 @@ import { FlightCabinEntity } from '../../models/flight/FlightCabinEntity';
 })
 export class TicketchangingComponent implements OnInit {
   cabin: FlightCabinEntity;
-  constructor(private modalCtrl: ModalController) {}
+  constructor(private popoverCtrl: PopoverController) {}
   async cancel() {
-    const m = await this.modalCtrl.getTop();
+    const m = await this.popoverCtrl.getTop();
     m.dismiss();
   }
   ngOnInit() {}

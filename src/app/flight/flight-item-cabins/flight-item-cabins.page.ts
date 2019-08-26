@@ -126,12 +126,13 @@ export class FlightItemCabinsPage implements OnInit {
     return "goBack";
   }
   async openrules(cabin: any) {
-    this.modalCtrl.dismiss().catch(_ => {});
-    const m = await this.modalCtrl.create({
+    // this.popoverController.dismiss().catch(_ => {});
+    const m = await this.popoverController.create({
       component: TicketchangingComponent,
       componentProps: { cabin: cabin.Cabin },
       showBackdrop: true,
-      cssClass: "ticket-changing"
+      cssClass: "ticket-changing",
+      // animated: false
     });
     m.backdropDismiss = false;
     await m.present();
@@ -151,7 +152,7 @@ export class FlightItemCabinsPage implements OnInit {
     setTimeout(async () => {
       const bookInfos = this.flightService.getPassengerBookInfos();
       const showPl = bookInfos.length == 1;
-      if (await this.staffService.isSelfBookType() || showPl) {
+      if ((await this.staffService.isSelfBookType()) || showPl) {
         this.isShowPolicyCabins = true;
         this.showPolicyCabins();
       } else {
