@@ -15,7 +15,7 @@
     <ion-item-group *ngFor="let combindInfo of viewModel?.combindInfos">
       <ion-item-divider color='primary' sticky>
         {{combindInfo?.credential?.CheckName}}
-        【{{viewModel?.tmc?.Name}}】
+        【{{tmc?.Name}}】
         [成人]
         {{combindInfo?.credential?.Number}}
       </ion-item-divider>
@@ -32,7 +32,7 @@
         <ion-checkbox margin-end color="secondary" [(ngModel)]='combindInfo.isSkipApprove'></ion-checkbox>
       </ion-item>
       <ion-item lines='none' class="ion-no-margin"
-        *ngIf='viewModel?.tmc?.IsShowServiceFee || viewModel?.identity?.Numbers?.AgentId'>
+        *ngIf='tmc?.IsShowServiceFee || viewModel?.identity?.Numbers?.AgentId'>
         <ion-label>服务费:</ion-label>
         <ion-label slot='end' text-end padding-end>{{getServiceFee(combindInfo)}}</ion-label>
       </ion-item>
@@ -60,7 +60,7 @@
         </app-book-credential-comp>
         <div *ngIf='s?.flightPolicy?.Rules?.length && !combindInfo?.modal.isNotWhitelist'>
           <app-book-illegal-reason-comp #illegalReasonsEle [illegalReasons]='viewModel?.illegalReasons'
-            [isAllowCustomReason]='viewModel?.tmc?.IsAllowCustomReason'
+            [isAllowCustomReason]='tmc?.IsAllowCustomReason'
             (ionchange)='onIllegalReason($event,combindInfo)'>
           </app-book-illegal-reason-comp>
         </div>
