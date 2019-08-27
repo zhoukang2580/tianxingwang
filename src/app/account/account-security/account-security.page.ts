@@ -35,7 +35,7 @@ export class AccountSecurityPage implements OnInit, OnDestroy {
     private navCtrl: NavController
   ) {
     this.identityEntitySubscription = this.identityService
-      .getIdentity()
+      .getIdentitySource()
       .subscribe(identity => {
         this.identityEntity = identity;
       });

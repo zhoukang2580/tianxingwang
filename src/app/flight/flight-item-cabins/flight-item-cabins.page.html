@@ -6,6 +6,13 @@
       </ion-button>
     </ion-buttons>
     <ion-text>{{getMothDay()}}</ion-text>
+    <ion-buttons slot='end' *ngIf='(showOpenBtn$|async) as num'>
+      <ion-button fill='clear' color='secondary' appOpenSelectedBookInfos size='small'>
+        <ion-text class='xs-font-size'>已选行程
+        </ion-text>
+        <ion-badge color='danger' slot='end'>{{num}}</ion-badge>
+      </ion-button>
+    </ion-buttons>
     <ion-buttons slot='end'>
       <ion-button fill='clear' color='secondary' (click)='filterPolicyFlights()' size='small'>
         <ion-text class='xs-font-size'>过滤差标</ion-text>
@@ -125,7 +132,7 @@
                   <ion-skeleton-text style="width: 45%"></ion-skeleton-text>
                 </h3>
                 <h3>
-                  <ion-skeleton-text style="width: 650%" ></ion-skeleton-text>
+                  <ion-skeleton-text style="width: 650%"></ion-skeleton-text>
                 </h3>
                 <h3>
                   <ion-skeleton-text style="width: 40%"></ion-skeleton-text>
@@ -137,15 +144,15 @@
                 <h3 text-end class='book'>
                   <ion-skeleton-text style="width: 60%"></ion-skeleton-text>
                 </h3>
-                <ion-skeleton-text  style="width: 90%;height: 1.5em;--border-radius: 4px;"></ion-skeleton-text>
+                <ion-skeleton-text style="width: 90%;height: 1.5em;--border-radius: 4px;"></ion-skeleton-text>
               </ion-label>
             </ion-col>
           </ion-row>
           <ion-row>
             <ion-col>
               <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
-              <ion-skeleton-text  style="width: 65%"></ion-skeleton-text>
-              <ion-skeleton-text  style="width: 80%"></ion-skeleton-text>
+              <ion-skeleton-text style="width: 65%"></ion-skeleton-text>
+              <ion-skeleton-text style="width: 80%"></ion-skeleton-text>
             </ion-col>
           </ion-row>
         </div>

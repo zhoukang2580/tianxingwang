@@ -67,6 +67,7 @@ import { ProductItemType } from "src/app/tmc/models/ProductItems";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { map, tap } from "rxjs/operators";
 import { AddContact } from "src/app/tmc/models/AddContact";
+import { environment } from "src/environments/environment";
 
 @Component({
   selector: "app-book",
@@ -121,7 +122,7 @@ export class BookPage implements OnInit, AfterViewInit {
     private popoverCtrl: PopoverController,
     private plt: Platform,
     private router: Router,
-    private payService: PayService
+    private storage: Storage
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -136,7 +137,7 @@ export class BookPage implements OnInit, AfterViewInit {
     this.isCanSkipApproval$ = combineLatest([
       from(this.tmcService.getTmc()),
       from(this.staffService.isSelfBookType()),
-      this.identityService.getIdentity()
+      this.identityService.getIdentitySource()
     ]).pipe(
       map(([tmc, isSelfType, identity]) => {
         return (
@@ -191,6 +192,7 @@ export class BookPage implements OnInit, AfterViewInit {
         const account = new AccountEntity();
         account.Id = item.passenger.AccountId;
         p.Credentials.Account = p.Credentials.Account || account;
+        p.Policy = item.passenger.Policy;
         this.bookDto.Passengers.push(p);
       }
     });
@@ -265,6 +267,7 @@ export class BookPage implements OnInit, AfterViewInit {
       await this.initCombindInfos();
       await this.initTmcOutNumberInfos();
       this.initOrderTravelPayTypes();
+      console.log(JSON.stringify(this.vmCombindInfos));
     } catch (err) {
       this.errors = err || "please retry";
       console.error(err);
@@ -815,6 +818,7 @@ export class BookPage implements OnInit, AfterViewInit {
         p.FlightCabin.InsuranceProducts = p.InsuranceProducts;
         p.InsuranceProducts = null;
       }
+      p.Policy = combindInfo.modal.passenger.Policy;
       bookDto.Passengers.push(p);
     }
     return true;
@@ -973,9 +977,9 @@ export class BookPage implements OnInit, AfterViewInit {
           return {
             insuranceResult: insurance,
             checked:
-            item.passenger &&
-            item.passenger.Policy &&
-            item.passenger.Policy.FlightIsForceInsurance
+              item.passenger &&
+              item.passenger.Policy &&
+              item.passenger.Policy.FlightIsForceInsurance
           };
         });
         const combineInfo: ICombindInfo = {

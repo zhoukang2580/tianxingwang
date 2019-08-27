@@ -246,15 +246,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     });
     this.showAdvSearchPage$ = this.flightService.getFilterPanelShow();
   }
-  async showSelectedBookInfos() {
-    const modal = await this.modalCtrl.create({
-      component: SelectedFlightsegmentInfoComponent
-    });
-    await this.flightService.dismissAllTopOverlays();
-    await modal.present();
-    await modal.onDidDismiss();
-    return "goBack";
-  }
+  
   async canShowAddPassenger() {
     const identity = await this.identityService.getIdentityAsync();
     this.showAddPassenger =

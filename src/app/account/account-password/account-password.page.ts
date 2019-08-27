@@ -45,7 +45,7 @@ export class AccountPasswordPage implements OnInit, OnDestroy {
     private apiService: ApiService,
     private navCtrl:NavController
   ) {
-    this.identitySubscription = identityService.getIdentity().subscribe(id => {
+    this.identitySubscription = identityService.getIdentitySource().subscribe(id => {
       this.identityEntity = id;
     });
     this.loading$ = this.apiService.getLoading();

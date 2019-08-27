@@ -72,7 +72,9 @@ ion-header {
 .hidden {
   display: none !important;
 }
-
+ion-badge {
+  color: white;
+}
 .can-go-back > ion-header ion-buttons ion-back-button {
   // --background:var(--ion-color-secondary);
   --color: rgba(var(--ion-color-dark-rgb), 0.5);

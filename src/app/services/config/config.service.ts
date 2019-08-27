@@ -26,7 +26,7 @@ export class ConfigService {
       .catch(e => {
         console.log("ConfigService get error", e);
       });
-    identityService.getIdentity().subscribe(identity => {
+    identityService.getIdentitySource().subscribe(identity => {
       if (!identity || !identity.Ticket) {
         this.disposal();
       }

@@ -78,7 +78,7 @@ export class IdentityService {
         );
     });
   }
-  getIdentity(): Observable<IdentityEntity> {
+  getIdentitySource(): Observable<IdentityEntity> {
     return this.identitySource.asObservable();
   }
   loadIdentityEntity() {

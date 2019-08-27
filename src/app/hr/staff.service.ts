@@ -231,7 +231,7 @@ export class StaffService {
     private apiService: ApiService,
     private identityService: IdentityService
   ) {
-    this.identityService.getIdentity().subscribe(id => {
+    this.identityService.getIdentitySource().subscribe(id => {
       if (!id || !id.Id || !id.Ticket) {
         this.staff = null;
       }

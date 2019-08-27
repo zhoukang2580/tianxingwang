@@ -42,7 +42,7 @@ export class MyPage implements OnDestroy, OnInit {
   ) {
     this.isIos = plt.is("ios");
     this.identitySubscription = this.identityService
-      .getIdentity()
+      .getIdentitySource()
       .subscribe(identity => {
         if (!identity || !identity.Ticket) {
           console.log("my page identity ", identity);

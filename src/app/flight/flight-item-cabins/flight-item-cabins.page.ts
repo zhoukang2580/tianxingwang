@@ -25,6 +25,8 @@ import {
   CurrentViewtFlightSegment,
   FlightPolicy
 } from "../models/PassengerFlightInfo";
+import { of } from "rxjs";
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: "app-flight-item-cabins",
@@ -39,6 +41,7 @@ export class FlightItemCabinsPage implements OnInit {
   isShowPolicyCabins = false;
   staff: StaffEntity;
   loading = true;
+  showOpenBtn$ = of(0);
   constructor(
     private flightService: FlightService,
     activatedRoute: ActivatedRoute,
@@ -131,7 +134,7 @@ export class FlightItemCabinsPage implements OnInit {
       component: TicketchangingComponent,
       componentProps: { cabin: cabin.Cabin },
       showBackdrop: true,
-      cssClass: "ticket-changing",
+      cssClass: "ticket-changing"
       // animated: false
     });
     m.backdropDismiss = false;
@@ -149,6 +152,14 @@ export class FlightItemCabinsPage implements OnInit {
     return "success";
   }
   async ngOnInit() {
+    this.showOpenBtn$ = this.flightService
+      .getPassengerBookInfoSource()
+      .pipe(
+        map(
+          infos =>
+            infos && infos.filter(it => !!it.flightSegmentInfo).length
+        )
+      );
     setTimeout(async () => {
       const bookInfos = this.flightService.getPassengerBookInfos();
       const showPl = bookInfos.length == 1;

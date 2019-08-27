@@ -47,7 +47,7 @@ export class ScanPage implements OnInit, OnDestroy {
   }
   ngOnInit() {
     this.identitySubscription = this.identityService
-      .getIdentity()
+      .getIdentitySource()
       .subscribe(r => {
         this.identity = r;
       });

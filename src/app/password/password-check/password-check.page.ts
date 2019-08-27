@@ -56,7 +56,7 @@ export class PasswordCheckPage implements OnInit, OnDestroy {
       Name: this.name,
       Action: "Check"
     });
-    return this.identityService.getIdentity().pipe(
+    return this.identityService.getIdentitySource().pipe(
       exhaustMap(identity => {
         this.identityEntity = identity;
         return this.apiService

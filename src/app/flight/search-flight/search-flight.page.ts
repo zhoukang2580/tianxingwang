@@ -46,7 +46,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
   selectedPassengers$ = of(0);
   totalFlyDays: number;
   staff: StaffEntity;
-  isShowBookInfos$ = of(false);
+  isShowBookInfos$ = of(0);
   canAddPassengers$ = of(false);
   constructor(
     private router: Router,
@@ -128,20 +128,11 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
   async isStaffTypeSelf() {
     return await this.staffService.isSelfBookType();
   }
-  async showSelectedBookInfos() {
-    const modal = await this.modalCtrl.create({
-      component: SelectedFlightsegmentInfoComponent
-    });
-    await this.flightService.dismissAllTopOverlays();
-    await modal.present();
-    await modal.onDidDismiss();
-    return "goBack";
-  }
   async ngOnInit() {
     this.isShowBookInfos$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(
-        map(infos => infos.filter(it => !!it.flightSegmentInfo).length > 0)
+        map(infos => infos.filter(it => !!it.flightSegmentInfo).length)
       );
     this.selectDaySubscription = this.flydayService
       .getSelectedDays()

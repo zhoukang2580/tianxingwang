@@ -122,6 +122,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         const account = new AccountEntity();
         account.Id = bookInfo.passenger.AccountId;
         p.Credentials.Account = p.Credentials.Account || account;
+        p.Policy = bookInfo.passenger.Policy;
         bookDto.Passengers.push(p);
       }
     });
@@ -185,7 +186,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     this.viewModel.isCanSkipApproval$ = combineLatest([
       from(this.tmcService.getTmc()),
       from(this.staffService.isSelfBookType()),
-      this.identityService.getIdentity()
+      this.identityService.getIdentitySource()
     ]).pipe(
       map(([tmc, isSelfType, identity]) => {
         return (
@@ -837,6 +838,9 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         p.Train.BookSeatType =
           combindInfo.bookInfo.trainInfo.trainPolicy.SeatType;
       }
+      if (combindInfo.bookInfo) {
+        p.Policy = combindInfo.bookInfo.passenger.Policy;
+      }
       bookDto.Passengers.push(p);
     }
     return true;
@@ -1057,7 +1061,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     this.viewModel.identity = await this.identityService.getIdentityAsync();
     this.viewModel.isCanSkipApproval$ = combineLatest([
       from(this.staffService.isSelfBookType()),
-      this.identityService.getIdentity()
+      this.identityService.getIdentitySource()
     ]).pipe(
       map(([isSelfType, identity]) => {
         const tmc = this.viewModel.tmc;

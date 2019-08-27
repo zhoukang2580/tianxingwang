@@ -16,7 +16,7 @@ export class LogService {
     private http: HttpClient,
     private identityService: IdentityService
   ) {
-    identityService.getIdentity().subscribe(r => {
+    identityService.getIdentitySource().subscribe(r => {
       this.identityEntity = r;
     });
   }

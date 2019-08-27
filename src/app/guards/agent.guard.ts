@@ -23,7 +23,7 @@ export class AgentGuard implements CanActivate, CanActivateChild {
     private loginService: LoginService,
     private router: Router
   ) {
-    this.identityService.getIdentity().subscribe(id => {
+    this.identityService.getIdentitySource().subscribe(id => {
       this.identityEntity = id;
     });
   }

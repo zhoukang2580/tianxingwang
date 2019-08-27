@@ -80,16 +80,14 @@ export class TrainService {
     this.selectedStationSource = new BehaviorSubject(null);
     combineLatest([
       this.getBookInfoSource(),
-      this.identityService.getIdentity()
+      this.identityService.getIdentitySource()
     ]).subscribe(async ([infos, identity]) => {
       if (identity && identity.Ticket) {
         this.initSelfBookTypeBookInfos();
       }
     });
-    identityService.getIdentity().subscribe(res => {
-      if (!res || !res.Ticket || !res.Id) {
-        this.disposal();
-      }
+    identityService.getIdentitySource().subscribe(res => {
+      this.disposal();
     });
   }
   async getPassengerCredentials(

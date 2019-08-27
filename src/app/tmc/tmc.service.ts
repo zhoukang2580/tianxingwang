@@ -62,7 +62,7 @@ export class TmcService {
     private payService: PayService,
     private router: Router
   ) {
-    this.identityService.getIdentity().subscribe(id => {
+    this.identityService.getIdentitySource().subscribe(id => {
       if (!id || !id.Ticket) {
         this.companies = null;
         this.tmc = null;

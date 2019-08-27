@@ -34,7 +34,7 @@ export class SelectCustomerPage implements OnInit, OnDestroy {
     private navCtrl: NavController
   ) {
     this.identitySubscription = this.identityService
-      .getIdentity()
+      .getIdentitySource()
       .subscribe(id => {
         this.identityEntity = id;
       });

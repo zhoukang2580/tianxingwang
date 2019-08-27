@@ -36,7 +36,7 @@ export class MessageService {
     identityService: IdentityService
   ) {
     this.messageSource = new BehaviorSubject(null);
-    identityService.getIdentity().pipe(
+    identityService.getIdentitySource().pipe(
       map(r => {
         if (r && r.Id && r.Ticket) {
           this.autoPopMessages();

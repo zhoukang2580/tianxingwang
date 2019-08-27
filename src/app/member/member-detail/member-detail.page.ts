@@ -46,7 +46,7 @@ export class MemberDetailPage implements OnInit, OnDestroy {
   async ngOnInit() {
     console.log("member detail ngOnInit");
     this.identitySubscription = this.identityService
-      .getIdentity()
+      .getIdentitySource()
       .subscribe(identity => {
         this.identity = identity;
         if (!identity || !identity.Ticket) {

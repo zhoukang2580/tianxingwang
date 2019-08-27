@@ -33,7 +33,7 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router
   ) {
     this.identityEntitySub = this.identityService
-      .getIdentity()
+      .getIdentitySource()
       .subscribe(id => {
         this.identityEntity = id;
       });

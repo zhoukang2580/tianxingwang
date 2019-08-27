@@ -29,7 +29,7 @@ export class LoginService {
     private apiService: ApiService,
     private http: HttpClient
   ) {
-    this.identityService.getIdentity().subscribe(id => {
+    this.identityService.getIdentitySource().subscribe(id => {
       this.identity = id;
     });
   }

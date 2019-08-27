@@ -1,3 +1,5 @@
+import { FlightService } from "src/app/flight/flight.service";
+import { TrainService } from "./../../train/train.service";
 import { Subscription } from "rxjs";
 import { IonRefresher } from "@ionic/angular";
 import { Router } from "@angular/router";
@@ -36,7 +38,7 @@ export class SwitchCompanyPage implements OnInit, OnDestroy {
   ) {}
   ngOnDestroy() {
     this.identitySubscription = this.identityService
-      .getIdentity()
+      .getIdentitySource()
       .subscribe(id => {
         this.identity = id;
       });

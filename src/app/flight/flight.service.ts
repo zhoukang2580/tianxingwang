@@ -84,13 +84,11 @@ export class FlightService {
     this.openCloseSelectCitySources = new BehaviorSubject(false);
     this.filterCondSources = new BehaviorSubject(null);
     this.worker = window["Worker"] ? new Worker("assets/worker.js") : null;
-    identityService.getIdentity().subscribe(res => {
-      if (!res || !res.Ticket) {
-        this.disposal();
-      }
+    identityService.getIdentitySource().subscribe(res => {
+      this.disposal();
     });
     combineLatest([
-      identityService.getIdentity(),
+      identityService.getIdentitySource(),
       this.getPassengerBookInfoSource()
     ]).subscribe(([identity, infos]) => {
       if (identity && identity.Id && identity.Ticket && infos.length == 0) {

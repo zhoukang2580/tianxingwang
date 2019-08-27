@@ -77,7 +77,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   }
   ngOnInit() {
     this.identitySubscription = this.identityService
-      .getIdentity()
+      .getIdentitySource()
       .subscribe(r => {
         this.identity = r;
       });

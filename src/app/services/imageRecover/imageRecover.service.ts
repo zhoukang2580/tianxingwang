@@ -13,7 +13,7 @@ export class ImageRecoverService {
     private apiService: ApiService,
     identityService: IdentityService
   ) {
-    identityService.getIdentity().subscribe(identity => {
+    identityService.getIdentitySource().subscribe(identity => {
       if (!identity || !identity.Ticket) {
         this.disposal();
       }
