@@ -60,8 +60,7 @@
         </app-book-credential-comp>
         <div *ngIf='s?.flightPolicy?.Rules?.length && !combindInfo?.modal.isNotWhitelist'>
           <app-book-illegal-reason-comp #illegalReasonsEle [illegalReasons]='viewModel?.illegalReasons'
-            [isAllowCustomReason]='tmc?.IsAllowCustomReason'
-            (ionchange)='onIllegalReason($event,combindInfo)'>
+            [isAllowCustomReason]='tmc?.IsAllowCustomReason' (ionchange)='onIllegalReason($event,combindInfo)'>
           </app-book-illegal-reason-comp>
         </div>
         <app-book-costcenter-comp [isOtherCostCenter]='combindInfo.isOtherCostCenter'
@@ -170,3 +169,18 @@
     </ion-row>
   </ng-template>
 </ion-content>
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-button color='secondary'>总计:
+        <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)}}</ion-text>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot='end'>
+      <ion-button color='secondary' (click)='bookTrain()'> 提交</ion-button>
+    </ion-buttons>
+    <ion-buttons slot='end'>
+      <ion-button color='secondary' (click)='bookTrain(true)'>保存订单</ion-button>
+    </ion-buttons> 
+  </ion-toolbar>
+</ion-footer>

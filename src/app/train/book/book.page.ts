@@ -29,7 +29,8 @@ import {
   OnInit,
   ViewChildren,
   ViewChild,
-  QueryList
+  QueryList,
+  AfterViewInit
 } from "@angular/core";
 import { AppHelper } from "src/app/appHelper";
 import { PassengerDto } from "src/app/tmc/models/PassengerDto";
@@ -43,7 +44,14 @@ import {
   PopoverController
 } from "@ionic/angular";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
-import { Observable, of, from, combineLatest } from "rxjs";
+import {
+  Observable,
+  of,
+  from,
+  combineLatest,
+  Subject,
+  BehaviorSubject
+} from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { StaffService } from "src/app/hr/staff.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
@@ -53,13 +61,16 @@ import { AddContact } from "src/app/tmc/models/AddContact";
 import { LanguageHelper } from "src/app/languageHelper";
 import { TaskType } from "src/app/workflow/models/TaskType";
 import { OrderLinkmanDto } from "src/app/order/models/OrderLinkmanDto";
+import { ProductItemType } from "src/app/tmc/models/ProductItems";
+import { RequestEntity } from "src/app/services/api/Request.entity";
+import { PayService } from "src/app/services/pay/pay.service";
 
 @Component({
   selector: "app-train-book",
   templateUrl: "./book.page.html",
   styleUrls: ["./book.page.scss"]
 })
-export class TrainBookPage implements OnInit {
+export class TrainBookPage implements OnInit, AfterViewInit {
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent) cnt: IonContent;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
@@ -69,7 +80,12 @@ export class TrainBookPage implements OnInit {
   error: any;
   identity: IdentityEntity;
   tmc: TmcEntity;
+  totalPriceSource: Subject<number>;
+  private isCheckingPay = false;
+  private checkPayCountIntervalId: any;
   private orderBookDto: OrderBookDto;
+  private checkPayCount = 5;
+  private checkPayCountIntervalTime = 3 * 1000;
   constructor(
     private trainService: TrainService,
     private storage: Storage,
@@ -78,8 +94,12 @@ export class TrainBookPage implements OnInit {
     private staffService: StaffService,
     private modalCtrl: ModalController,
     private popoverCtrl: PopoverController,
-    private tmcService: TmcService
-  ) {}
+    private tmcService: TmcService,
+    private router: Router,
+    private payService: PayService
+  ) {
+    this.totalPriceSource = new BehaviorSubject(0);
+  }
   back() {
     this.navCtrl.back();
   }
@@ -113,6 +133,20 @@ export class TrainBookPage implements OnInit {
   }
   ngOnInit() {
     this.doRefresh();
+  }
+  ngAfterViewInit() {
+    if (this.checkboxes) {
+      this.checkboxes.changes.subscribe(() => {
+        setTimeout(() => {
+          this.calcTotalPrice();
+        }, 0);
+        this.checkboxes.forEach(c => {
+          c.ionChange.subscribe(_ => {
+            this.calcTotalPrice();
+          });
+        });
+      });
+    }
   }
   async doRefresh() {
     try {
@@ -313,6 +347,124 @@ export class TrainBookPage implements OnInit {
     } catch (e) {
       console.error(e);
     }
+  }
+  async bookTrain(isSave?: boolean) {
+    const bookDto: OrderBookDto = new OrderBookDto();
+    bookDto.IsFromOffline = isSave;
+    let canBook = false;
+    canBook = this.fillBookLinkmans(bookDto);
+    canBook = this.fillBookPassengers(bookDto);
+    if (canBook) {
+      const res = await this.trainService.bookTrain(bookDto).catch(e => {
+        AppHelper.alert(e);
+        return { TradeNo: "" };
+      });
+      if (res) {
+        if (res.TradeNo) {
+          this.trainService.removeAllBookInfos();
+          if (
+            !isSave &&
+            (await this.staffService.isSelfBookType()) &&
+            bookDto.Passengers[0].TravelPayType == OrderTravelPayType.Person
+          ) {
+            const canPay = true || (await this.checkPay(res.TradeNo));
+            if (canPay) {
+              const cancelPay = await this.tmcService.payOrder(res.TradeNo);
+              if (cancelPay) {
+                this.router.navigate([""]); // 回到首页
+              }
+            } else {
+              await AppHelper.alert(
+                LanguageHelper.Order.getBookTicketWaitingTip()
+              );
+              this.goToMyOrders(ProductItemType.plane);
+            }
+          } else {
+            await AppHelper.alert(
+              LanguageHelper.Flight.getSaveBookOrderOkTip()
+            );
+            this.router.navigate([""]);
+          }
+        }
+      }
+    }
+  }
+  private async checkPay(tradeNo: string) {
+    return new Promise<boolean>(s => {
+      let loading = false;
+      this.isCheckingPay = true;
+      if (this.checkPayCountIntervalId) {
+        clearInterval(this.checkPayCountIntervalId);
+      }
+      this.checkPayCountIntervalId = setInterval(async () => {
+        if (!loading) {
+          loading = true;
+          const result = await this.tmcService.checkPay(tradeNo);
+          loading = false;
+          this.checkPayCount--;
+          if (!result) {
+            if (this.checkPayCount < 0) {
+              clearInterval(this.checkPayCountIntervalId);
+              s(false);
+              this.isCheckingPay = false;
+            }
+          } else {
+            this.isCheckingPay = false;
+            s(true);
+          }
+        }
+      }, this.checkPayCountIntervalTime);
+    });
+  }
+
+  calcTotalPrice() {
+    // console.time("总计");
+    if (this.viewModel && this.viewModel.combindInfos) {
+      let totalPrice = this.viewModel.combindInfos.reduce((arr, item) => {
+        if (
+          item.bookInfo &&
+          item.bookInfo.trainInfo &&
+          item.bookInfo.trainInfo.trainPolicy
+        ) {
+          const info = item.bookInfo.trainInfo;
+          const seat = info.trainEntity.Seats.find(
+            it =>
+              it.SeatType == info.trainPolicy.SeatType &&
+              info.trainEntity.TrainNo == info.trainPolicy.TrainNo
+          );
+
+          arr = AppHelper.add(arr, +((seat && seat.SalesPrice) || 0));
+        }
+        if (item.insuranceProducts) {
+          arr += item.insuranceProducts
+            .filter(it => it.checked)
+            .reduce((sum, it) => {
+              sum = AppHelper.add(+it.insuranceResult.Price, sum);
+              return sum;
+            }, 0);
+        }
+        return arr;
+      }, 0);
+      // console.log("totalPrice ", totalPrice);
+      if (this.initialBookDto && this.initialBookDto.ServiceFees) {
+        const fees = Object.keys(this.initialBookDto.ServiceFees).reduce(
+          (acc, key) => {
+            const fee = +this.initialBookDto.ServiceFees[key];
+            acc = AppHelper.add(fee, acc);
+            return acc;
+          },
+          0
+        );
+        totalPrice = AppHelper.add(fees, totalPrice);
+      }
+      this.totalPriceSource.next(totalPrice);
+    }
+    // console.timeEnd("总计");
+  }
+  private goToMyOrders(tab: ProductItemType) {
+    this.router.navigate(["product-tabs"], {
+      queryParams: { tabId: tab }
+    });
   }
   private isShowInsurances(takeoffTime: string) {
     if (takeoffTime) {
@@ -671,7 +823,15 @@ export class TrainBookPage implements OnInit {
       p.TravelType = combindInfo.travelType;
       p.TravelPayType = combindInfo.orderTravelPayType;
       p.IsSkipApprove = combindInfo.isSkipApprove;
-      p.Train = combindInfo.bookInfo.trainInfo.trainEntity;
+      if (
+        combindInfo.bookInfo.trainInfo &&
+        combindInfo.bookInfo.trainInfo.trainEntity &&
+        combindInfo.bookInfo.trainInfo.trainPolicy
+      ) {
+        p.Train = combindInfo.bookInfo.trainInfo.trainEntity;
+        p.Train.BookSeatType =
+          combindInfo.bookInfo.trainInfo.trainPolicy.SeatType;
+      }
       bookDto.Passengers.push(p);
     }
     return true;

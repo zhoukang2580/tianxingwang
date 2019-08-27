@@ -155,7 +155,9 @@ export class TrainListPage implements OnInit, OnDestroy {
     const m = await this.modalCtrl.create({
       component: TrainscheduleComponent,
       componentProps: {
-        schedules: train.Schedules
+        schedules: train.Schedules,
+        vmFromCity: this.vmFromCity,
+        vmToCity: this.vmToCity
       }
     });
     m.present();

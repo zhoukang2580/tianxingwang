@@ -1,3 +1,17 @@
+<ion-header text-center>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-button (click)='back()'>
+        <ion-icon color='dark' name='arrow-back'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title >
+      <ion-text>{{vmFromCity?.Nickname}}</ion-text>
+      <i class='icon icon-home-train'></i>
+      <ion-text>{{ vmToCity?.Nickname}}</ion-text>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
 <ion-content>
   <ion-grid>
     <ion-row *ngFor='let item of schedules;let i=index;' text-center
@@ -10,10 +24,5 @@
       <ion-col>{{item.StartTime}}</ion-col>
       <ion-col>{{item.StayTime}}</ion-col>
     </ion-row>
-  </ion-grid> 
+  </ion-grid>
 </ion-content>
-<ion-footer>
-  <ion-toolbar>
-    <ion-button slot='end' fill='clear' color='secondary' (click)='back()'>返回</ion-button>
-  </ion-toolbar>
-</ion-footer>

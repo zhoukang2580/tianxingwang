@@ -66,7 +66,7 @@ import { PassengerFlightSegmentInfo } from "../models/PassengerFlightInfo";
 import { ProductItemType } from "src/app/tmc/models/ProductItems";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { map, tap } from "rxjs/operators";
-import { AddContact } from 'src/app/tmc/models/AddContact';
+import { AddContact } from "src/app/tmc/models/AddContact";
 
 @Component({
   selector: "app-book",
@@ -527,8 +527,10 @@ export class BookPage implements OnInit, AfterViewInit {
           ) {
             const canPay = true || (await this.checkPay(res.TradeNo));
             if (canPay) {
-              await this.payOrder(res.TradeNo);
-              this.router.navigate([""]); // 回到首页
+              const cancelPay = await this.tmcService.payOrder(res.TradeNo);
+              if (cancelPay) {
+                this.router.navigate([""]); // 回到首页
+              }
             } else {
               await AppHelper.alert(
                 LanguageHelper.Order.getBookTicketWaitingTip()
@@ -549,85 +551,6 @@ export class BookPage implements OnInit, AfterViewInit {
     this.router.navigate(["product-tabs"], {
       queryParams: { tabId: tab }
     });
-  }
-  private async payOrder(tradeNo: string) {
-    const payWay = await this.payService.selectPayWay();
-    if (!payWay) {
-      const ok = await AppHelper.alert(
-        LanguageHelper.Order.getGiveUpPayTip(),
-        true,
-        LanguageHelper.getYesTip(),
-        LanguageHelper.getNegativeTip()
-      );
-      if (ok) {
-        this.router.navigate([""]);
-      } else {
-        await this.payOrder(tradeNo);
-      }
-    } else {
-      if (payWay.value == "ali") {
-        await this.aliPay(tradeNo);
-      }
-      if (payWay.value == "wechat") {
-        await this.wechatPay(tradeNo);
-      }
-      this.router.navigate([""]);
-    }
-  }
-  private async wechatPay(tradeNo: string) {
-    const req = new RequestEntity();
-    req.Method = "TmcApiOrderUrl-Pay-Create";
-    req.Version = "2.0";
-    req.Data = {
-      Channel: "App",
-      Type: "3",
-      OrderId: tradeNo,
-      IsApp: AppHelper.isApp()
-    };
-    return this.payService
-      .wechatpay(req, "")
-      .then(r => {
-        const req1 = new RequestEntity();
-        req1.Method = "TmcApiOrderUrl-Pay-Process";
-        req1.Version = "2.0";
-        req1.Data = {
-          OutTradeNo: r,
-          Type: "3"
-        };
-        this.payService.process(req1);
-      })
-      .catch(r => {
-        AppHelper.alert(r);
-      });
-  }
-  private async aliPay(tradeNo: string) {
-    const req = new RequestEntity();
-    req.Method = "TmcApiOrderUrl-Pay-Create";
-    req.Version = "2.0";
-    req.Data = {
-      Channel: "App",
-      Type: "2",
-      IsApp: AppHelper.isApp(),
-      OrderId: tradeNo
-    };
-    const r = await this.payService.alipay(req, "").catch(e => {
-      AppHelper.alert(e);
-    });
-    if (r) {
-      const req1 = new RequestEntity();
-      req1.Method = "TmcApiOrderUrl-Pay-Process";
-      req1.Version = "2.0";
-      req1.Data = {
-        OutTradeNo: r,
-        Type: "2"
-      };
-      const result = await this.payService.process(req1).catch(_ => {
-        AppHelper.alert(r);
-      });
-      if (result) {
-      } else {
-      }
-    }
   }
   private async checkPay(tradeNo: string) {
     return new Promise<boolean>(s => {
@@ -924,7 +847,7 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     console.log("onModify", item.credentials);
   }
- 
+
   private moveRequiredEleToViewPort(ele: any) {
     const el: HTMLElement = ele.nativeElement || ele;
     if (!el) {

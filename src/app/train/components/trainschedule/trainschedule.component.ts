@@ -1,6 +1,7 @@
 import { TrainScheduleEntity } from "../../models/TrainScheduleEntity";
 import { Component, OnInit } from "@angular/core";
 import { ModalController } from "@ionic/angular";
+import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 
 @Component({
   selector: "app-trainschedule",
@@ -9,6 +10,8 @@ import { ModalController } from "@ionic/angular";
 })
 export class TrainscheduleComponent implements OnInit {
   schedules: TrainScheduleEntity[];
+  vmFromCity: TrafficlineEntity;
+  vmToCity: TrafficlineEntity;
   constructor(private modalCtrl: ModalController) {}
 
   ngOnInit() {}

@@ -12,7 +12,11 @@ import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 import { CredentialsEntity } from "../tmc/models/CredentialsEntity";
 import { Storage } from "@ionic/storage";
 import * as jsPy from "js-pinyin";
-import { PassengerBookInfo, TmcService, InitialBookDtoModel } from "../tmc/tmc.service";
+import {
+  PassengerBookInfo,
+  TmcService,
+  InitialBookDtoModel
+} from "../tmc/tmc.service";
 import { CredentialsType } from "../member/pipe/credential.pipe";
 import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
 import * as moment from "moment";
@@ -20,7 +24,7 @@ import { LanguageHelper } from "../languageHelper";
 import { CalendarService } from "../tmc/calendar.service";
 import { TrainSeatEntity } from "./models/TrainSeatEntity";
 import { Router } from "@angular/router";
-import { OrderBookDto } from '../order/models/OrderBookDto';
+import { OrderBookDto } from "../order/models/OrderBookDto";
 const KEY_TRAIN_TRAFFICLINES_DATA = "train-traficlines-data";
 export class SearchTrainModel {
   TrainCode: string;
@@ -614,6 +618,19 @@ export class TrainService {
     return this.apiService.getPromiseData<TrainEntity[]>(req).catch(_ => {
       return [];
     });
+  }
+  async bookTrain(bookDto: OrderBookDto): Promise<{ TradeNo: string }> {
+    const req = new RequestEntity();
+    req.Method = "TmcApiBookUrl-Train-Book";
+    bookDto.Channel = "Mobile";
+    req.Data = bookDto;
+    req.IsShowLoading = true;
+    req.Timeout = 60;
+    return this.apiService.getPromiseData<{ TradeNo: string }>(req);
+  }
+  removeAllBookInfos() {
+    this.bookInfos = [];
+    this.setBookInfoSource(this.bookInfos);
   }
 }
 export interface CacheTrafficLineModel {

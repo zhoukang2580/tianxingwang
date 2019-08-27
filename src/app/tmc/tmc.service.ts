@@ -22,6 +22,9 @@ import { OrderService } from "../order/order.service";
 import { PassengerFlightSegmentInfo } from "../flight/models/PassengerFlightInfo";
 import { ITrainInfo } from "../train/train.service";
 import { InsuranceProductEntity } from "../insurance/models/InsuranceProductEntity";
+import { LanguageHelper } from "../languageHelper";
+import { PayService } from "../services/pay/pay.service";
+import { Router } from "@angular/router";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 
@@ -55,7 +58,9 @@ export class TmcService {
     private apiService: ApiService,
     private storage: Storage,
     private identityService: IdentityService,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private payService: PayService,
+    private router: Router
   ) {
     this.identityService.getIdentity().subscribe(id => {
       if (!id || !id.Ticket) {
@@ -64,6 +69,86 @@ export class TmcService {
       }
     });
     this.selectedCompanySource = new BehaviorSubject(null);
+  }
+  async payOrder(tradeNo: string) {
+    let cancelPay = false;
+    const payWay = await this.payService.selectPayWay();
+    if (!payWay) {
+      const ok = await AppHelper.alert(
+        LanguageHelper.Order.getGiveUpPayTip(),
+        true,
+        LanguageHelper.getYesTip(),
+        LanguageHelper.getNegativeTip()
+      );
+      if (ok) {
+        cancelPay = ok;
+      } else {
+        await this.payOrder(tradeNo);
+      }
+    } else {
+      if (payWay.value == "ali") {
+        await this.aliPay(tradeNo);
+      }
+      if (payWay.value == "wechat") {
+        await this.wechatPay(tradeNo);
+      }
+    }
+    return cancelPay;
+  }
+  private async wechatPay(tradeNo: string) {
+    const req = new RequestEntity();
+    req.Method = "TmcApiOrderUrl-Pay-Create";
+    req.Version = "2.0";
+    req.Data = {
+      Channel: "App",
+      Type: "3",
+      OrderId: tradeNo,
+      IsApp: AppHelper.isApp()
+    };
+    return this.payService
+      .wechatpay(req, "")
+      .then(r => {
+        const req1 = new RequestEntity();
+        req1.Method = "TmcApiOrderUrl-Pay-Process";
+        req1.Version = "2.0";
+        req1.Data = {
+          OutTradeNo: r,
+          Type: "3"
+        };
+        this.payService.process(req1);
+      })
+      .catch(r => {
+        AppHelper.alert(r);
+      });
+  }
+  private async aliPay(tradeNo: string) {
+    const req = new RequestEntity();
+    req.Method = "TmcApiOrderUrl-Pay-Create";
+    req.Version = "2.0";
+    req.Data = {
+      Channel: "App",
+      Type: "2",
+      IsApp: AppHelper.isApp(),
+      OrderId: tradeNo
+    };
+    const r = await this.payService.alipay(req, "").catch(e => {
+      AppHelper.alert(e);
+    });
+    if (r) {
+      const req1 = new RequestEntity();
+      req1.Method = "TmcApiOrderUrl-Pay-Process";
+      req1.Version = "2.0";
+      req1.Data = {
+        OutTradeNo: r,
+        Type: "2"
+      };
+      const result = await this.payService.process(req1).catch(_ => {
+        AppHelper.alert(r);
+      });
+      if (result) {
+      } else {
+      }
+    }
   }
   setFlightHotelTrainType(type: FlightHotelTrainType) {
     this.travelType = type;
