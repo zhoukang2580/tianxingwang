@@ -63,20 +63,27 @@
   </ion-infinite-scroll>
 </ion-content>
 <ion-footer [@openclose]='open'>
-  <ion-buttons>
-    <ion-button *ngIf='isSelectAll' (click)='onUnSelectAll()' fill='clear' size='small' color='secondary'>
-      <ion-icon name="checkmark-circle" mode='ios' color='success' *ngIf='isSelectAll'>
-      </ion-icon>
-      <ion-text>取消全选</ion-text>
-    </ion-button>
-    <ion-text (click)='onSelectAll()' *ngIf='!isSelectAll' fill='clear' size='small' color='secondary'>
-      <ion-icon name="radio-button-off" mode='ios' color='success'>
-      </ion-icon>
-      <ion-text>全选</ion-text>
-    </ion-text>
-    <ion-button (click)='onReadAll()' fill='clear' color='success' size='small'>标记已读</ion-button>
-    <ion-button (click)='onReadAll()' fill='clear' color='danger' size='small'>删除</ion-button>
-  </ion-buttons>
+  <ion-row>
+    <ion-col>
+      <ion-button *ngIf='isSelectAll' (click)='onUnSelectAll()' fill='clear' size='small' color='secondary'>
+        <ion-icon slot='start' name="checkmark-circle" mode='ios' color='success' *ngIf='isSelectAll'>
+        </ion-icon>
+        <ion-text>取消全选</ion-text>
+      </ion-button>
+      <ion-button (click)='onSelectAll()' *ngIf='!isSelectAll' fill='clear' size='small' color='secondary'>
+        <ion-icon slot='start' name="radio-button-off" mode='ios' color='success'>
+        </ion-icon>
+        <ion-text>全选</ion-text>
+      </ion-button>
+
+    </ion-col>
+    <ion-col>
+      <ion-button (click)='onReadAll()' fill='clear' color='success' size='small'>标记已读</ion-button>
+    </ion-col>
+    <ion-col>
+      <ion-button (click)='onReadAll()' fill='clear' color='danger' size='small'>删除</ion-button>
+    </ion-col>
+  </ion-row>
 </ion-footer>
 <!-- 
 <ion-list >

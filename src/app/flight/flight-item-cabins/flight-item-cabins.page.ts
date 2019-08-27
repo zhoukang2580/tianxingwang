@@ -26,7 +26,7 @@ import {
   FlightPolicy
 } from "../models/PassengerFlightInfo";
 import { of } from "rxjs";
-import { map } from 'rxjs/operators';
+import { map } from "rxjs/operators";
 
 @Component({
   selector: "app-flight-item-cabins",
@@ -56,6 +56,7 @@ export class FlightItemCabinsPage implements OnInit {
   ) {
     activatedRoute.queryParamMap.subscribe(async p => {
       this.currentViewtFlightSegment = flightService.getCurrentViewtFlightSegment();
+      console.log("flight-item-cabins", this.currentViewtFlightSegment);
       this.vmFlightSegment = this.currentViewtFlightSegment.flightSegment;
       const identity = await this.identityService.getIdentityAsync();
       this.staff = await this.staffService.getStaff();
@@ -141,24 +142,24 @@ export class FlightItemCabinsPage implements OnInit {
     await m.present();
   }
   bookColor(cabin: any) {
-    if (cabin && cabin.Rules) {
-      if (cabin.Rules.length) {
+    if (this.isShowPolicyCabins) {
+      if (cabin) {
         if (!cabin.IsAllowBook) {
           return "danger";
         }
-        return "warning";
+        if (cabin.Rules && cabin.Rules.length) {
+          return "warning";
+        }
+        return "success";
       }
     }
-    return "success";
+    return "primary";
   }
   async ngOnInit() {
     this.showOpenBtn$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(
-        map(
-          infos =>
-            infos && infos.filter(it => !!it.flightSegmentInfo).length
-        )
+        map(infos => infos && infos.filter(it => !!it.flightSegmentInfo).length)
       );
     setTimeout(async () => {
       const bookInfos = this.flightService.getPassengerBookInfos();

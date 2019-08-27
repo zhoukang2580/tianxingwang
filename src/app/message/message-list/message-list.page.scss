@@ -6,7 +6,21 @@ h3 {
   align-items: center;
   justify-content: flex-end;
 }
-ion-footer ion-buttons {
-  justify-content: space-evenly;
-  padding: 0.5em 0;
+
+
+ion-footer ion-row ion-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  &:not(:last-child)::after {
+    position: absolute;
+    right: 0;
+    top: 30%;
+    bottom: 30%;
+    content: "";
+    display: block;
+    background-color: rgba(var(--ion-color-dark-rgb), 0.13);
+    width: 1px;
+  }
 }
