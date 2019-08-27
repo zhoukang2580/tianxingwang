@@ -5,11 +5,16 @@
         <ion-icon color='dark' name='arrow-back'></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title >
+    <ion-title text-center>
       <ion-text>{{vmFromCity?.Nickname}}</ion-text>
       <i class='icon icon-home-train'></i>
       <ion-text>{{ vmToCity?.Nickname}}</ion-text>
     </ion-title>
+    <ion-buttons slot='end' class='h'>
+      <ion-button (click)='back()'>
+        <ion-icon color='dark' name='arrow-back'></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content>
