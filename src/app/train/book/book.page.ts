@@ -656,7 +656,11 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     bookDto.Passengers = [];
     for (let i = 0; i < this.viewModel.combindInfos.length; i++) {
       const combindInfo = this.viewModel.combindInfos[i];
-      if (this.isAllowSelectApprove(combindInfo) && !combindInfo.appovalStaff) {
+      if (
+        this.isAllowSelectApprove(combindInfo) &&
+        !combindInfo.appovalStaff &&
+        !combindInfo.isSkipApprove
+      ) {
         showErrorMsg(LanguageHelper.Flight.getApproverTip(), combindInfo);
         return;
       }

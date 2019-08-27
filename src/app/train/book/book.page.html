@@ -58,7 +58,7 @@
           (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo?.credentials'
           (modify)='onModify(combindInfo)'>
         </app-book-credential-comp>
-        <div *ngIf='s?.flightPolicy?.Rules?.length && !combindInfo?.modal.isNotWhitelist'>
+        <div *ngIf='combindInfo?.bookInfo?.trainInfo?.trainPolicy?.Rules?.length && !combindInfo?.isNotWhitelist'>
           <app-book-illegal-reason-comp #illegalReasonsEle [illegalReasons]='viewModel?.illegalReasons'
             [isAllowCustomReason]='tmc?.IsAllowCustomReason' (ionchange)='onIllegalReason($event,combindInfo)'>
           </app-book-illegal-reason-comp>
@@ -99,7 +99,7 @@
               <ion-col size='9'>
                 <ion-item>
                   <ion-checkbox color="secondary" name='insurance' [(ngModel)]="insurance.checked">
-                  </ion-checkbox>
+                  </ion-checkbox> 
                   <ion-label style='margin-left: 0.5em'>
                     {{insurance.insuranceResult?.Name}}({{insurance.insuranceResult?.Price}}元)</ion-label>
                 </ion-item>

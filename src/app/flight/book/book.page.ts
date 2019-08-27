@@ -641,7 +641,11 @@ export class BookPage implements OnInit, AfterViewInit {
     bookDto.Passengers = [];
     for (let i = 0; i < this.vmCombindInfos.length; i++) {
       const combindInfo = this.vmCombindInfos[i];
-      if (this.isAllowSelectApprove(combindInfo) && !combindInfo.appovalStaff) {
+      if (
+        this.isAllowSelectApprove(combindInfo) &&
+        !combindInfo.appovalStaff &&
+        !combindInfo.isSkipApprove
+      ) {
         showErrorMsg(LanguageHelper.Flight.getApproverTip(), combindInfo);
         return;
       }
@@ -968,7 +972,10 @@ export class BookPage implements OnInit, AfterViewInit {
         ).map(insurance => {
           return {
             insuranceResult: insurance,
-            checked: true
+            checked:
+            item.passenger &&
+            item.passenger.Policy &&
+            item.passenger.Policy.FlightIsForceInsurance
           };
         });
         const combineInfo: ICombindInfo = {

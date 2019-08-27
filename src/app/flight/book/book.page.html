@@ -138,11 +138,13 @@
             </div>
             <div *ngIf='combindInfo?.insuranceProducts?.length'>
               保险:
-              <div *ngFor='let insurance of combindInfo?.insuranceProducts?.slice(0,1)'>
+              <div *ngFor='let insurance of combindInfo?.insuranceProducts'>
                 <ion-row>
                   <ion-col size='9'>
                     <ion-item>
-                      <ion-checkbox color="secondary" name='insurance' [(ngModel)]="insurance.checked">
+                      <ion-checkbox color="secondary" name='insurance'
+                        [disabled]='combindInfo?.modal?.passenger?.Policy?.FlightIsForceInsurance'
+                        [(ngModel)]="insurance.checked" [checked]='insurance.checked'>
                       </ion-checkbox>
                       <ion-label style='margin-left: 0.5em'>
                         {{insurance.insuranceResult?.Name}}({{insurance.insuranceResult?.Price}}元)</ion-label>
