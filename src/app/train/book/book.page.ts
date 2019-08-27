@@ -667,6 +667,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       const p = new PassengerDto();
       p.ApprovalId =
         (this.isAllowSelectApprove(combindInfo) &&
+          !combindInfo.isSkipApprove &&
           (combindInfo.appovalStaff &&
             (combindInfo.appovalStaff.AccountId ||
               (combindInfo.appovalStaff.Account &&

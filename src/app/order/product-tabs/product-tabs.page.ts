@@ -198,6 +198,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     }
     this.orderModel = null;
     this.scrollToTop();
+    if (this.ionRefresher) {
+      this.ionRefresher.complete();
+    }
     this.loadMore();
   }
   onTabClick(tab: ProductItem) {
