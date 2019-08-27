@@ -111,9 +111,9 @@ export class MemberCredentialManagementPage
           AppHelper.alert(e);
           return false;
         });
-      if (result) {
-        await this.getCredentials();
-      }
+      // if (result) {
+      // }
+      await this.getCredentials();
     }
   }
   async saveModify(c: MemberCredential, el: HTMLElement) {
@@ -121,7 +121,7 @@ export class MemberCredentialManagementPage
     if (!valid) {
       return;
     }
-    this.memberService
+    await this.memberService
       .modifyCredentials(c)
       .then(_ => {
         AppHelper.alert(LanguageHelper.getInfoModifySuccessTip());
@@ -129,7 +129,7 @@ export class MemberCredentialManagementPage
       .catch(e => {
         AppHelper.alert(e);
       });
-      await this.getCredentials();
+    await this.getCredentials();
   }
   initializeValidate() {
     this.validatorService.initialize(

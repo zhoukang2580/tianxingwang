@@ -1,9 +1,18 @@
-import { NavController } from "@ionic/angular";
+import { ApiService } from "./../../services/api/api.service";
+import { NavController, LoadingController } from "@ionic/angular";
 import { MessageService } from "./../message.service";
 import { AppHelper } from "../../appHelper";
 import { DomSanitizer } from "@angular/platform-browser";
 import { Subject, BehaviorSubject } from "rxjs";
-import { Component, OnInit } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+  ViewChildren,
+  QueryList
+} from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { MessageModel } from "src/app/message/message.service";
 import * as moment from "moment";
@@ -12,24 +21,18 @@ import * as moment from "moment";
   templateUrl: "./message-detail.page.html",
   styleUrls: ["./message-detail.page.scss"]
 })
-export class MessageDetailPage implements OnInit {
+export class MessageDetailPage implements OnInit, AfterViewInit {
   message: MessageModel;
-  //  = {
-  //   Title: "测试标题",
-  //   Detail:
-  //     "单身快乐军付付付付付付付付付付付付付付付付付付付付付付付付付付付付付付付付付付付寻错木吧吧吧吧吧吧吧吧吧吧吧吧吧吧吧吧吧吧吧不是圣诞节里看风景的三轮车下拉框句",
-  //   Url: "https://www.baidu.com",
-  //   InsertTime: moment().format("YYYY-MM-DD HH:mm"),
-  //   Id: "aaaa",
-  //   IsRead: false
-  // };
-  showDetail: boolean;
+  isShowLink: boolean;
   url$: Subject<any>;
+  @ViewChildren("iframe") iframEles: QueryList<ElementRef<HTMLIFrameElement>>;
+  @ViewChildren("msgdetail") msgdetailEles: QueryList<ElementRef<HTMLElement>>;
   constructor(
     route: ActivatedRoute,
     private sanitizer: DomSanitizer,
     private messageService: MessageService,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private loadingController: LoadingController
   ) {
     this.url$ = new BehaviorSubject(null);
     route.queryParamMap.subscribe(p => {
@@ -45,7 +48,7 @@ export class MessageDetailPage implements OnInit {
           );
         }
         if (this.message && this.message.Url) {
-          this.showDetail = false;
+          this.isShowLink = false;
           this.message.Url = this.message.Url.includes("?")
             ? `${this.message.Url}&ticket=${AppHelper.getTicket()}`
             : `${this.message.Url}?ticket=${AppHelper.getTicket()}`;
@@ -54,14 +57,71 @@ export class MessageDetailPage implements OnInit {
       console.log(this.message);
     });
   }
+  ngAfterViewInit() {
+    if (this.iframEles) {
+      this.iframEles.changes.subscribe(async _ => {
+        console.log(this.iframEles.first);
+        const l = await this.loadingController.create({
+          message: "请稍后..."
+        });
+        l.backdropDismiss = true;
+        if (this.iframEles.first && this.iframEles.first.nativeElement) {
+          l.present();
+          this.iframEles.first.nativeElement.onload = () => {
+            l.dismiss().catch(_ => 0);
+          };
+        } else {
+          l.dismiss().catch(_ => 0);
+        }
+      });
+    }
+    if (this.msgdetailEles) {
+      if (
+        this.msgdetailEles.first &&
+        this.msgdetailEles.first &&
+        this.msgdetailEles.first.nativeElement
+      ) {
+        this.renderHtml();
+      }
+      this.msgdetailEles.changes.subscribe(_ => {
+        // console.log(_);
+        this.renderHtml();
+      });
+    }
+  }
+  private renderHtml() {
+    if (this.msgdetailEles.first && this.msgdetailEles.first.nativeElement) {
+      this.msgdetailEles.first.nativeElement.innerHTML =
+        this.message && this.message.Detail;
+      const anchors = this.msgdetailEles.first.nativeElement.querySelectorAll(
+        "a"
+      );
+      if (anchors && anchors.length) {
+        anchors.forEach(a => {
+          if (a.href) {
+            a.style.color = "var(--ion-color-secondary)";
+            a.style.textDecoration = "none";
+            a.onclick = (evt: MouseEvent) => {
+              evt.preventDefault();
+              evt.stopPropagation();
+              this.onShowDetail(a.href);
+              return false;
+            };
+          }
+        });
+      }
+    }
+  }
   back() {
+    if (this.isShowLink) {
+      this.isShowLink = false;
+      return;
+    }
     this.navCtrl.back();
   }
-  onShowDetail() {
-    this.showDetail = true;
-    this.url$.next(
-      this.sanitizer.bypassSecurityTrustResourceUrl(this.message.Url)
-    );
+  onShowDetail(url: string) {
+    this.isShowLink = true;
+    this.url$.next(this.sanitizer.bypassSecurityTrustResourceUrl(url));
   }
   ngOnInit() {}
 }

@@ -10,20 +10,19 @@
 </ion-header>
 
 <ion-content padding>
-  <ng-container *ngIf='!showDetail;else detailTempl'>
+  <ng-container *ngIf='!isShowLink;else detailTempl'>
     <h3 padding-start no-margin>
       {{message?.Title}}
     </h3>
     <h6 padding-start>{{message?.InsertTime}}</h6>
-    <div class='detail'>
-      {{message?.Detail}}
+    <div class='detail' #msgdetail [attr.msgdetail]='message?.Detail' [attr.msgid]='message?.Id'>
     </div>
-    <ion-button margin-top color='secondary' *ngIf='message?.Url' expand='block' (click)="onShowDetail()">显示详情
+    <ion-button margin-top color='secondary' *ngIf='message?.Url' expand='block' (click)="onShowDetail(message?.Url)">显示详情
     </ion-button>
   </ng-container>
   <ng-template #detailTempl>
     <div class='wrapper' *ngIf='(url$|async) as url'>
-      <iframe [src]="url"></iframe>
+      <iframe [src]="url" #iframe></iframe>
     </div>
   </ng-template>
 </ion-content>
