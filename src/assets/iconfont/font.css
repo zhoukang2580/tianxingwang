@@ -61,30 +61,34 @@
 	content: "\E00A";
 }
 
-.icon-tab-home-fill:before {
+.icon-search-train:before {
 	content: "\E00B";
 }
 
-.icon-tab-home:before {
+.icon-tab-home-fill:before {
 	content: "\E00C";
 }
 
-.icon-tab-my-fill:before {
+.icon-tab-home:before {
 	content: "\E00D";
 }
 
-.icon-tab-my:before {
+.icon-tab-my-fill:before {
 	content: "\E00E";
 }
 
-.icon-tab-trip-fill:before {
+.icon-tab-my:before {
 	content: "\E00F";
 }
 
-.icon-tab-trip:before {
+.icon-tab-trip-fill:before {
 	content: "\E010";
 }
 
-.icon-verify:before {
+.icon-tab-trip:before {
 	content: "\E011";
+}
+
+.icon-verify:before {
+	content: "\E012";
 }

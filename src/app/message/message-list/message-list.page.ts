@@ -30,7 +30,7 @@ import {
 })
 export class MessageListPage implements OnInit {
   messages: MessageModel[];
-  currentPage = 1;
+  currentPage = 0;
   pageSize = 10;
   loading = false;
   open = false;
@@ -93,7 +93,7 @@ export class MessageListPage implements OnInit {
     if (this.scroller) {
       this.scroller.disabled = false;
     }
-    this.currentPage = 1;
+    this.currentPage = 0;
     this.messages = [];
     this.loading = true;
     await this.loadMore();
