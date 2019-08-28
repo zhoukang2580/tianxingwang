@@ -25,8 +25,9 @@ import {
   CurrentViewtFlightSegment,
   FlightPolicy
 } from "../models/PassengerFlightInfo";
-import { of } from "rxjs";
-import { map } from "rxjs/operators";
+import { of, Observable } from "rxjs";
+import { map, tap } from "rxjs/operators";
+import { PassengerBookInfo } from "src/app/tmc/tmc.service";
 
 @Component({
   selector: "app-flight-item-cabins",
@@ -42,6 +43,7 @@ export class FlightItemCabinsPage implements OnInit {
   staff: StaffEntity;
   loading = true;
   showOpenBtn$ = of(0);
+  filteredPolicyPassenger$: Observable<PassengerBookInfo>;
   constructor(
     private flightService: FlightService,
     activatedRoute: ActivatedRoute,
@@ -97,20 +99,12 @@ export class FlightItemCabinsPage implements OnInit {
     });
     await popover.present();
     const d = await popover.onDidDismiss();
-    if (d && d.data) {
-      // console.log("filterPolicyFlights", d.data);
-      const one = this.currentViewtFlightSegment.totalPolicyFlights.find(
-        item => item.PassengerKey == d.data
+    const data = d && (d.data as PassengerBookInfo);
+    if (data && data.passenger && data.passenger.AccountId) {
+      this.vmPolicyCabins = this.flightService.filterPassengerPolicyCabins(
+        data,
+        this.vmFlightSegment
       );
-      if (one) {
-        this.vmPolicyCabins = one.FlightPolicies.filter(
-          pc =>
-            pc.FlightNo == this.vmFlightSegment.Number &&
-            (!pc.Rules || pc.Rules.length == 0)
-        );
-      } else {
-        this.vmPolicyCabins = [];
-      }
       this.isShowPolicyCabins = true;
     } else {
       this.isShowPolicyCabins = false;
@@ -156,6 +150,9 @@ export class FlightItemCabinsPage implements OnInit {
     return "primary";
   }
   async ngOnInit() {
+    this.filteredPolicyPassenger$ = this.flightService
+      .getPassengerBookInfoSource()
+      .pipe(map(infos => infos.find(it => it.isFilteredPolicy)));
     this.showOpenBtn$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(
@@ -164,7 +161,13 @@ export class FlightItemCabinsPage implements OnInit {
     setTimeout(async () => {
       const bookInfos = this.flightService.getPassengerBookInfos();
       const showPl = bookInfos.length == 1;
-      if ((await this.staffService.isSelfBookType()) || showPl) {
+      if (
+        (await this.staffService.isSelfBookType()) ||
+        showPl ||
+        this.flightService
+          .getPassengerBookInfos()
+          .find(it => it.isFilteredPolicy)
+      ) {
         this.isShowPolicyCabins = true;
         this.showPolicyCabins();
       } else {
@@ -173,25 +176,39 @@ export class FlightItemCabinsPage implements OnInit {
       }
     }, 100);
   }
-  private showPolicyCabins() {
+  private async showPolicyCabins() {
     this.vmPolicyCabins = [];
-    if (this.currentViewtFlightSegment) {
-      this.loading = true;
-      const cabins = (
-        this.currentViewtFlightSegment.flightSegment.PoliciedCabins || []
-      ).slice(0);
-      const loop = () => {
-        if (cabins.length) {
-          this.vmPolicyCabins.push(...cabins.splice(0, 1));
-          window.requestAnimationFrame(loop);
-        } else {
-          this.loading = false;
-        }
-      };
-      setTimeout(() => {
-        loop();
-      }, 0);
+    let policiedCabins: FlightPolicy[] =
+      this.currentViewtFlightSegment.flightSegment.PoliciedCabins || [];
+    this.loading = true;
+    const bookInfo = this.flightService
+      .getPassengerBookInfos()
+      .find(it => it.isFilteredPolicy);
+    if (bookInfo) {
+      const p = this.currentViewtFlightSegment.totalPolicyFlights.find(
+        it =>
+          it.PassengerKey ==
+          (bookInfo.passenger && bookInfo.passenger.AccountId)
+      );
+      if (p) {
+        policiedCabins = p.FlightPolicies.filter(
+          it =>
+            it.FlightNo === this.currentViewtFlightSegment.flightSegment.Number
+        );
+      }
     }
+    const cabins = policiedCabins.slice(0);
+    const loop = () => {
+      if (cabins.length) {
+        this.vmPolicyCabins.push(...cabins.splice(0, 1));
+        window.requestAnimationFrame(loop);
+      } else {
+        this.loading = false;
+      }
+    };
+    setTimeout(() => {
+      loop();
+    }, 0);
   }
   private showFlightCabins() {
     this.vmCabins = [];

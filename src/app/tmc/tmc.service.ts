@@ -1101,12 +1101,15 @@ export interface PassengerBookInfo {
   trainInfo?: ITrainInfo;
   id?: string;
   isReplace?: boolean;
+  isOnlyFilterMatchedPolicy?: boolean;
+  isFilteredPolicy?: boolean;
 }
 export class InitialBookDtoModel {
   ServiceFees: { [clientId: string]: string };
   Insurances: { [clientId: string]: InsuranceProductEntity[] };
   TravelFrom: TravelFormEntity;
   Tmc: TmcEntity;
+  PayTypes: any;
   IllegalReasons: string[];
   Staffs: {
     CredentialStaff: StaffEntity;

@@ -89,11 +89,12 @@ ion-radio {
   }
 }
 ion-checkbox {
+  --ion-color-primary: var(--ion-color-secondary);
   --checkmark-color: var(--ion-color-light);
   &.ios {
-    width: 1.5rem;
-    height: 1.5rem;
-    margin-left: 0.5em;
+    width: 1.3rem;
+    height: 1.3rem;
+    margin-left: 0.3em;
   }
 }
 

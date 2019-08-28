@@ -7,7 +7,11 @@ import {
   PassengerBookInfo,
   InitialBookDtoModel
 } from "src/app/tmc/tmc.service";
-import { ModalController, NavController } from "@ionic/angular";
+import {
+  ModalController,
+  NavController,
+  PopoverController
+} from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import { FlightCabinEntity } from "./models/flight/FlightCabinEntity";
 import { FilterConditionModel } from "./models/flight/advanced-search-cond/FilterConditionModel";
@@ -32,6 +36,7 @@ import {
 } from "./models/PassengerFlightInfo";
 import { OrderBookDto } from "../order/models/OrderBookDto";
 import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
+import { FilterPassengersPolicyComponent } from "../tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
 
 export class SearchFlightModel {
   BackDate: string; //  Yes 航班日期（yyyy-MM-dd）
@@ -71,6 +76,7 @@ export class FlightService {
     private router: Router,
     private navCtrl: NavController,
     private identityService: IdentityService,
+    private popoverController: PopoverController,
     private tmcService: TmcService,
     private calendarService: CalendarService
   ) {
@@ -164,7 +170,103 @@ export class FlightService {
   getPassengerBookInfoSource() {
     return this.passengerBookInfoSource.asObservable();
   }
-
+  filterPassengerPolicyCabins(
+    data: PassengerBookInfo,
+    flightSegment: FlightSegmentEntity
+  ) {
+    let policyCabins: FlightPolicy[];
+    if (data && data.passenger && data.passenger.AccountId) {
+      this.setPassengerBookInfos(
+        this.getPassengerBookInfos().map(it => {
+          it.isFilteredPolicy = it.id == data.id;
+          return it;
+        })
+      );
+      const one = this.currentViewtFlightSegment.totalPolicyFlights.find(
+        item => item.PassengerKey == data.passenger.AccountId
+      );
+      if (one) {
+        policyCabins = one.FlightPolicies.filter(
+          pc => pc.FlightNo == flightSegment.Number
+        );
+        if (data.isOnlyFilterMatchedPolicy) {
+          policyCabins = policyCabins.filter(
+            it => !it.Rules || it.Rules.length == 0
+          );
+        }
+      } else {
+        policyCabins = [];
+      }
+    } else {
+      this.setPassengerBookInfos(
+        this.getPassengerBookInfos().map(it => {
+          it.isFilteredPolicy = false;
+          it.isOnlyFilterMatchedPolicy = false;
+          return it;
+        })
+      );
+    }
+    return policyCabins;
+  }
+  filterPassengerPolicyFlights(
+    bookInfo: PassengerBookInfo,
+    flightJourneyList: FlightJourneyEntity[],
+    policyflights: PassengerPolicyFlights[]
+  ): FlightSegmentEntity[] {
+    if (bookInfo && bookInfo.passenger && bookInfo.passenger.AccountId) {
+      bookInfo.isFilteredPolicy = true;
+      this.setPassengerBookInfos(
+        this.getPassengerBookInfos().map(it => {
+          it.isFilteredPolicy = bookInfo.id == it.id;
+          return it;
+        })
+      );
+      let numbers: string[] = [];
+      const policies =
+        policyflights &&
+        policyflights.find(
+          pl => pl.PassengerKey == bookInfo.passenger.AccountId
+        );
+      if (policies && policies.FlightPolicies) {
+        numbers = policies.FlightPolicies.reduce(
+          (acc, it) => [...acc, it.FlightNo],
+          []
+        );
+      }
+      const filteredFlightJourenyList = flightJourneyList.filter(it => {
+        return (
+          it.FlightRoutes &&
+          it.FlightRoutes.some(fr => {
+            if (fr.FlightSegments) {
+              if (bookInfo.isOnlyFilterMatchedPolicy) {
+                return fr.FlightSegments.some(
+                  s =>
+                    numbers.includes(s.Number) &&
+                    s.PoliciedCabins &&
+                    s.PoliciedCabins.some(
+                      pc => !pc.Rules || pc.Rules.length == 0
+                    )
+                );
+              }
+              return fr.FlightSegments.some(s => numbers.includes(s.Number));
+            }
+            return false;
+          })
+        );
+      });
+      const segments = this.getTotalFlySegments(filteredFlightJourenyList);
+      return segments;
+    } else {
+      this.setPassengerBookInfos(
+        this.getPassengerBookInfos().map(it => {
+          it.isFilteredPolicy = false;
+          it.isOnlyFilterMatchedPolicy = false;
+          return it;
+        })
+      );
+      return this.getTotalFlySegments(flightJourneyList);
+    }
+  }
   getPassengerBookInfos() {
     this.passengerBookInfos = this.passengerBookInfos || [];
     return this.passengerBookInfos;
@@ -712,6 +814,7 @@ export class FlightService {
   ): Promise<{ [accountId: string]: CredentialsEntity[] }> {
     return this.tmcService.getPassengerCredentials(accountIds);
   }
+
   async getInitializeBookDto(
     bookDto: OrderBookDto
   ): Promise<InitialBookDtoModel> {

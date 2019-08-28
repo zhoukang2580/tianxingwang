@@ -157,24 +157,20 @@ export class BookPage implements OnInit, AfterViewInit {
     this.identity = await this.identityService
       .getIdentityAsync()
       .catch(_ => ({} as any));
-    this.orderTravelPayTypes = [
-      {
-        label: LanguageHelper.Flight.getCompanyPayTip(),
-        value: OrderTravelPayType.Company
-      },
-      {
-        label: LanguageHelper.Flight.getPersonPayTip(),
-        value: OrderTravelPayType.Person
-      },
-      {
-        label: LanguageHelper.Flight.getCreditPayTip(),
-        value: OrderTravelPayType.Credit
-      },
-      {
-        label: LanguageHelper.Flight.getBalancePayTip(),
-        value: OrderTravelPayType.Balance
+    if (!this.initialBookDtoModel || !this.initialBookDtoModel.PayTypes) {
+      return;
+    }
+    const arr = Object.keys(this.initialBookDtoModel.PayTypes);
+    this.orderTravelPayTypes = [];
+    arr.forEach(it => {
+      if (!this.orderTravelPayTypes.find(item => item.value == +it)) {
+        this.orderTravelPayTypes.push({
+          label: this.initialBookDtoModel.PayTypes[it],
+          value: +it
+        });
       }
-    ].filter(t => this.checkOrderTravelPayType(t.value));
+    });
+    console.log("initOrderTravelPayTypes", this.orderTravelPayTypes);
   }
   private async initializeBookDto() {
     this.bookDto = new OrderBookDto();
@@ -266,8 +262,8 @@ export class BookPage implements OnInit, AfterViewInit {
       }
       await this.initCombindInfos();
       await this.initTmcOutNumberInfos();
-      this.initOrderTravelPayTypes();
-      console.log(JSON.stringify(this.vmCombindInfos));
+      await this.initOrderTravelPayTypes();
+      console.log("vmCombindInfos", this.vmCombindInfos);
     } catch (err) {
       this.errors = err || "please retry";
       console.error(err);
@@ -280,21 +276,6 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     return !!Tmc.FlightOrderType.split(",").find(
       it => it == OrderTravelType[type]
-    );
-  }
-  checkOrderTravelPayType(payType: OrderTravelPayType) {
-    const Tmc = this.tmc;
-    if (!Tmc || !Tmc.FlightOrderPayType) {
-      return false;
-    }
-    return (
-      !!Tmc.FlightOrderPayType.split(",").find(
-        it => it == OrderTravelPayType[payType]
-      ) ||
-      (payType == OrderTravelPayType.Credit &&
-        this.identity &&
-        this.identity.Numbers &&
-        !!this.identity.Numbers.AgentId)
     );
   }
 

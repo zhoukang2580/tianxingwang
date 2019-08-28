@@ -29,7 +29,7 @@
         <ion-text color='danger' *ngIf='isFiltered'>(筛选后)</ion-text>
       </ion-col>
     </ion-row>
-    <ion-row *ngIf='isSelfBookType' >
+    <ion-row *ngIf='isSelfBookType'>
       <ng-container *ngIf='goAndBackFlightDateTime$|async as datetime'>
         <ion-col *ngIf='datetime?.goArrivalDateTime'>
           <ion-text>已选去程:{{datetime?.goArrivalDateTime}}</ion-text>
@@ -37,12 +37,18 @@
         <ion-col *ngIf='datetime?.backTakeOffDateTime'>
           <ion-text>已选返程:{{datetime?.backTakeOffDateTime}}</ion-text>
         </ion-col>
-      </ng-container> 
+      </ng-container>
+    </ion-row>
+    <ion-row *ngIf='(filteredPolicyPassenger$|async) as bookInfo'>
+      <ion-col *ngIf='bookInfo.credential as credential'>
+        <ion-text color='danger'>当前已过滤【{{credential.CheckFirstName}}{{credential.CheckLastName}}】{{credential.Number}})差标
+        </ion-text>
+      </ion-col>
     </ion-row>
   </ion-grid>
-  <ion-toolbar class="fly-days">  
+  <ion-toolbar class="fly-days">
     <app-days-calendar (itemSelected)="onChangedDay($event,true)" (calenderClick)="onCalenderClick()">
-    </app-days-calendar> 
+    </app-days-calendar>
   </ion-toolbar>
 </ion-header>
 <ion-content #cnt>

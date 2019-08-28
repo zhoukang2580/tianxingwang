@@ -1,3 +1,4 @@
+import { PassengerBookInfo } from "./../../tmc/tmc.service";
 import { environment } from "src/environments/environment";
 import { ApiService } from "src/app/services/api/api.service";
 import { FlyFilterComponent } from "./../components/fly-filter/fly-filter.component";
@@ -66,7 +67,7 @@ import {
   FlightPolicy
 } from "../models/PassengerFlightInfo";
 import { DaysCalendarComponent } from "src/app/tmc/components/days-calendar/days-calendar.component";
-import { NOT_WHITE_LIST } from 'src/app/tmc/select-passenger/select-passenger.page';
+import { NOT_WHITE_LIST } from "src/app/tmc/select-passenger/select-passenger.page";
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -128,6 +129,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   hasDataSource: Subject<boolean>;
   showAdvSearchPage$: Observable<boolean>;
   showSelectFlyDayPage$: Observable<boolean>;
+  filteredPolicyPassenger$: Observable<PassengerBookInfo>;
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -246,7 +248,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     });
     this.showAdvSearchPage$ = this.flightService.getFilterPanelShow();
   }
-  
+
   async canShowAddPassenger() {
     const identity = await this.identityService.getIdentityAsync();
     this.showAddPassenger =
@@ -370,8 +372,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           Object.keys(this.filterComp.userOps).some(
             k => this.filterComp.userOps[k]
           );
-        const segments = this.flightService.getTotalFlySegments(
-          filteredFlightJourenyList
+        const segments = this.flightService.filterPassengerPolicyFlights(
+          null,
+          filteredFlightJourenyList,
+          this.policyflights
         );
         this.st = Date.now();
         this.vmFlights = segments;
@@ -639,43 +643,25 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     });
     await popover.present();
     const d = await popover.onDidDismiss();
-    this.filterPassengerPolicyFlights(d && d.data);
+    const data = d.data as PassengerBookInfo;
+    this.filterPassengerPolicyFlights(data);
   }
-  private async filterPassengerPolicyFlights(passengerId: string) {
-    if (passengerId) {
-      const filteredFlightJourenyList = this.flightJourneyList.filter(
-        fj =>
-          fj.FlightRoutes &&
-          fj.FlightRoutes.some(
-            fr =>
-              fr.FlightSegments &&
-              fr.FlightSegments.some(
-                s =>
-                  s.PoliciedCabins &&
-                  s.PoliciedCabins.some(pc => !pc.Rules || pc.Rules.length == 0)
-              )
-          )
-      );
-      let segments = this.flightService.getTotalFlySegments(
-        filteredFlightJourenyList
-      );
-      if (segments.length == 0) {
-        if (`${passengerId}`.toLowerCase().includes(NOT_WHITE_LIST)) {
-          // 非白名单的是可以选择所有的航班
-          segments = this.flightService.getTotalFlySegments(
-            this.flightJourneyList
-          );
-        }
-      }
-      this.st = Date.now();
-      this.vmFlights = segments;
-      await this.renderFlightList(segments);
-      this.hasDataSource.next(!!this.vmFlights.length && !this.isLoading);
-      this.apiService.hideLoadingView();
-      this.isLoading = false;
-    }
+  private async filterPassengerPolicyFlights(bookInfo: PassengerBookInfo) {
+    this.st = Date.now();
+    this.vmFlights = this.flightService.filterPassengerPolicyFlights(
+      bookInfo,
+      this.flightJourneyList,
+      this.policyflights
+    );
+    await this.renderFlightList(this.vmFlights);
+    this.hasDataSource.next(!!this.vmFlights.length && !this.isLoading);
+    this.apiService.hideLoadingView();
+    this.isLoading = false;
   }
   async ngOnInit() {
+    this.filteredPolicyPassenger$ = this.flightService
+      .getPassengerBookInfoSource()
+      .pipe(map(infos => infos.find(it => it.isFilteredPolicy)));
     this.activeTab = "filter";
     this.filterConditionSubscription = this.flightService
       .getFilterCondition()

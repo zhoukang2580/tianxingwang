@@ -1,3 +1,4 @@
+import { StaffService } from "./../../../hr/staff.service";
 import { Component, OnInit, Input } from "@angular/core";
 import { Observable } from "rxjs";
 import { PopoverController } from "@ionic/angular";
@@ -11,20 +12,27 @@ import { map } from "rxjs/operators";
 export class FilterPassengersPolicyComponent implements OnInit {
   @Input() bookInfos$: Observable<PassengerBookInfo[]>;
   selectedItem: PassengerBookInfo;
-  constructor(private popoverCtrl: PopoverController) {}
+  isOnlyMatchPolicy: boolean;
+  constructor(
+    private popoverCtrl: PopoverController,
+    private staffService: StaffService
+  ) {}
   async onSelect(ok?: string) {
+    if (this.selectedItem) {
+      console.log("selectedItem", this.selectedItem, this.isOnlyMatchPolicy);
+      this.selectedItem.isOnlyFilterMatchedPolicy = this.isOnlyMatchPolicy;
+    }
     const t = await this.popoverCtrl
-      .dismiss(
-        ok
-          ? this.selectedItem &&
-              this.selectedItem.passenger &&
-              this.selectedItem.passenger.AccountId
-          : null
-      )
+      .dismiss(ok ? this.selectedItem : null)
       .catch(_ => void 0);
   }
-  ngOnInit() {
-    if (this.bookInfos$) {
+  onSelectItem(evt: CustomEvent) {
+    if (evt.detail && evt.detail.value && evt.detail.value.passenger) {
+      this.selectedItem = evt.detail.value;
+    }
+  }
+  async ngOnInit() {
+    if (this.bookInfos$ && (await this.staffService.isSelfBookType())) {
       this.bookInfos$ = this.bookInfos$.pipe(
         map(infos => {
           if (infos && infos.length) {

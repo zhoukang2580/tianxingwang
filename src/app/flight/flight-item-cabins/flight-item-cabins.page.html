@@ -8,16 +8,24 @@
     <ion-text>{{getMothDay()}}</ion-text>
     <ion-buttons slot='end' *ngIf='(showOpenBtn$|async) as num'>
       <ion-button fill='clear' color='secondary' appOpenSelectedBookInfos size='small'>
-        <ion-text class='xs-font-size'>已选行程
+        <ion-text class='xs-font-size'>
+          已选行程
         </ion-text>
         <ion-badge color='danger' slot='end'>{{num}}</ion-badge>
       </ion-button>
     </ion-buttons>
-    <ion-buttons slot='end'>
+    <ion-buttons slot='end' >
       <ion-button fill='clear' color='secondary' (click)='filterPolicyFlights()' size='small'>
         <ion-text class='xs-font-size'>过滤差标</ion-text>
       </ion-button>
     </ion-buttons>
+    <ion-row *ngIf='(filteredPolicyPassenger$|async) as bookInfo'>
+      <ion-col *ngIf='bookInfo.credential as credential'>
+        <ion-text color='danger'>
+          当前已过滤【{{credential.CheckFirstName}}{{credential.CheckLastName}}】({{credential.Number}})差标
+        </ion-text>
+      </ion-col>
+    </ion-row>
   </ion-toolbar>
 
 </ion-header>
