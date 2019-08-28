@@ -60,7 +60,7 @@ export class MessageDetailPage implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     if (this.iframEles) {
       this.iframEles.changes.subscribe(async _ => {
-        console.log(this.iframEles.first);
+        // console.log(this.iframEles.first);
         const l = await this.loadingController.create({
           message: "请稍后..."
         });
