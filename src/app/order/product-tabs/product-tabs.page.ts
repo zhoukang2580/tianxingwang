@@ -71,6 +71,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   dataCount: number;
   isLoading = true;
   title = "机票订单";
+
   @ViewChild(IonContent) ionContent: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;

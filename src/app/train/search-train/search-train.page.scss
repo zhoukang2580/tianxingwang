@@ -11,14 +11,17 @@ ion-content {
   ion-card {
     --background: white;
   }
-  .round-trip{
+  ion-buttons.small-font {
+    font-size: 0.6rem;
+  }
+  .round-trip {
     position: relative;
     display: flex;
     align-items: center;
     width: 100%;
     justify-content: space-around;
     &::after {
-      --border-color    : #d6d6d6;
+      --border-color: #d6d6d6;
       content: "";
       position: absolute;
       left: -1rem;

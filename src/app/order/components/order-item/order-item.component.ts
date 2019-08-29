@@ -11,6 +11,8 @@ export class OrderItemComponent implements OnInit {
   @Output() payaction: EventEmitter<OrderEntity>;
   OrderStatusType = OrderStatusType;
   OrderFlightTripStatusType = OrderFlightTripStatusType;
+  private bookChannals = `Eterm  BlueSky  Android  客户H5  IOS  外购PC  客户PC  代理PC`;
+  private selfBookChannals = `Android  客户H5  IOS 客户PC`;
   constructor() {
     this.payaction = new EventEmitter();
   }
@@ -22,6 +24,9 @@ export class OrderItemComponent implements OnInit {
     }
     evt.preventDefault();
     evt.stopPropagation();
+  }
+  isSelfBook(channal: string) {
+    return this.selfBookChannals.includes(channal);
   }
   ngOnInit() {}
 }

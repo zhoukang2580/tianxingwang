@@ -5,9 +5,11 @@
         <ion-icon color='dark' name='arrow-back'></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>机票查询</ion-title>
+    <ion-text *ngIf='(isShowBookInfos$|async)'>机票查询</ion-text>
+    <ion-title *ngIf='!(isShowBookInfos$|async)'>机票查询</ion-title>
     <ion-buttons slot='end' *ngIf='(isShowBookInfos$|async) as num'>
-      <ion-button fill='clear' color='secondary' size='small' appOpenSelectedBookInfos>已选航班<ion-badge slot='end' color='danger'>
+      <ion-button fill='clear' color='secondary' size='small' appOpenSelectedBookInfos>已选航班<ion-badge slot='end'
+          color='danger'>
           {{num}}</ion-badge>
       </ion-button>
     </ion-buttons>

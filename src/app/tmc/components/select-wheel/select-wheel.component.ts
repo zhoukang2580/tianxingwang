@@ -93,7 +93,14 @@ export class SelectWheelComponent
       clearInterval(this.watchDog);
     }
     this.watchDog = setInterval(() => {
-      if (this.lastScroll < Date.now() - 120) {
+      // if (this.lastScroll < Date.now() - 120) {
+      //   this.onScrollEnd(scrollEle, eles);
+      // }
+      if (
+        this.scrollEle &&
+        this.scrollEle.nativeElement &&
+        this.lastScroll == this.scrollEle.nativeElement.scrollTop
+      ) {
         this.onScrollEnd(scrollEle, eles);
       }
     }, 100);
@@ -175,6 +182,7 @@ export class SelectWheelComponent
         "scroll"
       ).subscribe(evt => {
         this.lastScroll = Date.now();
+        this.lastScroll = this.scrollEle.nativeElement.scrollTop;
         this.onScroll(this.scrollEle, this.liEles);
         evt.preventDefault();
         evt.stopPropagation();
