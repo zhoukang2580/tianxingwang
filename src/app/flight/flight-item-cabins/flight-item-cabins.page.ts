@@ -104,14 +104,16 @@ export class FlightItemCabinsPage implements OnInit {
       data,
       this.vmFlightSegment
     );
-    if (data && data.passenger && data.passenger.AccountId) {
+    if (
+      (data && data.passenger && data.passenger.AccountId) ||
+      (await this.staffService.isSelfBookType())
+    ) {
       this.isShowPolicyCabins = true;
+      this.showPolicyCabins();
     } else {
       this.isShowPolicyCabins = false;
-      if (await this.staffService.isSelfBookType()) {
-        this.isShowPolicyCabins = true;
-        this.showPolicyCabins();
-      }
+
+      this.showFlightCabins();
     }
   }
   async showSelectedInfos() {
@@ -181,9 +183,13 @@ export class FlightItemCabinsPage implements OnInit {
     let policiedCabins: FlightPolicy[] =
       this.currentViewtFlightSegment.flightSegment.PoliciedCabins || [];
     this.loading = true;
-    const bookInfo = this.flightService
+    const isfiltered = this.flightService
       .getPassengerBookInfos()
       .find(it => it.isFilteredPolicy);
+    const bookInfo =
+      isfiltered ||
+      ((await this.staffService.isSelfBookType()) &&
+        this.flightService.getPassengerBookInfos()[0]);
     if (bookInfo) {
       const p = this.currentViewtFlightSegment.totalPolicyFlights.find(
         it =>
@@ -195,6 +201,11 @@ export class FlightItemCabinsPage implements OnInit {
           it =>
             it.FlightNo === this.currentViewtFlightSegment.flightSegment.Number
         );
+        if (isfiltered && isfiltered.isOnlyFilterMatchedPolicy) {
+          policiedCabins = policiedCabins.filter(
+            it => !it.Rules || it.Rules.length == 0
+          );
+        }
       }
     }
     const cabins = policiedCabins.slice(0);
