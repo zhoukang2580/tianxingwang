@@ -174,7 +174,7 @@ export class FlightService {
     data: PassengerBookInfo,
     flightSegment: FlightSegmentEntity
   ) {
-    let policyCabins: FlightPolicy[];
+    let policyCabins: FlightPolicy[] = flightSegment.PoliciedCabins;
     if (data && data.passenger && data.passenger.AccountId) {
       this.setPassengerBookInfos(
         this.getPassengerBookInfos().map(it => {
