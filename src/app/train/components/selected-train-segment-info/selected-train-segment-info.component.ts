@@ -49,7 +49,18 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
       this.trainService.getBookInfoSource()
     ]).pipe(
       map(([isSelf, s, bookInfos]) => {
-        return isSelf && s && s.isRoundTrip && bookInfos.length < 2;
+        return (
+          isSelf &&
+          s &&
+          s.isRoundTrip &&
+          bookInfos &&
+          (bookInfos.length &&
+            bookInfos.find(
+              it =>
+                it.trainInfo && it.trainInfo.tripType == TripType.departureTrip
+            )) &&
+          bookInfos.length < 2
+        );
       })
     );
   }

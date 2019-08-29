@@ -1,3 +1,4 @@
+import { TrainPolicyModel } from "./../../train.service";
 import { Component, OnInit, Input, EventEmitter, Output } from "@angular/core";
 import { TrainEntity, TrainSeatType } from "../../models/TrainEntity";
 import { TrainSeatEntity } from "../../models/TrainSeatEntity";

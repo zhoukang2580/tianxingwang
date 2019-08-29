@@ -95,6 +95,76 @@ export class TrainService {
   ): Promise<{ [accountId: string]: CredentialsEntity[] }> {
     return this.tmcService.getPassengerCredentials(accountIds);
   }
+  filterPassengerPolicyTrains(
+    bookInfo: PassengerBookInfo,
+    trains: TrainEntity[],
+    policies: TrainPassengerModel[]
+  ): TrainEntity[] {
+    console.log(bookInfo, policies);
+    let result = trains || [];
+    if (
+      !bookInfo ||
+      !bookInfo.passenger ||
+      !bookInfo.passenger.AccountId ||
+      !policies ||
+      !policies.length
+    ) {
+      this.setBookInfoSource(
+        this.getBookInfos().map(it => {
+          it.isFilteredPolicy = false;
+          it.isOnlyFilterMatchedPolicy = false;
+          return it;
+        })
+      );
+      return result.map(it => {
+        if (it.Seats) {
+          it.Seats = it.Seats.map(s => {
+            s.Policy = null;
+            return s;
+          });
+        }
+        return it;
+      });
+    }
+    this.setBookInfoSource(
+      this.getBookInfos().map(it => {
+        it.isFilteredPolicy = it.id == bookInfo.id;
+        it.isOnlyFilterMatchedPolicy = true;
+        return it;
+      })
+    );
+    const selfPolicies = policies.find(
+      it => it.PassengerKey == bookInfo.passenger.AccountId
+    );
+    let selfTrainNos: string[] = [];
+    if (selfPolicies) {
+      selfTrainNos = selfPolicies.TrainPolicies.map(it => it.TrainNo);
+      if (bookInfo.isOnlyFilterMatchedPolicy) {
+        selfTrainNos = selfPolicies.TrainPolicies.filter(
+          it => it.IsAllowBook && (!it.Rules || it.Rules.length == 0)
+        ).map(it => it.TrainNo);
+      }
+      result = trains.filter(
+        t =>
+          selfTrainNos.includes(t.TrainNo) &&
+          t.Seats &&
+          t.Seats.some(s => +s.Count > 0)
+      );
+      result = result.map(it => {
+        if (it.Seats) {
+          it.Seats = it.Seats.map(s => {
+            const trainPolicy = selfPolicies.TrainPolicies.find(
+              p => p.TrainNo == it.TrainNo && p.SeatType == s.SeatType
+            );
+            s.Policy = trainPolicy;
+            return s;
+          });
+        }
+        return it;
+      });
+    }
+    return result;
+  }
   async reelectBookInfo(bookInfo: PassengerBookInfo) {
     bookInfo.isReplace = true;
     const m = await this.modalCtrl.getTop();
@@ -134,11 +204,8 @@ export class TrainService {
   async selectReturnTrip() {
     const infos = this.getBookInfos();
     const s = this.getSearchTrainModel();
-    if (
-      !(await this.staffService.isSelfBookType()) ||
-      infos.length == 0 ||
-      !s.isRoundTrip
-    ) {
+    const isSelfBookType = await this.staffService.isSelfBookType();
+    if (!isSelfBookType || infos.length == 0 || !s.isRoundTrip) {
       if (s.isLocked) {
         this.setSearchTrainModel({
           ...s,
@@ -151,21 +218,23 @@ export class TrainService {
     const go = infos.find(
       it => it.trainInfo && it.trainInfo.tripType == TripType.departureTrip
     );
-    if (infos.length == 1) {
-      this.addBookInfo({
-        ...infos[0],
-        trainInfo: null
-      });
-    }
     if (go) {
       const backParams = {
         ...s
       };
-      backParams.fromCity = s.toCity;
-      backParams.toCity = s.fromCity;
-      backParams.FromStation = s.ToStation;
-      backParams.ToStation = s.FromStation;
+      const stations = await this.getStationsAsync();
+      backParams.fromCity = stations.find(
+        station => station.Code == go.trainInfo.trainEntity.ToStationCode
+      );
+      backParams.toCity = stations.find(
+        station => station.Code == go.trainInfo.trainEntity.FromStationCode
+      );
+      backParams.FromStation = go.trainInfo.trainEntity.ToStationCode;
+      backParams.ToStation = go.trainInfo.trainEntity.FromStationCode;
       backParams.Date = s.BackDate;
+      if (+moment(s.BackDate) - +moment(s.Date) < 0) {
+        s.Date = s.Date;
+      }
       backParams.isLocked = true;
       backParams.tripType = TripType.returnTrip;
       backParams.isRefreshData = true;
@@ -193,59 +262,50 @@ export class TrainService {
       currentViewtTainItem.train
     ) {
       let bookInfos = this.getBookInfos();
-      if (bookInfos && bookInfos.length) {
-        const passenger = bookInfos[0].passenger;
-        const accountId =
-          (passenger && passenger.AccountId) ||
-          (passenger && passenger.Account && passenger.Account.Id);
-        if (!currentViewtTainItem.selectedSeat.Policy) {
-          const policy = currentViewtTainItem.totalPolicies.find(
-            k => k.PassengerKey == accountId
-          );
-          if (policy) {
-            currentViewtTainItem.selectedSeat.Policy = policy.TrainPolicies.find(
-              i =>
-                i.TrainNo == currentViewtTainItem.train.TrainNo &&
-                i.SeatType == currentViewtTainItem.selectedSeat.SeatType
-            );
-          }
-        }
-        const trainInfo = {
-          trainEntity: currentViewtTainItem.train,
-          trainPolicy: currentViewtTainItem.selectedSeat.Policy,
-          tripType: TripType.departureTrip,
-          id: AppHelper.uuid(),
-          selectedSeat: currentViewtTainItem.selectedSeat
-        };
+      const trainInfo = this.getTrainInfo(currentViewtTainItem);
+      if (trainInfo) {
         const s = this.getSearchTrainModel();
-        if (!s.isRoundTrip) {
-          // 单程
-          trainInfo.tripType = TripType.departureTrip;
-          bookInfos = [
-            {
-              ...bookInfos[0],
-              trainInfo,
-              id: AppHelper.uuid()
-            }
-          ];
-        } else {
+        if (s.isRoundTrip) {
           // 往返
-          trainInfo.tripType = TripType.departureTrip;
-          const go = bookInfos.find(
-            it =>
-              it.trainInfo && it.trainInfo.tripType == TripType.departureTrip
-          );
-          if (go) {
-            trainInfo.tripType = TripType.returnTrip;
+          const selected = bookInfos.filter(it => !!it.trainInfo);
+          if (selected.length) {
+            const go = bookInfos.find(
+              it => it.trainInfo.tripType == TripType.departureTrip
+            );
+            if (go) {
+              trainInfo.tripType = TripType.returnTrip;
+              bookInfos = [
+                go,
+                {
+                  ...bookInfos[0],
+                  trainInfo,
+                  id: AppHelper.uuid()
+                }
+              ];
+            } else {
+              trainInfo.tripType = TripType.departureTrip;
+              bookInfos = [
+                {
+                  ...bookInfos[0],
+                  trainInfo,
+                  id: AppHelper.uuid()
+                }
+              ];
+            }
+          } else {
+            trainInfo.tripType = TripType.departureTrip;
             bookInfos = [
-              go,
               {
-                ...go,
+                ...bookInfos[0],
                 trainInfo,
                 id: AppHelper.uuid()
               }
             ];
-          } else {
+          }
+        } else {
+          // 单程,直接替换
+          if (bookInfos.length) {
+            trainInfo.tripType = TripType.departureTrip;
             bookInfos = [
               {
                 ...bookInfos[0],
@@ -255,12 +315,43 @@ export class TrainService {
             ];
           }
         }
-      } else {
-        this.initSelfBookTypeBookInfos();
       }
-
       this.setBookInfoSource(bookInfos);
     }
+  }
+  private getTrainInfo(
+    currentViewtTainItem: ICurrentViewtTainItem
+  ): ITrainInfo {
+    const bookInfos = this.getBookInfos();
+    if (bookInfos && bookInfos.length) {
+      const passenger = bookInfos[0].passenger;
+      const accountId = passenger && passenger.AccountId;
+      if (!currentViewtTainItem.selectedSeat.Policy) {
+        const policy = currentViewtTainItem.totalPolicies.find(
+          k => k.PassengerKey == accountId
+        );
+        if (policy) {
+          if (currentViewtTainItem.train.Seats) {
+            currentViewtTainItem.train.Seats.forEach(s => {
+              s.Policy = policy.TrainPolicies.find(
+                i =>
+                  i.TrainNo == currentViewtTainItem.train.TrainNo &&
+                  i.SeatType == s.SeatType
+              );
+            });
+          }
+        }
+      }
+      const trainInfo: ITrainInfo = {
+        trainEntity: currentViewtTainItem.train,
+        trainPolicy: currentViewtTainItem.selectedSeat.Policy,
+        tripType: TripType.departureTrip,
+        id: AppHelper.uuid(),
+        selectedSeat: currentViewtTainItem.selectedSeat
+      };
+      return trainInfo;
+    }
+    return null;
   }
   private async addOrReselectNotSelfBookTypeBookInfo(
     currentViewtTainItem: ICurrentViewtTainItem
@@ -502,7 +593,8 @@ export class TrainService {
     const pyFl = `${jsPy.getFullChars(name)}`.charAt(0);
     return pyFl && pyFl.toUpperCase();
   }
-  searchAsync(condition: SearchTrainModel): Promise<TrainEntity[]> {
+  async searchAsync(condition: SearchTrainModel): Promise<TrainEntity[]> {
+    await this.initSelfBookTypeBookInfos();
     const req = new RequestEntity();
     req.Method = `TmcApiTrainUrl-Home-Search`;
     req.IsShowLoading = true;
@@ -565,9 +657,6 @@ export class TrainService {
       .catch(_ => {
         return [];
       });
-  }
-  getTotalSegments(): TrainEntity[] {
-    return [];
   }
   private addoneday(s: TrainEntity) {
     const addDay =

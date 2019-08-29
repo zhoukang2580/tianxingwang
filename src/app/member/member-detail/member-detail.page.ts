@@ -1,4 +1,5 @@
-import { StaffEntity } from "./../../hr/staff.service";
+import { MemberService } from "./../member.service";
+import { StaffEntity, StaffService } from "./../../hr/staff.service";
 import { NavController } from "@ionic/angular";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { IdentityService } from "src/app/services/identity/identity.service";
@@ -10,27 +11,18 @@ import { ConfigService } from "src/app/services/config/config.service";
 import { ApiService } from "src/app/services/api/api.service";
 import { map } from "rxjs/operators";
 import { CropAvatarPage } from "src/app/pages/crop-avatar/crop-avatar.page";
-import { Subscription } from "rxjs";
-type PageModel = {
-  Name: string;
-  RealName: string;
-  Mobile: string;
-  HeadUrl: string;
-  StaffNumber: string;
-  CostCenterName: string;
-  CostCenterCode: string;
-  OrganizationName: string;
-  BookTypeName: string;
-};
+import { Subscription, Observable } from "rxjs";
+import { PageModel } from "../member.service";
+
 @Component({
   selector: "app-member-detail",
   templateUrl: "./member-detail.page.html",
   styleUrls: ["./member-detail.page.scss"]
 })
 export class MemberDetailPage implements OnInit, OnDestroy {
-  Model: PageModel;
+  memberDetails: PageModel;
   identity: IdentityEntity;
-  staff: any;
+  staff: StaffEntity;
   defaultAvatar = AppHelper.getDefaultAvatar();
   identitySubscription = Subscription.EMPTY;
   constructor(
@@ -38,7 +30,9 @@ export class MemberDetailPage implements OnInit, OnDestroy {
     private router: Router,
     private configService: ConfigService,
     private apiService: ApiService,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private staffService: StaffService,
+    private memberService: MemberService
   ) {}
   back() {
     this.navCtrl.back();
@@ -50,7 +44,7 @@ export class MemberDetailPage implements OnInit, OnDestroy {
       .subscribe(identity => {
         this.identity = identity;
         if (!identity || !identity.Ticket) {
-          this.Model = null;
+          this.memberDetails = null;
           this.staff = null;
         }
       });
@@ -58,21 +52,19 @@ export class MemberDetailPage implements OnInit, OnDestroy {
     AppHelper.setCallback((name: string, data: any) => {
       console.log("helper callback");
       if (name == CropAvatarPage.UploadSuccessEvent && data && data.HeadUrl) {
-        this.Model.HeadUrl = data.HeadUrl + "?v=" + Date.now();
+        this.memberDetails.HeadUrl = data.HeadUrl + "?v=" + Date.now();
       }
     });
   }
 
   async load() {
-    const req = new RequestEntity();
-    if (this.Model) {
+    if (this.memberDetails) {
       return;
     }
-    req.Method = "ApiMemberUrl-Home-Get";
-    const r = await this.apiService.getPromiseData<PageModel>(req);
+    const r = await this.memberService.getMemberDetails();
     if (r) {
-      this.Model = {
-        ...this.Model,
+      this.memberDetails = {
+        ...this.memberDetails,
         Name: r.Name,
         RealName: r.RealName,
         HeadUrl: r.HeadUrl || (await this.configService.get()).DefaultImageUrl
@@ -81,15 +73,15 @@ export class MemberDetailPage implements OnInit, OnDestroy {
     if (this.staff) {
       return;
     }
-    const req1 = new RequestEntity();
-    req1.Method = "HrApiUrl-Staff-Get";
-    const staff = await this.apiService.getPromiseData<StaffEntity>(req);
-    this.staff = staff;
-    if (staff) {
-      this.Model = {
-        ...this.Model,
-        ...staff,
-        RealName: staff.Name || staff.Nickname
+    this.staff = await this.staffService.getStaff();
+    if (this.staff) {
+      this.memberDetails = {
+        ...this.memberDetails,
+        ...this.staff,
+        Name: this.memberDetails && this.memberDetails.Name,
+        RealName:
+          (this.memberDetails && this.memberDetails.RealName) ||
+          this.staff.Nickname
       };
     }
   }

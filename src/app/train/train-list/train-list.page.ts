@@ -64,9 +64,10 @@ export class TrainListPage implements OnInit, OnDestroy {
   searchTrainModel: SearchTrainModel;
   timeoutid: any;
   isLeavePage = false;
+  isSortingTrains = false;
   isShowAddPassenger$ = of(false);
   isShowRoundtripTip = false;
-  policyTrains: TrainPassengerModel[];
+  passengersPolicies: TrainPassengerModel[];
   activeTab: "filter" | "time" | "price" | "none"; // 当前激活的tab
   selectedPassengersNumbers$: Observable<number> = of(0);
   goRoundTripDateTime$: Observable<{
@@ -77,6 +78,7 @@ export class TrainListPage implements OnInit, OnDestroy {
   timeOrdM2N: boolean; // 时间从早到晚
   filterCondition: FilterTrainCondition;
   searchModalSubscription = Subscription.EMPTY;
+  curFilteredBookInfo$: Observable<PassengerBookInfo>;
   constructor(
     private tmcService: TmcService,
     private trainService: TrainService,
@@ -97,27 +99,56 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.searchModalSubscription.unsubscribe();
   }
   ngOnInit() {
+    this.curFilteredBookInfo$ = this.trainService
+      .getBookInfoSource()
+      .pipe(map(infos => infos.find(info => info.isFilteredPolicy)));
+    this.goRoundTripDateTime$ = this.trainService.getBookInfoSource().pipe(
+      map(infos => {
+        const go = infos.find(
+          it => it.trainInfo && it.trainInfo.tripType == TripType.departureTrip
+        );
+        let goArrivalDateTime = "";
+        let backDateTime = "";
+        if (go && go.trainInfo.trainEntity) {
+          const d = moment(go.trainInfo.trainEntity.ArrivalTime);
+          goArrivalDateTime = d.format("YYYY-MM-DD HH:mm");
+        }
+        const back = infos.find(
+          it => it.trainInfo && it.trainInfo.tripType == TripType.returnTrip
+        );
+        if (back && back.trainInfo.trainEntity) {
+          const d = moment(back.trainInfo.trainEntity.StartTime);
+          backDateTime = d.format("YYYY-MM-DD HH:mm");
+        }
+        return {
+          goArrivalDateTime,
+          backDateTime
+        };
+      })
+    );
     this.isShowAddPassenger$ = from(this.staffService.isSelfBookType()).pipe(
       map(isSelf => !isSelf)
     );
     this.route.queryParamMap.subscribe(async _ => {
-      this.onSearchCondition();
       this.isShowRoundtripTip = await this.staffService.isSelfBookType();
       this.isLeavePage = false;
       // if (!this.isLoading) {
       //   this.doRefresh(true, false);
       // }
     });
-
-    this.doRefresh(true, true);
     this.searchModalSubscription = this.trainService
       .getSearchTrainModelSource()
-      .subscribe(async modal => {
+      .subscribe(modal => {
         this.searchTrainModel = modal;
-        console.log(modal, this.isLeavePage, this.isLoading);
+        console.log(
+          "getSearchTrainModelSource",
+          modal,
+          this.isLeavePage,
+          this.isLoading
+        );
         if (this.searchTrainModel) {
-          this.vmFromCity = this.searchTrainModel.fromCity;
-          this.vmToCity = this.searchTrainModel.toCity;
+          this.vmFromCity = modal.fromCity;
+          this.vmToCity = modal.toCity;
           this.moveDayToSearchDate(
             this.calendarService.generateDayModelByDate(
               this.searchTrainModel.Date
@@ -129,11 +160,11 @@ export class TrainListPage implements OnInit, OnDestroy {
             !this.isLoading &&
             modal.isRefreshData
           ) {
-            this.doRefresh(true, false);
             this.trainService.setSearchTrainModel({
               ...modal,
               isRefreshData: false
             });
+            this.doRefresh(true, false);
           }
         }
       });
@@ -162,11 +193,6 @@ export class TrainListPage implements OnInit, OnDestroy {
     });
     m.present();
   }
-  private onSearchCondition() {
-    this.searchTrainModel = this.trainService.getSearchTrainModel();
-    this.vmFromCity = this.searchTrainModel.fromCity;
-    this.vmToCity = this.searchTrainModel.toCity;
-  }
   private async loadPolicyedTrainsAsync(): Promise<TrainEntity[]> {
     // 先获取最新的数据
     this.vmTrains = [];
@@ -190,8 +216,15 @@ export class TrainListPage implements OnInit, OnDestroy {
     }
     const notWhitelistPs = passengers.filter(p => p.isNotWhiteList); // 非白名单乘客
     const whitelistPs = passengers.filter(p => !p.isNotWhiteList); // 白名单的乘客，需要计算差标
-    const whitelist = whitelistPs.map(p => p.AccountId);
-    if (notWhitelistPs) {
+    const whitelistAccountId = whitelistPs
+      .map(p => p.AccountId)
+      .reduce((acc, item) => {
+        if (!acc.find(it => it == item)) {
+          acc.push(item);
+        }
+        return acc;
+      }, []);
+    if (notWhitelistPs.length) {
       const policyTrains = await this.getWhitelistPolicyTrains(
         passengers,
         trains
@@ -203,26 +236,25 @@ export class TrainListPage implements OnInit, OnDestroy {
         tmc && tmc.Account.Id,
         trains
       );
-      this.policyTrains = policyTrains.concat([notWhitelistTrains]);
-      console.log(`所有人的差标：`, this.policyTrains);
+      this.passengersPolicies = policyTrains.concat([notWhitelistTrains]);
     } else {
-      if (whitelist.length) {
-        this.policyTrains = await this.trainService.policyAsync(
+      if (whitelistAccountId.length) {
+        this.passengersPolicies = await this.trainService.policyAsync(
           trains,
-          whitelist
+          whitelistAccountId
         );
       }
     }
     if (
-      this.policyTrains &&
-      this.policyTrains.length === 0 &&
-      whitelist.length
+      this.passengersPolicies &&
+      this.passengersPolicies.length === 0 &&
+      passengers.length
     ) {
       trains = [];
-      this.policyTrains = [];
+      this.passengersPolicies = [];
       return [];
     }
-
+    console.log(`所有人的差标：`, this.passengersPolicies);
     return (this.vmTrains = this.trains = trains);
   }
   private async getWhitelistPolicyTrains(
@@ -300,16 +332,12 @@ export class TrainListPage implements OnInit, OnDestroy {
     });
     await popover.present();
     const d = await popover.onDidDismiss();
-    if (d && d.data) {
-      // this.doRefresh(false, false, d.data);
-      this.isLoading = true;
-      let data = this.filterPassengerPolicyTrains(d.data);
-      data = this.filterTrains(data);
-      this.vmTrains = data;
-      this.isLoading = false;
-    } else {
-      this.doRefresh(true, false);
-    }
+    // this.doRefresh(false, false, d.data);
+    this.isLoading = true;
+    let data = this.filterPassengerPolicyTrains(d.data);
+    data = this.filterTrains(data);
+    this.vmTrains = data;
+    this.isLoading = false;
   }
   goToSelectPassengerPage() {
     this.isLeavePage = true;
@@ -333,21 +361,23 @@ export class TrainListPage implements OnInit, OnDestroy {
     }
   }
   async onTimeOrder() {
+    if (this.isSortingTrains) {
+      return;
+    }
     console.time("time");
-    this.isLoading = true;
     this.activeTab = "time";
     this.timeOrdM2N = !this.timeOrdM2N;
     this.sortTrains("time");
-    this.isLoading = false;
     console.timeEnd("time");
   }
   async onPriceOrder() {
+    if (this.isSortingTrains) {
+      return;
+    }
     console.time("price");
-    this.isLoading = true;
     this.activeTab = "price";
     this.priceOrderL2H = !this.priceOrderL2H;
     this.sortTrains("price");
-    this.isLoading = false;
     console.timeEnd("price");
   }
   async showSelectedBookInfos() {
@@ -403,15 +433,18 @@ export class TrainListPage implements OnInit, OnDestroy {
         }, 0);
       }
       this.isLoading = true;
-      let data: TrainEntity[] = [];
+      let data: TrainEntity[] = this.trains;
       if (loadDataFromServer) {
         // 强制从服务器端返回新数据
         data = await this.loadPolicyedTrainsAsync();
       }
       // 根据筛选条件过滤航班信息：
-      // data = this.filterPassengerPolicyTrains(toBeFilteredPassengerId);
+      data = this.trainService.filterPassengerPolicyTrains(
+        null,
+        data,
+        this.passengersPolicies
+      );
       data = this.filterTrains(data);
-      // console.log("filter", data);
       this.vmTrains = data;
       this.apiService.hideLoadingView();
       this.isLoading = false;
@@ -431,7 +464,7 @@ export class TrainListPage implements OnInit, OnDestroy {
     if (await this.trainService.checkCanAdd()) {
       const currentViewtTainItem: ICurrentViewtTainItem = {
         selectedSeat: seat,
-        totalPolicies: this.policyTrains,
+        totalPolicies: this.passengersPolicies,
         train: train
       };
       this.trainService.addOrReselectBookInfo(currentViewtTainItem);
@@ -445,63 +478,14 @@ export class TrainListPage implements OnInit, OnDestroy {
     m.present();
   }
   private filterPassengerPolicyTrains(
-    toBeFilteredPassengerId?: string
+    bookInfo: PassengerBookInfo
   ): TrainEntity[] {
-    let result: TrainEntity[] = [];
-    if (!toBeFilteredPassengerId) {
-      const bookInfos = this.trainService.getBookInfos();
-      if (this.staffService.isSelfBookType || bookInfos.length === 1) {
-        toBeFilteredPassengerId =
-          bookInfos[0] &&
-          bookInfos[0].passenger &&
-          bookInfos[0].passenger.AccountId;
-        console.log("toBeFilteredPassengerId", toBeFilteredPassengerId);
-        if (toBeFilteredPassengerId) {
-          const policies = this.policyTrains.find(
-            it => it.PassengerKey == toBeFilteredPassengerId
-          );
-          if (policies) {
-            result = [];
-            policies.TrainPolicies.filter(it => it.IsAllowBook)
-              .map(
-                it =>
-                  this.trains && this.trains.find(t => t.TrainNo == it.TrainNo)
-              )
-              .filter(it => it && !!it.TrainNo)
-              .forEach(it => {
-                if (!result.find(t => t.TrainNo == it.TrainNo)) {
-                  result.push(it);
-                }
-              });
-          }
-        } else {
-          console.log("没有过滤任何人员的差标");
-          result = this.trains;
-        }
-      }
-    } else {
-      if (this.policyTrains) {
-        const p = this.policyTrains.find(
-          it => it.PassengerKey == toBeFilteredPassengerId
-        );
-        if (p) {
-          p.TrainPolicies.filter(it => it.IsAllowBook)
-            .map(
-              it =>
-                this.trains && this.trains.find(t => t.TrainNo == it.TrainNo)
-            )
-            .filter(it => it && it.TrainNo)
-            .forEach(t => {
-              if (!result.find(tr => tr.TrainNo == t.TrainNo)) {
-                result.push(t);
-              }
-            });
-        }
-      }
-    }
-    if (toBeFilteredPassengerId) {
-      return result.filter(it => it.Seats && it.Seats.some(s => +s.Count > 0));
-    }
+    let result: TrainEntity[] = this.trains;
+    result = this.trainService.filterPassengerPolicyTrains(
+      bookInfo,
+      result,
+      this.passengersPolicies
+    );
     return result;
   }
   onSelectPassenger() {
@@ -517,6 +501,12 @@ export class TrainListPage implements OnInit, OnDestroy {
   private filterTrains(trains: TrainEntity[]) {
     console.log("this.filterCondition", this.filterCondition, trains);
     let result = trains;
+    result = [];
+    trains.forEach(t => {
+      if (!result.find(it => it.TrainNo == t.TrainNo)) {
+        result.push(t);
+      }
+    });
     result = this.filterByTrainType(result);
     result = this.filterByDepartureTimespan(result);
     result = this.filterByDepartureStations(result);
@@ -548,11 +538,10 @@ export class TrainListPage implements OnInit, OnDestroy {
       this.filterCondition.trainTypes &&
       this.filterCondition.trainTypes.length
     ) {
-      return trains.filter(
-        train =>
-          !!this.filterCondition.trainTypes.find(
-            it => it.id == `${train.TrainType}`
-          )
+      return trains.filter(train =>
+        this.filterCondition.trainTypes.some(
+          it => it.id == `${train.TrainType}`
+        )
       );
     }
     return trains;
@@ -645,6 +634,11 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.navCtrl.back();
   }
   private sortTrains(key: "price" | "time") {
+    if (this.isSortingTrains) {
+      return;
+    }
+    this.isLoading = true;
+    this.isSortingTrains = true;
     if (!this.filterCondition) {
       this.filterCondition = FilterTrainCondition.init();
     }
@@ -661,6 +655,8 @@ export class TrainListPage implements OnInit, OnDestroy {
       this.sortByTime(this.timeOrdM2N);
     }
     this.scrollToTop();
+    this.isSortingTrains = false;
+    this.isLoading = false;
   }
   private sortByPrice(priceOrderL2H: boolean) {
     console.time("sortByPrice");

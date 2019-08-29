@@ -223,24 +223,24 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
   }
   async initTrainCities() {
     this.fromCity = this.vmFromCity = {} as any;
+    this.toCity = this.vmToCity = {} as any;
     this.fromCity.Nickname = this.fromCity.CityName = this.vmFromCity.CityName =
       "北京";
-    this.vmFromCity.Code = this.fromCity.Code = "SHH";
-    this.toCity = this.vmToCity = {} as any;
     this.toCity.Nickname = this.toCity.CityName = this.vmToCity.CityName =
       "上海";
+    this.vmFromCity.Code = this.fromCity.Code = "SHH";
     this.vmToCity.Code = this.toCity.Code = "BJP";
     const lastFromCity = await this.storage.get("fromTrainStation");
     const lastToCity = await this.storage.get("toTrainStation");
     if (!lastFromCity || !lastToCity) {
       const stations = await this.trainService.getStationsAsync();
       if (stations && stations.length) {
-        const vmFromCity = (this.fromCity = stations.find(
+        const vmFromCity = stations.find(
           c => c.Code.toUpperCase() == this.fromCity.Code
-        ));
-        const vmToCity = (this.toCity = stations.find(
+        );
+        const vmToCity = stations.find(
           c => c.Code.toUpperCase() == this.toCity.Code
-        ));
+        );
         if (vmFromCity && vmToCity) {
           this.fromCity = this.vmFromCity = vmFromCity;
           this.toCity = this.vmToCity = vmToCity;
@@ -253,8 +253,8 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
   }
   async searchTrain() {
     console.log(
-      `出发城市" + 【${this.fromCity && this.fromCity.CityName}】`,
-      `目的城市【${this.toCity && this.toCity.CityName}】`
+      `出发城市" + 【${this.fromCity && this.fromCity.Nickname}】`,
+      `目的城市【${this.toCity && this.toCity.Nickname}】`
     );
     console.log(`启程日期${this.flyDate.date},返程日期：${this.backDate.date}`);
     this.storage.set("fromTrainStation", this.fromCity);
@@ -268,6 +268,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     s.fromCity = this.fromCity;
     s.toCity = this.toCity;
     s.BackDate = this.backDate.date;
+    s.isRefreshData = true;
     if (this.disabled) {
       s.Date = s.BackDate;
     }

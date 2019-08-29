@@ -104,10 +104,10 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     this.navCtrl.back();
   }
   private async getInitializeBookDto() {
-    const mock = await this.storage.get("mock-initialBookDto-train");
-    if (mock) {
-      return mock;
-    }
+    // const mock = await this.storage.get("mock-initialBookDto-train");
+    // if (mock) {
+    //   return mock;
+    // }
     const bookDto = new OrderBookDto();
     bookDto.TravelFormId = AppHelper.getQueryParamers()["travelFormId"] || "";
     const infos = this.trainService.getBookInfos();
@@ -211,7 +211,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     await this.initCombindInfos();
     await this.initSelfBookTypeCredentials();
     await this.initTmcOutNumberInfos();
-    this.initOrderTravelPayTypes();
+    await this.initOrderTravelPayTypes();
   }
   private async initCombindInfos() {
     try {
@@ -490,31 +490,29 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     return "";
   }
   private async initOrderTravelPayTypes() {
-    this.tmc = this.tmc || (this.tmc = await this.tmcService.getTmc());
+    // console.log("initOrderTravelPayTypes", this.initialBookDto);
+    this.tmc = this.tmc || (await this.tmcService.getTmc());
     this.identity = await this.identityService
       .getIdentityAsync()
       .catch(_ => ({} as any));
-    if (!this.viewModel) {
+    if (
+      !this.initialBookDto ||
+      !this.initialBookDto.PayTypes ||
+      !this.viewModel
+    ) {
       return;
     }
-    this.viewModel.orderTravelPayTypes = [
-      {
-        label: LanguageHelper.Flight.getCompanyPayTip(),
-        value: OrderTravelPayType.Company
-      },
-      {
-        label: LanguageHelper.Flight.getPersonPayTip(),
-        value: OrderTravelPayType.Person
-      },
-      {
-        label: LanguageHelper.Flight.getCreditPayTip(),
-        value: OrderTravelPayType.Credit
-      },
-      {
-        label: LanguageHelper.Flight.getBalancePayTip(),
-        value: OrderTravelPayType.Balance
+    const arr = Object.keys(this.initialBookDto.PayTypes);
+    this.viewModel.orderTravelPayTypes = [];
+    arr.forEach(it => {
+      if (!this.viewModel.orderTravelPayTypes.find(item => item.value == +it)) {
+        this.viewModel.orderTravelPayTypes.push({
+          label: this.initialBookDto.PayTypes[it],
+          value: +it
+        });
       }
-    ].filter(t => this.checkOrderTravelPayType(t.value));
+    });
+    console.log("initOrderTravelPayTypes", this.viewModel.orderTravelPayTypes);
   }
   private async initSelfBookTypeCredentials(): Promise<CredentialsEntity[]> {
     if (await this.staffService.isSelfBookType()) {
@@ -922,21 +920,6 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     info.illegalReason = reason.illegalReason;
     info.otherIllegalReason = reason.otherIllegalReason;
   }
-  checkOrderTravelPayType(payType: OrderTravelPayType) {
-    const Tmc = this.viewModel && this.viewModel.tmc;
-    if (!Tmc || !Tmc.TrainOrderPayType) {
-      return false;
-    }
-    return (
-      !!Tmc.TrainOrderPayType.split(",").find(
-        it => it == OrderTravelPayType[payType]
-      ) ||
-      (payType == OrderTravelPayType.Credit &&
-        this.identity &&
-        this.identity.Numbers &&
-        !!this.identity.Numbers.AgentId)
-    );
-  }
   async onModify(item: IPassengerBookInfo) {
     if (!item.credentialsRequested) {
       const res: {
@@ -1108,7 +1091,11 @@ export interface IBookTrainViewModel {
   combindInfos: IPassengerBookInfo[];
   isCanSkipApproval$: Observable<boolean>;
   identity: IdentityEntity;
-  orderTravelPayTypes: { label: string; value: OrderTravelPayType }[];
+  orderTravelPayTypes: {
+    label: string;
+    value: OrderTravelPayType;
+    checked?: boolean;
+  }[];
 }
 export interface IPassengerBookInfo {
   isNotWhitelist?: boolean;

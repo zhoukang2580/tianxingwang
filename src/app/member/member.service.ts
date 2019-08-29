@@ -61,6 +61,7 @@ export class MemberCredential {
   providedIn: "root"
 })
 export class MemberService {
+  memberDetail: PageModel;
   constructor(private apiService: ApiService) {}
   async getCredentials(accountId: string): Promise<MemberCredential[]> {
     const req = new RequestEntity();
@@ -95,4 +96,20 @@ export class MemberService {
     req.Data = c;
     return this.apiService.getPromiseData<any>(req);
   }
+  getMemberDetails() {
+    const req = new RequestEntity();
+    req.Method = "ApiMemberUrl-Home-Get";
+    return this.apiService.getPromiseData<PageModel>(req);
+  }
+}
+export interface PageModel {
+  Name: string;
+  RealName: string;
+  Mobile: string;
+  HeadUrl: string;
+  StaffNumber: string;
+  CostCenterName: string;
+  CostCenterCode: string;
+  OrganizationName: string;
+  BookTypeName: string;
 }
