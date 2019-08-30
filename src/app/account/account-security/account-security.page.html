@@ -1,0 +1,55 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-button color='dark' (click)='back()'>
+        <ion-icon name='arrow-back'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>账号与安全</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list lines>
+    <ion-item>
+      <ion-label>账号</ion-label>
+      <ion-label no-margin>{{accountInfo?.Name}}</ion-label>
+    </ion-item>
+    <ion-item detail (click)="bindMobile()">
+      <ion-label>手机号</ion-label>
+      <ion-label no-margin class="mobile">
+        <ion-icon name="lock" color="success" *ngIf="accountInfo?.IsActiveMobile"></ion-icon>
+        <ion-note>{{accountInfo?.Mobile}}</ion-note>
+      </ion-label>
+    </ion-item>
+    <ion-item detail (click)="goToEmailPage()">
+      <ion-label>邮箱</ion-label>
+      <ion-label no-margin class="mobile">
+        <ion-icon name="lock" color="success"></ion-icon>
+        <ion-note>{{accountInfo?.Email}}</ion-note>
+      </ion-label>
+    </ion-item>
+    <ion-item detail (click)="goToWeixin()">
+      <ion-label>微信</ion-label>
+    </ion-item>
+    <ion-item detail (click)="goToDingding()">
+      <ion-label>钉钉</ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-list>
+
+    <ion-item detail (click)='modifyPassword()'>
+      <ion-label>密码修改</ion-label>
+    </ion-item>
+    <!-- <ion-item detail (click)='modifyPayword()'>
+      <ion-label>支付密码</ion-label>
+    </ion-item> -->
+
+
+  </ion-list>
+  <ion-list>
+    <ion-item detail (click)="loginDeviceManagement()">
+      <ion-label>设备管理</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
