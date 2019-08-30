@@ -33,3 +33,11 @@ ion-footer ion-row ion-col {
     width: 1px;
   }
 }
+.tasks {
+  margin-top: 0.5em;
+  padding-left: 1em;
+  ion-col {
+    margin: 0;
+    padding: 0;
+  }
+}

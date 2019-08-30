@@ -15,7 +15,9 @@ import { ProductInsuranceComponent } from "./product-insurance/product-insurance
 import { ProductTrainComponent } from "./product-train/product-train.component";
 import { ProductPlaneComponent } from "./product-plane/product-plane.component";
 import { SelectTicketPopoverComponent } from "./select-ticket-popover/select-ticket-popover.component";
-import { OrderTripComponent } from "./order-trip/order-trip.component";
+import { OrderFlightTripComponent } from "./order-flight-trip/order-flight-trip.component";
+import { OrderTrainTripComponent } from "./order-train-trip/order-train-trip.component";
+import { OrderHotelTripComponent } from "./order-hotel-trip/order-hotel-trip.component";
 
 @NgModule({
   declarations: [
@@ -30,7 +32,9 @@ import { OrderTripComponent } from "./order-trip/order-trip.component";
     ProductTrainComponent,
     ProductPlaneComponent,
     SelectTicketPopoverComponent,
-    OrderTripComponent
+    OrderFlightTripComponent,
+    OrderTrainTripComponent,
+    OrderHotelTripComponent
   ],
   imports: [
     CommonModule,
@@ -39,7 +43,12 @@ import { OrderTripComponent } from "./order-trip/order-trip.component";
     FlightModule,
     DirectivesModule
   ],
-  exports: [OrderItemComponent, OrderTripComponent],
+  exports: [
+    OrderItemComponent,
+    OrderFlightTripComponent,
+    OrderTrainTripComponent,
+    OrderHotelTripComponent
+  ],
   entryComponents: [
     SearchTicketModalComponent,
     OrderItemPricePopoverComponent,

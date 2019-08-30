@@ -1,0 +1,19 @@
+<ion-row>
+    <ion-col>订单编号</ion-col>
+    <ion-col text-center>{{orderTrip?.OrderId}}</ion-col>
+    <ion-col text-end padding-end>{{orderTrip?.Status}}</ion-col>
+</ion-row>
+<ion-row>
+    <ion-col>机票事务号</ion-col>
+    <ion-col>{{orderTrip?.OrderTicketId}}</ion-col>
+    <ion-col></ion-col>
+</ion-row>
+<ion-row>
+    <ion-col>{{getDate()}}</ion-col>
+    <ion-col text-center>{{orderTrip?.Number}}</ion-col>
+    <ion-col text-end padding-end>{{getTime()}}</ion-col>
+</ion-row>
+<ion-row>
+    <ion-col>{{orderTrip?.FromName}}</ion-col>
+    <ion-col text-end padding-end>{{orderTrip?.ToName}}</ion-col>
+</ion-row>

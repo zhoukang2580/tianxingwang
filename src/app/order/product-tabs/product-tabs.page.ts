@@ -219,7 +219,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     if (this.infiniteScroll) {
       this.infiniteScroll.disabled = false;
     }
-    this.orderModel = null;
+    this.orderModel = new OrderModel();
+    this.orderModel.OrderTrips = [];
+    this.orderModel.Orders = [];
     this.scrollToTop();
     if (this.ionRefresher) {
       this.ionRefresher.complete();
@@ -230,10 +232,10 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     this.activeTab = tab.value;
     this.title = tab.label + "订单";
     if (this.activeTab == ProductItemType.waitingApprovalTask) {
+      this.doRefreshTasks();
       this.title = tab.label;
     }
     this.doRefresh();
-    this.doRefreshTasks();
   }
   historyTrips() {
     const condition = new SearchTicketConditionModel();
@@ -264,11 +266,11 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       this.doRefresh();
     }
   }
-  goToDetailPage(order: OrderEntity) {
+  goToDetailPage(orderId: string) {
     this.router.navigate([AppHelper.getRoutePath("order-detail")], {
       queryParams: {
         tab: JSON.stringify(this.activeTab),
-        orderId: order.Id
+        orderId: orderId
       }
     });
   }
@@ -349,6 +351,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         .pipe(
           finalize(() => {
             this.isLoading = false;
+            this.apiService.hideLoadingView();
             setTimeout(() => {
               if (this.infiniteScroll) {
                 this.infiniteScroll.complete();
@@ -367,7 +370,12 @@ export class ProductTabsPage implements OnInit, OnDestroy {
             }
             this.dataCount = orderModel && orderModel.DataCount;
             orderModel = this.combineInfo(orderModel);
-            if (orderModel && orderModel.Orders && orderModel.Orders.length) {
+            if (
+              !isMyTrips &&
+              orderModel &&
+              orderModel.Orders &&
+              orderModel.Orders.length
+            ) {
               this.condition.pageIndex++;
               if (this.orderModel) {
                 this.orderModel.Orders = [
@@ -378,11 +386,32 @@ export class ProductTabsPage implements OnInit, OnDestroy {
                 this.orderModel = orderModel;
               }
             }
+            if (
+              isMyTrips &&
+              orderModel &&
+              orderModel.OrderTrips &&
+              orderModel.OrderTrips.length
+            ) {
+              this.condition.pageIndex++;
+              let type = ProductItemType.plane
+                ? "Flight"
+                : ProductItemType[this.activeTab];
+              type = type.substr(0, 1).toUpperCase() + type.substr(1);
+              console.log("current type", type);
+              if (this.orderModel) {
+                this.orderModel.OrderTrips = [
+                  ...this.orderModel.OrderTrips,
+                  ...orderModel.OrderTrips
+                ].filter(t => t.Type == type);
+              } else {
+                this.orderModel = orderModel;
+              }
+            }
             if (this.infiniteScroll) {
               this.infiniteScroll.disabled =
                 orderModel &&
-                orderModel.Orders &&
-                orderModel.Orders.length == 0;
+                (orderModel.OrderTrips || orderModel.Orders) &&
+                (orderModel.OrderTrips || orderModel.Orders).length == 0;
             }
           },
           e => {
@@ -549,7 +578,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     try {
       this.tmc = await this.tmcService.getTmc(true);
       this.doRefresh();
-      this.doRefreshTasks();
+      if (this.activeTab == ProductItemType.waitingApprovalTask) {
+        this.doRefreshTasks();
+      }
       this.tabs = ORDER_TABS.filter(t => t.value != ProductItemType.more);
     } catch (e) {
       console.error(e);

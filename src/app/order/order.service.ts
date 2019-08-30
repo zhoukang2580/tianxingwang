@@ -52,10 +52,7 @@ export class OrderService {
     req.Data = data;
     req.Method = `TmcApiOrderUrl-Task-List`;
     const result = this.apiService.getResponse<TaskModel>(req).pipe(
-      switchMap(res =>
-        from(this.apiService.getUrl(req)).pipe(map(url => ({ res, url })))
-      ),
-      map(({ res, url }) => {
+      map(res => {
         if (res.Data && res.Data.Tasks) {
           return res.Data.Tasks.map(it => {
             const Name =
@@ -67,7 +64,7 @@ export class OrderService {
             it.VariablesJsonObj =
               (it.Variables && JSON.parse(it.Variables)) || {};
             it.VariablesJsonObj["TaskUrl"] =
-              Name == "已过期" ? "" : `${url}/Task/Detail?taskId=${it.Id}`;
+              Name == "已过期" ? "" : it.HandleUrl;
             it.InsertTime = moment(it.InsertTime).format("YYYY-MM-DD HH:mm");
             it.ExpiredTime = moment(it.ExpiredTime).format("YYYY-MM-DD HH:mm");
             return it;
@@ -78,47 +75,12 @@ export class OrderService {
     );
     return result;
   }
-  async getOrderTasksAsync(data: OrderModel): Promise<TaskEntity[]> {
-    const req = new RequestEntity();
-    req.IsShowLoading = true;
-    req.Data = data;
-    req.Method = `TmcApiOrderUrl-Task-List`;
-    const url = await this.apiService.getUrl(req);
-    const result = this.apiService.getPromiseData<TaskModel>(req).then(res => {
-      if (res && res.Tasks) {
-        return res.Tasks.map(it => {
-          const Name =
-            it.ExpiredTime &&
-            !it.ExpiredTime.startsWith("1800") &&
-            new Date(it.ExpiredTime).getTime() < new Date().getTime()
-              ? "已过期"
-              : it.Name;
-          it.VariablesJsonObj =
-            (it.Variables && JSON.parse(it.Variables)) || {};
-          it.VariablesJsonObj["TaskUrl"] =
-            Name == "已过期" ? "" : `${url}/Task/Detail?taskId=${it.Id}`;
-          it.InsertTime = moment(it.InsertTime).format("YYYY-MM-DD HH:mm");
-          it.ExpiredTime = moment(it.ExpiredTime).format("YYYY-MM-DD HH:mm");
-          return it;
-        });
-      }
-      return (res && res.Tasks) || [];
-    });
-    return result;
-  }
-  getMyTripsAsync(data: OrderModel): Promise<OrderModel> {
-    const req = new RequestEntity();
-    req.IsShowLoading = true;
-    req.Data = data;
-    req.Method = `TmcApiOrderUrl-Order-Trips`;
-    const result = this.apiService.getPromiseData<OrderModel>(req);
-    return result;
-  }
+
   getMyTrips(data: OrderModel) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Data = data;
-    req.Method = `TmcApiOrderUrl-Order-Trips`;
+    req.Method = `TmcApiOrderUrl-Travel-List`;
     const result = this.apiService.getResponse<OrderModel>(req);
     return result;
   }
