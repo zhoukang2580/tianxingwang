@@ -27,7 +27,7 @@ import {
 import { ActivatedRoute } from "@angular/router";
 import { ProductItem } from "../../tmc/models/ProductItems";
 import { TmcService } from "../../tmc/tmc.service";
-import { OrderDetailModel } from "src/app/order/order.service";
+import { OrderDetailModel, OrderService } from "src/app/order/order.service";
 import { OrderPayStatusType } from "src/app/order/models/OrderInsuranceEntity";
 import * as moment from "moment";
 import { OrderItemPricePopoverComponent } from "../components/order-item-price-popover/order-item-price-popover.component";
@@ -77,7 +77,8 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     private flydayService: CalendarService,
     private modalCtrl: ModalController,
     private popoverCtrl: PopoverController,
-    private domCtrl: DomController
+    private domCtrl: DomController,
+    private orderService: OrderService
   ) {}
   scrollTop: number;
   private getOrderNumbers(tag = "TmcOutNumber"): OrderNumberEntity[] {
@@ -229,7 +230,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     this.tmc = await this.tmcService.getTmc(true);
   }
   private async getOrderInfo(orderId: string) {
-    this.orderDetail = await this.tmcService.getOrderDetail(orderId);
+    this.orderDetail = await this.orderService.getOrderDetailAsync(orderId);
     if (!this.tmc) {
       this.tmc = await this.tmcService.getTmc(true);
     }

@@ -1,10 +1,14 @@
+import { TaskModel } from "./models/TaskModel";
 import { TaskEntity } from "src/app/workflow/models/TaskEntity";
 import { HistoryEntity } from "./models/HistoryEntity";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { Injectable } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
 import { OrderModel } from "./models/OrderModel";
-import { OrderEntity } from './models/OrderEntity';
+import { OrderEntity } from "./models/OrderEntity";
+import { map, switchMap } from "rxjs/operators";
+import { from, Observable } from "rxjs";
+import * as moment from "moment";
 export class OrderDetailModel {
   Histories: HistoryEntity[];
   Tasks: TaskEntity[];
@@ -42,12 +46,64 @@ export class OrderService {
     const result = this.apiService.getPromiseData<OrderDetailModel>(req);
     return result;
   }
-  getOrderTasksAsync(data: OrderModel): Promise<OrderModel> {
+  getOrderTasks(data: OrderModel): Observable<TaskEntity[]> {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Data = data;
-    req.Method = `TmcApiOrderUrl-Order-Tasks`;
-    const result = this.apiService.getPromiseData<OrderModel>(req);
+    req.Method = `TmcApiOrderUrl-Task-List`;
+    const result = this.apiService.getResponse<TaskModel>(req).pipe(
+      switchMap(res =>
+        from(this.apiService.getUrl(req)).pipe(map(url => ({ res, url })))
+      ),
+      map(({ res, url }) => {
+        if (res.Data && res.Data.Tasks) {
+          return res.Data.Tasks.map(it => {
+            const Name =
+              it.ExpiredTime &&
+              !it.ExpiredTime.startsWith("1800") &&
+              new Date(it.ExpiredTime).getTime() < new Date().getTime()
+                ? "已过期"
+                : it.Name;
+            it.VariablesJsonObj =
+              (it.Variables && JSON.parse(it.Variables)) || {};
+            it.VariablesJsonObj["TaskUrl"] =
+              Name == "已过期" ? "" : `${url}/Task/Detail?taskId=${it.Id}`;
+            it.InsertTime = moment(it.InsertTime).format("YYYY-MM-DD HH:mm");
+            it.ExpiredTime = moment(it.ExpiredTime).format("YYYY-MM-DD HH:mm");
+            return it;
+          });
+        }
+        return [];
+      })
+    );
+    return result;
+  }
+  async getOrderTasksAsync(data: OrderModel): Promise<TaskEntity[]> {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Data = data;
+    req.Method = `TmcApiOrderUrl-Task-List`;
+    const url = await this.apiService.getUrl(req);
+    const result = this.apiService.getPromiseData<TaskModel>(req).then(res => {
+      if (res && res.Tasks) {
+        return res.Tasks.map(it => {
+          const Name =
+            it.ExpiredTime &&
+            !it.ExpiredTime.startsWith("1800") &&
+            new Date(it.ExpiredTime).getTime() < new Date().getTime()
+              ? "已过期"
+              : it.Name;
+          it.VariablesJsonObj =
+            (it.Variables && JSON.parse(it.Variables)) || {};
+          it.VariablesJsonObj["TaskUrl"] =
+            Name == "已过期" ? "" : `${url}/Task/Detail?taskId=${it.Id}`;
+          it.InsertTime = moment(it.InsertTime).format("YYYY-MM-DD HH:mm");
+          it.ExpiredTime = moment(it.ExpiredTime).format("YYYY-MM-DD HH:mm");
+          return it;
+        });
+      }
+      return (res && res.Tasks) || [];
+    });
     return result;
   }
   getMyTripsAsync(data: OrderModel): Promise<OrderModel> {
@@ -56,6 +112,14 @@ export class OrderService {
     req.Data = data;
     req.Method = `TmcApiOrderUrl-Order-Trips`;
     const result = this.apiService.getPromiseData<OrderModel>(req);
+    return result;
+  }
+  getMyTrips(data: OrderModel) {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Data = data;
+    req.Method = `TmcApiOrderUrl-Order-Trips`;
+    const result = this.apiService.getResponse<OrderModel>(req);
     return result;
   }
 }

@@ -19,7 +19,7 @@
       </ion-label>
     </ion-item>
   </ion-list>
-  <ion-card color='primary' mode='ios' [class.is-ios]='isIos'>
+  <ion-card color='primary' mode='ios' [class.is-ios]='isIos' *ngIf='canShowMyOrderTabs$|async'>
     <ion-card-header>
       <strong>我的订单</strong>
     </ion-card-header>

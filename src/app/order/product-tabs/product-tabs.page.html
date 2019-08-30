@@ -22,17 +22,10 @@
 </ion-header>
 
 <ion-content>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh()">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh();doRefreshTasks()">
   </ion-refresher>
-  <ng-container *ngIf='!isLoading else fakeList'>
-    <ion-list lines='none' *ngIf='orderModel?.Orders.length else nomoredate'>
-      <ion-item *ngFor='let order of orderModel?.Orders' (click)='goToDetailPage(order)'>
-        <app-order-item [order]='order' (payaction)='onPay(order)'></app-order-item>
-      </ion-item>
-    </ion-list>
-  </ng-container>
   <ng-template #nomoredate>
-    <app-or-comp>
+    <app-or-comp >
       暂无数据
     </app-or-comp>
   </ng-template>
@@ -64,23 +57,65 @@
       </ion-item>
     </ion-list>
   </ng-template>
-  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMore()">
-    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
-    </ion-infinite-scroll-content>
-  </ion-infinite-scroll>
+  <ng-container *ngIf='activeTab!==productItemType.waitingApprovalTask else waitingapprovalTempl'>
+    <ng-container *ngIf='!isLoading else fakeList'>
+      <ion-list lines='none' *ngIf='orderModel?.Orders.length else nomoredate'>
+        <ion-item *ngFor='let order of orderModel?.Orders' (click)='goToDetailPage(order)'>
+          <app-order-item [order]='order' (payaction)='onPay(order)'></app-order-item>
+        </ion-item>
+      </ion-list>
+    </ng-container>
+    <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMore()">
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </ng-container>
+  <ng-template #waitingapprovalTempl>
+    <ng-container *ngIf='!isLoading else fakeList'>
+      <ng-container *ngIf='tasks?.length else nomoredate'>
+        <app-timeline>
+          <app-timeline-item *ngFor='let task of tasks'>
+            <ion-row>
+              <ion-col>任务</ion-col>
+              <ion-col>
+                <ng-template #labelTemp>
+                  <span  >{{task.Name}}</span>
+                </ng-template>
+                <ion-button *ngIf='getTaskUrl(task) as url else labelTemp' (click)='onTaskDetail(task)'
+                  color='secondary' fill='clear'>
+                  {{task.Name}}</ion-button>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col> 订单号</ion-col>
+              <ion-col>{{getTaskOrderId(task)}}</ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>发起时间</ion-col>
+              <ion-col>{{task.InsertTime}}</ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>超时时间</ion-col>
+              <ion-col>{{task.ExpiredTime}}</ion-col>
+            </ion-row>
+          </app-timeline-item>
+        </app-timeline>
+      </ng-container>
+    </ng-container>
+  </ng-template>
 </ion-content>
-<ion-footer>
+<ion-footer *ngIf='activeTab !== productItemType.waitingApprovalTask'>
   <ion-row>
     <ion-col text-center>
-      <ion-button color='secondary' fill='clear' size='small'>
+      <ion-button color='secondary' fill='clear' size='small' (click)='doRefresh()'>
         全部<span slot='end' *ngIf='dataCount'>({{dataCount}})</span>
       </ion-button>
     </ion-col>
     <ion-col text-center>
-      <ion-button color='secondary' fill='clear' size='small'>待出行订单</ion-button>
+      <ion-button color='secondary' fill='clear' size='small' (click)='myTrips()'>待出行订单</ion-button>
     </ion-col>
     <ion-col text-center>
-      <ion-button color='secondary' fill='clear' size='small'>历史订单</ion-button>
+      <ion-button color='secondary' fill='clear' size='small' (click)='historyTrips()'>历史订单</ion-button>
     </ion-col>
   </ion-row>
 

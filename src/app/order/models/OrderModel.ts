@@ -57,7 +57,6 @@ export class OrderModel {
   OrderTrips: OrderTripModel[];
   OrderTasks: OrderTaskModel[];
   Passenger: string;
-  FromCityName:string;
-  ToCityName:string;
-
+  FromCityName: string;
+  ToCityName: string;
 }

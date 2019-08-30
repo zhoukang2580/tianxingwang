@@ -8,10 +8,12 @@ import { IdentityService } from "src/app/services/identity/identity.service";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
 import { ConfigService } from "src/app/services/config/config.service";
-import { Subscription, Observable } from "rxjs";
+import { Subscription, Observable, of, from, combineLatest } from "rxjs";
 import { Platform } from "@ionic/angular";
 import { ProductItem, ProductItemType } from "src/app/tmc/models/ProductItems";
 import { ORDER_TABS } from "src/app/order/product-tabs/product-tabs.page";
+import { StaffService } from "src/app/hr/staff.service";
+import { tap, map } from "rxjs/operators";
 interface PageModel {
   Name: string;
   RealName: string;
@@ -31,6 +33,7 @@ export class MyPage implements OnDestroy, OnInit {
   identitySubscription = Subscription.EMPTY;
   msgCount$: Observable<number>;
   items: ProductItem[] = [];
+  canShowMyOrderTabs$ = of(false);
   constructor(
     private router: Router,
     plt: Platform,
@@ -38,7 +41,8 @@ export class MyPage implements OnDestroy, OnInit {
     private configService: ConfigService,
     private apiService: ApiService,
     route: ActivatedRoute,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private staffService: StaffService
   ) {
     this.isIos = plt.is("ios");
     this.identitySubscription = this.identityService
@@ -76,7 +80,16 @@ export class MyPage implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
-    this.items = ORDER_TABS;
+    this.canShowMyOrderTabs$ = combineLatest([
+      from(this.staffService.isSelfBookType()),
+      from(this.staffService.isSecretaryBookType())
+    ]).pipe(
+      map(([self, secretary]) => self || secretary),
+      tap(show => {
+        console.log("can show tabs ", show);
+      })
+    );
+    this.items = ORDER_TABS.filter(it => it.isDisplay);
     this.msgCount$ = this.messageService.getMsgCount();
     console.log("my ngOnInit");
     // this.Model = {

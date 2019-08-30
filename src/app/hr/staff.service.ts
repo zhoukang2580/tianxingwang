@@ -248,7 +248,7 @@ export class StaffService {
   }
   async isSecretaryBookType() {
     const t = await this.getBookType();
-    return t === StaffBookType.Secretary;
+    return t == StaffBookType.Secretary;
   }
   private async getBookType(): Promise<StaffBookType> {
     const s = await this.getStaff();

@@ -15,6 +15,7 @@ import { ProductInsuranceComponent } from "./product-insurance/product-insurance
 import { ProductTrainComponent } from "./product-train/product-train.component";
 import { ProductPlaneComponent } from "./product-plane/product-plane.component";
 import { SelectTicketPopoverComponent } from "./select-ticket-popover/select-ticket-popover.component";
+import { OrderTripComponent } from "./order-trip/order-trip.component";
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { SelectTicketPopoverComponent } from "./select-ticket-popover/select-tic
     ProductInsuranceComponent,
     ProductTrainComponent,
     ProductPlaneComponent,
-    SelectTicketPopoverComponent
+    SelectTicketPopoverComponent,
+    OrderTripComponent
   ],
   imports: [
     CommonModule,
@@ -37,7 +39,7 @@ import { SelectTicketPopoverComponent } from "./select-ticket-popover/select-tic
     FlightModule,
     DirectivesModule
   ],
-  exports: [OrderItemComponent],
+  exports: [OrderItemComponent, OrderTripComponent],
   entryComponents: [
     SearchTicketModalComponent,
     OrderItemPricePopoverComponent,

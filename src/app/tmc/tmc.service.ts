@@ -156,21 +156,7 @@ export class TmcService {
   getFlightHotelTrainType() {
     return this.travelType;
   }
-  getOrderList(searchCondition: OrderModel) {
-    return this.orderService.getOrderList(searchCondition);
-  }
-  getOrderListAsync(searchCondition: OrderModel) {
-    return this.orderService.getOrderListAsync(searchCondition);
-  }
-  getOrderDetail(id: string) {
-    return this.orderService.getOrderDetailAsync(id);
-  }
-  getOrderTasks(data: OrderModel) {
-    return this.orderService.getOrderTasksAsync(data);
-  }
-  getMyTrips(data: OrderModel) {
-    return this.orderService.getMyTripsAsync(data);
-  }
+
   getSelectedCompanySource() {
     return this.selectedCompanySource.asObservable();
   }

@@ -1,3 +1,4 @@
+import { OrderService } from "./../order.service";
 import { ApiService } from "./../../services/api/api.service";
 import { StaffService } from "src/app/hr/staff.service";
 import { PayService } from "src/app/services/pay/pay.service";
@@ -23,36 +24,50 @@ import { OrderFlightTicketStatusType } from "src/app/order/models/OrderFlightTic
 import { OrderTrainTicketStatusType } from "src/app/order/models/OrderTrainTicketStatusType";
 import { OrderFlightTicketEntity } from "src/app/order/models/OrderFlightTicketEntity";
 import * as moment from "moment";
-import { Subscription } from "rxjs";
+import { Subscription, from } from "rxjs";
 import { finalize } from "rxjs/operators";
 import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { LanguageHelper } from "src/app/languageHelper";
-export const ORDER_TABS = [
+import { OrderTaskModel } from "../models/OrderTaskModel";
+import { TaskEntity } from "src/app/workflow/models/TaskEntity";
+import { TaskModel } from "../models/TaskModel";
+export const ORDER_TABS: ProductItem[] = [
   {
     label: "机票",
     value: ProductItemType.plane,
-    imageSrc: "assets/svgs/product-plane.svg"
+    imageSrc: "assets/svgs/product-plane.svg",
+    isDisplay: true
   },
   {
     label: "酒店",
     value: ProductItemType.hotel,
-    imageSrc: "assets/svgs/product-hotel.svg"
+    imageSrc: "assets/svgs/product-hotel.svg",
+    isDisplay: true
   },
   {
     label: "火车票",
     value: ProductItemType.train,
-    imageSrc: "assets/svgs/product-train.svg"
+    imageSrc: "assets/svgs/product-train.svg",
+    isDisplay: true
   },
   {
     label: "保险",
     value: ProductItemType.insurance,
-    imageSrc: "assets/svgs/product-insurance.svg"
+    imageSrc: "assets/svgs/product-insurance.svg",
+    isDisplay: true
+  },
+  {
+    label: "待审任务",
+    value: ProductItemType.waitingApprovalTask,
+    imageSrc: "assets/images/projectcheck.png",
+    isDisplay: false
   },
   {
     label: "更多",
     value: ProductItemType.more,
-    imageSrc: "assets/svgs/product-more.svg"
+    imageSrc: "assets/svgs/product-more.svg",
+    isDisplay: true
   }
 ];
 @Component({
@@ -71,7 +86,8 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   dataCount: number;
   isLoading = true;
   title = "机票订单";
-
+  tasks: TaskEntity[];
+  curTaskPageIndex = 0;
   @ViewChild(IonContent) ionContent: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
@@ -83,7 +99,8 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     private router: Router,
     private payService: PayService,
     private staffService: StaffService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private orderService: OrderService
   ) {
     route.queryParamMap.subscribe(d => {
       console.log("product-tabs", d);
@@ -120,6 +137,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     }
     this.doRefresh();
   }
+
   private async wechatPay(tradeNo: string) {
     const req = new RequestEntity();
     req.Method = "TmcApiOrderUrl-Pay-Create";
@@ -146,6 +164,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         AppHelper.alert(r);
       });
   }
+
   private async aliPay(tradeNo: string) {
     const req = new RequestEntity();
     req.Method = "TmcApiOrderUrl-Pay-Create";
@@ -183,15 +202,18 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       }
     }
   }
-  loadMore() {
-    this.doSearch();
+  loadMore(isMyTrips?: boolean) {
+    this.doSearch(isMyTrips);
   }
   private scrollToTop() {
     if (this.ionContent) {
       this.ionContent.scrollToTop(100);
     }
   }
-  doRefresh(condition?: SearchTicketConditionModel) {
+  doRefresh(condition?: SearchTicketConditionModel, isMyTrips?: boolean) {
+    if (this.activeTab == ProductItemType.waitingApprovalTask) {
+      return;
+    }
     this.condition = condition || new SearchTicketConditionModel();
     this.condition.pageIndex = 0;
     if (this.infiniteScroll) {
@@ -202,12 +224,26 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     if (this.ionRefresher) {
       this.ionRefresher.complete();
     }
-    this.loadMore();
+    this.loadMore(isMyTrips);
   }
   onTabClick(tab: ProductItem) {
     this.activeTab = tab.value;
     this.title = tab.label + "订单";
+    if (this.activeTab == ProductItemType.waitingApprovalTask) {
+      this.title = tab.label;
+    }
     this.doRefresh();
+    this.doRefreshTasks();
+  }
+  historyTrips() {
+    const condition = new SearchTicketConditionModel();
+    condition.toDate = moment().format("YYYY-MM-DD");
+    this.doRefresh(condition);
+  }
+  myTrips() {
+    const condition = new SearchTicketConditionModel();
+    condition.pageIndex = 0;
+    this.doRefresh(condition, true);
   }
   back() {
     this.navCtrl.back();
@@ -236,23 +272,80 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       }
     });
   }
-  private async doSearch() {
+  private doRefreshTasks() {
+    if (this.activeTab != ProductItemType.waitingApprovalTask) {
+      this.isLoading = false;
+      return;
+    }
+    if (this.loadDataSub) {
+      this.loadDataSub.unsubscribe();
+    }
+    this.tasks = [];
+    this.curTaskPageIndex = 0;
+    if (this.ionRefresher) {
+      this.ionRefresher.complete();
+    }
+    this.doLoadMoreTasks();
+  }
+  private doLoadMoreTasks() {
+    if (this.activeTab != ProductItemType.waitingApprovalTask) {
+      this.isLoading = false;
+      return;
+    }
+    this.isLoading = true;
+    this.loadDataSub = this.orderService
+      .getOrderTasks({
+        PageSize: 15,
+        PageIndex: this.curTaskPageIndex
+      } as any)
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+          if (this.ionRefresher) {
+            this.ionRefresher.complete();
+          }
+        })
+      )
+      .subscribe(async tasks => {
+        if (tasks) {
+          this.tasks = this.tasks.concat(tasks);
+          if (tasks.length) {
+            this.curTaskPageIndex++;
+          }
+          if (this.infiniteScroll) {
+            this.infiniteScroll.disabled = tasks.length == 0;
+            this.infiniteScroll.complete();
+          }
+        }
+      });
+  }
+  getTaskOrderId(task: TaskEntity) {
+    return task && task.VariablesJsonObj["OrderId"];
+  }
+  getTaskUrl(task: TaskEntity) {
+    return task && task.VariablesJsonObj["TaskUrl"];
+  }
+  private async doSearch(isMyTrips?: boolean) {
     try {
       if (this.loadDataSub) {
         this.loadDataSub.unsubscribe();
       }
       const m = this.transformSearchCondition(this.condition);
-      m.Type =
-        this.activeTab == ProductItemType.plane
-          ? "flight"
-          : this.activeTab == ProductItemType.train
-          ? "train"
-          : this.activeTab == ProductItemType.hotel
-          ? "hotel"
-          : "flight";
+      if (this.activeTab != ProductItemType.waitingApprovalTask) {
+        m.Type =
+          this.activeTab == ProductItemType.plane
+            ? "flight"
+            : this.activeTab == ProductItemType.train
+            ? "train"
+            : this.activeTab == ProductItemType.hotel
+            ? "hotel"
+            : "flight";
+      }
+      const obs = isMyTrips
+        ? this.orderService.getMyTrips(m)
+        : this.orderService.getOrderList(m);
       this.isLoading = this.condition && this.condition.pageIndex == 0;
-      this.loadDataSub = this.tmcService
-        .getOrderList(m)
+      this.loadDataSub = obs
         .pipe(
           finalize(() => {
             this.isLoading = false;
@@ -267,7 +360,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
           })
         )
         .subscribe(
-          async res => {
+          async (res: any) => {
             let orderModel: OrderModel = res.Status ? res.Data : null;
             if (!this.tmc) {
               this.tmc = await this.tmcService.getTmc();
@@ -287,7 +380,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
             }
             if (this.infiniteScroll) {
               this.infiniteScroll.disabled =
-                orderModel && orderModel.Orders.length == 0;
+                orderModel &&
+                orderModel.Orders &&
+                orderModel.Orders.length == 0;
             }
           },
           e => {
@@ -296,6 +391,14 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         );
     } catch (e) {
       console.error(e);
+    }
+  }
+  onTaskDetail(task: TaskEntity) {
+    const url = this.getTaskUrl(task);
+    if (url) {
+      this.router.navigate(["open-url"], {
+        queryParams: { url, title: task && task.Name }
+      });
     }
   }
   private combineInfo(data: OrderModel) {
@@ -420,10 +523,20 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         .format("YYYY-MM-DD");
     model.EndDate = data.toDate;
     model.Id = data.orderNumber;
-    model.Type = "flight";
     model.Status = data.orderStatus;
     model.Passenger = data.passengerName;
     model.PageIndex = data.pageIndex || 0;
+    if (data.passengerName) {
+      model.Orders = [
+        {
+          OrderPassengers: [
+            {
+              Name: data.passengerName
+            } as any
+          ]
+        } as any
+      ];
+    }
     if (data.toCity) {
       model.ToCityName = data.toCity.CityName || data.toCity.Nickname;
     }
@@ -436,6 +549,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     try {
       this.tmc = await this.tmcService.getTmc(true);
       this.doRefresh();
+      this.doRefreshTasks();
       this.tabs = ORDER_TABS.filter(t => t.value != ProductItemType.more);
     } catch (e) {
       console.error(e);
