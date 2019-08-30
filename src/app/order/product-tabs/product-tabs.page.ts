@@ -191,6 +191,23 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       this.ionContent.scrollToTop(100);
     }
   }
+  waitingOrders() {
+    this.condition = {
+      ...this.condition,
+      pageIndex: 0,
+      orderStatus: OrderStatusType.Finish,
+      toDate: moment().format("YYYY-MM-DD")
+    };
+    this.doRefresh(this.condition);
+  }
+  historyOrders() {
+    this.condition = {
+      ...this.condition,
+      pageIndex: 0,
+      fromDate: moment().format("YYYY-MM-DD")
+    };
+    this.doRefresh(this.condition);
+  }
   doRefresh(condition?: SearchTicketConditionModel) {
     this.condition = condition || new SearchTicketConditionModel();
     this.condition.pageIndex = 0;
@@ -421,6 +438,17 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     model.EndDate = data.toDate;
     model.Id = data.orderNumber;
     model.Type = "flight";
+    if (data.passengerName) {
+      model.Orders = [
+        {
+          OrderPassengers: [
+            {
+              Name: data.passengerName
+            } as any
+          ]
+        } as any
+      ];
+    }
     model.Status = data.orderStatus;
     model.Passenger = data.passengerName;
     model.PageIndex = data.pageIndex || 0;
