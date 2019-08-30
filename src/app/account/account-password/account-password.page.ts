@@ -63,11 +63,11 @@ export class AccountPasswordPage implements OnInit, OnDestroy {
   }
   done() {
     if (!this.passwordModel.NewPassword) {
-      AppHelper.alert(LanguageHelper.NewPasswordNullTip);
+      AppHelper.alert(LanguageHelper.NewPasswordNullTip());
       return;
     }
     if (this.passwordModel.NewPassword !== this.passwordModel.SurePassword) {
-      AppHelper.alert(LanguageHelper.TwicePasswordNotEqualTip);
+      AppHelper.alert(LanguageHelper.TwicePasswordNotEqualTip());
       return;
     }
     this.modifyPasswordSubscription.unsubscribe();
