@@ -9,6 +9,7 @@ import {
   TreeCallbacks
 } from "src/app/components/tree-ngx";
 const ORGANIZATION_PREFERANCE_KEY = "organization_preferance_key";
+const ORGANIZATION_PREFERANCE_KEY_MODE = "organization_preferance_key_mode";
 interface LocalOrganizationEntity {
   data: OrganizationEntity[];
   lastUpdateTime: number;
@@ -126,11 +127,11 @@ export class OrganizationComponent implements OnInit {
   }
   async changeMode() {
     this.isTreeMode = !this.isTreeMode;
-    await this.storage.set(ORGANIZATION_PREFERANCE_KEY,this.isTreeMode);
+    await this.storage.set(ORGANIZATION_PREFERANCE_KEY_MODE,this.isTreeMode);
     this.doRefresh();
   }
   async ngOnInit() {
-    this.isTreeMode = await this.storage.get(ORGANIZATION_PREFERANCE_KEY);
+    this.isTreeMode = await this.storage.get(ORGANIZATION_PREFERANCE_KEY_MODE);
     this.callbacks = {
       nameClick: (item: NodeItem<OrganizationEntity>) => {
         this.selectedNode = item.item;
