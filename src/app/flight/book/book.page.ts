@@ -523,9 +523,9 @@ export class BookPage implements OnInit, AfterViewInit {
               this.goToMyOrders(ProductItemType.plane);
             }
           } else {
-            await AppHelper.alert(
-              LanguageHelper.Flight.getSaveBookOrderOkTip()
-            );
+            // await AppHelper.alert(
+            //   LanguageHelper.Flight.getSaveBookOrderOkTip()
+            // );
             this.router.navigate([""]);
           }
         }
