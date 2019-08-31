@@ -1,0 +1,9 @@
+ion-col {
+  align-self: center;
+}
+ion-row ion-col:nth-child(2n) {
+  text-align: end;
+}
+ion-grid.item  + ion-grid.item {
+  border-top: 1px dashed var(--ion-color-secondary);
+}

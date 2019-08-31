@@ -1,3 +1,4 @@
+import { PriceDetailComponent } from "./../components/price-detail/price-detail.component";
 import { PayService } from "./../../services/pay/pay.service";
 import { AccountEntity } from "./../../tmc/models/AccountEntity";
 import { OrderBookDto } from "./../../order/models/OrderBookDto";
@@ -900,6 +901,61 @@ export class BookPage implements OnInit, AfterViewInit {
       this.initialBookDtoModel.ServiceFees[item.modal.id]
     );
   }
+  async onShowPriceDetail() {
+    const p = await this.popoverCtrl.create({
+      component: PriceDetailComponent,
+      componentProps: {
+        priceInfos:
+          this.vmCombindInfos &&
+          this.vmCombindInfos
+            .map(item => {
+              const bookInfo = item.modal && item.modal.flightSegmentInfo;
+              return {
+                from:
+                  bookInfo &&
+                  bookInfo.flightSegment &&
+                  bookInfo.flightSegment.FromCityName,
+                to:
+                  bookInfo &&
+                  bookInfo.flightSegment &&
+                  bookInfo.flightSegment.ToCityName,
+                price:
+                  bookInfo &&
+                  bookInfo.flightPolicy &&
+                  bookInfo.flightPolicy.Cabin &&
+                  bookInfo.flightPolicy.Cabin.SalesPrice,
+                tax:
+                  bookInfo &&
+                  bookInfo.flightSegment &&
+                  bookInfo.flightSegment.Tax,
+                insurances: item.insuranceProducts
+                  .filter(it => it.checked)
+                  .map(it => {
+                    return {
+                      name: it.insuranceResult && it.insuranceResult.Name,
+                      price: it.insuranceResult && it.insuranceResult.Price
+                    };
+                  })
+              };
+            })
+            .filter(it => !!it.from),
+        fees:
+          this.initialBookDtoModel &&
+          this.initialBookDtoModel.ServiceFees &&
+          Object.keys(this.initialBookDtoModel.ServiceFees).reduce(
+            (acc, key) => {
+              acc = AppHelper.add(
+                acc,
+                +this.initialBookDtoModel.ServiceFees[key]
+              );
+              return acc;
+            },
+            0
+          )
+      }
+    });
+    p.present();
+  }
   private async initCombindInfos() {
     try {
       const pfs = this.flightService.getPassengerBookInfos();
@@ -1034,18 +1090,18 @@ export class BookPage implements OnInit, AfterViewInit {
         combineInfo.addContacts = [];
         this.vmCombindInfos.push(combineInfo);
       }
-      if (!environment.production) {
-        if (!this.vmCombindInfos || this.vmCombindInfos.length == 0) {
-          this.vmCombindInfos = await this.storage.get(
-            "Flight-Book-Page-Mock-Data"
-          );
-        } else {
-          await this.storage.set(
-            "Flight-Book-Page-Mock-Data",
-            this.vmCombindInfos
-          );
-        }
-      }
+      // if (!environment.production) {
+      //   if (!this.vmCombindInfos || this.vmCombindInfos.length == 0) {
+      //     this.vmCombindInfos = await this.storage.get(
+      //       "Flight-Book-Page-Mock-Data"
+      //     );
+      //   } else {
+      //     await this.storage.set(
+      //       "Flight-Book-Page-Mock-Data",
+      //       this.vmCombindInfos
+      //     );
+      //   }
+      // }
     } catch (e) {
       console.error(e);
     }

@@ -13,13 +13,13 @@
   <ng-container *ngIf='!errors else errorTemp'>
     <ion-refresher slot='fixed' (ionRefresh)='refresh()'></ion-refresher>
     <ion-list *ngFor='let combindInfo of vmCombindInfos' lines='none'>
+      <ion-item-divider color='primary' sticky>
+        {{combindInfo?.modal?.credential?.CheckName}}
+        【{{tmc?.Name}}】
+        [成人]
+        {{combindInfo?.modal?.credential?.Number}}
+      </ion-item-divider>
       <ion-item-group>
-        <ion-item-divider color='primary' sticky>
-          {{combindInfo?.modal?.credential?.CheckName}}
-          【{{tmc?.Name}}】
-          [成人]
-          {{combindInfo?.modal?.credential?.Number}}
-        </ion-item-divider>
         <ion-item class="ion-no-margin">
           <ion-label>通知语言:</ion-label>
           <ion-select value='cn' okText="确定" cancelText="取消" [(ngModel)]='combindInfo.notifyLanguage'>
@@ -289,8 +289,9 @@
 <ion-footer>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <ion-button color='secondary'>总计:
+      <ion-button color='secondary' (click)='onShowPriceDetail()'>总计:
         <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)|flightprice:"1"}}</ion-text>
+        <ion-icon name='arrow-dropup' slot='end' color='secondary' mode='md'></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-buttons slot='end'>

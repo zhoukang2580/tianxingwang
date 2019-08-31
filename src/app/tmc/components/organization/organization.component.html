@@ -17,7 +17,7 @@
 </ion-header>
 <ion-content>
   <ion-toolbar class='name-paths' *ngIf='!isTreeMode&&currentSelectedNodePaths?.length'>
-    <ion-label text-wrap>
+    <ion-label text-wrap style="margin-left: .5em">
       <ion-text color='secondary' *ngFor='let node of currentSelectedNodePaths;let last=last;'
         (click)='onNextHierachy(node)'>
         {{node.Name}}
@@ -42,7 +42,7 @@
               </ion-text>
               <ion-text color='secondary'>下级</ion-text>
             </ion-col>
-            <ion-col size='0.8' style="align-self: center">
+            <ion-col size='1' style="align-self: center;justify-content: center;">
               <ion-icon name='arrow-forward' mode='ios' color='medium' size='small'></ion-icon>
             </ion-col>
           </ng-container>
