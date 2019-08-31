@@ -1,3 +1,5 @@
+import { CalendarService } from "./../../tmc/calendar.service";
+import { TrainEntity } from "./../models/TrainEntity";
 import { InsuranceProductEntity } from "./../../insurance/models/InsuranceProductEntity";
 import { OrderLinkmanEntity } from "./../../order/models/OrderLinkmanEntity";
 import * as moment from "moment";
@@ -96,7 +98,8 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     private popoverCtrl: PopoverController,
     private tmcService: TmcService,
     private router: Router,
-    private payService: PayService
+    private payService: PayService,
+    private flydayService: CalendarService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -207,6 +210,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     await this.initSelfBookTypeCredentials();
     await this.initTmcOutNumberInfos();
     await this.initOrderTravelPayTypes();
+    console.log("combindInfos", this.viewModel.combindInfos);
   }
   private async initCombindInfos() {
     try {
@@ -271,6 +275,8 @@ export class TrainBookPage implements OnInit, AfterViewInit {
           };
         });
         const combineInfo: IPassengerBookInfo = {} as any;
+        combineInfo.credential = bookInfo.credential;
+        combineInfo.id = bookInfo.id;
         combineInfo.bookInfo = bookInfo;
         combineInfo.vmCredential = bookInfo.credential;
         combineInfo.isSkipApprove = false;
@@ -529,13 +535,20 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       });
     }
   }
-
+  getDate(train: TrainEntity) {
+    if (!train) {
+      return "";
+    }
+    const day = this.flydayService.generateDayModel(moment(train.StartTime));
+    return `${day.date} ${day.dayOfWeekName}`;
+  }
   getServiceFee(item: IPassengerBookInfo) {
-    return (
+    const fee =
       this.initialBookDto &&
       this.initialBookDto.ServiceFees &&
-      this.initialBookDto.ServiceFees[item.id]
-    );
+      this.initialBookDto.ServiceFees[item.id];
+    // console.log(item.id, fee, this.initialBookDto);
+    return fee;
   }
   isAllowSelectApprove(info: IPassengerBookInfo) {
     const Tmc = this.initialBookDto.Tmc;
@@ -1033,37 +1046,6 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     }
   }
   isShowApprove() {}
-  private async initBookViewModel() {
-    this.viewModel = this.viewModel || ({} as any);
-    this.viewModel.tmc = this.initialBookDto.Tmc;
-    this.viewModel.identity = await this.identityService.getIdentityAsync();
-    this.viewModel.isCanSkipApproval$ = combineLatest([
-      from(this.staffService.isSelfBookType()),
-      this.identityService.getIdentitySource()
-    ]).pipe(
-      map(([isSelfType, identity]) => {
-        const tmc = this.viewModel.tmc;
-        return (
-          tmc &&
-          tmc.TrainApprovalType != 0 &&
-          tmc.TrainApprovalType != TmcApprovalType.None &&
-          !isSelfType &&
-          !(identity && identity.Numbers && identity.Numbers.AgentId)
-        );
-      }),
-      tap(can => {
-        console.log("是否可以跳过审批", can);
-      })
-    );
-    this.viewModel.travelForm = this.initialBookDto.TravelFrom;
-    this.viewModel.illegalReasons = this.initialBookDto.IllegalReasons.map(
-      it => {
-        const reason = new IllegalReasonEntity();
-        reason.Name = it;
-        return reason;
-      }
-    );
-  }
 }
 interface TmcOutNumberInfo {
   key: string;

@@ -9,6 +9,7 @@ import { TrainSeatEntity } from "../../models/TrainSeatEntity";
   styleUrls: ["./train-list-item.component.scss"]
 })
 export class TrainListItemComponent implements OnInit {
+  @Input() showBookBtn = true;
   @Input() seat: TrainSeatEntity;
   @Input() train: TrainEntity;
   @Output() scheduleEmit: EventEmitter<any>;

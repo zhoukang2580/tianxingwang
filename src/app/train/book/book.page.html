@@ -20,7 +20,7 @@
         {{combindInfo?.credential?.Number}}
       </ion-item-divider>
       <ion-item-group>
-        <ion-item  class="ion-no-margin">
+        <ion-item class="ion-no-margin">
           <ion-label>通知语言:</ion-label>
           <ion-select value='cn' okText="确定" cancelText="取消" [(ngModel)]='combindInfo.notifyLanguage'>
             <ion-select-option value=''>不发</ion-select-option>
@@ -28,16 +28,15 @@
             <ion-select-option value='en'>英文</ion-select-option>
           </ion-select>
         </ion-item>
-        <ion-item  class="ion-no-margin" *ngIf='viewModel?.isCanSkipApproval$|async'>
+        <ion-item class="ion-no-margin" *ngIf='viewModel?.isCanSkipApproval$|async'>
           <ion-label style='margin-right: 0.5em'>跳过审批:</ion-label>
           <ion-checkbox margin-end color="secondary" [(ngModel)]='combindInfo.isSkipApprove'></ion-checkbox>
         </ion-item>
-        <ion-item  class="ion-no-margin"
-          *ngIf='tmc?.IsShowServiceFee || viewModel?.identity?.Numbers?.AgentId'>
+        <ion-item class="ion-no-margin" *ngIf='tmc?.IsShowServiceFee || viewModel?.identity?.Numbers?.AgentId'>
           <ion-label>服务费:</ion-label>
           <ion-label slot='end' text-end padding-end>{{getServiceFee(combindInfo)}}</ion-label>
         </ion-item>
-        <ion-item class="ion-no-margin"  detail *ngIf='isAllowSelectApprove(combindInfo)'
+        <ion-item class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)'
           (click)='openApproverModal(combindInfo)'>
           <ion-label>
             审批人:<ion-text *ngIf='combindInfo?.appovalStaff'>
@@ -47,6 +46,20 @@
         </ion-item>
       </ion-item-group>
       <ion-item-group>
+        <ion-item-divider>车票预订信息:</ion-item-divider>
+        <ion-item>
+          <div style='width: 100%;padding: 0.5em 0.25em '>
+              <strong><ion-label style="padding: 0.5em 0">
+                  {{getDate(combindInfo?.bookInfo?.trainInfo?.trainEntity)}}
+              </ion-label>
+              </strong>
+            <app-train-list-item [train]='combindInfo?.bookInfo?.trainInfo?.trainEntity' [showBookBtn]='false'
+              [seat]='combindInfo?.bookInfo?.trainInfo?.selectedSeat'></app-train-list-item>
+          </div>
+        </ion-item>
+      </ion-item-group>
+      <ion-item-group>
+        <ion-item-divider>旅客信息：</ion-item-divider>
         <ion-item>
           <div style='width: 100%'>
             <app-book-credential-comp [credential]='combindInfo?.vmCredential'
@@ -175,7 +188,7 @@
         <ion-item>
           <div style='width: 100%'>
             <ion-radio-group [(ngModel)]='combindInfo.orderTravelPayType' name='travelPayType'>
-              <ion-item *ngFor='let pt of viewModel?.orderTravelPayTypes' >
+              <ion-item *ngFor='let pt of viewModel?.orderTravelPayTypes'>
                 <ion-label>{{pt.label}}</ion-label>
                 <ion-radio [value]="pt.value" [checked]='combindInfo.orderTravelPayType==pt.value'>
                 </ion-radio>
