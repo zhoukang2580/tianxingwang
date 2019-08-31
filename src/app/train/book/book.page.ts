@@ -163,11 +163,6 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       this.bookInfos = this.trainService
         .getBookInfos()
         .filter(it => !!it.trainInfo);
-      if (!this.bookInfos || !this.bookInfos.length) {
-        this.bookInfos = (await this.storage.get("MOCK-TRAIN-BOOKINFO")) || [];
-      } else {
-        this.storage.set("MOCK-TRAIN-BOOKINFO", this.bookInfos);
-      }
       this.initialBookDto = await this.getInitializeBookDto();
       if (!this.initialBookDto) {
         this.error = "初始化失败";
@@ -381,9 +376,9 @@ export class TrainBookPage implements OnInit, AfterViewInit {
               this.goToMyOrders(ProductItemType.plane);
             }
           } else {
-            await AppHelper.alert(
-              LanguageHelper.Flight.getSaveBookOrderOkTip()
-            );
+            // await AppHelper.alert(
+            //   LanguageHelper.Flight.getSaveBookOrderOkTip()
+            // );
             this.router.navigate([""]);
           }
         }
