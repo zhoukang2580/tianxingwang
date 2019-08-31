@@ -1,3 +1,43 @@
-<p>
-  order-hotel-trip works!
-</p>
+<ion-row>
+  <ion-col>
+    订单编号：{{orderTrip?.OrderId}}
+  </ion-col>
+  <ion-col size='4' text-end>{{orderTrip?.Status}}</ion-col>
+</ion-row>
+<ion-row>
+  <ion-col>
+    酒店事务号：
+    {{orderTrip?.OrderTicketId}}
+  </ion-col>
+</ion-row>
+<ion-row>
+  <ion-col>
+    旅客：
+    {{orderTrip?.Passenger?.Name}}
+  </ion-col>
+  <ion-col>
+    {{orderTrip?.Passenger?.CredentialsNumber}}
+  </ion-col>
+</ion-row>
+<ion-row>
+  <ion-col>
+    完成时间：
+    {{orderTrip?.InsertTime?.replace("T"," ")?.substr(0,"2019-01-08 15:38:10".length)}}
+  </ion-col>
+</ion-row>
+<ion-row>
+  <ion-col>
+    酒店名称：
+    {{orderTrip?.Name}}
+  </ion-col>
+</ion-row>
+<ion-row>
+  <ion-col>
+    入住：<strong>
+      {{orderTrip?.StartTime?.substr(0,"2019-01-01".length)}}
+    </strong>
+    <span margin-start> 离店：<strong>
+        {{orderTrip?.EndTime?.substr(0,"2019-01-01".length)}}
+      </strong></span>
+  </ion-col>
+</ion-row>

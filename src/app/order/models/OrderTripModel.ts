@@ -1,3 +1,6 @@
+import { OrderPassengerEntity } from "./OrderPassengerEntity";
+import { OrderInsuranceEntity } from "./OrderInsuranceEntity";
+
 export class OrderTripModel {
   /// <summary>
   /// 行程类型 Flight Train Hotel
@@ -23,6 +26,7 @@ export class OrderTripModel {
   /// 到达时间
   /// </summary>
   EndTime: string;
+  InsertTime: string;
   /// <summary>
   /// 车次 航班号
   /// </summary>
@@ -35,4 +39,10 @@ export class OrderTripModel {
   /// 到达
   /// </summary>
   ToName: string;
+  Passenger: OrderPassengerEntity;
+  OrderInsurances: OrderInsuranceEntity[];
+  Key: string;
+  AdditionKey: string;
+  Name: string;
+  PassengerId: string;
 }

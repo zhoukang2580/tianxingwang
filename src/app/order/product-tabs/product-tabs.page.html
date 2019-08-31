@@ -24,11 +24,7 @@
 <ion-content>
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh();doRefreshTasks()">
   </ion-refresher>
-  <ng-template #nomoredate>
-      <app-or-comp *ngIf='(orderModel?.Orders||orderModel?.OrderTrips||tasks)?.length==0'>
-        暂无数据
-      </app-or-comp>
-    </ng-template>
+
   <ng-template #fakeList>
     <ion-list>
       <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8]'>
@@ -59,20 +55,33 @@
   </ng-template>
   <ng-container *ngIf='activeTab!==productItemType.waitingApprovalTask else waitingapprovalTempl'>
     <ng-container *ngIf='!isLoading else fakeList'>
-      <ion-list lines='none' *ngIf='orderModel?.Orders?.length else nomoredate'>
-        <ion-item *ngFor='let order of orderModel.Orders' (click)='goToDetailPage(order.Id)'>
-          <app-order-item [order]='order' (payaction)='onPay(order)'></app-order-item>
-        </ion-item>
-      </ion-list>
-      <ion-list lines='none' *ngIf='orderModel?.OrderTrips?.length else nomoredate'>
-        <ion-item *ngFor='let trip of orderModel.OrderTrips' (click)='goToDetailPage(trip.OrderId)'>
-          <app-order-flight-trip [orderTrip]='trip'></app-order-flight-trip>
-        </ion-item>
-      </ion-list>
-     
-
+      <ng-container *ngIf='!isShowMyTrips'>
+        <ion-list lines='none' *ngIf='orderModel?.Orders?.length else nomoredate'>
+          <ion-item *ngFor='let order of orderModel.Orders' (click)='goToDetailPage(order.Id)'>
+            <app-order-item [order]='order' (payaction)='onPay(order)'></app-order-item>
+          </ion-item>
+        </ion-list>
+        <ng-template #nomoredate>
+          <app-or-comp *ngIf='(orderModel?.Orders||myTrips||tasks)?.length==0'>
+            暂无数据
+          </app-or-comp>
+        </ng-template>
+      </ng-container>
+      <ng-container *ngIf='isShowMyTrips'>
+        <ion-list lines='none' *ngIf='myTrips?.length else nomoredate'>
+          <ion-item *ngFor='let trip of myTrips' (click)='goToDetailPage(trip.OrderId)'>
+            <app-order-flight-trip [orderTrip]='trip' *ngIf='activeTab==productItemType.plane'></app-order-flight-trip>
+            <app-order-hotel-trip [orderTrip]='trip' *ngIf='activeTab==productItemType.hotel'></app-order-hotel-trip>
+          </ion-item>
+        </ion-list>
+        <ng-template #nomoredate>
+          <app-or-comp *ngIf='(orderModel?.Orders||myTrips||tasks)?.length==0'>
+            暂无数据
+          </app-or-comp>
+        </ng-template>
+      </ng-container>
     </ng-container>
-    <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMore()">
+    <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMoreOrders();loadMoreMyTrips()">
       <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
       </ion-infinite-scroll-content>
     </ion-infinite-scroll>
@@ -119,7 +128,7 @@
       </ion-button>
     </ion-col>
     <ion-col text-center>
-      <ion-button color='secondary' fill='clear' size='small' (click)='myTrips()'>待出行订单</ion-button>
+      <ion-button color='secondary' fill='clear' size='small' (click)='onshowMyTrips()'>待出行订单</ion-button>
     </ion-col>
     <ion-col text-center>
       <ion-button color='secondary' fill='clear' size='small' (click)='historyTrips()'>历史订单</ion-button>

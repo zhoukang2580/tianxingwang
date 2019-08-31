@@ -78,7 +78,7 @@ export class OrderService {
 
   getMyTrips(data: OrderModel) {
     const req = new RequestEntity();
-    req.IsShowLoading = true;
+    // req.IsShowLoading = true;
     req.Data = data;
     req.Method = `TmcApiOrderUrl-Travel-List`;
     const result = this.apiService.getResponse<OrderModel>(req);

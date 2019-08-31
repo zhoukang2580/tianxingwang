@@ -23,7 +23,7 @@ export class OrderModel {
   /// 数据
   /// </summary>
   DataCount: number;
-  Type: string;
+  Type: "Flight" | "Train" | "Hotel";
   /// <summary>
   /// 开始日期
   /// </summary>

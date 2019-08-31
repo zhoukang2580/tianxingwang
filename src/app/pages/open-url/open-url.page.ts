@@ -1,6 +1,6 @@
 import { LoadingController, NavController } from "@ionic/angular";
 import { Subject, BehaviorSubject } from "rxjs";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import {
   Component,
   OnInit,
