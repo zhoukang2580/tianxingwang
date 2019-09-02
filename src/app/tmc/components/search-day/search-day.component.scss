@@ -15,8 +15,14 @@ section {
 :host.disabled {
   section {
     color: var(--ion-color-medium);
-    i{
+    i {
       color: var(--ion-color-medium);
     }
+  }
+}
+.date {
+  text-align: end;
+  &.start {
+    text-align: start;
   }
 }

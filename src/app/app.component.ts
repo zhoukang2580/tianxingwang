@@ -234,6 +234,7 @@ export class AppComponent
       // this.router.navigate([AppHelper.getRoutePath("search-train")]);
       // this.router.navigate([AppHelper.getRoutePath("flight-book")]);
       // this.router.navigate([AppHelper.getRoutePath("train-book")]);
+      this.router.navigate([AppHelper.getRoutePath("search-hotel")]);
     });
   }
 

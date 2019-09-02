@@ -15,3 +15,23 @@
     }
   }
 }
+.destination {
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  margin: 0.5em 0;
+  ion-button {
+    margin-left: auto;
+    font-size: 0.6rem;
+    .pos {
+      height: 100%;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: center;
+      align-items: center;
+    }
+    .pos ion-icon {
+      font-size: 1rem;
+    }
+  }
+}

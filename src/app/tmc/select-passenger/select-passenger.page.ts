@@ -1,3 +1,4 @@
+import { HotelService } from "./../../hotel/hotel.service";
 import { SelectCountryModalComponent } from "../components/select-country/select-countrymodal.component";
 import { TrainService } from "./../../train/train.service";
 import { FlightHotelTrainType, PassengerBookInfo } from "./../tmc.service";
@@ -102,7 +103,8 @@ export class SelectPassengerPage
     private domCtrl: DomController,
     private tmcService: TmcService,
     private flightService: FlightService,
-    private trainService: TrainService
+    private trainService: TrainService,
+    private hotelService: HotelService
   ) {
     this.removeitem = new EventEmitter();
   }
@@ -468,6 +470,17 @@ export class SelectPassengerPage
   private async onAddPassengerBookInfo(
     passengerBookInfo: PassengerBookInfo<any>
   ) {
+    if (
+      this.tmcService.getFlightHotelTrainType() == FlightHotelTrainType.Hotel
+    ) {
+      const can = this.canAddMorePassenger(this.hotelService.getBookInfos());
+      if (!can) {
+        return false;
+      }
+      const bookInfos = this.hotelService.getBookInfos();
+      this.checkNewCredentialId(passengerBookInfo, bookInfos);
+      this.trainService.addBookInfo(passengerBookInfo);
+    }
     if (
       this.tmcService.getFlightHotelTrainType() == FlightHotelTrainType.Flight
     ) {

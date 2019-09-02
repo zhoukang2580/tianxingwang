@@ -24,11 +24,21 @@
 <ion-content>
   <ion-card padding>
     <ion-card-content>
+      <div class='destination' lines='none' detail>
+        <ion-label>目的地：</ion-label>
+        <ion-label>{{curPos?.CityName}}</ion-label>
+        <ion-button fill='clear' color='secondary' size='small' (click)='onPosition()' [disabled]='isPositioning'>
+          <div class='pos' slot='end'>
+            <ion-icon name="locate" mode='md' size='small' color='secondary'></ion-icon>
+            我的位置
+          </div>
+        </ion-button>
+      </div>
       <section class="flight-date">
-        <app-search-day-comp [day]='checkInDate' (click)="onSelecDate(true)" [disabled]='false'>
+        <app-search-day-comp [day]='checkInDate' [isCheckIn]='true' (click)="onSelecDate(true)" [disabled]='false'>
         </app-search-day-comp>
         <div *ngIf='totalFlyDays'>{{ totalFlyDays }}天</div>
-        <app-search-day-comp [day]='checkOutDate' (click)="onSelecDate(false)">
+        <app-search-day-comp [day]='checkOutDate' [isCheckOut]='true' (click)="onSelecDate(false)" [disabled]='false'>
         </app-search-day-comp>
       </section>
       <ion-button margin-top style='width: 100%' (click)="onSearchHotel()"

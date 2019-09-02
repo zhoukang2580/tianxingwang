@@ -11,20 +11,13 @@ import { StaffService } from "../hr/staff.service";
 import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 import { ModalController } from "@ionic/angular";
 import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
+import { MapService } from "../services/map/map.service";
 export class SearchHotelModel {
-  TrainCode: string;
   checkinDate: string;
   checkoutDate: string;
-  BackDate: string;
-  FromStation: string;
-  fromCity: TrafficlineEntity;
-  toCity: TrafficlineEntity;
-  ToStation: string;
-  TrainNo: string;
-  isLocked?: boolean;
   tripType: TripType;
-  isRoundTrip?: boolean; // 是否是往返
   isRefreshData?: boolean;
+  destinationCity: TrafficlineEntity;
 }
 @Injectable({
   providedIn: "root"
@@ -38,7 +31,8 @@ export class HotelService {
     private apiService: ApiService,
     private identityService: IdentityService,
     private staffService: StaffService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private mapService: MapService
   ) {
     this.bookInfoSource = new BehaviorSubject([]);
     this.searchHotelModelSource = new BehaviorSubject(null);
@@ -47,8 +41,12 @@ export class HotelService {
       identityService.getIdentitySource()
     ]).subscribe(async ([bookInfos, identity]) => {
       if (identity && identity.Id && identity.Ticket) {
+        this.initSelfBookInfo();
       }
     });
+  }
+  getCurPosition() {
+    return this.mapService.getCurrentCityPosition();
   }
   getSearchHotelModel() {
     return this.searchHotelModel || new SearchHotelModel();
@@ -62,8 +60,11 @@ export class HotelService {
   private async initSelfBookInfo() {
     const isSelfBookType = await this.staffService.isSelfBookType();
     if (isSelfBookType && this.getBookInfos().length == 0) {
-      if (this.getSearchHotelModel()) {
-      }
+    }
+  }
+  addBookInfo(bookInfo: PassengerBookInfo<IHotelInfo>) {
+    if (bookInfo) {
+      this.setBookInfoSource([...this.getBookInfos(), bookInfo]);
     }
   }
   getBookInfos() {

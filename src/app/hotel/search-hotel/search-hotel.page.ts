@@ -10,7 +10,7 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 import { NavController } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import { StaffService } from "src/app/hr/staff.service";
-import { map } from "rxjs/operators";
+import { map, catchError, finalize } from "rxjs/operators";
 import * as moment from "moment";
 @Component({
   selector: "app-search-hotel",
@@ -34,8 +34,10 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   destinationCity: TrafficlineEntity;
   checkInDate: DayModel;
   checkOutDate: DayModel;
+  curPos: TrafficlineEntity;
   private subscriptions: Subscription[] = [];
   private isLeavePage = false;
+  isPositioning = false;
 
   constructor(
     private router: Router,
@@ -61,12 +63,24 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     this.subscriptions = [];
   }
   ngOnInit() {
+    this.onPosition();
     this.canAddPassengers$ = from(this.staffService.isSelfBookType()).pipe(
       map(isSelf => {
         return !isSelf;
       })
     );
     this.initCheckInCheckOutDate();
+  }
+  async onPosition() {
+    this.isPositioning = true;
+    this.curPos = { CityName: "正在定位..." } as any;
+    const curPos = await this.hotelService.getCurPosition().catch(_ => null);
+    if (curPos) {
+      this.curPos = curPos.city;
+    } else {
+      this.curPos = { CityName: "定位出错啦" } as any;
+    }
+    this.isPositioning = false;
   }
   private initCheckInCheckOutDate() {
     this.checkInDate = this.calendarService.generateDayModel(moment());

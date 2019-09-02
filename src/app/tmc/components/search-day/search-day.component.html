@@ -3,8 +3,10 @@
     <i class="icon icon-calendar"></i>
   </ion-text>
   <ion-label class='day'>{{day?.day}}</ion-label>
-  <ion-label text-end>
-    <h5>{{day?.dayOfWeekName}}</h5>
+  <ion-label [class.start]='isCheckIn||isCheckOut' class="date">
+    <h5>{{getDayDesc()}} <ng-container *ngIf='isCheckIn'>入住</ng-container>
+      <ng-container *ngIf='isCheckOut'>离店</ng-container>
+    </h5>
     <h5>{{getYearMonth()}}</h5>
   </ion-label>
 </section>
