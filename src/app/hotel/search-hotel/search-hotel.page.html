@@ -1,9 +1,43 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>酒店搜索</ion-title>
+    <ion-buttons slot='start'>
+      <ion-button color='dark' (click)='back()'> 
+        <ion-icon name='arrow-back'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-text *ngIf='isShowSelectedInfos$ |async'>酒店查询</ion-text>
+    <ion-title *ngIf='!(isShowSelectedInfos$ |async)'>酒店查询</ion-title>
+    <ion-buttons class='small-font' slot='end'>
+      <ion-button *ngIf='isShowSelectedInfos$ |async' fill='clear' color='secondary' size='small'
+        (click)='onShowSelectedBookInfos()'>已选行程<ion-badge color='danger'>
+          <ion-text color='light'>{{selectedPassengers$|async}}</ion-text>
+        </ion-badge>
+      </ion-button>
+      <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()'
+        *ngIf='(canAddPassengers$|async)'>添加乘客<ion-badge color='danger'>
+          <ion-text color='light'>{{selectedPassengers$|async}}</ion-text>
+        </ion-badge>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
-
 <ion-content>
+  <ion-card padding>
+    <ion-card-content>
+      <section class="flight-date">
+        <app-search-day-comp [day]='' (click)="onSelecDate(true,false)" [disabled]='false'>
+        </app-search-day-comp>
+        <div *ngIf='totalFlyDays'>{{ totalFlyDays }}天</div>
+        <app-search-day-comp *ngIf="!isSingle" [day]='' (click)="onSelecDate(false,true)">
+        </app-search-day-comp>
+      </section>
+      <ion-button margin-top style='width: 100%' (click)="onSearchHotel()"
+        [disabled]='!vmFromCity||!vmToCity||((canAddPassengers$|async) && (selectedPassengers$|async)==0)'
+        color="secondary" expand="block">
+        <ion-text *ngIf='!((canAddPassengers$|async) && (selectedPassengers$|async)==0)'>查询航班</ion-text>
+        <ion-text *ngIf='(canAddPassengers$|async) && (selectedPassengers$|async)==0'>请添加乘客</ion-text>
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
 
 </ion-content>

@@ -1,15 +1,17 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Routes, RouterModule } from '@angular/router';
+import { AppComponentsModule } from "src/app/components/appcomponents.module";
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { Routes, RouterModule } from "@angular/router";
 
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from "@ionic/angular";
 
-import { SearchHotelPage } from './search-hotel.page';
+import { SearchHotelPage } from "./search-hotel.page";
+import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 
 const routes: Routes = [
   {
-    path: '',
+    path: "",
     component: SearchHotelPage
   }
 ];
@@ -19,7 +21,9 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    AppComponentsModule,
+    TmcComponentsModule
   ],
   declarations: [SearchHotelPage]
 })
