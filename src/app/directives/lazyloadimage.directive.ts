@@ -9,7 +9,8 @@ import {
   OnChanges,
   OnDestroy,
   SimpleChanges,
-  OnInit
+  OnInit,
+  AfterViewInit
 } from "@angular/core";
 import { AppHelper } from "../appHelper";
 import { RequestEntity } from "../services/api/Request.entity";
@@ -17,7 +18,8 @@ import { RequestEntity } from "../services/api/Request.entity";
 @Directive({
   selector: "[appLazyloadimage]"
 })
-export class LazyloadimageDirective implements OnChanges, OnDestroy, OnInit {
+export class LazyloadimageDirective
+  implements OnChanges, OnDestroy, OnInit, AfterViewInit {
   @Input() lazyloadImage;
   @Input() defaultImage; // = AppHelper.getDefaultAvatar();
   @Input() errorImage; // = AppHelper.getDefaultAvatar();
@@ -39,9 +41,9 @@ export class LazyloadimageDirective implements OnChanges, OnDestroy, OnInit {
     }
     console.log("failover", this.Failover);
     await this.initializeDefaultImages();
-    if (this.image) {
-      this.image.src = this.loadingImage;
-    }
+    // if (this.image) {
+    //   this.image.src = this.loadingImage;
+    // }
   }
   async initializeDefaultImages() {
     const config = await this.configService.get().catch(_ => null);
@@ -57,6 +59,16 @@ export class LazyloadimageDirective implements OnChanges, OnDestroy, OnInit {
       this.loadingImage = AppHelper.getDefaultLoadingImage();
     }
   }
+  async ngAfterViewInit() {
+    await this.initializeDefaultImages();
+    console.log("ngAfterViewInit", this.loadingImage);
+    if (!this.image) {
+      this.getImageEle();
+    }
+    if (this.image) {
+      this.image.src = this.loadingImage || AppHelper.getDefaultLoadingImage();
+    }
+  }
   async ngOnChanges(changes: SimpleChanges) {
     if (
       changes &&
@@ -65,52 +77,49 @@ export class LazyloadimageDirective implements OnChanges, OnDestroy, OnInit {
     ) {
       await this.initializeDefaultImages();
       if (!this.image) {
-        this.image =
-          this.el.nativeElement instanceof HTMLImageElement
-            ? this.el.nativeElement
-            : (this.el.nativeElement as HTMLElement).querySelector("img") ||
-              (this.el.nativeElement.shadowRoot &&
-                this.el.nativeElement.shadowRoot.querySelector("img"));
+        this.getImageEle();
       }
       if (this.image) {
         this.image.src =
           this.loadingImage || AppHelper.getDefaultLoadingImage();
       }
-      this.setLoadImage(changes);
+      this.setLoadImage();
     }
   }
-  async setLoadImage(changes: SimpleChanges) {
-    if (changes.lazyloadImage && changes.lazyloadImage.currentValue) {
-      console.log(
-        "setLoadImage LazyloadimageDirective image",
-        this.image,
-        this.lazyloadImage
-      );
-      if (this.image) {
-        this.image.src = this.loadingImage;
-        const id = setTimeout(() => {
-          if (
-            this.image.src == this.loadingImage &&
-            this.image.src != AppHelper.getDefaultLoadingImage()
-          ) {
-            this.image.src = AppHelper.getDefaultLoadingImage();
-          }
-        }, 1000);
-        this.image.onload = () => {
-          if (this.image.src == this.loadingImage) {
-            clearTimeout(id);
-          }
-        };
-        this.image.onerror = () => {
-          if (
-            this.image.src == this.loadingImage &&
-            this.image.src != AppHelper.getDefaultLoadingImage()
-          ) {
-            this.image.src = AppHelper.getDefaultLoadingImage();
-          }
-        };
-        this.Initialize(this.image.parentElement);
-      }
+  private getImageEle() {
+    this.image =
+      this.el.nativeElement instanceof HTMLImageElement
+        ? this.el.nativeElement
+        : (this.el.nativeElement as HTMLElement).querySelector("img") ||
+          (this.el.nativeElement.shadowRoot &&
+            this.el.nativeElement.shadowRoot.querySelector("img"));
+    return this.image;
+  }
+  async setLoadImage() {
+    if (this.image) {
+      this.image.src = this.loadingImage || AppHelper.getDefaultLoadingImage();
+      const id = setTimeout(() => {
+        if (
+          this.image.src == this.loadingImage &&
+          this.image.src != AppHelper.getDefaultLoadingImage()
+        ) {
+          this.image.src = AppHelper.getDefaultLoadingImage();
+        }
+      }, 1000);
+      this.image.onload = () => {
+        if (this.image.src == this.loadingImage) {
+          clearTimeout(id);
+        }
+      };
+      this.image.onerror = () => {
+        if (
+          this.image.src == this.loadingImage &&
+          this.image.src != AppHelper.getDefaultLoadingImage()
+        ) {
+          this.image.src = AppHelper.getDefaultLoadingImage();
+        }
+      };
+      this.Initialize(this.image.parentElement);
     }
   }
   ngOnDestroy() {}
