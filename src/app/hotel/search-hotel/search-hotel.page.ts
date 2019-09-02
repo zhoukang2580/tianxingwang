@@ -12,6 +12,7 @@ import { AppHelper } from "src/app/appHelper";
 import { StaffService } from "src/app/hr/staff.service";
 import { map, catchError, finalize } from "rxjs/operators";
 import * as moment from "moment";
+import { TripType } from "src/app/tmc/models/TripType";
 @Component({
   selector: "app-search-hotel",
   templateUrl: "./search-hotel.page.html",
@@ -23,10 +24,10 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   selectedPassengers$ = of(0);
   get totalFlyDays() {
     if (this.checkInDate && this.checkOutDate) {
-      return (
+      const nums =
         moment(this.checkOutDate.date).date() -
-        moment(this.checkInDate.date).date()
-      );
+        moment(this.checkInDate.date).date();
+      return nums <= 0 ? 1 : nums;
     }
     return 0;
   }
@@ -93,7 +94,16 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     this.isLeavePage = true;
     this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
   }
-  onSelecDate(is) {}
+  async onSelecDate(isCheckIn: boolean) {
+    const days = await this.hotelService.openCalendar(
+      this.checkInDate,
+      isCheckIn ? TripType.checkIn : TripType.checkOut
+    );
+    if (days && days.length >= 2) {
+      this.checkInDate = days[0];
+      this.checkOutDate = days[1];
+    }
+  }
   onSearchHotel() {}
   back() {
     this.navCtrl.back();

@@ -109,11 +109,11 @@ export class SelectDateComponent implements OnInit, OnDestroy {
     this.checkYms();
   }
   async cancel() {
-    console.log("select date component cancel ");
+    console.log("select date component cancel ", this.selectedDays);
     this.calendarService.setSelectedDays(this.selectedDays);
     const m = await this.modalCtrl.getTop();
     if (m) {
-      m.dismiss().catch(_ => {});
+      m.dismiss(this.selectedDays).catch(_ => {});
     }
   }
   onDaySelected(d: DayModel) {
@@ -144,8 +144,11 @@ export class SelectDateComponent implements OnInit, OnDestroy {
     if (this.isMulti) {
       if (this.selectedDays.length) {
         if (d.timeStamp < this.selectedDays[0].timeStamp) {
-          d.desc = LanguageHelper.getDepartureTip();
-          d.desc = LanguageHelper.getDepartureTip();
+          d.desc =
+            this.tripType == TripType.checkIn ||
+            this.tripType == TripType.checkOut
+              ? LanguageHelper.getCheckInTip()
+              : LanguageHelper.getDepartureTip();
           d.hasToolTip = true;
           d.toolTipMsg = LanguageHelper.getSelectFlyBackDate();
           this.selectedDays = [d];
@@ -157,6 +160,8 @@ export class SelectDateComponent implements OnInit, OnDestroy {
           d.desc =
             d.timeStamp == this.selectedDays[0].timeStamp
               ? LanguageHelper.getRoundTripTip()
+              : TripType.checkIn || TripType.checkOut
+              ? LanguageHelper.getCheckInOutTip()
               : LanguageHelper.getReturnTripTip();
           this.selectedDays.push(d);
         }
@@ -177,12 +182,12 @@ export class SelectDateComponent implements OnInit, OnDestroy {
         if (this.tripType == TripType.checkIn) {
           d.desc = LanguageHelper.getCheckInTip();
           d.hasToolTip = true;
-          d.toolTipMsg = LanguageHelper.getSelectFlyBackDate();
+          d.toolTipMsg = LanguageHelper.getSelectCheckOutDate();
         }
         if (this.tripType == TripType.checkOut) {
           d.desc = LanguageHelper.getCheckOutTip();
           d.hasToolTip = true;
-          d.toolTipMsg = LanguageHelper.getSelectFlyBackDate();
+          // d.toolTipMsg = LanguageHelper.getc();
         }
         this.selectedDays = [d];
       }
@@ -193,6 +198,11 @@ export class SelectDateComponent implements OnInit, OnDestroy {
       d.desc = LanguageHelper.getDepartureTip();
       if (this.tripType == TripType.returnTrip) {
         d.desc = LanguageHelper.getReturnTripTip();
+        d.hasToolTip = false;
+        d.toolTipMsg = null;
+      }
+      if (this.tripType == TripType.checkOut) {
+        d.desc = LanguageHelper.getCheckOutTip();
         d.hasToolTip = false;
         d.toolTipMsg = null;
       }
@@ -215,11 +225,59 @@ export class SelectDateComponent implements OnInit, OnDestroy {
       });
     });
     if (!this.isMulti) {
+      if (
+        this.tripType == TripType.checkIn ||
+        this.tripType == TripType.checkOut
+      ) {
+        this.selectedDays[0].desc =
+          this.tripType == TripType.checkIn
+            ? LanguageHelper.getCheckInTip()
+            : LanguageHelper.getCheckOutTip();
+      }
+      if (
+        this.tripType == TripType.departureTrip ||
+        this.tripType == TripType.returnTrip
+      ) {
+        this.selectedDays[0].desc =
+          this.tripType == TripType.departureTrip
+            ? LanguageHelper.getDepartureTip()
+            : LanguageHelper.getReturnTripTip();
+      }
       setTimeout(() => {
         this.cancel();
       }, this.delayBackTime);
     } else {
       if (this.selectedDays.length === 2) {
+        if (
+          this.tripType == TripType.checkIn ||
+          this.tripType == TripType.checkOut
+        ) {
+          this.selectedDays[0].desc = LanguageHelper.getCheckInTip();
+          this.selectedDays[1].desc = LanguageHelper.getCheckOutTip();
+          this.selectedDays[1].hasToolTip = true;
+          this.selectedDays[1].toolTipMsg = LanguageHelper.getCheckInOutTotalDaysTip(
+            moment(this.selectedDays[1].date).date() -
+              moment(this.selectedDays[0].date).date()
+          );
+          if (
+            this.selectedDays[0].timeStamp == this.selectedDays[1].timeStamp
+          ) {
+            console.log("选择了同一天");
+            this.selectedDays[0].desc = LanguageHelper.getCheckInOutTip();
+          }
+        }
+        if (
+          this.tripType == TripType.departureTrip ||
+          this.tripType == TripType.returnTrip
+        ) {
+          this.selectedDays[0].desc = LanguageHelper.getDepartureTip();
+          this.selectedDays[1].desc = LanguageHelper.getReturnTripTip();
+          if (
+            this.selectedDays[0].timeStamp == this.selectedDays[1].timeStamp
+          ) {
+            this.selectedDays[0].desc = LanguageHelper.getRoundTripTip();
+          }
+        }
         setTimeout(() => {
           this.cancel();
         }, this.delayBackTime);

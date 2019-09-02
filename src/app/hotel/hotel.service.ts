@@ -77,20 +77,25 @@ export class HotelService {
   getBookInfoSource() {
     return this.bookInfoSource.asObservable();
   }
-  async openCalendar(checkInDate: DayModel) {
-    const goTrain = this.getBookInfos().find(
-      f => f.bookInfo && f.bookInfo.tripType == TripType.departureTrip
-    );
+  async openCalendar(
+    checkInDate: DayModel,
+    tripType: TripType
+  ): Promise<DayModel[]> {
+    if (!checkInDate) {
+      return [];
+    }
     const s = this.getSearchHotelModel();
     const m = await this.modalCtrl.create({
       component: SelectDateComponent,
       componentProps: {
         goArrivalTime: checkInDate.timeStamp,
-        tripType: s.tripType,
+        tripType: tripType,
         isMulti: true
       }
     });
     m.present();
+    const result = await m.onDidDismiss();
+    return result.data as DayModel[];
   }
 }
 export interface IHotelInfo {

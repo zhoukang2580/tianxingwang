@@ -239,8 +239,17 @@ export class LanguageHelper {
   static getSelectPassengersTip() {
     return "请添加乘客";
   }
+  static getCheckInOutTotalDaysTip(num: number) {
+    return `共${num - 1 <= 0 ? 1 : num - 1}晚`;
+  }
   static getSelectFlyBackDate() {
     return "请选择返程日期";
+  }
+  static getSelectCheckInDate() {
+    return "请选择入住日期";
+  }
+  static getSelectCheckOutDate() {
+    return "请选择离店日期";
   }
   static getSelectOtherFlyDayTip() {
     return "请选择其他日期";
@@ -328,6 +337,9 @@ export class LanguageHelper {
   }
   static getCheckOutTip(): string {
     return "离店";
+  }
+  static getCheckInOutTip(): string {
+    return "入住离店";
   }
   static getCheckInTip() {
     return "入住";
