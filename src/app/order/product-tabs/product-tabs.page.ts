@@ -311,6 +311,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     });
     await m.present();
     const result = await m.onDidDismiss();
+    console.log("条件查询", result.data);
     if (result && result.data) {
       const condition = { ...this.condition, ...result.data };
       this.doRefresh(condition);
@@ -326,7 +327,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       }
     });
   }
- doRefreshTasks() {
+  doRefreshTasks() {
     if (this.activeTab != ProductItemType.waitingApprovalTask) {
       this.isLoading = false;
       return;
@@ -530,7 +531,11 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     return false;
   }
   private transformSearchCondition(data: SearchTicketConditionModel) {
-    const model = new OrderModel();
+    let model = new OrderModel();
+    model = {
+      ...model,
+      ...data
+    };
     model.StartDate =
       data.fromDate ||
       moment()
@@ -558,6 +563,21 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     if (data.fromCity) {
       model.FromCityName = data.fromCity.CityName || data.fromCity.Nickname;
     }
+    if (data.fromCityName) {
+      model.OrderTrips = [
+        {
+          FromName: data.fromCityName
+        } as any
+      ];
+    }
+    if (data.toCityName) {
+      model.OrderTrips = [
+        {
+          ToName: data.toCityName
+        } as any
+      ];
+    }
+    console.log("transformSearchCondition", model);
     return model;
   }
   async ngOnInit() {
