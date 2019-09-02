@@ -13,9 +13,10 @@ import { AgentModule } from "./agent/agent.module";
 import { TmcModule } from "./tmc/tmc.module";
 import { CmsModule } from "./cms/cms.module";
 import { MessageModule } from "./message/message.module";
-import { TainRoutingModule } from "./train/tain-routing.module";
 import { OrderModule } from "./order/order.module";
 import { HrModule } from "./hr/hr.module";
+import { TrainModule } from "./train/train.module";
+import { HotelModule } from "./hotel/hotel.module";
 
 const routes: Routes = [
   {
@@ -28,7 +29,10 @@ const routes: Routes = [
       "./pages/function-test/function-test.module#FunctionTestPageModule"
   },
   { path: "scan", loadChildren: "./pages/scan/scan.module#ScanPageModule" },
-  { path: 'open-url', loadChildren: './pages/open-url/open-url.module#OpenUrlPageModule' },
+  {
+    path: "open-url",
+    loadChildren: "./pages/open-url/open-url.module#OpenUrlPageModule"
+  },
   {
     path: "",
     component: TabsPage,
@@ -37,8 +41,7 @@ const routes: Routes = [
   {
     loadChildren: "./page404/page404.module#Page404PageModule",
     matcher: AppHelper.matchDefaultRoute
-  },
-
+  }
 ];
 @NgModule({
   imports: [
@@ -55,7 +58,8 @@ const routes: Routes = [
     TmcModule,
     OrderModule,
     MessageModule,
-    TainRoutingModule,
+    TrainModule,
+    HotelModule,
     RouterModule.forRoot(routes, {
       preloadingStrategy: PreloadAllModules,
       enableTracing: !true,
