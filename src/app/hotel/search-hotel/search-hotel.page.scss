@@ -1,0 +1,17 @@
+.flight-date {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .date-week {
+    display: flex;
+    align-items: flex-end;
+    margin: 0 0.5rem;
+    h2 {
+      font-size: 1.2rem;
+    }
+    h6 {
+      margin-left: 0.5rem;
+      font-size: 0.7rem;
+    }
+  }
+}
