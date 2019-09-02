@@ -10,7 +10,7 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 import { NavController } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import { StaffService } from "src/app/hr/staff.service";
-import { map, catchError, finalize } from "rxjs/operators";
+import { map} from "rxjs/operators";
 import * as moment from "moment";
 import { TripType } from "src/app/tmc/models/TripType";
 @Component({

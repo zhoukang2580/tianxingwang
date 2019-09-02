@@ -240,7 +240,7 @@ export class LanguageHelper {
     return "请添加乘客";
   }
   static getCheckInOutTotalDaysTip(num: number) {
-    return `共${num - 1 <= 0 ? 1 : num - 1}晚`;
+    return `共${num}晚`;
   }
   static getSelectFlyBackDate() {
     return "请选择返程日期";
