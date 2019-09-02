@@ -326,7 +326,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       }
     });
   }
-  private doRefreshTasks() {
+ doRefreshTasks() {
     if (this.activeTab != ProductItemType.waitingApprovalTask) {
       this.isLoading = false;
       return;

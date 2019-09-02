@@ -18,9 +18,9 @@ export class FilterPassengersPolicyComponent implements OnInit {
     private staffService: StaffService
   ) {}
   async onSelect(ok?: string) {
-    if (this.selectedItem) {
+    if (this.selectedItem && this.selectedItem.id) {
       console.log("selectedItem", this.selectedItem, this.isOnlyMatchPolicy);
-      this.selectedItem.isOnlyFilterMatchedPolicy = this.isOnlyMatchPolicy;
+      this.selectedItem.isOnlyFilterMatchedPolicy = !!this.isOnlyMatchPolicy;
     }
     const t = await this.popoverCtrl
       .dismiss(ok ? this.selectedItem : null)

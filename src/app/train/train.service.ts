@@ -129,7 +129,7 @@ export class TrainService {
     this.setBookInfoSource(
       this.getBookInfos().map(it => {
         it.isFilteredPolicy = it.id == bookInfo.id;
-        it.isOnlyFilterMatchedPolicy = true;
+        it.isOnlyFilterMatchedPolicy = bookInfo.isOnlyFilterMatchedPolicy;
         return it;
       })
     );
@@ -159,6 +159,11 @@ export class TrainService {
             s.Policy = trainPolicy;
             return s;
           });
+          if (bookInfo.isOnlyFilterMatchedPolicy) {
+            it.Seats = it.Seats.filter(
+              s => !s.Policy || !s.Policy.Rules || !s.Policy.Rules.length
+            );
+          }
         }
         return it;
       });
