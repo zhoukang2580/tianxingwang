@@ -173,15 +173,17 @@ export class TrainListPage implements OnInit, OnDestroy {
       .pipe(map(infos => infos.length));
   }
   async schedules(train: TrainEntity) {
-    const trains = await this.trainService.scheduleAsync({
-      Date: moment(train.StartTime).format("YYYY-MM-DD"),
-      FromStation: train.FromStationCode,
-      ToStation: train.ToStationCode,
-      TrainNo: train.TrainNo,
-      TrainCode: train.TrainCode
-    });
-    if (trains && trains.length) {
-      train.Schedules = trains[0].Schedules;
+    if (!train.Schedules) {
+      const trains = await this.trainService.scheduleAsync({
+        Date: moment(train.StartTime).format("YYYY-MM-DD"),
+        FromStation: train.FromStationCode,
+        ToStation: train.ToStationCode,
+        TrainNo: train.TrainNo,
+        TrainCode: train.TrainCode
+      });
+      if (trains && trains.length) {
+        train.Schedules = trains[0].Schedules;
+      }
     }
     const m = await this.modalCtrl.create({
       component: TrainscheduleComponent,
