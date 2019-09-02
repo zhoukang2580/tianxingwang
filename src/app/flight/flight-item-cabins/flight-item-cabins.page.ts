@@ -23,7 +23,8 @@ import { SelectedFlightsegmentInfoComponent } from "../components/selected-fligh
 import { FilterPassengersPolicyComponent } from "../../tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
 import {
   CurrentViewtFlightSegment,
-  FlightPolicy
+  FlightPolicy,
+  IFlightSegmentInfo
 } from "../models/PassengerFlightInfo";
 import { of, Observable } from "rxjs";
 import { map, tap } from "rxjs/operators";
@@ -43,7 +44,7 @@ export class FlightItemCabinsPage implements OnInit {
   staff: StaffEntity;
   loading = true;
   showOpenBtn$ = of(0);
-  filteredPolicyPassenger$: Observable<PassengerBookInfo>;
+  filteredPolicyPassenger$: Observable<PassengerBookInfo<IFlightSegmentInfo>>;
   constructor(
     private flightService: FlightService,
     activatedRoute: ActivatedRoute,
@@ -99,7 +100,7 @@ export class FlightItemCabinsPage implements OnInit {
     });
     await popover.present();
     const d = await popover.onDidDismiss();
-    const data = d && (d.data as PassengerBookInfo);
+    const data = d && (d.data as PassengerBookInfo<IFlightSegmentInfo>);
     this.vmPolicyCabins = this.flightService.filterPassengerPolicyCabins(
       data,
       this.vmFlightSegment
@@ -158,7 +159,7 @@ export class FlightItemCabinsPage implements OnInit {
     this.showOpenBtn$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(
-        map(infos => infos && infos.filter(it => !!it.flightSegmentInfo).length)
+        map(infos => infos && infos.filter(it => !!it.bookInfo).length)
       );
     setTimeout(async () => {
       const bookInfos = this.flightService.getPassengerBookInfos();

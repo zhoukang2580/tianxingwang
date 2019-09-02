@@ -19,7 +19,7 @@ import { Storage } from "@ionic/storage";
 import * as jsPy from "js-pinyin";
 import { OrderModel } from "../order/models/OrderModel";
 import { OrderService } from "../order/order.service";
-import { PassengerFlightSegmentInfo } from "../flight/models/PassengerFlightInfo";
+import { IFlightSegmentInfo } from "../flight/models/PassengerFlightInfo";
 import { ITrainInfo } from "../train/train.service";
 import { InsuranceProductEntity } from "../insurance/models/InsuranceProductEntity";
 import { LanguageHelper } from "../languageHelper";
@@ -801,12 +801,6 @@ export class TravelInfoNumberEntity {
   Name: string;
   Code: string;
 }
-export class TravelInfoEntity {
-  FlightList: TravelInfoFlightEntity[];
-  TrainList: TravelInfoTrainEntity[];
-  HotelList: TravelInfoHotelEntity[];
-  NumberList: TravelInfoNumberEntity[];
-}
 export class TmcModel {
   Tmcs: any[];
   Staffs: Array<StaffEntity>;
@@ -1079,12 +1073,11 @@ export interface TmcEntity {
   WechatMiniSecret: string;
   // =============== 微信支付配置 end ======
 }
-export interface PassengerBookInfo {
+export interface PassengerBookInfo<T> {
   passenger: StaffEntity;
   credential: CredentialsEntity;
   isNotWhitelist?: boolean;
-  flightSegmentInfo?: PassengerFlightSegmentInfo;
-  trainInfo?: ITrainInfo;
+  bookInfo?: T;
   id?: string;
   isReplace?: boolean;
   isOnlyFilterMatchedPolicy?: boolean;

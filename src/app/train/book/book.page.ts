@@ -1,3 +1,4 @@
+import { ITrainInfo } from './../train.service';
 import { CalendarService } from "./../../tmc/calendar.service";
 import { TrainEntity } from "./../models/TrainEntity";
 import { InsuranceProductEntity } from "./../../insurance/models/InsuranceProductEntity";
@@ -77,7 +78,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
   @ViewChild(IonContent) cnt: IonContent;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
   initialBookDto: InitialBookDtoModel;
-  bookInfos: PassengerBookInfo[];
+  bookInfos: PassengerBookInfo<ITrainInfo>[];
   viewModel: IBookTrainViewModel = {} as any;
   error: any;
   identity: IdentityEntity;
@@ -116,11 +117,11 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     const infos = this.trainService.getBookInfos();
     bookDto.Passengers = [];
     infos.forEach(bookInfo => {
-      if (bookInfo.passenger && bookInfo.trainInfo) {
+      if (bookInfo.passenger && bookInfo.bookInfo) {
         const p = new PassengerDto();
         p.ClientId = bookInfo.id;
-        p.Train = bookInfo.trainInfo.trainEntity;
-        p.Train.BookSeatType = bookInfo.trainInfo.trainPolicy.SeatType;
+        p.Train = bookInfo.bookInfo.trainEntity;
+        p.Train.BookSeatType = bookInfo.bookInfo.trainPolicy.SeatType;
         p.Credentials = bookInfo.credential;
         const account = new AccountEntity();
         account.Id = bookInfo.passenger.AccountId;
@@ -165,7 +166,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       this.identity = await this.identityService.getIdentityAsync();
       this.bookInfos = this.trainService
         .getBookInfos()
-        .filter(it => !!it.trainInfo);
+        .filter(it => !!it.bookInfo);
       this.initialBookDto = await this.getInitializeBookDto();
       if (!this.initialBookDto) {
         this.error = "初始化失败";
@@ -290,9 +291,9 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.orderTravelPayType = this.tmc && this.tmc.FlightPayType;
         combineInfo.insuranceProducts = this.isShowInsurances(
-          bookInfo.trainInfo &&
-            bookInfo.trainInfo.trainEntity &&
-            bookInfo.trainInfo.trainEntity.StartTime
+          bookInfo.bookInfo &&
+            bookInfo.bookInfo.trainEntity &&
+            bookInfo.bookInfo.trainEntity.StartTime
         )
           ? insurances
           : [];
@@ -425,10 +426,10 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       let totalPrice = this.viewModel.combindInfos.reduce((arr, item) => {
         if (
           item.bookInfo &&
-          item.bookInfo.trainInfo &&
-          item.bookInfo.trainInfo.trainPolicy
+          item.bookInfo.bookInfo &&
+          item.bookInfo.bookInfo.trainPolicy
         ) {
-          const info = item.bookInfo.trainInfo;
+          const info = item.bookInfo.bookInfo;
           const seat = info.trainEntity.Seats.find(
             it =>
               it.SeatType == info.trainPolicy.SeatType &&
@@ -575,10 +576,10 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     if (
       Tmc.TrainApprovalType == TmcApprovalType.ExceedPolicyFree &&
       info.bookInfo &&
-      info.bookInfo.trainInfo &&
-      info.bookInfo.trainInfo.trainPolicy &&
-      info.bookInfo.trainInfo.trainPolicy.Rules &&
-      info.bookInfo.trainInfo.trainPolicy.Rules.length
+      info.bookInfo.bookInfo &&
+      info.bookInfo.bookInfo.trainPolicy &&
+      info.bookInfo.bookInfo.trainPolicy.Rules &&
+      info.bookInfo.bookInfo.trainPolicy.Rules.length
     ) {
       return true;
     }
@@ -586,10 +587,10 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       (!staff.Approvers || staff.Approvers.length == 0) &&
       Tmc.TrainApprovalType == TmcApprovalType.ExceedPolicyApprover &&
       info &&
-      info.bookInfo.trainInfo &&
-      info.bookInfo.trainInfo.trainPolicy &&
-      info.bookInfo.trainInfo.trainPolicy.Rules &&
-      info.bookInfo.trainInfo.trainPolicy.Rules.length
+      info.bookInfo.bookInfo &&
+      info.bookInfo.bookInfo.trainPolicy &&
+      info.bookInfo.bookInfo.trainPolicy.Rules &&
+      info.bookInfo.bookInfo.trainPolicy.Rules.length
     ) {
       return true;
     }
@@ -671,7 +672,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         showErrorMsg(LanguageHelper.Flight.getApproverTip(), combindInfo);
         return;
       }
-      const info = combindInfo.bookInfo && combindInfo.bookInfo.trainInfo;
+      const info = combindInfo.bookInfo && combindInfo.bookInfo.bookInfo;
       if (!info) {
         continue;
       }
@@ -774,10 +775,10 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       if (
         !combindInfo.isNotWhitelist &&
         combindInfo.bookInfo &&
-        combindInfo.bookInfo.trainInfo &&
-        combindInfo.bookInfo.trainInfo.trainPolicy &&
-        combindInfo.bookInfo.trainInfo.trainPolicy.Rules &&
-        combindInfo.bookInfo.trainInfo.trainPolicy.Rules.length
+        combindInfo.bookInfo.bookInfo &&
+        combindInfo.bookInfo.bookInfo.trainPolicy &&
+        combindInfo.bookInfo.bookInfo.trainPolicy.Rules &&
+        combindInfo.bookInfo.bookInfo.trainPolicy.Rules.length
       ) {
         // 只有白名单的才需要考虑差标
         if (!p.IllegalReason) {
@@ -836,13 +837,13 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       p.TravelPayType = combindInfo.orderTravelPayType;
       p.IsSkipApprove = combindInfo.isSkipApprove;
       if (
-        combindInfo.bookInfo.trainInfo &&
-        combindInfo.bookInfo.trainInfo.trainEntity &&
-        combindInfo.bookInfo.trainInfo.trainPolicy
+        combindInfo.bookInfo.bookInfo &&
+        combindInfo.bookInfo.bookInfo.trainEntity &&
+        combindInfo.bookInfo.bookInfo.trainPolicy
       ) {
-        p.Train = combindInfo.bookInfo.trainInfo.trainEntity;
+        p.Train = combindInfo.bookInfo.bookInfo.trainEntity;
         p.Train.BookSeatType =
-          combindInfo.bookInfo.trainInfo.trainPolicy.SeatType;
+          combindInfo.bookInfo.bookInfo.trainPolicy.SeatType;
       }
       if (combindInfo.bookInfo) {
         p.Policy = combindInfo.bookInfo.passenger.Policy;
@@ -1084,7 +1085,7 @@ export interface IPassengerBookInfo {
   id: string;
   appovalStaff: StaffEntity;
   credentialStaff: StaffEntity;
-  bookInfo: PassengerBookInfo;
+  bookInfo: PassengerBookInfo<ITrainInfo>;
   isOpenrules?: boolean;
   travelType: OrderTravelType;
   orderTravelPayType: OrderTravelPayType;

@@ -10,12 +10,12 @@ import { PassengerBookInfo } from '../../tmc.service';
   styleUrls: ["./selected-passengers.component.scss"]
 })
 export class SelectedPassengersComponent implements OnInit {
-  @Input() bookInfos$: Observable<PassengerBookInfo[]>;
-  @Output() public removeitem: EventEmitter<PassengerBookInfo>;
+  @Input() bookInfos$: Observable<PassengerBookInfo<any>[]>;
+  @Output() public removeitem: EventEmitter<PassengerBookInfo<any>>;
   constructor(private modalCtrl: ModalController) {
     this.removeitem = new EventEmitter();
   }
-  remove(info: PassengerBookInfo) {
+  remove(info: PassengerBookInfo<any>) {
     this.removeitem.emit(info);
   }
   ngOnInit() {}

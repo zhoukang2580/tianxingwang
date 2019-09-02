@@ -1,3 +1,4 @@
+import { IFlightSegmentInfo } from './../models/PassengerFlightInfo';
 import { PassengerBookInfo } from "./../../tmc/tmc.service";
 import { environment } from "src/environments/environment";
 import { ApiService } from "src/app/services/api/api.service";
@@ -129,7 +130,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   hasDataSource: Subject<boolean>;
   showAdvSearchPage$: Observable<boolean>;
   showSelectFlyDayPage$: Observable<boolean>;
-  filteredPolicyPassenger$: Observable<PassengerBookInfo>;
+  filteredPolicyPassenger$: Observable<PassengerBookInfo<IFlightSegmentInfo>>;
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -191,30 +192,30 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         map(infos => {
           const goInfo = infos.find(
             item =>
-              item.flightSegmentInfo &&
-              item.flightSegmentInfo.tripType == TripType.departureTrip
+              item.bookInfo &&
+              item.bookInfo.tripType == TripType.departureTrip
           );
           const backInfo = infos.find(
             item =>
-              item.flightSegmentInfo &&
-              item.flightSegmentInfo.tripType == TripType.returnTrip
+              item.bookInfo &&
+              item.bookInfo.tripType == TripType.returnTrip
           );
           return {
             goArrivalDateTime:
               goInfo &&
-              goInfo.flightSegmentInfo &&
-              goInfo.flightSegmentInfo.flightSegment
+              goInfo.bookInfo &&
+              goInfo.bookInfo.flightSegment
                 ? moment(
-                    goInfo.flightSegmentInfo.flightSegment.TakeoffTime
+                    goInfo.bookInfo.flightSegment.TakeoffTime
                   ).format("YYYY-MM-DD HH:mm")
                 : "",
             backTakeOffDateTime:
               backInfo &&
-              backInfo.flightSegmentInfo &&
-              backInfo.flightSegmentInfo.flightSegment &&
-              backInfo.flightSegmentInfo.tripType == TripType.returnTrip
+              backInfo.bookInfo &&
+              backInfo.bookInfo.flightSegment &&
+              backInfo.bookInfo.tripType == TripType.returnTrip
                 ? moment(
-                    backInfo.flightSegmentInfo.flightSegment.TakeoffTime
+                    backInfo.bookInfo.flightSegment.TakeoffTime
                   ).format("YYYY-MM-DD HH:mm")
                 : ""
           };
@@ -280,10 +281,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       const info = bookInfos.find(
         item =>
           item &&
-          item.flightSegmentInfo &&
-          item.flightSegmentInfo.tripType == TripType.departureTrip
+          item.bookInfo &&
+          item.bookInfo.tripType == TripType.departureTrip
       );
-      const goFlight = info && info.flightSegmentInfo.flightSegment;
+      const goFlight = info && info.bookInfo.flightSegment;
       if (goFlight) {
         let goDay = moment(goFlight.ArrivalTime);
         goDay = moment(goDay.format("YYYY-MM-DD"));
@@ -510,9 +511,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       .getPassengerBookInfos()
       .filter(
         item =>
-          !item.flightSegmentInfo ||
-          !item.flightSegmentInfo.flightSegment ||
-          !item.flightSegmentInfo.flightPolicy
+          !item.bookInfo ||
+          !item.bookInfo.flightSegment ||
+          !item.bookInfo.flightPolicy
       )
       .map(item => item.passenger)
       .reduce(
@@ -643,10 +644,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     });
     await popover.present();
     const d = await popover.onDidDismiss();
-    const data = d.data as PassengerBookInfo;
+    const data = d.data as PassengerBookInfo<IFlightSegmentInfo>;
     this.filterPassengerPolicyFlights(data);
   }
-  private async filterPassengerPolicyFlights(bookInfo: PassengerBookInfo) {
+  private async filterPassengerPolicyFlights(bookInfo: PassengerBookInfo<IFlightSegmentInfo>) {
     this.st = Date.now();
     this.vmFlights = this.flightService.filterPassengerPolicyFlights(
       bookInfo,

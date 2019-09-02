@@ -65,7 +65,10 @@ export class SelectDateComponent implements OnInit, OnDestroy {
   }
   checkYms() {
     if (this.yms && this.yms.length) {
-      if (this.tripType == TripType.returnTrip) {
+      if (
+        this.tripType == TripType.returnTrip ||
+        this.tripType == TripType.checkOut
+      ) {
         if (this.goArrivalTime) {
           const goDate = moment(this.goArrivalTime);
           if (this.yms.length) {
@@ -165,8 +168,19 @@ export class SelectDateComponent implements OnInit, OnDestroy {
           d.desc = LanguageHelper.getReturnTripTip();
           d.hasToolTip = false;
           d.toolTipMsg = null;
-        } else {
+        }
+        if (this.tripType == TripType.departureTrip) {
           d.desc = LanguageHelper.getDepartureTip();
+          d.hasToolTip = true;
+          d.toolTipMsg = LanguageHelper.getSelectFlyBackDate();
+        }
+        if (this.tripType == TripType.checkIn) {
+          d.desc = LanguageHelper.getCheckInTip();
+          d.hasToolTip = true;
+          d.toolTipMsg = LanguageHelper.getSelectFlyBackDate();
+        }
+        if (this.tripType == TripType.checkOut) {
+          d.desc = LanguageHelper.getCheckOutTip();
           d.hasToolTip = true;
           d.toolTipMsg = LanguageHelper.getSelectFlyBackDate();
         }

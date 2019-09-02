@@ -63,7 +63,7 @@ import { TripType } from "src/app/tmc/models/TripType";
 import { TaskType } from "src/app/workflow/models/TaskType";
 import { SearchApprovalComponent } from "src/app/tmc/components/search-approval/search-approval.component";
 import { SelectTravelNumberComponent } from "src/app/tmc/components/select-travel-number-popover/select-travel-number-popover.component";
-import { PassengerFlightSegmentInfo } from "../models/PassengerFlightInfo";
+import { IFlightSegmentInfo } from "../models/PassengerFlightInfo";
 import { ProductItemType } from "src/app/tmc/models/ProductItems";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { map, tap } from "rxjs/operators";
@@ -180,11 +180,11 @@ export class BookPage implements OnInit, AfterViewInit {
     const infos = this.flightService.getPassengerBookInfos();
     this.bookDto.Passengers = [];
     infos.forEach(item => {
-      if (item.passenger && item.flightSegmentInfo) {
+      if (item.passenger && item.bookInfo) {
         const p = new PassengerDto();
         p.ClientId = item.id;
-        p.FlightSegment = item.flightSegmentInfo.flightSegment;
-        p.FlightCabin = item.flightSegmentInfo.flightPolicy.Cabin;
+        p.FlightSegment = item.bookInfo.flightSegment;
+        p.FlightCabin = item.bookInfo.flightPolicy.Cabin;
         p.Credentials = item.credential;
         const account = new AccountEntity();
         account.Id = item.passenger.AccountId;
@@ -427,10 +427,10 @@ export class BookPage implements OnInit, AfterViewInit {
     if (this.vmCombindInfos) {
       let totalPrice = this.vmCombindInfos.reduce((arr, item) => {
         if (
-          item.modal.flightSegmentInfo &&
-          item.modal.flightSegmentInfo.flightPolicy
+          item.modal.bookInfo &&
+          item.modal.bookInfo.flightPolicy
         ) {
-          const info = item.modal.flightSegmentInfo;
+          const info = item.modal.bookInfo;
           arr = AppHelper.add(
             arr,
             +info.flightPolicy.Cabin.SalesPrice,
@@ -478,7 +478,7 @@ export class BookPage implements OnInit, AfterViewInit {
     const day = this.flydayService.generateDayModel(moment(s.TakeoffTime));
     return `${day.date} ${day.dayOfWeekName}`;
   }
-  getTripTip(info: PassengerFlightSegmentInfo) {
+  getTripTip(info: IFlightSegmentInfo) {
     if (!info) {
       return "";
     }
@@ -634,7 +634,7 @@ export class BookPage implements OnInit, AfterViewInit {
         showErrorMsg(LanguageHelper.Flight.getApproverTip(), combindInfo);
         return;
       }
-      const info = combindInfo.modal.flightSegmentInfo;
+      const info = combindInfo.modal.bookInfo;
       const p = new PassengerDto();
       p.ApprovalId =
         (this.isAllowSelectApprove(combindInfo) &&
@@ -733,10 +733,10 @@ export class BookPage implements OnInit, AfterViewInit {
         "";
       if (
         !combindInfo.modal.isNotWhitelist &&
-        combindInfo.modal.flightSegmentInfo &&
-        combindInfo.modal.flightSegmentInfo.flightPolicy &&
-        combindInfo.modal.flightSegmentInfo.flightPolicy.Rules &&
-        combindInfo.modal.flightSegmentInfo.flightPolicy.Rules.length
+        combindInfo.modal.bookInfo &&
+        combindInfo.modal.bookInfo.flightPolicy &&
+        combindInfo.modal.bookInfo.flightPolicy.Rules &&
+        combindInfo.modal.bookInfo.flightPolicy.Rules.length
       ) {
         // 只有白名单的才需要考虑差标
         if (!p.IllegalReason) {
@@ -794,8 +794,8 @@ export class BookPage implements OnInit, AfterViewInit {
       p.TravelType = combindInfo.travelType;
       p.TravelPayType = combindInfo.orderTravelPayType;
       p.IsSkipApprove = combindInfo.isSkipApprove;
-      p.FlightSegment = combindInfo.modal.flightSegmentInfo.flightSegment;
-      p.FlightCabin = combindInfo.modal.flightSegmentInfo.flightPolicy.Cabin;
+      p.FlightSegment = combindInfo.modal.bookInfo.flightSegment;
+      p.FlightCabin = combindInfo.modal.bookInfo.flightPolicy.Cabin;
       if (p.FlightCabin) {
         p.FlightCabin.InsuranceProducts = p.InsuranceProducts;
         p.InsuranceProducts = null;
@@ -909,7 +909,7 @@ export class BookPage implements OnInit, AfterViewInit {
           this.vmCombindInfos &&
           this.vmCombindInfos
             .map(item => {
-              const bookInfo = item.modal && item.modal.flightSegmentInfo;
+              const bookInfo = item.modal && item.modal.bookInfo;
               return {
                 from:
                   bookInfo &&
@@ -1032,9 +1032,9 @@ export class BookPage implements OnInit, AfterViewInit {
           travelType: OrderTravelType.Business, // 默认全部因公
           orderTravelPayType: this.tmc && this.tmc.FlightPayType,
           insuranceProducts: this.isShowInsurances(
-            item.flightSegmentInfo &&
-              item.flightSegmentInfo.flightSegment &&
-              item.flightSegmentInfo.flightSegment.TakeoffTime
+            item.bookInfo &&
+              item.bookInfo.flightSegment &&
+              item.bookInfo.flightSegment.TakeoffTime
           )
             ? insurances
             : [],
@@ -1141,10 +1141,10 @@ export class BookPage implements OnInit, AfterViewInit {
         .getPassengerBookInfos()
         .some(
           it =>
-            it.flightSegmentInfo &&
-            it.flightSegmentInfo.flightPolicy &&
-            it.flightSegmentInfo.flightPolicy.Rules &&
-            it.flightSegmentInfo.flightPolicy.Rules.length > 0
+            it.bookInfo &&
+            it.bookInfo.flightPolicy &&
+            it.bookInfo.flightPolicy.Rules &&
+            it.bookInfo.flightPolicy.Rules.length > 0
         )
     ) {
       return true;
@@ -1175,10 +1175,10 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     if (
       Tmc.FlightApprovalType == TmcApprovalType.ExceedPolicyFree &&
-      info.modal.flightSegmentInfo &&
-      info.modal.flightSegmentInfo.flightPolicy &&
-      info.modal.flightSegmentInfo.flightPolicy.Rules &&
-      info.modal.flightSegmentInfo.flightPolicy.Rules.length
+      info.modal.bookInfo &&
+      info.modal.bookInfo.flightPolicy &&
+      info.modal.bookInfo.flightPolicy.Rules &&
+      info.modal.bookInfo.flightPolicy.Rules.length
     ) {
       return true;
     }
@@ -1186,10 +1186,10 @@ export class BookPage implements OnInit, AfterViewInit {
       (!staff.Approvers || staff.Approvers.length == 0) &&
       Tmc.FlightApprovalType == TmcApprovalType.ExceedPolicyApprover &&
       info &&
-      info.modal.flightSegmentInfo &&
-      info.modal.flightSegmentInfo.flightPolicy &&
-      info.modal.flightSegmentInfo.flightPolicy.Rules &&
-      info.modal.flightSegmentInfo.flightPolicy.Rules.length
+      info.modal.bookInfo &&
+      info.modal.bookInfo.flightPolicy &&
+      info.modal.bookInfo.flightPolicy.Rules &&
+      info.modal.bookInfo.flightPolicy.Rules.length
     ) {
       return true;
     }
@@ -1211,8 +1211,8 @@ interface TmcOutNumberInfo {
 }
 
 interface ICombindInfo {
-  vmModal: PassengerBookInfo;
-  modal: PassengerBookInfo;
+  vmModal: PassengerBookInfo<IFlightSegmentInfo>;
+  modal: PassengerBookInfo<IFlightSegmentInfo>;
   passengerDto: PassengerDto;
   openrules: boolean; // 打开退改签规则
   vmCredential: CredentialsEntity;

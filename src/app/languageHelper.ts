@@ -326,6 +326,12 @@ export class LanguageHelper {
   static getReturnTripTip() {
     return "返程";
   }
+  static getCheckOutTip(): string {
+    return "离店";
+  }
+  static getCheckInTip() {
+    return "入住";
+  }
   static getRoundTripTip() {
     return "往返";
   }

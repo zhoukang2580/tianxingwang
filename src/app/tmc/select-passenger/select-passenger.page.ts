@@ -64,7 +64,7 @@ export const NOT_WHITE_LIST = "notwhitelist";
 export class SelectPassengerPage
   implements OnInit, CanComponentDeactivate, AfterViewInit, OnDestroy {
   vmKeyword: string;
-  removeitem: EventEmitter<PassengerBookInfo>;
+  removeitem: EventEmitter<PassengerBookInfo<any>>;
   isShowNewCredential = false;
   credentialsRemarks: { key: string; value: string }[];
   selectedCredentialId: string;
@@ -87,7 +87,7 @@ export class SelectPassengerPage
     key: string;
     value: string;
   }[];
-  bookInfos$: Observable<PassengerBookInfo[]>;
+  bookInfos$: Observable<PassengerBookInfo<any>[]>;
   requestCode: "issueNationality" | "identityNationality";
   @ViewChild(IonRefresher) ionrefresher: IonRefresher;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
@@ -412,7 +412,7 @@ export class SelectPassengerPage
       );
       return;
     }
-    const passengerBookInfo: PassengerBookInfo = {
+    const passengerBookInfo: PassengerBookInfo<any> = {
       credential: ({
         ...selectedCredential
       } as any) as CredentialsEntity,
@@ -437,8 +437,8 @@ export class SelectPassengerPage
     }
   }
   private checkNewCredentialId(
-    passengerBookInfo: PassengerBookInfo,
-    bookInfos: PassengerBookInfo[]
+    passengerBookInfo: PassengerBookInfo<any>,
+    bookInfos: PassengerBookInfo<any>[]
   ) {
     const action = () => {
       const one = bookInfos.find(
@@ -453,7 +453,9 @@ export class SelectPassengerPage
     };
     action();
   }
-  private async canAddMorePassenger(passengerBookInfos: PassengerBookInfo[]) {
+  private async canAddMorePassenger(
+    passengerBookInfos: PassengerBookInfo<any>[]
+  ) {
     if (
       !(await this.staffService.isSelfBookType()) &&
       passengerBookInfos.length >= 9
@@ -463,7 +465,9 @@ export class SelectPassengerPage
     }
     return true;
   }
-  private async onAddPassengerBookInfo(passengerBookInfo: PassengerBookInfo) {
+  private async onAddPassengerBookInfo(
+    passengerBookInfo: PassengerBookInfo<any>
+  ) {
     if (
       this.tmcService.getFlightHotelTrainType() == FlightHotelTrainType.Flight
     ) {

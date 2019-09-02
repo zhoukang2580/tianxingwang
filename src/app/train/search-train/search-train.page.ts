@@ -133,7 +133,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     this.isShowSelectedInfos$ = this.trainService
       .getBookInfoSource()
       .pipe(
-        map(infos => infos && infos.filter(it => !!it.trainInfo).length > 0)
+        map(infos => infos && infos.filter(it => !!it.bookInfo).length > 0)
       );
     this.canAddPassengers$ = from(this.staffService.isSelfBookType()).pipe(
       map(isSelf => {

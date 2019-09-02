@@ -1,3 +1,5 @@
+import { DayModel } from "src/app/tmc/models/DayModel";
+import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { FlightHotelTrainType } from "./../../tmc/tmc.service";
 import { TmcService } from "src/app/tmc/tmc.service";
@@ -9,7 +11,7 @@ import { NavController } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import { StaffService } from "src/app/hr/staff.service";
 import { map } from "rxjs/operators";
-
+import * as moment from "moment";
 @Component({
   selector: "app-search-hotel",
   templateUrl: "./search-hotel.page.html",
@@ -19,10 +21,22 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   isShowSelectedInfos$: Observable<boolean>;
   canAddPassengers$: Observable<boolean>;
   selectedPassengers$ = of(0);
-  totalFlyDays: number;
+  get totalFlyDays() {
+    if (this.checkInDate && this.checkOutDate) {
+      return (
+        moment(this.checkOutDate.date).date() -
+        moment(this.checkInDate.date).date()
+      );
+    }
+    return 0;
+  }
   disabled: boolean;
+  destinationCity: TrafficlineEntity;
+  checkInDate: DayModel;
+  checkOutDate: DayModel;
   private subscriptions: Subscription[] = [];
   private isLeavePage = false;
+
   constructor(
     private router: Router,
     private hotelService: HotelService,
@@ -52,13 +66,20 @@ export class SearchHotelPage implements OnInit, OnDestroy {
         return !isSelf;
       })
     );
+    this.initCheckInCheckOutDate();
+  }
+  private initCheckInCheckOutDate() {
+    this.checkInDate = this.calendarService.generateDayModel(moment());
+    this.checkOutDate = this.calendarService.generateDayModel(
+      moment().add(1, "days")
+    );
   }
   onShowSelectedBookInfos() {}
   onSelectPassenger() {
     this.isLeavePage = true;
     this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
   }
-  onSelecDate() {}
+  onSelecDate(is) {}
   onSearchHotel() {}
   back() {
     this.navCtrl.back();

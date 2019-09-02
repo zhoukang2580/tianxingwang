@@ -132,7 +132,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.isShowBookInfos$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(
-        map(infos => infos.filter(it => !!it.flightSegmentInfo).length)
+        map(infos => infos.filter(it => !!it.bookInfo).length)
       );
     this.selectDaySubscription = this.flydayService
       .getSelectedDays()
@@ -254,13 +254,13 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
       let goFlight: FlightSegmentEntity;
       const info = exists.find(
         it =>
-          it.flightSegmentInfo &&
-          it.flightSegmentInfo.tripType == TripType.departureTrip
+          it.bookInfo &&
+          it.bookInfo.tripType == TripType.departureTrip
       );
       if (info) {
         s.tripType = TripType.returnTrip;
         goFlight =
-          info.flightSegmentInfo && info.flightSegmentInfo.flightSegment;
+          info.bookInfo && info.bookInfo.flightSegment;
       } else {
         s.tripType = TripType.departureTrip;
       }

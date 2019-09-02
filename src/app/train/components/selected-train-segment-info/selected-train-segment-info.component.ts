@@ -21,7 +21,7 @@ import { Router } from "@angular/router";
   styleUrls: ["./selected-train-segment-info.component.scss"]
 })
 export class SelectedTrainSegmentInfoComponent implements OnInit {
-  bookInfos$: Observable<PassengerBookInfo[]>;
+  bookInfos$: Observable<PassengerBookInfo<ITrainInfo>[]>;
   showSelectReturnTrip$ = of(false);
   TripType = TripType;
   constructor(
@@ -57,14 +57,14 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
           (bookInfos.length &&
             bookInfos.find(
               it =>
-                it.trainInfo && it.trainInfo.tripType == TripType.departureTrip
+                it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
             )) &&
           bookInfos.length < 2
         );
       })
     );
   }
-  async onSelectReturnTrip(bookInfo: PassengerBookInfo) {
+  async onSelectReturnTrip(bookInfo: PassengerBookInfo<ITrainInfo>) {
     await this.trainService.selectReturnTrip();
   }
   nextStep() {
@@ -97,10 +97,10 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
         : LanguageHelper.getReturnTripTip()
     }]`;
   }
-  remove(bookInfo: PassengerBookInfo) {
+  remove(bookInfo: PassengerBookInfo<ITrainInfo>) {
     this.trainService.removeBookInfo(bookInfo);
   }
-  async reelect(bookInfo: PassengerBookInfo) {
+  async reelect(bookInfo: PassengerBookInfo<ITrainInfo>) {
     await this.trainService.reelectBookInfo(bookInfo);
     return true;
   }

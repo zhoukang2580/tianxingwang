@@ -10,8 +10,8 @@ import { map } from "rxjs/operators";
   styleUrls: ["./filter-passengers-policy-popover.component.scss"]
 })
 export class FilterPassengersPolicyComponent implements OnInit {
-  @Input() bookInfos$: Observable<PassengerBookInfo[]>;
-  selectedItem: PassengerBookInfo;
+  @Input() bookInfos$: Observable<PassengerBookInfo<any>[]>;
+  selectedItem: PassengerBookInfo<any>;
   isOnlyMatchPolicy: boolean;
   constructor(
     private popoverCtrl: PopoverController,
@@ -36,7 +36,7 @@ export class FilterPassengersPolicyComponent implements OnInit {
       this.bookInfos$ = this.bookInfos$.pipe(
         map(infos => {
           if (infos && infos.length) {
-            const arr: PassengerBookInfo[] = [];
+            const arr: PassengerBookInfo<any>[] = [];
             infos.forEach(info => {
               if (
                 !arr.find(

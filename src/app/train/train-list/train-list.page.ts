@@ -4,7 +4,11 @@ import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { TrainFilterComponent } from "./../components/train-filter/train-filter.component";
 import { TrainscheduleComponent } from "./../components/trainschedule/trainschedule.component";
 import { TrainSeatEntity } from "./../models/TrainSeatEntity";
-import { TrainPassengerModel, ICurrentViewtTainItem } from "./../train.service";
+import {
+  TrainPassengerModel,
+  ICurrentViewtTainItem,
+  ITrainInfo
+} from "./../train.service";
 import { StaffService, StaffEntity } from "./../../hr/staff.service";
 import { ApiService } from "./../../services/api/api.service";
 import { CalendarService } from "./../../tmc/calendar.service";
@@ -78,7 +82,7 @@ export class TrainListPage implements OnInit, OnDestroy {
   timeOrdM2N: boolean; // 时间从早到晚
   filterCondition: FilterTrainCondition;
   searchModalSubscription = Subscription.EMPTY;
-  curFilteredBookInfo$: Observable<PassengerBookInfo>;
+  curFilteredBookInfo$: Observable<PassengerBookInfo<ITrainInfo>>;
   constructor(
     private tmcService: TmcService,
     private trainService: TrainService,
@@ -105,19 +109,19 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.goRoundTripDateTime$ = this.trainService.getBookInfoSource().pipe(
       map(infos => {
         const go = infos.find(
-          it => it.trainInfo && it.trainInfo.tripType == TripType.departureTrip
+          it => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
         );
         let goArrivalDateTime = "";
         let backDateTime = "";
-        if (go && go.trainInfo.trainEntity) {
-          const d = moment(go.trainInfo.trainEntity.ArrivalTime);
+        if (go && go.bookInfo.trainEntity) {
+          const d = moment(go.bookInfo.trainEntity.ArrivalTime);
           goArrivalDateTime = d.format("YYYY-MM-DD HH:mm");
         }
         const back = infos.find(
-          it => it.trainInfo && it.trainInfo.tripType == TripType.returnTrip
+          it => it.bookInfo && it.bookInfo.tripType == TripType.returnTrip
         );
-        if (back && back.trainInfo.trainEntity) {
-          const d = moment(back.trainInfo.trainEntity.StartTime);
+        if (back && back.bookInfo.trainEntity) {
+          const d = moment(back.bookInfo.trainEntity.StartTime);
           backDateTime = d.format("YYYY-MM-DD HH:mm");
         }
         return {
@@ -308,9 +312,9 @@ export class TrainListPage implements OnInit, OnDestroy {
       .getBookInfos()
       .filter(
         item =>
-          !item.trainInfo ||
-          !item.trainInfo.trainEntity ||
-          !item.trainInfo.trainPolicy
+          !item.bookInfo ||
+          !item.bookInfo.trainEntity ||
+          !item.bookInfo.trainPolicy
       )
       .map(item => item.passenger)
       .reduce(
@@ -480,7 +484,7 @@ export class TrainListPage implements OnInit, OnDestroy {
     m.present();
   }
   private filterPassengerPolicyTrains(
-    bookInfo: PassengerBookInfo
+    bookInfo: PassengerBookInfo<ITrainInfo>
   ): TrainEntity[] {
     let result: TrainEntity[] = this.trains;
     result = this.trainService.filterPassengerPolicyTrains(
@@ -591,10 +595,10 @@ export class TrainListPage implements OnInit, OnDestroy {
       const info = bookInfos.find(
         item =>
           item &&
-          item.flightSegmentInfo &&
-          item.flightSegmentInfo.tripType == TripType.departureTrip
+          item.bookInfo &&
+          item.bookInfo.tripType == TripType.departureTrip
       );
-      const goTrain = info && info.trainInfo && info.trainInfo.trainEntity;
+      const goTrain = info && info.bookInfo && info.bookInfo.trainEntity;
       if (goTrain) {
         let goDay = moment(goTrain.ArrivalTime);
         goDay = moment(goDay.format("YYYY-MM-DD"));

@@ -8,7 +8,7 @@ export interface CurrentViewtFlightSegment {
   totalPolicyFlights: PassengerPolicyFlights[];
 }
 
-export interface PassengerFlightSegmentInfo {
+export interface IFlightSegmentInfo {
   flightSegment: FlightSegmentEntity;
   flightPolicy: FlightPolicy;
   tripType?: TripType;
