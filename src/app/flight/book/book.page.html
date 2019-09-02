@@ -46,6 +46,7 @@
         </ion-item>
       </ion-item-group>
       <ion-item-group *ngIf='combindInfo?.modal?.flightSegmentInfo as s'>
+        <ion-item-divider>预订航班信息:</ion-item-divider>
         <div style='width: 100%' class='detail'>
           <ion-item>
             <div class='date'>
@@ -114,6 +115,7 @@
         </div>
       </ion-item-group>
       <ion-item-group *ngIf='combindInfo?.modal?.flightSegmentInfo as s'>
+        <ion-item-divider>旅客信息:</ion-item-divider>
         <ion-item>
           <app-book-credential-comp [credential]='combindInfo.vmCredential'
             (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo.credentials'
