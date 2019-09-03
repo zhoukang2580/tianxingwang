@@ -41,9 +41,6 @@ export class LazyloadimageDirective
     }
     console.log("failover", this.Failover);
     await this.initializeDefaultImages();
-    // if (this.image) {
-    //   this.image.src = this.loadingImage;
-    // }
   }
   async initializeDefaultImages() {
     const config = await this.configService.get().catch(_ => null);
@@ -60,7 +57,7 @@ export class LazyloadimageDirective
     }
   }
   async ngAfterViewInit() {
-    await this.initializeDefaultImages();
+    console.time("afterviewinit");
     console.log("ngAfterViewInit", this.loadingImage);
     if (!this.image) {
       this.getImageEle();
@@ -68,6 +65,7 @@ export class LazyloadimageDirective
     if (this.image) {
       this.image.src = this.loadingImage || AppHelper.getDefaultLoadingImage();
     }
+    console.timeEnd("afterviewinit");
   }
   async ngOnChanges(changes: SimpleChanges) {
     if (
@@ -96,7 +94,13 @@ export class LazyloadimageDirective
     return this.image;
   }
   async setLoadImage() {
+    if (!this.image) {
+      this.getImageEle();
+    }
     if (this.image) {
+      if (!this.loadingImage) {
+        await this.initializeDefaultImages();
+      }
       this.image.src = this.loadingImage || AppHelper.getDefaultLoadingImage();
       const id = setTimeout(() => {
         if (
@@ -126,12 +130,11 @@ export class LazyloadimageDirective
   Initialize(container) {
     this.LoadImages(container || document);
   }
-  LoadImages(container) {
-    let allImages = container.getElementsByTagName("img");
-    allImages = allImages.length
-      ? allImages
-      : this.el.nativeElement.shadowRoot &&
-        this.el.nativeElement.shadowRoot.querySelectorAll("img");
+  LoadImages(container: HTMLElement) {
+    if (!container) {
+      return;
+    }
+    const allImages = container.getElementsByTagName("img");
     console.log("allImages", allImages);
     for (let i = 0; i < allImages.length; i++) {
       this.BindErrorEvent(allImages[i]);
@@ -166,7 +169,11 @@ export class LazyloadimageDirective
     const date = new Date();
     const node = this.GetNode(this.lazyloadImage);
     if (!node && this.Failover && this.Failover.DefaultUrl) {
-      img.src = this.Failover.DefaultUrl + "?v=" + date;
+      if (this.Failover && this.Failover.DefaultUrl) {
+        img.src = this.Failover.DefaultUrl + "?v=" + date;
+      } else {
+        img.src = this.loadingImage || AppHelper.getDefaultLoadingImage();
+      }
       return;
     }
     let isRecover = false;
@@ -187,7 +194,10 @@ export class LazyloadimageDirective
       if (this.Failover.DefaultUrl && this.Failover.DefaultUrl.length) {
         img.src = this.Failover.DefaultUrl + "?v=" + date;
       } else {
-        img.src = this.defaultImage;
+        img.src =
+          this.defaultImage ||
+          this.loadingImage ||
+          AppHelper.getDefaultLoadingImage();
       }
     }
   }
