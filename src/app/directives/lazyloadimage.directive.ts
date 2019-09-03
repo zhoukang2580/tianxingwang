@@ -101,7 +101,10 @@ export class LazyloadimageDirective
       if (!this.loadingImage) {
         await this.initializeDefaultImages();
       }
-      this.image.src = this.loadingImage || AppHelper.getDefaultLoadingImage();
+      if (this.loadingImage != AppHelper.getDefaultLoadingImage()) {
+        this.image.src =
+          this.loadingImage || AppHelper.getDefaultLoadingImage();
+      }
       const id = setTimeout(() => {
         if (
           this.image.src == this.loadingImage &&
@@ -111,9 +114,7 @@ export class LazyloadimageDirective
         }
       }, 1000);
       this.image.onload = () => {
-        if (this.image.src == this.loadingImage) {
-          clearTimeout(id);
-        }
+        clearTimeout(id);
       };
       this.image.onerror = () => {
         if (
@@ -127,10 +128,10 @@ export class LazyloadimageDirective
     }
   }
   ngOnDestroy() {}
-  Initialize(container) {
+  Initialize(container: HTMLElement) {
     this.LoadImages(container || document);
   }
-  LoadImages(container: HTMLElement) {
+  LoadImages(container: HTMLElement | Document) {
     if (!container) {
       return;
     }
