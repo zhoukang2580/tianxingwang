@@ -199,6 +199,9 @@ export class MapService {
   }
   private getCityNameByIp() {
     return new Promise<string>(s => {
+      if (!BMap) {
+        s(null);
+      }
       const myCity = new BMap.LocalCity();
       myCity.get((rs: { name: string }) => {
         if (rs && rs.name) {
