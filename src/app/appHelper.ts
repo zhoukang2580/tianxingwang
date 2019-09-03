@@ -156,7 +156,7 @@ export class AppHelper {
       let i = 3;
       let a = await this.alertController.getTop();
       while (a && --i > 0) {
-        await a.dismiss().catch(_ => 0);
+        await a.dismiss();
         a = await this.alertController.getTop();
       }
     } catch (e) {

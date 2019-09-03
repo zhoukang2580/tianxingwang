@@ -6,6 +6,8 @@ const BMap = window["BMap"];
 export interface MapPoint {
   lng: string;
   lat: string;
+  province?: string;
+  cityName?: string;
 }
 @Injectable({
   providedIn: "root"
@@ -15,11 +17,14 @@ export class MapService {
   constructor(private apiService: ApiService) {}
   private convertPoint(curPoint: MapPoint): Promise<MapPoint> {
     return new Promise((s, reject) => {
+      if (!curPoint) {
+        reject("要转换的point不存在");
+      }
       const convertor = new BMap.Convertor();
       const pointArr = [];
       pointArr.push(curPoint);
       convertor.translate(pointArr, 1, 5, data => {
-        if (data.status == 0) {
+        if (data && data.status == 0) {
           s(data.points[0]);
         } else {
           reject(data);
@@ -55,18 +60,43 @@ export class MapService {
     }
     return new Promise<MapPoint>((s, reject) => {
       const map = new BMap.Map("allmap");
-      let point: { lat: string; lng: string };
+      let point: MapPoint;
       const geolocation = new BMap.Geolocation();
+      setTimeout(() => {
+        reject("定位超时");
+      }, 10 * 1000);
       geolocation.getCurrentPosition(
-        r => {
+        (r: {
+          address: {
+            city: string; // "上海市";
+            city_code: string; // 0;
+            country: string; // "";
+            district: string; // "";
+            province: string; // "上海市";
+            street: string; // "";
+            street_number: string; // "";
+          };
+          point: MapPoint;
+        }) => {
           if (geolocation.getStatus() == window["BMAP_STATUS_SUCCESS"]) {
             // const mk = new BMap.Marker(r.point);
             // map.addOverlay(mk);
             // map.panTo(r.point);
             // alert("您的位置：" + r.point.lng + "," + r.point.lat);
             point = r.point;
-            console.log(MapService.TAG, "当前位置", r);
-            s({ lat: point.lat, lng: point.lng });
+            if (r && r.point) {
+              console.log(MapService.TAG, "当前位置", r);
+              s({
+                lat: point.lat,
+                lng: point.lng,
+                cityName: r.address && r.address.city,
+                province: r.address && r.address.province
+              });
+            } else {
+              reject(
+                status[geolocation.getStatus()] || geolocation.getStatus()
+              );
+            }
           } else {
             // alert("failed" + geolocation.getStatus());
             console.error(
@@ -87,79 +117,85 @@ export class MapService {
     const geoc = new BMap.Geocoder();
     return new Promise<AddressComponents>((s, reject) => {
       geoc.getLocation(p, rs => {
-        const addComp: AddressComponents = rs.addressComponents;
+        const addComp: AddressComponents = rs && rs.addressComponents;
         s(addComp);
       });
     });
   }
-  getCurrentCityPosition(): Promise<{
+  async getCurrentCityPosition(): Promise<{
     city: TrafficlineEntity;
     position: any;
   }> {
-    return new Promise(async s => {
-      let result: {
-        city: TrafficlineEntity;
-        position: any;
+    let result: {
+      city: TrafficlineEntity;
+      position: any;
+    };
+    let latLng: MapPoint = await this.getCurrentPosition().catch(_ => {
+      console.error("getCurrentPosition", _);
+      return void 0;
+    });
+    if (latLng) {
+      result = {
+        city: {
+          CityName: latLng.cityName,
+          CityCode: ""
+        } as any,
+        position: latLng
       };
-      let latLng: MapPoint = await this.getCurrentPosition().catch(_ => {
-        console.error("getCurrentPosition", _);
-        return void 0;
+    }
+    console.log("getCurrentPosition", latLng);
+    if (!latLng) {
+      latLng = await this.getCurrentPostionByNavigator().catch(_ => {
+        console.error("getCurrentPostionByNavigator", _);
+        return null;
       });
-      console.log("getCurrentCityPosition", latLng);
-      if (!latLng) {
-        latLng = await this.getCurrentPostionByNavigator().catch(_ => {
-          console.error("getCurrentPostionByNavigator", _);
-          return null;
-        });
-        console.log("getCurrentPostionByNavigator", latLng);
-      }
-      console.log("getCurrentCityPosition after", latLng);
-      if (latLng) {
-        const city = await this.getCityByMap(latLng).catch(_ => {
-          console.error("getCityByMap", _);
-          return null;
-        });
-        if (city) {
-          result = {
-            city: {
-              CityName: city.CityName,
-              CityCode: city.CityCode
-            } as any,
-            position: latLng
-          };
-        } else {
-          const cityFromMap = await this.getCityFromMap(latLng).catch(_ => {
-            console.error("getCityFromMap", _);
-            return null;
-          });
-          if (cityFromMap) {
-            result = {
-              city: {
-                CityCode: "",
-                CityName: cityFromMap.city
-              } as any,
-              position: cityFromMap
-            };
-          }
-        }
-        s(result);
+      console.log("getCurrentPostionByNavigator", latLng);
+    }
+    console.log("getCurrentCityPosition after", latLng);
+    if (latLng) {
+      const city = await this.getCityByMap(latLng).catch(_ => {
+        console.error("getCityByMap", _);
+        return null;
+      });
+      if (city) {
+        result = {
+          city: {
+            CityName: city.CityName,
+            CityCode: city.CityCode
+          } as any,
+          position: latLng
+        };
       } else {
-        const n = await this.getCityNameByIp().catch(_ => {
-          console.error("getCityNameByIp", _);
+        const cityFromMap = await this.getCityFromMap(latLng).catch(_ => {
+          console.error("getCityFromMap", _);
           return null;
         });
-        if (n) {
+        if (cityFromMap) {
           result = {
             city: {
               CityCode: "",
-              CityName: n
+              CityName: cityFromMap.city
             } as any,
-            position: ""
+            position: cityFromMap
           };
         }
-        s(result);
       }
-    });
+    } else {
+      const name = await this.getCityNameByIp().catch(_ => {
+        console.error("getCityNameByIp", _);
+        return null;
+      });
+      if (name) {
+        result = {
+          city: {
+            CityCode: "",
+            CityName: name
+          } as any,
+          position: ""
+        };
+      }
+    }
+    return result;
   }
   private getCityNameByIp() {
     return new Promise<string>(s => {
@@ -183,30 +219,34 @@ export class MapService {
     }>(req);
   }
   private getCurrentPostionByNavigator(): Promise<MapPoint> {
-    if (navigator && navigator.geolocation) {
+    if (
+      navigator &&
+      navigator.geolocation &&
+      navigator.geolocation.getCurrentPosition
+    ) {
       return new Promise<MapPoint>((s, reject) => {
         navigator.geolocation.getCurrentPosition(async position => {
-          if (position) {
+          if (position && position.coords) {
             const curPoint = new BMap.Point(
               position.coords.longitude,
               position.coords.latitude
             );
             const p: MapPoint = await this.convertPoint(curPoint).catch(e => {
-              console.log(e);
+              console.error("getCurrentPostionByNavigator", e);
               return null;
             });
             if (p) {
               s(p);
             } else {
-              reject("定位失败");
+              reject("Navigator 定位失败");
             }
           } else {
-            reject("定位失败");
+            reject("Navigator 定位失败");
           }
         });
       });
     }
-    return Promise.reject("手机不支持gps定位");
+    return Promise.reject("手机不支持 Navigator geolocation 定位");
   }
 }
 export interface AddressComponents {
