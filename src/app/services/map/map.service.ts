@@ -108,7 +108,7 @@ export class MapService {
         },
         { enableHighAccuracy: true }
       );
-    });
+    }).catch(_ => null);
   }
   private getCityFromMap(p: MapPoint): Promise<AddressComponents> {
     if (!BMap) {
@@ -131,9 +131,10 @@ export class MapService {
       position: any;
     };
     let latLng: MapPoint = await this.getCurrentPosition().catch(_ => {
-      console.error("getCurrentPosition", _);
+      console.error("getCurrentPosition error", _);
       return void 0;
     });
+    console.log("getCurrentPosition", latLng);
     if (latLng) {
       result = {
         city: {
@@ -143,7 +144,6 @@ export class MapService {
         position: latLng
       };
     }
-    console.log("getCurrentPosition", latLng);
     if (!latLng) {
       latLng = await this.getCurrentPostionByNavigator().catch(_ => {
         console.error("getCurrentPostionByNavigator", _);
@@ -225,25 +225,34 @@ export class MapService {
       navigator.geolocation.getCurrentPosition
     ) {
       return new Promise<MapPoint>((s, reject) => {
-        navigator.geolocation.getCurrentPosition(async position => {
-          if (position && position.coords) {
-            const curPoint = new BMap.Point(
-              position.coords.longitude,
-              position.coords.latitude
-            );
-            const p: MapPoint = await this.convertPoint(curPoint).catch(e => {
-              console.error("getCurrentPostionByNavigator", e);
-              return null;
-            });
-            if (p) {
-              s(p);
+        navigator.geolocation.getCurrentPosition(
+          async position => {
+            if (position && position.coords) {
+              const curPoint = new BMap.Point(
+                position.coords.longitude,
+                position.coords.latitude
+              );
+              const p: MapPoint = await this.convertPoint(curPoint).catch(e => {
+                console.error("getCurrentPostionByNavigator", e);
+                return null;
+              });
+              if (p) {
+                s(p);
+              } else {
+                reject("Navigator 定位失败");
+              }
             } else {
               reject("Navigator 定位失败");
             }
-          } else {
-            reject("Navigator 定位失败");
+          },
+          error => {
+            reject(error);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 3 * 1000
           }
-        });
+        );
       });
     }
     return Promise.reject("手机不支持 Navigator geolocation 定位");
