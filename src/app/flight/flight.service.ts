@@ -70,6 +70,7 @@ export class FlightService {
 
   private selectedCitySource: Subject<TrafficlineEntity>;
   private passengerBookInfos: PassengerBookInfo<IFlightSegmentInfo>[]; // 记录乘客及其研究选择的航班
+  private isInitializingSelfBookInfos = false;
   currentViewtFlightSegment: CurrentViewtFlightSegment;
 
   constructor(
@@ -99,9 +100,9 @@ export class FlightService {
     combineLatest([
       identityService.getIdentitySource(),
       this.getPassengerBookInfoSource()
-    ]).subscribe(([identity, infos]) => {
+    ]).subscribe(async ([identity, infos]) => {
       if (identity && identity.Id && identity.Ticket && infos.length == 0) {
-        this.initSelfBookTypeBookInfos();
+        await this.initSelfBookTypeBookInfos();
       }
     });
   }
@@ -118,6 +119,7 @@ export class FlightService {
     this.setSelectedCity(null);
     this.currentViewtFlightSegment = null;
     this.selfCredentials = null;
+    this.isInitializingSelfBookInfos = false;
   }
 
   getCurrentViewtFlightSegment() {
@@ -548,6 +550,10 @@ export class FlightService {
         .catch(_ => ({ [staff.AccountId]: [] }));
       this.selfCredentials = res[staff.AccountId];
     }
+    if (this.isInitializingSelfBookInfos) {
+      return;
+    }
+    this.isInitializingSelfBookInfos = true;
     // if (!this.selfCredentials || !this.selfCredentials.length) {
     //   const ok = await AppHelper.alert(
     //     LanguageHelper.getMaintainCredentialsTip(),

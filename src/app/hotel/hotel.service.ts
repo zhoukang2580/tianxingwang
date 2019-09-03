@@ -18,6 +18,7 @@ import { HotelPaymentType } from "./models/HotelPaymentType";
 import { RequestEntity } from "../services/api/Request.entity";
 import { Storage } from "@ionic/storage";
 import * as jsPy from "js-pinyin";
+import { filter } from "rxjs/operators";
 export class SearchHotelModel {
   checkinDate: string;
   checkoutDate: string;
@@ -40,6 +41,7 @@ export class HotelService {
   private selfCredentials: CredentialsEntity[];
   private localHotelCities: TrafficlineEntity[];
   private lastUpdateTime = 0;
+  private isInitializingSelfBookInfos = false;
   constructor(
     private apiService: ApiService,
     identityService: IdentityService,
@@ -56,7 +58,7 @@ export class HotelService {
       identityService.getIdentitySource()
     ]).subscribe(async ([bookInfos, identity]) => {
       if (identity && identity.Id && identity.Ticket) {
-        this.initSelfBookTypeBookInfos();
+        await this.initSelfBookTypeBookInfos();
       }
     });
     identityService.getIdentitySource().subscribe(res => {
@@ -65,8 +67,9 @@ export class HotelService {
   }
   private disposal() {
     this.setSearchHotelModel(new SearchHotelModel());
-    this.setBookInfoSource([]);
+    this.setBookInfos([]);
     this.selfCredentials = null;
+    this.isInitializingSelfBookInfos = false;
   }
   getCurPosition() {
     return this.mapService.getCurrentCityPosition();
@@ -84,42 +87,50 @@ export class HotelService {
     }
   }
   private async initSelfBookTypeBookInfos() {
+    const isSelf = await this.staffService.isSelfBookType();
     const infos = this.getBookInfos();
-    if (infos.length === 0 && (await this.staffService.isSelfBookType())) {
-      let IdCredential: CredentialsEntity;
-      if (await this.staffService.isSelfBookType()) {
-        const staff = await this.staffService.getStaff();
-        if (!this.selfCredentials || this.selfCredentials.length === 0) {
-          const res = await this.tmcService
-            .getPassengerCredentials([staff.AccountId])
-            .catch(_ => ({ [staff.AccountId]: [] }));
-          this.selfCredentials = res[staff.AccountId];
-        }
-        IdCredential =
-          this.selfCredentials &&
-          this.selfCredentials.find(c => c.Type == CredentialsType.IdCard);
-        const i: PassengerBookInfo<IHotelInfo> = {
-          passenger: staff,
-          credential:
-            IdCredential ||
-            (this.selfCredentials &&
-              this.selfCredentials.length &&
-              this.selfCredentials[1]) ||
-            new CredentialsEntity()
-        };
-        this.addBookInfo(i);
+    console.log("initSelfBookTypeBookInfos", infos);
+    if (infos.length === 0 && isSelf) {
+      if (this.isInitializingSelfBookInfos) {
+        return;
       }
+      this.isInitializingSelfBookInfos = true;
+      let IdCredential: CredentialsEntity;
+      const staff = await this.staffService.getStaff();
+      if (!this.selfCredentials || this.selfCredentials.length === 0) {
+        const res = await this.tmcService
+          .getPassengerCredentials([staff.AccountId])
+          .catch(_ => ({ [staff.AccountId]: [] }));
+        this.selfCredentials = res[staff.AccountId];
+      }
+      IdCredential =
+        this.selfCredentials &&
+        this.selfCredentials.find(c => c.Type == CredentialsType.IdCard);
+      const i: PassengerBookInfo<IHotelInfo> = {
+        passenger: staff,
+        credential:
+          IdCredential ||
+          (this.selfCredentials &&
+            this.selfCredentials.length &&
+            this.selfCredentials[0]) ||
+          new CredentialsEntity()
+      };
+      this.addBookInfo(i);
     }
   }
   addBookInfo(bookInfo: PassengerBookInfo<IHotelInfo>) {
+    console.log("hotel,addbookinfo", bookInfo);
     if (bookInfo) {
-      this.setBookInfoSource([...this.getBookInfos(), bookInfo]);
+      const bookInfos = this.getBookInfos();
+      bookInfos.push(bookInfo);
+      this.setBookInfos(bookInfos);
     }
   }
   getBookInfos() {
     return this.bookInfos || [];
   }
-  private setBookInfoSource(bookInfos: PassengerBookInfo<IHotelInfo>[]) {
+  private setBookInfos(bookInfos: PassengerBookInfo<IHotelInfo>[]) {
+    console.log("hotel set book infos ", bookInfos);
     this.bookInfos = bookInfos || [];
     this.bookInfoSource.next(this.bookInfos);
   }

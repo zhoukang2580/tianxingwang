@@ -69,6 +69,9 @@ export class SearchHotelPage implements OnInit, OnDestroy {
         return !isSelf;
       })
     );
+    this.selectedPassengers$ = this.hotelService
+      .getBookInfoSource()
+      .pipe(map(infos => infos.map(it => it.passenger).length));
     this.initCheckInCheckOutDate();
     const sub = this.hotelService.getSearchHotelModelSource().subscribe(m => {
       if (m && m.destinationCity) {

@@ -6,7 +6,8 @@ export const routes: Routes = [
     path: "search-hotel",
     loadChildren: "./search-hotel/search-hotel.module#SearchHotelPageModule"
   },
-  { path: 'hotel-city', loadChildren: './hotel-city/hotel-city.module#HotelCityPageModule' }
+  { path: 'hotel-city', loadChildren: './hotel-city/hotel-city.module#HotelCityPageModule' },
+  { path: 'hotel-list', loadChildren: './hotel-list/hotel-list.module#HotelListPageModule' }
 ];
 @NgModule({
   declarations: [],

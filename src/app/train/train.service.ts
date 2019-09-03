@@ -65,6 +65,7 @@ export class TrainService {
   private bookInfos: PassengerBookInfo<ITrainInfo>[] = [];
   private bookInfoSource: Subject<PassengerBookInfo<ITrainInfo>[]>;
   private searchModelSource: Subject<SearchTrainModel>;
+  private isInitializingSelfBookInfos = false;
   constructor(
     private apiService: ApiService,
     private storage: Storage,
@@ -83,7 +84,7 @@ export class TrainService {
       this.identityService.getIdentitySource()
     ]).subscribe(async ([infos, identity]) => {
       if (identity && identity.Ticket) {
-        this.initSelfBookTypeBookInfos();
+        await this.initSelfBookTypeBookInfos();
       }
     });
     identityService.getIdentitySource().subscribe(res => {
@@ -424,10 +425,15 @@ export class TrainService {
     this.setSearchTrainModel(new SearchTrainModel());
     this.setBookInfoSource([]);
     this.selfCredentials = null;
+    this.isInitializingSelfBookInfos = false;
   }
   private async initSelfBookTypeBookInfos() {
     const infos = this.getBookInfos();
     if (infos.length === 0 && (await this.staffService.isSelfBookType())) {
+      if (this.isInitializingSelfBookInfos) {
+        return;
+      }
+      this.isInitializingSelfBookInfos = true;
       let IdCredential: CredentialsEntity;
       if (await this.staffService.isSelfBookType()) {
         const staff = await this.staffService.getStaff();
@@ -446,7 +452,7 @@ export class TrainService {
             IdCredential ||
             (this.selfCredentials &&
               this.selfCredentials.length &&
-              this.selfCredentials[1]) ||
+              this.selfCredentials[0]) ||
             new CredentialsEntity()
         };
         this.addBookInfo(i);
