@@ -150,7 +150,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
               ? LanguageHelper.getCheckInTip()
               : LanguageHelper.getDepartureTip();
           d.hasToolTip = true;
-          d.toolTipMsg = LanguageHelper.getSelectFlyBackDate();
+          d.toolTipMsg = LanguageHelper.getSelectCheckOutDate();
           this.selectedDays = [d];
           // AppHelper.toast(LanguageHelper.getSelectFlyBackDate(), 1000, "top");
         } else {
