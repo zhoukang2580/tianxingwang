@@ -49,7 +49,7 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
   failed: boolean;
   slideValid: boolean = false;
   timeUsed: number;
-  timeout = 2 * 1000; // 2秒内没返回图片，就用默认图片
+  timeout = 1 * 1000; // 2秒内没返回图片，就用默认图片
   timeoutId: any;
   @Output() slideEvent: EventEmitter<boolean>;
   constructor(

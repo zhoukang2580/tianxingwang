@@ -10,7 +10,7 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 import { NavController } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import { StaffService } from "src/app/hr/staff.service";
-import { map} from "rxjs/operators";
+import { map } from "rxjs/operators";
 import * as moment from "moment";
 import { TripType } from "src/app/tmc/models/TripType";
 @Component({
@@ -35,11 +35,10 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   destinationCity: TrafficlineEntity;
   checkInDate: DayModel;
   checkOutDate: DayModel;
-  curPos: TrafficlineEntity;
+  curPos: TrafficlineEntity = {} as any;
   private subscriptions: Subscription[] = [];
   private isLeavePage = false;
   isPositioning = false;
-
   constructor(
     private router: Router,
     private hotelService: HotelService,
@@ -71,6 +70,18 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       })
     );
     this.initCheckInCheckOutDate();
+    const sub = this.hotelService.getSearchHotelModelSource().subscribe(m => {
+      if (m && m.destinationCity) {
+        this.curPos = m.destinationCity;
+        this.curPos.CityName = m.destinationCity.Name;
+        this.curPos.CityCode = m.destinationCity.Code;
+      }
+    });
+    this.subscriptions.push(sub);
+  }
+  onSearchCity() {
+    this.isLeavePage = true;
+    this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
   }
   async onPosition() {
     this.isPositioning = true;
@@ -78,6 +89,21 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     const curPos = await this.hotelService.getCurPosition().catch(_ => null);
     if (curPos) {
       this.curPos = curPos.city;
+      const cities = await this.hotelService.getHotelCityAsync();
+      if (cities) {
+        const c = cities.find(
+          it =>
+            it.CityCode == this.curPos.CityCode ||
+            this.curPos.CityName.includes(it.Name) ||
+            it.Name.includes(this.curPos.CityName)
+        );
+        if (c) {
+          this.hotelService.setSearchHotelModel({
+            ...this.hotelService.getSearchHotelModel(),
+            destinationCity: c
+          });
+        }
+      }
     } else {
       this.curPos = { CityName: "定位出错啦" } as any;
     }

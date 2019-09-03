@@ -26,13 +26,13 @@
     <ion-card-content>
       <div class='destination' lines='none' detail>
         <ion-label>目的地：</ion-label>
-        <ion-label>{{curPos?.CityName}}</ion-label>
+        <ion-label (click)='onSearchCity()'>{{curPos?.CityName}}</ion-label>
         <ion-button fill='clear' color='secondary' size='small' (click)='onPosition()' [disabled]='isPositioning'>
           <div class='pos' slot='end'>
             <ion-icon name="locate" mode='md' size='small' color='secondary'></ion-icon>
             我的位置
           </div>
-        </ion-button>
+        </ion-button> 
       </div>
       <section class="flight-date">
         <app-search-day-comp [day]='checkInDate' [isCheckIn]='true' (click)="onSelecDate(true)" [disabled]='false'>
@@ -44,7 +44,7 @@
       <ion-button margin-top style='width: 100%' (click)="onSearchHotel()"
         [disabled]='!destinationCity||((canAddPassengers$|async) && (selectedPassengers$|async)==0)' color="secondary"
         expand="block">
-        <ion-text *ngIf='!((canAddPassengers$|async) && (selectedPassengers$|async)==0)'>查询航班</ion-text>
+        <ion-text *ngIf='!((canAddPassengers$|async) && (selectedPassengers$|async)==0)'>查询酒店</ion-text>
         <ion-text *ngIf='(canAddPassengers$|async) && (selectedPassengers$|async)==0'>请添加乘客</ion-text>
       </ion-button>
     </ion-card-content>

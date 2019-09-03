@@ -1,4 +1,5 @@
-export class TrafficlineEntity {
+import { BaseEntity } from './BaseEntity';
+export class TrafficlineEntity extends BaseEntity {
   /// <summary>
   /// 标签，Train Airport AirportCity
   /// </summary>
