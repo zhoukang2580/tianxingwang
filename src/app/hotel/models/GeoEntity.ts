@@ -36,7 +36,7 @@ export class GeoEntity extends BaseVariablesEntity {
   /// <summary>
   /// 类型
   /// </summary>
-  public Type: GeoType;
+  Type: GeoType;
 
   Map: string;
 
@@ -61,7 +61,7 @@ export class GeoEntity extends BaseVariablesEntity {
   /// <summary>
   ///
   /// </summary>
-  public Initial: string;
+  Initial: string;
   /// <summary>
   ///
   /// </summary>
@@ -72,11 +72,11 @@ export class GeoEntity extends BaseVariablesEntity {
   /// <summary>
   /// 图形路径
   /// </summary>
-  public GraphicsPath: GraphicsPath;
+  GraphicsPath: GraphicsPath;
   /// <summary>
   /// 区域
   /// </summary>
-  public Region: Region;
+  Region: Region;
 }
 export enum GeoType {
   /// <summary>

@@ -19,6 +19,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
     private modalCtrl: ModalController
   ) {}
   yms: AvailableDate[];
+  title: string;
   private _selectedDays: DayModel[] = [];
   private timeoutId: any;
   private tripType: TripType;

@@ -1,2 +1,2 @@
-<app-calendar (back)='cancel()' (daySelected)='onDaySelected($event)' [calendars]='yms' 
+<app-calendar (back)='cancel()' [title]='title' (daySelected)='onDaySelected($event)' [calendars]='yms'
     (yearChange)='onYearChange($event)' (monthChange)='onMonthChange($event)'></app-calendar>

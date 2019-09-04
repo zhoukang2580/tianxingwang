@@ -1,8 +1,8 @@
+import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { HotelPaymentType } from "./HotelPaymentType";
+import { TmcEntity } from "src/app/tmc/tmc.service";
 
-export class HotelQueryModel {
-  PageSize: number;
-  PageIndex: number;
+export class HotelQueryEntity {
   /// <summary>
   /// 价格类型
   /// </summary>
@@ -10,7 +10,7 @@ export class HotelQueryModel {
   /// <summary>
   /// 语言
   /// </summary>
-  Langs?: string[];
+  Langs: string[];
   /// <summary>
   /// 开始日期
   /// </summary>
@@ -22,7 +22,9 @@ export class HotelQueryModel {
   /// <summary>
   /// 城市代码
   /// </summary>
+  City: TrafficlineEntity;
   CityCode: string;
+  CityName: string;
   /// <summary>
   /// 关键字
   /// </summary>
@@ -55,11 +57,11 @@ export class HotelQueryModel {
   /// <summary>
   /// 星级
   /// </summary>
-  Stars: number[];
+  Stars: string[];
   /// <summary>
   /// 类别
   /// </summary>
-  Categories: number[];
+  Categories: string[];
   /// <summary>
   /// 品牌
   /// </summary>
@@ -92,6 +94,17 @@ export class HotelQueryModel {
   /// 表单
   /// </summary>
   Forms: { [key: string]: string };
+  PageIndex: number;
+  /// <summary>
+  /// 分页大小
+  /// </summary>
+  PageSize: number;
+  /// <summary>
+  ///
+  /// </summary>
+  Tag: string;
+
+  Tmc: TmcEntity;
   /// <summary>
   /// 酒店编号
   /// </summary>

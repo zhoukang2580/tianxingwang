@@ -18,10 +18,17 @@ import { HotelPaymentType } from "./models/HotelPaymentType";
 import { RequestEntity } from "../services/api/Request.entity";
 import { Storage } from "@ionic/storage";
 import * as jsPy from "js-pinyin";
+import * as moment from "moment";
 import { filter } from "rxjs/operators";
+import { HotelQueryEntity } from "./models/HotelQueryEntity";
+import { HotelResultEntity } from "./models/HotelResultEntity";
+import { HotelModel } from "./models/HotelModel";
+import { HotelPassengerModel } from "./models/HotelPassengerModel";
+import { CalendarService } from "../tmc/calendar.service";
+import { ConditionModel } from './models/ConditionModel';
 export class SearchHotelModel {
-  checkinDate: string;
-  checkoutDate: string;
+  checkInDate: string;
+  checkOutDate: string;
   tripType: TripType;
   isRefreshData?: boolean;
   destinationCity: TrafficlineEntity;
@@ -49,10 +56,12 @@ export class HotelService {
     private modalCtrl: ModalController,
     private mapService: MapService,
     private tmcService: TmcService,
-    private storage: Storage
+    private storage: Storage,
+    private calendarService: CalendarService
   ) {
     this.bookInfoSource = new BehaviorSubject([]);
     this.searchHotelModelSource = new BehaviorSubject(null);
+    this.initSearchHotelModel();
     combineLatest([
       this.getBookInfoSource(),
       identityService.getIdentitySource()
@@ -66,10 +75,22 @@ export class HotelService {
     });
   }
   private disposal() {
-    this.setSearchHotelModel(new SearchHotelModel());
+    this.initSearchHotelModel();
     this.setBookInfos([]);
     this.selfCredentials = null;
     this.isInitializingSelfBookInfos = false;
+  }
+  private initSearchHotelModel() {
+    const m = new SearchHotelModel();
+    m.checkInDate = moment().format("YYYY-MM-DD");
+    m.checkOutDate = moment()
+      .add(1, "days")
+      .format("YYYY-MM-DD");
+    m.destinationCity = new TrafficlineEntity();
+    m.destinationCity.CityName = "上海";
+    m.destinationCity.Name = "上海";
+    m.destinationCity.Code = m.destinationCity.CityCode = "3101";
+    this.setSearchHotelModel(m);
   }
   getCurPosition() {
     return this.mapService.getCurrentCityPosition();
@@ -78,7 +99,7 @@ export class HotelService {
     return this.searchHotelModelSource.asObservable();
   }
   getSearchHotelModel() {
-    return this.searchHotelModel || new SearchHotelModel();
+    return this.searchHotelModel;
   }
   setSearchHotelModel(m: SearchHotelModel) {
     if (m) {
@@ -138,23 +159,34 @@ export class HotelService {
     return this.bookInfoSource.asObservable();
   }
   async openCalendar(
-    checkInDate: DayModel,
-    tripType: TripType
+    checkInDate?: DayModel,
+    tripType: TripType = TripType.checkIn,
+    title = "请选择入离店日期"
   ): Promise<DayModel[]> {
     if (!checkInDate) {
-      return [];
+      checkInDate = this.calendarService.generateDayModel(moment());
     }
-    const s = this.getSearchHotelModel();
     const m = await this.modalCtrl.create({
       component: SelectDateComponent,
       componentProps: {
         goArrivalTime: checkInDate.timeStamp,
         tripType: tripType,
-        isMulti: true
+        isMulti: true,
+        title
       }
     });
     m.present();
     const result = await m.onDidDismiss();
+    if (result.data) {
+      const data = result.data as DayModel[];
+      if (data.length == 2) {
+        this.setSearchHotelModel({
+          ...this.getSearchHotelModel(),
+          checkInDate: data[0].date,
+          checkOutDate: data[1].date
+        });
+      }
+    }
     return result.data as DayModel[];
   }
   async getHotelCityAsync(forceRefresh = false) {
@@ -197,6 +229,12 @@ export class HotelService {
     }
     return this.localHotelCities;
   }
+   getConditions() {
+    const req = new RequestEntity();
+    req.Method = `TmcApiHotelUrl-Condition-Gets`;
+    req.IsShowLoading = true;
+    return this.apiService.getPromiseData<ConditionModel>(req);
+  }
   private getFirstLetter(name: string) {
     const pyFl = `${jsPy.getFullChars(name)}`.charAt(0);
     return pyFl && pyFl.toUpperCase();
@@ -210,6 +248,25 @@ export class HotelService {
   private async getHotelCitiesFromLocalCache(): Promise<LocalHotelCityCache> {
     const local = await this.storage.get(`LocalHotelCityCache`);
     return local;
+  }
+  getHotelDetailAsync(searchModel: SearchHotelModel) {
+    const query: HotelQueryEntity = new HotelQueryEntity();
+    const req = new RequestEntity();
+    req.Method = `TmcApiHotelUrl-Home-Detail`;
+    req.Data = {};
+    req.IsShowLoading = true;
+    return this.apiService.getPromiseData<HotelResultEntity>(req);
+  }
+  getHotelPolicyAsync(hotels: HotelModel[], passengerIds: string[]) {
+    const req = new RequestEntity();
+    req.Method = `TmcApiHotelUrl-Home-Detail`;
+    req.Version = "1.0";
+    req.Data = {
+      data: JSON.stringify(hotels),
+      passengers: passengerIds.join(",")
+    };
+    req.IsShowLoading = true;
+    return this.apiService.getPromiseData<HotelPassengerModel[]>(req);
   }
   private loadHotelCitiesFromServer(lastUpdateTime: number) {
     const req = new RequestEntity();

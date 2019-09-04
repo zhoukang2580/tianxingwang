@@ -71,13 +71,14 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     );
     this.selectedPassengers$ = this.hotelService
       .getBookInfoSource()
-      .pipe(map(infos => infos.map(it => it.passenger).length));
+      .pipe(map(infos => infos.length));
     this.initCheckInCheckOutDate();
     const sub = this.hotelService.getSearchHotelModelSource().subscribe(m => {
       if (m && m.destinationCity) {
         this.curPos = m.destinationCity;
         this.curPos.CityName = m.destinationCity.Name;
         this.curPos.CityCode = m.destinationCity.Code;
+        this.destinationCity = m.destinationCity;
       }
     });
     this.subscriptions.push(sub);
@@ -133,7 +134,14 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       this.checkOutDate = days[1];
     }
   }
-  onSearchHotel() {}
+  onSearchHotel() {
+    this.hotelService.setSearchHotelModel({
+      ...this.hotelService.getSearchHotelModel(),
+      checkInDate: this.checkInDate.date,
+      checkOutDate: this.checkOutDate.date,
+      destinationCity: this.destinationCity
+    });
+  }
   back() {
     this.navCtrl.back();
   }

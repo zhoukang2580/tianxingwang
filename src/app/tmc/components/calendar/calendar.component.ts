@@ -18,6 +18,7 @@ import { DateSelectWheelPopoverComponent } from "../date-select-wheel-popover/da
 })
 export class CalendarComponent implements OnInit, AfterViewInit {
   weeks: string[];
+  @Input() title: string;
   @Input() calendars: AvailableDate[];
   @Output() yearChange: EventEmitter<any>;
   @Output() monthChange: EventEmitter<any>;

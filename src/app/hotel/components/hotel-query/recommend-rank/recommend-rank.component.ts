@@ -1,0 +1,63 @@
+import { Component, OnInit, Output, EventEmitter } from "@angular/core";
+interface IItem {
+  id: number;
+  label: string;
+  orderBy: "Asc" | "Desc";
+  isSelected?: boolean;
+  value: string;
+}
+@Component({
+  selector: "app-recommend-rank",
+  templateUrl: "./recommend-rank.component.html",
+  styleUrls: ["./recommend-rank.component.scss"]
+})
+export class RecommendRankComponent implements OnInit {
+  @Output() rank: EventEmitter<any>;
+  ranks: IItem[];
+  selectedId: number;
+  constructor() {
+    this.rank = new EventEmitter();
+  }
+  onRank() {
+    this.rank.emit();
+  }
+  ngOnInit() {
+    this.ranks = [];
+    this.ranks.push({
+      id: 0,
+      label: "默认排序",
+      value: "Category",
+      orderBy: "Desc",
+      isSelected: true
+    });
+    this.ranks.push({
+      id: 1,
+      label: "口碑高-低",
+      value: "Grade",
+      orderBy: "Desc"
+    });
+    this.ranks.push({
+      id: 2,
+      label: "价格低-高",
+      value: "Price",
+      orderBy: "Asc"
+    });
+    this.ranks.push({
+      id: 3,
+      label: "价格高-低",
+      value: "Price",
+      orderBy: "Desc"
+    });
+    this.selectedId = this.ranks[0].id;
+  }
+  onSelect(r: IItem) {
+    this.ranks.forEach(it => {
+      it.isSelected = it.id == r.id;
+    });
+    const one = this.ranks.find(it => it.isSelected);
+    console.log(one);
+    if (one) {
+      this.rank.emit(one);
+    }
+  }
+}

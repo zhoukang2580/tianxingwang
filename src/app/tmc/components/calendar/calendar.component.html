@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-button fill="clear" color='secondary' (click)="cancel()">取消</ion-button>
     </ion-buttons>
-    <ion-title text-center>日历</ion-title>
+    <ion-title text-center>{{title||"日历"}}</ion-title>
   </ion-toolbar>
   <ion-grid class='weeks'>
     <ion-row>
@@ -14,7 +14,7 @@
 <ion-content>
   <ion-grid *ngFor='let ym of calendars' class='calendar' [attr.ymonth]='getMonth(ym.yearMonth)'>
     <ion-row style="margin-top: 1em;padding-bottom: 1em;">
-      <ion-col class='ym' (click)='showDateSelectWheel()'> 
+      <ion-col class='ym' (click)='showDateSelectWheel()'>
         <div class='ym'>{{ym.yearMonth?.substr(0,4)}}年{{getMonth(ym.yearMonth)}}月
           <ion-icon name="arrow-dropdown" mode='md'></ion-icon>
         </div>
