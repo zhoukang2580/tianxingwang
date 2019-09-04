@@ -1,9 +1,10 @@
 .tab {
   position: relative;
   padding: 0.5em 1em;
-  &.has-item-filtered::before {
+  &.has-item-filtered::after {
     position: absolute;
-    left: 0;
+    right: 2em;
+    background-color: var(--ion-color-secondary);
     top: 0.5em;
     display: block;
     content: "";
