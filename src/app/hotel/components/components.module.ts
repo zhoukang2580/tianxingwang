@@ -10,7 +10,8 @@ import { HotelGeoComponent } from "./hotel-query/hotel-geo/hotel-geo.component";
 import { HotelThemeComponent } from "./hotel-query/hotel-theme/hotel-theme.component";
 import { HotelBrandsComponent } from "./hotel-query/hotel-brands/hotel-brands.component";
 import { QueryTabComponent } from "./hotel-query/query-tab/query-tab.component";
-import { RecommendRankComponent } from './hotel-query/recommend-rank/recommend-rank.component';
+import { RecommendRankComponent } from "./hotel-query/recommend-rank/recommend-rank.component";
+import { HotelFilterComponent } from "./hotel-query/hotel-filter/hotel-filter.component";
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { RecommendRankComponent } from './hotel-query/recommend-rank/recommend-r
     HotelBrandsComponent,
     HotelQueryComponent,
     QueryTabComponent,
-    RecommendRankComponent
+    RecommendRankComponent,
+    HotelFilterComponent
   ],
   imports: [CommonModule, IonicModule, FormsModule],
   exports: [
@@ -34,6 +36,7 @@ import { RecommendRankComponent } from './hotel-query/recommend-rank/recommend-r
     HotelBrandsComponent,
     HotelQueryComponent,
     QueryTabComponent,
+    HotelFilterComponent,
     RecommendRankComponent
   ]
 })

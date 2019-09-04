@@ -1,17 +1,19 @@
 <ion-grid>
   <ion-row>
     <ion-col size='{{10/3}}'>
-      <app-query-tab [label]='"推荐排序"' (active)='onShowRank($event)'></app-query-tab>
+      <app-query-tab [label]='"推荐排序"' (active)='onActiveTab($event)'></app-query-tab>
     </ion-col>
     <ion-col size='{{10/3}}'>
-      <app-query-tab [label]='"星级价格"'></app-query-tab>
+      <app-query-tab [label]='"星级价格"' (active)='onActiveTab($event)'></app-query-tab>
     </ion-col>
     <ion-col size='{{10/3}}'>
-      <app-query-tab [label]='"位置区域"'></app-query-tab>
+      <app-query-tab [label]='"位置区域"' (active)='onActiveTab($event)'></app-query-tab>
     </ion-col>
     <ion-col size='2'>
-      <app-query-tab [label]='"筛选"'></app-query-tab>
+      <app-query-tab [label]='"筛选"' (active)='onActiveTab($event)'></app-query-tab>
     </ion-col>
   </ion-row>
 </ion-grid>
-<app-recommend-rank (rank)='onRank($event)' @flyInOut *ngIf='isShowRank'></app-recommend-rank>
+<app-recommend-rank (rank)='onRank($event)' *ngIf='activeTab?.label=="推荐排序"'></app-recommend-rank>
+<app-hotel-filter [conditionModel]='conditions' *ngIf='activeTab?.label=="筛选"' (filter)='onFilter($event)'>
+</app-hotel-filter>

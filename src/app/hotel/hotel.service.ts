@@ -25,7 +25,7 @@ import { HotelResultEntity } from "./models/HotelResultEntity";
 import { HotelModel } from "./models/HotelModel";
 import { HotelPassengerModel } from "./models/HotelPassengerModel";
 import { CalendarService } from "../tmc/calendar.service";
-import { ConditionModel } from './models/ConditionModel';
+import { ConditionModel } from "./models/ConditionModel";
 export class SearchHotelModel {
   checkInDate: string;
   checkOutDate: string;
@@ -229,9 +229,16 @@ export class HotelService {
     }
     return this.localHotelCities;
   }
-   getConditions() {
+  getConditions(cityCode?: string) {
     const req = new RequestEntity();
+    cityCode =
+      cityCode ||
+      (this.getSearchHotelModel().destinationCity &&
+        this.getSearchHotelModel().destinationCity.Code);
     req.Method = `TmcApiHotelUrl-Condition-Gets`;
+    req.Data = {
+      cityCode
+    };
     req.IsShowLoading = true;
     return this.apiService.getPromiseData<ConditionModel>(req);
   }

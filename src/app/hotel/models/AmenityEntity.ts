@@ -38,4 +38,6 @@ export class AmenityEntity extends BaseVariablesEntity {
   ///
   /// </summary>
   HotelAmenities: HotelAmenityEntity[];
+  IsSelected: boolean;
+
 }

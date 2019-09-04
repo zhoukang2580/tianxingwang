@@ -1,5 +1,5 @@
 import { Component, OnInit, Output, EventEmitter } from "@angular/core";
-interface IItem {
+export interface IRankItem {
   id: number;
   label: string;
   orderBy: "Asc" | "Desc";
@@ -13,7 +13,7 @@ interface IItem {
 })
 export class RecommendRankComponent implements OnInit {
   @Output() rank: EventEmitter<any>;
-  ranks: IItem[];
+  ranks: IRankItem[];
   selectedId: number;
   constructor() {
     this.rank = new EventEmitter();
@@ -50,7 +50,7 @@ export class RecommendRankComponent implements OnInit {
     });
     this.selectedId = this.ranks[0].id;
   }
-  onSelect(r: IItem) {
+  onSelect(r: IRankItem) {
     this.ranks.forEach(it => {
       it.isSelected = it.id == r.id;
     });

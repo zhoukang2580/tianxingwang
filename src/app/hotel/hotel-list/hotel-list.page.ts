@@ -1,3 +1,4 @@
+import { HotelQueryComponent } from "./../components/hotel-query/hotel-query.component";
 import { HotelQueryEntity } from "./../models/HotelQueryEntity";
 import { Router } from "@angular/router";
 import { HotelService } from "./../hotel.service";
@@ -15,7 +16,8 @@ import {
   NavController,
   IonContent,
   IonHeader,
-  IonSearchbar
+  IonSearchbar,
+  IonRefresher
 } from "@ionic/angular";
 import { Subscription } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
@@ -26,6 +28,7 @@ import {
   transition,
   animate
 } from "@angular/animations";
+import { QueryTabComponent } from '../components/hotel-query/query-tab/query-tab.component';
 
 @Component({
   selector: "app-hotel-list",
@@ -33,14 +36,16 @@ import {
   styleUrls: ["./hotel-list.page.scss"]
 })
 export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild(IonContent) content: IonContent;
-  @ViewChildren(IonSearchbar) searchbarEls: QueryList<IonSearchbar>;
   private subscriptions: Subscription[] = [];
+  @ViewChild(IonRefresher) refresher: IonRefresher;
+  @ViewChild(IonContent) content: IonContent;
+  @ViewChild(HotelQueryComponent) queryComp: HotelQueryComponent;
+  @ViewChildren(IonSearchbar) searchbarEls: QueryList<IonSearchbar>;
   @HostBinding("class.show-search-bar")
   isShowSearchBar = false;
   hotelQueryModal: HotelQueryEntity = new HotelQueryEntity();
   searchItems: any[];
-  vmKeyowrds="";
+  vmKeyowrds = "";
   constructor(
     private navCtrl: NavController,
     private hotelService: HotelService,
@@ -64,6 +69,14 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
         }
       });
       this.subscriptions.push(sub);
+    }
+  }
+  doRefresh() {
+    if (this.refresher) {
+      this.refresher.complete();
+    }
+    if (this.queryComp) {
+      this.queryComp.onReset();
     }
   }
   onDateClick() {

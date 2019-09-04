@@ -7,14 +7,19 @@ import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 })
 export class QueryTabComponent implements OnInit {
   @Input() label: string;
-  @Input() isActive = false;
   @Output() active: EventEmitter<any>;
+  isActive = false;
   constructor() {
     this.active = new EventEmitter();
   }
   onActive() {
     this.isActive = !this.isActive;
-    this.active.emit(this.isActive);
+    this.active.emit({
+      label: this.label
+    });
   }
   ngOnInit() {}
+  onReset() {
+    this.isActive = false;
+  }
 }

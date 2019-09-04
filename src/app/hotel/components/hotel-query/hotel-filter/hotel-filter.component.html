@@ -1,0 +1,28 @@
+<div class='wrapper'>
+  <div class='tabs'>
+    <div [class.active]='tab.active' (click)='onActive(tab)' class='tab' *ngFor='let tab of tabs'
+      [class.has-item-filtered]='tab.hasFilterItem'>{{tab.label}}</div>
+  </div>
+  <div class='items'>
+    <ion-list *ngFor='let item of items' lines='none'>
+      <ion-item-divider>{{item.label}}
+        <ion-button color='secondary' size='small' slot='end' (click)='resetItems(item)'>不限</ion-button>
+      </ion-item-divider>
+      <ion-item>
+        <ul>
+          <li *ngFor='let it of item.items'>
+            <ion-chip color='{{it.IsSelected?"secondary":"dark"}}' (click)='onItemClick(it,item)'>
+              {{it.Name}}
+            </ion-chip>
+          </li>
+        </ul>
+      </ion-item>
+    </ion-list>
+  </div>
+</div>
+<ion-footer>
+  <ion-toolbar>
+    <ion-button color='dark'>重置</ion-button>
+    <ion-button color='secondary' (click)='onFilter()'>确定</ion-button>
+  </ion-toolbar>
+</ion-footer>

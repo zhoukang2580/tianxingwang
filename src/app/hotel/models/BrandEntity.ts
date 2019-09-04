@@ -31,6 +31,7 @@ export class BrandEntity extends BaseVariablesEntity {
   ///
   /// </summary>
   Langs: BrandLangEntity[];
+  IsSelected: boolean;
 }
 export class BrandLangEntity {
   Brand: BrandEntity;
