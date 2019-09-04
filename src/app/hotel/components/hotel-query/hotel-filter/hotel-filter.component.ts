@@ -180,6 +180,7 @@ export class HotelFilterComponent implements OnInit {
     if (item && item.items) {
       item.items.forEach(it => (it.IsSelected = false));
     }
+    this.initHasFilterItem();
   }
   onItemClick(
     it: BrandEntity | AmenityEntity,
@@ -193,16 +194,27 @@ export class HotelFilterComponent implements OnInit {
       });
     }
     if (it.IsSelected) {
-      this.tabs.forEach(tab => {
-        if (tab.active) {
-          tab.hasFilterItem = item.items.some(j => j.IsSelected);
-        }
-      });
+      // this.tabs.forEach(tab => {
+      //   if (tab.active) {
+      //     tab.hasFilterItem = item.items.some(j => j.IsSelected);
+      //   }
+      // });
     }
+    this.initHasFilterItem();
+  }
+  private initHasFilterItem() {
+    this.tabs.forEach(tab => {
+      if (tab.items) {
+        tab.hasFilterItem = tab.items.some(
+          j => j.items && j.items.some(k => k.IsSelected)
+        );
+      }
+    });
   }
   onReset() {
     if (this.tabs) {
       this.tabs.forEach(it => {
+        it.hasFilterItem = false;
         if (it.items) {
           it.items.forEach(item => {
             this.resetItems(item);
