@@ -35,27 +35,28 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
   @Output() starPriceChange: EventEmitter<any>;
   tabs: IStarPriceTab<IStarPriceTabItem>[] = [];
   value: { lower: number; upper: number } = { lower: 0, upper: 1000 };
+  private priceTab: IStarPriceTab<IStarPriceTabItem> = {
+    label: "自定义价格",
+    tag: "customeprice",
+    items: [
+      {
+        label: "",
+        isSelected: true,
+        minPrice: this.value.lower,
+        maxPrice: this.value.upper
+      }
+    ]
+  };
   constructor() {
     this.starPriceChange = new EventEmitter();
   }
   private onStarPriceChange() {
-    const priceTab: IStarPriceTab<IStarPriceTabItem> = {
-      label: "自定义价格",
-      tag: "customeprice",
-      items: [
-        {
-          label: "",
-          isSelected: true,
-          minPrice: this.value.lower,
-          maxPrice: this.value.upper
-        }
-      ]
-    };
-    priceTab.hasItemSelected = true;
-    this.starPriceChange.emit([
-      ...this.tabs.filter(it => it.hasItemSelected),
-      priceTab
-    ]);
+    this.starPriceChange.emit(
+      [
+        ...this.tabs.filter(it => it.hasItemSelected),
+        this.priceTab.hasItemSelected ? this.priceTab : null
+      ].filter(it => !!it)
+    );
   }
   onFilter() {
     this.onStarPriceChange();
@@ -64,6 +65,9 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
   onPriceRangeChange(evt: CustomEvent) {
     if (evt.detail.value) {
       this.value = evt.detail.value;
+      this.priceTab.items[0].minPrice = this.value.lower;
+      this.priceTab.items[0].maxPrice = this.value.upper;
+      this.priceTab.hasItemSelected = true;
     }
   }
   private initTabs() {
@@ -116,6 +120,9 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
         lower: 0,
         upper: 1000
       };
+      this.priceTab.items[0].minPrice = this.value.lower;
+      this.priceTab.items[0].maxPrice = this.value.upper;
+      this.priceTab.hasItemSelected = false;
     }
   }
   onReset() {

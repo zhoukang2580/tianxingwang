@@ -149,9 +149,9 @@ export class HotelQueryComponent implements OnInit {
         },
         {} as { lower: number; upper: number }
       );
-    if (customeprice && customeprice.items[0].maxPrice < upper) {
-      upper = customeprice.items[0].maxPrice;
-    }
+    // if (customeprice && customeprice.items[0].maxPrice < upper) {
+    //   upper = customeprice.items[0].maxPrice;
+    // }
     console.log("价格：", lower, upper);
     this.hotelQueryModel.BeginPrice = lower + "";
     this.hotelQueryModel.EndPrice = `${upper}` == "Infinity" ? "" : `${upper}`;
