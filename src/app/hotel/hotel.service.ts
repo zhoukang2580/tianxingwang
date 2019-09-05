@@ -256,14 +256,18 @@ export class HotelService {
     const local = await this.storage.get(`LocalHotelCityCache`);
     return local;
   }
-  getHotelDetailAsync(searchModel: SearchHotelModel) {
-    const query: HotelQueryEntity = new HotelQueryEntity();
+  getHotelList(hotelquery: HotelQueryEntity) {
     const req = new RequestEntity();
-    req.Method = `TmcApiHotelUrl-Home-Detail`;
-    req.Data = {};
+    req.Method = `TmcApiHotelUrl-Home-List`;
+    const city = this.getSearchHotelModel().destinationCity;
+    hotelquery.CityCode = city && city.Code;
+    hotelquery.BeginDate = this.getSearchHotelModel().checkInDate;
+    hotelquery.EndDate = this.getSearchHotelModel().checkOutDate;
+    req.Data = hotelquery;
     req.IsShowLoading = true;
-    return this.apiService.getPromiseData<HotelResultEntity>(req);
+    return this.apiService.getResponse<HotelResultEntity>(req);
   }
+
   getHotelPolicyAsync(hotels: HotelModel[], passengerIds: string[]) {
     const req = new RequestEntity();
     req.Method = `TmcApiHotelUrl-Home-Detail`;

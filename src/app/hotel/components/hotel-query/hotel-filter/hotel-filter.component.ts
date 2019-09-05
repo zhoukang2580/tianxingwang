@@ -2,6 +2,7 @@ import { AmenityEntity } from "./../../../models/AmenityEntity";
 import { Component, OnInit, EventEmitter, Input, Output } from "@angular/core";
 import { BrandEntity } from "src/app/hotel/models/BrandEntity";
 import { ConditionModel } from "src/app/hotel/models/ConditionModel";
+import { ToastController } from "@ionic/angular";
 export interface IFilterTab<T> {
   hasFilterItem?: boolean;
   active?: boolean;
@@ -28,10 +29,10 @@ export interface IFilterTabItem<T> {
 export class HotelFilterComponent implements OnInit {
   @Input() conditionModel: ConditionModel;
   @Output() filter: EventEmitter<any>;
-  tabs: IFilterTab<IFilterTabItem<BrandEntity | AmenityEntity>>[]=[];
+  tabs: IFilterTab<IFilterTabItem<BrandEntity | AmenityEntity>>[] = [];
   isShowFilter = false;
   items: IFilterTabItem<BrandEntity | AmenityEntity>[];
-  constructor() {
+  constructor(private toastCtrl: ToastController) {
     this.filter = new EventEmitter();
   }
   onFilter() {
@@ -186,6 +187,21 @@ export class HotelFilterComponent implements OnInit {
     it: BrandEntity | AmenityEntity,
     item: IFilterTabItem<BrandEntity | AmenityEntity>
   ) {
+    if (
+      item &&
+      item.items &&
+      item.items.filter(j => j.IsSelected).length >= 3
+    ) {
+      this.toastCtrl
+        .create({
+          message: `${item.label}不能超过3个`,
+          position: "middle",
+          duration: 1000
+        })
+        .then(t => t.present());
+      it.IsSelected = false;
+      return;
+    }
     if (item.isMulti) {
       it.IsSelected = !it.IsSelected;
     } else {

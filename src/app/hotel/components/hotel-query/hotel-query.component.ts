@@ -128,23 +128,144 @@ export class HotelQueryComponent implements OnInit {
   }
   onStarPriceChange(evt: IStarPriceTab<IStarPriceTabItem>[]) {
     console.log(evt);
+    this.hotelQueryModel = new HotelQueryEntity();
     this.hideQueryPannel();
+    const tabs = evt.find(it => it.tag == "price" || it.tag == "customeprice");
+    const { lower, upper } = tabs.items.reduce(
+      (p, item) => {
+        p.lower = Math.min(item.minPrice, p.lower) || item.minPrice;
+        p.upper = Math.max(item.maxPrice, p.upper) || item.maxPrice;
+        return p;
+      },
+      {} as { lower: number; upper: number }
+    );
+    this.hotelQueryModel.BeginPrice = lower + "";
+    this.hotelQueryModel.EndPrice = upper + "";
+    const stars = evt.find(it => it.tag == "stars");
+    if (stars && stars.items && stars.items.some(it => it.isSelected)) {
+      this.hotelQueryModel.Stars = stars.items
+        .filter(it => it.isSelected)
+        .map(it => it.value);
+    }
+    const types = evt.find(it => it.tag == "types");
+    if (types && types.items && types.items.some(it => it.isSelected)) {
+      this.hotelQueryModel.Categories = types.items
+        .filter(it => it.isSelected)
+        .map(it => it.value);
+    }
+    this.doRefresh(this.hotelQueryModel);
   }
   onFilterGeo(geoTabs: IGeoTab<IGeoItem<GeoEntity>>[]) {
     console.log("geo 搜索", geoTabs);
-    this.hideQueryPannel();
+    if (geoTabs.length) {
+      this.hotelQueryModel = new HotelQueryEntity();
+      this.hotelQueryModel.Geos = [];
+      geoTabs.forEach(it => {
+        it.items.forEach(item => {
+          if (item.isSelected) {
+            this.hotelQueryModel.Geos.push(item.id);
+          }
+        });
+      });
+      this.doRefresh(this.hotelQueryModel);
+    }
   }
   onFilter(filter: IFilterTab<IFilterTabItem<BrandEntity | AmenityEntity>>[]) {
     console.log(filter);
-    this.hideQueryPannel();
     const theme = filter.find(it => it.tag == "Theme");
+    const brand = filter.find(it => it.tag == "Brand");
+    const services = filter.find(it => it.tag == "Service");
+    const facility = filter.find(it => it.tag == "Facility");
+    this.hotelQueryModel = new HotelQueryEntity();
+    if (theme) {
+      this.hotelQueryModel.Themes = [];
+      const themes =
+        theme.items &&
+        theme.items.filter(it => it.items && it.items.some(k => k.IsSelected));
+      if (themes) {
+        themes.forEach(t => {
+          if (t.items) {
+            t.items.forEach(k => {
+              if (k.IsSelected) {
+                this.hotelQueryModel.Themes.push(k.Id);
+              }
+            });
+          }
+        });
+      }
+    }
+    if (brand) {
+      this.hotelQueryModel.Themes = [];
+      const brands =
+        brand.items &&
+        brand.items.filter(it => it.items && it.items.some(k => k.IsSelected));
+      if (brands) {
+        brands.forEach(t => {
+          if (t.items) {
+            t.items.forEach(k => {
+              if (k.IsSelected) {
+                this.hotelQueryModel.Brands.push(k.Id);
+              }
+            });
+          }
+        });
+      }
+    }
+    if (services) {
+      this.hotelQueryModel.Themes = [];
+      const s =
+        services.items &&
+        services.items.filter(
+          it => it.items && it.items.some(k => k.IsSelected)
+        );
+      if (s) {
+        s.forEach(t => {
+          if (t.items) {
+            t.items.forEach(k => {
+              if (k.IsSelected) {
+                this.hotelQueryModel.Services.push(k.Id);
+              }
+            });
+          }
+        });
+      }
+    }
+    if (facility) {
+      this.hotelQueryModel.Themes = [];
+      const facilities =
+        facility.items &&
+        facility.items.filter(
+          it => it.items && it.items.some(k => k.IsSelected)
+        );
+      if (facilities) {
+        facilities.forEach(t => {
+          if (t.items) {
+            t.items.forEach(k => {
+              if (k.IsSelected) {
+                this.hotelQueryModel.Facilities.push(k.Id);
+              }
+            });
+          }
+        });
+      }
+    }
+    this.doRefresh(this.hotelQueryModel);
   }
   onRank(tab: IRankItem) {
-    this.hideQueryPannel();
+    this.doRefresh();
   }
   ngOnInit() {
     this.onReset();
+  }
+  doRefresh(query?: HotelQueryEntity) {
+    this.hotelQueryModel = new HotelQueryEntity();
+    if (query) {
+      this.hotelQueryModel = {
+        ...query
+      };
+    }
     this.hideQueryPannel();
+    this.emitQueryModel();
   }
   private emitQueryModel() {
     this.hotelQueryChange.emit(this.hotelQueryModel);

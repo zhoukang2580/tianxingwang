@@ -1,3 +1,4 @@
+import { AppHelper } from "./../../../../appHelper";
 import {
   Component,
   OnInit,
@@ -9,6 +10,7 @@ import {
 import { IonRange } from "@ionic/angular";
 export interface IStarPriceTabItem {
   label: string;
+  value?: string;
   id?: string;
   isSelected?: boolean;
   isMulti?: boolean;
@@ -21,6 +23,7 @@ export interface IStarPriceTab<T> {
   label: string;
   items: T[];
   hasItemSelected?: boolean;
+  tag: "stars" | "customeprice" | "price" | "types";
 }
 @Component({
   selector: "app-hotel-starprice",
@@ -38,6 +41,7 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
   private onStarPriceChange() {
     const priceTab: IStarPriceTab<IStarPriceTabItem> = {
       label: "自定义价格",
+      tag: "customeprice",
       items: [
         {
           label: "",
@@ -66,26 +70,31 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
     this.tabs = [];
     this.tabs.push({
       label: "星级(可多选)",
+      tag: "stars",
       items: ["一星", "二星", "三星", "四星", "五星"].map((it, idx) => {
         return {
           label: `${it}`,
           isMulti: true,
-          id: `${idx + 1}`
+          id: `${idx + 1}`,
+          value: `${idx + 1}`
         } as IStarPriceTabItem;
       })
     });
     this.tabs.push({
+      tag: "types",
       label: "分类(可多选)",
       items: ["公寓", "客栈", "舒适", "高档", "豪华"].map((it, idx) => {
         return {
           label: `${it}`,
           isMulti: true,
-          id: `${idx}`
+          id: `${idx}`,
+          value: `${idx + 1}`
         } as IStarPriceTabItem;
       })
     });
     this.tabs.push({
       label: "价格",
+      tag: "price",
       items: ["150以下", "150-300", "300-450", "450-600", "600以上"].map(
         (it, idx) => {
           return {
@@ -117,6 +126,11 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
   }
   onItemClick(item: IStarPriceTabItem, tab: IStarPriceTab<IStarPriceTabItem>) {
     if (item) {
+      if (tab.items.filter(it => it.isSelected).length >= 3) {
+        item.isSelected = false;
+        AppHelper.toast(`${tab.label}不能超过3个`, 1000, "middle");
+        return;
+      }
       item.isSelected = !item.isSelected;
       if (!item.isMulti && tab.items) {
         tab.items.forEach(it => {

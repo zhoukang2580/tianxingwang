@@ -1,3 +1,4 @@
+import { AppHelper } from "src/app/appHelper";
 import { GeoEntity } from "./../../../models/GeoEntity";
 import { Component, OnInit, Input, EventEmitter, Output } from "@angular/core";
 import { ConditionModel } from "src/app/hotel/models/ConditionModel";
@@ -60,6 +61,11 @@ export class HotelGeoComponent implements OnInit {
     if (item.level == "second") {
       this.thirdItems = item.items;
     }
+    if (items.filter(it => it.isSelected).length >= 3) {
+      AppHelper.toast(`${item.label}不能超过3个`, 1000, "middle");
+      item.isSelected = false;
+      return;
+    }
     if (!item.isMulti) {
       if (items) {
         items.forEach(it => {
@@ -79,13 +85,8 @@ export class HotelGeoComponent implements OnInit {
   private checkTabsHasFilteredItem() {
     console.time("checkTabsHasFilteredItem");
     this.tabs.forEach(tab => {
-      console.log(
-        tab,
-        tab.tag,
-        tab.items.some(it => it.items && it.items.some(k => k.isSelected))
-      );
       tab.hasFilterItem =
-        tab.tag == "Metro"
+        tab.active && tab.tag == "Metro"
           ? tab.items &&
             tab.items.some(it => it.items && it.items.some(k => k.isSelected))
           : tab.items && tab.items.some(it => it.isSelected);
@@ -126,7 +127,7 @@ export class HotelGeoComponent implements OnInit {
       return;
     }
     this.tabs.forEach(t => {
-      t.active = t.tag == tab.tag;
+      t.hasFilterItem = t.active = t.tag == tab.tag;
     });
     this.secondaryItems = tab.items || [];
     if (this.secondaryItems.some(it => it.items && it.items.length > 0)) {

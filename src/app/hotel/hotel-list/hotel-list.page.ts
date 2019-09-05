@@ -1,3 +1,5 @@
+import { HotelEntity } from "./../models/HotelEntity";
+import { HotelResultEntity } from "./../models/HotelResultEntity";
 import { HotelQueryComponent } from "./../components/hotel-query/hotel-query.component";
 import { HotelQueryEntity } from "./../models/HotelQueryEntity";
 import { Router } from "@angular/router";
@@ -28,7 +30,7 @@ import {
   transition,
   animate
 } from "@angular/animations";
-import { QueryTabComponent } from '../components/hotel-query/query-tab/query-tab.component';
+import { QueryTabComponent } from "../components/hotel-query/query-tab/query-tab.component";
 
 @Component({
   selector: "app-hotel-list",
@@ -44,8 +46,9 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   @HostBinding("class.show-search-bar")
   isShowSearchBar = false;
   hotelQueryModal: HotelQueryEntity = new HotelQueryEntity();
-  searchItems: any[];
+  hotels: HotelEntity[];
   vmKeyowrds = "";
+  loadDataSub = Subscription.EMPTY;
   constructor(
     private navCtrl: NavController,
     private hotelService: HotelService,
@@ -71,6 +74,10 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       this.subscriptions.push(sub);
     }
   }
+  onHotelQueryChange(query: HotelQueryEntity) {
+    this.hotelQueryModal = { ...query };
+    this.doRefresh();
+  }
   doRefresh() {
     if (this.refresher) {
       this.refresher.complete();
@@ -78,6 +85,23 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.queryComp) {
       this.queryComp.onReset();
     }
+    this.hotelQueryModal.PageIndex = 0;
+    this.hotelQueryModal.PageSize = 20;
+    this.loadMore();
+  }
+  loadMore() {
+    if (this.loadDataSub) {
+      this.loadDataSub.unsubscribe();
+    }
+    this.loadDataSub = this.hotelService
+      .getHotelList(this.hotelQueryModal)
+      .subscribe(
+        result => {
+          if (result && result.Data) {
+          }
+        },
+        e => {}
+      );
   }
   onDateClick() {
     this.hotelService.openCalendar();

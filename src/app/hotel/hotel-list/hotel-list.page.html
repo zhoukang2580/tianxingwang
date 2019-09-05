@@ -13,7 +13,7 @@
     </ion-searchbar>
   </ion-toolbar>
   <ion-toolbar>
-    <app-hotel-query></app-hotel-query>
+    <app-hotel-query (hotelQueryChange)='onHotelQueryChange($event)'></app-hotel-query>
   </ion-toolbar>
 </ion-header>
 
