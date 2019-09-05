@@ -130,15 +130,28 @@ export class HotelQueryComponent implements OnInit {
     console.log(evt);
     this.hotelQueryModel = new HotelQueryEntity();
     this.hideQueryPannel();
-    const tabs = evt.find(it => it.tag == "price" || it.tag == "customeprice");
-    const { lower, upper } = tabs.items.reduce(
-      (p, item) => {
-        p.lower = Math.min(item.minPrice, p.lower) || item.minPrice;
-        p.upper = Math.max(item.maxPrice, p.upper) || item.maxPrice;
-        return p;
-      },
-      {} as { lower: number; upper: number }
+    const customeprice = evt.find(it => it.tag == "customeprice");
+    const tabs = evt.filter(
+      it => it.tag == "price" || it.tag == "customeprice"
     );
+    console.log(tabs);
+    let { lower, upper } = tabs
+      .map(tab => tab.items)
+      .reduce(
+        (p, items) => {
+          items
+            .filter(it => it.isSelected)
+            .forEach(item => {
+              p.lower = Math.min(item.minPrice, p.lower) || item.minPrice;
+              p.upper = Math.max(item.maxPrice, p.upper) || item.maxPrice;
+            });
+          return p;
+        },
+        {} as { lower: number; upper: number }
+      );
+    if (customeprice && customeprice.items[0].maxPrice < upper) {
+      upper = customeprice.items[0].maxPrice;
+    }
     console.log("价格：", lower, upper);
     this.hotelQueryModel.BeginPrice = lower + "";
     this.hotelQueryModel.EndPrice = `${upper}` == "Infinity" ? "" : `${upper}`;
