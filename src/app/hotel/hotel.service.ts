@@ -263,6 +263,7 @@ export class HotelService {
     hotelquery.CityCode = city && city.Code;
     hotelquery.BeginDate = this.getSearchHotelModel().checkInDate;
     hotelquery.EndDate = this.getSearchHotelModel().checkOutDate;
+    hotelquery.IsLoadDetail = true;
     req.Data = hotelquery;
     req.IsShowLoading = true;
     return this.apiService.getResponse<HotelResultEntity>(req);
