@@ -203,7 +203,7 @@ export class LazyloadimageDirective
     }
   }
   GetNode(url) {
-    if (!this.Failover || !this.Failover.Nodes) {
+    if (!this.Failover || !this.Failover.Nodes || !url) {
       return;
     }
     for (let i = 0; i < this.Failover.Nodes.length; i++) {

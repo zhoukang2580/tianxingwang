@@ -333,9 +333,9 @@ export class AppHelper {
    * @param key 不区分大小写
    */
   static getStorage<T>(key: string) {
-    let result: T = null;
+    let result: T;
     if (!key) {
-      return result;
+      return result || "";
     }
     const local = window.localStorage.getItem(key.toLowerCase()) as any;
     if (local) {
@@ -348,7 +348,7 @@ export class AppHelper {
         result = local as T;
       }
     }
-    return result;
+    return result || "";
   }
   static getTicket() {
     const ticket =

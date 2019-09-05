@@ -101,7 +101,8 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
             label: `${it}`,
             isMulti: false,
             id: `${idx + 1}`,
-            minPrice: +(it.includes("下") ? null : it.split("-")[0]),
+            minPrice:
+              it.includes("下") || it.includes("上") ? 0 : it.split("-")[0],
             maxPrice: it.includes("下")
               ? 150
               : it.includes("上")

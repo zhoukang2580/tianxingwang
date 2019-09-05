@@ -256,9 +256,9 @@ export class HotelService {
     const local = await this.storage.get(`LocalHotelCityCache`);
     return local;
   }
-  getHotelList(hotelquery: HotelQueryEntity) {
+  getHotelDetail(hotelquery: HotelQueryEntity) {
     const req = new RequestEntity();
-    req.Method = `TmcApiHotelUrl-Home-List`;
+    req.Method = `TmcApiHotelUrl-Home-Detail`;
     const city = this.getSearchHotelModel().destinationCity;
     hotelquery.CityCode = city && city.Code;
     hotelquery.BeginDate = this.getSearchHotelModel().checkInDate;
