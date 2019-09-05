@@ -149,12 +149,14 @@ export class HotelQueryComponent implements OnInit {
         },
         {} as { lower: number; upper: number }
       );
-    // if (customeprice && customeprice.items[0].maxPrice < upper) {
-    //   upper = customeprice.items[0].maxPrice;
-    // }
+    if (customeprice) {
+      upper = customeprice.items[0].maxPrice;
+      lower = customeprice.items[0].minPrice;
+    }
     console.log("价格：", lower, upper);
     this.hotelQueryModel.BeginPrice = lower + "";
-    this.hotelQueryModel.EndPrice = `${upper}` == "Infinity" ? "" : `${upper}`;
+    this.hotelQueryModel.EndPrice =
+      `${upper}` == "Infinity" ? `1000000` : `${upper}`;
     const stars = evt.find(it => it.tag == "stars");
     if (stars && stars.items && stars.items.some(it => it.isSelected)) {
       this.hotelQueryModel.Stars = stars.items
