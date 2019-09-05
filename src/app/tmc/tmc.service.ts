@@ -1,3 +1,4 @@
+import { BaseEntity } from "./models/BaseEntity";
 import { LanguageInfo } from "./models/LanguageInfo";
 import { AppHelper } from "./../appHelper";
 import { OrganizationEntity, StaffApprover } from "./../hr/staff.service";
@@ -882,7 +883,7 @@ export enum TmcApprovalType {
   /// </summary>
   ExceedPolicyApprover = 5
 }
-export interface GroupCompanyEntity {
+export interface GroupCompanyEntity extends BaseEntity {
   Code: string;
   Name: string;
   Agent: any;
@@ -897,7 +898,7 @@ export enum TmcHotelFeeType {
   /// </summary>
   Order = 2
 }
-export interface TmcEntity {
+export class TmcEntity extends BaseEntity {
   /// <summary>
   /// 是否可以自定义违规理由
   /// </summary>

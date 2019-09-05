@@ -1,0 +1,41 @@
+<div class='wrapper'>
+  <ion-list *ngFor='let tab of tabs'>
+    <ion-item-divider>{{tab?.label}}
+      <ion-button slot='end' (click)='resetItems(tab)' color='secondary' size='small'>不限</ion-button>
+    </ion-item-divider>
+    <ion-item>
+      <div>
+        <ion-row>
+          <ion-col size='4' *ngFor='let item of tab.items'>
+            <ion-chip color='{{item.isSelected?"secondary":"dark"}}' (click)='onItemClick(item,tab)'>{{item.label}}
+            </ion-chip>
+          </ion-col>
+        </ion-row>
+      </div>
+    </ion-item>
+  </ion-list>
+  <ion-list>
+    <ion-list-header>自定义价格
+      <div class='custome-price'>
+        <span>￥{{value?.lower}}</span>
+        <span>￥{{value?.upper>=1000?"1000+":value?.upper}}</span>
+      </div>
+      <ion-button (click)='onResetCustomePrice()' size='small' color='secondary'>不限</ion-button>
+    </ion-list-header>
+    <ion-item>
+      <ion-range (ionChange)='onPriceRangeChange($event)' min="0" pin="true" dualKnobs="true" max="1000" step="100"
+        snaps="true" ticks="false" color="secondary">
+      </ion-range>
+    </ion-item>
+  </ion-list>
+</div>
+<ion-footer>
+  <ion-row>
+    <ion-col size='3'>
+      <ion-button expand='block' (click)='onReset()'>重置</ion-button>
+    </ion-col>
+    <ion-col size='9'>
+      <ion-button expand='block' (click)='onFilter()' color='secondary'>确定</ion-button>
+    </ion-col>
+  </ion-row>
+</ion-footer>

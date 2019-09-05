@@ -272,7 +272,7 @@ export class ApiService {
     this.setLoading(true, req.IsShowLoading);
     let due = req.Timeout || 30 * 1000;
     due = due < 1000 ? due * 1000 : due;
-    due=1;
+    // due=1;
     return from(this.loadApiConfig()).pipe(
       switchMap(config => {
         if (!config) {

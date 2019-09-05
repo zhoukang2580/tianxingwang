@@ -1,3 +1,39 @@
-<p>
-  hotel-geo works!
-</p>
+<div class='wrapper'>
+  <ul class='first-list'>
+    <li class='tab' *ngFor='let tab of tabs' (click)='onTabClick(tab)' [class.active]='tab.active'
+      [class.has-item-filtered]='tab.hasFilterItem'>
+      {{tab.label}}
+    </li>
+  </ul>
+  <ng-container *ngIf='secondaryItems?.length||thirdItems?.length else contents'>
+    <ul class='secondary-list' *ngIf='secondaryItems?.length'>
+      <li *ngFor='let item of secondaryItems' (click)='onItemClick(item,secondaryItems)'>
+        <ion-text color='{{item.isSelected?"secondary":"dark"}}'>{{item.label}}</ion-text>
+      </li>
+    </ul>
+    <ul class='third-list' *ngIf='thirdItems?.length'>
+      <li *ngFor='let item of thirdItems' (click)='onItemClick(item,thirdItems)'>
+        <ion-text color='{{item.isSelected?"secondary":"dark"}}'>{{item.label}}</ion-text>
+        <ion-icon name="checkmark" *ngIf='item.isSelected' color='secondary'></ion-icon>
+      </li>
+    </ul>
+  </ng-container>
+  <ng-template #contents>
+    <ul class='normal-list' *ngIf='normalItems?.length'>
+      <li *ngFor='let item of normalItems' (click)='onItemClick(item,normalItems)'>
+        <ion-text color='{{item.isSelected?"secondary":"dark"}}'>{{item.label}}</ion-text>
+        <ion-icon name="checkmark" *ngIf='item.isSelected' color='secondary'></ion-icon>
+      </li>
+    </ul>
+  </ng-template>
+</div>
+<ion-footer>
+  <ion-row>
+    <ion-col size='3'>
+      <ion-button expand='block' (click)='onReset()'>重置</ion-button>
+    </ion-col>
+    <ion-col size='9'>
+      <ion-button expand='block' (click)='onFilter()' color='secondary'>确定</ion-button>
+    </ion-col>
+  </ion-row>
+</ion-footer>

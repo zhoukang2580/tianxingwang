@@ -33,7 +33,7 @@
   height: 55vh;
   .tabs {
     width: 25%;
-    background: rgba(var(--ion-color-secondary-rgb), 0.12);
+    background: #eee;
     overflow: scroll;
   }
   .items {
@@ -54,4 +54,7 @@
       justify-content: center;
     }
   }
+}
+:host {
+  display: block;
 }

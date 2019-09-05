@@ -21,7 +21,7 @@ export class RecommendRankComponent implements OnInit {
   onRank() {
     this.rank.emit();
   }
-  ngOnInit() {
+  onReset() {
     this.ranks = [];
     this.ranks.push({
       id: 0,
@@ -49,6 +49,9 @@ export class RecommendRankComponent implements OnInit {
       orderBy: "Desc"
     });
     this.selectedId = this.ranks[0].id;
+  }
+  ngOnInit() {
+    this.onReset();
   }
   onSelect(r: IRankItem) {
     this.ranks.forEach(it => {

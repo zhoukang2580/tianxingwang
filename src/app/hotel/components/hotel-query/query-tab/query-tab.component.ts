@@ -15,7 +15,8 @@ export class QueryTabComponent implements OnInit {
   onActive() {
     this.isActive = !this.isActive;
     this.active.emit({
-      label: this.label
+      label: this.label,
+      isActive: this.isActive
     });
   }
   ngOnInit() {}

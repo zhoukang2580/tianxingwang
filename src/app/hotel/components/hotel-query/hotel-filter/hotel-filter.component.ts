@@ -28,7 +28,7 @@ export interface IFilterTabItem<T> {
 export class HotelFilterComponent implements OnInit {
   @Input() conditionModel: ConditionModel;
   @Output() filter: EventEmitter<any>;
-  tabs: IFilterTab<IFilterTabItem<BrandEntity | AmenityEntity>>[];
+  tabs: IFilterTab<IFilterTabItem<BrandEntity | AmenityEntity>>[]=[];
   isShowFilter = false;
   items: IFilterTabItem<BrandEntity | AmenityEntity>[];
   constructor() {
