@@ -1,3 +1,4 @@
+import { ActivatedRoute } from "@angular/router";
 import { HotelService } from "./../hotel.service";
 import { TrafficlineEntity } from "./../../tmc/models/TrafficlineEntity";
 import {
@@ -52,8 +53,13 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     private navCtrl: NavController,
     private domCtrl: DomController,
     private hotelService: HotelService,
-    private storage: Storage
-  ) {}
+    private storage: Storage,
+    private route: ActivatedRoute
+  ) {
+    route.queryParamMap.subscribe(_ => {
+      this.doRefresh();
+    });
+  }
   back() {
     this.navCtrl.back();
   }
@@ -123,7 +129,6 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     }, 200);
   }
   ngOnInit() {
-    this.doRefresh();
     const sub = this.hotelService.getSearchHotelModelSource().subscribe(m => {
       if (m && m.destinationCity) {
         this.selectedCity = m.destinationCity;
@@ -163,6 +168,8 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   async doRefresh() {
+    this.historyCities = [];
+    this.hotCities = [];
     this.initHistoryCity(null);
     if (this.refresher) {
       this.refresher.complete();

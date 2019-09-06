@@ -226,7 +226,7 @@ export class HotelService {
         return item;
       });
       this.localHotelCities = [
-        ...this.localHotelCities.filter(it => arr.some(c => c.Code == it.Code)),
+        ...this.localHotelCities.filter(it => !arr.some(c => c.Code == it.Code)),
         ...arr
       ];
       await this.setLocalHotelCityCache(this.localHotelCities);

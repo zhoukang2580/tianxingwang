@@ -434,7 +434,11 @@ export class FlightService {
     } else {
       // 重选去程
       s.tripType = TripType.departureTrip;
-      this.passengerBookInfos = [];
+      const arr = this.getPassengerBookInfos().map(item => {
+        item.isReplace = item.id == arg.id;
+        return item;
+      });
+      this.passengerBookInfos = arr;
     }
     this.setPassengerBookInfos(this.getPassengerBookInfos());
     this.apiService.showLoadingView();
@@ -554,20 +558,6 @@ export class FlightService {
       return;
     }
     this.isInitializingSelfBookInfos = true;
-    // if (!this.selfCredentials || !this.selfCredentials.length) {
-    //   const ok = await AppHelper.alert(
-    //     LanguageHelper.getMaintainCredentialsTip(),
-    //     true,
-    //     LanguageHelper.getConfirmTip(),
-    //     LanguageHelper.getCancelTip()
-    //   );
-    //   if (ok) {
-    //     this.router.navigate([
-    //       AppHelper.getRoutePath("member-credential-management")
-    //     ]);
-    //     return;
-    //   }
-    // }
     IdCredential =
       this.selfCredentials &&
       this.selfCredentials.find(c => c.Type == CredentialsType.IdCard);

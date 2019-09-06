@@ -20,7 +20,5 @@ export class PriceDetailComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    this.priceInfos =
-      this.priceInfos && this.priceInfos.concat(this.priceInfos);
   }
 }
