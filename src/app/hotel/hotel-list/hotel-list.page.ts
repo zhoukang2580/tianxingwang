@@ -94,7 +94,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       this.loadDataSub.unsubscribe();
     }
     this.loadDataSub = this.hotelService
-      .getHotelDetail(this.hotelQueryModal)
+      .getHotelList(this.hotelQueryModal)
       .subscribe(
         result => {
           if (result && result.Data) {

@@ -5,6 +5,7 @@ export class HotelDayPriceEntity {
   /// 酒店
   /// </summary>
   Hotel: HotelEntity;
+  AvgPrice: string;
   /// <summary>
   ///
   /// </summary>

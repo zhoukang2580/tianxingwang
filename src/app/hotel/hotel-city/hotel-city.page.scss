@@ -9,7 +9,7 @@ ul li {
   border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.13);
 }
 ion-chip {
-  width: 75%;
+  width: 100%;
   justify-content: center;
   &.selected {
     --background: rgba(var(--ion-color-secondary-rgb), 0.13);

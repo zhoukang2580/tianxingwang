@@ -221,9 +221,9 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     ) {
       this.domCtrl.read(_ => {
         const rect = this.firstLetterEl["el"].getBoundingClientRect();
-        console.log("hotEle Rect", rect);
+        // console.log("hotEle Rect", rect);
         const headerH = this.ionHeader["el"].clientHeight;
-        console.log("headerH", headerH);
+        // console.log("headerH", headerH);
         if (rect && this.ionContent) {
           this.domCtrl.write(_ => {
             this.ionContent.scrollByPoint(

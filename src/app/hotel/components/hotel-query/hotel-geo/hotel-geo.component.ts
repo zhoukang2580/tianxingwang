@@ -7,6 +7,7 @@ export interface IGeoTab<T> {
   label: string;
   active?: boolean;
   hasFilterItem?: boolean;
+  isMulti?: boolean;
   items?: T[];
   tag?:
     | "Metro"
@@ -85,6 +86,9 @@ export class HotelGeoComponent implements OnInit {
   private checkTabsHasFilteredItem() {
     console.time("checkTabsHasFilteredItem");
     this.tabs.forEach(tab => {
+      if (!tab.isMulti) {
+        tab.hasFilterItem = false;
+      }
       tab.hasFilterItem =
         tab.active && tab.tag == "Metro"
           ? tab.items &&
@@ -127,7 +131,7 @@ export class HotelGeoComponent implements OnInit {
       return;
     }
     this.tabs.forEach(t => {
-      t.hasFilterItem = t.active = t.tag == tab.tag;
+      t.active = t.tag == tab.tag;
     });
     this.secondaryItems = tab.items || [];
     if (this.secondaryItems.some(it => it.items && it.items.length > 0)) {
@@ -138,6 +142,7 @@ export class HotelGeoComponent implements OnInit {
       this.thirdItems = [];
     }
     this.scrollListsToTop();
+    this.checkTabsHasFilteredItem();
   }
   private initTabs() {
     this.tabs = [];

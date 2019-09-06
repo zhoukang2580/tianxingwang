@@ -1,3 +1,4 @@
+import { AppHelper } from "src/app/appHelper";
 import { DayModel } from "src/app/tmc/models/DayModel";
 import { TripType } from "src/app/tmc/models/TripType";
 import { HotelEntity } from "./models/HotelEntity";
@@ -19,19 +20,22 @@ import { RequestEntity } from "../services/api/Request.entity";
 import { Storage } from "@ionic/storage";
 import * as jsPy from "js-pinyin";
 import * as moment from "moment";
-import { filter } from "rxjs/operators";
+import { filter, map } from "rxjs/operators";
 import { HotelQueryEntity } from "./models/HotelQueryEntity";
 import { HotelResultEntity } from "./models/HotelResultEntity";
 import { HotelModel } from "./models/HotelModel";
 import { HotelPassengerModel } from "./models/HotelPassengerModel";
 import { CalendarService } from "../tmc/calendar.service";
 import { ConditionModel } from "./models/ConditionModel";
+import { HotelDayPriceEntity } from "./models/HotelDayPriceEntity";
 export class SearchHotelModel {
   checkInDate: string;
   checkOutDate: string;
   tripType: TripType;
   isRefreshData?: boolean;
   destinationCity: TrafficlineEntity;
+  tag: "Agreement" | "" | "SpecialPrice";
+  hotelType: "agreement" | "normal" | "specialprice";
 }
 export interface LocalHotelCityCache {
   LastUpdateTime: number;
@@ -256,19 +260,23 @@ export class HotelService {
     const local = await this.storage.get(`LocalHotelCityCache`);
     return local;
   }
-  getHotelDetail(hotelquery: HotelQueryEntity) {
+  getHotelList(hotelquery: HotelQueryEntity) {
     const req = new RequestEntity();
-    req.Method = `TmcApiHotelUrl-Home-Detail`;
+    req.Method = `TmcApiHotelUrl-Home-List`;
     const city = this.getSearchHotelModel().destinationCity;
     hotelquery.CityCode = city && city.Code;
     hotelquery.BeginDate = this.getSearchHotelModel().checkInDate;
     hotelquery.EndDate = this.getSearchHotelModel().checkOutDate;
     hotelquery.IsLoadDetail = true;
-    req.Data = hotelquery;
+    hotelquery.Tag = this.getSearchHotelModel().tag;
+    req.Data = {
+      ...hotelquery,
+      travelformid: AppHelper.getQueryParamers()["travelformid"] || "",
+      hotelType: this.getSearchHotelModel().hotelType
+    };
     req.IsShowLoading = true;
     return this.apiService.getResponse<HotelResultEntity>(req);
   }
-
   getHotelPolicyAsync(hotels: HotelModel[], passengerIds: string[]) {
     const req = new RequestEntity();
     req.Method = `TmcApiHotelUrl-Home-Detail`;
@@ -282,7 +290,7 @@ export class HotelService {
   }
   private loadHotelCitiesFromServer(lastUpdateTime: number) {
     const req = new RequestEntity();
-    req.Method = `ApiHomeUrl-Resource-HotelCity`;
+    req.Method = `TmcApiHotelUrl-City-Gets`;
     req.Data = {
       LastUpdateTime: lastUpdateTime
     };

@@ -214,7 +214,7 @@ export class MapService {
   }
   private async getCityByMap(p: MapPoint) {
     const req = new RequestEntity();
-    req.Method = "TmcApiHotelUrl-Home-GetCityByMap";
+    req.Method = "TmcApiHotelUrl-City-GetCityByMap";
     req.Data = p;
     return await this.apiService.getPromiseData<{
       CityName: string;

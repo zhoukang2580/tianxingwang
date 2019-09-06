@@ -727,6 +727,7 @@ export class FlightService {
   }
   getTotalFlySegments(flyJourneys: FlightJourneyEntity[]) {
     console.time("getTotalFlySegments");
+    console.log("getTotalFlySegments flyJourneys", flyJourneys);
     const result = flyJourneys.reduce(
       (arr, journey) => {
         arr = [
@@ -771,6 +772,7 @@ export class FlightService {
       [] as FlightSegmentEntity[]
     );
     console.timeEnd("getTotalFlySegments");
+    console.log("getTotalFlySegments", result);
     return result;
   }
   get allLocalAirports() {
@@ -797,6 +799,28 @@ export class FlightService {
     req.Timeout = 60;
     const serverFlights = await this.apiService
       .getPromiseData<FlightJourneyEntity[]>(req)
+      .then(res => {
+        if (res) {
+          return res.map(it => {
+            if (it.FlightRoutes) {
+              it.FlightRoutes = it.FlightRoutes.map(r => {
+                if (r.FlightSegments) {
+                  r.FlightSegments = r.FlightSegments.map(s => {
+                    return {
+                      ...s,
+                      ...s["flightSegment"]
+                    };
+                  });
+                }
+                return r;
+              });
+            }
+            return it;
+          });
+        } else {
+          return res;
+        }
+      })
       .catch(_ => {
         AppHelper.alert(_);
         return [] as FlightJourneyEntity[];
