@@ -1,3 +1,5 @@
+import { AppDirectivesModule } from "./../../directives/directives.module";
+import { HotelListItemComponent } from "./hotel-list-item/hotel-list-item.component";
 import { HotelStarPriceComponent } from "./hotel-query/hotel-starprice/hotel-starprice.component";
 import { HotelQueryComponent } from "./hotel-query/hotel-query.component";
 import { FormsModule } from "@angular/forms";
@@ -19,10 +21,12 @@ import { HotelFilterComponent } from "./hotel-query/hotel-filter/hotel-filter.co
     RecommendRankComponent,
     HotelFilterComponent,
     HotelStarPriceComponent,
-    HotelStarPriceComponent
+    HotelStarPriceComponent,
+    HotelListItemComponent
   ],
-  imports: [CommonModule, IonicModule, FormsModule],
+  imports: [CommonModule, IonicModule, FormsModule, AppDirectivesModule],
   exports: [
+    HotelListItemComponent,
     DateCityComponent,
     HotelGeoComponent,
     HotelQueryComponent,

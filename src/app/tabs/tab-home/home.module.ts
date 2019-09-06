@@ -1,5 +1,5 @@
 import { AgentGuard } from "./../../guards/agent.guard";
-import { DirectivesModule } from "../../directives/directives.module";
+import { AppDirectivesModule } from "../../directives/directives.module";
 import { IonicModule } from "@ionic/angular";
 import { RouterModule } from "@angular/router";
 import { NgModule } from "@angular/core";
@@ -22,7 +22,7 @@ import { AppComponentsModule } from "src/app/components/appcomponents.module";
       }
     ]),
     AppComponentsModule,
-    DirectivesModule
+    AppDirectivesModule
   ],
   declarations: [HomePage]
 })

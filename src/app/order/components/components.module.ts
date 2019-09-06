@@ -1,4 +1,4 @@
-import { DirectivesModule } from "src/app/directives/directives.module";
+import { AppDirectivesModule } from "src/app/directives/directives.module";
 import { FormsModule } from "@angular/forms";
 import { IonicModule } from "@ionic/angular";
 import { NgModule } from "@angular/core";
@@ -41,7 +41,7 @@ import { OrderHotelTripComponent } from "./order-hotel-trip/order-hotel-trip.com
     IonicModule,
     FormsModule,
     FlightModule,
-    DirectivesModule
+    AppDirectivesModule
   ],
   exports: [
     OrderItemComponent,

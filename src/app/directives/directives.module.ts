@@ -21,4 +21,4 @@ import { AutoGrowDirective } from "./auto-grow.directive";
     AutoGrowDirective
   ]
 })
-export class DirectivesModule {}
+export class AppDirectivesModule {}

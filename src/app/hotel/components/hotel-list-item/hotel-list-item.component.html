@@ -1,0 +1,16 @@
+<ion-item no-margin no-padding lines='none'>
+  <ion-thumbnail slot='start'>
+    <img [lazyloadImage]='item?.Hotel?.FileName' appLazyloadimage />
+  </ion-thumbnail>
+  <ion-label>
+    <h1>
+      <strong>{{item?.Hotel?.Name}}</strong>
+    </h1>
+    <h1>
+      {{item?.Hotel?.Grade}}
+    </h1>
+    <h1>
+      {{item?.Hotel?.Address}}
+    </h1>
+  </ion-label>
+</ion-item>

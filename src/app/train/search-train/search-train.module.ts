@@ -6,7 +6,7 @@ import { Routes, RouterModule } from "@angular/router";
 
 import { IonicModule } from "@ionic/angular";
 
-import { DirectivesModule } from "src/app/directives/directives.module";
+import { AppDirectivesModule } from "src/app/directives/directives.module";
 import { TmcGuard } from "src/app/guards/tmc.guard";
 import { SearchTrainPage } from "./search-train.page";
 import { TrainComponentsModule } from "../components/traincomponents.module";
@@ -26,7 +26,7 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    DirectivesModule,
+    AppDirectivesModule,
     TmcComponentsModule,
     TrainComponentsModule
   ],

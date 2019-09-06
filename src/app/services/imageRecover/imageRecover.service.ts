@@ -24,11 +24,12 @@ export class ImageRecoverService {
     this.Failover = null;
     this.imageRecover = null;
   }
-  initialize(container: HTMLElement) {
+  async initialize(container: HTMLElement) {
     if (!this.imageRecover) {
-      this.get().then(r => {
+      this.imageRecover = await this.get().catch(_ => null);
+      if (this.imageRecover) {
         this.imageRecover.Initialize(container);
-      });
+      }
     } else {
       this.imageRecover.Initialize(container);
     }

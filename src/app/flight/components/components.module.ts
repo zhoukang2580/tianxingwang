@@ -1,4 +1,4 @@
-import { DirectivesModule } from "src/app/directives/directives.module";
+import { AppDirectivesModule } from "src/app/directives/directives.module";
 import { AppComponentsModule } from "./../../components/appcomponents.module";
 import { IonicModule } from "@ionic/angular";
 import { NgModule } from "@angular/core";
@@ -54,12 +54,12 @@ import { PriceDetailComponent } from "./price-detail/price-detail.component";
     FlightPipesModule,
     ReactiveFormsModule,
     FlightDirectivesModule,
-    DirectivesModule,
+    AppDirectivesModule,
     AppComponentsModule,
     TmcComponentsModule
   ],
   exports: [
-    DirectivesModule,
+    AppDirectivesModule,
     FlightDirectivesModule,
     AppComponentsModule,
     FlightDynamicComponent,

@@ -4,11 +4,11 @@ import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { TabsPage } from "./tabs.page";
 import { TabsRoutingModule } from "./tabs-routing.module";
-import { DirectivesModule } from 'src/app/directives/directives.module';
+import { AppDirectivesModule } from 'src/app/directives/directives.module';
 
 @NgModule({
   declarations: [TabsPage],
-  imports: [IonicModule, CommonModule, FormsModule, TabsRoutingModule,DirectivesModule],
+  imports: [IonicModule, CommonModule, FormsModule, TabsRoutingModule,AppDirectivesModule],
   exports: []
 })
 export class TabsPageModule {}

@@ -1,4 +1,4 @@
-import { DirectivesModule } from 'src/app/directives/directives.module';
+import { AppDirectivesModule } from 'src/app/directives/directives.module';
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -24,7 +24,7 @@ const routes: Routes = [
     ReactiveFormsModule,
     RouterModule.forChild(routes),
     AppComponentsModule,
-    DirectivesModule
+    AppDirectivesModule
   ],
   declarations: [LoginPage]
 })

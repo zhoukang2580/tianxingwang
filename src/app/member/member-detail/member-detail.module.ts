@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 
 import { MemberDetailPage } from './member-detail.page';
 import { AuthorityGuard } from 'src/app/guards/authority.guard';
-import { DirectivesModule } from 'src/app/directives/directives.module';
+import { AppDirectivesModule } from 'src/app/directives/directives.module';
 
 const routes: Routes = [
   {
@@ -23,7 +23,7 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    DirectivesModule
+    AppDirectivesModule
   ],
   declarations: [MemberDetailPage]
 })

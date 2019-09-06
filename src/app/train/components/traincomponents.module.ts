@@ -1,7 +1,7 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
-import { DirectivesModule } from "src/app/directives/directives.module";
+import { AppDirectivesModule } from "src/app/directives/directives.module";
 import { IonicModule } from "@ionic/angular";
 import { ReactiveFormsModule, FormsModule } from "@angular/forms";
 import { SwitchStationComponent } from "./switch-station/switch-station.component";
@@ -26,7 +26,7 @@ import { TrainFilterComponent } from "./train-filter/train-filter.component";
     FormsModule,
     IonicModule,
     ReactiveFormsModule,
-    DirectivesModule,
+    AppDirectivesModule,
     AppComponentsModule,
     TmcComponentsModule
   ],

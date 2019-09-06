@@ -12,7 +12,7 @@ import { OrganizationComponent } from "./organization/organization.component";
 import { SelectTravelNumberComponent } from "./select-travel-number-popover/select-travel-number-popover.component";
 import { AddcontactsModalComponent } from "src/app/tmc/components/addcontacts-modal/addcontacts-modal.component";
 import { FilterPassengersPolicyComponent } from "./filter-passengers-popover/filter-passengers-policy-popover.component";
-import { DirectivesModule } from "src/app/directives/directives.module";
+import { AppDirectivesModule } from "src/app/directives/directives.module";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
 import { BookCredentialCompComponent } from "./book-credential-comp/book-credential-comp.component";
 import { BookIllegalReasonCompComponent } from "./book-illegal-reason-comp/book-illegal-reason-comp.component";
@@ -55,7 +55,7 @@ import { DaysCalendarComponent } from "./days-calendar/days-calendar.component";
     CommonModule,
     IonicModule,
     FormsModule,
-    DirectivesModule,
+    AppDirectivesModule,
     AppComponentsModule,
     MemberPipesModule
   ],

@@ -31,9 +31,14 @@ export class LazyloadimageDirective
     private configService: ConfigService,
     private apiService: ApiService,
     private imageRecorver: ImageRecoverService
-  ) {}
-  async ngOnInit() {
-    if (!this.Failover) {
+  ) {
+    this.Failover = imageRecorver.Failover;
+  }
+  ngOnInit() {
+    this.initFailover();
+  }
+  private async initFailover() {
+    if (!this.imageRecorver.Failover) {
       await this.imageRecorver.get();
       if (this.imageRecorver) {
         this.Failover = this.imageRecorver.Failover;
@@ -64,6 +69,9 @@ export class LazyloadimageDirective
     }
     if (this.image) {
       this.image.src = this.loadingImage || AppHelper.getDefaultLoadingImage();
+    }
+    if (!this.Failover) {
+      await this.initFailover();
     }
     console.timeEnd("afterviewinit");
   }

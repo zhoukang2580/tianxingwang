@@ -275,7 +275,19 @@ export class HotelService {
       hotelType: this.getSearchHotelModel().hotelType
     };
     req.IsShowLoading = true;
-    return this.apiService.getResponse<HotelResultEntity>(req);
+    return this.apiService.getResponse<HotelResultEntity>(req).pipe(
+      map(result => {
+        if (result && result.Data && result.Data.HotelDayPrices) {
+          result.Data.HotelDayPrices = result.Data.HotelDayPrices.map(it => {
+            if (it.Hotel && it.Hotel.Variables) {
+              it.Hotel.VariablesJsonObj = JSON.parse(it.Hotel.Variables);
+            }
+            return it;
+          });
+        }
+        return result;
+      })
+    );
   }
   getHotelPolicyAsync(hotels: HotelModel[], passengerIds: string[]) {
     const req = new RequestEntity();

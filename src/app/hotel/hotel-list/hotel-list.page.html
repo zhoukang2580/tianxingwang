@@ -26,12 +26,39 @@
       </ion-item>
     </ion-list>
   </ng-template>
-  <ng-container *ngIf='!isShowSearchBar else nosearchartempl'>
-    <ion-list>
-      <ion-item *ngFor='let items of [1,2,3,4,5]' (click)='onSearchItemClick()'>
-        圣诞快乐见风使舵
+  <ng-template #listTemp>
+    <ng-container *ngIf='!isShowSearchBar else nosearchartempl'>
+      <ion-list>
+        <ion-item *ngFor='let item of hotelDayPrices'>
+          <app-hotel-list-item [item]='item'></app-hotel-list-item>
+        </ion-item>
+      </ion-list>
+    </ng-container>
+  </ng-template>
+  <ng-container #fakeList *ngIf='isLoading else listTemp'>
+    <ion-list class='fakelist'>
+      <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8]'>
+        <ion-thumbnail>
+          <ion-skeleton-text style='height:3em;width:3em'></ion-skeleton-text>
+        </ion-thumbnail>
+        <ion-label>
+          <h1>
+            <ion-skeleton-text style="width:70%"></ion-skeleton-text>
+          </h1>
+          <h1>
+            <ion-skeleton-text style="width:80%"></ion-skeleton-text>
+          </h1>
+          <h1>
+            <ion-skeleton-text style="width:90%"></ion-skeleton-text>
+          </h1>
+          <h1>
+            <ion-skeleton-text style="width:100%"></ion-skeleton-text>
+          </h1>
+        </ion-label>
       </ion-item>
     </ion-list>
+    <ion-infinite-scroll (ionInfinite)="loadMore()">
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="正在加载..."></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
   </ng-container>
 </ion-content>
-<!-- <ion-backdrop *ngIf='isShowSearchBar' [visible]='true'></ion-backdrop> -->

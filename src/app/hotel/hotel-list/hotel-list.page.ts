@@ -19,7 +19,8 @@ import {
   IonContent,
   IonHeader,
   IonSearchbar,
-  IonRefresher
+  IonRefresher,
+  IonInfiniteScroll
 } from "@ionic/angular";
 import { Subscription } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
@@ -31,6 +32,8 @@ import {
   animate
 } from "@angular/animations";
 import { QueryTabComponent } from "../components/hotel-query/query-tab/query-tab.component";
+import { HotelDayPriceEntity } from "../models/HotelDayPriceEntity";
+import { finalize } from "rxjs/operators";
 
 @Component({
   selector: "app-hotel-list",
@@ -40,13 +43,15 @@ import { QueryTabComponent } from "../components/hotel-query/query-tab/query-tab
 export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   private subscriptions: Subscription[] = [];
   @ViewChild(IonRefresher) refresher: IonRefresher;
+  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(HotelQueryComponent) queryComp: HotelQueryComponent;
   @ViewChildren(IonSearchbar) searchbarEls: QueryList<IonSearchbar>;
   @HostBinding("class.show-search-bar")
   isShowSearchBar = false;
+  isLoading = false;
   hotelQueryModal: HotelQueryEntity = new HotelQueryEntity();
-  hotels: HotelEntity[];
+  hotelDayPrices: HotelDayPriceEntity[] = [];
   vmKeyowrds = "";
   loadDataSub = Subscription.EMPTY;
   constructor(
@@ -93,14 +98,35 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.loadDataSub) {
       this.loadDataSub.unsubscribe();
     }
+    this.isLoading = true;
     this.loadDataSub = this.hotelService
       .getHotelList(this.hotelQueryModal)
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+          setTimeout(() => {
+            if (this.scroller) {
+              this.scroller.complete();
+            }
+          }, 10);
+        })
+      )
       .subscribe(
         result => {
-          if (result && result.Data) {
+          if (result && result.Data && result.Data.HotelDayPrices) {
+            const arr = result.Data.HotelDayPrices;
+            if (this.scroller) {
+              this.scroller.disabled = arr.length == 0;
+            }
+            if (arr.length) {
+              this.hotelQueryModal.PageIndex++;
+              this.hotelDayPrices = [...this.hotelDayPrices, ...arr];
+            }
           }
         },
-        e => {}
+        e => {
+          console.error(e);
+        }
       );
   }
   onDateClick() {

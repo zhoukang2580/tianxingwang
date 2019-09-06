@@ -8,7 +8,7 @@ import { Routes, RouterModule } from "@angular/router";
 import { IonicModule } from "@ionic/angular";
 
 import { FlightComponentsModule } from "../components/components.module";
-import { DirectivesModule } from "src/app/directives/directives.module";
+import { AppDirectivesModule } from "src/app/directives/directives.module";
 import { TmcGuard } from "src/app/guards/tmc.guard";
 import { FlightDirectivesModule } from "../directives/directives.module";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
@@ -29,7 +29,7 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     FlightComponentsModule,
     FlightDirectivesModule,
-    DirectivesModule,
+    AppDirectivesModule,
     TmcComponentsModule
   ],
   declarations: [SearchFlightPage],

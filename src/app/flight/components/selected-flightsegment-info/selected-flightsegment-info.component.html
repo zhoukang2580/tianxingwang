@@ -13,30 +13,30 @@
     <ion-item-divider color='primary' sticky>
       <ion-label color='dark'>{{bookInfo?.passenger?.Name}}{{bookInfo?.credential?.Number}}</ion-label>
     </ion-item-divider>
-    <ion-item *ngIf='bookInfo?.flightSegmentInfo'>
+    <ion-item *ngIf='bookInfo?.bookInfo'>
       <div class='detail'>
         <div class='date'>
-          <strong>{{getDate(bookInfo?.flightSegmentInfo?.flightSegment)}} <ion-text color='secondary'>
-              {{getTripTypeTip(bookInfo?.flightSegmentInfo)}}</ion-text></strong>
+          <strong>{{getDate(bookInfo?.bookInfo?.flightSegment)}} <ion-text color='secondary'>
+              {{getTripTypeTip(bookInfo?.bookInfo)}}</ion-text></strong>
           <ion-button fill='clear' size='small' (click)='remove(bookInfo)'>
             <ion-icon name="trash" color='danger' mode='ios'>
             </ion-icon>
           </ion-button>
         </div>
-        <app-fly-list-item [flightSegment]='bookInfo?.flightSegmentInfo?.flightSegment' [showDetails]='true'
-          [flightPolicy]='bookInfo?.flightSegmentInfo?.flightPolicy'>
+        <app-fly-list-item [flightSegment]='bookInfo?.bookInfo?.flightSegment' [showDetails]='true'
+          [flightPolicy]='bookInfo?.bookInfo?.flightPolicy'>
         </app-fly-list-item>
         <div class='info'>
-          <ion-label text-wrap>税:￥{{bookInfo?.flightSegmentInfo?.flightSegment?.Tax}}</ion-label>
-          <ion-label color='danger'>￥{{bookInfo?.flightSegmentInfo?.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
+          <ion-label text-wrap>税:￥{{bookInfo?.bookInfo?.flightSegment?.Tax}}</ion-label>
+          <ion-label color='danger'>￥{{bookInfo?.bookInfo?.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
         </div>
         <ion-label class='rules' color='danger' text-wrap>
-          {{bookInfo?.flightSegmentInfo?.flightPolicy?.Rules?.join("; ")}}
+          {{bookInfo?.bookInfo?.flightPolicy?.Rules?.join("; ")}}
         </ion-label>
         <ion-label class='rules' text-wrap color='dark' (click)='onSelectLowestSegment(bookInfo)'
           *ngIf='showLowerSegment(bookInfo)'>
-          当前航班前后60分钟内有更低价航班:{{bookInfo?.flightSegmentInfo?.flightPolicy?.LowerSegment?.Number}}&nbsp;
-          {{getTime(bookInfo?.flightSegmentInfo?.flightPolicy?.LowerSegment?.TakeoffTime)}},价格:￥{{bookInfo?.flightSegmentInfo?.flightPolicy?.LowerSegment?.LowestFare}}
+          当前航班前后60分钟内有更低价航班:{{bookInfo?.bookInfo?.flightPolicy?.LowerSegment?.Number}}&nbsp;
+          {{getTime(bookInfo?.bookInfo?.flightPolicy?.LowerSegment?.TakeoffTime)}},价格:￥{{bookInfo?.bookInfo?.flightPolicy?.LowerSegment?.LowestFare}}
           <ion-button color='secondary' fill='clear'>选择该航班</ion-button>
         </ion-label>
         <div class='reset'>
@@ -46,7 +46,7 @@
       </div>
     </ion-item>
     <ion-item lines='none'
-      *ngIf='showSelectReturnTripButton&&bookInfo?.flightSegmentInfo?.tripType!=TripType.returnTrip'>
+      *ngIf='showSelectReturnTripButton&&bookInfo?.bookInfo?.tripType!=TripType.returnTrip'>
       <ion-button slot='end' expand='block' color='secondary' (click)='onSelectReturnTrip()'>
         选择回程
       </ion-button>
