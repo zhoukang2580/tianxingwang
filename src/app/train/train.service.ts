@@ -465,6 +465,7 @@ export class TrainService {
         } else {
           this.setBookInfoSource([i]);
         }
+        this.isInitializingSelfBookInfos = false;
       }
     }
   }

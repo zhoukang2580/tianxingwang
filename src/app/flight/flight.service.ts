@@ -571,6 +571,7 @@ export class FlightService {
         new CredentialsEntity()
     };
     this.addPassengerBookInfo(info);
+    this.isInitializingSelfBookInfos = false;
   }
   private async checkOrAddSelfBookTypeBookInfo() {
     if (
@@ -669,26 +670,38 @@ export class FlightService {
     const req = new RequestEntity();
     req.Method = `TmcApiFlightUrl-Home-Policy`;
     req.Version = "1.0";
-    const flights: FlightJourneyEntity[] = JSON.parse(JSON.stringify(Flights));
-    flights.forEach(fj => {
+    let flights: FlightJourneyEntity[] = JSON.parse(JSON.stringify(Flights));
+    flights = flights.map(fj => {
       if (fj.FlightRoutes) {
-        fj.FlightRoutes.forEach(r => {
+        fj.FlightRoutes = fj.FlightRoutes.map(r => {
           if (r.FlightSegments) {
-            r.FlightSegments.forEach(seg => {
+            r.FlightSegments = r.FlightSegments.map(seg => {
+              seg.flightSegment = null;
               seg.EiRule = null;
               seg.RefundRule = null;
               seg.Variables = null;
               seg.PoliciedCabins = null;
+              seg.RefundRule = null;
+              seg.ChangeRule = null;
               if (seg.Cabins) {
-                seg.Cabins.forEach(it => {
+                seg.Cabins = seg.Cabins.map(it => {
                   it.Rules = null;
+                  it.RefundChange = null;
+                  it.Rules = null;
+                  it.Variables = null;
+                  it.FlightPolicy = null;
+                  return it;
                 });
               }
+              return seg;
             });
           }
+          return r;
         });
       }
+      return fj;
     });
+    // console.log(flights);
     req.Data = {
       Flights: JSON.stringify(flights),
       Passengers: Passengers.join(",")

@@ -8,6 +8,7 @@ import { FlightPolicy } from "../PassengerFlightInfo";
 import { FlightFareType } from "./FlightFareType";
 
 export class FlightSegmentEntity {
+  flightSegment:FlightSegmentEntity;
   Id: string;
   /// <summary>
   /// 航班最低价
