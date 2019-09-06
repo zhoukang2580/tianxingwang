@@ -1,0 +1,27 @@
+import { FlightChangeDetailEntity } from "./flight/FlightChangeDetailEntity";
+import { FlightEndorsementDetailEntity } from "./flight/FlightEndorsementDetailEntity";
+
+export class FlightFareRuleEntity {
+  Airline: string;
+  Cabin: string;
+  /// <summary>
+  /// 退票信息
+  /// </summary>
+  public RefundDetail: FlightFareRuleDetailEntity;
+  /// <summary>
+  /// 改期信息
+  /// </summary>
+  public ChangeDetail: FlightChangeDetailEntity;
+  /// <summary>
+  /// 签转条件
+  /// </summary>
+  public EndorsementDetail: FlightEndorsementDetailEntity;
+  /// <summary>
+  /// 备注
+  /// </summary>
+  Remark: string;
+  /// <summary>
+  /// 行李额
+  /// </summary>
+  BaggageAllowance: string;
+}

@@ -2,3 +2,11 @@
   background-color: rgba(var(--ion-color-dark-rgb), 0.5);
 }
 
+.address-price {
+  ion-label {
+    flex: 1;
+  }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

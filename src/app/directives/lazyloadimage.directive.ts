@@ -62,7 +62,7 @@ export class LazyloadimageDirective
     }
   }
   async ngAfterViewInit() {
-    console.time("afterviewinit");
+    console.time("ngAfterViewInit");
     console.log("ngAfterViewInit", this.loadingImage);
     if (!this.image) {
       this.getImageEle();
@@ -73,7 +73,7 @@ export class LazyloadimageDirective
     if (!this.Failover) {
       await this.initFailover();
     }
-    console.timeEnd("afterviewinit");
+    console.timeEnd("ngAfterViewInit");
   }
   async ngOnChanges(changes: SimpleChanges) {
     if (

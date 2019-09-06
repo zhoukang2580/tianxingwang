@@ -669,8 +669,28 @@ export class FlightService {
     const req = new RequestEntity();
     req.Method = `TmcApiFlightUrl-Home-Policy`;
     req.Version = "1.0";
+    const flights: FlightJourneyEntity[] = JSON.parse(JSON.stringify(Flights));
+    flights.forEach(fj => {
+      if (fj.FlightRoutes) {
+        fj.FlightRoutes.forEach(r => {
+          if (r.FlightSegments) {
+            r.FlightSegments.forEach(seg => {
+              seg.EiRule = null;
+              seg.RefundRule = null;
+              seg.Variables = null;
+              seg.PoliciedCabins = null;
+              if (seg.Cabins) {
+                seg.Cabins.forEach(it => {
+                  it.Rules = null;
+                });
+              }
+            });
+          }
+        });
+      }
+    });
     req.Data = {
-      Flights: JSON.stringify(Flights),
+      Flights: JSON.stringify(flights),
       Passengers: Passengers.join(",")
     };
     req.IsShowLoading = true;

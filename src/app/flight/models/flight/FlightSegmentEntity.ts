@@ -3,10 +3,12 @@ import { FlightCabinFareType } from "./FlightCabinFareType";
 import { FlightStopCityEntity } from "./FlightStopCityEntity";
 import { FlightCabinEntity } from "./FlightCabinEntity";
 import { FlightMealType } from "../../pipes/flight-meal-type.pipe";
-import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
-import { FlightPolicy } from '../PassengerFlightInfo';
+import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
+import { FlightPolicy } from "../PassengerFlightInfo";
+import { FlightFareType } from "./FlightFareType";
 
 export class FlightSegmentEntity {
+  Id: string;
   /// <summary>
   /// 航班最低价
   /// </summary>
@@ -26,11 +28,19 @@ export class FlightSegmentEntity {
   /// <summary>
   /// 最低价舱位价格类型
   /// </summary>
-  LowestCabinFareType: FlightCabinFareType;
+  LowestCabinFareType: FlightFareType;
   /// <summary>
-  /// 机场税收
+  /// 税收 = FuelSurcharge + AirportTax
   /// </summary>
   Tax: string;
+  /// <summary>
+  /// 燃油附加费(新增)
+  /// </summary>
+  FuelFee: string;
+  /// <summary>
+  /// 机场建设费(新增)
+  /// </summary>
+  AirportFee: string;
   /// <summary>
   /// 经济舱全价
   /// </summary>
@@ -48,9 +58,12 @@ export class FlightSegmentEntity {
   /// </summary>
   Number: string;
   /// <summary>
-  // 航空公司
+  ///航空公司
   /// </summary>
   Airline: string;
+  /// <summary>
+  /// 航空公司图标
+  /// </summary>
   AirlineSrc: string;
   /// <summary>
   /// 航空公司名称
@@ -60,6 +73,35 @@ export class FlightSegmentEntity {
   /// 机型
   /// </summary>
   PlaneType: string;
+  /// <summary>
+  /// 餐食
+  /// M   Meal        不特定餐食
+  /// B   Breakfast   早餐
+  /// L   Lunch       午餐
+  /// C   Alcoholic Beverages Complimentary   免费酒精饮料
+  /// K   Continental Breakfast   大陆式早餐
+  /// D   Dinner      晚餐
+  /// S   Snack Or Brunch 点心或早午餐
+  /// O   Cold Meal   冷食
+  /// H   Hot Meal    热食
+  /// R   Refreshment 茶点或小吃
+  /// </summary>
+  MealType: FlightMealType;
+  /// <summary>
+  /// 餐食
+  /// </summary>
+  Meal: string;
+  /// <summary>
+  /// 连接级别
+  /// DS# 无缝连接级
+  /// AS# 近期有航班变更
+  /// </summary>
+  Link: string;
+  /// <summary>
+  /// 接受选座
+  /// ASR=^
+  /// </summary>
+  IsChooseSeat: boolean;
   /// <summary>
   /// 机型描述
   /// </summary>
@@ -104,12 +146,10 @@ export class FlightSegmentEntity {
   /// 起飞时间
   /// </summary>
   TakeoffTime: string;
-  TakeoffShortTime: string;
   /// <summary>
   /// 到达时间
   /// </summary>
   ArrivalTime: string;
-  ArrivalShortTime: string;
   /// <summary>
   /// 始发航站楼
   /// </summary>
@@ -124,19 +164,19 @@ export class FlightSegmentEntity {
   /// 直飞 False
   /// </summary>
   IsStop: boolean;
-  // Normal价
+  //Normal价
   BasicPrice: string;
-  // 前后航班最低价
+  //前后航班最低价
   LowerPrice: string;
-  // 前后最低价航班
+  //前后最低价航班
   LowerFlightNumber: string;
-  // 当前航班最低价
+  //当前航班最低价
   CurrentLowestFare: string;
-  // 退政策
+  //退政策
   RefundRule: string;
-  // 改政策
+  //改政策
   ChangeRule: string;
-  // Ei政策
+  //Ei政策
   EiRule: string;
   /// <summary>
   /// 经停城市
@@ -156,29 +196,18 @@ export class FlightSegmentEntity {
   /// <returns></returns>
   FlyTime: string;
   FlyTimeName: string;
-  MealType: FlightMealType;
-  Meal: string;
-  /// <summary>
-  /// 连接级别
-  /// DS# 无缝连接级
-  /// AS# 近期有航班变更
-  /// </summary>
-  Link: string;
-  /// <summary>
-  /// 接受选座
-  /// ASR=^
-  /// </summary>
-  IsChooseSeat: boolean;
-  /// <summary>
-  /// 舱位
-  /// </summary>
-  Cabins: FlightCabinEntity[];
-  PoliciedCabins: FlightPolicy[];
-  TrackById: number;
+  MealTypeName: string;
   TakeoffTimeStamp: number;
   ArrivalTimeStamp: number;
   AddOneDayTip: string;
   PassengerKeys: string[];
   FromCity: TrafficlineEntity;
   ToCity: TrafficlineEntity;
+  PoliciedCabins: FlightPolicy[];
+  Cabins: FlightCabinEntity[];
+
+  TakeoffShortTime: string;
+
+  ArrivalShortTime: string;
+  TrackById: number;
 }

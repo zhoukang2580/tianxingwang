@@ -1,4 +1,4 @@
-import { IFlightSegmentInfo } from './../models/PassengerFlightInfo';
+import { IFlightSegmentInfo } from "./../models/PassengerFlightInfo";
 import { PassengerBookInfo } from "./../../tmc/tmc.service";
 import { environment } from "src/environments/environment";
 import { ApiService } from "src/app/services/api/api.service";
@@ -115,6 +115,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   isFiltered = false;
   isLeavePage = false;
   isSelfBookType = true;
+  currentProcessStatus = "正在获取航班列表";
   st = 0;
   timeoutid: any;
   selectedPassengersNumbers$: Observable<number>;
@@ -192,31 +193,27 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         map(infos => {
           const goInfo = infos.find(
             item =>
-              item.bookInfo &&
-              item.bookInfo.tripType == TripType.departureTrip
+              item.bookInfo && item.bookInfo.tripType == TripType.departureTrip
           );
           const backInfo = infos.find(
             item =>
-              item.bookInfo &&
-              item.bookInfo.tripType == TripType.returnTrip
+              item.bookInfo && item.bookInfo.tripType == TripType.returnTrip
           );
           return {
             goArrivalDateTime:
-              goInfo &&
-              goInfo.bookInfo &&
-              goInfo.bookInfo.flightSegment
-                ? moment(
-                    goInfo.bookInfo.flightSegment.TakeoffTime
-                  ).format("YYYY-MM-DD HH:mm")
+              goInfo && goInfo.bookInfo && goInfo.bookInfo.flightSegment
+                ? moment(goInfo.bookInfo.flightSegment.TakeoffTime).format(
+                    "YYYY-MM-DD HH:mm"
+                  )
                 : "",
             backTakeOffDateTime:
               backInfo &&
               backInfo.bookInfo &&
               backInfo.bookInfo.flightSegment &&
               backInfo.bookInfo.tripType == TripType.returnTrip
-                ? moment(
-                    backInfo.bookInfo.flightSegment.TakeoffTime
-                  ).format("YYYY-MM-DD HH:mm")
+                ? moment(backInfo.bookInfo.flightSegment.TakeoffTime).format(
+                    "YYYY-MM-DD HH:mm"
+                  )
                 : ""
           };
         })
@@ -360,11 +357,26 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         }
         this.vmFlights = [];
         this.isLoading = true;
+        if (
+          !this.flightJourneyList ||
+          !this.flightJourneyList.length ||
+          loadDataFromServer
+        ) {
+          this.currentProcessStatus = "正在获取航班列表";
+          this.flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync(
+            this.searchFlightModel
+          );
+          if (this.flightJourneyList && this.flightJourneyList.length) {
+            await this.renderFlightList(
+              this.flightService.getTotalFlySegments(this.flightJourneyList)
+            );
+          }
+        }
         let data = JSON.parse(JSON.stringify(this.flightJourneyList));
         this.hasDataSource.next(false);
         if (loadDataFromServer) {
           // 强制从服务器端返回新数据
-          data = await this.loadPolicyedFlightsAsync();
+          data = await this.loadPolicyedFlightsAsync(this.flightJourneyList);
         }
         // 根据筛选条件过滤航班信息：
         const filteredFlightJourenyList = this.filterFlightJourneyList(data);
@@ -399,12 +411,11 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }, 100);
   }
-  private async loadPolicyedFlightsAsync(): Promise<FlightJourneyEntity[]> {
-    // 先获取最新的数据
+  private async loadPolicyedFlightsAsync(
+    flightJourneyList: FlightJourneyEntity[]
+  ): Promise<FlightJourneyEntity[]> {
+    this.currentProcessStatus = "正在计算差标";
     this.policyflights = [];
-    let flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync(
-      this.searchFlightModel
-    );
     if (flightJourneyList.length == 0) {
       return [];
     }
@@ -647,7 +658,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     const data = d.data as PassengerBookInfo<IFlightSegmentInfo>;
     this.filterPassengerPolicyFlights(data);
   }
-  private async filterPassengerPolicyFlights(bookInfo: PassengerBookInfo<IFlightSegmentInfo>) {
+  private async filterPassengerPolicyFlights(
+    bookInfo: PassengerBookInfo<IFlightSegmentInfo>
+  ) {
     this.st = Date.now();
     this.vmFlights = this.flightService.filterPassengerPolicyFlights(
       bookInfo,
