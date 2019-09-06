@@ -503,7 +503,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     ) {
       return;
     }
-    this.orderTravelPayType = this.tmc && this.tmc.FlightPayType;
+    this.viewModel.orderTravelPayType = this.tmc && this.tmc.FlightPayType;
     const arr = Object.keys(this.initialBookDto.PayTypes);
     this.viewModel.orderTravelPayTypes = [];
     arr.forEach(it => {
