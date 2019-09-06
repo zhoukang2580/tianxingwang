@@ -1,4 +1,4 @@
-import { ITrainInfo } from './../train.service';
+import { ITrainInfo } from "./../train.service";
 import { CalendarService } from "./../../tmc/calendar.service";
 import { TrainEntity } from "./../models/TrainEntity";
 import { InsuranceProductEntity } from "./../../insurance/models/InsuranceProductEntity";
@@ -289,7 +289,6 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         combineInfo.isOtherOrganization = false;
         combineInfo.notifyLanguage = "cn";
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
-        combineInfo.orderTravelPayType = this.tmc && this.tmc.FlightPayType;
         combineInfo.insuranceProducts = this.isShowInsurances(
           bookInfo.bookInfo &&
             bookInfo.bookInfo.trainEntity &&
@@ -504,6 +503,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     ) {
       return;
     }
+    this.orderTravelPayType = this.tmc && this.tmc.FlightPayType;
     const arr = Object.keys(this.initialBookDto.PayTypes);
     this.viewModel.orderTravelPayTypes = [];
     arr.forEach(it => {
@@ -822,7 +822,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         showErrorMsg(LanguageHelper.Flight.getTravelTypeTip(), combindInfo);
         return false;
       }
-      if (!combindInfo.orderTravelPayType) {
+      if (this.viewModel && !this.viewModel.orderTravelPayType) {
         showErrorMsg(
           LanguageHelper.Flight.getrOderTravelPayTypeTip(),
           combindInfo
@@ -834,7 +834,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       p.Credentials.Account =
         p.Credentials.Account || combindInfo.credential.Account;
       p.TravelType = combindInfo.travelType;
-      p.TravelPayType = combindInfo.orderTravelPayType;
+      p.TravelPayType = this.viewModel.orderTravelPayType;
       p.IsSkipApprove = combindInfo.isSkipApprove;
       if (
         combindInfo.bookInfo.bookInfo &&
@@ -1063,6 +1063,7 @@ interface TmcOutNumberInfo {
 }
 export interface IBookTrainViewModel {
   tmc: TmcEntity;
+  orderTravelPayType: OrderTravelPayType;
   bookDto: OrderBookDto;
   travelForm: TravelFormEntity;
   illegalReasons: IllegalReasonEntity[];
@@ -1088,7 +1089,6 @@ export interface IPassengerBookInfo {
   bookInfo: PassengerBookInfo<ITrainInfo>;
   isOpenrules?: boolean;
   travelType: OrderTravelType;
-  orderTravelPayType: OrderTravelPayType;
   addContacts?: AddContact[];
   isOtherCostCenter?: boolean;
   otherCostCenterCode?: string;

@@ -84,11 +84,12 @@ import { environment } from "src/environments/environment";
 export class BookPage implements OnInit, AfterViewInit {
   initialBookDtoModel: InitialBookDtoModel;
   errors: any;
-  orderTravelType = OrderTravelType;
+  OrderTravelType = OrderTravelType;
   orderTravelPayTypes: {
     label: string;
     value: OrderTravelPayType;
   }[];
+  orderTravelPayType: OrderTravelPayType;
   checkPayCount = 5;
   checkPayCountIntervalTime = 3 * 1000;
   checkPayCountIntervalId: any;
@@ -161,6 +162,7 @@ export class BookPage implements OnInit, AfterViewInit {
     if (!this.initialBookDtoModel || !this.initialBookDtoModel.PayTypes) {
       return;
     }
+    this.orderTravelPayType = this.tmc && this.tmc.FlightPayType;
     const arr = Object.keys(this.initialBookDtoModel.PayTypes);
     this.orderTravelPayTypes = [];
     arr.forEach(it => {
@@ -426,10 +428,7 @@ export class BookPage implements OnInit, AfterViewInit {
     // console.time("总计");
     if (this.vmCombindInfos) {
       let totalPrice = this.vmCombindInfos.reduce((arr, item) => {
-        if (
-          item.modal.bookInfo &&
-          item.modal.bookInfo.flightPolicy
-        ) {
+        if (item.modal.bookInfo && item.modal.bookInfo.flightPolicy) {
           const info = item.modal.bookInfo;
           arr = AppHelper.add(
             arr,
@@ -780,7 +779,7 @@ export class BookPage implements OnInit, AfterViewInit {
         showErrorMsg(LanguageHelper.Flight.getTravelTypeTip(), combindInfo);
         return false;
       }
-      if (!combindInfo.orderTravelPayType) {
+      if (!this.orderTravelPayType) {
         showErrorMsg(
           LanguageHelper.Flight.getrOderTravelPayTypeTip(),
           combindInfo
@@ -792,7 +791,7 @@ export class BookPage implements OnInit, AfterViewInit {
       p.Credentials.Account =
         p.Credentials.Account || combindInfo.modal.credential.Account;
       p.TravelType = combindInfo.travelType;
-      p.TravelPayType = combindInfo.orderTravelPayType;
+      p.TravelPayType = this.orderTravelPayType;
       p.IsSkipApprove = combindInfo.isSkipApprove;
       p.FlightSegment = combindInfo.modal.bookInfo.flightSegment;
       p.FlightCabin = combindInfo.modal.bookInfo.flightPolicy.Cabin;
@@ -1030,7 +1029,6 @@ export class BookPage implements OnInit, AfterViewInit {
           isOtherOrganization: false,
           notifyLanguage: "cn",
           travelType: OrderTravelType.Business, // 默认全部因公
-          orderTravelPayType: this.tmc && this.tmc.FlightPayType,
           insuranceProducts: this.isShowInsurances(
             item.bookInfo &&
               item.bookInfo.flightSegment &&
@@ -1260,5 +1258,4 @@ interface ICombindInfo {
   }[];
   tmcOutNumberInfos: TmcOutNumberInfo[];
   travelType: OrderTravelType; // 因公、因私
-  orderTravelPayType: OrderTravelPayType; //
 }

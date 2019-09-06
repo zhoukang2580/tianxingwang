@@ -230,14 +230,14 @@
           <div class='travel-type ion-margin-top'>
             差旅类型:
             <ion-radio-group [(ngModel)]='combindInfo.travelType' name='travelType'>
-              <ion-item *ngIf='checkOrderTravelType(orderTravelType.Business)'>
+              <ion-item *ngIf='checkOrderTravelType(OrderTravelType.Business)'>
                 <ion-label>因公</ion-label>
-                <ion-radio [value]="orderTravelType.Business"
-                  [checked]='checkOrderTravelType(orderTravelType.Business)'></ion-radio>
+                <ion-radio [value]="OrderTravelType.Business"
+                  [checked]='checkOrderTravelType(OrderTravelType.Business)'></ion-radio>
               </ion-item>
-              <ion-item *ngIf='checkOrderTravelType(orderTravelType.Person)'>
+              <ion-item *ngIf='checkOrderTravelType(OrderTravelType.Person)'>
                 <ion-label>因私</ion-label>
-                <ion-radio [value]="orderTravelType.Person" [checked]='checkOrderTravelType(orderTravelType.Person)'>
+                <ion-radio [value]="OrderTravelType.Person" [checked]='checkOrderTravelType(OrderTravelType.Person)'>
                 </ion-radio>
               </ion-item>
             </ion-radio-group>
@@ -254,22 +254,6 @@
       </ion-item-group>
       <ion-item-group>
         <ion-item-divider>
-          支付方式：
-        </ion-item-divider>
-        <ion-item>
-          <div style='width: 100%'>
-            <ion-radio-group [(ngModel)]='combindInfo.orderTravelPayType' name='travelPayType'>
-              <ion-item *ngFor='let pt of orderTravelPayTypes'>
-                <ion-label>{{pt.label}}</ion-label>
-                <ion-radio [value]="pt.value" [checked]='combindInfo.orderTravelPayType==pt.value'>
-                </ion-radio>
-              </ion-item>
-            </ion-radio-group>
-          </div>
-        </ion-item>
-      </ion-item-group>
-      <ion-item-group>
-        <ion-item-divider>
           添加联系人:
         </ion-item-divider>
         <ion-item>
@@ -278,6 +262,22 @@
         </ion-item>
       </ion-item-group>
     </ion-list>
+    <ion-item-group>
+      <ion-item-divider>
+        支付方式：
+      </ion-item-divider>
+      <ion-item>
+        <div style='width: 100%'>
+          <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType'>
+            <ion-item *ngFor='let pt of orderTravelPayTypes'>
+              <ion-label>{{pt.label}}</ion-label> 
+              <ion-radio [value]="pt.value" [checked]='orderTravelPayType==pt.value'>
+              </ion-radio>
+            </ion-item>
+          </ion-radio-group>
+        </div>
+      </ion-item>
+    </ion-item-group>
   </ng-container>
   <ng-template #errorTemp>
     <ion-row style="position: relative;top:35%">
