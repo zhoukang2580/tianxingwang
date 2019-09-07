@@ -19,7 +19,7 @@ import {
   ViewChild
 } from "@angular/core";
 import { trigger, transition, animate } from "@angular/animations";
-import { ConditionModel } from "../../models/ConditionModel";
+import { HotelConditionModel } from "../../models/ConditionModel";
 import { Storage } from "@ionic/storage";
 import {
   IRankItem,
@@ -60,7 +60,7 @@ export class HotelQueryComponent implements OnInit {
   @ViewChild(RecommendRankComponent)
   hotelRecommendRankComp: RecommendRankComponent;
   hotelQueryModel: HotelQueryEntity;
-  conditions: ConditionModel;
+  conditions: HotelConditionModel;
   isActiveTab = false;
   activeTab: ITab;
   constructor(
@@ -70,9 +70,7 @@ export class HotelQueryComponent implements OnInit {
   ) {
     this.hotelQueryChange = new EventEmitter();
   }
-  async onReset() {
-    // this.conditions = await this.storage.get("mock-hotel-condition");
-    console.log("query component ,onreset", this.conditions)
+  private async initConditions() {
     if (
       !this.conditions ||
       !this.conditions.Amenities ||
@@ -80,7 +78,7 @@ export class HotelQueryComponent implements OnInit {
       !this.conditions.Geos
     ) {
       this.conditions = await this.hotelService
-        .getConditions()
+        .getConditions(true)
         .catch(_ => null);
       // console.log(JSON.stringify(this.conditions));
       if (this.conditions) {
@@ -100,6 +98,11 @@ export class HotelQueryComponent implements OnInit {
         }
       }
     }
+  }
+  async onReset() {
+    // this.conditions = await this.storage.get("mock-hotel-condition");
+    console.log("query component ,onreset", this.conditions)
+    await this.initConditions();
     this.hotelQueryModel = new HotelQueryEntity();
     if (this.hotelFilterComp) {
       this.hotelFilterComp.onReset();

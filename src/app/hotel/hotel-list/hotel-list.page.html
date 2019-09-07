@@ -28,7 +28,7 @@
   </ng-template>
   <ng-template #listTemp>
     <ng-container *ngIf='!isShowSearchBar else nosearchartempl'>
-      <ion-list>
+      <ion-list *ngIf='hotelDayPrices?.length else noMoreData'>
         <ion-item *ngFor='let item of hotelDayPrices'>
           <ion-thumbnail slot='start'>
             <img [lazyloadImage]='item?.Hotel?.FileName' appLazyloadimage />
@@ -53,6 +53,9 @@
           </ion-label>
         </ion-item>
       </ion-list>
+      <ng-template #noMoreData>
+        <app-or-comp>暂无数据</app-or-comp>
+      </ng-template>
     </ng-container>
   </ng-template>
   <ng-container #fakeList *ngIf='isLoading else listTemp'>

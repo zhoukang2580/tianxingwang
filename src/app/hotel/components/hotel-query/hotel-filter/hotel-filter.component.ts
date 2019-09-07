@@ -1,7 +1,9 @@
+import { TmcService } from 'src/app/tmc/tmc.service';
+import { HotelService } from './../../../hotel.service';
 import { AmenityEntity } from "./../../../models/AmenityEntity";
 import { Component, OnInit, EventEmitter, Input, Output, OnChanges, SimpleChanges } from "@angular/core";
 import { BrandEntity } from "src/app/hotel/models/BrandEntity";
-import { ConditionModel } from "src/app/hotel/models/ConditionModel";
+import { HotelConditionModel } from "src/app/hotel/models/ConditionModel";
 import { ToastController } from "@ionic/angular";
 export interface IFilterTab<T> {
   hasFilterItem?: boolean;
@@ -27,12 +29,12 @@ export interface IFilterTabItem<T> {
   styleUrls: ["./hotel-filter.component.scss"]
 })
 export class HotelFilterComponent implements OnInit {
-  @Input() conditionModel: ConditionModel;
+ conditionModel: HotelConditionModel;
   @Output() filter: EventEmitter<any>;
   tabs: IFilterTab<IFilterTabItem<BrandEntity | AmenityEntity>>[] = [];
   isShowFilter = false;
   items: IFilterTabItem<BrandEntity | AmenityEntity>[];
-  constructor(private toastCtrl: ToastController) {
+  constructor(private toastCtrl: ToastController, private hotelService: HotelService) {
     this.filter = new EventEmitter();
   }
   onFilter() {
@@ -45,11 +47,15 @@ export class HotelFilterComponent implements OnInit {
     });
     this.items = this.tabs.find(it => it.active).items;
   }
-  ngOnInit() {
+ async ngOnInit() {
     console.log("hotel-filter ngOnInit", this.conditionModel);
+    await this.initConditions();
     if (this.conditionModel && this.conditionModel.Brands) {
       this.initTabs();
     }
+  }
+  private async initConditions() {
+    this.conditionModel=await this.hotelService.getConditions();
   }
   private initTabs() {
     this.tabs = [];
@@ -67,7 +73,7 @@ export class HotelFilterComponent implements OnInit {
     }
   }
   private initTabBrand() {
-    if(!this.conditionModel.Brands){
+    if (!this.conditionModel.Brands) {
       return;
     }
     const brands = this.conditionModel.Brands.slice(0, 8);
@@ -131,7 +137,7 @@ export class HotelFilterComponent implements OnInit {
     this.tabs.push(tabBrand);
   }
   private initTabTheme() {
-    if(!this.conditionModel.Amenities){
+    if (!this.conditionModel.Amenities) {
       return;
     }
     const amenities = this.conditionModel.Amenities.filter(
@@ -151,7 +157,7 @@ export class HotelFilterComponent implements OnInit {
     this.tabs.push(tab);
   }
   private initTabService() {
-    if(!this.conditionModel.Amenities){
+    if (!this.conditionModel.Amenities) {
       return;
     }
     const amenities = this.conditionModel.Amenities.filter(
@@ -171,7 +177,7 @@ export class HotelFilterComponent implements OnInit {
     this.tabs.push(tab);
   }
   private initTabFacility() {
-    if(!this.conditionModel.Amenities){
+    if (!this.conditionModel.Amenities) {
       return;
     }
     const amenities = this.conditionModel.Amenities.filter(

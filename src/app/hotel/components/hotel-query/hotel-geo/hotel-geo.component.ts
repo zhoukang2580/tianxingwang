@@ -1,7 +1,9 @@
+import { TmcService } from './../../../../tmc/tmc.service';
+import { HotelService } from './../../../hotel.service';
 import { AppHelper } from "src/app/appHelper";
 import { GeoEntity } from "./../../../models/GeoEntity";
 import { Component, OnInit, Input, EventEmitter, Output } from "@angular/core";
-import { ConditionModel } from "src/app/hotel/models/ConditionModel";
+import { HotelConditionModel } from "src/app/hotel/models/ConditionModel";
 export interface IGeoTab<T> {
   id: string;
   label: string;
@@ -10,21 +12,21 @@ export interface IGeoTab<T> {
   isMulti?: boolean;
   items?: T[];
   tag?:
-    | "Metro"
-    | "RailwayStation"
-    | "CarStation"
-    | "Airport"
-    | "District"
-    | "Mall"
-    | "CommericalCenter"
-    | "Landmark"
-    | "Hospital"
-    | "University"
-    | "Venue"
-    | "InFeatureSpot"
-    | "OutFeatureSpot"
-    | "Group"
-    | "Company";
+  | "Metro"
+  | "RailwayStation"
+  | "CarStation"
+  | "Airport"
+  | "District"
+  | "Mall"
+  | "CommericalCenter"
+  | "Landmark"
+  | "Hospital"
+  | "University"
+  | "Venue"
+  | "InFeatureSpot"
+  | "OutFeatureSpot"
+  | "Group"
+  | "Company";
 }
 export interface IGeoItem<T> {
   id?: string;
@@ -42,18 +44,22 @@ export interface IGeoItem<T> {
   styleUrls: ["./hotel-geo.component.scss"]
 })
 export class HotelGeoComponent implements OnInit {
-  @Input() conditionModel: ConditionModel;
+ conditionModel: HotelConditionModel;
   @Output() geoFilterChange: EventEmitter<any>;
   tabs: IGeoTab<IGeoItem<GeoEntity>>[];
   secondaryItems: IGeoItem<GeoEntity>[];
   thirdItems: IGeoItem<GeoEntity>[];
   normalItems: IGeoItem<GeoEntity>[];
-  constructor() {
+  constructor(private hotelService: HotelService) {
     this.geoFilterChange = new EventEmitter();
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    await this.initConditions();
     this.initTabs();
+  }
+  private async initConditions(){
+    this.conditionModel=await this.hotelService.getConditions();
   }
   onItemClick(item: IGeoItem<GeoEntity>, items: IGeoItem<GeoEntity>[]) {
     if (!item) {
@@ -92,7 +98,7 @@ export class HotelGeoComponent implements OnInit {
       tab.hasFilterItem =
         tab.active && tab.tag == "Metro"
           ? tab.items &&
-            tab.items.some(it => it.items && it.items.some(k => k.isSelected))
+          tab.items.some(it => it.items && it.items.some(k => k.isSelected))
           : tab.items && tab.items.some(it => it.isSelected);
     });
     console.timeEnd("checkTabsHasFilteredItem");
@@ -135,6 +141,7 @@ export class HotelGeoComponent implements OnInit {
     });
     this.secondaryItems = tab.items || [];
     if (this.secondaryItems.some(it => it.items && it.items.length > 0)) {
+      this.secondaryItems[0].isSelected = true;
       this.thirdItems = this.secondaryItems[0].items;
     } else {
       this.normalItems = tab.items;

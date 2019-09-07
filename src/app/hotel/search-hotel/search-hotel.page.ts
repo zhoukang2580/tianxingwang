@@ -119,7 +119,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       moment().add(1, "days")
     );
   }
-  onShowSelectedBookInfos() {}
+  onShowSelectedBookInfos() { }
   onSelectPassenger() {
     this.isLeavePage = true;
     this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
@@ -139,7 +139,8 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       ...this.hotelService.getSearchHotelModel(),
       checkInDate: this.checkInDate.date,
       checkOutDate: this.checkOutDate.date,
-      destinationCity: this.destinationCity
+      destinationCity: this.destinationCity,
+      isRefreshData:true,
     });
     this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
   }

@@ -3,7 +3,7 @@ import { AmenityEntity } from "./AmenityEntity";
 import { BrandEntity } from "./BrandEntity";
 import { GeoEntity } from "./GeoEntity";
 
-export class ConditionModel {
+export class HotelConditionModel {
   public Tmc: TmcEntity;
   /// <summary>
   /// 主题

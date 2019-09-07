@@ -26,7 +26,7 @@ import { HotelResultEntity } from "./models/HotelResultEntity";
 import { HotelModel } from "./models/HotelModel";
 import { HotelPassengerModel } from "./models/HotelPassengerModel";
 import { CalendarService } from "../tmc/calendar.service";
-import { ConditionModel } from "./models/ConditionModel";
+import { HotelConditionModel } from "./models/ConditionModel";
 import { HotelDayPriceEntity } from "./models/HotelDayPriceEntity";
 export class SearchHotelModel {
   checkInDate: string;
@@ -53,6 +53,7 @@ export class HotelService {
   private localHotelCities: TrafficlineEntity[];
   private lastUpdateTime = 0;
   private isInitializingSelfBookInfos = false;
+  conditionModel: HotelConditionModel;
   constructor(
     private apiService: ApiService,
     identityService: IdentityService,
@@ -77,6 +78,34 @@ export class HotelService {
     identityService.getIdentitySource().subscribe(res => {
       this.disposal();
     });
+  }
+  async getConditions(forceFetch = false) {
+    if (
+      forceFetch ||
+      !this.conditionModel ||
+      !this.conditionModel.Amenities ||
+      !this.conditionModel.Brands ||
+      !this.conditionModel.Geos
+    ) {
+      this.conditionModel = await this
+        .getHotelConditions()
+        .catch(_ => null);
+      // console.log(JSON.stringify(this.conditionModel));
+      if (this.conditionModel) {
+        if (this.conditionModel.Geos) {
+          this.conditionModel.Geos = this.conditionModel.Geos.map(geo => {
+            if (geo.Variables) {
+              geo.VariablesJsonObj = JSON.parse(geo.Variables);
+            }
+            return geo;
+          });
+        }
+        if (!this.conditionModel.Tmc) {
+          this.conditionModel.Tmc = await this.tmcService.getTmc().catch(_ => null);
+        }
+      }
+    }
+    return this.conditionModel;
   }
   private disposal() {
     this.initSearchHotelModel();
@@ -233,7 +262,7 @@ export class HotelService {
     }
     return this.localHotelCities;
   }
-  getConditions(cityCode?: string) {
+  private getHotelConditions(cityCode?: string) {
     const req = new RequestEntity();
     cityCode =
       cityCode ||
@@ -244,7 +273,7 @@ export class HotelService {
       cityCode
     };
     req.IsShowLoading = true;
-    return this.apiService.getPromiseData<ConditionModel>(req);
+    return this.apiService.getPromiseData<HotelConditionModel>(req);
   }
   private getFirstLetter(name: string) {
     const pyFl = `${jsPy.getFullChars(name)}`.charAt(0);
@@ -261,7 +290,7 @@ export class HotelService {
     return local;
   }
   getHotelList(query: HotelQueryEntity) {
-    const hotelquery={
+    const hotelquery = {
       ...query
     }
     const req = new RequestEntity();
