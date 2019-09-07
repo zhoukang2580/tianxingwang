@@ -4,7 +4,7 @@ import { ConfigEntity } from "./config.entity";
 import { RequestEntity } from "../api/Request.entity";
 import { ApiService } from "../api/api.service";
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, from, of, Observable } from "rxjs";
+import { BehaviorSubject, from, of, Observable, throwError } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
 import { switchMap, tap, map, finalize } from "rxjs/operators";
 
@@ -13,7 +13,7 @@ import { switchMap, tap, map, finalize } from "rxjs/operators";
 })
 export class ConfigService {
   private config: ConfigEntity;
-
+  private isLoading=false;
   constructor(
     private apiService: ApiService,
     identityService: IdentityService
@@ -60,7 +60,9 @@ export class ConfigService {
           },
           error => {
             reject(error);
-            subscription.unsubscribe();
+            if(subscription){
+              subscription.unsubscribe();
+            }
           },
           () => {}
         );
@@ -70,7 +72,11 @@ export class ConfigService {
     if (this.config.Status) {
       return of(this.config);
     }
+    if(this.isLoading){
+      return throwError(null);
+    }
     const data = { domain: AppHelper.getDomain() };
+    this.isLoading=true;
     return this.apiService
       .send<{
         DefaultImageUrl?: string;
@@ -81,6 +87,9 @@ export class ConfigService {
         Style?: string;
       }>("ApiHomeUrl-Router-Get", data)
       .pipe(
+        finalize(()=>{
+          this.isLoading=false;
+        }),
         map(r => {
           if (r.Data) {
             this.config.Status = true;
