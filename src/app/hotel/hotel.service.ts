@@ -91,9 +91,9 @@ export class HotelService {
       .add(1, "days")
       .format("YYYY-MM-DD");
     m.destinationCity = new TrafficlineEntity();
-    m.destinationCity.CityName = "上海";
-    m.destinationCity.Name = "上海";
-    m.destinationCity.Code = m.destinationCity.CityCode = "3101";
+    m.destinationCity.CityName = "北京";
+    m.destinationCity.Name = "北京";
+    m.destinationCity.Code = m.destinationCity.CityCode = "1101";
     this.setSearchHotelModel(m);
   }
   getCurPosition() {
@@ -260,7 +260,10 @@ export class HotelService {
     const local = await this.storage.get(`LocalHotelCityCache`);
     return local;
   }
-  getHotelList(hotelquery: HotelQueryEntity) {
+  getHotelList(query: HotelQueryEntity) {
+    const hotelquery={
+      ...query
+    }
     const req = new RequestEntity();
     req.Method = `TmcApiHotelUrl-Home-List`;
     const city = this.getSearchHotelModel().destinationCity;

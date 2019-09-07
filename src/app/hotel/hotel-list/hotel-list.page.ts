@@ -3,7 +3,7 @@ import { HotelResultEntity } from "./../models/HotelResultEntity";
 import { HotelQueryComponent } from "./../components/hotel-query/hotel-query.component";
 import { HotelQueryEntity } from "./../models/HotelQueryEntity";
 import { Router } from "@angular/router";
-import { HotelService } from "./../hotel.service";
+import { HotelService, SearchHotelModel } from "./../hotel.service";
 import {
   Component,
   OnInit,
@@ -50,6 +50,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   @HostBinding("class.show-search-bar")
   isShowSearchBar = false;
   isLoading = false;
+  searchHotelModel: SearchHotelModel;
   hotelQueryModal: HotelQueryEntity = new HotelQueryEntity();
   hotelDayPrices: HotelDayPriceEntity[] = [];
   vmKeyowrds = "";
@@ -58,12 +59,26 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     private navCtrl: NavController,
     private hotelService: HotelService,
     private router: Router
-  ) {}
+  ) { }
   onSearchItemClick() {
     this.isShowSearchBar = false;
   }
   ngAfterViewInit() {
     this.autofocusSearchBarInput();
+  }
+  getStars(hotel: HotelEntity) {
+    if (hotel && hotel.Category) {
+      hotel.Category = `${hotel.Category}`;
+      if (+hotel.Category >= 5) {
+        return new Array(5).fill(1);
+      }
+      if (hotel.Category.includes('.')) {
+        const a = hotel.Category.split('.');
+        return new Array(+a[0]).fill(1).concat([0.5]);
+      }
+      return new Array(+hotel.Category).fill(1);
+    }
+    return [];
   }
   private autofocusSearchBarInput() {
     if (this.searchbarEls) {
@@ -80,25 +95,31 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   onHotelQueryChange(query: HotelQueryEntity) {
-    this.hotelQueryModal = { ...query };
-    this.doRefresh();
+    this.hotelQueryModal = {
+      ...query
+    };
+    this.doRefresh(true);
   }
-  doRefresh() {
+  doRefresh(isKeepQueryCondition = false) {
     if (this.refresher) {
       this.refresher.complete();
     }
     if (this.queryComp) {
       this.queryComp.onReset();
     }
+    if (!isKeepQueryCondition) {
+      this.hotelQueryModal = new HotelQueryEntity();
+    }
     this.hotelQueryModal.PageIndex = 0;
     this.hotelQueryModal.PageSize = 20;
+    this.hotelDayPrices = [];
     this.loadMore();
   }
   loadMore() {
     if (this.loadDataSub) {
       this.loadDataSub.unsubscribe();
     }
-    this.isLoading = true;
+    this.isLoading = this.hotelQueryModal && this.hotelQueryModal.PageIndex == 0;
     this.loadDataSub = this.hotelService
       .getHotelList(this.hotelQueryModal)
       .pipe(
@@ -122,6 +143,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
               this.hotelQueryModal.PageIndex++;
               this.hotelDayPrices = [...this.hotelDayPrices, ...arr];
             }
+            console.log("this.scroller.disabled",this.scroller.disabled)
           }
         },
         e => {
@@ -151,6 +173,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     const sub = this.hotelService.getSearchHotelModelSource().subscribe(m => {
       console.log(m);
       if (m) {
+        this.searchHotelModel = m;
         this.hotelQueryModal.CityCode =
           m.destinationCity && m.destinationCity.Code;
         this.hotelQueryModal.CityName =

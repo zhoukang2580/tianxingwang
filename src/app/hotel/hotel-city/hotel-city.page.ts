@@ -214,7 +214,7 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
       this.letters = Object.keys(this.letterAndCities);
       this.letters.sort((l1, l2) => l1.charCodeAt(0) - l2.charCodeAt(0));
       this.activeLetter = this.letters[0];
-      this.vmCities = this.letterAndCities[this.activeLetter];
+      this.vmCities = this.letterAndCities[this.activeLetter] || [];
       this.vmCities.sort((s1, s2) => s1.Sequence - s2.Sequence);
       this.renderList();
     }
@@ -272,21 +272,23 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
         this.scrollToTargetLink();
       }, 200);
     } else {
-      this.vmCities = this.allCities.filter(s => {
-        return (
-          kw.toUpperCase() == s.FirstLetter ||
-          (s.Name && s.Name.includes(kw)) ||
-          (s.Nickname && s.Nickname.includes(kw)) ||
-          (s.EnglishName && s.EnglishName.includes(kw)) ||
-          (s.CityName && s.CityName.includes(kw))
-        );
-      });
-      this.vmCities.sort((s1, s2) => s1.Sequence - s2.Sequence);
-      this.renderList();
-      this.activeLetter = "";
-      setTimeout(() => {
-        this.scrollToTargetLink();
-      }, 200);
+      if (this.allCities) {
+        this.vmCities = this.allCities.filter(s => {
+          return (
+            kw.toUpperCase() == s.FirstLetter ||
+            (s.Name && s.Name.includes(kw)) ||
+            (s.Nickname && s.Nickname.includes(kw)) ||
+            (s.EnglishName && s.EnglishName.includes(kw)) ||
+            (s.CityName && s.CityName.includes(kw))
+          );
+        });
+        this.vmCities.sort((s1, s2) => s1.Sequence - s2.Sequence);
+        this.renderList();
+        this.activeLetter = "";
+        setTimeout(() => {
+          this.scrollToTargetLink();
+        }, 200);
+      }
     }
   }
 }

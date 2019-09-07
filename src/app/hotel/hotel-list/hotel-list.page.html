@@ -5,9 +5,9 @@
         <ion-icon name='arrow-back'></ion-icon>
       </ion-button>
     </ion-buttons>
-    <app-date-city [checkInDate]='hotelQueryModal.BeginDate' *ngIf='!isShowSearchBar'
-      [checkOutDate]='hotelQueryModal.EndDate' [city]='hotelQueryModal.City' (cityClick)='onCityClick()'
-      (dateClick)='onDateClick()' (searchBarClick)='onSearchClick()'></app-date-city>
+    <app-date-city [checkInDate]='searchHotelModel?.checkInDate' *ngIf='!isShowSearchBar'
+      [checkOutDate]='searchHotelModel?.checkOutDate' [city]='searchHotelModel?.destinationCity'
+      (cityClick)='onCityClick()' (dateClick)='onDateClick()' (searchBarClick)='onSearchClick()'></app-date-city>
     <ion-searchbar [debounce]='700' [ngModel]='vmKeyowrds' [animated]='true' placeholder="" mode='ios'
       *ngIf='isShowSearchBar'>
     </ion-searchbar>
@@ -35,8 +35,14 @@
           </ion-thumbnail>
           <ion-label>
             <h3> <strong>{{item?.Hotel?.Name}}</strong></h3>
-            <h5>
+            <h5 class='grad-stars'>
               {{item?.Hotel?.Grade}}
+              <div class='stars'>
+                <ng-container *ngFor='let s of getStars(item.Hotel)'>
+                  <ion-icon name="star" color='danger' *ngIf='s>=1'></ion-icon>
+                  <ion-icon name='star-half' color='danger' *ngIf='s<1'></ion-icon>
+                </ng-container>
+              </div>
             </h5>
             <h6 class='address-price'>
               <ion-label>{{item?.Hotel?.Address}}</ion-label>
