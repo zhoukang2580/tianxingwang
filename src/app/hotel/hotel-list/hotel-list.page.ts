@@ -113,7 +113,13 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     this.hotelQueryModal.PageIndex = 0;
     this.hotelQueryModal.PageSize = 20;
     this.hotelDayPrices = [];
+    this.scrollToTop();
     this.loadMore();
+  }
+  private scrollToTop() {
+    if (this.content) {
+      this.content.scrollToTop(100);
+    }
   }
   loadMore() {
     if (this.loadDataSub) {
@@ -143,7 +149,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
               this.hotelQueryModal.PageIndex++;
               this.hotelDayPrices = [...this.hotelDayPrices, ...arr];
             }
-            console.log("this.scroller.disabled",this.scroller.disabled)
+            console.log("this.scroller.disabled", this.scroller.disabled)
           }
         },
         e => {

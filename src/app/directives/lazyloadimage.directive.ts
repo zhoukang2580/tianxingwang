@@ -44,7 +44,7 @@ export class LazyloadimageDirective
         this.Failover = this.imageRecorver.Failover;
       }
     }
-    console.log("failover", this.Failover);
+    // console.log("failover", this.Failover);
     await this.initializeDefaultImages();
   }
   async initializeDefaultImages() {
@@ -62,8 +62,8 @@ export class LazyloadimageDirective
     }
   }
   async ngAfterViewInit() {
-    console.time("ngAfterViewInit");
-    console.log("ngAfterViewInit", this.loadingImage);
+    // console.time("ngAfterViewInit");
+    // console.log("ngAfterViewInit", this.loadingImage);
     if (!this.image) {
       this.getImageEle();
     }
@@ -73,7 +73,7 @@ export class LazyloadimageDirective
     if (!this.Failover) {
       await this.initFailover();
     }
-    console.timeEnd("ngAfterViewInit");
+    // console.timeEnd("ngAfterViewInit");
   }
   async ngOnChanges(changes: SimpleChanges) {
     if (
@@ -144,13 +144,13 @@ export class LazyloadimageDirective
       return;
     }
     const allImages = container.getElementsByTagName("img");
-    console.log("allImages", allImages);
+    // console.log("allImages", allImages);
     for (let i = 0; i < allImages.length; i++) {
       this.BindErrorEvent(allImages[i]);
     }
   }
   BindErrorEvent(img: HTMLImageElement) {
-    console.log("BindErrorEvent");
+    // console.log("BindErrorEvent");
     const tempImg = document.createElement("img");
     tempImg.onload = () => {
       img.src = tempImg.src;

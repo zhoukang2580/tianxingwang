@@ -33,6 +33,7 @@ import {
   IStarPriceTabItem,
   HotelStarPriceComponent
 } from "./hotel-starprice/hotel-starprice.component";
+import { environment } from 'src/environments/environment';
 interface ITab {
   label: string;
   id: string;
@@ -71,6 +72,7 @@ export class HotelQueryComponent implements OnInit {
   }
   async onReset() {
     // this.conditions = await this.storage.get("mock-hotel-condition");
+    console.log("query component ,onreset", this.conditions)
     if (
       !this.conditions ||
       !this.conditions.Amenities ||
@@ -93,7 +95,9 @@ export class HotelQueryComponent implements OnInit {
         if (!this.conditions.Tmc) {
           this.conditions.Tmc = await this.tmcService.getTmc().catch(_ => null);
         }
-        await this.storage.set("mock-hotel-condition", this.conditions);
+        if (!environment.production) {
+          await this.storage.set("mock-hotel-condition", this.conditions);
+        }
       }
     }
     this.hotelQueryModel = new HotelQueryEntity();
@@ -216,7 +220,7 @@ export class HotelQueryComponent implements OnInit {
       }
     }
     if (brand) {
-      this.hotelQueryModel.Themes = [];
+      this.hotelQueryModel.Brands = [];
       const brands =
         brand.items &&
         brand.items.filter(it => it.items && it.items.some(k => k.IsSelected));
@@ -233,7 +237,7 @@ export class HotelQueryComponent implements OnInit {
       }
     }
     if (services) {
-      this.hotelQueryModel.Themes = [];
+      this.hotelQueryModel.Services = [];
       const s =
         services.items &&
         services.items.filter(
@@ -252,7 +256,7 @@ export class HotelQueryComponent implements OnInit {
       }
     }
     if (facility) {
-      this.hotelQueryModel.Themes = [];
+      this.hotelQueryModel.Facilities = [];
       const facilities =
         facility.items &&
         facility.items.filter(

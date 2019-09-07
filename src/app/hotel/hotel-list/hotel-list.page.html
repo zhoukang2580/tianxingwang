@@ -34,7 +34,9 @@
             <img [lazyloadImage]='item?.Hotel?.FileName' appLazyloadimage />
           </ion-thumbnail>
           <ion-label>
-            <h3> <strong>{{item?.Hotel?.Name}}</strong></h3>
+            <h3 class='name'>
+              <ion-label>{{item?.Hotel?.Name}}</ion-label>
+            </h3>
             <h5 class='grad-stars'>
               {{item?.Hotel?.Grade}}
               <div class='stars'>
@@ -61,22 +63,20 @@
         </ion-thumbnail>
         <ion-label>
           <h1>
-            <ion-skeleton-text style="width:70%"></ion-skeleton-text>
-          </h1>
-          <h1>
-            <ion-skeleton-text style="width:80%"></ion-skeleton-text>
-          </h1>
-          <h1>
             <ion-skeleton-text style="width:90%"></ion-skeleton-text>
           </h1>
           <h1>
-            <ion-skeleton-text style="width:100%"></ion-skeleton-text>
+            <ion-skeleton-text style="width:40%"></ion-skeleton-text>
+          </h1>
+          <h1 style="display:flex;justify-content:space-between;align-items: center;">
+            <ion-skeleton-text style="width:70%"></ion-skeleton-text>
+            <ion-skeleton-text style="width:10%"></ion-skeleton-text>
           </h1>
         </ion-label>
       </ion-item>
     </ion-list>
-    <ion-infinite-scroll (ionInfinite)="loadMore()">
-      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="正在加载..."></ion-infinite-scroll-content>
-    </ion-infinite-scroll>
   </ng-container>
+  <ion-infinite-scroll (ionInfinite)="loadMore()">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="正在加载..."></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

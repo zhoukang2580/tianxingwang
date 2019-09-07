@@ -277,7 +277,7 @@ export class HotelService {
       travelformid: AppHelper.getQueryParamers()["travelformid"] || "",
       hotelType: this.getSearchHotelModel().hotelType
     };
-    req.IsShowLoading = true;
+    // req.IsShowLoading = true;
     return this.apiService.getResponse<HotelResultEntity>(req).pipe(
       map(result => {
         if (result && result.Data && result.Data.HotelDayPrices) {
