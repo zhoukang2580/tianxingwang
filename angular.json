@@ -19,7 +19,7 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
-            "outputHashing":"none",
+            "outputHashing": "none",
             "assets": [
               {
                 "glob": "**/*",
@@ -47,6 +47,12 @@
               },
               {
                 "input": "src/app/flight/flight-list/style.css"
+              },
+              {
+                "input": "node_modules/photoswipe/dist/photoswipe.css"
+              },
+              {
+                "input": "node_modules/photoswipe/dist/default-skin/default-skin.css"
               }
             ],
             "scripts": [
@@ -61,6 +67,12 @@
               },
               {
                 "input": "node_modules/vconsole/dist/vconsole.min.js"
+              },
+              {
+                "input": "node_modules/photoswipe/dist/photoswipe-ui-default.min.js"
+              },
+              {
+                "input": "node_modules/photoswipe/dist/photoswipe.min.js"
               }
             ]
           },
@@ -153,8 +165,13 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": ["src/tsconfig.app.json", "src/tsconfig.spec.json"],
-            "exclude": ["**/node_modules/**"]
+            "tsConfig": [
+              "src/tsconfig.app.json",
+              "src/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
           }
         },
         "ionic-cordova-build": {
@@ -203,7 +220,9 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": "e2e/tsconfig.e2e.json",
-            "exclude": ["**/node_modules/**"]
+            "exclude": [
+              "**/node_modules/**"
+            ]
           }
         }
       }
