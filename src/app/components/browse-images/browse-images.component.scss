@@ -1,0 +1,9 @@
+.thumbnails{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: .5em;
+    ion-thumbnail{
+        margin-right: 1em;
+    }
+}

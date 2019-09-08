@@ -12,6 +12,7 @@ import { TreeNgxModule } from "./tree-ngx/tree-ngx.module";
 import { TimelineComponent } from "./timeline/timeline.component";
 import { TimelineItemComponent } from "./timeline-item/timeline-item.component";
 import { PayComponent } from './pay/pay.component';
+import { BrowseImagesComponent } from './browse-images/browse-images.component';
 @NgModule({
   declarations: [
     OrComponent,
@@ -23,7 +24,8 @@ import { PayComponent } from './pay/pay.component';
     LoginSkeletonPageComponent,
     TimelineComponent,
     TimelineItemComponent,
-    PayComponent
+    PayComponent,
+    BrowseImagesComponent
   ],
   imports: [CommonModule, IonicModule, TreeNgxModule],
   exports: [
@@ -36,8 +38,9 @@ import { PayComponent } from './pay/pay.component';
     TreeNgxModule,
     TimelineComponent,
     TimelineItemComponent,
-    PayComponent
+    PayComponent,
+    BrowseImagesComponent
   ],
-  entryComponents: [LoginSkeletonPageComponent, PayComponent]
+  entryComponents: [LoginSkeletonPageComponent, PayComponent, BrowseImagesComponent]
 })
-export class AppComponentsModule {}
+export class AppComponentsModule { }

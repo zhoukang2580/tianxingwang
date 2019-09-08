@@ -19,6 +19,7 @@
 
 <ion-content>
   <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'></ion-refresher>
+  <app-browse-images></app-browse-images>
   <ng-template #nosearchartempl>
     <ion-list>
       <ion-item *ngFor='let items of [1,2,3,4,5]' (click)='onSearchItemClick()'>
