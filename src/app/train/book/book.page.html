@@ -49,10 +49,11 @@
         <ion-item-divider>车票预订信息:</ion-item-divider>
         <ion-item>
           <div style='width: 100%;padding: 0.5em 0.25em '>
-              <strong><ion-label style="padding: 0.5em 0">
-                  {{getDate(combindInfo?.bookInfo?.bookInfo?.trainEntity)}}
+            <strong>
+              <ion-label style="padding: 0.5em 0">
+                {{getDate(combindInfo?.bookInfo?.bookInfo?.trainEntity)}}
               </ion-label>
-              </strong>
+            </strong>
             <app-train-list-item [train]='combindInfo?.bookInfo?.bookInfo?.trainEntity' [showBookBtn]='false'
               [seat]='combindInfo?.bookInfo?.bookInfo?.selectedSeat'></app-train-list-item>
           </div>
@@ -183,22 +184,6 @@
       </ion-item-group>
       <ion-item-group>
         <ion-item-divider>
-          支付方式：
-        </ion-item-divider>
-        <ion-item>
-          <div style='width: 100%'>
-            <ion-radio-group [(ngModel)]='combindInfo.orderTravelPayType' name='travelPayType'>
-              <ion-item *ngFor='let pt of viewModel?.orderTravelPayTypes'>
-                <ion-label>{{pt.label}}</ion-label>
-                <ion-radio [value]="pt.value" [checked]='combindInfo.orderTravelPayType==pt.value'>
-                </ion-radio>
-              </ion-item>
-            </ion-radio-group>
-          </div>
-        </ion-item>
-      </ion-item-group>
-      <ion-item-group>
-        <ion-item-divider>
           添加联系人：
         </ion-item-divider>
         <ion-item>
@@ -207,6 +192,22 @@
         </ion-item>
       </ion-item-group>
     </ion-list>
+    <ion-item-group>
+      <ion-item-divider>
+        支付方式：
+      </ion-item-divider>
+      <ion-item>
+        <div style='width: 100%'>
+          <ion-radio-group [(ngModel)]='viewModel.orderTravelPayType' name='travelPayType'>
+            <ion-item *ngFor='let pt of viewModel?.orderTravelPayTypes'>
+              <ion-label>{{pt.label}}</ion-label>
+              <ion-radio [value]="pt.value" [checked]='viewModel.orderTravelPayType==pt.value'>
+              </ion-radio>
+            </ion-item>
+          </ion-radio-group>
+        </div>
+      </ion-item>
+    </ion-item-group>
   </ng-container>
   <ng-template #retryTempl>
     <ion-row style="position: relative;top:35%">
