@@ -669,7 +669,7 @@ export class FlightService {
   > {
     const req = new RequestEntity();
     req.Method = `TmcApiFlightUrl-Home-Policy`;
-    req.Version = "1.0";
+    req.Version = "2.0";
     let flights: FlightJourneyEntity[] = JSON.parse(JSON.stringify(Flights));
     flights = flights.map(fj => {
       if (fj.FlightRoutes) {

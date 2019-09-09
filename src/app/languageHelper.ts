@@ -1,4 +1,9 @@
 export class LanguageHelper {
+  static Train = {
+    getDontAllowBookTip: () => {
+      return "当前座位违反差标，不能预订";
+    }
+  };
   static Order = {
     getStatusCancelTypeTip: () => {
       return "取消";

@@ -276,6 +276,18 @@ export class TrainService {
     ) {
       let bookInfos = this.getBookInfos();
       const bookInfo = this.getTrainInfo(currentViewtTainItem);
+      if (
+        !bookInfo &&
+        bookInfo.trainPolicy &&
+        bookInfo.trainPolicy.IsAllowBook
+      ) {
+        AppHelper.alert(
+          LanguageHelper.Train.getDontAllowBookTip(),
+          true,
+          LanguageHelper.getConfirmTip()
+        );
+        return;
+      }
       if (bookInfo) {
         const s = this.getSearchTrainModel();
         if (s.isRoundTrip) {
@@ -665,7 +677,7 @@ export class TrainService {
     const req = new RequestEntity();
     req.Method = `TmcApiTrainUrl-Home-Policy`;
     req.IsShowLoading = true;
-    req.Version = "1.0";
+    req.Version = "2.0";
     req.Timeout = 60;
     req.Data = {
       Passengers: passengerIds.join(","),
