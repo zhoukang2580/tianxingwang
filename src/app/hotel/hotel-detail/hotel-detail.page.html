@@ -8,15 +8,16 @@
   </ion-toolbar>
 </div>
 <ion-content>
-  <div class='bg' #bgPic>
-    <ion-chip *ngIf='hotel?.HotelImages?.length as len' (click)='showImages=true'>
+  <div class='bg' #bgPic (click)='showImages=true'>
+    <ion-icon class='back-arrow' name="arrow-back" (click)='back()' color='light'></ion-icon>
+    <ion-chip *ngIf='hotel?.HotelImages?.length as len'>
       1/{{len}}
     </ion-chip>
   </div>
   <ion-card>
     <ion-card-header>
       <ion-label>
-        {{hotel.Name}}
+        {{hotel?.Name}}
       </ion-label>
     </ion-card-header>
     <ion-card-subtitle>
@@ -31,6 +32,14 @@
       </div>
     </ion-card-subtitle>
     <ion-card-content>
+      <div class='date'>
+        <div class='checkinoutdate'>{{queryModel?.checkInDate}} <span
+            class='weekName'>{{getWeekName(queryModel?.checkOutDate)}}</span></div>
+        <div>{{totalNights}}</div>
+        <div class='checkinoutdate'>{{queryModel?.checkOutDate}} <span
+            class='weekName'>{{getWeekName(queryModel?.checkOutDate)}}</span></div>
+      </div>
+      <ion-button (click)='onSearch()' color='secondary' expand='block'>搜索</ion-button>
     </ion-card-content>
   </ion-card>
 </ion-content>

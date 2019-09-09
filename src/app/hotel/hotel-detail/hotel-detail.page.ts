@@ -1,6 +1,6 @@
 import { HotelEntity } from "./../models/HotelEntity";
 import { AppHelper } from "./../../appHelper";
-import { HotelService } from "./../hotel.service";
+import { HotelService, SearchHotelModel } from "./../hotel.service";
 import { HotelResultEntity } from "./../models/HotelResultEntity";
 import { HotelDayPriceEntity } from "./../models/HotelDayPriceEntity";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -15,7 +15,9 @@ import {
 import { Observable, Subscription } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { DomController, IonContent } from "@ionic/angular";
-
+import { CalendarService } from "src/app/tmc/calendar.service";
+import { Storage } from "@ionic/storage";
+import { environment } from "src/environments/environment";
 @Component({
   selector: "app-hotel-detail",
   templateUrl: "./hotel-detail.page.html",
@@ -27,17 +29,29 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   private bgPicHeight = 0;
   private headerHeight = 0;
   hotelDetailSub = Subscription.EMPTY;
+  queryModelSub = Subscription.EMPTY;
   hotel: HotelEntity;
   @ViewChild("header") headerEle: ElementRef<HTMLElement>;
   @ViewChild("bgPic") bgPicEle: ElementRef<HTMLElement>;
   @ViewChild(IonContent) ionCnt: IonContent;
   showImages = false;
+  queryModel: SearchHotelModel;
+  get totalNights() {
+    return (
+      this.queryModel.checkInDate &&
+      this.queryModel.checkOutDate &&
+      +this.queryModel.checkOutDate.substring("2019-10-".length) -
+        +this.queryModel.checkInDate.substring("2019-10-".length)
+    );
+  }
   constructor(
     route: ActivatedRoute,
     private hotelService: HotelService,
     private router: Router,
     private domCtrl: DomController,
-    private render: Renderer2
+    private render: Renderer2,
+    private calendarService: CalendarService,
+    private storage: Storage
   ) {
     route.queryParamMap.subscribe(q => {
       if (q.get("data")) {
@@ -48,27 +62,19 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   back() {
     this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
   }
+  getWeekName(date: string) {
+    if (date) {
+      const d = new Date(date);
+      return this.calendarService.getDayOfWeekNames()[d.getDay()];
+    }
+  }
   ngOnInit() {
-    this.hotelDetailSub = this.hotelService
-      .getHotelDetail(this.item)
-      .pipe(
-        map(res => res && res.Data),
-        tap(r => {
-          console.log(r);
-        })
-      )
-      .subscribe(hotel => {
-        if (hotel) {
-          this.hotel = hotel.Hotel;
-          if (this.bgPicEle) {
-            this.render.setStyle(
-              this.bgPicEle.nativeElement,
-              "background-image",
-              `url(${this.hotel.FileName})`
-            );
-          }
-        }
+    this.queryModelSub = this.hotelService
+      .getSearchHotelModelSource()
+      .subscribe(m => {
+        this.queryModel = m;
       });
+    this.onSearch();
   }
   getImageUrls() {
     return (
@@ -91,7 +97,48 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     }
     return [];
   }
-  doRefresh() {}
+  onSearch() {
+    this.doRefresh();
+  }
+  async doRefresh() {
+    this.hotel = null;
+    if (!environment.production) {
+      this.hotel = await this.storage.get("mock-hotel-detail");
+    }
+    if (this.hotel) {
+      this.initBgPic();
+      return;
+    }
+    if (this.hotelDetailSub) {
+      this.hotelDetailSub.unsubscribe();
+    }
+    this.hotelDetailSub = this.hotelService
+      .getHotelDetail(this.item)
+      .pipe(
+        map(res => res && res.Data),
+        tap(r => {
+          console.log(r);
+        })
+      )
+      .subscribe(hotel => {
+        if (hotel) {
+          this.hotel = hotel.Hotel;
+          this.initBgPic();
+          this.storage.set("mock-hotel-detail", this.hotel);
+        }
+      });
+  }
+  private initBgPic() {
+    if (this.hotel) {
+      if (this.bgPicEle) {
+        this.render.setStyle(
+          this.bgPicEle.nativeElement,
+          "background-image",
+          `url(${this.hotel.FileName})`
+        );
+      }
+    }
+  }
   async ngAfterViewInit() {
     if (this.ionCnt) {
       this.scrollEle = await this.ionCnt.getScrollElement();

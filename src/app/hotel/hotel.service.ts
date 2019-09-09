@@ -330,7 +330,7 @@ export class HotelService {
     hotelquery.BeginDate = this.getSearchHotelModel().checkInDate;
     hotelquery.EndDate = this.getSearchHotelModel().checkOutDate;
     hotelquery.IsLoadDetail = true;
-    hotelquery.HotelId = hotelItem.Hotel && hotelItem.Hotel.Id;
+    hotelquery.HotelId = hotelItem && hotelItem.Hotel && hotelItem.Hotel.Id;
     hotelquery.CityCode =
       this.getSearchHotelModel().destinationCity &&
       this.getSearchHotelModel().destinationCity.Code;
