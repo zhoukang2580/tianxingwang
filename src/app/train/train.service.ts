@@ -277,9 +277,9 @@ export class TrainService {
       let bookInfos = this.getBookInfos();
       const bookInfo = this.getTrainInfo(currentViewtTainItem);
       if (
-        !bookInfo &&
+        bookInfo &&
         bookInfo.trainPolicy &&
-        bookInfo.trainPolicy.IsAllowBook
+        !bookInfo.trainPolicy.IsAllowBook
       ) {
         AppHelper.alert(
           LanguageHelper.Train.getDontAllowBookTip(),
