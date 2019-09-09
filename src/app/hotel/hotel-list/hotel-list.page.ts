@@ -195,7 +195,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     this.isShowSearchBar = true;
   }
   back() {
-    this.navCtrl.back();
+    this.router.navigate([AppHelper.getRoutePath("search-hotel")]);
   }
   ngOnDestroy() {
     this.subscriptions.forEach(sub => {
