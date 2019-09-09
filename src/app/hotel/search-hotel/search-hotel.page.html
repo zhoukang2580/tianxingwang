@@ -24,6 +24,19 @@
 <ion-content>
   <ion-card padding>
     <ion-card-content>
+      <ion-toolbar>
+        <ion-segment (ionChange)="segmentChanged($event)" color="secondary">
+          <ion-segment-button value="normal" checked>
+            <ion-label>非协议酒店</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="agreement">
+            <ion-label>协议酒店</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="specialprice">
+            <ion-label>特价酒店</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-toolbar>
       <div class='destination' lines='none' detail>
         <ion-label>目的地：</ion-label>
         <ion-label (click)='onSearchCity()'>{{curPos?.CityName}}</ion-label>
@@ -32,7 +45,7 @@
             <ion-icon name="locate" mode='md' size='small' color='secondary'></ion-icon>
             我的位置
           </div>
-        </ion-button> 
+        </ion-button>
       </div>
       <section class="flight-date">
         <app-search-day-comp [day]='checkInDate' [isCheckIn]='true' (click)="onSelecDate(true)" [disabled]='false'>

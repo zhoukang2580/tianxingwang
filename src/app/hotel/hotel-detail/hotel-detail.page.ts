@@ -14,10 +14,13 @@ import {
 } from "@angular/core";
 import { Observable, Subscription } from "rxjs";
 import { map, tap } from "rxjs/operators";
-import { DomController, IonContent } from "@ionic/angular";
+import { DomController, IonContent, IonRefresher } from "@ionic/angular";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { Storage } from "@ionic/storage";
 import { environment } from "src/environments/environment";
+import { ImageRecoverService } from "src/app/services/imageRecover/imageRecover.service";
+import { ConfigService } from "src/app/services/config/config.service";
+import { RoomEntity } from "../models/RoomEntity";
 @Component({
   selector: "app-hotel-detail",
   templateUrl: "./hotel-detail.page.html",
@@ -31,11 +34,17 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   hotelDetailSub = Subscription.EMPTY;
   queryModelSub = Subscription.EMPTY;
   hotel: HotelEntity;
+  config: any;
   @ViewChild("header") headerEle: ElementRef<HTMLElement>;
   @ViewChild("bgPic") bgPicEle: ElementRef<HTMLElement>;
   @ViewChild(IonContent) ionCnt: IonContent;
-  showImages = false;
+  @ViewChild(IonRefresher) ionRefresher: IonRefresher;
+  isShowImages = false;
+  isShowBackArrow = true;
+  backArrowColor = "light";
   queryModel: SearchHotelModel;
+  isShowRoomImages = false;
+  roomImages: string[] = [];
   get totalNights() {
     return (
       this.queryModel.checkInDate &&
@@ -45,20 +54,15 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     );
   }
   constructor(
-    route: ActivatedRoute,
+    private route: ActivatedRoute,
     private hotelService: HotelService,
     private router: Router,
     private domCtrl: DomController,
     private render: Renderer2,
     private calendarService: CalendarService,
-    private storage: Storage
-  ) {
-    route.queryParamMap.subscribe(q => {
-      if (q.get("data")) {
-        this.item = JSON.parse(q.get("data"));
-      }
-    });
-  }
+    private storage: Storage,
+    private configService: ConfigService
+  ) {}
   back() {
     this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
   }
@@ -68,13 +72,19 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       return this.calendarService.getDayOfWeekNames()[d.getDay()];
     }
   }
-  ngOnInit() {
+  async ngOnInit() {
     this.queryModelSub = this.hotelService
       .getSearchHotelModelSource()
       .subscribe(m => {
         this.queryModel = m;
       });
-    this.onSearch();
+    this.route.queryParamMap.subscribe(q => {
+      if (q.get("data")) {
+        this.item = JSON.parse(q.get("data"));
+      }
+      this.onSearch();
+    });
+    this.config = await this.configService.get().catch(_ => null);
   }
   getImageUrls() {
     return (
@@ -101,13 +111,19 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     this.doRefresh();
   }
   async doRefresh() {
+    if (this.ionRefresher) {
+      this.ionRefresher.complete();
+    }
     this.hotel = null;
+    if (!this.config) {
+      this.config = await this.configService.get().catch(_ => null);
+    }
     if (!environment.production) {
       this.hotel = await this.storage.get("mock-hotel-detail");
-    }
-    if (this.hotel) {
-      this.initBgPic();
-      return;
+      if (this.hotel) {
+        this.initBgPic(this.hotel.FileName);
+        return;
+      }
     }
     if (this.hotelDetailSub) {
       this.hotelDetailSub.unsubscribe();
@@ -123,40 +139,61 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       .subscribe(hotel => {
         if (hotel) {
           this.hotel = hotel.Hotel;
-          this.initBgPic();
-          this.storage.set("mock-hotel-detail", this.hotel);
+          if (this.hotel) {
+            this.initBgPic(this.hotel.FileName);
+            this.storage.set("mock-hotel-detail", this.hotel);
+          }
         }
       });
   }
-  private initBgPic() {
-    if (this.hotel) {
+  private initBgPic(src: string) {
+    src = src || (this.config && this.config.PrerenderImageUrl);
+    if (src) {
+      this.backArrowColor =
+        src == (this.config && this.config.PrerenderImageUrl)
+          ? "dark"
+          : "light";
       if (this.bgPicEle) {
         this.render.setStyle(
           this.bgPicEle.nativeElement,
           "background-image",
-          `url(${this.hotel.FileName})`
+          `url(${src})`
         );
       }
     }
   }
+  getRoomImages(room: RoomEntity) {
+    const images = this.hotel && this.hotel.HotelImages;
+    if (room && images) {
+      const roomImages = images
+        .filter(it => it.Room && it.Room.Id == room.Id)
+        .map(it => it.FileName && it.FileName);
+      return roomImages;
+    }
+  }
+  onShowRoomImages(room: RoomEntity) {
+    this.isShowRoomImages = true;
+    this.roomImages = this.getRoomImages(room);
+  }
+  onOpenMap() {}
   async ngAfterViewInit() {
     if (this.ionCnt) {
       this.scrollEle = await this.ionCnt.getScrollElement();
     }
+    const config = await this.configService.get().catch(_ => null);
+    this.initBgPic(
+      config.PrerenderImageUrl || AppHelper.getDefaultLoadingImage()
+    );
     setTimeout(() => {
       this.initEle();
     }, 1000);
   }
+  onOpenCalendar() {
+    this.hotelService.openCalendar();
+  }
   private initEle() {
     if (this.bgPicEle && this.bgPicEle.nativeElement) {
       this.bgPicHeight = this.bgPicEle.nativeElement.clientHeight;
-      if (this.scrollEle && this.bgPicHeight) {
-        this.render.setStyle(
-          this.scrollEle,
-          "min-height",
-          `calc(100vh + ${this.bgPicHeight}px)`
-        );
-      }
     }
     if (this.headerEle && this.headerEle.nativeElement) {
       this.headerHeight = this.headerEle.nativeElement.clientHeight;
@@ -165,6 +202,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       this.scrollEle.onscroll = () => {
         let bottom = 0;
         this.domCtrl.read(_ => {
+          this.isShowBackArrow = this.scrollEle.scrollTop < 10;
           let opacity = 0;
           const bottomRect =
             this.bgPicEle &&
@@ -188,7 +226,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
             this.render.setStyle(
               this.headerEle.nativeElement,
               "opacity",
-              opacity < 0.2 ? 0 : opacity
+              opacity < 0.35 ? 0 : opacity
             );
           });
         });

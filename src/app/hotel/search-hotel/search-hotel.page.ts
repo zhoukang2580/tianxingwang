@@ -1,3 +1,4 @@
+import { ImageRecoverService } from "./../../services/imageRecover/imageRecover.service";
 import { DayModel } from "src/app/tmc/models/DayModel";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { CalendarService } from "src/app/tmc/calendar.service";
@@ -6,7 +7,7 @@ import { TmcService } from "src/app/tmc/tmc.service";
 import { HotelService } from "./../hotel.service";
 import { Router, ActivatedRoute, NavigationEnd } from "@angular/router";
 import { Observable, Subscription, from, of } from "rxjs";
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import { NavController } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import { StaffService } from "src/app/hr/staff.service";
@@ -46,13 +47,20 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private tmcSerivce: TmcService,
     private staffService: StaffService,
-    private calendarService: CalendarService
+    private calendarService: CalendarService,
   ) {
     const sub = route.queryParamMap.subscribe(_ => {
       tmcSerivce.setFlightHotelTrainType(FlightHotelTrainType.Hotel);
       this.isLeavePage = false;
     });
     this.subscriptions.push(sub);
+  }
+  segmentChanged(ev: CustomEvent) {
+    // console.log("Segment changed", ev);
+    this.hotelService.setSearchHotelModel({
+      ...this.hotelService.getSearchHotelModel(),
+      hotelType: ev.detail.value
+    });
   }
   ngOnDestroy() {
     this.subscriptions.forEach(sub => {

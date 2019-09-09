@@ -137,7 +137,13 @@ export class HotelService {
   setSearchHotelModel(m: SearchHotelModel) {
     if (m) {
       this.searchHotelModel = m;
-      this.searchHotelModelSource.next(m);
+      this.searchHotelModel.tag =
+        m.hotelType == "normal"
+          ? ""
+          : m.hotelType == "agreement"
+          ? "Agreement"
+          : "SpecialPrice";
+      this.searchHotelModelSource.next(this.searchHotelModel);
     }
   }
   private async initSelfBookTypeBookInfos() {

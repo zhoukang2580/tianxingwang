@@ -22,7 +22,8 @@ import { HotelFilterComponent } from "./hotel-query/hotel-filter/hotel-filter.co
     HotelFilterComponent,
     HotelStarPriceComponent,
     HotelStarPriceComponent,
-    HotelListItemComponent
+    HotelListItemComponent,
+    RoomDetailComponent
   ],
   imports: [CommonModule, IonicModule, FormsModule, AppDirectivesModule],
   exports: [
@@ -34,7 +35,8 @@ import { HotelFilterComponent } from "./hotel-query/hotel-filter/hotel-filter.co
     HotelFilterComponent,
     RecommendRankComponent,
     HotelStarPriceComponent,
-    HotelStarPriceComponent
+    HotelStarPriceComponent,
+    RoomDetailComponent
   ]
 })
 export class HotelComponentsModule {}

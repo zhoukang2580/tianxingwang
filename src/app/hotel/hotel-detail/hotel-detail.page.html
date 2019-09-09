@@ -5,42 +5,87 @@
         <ion-icon name='arrow-back'></ion-icon>
       </ion-button>
     </ion-buttons>
+    <ion-title>{{hotel?.Name}}</ion-title>
   </ion-toolbar>
 </div>
 <ion-content>
-  <div class='bg' #bgPic (click)='showImages=true'>
-    <ion-icon class='back-arrow' name="arrow-back" (click)='back()' color='light'></ion-icon>
+  <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'></ion-refresher>
+  <div class='bg' #bgPic (click)='isShowImages=true'>
+    <ion-icon class='back-arrow' name="arrow-back" *ngIf='isShowBackArrow' (click)='back()' color='{{backArrowColor}}'>
+    </ion-icon>
     <ion-chip *ngIf='hotel?.HotelImages?.length as len'>
       1/{{len}}
     </ion-chip>
   </div>
-  <ion-card>
+  <ion-card *ngIf='hotel else fakeCard'>
     <ion-card-header>
       <ion-label>
-        {{hotel?.Name}}
+        <h2>
+          <strong>
+            {{hotel?.Name}}
+          </strong>
+        </h2>
       </ion-label>
     </ion-card-header>
     <ion-card-subtitle>
       <div class='grade-stars'>
-        {{hotel?.Grade}}
-        <div class='stars'>
-          <ng-container *ngFor='let s of getStars(hotel)'>
+        <span>{{hotel?.Grade}}</span>
+        <div class='stars' *ngIf='getStars(hotel) as stars'>
+          <ng-container *ngFor='let s of stars'>
             <ion-icon name="star" color='danger' *ngIf='s>=1'></ion-icon>
             <ion-icon name='star-half' color='danger' *ngIf='s<1'></ion-icon>
           </ng-container>
         </div>
+        <div class='position' (click)='onOpenMap()'>
+          <ion-label color='secondary'>{{hotel?.Address}}</ion-label>
+          <ion-icon name="pin" color='secondary'></ion-icon>
+        </div>
       </div>
     </ion-card-subtitle>
     <ion-card-content>
-      <div class='date'>
+      <div class='date' (click)="onOpenCalendar()">
         <div class='checkinoutdate'>{{queryModel?.checkInDate}} <span
             class='weekName'>{{getWeekName(queryModel?.checkOutDate)}}</span></div>
-        <div>{{totalNights}}</div>
+        <div>共{{totalNights}}晚</div>
         <div class='checkinoutdate'>{{queryModel?.checkOutDate}} <span
             class='weekName'>{{getWeekName(queryModel?.checkOutDate)}}</span></div>
       </div>
       <ion-button (click)='onSearch()' color='secondary' expand='block'>搜索</ion-button>
     </ion-card-content>
   </ion-card>
+  <ng-template #fakeCard>
+    <ion-card>
+      <ion-card-header>
+        <ion-skeleton-text style="height: 1.25em;width:80%"></ion-skeleton-text>
+      </ion-card-header>
+      <ion-card-subtitle>
+        <ion-skeleton-text style="height: 1.25em;width:40%;margin-left: 1em;"></ion-skeleton-text>
+      </ion-card-subtitle>
+      <ion-card-content>
+        <div class='date'>
+          <ion-skeleton-text style="height: 1em;width:40%"></ion-skeleton-text>
+          <ion-skeleton-text style="height: 1em;width:40%"></ion-skeleton-text>
+        </div>
+        <ion-button [disabled]='true' color='secondary' expand='block'>搜索</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </ng-template>
+
+  <ion-list>
+    <ion-item *ngFor='let room of hotel?.Rooms'>
+      <ion-thumbnail slot='start' (click)='onShowRoomImages(room)'>
+        <ng-container *ngIf='getRoomImages(room) as images'>
+          <img [lazyloadImage]='images[0]?.replace("Mobile640_960", "Hotel70_70")' appLazyloadimage />
+          <div class='images-nums' *ngIf='images.length as len'>{{len}}张</div>
+        </ng-container>
+      </ion-thumbnail>
+      <ion-label>
+        <h3 class='name'>
+          <ion-label>{{room.Name}}</ion-label>
+        </h3>
+      </ion-label>
+    </ion-item>
+  </ion-list>
 </ion-content>
-<app-browse-images *ngIf="showImages" [images]='getImageUrls()' (close)='showImages=false'></app-browse-images>
+<app-browse-images *ngIf="isShowImages" [images]='getImageUrls()' (close)='isShowImages=false'></app-browse-images>
+<app-browse-images *ngIf="isShowRoomImages" [images]="roomImages" (close)='isShowRoomImages=false'></app-browse-images>

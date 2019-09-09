@@ -1,14 +1,17 @@
+:host {
+  --h: 5em;
+}
 .bg {
   background-image: url(/assets/images/loading.gif);
   background-position: center center;
   background-size: cover;
-  height: 15em;
+  height: 30vh;
   background-color: aliceblue;
   position: relative;
   ion-chip {
     position: absolute;
     right: 1em;
-    bottom: 3em;
+    bottom: calc(var(--h) - 1.5em);
     color: white;
     background: rgba(var(--ion-color-dark-rgb), 0.5);
   }
@@ -27,16 +30,13 @@
   opacity: 0;
   z-index: 99;
   transition: opacity 100ms ease-in-out;
-  box-shadow: 0 1px 2px 7px grey;
-}
-.text {
-  height: 50vh;
 }
 ion-card {
   position: relative;
-  top: -3em;
+  top: calc(-1 * var(--h));
   background: white;
-  .grade-stars {
+  .grade-stars,
+  .position {
     margin-left: 1em;
     display: flex;
     align-items: center;
@@ -44,16 +44,41 @@ ion-card {
       margin-left: 1em;
     }
   }
-}
-.date {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  .checkinoutdate {
-    color: var(--ion-color-secondary);
+  .position {
+    margin-left: auto;
+    margin-right: 1em;
+    ion-label {
+      max-width: 16em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
-  .weekName {
-    font-size: 0.8rem;
-    color: var(--ion-color-medium);
+  ion-card-content {
+    padding-top: 0;
+  }
+  .date {
+    margin: 1em 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    color: var(--ion-color-secondary);
+    .weekName {
+      font-size: 0.7rem;
+      color: var(--ion-color-medium);
+    }
+  }
+}
+ion-thumbnail {
+  position: relative;
+  .images-nums {
+    position: absolute;
+    right: 0.2em;
+    bottom: 0.2em;
+    padding: 0.2em;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    font-size: 0.5rem;
   }
 }
