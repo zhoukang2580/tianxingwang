@@ -1,0 +1,43 @@
+.bg {
+    background-image: url(/assets/images/loading.gif);
+    background-position: center center;
+    background-size: cover;
+    height: 15em;
+    background-color: aliceblue;
+    position: relative;
+    ion-chip {
+      position: absolute;
+      right: 1em;
+      bottom: 3em;
+      color: white;
+      background: rgba(var(--ion-color-dark-rgb), 0.5);
+    }
+  }
+  .header {
+    position: fixed;
+    left: 0;
+    right: 0;
+    height: 3em;
+    background: transparent;
+    opacity: 0;
+    z-index: 99;
+    transition: opacity 100ms ease-in-out;
+    box-shadow: 0 1px 2px 7px grey;
+  }
+  .text {
+    height: 50vh;
+  }
+  ion-card {
+    position: relative;
+    top: -3em;
+    background: white;
+    .grade-stars {
+      margin-left: 1em;
+      display: flex;
+      align-items: center;
+      .stars {
+        margin-left: 1em;
+      }
+    }
+  }
+  

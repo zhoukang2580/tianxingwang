@@ -87,9 +87,7 @@ export class HotelService {
       !this.conditionModel.Brands ||
       !this.conditionModel.Geos
     ) {
-      this.conditionModel = await this
-        .getHotelConditions()
-        .catch(_ => null);
+      this.conditionModel = await this.getHotelConditions().catch(_ => null);
       // console.log(JSON.stringify(this.conditionModel));
       if (this.conditionModel) {
         if (this.conditionModel.Geos) {
@@ -101,7 +99,9 @@ export class HotelService {
           });
         }
         if (!this.conditionModel.Tmc) {
-          this.conditionModel.Tmc = await this.tmcService.getTmc().catch(_ => null);
+          this.conditionModel.Tmc = await this.tmcService
+            .getTmc()
+            .catch(_ => null);
         }
       }
     }
@@ -255,7 +255,9 @@ export class HotelService {
         return item;
       });
       this.localHotelCities = [
-        ...this.localHotelCities.filter(it => !arr.some(c => c.Code == it.Code)),
+        ...this.localHotelCities.filter(
+          it => !arr.some(c => c.Code == it.Code)
+        ),
         ...arr
       ];
       await this.setLocalHotelCityCache(this.localHotelCities);
@@ -292,7 +294,7 @@ export class HotelService {
   getHotelList(query: HotelQueryEntity) {
     const hotelquery = {
       ...query
-    }
+    };
     const req = new RequestEntity();
     req.Method = `TmcApiHotelUrl-Home-List`;
     const city = this.getSearchHotelModel().destinationCity;
@@ -301,6 +303,39 @@ export class HotelService {
     hotelquery.EndDate = this.getSearchHotelModel().checkOutDate;
     hotelquery.IsLoadDetail = true;
     hotelquery.Tag = this.getSearchHotelModel().tag;
+    req.Data = {
+      ...hotelquery,
+      travelformid: AppHelper.getQueryParamers()["travelformid"] || "",
+      hotelType: this.getSearchHotelModel().hotelType
+    };
+    // req.IsShowLoading = true;
+    return this.apiService.getResponse<HotelResultEntity>(req).pipe(
+      map(result => {
+        if (result && result.Data && result.Data.HotelDayPrices) {
+          result.Data.HotelDayPrices = result.Data.HotelDayPrices.map(it => {
+            if (it.Hotel && it.Hotel.Variables) {
+              it.Hotel.VariablesJsonObj = JSON.parse(it.Hotel.Variables);
+            }
+            return it;
+          });
+        }
+        return result;
+      })
+    );
+  }
+  getHotelDetail(hotelItem: HotelDayPriceEntity) {
+    const req = new RequestEntity();
+    req.Method = `TmcApiHotelUrl-Home-Detail`;
+    const hotelquery = new HotelQueryEntity();
+    hotelquery.BeginDate = this.getSearchHotelModel().checkInDate;
+    hotelquery.EndDate = this.getSearchHotelModel().checkOutDate;
+    hotelquery.IsLoadDetail = true;
+    hotelquery.HotelId = hotelItem.Hotel && hotelItem.Hotel.Id;
+    hotelquery.CityCode =
+      this.getSearchHotelModel().destinationCity &&
+      this.getSearchHotelModel().destinationCity.Code;
+    hotelquery.Tag = this.getSearchHotelModel().tag;
+
     req.Data = {
       ...hotelquery,
       travelformid: AppHelper.getQueryParamers()["travelformid"] || "",

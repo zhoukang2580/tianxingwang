@@ -23,7 +23,7 @@
   </ion-grid>
 </ion-header>
 <ion-content [scrollEvents]='true' (ionScroll)='onScroll($event)'>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh()">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh(true)">
   </ion-refresher>
   <ng-container *ngIf='!isLoading else loadingTemp'>
     <ion-grid *ngIf='hotCities&&hotCities.length' #hot>

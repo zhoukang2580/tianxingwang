@@ -12,14 +12,13 @@
       *ngIf='isShowSearchBar'>
     </ion-searchbar>
   </ion-toolbar>
-  <ion-toolbar>
+  <ion-toolbar class='query-toolbar' #querytoolbar>
     <app-hotel-query (hotelQueryChange)='onHotelQueryChange($event)'></app-hotel-query>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'></ion-refresher>
-  <app-browse-images></app-browse-images>
   <ng-template #nosearchartempl>
     <ion-list>
       <ion-item *ngFor='let items of [1,2,3,4,5]' (click)='onSearchItemClick()'>
@@ -30,15 +29,15 @@
   <ng-template #listTemp>
     <ng-container *ngIf='!isShowSearchBar else nosearchartempl'>
       <ion-list *ngIf='hotelDayPrices?.length else noMoreData'>
-        <ion-item *ngFor='let item of hotelDayPrices'>
+        <ion-item *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
           <ion-thumbnail slot='start'>
             <img [lazyloadImage]='item?.Hotel?.FileName' appLazyloadimage />
           </ion-thumbnail>
           <ion-label>
-            <h3 class='name'>
+            <h3 class='name'> 
               <ion-label>{{item?.Hotel?.Name}}</ion-label>
             </h3>
-            <h5 class='grad-stars'>
+            <h5 class='grade-stars'>
               {{item?.Hotel?.Grade}}
               <div class='stars'>
                 <ng-container *ngFor='let s of getStars(item.Hotel)'>

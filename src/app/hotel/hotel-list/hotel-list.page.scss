@@ -1,7 +1,7 @@
 :host.show-search-bar {
   background-color: rgba(var(--ion-color-dark-rgb), 0.5);
 }
-.name{
+.name {
   font-weight: bold;
 }
 .address-price {
@@ -12,10 +12,17 @@
   justify-content: space-between;
   align-items: center;
 }
-.grad-stars{
+.grade-stars {
   display: flex;
   align-items: center;
-  .stars{
+  .stars {
     margin-left: 1em;
   }
+}
+.query-toolbar {
+  position: fixed;
+}
+ion-content {
+  position: relative;
+  // border: 1px solid red;
 }

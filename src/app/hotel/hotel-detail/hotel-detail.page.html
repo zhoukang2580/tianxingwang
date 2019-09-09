@@ -1,0 +1,37 @@
+<div class='header' #header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-button color='dark' (click)='back()'>
+        <ion-icon name='arrow-back'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</div>
+<ion-content>
+  <div class='bg' #bgPic>
+    <ion-chip *ngIf='hotel?.HotelImages?.length as len' (click)='showImages=true'>
+      1/{{len}}
+    </ion-chip>
+  </div>
+  <ion-card>
+    <ion-card-header>
+      <ion-label>
+        {{hotel.Name}}
+      </ion-label>
+    </ion-card-header>
+    <ion-card-subtitle>
+      <div class='grade-stars'>
+        {{hotel?.Grade}}
+        <div class='stars'>
+          <ng-container *ngFor='let s of getStars(hotel)'>
+            <ion-icon name="star" color='danger' *ngIf='s>=1'></ion-icon>
+            <ion-icon name='star-half' color='danger' *ngIf='s<1'></ion-icon>
+          </ng-container>
+        </div>
+      </div>
+    </ion-card-subtitle>
+    <ion-card-content>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+<app-browse-images *ngIf="showImages" [images]='getImageUrls()' (close)='showImages=false'></app-browse-images>

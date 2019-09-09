@@ -93,6 +93,7 @@ export class SelectPassengerPage
   @ViewChild(IonRefresher) ionrefresher: IonRefresher;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChildren("addForm") addForm: QueryList<IonGrid>;
+  title = "选择旅客";
   constructor(
     public modalController: ModalController,
     private navCtrl: NavController,
@@ -479,7 +480,7 @@ export class SelectPassengerPage
       }
       const bookInfos = this.hotelService.getBookInfos();
       this.checkNewCredentialId(passengerBookInfo, bookInfos);
-      this.trainService.addBookInfo(passengerBookInfo);
+      this.hotelService.addBookInfo(passengerBookInfo);
     }
     if (
       this.tmcService.getFlightHotelTrainType() == FlightHotelTrainType.Flight

@@ -12,7 +12,8 @@ import {
   HostBinding,
   ViewChildren,
   QueryList,
-  AfterViewInit
+  AfterViewInit,
+  Renderer2
 } from "@angular/core";
 import {
   NavController,
@@ -20,7 +21,10 @@ import {
   IonHeader,
   IonSearchbar,
   IonRefresher,
-  IonInfiniteScroll
+  IonInfiniteScroll,
+  IonToolbar,
+  DomController,
+  Platform
 } from "@ionic/angular";
 import { Subscription } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
@@ -43,6 +47,7 @@ import { finalize } from "rxjs/operators";
 export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   private subscriptions: Subscription[] = [];
   @ViewChild(IonRefresher) refresher: IonRefresher;
+  @ViewChild("querytoolbar") querytoolbar: IonToolbar;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(HotelQueryComponent) queryComp: HotelQueryComponent;
@@ -58,13 +63,28 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private navCtrl: NavController,
     private hotelService: HotelService,
-    private router: Router
-  ) { }
+    private router: Router,
+    private domCtrl: DomController,
+    private render: Renderer2,
+    private plt: Platform
+  ) {}
   onSearchItemClick() {
     this.isShowSearchBar = false;
   }
   ngAfterViewInit() {
     this.autofocusSearchBarInput();
+    setTimeout(() => {
+      const height =
+        (this.querytoolbar &&
+          this.querytoolbar["el"] &&
+          this.querytoolbar["el"].clientHeight) ||
+        (this.plt.is("ios") ? 44 : 56);
+      if (height && this.content["el"]) {
+        this.domCtrl.write(_ => {
+          this.render.setStyle(this.content["el"], "top", `${height}px`);
+        });
+      }
+    }, 100);
   }
   getStars(hotel: HotelEntity) {
     if (hotel && hotel.Category) {
@@ -72,8 +92,8 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       if (+hotel.Category >= 5) {
         return new Array(5).fill(1);
       }
-      if (hotel.Category.includes('.')) {
-        const a = hotel.Category.split('.');
+      if (hotel.Category.includes(".")) {
+        const a = hotel.Category.split(".");
         return new Array(+a[0]).fill(1).concat([0.5]);
       }
       return new Array(+hotel.Category).fill(1);
@@ -125,7 +145,8 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.loadDataSub) {
       this.loadDataSub.unsubscribe();
     }
-    this.isLoading = this.hotelQueryModal && this.hotelQueryModal.PageIndex == 0;
+    this.isLoading =
+      this.hotelQueryModal && this.hotelQueryModal.PageIndex == 0;
     this.loadDataSub = this.hotelService
       .getHotelList(this.hotelQueryModal)
       .pipe(
@@ -149,7 +170,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
               this.hotelQueryModal.PageIndex++;
               this.hotelDayPrices = [...this.hotelDayPrices, ...arr];
             }
-            console.log("this.scroller.disabled", this.scroller.disabled)
+            console.log("this.scroller.disabled", this.scroller.disabled);
           }
         },
         e => {
@@ -159,6 +180,13 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   }
   onDateClick() {
     this.hotelService.openCalendar();
+  }
+  goToDetail(item: HotelDayPriceEntity) {
+    this.router.navigate([AppHelper.getRoutePath("hotel-detail")], {
+      queryParams: {
+        data: JSON.stringify(item)
+      }
+    });
   }
   onCityClick() {
     this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
@@ -190,8 +218,9 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
         if (m.isRefreshData) {
           this.doRefresh();
           this.hotelService.setSearchHotelModel({
-            ...m, isRefreshData: false
-          })
+            ...m,
+            isRefreshData: false
+          });
         }
       }
     });

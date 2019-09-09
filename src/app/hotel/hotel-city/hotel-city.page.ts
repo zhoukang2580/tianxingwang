@@ -121,7 +121,8 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
       await this.initHistoryCity(city);
       this.hotelService.setSearchHotelModel({
         ...this.hotelService.getSearchHotelModel(),
-        destinationCity: city
+        destinationCity: city,
+        isRefreshData: true
       });
     }
     setTimeout(() => {
@@ -167,7 +168,7 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
       this.scrollEle = await this.ionContent.getScrollElement();
     }
   }
-  async doRefresh() {
+  async doRefresh(forceFetch = false) {
     this.historyCities = [];
     this.hotCities = [];
     this.initHistoryCity(null);
@@ -179,7 +180,7 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
       }, 200);
     }
     this.isLoading = true;
-    this.allCities = await this.hotelService.getHotelCityAsync(true);
+    this.allCities = await this.hotelService.getHotelCityAsync(forceFetch);
     this.isLoading = false;
     this.init();
   }
