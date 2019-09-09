@@ -11,6 +11,7 @@ import { HotelGeoComponent } from "./hotel-query/hotel-geo/hotel-geo.component";
 import { QueryTabComponent } from "./hotel-query/query-tab/query-tab.component";
 import { RecommendRankComponent } from "./hotel-query/recommend-rank/recommend-rank.component";
 import { HotelFilterComponent } from "./hotel-query/hotel-filter/hotel-filter.component";
+import { RoomDetailComponent } from './room-detail/room-detail.component';
 
 @NgModule({
   declarations: [

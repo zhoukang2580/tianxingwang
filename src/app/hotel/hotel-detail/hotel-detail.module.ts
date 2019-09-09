@@ -1,3 +1,4 @@
+import { HotelComponentsModule } from "./../components/components.module";
 import { AppDirectivesModule } from "src/app/directives/directives.module";
 import { AppComponentsModule } from "./../../components/appcomponents.module";
 import { NgModule } from "@angular/core";
@@ -23,6 +24,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes),
     AppComponentsModule,
+    HotelComponentsModule,
     AppDirectivesModule
   ],
   declarations: [HotelDetailPage]
