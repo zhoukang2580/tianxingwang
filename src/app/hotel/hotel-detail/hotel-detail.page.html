@@ -10,7 +10,7 @@
 </div>
 <ion-content>
   <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'></ion-refresher>
-  <div class='bg' #bgPic (click)='isShowImages=true'>
+  <div class='bg' #bgPic (click)='isShowImages=true' [class.md]='isMd'>
     <ion-icon class='back-arrow' name="arrow-back" *ngIf='isShowBackArrow' (click)='back()' color='{{backArrowColor}}'>
     </ion-icon>
     <ion-chip *ngIf='hotel?.HotelImages?.length as len'>
@@ -27,7 +27,7 @@
         </h2>
       </ion-label>
     </ion-card-header>
-    <ion-card-subtitle>
+    <ion-card-subtitle padding-start>
       <div class='grade-stars'>
         <span>{{hotel?.Grade}}</span>
         <div class='stars' *ngIf='getStars(hotel) as stars'>
@@ -58,7 +58,7 @@
       <ion-card-header>
         <ion-skeleton-text style="height: 1.25em;width:80%"></ion-skeleton-text>
       </ion-card-header>
-      <ion-card-subtitle>
+      <ion-card-subtitle padding-start>
         <ion-skeleton-text style="height: 1.25em;width:40%;margin-left: 1em;"></ion-skeleton-text>
       </ion-card-subtitle>
       <ion-card-content>
@@ -70,18 +70,31 @@
       </ion-card-content>
     </ion-card>
   </ng-template>
-
-  <ion-list>
+  <ion-list class='room-list'>
     <ion-item *ngFor='let room of hotel?.Rooms'>
-      <ion-thumbnail slot='start' (click)='onShowRoomImages(room)'>
+      <ion-thumbnail (click)='onShowRoomImages(room)'>
         <ng-container *ngIf='getRoomImages(room) as images'>
           <img [lazyloadImage]='images[0]?.replace("Mobile640_960", "Hotel70_70")' appLazyloadimage />
           <div class='images-nums' *ngIf='images.length as len'>{{len}}张</div>
         </ng-container>
       </ion-thumbnail>
-      <ion-label>
+      <ion-label (click)='onShowRoomDetails(room)' class='item'>
         <h3 class='name'>
           <ion-label>{{room.Name}}</ion-label>
+          <ion-text color='danger'><strong>￥455</strong></ion-text>
+        </h3>
+        <h4 *ngIf='room.RoomDetails'>
+          <ion-label text-wrap>
+            <div class="room-detail-desc">
+              <span *ngIf='getRoomArea(room) as it'>{{it.Description}}m²</span>
+              <span *ngIf='getBedType(room) as it'>{{it.Description}}</span>
+              <span *ngIf='getCapacity(room) as it'>可住{{it.Description}}人</span>
+              <span *ngIf='getComments(room) as it'>{{it.Description}}</span>
+            </div>
+          </ion-label>
+        </h4>
+        <h3 text-end>
+          <ion-button (click)='onBookRoom(room,$event)' color='secondary' size='small'>预订</ion-button>
         </h3>
       </ion-label>
     </ion-item>
@@ -89,4 +102,5 @@
 </ion-content>
 <app-browse-images *ngIf="isShowImages" [images]='getImageUrls()' (close)='isShowImages=false'></app-browse-images>
 <app-browse-images *ngIf="isShowRoomImages" [images]="roomImages" (close)='isShowRoomImages=false'></app-browse-images>
-<app-room-detail></app-room-detail>
+<app-room-detail [room]='curSelectedRoom' [roomImages]='roomImages' (close)='isShowRoomDetails=false' class="ion-page"
+  *ngIf='isShowRoomDetails'></app-room-detail>

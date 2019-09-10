@@ -1,0 +1,15 @@
+.images {
+  height: 40vh;
+}
+.desc {
+  margin-right: 1em;
+}
+.name {
+  font-weight: bold;
+}
+ion-col {
+  align-self: flex-start;
+  &:first-child {
+    font-weight: bold;
+  }
+}

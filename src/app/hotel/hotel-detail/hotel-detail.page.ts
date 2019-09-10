@@ -14,7 +14,12 @@ import {
 } from "@angular/core";
 import { Observable, Subscription } from "rxjs";
 import { map, tap } from "rxjs/operators";
-import { DomController, IonContent, IonRefresher } from "@ionic/angular";
+import {
+  DomController,
+  IonContent,
+  IonRefresher,
+  Platform
+} from "@ionic/angular";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { Storage } from "@ionic/storage";
 import { environment } from "src/environments/environment";
@@ -44,7 +49,10 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   backArrowColor = "light";
   queryModel: SearchHotelModel;
   isShowRoomImages = false;
+  isShowRoomDetails = false;
+  isMd = false;
   roomImages: string[] = [];
+  curSelectedRoom: RoomEntity;
   get totalNights() {
     return (
       this.queryModel.checkInDate &&
@@ -61,8 +69,11 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     private render: Renderer2,
     private calendarService: CalendarService,
     private storage: Storage,
-    private configService: ConfigService
-  ) {}
+    private configService: ConfigService,
+    plt: Platform
+  ) {
+    this.isMd = plt.is("android");
+  }
   back() {
     this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
   }
@@ -120,9 +131,10 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     }
     if (!environment.production) {
       this.hotel = await this.storage.get("mock-hotel-detail");
+      console.log(this.hotel);
       if (this.hotel) {
         this.initBgPic(this.hotel.FileName);
-        return;
+        // return;
       }
     }
     if (this.hotelDetailSub) {
@@ -171,9 +183,50 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       return roomImages;
     }
   }
+  getRoomArea(room: RoomEntity) {
+    return (
+      room && room.RoomDetails && room.RoomDetails.find(it => it.Tag == "Area")
+    );
+  }
+  getFloor(room: RoomEntity) {
+    return (
+      room && room.RoomDetails && room.RoomDetails.find(it => it.Tag == "Floor")
+    );
+  }
+  getComments(room: RoomEntity) {
+    return (
+      room &&
+      room.RoomDetails &&
+      room.RoomDetails.find(it => it.Tag == "Comments")
+    );
+  }
+  getCapacity(room: RoomEntity) {
+    return (
+      room &&
+      room.RoomDetails &&
+      room.RoomDetails.find(it => it.Tag == "Capacity")
+    );
+  }
+  getBedType(room: RoomEntity) {
+    return (
+      room &&
+      room.RoomDetails &&
+      room.RoomDetails.find(it => it.Tag == "BedType")
+    );
+  }
+  onShowRoomDetails(room: RoomEntity) {
+    this.curSelectedRoom = room;
+    this.curSelectedRoom.Hotel = this.curSelectedRoom.Hotel || this.hotel;
+    this.roomImages = this.getRoomImages(room);
+    this.isShowRoomDetails = true;
+  }
   onShowRoomImages(room: RoomEntity) {
     this.isShowRoomImages = true;
     this.roomImages = this.getRoomImages(room);
+  }
+  onBookRoom(room: RoomEntity, evt: MouseEvent) {
+    evt.preventDefault();
+    evt.stopPropagation();
   }
   onOpenMap() {}
   async ngAfterViewInit() {
@@ -182,7 +235,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     }
     const config = await this.configService.get().catch(_ => null);
     this.initBgPic(
-      config.PrerenderImageUrl || AppHelper.getDefaultLoadingImage()
+      (config && config.PrerenderImageUrl) || AppHelper.getDefaultLoadingImage()
     );
     setTimeout(() => {
       this.initEle();

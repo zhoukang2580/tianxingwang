@@ -28,7 +28,7 @@
   </ng-template>
   <ng-template #listTemp>
     <ng-container *ngIf='!isShowSearchBar else nosearchartempl'>
-      <ion-list *ngIf='hotelDayPrices?.length else noMoreData'>
+      <ion-list *ngIf='hotelDayPrices?.length else noMoreData' #hotellist class='hotel-list'>
         <ion-item *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
           <ion-thumbnail slot='start'>
             <img [lazyloadImage]='item?.Hotel?.FileName' appLazyloadimage />

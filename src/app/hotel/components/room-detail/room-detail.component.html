@@ -1,3 +1,51 @@
-<p>
-  room-detail works!
-</p>
+<ion-header *ngIf='roomImages?.length'>
+  <ion-toolbar>
+    <div class="images" #imagesEle>
+      <app-image-scroller [images]='roomImages' (close)='onClose()'></app-image-scroller>
+    </div>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-list>
+    <ion-item-divider>
+      {{room?.Hotel?.Name}}
+    </ion-item-divider>
+    <ion-item-group>
+      <ion-item *ngIf='room?.RoomDetails'>
+        <ion-label text-wrap>
+          <ng-container *ngFor='let it of room.RoomDetails'>
+            <span class='name'>{{it.Name}}：</span>
+            <span class='desc'>{{it.Description}}</span>
+          </ng-container>
+        </ion-label>
+      </ion-item>
+    </ion-item-group>
+  </ion-list>
+  <ion-grid *ngFor='let plan of room?.RoomPlans'>
+    <ion-row>
+      <ion-col>产品名称</ion-col>
+      <ion-col>{{plan.Name}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>早餐</ion-col>
+      <ion-col>{{getBreakfast(plan)}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>房间设施</ion-col>
+      <ion-col>{{plan.Facility}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>取消规则</ion-col>
+      <ion-col>{{getRules(plan)}}
+        <div *ngIf='plan.BookType == HotelBookType.Elong ||
+        plan.BookType == HotelBookType.Inventory'>（即时确认）</div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>日均价</ion-col>
+      <ion-col>
+        <ion-text color='danger'>￥{{getAvgPrice(plan)}}</ion-text>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

@@ -15,7 +15,14 @@ import {
   HttpParams,
   HttpErrorResponse
 } from "@angular/common/http";
-import { map, catchError, finalize, switchMap, tap } from "rxjs/operators";
+import {
+  map,
+  catchError,
+  finalize,
+  switchMap,
+  tap,
+  timeout
+} from "rxjs/operators";
 import { IResponse } from "../api/IResponse";
 import { ExceptionEntity } from "../log/exception.entity";
 import { LanguageHelper } from "src/app/languageHelper";
@@ -92,6 +99,9 @@ export class IdentityService {
       req.Language = AppHelper.getLanguage();
       req.Ticket = AppHelper.getTicket();
       req.Domain = AppHelper.getDomain();
+      let due = req.Timeout || 30 * 1000;
+      due = due < 1000 ? due * 1000 : due;
+      // due = 1;
       const formObj = Object.keys(req)
         .map(k => `${k}=${req[k]}`)
         .join("&");
@@ -109,6 +119,7 @@ export class IdentityService {
             }
             return of(null);
           }),
+          timeout(due),
           catchError((error: Error | any) => {
             const entity = new ExceptionEntity();
             entity.Error = error;

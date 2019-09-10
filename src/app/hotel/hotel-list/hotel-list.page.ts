@@ -24,7 +24,8 @@ import {
   IonInfiniteScroll,
   IonToolbar,
   DomController,
-  Platform
+  Platform,
+  IonList
 } from "@ionic/angular";
 import { Subscription } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
@@ -52,8 +53,8 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(HotelQueryComponent) queryComp: HotelQueryComponent;
   @ViewChildren(IonSearchbar) searchbarEls: QueryList<IonSearchbar>;
-  @HostBinding("class.show-search-bar")
-  isShowSearchBar = false;
+  @ViewChildren("hotellist") hotellist: QueryList<IonList>;
+  @HostBinding("class.show-search-bar") isShowSearchBar = false;
   isLoading = false;
   searchHotelModel: SearchHotelModel;
   hotelQueryModal: HotelQueryEntity = new HotelQueryEntity();
@@ -73,18 +74,30 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   }
   ngAfterViewInit() {
     this.autofocusSearchBarInput();
-    setTimeout(() => {
-      const height =
-        (this.querytoolbar &&
-          this.querytoolbar["el"] &&
-          this.querytoolbar["el"].clientHeight) ||
-        (this.plt.is("ios") ? 44 : 56);
-      if (height && this.content["el"]) {
-        this.domCtrl.write(_ => {
-          this.render.setStyle(this.content["el"], "top", `${height}px`);
-        });
-      }
-    }, 100);
+
+    if (this.hotellist) {
+      const sub = this.hotellist.changes.subscribe(_ => {
+        if (this.hotellist && this.hotellist.first) {
+          setTimeout(() => {
+            const height =
+              (this.querytoolbar &&
+                this.querytoolbar["el"] &&
+                this.querytoolbar["el"].clientHeight) ||
+              (this.plt.is("ios") ? 44 : 56);
+            if (height) {
+              this.domCtrl.write(_ => {
+                this.render.setStyle(
+                  this.hotellist.first["el"],
+                  "margin-top",
+                  `${height}px`
+                );
+              });
+            }
+          }, 10);
+        }
+      });
+      this.subscriptions.push(sub);
+    }
   }
   getStars(hotel: HotelEntity) {
     if (hotel && hotel.Category) {

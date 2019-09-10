@@ -1,3 +1,4 @@
+import { BaseVariablesEntity } from 'src/app/tmc/models/BaseVariablesEntity';
 import { RoomPlanItemLangEntity } from "./RoomPlanItemLangEntity";
 import { RoomPlanPriceEntity } from "./RoomPlanPriceEntity";
 import { RoomPlanItemEntity } from "./RoomPlanItemEntity";
@@ -7,7 +8,7 @@ import { HotelSupplierType } from "./HotelSupplierType";
 import { RoomEntity } from "./RoomEntity";
 import { RoomPlanRuleEntity } from "./RoomPlanRuleEntity";
 
-export class RoomPlanEntity {
+export class RoomPlanEntity extends BaseVariablesEntity {
   Variables: string;
   /// <summary>
   /// 房型
