@@ -14,8 +14,10 @@
       <ion-item *ngIf='room?.RoomDetails'>
         <ion-label text-wrap>
           <ng-container *ngFor='let it of room.RoomDetails'>
-            <span class='name'>{{it.Name}}：</span>
-            <span class='desc'>{{it.Description}}</span>
+            <ng-container *ngIf='it.Description'>
+              <span class='name'>{{it.Name}}：</span>
+              <span class='desc'>{{it.Description}}</span>
+            </ng-container>
           </ng-container>
         </ion-label>
       </ion-item>
