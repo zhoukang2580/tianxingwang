@@ -468,7 +468,9 @@ export class HotelService {
       arr.push({
         Id: it.Id,
         TotalAmount: it.TotalAmount,
-        Number: it.Number
+        Number: it.Number,
+        BeginDate: it.BeginDate,
+        EndDate: it.EndDate
       } as RoomPlanEntity);
     });
     const city = this.getSearchHotelModel().destinationCity;
