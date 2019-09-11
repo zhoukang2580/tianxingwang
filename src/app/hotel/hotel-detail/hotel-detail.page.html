@@ -108,7 +108,7 @@
           </ion-label>
         </h4>
         <h3 text-end>
-          <ion-button color='secondary' size='small'>预订</ion-button>
+          <ion-button color='secondary' size='small'>详情</ion-button>
         </h3>
       </ion-label>
     </ion-item>
@@ -126,4 +126,4 @@
 <app-browse-images *ngIf="isShowImages" [images]='getImageUrls()' (close)='isShowImages=false'></app-browse-images>
 <app-browse-images *ngIf="isShowRoomImages" [images]="roomImages" (close)='isShowRoomImages=false'></app-browse-images>
 <app-room-detail [room]='curSelectedRoom' [roomImages]='roomImages' (close)='isShowRoomDetails=false' class="ion-page"
-  *ngIf='isShowRoomDetails' (bookRoom)='onBookRoomPlan($event)'></app-room-detail>
+  *ngIf='isShowRoomDetails' (bookRoom)='onBookRoomPlan($event)' ></app-room-detail>

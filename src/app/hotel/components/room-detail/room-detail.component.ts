@@ -1,3 +1,5 @@
+import { Observable, of } from "rxjs";
+import { HotelPassengerModel } from "./../../models/HotelPassengerModel";
 import { IdentityService } from "./../../../services/identity/identity.service";
 import {
   Component,
@@ -7,7 +9,9 @@ import {
   AfterViewInit,
   Output,
   EventEmitter,
-  ElementRef
+  ElementRef,
+  OnChanges,
+  SimpleChanges
 } from "@angular/core";
 import { RoomEntity } from "../../models/RoomEntity";
 import { DomController } from "@ionic/angular";
@@ -15,12 +19,15 @@ import { RoomPlanEntity } from "../../models/RoomPlanEntity";
 import { HotelSupplierType } from "../../models/HotelSupplierType";
 import { RoomPlanRuleType } from "../../models/RoomPlanRuleType";
 import { HotelBookType } from "../../models/HotelBookType";
+import { HotelService } from "../../hotel.service";
+import { StaffService } from "src/app/hr/staff.service";
+import { map, tap } from "rxjs/operators";
 @Component({
   selector: "app-room-detail",
   templateUrl: "./room-detail.component.html",
   styleUrls: ["./room-detail.component.scss"]
 })
-export class RoomDetailComponent implements OnInit, AfterViewInit {
+export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() room: RoomEntity;
   @Input() roomImages: string[];
   @Output() close: EventEmitter<any>;
@@ -28,9 +35,12 @@ export class RoomDetailComponent implements OnInit, AfterViewInit {
   curIndex = 0;
   isAgent = false;
   HotelBookType = HotelBookType;
+  color$: Observable<{ [roomPlanId: string]: string }> = of({});
   constructor(
     private domCtrl: DomController,
-    private identityService: IdentityService
+    private identityService: IdentityService,
+    private hotelService: HotelService,
+    private staffService: StaffService
   ) {
     this.close = new EventEmitter();
     this.bookRoom = new EventEmitter();
@@ -85,7 +95,16 @@ export class RoomDetailComponent implements OnInit, AfterViewInit {
       return plan.VariablesJsonObj["FullHouseOrCanBook"];
     }
   }
-  private isFull(plan: RoomPlanEntity) {
+  private isFull(p: RoomPlanEntity | string) {
+    let plan: RoomPlanEntity;
+    if (typeof plan === "string") {
+      plan =
+        this.room &&
+        this.room.RoomPlans &&
+        this.room.RoomPlans.find(it => it.Number == p);
+    } else if (p instanceof RoomPlanEntity) {
+      plan = p;
+    }
     const res = this.getFullHouseOrCanBook(plan);
     return res && res.toLowerCase().includes("full");
   }
@@ -95,21 +114,6 @@ export class RoomDetailComponent implements OnInit, AfterViewInit {
   }
   onBook(plan: RoomPlanEntity) {
     this.bookRoom.emit(plan);
-  }
-  private getRuleColor(plan: RoomPlanEntity) {
-    if (plan.RoomPlanRules) {
-      return "warning";
-    }
-    return "secondary";
-  }
-  getBookBtnColor(plan: RoomPlanEntity) {
-    if (this.isFull(plan)) {
-      return "danger";
-    }
-    if (this.isCanBook(plan)) {
-      return this.getRuleColor(plan);
-    }
-    return "primary";
   }
   getBreakfast(plan: RoomPlanEntity) {
     if (plan && plan.RoomPlanPrices && plan.RoomPlanPrices.length) {
@@ -138,6 +142,65 @@ export class RoomDetailComponent implements OnInit, AfterViewInit {
     if (identity) {
       this.isAgent = identity.Numbers && !!identity.Numbers["AgentId"];
     }
+    this.initFilterPolicy();
+  }
+  private async initFilterPolicy() {
+    const isSelf = await this.staffService.isSelfBookType();
+    if (isSelf) {
+      const bookInfos = this.hotelService.getBookInfos();
+      if (bookInfos.length && bookInfos[0] && bookInfos[0].passenger) {
+        this.filterPassengerPolicy(
+          this.hotelService.getBookInfos()[0].passenger.AccountId
+        );
+      }
+    }
+  }
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes && changes.hotelPolicy && changes.hotelPolicy.currentValue) {
+      this.initFilterPolicy();
+    }
+  }
+  private async getPolicy() {
+    let roomPlans: RoomPlanEntity[] = [];
+    if (this.room && this.room.Hotel && this.room.Hotel.Rooms) {
+      this.room.Hotel.Rooms.forEach(r => {
+        roomPlans = roomPlans.concat(r.RoomPlans);
+      });
+      return this.hotelService.getHotelPolicy(roomPlans, this.room.Hotel);
+    }
+    return [];
+  }
+  async filterPassengerPolicy(passengerId: string) {
+    const hotelPolicy = await this.getPolicy();
+    this.color$ = this.hotelService.getBookInfoSource().pipe(
+      map(_ => {
+        const colors = {};
+        console.log("hotelPolicy", hotelPolicy);
+        if (hotelPolicy) {
+          const policies = hotelPolicy.find(
+            it => it.PassengerKey == passengerId
+          );
+          if (policies) {
+            policies.HotelPolicies.forEach(p => {
+              let color = "";
+              if (p.IsAllowBook) {
+                color = !p.Rules || !p.Rules.length ? "success" : "warning";
+              } else {
+                color = "danger";
+              }
+              if (this.isFull(p.Number)) {
+                color = "danger";
+              }
+              colors[p.Number] = color;
+            });
+          }
+        }
+        return colors;
+      }),
+      tap(colors => {
+        console.log("colors", colors);
+      })
+    );
   }
   ngAfterViewInit() {}
   onClose() {

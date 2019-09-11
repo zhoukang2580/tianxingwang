@@ -1,3 +1,4 @@
+import { RoomEntity } from "./models/RoomEntity";
 import { AppHelper } from "src/app/appHelper";
 import { DayModel } from "src/app/tmc/models/DayModel";
 import { TripType } from "src/app/tmc/models/TripType";
@@ -28,6 +29,8 @@ import { HotelPassengerModel } from "./models/HotelPassengerModel";
 import { CalendarService } from "../tmc/calendar.service";
 import { HotelConditionModel } from "./models/ConditionModel";
 import { HotelDayPriceEntity } from "./models/HotelDayPriceEntity";
+import { RoomPlanEntity } from "./models/RoomPlanEntity";
+import { HotelPolicyModel } from "./models/HotelPolicyModel";
 export class SearchHotelModel {
   checkInDate: string;
   checkOutDate: string;
@@ -56,6 +59,7 @@ export class HotelService {
   private isInitializingSelfBookInfos = false;
   private conditionModel: HotelConditionModel;
   private cityConditionIsLoading: { [citycode: string]: boolean };
+  private hotelPolicies: { [hotelId: string]: HotelPassengerModel[] };
   constructor(
     private apiService: ApiService,
     identityService: IdentityService,
@@ -130,6 +134,7 @@ export class HotelService {
     m.destinationCity.CityName = "北京";
     m.destinationCity.Name = "北京";
     m.destinationCity.Code = m.destinationCity.CityCode = "1101";
+    m.hotelType = "normal";
     this.setSearchHotelModel(m);
   }
   getCurPosition() {
@@ -401,16 +406,82 @@ export class HotelService {
       })
     );
   }
-  getHotelPolicyAsync(hotels: HotelModel[], passengerIds: string[]) {
+  async getHotelPolicy(roomPlans: RoomPlanEntity[], hotel: HotelEntity) {
+    console.log("getHotelPolicy", this.hotelPolicies);
+    if (
+      this.hotelPolicies &&
+      this.hotelPolicies[hotel && hotel.Id] &&
+      this.hotelPolicies[hotel && hotel.Id].length
+    ) {
+      // return [...this.hotelPolicies[hotel.Id]];
+    }
+    const result = await this.getHotelPolicyAsync(roomPlans, hotel);
+    if (!this.hotelPolicies) {
+      this.hotelPolicies = { [hotel.Id]: result };
+    } else {
+      this.hotelPolicies[hotel.Id] = result;
+    }
+    return result;
+  }
+  private async getHotelPolicyAsync(
+    roomPlans: RoomPlanEntity[],
+    hotel: HotelEntity
+  ) {
+    const notWhitelistPolicies: HotelPassengerModel[] = [];
+    let whitelistPolicies: HotelPassengerModel[] = [];
+    const bookInfos = this.getBookInfos();
+    const whitelistPs = bookInfos
+      .filter(it => !it.isNotWhitelist)
+      .map(it => it.passenger && it.passenger.AccountId)
+      .filter(it => !!it);
+    const notWhitelistPs = bookInfos
+      .filter(it => it.isNotWhitelist)
+      .map(it => it.passenger && it.passenger.AccountId)
+      .filter(it => !!it);
+    if (notWhitelistPs.length && roomPlans) {
+      notWhitelistPs.forEach(it => {
+        const policies: HotelPolicyModel[] = [];
+        roomPlans.forEach(plan => {
+          const p = new HotelPolicyModel();
+          p.HotelId = hotel && hotel.Id;
+          p.IsAllowBook = true;
+          p.Number = plan.Number;
+          p.Rules = null;
+          policies.push(p);
+        });
+        notWhitelistPolicies.push({
+          PassengerKey: it,
+          HotelPolicies: policies
+        });
+      });
+    }
+    if (whitelistPs.length === 0 || !roomPlans || !roomPlans.length) {
+      whitelistPolicies = [];
+      return whitelistPolicies.concat(notWhitelistPolicies);
+    }
     const req = new RequestEntity();
-    req.Method = `TmcApiHotelUrl-Home-Detail`;
+    req.Method = `TmcApiHotelUrl-Home-Policy`;
     req.Version = "1.0";
+    req.IsShowLoading = true;
+    const arr: RoomPlanEntity[] = [];
+    roomPlans.forEach(it => {
+      arr.push({
+        Id: it.Id,
+        TotalAmount: it.TotalAmount,
+        Number: it.Number
+      } as RoomPlanEntity);
+    });
+    const city = this.getSearchHotelModel().destinationCity;
     req.Data = {
-      data: JSON.stringify(hotels),
-      passengers: passengerIds.join(",")
+      RoomPlans: JSON.stringify(arr),
+      Passengers: whitelistPs.join(","),
+      CityCode: city && city.Code
     };
     req.IsShowLoading = true;
-    return this.apiService.getPromiseData<HotelPassengerModel[]>(req);
+    whitelistPolicies = await this.apiService
+      .getPromiseData<HotelPassengerModel[]>(req)
+      .catch(_ => []);
+    return whitelistPolicies.concat(notWhitelistPolicies);
   }
   private loadHotelCitiesFromServer(lastUpdateTime: number) {
     const req = new RequestEntity();
@@ -426,8 +497,8 @@ export class HotelService {
 }
 export interface IHotelInfo {
   hotelEntity: HotelEntity;
-  // hotelPolicy: Hotel;
+  hotelRoom?: RoomEntity;
+  roomPlan?: RoomPlanEntity;
   tripType?: TripType;
   id?: string;
-  isLowerSegmentSelected?: boolean;
 }

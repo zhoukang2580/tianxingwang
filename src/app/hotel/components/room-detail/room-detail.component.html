@@ -36,8 +36,8 @@
             <span class='desc'>{{getRules(plan)}}</span>
             （即时确认）</div>
         </ion-label>
-        <ng-container *ngIf='getBookBtnColor(plan) as color'>
-          <ion-button slot='end' color='{{color}}' [disabled]='color=="danger"' (click)='onBook(plan)'>
+        <ng-container *ngIf='color$|async as color'>
+          <ion-button slot='end' color='{{color[plan.Number]}}' [disabled]='color=="danger"' (click)='onBook(plan)'>
             {{color=='danger'?"满房":"预订"}}
           </ion-button>
         </ng-container>

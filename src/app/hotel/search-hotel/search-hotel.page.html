@@ -26,13 +26,13 @@
     <ion-card-content>
       <ion-toolbar>
         <ion-segment (ionChange)="segmentChanged($event)" color="secondary">
-          <ion-segment-button value="normal" checked>
+          <ion-segment-button value="normal" [checked]='activeTab=="normal"'>
             <ion-label>非协议酒店</ion-label>
           </ion-segment-button>
-          <ion-segment-button value="agreement">
+          <ion-segment-button value="agreement" [checked]='activeTab=="agreement"'>
             <ion-label>协议酒店</ion-label>
           </ion-segment-button>
-          <ion-segment-button value="specialprice">
+          <ion-segment-button value="specialprice" [checked]='activeTab=="specialprice"'>
             <ion-label>特价酒店</ion-label>
           </ion-segment-button>
         </ion-segment>

@@ -1,3 +1,4 @@
+import { HotelPassengerModel } from "./../models/HotelPassengerModel";
 import { HotelEntity } from "./../models/HotelEntity";
 import { AppHelper } from "./../../appHelper";
 import { HotelService, SearchHotelModel } from "./../hotel.service";
@@ -12,7 +13,7 @@ import {
   ViewChild,
   AfterViewInit
 } from "@angular/core";
-import { Observable, Subscription } from "rxjs";
+import { Observable, Subscription, of, combineLatest, from } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import {
   DomController,
@@ -28,6 +29,7 @@ import { ImageRecoverService } from "src/app/services/imageRecover/imageRecover.
 import { ConfigService } from "src/app/services/config/config.service";
 import { RoomEntity } from "../models/RoomEntity";
 import { RoomPlanEntity } from "../models/RoomPlanEntity";
+import { StaffService } from "src/app/hr/staff.service";
 type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
 
 @Component({
@@ -36,7 +38,7 @@ type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
   styleUrls: ["./hotel-detail.page.scss"]
 })
 export class HotelDetailPage implements OnInit, AfterViewInit {
-  private item: HotelDayPriceEntity;
+  private hotelDayPrice: HotelDayPriceEntity;
   private scrollEle: HTMLElement;
   private headerHeight = 0;
   private rects: { [key in IHotelDetailTab]: ClientRect | DOMRect };
@@ -62,6 +64,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   hotel: HotelEntity;
   config: any;
   activeTab: IHotelDetailTab = "houseInfo";
+  hotelPolicy: HotelPassengerModel[];
   get totalNights() {
     return (
       this.queryModel.checkInDate &&
@@ -79,6 +82,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     private calendarService: CalendarService,
     private storage: Storage,
     private configService: ConfigService,
+    private staffService: StaffService,
     plt: Platform
   ) {
     this.isMd = plt.is("android");
@@ -100,7 +104,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       });
     this.route.queryParamMap.subscribe(q => {
       if (q.get("data")) {
-        this.item = JSON.parse(q.get("data"));
+        this.hotelDayPrice = JSON.parse(q.get("data"));
       }
       this.onSearch();
     });
@@ -150,18 +154,20 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       this.hotelDetailSub.unsubscribe();
     }
     this.hotelDetailSub = this.hotelService
-      .getHotelDetail(this.item)
+      .getHotelDetail(this.hotelDayPrice)
       .pipe(
         map(res => res && res.Data),
         tap(r => {
           console.log(r);
         })
       )
-      .subscribe(hotel => {
+      .subscribe(async hotel => {
         if (hotel) {
           this.hotel = hotel.Hotel;
           if (this.hotel) {
+            this.hotelDayPrice.Hotel = this.hotel;
             this.initBgPic(this.hotel.FileName);
+            this.hotelPolicy = await this.getPolicy();
             this.storage.set("mock-hotel-detail", this.hotel);
             this.ionCnt.scrollToTop();
             setTimeout(() => {
@@ -314,6 +320,24 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   onOpenCalendar() {
     this.hotelService.openCalendar();
   }
+  private async getPolicy() {
+    let roomPlans: RoomPlanEntity[] = [];
+    if (
+      this.hotelDayPrice &&
+      this.hotelDayPrice.Hotel &&
+      this.hotelDayPrice.Hotel.Rooms
+    ) {
+      this.hotelDayPrice.Hotel.Rooms.forEach(r => {
+        roomPlans = roomPlans.concat(r.RoomPlans);
+      });
+      return this.hotelService.getHotelPolicy(
+        roomPlans,
+        this.hotelDayPrice.Hotel
+      );
+    }
+    return [];
+  }
+
   private initRects() {
     this.activeTab = "houseInfo";
     this.rects = {} as any;

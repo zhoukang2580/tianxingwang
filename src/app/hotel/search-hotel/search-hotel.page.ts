@@ -20,6 +20,7 @@ import { TripType } from "src/app/tmc/models/TripType";
   styleUrls: ["./search-hotel.page.scss"]
 })
 export class SearchHotelPage implements OnInit, OnDestroy {
+  private subscriptions: Subscription[] = [];
   isShowSelectedInfos$: Observable<boolean>;
   canAddPassengers$: Observable<boolean>;
   selectedPassengers$ = of(0);
@@ -37,9 +38,9 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   checkInDate: DayModel;
   checkOutDate: DayModel;
   curPos: TrafficlineEntity = {} as any;
-  private subscriptions: Subscription[] = [];
-  private isLeavePage = false;
   isPositioning = false;
+  activeTab = "normal";
+  isLeavePage = false;
   constructor(
     private router: Router,
     private hotelService: HotelService,
@@ -47,11 +48,11 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private tmcSerivce: TmcService,
     private staffService: StaffService,
-    private calendarService: CalendarService,
+    private calendarService: CalendarService
   ) {
     const sub = route.queryParamMap.subscribe(_ => {
-      tmcSerivce.setFlightHotelTrainType(FlightHotelTrainType.Hotel);
       this.isLeavePage = false;
+      tmcSerivce.setFlightHotelTrainType(FlightHotelTrainType.Hotel);
     });
     this.subscriptions.push(sub);
   }
@@ -82,6 +83,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       .pipe(map(infos => infos.length));
     this.initCheckInCheckOutDate();
     const sub = this.hotelService.getSearchHotelModelSource().subscribe(m => {
+      this.activeTab = m.hotelType;
       if (m && m.destinationCity) {
         this.curPos = m.destinationCity;
         this.curPos.CityName = m.destinationCity.Name;
@@ -92,13 +94,15 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     this.subscriptions.push(sub);
   }
   onSearchCity() {
-    this.isLeavePage = true;
     this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
   }
   async onPosition() {
     this.isPositioning = true;
     this.curPos = { CityName: "正在定位..." } as any;
     const curPos = await this.hotelService.getCurPosition().catch(_ => null);
+    if (this.isLeavePage) {
+      return;
+    }
     if (curPos) {
       this.curPos = curPos.city;
       const cities = await this.hotelService.getHotelCityAsync();
@@ -129,7 +133,6 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   }
   onShowSelectedBookInfos() {}
   onSelectPassenger() {
-    this.isLeavePage = true;
     this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
   }
   async onSelecDate(isCheckIn: boolean) {
@@ -150,7 +153,9 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       destinationCity: this.destinationCity,
       isRefreshData: true
     });
-    this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
+    this.router.navigate([AppHelper.getRoutePath("hotel-list")]).then(_ => {
+      this.isLeavePage = true;
+    });
   }
   back() {
     this.router.navigate([AppHelper.getRoutePath("")]);

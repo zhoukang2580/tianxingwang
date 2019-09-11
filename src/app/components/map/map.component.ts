@@ -36,7 +36,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges {
     this.getCurPosition();
   }
   private async initMap(container: HTMLElement) {
-    console.log(container);
+    // console.log(container);
     if (!this.lat || !this.lng) {
       await this.getCurPosition();
       this.lat = (this.curLatLng && this.curLatLng.lat) || "40.057031";
