@@ -44,14 +44,17 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges {
     }
     if (BMap.Map) {
       this.map = new BMap.Map(container);
-      const point = new BMap.Point(this.lng, this.lat);
-      this.map.centerAndZoom(point, 15);
-      this.map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
-      setTimeout(() => {
+      if (this.map) {
+        const point = new BMap.Point(this.lng, this.lat);
+        this.map.centerAndZoom(point, 17);
+        this.map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
         const marker = new BMap.Marker(point); // 创建标注
         marker.setAnimation(window["BMAP_ANIMATION_BOUNCE"]); // 跳动的动画
         this.map.addOverlay(marker); // 将标注添加到地图中
-      }, 1000);
+        setTimeout(() => {
+          this.initAndPanToMarker({ lat: this.lat, lng: this.lng });
+        }, 1000);
+      }
     }
   }
   private initAndPanToMarker(p: MapPoint) {
