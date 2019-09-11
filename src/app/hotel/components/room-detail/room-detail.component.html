@@ -38,8 +38,10 @@
         </ion-label>
         <ng-container *ngIf='(color$|async)[plan.Number] as color'>
           <ion-button slot='end' color='{{color}}' [disabled]='color=="danger"'
-            [style.color]='color=="danger"?"white":"initial"' (click)='onBook(plan)'>
-            {{color=='danger'?"满房":"预订"}}
+             (click)='onBook(plan)'>
+            <span [style.color]='color=="danger"?"white":"initial"'>
+              {{color=='danger'?"满房":"预订"}}
+            </span>
           </ion-button>
         </ng-container>
       </ion-item>
