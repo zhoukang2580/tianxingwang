@@ -39,6 +39,8 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   private item: HotelDayPriceEntity;
   private scrollEle: HTMLElement;
   private headerHeight = 0;
+  private rects: { [key in IHotelDetailTab]: ClientRect | DOMRect };
+
   @ViewChild("header") headerEle: ElementRef<HTMLElement>;
   @ViewChild("bgPic") bgPicEle: ElementRef<HTMLElement>;
   @ViewChild(IonContent) ionCnt: IonContent;
@@ -59,7 +61,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   queryModelSub = Subscription.EMPTY;
   hotel: HotelEntity;
   config: any;
-  rects: { [key in IHotelDetailTab]: ClientRect | DOMRect };
+  activeTab: IHotelDetailTab = "houseInfo";
   get totalNights() {
     return (
       this.queryModel.checkInDate &&
@@ -161,6 +163,10 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
           if (this.hotel) {
             this.initBgPic(this.hotel.FileName);
             this.storage.set("mock-hotel-detail", this.hotel);
+            this.ionCnt.scrollToTop();
+            setTimeout(() => {
+              this.initRects();
+            }, 1000);
           }
         }
       });
@@ -180,9 +186,6 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
         );
       }
     }
-    setTimeout(() => {
-      this.initRects();
-    }, 2000);
   }
   getRoomImages(room: RoomEntity) {
     const images = this.hotel && this.hotel.HotelImages;
@@ -242,7 +245,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     }
   }
   private scrollToPoint(rect: ClientRect | DOMRect) {
-    console.log("scrollToPoint", rect);
+    // console.log("scrollToPoint", rect);
     if (rect) {
       const header = document.querySelector(".header");
       let hh = 0;
@@ -254,7 +257,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
           });
         }
       }
-      console.log("header", hh);
+      // console.log("header", hh);
       this.ionCnt.scrollToPoint(0, rect.top - hh, 100);
     }
   }
@@ -312,6 +315,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     this.hotelService.openCalendar();
   }
   private initRects() {
+    this.activeTab = "houseInfo";
     this.rects = {} as any;
     if (this.hotelInfoEle && this.hotelInfoEle["el"]) {
       this.rects.hotelInfo = this.hotelInfoEle["el"].getBoundingClientRect();
