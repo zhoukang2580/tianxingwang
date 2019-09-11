@@ -1,3 +1,4 @@
+import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
 import { TmcEntity } from "src/app/tmc/tmc.service";
 import { AmenityEntity } from "./AmenityEntity";
 import { BrandEntity } from "./BrandEntity";
@@ -17,4 +18,5 @@ export class HotelConditionModel {
   /// 地理信息
   /// </summary>
   Geos: GeoEntity[];
+  city:TrafficlineEntity;
 }

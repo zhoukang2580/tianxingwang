@@ -95,7 +95,7 @@
       <ion-label (click)='onShowRoomDetails(room)' class='item'>
         <h3 class='name'>
           <ion-label>{{room.Name}}</ion-label>
-          <ion-text color='danger'><strong>￥{{getRoomLowestAvgPrice(room)}}起</strong></ion-text>
+          <ion-text color='danger' *ngIf='getRoomLowestAvgPrice(room) as price'><strong>￥{{price}}起</strong></ion-text>
         </h3>
         <h4 *ngIf='room.RoomDetails'>
           <ion-label text-wrap>
@@ -116,8 +116,11 @@
   <ion-list #hotelInfo class='hotel-info'>
     <ion-item-divider sticky>酒店信息</ion-item-divider>
   </ion-list>
-  <ion-list #trafficInfo clas='traffic-info'>
+  <ion-list #trafficInfo class='traffic-info'>
     <ion-item-divider sticky>交通信息</ion-item-divider>
+    <div class="traffic-map">
+      <app-map [lat]='hotel?.Lat' [lng]='hotel?.Lng'></app-map>
+    </div>
   </ion-list>
 </ion-content>
 <app-browse-images *ngIf="isShowImages" [images]='getImageUrls()' (close)='isShowImages=false'></app-browse-images>

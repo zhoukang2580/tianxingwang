@@ -122,6 +122,9 @@ export class MapService {
       });
     });
   }
+  async getCurMapPoint(){
+    return this.getCurrentPosition();
+  }
   async getCurrentCityPosition(): Promise<{
     city: TrafficlineEntity;
     position: any;

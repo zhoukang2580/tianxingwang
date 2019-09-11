@@ -90,6 +90,7 @@ export class HotelService {
       this.conditionModel = await this.getHotelConditions().catch(_ => null);
       // console.log(JSON.stringify(this.conditionModel));
       if (this.conditionModel) {
+        this.conditionModel.city = this.getSearchHotelModel().destinationCity;
         if (this.conditionModel.Geos) {
           this.conditionModel.Geos = this.conditionModel.Geos.map(geo => {
             if (geo.Variables) {
@@ -144,6 +145,14 @@ export class HotelService {
           ? "Agreement"
           : "SpecialPrice";
       this.searchHotelModelSource.next(this.searchHotelModel);
+      if (
+        this.conditionModel &&
+        this.conditionModel.city &&
+        m.destinationCity &&
+        m.destinationCity.Code != this.conditionModel.city.Code
+      ) {
+        this.conditionModel = null;
+      }
     }
   }
   private async initSelfBookTypeBookInfos() {

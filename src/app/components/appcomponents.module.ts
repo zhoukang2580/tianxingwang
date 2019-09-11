@@ -1,3 +1,4 @@
+import { MapComponent } from './../components/map/map.component';
 import { AppUpdateComponent } from "./appupdate/appupdate.component";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
@@ -27,7 +28,8 @@ import { ImageScrollerComponent } from "./image-scroller/image-scroller.componen
     TimelineItemComponent,
     PayComponent,
     BrowseImagesComponent,
-    ImageScrollerComponent
+    ImageScrollerComponent,
+    MapComponent
   ],
   imports: [CommonModule, IonicModule, TreeNgxModule],
   exports: [
@@ -42,7 +44,8 @@ import { ImageScrollerComponent } from "./image-scroller/image-scroller.componen
     TimelineItemComponent,
     PayComponent,
     BrowseImagesComponent,
-    ImageScrollerComponent
+    ImageScrollerComponent,
+    MapComponent
   ],
   entryComponents: [
     LoginSkeletonPageComponent,

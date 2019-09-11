@@ -18,7 +18,8 @@ import {
   DomController,
   IonContent,
   IonRefresher,
-  Platform
+  Platform,
+  IonList
 } from "@ionic/angular";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { Storage } from "@ionic/storage";
@@ -42,9 +43,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   @ViewChild("bgPic") bgPicEle: ElementRef<HTMLElement>;
   @ViewChild(IonContent) ionCnt: IonContent;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
-  @ViewChild("houseInfo") private houseInfoEle: ElementRef<HTMLElement>;
-  @ViewChild("hotelInfo") private hotelInfoEle: ElementRef<HTMLElement>;
-  @ViewChild("trafficInfo") private trafficInfoEle: ElementRef<HTMLElement>;
+  @ViewChild("houseInfo") private houseInfoEle: IonList;
+  @ViewChild("hotelInfo") private hotelInfoEle: IonList;
+  @ViewChild("trafficInfo") private trafficInfoEle: IonList;
   isShowImages = false;
   isShowBackArrow = true;
   backArrowColor = "light";
@@ -58,6 +59,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   queryModelSub = Subscription.EMPTY;
   hotel: HotelEntity;
   config: any;
+  rects: { [key in IHotelDetailTab]: ClientRect | DOMRect };
   get totalNights() {
     return (
       this.queryModel.checkInDate &&
@@ -139,7 +141,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       console.log(this.hotel);
       if (this.hotel) {
         this.initBgPic(this.hotel.FileName);
-        return;
+        // return;
       }
     }
     if (this.hotelDetailSub) {
@@ -178,6 +180,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
         );
       }
     }
+    setTimeout(() => {
+      this.initRects();
+    }, 2000);
   }
   getRoomImages(room: RoomEntity) {
     const images = this.hotel && this.hotel.HotelImages;
@@ -232,33 +237,26 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     }
   }
   private scrollToTab(tab: IHotelDetailTab) {
-    if (tab == "houseInfo") {
-      if (this.houseInfoEle && this.houseInfoEle.nativeElement) {
-        const rect = this.houseInfoEle.nativeElement.getBoundingClientRect();
-        if (rect) {
-          this.scrollToPoint(rect.top);
-        }
-      }
-    }
-    if (tab == "hotelInfo") {
-      if (this.hotelInfoEle && this.hotelInfoEle.nativeElement) {
-        const rect = this.hotelInfoEle.nativeElement.getBoundingClientRect();
-        if (rect) {
-          this.scrollToPoint(rect.top);
-        }
-      }
-    }
-    if (tab == "trafficInfo") {
-      if (this.trafficInfoEle && this.trafficInfoEle.nativeElement) {
-        const rect = this.trafficInfoEle.nativeElement.getBoundingClientRect();
-        if (rect) {
-          this.scrollToPoint(rect.top);
-        }
-      }
+    if (this.rects) {
+      this.scrollToPoint(this.rects[tab]);
     }
   }
-  private scrollToPoint(y: number) {
-    this.ionCnt.scrollToPoint(0, y, 100);
+  private scrollToPoint(rect: ClientRect | DOMRect) {
+    console.log("scrollToPoint", rect);
+    if (rect) {
+      const header = document.querySelector(".header");
+      let hh = 0;
+      if (header) {
+        const toolbars = header.querySelectorAll("ion-toolbar");
+        if (toolbars) {
+          toolbars.forEach(t => {
+            hh += t.clientHeight;
+          });
+        }
+      }
+      console.log("header", hh);
+      this.ionCnt.scrollToPoint(0, rect.top - hh, 100);
+    }
   }
   onBookRoomPlan(plan: RoomPlanEntity) {}
   getRoomLowestAvgPrice(room: RoomEntity) {
@@ -306,11 +304,26 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       (config && config.PrerenderImageUrl) || AppHelper.getDefaultLoadingImage()
     );
     setTimeout(() => {
+      this.initRects();
       this.initEle();
     }, 1000);
   }
   onOpenCalendar() {
     this.hotelService.openCalendar();
+  }
+  private initRects() {
+    this.rects = {} as any;
+    if (this.hotelInfoEle && this.hotelInfoEle["el"]) {
+      this.rects.hotelInfo = this.hotelInfoEle["el"].getBoundingClientRect();
+    }
+    if (this.houseInfoEle && this.houseInfoEle["el"]) {
+      this.rects.houseInfo = this.houseInfoEle["el"].getBoundingClientRect();
+    }
+    if (this.trafficInfoEle && this.trafficInfoEle["el"]) {
+      this.rects.trafficInfo = this.trafficInfoEle[
+        "el"
+      ].getBoundingClientRect();
+    }
   }
   private initEle() {
     if (this.headerEle && this.headerEle.nativeElement) {
