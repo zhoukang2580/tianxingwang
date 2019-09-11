@@ -27,6 +27,8 @@ import { ImageRecoverService } from "src/app/services/imageRecover/imageRecover.
 import { ConfigService } from "src/app/services/config/config.service";
 import { RoomEntity } from "../models/RoomEntity";
 import { RoomPlanEntity } from "../models/RoomPlanEntity";
+type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
+
 @Component({
   selector: "app-hotel-detail",
   templateUrl: "./hotel-detail.page.html",
@@ -35,16 +37,14 @@ import { RoomPlanEntity } from "../models/RoomPlanEntity";
 export class HotelDetailPage implements OnInit, AfterViewInit {
   private item: HotelDayPriceEntity;
   private scrollEle: HTMLElement;
-  private bgPicHeight = 0;
   private headerHeight = 0;
-  hotelDetailSub = Subscription.EMPTY;
-  queryModelSub = Subscription.EMPTY;
-  hotel: HotelEntity;
-  config: any;
   @ViewChild("header") headerEle: ElementRef<HTMLElement>;
   @ViewChild("bgPic") bgPicEle: ElementRef<HTMLElement>;
   @ViewChild(IonContent) ionCnt: IonContent;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
+  @ViewChild("houseInfo") private houseInfoEle: ElementRef<HTMLElement>;
+  @ViewChild("hotelInfo") private hotelInfoEle: ElementRef<HTMLElement>;
+  @ViewChild("trafficInfo") private trafficInfoEle: ElementRef<HTMLElement>;
   isShowImages = false;
   isShowBackArrow = true;
   backArrowColor = "light";
@@ -54,6 +54,10 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   isMd = false;
   roomImages: string[] = [];
   curSelectedRoom: RoomEntity;
+  hotelDetailSub = Subscription.EMPTY;
+  queryModelSub = Subscription.EMPTY;
+  hotel: HotelEntity;
+  config: any;
   get totalNights() {
     return (
       this.queryModel.checkInDate &&
@@ -135,7 +139,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       console.log(this.hotel);
       if (this.hotel) {
         this.initBgPic(this.hotel.FileName);
-        // return;
+        return;
       }
     }
     if (this.hotelDetailSub) {
@@ -222,6 +226,41 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       room.RoomDetails.find(it => it.Tag == "BedType")
     );
   }
+  segmentChanged(evt: CustomEvent) {
+    if (evt.detail.value) {
+      this.scrollToTab(evt.detail.value);
+    }
+  }
+  private scrollToTab(tab: IHotelDetailTab) {
+    if (tab == "houseInfo") {
+      if (this.houseInfoEle && this.houseInfoEle.nativeElement) {
+        const rect = this.houseInfoEle.nativeElement.getBoundingClientRect();
+        if (rect) {
+          this.scrollToPoint(rect.top);
+        }
+      }
+    }
+    if (tab == "hotelInfo") {
+      if (this.hotelInfoEle && this.hotelInfoEle.nativeElement) {
+        const rect = this.hotelInfoEle.nativeElement.getBoundingClientRect();
+        if (rect) {
+          this.scrollToPoint(rect.top);
+        }
+      }
+    }
+    if (tab == "trafficInfo") {
+      if (this.trafficInfoEle && this.trafficInfoEle.nativeElement) {
+        const rect = this.trafficInfoEle.nativeElement.getBoundingClientRect();
+        if (rect) {
+          this.scrollToPoint(rect.top);
+        }
+      }
+    }
+  }
+  private scrollToPoint(y: number) {
+    this.ionCnt.scrollToPoint(0, y, 100);
+  }
+  onBookRoomPlan(plan: RoomPlanEntity) {}
   getRoomLowestAvgPrice(room: RoomEntity) {
     let result = 0;
     if (room && room.RoomPlans) {
@@ -274,9 +313,6 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     this.hotelService.openCalendar();
   }
   private initEle() {
-    if (this.bgPicEle && this.bgPicEle.nativeElement) {
-      this.bgPicHeight = this.bgPicEle.nativeElement.clientHeight;
-    }
     if (this.headerEle && this.headerEle.nativeElement) {
       this.headerHeight = this.headerEle.nativeElement.clientHeight;
     }

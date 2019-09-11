@@ -106,3 +106,13 @@ ion-card {
 app-room-detail {
   z-index: 102;
 }
+ion-list {
+  &.hotel-info {
+    min-height: 60vh;
+    background-color: blanchedalmond;
+  }
+  &.traffic-info {
+    min-height: 60vh;
+    background-color: black;
+  }
+}

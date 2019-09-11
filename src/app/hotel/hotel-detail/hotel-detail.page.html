@@ -7,6 +7,19 @@
     </ion-buttons>
     <ion-title>{{hotel?.Name}}</ion-title>
   </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment (ionChange)="segmentChanged($event)" color="secondary">
+      <ion-segment-button value="houseInfo" checked>
+        <ion-label>房型</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="hotelInfo">
+        <ion-label>酒店信息</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="trafficInfo">
+        <ion-label>交通信息</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 </div>
 <ion-content>
   <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'></ion-refresher>
@@ -70,7 +83,8 @@
       </ion-card-content>
     </ion-card>
   </ng-template>
-  <ion-list class='room-list'>
+  <ion-list class='room-list' #houseInfo>
+    <ion-item-divider sticky>房型信息</ion-item-divider>
     <ion-item *ngFor='let room of hotel?.Rooms'>
       <ion-thumbnail (click)='onShowRoomImages(room)'>
         <ng-container *ngIf='getRoomImages(room) as images'>
@@ -94,13 +108,19 @@
           </ion-label>
         </h4>
         <h3 text-end>
-          <ion-button (click)='onBookRoom(room,$event)' color='secondary' size='small'>预订</ion-button>
+          <ion-button color='secondary' size='small'>预订</ion-button>
         </h3>
       </ion-label>
     </ion-item>
+  </ion-list>
+  <ion-list #hotelInfo class='hotel-info'>
+    <ion-item-divider sticky>酒店信息</ion-item-divider>
+  </ion-list>
+  <ion-list #trafficInfo clas='traffic-info'>
+    <ion-item-divider sticky>交通信息</ion-item-divider>
   </ion-list>
 </ion-content>
 <app-browse-images *ngIf="isShowImages" [images]='getImageUrls()' (close)='isShowImages=false'></app-browse-images>
 <app-browse-images *ngIf="isShowRoomImages" [images]="roomImages" (close)='isShowRoomImages=false'></app-browse-images>
 <app-room-detail [room]='curSelectedRoom' [roomImages]='roomImages' (close)='isShowRoomDetails=false' class="ion-page"
-  *ngIf='isShowRoomDetails'></app-room-detail>
+  *ngIf='isShowRoomDetails' (bookRoom)='onBookRoomPlan($event)'></app-room-detail>

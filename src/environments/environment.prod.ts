@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  localhost: false
+  localhost: false,
+  disableNetWork: false
 };

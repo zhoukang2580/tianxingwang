@@ -6,7 +6,8 @@ import {
   ViewChild,
   AfterViewInit,
   Output,
-  EventEmitter
+  EventEmitter,
+  ElementRef
 } from "@angular/core";
 import { RoomEntity } from "../../models/RoomEntity";
 import { DomController } from "@ionic/angular";
@@ -14,7 +15,6 @@ import { RoomPlanEntity } from "../../models/RoomPlanEntity";
 import { HotelSupplierType } from "../../models/HotelSupplierType";
 import { RoomPlanRuleType } from "../../models/RoomPlanRuleType";
 import { HotelBookType } from "../../models/HotelBookType";
-
 @Component({
   selector: "app-room-detail",
   templateUrl: "./room-detail.component.html",
@@ -26,7 +26,6 @@ export class RoomDetailComponent implements OnInit, AfterViewInit {
   @Output() close: EventEmitter<any>;
   @Output() bookRoom: EventEmitter<any>;
   curIndex = 0;
-  @ViewChild("imagesEle") imagesEle: HTMLElement;
   isAgent = false;
   HotelBookType = HotelBookType;
   constructor(
@@ -97,12 +96,18 @@ export class RoomDetailComponent implements OnInit, AfterViewInit {
   onBook(plan: RoomPlanEntity) {
     this.bookRoom.emit(plan);
   }
+  private getRuleColor(plan: RoomPlanEntity) {
+    if (plan.RoomPlanRules) {
+      return "warning";
+    }
+    return "secondary";
+  }
   getBookBtnColor(plan: RoomPlanEntity) {
     if (this.isFull(plan)) {
       return "danger";
     }
     if (this.isCanBook(plan)) {
-      return "secondary";
+      return this.getRuleColor(plan);
     }
     return "primary";
   }

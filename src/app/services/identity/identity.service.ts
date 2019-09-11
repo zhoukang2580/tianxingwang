@@ -26,6 +26,7 @@ import {
 import { IResponse } from "../api/IResponse";
 import { ExceptionEntity } from "../log/exception.entity";
 import { LanguageHelper } from "src/app/languageHelper";
+import { environment } from "src/environments/environment";
 
 @Injectable({
   providedIn: "root"
@@ -101,7 +102,7 @@ export class IdentityService {
       req.Domain = AppHelper.getDomain();
       let due = req.Timeout || 30 * 1000;
       due = due < 1000 ? due * 1000 : due;
-      // due = 1;
+      due = environment.disableNetWork ? 1 : due;
       const formObj = Object.keys(req)
         .map(k => `${k}=${req[k]}`)
         .join("&");
