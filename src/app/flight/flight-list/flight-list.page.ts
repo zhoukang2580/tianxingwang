@@ -172,15 +172,14 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           if (this.isLeavePage || this.isLoading) {
             return;
           }
-          if (this.flightService.getSearchFlightModel().isRefreshData) {
-            setTimeout(() => {
-              this.doRefresh(true, false);
-              this.flightService.setSearchFlightModel({
-                ...this.flightService.getSearchFlightModel(),
-                isRefreshData: false
-              });
-            }, 10);
-          }
+          // if (this.flightService.getSearchFlightModel().isRefreshData) {
+          //   setTimeout(() => {
+          //     this.flightService.setSearchFlightModel({
+          //       ...this.flightService.getSearchFlightModel(),
+          //       isRefreshData: false
+          //     });
+          //   }, 10);
+          // }
         }
       });
     this.hasDataSource = new BehaviorSubject(false);
@@ -219,6 +218,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         })
       );
     this.route.queryParamMap.subscribe(async () => {
+      this.isLeavePage = false;
       this.showAddPassenger = await this.canShowAddPassenger();
       if (this.searchConditionSubscription) {
         this.searchConditionSubscription.unsubscribe();
@@ -243,6 +243,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.isLeavePage = false;
       this.flightService.setFilterPanelShow(false);
       console.log("this.route.queryParamMap", this.searchFlightModel);
+      this.doRefresh(true, true);
     });
     this.showAdvSearchPage$ = this.flightService.getFilterPanelShow();
   }
@@ -263,7 +264,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
 
   back() {
     this.isLeavePage = true;
-    this.navCtrl.back();
+    this.router.navigate([AppHelper.getRoutePath("search-flight")]);
   }
   async onChangedDay(day: DayModel, byUser: boolean) {
     if (
@@ -717,7 +718,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           this.doRefresh(true, false);
         }
       });
-    this.doRefresh(true, true);
   }
   ngOnDestroy() {
     this.vmFlights = [];

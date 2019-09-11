@@ -434,10 +434,21 @@ export class FlightService {
     } else {
       // 重选去程
       s.tripType = TripType.departureTrip;
-      const arr = this.getPassengerBookInfos().map(item => {
-        item.isReplace = item.id == arg.id;
+      let arr = this.getPassengerBookInfos().map(item => {
+        item.bookInfo = null;
         return item;
       });
+      if (s.isRoundTrip) {
+        if (arr.length < 2) {
+          await this.addOneBookInfoToSelfBookType();
+        } else {
+          if (arr.length) {
+            arr = [arr[0]];
+          } else {
+            await this.addOneBookInfoToSelfBookType();
+          }
+        }
+      }
       this.passengerBookInfos = arr;
     }
     this.setPassengerBookInfos(this.getPassengerBookInfos());
@@ -505,12 +516,26 @@ export class FlightService {
             this.currentViewtFlightSegment.flightSegment.Cabins.find(
               c => c.Code == cabin.CabinCode
             );
+          let tripType = TripType.departureTrip;
+          if (bookInfo.isReplace) {
+            if (bookInfo.bookInfo) {
+              tripType = bookInfo.bookInfo.tripType;
+            }
+          } else {
+            if (this.getSearchFlightModel().isRoundTrip) {
+              const go = this.getPassengerBookInfos().find(
+                it =>
+                  it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
+              );
+              if (go) {
+                tripType = TripType.returnTrip;
+              }
+            }
+          }
           bookInfo.bookInfo = {
             flightSegment: this.currentViewtFlightSegment.flightSegment,
             flightPolicy: cabin,
-            tripType: this.getSearchFlightModel().isRoundTrip
-              ? this.getSearchFlightModel().tripType
-              : TripType.departureTrip,
+            tripType,
             id: AppHelper.uuid()
           };
         }

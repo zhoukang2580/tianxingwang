@@ -109,7 +109,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     return `1`;
   }
   back() {
-    this.navCtrl.back();
+    this.router.navigate([""]);
   }
   private onRoundTrip(single: boolean) {
     // console.log("onRoundTrip isSingle", single);
@@ -131,9 +131,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
   async ngOnInit() {
     this.isShowBookInfos$ = this.flightService
       .getPassengerBookInfoSource()
-      .pipe(
-        map(infos => infos.filter(it => !!it.bookInfo).length)
-      );
+      .pipe(map(infos => infos.filter(it => !!it.bookInfo).length));
     this.selectDaySubscription = this.flydayService
       .getSelectedDays()
       .subscribe(days => {
@@ -253,14 +251,11 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
         );
       let goFlight: FlightSegmentEntity;
       const info = exists.find(
-        it =>
-          it.bookInfo &&
-          it.bookInfo.tripType == TripType.departureTrip
+        it => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
       );
       if (info) {
         s.tripType = TripType.returnTrip;
-        goFlight =
-          info.bookInfo && info.bookInfo.flightSegment;
+        goFlight = info.bookInfo && info.bookInfo.flightSegment;
       } else {
         s.tripType = TripType.departureTrip;
       }

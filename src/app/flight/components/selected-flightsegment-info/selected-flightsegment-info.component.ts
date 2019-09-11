@@ -252,8 +252,6 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     const goflight = goflightBookInfo.bookInfo.flightSegment;
     const fromCity = airports.find(c => c.Code == goflight.FromAirport);
     const toCity = airports.find(c => c.Code == goflight.ToAirport);
-    s.fromCity = fromCity;
-    s.toCity = toCity;
     const goDay = moment(goflight.ArrivalTime);
     let backDay = moment(s.BackDate);
     if (+backDay < +moment(goDay.format("YYYY-MM-DD"))) {
@@ -268,10 +266,11 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
         ToCode: goflight.FromAirport,
         ToAsAirport: s.FromAsAirport,
         FromAsAirport: s.ToAsAirport,
-        fromCity: s.toCity,
-        toCity: s.fromCity,
+        fromCity: toCity,
+        toCity: fromCity,
         Date: s.BackDate,
-        tripType: TripType.returnTrip
+        tripType: TripType.returnTrip,
+        isRefreshData: true
       });
     });
   }

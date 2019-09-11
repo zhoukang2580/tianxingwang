@@ -29,6 +29,7 @@ import {
 import { of, Observable } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { PassengerBookInfo } from "src/app/tmc/tmc.service";
+import { AppHelper } from "src/app/appHelper";
 
 @Component({
   selector: "app-flight-item-cabins",
@@ -73,7 +74,7 @@ export class FlightItemCabinsPage implements OnInit {
     });
   }
   back() {
-    this.navCtrl.back();
+    this.router.navigate([AppHelper.getRoutePath("flight-list")]);
   }
   getMothDay() {
     const t =
@@ -158,9 +159,7 @@ export class FlightItemCabinsPage implements OnInit {
       .pipe(map(infos => infos.find(it => it.isFilteredPolicy)));
     this.showOpenBtn$ = this.flightService
       .getPassengerBookInfoSource()
-      .pipe(
-        map(infos => infos && infos.filter(it => !!it.bookInfo).length)
-      );
+      .pipe(map(infos => infos && infos.filter(it => !!it.bookInfo).length));
     setTimeout(async () => {
       const bookInfos = this.flightService.getPassengerBookInfos();
       const showPl = bookInfos.length == 1;
