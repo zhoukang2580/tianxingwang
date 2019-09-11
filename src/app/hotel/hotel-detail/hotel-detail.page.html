@@ -36,11 +36,11 @@
             <ion-icon name='star-half' color='danger' *ngIf='s<1'></ion-icon>
           </ng-container>
         </div>
-        <div class='position' (click)='onOpenMap()'>
-          <ion-label color='secondary'>{{hotel?.Address}}</ion-label>
-          <ion-icon name="pin" color='secondary'></ion-icon>
-        </div>
       </div>
+      <ion-item (click)='onOpenMap()' lines='none' no-margin no-padding>
+        <ion-label color='secondary'>{{hotel?.Address}}</ion-label>
+        <ion-icon name="pin" color='secondary'></ion-icon>
+      </ion-item>
     </ion-card-subtitle>
     <ion-card-content>
       <div class='date' (click)="onOpenCalendar()">
@@ -81,7 +81,7 @@
       <ion-label (click)='onShowRoomDetails(room)' class='item'>
         <h3 class='name'>
           <ion-label>{{room.Name}}</ion-label>
-          <ion-text color='danger'><strong>￥455</strong></ion-text>
+          <ion-text color='danger'><strong>￥{{getRoomLowestAvgPrice(room)}}起</strong></ion-text>
         </h3>
         <h4 *ngIf='room.RoomDetails'>
           <ion-label text-wrap>

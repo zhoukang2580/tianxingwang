@@ -26,6 +26,7 @@ import { environment } from "src/environments/environment";
 import { ImageRecoverService } from "src/app/services/imageRecover/imageRecover.service";
 import { ConfigService } from "src/app/services/config/config.service";
 import { RoomEntity } from "../models/RoomEntity";
+import { RoomPlanEntity } from "../models/RoomPlanEntity";
 @Component({
   selector: "app-hotel-detail",
   templateUrl: "./hotel-detail.page.html",
@@ -193,6 +194,13 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       room && room.RoomDetails && room.RoomDetails.find(it => it.Tag == "Floor")
     );
   }
+  getRenovationDate(room: RoomEntity) {
+    return (
+      room &&
+      room.RoomDetails &&
+      room.RoomDetails.find(it => it.Tag == "RenovationDate")
+    );
+  }
   getComments(room: RoomEntity) {
     return (
       room &&
@@ -213,6 +221,27 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       room.RoomDetails &&
       room.RoomDetails.find(it => it.Tag == "BedType")
     );
+  }
+  getRoomLowestAvgPrice(room: RoomEntity) {
+    let result = 0;
+    if (room && room.RoomPlans) {
+      const arr: number[] = [];
+      room.RoomPlans.forEach(plan => {
+        arr.push(this.getAvgPrice(plan));
+      });
+      arr.sort((p1, p2) => p1 - p2);
+      result = arr[0] || 0;
+    }
+    return result;
+  }
+  private getAvgPrice(plan: RoomPlanEntity) {
+    if (plan && plan.VariablesJsonObj) {
+      return plan.VariablesJsonObj["AvgPrice"];
+    }
+    if (plan && plan.Variables) {
+      plan.VariablesJsonObj = JSON.parse(plan.Variables);
+      return plan.VariablesJsonObj["AvgPrice"];
+    }
   }
   onShowRoomDetails(room: RoomEntity) {
     this.curSelectedRoom = room;

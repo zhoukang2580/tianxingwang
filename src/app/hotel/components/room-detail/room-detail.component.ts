@@ -24,6 +24,7 @@ export class RoomDetailComponent implements OnInit, AfterViewInit {
   @Input() room: RoomEntity;
   @Input() roomImages: string[];
   @Output() close: EventEmitter<any>;
+  @Output() bookRoom: EventEmitter<any>;
   curIndex = 0;
   @ViewChild("imagesEle") imagesEle: HTMLElement;
   isAgent = false;
@@ -33,6 +34,7 @@ export class RoomDetailComponent implements OnInit, AfterViewInit {
     private identityService: IdentityService
   ) {
     this.close = new EventEmitter();
+    this.bookRoom = new EventEmitter();
   }
   getRules(roomPlan: RoomPlanEntity) {
     let result = "";
@@ -74,6 +76,35 @@ export class RoomDetailComponent implements OnInit, AfterViewInit {
       plan.VariablesJsonObj = JSON.parse(plan.Variables);
       return plan.VariablesJsonObj["AvgPrice"];
     }
+  }
+  private getFullHouseOrCanBook(plan: RoomPlanEntity): string {
+    if (plan && plan.VariablesJsonObj) {
+      return plan.VariablesJsonObj["FullHouseOrCanBook"];
+    }
+    if (plan && plan.Variables) {
+      plan.VariablesJsonObj = JSON.parse(plan.Variables);
+      return plan.VariablesJsonObj["FullHouseOrCanBook"];
+    }
+  }
+  private isFull(plan: RoomPlanEntity) {
+    const res = this.getFullHouseOrCanBook(plan);
+    return res && res.toLowerCase().includes("full");
+  }
+  private isCanBook(plan: RoomPlanEntity) {
+    const res = this.getFullHouseOrCanBook(plan);
+    return res && res.toLowerCase().includes("canbook");
+  }
+  onBook(plan: RoomPlanEntity) {
+    this.bookRoom.emit(plan);
+  }
+  getBookBtnColor(plan: RoomPlanEntity) {
+    if (this.isFull(plan)) {
+      return "danger";
+    }
+    if (this.isCanBook(plan)) {
+      return "secondary";
+    }
+    return "primary";
   }
   getBreakfast(plan: RoomPlanEntity) {
     if (plan && plan.RoomPlanPrices && plan.RoomPlanPrices.length) {

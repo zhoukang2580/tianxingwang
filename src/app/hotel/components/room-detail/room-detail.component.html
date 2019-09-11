@@ -21,33 +21,27 @@
           </ng-container>
         </ion-label>
       </ion-item>
+      <ion-item *ngFor='let plan of room?.RoomPlans'>
+        <ion-label text-wrap>
+          <div style="display: flex;align-items:center;justify-content:space-between">
+            <strong>{{plan.Name}}</strong>
+            <ion-text color='danger'>￥{{getAvgPrice(plan)}}</ion-text>
+          </div>
+          <div>
+            <span class='desc'>{{getBreakfast(plan)}}</span>
+            <span class='desc'>{{plan.Facility}}</span>
+          </div>
+          <div *ngIf='plan.BookType == HotelBookType.Elong ||
+          plan.BookType == HotelBookType.Inventory'>
+            <span class='desc'>{{getRules(plan)}}</span>
+            （即时确认）</div>
+        </ion-label>
+        <ng-container *ngIf='getBookBtnColor(plan) as color'>
+          <ion-button slot='end' color='{{color}}' [disabled]='color=="danger"' (click)='onBook(plan)'>
+            {{color=='danger'?"满房":"预订"}}
+          </ion-button>
+        </ng-container>
+      </ion-item>
     </ion-item-group>
   </ion-list>
-  <ion-grid *ngFor='let plan of room?.RoomPlans'>
-    <ion-row>
-      <ion-col>产品名称</ion-col>
-      <ion-col>{{plan.Name}}</ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>早餐</ion-col>
-      <ion-col>{{getBreakfast(plan)}}</ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>房间设施</ion-col>
-      <ion-col>{{plan.Facility}}</ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>取消规则</ion-col>
-      <ion-col>{{getRules(plan)}}
-        <div *ngIf='plan.BookType == HotelBookType.Elong ||
-        plan.BookType == HotelBookType.Inventory'>（即时确认）</div>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>日均价</ion-col>
-      <ion-col>
-        <ion-text color='danger'>￥{{getAvgPrice(plan)}}</ion-text>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
 </ion-content>
