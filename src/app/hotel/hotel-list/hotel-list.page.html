@@ -13,9 +13,9 @@
     </ion-searchbar>
   </ion-toolbar>
   <ion-toolbar class='query-toolbar' #querytoolbar>
-    <app-hotel-query (hotelQueryChange)='onHotelQueryChange($event)'></app-hotel-query>
+    <app-hotel-query [conditions]='conditionModel' (hotelQueryChange)='onHotelQueryChange($event)'></app-hotel-query>
   </ion-toolbar>
-</ion-header>
+</ion-header> 
 
 <ion-content>
   <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'></ion-refresher>

@@ -16,7 +16,8 @@ import {
   QueryList,
   Output,
   EventEmitter,
-  ViewChild
+  ViewChild,
+  Input
 } from "@angular/core";
 import { trigger, transition, animate } from "@angular/animations";
 import { HotelConditionModel } from "../../models/ConditionModel";
@@ -33,7 +34,7 @@ import {
   IStarPriceTabItem,
   HotelStarPriceComponent
 } from "./hotel-starprice/hotel-starprice.component";
-import { environment } from 'src/environments/environment';
+import { environment } from "src/environments/environment";
 interface ITab {
   label: string;
   id: string;
@@ -56,11 +57,11 @@ export class HotelQueryComponent implements OnInit {
   @ViewChildren(QueryTabComponent) queryTabComps: QueryList<QueryTabComponent>;
   @ViewChild(HotelFilterComponent) hotelFilterComp: HotelFilterComponent;
   @ViewChild(HotelStarPriceComponent)
-  hotelStarPriceComp: HotelStarPriceComponent;
   @ViewChild(RecommendRankComponent)
   hotelRecommendRankComp: RecommendRankComponent;
+  @Input() conditions: HotelConditionModel;
+  hotelStarPriceComp: HotelStarPriceComponent;
   hotelQueryModel: HotelQueryEntity;
-  conditions: HotelConditionModel;
   isActiveTab = false;
   activeTab: ITab;
   constructor(
@@ -77,31 +78,31 @@ export class HotelQueryComponent implements OnInit {
       !this.conditions.Brands ||
       !this.conditions.Geos
     ) {
-      this.conditions = await this.hotelService
+      const conditions = await this.hotelService
         .getConditions(true)
         .catch(_ => null);
       // console.log(JSON.stringify(this.conditions));
-      if (this.conditions) {
-        if (this.conditions.Geos) {
-          this.conditions.Geos = this.conditions.Geos.map(geo => {
+      if (conditions) {
+        if (conditions.Geos) {
+          conditions.Geos = conditions.Geos.map(geo => {
             if (geo.Variables) {
               geo.VariablesJsonObj = JSON.parse(geo.Variables);
             }
             return geo;
           });
         }
-        if (!this.conditions.Tmc) {
-          this.conditions.Tmc = await this.tmcService.getTmc().catch(_ => null);
+        if (!conditions.Tmc) {
+          conditions.Tmc = await this.tmcService.getTmc().catch(_ => null);
         }
         if (!environment.production) {
-          await this.storage.set("mock-hotel-condition", this.conditions);
+          await this.storage.set("mock-hotel-condition", conditions);
         }
       }
     }
   }
   async onReset() {
     // this.conditions = await this.storage.get("mock-hotel-condition");
-    console.log("query component ,onreset", this.conditions)
+    console.log("query component ,onreset", this.conditions);
     await this.initConditions();
     this.hotelQueryModel = new HotelQueryEntity();
     if (this.hotelFilterComp) {
@@ -163,11 +164,9 @@ export class HotelQueryComponent implements OnInit {
     console.log("价格：", lower, upper);
     if (lower == 0 || lower) {
       this.hotelQueryModel.BeginPrice = lower + "";
-
     }
     if (upper) {
-      this.hotelQueryModel.EndPrice =
-        upper == Infinity ? '' : `${upper}`;
+      this.hotelQueryModel.EndPrice = upper == Infinity ? "" : `${upper}`;
     }
     const stars = evt.find(it => it.tag == "stars");
     if (stars && stars.items && stars.items.some(it => it.isSelected)) {

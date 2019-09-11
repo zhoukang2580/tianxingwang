@@ -48,12 +48,14 @@ export class HotelService {
   private bookInfos: PassengerBookInfo<IHotelInfo>[];
   private bookInfoSource: Subject<PassengerBookInfo<IHotelInfo>[]>;
   private searchHotelModelSource: Subject<SearchHotelModel>;
+  private conditionModelSource: Subject<HotelConditionModel>;
   private searchHotelModel: SearchHotelModel;
   private selfCredentials: CredentialsEntity[];
   private localHotelCities: TrafficlineEntity[];
   private lastUpdateTime = 0;
   private isInitializingSelfBookInfos = false;
-  conditionModel: HotelConditionModel;
+  private conditionModel: HotelConditionModel;
+  private cityConditionIsLoading: { [citycode: string]: boolean };
   constructor(
     private apiService: ApiService,
     identityService: IdentityService,
@@ -66,6 +68,7 @@ export class HotelService {
   ) {
     this.bookInfoSource = new BehaviorSubject([]);
     this.searchHotelModelSource = new BehaviorSubject(null);
+    this.conditionModelSource = new BehaviorSubject(null);
     this.initSearchHotelModel();
     combineLatest([
       this.getBookInfoSource(),
@@ -87,7 +90,10 @@ export class HotelService {
       !this.conditionModel.Brands ||
       !this.conditionModel.Geos
     ) {
-      this.conditionModel = await this.getHotelConditions().catch(_ => null);
+      const city = this.getSearchHotelModel().destinationCity;
+      this.conditionModel = await this.getHotelConditions(
+        city && city.Code
+      ).catch(_ => null);
       // console.log(JSON.stringify(this.conditionModel));
       if (this.conditionModel) {
         this.conditionModel.city = this.getSearchHotelModel().destinationCity;
@@ -135,8 +141,25 @@ export class HotelService {
   getSearchHotelModel() {
     return this.searchHotelModel;
   }
+  setConditionModelSource(c: HotelConditionModel) {
+    this.conditionModel = c;
+    this.conditionModelSource.next(c);
+  }
+  getConditionModelSource() {
+    return this.conditionModelSource.asObservable();
+  }
   setSearchHotelModel(m: SearchHotelModel) {
     if (m) {
+      if (
+        this.conditionModel &&
+        this.conditionModel.city &&
+        m.destinationCity &&
+        m.destinationCity.Code != this.conditionModel.city.Code
+      ) {
+        this.getConditions(true).then(c => {
+          this.setConditionModelSource(c);
+        });
+      }
       this.searchHotelModel = m;
       this.searchHotelModel.tag =
         m.hotelType == "normal"
@@ -145,14 +168,6 @@ export class HotelService {
           ? "Agreement"
           : "SpecialPrice";
       this.searchHotelModelSource.next(this.searchHotelModel);
-      if (
-        this.conditionModel &&
-        this.conditionModel.city &&
-        m.destinationCity &&
-        m.destinationCity.Code != this.conditionModel.city.Code
-      ) {
-        this.conditionModel = null;
-      }
     }
   }
   private async initSelfBookTypeBookInfos() {
@@ -279,7 +294,16 @@ export class HotelService {
     }
     return this.localHotelCities;
   }
-  private getHotelConditions(cityCode?: string) {
+  private async getHotelConditions(cityCode: string) {
+    console.log("cityConditionIsLoading", this.cityConditionIsLoading);
+    if (this.cityConditionIsLoading && this.cityConditionIsLoading[cityCode]) {
+      return;
+    }
+    if (!this.cityConditionIsLoading) {
+      this.cityConditionIsLoading = { [cityCode]: true };
+    } else {
+      this.cityConditionIsLoading[cityCode] = true;
+    }
     const req = new RequestEntity();
     cityCode =
       cityCode ||
@@ -290,7 +314,13 @@ export class HotelService {
       cityCode
     };
     req.IsShowLoading = true;
-    return this.apiService.getPromiseData<HotelConditionModel>(req);
+    const result = await this.apiService
+      .getPromiseData<HotelConditionModel>(req)
+      .catch(_ => {
+        return null;
+      });
+    this.cityConditionIsLoading[cityCode] = false;
+    return result;
   }
   private getFirstLetter(name: string) {
     const pyFl = `${jsPy.getFullChars(name)}`.charAt(0);

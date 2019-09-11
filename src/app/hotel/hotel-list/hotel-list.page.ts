@@ -1,3 +1,4 @@
+import { HotelConditionModel } from "src/app/hotel/models/ConditionModel";
 import { HotelEntity } from "./../models/HotelEntity";
 import { HotelResultEntity } from "./../models/HotelResultEntity";
 import { HotelQueryComponent } from "./../components/hotel-query/hotel-query.component";
@@ -61,6 +62,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   hotelDayPrices: HotelDayPriceEntity[] = [];
   vmKeyowrds = "";
   loadDataSub = Subscription.EMPTY;
+  conditionModel: HotelConditionModel;
   constructor(
     private navCtrl: NavController,
     private hotelService: HotelService,
@@ -217,7 +219,10 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions = null;
   }
   ngOnInit() {
-    const sub = this.hotelService.getSearchHotelModelSource().subscribe(m => {
+    const sub = this.hotelService.getConditionModelSource().subscribe(c => {
+      this.conditionModel = c;
+    });
+    const sub1 = this.hotelService.getSearchHotelModelSource().subscribe(m => {
       console.log(m);
       if (m) {
         this.searchHotelModel = m;
@@ -238,5 +243,6 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       }
     });
     this.subscriptions.push(sub);
+    this.subscriptions.push(sub1);
   }
 }

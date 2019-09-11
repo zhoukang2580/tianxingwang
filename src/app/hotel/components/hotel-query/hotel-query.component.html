@@ -10,9 +10,9 @@
 </app-recommend-rank>
 <app-hotel-starprice *ngIf='activeTab?.label=="星级价格"' [@openClose]='activeTab.isActive'
   (starPriceChange)='onStarPriceChange($event)'></app-hotel-starprice>
-<app-hotel-filter  *ngIf='activeTab?.label=="筛选"' [@openClose]='activeTab.isActive'
+<app-hotel-filter [conditionModel]='conditions' *ngIf='activeTab?.label=="筛选"' [@openClose]='activeTab.isActive'
   (filter)='onFilter($event)'>
 </app-hotel-filter>
-<app-hotel-geo  *ngIf='activeTab?.label=="位置区域"' [@openClose]='activeTab.isActive'
+<app-hotel-geo [conditionModel]='conditions' *ngIf='activeTab?.label=="位置区域"' [@openClose]='activeTab.isActive'
   (geoFilterChange)='onFilterGeo($event)'>
 </app-hotel-geo>
