@@ -171,7 +171,7 @@ export class LazyloadimageDirective
       img.src &&
       this.Failover &&
       this.Failover.DefaultUrl &&
-      img.src.toLowerCase() == this.Failover.DefaultUrl.toLowerCase()
+      img.src.toLowerCase() .includes( this.Failover.DefaultUrl.toLowerCase())
     ) {
       return;
     }
