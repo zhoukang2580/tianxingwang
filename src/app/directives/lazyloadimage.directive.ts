@@ -125,9 +125,12 @@ export class LazyloadimageDirective
         clearTimeout(id);
       };
       this.image.onerror = () => {
+        if(id){
+          clearTimeout(id);
+        }
         if (
           this.image.src == this.loadingImage &&
-          this.image.src != AppHelper.getDefaultLoadingImage()
+          !this.image.src .includes(AppHelper.getDefaultLoadingImage())
         ) {
           this.image.src = AppHelper.getDefaultLoadingImage();
         }
