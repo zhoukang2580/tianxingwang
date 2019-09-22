@@ -115,6 +115,11 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
   private onRoundTrip(single: boolean) {
     // console.log("onRoundTrip isSingle", single);
     this.isSingle = single;
+    this.trainService.setSearchTrainModel({
+      ...this.trainService.getSearchTrainModel(),
+      isRefreshData : false,
+      isRoundTrip: !this.isSingle
+    });
   }
   getMonth(d: DayModel) {
     return +this.calendarService.getMonth(d);

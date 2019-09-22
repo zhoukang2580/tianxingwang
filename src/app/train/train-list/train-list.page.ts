@@ -473,7 +473,7 @@ export class TrainListPage implements OnInit, OnDestroy {
         totalPolicies: this.passengersPolicies,
         train: train
       };
-      this.trainService.addOrReselectBookInfo(currentViewtTainItem);
+     await this.trainService.addOrReselectBookInfo(currentViewtTainItem);
     }
     await this.showSelectedInfos();
   }
