@@ -38,7 +38,6 @@ export class MemberCredentialManagementPage
   credentials: MemberCredential[];
   newCredentials: MemberCredential[] = []; // 新增的证件
   loading = false;
-  isModify = false;
   isCanDeactive = false;
   requestCode: "issueNationality" | "identityNationality";
   private currentModifyItem: MemberCredential;
@@ -347,7 +346,7 @@ export class MemberCredentialManagementPage
   }
   togleModify(item: MemberCredential) {
     this.currentModifyItem = item;
-    this.isModify = !this.isModify;
+    item.isModified= !item.isModified;
     this.initializeValidate();
   }
   canDeactivate() {
