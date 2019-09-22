@@ -97,6 +97,9 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
         : LanguageHelper.getReturnTripTip()
     }]`;
   }
+  canGoToNext(){
+    return this.trainService.getBookInfos().filter(it=>!!it.bookInfo).length>0
+  }
   remove(bookInfo: PassengerBookInfo<ITrainInfo>) {
     this.trainService.removeBookInfo(bookInfo);
   }
