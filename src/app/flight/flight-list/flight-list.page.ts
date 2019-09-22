@@ -408,6 +408,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   private scrollToTop() {
     setTimeout(() => {
       if (this.cnt) {
+        if(!this.isStillOnCurrentPage()){
+          return;
+        }
         this.cnt.scrollToTop(100);
       }
     }, 100);
@@ -718,6 +721,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           this.doRefresh(true, false);
         }
       });
+  }
+  private isStillOnCurrentPage(){
+    return this.router.routerState.snapshot.url.includes("flight-list");
   }
   ngOnDestroy() {
     this.vmFlights = [];

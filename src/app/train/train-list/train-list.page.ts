@@ -473,7 +473,7 @@ export class TrainListPage implements OnInit, OnDestroy {
         totalPolicies: this.passengersPolicies,
         train: train
       };
-     await this.trainService.addOrReselectBookInfo(currentViewtTainItem);
+      await this.trainService.addOrReselectBookInfo(currentViewtTainItem);
     }
     await this.showSelectedInfos();
   }
@@ -500,9 +500,15 @@ export class TrainListPage implements OnInit, OnDestroy {
   private scrollToTop() {
     setTimeout(() => {
       if (this.cnt) {
+        if (!this.isStillOnCurrentPage()) {
+          return;
+        }
         this.cnt.scrollToTop(50);
       }
     }, 100);
+  }
+  private isStillOnCurrentPage(){
+    return this.router.routerState.snapshot.url.includes("flight-list");
   }
   private filterTrains(trains: TrainEntity[]) {
     console.log("this.filterCondition", this.filterCondition, trains);
