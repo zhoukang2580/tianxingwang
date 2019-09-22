@@ -354,9 +354,10 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     const bookDto: OrderBookDto = new OrderBookDto();
     bookDto.IsFromOffline = isSave;
     let canBook = false;
+    let canBook2 = false;
     canBook = this.fillBookLinkmans(bookDto);
-    canBook = this.fillBookPassengers(bookDto);
-    if (canBook) {
+    canBook2 = this.fillBookPassengers(bookDto);
+    if (canBook&&canBook2) {
       const res = await this.trainService.bookTrain(bookDto).catch(e => {
         AppHelper.alert(e);
         return { TradeNo: "" };
