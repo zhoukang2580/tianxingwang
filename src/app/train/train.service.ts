@@ -590,8 +590,14 @@ export class TrainService {
   }
   removeBookInfo(info: PassengerBookInfo<ITrainInfo>) {
     if (info) {
-      this.bookInfos = this.bookInfos.filter(item => item.id != info.id);
-      this.setBookInfoSource(this.bookInfos);
+      // this.bookInfos = this.bookInfos.filter(item => item.id != info.id);
+      const bookInfos = this.bookInfos.map(it=>{
+        if(it.id==info.id){
+          it.bookInfo=null;
+        }
+        return it;
+      })
+      this.setBookInfoSource(bookInfos);
     }
   }
   private async cacheTrafficLinesAsync(lines: TrafficlineEntity[]) {

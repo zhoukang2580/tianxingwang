@@ -10,37 +10,39 @@
 </ion-header>
 <ion-content>
   <ion-item-group *ngFor='let bookInfo of bookInfos$|async'>
-    <ion-item-divider color='primary' sticky>
-      <ion-label color='dark'>{{bookInfo?.passenger?.Name}}{{bookInfo?.credential?.Number}}</ion-label>
-    </ion-item-divider>
-    <ion-item *ngIf='bookInfo?.bookInfo' lines='none'>
-      <div class='detail'>
-        <div class='date'>
-          <strong>{{getDate(bookInfo?.bookInfo?.trainEntity)}} <ion-text color='secondary'>
-              {{getTripTypeTip(bookInfo?.bookInfo)}}</ion-text></strong>
-          <ion-button fill='clear' size='small' (click)='remove(bookInfo)'>
-            <ion-icon name="trash" color='danger' mode='ios'>
-            </ion-icon>
-          </ion-button>
+    <ng-container *ngIf='bookInfo?.bookInfo'>
+      <ion-item-divider color='primary' sticky>
+        <ion-label color='dark'>{{bookInfo?.passenger?.Name}}{{bookInfo?.credential?.Number}}</ion-label>
+      </ion-item-divider>
+      <ion-item  lines='none'>
+        <div class='detail'>
+          <div class='date'>
+            <strong>{{getDate(bookInfo?.bookInfo?.trainEntity)}} <ion-text color='secondary'>
+                {{getTripTypeTip(bookInfo?.bookInfo)}}</ion-text></strong>
+            <ion-button fill='clear' size='small' (click)='remove(bookInfo)'>
+              <ion-icon name="trash" color='danger' mode='ios'>
+              </ion-icon>
+            </ion-button>
+          </div>
+          <ion-label class='train-item'>
+            <app-train-list-item [seat]='bookInfo.bookInfo?.selectedSeat' [train]='bookInfo?.bookInfo?.trainEntity'>
+            </app-train-list-item>
+          </ion-label>
+          <ion-label class='rules' color='danger' text-wrap>
+            {{bookInfo?.bookInfo?.trainPolicy?.Rules?.join("; ")}}
+          </ion-label>
+          <div class='reset' *ngIf='bookInfo?.bookInfo?.tripType!=TripType.returnTrip'>
+            <ion-button expand='block' color='secondary' size='small' (click)='reelect(bookInfo)'>重选
+            </ion-button>
+          </div>
         </div>
-        <ion-label class='train-item'>
-          <app-train-list-item [seat]='bookInfo.bookInfo?.selectedSeat' [train]='bookInfo?.bookInfo?.trainEntity'>
-          </app-train-list-item>
-        </ion-label>
-        <ion-label class='rules' color='danger' text-wrap>
-          {{bookInfo?.bookInfo?.trainPolicy?.Rules?.join("; ")}}
-        </ion-label>
-        <div class='reset' *ngIf='bookInfo?.bookInfo?.tripType!=TripType.returnTrip'>
-          <ion-button expand='block' color='secondary' size='small' (click)='reelect(bookInfo)'>重选
-          </ion-button>
-        </div>
-      </div>
-    </ion-item>
-    <ion-item lines='none' *ngIf='(showSelectReturnTrip$|async)&&bookInfo?.bookInfo?.tripType!=TripType.returnTrip'>
-      <ion-button slot='end' expand='block' color='secondary' (click)='onSelectReturnTrip()'>
-        选择回程
-      </ion-button>
-    </ion-item>
+      </ion-item>
+      <ion-item lines='none' *ngIf='(showSelectReturnTrip$|async)&&bookInfo?.bookInfo?.tripType!=TripType.returnTrip'>
+        <ion-button slot='end' expand='block' color='secondary' (click)='onSelectReturnTrip()'>
+          选择回程
+        </ion-button>
+      </ion-item>
+    </ng-container>
   </ion-item-group>
 
 </ion-content>
