@@ -33,7 +33,7 @@ export class MyPage implements OnDestroy, OnInit {
   identitySubscription = Subscription.EMPTY;
   msgCount$: Observable<number>;
   items: ProductItem[] = [];
-  canShowMyOrderTabs$ = of(false);
+  isShowMyOrderTabs = false;
   constructor(
     private router: Router,
     plt: Platform,
@@ -55,6 +55,10 @@ export class MyPage implements OnDestroy, OnInit {
       });
     route.paramMap.subscribe(async _ => {
       this.load();
+      this.isShowMyOrderTabs =
+        (await this.staffService.isSelfBookType()) ||
+        (await this.staffService.isSecretaryBookType());
+      console.log("can show tabs ", this.isShowMyOrderTabs);
     });
   }
   private goToProductListPage() {
@@ -80,15 +84,7 @@ export class MyPage implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
-    this.canShowMyOrderTabs$ = combineLatest([
-      from(this.staffService.isSelfBookType()),
-      from(this.staffService.isSecretaryBookType())
-    ]).pipe(
-      map(([self, secretary]) => self || secretary),
-      tap(show => {
-        console.log("can show tabs ", show);
-      })
-    );
+    
     this.items = ORDER_TABS.filter(it => it.isDisplay);
     this.msgCount$ = this.messageService.getMsgCount();
     console.log("my ngOnInit");
