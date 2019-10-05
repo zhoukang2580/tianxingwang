@@ -125,12 +125,12 @@ export class LazyloadimageDirective
         clearTimeout(id);
       };
       this.image.onerror = () => {
-        if(id){
+        if (id) {
           clearTimeout(id);
         }
         if (
           this.image.src == this.loadingImage &&
-          !this.image.src .includes(AppHelper.getDefaultLoadingImage())
+          !this.image.src.includes(AppHelper.getDefaultLoadingImage())
         ) {
           this.image.src = AppHelper.getDefaultLoadingImage();
         }
@@ -166,7 +166,7 @@ export class LazyloadimageDirective
     };
     tempImg.src = this.lazyloadImage;
   }
-  Replace(img: HTMLImageElement) {
+  async Replace(img: HTMLImageElement) {
     if (!this.Failover) {
       return;
     }
@@ -174,7 +174,7 @@ export class LazyloadimageDirective
       img.src &&
       this.Failover &&
       this.Failover.DefaultUrl &&
-      img.src.toLowerCase() .includes( this.Failover.DefaultUrl.toLowerCase())
+      img.src.toLowerCase().includes(this.Failover.DefaultUrl.toLowerCase())
     ) {
       return;
     }
@@ -188,21 +188,8 @@ export class LazyloadimageDirective
       }
       return;
     }
-    let isRecover = false;
-    for (let i = 0; i < this.Failover.Nodes.length; i++) {
-      if (
-        !this.Failover.Nodes[i].IsNormal ||
-        this.Failover.Nodes[i].GroupName != node.GroupName
-      ) {
-        continue;
-      }
-      const src = `${this.lazyloadImage}`.split("?")[0];
-      img.src =
-        src.replace(node.Url, this.Failover.Nodes[i].Url) + "?v=" + date;
-      isRecover = true;
-      break;
-    }
-    if (!isRecover) {
+    const recoverSrc = await this.findOneAvailableSrc(node);
+    if (!recoverSrc) {
       if (this.Failover.DefaultUrl && this.Failover.DefaultUrl.length) {
         img.src = this.Failover.DefaultUrl + "?v=" + date;
       } else {
@@ -211,7 +198,46 @@ export class LazyloadimageDirective
           this.loadingImage ||
           AppHelper.getDefaultLoadingImage();
       }
+    } else {
+      img.src = recoverSrc;
     }
+  }
+  async findOneAvailableSrc(node: { Url: string; GroupName: string }) {
+    return new Promise<string>(s => {
+      const tempImage = document.createElement("img");
+      let i = 0;
+      const getOneNode = () => {
+        let result: { Url: string; GroupName: string };
+        for (i; i < this.Failover.Nodes.length; i++) {
+          if (
+            !this.Failover.Nodes[i].IsNormal ||
+            this.Failover.Nodes[i].GroupName != node.GroupName
+          ) {
+            continue;
+          }
+          result = this.Failover.Nodes[i];
+          break;
+        }
+        return result;
+      };
+      let tempNode = getOneNode();
+      const getSrc = () => {
+        const src = `${this.lazyloadImage}`.split("?")[0];
+        tempImage.src =
+          src.replace(node.Url, tempNode.Url) + "?v=" + new Date();
+      };
+      tempImage.onload = () => {
+        s(tempImage.src);
+      };
+      tempImage.onerror = () => {
+        tempNode = getOneNode();
+        if (!tempNode) {
+          s("");
+        } else {
+          getSrc();
+        }
+      };
+    });
   }
   GetNode(url) {
     if (!this.Failover || !this.Failover.Nodes || !url) {

@@ -4,7 +4,7 @@ import { NavController } from "@ionic/angular";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
-import { Router } from "@angular/router";
+import { Router, ActivatedRoute } from "@angular/router";
 import { AppHelper } from "src/app/appHelper";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ConfigService } from "src/app/services/config/config.service";
@@ -28,6 +28,7 @@ export class MemberDetailPage implements OnInit, OnDestroy {
   constructor(
     private identityService: IdentityService,
     private router: Router,
+    private route: ActivatedRoute,
     private configService: ConfigService,
     private apiService: ApiService,
     private navCtrl: NavController,
@@ -37,7 +38,10 @@ export class MemberDetailPage implements OnInit, OnDestroy {
   back() {
     this.navCtrl.back();
   }
-  async ngOnInit() {
+  ngOnInit() {
+    this.route.queryParamMap.subscribe(async _ => {
+      await this.load();
+    });
     console.log("member detail ngOnInit");
     this.identitySubscription = this.identityService
       .getIdentitySource()
@@ -48,13 +52,12 @@ export class MemberDetailPage implements OnInit, OnDestroy {
           this.staff = null;
         }
       });
-    await this.load();
-    AppHelper.setCallback((name: string, data: any) => {
-      console.log("helper callback");
-      if (name == CropAvatarPage.UploadSuccessEvent && data && data.HeadUrl) {
-        this.memberDetails.HeadUrl = data.HeadUrl + "?v=" + Date.now();
-      }
-    });
+    // AppHelper.setCallback((name: string, data: any) => {
+    //   console.log("helper callback");
+    //   if (name == CropAvatarPage.UploadSuccessEvent && data && data.HeadUrl) {
+    //     this.memberDetails.HeadUrl = data.HeadUrl + "?v=" + Date.now();
+    //   }
+    // });
   }
 
   async load() {
