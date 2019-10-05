@@ -134,8 +134,8 @@ export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
     this.selectCitySubscription.unsubscribe();
   }
   ngOnChanges(changes: SimpleChanges) {
-    console.log("changes", changes);
-    console.log("changes.toCity", changes.vmToCity);
+    // console.log("changes", changes);
+    // console.log("changes.toCity", changes.vmToCity);
   }
   ngOnInit() {
     this.selectCitySubscription = this.trainService

@@ -19,7 +19,11 @@ import {
   SearchTrainModel,
   TrainPolicyModel
 } from "src/app/train/train.service";
-import { TmcService, PassengerBookInfo } from "src/app/tmc/tmc.service";
+import {
+  TmcService,
+  PassengerBookInfo,
+  FlightHotelTrainType
+} from "src/app/tmc/tmc.service";
 import {
   Component,
   OnInit,
@@ -103,6 +107,11 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.searchModalSubscription.unsubscribe();
   }
   ngOnInit() {
+    this.route.queryParamMap.subscribe(async _ => {
+      this.tmcService.setFlightHotelTrainType(FlightHotelTrainType.Train);
+      this.isShowRoundtripTip = await this.staffService.isSelfBookType();
+      this.isLeavePage = false;
+    });
     this.curFilteredBookInfo$ = this.trainService
       .getBookInfoSource()
       .pipe(map(infos => infos.find(info => info.isFilteredPolicy)));
@@ -133,13 +142,6 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.isShowAddPassenger$ = from(this.staffService.isSelfBookType()).pipe(
       map(isSelf => !isSelf)
     );
-    this.route.queryParamMap.subscribe(async _ => {
-      this.isShowRoundtripTip = await this.staffService.isSelfBookType();
-      this.isLeavePage = false;
-      // if (!this.isLoading) {
-      //   this.doRefresh(true, false);
-      // }
-    });
     this.searchModalSubscription = this.trainService
       .getSearchTrainModelSource()
       .subscribe(modal => {
@@ -507,7 +509,7 @@ export class TrainListPage implements OnInit, OnDestroy {
       }
     }, 100);
   }
-  private isStillOnCurrentPage(){
+  private isStillOnCurrentPage() {
     return this.router.routerState.snapshot.url.includes("flight-list");
   }
   private filterTrains(trains: TrainEntity[]) {
@@ -637,8 +639,21 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.trainService.setSearchTrainModel(this.searchTrainModel);
     this.doRefresh(true, true);
   }
-  onCalenderClick() {
-    this.trainService.openCalendar(false);
+  async onCalenderClick() {
+    const days = await this.trainService.openCalendar(false);
+    if (days && days.length) {
+      this.searchTrainModel.Date = days[0].date;
+      if (
+        this.searchTrainModel.isRoundTrip &&
+        this.searchTrainModel.tripType == TripType.returnTrip
+      ) {
+        this.searchTrainModel.BackDate = days[0].date;
+      }
+      this.trainService.setSearchTrainModel({
+        ...this.searchTrainModel,
+        isRefreshData: true
+      });
+    }
   }
 
   back() {

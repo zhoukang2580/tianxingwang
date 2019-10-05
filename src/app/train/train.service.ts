@@ -25,6 +25,7 @@ import { CalendarService } from "../tmc/calendar.service";
 import { TrainSeatEntity } from "./models/TrainSeatEntity";
 import { Router } from "@angular/router";
 import { OrderBookDto } from "../order/models/OrderBookDto";
+import { DayModel } from '../tmc/models/DayModel';
 const KEY_TRAIN_TRAFFICLINES_DATA = "train-traficlines-data";
 export class SearchTrainModel {
   TrainCode: string;
@@ -187,7 +188,11 @@ export class TrainService {
     this.setSearchTrainModel({
       ...this.getSearchTrainModel(),
       isLocked: false,
-      tripType: TripType.departureTrip
+      tripType: TripType.departureTrip,
+      Date: moment().format("YYYY-MM-DD"),
+      BackDate: moment()
+        .add(1, "days")
+        .format("YYYY-MM-DD")
     });
     if (await this.staffService.isSelfBookType()) {
       this.setBookInfoSource([]);
@@ -219,13 +224,11 @@ export class TrainService {
     const s = this.getSearchTrainModel();
     const isSelfBookType = await this.staffService.isSelfBookType();
     if (!isSelfBookType || infos.length == 0 || !s.isRoundTrip) {
-      if (s.isLocked) {
-        this.setSearchTrainModel({
-          ...s,
-          isLocked: false,
-          isRefreshData: false
-        });
-      }
+      this.setSearchTrainModel({
+        ...s,
+        isLocked: false,
+        isRefreshData: false
+      });
       return;
     }
     const go = infos.find(
@@ -244,10 +247,10 @@ export class TrainService {
       );
       backParams.FromStation = go.bookInfo.trainEntity.ToStationCode;
       backParams.ToStation = go.bookInfo.trainEntity.FromStationCode;
-      backParams.Date = s.BackDate;
       if (+moment(s.BackDate) - +moment(s.Date) < 0) {
-        s.Date = s.Date;
+        s.BackDate = s.Date;
       }
+      backParams.Date = s.BackDate;
       backParams.isLocked = true;
       backParams.tripType = TripType.returnTrip;
       backParams.isRefreshData = true;
@@ -288,25 +291,35 @@ export class TrainService {
         );
         return;
       }
+      const s = this.getSearchTrainModel();
       if (bookInfo) {
-        const s = this.getSearchTrainModel();
         if (s.isRoundTrip) {
           // 往返
           const selected = bookInfos.filter(it => !!it.bookInfo);
           if (selected.length) {
-            const go = bookInfos.find(
+            const go = selected.find(
               it => it.bookInfo.tripType == TripType.departureTrip
             );
             if (go) {
-              bookInfo.tripType = TripType.returnTrip;
-              bookInfos = [
-                go,
-                {
-                  ...bookInfos[0],
-                  bookInfo,
-                  id: AppHelper.uuid()
-                }
-              ];
+              if (s.tripType == TripType.returnTrip) {
+                bookInfo.tripType = TripType.returnTrip;
+                bookInfos = [
+                  go,
+                  {
+                    ...bookInfos[0],
+                    bookInfo,
+                    id: AppHelper.uuid()
+                  }
+                ];
+              } else {
+                bookInfos = [
+                  {
+                    ...bookInfos[0],
+                    bookInfo,
+                    id: AppHelper.uuid()
+                  }
+                ];
+              }
             } else {
               bookInfo.tripType = TripType.departureTrip;
               bookInfos = [
@@ -339,6 +352,15 @@ export class TrainService {
               }
             ];
           }
+        }
+      }
+      if (s.isRoundTrip) {
+        if (
+          bookInfos.find(
+            it => !it.bookInfo || it.bookInfo.tripType == TripType.returnTrip
+          )
+        ) {
+          this.setSearchTrainModel({ ...s, isLocked: false });
         }
       }
       this.setBookInfoSource(bookInfos);
@@ -521,11 +543,13 @@ export class TrainService {
           goTrain.bookInfo &&
           goTrain.bookInfo.trainEntity &&
           goTrain.bookInfo.trainEntity.ArrivalTime,
-        tripType: s.tripType,
+        tripType: s.tripType || TripType.departureTrip,
         isMulti: isMulti
       }
     });
-    m.present();
+    await m.present();
+    const result = await m.onDidDismiss();
+    return result && result.data as  DayModel[];
   }
   async getStationsAsync(forceUpdate = false): Promise<TrafficlineEntity[]> {
     if (!forceUpdate) {
@@ -590,13 +614,39 @@ export class TrainService {
   }
   removeBookInfo(info: PassengerBookInfo<ITrainInfo>) {
     if (info) {
+      const delInfo = { ...info };
       // this.bookInfos = this.bookInfos.filter(item => item.id != info.id);
-      const bookInfos = this.bookInfos.map(it=>{
-        if(it.id==info.id){
-          it.bookInfo=null;
+      const s = this.getSearchTrainModel();
+      let bookInfos = this.bookInfos.map(it => {
+        if (it.id == info.id) {
+          it.bookInfo = null;
         }
         return it;
-      })
+      });
+      if (
+        s.isRoundTrip &&
+        delInfo.bookInfo &&
+        delInfo.bookInfo.tripType == TripType.returnTrip
+      ) {
+        this.setSearchTrainModel({
+          ...s,
+          isLocked: false
+        });
+      }
+      if (
+        s.isRoundTrip &&
+        delInfo.bookInfo &&
+        delInfo.bookInfo.tripType == TripType.departureTrip
+      ) {
+        bookInfos = this.bookInfos.map(it => {
+          it.bookInfo = null;
+          return it;
+        });
+        this.setSearchTrainModel({
+          ...s,
+          isLocked: false
+        });
+      }
       this.setBookInfoSource(bookInfos);
     }
   }
@@ -664,6 +714,7 @@ export class TrainService {
         return result;
       })
       .catch(_ => {
+        AppHelper.alert(_);
         return [];
       });
   }

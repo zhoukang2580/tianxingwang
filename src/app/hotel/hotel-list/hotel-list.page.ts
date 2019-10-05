@@ -3,7 +3,7 @@ import { HotelEntity } from "./../models/HotelEntity";
 import { HotelResultEntity } from "./../models/HotelResultEntity";
 import { HotelQueryComponent } from "./../components/hotel-query/hotel-query.component";
 import { HotelQueryEntity } from "./../models/HotelQueryEntity";
-import { Router } from "@angular/router";
+import { Router, ActivatedRoute } from "@angular/router";
 import { HotelService, SearchHotelModel } from "./../hotel.service";
 import {
   Component,
@@ -40,6 +40,7 @@ import {
 import { QueryTabComponent } from "../components/hotel-query/query-tab/query-tab.component";
 import { HotelDayPriceEntity } from "../models/HotelDayPriceEntity";
 import { finalize } from "rxjs/operators";
+import { FlightHotelTrainType, TmcService } from "src/app/tmc/tmc.service";
 
 @Component({
   selector: "app-hotel-list",
@@ -57,6 +58,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChildren("hotellist") hotellist: QueryList<IonList>;
   @HostBinding("class.show-search-bar") isShowSearchBar = false;
   isLoading = false;
+  isLeavePage = false;
   searchHotelModel: SearchHotelModel;
   hotelQueryModal: HotelQueryEntity = new HotelQueryEntity();
   hotelDayPrices: HotelDayPriceEntity[] = [];
@@ -69,7 +71,9 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private domCtrl: DomController,
     private render: Renderer2,
-    private plt: Platform
+    private plt: Platform,
+    private route: ActivatedRoute,
+    private tmcService: TmcService
   ) {}
   onSearchItemClick() {
     this.isShowSearchBar = false;
@@ -219,6 +223,11 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions = null;
   }
   ngOnInit() {
+    const sub0 = this.route.queryParamMap.subscribe(_ => {
+      this.isLeavePage = false;
+      this.tmcService.setFlightHotelTrainType(FlightHotelTrainType.Hotel);
+    });
+    this.subscriptions.push(sub0);
     const sub = this.hotelService.getConditionModelSource().subscribe(c => {
       this.conditionModel = c;
     });

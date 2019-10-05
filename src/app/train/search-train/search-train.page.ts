@@ -55,8 +55,9 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
   fromCity: TrafficlineEntity; // 城市切换后，真实的出发城市
   toCity: TrafficlineEntity; // 切换后，真实的目的城市
   showReturnTrip: boolean;
-  disabled = false;
+  isDisabled = false;
   selectedPassengers: number;
+  selectedBookInfos: number;
   staff: StaffEntity;
   totalFlyDays: number;
   constructor(
@@ -76,10 +77,14 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
       this.tmcService.setFlightHotelTrainType(FlightHotelTrainType.Train);
       this.staff = await this.staffService.getStaff();
       if (await this.isStaffTypeSelf()) {
-        this.disabled = this.searchTrainModel && this.searchTrainModel.isLocked;
+        this.isDisabled =
+          this.searchTrainModel && this.searchTrainModel.isLocked;
       }
       this.showReturnTrip = await this.isStaffTypeSelf();
       this.selectedPassengers = trainService.getBookInfos().length;
+      this.selectedBookInfos = trainService
+        .getBookInfos()
+        .filter(it => it.bookInfo).length;
       if (this.searchConditionSubscription) {
         this.searchConditionSubscription.unsubscribe();
       }
@@ -90,7 +95,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
           const staff = await this.staffService.getStaff();
           this.showReturnTrip = staff.BookType == StaffBookType.Self;
           if (s) {
-            this.disabled = s.isLocked;
+            this.isDisabled = s.isLocked;
             this.fromCity = this.vmFromCity = s.fromCity || this.fromCity;
             this.toCity = this.vmToCity = s.toCity || this.toCity;
             this.flyDate = this.calendarService.generateDayModelByDate(s.Date);
@@ -117,7 +122,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     this.isSingle = single;
     this.trainService.setSearchTrainModel({
       ...this.trainService.getSearchTrainModel(),
-      isRefreshData : false,
+      isRefreshData: false,
       isRoundTrip: !this.isSingle
     });
   }
@@ -153,7 +158,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
         }
         if (days && days.length) {
           if (days.length == 1) {
-            if (this.disabled) {
+            if (this.isDisabled) {
               this.backDate = days[0];
             } else {
               this.flyDate = days[0];
@@ -274,7 +279,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     s.toCity = this.toCity;
     s.BackDate = this.backDate.date;
     s.isRefreshData = true;
-    if (this.disabled) {
+    if (this.isDisabled) {
       s.Date = s.BackDate;
     }
     if (!s.isRoundTrip) {
@@ -288,11 +293,11 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     return this.calendarService.getDescOfDay(d);
   }
   onSelecDate(flyTo: boolean, backDate: boolean) {
-    if (this.disabled && !backDate) {
+    if (this.isDisabled && !backDate) {
       return;
     }
     this.isSelectFlyDate = flyTo;
-    this.trainService.openCalendar(!this.isSingle && !this.disabled);
+    this.trainService.openCalendar(!this.isSingle && !this.isDisabled);
   }
   onFromCitySelected(city: TrafficlineEntity) {
     if (city) {

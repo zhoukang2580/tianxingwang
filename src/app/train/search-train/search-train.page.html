@@ -10,7 +10,7 @@
     <ion-buttons class='small-font' slot='end'>
       <ion-button  *ngIf='isShowSelectedInfos$ |async' fill='clear' color='secondary' size='small' (click)='onShowSelectedBookInfos()'>已选行程<ion-badge
           color='danger'>
-          <ion-text color='light'>{{selectedPassengers}}</ion-text>
+          <ion-text color='light'>{{selectedBookInfos}}</ion-text>
         </ion-badge>
       </ion-button>
       <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()'
@@ -24,8 +24,8 @@
 <ion-content>
   <ion-card padding>
     <ion-card-content>
-      <ion-segment (ionChange)="segmentChanged($event)" value="single" color='secondary' *ngIf='showReturnTrip'
-        [disabled]='disabled'>
+      <ion-segment (ionChange)="segmentChanged($event)" [value]="isSingle?'single':'roundtrip'" color='secondary' *ngIf='showReturnTrip'
+        [disabled]='isDisabled'>
         <ion-segment-button value="single">
           <ion-label><strong>单程</strong></ion-label>
         </ion-segment-button>
@@ -34,10 +34,10 @@
         </ion-segment-button>
       </ion-segment>
       <app-switch-station-comp [vmFromCity]="vmFromCity" (eToCity)='onToCitySelected($event)'
-        (eFromCity)='onFromCitySelected($event)' [vmToCity]="vmToCity" [disabled]='disabled'>
+        (eFromCity)='onFromCitySelected($event)' [vmToCity]="vmToCity" [disabled]='isDisabled'>
       </app-switch-station-comp>
       <section class="flight-date">
-        <app-search-day-comp [day]='flyDate' (click)="onSelecDate(true,false)" [disabled]='disabled'>
+        <app-search-day-comp [day]='flyDate' (click)="onSelecDate(true,false)" [disabled]='isDisabled'>
         </app-search-day-comp>
         <div *ngIf="!isSingle &&( totalFlyDays > 0)">{{ totalFlyDays }}天</div>
         <app-search-day-comp *ngIf="!isSingle" [day]='backDate' (click)="onSelecDate(false,true)">
@@ -46,7 +46,7 @@
       <ion-button margin-top style='width: 100%' (click)="searchTrain()"
         [disabled]='!vmFromCity||!vmToCity||((canAddPassengers$|async) && selectedPassengers==0)' color="secondary"
         expand="block">
-        <ion-text *ngIf='!((canAddPassengers$|async) && selectedPassengers==0)'>查询航班</ion-text>
+        <ion-text *ngIf='!((canAddPassengers$|async) && selectedPassengers==0)'>查询车次</ion-text>
         <ion-text *ngIf='(canAddPassengers$|async) && selectedPassengers==0'>请添加乘客</ion-text>
       </ion-button>
     </ion-card-content>
