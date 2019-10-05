@@ -565,9 +565,9 @@ export class BookPage implements OnInit, AfterViewInit {
     bookDto.Linkmans = [];
     const showErrorMsg = (msg: string, item: ICombindInfo) => {
       AppHelper.alert(
-        `联系人${(item.credentialStaff && item.credentialStaff.Name) ||
+        `${(item.credentialStaff && item.credentialStaff.Name) ||
           (item.modal.credential &&
-            item.modal.credential.Number)}信息${msg}不能为空`
+            item.modal.credential.Number)}联系人信息${msg}不能为空`
       );
     };
     for (let i = 0; i < this.vmCombindInfos.length; i++) {
