@@ -36,6 +36,7 @@ export class FlightTripComponent implements OnInit, OnChanges {
   originalTrips: OrderFlightTripEntity[];
   constructor(private popoverCtrl: PopoverController) {}
   getTripDateTime(trip: OrderFlightTripEntity) {
+    // console.log("getTripDateTime", trip);
     if (!trip) {
       return null;
     }

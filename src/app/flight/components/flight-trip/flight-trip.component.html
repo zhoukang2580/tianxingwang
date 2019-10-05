@@ -2,7 +2,7 @@
   <ion-grid>
     <ion-row>
       <ion-col>
-        <span *ngIf='getTripDateTime(trip?.TakeoffTime) as dt'>
+        <span *ngIf='getTripDateTime(trip) as dt'>
           {{dt.takeOffDateTime}}
         </span>
         {{trip?.FromCityName}}----{{trip?.ToCityName}}
@@ -44,9 +44,9 @@
           <span>{{trip?.FromAirportName}}</span>
           <span *ngIf='trip?.FromTerminal'>({{trip?.FromTerminal}})</span>
         </div>
-        <div class='is-stop'>
-          <div *ngIf='trip?.IsStop'>------经停------</div>
-          <div *ngIf='!trip?.IsStop'>------直飞------</div>
+        <div class='is-stop' text-nowrap>
+          <div *ngIf='trip?.IsStop'>----经停----</div>
+          <div *ngIf='!trip?.IsStop'>----直飞----</div>
         </div>
         <div>
           <span>{{trip?.FromAirportName}}</span>
