@@ -299,30 +299,9 @@ export class FlightService {
       return true;
     }
     if (await this.staffService.isSelfBookType()) {
-      if (this.getSearchFlightModel().isRoundTrip) {
-        const arr = this.getPassengerBookInfos();
-        if (arr.filter(item => !!item.bookInfo).length == 2) {
-          const g = arr.find(
-            item =>
-              item.bookInfo && item.bookInfo.tripType == TripType.departureTrip
-          );
-          const b = arr.find(
-            item =>
-              item.bookInfo && item.bookInfo.tripType == TripType.returnTrip
-          );
-          const hasReselect = arr.find(item => item.isReplace);
-          if (g && b) {
-            return !!hasReselect;
-          } else {
-            return false;
-          }
-        }
-        return !this.checkIfExcessMaxLimitedBookTickets(2);
-      }
-      return !this.checkIfExcessMaxLimitedBookTickets(1);
-    } else {
-      return !this.checkIfExcessMaxLimitedBookTickets(9);
+      return true;
     }
+    return !this.checkIfExcessMaxLimitedBookTickets(9);
   }
   private checkIfExcessMaxLimitedBookTickets(max: number) {
     return (
@@ -379,7 +358,7 @@ export class FlightService {
           goFlight.bookInfo &&
           goFlight.bookInfo.flightSegment &&
           goFlight.bookInfo.flightSegment.ArrivalTime,
-        tripType: s.tripType,
+        tripType: s.tripType || TripType.departureTrip,
         isMulti: isMulti
       }
     });
@@ -490,6 +469,9 @@ export class FlightService {
     if (isSelfBookType) {
       const s = this.getSearchFlightModel();
       if (s.isRoundTrip) {
+        if (!bookInfos.length) {
+          await this.addOneBookInfoToSelfBookType();
+        }
         if (bookInfos.length) {
           const info = this.getPolicyCabinBookInfo(bookInfos[0], flightCabin);
           const go = bookInfos.find(
@@ -498,7 +480,7 @@ export class FlightService {
           if (go) {
             if (s.tripType == TripType.returnTrip) {
               info.tripType = TripType.returnTrip;
-              bookInfos = [go, { ...go, bookInfo: info }];
+              bookInfos = [go, { ...go, bookInfo: info, id: AppHelper.uuid() }];
             } else {
               bookInfos = bookInfos.map(it => {
                 if (it.id == go.id) {
@@ -510,7 +492,10 @@ export class FlightService {
             }
           } else {
             info.tripType = TripType.departureTrip;
-            bookInfos = [{ ...bookInfos[0], bookInfo: info },{ ...bookInfos[0], bookInfo: null }];
+            bookInfos = [
+              { ...bookInfos[0], bookInfo: info },
+              { ...bookInfos[0], bookInfo: null, id: AppHelper.uuid() }
+            ];
           }
         }
       } else {
@@ -654,21 +639,20 @@ export class FlightService {
     });
     this.setPassengerBookInfos(arr);
   }
-  async removePassengerBookInfo(arg: PassengerBookInfo<IFlightSegmentInfo>) {
+  async removePassengerBookInfo(p: PassengerBookInfo<IFlightSegmentInfo>) {
+    const arg = { ...p };
     if (await this.staffService.isSelfBookType()) {
       if (arg.bookInfo) {
         if (arg.bookInfo.tripType == TripType.returnTrip) {
-          this.passengerBookInfos = this.getPassengerBookInfos().map(item => {
-            if (item.id == arg.id) {
-              item.bookInfo = null;
-            }
-            return item;
-          });
+          this.passengerBookInfos = this.getPassengerBookInfos().filter(
+            it => it.id !== arg.id
+          );
         }
         if (arg.bookInfo.tripType == TripType.departureTrip) {
-          this.passengerBookInfos = this.getPassengerBookInfos().filter(
-            item => item.id !== arg.id
-          );
+          this.passengerBookInfos = this.getPassengerBookInfos().map(item => {
+            item.bookInfo = null;
+            return item;
+          });
           this.setSearchFlightModel({
             ...this.getSearchFlightModel(),
             isLocked: false,
@@ -677,12 +661,9 @@ export class FlightService {
         }
       }
     } else {
-      this.passengerBookInfos = this.getPassengerBookInfos().map(item => {
-        if (item.id == arg.id) {
-          item.bookInfo = null;
-        }
-        return item;
-      });
+      this.passengerBookInfos = this.getPassengerBookInfos().filter(
+        it => it.id !== arg.id
+      );
     }
     this.setPassengerBookInfos(this.passengerBookInfos);
   }
