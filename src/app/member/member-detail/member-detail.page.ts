@@ -64,7 +64,7 @@ export class MemberDetailPage implements OnInit, OnDestroy {
     if (this.memberDetails) {
       return;
     }
-    const r = await this.memberService.getMemberDetails();
+    const r = await this.memberService.getMemberDetails().catch(_ => null);
     if (r) {
       this.memberDetails = {
         ...this.memberDetails,
