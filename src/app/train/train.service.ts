@@ -644,7 +644,8 @@ export class TrainService {
         });
         this.setSearchTrainModel({
           ...s,
-          isLocked: false
+          isLocked: false,
+          tripType:TripType.departureTrip
         });
       }
       this.setBookInfoSource(bookInfos);
