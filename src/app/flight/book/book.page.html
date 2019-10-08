@@ -122,12 +122,10 @@
             (modify)='onModify(combindInfo)'>
           </app-book-credential-comp>
         </ion-item>
-        <ion-item>
-          <div style='width: 100%;' *ngIf='s?.flightPolicy?.Rules?.length && !combindInfo?.modal.isNotWhitelist'>
-            <app-book-illegal-reason-comp #illegalReasonsEle [illegalReasons]='illegalReasons'
-              [isAllowCustomReason]='tmc?.IsAllowCustomReason' (ionchange)='onIllegalReason($event,combindInfo)'>
-            </app-book-illegal-reason-comp>
-          </div>
+        <ion-item *ngIf='s?.flightPolicy?.Rules?.length && !combindInfo?.modal.isNotWhitelist'>
+          <app-book-illegal-reason-comp #illegalReasonsEle [illegalReasons]='illegalReasons'
+            [isAllowCustomReason]='tmc?.IsAllowCustomReason' (ionchange)='onIllegalReason($event,combindInfo)'>
+          </app-book-illegal-reason-comp>
         </ion-item>
         <ion-item>
           <app-book-costcenter-comp [isOtherCostCenter]='combindInfo.isOtherCostCenter'
@@ -270,7 +268,7 @@
         <div style='width: 100%'>
           <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType'>
             <ion-item *ngFor='let pt of orderTravelPayTypes'>
-              <ion-label>{{pt.label}}</ion-label> 
+              <ion-label>{{pt.label}}</ion-label>
               <ion-radio [value]="pt.value" [checked]='orderTravelPayType==pt.value'>
               </ion-radio>
             </ion-item>

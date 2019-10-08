@@ -292,38 +292,42 @@ export class BookPage implements OnInit, AfterViewInit {
       return false;
     }
     this.vmCombindInfos.forEach(item => {
-      item.tmcOutNumberInfos.forEach(it => {
-        if (true || it.isLoadNumber) {
-          if (
-            it.staffNumber &&
-            !args.find(n => n.staffNumber == it.staffNumber)
-          ) {
-            args.push({
-              staffNumber: it.staffNumber,
-              staffOutNumber: it.staffOutNumber,
-              name: it.value
-            });
+      if (item.tmcOutNumberInfos) {
+        item.tmcOutNumberInfos.forEach(it => {
+          if (true || it.isLoadNumber) {
+            if (
+              it.staffNumber &&
+              !args.find(n => n.staffNumber == it.staffNumber)
+            ) {
+              args.push({
+                staffNumber: it.staffNumber,
+                staffOutNumber: it.staffOutNumber,
+                name: it.value
+              });
+            }
           }
-        }
-      });
+        });
+      }
     });
     const result = await this.tmcService.getTravelUrls(args);
     if (result) {
-      this.vmCombindInfos.forEach(item =>
-        item.tmcOutNumberInfos.forEach(info => {
-          info.travelUrlInfos = result[info.staffNumber];
-          if (
-            !info.value &&
-            info.travelUrlInfos &&
-            info.travelUrlInfos.length
-          ) {
-            info.value = info.travelUrlInfos[0].TravelNumber;
-          }
-          info.canSelect = !!(
-            info.travelUrlInfos && info.travelUrlInfos.length
-          ); // && info.canSelect;
-        })
-      );
+      this.vmCombindInfos.forEach(item => {
+        if (item.tmcOutNumberInfos) {
+          item.tmcOutNumberInfos.forEach(info => {
+            info.travelUrlInfos = result[info.staffNumber];
+            if (
+              !info.value &&
+              info.travelUrlInfos &&
+              info.travelUrlInfos.length
+            ) {
+              info.value = info.travelUrlInfos[0].TravelNumber;
+            }
+            info.canSelect = !!(
+              info.travelUrlInfos && info.travelUrlInfos.length
+            ); // && info.canSelect;
+          });
+        }
+      });
     }
   }
   onIllegalReason(
@@ -497,7 +501,7 @@ export class BookPage implements OnInit, AfterViewInit {
     let canBook2 = false;
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto);
-    if (canBook&&canBook2) {
+    if (canBook && canBook2) {
       const res = await this.flightService.bookFlight(bookDto).catch(e => {
         AppHelper.alert(e);
         return { TradeNo: "" };
@@ -1069,6 +1073,7 @@ export class BookPage implements OnInit, AfterViewInit {
           appovalStaff: cs && cs.DefaultApprover,
           tmcOutNumberInfos:
             this.tmc &&
+            this.tmc.OutNumberNameArray &&
             this.tmc.OutNumberNameArray.map(n => {
               return {
                 label: n,
