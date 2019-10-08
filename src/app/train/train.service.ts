@@ -200,23 +200,23 @@ export class TrainService {
     this.router.navigate([AppHelper.getRoutePath("search-train")]);
   }
   async checkCanAdd() {
-    if (this.getBookInfos().find(it => it.isReplace)) {
-      return true;
-    }
+    // if (this.getBookInfos().find(it => it.isReplace)) {
+    //   return true;
+    // }
     const bookInfos = this.getBookInfos().filter(it => !!it.bookInfo);
     if (!(await this.staffService.isSelfBookType())) {
       if (bookInfos.length >= 9) {
         return false;
       }
     }
-    if (await this.staffService.isSelfBookType()) {
-      if (bookInfos.length == 2 && this.getSearchTrainModel().isRoundTrip) {
-        return false;
-      }
-      if (bookInfos.length == 1 && !this.getSearchTrainModel().isRoundTrip) {
-        return false;
-      }
-    }
+    // if (await this.staffService.isSelfBookType()) {
+    //   if (bookInfos.length == 2 && this.getSearchTrainModel().isRoundTrip) {
+    //     return false;
+    //   }
+    //   if (bookInfos.length == 1 && !this.getSearchTrainModel().isRoundTrip) {
+    //     return false;
+    //   }
+    // }
     return true;
   }
   async selectReturnTrip() {

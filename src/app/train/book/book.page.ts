@@ -357,7 +357,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     let canBook2 = false;
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto);
-    if (canBook&&canBook2) {
+    if (canBook && canBook2) {
       const res = await this.trainService.bookTrain(bookDto).catch(e => {
         AppHelper.alert(e);
         return { TradeNo: "" };
@@ -504,7 +504,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     ) {
       return;
     }
-    this.viewModel.orderTravelPayType = this.tmc && this.tmc.FlightPayType;
+    this.viewModel.orderTravelPayType = this.tmc && this.tmc.TrainPayType;
     const arr = Object.keys(this.initialBookDto.PayTypes);
     this.viewModel.orderTravelPayTypes = [];
     arr.forEach(it => {
@@ -515,7 +515,11 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         });
       }
     });
-    console.log("initOrderTravelPayTypes", this.viewModel.orderTravelPayTypes);
+    console.log(
+      "initOrderTravelPayTypes",
+      this.viewModel.orderTravelPayTypes,
+      `viewModel.orderTravelPayType=${this.viewModel.orderTravelPayType}`
+    );
   }
   private async initSelfBookTypeCredentials(): Promise<CredentialsEntity[]> {
     if (await this.staffService.isSelfBookType()) {

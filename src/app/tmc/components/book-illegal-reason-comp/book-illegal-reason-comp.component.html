@@ -1,17 +1,25 @@
-<ion-item lines='none' no-margin no-padding>
-  <ion-label>超标原因：</ion-label>
-  <ion-select [disabled]='isOtherIllegalReason' [(ngModel)]='illegalReason' name='Type' okText="确定" cancelText="取消"
-    (ionChange)='onValueChange()'>
-    <ion-select-option [value]="opt?.Name" *ngFor='let opt of illegalReasons'>
-      {{opt?.Name}}
-    </ion-select-option>
-  </ion-select>
-</ion-item>
-<div *ngIf='isAllowCustomReason'>
+<ng-container *ngIf='illegalReasons?.length else elsetemp'>
   <ion-item lines='none' no-margin no-padding>
-    <ion-label style='margin-right: 0'>其他原因:</ion-label>
-    <ion-checkbox color="secondary" [(ngModel)]="isOtherIllegalReason" (ionChange)='onValueChange()'></ion-checkbox>
-    <ion-input [disabled]='!isOtherIllegalReason' [(ngModel)]='otherIllegalReason' placeholder='请输入其他原因'
-      (ionChange)='onValueChange()'></ion-input>
+    <ion-label>超标原因：</ion-label>
+    <ion-select [disabled]='isOtherIllegalReason' [(ngModel)]='illegalReason' name='Type' okText="确定" cancelText="取消"
+      (ionChange)='onValueChange()'>
+      <ion-select-option [value]="opt?.Name" *ngFor='let opt of illegalReasons'>
+        {{opt?.Name}}
+      </ion-select-option>
+    </ion-select>
   </ion-item>
-</div>
+  <div *ngIf='isAllowCustomReason'>
+    <ion-item lines='none' no-margin no-padding>
+      <ion-label style='margin-right: 0'>其他原因:</ion-label>
+      <ion-checkbox color="secondary" [(ngModel)]="isOtherIllegalReason" (ionChange)='onValueChange()'></ion-checkbox>
+      <ion-input [disabled]='!isOtherIllegalReason' [(ngModel)]='otherIllegalReason' placeholder='请输入其他原因'
+        (ionChange)='onValueChange()'></ion-input>
+    </ion-item>
+  </div>
+</ng-container>
+<ng-template #elsetemp>
+  <ion-item lines='none' no-margin no-padding>
+    <ion-label style='margin-right: 0'>超标原因：</ion-label>
+    <ion-input [(ngModel)]='illegalReason' placeholder='请输入超标原因' (ionChange)='onValueChange()'></ion-input>
+  </ion-item>
+</ng-template>
