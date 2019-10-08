@@ -87,7 +87,7 @@ export class FlightItemCabinsPage implements OnInit {
     return `${t && t.format("MM月DD日")} ${d && d.dayOfWeekName} `;
   }
   async onBookTicket(flightCabin: FlightCabinEntity) {
-    this.flightService.addOrReplaceSegmentInfo(flightCabin);
+    await this.flightService.addOrReplaceSegmentInfo(flightCabin);
     await this.showSelectedInfos();
   }
   async filterPolicyFlights() {
