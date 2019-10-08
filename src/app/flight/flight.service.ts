@@ -131,19 +131,6 @@ export class FlightService {
       this.searchFlightModel = {
         ...m
       };
-      if (m.isRoundTrip) {
-        const arr = this.getPassengerBookInfos();
-        if (m.tripType == TripType.returnTrip) {
-          if (!arr.find(item => item.isReplace)) {
-            this.searchFlightModel.isLocked = true;
-          }
-        } else {
-          this.searchFlightModel.isLocked = false;
-        }
-        this.searchFlightModel.isLocked = arr.length === 2;
-      } else {
-        this.searchFlightModel.isLocked = false;
-      }
       this.searchFlightModelSource.next(this.searchFlightModel);
     }
   }
@@ -631,18 +618,15 @@ export class FlightService {
           );
         }
         if (arg.bookInfo.tripType == TripType.departureTrip) {
-          this.passengerBookInfos = this.getPassengerBookInfos()
-            .filter(
-              item =>
-                item.bookInfo &&
-                item.bookInfo.tripType == TripType.departureTrip
-            )
-            .map(item => {
-              if (item.id == arg.id) {
-                item.bookInfo = null;
-              }
-              return item;
-            });
+          this.passengerBookInfos = this.getPassengerBookInfos().map(item => {
+            item.bookInfo = null;
+            return item;
+          });
+          this.setSearchFlightModel({
+            ...this.getSearchFlightModel(),
+            isLocked: false,
+            tripType: TripType.departureTrip
+          });
         }
       }
     } else {
