@@ -133,6 +133,20 @@
   </ion-list>
   <ion-list #hotelInfo class='hotel-info'>
     <ion-item-divider sticky>酒店信息</ion-item-divider>
+    <ion-grid *ngIf='hotel?.HotelDetails'>
+      <ng-container *ngFor='let detail of hotel?.HotelDetails'>
+        <ion-row *ngIf='detail.Description'>
+          <ion-col size='2'>{{detail.Name}}</ion-col>
+          <ion-col size='10'>
+            <ion-text color='medium'>
+              <span *ngIf='detail.Tag=="ArrivalTime"'>{{detail.Description}}点之后</span>
+              <span *ngIf='detail.Tag=="DepartureTime"'>{{detail.Description}}点之前</span>
+              <span *ngIf='detail.Tag!="DepartureTime"&&detail.Tag!="ArrivalTime"'>{{detail.Description}}</span>
+            </ion-text>
+          </ion-col>
+        </ion-row>
+      </ng-container>
+    </ion-grid>
   </ion-list>
   <ion-list #trafficInfo class='traffic-info'>
     <ion-item-divider sticky>交通信息</ion-item-divider>

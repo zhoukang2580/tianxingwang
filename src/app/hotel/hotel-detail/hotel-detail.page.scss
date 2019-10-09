@@ -115,6 +115,9 @@ ion-list {
   &.hotel-info {
     min-height: 90vh;
     background-color: blanchedalmond;
+    ion-grid ion-row ion-col{
+      align-self: flex-start;
+    }
   }
   &.traffic-info {
     min-height: 90vh;
