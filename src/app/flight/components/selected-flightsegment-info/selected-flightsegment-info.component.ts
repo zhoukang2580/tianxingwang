@@ -270,7 +270,8 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
         toCity: fromCity,
         Date: s.BackDate,
         tripType: TripType.returnTrip,
-        isRefreshData: true
+        isRefreshData: true,
+        isLocked: true
       });
     });
   }
