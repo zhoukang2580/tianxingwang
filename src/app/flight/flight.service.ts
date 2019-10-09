@@ -513,6 +513,7 @@ export class FlightService {
           }
         }
       } else {
+        bookInfos=[bookInfos[0]];
         bookInfos = bookInfos.map(it => {
           it.bookInfo = this.getPolicyCabinBookInfo(it, flightCabin);
           return it;
