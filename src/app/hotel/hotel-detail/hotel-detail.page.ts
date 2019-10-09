@@ -149,14 +149,14 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     if (!this.config) {
       this.config = await this.configService.get().catch(_ => null);
     }
-    if (!environment.production) {
-      this.hotel = await this.storage.get("mock-hotel-detail");
-      console.log(this.hotel);
-      if (this.hotel) {
-        this.initBgPic(this.hotel.FileName);
-        return;
-      }
-    }
+    // if (!environment.production) {
+    //   this.hotel = await this.storage.get("mock-hotel-detail");
+    //   console.log(this.hotel);
+    //   if (this.hotel) {
+    //     this.initBgPic(this.hotel.FileName);
+    //     return;
+    //   }
+    // }
     if (this.hotelDetailSub) {
       this.hotelDetailSub.unsubscribe();
     }
