@@ -7,22 +7,22 @@
     </ion-buttons>
     <app-date-city [checkInDate]='searchHotelModel?.checkInDate' *ngIf='!isShowSearchBar'
       [checkOutDate]='searchHotelModel?.checkOutDate' [city]='searchHotelModel?.destinationCity'
-      (cityClick)='onCityClick()' (dateClick)='onDateClick()' (searchBarClick)='onSearchClick()'></app-date-city>
-    <ion-searchbar [debounce]='700' [ngModel]='vmKeyowrds' [animated]='true' placeholder="" mode='ios'
-      *ngIf='isShowSearchBar'>
+      (cityClick)='onCityClick()' (dateClick)='onDateClick()' (searchBarClick)='onSearchClick()' [keywords]='keyowrds'></app-date-city>
+    <ion-searchbar [debounce]='700' [(ngModel)]='vmKeyowrds' [animated]='true' placeholder=""
+      (ionChange)='onSearchByKeywords()' mode='ios' *ngIf='isShowSearchBar'>
     </ion-searchbar>
   </ion-toolbar>
-  <ion-toolbar class='query-toolbar' #querytoolbar>
-    <app-hotel-query [conditions]='conditionModel' (hotelQueryChange)='onHotelQueryChange($event)'></app-hotel-query>
+  <ion-toolbar class='query-toolbar' #querytoolbar *ngIf='!isShowSearchBar'>
+    <app-hotel-query [conditions]='conditionModel' (hotelQueryChange)='onHotelQueryChange($event)' ></app-hotel-query>
   </ion-toolbar>
-</ion-header> 
+</ion-header>
 
 <ion-content>
   <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'></ion-refresher>
   <ng-template #nosearchartempl>
     <ion-list>
-      <ion-item *ngFor='let items of [1,2,3,4,5]' (click)='onSearchItemClick()'>
-        搜索三生三世的
+      <ion-item *ngFor='let item of vmSearchTextList' (click)='onSearchItemClick(item)'>
+        {{item.Text}}
       </ion-item>
     </ion-list>
   </ng-template>
@@ -34,7 +34,7 @@
             <img [lazyloadImage]='item?.Hotel?.FileName' appLazyloadimage />
           </ion-thumbnail>
           <ion-label>
-            <h3 class='name'> 
+            <h3 class='name'>
               <ion-label>{{item?.Hotel?.Name}}</ion-label>
             </h3>
             <h5 class='grade-stars'>

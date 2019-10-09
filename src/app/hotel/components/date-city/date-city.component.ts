@@ -7,6 +7,7 @@ import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
   styleUrls: ["./date-city.component.scss"]
 })
 export class DateCityComponent implements OnInit {
+  @Input() keywords: string;
   @Input() checkInDate: string;
   @Input() checkOutDate: string;
   @Input() city: TrafficlineEntity;

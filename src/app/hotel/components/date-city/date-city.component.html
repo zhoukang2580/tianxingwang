@@ -18,7 +18,7 @@
     </div>
     <div class='search-bar' (click)='onSearchBarClick()'>
       <ion-icon name="search" mode='ios'></ion-icon>
-      <input type="text" placeholder="地名/酒店/关键词" disabled>
+      <input type="text" placeholder="{{keywords||'地名/酒店/关键词'}}" disabled >
     </div>
   </div>
 </div>

@@ -496,6 +496,31 @@ export class HotelService {
       HotelCities: TrafficlineEntity[];
     }>(req);
   }
+  searchHotelByText(keyword: string) {
+    const req = new RequestEntity();
+    req.Method = `TmcApiHotelUrl-Home-SearchHotel`;
+    req.Data = {
+      CityCode:
+        this.getSearchHotelModel().destinationCity &&
+        this.getSearchHotelModel().destinationCity.Code,
+      Keyword: keyword
+    };
+    return this.apiService
+      .getResponse<
+        {
+          Text: string;
+          Value: string;
+        }[]
+      >(req)
+      .pipe(
+        map(r => {
+          if (r.Status) {
+            return r.Data;
+          }
+          return [];
+        })
+      );
+  }
 }
 export interface IHotelInfo {
   hotelEntity: HotelEntity;

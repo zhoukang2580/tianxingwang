@@ -63,6 +63,9 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   hotelQueryModal: HotelQueryEntity = new HotelQueryEntity();
   hotelDayPrices: HotelDayPriceEntity[] = [];
   vmKeyowrds = "";
+  keyowrds = "";
+  vmSearchTextList: { Text: string; Value: string }[] = [];
+  searchSubscription = Subscription.EMPTY;
   loadDataSub = Subscription.EMPTY;
   conditionModel: HotelConditionModel;
   constructor(
@@ -75,12 +78,16 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     private route: ActivatedRoute,
     private tmcService: TmcService
   ) {}
-  onSearchItemClick() {
+  onSearchItemClick(item: { Text: string; Value: string }) {
     this.isShowSearchBar = false;
+    if (item) {
+      this.hotelQueryModal.HotelId = item.Value;
+      this.keyowrds = this.hotelQueryModal.SearchKey = item.Text;
+      this.doRefresh(true);
+    }
   }
   ngAfterViewInit() {
     this.autofocusSearchBarInput();
-
     if (this.hotellist) {
       const sub = this.hotellist.changes.subscribe(_ => {
         if (this.hotellist && this.hotellist.first) {
@@ -132,6 +139,16 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       });
       this.subscriptions.push(sub);
     }
+  }
+  onSearchByKeywords() {
+    // console.log("onSearchByKeywords",this.vmKeyowrds);
+    const name = (this.vmKeyowrds && this.vmKeyowrds.trim()) || "";
+    this.searchSubscription.unsubscribe();
+    this.searchSubscription = this.hotelService
+      .searchHotelByText(name)
+      .subscribe(kvs => {
+        this.vmSearchTextList = kvs;
+      });
   }
   onHotelQueryChange(query: HotelQueryEntity) {
     this.hotelQueryModal = {
@@ -212,6 +229,10 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   }
   onSearchClick() {
     this.isShowSearchBar = true;
+    this.hotelQueryModal.HotelId = "";
+    this.hotelQueryModal.SearchKey = "";
+    this.keyowrds = this.vmKeyowrds = "";
+    this.vmSearchTextList = [];
   }
   back() {
     this.router.navigate([AppHelper.getRoutePath("search-hotel")]);
