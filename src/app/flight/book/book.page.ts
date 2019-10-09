@@ -1010,17 +1010,18 @@ export class BookPage implements OnInit, AfterViewInit {
         ) {
           credentials.push(item.credential);
         }
-        const insurances = (
+        const insuranceProducts =
           (this.initialBookDtoModel.Insurances &&
             this.initialBookDtoModel.Insurances[item.id]) ||
-          []
-        ).map(insurance => {
+          [];
+        const insurances = insuranceProducts.map(insurance => {
           return {
             insuranceResult: insurance,
             checked:
-              item.passenger &&
-              item.passenger.Policy &&
-              item.passenger.Policy.FlightIsForceInsurance
+              (item.passenger &&
+                item.passenger.Policy &&
+                item.passenger.Policy.FlightIsForceInsurance) ||
+              insuranceProducts.length == 1
           };
         });
         const combineInfo: ICombindInfo = {

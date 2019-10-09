@@ -12,7 +12,7 @@ export class PriceDetailComponent implements OnInit {
     to: string;
     price: number;
     tax: number;
-    insuraces: {
+    insurances: {
       name: string;
       price: number;
     };
@@ -20,5 +20,6 @@ export class PriceDetailComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
+    console.log("priceInfos", this.priceInfos);
   }
 }
