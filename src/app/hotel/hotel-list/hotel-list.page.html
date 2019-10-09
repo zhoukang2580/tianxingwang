@@ -20,11 +20,12 @@
 <ion-content>
   <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'></ion-refresher>
   <ng-template #nosearchartempl>
-    <ion-list>
+    <ion-list *ngIf='!isSearching'>
       <ion-item *ngFor='let item of vmSearchTextList' (click)='onSearchItemClick(item)'>
         {{item.Text}}
       </ion-item>
     </ion-list>
+    <ion-label *ngIf='isSearching'>正在查询...</ion-label>
   </ng-template>
   <ng-template #listTemp>
     <ng-container *ngIf='!isShowSearchBar else nosearchartempl'>

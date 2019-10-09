@@ -64,6 +64,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   hotelDayPrices: HotelDayPriceEntity[] = [];
   vmKeyowrds = "";
   keyowrds = "";
+  isSearching = false;
   vmSearchTextList: { Text: string; Value: string }[] = [];
   searchSubscription = Subscription.EMPTY;
   loadDataSub = Subscription.EMPTY;
@@ -144,8 +145,10 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     // console.log("onSearchByKeywords",this.vmKeyowrds);
     const name = (this.vmKeyowrds && this.vmKeyowrds.trim()) || "";
     this.searchSubscription.unsubscribe();
+    this.isSearching = true;
     this.searchSubscription = this.hotelService
       .searchHotelByText(name)
+      .pipe(finalize(() => (this.isSearching = false)))
       .subscribe(kvs => {
         this.vmSearchTextList = kvs;
       });
@@ -245,6 +248,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   }
   ngOnInit() {
     const sub0 = this.route.queryParamMap.subscribe(_ => {
+      this.isShowSearchBar = false;
       this.isLeavePage = false;
       this.tmcService.setFlightHotelTrainType(FlightHotelTrainType.Hotel);
     });

@@ -413,7 +413,7 @@ export class HotelService {
       this.hotelPolicies[hotel && hotel.Id] &&
       this.hotelPolicies[hotel && hotel.Id].length
     ) {
-      // return [...this.hotelPolicies[hotel.Id]];
+      return [...this.hotelPolicies[hotel.Id]];
     }
     const result = await this.getHotelPolicyAsync(roomPlans, hotel);
     if (!this.hotelPolicies) {

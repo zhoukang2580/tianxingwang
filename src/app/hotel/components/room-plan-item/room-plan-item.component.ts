@@ -1,50 +1,38 @@
-import { Observable, of } from "rxjs";
-import { HotelPassengerModel } from "./../../models/HotelPassengerModel";
-import { IdentityService } from "./../../../services/identity/identity.service";
+import { HotelService } from "./../../hotel.service";
 import {
   Component,
   OnInit,
   Input,
-  ViewChild,
-  AfterViewInit,
-  Output,
-  EventEmitter,
-  ElementRef,
   OnChanges,
   SimpleChanges
 } from "@angular/core";
 import { RoomEntity } from "../../models/RoomEntity";
-import { DomController } from "@ionic/angular";
 import { RoomPlanEntity } from "../../models/RoomPlanEntity";
-import { HotelSupplierType } from "../../models/HotelSupplierType";
 import { RoomPlanRuleType } from "../../models/RoomPlanRuleType";
+import { HotelSupplierType } from "../../models/HotelSupplierType";
 import { HotelBookType } from "../../models/HotelBookType";
-import { HotelService } from "../../hotel.service";
-import { StaffService } from "src/app/hr/staff.service";
+import { of } from "rxjs";
 import { map, tap } from "rxjs/operators";
+import { StaffService } from "src/app/hr/staff.service";
+import { HotelEntity } from "../../models/HotelEntity";
+import { HotelPaymentType } from "../../models/HotelPaymentType";
+
 @Component({
-  selector: "app-room-detail",
-  templateUrl: "./room-detail.component.html",
-  styleUrls: ["./room-detail.component.scss"]
+  selector: "app-room-plan-item",
+  templateUrl: "./room-plan-item.component.html",
+  styleUrls: ["./room-plan-item.component.scss"]
 })
-export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
+export class RoomPlanItemComponent implements OnInit, OnChanges {
   @Input() room: RoomEntity;
-  @Input() roomImages: string[];
-  @Output() close: EventEmitter<any>;
-  @Output() bookRoom: EventEmitter<any>;
-  curIndex = 0;
-  isAgent = false;
+  @Input() hotel: HotelEntity;
+  @Input() roomPlan: RoomPlanEntity;
   HotelBookType = HotelBookType;
-  color$: Observable<{ [roomPlanId: string]: string }> = of({});
+  HotelPaymentType = HotelPaymentType;
+  color$ = of({});
   constructor(
-    private domCtrl: DomController,
-    private identityService: IdentityService,
     private hotelService: HotelService,
     private staffService: StaffService
-  ) {
-    this.close = new EventEmitter();
-    this.bookRoom = new EventEmitter();
-  }
+  ) {}
   getRules(roomPlan: RoomPlanEntity) {
     let result = "";
     if (!roomPlan) {
@@ -77,6 +65,11 @@ export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
     }
     return result;
   }
+  getRoomArea(room: RoomEntity) {
+    return (
+      room && room.RoomDetails && room.RoomDetails.find(it => it.Tag == "Area")
+    );
+  }
   getAvgPrice(plan: RoomPlanEntity) {
     if (plan && plan.VariablesJsonObj) {
       return plan.VariablesJsonObj["AvgPrice"];
@@ -108,12 +101,43 @@ export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
     const res = this.getFullHouseOrCanBook(plan);
     return res && res.toLowerCase().includes("full");
   }
-  private isCanBook(plan: RoomPlanEntity) {
-    const res = this.getFullHouseOrCanBook(plan);
-    return res && res.toLowerCase().includes("canbook");
+  private async getPolicy() {
+    let roomPlans: RoomPlanEntity[] = [];
+    if (this.hotel && this.hotel.Rooms) {
+      this.hotel.Rooms.forEach(r => {
+        roomPlans = roomPlans.concat(r.RoomPlans);
+      });
+      return this.hotelService.getHotelPolicy(roomPlans, this.hotel);
+    }
+    return [];
   }
-  onBook(plan: RoomPlanEntity) {
-    this.bookRoom.emit(plan);
+  getRenovationDate(room: RoomEntity) {
+    return (
+      room &&
+      room.RoomDetails &&
+      room.RoomDetails.find(it => it.Tag == "RenovationDate")
+    );
+  }
+  getComments(room: RoomEntity) {
+    return (
+      room &&
+      room.RoomDetails &&
+      room.RoomDetails.find(it => it.Tag == "Comments")
+    );
+  }
+  getCapacity(room: RoomEntity) {
+    return (
+      room &&
+      room.RoomDetails &&
+      room.RoomDetails.find(it => it.Tag == "Capacity")
+    );
+  }
+  getBedType(room: RoomEntity) {
+    return (
+      room &&
+      room.RoomDetails &&
+      room.RoomDetails.find(it => it.Tag == "BedType")
+    );
   }
   getBreakfast(plan: RoomPlanEntity) {
     if (plan && plan.RoomPlanPrices && plan.RoomPlanPrices.length) {
@@ -137,13 +161,7 @@ export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
       }
     }
   }
-  async ngOnInit() {
-    const identity = await this.identityService.getIdentityAsync();
-    if (identity) {
-      this.isAgent = identity.Numbers && !!identity.Numbers["AgentId"];
-    }
-    this.initFilterPolicy();
-  }
+  onBook() {}
   private async initFilterPolicy() {
     const isSelf = await this.staffService.isSelfBookType();
     if (isSelf) {
@@ -155,27 +173,12 @@ export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
       }
     }
   }
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes && changes.hotelPolicy && changes.hotelPolicy.currentValue) {
-      this.initFilterPolicy();
-    }
-  }
-  private async getPolicy() {
-    let roomPlans: RoomPlanEntity[] = [];
-    if (this.room && this.room.Hotel && this.room.Hotel.Rooms) {
-      this.room.Hotel.Rooms.forEach(r => {
-        roomPlans = roomPlans.concat(r.RoomPlans);
-      });
-      return this.hotelService.getHotelPolicy(roomPlans, this.room.Hotel);
-    }
-    return [];
-  }
   async filterPassengerPolicy(passengerId: string) {
     const hotelPolicy = await this.getPolicy();
     this.color$ = this.hotelService.getBookInfoSource().pipe(
       map(_ => {
         const colors = {};
-        console.log("hotelPolicy", hotelPolicy);
+        console.log("hotelPolicy", hotelPolicy, this.room);
         if (hotelPolicy) {
           const policies = hotelPolicy.find(
             it => it.PassengerKey == passengerId
@@ -202,8 +205,10 @@ export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
       })
     );
   }
-  ngAfterViewInit() {}
-  onClose() {
-    this.close.emit();
+  ngOnInit() {}
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes && changes.room && changes.room.firstChange) {
+      this.initFilterPolicy();
+    }
   }
 }

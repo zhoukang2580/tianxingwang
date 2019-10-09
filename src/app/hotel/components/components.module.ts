@@ -13,6 +13,7 @@ import { QueryTabComponent } from "./hotel-query/query-tab/query-tab.component";
 import { RecommendRankComponent } from "./hotel-query/recommend-rank/recommend-rank.component";
 import { HotelFilterComponent } from "./hotel-query/hotel-filter/hotel-filter.component";
 import { RoomDetailComponent } from "./room-detail/room-detail.component";
+import { RoomPlanItemComponent } from "./room-plan-item/room-plan-item.component";
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { RoomDetailComponent } from "./room-detail/room-detail.component";
     HotelStarPriceComponent,
     HotelStarPriceComponent,
     HotelListItemComponent,
-    RoomDetailComponent
+    RoomDetailComponent,
+    RoomPlanItemComponent
   ],
   imports: [
     CommonModule,
@@ -44,7 +46,8 @@ import { RoomDetailComponent } from "./room-detail/room-detail.component";
     RecommendRankComponent,
     HotelStarPriceComponent,
     HotelStarPriceComponent,
-    RoomDetailComponent
+    RoomDetailComponent,
+    RoomPlanItemComponent
   ]
 })
 export class HotelComponentsModule {}

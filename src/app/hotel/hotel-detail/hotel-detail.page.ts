@@ -20,7 +20,8 @@ import {
   IonContent,
   IonRefresher,
   Platform,
-  IonList
+  IonList,
+  IonToolbar
 } from "@ionic/angular";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { Storage } from "@ionic/storage";
@@ -41,12 +42,12 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   private hotelDayPrice: HotelDayPriceEntity;
   private scrollEle: HTMLElement;
   private headerHeight = 0;
-  private rects: { [key in IHotelDetailTab]: ClientRect | DOMRect };
 
   @ViewChild("header") headerEle: ElementRef<HTMLElement>;
   @ViewChild("bgPic") bgPicEle: ElementRef<HTMLElement>;
   @ViewChild(IonContent) ionCnt: IonContent;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
+  @ViewChild("toolbarsegment") private toolbarsegmentEle: IonToolbar;
   @ViewChild("houseInfo") private houseInfoEle: IonList;
   @ViewChild("hotelInfo") private hotelInfoEle: IonList;
   @ViewChild("trafficInfo") private trafficInfoEle: IonList;
@@ -58,13 +59,14 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   isShowRoomDetails = false;
   isMd = false;
   roomImages: string[] = [];
-  curSelectedRoom: RoomEntity;
+  curSelectedRoom: RoomEntity = {} as any;
   hotelDetailSub = Subscription.EMPTY;
   queryModelSub = Subscription.EMPTY;
   hotel: HotelEntity;
   config: any;
   activeTab: IHotelDetailTab = "houseInfo";
   hotelPolicy: HotelPassengerModel[];
+  rects: { [key in IHotelDetailTab]: ClientRect | DOMRect };
   get totalNights() {
     return (
       this.queryModel.checkInDate &&
@@ -110,6 +112,11 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     });
     this.config = await this.configService.get().catch(_ => null);
   }
+  onCloseRoomImages() {
+    setTimeout(() => {
+      this.isShowRoomImages = false;
+    }, 100);
+  }
   getImageUrls() {
     return (
       this.hotel &&
@@ -147,7 +154,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       console.log(this.hotel);
       if (this.hotel) {
         this.initBgPic(this.hotel.FileName);
-        // return;
+        return;
       }
     }
     if (this.hotelDetailSub) {
@@ -246,25 +253,23 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     }
   }
   private scrollToTab(tab: IHotelDetailTab) {
-    if (this.rects) {
+    this.initRects();
+    if (this.rects[tab]) {
       this.scrollToPoint(this.rects[tab]);
     }
   }
-  private scrollToPoint(rect: ClientRect | DOMRect) {
+  private scrollToPoint(tab: ClientRect | DOMRect) {
     // console.log("scrollToPoint", rect);
-    if (rect) {
-      const header = document.querySelector(".header");
-      let hh = 0;
-      if (header) {
-        const toolbars = header.querySelectorAll("ion-toolbar");
-        if (toolbars) {
-          toolbars.forEach(t => {
-            hh += t.clientHeight;
-          });
+    if (tab) {
+      if (this.toolbarsegmentEle && this.toolbarsegmentEle["el"]) {
+        const segmentbar = this.toolbarsegmentEle["el"].getBoundingClientRect();
+        if (segmentbar && this.scrollEle) {
+          const delta = tab.top - segmentbar.bottom;
+          // console.log("scrollToPoint", delta);
+          this.scrollEle.scrollBy({ behavior: "smooth", top: delta });
         }
       }
       // console.log("header", hh);
-      this.ionCnt.scrollToPoint(0, rect.top - hh, 100);
     }
   }
   onBookRoomPlan(plan: RoomPlanEntity) {}
@@ -352,6 +357,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
         "el"
       ].getBoundingClientRect();
     }
+    // console.log(this.rects);
   }
   private initEle() {
     if (this.headerEle && this.headerEle.nativeElement) {
@@ -381,11 +387,17 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
           } else {
             opacity = 0;
           }
+          opacity = opacity < 0.35 ? 0 : opacity;
+          this.render.setStyle(
+            this.headerEle.nativeElement,
+            "zIndex",
+            `${opacity}`
+          );
           this.domCtrl.write(_ => {
             this.render.setStyle(
               this.headerEle.nativeElement,
               "opacity",
-              opacity < 0.35 ? 0 : opacity
+              opacity
             );
           });
         });
