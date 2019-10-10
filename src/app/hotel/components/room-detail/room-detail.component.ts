@@ -46,67 +46,16 @@ export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
     this.bookRoom = new EventEmitter();
   }
   getRules(roomPlan: RoomPlanEntity) {
-    let result = "";
-    if (!roomPlan) {
-      return result;
-    }
-    if (
-      roomPlan.SupplierType == HotelSupplierType.Company ||
-      roomPlan.SupplierType == HotelSupplierType.Group ||
-      roomPlan.SupplierType == HotelSupplierType.Agent
-    ) {
-      result = "规则";
-    } else if (
-      roomPlan.RoomPlanRules &&
-      (roomPlan.RoomPlanRules.reduce((acc, it) => {
-        if (it.Type == RoomPlanRuleType.CancelNo) {
-          acc++;
-        }
-        return acc;
-      }, 0) > 0 ||
-        roomPlan.RoomPlanRules.reduce((acc, it) => {
-          if (it.TypeName && it.TypeName.startsWith("Cancel")) {
-            acc++;
-          }
-          return acc;
-        }, 0) == 0)
-    ) {
-      result = "不可取消";
-    } else {
-      result = "限时取消";
-    }
-    return result;
+    return this.hotelService.getRules(roomPlan);
   }
   getAvgPrice(plan: RoomPlanEntity) {
-    if (plan && plan.VariablesJsonObj) {
-      return plan.VariablesJsonObj["AvgPrice"];
-    }
-    if (plan && plan.Variables) {
-      plan.VariablesJsonObj = JSON.parse(plan.Variables);
-      return plan.VariablesJsonObj["AvgPrice"];
-    }
+    return this.hotelService.getAvgPrice(plan);
   }
   private getFullHouseOrCanBook(plan: RoomPlanEntity): string {
-    if (plan && plan.VariablesJsonObj) {
-      return plan.VariablesJsonObj["FullHouseOrCanBook"];
-    }
-    if (plan && plan.Variables) {
-      plan.VariablesJsonObj = JSON.parse(plan.Variables);
-      return plan.VariablesJsonObj["FullHouseOrCanBook"];
-    }
+    return this.hotelService.getFullHouseOrCanBook(plan);
   }
   private isFull(p: RoomPlanEntity | string) {
-    let plan: RoomPlanEntity;
-    if (typeof p === "string") {
-      plan =
-        this.room &&
-        this.room.RoomPlans &&
-        this.room.RoomPlans.find(it => it.Number == p);
-    } else if (p instanceof RoomPlanEntity) {
-      plan = p;
-    }
-    const res = this.getFullHouseOrCanBook(plan);
-    return res && res.toLowerCase().includes("full");
+    return this.hotelService.isFull(p, this.room);
   }
   private isCanBook(plan: RoomPlanEntity) {
     const res = this.getFullHouseOrCanBook(plan);
@@ -116,26 +65,7 @@ export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
     this.bookRoom.emit(plan);
   }
   getBreakfast(plan: RoomPlanEntity) {
-    if (plan && plan.RoomPlanPrices && plan.RoomPlanPrices.length) {
-      const minBreakfast = plan.RoomPlanPrices.map(it => it.Breakfast).sort(
-        (a, b) => +a - +b
-      )[0];
-      if (
-        plan.RoomPlanPrices.every(it => it.Breakfast == minBreakfast) &&
-        minBreakfast == `${plan.Breakfast}`
-      ) {
-        if (minBreakfast == "0") {
-          return "无早";
-        } else {
-          return `${plan.Breakfast}份早餐`;
-        }
-      } else {
-        if (minBreakfast == "0") {
-          return "部分早餐";
-        }
-        return `部分${minBreakfast}份早餐`;
-      }
-    }
+    return this.hotelService.getBreakfast(plan);
   }
   async ngOnInit() {
     const identity = await this.identityService.getIdentityAsync();

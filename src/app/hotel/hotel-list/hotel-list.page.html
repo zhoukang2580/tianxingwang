@@ -7,13 +7,14 @@
     </ion-buttons>
     <app-date-city [checkInDate]='searchHotelModel?.checkInDate' *ngIf='!isShowSearchBar'
       [checkOutDate]='searchHotelModel?.checkOutDate' [city]='searchHotelModel?.destinationCity'
-      (cityClick)='onCityClick()' (dateClick)='onDateClick()' (searchBarClick)='onSearchClick()' [keywords]='keyowrds'></app-date-city>
+      (cityClick)='onCityClick()' (dateClick)='onDateClick()' (searchBarClick)='onSearchClick()' [keywords]='keyowrds'>
+    </app-date-city>
     <ion-searchbar [debounce]='700' [(ngModel)]='vmKeyowrds' [animated]='true' placeholder=""
       (ionChange)='onSearchByKeywords()' mode='ios' *ngIf='isShowSearchBar'>
     </ion-searchbar>
   </ion-toolbar>
   <ion-toolbar class='query-toolbar' #querytoolbar *ngIf='!isShowSearchBar'>
-    <app-hotel-query [conditions]='conditionModel' (hotelQueryChange)='onHotelQueryChange($event)' ></app-hotel-query>
+    <app-hotel-query [conditions]='conditionModel' (hotelQueryChange)='onHotelQueryChange($event)'></app-hotel-query>
   </ion-toolbar>
 </ion-header>
 
@@ -32,7 +33,7 @@
       <ion-list *ngIf='hotelDayPrices?.length else noMoreData' #hotellist class='hotel-list'>
         <ion-item *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
           <ion-thumbnail slot='start'>
-            <img [lazyloadImage]='item?.Hotel?.FileName' appLazyloadimage />
+            <img [lazyloadImage]='item.Hotel?.FileName'  appLazyloadimage />
           </ion-thumbnail>
           <ion-label>
             <h3 class='name'>

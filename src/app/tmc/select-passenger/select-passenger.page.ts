@@ -64,12 +64,13 @@ export const NOT_WHITE_LIST = "notwhitelist";
 })
 export class SelectPassengerPage
   implements OnInit, CanComponentDeactivate, AfterViewInit, OnDestroy {
+  private keyword: string;
+  private isOpenPageAsModal = false;
   vmKeyword: string;
   removeitem: EventEmitter<PassengerBookInfo<any>>;
   isShowNewCredential = false;
   credentialsRemarks: { key: string; value: string }[];
   selectedCredentialId: string;
-  private keyword: string;
   selectedPasengersNumber$: Observable<number> = of(0);
   currentPage = 1;
   pageSize = 15;
@@ -95,7 +96,7 @@ export class SelectPassengerPage
   @ViewChildren("addForm") addForm: QueryList<IonGrid>;
   title = "选择旅客";
   constructor(
-    public modalController: ModalController,
+    private modalController: ModalController,
     private navCtrl: NavController,
     private apiService: ApiService,
     private identityService: IdentityService,
@@ -610,7 +611,15 @@ export class SelectPassengerPage
     }
   }
   back() {
-    this.navCtrl.back();
+    if (!this.isOpenPageAsModal) {
+      this.navCtrl.back();
+    } else {
+      this.modalController.getTop().then(t => {
+        if (t) {
+          t.dismiss();
+        }
+      });
+    }
   }
   async canDeactivate() {
     if (this.isCanDeactive) {

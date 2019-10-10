@@ -504,7 +504,7 @@ export class LanguageHelper {
   static getConfirmTip() {
     return "确定";
   }
-  static getDeleteTip() {
+  static getConfirmDeleteTip() {
     return "确定删除";
   }
   static getHintTip(): string {

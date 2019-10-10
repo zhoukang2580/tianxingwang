@@ -9,6 +9,7 @@ import { Routes, RouterModule } from "@angular/router";
 import { IonicModule } from "@ionic/angular";
 
 import { HotelDetailPage } from "./hotel-detail.page";
+import { SelectPassengerPage } from "src/app/tmc/select-passenger/select-passenger.page";
 
 const routes: Routes = [
   {

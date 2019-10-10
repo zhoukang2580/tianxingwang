@@ -4,7 +4,9 @@ import {
   OnInit,
   Input,
   OnChanges,
-  SimpleChanges
+  SimpleChanges,
+  EventEmitter,
+  Output
 } from "@angular/core";
 import { RoomEntity } from "../../models/RoomEntity";
 import { RoomPlanEntity } from "../../models/RoomPlanEntity";
@@ -26,80 +28,30 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
   @Input() room: RoomEntity;
   @Input() hotel: HotelEntity;
   @Input() roomPlan: RoomPlanEntity;
+  @Output() bookRoom: EventEmitter<any>;
   HotelBookType = HotelBookType;
   HotelPaymentType = HotelPaymentType;
   color$ = of({});
   constructor(
     private hotelService: HotelService,
     private staffService: StaffService
-  ) {}
+  ) {
+    this.bookRoom = new EventEmitter();
+  }
   getRules(roomPlan: RoomPlanEntity) {
-    let result = "";
-    if (!roomPlan) {
-      return result;
-    }
-    if (
-      roomPlan.SupplierType == HotelSupplierType.Company ||
-      roomPlan.SupplierType == HotelSupplierType.Group ||
-      roomPlan.SupplierType == HotelSupplierType.Agent
-    ) {
-      result = "规则";
-    } else if (
-      roomPlan.RoomPlanRules &&
-      (roomPlan.RoomPlanRules.reduce((acc, it) => {
-        if (it.Type == RoomPlanRuleType.CancelNo) {
-          acc++;
-        }
-        return acc;
-      }, 0) > 0 ||
-        roomPlan.RoomPlanRules.reduce((acc, it) => {
-          if (it.TypeName && it.TypeName.startsWith("Cancel")) {
-            acc++;
-          }
-          return acc;
-        }, 0) == 0)
-    ) {
-      result = "不可取消";
-    } else {
-      result = "限时取消";
-    }
-    return result;
+    return this.hotelService.getRules(roomPlan);
   }
   getRoomArea(room: RoomEntity) {
-    return (
-      room && room.RoomDetails && room.RoomDetails.find(it => it.Tag == "Area")
-    );
+    return this.hotelService.getRoomArea(room);
   }
   getAvgPrice(plan: RoomPlanEntity) {
-    if (plan && plan.VariablesJsonObj) {
-      return plan.VariablesJsonObj["AvgPrice"];
-    }
-    if (plan && plan.Variables) {
-      plan.VariablesJsonObj = JSON.parse(plan.Variables);
-      return plan.VariablesJsonObj["AvgPrice"];
-    }
+    return this.hotelService.getAvgPrice(plan);
   }
   private getFullHouseOrCanBook(plan: RoomPlanEntity): string {
-    if (plan && plan.VariablesJsonObj) {
-      return plan.VariablesJsonObj["FullHouseOrCanBook"];
-    }
-    if (plan && plan.Variables) {
-      plan.VariablesJsonObj = JSON.parse(plan.Variables);
-      return plan.VariablesJsonObj["FullHouseOrCanBook"];
-    }
+    return this.hotelService.getFullHouseOrCanBook(plan);
   }
   private isFull(p: RoomPlanEntity | string) {
-    let plan: RoomPlanEntity;
-    if (typeof p === "string") {
-      plan =
-        this.room &&
-        this.room.RoomPlans &&
-        this.room.RoomPlans.find(it => it.Number == p);
-    } else if (p instanceof RoomPlanEntity) {
-      plan = p;
-    }
-    const res = this.getFullHouseOrCanBook(plan);
-    return res && res.toLowerCase().includes("full");
+    return this.hotelService.isFull(p, this.room);
   }
   private async getPolicy() {
     let roomPlans: RoomPlanEntity[] = [];
@@ -112,66 +64,56 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
     return [];
   }
   getRenovationDate(room: RoomEntity) {
-    return (
-      room &&
-      room.RoomDetails &&
-      room.RoomDetails.find(it => it.Tag == "RenovationDate")
-    );
+    return this.hotelService.getRenovationDate(room);
   }
   getComments(room: RoomEntity) {
-    return (
-      room &&
-      room.RoomDetails &&
-      room.RoomDetails.find(it => it.Tag == "Comments")
-    );
+    return this.hotelService.getComments(room);
   }
   getCapacity(room: RoomEntity) {
-    return (
-      room &&
-      room.RoomDetails &&
-      room.RoomDetails.find(it => it.Tag == "Capacity")
-    );
+    return this.hotelService.getCapacity(room);
   }
   getBedType(room: RoomEntity) {
-    return (
-      room &&
-      room.RoomDetails &&
-      room.RoomDetails.find(it => it.Tag == "BedType")
-    );
+    return this.hotelService.getBedType(room);
   }
   getBreakfast(plan: RoomPlanEntity) {
-    if (plan && plan.RoomPlanPrices && plan.RoomPlanPrices.length) {
-      const minBreakfast = plan.RoomPlanPrices.map(it => it.Breakfast).sort(
-        (a, b) => +a - +b
-      )[0];
-      if (
-        plan.RoomPlanPrices.every(it => it.Breakfast == minBreakfast) &&
-        minBreakfast == `${plan.Breakfast}`
-      ) {
-        if (minBreakfast == "0") {
-          return "无早";
-        } else {
-          return `${plan.Breakfast}份早餐`;
-        }
-      } else {
-        if (minBreakfast == "0") {
-          return "部分早餐";
-        }
-        return `部分${minBreakfast}份早餐`;
-      }
-    }
+    return this.hotelService.getBreakfast(plan);
   }
-  onBook() {}
+  onBook() {
+    this.bookRoom.emit({ roomPlan: this.roomPlan, room: this.room });
+  }
   private async initFilterPolicy() {
     const isSelf = await this.staffService.isSelfBookType();
+    const bookInfos = this.hotelService.getBookInfos();
     if (isSelf) {
-      const bookInfos = this.hotelService.getBookInfos();
-      if (bookInfos.length && bookInfos[0] && bookInfos[0].passenger) {
-        this.filterPassengerPolicy(
-          this.hotelService.getBookInfos()[0].passenger.AccountId
-        );
+      if (bookInfos.length) {
+        if (bookInfos[0] && bookInfos[0].passenger) {
+          this.filterPassengerPolicy(
+            this.hotelService.getBookInfos()[0].passenger.AccountId
+          );
+        }
+      } else {
+        this.initUnFilterColors();
       }
+    } else {
+      this.initUnFilterColors();
     }
+  }
+  private initUnFilterColors() {
+    let roomPlans: RoomPlanEntity[] = [];
+    if (this.hotel && this.hotel.Rooms) {
+      this.hotel.Rooms.forEach(r => {
+        roomPlans = roomPlans.concat(r.RoomPlans);
+      });
+    }
+    const colors = {};
+    roomPlans.forEach(p => {
+      let color = "success";
+      if (this.isFull(p.Number)) {
+        color = "danger";
+      }
+      colors[p.Number] = color;
+    });
+    this.color$ = of(colors);
   }
   async filterPassengerPolicy(passengerId: string) {
     const hotelPolicy = await this.getPolicy();

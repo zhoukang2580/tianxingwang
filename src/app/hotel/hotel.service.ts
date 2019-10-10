@@ -31,6 +31,8 @@ import { HotelConditionModel } from "./models/ConditionModel";
 import { HotelDayPriceEntity } from "./models/HotelDayPriceEntity";
 import { RoomPlanEntity } from "./models/RoomPlanEntity";
 import { HotelPolicyModel } from "./models/HotelPolicyModel";
+import { HotelSupplierType } from "./models/HotelSupplierType";
+import { RoomPlanRuleType } from "./models/RoomPlanRuleType";
 export class SearchHotelModel {
   checkInDate: string;
   checkOutDate: string;
@@ -85,6 +87,127 @@ export class HotelService {
     identityService.getIdentitySource().subscribe(res => {
       this.disposal();
     });
+  }
+  getRules(roomPlan: RoomPlanEntity) {
+    let result = "";
+    if (!roomPlan) {
+      return result;
+    }
+    if (
+      roomPlan.SupplierType == HotelSupplierType.Company ||
+      roomPlan.SupplierType == HotelSupplierType.Group ||
+      roomPlan.SupplierType == HotelSupplierType.Agent
+    ) {
+      result = "规则";
+    } else if (
+      roomPlan.RoomPlanRules &&
+      (roomPlan.RoomPlanRules.reduce((acc, it) => {
+        if (it.Type == RoomPlanRuleType.CancelNo) {
+          acc++;
+        }
+        return acc;
+      }, 0) > 0 ||
+        roomPlan.RoomPlanRules.reduce((acc, it) => {
+          if (it.TypeName && it.TypeName.startsWith("Cancel")) {
+            acc++;
+          }
+          return acc;
+        }, 0) == 0)
+    ) {
+      result = "不可取消";
+    } else {
+      result = "限时取消";
+    }
+    return result;
+  }
+  getAvgPrice(plan: RoomPlanEntity) {
+    if (plan && plan.VariablesJsonObj) {
+      return plan.VariablesJsonObj["AvgPrice"];
+    }
+    if (plan && plan.Variables) {
+      plan.VariablesJsonObj = JSON.parse(plan.Variables);
+      return plan.VariablesJsonObj["AvgPrice"];
+    }
+  }
+  getFullHouseOrCanBook(plan: RoomPlanEntity): string {
+    if (plan && plan.VariablesJsonObj) {
+      return plan.VariablesJsonObj["FullHouseOrCanBook"];
+    }
+    if (plan && plan.Variables) {
+      plan.VariablesJsonObj = JSON.parse(plan.Variables);
+      return plan.VariablesJsonObj["FullHouseOrCanBook"];
+    }
+  }
+  isFull(p: RoomPlanEntity | string, room: RoomEntity) {
+    let plan: RoomPlanEntity;
+    if (typeof p === "string") {
+      plan =
+        room && room.RoomPlans && room.RoomPlans.find(it => it.Number == p);
+    } else if (p instanceof RoomPlanEntity) {
+      plan = p;
+    }
+    const res = this.getFullHouseOrCanBook(plan);
+    return res && res.toLowerCase().includes("full");
+  }
+  getRoomArea(room: RoomEntity) {
+    return (
+      room && room.RoomDetails && room.RoomDetails.find(it => it.Tag == "Area")
+    );
+  }
+  getFloor(room: RoomEntity) {
+    return (
+      room && room.RoomDetails && room.RoomDetails.find(it => it.Tag == "Floor")
+    );
+  }
+  getRenovationDate(room: RoomEntity) {
+    return (
+      room &&
+      room.RoomDetails &&
+      room.RoomDetails.find(it => it.Tag == "RenovationDate")
+    );
+  }
+  getComments(room: RoomEntity) {
+    return (
+      room &&
+      room.RoomDetails &&
+      room.RoomDetails.find(it => it.Tag == "Comments")
+    );
+  }
+  getCapacity(room: RoomEntity) {
+    return (
+      room &&
+      room.RoomDetails &&
+      room.RoomDetails.find(it => it.Tag == "Capacity")
+    );
+  }
+  getBedType(room: RoomEntity) {
+    return (
+      room &&
+      room.RoomDetails &&
+      room.RoomDetails.find(it => it.Tag == "BedType")
+    );
+  }
+  getBreakfast(plan: RoomPlanEntity) {
+    if (plan && plan.RoomPlanPrices && plan.RoomPlanPrices.length) {
+      const minBreakfast = plan.RoomPlanPrices.map(it => it.Breakfast).sort(
+        (a, b) => +a - +b
+      )[0];
+      if (
+        plan.RoomPlanPrices.every(it => it.Breakfast == minBreakfast) &&
+        minBreakfast == `${plan.Breakfast}`
+      ) {
+        if (minBreakfast == "0") {
+          return "无早";
+        } else {
+          return `${plan.Breakfast}份早餐`;
+        }
+      } else {
+        if (minBreakfast == "0") {
+          return "部分早餐";
+        }
+        return `部分${minBreakfast}份早餐`;
+      }
+    }
   }
   async getConditions(forceFetch = false) {
     if (
@@ -215,10 +338,22 @@ export class HotelService {
       this.setBookInfos(bookInfos);
     }
   }
+  removeBookInfo(bookInfo: PassengerBookInfo<IHotelInfo>) {
+    console.log("hotel,removeBookInfo", bookInfo);
+    if (bookInfo) {
+      const bookInfos = this.getBookInfos().map(it => {
+        if (it.id === bookInfo.id) {
+          it.bookInfo = null;
+        }
+        return it;
+      });
+      this.setBookInfos(bookInfos);
+    }
+  }
   getBookInfos() {
     return this.bookInfos || [];
   }
-  private setBookInfos(bookInfos: PassengerBookInfo<IHotelInfo>[]) {
+  setBookInfos(bookInfos: PassengerBookInfo<IHotelInfo>[]) {
     console.log("hotel set book infos ", bookInfos);
     this.bookInfos = bookInfos || [];
     this.bookInfoSource.next(this.bookInfos);
@@ -426,10 +561,13 @@ export class HotelService {
   private async getHotelPolicyAsync(
     roomPlans: RoomPlanEntity[],
     hotel: HotelEntity
-  ) {
+  ): Promise<HotelPassengerModel[]> {
     const notWhitelistPolicies: HotelPassengerModel[] = [];
     let whitelistPolicies: HotelPassengerModel[] = [];
     const bookInfos = this.getBookInfos();
+    if (bookInfos.length == 0) {
+      return [];
+    }
     const whitelistPs = bookInfos
       .filter(it => !it.isNotWhitelist)
       .map(it => it.passenger && it.passenger.AccountId)

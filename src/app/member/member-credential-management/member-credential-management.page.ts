@@ -97,7 +97,7 @@ export class MemberCredentialManagementPage
   }
   async removeExistCredential(c: MemberCredential) {
     const comfirmDel = await AppHelper.alert(
-      LanguageHelper.getDeleteTip(),
+      LanguageHelper.getConfirmDeleteTip(),
       true,
       LanguageHelper.getConfirmTip(),
       LanguageHelper.getCancelTip()
@@ -213,7 +213,7 @@ export class MemberCredentialManagementPage
   }
   removeAdd(c: MemberCredential) {
     AppHelper.alert(
-      LanguageHelper.getDeleteTip(),
+      LanguageHelper.getConfirmDeleteTip(),
       true,
       LanguageHelper.getConfirmTip(),
       LanguageHelper.getCancelTip()
@@ -346,7 +346,7 @@ export class MemberCredentialManagementPage
   }
   togleModify(item: MemberCredential) {
     this.currentModifyItem = item;
-    item.isModified= !item.isModified;
+    item.isModified = !item.isModified;
     this.initializeValidate();
   }
   canDeactivate() {

@@ -1,3 +1,5 @@
+import { ConfigEntity } from "./../../services/config/config.entity";
+import { ConfigService } from "./../../services/config/config.service";
 import { HotelConditionModel } from "src/app/hotel/models/ConditionModel";
 import { HotelEntity } from "./../models/HotelEntity";
 import { HotelResultEntity } from "./../models/HotelResultEntity";
@@ -28,7 +30,7 @@ import {
   Platform,
   IonList
 } from "@ionic/angular";
-import { Subscription } from "rxjs";
+import { Subscription, Observable } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
 import {
   trigger,
@@ -69,6 +71,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   searchSubscription = Subscription.EMPTY;
   loadDataSub = Subscription.EMPTY;
   conditionModel: HotelConditionModel;
+  config$:Observable<ConfigEntity>;
   constructor(
     private navCtrl: NavController,
     private hotelService: HotelService,
@@ -77,7 +80,8 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     private render: Renderer2,
     private plt: Platform,
     private route: ActivatedRoute,
-    private tmcService: TmcService
+    private tmcService: TmcService,
+    private configService: ConfigService
   ) {}
   onSearchItemClick(item: { Text: string; Value: string }) {
     this.isShowSearchBar = false;
@@ -247,6 +251,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions = null;
   }
   ngOnInit() {
+   this.config$= this.configService.getConfigSource();
     const sub0 = this.route.queryParamMap.subscribe(_ => {
       this.isShowSearchBar = false;
       this.isLeavePage = false;

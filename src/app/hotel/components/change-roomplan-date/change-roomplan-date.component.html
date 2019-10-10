@@ -1,0 +1,37 @@
+<div>
+  <div class='check-in-out'>
+    <div class='date'>
+      <span>{{getDate(checkInDate)}}</span>
+      <span>
+        <ion-text color='medium'>({{getDayDesc(checkInDate)}})</ion-text><strong>入住</strong>
+        <ion-text color='medium'>></ion-text>
+      </span>
+    </div>
+    <div class="btns">
+      <div class='start' [class.disabled]='!isDateEnabled()' (click)='onAddCheckInDays(-1)'>
+        前一天
+      </div>
+      <div class='end' (click)='onAddCheckInDays(1)'>
+        后一天
+      </div>
+    </div>
+  </div>
+  <div class='line'></div>
+  <div class='check-in-out'>
+    <div class='date'>
+      <span>住{{calcNights()}}晚</span>
+      <span>
+        <ion-text color='medium'>{{getDate(checkOutDate)}}({{getDayDesc(checkOutDate)}})</ion-text><strong>离店</strong>
+      </span>
+    </div>
+    <div class="btns">
+      <div class='start icon' [class.disabled]='calcNights()==1'>
+        <ion-icon name="remove-circle-outline" mode='ios' color='{{calcNights()==1?"medium":"secondary"}}' (click)='onAddCheckOutDays(-1)'></ion-icon>
+      </div>
+      <div class='end icon'>
+        <ion-icon name="add-circle-outline" mode='ios' color='secondary' (click)='onAddCheckOutDays(1)'></ion-icon>
+      </div>
+    </div>
+  </div>
+</div>
+<ion-button expand='block' color='secondary'>确定</ion-button>

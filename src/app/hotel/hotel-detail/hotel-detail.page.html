@@ -91,7 +91,8 @@
       <ion-item>
         <ion-thumbnail (click)='onShowRoomImages(room)'>
           <ng-container *ngIf='getRoomImages(room) as images'>
-            <img [lazyloadImage]='images[0]?.replace("Mobile640_960", "Hotel70_70")' appLazyloadimage />
+            <img [lazyloadImage]='images[0]?.replace("Mobile640_960", "Hotel70_70")||(config?.DefaultImageUrl)'
+              appLazyloadimage />
             <div class='images-nums' *ngIf='images.length as len'>{{len}}张</div>
           </ng-container>
         </ion-thumbnail>
@@ -110,7 +111,7 @@
               </div>
             </ion-label>
           </h4>
-          <h3 text-end (click)='room["isShowRoomPlans"]=!room["isShowRoomPlans"]'>
+          <h3 text-end (click)='room["isShowRoomPlans"]=!room["isShowRoomPlans"]' style="padding-bottom: 0.5em;">
             <ion-text color='danger' *ngIf='getRoomLowestAvgPrice(room) as price'>
               <strong><small style="font-size:.6rem;margin-right:0em;">￥</small><span
                   style="font-size: 1rem">{{price}}</span>
@@ -125,7 +126,7 @@
       </ion-item>
       <ng-container *ngIf='room["isShowRoomPlans"]'>
         <ion-item *ngFor='let plan of room.RoomPlans'>
-          <app-room-plan-item [room]='room' [roomPlan]='plan' [hotel]='hotel'>
+          <app-room-plan-item [room]='room' [roomPlan]='plan' [hotel]='hotel' (bookRoom)='onBookRoomPlan($event)'>
           </app-room-plan-item>
         </ion-item>
       </ng-container>
@@ -155,7 +156,7 @@
     </div>
   </ion-list>
 </ion-content>
-<app-browse-images *ngIf="isShowImages" [images]='getImageUrls()' (close)='isShowImages=false'></app-browse-images>
+<app-browse-images *ngIf="isShowImages" [images]='getHotelImageUrls()' (close)='isShowImages=false'></app-browse-images>
 <app-browse-images *ngIf="isShowRoomImages" [images]="roomImages" (close)='onCloseRoomImages()'></app-browse-images>
 <app-room-detail [room]='curSelectedRoom' [roomImages]='roomImages' (close)='isShowRoomDetails=false' class="ion-page"
   *ngIf='isShowRoomDetails' (bookRoom)='onBookRoomPlan($event)'></app-room-detail>

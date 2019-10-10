@@ -1,0 +1,27 @@
+<div style="width: 100%">
+  <ion-card>
+    <ion-card-content>
+      <div class='date' (click)='onChangeDate()'>
+        <span>{{getDate(bookInfo?.bookInfo?.roomPlan?.BeginDate)}}</span>
+        <span>{{getDayDesc(bookInfo?.bookInfo?.roomPlan?.BeginDate)}}</span>
+        <ion-chip color='secondary'>{{calcNights()}}晚</ion-chip>
+        <span>{{getDate(bookInfo?.bookInfo?.roomPlan?.EndDate)}}</span>
+        <span>{{getDayDesc(bookInfo?.bookInfo?.roomPlan?.EndDate)}}</span>
+        <ion-button fill='clear' size='small' color='secondary'>修改</ion-button>
+      </div>
+      <div class="dashed-line"></div>
+      <div (click)='onShowRoomDetail()'>
+        <div><strong>豪华大床房(官方直营)</strong></div>
+        <div class='desc'>
+          <ul>
+            <ng-container *ngFor='let it of items;let last=last;'>
+              <li>{{it}} </li>
+              <span *ngIf='!last'>|</span>
+            </ng-container>
+          </ul>
+          <ion-button slot='end' fill='clear' color='secondary'>房型详情</ion-button>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</div>

@@ -14,6 +14,10 @@ import { RecommendRankComponent } from "./hotel-query/recommend-rank/recommend-r
 import { HotelFilterComponent } from "./hotel-query/hotel-filter/hotel-filter.component";
 import { RoomDetailComponent } from "./room-detail/room-detail.component";
 import { RoomPlanItemComponent } from "./room-plan-item/room-plan-item.component";
+import { HotelRoomBookedinfosComponent } from "./hotel-room-bookedinfos/hotel-room-bookedinfos.component";
+import { RoomShowItemComponent } from "./room-show-item/room-show-item.component";
+import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
+import { ChangeRoomplanDateComponent } from './change-roomplan-date/change-roomplan-date.component';
 
 @NgModule({
   declarations: [
@@ -27,14 +31,18 @@ import { RoomPlanItemComponent } from "./room-plan-item/room-plan-item.component
     HotelStarPriceComponent,
     HotelListItemComponent,
     RoomDetailComponent,
-    RoomPlanItemComponent
+    RoomPlanItemComponent,
+    HotelRoomBookedinfosComponent,
+    RoomShowItemComponent,
+    ChangeRoomplanDateComponent
   ],
   imports: [
     CommonModule,
     IonicModule,
     FormsModule,
     AppDirectivesModule,
-    AppComponentsModule
+    AppComponentsModule,
+    TmcComponentsModule
   ],
   exports: [
     HotelListItemComponent,
@@ -47,7 +55,12 @@ import { RoomPlanItemComponent } from "./room-plan-item/room-plan-item.component
     HotelStarPriceComponent,
     HotelStarPriceComponent,
     RoomDetailComponent,
-    RoomPlanItemComponent
-  ]
+    RoomPlanItemComponent,
+    HotelRoomBookedinfosComponent,
+    RoomShowItemComponent,
+    TmcComponentsModule,
+    ChangeRoomplanDateComponent
+  ],
+  entryComponents: [HotelRoomBookedinfosComponent]
 })
 export class HotelComponentsModule {}
