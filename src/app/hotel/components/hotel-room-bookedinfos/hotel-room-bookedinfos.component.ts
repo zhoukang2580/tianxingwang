@@ -1,3 +1,4 @@
+import { CalendarService } from "src/app/tmc/calendar.service";
 import { HotelEntity } from "./../../models/HotelEntity";
 import { switchMap, map, tap } from "rxjs/operators";
 import { ConfigService } from "src/app/services/config/config.service";
@@ -39,6 +40,7 @@ export class HotelRoomBookedinfosComponent implements OnInit {
   constructor(
     private modalCtrl: ModalController,
     private hotelService: HotelService,
+    private calendarService: CalendarService,
     private configService: ConfigService
   ) {
     this.bookInfos$ = this.hotelService.getBookInfoSource();
@@ -195,7 +197,19 @@ export class HotelRoomBookedinfosComponent implements OnInit {
     this.isShowChangeDateComp = true;
   }
   async onConfirm() {
+    console.log("onConfirm dorefresh");
     await this.doRefresh();
+  }
+  async onOpenCalendar(checkInDate: string) {
+    const days = await this.hotelService.openCalendar(
+      this.calendarService.generateDayModelByDate(checkInDate)
+    );
+    if (days && days.length) {
+      setTimeout(() => {
+        console.log("选择的日期", days, "onConfirm");
+        this.onConfirm();
+      }, 100);
+    }
   }
   onShowRoomDetail(bookInfo: PassengerBookInfo<IHotelInfo>) {
     this.curSelectedBookInfo = bookInfo;

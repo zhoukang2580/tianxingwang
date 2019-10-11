@@ -1,8 +1,8 @@
 <div class='content' [class.show]='show'>
   <div class='check-in-out'>
-    <div class='date'>
+    <div class='date' (click)='onOpenCalendar()'>
       <span>{{getDate(checkInDate)}}</span>
-      <span (click)='openCalendar()'>
+      <span >
         <ion-text color='medium'>({{getDayDesc(checkInDate)}})</ion-text><strong>入住</strong>
         <ion-text color='medium'>></ion-text>
       </span>

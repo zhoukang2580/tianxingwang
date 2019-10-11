@@ -11,6 +11,7 @@ import * as moment from "moment";
 export class ChangeRoomplanDateComponent implements OnInit {
   @Output() close: EventEmitter<any>;
   @Output() confirm: EventEmitter<any>;
+  @Output() openCalendar: EventEmitter<any>;
   checkInDate: string;
   checkOutDate: string;
   show = false;
@@ -20,6 +21,7 @@ export class ChangeRoomplanDateComponent implements OnInit {
   ) {
     this.close = new EventEmitter();
     this.confirm = new EventEmitter();
+    this.openCalendar = new EventEmitter();
   }
   getDate(date: string) {
     if (date) {
@@ -36,8 +38,10 @@ export class ChangeRoomplanDateComponent implements OnInit {
     }
   }
   onConfirm() {
-    this.onClose();
     this.confirm.emit();
+    setTimeout(() => {
+      this.onClose();
+    }, 200);
   }
   onAddCheckInDays(days: number, evt: CustomEvent) {
     evt.stopPropagation();
@@ -87,15 +91,7 @@ export class ChangeRoomplanDateComponent implements OnInit {
       this.show = true;
     }, 200);
   }
-  async openCalendar() {
-    const days = await this.hotelService.openCalendar(
-      this.calendarService.generateDayModelByDate(this.checkInDate)
-    );
-    if (days && days.length) {
-      setTimeout(() => {
-        console.log("选择的日期", days, "onConfirm");
-        this.onConfirm();
-      }, 100);
-    }
+  async onOpenCalendar() {
+    this.openCalendar.emit(this.checkInDate);
   }
 }
