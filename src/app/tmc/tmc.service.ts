@@ -1091,6 +1091,11 @@ export class InitialBookDtoModel {
   Tmc: TmcEntity;
   PayTypes: any;
   IllegalReasons: string[];
+  RoomPlans: {
+    ClientId: string;
+    GuaranteeStartTime: string;
+    GuaranteeEndTime: string;
+  }[];
   Staffs: {
     CredentialStaff: StaffEntity;
     Account: AccountEntity;

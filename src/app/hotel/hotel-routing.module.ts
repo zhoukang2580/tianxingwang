@@ -8,7 +8,8 @@ export const routes: Routes = [
   },
   { path: 'hotel-city', loadChildren: './hotel-city/hotel-city.module#HotelCityPageModule' },
   { path: 'hotel-list', loadChildren: './hotel-list/hotel-list.module#HotelListPageModule' },
-  { path: 'hotel-detail', loadChildren: './hotel-detail/hotel-detail.module#HotelDetailPageModule' }
+  { path: 'hotel-detail', loadChildren: './hotel-detail/hotel-detail.module#HotelDetailPageModule' },
+  { path: 'hotel-book', loadChildren: './book/book.module#BookPageModule' }
 ];
 @NgModule({
   declarations: [],

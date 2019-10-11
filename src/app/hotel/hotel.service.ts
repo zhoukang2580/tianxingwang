@@ -7,7 +7,7 @@ import { IdentityService } from "./../services/identity/identity.service";
 import { BehaviorSubject } from "rxjs";
 import { Injectable } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
-import { PassengerBookInfo, TmcService } from "../tmc/tmc.service";
+import { PassengerBookInfo, TmcService, InitialBookDtoModel } from "../tmc/tmc.service";
 import { Subject, combineLatest } from "rxjs";
 import { StaffService } from "../hr/staff.service";
 import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
@@ -33,6 +33,7 @@ import { RoomPlanEntity } from "./models/RoomPlanEntity";
 import { HotelPolicyModel } from "./models/HotelPolicyModel";
 import { HotelSupplierType } from "./models/HotelSupplierType";
 import { RoomPlanRuleType } from "./models/RoomPlanRuleType";
+import { OrderBookDto } from '../order/models/OrderBookDto';
 export class SearchHotelModel {
   checkInDate: string;
   checkOutDate: string;
@@ -350,6 +351,9 @@ export class HotelService {
       this.setBookInfos(bookInfos);
     }
   }
+  removeAllBookInfos(){
+    this.setBookInfos([]);
+  }
   getBookInfos() {
     return this.bookInfos || [];
   }
@@ -658,6 +662,49 @@ export class HotelService {
           return [];
         })
       );
+  }
+  async getInitializeBookDto(
+    bookDto: OrderBookDto
+  ): Promise<InitialBookDtoModel> {
+    const req = new RequestEntity();
+    req.Method = "TmcApiBookUrl-Hotel-Initialize";
+    req.Data = bookDto;
+    req.IsShowLoading = true;
+    req.Timeout = 60;
+    return this.apiService
+      .getPromiseData<InitialBookDtoModel>(req)
+      .then(res => {
+        res.IllegalReasons = res.IllegalReasons || [];
+        res.Insurances = res.Insurances || {};
+        res.ServiceFees = res.ServiceFees || ({} as any);
+        res.Staffs = res.Staffs || [];
+        res.Staffs = res.Staffs.map(it => {
+          return {
+            ...it,
+            CredentialStaff: { ...it } as any
+          };
+        });
+        res.Tmc = res.Tmc || ({} as any);
+        res.TravelFrom = res.TravelFrom || ({} as any);
+        return res;
+      });
+  }
+  async dismissAllTopOverlays() {
+    let i = 10;
+    let top = await this.modalCtrl.getTop();
+    while (top && --i > 0) {
+      await top.dismiss().catch(_ => {});
+      top = await this.modalCtrl.getTop();
+    }
+  }
+  async onBook(bookDto: OrderBookDto): Promise<{ TradeNo: string }> {
+    const req = new RequestEntity();
+    req.Method = "TmcApiBookUrl-Hotel-Book";
+    bookDto.Channel = "Mobile";
+    req.Data = bookDto;
+    req.IsShowLoading = true;
+    req.Timeout = 60;
+    return this.apiService.getPromiseData<{ TradeNo: string }>(req);
   }
 }
 export interface IHotelInfo {

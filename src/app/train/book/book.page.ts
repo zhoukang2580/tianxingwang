@@ -100,12 +100,38 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     private tmcService: TmcService,
     private router: Router,
     private payService: PayService,
-    private flydayService: CalendarService
+    private calendarService: CalendarService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
   back() {
     this.navCtrl.back();
+  }
+  async doRefresh() {
+    try {
+      if (this.ionRefresher) {
+        this.ionRefresher.complete();
+        this.ionRefresher.disabled = true;
+        setTimeout(() => {
+          this.ionRefresher.disabled = false;
+        }, 300);
+      }
+      this.error = "";
+      this.identity = await this.identityService.getIdentityAsync();
+      this.bookInfos = this.trainService
+        .getBookInfos()
+        .filter(it => !!it.bookInfo);
+      this.initialBookDto = await this.getInitializeBookDto();
+      if (!this.initialBookDto) {
+        this.error = "初始化失败";
+        return "";
+      }
+      this.tmc = this.initialBookDto.Tmc;
+      await this.initializeViewModel();
+    } catch (e) {
+      console.log(e);
+      this.error = e;
+    }
   }
   private async getInitializeBookDto() {
     // const mock = await this.storage.get("mock-initialBookDto-train");
@@ -153,32 +179,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       });
     }
   }
-  async doRefresh() {
-    try {
-      if (this.ionRefresher) {
-        this.ionRefresher.complete();
-        this.ionRefresher.disabled = true;
-        setTimeout(() => {
-          this.ionRefresher.disabled = false;
-        }, 300);
-      }
-      this.error = "";
-      this.identity = await this.identityService.getIdentityAsync();
-      this.bookInfos = this.trainService
-        .getBookInfos()
-        .filter(it => !!it.bookInfo);
-      this.initialBookDto = await this.getInitializeBookDto();
-      if (!this.initialBookDto) {
-        this.error = "初始化失败";
-        return "";
-      }
-      this.tmc = this.initialBookDto.Tmc;
-      await this.initializeViewModel();
-    } catch (e) {
-      console.log(e);
-      this.error = e;
-    }
-  }
+
   private async initializeViewModel() {
     this.viewModel = {} as any;
     this.viewModel.bookDto = this.orderBookDto;
@@ -340,7 +341,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
               isTravelNumber: n == "TravelNumber",
               canSelect: n == "TravelNumber",
               isDisabled: !!(this.viewModel.travelForm && n == "TravelNumber")
-            } as TmcOutNumberInfo;
+            } as ITmcOutNumberInfo;
           });
 
         combineInfo.addContacts = [];
@@ -545,7 +546,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     if (!train) {
       return "";
     }
-    const day = this.flydayService.generateDayModel(moment(train.StartTime));
+    const day = this.calendarService.generateDayModel(moment(train.StartTime));
     return `${day.date} ${day.dayOfWeekName}`;
   }
   getServiceFee(item: IPassengerBookInfo) {
@@ -1011,7 +1012,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       info.vmCredential = credential;
     }
   }
-  async onSelectTravelNumber(arg: TmcOutNumberInfo, item: IPassengerBookInfo) {
+  async onSelectTravelNumber(arg: ITmcOutNumberInfo, item: IPassengerBookInfo) {
     if (
       !arg.canSelect ||
       !arg.travelUrlInfos ||
@@ -1053,7 +1054,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
   }
   isShowApprove() {}
 }
-interface TmcOutNumberInfo {
+interface ITmcOutNumberInfo {
   key: string;
   label: string;
   required: boolean;
@@ -1081,7 +1082,7 @@ export interface IBookTrainViewModel {
     checked?: boolean;
   }[];
 }
-export interface IPassengerBookInfo {
+interface IPassengerBookInfo {
   isNotWhitelist?: boolean;
   vmCredential: CredentialsEntity;
   credential: CredentialsEntity;
@@ -1121,7 +1122,7 @@ export interface IPassengerBookInfo {
     Type: TaskType;
     approvers: StaffApprover[];
   }[];
-  tmcOutNumberInfos: TmcOutNumberInfo[];
+  tmcOutNumberInfos: ITmcOutNumberInfo[];
   credentialsRequested?: boolean;
   isOtherIllegalReason?: boolean;
   isShowFriendlyReminder?: boolean;

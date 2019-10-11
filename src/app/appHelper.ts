@@ -153,7 +153,7 @@ export class AppHelper {
 
   static async dismissAlertLayer() {
     try {
-      let i = 3;
+      let i = 5;
       let a = await this.alertController.getTop();
       while (a && --i > 0) {
         await a.dismiss();

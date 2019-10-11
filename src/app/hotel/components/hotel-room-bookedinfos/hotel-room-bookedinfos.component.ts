@@ -1,3 +1,4 @@
+import { Router } from "@angular/router";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { HotelEntity } from "./../../models/HotelEntity";
 import { switchMap, map, tap } from "rxjs/operators";
@@ -41,7 +42,8 @@ export class HotelRoomBookedinfosComponent implements OnInit {
     private modalCtrl: ModalController,
     private hotelService: HotelService,
     private calendarService: CalendarService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private router: Router
   ) {
     this.bookInfos$ = this.hotelService.getBookInfoSource();
   }
@@ -187,7 +189,10 @@ export class HotelRoomBookedinfosComponent implements OnInit {
     }
     this.changeDateBookInfo = null;
   }
-  async nextStep() {}
+  async nextStep() {
+    await this.router.navigate([AppHelper.getRoutePath("hotel-book")]);
+    await this.hotelService.dismissAllTopOverlays();
+  }
   onChangeDate(bookInfo: PassengerBookInfo<IHotelInfo>) {
     this.curSelectedBookInfo = bookInfo;
     console.log("onChangeDate", bookInfo);
@@ -228,7 +233,7 @@ export class HotelRoomBookedinfosComponent implements OnInit {
     return true;
   }
   async ngOnInit() {
-    this.config = await this.configService.get();
+    this.config = await this.configService.get().catch(_ => null);
   }
   @HostListener("click")
   closePriceDetail() {
