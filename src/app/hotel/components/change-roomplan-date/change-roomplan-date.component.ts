@@ -1,7 +1,7 @@
 import { HotelService } from "./../../hotel.service";
 import { CalendarService } from "./../../../tmc/calendar.service";
 import { EventEmitter } from "@angular/core";
-import { Component, OnInit, Output, Input } from "@angular/core";
+import { Component, OnInit, Output, HostListener } from "@angular/core";
 import * as moment from "moment";
 @Component({
   selector: "app-change-roomplan-date",
@@ -13,6 +13,7 @@ export class ChangeRoomplanDateComponent implements OnInit {
   @Output() confirm: EventEmitter<any>;
   checkInDate: string;
   checkOutDate: string;
+  show = false;
   constructor(
     private calendarService: CalendarService,
     private hotelService: HotelService
@@ -38,28 +39,42 @@ export class ChangeRoomplanDateComponent implements OnInit {
     this.onClose();
     this.confirm.emit();
   }
-  onAddCheckInDays(days: number) {
-    this.checkInDate = moment(this.checkInDate)
+  onAddCheckInDays(days: number, evt: CustomEvent) {
+    evt.stopPropagation();
+    const checkInDate = moment(this.checkInDate)
       .add(days, "days")
       .format("YYYY-MM-DD");
-    this.checkOutDate = moment(this.checkOutDate)
+    const checkOutDate = moment(this.checkOutDate)
       .add(days, "days")
       .format("YYYY-MM-DD");
+    this.hotelService.setSearchHotelModel({
+      ...this.hotelService.getSearchHotelModel(),
+      checkInDate,
+      checkOutDate
+    });
   }
-  onAddCheckOutDays(days: number) {
-    if (this.calcNights() === 1) {
+  onAddCheckOutDays(days: number, evt: CustomEvent) {
+    evt.stopPropagation();
+    if (days < 0 && this.calcNights() === 1) {
       return;
     }
-    this.checkOutDate = moment(this.checkOutDate)
+    const checkOutDate = moment(this.checkOutDate)
       .add(days, "days")
       .format("YYYY-MM-DD");
+    this.hotelService.setSearchHotelModel({
+      ...this.hotelService.getSearchHotelModel(),
+      checkOutDate
+    });
   }
   calcNights() {
-    return moment(this.checkOutDate).date() - moment(this.checkInDate).date();
+    const m0 = moment(this.checkInDate);
+    const m1 = moment(this.checkOutDate);
+    return m1.diff(m0, "days");
   }
   isDateEnabled() {
     return +moment(this.checkInDate) >= +moment();
   }
+  @HostListener("click")
   onClose() {
     this.close.emit();
   }
@@ -68,5 +83,19 @@ export class ChangeRoomplanDateComponent implements OnInit {
       this.checkInDate = s.checkInDate;
       this.checkOutDate = s.checkOutDate;
     });
+    setTimeout(() => {
+      this.show = true;
+    }, 200);
+  }
+  async openCalendar() {
+    const days = await this.hotelService.openCalendar(
+      this.calendarService.generateDayModelByDate(this.checkInDate)
+    );
+    if (days && days.length) {
+      setTimeout(() => {
+        console.log("选择的日期", days, "onConfirm");
+        this.onConfirm();
+      }, 100);
+    }
   }
 }

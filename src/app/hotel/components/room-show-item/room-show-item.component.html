@@ -9,9 +9,14 @@
         <span>{{getDayDesc(bookInfo?.bookInfo?.roomPlan?.EndDate)}}</span>
         <ion-button fill='clear' size='small' color='secondary'>修改</ion-button>
       </div>
+      <ion-label class='price' *ngIf='bookInfo?.bookInfo?.roomPlan?.TotalAmount as m' text-end color='danger'>
+        共<small>￥</small>{{m}}<ion-text color='secondary' (click)='onShowPriceDetail()'>
+          明细
+        </ion-text>
+      </ion-label>
       <div class="dashed-line"></div>
       <div (click)='onShowRoomDetail()'>
-        <div><strong>豪华大床房(官方直营)</strong></div>
+        <div><strong>{{bookInfo?.bookInfo?.hotelRoom?.Name}}</strong></div>
         <div class='desc'>
           <ul>
             <ng-container *ngFor='let it of items;let last=last;'>

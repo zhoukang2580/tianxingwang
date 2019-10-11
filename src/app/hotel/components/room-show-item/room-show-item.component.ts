@@ -8,7 +8,9 @@ import {
   OnChanges,
   SimpleChanges,
   Output,
-  EventEmitter
+  EventEmitter,
+  HostBinding,
+  HostListener
 } from "@angular/core";
 import { PassengerBookInfo } from "src/app/tmc/tmc.service";
 import * as moment from "moment";
@@ -19,9 +21,12 @@ import * as moment from "moment";
   styleUrls: ["./room-show-item.component.scss"]
 })
 export class RoomShowItemComponent implements OnInit, OnChanges {
+  @Output() showPriceDetailEvt: EventEmitter<any>;
   @Output() changeDate: EventEmitter<any>;
   @Output() showRoomDetail: EventEmitter<any>;
   @Input() bookInfo: PassengerBookInfo<IHotelInfo>;
+  @HostBinding("class.show-price-detail")
+  isShowPriceDetail = false;
   items: string[] = [
     // "大床",
     // "可住2人",
@@ -36,6 +41,18 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
   ) {
     this.changeDate = new EventEmitter();
     this.showRoomDetail = new EventEmitter();
+    this.showPriceDetailEvt = new EventEmitter();
+  }
+  @HostListener("click")
+  private closePriceDetail() {
+    this.showPriceDetailEvt.emit({ isShow: false, bookInfo: this.bookInfo });
+    this.isShowPriceDetail = false;
+  }
+  onShowPriceDetail() {
+    setTimeout(() => {
+      this.isShowPriceDetail = true;
+      this.showPriceDetailEvt.emit({ isShow: true, bookInfo: this.bookInfo });
+    }, 100);
   }
   getDate(date: string) {
     if (date) {
@@ -56,9 +73,9 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
       this.bookInfo.bookInfo.roomPlan.BeginDate &&
       this.bookInfo.bookInfo.roomPlan.EndDate
     ) {
-      return (
-        moment(this.bookInfo.bookInfo.roomPlan.EndDate).date() -
-        moment(this.bookInfo.bookInfo.roomPlan.BeginDate).date()
+      return moment(this.bookInfo.bookInfo.roomPlan.EndDate).diff(
+        this.bookInfo.bookInfo.roomPlan.BeginDate,
+        "days"
       );
     }
   }

@@ -7,26 +7,35 @@ import { AppHelper } from "src/app/appHelper";
 import { Observable, Subscription } from "rxjs";
 import { HotelService, IHotelInfo } from "./../../hotel.service";
 import { ModalController, IonRefresher } from "@ionic/angular";
-import { Component, OnInit, ViewChild } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  HostBinding,
+  HostListener
+} from "@angular/core";
 import { PassengerBookInfo } from "src/app/tmc/tmc.service";
 import { RoomPlanEntity } from "../../models/RoomPlanEntity";
 import { RoomEntity } from "../../models/RoomEntity";
-
+import * as moment from "moment";
 @Component({
   selector: "app-hotel-room-bookedinfos",
   templateUrl: "./hotel-room-bookedinfos.component.html",
   styleUrls: ["./hotel-room-bookedinfos.component.scss"]
 })
-export class HotelRoomBookedinfosComponent implements OnInit{
+export class HotelRoomBookedinfosComponent implements OnInit {
   private changeDateBookInfo: PassengerBookInfo<IHotelInfo>;
   private hotelDetailSub = Subscription.EMPTY;
   bookInfos$: Observable<PassengerBookInfo<IHotelInfo>[]>;
   curSelectedRoom: RoomEntity;
+  curSelectedBookInfo: PassengerBookInfo<IHotelInfo>;
   isShowRoomDetails = false;
   isShowChangeDateComp = false;
+  @HostBinding("class.show-price-detail") isShowPriceDetail = false;
   roomImages: string[];
   config: ConfigEntity;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
+  dates: { date: string; price: string }[] = [];
   constructor(
     private modalCtrl: ModalController,
     private hotelService: HotelService,
@@ -64,7 +73,49 @@ export class HotelRoomBookedinfosComponent implements OnInit{
       this.hotelService.removeBookInfo(bookInfo);
     }
   }
-  async doRefresh(changeDateBookInfo: PassengerBookInfo<IHotelInfo> = null) {
+  calcNights() {
+    if (
+      this.curSelectedBookInfo &&
+      this.curSelectedBookInfo.bookInfo &&
+      this.curSelectedBookInfo.bookInfo.roomPlan &&
+      this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate &&
+      this.curSelectedBookInfo.bookInfo.roomPlan.EndDate
+    ) {
+      return moment(this.curSelectedBookInfo.bookInfo.roomPlan.EndDate).diff(
+        this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate,
+        "days"
+      );
+    }
+  }
+  onShowPriceDetails(evt: {
+    isShow: boolean;
+    bookInfo: PassengerBookInfo<IHotelInfo>;
+  }) {
+    this.curSelectedBookInfo = evt.bookInfo;
+    if (evt.isShow) {
+      this.dates = [];
+      const n = this.calcNights();
+      if (
+        this.curSelectedBookInfo &&
+        this.curSelectedBookInfo.bookInfo &&
+        this.curSelectedBookInfo.bookInfo.roomPlan &&
+        this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate
+      ) {
+        for (let i = 0; i < n; i++) {
+          this.dates.push({
+            date: moment(this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate)
+              .add(i, "days")
+              .format("YYYY-MM-DD"),
+            price: this.hotelService.getAvgPrice(
+              this.curSelectedBookInfo.bookInfo.roomPlan
+            )
+          });
+        }
+      }
+    }
+    this.isShowPriceDetail = evt.isShow;
+  }
+  async doRefresh() {
     if (this.ionRefresher) {
       this.ionRefresher.complete();
     }
@@ -74,16 +125,12 @@ export class HotelRoomBookedinfosComponent implements OnInit{
     if (this.hotelDetailSub) {
       this.hotelDetailSub.unsubscribe();
     }
-    const bookinfos = this.hotelService.getBookInfos();
-    if (!changeDateBookInfo) {
-      changeDateBookInfo = bookinfos[0];
-    }
-    if (!changeDateBookInfo || !changeDateBookInfo.bookInfo) {
+    if (!this.changeDateBookInfo || !this.changeDateBookInfo.bookInfo) {
       return;
     }
     this.hotelDetailSub = this.hotelService
       .getHotelDetail({
-        Hotel: changeDateBookInfo.bookInfo.hotelEntity
+        Hotel: this.changeDateBookInfo.bookInfo.hotelEntity
       } as any)
       .pipe(
         map(res => res && res.Data),
@@ -93,58 +140,65 @@ export class HotelRoomBookedinfosComponent implements OnInit{
       )
       .subscribe(async hotel => {
         if (hotel) {
-          this.checkIfBookedRoomPlan(
-            hotel.Hotel,
-            changeDateBookInfo ? [changeDateBookInfo] : bookinfos
-          );
+          this.checkIfBookedRoomPlan(hotel.Hotel);
         }
       });
   }
-  private checkIfBookedRoomPlan(
-    hotel: HotelEntity,
-    changeDateBookInfos: PassengerBookInfo<IHotelInfo>[]
-  ) {
+  private checkIfBookedRoomPlan(hotel: HotelEntity) {
     const priceHasChanged: { roomPlan: RoomPlanEntity }[] = [];
-    changeDateBookInfos.forEach(changeDateBookInfo => {
-      if (changeDateBookInfo && changeDateBookInfo.bookInfo) {
-        if (changeDateBookInfo.bookInfo.roomPlan && hotel && hotel.Rooms) {
-          for (let i = 0; i < hotel.Rooms.length; i++) {
-            const r = hotel.Rooms[i];
-            const rp = r.RoomPlans.find(
-              it => it.Id == changeDateBookInfo.bookInfo.roomPlan.Id
-            );
-            if (rp) {
-              const old = this.hotelService.getAvgPrice(
-                changeDateBookInfo.bookInfo.roomPlan
-              );
-              const cur = this.hotelService.getAvgPrice(rp);
-              if (old !== cur) {
-                priceHasChanged.push({ roomPlan: rp });
-              }
-              changeDateBookInfo.bookInfo.hotelRoom = r;
-              changeDateBookInfo.bookInfo.roomPlan = rp;
+    const changeDateBookInfo = this.changeDateBookInfo;
+    if (!changeDateBookInfo || !this.changeDateBookInfo.bookInfo) {
+      return;
+    }
+    if (changeDateBookInfo && changeDateBookInfo.bookInfo) {
+      if (changeDateBookInfo.bookInfo.roomPlan && hotel && hotel.Rooms) {
+        const r = hotel.Rooms.find(
+          it => it.Id == changeDateBookInfo.bookInfo.hotelRoom.Id
+        );
+        if (r) {
+          const rp = r.RoomPlans.find(
+            it => it.Number == changeDateBookInfo.bookInfo.roomPlan.Number
+          );
+          if (rp) {
+            const old = changeDateBookInfo.bookInfo.roomPlan.TotalAmount;
+            const cur = rp.TotalAmount;
+            if (old !== cur) {
+              priceHasChanged.push({ roomPlan: rp });
             }
+            changeDateBookInfo.bookInfo.hotelRoom = r;
+            changeDateBookInfo.bookInfo.roomPlan = rp;
+            const bookinfos = this.hotelService.getBookInfos().map(it => {
+              if (it.id == changeDateBookInfo.id) {
+                it = changeDateBookInfo;
+              }
+              return it;
+            });
+            this.hotelService.setBookInfos(bookinfos);
           }
         }
       }
-    });
-    // this.hotelService.setBookInfos(this.hotelService.getBookInfos());
-    if (priceHasChanged.length) {
-      AppHelper.alert("价格有变动");
     }
+    if (priceHasChanged.length) {
+      AppHelper.alert(
+        `总价格有变动，当前总价${this.changeDateBookInfo.bookInfo.roomPlan.TotalAmount}`
+      );
+    }
+    this.changeDateBookInfo = null;
   }
   async nextStep() {}
   onChangeDate(bookInfo: PassengerBookInfo<IHotelInfo>) {
+    this.curSelectedBookInfo = bookInfo;
+    console.log("onChangeDate", bookInfo);
     if (bookInfo) {
       this.changeDateBookInfo = bookInfo;
     }
     this.isShowChangeDateComp = true;
   }
   async onConfirm() {
-    await this.doRefresh(this.changeDateBookInfo);
-    this.changeDateBookInfo = null;
+    await this.doRefresh();
   }
   onShowRoomDetail(bookInfo: PassengerBookInfo<IHotelInfo>) {
+    this.curSelectedBookInfo = bookInfo;
     this.curSelectedRoom = bookInfo.bookInfo.hotelRoom;
     this.curSelectedRoom.Hotel =
       this.curSelectedRoom.Hotel || bookInfo.bookInfo.hotelEntity;
@@ -161,5 +215,9 @@ export class HotelRoomBookedinfosComponent implements OnInit{
   }
   async ngOnInit() {
     this.config = await this.configService.get();
+  }
+  @HostListener("click")
+  closePriceDetail() {
+    this.isShowPriceDetail = false;
   }
 }

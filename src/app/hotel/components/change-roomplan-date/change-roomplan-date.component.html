@@ -1,17 +1,17 @@
-<div>
+<div class='content' [class.show]='show'>
   <div class='check-in-out'>
     <div class='date'>
       <span>{{getDate(checkInDate)}}</span>
-      <span>
+      <span (click)='openCalendar()'>
         <ion-text color='medium'>({{getDayDesc(checkInDate)}})</ion-text><strong>入住</strong>
         <ion-text color='medium'>></ion-text>
       </span>
     </div>
     <div class="btns">
-      <div class='start' [class.disabled]='!isDateEnabled()' (click)='onAddCheckInDays(-1)'>
+      <div class='start' [class.disabled]='!isDateEnabled()' (click)='onAddCheckInDays(-1,$event)'>
         前一天
       </div>
-      <div class='end' (click)='onAddCheckInDays(1)'>
+      <div class='end' (click)='onAddCheckInDays(1,$event)'>
         后一天
       </div>
     </div>
@@ -26,12 +26,14 @@
     </div>
     <div class="btns">
       <div class='start icon' [class.disabled]='calcNights()==1'>
-        <ion-icon name="remove-circle-outline" mode='ios' color='{{calcNights()==1?"medium":"secondary"}}' (click)='onAddCheckOutDays(-1)'></ion-icon>
+        <ion-icon name="remove-circle-outline" mode='ios' color='{{calcNights()==1?"medium":"secondary"}}'
+          (click)='onAddCheckOutDays(-1,$event)'></ion-icon>
       </div>
       <div class='end icon'>
-        <ion-icon name="add-circle-outline" mode='ios' color='secondary' (click)='onAddCheckOutDays(1)'></ion-icon>
+        <ion-icon name="add-circle-outline" mode='ios' color='secondary' (click)='onAddCheckOutDays(1,$event)'>
+        </ion-icon>
       </div>
     </div>
   </div>
+  <ion-button expand='block' color='secondary' (click)='onConfirm()'>确定</ion-button>
 </div>
-<ion-button expand='block' color='secondary'>确定</ion-button>

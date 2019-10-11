@@ -520,7 +520,7 @@ export class HotelService {
       this.getSearchHotelModel().destinationCity &&
       this.getSearchHotelModel().destinationCity.Code;
     hotelquery.Tag = this.getSearchHotelModel().tag;
-
+    req.IsShowLoading = true;
     req.Data = {
       ...hotelquery,
       travelformid: AppHelper.getQueryParamers()["travelformid"] || "",

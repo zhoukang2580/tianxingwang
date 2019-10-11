@@ -60,8 +60,17 @@ export class SelectDateComponent implements OnInit, OnDestroy {
     this.checkYms();
   }
   initCurYearMonthCalendar() {
-    this.curSelectedYear = new Date().getFullYear() + "";
-    this.curSelectedMonth = new Date().getMonth() + 1;
+    console.log("goArrivalTime", this.goArrivalTime);
+    if (!this.goArrivalTime) {
+      this.curSelectedYear = new Date().getFullYear() + "";
+      this.curSelectedMonth = new Date().getMonth() + 1;
+    } else {
+      const m = moment(
+        +this.goArrivalTime ? +this.goArrivalTime * 1000 : this.goArrivalTime
+      );
+      this.curSelectedYear = m.year() + "";
+      this.curSelectedMonth = m.month() + 1;
+    }
     this.generateYearNthMonthCalendar();
   }
   checkYms() {

@@ -1,3 +1,4 @@
+<div class="back-drop" *ngIf='isShowPriceDetail'></div>
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
@@ -12,12 +13,12 @@
   <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'></ion-refresher>
   <ion-item-group *ngFor='let bookInfo of bookInfos$|async'>
     <ng-container *ngIf='bookInfo?.bookInfo'>
-      <ion-item-divider color='primary' sticky>
+      <ion-item-divider sticky>
         <ion-label color='dark'>{{bookInfo?.passenger?.Name}}{{bookInfo?.credential?.Number}}</ion-label>
         <ion-icon name='trash' color='danger' (click)='onRemoveBookInfo(bookInfo)' slot='end' margin-end></ion-icon>
       </ion-item-divider>
       <app-room-show-item [bookInfo]='bookInfo' (changeDate)='onChangeDate(bookInfo)'
-        (showRoomDetail)='onShowRoomDetail(bookInfo)'>
+        (showRoomDetail)='onShowRoomDetail(bookInfo)' (showPriceDetailEvt)='onShowPriceDetails($event)'>
       </app-room-show-item>
     </ng-container>
   </ion-item-group>
@@ -30,7 +31,16 @@
   </ion-toolbar>
 </ion-footer>
 <app-room-detail [room]='curSelectedRoom' [roomImages]='roomImages' (close)='isShowRoomDetails=false' class="ion-page"
-  *ngIf='isShowRoomDetails'></app-room-detail>
-<app-change-roomplan-date (close)='isShowChangeDateComp=false' [class.show]='isShowChangeDateComp'
-  *ngIf='isShowChangeDateComp'>
+  [class.show]='isShowRoomDetails'></app-room-detail>
+<app-change-roomplan-date (close)='isShowChangeDateComp=false' *ngIf='isShowChangeDateComp' (confirm)='onConfirm()'>
 </app-change-roomplan-date>
+<div [class.show]='isShowPriceDetail' class="price-list">
+  <ion-item-divider>{{calcNights()}}晚,共<small>￥</small>{{curSelectedBookInfo?.bookInfo?.roomPlan?.TotalAmount}}
+  </ion-item-divider>
+  <ul>
+    <li *ngFor='let d of dates'>
+      <span>{{d.date}}</span>
+      <ion-label margin-start>1&times;<small>￥</small>{{d.price}}</ion-label>
+    </li>
+  </ul>
+</div>
