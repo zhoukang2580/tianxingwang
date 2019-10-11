@@ -48,16 +48,7 @@
       </ion-item-group>
       <ion-item-group>
         <ion-item-divider>酒店预订信息:</ion-item-divider>
-        <ion-item>
-          <div style='width: 100%;padding: 0.5em 0.25em '>
-            <strong>
-              <ion-label style="padding: 0.5em 0">
-                {{getDate(combindInfo?.bookInfo?.bookInfo?.roomPlan)}}
-              </ion-label>
-            </strong>
-            <app-room-show-item [bookInfo]='combindInfo'></app-room-show-item>
-          </div>
-        </ion-item>
+        <app-room-show-item [bookInfo]='combindInfo.bookInfo' [disabledEdit]='true'></app-room-show-item>
       </ion-item-group>
       <ion-item-group>
         <ion-item-divider>旅客信息：</ion-item-divider>
@@ -155,7 +146,7 @@
         </div>
       </ion-item>
     </ion-item-group>
-  </ng-container>
+  </ng-container> 
   <ng-template #retryTempl>
     <ion-row style="position: relative;top:35%">
       <ion-col text-center>
@@ -180,3 +171,13 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-footer>
+<div [class.show]='isShowPriceDetail' class="price-list">
+  <ion-item-divider>{{calcNights()}}晚,共<small>￥</small>{{curSelectedBookInfo?.bookInfo?.roomPlan?.TotalAmount}}
+  </ion-item-divider>
+  <ul>
+    <li *ngFor='let d of dates'>
+      <span>{{d.date}}</span>
+      <ion-label margin-start>1&times;<small>￥</small>{{d.price}}</ion-label>
+    </li>
+  </ul>
+</div>

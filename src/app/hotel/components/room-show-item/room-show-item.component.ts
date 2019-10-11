@@ -25,8 +25,9 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
   @Output() changeDate: EventEmitter<any>;
   @Output() showRoomDetail: EventEmitter<any>;
   @Input() bookInfo: PassengerBookInfo<IHotelInfo>;
-  @HostBinding("class.show-price-detail")
-  isShowPriceDetail = false;
+  @Input() disabledEdit: boolean;
+  @HostBinding("class.show-price-detail") isShowPriceDetail = false;
+
   items: string[] = [
     // "大床",
     // "可住2人",
@@ -86,7 +87,12 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
     this.showRoomDetail.emit();
   }
   ngOnChanges(changes: SimpleChanges) {
-    if (changes && changes.bookInfo && changes.bookInfo.currentValue) {
+    if (
+      changes &&
+      changes.bookInfo &&
+      changes.bookInfo.currentValue &&
+      changes.bookInfo.currentValue.bookInfo
+    ) {
       this.initItems();
     }
   }

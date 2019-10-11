@@ -1,10 +1,19 @@
 .date,
+.price-detail,
 .desc {
   display: flex;
   align-items: center;
   ion-button {
     margin-left: auto;
   }
+}
+.price-detail ion-label {
+  margin-left: auto;
+}
+.hotel-name {
+  margin-left: 0.7em;
+  margin-bottom: -0.5em;
+  padding-top: 0.5em;
 }
 .price small {
   font-size: 0.6rem;
@@ -43,4 +52,7 @@
 }
 ion-card {
   margin: 0.5em;
+  ion-card-content {
+    padding: 0.5em;
+  }
 }

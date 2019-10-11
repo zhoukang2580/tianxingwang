@@ -7,7 +7,11 @@ import { IdentityService } from "./../services/identity/identity.service";
 import { BehaviorSubject } from "rxjs";
 import { Injectable } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
-import { PassengerBookInfo, TmcService, InitialBookDtoModel } from "../tmc/tmc.service";
+import {
+  PassengerBookInfo,
+  TmcService,
+  InitialBookDtoModel
+} from "../tmc/tmc.service";
 import { Subject, combineLatest } from "rxjs";
 import { StaffService } from "../hr/staff.service";
 import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
@@ -33,7 +37,7 @@ import { RoomPlanEntity } from "./models/RoomPlanEntity";
 import { HotelPolicyModel } from "./models/HotelPolicyModel";
 import { HotelSupplierType } from "./models/HotelSupplierType";
 import { RoomPlanRuleType } from "./models/RoomPlanRuleType";
-import { OrderBookDto } from '../order/models/OrderBookDto';
+import { OrderBookDto } from "../order/models/OrderBookDto";
 export class SearchHotelModel {
   checkInDate: string;
   checkOutDate: string;
@@ -320,6 +324,7 @@ export class HotelService {
         this.selfCredentials &&
         this.selfCredentials.find(c => c.Type == CredentialsType.IdCard);
       const i: PassengerBookInfo<IHotelInfo> = {
+        id: AppHelper.uuid(),
         passenger: staff,
         credential:
           IdCredential ||
@@ -329,6 +334,7 @@ export class HotelService {
           new CredentialsEntity()
       };
       this.addBookInfo(i);
+      this.isInitializingSelfBookInfos = false;
     }
   }
   addBookInfo(bookInfo: PassengerBookInfo<IHotelInfo>) {
@@ -351,7 +357,7 @@ export class HotelService {
       this.setBookInfos(bookInfos);
     }
   }
-  removeAllBookInfos(){
+  removeAllBookInfos() {
     this.setBookInfos([]);
   }
   getBookInfos() {

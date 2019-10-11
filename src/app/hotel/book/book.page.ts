@@ -20,7 +20,7 @@ import {
   ModalController
 } from "@ionic/angular";
 import { NavController } from "@ionic/angular";
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit, ViewChild, HostListener } from "@angular/core";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { OrderBookDto } from "src/app/order/models/OrderBookDto";
 import { AppHelper } from "src/app/appHelper";
@@ -74,6 +74,9 @@ export class BookPage implements OnInit {
   checkPayCountIntervalId: any;
   checkPayCount = 3;
   checkPayCountIntervalTime = 5 * 1000;
+  curSelectedBookInfo: PassengerBookInfo<IHotelInfo>;
+  isShowPriceDetail = false;
+  dates: { date: string; price: string }[] = [];
   constructor(
     private navCtrl: NavController,
     private identityService: IdentityService,
@@ -88,7 +91,52 @@ export class BookPage implements OnInit {
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
-
+  calcNights() {
+    if (
+      this.curSelectedBookInfo &&
+      this.curSelectedBookInfo.bookInfo &&
+      this.curSelectedBookInfo.bookInfo.roomPlan &&
+      this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate &&
+      this.curSelectedBookInfo.bookInfo.roomPlan.EndDate
+    ) {
+      return moment(this.curSelectedBookInfo.bookInfo.roomPlan.EndDate).diff(
+        this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate,
+        "days"
+      );
+    }
+  }
+  onShowPriceDetails(evt: {
+    isShow: boolean;
+    bookInfo: PassengerBookInfo<IHotelInfo>;
+  }) {
+    this.curSelectedBookInfo = evt.bookInfo;
+    if (evt.isShow) {
+      this.dates = [];
+      const n = this.calcNights();
+      if (
+        this.curSelectedBookInfo &&
+        this.curSelectedBookInfo.bookInfo &&
+        this.curSelectedBookInfo.bookInfo.roomPlan &&
+        this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate
+      ) {
+        for (let i = 0; i < n; i++) {
+          this.dates.push({
+            date: moment(this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate)
+              .add(i, "days")
+              .format("YYYY-MM-DD"),
+            price: this.hotelService.getAvgPrice(
+              this.curSelectedBookInfo.bookInfo.roomPlan
+            )
+          });
+        }
+      }
+    }
+    this.isShowPriceDetail = evt.isShow;
+  }
+  @HostListener("click")
+  closePriceDetail() {
+    this.isShowPriceDetail = false;
+  }
   back() {
     this.navCtrl.back();
   }
@@ -107,6 +155,7 @@ export class BookPage implements OnInit {
         .getBookInfos()
         .filter(it => !!it.bookInfo);
       this.initialBookDto = await this.getInitializeBookDto();
+      console.log("getInitializeBookDto", this.initialBookDto);
       if (!this.initialBookDto) {
         this.error = "初始化失败";
         return "";
