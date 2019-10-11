@@ -20,7 +20,13 @@ import {
   ModalController
 } from "@ionic/angular";
 import { NavController } from "@ionic/angular";
-import { Component, OnInit, ViewChild, HostListener } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  HostListener,
+  HostBinding
+} from "@angular/core";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { OrderBookDto } from "src/app/order/models/OrderBookDto";
 import { AppHelper } from "src/app/appHelper";
@@ -75,7 +81,7 @@ export class BookPage implements OnInit {
   checkPayCount = 3;
   checkPayCountIntervalTime = 5 * 1000;
   curSelectedBookInfo: PassengerBookInfo<IHotelInfo>;
-  isShowPriceDetail = false;
+  @HostBinding("class.show-price-detail") isShowPriceDetail = false;
   dates: { date: string; price: string }[] = [];
   constructor(
     private navCtrl: NavController,

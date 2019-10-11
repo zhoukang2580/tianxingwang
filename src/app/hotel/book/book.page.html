@@ -1,3 +1,4 @@
+<div class="back-drop" *ngIf='isShowPriceDetail'></div>
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
@@ -48,7 +49,8 @@
       </ion-item-group>
       <ion-item-group>
         <ion-item-divider>酒店预订信息:</ion-item-divider>
-        <app-room-show-item [bookInfo]='combindInfo.bookInfo' [disabledEdit]='true'></app-room-show-item>
+        <app-room-show-item [bookInfo]='combindInfo.bookInfo' (showPriceDetailEvt)='onShowPriceDetails($event)'
+          [disabledEdit]='true'></app-room-show-item>
       </ion-item-group>
       <ion-item-group>
         <ion-item-divider>旅客信息：</ion-item-divider>
@@ -146,7 +148,7 @@
         </div>
       </ion-item>
     </ion-item-group>
-  </ng-container> 
+  </ng-container>
   <ng-template #retryTempl>
     <ion-row style="position: relative;top:35%">
       <ion-col text-center>
