@@ -5,7 +5,7 @@
         <ion-icon name='arrow-back'></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>{{hotel?.Name}}</ion-title>
+    <ion-title [class.has-add-passenger]='(isShowAddPassenger$|async)'>{{hotel?.Name}}</ion-title>
     <ion-buttons slot='end'>
       <ion-button fill='clear' color='secondary' (click)='filterPassengerPolicy()' size='small'>
         <ion-text class='xs-font-size'>过滤差标</ion-text>
