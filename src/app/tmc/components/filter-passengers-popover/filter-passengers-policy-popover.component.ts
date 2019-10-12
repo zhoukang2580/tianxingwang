@@ -13,6 +13,7 @@ export class FilterPassengersPolicyComponent implements OnInit {
   @Input() bookInfos$: Observable<PassengerBookInfo<any>[]>;
   selectedItem: PassengerBookInfo<any>;
   isOnlyMatchPolicy: boolean;
+  isShowOnlyMatchSwitch = true;
   constructor(
     private popoverCtrl: PopoverController,
     private staffService: StaffService

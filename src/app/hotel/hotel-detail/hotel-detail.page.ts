@@ -152,6 +152,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       component: FilterPassengersPolicyComponent,
       translucent: true,
       componentProps: {
+        isShowOnlyMatchSwitch: false,
         bookInfos$: this.hotelService.getBookInfoSource()
       }
       // backdropDismiss: false
