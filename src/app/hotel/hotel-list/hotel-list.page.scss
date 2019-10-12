@@ -29,3 +29,6 @@ ion-content {
   //   margin-top: 56px;
   // }
 }
+ion-toolbar.ios {
+  --border-width: 0;
+}

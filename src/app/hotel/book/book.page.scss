@@ -1,3 +1,7 @@
+ion-item-divider[sticky] {
+  border-left: 4px solid var(--ion-color-secondary);
+  z-index: 1000;
+}
 .price-list {
   background: white;
   position: fixed;

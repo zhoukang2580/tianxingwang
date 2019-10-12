@@ -24,7 +24,7 @@
         <ion-button slot='end' no-margin [disabled]='color=="danger"' expand='full'>
           <ion-text color='light'>{{color=='danger'?"满房":"预订"}}</ion-text>
         </ion-button>
-        <ion-text color='danger' *ngIf='roomPlan?.PaymentType==HotelPaymentType.SelfPay'>在线付</ion-text>
+        <ion-text color='danger' *ngIf='roomPlan?.PaymentType==HotelPaymentType.SelfPay'>现付</ion-text>
         <ion-text color='secondary' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Prepay'>预付</ion-text>
         <ion-text color='dark' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Settle'>月结</ion-text>
       </div>

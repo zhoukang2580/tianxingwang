@@ -94,36 +94,7 @@ export class HotelService {
     });
   }
   getRules(roomPlan: RoomPlanEntity) {
-    let result = "";
-    if (!roomPlan) {
-      return result;
-    }
-    if (
-      roomPlan.SupplierType == HotelSupplierType.Company ||
-      roomPlan.SupplierType == HotelSupplierType.Group ||
-      roomPlan.SupplierType == HotelSupplierType.Agent
-    ) {
-      result = "规则";
-    } else if (
-      roomPlan.RoomPlanRules &&
-      (roomPlan.RoomPlanRules.reduce((acc, it) => {
-        if (it.Type == RoomPlanRuleType.CancelNo) {
-          acc++;
-        }
-        return acc;
-      }, 0) > 0 ||
-        roomPlan.RoomPlanRules.reduce((acc, it) => {
-          if (it.TypeName && it.TypeName.startsWith("Cancel")) {
-            acc++;
-          }
-          return acc;
-        }, 0) == 0)
-    ) {
-      result = "不可取消";
-    } else {
-      result = "限时取消";
-    }
-    return result;
+    return this.getRoomRateRule(roomPlan);
   }
   getAvgPrice(plan: RoomPlanEntity) {
     if (plan && plan.VariablesJsonObj) {
@@ -132,6 +103,25 @@ export class HotelService {
     if (plan && plan.Variables) {
       plan.VariablesJsonObj = JSON.parse(plan.Variables);
       return plan.VariablesJsonObj["AvgPrice"];
+    }
+  }
+ private getRoomRateRule(plan: RoomPlanEntity) {
+    // 限时取消 不可取消 规则
+    if (plan && plan.VariablesJsonObj) {
+      return plan.VariablesJsonObj["RoomRateRule"];
+    }
+    if (plan && plan.Variables) {
+      plan.VariablesJsonObj = JSON.parse(plan.Variables);
+      return plan.VariablesJsonObj["RoomRateRule"];
+    }
+  }
+  getBreakfast(plan: RoomPlanEntity) {
+    if (plan && plan.VariablesJsonObj) {
+      return plan.VariablesJsonObj["Breakfast"];
+    }
+    if (plan && plan.Variables) {
+      plan.VariablesJsonObj = JSON.parse(plan.Variables);
+      return plan.VariablesJsonObj["Breakfast"];
     }
   }
   getFullHouseOrCanBook(plan: RoomPlanEntity): string {
@@ -191,28 +181,6 @@ export class HotelService {
       room.RoomDetails &&
       room.RoomDetails.find(it => it.Tag == "BedType")
     );
-  }
-  getBreakfast(plan: RoomPlanEntity) {
-    if (plan && plan.RoomPlanPrices && plan.RoomPlanPrices.length) {
-      const minBreakfast = plan.RoomPlanPrices.map(it => it.Breakfast).sort(
-        (a, b) => +a - +b
-      )[0];
-      if (
-        plan.RoomPlanPrices.every(it => it.Breakfast == minBreakfast) &&
-        minBreakfast == `${plan.Breakfast}`
-      ) {
-        if (minBreakfast == "0") {
-          return "无早";
-        } else {
-          return `${plan.Breakfast}份早餐`;
-        }
-      } else {
-        if (minBreakfast == "0") {
-          return "部分早餐";
-        }
-        return `部分${minBreakfast}份早餐`;
-      }
-    }
   }
   async getConditions(forceFetch = false) {
     if (

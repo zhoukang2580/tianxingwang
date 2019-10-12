@@ -1,3 +1,4 @@
+import { PayService } from "src/app/services/pay/pay.service";
 import { Router } from "@angular/router";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { RoomPlanEntity } from "./../models/RoomPlanEntity";
@@ -93,7 +94,8 @@ export class BookPage implements OnInit {
     private modalCtrl: ModalController,
     private staffService: StaffService,
     private calendarService: CalendarService,
-    private router: Router
+    private router: Router,
+    private payService: PayService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -147,6 +149,7 @@ export class BookPage implements OnInit {
     this.navCtrl.back();
   }
   async doRefresh() {
+    await this.payService.selectPayWay();
     try {
       if (this.ionRefresher) {
         this.ionRefresher.complete();

@@ -94,9 +94,9 @@ export class HotelQueryComponent implements OnInit {
         if (!conditions.Tmc) {
           conditions.Tmc = await this.tmcService.getTmc().catch(_ => null);
         }
-        if (!environment.production) {
-          await this.storage.set("mock-hotel-condition", conditions);
-        }
+        // if (!environment.production) {
+        //   await this.storage.set("mock-hotel-condition", conditions);
+        // }
       }
     }
   }
