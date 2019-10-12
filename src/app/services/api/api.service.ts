@@ -285,6 +285,20 @@ export class ApiService {
         const formObj = Object.keys(req)
           .map(k => `${k}=${encodeURIComponent(req[k])}`)
           .join("&");
+        if (environment.enableLocalData) {
+          return from(this.storage.get(md5(req.Method + req.Data))).pipe(switchMap((r:IResponse<any>) => {
+            if (r&&r.Status) {
+              return of(r);
+            }
+            return this.http.post(url, `${formObj}&Sign=${this.getSign(req)}`, {
+              headers: { "content-type": "application/x-www-form-urlencoded" },
+              observe: "body"
+            }).pipe(
+              switchMap(r =>
+                from(this.storage.set(md5(req.Method + req.Data), r)).pipe(map(_ => r)))
+            );
+          }))
+        }
         return this.http.post(url, `${formObj}&Sign=${this.getSign(req)}`, {
           headers: { "content-type": "application/x-www-form-urlencoded" },
           observe: "body"
@@ -373,7 +387,7 @@ export class ApiService {
   getSign(req: RequestEntity) {
     return md5(
       `${typeof req.Data === "string" ? req.Data : JSON.stringify(req.Data)}${
-        req.Timestamp
+      req.Timestamp
       }${req.Token}`
     ) as string;
   }

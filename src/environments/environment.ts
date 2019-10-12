@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   localhost: false,
-  disableNetWork: !true
+  disableNetWork: !true,
+  enableLocalData:true
 };
 
 /*
