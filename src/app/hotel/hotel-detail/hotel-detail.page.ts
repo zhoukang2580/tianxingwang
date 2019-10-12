@@ -162,7 +162,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     const data = d && (d.data as PassengerBookInfo<IHotelInfo>);
     return data;
   }
-  async filterPassengerPolicy(passengerId: string) {
+  async filterPassengerPolicy(passengerId: string = "") {
     if (!passengerId) {
       const data = await this.getFilteredPassenger();
       if (!data) {
