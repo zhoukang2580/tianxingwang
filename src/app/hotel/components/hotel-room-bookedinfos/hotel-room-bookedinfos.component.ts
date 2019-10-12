@@ -77,16 +77,15 @@ export class HotelRoomBookedinfosComponent implements OnInit {
       this.hotelService.removeBookInfo(bookInfo);
     }
   }
-  calcNights() {
+  calcNights(info: PassengerBookInfo<IHotelInfo>) {
     if (
-      this.curSelectedBookInfo &&
-      this.curSelectedBookInfo.bookInfo &&
-      this.curSelectedBookInfo.bookInfo.roomPlan &&
-      this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate &&
-      this.curSelectedBookInfo.bookInfo.roomPlan.EndDate
+      info &&
+      info.bookInfo.roomPlan &&
+      info.bookInfo.roomPlan.BeginDate &&
+      info.bookInfo.roomPlan.EndDate
     ) {
-      return moment(this.curSelectedBookInfo.bookInfo.roomPlan.EndDate).diff(
-        this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate,
+      return moment(info.bookInfo.roomPlan.EndDate).diff(
+        info.bookInfo.roomPlan.BeginDate,
         "days"
       );
     }
@@ -98,7 +97,7 @@ export class HotelRoomBookedinfosComponent implements OnInit {
     this.curSelectedBookInfo = evt.bookInfo;
     if (evt.isShow) {
       this.dates = [];
-      const n = this.calcNights();
+      const n = this.calcNights(evt.bookInfo);
       if (
         this.curSelectedBookInfo &&
         this.curSelectedBookInfo.bookInfo &&
@@ -193,11 +192,11 @@ export class HotelRoomBookedinfosComponent implements OnInit {
     await this.router.navigate([AppHelper.getRoutePath("hotel-book")]);
     await this.hotelService.dismissAllTopOverlays();
   }
-  onChangeDate(bookInfo: PassengerBookInfo<IHotelInfo>) {
-    this.curSelectedBookInfo = bookInfo;
-    console.log("onChangeDate", bookInfo);
-    if (bookInfo) {
-      this.changeDateBookInfo = bookInfo;
+  onChangeDate(evt: { bookInfo: PassengerBookInfo<IHotelInfo> }) {
+    this.curSelectedBookInfo = evt.bookInfo;
+    console.log("onChangeDate", evt.bookInfo);
+    if (evt.bookInfo) {
+      this.changeDateBookInfo = evt.bookInfo;
     }
     this.isShowChangeDateComp = true;
   }

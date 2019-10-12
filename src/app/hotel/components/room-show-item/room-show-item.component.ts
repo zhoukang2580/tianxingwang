@@ -81,10 +81,10 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
     }
   }
   onChangeDate() {
-    this.changeDate.emit();
+    this.changeDate.emit({bookInfo: this.bookInfo});
   }
   onShowRoomDetail() {
-    this.showRoomDetail.emit();
+    this.showRoomDetail.emit({bookInfo: this.bookInfo});
   }
   ngOnChanges(changes: SimpleChanges) {
     if (

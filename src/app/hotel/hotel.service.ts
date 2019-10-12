@@ -105,7 +105,7 @@ export class HotelService {
       return plan.VariablesJsonObj["AvgPrice"];
     }
   }
- private getRoomRateRule(plan: RoomPlanEntity) {
+  private getRoomRateRule(plan: RoomPlanEntity) {
     // 限时取消 不可取消 规则
     if (plan && plan.VariablesJsonObj) {
       return plan.VariablesJsonObj["RoomRateRule"];
@@ -301,6 +301,7 @@ export class HotelService {
   addBookInfo(bookInfo: PassengerBookInfo<IHotelInfo>) {
     console.log("hotel,addbookinfo", bookInfo);
     if (bookInfo) {
+      bookInfo.id = AppHelper.uuid();
       const bookInfos = this.getBookInfos();
       bookInfos.push(bookInfo);
       this.setBookInfos(bookInfos);

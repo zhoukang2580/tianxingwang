@@ -36,7 +36,7 @@
   (openCalendar)='onOpenCalendar($event)'>
 </app-change-roomplan-date>
 <div [class.show]='isShowPriceDetail' class="price-list">
-  <ion-item-divider>{{calcNights()}}晚,共<small>￥</small>{{curSelectedBookInfo?.bookInfo?.roomPlan?.TotalAmount}}
+  <ion-item-divider>{{calcNights(curSelectedBookInfo)}}晚,共<small>￥</small>{{curSelectedBookInfo?.bookInfo?.roomPlan?.TotalAmount}}
   </ion-item-divider>
   <ul>
     <li *ngFor='let d of dates'>

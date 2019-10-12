@@ -1,3 +1,4 @@
+import { HotelPolicyModel } from "./../models/HotelPolicyModel";
 import { ConfigEntity } from "./../../services/config/config.entity";
 import { HotelRoomBookedinfosComponent } from "./../components/hotel-room-bookedinfos/hotel-room-bookedinfos.component";
 import { LanguageHelper } from "./../../languageHelper";
@@ -408,6 +409,8 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     if (!evt || !evt.room || !evt.roomPlan) {
       return;
     }
+    const removedBookInfos: PassengerBookInfo<IHotelInfo>[] = [];
+    const policies = await this.getPolicy();
     const bookInfos = this.hotelService.getBookInfos();
     if (bookInfos.length === 0) {
       const a = await AppHelper.alert(
@@ -422,21 +425,57 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     } else {
       const s = this.hotelService.getSearchHotelModel();
       bookInfos.forEach(info => {
-        info.bookInfo = {
+        let bookInfo: IHotelInfo;
+        bookInfo = {
           hotelEntity: this.hotel,
           hotelRoom: evt.room,
           roomPlan: evt.roomPlan,
           tripType: s.tripType || TripType.checkIn,
           id: AppHelper.uuid()
         };
+        if (
+          !this.checkIfPassengerCanBookRoomPlan(
+            policies,
+            evt.roomPlan,
+            info.passenger.AccountId
+          )
+        ) {
+          bookInfo = null;
+        }
+        if (info.bookInfo && !bookInfo) {
+          removedBookInfos.push(info);
+        }
+        info.bookInfo = bookInfo;
       });
       this.bookedRoomPlan = null;
       const m = await this.modalCtrl.getTop();
       if (m) {
         m.dismiss();
       }
+      if (removedBookInfos.length) {
+        AppHelper.alert(
+          `${removedBookInfos
+            .map(it => it.credential.Name)
+            .join(",")}预订信息因差标变化已被删除`
+        );
+      }
       await this.onShowBookInfos();
     }
+  }
+  private checkIfPassengerCanBookRoomPlan(
+    policies: HotelPassengerModel[],
+    roomPlan: RoomPlanEntity,
+    passengerAccountId: string
+  ) {
+    if (!roomPlan || !passengerAccountId) {
+      return false;
+    }
+    const p = policies.find(it => it.PassengerKey == passengerAccountId);
+    const policy = p.HotelPolicies.find(it => it.Number == roomPlan.Number);
+    if (!policy.IsAllowBook || this.hotelService.isFull(roomPlan)) {
+      return false;
+    }
+    return true;
   }
   private async onShowBookInfos() {
     const m = await this.modalCtrl.create({
