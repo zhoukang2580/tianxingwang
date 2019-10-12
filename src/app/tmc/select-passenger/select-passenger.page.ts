@@ -106,7 +106,8 @@ export class SelectPassengerPage
     private tmcService: TmcService,
     private flightService: FlightService,
     private trainService: TrainService,
-    private hotelService: HotelService
+    private hotelService: HotelService,
+    private route: ActivatedRoute
   ) {
     this.removeitem = new EventEmitter();
   }
@@ -136,17 +137,19 @@ export class SelectPassengerPage
     this.removeitemSubscription.unsubscribe();
   }
   async ngOnInit() {
-    this.getIdentityTypes();
-    this.initPassengerTypes();
-    this.initCredentialsRemarks();
-    this.initRemoveitem();
-    this.initBookInfos();
-    if (this.bookInfos$) {
-      this.selectedPasengersNumber$ = this.bookInfos$.pipe(
-        map(infos => infos.length)
-      );
-    }
-    this.isCanDeactive = false;
+    this.route.queryParamMap.subscribe(_ => {
+      this.getIdentityTypes();
+      this.initPassengerTypes();
+      this.initCredentialsRemarks();
+      this.initRemoveitem();
+      this.initBookInfos();
+      if (this.bookInfos$) {
+        this.selectedPasengersNumber$ = this.bookInfos$.pipe(
+          map(infos => infos.length)
+        );
+      }
+      this.isCanDeactive = false;
+    });
   }
   private initRemoveitem() {
     this.removeitemSubscription = this.removeitem.subscribe(info => {
@@ -177,6 +180,11 @@ export class SelectPassengerPage
       this.tmcService.getFlightHotelTrainType() == FlightHotelTrainType.Train
     ) {
       this.bookInfos$ = this.trainService.getBookInfoSource();
+    }
+    if (
+      this.tmcService.getFlightHotelTrainType() == FlightHotelTrainType.Hotel
+    ) {
+      this.bookInfos$ = this.hotelService.getBookInfoSource();
     }
   }
   private initCredentialsRemarks() {
