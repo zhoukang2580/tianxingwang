@@ -11,7 +11,7 @@ import { CredentialsEntity } from "../../models/CredentialsEntity";
 export class BookCredentialCompComponent implements OnInit {
   @Input() credential: CredentialsEntity;
   @Input() credentials: CredentialsEntity[];
-  @Input() isFlightTrainHotel: "flight" | "train" | "hotel";
+  // @Input() isFlightTrainHotel: "flight" | "train" | "hotel";
   @Output() savecredential: EventEmitter<any>;
   @Output() modify: EventEmitter<any>;
   isModified = false;
@@ -40,6 +40,6 @@ export class BookCredentialCompComponent implements OnInit {
     this.savecredential.emit(this.credential);
   }
   ngOnInit() {
-    this.isFlightTrainHotel = "train";
+    // this.isFlightTrainHotel = "train";
   }
 }
