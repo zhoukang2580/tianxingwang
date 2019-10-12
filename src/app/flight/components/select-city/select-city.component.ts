@@ -58,7 +58,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   segmentValue: "domestic" | "overseas" = "domestic";
   private isDataInit = false;
   @Input()
-  @HostBinding("@openclose")
+  // @HostBinding("@openclose")
   openclose = true;
   constructor(
     private plt: Platform,
