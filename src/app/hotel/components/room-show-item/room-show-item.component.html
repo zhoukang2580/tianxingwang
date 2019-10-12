@@ -1,6 +1,6 @@
 <div style="width: 100%">
   <ion-card>
-    <div *ngIf='disabledEdit' class="hotel-name">
+    <div  class="hotel-name">
       酒店名称：<strong>{{bookInfo?.bookInfo?.hotelEntity?.Name}}</strong>
     </div>
     <ion-card-content>
@@ -13,7 +13,7 @@
         <ion-button fill='clear' size='small' color='secondary' *ngIf='!disabledEdit'>修改</ion-button>
       </div>
       <div class='price-detail'>
-        <span *ngIf='disabledEdit'>
+        <span >
           {{bookInfo?.bookInfo?.roomPlan?.Name}}
         </span>
         <ion-label class='price' *ngIf='bookInfo?.bookInfo?.roomPlan?.TotalAmount as m' text-end color='danger'>

@@ -90,6 +90,13 @@ export class LazyloadimageDirective
           this.loadingImage || AppHelper.getDefaultLoadingImage();
       }
       this.setLoadImage();
+    } else {
+      if (!this.image) {
+        await this.getImageEle();
+      }
+      if (this.image && this.defaultImage) {
+        this.image.src = this.defaultImage;
+      }
     }
   }
   private getImageEle() {
