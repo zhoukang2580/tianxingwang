@@ -133,15 +133,8 @@ export class HotelService {
       return plan.VariablesJsonObj["FullHouseOrCanBook"];
     }
   }
-  isFull(p: RoomPlanEntity | string, room: RoomEntity) {
-    let plan: RoomPlanEntity;
-    if (typeof p === "string") {
-      plan =
-        room && room.RoomPlans && room.RoomPlans.find(it => it.Number == p);
-    } else if (p instanceof RoomPlanEntity) {
-      plan = p;
-    }
-    const res = this.getFullHouseOrCanBook(plan);
+  isFull(p: RoomPlanEntity) {
+    const res = this.getFullHouseOrCanBook(p);
     return res && res.toLowerCase().includes("full");
   }
   getRoomArea(room: RoomEntity) {

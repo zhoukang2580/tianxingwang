@@ -31,7 +31,7 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
   @Output() bookRoom: EventEmitter<any>;
   HotelBookType = HotelBookType;
   HotelPaymentType = HotelPaymentType;
-  color$ = of({});
+  @Input() color$ = of({});
   constructor(
     private hotelService: HotelService,
     private staffService: StaffService
@@ -46,22 +46,6 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
   }
   getAvgPrice(plan: RoomPlanEntity) {
     return this.hotelService.getAvgPrice(plan);
-  }
-  private getFullHouseOrCanBook(plan: RoomPlanEntity): string {
-    return this.hotelService.getFullHouseOrCanBook(plan);
-  }
-  private isFull(p: RoomPlanEntity | string) {
-    return this.hotelService.isFull(p, this.room);
-  }
-  private async getPolicy() {
-    let roomPlans: RoomPlanEntity[] = [];
-    if (this.hotel && this.hotel.Rooms) {
-      this.hotel.Rooms.forEach(r => {
-        roomPlans = roomPlans.concat(r.RoomPlans);
-      });
-      return this.hotelService.getHotelPolicy(roomPlans, this.hotel);
-    }
-    return [];
   }
   getRenovationDate(room: RoomEntity) {
     return this.hotelService.getRenovationDate(room);
@@ -81,76 +65,76 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
   onBook() {
     this.bookRoom.emit({ roomPlan: this.roomPlan, room: this.room });
   }
-  private async initFilterPolicy() {
-    const isSelf = await this.staffService.isSelfBookType();
-    const bookInfos = this.hotelService.getBookInfos();
-    if (isSelf) {
-      if (bookInfos.length) {
-        if (bookInfos[0] && bookInfos[0].passenger) {
-          this.filterPassengerPolicy(
-            this.hotelService.getBookInfos()[0].passenger.AccountId
-          );
-        }
-      } else {
-        this.initUnFilterColors();
-      }
-    } else {
-      this.initUnFilterColors();
-    }
-  }
-  private initUnFilterColors() {
-    let roomPlans: RoomPlanEntity[] = [];
-    if (this.hotel && this.hotel.Rooms) {
-      this.hotel.Rooms.forEach(r => {
-        roomPlans = roomPlans.concat(r.RoomPlans);
-      });
-    }
-    const colors = {};
-    roomPlans.forEach(p => {
-      let color = "success";
-      if (this.isFull(p.Number)) {
-        color = "danger";
-      }
-      colors[p.Number] = color;
-    });
-    this.color$ = of(colors);
-  }
-  async filterPassengerPolicy(passengerId: string) {
-    const hotelPolicy = await this.getPolicy();
-    this.color$ = this.hotelService.getBookInfoSource().pipe(
-      map(_ => {
-        const colors = {};
-        console.log("hotelPolicy", hotelPolicy, this.room);
-        if (hotelPolicy) {
-          const policies = hotelPolicy.find(
-            it => it.PassengerKey == passengerId
-          );
-          if (policies) {
-            policies.HotelPolicies.forEach(p => {
-              let color = "";
-              if (p.IsAllowBook) {
-                color = !p.Rules || !p.Rules.length ? "success" : "warning";
-              } else {
-                color = "danger";
-              }
-              if (this.isFull(p.Number)) {
-                color = "danger";
-              }
-              colors[p.Number] = color;
-            });
-          }
-        }
-        return colors;
-      }),
-      tap(colors => {
-        console.log("colors", colors);
-      })
-    );
-  }
+  // private async initFilterPolicy() {
+  //   const isSelf = await this.staffService.isSelfBookType();
+  //   const bookInfos = this.hotelService.getBookInfos();
+  //   if (isSelf) {
+  //     if (bookInfos.length) {
+  //       if (bookInfos[0] && bookInfos[0].passenger) {
+  //         this.filterPassengerPolicy(
+  //           this.hotelService.getBookInfos()[0].passenger.AccountId
+  //         );
+  //       }
+  //     } else {
+  //       this.initUnFilterColors();
+  //     }
+  //   } else {
+  //     this.initUnFilterColors();
+  //   }
+  // }
+  // private initUnFilterColors() {
+  //   let roomPlans: RoomPlanEntity[] = [];
+  //   if (this.hotel && this.hotel.Rooms) {
+  //     this.hotel.Rooms.forEach(r => {
+  //       roomPlans = roomPlans.concat(r.RoomPlans);
+  //     });
+  //   }
+  //   const colors = {};
+  //   roomPlans.forEach(p => {
+  //     let color = "success";
+  //     if (this.isFull(p.Number)) {
+  //       color = "danger";
+  //     }
+  //     colors[p.Number] = color;
+  //   });
+  //   this.color$ = of(colors);
+  // }
+  // async filterPassengerPolicy(passengerId: string) {
+  //   const hotelPolicy = await this.getPolicy();
+  //   this.color$ = this.hotelService.getBookInfoSource().pipe(
+  //     map(_ => {
+  //       const colors = {};
+  //       console.log("hotelPolicy", hotelPolicy, this.room);
+  //       if (hotelPolicy) {
+  //         const policies = hotelPolicy.find(
+  //           it => it.PassengerKey == passengerId
+  //         );
+  //         if (policies) {
+  //           policies.HotelPolicies.forEach(p => {
+  //             let color = "";
+  //             if (p.IsAllowBook) {
+  //               color = !p.Rules || !p.Rules.length ? "success" : "warning";
+  //             } else {
+  //               color = "danger";
+  //             }
+  //             if (this.isFull(p.Number)) {
+  //               color = "danger";
+  //             }
+  //             colors[p.Number] = color;
+  //           });
+  //         }
+  //       }
+  //       return colors;
+  //     }),
+  //     tap(colors => {
+  //       console.log("colors", colors);
+  //     })
+  //   );
+  // }
   ngOnInit() {}
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.room && changes.room.firstChange) {
-      this.initFilterPolicy();
+      // this.initFilterPolicy();
     }
   }
 }

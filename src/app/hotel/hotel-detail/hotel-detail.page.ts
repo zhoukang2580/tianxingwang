@@ -25,7 +25,8 @@ import {
   Platform,
   IonList,
   IonToolbar,
-  ModalController
+  ModalController,
+  PopoverController
 } from "@ionic/angular";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { Storage } from "@ionic/storage";
@@ -36,6 +37,7 @@ import { StaffService } from "src/app/hr/staff.service";
 import { PassengerBookInfo } from "src/app/tmc/tmc.service";
 import { TripType } from "src/app/tmc/models/TripType";
 import { environment } from "src/environments/environment";
+import { FilterPassengersPolicyComponent } from "src/app/tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
 type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
 
 @Component({
@@ -62,9 +64,12 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   queryModel: SearchHotelModel;
   isShowRoomImages = false;
   isShowRoomDetails = false;
+  isShowAddPassenger$ = of(false);
+  selectedPassengersNumbers$ = of(0);
   isMd = false;
   roomImages: string[] = [];
   curSelectedRoom: RoomEntity = {} as any;
+  color$ = of({});
   hotelDetailSub = Subscription.EMPTY;
   queryModelSub = Subscription.EMPTY;
   hotel: HotelEntity;
@@ -92,12 +97,119 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     private configService: ConfigService,
     private staffService: StaffService,
     private modalCtrl: ModalController,
-    plt: Platform
+    plt: Platform,
+    private popoverController: PopoverController
   ) {
     this.isMd = plt.is("android");
   }
   back() {
     this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
+  }
+  onSelectPassenger() {
+    this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
+  }
+  private async initFilterPolicy() {
+    const isSelf = await this.staffService.isSelfBookType();
+    const bookInfos = this.hotelService.getBookInfos();
+    if (isSelf) {
+      if (bookInfos.length) {
+        if (bookInfos[0] && bookInfos[0].passenger) {
+          this.filterPassengerPolicy(
+            this.hotelService.getBookInfos()[0].passenger.AccountId
+          );
+        }
+      } else {
+        this.initUnFilterColors();
+      }
+    } else {
+      const p = bookInfos.find(it => it.isFilteredPolicy);
+      if (p && p.passenger && p.passenger.AccountId) {
+        this.filterPassengerPolicy(p.passenger.AccountId);
+      } else {
+        this.initUnFilterColors();
+      }
+    }
+  }
+  private initUnFilterColors() {
+    let roomPlans: RoomPlanEntity[] = [];
+    if (this.hotel && this.hotel.Rooms) {
+      this.hotel.Rooms.forEach(r => {
+        roomPlans = roomPlans.concat(r.RoomPlans);
+      });
+    }
+    const colors = {};
+    roomPlans.forEach(p => {
+      let color = "success";
+      if (this.hotelService.isFull(p)) {
+        color = "danger";
+      }
+      colors[p.Number] = color;
+    });
+    this.color$ = of(colors);
+  }
+  private async getFilteredPassenger() {
+    const popover = await this.popoverController.create({
+      component: FilterPassengersPolicyComponent,
+      translucent: true,
+      componentProps: {
+        bookInfos$: this.hotelService.getBookInfoSource()
+      }
+      // backdropDismiss: false
+    });
+    await popover.present();
+    const d = await popover.onDidDismiss();
+    const data = d && (d.data as PassengerBookInfo<IHotelInfo>);
+    return data;
+  }
+  async filterPassengerPolicy(passengerId: string) {
+    if (!passengerId) {
+      const data = await this.getFilteredPassenger();
+      if (!data) {
+        return;
+      }
+      passengerId = data.passenger.AccountId;
+    }
+    const hotelPolicy = await this.getPolicy();
+    this.color$ = this.hotelService.getBookInfoSource().pipe(
+      map(_ => {
+        const colors = {};
+        if (hotelPolicy) {
+          const policies = hotelPolicy.find(
+            it => it.PassengerKey == passengerId
+          );
+          if (policies) {
+            if (this.hotel && this.hotel.Rooms) {
+              this.hotel.Rooms.forEach(r => {
+                if (r.RoomPlans) {
+                  r.RoomPlans.forEach(plan => {
+                    const p = policies.HotelPolicies.find(
+                      it => it.Number == plan.Number
+                    );
+                    if (p) {
+                      let color = "";
+                      if (p.IsAllowBook) {
+                        color =
+                          !p.Rules || !p.Rules.length ? "success" : "warning";
+                      } else {
+                        color = "danger";
+                      }
+                      if (this.hotelService.isFull(plan)) {
+                        color = "danger";
+                      }
+                      colors[p.Number] = color;
+                    }
+                  });
+                }
+              });
+            }
+          }
+        }
+        return colors;
+      }),
+      tap(colors => {
+        console.log("colors", colors);
+      })
+    );
   }
   getWeekName(date: string) {
     if (date) {
@@ -106,6 +218,12 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     }
   }
   async ngOnInit() {
+    this.isShowAddPassenger$ = from(this.staffService.isSelfBookType()).pipe(
+      map(isSelf => !isSelf)
+    );
+    this.selectedPassengersNumbers$ = this.hotelService
+      .getBookInfoSource()
+      .pipe(map(infos => infos.length));
     this.queryModelSub = this.hotelService
       .getSearchHotelModelSource()
       .subscribe(m => {
@@ -190,6 +308,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
             this.hotelPolicy = await this.getPolicy();
             this.storage.set("mock-hotel-detail", this.hotel);
             await this.ionCnt.scrollToTop();
+            this.initFilterPolicy();
             this.checkIfBookedRoomPlan();
             setTimeout(() => {
               this.initRects();
@@ -297,7 +416,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       );
       if (a) {
         this.bookedRoomPlan = evt;
-        this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
+        this.onSelectPassenger();
       }
     } else {
       const s = this.hotelService.getSearchHotelModel();
@@ -386,6 +505,13 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       this.hotelDayPrice.Hotel.Rooms
     ) {
       this.hotelDayPrice.Hotel.Rooms.forEach(r => {
+        if (r.RoomPlans) {
+          r.RoomPlans.forEach(plan => {
+            if (!plan.Room) {
+              plan.Room = r;
+            }
+          });
+        }
         roomPlans = roomPlans.concat(r.RoomPlans);
       });
       return this.hotelService.getHotelPolicy(

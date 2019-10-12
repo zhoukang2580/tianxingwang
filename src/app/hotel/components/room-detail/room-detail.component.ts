@@ -51,16 +51,6 @@ export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
   getAvgPrice(plan: RoomPlanEntity) {
     return this.hotelService.getAvgPrice(plan);
   }
-  private getFullHouseOrCanBook(plan: RoomPlanEntity): string {
-    return this.hotelService.getFullHouseOrCanBook(plan);
-  }
-  private isFull(p: RoomPlanEntity | string) {
-    return this.hotelService.isFull(p, this.room);
-  }
-  private isCanBook(plan: RoomPlanEntity) {
-    const res = this.getFullHouseOrCanBook(plan);
-    return res && res.toLowerCase().includes("canbook");
-  }
   onBook(plan: RoomPlanEntity) {
     this.bookRoom.emit(plan);
   }
@@ -72,65 +62,11 @@ export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
     if (identity) {
       this.isAgent = identity.Numbers && !!identity.Numbers["AgentId"];
     }
-    this.initFilterPolicy();
-  }
-  private async initFilterPolicy() {
-    const isSelf = await this.staffService.isSelfBookType();
-    if (isSelf) {
-      const bookInfos = this.hotelService.getBookInfos();
-      if (bookInfos.length && bookInfos[0] && bookInfos[0].passenger) {
-        this.filterPassengerPolicy(
-          this.hotelService.getBookInfos()[0].passenger.AccountId
-        );
-      }
-    }
+
   }
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.hotelPolicy && changes.hotelPolicy.currentValue) {
-      this.initFilterPolicy();
     }
-  }
-  private async getPolicy() {
-    let roomPlans: RoomPlanEntity[] = [];
-    if (this.room && this.room.Hotel && this.room.Hotel.Rooms) {
-      this.room.Hotel.Rooms.forEach(r => {
-        roomPlans = roomPlans.concat(r.RoomPlans);
-      });
-      return this.hotelService.getHotelPolicy(roomPlans, this.room.Hotel);
-    }
-    return [];
-  }
-  async filterPassengerPolicy(passengerId: string) {
-    const hotelPolicy = await this.getPolicy();
-    this.color$ = this.hotelService.getBookInfoSource().pipe(
-      map(_ => {
-        const colors = {};
-        console.log("hotelPolicy", hotelPolicy);
-        if (hotelPolicy) {
-          const policies = hotelPolicy.find(
-            it => it.PassengerKey == passengerId
-          );
-          if (policies) {
-            policies.HotelPolicies.forEach(p => {
-              let color = "";
-              if (p.IsAllowBook) {
-                color = !p.Rules || !p.Rules.length ? "success" : "warning";
-              } else {
-                color = "danger";
-              }
-              if (this.isFull(p.Number)) {
-                color = "danger";
-              }
-              colors[p.Number] = color;
-            });
-          }
-        }
-        return colors;
-      }),
-      tap(colors => {
-        console.log("colors", colors);
-      })
-    );
   }
   ngAfterViewInit() {}
   onClose() {

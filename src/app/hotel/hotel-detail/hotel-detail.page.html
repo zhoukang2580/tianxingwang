@@ -6,6 +6,18 @@
       </ion-button>
     </ion-buttons>
     <ion-title>{{hotel?.Name}}</ion-title>
+    <ion-buttons slot='end'>
+      <ion-button fill='clear' color='secondary' (click)='filterPassengerPolicy()' size='small'>
+        <ion-text class='xs-font-size'>过滤差标</ion-text>
+      </ion-button>
+      <ion-button fill='clear' *ngIf='(isShowAddPassenger$|async)' color='secondary' size='small'
+        (click)='onSelectPassenger()'> 
+        <ion-text class='xs-font-size'>添加旅客</ion-text>
+        <ion-badge color='danger'>
+          <ion-text color='light' class='xs-font-size'>{{selectedPassengersNumbers$|async}}</ion-text>
+        </ion-badge>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
   <ion-toolbar #toolbarsegment>
     <ion-segment (ionChange)="segmentChanged($event)" color="secondary">
@@ -137,7 +149,8 @@
       </ion-item>
       <ng-container *ngIf='room["isShowRoomPlans"]'>
         <ion-item *ngFor='let plan of room.RoomPlans'>
-          <app-room-plan-item [room]='room' [roomPlan]='plan' [hotel]='hotel' (bookRoom)='onBookRoomPlan($event)'>
+          <app-room-plan-item [color$]='color$' [room]='room' [roomPlan]='plan' [hotel]='hotel'
+            (bookRoom)='onBookRoomPlan($event)'>
           </app-room-plan-item>
         </ion-item>
       </ng-container>
