@@ -7,10 +7,10 @@
     </ion-buttons>
     <ion-title [class.has-add-passenger]='(isShowAddPassenger$|async)'>{{hotel?.Name}}</ion-title>
     <ion-buttons slot='end'>
-      <ion-button fill='clear' color='secondary' (click)='filterPassengerPolicy()' size='small'>
+      <ion-button style="font-size: 0.6rem;" fill='clear' color='secondary' (click)='filterPassengerPolicy()' size='small'>
         <ion-text class='xs-font-size'>过滤差标</ion-text>
       </ion-button>
-      <ion-button fill='clear' *ngIf='(isShowAddPassenger$|async)' color='secondary' size='small'
+      <ion-button style="font-size: 0.6rem;" fill='clear' *ngIf='(isShowAddPassenger$|async)' color='secondary' size='small'
         (click)='onSelectPassenger()'> 
         <ion-text class='xs-font-size'>添加旅客</ion-text>
         <ion-badge color='danger'>
