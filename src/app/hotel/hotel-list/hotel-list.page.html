@@ -33,7 +33,7 @@
       <ion-list *ngIf='hotelDayPrices?.length else noMoreData' #hotellist class='hotel-list'>
         <ion-item *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
           <ion-thumbnail slot='start'>
-            <img [lazyloadImage]='item.Hotel?.FileName'  appLazyloadimage />
+            <img [lazyloadImage]='item.Hotel?.FileName' appLazyloadimage />
           </ion-thumbnail>
           <ion-label>
             <h3 class='name'>
@@ -50,7 +50,8 @@
             </h5>
             <h6 class='address-price'>
               <ion-label>{{item?.Hotel?.Address}}</ion-label>
-              <ion-text color='danger'>￥{{item?.Hotel?.VariablesJsonObj?.AvgPrice}}起</ion-text>
+              <ion-text color='danger'><small>￥</small> <strong>{{item?.Hotel?.VariablesJsonObj?.AvgPrice}}</strong>
+                <small>起</small> </ion-text>
             </h6>
           </ion-label>
         </ion-item>

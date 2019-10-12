@@ -86,6 +86,17 @@
     </ion-card>
   </ng-template>
   <ion-list class='room-list' #houseInfo>
+    <div style="font-size: 0.7rem;" margin-start>
+      <div>
+        <ion-text color='success'>绿色代表符合差标</ion-text>
+      </div>
+      <div>
+        <ion-text color='warning'>黄色代表违规可以预订</ion-text>
+      </div>
+      <div>
+        <ion-text color='danger'>红色代表违规不可预订</ion-text>
+      </div>
+    </div>
     <ion-item-divider sticky>房型信息</ion-item-divider>
     <ng-container *ngFor='let room of hotel?.Rooms'>
       <ion-item>
