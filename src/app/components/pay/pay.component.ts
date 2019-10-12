@@ -1,6 +1,6 @@
 import { LanguageHelper } from "src/app/languageHelper";
 import { AppHelper } from "src/app/appHelper";
-import { PopoverController } from "@ionic/angular";
+import { PopoverController, Platform } from "@ionic/angular";
 import { Component, OnInit } from "@angular/core";
 import { environment } from "src/environments/environment";
 export interface IPayWayItem {
@@ -15,7 +15,10 @@ export interface IPayWayItem {
 })
 export class PayComponent implements OnInit {
   payWays: IPayWayItem[];
-  constructor(private popoverController: PopoverController) {}
+  isIos=false;
+  constructor(private popoverController: PopoverController,plt:Platform) {
+    this.isIos=plt.is("ios");
+  }
   async onSelectPayWay(payWay: IPayWayItem) {
     this.payWays.forEach(it => {
       it.isChecked = it.value == payWay.value;

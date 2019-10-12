@@ -1,6 +1,9 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title text-center>
+    <ion-label *ngIf='isIos'>
+      请选择支付方式
+    </ion-label>
+    <ion-title text-center *ngIf='!isIos'>
       请选择支付方式
     </ion-title>
   </ion-toolbar>

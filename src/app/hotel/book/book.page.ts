@@ -717,10 +717,10 @@ export class BookPage implements OnInit {
     }
   }
   private async getInitializeBookDto() {
-    const mock = await this.storage.get("mock-initialBookDto-hotel");
-    if (mock) {
-      return mock;
-    }
+    // const mock = await this.storage.get("mock-initialBookDto-hotel");
+    // if (mock) {
+    //   return mock;
+    // }
     const bookDto = new OrderBookDto();
     bookDto.TravelFormId = AppHelper.getQueryParamers()["travelFormId"] || "";
     const infos = this.hotelService.getBookInfos();

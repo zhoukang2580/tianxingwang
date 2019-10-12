@@ -11,6 +11,9 @@ ion-footer ion-row ion-col {
     width: 1px;
   }
 }
+ion-toolbar.ios {
+  text-align: center;
+}
 ion-title {
   font-size: 0.8rem;
 }
