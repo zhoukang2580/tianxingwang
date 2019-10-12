@@ -1093,6 +1093,7 @@ export class InitialBookDtoModel {
   IllegalReasons: string[];
   RoomPlans: {
     ClientId: string;
+    PassengerClientId: string;
     GuaranteeStartTime: string;
     GuaranteeEndTime: string;
   }[];

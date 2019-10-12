@@ -24,10 +24,12 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
   @Output() showPriceDetailEvt: EventEmitter<any>;
   @Output() changeDate: EventEmitter<any>;
   @Output() showRoomDetail: EventEmitter<any>;
+  @Output() arrivalHotel: EventEmitter<any>;
   @Input() bookInfo: PassengerBookInfo<IHotelInfo>;
   @Input() disabledEdit: boolean;
   @HostBinding("class.show-price-detail") isShowPriceDetail = false;
-
+  arrivalDateTimes: string[];
+  arrivalHotelDateTime: string;
   items: string[] = [
     // "大床",
     // "可住2人",
@@ -43,11 +45,15 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
     this.changeDate = new EventEmitter();
     this.showRoomDetail = new EventEmitter();
     this.showPriceDetailEvt = new EventEmitter();
+    this.arrivalHotel = new EventEmitter();
   }
   @HostListener("click")
   private closePriceDetail() {
     this.showPriceDetailEvt.emit({ isShow: false, bookInfo: this.bookInfo });
     this.isShowPriceDetail = false;
+  }
+  onIonChange() {
+    this.arrivalHotel.emit(this.arrivalHotelDateTime);
   }
   onShowPriceDetail() {
     setTimeout(() => {
@@ -81,10 +87,25 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
     }
   }
   onChangeDate() {
-    this.changeDate.emit({bookInfo: this.bookInfo});
+    this.changeDate.emit({ bookInfo: this.bookInfo });
   }
   onShowRoomDetail() {
-    this.showRoomDetail.emit({bookInfo: this.bookInfo});
+    this.showRoomDetail.emit({ bookInfo: this.bookInfo });
+  }
+  private initArrivalTimes() {
+    this.arrivalDateTimes = [];
+    const n = (18 * 60) / 30;
+    for (let i = 0; i < n; i++) {
+      const dt = moment(this.bookInfo.bookInfo.roomPlan.BeginDate);
+      this.arrivalDateTimes.push(
+        dt.add(i * 30, "minutes").format("YYYY-MM-DD HH:mm")
+      );
+    }
+  }
+  getHHmm(datetime: string) {
+    if (datetime) {
+      return this.calendarService.getHHmm(datetime);
+    }
   }
   ngOnChanges(changes: SimpleChanges) {
     if (
@@ -94,6 +115,7 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
       changes.bookInfo.currentValue.bookInfo
     ) {
       this.initItems();
+      this.initArrivalTimes();
     }
   }
   private initItems() {

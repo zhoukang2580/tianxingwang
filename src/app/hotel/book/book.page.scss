@@ -52,3 +52,10 @@ ion-item-divider[sticky] {
     }
   }
 }
+.small-font {
+  font-size: 0.6rem;
+}
+.change-policy-btn {
+  --padding-start: 0;
+  margin-left: 0;
+}

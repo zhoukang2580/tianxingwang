@@ -48,9 +48,73 @@
         </ion-item>
       </ion-item-group>
       <ion-item-group>
-        <ion-item-divider>酒店预订信息:</ion-item-divider>
-        <app-room-show-item [bookInfo]='combindInfo.bookInfo' (showPriceDetailEvt)='onShowPriceDetails($event)'
-          [disabledEdit]='true'></app-room-show-item>
+        <ion-item-divider>
+          酒店预订信息:{{combindInfo.bookInfo?.bookInfo?.roomPlan?.PaymentType==HotelPaymentType.SelfPay?"(到酒店支付)":""}}
+        </ion-item-divider>
+        <app-room-show-item [bookInfo]='combindInfo.bookInfo' (arrivalHotel)='onArrivalHotel($event,combindInfo)'
+          (showPriceDetailEvt)='onShowPriceDetails($event)' [disabledEdit]='true'></app-room-show-item>
+        <div style='width: 100%' *ngIf='getRuleMessage(combindInfo.bookInfo?.bookInfo?.roomPlan) as msg'>
+          超标:<ion-label text-wrap color='danger'>{{msg}}
+          </ion-label>
+        </div>
+        <ion-button fill='clear' class='change-policy-btn'
+          (click)='combindInfo["isShowRoomPlanRulesDesc"]=!combindInfo["isShowRoomPlanRulesDesc"]' color='secondary'>
+          预订规则:
+          <ion-icon name="arrow-dropdown" *ngIf='combindInfo["isShowRoomPlanRulesDesc"]'></ion-icon>
+          <ion-icon name="arrow-dropright" *ngIf='!combindInfo["isShowRoomPlanRulesDesc"]'></ion-icon>
+        </ion-button>
+        <div>
+          <ion-label [@showHide]='combindInfo["isShowRoomPlanRulesDesc"]' text-wrap color='danger' class='small-font'>
+            {{getRoomPlanRulesDesc(combindInfo.bookInfo?.bookInfo?.roomPlan)}}2019年7月1日起，部分城市将不再主动提供牙刷等一次性日用品，建议自行准备。
+          </ion-label>
+        </div>
+      </ion-item-group>
+      <ion-item-group *ngIf='combindInfo.creditCardInfo.isShowCreditCard'>
+        <ion-item-divider>信用卡信息</ion-item-divider>
+        <ion-item>
+          <div class="width:100%">
+            <ion-label>信用卡:</ion-label>
+            <ion-select [(ngModel)]="combindInfo.creditCardInfo.creditCardType">
+              <ion-select-option value="VI">VISA</ion-select-option>
+              <ion-select-option value="AX">美国运通卡</ion-select-option>
+              <ion-select-option value="CA"> 万事达卡</ion-select-option>
+              <ion-select-option value="JC">JCB</ion-select-option>
+              <ion-select-option value="DC">大来卡</ion-select-option>
+            </ion-select>
+          </div>
+        </ion-item>
+        <ion-item>
+          <ion-label>信用卡号:</ion-label>
+          <ion-input [(ngModel)]='combindInfo.creditCardInfo.creditCardNumber' placeholder="信用卡卡号"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label>CVV:</ion-label>
+          <ion-input [(ngModel)]='combindInfo.creditCardInfo.creditCardCvv' placeholder="CVV"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label>有效期:</ion-label>
+          <ion-input [(ngModel)]='combindInfo.creditCardInfo.creditCardExpirationDate' type='text' placeholder="有效期">
+          </ion-input>
+        </ion-item>
+        <ion-item-divider>持卡人</ion-item-divider>
+        <ion-item>
+          <ion-label>身份证:</ion-label>
+          <ion-select [(ngModel)]="combindInfo.creditCardPersionInfo.credentialType">
+            <ion-select-option value="{{CredentialsType.IdCard}}">身份证</ion-select-option>
+            <ion-select-option value="{{CredentialsType.Passport}}">护照</ion-select-option>
+            <ion-select-option value="{{CredentialsType.Other}}">其它</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label>持卡人证件号码:</ion-label>
+          <ion-input [(ngModel)]='combindInfo.creditCardPersionInfo.credentialNumber' type='text' placeholder="持卡人证件号码">
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label>持卡人姓名:</ion-label>
+          <ion-input [(ngModel)]='combindInfo.creditCardPersionInfo.name' type='text' placeholder="持卡人姓名">
+          </ion-input>
+        </ion-item>
       </ion-item-group>
       <ion-item-group>
         <ion-item-divider>旅客信息：</ion-item-divider>
@@ -162,7 +226,7 @@
   <ion-toolbar>
     <ion-buttons slot='start'>
       <ion-button color='secondary'>总计:
-        <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)}}</ion-text>
+        <ion-text slot='end' color='danger'>￥{{(totalPrice$|async)}}</ion-text>
       </ion-button>
     </ion-buttons>
     <ion-buttons slot='end'>

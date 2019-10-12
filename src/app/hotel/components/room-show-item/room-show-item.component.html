@@ -1,6 +1,6 @@
 <div style="width: 100%">
   <ion-card>
-    <div  class="hotel-name">
+    <div class="hotel-name">
       酒店名称：<strong>{{bookInfo?.bookInfo?.hotelEntity?.Name}}</strong>
     </div>
     <ion-card-content>
@@ -13,7 +13,7 @@
         <ion-button fill='clear' size='small' color='secondary' *ngIf='!disabledEdit'>修改</ion-button>
       </div>
       <div class='price-detail'>
-        <span >
+        <span>
           {{bookInfo?.bookInfo?.roomPlan?.Name}}
         </span>
         <ion-label class='price' *ngIf='bookInfo?.bookInfo?.roomPlan?.TotalAmount as m' text-end color='danger'>
@@ -35,6 +35,14 @@
           <ion-button slot='end' fill='clear' color='secondary' *ngIf='!disabledEdit'>房型详情</ion-button>
         </div>
       </div>
+      <ion-item no-margin no-padding *ngIf='disabledEdit' lines='none'>
+        <ion-label>到店时间</ion-label>
+        <ion-select value="brown" okText="确定" cancelText="取消" (ionChange)='onIonChange()'
+          [(ngModel)]='arrivalHotelDateTime'>
+          <ion-select-option value="{{datetime}}" *ngFor='let datetime of arrivalDateTimes'>{{getHHmm(datetime)}}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
     </ion-card-content>
   </ion-card>
 </div>

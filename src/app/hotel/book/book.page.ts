@@ -26,7 +26,8 @@ import {
   OnInit,
   ViewChild,
   HostListener,
-  HostBinding
+  HostBinding,
+  AfterViewInit
 } from "@angular/core";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { OrderBookDto } from "src/app/order/models/OrderBookDto";
@@ -46,21 +47,38 @@ import {
 } from "src/app/order/models/OrderTravelEntity";
 import { AddContact } from "src/app/tmc/models/AddContact";
 import { TaskType } from "src/app/workflow/models/TaskType";
-import { Subject, BehaviorSubject, of, combineLatest, from } from "rxjs";
+import {
+  Subject,
+  BehaviorSubject,
+  of,
+  combineLatest,
+  from,
+  Observable
+} from "rxjs";
 import { OrderLinkmanDto } from "src/app/order/models/OrderLinkmanDto";
 import { LanguageHelper } from "src/app/languageHelper";
 import { SelectTravelNumberComponent } from "src/app/tmc/components/select-travel-number-popover/select-travel-number-popover.component";
 import { SearchApprovalComponent } from "src/app/tmc/components/search-approval/search-approval.component";
 import { map, tap } from "rxjs/operators";
 import * as moment from "moment";
+import { trigger, state, style } from "@angular/animations";
+import { HotelPaymentType } from "../models/HotelPaymentType";
+import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 @Component({
   selector: "app-book",
   templateUrl: "./book.page.html",
-  styleUrls: ["./book.page.scss"]
+  styleUrls: ["./book.page.scss"],
+  animations: [
+    trigger("showHide", [
+      state("true", style({ display: "initial" })),
+      state("false", style({ display: "none" }))
+    ])
+  ]
 })
-export class BookPage implements OnInit {
-  private orderBookDto: OrderBookDto;
+export class BookPage implements OnInit, AfterViewInit {
   private initialBookDto: InitialBookDtoModel;
+  HotelPaymentType = HotelPaymentType;
+  CredentialsType = CredentialsType;
   combindInfos: IPassengerHotelBookInfo[];
   orderTravelPayType: any;
   orderTravelPayTypes: {
@@ -73,7 +91,7 @@ export class BookPage implements OnInit {
   identity: IdentityEntity;
   bookInfos: PassengerBookInfo<IHotelInfo>[];
   tmc: TmcEntity;
-  totalPriceSource: Subject<number>;
+  totalPrice$: Observable<number>;
   isCanSkipApproval$ = of(false);
   illegalReasons: any[];
   travelForm: TravelFormEntity;
@@ -96,9 +114,7 @@ export class BookPage implements OnInit {
     private calendarService: CalendarService,
     private router: Router,
     private payService: PayService
-  ) {
-    this.totalPriceSource = new BehaviorSubject(0);
-  }
+  ) {}
   calcNights() {
     if (
       this.curSelectedBookInfo &&
@@ -111,6 +127,22 @@ export class BookPage implements OnInit {
         this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate,
         "days"
       );
+    }
+  }
+  onArrivalHotel(arrivalTime: string, item: IPassengerHotelBookInfo) {
+    if (item && arrivalTime) {
+      item.arrivalHotelTime = arrivalTime;
+      if (this.initialBookDto && this.initialBookDto.RoomPlans) {
+        const plan = this.initialBookDto.RoomPlans.find(
+          it => it.PassengerClientId == item.id
+        );
+        if (plan && plan.GuaranteeStartTime && plan.GuaranteeEndTime) {
+          item.creditCardInfo.isShowCreditCard = moment().isBetween(
+            moment(plan.GuaranteeStartTime),
+            moment(plan.GuaranteeEndTime)
+          );
+        }
+      }
     }
   }
   onShowPriceDetails(evt: {
@@ -176,35 +208,32 @@ export class BookPage implements OnInit {
       this.error = e;
     }
   }
+  ngAfterViewInit() {}
   calcTotalPrice() {
-    // console.time("总计");
-    if (this.combindInfos) {
-      let totalPrice = this.combindInfos.reduce((arr, item) => {
-        if (
-          item.bookInfo &&
-          item.bookInfo.bookInfo &&
-          item.bookInfo.bookInfo.roomPlan
-        ) {
-          const info = item.bookInfo.bookInfo;
-          arr = AppHelper.add(arr, +info.roomPlan.TotalAmount);
+    this.totalPrice$ = this.hotelService.getBookInfoSource().pipe(
+      map(infos => {
+        let totalPrice = infos.reduce((arr, item) => {
+          if (item && item.bookInfo && item.bookInfo.roomPlan) {
+            const info = item.bookInfo;
+            arr = AppHelper.add(arr, +info.roomPlan.TotalAmount);
+          }
+          return arr;
+        }, 0);
+        // console.log("totalPrice ", totalPrice);
+        if (this.initialBookDto && this.initialBookDto.ServiceFees) {
+          const fees = Object.keys(this.initialBookDto.ServiceFees).reduce(
+            (acc, key) => {
+              const fee = +this.initialBookDto.ServiceFees[key];
+              acc = AppHelper.add(fee, acc);
+              return acc;
+            },
+            0
+          );
+          totalPrice = AppHelper.add(fees, totalPrice);
         }
-        return arr;
-      }, 0);
-      // console.log("totalPrice ", totalPrice);
-      if (this.initialBookDto && this.initialBookDto.ServiceFees) {
-        const fees = Object.keys(this.initialBookDto.ServiceFees).reduce(
-          (acc, key) => {
-            const fee = +this.initialBookDto.ServiceFees[key];
-            acc = AppHelper.add(fee, acc);
-            return acc;
-          },
-          0
-        );
-        totalPrice = AppHelper.add(fees, totalPrice);
-      }
-      this.totalPriceSource.next(totalPrice);
-    }
-    // console.timeEnd("总计");
+        return totalPrice;
+      })
+    );
   }
   private async initOrderTravelPayTypes() {
     // console.log("initOrderTravelPayTypes", this.initialBookDto);
@@ -613,6 +642,8 @@ export class BookPage implements OnInit {
           credentials.push(bookInfo.credential);
         }
         const combineInfo: IPassengerHotelBookInfo = {} as any;
+        combineInfo.creditCardInfo = {} as any;
+        combineInfo.creditCardPersionInfo = {} as any;
         combineInfo.credential = bookInfo.credential;
         combineInfo.id = bookInfo.id;
         combineInfo.bookInfo = bookInfo;
@@ -741,12 +772,12 @@ export class BookPage implements OnInit {
     const initialBookDto = await this.hotelService.getInitializeBookDto(
       bookDto
     );
-    this.orderBookDto = bookDto;
     console.log("initializeBookDto", initialBookDto);
     await this.storage.set("mock-initialBookDto-hotel", initialBookDto);
     return initialBookDto;
   }
   ngOnInit() {
+    this.calcTotalPrice();
     this.doRefresh();
   }
   async onBook(isSave: boolean) {
@@ -974,6 +1005,20 @@ export class BookPage implements OnInit {
       info.vmCredential = credential;
     }
   }
+  getRuleMessage(roomPlan: RoomPlanEntity) {
+    return (
+      roomPlan &&
+      roomPlan.Rules &&
+      Object.keys(roomPlan.Rules)
+        .map(k => roomPlan.Rules[k])
+        .join(",")
+    );
+  }
+  getRoomPlanRulesDesc(roomPlan: RoomPlanEntity) {
+    return (
+      roomPlan && roomPlan.RoomPlanRules && roomPlan.RoomPlanRules.join(",")
+    );
+  }
   async onSelectTravelNumber(
     arg: ITmcOutNumberInfo,
     item: IPassengerHotelBookInfo
@@ -1019,6 +1064,19 @@ export class BookPage implements OnInit {
   }
 }
 export interface IPassengerHotelBookInfo {
+  arrivalHotelTime: string;
+  creditCardInfo: {
+    isShowCreditCard: boolean;
+    creditCardType: string;
+    creditCardNumber: string;
+    creditCardCvv: string;
+    creditCardExpirationDate: string;
+  };
+  creditCardPersionInfo: {
+    credentialType: string;
+    credentialNumber: string;
+    name: string;
+  };
   isNotWhitelist?: boolean;
   vmCredential: CredentialsEntity;
   credential: CredentialsEntity;
