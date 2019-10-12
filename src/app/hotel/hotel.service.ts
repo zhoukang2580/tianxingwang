@@ -514,13 +514,13 @@ export class HotelService {
   }
   async getHotelPolicy(roomPlans: RoomPlanEntity[], hotel: HotelEntity) {
     console.log("getHotelPolicy", this.hotelPolicies);
-    if (
-      this.hotelPolicies &&
-      this.hotelPolicies[hotel && hotel.Id] &&
-      this.hotelPolicies[hotel && hotel.Id].length
-    ) {
-      return [...this.hotelPolicies[hotel.Id]];
-    }
+    // if (
+    //   this.hotelPolicies &&
+    //   this.hotelPolicies[hotel && hotel.Id] &&
+    //   this.hotelPolicies[hotel && hotel.Id].length
+    // ) {
+    //   return [...this.hotelPolicies[hotel.Id]];
+    // }
     const result = await this.getHotelPolicyAsync(roomPlans, hotel);
     if (!this.hotelPolicies) {
       this.hotelPolicies = { [hotel.Id]: result };
