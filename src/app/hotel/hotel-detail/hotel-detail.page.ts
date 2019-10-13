@@ -1,10 +1,10 @@
+import { AppHelper } from "src/app/appHelper";
 import { HotelPolicyModel } from "./../models/HotelPolicyModel";
 import { ConfigEntity } from "./../../services/config/config.entity";
 import { HotelRoomBookedinfosComponent } from "./../components/hotel-room-bookedinfos/hotel-room-bookedinfos.component";
 import { LanguageHelper } from "./../../languageHelper";
 import { HotelPassengerModel } from "./../models/HotelPassengerModel";
 import { HotelEntity } from "./../models/HotelEntity";
-import { AppHelper } from "./../../appHelper";
 import { HotelService, SearchHotelModel, IHotelInfo } from "./../hotel.service";
 import { HotelDayPriceEntity } from "./../models/HotelDayPriceEntity";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -443,6 +443,19 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
           bookInfo = null;
         }
         if (info.bookInfo && !bookInfo) {
+          const p = policies.find(
+            it => it.PassengerKey == info.passenger.AccountId
+          );
+          const policy =
+            p &&
+            p.HotelPolicies.find(it => it.Number == bookInfo.roomPlan.Number);
+          if (policy && policy.Rules) {
+            const rules = {};
+            policy.Rules.forEach(r => {
+              rules[AppHelper.uuid()] = r;
+            });
+            bookInfo.roomPlan.Rules = bookInfo.roomPlan.Rules || rules;
+          }
           removedBookInfos.push(info);
         }
         info.bookInfo = bookInfo;
@@ -520,7 +533,11 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     evt.preventDefault();
     evt.stopPropagation();
   }
-  onOpenMap() {}
+  onOpenMap() {
+    this.segmentChanged({
+      detail: { value: "trafficInfo" as IHotelDetailTab }
+    } as any);
+  }
   async ngAfterViewInit() {
     if (this.ionCnt) {
       this.scrollEle = await this.ionCnt.getScrollElement();

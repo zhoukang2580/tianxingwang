@@ -1,3 +1,4 @@
+import { RoomPlanEntity } from "src/app/hotel/models/RoomPlanEntity";
 import { HotelService } from "./../../hotel.service";
 import {
   Component,
@@ -9,7 +10,6 @@ import {
   Output
 } from "@angular/core";
 import { RoomEntity } from "../../models/RoomEntity";
-import { RoomPlanEntity } from "../../models/RoomPlanEntity";
 import { RoomPlanRuleType } from "../../models/RoomPlanRuleType";
 import { HotelSupplierType } from "../../models/HotelSupplierType";
 import { HotelBookType } from "../../models/HotelBookType";
@@ -62,7 +62,10 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
   getBreakfast(plan: RoomPlanEntity) {
     return this.hotelService.getBreakfast(plan);
   }
-  onBook() {
+  onBook(roomPlan: RoomPlanEntity, disabled: boolean) {
+    if (disabled) {
+      return;
+    }
     this.bookRoom.emit({ roomPlan: this.roomPlan, room: this.room });
   }
   // private async initFilterPolicy() {

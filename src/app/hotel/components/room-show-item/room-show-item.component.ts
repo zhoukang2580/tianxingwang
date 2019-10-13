@@ -1,3 +1,4 @@
+import { RoomPlanEntity } from "./../../models/RoomPlanEntity";
 import { CalendarService } from "./../../../tmc/calendar.service";
 import { IHotelInfo, HotelService } from "./../../hotel.service";
 import { RoomEntity } from "./../../models/RoomEntity";
@@ -55,6 +56,15 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
   onIonChange() {
     this.arrivalHotel.emit(this.arrivalHotelDateTime);
   }
+  getRules(plan: RoomPlanEntity) {
+    return (
+      plan &&
+      plan.Rules &&
+      Object.keys(plan.Rules)
+        .map(k => plan.Rules[k])
+        .join(",")
+    );
+  }
   onShowPriceDetail() {
     setTimeout(() => {
       this.isShowPriceDetail = true;
@@ -93,13 +103,26 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
     this.showRoomDetail.emit({ bookInfo: this.bookInfo });
   }
   private initArrivalTimes() {
-    this.arrivalDateTimes = [];
-    const n = (18 * 60) / 30;
-    for (let i = 0; i < n; i++) {
-      const dt = moment(this.bookInfo.bookInfo.roomPlan.BeginDate);
-      this.arrivalDateTimes.push(
-        dt.add(i * 30, "minutes").format("YYYY-MM-DD HH:mm")
-      );
+    if (
+      this.bookInfo &&
+      this.bookInfo.bookInfo &&
+      this.bookInfo.bookInfo.roomPlan &&
+      this.bookInfo.bookInfo.roomPlan.BeginDate
+    ) {
+      this.arrivalDateTimes = [];
+      const dt = moment(this.bookInfo.bookInfo.roomPlan.BeginDate)
+        .startOf("date")
+        .add(12, "hours");
+      const edt = dt.clone().add(18, "hours");
+      const n = edt.diff(dt, "minutes") / 30;
+      for (let i = 0; i <= n; i++) {
+        this.arrivalDateTimes.push(
+          dt
+            .clone()
+            .add(i * 30, "minutes")
+            .format("YYYY-MM-DD HH:mm")
+        );
+      }
     }
   }
   getHHmm(datetime: string) {

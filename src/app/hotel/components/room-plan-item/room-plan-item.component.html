@@ -18,9 +18,10 @@
       *ngIf='roomPlan?.BookType == HotelBookType.Elong || roomPlan?.BookType == HotelBookType.Inventory'>
       <span class='desc'>{{getRules(roomPlan)}}</span>
       （即时确认）</div>
-    <div class="price" *ngIf='(color$|async)[roomPlan?.Number] as color' [class.can-not-be-book]='color=="danger"' [attr.color]='color'>
+    <div class="price" *ngIf='(color$|async)[roomPlan?.Number] as color' [class.can-not-be-book]='color=="danger"'
+      [attr.color]='color'>
       <ion-text color='danger' class='avg-price'>￥{{getAvgPrice(roomPlan)}}</ion-text>
-      <div class="btn-book" (click)='onBook(roomPlan)'>
+      <div class="btn-book" (click)='onBook(roomPlan,color=="danger")'>
         <ion-button slot='end' no-margin [disabled]='color=="danger"' expand='full'>
           <ion-text color='light'>{{color=='danger'?"满房":"预订"}}</ion-text>
         </ion-button>

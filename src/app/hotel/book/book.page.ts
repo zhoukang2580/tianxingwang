@@ -181,7 +181,6 @@ export class BookPage implements OnInit, AfterViewInit {
     this.navCtrl.back();
   }
   async doRefresh() {
-    await this.payService.selectPayWay();
     try {
       if (this.ionRefresher) {
         this.ionRefresher.complete();
@@ -1016,7 +1015,9 @@ export class BookPage implements OnInit, AfterViewInit {
   }
   getRoomPlanRulesDesc(roomPlan: RoomPlanEntity) {
     return (
-      roomPlan && roomPlan.RoomPlanRules && roomPlan.RoomPlanRules.join(",")
+      roomPlan &&
+      roomPlan.RoomPlanRules &&
+      roomPlan.RoomPlanRules.map(it => it.Description).join(",")
     );
   }
   async onSelectTravelNumber(

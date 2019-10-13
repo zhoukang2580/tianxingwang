@@ -22,12 +22,24 @@ export class CalendarService {
     this.selectedDaysSource = new BehaviorSubject([]);
   }
   getHHmm(datetime: string) {
-    if (datetime && datetime.includes("T")) {
-      const remain = datetime.split("T")[1];
-      if (remain) {
-        const hhmmss = remain.split(":");
-        hhmmss.pop();
-        return hhmmss.join(":");
+    if (datetime) {
+      if (datetime.includes("T")) {
+        const remain = datetime.split("T")[1];
+        if (remain) {
+          const hhmmss = remain.split(":");
+          hhmmss.pop();
+          return hhmmss.join(":");
+        }
+      }
+      if (datetime.length == "YYYY-MM-DD HH:mm:ss".length) {
+        const hms = datetime.split(" ")[1];
+        const hmsArr = hms.split(":");
+        hmsArr.pop();
+        return hmsArr.join(":");
+      }
+      if (datetime.length == "YYYY-MM-DD HH:mm".length) {
+        const hms = datetime.split(" ")[1];
+        return hms;
       }
     }
     return datetime;
