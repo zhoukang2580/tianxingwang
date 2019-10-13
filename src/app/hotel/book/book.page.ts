@@ -64,6 +64,7 @@ import * as moment from "moment";
 import { trigger, state, style } from "@angular/animations";
 import { HotelPaymentType } from "../models/HotelPaymentType";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
+import { OrderCardEntity } from "src/app/order/models/OrderCardEntity";
 @Component({
   selector: "app-book",
   templateUrl: "./book.page.html",
@@ -318,6 +319,46 @@ export class BookPage implements OnInit, AfterViewInit {
     const day = this.calendarService.generateDayModelByDate(roomPlan.BeginDate);
     return `${day.date} ${day.dayOfWeekName}`;
   }
+  private fillCredicardInfo(item: IPassengerHotelBookInfo) {
+    if (!item.creditCardInfo || !item.creditCardInfo.isShowCreditCard) {
+      return true;
+    }
+    const showErrorMsg = (msg: string) => {
+      AppHelper.alert(
+        `${(item.credentialStaff && item.credentialStaff.Name) ||
+          (item.credential && item.credential.Number)}信用卡信息${msg}`
+      );
+    };
+    if (!item.creditCardInfo.creditCardType) {
+      showErrorMsg("未选择信用卡的类型必填");
+      return false;
+    }
+    if (!item.creditCardInfo.creditCardNumber) {
+      showErrorMsg("信用卡号未必填");
+      return false;
+    }
+    if (!item.creditCardInfo.creditCardCvv) {
+      showErrorMsg("信用卡CVV必填");
+      return false;
+    }
+    if (!item.creditCardPersionInfo) {
+      showErrorMsg("信用卡持卡人信息必填");
+      return false;
+    }
+    if (!item.creditCardPersionInfo.credentialType) {
+      showErrorMsg("持卡人证件类型必填");
+      return false;
+    }
+    if (!item.creditCardPersionInfo.credentialNumber) {
+      showErrorMsg("持卡人证件号码必填");
+      return false;
+    }
+    // if (!item.creditCardPersionInfo.name) {
+    //   showErrorMsg("持卡人名必填");
+    //   return false;
+    // }
+    return true;
+  }
   private fillBookLinkmans(bookDto: OrderBookDto) {
     bookDto.Linkmans = [];
     const showErrorMsg = (msg: string, item: IPassengerHotelBookInfo) => {
@@ -395,6 +436,51 @@ export class BookPage implements OnInit, AfterViewInit {
         continue;
       }
       const p = new PassengerDto();
+      const canbook = this.fillCredicardInfo(combindInfo);
+      if (!canbook) {
+        return false;
+      }
+      if (
+        combindInfo.creditCardInfo &&
+        combindInfo.creditCardInfo.isShowCreditCard
+      ) {
+        p.OrderCard = new OrderCardEntity();
+        p.OrderCard.Description = "信用卡";
+        p.OrderCard.Number = combindInfo.creditCardInfo.creditCardNumber;
+        p.OrderCard.Description = "";
+        p.OrderCard.SetVariable(
+          "CredentialsName",
+          combindInfo.creditCardPersionInfo &&
+            combindInfo.creditCardPersionInfo.name
+        );
+        p.OrderCard.SetVariable(
+          "CredentialsNumber",
+          combindInfo.creditCardPersionInfo &&
+            combindInfo.creditCardPersionInfo.credentialNumber
+        );
+        p.OrderCard.SetVariable(
+          "CredentialsType",
+          combindInfo.creditCardPersionInfo &&
+            combindInfo.creditCardPersionInfo.credentialType
+        );
+        p.OrderCard.SetVariable(
+          "Year",
+          combindInfo.creditCardInfo.expirationYear
+        );
+        p.OrderCard.SetVariable(
+          "Month",
+          combindInfo.creditCardInfo.expirationMonth
+        );
+        p.OrderCard.SetVariable(
+          "Cvv",
+          combindInfo.creditCardInfo.creditCardCvv
+        );
+        p.OrderCard.SetVariable(
+          "VendorCode",
+          combindInfo.creditCardInfo.creditCardType
+        );
+        p.OrderCard.Variables = JSON.stringify(p.OrderCard.Variables);
+      }
       p.ApprovalId =
         (this.isAllowSelectApprove(combindInfo) &&
           !combindInfo.isSkipApprove &&
@@ -549,7 +635,14 @@ export class BookPage implements OnInit, AfterViewInit {
         combindInfo.bookInfo.bookInfo.roomPlan &&
         combindInfo.bookInfo.bookInfo.roomPlan
       ) {
+        p.CheckinTime = combindInfo.arrivalHotelTime;
         p.RoomPlan = combindInfo.bookInfo.bookInfo.roomPlan;
+        p.RoomPlan.Room = JSON.parse(
+          JSON.stringify(combindInfo.bookInfo.bookInfo.hotelRoom)
+        );
+        p.RoomPlan.Room.Hotel = JSON.parse(
+          JSON.stringify(combindInfo.bookInfo.bookInfo.hotelEntity)
+        );
       }
       if (combindInfo.bookInfo) {
         p.Policy = combindInfo.bookInfo.passenger.Policy;
@@ -641,7 +734,23 @@ export class BookPage implements OnInit, AfterViewInit {
           credentials.push(bookInfo.credential);
         }
         const combineInfo: IPassengerHotelBookInfo = {} as any;
-        combineInfo.creditCardInfo = {} as any;
+        const years = [];
+        for (let i = 0; i <= 30; i++) {
+          years.push(
+            moment()
+              .clone()
+              .add(i, "years")
+              .format("YYYY")
+          );
+        }
+        combineInfo.creditCardInfo = {
+          years,
+          expirationYear: `${new Date().getFullYear()}`,
+          expirationMonth: `1`,
+          creditCardExpirationDate: `${moment()
+            .startOf("year")
+            .format("YYYY-MM-DD")}`
+        } as any;
         combineInfo.creditCardPersionInfo = {} as any;
         combineInfo.credential = bookInfo.credential;
         combineInfo.id = bookInfo.id;
@@ -779,6 +888,7 @@ export class BookPage implements OnInit, AfterViewInit {
     this.calcTotalPrice();
     this.doRefresh();
   }
+
   async onBook(isSave: boolean) {
     const bookDto: OrderBookDto = new OrderBookDto();
     bookDto.IsFromOffline = isSave;
@@ -1072,6 +1182,9 @@ export interface IPassengerHotelBookInfo {
     creditCardNumber: string;
     creditCardCvv: string;
     creditCardExpirationDate: string;
+    expirationYear: string;
+    expirationMonth: string;
+    years: number[];
   };
   creditCardPersionInfo: {
     credentialType: string;
