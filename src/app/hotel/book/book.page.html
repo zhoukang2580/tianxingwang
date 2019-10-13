@@ -55,10 +55,11 @@
           </ion-text>
         </ion-item-divider>
         <app-room-show-item [bookInfo]='combindInfo.bookInfo' (arrivalHotel)='onArrivalHotel($event,combindInfo)'
-          (showPriceDetailEvt)='onShowPriceDetails($event)' [disabledEdit]='true'></app-room-show-item>
+          (showPriceDetailEvt)='onShowPriceDetails($event)' [disabledEdit]='true' [showRules]='false'>
+        </app-room-show-item>
         <ion-item *ngIf='getRuleMessage(combindInfo.bookInfo?.bookInfo?.roomPlan) as msg'>
           <div style='width: 100%;'>
-            超标:<ion-label text-wrap color='danger'>{{msg}}
+            <ion-label class='small-font' text-wrap color='danger'>超标:{{msg}}
             </ion-label>
           </div>
         </ion-item>

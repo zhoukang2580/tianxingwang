@@ -28,6 +28,7 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
   @Output() arrivalHotel: EventEmitter<any>;
   @Input() bookInfo: PassengerBookInfo<IHotelInfo>;
   @Input() disabledEdit: boolean;
+  @Input() showRules = true;
   @HostBinding("class.show-price-detail") isShowPriceDetail = false;
   arrivalDateTimes: string[];
   arrivalHotelDateTime: string;
@@ -57,6 +58,9 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
     this.arrivalHotel.emit(this.arrivalHotelDateTime);
   }
   getRules(plan: RoomPlanEntity) {
+    if (!this.showRules) {
+      return "";
+    }
     return (
       plan &&
       plan.Rules &&

@@ -218,7 +218,7 @@ export class BookPage implements OnInit, AfterViewInit {
           }
           return arr;
         }, 0);
-        // console.log("totalPrice ", totalPrice);
+        console.log("totalPrice ", this.initialBookDto);
         if (this.initialBookDto && this.initialBookDto.ServiceFees) {
           const fees = Object.keys(this.initialBookDto.ServiceFees).reduce(
             (acc, key) => {
