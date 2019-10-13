@@ -73,7 +73,7 @@
                 <ion-icon name="arrow-dropright" *ngIf='!combindInfo["isShowRoomPlanRulesDesc"]'></ion-icon>
               </ion-button>
             </div>
-            <ion-label [@showHide]='combindInfo["isShowRoomPlanRulesDesc"]' text-wrap color='danger' class='small-font'>
+            <ion-label *ngIf='combindInfo["isShowRoomPlanRulesDesc"]' text-wrap color='danger' class='small-font'>
               {{getRoomPlanRulesDesc(combindInfo.bookInfo?.bookInfo?.roomPlan)}}2019年7月1日起，部分城市将不再主动提供牙刷等一次性日用品，建议自行准备。
             </ion-label>
           </div>

@@ -406,21 +406,25 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     }
   }
   async onBookRoomPlan(evt: { roomPlan: RoomPlanEntity; room: RoomEntity }) {
+    console.log("onBookRoomPlan", evt.roomPlan);
     if (!evt || !evt.room || !evt.roomPlan) {
       return;
     }
     const removedBookInfos: PassengerBookInfo<IHotelInfo>[] = [];
     const policies = await this.getPolicy();
     const bookInfos = this.hotelService.getBookInfos();
+    const isSelf = await this.staffService.isSelfBookType();
     if (bookInfos.length === 0) {
-      const a = await AppHelper.alert(
-        "请先添加房客",
-        true,
-        LanguageHelper.getConfirmTip()
-      );
-      if (a) {
-        this.bookedRoomPlan = evt;
-        this.onSelectPassenger();
+      if (!isSelf) {
+        const a = await AppHelper.alert(
+          "请先添加房客",
+          true,
+          LanguageHelper.getConfirmTip()
+        );
+        if (a) {
+          this.bookedRoomPlan = evt;
+          this.onSelectPassenger();
+        }
       }
     } else {
       const s = this.hotelService.getSearchHotelModel();
@@ -443,6 +447,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
           bookInfo = null;
         }
         if (info.bookInfo && !bookInfo) {
+          removedBookInfos.push(info);
+        }
+        if (bookInfo) {
           const p = policies.find(
             it => it.PassengerKey == info.passenger.AccountId
           );
@@ -456,7 +463,6 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
             });
             bookInfo.roomPlan.Rules = bookInfo.roomPlan.Rules || rules;
           }
-          removedBookInfos.push(info);
         }
         info.bookInfo = bookInfo;
       });
@@ -528,10 +534,6 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       return;
     }
     this.isShowRoomImages = true;
-  }
-  onBookRoom(room: RoomEntity, evt: MouseEvent) {
-    evt.preventDefault();
-    evt.stopPropagation();
   }
   onOpenMap() {
     this.segmentChanged({
