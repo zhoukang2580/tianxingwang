@@ -141,7 +141,6 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     bookDto.TravelFormId = AppHelper.getQueryParamers()["travelFormId"] || "";
     const infos = this.trainService.getBookInfos();
     bookDto.Passengers = [];
-    const isSelf = await this.staffService.isSelfBookType();
     infos.forEach(bookInfo => {
       if (bookInfo.passenger && bookInfo.bookInfo) {
         const p = new PassengerDto();
@@ -156,24 +155,8 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         bookDto.Passengers.push(p);
       }
     });
-    if (isSelf && bookDto.Passengers.length == 2) {
-      bookDto.Passengers = [bookDto.Passengers[0]];
-    }
     console.log("initializeBookDto", bookDto);
     this.initialBookDto = await this.trainService.getInitializeBookDto(bookDto);
-    if (isSelf) {
-      if (this.initialBookDto && infos.length == 2) {
-        if (this.initialBookDto.ServiceFees) {
-          const fees = {};
-          Object.keys(this.initialBookDto.ServiceFees).forEach(k => {
-            infos.forEach(info => {
-              fees[info.id] = this.initialBookDto.ServiceFees[k];
-            });
-          });
-          this.initialBookDto.ServiceFees = fees;
-        }
-      }
-    }
     console.log("initializeBookDto", this.initialBookDto);
     await this.storage.set("mock-initialBookDto-train", this.initialBookDto);
     return this.initialBookDto;

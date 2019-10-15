@@ -25,7 +25,7 @@ import { CalendarService } from "../tmc/calendar.service";
 import { TrainSeatEntity } from "./models/TrainSeatEntity";
 import { Router } from "@angular/router";
 import { OrderBookDto } from "../order/models/OrderBookDto";
-import { DayModel } from '../tmc/models/DayModel';
+import { DayModel } from "../tmc/models/DayModel";
 const KEY_TRAIN_TRAFFICLINES_DATA = "train-traficlines-data";
 export class SearchTrainModel {
   TrainCode: string;
@@ -549,7 +549,7 @@ export class TrainService {
     });
     await m.present();
     const result = await m.onDidDismiss();
-    return result && result.data as  DayModel[];
+    return result && (result.data as DayModel[]);
   }
   async getStationsAsync(forceUpdate = false): Promise<TrafficlineEntity[]> {
     if (!forceUpdate) {
@@ -645,7 +645,7 @@ export class TrainService {
         this.setSearchTrainModel({
           ...s,
           isLocked: false,
-          tripType:TripType.departureTrip
+          tripType: TripType.departureTrip
         });
       }
       this.setBookInfoSource(bookInfos);
@@ -760,12 +760,20 @@ export class TrainService {
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;
+    const bookInfos = this.getBookInfos();
+    const isSelf = await this.staffService.isSelfBookType();
     return this.apiService
       .getPromiseData<InitialBookDtoModel>(req)
       .then(res => {
         res.IllegalReasons = res.IllegalReasons || [];
         res.Insurances = res.Insurances || {};
         res.ServiceFees = res.ServiceFees || ({} as any);
+        if (bookInfos.length == 2 && isSelf) {
+          const fees = {};
+          Object.keys(res.ServiceFees).forEach(k => {
+            fees[k] = +res.ServiceFees[k] / 2;
+          });
+        }
         res.Staffs = res.Staffs || [];
         res.Staffs = res.Staffs.map(it => {
           return {
