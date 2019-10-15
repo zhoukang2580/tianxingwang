@@ -531,9 +531,17 @@ export class HotelService {
     return result;
   }
   private async getHotelPolicyAsync(
-    roomPlans: RoomPlanEntity[],
+    rpls: RoomPlanEntity[],
     hotel: HotelEntity
   ): Promise<HotelPassengerModel[]> {
+    const roomPlans: RoomPlanEntity[] = [];
+    if (rpls) {
+      rpls.forEach(it => {
+        if (!roomPlans.find(i => i.Number == it.Number)) {
+          roomPlans.push(it);
+        }
+      });
+    }
     const notWhitelistPolicies: HotelPassengerModel[] = [];
     let whitelistPolicies: HotelPassengerModel[] = [];
     const bookInfos = this.getBookInfos();
