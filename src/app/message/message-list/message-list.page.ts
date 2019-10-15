@@ -68,16 +68,17 @@ export class MessageListPage implements OnInit, AfterViewInit {
     if (this.refresher) {
       this.refresher.complete();
     }
-    if (this.messages.length == 0) {
-      this.messages.push({
-        IsRead: false,
-        Url: "",
-        Id: "000",
-        InsertTime: "2019-08-27T17:51:00",
-        Title: "测试",
-        Detail: `您的火车票账单已经生成成功<a href='http://test.excel.agent.download.beeant.com/files/download/excel/20190821/58c7ecae48384047999832794d8edbd1.xlsx?timestamp=1567293674.39136&contenttype=application/octet-stream&sign=823840366a1914283eba269771b52b2d&name=火车票账单-0001-01-01-0001-01-02'>火车票账单</a>`
-      });
-    }
+    // if (this.messages.length == 0) {
+    //   this.messages.push({
+    //     IsRead: false,
+    //     Url: "",
+    //     Id: "000",
+    //     InsertTime: "2019-08-27T17:51:00",
+    //     Title: "测试",
+    // tslint:disable-next-line: max-line-length
+    //     Detail: `您的火车票账单已经生成成功<a href='http://test.excel.agent.download.beeant.com/files/download/excel/20190821/58c7ecae48384047999832794d8edbd1.xlsx?timestamp=1567293674.39136&contenttype=application/octet-stream&sign=823840366a1914283eba269771b52b2d&name=火车票账单-0001-01-01-0001-01-02'>火车票账单</a>`
+    //   });
+    // }
   }
   back() {
     this.navCtrl.back();
@@ -122,7 +123,10 @@ export class MessageListPage implements OnInit, AfterViewInit {
   }
   async doRefresh() {
     if (this.scroller) {
-      this.scroller.disabled = false;
+      this.scroller.disabled = true;
+      setTimeout(() => {
+        this.scroller.disabled = false;
+      }, 200);
     }
     this.currentPage = 0;
     this.messages = [];
