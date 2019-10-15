@@ -482,27 +482,47 @@ export class FlightService {
           const back = this.passengerBookInfos.find(
             it => it.bookInfo && it.bookInfo.tripType == TripType.returnTrip
           );
+          if (go && back) {
+            this.setSearchFlightModel({
+              ...this.getSearchFlightModel(),
+              isLocked: false
+            });
+          }
           if (go) {
-            if (back) {
-              // 已经选择了来回程
-              this.setSearchFlightModel({
-                ...this.getSearchFlightModel(),
-                isLocked: false,
-                tripType: TripType.departureTrip
-              });
-            }
             if (s.tripType == TripType.returnTrip) {
               info.tripType = TripType.returnTrip;
-              bookInfos = [go, { ...go, bookInfo: info, id: AppHelper.uuid() }];
+
+              bookInfos = [
+                bookInfos[0],
+                { ...bookInfos[0], bookInfo: info, id: AppHelper.uuid() }
+              ];
             } else {
               // 当前选择的是去程信息
               // 选择了去程，未选择回程
               info.tripType = TripType.departureTrip;
               go.bookInfo = info;
-              bookInfos = bookInfos = [
-                go,
-                { ...go, bookInfo: null, id: AppHelper.uuid() }
-              ]; // 更换去程信息，清空回程信息
+              const backInfo = back || {
+                ...go,
+                bookInfo: null,
+                id: AppHelper.uuid()
+              };
+              if (backInfo.bookInfo) {
+                if (
+                  !(
+                    (go.bookInfo.flightSegment &&
+                      go.bookInfo.flightSegment.FromCityName) ==
+                      (backInfo.bookInfo.flightSegment &&
+                        backInfo.bookInfo.flightSegment.ToCityName) &&
+                    (go.bookInfo.flightSegment &&
+                      go.bookInfo.flightSegment.ToCityName) ==
+                      (backInfo.bookInfo.flightSegment &&
+                        backInfo.bookInfo.flightSegment.FromCityName)
+                  )
+                ) {
+                  backInfo.bookInfo = null;
+                }
+              }
+              bookInfos = bookInfos = [go, backInfo]; // 更换去程信息，清空回程信息
             }
           } else {
             info.tripType = TripType.departureTrip;
@@ -529,6 +549,12 @@ export class FlightService {
       item.isReplace = false;
       return item;
     });
+    if (isSelfBookType && arr.filter(it => !!it.bookInfo).length == 2) {
+      this.setSearchFlightModel({
+        ...this.getSearchFlightModel(),
+        isLocked: false
+      });
+    }
     this.setPassengerBookInfos(arr);
   }
   private getPolicyCabinBookInfo(
@@ -601,6 +627,9 @@ export class FlightService {
   async addOneBookInfoToSelfBookType() {
     let IdCredential: CredentialsEntity;
     const staff = await this.staffService.getStaff().catch(_ => null);
+    if (this.getPassengerBookInfos().length) {
+      return;
+    }
     if (!(await this.staffService.isSelfBookType())) {
       return;
     }

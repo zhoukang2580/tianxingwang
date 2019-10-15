@@ -286,9 +286,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.disabled) {
       s.Date = s.BackDate;
     }
-    if (!s.isRoundTrip) {
-      s.tripType = TripType.departureTrip;
-    }
+    s.tripType = TripType.departureTrip;
     console.log("search-flight", s);
     this.flightService.setSearchFlightModel(s);
     this.router.navigate([AppHelper.getRoutePath("flight-list")]);

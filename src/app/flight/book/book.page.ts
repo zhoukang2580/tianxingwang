@@ -96,7 +96,6 @@ export class BookPage implements OnInit, AfterViewInit {
   totalPriceSource: Subject<number>;
   vmCombindInfos: ICombindInfo[] = [];
   tmc: TmcEntity;
-  bookDto: OrderBookDto;
   travelForm: TravelFormEntity;
   illegalReasons: IllegalReasonEntity[] = [];
   selfStaff: StaffEntity;
@@ -176,11 +175,11 @@ export class BookPage implements OnInit, AfterViewInit {
     console.log("initOrderTravelPayTypes", this.orderTravelPayTypes);
   }
   private async initializeBookDto() {
-    this.bookDto = new OrderBookDto();
-    this.bookDto.TravelFormId =
-      AppHelper.getQueryParamers()["travelFormId"] || "";
+    const bookDto = new OrderBookDto();
+    bookDto.TravelFormId = AppHelper.getQueryParamers()["travelFormId"] || "";
     const infos = this.flightService.getPassengerBookInfos();
-    this.bookDto.Passengers = [];
+    bookDto.Passengers = [];
+    const isSelf = await this.staffService.isSelfBookType();
     infos.forEach(item => {
       if (item.passenger && item.bookInfo) {
         const p = new PassengerDto();
@@ -192,13 +191,29 @@ export class BookPage implements OnInit, AfterViewInit {
         account.Id = item.passenger.AccountId;
         p.Credentials.Account = p.Credentials.Account || account;
         p.Policy = item.passenger.Policy;
-        this.bookDto.Passengers.push(p);
+        bookDto.Passengers.push(p);
       }
     });
-    console.log("initializeBookDto", this.bookDto);
+    if (isSelf && bookDto.Passengers.length == 2) {
+      bookDto.Passengers = [bookDto.Passengers[0]];
+    }
+    console.log("initializeBookDto", bookDto);
     this.initialBookDtoModel = await this.flightService.getInitializeBookDto(
-      this.bookDto
+      bookDto
     );
+    if (isSelf) {
+      if (this.initialBookDtoModel && infos.length == 2) {
+        if (this.initialBookDtoModel.ServiceFees) {
+          const fees = {};
+          Object.keys(this.initialBookDtoModel.ServiceFees).forEach(k => {
+            infos.forEach(info => {
+              fees[info.id] = this.initialBookDtoModel.ServiceFees[k];
+            });
+          });
+          this.initialBookDtoModel.ServiceFees = fees;
+        }
+      }
+    }
     return this.initialBookDtoModel;
   }
   ngAfterViewInit() {
