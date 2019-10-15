@@ -33,6 +33,7 @@ import { environment } from "src/environments/environment";
 })
 export class IdentityService {
   private status = false;
+  private isLoading = false;
   private _IdentityEntity: IdentityEntity;
   private identitySource: Subject<IdentityEntity>;
   constructor(private http: HttpClient) {
@@ -107,12 +108,19 @@ export class IdentityService {
         .map(k => `${k}=${req[k]}`)
         .join("&");
       const url = req.Url || AppHelper.getApiUrl() + "/Home/Proxy";
+      if (this.isLoading) {
+        return of(this._IdentityEntity);
+      }
+      this.isLoading = true;
       return this.http
         .post(url, formObj, {
           headers: { "content-type": "application/x-www-form-urlencoded" },
           observe: "body"
         })
         .pipe(
+          finalize(() => {
+            this.isLoading = false;
+          }),
           map((r: IResponse<IdentityEntity>) => r),
           switchMap(r => {
             if (r.Status) {

@@ -24,6 +24,10 @@ ion-content {
     margin-bottom: 0;
   }
   ion-segment {
+    &.ios {
+      width: 70vw;
+      margin: 0 auto;
+    }
     --indicator-color: rgba(0, 0, 0, 0.13);
     ion-segment-button {
       ion-label {

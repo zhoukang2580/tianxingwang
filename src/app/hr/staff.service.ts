@@ -227,6 +227,7 @@ export interface HrEntity {
 })
 export class StaffService {
   private staff: StaffEntity;
+  private isLoading = false;
   constructor(
     private apiService: ApiService,
     private identityService: IdentityService
@@ -255,7 +256,7 @@ export class StaffService {
     return s && s.BookType;
   }
   async getStaff(forceRefresh: boolean = false): Promise<StaffEntity> {
-    const id = await this.identityService.getIdentityAsync();
+    const id = await this.identityService.getIdentityAsync().catch(_ => null);
     if (!id || !id.Id || !id.Ticket) {
       this.staff = {} as any;
       return this.staff;
@@ -285,9 +286,14 @@ export class StaffService {
     const req = new RequestEntity();
     req.Method = "HrApiUrl-Staff-Get";
     req.IsShowLoading = true;
+    // if (this.isLoading) {
+    //   return Promise.reject("loading Staff...");
+    // }
+    this.isLoading = true;
     return this.apiService
       .getPromiseData<StaffEntity>(req)
       .then(s => {
+        this.isLoading = false;
         console.log("staff ", s);
         this.staff = s;
         if (this.staff.BookType == StaffBookType.Self) {
@@ -297,6 +303,7 @@ export class StaffService {
         return s;
       })
       .catch(_ => {
+        this.isLoading = false;
         console.error(_);
         this.staff = {} as any;
         return null;

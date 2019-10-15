@@ -39,7 +39,7 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
   async ngAfterViewInit() {
-    WechatHelper.getJssdk();
+    WechatHelper.getJssdk().catch(_ => null);
   }
   ngOnDestroy() {
     this.identityEntitySub.unsubscribe();

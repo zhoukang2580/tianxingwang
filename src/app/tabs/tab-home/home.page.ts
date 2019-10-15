@@ -51,7 +51,6 @@ export class HomePage implements OnInit {
     });
   }
   async ngOnInit() {
-
     const paramters = AppHelper.getQueryParamers();
     if (paramters.wechatPayResultNumber) {
       const req1 = this.apiService.createRequest();
@@ -66,14 +65,16 @@ export class HomePage implements OnInit {
     this.getAgentNotices();
   }
   async getAgentNotices() {
-    this.agentNotices = await this.cmsService.getAgentNotices(0);
+    this.agentNotices = await this.cmsService.getAgentNotices(0).catch(_ => []);
   }
   async check() {
     console.log("home check");
     try {
       this.apiService.showLoadingView();
-      this.identity = await this.identityService.getIdentityAsync();
-      this.companies = await this.tmcService.getCompanies();
+      this.identity = await this.identityService
+        .getIdentityAsync()
+        .catch(_ => null);
+      this.companies = await this.tmcService.getCompanies().catch(_ => []);
       if (
         this.identity &&
         this.identity.Numbers &&
