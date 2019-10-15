@@ -114,6 +114,10 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
   private onRoundTrip(single: boolean) {
     // console.log("onRoundTrip isSingle", single);
     this.isSingle = single;
+    this.flightService.setSearchFlightModel({
+      ...this.flightService.getSearchFlightModel(),
+      isRoundTrip: !this.isSingle
+    });
   }
   getMonth(d: DayModel) {
     return +this.calendarService.getMonth(d);
@@ -168,8 +172,9 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
         }
       });
     this.apiService.showLoadingView();
-    const s = await this.staffService.getStaff();
-    this.showReturnTrip = s && s.BookType == StaffBookType.Self;
+    this.showReturnTrip = await this.staffService
+      .isSelfBookType()
+      .catch(_ => false);
     this.initFlightDays();
     this.initFlightCities();
     this.apiService.hideLoadingView();
@@ -211,8 +216,8 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
       "上海";
     this.vmToCity.Code = this.toCity.Code = "BJS";
     this.fromCity.Tag = this.toCity.Tag = "AirportCity"; // 出发城市，不是出发城市的那个机场
-    const lastFromCity = await this.storage.get("fromCity");
-    const lastToCity = await this.storage.get("toCity");
+    const lastFromCity = await this.storage.get("fromCity").catch(_ => null);
+    const lastToCity = await this.storage.get("toCity").catch(_ => null);
     if (!lastFromCity || !lastToCity) {
       const cities = await this.flightService.getAllLocalAirports();
       if (cities && cities.length) {
@@ -242,8 +247,8 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.storage.set("toCity", this.toCity);
     const s: SearchFlightModel = new SearchFlightModel();
     s.tripType = TripType.departureTrip;
-    const staff = await this.staffService.getStaff();
-    if (staff.BookType == StaffBookType.Self) {
+    const staff = await this.staffService.getStaff().catch(_ => null);
+    if (staff && staff.BookType == StaffBookType.Self) {
       const exists = this.flightService
         .getPassengerBookInfos()
         .filter(

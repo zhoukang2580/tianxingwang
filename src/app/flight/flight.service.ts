@@ -513,7 +513,7 @@ export class FlightService {
           }
         }
       } else {
-        bookInfos=[bookInfos[0]];
+        bookInfos = [bookInfos[0]];
         bookInfos = bookInfos.map(it => {
           it.bookInfo = this.getPolicyCabinBookInfo(it, flightCabin);
           return it;
@@ -600,7 +600,10 @@ export class FlightService {
   }
   async addOneBookInfoToSelfBookType() {
     let IdCredential: CredentialsEntity;
-    const staff = await this.staffService.getStaff();
+    const staff = await this.staffService.getStaff().catch(_ => null);
+    if (!(await this.staffService.isSelfBookType())) {
+      return;
+    }
     if (!this.selfCredentials || this.selfCredentials.length == 0) {
       const res = await this.tmcService
         .getPassengerCredentials([staff.AccountId])

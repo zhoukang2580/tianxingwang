@@ -252,7 +252,7 @@ export class StaffService {
     return t == StaffBookType.Secretary;
   }
   private async getBookType(): Promise<StaffBookType> {
-    const s = await this.getStaff();
+    const s = await this.getStaff().catch(_ => null);
     return s && s.BookType;
   }
   async getStaff(forceRefresh: boolean = false): Promise<StaffEntity> {

@@ -149,39 +149,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.selectedPassengersNumbers$ = flightService
       .getPassengerBookInfoSource()
       .pipe(map(item => item.length));
-    this.selectPassengerSubscription = this.flightService
-      .getPassengerBookInfoSource()
-      .subscribe(async p => {
-        if (p.length == 0) {
-          if (this.isLeavePage) {
-            return;
-          }
-          if (!(await this.canShowAddPassenger())) {
-            return;
-          }
-          const ok = await AppHelper.alert(
-            LanguageHelper.Flight.getMustAddOnePassengerTip(),
-            true,
-            LanguageHelper.getConfirmTip(),
-            LanguageHelper.getCancelTip()
-          );
-          if (ok) {
-            this.goToSelectPassengerPage();
-          }
-        } else {
-          if (this.isLeavePage || this.isLoading) {
-            return;
-          }
-          // if (this.flightService.getSearchFlightModel().isRefreshData) {
-          //   setTimeout(() => {
-          //     this.flightService.setSearchFlightModel({
-          //       ...this.flightService.getSearchFlightModel(),
-          //       isRefreshData: false
-          //     });
-          //   }, 10);
-          // }
-        }
-      });
     this.hasDataSource = new BehaviorSubject(false);
     this.vmFlights = [];
     this.flightJourneyList = [];
@@ -249,7 +216,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async canShowAddPassenger() {
-    const identity = await this.identityService.getIdentityAsync();
+    const identity = await this.identityService
+      .getIdentityAsync()
+      .catch(_ => null);
     this.showAddPassenger =
       (identity && identity.Numbers && identity.Numbers.AgentId) ||
       !(await this.staffService.isSelfBookType());
@@ -408,7 +377,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   private scrollToTop() {
     setTimeout(() => {
       if (this.cnt) {
-        if(!this.isStillOnCurrentPage()){
+        if (!this.isStillOnCurrentPage()) {
           return;
         }
         this.cnt.scrollToTop(100);
@@ -543,6 +512,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async goToFlightCabinsDetails(fs: FlightSegmentEntity) {
+    await this.flightService.addOneBookInfoToSelfBookType();
     const isSelf = await this.staffService.isSelfBookType();
     if (
       !isSelf &&
@@ -722,7 +692,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         }
       });
   }
-  private isStillOnCurrentPage(){
+  private isStillOnCurrentPage() {
     return this.router.routerState.snapshot.url.includes("flight-list");
   }
   ngOnDestroy() {

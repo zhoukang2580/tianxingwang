@@ -1,3 +1,4 @@
+import { environment } from "src/environments/environment";
 import { CalendarService } from "./tmc/calendar.service";
 import { MessageModel, MessageService } from "./message/message.service";
 import { FlightService } from "./flight/flight.service";
@@ -217,6 +218,9 @@ export class AppComponent
   }
   private jumpToRoute(route: string) {
     return this.router.navigate([AppHelper.getRoutePath(route)]).then(() => {
+      if (environment.production) {
+        return;
+      }
       // this.router.navigate([AppHelper.getRoutePath("register")]);
       // this.router.navigate([AppHelper.getRoutePath("account-password")]);
       // this.router.navigate([AppHelper.getRoutePath("account-email")]);
