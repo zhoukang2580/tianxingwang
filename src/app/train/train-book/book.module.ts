@@ -5,10 +5,10 @@ import { Routes, RouterModule } from "@angular/router";
 
 import { IonicModule } from "@ionic/angular";
 
-import { TrainBookPage } from "./book.page";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 import { TrainComponentsModule } from '../components/traincomponents.module';
+import { TrainBookPage } from './book.page';
 
 const routes: Routes = [
   {

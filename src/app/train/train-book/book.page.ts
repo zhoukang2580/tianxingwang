@@ -1,19 +1,19 @@
-import { ITrainInfo } from "./../train.service";
-import { CalendarService } from "./../../tmc/calendar.service";
-import { TrainEntity } from "./../models/TrainEntity";
-import { InsuranceProductEntity } from "./../../insurance/models/InsuranceProductEntity";
-import { OrderLinkmanEntity } from "./../../order/models/OrderLinkmanEntity";
+import { ITrainInfo } from "../train.service";
+import { CalendarService } from "../../tmc/calendar.service";
+import { TrainEntity } from "../models/TrainEntity";
+import { InsuranceProductEntity } from "../../insurance/models/InsuranceProductEntity";
+import { OrderLinkmanEntity } from "../../order/models/OrderLinkmanEntity";
 import * as moment from "moment";
 import {
   OrderTravelPayType,
   OrderTravelType
-} from "./../../order/models/OrderTravelEntity";
+} from "../../order/models/OrderTravelEntity";
 import {
   StaffApprover,
   StaffEntity,
   OrganizationEntity
-} from "./../../hr/staff.service";
-import { IdentityService } from "./../../services/identity/identity.service";
+} from "../../hr/staff.service";
+import { IdentityService } from "../../services/identity/identity.service";
 import {
   TmcEntity,
   TravelFormEntity,
@@ -73,7 +73,7 @@ import { PayService } from "src/app/services/pay/pay.service";
   templateUrl: "./book.page.html",
   styleUrls: ["./book.page.scss"]
 })
-export class TrainBookPage implements OnInit, AfterViewInit {
+export class TrainBookPage implements OnInit, AfterViewInit { 
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent) cnt: IonContent;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
