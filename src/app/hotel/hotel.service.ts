@@ -639,12 +639,20 @@ export class HotelService {
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;
+    const isSelf = await this.staffService.isSelfBookType();
+    const bookInfos = this.getBookInfos();
     return this.apiService
       .getPromiseData<InitialBookDtoModel>(req)
       .then(res => {
         res.IllegalReasons = res.IllegalReasons || [];
         res.Insurances = res.Insurances || {};
         res.ServiceFees = res.ServiceFees || ({} as any);
+        if (bookInfos.length == 2 && isSelf) {
+          const fees = {};
+          Object.keys(res.ServiceFees).forEach(k => {
+            fees[k] = +res.ServiceFees[k] / 2;
+          });
+        }
         res.Staffs = res.Staffs || [];
         res.Staffs = res.Staffs.map(it => {
           return {
