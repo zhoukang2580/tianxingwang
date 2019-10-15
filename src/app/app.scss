@@ -126,7 +126,7 @@ input {
   //   &:focus {
   //     border-color: var(--ion-color-secondary);
   //   }
-  &:focus + .validerrormess {
+  &:focus ~ .validerrormess {
     display: none;
   }
 }
@@ -134,8 +134,8 @@ input {
 .validctrlsucess {
   border: 1px solid var(--ion-color-success);
 
-  & + .validerrormess,
-  & + .validsucessmess {
+  & ~ .validerrormess,
+  & ~ .validsucessmess {
     display: none;
   }
 }
