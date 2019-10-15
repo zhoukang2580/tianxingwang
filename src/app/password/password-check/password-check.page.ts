@@ -29,9 +29,7 @@ export class PasswordCheckPage implements OnInit, OnDestroy {
   back() {
     this.navCtrl.back();
   }
-  ngOnInit() {
-    this.subscription = this.check().subscribe();
-  }
+  ngOnInit() {}
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
@@ -39,6 +37,7 @@ export class PasswordCheckPage implements OnInit, OnDestroy {
     this.isShowImageCode = true;
   }
   onSlideEvent(valid: boolean) {
+    this.message = "";
     if (valid) {
       if (this.subscription) {
         this.subscription.unsubscribe();
@@ -50,6 +49,9 @@ export class PasswordCheckPage implements OnInit, OnDestroy {
   }
 
   check() {
+    if (!this.name || !this.name.trim()) {
+      return;
+    }
     const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Home-Action";
     req.Data = JSON.stringify({
