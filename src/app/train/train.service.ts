@@ -424,20 +424,17 @@ export class TrainService {
             );
           }
         }
-        // 给未选择的乘客选择火车信息
-        if (
-          !bookInfo.bookInfo ||
-          !bookInfo.bookInfo.trainPolicy ||
-          !bookInfo.bookInfo.trainEntity
-        ) {
-          bookInfo.bookInfo = {
-            trainEntity: currentViewtTainItem.train,
-            trainPolicy: currentViewtTainItem.selectedSeat.Policy,
-            tripType,
-            id: AppHelper.uuid(),
-            selectedSeat: currentViewtTainItem.selectedSeat
-          };
+        bookInfo.bookInfo = {
+          trainEntity: currentViewtTainItem.train,
+          trainPolicy: currentViewtTainItem.selectedSeat.Policy,
+          tripType,
+          id: AppHelper.uuid(),
+          selectedSeat: currentViewtTainItem.selectedSeat
+        };
+        if (!currentViewtTainItem.selectedSeat.Policy.IsAllowBook) {
+          bookInfo.bookInfo = null;
         }
+
         // 修改重选的火车信息,每次只能重选一个，所以直接覆盖重选的即可
         if (bookInfo.isReplace) {
           bookInfo.bookInfo = {
