@@ -163,7 +163,7 @@ export class MemberCredentialManagementPage
       Gender: "M",
       Type: CredentialsType.IdCard
     } as any;
-    this.newCredentials.push(item);
+    this.newCredentials.unshift(item);
   }
   initializeValidateAdd(el: HTMLFormElement) {
     this.validatorService.initialize(
