@@ -119,7 +119,7 @@ export class BookPage implements OnInit, AfterViewInit {
     private tmcService: TmcService,
     private natCtrl: NavController,
     private modalCtrl: ModalController,
-    private flydayService: CalendarService,
+    private calendarService: CalendarService,
     private route: ActivatedRoute,
     private popoverCtrl: PopoverController,
     private plt: Platform,
@@ -470,7 +470,7 @@ export class BookPage implements OnInit, AfterViewInit {
     const t = flightSegment && moment(flightSegment.TakeoffTime);
     let d: DayModel;
     if (t) {
-      d = this.flydayService.generateDayModel(t);
+      d = this.calendarService.generateDayModel(t);
     }
     return `${t && t.format("MM月DD日")} ${d && d.dayOfWeekName} `;
   }
@@ -478,7 +478,7 @@ export class BookPage implements OnInit, AfterViewInit {
     if (!s) {
       return "";
     }
-    const day = this.flydayService.generateDayModel(moment(s.TakeoffTime));
+    const day = this.calendarService.generateDayModel(moment(s.TakeoffTime));
     return `${day.date} ${day.dayOfWeekName}`;
   }
   getTripTip(info: IFlightSegmentInfo) {

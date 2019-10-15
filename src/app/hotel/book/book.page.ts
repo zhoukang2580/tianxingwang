@@ -65,6 +65,7 @@ import { trigger, state, style } from "@angular/animations";
 import { HotelPaymentType } from "../models/HotelPaymentType";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { OrderCardEntity } from "src/app/order/models/OrderCardEntity";
+import { ProductItemType } from 'src/app/tmc/models/ProductItems';
 @Component({
   selector: "app-book",
   templateUrl: "./book.page.html",
@@ -919,6 +920,7 @@ export class BookPage implements OnInit, AfterViewInit {
               await AppHelper.alert(
                 LanguageHelper.Order.getBookTicketWaitingTip()
               );
+              this.goToMyOrders(ProductItemType.hotel);
             }
           } else {
             // await AppHelper.alert(
@@ -929,6 +931,11 @@ export class BookPage implements OnInit, AfterViewInit {
         }
       }
     }
+  }
+  private goToMyOrders(tab: ProductItemType) {
+    this.router.navigate(["product-tabs"], {
+      queryParams: { tabId: tab }
+    });
   }
   private async checkPay(tradeNo: string) {
     return new Promise<boolean>(s => {
