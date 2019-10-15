@@ -73,7 +73,7 @@ import { PayService } from "src/app/services/pay/pay.service";
   templateUrl: "./book.page.html",
   styleUrls: ["./book.page.scss"]
 })
-export class TrainBookPage implements OnInit, AfterViewInit { 
+export class TrainBookPage implements OnInit, AfterViewInit {
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent) cnt: IonContent;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
@@ -86,7 +86,6 @@ export class TrainBookPage implements OnInit, AfterViewInit {
   totalPriceSource: Subject<number>;
   private isCheckingPay = false;
   private checkPayCountIntervalId: any;
-  private orderBookDto: OrderBookDto;
   private checkPayCount = 5;
   private checkPayCountIntervalTime = 3 * 1000;
   constructor(
@@ -142,6 +141,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     bookDto.TravelFormId = AppHelper.getQueryParamers()["travelFormId"] || "";
     const infos = this.trainService.getBookInfos();
     bookDto.Passengers = [];
+    const isSelf = await this.staffService.isSelfBookType();
     infos.forEach(bookInfo => {
       if (bookInfo.passenger && bookInfo.bookInfo) {
         const p = new PassengerDto();
@@ -156,8 +156,24 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         bookDto.Passengers.push(p);
       }
     });
+    if (isSelf && bookDto.Passengers.length == 2) {
+      bookDto.Passengers = [bookDto.Passengers[0]];
+    }
+    console.log("initializeBookDto", bookDto);
     this.initialBookDto = await this.trainService.getInitializeBookDto(bookDto);
-    this.orderBookDto = bookDto;
+    if (isSelf) {
+      if (this.initialBookDto && infos.length == 2) {
+        if (this.initialBookDto.ServiceFees) {
+          const fees = {};
+          Object.keys(this.initialBookDto.ServiceFees).forEach(k => {
+            infos.forEach(info => {
+              fees[info.id] = this.initialBookDto.ServiceFees[k];
+            });
+          });
+          this.initialBookDto.ServiceFees = fees;
+        }
+      }
+    }
     console.log("initializeBookDto", this.initialBookDto);
     await this.storage.set("mock-initialBookDto-train", this.initialBookDto);
     return this.initialBookDto;
@@ -182,7 +198,6 @@ export class TrainBookPage implements OnInit, AfterViewInit {
 
   private async initializeViewModel() {
     this.viewModel = {} as any;
-    this.viewModel.bookDto = this.orderBookDto;
     this.viewModel.isCanSkipApproval$ = combineLatest([
       from(this.tmcService.getTmc()),
       from(this.staffService.isSelfBookType()),
@@ -1070,7 +1085,6 @@ interface ITmcOutNumberInfo {
 export interface IBookTrainViewModel {
   tmc: TmcEntity;
   orderTravelPayType: OrderTravelPayType;
-  bookDto: OrderBookDto;
   travelForm: TravelFormEntity;
   illegalReasons: IllegalReasonEntity[];
   combindInfos: IPassengerBookInfo[];
