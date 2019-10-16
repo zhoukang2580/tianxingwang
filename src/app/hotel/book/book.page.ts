@@ -59,7 +59,7 @@ import { OrderLinkmanDto } from "src/app/order/models/OrderLinkmanDto";
 import { LanguageHelper } from "src/app/languageHelper";
 import { SelectTravelNumberComponent } from "src/app/tmc/components/select-travel-number-popover/select-travel-number-popover.component";
 import { SearchApprovalComponent } from "src/app/tmc/components/search-approval/search-approval.component";
-import { map, tap } from "rxjs/operators";
+import { map, tap, mergeMap } from "rxjs/operators";
 import * as moment from "moment";
 import { trigger, state, style } from "@angular/animations";
 import { HotelPaymentType } from "../models/HotelPaymentType";
@@ -94,7 +94,6 @@ export class BookPage implements OnInit, AfterViewInit {
   identity: IdentityEntity;
   bookInfos: PassengerBookInfo<IHotelInfo>[];
   tmc: TmcEntity;
-  totalPrice$: Observable<number>;
   isCanSkipApproval$ = of(false);
   illegalReasons: any[];
   travelForm: TravelFormEntity;
@@ -211,31 +210,27 @@ export class BookPage implements OnInit, AfterViewInit {
     }
   }
   ngAfterViewInit() {}
-  calcTotalPrice() {
-    this.totalPrice$ = this.hotelService.getBookInfoSource().pipe(
-      map(infos => {
-        let totalPrice = infos.reduce((arr, item) => {
-          if (item && item.bookInfo && item.bookInfo.roomPlan) {
-            const info = item.bookInfo;
-            arr = AppHelper.add(arr, +info.roomPlan.TotalAmount);
-          }
-          return arr;
-        }, 0);
-        console.log("totalPrice ", this.initialBookDto);
-        if (this.initialBookDto && this.initialBookDto.ServiceFees) {
-          const fees = Object.keys(this.initialBookDto.ServiceFees).reduce(
-            (acc, key) => {
-              const fee = +this.initialBookDto.ServiceFees[key];
-              acc = AppHelper.add(fee, acc);
-              return acc;
-            },
-            0
-          );
-          totalPrice = AppHelper.add(fees, totalPrice);
-        }
-        return totalPrice;
-      })
-    );
+  get totalPrice() {
+    const infos = this.hotelService.getBookInfos();
+    let totalPrice = infos.reduce((arr, item) => {
+      if (item && item.bookInfo && item.bookInfo.roomPlan) {
+        const info = item.bookInfo;
+        arr = AppHelper.add(arr, +info.roomPlan.TotalAmount);
+      }
+      return arr;
+    }, 0);
+    if (this.initialBookDto && this.initialBookDto.ServiceFees) {
+      const fees = Object.keys(this.initialBookDto.ServiceFees).reduce(
+        (acc, key) => {
+          const fee = +this.initialBookDto.ServiceFees[key];
+          acc = AppHelper.add(fee, acc);
+          return acc;
+        },
+        0
+      );
+      totalPrice = AppHelper.add(fees, totalPrice);
+    }
+    return totalPrice;
   }
   private async initOrderTravelPayTypes() {
     // console.log("initOrderTravelPayTypes", this.initialBookDto);
@@ -887,7 +882,6 @@ export class BookPage implements OnInit, AfterViewInit {
     return initialBookDto;
   }
   ngOnInit() {
-    this.calcTotalPrice();
     this.doRefresh();
   }
   get hotelPaymentType(): HotelPaymentType {
