@@ -25,6 +25,8 @@ import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module
 import { FlightOrderDetialComponent } from "./flight-order-detial/flight-order-detial.component";
 import { FlightOriginalTripComponent } from "./flight-original-trip/flight-original-trip.component";
 import { PriceDetailComponent } from "./price-detail/price-detail.component";
+import { SelectFlightPassengerComponent } from "./select-flight-passenger/select-flight-passenger.component";
+import { MemberPipesModule } from "src/app/member/pipe/pipe.module";
 
 @NgModule({
   declarations: [
@@ -45,7 +47,8 @@ import { PriceDetailComponent } from "./price-detail/price-detail.component";
     SelectFlightsegmentCabinComponent,
     FlightTripComponent,
     FlightOriginalTripComponent,
-    PriceDetailComponent
+    PriceDetailComponent,
+    SelectFlightPassengerComponent
   ],
   imports: [
     CommonModule,
@@ -56,7 +59,8 @@ import { PriceDetailComponent } from "./price-detail/price-detail.component";
     FlightDirectivesModule,
     AppDirectivesModule,
     AppComponentsModule,
-    TmcComponentsModule
+    TmcComponentsModule,
+    MemberPipesModule
   ],
   exports: [
     AppDirectivesModule,
@@ -85,7 +89,8 @@ import { PriceDetailComponent } from "./price-detail/price-detail.component";
     SelectedPassengersComponent,
     SelectedFlightsegmentInfoComponent,
     SelectFlightsegmentCabinComponent,
-    PriceDetailComponent
+    PriceDetailComponent,
+    SelectFlightPassengerComponent
   ]
 })
 export class FlightComponentsModule {}

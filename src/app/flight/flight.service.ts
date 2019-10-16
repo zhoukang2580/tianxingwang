@@ -660,10 +660,15 @@ export class FlightService {
   }
   private async checkOrAddSelfBookTypeBookInfo() {
     const bookInfos = this.getPassengerBookInfos();
-    if ((await this.staffService.isSelfBookType()) && bookInfos.length === 0) {
+    const isSelf = await this.staffService.isSelfBookType();
+    if (isSelf && bookInfos.length === 0) {
       await this.addOneBookInfoToSelfBookType();
     }
-    if (this.getSearchFlightModel().isRoundTrip && bookInfos.length == 1) {
+    if (
+      isSelf &&
+      this.getSearchFlightModel().isRoundTrip &&
+      bookInfos.length == 1
+    ) {
       this.setPassengerBookInfos([
         bookInfos[0],
         { ...bookInfos[0], bookInfo: null }

@@ -96,7 +96,7 @@ export class SelectPassengerPage
   @ViewChildren("addForm") addForm: QueryList<IonGrid>;
   title = "选择旅客";
   constructor(
-    private modalController: ModalController,
+    public modalController: ModalController,
     private navCtrl: NavController,
     private apiService: ApiService,
     private identityService: IdentityService,
@@ -164,6 +164,7 @@ export class SelectPassengerPage
             break;
           }
           case FlightHotelTrainType.Hotel: {
+            this.hotelService.removeBookInfo(info);
             break;
           }
         }

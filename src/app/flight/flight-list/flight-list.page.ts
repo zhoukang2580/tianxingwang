@@ -1,3 +1,4 @@
+import { SelectFlightPassengerComponent } from "./../components/select-flight-passenger/select-flight-passenger.component";
 import { IFlightSegmentInfo } from "./../models/PassengerFlightInfo";
 import { PassengerBookInfo } from "./../../tmc/tmc.service";
 import { environment } from "src/environments/environment";
@@ -68,7 +69,6 @@ import {
   FlightPolicy
 } from "../models/PassengerFlightInfo";
 import { DaysCalendarComponent } from "src/app/tmc/components/days-calendar/days-calendar.component";
-import { NOT_WHITE_LIST } from "src/app/tmc/select-passenger/select-passenger.page";
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -288,13 +288,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.flightService.setSearchFlightModel(this.searchFlightModel);
     this.doRefresh(true, true);
   }
-  goToSelectPassengerPage() {
-    if (this.searchConditionSubscription) {
-      this.searchConditionSubscription.unsubscribe();
-    }
-    this.isLeavePage = true;
-    this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
-  }
   async doRefresh(loadDataFromServer: boolean, keepSearchCondition: boolean) {
     if (this.timeoutid) {
       clearTimeout(this.timeoutid);
@@ -487,8 +480,29 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       FlightPolicies
     };
   }
-  onSelectPassenger() {
-    this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
+  async onSelectPassenger() {
+    const m = await this.modalCtrl.create({
+      component: SelectFlightPassengerComponent,
+      componentProps: {
+        isOpenPageAsModal: true
+      }
+    });
+    const oldBookInfos = this.flightService
+      .getPassengerBookInfos()
+      .map(it => it.id);
+    await m.present();
+    await m.onDidDismiss();
+    const newBookInfos = this.flightService
+      .getPassengerBookInfos()
+      .map(it => it.id);
+    console.log(oldBookInfos.map(it => it), "new ", newBookInfos.map(it => it));
+    const isChange =
+      oldBookInfos.length !== newBookInfos.length ||
+      oldBookInfos.some(it => !newBookInfos.find(n => n == it)) ||
+      newBookInfos.some(n => !oldBookInfos.find(it => it == n));
+    if (isChange) {
+      this.doRefresh(true, false);
+    }
   }
   private getUnSelectFlightSegmentPassengers() {
     return this.flightService
@@ -524,7 +538,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         true,
         LanguageHelper.getConfirmTip()
       );
-      this.goToSelectPassengerPage();
+      await this.onSelectPassenger();
       return;
     }
     const canbookMore = await this.flightService.canBookMoreFlightSegment(fs);
