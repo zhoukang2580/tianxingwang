@@ -113,7 +113,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   timeOrdM2N: boolean; // 时间从早到晚
   isLoading = false;
   isFiltered = false;
-  isLeavePage = false;
   isSelfBookType = true;
   currentProcessStatus = "正在获取航班列表";
   st = 0;
@@ -185,10 +184,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         })
       );
     this.route.queryParamMap.subscribe(async () => {
-      this.isLeavePage = false;
       this.showAddPassenger = await this.canShowAddPassenger();
-      this.isLeavePage = false;
       this.flightService.setFilterPanelShow(false);
+      await this.initSearchModelParams();
       console.log("this.route.queryParamMap", this.searchFlightModel);
     });
     this.showAdvSearchPage$ = this.flightService.getFilterPanelShow();
@@ -211,13 +209,11 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   back() {
-    this.isLeavePage = true;
     this.router.navigate([AppHelper.getRoutePath("search-flight")]);
   }
   async onChangedDay(day: DayModel, byUser: boolean) {
     if (
       byUser &&
-      !this.isLeavePage &&
       (!day || this.searchFlightModel.Date == day.date || this.isLoading)
     ) {
       return;
@@ -273,7 +269,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     }
     this.timeoutid = setTimeout(async () => {
       try {
-        if (this.isLeavePage || this.isLoading) {
+        if (this.isLoading) {
           return;
         }
         this.moveDayToSearchDate();
@@ -305,9 +301,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           loadDataFromServer
         ) {
           this.currentProcessStatus = "正在获取航班列表";
-          this.flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync(
-            this.searchFlightModel
-          );
+          this.flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync();
           if (this.flightJourneyList && this.flightJourneyList.length) {
             await this.renderFlightList(
               this.flightService.getTotalFlySegments(this.flightJourneyList)
@@ -549,7 +543,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
 
     this.searchConditionSubscription.unsubscribe();
-    this.isLeavePage = true;
   }
   private async showSelectedInfos() {
     const modal = await this.modalCtrl.create({
@@ -639,31 +632,26 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.apiService.hideLoadingView();
     this.isLoading = false;
   }
+  private async initSearchModelParams() {
+    this.searchFlightModel = this.flightService.getSearchFlightModel();
+    this.isSelfBookType = await this.staffService.isSelfBookType();
+    if (this.searchFlightModel) {
+      // this.isRoundTrip = this.searchFlightModel.IsRoundTrip;
+      this.vmFromCity = this.searchFlightModel.fromCity;
+      this.vmToCity = this.searchFlightModel.toCity;
+      this.moveDayToSearchDate(
+        this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date)
+      );
+      if (this.searchFlightModel.isRefreshData) {
+        this.flightService.setSearchFlightModel({
+          ...this.searchFlightModel,
+          isRefreshData: false
+        });
+        this.doRefresh(true, false);
+      }
+    }
+  }
   async ngOnInit() {
-    this.searchConditionSubscription = this.flightService
-      .getSearchFlightModelSource()
-      .subscribe(async s => {
-        console.log("flight-list page getSearchFlightModelSource", s);
-        this.searchFlightModel = s;
-        this.isSelfBookType = await this.staffService.isSelfBookType();
-        if (this.searchFlightModel) {
-          // this.isRoundTrip = this.searchFlightModel.IsRoundTrip;
-          this.vmFromCity = this.searchFlightModel.fromCity;
-          this.vmToCity = this.searchFlightModel.toCity;
-          this.moveDayToSearchDate(
-            this.flyDayService.generateDayModelByDate(
-              this.searchFlightModel.Date
-            )
-          );
-          if (s.isRefreshData) {
-            this.flightService.setSearchFlightModel({
-              ...s,
-              isRefreshData: false
-            });
-            this.doRefresh(true, true);
-          }
-        }
-      });
     this.filteredPolicyPassenger$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(map(infos => infos.find(it => it.isFilteredPolicy)));
@@ -692,28 +680,24 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
             this.moveDayToSearchDate();
           }
           this.searchFlightModel.Date = day.date;
-          if (this.isLoading && this.isLeavePage) {
-            return;
-          }
-          console.log(
-            `isLeavePage,${this.isLeavePage},cur route url = ${this.router.routerState.snapshot.url}`
-          );
-          if (
-            this.isLeavePage ||
-            !this.router.routerState.snapshot.url.includes("flight-list")
-          ) {
+          if (this.notCurrentPage()) {
             console.log("当前路由不在航班列表页面");
             return;
           }
           this.doRefresh(true, false);
         }
       });
+    await this.initSearchModelParams();
     this.doRefresh(true, true);
+  }
+  private notCurrentPage() {
+    return !this.router.routerState.snapshot.url.includes("flight-list");
   }
   private isStillOnCurrentPage() {
     return this.router.routerState.snapshot.url.includes("flight-list");
   }
   ngOnDestroy() {
+    console.log("ngOnDestroy");
     this.vmFlights = [];
     this.selectDaySubscription.unsubscribe();
     this.filterConditionSubscription.unsubscribe();

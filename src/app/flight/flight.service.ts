@@ -126,12 +126,8 @@ export class FlightService {
   }
   setSearchFlightModel(m: SearchFlightModel) {
     console.log("setSearchFlightModel", m);
-    if (m) {
-      this.searchFlightModel = {
-        ...m
-      };
-      this.searchFlightModelSource.next(this.searchFlightModel);
-    }
+    this.searchFlightModel = m;
+    this.searchFlightModelSource.next(this.searchFlightModel);
   }
   getSearchFlightModel() {
     return { ...(this.searchFlightModel || new SearchFlightModel()) };
@@ -901,12 +897,11 @@ export class FlightService {
   private getHHmm(datetime: string) {
     return this.calendarService.getHHmm(datetime);
   }
-  async getFlightJourneyDetailListAsync(
-    data: SearchFlightModel
-  ): Promise<FlightJourneyEntity[]> {
+  async getFlightJourneyDetailListAsync(): Promise<FlightJourneyEntity[]> {
     await this.checkOrAddSelfBookTypeBookInfo();
     const req = new RequestEntity();
     req.Method = "TmcApiFlightUrl-Home-Detail ";
+    const data = this.getSearchFlightModel();
     req.Data = {
       Date: data.Date, //  Yes 航班日期（yyyy-MM-dd）
       FromCode: data.FromCode, //  Yes 三字代码
