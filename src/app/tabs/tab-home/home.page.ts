@@ -5,11 +5,11 @@ import { IdentityService } from "src/app/services/identity/identity.service";
 import { ApiService } from "./../../services/api/api.service";
 import { AppHelper } from "src/app/appHelper";
 import { Component, OnInit } from "@angular/core";
-import { Observable, Subject, BehaviorSubject } from "rxjs";
+import { Observable, Subject, BehaviorSubject, from, of } from "rxjs";
 import { ActivatedRoute, Router, NavigationEnd } from "@angular/router";
 import { PayService } from "src/app/services/pay/pay.service";
 import { TmcService } from "src/app/tmc/tmc.service";
-import { tap, shareReplay } from "rxjs/operators";
+import { tap, shareReplay, map } from "rxjs/operators";
 @Component({
   selector: "app-home",
   templateUrl: "home.page.html",
@@ -23,6 +23,7 @@ export class HomePage implements OnInit {
   selectedCompany$: Observable<string>;
   companies: any[];
   agentNotices: Notice[];
+  canSelectCompany$ = of(false);
   constructor(
     private identityService: IdentityService,
     private router: Router,
@@ -34,13 +35,21 @@ export class HomePage implements OnInit {
     route: ActivatedRoute
   ) {
     this.selectedCompany$ = tmcService.getSelectedCompanySource();
-    route.paramMap.subscribe(p => {
+    route.paramMap.subscribe(async p => {
+      this.identity = await this.identityService
+        .getIdentityAsync()
+        .catch(_ => null);
       // console.log("返回到首页 ",p.keys);
-      this.check();
+      await this.check();
       if (p.get("selectedCompany")) {
         this.tmcService.setSelectedCompany(p.get("selectedCompany"));
       }
     });
+    this.canSelectCompany$ = from(this.staffService.isSelfBookType()).pipe(
+      map(isSelf => {
+        return !isSelf;
+      })
+    );
   }
   accountSecurityEn() {
     this.router.navigate(["account-security_en"]);
@@ -70,6 +79,10 @@ export class HomePage implements OnInit {
   async check() {
     console.log("home check");
     try {
+      const isSelf = await this.staffService.isSelfBookType();
+      if (isSelf) {
+        return;
+      }
       this.apiService.showLoadingView();
       this.identity = await this.identityService
         .getIdentityAsync()

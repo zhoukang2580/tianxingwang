@@ -6,7 +6,9 @@
       </ion-button>
     </ion-buttons>
     <ion-title text-center appShowtip>
-      <ion-text *ngIf='selectedCompany$|async as company'>{{company}}</ion-text>
+      <ng-container *ngIf='canSelectCompany$|async'>
+        <ion-text *ngIf='selectedCompany$|async as company'>{{company}}</ion-text>
+      </ng-container>
       {{identity?.Name}}
     </ion-title>
     <ion-buttons slot='end' *ngIf='identity?.Numbers?.AgentId;else selectCompany'>
@@ -17,7 +19,7 @@
       </ion-button>
     </ion-buttons>
     <ng-template #selectCompany>
-      <ion-buttons slot='end' *ngIf="companies?.length>1">
+      <ion-buttons slot='end' *ngIf="(canSelectCompany$|async)&&companies?.length>1">
         <ion-button fill='clear' size='small' (click)='onSwitchCompany()'>
           <ion-chip color='success'>
             <ion-label>切换公司</ion-label>
@@ -30,7 +32,7 @@
 <ion-content>
 
   <div class="img">
-    <img  [src]='"assets/images/home_top_bg.png"'/>
+    <img [src]='"assets/images/home_top_bg.png"' />
   </div>
   <ion-toolbar (click)='goToBulletinList("agentNotice")'>
     <div class="marquee">
@@ -52,7 +54,7 @@
       <ion-col [routerLink]="['/search-hotel']" size="4">
         <div class="item">
           <ion-label>
-            <img src="assets/svgs/hotel.svg"  alt="酒店" [style.height.em]='3'>
+            <img src="assets/svgs/hotel.svg" alt="酒店" [style.height.em]='3'>
             <!-- <i class="icon icon-hotel"></i> -->
           </ion-label>
           <ion-text>国内酒店</ion-text>
