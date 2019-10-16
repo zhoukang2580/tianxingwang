@@ -210,7 +210,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.isLeavePage = false;
       this.flightService.setFilterPanelShow(false);
       console.log("this.route.queryParamMap", this.searchFlightModel);
-      this.doRefresh(true, true);
     });
     this.showAdvSearchPage$ = this.flightService.getFilterPanelShow();
   }
@@ -705,6 +704,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           this.doRefresh(true, false);
         }
       });
+    this.doRefresh(true, true);
   }
   private isStillOnCurrentPage() {
     return this.router.routerState.snapshot.url.includes("flight-list");
