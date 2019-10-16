@@ -46,6 +46,7 @@ export class ApiService {
   private loadingSubject: Subject<boolean>;
   public apiConfig: ApiConfig;
   private worker = null;
+  private isLoadingApiConfig = false;
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -337,8 +338,7 @@ export class ApiService {
       map(r => r as any)
     );
   }
-
-  async loadApiConfig(forceRefresh = false): Promise<ApiConfig> {
+  private async loadApiConfig(forceRefresh = false): Promise<ApiConfig> {
     if (!forceRefresh) {
       if (!this.apiConfig) {
         this.apiConfig = await this.storage.get(`KEY_API_CONFIG`);
@@ -347,6 +347,10 @@ export class ApiService {
         return Promise.resolve(this.apiConfig);
       }
     }
+    if (this.isLoadingApiConfig) {
+      return Promise.reject("loading api config");
+    }
+    this.isLoadingApiConfig = true;
     const url = AppHelper.getApiUrl() + "/Home/ApiConfig";
     const due = 30 * 1000;
     return new Promise<ApiConfig>(s => {
@@ -355,6 +359,7 @@ export class ApiService {
         .pipe(
           timeout(due),
           finalize(() => {
+            this.isLoadingApiConfig = false;
             setTimeout(() => {
               if (sub) {
                 console.log("loadUrls unsubscribe");
@@ -387,7 +392,7 @@ export class ApiService {
   getSign(req: RequestEntity) {
     return md5(
       `${typeof req.Data === "string" ? req.Data : JSON.stringify(req.Data)}${
-      req.Timestamp
+        req.Timestamp
       }${req.Token}`
     ) as string;
   }

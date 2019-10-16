@@ -187,26 +187,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.route.queryParamMap.subscribe(async () => {
       this.isLeavePage = false;
       this.showAddPassenger = await this.canShowAddPassenger();
-      if (this.searchConditionSubscription) {
-        this.searchConditionSubscription.unsubscribe();
-      }
-      this.searchConditionSubscription = this.flightService
-        .getSearchFlightModelSource()
-        .subscribe(async s => {
-          console.log("flight-list page getSearchFlightModelSource", s);
-          this.searchFlightModel = s;
-          this.isSelfBookType = await this.staffService.isSelfBookType();
-          if (this.searchFlightModel) {
-            // this.isRoundTrip = this.searchFlightModel.IsRoundTrip;
-            this.vmFromCity = this.searchFlightModel.fromCity;
-            this.vmToCity = this.searchFlightModel.toCity;
-            this.moveDayToSearchDate(
-              this.flyDayService.generateDayModelByDate(
-                this.searchFlightModel.Date
-              )
-            );
-          }
-        });
       this.isLeavePage = false;
       this.flightService.setFilterPanelShow(false);
       console.log("this.route.queryParamMap", this.searchFlightModel);
@@ -660,6 +640,30 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.isLoading = false;
   }
   async ngOnInit() {
+    this.searchConditionSubscription = this.flightService
+      .getSearchFlightModelSource()
+      .subscribe(async s => {
+        console.log("flight-list page getSearchFlightModelSource", s);
+        this.searchFlightModel = s;
+        this.isSelfBookType = await this.staffService.isSelfBookType();
+        if (this.searchFlightModel) {
+          // this.isRoundTrip = this.searchFlightModel.IsRoundTrip;
+          this.vmFromCity = this.searchFlightModel.fromCity;
+          this.vmToCity = this.searchFlightModel.toCity;
+          this.moveDayToSearchDate(
+            this.flyDayService.generateDayModelByDate(
+              this.searchFlightModel.Date
+            )
+          );
+          if (s.isRefreshData) {
+            this.flightService.setSearchFlightModel({
+              ...s,
+              isRefreshData: false
+            });
+            this.doRefresh(true, true);
+          }
+        }
+      });
     this.filteredPolicyPassenger$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(map(infos => infos.find(it => it.isFilteredPolicy)));
