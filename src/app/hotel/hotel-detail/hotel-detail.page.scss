@@ -29,6 +29,7 @@
   position: relative;
   top: 0.2em;
 }
+
 .header {
   position: fixed;
   left: 0;
@@ -117,6 +118,12 @@ ion-list {
     background-color: blanchedalmond;
     ion-grid ion-row ion-col {
       align-self: flex-start;
+    }
+    .text {
+      min-width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
   }
   &.traffic-info {

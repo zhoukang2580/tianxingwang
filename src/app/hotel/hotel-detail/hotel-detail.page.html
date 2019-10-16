@@ -7,11 +7,12 @@
     </ion-buttons>
     <ion-title [class.has-add-passenger]='(isShowAddPassenger$|async)'>{{hotel?.Name}}</ion-title>
     <ion-buttons slot='end'>
-      <ion-button style="font-size: 0.6rem;" fill='clear' color='secondary' (click)='filterPassengerPolicy()' size='small'>
+      <ion-button style="font-size: 0.6rem;" fill='clear' color='secondary' (click)='filterPassengerPolicy()'
+        size='small'>
         <ion-text class='xs-font-size'>过滤差标</ion-text>
       </ion-button>
-      <ion-button style="font-size: 0.6rem;" fill='clear' *ngIf='(isShowAddPassenger$|async)' color='secondary' size='small'
-        (click)='onSelectPassenger()'> 
+      <ion-button style="font-size: 0.6rem;" fill='clear' *ngIf='(isShowAddPassenger$|async)' color='secondary'
+        size='small' (click)='onSelectPassenger()'>
         <ion-text class='xs-font-size'>添加旅客</ion-text>
         <ion-badge color='danger'>
           <ion-text color='light' class='xs-font-size'>{{selectedPassengersNumbers$|async}}</ion-text>
@@ -161,14 +162,36 @@
     <ion-grid *ngIf='hotel?.HotelDetails'>
       <ng-container *ngFor='let detail of hotel?.HotelDetails'>
         <ion-row *ngIf='detail.Description'>
-          <ion-col size='2'>{{detail.Name}}</ion-col>
-          <ion-col size='10'>
-            <ion-text color='medium'>
-              <span *ngIf='detail.Tag=="ArrivalTime"'>{{detail.Description}}点之后</span>
-              <span *ngIf='detail.Tag=="DepartureTime"'>{{detail.Description}}点之前</span>
-              <span *ngIf='detail.Tag!="DepartureTime"&&detail.Tag!="ArrivalTime"'>{{detail.Description}}</span>
-            </ion-text>
-          </ion-col>
+          <ng-container *ngIf='!(detail.Tag=="IntroEditor"||detail.Tag=="Traffic" || (detail.Tag=="Description" && detail.Description?.length>=16)) else
+            otherTempl'>
+            <ion-col size='2'>{{detail.Name}}</ion-col>
+            <ion-col size='10'>
+              <ion-text color='medium'>
+                <span *ngIf='detail.Tag=="ArrivalTime"'>{{detail.Description}}点之后</span>
+                <span *ngIf='detail.Tag=="DepartureTime"'>{{detail.Description}}点之前</span>
+                <span *ngIf='detail.Tag!="DepartureTime"&&detail.Tag!="ArrivalTime"'>{{detail.Description}}</span>
+              </ion-text>
+            </ion-col>
+          </ng-container>
+          <ng-template #otherTempl>
+            <ion-col size='2'>
+              <ion-text fill='clear' (click)='detail["isShowMore"]=!detail["isShowMore"]' color='secondary'>
+                {{detail.Name}}
+                <ion-icon name="arrow-dropdown" *ngIf='detail["isShowMore"]'></ion-icon>
+                <ion-icon name="arrow-dropright" *ngIf='!detail["isShowMore"]'></ion-icon>
+              </ion-text>
+            </ion-col>
+            <ion-col size='10'>
+              <div class="text">
+                <ion-text color='medium' *ngIf='!detail["isShowMore"]'>
+                  {{detail.Description}}
+                </ion-text>
+              </div>
+              <ion-text *ngIf='detail["isShowMore"]' color='medium'>
+                {{detail.Description}}
+              </ion-text>
+            </ion-col>
+          </ng-template>
         </ion-row>
       </ng-container>
     </ion-grid>
