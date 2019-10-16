@@ -65,7 +65,7 @@ import { trigger, state, style } from "@angular/animations";
 import { HotelPaymentType } from "../models/HotelPaymentType";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { OrderCardEntity } from "src/app/order/models/OrderCardEntity";
-import { ProductItemType } from 'src/app/tmc/models/ProductItems';
+import { ProductItemType } from "src/app/tmc/models/ProductItems";
 @Component({
   selector: "app-book",
   templateUrl: "./book.page.html",
@@ -82,6 +82,7 @@ export class BookPage implements OnInit, AfterViewInit {
   HotelPaymentType = HotelPaymentType;
   CredentialsType = CredentialsType;
   combindInfos: IPassengerHotelBookInfo[];
+  OrderTravelPayType = OrderTravelPayType;
   orderTravelPayType: any;
   orderTravelPayTypes: {
     label: string;
@@ -889,12 +890,53 @@ export class BookPage implements OnInit, AfterViewInit {
     this.calcTotalPrice();
     this.doRefresh();
   }
-
+  get hotelPaymentType(): HotelPaymentType {
+    if (
+      this.combindInfos &&
+      this.combindInfos.length &&
+      this.combindInfos[0] &&
+      this.combindInfos[0].bookInfo &&
+      this.combindInfos[0].bookInfo.bookInfo
+    ) {
+      return (
+        this.combindInfos[0].bookInfo.bookInfo.roomPlan &&
+        this.combindInfos[0].bookInfo.bookInfo.roomPlan.PaymentType
+      );
+    }
+    return null;
+  }
+  notShowServiceFee() {
+    let totalFee = 0;
+    if (this.initialBookDto && this.initialBookDto.ServiceFees) {
+      Object.keys(this.initialBookDto.ServiceFees).forEach(k => {
+        totalFee = AppHelper.add(+this.initialBookDto.ServiceFees[k], totalFee);
+      });
+    }
+    return !(this.tmc && this.tmc.IsShowServiceFee) || totalFee == 0;
+  }
+  checkOrderTravelPayType(pt: string) {
+    const payType = OrderTravelPayType[pt];
+    // console.log(
+    //   "checkOrderTravelPayType",
+    //   payType,
+    //   this.tmc && this.tmc.HotelOrderPayType
+    // );
+    if (!this.tmc || !this.tmc.HotelOrderPayType) {
+      return false;
+    }
+    return this.tmc.HotelOrderPayType.includes(payType);
+  }
   async onBook(isSave: boolean) {
     const bookDto: OrderBookDto = new OrderBookDto();
     bookDto.IsFromOffline = isSave;
     let canBook = false;
     let canBook2 = false;
+    if (this.combindInfos) {
+      if (this.combindInfos.some(it => !it.arrivalHotelTime)) {
+        AppHelper.alert("请选择到店时间");
+        return;
+      }
+    }
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto);
     if (canBook && canBook2) {

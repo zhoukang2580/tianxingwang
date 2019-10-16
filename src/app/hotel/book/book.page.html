@@ -214,17 +214,44 @@
       <ion-item-divider>
         支付方式：
       </ion-item-divider>
-      <ion-item>
+      <ion-item
+        *ngIf='hotelPaymentType==HotelPaymentType.Prepay||hotelPaymentType==HotelPaymentType.Settle else zhifu2'>
         <div style='width: 100%'>
           <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType'>
-            <ion-item *ngFor='let pt of orderTravelPayTypes'>
-              <ion-label>{{pt.label}}</ion-label>
-              <ion-radio [value]="pt.value" [checked]='orderTravelPayType==pt.value'>
-              </ion-radio>
-            </ion-item>
+            <ng-container *ngFor='let pt of orderTravelPayTypes'>
+              <ion-item
+                *ngIf='checkOrderTravelPayType(pt.value)||(pt.value == OrderTravelPayType.Credit&&identity?.Numbers?.AgentId)'>
+                <ion-label>{{pt.label}}</ion-label>
+                <ion-radio [value]="pt.value" [checked]='tmc?.HotelPayType==pt.value'>
+                </ion-radio>
+              </ion-item>
+            </ng-container>
           </ion-radio-group>
         </div>
       </ion-item>
+      <ng-template #zhifu2>
+        <ion-item *ngIf='hotelPaymentType==HotelPaymentType.SelfPay&&notShowServiceFee() else zhifu3'>
+          <ion-label>前台现付</ion-label>
+          <ion-radio value="Company" [checked]='true'>
+          </ion-radio>
+        </ion-item>
+      </ng-template>
+      <ng-template #zhifu3>
+        <ion-item>
+          <div style='width: 100%'>
+            <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType'>
+              <ng-container *ngFor='let pt of orderTravelPayTypes'>
+                <ion-item
+                  *ngIf='checkOrderTravelPayType(pt.value)||(pt.value==OrderTravelPayType.Credit&&identity?.Numbers?.AgentId)'>
+                  <ion-label>前台现付(服务费:{{pt.label}})</ion-label>
+                  <ion-radio [value]="pt.value" [checked]='tmc?.HotelPayType==pt.value'>
+                  </ion-radio>
+                </ion-item>
+              </ng-container>
+            </ion-radio-group>
+          </div>
+        </ion-item>
+      </ng-template>
     </ion-item-group>
   </ng-container>
   <ng-template #retryTempl>
@@ -246,7 +273,7 @@
     <ion-buttons slot='end'>
       <ion-button color='secondary' (click)='onBook(false)'> 提交</ion-button>
     </ion-buttons>
-    <ion-buttons slot='end'>
+    <ion-buttons slot='end' *ngIf='identity?.Numbers?.AgentId'>
       <ion-button color='secondary' (click)='onBook(true)'>保存订单</ion-button>
     </ion-buttons>
   </ion-toolbar>
