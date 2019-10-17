@@ -44,7 +44,7 @@ export class ImageRecoverService {
     return new Promise<any>((resolve, reject) => {
       const subscribtion = this.load().subscribe(
         r => {
-          if (r&&r.Status && r.Data) {
+          if (r && r.Status && r.Data) {
             this.Failover = r.Data;
             this.imageRecover = new window["Winner"].ImageRecover(r.Data);
             resolve(this.imageRecover);
@@ -65,11 +65,11 @@ export class ImageRecoverService {
     }).catch(() => null);
   }
 
-  load() {
+  private load() {
     if (this.isLoading) {
       return throwError(null);
     }
-    this.isLoading=true;
+    this.isLoading = true;
     const req = new RequestEntity();
     req.Method = "ApiHomeUrl-Home-GetImageRecoverAddress";
     req.Data = JSON.stringify({});
