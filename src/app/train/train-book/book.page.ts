@@ -178,7 +178,12 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       });
     }
   }
-
+  onSeatPicker(seat: string, item: PassengerBookInfo<ITrainInfo>) {
+    if (seat && item.bookInfo) {
+      item.bookInfo.pickSeat = seat;
+      item.bookInfo.trainEntity.BookSeatLocation = seat;
+    }
+  }
   private async initializeViewModel() {
     this.viewModel = {} as any;
     this.viewModel.isCanSkipApproval$ = combineLatest([
@@ -290,28 +295,28 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = this.isShowInsurances(
           bookInfo.bookInfo &&
-            bookInfo.bookInfo.trainEntity &&
-            bookInfo.bookInfo.trainEntity.StartTime
+          bookInfo.bookInfo.trainEntity &&
+          bookInfo.bookInfo.trainEntity.StartTime
         )
           ? insurances
           : [];
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile
-                };
-              })
+              return {
+                checked: idx == 0,
+                mobile
+              };
+            })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email
-                };
-              })
+              return {
+                checked: idx == 0,
+                email
+              };
+            })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
@@ -609,7 +614,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     const showErrorMsg = (msg: string, item: IPassengerBookInfo) => {
       AppHelper.alert(
         `联系人${(item.credentialStaff && item.credentialStaff.Name) ||
-          (item.credential && item.credential.Number)}信息${msg}不能为空`
+        (item.credential && item.credential.Number)}信息${msg}不能为空`
       );
     };
     for (let i = 0; i < this.viewModel.combindInfos.length; i++) {
@@ -659,9 +664,9 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     const showErrorMsg = (msg: string, item: IPassengerBookInfo) => {
       AppHelper.alert(
         `${(item.credentialStaff && item.credentialStaff.Name) ||
-          (item.credential &&
-            item.credential.CheckFirstName +
-              item.credential.CheckLastName)} 【${item.credential &&
+        (item.credential &&
+          item.credential.CheckFirstName +
+          item.credential.CheckLastName)} 【${item.credential &&
           item.credential.Number}】 ${msg} 信息不能为空`
       );
     };
@@ -743,7 +748,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
           p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-        }`;
+          }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -757,7 +762,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
           p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-        }`;
+          }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -1050,7 +1055,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       }
     }
   }
-  isShowApprove() {}
+  isShowApprove() { }
 }
 interface ITmcOutNumberInfo {
   key: string;

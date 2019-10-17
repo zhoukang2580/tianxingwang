@@ -825,6 +825,7 @@ export interface ITrainInfo {
   trainPolicy: TrainPolicyModel;
   tripType?: TripType;
   id?: string;
+  pickSeat?: string;
   isLowerSegmentSelected?: boolean;
 }
 export class TrainPolicyModel {

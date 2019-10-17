@@ -14,10 +14,12 @@ export class TrainListItemComponent implements OnInit {
   @Input() train: TrainEntity;
   @Output() scheduleEmit: EventEmitter<any>;
   @Output() bookTicket: EventEmitter<TrainSeatEntity>;
+  @Output() seatPicker: EventEmitter<string>;
   TrainSeatType = TrainSeatType;
   constructor() {
     this.scheduleEmit = new EventEmitter();
     this.bookTicket = new EventEmitter();
+    this.seatPicker = new EventEmitter();
   }
   getLowestSeatPrice() {
     if (!this.train || !this.train.Seats || !this.train.Seats.length) {
@@ -27,7 +29,13 @@ export class TrainListItemComponent implements OnInit {
     return this.train.Seats[0].SalesPrice;
   }
   onBookTicket(seat: TrainSeatEntity) {
+    if (this.train) {
+      this.train.BookSeatType = seat.SeatType;
+    }
     this.bookTicket.emit(seat);
+  }
+  onSeatPicker(seat: string) {
+    this.seatPicker.emit(seat);
   }
   getBookBtnColor(seat: TrainSeatEntity) {
     if (seat && seat.Policy) {
@@ -49,7 +57,7 @@ export class TrainListItemComponent implements OnInit {
       seat => +seat.Count > 0 && +seat.SalesPrice > 0
     );
   }
-  ngOnInit() {}
+  ngOnInit() { }
   onScheduls() {
     this.scheduleEmit.emit();
   }

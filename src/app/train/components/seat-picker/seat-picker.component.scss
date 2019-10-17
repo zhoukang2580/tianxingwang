@@ -1,0 +1,33 @@
+.jin {
+  display: flex;
+  align-items: center;
+}
+.selectSeatLocation {
+  border: 1px;
+  border-style: dashed;
+  width: 20px;
+  text-align: center;
+  color: tomato;
+  cursor: pointer;
+  background: #fff;
+  margin-left: 0.5em;
+}
+.selectSeatLocationBlank {
+  border: none;
+  margin-left: 1em;
+}
+.selected {
+  color: white;
+  background: var(--ion-color-secondary);
+}
+.trainCode {
+  display: none;
+  margin: 0px;
+  padding: 0px;
+  font-size: 1.5rem;
+  height: 30px;
+  font-weight: bolder;
+}
+.red {
+  color: tomato;
+}
