@@ -179,9 +179,9 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     }
   }
   onSeatPicker(seat: string, item: PassengerBookInfo<ITrainInfo>) {
-    if (seat && item.bookInfo) {
-      item.bookInfo.pickSeat = seat;
-      item.bookInfo.trainEntity.BookSeatLocation = seat;
+    if (item.bookInfo) {
+      item.bookInfo.pickSeat = seat || "";
+      item.bookInfo.trainEntity.BookSeatLocation = seat || "";
     }
   }
   private async initializeViewModel() {

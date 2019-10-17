@@ -30,15 +30,19 @@ export class SeatPickerComponent implements OnInit, AfterViewInit {
               it.addEventListener('click', evt => {
                 const div = evt.target as HTMLElement;
                 if (div) {
-                  this.selectedSeat = div.getAttribute("val");
-                  this.onSelect(this.selectedSeat);
                   this.selectSeatLocations.forEach(s => {
                     const isSelected = s.classList.contains("selected");
                     s.classList.remove('selected');
                     if (!isSelected && s.getAttribute("val") == this.selectedSeat) {
                       s.classList.add("selected");
                     }
+                    if (s.classList.contains("selected")) {
+                      this.selectedSeat = div.getAttribute("val");
+                    } else {
+                      this.selectedSeat = ""
+                    }
                   });
+                  this.onSelect(this.selectedSeat);
                 }
               }, false);
             });
