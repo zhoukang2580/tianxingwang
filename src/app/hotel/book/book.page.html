@@ -190,6 +190,29 @@
           </ion-item>
         </div>
       </ion-item-group>
+      <ion-item-group>
+        <ng-container *ngIf="isShowApprove(combindInfo)">
+          <ion-item-divider>
+            审批人：
+          </ion-item-divider>
+          <ion-item>
+            <div>
+              <ion-row style='margin-top: .5em;'>
+                <ion-col>
+                  <app-timeline [hideLastTimeLineTail]='false'>
+                    <app-timeline-item *ngFor='let it of combindInfo?.credentialStaffApprovers'>
+                      第{{it.Tag}}级审批:
+                      <ion-label text-wrap *ngFor='let ap of it.approvers;let last'>
+                        {{ap.Name}}({{it?.Type==1?"所有通过":"任意通过"}})
+                      </ion-label>
+                    </app-timeline-item>
+                  </app-timeline>
+                </ion-col>
+              </ion-row>
+            </div>
+          </ion-item>
+        </ng-container>
+      </ion-item-group>
       <ion-item-group *ngIf='combindInfo?.tmcOutNumberInfos?.length'>
         <ion-item-divider>
           外部编号：

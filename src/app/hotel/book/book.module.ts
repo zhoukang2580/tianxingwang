@@ -1,3 +1,4 @@
+import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 import { HotelComponentsModule } from "./../components/components.module";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
@@ -23,8 +24,9 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes),
     TmcComponentsModule,
-    HotelComponentsModule
+    HotelComponentsModule,
+    AppComponentsModule
   ],
   declarations: [BookPage]
 })
-export class BookPageModule {}
+export class BookPageModule { }
