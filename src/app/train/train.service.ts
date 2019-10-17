@@ -720,7 +720,7 @@ export class TrainService {
     let i = 10;
     let top = await this.modalCtrl.getTop();
     while (top && --i > 0) {
-      await top.dismiss().catch(_ => {});
+      await top.dismiss().catch(_ => { });
       top = await this.modalCtrl.getTop();
     }
   }
@@ -770,6 +770,7 @@ export class TrainService {
           Object.keys(res.ServiceFees).forEach(k => {
             fees[k] = +res.ServiceFees[k] / 2;
           });
+          res.ServiceFees = fees;
         }
         res.Staffs = res.Staffs || [];
         res.Staffs = res.Staffs.map(it => {
