@@ -1,3 +1,4 @@
+import { IdentityService } from './../../services/identity/identity.service';
 import { OrderTripModel } from "./../models/OrderTripModel";
 import { OrderService } from "./../order.service";
 import { ApiService } from "./../../services/api/api.service";
@@ -52,12 +53,12 @@ export const ORDER_TABS: ProductItem[] = [
     imageSrc: "assets/svgs/product-train.svg",
     isDisplay: true
   },
-  {
-    label: "保险",
-    value: ProductItemType.insurance,
-    imageSrc: "assets/svgs/product-insurance.svg",
-    isDisplay: true
-  },
+  // {
+  //   label: "保险",
+  //   value: ProductItemType.insurance,
+  //   imageSrc: "assets/svgs/product-insurance.svg",
+  //   isDisplay: true
+  // },
   {
     label: "待审任务",
     value: ProductItemType.waitingApprovalTask,
@@ -104,7 +105,8 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     private payService: PayService,
     private staffService: StaffService,
     private apiService: ApiService,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private identityService: IdentityService
   ) {
     route.queryParamMap.subscribe(d => {
       console.log("product-tabs", d);
@@ -273,8 +275,8 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       this.activeTab === ProductItemType.plane
         ? "Flight"
         : this.activeTab == ProductItemType.hotel
-        ? "Hotel"
-        : "Train";
+          ? "Hotel"
+          : "Train";
     this.isLoading = this.condition && this.condition.pageIndex == 0;
     this.loadDataSub = this.orderService
       .getMyTrips(m)
@@ -390,8 +392,8 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         this.activeTab == ProductItemType.plane
           ? "Flight"
           : this.activeTab == ProductItemType.train
-          ? "Train"
-          : "Hotel";
+            ? "Train"
+            : "Hotel";
       this.isLoading = this.condition && this.condition.pageIndex == 0;
       this.loadDataSub = this.orderService
         .getOrderList(m)
@@ -433,12 +435,15 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       console.error(e);
     }
   }
-  onTaskDetail(task: TaskEntity) {
+  async onTaskDetail(task: TaskEntity) {
     const url = this.getTaskUrl(task);
     if (url) {
+      const identity = await this.identityService.getIdentityAsync()
+        .catch(_ => null);
+      const sign = this.apiService.getSign({Token: identity && identity.Token } as any);
       this.router
         .navigate(["open-url"], {
-          queryParams: { url, title: task && task.Name, tabId: this.activeTab }
+          queryParams: { url: `${url}?sign=${sign}&taskid=${task.Id}`, title: task && task.Name, tabId: this.activeTab, taskId: task.Id }
         })
         .then(_ => {
           this.isOpenUrl = true;
@@ -611,7 +616,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       ((order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
         OrderTravelPayType.Credit ||
         (order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
-          OrderTravelPayType.Person) &&
+        OrderTravelPayType.Person) &&
       order.Status != OrderStatusType.Cancel;
     if (!rev) {
       return false;
