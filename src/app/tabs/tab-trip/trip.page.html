@@ -7,11 +7,16 @@
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-list-header>Follow us on Twitter</ion-list-header>
-    <ion-item>
-      <ion-icon name="logo-ionic" slot="start"></ion-icon>
-      @ionicframework
+  <ion-refresher (ionRefresh)='doRefresh()' slot='fixed'></ion-refresher>
+  <ion-list *ngIf='!isLoading && trips?.length else nomoredata'>
+    <ion-item *ngFor='let trip of trips'>
+      {{trip|json}}
     </ion-item>
   </ion-list>
+  <ng-template #nomoredata>
+    暂无数据
+  </ng-template>
+  <ion-infinite-scroll (ionInfinite)='loadMoreTrips()'>
+    <ion-infinite-scroll-content>正在加载更多...</ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>
