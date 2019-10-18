@@ -13,7 +13,7 @@ export class SeatPickerComponent implements OnInit, AfterViewInit {
   @Input() selectdSeat: TrainSeatEntity;
   @ViewChildren("jin") jinEles: QueryList<ElementRef<HTMLElement>>;
   TrainSeatType = TrainSeatType;
-  selectedSeat: string;
+  selectedSeatTxt: string;
   private selectSeatLocations: HTMLElement[];
   constructor() {
     this.seatPicker = new EventEmitter();
@@ -27,24 +27,6 @@ export class SeatPickerComponent implements OnInit, AfterViewInit {
           if (selectSeatLocations) {
             selectSeatLocations.forEach(it => {
               this.selectSeatLocations.push(it as HTMLElement);
-              it.addEventListener('click', evt => {
-                const div = evt.target as HTMLElement;
-                if (div) {
-                  this.selectSeatLocations.forEach(s => {
-                    const isSelected = s.classList.contains("selected");
-                    s.classList.remove('selected');
-                    if (!isSelected && s.getAttribute("val") == this.selectedSeat) {
-                      s.classList.add("selected");
-                    }
-                    if (s.classList.contains("selected")) {
-                      this.selectedSeat = div.getAttribute("val");
-                    } else {
-                      this.selectedSeat = ""
-                    }
-                  });
-                  this.onSelect(this.selectedSeat);
-                }
-              }, false);
             });
           }
         }
@@ -52,9 +34,23 @@ export class SeatPickerComponent implements OnInit, AfterViewInit {
     }
   }
   ngOnInit() { }
-  private onSelect(txt: string) {
-    this.selectedSeat = txt;
-    this.seatPicker.emit(this.selectedSeat);
+  onSelect(evt: CustomEvent) {
+    const div = evt.target as HTMLElement;
+    if (div) {
+      this.selectSeatLocations.forEach(s => {
+        const isSelected = s.classList.contains("selected");
+        s.classList.remove('selected');
+        if (!isSelected && s.getAttribute("val") == this.selectedSeatTxt) {
+          s.classList.add("selected");
+        }
+        if (s.classList.contains("selected")) {
+          this.selectedSeatTxt = div.getAttribute("val");
+        } else {
+          this.selectedSeatTxt = ""
+        }
+      });
+    }
+    this.seatPicker.emit(this.selectedSeatTxt);
   }
 
 }
