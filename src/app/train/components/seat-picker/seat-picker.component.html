@@ -3,7 +3,7 @@
     <div class="trainCode">
       二等座
     </div>
-    <div class="jin" #jin>
+    <div class="jin" #jin [attr.trainseattype]='selectdSeat.SeatType'>
       <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="A" title="靠窗">A</div>
       <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="B" title="中间">B</div>
       <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="C" title="靠过道">C</div>
@@ -16,7 +16,7 @@
     <div class="trainCode">
       一等座
     </div>
-    <div class="jin" #jin>
+    <div class="jin" #jin [attr.trainseattype]='selectdSeat.SeatType'>
       <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="A" title="靠窗">A</div>
       <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="C" title="靠过道">C</div>
       <div class="selectSeatLocationBlank">&nbsp;</div>
@@ -28,7 +28,7 @@
     <div class="trainCode">
       商务座
     </div>
-    <div class="jin" #jin>
+    <div class="jin" #jin [attr.trainseattype]='selectdSeat.SeatType'>
       <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="A" title="靠窗">A</div>
       <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="C" title="靠过道">C</div>
       <div class="selectSeatLocationBlank">&nbsp;</div>
@@ -39,7 +39,7 @@
     <div class="trainCode">
       特等座
     </div>
-    <div class="jin" #jin>
+    <div class="jin" #jin [attr.trainseattype]='selectdSeat.SeatType'>
       <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="A" title="靠窗">A</div>
       <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="C" title="靠过道">C</div>
       <div class="selectSeatLocationBlank">&nbsp;</div>
@@ -50,7 +50,7 @@
     <div class="trainCode">
       {{selectdSeat?.SeatTypeName}}
     </div>
-    <div class="jin" #jin>
+    <div class="jin" #jin [attr.trainseattype]='selectdSeat.SeatType'>
 
     </div>
   </ng-container>

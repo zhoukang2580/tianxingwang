@@ -1,4 +1,4 @@
-import { AfterViewInit, EventEmitter, Output, Component, OnInit, Input, ElementRef, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, EventEmitter, Output, Component, OnInit, Input, ElementRef, QueryList, ViewChildren, OnChanges, SimpleChanges } from '@angular/core';
 import { Renderer2 } from '@angular/core';
 import { TrainEntity, TrainSeatType } from '../../models/TrainEntity';
 import { TrainSeatEntity } from '../../models/TrainSeatEntity';
@@ -13,9 +13,10 @@ export class SeatPickerComponent implements OnInit, AfterViewInit {
   @Input() selectdSeat: TrainSeatEntity;
   @ViewChildren("jin") jinEles: QueryList<ElementRef<HTMLElement>>;
   TrainSeatType = TrainSeatType;
+  @Input() selectSeatLocation: string;
   selectedSeatTxt: string;
-  private selectSeatLocations: HTMLElement[];
-  constructor() {
+  private selectSeatLocations: { jin: HTMLElement, target: HTMLElement }[] = [];
+  constructor(private el: ElementRef<HTMLElement>) {
     this.seatPicker = new EventEmitter();
   }
   ngAfterViewInit() {
@@ -26,29 +27,52 @@ export class SeatPickerComponent implements OnInit, AfterViewInit {
           const selectSeatLocations = el.nativeElement.querySelectorAll(".selectSeatLocation");
           if (selectSeatLocations) {
             selectSeatLocations.forEach(it => {
-              this.selectSeatLocations.push(it as HTMLElement);
+              this.selectSeatLocations.push({ jin: el.nativeElement as HTMLElement, target: it as HTMLElement });
             });
           }
         }
-      })
+      });
+      setTimeout(() => {
+        if (this.selectSeatLocation) {
+          const jinEl = this.jinEles.find(it => it.nativeElement && it.nativeElement.getAttribute("trainseattype") == `${this.selectdSeat.SeatType}`);
+          if (jinEl) {
+            if (jinEl) {
+              const ss = jinEl.nativeElement.querySelectorAll(".selectSeatLocation");
+              let ele: HTMLElement;
+              if (ss) {
+                for (let i = 0; i < ss.length; i++) {
+                  const e = ss.item(i);
+                  if (e.getAttribute("val") == this.selectSeatLocation) {
+                    ele = e as HTMLElement;
+                    break;
+                  }
+                }
+                if (ele) {
+                  ele.classList.add("selected");
+                }
+              }
+            }
+          }
+        }
+      }, 200);
     }
   }
   ngOnInit() { }
   onSelect(evt: CustomEvent) {
     const div = evt.target as HTMLElement;
+    console.log(div);
     if (div) {
+      let isSelected = div.classList.contains("selected");
+      isSelected = !isSelected;
       this.selectSeatLocations.forEach(s => {
-        const isSelected = s.classList.contains("selected");
-        s.classList.remove('selected');
-        if (!isSelected && s.getAttribute("val") == this.selectedSeatTxt) {
-          s.classList.add("selected");
-        }
-        if (s.classList.contains("selected")) {
-          this.selectedSeatTxt = div.getAttribute("val");
-        } else {
-          this.selectedSeatTxt = ""
-        }
+        s.target.classList.remove('selected');
       });
+      if (isSelected) {
+        div.classList.add('selected');
+        this.selectedSeatTxt = div.getAttribute("val");
+      } else {
+        this.selectedSeatTxt = ""
+      }
     }
     this.seatPicker.emit(this.selectedSeatTxt);
   }

@@ -55,10 +55,12 @@
               </ion-label>
             </strong>
             <app-train-list-item [train]='combindInfo?.bookInfo?.bookInfo?.trainEntity' [showBookBtn]='false'
-              [seat]='combindInfo?.bookInfo?.bookInfo?.selectedSeat' (seatPicker)='onSeatPicker($event)'></app-train-list-item>
+              [seat]='combindInfo?.bookInfo?.bookInfo?.selectedSeat' (seatPicker)='onSeatPicker($event,combindInfo)'
+              [selectSeatLocation]='combindInfo.bookInfo?.bookInfo?.trainEntity?.BookSeatLocation'>
+            </app-train-list-item>
           </div>
         </ion-item>
-      </ion-item-group> 
+      </ion-item-group>
       <ion-item-group>
         <ion-item-divider>旅客信息：</ion-item-divider>
         <ion-item>

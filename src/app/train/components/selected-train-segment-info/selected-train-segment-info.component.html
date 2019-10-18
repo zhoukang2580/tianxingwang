@@ -14,7 +14,7 @@
       <ion-item-divider color='primary' sticky>
         <ion-label color='dark'>{{bookInfo?.passenger?.Name}}{{bookInfo?.credential?.Number}}</ion-label>
       </ion-item-divider>
-      <ion-item  lines='none'>
+      <ion-item lines='none'>
         <div class='detail'>
           <div class='date'>
             <strong>{{getDate(bookInfo?.bookInfo?.trainEntity)}} <ion-text color='secondary'>
@@ -25,7 +25,9 @@
             </ion-button>
           </div>
           <ion-label class='train-item'>
-            <app-train-list-item [seat]='bookInfo.bookInfo?.selectedSeat' [train]='bookInfo?.bookInfo?.trainEntity'>
+            <app-train-list-item [seat]='bookInfo.bookInfo?.selectedSeat'
+              [selectSeatLocation]='bookInfo?.bookInfo?.trainEntity?.BookSeatLocation'
+              (seatPicker)='onSeatPicked($event,bookInfo)' [train]='bookInfo?.bookInfo?.trainEntity'>
             </app-train-list-item>
           </ion-label>
           <ion-label class='rules' color='danger' text-wrap>

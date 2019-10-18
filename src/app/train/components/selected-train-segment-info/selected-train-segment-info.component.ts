@@ -30,7 +30,7 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
     private trainService: TrainService,
     private staffService: StaffService,
     private router: Router
-  ) {}
+  ) { }
   async back() {
     const t = await this.modalCtrl.getTop();
     if (t) {
@@ -61,6 +61,11 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
         );
       })
     );
+  }
+  onSeatPicked(location: string, bookInfo: PassengerBookInfo<ITrainInfo>) {
+    if (bookInfo && bookInfo.bookInfo && bookInfo.bookInfo.trainEntity) {
+      bookInfo.bookInfo.trainEntity.BookSeatLocation = location;
+    }
   }
   async onSelectReturnTrip(bookInfo: PassengerBookInfo<ITrainInfo>) {
     await this.trainService.selectReturnTrip();
@@ -93,7 +98,7 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
       info.tripType == TripType.departureTrip
         ? LanguageHelper.getDepartureTip()
         : LanguageHelper.getReturnTripTip()
-    }]`;
+      }]`;
   }
   canGoToNext() {
     return (
