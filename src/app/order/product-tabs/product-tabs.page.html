@@ -88,33 +88,28 @@
   <ng-template #waitingapprovalTempl>
     <ng-container *ngIf='!isLoading else fakeList'>
       <ng-container *ngIf='tasks?.length else nomoredate'>
-        <div class='tasks'>
-          <app-timeline [hideLastTimeLineTail]='false'>
-            <app-timeline-item *ngFor='let task of tasks'>
-              <ion-row>
-                <ion-col>任务：
-                  <ng-template #labelTemp>
-                    <span>{{task.Name}}</span>
-                  </ng-template>
-                  <ion-text *ngIf='getTaskUrl(task) as url else labelTemp' (click)='onTaskDetail(task)'
-                    color='secondary'>
-                    {{task.Name}}</ion-text>
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col> 订单号：{{getTaskOrderId(task)}}</ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>发起时间：
-                  {{task.InsertTime}}
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>超时时间：{{task.ExpiredTime}}</ion-col>
-              </ion-row>
-            </app-timeline-item>
-          </app-timeline>
-        </div>
+        <ion-list>
+          <ion-item detail *ngFor='let task of tasks' (click)='onTaskDetail(task)'>
+            <ion-label>
+              <h3>任务：
+                <ng-template #labelTemp>
+                  <span>{{task.Name}}</span>
+                </ng-template>
+                <ion-text text-wrap *ngIf='getTaskUrl(task) as url else labelTemp' color='secondary'>
+                  {{task.Name}}</ion-text>
+              </h3>
+              <h4>
+                订单号：{{getTaskOrderId(task)}}
+              </h4>
+              <h4>
+                发起时间： {{task.InsertTime}}
+              </h4>
+              <h4>
+                超时时间：{{task.ExpiredTime}}
+              </h4>
+            </ion-label>
+          </ion-item>
+        </ion-list>
       </ng-container>
     </ng-container>
   </ng-template>

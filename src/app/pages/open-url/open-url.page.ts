@@ -19,6 +19,7 @@ import { DomSanitizer } from "@angular/platform-browser";
 export class OpenUrlPage implements OnInit, AfterViewInit {
   title: string;
   url$: Subject<any>;
+  isHideTitle = false;
   @ViewChildren("iframe") iframes: QueryList<ElementRef<HTMLIFrameElement>>;
   constructor(
     activatedRoute: ActivatedRoute,
@@ -37,6 +38,8 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
       if (p.get("title")) {
         this.title = p.get("title");
       }
+      const h = p.get('isHideTitle');
+      this.isHideTitle = h == 'true';
     });
   }
   back() {
@@ -57,5 +60,5 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
       });
     }
   }
-  ngOnInit() {}
+  ngOnInit() { }
 }
