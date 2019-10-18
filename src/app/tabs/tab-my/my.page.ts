@@ -84,8 +84,11 @@ export class MyPage implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
-    
+
     this.items = ORDER_TABS.filter(it => it.isDisplay);
+    if (this.items.length < 4) {
+      this.items = this.items.filter(it => it.value != ProductItemType.more);
+    }
     this.msgCount$ = this.messageService.getMsgCount();
     console.log("my ngOnInit");
     // this.Model = {
