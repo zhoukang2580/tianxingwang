@@ -115,35 +115,35 @@ export class HotelFilterComponent implements OnInit, OnChanges {
           label: "热门品牌（可多选）",
           isMulti: true,
           items: brands.map(it => {
-            return { ...it };
+            return { ...it } as any;
           })
         },
         {
           label: "经济（可多选）",
           isMulti: true,
           items: economy.map(it => {
-            return { ...it };
+            return { ...it } as any;
           })
         },
         {
           label: "舒适（可多选）",
           isMulti: true,
           items: comfort.map(it => {
-            return { ...it };
+            return { ...it } as any;
           })
         },
         {
           label: "高端（可多选）",
           isMulti: true,
           items: high.map(it => {
-            return { ...it };
+            return { ...it } as any;
           })
         },
         {
           label: "豪华（可多选）",
           isMulti: true,
           items: luxury.map(it => {
-            return { ...it };
+            return { ...it } as any ;
           })
         }
       ]

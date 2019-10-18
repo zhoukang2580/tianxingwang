@@ -27,8 +27,9 @@ import { OrderNumberEntity } from "./OrderNumberEntity";
 import { TaskEntity } from 'src/app/workflow/models/TaskEntity';
 
 export class OrderEntity extends BaseVariablesEntity {
+
   Id: string;
-  vmIsCheckPay:boolean;
+  vmIsCheckPay: boolean;
   /// <summary>
   /// 订单编号
   /// </summary>
@@ -233,8 +234,9 @@ export class OrderEntity extends BaseVariablesEntity {
   Tasks: TaskEntity[];
 
   Queues: any[];
+ 
 }
-export class OrderItemEntity extends BaseVariablesEntity{
+export class OrderItemEntity extends BaseVariablesEntity {
   /// 订单
 
   Order: OrderEntity;

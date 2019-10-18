@@ -5,10 +5,13 @@ import { RequestEntity } from "src/app/services/api/Request.entity";
 import { Injectable } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
 import { OrderModel } from "./models/OrderModel";
-import { OrderEntity } from "./models/OrderEntity";
+import { OrderEntity, OrderStatusType } from "./models/OrderEntity";
 import { map, switchMap } from "rxjs/operators";
 import { from, Observable } from "rxjs";
 import * as moment from "moment";
+import { OrderTravelPayType } from './models/OrderTravelEntity';
+import { OrderFlightTicketStatusType } from './models/OrderFlightTicketStatusType';
+import { OrderTrainTicketStatusType } from './models/OrderTrainTicketStatusType';
 export class OrderDetailModel {
   Histories: HistoryEntity[];
   Tasks: TaskEntity[];
@@ -20,7 +23,7 @@ export class OrderDetailModel {
   providedIn: "root"
 })
 export class OrderService {
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService) { }
   getOrderList(searchCondition: OrderModel) {
     const req = new RequestEntity();
     // req.IsShowLoading = true;
@@ -57,8 +60,8 @@ export class OrderService {
           return res.Data.Tasks.map(it => {
             const Name =
               it.ExpiredTime &&
-              !it.ExpiredTime.startsWith("1800") &&
-              new Date(it.ExpiredTime).getTime() < new Date().getTime()
+                !it.ExpiredTime.startsWith("1800") &&
+                new Date(it.ExpiredTime).getTime() < new Date().getTime()
                 ? "已过期"
                 : it.Name;
             it.VariablesJsonObj =
@@ -75,7 +78,24 @@ export class OrderService {
     );
     return result;
   }
-
+  checkPay(order: OrderEntity) {
+    if (order.Status == OrderStatusType.WaitHandle) { return false; }
+    let rev = order.PayAmount < order.TotalAmount &&
+      (order.GetVariable<number>("TravelPayType") ==
+        OrderTravelPayType.Credit
+        ||
+        order.GetVariable<number>("TravelPayType") ==
+        OrderTravelPayType.Person) && order.Status != OrderStatusType.Cancel;
+    if (!rev) { return false; }
+    rev = !order.OrderFlightTickets ||
+      order.OrderFlightTickets.filter(it => it.Status == OrderFlightTicketStatusType.Booking ||
+        it.Status == OrderFlightTicketStatusType.BookExchanging).length == 0;
+    if (!rev) { return false; }
+    rev = !order.OrderTrainTickets ||
+      order.OrderTrainTickets.filter(it => it.Status == OrderTrainTicketStatusType.Booking ||
+        it.Status == OrderTrainTicketStatusType.BookExchanging).length == 0;
+    return rev;
+  }
   getMyTrips(data: OrderModel) {
     const req = new RequestEntity();
     // req.IsShowLoading = true;

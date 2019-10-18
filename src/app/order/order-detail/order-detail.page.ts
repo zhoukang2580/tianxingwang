@@ -469,7 +469,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       .filter(it => it.Status == OrderFlightTripStatusType.Normal)
       .map(it => {
         it.tripDesc = "行程航班信息";
-        return { ...it };
+        return { ...it } as any;
       });
     trips.sort((a, b) => +a.Id - +b.Id);
     if (this.viewModel) {

@@ -18,6 +18,7 @@ import { SelectTicketPopoverComponent } from "./select-ticket-popover/select-tic
 import { OrderFlightTripComponent } from "./order-flight-trip/order-flight-trip.component";
 import { OrderTrainTripComponent } from "./order-train-trip/order-train-trip.component";
 import { OrderHotelTripComponent } from "./order-hotel-trip/order-hotel-trip.component";
+import { OrderTripItemComponent } from './order-trip-item/order-trip-item.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { OrderHotelTripComponent } from "./order-hotel-trip/order-hotel-trip.com
     SelectTicketPopoverComponent,
     OrderFlightTripComponent,
     OrderTrainTripComponent,
-    OrderHotelTripComponent
+    OrderHotelTripComponent,
+    OrderTripItemComponent
   ],
   imports: [
     CommonModule,
@@ -47,7 +49,8 @@ import { OrderHotelTripComponent } from "./order-hotel-trip/order-hotel-trip.com
     OrderItemComponent,
     OrderFlightTripComponent,
     OrderTrainTripComponent,
-    OrderHotelTripComponent
+    OrderHotelTripComponent,
+    OrderTripItemComponent
   ],
   entryComponents: [
     SearchTicketModalComponent,
@@ -59,4 +62,4 @@ import { OrderHotelTripComponent } from "./order-hotel-trip/order-hotel-trip.com
     SelectTicketPopoverComponent
   ]
 })
-export class OrderComponentsModule {}
+export class OrderComponentsModule { }
