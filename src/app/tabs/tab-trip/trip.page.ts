@@ -26,7 +26,7 @@ export class TripPage implements OnInit {
     this.loadMoreSubscription.unsubscribe();
     this.isLoading = true;
     const req = new RequestEntity();
-    req.Method = `TmcApiOrderUrl- Travel-List`;
+    req.Method = `TmcApiOrderUrl-Travel-List`;
     req.Data = this.searchCondition;
     return this.apiservice.getResponse<OrderModel>(req).pipe(finalize(() => {
       this.isLoading = false;
