@@ -188,4 +188,8 @@ export class OrderFlightTicketEntity extends BaseVariablesEntity {
   vmInsuranceAmount: number; // 保险总价
   vmIsAllowRefund: boolean; // 是否允许退票
   vmIsAllowExchange: boolean; // 是否允许改签
+  GetVariable<T>(key: string) {
+    this.VariablesJsonObj = this.VariablesJsonObj || JSON.parse(this.Variables);
+    return this.VariablesJsonObj[key] as T
+  }
 }

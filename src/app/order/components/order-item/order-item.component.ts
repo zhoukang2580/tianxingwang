@@ -1,3 +1,4 @@
+import { CalendarService } from './../../../tmc/calendar.service';
 import { AppHelper } from 'src/app/appHelper';
 import { TmcEntity } from 'src/app/tmc/tmc.service';
 import { TmcService } from './../../../tmc/tmc.service';
@@ -8,20 +9,29 @@ import { OrderTravelPayType } from '../../models/OrderTravelEntity';
 import { OrderFlightTicketStatusType } from '../../models/OrderFlightTicketStatusType';
 import { OrderTrainTicketStatusType } from '../../models/OrderTrainTicketStatusType';
 import { OrderFlightTicketEntity } from '../../models/OrderFlightTicketEntity';
+import { OrderTrainTicketEntity } from '../../models/OrderTrainTicketEntity';
+import { TrainBookType } from 'src/app/train/models/TrainBookType';
+import { OrderHotelStatusType } from '../../models/OrderHotelEntity';
+import { HotelPaymentType } from 'src/app/hotel/models/HotelPaymentType';
 @Component({
   selector: "app-order-item",
   templateUrl: "./order-item.component.html",
   styleUrls: ["./order-item.component.scss"]
 })
 export class OrderItemComponent implements OnInit {
+  private bookChannals = `Eterm  BlueSky  Android  客户H5  IOS  外购PC  客户PC  代理PC`;
+  private selfBookChannals = `Android  客户H5  IOS 客户PC`;
   @Input() order: OrderEntity;
   @Output() payaction: EventEmitter<OrderEntity>;
   OrderStatusType = OrderStatusType;
   OrderFlightTripStatusType = OrderFlightTripStatusType;
-  private bookChannals = `Eterm  BlueSky  Android  客户H5  IOS  外购PC  客户PC  代理PC`;
-  private selfBookChannals = `Android  客户H5  IOS 客户PC`;
-  private tmc: TmcEntity;
-  constructor(private tmcService: TmcService) {
+  OrderFlightTicketStatusType = OrderFlightTicketStatusType;
+  OrderTrainTicketStatusType = OrderTrainTicketStatusType;
+  OrderHotelStatusType = OrderHotelStatusType;
+  HotelPaymentType = HotelPaymentType;
+  TrainBookType = TrainBookType;
+  tmc: TmcEntity;
+  constructor(private tmcService: TmcService, private calendarService: CalendarService) {
     this.payaction = new EventEmitter();
   }
   onPay(evt: CustomEvent) {
@@ -39,17 +49,23 @@ export class OrderItemComponent implements OnInit {
   async ngOnInit() {
     this.tmc = await this.tmcService.getTmc().catch(_ => null);
   }
+  getHHmm(time: string) {
+    if (time) {
+      return this.calendarService.getHHmm(time);
+    }
+  }
   checkPay() {
     const order = this.order;
     if (!order) {
       return false;
     }
+    order.VariablesJsonObj = order.VariablesJsonObj || JSON.parse(order.Variables) || {};
     if (order.Status == OrderStatusType.WaitHandle) { return false; }
     let rev = order.PayAmount < order.TotalAmount &&
-      (order.GetVariable<number>("TravelPayType") ==
+      (order.VariablesJsonObj["TravelPayType"] ==
         OrderTravelPayType.Credit
         ||
-        order.GetVariable<number>("TravelPayType") ==
+        order.VariablesJsonObj["TravelPayType"] ==
         OrderTravelPayType.Person) && order.Status != OrderStatusType.Cancel;
     if (!rev) { return false; }
     rev = !order.OrderFlightTickets ||
@@ -80,7 +96,32 @@ export class OrderItemComponent implements OnInit {
     }
     return amount;
   }
-  orderFlightTicketIsReject(orderFlightTicket:OrderFlightTicketEntity){
-    return orderFlightTicket&&orderFlightTicket.GetVariable<boolean>("IsReject");
+  ticketIsReject(orderFlightTicket: { Variables: string; VariablesJsonObj: any }) {
+    orderFlightTicket.VariablesJsonObj = orderFlightTicket.VariablesJsonObj || JSON.parse(orderFlightTicket.Variables) || {};
+    return orderFlightTicket && orderFlightTicket.VariablesJsonObj["IsReject"];
+  }
+  flightInsuranceAmount(orderFlightTicket: OrderFlightTicketEntity) {
+    let amount = 0;
+    if (this.order && this.order.OrderItems) {
+      const flighttripKeys = orderFlightTicket.OrderFlightTrips && orderFlightTicket.OrderFlightTrips.map(it => it.Key) || [];
+      const keys = this.order.OrderInsurances && this.order.OrderInsurances
+        .filter(it => flighttripKeys.includes(it.AdditionKey)).map(it => it.Key) || [];
+      amount = this.order.OrderItems
+        .filter(it => keys.includes(it.Key))
+        .reduce((acc, it) => { acc = AppHelper.add(acc, +it.Amount); return acc; }, 0);
+    }
+    return amount;
+  }
+  trainInsuranceAmount(orderTrainTicket: OrderTrainTicketEntity) {
+    let amount = 0;
+    if (this.order && this.order.OrderItems) {
+      const flighttripKeys = orderTrainTicket.OrderTrainTrips && orderTrainTicket.OrderTrainTrips.map(it => it.Key) || [];
+      const keys = this.order.OrderInsurances && this.order.OrderInsurances
+        .filter(it => flighttripKeys.includes(it.AdditionKey)).map(it => it.Key) || [];
+      amount = this.order.OrderItems
+        .filter(it => keys.includes(it.Key))
+        .reduce((acc, it) => { acc = AppHelper.add(acc, +it.Amount); return acc; }, 0);
+    }
+    return amount;
   }
 }
