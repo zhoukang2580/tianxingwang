@@ -185,6 +185,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         item.bookInfo.trainEntity.BookSeatLocation = seat || "";
       }
     }
+    this.trainService.setBookInfoSource(this.trainService.getBookInfos());
   }
   private async initializeViewModel() {
     this.viewModel = {} as any;

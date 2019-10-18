@@ -598,7 +598,7 @@ export class TrainService {
     };
     return this.localTrafficLine.TrafficLines;
   }
-  private setBookInfoSource(infos: PassengerBookInfo<ITrainInfo>[]) {
+  setBookInfoSource(infos: PassengerBookInfo<ITrainInfo>[]) {
     console.log("setBookInfoSource", infos);
     this.bookInfos = infos || [];
     this.bookInfoSource.next(this.bookInfos);

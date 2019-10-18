@@ -60,7 +60,6 @@ export class SeatPickerComponent implements OnInit, AfterViewInit {
   ngOnInit() { }
   onSelect(evt: CustomEvent) {
     const div = evt.target as HTMLElement;
-    console.log(div);
     if (div) {
       let isSelected = div.classList.contains("selected");
       isSelected = !isSelected;
