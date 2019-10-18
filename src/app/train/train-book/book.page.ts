@@ -184,8 +184,15 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       if (item.bookInfo.trainEntity) {
         item.bookInfo.trainEntity.BookSeatLocation = seat || "";
       }
+      this.trainService.setBookInfoSource(this.trainService.getBookInfos().map(it => {
+        if (it.id == item.id) {
+          if (it.bookInfo && it.bookInfo.trainEntity) {
+            it.bookInfo.trainEntity.BookSeatLocation = seat || "";
+          }
+        }
+        return it;
+      }));
     }
-    this.trainService.setBookInfoSource(this.trainService.getBookInfos());
   }
   private async initializeViewModel() {
     this.viewModel = {} as any;
