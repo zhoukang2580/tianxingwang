@@ -139,7 +139,10 @@ export class MemberCredentialManagementPage
   }
   async getCredentials() {
     this.loading = true;
-    const identity = await this.identityService.getIdentityAsync();
+    const identity = await this.identityService.getIdentityAsync().catch(_ => null);
+    if (!identity) {
+      return [];
+    }
     const credentials = await this.memberService.getCredentials(
       identity && identity.Id
     );
