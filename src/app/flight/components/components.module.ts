@@ -20,7 +20,6 @@ import { TicketchangingComponent } from "./ticketchanging/ticketchanging.compone
 import { SelectedPassengersComponent } from "../../tmc/components/selected-passengers/selected-passengers.component";
 import { SelectedFlightsegmentInfoComponent } from "./selected-flightsegment-info/selected-flightsegment-info.component";
 import { SelectFlightsegmentCabinComponent } from "./select-flightsegment-cabin/select-flightsegment-cabin.component";
-import { FlightTripComponent } from "./flight-trip/flight-trip.component";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 import { SelectFlightPassengerComponent } from "./select-flight-passenger/select-flight-passenger.component";
 import { MemberPipesModule } from "src/app/member/pipe/pipe.module";
@@ -42,7 +41,6 @@ import { PriceDetailComponent } from './price-detail/price-detail.component';
     SelectedPassengersComponent,
     SelectedFlightsegmentInfoComponent,
     SelectFlightsegmentCabinComponent,
-    FlightTripComponent,
     PriceDetailComponent,
     SelectFlightPassengerComponent
   ],
@@ -75,7 +73,6 @@ import { PriceDetailComponent } from './price-detail/price-detail.component';
     SelectCityComponent,
     TicketchangingComponent,
     SelectedPassengersComponent,
-    FlightTripComponent,
   ],
   entryComponents: [
     FlyFilterComponent,
