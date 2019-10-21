@@ -106,12 +106,12 @@ export class MyPage implements OnDestroy, OnInit {
       return this.Model;
     }
     req.Method = "ApiMemberUrl-Home-Get";
-    const r = await this.apiService.getPromiseData<PageModel>(req);
-    const config = await this.configService.get();
+    const r = await this.apiService.getPromiseData<PageModel>(req).catch(_ => null);
+    const config = await this.configService.get().catch(_ => null);
     console.log("my load ApiMemberUrl-Home-Get", r);
     this.Model = { ...this.Model, ...r };
     if (this.Model && !this.Model.HeadUrl) {
-      this.Model.HeadUrl = config.DefaultImageUrl;
+      this.Model.HeadUrl = config && config.DefaultImageUrl;
     }
   }
   credentialManagement() {
