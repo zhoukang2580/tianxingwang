@@ -1,5 +1,6 @@
 import { OrderPassengerEntity } from "./OrderPassengerEntity";
 import { OrderInsuranceEntity } from "./OrderInsuranceEntity";
+import { InsuranceResultEntity } from 'src/app/tmc/models/Insurance/InsuranceResultEntity';
 
 export class OrderTripModel {
   /// <summary>
@@ -45,4 +46,5 @@ export class OrderTripModel {
   AdditionKey: string;
   Name: string;
   PassengerId: string;
+  InsuranceResult:InsuranceResultEntity;
 }

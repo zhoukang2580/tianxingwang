@@ -167,3 +167,12 @@ ion-modal.ticket-changing {
   --border-radius: 0.5em;
   --height: 40%;
 }
+.clip-text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  &.show {
+    -webkit-line-clamp: 10000;
+  }
+}

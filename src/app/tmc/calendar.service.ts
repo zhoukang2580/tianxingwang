@@ -44,6 +44,11 @@ export class CalendarService {
     }
     return datetime;
   }
+  getDiffDays(t1: string, t2: string) {
+    const mt1 = t1 ? moment(t1) : moment();
+    const mt2 = t2 ? moment(t2) : moment();
+    return mt1.diff(mt2, 'days');
+  }
   getDayOfWeekNames() {
     return this.dayOfWeekNames;
   }
@@ -165,7 +170,7 @@ export class CalendarService {
         .subtract(1, "days") // 上个月的最后一天
         .date();
       // console.log(lastMDay);
-      for (let d = lastMDay, j = curWeek; j > 0; d--, j--) {
+      for (let d = lastMDay, j = curWeek; j > 0; d-- , j--) {
         const date = curMFistDate
           .subtract(1, "days") // 应该是上个月的日期
           .date(d);
@@ -213,7 +218,7 @@ export class CalendarService {
           .subtract(1, "days") // 上个月的最后一天
           .date();
         // console.log(lastMDay);
-        for (let d = lastMDay, j = curWeek; j > 0; d--, j--) {
+        for (let d = lastMDay, j = curWeek; j > 0; d-- , j--) {
           const date = curMFistDate
             .subtract(1, "days") // 应该是上个月的日期
             .date(d);
@@ -277,7 +282,7 @@ export class CalendarService {
           const lastMDay = new Date(curMFistDate.setSeconds(-1));
 
           // console.log("lastMDay", this.format(lastMDay));
-          for (let d = lastMDay.getDate(), j = curWeek; j > 0; d--, j--) {
+          for (let d = lastMDay.getDate(), j = curWeek; j > 0; d-- , j--) {
             const date = new Date(lastMDay.setDate(d));
             // console.log(this.format(date));
             const lsmd = this.generateDayModel(date);

@@ -1,1 +1,22 @@
-
+.insurance {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform: translateY(100%);
+  opacity: 0;
+  z-index: -1;
+  transition: all ease-in-out 100ms;
+  &.show {
+    opacity: 1;
+    z-index: 100;
+    top: 0;
+    transform: translateY(0);
+  }
+  p {
+    margin: 0;
+  }
+  ion-row ion-col:last-child {
+    color: var(--ion-color-medium);
+  }
+}
