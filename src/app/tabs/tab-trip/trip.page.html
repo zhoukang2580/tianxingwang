@@ -10,7 +10,7 @@
   <ion-refresher (ionRefresh)='doRefresh()' slot='fixed'></ion-refresher>
   <ng-container *ngIf='!isLoading '>
     <ion-list *ngIf='trips?.length else nomoredata'>
-      <ion-item *ngFor='let trip of trips'>
+      <ion-item *ngFor='let trip of trips' detail (click)='goToDetailPage(trip)'>
         <div style='width: 100%;'>
           <ion-row>
             <ion-col>
@@ -82,14 +82,14 @@
               <ng-container *ngIf='products.length && getDays(trip.StartTime)>=1'>
                 <ng-container *ngFor='let p of products'>
                   <ion-button color='secondary' *ngIf='check(trip,p.InsuranceType)'
-                    (click)='onShowSelectedInsurance(p,trip)'>
+                    (click)='onShowSelectedInsurance(p,trip,$event)'>
                     {{p.Name}}({{p.Price}})
                   </ion-button>
                 </ng-container>
               </ng-container>
             </ng-container>
             <ng-container *ngIf='getOrderInsurad(trip) as orderInsurad'>
-              <ion-button color='secondary' (click)='bookInsurance(trip)'>继续支付{{orderInsurad.Name}}
+              <ion-button color='secondary' (click)='bookInsurance(trip,$event)'>继续支付{{orderInsurad.Name}}
               </ion-button>
             </ng-container>
           </ng-container>

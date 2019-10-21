@@ -13,7 +13,7 @@ const routes: Routes = [
   {
     path: "tabs",
     component: TabsPage,
-    // canActivateChild: [AuthorityGuard,ConfirmCredentialInfoGuard],
+    canActivateChild: [AuthorityGuard,ConfirmCredentialInfoGuard],
     children: [
       {
         path: "",

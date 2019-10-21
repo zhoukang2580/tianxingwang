@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { AppHelper } from 'src/app/appHelper';
 import { OrderEntity } from 'src/app/order/models/OrderEntity';
 import { RequestEntity } from 'src/app/services/api/Request.entity';
@@ -14,6 +15,8 @@ import { OrderInsuranceType } from 'src/app/insurance/models/OrderInsuranceType'
 import { OrderInsuranceStatusType } from 'src/app/order/models/OrderInsuranceStatusType';
 import { OrderTravelPayType } from 'src/app/order/models/OrderTravelEntity';
 import { TravelModel } from 'src/app/order/models/TravelModel';
+import { ORDER_TABS } from 'src/app/order/product-tabs/product-tabs.page';
+import { ProductItemType } from 'src/app/tmc/models/ProductItems';
 @Component({
   selector: 'app-trip',
   templateUrl: 'trip.page.html',
@@ -31,7 +34,7 @@ export class TripPage implements OnInit {
   loadMoreSubscription = Subscription.EMPTY;
   selectedInsurance: InsuranceProductEntity;
   selectedInsuranceTrip: OrderTripModel;
-  constructor(private apiservice: ApiService, private calendarService: CalendarService) { }
+  constructor(private apiservice: ApiService, private calendarService: CalendarService, private router: Router) { }
   private getTrips() {
     this.loadMoreSubscription.unsubscribe();
     this.isLoading = this.searchCondition.PageIndex == 0;
@@ -113,9 +116,12 @@ export class TripPage implements OnInit {
     // console.log("get InsuranceProductEntity", products);
     return products;
   }
-  onShowSelectedInsurance(p?: InsuranceProductEntity, trip?: OrderTripModel) {
+  onShowSelectedInsurance(p?: InsuranceProductEntity, trip?: OrderTripModel, evt?: CustomEvent) {
     this.selectedInsurance = p;
     this.selectedInsuranceTrip = trip;
+    if (evt) {
+      evt.stopPropagation();
+    }
   }
   getDays(t1: string, t2: string) {
     const diff = this.calendarService.getDiffDays(t1, t2);
@@ -140,8 +146,25 @@ export class TripPage implements OnInit {
     }
     return orderTrip.InsuranceResult.Products.filter(it => types.some(t => t == it.InsuranceType));
   }
-  async bookInsurance() {
-    const trip = this.selectedInsuranceTrip;
+  goToDetailPage(trip: OrderTripModel) {
+    if (!trip) {
+      return;
+    }
+    const plane = ORDER_TABS.find(it => it.value == ProductItemType.plane);
+    const train = ORDER_TABS.find(it => it.value == ProductItemType.train);
+    const hotel = ORDER_TABS.find(it => it.value == ProductItemType.hotel);
+    this.router.navigate([AppHelper.getRoutePath("order-detail")], {
+      queryParams: {
+        tab: JSON.stringify(trip.Type == "Flight" ? plane : trip.Type == "Train" ? train : hotel),
+        orderId: trip.OrderId
+      }
+    });
+  }
+  async bookInsurance(trip?: OrderTripModel, evt?: CustomEvent) {
+    if (evt) {
+      evt.stopPropagation();
+    }
+    trip = trip || this.selectedInsuranceTrip;
     if (!this.selectedInsurance || !trip) {
       return;
     }
