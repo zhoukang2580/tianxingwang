@@ -1,0 +1,25 @@
+<div *ngFor='let orderTrainTicket of trainTickets'>
+  <ng-container *ngIf='orderTrainTicket.Status!=OrderTrainTicketStatusType.ChangeTicket'>
+    <div>{{orderTrainTicket.Id=="0"?"":"火车票事务号"}}{{orderTrainTicket.Id}}{{orderTrainTicket.StatusName}}</div>
+    <div *ngFor='let orderTrainTrip of orderTrainTicket.OrderTrainTrips'>
+      <div>
+        <span>{{orderTrainTrip.FromStationName}}</span>
+        <span [attr.travelminutes]='orderTrainTrip.TravelMinutes'
+          [attr.traincode]='orderTrainTrip.TrainCode'>------</span>
+        <span>{{orderTrainTrip.ToStationName}}</span>
+      </div>
+      <div>
+        <span>出发:{{orderTrainTrip.StartTime?.substr(0,"yyyy-MM-dd".length)}}</span>
+        <span>{{orderTrainTrip.StartTime?.substr("yyyy-MM-ddT".length,'"HH:mm"'.length)}}</span>
+        <span>{{orderTrainTrip.FromStationName}}({{orderTrainTrip.FromStationCode}})</span>
+        <span>席别:{{orderTrainTicket.SeatTypeName}}</span>
+      </div>
+      <div>
+        <span>到达:{{orderTrainTrip.ArrivalTime?.substr(0,"yyyy-MM-dd".length)}}</span>
+        <span>{{orderTrainTrip.ArrivalTime?.substr("yyyy-MM-ddT".length,'"HH:mm"'.length)}}</span>
+        <span>{{orderTrainTrip.ToStationName}}({{orderTrainTrip.ToStationCode}})</span>
+        <span>信息:{{orderTrainTicket.Detail}}</span>
+      </div>
+    </div>
+  </ng-container>
+</div>

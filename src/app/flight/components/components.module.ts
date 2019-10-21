@@ -22,16 +22,13 @@ import { SelectedFlightsegmentInfoComponent } from "./selected-flightsegment-inf
 import { SelectFlightsegmentCabinComponent } from "./select-flightsegment-cabin/select-flightsegment-cabin.component";
 import { FlightTripComponent } from "./flight-trip/flight-trip.component";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
-import { FlightOrderDetialComponent } from "./flight-order-detial/flight-order-detial.component";
-import { FlightOriginalTripComponent } from "./flight-original-trip/flight-original-trip.component";
-import { PriceDetailComponent } from "./price-detail/price-detail.component";
 import { SelectFlightPassengerComponent } from "./select-flight-passenger/select-flight-passenger.component";
 import { MemberPipesModule } from "src/app/member/pipe/pipe.module";
+import { PriceDetailComponent } from './price-detail/price-detail.component';
 
 @NgModule({
   declarations: [
     FlightDynamicComponent,
-    FlightOrderDetialComponent,
     SwitchCityComponent,
     FlyListItemComponent,
     FlyFilterComponent,
@@ -46,7 +43,6 @@ import { MemberPipesModule } from "src/app/member/pipe/pipe.module";
     SelectedFlightsegmentInfoComponent,
     SelectFlightsegmentCabinComponent,
     FlightTripComponent,
-    FlightOriginalTripComponent,
     PriceDetailComponent,
     SelectFlightPassengerComponent
   ],
@@ -80,8 +76,6 @@ import { MemberPipesModule } from "src/app/member/pipe/pipe.module";
     TicketchangingComponent,
     SelectedPassengersComponent,
     FlightTripComponent,
-    FlightOrderDetialComponent,
-    FlightOriginalTripComponent
   ],
   entryComponents: [
     FlyFilterComponent,

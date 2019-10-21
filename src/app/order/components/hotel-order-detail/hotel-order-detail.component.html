@@ -1,0 +1,31 @@
+<div *ngFor='let orderHotel of hotels'>
+  <div>
+    {{ orderHotel.Id == "0" ? "" : "酒店事务号"}}
+    <span>
+      {{orderHotel.Id}}
+    </span>
+    <span>{{orderHotel.StatusName}}</span>
+  </div>
+  <div>
+    入住：{{orderHotel.BeginDate?.substr(0,"yyyy-MM-dd".length)}}
+    <span margin-start></span>
+    离店：{{orderHotel.EndDate?.substr(0,"yyyy-MM-dd".length)}}
+  </div>
+  <div>
+    酒店名称:{{orderHotel.HotelName}}
+  </div>
+  <div>
+    房型：{{orderHotel.RoomName}}
+  </div>
+  <div>
+    早餐数量：{{orderHotel.Breakfast}}
+  </div>
+  <div>
+    酒店费用支付方式：{{orderHotel.PaymentType==2?"现付":orderHotel.PaymentType==1?"预付":"月结"}}
+  </div>
+  <div>酒店地址:{{orderHotel.HotelAddress}}</div>
+  <div>酒店电话:{{orderHotel.HotelContact}}</div>
+  <div class='clip-text' (click)='orderHotel["isShowDetail"]=!orderHotel["isShowDetail"]' [class.show]='orderHotel["isShowDetail"]'>
+    {{orderHotel.RuleDescription}}
+  </div>
+</div>

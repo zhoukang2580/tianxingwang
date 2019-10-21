@@ -1,22 +1,22 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FlightOriginalTripComponent } from './flight-original-trip.component';
+import { HotelOrderDetailComponent } from './hotel-order-detail.component';
 
-describe('FlightOriginalTripComponent', () => {
-  let component: FlightOriginalTripComponent;
-  let fixture: ComponentFixture<FlightOriginalTripComponent>;
+describe('HotelOrderDetailComponent', () => {
+  let component: HotelOrderDetailComponent;
+  let fixture: ComponentFixture<HotelOrderDetailComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FlightOriginalTripComponent ],
+      declarations: [ HotelOrderDetailComponent ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FlightOriginalTripComponent);
+    fixture = TestBed.createComponent(HotelOrderDetailComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

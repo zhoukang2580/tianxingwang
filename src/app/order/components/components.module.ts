@@ -19,6 +19,9 @@ import { OrderFlightTripComponent } from "./order-flight-trip/order-flight-trip.
 import { OrderTrainTripComponent } from "./order-train-trip/order-train-trip.component";
 import { OrderHotelTripComponent } from "./order-hotel-trip/order-hotel-trip.component";
 import { OrderTripItemComponent } from './order-trip-item/order-trip-item.component';
+import { TrainOrderDetailComponent } from 'src/app/order/components/train-order-detail/train-order-detail.component';
+import { FlightOrderDetailComponent } from './flight-order-detail/flight-order-detail.component';
+import { HotelOrderDetailComponent } from './hotel-order-detail/hotel-order-detail.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +39,10 @@ import { OrderTripItemComponent } from './order-trip-item/order-trip-item.compon
     OrderFlightTripComponent,
     OrderTrainTripComponent,
     OrderHotelTripComponent,
-    OrderTripItemComponent
+    OrderTripItemComponent,
+    TrainOrderDetailComponent,
+    FlightOrderDetailComponent,
+    HotelOrderDetailComponent
   ],
   imports: [
     CommonModule,
@@ -50,7 +56,10 @@ import { OrderTripItemComponent } from './order-trip-item/order-trip-item.compon
     OrderFlightTripComponent,
     OrderTrainTripComponent,
     OrderHotelTripComponent,
-    OrderTripItemComponent
+    OrderTripItemComponent,
+    TrainOrderDetailComponent,
+    FlightOrderDetailComponent,
+    HotelOrderDetailComponent
   ],
   entryComponents: [
     SearchTicketModalComponent,

@@ -79,7 +79,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     private popoverCtrl: PopoverController,
     private domCtrl: DomController,
     private orderService: OrderService
-  ) {}
+  ) { }
   scrollTop: number;
   private getOrderNumbers(tag = "TmcOutNumber"): OrderNumberEntity[] {
     if (
@@ -113,6 +113,21 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
         console.log("onSelectTicket", this.selectedTicket, this.viewModel);
       }
     }
+  }
+  getTravelFlightTrips() {
+    let infos: OrderFlightTripEntity[] = [];
+    if (!this.orderDetail || !this.orderDetail.Order || !this.orderDetail.Order.OrderFlightTickets)
+      return infos;
+    this.orderDetail.Order.OrderFlightTickets.forEach(ticket => {
+      if (ticket.OrderFlightTrips) {
+        ticket.OrderFlightTrips.forEach(flightTrip => {
+          if (flightTrip.Status == OrderFlightTripStatusType.Normal)
+            infos.push(flightTrip);
+        })
+      }
+    });
+    infos.sort((a, b) => new Date(a.TakeoffTime).getTime() - new Date(b.TakeoffTime).getTime());
+    return infos;
   }
   canSendEmailMsg() {
     if (this.selectedTicket) {
@@ -193,7 +208,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
         rect: null
       },
       {
-        label: "航班信息",
+        label: "出行信息",
         value: 2,
         isActive: false,
         rect: null
@@ -213,6 +228,12 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       {
         label: "审批记录",
         value: 5,
+        isActive: false,
+        rect: null
+      },
+      {
+        label: "联系信息",
+        value: 6,
         isActive: false,
         rect: null
       }
@@ -269,6 +290,32 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
         });
       }
     }
+  }
+  getPassengerContacts() {
+    let infos: { Label: string; Name: string; Email: string; Mobile: string; }[] = [];
+    if (this.orderDetail && this.orderDetail.Order) {
+      if (this.orderDetail.Order.OrderPassengers) {
+        this.orderDetail.Order.OrderPassengers.forEach(it => {
+          infos.push({
+            Label: "旅客",
+            Email: it.Email,
+            Name: it.Name,
+            Mobile: it.Mobile
+          });
+        });
+      }
+      if (this.orderDetail.Order.OrderLinkmans) {
+        this.orderDetail.Order.OrderLinkmans.forEach(it => {
+          infos.push({
+            Label: "联系人",
+            Email: it.Email,
+            Name: it.Name,
+            Mobile: it.Mobile
+          });
+        });
+      }
+    }
+    return infos;
   }
   getOrderTotalAmount() {
     return (
