@@ -114,7 +114,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       if (d && d.get("tabId")) {
         this.activeTab = this.isOpenUrl
           ? this.activeTab
-          : +d.get("tabId") || this.activeTab || ProductItemType.plane;
+          : this.activeTab || +d.get("tabId") || ProductItemType.plane;
       }
       this.isOpenUrl = false;
     });
@@ -478,8 +478,8 @@ export class ProductTabsPage implements OnInit, OnDestroy {
             order.OrderFlightTickets = order.OrderFlightTickets.map(t => {
               t.vmTicketAmount = this.getTotalAmount(order, t.Key);
               t.vmInsuranceAmount = this.getInsuranceAmount(order, t);
-              t.vmIsAllowExchange = this.isAllowExchange(order);
-              t.vmIsAllowRefund = this.isAllowRefund(order);
+              // t.vmIsAllowExchange = this.isAllowExchange(order);
+              // t.vmIsAllowRefund = this.isAllowRefund(order);
               if (t.OrderFlightTrips) {
                 t.OrderFlightTrips = t.OrderFlightTrips.map(trip => {
                   if (trip.TakeoffTime) {
@@ -534,12 +534,6 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     return order.OrderItems.filter(
       it => it.Tag == OrderItemHelper.Insurance
     ).reduce((acc, item) => (acc = AppHelper.add(acc, +item.Amount)), 0);
-  }
-  private isAllowRefund(order: OrderEntity) {
-    return false;
-  }
-  private isAllowExchange(order: OrderEntity) {
-    return false;
   }
   private transformSearchCondition(data: SearchTicketConditionModel) {
     let model = new OrderModel();

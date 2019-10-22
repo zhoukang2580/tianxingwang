@@ -11,6 +11,7 @@ export class OrderItemPricePopoverComponent implements OnInit {
   amount: number;
   orderItems: OrderItemEntity[];
   OrderItemHelper = OrderItemHelper;
+  IsShowServiceFee=false;
   constructor() {}
   abs(item: number) {
     return Math.abs(item);
