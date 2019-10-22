@@ -301,6 +301,13 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     this.onTabActive(this.tabs[0]);
     this.tmc = await this.tmcService.getTmc(true);
   }
+  getHotelRoomFee() {
+    return this.orderDetail
+      && this.orderDetail.Order
+      && this.orderDetail.Order.OrderItems
+      && this.orderDetail.Order.OrderItems.filter(it => it.Tag == "Hotel")
+        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+  }
   getVariableObj(it: { Variables: string; VariablesDictionary: any }, key: string) {
     if (it) {
       it.VariablesDictionary = it.VariablesDictionary || JSON.parse(it.Variables) || {};
