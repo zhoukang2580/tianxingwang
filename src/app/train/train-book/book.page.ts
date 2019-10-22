@@ -84,6 +84,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
   identity: IdentityEntity;
   tmc: TmcEntity;
   totalPriceSource: Subject<number>;
+  isCanSave$ = of(false);
   private isCheckingPay = false;
   private checkPayCountIntervalId: any;
   private checkPayCount = 5;
@@ -163,6 +164,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
   }
   ngOnInit() {
     this.doRefresh();
+    this.isCanSave$ = this.identityService.getIdentitySource().pipe(map(id => id && id.Numbers && id.Numbers["AgentId"]));
   }
   ngAfterViewInit() {
     if (this.checkboxes) {

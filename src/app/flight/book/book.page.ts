@@ -102,6 +102,7 @@ export class BookPage implements OnInit, AfterViewInit {
   identity: IdentityEntity;
   isCheckingPay: boolean;
   isCanSkipApproval$ = of(false);
+  isCanSave = false;
   appoval: {
     Value: string;
     Text: string;
@@ -130,7 +131,10 @@ export class BookPage implements OnInit, AfterViewInit {
 
   async ngOnInit() {
     // 秘书和特殊角色可以跳过审批(如果有审批人)
-    this.route.queryParamMap.subscribe(() => {
+    this.route.queryParamMap.subscribe(async () => {
+      this.isCanSave = await this.identityService.getIdentityAsync().catch(_ => null as IdentityEntity).then(id => {
+        return !!(id && id.Numbers && id.Numbers['AgentId']);
+      })
       setTimeout(() => {
         this.refresh();
       }, 200);
@@ -504,7 +508,7 @@ export class BookPage implements OnInit, AfterViewInit {
       info.tripType == TripType.departureTrip
         ? LanguageHelper.getDepartureTip()
         : LanguageHelper.getReturnTripTip()
-    }]`;
+      }]`;
   }
   back() {
     this.natCtrl.back();
@@ -585,8 +589,8 @@ export class BookPage implements OnInit, AfterViewInit {
     const showErrorMsg = (msg: string, item: ICombindInfo) => {
       AppHelper.alert(
         `${(item.credentialStaff && item.credentialStaff.Name) ||
-          (item.modal.credential &&
-            item.modal.credential.Number)}联系人信息${msg}不能为空`
+        (item.modal.credential &&
+          item.modal.credential.Number)}联系人信息${msg}不能为空`
       );
     };
     for (let i = 0; i < this.vmCombindInfos.length; i++) {
@@ -636,9 +640,9 @@ export class BookPage implements OnInit, AfterViewInit {
     const showErrorMsg = (msg: string, item: ICombindInfo) => {
       AppHelper.alert(
         `${(item.credentialStaff && item.credentialStaff.Name) ||
-          (item.modal.credential &&
-            item.modal.credential.CheckFirstName +
-              item.modal.credential.CheckLastName)} 【${item.modal.credential &&
+        (item.modal.credential &&
+          item.modal.credential.CheckFirstName +
+          item.modal.credential.CheckLastName)} 【${item.modal.credential &&
           item.modal.credential.Number}】 ${msg} 信息不能为空`
       );
     };
@@ -717,7 +721,7 @@ export class BookPage implements OnInit, AfterViewInit {
           p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-        }`;
+          }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -731,7 +735,7 @@ export class BookPage implements OnInit, AfterViewInit {
           p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-        }`;
+          }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -977,7 +981,7 @@ export class BookPage implements OnInit, AfterViewInit {
   }
   private async initCombindInfos() {
     try {
-      const pfs = this.flightService.getPassengerBookInfos();
+      const pfs = this.flightService.getPassengerBookInfos().filter(it => !!it.bookInfo);
       for (let i = 0; i < pfs.length; i++) {
         const item = pfs[i];
         const cs = this.initialBookDtoModel.Staffs.find(
@@ -1052,28 +1056,28 @@ export class BookPage implements OnInit, AfterViewInit {
           travelType: OrderTravelType.Business, // 默认全部因公
           insuranceProducts: this.isShowInsurances(
             item.bookInfo &&
-              item.bookInfo.flightSegment &&
-              item.bookInfo.flightSegment.TakeoffTime
+            item.bookInfo.flightSegment &&
+            item.bookInfo.flightSegment.TakeoffTime
           )
             ? insurances
             : [],
           credentialStaffMobiles:
             cstaff && cstaff.Account && cstaff.Account.Mobile
               ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                  return {
-                    checked: idx == 0,
-                    mobile
-                  };
-                })
+                return {
+                  checked: idx == 0,
+                  mobile
+                };
+              })
               : [],
           credentialStaffEmails:
             cstaff && cstaff.Account && cstaff.Account.Email
               ? cstaff.Account.Email.split(",").map((email, idx) => {
-                  return {
-                    checked: idx == 0,
-                    email
-                  };
-                })
+                return {
+                  checked: idx == 0,
+                  email
+                };
+              })
               : [],
           credentialStaffApprovers,
           organization: {
