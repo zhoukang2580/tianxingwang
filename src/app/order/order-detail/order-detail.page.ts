@@ -55,13 +55,13 @@ export interface TabItem {
   styleUrls: ["./order-detail.page.scss"]
 })
 export class OrderDetailPage implements OnInit, AfterViewInit {
+  private  tmc: TmcEntity;
+  private selectedTicket: OrderFlightTicketEntity;
   title: string;
   tab: ProductItem;
   items: { label: string; value: string }[] = [];
   tabs: TabItem[] = [];
   orderDetail: OrderDetailModel;
-  tmc: TmcEntity;
-  selectedTicket: OrderFlightTicketEntity;
   viewModel: ITicketViewModelItem;
   @ViewChildren("info") tabEles: QueryList<IonButton>;
   @ViewChildren("link") linkEles: QueryList<IonList>;
@@ -251,6 +251,9 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     this.tmc = await this.tmcService.getTmc(true);
   }
   private async getOrderInfo(orderId: string) {
+    if(!orderId){
+      return ;
+    }
     this.orderDetail = await this.orderService.getOrderDetailAsync(orderId);
     if (!this.tmc) {
       this.tmc = await this.tmcService.getTmc(true);
@@ -505,119 +508,10 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       }
     }
     this.viewModel = result;
-    this.initTrips();
     return result;
   }
-  private initTrips() {
-    let trips =
-      (this.selectedTicket && this.selectedTicket.OrderFlightTrips) || [];
-    console.log("this.selectedTicket.OrderFlightTrips", trips);
-    trips = trips
-      .filter(it => it.Status == OrderFlightTripStatusType.Normal)
-      .map(it => {
-        it.tripDesc = "行程航班信息";
-        return { ...it } as any;
-      });
-    trips.sort((a, b) => +a.Id - +b.Id);
-    if (this.viewModel) {
-      if (this.selectedTicket) {
-        const originalTrips = this.getOriginalTrips();
-        const exchangedTrips = this.getExchangedTrips();
-        const refundTrips = this.getRefundTrips();
-        [...originalTrips, ...exchangedTrips, ...refundTrips].forEach(trip => {
-          if (!trips.find(it => it.Id == trip.Id)) {
-            trips.push(trip);
-          }
-        });
-      }
-      this.viewModel.trips = trips;
-    }
-    console.log("initTrips", trips);
-  }
-  private getExchangedTrips() {
-    let exchangedTrips: OrderFlightTripEntity[] = [];
-    if (
-      this.viewModel &&
-      this.viewModel.orderFlightTicket &&
-      this.viewModel.orderFlightTicket.OrderFlightTrips &&
-      this.viewModel.existExchanged
-    ) {
-      exchangedTrips = this.viewModel.orderFlightTicket.OrderFlightTrips.map(
-        it => {
-          it.tripDesc =
-            it.Status == OrderFlightTripStatusType.Normal
-              ? "行程航班信息"
-              : "改签航班信息";
-          if (it.TakeoffTime) {
-            const m = moment(it.TakeoffTime);
-            const d = this.flydayService.generateDayModel(m);
-            it.TakeoffDate = m.format(`YYYY年MM月DD日(${d.dayOfWeekName})`);
-          }
-          return it;
-        }
-      );
-    }
-    return exchangedTrips;
-  }
-  private getRefundTrips() {
-    let refundTrips: OrderFlightTripEntity[] = [];
-    if (
-      this.viewModel &&
-      this.viewModel.orderFlightTicket &&
-      this.viewModel.existRefund
-    ) {
-      const orderFlightTicket = this.viewModel.orderFlightTicket;
-      if (orderFlightTicket && orderFlightTicket.OrderFlightTrips) {
-        refundTrips = orderFlightTicket.OrderFlightTrips.filter(
-          orderFlightTrip =>
-            orderFlightTrip.Status == OrderFlightTripStatusType.Refund
-        ).map(it => {
-          it.tripDesc = "退票航班信息";
-          if (it.TakeoffTime) {
-            const m = moment(it.TakeoffTime);
-            const d = this.flydayService.generateDayModel(m);
-            it.TakeoffDate = m.format(`YYYY年MM月DD日(${d.dayOfWeekName})`);
-          }
-          return it;
-        });
-      }
-    }
-    return refundTrips;
-  }
-  private getOriginalTrips() {
-    let originalTrips: OrderFlightTripEntity[] = [];
-    if (
-      this.orderDetail &&
-      this.orderDetail.Order &&
-      this.selectedTicket &&
-      this.orderDetail.Order.OrderFlightTickets
-    ) {
-      if (!this.selectedTicket.VariablesJsonObj) {
-        this.selectedTicket.VariablesJsonObj =
-          (this.selectedTicket.Variables &&
-            JSON.parse(this.selectedTicket.Variables)) ||
-          {};
-      }
-      const originalTicketId = this.selectedTicket.VariablesJsonObj[
-        "OriginalTicketId"
-      ];
-      const ticket = this.orderDetail.Order.OrderFlightTickets.find(it => {
-        return it.Id == originalTicketId;
-      });
-      originalTrips = (ticket && ticket.OrderFlightTrips) || [];
-      originalTrips = originalTrips.map(it => {
-        it.tripDesc = "原始航班信息";
-        if (it.TakeoffTime) {
-          const m = moment(it.TakeoffTime);
-          const d = this.flydayService.generateDayModel(m);
-          it.TakeoffDate = m.format(`YYYY年MM月DD日(${d.dayOfWeekName})`);
-        }
-        return it;
-      });
-      originalTrips.sort((a, b) => +a.Id - +b.Id);
-    }
-    return originalTrips;
-  }
+
+ 
   back() {
     this.navCtrl.back();
   }

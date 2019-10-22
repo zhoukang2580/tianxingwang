@@ -70,7 +70,7 @@
       <ng-container *ngIf='isShowMyTrips'>
         <ion-list lines='none' *ngIf='myTrips?.length else nomoredate'>
           <ion-item *ngFor='let trip of myTrips' (click)='goToDetailPage(trip.OrderId)'>
-            <app-order-flight-trip [orderTrip]='trip' *ngIf='activeTab==productItemType.plane'></app-order-flight-trip>
+            <!-- <app-order-flight-trip [orderTrip]='trip' *ngIf='activeTab==productItemType.plane'></app-order-flight-trip> -->
           </ion-item>
         </ion-list>
         <ng-template #nomoredate>

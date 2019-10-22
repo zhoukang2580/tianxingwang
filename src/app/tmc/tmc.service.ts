@@ -71,7 +71,7 @@ export class TmcService {
     });
     this.selectedCompanySource = new BehaviorSubject(null);
   }
-  async payOrder(tradeNo: string) {
+  async payOrder(tradeNo: string, key = "") {
     let cancelPay = false;
     const payWay = await this.payService.selectPayWay();
     if (!payWay) {
@@ -84,21 +84,21 @@ export class TmcService {
       if (ok) {
         cancelPay = ok;
       } else {
-        await this.payOrder(tradeNo);
+        await this.payOrder(tradeNo, key);
       }
     } else {
       if (payWay.value == "ali") {
-        await this.aliPay(tradeNo);
+        await this.aliPay(tradeNo, key);
       }
       if (payWay.value == "wechat") {
-        await this.wechatPay(tradeNo);
+        await this.wechatPay(tradeNo, key);
       }
     }
     return cancelPay;
   }
-  private async wechatPay(tradeNo: string) {
+  private async wechatPay(tradeNo: string, key: string = "", method: string = "TmcApiOrderUrl-Pay-Create") {
     const req = new RequestEntity();
-    req.Method = "TmcApiOrderUrl-Pay-Create";
+    req.Method = method;
     req.Version = "2.0";
     req.Data = {
       Channel: "App",
@@ -106,6 +106,9 @@ export class TmcService {
       OrderId: tradeNo,
       IsApp: AppHelper.isApp()
     };
+    if (key) {
+      req.Data['Key'] = key;
+    }
     return this.payService
       .wechatpay(req, "")
       .then(r => {
@@ -122,9 +125,9 @@ export class TmcService {
         AppHelper.alert(r);
       });
   }
-  private async aliPay(tradeNo: string) {
+  private async aliPay(tradeNo: string, key: string = "", method: string = "TmcApiOrderUrl-Pay-Create") {
     const req = new RequestEntity();
-    req.Method = "TmcApiOrderUrl-Pay-Create";
+    req.Method = method;
     req.Version = "2.0";
     req.Data = {
       Channel: "App",
@@ -132,6 +135,9 @@ export class TmcService {
       IsApp: AppHelper.isApp(),
       OrderId: tradeNo
     };
+    if (key) {
+      req.Data['Key'] = key;
+    }
     const r = await this.payService.alipay(req, "").catch(e => {
       AppHelper.alert(e);
     });

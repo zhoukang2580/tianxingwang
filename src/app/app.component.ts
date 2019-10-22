@@ -241,9 +241,9 @@ export class AppComponent
       // this.router.navigate([AppHelper.getRoutePath("search-hotel")]);
       // this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
       // this.router.navigate([AppHelper.getRoutePath("hotel-book")]);
-      // this.router.navigate([AppHelper.getRoutePath("product-tabs")], { queryParams: { tabId: 3 } });
+      this.router.navigate([AppHelper.getRoutePath("product-tabs")], { queryParams: { tabId: 3 } });
       // this.router.navigate([AppHelper.getRoutePath("tabs/trip")]);
-      this.router.navigate([AppHelper.getRoutePath("order-detail")], { queryParams: { tabId: 1, orderId: 190000048592 } });
+      // this.router.navigate([AppHelper.getRoutePath("order-detail")], { queryParams: { tabId: 1, orderId:  } });
     });
   }
 
