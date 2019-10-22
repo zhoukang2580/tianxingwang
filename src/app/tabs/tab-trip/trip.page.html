@@ -89,7 +89,7 @@
               </ng-container>
             </ng-container>
             <ng-container *ngIf='getOrderInsurad(trip) as orderInsurad'>
-              <ion-button color='secondary' (click)='bookInsurance(trip,$event)'>继续支付{{orderInsurad.Name}}
+              <ion-button color='secondary' (click)='payInsurance(orderInsurad.Key,trip.OrderId,$event)'>继续支付{{orderInsurad.Name}}
               </ion-button>
             </ng-container>
           </ng-container>

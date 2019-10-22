@@ -1,3 +1,4 @@
+import { TmcService } from 'src/app/tmc/tmc.service';
 import { Router } from '@angular/router';
 import { AppHelper } from 'src/app/appHelper';
 import { OrderEntity } from 'src/app/order/models/OrderEntity';
@@ -34,7 +35,11 @@ export class TripPage implements OnInit {
   loadMoreSubscription = Subscription.EMPTY;
   selectedInsurance: InsuranceProductEntity;
   selectedInsuranceTrip: OrderTripModel;
-  constructor(private apiservice: ApiService, private calendarService: CalendarService, private router: Router) { }
+  constructor(
+    private tmcService: TmcService,
+    private apiservice: ApiService,
+    private calendarService: CalendarService,
+    private router: Router) { }
   private getTrips() {
     this.loadMoreSubscription.unsubscribe();
     this.isLoading = this.searchCondition.PageIndex == 0;
@@ -135,8 +140,12 @@ export class TripPage implements OnInit {
     return orderTrip.OrderInsurances
       .find(it => it.Status == OrderInsuranceStatusType.Booking && it.TravelPayType == OrderTravelPayType.Person);
   }
-  payInsurance(insuranceId: string) {
-    if (insuranceId) {
+  async payInsurance(key: string, tradeNo: string, evt?: CustomEvent) {
+    if (evt) {
+      evt.stopPropagation();
+    }
+    if (key && tradeNo) {
+      await this.tmcService.payOrder(tradeNo, key);
     }
   }
   getTrainProducts(orderTrip: OrderTripModel, ) {
@@ -178,12 +187,12 @@ export class TripPage implements OnInit {
       PassagerId: trip.PassengerId
     };
     req.IsShowLoading = true;
-    const order: OrderEntity = await this.apiservice.getPromiseData<OrderEntity>(req).catch(_ => {
+    const order: { TradeNo: string; Key: string; } = await this.apiservice.getPromiseData<any>(req).catch(_ => {
       AppHelper.alert(_.Message || _);
       return null;
     });
     if (order) {
-      await this.payInsurance(this.selectedInsurance.Id);
+      await this.payInsurance(order.Key, order.TradeNo);
     }
   }
 }
