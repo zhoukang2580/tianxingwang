@@ -14,8 +14,8 @@
   </ion-toolbar>
   <ion-toolbar text-center>
     <div class='tabs'>
-      <ion-button [color]='activeTab==tab.value?"secondary":"dark"' (click)='onTabClick(tab)' *ngFor='let tab of tabs'
-        fill='clear' [class.active]='activeTab==tab.value'>{{tab.label}}
+      <ion-button [color]='activeTab.value==tab.value?"secondary":"dark"' (click)='onTabClick(tab)'
+        *ngFor='let tab of tabs' fill='clear' [class.active]='activeTab.value==tab.value'>{{tab.label}}
       </ion-button>
     </div>
   </ion-toolbar>
@@ -53,7 +53,7 @@
       </ion-item>
     </ion-list>
   </ng-template>
-  <ng-container *ngIf='activeTab!==productItemType.waitingApprovalTask else waitingapprovalTempl'>
+  <ng-container *ngIf='activeTab.value!==productItemType.waitingApprovalTask else waitingapprovalTempl'>
     <ng-container *ngIf='!isLoading else fakeList'>
       <ng-container *ngIf='!isShowMyTrips'>
         <ion-list lines='none' *ngIf='orderModel?.Orders?.length else nomoredate'>
@@ -114,7 +114,7 @@
     </ng-container>
   </ng-template>
 </ion-content>
-<ion-footer *ngIf='activeTab !== productItemType.waitingApprovalTask'>
+<ion-footer *ngIf='activeTab.value !== productItemType.waitingApprovalTask'>
   <ion-row>
     <ion-col text-center>
       <ion-button color='secondary' fill='clear' size='small' (click)='doRefresh()'>
@@ -124,7 +124,7 @@
     <ion-col text-center>
       <ion-button color='secondary' fill='clear' size='small' (click)='onshowMyTrips()'>待出行订单</ion-button>
     </ion-col>
-    <ion-col text-center>
+    <ion-col text-center *ngIf='false'>
       <ion-button color='secondary' fill='clear' size='small' (click)='historyTrips()'>历史订单</ion-button>
     </ion-col>
   </ion-row>

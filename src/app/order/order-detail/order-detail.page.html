@@ -5,7 +5,7 @@
         <ion-icon name='arrow-back'></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>{{title}}订单详情</ion-title>
+    <ion-title>{{title}}</ion-title>
   </ion-toolbar>
   <ion-toolbar>
     <div class='infos' #infos>
@@ -19,9 +19,9 @@
   <ng-container *ngIf='orderDetail&&orderDetail.Order else nomoredata'>
     <div>
       <!-- 订单信息 -->
-      <ion-list #link [attr.tabid]='tabs[0].value' lines='none'>
+      <ion-list #link [attr.tabid]='getTabByLabel("订单")?.value' lines='none'>
         <ion-item-divider>
-          <strong>{{tabs[0].label}}</strong>
+          <strong>{{getTabByLabel("订单")?.label}}</strong>
         </ion-item-divider>
         <ion-item>
           <div style='width: 100%'>
@@ -61,7 +61,7 @@
         </ion-item>
       </ion-list>
       <!-- 出行信息 -->
-      <ion-list #link [attr.tabid]='tabs[1].value' lines='none'>
+      <ion-list #link [attr.tabid]='getTabByLabel("出行")?.value' lines='none'>
         <ng-container *ngIf='orderDetail.Order.OrderFlightTickets?.length'>
           <ng-container *ngIf='getTravelFlightTrips() as trips'>
             <ion-item-divider>
@@ -92,8 +92,8 @@
         </ng-container>
       </ion-list>
       <!-- 旅客信息 -->
-      <ion-list #link [attr.tabid]='tabs[2].value' lines='none'>
-        <ion-item-divider>{{tabs[2].label}}
+      <ion-list #link [attr.tabid]='getTabByLabel("旅客")?.value' lines='none'>
+        <ion-item-divider>{{getTabByLabel("旅客")?.label}}
           <ng-container *ngIf='orderDetail.Order.OrderFlightTickets?.length>1'>
             <ion-badge color='danger'>
               {{orderDetail.Order.OrderFlightTickets?.length}}</ion-badge>
@@ -167,23 +167,24 @@
         </ion-item>
       </ion-list>
       <!-- 保险信息 -->
-      <ion-list #link [attr.tabid]='tabs[3].value' lines='none'>
-        <ion-item-divider>{{tabs[3].label}} </ion-item-divider>
+      <ion-list #link [attr.tabid]='getTabByLabel("保险")?.value' lines='none'
+        *ngIf='(tab?.value == ProductItemType.train)||(tab?.value ==ProductItemType.plane)'>
+        <ion-item-divider>{{getTabByLabel("保险")?.label}} </ion-item-divider>
         <ion-item *ngFor='let item of items'></ion-item>
       </ion-list>
       <!-- 审批记录 -->
-      <ion-list #link [attr.tabid]='tabs[4].value' lines='none'>
+      <ion-list #link [attr.tabid]='getTabByLabel("审批")?.value' lines='none'>
         <ion-item-divider>{{tabs[4].label}}</ion-item-divider>
         <ion-item style='margin-top: 0.5em' *ngIf='orderDetail.Histories?.length'>
-          <app-timeline [hideLastTimeLineTail]='false' >
+          <app-timeline [hideLastTimeLineTail]='false'>
             <app-timeline-item *ngFor='let history of orderDetail.Histories'>
               <div class='approval-info'>
-                <ion-label>审批类型：{{history.Type==1?"所有通过":"任意通过"}}</ion-label>
+                <ion-label>审批类型：{{getVariableObj(history,"TypeName")}}</ion-label>
                 <ion-label>审批人：{{history.Account?.RealName}} <span
                     *ngIf='history.StatusName'>({{history.StatusName}})</span>
                 </ion-label>
                 <ion-label>发起审批时间：{{history?.InsertDateTime}}</ion-label>
-                <ion-label>审批截止时间：{{history?.ExpiredTime}}</ion-label>
+                <ion-label>审批截止时间：{{history?.ExpiredTime?.startsWith("1800")?"":history?.ExpiredTime}}</ion-label>
               </div>
             </app-timeline-item>
           </app-timeline>
@@ -192,8 +193,8 @@
       <!-- 联系信息 -->
       <ion-list #link
         [class.link-has-items]='orderDetail.Order.OrderPassengers?.length||orderDetail.Order.OrderLinkmans?.length'
-        [attr.tabid]='tabs[5].value' lines='none'>
-        <ion-item-divider>{{tabs[5].label}} </ion-item-divider>
+        [attr.tabid]='getTabByLabel("联系")?.value' lines='none'>
+        <ion-item-divider>{{getTabByLabel("联系")?.label}} </ion-item-divider>
         <ion-item *ngFor='let item of orderDetail.Order.OrderPassengers'>
           <div style='width: 100%;'>
             <ion-row>

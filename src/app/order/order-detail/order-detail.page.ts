@@ -25,7 +25,7 @@ import {
   AfterViewInit
 } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { ProductItem } from "../../tmc/models/ProductItems";
+import { ProductItem, ProductItemType } from "../../tmc/models/ProductItems";
 import { TmcService } from "../../tmc/tmc.service";
 import { OrderDetailModel, OrderService } from "src/app/order/order.service";
 import { OrderPayStatusType } from "src/app/order/models/OrderInsuranceEntity";
@@ -58,6 +58,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
   private tmc: TmcEntity;
   title: string;
   tab: ProductItem;
+  ProductItemType = ProductItemType;
   items: { label: string; value: string }[] = [];
   tabs: TabItem[] = [];
   orderDetail: OrderDetailModel;
@@ -288,7 +289,10 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     this.route.queryParamMap.subscribe(q => {
       if (q.get("tab")) {
         this.tab = this.tab || JSON.parse(q.get("tab"));
-        this.title = this.tab.label;
+        this.title = this.tab.label + "订单";
+        if (!(this.tab.value == ProductItemType.train || this.tab.value == ProductItemType.plane)) {
+          this.tabs = this.tabs.filter(it => it.label != '保险信息');
+        }
       }
       if (q.get("orderId")) {
         this.getOrderInfo(q.get("orderId"));
@@ -296,6 +300,12 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     });
     this.onTabActive(this.tabs[0]);
     this.tmc = await this.tmcService.getTmc(true);
+  }
+  getVariableObj(it: { Variables: string; VariablesDictionary: any }, key: string) {
+    if (it) {
+      it.VariablesDictionary = it.VariablesDictionary || JSON.parse(it.Variables) || {};
+      return it.VariablesDictionary[key];
+    }
   }
   private async getOrderInfo(orderId: string) {
     if (!orderId) {
@@ -383,6 +393,9 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
           .filter(it => !(it.Tag || "").endsWith("Fee"))
           .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0)}`;
     }
+  }
+  getTabByLabel(label: string) {
+    return this.tabs && this.tabs.find(it => it.label && it.label.includes(label));
   }
   getInsuranceAmount() {
     if (

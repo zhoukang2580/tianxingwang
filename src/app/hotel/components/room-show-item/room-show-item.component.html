@@ -39,7 +39,11 @@
         <ion-label color='danger' text-wrap>超标：{{rules}}</ion-label>
       </ion-item>
       <ion-item no-margin no-padding *ngIf='disabledEdit' lines='none'>
-        <ion-label style="font-weight: bold;">到店时间</ion-label>
+        <ion-label style="font-weight: bold;">
+          <div style='display: flex;align-items: center;'>
+            到店时间 <ion-icon name="star" color='danger'></ion-icon>
+          </div>
+        </ion-label>
         <ion-select value="brown" okText="确定" [selectedText]='getHHmm(arrivalHotelDateTime)' cancelText="取消"
           (ionChange)='onIonChange()' [(ngModel)]='arrivalHotelDateTime'>
           <ion-select-option value="{{datetime}}" *ngFor='let datetime of arrivalDateTimes'>{{datetime}}

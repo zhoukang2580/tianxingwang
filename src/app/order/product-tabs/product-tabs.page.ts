@@ -82,7 +82,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   private condition: SearchTicketConditionModel = new SearchTicketConditionModel();
   loadDataSub = Subscription.EMPTY;
   productItemType = ProductItemType;
-  activeTab: ProductItemType;
+  activeTab: ProductItem;
   tabs: ProductItem[] = [];
   tmc: TmcEntity;
   orderModel: OrderModel;
@@ -110,11 +110,14 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     private identityService: IdentityService
   ) {
     route.queryParamMap.subscribe(d => {
-      console.log("product-tabs", d);
       if (d && d.get("tabId")) {
+        const tab = ORDER_TABS.find(it => it.value == +(d.get('tabId')));
+        console.log("product-tabs", tab);
+        const plane = ORDER_TABS.find(it => it.value == ProductItemType.plane);
         this.activeTab = this.isOpenUrl
-          ? this.activeTab
-          : this.activeTab || +d.get("tabId") || ProductItemType.plane;
+        ? this.activeTab
+        : this.activeTab || tab || plane;
+        this.title=tab.label;
       }
       this.isOpenUrl = false;
     });
@@ -224,7 +227,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     }
   }
   doRefresh(condition?: SearchTicketConditionModel) {
-    if (this.activeTab == ProductItemType.waitingApprovalTask) {
+    if (this.activeTab.value == ProductItemType.waitingApprovalTask) {
       this.doRefreshTasks();
       return;
     }
@@ -244,9 +247,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     this.loadMoreOrders();
   }
   onTabClick(tab: ProductItem) {
-    this.activeTab = tab.value;
+    this.activeTab = tab;
     this.title = tab.label + "订单";
-    if (this.activeTab == ProductItemType.waitingApprovalTask) {
+    if (this.activeTab.value == ProductItemType.waitingApprovalTask) {
       this.doRefreshTasks();
       this.title = tab.label;
     }
@@ -273,9 +276,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     }
     const m = this.transformSearchCondition(this.condition);
     m.Type =
-      this.activeTab === ProductItemType.plane
+      this.activeTab.value == ProductItemType.plane
         ? "Flight"
-        : this.activeTab == ProductItemType.hotel
+        : this.activeTab.value == ProductItemType.hotel
           ? "Hotel"
           : "Train";
     this.isLoading = this.condition && this.condition.pageIndex == 0;
@@ -331,7 +334,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     });
   }
   doRefreshTasks() {
-    if (this.activeTab != ProductItemType.waitingApprovalTask) {
+    if (this.activeTab.value != ProductItemType.waitingApprovalTask) {
       this.isLoading = false;
       return;
     }
@@ -346,7 +349,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     this.doLoadMoreTasks();
   }
   private doLoadMoreTasks() {
-    if (this.activeTab != ProductItemType.waitingApprovalTask) {
+    if (this.activeTab.value != ProductItemType.waitingApprovalTask) {
       this.isLoading = false;
       return;
     }
@@ -390,9 +393,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       }
       const m = this.transformSearchCondition(this.condition);
       m.Type =
-        this.activeTab == ProductItemType.plane
+        this.activeTab.value == ProductItemType.plane
           ? "Flight"
-          : this.activeTab == ProductItemType.train
+          : this.activeTab.value == ProductItemType.train
             ? "Train"
             : "Hotel";
       this.isLoading = this.condition && this.condition.pageIndex == 0;
@@ -589,7 +592,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     try {
       this.tmc = await this.tmcService.getTmc(true);
       this.doRefresh();
-      this.tabs = ORDER_TABS.filter(t => t.value != ProductItemType.more);
+      this.tabs = ORDER_TABS.filter(t => t.value != ProductItemType.more && t.isDisplay);
     } catch (e) {
       console.error(e);
     }
