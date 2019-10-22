@@ -147,6 +147,11 @@ export class BookPage implements OnInit, AfterViewInit {
       }
     }
   }
+  onBedchange(bed: string, bookInfo: PassengerBookInfo<IHotelInfo>;) {
+    if (bookInfo && bookInfo.bookInfo) {
+      bookInfo.bookInfo.bed = bed;
+    }
+  }
   onShowPriceDetails(evt: {
     isShow: boolean;
     bookInfo: PassengerBookInfo<IHotelInfo>;
@@ -271,7 +276,7 @@ export class BookPage implements OnInit, AfterViewInit {
     if (!Tmc || Tmc.HotelApprovalType == TmcApprovalType.None || Tmc.HotelApprovalType == 0) { return false; }
     if (Tmc.HotelApprovalType == TmcApprovalType.Approver) { return true; }
     if (Tmc.HotelApprovalType == TmcApprovalType.ExceedPolicyApprover
-       && !this.getRuleMessage(item.bookInfo.bookInfo.roomPlan)) { return true; }
+      && !this.getRuleMessage(item.bookInfo.bookInfo.roomPlan)) { return true; }
     return false;
   }
   isAllowSelectApprove(info: IPassengerHotelBookInfo) {

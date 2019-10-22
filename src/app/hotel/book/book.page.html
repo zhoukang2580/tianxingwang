@@ -55,7 +55,7 @@
           </ion-text>
         </ion-item-divider>
         <app-room-show-item [bookInfo]='combindInfo.bookInfo' (arrivalHotel)='onArrivalHotel($event,combindInfo)'
-          (showPriceDetailEvt)='onShowPriceDetails($event)' [disabledEdit]='true' [showRules]='false'>
+          (showPriceDetailEvt)='onShowPriceDetails($event)' [disabledEdit]='true' [showRules]='false' (bedChange)='onBedchange($event,combindInfo)'> 
         </app-room-show-item>
         <ion-item *ngIf='getRuleMessage(combindInfo.bookInfo?.bookInfo?.roomPlan) as msg'>
           <div style='width: 100%;'>

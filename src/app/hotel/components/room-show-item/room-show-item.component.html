@@ -50,6 +50,16 @@
           </ion-select-option>
         </ion-select>
       </ion-item>
+      <ion-item no-margin no-padding *ngIf='bookInfo?.bookInfo?.roomPlan.BookType != HotelBookType.Elong' lines='none'>
+        <ion-label>
+          床型需求（尽量安排）
+        </ion-label>
+        <ion-select value="brown" okText="确定" (ionChange)='onBedChange(bookInfo)' cancelText="取消" [(ngModel)]='bed'>
+          <ion-select-option value="">请选择 </ion-select-option>
+          <ion-select-option value="大床">大床 </ion-select-option> 
+          <ion-select-option value="双床">双床 </ion-select-option>
+        </ion-select>
+      </ion-item>
     </ion-card-content>
   </ion-card>
 </div>

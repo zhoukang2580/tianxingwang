@@ -194,6 +194,11 @@ export class HotelRoomBookedinfosComponent implements OnInit {
     await this.router.navigate([AppHelper.getRoutePath("hotel-book")]);
     await this.hotelService.dismissAllTopOverlays();
   }
+  onbedChange(bed: string, bookInfo: PassengerBookInfo<IHotelInfo>) {
+    if (bookInfo && bookInfo.bookInfo) {
+      bookInfo.bookInfo.bed = bed;
+    }
+  }
   onChangeDate(bookInfo: PassengerBookInfo<IHotelInfo>) {
     this.curSelectedBookInfo = bookInfo;
     console.log("onChangeDate", bookInfo);

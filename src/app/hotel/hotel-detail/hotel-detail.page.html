@@ -151,7 +151,7 @@
       <ng-container *ngIf='room["isShowRoomPlans"]'>
         <ion-item *ngFor='let plan of room.RoomPlans'>
           <app-room-plan-item [color$]='color$' [room]='room' [roomPlan]='plan' [hotel]='hotel'
-            (bookRoom)='onBookRoomPlan($event)'>
+            (bookRoom)='onBookRoomPlan($event)' >
           </app-room-plan-item>
         </ion-item>
       </ng-container>

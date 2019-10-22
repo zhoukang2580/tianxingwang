@@ -17,7 +17,7 @@
         <ion-label color='dark'>{{bookInfo?.passenger?.Name}}{{bookInfo?.credential?.Number}}</ion-label>
         <ion-icon name='trash' color='danger' (click)='onRemoveBookInfo(bookInfo)' slot='end' margin-end></ion-icon>
       </ion-item-divider>
-      <app-room-show-item [bookInfo]='bookInfo' (changeDate)='onChangeDate(bookInfo)'
+      <app-room-show-item [bookInfo]='bookInfo' (changeDate)='onChangeDate(bookInfo)' (bedChange)='onbedChange($event,bookInfo)'
         (showRoomDetail)='onShowRoomDetail(bookInfo)' (showPriceDetailEvt)='onShowPriceDetails($event)'>
       </app-room-show-item>
     </ng-container>

@@ -15,6 +15,7 @@ import {
 } from "@angular/core";
 import { PassengerBookInfo } from "src/app/tmc/tmc.service";
 import * as moment from "moment";
+import { HotelBookType } from '../../models/HotelBookType';
 
 @Component({
   selector: "app-room-show-item",
@@ -26,12 +27,14 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
   @Output() changeDate: EventEmitter<any>;
   @Output() showRoomDetail: EventEmitter<any>;
   @Output() arrivalHotel: EventEmitter<any>;
+  @Output() bedChange: EventEmitter<any>;
   @Input() bookInfo: PassengerBookInfo<IHotelInfo>;
   @Input() disabledEdit: boolean;
   @Input() showRules = true;
   @HostBinding("class.show-price-detail") isShowPriceDetail = false;
   arrivalDateTimes: string[];
   arrivalHotelDateTime: string;
+  bed: string;
   items: string[] = [
     // "大床",
     // "可住2人",
@@ -40,6 +43,7 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
     // "2-8层",
     // "全部房间WiFi、有线宽带免费"
   ];
+  HotelBookType = HotelBookType;
   constructor(
     private hotelService: HotelService,
     private calendarService: CalendarService
@@ -48,6 +52,7 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
     this.showRoomDetail = new EventEmitter();
     this.showPriceDetailEvt = new EventEmitter();
     this.arrivalHotel = new EventEmitter();
+    this.bedChange = new EventEmitter();
   }
   @HostListener("click")
   private closePriceDetail() {
@@ -56,6 +61,9 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
   }
   onIonChange() {
     this.arrivalHotel.emit(this.arrivalHotelDateTime);
+  }
+  onBedChange() {
+    this.bedChange.emit(this.bed);
   }
   getRules(plan: RoomPlanEntity) {
     if (!this.showRules) {
@@ -182,5 +190,5 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
       this.items.push(c.Description);
     }
   }
-  ngOnInit() {}
+  ngOnInit() { }
 }
