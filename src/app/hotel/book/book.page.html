@@ -54,7 +54,7 @@
             (到酒店支付)
           </ion-text>
         </ion-item-divider>
-        <app-room-show-item [bookInfo]='combindInfo.bookInfo' (arrivalHotel)='onArrivalHotel($event,combindInfo)'
+        <app-room-show-item [attr.dataid]='combindInfo.id' [bookInfo]='combindInfo.bookInfo' (arrivalHotel)='onArrivalHotel($event,combindInfo)'
           (showPriceDetailEvt)='onShowPriceDetails($event)' [disabledEdit]='true' [showRules]='false' (bedChange)='onBedchange($event,combindInfo)'>  
         </app-room-show-item>
         <ion-item *ngIf='getRuleMessage(combindInfo.bookInfo?.bookInfo?.roomPlan) as msg'>
@@ -80,7 +80,7 @@
           </div>
         </ion-item>
       </ion-item-group>
-      <ion-item-group *ngIf='combindInfo.creditCardInfo.isShowCreditCard'>
+      <ion-item-group *ngIf='combindInfo.creditCardInfo.isShowCreditCard' [attr.datacreditcardid]='combindInfo.id'>
         <ion-item-divider>信用卡信息</ion-item-divider>
         <ion-item>
           <ion-label>信用卡:</ion-label>

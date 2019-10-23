@@ -18,7 +18,8 @@ import { IdentityService } from "./../../services/identity/identity.service";
 import {
   IonRefresher,
   PopoverController,
-  ModalController
+  ModalController,
+  IonContent
 } from "@ionic/angular";
 import { NavController } from "@ionic/angular";
 import {
@@ -87,6 +88,7 @@ export class BookPage implements OnInit, AfterViewInit {
     checked?: boolean;
   }[];
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
+  @ViewChild(IonContent) ionContent: IonContent;
   error: any;
   identity: IdentityEntity;
   bookInfos: PassengerBookInfo<IHotelInfo>[];
@@ -335,6 +337,8 @@ export class BookPage implements OnInit, AfterViewInit {
         `${(item.credentialStaff && item.credentialStaff.Name) ||
         (item.credential && item.credential.Number)}信用卡信息${msg}`
       );
+      const ele = document.querySelector(`[datacreditcardid='${item.id}']`);
+      this.scrollEleToView(ele);
     };
     if (!item.creditCardInfo.creditCardType) {
       showErrorMsg("未选择信用卡的类型必填");
@@ -644,10 +648,10 @@ export class BookPage implements OnInit, AfterViewInit {
       ) {
         p.CheckinTime = combindInfo.arrivalHotelTime;
         p.RoomPlan = combindInfo.bookInfo.bookInfo.roomPlan;
-        p.RoomPlan.Room = JSON.parse(
+        p.RoomPlan.Room = p.RoomPlan.Room || JSON.parse(
           JSON.stringify(combindInfo.bookInfo.bookInfo.hotelRoom)
         );
-        p.RoomPlan.Room.Hotel = JSON.parse(
+        p.RoomPlan.Room.Hotel = p.RoomPlan.Room.Hotel || JSON.parse(
           JSON.stringify(combindInfo.bookInfo.bookInfo.hotelEntity)
         );
       }
@@ -930,14 +934,26 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     return this.tmc.HotelOrderPayType.includes(payType);
   }
+  private async scrollEleToView(ele: Element) {
+    if (this.ionContent) {
+      const scrollEle = await this.ionContent.getScrollElement();
+      const rect = ele && ele.getBoundingClientRect();
+      if (rect && scrollEle) {
+        scrollEle.scrollBy({ behavior: "smooth", top: rect.top });
+      }
+    }
+  }
   async onBook(isSave: boolean) {
     const bookDto: OrderBookDto = new OrderBookDto();
     bookDto.IsFromOffline = isSave;
     let canBook = false;
     let canBook2 = false;
     if (this.combindInfos) {
-      if (this.combindInfos.some(it => !it.arrivalHotelTime)) {
+      const c = this.combindInfos.find(it => !it.arrivalHotelTime);
+      if (c) {
         AppHelper.alert("请选择到店时间");
+        const ele = document.querySelector(`app-room-show-item[dataid='${c.id}']`);
+        this.scrollEleToView(ele);
         return;
       }
     }
