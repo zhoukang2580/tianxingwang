@@ -42,6 +42,7 @@ export class MemberCredentialManagementPage
   requestCode: "issueNationality" | "identityNationality";
   private currentModifyItem: MemberCredential;
   @ViewChild("f") formEle: ElementRef<HTMLFormElement>;
+  @ViewChildren("modifyForm") modifyFormEles: QueryList<ElementRef<HTMLFormElement>>;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   @ViewChildren("addForm") addForm: QueryList<IonGrid>;
   constructor(
@@ -65,11 +66,14 @@ export class MemberCredentialManagementPage
     this.doRefresh();
     this.getIdentityTypes();
   }
-  doRefresh() {
-    this.getCredentials();
+  async doRefresh() {
+    await this.getCredentials();
     if (this.refresher) {
       this.refresher.complete();
     }
+    setTimeout(() => {
+      this.initializeValidate();
+    }, 1000);
   }
   compareFn(t1, t2) {
     return t1 == t2;
@@ -94,6 +98,15 @@ export class MemberCredentialManagementPage
         this.initializeValidateAdd(el.last.el);
       }
     });
+    this.modifyFormEles.changes.subscribe(_ => {
+      if (this.modifyFormEles.last) {
+        this.validatorService.initialize(
+          "Beeant.Domain.Entities.Member.CredentialsEntity",
+          "Modify",
+          this.modifyFormEles.last.nativeElement
+        );
+      }
+    })
   }
   async removeExistCredential(c: MemberCredential) {
     const comfirmDel = await AppHelper.alert(
@@ -141,15 +154,15 @@ export class MemberCredentialManagementPage
     this.loading = true;
     const identity = await this.identityService.getIdentityAsync().catch(_ => null);
     if (!identity) {
-      return [];
+      return this.credentials = [];
     }
     const credentials = await this.memberService.getCredentials(
       identity && identity.Id
     );
     this.credentials = credentials.map(c => {
       return {
-        isModified: false,
         ...c,
+        isModified: false,
         Birthday: c.Birthday.indexOf("T")
           ? moment(c.Birthday).format("YYYY-MM-DD")
           : c.Birthday,
@@ -243,10 +256,6 @@ export class MemberCredentialManagementPage
       }
       await this.getCredentials();
     }
-  }
-  dataModified(c: MemberCredential) {
-    console.log("aaaaa");
-    c.isModified = true;
   }
   async validateCredential(c: MemberCredential, container: HTMLElement) {
     if (!c) {
@@ -348,9 +357,11 @@ export class MemberCredentialManagementPage
     }
   }
   togleModify(item: MemberCredential) {
-    this.currentModifyItem = item;
     item.isModified = !item.isModified;
-    this.initializeValidate();
+    this.currentModifyItem = item;
+    setTimeout(() => {
+      this.initializeValidate();
+    }, 100);
   }
   canDeactivate() {
     if (this.isCanDeactive) {
