@@ -143,7 +143,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     const bookInfos = this.hotelService.getBookInfos();
     roomPlans.forEach(p => {
       let color = "success";
-      const isRoomPlanCanBook = bookInfos.some(b => this.checkIfPassengerCanBookRoomPlan(policies, p, b.passenger.AccountId));
+      const isRoomPlanCanBook = bookInfos.some(b => this.checkIfPassengerCanBookRoomPlan(policies, p, b.passenger.AccountId, false));
       if (isRoomPlanCanBook) {
         color = 'success';
       } else {
@@ -460,7 +460,8 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
           !this.checkIfPassengerCanBookRoomPlan(
             policies,
             evt.roomPlan,
-            info.passenger.AccountId
+            info.passenger.AccountId,
+            true
           )
         ) {
           bookInfo = null;
@@ -503,7 +504,8 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   private checkIfPassengerCanBookRoomPlan(
     policies: HotelPassengerModel[],
     roomPlan: RoomPlanEntity,
-    passengerAccountId: string
+    passengerAccountId: string,
+    isAlert = false
   ) {
     if (!roomPlan || !passengerAccountId) {
       return false;
@@ -512,13 +514,13 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     const policy = p.HotelPolicies.find(it => it.Number == roomPlan.Number);
     const passenger = this.hotelService.getBookInfos().find(it => it.passenger && it.passenger.AccountId == p.PassengerKey);
     if (!policy.IsAllowBook) {
-      if (passenger) {
+      if (passenger && isAlert) {
         AppHelper.alert(`房客${passenger.passenger.Name}超标不可预订`)
       }
       return false;
     }
     if (this.hotelService.isFull(roomPlan)) {
-      if (passenger) {
+      if (passenger && isAlert) {
         AppHelper.alert(`满房不可预订`)
       }
       return false;
