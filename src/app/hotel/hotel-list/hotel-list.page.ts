@@ -162,9 +162,10 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       ...query
     };
     this.hotelDayPrices = [];
+    this.isLoading=true;
     setTimeout(() => {
       this.doRefresh(true);
-    }, 100);
+    }, 200);
   }
   doRefresh(isKeepQueryCondition = false) {
     if (this.refresher) {

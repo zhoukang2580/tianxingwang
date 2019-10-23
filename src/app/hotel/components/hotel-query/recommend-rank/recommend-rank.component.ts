@@ -30,12 +30,12 @@ export class RecommendRankComponent implements OnInit {
       orderBy: "Desc",
       isSelected: true
     });
-    this.ranks.push({
-      id: 1,
-      label: "口碑高-低",
-      value: "Grade",
-      orderBy: "Desc"
-    });
+    // this.ranks.push({
+    //   id: 1,
+    //   label: "口碑高-低",
+    //   value: "Grade",
+    //   orderBy: "Desc"
+    // });
     this.ranks.push({
       id: 2,
       label: "价格低-高",

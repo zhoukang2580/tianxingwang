@@ -279,7 +279,11 @@ export class HotelQueryComponent implements OnInit {
     this.doRefresh(this.hotelQueryModel);
   }
   onRank(tab: IRankItem) {
-    this.doRefresh();
+    if (tab) {
+      const hotelQueryModel = new HotelQueryEntity();
+      hotelQueryModel.Orderby = tab.orderBy;
+      this.doRefresh(hotelQueryModel);
+    }
   }
   ngOnInit() {
     this.onReset();
