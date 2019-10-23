@@ -280,7 +280,7 @@ export class HotelQueryComponent implements OnInit {
   }
   onRank(tab: IRankItem) {
     if (tab) {
-      const hotelQueryModel = new HotelQueryEntity();
+      const hotelQueryModel = this.hotelQueryModel || new HotelQueryEntity();
       hotelQueryModel.Orderby = tab.orderBy;
       this.doRefresh(hotelQueryModel);
     }

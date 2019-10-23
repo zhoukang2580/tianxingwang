@@ -34,6 +34,7 @@ export class ConfirmCredentialInfoGuard
     return this.staffService
       .getStaff()
       .then(staff => {
+        console.log("ConfirmCredentialInfoGuard",staff);
         if (
           staff &&
           staff.IsConfirmInfo != undefined &&
@@ -43,9 +44,13 @@ export class ConfirmCredentialInfoGuard
             return true;
           }
           this.router.navigate([AppHelper.getRoutePath("confirm-information")]);
+          return false;
         }
         return true;
       })
-      .catch(_ => true);
+      .catch(_ => {
+        console.log("ConfirmCredentialInfoGuard",_);
+        return true;
+      });
   }
 }

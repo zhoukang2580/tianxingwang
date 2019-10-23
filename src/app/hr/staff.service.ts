@@ -286,9 +286,10 @@ export class StaffService {
     const req = new RequestEntity();
     req.Method = "HrApiUrl-Staff-Get";
     req.IsShowLoading = true;
-    if (this.isLoading) {
-      return Promise.reject("loading Staff...");
-    }
+    // if (this.isLoading) {
+    // 这里会影响到证件确认的功能
+    //   return Promise.reject("loading Staff...");
+    // }
     this.isLoading = true;
     return this.apiService
       .getPromiseData<StaffEntity>(req)

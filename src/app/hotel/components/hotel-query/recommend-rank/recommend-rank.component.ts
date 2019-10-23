@@ -2,7 +2,7 @@ import { Component, OnInit, Output, EventEmitter } from "@angular/core";
 export interface IRankItem {
   id: number;
   label: string;
-  orderBy: "Asc" | "Desc";
+  orderBy: "PriceAsc" | "PriceDesc";
   isSelected?: boolean;
   value: string;
 }
@@ -18,16 +18,13 @@ export class RecommendRankComponent implements OnInit {
   constructor() {
     this.rank = new EventEmitter();
   }
-  onRank() {
-    this.rank.emit();
-  }
   onReset() {
     this.ranks = [];
     this.ranks.push({
       id: 0,
       label: "默认排序",
       value: "Category",
-      orderBy: "Desc",
+      orderBy: "PriceDesc",
       isSelected: true
     });
     // this.ranks.push({
@@ -40,13 +37,13 @@ export class RecommendRankComponent implements OnInit {
       id: 2,
       label: "价格低-高",
       value: "Price",
-      orderBy: "Asc"
+      orderBy: "PriceAsc"
     });
     this.ranks.push({
       id: 3,
       label: "价格高-低",
       value: "Price",
-      orderBy: "Desc"
+      orderBy: "PriceDesc"
     });
     this.selectedId = this.ranks[0].id;
   }
