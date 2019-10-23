@@ -13,8 +13,8 @@
           <ion-text color='light'>{{selectedPassengers$|async}}</ion-text>
         </ion-badge>
       </ion-button>
-      <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()'
-        *ngIf='(canAddPassengers$|async)'>添加乘客<ion-badge color='danger'>
+      <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()' *ngIf='canAddPassengers'>
+        添加乘客<ion-badge color='danger'>
           <ion-text color='light'>{{selectedPassengers$|async}}</ion-text>
         </ion-badge>
       </ion-button>
@@ -55,10 +55,10 @@
         </app-search-day-comp>
       </section>
       <ion-button margin-top style='width: 100%' (click)="onSearchHotel()"
-        [disabled]='!destinationCity||((canAddPassengers$|async) && (selectedPassengers$|async)==0)' color="secondary"
+        [disabled]='!destinationCity||((canAddPassengers) && (selectedPassengers$|async)==0)' color="secondary"
         expand="block">
         <ion-text *ngIf='!((canAddPassengers$|async) && (selectedPassengers$|async)==0)'>查询酒店</ion-text>
-        <ion-text *ngIf='(canAddPassengers$|async) && (selectedPassengers$|async)==0'>请添加乘客</ion-text>
+        <ion-text *ngIf='(canAddPassengers) && (selectedPassengers$|async)==0'>请添加乘客</ion-text>
       </ion-button>
     </ion-card-content>
   </ion-card>

@@ -22,7 +22,7 @@ import { TripType } from "src/app/tmc/models/TripType";
 export class SearchHotelPage implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   isShowSelectedInfos$: Observable<boolean>;
-  canAddPassengers$: Observable<boolean>;
+  canAddPassengers = false;
   selectedPassengers$ = of(0);
   get totalFlyDays() {
     if (this.checkInDate && this.checkOutDate) {
@@ -50,8 +50,9 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     private staffService: StaffService,
     private calendarService: CalendarService
   ) {
-    const sub = route.queryParamMap.subscribe(_ => {
+    const sub = route.queryParamMap.subscribe(async _ => {
       this.isLeavePage = false;
+      this.canAddPassengers = !(await this.staffService.isSelfBookType());
       tmcSerivce.setFlightHotelTrainType(FlightHotelTrainType.Hotel);
     });
     this.subscriptions.push(sub);
@@ -73,11 +74,6 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   }
   ngOnInit() {
     this.onPosition();
-    this.canAddPassengers$ = from(this.staffService.isSelfBookType()).pipe(
-      map(isSelf => {
-        return !isSelf;
-      })
-    );
     this.selectedPassengers$ = this.hotelService
       .getBookInfoSource()
       .pipe(map(infos => infos.length));
@@ -131,7 +127,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       moment().add(1, "days")
     );
   }
-  onShowSelectedBookInfos() {}
+  onShowSelectedBookInfos() { }
   onSelectPassenger() {
     this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
   }

@@ -30,7 +30,7 @@
   </ng-template>
   <ng-template #listTemp>
     <ng-container *ngIf='!isShowSearchBar else nosearchartempl'>
-      <ion-list *ngIf='hotelDayPrices?.length else noMoreData' #hotellist class='hotel-list'>
+      <ion-list *ngIf='!isLoading&&hotelDayPrices?.length else noMoreData' #hotellist class='hotel-list'>
         <ion-item *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
           <ion-thumbnail slot='start'>
             <img [lazyloadImage]='item.Hotel?.FileName' appLazyloadimage />
@@ -56,10 +56,12 @@
           </ion-label>
         </ion-item>
       </ion-list>
-      <ng-template #noMoreData>
-        <app-or-comp>暂无数据</app-or-comp>
-      </ng-template>
     </ng-container>
+    <ng-template #noMoreData>
+      <div style='margin-top: 56px;'>
+        <app-or-comp>暂无数据</app-or-comp>
+      </div>
+    </ng-template>
   </ng-template>
   <ng-container #fakeList *ngIf='isLoading else listTemp'>
     <ion-list class='fakelist'>
