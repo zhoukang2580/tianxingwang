@@ -125,13 +125,13 @@
             <ion-label margin-end>{{room.Name}}</ion-label>
             <ion-text color='secondary' (click)='onShowRoomDetails(room)'>详情</ion-text>
           </h3>
-          <h4 *ngIf='room.RoomDetails'>
+          <h4 *ngIf='room.RoomDetails' (click)='onShowRoomDetails(room)'>
             <ion-label text-wrap>
               <div class="room-detail-desc">
                 <span *ngIf='getRoomArea(room) as it'>{{it.Description}}m²</span>
                 <span *ngIf='getBedType(room) as it'>{{it.Description}}</span>
                 <span *ngIf='getCapacity(room) as it'>可住{{it.Description}}人</span>
-                <span *ngIf='getComments(room) as it'>{{it.Description}}</span>
+                <span *ngIf='getComments(room) as it' class='clip-text'>{{it.Description}}</span>
               </div>
             </ion-label>
           </h4>
