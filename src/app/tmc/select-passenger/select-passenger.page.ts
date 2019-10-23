@@ -152,8 +152,9 @@ export class SelectPassengerPage
     });
   }
   private initRemoveitem() {
-    this.removeitemSubscription = this.removeitem.subscribe(info => {
-      if (info) {
+    this.removeitemSubscription = this.removeitem.subscribe(async info => {
+      const ok = await AppHelper.alert(LanguageHelper.getConfirmDeleteTip(),true,LanguageHelper.getConfirmTip(),LanguageHelper.getCancelTip());
+      if (info&&ok) {
         switch (this.tmcService.getFlightHotelTrainType()) {
           case FlightHotelTrainType.Flight: {
             this.flightService.removePassengerBookInfo(info);

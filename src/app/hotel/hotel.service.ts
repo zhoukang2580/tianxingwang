@@ -311,17 +311,37 @@ export class HotelService {
       this.setBookInfos(bookInfos);
     }
   }
-  removeBookInfo(bookInfo: PassengerBookInfo<IHotelInfo>) {
-    console.log("hotel,removeBookInfo", bookInfo);
-    if (bookInfo) {
-      const bookInfos = this.getBookInfos().map(it => {
-        if (it.id === bookInfo.id) {
-          it.bookInfo = null;
+  async removeBookInfo(bookInfo: PassengerBookInfo<IHotelInfo>) {
+    const arg = { ...bookInfo };
+    const isSelf = await this.staffService.isSelfBookType();
+    if (isSelf) {
+      if (arg.bookInfo) {
+        if (arg.bookInfo.tripType == TripType.returnTrip) {
+          this.bookInfos = this.getBookInfos().filter(
+            it => it.id !== arg.id
+          );
+          this.setSearchHotelModel({
+            ...this.getSearchHotelModel(),
+            tripType: TripType.checkIn
+          });
         }
-        return it;
-      });
-      this.setBookInfos(bookInfos);
+        if (arg.bookInfo.tripType == TripType.departureTrip) {
+          this.bookInfos = this.getBookInfos().map(item => {
+            item.bookInfo = null;
+            return item;
+          });
+          this.setSearchHotelModel({
+            ...this.getSearchHotelModel(),
+            tripType: TripType.checkIn
+          });
+        }
+      }
+    } else {
+      this.bookInfos = this.getBookInfos().filter(
+        it => it.id !== arg.id
+      );
     }
+    this.setBookInfos(this.bookInfos);
   }
   removeAllBookInfos() {
     this.setBookInfos([]);
