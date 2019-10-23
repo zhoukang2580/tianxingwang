@@ -62,7 +62,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   isLoading = false;
   isLeavePage = false;
   searchHotelModel: SearchHotelModel;
-  hotelQueryModal: HotelQueryEntity = new HotelQueryEntity();
+  hotelQueryModel: HotelQueryEntity = new HotelQueryEntity();
   hotelDayPrices: HotelDayPriceEntity[] = [];
   vmKeyowrds = "";
   keyowrds = "";
@@ -71,7 +71,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   searchSubscription = Subscription.EMPTY;
   loadDataSub = Subscription.EMPTY;
   conditionModel: HotelConditionModel;
-  config$:Observable<ConfigEntity>;
+  config$: Observable<ConfigEntity>;
   constructor(
     private navCtrl: NavController,
     private hotelService: HotelService,
@@ -82,12 +82,12 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     private route: ActivatedRoute,
     private tmcService: TmcService,
     private configService: ConfigService
-  ) {}
+  ) { }
   onSearchItemClick(item: { Text: string; Value: string }) {
     this.isShowSearchBar = false;
     if (item) {
-      this.hotelQueryModal.HotelId = item.Value;
-      this.keyowrds = this.hotelQueryModal.SearchKey = item.Text;
+      this.hotelQueryModel.HotelId = item.Value;
+      this.keyowrds = this.hotelQueryModel.SearchKey = item.Text;
       this.doRefresh(true);
     }
   }
@@ -158,11 +158,11 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       });
   }
   onHotelQueryChange(query: HotelQueryEntity) {
-    this.hotelQueryModal = {
+    this.hotelQueryModel = {
       ...query
     };
     this.hotelDayPrices = [];
-    this.isLoading=true;
+    this.isLoading = true;
     setTimeout(() => {
       this.doRefresh(true);
     }, 200);
@@ -175,10 +175,10 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       this.queryComp.onReset();
     }
     if (!isKeepQueryCondition) {
-      this.hotelQueryModal = new HotelQueryEntity();
+      this.hotelQueryModel = new HotelQueryEntity();
     }
-    this.hotelQueryModal.PageIndex = 0;
-    this.hotelQueryModal.PageSize = 20;
+    this.hotelQueryModel.PageIndex = 0;
+    this.hotelQueryModel.PageSize = 20;
     this.hotelDayPrices = [];
     this.scrollToTop();
     this.loadMore();
@@ -193,9 +193,9 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       this.loadDataSub.unsubscribe();
     }
     this.isLoading =
-      this.hotelQueryModal && this.hotelQueryModal.PageIndex == 0;
+      this.hotelQueryModel && this.hotelQueryModel.PageIndex == 0;
     this.loadDataSub = this.hotelService
-      .getHotelList(this.hotelQueryModal)
+      .getHotelList(this.hotelQueryModel)
       .pipe(
         finalize(() => {
           this.isLoading = false;
@@ -214,7 +214,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
               this.scroller.disabled = arr.length == 0;
             }
             if (arr.length) {
-              this.hotelQueryModal.PageIndex++;
+              this.hotelQueryModel.PageIndex++;
               this.hotelDayPrices = [...this.hotelDayPrices, ...arr];
             }
             console.log("this.scroller.disabled", this.scroller.disabled);
@@ -240,8 +240,8 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   }
   onSearchClick() {
     this.isShowSearchBar = true;
-    this.hotelQueryModal.HotelId = "";
-    this.hotelQueryModal.SearchKey = "";
+    this.hotelQueryModel.HotelId = "";
+    this.hotelQueryModel.SearchKey = "";
     this.keyowrds = this.vmKeyowrds = "";
     this.vmSearchTextList = [];
   }
@@ -255,7 +255,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions = null;
   }
   ngOnInit() {
-   this.config$= this.configService.getConfigSource();
+    this.config$ = this.configService.getConfigSource();
     const sub0 = this.route.queryParamMap.subscribe(_ => {
       this.isShowSearchBar = false;
       this.isLeavePage = false;
@@ -269,13 +269,13 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       console.log(m);
       if (m) {
         this.searchHotelModel = m;
-        this.hotelQueryModal.CityCode =
+        this.hotelQueryModel.CityCode =
           m.destinationCity && m.destinationCity.Code;
-        this.hotelQueryModal.CityName =
+        this.hotelQueryModel.CityName =
           m.destinationCity && m.destinationCity.Name;
-        this.hotelQueryModal.BeginDate = m.checkInDate;
-        this.hotelQueryModal.EndDate = m.checkOutDate;
-        this.hotelQueryModal.City = m.destinationCity;
+        this.hotelQueryModel.BeginDate = m.checkInDate;
+        this.hotelQueryModel.EndDate = m.checkOutDate;
+        this.hotelQueryModel.City = m.destinationCity;
         if (m.isRefreshData) {
           this.doRefresh();
           this.hotelService.setSearchHotelModel({

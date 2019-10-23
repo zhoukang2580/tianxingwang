@@ -12,6 +12,7 @@ import {
   SimpleChanges
 } from "@angular/core";
 import { HotelConditionModel } from "src/app/hotel/models/ConditionModel";
+import { HotelQueryEntity } from 'src/app/hotel/models/HotelQueryEntity';
 export interface IGeoTab<T> {
   id: string;
   label: string;
@@ -20,21 +21,21 @@ export interface IGeoTab<T> {
   isMulti?: boolean;
   items?: T[];
   tag?:
-    | "Metro"
-    | "RailwayStation"
-    | "CarStation"
-    | "Airport"
-    | "District"
-    | "Mall"
-    | "CommericalCenter"
-    | "Landmark"
-    | "Hospital"
-    | "University"
-    | "Venue"
-    | "InFeatureSpot"
-    | "OutFeatureSpot"
-    | "Group"
-    | "Company";
+  | "Metro"
+  | "RailwayStation"
+  | "CarStation"
+  | "Airport"
+  | "District"
+  | "Mall"
+  | "CommericalCenter"
+  | "Landmark"
+  | "Hospital"
+  | "University"
+  | "Venue"
+  | "InFeatureSpot"
+  | "OutFeatureSpot"
+  | "Group"
+  | "Company";
 }
 export interface IGeoItem<T> {
   id?: string;
@@ -52,8 +53,9 @@ export interface IGeoItem<T> {
   styleUrls: ["./hotel-geo.component.scss"]
 })
 export class HotelGeoComponent implements OnInit, OnChanges {
-  @Input() conditionModel: HotelConditionModel;
+  private conditionModel: HotelConditionModel;
   @Output() geoFilterChange: EventEmitter<any>;
+  @Input() hotelQuery: HotelQueryEntity;
   tabs: IGeoTab<IGeoItem<GeoEntity>>[];
   secondaryItems: IGeoItem<GeoEntity>[];
   thirdItems: IGeoItem<GeoEntity>[];
@@ -62,15 +64,18 @@ export class HotelGeoComponent implements OnInit, OnChanges {
     this.geoFilterChange = new EventEmitter();
   }
 
-  async ngOnInit() {}
+  async ngOnInit() {
+    this.conditionModel = await this.hotelService.getConditions();
+    this.initTabs();
+  }
   ngOnChanges(changes: SimpleChanges) {
-    if (
-      changes &&
-      changes.conditionModel &&
-      changes.conditionModel.currentValue
-    ) {
-      this.initTabs();
-    }
+    // if (
+    //   changes &&
+    //   changes.conditionModel &&
+    //   changes.conditionModel.currentValue
+    // ) {
+    //   this.initTabs();
+    // }
   }
   onItemClick(item: IGeoItem<GeoEntity>, items: IGeoItem<GeoEntity>[]) {
     if (!item) {
@@ -109,7 +114,7 @@ export class HotelGeoComponent implements OnInit, OnChanges {
       tab.hasFilterItem =
         tab.active && tab.tag == "Metro"
           ? tab.items &&
-            tab.items.some(it => it.items && it.items.some(k => k.isSelected))
+          tab.items.some(it => it.items && it.items.some(k => k.isSelected))
           : tab.items && tab.items.some(it => it.isSelected);
     });
     console.timeEnd("checkTabsHasFilteredItem");
@@ -166,6 +171,7 @@ export class HotelGeoComponent implements OnInit, OnChanges {
     this.tabs = [];
     this.initMetros();
     this.initOtherTabs();
+    const geos = this.hotelQuery && this.hotelQuery.Geos || [];
     if (this.tabs && this.tabs[0]) {
       this.onTabClick(this.tabs[0]);
     }
@@ -197,20 +203,24 @@ export class HotelGeoComponent implements OnInit, OnChanges {
       },
       {} as { [key: string]: GeoEntity[] }
     );
+    const geos = this.hotelQuery && this.hotelQuery.Geos || [];
+    const mtros = Object.keys(metros);
     const metroTab: IGeoTab<IGeoItem<GeoEntity>> = {
       id: "metro",
       label: "地铁",
       tag: "Metro",
-      items: Object.keys(metros).map(line => {
+      active: mtros.some(line => metros[line].some(stop => geos.some(gs => gs == stop.Id))),
+      items: mtros.map(line => {
         return {
           label: line,
           level: "second",
           tag: metros[line][0].Tag,
+          isSelected: metros[line].some(stop => geos.some(gs => gs == stop.Id)),
           items: metros[line].map(geo => {
             return {
               label: geo.Name,
               id: geo.Id,
-              isSelected: false,
+              isSelected: !!geos.find(id => id == geo.Id),
               tag: geo.Tag,
               level: "third"
             } as IGeoItem<GeoEntity>;
@@ -302,6 +312,7 @@ export class HotelGeoComponent implements OnInit, OnChanges {
     }
   }
   private processCase(label: string, geo: GeoEntity, tags?: string[]) {
+    const geos = this.hotelQuery && this.hotelQuery.Geos || [];
     const tab = this.tabs.find(
       t => t.tag == geo.Tag || (tags && tags.some(tg => tg == t.tag))
     );
@@ -310,15 +321,19 @@ export class HotelGeoComponent implements OnInit, OnChanges {
         label: label,
         id: geo.Tag,
         tag: geo.Tag as any,
-        items: []
+        items: [],
       });
     } else {
       tab.items.push({
         label: geo.Name,
         id: geo.Id,
         level: "normal",
-        tag: geo.Tag
+        tag: geo.Tag,
+        isSelected: !!geos.find(gid => gid == geo.Id)
       });
+    }
+    if(tab.isMulti){
+      tab.active = tab.items.some(it => it.isSelected);
     }
   }
 }

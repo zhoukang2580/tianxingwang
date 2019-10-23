@@ -1,4 +1,5 @@
-import { Component, OnInit, Output, EventEmitter } from "@angular/core";
+import { HotelQueryEntity } from './../../../models/HotelQueryEntity';
+import { Component, OnInit, Output, EventEmitter, Input } from "@angular/core";
 export interface IRankItem {
   id: number;
   label: string;
@@ -13,6 +14,7 @@ export interface IRankItem {
 })
 export class RecommendRankComponent implements OnInit {
   @Output() rank: EventEmitter<any>;
+  @Input() hotelQuery: HotelQueryEntity;
   ranks: IRankItem[];
   selectedId: number;
   constructor() {
@@ -45,7 +47,12 @@ export class RecommendRankComponent implements OnInit {
       value: "Price",
       orderBy: "PriceDesc"
     });
-    this.selectedId = this.ranks[0].id;
+    let rank = this.ranks.find(it => it.isSelected) || this.ranks[0];
+    if (this.hotelQuery) {
+      rank = this.ranks.find(it => it.orderBy == this.hotelQuery.Orderby) || rank;
+    }
+    rank.isSelected = true;
+    this.selectedId = rank.id;
   }
   ngOnInit() {
     this.onReset();

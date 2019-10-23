@@ -5,9 +5,11 @@ import {
   Output,
   EventEmitter,
   ViewChild,
-  AfterViewInit
+  AfterViewInit,
+  Input
 } from "@angular/core";
 import { IonRange } from "@ionic/angular";
+import { HotelQueryEntity } from 'src/app/hotel/models/HotelQueryEntity';
 export interface IStarPriceTabItem {
   label: string;
   value?: string;
@@ -33,6 +35,7 @@ export interface IStarPriceTab<T> {
 export class HotelStarPriceComponent implements OnInit, AfterViewInit {
   @ViewChild(IonRange) rangeEle: IonRange;
   @Output() starPriceChange: EventEmitter<any>;
+  @Input() hotelQuery: HotelQueryEntity;
   tabs: IStarPriceTab<IStarPriceTabItem>[] = [];
   value: { lower: number; upper: number } = { lower: 0, upper: 1000 };
   private priceTab: IStarPriceTab<IStarPriceTabItem> = {
@@ -61,7 +64,7 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
   onFilter() {
     this.onStarPriceChange();
   }
-  ngAfterViewInit() {}
+  ngAfterViewInit() { }
   onPriceRangeChange(evt: CustomEvent) {
     if (evt.detail.value) {
       this.value = evt.detail.value;
@@ -71,6 +74,7 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
     }
   }
   private initTabs() {
+    const stars = this.hotelQuery && this.hotelQuery.Stars || [];
     this.tabs = [];
     this.tabs.push({
       label: "星级(可多选)",
@@ -80,7 +84,8 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
           label: `${it}`,
           isMulti: true,
           id: `${idx + 1}`,
-          value: `${idx + 1}`
+          value: `${idx + 1}`,
+          isSelected: !!stars.find(it => it == idx + 1 + "")
         } as IStarPriceTabItem;
       })
     });
@@ -92,7 +97,8 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
           label: `${it}`,
           isMulti: true,
           id: `${idx}`,
-          value: `${idx + 1}`
+          value: `${idx + 1}`,
+          isSelected: this.hotelQuery && this.hotelQuery.Type == it
         } as IStarPriceTabItem;
       })
     });
@@ -101,14 +107,14 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
       tag: "price",
       items: ["150以下", "150-300", "300-450", "450-600", "600以上"].map(
         (it, idx) => {
+          const minPrice = idx === 0 ? 0 : it.includes("上") ? 600 : it.split("-")[0];
+          const maxPrice = idx === 0 ? 150 : it.includes("上") ? Infinity : it.split("-")[1];
           return {
             label: `${it}`,
             isMulti: false,
             id: `${idx + 1}`,
-            minPrice:
-              idx === 0 ? 0 : it.includes("上") ? 600 : it.split("-")[0],
-            maxPrice:
-              idx === 0 ? 150 : it.includes("上") ? Infinity : it.split("-")[1]
+            minPrice,
+            maxPrice
           } as IStarPriceTabItem;
         }
       )

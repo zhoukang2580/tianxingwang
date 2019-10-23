@@ -14,7 +14,8 @@
     </ion-searchbar>
   </ion-toolbar>
   <ion-toolbar class='query-toolbar' #querytoolbar *ngIf='!isShowSearchBar'>
-    <app-hotel-query [conditions]='conditionModel' (hotelQueryChange)='onHotelQueryChange($event)'></app-hotel-query>
+    <app-hotel-query [conditions]='conditionModel' [hotelQueryModel]='hotelQueryModel'
+      (hotelQueryChange)='onHotelQueryChange($event)'></app-hotel-query>
   </ion-toolbar>
 </ion-header>
 

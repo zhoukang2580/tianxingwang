@@ -1,3 +1,4 @@
+import { HotelQueryEntity } from 'src/app/hotel/models/HotelQueryEntity';
 import { TmcService } from "src/app/tmc/tmc.service";
 import { HotelService } from "./../../../hotel.service";
 import { AmenityEntity } from "./../../../models/AmenityEntity";
@@ -37,7 +38,8 @@ export interface IFilterTabItem<T> {
   styleUrls: ["./hotel-filter.component.scss"]
 })
 export class HotelFilterComponent implements OnInit, OnChanges {
-  @Input() conditionModel: HotelConditionModel;
+  @Input() hotelQuery: HotelQueryEntity;
+  private conditionModel: HotelConditionModel;
   @Output() filter: EventEmitter<any>;
   tabs: IFilterTab<IFilterTabItem<BrandEntity | AmenityEntity>>[] = [];
   isShowFilter = false;
@@ -58,18 +60,23 @@ export class HotelFilterComponent implements OnInit, OnChanges {
     });
     this.items = this.tabs.find(it => it.active).items;
   }
-  async ngOnInit() {}
-  ngOnChanges(changes: SimpleChanges) {
-    if (
-      changes &&
-      changes.conditionModel &&
-      changes.conditionModel.currentValue
-    ) {
-      console.log("hotel-filter ngOnInit", this.conditionModel);
-      if (this.conditionModel && this.conditionModel.Brands) {
-        this.initTabs();
-      }
+  async ngOnInit() {
+    this.conditionModel = await this.hotelService.getConditions();
+    if (this.conditionModel && this.conditionModel.Brands) {
+      this.initTabs();
     }
+  }
+  ngOnChanges(changes: SimpleChanges) {
+    // if (
+    //   changes &&
+    //   changes.conditionModel &&
+    //   changes.conditionModel.currentValue
+    // ) {
+    //   console.log("hotel-filter ngOnInit", this.conditionModel);
+    //   if (this.conditionModel && this.conditionModel.Brands) {
+    //     this.initTabs();
+    //   }
+    // }
   }
   private initTabs() {
     this.tabs = [];
@@ -143,7 +150,7 @@ export class HotelFilterComponent implements OnInit, OnChanges {
           label: "豪华（可多选）",
           isMulti: true,
           items: luxury.map(it => {
-            return { ...it } as any ;
+            return { ...it } as any;
           })
         }
       ]

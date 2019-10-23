@@ -61,7 +61,7 @@ export class HotelQueryComponent implements OnInit {
   hotelRecommendRankComp: RecommendRankComponent;
   @Input() conditions: HotelConditionModel;
   hotelStarPriceComp: HotelStarPriceComponent;
-  hotelQueryModel: HotelQueryEntity;
+  @Input() hotelQueryModel: HotelQueryEntity;
   isActiveTab = false;
   activeTab: ITab;
   constructor(
@@ -194,8 +194,8 @@ export class HotelQueryComponent implements OnInit {
           }
         });
       });
-      this.doRefresh(this.hotelQueryModel);
     }
+    this.doRefresh(this.hotelQueryModel);
   }
   onFilter(filter: IFilterTab<IFilterTabItem<BrandEntity | AmenityEntity>>[]) {
     console.log(filter);
@@ -311,8 +311,9 @@ export class HotelQueryComponent implements OnInit {
     }
     setTimeout(() => {
       this.activeTab = {
-        label: "initial"
+        label: "initial",
+        isActive: false
       } as any;
-    }, 300);
+    }, 100);
   }
 }
