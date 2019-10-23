@@ -195,8 +195,8 @@ export class HotelRoomBookedinfosComponent implements OnInit {
     await this.hotelService.dismissAllTopOverlays();
   }
   onbedChange(bed: string, bookInfo: PassengerBookInfo<IHotelInfo>) {
-    if (bookInfo && bookInfo.bookInfo) {
-      bookInfo.bookInfo.bed = bed;
+    if (bookInfo && bookInfo.bookInfo && bookInfo.bookInfo.roomPlan) {
+      bookInfo.bookInfo.roomPlan.Remark = bed;
     }
   }
   onChangeDate(bookInfo: PassengerBookInfo<IHotelInfo>) {

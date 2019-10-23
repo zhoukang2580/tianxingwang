@@ -193,10 +193,10 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
                         color =
                           !p.Rules || !p.Rules.length ? "success" : "warning";
                       } else {
-                        color = "danger";
+                        color = "danger_disabled";
                       }
                       if (this.hotelService.isFull(plan)) {
-                        color = "danger";
+                        color = "danger_full";
                       }
                       colors[p.Number] = color;
                     }

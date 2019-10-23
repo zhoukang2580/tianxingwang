@@ -48,12 +48,9 @@ import {
 import { AddContact } from "src/app/tmc/models/AddContact";
 import { TaskType } from "src/app/workflow/models/TaskType";
 import {
-  Subject,
-  BehaviorSubject,
   of,
   combineLatest,
   from,
-  Observable
 } from "rxjs";
 import { OrderLinkmanDto } from "src/app/order/models/OrderLinkmanDto";
 import { LanguageHelper } from "src/app/languageHelper";
@@ -147,9 +144,9 @@ export class BookPage implements OnInit, AfterViewInit {
       }
     }
   }
-  onBedchange(bed: string, bookInfo: PassengerBookInfo<IHotelInfo>;) {
-    if (bookInfo && bookInfo.bookInfo) {
-      bookInfo.bookInfo.bed = bed;
+  onBedchange(bed: string, bookInfo: PassengerBookInfo<IHotelInfo>) {
+    if (bookInfo && bookInfo.bookInfo && bookInfo.bookInfo.roomPlan) {
+      bookInfo.bookInfo.roomPlan.Remark = bed;
     }
   }
   onShowPriceDetails(evt: {

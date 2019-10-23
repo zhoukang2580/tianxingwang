@@ -34,7 +34,6 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
   @HostBinding("class.show-price-detail") isShowPriceDetail = false;
   arrivalDateTimes: string[];
   arrivalHotelDateTime: string;
-  bed: string;
   items: string[] = [
     // "大床",
     // "可住2人",
@@ -63,7 +62,9 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
     this.arrivalHotel.emit(this.arrivalHotelDateTime);
   }
   onBedChange() {
-    this.bedChange.emit(this.bed);
+    if (this.bookInfo && this.bookInfo.bookInfo && this.bookInfo.bookInfo.roomPlan) {
+      this.bedChange.emit(this.bookInfo.bookInfo.roomPlan.Remark);
+    }
   }
   getRules(plan: RoomPlanEntity) {
     if (!this.showRules) {
@@ -76,6 +77,9 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
         .map(k => plan.Rules[k])
         .join(",")
     );
+  }
+  bedCompareFn(b1: string, b2: string) {
+    return b1 == b2;
   }
   onShowPriceDetail() {
     setTimeout(() => {

@@ -697,5 +697,4 @@ export interface IHotelInfo {
   roomPlan?: RoomPlanEntity;
   tripType?: TripType;
   id?: string;
-  bed?: string;
 }
