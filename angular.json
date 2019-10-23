@@ -49,10 +49,10 @@
                 "input": "src/app/flight/flight-list/style.css"
               },
               {
-                "input": "src/assets/photoswipe/dist/photoswipe.css"
+                "input": "src/assets/photoswipe/photoswipe.css"
               },
               {
-                "input": "src/assets/photoswipe/dist/default-skin/default-skin.css"
+                "input": "src/assets/photoswipe/default-skin/default-skin.css"
               }
             ],
             "scripts": [
@@ -69,10 +69,10 @@
                 "input": "node_modules/vconsole/dist/vconsole.min.js"
               },
               {
-                "input": "src/assets/photoswipe/dist/photoswipe-ui-default.js"
+                "input": "src/assets/photoswipe/photoswipe-ui-default.js"
               },
               {
-                "input": "src/assets/photoswipe/dist/photoswipe.js"
+                "input": "src/assets/photoswipe/photoswipe.js"
               }
             ]
           },
