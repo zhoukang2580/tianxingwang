@@ -18,6 +18,7 @@ import { HotelRoomBookedinfosComponent } from "./hotel-room-bookedinfos/hotel-ro
 import { RoomShowItemComponent } from "./room-show-item/room-show-item.component";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 import { ChangeRoomplanDateComponent } from './change-roomplan-date/change-roomplan-date.component';
+import { ShowMsgComponent } from './show-msg/show-msg.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { ChangeRoomplanDateComponent } from './change-roomplan-date/change-roomp
     RoomPlanItemComponent,
     HotelRoomBookedinfosComponent,
     RoomShowItemComponent,
-    ChangeRoomplanDateComponent
+    ChangeRoomplanDateComponent,
+    ShowMsgComponent
   ],
   imports: [
     CommonModule,
@@ -61,6 +63,6 @@ import { ChangeRoomplanDateComponent } from './change-roomplan-date/change-roomp
     TmcComponentsModule,
     ChangeRoomplanDateComponent
   ],
-  entryComponents: [HotelRoomBookedinfosComponent]
+  entryComponents: [HotelRoomBookedinfosComponent,ShowMsgComponent]
 })
 export class HotelComponentsModule {}

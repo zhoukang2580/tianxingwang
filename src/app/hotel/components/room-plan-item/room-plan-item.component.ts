@@ -1,3 +1,4 @@
+import { PopoverController } from '@ionic/angular';
 import { AppHelper } from './../../../appHelper';
 import { RoomPlanEntity } from "src/app/hotel/models/RoomPlanEntity";
 import { HotelService } from "./../../hotel.service";
@@ -19,6 +20,7 @@ import { map, tap } from "rxjs/operators";
 import { StaffService } from "src/app/hr/staff.service";
 import { HotelEntity } from "../../models/HotelEntity";
 import { HotelPaymentType } from "../../models/HotelPaymentType";
+import { ShowMsgComponent } from '../show-msg/show-msg.component';
 
 @Component({
   selector: "app-room-plan-item",
@@ -35,12 +37,27 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
   @Input() color$ = of({});
   constructor(
     private hotelService: HotelService,
-    private staffService: StaffService
+    private staffService: StaffService,
+    private popoverCtrl: PopoverController
   ) {
     this.bookRoom = new EventEmitter();
   }
   getRules(roomPlan: RoomPlanEntity) {
     return this.hotelService.getRules(roomPlan);
+  }
+  async showRoomRateRuleMessage(roomPlan: RoomPlanEntity) {
+    const msg = this.hotelService.getRoomRateRuleMessage(roomPlan);
+    if (msg) {
+      const m = await this.popoverCtrl.create({
+        component: ShowMsgComponent,
+        componentProps: {
+          msg
+        }
+      });
+      if (m) {
+        await m.present();
+      }
+    }
   }
   getRoomArea(room: RoomEntity) {
     return this.hotelService.getRoomArea(room);
@@ -64,7 +81,7 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
     return this.hotelService.getBreakfast(plan);
   }
   onBook(roomPlan: RoomPlanEntity, color: string) {
-    this.bookRoom.emit({ roomPlan: this.roomPlan, room: this.room,color });
+    this.bookRoom.emit({ roomPlan: this.roomPlan, room: this.room, color });
   }
   // private async initFilterPolicy() {
   //   const isSelf = await this.staffService.isSelfBookType();
@@ -132,7 +149,7 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
   //     })
   //   );
   // }
-  ngOnInit() {}
+  ngOnInit() { }
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.room && changes.room.firstChange) {
       // this.initFilterPolicy();

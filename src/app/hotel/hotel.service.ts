@@ -96,6 +96,10 @@ export class HotelService {
   getRules(roomPlan: RoomPlanEntity) {
     return this.getRoomRateRule(roomPlan);
   }
+  getRoomRateRuleMessage(roomPlan: RoomPlanEntity) {
+    if (!roomPlan||!roomPlan.RoomPlanRules)    {return "";}
+    return  roomPlan.RoomPlanRules.map(it=>it.Description).join(",");
+  }
   getAvgPrice(plan: RoomPlanEntity) {
     if (plan && plan.VariablesJsonObj) {
       return plan.VariablesJsonObj["AvgPrice"];
