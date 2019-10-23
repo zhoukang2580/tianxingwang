@@ -78,13 +78,13 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   activeTab: IHotelDetailTab = "houseInfo";
   hotelPolicy: HotelPassengerModel[];
   rects: { [key in IHotelDetailTab]: ClientRect | DOMRect };
-  bookedRoomPlan: { roomPlan: RoomPlanEntity; room: RoomEntity };
+  bookedRoomPlan: { roomPlan: RoomPlanEntity; room: RoomEntity, color: string };
   get totalNights() {
     return (
       this.queryModel.checkInDate &&
       this.queryModel.checkOutDate &&
       +this.queryModel.checkOutDate.substring("2019-10-".length) -
-        +this.queryModel.checkInDate.substring("2019-10-".length)
+      +this.queryModel.checkInDate.substring("2019-10-".length)
     );
   }
   constructor(
@@ -120,29 +120,37 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
           );
         }
       } else {
-        this.initUnFilterColors();
+        await this.initUnFilterColors();
       }
     } else {
       const p = bookInfos.find(it => it.isFilteredPolicy);
       if (p && p.passenger && p.passenger.AccountId) {
         this.filterPassengerPolicy(p.passenger.AccountId);
       } else {
-        this.initUnFilterColors();
+        await this.initUnFilterColors();
       }
     }
   }
-  private initUnFilterColors() {
+  private async initUnFilterColors() {
     let roomPlans: RoomPlanEntity[] = [];
+    const policies = await this.getPolicy();
     if (this.hotel && this.hotel.Rooms) {
       this.hotel.Rooms.forEach(r => {
         roomPlans = roomPlans.concat(r.RoomPlans);
       });
     }
     const colors = {};
+    const bookInfos = this.hotelService.getBookInfos();
     roomPlans.forEach(p => {
       let color = "success";
+      const isRoomPlanCanBook = bookInfos.some(b => this.checkIfPassengerCanBookRoomPlan(policies, p, b.passenger.AccountId));
+      if (isRoomPlanCanBook) {
+        color = 'success';
+      } else {
+        color = 'danger_disabled';
+      }
       if (this.hotelService.isFull(p)) {
-        color = "danger";
+        color = "danger_full";
       }
       colors[p.Number] = color;
     });
@@ -308,7 +316,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
             this.hotelDayPrice.Hotel = this.hotel;
             this.initBgPic(this.hotel.FileName);
             this.hotelPolicy = await this.getPolicy();
-            this.storage.set("mock-hotel-detail", this.hotel);
+            if (!environment.production) {
+              this.storage.set("mock-hotel-detail", this.hotel);
+            }
             await this.ionCnt.scrollToTop();
             this.initFilterPolicy();
             this.checkIfBookedRoomPlan();
@@ -405,9 +415,18 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       // console.log("header", hh);
     }
   }
-  async onBookRoomPlan(evt: { roomPlan: RoomPlanEntity; room: RoomEntity }) {
+  async onBookRoomPlan(evt: { roomPlan: RoomPlanEntity; room: RoomEntity, color: string }) {
     console.log("onBookRoomPlan", evt.roomPlan);
     if (!evt || !evt.room || !evt.roomPlan) {
+      return;
+    }
+    const color = evt.color || "";
+    if (color.includes("disabled")) {
+      AppHelper.alert("超标不可预订");
+      return;
+    }
+    if (color.includes("full")) {
+      AppHelper.alert("已满房，不可预订");
       return;
     }
     const removedBookInfos: PassengerBookInfo<IHotelInfo>[] = [];
@@ -491,7 +510,17 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     }
     const p = policies.find(it => it.PassengerKey == passengerAccountId);
     const policy = p.HotelPolicies.find(it => it.Number == roomPlan.Number);
-    if (!policy.IsAllowBook || this.hotelService.isFull(roomPlan)) {
+    const passenger = this.hotelService.getBookInfos().find(it => it.passenger && it.passenger.AccountId == p.PassengerKey);
+    if (!policy.IsAllowBook) {
+      if (passenger) {
+        AppHelper.alert(`房客${passenger.passenger.Name}超标不可预订`)
+      }
+      return false;
+    }
+    if (this.hotelService.isFull(roomPlan)) {
+      if (passenger) {
+        AppHelper.alert(`满房不可预订`)
+      }
       return false;
     }
     return true;

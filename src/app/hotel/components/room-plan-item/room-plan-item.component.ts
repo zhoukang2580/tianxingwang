@@ -1,3 +1,4 @@
+import { AppHelper } from './../../../appHelper';
 import { RoomPlanEntity } from "src/app/hotel/models/RoomPlanEntity";
 import { HotelService } from "./../../hotel.service";
 import {
@@ -62,11 +63,8 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
   getBreakfast(plan: RoomPlanEntity) {
     return this.hotelService.getBreakfast(plan);
   }
-  onBook(roomPlan: RoomPlanEntity, disabled: boolean) {
-    if (disabled) {
-      return;
-    }
-    this.bookRoom.emit({ roomPlan: this.roomPlan, room: this.room });
+  onBook(roomPlan: RoomPlanEntity, color: string) {
+    this.bookRoom.emit({ roomPlan: this.roomPlan, room: this.room,color });
   }
   // private async initFilterPolicy() {
   //   const isSelf = await this.staffService.isSelfBookType();
