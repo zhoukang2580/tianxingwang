@@ -19,7 +19,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'></ion-refresher>
+  <ion-refresher slot='fixed' (ionRefresh)='doRefresh(false)'></ion-refresher>
   <ng-template #nosearchartempl>
     <ion-list *ngIf='!isSearching'>
       <ion-item *ngFor='let item of vmSearchTextList' (click)='onSearchItemClick(item)'>

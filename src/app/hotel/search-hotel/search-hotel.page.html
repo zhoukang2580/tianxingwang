@@ -57,7 +57,7 @@
       <ion-button margin-top style='width: 100%' (click)="onSearchHotel()"
         [disabled]='!destinationCity||((canAddPassengers) && (selectedPassengers$|async)==0)' color="secondary"
         expand="block">
-        <ion-text *ngIf='!((canAddPassengers$|async) && (selectedPassengers$|async)==0)'>查询酒店</ion-text>
+        <ion-text *ngIf='!((canAddPassengers) && (selectedPassengers$|async)==0)'>查询酒店</ion-text>
         <ion-text *ngIf='(canAddPassengers) && (selectedPassengers$|async)==0'>请添加乘客</ion-text>
       </ion-button>
     </ion-card-content>
