@@ -72,7 +72,7 @@
                 "input": "node_modules/photoswipe/dist/photoswipe-ui-default.min.js"
               },
               {
-                "input": "node_modules/photoswipe/dist/photoswipe.min.js"
+                "input": "node_modules/photoswipe/dist/photoswipe.js"
               }
             ]
           },
