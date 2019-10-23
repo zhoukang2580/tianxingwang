@@ -1067,7 +1067,16 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       }
     }
   }
-  isShowApprove() { }
+  isShowApprove(combindInfo: PassengerBookInfo<ITrainInfo>) {
+    const Tmc = this.tmc;
+    if (!Tmc || Tmc.TrainApprovalType == TmcApprovalType.None || Tmc.FlightApprovalType == 0)
+      return false;
+    if (Tmc.TrainApprovalType == TmcApprovalType.Approver)
+      return true;
+    if (Tmc.TrainApprovalType == TmcApprovalType.ExceedPolicyApprover && (combindInfo && combindInfo.bookInfo && combindInfo.bookInfo.trainPolicy && combindInfo.bookInfo.trainPolicy.Rules))
+      return true;
+    return false;
+  }
 }
 interface ITmcOutNumberInfo {
   key: string;
