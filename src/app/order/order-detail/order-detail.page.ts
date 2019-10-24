@@ -1,3 +1,4 @@
+import { OrderInsuranceEntity } from './../models/OrderInsuranceEntity';
 import { SelectTicketPopoverComponent } from "./../components/select-ticket-popover/select-ticket-popover.component";
 import { SendEmailComponent } from "../components/send-email/send-email.component";
 import { OrderFlightTicketEntity } from "../models/OrderFlightTicketEntity";

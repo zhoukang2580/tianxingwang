@@ -1,0 +1,17 @@
+ion-row ion-col {
+  &:first-child:not([size]) {
+    max-width: 12vw;
+  }
+  &:last-child {
+    color: var(--ion-color-medium);
+  }
+}
+ion-grid {
+  font-size: 0.8rem;
+  ion-row + ion-row {
+    border-bottom: 1px solid var(--ion-color-dark);
+  }
+  ion-row ion-col:last-child {
+    color: initial;
+  }
+}

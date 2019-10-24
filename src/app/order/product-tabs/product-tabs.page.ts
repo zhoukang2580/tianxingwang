@@ -115,9 +115,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         console.log("product-tabs", tab);
         const plane = ORDER_TABS.find(it => it.value == ProductItemType.plane);
         this.activeTab = this.isOpenUrl
-        ? this.activeTab
-        : this.activeTab || tab || plane;
-        this.title=tab.label;
+          ? this.activeTab
+          : this.activeTab || tab || plane;
+        this.title = tab.label;
       }
       this.isOpenUrl = false;
     });
@@ -388,6 +388,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   }
   private async doSearchOrderList() {
     try {
+      if (this.infiniteScroll) {
+        this.infiniteScroll.disabled = this.isLoading;
+      }
       if (this.loadDataSub) {
         this.loadDataSub.unsubscribe();
       }

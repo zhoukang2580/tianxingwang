@@ -51,7 +51,7 @@
         <ion-col>
           <ion-text color='danger'>
             {{getTotalAmount(order,orderFlightTicket.Key) + flightInsuranceAmount(orderFlightTicket)}}
-            <span *ngIf='flightInsuranceAmount(orderFlightTicket) as insuram'>(含保险{{insuram}})</span>
+            <span *ngIf='order.OrderInsurances?.length'>(含保险)</span>
           </ion-text>
         </ion-col>
         <ion-col>

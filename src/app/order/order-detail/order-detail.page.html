@@ -36,7 +36,7 @@
             </ion-row>
             <ion-row>
               <ion-col>付款方式:</ion-col>
-              <ion-col>{{orderDetail.TravelType}}-{{orderDetail.TravelType}}</ion-col>
+              <ion-col>{{orderDetail.TravelType}}-{{orderDetail.TravelPayType}}</ion-col>
             </ion-row>
             <ion-row>
               <ion-col>完成时间:</ion-col>
@@ -54,10 +54,10 @@
               </ion-col>
             </ion-row>
             <ng-template #hotelprice>
-            <ion-row>
-              <ion-col>房费:</ion-col>
-              <ion-col>{{getHotelRoomFee()}}</ion-col>
-            </ion-row>
+              <ion-row>
+                <ion-col>房费:</ion-col>
+                <ion-col>{{getHotelRoomFee()}}</ion-col>
+              </ion-row>
             </ng-template>
             <ion-row *ngIf='tab?.value!=ProductItemType.hotel'>
               <ion-col>已付金额:</ion-col>
@@ -172,11 +172,11 @@
           </div>
         </ion-item>
       </ion-list>
-      <!-- 保险信息 -->
+      <!-- 保险信息 *ngIf='(tab?.value == ProductItemType.train)||(tab?.value ==ProductItemType.plane)'-->
       <ion-list #link [attr.tabid]='getTabByLabel("保险")?.value' lines='none'
-        *ngIf='(tab?.value == ProductItemType.train)||(tab?.value ==ProductItemType.plane)'>
+        *ngIf="orderDetail.Order.OrderInsurances?.length&&orderDetail.Order.OrderTravels">
         <ion-item-divider>{{getTabByLabel("保险")?.label}} </ion-item-divider>
-        <ion-item *ngFor='let item of items'></ion-item>
+        <app-insurance-order-detail [order]='orderDetail.Order'></app-insurance-order-detail>
       </ion-list>
       <!-- 审批记录 -->
       <ion-list #link [attr.tabid]='getTabByLabel("审批")?.value' lines='none'>
