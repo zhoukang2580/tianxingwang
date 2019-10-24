@@ -64,9 +64,9 @@
           </div>
         </ion-item>
         <ion-item>
-          <div style='width: 100%'>
+          <div style='width: 100%;font-size: 0.9rem;'>
             <div>
-              <ion-button fill='clear' class='small-font' style="margin-left: -1em;"
+              <ion-button fill='clear'  style="margin-left: -1em;"
                 (click)='combindInfo["isShowRoomPlanRulesDesc"]=!combindInfo["isShowRoomPlanRulesDesc"]'
                 color='secondary'>
                 预订规则:
@@ -74,7 +74,7 @@
                 <ion-icon name="arrow-dropright" *ngIf='!combindInfo["isShowRoomPlanRulesDesc"]'></ion-icon>
               </ion-button>
             </div>
-            <ion-label *ngIf='combindInfo["isShowRoomPlanRulesDesc"]' text-wrap color='danger' class='small-font'>
+            <ion-label *ngIf='combindInfo["isShowRoomPlanRulesDesc"]' text-wrap color='danger' >
               {{getRoomPlanRulesDesc(combindInfo.bookInfo?.bookInfo?.roomPlan)}}2019年7月1日起，部分城市将不再主动提供牙刷等一次性日用品，建议自行准备。
             </ion-label>
           </div>
