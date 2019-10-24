@@ -137,7 +137,7 @@
           </ion-col>
         </ion-row>
         <ion-item-divider>保费/成本信息</ion-item-divider>
-        <ion-grid text-center>
+        <ion-grid text-start>
           <ion-row>
             <ion-col size>保险费</ion-col>
             <ion-col size>退保手续费</ion-col>
@@ -146,17 +146,17 @@
           </ion-row>
           <ion-row>
             <ion-col size>客户</ion-col>
-            <ion-col size="3">{{getOrderItemsSum(OrderItemHelper.Insurance||" ")}}</ion-col>
-            <ion-col size="3">{{getOrderItemsSum(OrderItemHelper.InsuranceRefundDeduction)||" "}}</ion-col>
-            <ion-col size="3">{{getOrderItemsSum()||" "}}</ion-col>
-            <ion-col size="3">{{getOrderPaysAmount(orderInsurance.Key)||" "}}</ion-col>
+            <ion-col size="3">{{getOrderItemsSum(OrderItemHelper.Insurance)}}</ion-col>
+            <ion-col size="3">{{getOrderItemsSum(OrderItemHelper.InsuranceRefundDeduction)}}</ion-col>
+            <ion-col size="3">{{getOrderItemsSum()}}</ion-col>
+            <ion-col size="3">{{getOrderPaysAmount(orderInsurance.Key)}}</ion-col>
           </ion-row>
-          <ion-row *ngIf='isAgent'>
+          <ion-row *ngIf='isAgent|async'>
             <ion-col size>成本</ion-col>
-            <ion-col size="3">{{getOrderItemsSum(OrderItemHelper.FlightTicket)||" "}}</ion-col>
-            <ion-col size="3">{{getOrderItemsSum(OrderItemHelper.InsuranceRefundDeduction)||" "}}</ion-col>
-            <ion-col size="3">{{getOrderItemsSum("","CostAmount")||" "}}</ion-col>
-            <ion-col size="3">{{getOrderPayCostsAmount(orderInsurance.Key)||" "}}</ion-col>
+            <ion-col size="3">{{getOrderItemsSum(OrderItemHelper.FlightTicket)}}</ion-col>
+            <ion-col size="3">{{getOrderItemsSum(OrderItemHelper.InsuranceRefundDeduction)}}</ion-col>
+            <ion-col size="3">{{getOrderItemsSum("","CostAmount")}}</ion-col>
+            <ion-col size="3">{{getOrderPayCostsAmount(orderInsurance.Key)}}</ion-col>
           </ion-row>
         </ion-grid>
       </div>
