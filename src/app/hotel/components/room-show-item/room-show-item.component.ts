@@ -189,10 +189,10 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
         f.Description.includes("层") ? f.Description : `${f.Description}层`
       );
     }
-    const c = this.hotelService.getComments(this.bookInfo.bookInfo.hotelRoom);
-    if (c) {
-      this.items.push(c.Description);
-    }
+    // const c = this.hotelService.getComments(this.bookInfo.bookInfo.hotelRoom);
+    // if (c) {
+    //   this.items.push(c.Description);
+    // }
   }
   ngOnInit() { }
 }
