@@ -25,15 +25,16 @@ export class PasswordValidPage implements OnInit {
   }[];
   countDown = 0;
   countDownInterval: any;
-  constructor(private apiService: ApiService, private router: Router, private activatedRoute: ActivatedRoute,private navCtrl:NavController) { }
+  constructor(private apiService: ApiService, private router: Router, private activatedRoute: ActivatedRoute, private navCtrl: NavController) { }
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe(p => {
-      this.items = p.get("ValidTypes") && JSON.parse(p.get("ValidTypes")) ;
+      this.message = "";
+      this.items = p.get("ValidTypes") && JSON.parse(p.get("ValidTypes"));
       this.name = p.get("Name");
     });
   }
-  back(){
+  back() {
     this.navCtrl.back();
   }
   check() {
@@ -93,8 +94,8 @@ export class PasswordValidPage implements OnInit {
       SendInterval: number;
       ExpiredInterval: number;
     }>(req).subscribe(res => {
-      if(res.Data)
-      this.startCountDonw(res.Data.SendInterval||0);
+      if (res.Data)
+        this.startCountDonw(res.Data.SendInterval || 0);
     }, e => {
       AppHelper.alert(e);
     }, () => {
