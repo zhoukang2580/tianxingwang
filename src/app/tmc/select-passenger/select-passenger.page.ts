@@ -444,7 +444,7 @@ export class SelectPassengerPage
       LanguageHelper.getConfirmTip(),
       LanguageHelper.getCancelTip()
     );
-    if (!ok) {
+    if (ok) {
       this.back();
     } else {
       this.doRefresh("");

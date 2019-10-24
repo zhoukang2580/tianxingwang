@@ -137,7 +137,7 @@ export class LanguageHelper {
       return `请先选择去程`;
     },
     getAddMorePassengersTip: () => {
-      return `继续添加乘客？`;
+      return `完成添加乘客？`;
     },
     getMustSelectPassengerTypeTip: () => {
       return `请选择乘客类型`;
