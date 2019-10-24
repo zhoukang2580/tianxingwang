@@ -80,19 +80,17 @@ export class OrderItemComponent implements OnInit {
   getTotalAmount(order: OrderEntity, key: string) {
     let amount = 0;
     const Tmc = this.tmc;
-    if (!order) {
+    if (!order || !order.OrderItems || !Tmc) {
       return amount;
     }
-    if (!order.OrderItems || !Tmc) { return amount; }
     if (Tmc.IsShowServiceFee) {
       amount = order.OrderItems
         .filter(it => it.Key == key)
-        .reduce((acc, it) => { acc = AppHelper.add(acc, +it.Amount); return acc; }, 0);
-    }
-    else {
+        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+    } else {
       amount = order.OrderItems
         .filter(it => it.Key == key && !(it.Tag || "").endsWith("Fee"))
-        .reduce((acc, it) => { acc = AppHelper.add(acc, +it.Amount); return acc; }, 0);
+        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
     }
     return amount;
   }
@@ -102,12 +100,12 @@ export class OrderItemComponent implements OnInit {
   }
   flightInsuranceAmount(orderFlightTicket: OrderFlightTicketEntity) {
     let amount = 0;
-    if (this.order && this.order.OrderItems) {
+    if (orderFlightTicket && this.order && this.order.OrderItems) {
       const flighttripKeys = orderFlightTicket.OrderFlightTrips && orderFlightTicket.OrderFlightTrips.map(it => it.Key) || [];
       const keys = this.order.OrderInsurances && this.order.OrderInsurances
-        .filter(it => flighttripKeys.includes(it.AdditionKey)).map(it => it.Key) || [];
+        .filter(it => flighttripKeys.some(fk => fk == it.AdditionKey)).map(it => it.Key) || [];
       amount = this.order.OrderItems
-        .filter(it => keys.includes(it.Key))
+        .filter(it => keys.some(k=>k==it.Key))
         .reduce((acc, it) => { acc = AppHelper.add(acc, +it.Amount); return acc; }, 0);
     }
     return amount;

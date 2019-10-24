@@ -601,15 +601,20 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     }
   }
   getTotalAmount(order: OrderEntity, key: string) {
-    // console.log("getTotalAmount", order, key);
-    if (!order.OrderItems || !this.tmc) {
-      return 0;
-    }
     let amount = 0;
-    amount = order.OrderItems.reduce((acc, it) => {
-      acc = AppHelper.add(acc, +it.Amount);
-      return acc;
-    }, 0);
+    const Tmc = this.tmc;
+    if (!order || !order.OrderItems || !Tmc) {
+      return amount;
+    }
+    if (Tmc.IsShowServiceFee) {
+      amount = order.OrderItems
+        .filter(it => it.Key == key)
+        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+    } else {
+      amount = order.OrderItems
+        .filter(it => it.Key == key && !(it.Tag || "").endsWith("Fee"))
+        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+    }
     return amount;
   }
   private checkPay(order: OrderEntity) {

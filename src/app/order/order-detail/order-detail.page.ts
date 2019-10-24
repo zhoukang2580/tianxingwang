@@ -362,14 +362,20 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     }
   }
   getOrderTotalAmount() {
-    return (
-      this.orderDetail &&
-      this.orderDetail.Order.OrderItems &&
-      this.orderDetail.Order.OrderItems.reduce(
-        (acc, item) => (acc = AppHelper.add(acc, +item.Amount)),
-        0
-      )
-    );
+    let amount = 0;
+    const order = this.orderDetail && this.orderDetail.Order;
+    const Tmc = this.tmc;
+    if (!Tmc || !order || !order.OrderItems)
+      return amount;
+    if (Tmc.IsShowServiceFee) {
+      amount = order.OrderItems
+        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+    } else {
+      amount = order.OrderItems
+        .filter(it => !(it.Tag || "").endsWith("Fee"))
+        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+    }
+    return amount < 0 ? 0 : amount;
   }
   private transformTime(datetime: string) {
     if (datetime && datetime.includes("T")) {
@@ -381,25 +387,21 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     return datetime;
   }
   getOrderPayAmount() {
-    if (!this.orderDetail || !this.orderDetail.Order || !this.tmc) {
-      return `0`;
-    }
+    const Tmc = this.tmc;
     let amount = 0;
-    if (this.orderDetail.Order.OrderPays) {
-      amount = this.orderDetail.Order.OrderPays.filter(
-        it => it.Type != "SelfPay" && it.Status == OrderPayStatusType.Effective
-      ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+    const order = this.orderDetail && this.orderDetail.Order;
+    if (!Tmc || !order) { return amount; }
+    amount = (order.OrderPays || [])
+      .filter(it => it.Status == OrderPayStatusType.Effective)
+      .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+    if (amount == 0) { return amount; }
+    if (Tmc.IsShowServiceFee || !order.OrderItems) {
+      return amount;
     }
-    if (amount == 0) {
-      return `0`;
-    }
-    if (this.tmc.IsShowServiceFee || !this.orderDetail.Order.OrderItems) {
-      return `${amount}`;
-    } else {
-      return `${amount -
-        (this.orderDetail.Order.OrderItems || [])
-          .filter(it => !(it.Tag || "").endsWith("Fee"))
-          .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0)}`;
+    else {
+      return amount - (order.OrderItems || [])
+        .filter(it => !(it.Tag || "").endsWith("Fee"))
+        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
     }
   }
   getTabByLabel(label: string) {
