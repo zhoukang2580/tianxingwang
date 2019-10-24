@@ -412,6 +412,17 @@ export class TrainListPage implements OnInit, OnDestroy {
       }
     });
   }
+  private async setSelfFilterPolicy() {
+    const isSelf = await this.staffService.isSelfBookType();
+    if (isSelf) {
+      this.trainService.setBookInfoSource(this.trainService.getBookInfos().map((it, idx) => {
+        if (idx == 0) {
+          it.isFilteredPolicy = true;
+        }
+        return it;
+      }));
+    }
+  }
   async doRefresh(loadDataFromServer: boolean, keepSearchCondition: boolean) {
     if (this.ionRefresher) {
       this.ionRefresher.disabled = true;
@@ -447,8 +458,12 @@ export class TrainListPage implements OnInit, OnDestroy {
         data = await this.loadPolicyedTrainsAsync();
       }
       // 根据筛选条件过滤航班信息：
+      const b = this.trainService.getBookInfos()[0];
+      if (b) {
+        b.isOnlyFilterMatchedPolicy = false;
+      }
       data = this.trainService.filterPassengerPolicyTrains(
-        null,
+        await this.staffService.isSelfBookType() ? b: null,
         data,
         this.passengersPolicies
       );
