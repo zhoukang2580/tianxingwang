@@ -20,12 +20,17 @@
   <div>
     早餐数量：{{orderHotel.Breakfast}}
   </div>
+  <div class='clip-text' (click)='orderHotel["isShowRoomFees"]=!orderHotel["isShowRoomFees"]'
+    [class.show]='orderHotel["isShowRoomFees"]'>
+    房费：{{getHotelRoomFee()}}
+  </div>
   <div>
     酒店费用支付方式：{{orderHotel.PaymentType==2?"现付":orderHotel.PaymentType==1?"预付":"月结"}}
   </div>
   <div>酒店地址:{{orderHotel.HotelAddress}}</div>
   <div>酒店电话:{{orderHotel.HotelContact}}</div>
-  <div class='clip-text' (click)='orderHotel["isShowDetail"]=!orderHotel["isShowDetail"]' [class.show]='orderHotel["isShowDetail"]'>
+  <div class='clip-text' (click)='orderHotel["isShowDetail"]=!orderHotel["isShowDetail"]'
+    [class.show]='orderHotel["isShowDetail"]'>
     {{orderHotel.RuleDescription}}
   </div>
 </div>

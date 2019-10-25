@@ -42,7 +42,7 @@
               <ion-col>完成时间:</ion-col>
               <ion-col>{{orderDetail.Order.InsertDateTime}}</ion-col>
             </ion-row>
-            <ion-row (click)='showPricePopover()' *ngIf='tab?.value!=ProductItemType.hotel else hotelprice'>
+            <ion-row (click)='showPricePopover()' *ngIf='tab?.value!=ProductItemType.hotel else hotelTempl'>
               <ion-col>应收金额:</ion-col>
               <ion-col class='arrow-forward'>
                 <div>
@@ -53,11 +53,21 @@
                 </ion-icon>
               </ion-col>
             </ion-row>
-            <ng-template #hotelprice>
-              <ion-row>
-                <ion-col>房费:</ion-col>
-                <ion-col>{{getHotelRoomFee()}}</ion-col>
-              </ion-row>
+            <ng-template #hotelTempl>
+              <ng-container *ngIf='tmc?.IsShowServiceFee'>
+                <ion-row *ngFor='let orderHotel of orderDetail.Order.OrderHotels'>
+                  <ion-col>
+                    <ng-container *ngIf='orderDetail.Order.OrderHotels.length>1'>
+                      <strong *ngIf='orderHotel.HotelName as n'>
+                        {{n.length>10?n.substr(0,10)+"...":n}}
+                      </strong>
+                    </ng-container>
+                    服务费:
+                  </ion-col>
+                  <ion-col size='3'>{{getHotelServiceFee(orderHotel.Key)}}
+                  </ion-col>
+                </ion-row>
+              </ng-container>
             </ng-template>
             <ion-row *ngIf='tab?.value!=ProductItemType.hotel'>
               <ion-col>已付金额:</ion-col>

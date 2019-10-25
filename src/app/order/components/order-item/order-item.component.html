@@ -143,13 +143,13 @@
         </ion-col>
       </ion-row>
       <ion-row>
-        <ion-col>
+        <ion-col *ngIf='false'>
           <ion-text color='danger'>{{getTotalAmount(order,orderHotel.Key)}}</ion-text>
         </ion-col>
         <ion-col>
           {{orderHotel.StatusName}}
           <ion-button
-            *ngIf='orderHotel.Status == OrderHotelStatusType.PayFailure && orderHotel.PaymentType == HotelPaymentType.SelfPay'>
+            *ngIf='false&&orderHotel.Status == OrderHotelStatusType.PayFailure && orderHotel.PaymentType == HotelPaymentType.SelfPay'>
             重新担保</ion-button>
         </ion-col>
       </ion-row>

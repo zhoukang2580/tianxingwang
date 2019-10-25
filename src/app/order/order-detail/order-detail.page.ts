@@ -56,7 +56,7 @@ export interface TabItem {
   styleUrls: ["./order-detail.page.scss"]
 })
 export class OrderDetailPage implements OnInit, AfterViewInit {
-  private tmc: TmcEntity;
+  tmc: TmcEntity;
   title: string;
   tab: ProductItem;
   ProductItemType = ProductItemType;
@@ -302,18 +302,35 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     this.onTabActive(this.tabs[0]);
     this.tmc = await this.tmcService.getTmc(true);
   }
-  getHotelRoomFee() {
-    return this.orderDetail
-      && this.orderDetail.Order
-      && this.orderDetail.Order.OrderItems
-      && this.orderDetail.Order.OrderItems.filter(it => it.Tag == "Hotel")
-        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
-  }
   getVariableObj(it: { Variables: string; VariablesDictionary: any }, key: string) {
     if (it) {
       it.VariablesDictionary = it.VariablesDictionary || JSON.parse(it.Variables) || {};
       return it.VariablesDictionary[key];
     }
+  }
+  getHotelServiceFee(orderHotelKey: string) {
+    return this.orderDetail
+      && this.orderDetail.Order.OrderItems
+      && this.orderDetail.Order.OrderItems
+        .filter(it => it.Key == orderHotelKey && (it.Tag || "").includes("Fee"))
+        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+  }
+  getTotalAmount(order: OrderEntity, key: string) {
+    let amount = 0;
+    const Tmc = this.tmc;
+    if (!order || !order.OrderItems || !Tmc) {
+      return amount;
+    }
+    if (Tmc.IsShowServiceFee) {
+      amount = order.OrderItems
+        .filter(it => it.Key == key)
+        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+    } else {
+      amount = order.OrderItems
+        .filter(it => it.Key == key && !(it.Tag || "").endsWith("Fee"))
+        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+    }
+    return amount;
   }
   private async getOrderInfo(orderId: string) {
     if (!orderId) {
