@@ -300,7 +300,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       }
     });
     this.onTabActive(this.tabs[0]);
-    this.tmc = await this.tmcService.getTmc(true);
+    this.tmc = await this.tmcService.getTmc();
   }
   getVariableObj(it: { Variables: string; VariablesDictionary: any }, key: string) {
     if (it) {

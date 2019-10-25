@@ -14,7 +14,8 @@ export class HotelOrderDetailComponent implements OnInit {
   @Input() order: OrderEntity;
   constructor() { }
 
-  ngOnInit() { }
+  ngOnInit() {
+  }
   getHotelRoomFee(orderHotelKey: string) {
     return this.order
       && this.order.OrderItems
@@ -29,5 +30,12 @@ export class HotelOrderDetailComponent implements OnInit {
   getVariable(orderHotel: OrderHotelEntity, key: string) {
     orderHotel.VariablesJsonObj = orderHotel.VariablesJsonObj || JSON.parse(orderHotel.Variables) || {};
     return orderHotel.VariablesJsonObj[key];
+  }
+  getHotelOrderTravel(orderHotel: OrderHotelEntity) {
+    if (!orderHotel) {
+      return;
+    }
+    orderHotel.OrderTravel = orderHotel.OrderTravel || (this.order && this.order.OrderTravels.find(it => it.Key == orderHotel.Key));
+    return orderHotel.OrderTravel;
   }
 }
