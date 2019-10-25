@@ -61,6 +61,9 @@ export class MyPage implements OnDestroy, OnInit {
       console.log("can show tabs ", this.isShowMyOrderTabs);
     });
   }
+  contactUs(){
+    this.router.navigate([AppHelper.getRoutePath(`contact-us`)]);
+  }
   private goToProductListPage() {
     this.router.navigate([AppHelper.getRoutePath(`product-list`)]);
   }
