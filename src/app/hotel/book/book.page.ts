@@ -97,6 +97,7 @@ export class BookPage implements OnInit, AfterViewInit {
   illegalReasons: any[];
   travelForm: TravelFormEntity;
   isCheckingPay = false;
+  isSubmitting = false;
   checkPayCountIntervalId: any;
   checkPayCount = 3;
   checkPayCountIntervalTime = 5 * 1000;
@@ -960,6 +961,7 @@ export class BookPage implements OnInit, AfterViewInit {
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto);
     if (canBook && canBook2) {
+      this.isSubmitting=true;
       const res = await this.hotelService.onBook(bookDto).catch(e => {
         AppHelper.alert(e);
         return { TradeNo: "" };

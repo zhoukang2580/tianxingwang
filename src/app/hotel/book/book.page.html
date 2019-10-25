@@ -294,7 +294,7 @@
       </ion-button>
     </ion-buttons>
     <ion-buttons slot='end'>
-      <ion-button color='secondary' (click)='onBook(false)'> 提交</ion-button>
+      <ion-button color='secondary' [disabled]='isSubmitting' (click)='onBook(false)'> 提交</ion-button>
     </ion-buttons>
     <ion-buttons slot='end' *ngIf='identity?.Numbers?.AgentId'>
       <ion-button color='secondary' (click)='onBook(true)'>保存订单</ion-button>

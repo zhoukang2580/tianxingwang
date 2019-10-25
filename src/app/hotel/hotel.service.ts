@@ -712,6 +712,7 @@ export class HotelService {
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;
+    this.apiService.showLoadingView();
     return this.apiService.getPromiseData<{ TradeNo: string }>(req);
   }
 }
