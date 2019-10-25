@@ -40,7 +40,9 @@
           <ion-label (click)='openrules(cabin)'>
             <h3 class='discount'>
               <ion-text color='dark'>{{cabin?.Cabin?.Type|cabintype}}</ion-text>
-              <ion-text color='dark'>{{cabin?.Cabin?.Discount|discount}}
+              <ion-text color='dark'>{{cabin?.Cabin?.Discount|discount}} </ion-text>
+              <ion-text color='secondary' *ngIf='cabin?.Cabin?.FareType==FlightFareType.Agreement'> 
+                <strong>协</strong>
               </ion-text>
             </h3>
             <h3>

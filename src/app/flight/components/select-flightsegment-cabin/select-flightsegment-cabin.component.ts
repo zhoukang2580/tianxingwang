@@ -3,6 +3,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 import { ModalController } from "@ionic/angular";
 import { TicketchangingComponent } from "../ticketchanging/ticketchanging.component";
 import { FlightPolicy } from "../../models/PassengerFlightInfo";
+import { FlightFareType } from '../../models/flight/FlightFareType';
 
 @Component({
   selector: "app-select-flightsegment-cabin",
@@ -13,6 +14,7 @@ export class SelectFlightsegmentCabinComponent implements OnInit {
   @Input() policiedCabins: FlightPolicy[];
   @Input() flightSegment: FlightSegmentEntity;
   @Output() selectcabin: EventEmitter<any>;
+  FlightFareType=FlightFareType;
   constructor(private modalCtrl: ModalController) {
     this.selectcabin = new EventEmitter();
   }

@@ -30,6 +30,7 @@ import { of, Observable } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { PassengerBookInfo } from "src/app/tmc/tmc.service";
 import { AppHelper } from "src/app/appHelper";
+import { FlightFareType } from '../models/flight/FlightFareType';
 
 @Component({
   selector: "app-flight-item-cabins",
@@ -38,6 +39,7 @@ import { AppHelper } from "src/app/appHelper";
 })
 export class FlightItemCabinsPage implements OnInit {
   vmFlightSegment: FlightSegmentEntity;
+  FlightFareType=FlightFareType;
   currentViewtFlightSegment: CurrentViewtFlightSegment;
   vmCabins: FlightCabinEntity[] = [];
   vmPolicyCabins: FlightPolicy[] = [];
