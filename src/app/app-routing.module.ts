@@ -33,6 +33,7 @@ const routes: Routes = [
     path: "open-url",
     loadChildren: "./pages/open-url/open-url.module#OpenUrlPageModule"
   },
+  { path: 'contact-us', loadChildren: './pages/contact-us/contact-us.module#ContactUsPageModule' },
   {
     path: "",
     component: TabsPage,
@@ -41,7 +42,7 @@ const routes: Routes = [
   {
     loadChildren: "./page404/page404.module#Page404PageModule",
     matcher: AppHelper.matchDefaultRoute
-  },  { path: 'contact-us', loadChildren: './pages/contact-us/contact-us.module#ContactUsPageModule' }
+  },
 
 ];
 @NgModule({
