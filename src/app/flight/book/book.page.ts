@@ -535,7 +535,7 @@ export class BookPage implements OnInit, AfterViewInit {
           ) {
             const canPay = true || (await this.checkPay(res.TradeNo));
             if (canPay) {
-              const cancelPay = await this.tmcService.payOrder(res.TradeNo);
+              const cancelPay = await this.tmcService.payOrder(res.TradeNo).catch(_ => true);
               if (cancelPay) {
                 this.router.navigate([""]); // 回到首页
               }

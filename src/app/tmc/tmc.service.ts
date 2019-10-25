@@ -109,21 +109,27 @@ export class TmcService {
     if (key) {
       req.Data['Key'] = key;
     }
-    return this.payService
-      .wechatpay(req, "")
-      .then(r => {
-        const req1 = new RequestEntity();
-        req1.Method = "TmcApiOrderUrl-Pay-Process";
-        req1.Version = "2.0";
-        req1.Data = {
-          OutTradeNo: r,
-          Type: "3"
-        };
-        this.payService.process(req1);
-      })
-      .catch(r => {
-        AppHelper.alert(r);
+    const r = await this.payService
+      .wechatpay(req, "").catch(_ => null);
+    if (r) {
+      const req1 = new RequestEntity();
+      req1.Method = "TmcApiOrderUrl-Pay-Process";
+      req1.Version = "2.0";
+      req1.Data = {
+        OutTradeNo: r,
+        Type: "3"
+      };
+      const result = await this.payService.process(req1).catch(_ => {
+        AppHelper.alert(_);
       });
+      if (result) {
+        AppHelper.alert(result)
+      } else {
+        AppHelper.alert("处理支付失败");
+      }
+    } else {
+      AppHelper.alert("支付失败");
+    }
   }
   private async aliPay(tradeNo: string, key: string = "", method: string = "TmcApiOrderUrl-Pay-Create") {
     const req = new RequestEntity();
@@ -150,11 +156,15 @@ export class TmcService {
         Type: "2"
       };
       const result = await this.payService.process(req1).catch(_ => {
-        AppHelper.alert(r);
+        AppHelper.alert(_);
       });
       if (result) {
+        AppHelper.alert(result)
       } else {
+        AppHelper.alert("处理支付失败");
       }
+    } else {
+      AppHelper.alert("支付失败");
     }
   }
   setFlightHotelTrainType(type: FlightHotelTrainType) {

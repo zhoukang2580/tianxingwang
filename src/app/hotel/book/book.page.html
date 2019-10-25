@@ -293,9 +293,7 @@
         <ion-text slot='end' color='danger'>￥{{totalPrice}}</ion-text>
       </ion-button>
     </ion-buttons>
-    <ion-buttons slot='end'>
-      <ion-button color='secondary' [disabled]='isSubmitting' (click)='onBook(false)'> 提交</ion-button>
-    </ion-buttons>
+    <ion-button slot='end' color='secondary' [disabled]='isSubmitting' size='small' (click)='onBook(false)'> 提交</ion-button>
     <ion-buttons slot='end' *ngIf='identity?.Numbers?.AgentId'>
       <ion-button color='secondary' (click)='onBook(true)'>保存订单</ion-button>
     </ion-buttons>

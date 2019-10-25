@@ -286,7 +286,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     if (this.ionRefresher) {
       this.ionRefresher.complete();
     }
-    this.hotel = null;
+    // this.hotel = null;
     if (!this.config) {
       this.config = await this.configService.get().catch(_ => null);
     }
@@ -327,6 +327,8 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
             }, 1000);
           }
         }
+      }, e => {
+        AppHelper.alert(e.Message || e);
       });
   }
   private checkIfBookedRoomPlan() {
@@ -656,7 +658,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
           } else {
             opacity = 0;
           }
-          opacity = opacity < 0.35 ? 0 : opacity;
+          opacity = opacity < 0.35 || this.scrollEle.scrollTop == 0 ? 0 : opacity;
           this.render.setStyle(
             this.headerEle.nativeElement,
             "zIndex",

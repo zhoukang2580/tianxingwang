@@ -51,9 +51,11 @@ export class PayService {
                 this.ali
                   .pay(r.Data.Body)
                   .then(n => {
+                    console.log("支付宝支付结果：", JSON.stringify(n));
                     resolve(r.Data.Number);
                   })
                   .catch(e => {
+                    AppHelper.alert(e.message || e);
                     resolve(r.Data.Number);
                   });
               } else {
@@ -81,8 +83,7 @@ export class PayService {
     ) {
       req.Data.OpenId = WechatHelper.openId;
       req.IsShowLoading = true;
-      if(AppHelper.isApp())
-      {
+      if (AppHelper.isApp()) {
         req.Data.CreateType = "App";
         req.Data.DataType = "json";
       }
@@ -155,10 +156,11 @@ export class PayService {
                 this.wechat
                   .pay(payInfo as any)
                   .then(n => {
-                    alert("wechat 支付成功返回结果：" + JSON.stringify(n));
+                    console.log("wechat 支付成功返回结果：" + JSON.stringify(n));
                     resolve(r.Data.Number);
                   })
                   .catch(e => {
+                    AppHelper.alert(e.message || e);
                     resolve(r.Data.Number);
                   });
               }
@@ -186,12 +188,12 @@ export class PayService {
       "/home/Pay?path=" +
       encodeURIComponent(
         AppHelper.getRedirectUrl() +
-          "?path=" +
-          path +
-          "&ticket=" +
-          AppHelper.getTicket() +
-          "&openid" +
-          (WechatHelper.openId || "")
+        "?path=" +
+        path +
+        "&ticket=" +
+        AppHelper.getTicket() +
+        "&openid" +
+        (WechatHelper.openId || "")
       );
     for (let r in req) {
       url +=
@@ -208,7 +210,7 @@ export class PayService {
       const sub = this.apiService.getResponse<{}>(req).subscribe(
         r => {
           if (r.Status) {
-            resolve(r);
+            resolve(r.Data);
           } else {
             reject(r.Message);
           }
@@ -257,14 +259,14 @@ export interface Ali {
         其它	 其它支付错误
      */
     resultStatus:
-      | "9000"
-      | "8000"
-      | "4000"
-      | "5000"
-      | "6001"
-      | "6002"
-      | "6004"
-      | "其它"; // 9000
+    | "9000"
+    | "8000"
+    | "4000"
+    | "5000"
+    | "6001"
+    | "6002"
+    | "6004"
+    | "其它"; // 9000
   }>;
 }
 interface Wechat {

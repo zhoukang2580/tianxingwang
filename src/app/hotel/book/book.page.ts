@@ -961,11 +961,12 @@ export class BookPage implements OnInit, AfterViewInit {
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto);
     if (canBook && canBook2) {
-      this.isSubmitting=true;
+      this.isSubmitting = true;
       const res = await this.hotelService.onBook(bookDto).catch(e => {
         AppHelper.alert(e);
         return { TradeNo: "" };
       });
+      this.isSubmitting = false;
       if (res) {
         if (res.TradeNo) {
           this.hotelService.removeAllBookInfos();

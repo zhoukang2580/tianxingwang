@@ -4,7 +4,7 @@ import { DayModel } from "src/app/tmc/models/DayModel";
 import { TripType } from "src/app/tmc/models/TripType";
 import { HotelEntity } from "./models/HotelEntity";
 import { IdentityService } from "./../services/identity/identity.service";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, throwError } from "rxjs";
 import { Injectable } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
 import {
@@ -505,6 +505,7 @@ export class HotelService {
     );
   }
   getHotelDetail(hotelItem: HotelDayPriceEntity) {
+    // return throwError("没获取列表")
     const req = new RequestEntity();
     req.Method = `TmcApiHotelUrl-Home-Detail`;
     const hotelquery = new HotelQueryEntity();
