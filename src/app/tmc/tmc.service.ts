@@ -1,3 +1,4 @@
+import { ProductItemType } from 'src/app/tmc/models/ProductItems';
 import { BaseEntity } from "./models/BaseEntity";
 import { LanguageInfo } from "./models/LanguageInfo";
 import { AppHelper } from "./../appHelper";
@@ -71,8 +72,8 @@ export class TmcService {
     });
     this.selectedCompanySource = new BehaviorSubject(null);
   }
-  async payOrder(tradeNo: string, key = "") {
-    let cancelPay = false;
+  async payOrder(tradeNo: string, key = ""):Promise<boolean> {
+    let payResult = false;
     const payWay = await this.payService.selectPayWay();
     if (!payWay) {
       const ok = await AppHelper.alert(
@@ -82,21 +83,22 @@ export class TmcService {
         LanguageHelper.getNegativeTip()
       );
       if (ok) {
-        cancelPay = ok;
+        payResult = false;
       } else {
-        await this.payOrder(tradeNo, key);
+        payResult = await this.payOrder(tradeNo, key);
       }
     } else {
       if (payWay.value == "ali") {
-        await this.aliPay(tradeNo, key);
+        payResult = await this.aliPay(tradeNo, key);
       }
       if (payWay.value == "wechat") {
-        await this.wechatPay(tradeNo, key);
+        payResult = await this.wechatPay(tradeNo, key);
       }
     }
-    return cancelPay;
+    return payResult;
   }
   private async wechatPay(tradeNo: string, key: string = "", method: string = "TmcApiOrderUrl-Pay-Create") {
+    let res = false;
     const req = new RequestEntity();
     req.Method = method;
     req.Version = "2.0";
@@ -110,7 +112,9 @@ export class TmcService {
       req.Data['Key'] = key;
     }
     const r = await this.payService
-      .wechatpay(req, "").catch(_ => null);
+      .wechatpay(req, "").catch(_ => {
+        AppHelper.alert(_);
+      });
     if (r) {
       const req1 = new RequestEntity();
       req1.Method = "TmcApiOrderUrl-Pay-Process";
@@ -124,14 +128,18 @@ export class TmcService {
       });
       if (result) {
         AppHelper.alert(result)
+        res = true;
       } else {
         AppHelper.alert("处理支付失败");
       }
     } else {
       AppHelper.alert("支付失败");
+      res = false;
     }
+    return res;
   }
   private async aliPay(tradeNo: string, key: string = "", method: string = "TmcApiOrderUrl-Pay-Create") {
+    let res = false;
     const req = new RequestEntity();
     req.Method = method;
     req.Version = "2.0";
@@ -155,17 +163,21 @@ export class TmcService {
         OutTradeNo: r,
         Type: "2"
       };
-      const result = await this.payService.process(req1).catch(_ => {
-        AppHelper.alert(_);
-      });
+      const result = await this.payService.process(req1)
+        .catch(_ => {
+          AppHelper.alert(_);
+        });
       if (result) {
+        res = true;
         AppHelper.alert(result)
       } else {
         AppHelper.alert("处理支付失败");
       }
     } else {
       AppHelper.alert("支付失败");
+      res = false;
     }
+    return res;
   }
   setFlightHotelTrainType(type: FlightHotelTrainType) {
     this.travelType = type;

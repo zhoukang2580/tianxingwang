@@ -125,83 +125,6 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.loadDataSub.unsubscribe();
   }
-  private async payOrder(tradeNo: string) {
-    const payWay = await this.payService.selectPayWay();
-    if (!payWay) {
-      const ok = await AppHelper.alert(
-        LanguageHelper.Order.getGiveUpPayTip(),
-        true,
-        LanguageHelper.getYesTip(),
-        LanguageHelper.getNegativeTip()
-      );
-      if (ok) {
-        // this.router.navigate([""]);
-      } else {
-        await this.payOrder(tradeNo);
-      }
-    } else {
-      if (payWay.value == "ali") {
-        await this.aliPay(tradeNo);
-      }
-      if (payWay.value == "wechat") {
-        await this.wechatPay(tradeNo);
-      }
-      // this.router.navigate([""]);
-    }
-    this.doRefresh();
-  }
-
-  private async wechatPay(tradeNo: string) {
-    const req = new RequestEntity();
-    req.Method = "TmcApiOrderUrl-Pay-Create";
-    req.Version = "2.0";
-    req.Data = {
-      Channel: "App",
-      Type: "3",
-      OrderId: tradeNo,
-      IsApp: AppHelper.isApp()
-    };
-    return this.payService
-      .wechatpay(req, "")
-      .then(r => {
-        const req1 = new RequestEntity();
-        req1.Method = "TmcApiOrderUrl-Pay-Process";
-        req1.Version = "2.0";
-        req1.Data = {
-          OutTradeNo: r,
-          Type: "3"
-        };
-        return this.payService.process(req1);
-      })
-      .catch(r => {
-        AppHelper.alert(r);
-      });
-  }
-
-  private async aliPay(tradeNo: string) {
-    const req = new RequestEntity();
-    req.Method = "TmcApiOrderUrl-Pay-Create";
-    req.Version = "2.0";
-    req.Data = {
-      Channel: "App",
-      Type: "2",
-      IsApp: AppHelper.isApp(),
-      OrderId: tradeNo
-    };
-    const r = await this.payService.alipay(req, "").catch(e => {
-      AppHelper.alert(e);
-    });
-    if (r) {
-      const req1 = new RequestEntity();
-      req1.Method = "TmcApiOrderUrl-Pay-Process";
-      req1.Version = "2.0";
-      req1.Data = {
-        OutTradeNo: r,
-        Type: "2"
-      };
-      return this.payService.process(req1);
-    }
-  }
   async onPay(order: OrderEntity) {
     const isSelfBookType = await this.staffService.isSelfBookType();
     if (order) {
@@ -210,7 +133,17 @@ export class ProductTabsPage implements OnInit, OnDestroy {
           order.TravelPayType == OrderTravelPayType.Person &&
           isSelfBookType
         ) {
-          const result = await this.payOrder(order.Id);
+          const result = await this.tmcService.payOrder(order.Id);
+          if (result) {
+
+          } else {
+            const ok = await AppHelper.alert(LanguageHelper.Order.getGiveUpPayTip(), true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+            if (ok) {
+
+            } else {
+              await this.onPay(order);
+            }
+          }
         }
       }
     }

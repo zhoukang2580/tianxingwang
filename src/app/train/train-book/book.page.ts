@@ -386,10 +386,12 @@ export class TrainBookPage implements OnInit, AfterViewInit {
             (await this.staffService.isSelfBookType()) &&
             bookDto.Passengers[0].TravelPayType == OrderTravelPayType.Person
           ) {
-            const canPay = true || (await this.checkPay(res.TradeNo));
+            const canPay = (await this.checkPay(res.TradeNo));
             if (canPay) {
-              const cancelPay = await this.tmcService.payOrder(res.TradeNo);
-              if (cancelPay) {
+              const payResult = await this.tmcService.payOrder(res.TradeNo);
+              if (payResult) {
+                this.goToMyOrders(ProductItemType.plane);
+              } else {
                 this.router.navigate([""]); // 回到首页
               }
             } else {

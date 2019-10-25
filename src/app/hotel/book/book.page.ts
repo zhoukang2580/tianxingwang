@@ -977,8 +977,10 @@ export class BookPage implements OnInit, AfterViewInit {
           ) {
             const canPay = true || (await this.checkPay(res.TradeNo));
             if (canPay) {
-              const cancelPay = await this.tmcService.payOrder(res.TradeNo);
-              if (cancelPay) {
+              const payResult = await this.tmcService.payOrder(res.TradeNo);
+              if (payResult) {
+                this.goToMyOrders(ProductItemType.hotel);
+              } else {
                 this.router.navigate([""]); // 回到首页
               }
             } else {
