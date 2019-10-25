@@ -1,6 +1,8 @@
 import { OrderEntity } from './../../models/OrderEntity';
 import { Component, OnInit, Input } from '@angular/core';
 import { OrderHotelEntity } from '../../models/OrderHotelEntity';
+import { OrderItemHelper } from 'src/app/flight/models/flight/OrderItemHelper';
+import { AppHelper } from 'src/app/appHelper';
 
 @Component({
   selector: 'app-hotel-order-detail',
@@ -13,14 +15,19 @@ export class HotelOrderDetailComponent implements OnInit {
   constructor() { }
 
   ngOnInit() { }
-  getHotelRoomFee() {
-    const items = this.order
+  getHotelRoomFee(orderHotelKey: string) {
+    return this.order
       && this.order.OrderItems
-      && this.order.OrderItems.filter(it => it.Tag == "Hotel");
-    if (items.length > 1) {
-      return items.map(h => ` 1 x ${h.Amount}`).join(",");
-    }
-    return items.map(it => it.Amount);
-    // .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+      && this.order.OrderItems
+        .filter(it => it.Key == orderHotelKey && it.Tag == OrderItemHelper.Hotel)
+        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+  }
+  getOrderNumbers() {
+    if (this.order && this.order.OrderNumbers)
+      return this.order.OrderNumbers.filter(it => it.Tag == "TmcOutNumber");
+  }
+  getVariable(orderHotel: OrderHotelEntity, key: string) {
+    orderHotel.VariablesJsonObj = orderHotel.VariablesJsonObj || JSON.parse(orderHotel.Variables) || {};
+    return orderHotel.VariablesJsonObj[key];
   }
 }

@@ -22,7 +22,7 @@
   </div>
   <div class='clip-text' (click)='orderHotel["isShowRoomFees"]=!orderHotel["isShowRoomFees"]'
     [class.show]='orderHotel["isShowRoomFees"]'>
-    房费：{{getHotelRoomFee()}}
+    房费：{{getHotelRoomFee(orderHotel.Key)}}
   </div>
   <div>
     酒店费用支付方式：{{orderHotel.PaymentType==2?"现付":orderHotel.PaymentType==1?"预付":"月结"}}
@@ -33,4 +33,24 @@
     [class.show]='orderHotel["isShowDetail"]'>
     {{orderHotel.RuleDescription}}
   </div>
+  <ng-container *ngIf='orderHotel.OrderTravel as orderTravel'>
+    <div class='clip-text' [class.show]='orderHotel["isShowIllegalPolicy"]'
+      (click)='orderHotel["isShowIllegalPolicy"]=!orderHotel["isShowIllegalPolicy"]'>
+      违规：{{orderTravel.IllegalPolicy}}
+    </div>
+    <div class='clip-text' [class.show]='orderHotel["isShowIllegalReason"]'
+      (click)='orderHotel["isShowIllegalReason"]=!orderHotel["isShowIllegalReason"]'>
+      违规原因：{{orderTravel.IllegalReason}}
+    </div>
+    <div class='clip-text' [class.show]='orderHotel["isShowCostCenter"]'
+      (click)='orderHotel["isShowCostCenter"]=!orderHotel["isShowCostCenter"]'>
+      成本中心：{{orderTravel.CostCenterCode}}->{{orderTravel.CostCenterName}}
+      <div *ngIf='getOrderNumbers() as orderNumbers'>
+        <ng-container *ngFor='let number of orderNumbers'>
+          <span>{{number.Name}}</span>:<span>{{number.Number}}</span>
+        </ng-container>
+      </div>
+    </div>
+  </ng-container>
+  <div *ngIf='getVariable(orderHotel,"ExceptionMessage") as ExceptionMessage'>异常消息:{{ExceptionMessage}}</div>
 </div>
