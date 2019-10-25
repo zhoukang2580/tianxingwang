@@ -1,3 +1,4 @@
+import { AppHelper } from './../../../appHelper';
 import { OrderItemHelper } from "./../../../flight/models/flight/OrderItemHelper";
 import { Component, OnInit } from "@angular/core";
 import { OrderItemEntity } from "../../models/OrderEntity";
@@ -11,12 +12,12 @@ export class OrderItemPricePopoverComponent implements OnInit {
   amount: number;
   orderItems: OrderItemEntity[];
   OrderItemHelper = OrderItemHelper;
-  IsShowServiceFee=false;
-  constructor() {}
+  IsShowServiceFee = false;
+  constructor() { }
   abs(item: number) {
     return Math.abs(item);
   }
-  ngOnInit() {}
+  ngOnInit() { }
 
   getAmount(
     args: OrderItemHelper | [OrderItemHelper],
@@ -32,9 +33,9 @@ export class OrderItemPricePopoverComponent implements OnInit {
         if (amountFromVariable) {
           item.VariablesJsonObj =
             item.VariablesJsonObj || JSON.parse(item.Variables) || {};
-          acc += +item.VariablesJsonObj[amountFromVariable] || 0;
+          acc = AppHelper.add(acc, +item.VariablesJsonObj[amountFromVariable] || 0);
         } else {
-          acc += +item.Amount || 0;
+          acc = AppHelper.add(acc, +item.Amount || 0);
         }
         return acc;
       }, 0);
