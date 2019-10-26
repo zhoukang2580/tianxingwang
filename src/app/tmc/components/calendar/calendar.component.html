@@ -16,7 +16,7 @@
   </ion-grid>
 </ion-header>
 <ion-content style='--offset-bottom: -1em'>
-  <ion-grid *ngFor='let ym of calendars;let first = first' class='calendar' [attr.ymonth]='getMonth(ym.yearMonth)'>
+  <ion-grid *ngFor='let ym of calendars;let first = first;let last=last' class='calendar' [attr.ymonth]='getMonth(ym.yearMonth)'>
     <ion-row style="margin-top: 1em;padding-bottom: 1em;">
       <ion-col class='ym'>
         <div class='ym'>
@@ -45,7 +45,7 @@
         <app-day [dayModel]='day' (daySelected)='onDaySelected(day)'></app-day>
       </ion-col>
     </ion-row>
-    <ion-row style="margin: 1em 0;padding: 1em 0;"></ion-row>
+    <ion-row *ngIf='last' style="margin: 1em 0;padding: 1em 0;"></ion-row>
   </ion-grid>
 </ion-content>
 <ion-select style="display:none" #yearSelectEle [okText]='"确定"' [cancelText]='"取消"' [(ngModel)]='year'
