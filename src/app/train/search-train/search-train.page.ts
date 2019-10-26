@@ -330,6 +330,12 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
       const ok = await AppHelper.alert("是否放弃改签？", true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
       if (ok) {
         this.trainService.exchangedTrainTicketInfo = null;
+        this.trainService.setSearchTrainModel({
+          ...this.trainService.getSearchTrainModel(),
+          isExchange: false,
+          isLocked: false
+        });
+        this.trainService.removeAllBookInfos();
         return true;
       }
     }
