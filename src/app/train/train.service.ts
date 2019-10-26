@@ -767,24 +767,24 @@ export class TrainService {
         credential: info.DefaultCredentials,
         // isNotWhitelist?: boolean;
         bookInfo: {
-          trainEntity: {
-            FromStationCode: info.FromStation,
-            FromStationName: info.FromStationName,
-            ToStationCode: info.ToStation,
-            ToStationName: info.ToStationName,
-            ArrivalShortTime: this.calendarService.getHHmm(trip && trip.ArrivalTime),
-            ArrivalTimeStamp: +moment(trip && trip.ArrivalTime),
-            ArrivalTime: trip && trip.ArrivalTime,
-            StartShortTime: this.calendarService.getHHmm(trip && trip.StartTime),
-            StartTime: trip && trip.StartTime,
-            StartTimeStamp: +moment(trip && trip.StartTime),
-            TrainNo: trip && trip.TrainNo,
-            TrainCode: trip && trip.TrainCode
-          },
-          selectedSeat: {
-            SeatType: info.OrderTrainTicket.SeatType,
-            SeatTypeName: info.OrderTrainTicket.SeatTypeName,
-          },
+          // trainEntity: {
+          //   FromStationCode: info.FromStation,
+          //   FromStationName: info.FromStationName,
+          //   ToStationCode: info.ToStation,
+          //   ToStationName: info.ToStationName,
+          //   ArrivalShortTime: this.calendarService.getHHmm(trip && trip.ArrivalTime),
+          //   ArrivalTimeStamp: +moment(trip && trip.ArrivalTime),
+          //   ArrivalTime: trip && trip.ArrivalTime,
+          //   StartShortTime: this.calendarService.getHHmm(trip && trip.StartTime),
+          //   StartTime: trip && trip.StartTime,
+          //   StartTimeStamp: +moment(trip && trip.StartTime),
+          //   TrainNo: trip && trip.TrainNo,
+          //   TrainCode: trip && trip.TrainCode
+          // },
+          // selectedSeat: {
+          //   SeatType: info.OrderTrainTicket.SeatType,
+          //   SeatTypeName: info.OrderTrainTicket.SeatTypeName,
+          // },
           tripType: TripType.departureTrip,
           id: AppHelper.uuid(),
           isExchange: true,
@@ -802,6 +802,7 @@ export class TrainService {
         ...this.getSearchTrainModel(),
         isLocked: true,
         isExchange: true,
+        isRoundTrip:false,
         fromCity,
         toCity,
         Date: info.GoDate,
