@@ -1,3 +1,4 @@
+import { ITrainInfo } from './../../train.service';
 import { Component, OnInit, Input, EventEmitter, Output } from "@angular/core";
 import { TrainEntity, TrainSeatType } from "../../models/TrainEntity";
 import { TrainSeatEntity } from "../../models/TrainSeatEntity";
@@ -12,6 +13,7 @@ export class TrainListItemComponent implements OnInit {
   @Input() showBookBtn = true;
   @Input() seat: TrainSeatEntity;
   @Input() train: TrainEntity;
+  @Input() bookInfo: ITrainInfo;
   @Output() scheduleEmit: EventEmitter<any>;
   @Output() bookTicket: EventEmitter<TrainSeatEntity>;
   @Output() seatPicker: EventEmitter<string>;

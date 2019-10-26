@@ -8,8 +8,8 @@
     <ion-text *ngIf='isShowSelectedInfos$ |async'>火车票查询</ion-text>
     <ion-title *ngIf='!(isShowSelectedInfos$ |async)'>火车票查询</ion-title>
     <ion-buttons class='small-font' slot='end'>
-      <ion-button  *ngIf='isShowSelectedInfos$ |async' fill='clear' color='secondary' size='small' (click)='onShowSelectedBookInfos()'>已选行程<ion-badge
-          color='danger'>
+      <ion-button *ngIf='isShowSelectedInfos$ |async' fill='clear' color='secondary' size='small'
+        (click)='onShowSelectedBookInfos()'>已选行程<ion-badge color='danger'>
           <ion-text color='light'>{{selectedBookInfos}}</ion-text>
         </ion-badge>
       </ion-button>
@@ -24,8 +24,8 @@
 <ion-content>
   <ion-card padding>
     <ion-card-content>
-      <ion-segment (ionChange)="segmentChanged($event)" [value]="isSingle?'single':'roundtrip'" color='secondary' *ngIf='showReturnTrip'
-        [disabled]='isDisabled'>
+      <ion-segment (ionChange)="segmentChanged($event)" [value]="isSingle?'single':'roundtrip'" color='secondary'
+        *ngIf='showReturnTrip' [disabled]='isDisabled'>
         <ion-segment-button value="single">
           <ion-label><strong>单程</strong></ion-label>
         </ion-segment-button>
@@ -37,7 +37,8 @@
         (eFromCity)='onFromCitySelected($event)' [vmToCity]="vmToCity" [disabled]='isDisabled'>
       </app-switch-station-comp>
       <section class="flight-date">
-        <app-search-day-comp [day]='flyDate' (click)="onSelecDate(true,false)" [disabled]='isDisabled'>
+        <app-search-day-comp [day]='flyDate' (click)="onSelecDate(true,false)"
+          [disabled]='isDisabled&&!(searchTrainModel?.isExchange)'>
         </app-search-day-comp>
         <div *ngIf="!isSingle &&( totalFlyDays > 0)">{{ totalFlyDays }}天</div>
         <app-search-day-comp *ngIf="!isSingle" [day]='backDate' (click)="onSelecDate(false,true)">

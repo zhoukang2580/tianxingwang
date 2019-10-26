@@ -5,7 +5,8 @@
         <ion-icon color='dark' name='arrow-back'></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>当前已选择火车信息</ion-title>
+    <ion-title *ngIf='!isExchange'>当前已选择火车信息</ion-title>
+    <ion-title *ngIf='isExchange' color='danger'>正在被改签的火车信息</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -17,7 +18,8 @@
       <ion-item lines='none'>
         <div class='detail'>
           <div class='date'>
-            <strong>{{getDate(bookInfo?.bookInfo?.trainEntity)}} <ion-text color='secondary'>
+            <strong>{{getDate(bookInfo?.bookInfo?.trainEntity)}}
+              <ion-text color='secondary' *ngIf='!bookInfo.bookInfo?.isExchange'>
                 {{getTripTypeTip(bookInfo?.bookInfo)}}</ion-text></strong>
             <ion-button fill='clear' size='small' (click)='remove(bookInfo)'>
               <ion-icon name="trash" color='danger' mode='ios'>
@@ -27,20 +29,22 @@
           <ion-label class='train-item'>
             <app-train-list-item [seat]='bookInfo.bookInfo?.selectedSeat'
               [selectSeatLocation]='bookInfo?.bookInfo?.trainEntity?.BookSeatLocation'
-              (seatPicker)='onSeatPicked($event,bookInfo)' [train]='bookInfo?.bookInfo?.trainEntity'>
+              (seatPicker)='onSeatPicked($event,bookInfo)' [bookInfo]='bookInfo?.bookInfo'
+              [train]='bookInfo?.bookInfo?.trainEntity'>
             </app-train-list-item>
           </ion-label>
           <ion-label class='rules' color='danger' text-wrap>
             {{bookInfo?.bookInfo?.trainPolicy?.Rules?.join("; ")}}
           </ion-label>
           <div class='reset' *ngIf='bookInfo?.bookInfo?.tripType!=TripType.returnTrip'>
-            <ion-button expand='block' color='secondary' size='small' (click)='reelect(bookInfo)'>重选
+            <ion-button expand='block' color='secondary' size='small' (click)='reelect(bookInfo)'
+              *ngIf='!bookInfo.bookInfo?.isExchange'>重选
             </ion-button>
           </div>
         </div>
       </ion-item>
       <ion-item lines='none' *ngIf='(showSelectReturnTrip$|async)&&bookInfo?.bookInfo?.tripType!=TripType.returnTrip'>
-        <ion-button slot='end' expand='block' color='secondary' (click)='onSelectReturnTrip()'>
+        <ion-button slot='end' *ngIf='isExchange' expand='block' color='secondary' (click)='onSelectReturnTrip()'>
           选择回程
         </ion-button>
       </ion-item>

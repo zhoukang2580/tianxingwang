@@ -56,7 +56,7 @@
     </div>
     <div class='price' style='margin-left: auto'>￥{{seat.SalesPrice}}</div>
   </div>
-  <div>
+  <div *ngIf='!bookInfo?.isExchange'>
     <app-seat-picker [selectdSeat]='seat' [selectSeatLocation]='selectSeatLocation' (seatPicker)='onSeatPicker($event)'></app-seat-picker>
   </div>
 </ng-template>

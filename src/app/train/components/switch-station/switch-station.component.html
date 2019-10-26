@@ -1,32 +1,58 @@
-<ng-container *ngIf='disabled'>
-  <ion-text class='flight-cities disabled' #flightcities [attr.mode]='mode'>
-    <ion-skeleton-text style='width: 20%;height: 2em;' animated *ngIf='!vmFromCity'></ion-skeleton-text>
-    <ion-text text-wrap color='medium' #fromCityEle *ngIf='vmFromCity'>
+<ng-container *ngIf='isExchange else normal'>
+  <div class='flight-cities' #flightcities [attr.mode]='mode'>
+    <div class='disabled'>
+      <ion-skeleton-text style='width: 20%;height:2em;' animated *ngIf='!vmFromCity'></ion-skeleton-text>
+      <ion-text text-wrap  #fromCityEle *ngIf='vmFromCity'>
+        <h2 [class.left]='!toggleCities' [class.right]='toggleCities'>{{vmFromCity?.Nickname}}
+        </h2>
+      </ion-text>
+    </div>
+    <div class='toogle-icon disabled' >
+      <ion-icon name="repeat" [@rotateIcon]='rotateIcon' color='medium' mode='ios'
+        (@rotateIcon.done)='onRotateIconDone($event)'></ion-icon>
+    </div>
+    <div>
+      <ion-skeleton-text style='width: 20%;height: 2em;' animated *ngIf='!vmToCity'></ion-skeleton-text>
+      <ion-text (click)='onSelectCity(false)' color='secondary' text-wrap #toCityEle *ngIf='vmToCity'>
+        <h2 [class.left]='toggleCities' [class.right]='!toggleCities'>{{vmToCity?.Nickname}}
+        </h2>
+      </ion-text>
+    </div>
+  </div>
+</ng-container>
+<ng-template #normal>
+  <ng-container *ngIf='disabled'>
+    <ion-text class='flight-cities disabled' #flightcities [attr.mode]='mode'>
+      <ion-skeleton-text style='width: 20%;height: 2em;' animated *ngIf='!vmFromCity'></ion-skeleton-text>
+      <ion-text text-wrap color='medium' #fromCityEle *ngIf='vmFromCity'>
+        <h2 [class.left]='!toggleCities' [class.right]='toggleCities'>{{vmFromCity?.Nickname}}
+        </h2>
+      </ion-text>
+      <div class='toogle-icon' [class.disabled]='disabled'>
+        <ion-icon name="repeat" [@rotateIcon]='rotateIcon' mode='ios' color='secondary'
+          (@rotateIcon.done)='onRotateIconDone($event)'></ion-icon>
+      </div>
+      <ion-text color='medium' text-wrap #toCityEle>
+        <h2 [class.left]='toggleCities' [class.right]='!toggleCities' *ngIf='vmToCity'>{{vmToCity?.Nickname}}
+        </h2>
+      </ion-text>
+      <ion-skeleton-text style='width: 20%;height:2em;' animated *ngIf='!vmToCity'></ion-skeleton-text>
+    </ion-text>
+  </ng-container>
+  <div class='flight-cities' #flightcities [class.hide]='disabled' [attr.mode]='mode'>
+    <ion-skeleton-text style='width: 20%;height:2em;' animated *ngIf='!vmFromCity'></ion-skeleton-text>
+    <ion-text text-wrap (click)="onSelectCity(true)" color='secondary' #fromCityEle *ngIf='vmFromCity'>
       <h2 [class.left]='!toggleCities' [class.right]='toggleCities'>{{vmFromCity?.Nickname}}
       </h2>
     </ion-text>
-    <div class='toogle-icon' [class.disabled]='disabled'>
-        <ion-icon name="repeat" [@rotateIcon]='rotateIcon' mode='ios' color='secondary' (@rotateIcon.done)='onRotateIconDone($event)'></ion-icon>
+    <div class='toogle-icon' (click)='onRotateIcon()'>
+      <ion-icon name="repeat" [@rotateIcon]='rotateIcon' color='secondary' mode='ios'
+        (@rotateIcon.done)='onRotateIconDone($event)'></ion-icon>
     </div>
-    <ion-text color='medium' text-wrap #toCityEle>
-      <h2 [class.left]='toggleCities' [class.right]='!toggleCities' *ngIf='vmToCity'>{{vmToCity?.Nickname}}
+    <ion-skeleton-text style='width: 20%;height: 2em;' animated *ngIf='!vmToCity'></ion-skeleton-text>
+    <ion-text (click)='onSelectCity(false)' color='secondary' text-wrap #toCityEle *ngIf='vmToCity'>
+      <h2 [class.left]='toggleCities' [class.right]='!toggleCities'>{{vmToCity?.Nickname}}
       </h2>
     </ion-text>
-    <ion-skeleton-text style='width: 20%;height:2em;' animated *ngIf='!vmToCity'></ion-skeleton-text>
-  </ion-text>
-</ng-container>
-<div class='flight-cities' #flightcities [class.hide]='disabled' [attr.mode]='mode'>
-  <ion-skeleton-text style='width: 20%;height:2em;' animated *ngIf='!vmFromCity'></ion-skeleton-text>
-  <ion-text text-wrap (click)="onSelectCity(true)" color='dark' #fromCityEle *ngIf='vmFromCity'>
-    <h2 [class.left]='!toggleCities' [class.right]='toggleCities'>{{vmFromCity?.Nickname}}
-    </h2>
-  </ion-text>
-  <div class='toogle-icon' (click)='onRotateIcon()'>
-      <ion-icon name="repeat" [@rotateIcon]='rotateIcon' color='secondary' mode='ios' (@rotateIcon.done)='onRotateIconDone($event)'></ion-icon>
   </div>
-  <ion-skeleton-text style='width: 20%;height: 2em;' animated *ngIf='!vmToCity'></ion-skeleton-text>
-  <ion-text (click)='onSelectCity(false)' color='dark' text-wrap #toCityEle *ngIf='vmToCity'>
-    <h2 [class.left]='toggleCities' [class.right]='!toggleCities'>{{vmToCity?.Nickname}}
-    </h2>
-  </ion-text>
-</div>
+</ng-template>

@@ -2,8 +2,10 @@
   &.hide {
     display: none;
   }
-  &.disabled {
+  &.disabled,
+  .disabled {
     color: var(--ion-color-medium);
+    .toogle-icon.disabled,
     .toogle-icon {
       i,
       ion-icon {

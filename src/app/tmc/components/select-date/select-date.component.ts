@@ -1,3 +1,4 @@
+import { TmcService, FlightHotelTrainType } from 'src/app/tmc/tmc.service';
 import { ModalController } from "@ionic/angular";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Subscription } from "rxjs";
@@ -16,8 +17,9 @@ import { TripType } from "src/app/tmc/models/TripType";
 export class SelectDateComponent implements OnInit, OnDestroy {
   constructor(
     private calendarService: CalendarService,
-    private modalCtrl: ModalController
-  ) {}
+    private modalCtrl: ModalController,
+    private tmcService: TmcService
+  ) { }
   yms: AvailableDate[];
   title: string;
   private _selectedDays: DayModel[] = [];
@@ -93,9 +95,14 @@ export class SelectDateComponent implements OnInit, OnDestroy {
         }
       } else {
         const today = this.calendarService.generateDayModel(moment());
+        const endDay = this.calendarService.generateDayModel(moment().add(30, 'days'));
+        const type = this.tmcService.getFlightHotelTrainType();
         this.yms.forEach(day => {
           day.dayList.forEach(d => {
             d.enabled = d.timeStamp > today.timeStamp || d.date == today.date;
+            if (type == FlightHotelTrainType.Train) {
+              d.enabled = d.timeStamp <= endDay.timeStamp ? d.enabled : false;
+            }
           });
         });
       }
@@ -123,7 +130,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
     this.calendarService.setSelectedDays(this.selectedDays);
     const m = await this.modalCtrl.getTop();
     if (m) {
-      m.dismiss(this.selectedDays).catch(_ => {});
+      m.dismiss(this.selectedDays).catch(_ => { });
     }
   }
   onDaySelected(d: DayModel) {
@@ -156,7 +163,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
         if (d.timeStamp < this.selectedDays[0].timeStamp) {
           d.desc =
             this.tripType == TripType.checkIn ||
-            this.tripType == TripType.checkOut
+              this.tripType == TripType.checkOut
               ? LanguageHelper.getCheckInTip()
               : LanguageHelper.getDepartureTip();
           d.hasToolTip = true;
@@ -171,8 +178,8 @@ export class SelectDateComponent implements OnInit, OnDestroy {
             d.timeStamp == this.selectedDays[0].timeStamp
               ? LanguageHelper.getRoundTripTip()
               : TripType.checkIn || TripType.checkOut
-              ? LanguageHelper.getCheckInOutTip()
-              : LanguageHelper.getReturnTripTip();
+                ? LanguageHelper.getCheckInOutTip()
+                : LanguageHelper.getReturnTripTip();
           this.selectedDays.push(d);
         }
       } else {
@@ -267,7 +274,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
           this.selectedDays[1].hasToolTip = true;
           this.selectedDays[1].toolTipMsg = LanguageHelper.getCheckInOutTotalDaysTip(
             moment(this.selectedDays[1].date).date() -
-              moment(this.selectedDays[0].date).date()
+            moment(this.selectedDays[0].date).date()
           );
           if (
             this.selectedDays[0].timeStamp == this.selectedDays[1].timeStamp

@@ -1,3 +1,5 @@
+import { PassengerBookInfo } from 'src/app/tmc/tmc.service';
+import { TrainService, ITrainInfo } from './../../../train/train.service';
 import { CalendarService } from './../../../tmc/calendar.service';
 import { AppHelper } from 'src/app/appHelper';
 import { TmcEntity } from 'src/app/tmc/tmc.service';
@@ -13,6 +15,10 @@ import { OrderTrainTicketEntity } from '../../models/OrderTrainTicketEntity';
 import { TrainBookType } from 'src/app/train/models/TrainBookType';
 import { OrderHotelStatusType } from '../../models/OrderHotelEntity';
 import { HotelPaymentType } from 'src/app/hotel/models/HotelPaymentType';
+import { TrainSupplierType } from 'src/app/train/models/TrainSupplierType';
+import { TripType } from 'src/app/tmc/models/TripType';
+import * as moment from 'moment';
+import { Router } from '@angular/router';
 @Component({
   selector: "app-order-item",
   templateUrl: "./order-item.component.html",
@@ -21,6 +27,7 @@ import { HotelPaymentType } from 'src/app/hotel/models/HotelPaymentType';
 export class OrderItemComponent implements OnInit {
   private bookChannals = `Eterm  BlueSky  Android  客户H5  IOS  外购PC  客户PC  代理PC`;
   private selfBookChannals = `Android  客户H5  IOS 客户PC`;
+  TrainSupplierType = TrainSupplierType;
   @Input() order: OrderEntity;
   @Output() payaction: EventEmitter<OrderEntity>;
   OrderStatusType = OrderStatusType;
@@ -31,7 +38,10 @@ export class OrderItemComponent implements OnInit {
   HotelPaymentType = HotelPaymentType;
   TrainBookType = TrainBookType;
   tmc: TmcEntity;
-  constructor(private tmcService: TmcService, private calendarService: CalendarService) {
+  constructor(private tmcService: TmcService,
+    private calendarService: CalendarService,
+    private router: Router,
+    private trainService: TrainService) {
     this.payaction = new EventEmitter();
   }
   onPay(evt: CustomEvent) {
@@ -42,6 +52,74 @@ export class OrderItemComponent implements OnInit {
     }
     evt.preventDefault();
     evt.stopPropagation();
+  }
+  async onExchange(evt: CustomEvent, orderTrainTicket: OrderTrainTicketEntity) {
+    if (evt) { evt.stopPropagation(); }
+    try {
+      const info = await this.trainService.getExchangeInfo(orderTrainTicket.Id);
+      const trainStations = await this.trainService.getStationsAsync()
+      // .catch(_=>[]);
+      if (!info || !info.OrderTrainTicket) {
+        return;
+      }
+      let books = this.trainService.getBookInfos();
+      const trip = info.OrderTrainTicket.OrderTrainTrips && info.OrderTrainTicket.OrderTrainTrips[0];
+      const b: PassengerBookInfo<ITrainInfo> = {
+        passenger: info.BookStaff,
+        credential: info.DefaultCredentials,
+        // isNotWhitelist?: boolean;
+        bookInfo: {
+          trainEntity: {
+            FromStationCode: info.FromStation,
+            FromStationName: info.FromStationName,
+            ToStationCode: info.ToStation,
+            ToStationName: info.ToStationName,
+            ArrivalShortTime: this.calendarService.getHHmm(trip && trip.ArrivalTime),
+            ArrivalTimeStamp: +moment(trip && trip.ArrivalTime),
+            ArrivalTime: trip && trip.ArrivalTime,
+            StartShortTime: this.calendarService.getHHmm(trip && trip.StartTime),
+            StartTime: trip && trip.StartTime,
+            StartTimeStamp: +moment(trip && trip.StartTime),
+            TrainNo: trip && trip.TrainNo,
+            TrainCode: trip && trip.TrainCode
+          },
+          selectedSeat: {
+            SeatType: info.OrderTrainTicket.SeatType,
+            SeatTypeName: info.OrderTrainTicket.SeatTypeName,
+          },
+          tripType: TripType.departureTrip,
+          id: AppHelper.uuid(),
+          isExchange: true,
+        } as ITrainInfo,
+        id: AppHelper.uuid(),
+        isFilteredPolicy: true
+      };
+      books = [b];
+      this.trainService.exchangedTrainInfo = JSON.parse(JSON.stringify(b));
+      const fromCity = trainStations.find(it => it.Code == info.FromStation);
+      const toCity = trainStations.find(it => it.Code == info.ToStation);
+      console.log("exchange bookInfo", b, 'fromcity', fromCity, 'tocity', toCity);
+      debugger;
+      this.trainService.setBookInfoSource(books)
+      this.trainService.setSearchTrainModel({
+        ...this.trainService.getSearchTrainModel(),
+        isLocked: true,
+        isExchange: true,
+        fromCity,
+        toCity,
+        Date: info.GoDate,
+        BackDate: info.BackDate || moment().format("YYYY-MM-DD")
+      });
+      this.router.navigate([AppHelper.getRoutePath('search-train')]);
+    } catch (e) {
+      console.error(e);
+    }
+
+  }
+  onRefund(evt: CustomEvent) {
+    if (evt) {
+      evt.stopPropagation();
+    }
   }
   isSelfBook(channal: string) {
     return this.selfBookChannals.includes(channal);
@@ -105,7 +183,7 @@ export class OrderItemComponent implements OnInit {
       const keys = this.order.OrderInsurances && this.order.OrderInsurances
         .filter(it => flighttripKeys.some(fk => fk == it.AdditionKey)).map(it => it.Key) || [];
       amount = this.order.OrderItems
-        .filter(it => keys.some(k=>k==it.Key))
+        .filter(it => keys.some(k => k == it.Key))
         .reduce((acc, it) => { acc = AppHelper.add(acc, +it.Amount); return acc; }, 0);
     }
     return amount;

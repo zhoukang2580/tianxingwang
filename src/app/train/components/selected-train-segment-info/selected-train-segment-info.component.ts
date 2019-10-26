@@ -24,6 +24,7 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
   bookInfos$: Observable<PassengerBookInfo<ITrainInfo>[]>;
   showSelectReturnTrip$ = of(false);
   TripType = TripType;
+  isExchange=false;
   constructor(
     private modalCtrl: ModalController,
     private calendarService: CalendarService,
@@ -41,6 +42,7 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
     this.bookInfos$ = this.trainService.getBookInfoSource().pipe(
       tap(infos => {
         console.log("bookinfos", infos);
+        this.isExchange=!!infos.find(it=>it.bookInfo&&it.bookInfo.isExchange);
       })
     );
     this.showSelectReturnTrip$ = combineLatest([

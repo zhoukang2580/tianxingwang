@@ -1,3 +1,4 @@
+import { ExchangeTrainModel } from './../order/models/ExchangeTrainModel';
 import { AppHelper } from "src/app/appHelper";
 import { ModalController } from "@ionic/angular";
 import { IdentityService } from "./../services/identity/identity.service";
@@ -40,6 +41,7 @@ export class SearchTrainModel {
   tripType: TripType;
   isRoundTrip?: boolean; // 是否是往返
   isRefreshData?: boolean;
+  isExchange?: boolean;// 是否是改签
 }
 export interface ISelectedStation {
   isSelectFrom: boolean;
@@ -67,6 +69,7 @@ export class TrainService {
   private bookInfoSource: Subject<PassengerBookInfo<ITrainInfo>[]>;
   private searchModelSource: Subject<SearchTrainModel>;
   private isInitializingSelfBookInfos = false;
+  exchangedTrainInfo: PassengerBookInfo<ITrainInfo>;
   constructor(
     private apiService: ApiService,
     private storage: Storage,
@@ -458,7 +461,7 @@ export class TrainService {
     this.selfCredentials = null;
     this.isInitializingSelfBookInfos = false;
   }
-  private async initSelfBookTypeBookInfos() {
+  async initSelfBookTypeBookInfos() {
     const infos = this.getBookInfos();
     if (infos.length === 0 && (await this.staffService.isSelfBookType())) {
       if (this.isInitializingSelfBookInfos) {
@@ -725,6 +728,24 @@ export class TrainService {
     }
   }
 
+  getExchangeInfo(
+    ticketId: string
+  ): Promise<ExchangeTrainModel> {
+    const req = new RequestEntity();
+    req.Method = `TmcApiTrainUrl-Home-GetExchangeInfo`;
+    req.IsShowLoading = true;
+    req.Version = "2.0";
+    req.Timeout = 60;
+    req.Data = {
+      TicketId: ticketId
+    };
+    return this.apiService
+      .getPromiseData<ExchangeTrainModel>(req)
+      .catch(_ => {
+        AppHelper.alert(_.Message || _);
+        return null;
+      });
+  }
   policyAsync(
     trains: TrainEntity[],
     passengerIds: string[]
@@ -827,6 +848,7 @@ export interface ITrainInfo {
   id?: string;
   pickSeat?: string;
   isLowerSegmentSelected?: boolean;
+  isExchange?: boolean;// 是否是改签
 }
 export class TrainPolicyModel {
   /// <summary>
