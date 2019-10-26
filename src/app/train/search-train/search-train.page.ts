@@ -277,7 +277,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     this.storage.set("fromTrainStation", this.fromCity);
     this.storage.set("toTrainStation", this.toCity);
     const s = this.searchTrainModel || new SearchTrainModel();
-    s.tripType = TripType.departureTrip;
+    s.tripType = this.searchTrainModel.tripType || TripType.departureTrip;
     s.Date = this.flyDate.date;
     s.FromStation = this.fromCity.Code;
     s.ToStation = this.toCity.Code;

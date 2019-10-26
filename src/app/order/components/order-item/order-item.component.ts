@@ -55,65 +55,7 @@ export class OrderItemComponent implements OnInit {
   }
   async onExchange(evt: CustomEvent, orderTrainTicket: OrderTrainTicketEntity) {
     if (evt) { evt.stopPropagation(); }
-    try {
-      const info = await this.trainService.getExchangeInfo(orderTrainTicket.Id);
-      const trainStations = await this.trainService.getStationsAsync()
-      // .catch(_=>[]);
-      if (!info || !info.OrderTrainTicket) {
-        return;
-      }
-      let books = this.trainService.getBookInfos();
-      const trip = info.OrderTrainTicket.OrderTrainTrips && info.OrderTrainTicket.OrderTrainTrips[0];
-      const b: PassengerBookInfo<ITrainInfo> = {
-        passenger: info.BookStaff,
-        credential: info.DefaultCredentials,
-        // isNotWhitelist?: boolean;
-        bookInfo: {
-          trainEntity: {
-            FromStationCode: info.FromStation,
-            FromStationName: info.FromStationName,
-            ToStationCode: info.ToStation,
-            ToStationName: info.ToStationName,
-            ArrivalShortTime: this.calendarService.getHHmm(trip && trip.ArrivalTime),
-            ArrivalTimeStamp: +moment(trip && trip.ArrivalTime),
-            ArrivalTime: trip && trip.ArrivalTime,
-            StartShortTime: this.calendarService.getHHmm(trip && trip.StartTime),
-            StartTime: trip && trip.StartTime,
-            StartTimeStamp: +moment(trip && trip.StartTime),
-            TrainNo: trip && trip.TrainNo,
-            TrainCode: trip && trip.TrainCode
-          },
-          selectedSeat: {
-            SeatType: info.OrderTrainTicket.SeatType,
-            SeatTypeName: info.OrderTrainTicket.SeatTypeName,
-          },
-          tripType: TripType.departureTrip,
-          id: AppHelper.uuid(),
-          isExchange: true,
-        } as ITrainInfo,
-        id: AppHelper.uuid(),
-        isFilteredPolicy: true
-      };
-      books = [b];
-      this.trainService.exchangedTrainInfo = JSON.parse(JSON.stringify(b));
-      const fromCity = trainStations.find(it => it.Code == info.FromStation);
-      const toCity = trainStations.find(it => it.Code == info.ToStation);
-      console.log("exchange bookInfo", b, 'fromcity', fromCity, 'tocity', toCity);
-      this.trainService.setBookInfoSource(books)
-      this.trainService.setSearchTrainModel({
-        ...this.trainService.getSearchTrainModel(),
-        isLocked: true,
-        isExchange: true,
-        fromCity,
-        toCity,
-        Date: info.GoDate,
-        BackDate: info.BackDate || moment().format("YYYY-MM-DD")
-      });
-      this.router.navigate([AppHelper.getRoutePath('search-train')]);
-    } catch (e) {
-      console.error(e);
-    }
-
+    return this.trainService.onExchange(orderTrainTicket);
   }
   onRefund(evt: CustomEvent) {
     if (evt) {

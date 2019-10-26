@@ -1,3 +1,4 @@
+import { OrderTrainTicketEntity } from 'src/app/order/models/OrderTrainTicketEntity';
 import { ExchangeTrainModel } from './../order/models/ExchangeTrainModel';
 import { AppHelper } from "src/app/appHelper";
 import { ModalController } from "@ionic/angular";
@@ -746,6 +747,70 @@ export class TrainService {
         AppHelper.alert(_.Message || _);
         return null;
       });
+  }
+  async onExchange(orderTrainTicket: OrderTrainTicketEntity) {
+    try {
+      const info = await this.getExchangeInfo(orderTrainTicket.Id);
+      const trainStations = await this.getStationsAsync()
+      // .catch(_=>[]);
+      if (!info || !info.OrderTrainTicket) {
+        return;
+      }
+      let books = this.getBookInfos();
+      const trip = info.OrderTrainTicket.OrderTrainTrips && info.OrderTrainTicket.OrderTrainTrips[0];
+      const passenger = info.BookStaff;
+      if (passenger) {
+        passenger.AccountId = passenger.AccountId || (passenger.Account && passenger.Account.Id);
+      }
+      const b: PassengerBookInfo<ITrainInfo> = {
+        passenger: info.BookStaff,
+        credential: info.DefaultCredentials,
+        // isNotWhitelist?: boolean;
+        bookInfo: {
+          trainEntity: {
+            FromStationCode: info.FromStation,
+            FromStationName: info.FromStationName,
+            ToStationCode: info.ToStation,
+            ToStationName: info.ToStationName,
+            ArrivalShortTime: this.calendarService.getHHmm(trip && trip.ArrivalTime),
+            ArrivalTimeStamp: +moment(trip && trip.ArrivalTime),
+            ArrivalTime: trip && trip.ArrivalTime,
+            StartShortTime: this.calendarService.getHHmm(trip && trip.StartTime),
+            StartTime: trip && trip.StartTime,
+            StartTimeStamp: +moment(trip && trip.StartTime),
+            TrainNo: trip && trip.TrainNo,
+            TrainCode: trip && trip.TrainCode
+          },
+          selectedSeat: {
+            SeatType: info.OrderTrainTicket.SeatType,
+            SeatTypeName: info.OrderTrainTicket.SeatTypeName,
+          },
+          tripType: TripType.departureTrip,
+          id: AppHelper.uuid(),
+          isExchange: true,
+        } as ITrainInfo,
+        id: AppHelper.uuid(),
+        isFilteredPolicy: true
+      };
+      books = [b];
+      this.exchangedTrainInfo = JSON.parse(JSON.stringify(b));
+      const fromCity = trainStations.find(it => it.Code == info.FromStation);
+      const toCity = trainStations.find(it => it.Code == info.ToStation);
+      console.log("exchange bookInfo", b, 'fromcity', fromCity, 'tocity', toCity);
+      this.setBookInfoSource(books)
+      this.setSearchTrainModel({
+        ...this.getSearchTrainModel(),
+        isLocked: true,
+        isExchange: true,
+        fromCity,
+        toCity,
+        Date: info.GoDate,
+        BackDate: info.BackDate || moment().format("YYYY-MM-DD")
+      });
+      this.router.navigate([AppHelper.getRoutePath('search-train')]);
+    } catch (e) {
+      console.error(e);
+    }
   }
   policyAsync(
     trains: TrainEntity[],
