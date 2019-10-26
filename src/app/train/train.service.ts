@@ -519,6 +519,7 @@ export class TrainService {
     return this.searchModel || s;
   }
   setSearchTrainModel(m: SearchTrainModel) {
+    console.log("setSearchTrainModel", m);
     this.searchModel = m || new SearchTrainModel();
     this.searchModelSource.next(this.searchModel);
   }

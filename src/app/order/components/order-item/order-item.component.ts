@@ -99,7 +99,6 @@ export class OrderItemComponent implements OnInit {
       const fromCity = trainStations.find(it => it.Code == info.FromStation);
       const toCity = trainStations.find(it => it.Code == info.ToStation);
       console.log("exchange bookInfo", b, 'fromcity', fromCity, 'tocity', toCity);
-      debugger;
       this.trainService.setBookInfoSource(books)
       this.trainService.setSearchTrainModel({
         ...this.trainService.getSearchTrainModel(),

@@ -80,6 +80,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
         this.isDisabled =
           this.searchTrainModel && this.searchTrainModel.isLocked;
       }
+      this.searchTrainModel.isExchange = this.trainService.getSearchTrainModel().isExchange || !!this.trainService.getBookInfos().find(it => it.bookInfo && it.bookInfo.isExchange);
       this.showReturnTrip = await this.isStaffTypeSelf();
       this.selectedPassengers = trainService.getBookInfos().length;
       this.selectedBookInfos = trainService
@@ -275,7 +276,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     console.log(`启程日期${this.flyDate.date},返程日期：${this.backDate.date}`);
     this.storage.set("fromTrainStation", this.fromCity);
     this.storage.set("toTrainStation", this.toCity);
-    const s = new SearchTrainModel();
+    const s = this.searchTrainModel || new SearchTrainModel();
     s.tripType = TripType.departureTrip;
     s.Date = this.flyDate.date;
     s.FromStation = this.fromCity.Code;
