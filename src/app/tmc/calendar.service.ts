@@ -144,8 +144,10 @@ export class CalendarService {
     d.dayOfWeekName = wn;
     return wn;
   }
-  generateYearNthMonthCalendar(year: string, month: number): AvailableDate {
+  generateYearNthMonthCalendar(year: number, month: number): AvailableDate {
+    console.time("generateYearNthMonthCalendar");
     const iM = moment(`${year}-${month}-01`, "YYYY-MM-DD"); // 第i个月
+    // console.log("generateYearNthMonthCalendar", iM.format('YYYY-MM-DD'), year, month);
     const calender: AvailableDate = {
       dayList: [],
       disabled: false,
@@ -185,6 +187,7 @@ export class CalendarService {
       const dayOfiM = iM.startOf("month").date(j); // 每月的j号
       calender.dayList.push(this.generateDayModel(dayOfiM));
     }
+    console.timeEnd("generateYearNthMonthCalendar");
     return calender;
   }
   generateCanlender2(months: number) {

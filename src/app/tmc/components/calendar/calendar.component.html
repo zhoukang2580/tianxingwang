@@ -1,22 +1,39 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button fill="clear" color='secondary' (click)="cancel()">取消</ion-button>
+      <ion-button fill="clear" color='dark' (click)="cancel()">取消</ion-button>
     </ion-buttons>
     <ion-title text-center>{{title||"日历"}}</ion-title>
   </ion-toolbar>
   <ion-grid class='weeks'>
     <ion-row>
-      <ion-col *ngFor='let w of weeks' size='{{12/7}}'>{{w}}</ion-col>
+      <ion-col *ngFor='let w of weeks' size='{{12/7}}'>
+        <ion-text color='dark'>
+          {{w}}
+        </ion-text>
+      </ion-col>
     </ion-row>
   </ion-grid>
 </ion-header>
-<ion-content>
-  <ion-grid *ngFor='let ym of calendars' class='calendar' [attr.ymonth]='getMonth(ym.yearMonth)'>
+<ion-content style='--offset-bottom: -1em'>
+  <ion-grid *ngFor='let ym of calendars;let first = first' class='calendar' [attr.ymonth]='getMonth(ym.yearMonth)'>
     <ion-row style="margin-top: 1em;padding-bottom: 1em;">
-      <ion-col class='ym' (click)='showDateSelectWheel()'>
-        <div class='ym'>{{ym.yearMonth?.substr(0,4)}}年{{getMonth(ym.yearMonth)}}月
-          <ion-icon name="arrow-dropdown" mode='md'></ion-icon>
+      <ion-col class='ym'>
+        <div class='ym'>
+          <div class='ym' (click)='onNextMonth(-1)' *ngIf='first'>
+            <!-- <ion-icon name="arrow-dropleft"  size='large' mode='md'></ion-icon> -->
+            <span>前一月</span>
+          </div>
+          <div (click)='onChangeYear()' margin-start>
+            {{ym.yearMonth?.substr(0,4)}}年<ion-icon *ngIf='first' name="arrow-dropdown" mode='md'></ion-icon>
+          </div>
+          <div (click)='onChangeMonth()' margin-end *ngIf='first'>
+            {{getMonth(ym.yearMonth)}}月 <ion-icon *ngIf='first' name="arrow-dropdown" mode='md'></ion-icon>
+          </div>
+          <div class='ym' (click)='onNextMonth(1)' *ngIf='first'>
+            <!-- <ion-icon name="arrow-dropright" size='large' mode='md' ></ion-icon> -->
+            <span>后一月</span>
+          </div>
         </div>
       </ion-col>
     </ion-row>
@@ -28,5 +45,14 @@
         <app-day [dayModel]='day' (daySelected)='onDaySelected(day)'></app-day>
       </ion-col>
     </ion-row>
+    <ion-row margin-top margin-bottom></ion-row>
   </ion-grid>
 </ion-content>
+<ion-select style="display:none" #yearSelectEle [okText]='"确定"' [cancelText]='"取消"' [(ngModel)]='year'
+  (ionChange)='onYearChanged()'>
+  <ion-select-option *ngFor='let y of years' [value]='y.year' [selected]='y.selected'>{{y.year}}年</ion-select-option>
+</ion-select>
+<ion-select style="display:none" #monthSelectEle [okText]='"确定"' [cancelText]='"取消"' [(ngModel)]='month'
+  (ionChange)='onMonthChanged()'>
+  <ion-select-option *ngFor='let m of months' [value]='m.month' [selected]='m.selected'>{{m.month}}月</ion-select-option>
+</ion-select>

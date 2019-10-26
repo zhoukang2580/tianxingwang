@@ -4,12 +4,13 @@ import {
   Output,
   EventEmitter,
   Input,
-  AfterViewInit
+  AfterViewInit,
+  ViewChild
 } from "@angular/core";
 import { AvailableDate } from "../../models/AvailableDate";
 import { CalendarService } from "../../calendar.service";
 import { DayModel } from "../../models/DayModel";
-import { PopoverController } from "@ionic/angular";
+import { PopoverController, IonSelect } from "@ionic/angular";
 import { DateSelectWheelPopoverComponent } from "../date-select-wheel-popover/date-select-wheel-popover.component";
 @Component({
   selector: "app-calendar",
@@ -18,12 +19,18 @@ import { DateSelectWheelPopoverComponent } from "../date-select-wheel-popover/da
 })
 export class CalendarComponent implements OnInit, AfterViewInit {
   weeks: string[];
+  @ViewChild('yearSelectEle') yearSelectEle: IonSelect;
+  @ViewChild('monthSelectEle') monthSelectEle: IonSelect;
   @Input() title: string;
   @Input() calendars: AvailableDate[];
   @Output() yearChange: EventEmitter<any>;
   @Output() monthChange: EventEmitter<any>;
   @Output() back: EventEmitter<any>;
   @Output() daySelected: EventEmitter<any>;
+  year: number;
+  month: number;
+  months: { month: number; selected: boolean; }[];
+  years: { year: number; selected: boolean; }[] = [];
   constructor(
     private calendarService: CalendarService,
     private popoverCtrl: PopoverController
@@ -37,12 +44,74 @@ export class CalendarComponent implements OnInit, AfterViewInit {
     this.back.emit();
   }
   async ngOnInit() {
+    const curY = new Date().getFullYear();
+    this.year = curY;
+    const curM = new Date().getMonth() + 1;
+    this.month = curM;
+    this.months = new Array(12).fill(0).map((it, idx) => {
+      const m = idx + 1;
+      return {
+        selected: m == curM,
+        month: m
+      }
+    });
+    this.years = new Array(10).fill(0).map((it, idx) => {
+      return {
+        selected: curY == curY + idx,
+        year: curY + idx
+      }
+    });
+    console.log("years", this.years, 'months', this.months);
     const w = this.calendarService.getDayOfWeekNames();
     this.weeks = Object.keys(w).map(k => w[k]);
     // this.calendars = await this.calendarService.generateCanlender(12);
   }
-  ngAfterViewInit() {}
-  async showDateSelectWheel() {
+  onNextMonth(n: number) {
+    this.month += n;
+    let yearChanged = false;
+    if (this.month > 12) {
+      this.month = 1;
+      this.year = this.year + 1;
+      yearChanged = true;
+    }
+    if (this.month < 1) {
+      this.month = 12;
+      this.year = this.year - 1;
+      yearChanged = true;
+    }
+    if (this.year <= 1900) {
+      this.year = 1900;
+      this.month = 1;
+      yearChanged = true;
+    }
+    this.onMonthChanged();
+    if (yearChanged) {
+      this.onYearChanged();
+      this.onMonthChanged();
+    }
+  }
+  onChangeYear() {
+    if (this.yearSelectEle) {
+      this.yearSelectEle.open();
+    }
+  }
+  onChangeMonth() {
+    if (this.monthSelectEle) {
+      this.monthSelectEle.open();
+    }
+  }
+  onYearChanged() {
+    if (this.year) {
+      this.yearChange.emit(this.year);
+    }
+  }
+  onMonthChanged() {
+    if (this.month) {
+      this.monthChange.emit(this.month);
+    }
+  }
+  ngAfterViewInit() { }
+  private async showDateSelectWheel() {
     const p = await this.popoverCtrl.create({
       component: DateSelectWheelPopoverComponent,
       cssClass: "date-select-wheel",

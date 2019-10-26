@@ -7,7 +7,7 @@
   height: 3em;
   width: 100%;
   position: relative;
-  $toolTipWidth:7em;
+  $toolTipWidth: 7em;
   &.hasToolTip[toolTipPos="start"]::before {
     content: attr(toolTipMsg);
     width: $toolTipWidth;
@@ -109,6 +109,21 @@
     align-items: center;
     justify-content: center;
     width: 100%;
+    [color="light"] {
+      color:var(--ion-color-light);
+    }
+    [color="primary"] {
+      color:var(--ion-color-primary);
+    }
+    [color="dark"] {
+      color:var(--ion-color-dark);
+    }
+    [color="danger"] {
+      color:var(--ion-color-danger);
+    }
+    [color="medium"] {
+      color:var(--ion-color-medium);
+    }
   }
 }
 :host {
