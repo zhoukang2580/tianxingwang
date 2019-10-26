@@ -1,3 +1,4 @@
+import { OrderEntity } from './../order/models/OrderEntity';
 import { OrderTrainTicketEntity } from 'src/app/order/models/OrderTrainTicketEntity';
 import { ExchangeTrainModel } from './../order/models/ExchangeTrainModel';
 import { AppHelper } from "src/app/appHelper";
@@ -70,7 +71,7 @@ export class TrainService {
   private bookInfoSource: Subject<PassengerBookInfo<ITrainInfo>[]>;
   private searchModelSource: Subject<SearchTrainModel>;
   private isInitializingSelfBookInfos = false;
-  exchangedTrainInfo: PassengerBookInfo<ITrainInfo>;
+  exchangedTrainTicketInfo: { order: OrderEntity, ticket: OrderTrainTicketEntity };
   constructor(
     private apiService: ApiService,
     private storage: Storage,
@@ -460,6 +461,7 @@ export class TrainService {
     this.setSearchTrainModel(new SearchTrainModel());
     this.setBookInfoSource([]);
     this.selfCredentials = null;
+    this.exchangedTrainTicketInfo = null;
     this.isInitializingSelfBookInfos = false;
   }
   async initSelfBookTypeBookInfos() {
@@ -766,34 +768,34 @@ export class TrainService {
         passenger: info.BookStaff,
         credential: info.DefaultCredentials,
         // isNotWhitelist?: boolean;
-        bookInfo: {
-          // trainEntity: {
-          //   FromStationCode: info.FromStation,
-          //   FromStationName: info.FromStationName,
-          //   ToStationCode: info.ToStation,
-          //   ToStationName: info.ToStationName,
-          //   ArrivalShortTime: this.calendarService.getHHmm(trip && trip.ArrivalTime),
-          //   ArrivalTimeStamp: +moment(trip && trip.ArrivalTime),
-          //   ArrivalTime: trip && trip.ArrivalTime,
-          //   StartShortTime: this.calendarService.getHHmm(trip && trip.StartTime),
-          //   StartTime: trip && trip.StartTime,
-          //   StartTimeStamp: +moment(trip && trip.StartTime),
-          //   TrainNo: trip && trip.TrainNo,
-          //   TrainCode: trip && trip.TrainCode
-          // },
-          // selectedSeat: {
-          //   SeatType: info.OrderTrainTicket.SeatType,
-          //   SeatTypeName: info.OrderTrainTicket.SeatTypeName,
-          // },
-          tripType: TripType.departureTrip,
-          id: AppHelper.uuid(),
-          isExchange: true,
-        } as ITrainInfo,
+        // bookInfo: {
+        //   trainEntity: {
+        //     FromStationCode: info.FromStation,
+        //     FromStationName: info.FromStationName,
+        //     ToStationCode: info.ToStation,
+        //     ToStationName: info.ToStationName,
+        //     ArrivalShortTime: this.calendarService.getHHmm(trip && trip.ArrivalTime),
+        //     ArrivalTimeStamp: +moment(trip && trip.ArrivalTime),
+        //     ArrivalTime: trip && trip.ArrivalTime,
+        //     StartShortTime: this.calendarService.getHHmm(trip && trip.StartTime),
+        //     StartTime: trip && trip.StartTime,
+        //     StartTimeStamp: +moment(trip && trip.StartTime),
+        //     TrainNo: trip && trip.TrainNo,
+        //     TrainCode: trip && trip.TrainCode
+        //   },
+        //   selectedSeat: {
+        //     SeatType: info.OrderTrainTicket.SeatType,
+        //     SeatTypeName: info.OrderTrainTicket.SeatTypeName,
+        //   },
+        //   tripType: TripType.departureTrip,
+        //   id: AppHelper.uuid(),
+        //   isExchange: true,
+        // } as ITrainInfo,
         id: AppHelper.uuid(),
         isFilteredPolicy: true
       };
       books = [b];
-      this.exchangedTrainInfo = JSON.parse(JSON.stringify(b));
+      this.exchangedTrainTicketInfo = { ticket: JSON.parse(JSON.stringify(info.OrderTrainTicket)), order: JSON.parse(JSON.stringify(info.OrderTrainTicket.Order)) };
       const fromCity = trainStations.find(it => it.Code == info.FromStation);
       const toCity = trainStations.find(it => it.Code == info.ToStation);
       console.log("exchange bookInfo", b, 'fromcity', fromCity, 'tocity', toCity);
@@ -802,7 +804,7 @@ export class TrainService {
         ...this.getSearchTrainModel(),
         isLocked: true,
         isExchange: true,
-        isRoundTrip:false,
+        isRoundTrip: false,
         fromCity,
         toCity,
         Date: info.GoDate,
@@ -900,6 +902,7 @@ export class TrainService {
   }
   removeAllBookInfos() {
     this.bookInfos = [];
+    this.exchangedTrainTicketInfo = null;
     this.setBookInfoSource(this.bookInfos);
   }
 }

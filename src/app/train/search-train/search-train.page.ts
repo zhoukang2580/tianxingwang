@@ -1,3 +1,5 @@
+import { LanguageHelper } from 'src/app/languageHelper';
+import { CanComponentDeactivate } from 'src/app/guards/candeactivate.guard';
 import { FlightHotelTrainType } from "./../../tmc/tmc.service";
 import { TrainService, SearchTrainModel } from "./../train.service";
 import { TrafficlineEntity } from "./../../tmc/models/TrafficlineEntity";
@@ -25,7 +27,8 @@ import { SelectedTrainSegmentInfoComponent } from "../components/selected-train-
   templateUrl: "./search-train.page.html",
   styleUrls: ["./search-train.page.scss"]
 })
-export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
+export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate {
+  private isCanLeave = true;
   toggleCities = false; // 没有切换城市顺序
   rotateIcon = false;
   isSingle = true;
@@ -80,7 +83,9 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
         this.isDisabled =
           this.searchTrainModel && this.searchTrainModel.isLocked;
       }
-      this.searchTrainModel.isExchange = this.trainService.getSearchTrainModel().isExchange || !!this.trainService.getBookInfos().find(it => it.bookInfo && it.bookInfo.isExchange);
+      this.searchTrainModel.isExchange = this.trainService.getSearchTrainModel().isExchange
+        || !!this.trainService.getBookInfos().find(it => it.bookInfo && it.bookInfo.isExchange);
+      this.isCanLeave = this.searchTrainModel.isExchange ? false : true;
       this.showReturnTrip = await this.isStaffTypeSelf();
       this.selectedPassengers = trainService.getBookInfos().length;
       this.selectedBookInfos = trainService
@@ -294,6 +299,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     }
     console.log("search-train", s);
     this.trainService.setSearchTrainModel(s);
+    this.isCanLeave = true;
     this.router.navigate([AppHelper.getRoutePath("train-list")]);
   }
   getDayDesc(d: DayModel) {
@@ -315,5 +321,18 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit {
     if (city) {
       this.toCity = city;
     }
+  }
+  async canDeactivate() {
+    if (this.isCanLeave) {
+      return true;
+    }
+    if (this.trainService.exchangedTrainTicketInfo) {
+      const ok = await AppHelper.alert("是否放弃改签？", true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+      if (ok) {
+        this.trainService.exchangedTrainTicketInfo = null;
+        return true;
+      }
+    }
+    return false;
   }
 }

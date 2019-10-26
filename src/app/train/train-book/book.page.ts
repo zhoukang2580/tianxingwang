@@ -1,3 +1,4 @@
+import { OrderEntity } from 'src/app/order/models/OrderEntity';
 import { ITrainInfo } from "../train.service";
 import { CalendarService } from "../../tmc/calendar.service";
 import { TrainEntity } from "../models/TrainEntity";
@@ -373,6 +374,12 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     let canBook2 = false;
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto);
+    if (this.trainService.exchangedTrainTicketInfo) {
+      if (this.trainService.exchangedTrainTicketInfo.order) {
+        this.trainService.exchangedTrainTicketInfo.order.OrderTrainTickets = this.trainService.exchangedTrainTicketInfo.order.OrderTrainTickets || [this.trainService.exchangedTrainTicketInfo.ticket];
+      }
+      bookDto.Orders = [this.trainService.exchangedTrainTicketInfo.order];
+    }
     if (canBook && canBook2) {
       const res = await this.trainService.bookTrain(bookDto).catch(e => {
         AppHelper.alert(e);

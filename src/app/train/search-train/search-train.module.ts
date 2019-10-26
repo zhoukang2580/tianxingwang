@@ -1,4 +1,4 @@
-import { AgentGuard } from "../../guards/agent.guard";
+import { CandeactivateGuard } from './../../guards/candeactivate.guard';
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -16,7 +16,8 @@ const routes: Routes = [
   {
     path: "",
     component: SearchTrainPage,
-    canActivate: [TmcGuard]
+    canActivate: [TmcGuard],
+    canDeactivate: [CandeactivateGuard]
   }
 ];
 
