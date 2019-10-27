@@ -52,9 +52,9 @@ ion-grid {
       border-top-left-radius: 4px;
       border-bottom-left-radius: 4px;
     }
-    &.selected.between-selected-days,
-    &.selected.between-selected-days.not-enabled {
-      background-color: rgba(var(--ion-color-primary-rgb), 0.5);
+    &.selected.between-selected-days:not(.not-enabled),
+    &.selected.between-selected-days {
+      background-color: rgba(var(--ion-color-secondary-rgb), 0.8);
       color: var(--ion-color-primary);
     }
   }

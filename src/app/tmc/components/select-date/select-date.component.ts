@@ -30,17 +30,11 @@ export class SelectDateComponent implements OnInit, OnDestroy {
   private goArrivalTime: string;
   set selectedDays(days: DayModel[]) {
     this._selectedDays = days;
-    setTimeout(() => {
-      this._selectedDays.forEach(dt => {
-        dt.firstSelected = true;
-        dt.lastSelected = true;
-      });
-    }, 0);
-    clearTimeout(this.timeoutId);
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
     this.timeoutId = setTimeout(() => {
       this._selectedDays.forEach(dt => {
-        dt.firstSelected = true;
-        dt.lastSelected = true;
         dt.hasToolTip = false;
         dt.toolTipMsg = null;
       });
@@ -127,10 +121,6 @@ export class SelectDateComponent implements OnInit, OnDestroy {
       this.calendarService.generateYearNthMonthCalendar(
         m + 1 > 12 ? y + 1 : y,
         m + 1 > 12 ? 1 : m + 1
-      ),
-      this.calendarService.generateYearNthMonthCalendar(
-        m + 2 > 12 ? y + 1 : y,
-        m + 2 > 12 ? 1 : m + 2
       )
     ];
     this.checkYms();
@@ -303,6 +293,26 @@ export class SelectDateComponent implements OnInit, OnDestroy {
             this.selectedDays[0].timeStamp == this.selectedDays[1].timeStamp
           ) {
             this.selectedDays[0].desc = LanguageHelper.getRoundTripTip();
+          }
+        }
+        if (this.selectedDays && this.selectedDays.length) {
+          const first = this.selectedDays[0];
+          const last = this.selectedDays[this.selectedDays.length - 1];
+          first.firstSelected = true;
+          if (last) {
+            last.lastSelected = true;
+            if (first.date != last.date) {
+              last.firstSelected = false;
+              first.lastSelected = false;
+              this.yms.forEach(ym => {
+                ym.dayList.forEach(it => {
+                  it.isBetweenDays = it.timeStamp > first.timeStamp && it.timeStamp < last.timeStamp;
+                  if (it.isBetweenDays) {
+                    it.selected = true;
+                  }
+                })
+              })
+            }
           }
         }
         setTimeout(() => {

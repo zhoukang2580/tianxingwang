@@ -7,8 +7,8 @@
   </ion-toolbar>
   <ion-grid class='weeks'>
     <ion-row>
-      <ion-col *ngFor='let w of weeks' size='{{12/7}}'>
-        <ion-text color='dark'>
+      <ion-col *ngFor='let w of weeks;let first=first;let last=last' size='{{12/7}}'>
+        <ion-text color='{{first||last?"danger":"secondary"}}'>
           {{w}}
         </ion-text>
       </ion-col>
@@ -16,7 +16,8 @@
   </ion-grid>
 </ion-header>
 <ion-content style='--offset-bottom: -1em'>
-  <ion-grid *ngFor='let ym of calendars;let first = first;let last=last' class='calendar' [attr.ymonth]='getMonth(ym.yearMonth)'>
+  <ion-grid *ngFor='let ym of calendars;let first = first;let last=last' class='calendar'
+    [attr.ymonth]='getMonth(ym.yearMonth)'>
     <ion-row style="margin-top: 1em;padding-bottom: 1em;">
       <ion-col class='ym'>
         <div class='ym'>
