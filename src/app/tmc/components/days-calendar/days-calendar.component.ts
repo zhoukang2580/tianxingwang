@@ -66,8 +66,8 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
     let n = Math.abs(moment().diff(moment(date), 'days'));
     n = n > 10 ? 7 : n;
     if (n < 10) {
-      for (let i = -1; i < 7; i++) {
-        const nextDay = moment(date).add(i, "days");
+      for (let i = -1; i > -n; i--) {
+        const nextDay = moment().add(i, "days");
         const day = this.calendarService.generateDayModel(nextDay);
         day.dayOfWeekName = this.calendarService.getWeekName(day);
         day.desc = this.calendarService.getDescOfDay(day);
@@ -79,8 +79,15 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
   onCalendar() {
     this.calenderClick.emit();
   }
-  ngAfterViewInit() { }
-  onDaySelected(day: DayModel) {
+  ngAfterViewInit() {
+    setTimeout(() => {
+      const d = this.days.find(it => it.selected);
+      if (d) {
+        this.onDaySelected(d, false);
+      }
+    }, 100);
+  }
+  onDaySelected(day: DayModel, byUser = true) {
     day.selected = true;
     let index = 0;
     for (let i = 0; i < this.days.length; i++) {
@@ -132,6 +139,8 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       }
     });
-    this.itemSelected.emit(day);
+    if (byUser) {
+      this.itemSelected.emit(day);
+    }
   }
 }
