@@ -66,17 +66,15 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     let n = Math.abs(moment().diff(moment(date), 'days'));
     n = n > 10 ? 7 : n;
-    if (n < 10) {
-      for (let i = -1; i > -n; i--) {
-        const nextDay = moment(date).add(i, "days");
-        const day = this.calendarService.generateDayModel(nextDay);
-        if (day.timeStamp < Math.floor(new Date().getTime() / 1000)) {
-          break;
-        }
-        day.dayOfWeekName = this.calendarService.getWeekName(day);
-        day.desc = this.calendarService.getDescOfDay(day);
-        this.days.unshift(day);
+    for (let i = -1; i >= -n; i--) {
+      const nextDay = moment(date).add(i, "days");
+      const day = this.calendarService.generateDayModel(nextDay);
+      if (day.timeStamp < Math.floor(new Date().getTime() / 1000)) {
+        break;
       }
+      day.dayOfWeekName = this.calendarService.getWeekName(day);
+      day.desc = this.calendarService.getDescOfDay(day);
+      this.days.unshift(day);
     }
     console.log("days calendar", `n=${n}`, this.days)
   }
