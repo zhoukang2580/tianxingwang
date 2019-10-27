@@ -638,9 +638,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       // this.isRoundTrip = this.searchFlightModel.IsRoundTrip;
       this.vmFromCity = this.searchFlightModel.fromCity;
       this.vmToCity = this.searchFlightModel.toCity;
-      // this.moveDayToSearchDate(
-      //   this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date)
-      // );
       if (this.searchFlightModel.isRefreshData) {
         this.flightService.setSearchFlightModel({
           ...this.searchFlightModel,

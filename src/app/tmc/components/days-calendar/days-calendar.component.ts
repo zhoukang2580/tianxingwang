@@ -42,6 +42,7 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subscription.unsubscribe();
   }
   ngOnInit() {
+    this.initDays(moment().format("YYYY-MM-DD"));
     this.subscription = this.calendarService.getSelectedDays().subscribe(days => {
       if (days && days.length) {
         const selectedDate = days.find(it => it.selected);
@@ -51,7 +52,6 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     // console.log(this.days);
-    this.initDays(moment().format("YYYY-MM-DD"));
   }
   private initDays(date: string, selectedDate: DayModel = null) {
     this.days = [];
@@ -63,9 +63,10 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
       day.selected = (selectedDate && selectedDate.date == day.date) || i == 0;
       this.days.push(day);
     }
-    const n = Math.abs(moment().diff(moment(date)));
+    let n = Math.abs(moment().diff(moment(date), 'days'));
+    n = n > 10 ? 7 : n;
     if (n < 10) {
-      for (let i = -1; i < n; i++) {
+      for (let i = -1; i < 7; i++) {
         const nextDay = moment(date).add(i, "days");
         const day = this.calendarService.generateDayModel(nextDay);
         day.dayOfWeekName = this.calendarService.getWeekName(day);
@@ -73,7 +74,7 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
         this.days.unshift(day);
       }
     }
-    console.log("days calendar", this.days)
+    console.log("days calendar", `n=${n}`, this.days)
   }
   onCalendar() {
     this.calenderClick.emit();
