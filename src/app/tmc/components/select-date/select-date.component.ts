@@ -15,19 +15,16 @@ import { TripType } from "src/app/tmc/models/TripType";
   styleUrls: ["./select-date.component.scss"]
 })
 export class SelectDateComponent implements OnInit, OnDestroy {
-  constructor(
-    private calendarService: CalendarService,
-    private modalCtrl: ModalController,
-    private tmcService: TmcService
-  ) { }
-  yms: AvailableDate[];
-  title: string;
+
   private _selectedDays: DayModel[] = [];
   private timeoutId: any;
   private tripType: TripType;
   private curSelectedYear: string;
   private curSelectedMonth: number;
   private goArrivalTime: string;
+  yms: AvailableDate[];
+  title: string;
+  delayBackTime = 1400;
   set selectedDays(days: DayModel[]) {
     this._selectedDays = days;
     if (this.timeoutId) {
@@ -38,7 +35,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
         dt.hasToolTip = false;
         dt.toolTipMsg = null;
       });
-    }, 1300);
+    }, this.delayBackTime);
   }
   get selectedDays() {
     return this._selectedDays;
@@ -46,7 +43,11 @@ export class SelectDateComponent implements OnInit, OnDestroy {
   isMulti: boolean; // 是否多选
   multiSub = Subscription.EMPTY;
   selectedSub = Subscription.EMPTY;
-  delayBackTime = 200;
+  constructor(
+    private calendarService: CalendarService,
+    private modalCtrl: ModalController,
+    private tmcService: TmcService
+  ) { }
   ngOnDestroy() {
     this.multiSub.unsubscribe();
   }
