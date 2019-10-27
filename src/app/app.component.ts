@@ -249,12 +249,21 @@ export class AppComponent
 
   private backButtonAction() {
     let lastClickTime = 0;
-    console.log("backbutton url = " + this.router.url);
     this.platform.backButton.subscribe(async () => {
+      console.log("backbutton url = " + this.router.url);
       let count = 1;
-      await AppHelper.dismissAlertLayer();
-      this.flightService.setOpenCloseSelectCityPageSources(false);
       this.apiService.hideLoadingView();
+      this.flightService.setOpenCloseSelectCityPageSources(false);
+      const t = await this.modalController.getTop();
+      if (t) {
+        await t.dismiss().catch(_ => { });
+        return;
+      }
+      const a = await this.alertController.getTop();
+      if (a) {
+        await a.dismiss().catch(_ => { });
+        return;
+      }
       if (
         this.router.url.includes("login") ||
         this.router.url.includes("tabs")
