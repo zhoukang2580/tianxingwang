@@ -1,3 +1,4 @@
+import { Subscription } from 'rxjs';
 import {
   Component,
   OnInit,
@@ -5,7 +6,8 @@ import {
   EventEmitter,
   Input,
   AfterViewInit,
-  ViewChild
+  ViewChild,
+  OnDestroy
 } from "@angular/core";
 import { AvailableDate } from "../../models/AvailableDate";
 import { CalendarService } from "../../calendar.service";
@@ -17,7 +19,8 @@ import { DateSelectWheelPopoverComponent } from "../date-select-wheel-popover/da
   templateUrl: "./calendar.component.html",
   styleUrls: ["./calendar.component.scss"]
 })
-export class CalendarComponent implements OnInit, AfterViewInit {
+export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
+  private subscription = Subscription.EMPTY;
   weeks: string[];
   @ViewChild('yearSelectEle') yearSelectEle: IonSelect;
   @ViewChild('monthSelectEle') monthSelectEle: IonSelect;
@@ -40,13 +43,37 @@ export class CalendarComponent implements OnInit, AfterViewInit {
     this.yearChange = new EventEmitter();
     this.monthChange = new EventEmitter();
   }
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
   cancel() {
+    this.subscription.unsubscribe();
     this.back.emit();
   }
   async ngOnInit() {
-    const curY = new Date().getFullYear();
+    this.calendarService.getSelectedDays().subscribe(days => {
+      if (days && days.length) {
+        const cur = days[0];
+        if (cur) {
+          const y = +cur.date.substr(0, 4);
+          const m = +cur.date.substr('yyyy-'.length, 2);
+          this.initCurYM(y, m);
+        } else {
+          this.initCurYM();
+        }
+      } else {
+        this.initCurYM();
+      }
+    })
+    this.initCurYM();
+    const w = this.calendarService.getDayOfWeekNames();
+    this.weeks = Object.keys(w).map(k => w[k]);
+    // this.calendars = await this.calendarService.generateCanlender(12);
+  }
+  private initCurYM(y: number = new Date().getFullYear(), m: number = new Date().getMonth() + 1) {
+    const curY = y;
     this.year = curY;
-    const curM = new Date().getMonth() + 1;
+    const curM = m;
     this.month = curM;
     this.months = new Array(12).fill(0).map((it, idx) => {
       const m = idx + 1;
@@ -62,9 +89,6 @@ export class CalendarComponent implements OnInit, AfterViewInit {
       }
     });
     console.log("years", this.years, 'months', this.months);
-    const w = this.calendarService.getDayOfWeekNames();
-    this.weeks = Object.keys(w).map(k => w[k]);
-    // this.calendars = await this.calendarService.generateCanlender(12);
   }
   onNextMonth(n: number) {
     this.month += n;
