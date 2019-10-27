@@ -68,7 +68,7 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
     n = n > 10 ? 7 : n;
     if (n < 10) {
       for (let i = -1; i > -n; i--) {
-        const nextDay = moment().add(i, "days");
+        const nextDay = moment(date).add(i, "days");
         const day = this.calendarService.generateDayModel(nextDay);
         if (day.timeStamp < Math.floor(new Date().getTime() / 1000)) {
           break;
