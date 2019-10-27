@@ -85,7 +85,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
         // console.log(`key=${k}`, c[k]);
         return (c[k] && c[k] || "").toLowerCase().includes(name);
       })
-    });
+    }).slice(0, 20);
     this.isFiltering = false;
     // console.log(`name=${name}`, this.cities, this.textSearchResults);
   }
