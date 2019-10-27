@@ -24,7 +24,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
   private goArrivalTime: string;
   yms: AvailableDate[];
   title: string;
-  delayBackTime = 1000;
+  delayBackTime = 200;
   set selectedDays(days: DayModel[]) {
     this._selectedDays = days;
     if (this.timeoutId) {
@@ -35,7 +35,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
         dt.hasToolTip = false;
         dt.toolTipMsg = null;
       });
-    }, 1500);
+    }, 1000);
   }
   get selectedDays() {
     return this._selectedDays;
