@@ -275,7 +275,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
           this.selectedDays[1].hasToolTip = true;
           this.selectedDays[1].toolTipMsg = LanguageHelper.getCheckInOutTotalDaysTip(
             Math.abs(moment(this.selectedDays[1].date).diff(
-              moment(this.selectedDays[0].date).date(), 'days'))
+              moment(this.selectedDays[0].date), 'days'))
           );
           if (
             this.selectedDays[0].timeStamp == this.selectedDays[1].timeStamp
