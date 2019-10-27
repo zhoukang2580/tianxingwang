@@ -27,8 +27,8 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   get totalFlyDays() {
     if (this.checkInDate && this.checkOutDate) {
       const nums =
-        moment(this.checkOutDate.date).date() -
-        moment(this.checkInDate.date).date();
+        Math.abs(moment(this.checkOutDate.date).diff(
+          moment(this.checkInDate.date), 'days'))
       return nums <= 0 ? 1 : nums;
     }
     return 0;

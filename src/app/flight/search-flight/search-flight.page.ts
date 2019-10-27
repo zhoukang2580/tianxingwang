@@ -96,15 +96,12 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  private calcTotalFlyDays(): string {
+  private calcTotalFlyDays() {
     if (this.backDate && this.flyDate) {
-      const detal = Math.floor(
-        this.backDate.timeStamp - this.flyDate.timeStamp
-      );
-      if (detal == 0) {
-        return `1`;
-      }
-      return (detal / 24 / 3600).toFixed(0);
+      const nums =
+        Math.abs(moment(this.backDate.date).diff(
+          moment(this.flyDate.date), 'days'));
+      return nums <= 0 ? 1 : nums;
     }
     return `1`;
   }
