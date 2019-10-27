@@ -113,6 +113,7 @@ export class AppComponent
     AppHelper.setModalController(this.modalController);
     this.initializeApp();
     this.platform.ready().then(() => {
+      this.backButtonAction();
       this.splashScreen.show();
       console.log(`platform ready`);
       this.app = navigator["app"];
@@ -190,7 +191,6 @@ export class AppComponent
     return true;
   }
   initializeApp() {
-    this.backButtonAction();
     AppHelper.getDomain(); //
     AppHelper.setQueryParamers();
     if (!this.checkWechatOpenId() || !this.checkDingtalkUnionid()) {
