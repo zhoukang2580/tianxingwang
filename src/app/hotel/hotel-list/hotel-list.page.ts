@@ -225,8 +225,13 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
         }
       );
   }
-  onDateClick() {
-    this.hotelService.openCalendar();
+  async onDateChange() {
+    const days = await this.hotelService.openCalendar();
+    if (days.length) {
+      this.hotelQueryModel.BeginDate = days[0].date;
+      this.hotelQueryModel.EndDate = days[days.length - 1].date;
+      this.doRefresh();
+    }
   }
   goToDetail(item: HotelDayPriceEntity) {
     this.router.navigate([AppHelper.getRoutePath("hotel-detail")], {

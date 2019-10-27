@@ -46,7 +46,11 @@
         <app-day [dayModel]='day' (daySelected)='onDaySelected(day)'></app-day>
       </ion-col>
     </ion-row>
-    <ion-row *ngIf='last' style="margin: 1em 0;padding: 1em 0;"></ion-row>
+    <ion-row *ngIf='last' style="margin:1em 0;padding:1em 0;">
+      <ion-col class="md hydrated">
+        <div margin-top margin-bottom></div>
+      </ion-col>
+    </ion-row>
   </ion-grid>
 </ion-content>
 <ion-select style="display:none" #yearSelectEle [okText]='"确定"' [cancelText]='"取消"' [(ngModel)]='year'

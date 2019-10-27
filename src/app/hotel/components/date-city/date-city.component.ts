@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
+import * as moment from 'moment';
 
 @Component({
   selector: "app-date-city",
@@ -12,21 +13,19 @@ export class DateCityComponent implements OnInit {
   @Input() checkOutDate: string;
   @Input() city: TrafficlineEntity;
   @Output() cityClick: EventEmitter<any>;
-  @Output() dateClick: EventEmitter<any>;
+  @Output() dateChange: EventEmitter<any>;
   @Output() searchBarClick: EventEmitter<any>;
   constructor() {
     this.cityClick = new EventEmitter();
-    this.dateClick = new EventEmitter();
+    this.dateChange = new EventEmitter();
     this.searchBarClick = new EventEmitter();
   }
   getDays() {
     if (this.checkInDate && this.checkOutDate) {
-      const d1 = this.checkInDate.substring("2019-08-".length);
-      const d2 = this.checkOutDate.substring("2019-08-".length);
-      return +d2 - +d1;
+      return Math.abs(moment(this.checkOutDate).diff(moment(this.checkInDate), 'days'))
     }
   }
-  ngOnInit() {}
+  ngOnInit() { }
   onCityClick() {
     this.cityClick.emit();
   }
@@ -34,6 +33,6 @@ export class DateCityComponent implements OnInit {
     this.searchBarClick.emit();
   }
   onDateClick() {
-    this.dateClick.emit();
+    this.dateChange.emit();
   }
 }

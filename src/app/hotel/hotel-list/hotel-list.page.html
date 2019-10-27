@@ -7,7 +7,7 @@
     </ion-buttons>
     <app-date-city [checkInDate]='searchHotelModel?.checkInDate' *ngIf='!isShowSearchBar'
       [checkOutDate]='searchHotelModel?.checkOutDate' [city]='searchHotelModel?.destinationCity'
-      (cityClick)='onCityClick()' (dateClick)='onDateClick()' (searchBarClick)='onSearchClick()' [keywords]='keyowrds'>
+      (cityClick)='onCityClick()' (dateChange)='onDateChange()' (searchBarClick)='onSearchClick()' [keywords]='keyowrds'>
     </app-date-city>
     <ion-searchbar [debounce]='700' [(ngModel)]='vmKeyowrds' [animated]='true' placeholder=""
       (ionChange)='onSearchByKeywords()' mode='ios' *ngIf='isShowSearchBar'>
