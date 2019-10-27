@@ -59,6 +59,7 @@ ion-grid {
     }
   }
   &.weeks {
+    padding: 0 0.5em;
     ion-row:first-child {
       background-color: transparent;
       margin: 0;
@@ -89,6 +90,10 @@ ion-grid {
       background-color: rgba(var(--ion-color-danger-rgb), 0.9);
     }
   }
+}
+ion-content {
+  --padding-start: 0.5em;
+  --padding-end: 0.5em;
 }
 :host {
   height: 100%;

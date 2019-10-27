@@ -24,7 +24,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
   private goArrivalTime: string;
   yms: AvailableDate[];
   title: string;
-  delayBackTime = 1400;
+  delayBackTime = 1000;
   set selectedDays(days: DayModel[]) {
     this._selectedDays = days;
     if (this.timeoutId) {
@@ -35,7 +35,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
         dt.hasToolTip = false;
         dt.toolTipMsg = null;
       });
-    }, this.delayBackTime);
+    }, 1500);
   }
   get selectedDays() {
     return this._selectedDays;
@@ -274,8 +274,8 @@ export class SelectDateComponent implements OnInit, OnDestroy {
           this.selectedDays[1].desc = LanguageHelper.getCheckOutTip();
           this.selectedDays[1].hasToolTip = true;
           this.selectedDays[1].toolTipMsg = LanguageHelper.getCheckInOutTotalDaysTip(
-            moment(this.selectedDays[1].date).date() -
-            moment(this.selectedDays[0].date).date()
+            Math.abs(moment(this.selectedDays[1].date).diff(
+              moment(this.selectedDays[0].date).date(), 'days'))
           );
           if (
             this.selectedDays[0].timeStamp == this.selectedDays[1].timeStamp
