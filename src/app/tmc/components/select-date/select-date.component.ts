@@ -128,7 +128,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
   }
   async cancel() {
     console.log("select date component cancel ", this.selectedDays);
-    this.calendarService.setSelectedDays(this.selectedDays);
+    this.calendarService.setSelectedDaysSource(this.selectedDays);
     const m = await this.modalCtrl.getTop();
     if (m) {
       m.dismiss(this.selectedDays).catch(_ => { });

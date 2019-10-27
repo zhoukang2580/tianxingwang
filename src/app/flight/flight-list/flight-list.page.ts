@@ -123,8 +123,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     backTakeOffDateTime: string;
   }>;
   @ViewChild(FlyFilterComponent) filterComp: FlyFilterComponent;
-  @ViewChild(DaysCalendarComponent)
-  daysCalendarComp: DaysCalendarComponent;
+  @ViewChild(DaysCalendarComponent) daysCalendarComp: DaysCalendarComponent;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   activeTab: "filter" | "time" | "price" | "none"; // 当前激活的tab
   hasDataSource: Subject<boolean>;
@@ -168,17 +167,17 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
             goArrivalDateTime:
               goInfo && goInfo.bookInfo && goInfo.bookInfo.flightSegment
                 ? moment(goInfo.bookInfo.flightSegment.TakeoffTime).format(
-                    "YYYY-MM-DD HH:mm"
-                  )
+                  "YYYY-MM-DD HH:mm"
+                )
                 : "",
             backTakeOffDateTime:
               backInfo &&
-              backInfo.bookInfo &&
-              backInfo.bookInfo.flightSegment &&
-              backInfo.bookInfo.tripType == TripType.returnTrip
+                backInfo.bookInfo &&
+                backInfo.bookInfo.flightSegment &&
+                backInfo.bookInfo.tripType == TripType.returnTrip
                 ? moment(backInfo.bookInfo.flightSegment.TakeoffTime).format(
-                    "YYYY-MM-DD HH:mm"
-                  )
+                  "YYYY-MM-DD HH:mm"
+                )
                 : ""
           };
         })
@@ -256,7 +255,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.filterCondition.timeFromM2N = "initial";
     this.activeTab =
       this.filterComp &&
-      Object.keys(this.filterComp.userOps).some(k => this.filterComp.userOps[k])
+        Object.keys(this.filterComp.userOps).some(k => this.filterComp.userOps[k])
         ? "filter"
         : "none";
     this.searchFlightModel.Date = day.date;
@@ -272,7 +271,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         if (this.isLoading) {
           return;
         }
-        this.moveDayToSearchDate();
+        // this.moveDayToSearchDate();
         if (this.list) {
           this.list.nativeElement.innerHTML = "";
         }
@@ -639,9 +638,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       // this.isRoundTrip = this.searchFlightModel.IsRoundTrip;
       this.vmFromCity = this.searchFlightModel.fromCity;
       this.vmToCity = this.searchFlightModel.toCity;
-      this.moveDayToSearchDate(
-        this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date)
-      );
+      // this.moveDayToSearchDate(
+      //   this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date)
+      // );
       if (this.searchFlightModel.isRefreshData) {
         this.flightService.setSearchFlightModel({
           ...this.searchFlightModel,
@@ -677,7 +676,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           }
           if (this.searchFlightModel.Date != day.date) {
             this.searchFlightModel.Date = day.date;
-            this.moveDayToSearchDate();
+            // this.moveDayToSearchDate();
           }
           this.searchFlightModel.Date = day.date;
           if (this.notCurrentPage()) {
@@ -705,28 +704,12 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    if (this.searchFlightModel && this.searchFlightModel.Date) {
-      this.moveDayToSearchDate();
-    }
+    // if (this.searchFlightModel && this.searchFlightModel.Date) {
+    //   this.moveDayToSearchDate();
+    // }
     // console.dir(this.cnt);
 
     // this.controlFooterShowHide();
-  }
-  private moveDayToSearchDate(d?: DayModel) {
-    this.domCtrl.write(_ => {
-      if (this.daysCalendarComp) {
-        const day =
-          d ||
-          this.flyDayService.generateDayModelByDate(
-            this.searchFlightModel.Date
-          );
-        setTimeout(() => {
-          if (this.daysCalendarComp) {
-            this.daysCalendarComp.onDaySelected(day);
-          }
-        }, 1000);
-      }
-    });
   }
   controlFooterShowHide() {
     const cnt = document.querySelector("ion-content");
@@ -739,7 +722,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
               this.cnt.ionScrollEnd.pipe(
                 tap(() => {
                   console.log("滚动停止");
-                  this.ngZone.run(() => {});
+                  this.ngZone.run(() => { });
                 })
               )
             )
@@ -844,23 +827,23 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           <h4 class="time">
     <strong>${s.TakeoffShortTime}</strong>
               <span class="line">-----&nbsp;${
-                s.IsStop ? `经停` : `直飞`
-              }&nbsp;-----</span>
+        s.IsStop ? `经停` : `直飞`
+        }&nbsp;-----</span>
               <strong>${s.ArrivalShortTime}
                 ${
-                  s.AddOneDayTip
-                    ? `<span class='addoneday'>${s.AddOneDayTip}</span>`
-                    : ``
-                }
+        s.AddOneDayTip
+          ? `<span class='addoneday'>${s.AddOneDayTip}</span>`
+          : ``
+        }
               </strong>
           </h4>
           <div class="airports">
               <span>${s.FromAirportName}${
         s.FromTerminal ? `(${s.FromTerminal})` : ``
-      }</span>
+        }</span>
               <span>${s.ToAirportName}${
         s.ToTerminal ? `(${s.ToTerminal})` : ``
-      }</span>
+        }</span>
           </div>
           <div class="desc">
               <img src="${s.AirlineSrc}" class="airlinesrc">
@@ -868,10 +851,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
               <label>|${s.Number}</label>
               <label>|${s.PlaneType}</label>
               ${
-                s.CodeShareNumber
-                  ? `|<span class='code-share-number'>共享${s.CodeShareNumber}</span>`
-                  : ``
-              }
+        s.CodeShareNumber
+          ? `|<span class='code-share-number'>共享${s.CodeShareNumber}</span>`
+          : ``
+        }
           </div>
       </div>
       <div class="price">
@@ -1043,7 +1026,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
             // console.log(moment(s.TakeoffTime).hour());
             return (
               this.filterCondition.takeOffTimeSpan.lower <=
-                moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() &&
+              moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() &&
               (moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() <
                 this.filterCondition.takeOffTimeSpan.upper ||
                 (moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() ==

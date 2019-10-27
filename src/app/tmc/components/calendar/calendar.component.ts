@@ -88,7 +88,7 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
         year: curY + idx
       }
     });
-    console.log("years", this.years, 'months', this.months);
+    // console.log("years", this.years, 'months', this.months);
   }
   onNextMonth(n: number) {
     this.month += n;

@@ -54,7 +54,7 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.initDays(moment().format("YYYY-MM-DD"));
   }
   private initDays(date: string, selectedDate: DayModel = null) {
-    this.days=[];
+    this.days = [];
     for (let i = 0; i < 7; i++) {
       const nextDay = moment(date).add(i, "days");
       const day = this.calendarService.generateDayModel(nextDay);
@@ -63,6 +63,17 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
       day.selected = (selectedDate && selectedDate.date == day.date) || i == 0;
       this.days.push(day);
     }
+    const n = Math.abs(moment().diff(moment(date)));
+    if (n < 10) {
+      for (let i = -1; i < n; i++) {
+        const nextDay = moment(date).add(i, "days");
+        const day = this.calendarService.generateDayModel(nextDay);
+        day.dayOfWeekName = this.calendarService.getWeekName(day);
+        day.desc = this.calendarService.getDescOfDay(day);
+        this.days.unshift(day);
+      }
+    }
+    console.log("days calendar", this.days)
   }
   onCalendar() {
     this.calenderClick.emit();

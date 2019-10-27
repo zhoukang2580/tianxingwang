@@ -55,7 +55,7 @@ export class CalendarService {
   getSelectedDays() {
     return this.selectedDaysSource.asObservable();
   }
-  setSelectedDays(days: DayModel[]) {
+  setSelectedDaysSource(days: DayModel[]) {
     this.selectedDaysSource.next(days);
   }
   getMonth(d: DayModel) {
