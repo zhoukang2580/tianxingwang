@@ -5,7 +5,9 @@
         <ion-icon class='icon-back' name='arrow-back' slot='icon-only'></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>选择城市</ion-title>
+    <ion-searchbar [debounce]='700' [(ngModel)]='vmKeyowrds' [animated]='true' placeholder="城市名称/拼音/三字码"
+      (ionChange)='onSearchByKeywords()' mode='ios'>
+    </ion-searchbar>
   </ion-toolbar>
 </ion-header>
 <!-- <ion-toolbar class='seg'>
@@ -14,7 +16,7 @@
     <ion-segment-button value='overseas' class='overseas'>海外</ion-segment-button>
   </ion-segment>
 </ion-toolbar> -->
-<ion-header class='nav-links' color='dark' #links>
+<ion-header class='nav-links' color='dark' [class.hidden]='isSearching' #links>
   <div class='nav'>
     <ion-text *ngFor='let nav of listCitiesViewModel' (click)='onNavLickClick(nav.link)'
       [style.display]="(nav?.link=='history')&&historyCities.length==0?'none':'block'" text-center
@@ -24,94 +26,110 @@
   </div>
 </ion-header>
 <ion-content #cnt class='mainCnt' scroll-y='true' force-overscroll='false'>
-  <ion-text class='curTargetNav' slot='fixed' color='light'>
-    <h1 #curNavText></h1>
-  </ion-text>
-
-  <section class='cities'>
-    <ion-list class='history-class' [style.display]='historyCities.length>0?"block":"none"'>
-      <ion-item-divider color='primary' sticky>
-        <ion-label color='dark'>
-          <h6>历史</h6>
-        </ion-label>
-      </ion-item-divider>
-      <div class='history-cites'>
-        <ion-grid padding-end margin-end>
-          <ion-row wrap>
-            <ion-col size='4' *ngFor='let city of historyCities'>
-              <ion-button szie='small' expand='block' fill='outline' color='{{city?.Selected?"secondary":"medium"}}'>
-                <ion-label color='{{city?.Selected?"secondary":"medium"}}' (click)='onCitySelected(city,true)'>
-                  {{city?.Nickname}}
-                </ion-label>
-              </ion-button>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </div>
-    </ion-list>
-    <ion-list class='hot-class'>
-      <ion-item-divider color='primary' sticky>
-        <ion-label color='dark'>
-          <h6>热门城市</h6>
-        </ion-label>
-      </ion-item-divider>
-      <ion-grid padding-end margin-end>
-        <ion-row wrap>
-          <ng-container *ngIf='hotCities.length else fakeHotCityTemp'>
-            <ion-col size='4' *ngFor='let city of hotCities'>
-              <ion-button szie='small' expand='block' fill='outline' color='{{city?.Selected?"secondary":"medium"}}'
-                (click)='onCitySelected(city,true)'>
-                <ion-label> {{city?.Nickname}}</ion-label>
-              </ion-button>
-            </ion-col>
-          </ng-container>
-          <ng-template #fakeHotCityTemp>
-            <ion-col size='4' *ngFor='let city of [1,2,3,4,5,6,7,8,9]'>
-              <ion-button szie='small' expand='block' fill='outline'>
-                <ion-skeleton-text animated style="height:100%"></ion-skeleton-text>
-              </ion-button>
-            </ion-col>
-          </ng-template>
-        </ion-row>
-      </ion-grid>
-    </ion-list>
-    <ng-container *ngIf='listCitiesViewModel.length else fakelistCitiesViewTemplate'>
-      <ion-list *ngFor='let nav of listCitiesViewModel' class='{{nav.link}}-class'
-        [style.display]='nav?.link!=="cur"&&nav?.link!=="history"&&nav?.link!=="hot"?"block":"none"'>
+  <div class='city-list-container' [class.hidden]='isSearching'>
+    <ion-text class='curTargetNav' slot='fixed' color='light'>
+      <h1 #curNavText></h1>
+    </ion-text>
+    <section class='cities'>
+      <ion-list class='history-class' [style.display]='historyCities.length>0?"block":"none"'>
         <ion-item-divider color='primary' sticky>
           <ion-label color='dark'>
-            <h6>{{nav?.link}}</h6>
+            <h6>历史</h6>
           </ion-label>
         </ion-item-divider>
-        <ng-container *ngIf='nav?.items else fakeNavItemTemplate'>
-          <div margin-start padding-end (click)='onCitySelected(item,true)'
-            *ngFor='let item of nav?.items;let i= index;trackBy:i'>
-            <h6>
-              <ion-text [color]="item?.Selected?'secondary':'dark'">{{item?.Nickname}}</ion-text>
-            </h6>
-          </div>
-        </ng-container>
-        <ng-template #fakeNavItemTemplate>
+        <div class='history-cites'>
+          <ion-grid padding-end margin-end>
+            <ion-row wrap>
+              <ion-col size='4' *ngFor='let city of historyCities'>
+                <ion-button szie='small' expand='block' fill='outline' color='{{city?.Selected?"secondary":"medium"}}'>
+                  <ion-label color='{{city?.Selected?"secondary":"medium"}}' (click)='onCitySelected(city,true)'>
+                    {{city?.Nickname}}
+                  </ion-label>
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+      </ion-list>
+      <ion-list class='hot-class'>
+        <ion-item-divider color='primary' sticky>
+          <ion-label color='dark'>
+            <h6>热门城市</h6>
+          </ion-label>
+        </ion-item-divider>
+        <ion-grid padding-end margin-end>
+          <ion-row wrap>
+            <ng-container *ngIf='hotCities.length else fakeHotCityTemp'>
+              <ion-col size='4' *ngFor='let city of hotCities'>
+                <ion-button szie='small' expand='block' fill='outline' color='{{city?.Selected?"secondary":"medium"}}'
+                  (click)='onCitySelected(city,true)'>
+                  <ion-label> {{city?.Nickname}}</ion-label>
+                </ion-button>
+              </ion-col>
+            </ng-container>
+            <ng-template #fakeHotCityTemp>
+              <ion-col size='4' *ngFor='let city of [1,2,3,4,5,6,7,8,9]'>
+                <ion-button szie='small' expand='block' fill='outline'>
+                  <ion-skeleton-text animated style="height:100%"></ion-skeleton-text>
+                </ion-button>
+              </ion-col>
+            </ng-template>
+          </ion-row>
+        </ion-grid>
+      </ion-list>
+      <ng-container *ngIf='listCitiesViewModel.length else fakelistCitiesViewTemplate'>
+        <ion-list *ngFor='let nav of listCitiesViewModel' class='{{nav.link}}-class'
+          [style.display]='nav?.link!=="cur"&&nav?.link!=="history"&&nav?.link!=="hot"?"block":"none"'>
+          <ion-item-divider color='primary' sticky>
+            <ion-label color='dark'>
+              <h6>{{nav?.link}}</h6>
+            </ion-label>
+          </ion-item-divider>
+          <ng-container *ngIf='nav?.items else fakeNavItemTemplate'>
+            <div margin-start padding-end (click)='onCitySelected(item,true)'
+              *ngFor='let item of nav?.items;let i= index;trackBy:i'>
+              <h6>
+                <ion-text [color]="item?.Selected?'secondary':'dark'">{{item?.Nickname}}</ion-text>
+              </h6>
+            </div>
+          </ng-container>
+          <ng-template #fakeNavItemTemplate>
+            <div margin-start padding-end *ngFor='let item of [1,2,3,4,5];let i= index;trackBy:i'>
+              <h6>
+                <ion-skeleton-text animated [style.width.%]='item*20'></ion-skeleton-text>
+              </h6>
+            </div>
+          </ng-template>
+        </ion-list>
+      </ng-container>
+      <ng-template #fakelistCitiesViewTemplate>
+        <ion-list *ngFor='let nav of [1,2,3,4,5]' class='{{nav.link}}-class'
+          [style.display]='nav?.link!=="cur"&&nav?.link!=="history"&&nav?.link!=="hot"?"block":"none"'>
+          <ion-item-divider color='primary' sticky>
+            <ion-skeleton-text animated [style.width.%]='10'></ion-skeleton-text>
+          </ion-item-divider>
           <div margin-start padding-end *ngFor='let item of [1,2,3,4,5];let i= index;trackBy:i'>
             <h6>
               <ion-skeleton-text animated [style.width.%]='item*20'></ion-skeleton-text>
             </h6>
           </div>
-        </ng-template>
-      </ion-list>
+        </ion-list>
+      </ng-template>
+    </section>
+  </div>
+  <div class='search-city-results' [class.show]='isSearching' (click)='onCloseSearchPanel($event)'>
+    <ng-container *ngIf='isFiltering else'>
+      <ion-label>正在搜索...</ion-label>
     </ng-container>
-    <ng-template #fakelistCitiesViewTemplate>
-      <ion-list *ngFor='let nav of [1,2,3,4,5]' class='{{nav.link}}-class'
-        [style.display]='nav?.link!=="cur"&&nav?.link!=="history"&&nav?.link!=="hot"?"block":"none"'>
-        <ion-item-divider color='primary' sticky>
-          <ion-skeleton-text animated [style.width.%]='10'></ion-skeleton-text>
-        </ion-item-divider>
-        <div margin-start padding-end *ngFor='let item of [1,2,3,4,5];let i= index;trackBy:i'>
-          <h6>
-            <ion-skeleton-text animated [style.width.%]='item*20'></ion-skeleton-text>
-          </h6>
-        </div>
+    <ng-template #n>
+      <ion-list *ngIf='textSearchResults?.length else nodatatempl'>
+        <ion-item *ngFor='let item of textSearchResults' (click)='onCitySelected(item,true)'>
+          <ion-text [color]="item?.Selected?'secondary':'dark'">{{item?.Nickname}}</ion-text>
+        </ion-item>
       </ion-list>
     </ng-template>
-  </section>
+    <ng-template #nodatatempl>
+      <app-or-comp>没有匹配的数据</app-or-comp>
+    </ng-template>
+  </div>
 </ion-content>

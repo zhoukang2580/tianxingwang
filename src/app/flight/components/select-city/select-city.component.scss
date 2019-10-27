@@ -30,7 +30,7 @@ ion-toolbar.seg {
   --background: white;
 }
 
-:host{
+:host {
   position: fixed;
   left: 0;
   right: 0;
@@ -198,5 +198,20 @@ ion-row ion-col {
     margin: 0;
     font-size: 0.7rem;
     padding: 0;
+  }
+}
+.search-city-results {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: all ease-in-out 100ms;
+  &.show {
+    transform: translateY(0);
+    top: 3em;
+    z-index: 100;
+    opacity: 1;
   }
 }

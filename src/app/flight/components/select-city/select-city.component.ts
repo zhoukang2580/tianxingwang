@@ -37,7 +37,11 @@ import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
   ]
 })
 export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input() cities: TrafficlineEntity[] = [];
+  private cities: TrafficlineEntity[] = [];
+  textSearchResults: TrafficlineEntity[];
+  vmKeyowrds = "";
+  isSearching = false;
+  isFiltering = false;
   hotCities: TrafficlineEntity[] = [];
   // @ViewChild(IonRefresher)  ionRefresher: IonRefresher;
   @ViewChild("cnt")
@@ -65,10 +69,31 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     private render: Renderer2,
     // private ngZone: NgZone,
     private flightService: FlightService
-  ) {}
+  ) { }
   ionViewWillEnter() {
     this.initHistoryCities();
     // console.log(this.domesticAirports.length);
+  }
+  onSearchByKeywords() {
+    this.isFiltering=true;
+    let name = (this.vmKeyowrds && this.vmKeyowrds.trim()) || "";
+    name = name.toLowerCase();
+    this.isSearching = true;
+    this.textSearchResults = (this.cities || []).filter(c => {
+      const keys = `Code,Name,Nickname,CityName,CityCode,Pinyin`.split(",");
+      return keys.some(k => {
+        // console.log(`key=${k}`, c[k]);
+        return (c[k] && c[k] || "").toLowerCase().includes(name);
+      })
+    });
+    this.isFiltering=true;
+    // console.log(`name=${name}`, this.cities, this.textSearchResults);
+  }
+  onCloseSearchPanel(evt: CustomEvent) {
+    if (evt) {
+      evt.stopPropagation();
+    }
+    this.isSearching = false;
   }
   ngOnInit() {
     this.openCloseSubscription = this.flightService
@@ -162,6 +187,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     return false;
   }
   initDomesticListCity() {
+    this.cities = [];
     return new Promise(done => {
       let cities: TrafficlineEntity[] = [];
       if (this.segmentValue == "domestic") {
@@ -171,6 +197,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
       }
       this.listCitiesViewModel = this.listCities = [];
       cities.forEach(c => {
+        this.cities.push(c);
         const pyFl = `${jsPy.getFullChars(c.Nickname)}`.charAt(0);
         // console.log(pyFl + " -- " + c.Nickname);
         let lm = this.listCities.find(item => item.link === pyFl);
@@ -290,7 +317,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
           });
           console.log(
             `完成${this.listCities.length}个link位置初始化耗時：${Date.now() -
-              lastTime}`
+            lastTime}`
           );
         }),
         switchMap(() =>
@@ -334,6 +361,8 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
   goBack() {
+    this.vmKeyowrds = "";
+    this.isSearching = false;
     this.flightService.setOpenCloseSelectCityPageSources(false);
   }
   onNavLickClick(link: string) {
