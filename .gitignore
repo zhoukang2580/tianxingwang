@@ -297,3 +297,4 @@ dist/
 .angulardoc.json
 .merge_file_a13268
 .angulardoc.json
+.ionide/symbolCache.db
