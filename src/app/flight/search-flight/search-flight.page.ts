@@ -285,6 +285,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     }
     s.tripType = TripType.departureTrip;
     console.log("search-flight", s);
+    this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(s.Date)]);
     this.flightService.setSearchFlightModel(s);
     this.router.navigate([AppHelper.getRoutePath("flight-list")]);
   }
