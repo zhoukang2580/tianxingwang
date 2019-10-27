@@ -269,11 +269,11 @@ export class AppComponent
       this.router.url.includes("login") ||
       this.router.url.includes("tabs")
     ) {
-      if (Date.now() - lastClickTime <= 2000) {
+      if (Math.floor(Date.now() / 1000) - lastClickTime <= 2000) {
         navigator["app"].exitApp();
       } else {
         AppHelper.toast(LanguageHelper.getAppDoubleClickExit());
-        lastClickTime = Date.now();
+        lastClickTime = Math.floor(Date.now() / 1000);
       }
     } else {
       this.navCtrl.back();
