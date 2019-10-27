@@ -113,7 +113,9 @@ export class AppComponent
     AppHelper.setModalController(this.modalController);
     this.initializeApp();
     this.platform.ready().then(() => {
-      this.backButtonAction();
+      document.addEventListener("backbutton", () => {
+        this.backButtonAction();
+      }, false);
       this.splashScreen.show();
       console.log(`platform ready`);
       this.app = navigator["app"];
@@ -247,39 +249,37 @@ export class AppComponent
     });
   }
 
-  private backButtonAction() {
+  private async backButtonAction() {
     let lastClickTime = 0;
-    this.platform.backButton.subscribe(async () => {
-      console.log("backbutton url = " + this.router.url);
-      let count = 1;
-      this.apiService.hideLoadingView();
-      this.flightService.setOpenCloseSelectCityPageSources(false);
-      const t = await this.modalController.getTop();
-      if (t) {
-        await t.dismiss().catch(_ => { });
-        return;
-      }
-      const a = await this.alertController.getTop();
-      if (a) {
-        await a.dismiss().catch(_ => { });
-        return;
-      }
-      if (
-        this.router.url.includes("login") ||
-        this.router.url.includes("tabs")
-      ) {
-        if (Date.now() - lastClickTime <= 2000) {
-          navigator["app"].exitApp();
-        } else {
-          AppHelper.toast(LanguageHelper.getAppDoubleClickExit());
-          lastClickTime = Date.now();
-        }
+    console.log("backbutton url = " + this.router.url);
+    let count = 1;
+    this.apiService.hideLoadingView();
+    this.flightService.setOpenCloseSelectCityPageSources(false);
+    const t = await this.modalController.getTop();
+    if (t) {
+      await t.dismiss().catch(_ => { });
+      return;
+    }
+    const a = await this.alertController.getTop();
+    if (a) {
+      await a.dismiss().catch(_ => { });
+      return;
+    }
+    if (
+      this.router.url.includes("login") ||
+      this.router.url.includes("tabs")
+    ) {
+      if (Date.now() - lastClickTime <= 2000) {
+        navigator["app"].exitApp();
       } else {
-        this.navCtrl.back();
-        count++;
-        console.log(`backbutton back count=${count}`);
-        // window.history.back();
+        AppHelper.toast(LanguageHelper.getAppDoubleClickExit());
+        lastClickTime = Date.now();
       }
-    });
+    } else {
+      this.navCtrl.back();
+      count++;
+      console.log(`backbutton back count=${count}`);
+      // window.history.back();
+    }
   }
 }
