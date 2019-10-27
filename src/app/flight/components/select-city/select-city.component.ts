@@ -75,7 +75,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     // console.log(this.domesticAirports.length);
   }
   onSearchByKeywords() {
-    this.isFiltering=true;
+    this.isFiltering = true;
     let name = (this.vmKeyowrds && this.vmKeyowrds.trim()) || "";
     name = name.toLowerCase();
     this.isSearching = true;
@@ -86,7 +86,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
         return (c[k] && c[k] || "").toLowerCase().includes(name);
       })
     });
-    this.isFiltering=true;
+    this.isFiltering = false;
     // console.log(`name=${name}`, this.cities, this.textSearchResults);
   }
   onCloseSearchPanel(evt: CustomEvent) {
