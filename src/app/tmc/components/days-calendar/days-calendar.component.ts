@@ -1,3 +1,4 @@
+import { Subscription } from 'rxjs';
 import { Platform, DomController } from "@ionic/angular";
 import { DayModel } from "../../models/DayModel";
 import {
@@ -10,7 +11,8 @@ import {
   Output,
   EventEmitter,
   QueryList,
-  ViewChildren
+  ViewChildren,
+  OnDestroy
 } from "@angular/core";
 import * as moment from "moment";
 import { CalendarService } from 'src/app/tmc/calendar.service';
@@ -19,14 +21,15 @@ import { CalendarService } from 'src/app/tmc/calendar.service';
   templateUrl: "./days-calendar.component.html",
   styleUrls: ["./days-calendar.component.scss"]
 })
-export class DaysCalendarComponent implements OnInit, AfterViewInit {
+export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
+  private subscription = Subscription.EMPTY;
   @Output() itemSelected: EventEmitter<DayModel>;
   @Output() calenderClick: EventEmitter<any>;
   @ViewChild("daysContainer") daysEle: ElementRef<HTMLElement>;
   @ViewChildren("dayItem") dayItems: QueryList<ElementRef<HTMLElement>>;
   days: DayModel[];
   constructor(
-    private dayService: CalendarService,
+    private calendarService: CalendarService,
     private render: Renderer2,
     private plt: Platform,
     private domCtrl: DomController
@@ -35,22 +38,36 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit {
     this.itemSelected = new EventEmitter();
     this.calenderClick = new EventEmitter();
   }
-
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
   ngOnInit() {
+    this.subscription = this.calendarService.getSelectedDays().subscribe(days => {
+      if (days && days.length) {
+        const selectedDate = days.find(it => it.selected);
+        this.initDays(days[0].date, selectedDate);
+      } else {
+        this.initDays(moment().format("YYYY-MM-DD"))
+      }
+    });
+    // console.log(this.days);
+    this.initDays(moment().format("YYYY-MM-DD"));
+  }
+  private initDays(date: string, selectedDate: DayModel = null) {
+    this.days=[];
     for (let i = 0; i < 7; i++) {
-      const nextDay = moment().add(i, "days");
-      const day = this.dayService.generateDayModel(nextDay);
-      day.dayOfWeekName = this.dayService.getWeekName(day);
-      day.desc = this.dayService.getDescOfDay(day);
-      day.selected = i == 0;
+      const nextDay = moment(date).add(i, "days");
+      const day = this.calendarService.generateDayModel(nextDay);
+      day.dayOfWeekName = this.calendarService.getWeekName(day);
+      day.desc = this.calendarService.getDescOfDay(day);
+      day.selected = (selectedDate && selectedDate.date == day.date) || i == 0;
       this.days.push(day);
     }
-    // console.log(this.days);
   }
   onCalendar() {
     this.calenderClick.emit();
   }
-  ngAfterViewInit() {}
+  ngAfterViewInit() { }
   onDaySelected(day: DayModel) {
     day.selected = true;
     let index = 0;
