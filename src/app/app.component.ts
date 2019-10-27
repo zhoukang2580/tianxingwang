@@ -249,8 +249,8 @@ export class AppComponent
     });
   }
 
+  private lastClickTime = 0;
   private async backButtonAction() {
-    let lastClickTime = 0;
     console.log("backbutton url = " + this.router.url);
     let count = 1;
     this.apiService.hideLoadingView();
@@ -269,11 +269,12 @@ export class AppComponent
       this.router.url.includes("login") ||
       this.router.url.includes("tabs")
     ) {
-      if (Math.floor(Date.now() / 1000) - lastClickTime <= 2000) {
+      console.log("is exit app", Date.now() - this.lastClickTime);
+      if (Date.now() - this.lastClickTime <= 2000) {
         navigator["app"].exitApp();
       } else {
         AppHelper.toast(LanguageHelper.getAppDoubleClickExit());
-        lastClickTime = Math.floor(Date.now() / 1000);
+        this.lastClickTime = Date.now();
       }
     } else {
       this.navCtrl.back();
