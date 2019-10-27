@@ -80,12 +80,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   rects: { [key in IHotelDetailTab]: ClientRect | DOMRect };
   bookedRoomPlan: { roomPlan: RoomPlanEntity; room: RoomEntity, color: string };
   get totalNights() {
-    return (
-      this.queryModel.checkInDate &&
-      this.queryModel.checkOutDate &&
-      +this.queryModel.checkOutDate.substring("2019-10-".length) -
-      +this.queryModel.checkInDate.substring("2019-10-".length)
-    );
+    return this.hotelService.calcTotalNights(this.queryModel.checkOutDate, this.queryModel.checkInDate);
   }
   constructor(
     private route: ActivatedRoute,

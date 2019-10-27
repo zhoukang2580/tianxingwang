@@ -313,16 +313,17 @@ export class HotelGeoComponent implements OnInit, OnChanges {
   }
   private processCase(label: string, geo: GeoEntity, tags?: string[]) {
     const geos = this.hotelQuery && this.hotelQuery.Geos || [];
-    const tab = this.tabs.find(
+    let tab = this.tabs.find(
       t => t.tag == geo.Tag || (tags && tags.some(tg => tg == t.tag))
     );
     if (!tab) {
-      this.tabs.push({
+      tab={
         label: label,
         id: geo.Tag,
         tag: geo.Tag as any,
         items: [],
-      });
+      };
+      this.tabs.push(tab);
     } else {
       tab.items.push({
         label: geo.Name,

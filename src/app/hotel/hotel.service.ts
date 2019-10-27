@@ -357,6 +357,9 @@ export class HotelService {
   getBookInfoSource() {
     return this.bookInfoSource.asObservable();
   }
+  calcTotalNights(d1:string,d2:string){
+    return Math.abs(moment(d1).diff(moment(d2),'days'))
+  }
   async openCalendar(
     checkInDate?: DayModel,
     tripType: TripType = TripType.checkIn,
