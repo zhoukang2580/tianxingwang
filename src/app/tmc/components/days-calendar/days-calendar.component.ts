@@ -70,6 +70,9 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
       for (let i = -1; i > -n; i--) {
         const nextDay = moment().add(i, "days");
         const day = this.calendarService.generateDayModel(nextDay);
+        if (day.timeStamp < Math.floor(new Date().getTime() / 1000)) {
+          break;
+        }
         day.dayOfWeekName = this.calendarService.getWeekName(day);
         day.desc = this.calendarService.getDescOfDay(day);
         this.days.unshift(day);
