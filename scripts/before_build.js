@@ -143,6 +143,7 @@ module.exports = function (ctx) {
     }
     // throw 'error';
   }
+  if (ctx.opts.platforms.includes("ios")) {return;}
   if(fs.existsSync(path.join(ctx.opts.projectRoot,'build-extras.gradle'))){
     fs.copyFileSync(path.join(ctx.opts.projectRoot,'build-extras.gradle'),path.join(ctx.opts.projectRoot,'platforms','android','app','build-extras.gradle'));
   }
