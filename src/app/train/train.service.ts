@@ -1,8 +1,9 @@
+import { TrainRefundComponent } from './components/train-refund/train-refund.component';
 import { OrderEntity } from './../order/models/OrderEntity';
 import { OrderTrainTicketEntity } from 'src/app/order/models/OrderTrainTicketEntity';
 import { ExchangeTrainModel } from './../order/models/ExchangeTrainModel';
 import { AppHelper } from "src/app/appHelper";
-import { ModalController } from "@ionic/angular";
+import { ModalController, PopoverController } from "@ionic/angular";
 import { IdentityService } from "./../services/identity/identity.service";
 import { StaffService } from "./../hr/staff.service";
 import { Subject, BehaviorSubject, combineLatest } from "rxjs";
@@ -80,7 +81,8 @@ export class TrainService {
     private identityService: IdentityService,
     private modalCtrl: ModalController,
     private calendarService: CalendarService,
-    private router: Router
+    private router: Router,
+    private popoverCtrl: PopoverController
   ) {
     this.bookInfoSource = new BehaviorSubject([]);
     this.searchModelSource = new BehaviorSubject(new SearchTrainModel());
@@ -750,6 +752,64 @@ export class TrainService {
         return null;
       });
   }
+  private doRefund(
+    ticketId: string
+  ): Promise<{ Status: boolean; Id: string; Message: string; }> {
+    const req = new RequestEntity();
+    req.Method = `TmcApiTrainUrl-Home-Refund`;
+    req.IsShowLoading = true;
+    req.Version = "2.0";
+    req.Timeout = 60;
+    req.Data = {
+      TicketId: ticketId
+    };
+    return this.apiService
+      .getPromiseData<any>(req);
+  }
+  async refund(ticketId: string) {
+    const req = new RequestEntity();
+    req.Method = `TmcApiTrainUrl-Home-GetTrainPassenger`;
+    req.IsShowLoading = true;
+    req.Version = "2.0";
+    req.Timeout = 60;
+    req.Data = {
+      TicketId: ticketId
+    };
+    const info = await this.apiService
+      .getPromiseData<{
+        Id: string;
+        CheckName: string;
+        CredentialsNumber: string;
+        StartTime: string;
+        FromStationName: string;
+        ToStationName: string;
+        TrainCode: string;
+      }>(req)
+      .catch(_ => {
+        AppHelper.alert(_.Message || _);
+        return null;
+      });
+    if (info) {
+      const p = await this.popoverCtrl.create({
+        component: TrainRefundComponent,
+        componentProps: {
+          ...info
+        }
+      });
+      p.backdropDismiss = false;
+      const result = await p.onDidDismiss();
+      if (result) {
+        if (result.data) {
+          const rev: { Message: string; Status: boolean; } = await this.doRefund(ticketId)
+            .catch(_ => {
+              AppHelper.alert(_.Message || _);
+              return null;
+            })
+          AppHelper.alert(rev.Message || "申请已提交");
+        }
+      }
+    }
+  }
   async onExchange(orderTrainTicket: OrderTrainTicketEntity) {
     try {
       const info = await this.getExchangeInfo(orderTrainTicket.Id);
@@ -942,4 +1002,5 @@ export class TrainPolicyModel {
 export class TrainPassengerModel {
   PassengerKey: string;
   TrainPolicies: TrainPolicyModel[];
+
 }

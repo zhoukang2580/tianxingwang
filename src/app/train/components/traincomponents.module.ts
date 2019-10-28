@@ -12,6 +12,7 @@ import { TrainscheduleComponent } from "./trainschedule/trainschedule.component"
 import { TimeSpanComponent } from "./train-filter/time-span/time-span.component";
 import { TrainFilterComponent } from "./train-filter/train-filter.component";
 import { SeatPickerComponent } from './seat-picker/seat-picker.component';
+import { TrainRefundComponent } from './train-refund/train-refund.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { SeatPickerComponent } from './seat-picker/seat-picker.component';
     TrainscheduleComponent,
     TimeSpanComponent,
     TrainFilterComponent,
-    SeatPickerComponent
+    SeatPickerComponent,
+    TrainRefundComponent
   ],
   imports: [
     CommonModule,
@@ -44,7 +46,8 @@ import { SeatPickerComponent } from './seat-picker/seat-picker.component';
   entryComponents: [
     SelectedTrainSegmentInfoComponent,
     TrainscheduleComponent,
-    TrainFilterComponent
+    TrainFilterComponent,
+    TrainRefundComponent
   ]
 })
 export class TrainComponentsModule {}

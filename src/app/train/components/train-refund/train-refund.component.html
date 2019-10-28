@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>退票信息</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col>姓名</ion-col>
+      <ion-col>{{CheckName}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>行程号</ion-col>
+      <ion-col>{{TrainCode}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>订单编号</ion-col>
+      <ion-col>{{Id}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>证件号码</ion-col>
+      <ion-col>{{CredentialsNumber}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>发车时间</ion-col>
+      <ion-col>{{StartTime}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>行程信息</ion-col>
+      <ion-col>{{FromStationName}}---ToStationName</ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-row>
+    <ion-col>
+      <ion-button color='dark' expand='block' (click)='back()'>取消</ion-button>
+    </ion-col>
+    <ion-col>
+      <ion-button color='danger' expand='block' (click)='back(true)'>确认</ion-button>
+    </ion-col>
+  </ion-row>
+</ion-content>

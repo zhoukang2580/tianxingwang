@@ -57,9 +57,12 @@ export class OrderItemComponent implements OnInit {
     if (evt) { evt.stopPropagation(); }
     return this.trainService.onExchange(orderTrainTicket);
   }
-  onRefund(evt: CustomEvent) {
+  onRefund(evt: CustomEvent, orderTrainTicket: OrderTrainTicketEntity) {
     if (evt) {
       evt.stopPropagation();
+    }
+    if (orderTrainTicket) {
+      this.trainService.refund(orderTrainTicket.Id);
     }
   }
   isSelfBook(channal: string) {
