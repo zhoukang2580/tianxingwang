@@ -81,9 +81,9 @@ export class SelectTrainStationModalComponent implements OnInit, AfterViewInit {
     });
     this.letters = Object.keys(this.stations);
     this.letters.sort((l1, l2) => l1.charCodeAt(0) - l2.charCodeAt(0));
-    this.letters.unshift("热门");
     this.activeLetter = this.letters[0];
-    this.vmStations = this.stations[this.activeLetter];
+    this.letters.unshift("热门");
+    this.vmStations = this.stations[this.activeLetter] || [];
     this.vmStations.sort((s1, s2) => s1.Sequence - s2.Sequence);
   }
   onScroll(evt: any) {
