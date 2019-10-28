@@ -43,6 +43,8 @@
       <ng-container *ngIf='vmStations?.length'>
         <li *ngFor='let s of vmStations' (click)='onSelectStation(s)'>
           <ion-text [color]='s.Selected?"secondary":""'>{{s.Nickname}}</ion-text>
+          <ion-text *ngIf='s.Pinyin' color='medium'>({{s.Pinyin}})</ion-text>
+          <ion-text *ngIf='s.Code' color='medium'>({{s.Code}})</ion-text>
         </li>
       </ng-container>
       <ng-template #nomatchdata>
