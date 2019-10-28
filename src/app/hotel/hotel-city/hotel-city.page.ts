@@ -268,7 +268,7 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   async doSearch() {
-    const kw = this.vmKeyword.trim();
+    let kw = this.vmKeyword.trim();
     if (!kw) {
       this.activeLetter = this.letters[0];
       this.vmCities = this.letterAndCities[this.activeLetter];
@@ -279,15 +279,17 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
       }, 200);
     } else {
       if (this.allCities) {
+        kw = kw.toLowerCase();
         this.vmCities = this.allCities.filter(s => {
           return (
-            kw.toUpperCase() == s.FirstLetter ||
-            (s.Name && s.Name.includes(kw)) ||
-            (s.Nickname && s.Nickname.includes(kw)) ||
-            (s.EnglishName && s.EnglishName.includes(kw)) ||
-            (s.CityName && s.CityName.includes(kw))
+            kw == s.FirstLetter.toLowerCase() ||
+            (s.Name && s.Name.toLowerCase().includes(kw)) ||
+            (s.Code && s.Code.toLowerCase().includes(kw)) ||
+            (s.Nickname && s.Nickname.toLowerCase().includes(kw)) ||
+            (s.EnglishName && s.EnglishName.toLowerCase().includes(kw)) ||
+            (s.CityName && s.CityName.toLowerCase().includes(kw))
           );
-        }).slice(0,20);
+        }).slice(0, 20);
         this.vmCities.sort((s1, s2) => s1.Sequence - s2.Sequence);
         this.renderList();
         this.activeLetter = "";

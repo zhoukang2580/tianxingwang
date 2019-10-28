@@ -54,7 +54,13 @@
       <ion-item-divider sticky *ngIf='activeLetter!="热门"'>{{activeLetter}}</ion-item-divider>
       <ng-container *ngIf='vmCities?.length else nomatchdata'>
         <ion-item *ngFor='let s of vmCities' (click)='onSelect(s)'>
-          <ion-text [color]='s.Selected?"secondary":""'>{{s.Name}}</ion-text>
+          <ion-label>
+            <ion-text [color]='s.Selected?"secondary":""'>
+              {{s.Name}}
+            </ion-text>
+            <ion-text *ngIf='s.Pinyin'>({{s.Pinyin}})</ion-text>
+            <ion-text *ngIf='s.Code'>({{s.Code}})</ion-text>
+          </ion-label>
         </ion-item>
       </ng-container>
       <ng-template #nomatchdata>
