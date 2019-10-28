@@ -12,7 +12,8 @@
             </ng-container>
           </ion-col>
         </ion-row>
-        <ion-row *ngIf='orderInsurance.BookTime?.replace("T"," ") as time'>
+        <ion-row
+          *ngIf='orderInsurance.BookTime?.replace("T"," ")?.substring(0,orderInsurance.BookTime?.lastIndexOf(".")) as time'>
           <ion-col>预订时间</ion-col>
           <ion-col> {{time}} </ion-col>
         </ion-row>
@@ -38,11 +39,11 @@
           <ion-col>供应商订单号</ion-col>
           <ion-col> {{s}} </ion-col>
         </ion-row>
-        <ion-row *ngIf='orderInsurance.Name as n'>
+        <ion-row *ngIf='false && orderInsurance.Name as n'>
           <ion-col>保险名称</ion-col>
           <ion-col> {{n}} </ion-col>
         </ion-row>
-        <ion-row *ngIf='orderInsurance.Supplier as s'>
+        <ion-row *ngIf='false && orderInsurance.Supplier as s'>
           <ion-col>供应商</ion-col>
           <ion-col> {{s}} </ion-col>
         </ion-row>
@@ -58,7 +59,7 @@
           <ion-col>最大保额</ion-col>
           <ion-col> {{a}} </ion-col>
         </ion-row>
-        <ion-row *ngIf='orderInsurance.BookCode as c'>
+        <ion-row *ngIf='false && orderInsurance.BookCode as c'>
           <ion-col size='2'>预订代码</ion-col>
           <ion-col size='10'> {{c}} </ion-col>
         </ion-row>
@@ -74,20 +75,20 @@
             登机证件类型信息
           </ion-col>
           <ion-col size="9">
-            {{orderPassenger.CheckName}}{{orderPassenger.CredentialsTypeName}}
-            /orderPassenger.CredentialsNumber
-            /{{orderPassenger.Birthday?.substr(0,"yyyy-MM-DD".length)}}
-            /{{orderPassenger.Gender == "F" ? "女" : "男"}}
-            /{{orderPassenger.ExpirationDateName}}
-            /{{orderPassenger.Country}}
-            /{{orderPassenger.IssueCountry}}
+            <!-- {{orderPassenger.CheckName}}{{orderPassenger.CredentialsTypeName}} -->
+            {{orderPassenger.CredentialsNumber}}
+            <!-- /{{orderPassenger.Birthday?.substr(0,"yyyy-MM-DD".length)}} -->
+            <!-- /{{orderPassenger.Gender == "F" ? "女" : "男"}} -->
+            <!-- /{{orderPassenger.ExpirationDateName}} -->
+            <!-- /{{orderPassenger.Country}} -->
+            <!-- /{{orderPassenger.IssueCountry}} -->
           </ion-col>
         </ion-row>
         <ion-row>
           <ion-col size="3">旅客/证件姓名</ion-col>
           <ion-col size="9">{{orderPassenger.Name}}</ion-col>
         </ion-row>
-        <ion-row>
+        <ion-row *ngIf='false'>
           <ion-col size="3">登机姓名(18位)</ion-col>
           <ion-col size="9">{{orderPassenger.CheckName}}</ion-col>
         </ion-row>
@@ -136,8 +137,8 @@
             <ion-button size='small' color='secondary'>发送邮件</ion-button>
           </ion-col>
         </ion-row>
-        <ion-item-divider>保费/成本信息</ion-item-divider>
-        <ion-grid text-start>
+        <ion-item-divider *ngIf='false'>保费/成本信息</ion-item-divider>
+        <ion-grid text-start *ngIf='false'>
           <ion-row>
             <ion-col size>保险费</ion-col>
             <ion-col size>退保手续费</ion-col>
