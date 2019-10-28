@@ -767,6 +767,7 @@ export class TrainService {
       .getPromiseData<any>(req);
   }
   async refund(ticketId: string) {
+    let isRefund=false;
     const req = new RequestEntity();
     req.Method = `TmcApiTrainUrl-Home-GetTrainPassenger`;
     req.IsShowLoading = true;
@@ -809,9 +810,11 @@ export class TrainService {
               return null;
             })
           AppHelper.alert(rev.Message || "申请已提交");
+          isRefund=true;
         }
       }
     }
+    return isRefund;
   }
   async onExchange(orderTrainTicket: OrderTrainTicketEntity) {
     try {

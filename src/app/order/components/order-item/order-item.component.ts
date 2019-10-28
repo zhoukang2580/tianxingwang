@@ -64,8 +64,10 @@ export class OrderItemComponent implements OnInit {
       evt.stopPropagation();
     }
     if (orderTrainTicket) {
-      await this.trainService.refund(orderTrainTicket.Id);
-      this.refundTicket.emit();
+      const isRefund = await this.trainService.refund(orderTrainTicket.Id);
+      if (isRefund) {
+        this.refundTicket.emit();
+      }
     }
   }
   isSelfBook(channal: string) {
