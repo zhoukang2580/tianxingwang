@@ -55,7 +55,7 @@
         </app-search-day-comp>
       </section>
       <ion-button margin-top style='width: 100%' (click)="onSearchHotel()"
-        *ngIf='(canAddPassengers) && (selectedPassengers$|async)==0' color="secondary" expand="block">
+        *ngIf='!((canAddPassengers) && (selectedPassengers$|async)==0)' color="secondary" expand="block">
         <ion-text>查询酒店</ion-text>
       </ion-button>
       <ion-button *ngIf='(canAddPassengers) && (selectedPassengers$|async)==0' margin-top style='width: 100%'
