@@ -287,7 +287,8 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
             (s.Code && s.Code.toLowerCase().includes(kw)) ||
             (s.Nickname && s.Nickname.toLowerCase().includes(kw)) ||
             (s.EnglishName && s.EnglishName.toLowerCase().includes(kw)) ||
-            (s.CityName && s.CityName.toLowerCase().includes(kw))
+            (s.CityName && s.CityName.toLowerCase().includes(kw))||
+            (s.Pinyin && s.Pinyin.toLowerCase().includes(kw))
           );
         }).slice(0, 20);
         this.vmCities.sort((s1, s2) => s1.Sequence - s2.Sequence);
