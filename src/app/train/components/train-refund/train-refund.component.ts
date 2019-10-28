@@ -1,3 +1,6 @@
+import { OrderEntity } from 'src/app/order/models/OrderEntity';
+import { StaffEntity } from './../../../hr/staff.service';
+import { TrainEntity } from 'src/app/train/models/TrainEntity';
 import { PopoverController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 
@@ -7,13 +10,17 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./train-refund.component.scss'],
 })
 export class TrainRefundComponent implements OnInit {
+  train: TrainEntity;
+  order: OrderEntity;
   Id: string;
   CheckName: string;
   CredentialsNumber: string;
   StartTime: string;
+  ArrivalTime: string;
   FromStationName: string;
   ToStationName: string;
   TrainCode: string;
+  passenger: StaffEntity;
   constructor(private popoverCtrl: PopoverController) { }
   async back(ok = false) {
     const t = await this.popoverCtrl.getTop();
@@ -21,6 +28,18 @@ export class TrainRefundComponent implements OnInit {
       t.dismiss(ok).catch(_ => { });
     }
   }
-  ngOnInit() { }
+  ngOnInit() {
+    this.train = new TrainEntity();
+    this.passenger = new StaffEntity();
+    this.order = new OrderEntity();
+    this.order.Id = this.Id;
+    this.train.FromStationName = this.FromStationName;
+    this.train.ToStationName = this.ToStationName;
+    this.train.ArrivalTime = this.ArrivalTime;
+    this.train.StartTime = this.StartTime;
+    this.train.TrainCode = this.TrainCode;
+    this.passenger.CredentialsInfo = this.CredentialsNumber;
+    this.passenger.Name = this.CheckName;
+  }
 
 }

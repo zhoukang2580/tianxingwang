@@ -58,7 +58,8 @@
       <ng-container *ngIf='!isShowMyTrips'>
         <ion-list lines='none' *ngIf='orderModel?.Orders?.length else nomoredate'>
           <ion-item *ngFor='let order of orderModel.Orders' (click)='goToDetailPage(order.Id)'>
-            <app-order-item [order]='order' (payaction)='onPay(order)'></app-order-item>
+            <app-order-item [order]='order' (payaction)='onPay(order)' (refundTicket)='doRefresh();doRefreshTasks();'>
+            </app-order-item>
           </ion-item>
         </ion-list>
         <ng-template #nomoredate>

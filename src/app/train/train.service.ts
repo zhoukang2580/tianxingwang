@@ -781,6 +781,7 @@ export class TrainService {
         CheckName: string;
         CredentialsNumber: string;
         StartTime: string;
+        ArrivalTime: string;
         FromStationName: string;
         ToStationName: string;
         TrainCode: string;
@@ -792,6 +793,7 @@ export class TrainService {
     if (info) {
       const p = await this.popoverCtrl.create({
         component: TrainRefundComponent,
+        cssClass:"train-refund-comp",
         componentProps: {
           ...info
         }

@@ -4,35 +4,10 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-grid>
-    <ion-row>
-      <ion-col>姓名</ion-col>
-      <ion-col>{{CheckName}}</ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>行程号</ion-col>
-      <ion-col>{{TrainCode}}</ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>订单编号</ion-col>
-      <ion-col>{{Id}}</ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>证件号码</ion-col>
-      <ion-col>{{CredentialsNumber}}</ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>发车时间</ion-col>
-      <ion-col>{{StartTime}}</ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>行程信息</ion-col>
-      <ion-col>{{FromStationName}}---ToStationName</ion-col>
-    </ion-row>
-  </ion-grid>
+  <app-train-ticket [train]='train' [passenger]='passenger' [order]='order'></app-train-ticket>
   <ion-row>
     <ion-col>
-      <ion-button  expand='block' (click)='back()'>取消</ion-button>
+      <ion-button expand='block' (click)='back()'>取消</ion-button>
     </ion-col>
     <ion-col>
       <ion-button color='danger' expand='block' (click)='back(true)'>

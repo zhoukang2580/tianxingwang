@@ -30,6 +30,7 @@ export class OrderItemComponent implements OnInit {
   TrainSupplierType = TrainSupplierType;
   @Input() order: OrderEntity;
   @Output() payaction: EventEmitter<OrderEntity>;
+  @Output() refundTicket: EventEmitter<OrderEntity>;
   OrderStatusType = OrderStatusType;
   OrderFlightTripStatusType = OrderFlightTripStatusType;
   OrderFlightTicketStatusType = OrderFlightTicketStatusType;
@@ -43,6 +44,7 @@ export class OrderItemComponent implements OnInit {
     private router: Router,
     private trainService: TrainService) {
     this.payaction = new EventEmitter();
+    this.refundTicket = new EventEmitter();
   }
   onPay(evt: CustomEvent) {
     if (this.order) {
@@ -57,12 +59,13 @@ export class OrderItemComponent implements OnInit {
     if (evt) { evt.stopPropagation(); }
     return this.trainService.onExchange(orderTrainTicket);
   }
-  onRefund(evt: CustomEvent, orderTrainTicket: OrderTrainTicketEntity) {
+  async onRefund(evt: CustomEvent, orderTrainTicket: OrderTrainTicketEntity) {
     if (evt) {
       evt.stopPropagation();
     }
     if (orderTrainTicket) {
-      this.trainService.refund(orderTrainTicket.Id);
+      await this.trainService.refund(orderTrainTicket.Id);
+      this.refundTicket.emit();
     }
   }
   isSelfBook(channal: string) {

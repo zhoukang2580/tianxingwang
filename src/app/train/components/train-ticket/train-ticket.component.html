@@ -1,3 +1,35 @@
-<p>
-  train-ticket works!
-</p>
+<ion-card>
+  <ion-card-content>
+    <div *ngIf='order?.Id as Id'>
+      <strong>订单编号:{{Id}}</strong>
+    </div>
+    <div class='ticket'>
+      <div class="start">
+        <div>{{train?.FromStationName}}</div>
+        <div>
+          <strong>{{getHHmm(train?.StartTime)}}</strong>
+        </div>
+      </div>
+      <div class="center">
+        <div class='stop-line-stop' [attr.data]='train?.TrainCode'>
+          <div class="line"></div>
+        </div>
+      </div>
+      <div class="end" text-end>
+        <div>{{train?.ToStationName}}</div>
+        <div>
+          <strong>{{getHHmm(train?.ArrivalTime)}}</strong>
+        </div>
+      </div>
+    </div>
+    <div class='time'>
+      <ion-text color='dark'>发车时间：{{getDate(train?.StartTime)}}</ion-text>
+    </div>
+    <div class="passenger">
+      <strong>
+        {{passenger?.Name}}:
+      </strong>
+      <span>{{passenger?.CredentialsInfo}}</span>
+    </div>
+  </ion-card-content>
+</ion-card>
