@@ -769,24 +769,28 @@ export class FlightService {
         fj.FlightRoutes = fj.FlightRoutes.map(r => {
           if (r.FlightSegments) {
             r.FlightSegments = r.FlightSegments.map(seg => {
-              seg.flightSegment = null;
-              seg.EiRule = null;
-              seg.RefundRule = null;
-              seg.Variables = null;
-              seg.PoliciedCabins = null;
-              seg.RefundRule = null;
-              seg.ChangeRule = null;
+              const s = new FlightSegmentEntity();
               if (seg.Cabins) {
-                seg.Cabins = seg.Cabins.map(it => {
-                  it.Rules = null;
-                  it.RefundChange = null;
-                  it.Rules = null;
-                  it.Variables = null;
-                  it.FlightPolicy = null;
-                  return it;
+                s.Cabins = seg.Cabins.map(fare => {
+                  const c = new FlightCabinEntity();
+                  c.Discount=fare.Discount;
+                  c.Id= fare.Id;
+                   c.SalesPrice= fare.SalesPrice;
+                   c.Type= fare.Type;
+                   c.FlightRouteIds= fare.FlightRouteIds;
+                   c.FlightNumber=fare.FlightNumber;
+                   c.Code=fare.Code;
+                   c.Variables=fare.Variables;
+                   c.Rules=fare.Rules;
+                   c.LowerSegment={} as any;
+                   c.LowerSegment.AirlineName=fare.LowerSegment&&fare.LowerSegment.AirlineName;
+                   c.LowerSegment.LowestFare=fare.LowerSegment&&fare.LowerSegment.LowestFare;
+                   c.LowerSegment.Number=fare.LowerSegment&&fare.LowerSegment.Number;
+                   c.LowerSegment.TakeoffTime=fare.LowerSegment&&fare.LowerSegment.TakeoffTime;
+                  return c;
                 });
               }
-              return seg;
+              return s;
             });
           }
           return r;

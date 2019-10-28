@@ -16,6 +16,7 @@ export class FlightCabinEntity {
   /// <summary>
   /// 舱位代码
   /// </summary>
+  Id: string;
   Code: string;
   /// <summary>
   /// 舱位类型
@@ -49,6 +50,7 @@ export class FlightCabinEntity {
   /// z
   /// </summary>
   PolicyId: string;
+  FlightRouteIds: string[];
   /// <summary>
   /// 来源
   /// </summary>
