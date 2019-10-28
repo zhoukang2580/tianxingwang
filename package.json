@@ -117,7 +117,9 @@
       "cordova-hcp-plugin": {},
       "cordova-plugin-device": {},
       "cordova-ali-plugin": {},
-      "cordova-wechat-plugin": {},
+      "cordova-wechat-plugin": {
+        "WECHATAPPID": "wx0839a418ccafdf36"
+      },
       "cordova-plugin-splashscreen": {},
       "cordova-sqlite-storage": {}
     },
