@@ -45,10 +45,12 @@
         </app-search-day-comp>
       </section>
       <ion-button margin-top style='width: 100%' (click)="searchTrain()"
-        [disabled]='!vmFromCity||!vmToCity||((canAddPassengers$|async) && selectedPassengers==0)' color="secondary"
-        expand="block">
-        <ion-text *ngIf='!((canAddPassengers$|async) && selectedPassengers==0)'>查询车次</ion-text>
-        <ion-text *ngIf='(canAddPassengers$|async) && selectedPassengers==0'>请添加乘客</ion-text>
+        *ngIf='!((canAddPassengers$|async) && selectedPassengers==0)' color="secondary" expand="block">
+        <ion-text>查询车次</ion-text>
+      </ion-button>
+      <ion-button margin-top style='width: 100%' (click)="onSelectPassenger()"
+        *ngIf='(canAddPassengers$|async) && selectedPassengers==0' color="secondary" expand="block">
+        <ion-text>请添加乘客</ion-text>
       </ion-button>
     </ion-card-content>
   </ion-card>
