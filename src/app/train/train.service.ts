@@ -797,6 +797,7 @@ export class TrainService {
         }
       });
       p.backdropDismiss = false;
+      await p.present();
       const result = await p.onDidDismiss();
       if (result) {
         if (result.data) {

@@ -32,10 +32,12 @@
   </ion-grid>
   <ion-row>
     <ion-col>
-      <ion-button color='dark' expand='block' (click)='back()'>取消</ion-button>
+      <ion-button  expand='block' (click)='back()'>取消</ion-button>
     </ion-col>
     <ion-col>
-      <ion-button color='danger' expand='block' (click)='back(true)'>确认</ion-button>
+      <ion-button color='danger' expand='block' (click)='back(true)'>
+        <ion-text color='light'>确认退票</ion-text>
+      </ion-button>
     </ion-col>
   </ion-row>
 </ion-content>
