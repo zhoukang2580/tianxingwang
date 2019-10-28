@@ -1,3 +1,4 @@
+import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 import { IonicModule } from "@ionic/angular";
 import { RouterModule } from "@angular/router";
 import { NgModule } from "@angular/core";
@@ -10,7 +11,8 @@ import { TripPage } from "./trip.page";
     IonicModule,
     CommonModule,
     FormsModule,
-    RouterModule.forChild([{ path: "", component: TripPage }])
+    RouterModule.forChild([{ path: "", component: TripPage }]),
+    AppComponentsModule
   ],
   declarations: [TripPage]
 })

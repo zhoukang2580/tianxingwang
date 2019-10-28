@@ -105,7 +105,7 @@
     </ion-list>
   </ng-container>
   <ng-template #nomoredata>
-    暂无数据
+    <app-or-comp>暂无数据</app-or-comp>
   </ng-template>
   <ion-infinite-scroll (ionInfinite)='loadMoreTrips()'>
     <ion-infinite-scroll-content>正在加载更多...</ion-infinite-scroll-content>

@@ -21,74 +21,78 @@
 }
 
 
-.icon-calendar:before {
+.icon-announcement:before {
 	content: "\E001";
 }
 
-.icon-flight-plane:before {
+.icon-calendar:before {
 	content: "\E002";
 }
 
-.icon-home-hotel:before {
+.icon-flight-plane:before {
 	content: "\E003";
 }
 
-.icon-home-plane:before {
+.icon-home-hotel:before {
 	content: "\E004";
 }
 
-.icon-home-train:before {
+.icon-home-plane:before {
 	content: "\E005";
 }
 
-.icon-hotel:before {
+.icon-home-train:before {
 	content: "\E006";
 }
 
-.icon-lock:before {
+.icon-hotel:before {
 	content: "\E007";
 }
 
-.icon-mobile:before {
+.icon-lock:before {
 	content: "\E008";
 }
 
-.icon-organization:before {
+.icon-mobile:before {
 	content: "\E009";
 }
 
-.icon-person:before {
+.icon-organization:before {
 	content: "\E00A";
 }
 
-.icon-search-train:before {
+.icon-person:before {
 	content: "\E00B";
 }
 
-.icon-tab-home-fill:before {
+.icon-search-train:before {
 	content: "\E00C";
 }
 
-.icon-tab-home:before {
+.icon-tab-home-fill:before {
 	content: "\E00D";
 }
 
-.icon-tab-my-fill:before {
+.icon-tab-home:before {
 	content: "\E00E";
 }
 
-.icon-tab-my:before {
+.icon-tab-my-fill:before {
 	content: "\E00F";
 }
 
-.icon-tab-trip-fill:before {
+.icon-tab-my:before {
 	content: "\E010";
 }
 
-.icon-tab-trip:before {
+.icon-tab-trip-fill:before {
 	content: "\E011";
 }
 
-.icon-verify:before {
+.icon-tab-trip:before {
 	content: "\E012";
+}
+
+.icon-verify:before {
+	content: "\E013";
 }
