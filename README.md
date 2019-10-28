@@ -42,3 +42,9 @@
 记录在config.xml文件内
 1. 主版本和次版本不变，就不用更新app
 2. (1)的情况下，查看人更新的版本号，检查本地目录是否已经存在，不存在该热更新版本，则下载更新，新增一个目录名称，存放新文件，下次启动后加载新目录的文件
+
+## 更新app过程
+1. 到config.xml修改版本号，修改主、次版本号需要重新发布到appstore或者安卓市场，如果修改的是热更版本号，也就是最后一位，则不需要重新发布应用
+2. 执行生产环境打包，生产android的apk，用mac打包，生成iphone的app，分别发布到市场
+3. 如果不需要发布应用，仅发布热更，则将生成的xxx.xxx.xxx(包名).android.zip放到热更的Android目录下，同理，将生成的xxx.xxx.xxx.ios.zip放到ios的下载目录
+4. 最后修改updateList.xml修改对应的配置项。其中的Value=config.xml的版本号，其中的version节点对应Android的apk更新，其内部的hotfix对应热更的www目录。md5的值在编译生成的output目录的xxx.apk路径中很长的一段字符串就是对应的md5
