@@ -40,9 +40,17 @@
     </ion-grid>
 
     <ul style='list-style-type:none;margin:0;padding:0;'>
-      <li *ngFor='let s of vmStations' (click)='onSelectStation(s)'>
-        <ion-text [color]='s.Selected?"secondary":""'>{{s.Nickname}}</ion-text>
-      </li>
+      <ng-container *ngIf='vmStations?.length'>
+        <li *ngFor='let s of vmStations' (click)='onSelectStation(s)'>
+          <ion-text [color]='s.Selected?"secondary":""'>{{s.Nickname}}</ion-text>
+        </li>
+      </ng-container>
+      <ng-template #nomatchdata>
+        <li>
+          <app-or-comp>没有匹配的数据</app-or-comp>
+        </li>
+      </ng-template>
+      <li *ngFor='let it of [1,2,3,4,5,6,7,8,9,10]'></li>
     </ul>
   </ng-container>
   <ng-template #loadingTemp>

@@ -55,7 +55,7 @@ export class SelectTrainStationModalComponent implements OnInit, AfterViewInit {
     private trainService: TrainService,
     private modalCtrl: ModalController,
     private domCtrl: DomController
-  ) {}
+  ) { }
   async ngOnInit() {
     this.allStations = await this.trainService.getStationsAsync();
     this.hotStations = this.allStations.filter(s => s.IsHot);
@@ -81,6 +81,7 @@ export class SelectTrainStationModalComponent implements OnInit, AfterViewInit {
     });
     this.letters = Object.keys(this.stations);
     this.letters.sort((l1, l2) => l1.charCodeAt(0) - l2.charCodeAt(0));
+    this.letters.unshift("热门");
     this.activeLetter = this.letters[0];
     this.vmStations = this.stations[this.activeLetter];
     this.vmStations.sort((s1, s2) => s1.Sequence - s2.Sequence);
@@ -103,6 +104,10 @@ export class SelectTrainStationModalComponent implements OnInit, AfterViewInit {
     });
   }
   onSelectLetter(letter: string) {
+    if (letter == '热门') {
+      this.ionContent.scrollToTop(100);
+      return;
+    }
     this.activeLetter = letter;
     this.vmStations = this.stations[this.activeLetter];
     this.vmStations.sort((s1, s2) => s1.Sequence - s2.Sequence);
@@ -136,7 +141,7 @@ export class SelectTrainStationModalComponent implements OnInit, AfterViewInit {
   async back() {
     const m = await this.modalCtrl.getTop();
     if (m) {
-      m.dismiss(this.selectedStation).catch(_ => {});
+      m.dismiss(this.selectedStation).catch(_ => { });
     }
   }
   async onSelectStation(station: TrafficlineEntity) {
@@ -147,19 +152,22 @@ export class SelectTrainStationModalComponent implements OnInit, AfterViewInit {
     this.back();
   }
   async doSearch() {
-    const kw = this.vmKeyword.trim();
+    let kw = this.vmKeyword.trim();
     if (!kw) {
       this.vmStations = this.stations[this.activeLetter];
     } else {
+      kw = kw.toLowerCase();
       this.vmStations = this.allStations.filter(s => {
         return (
-          kw.toUpperCase() == s.FirstLetter ||
-          (s.Name && s.Name.includes(kw)) ||
-          (s.Nickname && s.Nickname.includes(kw)) ||
-          (s.EnglishName && s.EnglishName.includes(kw)) ||
-          (s.CityName && s.CityName.includes(kw))
+          kw == s.FirstLetter.toLowerCase() ||
+          (s.Code && s.Code.toLowerCase().includes(kw)) ||
+          (s.Name && s.Name.toLowerCase().includes(kw)) ||
+          (s.Nickname && s.Nickname.toLowerCase().includes(kw)) ||
+          (s.EnglishName && s.EnglishName.toLowerCase().includes(kw)) ||
+          (s.CityName && s.CityName.toLowerCase().includes(kw)) ||
+          (s.Pinyin && s.Pinyin.toLowerCase().includes(kw))
         );
-      });
+      }).slice(0, 20);
       this.vmStations.sort((s1, s2) => s1.Sequence - s2.Sequence);
       this.scrollToTargetLink();
     }
