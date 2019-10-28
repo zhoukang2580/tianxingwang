@@ -58,8 +58,8 @@
             <ion-text [color]='s.Selected?"secondary":""'>
               {{s.Name}}
             </ion-text>
-            <ion-text *ngIf='s.Pinyin'>({{s.Pinyin}})</ion-text>
-            <ion-text *ngIf='s.Code'>({{s.Code}})</ion-text>
+            <ion-text *ngIf='s.Pinyin' color='medium'>({{s.Pinyin}})</ion-text>
+            <ion-text *ngIf='s.Code' color='medium'>({{s.Code}})</ion-text>
           </ion-label>
         </ion-item>
       </ng-container>
