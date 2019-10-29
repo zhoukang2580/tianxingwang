@@ -782,11 +782,13 @@ export class FlightService {
                    c.Code=fare.Code;
                    c.Variables=fare.Variables;
                    c.Rules=fare.Rules;
-                   c.LowerSegment={} as any;
-                   c.LowerSegment.AirlineName=fare.LowerSegment&&fare.LowerSegment.AirlineName;
-                   c.LowerSegment.LowestFare=fare.LowerSegment&&fare.LowerSegment.LowestFare||"0";
-                   c.LowerSegment.Number=fare.LowerSegment&&fare.LowerSegment.Number;
-                   c.LowerSegment.TakeoffTime=fare.LowerSegment&&fare.LowerSegment.TakeoffTime;
+                   if(fare.LowerSegment){
+                     c.LowerSegment={} as any;
+                     c.LowerSegment.AirlineName=fare.LowerSegment&&fare.LowerSegment.AirlineName;
+                     c.LowerSegment.LowestFare=fare.LowerSegment&&fare.LowerSegment.LowestFare||"0";
+                     c.LowerSegment.Number=fare.LowerSegment&&fare.LowerSegment.Number;
+                    c.LowerSegment.TakeoffTime=fare.LowerSegment&&fare.LowerSegment.TakeoffTime;
+                   }
                   return c;
                 });
               }
