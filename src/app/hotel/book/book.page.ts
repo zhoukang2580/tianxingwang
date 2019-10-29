@@ -649,10 +649,10 @@ export class BookPage implements OnInit, AfterViewInit {
       ) {
         p.CheckinTime = combindInfo.arrivalHotelTime;
         p.RoomPlan = combindInfo.bookInfo.bookInfo.roomPlan;
-        p.RoomPlan.Room = p.RoomPlan.Room || JSON.parse(
+        p.RoomPlan.Room = JSON.parse(
           JSON.stringify(combindInfo.bookInfo.bookInfo.hotelRoom)
         );
-        p.RoomPlan.Room.Hotel = p.RoomPlan.Room.Hotel || JSON.parse(
+        p.RoomPlan.Room.Hotel =  JSON.parse(
           JSON.stringify(combindInfo.bookInfo.bookInfo.hotelEntity)
         );
       }

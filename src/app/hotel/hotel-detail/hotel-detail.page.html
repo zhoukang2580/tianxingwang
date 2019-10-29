@@ -1,39 +1,41 @@
-<div class='header' #header>
-  <ion-toolbar>
-    <ion-buttons slot='start'>
-      <ion-button color='dark' (click)='back()'>
-        <ion-icon name='arrow-back'></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title [class.has-add-passenger]='(isShowAddPassenger$|async)'>{{hotel?.Name}}</ion-title>
-    <ion-buttons slot='end'>
-      <ion-button style="font-size: 0.6rem;" fill='clear' color='secondary' (click)='filterPassengerPolicy()'
-        size='small'>
-        <ion-text class='xs-font-size'>过滤差标</ion-text>
-      </ion-button>
-      <ion-button style="font-size: 0.6rem;" fill='clear' *ngIf='(isShowAddPassenger$|async)' color='secondary'
-        size='small' (click)='onSelectPassenger()'>
-        <ion-text class='xs-font-size'>添加旅客</ion-text>
-        <ion-badge color='danger'>
-          <ion-text color='light' class='xs-font-size'>{{selectedPassengersNumbers$|async}}</ion-text>
-        </ion-badge>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-  <ion-toolbar #toolbarsegment>
-    <ion-segment (ionChange)="segmentChanged($event)" color="secondary">
-      <ion-segment-button value="houseInfo" [checked]='activeTab=="houseInfo"'>
-        <ion-label>房型</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="hotelInfo" [checked]='activeTab=="hotelInfo"'>
-        <ion-label>酒店信息</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="trafficInfo" [checked]='activeTab=="trafficInfo"'>
-        <ion-label>交通信息</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-  </ion-toolbar>
-</div>
+<ion-header>
+  <div class='header' #header>
+    <ion-toolbar>
+      <ion-buttons slot='start'>
+        <ion-button color='dark' (click)='back()'>
+          <ion-icon name='arrow-back'></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-title [class.has-add-passenger]='(isShowAddPassenger$|async)'>{{hotel?.Name}}</ion-title>
+      <ion-buttons slot='end'>
+        <ion-button style="font-size: 0.6rem;" fill='clear' color='secondary' (click)='filterPassengerPolicy()'
+          size='small'>
+          <ion-text class='xs-font-size'>过滤差标</ion-text>
+        </ion-button>
+        <ion-button style="font-size: 0.6rem;" fill='clear' *ngIf='(isShowAddPassenger$|async)' color='secondary'
+          size='small' (click)='onSelectPassenger()'>
+          <ion-text class='xs-font-size'>添加旅客</ion-text>
+          <ion-badge color='danger'>
+            <ion-text color='light' class='xs-font-size'>{{selectedPassengersNumbers$|async}}</ion-text>
+          </ion-badge>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+    <ion-toolbar #toolbarsegment>
+      <ion-segment (ionChange)="segmentChanged($event)" color="secondary">
+        <ion-segment-button value="houseInfo" [checked]='activeTab=="houseInfo"'>
+          <ion-label>房型</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="hotelInfo" [checked]='activeTab=="hotelInfo"'>
+          <ion-label>酒店信息</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="trafficInfo" [checked]='activeTab=="trafficInfo"'>
+          <ion-label>交通信息</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>
+  </div>
+</ion-header>
 <ion-content>
   <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'></ion-refresher>
   <div class='bg' #bgPic (click)='isShowImages=true' [class.md]='isMd'>
@@ -151,7 +153,7 @@
       <ng-container *ngIf='room["isShowRoomPlans"]'>
         <ion-item *ngFor='let plan of room.RoomPlans'>
           <app-room-plan-item [color$]='color$' [room]='room' [roomPlan]='plan' [hotel]='hotel'
-            (bookRoom)='onBookRoomPlan($event)' >
+            (bookRoom)='onBookRoomPlan($event)'>
           </app-room-plan-item>
         </ion-item>
       </ng-container>

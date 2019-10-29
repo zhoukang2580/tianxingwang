@@ -73,7 +73,7 @@ export class BrowseImagesComponent implements OnInit, AfterViewInit, OnChanges {
     };
 
     // Initializes and opens PhotoSwipe
-    console.log(PhotoSwipeUI_Default, pswpElement);
+    // console.log(PhotoSwipeUI_Default, pswpElement);
     this.gallery = new PhotoSwipe(
       pswpElement,
       PhotoSwipeUI_Default,

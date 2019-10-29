@@ -78,8 +78,8 @@ export class FileHelperService {
     this.plt.ready().then(async () => {
       this.hcpPlugin = window['hcp'];
       this.app = navigator['app'];
-      if(AppHelper.isApp()){
-        if(this.plt.is('android')){
+      if (AppHelper.isApp()) {
+        if (this.plt.is('android')) {
           this.hcpPlugin.loadHcpPage();
         }
         this.splashScreen.show();
@@ -105,19 +105,23 @@ export class FileHelperService {
   private async clearLocalHcpVersionIfAppUpdated() {
     if (AppHelper.isApp()) {
       const curRunningVersionStr = await this.getLocalVersionNumber();
-      this.logMessage(`clearLocalHcpVersionIfAppUpdated,curRunningVersionStr=${curRunningVersionStr}`);
+      this.logMessage(`clearLocalHcpVersionIfAppUpdated,手机上正在运行的版本=${curRunningVersionStr}`);
       const hcpVersionStr = this.getLocalHcpVersion();
       this.logMessage(`clearLocalHcpVersionIfAppUpdated,hcpVersionStr=${hcpVersionStr}`);
       if (curRunningVersionStr && hcpVersionStr) {
         const curRunningVersion = curRunningVersionStr.split(".");
         curRunningVersion.pop();
-        const hcpVersion = curRunningVersionStr.split(".");
+        const hcpVersion = hcpVersionStr.split(".");
         hcpVersion.pop();
         if (hcpVersion.join("_") !== curRunningVersion.join("_")) {
           this.logMessage(`clearLocalHcpVersionIfAppUpdated app 已经安装了新版本，本地hcp版本记录清空`);
           this.setHcpVersionToLoacal('');
-          await this.hcpPlugin.saveHcpPath("");
+          await this.hcpPlugin.saveHcpPath("").catch(_ => {
+            this.logMessage(`clearLocalHcpVersionIfAppUpdated,保存路径失败`, _);
+          });
         }
+      } else {
+        this.logMessage("尚不存在hcpversion 或者本地运行版本get 不到");
       }
     }
   }
@@ -162,7 +166,7 @@ export class FileHelperService {
     if (!AppHelper.isApp()) {
       return "com.skytrip.dmonline";
     }
-    return await this.appVersion.getPackageName();
+    return this.appVersion.getPackageName();
   }
   private async getServerVersion(onprogress?: (evt: IHcpUpdateModel) => void) {
     this.logMessage(`this.appVersion.getPackageName=${await this.getPackageName()}`);
@@ -341,7 +345,7 @@ export class FileHelperService {
     if (!AppHelper.isApp()) {
       return `1.0.0`;
     }
-    return await this.appVersion.getVersionNumber();
+    return this.appVersion.getVersionNumber();
   }
   private async clearUnUseVersions(serverVersion: string = "") {
     try {
@@ -364,9 +368,10 @@ export class FileHelperService {
       this.logMessage(`clearUnUseVersions error ${JSON.stringify(e, null, 2)}`);
     }
   }
-   getLocalHcpVersion() {
-    this.logMessage(`apphcpversion=${AppHelper.getStorage<string>("apphcpversion")}`);
-    return (AppHelper.getStorage<string>("apphcpversion") || "").trim();
+  getLocalHcpVersion() {
+    const hcpVersion = (AppHelper.getStorage<string>("apphcpversion") || "").trim();
+    this.logMessage(`getStorage 热更后存储在本地的版本=${hcpVersion}`);
+    return hcpVersion;
   }
   private setHcpVersionToLoacal(version: string) {
     AppHelper.setStorage('apphcpversion', version);
@@ -444,9 +449,12 @@ export class FileHelperService {
       }
       fileEntry.createWriter(fw => {
         fw.onerror = err => {
+          this.logMessage(`【${fileName}】写入本地失败`, err);
+
           reject(err);
         };
         fw.onprogress = fwevt => {
+          this.logMessage("正在写入文件",fwevt.loaded/fwevt.total);
           onprogress({
             total: fwevt.total,
             loaded: fwevt.loaded,
@@ -485,7 +493,7 @@ export class FileHelperService {
     }
     this.serverVersion = up.Version[0].Value;
     if (!this.checkIfUpdateAppByVersion(this.serverVersion, this.localVersion)) {
-      this.logMessage(`无需更新`);
+      this.logMessage(`无需升级更新`);
       return {
         isCanUpdate: false,
         ignore: true
@@ -669,11 +677,15 @@ export class FileHelperService {
     if (!AppHelper.isApp()) {
       return Promise.resolve(null);
     }
-    this.logMessage(`创建文件${path}/${fileName}`);
-    return this.file.createFile(path, fileName, replace).catch(e => {
-      this.logMessage(`创建文件失败${JSON.stringify(e, null, 2)}`);
-      return null as FileEntry;
-    });
+    this.logMessage(`开始创建文件${path}/${fileName}`);
+    return this.file.createFile(path, fileName, replace)
+      .then(fe => {
+        this.logMessage(`创建文件${fe.nativeURL}成功`);
+        return fe;
+      }).catch(e => {
+        this.logMessage(`创建文件失败${JSON.stringify(e, null, 2)}`);
+        return null as FileEntry;
+      });
   }
   /**
    *  递归删除文件夹下面的所有文件，以及文件夹本身
@@ -742,7 +754,7 @@ export class FileHelperService {
     const lmain = lVs[0];
     const lMinor = lVs[1];
     // 主版本不等或者次版本不等
-    this.logMessage(`比较应用主版本，判断是否需要升级,serverVersion=${serverVersion}<=>localVersion=${localVersion} true`);
+    // this.logMessage(`比较应用主版本，判断是否需要升级,serverVersion=${serverVersion}<=>localVersion=${localVersion} `);
 
     return smain !== lmain || sMinor !== lMinor;
   }
@@ -763,10 +775,10 @@ export class FileHelperService {
       });
   }
   private checkDirExists(path: string, dirName: string) {
-    this.logMessage(`检查路径${path} / ${dirName}是否存在`);
+    this.logMessage(`检查路径${path}${(path || "").endsWith("/") ? "" : "/"}${dirName}是否存在`);
     return this.file.checkDir(path, dirName)
       .then(_ => {
-        this.logMessage(`路径${path}/${dirName}【存在】`);
+        this.logMessage(`路径${path}${(path || "").endsWith("/") ? "" : "/"}${dirName}是否存在?${_}】`);
         return true;
       }).catch(e => {
         this.logMessage(`路径${path}/${dirName}【不存在】${JSON.stringify(e, null, 2)}`);

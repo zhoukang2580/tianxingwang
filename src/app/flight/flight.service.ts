@@ -37,6 +37,7 @@ import {
 } from "./models/PassengerFlightInfo";
 import { OrderBookDto } from "../order/models/OrderBookDto";
 import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
+import { DayModel } from '../tmc/models/DayModel';
 
 export class SearchFlightModel {
   BackDate: string; //  Yes 航班日期（yyyy-MM-dd）
@@ -358,7 +359,9 @@ export class FlightService {
         isMulti: isMulti
       }
     });
-    m.present();
+   await m.present();
+   const d = await m.onDidDismiss();
+   return d&&d.data as DayModel[];
   }
 
   private async reselectSelfBookTypeSegment(

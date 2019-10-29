@@ -497,8 +497,10 @@ export class HotelService {
       map(result => {
         if (result && result.Data && result.Data.HotelDayPrices) {
           result.Data.HotelDayPrices = result.Data.HotelDayPrices.map(it => {
-            if (it.Hotel && it.Hotel.Variables) {
-              it.Hotel.VariablesJsonObj = JSON.parse(it.Hotel.Variables);
+            if(it.Hotel){
+              if (it.Hotel.Variables) {
+                it.Hotel.VariablesJsonObj = JSON.parse(it.Hotel.Variables);
+              }
             }
             return it;
           });

@@ -203,8 +203,13 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   async isStaffTypeSelf() {
     return await this.staffService.isSelfBookType();
   }
-  onCalenderClick() {
-    this.flightService.openCalendar(false);
+  async onCalenderClick() {
+   const d = await this.flightService.openCalendar(false);
+   if(d&&d.length){
+     const go = d[0];
+     this.flyDayService.setSelectedDaysSource([this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date)]);
+     this.onChangedDay(go,true);
+   }
   }
 
   back() {
@@ -271,7 +276,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         if (this.isLoading) {
           return;
         }
+        this.isLoading=true;
+        this.flyDayService.setSelectedDaysSource([this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date)]);
         // this.moveDayToSearchDate();
+
         if (this.list) {
           this.list.nativeElement.innerHTML = "";
         }
@@ -662,27 +670,27 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           this.doRefresh(false, true);
         }
       });
-    this.selectDaySubscription = this.flyDayService
-      .getSelectedDays()
-      .subscribe(async days => {
-        if (days && days.length == 1) {
-          console.log("选择的日期", days);
-          const day = days[0];
-          if (!day) {
-            return;
-          }
-          if (this.searchFlightModel.Date != day.date) {
-            this.searchFlightModel.Date = day.date;
-            // this.moveDayToSearchDate();
-          }
-          this.searchFlightModel.Date = day.date;
-          if (this.notCurrentPage()) {
-            console.log("当前路由不在航班列表页面");
-            return;
-          }
-          this.doRefresh(true, false);
-        }
-      });
+    // this.selectDaySubscription = this.flyDayService
+    //   .getSelectedDays()
+    //   .subscribe(async days => {
+    //     if (days && days.length == 1) {
+    //       console.log("选择的日期", days);
+    //       const day = days[0];
+    //       if (!day) {
+    //         return;
+    //       }
+    //       if (this.searchFlightModel.Date != day.date) {
+    //         this.searchFlightModel.Date = day.date;
+    //         // this.moveDayToSearchDate();
+    //       }
+    //       this.searchFlightModel.Date = day.date;
+    //       if (this.notCurrentPage()) {
+    //         console.log("当前路由不在航班列表页面");
+    //         return;
+    //       }
+    //       this.doRefresh(true, false);
+    //     }
+    //   });
     await this.initSearchModelParams();
     this.doRefresh(true, true);
   }
