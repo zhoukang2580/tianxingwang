@@ -18,7 +18,7 @@ export class AppHelper {
   private static toastController: ToastController;
   private static alertController: AlertController;
   private static modalController: ModalController;
-  static _appDomain ="testskytrip.com";// "beeant.com";
+  static _appDomain = environment.production ? "testskytrip.com" : "beeant.com";
   static _domain;
   static _queryParamers = {};
 
@@ -52,10 +52,10 @@ export class AppHelper {
           typeof msg === "string"
             ? msg
             : msg instanceof Error
-            ? msg.message
-            : typeof msg === "object" && msg.message
-            ? msg.message
-            : JSON.stringify(msg),
+              ? msg.message
+              : typeof msg === "object" && msg.message
+                ? msg.message
+                : JSON.stringify(msg),
         position: position as any,
         duration: duration
       });
@@ -99,10 +99,10 @@ export class AppHelper {
           typeof msg === "string"
             ? msg
             : msg instanceof Error
-            ? msg.message
-            : typeof msg === "object" && msg.message
-            ? msg.message
-            : JSON.stringify(msg),
+              ? msg.message
+              : typeof msg === "object" && msg.message
+                ? msg.message
+                : JSON.stringify(msg),
         backdropDismiss: !userOp,
         buttons
       })).present();
@@ -418,11 +418,11 @@ export class AppHelper {
       console.log("matchDefaultRoute path after", path);
       return path && url[0].path.match(new RegExp(`${path}_*`, "gi"))
         ? (route.redirectTo = `/${path}`) && {
-            consumed: [new UrlSegment(path, {})]
-          }
+          consumed: [new UrlSegment(path, {})]
+        }
         : {
-            consumed: [new UrlSegment("", {})]
-          };
+          consumed: [new UrlSegment("", {})]
+        };
     } catch (e) {
       console.error("matchDefaultRoute", e);
     }

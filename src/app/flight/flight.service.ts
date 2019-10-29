@@ -775,7 +775,7 @@ export class FlightService {
                   const c = new FlightCabinEntity();
                   c.Discount=fare.Discount;
                   c.Id= fare.Id;
-                   c.SalesPrice= fare.SalesPrice;
+                   c.SalesPrice= fare.SalesPrice||"0";
                    c.Type= fare.Type;
                    c.FlightRouteIds= fare.FlightRouteIds;
                    c.FlightNumber=fare.FlightNumber;
@@ -784,7 +784,7 @@ export class FlightService {
                    c.Rules=fare.Rules;
                    c.LowerSegment={} as any;
                    c.LowerSegment.AirlineName=fare.LowerSegment&&fare.LowerSegment.AirlineName;
-                   c.LowerSegment.LowestFare=fare.LowerSegment&&fare.LowerSegment.LowestFare;
+                   c.LowerSegment.LowestFare=fare.LowerSegment&&fare.LowerSegment.LowestFare||"0";
                    c.LowerSegment.Number=fare.LowerSegment&&fare.LowerSegment.Number;
                    c.LowerSegment.TakeoffTime=fare.LowerSegment&&fare.LowerSegment.TakeoffTime;
                   return c;
