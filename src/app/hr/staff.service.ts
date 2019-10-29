@@ -236,10 +236,8 @@ export class StaffService {
     private identityService: IdentityService
   ) {
     this.identityService.getIdentitySource().subscribe(id => {
-      if (!id || !id.Id || !id.Ticket) {
-        this.staff = null;
-        this.staffCredentials = null;
-      }
+      this.staff = null;
+      this.staffCredentials = null;
     });
   }
   async isSelfBookType() {
