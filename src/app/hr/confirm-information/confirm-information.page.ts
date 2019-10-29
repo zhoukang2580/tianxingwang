@@ -43,7 +43,7 @@ export class ConfirmInformationPage implements OnInit {
       ) {
         if (staff.IsConfirmInfo && staff.IsModifyPassword) {
           if (!this.credentials || this.credentials.length == 0) {
-            this.checkIfHasCredentials();
+            await this.checkIfHasCredentials();
           }
           return true;
         }
@@ -104,7 +104,7 @@ export class ConfirmInformationPage implements OnInit {
         if (ok) {
           this.maintainCredentials();
         } else {
-          this.checkIfHasCredentials();
+          await this.checkIfHasCredentials();
         }
       }
     }
