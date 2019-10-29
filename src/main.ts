@@ -6,6 +6,8 @@ import { environment } from "./environments/environment";
 
 if (environment.production) {
   enableProdMode();
+  
+}else{
   if (window["cordova"]) {
     if (window["VConsole"]) {
       var vConsole = new window["VConsole"]();
