@@ -26,7 +26,7 @@ export class ConfirmCredentialInfoGuard
     | Promise<boolean | UrlTree> {
     return this.canActivate(childRoute, state);
   }
-  constructor(private staffService: StaffService, private router: Router) {}
+  constructor(private staffService: StaffService, private router: Router) { }
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
@@ -34,13 +34,16 @@ export class ConfirmCredentialInfoGuard
     return this.staffService
       .getStaff()
       .then(staff => {
-        console.log("ConfirmCredentialInfoGuard",staff);
+        console.log("ConfirmCredentialInfoGuard", staff);
         if (
           staff &&
           staff.IsConfirmInfo != undefined &&
           staff.IsModifyPassword != undefined
         ) {
           if (staff.IsConfirmInfo && staff.IsModifyPassword) {
+            if (!this.staffService.staffCredentials || this.staffService.staffCredentials.length == 0) {
+              return false;
+            }
             return true;
           }
           this.router.navigate([AppHelper.getRoutePath("confirm-information")]);
@@ -49,7 +52,7 @@ export class ConfirmCredentialInfoGuard
         return true;
       })
       .catch(_ => {
-        console.log("ConfirmCredentialInfoGuard",_);
+        console.log("ConfirmCredentialInfoGuard", _);
         return true;
       });
   }

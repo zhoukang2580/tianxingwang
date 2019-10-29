@@ -228,6 +228,7 @@ export interface HrEntity {
 export class StaffService {
   private staff: StaffEntity;
   private isLoading = false;
+  staffCredentials: MemberCredential[];
   constructor(
     private apiService: ApiService,
     private identityService: IdentityService
@@ -235,6 +236,7 @@ export class StaffService {
     this.identityService.getIdentitySource().subscribe(id => {
       if (!id || !id.Id || !id.Ticket) {
         this.staff = null;
+        this.staffCredentials = null;
       }
     });
   }
@@ -282,6 +284,9 @@ export class StaffService {
         }
         return this.staff;
       }
+    }
+    if (!this.staffCredentials || this.staffCredentials.length) {
+      this.staffCredentials = await this.getStaffCredentials(id.Id).catch(_ => []);
     }
     const req = new RequestEntity();
     req.Method = "HrApiUrl-Staff-Get";
