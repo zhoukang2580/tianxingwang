@@ -1,3 +1,4 @@
+import { finalize } from 'rxjs/operators';
 import { ProductItemType } from 'src/app/tmc/models/ProductItems';
 import { BaseEntity } from "./models/BaseEntity";
 import { LanguageInfo } from "./models/LanguageInfo";
@@ -8,7 +9,7 @@ import { AgentEntity } from "./models/AgentEntity";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
-import { BehaviorSubject, of } from "rxjs";
+import { BehaviorSubject, of, Subscription } from "rxjs";
 import { Injectable } from "@angular/core";
 import { MemberCredential } from "../member/member.service";
 import { OrderTravelPayType } from "../order/models/OrderTravelEntity";
@@ -48,13 +49,14 @@ export enum FlightHotelTrainType {
 })
 export class TmcService {
   private localInternationAirports: LocalStorageAirport;
-  emailTemplateSelectItemList: SelectItem[] = [];
-  mobileTemplateSelectItemList: SelectItem[] = [];
+  private getPassengerCredentialsSbuscription = Subscription.EMPTY;
   private localDomesticAirports: LocalStorageAirport;
   private selectedCompanySource: BehaviorSubject<string>;
   private companies: GroupCompanyEntity[];
   private tmc: TmcEntity;
   private travelType: FlightHotelTrainType;
+  mobileTemplateSelectItemList: SelectItem[] = [];
+  emailTemplateSelectItemList: SelectItem[] = [];
   allLocalAirports: TrafficlineEntity[];
   constructor(
     private apiService: ApiService,
@@ -72,7 +74,7 @@ export class TmcService {
     });
     this.selectedCompanySource = new BehaviorSubject(null);
   }
-  async payOrder(tradeNo: string, key = ""):Promise<boolean> {
+  async payOrder(tradeNo: string, key = ""): Promise<boolean> {
     let payResult = false;
     const payWay = await this.payService.selectPayWay();
     if (!payWay) {
@@ -561,9 +563,30 @@ export class TmcService {
     };
     req.IsShowLoading = true;
     req.Timeout = 60;
-    return this.apiService.getPromiseData<{
-      [accountId: string]: CredentialsEntity[];
-    }>(req);
+    return new Promise<any>((s, rej) => {
+      if (this.getPassengerCredentialsSbuscription) {
+        this.getPassengerCredentialsSbuscription.unsubscribe();
+      }
+      this.getPassengerCredentialsSbuscription = this.apiService.getResponse<{
+        [accountId: string]: CredentialsEntity[];
+      }>(req)
+        .pipe(finalize(() => {
+          setTimeout(() => {
+            if (this.getPassengerCredentialsSbuscription) {
+              this.getPassengerCredentialsSbuscription.unsubscribe();
+            }
+          }, 100);
+        }))
+        .subscribe(res => {
+          if (res.Status) {
+            s(res.Data);
+          } else {
+            rej(res.Message);
+          }
+        }, e => {
+          rej(e);
+        });
+    });
   }
   async getTmc(forceFetch = false): Promise<TmcEntity> {
     if (this.tmc && !forceFetch) {

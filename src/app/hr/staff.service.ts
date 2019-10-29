@@ -1,4 +1,5 @@
-import { Subject, from } from "rxjs";
+import { finalize } from 'rxjs/operators';
+import { Subject, from, Subscription } from "rxjs";
 import { MemberCredential } from "src/app/member/member.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { RequestEntity } from "src/app/services/api/Request.entity";
@@ -228,6 +229,7 @@ export interface HrEntity {
 export class StaffService {
   private staff: StaffEntity;
   private isLoading = false;
+  private subscription = Subscription.EMPTY;
   staffCredentials: MemberCredential[];
   constructor(
     private apiService: ApiService,
@@ -347,8 +349,28 @@ export class StaffService {
     req.Data = {
       AccountId
     };
-    return this.apiService
-      .getPromiseData<MemberCredential[]>(req)
-      .catch(_ => [] as MemberCredential[]);
+    this.isLoading = true;
+    return new Promise<any>((s, rej) => {
+      if (this.subscription) {
+        this.subscription.unsubscribe();
+      }
+      this.subscription = this.apiService
+      .getResponse<MemberCredential[]>(req)
+        .pipe(finalize(() => {
+          this.isLoading = false;
+          setTimeout(() => {
+            this.subscription.unsubscribe();
+          }, 100);
+        }))
+        .subscribe(res => {
+          if (res.Status) {
+            s(res.Data);
+          } else {
+            rej(res.Message);
+          }
+        }, e => {
+          rej(e);
+        })
+    })
   }
 }

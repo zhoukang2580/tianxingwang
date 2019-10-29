@@ -643,22 +643,23 @@ export class SelectPassengerPage
     );
   }
   private async getCredentials(accountId: string) {
-    this.loading = true;
-    const req = new RequestEntity();
-    req.IsShowLoading = true;
-    req.Method = "TmcApiHomeUrl-Staff-Credentials";
-    req.Data = {
-      AccountId: accountId
-    };
-    const credentials = await this.apiService
-      .getPromiseData<MemberCredential[]>(req)
-      .then(res => res || [])
-      .catch(_ => []);
-    if (await this.canAddNotWhiteListCredential()) {
-      this.frqPassengerCredentials = await this.getPassengers(accountId);
-    }
-    this.loading = false;
-    return credentials as MemberCredential[];
+    // this.loading = true;
+    // const req = new RequestEntity();
+    // req.IsShowLoading = true;
+    // req.Method = "TmcApiHomeUrl-Staff-Credentials";
+    // req.Data = {
+    //   AccountId: accountId
+    // };
+    // const credentials = await this.apiService
+    //   .getPromiseData<MemberCredential[]>(req)
+    //   .then(res => res || [])
+    //   .catch(_ => []);
+    // if (await this.canAddNotWhiteListCredential()) {
+    //   this.frqPassengerCredentials = await this.getPassengers(accountId);
+    // }
+    // this.loading = false;
+    // return credentials as MemberCredential[];
+    return this.staffService.getStaffCredentials(accountId);
   }
   private async getPassengers(accountId: string): Promise<MemberCredential[]> {
     this.loading = true;
