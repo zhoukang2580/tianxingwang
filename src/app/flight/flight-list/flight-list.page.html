@@ -12,10 +12,10 @@
     </ion-title>
     <ion-buttons slot='end'>
       <ion-button fill='clear' color='secondary' (click)='selectFilterPolicyPasseger()' size='small'>
-        <ion-text class='xs-font-size'>过滤差标</ion-text>
+        <ion-text class='sm-font-size'>过滤差标</ion-text>
       </ion-button>
       <ion-button fill='clear' *ngIf='showAddPassenger' color='secondary' size='small' (click)='onSelectPassenger()'>
-        <ion-text class='xs-font-size'>添加旅客</ion-text>
+        <ion-text class='sm-font-size'>添加旅客</ion-text>
         <ion-badge color='danger'>
           <ion-text color='light' class='xs-font-size'>{{selectedPassengersNumbers$|async}}</ion-text>
         </ion-badge>

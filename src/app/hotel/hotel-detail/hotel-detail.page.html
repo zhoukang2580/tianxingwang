@@ -1,8 +1,8 @@
 <ion-header>
-  <div class='header' #header>
+  <div class='header' #header (click)='isShowImages=true'>
     <ion-toolbar>
       <ion-buttons slot='start'>
-        <ion-button color='dark' (click)='back()'>
+        <ion-button color='dark' (click)='back($event)'>
           <ion-icon name='arrow-back'></ion-icon>
         </ion-button>
       </ion-buttons>
@@ -205,7 +205,7 @@
     </div>
   </ion-list>
 </ion-content>
-<app-browse-images *ngIf="isShowImages" [images]='getHotelImageUrls()' (close)='isShowImages=false'></app-browse-images>
+<app-browse-images *ngIf="isShowImages" [images]='getHotelImageUrls()' (close)='onCloseHotelImages()'></app-browse-images>
 <app-browse-images *ngIf="isShowRoomImages" [images]="roomImages" (close)='onCloseRoomImages()'></app-browse-images>
 <app-room-detail [room]='curSelectedRoom' [roomImages]='roomImages' (close)='isShowRoomDetails=false' class="ion-page"
   *ngIf='isShowRoomDetails' (bookRoom)='onBookRoomPlan($event)'></app-room-detail>

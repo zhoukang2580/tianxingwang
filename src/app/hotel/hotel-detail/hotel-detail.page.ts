@@ -98,7 +98,10 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   ) {
     this.isMd = plt.is("android");
   }
-  back() {
+  back(evt:CustomEvent) {
+    if(evt){
+      evt.stopPropagation();
+    }
     this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
   }
   onSelectPassenger() {
@@ -245,6 +248,11 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   onCloseRoomImages() {
     setTimeout(() => {
       this.isShowRoomImages = false;
+    }, 100);
+  }
+  onCloseHotelImages() {
+    setTimeout(() => {
+      this.isShowImages = false;
     }, 100);
   }
   getHotelImageUrls() {

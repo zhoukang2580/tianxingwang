@@ -5,7 +5,7 @@
         <ion-icon color='dark' name='arrow-back'></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title color='secondary' class='xs-font-size' [class.text-start]='(isShowAddPassenger$|async)'
+    <ion-title color='secondary' class='sm-font-size' [class.text-start]='(isShowAddPassenger$|async)'
       [class.text-center]='!(isShowAddPassenger$|async)'>
       <ion-text>{{vmFromCity?.Nickname}}</ion-text>
       <i class='icon icon-search-train'></i>
@@ -13,11 +13,11 @@
     </ion-title>
     <ion-buttons slot='end'>
       <ion-button fill='clear' color='secondary' (click)='filterPolicyTrains()' size='small'>
-        <ion-text class='xs-font-size'>过滤差标</ion-text>
+        <ion-text class='sm-font-size'>过滤差标</ion-text>
       </ion-button>
       <ion-button fill='clear' *ngIf='(isShowAddPassenger$|async)' color='secondary' size='small'
         (click)='onSelectPassenger()'>
-        <ion-text class='xs-font-size'>添加旅客</ion-text>
+        <ion-text class='sm-font-size'>添加旅客</ion-text>
         <ion-badge color='danger'>
           <ion-text color='light' class='xs-font-size'>{{selectedPassengersNumbers$|async}}</ion-text>
         </ion-badge>
