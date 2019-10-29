@@ -10,11 +10,13 @@ import { IonicModule } from "@ionic/angular";
 import { BookPage } from "./book.page";
 import { FlightPipesModule } from "../pipes/Pipes.module";
 import { TmcComponentsModule } from 'src/app/tmc/components/tmcComponents.module';
+import { ConfirmCredentialInfoGuard } from 'src/app/guards/confirm-credential-info.guard';
 
 const routes: Routes = [
   {
     path: "",
-    component: BookPage
+    component: BookPage,
+    canActivate: [ConfirmCredentialInfoGuard]
   }
 ];
 

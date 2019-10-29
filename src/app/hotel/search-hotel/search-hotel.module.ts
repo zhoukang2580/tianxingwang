@@ -8,11 +8,13 @@ import { IonicModule } from "@ionic/angular";
 
 import { SearchHotelPage } from "./search-hotel.page";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
+import { ConfirmCredentialInfoGuard } from 'src/app/guards/confirm-credential-info.guard';
 
 const routes: Routes = [
   {
     path: "",
-    component: SearchHotelPage
+    component: SearchHotelPage,
+    canActivate: [ConfirmCredentialInfoGuard]
   }
 ];
 

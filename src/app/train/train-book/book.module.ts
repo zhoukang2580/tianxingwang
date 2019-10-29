@@ -9,11 +9,13 @@ import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module
 import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 import { TrainComponentsModule } from '../components/traincomponents.module';
 import { TrainBookPage } from './book.page';
+import { ConfirmCredentialInfoGuard } from 'src/app/guards/confirm-credential-info.guard';
 
 const routes: Routes = [
   {
     path: "",
-    component: TrainBookPage
+    component: TrainBookPage,
+    canActivate: [ConfirmCredentialInfoGuard]
   }
 ];
 
@@ -29,4 +31,4 @@ const routes: Routes = [
   ],
   declarations: [TrainBookPage]
 })
-export class TrainBookPageModule {}
+export class TrainBookPageModule { }

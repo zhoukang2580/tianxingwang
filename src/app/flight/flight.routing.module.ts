@@ -2,16 +2,15 @@ import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { TmcGuard } from "../guards/tmc.guard";
 import { FlightComponentsModule } from "./components/components.module";
+import { ConfirmCredentialInfoGuard } from '../guards/confirm-credential-info.guard';
 const routes: Routes = [
   {
     path: "search-flight",
     loadChildren: "./search-flight/search-flight.module#SearchFlightPageModule",
-    canActivate: [TmcGuard]
   },
   {
     path: "flight-list",
     loadChildren: "./flight-list/flight-list.module#FlightListPageModule",
-    canActivate: [TmcGuard]
   },
   {
     path: "flight-item-cabins",
@@ -28,4 +27,4 @@ const routes: Routes = [
   imports: [FlightComponentsModule, RouterModule.forChild(routes)],
   exports: [RouterModule, FlightComponentsModule]
 })
-export class FlightRoutingModule {}
+export class FlightRoutingModule { }

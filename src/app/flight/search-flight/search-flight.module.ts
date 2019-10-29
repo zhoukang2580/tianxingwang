@@ -12,12 +12,13 @@ import { AppDirectivesModule } from "src/app/directives/directives.module";
 import { TmcGuard } from "src/app/guards/tmc.guard";
 import { FlightDirectivesModule } from "../directives/directives.module";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
+import { ConfirmCredentialInfoGuard } from 'src/app/guards/confirm-credential-info.guard';
 
 const routes: Routes = [
   {
     path: "",
     component: SearchFlightPage,
-    canActivate: [TmcGuard]
+    canActivate: [TmcGuard,ConfirmCredentialInfoGuard]
   }
 ];
 

@@ -1,3 +1,4 @@
+import { ConfirmCredentialInfoGuard } from './../../guards/confirm-credential-info.guard';
 import { CandeactivateGuard } from './../../guards/candeactivate.guard';
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
@@ -16,7 +17,7 @@ const routes: Routes = [
   {
     path: "",
     component: SearchTrainPage,
-    canActivate: [TmcGuard],
+    canActivate: [TmcGuard,ConfirmCredentialInfoGuard],
     canDeactivate: [CandeactivateGuard]
   }
 ];
