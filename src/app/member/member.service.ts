@@ -61,8 +61,7 @@ export class MemberCredential {
   providedIn: "root"
 })
 export class MemberService {
-  memberDetail: PageModel;
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService) { }
   async getCredentials(accountId: string): Promise<MemberCredential[]> {
     const req = new RequestEntity();
     req.IsShowLoading = true;

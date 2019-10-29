@@ -236,9 +236,12 @@ export class StaffService {
     private identityService: IdentityService
   ) {
     this.identityService.getIdentitySource().subscribe(id => {
-      this.staff = null;
-      this.staffCredentials = null;
+      this.disposal();
     });
+  }
+  private disposal() {
+    this.staff = null;
+    this.staffCredentials = null;
   }
   async isSelfBookType() {
     const t = (await this.getBookType()) === StaffBookType.Self;

@@ -55,9 +55,9 @@ export class TmcService {
   private companies: GroupCompanyEntity[];
   private tmc: TmcEntity;
   private travelType: FlightHotelTrainType;
-  mobileTemplateSelectItemList: SelectItem[] = [];
-  emailTemplateSelectItemList: SelectItem[] = [];
-  allLocalAirports: TrafficlineEntity[];
+  private mobileTemplateSelectItemList: SelectItem[] = [];
+  private emailTemplateSelectItemList: SelectItem[] = [];
+  public allLocalAirports: TrafficlineEntity[];
   constructor(
     private apiService: ApiService,
     private storage: Storage,
@@ -67,12 +67,13 @@ export class TmcService {
     private router: Router
   ) {
     this.identityService.getIdentitySource().subscribe(id => {
-      if (!id || !id.Ticket) {
-        this.companies = null;
-        this.tmc = null;
-      }
+      this.disposal();
     });
     this.selectedCompanySource = new BehaviorSubject(null);
+  }
+  private disposal() {
+    this.companies = null;
+    this.tmc = null;
   }
   async payOrder(tradeNo: string, key = ""): Promise<boolean> {
     let payResult = false;
