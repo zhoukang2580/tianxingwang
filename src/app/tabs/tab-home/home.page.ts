@@ -79,6 +79,10 @@ export class HomePage implements OnInit {
   async check() {
     console.log("home check");
     try {
+      if (!this.staffService.staffCredentials || this.staffService.staffCredentials.length == 0) {
+        this.router.navigate([AppHelper.getRoutePath("confirm-information")]);
+        return false;
+      }
       const isSelf = await this.staffService.isSelfBookType();
       if (isSelf) {
         return;

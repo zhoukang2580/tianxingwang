@@ -41,10 +41,10 @@ export class ConfirmCredentialInfoGuard
           staff.IsModifyPassword != undefined
         ) {
           if (staff.IsConfirmInfo && staff.IsModifyPassword) {
-            if (!this.staffService.staffCredentials || this.staffService.staffCredentials.length == 0) {
-              this.router.navigate([AppHelper.getRoutePath("confirm-information")]);
-              return false;
-            }
+            // if (!this.staffService.staffCredentials || this.staffService.staffCredentials.length == 0) {
+            //   this.router.navigate([AppHelper.getRoutePath("confirm-information")]);
+            //   return false;
+            // }
             return true;
           }
           this.router.navigate([AppHelper.getRoutePath("confirm-information")]);
