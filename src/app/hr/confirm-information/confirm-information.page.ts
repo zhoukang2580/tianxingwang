@@ -23,25 +23,50 @@ export class ConfirmInformationPage implements OnInit {
   constructor(
     private staffService: StaffService,
     private apiService: ApiService,
-    private navCtrl:NavController,
-    private tmcService: TmcService,
+    private navCtrl: NavController,
+    // private tmcService: TmcService,
     private router: Router,
     private route: ActivatedRoute,
     private identityService: IdentityService
   ) {
     route.paramMap.subscribe(async p => {
       this.staff = await this.staffService.getStaff();
+      const staff = this.staff;
       const identity = await this.identityService.getIdentityAsync();
-      this.credentials = await this.tmcService.searchPassengerCredentials(
+      this.credentials = await this.getCredentials(
         identity && identity.Id
       );
-      console.log("ConfirmInformationPage", this.staff);
+      if (
+        staff &&
+        staff.IsConfirmInfo != undefined &&
+        staff.IsModifyPassword != undefined
+      ) {
+        if (staff.IsConfirmInfo && staff.IsModifyPassword) {
+          if (!this.credentials || this.credentials.length == 0) {
+            this.checkIfHasCredentials();
+          }
+          return true;
+        }
+        return false;
+      }
     });
   }
-  back(){
+  async getCredentials(accountId: string): Promise<MemberCredential[]> {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = "TmcApiHomeUrl-Credentials-List";
+    req.Data = {
+      accountId
+    };
+    return this.apiService
+      .getPromiseData<{ Credentials: MemberCredential[] }>(req)
+      .then(r => r.Credentials)
+      .catch(_ => []);
+  }
+  back() {
     this.navCtrl.back();
   }
-  async ngOnInit() {}
+  async ngOnInit() { }
   async confirmPassword() {
     if (!this.password) {
       AppHelper.alert(LanguageHelper.getEnterPasswordTip());
@@ -66,6 +91,21 @@ export class ConfirmInformationPage implements OnInit {
         AppHelper.toast(
           LanguageHelper.getComfirmInfoModifyPasswordFailureTip()
         );
+      }
+    }
+    await this.checkIfHasCredentials();
+  }
+  private async checkIfHasCredentials() {
+    const identity = await this.identityService.getIdentityAsync();
+    if (identity) {
+      const cs = await this.getCredentials(identity && identity.Id);
+      if (!cs || cs.length == 0) {
+        const ok = await AppHelper.alert("请维护证件", true, LanguageHelper.getConfirmTip());
+        if (ok) {
+          this.maintainCredentials();
+        } else {
+          this.checkIfHasCredentials();
+        }
       }
     }
   }
@@ -122,7 +162,7 @@ export class ConfirmInformationPage implements OnInit {
           LanguageHelper.getComfirmInfoModifyCredentialsFailureTip()
         );
       }
-    } catch {}
+    } catch { }
   }
   maintainCredentials() {
     this.router.navigate([

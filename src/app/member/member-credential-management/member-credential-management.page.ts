@@ -136,7 +136,9 @@ export class MemberCredentialManagementPage
     await this.memberService
       .modifyCredentials(c)
       .then(_ => {
-        AppHelper.alert(LanguageHelper.getInfoModifySuccessTip());
+        if (_.Message) {
+          AppHelper.alert(_.Message);
+        }
       })
       .catch(e => {
         AppHelper.alert(e);
