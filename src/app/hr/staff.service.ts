@@ -228,8 +228,8 @@ export interface HrEntity {
 })
 export class StaffService {
   private staff: StaffEntity;
-  private isLoading = false;
   private subscription = Subscription.EMPTY;
+  private staffSubscription = Subscription.EMPTY;
   staffCredentials: MemberCredential[];
   constructor(
     private apiService: ApiService,
@@ -293,29 +293,27 @@ export class StaffService {
     const req = new RequestEntity();
     req.Method = "HrApiUrl-Staff-Get";
     req.IsShowLoading = true;
-    // if (this.isLoading) {
-    // 这里会影响到证件确认的功能
-    //   return Promise.reject("loading Staff...");
-    // }
-    this.isLoading = true;
-    return this.apiService
-      .getPromiseData<StaffEntity>(req)
-      .then(s => {
-        this.isLoading = false;
-        console.log("staff ", s);
-        this.staff = s;
-        if (this.staff.BookType == StaffBookType.Self) {
-          this.staff.AccountId = this.staff.AccountId || id.Id;
-          this.staff.Name = this.staff.Name || id.Name;
-        }
-        return s;
-      })
-      .catch(_ => {
-        this.isLoading = false;
-        console.error(_);
-        this.staff = {} as any;
-        return null;
-      });
+    this.staffSubscription.unsubscribe();
+    return new Promise<StaffEntity>((s, rej) => {
+      this.staffSubscription = this.apiService
+        .getResponse<StaffEntity>(req)
+        .subscribe(res => {
+          if (res.Status) {
+            const staff = res && res.Data;
+            console.log("staff ", staff);
+            this.staff = staff;
+            if (this.staff.BookType == StaffBookType.Self) {
+              this.staff.AccountId = this.staff.AccountId || id.Id;
+              this.staff.Name = this.staff.Name || id.Name;
+            }
+            s(staff);
+          } else {
+            rej(res.Message);
+          }
+        }, _ => {
+          rej({});
+        })
+    })
   }
   async comfirmInfo(data: {
     IsModifyPassword: boolean;
@@ -349,19 +347,12 @@ export class StaffService {
     req.Data = {
       AccountId
     };
-    this.isLoading = true;
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
     return new Promise<any>((s, rej) => {
-      if (this.subscription) {
-        this.subscription.unsubscribe();
-      }
       this.subscription = this.apiService
-      .getResponse<MemberCredential[]>(req)
-        .pipe(finalize(() => {
-          this.isLoading = false;
-          setTimeout(() => {
-            this.subscription.unsubscribe();
-          }, 100);
-        }))
+        .getResponse<MemberCredential[]>(req)
         .subscribe(res => {
           if (res.Status) {
             s(res.Data);
