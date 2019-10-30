@@ -237,11 +237,11 @@ export class AppComponent
       // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management-add')]);
       // this.router.navigate([AppHelper.getRoutePath('search-flight')]);
       // this.router.navigate([AppHelper.getRoutePath("select-customer")]);
-      // this.router.navigate([AppHelper.getRoutePath("search-train")]);
+      this.router.navigate([AppHelper.getRoutePath("search-train")]);
       // this.router.navigate([AppHelper.getRoutePath("flight-book")]);
       // this.router.navigate([AppHelper.getRoutePath("train-book")]);
       // this.router.navigate([AppHelper.getRoutePath("search-hotel")]);
-      this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
+      // this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
       // this.router.navigate([AppHelper.getRoutePath("hotel-book")]);
       // this.router.navigate([AppHelper.getRoutePath("product-tabs")], { queryParams: { tabId: 3 } });
       // this.router.navigate([AppHelper.getRoutePath("tabs/trip")]);

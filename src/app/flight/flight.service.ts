@@ -162,8 +162,10 @@ export class FlightService {
     data: PassengerBookInfo<IFlightSegmentInfo>,
     flightSegment: FlightSegmentEntity
   ) {
+    const temp = this.currentViewtFlightSegment&&this.currentViewtFlightSegment.totalPolicyFlights
+    .find(it=>it.PassengerKey==(data&&data.passenger&&data.passenger.AccountId));
     let policyCabins: FlightPolicy[] =
-      flightSegment && flightSegment.PoliciedCabins;
+      flightSegment && flightSegment.PoliciedCabins||(temp&&temp.FlightPolicies)||[];
     if (data && data.passenger && data.passenger.AccountId) {
       this.setPassengerBookInfos(
         this.getPassengerBookInfos().map(it => {

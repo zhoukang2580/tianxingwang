@@ -293,9 +293,10 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
       s.tripType = TripType.departureTrip;
     }
     console.log("search-train", s);
-    this.trainService.setSearchTrainModel(s);
     this.isCanLeave = true;
-    this.router.navigate([AppHelper.getRoutePath("train-list")]);
+    this.router.navigate([AppHelper.getRoutePath("train-list")]).then(_ => {
+      this.trainService.setSearchTrainModel(s);
+    });
   }
   getDayDesc(d: DayModel) {
     return this.calendarService.getDescOfDay(d);

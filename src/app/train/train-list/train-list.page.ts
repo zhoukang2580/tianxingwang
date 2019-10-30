@@ -155,15 +155,13 @@ export class TrainListPage implements OnInit, OnDestroy {
         if (this.searchTrainModel) {
           this.vmFromCity = modal.fromCity;
           this.vmToCity = modal.toCity;
-          this.moveDayToSearchDate(
-            this.calendarService.generateDayModelByDate(
-              this.searchTrainModel.Date
-            )
-          );
+          // this.moveDayToSearchDate(
+          //   this.calendarService.generateDayModelByDate(
+          //     this.searchTrainModel.Date
+          //   )
+          // );
           if (
             modal &&
-            !this.isLeavePage &&
-            !this.isLoading &&
             modal.isRefreshData
           ) {
             this.trainService.setSearchTrainModel({
@@ -396,22 +394,22 @@ export class TrainListPage implements OnInit, OnDestroy {
     await modal.present();
     await modal.onDidDismiss();
   }
-  private moveDayToSearchDate(d?: DayModel) {
-    this.domCtrl.write(_ => {
-      if (this.daysCalendarComp) {
-        const day =
-          d ||
-          this.calendarService.generateDayModelByDate(
-            this.searchTrainModel.Date
-          );
-        setTimeout(() => {
-          if (this.daysCalendarComp) {
-            this.daysCalendarComp.onDaySelected(day);
-          }
-        }, 1000);
-      }
-    });
-  }
+  // private moveDayToSearchDate(d?: DayModel) {
+  //   this.domCtrl.write(_ => {
+  //     if (this.daysCalendarComp) {
+  //       const day =
+  //         d ||
+  //         this.calendarService.generateDayModelByDate(
+  //           this.searchTrainModel.Date
+  //         );
+  //       setTimeout(() => {
+  //         if (this.daysCalendarComp) {
+  //           this.daysCalendarComp.onDaySelected(day);
+  //         }
+  //       }, 1000);
+  //     }
+  //   });
+  // }
   private async setSelfFilterPolicy() {
     const isSelf = await this.staffService.isSelfBookType();
     if (isSelf) {
@@ -434,7 +432,7 @@ export class TrainListPage implements OnInit, OnDestroy {
     if (this.isLoading || this.isLeavePage) {
       return;
     }
-    this.moveDayToSearchDate();
+    // this.moveDayToSearchDate();
     if (this.timeoutid) {
       clearTimeout(this.timeoutid);
     }
@@ -442,7 +440,7 @@ export class TrainListPage implements OnInit, OnDestroy {
       if (this.isLeavePage || this.isLoading) {
         return;
       }
-      this.moveDayToSearchDate();
+      // this.moveDayToSearchDate();
 
       this.apiService.showLoadingView();
       if (!keepSearchCondition) {
@@ -463,7 +461,7 @@ export class TrainListPage implements OnInit, OnDestroy {
         b.isOnlyFilterMatchedPolicy = false;
       }
       data = this.trainService.filterPassengerPolicyTrains(
-        await this.staffService.isSelfBookType() ? b: null,
+        await this.staffService.isSelfBookType() ? b : null,
         data,
         this.passengersPolicies
       );
@@ -613,37 +611,37 @@ export class TrainListPage implements OnInit, OnDestroy {
     ) {
       return;
     }
-    if (this.searchTrainModel.tripType == TripType.returnTrip) {
-      const bookInfos = this.trainService.getBookInfos();
-      const info = bookInfos.find(
-        item =>
-          item &&
-          item.bookInfo &&
-          item.bookInfo.tripType == TripType.departureTrip
-      );
-      const goTrain = info && info.bookInfo && info.bookInfo.trainEntity;
-      if (goTrain) {
-        let goDay = moment(goTrain.ArrivalTime);
-        goDay = moment(goDay.format("YYYY-MM-DD"));
-        const backDate = day;
-        if (+moment(backDate.date) < +goDay) {
-          await AppHelper.toast(
-            LanguageHelper.Flight.getBackDateCannotBeforeGoDateTip(),
-            1000,
-            "middle"
-          );
-          return;
-        }
-      }
-    } else {
-      if (this.searchTrainModel.isRoundTrip) {
-        if (+moment(day.date) > +moment(this.searchTrainModel.BackDate)) {
-          this.searchTrainModel.BackDate = moment(day.date)
-            .add(1, "days")
-            .format("YYYY-MM-DD");
-        }
-      }
-    }
+    // if (this.searchTrainModel.tripType == TripType.returnTrip) {
+    //   const bookInfos = this.trainService.getBookInfos();
+    //   const info = bookInfos.find(
+    //     item =>
+    //       item &&
+    //       item.bookInfo &&
+    //       item.bookInfo.tripType == TripType.departureTrip
+    //   );
+    //   const goTrain = info && info.bookInfo && info.bookInfo.trainEntity;
+    //   if (goTrain) {
+    //     let goDay = moment(goTrain.ArrivalTime);
+    //     goDay = moment(goDay.format("YYYY-MM-DD"));
+    //     const backDate = day;
+    //     if (+moment(backDate.date) < +goDay) {
+    //       await AppHelper.toast(
+    //         LanguageHelper.Flight.getBackDateCannotBeforeGoDateTip(),
+    //         1000,
+    //         "middle"
+    //       );
+    //       return;
+    //     }
+    //   }
+    // } else {
+    //   if (this.searchTrainModel.isRoundTrip) {
+    //     if (+moment(day.date) > +moment(this.searchTrainModel.BackDate)) {
+    //       this.searchTrainModel.BackDate = moment(day.date)
+    //         .add(1, "days")
+    //         .format("YYYY-MM-DD");
+    //     }
+    //   }
+    // }
     if (!this.filterCondition) {
       this.filterCondition = FilterTrainCondition.init();
     }
@@ -658,16 +656,17 @@ export class TrainListPage implements OnInit, OnDestroy {
     const days = await this.trainService.openCalendar(false);
     if (days && days.length) {
       this.searchTrainModel.Date = days[0].date;
-      if (
-        this.searchTrainModel.isRoundTrip &&
-        this.searchTrainModel.tripType == TripType.returnTrip
-      ) {
-        this.searchTrainModel.BackDate = days[0].date;
-      }
+      // if (
+      //   this.searchTrainModel.isRoundTrip &&
+      //   this.searchTrainModel.tripType == TripType.returnTrip
+      // ) {
+      //   this.searchTrainModel.BackDate = days[0].date;
+      // }
       this.trainService.setSearchTrainModel({
         ...this.searchTrainModel,
-        isRefreshData: true
+        Date: days[0].date
       });
+      this.onChangedDay(this.calendarService.generateDayModelByDate(this.searchTrainModel.Date), true);
     }
   }
 

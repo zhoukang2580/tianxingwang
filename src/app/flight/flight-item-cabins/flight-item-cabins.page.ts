@@ -31,6 +31,7 @@ import { map, tap } from "rxjs/operators";
 import { PassengerBookInfo } from "src/app/tmc/tmc.service";
 import { AppHelper } from "src/app/appHelper";
 import { FlightFareType } from '../models/flight/FlightFareType';
+import { IdentityEntity } from 'src/app/services/identity/identity.entity';
 
 @Component({
   selector: "app-flight-item-cabins",
@@ -47,6 +48,7 @@ export class FlightItemCabinsPage implements OnInit {
   staff: StaffEntity;
   loading = true;
   showOpenBtn$ = of(0);
+  identity:IdentityEntity;
   filteredPolicyPassenger$: Observable<PassengerBookInfo<IFlightSegmentInfo>>;
   constructor(
     private flightService: FlightService,
@@ -64,7 +66,8 @@ export class FlightItemCabinsPage implements OnInit {
       this.currentViewtFlightSegment = flightService.getCurrentViewtFlightSegment();
       console.log("flight-item-cabins", this.currentViewtFlightSegment);
       this.vmFlightSegment = this.currentViewtFlightSegment.flightSegment;
-      const identity = await this.identityService.getIdentityAsync();
+      const identity = await this.identityService.getIdentityAsync().catch(_=>null)
+      this.identity=identity;
       this.staff = await this.staffService.getStaff();
       if (
         this.staff &&
@@ -180,48 +183,60 @@ export class FlightItemCabinsPage implements OnInit {
       }
     }, 100);
   }
+  // private async showPolicyCabins() {
+  //   this.vmPolicyCabins = [];
+  //   let policiedCabins: FlightPolicy[] =
+  //     this.currentViewtFlightSegment.flightSegment.PoliciedCabins || [];
+  //   this.loading = true;
+  //   const isfiltered = this.flightService
+  //     .getPassengerBookInfos()
+  //     .find(it => it.isFilteredPolicy);
+  //   const bookInfo =
+  //     isfiltered ||
+  //     ((await this.staffService.isSelfBookType()) &&
+  //       this.flightService.getPassengerBookInfos()[0]);
+  //   if (bookInfo) {
+  //     const p = this.currentViewtFlightSegment.totalPolicyFlights.find(
+  //       it =>
+  //         it.PassengerKey ==
+  //         (bookInfo.passenger && bookInfo.passenger.AccountId)
+  //     );
+  //     if (p) {
+  //       policiedCabins = p.FlightPolicies.filter(
+  //         it =>
+  //           it.FlightNo === this.currentViewtFlightSegment.flightSegment.Number
+  //       );
+  //       if (isfiltered && isfiltered.isOnlyFilterMatchedPolicy) {
+  //         policiedCabins = policiedCabins.filter(
+  //           it => !it.Rules || it.Rules.length == 0
+  //         );
+  //       }
+  //     }
+  //   }
+  //   const cabins = policiedCabins.slice(0);
+  //   const loop = () => {
+  //     if (cabins.length) {
+  //       this.vmPolicyCabins.push(...cabins.splice(0, 1));
+  //       window.requestAnimationFrame(loop);
+  //     } else {
+  //       this.loading = false;
+  //     }
+  //   };
+  //   setTimeout(() => {
+  //     loop();
+  //   }, 0);
+  // }
   private async showPolicyCabins() {
-    this.vmPolicyCabins = [];
-    let policiedCabins: FlightPolicy[] =
-      this.currentViewtFlightSegment.flightSegment.PoliciedCabins || [];
-    this.loading = true;
     const isfiltered = this.flightService
-      .getPassengerBookInfos()
-      .find(it => it.isFilteredPolicy);
+    .getPassengerBookInfos()
+    .find(it => it.isFilteredPolicy);
     const bookInfo =
-      isfiltered ||
-      ((await this.staffService.isSelfBookType()) &&
-        this.flightService.getPassengerBookInfos()[0]);
-    if (bookInfo) {
-      const p = this.currentViewtFlightSegment.totalPolicyFlights.find(
-        it =>
-          it.PassengerKey ==
-          (bookInfo.passenger && bookInfo.passenger.AccountId)
-      );
-      if (p) {
-        policiedCabins = p.FlightPolicies.filter(
-          it =>
-            it.FlightNo === this.currentViewtFlightSegment.flightSegment.Number
-        );
-        if (isfiltered && isfiltered.isOnlyFilterMatchedPolicy) {
-          policiedCabins = policiedCabins.filter(
-            it => !it.Rules || it.Rules.length == 0
-          );
-        }
-      }
-    }
-    const cabins = policiedCabins.slice(0);
-    const loop = () => {
-      if (cabins.length) {
-        this.vmPolicyCabins.push(...cabins.splice(0, 1));
-        window.requestAnimationFrame(loop);
-      } else {
-        this.loading = false;
-      }
-    };
-    setTimeout(() => {
-      loop();
-    }, 0);
+    isfiltered ||
+    ((await this.staffService.isSelfBookType()) &&
+      this.flightService.getPassengerBookInfos()[0]);
+    this.vmPolicyCabins=this.flightService.filterPassengerPolicyCabins(bookInfo,this.currentViewtFlightSegment.flightSegment);
+    console.log("showPolicyCabins ",this.vmPolicyCabins);
+    this.loading = false;
   }
   private showFlightCabins() {
     this.vmCabins = [];

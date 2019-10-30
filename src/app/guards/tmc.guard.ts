@@ -40,12 +40,12 @@ export class TmcGuard implements CanActivate, CanActivateChild {
     return this.identityService
       .getIdentityAsync()
       .then(identity => {
+        console.log("tmc guard", identity);
         if (
           identity &&
           identity.Numbers &&
           (identity.Numbers.AgentId || identity.Numbers.TmcId)
         ) {
-          console.log("tmc guard", identity);
           if (identity.Numbers.AgentId && !identity.Numbers.TmcId) {
             this.router.navigate([AppHelper.getRoutePath("select-customer")]);
             return false;
@@ -53,6 +53,7 @@ export class TmcGuard implements CanActivate, CanActivateChild {
           return true;
         }
         this.loginService.setToPageRouter(state.url);
+        this.router.navigate([AppHelper.getRoutePath("login")]);
         return false;
       })
       .catch(_ => false);
