@@ -10,7 +10,7 @@
         <ion-chip color='secondary'>{{calcNights()}}晚</ion-chip>
         <span>{{getDate(bookInfo?.bookInfo?.roomPlan?.EndDate)}}</span>
         <span>{{getDayDesc(bookInfo?.bookInfo?.roomPlan?.EndDate)}}</span>
-        <ion-button fill='clear' size='small' color='secondary' *ngIf='!disabledEdit'>修改</ion-button>
+        <ion-button fill='clear' size='small' color='secondary' *ngIf='false&&!disabledEdit'>修改</ion-button>
       </div>
       <div class='price-detail'>
         <span>
