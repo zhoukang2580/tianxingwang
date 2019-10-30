@@ -901,9 +901,9 @@ export class TrainService {
       });
   }
   private addoneday(s: TrainEntity) {
-    const addDay = s.ArriveDays||"0";
+    const addDay = s.ArriveDays || "0";
     // new Date(s.ArrivalTime).getDate() - new Date(s.StartTime).getDate();
-    return addDay>0?addDay + LanguageHelper.getDayTip():"";
+    return +addDay > 0 ? "+" + addDay + LanguageHelper.getDayTip() : "";
   }
   async getInitializeBookDto(
     bookDto: OrderBookDto
