@@ -1,5 +1,5 @@
 <ion-header>
-  <div class='header' #header (click)='isShowImages=true'>
+  <div class='header' #header >
     <ion-toolbar>
       <ion-buttons slot='start'>
         <ion-button color='dark' (click)='back($event)'>
@@ -38,7 +38,7 @@
 </ion-header>
 <ion-content>
   <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'></ion-refresher>
-  <div class='bg' [ngStyle]='isShowBackArrow?{display:"initial",zIndex:-1}:{display:"none",zIndex:99}' #bgPic
+  <div class='bg' [ngStyle]='isShowBackArrow?{display:"block",zIndex:-1}:{display:"none",zIndex:99}' #bgPic
     (click)='isShowImages=true' [class.md]='isMd'>
     <ion-icon class='back-arrow' name="arrow-back" (click)='back()' color='{{backArrowColor}}'>
     </ion-icon>

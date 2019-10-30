@@ -98,7 +98,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   ) {
     this.isMd = plt.is("android");
   }
-  back(evt: CustomEvent) {
+  back(evt?: CustomEvent) {
     if (evt) {
       evt.stopPropagation();
     }
