@@ -332,7 +332,7 @@ export class StaffService {
       (this.staff &&
         (!(this.staff.IsModifyPassword === undefined) &&
           !this.staff.IsModifyPassword));
-    if (this.staff) {
+    if (this.staff&&this.staff.AccountId) {
       if (
         !forceRefresh ||
         (this.staff.BookType === undefined && id.Numbers && id.Numbers.AgentId)

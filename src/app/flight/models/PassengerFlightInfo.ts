@@ -34,6 +34,7 @@ export interface FlightSegmentModel {
 export interface FlightPolicy {
   Cabin: FlightCabinEntity; // 记录原始的cabin
   FlightNo: string; // String Yes 航班号
+  Id: string; // String Yes 航班号
   CabinCode: string; // string Yes 舱位代码
   IsAllowBook: boolean; // Bool Yes 是否可预订
   Discount: string; // Decimal Yes 折扣率

@@ -159,13 +159,19 @@ export class FlightService {
     return this.passengerBookInfoSource.asObservable();
   }
   filterPassengerPolicyCabins(
-    data: PassengerBookInfo<IFlightSegmentInfo>,
-    flightSegment: FlightSegmentEntity
-  ) {
+{ data, flightSegment }: { data: PassengerBookInfo<IFlightSegmentInfo>; flightSegment: FlightSegmentEntity; }  ) {
     const temp = this.currentViewtFlightSegment&&this.currentViewtFlightSegment.totalPolicyFlights
     .find(it=>it.PassengerKey==(data&&data.passenger&&data.passenger.AccountId));
-    let policyCabins: FlightPolicy[] =
-      flightSegment && flightSegment.PoliciedCabins||(temp&&temp.FlightPolicies)||[];
+    let policyCabins: FlightPolicy[] =(temp&&temp.FlightPolicies)||[];
+    if(flightSegment&&flightSegment.Cabins){
+      policyCabins=policyCabins.map(it=>{
+        const fc = flightSegment.Cabins.find(c=>c.Id==it.Id);
+        if(fc){
+          it.Cabin=JSON.parse(JSON.stringify(fc));
+        }
+        return it;
+      })
+    }
     if (data && data.passenger && data.passenger.AccountId) {
       this.setPassengerBookInfos(
         this.getPassengerBookInfos().map(it => {
@@ -233,8 +239,8 @@ export class FlightService {
                 return fr.FlightSegments.some(
                   s =>
                     numbers.includes(s.Number) &&
-                    s.PoliciedCabins &&
-                    s.PoliciedCabins.some(
+                    policies &&policies.FlightPolicies&&
+                    policies.FlightPolicies.some(
                       pc => !pc.Rules || pc.Rules.length == 0
                     )
                 );
@@ -626,8 +632,12 @@ export class FlightService {
     this.setPassengerBookInfos(this.getPassengerBookInfos());
   }
   async addOneBookInfoToSelfBookType() {
+    console.log("addOneBookInfoToSelfBookType");
     let IdCredential: CredentialsEntity;
-    const staff = await this.staffService.getStaff().catch(_ => null);
+    const staff:StaffEntity = await this.staffService.getStaff().catch(_ => null);
+    if(!staff||!staff.AccountId){
+      return ;
+    }
     if (this.getPassengerBookInfos().length) {
       return;
     }
@@ -653,7 +663,7 @@ export class FlightService {
         IdCredential ||
         (this.selfCredentials &&
           this.selfCredentials.length &&
-          this.selfCredentials[1]) ||
+          this.selfCredentials[0]) ||
         new CredentialsEntity()
     };
     this.addPassengerBookInfo(info);

@@ -108,9 +108,7 @@ export class FlightItemCabinsPage implements OnInit {
     const d = await popover.onDidDismiss();
     const data = d && (d.data as PassengerBookInfo<IFlightSegmentInfo>);
     this.vmPolicyCabins = this.flightService.filterPassengerPolicyCabins(
-      data,
-      this.vmFlightSegment
-    );
+        { data, flightSegment: this.vmFlightSegment }    );
     if (
       (data && data.passenger && data.passenger.AccountId) ||
       (await this.staffService.isSelfBookType())
@@ -234,7 +232,7 @@ export class FlightItemCabinsPage implements OnInit {
     isfiltered ||
     ((await this.staffService.isSelfBookType()) &&
       this.flightService.getPassengerBookInfos()[0]);
-    this.vmPolicyCabins=this.flightService.filterPassengerPolicyCabins(bookInfo,this.currentViewtFlightSegment.flightSegment);
+    this.vmPolicyCabins=this.flightService.filterPassengerPolicyCabins({ data: bookInfo, flightSegment: this.currentViewtFlightSegment.flightSegment });
     console.log("showPolicyCabins ",this.vmPolicyCabins);
     this.loading = false;
   }

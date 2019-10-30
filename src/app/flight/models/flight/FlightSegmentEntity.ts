@@ -204,7 +204,7 @@ export class FlightSegmentEntity {
   PassengerKeys: string[];
   FromCity: TrafficlineEntity;
   ToCity: TrafficlineEntity;
-  PoliciedCabins: FlightPolicy[];
+  // PoliciedCabins: FlightPolicy[];
   Cabins: FlightCabinEntity[];
 
   TakeoffShortTime: string;

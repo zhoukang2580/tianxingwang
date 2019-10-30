@@ -204,12 +204,12 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     return await this.staffService.isSelfBookType();
   }
   async onCalenderClick() {
-   const d = await this.flightService.openCalendar(false);
-   if(d&&d.length){
-     const go = d[0];
-     this.flyDayService.setSelectedDaysSource([this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date)]);
-     this.onChangedDay(go,true);
-   }
+    const d = await this.flightService.openCalendar(false);
+    if (d && d.length) {
+      const go = d[0];
+      this.flyDayService.setSelectedDaysSource([this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date)]);
+      this.onChangedDay(go, true);
+    }
   }
 
   back() {
@@ -276,7 +276,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         if (this.isLoading) {
           return;
         }
-        this.isLoading=true;
+        this.isLoading = true;
         this.flyDayService.setSelectedDaysSource([this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date)]);
         // this.moveDayToSearchDate();
 
@@ -418,16 +418,16 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.policyflights = [];
       return [];
     }
-    const arr = passengers.map(it => {
-      const plicies = this.policyflights.find(
-        item => item.PassengerKey == it.AccountId
-      );
-      return {
-        PassengerKey: it.AccountId,
-        FlightPolicies: (plicies && plicies.FlightPolicies) || []
-      };
-    });
-    this.replaceCabinInfo(arr, flightJourneyList);
+    // const arr = passengers.map(it => {
+    //   const plicies = this.policyflights.find(
+    //     item => item.PassengerKey == it.AccountId
+    //   );
+    //   return {
+    //     PassengerKey: it.AccountId,
+    //     FlightPolicies: (plicies && plicies.FlightPolicies) || []
+    //   };
+    // });
+    // this.replaceCabinInfo(arr, flightJourneyList);
     return (this.flightJourneyList = flightJourneyList);
   }
   private getNotWhitelistCabins(
@@ -444,6 +444,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           s.Cabins.forEach(c => {
             FlightPolicies.push({
               Cabin: c,
+              Id:c.Id,
               FlightNo: c.FlightNumber,
               CabinCode: c.Code,
               IsAllowBook: true, // 非白名单全部可预订
@@ -560,58 +561,60 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     await modal.onDidDismiss();
     return "ok";
   }
-  private replaceCabinInfo(
-    passengerPolicyflights: {
-      PassengerKey: string;
-      FlightPolicies: FlightPolicy[];
-    }[],
-    flights: FlightJourneyEntity[]
-  ) {
-    console.time("replaceCabinInfo");
-    if (passengerPolicyflights && flights) {
-      const passengerKeyFlightNoCabins = passengerPolicyflights.map(pf => {
-        return {
-          PassengerKey: pf.PassengerKey,
-          FlightPolicy: pf.FlightPolicies.reduce(
-            (obj, item) => {
-              if (!obj[item.FlightNo]) {
-                obj[item.FlightNo] = [item];
-              } else {
-                obj[item.FlightNo].push(item);
-              }
-              return obj;
-            },
-            {} as { [FlightNo: string]: FlightPolicy[] }
-          )
-        };
-      });
-      flights.forEach(f => {
-        f.FlightRoutes.forEach(r => {
-          r.FlightSegments.forEach(s => {
-            passengerKeyFlightNoCabins.forEach(item => {
-              s.PassengerKeys = s.PassengerKeys || [];
-              if (!s.PassengerKeys.find(k => k == item.PassengerKey)) {
-                s.PassengerKeys.push(item.PassengerKey);
-              }
-              if (item.FlightPolicy[s.Number]) {
-                s.PoliciedCabins = item.FlightPolicy[s.Number];
-                s.PoliciedCabins.forEach(pc => {
-                  const sc = s.Cabins.find(
-                    scabin => scabin.Code == pc.CabinCode
-                  );
-                  if (sc) {
-                    pc.Cabin = sc;
-                  }
-                });
-              }
-            });
-          });
-        });
-      });
-      console.timeEnd("replaceCabinInfo");
-    }
-    return flights;
-  }
+  // private replaceCabinInfo(
+  //   passengerPolicyflights: {
+  //     PassengerKey: string;
+  //     FlightPolicies: FlightPolicy[];
+  //   }[],
+  //   flights: FlightJourneyEntity[]
+  // ) {
+  //   console.time("replaceCabinInfo");
+  //   if (passengerPolicyflights && flights) {
+  //     const passengerKeyFlightNoCabins = passengerPolicyflights.map(pf => {
+  //       return {
+  //         PassengerKey: pf.PassengerKey,
+  //         FlightPolicy: pf.FlightPolicies.reduce(
+  //           (obj, item) => {
+  //             if (!obj[item.FlightNo]) {
+  //               obj[item.FlightNo] = [item];
+  //             } else {
+  //               obj[item.FlightNo].push(item);
+  //             }
+  //             return obj;
+  //           },
+  //           {} as { [FlightNo: string]: FlightPolicy[] }
+  //         )
+  //       };
+  //     });
+  //     debugger;
+  //     flights.forEach(f => {
+  //       f.FlightRoutes.forEach(r => {
+  //         r.FlightSegments.forEach(flightSegment => {
+  //           passengerKeyFlightNoCabins.forEach(item => {
+  //             flightSegment.PassengerKeys = flightSegment.PassengerKeys || [];
+  //             if (!flightSegment.PassengerKeys.find(k => k == item.PassengerKey)) {
+  //               flightSegment.PassengerKeys.push(item.PassengerKey);
+  //             }
+  //             if (item.FlightPolicy[flightSegment.Number]) {
+  //               flightSegment.PoliciedCabins = item.FlightPolicy[flightSegment.Number];
+  //               flightSegment.PoliciedCabins.forEach(pc => {
+  //                 const sc = flightSegment.Cabins.find(
+  //                   scabin => scabin.Id == (pc.Cabin && pc.Cabin.Id) && pc.FlightNo == flightSegment.Number
+  //                 );
+  //                 console.log(`flightSegment.Cabins`,flightSegment.Cabins,'sc', sc, 'pccabin', pc);
+  //                 if (sc) {
+  //                   pc.Cabin = sc;
+  //                 }
+  //               });
+  //             }
+  //           });
+  //         });
+  //       });
+  //     });
+  //     console.timeEnd("replaceCabinInfo");
+  //   }
+  //   return flights;
+  // }
   async selectFilterPolicyPasseger() {
     const popover = await this.popoverController.create({
       component: FilterPassengersPolicyComponent,
