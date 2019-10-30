@@ -40,7 +40,7 @@ export class HomePage implements OnInit {
         .getIdentityAsync()
         .catch(_ => null);
       // console.log("返回到首页 ",p.keys);
-      await this.check();
+      this.check();
       if (p.get("selectedCompany")) {
         this.tmcService.setSelectedCompany(p.get("selectedCompany"));
       }
@@ -80,6 +80,7 @@ export class HomePage implements OnInit {
     console.log("home check");
     try {
       if (!this.staffService.staffCredentials || this.staffService.staffCredentials.length == 0) {
+        console.log("需要确认证件信息")
         this.router.navigate([AppHelper.getRoutePath("confirm-information")]);
         return false;
       }
