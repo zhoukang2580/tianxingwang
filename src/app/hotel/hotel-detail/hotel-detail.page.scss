@@ -41,6 +41,7 @@
   transition: opacity 100ms ease-in-out;
 }
 ion-card {
+  z-index: 100;
   position: relative;
   top: calc(-1 * var(--h));
   background: white;

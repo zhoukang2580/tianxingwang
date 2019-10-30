@@ -79,11 +79,11 @@ export class HomePage implements OnInit {
   async check() {
     console.log("home check");
     try {
-      if (!this.staffService.staffCredentials || this.staffService.staffCredentials.length == 0) {
-        console.log("需要确认证件信息")
-        this.router.navigate([AppHelper.getRoutePath("confirm-information")]);
-        return false;
-      }
+      // if (!this.staffService.staffCredentials || this.staffService.staffCredentials.length == 0) {
+      //   console.log("需要确认证件信息")
+      //   this.router.navigate([AppHelper.getRoutePath("confirm-information")]);
+      //   return false;
+      // }
       const isSelf = await this.staffService.isSelfBookType();
       if (isSelf) {
         return;

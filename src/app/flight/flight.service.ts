@@ -846,9 +846,11 @@ export class FlightService {
     //   moment(s.ArrivalTime, "YYYY-MM-DDTHH:mm:ss").date() -
     //   moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").date();
     // console.log(addDay);
-    const addDay =
-      new Date(s.ArrivalTime).getDate() - new Date(s.TakeoffTime).getDate();
-    return addDay > 0 ? "+" + addDay + LanguageHelper.getDayTip() : "";
+    const addDay =s.AddOneDayTip||"";
+      // new Date(s.ArrivalTime).getDate() - new Date(s.TakeoffTime).getDate();
+    return addDay.includes("+")?
+     ("" + addDay.length?addDay + LanguageHelper.getDayTip():"" )
+     : (addDay.length?"+"+addDay + LanguageHelper.getDayTip():"");
   }
   getTotalFlySegments(flyJourneys: FlightJourneyEntity[]) {
     console.time("getTotalFlySegments");

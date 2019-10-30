@@ -98,8 +98,8 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   ) {
     this.isMd = plt.is("android");
   }
-  back(evt:CustomEvent) {
-    if(evt){
+  back(evt: CustomEvent) {
+    if (evt) {
       evt.stopPropagation();
     }
     this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
@@ -396,6 +396,10 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     return this.hotelService.getBedType(room);
   }
   segmentChanged(evt: CustomEvent) {
+    this.isShowImages = false;
+    if(evt.stopPropagation){
+      evt.stopPropagation();
+    }
     if (evt.detail.value) {
       this.scrollToTab(evt.detail.value);
     }

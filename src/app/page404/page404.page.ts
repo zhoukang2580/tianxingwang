@@ -1,3 +1,4 @@
+import { LoginService } from './../services/login/login.service';
 import { AppHelper } from './../appHelper';
 import { IdentityService } from './../services/identity/identity.service';
 import { ActivatedRoute, Router } from "@angular/router";
@@ -12,7 +13,10 @@ import { IdentityEntity } from '../services/identity/identity.entity';
 export class Page404Page implements OnInit {
   curRoute: { url: string } = { url: null };
 
-  constructor(private route: ActivatedRoute, private router: Router, private identityService: IdentityService) {
+  constructor(
+    private route: ActivatedRoute,
+    private loginService: LoginService,
+    private router: Router, private identityService: IdentityService) {
   }
 
   async ngOnInit() {
@@ -22,8 +26,13 @@ export class Page404Page implements OnInit {
       if (identity.Ticket) {
         this.router.navigate([AppHelper.getRoutePath("")]);
       } else {
+        this.loginService.setToPageRouter("");
         this.router.navigate([AppHelper.getRoutePath("login")]);
       }
+    } else {
+      this.router.navigate([AppHelper.getRoutePath("login")]).then(_ => {
+        this.loginService.setToPageRouter("");
+      });
     }
   }
 }

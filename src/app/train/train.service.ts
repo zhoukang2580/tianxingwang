@@ -767,7 +767,7 @@ export class TrainService {
       .getPromiseData<any>(req);
   }
   async refund(ticketId: string) {
-    let isRefund=false;
+    let isRefund = false;
     const req = new RequestEntity();
     req.Method = `TmcApiTrainUrl-Home-GetTrainPassenger`;
     req.IsShowLoading = true;
@@ -794,7 +794,7 @@ export class TrainService {
     if (info) {
       const p = await this.popoverCtrl.create({
         component: TrainRefundComponent,
-        cssClass:"train-refund-comp",
+        cssClass: "train-refund-comp",
         componentProps: {
           ...info
         }
@@ -810,7 +810,7 @@ export class TrainService {
               return null;
             })
           AppHelper.alert(rev.Message || "申请已提交");
-          isRefund=true;
+          isRefund = true;
         }
       }
     }
@@ -901,9 +901,11 @@ export class TrainService {
       });
   }
   private addoneday(s: TrainEntity) {
-    const addDay =
-      new Date(s.ArrivalTime).getDate() - new Date(s.StartTime).getDate();
-    return addDay > 0 ? "+" + addDay + LanguageHelper.getDayTip() : "";
+    const addDay = s.AddOneDayTip || "";
+    // new Date(s.ArrivalTime).getDate() - new Date(s.StartTime).getDate();
+    return addDay.includes("+")?
+    ("" + addDay.length?addDay + LanguageHelper.getDayTip():"" )
+    : (addDay.length?"+"+addDay + LanguageHelper.getDayTip():"");
   }
   async getInitializeBookDto(
     bookDto: OrderBookDto

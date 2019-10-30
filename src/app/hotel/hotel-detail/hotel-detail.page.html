@@ -21,7 +21,7 @@
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
-    <ion-toolbar #toolbarsegment>
+    <ion-toolbar #toolbarsegment *ngIf='!isShowBackArrow'>
       <ion-segment (ionChange)="segmentChanged($event)" color="secondary">
         <ion-segment-button value="houseInfo" [checked]='activeTab=="houseInfo"'>
           <ion-label>房型</ion-label>
@@ -38,8 +38,9 @@
 </ion-header>
 <ion-content>
   <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'></ion-refresher>
-  <div class='bg' #bgPic (click)='isShowImages=true' [class.md]='isMd'>
-    <ion-icon class='back-arrow' name="arrow-back" *ngIf='isShowBackArrow' (click)='back()' color='{{backArrowColor}}'>
+  <div class='bg' [ngStyle]='isShowBackArrow?{display:initial,zIndex:-1}:{display:none,zIndex:99}' #bgPic
+    (click)='isShowImages=true' [class.md]='isMd'>
+    <ion-icon class='back-arrow' name="arrow-back" (click)='back()' color='{{backArrowColor}}'>
     </ion-icon>
     <ion-chip *ngIf='hotel?.HotelImages?.length as len' style="z-index: 99">
       1/{{len}}
@@ -205,7 +206,8 @@
     </div>
   </ion-list>
 </ion-content>
-<app-browse-images *ngIf="isShowImages" [images]='getHotelImageUrls()' (close)='onCloseHotelImages()'></app-browse-images>
+<app-browse-images *ngIf="isShowImages" [images]='getHotelImageUrls()' (close)='onCloseHotelImages()'>
+</app-browse-images>
 <app-browse-images *ngIf="isShowRoomImages" [images]="roomImages" (close)='onCloseRoomImages()'></app-browse-images>
 <app-room-detail [room]='curSelectedRoom' [roomImages]='roomImages' (close)='isShowRoomDetails=false' class="ion-page"
   *ngIf='isShowRoomDetails' (bookRoom)='onBookRoomPlan($event)'></app-room-detail>
