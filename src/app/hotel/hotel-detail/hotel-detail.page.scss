@@ -19,9 +19,9 @@
     background: rgba(var(--ion-color-dark-rgb), 0.5);
   }
   .back-arrow {
-    position: absolute;
+    position: fixed;
     left: 0.5em;
-    top: 1em;
+    top: 1.5em;
   }
 }
 .arrow-icon {
