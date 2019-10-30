@@ -160,18 +160,19 @@ export class FlightService {
   }
   filterPassengerPolicyCabins(
 { data, flightSegment }: { data: PassengerBookInfo<IFlightSegmentInfo>; flightSegment: FlightSegmentEntity; }  ) {
-    const temp = this.currentViewtFlightSegment&&this.currentViewtFlightSegment.totalPolicyFlights
-    .find(it=>it.PassengerKey==(data&&data.passenger&&data.passenger.AccountId));
-    let policyCabins: FlightPolicy[] =(temp&&temp.FlightPolicies)||[];
-    if(flightSegment&&flightSegment.Cabins){
-      policyCabins=policyCabins.map(it=>{
-        const fc = flightSegment.Cabins.find(c=>c.Id==it.Id);
-        if(fc){
-          it.Cabin=JSON.parse(JSON.stringify(fc));
-        }
-        return it;
-      })
-    }
+    let policyCabins: FlightPolicy[] =[];
+    policyCabins = (flightSegment.Cabins||[]).map(it=>{
+      return {
+        Cabin: it,
+        FlightNo: flightSegment.Number,
+        Id: it.Id,
+        CabinCode: it.Code,
+        IsAllowBook:true,
+        Discount:it.Discount,
+        LowerSegment: it.LowerSegment,
+        Rules: []
+      }
+    });
     if (data && data.passenger && data.passenger.AccountId) {
       this.setPassengerBookInfos(
         this.getPassengerBookInfos().map(it => {
@@ -191,8 +192,13 @@ export class FlightService {
             it => !it.Rules || it.Rules.length == 0
           );
         }
-      } else {
-        policyCabins = [];
+        policyCabins=policyCabins.map(it=>{
+          const fc = flightSegment.Cabins&&flightSegment.Cabins.find(f=>f.Id==it.Id);
+          if(fc){
+            it.Cabin={...fc};
+          }
+          return it;
+        })
       }
     } else {
       this.setPassengerBookInfos(
