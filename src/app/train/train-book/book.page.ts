@@ -397,7 +397,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
             if (canPay) {
               const payResult = await this.tmcService.payOrder(res.TradeNo);
               if (payResult) {
-                this.goToMyOrders(ProductItemType.plane);
+                this.goToMyOrders(ProductItemType.train);
               } else {
                 this.router.navigate([""]); // 回到首页
               }
@@ -405,7 +405,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
               await AppHelper.alert(
                 LanguageHelper.Order.getBookTicketWaitingTip()
               );
-              this.goToMyOrders(ProductItemType.plane);
+              this.goToMyOrders(ProductItemType.train);
             }
           } else {
             // await AppHelper.alert(
