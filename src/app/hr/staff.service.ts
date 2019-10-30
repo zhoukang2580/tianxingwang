@@ -260,6 +260,62 @@ export class StaffService {
     const s = await this.getStaff().catch(_ => null);
     return s && s.BookType;
   }
+  // async getStaff(forceRefresh: boolean = false): Promise<StaffEntity> {
+  //   const id = await this.identityService.getIdentityAsync().catch(_ => null);
+  //   if (!id || !id.Id || !id.Ticket) {
+  //     this.staff = {} as any;
+  //     return this.staff;
+  //   }
+  //   forceRefresh =
+  //     forceRefresh ||
+  //     !this.staff ||
+  //     (!this.staff.BookType && !(id.Numbers && id.Numbers.AgentId)) ||
+  //     (this.staff &&
+  //       (!(this.staff.IsConfirmInfo === undefined) &&
+  //         !this.staff.IsConfirmInfo)) ||
+  //     (this.staff &&
+  //       (!(this.staff.IsModifyPassword === undefined) &&
+  //         !this.staff.IsModifyPassword));
+  //   if (this.staff) {
+  //     if (
+  //       !forceRefresh ||
+  //       (this.staff.BookType === undefined && id.Numbers && id.Numbers.AgentId)
+  //     ) {
+  //       if (this.staff.BookType == StaffBookType.Self) {
+  //         this.staff.AccountId = this.staff.AccountId || id.Id;
+  //         this.staff.Name = this.staff.Name || id.Name;
+  //       }
+  //       return this.staff;
+  //     }
+  //   }
+  //   if (!this.staffCredentials || this.staffCredentials.length) {
+  //     this.staffCredentials = await this.getStaffCredentials(id.Id).catch(_ => []);
+  //   }
+  //   const req = new RequestEntity();
+  //   req.Method = "HrApiUrl-Staff-Get";
+  //   req.IsShowLoading = true;
+  //   this.staffSubscription.unsubscribe();
+  //   return new Promise<StaffEntity>((s, rej) => {
+  //     this.staffSubscription = this.apiService
+  //       .getResponse<StaffEntity>(req)
+  //       .subscribe(res => {
+  //         if (res.Status) {
+  //           const staff = res && res.Data;
+  //           console.log("staff ", staff);
+  //           this.staff = staff;
+  //           if (this.staff.BookType == StaffBookType.Self) {
+  //             this.staff.AccountId = this.staff.AccountId || id.Id;
+  //             this.staff.Name = this.staff.Name || id.Name;
+  //           }
+  //           s(staff);
+  //         } else {
+  //           rej(res.Message);
+  //         }
+  //       }, _ => {
+  //         rej({});
+  //       })
+  //   })
+  // }
   async getStaff(forceRefresh: boolean = false): Promise<StaffEntity> {
     const id = await this.identityService.getIdentityAsync().catch(_ => null);
     if (!id || !id.Id || !id.Ticket) {
@@ -295,26 +351,19 @@ export class StaffService {
     req.Method = "HrApiUrl-Staff-Get";
     req.IsShowLoading = true;
     this.staffSubscription.unsubscribe();
-    return new Promise<StaffEntity>((s, rej) => {
-      this.staffSubscription = this.apiService
-        .getResponse<StaffEntity>(req)
-        .subscribe(res => {
-          if (res.Status) {
-            const staff = res && res.Data;
-            console.log("staff ", staff);
-            this.staff = staff;
-            if (this.staff.BookType == StaffBookType.Self) {
-              this.staff.AccountId = this.staff.AccountId || id.Id;
-              this.staff.Name = this.staff.Name || id.Name;
-            }
-            s(staff);
-          } else {
-            rej(res.Message);
-          }
-        }, _ => {
-          rej({});
-        })
-    })
+    return this.apiService
+      .getPromiseData<StaffEntity>(req)
+      .then(staff => {
+        console.log("staff ", staff);
+        this.staff = staff;
+        if (this.staff.BookType == StaffBookType.Self) {
+          this.staff.AccountId = this.staff.AccountId || id.Id;
+          this.staff.Name = this.staff.Name || id.Name;
+        }
+        return staff
+      }).catch(_ => {
+        return {} as StaffEntity;
+      })
   }
   async comfirmInfo(data: {
     IsModifyPassword: boolean;

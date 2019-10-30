@@ -554,6 +554,34 @@ export class TmcService {
       .catch(_ => false);
   }
 
+  // async getPassengerCredentials(
+  //   accountIds: string[]
+  // ): Promise<{ [accountId: string]: CredentialsEntity[] }> {
+  //   const req = new RequestEntity();
+  //   req.Method = "TmcApiBookUrl-Home-Credentials";
+  //   req.Data = {
+  //     AccountIds: accountIds.join(";")
+  //   };
+  //   req.IsShowLoading = true;
+  //   req.Timeout = 60;
+  //   return new Promise<any>((s, rej) => {
+  //     if (this.getPassengerCredentialsSbuscription) {
+  //       this.getPassengerCredentialsSbuscription.unsubscribe();
+  //     }
+  //     this.getPassengerCredentialsSbuscription = this.apiService.getResponse<{
+  //       [accountId: string]: CredentialsEntity[];
+  //     }>(req)
+  //       .subscribe(res => {
+  //         if (res.Status) {
+  //           s(res.Data);
+  //         } else {
+  //           rej(res.Message);
+  //         }
+  //       }, e => {
+  //         rej(e);
+  //       });
+  //   });
+  // }
   async getPassengerCredentials(
     accountIds: string[]
   ): Promise<{ [accountId: string]: CredentialsEntity[] }> {
@@ -564,30 +592,9 @@ export class TmcService {
     };
     req.IsShowLoading = true;
     req.Timeout = 60;
-    return new Promise<any>((s, rej) => {
-      if (this.getPassengerCredentialsSbuscription) {
-        this.getPassengerCredentialsSbuscription.unsubscribe();
-      }
-      this.getPassengerCredentialsSbuscription = this.apiService.getResponse<{
-        [accountId: string]: CredentialsEntity[];
-      }>(req)
-        // .pipe(finalize(() => {
-        //   setTimeout(() => {
-        //     if (this.getPassengerCredentialsSbuscription) {
-        //       this.getPassengerCredentialsSbuscription.unsubscribe();
-        //     }
-        //   }, 100);
-        // }))
-        .subscribe(res => {
-          if (res.Status) {
-            s(res.Data);
-          } else {
-            rej(res.Message);
-          }
-        }, e => {
-          rej(e);
-        });
-    });
+    return this.apiService.getPromiseData<{
+      [accountId: string]: CredentialsEntity[];
+    }>(req);
   }
   async getTmc(forceFetch = false): Promise<TmcEntity> {
     if (this.tmc && !forceFetch) {

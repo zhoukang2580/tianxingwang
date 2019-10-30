@@ -245,6 +245,10 @@ export class MemberCredentialManagementPage
     const ok = await this.validateCredential(c, container);
     console.log("validateCredential", ok);
     if (ok) {
+      const ok =await AppHelper.alert(`请确认您的证件姓名：${c.FirstName}${c.LastName},您的登机名：${c.CheckFirstName}${c.CheckLastName},证件号码：${c.Number}`,true);
+      if(!ok){
+        return;
+      }
       const result = await this.memberService
         .addCredentials(c)
         .then(_ => true)
