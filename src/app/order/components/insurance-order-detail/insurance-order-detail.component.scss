@@ -1,4 +1,5 @@
 ion-row ion-col {
+  font-size: 0.8rem;
   &:first-child:not([size]) {
     max-width: 12vw;
   }

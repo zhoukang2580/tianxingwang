@@ -3,19 +3,24 @@
     <ng-container *ngIf='infos.orderPassenger as orderPassenger'>
       <div style='width: 100%;'>
         <ion-row>
-          <ion-col>保单状态</ion-col>
-          <ion-col>
-            {{orderInsurance.StatusName}}
-            <ng-container *ngIf='GetVariable(orderInsurance,"ExceptionMessage") as ExceptionMessage'>
-              {{ExceptionMessage}}
-              <span [innerHTML]='ExceptionMessage.replace(".","<br/>")'></span>
-            </ng-container>
+          <ion-col size>
+            保单状态:
+            <ion-text color='medium'>
+              {{orderInsurance.StatusName}}
+              <ng-container *ngIf='GetVariable(orderInsurance,"ExceptionMessage") as ExceptionMessage'>
+                {{ExceptionMessage}}
+                <span [innerHTML]='ExceptionMessage.replace(".","<br/>")'>
+                </span>
+              </ng-container>
+            </ion-text>
           </ion-col>
-        </ion-row>
-        <ion-row
-          *ngIf='orderInsurance.BookTime?.replace("T"," ")?.substring(0,orderInsurance.BookTime?.lastIndexOf(".")) as time'>
-          <ion-col>预订时间</ion-col>
-          <ion-col> {{time}} </ion-col>
+          <ion-col size
+            *ngIf='orderInsurance.BookTime?.replace("T"," ")?.substring(0,orderInsurance.BookTime?.lastIndexOf(".")) as time'>
+            <ion-text color='dark'>预订时间</ion-text>
+            <ion-text color='medium'>
+              {{time}}
+            </ion-text>
+          </ion-col>
         </ion-row>
         <ion-row
           *ngIf='orderInsurance.EffectiveDate?.startsWith("1800") ? "" : orderInsurance.EffectiveDate?.replace("T"," ") as time'>
@@ -28,8 +33,8 @@
           <ion-col> {{time}} </ion-col>
         </ion-row>
         <ion-row *ngIf='GetVariable(orderInsurance,"InsuranceTypeName") as t'>
-          <ion-col>保险类型</ion-col>
-          <ion-col> {{t}} </ion-col>
+          <ion-col >保险类型</ion-col>
+          <ion-col > {{t}} </ion-col>
         </ion-row>
         <ion-row *ngIf='orderInsurance.PolicyNo as n'>
           <ion-col>保单号</ion-col>
