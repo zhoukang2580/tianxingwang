@@ -104,7 +104,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
   private checkBackDateIsAfterGoDate() {
     if (this.goDate && this.backDate) {
       this.backDate = this.goDate.timeStamp > this.backDate.timeStamp ?
-        this.calendarService.generateDayModel(moment().add(1, 'years')) : this.backDate;
+        this.calendarService.generateDayModel(moment(this.goDate.date).add(1, 'years')) : this.backDate;
     }
   }
   back() {
