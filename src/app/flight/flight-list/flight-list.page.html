@@ -121,6 +121,6 @@
   </ion-toolbar>
 </ion-footer>
 
-<app-fly-filter *ngIf="showAdvSearchPage$ | async" class='ion-page' [flights]="flightJourneyList"
+<app-fly-filter [class.show]="showAdvSearchPage$ | async" [flights]="flightJourneyList"
   [fromCityName]='vmFromCity?.CityName' [@showAdvSearchPage]="showAdvSearchPage$ | async"
   [toCityName]="vmToCity?.CityName"></app-fly-filter>

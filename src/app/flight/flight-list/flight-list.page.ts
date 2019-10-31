@@ -124,7 +124,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     goArrivalDateTime: string;
     backTakeOffDateTime: string;
   }>;
-  @ViewChildren(FlyFilterComponent) filterComps: QueryList<FlyFilterComponent>;
+  @ViewChild(FlyFilterComponent) filterComp: FlyFilterComponent;
   @ViewChild(DaysCalendarComponent) daysCalendarComp: DaysCalendarComponent;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   activeTab: "filter" | "time" | "price" | "none"; // 当前激活的tab
@@ -261,8 +261,8 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.filterCondition.priceFromL2H = "initial";
     this.filterCondition.timeFromM2N = "initial";
     this.activeTab =
-      this.filterComps && this.filterComps.first &&
-        Object.keys(this.filterComps.first.userOps).some(k => this.filterComps.first.userOps[k])
+      this.filterComp && 
+        Object.keys(this.filterComp.userOps).some(k => this.filterComp.userOps[k])
         ? "filter"
         : "none";
     this.searchFlightModel.Date = day.date;
@@ -294,8 +294,8 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         }
         this.apiService.showLoadingView();
         if (!keepSearchCondition) {
-          if (this.filterComps&&this.filterComps.first) {
-            this.filterComps.first.onReset();
+          if (this.filterComp) {
+            this.filterComp.onReset();
           }
           this.filterCondition = FilterConditionModel.init();
           setTimeout(() => {
@@ -326,9 +326,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         // 根据筛选条件过滤航班信息：
         const filteredFlightJourenyList = this.filterFlightJourneyList(data);
         this.isFiltered =
-          this.filterComps &&this.filterComps.first &&
-          Object.keys(this.filterComps.first.userOps).some(
-            k => this.filterComps.first.userOps[k]
+          this.filterComp &&
+          Object.keys(this.filterComp.userOps).some(
+            k => this.filterComp.userOps[k]
           );
         const segments = this.flightService.filterPassengerPolicyFlights(
           null,

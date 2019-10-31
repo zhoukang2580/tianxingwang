@@ -144,7 +144,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
         return "";
       }
       lowestCabin.Cabin = lowestFlightSegment.Cabins.find(
-        c => c.Code == lowestCabin.CabinCode
+        c => c.Id == lowestCabin.Id
       );
       const m = await this.modalCtrl.create({
         component: SelectFlightsegmentCabinComponent,
