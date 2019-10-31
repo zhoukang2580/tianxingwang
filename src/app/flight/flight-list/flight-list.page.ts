@@ -38,7 +38,9 @@ import {
   AfterViewInit,
   OnDestroy,
   NgZone,
-  ElementRef
+  ElementRef,
+  QueryList,
+  ViewChildren
 } from "@angular/core";
 import {
   tap,
@@ -122,7 +124,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     goArrivalDateTime: string;
     backTakeOffDateTime: string;
   }>;
-  @ViewChild(FlyFilterComponent) filterComp: FlyFilterComponent;
+  @ViewChildren(FlyFilterComponent) filterComps: QueryList<FlyFilterComponent>;
   @ViewChild(DaysCalendarComponent) daysCalendarComp: DaysCalendarComponent;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   activeTab: "filter" | "time" | "price" | "none"; // 当前激活的tab
@@ -259,8 +261,8 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.filterCondition.priceFromL2H = "initial";
     this.filterCondition.timeFromM2N = "initial";
     this.activeTab =
-      this.filterComp &&
-        Object.keys(this.filterComp.userOps).some(k => this.filterComp.userOps[k])
+      this.filterComps && this.filterComps.first &&
+        Object.keys(this.filterComps.first.userOps).some(k => this.filterComps.first.userOps[k])
         ? "filter"
         : "none";
     this.searchFlightModel.Date = day.date;
@@ -292,8 +294,8 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         }
         this.apiService.showLoadingView();
         if (!keepSearchCondition) {
-          if (this.filterComp) {
-            this.filterComp.onReset();
+          if (this.filterComps&&this.filterComps.first) {
+            this.filterComps.first.onReset();
           }
           this.filterCondition = FilterConditionModel.init();
           setTimeout(() => {
@@ -324,9 +326,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         // 根据筛选条件过滤航班信息：
         const filteredFlightJourenyList = this.filterFlightJourneyList(data);
         this.isFiltered =
-          this.filterComp &&
-          Object.keys(this.filterComp.userOps).some(
-            k => this.filterComp.userOps[k]
+          this.filterComps &&this.filterComps.first &&
+          Object.keys(this.filterComps.first.userOps).some(
+            k => this.filterComps.first.userOps[k]
           );
         const segments = this.flightService.filterPassengerPolicyFlights(
           null,
@@ -444,7 +446,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           s.Cabins.forEach(c => {
             FlightPolicies.push({
               Cabin: c,
-              Id:c.Id,
+              Id: c.Id,
               FlightNo: c.FlightNumber,
               CabinCode: c.Code,
               IsAllowBook: true, // 非白名单全部可预订
