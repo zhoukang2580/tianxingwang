@@ -25,6 +25,7 @@ import {
   CurrentViewtFlightSegment,
   IFlightSegmentInfo
 } from "../../models/PassengerFlightInfo";
+import { FlightCabinEntity } from '../../models/flight/FlightCabinEntity';
 @Component({
   selector: "app-selected-flightsegment-info",
   templateUrl: "./selected-flightsegment-info.component.html",
@@ -143,8 +144,8 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
         );
         return "";
       }
-      lowestCabin.Cabin = lowestFlightSegment.Cabins.find(
-        c => c.Id == lowestCabin.Id
+      lowestCabin.Cabin = flights.reduce((acc, f) => (acc = [...acc, ...f.Cabins]), [] as FlightCabinEntity[]).find(
+        c => c.FlightNumber == lowestCabin.FlightNo && c.Id == lowestCabin.Id
       );
       const m = await this.modalCtrl.create({
         component: SelectFlightsegmentCabinComponent,

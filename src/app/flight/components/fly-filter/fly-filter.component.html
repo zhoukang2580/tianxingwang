@@ -1,15 +1,34 @@
 <ion-header>
-  <ion-header>
-    <ion-toolbar>
-      <ion-buttons slot='start'>
-        <ion-button (click)='onCancel()'>
-          <ion-icon color='dark' name='arrow-back'></ion-icon>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-button (click)='onCancel()'>
+        <ion-icon color='dark' name='arrow-back'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>过滤航班</ion-title>
+  </ion-toolbar>
+  <ion-toolbar slot='fixed' #toolbar>
+    <ion-row text-center margin-top>
+      <ion-col>
+        <ion-button color='dark' fill='outline' size='small' (click)='onCancel()'>
+          取消
         </ion-button>
-      </ion-buttons>
-      <ion-title>过滤航班</ion-title>
-    </ion-toolbar>
-  </ion-header>
+      </ion-col>
+      <ion-col>
+        <ion-button color='dark' fill='outline' size='small' (click)='onReset()'>
+          重置
+        </ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button color='secondary' size='small' fill='outline' type='submit'>
+          确定
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
 </ion-header>
+
+
 <ion-content margin-top>
   <form (ngSubmit)="onSearch()" [formGroup]='sForm'>
     <ion-list lines='none' no-margin #ionlist>
@@ -53,24 +72,3 @@
     </section>
   </form>
 </ion-content>
-<ion-footer>
-  <ion-toolbar slot='fixed' #toolbar>
-    <ion-row text-center margin-top>
-      <ion-col>
-        <ion-button color='dark' fill='outline' size='small' (click)='onCancel()'>
-          取消
-        </ion-button>
-      </ion-col>
-      <ion-col>
-        <ion-button color='dark' fill='outline' size='small' (click)='onReset()'>
-          重置
-        </ion-button>
-      </ion-col>
-      <ion-col>
-        <ion-button color='secondary' size='small' fill='outline' type='submit'>
-          确定
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-toolbar>
-</ion-footer>

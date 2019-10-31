@@ -101,6 +101,7 @@ ion-title {
   }
 }
 app-fly-filter{
+  z-index: 0;
   position: fixed;
   bottom: 0;
   left: 0;
@@ -109,10 +110,11 @@ app-fly-filter{
   transform: translateY(100%);
   opacity: 0;
   transition: all ease-in-out 100ms;
+  overflow: hidden;
   &.show {
     transform: translateY(0);
-    top: 3em;
-    z-index: 100;
+    top: 0;
+    z-index: 1000;
     opacity: 1;
   }
 }
