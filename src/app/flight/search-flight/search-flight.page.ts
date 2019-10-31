@@ -216,19 +216,19 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     const lastFromCity = await this.storage.get("fromCity").catch(_ => null);
     const lastToCity = await this.storage.get("toCity").catch(_ => null);
     if (!lastFromCity || !lastToCity) {
-      const cities = await this.flightService.getAllLocalAirports();
-      if (cities && cities.length) {
-        const vmFromCity = (this.fromCity = cities.find(
-          c => c.Code.toUpperCase() == this.fromCity.Code
-        ));
-        const vmToCity = (this.toCity = cities.find(
-          c => c.Code.toUpperCase() == this.toCity.Code
-        ));
-        if (vmFromCity && vmToCity) {
-          this.fromCity = this.vmFromCity = vmFromCity;
-          this.toCity = this.vmToCity = vmToCity;
-        }
-      }
+      // const cities = await this.flightService.getAllLocalAirports();
+      // if (cities && cities.length) {
+      //   const vmFromCity = (this.fromCity = cities.find(
+      //     c => c.Code.toUpperCase() == this.fromCity.Code
+      //   ));
+      //   const vmToCity = (this.toCity = cities.find(
+      //     c => c.Code.toUpperCase() == this.toCity.Code
+      //   ));
+      //   if (vmFromCity && vmToCity) {
+      //     this.fromCity = this.vmFromCity = vmFromCity;
+      //     this.toCity = this.vmToCity = vmToCity;
+      //   }
+      // }
     } else {
       this.fromCity = this.vmFromCity = lastFromCity;
       this.toCity = this.vmToCity = lastToCity;

@@ -791,6 +791,10 @@ export class FlightService {
           if (r.FlightSegments) {
             r.FlightSegments = r.FlightSegments.map(seg => {
               const s = new FlightSegmentEntity();
+              s.TakeoffTime=seg.TakeoffTime;
+              s.LowestFare=seg.LowestFare;
+              s.IsStop=seg.IsStop;
+              s.Number=seg.Number;
               if (seg.Cabins) {
                 s.Cabins = seg.Cabins.map(fare => {
                   const c = new FlightCabinEntity();
