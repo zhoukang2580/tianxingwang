@@ -264,7 +264,6 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     const sub0 = this.route.queryParamMap.subscribe(_ => {
       this.isShowSearchBar = false;
       this.isLeavePage = false;
-      this.tmcService.setFlightHotelTrainType(FlightHotelTrainType.Hotel);
     });
     this.subscriptions.push(sub0);
     const sub = this.hotelService.getConditionModelSource().subscribe(c => {

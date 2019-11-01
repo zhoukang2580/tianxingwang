@@ -54,7 +54,6 @@ export class TmcService {
   private selectedCompanySource: BehaviorSubject<string>;
   private companies: GroupCompanyEntity[];
   private tmc: TmcEntity;
-  private travelType: FlightHotelTrainType;
   private mobileTemplateSelectItemList: SelectItem[] = [];
   private emailTemplateSelectItemList: SelectItem[] = [];
   public allLocalAirports: TrafficlineEntity[];
@@ -182,13 +181,6 @@ export class TmcService {
     }
     return res;
   }
-  setFlightHotelTrainType(type: FlightHotelTrainType) {
-    this.travelType = type;
-  }
-  getFlightHotelTrainType() {
-    return this.travelType;
-  }
-
   getSelectedCompanySource() {
     return this.selectedCompanySource.asObservable();
   }

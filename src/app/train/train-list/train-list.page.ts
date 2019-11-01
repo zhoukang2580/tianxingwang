@@ -107,7 +107,6 @@ export class TrainListPage implements OnInit, OnDestroy {
   }
   ngOnInit() {
     this.route.queryParamMap.subscribe(async _ => {
-      this.tmcService.setFlightHotelTrainType(FlightHotelTrainType.Train);
       this.isShowRoundtripTip = await this.staffService.isSelfBookType();
     });
     this.curFilteredBookInfo$ = this.trainService
@@ -343,7 +342,11 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.isLoading = false;
   }
   goToSelectPassengerPage() {
-    this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
+    this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
+      queryParams: {
+        forType: FlightHotelTrainType.Train
+      }
+    });
   }
   async onFilter() {
     this.activeTab = "filter";
@@ -506,7 +509,7 @@ export class TrainListPage implements OnInit, OnDestroy {
     return result;
   }
   onSelectPassenger() {
-    this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
+    this.goToSelectPassengerPage();
   }
   private scrollToTop() {
     setTimeout(() => {
@@ -519,7 +522,7 @@ export class TrainListPage implements OnInit, OnDestroy {
     }, 100);
   }
   private isStillOnCurrentPage() {
-    return this.router.routerState.snapshot.url.includes("flight-list");
+    return this.router.routerState.snapshot.url.includes("train-list");
   }
   private filterTrains(trains: TrainEntity[]) {
     console.log("this.filterCondition", this.filterCondition, trains);

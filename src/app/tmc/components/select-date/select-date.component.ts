@@ -22,6 +22,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
   private curSelectedYear: string;
   private curSelectedMonth: number;
   private goArrivalTime: string;
+  private forType:FlightHotelTrainType;
   yms: AvailableDate[];
   title: string;
   delayBackTime = 200;
@@ -91,7 +92,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
       } else {
         const today = this.calendarService.generateDayModel(moment());
         const endDay = this.calendarService.generateDayModel(moment().add(30, 'days'));
-        const type = this.tmcService.getFlightHotelTrainType();
+        const type = this.forType;
         this.yms.forEach(day => {
           day.dayList.forEach(d => {
             d.enabled = d.timeStamp > today.timeStamp || d.date == today.date;
@@ -167,7 +168,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
               this.tripType == TripType.checkOut
               ? LanguageHelper.getCheckInTip()
               : LanguageHelper.getDepartureTip();
-          d.hasToolTip = true;
+          d.hasToolTip = !!this.forType;
           d.toolTipMsg = LanguageHelper.getSelectCheckOutDate();
           this.selectedDays = [d];
           // AppHelper.toast(LanguageHelper.getSelectFlyBackDate(), 1000, "top");
@@ -194,17 +195,17 @@ export class SelectDateComponent implements OnInit, OnDestroy {
         }
         if (this.tripType == TripType.departureTrip) {
           d.desc = LanguageHelper.getDepartureTip();
-          d.hasToolTip = true;
+          d.hasToolTip = !!this.forType;
           d.toolTipMsg = LanguageHelper.getSelectFlyBackDate();
         }
         if (this.tripType == TripType.checkIn) {
           d.desc = LanguageHelper.getCheckInTip();
-          d.hasToolTip = true;
+          d.hasToolTip = !!this.forType;
           d.toolTipMsg = LanguageHelper.getSelectCheckOutDate();
         }
         if (this.tripType == TripType.checkOut) {
           d.desc = LanguageHelper.getCheckOutTip();
-          d.hasToolTip = true;
+          d.hasToolTip = !!this.forType;
           // d.toolTipMsg = LanguageHelper.getc();
         }
         this.selectedDays = [d];
@@ -272,7 +273,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
         ) {
           this.selectedDays[0].desc = LanguageHelper.getCheckInTip();
           this.selectedDays[1].desc = LanguageHelper.getCheckOutTip();
-          this.selectedDays[1].hasToolTip = true;
+          this.selectedDays[1].hasToolTip = !!this.forType;
           this.selectedDays[1].toolTipMsg = LanguageHelper.getCheckInOutTotalDaysTip(
             Math.abs(moment(this.selectedDays[1].date).diff(
               moment(this.selectedDays[0].date), 'days'))

@@ -66,6 +66,7 @@ export class SelectPassengerPage
   implements OnInit, CanComponentDeactivate, AfterViewInit, OnDestroy {
   private keyword: string;
   private isOpenPageAsModal = false;
+  private forType:FlightHotelTrainType;
   vmKeyword: string;
   removeitem: EventEmitter<PassengerBookInfo<any>>;
   isShowNewCredential = false;
@@ -138,6 +139,7 @@ export class SelectPassengerPage
   }
   async ngOnInit() {
     this.route.queryParamMap.subscribe(_ => {
+      this.forType =_.get("forType") as any;
       this.getIdentityTypes();
       this.initPassengerTypes();
       this.initCredentialsRemarks();
@@ -155,7 +157,7 @@ export class SelectPassengerPage
     this.removeitemSubscription = this.removeitem.subscribe(async info => {
       const ok = await AppHelper.alert(LanguageHelper.getConfirmDeleteTip(),true,LanguageHelper.getConfirmTip(),LanguageHelper.getCancelTip());
       if (info&&ok) {
-        switch (this.tmcService.getFlightHotelTrainType()) {
+        switch (this.forType) {
           case FlightHotelTrainType.Flight: {
             this.flightService.removePassengerBookInfo(info);
             break;
@@ -174,17 +176,17 @@ export class SelectPassengerPage
   }
   private initBookInfos() {
     if (
-      this.tmcService.getFlightHotelTrainType() == FlightHotelTrainType.Flight
+      this.forType== FlightHotelTrainType.Flight
     ) {
       this.bookInfos$ = this.flightService.getPassengerBookInfoSource();
     }
     if (
-      this.tmcService.getFlightHotelTrainType() == FlightHotelTrainType.Train
+      this.forType == FlightHotelTrainType.Train
     ) {
       this.bookInfos$ = this.trainService.getBookInfoSource();
     }
     if (
-      this.tmcService.getFlightHotelTrainType() == FlightHotelTrainType.Hotel
+      this.forType == FlightHotelTrainType.Hotel
     ) {
       this.bookInfos$ = this.hotelService.getBookInfoSource();
     }
@@ -483,7 +485,7 @@ export class SelectPassengerPage
     passengerBookInfo: PassengerBookInfo<any>
   ) {
     if (
-      this.tmcService.getFlightHotelTrainType() == FlightHotelTrainType.Hotel
+      this.forType == FlightHotelTrainType.Hotel
     ) {
       const can = this.canAddMorePassenger(this.hotelService.getBookInfos());
       if (!can) {
@@ -494,7 +496,7 @@ export class SelectPassengerPage
       this.hotelService.addBookInfo(passengerBookInfo);
     }
     if (
-      this.tmcService.getFlightHotelTrainType() == FlightHotelTrainType.Flight
+      this.forType == FlightHotelTrainType.Flight
     ) {
       const can = this.canAddMorePassenger(
         this.flightService.getPassengerBookInfos()
@@ -507,7 +509,7 @@ export class SelectPassengerPage
       this.flightService.addPassengerBookInfo(passengerBookInfo);
     }
     if (
-      this.tmcService.getFlightHotelTrainType() == FlightHotelTrainType.Train
+      this.forType == FlightHotelTrainType.Train
     ) {
       if (!this.canAddMorePassenger(this.trainService.getBookInfos())) {
         return false;

@@ -77,7 +77,6 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     private modalCtrl: ModalController
   ) {
     route.queryParamMap.subscribe(async _ => {
-      this.tmcService.setFlightHotelTrainType(FlightHotelTrainType.Train);
       this.staff = await this.staffService.getStaff();
       if (await this.isStaffTypeSelf()) {
         this.isDisabled =
@@ -222,7 +221,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
   }
 
   onSelectPassenger() {
-    this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
+    this.router.navigate([AppHelper.getRoutePath("select-passenger")],{queryParams:{forType:FlightHotelTrainType.Train}});
   }
 
   ngOnDestroy(): void {

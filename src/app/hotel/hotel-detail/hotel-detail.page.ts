@@ -35,7 +35,7 @@ import { ConfigService } from "src/app/services/config/config.service";
 import { RoomEntity } from "../models/RoomEntity";
 import { RoomPlanEntity } from "../models/RoomPlanEntity";
 import { StaffService } from "src/app/hr/staff.service";
-import { PassengerBookInfo } from "src/app/tmc/tmc.service";
+import { PassengerBookInfo, FlightHotelTrainType } from "src/app/tmc/tmc.service";
 import { TripType } from "src/app/tmc/models/TripType";
 import { environment } from "src/environments/environment";
 import { FilterPassengersPolicyComponent } from "src/app/tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
@@ -105,7 +105,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
   }
   onSelectPassenger() {
-    this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
+    this.router.navigate([AppHelper.getRoutePath("select-passenger")], { queryParams: { forType: FlightHotelTrainType.Hotel } });
   }
   private async initFilterPolicy() {
     const isSelf = await this.staffService.isSelfBookType();

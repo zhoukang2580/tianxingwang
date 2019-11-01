@@ -19,7 +19,8 @@ import * as jsPy from "js-pinyin";
 import {
   PassengerBookInfo,
   TmcService,
-  InitialBookDtoModel
+  InitialBookDtoModel,
+  FlightHotelTrainType
 } from "../tmc/tmc.service";
 import { CredentialsType } from "../member/pipe/credential.pipe";
 import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
@@ -551,7 +552,8 @@ export class TrainService {
           goTrain.bookInfo.trainEntity &&
           goTrain.bookInfo.trainEntity.ArrivalTime,
         tripType: s.tripType || TripType.departureTrip,
-        isMulti: isMulti
+        isMulti: isMulti,
+        forType: FlightHotelTrainType.Train
       }
     });
     await m.present();

@@ -70,7 +70,6 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
       .getPassengerBookInfoSource()
       .pipe(map(infos => infos && infos.length));
     route.queryParamMap.subscribe(async _ => {
-      this.tmcService.setFlightHotelTrainType(FlightHotelTrainType.Flight);
       this.staff = await this.staffService.getStaff();
       this.disabled = this.searchFlightModel && this.searchFlightModel.isLocked;
       this.showReturnTrip = await this.isStaffTypeSelf();
@@ -177,7 +176,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.apiService.hideLoadingView();
   }
   onSelectPassenger() {
-    this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
+    this.router.navigate([AppHelper.getRoutePath("select-passenger")], { queryParams: { forType: FlightHotelTrainType.Flight } });
   }
 
   ngOnDestroy(): void {

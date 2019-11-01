@@ -53,7 +53,6 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     const sub = route.queryParamMap.subscribe(async _ => {
       this.isLeavePage = false;
       this.canAddPassengers = !(await this.staffService.isSelfBookType());
-      tmcSerivce.setFlightHotelTrainType(FlightHotelTrainType.Hotel);
     });
     this.subscriptions.push(sub);
   }
@@ -129,7 +128,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   }
   onShowSelectedBookInfos() { }
   onSelectPassenger() {
-    this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
+    this.router.navigate([AppHelper.getRoutePath("select-passenger")], { queryParams: { forType: FlightHotelTrainType.Hotel } });
   }
   async onSelecDate(isCheckIn: boolean) {
     const days = await this.hotelService.openCalendar(

@@ -10,7 +10,8 @@ import { ApiService } from "../services/api/api.service";
 import {
   PassengerBookInfo,
   TmcService,
-  InitialBookDtoModel
+  InitialBookDtoModel,
+  FlightHotelTrainType
 } from "../tmc/tmc.service";
 import { Subject, combineLatest } from "rxjs";
 import { StaffService } from "../hr/staff.service";
@@ -97,8 +98,8 @@ export class HotelService {
     return this.getRoomRateRule(roomPlan);
   }
   getRoomRateRuleMessage(roomPlan: RoomPlanEntity) {
-    if (!roomPlan||!roomPlan.RoomPlanRules)    {return "";}
-    return  roomPlan.RoomPlanRules.map(it=>it.Description).join(",");
+    if (!roomPlan || !roomPlan.RoomPlanRules) { return ""; }
+    return roomPlan.RoomPlanRules.map(it => it.Description).join(",");
   }
   getAvgPrice(plan: RoomPlanEntity) {
     if (plan && plan.VariablesJsonObj) {
@@ -263,8 +264,8 @@ export class HotelService {
         m.hotelType == "normal"
           ? ""
           : m.hotelType == "agreement"
-          ? "Agreement"
-          : "SpecialPrice";
+            ? "Agreement"
+            : "SpecialPrice";
       this.searchHotelModelSource.next(this.searchHotelModel);
     }
   }
@@ -357,8 +358,8 @@ export class HotelService {
   getBookInfoSource() {
     return this.bookInfoSource.asObservable();
   }
-  calcTotalNights(d1:string,d2:string){
-    return Math.abs(moment(d1).diff(moment(d2),'days'))
+  calcTotalNights(d1: string, d2: string) {
+    return Math.abs(moment(d1).diff(moment(d2), 'days'))
   }
   async openCalendar(
     checkInDate?: DayModel,
@@ -374,7 +375,8 @@ export class HotelService {
         goArrivalTime: checkInDate.timeStamp,
         tripType: tripType,
         isMulti: true,
-        title
+        title,
+        forType: FlightHotelTrainType.Hotel
       }
     });
     m.present();
@@ -497,7 +499,7 @@ export class HotelService {
       map(result => {
         if (result && result.Data && result.Data.HotelDayPrices) {
           result.Data.HotelDayPrices = result.Data.HotelDayPrices.map(it => {
-            if(it.Hotel){
+            if (it.Hotel) {
               if (it.Hotel.Variables) {
                 it.Hotel.VariablesJsonObj = JSON.parse(it.Hotel.Variables);
               }
@@ -707,7 +709,7 @@ export class HotelService {
     let i = 10;
     let top = await this.modalCtrl.getTop();
     while (top && --i > 0) {
-      await top.dismiss().catch(_ => {});
+      await top.dismiss().catch(_ => { });
       top = await this.modalCtrl.getTop();
     }
   }

@@ -5,7 +5,8 @@ import { CredentialsEntity } from "./../tmc/models/CredentialsEntity";
 import {
   TmcService,
   PassengerBookInfo,
-  InitialBookDtoModel
+  InitialBookDtoModel,
+  FlightHotelTrainType
 } from "src/app/tmc/tmc.service";
 import {
   ModalController,
@@ -159,16 +160,16 @@ export class FlightService {
     return this.passengerBookInfoSource.asObservable();
   }
   filterPassengerPolicyCabins(
-{ data, flightSegment }: { data: PassengerBookInfo<IFlightSegmentInfo>; flightSegment: FlightSegmentEntity; }  ) {
-    let policyCabins: FlightPolicy[] =[];
-    policyCabins = (flightSegment.Cabins||[]).map(it=>{
+    { data, flightSegment }: { data: PassengerBookInfo<IFlightSegmentInfo>; flightSegment: FlightSegmentEntity; }) {
+    let policyCabins: FlightPolicy[] = [];
+    policyCabins = (flightSegment.Cabins || []).map(it => {
       return {
         Cabin: it,
         FlightNo: flightSegment.Number,
         Id: it.Id,
         CabinCode: it.Code,
-        IsAllowBook:true,
-        Discount:it.Discount,
+        IsAllowBook: true,
+        Discount: it.Discount,
         LowerSegment: it.LowerSegment,
         Rules: []
       }
@@ -192,10 +193,10 @@ export class FlightService {
             it => !it.Rules || it.Rules.length == 0
           );
         }
-        policyCabins=policyCabins.map(it=>{
-          const fc = flightSegment.Cabins&&flightSegment.Cabins.find(f=>f.Id==it.Id);
-          if(fc){
-            it.Cabin={...fc};
+        policyCabins = policyCabins.map(it => {
+          const fc = flightSegment.Cabins && flightSegment.Cabins.find(f => f.Id == it.Id);
+          if (fc) {
+            it.Cabin = { ...fc };
           }
           return it;
         })
@@ -245,7 +246,7 @@ export class FlightService {
                 return fr.FlightSegments.some(
                   s =>
                     numbers.includes(s.Number) &&
-                    policies &&policies.FlightPolicies&&
+                    policies && policies.FlightPolicies &&
                     policies.FlightPolicies.some(
                       pc => !pc.Rules || pc.Rules.length == 0
                     )
@@ -370,12 +371,13 @@ export class FlightService {
           goFlight.bookInfo.flightSegment &&
           goFlight.bookInfo.flightSegment.ArrivalTime,
         tripType: s.tripType,
+        forType: FlightHotelTrainType.Flight,
         isMulti: isMulti
       }
     });
-   await m.present();
-   const d = await m.onDidDismiss();
-   return d&&d.data as DayModel[];
+    await m.present();
+    const d = await m.onDidDismiss();
+    return d && d.data as DayModel[];
   }
 
   private async reselectSelfBookTypeSegment(
@@ -524,12 +526,12 @@ export class FlightService {
                   !(
                     (go.bookInfo.flightSegment &&
                       go.bookInfo.flightSegment.FromCityName) ==
-                      (backInfo.bookInfo.flightSegment &&
-                        backInfo.bookInfo.flightSegment.ToCityName) &&
+                    (backInfo.bookInfo.flightSegment &&
+                      backInfo.bookInfo.flightSegment.ToCityName) &&
                     (go.bookInfo.flightSegment &&
                       go.bookInfo.flightSegment.ToCityName) ==
-                      (backInfo.bookInfo.flightSegment &&
-                        backInfo.bookInfo.flightSegment.FromCityName)
+                    (backInfo.bookInfo.flightSegment &&
+                      backInfo.bookInfo.flightSegment.FromCityName)
                   )
                 ) {
                   backInfo.bookInfo = null;
@@ -627,7 +629,7 @@ export class FlightService {
     let i = 10;
     while (top && --i > 0) {
       // console.log("onSelectReturnTrip", top);
-      await top.dismiss().catch(_ => {});
+      await top.dismiss().catch(_ => { });
       top = await this.modalCtrl.getTop();
     }
     console.timeEnd("dismissAllTopOverlays");
@@ -640,9 +642,9 @@ export class FlightService {
   async addOneBookInfoToSelfBookType() {
     console.log("addOneBookInfoToSelfBookType");
     let IdCredential: CredentialsEntity;
-    const staff:StaffEntity = await this.staffService.getStaff().catch(_ => null);
-    if(!staff||!staff.AccountId){
-      return ;
+    const staff: StaffEntity = await this.staffService.getStaff().catch(_ => null);
+    if (!staff || !staff.AccountId) {
+      return;
     }
     if (this.getPassengerBookInfos().length) {
       return;
@@ -791,29 +793,29 @@ export class FlightService {
           if (r.FlightSegments) {
             r.FlightSegments = r.FlightSegments.map(seg => {
               const s = new FlightSegmentEntity();
-              s.TakeoffTime=seg.TakeoffTime;
-              s.LowestFare=seg.LowestFare;
-              s.IsStop=seg.IsStop;
-              s.Number=seg.Number;
+              s.TakeoffTime = seg.TakeoffTime;
+              s.LowestFare = seg.LowestFare;
+              s.IsStop = seg.IsStop;
+              s.Number = seg.Number;
               if (seg.Cabins) {
                 s.Cabins = seg.Cabins.map(fare => {
                   const c = new FlightCabinEntity();
-                  c.Discount=fare.Discount;
-                  c.Id= fare.Id;
-                   c.SalesPrice= fare.SalesPrice||"0";
-                   c.Type= fare.Type;
-                   c.FlightRouteIds= fare.FlightRouteIds;
-                   c.FlightNumber=fare.FlightNumber;
-                   c.Code=fare.Code;
-                   c.Variables=fare.Variables;
-                   c.Rules=fare.Rules;
-                   if(fare.LowerSegment){
-                     c.LowerSegment={} as any;
-                     c.LowerSegment.AirlineName=fare.LowerSegment&&fare.LowerSegment.AirlineName;
-                     c.LowerSegment.LowestFare=fare.LowerSegment&&fare.LowerSegment.LowestFare||"0";
-                     c.LowerSegment.Number=fare.LowerSegment&&fare.LowerSegment.Number;
-                    c.LowerSegment.TakeoffTime=fare.LowerSegment&&fare.LowerSegment.TakeoffTime;
-                   }
+                  c.Discount = fare.Discount;
+                  c.Id = fare.Id;
+                  c.SalesPrice = fare.SalesPrice || "0";
+                  c.Type = fare.Type;
+                  c.FlightRouteIds = fare.FlightRouteIds;
+                  c.FlightNumber = fare.FlightNumber;
+                  c.Code = fare.Code;
+                  c.Variables = fare.Variables;
+                  c.Rules = fare.Rules;
+                  if (fare.LowerSegment) {
+                    c.LowerSegment = {} as any;
+                    c.LowerSegment.AirlineName = fare.LowerSegment && fare.LowerSegment.AirlineName;
+                    c.LowerSegment.LowestFare = fare.LowerSegment && fare.LowerSegment.LowestFare || "0";
+                    c.LowerSegment.Number = fare.LowerSegment && fare.LowerSegment.Number;
+                    c.LowerSegment.TakeoffTime = fare.LowerSegment && fare.LowerSegment.TakeoffTime;
+                  }
                   return c;
                 });
               }
@@ -868,9 +870,9 @@ export class FlightService {
     //   moment(s.ArrivalTime, "YYYY-MM-DDTHH:mm:ss").date() -
     //   moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").date();
     // console.log(addDay);
-    const addDay =moment(s.ArrivalTime).diff(moment(s.TakeoffTime),'days');
-      // new Date(s.ArrivalTime).getDate() - new Date(s.TakeoffTime).getDate();
-    return addDay>0?"+"+addDay + LanguageHelper.getDayTip():"";
+    const addDay = moment(s.ArrivalTime).diff(moment(s.TakeoffTime), 'days');
+    // new Date(s.ArrivalTime).getDate() - new Date(s.TakeoffTime).getDate();
+    return addDay > 0 ? "+" + addDay + LanguageHelper.getDayTip() : "";
   }
   getTotalFlySegments(flyJourneys: FlightJourneyEntity[]) {
     console.time("getTotalFlySegments");
