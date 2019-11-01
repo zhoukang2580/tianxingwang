@@ -216,13 +216,21 @@ export class SelectDateComponent implements OnInit, OnDestroy {
       d.desc = LanguageHelper.getDepartureTip();
       if (this.tripType == TripType.returnTrip) {
         d.desc = LanguageHelper.getReturnTripTip();
-        d.hasToolTip = true;
+        d.hasToolTip = false;
         d.toolTipMsg = null;
       }
-      if (this.tripType == TripType.checkOut || this.tripType == TripType.checkIn) {
+      if (this.tripType == TripType.departureTrip) {
+        d.desc = LanguageHelper.getDepartureTip();
+        d.hasToolTip = false;
+        d.toolTipMsg = null;
+      }
+      if (this.tripType == TripType.checkOut) {
+        d.desc = LanguageHelper.getCheckOutTip();
+        d.hasToolTip = false;
+      }
+      if (this.tripType == TripType.checkIn) {
         d.desc = LanguageHelper.getCheckInTip();
-        d.hasToolTip = true;
-        d.toolTipMsg = LanguageHelper.getSelectCheckOutDate();
+        d.hasToolTip = false;
       }
       this.selectedDays = [d];
     }
@@ -246,6 +254,26 @@ export class SelectDateComponent implements OnInit, OnDestroy {
       this.isCurrentSelectedOk = this.selectedDays && this.selectedDays.length > 1;
     } else {
       this.isCurrentSelectedOk = !!(this.selectedDays && this.selectedDays.length);
+    }
+    if (this.selectedDays && this.selectedDays.length) {
+      const first = this.selectedDays[0];
+      const last = this.selectedDays[this.selectedDays.length - 1];
+      first.firstSelected = true;
+      if (last) {
+        last.lastSelected = true;
+        if (first.date != last.date) {
+          last.firstSelected = false;
+          first.lastSelected = false;
+          this.yms.forEach(ym => {
+            ym.dayList.forEach(it => {
+              it.isBetweenDays = it.timeStamp > first.timeStamp && it.timeStamp < last.timeStamp;
+              if (it.isBetweenDays) {
+                it.selected = true;
+              }
+            })
+          })
+        }
+      }
     }
     if (this.isMulti) {
       if (this.selectedDays.length > 1) {
