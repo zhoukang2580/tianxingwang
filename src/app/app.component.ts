@@ -117,10 +117,19 @@ export class AppComponent
         this.backButtonAction();
       }, false);
       this.splashScreen.show();
+      this.splashScreen.hide();
       console.log(`platform ready`);
       this.app = navigator["app"];
       this.statusBar.styleDefault();
       if (AppHelper.isApp() && this.platform.is("android")) {
+        if (AppHelper.isApp()) {
+          if (this.platform.is('android')) {
+            this.splashScreen.show();
+            const hcpPlugin = window['hcp'];
+            hcpPlugin.loadHcpPage();
+          }
+          this.splashScreen.hide();
+        }
         setTimeout(async () => {
           this.splashScreen.hide();
           // console.log(`uuid = ${await AppHelper.getUUID()}`);

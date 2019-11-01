@@ -16,7 +16,10 @@
   2.手机验证码登录,倒计时,如果输错2次，请求验证码
   3.微信登录、钉钉登录
   4.设备登录（用于自动登录）
-
+## mac上的注意事项
+1. 拉取代码后，需要执行npm i，如果要用到热更功能，需要先安装cordova-plugin-zip 插件，随后可选择安装，cordova-plugin-file 插件，zip插件依赖file插件，所以会自动安装，否则ios的热更不起作用
+2. 打包编译指令 sudo ionic cordova build ios --prod 
+3. 用xcode 打开项目前 需要先执行下 sudo chmod -R 777 ./platforms/ios 改变文件夹属性，否则打开xcode会不能修改里面的信息
 ## 开发阶段，改变localhost:4200为指定的域名地址
   `ng serve --host 域名 --port 端口号 --open` 其中的默认端口号是4200
   例如：

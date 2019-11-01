@@ -78,17 +78,21 @@ export class FileHelperService {
     this.plt.ready().then(async () => {
       this.hcpPlugin = window['hcp'];
       this.app = navigator['app'];
-      if (AppHelper.isApp()) {
-        if (this.plt.is('android')) {
-          this.hcpPlugin.loadHcpPage();
-        }
-        this.splashScreen.show();
-        this.logMessage(`uuid = ${await AppHelper.getDeviceId()}`);
-      }
+      // if (AppHelper.isApp()) {
+      //   if (this.plt.is('android')) {
+      //     this.splashScreen.show();
+      //     this.hcpPlugin.loadHcpPage();
+      //   }
+      //   this.splashScreen.hide();
+      //   this.logMessage(`uuid = ${await AppHelper.getDeviceId()}`);
+      // }
       this.dataDirectory = this.file.dataDirectory;
+      // if(this.plt.is("ios")&&window['cordova'].file){
+      //   this.dataDirectory=window['cordova'].file.dataDirectory;
+      // }
       await this.clearLocalHcpVersionIfAppUpdated();
       this.localVersion = await this.getLocalVersionNumber();
-      this.fileInfo.dataDrectory = this.file.dataDirectory;
+      this.fileInfo.dataDrectory = this.dataDirectory;
       this.fileInfo.externalDataDirectory = this.file.externalDataDirectory;
       this.fileInfo.cacheDirector = this.file.cacheDirectory;
       this.fileInfo.tempDirectory = this.file.tempDirectory;
@@ -252,14 +256,17 @@ export class FileHelperService {
         }
         const url = `${hcpRes}?v=${Date.now()}`;
         this.logMessage(`下载的热更zip 文件URL ${url}`);
-        const zipFile = await this.downloadZipFile(url, onprogress);
+        const zipFile = await this.downloadZipFile(url, onprogress).catch(_ => {
+          this.logMessage(`zipFile 异常 ${url}`);
+          return null;
+        });
         const f = await this.getFileEntry(zipFile.nativePath);
         const zp = await this.getParent(f);
         const zipFileExists = await this.checkPathFileExists(zp.nativeURL, this.updateZipFileName);
         this.logMessage(`zipFile 是否存在 ${zipFileExists ? "存在" : "不存在"}`)
         if (!zipFileExists) {
-          // reject(`zipFile是否存在 ${zipFileExists ? "存在" : "不存在"}`)
-          // return false;
+          reject(`zipFile是否存在 ${zipFileExists ? "存在" : "不存在"}`)
+          return false;
         }
         const path = `${this.dataDirectory}${this.updateDirectoryName}`;
         const serverVersionDirectory = `${this.www}_${this.serverVersion}`.replace(/\./g, "_");
@@ -394,6 +401,28 @@ export class FileHelperService {
    * @param onprogress 下载进度回调函数
    */
   private downLoadFile(url: string, destFilePathDir: string, fileName: string, onprogress: (hcp: IHcpUpdateModel) => void) {
+    if(this.plt.is("ios")){
+      return new Promise<IHcpUpdateModel>(async (resolve, reject)=>{
+       const result =  await this.download(`${destFilePathDir}/${fileName}`,url,evt=>{
+          if(evt.lengthComputable){
+            if(onprogress){
+              onprogress({
+                total: evt.total,
+                loaded: evt.loaded,
+                taskDesc: LanguageHelper.getFileDownloadingTip()
+              } as IHcpUpdateModel)
+            }
+          }
+        }).catch(_=>{
+          reject(_);
+          return null;
+        });
+        resolve({
+          hcpUpdateComplete: true,
+          nativePath: result
+        } as IHcpUpdateModel)
+      });
+    }
     return new Promise<IHcpUpdateModel>((resolve, reject) => {
       const sub = this.httpClient.get(url, {
         observe: "events",
@@ -401,32 +430,59 @@ export class FileHelperService {
         reportProgress: true
       })
         .subscribe(async (evt: any) => {
+          this.logMessage("evt", evt);
           if (evt.total) {
-            this.logMessage(`正在下载文件 ${Math.floor(evt.loaded / evt.total * 100).toFixed(2)}%`);
+            this.logMessage(`正在下载文件 ${Math.floor(evt.loaded / evt.total * 100).toFixed(2)}% evt.body=`, evt.body);
             onprogress({
               total: evt.total,
               loaded: evt.loaded,
               taskDesc: LanguageHelper.getFileDownloadingTip()
             } as IHcpUpdateModel);
           }
-          if (evt instanceof HttpResponse) {
-            if (!AppHelper.isApp()) {
-              console.log(evt);
-              resolve({
-                hcpUpdateComplete: true,
-                nativePath: ``
-              } as IHcpUpdateModel);
-              return;
-            }
-            const result = await this.writeContentToFile(destFilePathDir, fileName, evt.body, onprogress)
-              .catch(e => {
-                reject(e);
-                return null as IHcpUpdateModel;
-              });
-            if (result) {
-              resolve(result);
+          if (this.plt.is('ios')) {
+            if (evt.body && evt.status == 200 && evt.type == 4) {
+              // if (!AppHelper.isApp()) {
+              //   console.log(evt);
+              //   resolve({
+              //     hcpUpdateComplete: true,
+              //     nativePath: ``
+              //   } as IHcpUpdateModel);
+              //   return;
+              // }
+              const result = await this.writeContentToFile(destFilePathDir, fileName, evt.body, onprogress)
+                .catch(e => {
+                  reject(e);
+                  return null as IHcpUpdateModel;
+                });
+              this.logMessage("result ", result);
+              if (result) {
+                resolve(result);
+              }
+            } else {
+              // reject(evt.statusText);
             }
           }
+          if (this.plt.is("android")) {
+            if (evt instanceof HttpResponse) {
+              if (!AppHelper.isApp()) {
+                console.log(evt);
+                resolve({
+                  hcpUpdateComplete: true,
+                  nativePath: ``
+                } as IHcpUpdateModel);
+                return;
+              }
+              const result = await this.writeContentToFile(destFilePathDir, fileName, evt.body, onprogress)
+                .catch(e => {
+                  reject(e);
+                  return null as IHcpUpdateModel;
+                });
+              if (result) {
+                resolve(result);
+              }
+            }
+          }
+
         }, e => {
           reject(e);
         }, () => {
@@ -439,37 +495,76 @@ export class FileHelperService {
   private writeContentToFile(
     destFilePathDir: string,
     fileName: string,
-    data: any,
+    data: ArrayBuffer | any,
     onprogress: (evt: IHcpUpdateModel) => void) {
     return new Promise<IHcpUpdateModel>(async (resove, reject) => {
-      const fileEntry = await this.createFile(destFilePathDir, fileName, true);
-      if (!fileEntry) {
-        reject(`【${this.updateZipFileName}】文件创建失败`);
-        return;
-      }
-      fileEntry.createWriter(fw => {
-        fw.onerror = err => {
-          this.logMessage(`【${fileName}】写入本地失败`, err);
-
-          reject(err);
-        };
-        fw.onprogress = fwevt => {
-          this.logMessage("正在写入文件",fwevt.loaded/fwevt.total);
-          onprogress({
-            total: fwevt.total,
-            loaded: fwevt.loaded,
-            taskDesc: LanguageHelper.getWritingFileTip()
-          } as IHcpUpdateModel);
-        };
-        fw.onwriteend = fwevt => {
-          this.logMessage(`【${fileName}】写入本地已经完成,文件的路径：${fileEntry.toURL()}`);
+      this.logMessage("data is of  type ArrayBuffer ", data instanceof ArrayBuffer);
+      this.logMessage("data.byteLength", data && data.byteLength);
+      if (this.plt.is("ios")) {
+        this.logMessage("ios destFilePathDir", `${destFilePathDir}/${fileName}`);
+        const writeFile = await this.file.writeFile(destFilePathDir, fileName, data, { replace: true })
+          .then(_ => {
+            this.logMessage("ios 写入文件成功", _);
+            return true;
+          })
+          .catch(_ => {
+            this.logMessage("ios 写入文件失败");
+            return false;
+          });
+        const check = await this.file.checkFile(destFilePathDir, fileName).catch(_ => {
+          this.logError('ios check file error ', _);
+          return false
+        });
+        this.logMessage(`结果，writeFile=${writeFile},checkfile=${check}`);
+        if (check) {
           resove({
             hcpUpdateComplete: true,
-            nativePath: fileEntry.toURL()
+            nativePath: `${destFilePathDir.endsWith("/") ? destFilePathDir : destFilePathDir + "/"}${fileName}`
           } as IHcpUpdateModel);
+        } else {
+          reject("文件写入失败");
         }
-        fw.write(data);
-      });
+      } else {
+        const fileEntry = await this.createFile(destFilePathDir, fileName, true);
+        this.logMessage("writeContentToFile", fileEntry);
+        if (!fileEntry) {
+          reject(`【${this.updateZipFileName}】文件创建失败`);
+          return;
+        }
+        fileEntry.createWriter(fw => {
+          if (!fw) {
+            reject("filewrter 创建失败");
+            return;
+          }
+          this.logMessage("writeContentToFile", typeof fw);
+          fw.onabort = (fwabortevt => {
+            this.logMessage(`fwabortevt`, fwabortevt);
+          })
+          fw.onwritestart = (startevt => {
+            this.logMessage(`onwritestart`, startevt);
+          })
+          fw.onerror = err => {
+            this.logMessage(`【${fileName}】写入本地失败`, err);
+            reject(err);
+          };
+          fw.onprogress = fwevt => {
+            this.logMessage("正在写入文件", fwevt.loaded / fwevt.total);
+            onprogress({
+              total: fwevt.total,
+              loaded: fwevt.loaded,
+              taskDesc: LanguageHelper.getWritingFileTip()
+            } as IHcpUpdateModel);
+          };
+          fw.onwriteend = fwevt => {
+            this.logMessage(`【${fileName}】写入本地已经完成,文件的路径：${fileEntry.toURL()}`);
+            resove({
+              hcpUpdateComplete: true,
+              nativePath: fileEntry.toURL()
+            } as IHcpUpdateModel);
+          }
+          fw.write(data);
+        });
+      }
     });
   }
   private downloadZipFile(url: string, onprogress: (hcp: IHcpUpdateModel) => void) {
@@ -731,7 +826,7 @@ export class FileHelperService {
     const lmain = lVs[0];
     const lMinor = lVs[1];
     const lPatch = lVs[sVs.length - 1];
-    return smain == lmain && sMinor == lMinor && sPatch != lPatch && serverVersion !== this.getLocalHcpVersion();
+    return smain == lmain && sMinor == lMinor && sPatch > lPatch && serverVersion !== this.getLocalHcpVersion();
   }
   /**
  *  
@@ -899,6 +994,38 @@ export class FileHelperService {
       });
     }
     return "";
+  }
+  private async download(fileURL: string, url: string, onprogress: (evt: ProgressEvent) => void, ticket = "") {
+    return new Promise<string>((rsl, rej) => {
+      console.log(`new window["FileTransfer"]`, typeof window["FileTransfer"]);
+      const fileTransfer: any = new window["FileTransfer"]();
+      const uri = encodeURI(`${url}`);
+      if (!fileTransfer) {
+        return rej("fileTransfer 不存在");
+      }
+      fileTransfer.onprogress = onprogress;
+      fileTransfer.download(
+        uri,
+        fileURL,
+        (entry) => {
+          console.log("download complete: " + entry.toURL());
+          console.log("download complete: " + JSON.stringify(entry, null, 2));
+          rsl(entry.toURL());
+        },
+        (error) => {
+          console.log("download error source " + error.source);
+          console.log("download error target " + error.target);
+          console.log("download error code" + error.code);
+          rej("下载失败");
+        },
+        false,
+        {
+          headers: {
+            "Ticket": ``
+          }
+        }
+      );
+    });
   }
   private async getDirectoryFilesRecursively(path: string, dir: string, entries: Entry[]) {
     const tempEntry = await this.getDirectoryFiles(path, dir);

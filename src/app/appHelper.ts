@@ -394,7 +394,7 @@ export class AppHelper {
     const style = AppHelper.getStyle() || "";
     path =
       path && path.length > 0 ? `${path}${style ? "_" + style : ""}` : path;
-    console.log(`get style=${style}, Route Path=`, path);
+    console.log(`get style=${style}, Route Path=${path}`);
     if (path) {
       return `/${path}`;
     }
@@ -406,8 +406,8 @@ export class AppHelper {
     route: Route
   ) {
     try {
-      // console.log(url, group, route, route.loadChildren);
-      let path: string = null;
+      console.log(url, group, route, route.loadChildren);
+      let path: string = "/tabs/home";
       if (url.length === 1) {
         path = url[0].path;
         console.log("path", path);
@@ -418,7 +418,7 @@ export class AppHelper {
       }
       console.log("matchDefaultRoute path after", path);
       return path && url[0].path.match(new RegExp(`${path}_*`, "gi"))
-        ? (route.redirectTo = `/${path}`) && {
+        ? (route.redirectTo = `/${path=="null"?"":path}`) && {
           consumed: [new UrlSegment(path, {})]
         }
         : {
