@@ -22,7 +22,8 @@ export class SelectDateComponent implements OnInit, OnDestroy {
   private curSelectedYear: string;
   private curSelectedMonth: number;
   private goArrivalTime: string;
-  private forType:FlightHotelTrainType;
+  private forType: FlightHotelTrainType;
+  private isCurrentSelectedOk = false;
   yms: AvailableDate[];
   title: string;
   delayBackTime = 200;
@@ -132,19 +133,13 @@ export class SelectDateComponent implements OnInit, OnDestroy {
     this.calendarService.setSelectedDaysSource(this.selectedDays);
     const m = await this.modalCtrl.getTop();
     if (m) {
-      m.dismiss(this.selectedDays).catch(_ => { });
+     await m.dismiss(this.selectedDays).catch(_ => {});
     }
+    this.isCurrentSelectedOk=false;
   }
   onDaySelected(d: DayModel) {
-    // console.log(
-    //   "select date component onDaySelected",
-    //   d,
-    //   this.selectedDays.length,
-    //   this.tripType,
-    //   "this.isMulti",
-    //   this.isMulti
-    // );
-    if (!d || !d.date) {
+
+    if (!d || !d.date || this.isCurrentSelectedOk) {
       return;
     }
     if (!d.enabled) {
@@ -164,11 +159,15 @@ export class SelectDateComponent implements OnInit, OnDestroy {
       if (this.selectedDays.length) {
         if (d.timeStamp < this.selectedDays[0].timeStamp) {
           d.desc =
-            this.forType==FlightHotelTrainType.Hotel
+            this.tripType == TripType.checkIn ||
+              this.tripType == TripType.checkOut
               ? LanguageHelper.getCheckInTip()
               : LanguageHelper.getDepartureTip();
-          d.hasToolTip = !!this.forType;
-          d.toolTipMsg = "";
+          d.hasToolTip = true;
+          d.toolTipMsg = this.tripType == TripType.checkIn ||
+            this.tripType == TripType.checkOut
+            ? LanguageHelper.getSelectCheckOutDate()
+            : LanguageHelper.getBackDateTip();
           this.selectedDays = [d];
           // AppHelper.toast(LanguageHelper.getSelectFlyBackDate(), 1000, "top");
         } else {
@@ -176,12 +175,22 @@ export class SelectDateComponent implements OnInit, OnDestroy {
           d.lastSelected = true;
           d.descPos = "top";
           d.desc =
-            d.timeStamp == this.selectedDays[0].timeStamp
-              ? LanguageHelper.getRoundTripTip()
-              : this.forType==FlightHotelTrainType.Hotel
-                ? LanguageHelper.getCheckInOutTip()
-                : LanguageHelper.getReturnTripTip();
+            this.tripType == TripType.checkIn ||
+              this.tripType == TripType.checkOut
+              ? LanguageHelper.getCheckOutTip()
+              : LanguageHelper.getReturnTripTip();
+          d.hasToolTip = true;
           this.selectedDays.push(d);
+          if (this.selectedDays[0].timeStamp == this.selectedDays[1].timeStamp) {
+            this.selectedDays[0].desc = this.tripType == TripType.checkIn ||
+              this.tripType == TripType.checkOut
+              ? LanguageHelper.getCheckInOutTip()
+              : LanguageHelper.getRoundTripTip();
+          }
+          d.toolTipMsg = this.tripType == TripType.checkIn ||
+            this.tripType == TripType.checkOut
+            ? LanguageHelper.getCheckInOutTotalDaysTip(Math.abs(moment(this.selectedDays[0].date).diff(this.selectedDays[1].date, 'days')))
+            : "";
         }
       } else {
         d.firstSelected = true;
@@ -189,22 +198,22 @@ export class SelectDateComponent implements OnInit, OnDestroy {
         d.descPos = "top";
         if (this.tripType == TripType.returnTrip) {
           d.desc = LanguageHelper.getReturnTripTip();
-          d.hasToolTip = false;
+          d.hasToolTip = true;
           d.toolTipMsg = null;
         }
         if (this.tripType == TripType.departureTrip) {
           d.desc = LanguageHelper.getDepartureTip();
-          d.hasToolTip = !!this.forType;
+          d.hasToolTip = true;
           d.toolTipMsg = LanguageHelper.getSelectFlyBackDate();
         }
         if (this.tripType == TripType.checkIn) {
           d.desc = LanguageHelper.getCheckInTip();
-          d.hasToolTip = !!this.forType;
+          d.hasToolTip = true;
           d.toolTipMsg = LanguageHelper.getSelectCheckOutDate();
         }
         if (this.tripType == TripType.checkOut) {
           d.desc = LanguageHelper.getCheckOutTip();
-          d.hasToolTip = !!this.forType;
+          d.hasToolTip = true;
           // d.toolTipMsg = LanguageHelper.getc();
         }
         this.selectedDays = [d];
@@ -216,12 +225,12 @@ export class SelectDateComponent implements OnInit, OnDestroy {
       d.desc = LanguageHelper.getDepartureTip();
       if (this.tripType == TripType.returnTrip) {
         d.desc = LanguageHelper.getReturnTripTip();
-        d.hasToolTip = false;
+        d.hasToolTip = true;
         d.toolTipMsg = null;
       }
       if (this.tripType == TripType.checkOut) {
         d.desc = LanguageHelper.getCheckOutTip();
-        d.hasToolTip = false;
+        d.hasToolTip = true;
         d.toolTipMsg = null;
       }
       this.selectedDays = [d];
@@ -242,84 +251,13 @@ export class SelectDateComponent implements OnInit, OnDestroy {
         }
       });
     });
-    if (!this.isMulti) {
-      if (
-        this.tripType == TripType.checkIn ||
-        this.tripType == TripType.checkOut
-      ) {
-        this.selectedDays[0].desc =
-          this.tripType == TripType.checkIn
-            ? LanguageHelper.getCheckInTip()
-            : LanguageHelper.getCheckOutTip();
-      }
-      if (
-        this.tripType == TripType.departureTrip ||
-        this.tripType == TripType.returnTrip
-      ) {
-        this.selectedDays[0].desc =
-          this.tripType == TripType.departureTrip
-            ? LanguageHelper.getDepartureTip()
-            : LanguageHelper.getReturnTripTip();
-      }
-      setTimeout(() => {
-        this.cancel();
-      }, this.delayBackTime);
+    if (this.isMulti) {
+      this.isCurrentSelectedOk = this.selectedDays && this.selectedDays.length > 1;
     } else {
-      if (this.selectedDays.length === 2) {
-        if (
-          this.tripType == TripType.checkIn ||
-          this.tripType == TripType.checkOut
-        ) {
-          this.selectedDays[0].desc = LanguageHelper.getCheckInTip();
-          this.selectedDays[1].desc = LanguageHelper.getCheckOutTip();
-          this.selectedDays[1].hasToolTip = !!this.forType;
-          this.selectedDays[1].toolTipMsg = LanguageHelper.getCheckInOutTotalDaysTip(
-            Math.abs(moment(this.selectedDays[1].date).diff(
-              moment(this.selectedDays[0].date), 'days'))
-          );
-          if (
-            this.selectedDays[0].timeStamp == this.selectedDays[1].timeStamp
-          ) {
-            console.log("选择了同一天");
-            this.selectedDays[0].desc = LanguageHelper.getCheckInOutTip();
-          }
-        }
-        if (
-          this.tripType == TripType.departureTrip ||
-          this.tripType == TripType.returnTrip
-        ) {
-          this.selectedDays[0].desc = LanguageHelper.getDepartureTip();
-          this.selectedDays[1].desc = LanguageHelper.getReturnTripTip();
-          if (
-            this.selectedDays[0].timeStamp == this.selectedDays[1].timeStamp
-          ) {
-            this.selectedDays[0].desc = LanguageHelper.getRoundTripTip();
-          }
-        }
-        if (this.selectedDays && this.selectedDays.length) {
-          const first = this.selectedDays[0];
-          const last = this.selectedDays[this.selectedDays.length - 1];
-          first.firstSelected = true;
-          if (last) {
-            last.lastSelected = true;
-            if (first.date != last.date) {
-              last.firstSelected = false;
-              first.lastSelected = false;
-              this.yms.forEach(ym => {
-                ym.dayList.forEach(it => {
-                  it.isBetweenDays = it.timeStamp > first.timeStamp && it.timeStamp < last.timeStamp;
-                  if (it.isBetweenDays) {
-                    it.selected = true;
-                  }
-                })
-              })
-            }
-          }
-        }
-        setTimeout(() => {
-          this.cancel();
-        }, this.delayBackTime);
-      }
+      this.isCurrentSelectedOk = !!(this.selectedDays && this.selectedDays.length);
     }
+    setTimeout(() => {
+      this.cancel();
+    }, this.delayBackTime);
   }
 }
