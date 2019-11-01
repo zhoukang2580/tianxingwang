@@ -200,14 +200,13 @@ export class SelectDateComponent implements OnInit, OnDestroy {
         d.hasToolTip = true;
         console.log("tripType", this.tripType);
         if (this.tripType == TripType.returnTrip || this.tripType == TripType.departureTrip) {
-
+          d.desc = LanguageHelper.getDepartureTip();
+          d.toolTipMsg = LanguageHelper.getSelectFlyBackDate();
         }
         if (this.tripType == TripType.checkIn || this.tripType == TripType.checkOut) {
           d.desc = LanguageHelper.getCheckInTip();
           d.toolTipMsg = LanguageHelper.getSelectCheckOutDate();
         } else {
-          d.desc = LanguageHelper.getDepartureTip();
-          d.toolTipMsg = LanguageHelper.getSelectFlyBackDate();
         }
         this.selectedDays = [d];
       }

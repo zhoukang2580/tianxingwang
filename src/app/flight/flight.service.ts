@@ -370,7 +370,7 @@ export class FlightService {
           goFlight.bookInfo &&
           goFlight.bookInfo.flightSegment &&
           goFlight.bookInfo.flightSegment.ArrivalTime,
-        tripType: s.tripType,
+        tripType: s.tripType||TripType.departureTrip,
         forType: FlightHotelTrainType.Flight,
         isMulti: isMulti
       }
