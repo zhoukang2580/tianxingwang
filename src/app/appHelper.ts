@@ -102,8 +102,8 @@ export class AppHelper {
             : msg instanceof Error
               ? msg.message
               : typeof msg === "object" && msg.message
-                ? msg.message
-                : JSON.stringify(msg),
+                ? msg.message : msg.Message ? msg.Message
+                  : JSON.stringify(msg),
         backdropDismiss: !userOp,
         buttons
       })).present();

@@ -31,7 +31,7 @@ import {
 import { ExceptionEntity } from "../log/exception.entity";
 import { Router } from "@angular/router";
 import { IdentityService } from "../identity/identity.service";
-import { LoadingController } from "@ionic/angular";
+import { LoadingController, AlertController } from "@ionic/angular";
 import { LanguageHelper } from "src/app/languageHelper";
 import { environment } from "src/environments/environment";
 import { Storage } from "@ionic/storage";
@@ -47,11 +47,13 @@ export class ApiService {
   public apiConfig: ApiConfig;
   private worker = null;
   private isLoadingApiConfig = false;
+  private isAlert=false;
   constructor(
     private http: HttpClient,
     private router: Router,
     private identityService: IdentityService,
     private loadingCtrl: LoadingController,
+    private alertCtrl: AlertController,
     private storage: Storage
   ) {
     this.loadingSubject = new BehaviorSubject(false);
@@ -232,7 +234,15 @@ export class ApiService {
               return this.sendRequest(orgReq, false);
             }
             if (r && !r.Status && r.Code && r.Code.toLowerCase() == "nologin") {
-              AppHelper.alert(r.Message || LanguageHelper.getApiExceptionTip());
+              const msg = r.Message || LanguageHelper.getApiExceptionTip();
+              if(msg==LanguageHelper.getApiExceptionTip()){
+                if(!this.isAlert){
+                  this.alertCtrl
+                  .create({message:msg,buttons:[{text:LanguageHelper.getConfirmTip()}]}).then(_=>{
+                    this.isAlert=false;
+                  })
+                }
+              }
             }
             this.identityService.removeIdentity();
             this.router.navigate([AppHelper.getRoutePath("login")]);
