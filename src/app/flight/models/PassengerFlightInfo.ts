@@ -28,6 +28,7 @@ export interface FlightSegmentModel {
   FlyTime; // Int 飞行时间（分钟）
   LowestFare; // Decimal 最低价
   LowestCabinCode; // String 最低价舱位
+  LowestCabinId; // String 最低价舱位
   LowestDiscount; // Decimal 最低价折扣
   IsStop: boolean; // Bool 是否经停
 }

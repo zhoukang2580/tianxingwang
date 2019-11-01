@@ -33,14 +33,14 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
   rotateIcon = false;
   isSingle = true;
   isSelectFlyDate: boolean;
-  flyDate: DayModel;
+  goDate: DayModel;
   backDate: DayModel;
   isShowSelectedInfos$ = of(false);
   canAddPassengers$ = of(false);
   get totalDays() {
-    if (this.backDate && this.flyDate) {
+    if (this.backDate && this.goDate) {
       const detal = Math.floor(
-        this.backDate.timeStamp - this.flyDate.timeStamp
+        this.backDate.timeStamp - this.goDate.timeStamp
       );
       if (detal == 0) {
         return 1;
@@ -83,7 +83,12 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
         this.isDisabled =
           this.searchTrainModel && this.searchTrainModel.isLocked;
       }
-      this.searchTrainModel.isExchange = this.trainService.getSearchTrainModel().isExchange
+      const searchTrainModel = this.trainService.getSearchTrainModel();
+      this.goDate = this.calendarService.generateDayModelByDate(searchTrainModel.Date);
+      this.backDate = this.calendarService.generateDayModelByDate(searchTrainModel.BackDate);
+      this.checkBackDateIsAfterGoDate();
+      this.totalFlyDays = +this.calcTotalFlyDays();
+      this.searchTrainModel.isExchange = searchTrainModel.isExchange
         || !!this.trainService.getBookInfos().find(it => it.bookInfo && it.bookInfo.isExchange);
       this.isCanLeave = this.searchTrainModel.isExchange ? false : true;
       this.showReturnTrip = await this.isStaffTypeSelf();
@@ -96,7 +101,15 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
       }
     });
   }
-
+  private checkBackDateIsAfterGoDate() {
+    if (!this.goDate || (this.goDate.timeStamp < Math.floor(new Date().getTime() / 1000))) {
+      this.goDate = this.calendarService.generateDayModel(moment());
+    }
+    if (this.goDate && this.backDate) {
+      this.backDate = this.goDate.timeStamp > this.backDate.timeStamp ?
+        this.calendarService.generateDayModel(moment(this.goDate.date).add(1, 'days')) : this.backDate;
+    }
+  }
   back() {
     this.navCtrl.back();
   }
@@ -139,41 +152,41 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
         return !isSelf;
       })
     );
-    this.selectDaySubscription = this.calendarService
-      .getSelectedDays()
-      .subscribe(days => {
-        if (!this.router.routerState.snapshot.url.includes("search-train")) {
-          return;
-        }
-        if (days && days.length) {
-          if (days.length == 1) {
-            if (this.isDisabled) {
-              this.backDate = days[0];
-            } else {
-              this.flyDate = days[0];
-              this.flyDate = days[0];
-              this.backDate = this.calendarService.generateDayModel(
-                moment(this.flyDate.date).add(1, "days")
-              );
-            }
-          } else {
-            if (this.isSingle) {
-              if (this.isSelectFlyDate) {
-                this.flyDate = days[0];
-              } else {
-                this.backDate = days[0];
-              }
-            } else {
-              this.flyDate = days[0];
-              this.backDate = days[1];
-              this.totalFlyDays = +this.calcTotalFlyDays();
-            }
-          }
-          if (this.flyDate.timeStamp > this.backDate.timeStamp) {
-            this.flyDate = this.calendarService.generateDayModel(moment());
-          }
-        }
-      });
+    // this.selectDaySubscription = this.calendarService
+    //   .getSelectedDays()
+    //   .subscribe(days => {
+    //     if (!this.router.routerState.snapshot.url.includes("search-train")) {
+    //       return;
+    //     }
+    //     if (days && days.length) {
+    //       if (days.length == 1) {
+    //         if (this.isDisabled) {
+    //           this.backDate = days[0];
+    //         } else {
+    //           this.goDate = days[0];
+    //           this.goDate = days[0];
+    //           this.backDate = this.calendarService.generateDayModel(
+    //             moment(this.goDate.date).add(1, "days")
+    //           );
+    //         }
+    //       } else {
+    //         if (this.isSingle) {
+    //           if (this.isSelectFlyDate) {
+    //             this.goDate = days[0];
+    //           } else {
+    //             this.backDate = days[0];
+    //           }
+    //         } else {
+    //           this.goDate = days[0];
+    //           this.backDate = days[1];
+    //           this.totalFlyDays = +this.calcTotalFlyDays();
+    //         }
+    //       }
+    //       if (this.goDate.timeStamp > this.backDate.timeStamp) {
+    //         this.goDate = this.calendarService.generateDayModel(moment());
+    //       }
+    //     }
+    //   });
     this.apiService.showLoadingView();
     this.showReturnTrip = await this.staffService.isSelfBookType();
     this.initTrainDays();
@@ -191,7 +204,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
           this.isDisabled = s.isLocked;
           this.fromCity = this.vmFromCity = s.fromCity || this.fromCity;
           this.toCity = this.vmToCity = s.toCity || this.toCity;
-          this.flyDate = this.calendarService.generateDayModelByDate(s.Date);
+          this.goDate = this.calendarService.generateDayModelByDate(s.Date);
           this.backDate = this.calendarService.generateDayModelByDate(
             s.BackDate
           );
@@ -201,8 +214,8 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
       });
   }
   private calcTotalFlyDays() {
-    if (this.backDate && this.flyDate) {
-      const nums = Math.abs(moment(this.backDate.date).diff(moment(this.flyDate.date), 'days'));
+    if (this.backDate && this.goDate) {
+      const nums = Math.abs(moment(this.backDate.date).diff(moment(this.goDate.date), 'days'));
       return nums <= 0 ? 1 : nums;
     }
     return `1`;
@@ -218,15 +231,15 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     this.searchConditionSubscription.unsubscribe();
   }
   initTrainDays() {
-    this.flyDate = this.calendarService.generateDayModel(
+    this.goDate = this.calendarService.generateDayModel(
       moment()
       // 默认第二天
       // .add(1, "days")
     );
-    this.flyDate.hasToolTip = false;
-    this.flyDate.enabled = true;
-    this.flyDate.desc = "去程";
-    this.flyDate.descPos = "top";
+    this.goDate.hasToolTip = false;
+    this.goDate.enabled = true;
+    this.goDate.desc = "去程";
+    this.goDate.descPos = "top";
     this.backDate = this.calendarService.generateDayModel(
       moment().add(4, "days")
     );
@@ -273,12 +286,12 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
       `出发城市" + 【${this.fromCity && this.fromCity.Nickname}】`,
       `目的城市【${this.toCity && this.toCity.Nickname}】`
     );
-    console.log(`启程日期${this.flyDate.date},返程日期：${this.backDate.date}`);
+    console.log(`启程日期${this.goDate.date},返程日期：${this.backDate.date}`);
     this.storage.set("fromTrainStation", this.fromCity);
     this.storage.set("toTrainStation", this.toCity);
     const s = this.searchTrainModel || new SearchTrainModel();
     s.tripType = this.searchTrainModel.tripType || TripType.departureTrip;
-    s.Date = this.flyDate.date;
+    s.Date = this.goDate.date;
     s.FromStation = this.fromCity.Code;
     s.ToStation = this.toCity.Code;
     s.isRoundTrip = !this.isSingle;

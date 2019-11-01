@@ -38,7 +38,9 @@ import {
   AfterViewInit,
   OnDestroy,
   NgZone,
-  ElementRef
+  ElementRef,
+  QueryList,
+  ViewChildren
 } from "@angular/core";
 import {
   tap,
@@ -259,7 +261,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.filterCondition.priceFromL2H = "initial";
     this.filterCondition.timeFromM2N = "initial";
     this.activeTab =
-      this.filterComp &&
+      this.filterComp && 
         Object.keys(this.filterComp.userOps).some(k => this.filterComp.userOps[k])
         ? "filter"
         : "none";
@@ -444,7 +446,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           s.Cabins.forEach(c => {
             FlightPolicies.push({
               Cabin: c,
-              Id:c.Id,
+              Id: c.Id,
               FlightNo: c.FlightNumber,
               CabinCode: c.Code,
               IsAllowBook: true, // 非白名单全部可预订

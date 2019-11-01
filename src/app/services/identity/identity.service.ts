@@ -90,60 +90,82 @@ export class IdentityService {
   getIdentitySource(): Observable<IdentityEntity> {
     return this.identitySource.asObservable();
   }
-  loadIdentityEntity() {
-    const ticket = AppHelper.getTicket();
-    if (ticket) {
-      const req = new RequestEntity();
-      req.IsShowLoading = true;
-      req.Method = "ApiHomeUrl-Identity-Get";
-      req.Data = JSON.stringify({ Ticket: ticket });
-      req.Timestamp = Math.floor(Date.now() / 1000);
-      req.Language = AppHelper.getLanguage();
-      req.Ticket = AppHelper.getTicket();
-      req.Domain = AppHelper.getDomain();
-      let due = req.Timeout || 30 * 1000;
-      due = due < 1000 ? due * 1000 : due;
-      due = environment.disableNetWork ? 1 : due;
-      const formObj = Object.keys(req)
-        .map(k => `${k}=${req[k]}`)
-        .join("&");
-      const url = req.Url || AppHelper.getApiUrl() + "/Home/Proxy";
-      if (this.isLoading) {
-        return of(this._IdentityEntity);
-      }
-      this.isLoading = true;
-      return this.http
-        .post(url, formObj, {
-          headers: { "content-type": "application/x-www-form-urlencoded" },
-          observe: "body"
+  checkTicketAsync(t: string = "") {
+    return new Promise<IdentityEntity>(s => {
+      const sub = this.checkTicket(t)
+        .pipe(finalize(() => {
+          setTimeout(() => {
+            if (sub) {
+              sub.unsubscribe();
+            }
+          }, 1000);
+        }))
+        .subscribe(res => {
+          if (res) {
+            s(res);
+          } else {
+            s(null);
+          }
+        }, _ => {
+          s(null)
         })
-        .pipe(
-          finalize(() => {
-            this.isLoading = false;
-          }),
-          map((r: IResponse<IdentityEntity>) => r),
-          switchMap(r => {
-            if (r.Status) {
-              return of(r.Data);
+    })
+  }
+  checkTicket(ticket: string = ""): Observable<IdentityEntity> {
+    ticket = ticket || this._IdentityEntity && this._IdentityEntity.Ticket || AppHelper.getTicket();
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = "ApiHomeUrl-Identity-Get";
+    req.Data = JSON.stringify({ Ticket: ticket });
+    req.Timestamp = Math.floor(Date.now() / 1000);
+    req.Language = AppHelper.getLanguage();
+    req.Ticket = ticket;
+    req.Domain = AppHelper.getDomain();
+    let due = req.Timeout || 30 * 1000;
+    due = due < 1000 ? due * 1000 : due;
+    due = environment.disableNetWork ? 1 : due;
+    const formObj = Object.keys(req)
+      .map(k => `${k}=${req[k]}`)
+      .join("&");
+    const url = req.Url || AppHelper.getApiUrl() + "/Home/Proxy";
+    return this.http
+      .post(url, formObj, {
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        observe: "body"
+      }).pipe(
+        map((r: IResponse<IdentityEntity>) => r),
+        switchMap(r => {
+          if (r.Status) {
+            this._IdentityEntity = {
+              ...this._IdentityEntity,
+              ...r.Data
             }
-            return of(null);
-          }),
-          timeout(due),
-          catchError((error: Error | any) => {
-            const entity = new ExceptionEntity();
-            entity.Error = error;
-            entity.Method = req.Method;
-            entity.Message = LanguageHelper.getApiExceptionTip();
-            if (error instanceof TimeoutError) {
-              entity.Message = LanguageHelper.getApiTimeoutTip();
-              return throwError(entity.Message);
-            }
-            if (error instanceof HttpErrorResponse) {
-              return throwError(LanguageHelper.getNetworkErrorTip());
-            }
-            return throwError(error);
-          })
-        );
+            this.setIdentity(this._IdentityEntity);
+            return of(this._IdentityEntity);
+          }
+          return of(this._IdentityEntity);
+        }),
+        timeout(due),
+        catchError((error: Error | any) => {
+          const entity = new ExceptionEntity();
+          entity.Error = error;
+          entity.Method = req.Method;
+          entity.Message = LanguageHelper.getApiExceptionTip();
+          if (error instanceof TimeoutError) {
+            entity.Message = LanguageHelper.getApiTimeoutTip();
+            return throwError(entity.Message);
+          }
+          if (error instanceof HttpErrorResponse) {
+            return throwError(LanguageHelper.getNetworkErrorTip());
+          }
+          return throwError(error);
+        })
+      );
+  }
+  loadIdentityEntity() {
+    const ticket = this._IdentityEntity && this._IdentityEntity.Ticket || AppHelper.getTicket();
+    if (ticket) {
+      return this.checkTicket(ticket);
     }
     this._IdentityEntity.Ticket = null;
     this._IdentityEntity.Id = null;

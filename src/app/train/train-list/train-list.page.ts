@@ -71,7 +71,6 @@ export class TrainListPage implements OnInit, OnDestroy {
   vmToCity: TrafficlineEntity;
   searchTrainModel: SearchTrainModel;
   timeoutid: any;
-  isLeavePage = false;
   isSortingTrains = false;
   isShowAddPassenger$ = of(false);
   isShowRoundtripTip = false;
@@ -110,7 +109,6 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.route.queryParamMap.subscribe(async _ => {
       this.tmcService.setFlightHotelTrainType(FlightHotelTrainType.Train);
       this.isShowRoundtripTip = await this.staffService.isSelfBookType();
-      this.isLeavePage = false;
     });
     this.curFilteredBookInfo$ = this.trainService
       .getBookInfoSource()
@@ -149,7 +147,6 @@ export class TrainListPage implements OnInit, OnDestroy {
         console.log(
           "getSearchTrainModelSource",
           modal,
-          this.isLeavePage,
           this.isLoading
         );
         if (this.searchTrainModel) {
@@ -346,7 +343,6 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.isLoading = false;
   }
   goToSelectPassengerPage() {
-    this.isLeavePage = true;
     this.router.navigate([AppHelper.getRoutePath("select-passenger")]);
   }
   async onFilter() {
@@ -429,7 +425,7 @@ export class TrainListPage implements OnInit, OnDestroy {
         this.ionRefresher.disabled = false;
       }, 100);
     }
-    if (this.isLoading || this.isLeavePage) {
+    if (this.isLoading) {
       return;
     }
     // this.moveDayToSearchDate();
@@ -437,7 +433,7 @@ export class TrainListPage implements OnInit, OnDestroy {
       clearTimeout(this.timeoutid);
     }
     try {
-      if (this.isLeavePage || this.isLoading) {
+      if (this.isLoading) {
         return;
       }
       // this.moveDayToSearchDate();
@@ -605,9 +601,7 @@ export class TrainListPage implements OnInit, OnDestroy {
   }
   async onChangedDay(day: DayModel, byUser: boolean) {
     if (
-      byUser &&
-      !this.isLeavePage &&
-      (!day || this.searchTrainModel.Date == day.date || this.isLoading)
+      !byUser
     ) {
       return;
     }
@@ -666,12 +660,12 @@ export class TrainListPage implements OnInit, OnDestroy {
         ...this.searchTrainModel,
         Date: days[0].date
       });
+      this.calendarService.setSelectedDaysSource(days);
       this.onChangedDay(this.calendarService.generateDayModelByDate(this.searchTrainModel.Date), true);
     }
   }
 
   back() {
-    this.isLeavePage = true;
     this.navCtrl.back();
   }
   private sortTrains(key: "price" | "time") {

@@ -1,6 +1,6 @@
 import { FlightSegmentEntity } from "./../../models/flight/FlightSegmentEntity";
 import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
-import { ModalController } from "@ionic/angular";
+import { ModalController, PopoverController } from "@ionic/angular";
 import { TicketchangingComponent } from "../ticketchanging/ticketchanging.component";
 import { FlightPolicy } from "../../models/PassengerFlightInfo";
 import { FlightFareType } from '../../models/flight/FlightFareType';
@@ -15,7 +15,7 @@ export class SelectFlightsegmentCabinComponent implements OnInit {
   @Input() flightSegment: FlightSegmentEntity;
   @Output() selectcabin: EventEmitter<any>;
   FlightFareType=FlightFareType;
-  constructor(private modalCtrl: ModalController) {
+  constructor(private modalCtrl: ModalController,private popoverCtrl:PopoverController) {
     this.selectcabin = new EventEmitter();
   }
   back() {
@@ -39,7 +39,7 @@ export class SelectFlightsegmentCabinComponent implements OnInit {
   }
   ngOnInit() {}
   async openrules(cabin: any) {
-    const m = await this.modalCtrl.create({
+    const m = await this.popoverCtrl.create({
       component: TicketchangingComponent,
       componentProps: { cabin: cabin.Cabin },
       showBackdrop: true,

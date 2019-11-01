@@ -100,3 +100,21 @@ ion-title {
     align-items: center;
   }
 }
+app-fly-filter{
+  z-index: 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: auto;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: all ease-in-out 100ms;
+  overflow: hidden;
+  &.show {
+    transform: translateY(0);
+    top: 0;
+    z-index: 1000;
+    opacity: 1;
+  }
+}

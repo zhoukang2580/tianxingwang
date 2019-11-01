@@ -37,7 +37,7 @@
         (eFromCity)='onFromCitySelected($event)' [vmToCity]="vmToCity" [disabled]='isDisabled'>
       </app-switch-station-comp>
       <section class="flight-date">
-        <app-search-day-comp [day]='flyDate' (click)="onSelecDate(true,false)"
+        <app-search-day-comp [day]='goDate' (click)="onSelecDate(true,false)"
           [disabled]='isDisabled&&!(searchTrainModel?.isExchange)'>
         </app-search-day-comp>
         <div *ngIf="!isSingle &&( totalFlyDays > 0)">{{ totalFlyDays }}天</div>

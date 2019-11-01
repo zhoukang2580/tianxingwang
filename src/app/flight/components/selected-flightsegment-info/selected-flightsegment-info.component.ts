@@ -25,6 +25,7 @@ import {
   CurrentViewtFlightSegment,
   IFlightSegmentInfo
 } from "../../models/PassengerFlightInfo";
+import { FlightCabinEntity } from '../../models/flight/FlightCabinEntity';
 @Component({
   selector: "app-selected-flightsegment-info",
   templateUrl: "./selected-flightsegment-info.component.html",
@@ -46,7 +47,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     private staffService: StaffService,
     private router: Router,
     private navCtrl: NavController
-  ) {}
+  ) { }
   ngOnDestroy() {
     this.searchModelSubscrition.unsubscribe();
   }
@@ -87,7 +88,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
   async back() {
     const t = await this.modalCtrl.getTop();
     if (t) {
-      t.dismiss().catch(_ => {});
+      t.dismiss().catch(_ => { });
     }
   }
   getTime(takofftime: string) {
@@ -115,7 +116,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     );
   }
   async onSelectLowestSegment(old: PassengerBookInfo<IFlightSegmentInfo>) {
-    if (!old || !old.bookInfo) {
+    if (!old || !old.bookInfo || !old.bookInfo.flightPolicy || !old.bookInfo.flightPolicy.LowerSegment) {
       return "";
     }
     if (old.bookInfo.isLowerSegmentSelected) {
@@ -133,10 +134,9 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     if (!lowestFlightSegment || !onePolicyFlights) {
       AppHelper.alert(LanguageHelper.Flight.getTheLowestSegmentNotFoundTip());
     } else {
-      const lowestCabin = onePolicyFlights.FlightPolicies.find(
+      const lowestCabin = (onePolicyFlights.FlightPolicies || []).find(
         c =>
-          c.CabinCode == data.flightPolicy.LowerSegment.LowestCabinCode &&
-          c.FlightNo == lowestFlightSegment.Number
+          c.Id == data.flightPolicy.LowerSegment.LowestCabinId
       );
       if (!lowestCabin) {
         await AppHelper.alert(
@@ -144,8 +144,8 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
         );
         return "";
       }
-      lowestCabin.Cabin = lowestFlightSegment.Cabins.find(
-        c => c.Code == lowestCabin.CabinCode
+      lowestCabin.Cabin = flights.reduce((acc, f) => (acc = [...acc, ...f.Cabins]), [] as FlightCabinEntity[]).find(
+        c => c.FlightNumber == lowestCabin.FlightNo && c.Id == lowestCabin.Id
       );
       const m = await this.modalCtrl.create({
         component: SelectFlightsegmentCabinComponent,
@@ -202,7 +202,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
         },
         {
           text: LanguageHelper.getCancelTip(),
-          handler: () => {}
+          handler: () => { }
         }
       ]
     });
@@ -225,7 +225,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
       info.tripType == TripType.departureTrip
         ? LanguageHelper.getDepartureTip()
         : LanguageHelper.getReturnTripTip()
-    }]`;
+      }]`;
   }
 
   async onSelectReturnTrip() {

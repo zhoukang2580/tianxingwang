@@ -261,6 +261,7 @@ export class TrainService {
       backParams.isLocked = true;
       backParams.tripType = TripType.returnTrip;
       backParams.isRefreshData = true;
+      this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(backParams.Date)]);
       await this.dismissAllTopOverlays();
       await this.router.navigate([AppHelper.getRoutePath("train-list")]);
       this.setSearchTrainModel(backParams);
