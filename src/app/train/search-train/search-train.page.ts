@@ -194,8 +194,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
       .getSearchTrainModelSource()
       .subscribe(async s => {
         console.log("search-train", s);
-        const staff = await this.staffService.getStaff();
-        this.showReturnTrip = staff.BookType == StaffBookType.Self;
+        this.showReturnTrip = await this.staffService.isSelfBookType();
         if (s) {
           if (this.searchTrainModel) {
             this.searchTrainModel.isExchange = s.isExchange;

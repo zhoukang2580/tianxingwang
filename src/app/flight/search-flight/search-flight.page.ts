@@ -140,7 +140,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.onRoundTrip(evt.detail.value == "single");
   }
   async isStaffTypeSelf() {
-    return await this.staffService.isSelfBookType();
+    return  this.staffService.isSelfBookType();
   }
   async ngOnInit() {
     this.isShowBookInfos$ = this.flightService
