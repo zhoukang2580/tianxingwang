@@ -18,7 +18,7 @@ export class AppHelper {
   private static toastController: ToastController;
   private static alertController: AlertController;
   private static modalController: ModalController;
-  static _appDomain = environment.production ? "testskytrip.com" : "beeant.com";
+  static _appDomain = environment.production || navigator.userAgent.includes("Mac OS") ? "testskytrip.com" : "beeant.com";
   // static _appDomain =  "testskytrip.com" ;
   static _domain;
   static _queryParamers = {};
@@ -418,7 +418,7 @@ export class AppHelper {
       }
       console.log("matchDefaultRoute path after", path);
       return path && url[0].path.match(new RegExp(`${path}_*`, "gi"))
-        ? (route.redirectTo = `/${path=="null"?"":path}`) && {
+        ? (route.redirectTo = `/${path == "null" ? "" : path}`) && {
           consumed: [new UrlSegment(path, {})]
         }
         : {
