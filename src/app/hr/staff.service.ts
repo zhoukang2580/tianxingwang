@@ -230,6 +230,7 @@ export class StaffService {
   private staff: StaffEntity;
   private subscription = Subscription.EMPTY;
   private staffSubscription = Subscription.EMPTY;
+  status = false;
   staffCredentials: MemberCredential[];
   constructor(
     private apiService: ApiService,
@@ -242,6 +243,7 @@ export class StaffService {
   private disposal() {
     this.staff = null;
     this.staffCredentials = null;
+    this.status = false;
   }
   async isSelfBookType() {
     const t = (await this.getBookType()) === StaffBookType.Self;
@@ -332,7 +334,7 @@ export class StaffService {
       (this.staff &&
         (!(this.staff.IsModifyPassword === undefined) &&
           !this.staff.IsModifyPassword));
-    if (this.staff&&this.staff.AccountId) {
+    if (this.staff && this.staff.AccountId) {
       if (
         !forceRefresh ||
         (this.staff.BookType === undefined && id.Numbers && id.Numbers.AgentId)
@@ -350,12 +352,13 @@ export class StaffService {
     const req = new RequestEntity();
     req.Method = "HrApiUrl-Staff-Get";
     req.IsShowLoading = true;
-    this.staffSubscription.unsubscribe();
+    // this.staffSubscription.unsubscribe();
     return this.apiService
       .getPromiseData<StaffEntity>(req)
       .then(staff => {
         console.log("staff ", staff);
         this.staff = staff;
+        this.status = true;
         if (this.staff.BookType == StaffBookType.Self) {
           this.staff.AccountId = this.staff.AccountId || id.Id;
           this.staff.Name = this.staff.Name || id.Name;
@@ -397,21 +400,10 @@ export class StaffService {
     req.Data = {
       AccountId
     };
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-    return new Promise<any>((s, rej) => {
-      this.subscription = this.apiService
-        .getResponse<MemberCredential[]>(req)
-        .subscribe(res => {
-          if (res.Status) {
-            s(res.Data);
-          } else {
-            rej(res.Message);
-          }
-        }, e => {
-          rej(e);
-        })
-    })
+    // if (this.subscription) {
+    //   this.subscription.unsubscribe();
+    // }
+    return this.apiService
+    .getPromiseData<MemberCredential[]>(req);
   }
 }

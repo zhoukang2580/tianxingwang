@@ -68,7 +68,7 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
                 .catch(_ => {});
             }
           }, 5000);
-          const identity = await this.identityService.getIdentityAsync();
+          // const identity = await this.identityService.getIdentityAsync();
           if (timeoutid) {
             clearTimeout(timeoutid);
           }
@@ -79,11 +79,11 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
               })
               .catch(_ => {});
           }
-          if (!identity || !identity.Ticket || !identity.Id) {
-            this.loginService.setToPageRouter(state.url);
-            this.router.navigate([AppHelper.getRoutePath("login")]);
-            return false;
-          }
+          // if (!identity || !identity.Ticket || !identity.Id) {
+          //   this.loginService.setToPageRouter(state.url);
+          //   this.router.navigate([AppHelper.getRoutePath("login")]);
+          //   return false;
+          // }
           if (!this.identityService.getStatus()) {
             this.loginService.setToPageRouter(state.url);
             this.router.navigate([AppHelper.getRoutePath("login")]);
