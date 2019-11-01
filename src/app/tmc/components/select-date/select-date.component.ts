@@ -164,8 +164,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
       if (this.selectedDays.length) {
         if (d.timeStamp < this.selectedDays[0].timeStamp) {
           d.desc =
-            this.tripType == TripType.checkIn ||
-              this.tripType == TripType.checkOut
+            this.forType==FlightHotelTrainType.Hotel
               ? LanguageHelper.getCheckInTip()
               : LanguageHelper.getDepartureTip();
           d.hasToolTip = !!this.forType;
@@ -179,7 +178,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
           d.desc =
             d.timeStamp == this.selectedDays[0].timeStamp
               ? LanguageHelper.getRoundTripTip()
-              : TripType.checkIn || TripType.checkOut
+              : this.forType==FlightHotelTrainType.Hotel
                 ? LanguageHelper.getCheckInOutTip()
                 : LanguageHelper.getReturnTripTip();
           this.selectedDays.push(d);

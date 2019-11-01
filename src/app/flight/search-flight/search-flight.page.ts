@@ -72,6 +72,12 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     route.queryParamMap.subscribe(async _ => {
       this.staff = await this.staffService.getStaff();
       this.disabled = this.searchFlightModel && this.searchFlightModel.isLocked;
+      const searchModel = this.flightService.getSearchFlightModel();
+      this.flyDate = this.flydayService.generateDayModelByDate(searchModel.Date);
+      this.backDate = this.flydayService.generateDayModelByDate(
+        searchModel.BackDate
+      );
+      this.checkBackDateIsAfterflyDate();
       this.showReturnTrip = await this.isStaffTypeSelf();
       if (this.searchConditionSubscription) {
         this.searchConditionSubscription.unsubscribe();
@@ -94,7 +100,15 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
         });
     });
   }
-
+  private checkBackDateIsAfterflyDate() {
+    if (!this.flyDate || (this.flyDate.timeStamp < Math.floor(new Date().getTime() / 1000))) {
+      this.flyDate = this.calendarService.generateDayModel(moment());
+    }
+    if (this.flyDate && this.backDate) {
+      this.backDate = this.flyDate.timeStamp > this.backDate.timeStamp ?
+        this.calendarService.generateDayModel(moment(this.flyDate.date).add(1, 'days')) : this.backDate;
+    }
+  }
   private calcTotalFlyDays() {
     if (this.backDate && this.flyDate) {
       const nums =
