@@ -244,6 +244,9 @@ export class LanguageHelper {
   static getSelectPassengersTip() {
     return "请添加乘客";
   }
+  static getRoundTripTotalDaysTip(num: number) {
+    return `共${num}天`;
+  }
   static getCheckInOutTotalDaysTip(num: number) {
     return `共${num}晚`;
   }
