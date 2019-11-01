@@ -25,12 +25,12 @@
 <ion-content>
   <ion-card padding>
     <ion-card-content>
-      <ion-segment (ionChange)="segmentChanged($event)" value="single" color='secondary' *ngIf='showReturnTrip'
+      <ion-segment (ionChange)="segmentChanged($event)" [value]="isSingle?'single':'roundtrip'" color='secondary' *ngIf='showReturnTrip'
         [disabled]='disabled'>
-        <ion-segment-button value="single">
+        <ion-segment-button value="single" >
           <ion-label><strong>单程</strong></ion-label>
         </ion-segment-button>
-        <ion-segment-button value="roundtrip">
+        <ion-segment-button value="roundtrip" >
           <ion-label><strong>往返</strong></ion-label>
         </ion-segment-button>
       </ion-segment>
