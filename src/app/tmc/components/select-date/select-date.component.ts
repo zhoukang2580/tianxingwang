@@ -197,15 +197,17 @@ export class SelectDateComponent implements OnInit, OnDestroy {
         d.firstSelected = true;
         d.lastSelected = true;
         d.descPos = "top";
+        d.hasToolTip = true;
+        console.log("tripType", this.tripType);
         if (this.tripType == TripType.returnTrip || this.tripType == TripType.departureTrip) {
-          d.desc = LanguageHelper.getDepartureTip();
-          d.hasToolTip = true;
-          d.toolTipMsg = LanguageHelper.getSelectFlyBackDate();
+
         }
         if (this.tripType == TripType.checkIn || this.tripType == TripType.checkOut) {
           d.desc = LanguageHelper.getCheckInTip();
-          d.hasToolTip = true;
           d.toolTipMsg = LanguageHelper.getSelectCheckOutDate();
+        } else {
+          d.desc = LanguageHelper.getDepartureTip();
+          d.toolTipMsg = LanguageHelper.getSelectFlyBackDate();
         }
         this.selectedDays = [d];
       }
