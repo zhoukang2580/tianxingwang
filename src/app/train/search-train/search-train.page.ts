@@ -108,7 +108,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     }
   }
   back() {
-    this.navCtrl.back();
+   this.router.navigate(['']);
   }
   async onShowSelectedBookInfos() {
     const m = await this.modalCtrl.create({
@@ -267,6 +267,11 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     }
     console.log("search-train", s);
     this.isCanLeave = true;
+    if(this.goDate&&this.backDate){
+      this.calendarService.setSelectedDaysSource([this.goDate,this.backDate]);
+    }else if(this.goDate){
+      this.calendarService.setSelectedDaysSource([this.goDate]);
+    }
     this.router.navigate([AppHelper.getRoutePath("train-list")]).then(_ => {
       this.trainService.setSearchTrainModel(s);
     });

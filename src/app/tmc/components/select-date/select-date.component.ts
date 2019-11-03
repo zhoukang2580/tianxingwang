@@ -74,6 +74,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
   }
   checkYms() {
     if (this.yms && this.yms.length) {
+      const type = this.forType;
       if (
         this.tripType == TripType.returnTrip ||
         this.tripType == TripType.checkOut
@@ -81,11 +82,15 @@ export class SelectDateComponent implements OnInit, OnDestroy {
         if (this.goArrivalTime) {
           const goDate = moment(this.goArrivalTime);
           if (this.yms.length) {
+            const endDay = this.calendarService.generateDayModel(moment().add(30, 'days'));
             this.yms.forEach(day => {
               day.dayList.forEach(d => {
                 d.enabled =
                   goDate.format("YYYY-MM-DD") == d.date ||
                   +moment(d.date) >= +goDate;
+                  if (type == FlightHotelTrainType.Train) {
+                    d.enabled = d.timeStamp <= endDay.timeStamp ? d.enabled : false;
+                  }
               });
             });
           }
@@ -93,7 +98,6 @@ export class SelectDateComponent implements OnInit, OnDestroy {
       } else {
         const today = this.calendarService.generateDayModel(moment());
         const endDay = this.calendarService.generateDayModel(moment().add(30, 'days'));
-        const type = this.forType;
         this.yms.forEach(day => {
           day.dayList.forEach(d => {
             d.enabled = d.timeStamp > today.timeStamp || d.date == today.date;
