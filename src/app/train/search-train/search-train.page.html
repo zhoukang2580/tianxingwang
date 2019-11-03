@@ -14,7 +14,7 @@
         </ion-badge>
       </ion-button>
       <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()'
-        *ngIf='(canAddPassengers$|async)'>添加乘客<ion-badge color='danger'>
+        *ngIf='canAddPassengers'>添加乘客<ion-badge color='danger'>
           <ion-text color='light'>{{selectedPassengers}}</ion-text>
         </ion-badge>
       </ion-button>
@@ -40,16 +40,16 @@
         <app-search-day-comp [day]='goDate' (click)="onSelecDate(true,false)"
           [disabled]='isDisabled&&!(searchTrainModel?.isExchange)'>
         </app-search-day-comp>
-        <div *ngIf="!isSingle &&( totalFlyDays > 0)">{{ totalFlyDays }}天</div>
+        <div *ngIf="!isSingle &&( calcTotalFlyDays() > 0)">{{ calcTotalFlyDays() }}天</div> 
         <app-search-day-comp *ngIf="!isSingle" [day]='backDate' (click)="onSelecDate(false,true)">
         </app-search-day-comp>
       </section>
       <ion-button margin-top style='width: 100%' (click)="searchTrain()"
-        *ngIf='!((canAddPassengers$|async) && selectedPassengers==0)' color="secondary" expand="block">
+        *ngIf='!(canAddPassengers&& selectedPassengers==0)' color="secondary" expand="block">
         <ion-text>查询车次</ion-text>
       </ion-button>
       <ion-button margin-top style='width: 100%' (click)="onSelectPassenger()"
-        *ngIf='(canAddPassengers$|async) && selectedPassengers==0' color="secondary" expand="block">
+        *ngIf='canAddPassengers&& selectedPassengers==0' color="secondary" expand="block">
         <ion-text>请添加乘客</ion-text>
       </ion-button>
     </ion-card-content>

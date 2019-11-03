@@ -36,7 +36,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
   goDate: DayModel;
   backDate: DayModel;
   isShowSelectedInfos$ = of(false);
-  canAddPassengers$ = of(false);
+  canAddPassengers = false;
   get totalDays() {
     if (this.backDate && this.goDate) {
       const detal = Math.floor(
@@ -62,7 +62,6 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
   selectedPassengers: number;
   selectedBookInfos: number;
   staff: StaffEntity;
-  totalFlyDays: number;
   constructor(
     private router: Router,
     route: ActivatedRoute,
@@ -86,7 +85,6 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
       this.goDate = this.calendarService.generateDayModelByDate(searchTrainModel.Date);
       this.backDate = this.calendarService.generateDayModelByDate(searchTrainModel.BackDate);
       this.checkBackDateIsAfterGoDate();
-      this.totalFlyDays = +this.calcTotalFlyDays();
       this.searchTrainModel.isExchange = searchTrainModel.isExchange
         || !!this.trainService.getBookInfos().find(it => it.bookInfo && it.bookInfo.isExchange);
       this.isCanLeave = this.searchTrainModel.isExchange ? false : true;
@@ -146,46 +144,8 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
       .pipe(
         map(infos => infos && infos.filter(it => !!it.bookInfo).length > 0)
       );
-    this.canAddPassengers$ = from(this.staffService.isSelfBookType()).pipe(
-      map(isSelf => {
-        return !isSelf;
-      })
-    );
-    // this.selectDaySubscription = this.calendarService
-    //   .getSelectedDays()
-    //   .subscribe(days => {
-    //     if (!this.router.routerState.snapshot.url.includes("search-train")) {
-    //       return;
-    //     }
-    //     if (days && days.length) {
-    //       if (days.length == 1) {
-    //         if (this.isDisabled) {
-    //           this.backDate = days[0];
-    //         } else {
-    //           this.goDate = days[0];
-    //           this.goDate = days[0];
-    //           this.backDate = this.calendarService.generateDayModel(
-    //             moment(this.goDate.date).add(1, "days")
-    //           );
-    //         }
-    //       } else {
-    //         if (this.isSingle) {
-    //           if (this.isSelectFlyDate) {
-    //             this.goDate = days[0];
-    //           } else {
-    //             this.backDate = days[0];
-    //           }
-    //         } else {
-    //           this.goDate = days[0];
-    //           this.backDate = days[1];
-    //           this.totalFlyDays = +this.calcTotalFlyDays();
-    //         }
-    //       }
-    //       if (this.goDate.timeStamp > this.backDate.timeStamp) {
-    //         this.goDate = this.calendarService.generateDayModel(moment());
-    //       }
-    //     }
-    //   });
+
+
     this.apiService.showLoadingView();
     this.showReturnTrip = await this.staffService.isSelfBookType();
     this.initTrainDays();
@@ -210,17 +170,19 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
           await this.initTrainCities();
         }
       });
+    this.canAddPassengers = !(await this.staffService.isSelfBookType());
+
   }
-  private calcTotalFlyDays() {
+   calcTotalFlyDays():number {
     if (this.backDate && this.goDate) {
       const nums = Math.abs(moment(this.backDate.date).diff(moment(this.goDate.date), 'days'));
       return nums <= 0 ? 1 : nums;
     }
-    return `1`;
+    return 1;
   }
 
   onSelectPassenger() {
-    this.router.navigate([AppHelper.getRoutePath("select-passenger")],{queryParams:{forType:FlightHotelTrainType.Train}});
+    this.router.navigate([AppHelper.getRoutePath("select-passenger")], { queryParams: { forType: FlightHotelTrainType.Train } });
   }
 
   ngOnDestroy(): void {
@@ -312,12 +274,21 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
   getDayDesc(d: DayModel) {
     return this.calendarService.getDescOfDay(d);
   }
-  onSelecDate(flyTo: boolean, backDate: boolean) {
+  async  onSelecDate(flyTo: boolean, backDate: boolean) {
     if (this.isDisabled && !this.searchTrainModel.isExchange && !backDate) {
       return;
     }
     this.isSelectFlyDate = flyTo;
-    this.trainService.openCalendar(!this.isSingle && !this.isDisabled);
+    const days = await this.trainService.openCalendar(!this.isSingle && !this.isDisabled);
+    console.log("train openCalendar",days);
+    if (days && days.length) {
+      if(days.length>1){
+        this.goDate=days[0];
+        this.backDate=days[1];
+      }else{
+        this.goDate=days[0];
+      }
+    }
   }
   onFromCitySelected(city: TrafficlineEntity) {
     if (city) {
