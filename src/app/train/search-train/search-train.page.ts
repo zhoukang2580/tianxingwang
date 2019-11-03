@@ -77,6 +77,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
   ) {
     route.queryParamMap.subscribe(async _ => {
       this.staff = await this.staffService.getStaff();
+      this.canAddPassengers = !(await this.staffService.isSelfBookType());
       if (await this.isStaffTypeSelf()) {
         this.isDisabled =
           this.searchTrainModel && this.searchTrainModel.isLocked;
@@ -108,7 +109,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     }
   }
   back() {
-   this.router.navigate(['']);
+    this.router.navigate(['']);
   }
   async onShowSelectedBookInfos() {
     const m = await this.modalCtrl.create({
@@ -173,7 +174,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     this.canAddPassengers = !(await this.staffService.isSelfBookType());
 
   }
-   calcTotalFlyDays():number {
+  calcTotalFlyDays(): number {
     if (this.backDate && this.goDate) {
       const nums = Math.abs(moment(this.backDate.date).diff(moment(this.goDate.date), 'days'));
       return nums <= 0 ? 1 : nums;
@@ -267,9 +268,9 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     }
     console.log("search-train", s);
     this.isCanLeave = true;
-    if(this.goDate&&this.backDate){
-      this.calendarService.setSelectedDaysSource([this.goDate,this.backDate]);
-    }else if(this.goDate){
+    if (this.goDate && this.backDate) {
+      this.calendarService.setSelectedDaysSource([this.goDate, this.backDate]);
+    } else if (this.goDate) {
       this.calendarService.setSelectedDaysSource([this.goDate]);
     }
     this.router.navigate([AppHelper.getRoutePath("train-list")]).then(_ => {
@@ -285,13 +286,13 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     }
     this.isSelectFlyDate = flyTo;
     const days = await this.trainService.openCalendar(!this.isSingle && !this.isDisabled);
-    console.log("train openCalendar",days);
+    console.log("train openCalendar", days);
     if (days && days.length) {
-      if(days.length>1){
-        this.goDate=days[0];
-        this.backDate=days[1];
-      }else{
-        this.goDate=days[0];
+      if (days.length > 1) {
+        this.goDate = days[0];
+        this.backDate = days[1];
+      } else {
+        this.goDate = days[0];
       }
     }
   }
