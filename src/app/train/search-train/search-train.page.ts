@@ -77,7 +77,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
   ) {
     route.queryParamMap.subscribe(async _ => {
       this.staff = await this.staffService.getStaff();
-      this.canAddPassengers = !(await this.staffService.isSelfBookType());
+      this.canAddPassengers = await this.staffService.isAllBookType() || await this.staffService.isSecretaryBookType();
       if (await this.isStaffTypeSelf()) {
         this.isDisabled =
           this.searchTrainModel && this.searchTrainModel.isLocked;
