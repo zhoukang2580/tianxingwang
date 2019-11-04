@@ -23,7 +23,6 @@ import { trigger, transition, animate } from "@angular/animations";
 import { HotelConditionModel } from "../../models/ConditionModel";
 import { Storage } from "@ionic/storage";
 import {
-  IRankItem,
   RecommendRankComponent
 } from "./recommend-rank/recommend-rank.component";
 import { QueryTabComponent } from "./query-tab/query-tab.component";
@@ -53,7 +52,7 @@ interface ITab {
   ]
 })
 export class HotelQueryComponent implements OnInit {
-  @Output() hotelQueryChange: EventEmitter<HotelQueryEntity>;
+  @Output() hotelQueryChange: EventEmitter<any>;
   @ViewChildren(QueryTabComponent) queryTabComps: QueryList<QueryTabComponent>;
   @ViewChild(HotelFilterComponent) hotelFilterComp: HotelFilterComponent;
   @ViewChild(HotelStarPriceComponent)
@@ -125,7 +124,10 @@ export class HotelQueryComponent implements OnInit {
       this.hotelStarPriceComp.onReset();
     }
   }
-
+  isStarPriceHasConditionFiltered(){
+    const query=this.hotelService.getHotelQueryModel();
+    return query&&query.starAndPrices&&query.starAndPrices.some(t=>t.hasItemSelected);
+  }
   onActiveTab(tab: ITab) {
     if (this.queryTabComps) {
       this.queryTabComps.forEach(comp => {
@@ -134,68 +136,76 @@ export class HotelQueryComponent implements OnInit {
     }
     this.activeTab = tab;
   }
-  onStarPriceChange(evt: IStarPriceTab<IStarPriceTabItem>[]) {
-    console.log(evt);
-    this.hotelQueryModel = new HotelQueryEntity();
-    this.hideQueryPannel();
-    const customeprice = evt.find(it => it.tag == "customeprice");
-    const tabs = evt.filter(
-      it => it.tag == "price" || it.tag == "customeprice"
-    );
-    console.log(tabs);
-    let { lower, upper } = tabs
-      .map(tab => tab.items)
-      .reduce(
-        (p, items) => {
-          items
-            .filter(it => it.isSelected)
-            .forEach(item => {
-              p.lower = Math.min(item.minPrice, p.lower) || item.minPrice;
-              p.upper = Math.max(item.maxPrice, p.upper) || item.maxPrice;
-            });
-          return p;
-        },
-        {} as { lower: number; upper: number }
+  onStarPriceChange() {
+    const query = this.hotelService.getHotelQueryModel();
+    if (query && query.starAndPrices) {
+      const customeprice = query.starAndPrices.find(it => it.tag == "customeprice");
+      const evt = [
+        ...query.starAndPrices.filter(it => it.hasItemSelected),
+        customeprice ? customeprice : null
+      ].filter(it => !!it);
+      console.log(evt);
+      this.hideQueryPannel();
+      const tabs = evt.filter(
+        it => it.tag == "price" || it.tag == "customeprice"
       );
-    if (customeprice) {
-      upper = customeprice.items[0].maxPrice;
-      lower = customeprice.items[0].minPrice;
+      console.log(tabs);
+      let { lower, upper } = tabs
+        .map(tab => tab.items)
+        .reduce(
+          (p, items) => {
+            items
+              .filter(it => it.isSelected)
+              .forEach(item => {
+                p.lower = Math.min(item.minPrice, p.lower) || item.minPrice;
+                p.upper = Math.max(item.maxPrice, p.upper) || item.maxPrice;
+              });
+            return p;
+          },
+          {} as { lower: number; upper: number }
+        );
+      if (customeprice) {
+        upper = customeprice.items[0].maxPrice;
+        lower = customeprice.items[0].minPrice;
+      }
+      console.log("价格：", lower, upper);
+      if (lower == 0 || lower) {
+        query.BeginPrice = lower + "";
+      }
+      if (upper) {
+        query.EndPrice = upper == Infinity ? "" : `${upper}`;
+      }
+      const stars = evt.find(it => it.tag == "stars");
+      if (stars && stars.items && stars.items.some(it => it.isSelected)) {
+        query.Stars = stars.items
+          .filter(it => it.isSelected)
+          .map(it => it.value);
+      }
+      const types = evt.find(it => it.tag == "types");
+      if (types && types.items && types.items.some(it => it.isSelected)) {
+        query.Categories = types.items
+          .filter(it => it.isSelected)
+          .map(it => it.value);
+      }
     }
-    console.log("价格：", lower, upper);
-    if (lower == 0 || lower) {
-      this.hotelQueryModel.BeginPrice = lower + "";
-    }
-    if (upper) {
-      this.hotelQueryModel.EndPrice = upper == Infinity ? "" : `${upper}`;
-    }
-    const stars = evt.find(it => it.tag == "stars");
-    if (stars && stars.items && stars.items.some(it => it.isSelected)) {
-      this.hotelQueryModel.Stars = stars.items
-        .filter(it => it.isSelected)
-        .map(it => it.value);
-    }
-    const types = evt.find(it => it.tag == "types");
-    if (types && types.items && types.items.some(it => it.isSelected)) {
-      this.hotelQueryModel.Categories = types.items
-        .filter(it => it.isSelected)
-        .map(it => it.value);
-    }
-    this.doRefresh(this.hotelQueryModel);
+    this.doRefresh(query);
   }
-  onFilterGeo(geoTabs: IGeoTab<IGeoItem<GeoEntity>>[]) {
-    console.log("geo 搜索", geoTabs);
-    if (geoTabs.length) {
-      this.hotelQueryModel = new HotelQueryEntity();
-      this.hotelQueryModel.Geos = [];
-      geoTabs.forEach(it => {
-        it.items.forEach(item => {
-          if (item.isSelected) {
-            this.hotelQueryModel.Geos.push(item.id);
-          }
+  onFilterGeo() {
+    const query = this.hotelService.getHotelQueryModel();
+    if(query&&query.locationAreas){
+      const geoTabs  = query.locationAreas.filter(tab => tab.hasFilterItem)
+      console.log("geo 搜索", geoTabs);
+      if (geoTabs.length) {
+        geoTabs.forEach(it => {
+          it.items.forEach(item => {
+            if (item.isSelected) {
+              query.Geos.push(item.id);
+            }
+          });
         });
-      });
+      }
+      this.doRefresh(query);
     }
-    this.doRefresh(this.hotelQueryModel);
   }
   onFilter(filter: IFilterTab<IFilterTabItem<BrandEntity | AmenityEntity>>[]) {
     console.log(filter);
@@ -278,11 +288,12 @@ export class HotelQueryComponent implements OnInit {
     }
     this.doRefresh(this.hotelQueryModel);
   }
-  onRank(tab: IRankItem) {
-    if (tab) {
-      const hotelQueryModel = this.hotelQueryModel || new HotelQueryEntity();
-      hotelQueryModel.Orderby = tab.orderBy;
-      this.doRefresh(hotelQueryModel);
+  onRank() {
+    const query = this.hotelService.getHotelQueryModel();
+    if (query && query.ranks) {
+      const tab = query.ranks.find(it => it.isSelected);
+      query.Orderby = tab.orderBy;
+      this.doRefresh(query);
     }
   }
   ngOnInit() {

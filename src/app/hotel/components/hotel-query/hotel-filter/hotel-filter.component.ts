@@ -38,7 +38,7 @@ export interface IFilterTabItem<T> {
   styleUrls: ["./hotel-filter.component.scss"]
 })
 export class HotelFilterComponent implements OnInit, OnChanges {
-  @Input() hotelQuery: HotelQueryEntity;
+  private hotelQuery: HotelQueryEntity;
   private conditionModel: HotelConditionModel;
   @Output() filter: EventEmitter<any>;
   tabs: IFilterTab<IFilterTabItem<BrandEntity | AmenityEntity>>[] = [];
@@ -55,10 +55,14 @@ export class HotelFilterComponent implements OnInit, OnChanges {
     this.filter.emit(result);
   }
   onActive(tab: IFilterTab<any>) {
-    this.tabs.forEach(it => {
+    this.tabs = this.tabs.map(it => {
       it.active = it.id == tab.id;
+      return it;
     });
-    this.items = this.tabs.find(it => it.active).items;
+    const active = this.tabs.find(it => it.active);
+    if (active) {
+      this.items = active.items;
+    }
   }
   async ngOnInit() {
     this.conditionModel = await this.hotelService.getConditions();

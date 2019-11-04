@@ -1,8 +1,16 @@
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { HotelPaymentType } from "./HotelPaymentType";
 import { TmcEntity } from "src/app/tmc/tmc.service";
+import { IStarPriceTabItem, IStarPriceTab } from '../components/hotel-query/hotel-starprice/hotel-starprice.component';
+import { IRankItem } from '../components/hotel-query/recommend-rank/recommend-rank.component';
+import { IGeoTab, IGeoItem, IMetros } from '../components/hotel-query/hotel-geo/hotel-geo.component';
+import { GeoEntity } from './GeoEntity';
 
 export class HotelQueryEntity {
+  starAndPrices: IStarPriceTab<IStarPriceTabItem>[];
+  ranks: IRankItem[];
+  locationAreas:IGeoTab<IGeoItem<GeoEntity>>[];
+  filters:any[];
   /// <summary>
   /// 价格类型
   /// </summary>
@@ -114,3 +122,4 @@ export class HotelQueryEntity {
   /// </summary>
   IsLoadDetail: boolean;
 }
+

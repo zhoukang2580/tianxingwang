@@ -1,5 +1,5 @@
 <div class='wrapper'>
-  <ion-list *ngFor='let tab of tabs'>
+  <ion-list *ngFor='let tab of hotelQuery?.starAndPrices'>
     <ion-item-divider>{{tab?.label}}
       <ion-button slot='end' (click)='resetItems(tab)' color='secondary' size='small'>不限</ion-button>
     </ion-item-divider>
@@ -14,7 +14,7 @@
       </div>
     </ion-item>
   </ion-list>
-  <ion-list>
+  <ion-list> 
     <ion-list-header>自定义价格
       <div class='custome-price'>
         <span>￥{{value?.lower}}</span>

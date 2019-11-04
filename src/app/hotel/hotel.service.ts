@@ -68,6 +68,7 @@ export class HotelService {
   private conditionModel: HotelConditionModel;
   private cityConditionIsLoading: { [citycode: string]: boolean };
   private hotelPolicies: { [hotelId: string]: HotelPassengerModel[] };
+  private hotelQueryModel: HotelQueryEntity;
   constructor(
     private apiService: ApiService,
     identityService: IdentityService,
@@ -93,6 +94,13 @@ export class HotelService {
     identityService.getIdentitySource().subscribe(res => {
       this.disposal();
     });
+    this.setHotelQueryModel(new HotelQueryEntity());
+  }
+  setHotelQueryModel(query: HotelQueryEntity) {
+    this.hotelQueryModel = query;
+  }
+  getHotelQueryModel() {
+    return this.hotelQueryModel;
   }
   getRules(roomPlan: RoomPlanEntity) {
     return this.getRoomRateRule(roomPlan);
@@ -217,6 +225,7 @@ export class HotelService {
     this.setBookInfos([]);
     this.selfCredentials = null;
     this.isInitializingSelfBookInfos = false;
+    this.hotelQueryModel = null;
   }
   private initSearchHotelModel() {
     const m = new SearchHotelModel();

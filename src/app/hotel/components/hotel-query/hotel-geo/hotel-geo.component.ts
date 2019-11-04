@@ -52,11 +52,10 @@ export interface IGeoItem<T> {
   templateUrl: "./hotel-geo.component.html",
   styleUrls: ["./hotel-geo.component.scss"]
 })
-export class HotelGeoComponent implements OnInit, OnChanges {
+export class HotelGeoComponent implements OnInit {
   private conditionModel: HotelConditionModel;
+  hotelQuery: HotelQueryEntity;
   @Output() geoFilterChange: EventEmitter<any>;
-  @Input() hotelQuery: HotelQueryEntity;
-  tabs: IGeoTab<IGeoItem<GeoEntity>>[];
   secondaryItems: IGeoItem<GeoEntity>[];
   thirdItems: IGeoItem<GeoEntity>[];
   normalItems: IGeoItem<GeoEntity>[];
@@ -65,17 +64,12 @@ export class HotelGeoComponent implements OnInit, OnChanges {
   }
 
   async ngOnInit() {
-    this.conditionModel = await this.hotelService.getConditions();
-    this.initTabs();
-  }
-  ngOnChanges(changes: SimpleChanges) {
-    // if (
-    //   changes &&
-    //   changes.conditionModel &&
-    //   changes.conditionModel.currentValue
-    // ) {
-    //   this.initTabs();
-    // }
+    this.hotelQuery = this.hotelService.getHotelQueryModel();
+    // this.conditionModel = await this.hotelService.getConditions();
+    if (this.hotelQuery) {
+      if (!this.hotelQuery.locationAreas)
+        this.resetTabs();
+    }
   }
   onItemClick(item: IGeoItem<GeoEntity>, items: IGeoItem<GeoEntity>[]) {
     if (!item) {
@@ -103,84 +97,89 @@ export class HotelGeoComponent implements OnInit, OnChanges {
     } else {
       item.isSelected = !item.isSelected;
     }
-    this.checkTabsHasFilteredItem();
-  }
-  private checkTabsHasFilteredItem() {
-    console.time("checkTabsHasFilteredItem");
-    this.tabs.forEach(tab => {
-      if (!tab.isMulti) {
-        tab.hasFilterItem = false;
-      }
-      tab.hasFilterItem =
-        tab.active && tab.tag == "Metro"
-          ? tab.items &&
-          tab.items.some(it => it.items && it.items.some(k => k.isSelected))
-          : tab.items && tab.items.some(it => it.isSelected);
-    });
-    console.timeEnd("checkTabsHasFilteredItem");
-    console.log(this.tabs);
-  }
-  private scrollThirdListToTop() {
-    setTimeout(() => {
-      const list = document.querySelector(".third-list");
-      if (list) {
-        list.scrollTop = 0;
-      }
-    }, 300);
-  }
-  private scrollSecondaryListToTop() {
-    setTimeout(() => {
-      const secondList = document.querySelector(".secondary-list");
-      if (secondList) {
-        secondList.scrollTop = 0;
-      }
-    }, 300);
   }
   private scrollListsToTop() {
     setTimeout(() => {
       const secondList = document.querySelector(".secondary-list");
       const thirdList = document.querySelector(".third-list");
       if (secondList) {
-        secondList.scrollTop = 0;
+        const sec = this.secondaryItems && this.secondaryItems.find(it => it.isSelected);
+        if (sec) {
+          const secEle = secondList.querySelector(`[dataid=${sec.id}]`);
+          const rect = secEle&&secEle.getBoundingClientRect();
+          if (secEle && rect) {
+            secondList.scrollBy({
+              top: rect.top,
+              behavior: "smooth"
+            });
+          } else {
+            secondList.scrollTop = 0;
+          }
+        } else {
+          secondList.scrollTop = 0;
+        }
       }
       if (thirdList) {
-        thirdList.scrollTop = 0;
+        const third = this.thirdItems && this.thirdItems.find(it => it.isSelected);
+        if (third) {
+          const ele = thirdList.querySelector(`[dataid=${third.id}]`);
+          const rect = ele.getBoundingClientRect();
+          if (ele && rect) {
+            thirdList.scrollBy({
+              top: rect.top,
+              behavior: "smooth"
+            });
+          } else {
+            thirdList.scrollTop = 0;
+          }
+        } else {
+          thirdList.scrollTop = 0;
+        }
       }
     }, 300);
   }
   onTabClick(tab: IGeoTab<IGeoItem<GeoEntity>>) {
-    if (!tab) {
+    if (!this.hotelQuery || !tab || !this.hotelQuery.locationAreas) {
       return;
     }
-    this.tabs.forEach(t => {
+    this.hotelQuery.locationAreas = this.hotelQuery.locationAreas.map(t => {
       t.active = t.tag == tab.tag;
+      return t;
     });
     this.secondaryItems = tab.items || [];
     if (this.secondaryItems.some(it => it.items && it.items.length > 0)) {
-      this.secondaryItems[0].isSelected = true;
-      this.thirdItems = this.secondaryItems[0].items;
+      const s = this.secondaryItems.find(sec => sec.isSelected);
+      if (!s) {
+        this.secondaryItems[0].isSelected = true;
+        this.thirdItems = this.secondaryItems[0].items;
+      } else {
+        this.thirdItems = s.items;
+      }
     } else {
       this.normalItems = tab.items;
       this.secondaryItems = [];
       this.thirdItems = [];
     }
     this.scrollListsToTop();
-    this.checkTabsHasFilteredItem();
   }
-  private initTabs() {
-    this.tabs = [];
+  private async resetTabs() {
+    this.conditionModel = await this.hotelService.getConditions(true);
+    this.hotelQuery.locationAreas = [];
     this.initMetros();
     this.initOtherTabs();
-    const geos = this.hotelQuery && this.hotelQuery.Geos || [];
-    if (this.tabs && this.tabs[0]) {
-      this.onTabClick(this.tabs[0]);
+    if (this.hotelQuery.locationAreas && this.hotelQuery.locationAreas[0]) {
+      this.onTabClick(this.hotelQuery.locationAreas[0]);
     }
   }
-  onReset() {
-    this.initTabs();
+  async onReset() {
+    if (this.hotelQuery) {
+      this.hotelQuery.locationAreas = null;
+      this.hotelService.setHotelQueryModel(this.hotelQuery);
+      await this.resetTabs();
+    }
   }
   onFilter() {
-    this.geoFilterChange.emit(this.tabs.filter(tab => tab.hasFilterItem));
+    this.geoFilterChange.emit();
   }
   private initMetros() {
     if (!this.conditionModel || !this.conditionModel.Geos) {
@@ -203,24 +202,21 @@ export class HotelGeoComponent implements OnInit, OnChanges {
       },
       {} as { [key: string]: GeoEntity[] }
     );
-    const geos = this.hotelQuery && this.hotelQuery.Geos || [];
     const mtros = Object.keys(metros);
     const metroTab: IGeoTab<IGeoItem<GeoEntity>> = {
       id: "metro",
       label: "地铁",
       tag: "Metro",
-      active: mtros.some(line => metros[line].some(stop => geos.some(gs => gs == stop.Id))),
       items: mtros.map(line => {
         return {
+          id:line,
           label: line,
           level: "second",
           tag: metros[line][0].Tag,
-          isSelected: metros[line].some(stop => geos.some(gs => gs == stop.Id)),
           items: metros[line].map(geo => {
             return {
               label: geo.Name,
               id: geo.Id,
-              isSelected: !!geos.find(id => id == geo.Id),
               tag: geo.Tag,
               level: "third"
             } as IGeoItem<GeoEntity>;
@@ -228,7 +224,7 @@ export class HotelGeoComponent implements OnInit, OnChanges {
         } as IGeoItem<GeoEntity>;
       })
     };
-    this.tabs.push(metroTab);
+    this.hotelQuery.locationAreas.push(metroTab);
   }
   private initOtherTabs() {
     if (!this.conditionModel || !this.conditionModel.Geos) {
@@ -313,17 +309,17 @@ export class HotelGeoComponent implements OnInit, OnChanges {
   }
   private processCase(label: string, geo: GeoEntity, tags?: string[]) {
     const geos = this.hotelQuery && this.hotelQuery.Geos || [];
-    let tab = this.tabs.find(
+    let tab = this.hotelQuery.locationAreas.find(
       t => t.tag == geo.Tag || (tags && tags.some(tg => tg == t.tag))
     );
     if (!tab) {
-      tab={
+      tab = {
         label: label,
-        id: geo.Tag,
+        id: geo.Id,
         tag: geo.Tag as any,
         items: [],
       };
-      this.tabs.push(tab);
+      this.hotelQuery.locationAreas.push(tab);
     } else {
       tab.items.push({
         label: geo.Name,
@@ -333,8 +329,16 @@ export class HotelGeoComponent implements OnInit, OnChanges {
         isSelected: !!geos.find(gid => gid == geo.Id)
       });
     }
-    if(tab.isMulti){
+    if (tab.isMulti) {
       tab.active = tab.items.some(it => it.isSelected);
     }
   }
+}
+export interface IMetros {
+  hasItemSelected?: boolean;
+  line: string;
+  stops: {
+    isSelected: boolean;
+    stop: GeoEntity
+  }[]
 }
