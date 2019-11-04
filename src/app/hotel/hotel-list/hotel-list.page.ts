@@ -280,16 +280,10 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
         this.hotelQueryModel.BeginDate = m.checkInDate;
         this.hotelQueryModel.EndDate = m.checkOutDate;
         this.hotelQueryModel.City = m.destinationCity;
-        if (m.isRefreshData) {
-          this.doRefresh();
-          this.hotelService.setSearchHotelModel({
-            ...m,
-            isRefreshData: false
-          });
-        }
       }
     });
     this.subscriptions.push(sub);
     this.subscriptions.push(sub1);
+    this.doRefresh();
   }
 }

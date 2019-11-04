@@ -43,7 +43,6 @@ export class SearchHotelModel {
   checkInDate: string;
   checkOutDate: string;
   tripType: TripType;
-  isRefreshData?: boolean;
   destinationCity: TrafficlineEntity;
   tag: "Agreement" | "" | "SpecialPrice";
   hotelType: "agreement" | "normal" | "specialprice";
@@ -59,6 +58,7 @@ export class HotelService {
   private bookInfos: PassengerBookInfo<IHotelInfo>[];
   private bookInfoSource: Subject<PassengerBookInfo<IHotelInfo>[]>;
   private searchHotelModelSource: Subject<SearchHotelModel>;
+  private hotelQuerySource: Subject<HotelQueryEntity>;
   private conditionModelSource: Subject<HotelConditionModel>;
   private searchHotelModel: SearchHotelModel;
   private selfCredentials: CredentialsEntity[];
@@ -66,7 +66,6 @@ export class HotelService {
   private lastUpdateTime = 0;
   private isInitializingSelfBookInfos = false;
   private conditionModel: HotelConditionModel;
-  private cityConditionIsLoading: { [citycode: string]: boolean };
   private hotelPolicies: { [hotelId: string]: HotelPassengerModel[] };
   private hotelQueryModel: HotelQueryEntity;
   constructor(
@@ -81,6 +80,7 @@ export class HotelService {
   ) {
     this.bookInfoSource = new BehaviorSubject([]);
     this.searchHotelModelSource = new BehaviorSubject(null);
+    this.hotelQuerySource = new BehaviorSubject(new HotelQueryEntity());
     this.conditionModelSource = new BehaviorSubject(null);
     this.initSearchHotelModel();
     combineLatest([
@@ -94,12 +94,18 @@ export class HotelService {
     identityService.getIdentitySource().subscribe(res => {
       this.disposal();
     });
-    this.setHotelQueryModel(new HotelQueryEntity());
   }
-  setHotelQueryModel(query: HotelQueryEntity) {
-    this.hotelQueryModel = query;
+  setHotelQuerySource(query:HotelQueryEntity) {
+    this.hotelQueryModel=query;
+    this.hotelQuerySource.next(query);
+  }
+  getHotelQuerySource() {
+    return this.hotelQuerySource.asObservable();
   }
   getHotelQueryModel() {
+    if(!this.hotelQueryModel){
+      this.setHotelQuerySource(new HotelQueryEntity());
+    }
     return this.hotelQueryModel;
   }
   getRules(roomPlan: RoomPlanEntity) {
@@ -258,16 +264,6 @@ export class HotelService {
   }
   setSearchHotelModel(m: SearchHotelModel) {
     if (m) {
-      if (
-        this.conditionModel &&
-        this.conditionModel.city &&
-        m.destinationCity &&
-        m.destinationCity.Code != this.conditionModel.city.Code
-      ) {
-        this.getConditions(true).then(c => {
-          this.setConditionModelSource(c);
-        });
-      }
       this.searchHotelModel = m;
       this.searchHotelModel.tag =
         m.hotelType == "normal"
@@ -445,15 +441,6 @@ export class HotelService {
     return this.localHotelCities;
   }
   private async getHotelConditions(cityCode: string) {
-    console.log("cityConditionIsLoading", this.cityConditionIsLoading);
-    if (this.cityConditionIsLoading && this.cityConditionIsLoading[cityCode]) {
-      return;
-    }
-    if (!this.cityConditionIsLoading) {
-      this.cityConditionIsLoading = { [cityCode]: true };
-    } else {
-      this.cityConditionIsLoading[cityCode] = true;
-    }
     const req = new RequestEntity();
     cityCode =
       cityCode ||
@@ -469,7 +456,6 @@ export class HotelService {
       .catch(_ => {
         return null;
       });
-    this.cityConditionIsLoading[cityCode] = false;
     return result;
   }
   private getFirstLetter(name: string) {
@@ -487,8 +473,11 @@ export class HotelService {
     return local;
   }
   getHotelList(query: HotelQueryEntity) {
-    const hotelquery = {
-      ...query
+    const hotelquery :HotelQueryEntity= {
+      ...query,
+      starAndPrices:null,
+      locationAreas:null,
+      ranks:null
     };
     const req = new RequestEntity();
     req.Method = `TmcApiHotelUrl-Home-List`;

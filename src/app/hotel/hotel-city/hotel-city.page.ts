@@ -118,12 +118,18 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
         });
       }
       city.Selected = true;
+      const old = this.hotelService.getSearchHotelModel();
       await this.initHistoryCity(city);
-      this.hotelService.setSearchHotelModel({
-        ...this.hotelService.getSearchHotelModel(),
-        destinationCity: city,
-        isRefreshData: true
-      });
+      if (old && old.destinationCity && old.destinationCity.CityCode != city.CityCode) {
+        const query = this.hotelService.getHotelQueryModel();
+        this.hotelService.setSearchHotelModel({
+          ...old,
+          destinationCity: city,
+        });
+        await this.hotelService.getConditions(true);
+        query.locationAreas = null;
+        this.hotelService.setHotelQuerySource(query);
+      }
     }
     setTimeout(() => {
       this.back();
@@ -287,7 +293,7 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
             (s.Code && s.Code.toLowerCase().includes(kw)) ||
             (s.Nickname && s.Nickname.toLowerCase().includes(kw)) ||
             (s.EnglishName && s.EnglishName.toLowerCase().includes(kw)) ||
-            (s.CityName && s.CityName.toLowerCase().includes(kw))||
+            (s.CityName && s.CityName.toLowerCase().includes(kw)) ||
             (s.Pinyin && s.Pinyin.toLowerCase().includes(kw))
           );
         }).slice(0, 20);

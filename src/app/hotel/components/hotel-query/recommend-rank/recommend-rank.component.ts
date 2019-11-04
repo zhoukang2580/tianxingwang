@@ -56,7 +56,7 @@ export class RecommendRankComponent implements OnInit {
       it.isSelected = it.id == r.id;
       return it;
     });
-    this.hotelService.setHotelQueryModel(this.hotelQuery);
+    this.hotelService.setHotelQuerySource(this.hotelQuery);
     this.rank.emit();
   }
 }

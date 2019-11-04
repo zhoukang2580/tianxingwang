@@ -9,10 +9,12 @@ import {
   EventEmitter,
   Output,
   OnChanges,
-  SimpleChanges
+  SimpleChanges,
+  OnDestroy
 } from "@angular/core";
 import { HotelConditionModel } from "src/app/hotel/models/ConditionModel";
 import { HotelQueryEntity } from 'src/app/hotel/models/HotelQueryEntity';
+import { Subscription } from 'rxjs';
 export interface IGeoTab<T> {
   id: string;
   label: string;
@@ -52,8 +54,9 @@ export interface IGeoItem<T> {
   templateUrl: "./hotel-geo.component.html",
   styleUrls: ["./hotel-geo.component.scss"]
 })
-export class HotelGeoComponent implements OnInit {
+export class HotelGeoComponent implements OnInit,OnDestroy {
   private conditionModel: HotelConditionModel;
+  private subscription=Subscription.EMPTY;
   hotelQuery: HotelQueryEntity;
   @Output() geoFilterChange: EventEmitter<any>;
   secondaryItems: IGeoItem<GeoEntity>[];
@@ -62,23 +65,34 @@ export class HotelGeoComponent implements OnInit {
   constructor(private hotelService: HotelService) {
     this.geoFilterChange = new EventEmitter();
   }
-
+  ngOnDestroy(){
+    this.subscription.unsubscribe();
+  }
   async ngOnInit() {
-    this.hotelQuery = this.hotelService.getHotelQueryModel();
-    // this.conditionModel = await this.hotelService.getConditions();
-    if (this.hotelQuery) {
-      if (!this.hotelQuery.locationAreas)
-        this.resetTabs();
-    }
+   this.subscription= this.hotelService.getHotelQuerySource().subscribe(query=>{
+      this.hotelQuery=query;
+      console.log("geo filter ", this.hotelQuery);
+      // this.conditionModel = await this.hotelService.getConditions();
+      if (this.hotelQuery) {
+        if (!this.hotelQuery.locationAreas){
+          this.resetTabs();
+        }else{
+          this.onTabClick(this.hotelQuery.locationAreas[0]);
+        }
+      }
+    })
   }
   onItemClick(item: IGeoItem<GeoEntity>, items: IGeoItem<GeoEntity>[]) {
     if (!item) {
       return;
     }
+    const tab:IGeoTab<IGeoItem<GeoEntity>>=this.hotelQuery.locationAreas.find(it=>it.active);
     if (item.level == "second") {
       this.thirdItems = item.items;
+    }else{
+      this.thirdItems=[];
     }
-    if (items.filter(it => it.isSelected).length >= 3) {
+    if (items.filter(it => it.isSelected).length > 2) {
       AppHelper.toast(`${item.label}不能超过3个`, 1000, "middle");
       item.isSelected = false;
       return;
@@ -86,10 +100,10 @@ export class HotelGeoComponent implements OnInit {
     if (!item.isMulti) {
       if (items) {
         items.forEach(it => {
-          it.isSelected = it == item;
+          it.isSelected = it.id == item.id;
           if (it.items) {
             it.items.forEach(k => {
-              k.isSelected = k == item;
+              k.isSelected = k.id == item.id;
             });
           }
         });
@@ -97,53 +111,50 @@ export class HotelGeoComponent implements OnInit {
     } else {
       item.isSelected = !item.isSelected;
     }
+    if(tab){
+      if(this.thirdItems&&this.thirdItems.length){
+        tab.hasFilterItem=this.thirdItems.some(it=>it.isSelected);
+      }else{
+        if(tab.items){
+          tab.hasFilterItem=tab.items.some(it=>it.isSelected);
+        }
+      }
+    }
   }
   private scrollListsToTop() {
     setTimeout(() => {
       const secondList = document.querySelector(".secondary-list");
       const thirdList = document.querySelector(".third-list");
-      if (secondList) {
-        const sec = this.secondaryItems && this.secondaryItems.find(it => it.isSelected);
-        if (sec) {
-          const secEle = secondList.querySelector(`[dataid=${sec.id}]`);
-          const rect = secEle&&secEle.getBoundingClientRect();
-          if (secEle && rect) {
-            secondList.scrollBy({
-              top: rect.top,
-              behavior: "smooth"
-            });
-          } else {
-            secondList.scrollTop = 0;
-          }
-        } else {
-          secondList.scrollTop = 0;
-        }
-      }
-      if (thirdList) {
-        const third = this.thirdItems && this.thirdItems.find(it => it.isSelected);
-        if (third) {
-          const ele = thirdList.querySelector(`[dataid=${third.id}]`);
-          const rect = ele.getBoundingClientRect();
-          if (ele && rect) {
-            thirdList.scrollBy({
-              top: rect.top,
-              behavior: "smooth"
-            });
-          } else {
-            thirdList.scrollTop = 0;
-          }
-        } else {
-          thirdList.scrollTop = 0;
-        }
-      }
+      const normalList = document.querySelector(".normal-list");
+      const sec = this.secondaryItems && this.secondaryItems.find(it => it.isSelected);
+      this.scrollEleToView(secondList, sec && sec.id,this.secondaryItems&&this.secondaryItems.length);
+      const third = this.thirdItems && this.thirdItems.find(it => it.isSelected);
+      this.scrollEleToView(thirdList, third && third.id,this.thirdItems&&this.thirdItems.length);
+      const nor = this.normalItems && this.normalItems.find(it => it.isSelected);
+      this.scrollEleToView(normalList, nor && nor.id,this.normalItems&&this.normalItems.length);
     }, 300);
+  }
+  private scrollEleToView(container: Element, eleDataId: string, scrollItemsNum = 0) {
+    if (container) {
+      const ele = container.querySelector(`[dataid='${eleDataId}']`);
+      const rect = ele && ele.getBoundingClientRect();
+      const h = container.getBoundingClientRect() && container.getBoundingClientRect().height;
+      if (ele && rect) {
+        container.scrollBy({
+          top: rect.top - h / 2,
+          behavior: scrollItemsNum > 100 ? "auto" : "smooth"
+        });
+      } else {
+        container.scrollTop = 0;
+      }
+    }
   }
   onTabClick(tab: IGeoTab<IGeoItem<GeoEntity>>) {
     if (!this.hotelQuery || !tab || !this.hotelQuery.locationAreas) {
       return;
     }
     this.hotelQuery.locationAreas = this.hotelQuery.locationAreas.map(t => {
-      t.active = t.tag == tab.tag;
+      t.active = t.tag == tab.tag||t.id==tab.id;
       return t;
     });
     this.secondaryItems = tab.items || [];
@@ -163,7 +174,7 @@ export class HotelGeoComponent implements OnInit {
     this.scrollListsToTop();
   }
   private async resetTabs() {
-    this.conditionModel = await this.hotelService.getConditions(true);
+    this.conditionModel = await this.hotelService.getConditions();
     this.hotelQuery.locationAreas = [];
     this.initMetros();
     this.initOtherTabs();
@@ -174,7 +185,7 @@ export class HotelGeoComponent implements OnInit {
   async onReset() {
     if (this.hotelQuery) {
       this.hotelQuery.locationAreas = null;
-      this.hotelService.setHotelQueryModel(this.hotelQuery);
+      this.hotelService.setHotelQuerySource(this.hotelQuery);
       await this.resetTabs();
     }
   }
@@ -209,7 +220,7 @@ export class HotelGeoComponent implements OnInit {
       tag: "Metro",
       items: mtros.map(line => {
         return {
-          id:line,
+          id: line,
           label: line,
           level: "second",
           tag: metros[line][0].Tag,

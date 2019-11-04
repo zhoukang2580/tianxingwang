@@ -52,6 +52,7 @@ interface ITab {
   ]
 })
 export class HotelQueryComponent implements OnInit {
+  private hotelQueryModel: HotelQueryEntity;
   @Output() hotelQueryChange: EventEmitter<any>;
   @ViewChildren(QueryTabComponent) queryTabComps: QueryList<QueryTabComponent>;
   @ViewChild(HotelFilterComponent) hotelFilterComp: HotelFilterComponent;
@@ -60,7 +61,6 @@ export class HotelQueryComponent implements OnInit {
   hotelRecommendRankComp: RecommendRankComponent;
   @Input() conditions: HotelConditionModel;
   hotelStarPriceComp: HotelStarPriceComponent;
-  @Input() hotelQueryModel: HotelQueryEntity;
   isActiveTab = false;
   activeTab: ITab;
   constructor(
@@ -124,9 +124,9 @@ export class HotelQueryComponent implements OnInit {
       this.hotelStarPriceComp.onReset();
     }
   }
-  isStarPriceHasConditionFiltered(){
-    const query=this.hotelService.getHotelQueryModel();
-    return query&&query.starAndPrices&&query.starAndPrices.some(t=>t.hasItemSelected);
+  isStarPriceHasConditionFiltered() {
+    const query = this.hotelService.getHotelQueryModel();
+    return query && query.starAndPrices && query.starAndPrices.some(t => t.hasItemSelected);
   }
   onActiveTab(tab: ITab) {
     if (this.queryTabComps) {
@@ -192,17 +192,27 @@ export class HotelQueryComponent implements OnInit {
   }
   onFilterGeo() {
     const query = this.hotelService.getHotelQueryModel();
-    if(query&&query.locationAreas){
-      const geoTabs  = query.locationAreas.filter(tab => tab.hasFilterItem)
+    if (query && query.locationAreas) {
+      query.Geos=query.Geos||[];
+      const geoTabs = query.locationAreas.filter(tab => tab.hasFilterItem)
       console.log("geo 搜索", geoTabs);
       if (geoTabs.length) {
-        geoTabs.forEach(it => {
-          it.items.forEach(item => {
-            if (item.isSelected) {
-              query.Geos.push(item.id);
+        geoTabs.forEach(tab => {
+          tab.items.forEach(item => {
+            if (item.items) {// level 3
+              item.items.forEach(t => {
+                if (t.isSelected) {
+                  query.Geos.push(t.id);
+                }
+              })
+            } else {// level 2
+              if (item.isSelected) {
+                query.Geos.push(item.id);
+              }
             }
           });
         });
+        this.hotelService.setHotelQuerySource(query);
       }
       this.doRefresh(query);
     }

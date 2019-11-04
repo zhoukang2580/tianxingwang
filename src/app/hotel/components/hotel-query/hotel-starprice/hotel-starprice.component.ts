@@ -55,7 +55,7 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
     this.starPriceChange = new EventEmitter();
   }
   private onStarPriceChange() {
-    this.hotelService.setHotelQueryModel(this.hotelQuery);
+    this.hotelService.setHotelQuerySource(this.hotelQuery);
     this.starPriceChange.emit();
   }
   onFilter() {
@@ -133,11 +133,11 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
   onReset() {
     if (this.hotelQuery) {
       this.hotelQuery.starAndPrices = null;
-      this.hotelService.setHotelQueryModel(this.hotelQuery);
+      this.hotelService.setHotelQuerySource(this.hotelQuery);
     }
     this.resetTabs();
     this.onResetCustomePrice();
-    this.hotelService.setHotelQueryModel(this.hotelQuery);
+    this.hotelService.setHotelQuerySource(this.hotelQuery);
   }
   onItemClick(item: IStarPriceTabItem, tab: IStarPriceTab<IStarPriceTabItem>) {
     if (item) {

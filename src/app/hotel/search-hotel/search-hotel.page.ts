@@ -146,7 +146,6 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       checkInDate: this.checkInDate.date,
       checkOutDate: this.checkOutDate.date,
       destinationCity: this.destinationCity,
-      isRefreshData: true
     });
     this.router.navigate([AppHelper.getRoutePath("hotel-list")]).then(_ => {
       this.isLeavePage = true;
