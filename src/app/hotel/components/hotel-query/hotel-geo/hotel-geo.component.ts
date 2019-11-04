@@ -89,8 +89,6 @@ export class HotelGeoComponent implements OnInit,OnDestroy {
     const tab:IGeoTab<IGeoItem<GeoEntity>>=this.hotelQuery.locationAreas.find(it=>it.active);
     if (item.level == "second") {
       this.thirdItems = item.items;
-    }else{
-      this.thirdItems=[];
     }
     if (items.filter(it => it.isSelected).length > 2) {
       AppHelper.toast(`${item.label}不能超过3个`, 1000, "middle");

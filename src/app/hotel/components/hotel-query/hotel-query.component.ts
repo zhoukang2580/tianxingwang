@@ -199,7 +199,7 @@ export class HotelQueryComponent implements OnInit {
       if (geoTabs.length) {
         geoTabs.forEach(tab => {
           tab.items.forEach(item => {
-            if (item.items) {// level 3
+            if (item.items&&item.items.length) {// level 3
               item.items.forEach(t => {
                 if (t.isSelected) {
                   query.Geos.push(t.id);
