@@ -66,5 +66,5 @@ export interface IRankItem {
   label: string;
   orderBy: "PriceAsc" | "PriceDesc";
   isSelected?: boolean;
-  value: string;
+  value: "Category"|"Price";
 }

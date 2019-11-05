@@ -17,7 +17,8 @@ import {
   Output,
   EventEmitter,
   ViewChild,
-  Input
+  Input,
+  OnDestroy
 } from "@angular/core";
 import { trigger, transition, animate } from "@angular/animations";
 import { HotelConditionModel } from "../../models/ConditionModel";
@@ -34,6 +35,7 @@ import {
   HotelStarPriceComponent
 } from "./hotel-starprice/hotel-starprice.component";
 import { environment } from "src/environments/environment";
+import { Subscription } from 'rxjs';
 interface ITab {
   label: string;
   id: string;
@@ -51,8 +53,9 @@ interface ITab {
     ])
   ]
 })
-export class HotelQueryComponent implements OnInit {
+export class HotelQueryComponent implements OnInit, OnDestroy {
   private hotelQueryModel: HotelQueryEntity;
+  private hotelQueryModelSub = Subscription.EMPTY;
   @Output() hotelQueryChange: EventEmitter<any>;
   @ViewChildren(QueryTabComponent) queryTabComps: QueryList<QueryTabComponent>;
   @ViewChild(HotelFilterComponent) hotelFilterComp: HotelFilterComponent;
@@ -70,39 +73,13 @@ export class HotelQueryComponent implements OnInit {
   ) {
     this.hotelQueryChange = new EventEmitter();
   }
-  private async initConditions() {
-    if (
-      !this.conditions ||
-      !this.conditions.Amenities ||
-      !this.conditions.Brands ||
-      !this.conditions.Geos
-    ) {
-      const conditions = await this.hotelService
-        .getConditions(true)
-        .catch(_ => null);
-      // console.log(JSON.stringify(this.conditions));
-      if (conditions) {
-        if (conditions.Geos) {
-          conditions.Geos = conditions.Geos.map(geo => {
-            if (geo.Variables) {
-              geo.VariablesJsonObj = JSON.parse(geo.Variables);
-            }
-            return geo;
-          });
-        }
-        if (!conditions.Tmc) {
-          conditions.Tmc = await this.tmcService.getTmc().catch(_ => null);
-        }
-        // if (!environment.production) {
-        //   await this.storage.set("mock-hotel-condition", conditions);
-        // }
-      }
-    }
+  ngOnDestroy() {
+    this.hotelQueryModelSub.unsubscribe();
   }
+  
   async onReset() {
     // this.conditions = await this.storage.get("mock-hotel-condition");
     console.log("query component ,onreset", this.conditions);
-    await this.initConditions();
     this.hotelQueryModel = new HotelQueryEntity();
     if (this.hotelFilterComp) {
       this.hotelFilterComp.onReset();
@@ -125,8 +102,13 @@ export class HotelQueryComponent implements OnInit {
     }
   }
   isStarPriceHasConditionFiltered() {
-    const query = this.hotelService.getHotelQueryModel();
-    return query && query.starAndPrices && query.starAndPrices.some(t => t.hasItemSelected);
+    return this.hotelQueryModel && this.hotelQueryModel.starAndPrices && this.hotelQueryModel.starAndPrices.some(t => t.hasItemSelected);
+  }
+  isLocationAreasHasConditionFiltered() {
+    return this.hotelQueryModel && this.hotelQueryModel.locationAreas && this.hotelQueryModel.locationAreas.some(it => it.hasFilterItem);
+  }
+  isRanksHasConditionFiltered() {
+    return this.hotelQueryModel && this.hotelQueryModel.ranks && this.hotelQueryModel.ranks.some(it => it.value != 'Category');
   }
   onActiveTab(tab: ITab) {
     if (this.queryTabComps) {
@@ -140,10 +122,7 @@ export class HotelQueryComponent implements OnInit {
     const query = this.hotelService.getHotelQueryModel();
     if (query && query.starAndPrices) {
       const customeprice = query.starAndPrices.find(it => it.tag == "customeprice");
-      const evt = [
-        ...query.starAndPrices.filter(it => it.hasItemSelected),
-        customeprice ? customeprice : null
-      ].filter(it => !!it);
+      const evt = query.starAndPrices.filter(it => it.hasItemSelected).filter(it=>!!it);
       console.log(evt);
       this.hideQueryPannel();
       const tabs = evt.filter(
@@ -173,7 +152,7 @@ export class HotelQueryComponent implements OnInit {
         query.BeginPrice = lower + "";
       }
       if (upper) {
-        query.EndPrice = upper == Infinity ? "" : `${upper}`;
+        query.EndPrice = upper == Infinity ? "10000000" : `${upper}`;
       }
       const stars = evt.find(it => it.tag == "stars");
       if (stars && stars.items && stars.items.some(it => it.isSelected)) {
@@ -193,13 +172,13 @@ export class HotelQueryComponent implements OnInit {
   onFilterGeo() {
     const query = this.hotelService.getHotelQueryModel();
     if (query && query.locationAreas) {
-      query.Geos=query.Geos||[];
+      query.Geos = query.Geos || [];
       const geoTabs = query.locationAreas.filter(tab => tab.hasFilterItem)
       console.log("geo 搜索", geoTabs);
       if (geoTabs.length) {
         geoTabs.forEach(tab => {
           tab.items.forEach(item => {
-            if (item.items&&item.items.length) {// level 3
+            if (item.items && item.items.length) {// level 3
               item.items.forEach(t => {
                 if (t.isSelected) {
                   query.Geos.push(t.id);
@@ -305,9 +284,12 @@ export class HotelQueryComponent implements OnInit {
       query.Orderby = tab.orderBy;
       this.doRefresh(query);
     }
+    this.hotelService.setHotelQuerySource(query);
   }
   ngOnInit() {
-    this.onReset();
+    this.hotelQueryModelSub = this.hotelService.getHotelQuerySource().subscribe(query => {
+      this.hotelQueryModel = query;
+    })
   }
   doRefresh(query?: HotelQueryEntity) {
     this.hotelQueryModel = new HotelQueryEntity();
@@ -323,13 +305,13 @@ export class HotelQueryComponent implements OnInit {
     this.hotelQueryChange.emit(this.hotelQueryModel);
   }
   private hideQueryPannel() {
-    if (this.queryTabComps) {
-      this.queryTabComps.forEach(tab => {
-        if (tab) {
-          tab.onReset();
-        }
-      });
-    }
+    // if (this.queryTabComps) {
+    //   this.queryTabComps.forEach(tab => {
+    //     if (tab) {
+    //       tab.onReset();
+    //     }
+    //   });
+    // }
     setTimeout(() => {
       this.activeTab = {
         label: "initial",

@@ -41,7 +41,7 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
     items: [
       {
         label: "",
-        isSelected: true,
+        isSelected: false,
         minPrice: 0,
         maxPrice: 1000
       }
@@ -63,6 +63,7 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
   }
   ngAfterViewInit() { }
   onPriceRangeChange(evt: CustomEvent) {
+    // console.log("onPriceRangeChange",evt.detail);
     if (evt.detail.value) {
       this.value = evt.detail.value as ILowerUper;
       this.customepriceTab.items[0].minPrice = this.value.lower;
@@ -117,14 +118,13 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
           }
         )
       });
+      this.hotelQuery.starAndPrices.push(this.customepriceTab);
     }
   }
   onResetCustomePrice() {
     if (this.rangeEle) {
-      this.rangeEle.value = {
-        lower: 0,
-        upper: 1000
-      };
+      this.value={lower:0,upper:1000};
+      this.rangeEle.value = this.value;
       this.customepriceTab.items[0].minPrice = this.value.lower;
       this.customepriceTab.items[0].maxPrice = this.value.upper;
       this.customepriceTab.hasItemSelected = false;
@@ -141,7 +141,7 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
   }
   onItemClick(item: IStarPriceTabItem, tab: IStarPriceTab<IStarPriceTabItem>) {
     if (item) {
-      if (tab.items.filter(it => it.isSelected).length >2) {
+      if (tab.items.filter(it => it.isSelected).length > 2) {
         item.isSelected = false;
         AppHelper.toast(`${tab.label}不能超过3个`, 1000, "middle");
         return;
@@ -167,9 +167,22 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
     }
   }
   ngOnInit() {
-    this.hotelQuery=this.hotelService.getHotelQueryModel();
-    if(this.hotelQuery&&!this.hotelQuery.starAndPrices){
-      this.onReset();
-    }
+    this.hotelService.getHotelQuerySource().subscribe(query => {
+      this.hotelQuery = query;
+      if (this.hotelQuery && !this.hotelQuery.starAndPrices) {
+        this.onReset();
+      } else {
+        const custome = this.hotelQuery.starAndPrices.find(it => it.tag == "customeprice");
+        if (custome && custome.items && custome.items[0]) {
+          // console.log("customeprice",custome.items);
+          this.value.lower = custome.items[0].minPrice;
+          this.value.upper = custome.items[0].maxPrice;
+          this.customepriceTab.hasItemSelected = custome.hasItemSelected || this.value.lower != 0 && this.value.upper != 1000;
+          if(this.rangeEle){
+            this.rangeEle.value = this.value;
+          }
+        }
+      }
+    });
   }
 }

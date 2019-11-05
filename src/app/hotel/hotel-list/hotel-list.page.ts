@@ -51,7 +51,7 @@ import { FlightHotelTrainType, TmcService } from "src/app/tmc/tmc.service";
 })
 export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   private subscriptions: Subscription[] = [];
-  private lastCityCode="";
+  private lastCityCode = "";
   @ViewChild(IonRefresher) refresher: IonRefresher;
   @ViewChild("querytoolbar") querytoolbar: IonToolbar;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
@@ -177,13 +177,18 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       this.queryComp.onReset();
     }
     if (!isKeepQueryCondition) {
+      // if (this.queryComp) {
+      //   this.queryComp.onReset();
+      // }
       this.hotelQueryModel = new HotelQueryEntity();
+      this.hotelService.setHotelQuerySource(this.hotelQueryModel);
     }
     this.hotelQueryModel.PageIndex = 0;
     this.hotelQueryModel.PageSize = 20;
     this.hotelDayPrices = [];
     this.scrollToTop();
     this.loadMore();
+    this.hotelService.setHotelQuerySource(this.hotelQueryModel);
   }
   private scrollToTop() {
     if (this.content) {
@@ -243,8 +248,8 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     });
   }
   onCityClick() {
-    if(this.searchHotelModel&&this.searchHotelModel.destinationCity){
-      this.lastCityCode=this.searchHotelModel.destinationCity.CityCode;
+    if (this.searchHotelModel && this.searchHotelModel.destinationCity) {
+      this.lastCityCode = this.searchHotelModel.destinationCity.CityCode;
     }
     this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
   }
@@ -270,7 +275,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       this.isShowSearchBar = false;
       this.isLeavePage = false;
       const c = this.hotelService.getSearchHotelModel();
-      if(this.lastCityCode!==(c&&c.destinationCity&&c.destinationCity.CityCode)){
+      if (this.lastCityCode !== (c && c.destinationCity && c.destinationCity.CityCode)) {
         this.doRefresh(true);
       }
     });
