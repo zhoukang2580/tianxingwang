@@ -38,6 +38,7 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
   private customepriceTab: IStarPriceTab<IStarPriceTabItem> = {
     label: "自定义价格",
     tag: "customeprice",
+    hasItemSelected:false,
     items: [
       {
         label: "",
@@ -63,7 +64,7 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
   }
   ngAfterViewInit() { }
   onPriceRangeChange(evt: CustomEvent) {
-    // console.log("onPriceRangeChange",evt.detail);
+    console.log("onPriceRangeChange",evt.detail);
     if (evt.detail.value) {
       this.value = evt.detail.value as ILowerUper;
       this.customepriceTab.items[0].minPrice = this.value.lower;
@@ -122,12 +123,15 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
     }
   }
   onResetCustomePrice() {
+    console.log("onResetCustomePrice",this.value);
     if (this.rangeEle) {
       this.value={lower:0,upper:1000};
+      this.rangeEle.disabled=true;
       this.rangeEle.value = this.value;
       this.customepriceTab.items[0].minPrice = this.value.lower;
       this.customepriceTab.items[0].maxPrice = this.value.upper;
       this.customepriceTab.hasItemSelected = false;
+      this.rangeEle.disabled=false;
     }
   }
   onReset() {
