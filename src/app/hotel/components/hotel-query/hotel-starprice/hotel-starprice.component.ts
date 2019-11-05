@@ -131,11 +131,11 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
     }
   }
   onReset() {
+    this.hotelQuery=this.hotelQuery||this.hotelService.getHotelQueryModel();
     if (this.hotelQuery) {
       this.hotelQuery.starAndPrices = null;
+      this.hotelService.setHotelQuerySource(this.hotelQuery);
     }
-    this.resetTabs();
-    this.onResetCustomePrice();
   }
   onItemClick(item: IStarPriceTabItem, tab: IStarPriceTab<IStarPriceTabItem>) {
     if (item) {
@@ -168,7 +168,8 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
     this.hotelService.getHotelQuerySource().subscribe(query => {
       this.hotelQuery = query;
       if (this.hotelQuery && !this.hotelQuery.starAndPrices) {
-        this.onReset();
+        this.resetTabs();
+        this.onResetCustomePrice();
       } else {
         const custome = this.hotelQuery.starAndPrices.find(it => it.tag == "customeprice");
         if (custome && custome.items && custome.items[0]) {
