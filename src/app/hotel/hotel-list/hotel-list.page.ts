@@ -51,6 +51,7 @@ import { FlightHotelTrainType, TmcService } from "src/app/tmc/tmc.service";
 })
 export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   private subscriptions: Subscription[] = [];
+  private lastCityCode="";
   @ViewChild(IonRefresher) refresher: IonRefresher;
   @ViewChild("querytoolbar") querytoolbar: IonToolbar;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
@@ -72,6 +73,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   loadDataSub = Subscription.EMPTY;
   conditionModel: HotelConditionModel;
   config$: Observable<ConfigEntity>;
+
   constructor(
     private navCtrl: NavController,
     private hotelService: HotelService,
@@ -241,6 +243,9 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     });
   }
   onCityClick() {
+    if(this.searchHotelModel&&this.searchHotelModel.destinationCity){
+      this.lastCityCode=this.searchHotelModel.destinationCity.CityCode;
+    }
     this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
   }
   onSearchClick() {
@@ -264,6 +269,10 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     const sub0 = this.route.queryParamMap.subscribe(_ => {
       this.isShowSearchBar = false;
       this.isLeavePage = false;
+      const c = this.hotelService.getSearchHotelModel();
+      if(this.lastCityCode!==(c&&c.destinationCity&&c.destinationCity.CityCode)){
+        this.doRefresh(true);
+      }
     });
     this.subscriptions.push(sub0);
     const sub = this.hotelService.getConditionModelSource().subscribe(c => {
