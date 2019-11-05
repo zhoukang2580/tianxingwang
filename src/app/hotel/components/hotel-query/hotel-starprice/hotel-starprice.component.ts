@@ -133,11 +133,9 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
   onReset() {
     if (this.hotelQuery) {
       this.hotelQuery.starAndPrices = null;
-      this.hotelService.setHotelQuerySource(this.hotelQuery);
     }
     this.resetTabs();
     this.onResetCustomePrice();
-    this.hotelService.setHotelQuerySource(this.hotelQuery);
   }
   onItemClick(item: IStarPriceTabItem, tab: IStarPriceTab<IStarPriceTabItem>) {
     if (item) {
@@ -184,5 +182,10 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
         }
       }
     });
+    const query = this.hotelService.getHotelQueryModel();
+    this.hotelQuery = query;
+    if(query&&!query.starAndPrices){
+      this.onReset();
+    }
   }
 }
