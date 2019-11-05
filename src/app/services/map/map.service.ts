@@ -100,7 +100,7 @@ export class MapService {
           } else {
             // alert("failed" + geolocation.getStatus());
             console.error(
-              MapService.TAG,
+              `${MapService.TAG} 出错，`,
               status[geolocation.getStatus()] || geolocation.getStatus()
             );
             reject(status[geolocation.getStatus()] || geolocation.getStatus());
@@ -203,6 +203,7 @@ export class MapService {
   private getCityNameByIp() {
     return new Promise<string>(s => {
       if (!BMap) {
+        console.error("getCityNameByIp,BMap 地图尚未加载。。。");
         s(null);
       }
       const myCity = new BMap.LocalCity();
