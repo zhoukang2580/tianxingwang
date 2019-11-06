@@ -361,6 +361,9 @@ export class FlightService {
     const goFlight = this.getPassengerBookInfos().find(
       f => f.bookInfo && f.bookInfo.tripType == TripType.departureTrip
     );
+    const backFlight = this.getPassengerBookInfos().find(
+      f => f.bookInfo && f.bookInfo.tripType == TripType.returnTrip
+    );
     let s = this.getSearchFlightModel();
     if(s.isRoundTrip){
       if(goFlight){
@@ -371,9 +374,9 @@ export class FlightService {
     const m = await this.modalCtrl.create({
       component: SelectDateComponent,
       componentProps: {
-        goArrivalTime:
+        goArrivalTime:backFlight&&goFlight&& !this.getPassengerBookInfos().some(it=>it.isReplace)?"": 
           goFlight &&
-          goFlight.bookInfo &&
+          goFlight.bookInfo && 
           goFlight.bookInfo.flightSegment &&
           goFlight.bookInfo.flightSegment.ArrivalTime,
         tripType: s.tripType||TripType.departureTrip,
@@ -489,16 +492,13 @@ export class FlightService {
   async addOrReplaceSegmentInfo(flightCabin: FlightCabinEntity) {
     const isSelfBookType = await this.staffService.isSelfBookType();
     let bookInfos = this.getPassengerBookInfos();
+    let s = this.getSearchFlightModel();
     if (isSelfBookType) {
-      if (bookInfos.filter(it => it.bookInfo && !it.isReplace).length >= 2) {
-       this.setPassengerBookInfos([{...bookInfos[0],bookInfo:null},{...bookInfos[1],bookInfo:null}])
-      }
-      bookInfos = this.getPassengerBookInfos();
-      const s = this.getSearchFlightModel();
       if (s.isRoundTrip) {
         if (!bookInfos.length) {
           await this.addOneBookInfoToSelfBookType();
         }
+        bookInfos = this.getPassengerBookInfos();
         if (bookInfos.length) {
           const info = this.getPolicyCabinBookInfo(bookInfos[0], flightCabin);
           const go = this.passengerBookInfos.find(
@@ -513,12 +513,14 @@ export class FlightService {
               isLocked: false
             });
           }
+          s = this.getSearchFlightModel();
+          debugger;
           if (go) {
             if (s.tripType == TripType.returnTrip) {
               info.tripType = TripType.returnTrip;
 
               bookInfos = [
-                bookInfos[0],
+                go,
                 { ...bookInfos[0], bookInfo: info, id: AppHelper.uuid() }
               ];
             } else {
@@ -731,7 +733,8 @@ export class FlightService {
           );
           this.setSearchFlightModel({
             ...this.getSearchFlightModel(),
-            tripType: TripType.departureTrip
+            tripType: TripType.departureTrip,
+            isLocked:false,
           });
         }
         if (arg.bookInfo.tripType == TripType.departureTrip) {

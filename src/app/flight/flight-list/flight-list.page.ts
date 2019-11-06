@@ -230,9 +230,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     if (s.isRoundTrip) {
       if (s.tripType == TripType.departureTrip) {
         await this.storage.set(`last_selected_flight_goDate_${staff && staff.AccountId}`, day.date);
-      } else {
-        await this.storage.set(`last_selected_flight_backDate_${staff && staff.AccountId}`, day.date);
-      }
+      } 
     } else {
       await this.storage.set(`last_selected_flight_goDate_${staff && staff.AccountId}`, day.date);
     }

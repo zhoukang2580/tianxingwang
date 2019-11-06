@@ -74,8 +74,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
       this.disabled = this.searchFlightModel && this.searchFlightModel.isLocked;
       const lastSelectedGoDate = await this.storage.get(`last_selected_flight_goDate_${this.staff && this.staff.AccountId}`)
         || moment().add(1, 'days').format("YYYY-MM-DD");
-      const lastSelectedBackDate = await this.storage.get(`last_selected_flight_backDate_${this.staff && this.staff.AccountId}`)
-        || moment().add(2, 'days').format("YYYY-MM-DD");
+      const lastSelectedBackDate = moment(lastSelectedGoDate).add(1, 'days').format("YYYY-MM-DD");
       const s = this.flightService.getSearchFlightModel();
       s.Date = lastSelectedGoDate;
       s.BackDate = lastSelectedBackDate;
@@ -204,26 +203,22 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.storage.set("toCity", this.toCity);
 
     const s: SearchFlightModel = new SearchFlightModel();
-    s.tripType = TripType.departureTrip;
+    // s.tripType = TripType.departureTrip;
     const staff = await this.staffService.getStaff().catch(_ => null);
-    let goFlight: FlightSegmentEntity;
     if (staff && staff.BookType == StaffBookType.Self) {
       const exists = this.flightService
-        .getPassengerBookInfos()
-        .filter(
-          item => item.passenger && item.passenger.AccountId == staff.AccountId
-        );
-      const info = exists.find(
+        .getPassengerBookInfos();
+      const go = exists.find(
         it => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
       );
-      if (info) {
-        s.tripType = TripType.returnTrip;
-        goFlight = info.bookInfo && info.bookInfo.flightSegment;
-      } else {
+      const back = exists.find(
+        it => it.bookInfo && it.bookInfo.tripType == TripType.returnTrip
+      );
+      if (go && back && !exists.some(it => it.isReplace)) {
         s.tripType = TripType.departureTrip;
       }
-      if (s.tripType == TripType.returnTrip && goFlight) {
-        const arrivalDate = moment(goFlight.ArrivalTime);
+      if (go) {
+        const arrivalDate = moment(go.bookInfo && go.bookInfo.flightSegment && go.bookInfo.flightSegment.ArrivalTime);
         if (
           +moment(this.backDate.date) <
           +moment(arrivalDate.format("YYYY-MM-DD"))
@@ -232,7 +227,11 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
           return;
           // this.backDate = this.calendarService.generateDayModel(arrivalDate);
         }
+      } else {
+        s.tripType = TripType.departureTrip;
       }
+    } else {
+      s.tripType = TripType.departureTrip;
     }
     s.Date = this.goDate.date;
     s.FromCode = this.fromCity.Code;
@@ -247,7 +246,6 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
       s.Date = s.BackDate;
     }
     await this.storage.set(`last_selected_flight_goDate_${this.staff && this.staff.AccountId}`, s.Date);
-    await this.storage.set(`last_selected_flight_backDate_${this.staff && this.staff.AccountId}`, s.BackDate);
     // s.tripType = s.isRoundTrip ? goFlight ? s.tripType : TripType.departureTrip : TripType.departureTrip;
     console.log("search-flight", s);
     // this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(s.Date)]);
