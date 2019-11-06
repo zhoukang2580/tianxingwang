@@ -491,8 +491,7 @@ export class FlightService {
     let bookInfos = this.getPassengerBookInfos();
     if (isSelfBookType) {
       if (bookInfos.filter(it => it.bookInfo && !it.isReplace).length >= 2) {
-        this.removePassengerBookInfo(bookInfos[0]);
-        this.removePassengerBookInfo(bookInfos[1]);
+       this.setPassengerBookInfos([{...bookInfos[0],bookInfo:null},{...bookInfos[1],bookInfo:null}])
       }
       bookInfos = this.getPassengerBookInfos();
       const s = this.getSearchFlightModel();
