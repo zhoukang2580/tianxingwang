@@ -1,3 +1,4 @@
+import { LanguageHelper } from 'src/app/languageHelper';
 import { TmcService, FlightHotelTrainType } from "src/app/tmc/tmc.service";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { IdentityService } from "../../services/identity/identity.service";
@@ -75,25 +76,12 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
         || moment().add(1, 'days').format("YYYY-MM-DD");
       const lastSelectedBackDate = await this.storage.get(`last_selected_flight_backDate_${this.staff && this.staff.AccountId}`)
         || moment().add(2, 'days').format("YYYY-MM-DD");
-      this.goDate = this.calendarService.generateDayModelByDate(lastSelectedGoDate);
-      this.backDate = this.calendarService.generateDayModelByDate(lastSelectedBackDate);
-      this.calendarService.setSelectedDaysSource([this.goDate, this.backDate]);
+      const s = this.flightService.getSearchFlightModel();
+      s.Date = lastSelectedGoDate;
+      s.BackDate = lastSelectedBackDate;
+      this.flightService.setSearchFlightModel(s);
+      // this.calendarService.setSelectedDaysSource([this.goDate, this.backDate]);
       this.showReturnTrip = await this.isStaffTypeSelf();
-      if (this.searchConditionSubscription) {
-        this.searchConditionSubscription.unsubscribe();
-      }
-      this.searchConditionSubscription = this.flightService
-        .getSearchFlightModelSource()
-        .subscribe(async s => {
-          console.log("search-flights", s);
-          this.showReturnTrip = await this.staffService.isSelfBookType();
-          if (s) {
-            this.disabled = s.isLocked;
-            this.fromCity = this.vmFromCity = s.fromCity || this.fromCity;
-            this.toCity = this.vmToCity = s.toCity || this.toCity;
-            this.isSingle = !s.isRoundTrip;
-          }
-        });
     });
   }
   private checkBackDateIsAfterflyDate() {
@@ -122,9 +110,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.isSingle = single;
     this.flightService.setSearchFlightModel({
       ...this.flightService.getSearchFlightModel(),
-      isRoundTrip: !this.isSingle,
-      Date: this.goDate.date,
-      BackDate: this.backDate.date
+      isRoundTrip: !this.isSingle
     });
   }
   getMonth(d: DayModel) {
@@ -141,39 +127,25 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     return this.staffService.isSelfBookType();
   }
   async ngOnInit() {
+    this.searchConditionSubscription = this.flightService
+      .getSearchFlightModelSource()
+      .subscribe(async s => {
+        console.log("search-flights", s);
+        this.showReturnTrip = await this.staffService.isSelfBookType();
+        this.searchFlightModel = s;
+        if (s) {
+          this.disabled = s.isLocked;
+          this.fromCity = this.vmFromCity = s.fromCity || this.fromCity;
+          this.toCity = this.vmToCity = s.toCity || this.toCity;
+          this.isSingle = !s.isRoundTrip;
+          this.goDate = this.calendarService.generateDayModelByDate(s.Date);
+          this.backDate = this.calendarService.generateDayModelByDate(s.BackDate);
+          this.checkBackDateIsAfterflyDate();
+        }
+      });
     this.isShowBookInfos$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(map(infos => infos.filter(it => !!it.bookInfo).length));
-    this.selectDaySubscription = this.calendarService
-      .getSelectedDays()
-      .subscribe(days => {
-        if (days && days.length) {
-          if (days.length == 1) {
-            if (this.disabled) {
-              this.backDate = days[0];
-            } else {
-              this.goDate = days[0];
-              this.backDate = this.calendarService.generateDayModel(
-                moment(this.goDate.date).add(1, "days")
-              );
-            }
-          } else {
-            if (this.isSingle) {
-              this.goDate = days[0];
-            } else {
-              this.goDate = days[0];
-              this.backDate = days[1];
-            }
-          }
-          this.flightService.setSearchFlightModel({
-            ...this.flightService.getSearchFlightModel(),
-            Date: this.goDate.date,
-            BackDate: this.backDate.date
-          });
-          this.checkBackDateIsAfterflyDate();
-          this.totalFlyDays = +this.calcTotalFlyDays();
-        }
-      });
     this.apiService.showLoadingView();
     this.showReturnTrip = await this.staffService
       .isSelfBookType()
@@ -285,12 +257,25 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
   getDayDesc(d: DayModel) {
     return this.calendarService.getDescOfDay(d);
   }
-  onSelecFlyDate(flyTo: boolean, backDate: boolean) {
+  async onSelecFlyDate(flyTo: boolean, backDate: boolean) {
     if (this.disabled && !backDate) {
       return;
     }
     this.isSelectFlyDate = flyTo;
-    this.flightService.openCalendar(!this.isSingle && !this.disabled);
+    const dates = await this.flightService.openCalendar(!this.isSingle && !this.disabled);
+    if (dates && dates.length) {
+      if (dates.length > 1) {
+        this.searchFlightModel.Date = dates[0].date;
+        this.searchFlightModel.BackDate = dates[1].date;
+      } else {
+        if (this.searchFlightModel.isRoundTrip && this.searchFlightModel.tripType == TripType.returnTrip) {
+          this.searchFlightModel.BackDate = dates[0].date;
+        } else {
+          this.searchFlightModel.Date = dates[0].date;
+        }
+      }
+    }
+    this.flightService.setSearchFlightModel(this.searchFlightModel);
   }
   onFromCitySelected(city: TrafficlineEntity) {
     if (city) {

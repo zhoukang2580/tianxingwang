@@ -490,6 +490,11 @@ export class FlightService {
     const isSelfBookType = await this.staffService.isSelfBookType();
     let bookInfos = this.getPassengerBookInfos();
     if (isSelfBookType) {
+      if (bookInfos.filter(it => it.bookInfo && !it.isReplace).length >= 2) {
+        this.removePassengerBookInfo(bookInfos[0]);
+        this.removePassengerBookInfo(bookInfos[1]);
+      }
+      bookInfos = this.getPassengerBookInfos();
       const s = this.getSearchFlightModel();
       if (s.isRoundTrip) {
         if (!bookInfos.length) {
@@ -732,7 +737,9 @@ export class FlightService {
         }
         if (arg.bookInfo.tripType == TripType.departureTrip) {
           this.passengerBookInfos = this.getPassengerBookInfos().map(item => {
-            item.bookInfo = null;
+            if(item.id==arg.id){
+              item.bookInfo = null;
+            }
             return item;
           });
           this.setSearchFlightModel({
