@@ -76,11 +76,12 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.hotelQueryModelSub.unsubscribe();
   }
-  
+
   async onReset() {
     // this.conditions = await this.storage.get("mock-hotel-condition");
     console.log("query component ,onreset", this.conditions);
     this.hotelQueryModel = new HotelQueryEntity();
+    this.hotelService.setHotelQuerySource(this.hotelQueryModel);
     if (this.hotelFilterComp) {
       this.hotelFilterComp.onReset();
     }
@@ -119,16 +120,20 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
     this.activeTab = tab;
   }
   onStarPriceChange() {
-    const query = this.hotelService.getHotelQueryModel();
+    let query = { ...this.hotelService.getHotelQueryModel() };
     if (query && query.starAndPrices) {
       const customeprice = query.starAndPrices.find(it => it.tag == "customeprice");
-      const evt = query.starAndPrices.filter(it => it.hasItemSelected).filter(it=>!!it);
-      console.log(evt);
+      const evt = query.starAndPrices.filter(it => it.hasItemSelected).filter(it => !!it);
+      console.log("onStarPriceChange evt ", evt);
       this.hideQueryPannel();
       const tabs = evt.filter(
         it => it.tag == "price" || it.tag == "customeprice"
       );
-      console.log(tabs);
+      if(tabs.filter(it=>it.hasItemSelected).length==0){
+        delete query.BeginPrice;
+        delete query.EndPrice;
+      }
+      console.log("price customeprice", tabs,query);
       let { lower, upper } = tabs
         .map(tab => tab.items)
         .reduce(
@@ -143,7 +148,7 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
           },
           {} as { lower: number; upper: number }
         );
-      if (customeprice) {
+      if (customeprice && customeprice.hasItemSelected) {
         upper = customeprice.items[0].maxPrice;
         lower = customeprice.items[0].minPrice;
       }

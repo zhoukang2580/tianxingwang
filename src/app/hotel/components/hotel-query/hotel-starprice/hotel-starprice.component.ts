@@ -1,3 +1,4 @@
+import { Subscription } from 'rxjs';
 import { AppHelper } from "./../../../../appHelper";
 import {
   Component,
@@ -6,7 +7,8 @@ import {
   EventEmitter,
   ViewChild,
   AfterViewInit,
-  Input
+  Input,
+  OnDestroy
 } from "@angular/core";
 import { IonRange } from "@ionic/angular";
 import { HotelQueryEntity } from 'src/app/hotel/models/HotelQueryEntity';
@@ -34,7 +36,8 @@ interface ILowerUper { lower: number; upper: number }
   templateUrl: "./hotel-starprice.component.html",
   styleUrls: ["./hotel-starprice.component.scss"]
 })
-export class HotelStarPriceComponent implements OnInit, AfterViewInit {
+export class HotelStarPriceComponent implements OnInit, AfterViewInit, OnDestroy {
+  private subscription = Subscription.EMPTY;
   private customepriceTab: IStarPriceTab<IStarPriceTabItem> = {
     label: "自定义价格",
     tag: "customeprice",
@@ -44,11 +47,11 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
         label: "",
         isSelected: false,
         minPrice: 0,
-        maxPrice: 1000
+        maxPrice: Infinity
       }
     ]
   };
-  value: ILowerUper = { lower: 0, upper: 1000 };
+  value: ILowerUper = { lower: 0, upper: Infinity };
   hotelQuery: HotelQueryEntity;
   @ViewChild(IonRange) rangeEle: IonRange;
   @Output() starPriceChange: EventEmitter<any>;
@@ -62,14 +65,23 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
   onFilter() {
     this.onStarPriceChange();
   }
-  ngAfterViewInit() { }
+  ngAfterViewInit() {
+  }
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
   onPriceRangeChange(evt: CustomEvent) {
     console.log(`onPriceRangeChange`, evt.detail);
     if (evt.detail.value) {
       this.value = evt.detail.value as ILowerUper;
-      this.customepriceTab.items[0].minPrice = this.value.lower;
-      this.customepriceTab.items[0].maxPrice = this.value.upper;
-      this.customepriceTab.hasItemSelected = true;
+      const value = {...this.value};
+      value.upper = this.value.upper >= 1000 ? Infinity : this.value.upper;
+      this.customepriceTab.items[0].minPrice = value.lower;
+      this.customepriceTab.items[0].maxPrice = value.upper;
+      this.customepriceTab.hasItemSelected = value.lower > 0 || value.upper < Infinity;
+      if (this.customepriceTab.hasItemSelected && this.hotelQuery && this.hotelQuery.starAndPrices && !this.hotelQuery.starAndPrices.find(it => it.tag == 'customeprice')) {
+        this.hotelQuery.starAndPrices.push(this.customepriceTab);
+      }
     }
   }
 
@@ -98,7 +110,6 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
             isMulti: true,
             id: `${idx}`,
             value: `${idx + 1}`,
-            isSelected: this.hotelQuery && this.hotelQuery.Type == it
           } as IStarPriceTabItem;
         })
       });
@@ -122,27 +133,31 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
       this.hotelQuery.starAndPrices.push(this.customepriceTab);
     }
   }
-  onResetCustomePrice() {
-    console.log("onResetCustomePrice", this.value);
+  onResetCustomePrice(isUnlimited = false) {
     if (this.rangeEle) {
       this.value = { lower: 0, upper: 1000 };
-      this.rangeEle.value = this.value;
+      console.log("重置自定义价格，onResetCustomePrice", this.value);
       this.customepriceTab.items[0].minPrice = this.value.lower;
       this.customepriceTab.items[0].maxPrice = this.value.upper;
-      setTimeout(() => {
-        this.customepriceTab.hasItemSelected = false;
-      }, 200);
+      this.customepriceTab.hasItemSelected = false;
+      this.rangeEle.value = this.value;
+      if (this.hotelQuery.starAndPrices) {
+        this.hotelQuery.starAndPrices = this.hotelQuery.starAndPrices.filter(it => it.tag != 'customeprice');
+      }
+      this.hotelService.setHotelQuerySource(this.hotelQuery);
     }
   }
   onReset() {
+    this.hotelQuery = new HotelQueryEntity();
     this.resetTabs();
     this.onResetCustomePrice();
+    this.hotelService.setHotelQuerySource(this.hotelQuery);
   }
   onItemClick(item: IStarPriceTabItem, tab: IStarPriceTab<IStarPriceTabItem>) {
     if (item) {
       if (tab.items.filter(it => it.isSelected).length > 2) {
         item.isSelected = false;
-        AppHelper.toast(`${tab.label}不能超过3个`, 1000, "middle");
+        AppHelper.toast(`${tab.label}不能超过3个`, Infinity, "middle");
         return;
       }
       item.isSelected = !item.isSelected;
@@ -152,8 +167,8 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
           return it;
         });
       }
-      if (tab) {
-        tab.hasItemSelected = item.isSelected;
+      if (tab && tab.items) {
+        tab.hasItemSelected = tab.items.some(it => it.isSelected);
       }
     }
   }
@@ -163,22 +178,22 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit {
         item.isSelected = false;
         return item;
       });
+      tab.hasItemSelected = false;
     }
+    this.hotelService.setHotelQuerySource(this.hotelQuery);
   }
   ngOnInit() {
-    this.hotelService.getHotelQuerySource().subscribe(query => {
+    this.subscription = this.hotelService.getHotelQuerySource().subscribe(query => {
+      console.log("starAndPrices :", query.starAndPrices);
       this.hotelQuery = query;
       if (this.hotelQuery && !this.hotelQuery.starAndPrices) {
         this.onReset();
-        this.hotelService.setHotelQuerySource(this.hotelQuery);
-      }else {
+      } else {
         const custome = this.hotelQuery.starAndPrices.find(it => it.tag == "customeprice");
         if (custome && custome.items && custome.items[0]) {
-          // console.log("customeprice",custome.items);
           this.value.lower = custome.items[0].minPrice;
           this.value.upper = custome.items[0].maxPrice;
-          this.customepriceTab.hasItemSelected = custome.hasItemSelected || (this.value.lower != 0 && this.value.upper != 1000);
-          if(this.rangeEle){
+          if (this.rangeEle) {
             this.rangeEle.value = this.value;
           }
         }
