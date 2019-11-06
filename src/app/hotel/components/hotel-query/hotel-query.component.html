@@ -3,7 +3,7 @@
     <app-query-tab [label]='"推荐排序"' [class.has-condition]='isRanksHasConditionFiltered()' (active)='onActiveTab($event)'></app-query-tab>
     <app-query-tab [label]='"星级价格"' [class.has-condition]='isStarPriceHasConditionFiltered()' (active)='onActiveTab($event)'></app-query-tab>
     <app-query-tab [label]='"位置区域"' [class.has-condition]='isLocationAreasHasConditionFiltered()'  (active)='onActiveTab($event)'></app-query-tab>
-    <app-query-tab [label]='"筛选"' [class.has-condition]='isStarPriceHasConditionFiltered()' (active)='onActiveTab($event)'></app-query-tab>
+    <app-query-tab [label]='"筛选"' [class.has-condition]='isFiltersConditionFiltered()' (active)='onActiveTab($event)'></app-query-tab>
   </div>
 </ion-toolbar>
 <app-recommend-rank (rank)='onRank($event)'   *ngIf='activeTab?.label=="推荐排序"' [@openClose]='activeTab.isActive'>
@@ -11,7 +11,7 @@
 <app-hotel-starprice  *ngIf='activeTab?.label=="星级价格"' [@openClose]='activeTab.isActive'
   (starPriceChange)='onStarPriceChange($event)'></app-hotel-starprice>
 <app-hotel-filter  *ngIf='activeTab?.label=="筛选"'  [@openClose]='activeTab.isActive'
-  (filter)='onFilter($event)'>
+  (filter)='onFilter()'>
 </app-hotel-filter>
 <app-hotel-geo  *ngIf='activeTab?.label=="位置区域"'  [@openClose]='activeTab.isActive'
   (geoFilterChange)='onFilterGeo($event)'>

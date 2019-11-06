@@ -5,12 +5,15 @@ import { IStarPriceTabItem, IStarPriceTab } from '../components/hotel-query/hote
 import { IRankItem } from '../components/hotel-query/recommend-rank/recommend-rank.component';
 import { IGeoTab, IGeoItem, IMetros } from '../components/hotel-query/hotel-geo/hotel-geo.component';
 import { GeoEntity } from './GeoEntity';
+import { IFilterTab, IFilterTabItem } from '../components/hotel-query/hotel-filter/hotel-filter.component';
+import { BrandEntity } from './BrandEntity';
+import { AmenityEntity } from './AmenityEntity';
 
 export class HotelQueryEntity {
   starAndPrices: IStarPriceTab<IStarPriceTabItem>[];
   ranks: IRankItem[];
   locationAreas:IGeoTab<IGeoItem<GeoEntity>>[];
-  filters:any[];
+  filters:IFilterTab<IFilterTabItem<BrandEntity | AmenityEntity>>[];
   /// <summary>
   /// 价格类型
   /// </summary>

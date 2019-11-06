@@ -111,6 +111,9 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
   isRanksHasConditionFiltered() {
     return this.hotelQueryModel && this.hotelQueryModel.ranks && this.hotelQueryModel.ranks.some(it => it.value != 'Category');
   }
+  isFiltersConditionFiltered() {
+    return this.hotelQueryModel && this.hotelQueryModel.filters && this.hotelQueryModel.filters.some(it => it.hasFilterItem);
+  }
   onActiveTab(tab: ITab) {
     if (this.queryTabComps) {
       this.queryTabComps.forEach(comp => {
@@ -129,11 +132,11 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
       const tabs = evt.filter(
         it => it.tag == "price" || it.tag == "customeprice"
       );
-      if(tabs.filter(it=>it.hasItemSelected).length==0){
+      if (tabs.filter(it => it.hasItemSelected).length == 0) {
         delete query.BeginPrice;
         delete query.EndPrice;
       }
-      console.log("price customeprice", tabs,query);
+      console.log("price customeprice", tabs, query);
       let { lower, upper } = tabs
         .map(tab => tab.items)
         .reduce(
@@ -201,15 +204,18 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
       this.doRefresh(query);
     }
   }
-  onFilter(filter: IFilterTab<IFilterTabItem<BrandEntity | AmenityEntity>>[]) {
-    console.log(filter);
+  onFilter() {
+    const query = this.hotelService.getHotelQueryModel();
+    if (!query.filters) {
+      return;
+    }
+    const filter: IFilterTab<any>[] = query.filters.filter(it => it.hasFilterItem);
     const theme = filter.find(it => it.tag == "Theme");
     const brand = filter.find(it => it.tag == "Brand");
     const services = filter.find(it => it.tag == "Service");
     const facility = filter.find(it => it.tag == "Facility");
-    this.hotelQueryModel = new HotelQueryEntity();
     if (theme) {
-      this.hotelQueryModel.Themes = [];
+      query.Themes = [];
       const themes =
         theme.items &&
         theme.items.filter(it => it.items && it.items.some(k => k.IsSelected));
@@ -218,7 +224,7 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
           if (t.items) {
             t.items.forEach(k => {
               if (k.IsSelected) {
-                this.hotelQueryModel.Themes.push(k.Id);
+                query.Themes.push(k.Id);
               }
             });
           }
@@ -226,7 +232,7 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
       }
     }
     if (brand) {
-      this.hotelQueryModel.Brands = [];
+      query.Brands = [];
       const brands =
         brand.items &&
         brand.items.filter(it => it.items && it.items.some(k => k.IsSelected));
@@ -235,7 +241,7 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
           if (t.items) {
             t.items.forEach(k => {
               if (k.IsSelected) {
-                this.hotelQueryModel.Brands.push(k.Id);
+                query.Brands.push(k.Id);
               }
             });
           }
@@ -243,7 +249,7 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
       }
     }
     if (services) {
-      this.hotelQueryModel.Services = [];
+      query.Services = [];
       const s =
         services.items &&
         services.items.filter(
@@ -254,7 +260,7 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
           if (t.items) {
             t.items.forEach(k => {
               if (k.IsSelected) {
-                this.hotelQueryModel.Services.push(k.Id);
+                query.Services.push(k.Id);
               }
             });
           }
@@ -262,7 +268,7 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
       }
     }
     if (facility) {
-      this.hotelQueryModel.Facilities = [];
+      query.Facilities = [];
       const facilities =
         facility.items &&
         facility.items.filter(
@@ -273,14 +279,14 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
           if (t.items) {
             t.items.forEach(k => {
               if (k.IsSelected) {
-                this.hotelQueryModel.Facilities.push(k.Id);
+                query.Facilities.push(k.Id);
               }
             });
           }
         });
       }
     }
-    this.doRefresh(this.hotelQueryModel);
+    this.doRefresh(query);
   }
   onRank() {
     const query = this.hotelService.getHotelQueryModel();

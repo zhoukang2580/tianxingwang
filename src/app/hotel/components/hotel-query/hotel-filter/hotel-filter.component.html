@@ -1,6 +1,6 @@
 <div class='wrapper'>
   <div class='tabs'>
-    <div [class.active]='tab.active' (click)='onActive(tab)' class='tab' *ngFor='let tab of tabs'
+    <div [class.active]='tab.active' (click)='onActive(tab)' class='tab' *ngFor='let tab of hotelQuery?.filters'
       [class.has-item-filtered]='tab.hasFilterItem'>{{tab.label}}</div>
   </div>
   <div class='items'>

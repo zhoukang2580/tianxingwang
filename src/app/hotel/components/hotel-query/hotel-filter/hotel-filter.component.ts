@@ -1,3 +1,4 @@
+import { Subscription } from 'rxjs';
 import { HotelQueryEntity } from 'src/app/hotel/models/HotelQueryEntity';
 import { TmcService } from "src/app/tmc/tmc.service";
 import { HotelService } from "./../../../hotel.service";
@@ -9,7 +10,8 @@ import {
   Input,
   Output,
   OnChanges,
-  SimpleChanges
+  SimpleChanges,
+  OnDestroy
 } from "@angular/core";
 import { BrandEntity } from "src/app/hotel/models/BrandEntity";
 import { HotelConditionModel } from "src/app/hotel/models/ConditionModel";
@@ -37,11 +39,11 @@ export interface IFilterTabItem<T> {
   templateUrl: "./hotel-filter.component.html",
   styleUrls: ["./hotel-filter.component.scss"]
 })
-export class HotelFilterComponent implements OnInit, OnChanges {
-  private hotelQuery: HotelQueryEntity;
+export class HotelFilterComponent implements OnInit, OnDestroy {
+  private subscription = Subscription.EMPTY;
   private conditionModel: HotelConditionModel;
   @Output() filter: EventEmitter<any>;
-  tabs: IFilterTab<IFilterTabItem<BrandEntity | AmenityEntity>>[] = [];
+  hotelQuery: HotelQueryEntity;
   isShowFilter = false;
   items: IFilterTabItem<BrandEntity | AmenityEntity>[];
   constructor(
@@ -50,54 +52,56 @@ export class HotelFilterComponent implements OnInit, OnChanges {
   ) {
     this.filter = new EventEmitter();
   }
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
   onFilter() {
-    const result: IFilterTab<any>[] = this.tabs.filter(it => it.hasFilterItem);
-    this.filter.emit(result);
+    this.filter.emit();
   }
   onActive(tab: IFilterTab<any>) {
-    this.tabs = this.tabs.map(it => {
+    this.hotelQuery.filters = this.hotelQuery.filters.map(it => {
       it.active = it.id == tab.id;
       return it;
     });
-    const active = this.tabs.find(it => it.active);
+    const active = this.hotelQuery.filters.find(it => it.active);
     if (active) {
       this.items = active.items;
     }
   }
   async ngOnInit() {
     this.conditionModel = await this.hotelService.getConditions();
-    if (this.conditionModel && this.conditionModel.Brands) {
-      this.initTabs();
+    const query = this.hotelService.getHotelQueryModel();
+    this.subscription = this.hotelService.getHotelQuerySource().subscribe(query => {
+      this.hotelQuery = query;
+      if (this.hotelQuery && !this.hotelQuery.filters) {
+        this.onReset();
+      }
+    })
+    if (query && !query.filters) {
+      this.onReset();
+    } else {
+      this.onActive(query.filters[0]);
     }
   }
-  ngOnChanges(changes: SimpleChanges) {
-    // if (
-    //   changes &&
-    //   changes.conditionModel &&
-    //   changes.conditionModel.currentValue
-    // ) {
-    //   console.log("hotel-filter ngOnInit", this.conditionModel);
-    //   if (this.conditionModel && this.conditionModel.Brands) {
-    //     this.initTabs();
-    //   }
-    // }
-  }
-  private initTabs() {
-    this.tabs = [];
-    this.initTabBrand();
-    this.initTabTheme();
-    this.initTabService();
-    this.initTabFacility();
-    this.tabs = this.tabs.map((it, idx) => {
-      it.id = `${idx}`;
-      return it;
-    });
-    if (this.tabs.length) {
-      this.tabs[0].active = true;
-      this.items = this.tabs[0].items;
+  private resetTabs() {
+    if (this.hotelQuery) {
+      this.hotelQuery.filters = [];
+      this.resetTabBrand();
+      this.resetTabTheme();
+      this.resetTabService();
+      this.resetTabFacility();
+      this.hotelQuery.filters = this.hotelQuery.filters.map((it, idx) => {
+        it.id = `${idx}`;
+        return it;
+      });
+      if (this.hotelQuery.filters.length) {
+        this.hotelQuery.filters[0].active = true;
+        this.items = this.hotelQuery.filters[0].items;
+      }
     }
+    this.hotelService.setHotelQuerySource(this.hotelQuery);
   }
-  private initTabBrand() {
+  private resetTabBrand() {
     if (!this.conditionModel.Brands) {
       return;
     }
@@ -159,9 +163,9 @@ export class HotelFilterComponent implements OnInit, OnChanges {
         }
       ]
     };
-    this.tabs.push(tabBrand);
+    this.hotelQuery.filters.push(tabBrand);
   }
-  private initTabTheme() {
+  private resetTabTheme() {
     if (!this.conditionModel.Amenities) {
       return;
     }
@@ -179,9 +183,9 @@ export class HotelFilterComponent implements OnInit, OnChanges {
         }
       ]
     };
-    this.tabs.push(tab);
+    this.hotelQuery.filters.push(tab);
   }
-  private initTabService() {
+  private resetTabService() {
     if (!this.conditionModel.Amenities) {
       return;
     }
@@ -199,9 +203,9 @@ export class HotelFilterComponent implements OnInit, OnChanges {
         }
       ]
     };
-    this.tabs.push(tab);
+    this.hotelQuery.filters.push(tab);
   }
-  private initTabFacility() {
+  private resetTabFacility() {
     if (!this.conditionModel.Amenities) {
       return;
     }
@@ -219,13 +223,16 @@ export class HotelFilterComponent implements OnInit, OnChanges {
         }
       ]
     };
-    this.tabs.push(tab);
+    this.hotelQuery.filters.push(tab);
   }
   resetItems(item: IFilterTabItem<BrandEntity | AmenityEntity>) {
     if (item && item.items) {
-      item.items.forEach(it => (it.IsSelected = false));
+      item.items = item.items.map(it => {
+        it.IsSelected = false;
+        return it;
+      });
     }
-    this.initHasFilterItem();
+    this.resetHasFilterItem();
   }
   onItemClick(
     it: BrandEntity | AmenityEntity,
@@ -254,33 +261,28 @@ export class HotelFilterComponent implements OnInit, OnChanges {
       });
     }
     if (it.IsSelected) {
-      // this.tabs.forEach(tab => {
+      // this.hotelQuery.filters.forEach(tab => {
       //   if (tab.active) {
       //     tab.hasFilterItem = item.items.some(j => j.IsSelected);
       //   }
       // });
     }
-    this.initHasFilterItem();
+    this.resetHasFilterItem();
   }
-  private initHasFilterItem() {
-    this.tabs.forEach(tab => {
-      if (tab.items) {
-        tab.hasFilterItem = tab.items.some(
-          j => j.items && j.items.some(k => k.IsSelected)
-        );
-      }
-    });
-  }
-  onReset() {
-    if (this.tabs) {
-      this.tabs.forEach(it => {
-        it.hasFilterItem = false;
-        if (it.items) {
-          it.items.forEach(item => {
-            this.resetItems(item);
-          });
+  private resetHasFilterItem() {
+    if (this.hotelQuery && this.hotelQuery.filters) {
+      this.hotelQuery.filters = this.hotelQuery.filters.map(tab => {
+        if (tab.items) {
+          tab.hasFilterItem = tab.items.some(
+            j => j.items && j.items.some(k => k.IsSelected)
+          );
         }
+        return tab;
       });
     }
+    this.hotelService.setHotelQuerySource(this.hotelQuery);
+  }
+  onReset() {
+    this.resetTabs();
   }
 }
