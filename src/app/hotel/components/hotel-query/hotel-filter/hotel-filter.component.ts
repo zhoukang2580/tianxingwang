@@ -92,6 +92,7 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
       this.resetTabFacility();
       this.hotelQuery.filters = this.hotelQuery.filters.map((it, idx) => {
         it.id = `${idx}`;
+        it.hasFilterItem = false;
         return it;
       });
       if (this.hotelQuery.filters.length) {
@@ -283,6 +284,9 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
     this.hotelService.setHotelQuerySource(this.hotelQuery);
   }
   onReset() {
+    if (this.hotelQuery) {
+      this.hotelQuery.filters = null;
+    }
     this.resetTabs();
   }
 }
