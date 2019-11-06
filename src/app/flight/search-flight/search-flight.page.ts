@@ -72,12 +72,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     route.queryParamMap.subscribe(async _ => {
       this.staff = await this.staffService.getStaff();
       this.disabled = this.searchFlightModel && this.searchFlightModel.isLocked;
-      const searchModel = this.flightService.getSearchFlightModel();
-      this.flyDate = this.flydayService.generateDayModelByDate(searchModel.Date);
-      this.backDate = this.flydayService.generateDayModelByDate(
-        searchModel.BackDate
-      );
-      this.checkBackDateIsAfterflyDate();
+
       this.showReturnTrip = await this.isStaffTypeSelf();
       if (this.searchConditionSubscription) {
         this.searchConditionSubscription.unsubscribe();
@@ -140,7 +135,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.onRoundTrip(evt.detail.value == "single");
   }
   async isStaffTypeSelf() {
-    return  this.staffService.isSelfBookType();
+    return this.staffService.isSelfBookType();
   }
   async ngOnInit() {
     this.isShowBookInfos$ = this.flightService
@@ -149,9 +144,6 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.selectDaySubscription = this.flydayService
       .getSelectedDays()
       .subscribe(days => {
-        if (!this.router.routerState.snapshot.url.includes("search-flight")) {
-          return;
-        }
         if (days && days.length) {
           if (days.length == 1) {
             if (this.disabled) {
@@ -175,9 +167,15 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
               this.backDate = days[1];
             }
           }
+          this.flightService.setSearchFlightModel({
+            ...this.flightService.getSearchFlightModel(),
+            Date: this.flyDate.date,
+            BackDate: this.backDate.date
+          });
           if (this.flyDate.timeStamp > this.backDate.timeStamp) {
             this.flyDate = this.flydayService.generateDayModel(moment());
           }
+          this.checkBackDateIsAfterflyDate();
           this.totalFlyDays = +this.calcTotalFlyDays();
         }
       });
