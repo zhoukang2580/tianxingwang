@@ -126,10 +126,10 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
     let query = { ...this.hotelService.getHotelQueryModel() };
     if (query && query.starAndPrices) {
       const customeprice = query.starAndPrices.find(it => it.tag == "customeprice");
-      const evt = query.starAndPrices.filter(it => it.hasItemSelected).filter(it => !!it);
-      console.log("onStarPriceChange evt ", evt);
+      const starAndPrices = query.starAndPrices.filter(it => it.hasItemSelected).filter(it => !!it);
+      console.log("onStarPriceChange starAndPrices ", starAndPrices);
       this.hideQueryPannel();
-      const tabs = evt.filter(
+      const tabs = starAndPrices.filter(
         it => it.tag == "price" || it.tag == "customeprice"
       );
       if (tabs.filter(it => it.hasItemSelected).length == 0) {
@@ -162,18 +162,21 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
       if (upper) {
         query.EndPrice = upper == Infinity ? "10000000" : `${upper}`;
       }
-      const stars = evt.find(it => it.tag == "stars");
+      const stars = starAndPrices.find(it => it.tag == "stars");
       if (stars && stars.items && stars.items.some(it => it.isSelected)) {
         query.Stars = stars.items
           .filter(it => it.isSelected)
           .map(it => it.value);
       }
-      const types = evt.find(it => it.tag == "types");
+      const types = starAndPrices.find(it => it.tag == "types");
       if (types && types.items && types.items.some(it => it.isSelected)) {
         query.Categories = types.items
           .filter(it => it.isSelected)
           .map(it => it.value);
       }
+    } else {
+      query.Stars = [];
+      query.Categories = [];
     }
     this.doRefresh(query);
   }

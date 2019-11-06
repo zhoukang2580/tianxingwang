@@ -1,5 +1,5 @@
+import { AppHelper } from 'src/app/appHelper';
 import { Subscription } from 'rxjs';
-import { AppHelper } from "./../../../../appHelper";
 import {
   Component,
   OnInit,
@@ -24,7 +24,7 @@ export interface IStarPriceTab<T> {
 export interface IStarPriceTabItem {
   label: string;
   value?: string;
-  id?: string;
+  id: string;
   isSelected?: boolean;
   isMulti?: boolean;
   minPrice: number;
@@ -41,11 +41,13 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit, OnDestroy
   private customepriceTab: IStarPriceTab<IStarPriceTabItem> = {
     label: "自定义价格",
     tag: "customeprice",
+    id:AppHelper.uuid(),
     hasItemSelected: false,
     items: [
       {
         label: "",
         isSelected: false,
+        id:AppHelper.uuid(),
         minPrice: 0,
         maxPrice: Infinity
       }
@@ -90,6 +92,7 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit, OnDestroy
     if (this.hotelQuery) {
       this.hotelQuery.starAndPrices = [];
       this.hotelQuery.starAndPrices.push({
+        id:AppHelper.uuid(),
         label: "星级(可多选)",
         tag: "stars",
         items: ["一星", "二星", "三星", "四星", "五星"].map((it, idx) => {
@@ -102,6 +105,7 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit, OnDestroy
         })
       });
       this.hotelQuery.starAndPrices.push({
+        id:AppHelper.uuid(),
         tag: "types",
         label: "分类(可多选)",
         items: ["公寓", "客栈", "舒适", "高档", "豪华"].map((it, idx) => {
@@ -114,6 +118,7 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit, OnDestroy
         })
       });
       this.hotelQuery.starAndPrices.push({
+        id:AppHelper.uuid(),
         label: "价格",
         tag: "price",
         items: ["150以下", "150-300", "300-450", "450-600", "600以上"].map(
@@ -174,11 +179,18 @@ export class HotelStarPriceComponent implements OnInit, AfterViewInit, OnDestroy
   }
   resetItems(tab: IStarPriceTab<IStarPriceTabItem>) {
     if (tab && tab.items) {
-      tab.items = tab.items.map(item => {
-        item.isSelected = false;
-        return item;
-      });
-      tab.hasItemSelected = false;
+      if(this.hotelQuery&&this.hotelQuery.starAndPrices){
+        this.hotelQuery.starAndPrices=this.hotelQuery.starAndPrices.map(it=>{
+          if(it.id==tab.id){
+            it.items = it.items.map(item => {
+              item.isSelected = false;
+              return item;
+            });
+            it.hasItemSelected = false;
+          }
+          return it;
+        })
+      }
     }
     this.hotelService.setHotelQuerySource(this.hotelQuery);
   }

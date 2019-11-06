@@ -478,7 +478,8 @@ export class HotelService {
       starAndPrices:null,
       locationAreas:null,
       ranks:null,
-      filters:null
+      filters:null,
+      City:null
     };
     const req = new RequestEntity();
     req.Method = `TmcApiHotelUrl-Home-List`;

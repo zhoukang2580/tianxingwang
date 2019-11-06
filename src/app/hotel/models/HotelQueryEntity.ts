@@ -14,6 +14,7 @@ export class HotelQueryEntity {
   ranks: IRankItem[];
   locationAreas:IGeoTab<IGeoItem<GeoEntity>>[];
   filters:IFilterTab<IFilterTabItem<BrandEntity | AmenityEntity>>[];
+  City: TrafficlineEntity;
   /// <summary>
   /// 价格类型
   /// </summary>
@@ -33,7 +34,6 @@ export class HotelQueryEntity {
   /// <summary>
   /// 城市代码
   /// </summary>
-  City: TrafficlineEntity;
   CityCode: string;
   CityName: string;
   /// <summary>
