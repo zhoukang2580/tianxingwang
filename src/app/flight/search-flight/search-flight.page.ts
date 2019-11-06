@@ -122,7 +122,9 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.isSingle = single;
     this.flightService.setSearchFlightModel({
       ...this.flightService.getSearchFlightModel(),
-      isRoundTrip: !this.isSingle
+      isRoundTrip: !this.isSingle,
+      Date: this.goDate.date,
+      BackDate: this.backDate.date
     });
   }
   getMonth(d: DayModel) {
@@ -228,18 +230,17 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     console.log(`启程日期${this.goDate.date},返程日期：${this.backDate.date}`);
     this.storage.set("fromCity", this.fromCity);
     this.storage.set("toCity", this.toCity);
-    await this.storage.set(`last_selected_flight_goDate_${this.staff && this.staff.AccountId}`, this.goDate.date);
-    await this.storage.set(`last_selected_flight_backDate_${this.staff && this.staff.AccountId}`, this.backDate.date);
+
     const s: SearchFlightModel = new SearchFlightModel();
     s.tripType = TripType.departureTrip;
     const staff = await this.staffService.getStaff().catch(_ => null);
+    let goFlight: FlightSegmentEntity;
     if (staff && staff.BookType == StaffBookType.Self) {
       const exists = this.flightService
         .getPassengerBookInfos()
         .filter(
           item => item.passenger && item.passenger.AccountId == staff.AccountId
         );
-      let goFlight: FlightSegmentEntity;
       const info = exists.find(
         it => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
       );
@@ -255,7 +256,9 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
           +moment(this.backDate.date) <
           +moment(arrivalDate.format("YYYY-MM-DD"))
         ) {
-          this.backDate = this.calendarService.generateDayModel(arrivalDate);
+          AppHelper.alert("返程时间不能在去程时间之前");
+          return;
+          // this.backDate = this.calendarService.generateDayModel(arrivalDate);
         }
       }
     }
@@ -271,9 +274,11 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.disabled) {
       s.Date = s.BackDate;
     }
-    s.tripType = TripType.departureTrip;
+    await this.storage.set(`last_selected_flight_goDate_${this.staff && this.staff.AccountId}`, s.Date);
+    await this.storage.set(`last_selected_flight_backDate_${this.staff && this.staff.AccountId}`, s.BackDate);
+    // s.tripType = s.isRoundTrip ? goFlight ? s.tripType : TripType.departureTrip : TripType.departureTrip;
     console.log("search-flight", s);
-    this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(s.Date)]);
+    // this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(s.Date)]);
     this.flightService.setSearchFlightModel(s);
     this.router.navigate([AppHelper.getRoutePath("flight-list")]);
   }

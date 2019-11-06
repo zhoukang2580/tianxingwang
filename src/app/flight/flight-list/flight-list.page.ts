@@ -658,23 +658,21 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       });
     // this.selectDaySubscription = this.flyDayService
     //   .getSelectedDays()
-    //   .subscribe(async days => {
-    //     if (days && days.length == 1) {
-    //       console.log("选择的日期", days);
-    //       const day = days[0];
-    //       if (!day) {
-    //         return;
+    //   .subscribe(days => {
+    //     if (days.length) {
+    //       const go = days[0];
+    //       const back = days[1]
+    //       if (this.searchFlightModel.isRoundTrip) {
+    //         if (this.searchFlightModel.tripType == TripType.departureTrip) {
+    //           this.searchFlightModel.Date = go.date;
+    //         } else if (this.searchFlightModel.tripType == TripType.returnTrip) {
+    //           this.searchFlightModel.BackDate = go.date;
+    //         }
     //       }
-    //       if (this.searchFlightModel.Date != day.date) {
-    //         this.searchFlightModel.Date = day.date;
-    //         // this.moveDayToSearchDate();
-    //       }
-    //       this.searchFlightModel.Date = day.date;
-    //       if (this.notCurrentPage()) {
-    //         console.log("当前路由不在航班列表页面");
-    //         return;
-    //       }
-    //       this.doRefresh(true, false);
+    //       this.flightService.setSearchFlightModel({
+    //         ...this.searchFlightModel,
+    //         Date: go.date
+    //       })
     //     }
     //   });
     await this.initSearchModelParams();
