@@ -34,7 +34,6 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
   isSelectFlyDate: boolean;
   goDate: DayModel;
   backDate: DayModel;
-  selectDaySubscription = Subscription.EMPTY;
   searchConditionSubscription = Subscription.EMPTY;
   searchFlightModel: SearchFlightModel;
   isMoving: boolean;
@@ -158,7 +157,6 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnDestroy(): void {
     console.log("on destroyed");
-    this.selectDaySubscription.unsubscribe();
     this.searchConditionSubscription.unsubscribe();
   }
 

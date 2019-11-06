@@ -52,6 +52,7 @@ import { TripType } from "src/app/tmc/models/TripType";
 import * as moment from "moment";
 import { LanguageHelper } from "src/app/languageHelper";
 import { map } from "rxjs/operators";
+import { Storage } from "@ionic/storage";
 @Component({
   selector: "app-train-list",
   templateUrl: "./train-list.page.html",
@@ -90,6 +91,7 @@ export class TrainListPage implements OnInit, OnDestroy {
     private tmcService: TmcService,
     private trainService: TrainService,
     private router: Router,
+    private storage: Storage,
     private domCtrl: DomController,
     private calendarService: CalendarService,
     private route: ActivatedRoute,
@@ -646,6 +648,12 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.filterCondition.timeFromM2N = "initial";
     this.activeTab = "none";
     this.searchTrainModel.Date = day.date;
+    const staff = await this.staffService.getStaff();
+    if (this.searchTrainModel) {
+      if (this.searchTrainModel.tripType == TripType.departureTrip) {
+        await this.storage.set(`last_selected_train_goDate_${staff && staff.AccountId}`, s.Date);
+      }
+    }
     this.trainService.setSearchTrainModel(this.searchTrainModel);
     this.doRefresh(true, true);
   }

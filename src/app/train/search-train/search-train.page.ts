@@ -32,24 +32,11 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
   toggleCities = false; // 没有切换城市顺序
   rotateIcon = false;
   isSingle = true;
-  isSelectFlyDate: boolean;
   goDate: DayModel;
   backDate: DayModel;
   isShowSelectedInfos$ = of(false);
   canAddPassengers = false;
-  get totalDays() {
-    if (this.backDate && this.goDate) {
-      const detal = Math.floor(
-        this.backDate.timeStamp - this.goDate.timeStamp
-      );
-      if (detal == 0) {
-        return 1;
-      }
-      return (detal / 24 / 3600).toFixed(0);
-    }
-    return 1;
-  }
-  selectDaySubscription = Subscription.EMPTY;
+  // selectDaySubscription = Subscription.EMPTY;
   searchConditionSubscription = Subscription.EMPTY;
   searchTrainModel: SearchTrainModel = new SearchTrainModel();
   isMoving: boolean;
@@ -76,6 +63,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     private modalCtrl: ModalController
   ) {
     route.queryParamMap.subscribe(async _ => {
+      await this.initTrainDays();
       this.staff = await this.staffService.getStaff();
       this.canAddPassengers = await this.staffService.isAllBookType() || await this.staffService.isSecretaryBookType();
       if (await this.isStaffTypeSelf()) {
@@ -91,9 +79,6 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
       this.selectedBookInfos = trainService
         .getBookInfos()
         .filter(it => it.bookInfo).length;
-      if (this.searchConditionSubscription) {
-        this.searchConditionSubscription.unsubscribe();
-      }
     });
   }
   private checkBackDateIsAfterGoDate() {
@@ -142,21 +127,16 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
       .pipe(
         map(infos => infos && infos.filter(it => !!it.bookInfo).length > 0)
       );
-
-
     this.apiService.showLoadingView();
-    this.showReturnTrip = await this.staffService.isSelfBookType();
-    this.initTrainDays();
     this.apiService.hideLoadingView();
     this.searchConditionSubscription = this.trainService
       .getSearchTrainModelSource()
       .subscribe(async s => {
         console.log("search-train", s);
+        this.searchTrainModel = s;
         this.showReturnTrip = await this.staffService.isSelfBookType();
-        if (s) {
-          if (this.searchTrainModel) {
-            this.searchTrainModel.isExchange = s.isExchange;
-          }
+        if (this.searchTrainModel) {
+          this.searchTrainModel.isExchange = s.isExchange;
           this.isDisabled = s.isLocked;
           this.fromCity = this.vmFromCity = s.fromCity || this.fromCity;
           this.toCity = this.vmToCity = s.toCity || this.toCity;
@@ -164,23 +144,13 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
           this.backDate = this.calendarService.generateDayModelByDate(
             s.BackDate
           );
+          this.checkBackDateIsAfterGoDate();
           this.isSingle = !s.isRoundTrip;
-          await this.initTrainCities();
         }
       });
     this.canAddPassengers = !(await this.staffService.isSelfBookType());
-    this.calendarService.getSelectedDays().subscribe(days => {
-      if (days && days.length) {
-        if (days.length > 1) {
-          this.goDate = days[0];
-          this.backDate = days[1];
-        } else {
-          this.goDate = days[0];
-        }
-        this.checkBackDateIsAfterGoDate();
-        this.trainService.setSearchTrainModel({ ...this.trainService.getSearchTrainModel(), Date: this.goDate.date, BackDate: this.backDate.date });
-      }
-    });
+    await this.initTrainCities();
+    this.showReturnTrip = await this.staffService.isSelfBookType();
   }
   calcTotalFlyDays(): number {
     if (this.backDate && this.goDate) {
@@ -196,26 +166,14 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
 
   ngOnDestroy(): void {
     console.log("on destroyed");
-    this.selectDaySubscription.unsubscribe();
     this.searchConditionSubscription.unsubscribe();
   }
-  initTrainDays() {
-    this.goDate = this.calendarService.generateDayModel(
-      moment()
-      // 默认第二天
-      // .add(1, "days")
-    );
-    this.goDate.hasToolTip = false;
-    this.goDate.enabled = true;
-    this.goDate.desc = "去程";
-    this.goDate.descPos = "top";
-    this.backDate = this.calendarService.generateDayModel(
-      moment().add(4, "days")
-    );
-    this.backDate.hasToolTip = false;
-    this.backDate.enabled = true;
-    this.backDate.desc = "返程";
-    this.backDate.descPos = "bottom";
+  async initTrainDays() {
+    const lastSelectedGoDate = await this.storage.get(`last_selected_train_goDate_${this.staff && this.staff.AccountId}`) || moment().format("YYYY-MM-DD");
+    this.trainService.setSearchTrainModel({
+      ...this.trainService.getSearchTrainModel(),
+      Date: lastSelectedGoDate
+    });
   }
   async initTrainCities() {
     if (this.fromCity && this.fromCity.Code && this.toCity && this.toCity.Code) {
@@ -276,11 +234,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     }
     console.log("search-train", s);
     this.isCanLeave = true;
-    if (this.goDate && this.backDate) {
-      this.calendarService.setSelectedDaysSource([this.goDate, this.backDate]);
-    } else if (this.goDate) {
-      this.calendarService.setSelectedDaysSource([this.goDate]);
-    }
+    await this.storage.set(`last_selected_train_goDate_${this.staff && this.staff.AccountId}`, s.Date);
     this.router.navigate([AppHelper.getRoutePath("train-list")]).then(_ => {
       this.trainService.setSearchTrainModel(s);
     });
@@ -292,15 +246,25 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     if (this.isDisabled && !this.searchTrainModel.isExchange && !backDate) {
       return;
     }
-    this.isSelectFlyDate = flyTo;
     const days = await this.trainService.openCalendar(!this.isSingle && !this.isDisabled);
     console.log("train openCalendar", days);
     if (days && days.length) {
+      let goDate:DayModel;
+      let backDate:DayModel;
       if (days.length > 1) {
-        this.goDate = days[0];
-        this.backDate = days[1];
+        goDate = days[0];
+        backDate = days[1];
       } else {
-        this.goDate = days[0];
+        goDate = days[0];
+      }
+      if(this.searchTrainModel){
+        if(goDate){
+          this.searchTrainModel.Date=goDate.date;
+        }
+        if(backDate){
+          this.searchTrainModel.BackDate=backDate.date;
+        }
+        this.trainService.setSearchTrainModel(this.searchTrainModel);
       }
     }
   }
