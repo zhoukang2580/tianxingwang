@@ -386,7 +386,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
           queryParams: {
             url: `${url}?sign=${sign}&taskid=${task.Id}&ticket=${identity && identity.Ticket}`,
             title: task && task.Name,
-            tabId: this.activeTab,
+            tabId: this.activeTab.value,
             isHideTitle: true
           }
         })
