@@ -209,7 +209,7 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
   }
   onFilter() {
     const query = this.hotelService.getHotelQueryModel();
-    if (!query.filters) {
+    if (!query.filters || !query.filters.some(it => it.hasFilterItem)) {
       query.Themes = null;
       query.Brands = null;
       query.Services = null;
