@@ -242,11 +242,16 @@ export class MemberCredentialManagementPage
     });
   }
   async saveAdd(c: MemberCredential, container: HTMLElement) {
+    c.FirstName = c.FirstName && c.FirstName.toUpperCase();
+    c.LastName = c.LastName && c.LastName.toUpperCase();
+    c.CheckFirstName = c.CheckFirstName && c.CheckFirstName.toUpperCase();
+    c.CheckLastName = c.CheckLastName && c.CheckLastName.toUpperCase();
+    c.Number = c.Number && c.Number.toUpperCase();
     const ok = await this.validateCredential(c, container);
     console.log("validateCredential", ok);
     if (ok) {
-      const ok =await AppHelper.alert(`请确认您的证件姓名：${c.FirstName}${c.LastName},您的登机名：${c.CheckFirstName}${c.CheckLastName},证件号码：${c.Number}`,true);
-      if(!ok){
+      const ok = await AppHelper.alert(`请确认您的证件姓名：${c.FirstName}${c.LastName},您的登机名：${c.CheckFirstName}${ c.CheckLastName},证件号码：${c.Number}`, true);
+      if (!ok) {
         return;
       }
       const result = await this.memberService
