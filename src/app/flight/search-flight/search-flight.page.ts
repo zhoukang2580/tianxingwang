@@ -75,7 +75,9 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
         || moment().add(1, 'days').format("YYYY-MM-DD");
       const lastSelectedBackDate = await this.storage.get(`last_selected_flight_backDate_${this.staff && this.staff.AccountId}`)
         || moment().add(2, 'days').format("YYYY-MM-DD");
-      this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(lastSelectedGoDate), this.calendarService.generateDayModelByDate(lastSelectedBackDate)]);
+      this.goDate = this.calendarService.generateDayModelByDate(lastSelectedGoDate);
+      this.backDate = this.calendarService.generateDayModelByDate(lastSelectedBackDate);
+      this.calendarService.setSelectedDaysSource([this.goDate, this.backDate]);
       this.showReturnTrip = await this.isStaffTypeSelf();
       if (this.searchConditionSubscription) {
         this.searchConditionSubscription.unsubscribe();
@@ -96,7 +98,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
   }
   private checkBackDateIsAfterflyDate() {
     if (!this.goDate || (this.goDate.timeStamp < Math.floor(new Date().getTime() / 1000))) {
-      this.goDate = this.calendarService.generateDayModel(moment());
+      this.goDate = this.calendarService.generateDayModel(moment().add(1, 'days'));
     }
     if (this.goDate && this.backDate) {
       this.backDate = this.goDate.timeStamp > this.backDate.timeStamp ?
@@ -155,11 +157,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
             }
           } else {
             if (this.isSingle) {
-              if (this.isSelectFlyDate) {
-                this.goDate = days[0];
-              } else {
-                this.backDate = days[0];
-              }
+              this.goDate = days[0];
             } else {
               this.goDate = days[0];
               this.backDate = days[1];
@@ -170,9 +168,6 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
             Date: this.goDate.date,
             BackDate: this.backDate.date
           });
-          if (this.goDate.timeStamp > this.backDate.timeStamp) {
-            this.goDate = this.calendarService.generateDayModel(moment());
-          }
           this.checkBackDateIsAfterflyDate();
           this.totalFlyDays = +this.calcTotalFlyDays();
         }
@@ -181,7 +176,6 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.showReturnTrip = await this.staffService
       .isSelfBookType()
       .catch(_ => false);
-    this.initFlightDays();
     this.initFlightCities();
     this.apiService.hideLoadingView();
   }
@@ -194,24 +188,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.selectDaySubscription.unsubscribe();
     this.searchConditionSubscription.unsubscribe();
   }
-  initFlightDays() {
-    this.goDate = this.calendarService.generateDayModel(
-      moment()
-      // 默认第二天
-      // .add(1, "days")
-    );
-    this.goDate.hasToolTip = false;
-    this.goDate.enabled = true;
-    this.goDate.desc = "去程";
-    this.goDate.descPos = "top";
-    this.backDate = this.calendarService.generateDayModel(
-      moment().add(4, "days")
-    );
-    this.backDate.hasToolTip = false;
-    this.backDate.enabled = true;
-    this.backDate.desc = "返程";
-    this.backDate.descPos = "bottom";
-  }
+
   async initFlightCities() {
     this.fromCity = this.vmFromCity = {} as any;
     this.fromCity.Nickname = this.fromCity.CityName = this.vmFromCity.CityName =
@@ -251,6 +228,8 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     console.log(`启程日期${this.goDate.date},返程日期：${this.backDate.date}`);
     this.storage.set("fromCity", this.fromCity);
     this.storage.set("toCity", this.toCity);
+    await this.storage.set(`last_selected_flight_goDate_${this.staff && this.staff.AccountId}`, this.goDate.date);
+    await this.storage.set(`last_selected_flight_backDate_${this.staff && this.staff.AccountId}`, this.backDate.date);
     const s: SearchFlightModel = new SearchFlightModel();
     s.tripType = TripType.departureTrip;
     const staff = await this.staffService.getStaff().catch(_ => null);

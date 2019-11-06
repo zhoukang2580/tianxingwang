@@ -144,7 +144,8 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     private identityService: IdentityService,
     private domCtrl: DomController,
     private modalCtrl: ModalController,
-    private popoverController: PopoverController
+    private popoverController: PopoverController,
+    private storage: Storage
   ) {
     this.selectedPassengersNumbers$ = flightService
       .getPassengerBookInfoSource()
@@ -224,44 +225,24 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     ) {
       return;
     }
-    // if (this.searchFlightModel.tripType == TripType.returnTrip) {
-    //   const bookInfos = this.flightService.getPassengerBookInfos();
-    //   const info = bookInfos.find(
-    //     item =>
-    //       item &&
-    //       item.bookInfo &&
-    //       item.bookInfo.tripType == TripType.departureTrip
-    //   );
-    //   const goFlight = info && info.bookInfo.flightSegment;
-    //   if (goFlight) {
-    //     let goDay = moment(goFlight.ArrivalTime);
-    //     goDay = moment(goDay.format("YYYY-MM-DD"));
-    //     const backDate = day;
-    //     if (+moment(backDate.date) < +goDay) {
-    //       await AppHelper.toast(
-    //         LanguageHelper.Flight.getBackDateCannotBeforeGoDateTip(),
-    //         1000,
-    //         "middle"
-    //       );
-    //       return;
-    //     }
-    //   }
-    // } else {
-    //   if (this.searchFlightModel.isRoundTrip) {
-    //     if (+moment(day.date) > +moment(this.searchFlightModel.BackDate)) {
-    //       this.searchFlightModel.BackDate = moment(day.date)
-    //         .add(1, "days")
-    //         .format("YYYY-MM-DD");
-    //     }
-    //   }
-    // }
+    const staff = await this.staffService.getStaff();
+    const s = this.flightService.getSearchFlightModel();
+    if (s.isRoundTrip) {
+      if (s.tripType == TripType.departureTrip) {
+        await this.storage.set(`last_selected_flight_goDate_${staff && staff.AccountId}`, day.date);
+      } else {
+        await this.storage.set(`last_selected_flight_backDate_${staff && staff.AccountId}`, day.date);
+      }
+    } else {
+      await this.storage.set(`last_selected_flight_goDate_${staff && staff.AccountId}`, day.date);
+    }
     if (!this.filterCondition) {
       this.filterCondition = FilterConditionModel.init();
     }
     this.filterCondition.priceFromL2H = "initial";
     this.filterCondition.timeFromM2N = "initial";
     this.activeTab =
-      this.filterComp && 
+      this.filterComp &&
         Object.keys(this.filterComp.userOps).some(k => this.filterComp.userOps[k])
         ? "filter"
         : "none";

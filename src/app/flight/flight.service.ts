@@ -361,7 +361,13 @@ export class FlightService {
     const goFlight = this.getPassengerBookInfos().find(
       f => f.bookInfo && f.bookInfo.tripType == TripType.departureTrip
     );
-    const s = this.getSearchFlightModel();
+    let s = this.getSearchFlightModel();
+    if(s.isRoundTrip){
+      if(goFlight){
+        this.setSearchFlightModel({...s,tripType:TripType.returnTrip});
+      }
+    }
+    s = this.getSearchFlightModel();
     const m = await this.modalCtrl.create({
       component: SelectDateComponent,
       componentProps: {
