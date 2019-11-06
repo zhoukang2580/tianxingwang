@@ -83,9 +83,6 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
           this.searchTrainModel && this.searchTrainModel.isLocked;
       }
       const searchTrainModel = this.trainService.getSearchTrainModel();
-      this.goDate = this.calendarService.generateDayModelByDate(searchTrainModel.Date);
-      this.backDate = this.calendarService.generateDayModelByDate(searchTrainModel.BackDate);
-      this.checkBackDateIsAfterGoDate();
       this.searchTrainModel.isExchange = searchTrainModel.isExchange
         || !!this.trainService.getBookInfos().find(it => it.bookInfo && it.bookInfo.isExchange);
       this.isCanLeave = this.searchTrainModel.isExchange ? false : true;
@@ -172,7 +169,18 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
         }
       });
     this.canAddPassengers = !(await this.staffService.isSelfBookType());
-
+    this.calendarService.getSelectedDays().subscribe(days => {
+      if (days && days.length) {
+        if (days.length > 1) {
+          this.goDate = days[0];
+          this.backDate = days[1];
+        } else {
+          this.goDate = days[0];
+        }
+        this.checkBackDateIsAfterGoDate();
+        this.trainService.setSearchTrainModel({ ...this.trainService.getSearchTrainModel(), Date: this.goDate.date, BackDate: this.backDate.date });
+      }
+    });
   }
   calcTotalFlyDays(): number {
     if (this.backDate && this.goDate) {
