@@ -124,7 +124,7 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
   }
   onStarPriceChange() {
     let query = { ...this.hotelService.getHotelQueryModel() };
-    if (query && query.starAndPrices) {
+    if (query && query.starAndPrices && query.starAndPrices.some(it => it.hasItemSelected)) {
       const customeprice = query.starAndPrices.find(it => it.tag == "customeprice");
       const starAndPrices = query.starAndPrices.filter(it => it.hasItemSelected).filter(it => !!it);
       console.log("onStarPriceChange starAndPrices ", starAndPrices);
@@ -175,8 +175,8 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
           .map(it => it.value);
       }
     } else {
-      query.Stars = [];
-      query.Categories = [];
+      query.Stars = null;
+      query.Categories = null;
     }
     this.doRefresh(query);
   }
@@ -210,6 +210,11 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
   onFilter() {
     const query = this.hotelService.getHotelQueryModel();
     if (!query.filters) {
+      query.Themes = null;
+      query.Brands = null;
+      query.Services = null;
+      query.Facilities = null;
+      this.doRefresh(query);
       return;
     }
     const filter: IFilterTab<any>[] = query.filters.filter(it => it.hasFilterItem);
