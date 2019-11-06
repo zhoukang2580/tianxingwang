@@ -736,9 +736,7 @@ export class FlightService {
         }
         if (arg.bookInfo.tripType == TripType.departureTrip) {
           this.passengerBookInfos = this.getPassengerBookInfos().map(item => {
-            if(item.id==arg.id){
-              item.bookInfo = null;
-            }
+            item.bookInfo = null;
             return item;
           });
           this.setSearchFlightModel({
