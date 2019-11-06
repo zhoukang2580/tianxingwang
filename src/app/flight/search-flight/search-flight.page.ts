@@ -31,7 +31,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
   rotateIcon = false;
   isSingle = true;
   isSelectFlyDate: boolean;
-  flyDate: DayModel;
+  goDate: DayModel;
   backDate: DayModel;
   selectDaySubscription = Subscription.EMPTY;
   searchConditionSubscription = Subscription.EMPTY;
@@ -53,7 +53,6 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     route: ActivatedRoute,
     private calendarService: CalendarService,
     private navCtrl: NavController,
-    private flydayService: CalendarService,
     private flightService: FlightService,
     private storage: Storage,
     private staffService: StaffService,
@@ -72,7 +71,11 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     route.queryParamMap.subscribe(async _ => {
       this.staff = await this.staffService.getStaff();
       this.disabled = this.searchFlightModel && this.searchFlightModel.isLocked;
-
+      const lastSelectedGoDate = await this.storage.get(`last_selected_flight_goDate_${this.staff && this.staff.AccountId}`)
+        || moment().add(1, 'days').format("YYYY-MM-DD");
+      const lastSelectedBackDate = await this.storage.get(`last_selected_flight_backDate_${this.staff && this.staff.AccountId}`)
+        || moment().add(2, 'days').format("YYYY-MM-DD");
+      this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(lastSelectedGoDate), this.calendarService.generateDayModelByDate(lastSelectedBackDate)]);
       this.showReturnTrip = await this.isStaffTypeSelf();
       if (this.searchConditionSubscription) {
         this.searchConditionSubscription.unsubscribe();
@@ -86,29 +89,25 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
             this.disabled = s.isLocked;
             this.fromCity = this.vmFromCity = s.fromCity || this.fromCity;
             this.toCity = this.vmToCity = s.toCity || this.toCity;
-            this.flyDate = this.flydayService.generateDayModelByDate(s.Date);
-            this.backDate = this.flydayService.generateDayModelByDate(
-              s.BackDate
-            );
             this.isSingle = !s.isRoundTrip;
           }
         });
     });
   }
   private checkBackDateIsAfterflyDate() {
-    if (!this.flyDate || (this.flyDate.timeStamp < Math.floor(new Date().getTime() / 1000))) {
-      this.flyDate = this.calendarService.generateDayModel(moment());
+    if (!this.goDate || (this.goDate.timeStamp < Math.floor(new Date().getTime() / 1000))) {
+      this.goDate = this.calendarService.generateDayModel(moment());
     }
-    if (this.flyDate && this.backDate) {
-      this.backDate = this.flyDate.timeStamp > this.backDate.timeStamp ?
-        this.calendarService.generateDayModel(moment(this.flyDate.date).add(1, 'days')) : this.backDate;
+    if (this.goDate && this.backDate) {
+      this.backDate = this.goDate.timeStamp > this.backDate.timeStamp ?
+        this.calendarService.generateDayModel(moment(this.goDate.date).add(1, 'days')) : this.backDate;
     }
   }
   private calcTotalFlyDays() {
-    if (this.backDate && this.flyDate) {
+    if (this.backDate && this.goDate) {
       const nums =
         Math.abs(moment(this.backDate.date).diff(
-          moment(this.flyDate.date), 'days'));
+          moment(this.goDate.date), 'days'));
       return nums <= 0 ? 1 : nums;
     }
     return `1`;
@@ -141,7 +140,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.isShowBookInfos$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(map(infos => infos.filter(it => !!it.bookInfo).length));
-    this.selectDaySubscription = this.flydayService
+    this.selectDaySubscription = this.calendarService
       .getSelectedDays()
       .subscribe(days => {
         if (days && days.length) {
@@ -149,31 +148,30 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
             if (this.disabled) {
               this.backDate = days[0];
             } else {
-              this.flyDate = days[0];
-              this.flyDate = days[0];
-              this.backDate = this.flydayService.generateDayModel(
-                moment(this.flyDate.date).add(1, "days")
+              this.goDate = days[0];
+              this.backDate = this.calendarService.generateDayModel(
+                moment(this.goDate.date).add(1, "days")
               );
             }
           } else {
             if (this.isSingle) {
               if (this.isSelectFlyDate) {
-                this.flyDate = days[0];
+                this.goDate = days[0];
               } else {
                 this.backDate = days[0];
               }
             } else {
-              this.flyDate = days[0];
+              this.goDate = days[0];
               this.backDate = days[1];
             }
           }
           this.flightService.setSearchFlightModel({
             ...this.flightService.getSearchFlightModel(),
-            Date: this.flyDate.date,
+            Date: this.goDate.date,
             BackDate: this.backDate.date
           });
-          if (this.flyDate.timeStamp > this.backDate.timeStamp) {
-            this.flyDate = this.flydayService.generateDayModel(moment());
+          if (this.goDate.timeStamp > this.backDate.timeStamp) {
+            this.goDate = this.calendarService.generateDayModel(moment());
           }
           this.checkBackDateIsAfterflyDate();
           this.totalFlyDays = +this.calcTotalFlyDays();
@@ -197,15 +195,15 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.searchConditionSubscription.unsubscribe();
   }
   initFlightDays() {
-    this.flyDate = this.calendarService.generateDayModel(
+    this.goDate = this.calendarService.generateDayModel(
       moment()
       // 默认第二天
       // .add(1, "days")
     );
-    this.flyDate.hasToolTip = false;
-    this.flyDate.enabled = true;
-    this.flyDate.desc = "去程";
-    this.flyDate.descPos = "top";
+    this.goDate.hasToolTip = false;
+    this.goDate.enabled = true;
+    this.goDate.desc = "去程";
+    this.goDate.descPos = "top";
     this.backDate = this.calendarService.generateDayModel(
       moment().add(4, "days")
     );
@@ -250,7 +248,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
       `出发城市" + 【${this.fromCity && this.fromCity.CityName}】`,
       `目的城市【${this.toCity && this.toCity.CityName}】`
     );
-    console.log(`启程日期${this.flyDate.date},返程日期：${this.backDate.date}`);
+    console.log(`启程日期${this.goDate.date},返程日期：${this.backDate.date}`);
     this.storage.set("fromCity", this.fromCity);
     this.storage.set("toCity", this.toCity);
     const s: SearchFlightModel = new SearchFlightModel();
@@ -278,11 +276,11 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
           +moment(this.backDate.date) <
           +moment(arrivalDate.format("YYYY-MM-DD"))
         ) {
-          this.backDate = this.flydayService.generateDayModel(arrivalDate);
+          this.backDate = this.calendarService.generateDayModel(arrivalDate);
         }
       }
     }
-    s.Date = this.flyDate.date;
+    s.Date = this.goDate.date;
     s.FromCode = this.fromCity.Code;
     s.ToCode = this.toCity.Code;
     s.ToAsAirport = this.toCity.Tag === "Airport"; // Airport 以到达 机场 查询;AirportCity 以城市查询
