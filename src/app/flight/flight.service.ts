@@ -514,7 +514,7 @@ export class FlightService {
             });
           }
           s = this.getSearchFlightModel();
-          debugger;
+          // debugger;
           if (go) {
             if (s.tripType == TripType.returnTrip) {
               info.tripType = TripType.returnTrip;

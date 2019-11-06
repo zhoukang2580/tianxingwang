@@ -202,7 +202,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.storage.set("fromCity", this.fromCity);
     this.storage.set("toCity", this.toCity);
 
-    const s: SearchFlightModel = new SearchFlightModel();
+    const s: SearchFlightModel = this.searchFlightModel||new SearchFlightModel();
     // s.tripType = TripType.departureTrip;
     const staff = await this.staffService.getStaff().catch(_ => null);
     if (staff && staff.BookType == StaffBookType.Self) {
