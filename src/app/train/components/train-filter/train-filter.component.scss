@@ -11,3 +11,6 @@ ion-col {
 ion-list-header {
   --background: var(--ion-color-primary);
 }
+:host{
+  padding-top: 3em;
+}
