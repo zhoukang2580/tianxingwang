@@ -651,7 +651,7 @@ export class TrainListPage implements OnInit, OnDestroy {
     const staff = await this.staffService.getStaff();
     if (this.searchTrainModel) {
       if (this.searchTrainModel.tripType == TripType.departureTrip) {
-        await this.storage.set(`last_selected_train_goDate_${staff && staff.AccountId}`, s.Date);
+        await this.storage.set(`last_selected_train_goDate_${staff && staff.AccountId}`, day.date);
       }
     }
     this.trainService.setSearchTrainModel(this.searchTrainModel);
