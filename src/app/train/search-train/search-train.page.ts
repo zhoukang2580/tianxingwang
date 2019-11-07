@@ -87,7 +87,6 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     this.isSingle = single;
     this.trainService.setSearchTrainModel({
       ...this.trainService.getSearchTrainModel(),
-      isRefreshData: false,
       isRoundTrip: !this.isSingle
     });
   }
@@ -227,7 +226,6 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     s.fromCity = this.fromCity;
     s.toCity = this.toCity;
     s.BackDate = this.backDate.date;
-    s.isRefreshData = true;
     if (this.isDisabled) {
       s.Date = s.BackDate;
     }
@@ -236,10 +234,13 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     }
     console.log("search-train", s);
     this.isCanLeave = true;
-    await this.storage.set(`last_selected_train_goDate_${this.staff && this.staff.AccountId}`, s.Date);
     this.trainService.setSearchTrainModel(s);
     this.router.navigate([AppHelper.getRoutePath("train-list")]).then(_ => {
     });
+    const staff=await this.staffService.getStaff();
+    if(staff){
+      await this.storage.set(`last_selected_train_goDate_${staff && staff.AccountId}`, s.Date);
+    }
   }
   getDayDesc(d: DayModel) {
     return this.calendarService.getDescOfDay(d);

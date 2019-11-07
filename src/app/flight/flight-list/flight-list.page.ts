@@ -229,10 +229,14 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     const s = this.flightService.getSearchFlightModel();
     if (s.isRoundTrip) {
       if (s.tripType == TripType.departureTrip) {
-        await this.storage.set(`last_selected_flight_goDate_${staff && staff.AccountId}`, day.date);
-      } 
+        if (staff) {
+          await this.storage.set(`last_selected_flight_goDate_${staff && staff.AccountId}`, day.date);
+        }
+      }
     } else {
-      await this.storage.set(`last_selected_flight_goDate_${staff && staff.AccountId}`, day.date);
+      if (staff) {
+        await this.storage.set(`last_selected_flight_goDate_${staff && staff.AccountId}`, day.date);
+      }
     }
     if (!this.filterCondition) {
       this.filterCondition = FilterConditionModel.init();
@@ -607,7 +611,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     await popover.present();
     const d = await popover.onDidDismiss();
     const data = d.data as PassengerBookInfo<IFlightSegmentInfo>;
-    if(data){
+    if (data) {
       this.filterPassengerPolicyFlights(data);
     }
   }

@@ -44,7 +44,6 @@ export class SearchTrainModel {
   isLocked?: boolean;
   tripType: TripType;
   isRoundTrip?: boolean; // 是否是往返
-  isRefreshData?: boolean;
   isExchange?: boolean;// 是否是改签
 }
 export interface ISelectedStation {
@@ -235,8 +234,7 @@ export class TrainService {
     if (!isSelfBookType || infos.length == 0 || !s.isRoundTrip) {
       this.setSearchTrainModel({
         ...s,
-        isLocked: false,
-        isRefreshData: false
+        isLocked: false
       });
       return;
     }
@@ -262,7 +260,6 @@ export class TrainService {
       backParams.Date = s.BackDate;
       backParams.isLocked = true;
       backParams.tripType = TripType.returnTrip;
-      backParams.isRefreshData = true;
       this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(backParams.Date)]);
       await this.dismissAllTopOverlays();
       await this.router.navigate([AppHelper.getRoutePath("train-list")]);

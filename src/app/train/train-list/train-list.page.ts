@@ -153,21 +153,6 @@ export class TrainListPage implements OnInit, OnDestroy {
         if (this.searchTrainModel) {
           this.vmFromCity = modal.fromCity;
           this.vmToCity = modal.toCity;
-          // this.moveDayToSearchDate(
-          //   this.calendarService.generateDayModelByDate(
-          //     this.searchTrainModel.Date
-          //   )
-          // );
-          if (
-            modal &&
-            modal.isRefreshData
-          ) {
-            this.trainService.setSearchTrainModel({
-              ...modal,
-              isRefreshData: false
-            });
-            this.doRefresh(true, false);
-          }
         }
       });
     this.selectedPassengersNumbers$ = this.trainService
@@ -445,6 +430,9 @@ export class TrainListPage implements OnInit, OnDestroy {
         return;
       }
       // this.moveDayToSearchDate();
+      if(this.searchTrainModel){
+        this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(this.searchTrainModel.Date)]);
+      }
 
       this.apiService.showLoadingView();
       if (!keepSearchCondition) {
@@ -623,7 +611,9 @@ export class TrainListPage implements OnInit, OnDestroy {
     if (this.searchTrainModel) {
       if (this.searchTrainModel.tripType == TripType.departureTrip) {
         this.searchTrainModel.Date = day.date;
-        await this.storage.set(`last_selected_train_goDate_${staff && staff.AccountId}`, day.date);
+        if(staff){
+          await this.storage.set(`last_selected_train_goDate_${staff && staff.AccountId}`, day.date);
+        }
       } else {
         this.searchTrainModel.BackDate = day.date;
       }

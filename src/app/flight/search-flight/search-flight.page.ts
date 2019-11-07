@@ -200,7 +200,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.storage.set("fromCity", this.fromCity);
     this.storage.set("toCity", this.toCity);
 
-    const s: SearchFlightModel = this.searchFlightModel||new SearchFlightModel();
+    const s: SearchFlightModel = this.searchFlightModel || new SearchFlightModel();
     // s.tripType = TripType.departureTrip;
     const staff = await this.staffService.getStaff().catch(_ => null);
     if (staff && staff.BookType == StaffBookType.Self) {
@@ -243,12 +243,15 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.disabled) {
       s.Date = s.BackDate;
     }
-    await this.storage.set(`last_selected_flight_goDate_${this.staff && this.staff.AccountId}`, s.Date);
     // s.tripType = s.isRoundTrip ? goFlight ? s.tripType : TripType.departureTrip : TripType.departureTrip;
     console.log("search-flight", s);
     // this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(s.Date)]);
     this.flightService.setSearchFlightModel(s);
     this.router.navigate([AppHelper.getRoutePath("flight-list")]);
+    this.staff = await this.staffService.getStaff();
+    if (this.staff) {
+      await this.storage.set(`last_selected_flight_goDate_${this.staff && this.staff.AccountId}`, s.Date);
+    }
   }
   getDayDesc(d: DayModel) {
     return this.calendarService.getDescOfDay(d);
