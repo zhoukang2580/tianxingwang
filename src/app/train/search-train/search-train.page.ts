@@ -51,7 +51,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
   staff: StaffEntity;
   constructor(
     private router: Router,
-    route: ActivatedRoute,
+    private route: ActivatedRoute,
     private navCtrl: NavController,
     private storage: Storage,
     private staffService: StaffService,
@@ -62,24 +62,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     private tmcService: TmcService,
     private modalCtrl: ModalController
   ) {
-    route.queryParamMap.subscribe(async _ => {
-      await this.initTrainDays();
-      this.staff = await this.staffService.getStaff();
-      this.canAddPassengers = await this.staffService.isAllBookType() || await this.staffService.isSecretaryBookType();
-      if (await this.isStaffTypeSelf()) {
-        this.isDisabled =
-          this.searchTrainModel && this.searchTrainModel.isLocked;
-      }
-      const searchTrainModel = this.trainService.getSearchTrainModel();
-      this.searchTrainModel.isExchange = searchTrainModel.isExchange
-        || !!this.trainService.getBookInfos().find(it => it.bookInfo && it.bookInfo.isExchange);
-      this.isCanLeave = this.searchTrainModel.isExchange ? false : true;
-      this.showReturnTrip = await this.isStaffTypeSelf();
-      this.selectedPassengers = trainService.getBookInfos().length;
-      this.selectedBookInfos = trainService
-        .getBookInfos()
-        .filter(it => it.bookInfo).length;
-    });
+
   }
   private checkBackDateIsAfterGoDate() {
     if (!this.goDate || (this.goDate.timeStamp < Math.floor(new Date().getTime() / 1000))) {
@@ -151,6 +134,24 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     this.canAddPassengers = !(await this.staffService.isSelfBookType());
     await this.initTrainCities();
     this.showReturnTrip = await this.staffService.isSelfBookType();
+    this.route.queryParamMap.subscribe(async _ => {
+      await this.initTrainDays();
+      this.staff = await this.staffService.getStaff();
+      this.canAddPassengers = await this.staffService.isAllBookType() || await this.staffService.isSecretaryBookType();
+      if (await this.isStaffTypeSelf()) {
+        this.isDisabled =
+          this.searchTrainModel && this.searchTrainModel.isLocked;
+      }
+      const searchTrainModel = this.trainService.getSearchTrainModel();
+      this.searchTrainModel.isExchange = searchTrainModel.isExchange
+        || !!this.trainService.getBookInfos().find(it => it.bookInfo && it.bookInfo.isExchange);
+      this.isCanLeave = this.searchTrainModel.isExchange ? false : true;
+      this.showReturnTrip = await this.isStaffTypeSelf();
+      this.selectedPassengers = this.trainService.getBookInfos().length;
+      this.selectedBookInfos = this.trainService
+        .getBookInfos()
+        .filter(it => it.bookInfo).length;
+    });
   }
   calcTotalFlyDays(): number {
     if (this.backDate && this.goDate) {
@@ -169,7 +170,8 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     this.searchConditionSubscription.unsubscribe();
   }
   async initTrainDays() {
-    const lastSelectedGoDate = await this.storage.get(`last_selected_train_goDate_${this.staff && this.staff.AccountId}`) || moment().format("YYYY-MM-DD");
+    const staff = await this.staffService.getStaff();
+    const lastSelectedGoDate = await this.storage.get(`last_selected_train_goDate_${staff && staff.AccountId}`) || moment().format("YYYY-MM-DD");
     this.trainService.setSearchTrainModel({
       ...this.trainService.getSearchTrainModel(),
       Date: lastSelectedGoDate
@@ -249,20 +251,20 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     const days = await this.trainService.openCalendar(!this.isSingle && !this.isDisabled);
     console.log("train openCalendar", days);
     if (days && days.length) {
-      let goDate:DayModel;
-      let backDate:DayModel;
+      let goDate: DayModel;
+      let backDate: DayModel;
       if (days.length > 1) {
         goDate = days[0];
         backDate = days[1];
       } else {
         goDate = days[0];
       }
-      if(this.searchTrainModel){
-        if(goDate){
-          this.searchTrainModel.Date=goDate.date;
+      if (this.searchTrainModel) {
+        if (goDate) {
+          this.searchTrainModel.Date = goDate.date;
         }
-        if(backDate){
-          this.searchTrainModel.BackDate=backDate.date;
+        if (backDate) {
+          this.searchTrainModel.BackDate = backDate.date;
         }
         this.trainService.setSearchTrainModel(this.searchTrainModel);
       }
