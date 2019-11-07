@@ -8,7 +8,7 @@
   </div>
   <div class='content' [class.today]='dayModel.isToday' [class.has-top-desc]='dayModel?.desc&&dayModel?.descPos=="top"'>
     <div [attr.color]='dayModel?.color' *ngIf='!dayModel?.isToday'>
-      {{dayModel?.day}}
+      <ion-text color='{{dayModel?.dayoff?"danger":""}}'>{{dayModel?.day}}</ion-text>
     </div>
     <div [attr.color]='dayModel?.color' *ngIf='dayModel?.isToday'>
       {{dayModel?.displayName}}

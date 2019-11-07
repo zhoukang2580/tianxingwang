@@ -374,18 +374,23 @@ export class FlightService {
       }
     }
     s = this.getSearchFlightModel();
-    let goArrivalTime="";
-    if(tripType==TripType.returnTrip){
-      goArrivalTime=s&&s.Date;
+    let goArrivalTime:string|number=+moment();
+    if(tripType==TripType.returnTrip||goFlight){
+      if(!goFlight){
+        goArrivalTime=+(moment(s&&s.Date));
+      }else{
+        if( goFlight &&
+          goFlight.bookInfo && 
+          goFlight.bookInfo.flightSegment &&
+          goFlight.bookInfo.flightSegment.ArrivalTime){
+            goArrivalTime=goFlight.bookInfo.flightSegment.ArrivalTime;
+          }
+      }
     }
     const m = await this.modalCtrl.create({
       component: SelectDateComponent,
       componentProps: {
-        goArrivalTime:goArrivalTime||goFlight&& !this.getPassengerBookInfos().some(it=>it.isReplace)?
-          goFlight &&
-          goFlight.bookInfo && 
-          goFlight.bookInfo.flightSegment &&
-          goFlight.bookInfo.flightSegment.ArrivalTime:"",
+        goArrivalTime,
         tripType: tripType||s.tripType||TripType.departureTrip,
         forType: FlightHotelTrainType.Flight,
         isMulti: isMulti

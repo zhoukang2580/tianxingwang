@@ -65,7 +65,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
       this.curSelectedMonth = new Date().getMonth() + 1;
     } else {
       const m = moment(
-        +this.goArrivalTime ? +this.goArrivalTime * 1000 : this.goArrivalTime
+        +this.goArrivalTime ? +this.goArrivalTime : this.goArrivalTime
       );
       this.curSelectedYear = m.year() + "";
       this.curSelectedMonth = m.month() + 1;

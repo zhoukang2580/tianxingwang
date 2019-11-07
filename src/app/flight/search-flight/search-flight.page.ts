@@ -86,9 +86,6 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
     });
   }
   private checkBackDateIsAfterflyDate() {
-    if (!this.goDate || (this.goDate.timeStamp < Math.floor(new Date().getTime() / 1000))) {
-      this.goDate = this.calendarService.generateDayModel(moment().add(1, 'days'));
-    }
     if (this.goDate && this.backDate) {
       this.backDate = this.goDate.timeStamp > this.backDate.timeStamp ?
         this.calendarService.generateDayModel(moment(this.goDate.date).add(1, 'days')) : this.backDate;
