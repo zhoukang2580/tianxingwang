@@ -653,7 +653,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       .pipe(map(infos => infos.find(it => it.isFilteredPolicy)));
     this.activeTab = "filter";
     this.filterConditionSubscription = this.flightService
-      .getFilterCondition()
+      .getFilterConditionSource()
       .subscribe(filterCondition => {
         console.log("高阶查询", filterCondition);
         this.filterCondition = filterCondition;
@@ -892,148 +892,13 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     if (!this.filterCondition) {
       return result;
     }
-    result = this.filterByFlightDirect(result);
-    result = this.filterByFromAirports(result);
-    result = this.filterByToAirports(result);
-    result = this.filterByAirportCompanies(result);
-    result = this.filterByAirTypes(result);
-    result = this.filterByCabins(result);
-    result = this.filterByTakeOffTimeSpan(result);
-    return result;
-  }
-  private filterByFlightDirect(flys: FlightJourneyEntity[]) {
-    let result = flys;
-    if (this.filterCondition.onlyDirect) {
-      result = result.map(f => {
-        f.FlightRoutes = f.FlightRoutes.map(r => {
-          r.FlightSegments = r.FlightSegments.filter(s => !s.IsStop);
-          return r;
-        });
-        return f;
-      });
-    }
-    return result;
-  }
-  private filterByFromAirports(
-    flys: FlightJourneyEntity[]
-  ): FlightJourneyEntity[] {
-    let result = flys;
-    if (
-      this.filterCondition.fromAirports &&
-      this.filterCondition.fromAirports.length
-    ) {
-      result = result.map(fly => {
-        fly.FlightRoutes = fly.FlightRoutes.map(r => {
-          r.FlightSegments = r.FlightSegments.filter(s =>
-            this.filterCondition.fromAirports.some(a => a.id === s.FromAirport)
-          );
-          return r;
-        });
-        return fly;
-      });
-    }
-    return result;
-  }
-  private filterByToAirports(
-    flys: FlightJourneyEntity[]
-  ): FlightJourneyEntity[] {
-    let result = flys;
-    if (
-      this.filterCondition.toAirports &&
-      this.filterCondition.toAirports.length
-    ) {
-      result = result.map(fly => {
-        fly.FlightRoutes = fly.FlightRoutes.map(r => {
-          r.FlightSegments = r.FlightSegments.filter(s =>
-            this.filterCondition.toAirports.some(a => a.id === s.ToAirport)
-          );
-          return r;
-        });
-        return fly;
-      });
-    }
-    return result;
-  }
-  private filterByAirportCompanies(
-    flys: FlightJourneyEntity[]
-  ): FlightJourneyEntity[] {
-    let result = flys;
-    if (
-      this.filterCondition.airCompanies &&
-      this.filterCondition.airCompanies.length > 0
-    ) {
-      result = result.map(fly => {
-        fly.FlightRoutes = fly.FlightRoutes.map(r => {
-          r.FlightSegments = r.FlightSegments.filter(s =>
-            this.filterCondition.airCompanies.some(a => a.id === s.Airline)
-          );
-          return r;
-        });
-        return fly;
-      });
-    }
-    return result;
-  }
-  private filterByAirTypes(flys: FlightJourneyEntity[]): FlightJourneyEntity[] {
-    let result = flys;
-    if (
-      this.filterCondition.airTypes &&
-      this.filterCondition.airTypes.length > 0
-    ) {
-      result = result.map(fly => {
-        fly.FlightRoutes = fly.FlightRoutes.map(r => {
-          r.FlightSegments = r.FlightSegments.filter(s =>
-            this.filterCondition.airTypes.some(a => a.id === s.PlaneType)
-          );
-          return r;
-        });
-        return fly;
-      });
-    }
-    return result;
-  }
-  private filterByCabins(flys: FlightJourneyEntity[]): FlightJourneyEntity[] {
-    let result = flys;
-    if (this.filterCondition.cabins && this.filterCondition.cabins.length > 0) {
-      result = result.map(fly => {
-        fly.FlightRoutes = fly.FlightRoutes.map(r => {
-          r.FlightSegments = r.FlightSegments.filter(s =>
-            this.filterCondition.cabins.some(
-              a => FlightCabinType[a.id] === s.LowestCabinType
-            )
-          );
-          return r;
-        });
-        return fly;
-      });
-    }
-    return result;
-  }
-  private filterByTakeOffTimeSpan(
-    flys: FlightJourneyEntity[]
-  ): FlightJourneyEntity[] {
-    let result = flys;
-    if (this.filterCondition.takeOffTimeSpan) {
-      // console.log(this.filterCondition.takeOffTimeSpan);
-      result = result.map(fly => {
-        fly.FlightRoutes = fly.FlightRoutes.map(r => {
-          r.FlightSegments = r.FlightSegments.filter(s => {
-            // console.log(moment(s.TakeoffTime).hour());
-            return (
-              this.filterCondition.takeOffTimeSpan.lower <=
-              moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() &&
-              (moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() <
-                this.filterCondition.takeOffTimeSpan.upper ||
-                (moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() ==
-                  this.filterCondition.takeOffTimeSpan.upper &&
-                  moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").minutes() == 0))
-            );
-          });
-          return r;
-        });
-        return fly;
-      });
-    }
+    result = this.flightService.filterByFlightDirect(result);
+    result = this.flightService.filterByFromAirports(result);
+    result = this.flightService.filterByToAirports(result);
+    result = this.flightService.filterByAirportCompanies(result);
+    result = this.flightService.filterByAirTypes(result);
+    result = this.flightService.filterByCabins(result);
+    result = this.flightService.filterByTakeOffTimeSpan(result);
     return result;
   }
 }

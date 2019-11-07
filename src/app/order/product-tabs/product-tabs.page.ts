@@ -126,12 +126,11 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     this.loadDataSub.unsubscribe();
   }
   async onPay(order: OrderEntity) {
-    const isSelfBookType = await this.staffService.isSelfBookType();
+    // const isSelfBookType = await this.staffService.isSelfBookType();
     if (order) {
       if (order.Status == OrderStatusType.WaitPay) {
         if (
-          order.TravelPayType == OrderTravelPayType.Person &&
-          isSelfBookType
+          order.TravelPayType == OrderTravelPayType.Person
         ) {
           const result = await this.tmcService.payOrder(order.Id);
           if (result) {
@@ -254,9 +253,10 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     if (result && result.data) {
       const condition = { ...this.condition, ...result.data };
       this.doRefresh(condition);
-    } else {
-      this.doRefresh();
-    }
+    } 
+    // else {
+    //   this.doRefresh();
+    // }
   }
   goToDetailPage(orderId: string) {
     this.router.navigate([AppHelper.getRoutePath("order-detail")], {

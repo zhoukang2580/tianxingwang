@@ -16,7 +16,7 @@ export class SearchTicketModalComponent implements OnInit {
   type: number;
   title: string;
   orderStatus: { label: string; value: OrderStatusType }[] = [];
-  constructor(private modalCtrl: ModalController) {}
+  constructor(private modalCtrl: ModalController) { }
   private async searchAirports(isFromCity = true) {
     const m = await this.modalCtrl.create({
       component: SelectAirportsModalComponent
@@ -29,6 +29,12 @@ export class SearchTicketModalComponent implements OnInit {
       } else {
         this.condition.toCityName = result.data;
       }
+    }
+  }
+  async back() {
+    const m = await this.modalCtrl.getTop();
+    if (m) {
+      m.dismiss(this.condition).catch(_ => null);
     }
   }
   async searchCities(isFromCity = true) {
@@ -68,7 +74,7 @@ export class SearchTicketModalComponent implements OnInit {
               "YYYY-MM-DD"
             )) ||
           "";
-        t.dismiss(this.condition).catch(_ => {});
+        t.dismiss(this.condition).catch(_ => { });
       }
     });
   }

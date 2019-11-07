@@ -5,6 +5,6 @@
   </ion-item>
   <ion-item *ngFor="let c of cabins">
     <ion-label>{{c?.label}}</ion-label>
-    <ion-checkbox #cbox slot="end" [(ngModel)]="c.isChecked" (ionChange)='onionChange()'></ion-checkbox>
+    <ion-checkbox #cbox slot="end" [(ngModel)]="c.isChecked" (ionChange)='onionChange(c)'></ion-checkbox>
   </ion-item>
-</ion-list>  
+</ion-list>

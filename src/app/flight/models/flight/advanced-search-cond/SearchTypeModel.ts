@@ -1,6 +1,6 @@
 
 export class SearchTypeModel {
-  id: string;
+  id: string|number;
   label: string;
   isChecked: boolean;
   icon?: string;

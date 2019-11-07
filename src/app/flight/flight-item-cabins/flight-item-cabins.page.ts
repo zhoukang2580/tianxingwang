@@ -1,3 +1,4 @@
+import { FilterConditionModel } from 'src/app/flight/models/flight/advanced-search-cond/FilterConditionModel';
 import { FlightCabinEntity } from "./../models/flight/FlightCabinEntity";
 import { IdentityService } from "./../../services/identity/identity.service";
 import {
@@ -26,7 +27,7 @@ import {
   FlightPolicy,
   IFlightSegmentInfo
 } from "../models/PassengerFlightInfo";
-import { of, Observable } from "rxjs";
+import { of, Observable, Subscription } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { PassengerBookInfo } from "src/app/tmc/tmc.service";
 import { AppHelper } from "src/app/appHelper";
@@ -50,6 +51,8 @@ export class FlightItemCabinsPage implements OnInit {
   showOpenBtn$ = of(0);
   identity: IdentityEntity;
   filteredPolicyPassenger$: Observable<PassengerBookInfo<IFlightSegmentInfo>>;
+  filterConditions: FilterConditionModel;
+  filterConditionSub = Subscription.EMPTY;
   constructor(
     private flightService: FlightService,
     activatedRoute: ActivatedRoute,
@@ -161,6 +164,9 @@ export class FlightItemCabinsPage implements OnInit {
     return "primary";
   }
   async ngOnInit() {
+    this.filterConditionSub = this.flightService.getFilterConditionSource().subscribe(c => {
+      this.filterConditions = c;
+    })
     this.filteredPolicyPassenger$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(map(infos => infos.find(it => it.isFilteredPolicy)));
@@ -185,49 +191,7 @@ export class FlightItemCabinsPage implements OnInit {
       }
     }, 100);
   }
-  // private async showPolicyCabins() {
-  //   this.vmPolicyCabins = [];
-  //   let policiedCabins: FlightPolicy[] =
-  //     this.currentViewtFlightSegment.flightSegment.PoliciedCabins || [];
-  //   this.loading = true;
-  //   const isfiltered = this.flightService
-  //     .getPassengerBookInfos()
-  //     .find(it => it.isFilteredPolicy);
-  //   const bookInfo =
-  //     isfiltered ||
-  //     ((await this.staffService.isSelfBookType()) &&
-  //       this.flightService.getPassengerBookInfos()[0]);
-  //   if (bookInfo) {
-  //     const p = this.currentViewtFlightSegment.totalPolicyFlights.find(
-  //       it =>
-  //         it.PassengerKey ==
-  //         (bookInfo.passenger && bookInfo.passenger.AccountId)
-  //     );
-  //     if (p) {
-  //       policiedCabins = p.FlightPolicies.filter(
-  //         it =>
-  //           it.FlightNo === this.currentViewtFlightSegment.flightSegment.Number
-  //       );
-  //       if (isfiltered && isfiltered.isOnlyFilterMatchedPolicy) {
-  //         policiedCabins = policiedCabins.filter(
-  //           it => !it.Rules || it.Rules.length == 0
-  //         );
-  //       }
-  //     }
-  //   }
-  //   const cabins = policiedCabins.slice(0);
-  //   const loop = () => {
-  //     if (cabins.length) {
-  //       this.vmPolicyCabins.push(...cabins.splice(0, 1));
-  //       window.requestAnimationFrame(loop);
-  //     } else {
-  //       this.loading = false;
-  //     }
-  //   };
-  //   setTimeout(() => {
-  //     loop();
-  //   }, 0);
-  // }
+
   private async showPolicyCabins() {
     const isfiltered = this.flightService
       .getPassengerBookInfos()
@@ -237,6 +201,9 @@ export class FlightItemCabinsPage implements OnInit {
       ((await this.staffService.isSelfBookType()) &&
         this.flightService.getPassengerBookInfos()[0]);
     this.vmPolicyCabins = this.flightService.filterPassengerPolicyCabins({ data: bookInfo, flightSegment: this.currentViewtFlightSegment.flightSegment });
+    if (this.filterConditions && this.filterConditions.cabins && this.filterConditions.cabins.length) {
+      this.vmPolicyCabins = this.vmPolicyCabins.filter(c => c.Cabin && this.filterConditions.cabins.some(it => it.id == c.Cabin.Type || (c.Cabin.TypeName && c.Cabin.TypeName.includes(it.label))))
+    }
     console.log("showPolicyCabins ", this.vmPolicyCabins);
     this.loading = false;
   }
@@ -244,9 +211,10 @@ export class FlightItemCabinsPage implements OnInit {
     this.vmCabins = [];
     if (this.currentViewtFlightSegment) {
       this.loading = true;
-      const cabins = (
-        this.currentViewtFlightSegment.flightSegment.Cabins || []
-      ).slice(0);
+      let cabins = this.currentViewtFlightSegment.flightSegment.Cabins || [];
+      if (this.filterConditions && this.filterConditions.cabins && this.filterConditions.cabins.length) {
+        cabins = cabins.filter(c => this.filterConditions.cabins.some(it => it.id == c.Type || (c.TypeName && c.TypeName.includes(it.label))))
+      }
       const loop = () => {
         if (cabins.length) {
           this.vmCabins.push(...cabins.splice(0, 1));

@@ -1,3 +1,4 @@
+import { StaffService } from 'src/app/hr/staff.service';
 import { IonRadio } from "@ionic/angular";
 import { Subscription } from "rxjs";
 import { FilterConditionModel } from "./../../../models/flight/advanced-search-cond/FilterConditionModel";
@@ -30,7 +31,8 @@ export class CabinComponent
   @Output() sCond: EventEmitter<any>; // 搜索条件
   cabins: SearchTypeModel[] = [];
   isUnlimitRadioChecked = true;
-  constructor(private cabinPipe: CabintypePipe) {
+  isSelf = true;
+  constructor(private cabinPipe: CabintypePipe, private staff: StaffService) {
     this.sCond = new EventEmitter();
   }
   onUnlimit() {
@@ -50,8 +52,14 @@ export class CabinComponent
       this.onSearch();
     }
   }
-  onionChange() {
+  onionChange(c: { id: string }) {
     this.isUnlimitRadioChecked = !this.cabins.some(item => item.isChecked);
+    if (this.isSelf) {
+      this.cabins = this.cabins.map(it => {
+        it.isChecked = it.id == c.id;
+        return it;
+      })
+    }
     this.onSearch();
   }
   onSearch() {
@@ -65,12 +73,12 @@ export class CabinComponent
           s.Cabins.forEach(c => {
             if (
               !this.cabins.find(
-                a => a.label == this.cabinPipe.transform(c.Type)
+                a => a.label == c.TypeName
               )
             ) {
               this.cabins.push({
-                id: FlightCabinType[c.Type],
-                label: this.cabinPipe.transform(c.Type),
+                id: c.Type,
+                label: c.TypeName,
                 isChecked: false
               });
             }
@@ -78,8 +86,16 @@ export class CabinComponent
         });
       });
     });
+    this.cabins = this.cabins.filter(c => [
+      FlightCabinType.Y,
+      FlightCabinType.SeniorY,
+      FlightCabinType.C,
+      FlightCabinType.F
+    ].some(it => +it == +c.id));
   }
-  ngAfterViewInit() {}
-  ngOnDestroy() {}
-  ngOnInit() {}
+  ngAfterViewInit() { }
+  ngOnDestroy() { }
+  async ngOnInit() {
+    this.isSelf = await this.staff.isSelfBookType();
+  }
 }

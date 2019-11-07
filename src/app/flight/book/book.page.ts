@@ -531,9 +531,14 @@ export class BookPage implements OnInit, AfterViewInit {
           if (
             !isSave &&
             (await this.staffService.isSelfBookType()) &&
-            bookDto.Passengers[0].TravelPayType == OrderTravelPayType.Person
+            this.orderTravelPayType == OrderTravelPayType.Person
           ) {
-            const canPay = true || (await this.checkPay(res.TradeNo));
+            AppHelper.alert("正在预定中...", true);
+            const canPay = await this.checkPay(res.TradeNo);
+            const t = await this.modalCtrl.getTop();
+            if (t) {
+              t.dismiss().catch(_ => null);
+            }
             if (canPay) {
               const payResult = await this.tmcService.payOrder(res.TradeNo);
               if (payResult) {

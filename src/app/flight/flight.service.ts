@@ -72,8 +72,9 @@ export class FlightService {
   private selectedCitySource: Subject<TrafficlineEntity>;
   private passengerBookInfos: PassengerBookInfo<IFlightSegmentInfo>[]; // 记录乘客及其研究选择的航班
   private isInitializingSelfBookInfos = false;
+  private  filterCondition: FilterConditionModel;
   currentViewtFlightSegment: CurrentViewtFlightSegment;
-
+  
   constructor(
     private apiService: ApiService,
     private staffService: StaffService,
@@ -122,7 +123,9 @@ export class FlightService {
     this.selfCredentials = null;
     this.isInitializingSelfBookInfos = false;
   }
-
+  getFilterCondition(){
+    return this.filterCondition;
+  }
   getCurrentViewtFlightSegment() {
     return this.currentViewtFlightSegment;
   }
@@ -371,14 +374,18 @@ export class FlightService {
       }
     }
     s = this.getSearchFlightModel();
+    let goArrivalTime="";
+    if(tripType==TripType.returnTrip){
+      goArrivalTime=s&&s.Date;
+    }
     const m = await this.modalCtrl.create({
       component: SelectDateComponent,
       componentProps: {
-        goArrivalTime:backFlight&&goFlight&& !this.getPassengerBookInfos().some(it=>it.isReplace)?"": 
+        goArrivalTime:goArrivalTime||goFlight&& !this.getPassengerBookInfos().some(it=>it.isReplace)?
           goFlight &&
           goFlight.bookInfo && 
           goFlight.bookInfo.flightSegment &&
-          goFlight.bookInfo.flightSegment.ArrivalTime,
+          goFlight.bookInfo.flightSegment.ArrivalTime:"",
         tripType: tripType||s.tripType||TripType.departureTrip,
         forType: FlightHotelTrainType.Flight,
         isMulti: isMulti
@@ -769,9 +776,10 @@ export class FlightService {
     this.openCloseSelectCitySources.next(open);
   }
   setFilterCondition(advSCond: FilterConditionModel) {
+    this.filterCondition=advSCond;
     this.filterCondSources.next(advSCond);
   }
-  getFilterCondition() {
+  getFilterConditionSource() {
     return this.filterCondSources.asObservable();
   }
   setFilterPanelShow(show: boolean) {
@@ -1038,5 +1046,144 @@ export class FlightService {
 
         return res;
       });
+  }
+   filterByFlightDirect(flys: FlightJourneyEntity[]) {
+    let result = flys;
+    if (this.filterCondition&&this.filterCondition.onlyDirect) {
+      result = result.map(f => {
+        f.FlightRoutes = f.FlightRoutes.map(r => {
+          r.FlightSegments = r.FlightSegments.filter(s => !s.IsStop);
+          return r;
+        });
+        return f;
+      });
+    }
+    return result;
+  }
+   filterByFromAirports(
+    flys: FlightJourneyEntity[]
+  ): FlightJourneyEntity[] {
+    let result = flys;
+    if (
+      this.filterCondition&&
+      this.filterCondition.fromAirports &&
+      this.filterCondition.fromAirports.length
+    ) {
+      result = result.map(fly => {
+        fly.FlightRoutes = fly.FlightRoutes.map(r => {
+          r.FlightSegments = r.FlightSegments.filter(s =>
+            this.filterCondition.fromAirports.some(a => a.id === s.FromAirport)
+          );
+          return r;
+        });
+        return fly;
+      });
+    }
+    return result;
+  }
+   filterByToAirports(
+    flys: FlightJourneyEntity[]
+  ): FlightJourneyEntity[] {
+    let result = flys;
+    if (
+      this.filterCondition&&
+      this.filterCondition.toAirports &&
+      this.filterCondition.toAirports.length
+    ) {
+      result = result.map(fly => {
+        fly.FlightRoutes = fly.FlightRoutes.map(r => {
+          r.FlightSegments = r.FlightSegments.filter(s =>
+            this.filterCondition.toAirports.some(a => a.id === s.ToAirport)
+          );
+          return r;
+        });
+        return fly;
+      });
+    }
+    return result;
+  }
+   filterByAirportCompanies(
+    flys: FlightJourneyEntity[]
+  ): FlightJourneyEntity[] {
+    let result = flys;
+    if (
+      this.filterCondition&&
+      this.filterCondition.airCompanies &&
+      this.filterCondition.airCompanies.length > 0
+    ) {
+      result = result.map(fly => {
+        fly.FlightRoutes = fly.FlightRoutes.map(r => {
+          r.FlightSegments = r.FlightSegments.filter(s =>
+            this.filterCondition.airCompanies.some(a => a.id === s.Airline)
+          );
+          return r;
+        });
+        return fly;
+      });
+    }
+    return result;
+  }
+   filterByAirTypes(flys: FlightJourneyEntity[]): FlightJourneyEntity[] {
+    let result = flys;
+    if (
+      this.filterCondition&&
+      this.filterCondition.airTypes &&
+      this.filterCondition.airTypes.length > 0
+    ) {
+      result = result.map(fly => {
+        fly.FlightRoutes = fly.FlightRoutes.map(r => {
+          r.FlightSegments = r.FlightSegments.filter(s =>
+            this.filterCondition.airTypes.some(a => a.id === s.PlaneType)
+          );
+          return r;
+        });
+        return fly;
+      });
+    }
+    return result;
+  }
+   filterByCabins(flys: FlightJourneyEntity[]): FlightJourneyEntity[] {
+    let result = flys;
+    if (this.filterCondition&&this.filterCondition.cabins && this.filterCondition.cabins.length > 0) {
+      result = result.map(fly => {
+        fly.FlightRoutes = fly.FlightRoutes.map(r => {
+          r.FlightSegments = r.FlightSegments.filter(s =>
+            s.Cabins && s.Cabins.some(c => this.filterCondition.cabins.some(
+              a => a.id == c.Type || (c.TypeName && c.TypeName.includes(a.label))
+            ))
+          );
+          return r;
+        });
+        return fly;
+      });
+    }
+    return result;
+  }
+   filterByTakeOffTimeSpan(
+    flys: FlightJourneyEntity[]
+  ): FlightJourneyEntity[] {
+    let result = flys;
+    if (this.filterCondition&&this.filterCondition.takeOffTimeSpan) {
+      // console.log(this.filterCondition.takeOffTimeSpan);
+      result = result.map(fly => {
+        fly.FlightRoutes = fly.FlightRoutes.map(r => {
+          r.FlightSegments = r.FlightSegments.filter(s => {
+            // console.log(moment(s.TakeoffTime).hour());
+            return (
+              this.filterCondition.takeOffTimeSpan.lower <=
+              moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() &&
+              (moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() <
+                this.filterCondition.takeOffTimeSpan.upper ||
+                (moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() ==
+                  this.filterCondition.takeOffTimeSpan.upper &&
+                  moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").minutes() == 0))
+            );
+          });
+          return r;
+        });
+        return fly;
+      });
+    }
+    return result;
   }
 }

@@ -1,5 +1,10 @@
 <ion-header>
   <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-button color='dark' (click)='back()'> 
+        <ion-icon name='arrow-back'></ion-icon>
+      </ion-button>
+    </ion-buttons>
     <ion-title>{{title||"订单查询条件"}}</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -29,11 +34,11 @@
         <ion-select-option [value]="item.value" *ngFor='let item of orderStatus'>{{item.label}}</ion-select-option>
       </ion-select>
     </ion-item>
-    <ion-item >
+    <ion-item>
       <ion-label>出发城市</ion-label>
       <ion-input type='text' placeholder='出发城市' [(ngModel)]='condition.fromCityName'></ion-input>
     </ion-item>
-    <ion-item >
+    <ion-item>
       <ion-label>到达城市</ion-label>
       <ion-input type='text' placeholder='到达城市' [(ngModel)]='condition.toCityName'></ion-input>
     </ion-item>
