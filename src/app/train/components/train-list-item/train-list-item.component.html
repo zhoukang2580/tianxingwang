@@ -17,8 +17,10 @@
     </div>
     <div>
       <div class='price' (click)='train["isShowSeats"]=!train["isShowSeats"]'>￥{{getLowestSeatPrice()}}
-        <ion-icon name="arrow-dropdown" color='secondary' *ngIf='train["isShowSeats"]'></ion-icon>
-        <ion-icon name="arrow-dropup" color='secondary' *ngIf='!train["isShowSeats"]'></ion-icon>
+        <ng-container *ngIf='getSeats()?.length'>
+          <ion-icon name="arrow-dropdown" color='secondary' *ngIf='train["isShowSeats"]'></ion-icon>
+          <ion-icon name="arrow-dropup" color='secondary' *ngIf='!train["isShowSeats"]'></ion-icon>
+        </ng-container>
       </div>
       <ion-button (click)='onScheduls()' fill='clear' size='small' style="margin-left: 1em" color='secondary'>经停
       </ion-button>
