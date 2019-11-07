@@ -40,24 +40,7 @@ export class HomePage implements OnInit {
     this.staff = null;
     this.selectedCompany$ = tmcService.getSelectedCompanySource();
     route.paramMap.subscribe(async p => {
-      if (this.intervalIds && this.intervalIds.length) {
-        this.clearIntervalIds();
-      }
-      if (!this.staff) {
-        this.staff = await this.staffService.getStaff();
-        const intervalId = setInterval(async () => {
-          this.staff = await this.staffService.getStaff();
-          if (!this.staff) {
-            this.apiService.showLoadingView();
-          } else {
-            this.apiService.hideLoadingView();
-            this.clearIntervalIds();
-          }
-        }, 2000);
-        this.intervalIds.push(intervalId);
-      } else {
-        this.clearIntervalIds();
-      }
+      
       this.identity = await this.identityService
         .getIdentityAsync()
         .catch(_ => null);
@@ -112,6 +95,24 @@ export class HomePage implements OnInit {
       //   this.router.navigate([AppHelper.getRoutePath("confirm-information")]);
       //   return false;
       // }
+      if (this.intervalIds && this.intervalIds.length) {
+        this.clearIntervalIds();
+      }
+      if (!this.staff) {
+        this.staff = await this.staffService.getStaff();
+        const intervalId = setInterval(async () => {
+          this.staff = await this.staffService.getStaff();
+          if (!this.staff) {
+            this.apiService.showLoadingView();
+          } else {
+            this.apiService.hideLoadingView();
+            this.clearIntervalIds();
+          }
+        }, 2000);
+        this.intervalIds.push(intervalId);
+      } else {
+        this.clearIntervalIds();
+      }
       const isSelf = await this.staffService.isSelfBookType();
       if (isSelf) {
         return;
