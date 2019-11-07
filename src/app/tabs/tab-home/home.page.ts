@@ -42,10 +42,15 @@ export class HomePage implements OnInit {
       }
       this.intervalId=setInterval(async ()=>{
         const staff = await this.staffService.getStaff();
+        if(!staff){
+          this.apiService.showLoadingView();
+        }else{
+          this.apiService.hideLoadingView();
+        }
         if(staff&&staff.AccountId){
           clearInterval(this.intervalId);
         }
-      },200);
+      },2000);
       this.identity = await this.identityService
         .getIdentityAsync()
         .catch(_ => null);
