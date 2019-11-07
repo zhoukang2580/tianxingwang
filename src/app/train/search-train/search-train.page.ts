@@ -44,7 +44,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
   vmToCity: TrafficlineEntity; // 界面上显示的城市
   fromCity: TrafficlineEntity; // 城市切换后，真实的出发城市
   toCity: TrafficlineEntity; // 切换后，真实的目的城市
-  showReturnTrip: boolean;
+  showReturnTrip = false;
   isDisabled = false;
   selectedPassengers: number;
   selectedBookInfos: number;
@@ -116,7 +116,6 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
       .subscribe(async s => {
         console.log("search-train", s);
         this.searchTrainModel = s;
-        this.showReturnTrip = await this.staffService.isSelfBookType();
         if (this.searchTrainModel) {
           this.searchTrainModel.isExchange = s.isExchange;
           this.isDisabled = s.isLocked;
@@ -132,7 +131,6 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
       });
     this.canAddPassengers = !(await this.staffService.isSelfBookType());
     await this.initTrainCities();
-    this.showReturnTrip = await this.staffService.isSelfBookType();
     this.route.queryParamMap.subscribe(async _ => {
       await this.initTrainDays();
       this.staff = await this.staffService.getStaff();
@@ -145,7 +143,6 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
       this.searchTrainModel.isExchange = searchTrainModel.isExchange
         || !!this.trainService.getBookInfos().find(it => it.bookInfo && it.bookInfo.isExchange);
       this.isCanLeave = this.searchTrainModel.isExchange ? false : true;
-      this.showReturnTrip = await this.isStaffTypeSelf();
       this.selectedPassengers = this.trainService.getBookInfos().length;
       this.selectedBookInfos = this.trainService
         .getBookInfos()
@@ -237,8 +234,8 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     this.trainService.setSearchTrainModel(s);
     this.router.navigate([AppHelper.getRoutePath("train-list")]).then(_ => {
     });
-    const staff=await this.staffService.getStaff();
-    if(staff){
+    const staff = await this.staffService.getStaff();
+    if (staff) {
       await this.storage.set(`last_selected_train_goDate_${staff && staff.AccountId}`, s.Date);
     }
   }

@@ -400,15 +400,17 @@ export class StaffService {
       IsModifyCredentials: true
     });
   }
-  async getStaffCredentials(AccountId: string): Promise<MemberCredential[]> {
+  async getStaffCredentials(AccountId: string,forceFetch=false): Promise<MemberCredential[]> {
     const req = new RequestEntity();
     req.Method = `TmcApiHomeUrl-Staff-Credentials`;
     req.IsShowLoading = true;
     req.Data = {
       AccountId
     };
-    if (this.isStaffCredentialsLoading || this.staffCredentials && this.staffCredentials.length) {
-      return Promise.resolve(this.staffCredentials);
+    if(!forceFetch){
+      if (this.isStaffCredentialsLoading || this.staffCredentials && this.staffCredentials.length) {
+        return Promise.resolve(this.staffCredentials);
+      }
     }
     this.isStaffCredentialsLoading=true;
     this.staffCredentials = await this.apiService
