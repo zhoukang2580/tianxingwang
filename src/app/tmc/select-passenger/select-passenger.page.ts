@@ -243,7 +243,7 @@ export class SelectPassengerPage
     const staff = await this.staffService.getStaff();
     const can =
       !!(identity && identity.Numbers && identity.Numbers.AgentId) ||
-      (staff&&staff).BookType == StaffBookType.All;
+      (staff&&staff.BookType) == StaffBookType.All;
     console.log("can add not whitelist ", can);
     return can;
   }
