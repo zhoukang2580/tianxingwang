@@ -64,6 +64,8 @@ import { HotelPaymentType } from "../models/HotelPaymentType";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { OrderCardEntity } from "src/app/order/models/OrderCardEntity";
 import { ProductItemType } from "src/app/tmc/models/ProductItems";
+import { HotelEntity } from '../models/HotelEntity';
+import { RoomEntity } from '../models/RoomEntity';
 @Component({
   selector: "app-book",
   templateUrl: "./book.page.html",
@@ -649,12 +651,21 @@ export class BookPage implements OnInit, AfterViewInit {
       ) {
         p.CheckinTime = combindInfo.arrivalHotelTime;
         p.RoomPlan = combindInfo.bookInfo.bookInfo.roomPlan;
-        p.RoomPlan.Room = JSON.parse(
-          JSON.stringify(combindInfo.bookInfo.bookInfo.hotelRoom)
-        );
-        p.RoomPlan.Room.Hotel =  JSON.parse(
-          JSON.stringify(combindInfo.bookInfo.bookInfo.hotelEntity)
-        );
+        p.RoomPlan.Room = {
+          ...combindInfo.bookInfo.bookInfo.hotelRoom,
+          Hotel: { Id: combindInfo.bookInfo.bookInfo.hotelEntity.Id }
+        } as RoomEntity;
+        p.RoomPlan.Room.Hotel = {
+          ...combindInfo.bookInfo.bookInfo.hotelEntity,
+          Rooms: null,
+          HotelDayPrices: [],
+          HotelDetails: combindInfo.bookInfo.bookInfo.hotelEntity.HotelDetails.map(it => {
+            const Hotel = new HotelEntity();
+            Hotel.Id = it.Hotel.Id;
+            it.Hotel = Hotel;
+            return it;
+          })
+        } as HotelEntity;
       }
       if (combindInfo.bookInfo) {
         p.Policy = combindInfo.bookInfo.passenger.Policy;
