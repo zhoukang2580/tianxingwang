@@ -19,7 +19,7 @@ export class ProductListPage implements OnInit {
     route.queryParamMap.subscribe(p => {
       this.products = ORDER_TABS;
       this.products = this.products.filter(
-        t => t.value != ProductItemType.more
+        t => t.value != ProductItemType.more && t.value != ProductItemType.insurance
       );
     });
   }
@@ -31,5 +31,5 @@ export class ProductListPage implements OnInit {
       queryParams: { tabId: tab.value }
     });
   }
-  ngOnInit() {}
+  ngOnInit() { }
 }
