@@ -114,7 +114,7 @@ export class FlightService {
   }
   private disposal() {
     this.setSearchFlightModel(new SearchFlightModel());
-    this.removeAllPassengerFlightSegments();
+    this.removeAllBookInfos();
     this.selectedCitySource.next(null);
     this.openCloseSelectCitySources.next(false);
     this.setSelectedCity(null);
@@ -647,7 +647,7 @@ export class FlightService {
     console.timeEnd("dismissAllTopOverlays");
     return true;
   }
-  removeAllPassengerFlightSegments() {
+  removeAllBookInfos() {
     this.passengerBookInfos = [];
     this.setPassengerBookInfos(this.getPassengerBookInfos());
   }

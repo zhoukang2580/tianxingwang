@@ -1,3 +1,4 @@
+import { StaffEntity } from 'src/app/hr/staff.service';
 import { StaffService } from "../../hr/staff.service";
 import { Notice, CmsService } from "./../../cms/cms.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
@@ -25,6 +26,7 @@ export class HomePage implements OnInit {
   companies: any[];
   agentNotices: Notice[];
   canSelectCompany$ = of(false);
+  staff: StaffEntity;
   constructor(
     private identityService: IdentityService,
     private router: Router,
@@ -35,16 +37,17 @@ export class HomePage implements OnInit {
     private staffService: StaffService,
     route: ActivatedRoute
   ) {
+    this.staff = null;
     this.selectedCompany$ = tmcService.getSelectedCompanySource();
     route.paramMap.subscribe(async p => {
       if (this.intervalIds && this.intervalIds.length) {
         this.clearIntervalIds();
       }
-      let staff = await this.staffService.getStaff();
-      if (!staff) {
+      if (!this.staff) {
+        this.staff = await this.staffService.getStaff();
         const intervalId = setInterval(async () => {
-          staff = await this.staffService.getStaff();
-          if (!staff) {
+          this.staff = await this.staffService.getStaff();
+          if (!this.staff) {
             this.apiService.showLoadingView();
           } else {
             this.apiService.hideLoadingView();

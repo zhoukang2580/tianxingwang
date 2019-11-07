@@ -101,6 +101,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     return `1`;
   }
   back() {
+    this.flightService.removeAllBookInfos();
     this.router.navigate([""]);
   }
   private onRoundTrip(single: boolean) {

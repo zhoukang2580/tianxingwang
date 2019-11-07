@@ -527,7 +527,7 @@ export class BookPage implements OnInit, AfterViewInit {
       });
       if (res) {
         if (res.TradeNo) {
-          this.flightService.removeAllPassengerFlightSegments();
+          this.flightService.removeAllBookInfos();
           if (
             !isSave &&
             (await this.staffService.isSelfBookType()) &&
