@@ -16,6 +16,7 @@ import { tap, shareReplay, map } from "rxjs/operators";
   styleUrls: ["home.page.scss"]
 })
 export class HomePage implements OnInit {
+  private intervalId:any;
   identity: IdentityEntity;
   aliPayResult$: Observable<any>;
   wxPayResult$: Observable<any>;
@@ -36,6 +37,15 @@ export class HomePage implements OnInit {
   ) {
     this.selectedCompany$ = tmcService.getSelectedCompanySource();
     route.paramMap.subscribe(async p => {
+      if(this.intervalId){
+        clearInterval(this.intervalId);
+      }
+      this.intervalId=setInterval(async ()=>{
+        const staff = await this.staffService.getStaff();
+        if(staff&&staff.AccountId){
+          clearInterval(this.intervalId);
+        }
+      },200);
       this.identity = await this.identityService
         .getIdentityAsync()
         .catch(_ => null);

@@ -27,7 +27,7 @@
     </div>
   </div>
   <ion-row class='seat-outline' color='medium'>
-    <ion-col size='3' *ngFor='let seat of getSeats()'>
+    <ion-col size='4' *ngFor='let seat of getSeats()'>
       <span>{{seat.SeatTypeName}}</span>
       <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?seat.Count+"张":""}}</span>
       <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"有":"无"}}票</span>
