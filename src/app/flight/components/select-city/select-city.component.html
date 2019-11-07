@@ -123,7 +123,6 @@
     </ng-container>
     <ng-template #n>
       <ion-list>
-        <ion-item></ion-item>
       </ion-list>
       <ion-list *ngIf='textSearchResults?.length else nodatatempl'>
         <ion-item *ngFor='let item of textSearchResults' (click)='onCitySelected(item,true)'>
