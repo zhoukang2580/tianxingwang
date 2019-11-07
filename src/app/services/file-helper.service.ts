@@ -820,12 +820,12 @@ export class FileHelperService {
     if (sVs.length !== lVs.length) {
       return false;
     }
-    const smain = sVs[0];
-    const sMinor = sVs[1];
-    const sPatch = sVs[sVs.length - 1];
-    const lmain = lVs[0];
-    const lMinor = lVs[1];
-    const lPatch = lVs[sVs.length - 1];
+    const smain = +sVs[0];
+    const sMinor = +sVs[1];
+    const sPatch = +sVs[sVs.length - 1];
+    const lmain = +lVs[0];
+    const lMinor = +lVs[1];
+    const lPatch = +lVs[sVs.length - 1];
     return smain == lmain && sMinor == lMinor && sPatch > lPatch && serverVersion !== this.getLocalHcpVersion();
   }
   /**
