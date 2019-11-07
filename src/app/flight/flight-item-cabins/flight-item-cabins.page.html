@@ -30,11 +30,17 @@
 </ion-header>
 <ion-content>
   <ion-toolbar text-center>
-    <ion-label no-margin no-padding>
-      <strong>{{vmFlightSegment?.FromCityName}} 到 {{vmFlightSegment?.ToCityName}}</strong>
-    </ion-label>
     <ion-item lines='none'>
-      <app-fly-list-item [flightSegment]='vmFlightSegment' [showDetails]='true'></app-fly-list-item>
+      <div>
+        <ion-label no-margin no-padding>
+          <strong>
+            <ion-text color='secondary'>{{vmFlightSegment?.FromCityName}}</ion-text>
+            <span style='font-size: 0.9rem;'>到</span>
+            <ion-text color='secondary'>{{vmFlightSegment?.ToCityName}}</ion-text>
+          </strong>
+        </ion-label>
+        <app-fly-list-item [flightSegment]='vmFlightSegment' [showDetails]='true'></app-fly-list-item>
+      </div>
     </ion-item>
   </ion-toolbar>
   <ion-toolbar style='font-size: .6rem;padding:0 1em;'>
@@ -67,7 +73,7 @@
                       *ngIf=' cabin.Cabin?.TypeName?.length > 4 ? cabin.Cabin?.TypeName?.replace("舱", "") : cabin.Cabin?.TypeName as cabinTypeName'></span>
                     {{ cabin.Cabin?.Code }}(cabinTypeName)
                   </ion-text>
-                  <ng-template #aatemp> 
+                  <ng-template #aatemp>
                     <ion-text color='dark'>{{cabin.Cabin?.TypeName}}</ion-text>
                   </ng-template>
                   <ion-text color='dark'>{{cabin.Cabin?.Discount|discount}}</ion-text>
