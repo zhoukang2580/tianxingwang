@@ -326,7 +326,7 @@ export class StaffService {
     this.isStaffLoading=true;
     const id = await this.identityService.getIdentityAsync().catch(_ => null);
     if (!id || !id.Id || !id.Ticket) {
-      this.staff = {} as any;
+      // this.staff = {} as any;
       this.isStaffLoading = false;
       return this.staff;
     }
@@ -340,7 +340,7 @@ export class StaffService {
       (this.staff &&
         (!(this.staff.IsModifyPassword === undefined) &&
           !this.staff.IsModifyPassword));
-    if (this.staff && this.staff.AccountId) {
+    if (this.staff) {
       if (
         !forceRefresh ||
         (this.staff.BookType === undefined && id.Numbers && id.Numbers.AgentId)
