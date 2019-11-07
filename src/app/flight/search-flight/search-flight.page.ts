@@ -51,6 +51,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private router: Router,
     route: ActivatedRoute,
+    private identityService:IdentityService,
     private calendarService: CalendarService,
     private navCtrl: NavController,
     private flightService: FlightService,
@@ -69,9 +70,9 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
       .getPassengerBookInfoSource()
       .pipe(map(infos => infos && infos.length));
     route.queryParamMap.subscribe(async _ => {
-      this.staff = await this.staffService.getStaff();
+      const identity = await this.identityService.getIdentityAsync();
       this.disabled = this.searchFlightModel && this.searchFlightModel.isLocked;
-      const lastSelectedGoDate = await this.storage.get(`last_selected_flight_goDate_${this.staff && this.staff.AccountId}`)
+      const lastSelectedGoDate = await this.storage.get(`last_selected_flight_goDate_${identity&&identity.Id}`)
         || moment().add(1, 'days').format("YYYY-MM-DD");
       const lastSelectedBackDate = moment(lastSelectedGoDate).add(1, 'days').format("YYYY-MM-DD");
       const s = this.flightService.getSearchFlightModel();
@@ -249,9 +250,9 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     // this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(s.Date)]);
     this.flightService.setSearchFlightModel(s);
     this.router.navigate([AppHelper.getRoutePath("flight-list")]);
-    this.staff = await this.staffService.getStaff();
-    if (this.staff) {
-      await this.storage.set(`last_selected_flight_goDate_${this.staff && this.staff.AccountId}`, s.Date);
+    const identity=await this.identityService.getIdentityAsync();
+    if (identity) {
+      await this.storage.set(`last_selected_flight_goDate_${identity.Id}`, s.Date); 
     }
   }
   getDayDesc(d: DayModel) {

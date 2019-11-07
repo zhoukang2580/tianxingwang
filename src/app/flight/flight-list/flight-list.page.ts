@@ -225,17 +225,17 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     ) {
       return;
     }
-    const staff = await this.staffService.getStaff();
+    const identity = await this.identityService.getIdentityAsync();
     const s = this.flightService.getSearchFlightModel();
     if (s.isRoundTrip) {
       if (s.tripType == TripType.departureTrip) {
-        if (staff) {
-          await this.storage.set(`last_selected_flight_goDate_${staff && staff.AccountId}`, day.date);
+        if (identity) {
+          await this.storage.set(`last_selected_flight_goDate_${identity.Id}`, day.date);
         }
       }
     } else {
-      if (staff) {
-        await this.storage.set(`last_selected_flight_goDate_${staff && staff.AccountId}`, day.date);
+      if (identity) {
+        await this.storage.set(`last_selected_flight_goDate_${identity.Id}`, day.date);
       }
     }
     if (!this.filterCondition) {

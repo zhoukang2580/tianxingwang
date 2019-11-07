@@ -166,8 +166,8 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     this.searchConditionSubscription.unsubscribe();
   }
   async initTrainDays() {
-    const staff = await this.staffService.getStaff();
-    const lastSelectedGoDate = await this.storage.get(`last_selected_train_goDate_${staff && staff.AccountId}`) || moment().format("YYYY-MM-DD");
+    const identity = await this.identityService.getIdentityAsync();
+    const lastSelectedGoDate = await this.storage.get(`last_selected_train_goDate_${identity && identity.Id}`) || moment().format("YYYY-MM-DD");
     this.trainService.setSearchTrainModel({
       ...this.trainService.getSearchTrainModel(),
       Date: lastSelectedGoDate
@@ -234,9 +234,9 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     this.trainService.setSearchTrainModel(s);
     this.router.navigate([AppHelper.getRoutePath("train-list")]).then(_ => {
     });
-    const staff = await this.staffService.getStaff();
-    if (staff) {
-      await this.storage.set(`last_selected_train_goDate_${staff && staff.AccountId}`, s.Date);
+    const identity = await this.identityService.getIdentityAsync();
+    if (identity) {
+      await this.storage.set(`last_selected_train_goDate_${identity && identity.Id}`, s.Date);
     }
   }
   getDayDesc(d: DayModel) {

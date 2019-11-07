@@ -607,12 +607,12 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.filterCondition.priceFromL2H = "initial";
     this.filterCondition.timeFromM2N = "initial";
     this.activeTab = "none";
-    const staff = await this.staffService.getStaff();
+    const identity=await this.identityService.getIdentityAsync().catch(_=>null);
     if (this.searchTrainModel) {
       if (this.searchTrainModel.tripType == TripType.departureTrip) {
         this.searchTrainModel.Date = day.date;
-        if(staff){
-          await this.storage.set(`last_selected_train_goDate_${staff && staff.AccountId}`, day.date);
+        if(identity){
+          await this.storage.set(`last_selected_train_goDate_${identity.Id}`, day.date);
         }
       } else {
         this.searchTrainModel.BackDate = day.date;
