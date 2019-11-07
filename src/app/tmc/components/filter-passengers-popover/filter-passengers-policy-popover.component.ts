@@ -16,14 +16,16 @@ export class FilterPassengersPolicyComponent implements OnInit {
   selectedItem: PassengerBookInfo<any>;
   isOnlyMatchPolicy: boolean;
   isShowOnlyMatchSwitch = true;
+  isAllowBookPolicy = true;
   constructor(
     private popoverCtrl: PopoverController,
     private staffService: StaffService
   ) { }
   async onSelect(ok?: string) {
     if (this.selectedItem && this.selectedItem.id) {
-      console.log("selectedItem", this.selectedItem, this.isOnlyMatchPolicy);
+      console.log("selectedItem", this.selectedItem, this.isOnlyMatchPolicy, this.isAllowBookPolicy);
       this.selectedItem.isOnlyFilterMatchedPolicy = !!this.isOnlyMatchPolicy;
+      this.selectedItem.isAllowBookPolicy = !!this.isAllowBookPolicy;
     }
     const isSelf = await this.staffService.isSelfBookType();
     if (!isSelf) {

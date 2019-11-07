@@ -191,6 +191,9 @@ export class FlightService {
         policyCabins = one.FlightPolicies.filter(
           pc => pc.FlightNo == flightSegment.Number
         );
+        if(data.isAllowBookPolicy){
+          policyCabins=policyCabins.filter(it=>!it.Rules||it.Rules.length||it.IsAllowBook);
+        }
         if (data.isOnlyFilterMatchedPolicy) {
           policyCabins = policyCabins.filter(
             it => !it.Rules || it.Rules.length == 0
@@ -209,10 +212,12 @@ export class FlightService {
         this.getPassengerBookInfos().map(it => {
           it.isFilteredPolicy = false;
           it.isOnlyFilterMatchedPolicy = false;
+          it.isAllowBookPolicy = false;
           return it;
         })
       );
     }
+    console.log("filterPassengerPolicyCabins",policyCabins);
     return policyCabins;
   }
   filterPassengerPolicyFlights(
@@ -245,6 +250,16 @@ export class FlightService {
           it.FlightRoutes &&
           it.FlightRoutes.some(fr => {
             if (fr.FlightSegments) {
+              if(bookInfo.isAllowBookPolicy){
+                return fr.FlightSegments.some(
+                  s =>
+                    numbers.includes(s.Number) &&
+                    policies && policies.FlightPolicies &&
+                    policies.FlightPolicies.some(
+                      pc => !pc.Rules || !!pc.Rules.length||pc.IsAllowBook
+                    )
+                );
+              }
               if (bookInfo.isOnlyFilterMatchedPolicy) {
                 return fr.FlightSegments.some(
                   s =>
@@ -267,6 +282,7 @@ export class FlightService {
       this.setPassengerBookInfos(
         this.getPassengerBookInfos().map(it => {
           it.isFilteredPolicy = false;
+          it.isAllowBookPolicy=false;
           it.isOnlyFilterMatchedPolicy = false;
           return it;
         })

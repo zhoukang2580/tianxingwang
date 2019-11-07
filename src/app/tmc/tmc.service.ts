@@ -1133,7 +1133,8 @@ export interface PassengerBookInfo<T> {
   id?: string;
   isReplace?: boolean;
   isOnlyFilterMatchedPolicy?: boolean;
-  isFilteredPolicy?: boolean;
+  isFilteredPolicy?: boolean;// 完全符合差标
+  isAllowBookPolicy?:boolean;// 所有可预订
 }
 export class InitialBookDtoModel {
   ServiceFees: { [clientId: string]: string };
