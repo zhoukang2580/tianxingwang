@@ -55,6 +55,7 @@ export class TrainListItemComponent implements OnInit {
     if (!this.train || !this.train.Seats || !this.train.Seats.length) {
       return [];
     }
+    
     return this.train.Seats.filter(
       seat => +seat.Count > 0 && +seat.SalesPrice > 0
     );

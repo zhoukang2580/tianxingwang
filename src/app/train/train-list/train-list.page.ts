@@ -610,48 +610,19 @@ export class TrainListPage implements OnInit, OnDestroy {
     ) {
       return;
     }
-    // if (this.searchTrainModel.tripType == TripType.returnTrip) {
-    //   const bookInfos = this.trainService.getBookInfos();
-    //   const info = bookInfos.find(
-    //     item =>
-    //       item &&
-    //       item.bookInfo &&
-    //       item.bookInfo.tripType == TripType.departureTrip
-    //   );
-    //   const goTrain = info && info.bookInfo && info.bookInfo.trainEntity;
-    //   if (goTrain) {
-    //     let goDay = moment(goTrain.ArrivalTime);
-    //     goDay = moment(goDay.format("YYYY-MM-DD"));
-    //     const backDate = day;
-    //     if (+moment(backDate.date) < +goDay) {
-    //       await AppHelper.toast(
-    //         LanguageHelper.Flight.getBackDateCannotBeforeGoDateTip(),
-    //         1000,
-    //         "middle"
-    //       );
-    //       return;
-    //     }
-    //   }
-    // } else {
-    //   if (this.searchTrainModel.isRoundTrip) {
-    //     if (+moment(day.date) > +moment(this.searchTrainModel.BackDate)) {
-    //       this.searchTrainModel.BackDate = moment(day.date)
-    //         .add(1, "days")
-    //         .format("YYYY-MM-DD");
-    //     }
-    //   }
-    // }
     if (!this.filterCondition) {
       this.filterCondition = FilterTrainCondition.init();
     }
     this.filterCondition.priceFromL2H = "initial";
     this.filterCondition.timeFromM2N = "initial";
     this.activeTab = "none";
-    this.searchTrainModel.Date = day.date;
     const staff = await this.staffService.getStaff();
     if (this.searchTrainModel) {
       if (this.searchTrainModel.tripType == TripType.departureTrip) {
+        this.searchTrainModel.Date = day.date;
         await this.storage.set(`last_selected_train_goDate_${staff && staff.AccountId}`, day.date);
+      }else{
+        this.searchTrainModel.BackDate = day.date;
       }
     }
     this.trainService.setSearchTrainModel(this.searchTrainModel);

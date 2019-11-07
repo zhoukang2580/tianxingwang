@@ -159,7 +159,11 @@ export class TrainService {
           selfTrainNos.includes(t.TrainNo) &&
           t.Seats &&
           t.Seats.some(s => +s.Count > 0)
-      );
+      ).map(train => {
+        train.isShowSeats = bookInfo.isOnlyFilterMatchedPolicy;
+        return train;
+      });
+
       result = result
         .map(it => {
           if (it.Seats) {

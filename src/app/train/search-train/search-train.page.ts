@@ -185,8 +185,8 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
       "北京";
     this.toCity.Nickname = this.toCity.CityName = this.vmToCity.CityName =
       "上海";
-    this.vmFromCity.Code = this.fromCity.Code = "SHH";
-    this.vmToCity.Code = this.toCity.Code = "BJP";
+    this.vmFromCity.Code = this.fromCity.Code = "BJP";
+    this.vmToCity.Code = this.toCity.Code = "SHH";
     const lastFromCity = await this.storage.get("fromTrainStation");
     const lastToCity = await this.storage.get("toTrainStation");
     if (!lastFromCity || !lastToCity) {
@@ -235,8 +235,8 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     console.log("search-train", s);
     this.isCanLeave = true;
     await this.storage.set(`last_selected_train_goDate_${this.staff && this.staff.AccountId}`, s.Date);
+    this.trainService.setSearchTrainModel(s);
     this.router.navigate([AppHelper.getRoutePath("train-list")]).then(_ => {
-      this.trainService.setSearchTrainModel(s);
     });
   }
   getDayDesc(d: DayModel) {

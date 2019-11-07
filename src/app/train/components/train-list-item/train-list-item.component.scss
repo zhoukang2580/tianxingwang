@@ -32,9 +32,9 @@
     }
   }
 }
-.seat-count {
-  color: var(--ion-color-danger);
-}
+// .seat-count {
+//   color: var(--ion-color-danger);
+// }
 .info {
   font-size: 0.9rem;
   flex: 1;
@@ -43,7 +43,7 @@
   }
 }
 .seat {
-  margin-top: .5em;
+  margin-top: 0.5em;
   justify-content: flex-start;
   flex-flow: row wrap;
   width: 100%;
@@ -53,6 +53,33 @@
     justify-content: flex-start;
     ion-button {
       padding-left: 0.25em;
+    }
+  }
+}
+
+.seat-outline {
+  font-size: 0.7rem;
+}
+.seats {
+  font-size: 0.9rem;
+  ion-row {
+    border: 2px solid gray;
+    border-radius: 4px;
+    margin: 0.5em 0;
+    &[color='primary']{
+     border-color: var(--ion-color-primary); 
+    }
+    &[color='danger']{
+     border-color: var(--ion-color-danger); 
+    }
+    &[color='secondary']{
+     border-color: var(--ion-color-secondary); 
+    }
+    &[color='success']{
+     border-color: var(--ion-color-success); 
+    }
+    &[color='warning']{
+     border-color: var(--ion-color-warning); 
     }
   }
 }
