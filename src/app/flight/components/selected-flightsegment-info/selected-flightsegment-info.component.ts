@@ -229,50 +229,6 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
   }
 
   async onSelectReturnTrip() {
-    console.log("onSelectReturnTrip");
-    await this.flightService.dismissAllTopOverlays();
-    const s = this.flightService.getSearchFlightModel();
-    const airports = await this.flightService.getAllLocalAirports();
-    const bookInfos = this.flightService.getPassengerBookInfos();
-    if (bookInfos.length < 2) {
-      await this.flightService.addOneBookInfoToSelfBookType();
-    }
-    s.tripType = TripType.returnTrip;
-    const goflightBookInfo = bookInfos.find(
-      item => item.bookInfo && item.bookInfo.tripType == TripType.departureTrip
-    );
-    if (
-      !goflightBookInfo ||
-      !goflightBookInfo.bookInfo ||
-      !goflightBookInfo.bookInfo.flightSegment
-    ) {
-      AppHelper.alert(LanguageHelper.Flight.getPlsSelectGoFlightTip());
-      return;
-    }
-    const goflight = goflightBookInfo.bookInfo.flightSegment;
-    const fromCity = airports.find(c => c.Code == goflight.FromAirport);
-    const toCity = airports.find(c => c.Code == goflight.ToAirport);
-    const goDay = moment(goflight.ArrivalTime);
-    let backDay = moment(s.BackDate);
-    if (+backDay < +moment(goDay.format("YYYY-MM-DD"))) {
-      backDay = goDay;
-    }
-    s.BackDate = backDay.format("YYYY-MM-DD");
-    this.router.navigate([AppHelper.getRoutePath("flight-list")]).then(_ => {
-      this.flightService.setSearchFlightModel({
-        ...s,
-        FromCode: goflight.ToAirport,
-        ToCode: goflight.FromAirport,
-        ToAsAirport:false&& s.FromAsAirport,
-        FromAsAirport:false&& s.ToAsAirport,
-        fromCity: toCity,
-        toCity: fromCity,
-        Date: s.BackDate,
-        tripType: TripType.returnTrip,
-        isRefreshData: true,
-        isLocked: true
-      });
-    });
-    this.flightService.dismissAllTopOverlays();
+    await this.flightService.onSelectReturnTrip();
   }
 }

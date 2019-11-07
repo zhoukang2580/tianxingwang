@@ -185,11 +185,13 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           };
         })
       );
-    this.route.queryParamMap.subscribe(async () => {
+    this.route.queryParamMap.subscribe(async (d) => {
       this.showAddPassenger = await this.canShowAddPassenger();
       this.flightService.setFilterPanelShow(false);
-      await this.initSearchModelParams();
-      console.log("this.route.queryParamMap", this.searchFlightModel);
+      console.log("this.route.queryParamMap", this.searchFlightModel,d);
+      if (d && d.get("doRefresh")) {
+        this.doRefresh(true, false);
+      }
     });
     this.showAdvSearchPage$ = this.flightService.getFilterPanelShow();
   }
@@ -546,60 +548,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     await modal.onDidDismiss();
     return "ok";
   }
-  // private replaceCabinInfo(
-  //   passengerPolicyflights: {
-  //     PassengerKey: string;
-  //     FlightPolicies: FlightPolicy[];
-  //   }[],
-  //   flights: FlightJourneyEntity[]
-  // ) {
-  //   console.time("replaceCabinInfo");
-  //   if (passengerPolicyflights && flights) {
-  //     const passengerKeyFlightNoCabins = passengerPolicyflights.map(pf => {
-  //       return {
-  //         PassengerKey: pf.PassengerKey,
-  //         FlightPolicy: pf.FlightPolicies.reduce(
-  //           (obj, item) => {
-  //             if (!obj[item.FlightNo]) {
-  //               obj[item.FlightNo] = [item];
-  //             } else {
-  //               obj[item.FlightNo].push(item);
-  //             }
-  //             return obj;
-  //           },
-  //           {} as { [FlightNo: string]: FlightPolicy[] }
-  //         )
-  //       };
-  //     });
-  //     debugger;
-  //     flights.forEach(f => {
-  //       f.FlightRoutes.forEach(r => {
-  //         r.FlightSegments.forEach(flightSegment => {
-  //           passengerKeyFlightNoCabins.forEach(item => {
-  //             flightSegment.PassengerKeys = flightSegment.PassengerKeys || [];
-  //             if (!flightSegment.PassengerKeys.find(k => k == item.PassengerKey)) {
-  //               flightSegment.PassengerKeys.push(item.PassengerKey);
-  //             }
-  //             if (item.FlightPolicy[flightSegment.Number]) {
-  //               flightSegment.PoliciedCabins = item.FlightPolicy[flightSegment.Number];
-  //               flightSegment.PoliciedCabins.forEach(pc => {
-  //                 const sc = flightSegment.Cabins.find(
-  //                   scabin => scabin.Id == (pc.Cabin && pc.Cabin.Id) && pc.FlightNo == flightSegment.Number
-  //                 );
-  //                 console.log(`flightSegment.Cabins`,flightSegment.Cabins,'sc', sc, 'pccabin', pc);
-  //                 if (sc) {
-  //                   pc.Cabin = sc;
-  //                 }
-  //               });
-  //             }
-  //           });
-  //         });
-  //       });
-  //     });
-  //     console.timeEnd("replaceCabinInfo");
-  //   }
-  //   return flights;
-  // }
+
   async selectFilterPolicyPasseger() {
     const popover = await this.popoverController.create({
       component: FilterPassengersPolicyComponent,
@@ -632,20 +581,13 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.isLoading = false;
   }
   private async initSearchModelParams() {
-    this.searchFlightModel = this.flightService.getSearchFlightModel();
-    this.isSelfBookType = await this.staffService.isSelfBookType();
-    if (this.searchFlightModel) {
-      // this.isRoundTrip = this.searchFlightModel.IsRoundTrip;
-      this.vmFromCity = this.searchFlightModel.fromCity;
-      this.vmToCity = this.searchFlightModel.toCity;
-      if (this.searchFlightModel.isRefreshData) {
-        this.flightService.setSearchFlightModel({
-          ...this.searchFlightModel,
-          isRefreshData: false
-        });
-        this.doRefresh(true, false);
+    this.searchConditionSubscription = this.flightService.getSearchFlightModelSource().subscribe(m => {
+      this.searchFlightModel = m;
+      if (this.searchFlightModel) {
+        this.vmFromCity = this.searchFlightModel.fromCity;
+        this.vmToCity = this.searchFlightModel.toCity;
       }
-    }
+    });
   }
   async ngOnInit() {
     this.filteredPolicyPassenger$ = this.flightService
@@ -662,26 +604,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           this.doRefresh(false, true);
         }
       });
-    // this.selectDaySubscription = this.flyDayService
-    //   .getSelectedDays()
-    //   .subscribe(days => {
-    //     if (days.length) {
-    //       const go = days[0];
-    //       const back = days[1]
-    //       if (this.searchFlightModel.isRoundTrip) {
-    //         if (this.searchFlightModel.tripType == TripType.departureTrip) {
-    //           this.searchFlightModel.Date = go.date;
-    //         } else if (this.searchFlightModel.tripType == TripType.returnTrip) {
-    //           this.searchFlightModel.BackDate = go.date;
-    //         }
-    //       }
-    //       this.flightService.setSearchFlightModel({
-    //         ...this.searchFlightModel,
-    //         Date: go.date
-    //       })
-    //     }
-    //   });
-    await this.initSearchModelParams();
+    this.initSearchModelParams();
     this.doRefresh(true, true);
   }
   private notCurrentPage() {

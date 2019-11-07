@@ -52,7 +52,7 @@ export class SearchFlightModel {
   toCity: TrafficlineEntity;
   tripType: TripType;
   isLocked?: boolean;
-  isRefreshData?: boolean;
+  // isRefreshData?: boolean;
 }
 @Injectable({
   providedIn: "root"
@@ -404,43 +404,54 @@ export class FlightService {
   private async reselectSelfBookTypeSegment(
     arg: PassengerBookInfo<IFlightSegmentInfo>
   ) {
+    if(!await this.staffService.isSelfBookType()){
+      return;
+    }
     const s = this.getSearchFlightModel();
     if (arg.bookInfo.tripType == TripType.returnTrip) {
       // 重选回程
-      const exists = this.getPassengerBookInfos();
-      const citites = await this.getAllLocalAirports();
-      const goInfo = exists.find(
-        item =>
-          item.bookInfo && item.bookInfo.tripType == TripType.departureTrip
-      );
-      const goFlight = goInfo && goInfo.bookInfo.flightSegment;
-      if (goFlight) {
-        const fromCode = goFlight.FromAirport;
-        const toCode = goFlight.ToAirport;
-        const toCity = citites.find(c => c.Code == toCode);
-        const fromCity = citites.find(c => c.Code == fromCode);
-        const arrivalDate = moment(goFlight.ArrivalTime).format("YYYY-MM-DD");
-        if (+moment(s.BackDate) < +moment(arrivalDate)) {
-          s.BackDate = arrivalDate;
-        }
-        s.FromCode = toCode;
-        s.fromCity = toCity;
-        s.Date = s.BackDate;
-        s.toCity = fromCity;
-        s.ToCode = fromCode;
-        s.tripType = TripType.returnTrip;
-        s.isLocked = true;
-      }
-      const arr = this.getPassengerBookInfos().map(item => {
-        item.isReplace = item.id == arg.id;
-        return item;
-      });
-      this.passengerBookInfos = arr;
+      this.setPassengerBookInfos(this.getPassengerBookInfos().map(info=>{
+        info.bookInfo=info.id==arg.id?null:info.bookInfo;
+        return info;
+      }))
+      await this.onSelectReturnTrip();
+      // const exists = this.getPassengerBookInfos();
+      // const citites = await this.getAllLocalAirports();
+      // const goInfo = exists.find(
+      //   item =>
+      //     item.bookInfo && item.bookInfo.tripType == TripType.departureTrip
+      // );
+      // const goFlight = goInfo && goInfo.bookInfo.flightSegment;
+      // if (goFlight) {
+      //   const fromCode = goFlight.FromAirport;
+      //   const toCode = goFlight.ToAirport;
+      //   const toCity = citites.find(c => c.Code == toCode);
+      //   const fromCity = citites.find(c => c.Code == fromCode);
+      //   const arrivalDate = moment(goFlight.ArrivalTime).format("YYYY-MM-DD");
+      //   if (+moment(s.BackDate) < +moment(arrivalDate)) {
+      //     s.BackDate = arrivalDate;
+      //   }
+      //   s.FromCode = toCode;
+      //   s.fromCity = toCity;
+      //   s.Date = s.BackDate;
+      //   s.toCity = fromCity;
+      //   s.ToCode = fromCode;
+      //   s.tripType = TripType.returnTrip;
+      //   s.isLocked = true;
+      // }
+      // const arr = this.getPassengerBookInfos().map(item => {
+      //   item.isReplace = item.id == arg.id;
+      //   return item;
+      // });
+      // this.passengerBookInfos = arr;
     } else {
       // 重选去程
       s.tripType = TripType.departureTrip;
       s.isLocked = false;
       let arr = this.getPassengerBookInfos().map(item => {
+        if(item.bookInfo&&item.bookInfo.tripType==TripType.departureTrip){
+          s.Date=item.bookInfo.flightSegment&&item.bookInfo.flightSegment.TakeoffTime&&item.bookInfo.flightSegment.TakeoffTime.substr(0,"2019-10-11".length);
+        }
         item.bookInfo = null;
         return item;
       });
@@ -461,13 +472,10 @@ export class FlightService {
     this.apiService.showLoadingView();
     await this.dismissAllTopOverlays();
     this.apiService.hideLoadingView();
-    if (s.tripType == TripType.returnTrip) {
-      this.setSearchFlightModel(s);
-      this.router.navigate([AppHelper.getRoutePath("flight-list")]);
-    } else {
-      this.setSearchFlightModel(s);
-      this.router.navigate([AppHelper.getRoutePath("search-flight")]);
-    }
+    this.setSearchFlightModel(s);
+    this.router.navigate([AppHelper.getRoutePath("flight-list")],{queryParams:{
+      doRefresh:true
+    }});
   }
   private async reselectNotSelfBookTypeSegments(
     arg: PassengerBookInfo<IFlightSegmentInfo>
@@ -662,6 +670,59 @@ export class FlightService {
   removeAllBookInfos() {
     this.passengerBookInfos = [];
     this.setPassengerBookInfos(this.getPassengerBookInfos());
+    this.setSearchFlightModel({
+      ...this.getSearchFlightModel(),
+      tripType: TripType.departureTrip,
+      isLocked:false,
+    });
+  }
+  async onSelectReturnTrip() {
+    console.log("onSelectReturnTrip");
+    await this.dismissAllTopOverlays();
+    const s = this.getSearchFlightModel();
+    const airports = await this.getAllLocalAirports();
+    const bookInfos = this.getPassengerBookInfos();
+    if (bookInfos.length < 2) {
+      await this.addOneBookInfoToSelfBookType();
+    }
+    s.tripType = TripType.returnTrip;
+    const goflightBookInfo = bookInfos.find(
+      item => item.bookInfo && item.bookInfo.tripType == TripType.departureTrip
+    );
+    if (
+      !goflightBookInfo ||
+      !goflightBookInfo.bookInfo ||
+      !goflightBookInfo.bookInfo.flightSegment
+    ) {
+      AppHelper.alert(LanguageHelper.Flight.getPlsSelectGoFlightTip());
+      return;
+    }
+    const goflight = goflightBookInfo.bookInfo.flightSegment;
+    const fromCity = airports.find(c => c.Code == goflight.FromAirport);
+    const toCity = airports.find(c => c.Code == goflight.ToAirport);
+    const goDay = moment(goflight.ArrivalTime);
+    let backDay = moment(s.BackDate);
+    if (+backDay < +moment(goDay.format("YYYY-MM-DD"))) {
+      backDay = goDay;
+    }
+    s.BackDate = backDay.format("YYYY-MM-DD");
+    this.router.navigate([AppHelper.getRoutePath("flight-list")],{queryParams:{
+      doRefresh:true
+    }}).then(_ => {
+      this.setSearchFlightModel({
+        ...s,
+        FromCode: goflight.ToAirport,
+        ToCode: goflight.FromAirport,
+        ToAsAirport:false&& s.FromAsAirport,
+        FromAsAirport:false&& s.ToAsAirport,
+        fromCity: toCity,
+        toCity: fromCity,
+        Date: s.BackDate,
+        tripType: TripType.returnTrip,
+        isLocked: true
+      });
+    });
+    this.dismissAllTopOverlays();
   }
   async addOneBookInfoToSelfBookType() {
     console.log("addOneBookInfoToSelfBookType");
