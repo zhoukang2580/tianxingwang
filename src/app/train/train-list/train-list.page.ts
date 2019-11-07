@@ -338,6 +338,9 @@ export class TrainListPage implements OnInit, OnDestroy {
     const d = await popover.onDidDismiss();
     // this.doRefresh(false, false, d.data);
     this.isLoading = true;
+    if (!d.data) {
+      return;
+    }
     let data = this.filterPassengerPolicyTrains(d.data);
     data = this.filterTrains(data);
     this.vmTrains = data;
@@ -621,7 +624,7 @@ export class TrainListPage implements OnInit, OnDestroy {
       if (this.searchTrainModel.tripType == TripType.departureTrip) {
         this.searchTrainModel.Date = day.date;
         await this.storage.set(`last_selected_train_goDate_${staff && staff.AccountId}`, day.date);
-      }else{
+      } else {
         this.searchTrainModel.BackDate = day.date;
       }
     }

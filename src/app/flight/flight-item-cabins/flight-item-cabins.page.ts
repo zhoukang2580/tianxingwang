@@ -40,7 +40,7 @@ import { IdentityEntity } from 'src/app/services/identity/identity.entity';
 })
 export class FlightItemCabinsPage implements OnInit {
   vmFlightSegment: FlightSegmentEntity;
-  FlightFareType=FlightFareType;
+  FlightFareType = FlightFareType;
   currentViewtFlightSegment: CurrentViewtFlightSegment;
   vmCabins: FlightCabinEntity[] = [];
   vmPolicyCabins: FlightPolicy[] = [];
@@ -48,7 +48,7 @@ export class FlightItemCabinsPage implements OnInit {
   staff: StaffEntity;
   loading = true;
   showOpenBtn$ = of(0);
-  identity:IdentityEntity;
+  identity: IdentityEntity;
   filteredPolicyPassenger$: Observable<PassengerBookInfo<IFlightSegmentInfo>>;
   constructor(
     private flightService: FlightService,
@@ -66,8 +66,8 @@ export class FlightItemCabinsPage implements OnInit {
       this.currentViewtFlightSegment = flightService.getCurrentViewtFlightSegment();
       console.log("flight-item-cabins", this.currentViewtFlightSegment);
       this.vmFlightSegment = this.currentViewtFlightSegment.flightSegment;
-      const identity = await this.identityService.getIdentityAsync().catch(_=>null)
-      this.identity=identity;
+      const identity = await this.identityService.getIdentityAsync().catch(_ => null)
+      this.identity = identity;
       this.staff = await this.staffService.getStaff();
       if (
         this.staff &&
@@ -108,7 +108,7 @@ export class FlightItemCabinsPage implements OnInit {
     const d = await popover.onDidDismiss();
     const data = d && (d.data as PassengerBookInfo<IFlightSegmentInfo>);
     this.vmPolicyCabins = this.flightService.filterPassengerPolicyCabins(
-        { data, flightSegment: this.vmFlightSegment }    );
+      { data, flightSegment: this.vmFlightSegment });
     if (
       (data && data.passenger && data.passenger.AccountId) ||
       (await this.staffService.isSelfBookType())
@@ -116,9 +116,10 @@ export class FlightItemCabinsPage implements OnInit {
       this.isShowPolicyCabins = true;
       this.showPolicyCabins();
     } else {
-      this.isShowPolicyCabins = false;
-
-      this.showFlightCabins();
+      if (data && data.passenger && data.passenger.AccountId) {
+        this.isShowPolicyCabins = false;
+        this.showFlightCabins();
+      }
     }
   }
   async showSelectedInfos() {
@@ -226,14 +227,14 @@ export class FlightItemCabinsPage implements OnInit {
   // }
   private async showPolicyCabins() {
     const isfiltered = this.flightService
-    .getPassengerBookInfos()
-    .find(it => it.isFilteredPolicy);
+      .getPassengerBookInfos()
+      .find(it => it.isFilteredPolicy);
     const bookInfo =
-    isfiltered ||
-    ((await this.staffService.isSelfBookType()) &&
-      this.flightService.getPassengerBookInfos()[0]);
-    this.vmPolicyCabins=this.flightService.filterPassengerPolicyCabins({ data: bookInfo, flightSegment: this.currentViewtFlightSegment.flightSegment });
-    console.log("showPolicyCabins ",this.vmPolicyCabins);
+      isfiltered ||
+      ((await this.staffService.isSelfBookType()) &&
+        this.flightService.getPassengerBookInfos()[0]);
+    this.vmPolicyCabins = this.flightService.filterPassengerPolicyCabins({ data: bookInfo, flightSegment: this.currentViewtFlightSegment.flightSegment });
+    console.log("showPolicyCabins ", this.vmPolicyCabins);
     this.loading = false;
   }
   private showFlightCabins() {

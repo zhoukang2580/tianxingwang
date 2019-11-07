@@ -607,7 +607,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     await popover.present();
     const d = await popover.onDidDismiss();
     const data = d.data as PassengerBookInfo<IFlightSegmentInfo>;
-    this.filterPassengerPolicyFlights(data);
+    if(data){
+      this.filterPassengerPolicyFlights(data);
+    }
   }
   private async filterPassengerPolicyFlights(
     bookInfo: PassengerBookInfo<IFlightSegmentInfo>
