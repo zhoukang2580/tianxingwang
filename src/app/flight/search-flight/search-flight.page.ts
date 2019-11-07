@@ -1,3 +1,4 @@
+import { CanComponentDeactivate } from 'src/app/guards/candeactivate.guard';
 import { LanguageHelper } from 'src/app/languageHelper';
 import { TmcService, FlightHotelTrainType } from "src/app/tmc/tmc.service";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
@@ -27,11 +28,10 @@ import { SelectedFlightsegmentInfoComponent } from "../components/selected-fligh
   templateUrl: "./search-flight.page.html",
   styleUrls: ["./search-flight.page.scss"]
 })
-export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
+export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate {
   toggleCities = false; // 没有切换城市顺序
   rotateIcon = false;
   isSingle = true;
-  isSelectFlyDate: boolean;
   goDate: DayModel;
   backDate: DayModel;
   searchConditionSubscription = Subscription.EMPTY;
@@ -48,10 +48,11 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
   staff: StaffEntity;
   isShowBookInfos$ = of(0);
   canAddPassengers$ = of(false);
+  isCanleave = true;
   constructor(
     private router: Router,
     route: ActivatedRoute,
-    private identityService:IdentityService,
+    private identityService: IdentityService,
     private calendarService: CalendarService,
     private navCtrl: NavController,
     private flightService: FlightService,
@@ -70,9 +71,10 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
       .getPassengerBookInfoSource()
       .pipe(map(infos => infos && infos.length));
     route.queryParamMap.subscribe(async _ => {
+      this.isCanleave = false;
       const identity = await this.identityService.getIdentityAsync();
       this.disabled = this.searchFlightModel && this.searchFlightModel.isLocked;
-      const lastSelectedGoDate = await this.storage.get(`last_selected_flight_goDate_${identity&&identity.Id}`)
+      const lastSelectedGoDate = await this.storage.get(`last_selected_flight_goDate_${identity && identity.Id}`)
         || moment().add(1, 'days').format("YYYY-MM-DD");
       const lastSelectedBackDate = moment(lastSelectedGoDate).add(1, 'days').format("YYYY-MM-DD");
       const s = this.flightService.getSearchFlightModel();
@@ -91,6 +93,16 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
       this.backDate = this.goDate.timeStamp > this.backDate.timeStamp ?
         this.calendarService.generateDayModel(moment(this.goDate.date).add(1, 'days')) : this.backDate;
     }
+  }
+  async canDeactivate() {
+    if (this.isCanleave) {
+      return true;
+    }
+    const bookInfos = this.flightService.getPassengerBookInfos();
+    if (bookInfos.length) {
+      return AppHelper.alert("是否放弃所选航班信息？", true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+    }
+    return true;
   }
   private calcTotalFlyDays() {
     if (this.backDate && this.goDate) {
@@ -154,6 +166,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     this.apiService.hideLoadingView();
   }
   onSelectPassenger() {
+    this.isCanleave = true;
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], { queryParams: { forType: FlightHotelTrainType.Flight } });
   }
 
@@ -194,6 +207,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   async searchFlight() {
+    this.isCanleave=true;
     console.log(
       `出发城市" + 【${this.fromCity && this.fromCity.CityName}】`,
       `目的城市【${this.toCity && this.toCity.CityName}】`
@@ -250,29 +264,26 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit {
     // this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(s.Date)]);
     this.flightService.setSearchFlightModel(s);
     this.router.navigate([AppHelper.getRoutePath("flight-list")]);
-    const identity=await this.identityService.getIdentityAsync();
+    const identity = await this.identityService.getIdentityAsync();
     if (identity) {
-      await this.storage.set(`last_selected_flight_goDate_${identity.Id}`, s.Date); 
+      await this.storage.set(`last_selected_flight_goDate_${identity.Id}`, s.Date);
     }
   }
   getDayDesc(d: DayModel) {
     return this.calendarService.getDescOfDay(d);
   }
   async onSelecFlyDate(flyTo: boolean, backDate: boolean) {
-    if (this.disabled && !backDate) {
+    if (this.disabled) {
       return;
     }
-    this.isSelectFlyDate = flyTo;
-    const dates = await this.flightService.openCalendar(!this.isSingle && !this.disabled);
+    const dates = await this.flightService.openCalendar(false, flyTo ? TripType.departureTrip : backDate ? TripType.returnTrip : null);
     if (dates && dates.length) {
-      if (dates.length > 1) {
-        this.searchFlightModel.Date = dates[0].date;
-        this.searchFlightModel.BackDate = dates[1].date;
-      } else {
-        if (this.searchFlightModel.isRoundTrip && this.searchFlightModel.tripType == TripType.returnTrip) {
-          this.searchFlightModel.BackDate = dates[0].date;
-        } else {
+      if (dates.length && this.searchFlightModel) {
+        if (flyTo) {
           this.searchFlightModel.Date = dates[0].date;
+        }
+        if (backDate) {
+          this.searchFlightModel.BackDate = dates[1].date;
         }
       }
     }

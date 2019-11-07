@@ -611,19 +611,21 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     await popover.present();
     const d = await popover.onDidDismiss();
     const data = d.data as PassengerBookInfo<IFlightSegmentInfo>;
-    if (data) {
-      this.filterPassengerPolicyFlights(data);
-    }
+    this.filterPassengerPolicyFlights(data);
   }
   private async filterPassengerPolicyFlights(
     bookInfo: PassengerBookInfo<IFlightSegmentInfo>
   ) {
     this.st = Date.now();
-    this.vmFlights = this.flightService.filterPassengerPolicyFlights(
+    const flights = this.flightService.filterPassengerPolicyFlights(
       bookInfo,
       this.flightJourneyList,
       this.policyflights
     );
+    if (!bookInfo) {
+      return;
+    }
+    this.vmFlights = flights;
     await this.renderFlightList(this.vmFlights);
     this.hasDataSource.next(!!this.vmFlights.length && !this.isLoading);
     this.apiService.hideLoadingView();

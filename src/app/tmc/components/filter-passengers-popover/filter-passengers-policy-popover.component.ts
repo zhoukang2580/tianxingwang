@@ -28,7 +28,7 @@ export class FilterPassengersPolicyComponent implements OnInit {
     const isSelf = await this.staffService.isSelfBookType();
     if (!isSelf) {
       if (!this.selectedItem && this.bookInfos && this.bookInfos.length > 1) {
-        AppHelper.alert("请选择一个人员过滤差标");
+        AppHelper.alert("请勾选需过滤差标的账号");
         return;
       }
     }

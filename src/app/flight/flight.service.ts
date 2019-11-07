@@ -357,7 +357,7 @@ export class FlightService {
     console.log("addPassengerFlightSegments added", arg);
     this.setPassengerBookInfos(infos);
   }
-  async openCalendar(isMulti: boolean) {
+  async openCalendar(isMulti: boolean,tripType?:TripType) {
     const goFlight = this.getPassengerBookInfos().find(
       f => f.bookInfo && f.bookInfo.tripType == TripType.departureTrip
     );
@@ -379,7 +379,7 @@ export class FlightService {
           goFlight.bookInfo && 
           goFlight.bookInfo.flightSegment &&
           goFlight.bookInfo.flightSegment.ArrivalTime,
-        tripType: s.tripType||TripType.departureTrip,
+        tripType: tripType||s.tripType||TripType.departureTrip,
         forType: FlightHotelTrainType.Flight,
         isMulti: isMulti
       }

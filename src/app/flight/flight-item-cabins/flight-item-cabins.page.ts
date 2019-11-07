@@ -107,16 +107,19 @@ export class FlightItemCabinsPage implements OnInit {
     await popover.present();
     const d = await popover.onDidDismiss();
     const data = d && (d.data as PassengerBookInfo<IFlightSegmentInfo>);
+    if (!data) {
+      return;
+    }
     this.vmPolicyCabins = this.flightService.filterPassengerPolicyCabins(
       { data, flightSegment: this.vmFlightSegment });
     if (
-      (data && data.passenger && data.passenger.AccountId) ||
+      (data.passenger && data.passenger.AccountId) ||
       (await this.staffService.isSelfBookType())
     ) {
       this.isShowPolicyCabins = true;
       this.showPolicyCabins();
     } else {
-      if (data && data.passenger && data.passenger.AccountId) {
+      if (data.passenger && data.passenger.AccountId) {
         this.isShowPolicyCabins = false;
         this.showFlightCabins();
       }

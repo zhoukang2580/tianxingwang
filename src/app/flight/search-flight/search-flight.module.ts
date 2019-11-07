@@ -1,3 +1,4 @@
+import { CandeactivateGuard } from './../../guards/candeactivate.guard';
 import { SearchFlightPage } from "./../search-flight/search-flight.page";
 import { AgentGuard } from "../../guards/agent.guard";
 import { NgModule } from "@angular/core";
@@ -18,7 +19,8 @@ const routes: Routes = [
   {
     path: "",
     component: SearchFlightPage,
-    canActivate: [TmcGuard,ConfirmCredentialInfoGuard]
+    canActivate: [TmcGuard,ConfirmCredentialInfoGuard],
+    canDeactivate:[CandeactivateGuard]
   }
 ];
 
