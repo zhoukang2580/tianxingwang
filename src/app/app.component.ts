@@ -246,7 +246,7 @@ export class AppComponent
       // this.router.navigate([AppHelper.getRoutePath('/tabs/my/my-credential-management-add')]);
       // this.router.navigate([AppHelper.getRoutePath('search-flight')]);
       // this.router.navigate([AppHelper.getRoutePath("select-customer")]);
-      this.router.navigate([AppHelper.getRoutePath("search-train")]);
+      // this.router.navigate([AppHelper.getRoutePath("search-train")]);
       // this.router.navigate([AppHelper.getRoutePath("flight-book")]);
       // this.router.navigate([AppHelper.getRoutePath("train-book")]);
       // this.router.navigate([AppHelper.getRoutePath("search-hotel")]);
@@ -254,6 +254,7 @@ export class AppComponent
       // this.router.navigate([AppHelper.getRoutePath("hotel-book")]);
       // this.router.navigate([AppHelper.getRoutePath("product-tabs")], { queryParams: { tabId: 3 } });
       // this.router.navigate([AppHelper.getRoutePath("tabs/trip")]);
+      this.router.navigate([AppHelper.getRoutePath("tabs/home")]);
       // this.router.navigate([AppHelper.getRoutePath("order-detail")], { queryParams: { tabId: 1, orderId:  } });
     });
   }

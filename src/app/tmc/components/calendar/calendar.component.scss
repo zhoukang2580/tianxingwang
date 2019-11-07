@@ -24,12 +24,12 @@ ion-grid {
       z-index: -1;
       font-family: serif;
     }
-    ion-row:first-child {
-      position: sticky;
-      top: 0;
-      background: white;
-      z-index: 100;
-    }
+    // ion-row:first-child {
+    //   position: sticky;
+    //   top: 0;
+    //   background: white;
+    //   z-index: 100;
+    // }
   }
   ion-row ion-col {
     display: flex;
