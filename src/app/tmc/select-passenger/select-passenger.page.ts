@@ -157,16 +157,16 @@ export class SelectPassengerPage
     this.removeitemSubscription = this.removeitem.subscribe(async info => {
       const ok = await AppHelper.alert(LanguageHelper.getConfirmDeleteTip(),true,LanguageHelper.getConfirmTip(),LanguageHelper.getCancelTip());
       if (info&&ok) {
-        switch (this.forType) {
-          case FlightHotelTrainType.Flight: {
+        switch (+this.forType) {
+          case +FlightHotelTrainType.Flight: {
             this.flightService.removePassengerBookInfo(info);
             break;
           }
-          case FlightHotelTrainType.Train: {
+          case +FlightHotelTrainType.Train: {
             this.trainService.removeBookInfo(info);
             break;
           }
-          case FlightHotelTrainType.Hotel: {
+          case +FlightHotelTrainType.Hotel: {
             this.hotelService.removeBookInfo(info);
             break;
           }

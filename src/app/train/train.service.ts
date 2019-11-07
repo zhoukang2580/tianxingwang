@@ -622,7 +622,7 @@ export class TrainService {
   removeBookInfo(info: PassengerBookInfo<ITrainInfo>) {
     if (info) {
       const delInfo = { ...info };
-      // this.bookInfos = this.bookInfos.filter(item => item.id != info.id);
+      this.bookInfos = this.bookInfos.filter(item => item.id != info.id);
       const s = this.getSearchTrainModel();
       let bookInfos = this.bookInfos.map(it => {
         if (it.id == info.id) {
