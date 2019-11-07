@@ -240,9 +240,10 @@ export class SelectPassengerPage
       return false;
     }
     const identity = await this.identityService.getIdentityAsync();
+    const staff = await this.staffService.getStaff();
     const can =
       !!(identity && identity.Numbers && identity.Numbers.AgentId) ||
-      (await this.staffService.getStaff()).BookType == StaffBookType.All;
+      (staff&&staff).BookType == StaffBookType.All;
     console.log("can add not whitelist ", can);
     return can;
   }
