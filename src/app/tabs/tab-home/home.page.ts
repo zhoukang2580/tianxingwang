@@ -16,7 +16,7 @@ import { tap, shareReplay, map } from "rxjs/operators";
   styleUrls: ["home.page.scss"]
 })
 export class HomePage implements OnInit {
-  private intervalId: any;
+  private intervalIds: any[] = [];
   identity: IdentityEntity;
   aliPayResult$: Observable<any>;
   wxPayResult$: Observable<any>;
@@ -37,22 +37,23 @@ export class HomePage implements OnInit {
   ) {
     this.selectedCompany$ = tmcService.getSelectedCompanySource();
     route.paramMap.subscribe(async p => {
-      if (this.intervalId) {
-        clearInterval(this.intervalId);
+      if (this.intervalIds && this.intervalIds.length) {
+        this.clearIntervalIds();
       }
       let staff = await this.staffService.getStaff();
       if (!staff) {
-        this.intervalId = setInterval(async () => {
+        const intervalId = setInterval(async () => {
           staff = await this.staffService.getStaff();
           if (!staff) {
             this.apiService.showLoadingView();
           } else {
             this.apiService.hideLoadingView();
-          }
-          if (staff && staff.AccountId) {
-            clearInterval(this.intervalId);
+            this.clearIntervalIds();
           }
         }, 2000);
+        this.intervalIds.push(intervalId);
+      } else {
+        this.clearIntervalIds();
       }
       this.identity = await this.identityService
         .getIdentityAsync()
@@ -68,6 +69,12 @@ export class HomePage implements OnInit {
         return !isSelf;
       })
     );
+  }
+  private clearIntervalIds() {
+    this.intervalIds.forEach(i => {
+      clearInterval(i);
+    });
+    this.intervalIds = [];
   }
   accountSecurityEn() {
     this.router.navigate(["account-security_en"]);
