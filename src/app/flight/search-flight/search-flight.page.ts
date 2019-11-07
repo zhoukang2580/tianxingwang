@@ -283,7 +283,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
           this.searchFlightModel.Date = dates[0].date;
         }
         if (backDate) {
-          this.searchFlightModel.BackDate = dates[1].date;
+          this.searchFlightModel.BackDate = dates[0].date;
         }
       }
     }
