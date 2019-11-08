@@ -35,17 +35,17 @@
   </div>
 </ng-template> -->
 <div class='flight-cities' #flightcities [class.disabled]='disabled' [attr.mode]='mode'>
-    <ion-skeleton-text style='width: 20%;height:2em;' animated *ngIf='!vmFromCity'></ion-skeleton-text>
-    <ion-text text-wrap (click)="onSelectCity(true)" color='secondary' #fromCityEle *ngIf='vmFromCity'>
-      <h2 [class.left]='!toggleCities' [class.right]='toggleCities'>{{vmFromCity?.Nickname}}
-      </h2>
-    </ion-text>
-    <div class='toogle-icon' (click)='onRotateIcon()'>
-      <ion-icon name="swap" color='secondary'></ion-icon>
-    </div>
-    <ion-skeleton-text style='width: 20%;height: 2em;' animated *ngIf='!vmToCity'></ion-skeleton-text>
-    <ion-text (click)='onSelectCity(false)' color='secondary' text-wrap #toCityEle *ngIf='vmToCity'>
-      <h2 [class.left]='toggleCities' [class.right]='!toggleCities'>{{vmToCity?.Nickname}}
-      </h2>
-    </ion-text>
+  <ion-skeleton-text style='width: 20%;height:2em;' animated *ngIf='!vmFromCity'></ion-skeleton-text>
+  <ion-text text-wrap (click)="onSelectCity(true)" color='secondary' #fromCityEle *ngIf='vmFromCity'>
+    <h2 [class.left]='!toggleCities' [class.right]='toggleCities'>{{vmFromCity?.Nickname}}
+    </h2>
+  </ion-text>
+  <div class='toogle-icon' (click)='onRotateIcon()'>
+    <ion-icon name="swap" color='secondary'></ion-icon>
   </div>
+  <ion-skeleton-text style='width: 20%;height: 2em;' animated *ngIf='!vmToCity'></ion-skeleton-text>
+  <ion-text (click)='onSelectCity(false)' color='secondary' text-wrap #toCityEle *ngIf='vmToCity'>
+    <h2 [class.left]='toggleCities' [class.right]='!toggleCities'>{{vmToCity?.Nickname}}
+    </h2>
+  </ion-text>
+</div>

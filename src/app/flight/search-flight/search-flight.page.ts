@@ -39,8 +39,6 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
   isMoving: boolean;
   vmFromCity: TrafficlineEntity; // 界面上显示的城市
   vmToCity: TrafficlineEntity; // 界面上显示的城市
-  fromCity: TrafficlineEntity; // 城市切换后，真实的出发城市
-  toCity: TrafficlineEntity; // 切换后，真实的目的城市
   showReturnTrip: boolean;
   disabled = false;
   selectedPassengers$ = of(0);
@@ -136,7 +134,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
     return this.staffService.isSelfBookType();
   }
   async ngOnInit() {
-    await  this.initFlightCities();
+    await this.initFlightCities();
     this.searchConditionSubscription = this.flightService
       .getSearchFlightModelSource()
       .subscribe(async s => {
@@ -145,8 +143,8 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
         this.searchFlightModel = s;
         if (s) {
           this.disabled = s.isLocked;
-          this.fromCity = this.vmFromCity = s.fromCity;
-          this.toCity = this.vmToCity = s.toCity;
+          this.vmFromCity = s.fromCity;
+          this.vmToCity = s.toCity;
           this.isSingle = !s.isRoundTrip;
           this.goDate = this.calendarService.generateDayModelByDate(s.Date);
           this.backDate = this.calendarService.generateDayModelByDate(s.BackDate);
@@ -166,57 +164,64 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
     this.isCanleave = true;
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], { queryParams: { forType: FlightHotelTrainType.Flight } });
   }
-
+  onCities(evt: { vmFromCity: TrafficlineEntity, vmToCity: TrafficlineEntity }) {
+    const s = this.flightService.getSearchFlightModel();
+    this.flightService.setSearchFlightModel({
+      ...s,
+      fromCity: evt.vmFromCity,
+      toCity: evt.vmToCity
+    })
+  }
   ngOnDestroy(): void {
     console.log("on destroyed");
     this.searchConditionSubscription.unsubscribe();
   }
 
   async initFlightCities() {
-    this.fromCity = this.vmFromCity = {} as any;
-    this.fromCity.Nickname = this.fromCity.CityName = this.vmFromCity.CityName =
+    this.vmFromCity = {} as any;
+    this.vmFromCity.CityName =
       "北京";
-    this.vmFromCity.Code = this.fromCity.Code = "BJS";
-    this.toCity = this.vmToCity = {} as any;
-    this.toCity.Nickname = this.toCity.CityName = this.vmToCity.CityName =
+    this.vmFromCity.Code = "BJS";
+    this.vmToCity = {} as any;
+    this.vmToCity.CityName =
       "上海";
-    this.vmToCity.Code = this.toCity.Code = "SHA";
-    this.fromCity.Tag = this.toCity.Tag = "AirportCity"; // 出发城市，不是出发城市的那个机场
+    // 出发城市，不是出发城市的那个机场
+    this.vmToCity.Code = "SHA";
     const lastFromCity = await this.storage.get("fromCity").catch(_ => null);
     const lastToCity = await this.storage.get("toCity").catch(_ => null);
     if (!lastFromCity || !lastToCity) {
       // const cities = await this.flightService.getAllLocalAirports();
       // if (cities && cities.length) {
-      //   const vmFromCity = (this.fromCity = cities.find(
-      //     c => c.Code.toUpperCase() == this.fromCity.Code
+      //   const vmFromCity = ( cities.find(
+      //     c => c.Code.toUpperCase() == this.vmFromCity.Code
       //   ));
-      //   const vmToCity = (this.toCity = cities.find(
-      //     c => c.Code.toUpperCase() == this.toCity.Code
+      //   const vmToCity = (this.vmToCity = cities.find(
+      //     c => c.Code.toUpperCase() == this.vmToCity.Code
       //   ));
       //   if (vmFromCity && vmToCity) {
-      //     this.fromCity = this.vmFromCity = vmFromCity;
-      //     this.toCity = this.vmToCity = vmToCity;
+      //      this.vmFromCity = vmFromCity;
+      //     this.vmToCity = this.vmToCity = vmToCity;
       //   }
       // }
     } else {
-      this.fromCity = this.vmFromCity = lastFromCity;
-      this.toCity = this.vmToCity = lastToCity;
+      this.vmFromCity = lastFromCity;
+      this.vmToCity = lastToCity;
     }
     this.flightService.setSearchFlightModel({
       ...this.flightService.getSearchFlightModel(),
-      fromCity:this.fromCity,
-      toCity:this.toCity
+      fromCity: this.vmFromCity,
+      toCity: this.vmToCity
     })
   }
   async searchFlight() {
-    this.isCanleave=true;
+    this.isCanleave = true;
     console.log(
-      `出发城市" + 【${this.fromCity && this.fromCity.CityName}】`,
-      `目的城市【${this.toCity && this.toCity.CityName}】`
+      `出发城市" + 【${this.vmFromCity && this.vmFromCity.CityName}】`,
+      `目的城市【${this.vmToCity && this.vmToCity.CityName}】`
     );
     console.log(`启程日期${this.goDate.date},返程日期：${this.backDate.date}`);
-    this.storage.set("fromCity", this.fromCity);
-    this.storage.set("toCity", this.toCity);
+    this.storage.set("fromCity", this.vmFromCity);
+    this.storage.set("toCity", this.vmToCity);
 
     const s: SearchFlightModel = this.searchFlightModel || new SearchFlightModel();
     // s.tripType = TripType.departureTrip;
@@ -250,13 +255,13 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
       s.tripType = TripType.departureTrip;
     }
     s.Date = this.goDate.date;
-    s.FromCode = this.fromCity.Code;
-    s.ToCode = this.toCity.Code;
-    s.ToAsAirport = this.toCity.Tag === "Airport"; // Airport 以到达 机场 查询;AirportCity 以城市查询
-    s.FromAsAirport = this.fromCity.Tag === "Airport"; // Airport 以出发 机场 查询
+    s.FromCode = this.vmFromCity.Code;
+    s.ToCode = this.vmToCity.Code;
+    s.ToAsAirport = this.vmToCity.Tag === "Airport"; // Airport 以到达 机场 查询;AirportCity 以城市查询
+    s.FromAsAirport = this.vmFromCity.Tag === "Airport"; // Airport 以出发 机场 查询
     s.isRoundTrip = !this.isSingle;
-    s.fromCity = this.fromCity;
-    s.toCity = this.toCity;
+    s.fromCity = this.vmFromCity;
+    s.toCity = this.vmToCity;
     s.BackDate = this.backDate.date;
     if (this.disabled) {
       s.Date = s.BackDate;
@@ -295,7 +300,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
     if (city) {
       this.flightService.setSearchFlightModel({
         ...this.flightService.getSearchFlightModel(),
-        fromCity:city
+        fromCity: city
       })
     }
   }
@@ -303,7 +308,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
     if (city) {
       this.flightService.setSearchFlightModel({
         ...this.flightService.getSearchFlightModel(),
-        toCity:city
+        toCity: city
       })
     }
   }

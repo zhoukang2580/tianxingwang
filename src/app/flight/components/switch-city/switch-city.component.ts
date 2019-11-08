@@ -47,6 +47,7 @@ import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
   ]
 })
 export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
+  private selectCitySubscription = Subscription.EMPTY;
   @ViewChild("fromCityEle") fromCityEle: IonText;
   @ViewChild("toCityEle") toCityEle: IonText;
   @ViewChild("flightcitieEle") flightcitieEle: ElementRef<HTMLElement>;
@@ -57,45 +58,39 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
   @Input() vmToCity: TrafficlineEntity; // 界面上显示的目的城市
   isSelectFromCity: boolean;
   isMoving: boolean;
-  selectCitySubscription = Subscription.EMPTY;
   mode: string;
-  @Output() eFromCity: EventEmitter<TrafficlineEntity>;
-  @Output() eToCity: EventEmitter<TrafficlineEntity>;
+  @Output() eCity: EventEmitter<{ vmFromCity: TrafficlineEntity; vmToCity: TrafficlineEntity; }>;
   constructor(
     plt: Platform,
     private flightService: FlightService,
     private render: Renderer2
   ) {
     this.mode = plt.is("ios") ? "ios" : plt.is("android") ? "md" : "";
-    this.eFromCity = new EventEmitter();
-    this.eToCity = new EventEmitter();
+    this.eCity = new EventEmitter();
   }
   onRotateIconDone(evt) {
     console.log("onRotateIconDone");
     this.isMoving = false;
   }
   onRotateIcon() {
+    if (this.disabled) {
+      return;
+    }
     this.rotateIcon = !this.rotateIcon; // 控制图标旋转
     this.toggleCities = !this.toggleCities;
-    let fromCity = this.vmFromCity;
-    let toCity = this.vmToCity;
-    const temp = fromCity;
-    fromCity = toCity;
-    toCity = temp;
-    this.vmFromCity=fromCity;
-    this.vmToCity=toCity;
-    if (this.vmFromCity) {
-      this.eFromCity.emit(fromCity);
-    }
-    if (this.vmToCity) {
-      this.eToCity.emit(toCity);
-    }
-    console.log("出发城市：", fromCity.Nickname);
-    console.log("目的城市：", toCity.Nickname);
+    const temp = this.vmFromCity;
+    this.vmFromCity = this.vmToCity;
+    this.vmToCity = temp;
+    this.eCity.emit({
+      vmFromCity: this.vmFromCity,
+      vmToCity: this.vmToCity
+    });
+    console.log("出发城市：", this.vmFromCity.Nickname);
+    console.log("目的城市：", this.vmToCity.Nickname);
     // this.moveEle();
   }
-  private moveEle(){
-    if (this.fromCityEle && this.toCityEle && this.flightcitieEle&&this.flightcitieEle.nativeElement) {
+  private moveEle() {
+    if (this.fromCityEle && this.toCityEle && this.flightcitieEle && this.flightcitieEle.nativeElement) {
       // console.log(this.fromCityEle, this.toCityEle);
       const rect = this.flightcitieEle.nativeElement.getBoundingClientRect();
       const fEle = this.fromCityEle["el"];
@@ -137,23 +132,12 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
           } else {
             this.vmToCity = c;
           }
-          if (this.vmFromCity) {
-            this.eFromCity.emit(
-              this.toggleCities ? this.vmToCity : this.vmFromCity
-            );
-          }
-          if (this.vmToCity) {
-            this.eToCity.emit(
-              this.toggleCities ? this.vmFromCity : this.vmToCity
-            );
-          }
+          this.eCity.emit({vmFromCity:this.vmFromCity,vmToCity:this.vmToCity});
         }
       });
   }
   onSelectCity(fromCity: boolean) {
-    // console.log(this.isMoving);
-    if (this.isMoving) {
-      // 如果切换城市的动画还在进行
+    if (this.disabled) {
       return;
     }
     this.flightService.setOpenCloseSelectCityPageSources(true);

@@ -82,8 +82,8 @@ export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
     this.toggleCities = !this.toggleCities;
     // this.moveEle();
     this.swap(this.vmFromCity, this.vmToCity);
-    // console.log("出发城市：", this.vmFromCity.Nickname);
-    // console.log("目的城市：", this.vmToCity.Nickname);
+    console.log("出发城市：", this.vmFromCity.Nickname);
+    console.log("目的城市：", this.vmToCity.Nickname);
     if (this.vmFromCity) {
       this.eFromCity.emit(this.vmFromCity);
     }
