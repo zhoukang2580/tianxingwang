@@ -32,26 +32,9 @@
     }
   }
   .toogle-icon {
-    position: relative;
-    min-width: 4em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    i,
-    ion-icon {
-      color: var(--ion-color-secondary);
-    }
-    .airplane {
-      font-size: 0.6rem;
-      position: absolute;
-      margin: 0;
-      padding: 0;
-      left: 50%;
-      top: 50%;
-      transform: translate3d(-50%, -50%, 0);
-    }
-    ion-icon[name="ios-sync"] {
-      font-size: 2.5rem;
-    }
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.5rem;
   }
 }
