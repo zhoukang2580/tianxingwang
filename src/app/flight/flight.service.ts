@@ -192,7 +192,7 @@ export class FlightService {
           pc => pc.FlightNo == flightSegment.Number
         );
         if(data.isAllowBookPolicy){
-          policyCabins=policyCabins.filter(it=>!it.Rules||it.Rules.length||it.IsAllowBook);
+          policyCabins=policyCabins.filter(it=>it.IsAllowBook);
         }
         if (data.isOnlyFilterMatchedPolicy) {
           policyCabins = policyCabins.filter(
@@ -234,49 +234,21 @@ export class FlightService {
         })
       );
       let numbers: string[] = [];
-      const policies =
+      const passengerPolicies:PassengerPolicyFlights =
         policyflights &&
         policyflights.find(
           pl => pl.PassengerKey == bookInfo.passenger.AccountId
         );
-      if (policies && policies.FlightPolicies) {
-        numbers = policies.FlightPolicies.reduce(
-          (acc, it) => [...acc, it.FlightNo],
-          []
-        );
+      let flightPolicies:FlightPolicy[]=passengerPolicies && passengerPolicies.FlightPolicies||[];
+      if(bookInfo.isAllowBookPolicy){
+        flightPolicies=flightPolicies.filter(it=>it.IsAllowBook);
       }
-      const filteredFlightJourenyList = flightJourneyList.filter(it => {
-        return (
-          it.FlightRoutes &&
-          it.FlightRoutes.some(fr => {
-            if (fr.FlightSegments) {
-              if(bookInfo.isAllowBookPolicy){
-                return fr.FlightSegments.some(
-                  s =>
-                    numbers.includes(s.Number) &&
-                    policies && policies.FlightPolicies &&
-                    policies.FlightPolicies.some(
-                      pc => !pc.Rules || !!pc.Rules.length||pc.IsAllowBook
-                    )
-                );
-              }
-              if (bookInfo.isOnlyFilterMatchedPolicy) {
-                return fr.FlightSegments.some(
-                  s =>
-                    numbers.includes(s.Number) &&
-                    policies && policies.FlightPolicies &&
-                    policies.FlightPolicies.some(
-                      pc => !pc.Rules || pc.Rules.length == 0
-                    )
-                );
-              }
-              return fr.FlightSegments.some(s => numbers.includes(s.Number));
-            }
-            return false;
-          })
-        );
-      });
-      const segments = this.getTotalFlySegments(filteredFlightJourenyList);
+      if (bookInfo.isOnlyFilterMatchedPolicy) {
+       flightPolicies=flightPolicies.filter(it=>!it.Rules||!it.Rules.length)
+      }
+      numbers=flightPolicies.map(it=>it.FlightNo);
+      const segments = this.getTotalFlySegments(flightJourneyList).filter(it=>numbers.includes(it.Number));
+      console.log("过滤差标后的segments:",segments);
       return segments;
     } else {
       this.setPassengerBookInfos(
