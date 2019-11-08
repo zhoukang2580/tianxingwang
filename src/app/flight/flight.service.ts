@@ -861,7 +861,7 @@ export class FlightService {
                   c.FlightRouteIds = fare.FlightRouteIds;
                   c.FlightNumber = fare.FlightNumber;
                   c.Code = fare.Code;
-                  c.Variables = fare.Variables;
+                  // c.Variables = fare.Variables;
                   c.Rules = fare.Rules;
                   if (fare.LowerSegment) {
                     c.LowerSegment = {} as any;

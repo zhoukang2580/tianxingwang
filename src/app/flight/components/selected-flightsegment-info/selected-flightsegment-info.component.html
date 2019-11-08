@@ -31,18 +31,26 @@
           <app-fly-list-item [flightSegment]='bookInfo.bookInfo?.flightSegment' [showDetails]='true'
             [flightPolicy]='bookInfo.bookInfo?.flightPolicy'>
           </app-fly-list-item>
-          <div class='info'>
-            <ion-label text-wrap>税:￥{{bookInfo.bookInfo?.flightSegment?.Tax}}</ion-label>
-            <ion-label color='danger'>￥{{bookInfo.bookInfo?.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
+          <div>
+            <ion-row>
+              <ion-col text-end>
+                <ion-label text-wrap color='danger'>税:￥{{bookInfo.bookInfo?.flightSegment?.Tax}}</ion-label>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col text-end>
+                <ion-label color='danger'>￥{{bookInfo.bookInfo?.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
+              </ion-col>
+            </ion-row>
           </div>
           <ion-label class='rules' color='danger' text-wrap>
             {{bookInfo.bookInfo?.flightPolicy?.Rules?.join("; ")}}
           </ion-label>
-          <ion-label class='rules' style="display: flex;" text-wrap color='dark' (click)='onSelectLowestSegment(bookInfo)'
+          <ion-label class='rules' text-wrap color='dark' (click)='onSelectLowestSegment(bookInfo)'
             *ngIf='showLowerSegment(bookInfo)'>
             当前航班前后60分钟内有更低价航班:{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.Number}}&nbsp;
             {{getTime(bookInfo.bookInfo?.flightPolicy?.LowerSegment?.TakeoffTime)}},价格:￥{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.LowestFare}}
-            <ion-button color='secondary' style="margin-left: auto;">选择该航班</ion-button>
+            <ion-text color='secondary'>选择更低价</ion-text>
           </ion-label>
         </div>
       </ion-item>

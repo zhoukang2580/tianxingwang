@@ -191,7 +191,7 @@ export class LanguageHelper {
       return `更低价航班未找到`;
     },
     getTheLowestCabinNotFoundTip: () => {
-      return `航班仓位未找到`;
+      return `航班舱位未找到`;
     },
     getHasLowerSegmentTip: () => {
       return `您指定的航班前后60分钟内有更低价航班`;
