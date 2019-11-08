@@ -40,7 +40,7 @@
         <app-search-day-comp [day]='goDate' (click)="onSelecDate(true,false)"
           [disabled]='isDisabled&&!(searchTrainModel?.isExchange)'>
         </app-search-day-comp>
-        <div *ngIf="">{{ calcTotalFlyDays() }}天</div>  
+        <!-- <div *ngIf="">{{ calcTotalFlyDays() }}天</div>   -->
         <app-search-day-comp *ngIf="!isSingle" [day]='backDate' (click)="onSelecDate(false,true)">
         </app-search-day-comp>
       </section>

@@ -242,27 +242,19 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
   getDayDesc(d: DayModel) {
     return this.calendarService.getDescOfDay(d);
   }
-  async  onSelecDate(flyTo: boolean, backDate: boolean) {
-    if (this.isDisabled && !this.searchTrainModel.isExchange && !backDate) {
+  async onSelecDate(isGo: boolean, isBack: boolean) {
+    if (this.isDisabled && !this.searchTrainModel.isExchange && !isBack) {
       return;
     }
-    const days = await this.trainService.openCalendar(!this.isSingle && !this.isDisabled);
-    console.log("train openCalendar", days);
+    const days = await this.trainService.openCalendar(false);
+    // console.log("train openCalendar", days);
     if (days && days.length) {
-      let goDate: DayModel;
-      let backDate: DayModel;
-      if (days.length > 1) {
-        goDate = days[0];
-        backDate = days[1];
-      } else {
-        goDate = days[0];
-      }
       if (this.searchTrainModel) {
-        if (goDate) {
-          this.searchTrainModel.Date = goDate.date;
+        if (isGo) {
+          this.searchTrainModel.Date = days[0].date;
         }
-        if (backDate) {
-          this.searchTrainModel.BackDate = backDate.date;
+        if (isBack) {
+          this.searchTrainModel.BackDate = days[0].date;
         }
         this.trainService.setSearchTrainModel(this.searchTrainModel);
       }
