@@ -29,6 +29,8 @@ export class CabintypePipe implements PipeTransform {
       case FlightCabinType.SuperF:
       case FlightCabinType[FlightCabinType.SuperF]:
         return "超级头等舱";
+      case FlightCabinType[FlightCabinType.BusinessPremier]:
+        return "豪华公务舱";
       default:
         return value;
     }

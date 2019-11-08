@@ -1,14 +1,18 @@
 <div class='flight-trip' *ngFor='let trip of trips'>
   <div>
     {{trip?.FromCityName}}
-    <span class='stop-cities' [attr.stopcities]='trip?.StopCities'>------</span>
+    <span class='stop-cities' [attr.stopcities]='trip?.StopCities'>---</span>
     {{trip?.ToCityName}}
-    <span *ngIf='!trip?.CodeShareNumber'>
+    <!-- <span *ngIf='!trip?.CodeShareNumber'>
       {{trip?.CarrierName}}
-    </span>
-    <span *ngIf='trip?.CodeShareNumber'>
+    </span> -->
+    <!-- <span *ngIf='trip?.CodeShareNumber'>
       ({{trip?.CarrierName}})
-    </span>
+    </span> -->
+    <span class='line-vertical'>|</span>
+    <span>{{trip?.PlaneType}}</span>
+    <span class='line-vertical'>|</span>
+    <span >{{trip?.CabinType|cabintype}}</span>
   </div>
   <div>
     <span>
@@ -16,19 +20,17 @@
       <span margin-start margin-end>{{trip?.TakeoffTime?.substr("yyyy-MM-ddT".length,"HH:mm".length)}}</span>
     </span>
     <span>{{trip?.FromAirportName}}({{trip?.FromAirport}}){{trip?.FromTerminal}}</span>
-    舱位:{{trip?.ShowCabinCode}}
   </div>
   <div>
-    <span *ngIf='!trip?.CodeShareNumber'>
+    <!-- <span *ngIf='!trip?.CodeShareNumber'>
       {{trip?.FlightNumber}}
     </span>
     <span *ngIf='trip?.CodeShareNumber'>
       ({{trip?.CodeShareNumber}}){{trip?.FlightNumber}}
-    </span>
+    </span> -->
     到达:<span>{{trip?.ArrivalTime?.substr(0,"yyyy-MM-dd".length)}}</span>
     <span margin-start margin-end>{{trip?.ArrivalTime?.substr("yyyy-MM-ddT".length,"HH:mm".length)}}</span>
     <span>{{trip?.ToAirportName}}({{trip?.ToAirport}}){{trip?.ToTerminal}}</span>
-    机型：{{trip?.PlaneType}}
   </div>
 </div>
 <ng-container *ngIf='hasOriginalFlightTrip()'>

@@ -26,5 +26,9 @@ export enum FlightCabinType {
     /// <summary>
     /// 超级头等舱
     /// </summary>
-    SuperF = 64
+    SuperF = 64,
+    /// <summary>
+    /// 豪华公务舱
+    /// </summary>
+    BusinessPremier = 128
 }
