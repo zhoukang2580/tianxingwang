@@ -34,12 +34,12 @@
           <div>
             <ion-row>
               <ion-col text-end>
-                <ion-label text-wrap color='danger'>税:￥{{bookInfo.bookInfo?.flightSegment?.Tax}}</ion-label>
-              </ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col text-end>
-                <ion-label color='danger'>￥{{bookInfo.bookInfo?.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
+                <div>
+                  <ion-label text-wrap color='danger'>税:￥{{bookInfo.bookInfo?.flightSegment?.Tax}}</ion-label>
+                </div>
+                <div>
+                  <ion-label color='danger'>￥{{bookInfo.bookInfo?.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
+                </div>
               </ion-col>
             </ion-row>
           </div>
@@ -50,7 +50,7 @@
             *ngIf='showLowerSegment(bookInfo)'>
             当前航班前后60分钟内有更低价航班:{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.Number}}&nbsp;
             {{getTime(bookInfo.bookInfo?.flightPolicy?.LowerSegment?.TakeoffTime)}},价格:￥{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.LowestFare}}
-            <ion-text color='secondary'>选择更低价</ion-text>
+            <ion-button color='secondary' size='small'>选择更低价</ion-button>
           </ion-label>
         </div>
       </ion-item>
