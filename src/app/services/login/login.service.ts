@@ -85,10 +85,10 @@ export class LoginService {
           if (!r.Status) {
             return throwError(r.Message);
           }
-          return of(r.Data);
+          this.identityService.setIdentity(r.Data);
+          return of( r.Data)
         }),
         tap(rid => {
-          this.identityService.setIdentity(rid);
         })
       );
   }

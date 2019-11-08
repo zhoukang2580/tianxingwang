@@ -1,3 +1,4 @@
+import { StaffService } from './../hr/staff.service';
 import { IdentityEntity } from "./../services/identity/identity.entity";
 import { LoginService } from "../services/login/login.service";
 import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
@@ -45,6 +46,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private config: Config,
     route: ActivatedRoute,
+    private staffService: StaffService,
     private modalCtrl: ModalController
   ) {
     this.config.set("swipeBackEnabled", false);
@@ -61,7 +63,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     while (--i > 0 && t) {
       t = await this.modalCtrl.getTop();
       if (t) {
-        await t.dismiss().catch(_ => {});
+        await t.dismiss().catch(_ => { });
       }
     }
   }
@@ -331,13 +333,28 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         }
       );
   }
+  private async checkStaff(count: number) {
+    const staff = await this.staffService.getStaff();
+    await new Promise<any>(s=>{
+      setTimeout(() => {
+        s();
+      }, 1000);
+    });
+    if (!staff && count < 10) {
+      this.checkStaff(++count);
+    }else{
+      AppHelper.alert("登录失败");
+      this.router.navigate(['login']);
+    }
+  }
   async jump(
     isCheckDevice: boolean // 跳转
   ) {
+    await this.checkStaff(0);
     this.loginType = "user";
     const toPageRouter = this.loginService.getToPageRouter() || "";
     if (isCheckDevice && AppHelper.isApp()) {
-      this.checkIsDeviceBinded();
+      await this.checkIsDeviceBinded();
     } else {
       this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
     }
