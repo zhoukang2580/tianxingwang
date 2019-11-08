@@ -1,6 +1,6 @@
 import { SelectFlightPassengerComponent } from "./../components/select-flight-passenger/select-flight-passenger.component";
 import { IFlightSegmentInfo } from "./../models/PassengerFlightInfo";
-import { PassengerBookInfo } from "./../../tmc/tmc.service";
+import { PassengerBookInfo, FlightHotelTrainType } from "./../../tmc/tmc.service";
 import { environment } from "src/environments/environment";
 import { ApiService } from "src/app/services/api/api.service";
 import { FlyFilterComponent } from "./../components/fly-filter/fly-filter.component";
@@ -40,7 +40,8 @@ import {
   NgZone,
   ElementRef,
   QueryList,
-  ViewChildren
+  ViewChildren,
+  EventEmitter
 } from "@angular/core";
 import {
   tap,
@@ -453,21 +454,32 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     };
   }
   async onSelectPassenger() {
+    const removeitem = new EventEmitter<PassengerBookInfo<IFlightSegmentInfo>>();
+   const sub =  removeitem.subscribe(info=>{
+      this.flightService.removePassengerBookInfo(info);
+    })
     const m = await this.modalCtrl.create({
       component: SelectFlightPassengerComponent,
       componentProps: {
-        isOpenPageAsModal: true
+        isOpenPageAsModal: true,
+        removeitem,
+        forType:FlightHotelTrainType.Flight,
+        bookInfos$:this.flightService.getPassengerBookInfoSource(),
       }
     });
+
     const oldBookInfos = this.flightService
       .getPassengerBookInfos()
       .map(it => it.id);
     await m.present();
     await m.onDidDismiss();
+    if(sub){
+      sub.unsubscribe();
+    }
     const newBookInfos = this.flightService
       .getPassengerBookInfos()
       .map(it => it.id);
-    console.log(oldBookInfos.map(it => it), "new ", newBookInfos.map(it => it));
+    console.log("old ",oldBookInfos.map(it => it), "new ", newBookInfos.map(it => it));
     const isChange =
       oldBookInfos.length !== newBookInfos.length ||
       oldBookInfos.some(it => !newBookInfos.find(n => n == it)) ||

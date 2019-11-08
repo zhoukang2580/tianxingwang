@@ -23,6 +23,10 @@
               <ion-icon name="trash" color='danger' mode='ios'>
               </ion-icon>
             </ion-button>
+            <div class='reset'>
+              <ion-button expand='block' color='secondary' size='small' fill='clear' (click)='reelect(bookInfo)'>重选
+              </ion-button>
+            </div>
           </div>
           <app-fly-list-item [flightSegment]='bookInfo.bookInfo?.flightSegment' [showDetails]='true'
             [flightPolicy]='bookInfo.bookInfo?.flightPolicy'>
@@ -34,16 +38,12 @@
           <ion-label class='rules' color='danger' text-wrap>
             {{bookInfo.bookInfo?.flightPolicy?.Rules?.join("; ")}}
           </ion-label>
-          <ion-label class='rules' text-wrap color='dark' (click)='onSelectLowestSegment(bookInfo)'
+          <ion-label class='rules' style="display: flex;" text-wrap color='dark' (click)='onSelectLowestSegment(bookInfo)'
             *ngIf='showLowerSegment(bookInfo)'>
             当前航班前后60分钟内有更低价航班:{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.Number}}&nbsp;
             {{getTime(bookInfo.bookInfo?.flightPolicy?.LowerSegment?.TakeoffTime)}},价格:￥{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.LowestFare}}
-            <ion-button color='secondary' fill='clear'>选择该航班</ion-button>
+            <ion-button color='secondary' style="margin-left: auto;">选择该航班</ion-button>
           </ion-label>
-          <div class='reset'>
-            <ion-button expand='block' color='secondary' size='small' (click)='reelect(bookInfo)'>重选
-            </ion-button>
-          </div>
         </div>
       </ion-item>
       <ion-item lines='none' *ngIf='showSelectReturnTripButton&&bookInfo.bookInfo?.tripType!=TripType.returnTrip'>
@@ -56,9 +56,8 @@
 </ion-content>
 <ion-footer>
   <ion-toolbar>
-    <ion-buttons slot='end'>
-      <ion-button (click)='nextStep()' color='secondary' [disabled]='(passengerAndBookInfos$|async).length <= 0'>下一步
-      </ion-button>
-    </ion-buttons>
+    <ion-button slot='end' (click)='nextStep()' color='secondary'
+      [disabled]='(passengerAndBookInfos$|async).length <= 0'>下一步
+    </ion-button>
   </ion-toolbar>
 </ion-footer>
