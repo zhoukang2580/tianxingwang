@@ -53,13 +53,10 @@ export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
   @ViewChild("flightcities") flightcitieEle: ElementRef<HTMLElement>;
   toggleCities = false; // 没有切换城市顺序
   rotateIcon = false;
-  isExchange = false;
   @Input() disabled = false; // 界面上显示的出发城市
   @Input() vmFromCity: TrafficlineEntity; // 界面上显示的出发城市
   @Input() vmToCity: TrafficlineEntity; // 界面上显示的目的城市
   isMoving: boolean;
-  selectCitySubscription = Subscription.EMPTY;
-  searchModelSubscription = Subscription.EMPTY;
   mode: string;
   @Output() eFromCity: EventEmitter<TrafficlineEntity>;
   @Output() eToCity: EventEmitter<TrafficlineEntity>;
@@ -78,24 +75,26 @@ export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
     this.isMoving = false;
   }
   onRotateIcon() {
-    this.rotateIcon = !this.rotateIcon; // 控制图标旋转
+    // if(this.isMoving){
+    //   return;
+    // }
+    // this.rotateIcon = !this.rotateIcon; // 控制图标旋转
     this.toggleCities = !this.toggleCities;
-    let fromCity = this.vmFromCity;
-    let toCity = this.vmToCity;
-    const temp = fromCity;
-    fromCity = toCity;
-    toCity = temp;
-    this.vmFromCity = fromCity;
-    this.vmToCity = toCity;
+    // this.moveEle();
+    this.swap(this.vmFromCity, this.vmToCity);
+    // console.log("出发城市：", this.vmFromCity.Nickname);
+    // console.log("目的城市：", this.vmToCity.Nickname);
     if (this.vmFromCity) {
-      this.eFromCity.emit(fromCity);
+      this.eFromCity.emit(this.vmFromCity);
     }
     if (this.vmToCity) {
-      this.eToCity.emit(toCity);
+      this.eToCity.emit(this.vmToCity);
     }
-    console.log("出发城市：", fromCity.Nickname);
-    console.log("目的城市：", toCity.Nickname);
-
+  }
+  private swap(a: any, b: any) {
+    const temp = a;
+    a = b;
+    b = temp;
   }
   private moveEle() {
     if (
@@ -129,40 +128,13 @@ export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
   ngOnDestroy() {
-    this.selectCitySubscription.unsubscribe();
-    this.searchModelSubscription.unsubscribe();
   }
   ngOnChanges(changes: SimpleChanges) {
     // console.log("changes", changes);
     // console.log("changes.toCity", changes.vmToCity);
   }
   ngOnInit() {
-    this.selectCitySubscription = this.trainService
-      .getSelectedStationSource()
-      .subscribe(c => {
-        if (c) {
-          if (c.isSelectFrom) {
-            this.vmFromCity = c.fromStation;
-          } else {
-            this.vmToCity = c.toStation;
-          }
-          if (this.vmFromCity) {
-            this.eFromCity.emit(
-              this.toggleCities ? this.vmToCity : this.vmFromCity
-            );
-          }
-          if (this.vmToCity) {
-            this.eToCity.emit(
-              this.toggleCities ? this.vmFromCity : this.vmToCity
-            );
-          }
-        }
-      });
-    this.searchModelSubscription = this.trainService.getSearchTrainModelSource().subscribe(m => {
-      if (m) {
-        this.isExchange = m.isExchange;
-      }
-    })
+
   }
   async onSelectCity(fromCity: boolean) {
     // console.log(this.isMoving);
@@ -170,6 +142,7 @@ export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
       // 如果切换城市的动画还在进行
       return;
     }
+
     const m = await this.modalCtrl.create({
       component: SelectTrainStationModalComponent
     });
@@ -178,12 +151,6 @@ export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
     const result = await m.onDidDismiss();
     if (result && result.data) {
       const data = result.data as TrafficlineEntity;
-      this.trainService.setSelectedStation({
-        isSelectFrom: fromCity,
-        isSelectTo: !fromCity,
-        fromStation: fromCity ? data : null,
-        toStation: !fromCity ? data : null
-      });
       if (fromCity) {
         this.eFromCity.emit(data);
       } else {
