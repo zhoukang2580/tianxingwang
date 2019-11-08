@@ -137,12 +137,9 @@ export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
 
   }
   async onSelectCity(fromCity: boolean) {
-    // console.log(this.isMoving);
-    if (this.isMoving) {
-      // 如果切换城市的动画还在进行
-      return;
-    }
-
+   if(this.disabled){
+     return;
+   }
     const m = await this.modalCtrl.create({
       component: SelectTrainStationModalComponent
     });
