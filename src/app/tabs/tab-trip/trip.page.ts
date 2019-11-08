@@ -1,3 +1,4 @@
+import { Platform } from '@ionic/angular';
 import { TmcService } from 'src/app/tmc/tmc.service';
 import { Router } from '@angular/router';
 import { AppHelper } from 'src/app/appHelper';
@@ -39,6 +40,7 @@ export class TripPage implements OnInit {
     private tmcService: TmcService,
     private apiservice: ApiService,
     private calendarService: CalendarService,
+    private plt:Platform,
     private router: Router) { }
   private getTrips() {
     this.loadMoreSubscription.unsubscribe();
@@ -177,6 +179,14 @@ export class TripPage implements OnInit {
     if (!this.selectedInsurance || !trip) {
       return;
     }
+    let channel = "客户H5";
+    if(AppHelper.isApp()){
+      if(this.plt.is("android")){
+        channel="android";
+      }else if(this.plt.is("ios")){
+        channel="ios";
+      }
+    }
     const req = new RequestEntity();
     req.Method = `TmcApiOrderUrl-Insurance-Book`;
     req.Data = {
@@ -184,7 +194,8 @@ export class TripPage implements OnInit {
       travelkey: trip.Key,
       OrderId: trip.OrderId,
       Product: JSON.stringify(this.selectedInsurance),
-      PassagerId: trip.PassengerId
+      PassagerId: trip.PassengerId,
+      Channel:channel
     };
     req.IsShowLoading = true;
     const order: { TradeNo: string; Key: string; } = await this.apiservice.getPromiseData<any>(req).catch(_ => {

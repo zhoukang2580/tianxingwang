@@ -120,7 +120,7 @@ export class FlightItemCabinsPage implements OnInit {
       (await this.staffService.isSelfBookType())
     ) {
       this.isShowPolicyCabins = true;
-      this.showPolicyCabins();
+      this.getPolicyCabins();
     } else {
       if (data.passenger && data.passenger.AccountId) {
         this.isShowPolicyCabins = false;
@@ -173,39 +173,30 @@ export class FlightItemCabinsPage implements OnInit {
     this.showOpenBtn$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(map(infos => infos && infos.filter(it => !!it.bookInfo).length));
-    setTimeout(async () => {
-      const bookInfos = this.flightService.getPassengerBookInfos();
-      const showPl = bookInfos.length == 1;
-      if (
-        (await this.staffService.isSelfBookType()) ||
-        showPl ||
-        this.flightService
-          .getPassengerBookInfos()
-          .find(it => it.isFilteredPolicy)
-      ) {
-        this.isShowPolicyCabins = true;
-        this.showPolicyCabins();
-      } else {
-        this.isShowPolicyCabins = false;
-        this.showFlightCabins();
-      }
-    }, 100);
+    const bookInfos = this.flightService.getPassengerBookInfos();
+    if (
+      bookInfos.find(it => it.isFilteredPolicy)
+    ) {
+      this.isShowPolicyCabins = true;
+      this.vmPolicyCabins = await this.getPolicyCabins();
+    } else {
+      this.isShowPolicyCabins = false;
+      this.showFlightCabins();
+    }
   }
 
-  private async showPolicyCabins() {
-    const isfiltered = this.flightService
+  private async getPolicyCabins() {
+    const isfilteredBookInfo = this.flightService
       .getPassengerBookInfos()
       .find(it => it.isFilteredPolicy);
-    const bookInfo =
-      isfiltered ||
-      ((await this.staffService.isSelfBookType()) &&
-        this.flightService.getPassengerBookInfos()[0]);
-    this.vmPolicyCabins = this.flightService.filterPassengerPolicyCabins({ data: bookInfo, flightSegment: this.currentViewtFlightSegment.flightSegment });
+    const bookInfo = isfilteredBookInfo;
+    let policyCabins = this.flightService.filterPassengerPolicyCabins({ data: bookInfo, flightSegment: this.currentViewtFlightSegment.flightSegment });
     if (this.filterConditions && this.filterConditions.cabins && this.filterConditions.cabins.length) {
-      this.vmPolicyCabins = this.vmPolicyCabins.filter(c => c.Cabin && this.filterConditions.cabins.some(it => it.id == c.Cabin.Type || (c.Cabin.TypeName && c.Cabin.TypeName.includes(it.label))))
+      policyCabins = policyCabins.filter(c => c.Cabin && this.filterConditions.cabins.some(it => it.id == c.Cabin.Type || (c.Cabin.TypeName && c.Cabin.TypeName.includes(it.label))))
     }
-    console.log("showPolicyCabins ", this.vmPolicyCabins);
+    console.log("showPolicyCabins ", policyCabins);
     this.loading = false;
+    return policyCabins;
   }
   private showFlightCabins() {
     this.vmCabins = [];
