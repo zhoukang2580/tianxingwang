@@ -335,16 +335,18 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   }
   private async checkStaff(count: number) {
     const staff = await this.staffService.getStaff();
-    await new Promise<any>(s=>{
+    await new Promise<any>(s => {
       setTimeout(() => {
         s();
       }, 1000);
     });
     if (!staff && count < 10) {
-      this.checkStaff(++count);
-    }else{
-      AppHelper.alert("登录失败");
-      this.router.navigate(['login']);
+      await this.checkStaff(++count);
+    } else {
+      if (count > 10 || !staff) {
+        AppHelper.alert("登录失败");
+        this.router.navigate(['login']);
+      }
     }
   }
   async jump(
