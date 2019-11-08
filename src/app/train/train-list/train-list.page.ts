@@ -110,6 +110,9 @@ export class TrainListPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.route.queryParamMap.subscribe(async _ => {
       this.isShowRoundtripTip = await this.staffService.isSelfBookType();
+      if(_&&_.get("doRefresh")){
+        this.doRefresh(true,false);
+      }
     });
     this.curFilteredBookInfo$ = this.trainService
       .getBookInfoSource()
@@ -158,6 +161,7 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.selectedPassengersNumbers$ = this.trainService
       .getBookInfoSource()
       .pipe(map(infos => infos.length));
+    this.doRefresh(true, false);
   }
   async schedules(train: TrainEntity) {
     if (!train.Schedules) {
@@ -430,7 +434,7 @@ export class TrainListPage implements OnInit, OnDestroy {
         return;
       }
       // this.moveDayToSearchDate();
-      if(this.searchTrainModel){
+      if (this.searchTrainModel) {
         this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(this.searchTrainModel.Date)]);
       }
 
@@ -607,11 +611,11 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.filterCondition.priceFromL2H = "initial";
     this.filterCondition.timeFromM2N = "initial";
     this.activeTab = "none";
-    const identity=await this.identityService.getIdentityAsync().catch(_=>null);
+    const identity = await this.identityService.getIdentityAsync().catch(_ => null);
     if (this.searchTrainModel) {
       if (this.searchTrainModel.tripType == TripType.departureTrip) {
         this.searchTrainModel.Date = day.date;
-        if(identity){
+        if (identity) {
           await this.storage.set(`last_selected_train_goDate_${identity.Id}`, day.date);
         }
       } else {

@@ -26,6 +26,11 @@
             <ion-button fill='clear' size='small' (click)='remove(bookInfo)'>
               <ion-icon name="trash" color='danger' mode='ios'>
               </ion-icon>
+              <div class='reset' *ngIf='bookInfo?.bookInfo?.tripType!=TripType.returnTrip'>
+                <ion-button fill='clear' expand='block' color='secondary' size='small' (click)='reelect(bookInfo)'
+                  *ngIf='!bookInfo.bookInfo?.isExchange'>重选
+                </ion-button>
+              </div>
             </ion-button>
           </div>
           <ion-label class='train-item'>
@@ -38,11 +43,6 @@
           <ion-label class='rules' color='danger' text-wrap>
             {{bookInfo?.bookInfo?.trainPolicy?.Rules?.join("; ")}}
           </ion-label>
-          <div class='reset' *ngIf='bookInfo?.bookInfo?.tripType!=TripType.returnTrip'>
-            <ion-button expand='block' color='secondary' size='small' (click)='reelect(bookInfo)'
-              *ngIf='!bookInfo.bookInfo?.isExchange'>重选
-            </ion-button>
-          </div>
         </div>
       </ion-item>
       <!-- <ion-item lines='none' *ngIf='(showSelectReturnTrip$|async)&&bookInfo?.bookInfo?.tripType!=TripType.returnTrip'>
@@ -56,8 +56,6 @@
 </ion-content>
 <ion-footer>
   <ion-toolbar>
-    <ion-buttons slot='end'>
-      <ion-button (click)='nextStep()' color='secondary' [disabled]='!canGoToNext()'>下一步</ion-button>
-    </ion-buttons>
+    <ion-button (click)='nextStep()' slot='end' color='secondary' [disabled]='!canGoToNext()'>下一步</ion-button>
   </ion-toolbar>
 </ion-footer>

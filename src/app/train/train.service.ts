@@ -188,24 +188,28 @@ export class TrainService {
     return result;
   }
   async reelectBookInfo(bookInfo: PassengerBookInfo<ITrainInfo>) {
+    if (!bookInfo || !bookInfo.bookInfo || !bookInfo.bookInfo.trainPolicy || !bookInfo.bookInfo.trainEntity) {
+      return;
+    }
     bookInfo.isReplace = true;
     const m = await this.modalCtrl.getTop();
     if (m) {
       m.dismiss();
     }
+    const s = this.getSearchTrainModel();
+    s.Date = bookInfo.bookInfo.trainEntity.StartTime && bookInfo.bookInfo.trainEntity.StartTime.substr(0, '2019-10-11'.length);
+    s.BackDate = moment(s.Date)
+      .add(1, "days")
+      .format("YYYY-MM-DD");
+    s.tripType = TripType.departureTrip;
+    s.isLocked = false;
     this.setSearchTrainModel({
-      ...this.getSearchTrainModel(),
-      isLocked: false,
-      tripType: TripType.departureTrip,
-      Date: moment().format("YYYY-MM-DD"),
-      BackDate: moment()
-        .add(1, "days")
-        .format("YYYY-MM-DD")
+      ...s
     });
     if (await this.staffService.isSelfBookType()) {
       this.setBookInfoSource([]);
     }
-    this.router.navigate([AppHelper.getRoutePath("search-train")]);
+    this.router.navigate([AppHelper.getRoutePath("train-list")],{queryParams:{doRefresh:true}});
   }
   async checkCanAdd() {
     // if (this.getBookInfos().find(it => it.isReplace)) {
