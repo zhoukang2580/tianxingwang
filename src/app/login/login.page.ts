@@ -1,3 +1,4 @@
+import { ApiService } from './../services/api/api.service';
 import { StaffService } from './../hr/staff.service';
 import { IdentityEntity } from "./../services/identity/identity.entity";
 import { LoginService } from "../services/login/login.service";
@@ -47,7 +48,8 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     private config: Config,
     route: ActivatedRoute,
     private staffService: StaffService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private apiService:ApiService
   ) {
     this.config.set("swipeBackEnabled", false);
     this.loading$ = this.loginService.getLoading();
@@ -352,7 +354,9 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   async jump(
     isCheckDevice: boolean // 跳转
   ) {
+    this.apiService.showLoadingView();
     await this.checkStaff(0);
+    this.apiService.hideLoadingView();
     this.loginType = "user";
     const toPageRouter = this.loginService.getToPageRouter() || "";
     if (isCheckDevice && AppHelper.isApp()) {

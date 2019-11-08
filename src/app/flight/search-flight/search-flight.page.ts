@@ -136,6 +136,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
     return this.staffService.isSelfBookType();
   }
   async ngOnInit() {
+    await  this.initFlightCities();
     this.searchConditionSubscription = this.flightService
       .getSearchFlightModelSource()
       .subscribe(async s => {
@@ -144,8 +145,8 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
         this.searchFlightModel = s;
         if (s) {
           this.disabled = s.isLocked;
-          this.fromCity = this.vmFromCity = s.fromCity || this.fromCity;
-          this.toCity = this.vmToCity = s.toCity || this.toCity;
+          this.fromCity = this.vmFromCity = s.fromCity;
+          this.toCity = this.vmToCity = s.toCity;
           this.isSingle = !s.isRoundTrip;
           this.goDate = this.calendarService.generateDayModelByDate(s.Date);
           this.backDate = this.calendarService.generateDayModelByDate(s.BackDate);
@@ -159,7 +160,6 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
     this.showReturnTrip = await this.staffService
       .isSelfBookType()
       .catch(_ => false);
-    this.initFlightCities();
     this.apiService.hideLoadingView();
   }
   onSelectPassenger() {
@@ -202,6 +202,11 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
       this.fromCity = this.vmFromCity = lastFromCity;
       this.toCity = this.vmToCity = lastToCity;
     }
+    this.flightService.setSearchFlightModel({
+      ...this.flightService.getSearchFlightModel(),
+      fromCity:this.fromCity,
+      toCity:this.toCity
+    })
   }
   async searchFlight() {
     this.isCanleave=true;
