@@ -188,9 +188,13 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.route.queryParamMap.subscribe(async (d) => {
       this.showAddPassenger = await this.canShowAddPassenger();
       this.flightService.setFilterPanelShow(false);
-      console.log("this.route.queryParamMap", this.searchFlightModel,d);
+      console.log("this.route.queryParamMap", this.searchFlightModel, d);
       if (d && d.get("doRefresh")) {
         this.doRefresh(true, false);
+      }
+      const filteredBookInfo = this.flightService.getPassengerBookInfos().find(it=>it.isFilteredPolicy);
+      if(filteredBookInfo){
+        this.filterPassengerPolicyFlights(filteredBookInfo);
       }
     });
     this.showAdvSearchPage$ = this.flightService.getFilterPanelShow();
@@ -315,6 +319,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           Object.keys(this.filterComp.userOps).some(
             k => this.filterComp.userOps[k]
           );
+        await this.flightService.setDefaultFilteredPassenger();
         const segments = this.flightService.filterPassengerPolicyFlights(
           null,
           filteredFlightJourenyList,

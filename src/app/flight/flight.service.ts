@@ -74,7 +74,6 @@ export class FlightService {
   private isInitializingSelfBookInfos = false;
   private  filterCondition: FilterConditionModel;
   currentViewtFlightSegment: CurrentViewtFlightSegment;
-  
   constructor(
     private apiService: ApiService,
     private staffService: StaffService,
@@ -151,7 +150,7 @@ export class FlightService {
       totalPolicyFlights: policyFlights
     };
   }
-  private setPassengerBookInfos(args: PassengerBookInfo<IFlightSegmentInfo>[]) {
+  setPassengerBookInfosSource(args: PassengerBookInfo<IFlightSegmentInfo>[]) {
     console.log("flight setPassengerBookInfos", args);
     this.passengerBookInfos = args || [];
     this.passengerBookInfoSource.next(this.passengerBookInfos);
@@ -177,8 +176,8 @@ export class FlightService {
         Rules: []
       }
     });
-    if (data && data.passenger && data.passenger.AccountId) {
-      this.setPassengerBookInfos(
+    if (data && data.passenger && data.passenger.AccountId&&data.isFilteredPolicy) {
+      this.setPassengerBookInfosSource(
         this.getPassengerBookInfos().map(it => {
           it.isFilteredPolicy = it.id == data.id;
           return it;
@@ -208,7 +207,7 @@ export class FlightService {
         })
       }
     } else {
-      this.setPassengerBookInfos(
+      this.setPassengerBookInfosSource(
         this.getPassengerBookInfos().map(it => {
           it.isFilteredPolicy = false;
           it.isOnlyFilterMatchedPolicy = false;
@@ -227,7 +226,7 @@ export class FlightService {
   ): FlightSegmentEntity[] {
     if (bookInfo && bookInfo.passenger && bookInfo.passenger.AccountId) {
       bookInfo.isFilteredPolicy = true;
-      this.setPassengerBookInfos(
+      this.setPassengerBookInfosSource(
         this.getPassengerBookInfos().map(it => {
           it.isFilteredPolicy = bookInfo.id == it.id;
           return it;
@@ -251,7 +250,7 @@ export class FlightService {
       console.log("过滤差标后的segments:",segments);
       return segments;
     } else {
-      this.setPassengerBookInfos(
+      this.setPassengerBookInfosSource(
         this.getPassengerBookInfos().map(it => {
           it.isFilteredPolicy = false;
           it.isAllowBookPolicy=false;
@@ -346,7 +345,7 @@ export class FlightService {
     arg.isNotWhitelist = arg.passenger.isNotWhiteList;
     infos.push(arg);
     console.log("addPassengerFlightSegments added", arg);
-    this.setPassengerBookInfos(infos);
+    this.setPassengerBookInfosSource(infos);
   }
   async openCalendar(isMulti: boolean,tripType?:TripType) {
     const goFlight = this.getPassengerBookInfos().find(
@@ -398,44 +397,23 @@ export class FlightService {
     const s = this.getSearchFlightModel();
     if (arg.bookInfo.tripType == TripType.returnTrip) {
       // 重选回程
-      this.setPassengerBookInfos(this.getPassengerBookInfos().map(info=>{
+      this.setPassengerBookInfosSource(this.getPassengerBookInfos().map(info=>{
         info.bookInfo=info.id==arg.id?null:info.bookInfo;
         return info;
       }))
       await this.onSelectReturnTrip();
-      // const exists = this.getPassengerBookInfos();
-      // const citites = await this.getAllLocalAirports();
-      // const goInfo = exists.find(
-      //   item =>
-      //     item.bookInfo && item.bookInfo.tripType == TripType.departureTrip
-      // );
-      // const goFlight = goInfo && goInfo.bookInfo.flightSegment;
-      // if (goFlight) {
-      //   const fromCode = goFlight.FromAirport;
-      //   const toCode = goFlight.ToAirport;
-      //   const toCity = citites.find(c => c.Code == toCode);
-      //   const fromCity = citites.find(c => c.Code == fromCode);
-      //   const arrivalDate = moment(goFlight.ArrivalTime).format("YYYY-MM-DD");
-      //   if (+moment(s.BackDate) < +moment(arrivalDate)) {
-      //     s.BackDate = arrivalDate;
-      //   }
-      //   s.FromCode = toCode;
-      //   s.fromCity = toCity;
-      //   s.Date = s.BackDate;
-      //   s.toCity = fromCity;
-      //   s.ToCode = fromCode;
-      //   s.tripType = TripType.returnTrip;
-      //   s.isLocked = true;
-      // }
-      // const arr = this.getPassengerBookInfos().map(item => {
-      //   item.isReplace = item.id == arg.id;
-      //   return item;
-      // });
-      // this.passengerBookInfos = arr;
     } else {
       // 重选去程
+      const airports = await this.getAllLocalAirports();
+      s.Date=arg.bookInfo.flightSegment.TakeoffTime.substr(0,"2019-10-11".length);
+      s.FromAsAirport=false;
+      s.ToAsAirport=false;
+      s.FromCode=arg.bookInfo.flightSegment.FromAirport;
+      s.ToCode=arg.bookInfo.flightSegment.ToAirport;
       s.tripType = TripType.departureTrip;
       s.isLocked = false;
+      s. fromCity = airports.find(c => c.Code == s.FromCode);
+      s. toCity = airports.find(c => c.Code == s.ToCode);
       let arr = this.getPassengerBookInfos().map(item => {
         if(item.bookInfo&&item.bookInfo.tripType==TripType.departureTrip){
           s.Date=item.bookInfo.flightSegment&&item.bookInfo.flightSegment.TakeoffTime&&item.bookInfo.flightSegment.TakeoffTime.substr(0,"2019-10-11".length);
@@ -456,7 +434,7 @@ export class FlightService {
       }
       this.passengerBookInfos = arr;
     }
-    this.setPassengerBookInfos(this.getPassengerBookInfos());
+    this.setPassengerBookInfosSource(this.getPassengerBookInfos());
     this.apiService.showLoadingView();
     await this.dismissAllTopOverlays();
     this.apiService.hideLoadingView();
@@ -481,7 +459,7 @@ export class FlightService {
       this.setSearchFlightModel(s);
     });
     this.passengerBookInfos = arr;
-    this.setPassengerBookInfos(this.passengerBookInfos);
+    this.setPassengerBookInfosSource(this.passengerBookInfos);
   }
   async reselectPassengerFlightSegments(
     arg: PassengerBookInfo<IFlightSegmentInfo>
@@ -590,7 +568,7 @@ export class FlightService {
         isLocked: false
       });
     }
-    this.setPassengerBookInfos(arr);
+    this.setPassengerBookInfosSource(arr);
   }
   private getPolicyCabinBookInfo(
     bookInfo: PassengerBookInfo<IFlightSegmentInfo>,
@@ -657,7 +635,7 @@ export class FlightService {
   }
   removeAllBookInfos() {
     this.passengerBookInfos = [];
-    this.setPassengerBookInfos(this.getPassengerBookInfos());
+    this.setPassengerBookInfosSource(this.getPassengerBookInfos());
     this.setSearchFlightModel({
       ...this.getSearchFlightModel(),
       tripType: TripType.departureTrip,
@@ -761,7 +739,7 @@ export class FlightService {
       this.getSearchFlightModel().isRoundTrip &&
       bookInfos.length == 1
     ) {
-      this.setPassengerBookInfos([
+      this.setPassengerBookInfosSource([
         bookInfos[0],
         { ...bookInfos[0], bookInfo: null }
       ]);
@@ -781,7 +759,7 @@ export class FlightService {
       }
       return item;
     });
-    this.setPassengerBookInfos(arr);
+    this.setPassengerBookInfosSource(arr);
   }
   async removePassengerBookInfo(p: PassengerBookInfo<IFlightSegmentInfo>) {
     const arg = { ...p };
@@ -815,7 +793,7 @@ export class FlightService {
         it => it.id !== arg.id
       );
     }
-    this.setPassengerBookInfos(this.passengerBookInfos);
+    this.setPassengerBookInfosSource(this.passengerBookInfos);
   }
   getSelectedCity() {
     return this.selectedCitySource.asObservable();
@@ -1004,6 +982,20 @@ export class FlightService {
   }
   private getHHmm(datetime: string) {
     return this.calendarService.getHHmm(datetime);
+  }
+  async setDefaultFilteredPassenger(){
+    const isStaff = await this.staffService.isSelfBookType();
+    let bookInfos = this.getPassengerBookInfos();
+    if(bookInfos.length==1||isStaff){
+      bookInfos=bookInfos.map((it,idx)=>{
+        if(idx==0){
+          it.isFilteredPolicy=true;
+          it.isAllowBookPolicy=true;
+        }
+        return it;
+      })
+    }
+    this.setPassengerBookInfosSource(bookInfos);
   }
   async getFlightJourneyDetailListAsync(): Promise<FlightJourneyEntity[]> {
     await this.checkOrAddSelfBookTypeBookInfo();

@@ -107,6 +107,7 @@ export class BookPage implements OnInit, AfterViewInit {
     Value: string;
     Text: string;
   };
+  addContacts: AddContact[]=[];
   @ViewChildren("illegalReasonsEle", { read: ElementRef })
   illegalReasonsEles: QueryList<ElementRef<HTMLElement>>;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
@@ -592,54 +593,50 @@ export class BookPage implements OnInit, AfterViewInit {
     });
   }
   private fillBookLinkmans(bookDto: OrderBookDto) {
+    if (!this.addContacts || this.addContacts.length == 0) {
+      return true;
+    }
     bookDto.Linkmans = [];
-    const showErrorMsg = (msg: string, item: ICombindInfo) => {
+    const showErrorMsg = (msg: string, idx: number) => {
       AppHelper.alert(
-        `${(item.credentialStaff && item.credentialStaff.Name) ||
-        (item.modal.credential &&
-          item.modal.credential.Number)}联系人信息${msg}不能为空`
+        `第${idx + 1}个联系人信息${msg}不能为空`
       );
     };
-    for (let i = 0; i < this.vmCombindInfos.length; i++) {
-      const item = this.vmCombindInfos[i];
-      if (item.addContacts) {
-        for (let j = 0; j < item.addContacts.length; j++) {
-          const man = item.addContacts[j];
-          const linkMan: OrderLinkmanDto = new OrderLinkmanDto();
-          if (!man.accountId) {
-            showErrorMsg("", item);
-            return false;
-          }
-          if (!man.email) {
-            showErrorMsg("Email", item);
-            return false;
-          }
-          if (
-            !(
-              man.notifyLanguage == "" ||
-              man.notifyLanguage == "cn" ||
-              man.notifyLanguage == "en"
-            )
-          ) {
-            showErrorMsg(LanguageHelper.getNotifyLanguageTip(), item);
-            return false;
-          }
-          if (!man.mobile) {
-            showErrorMsg("Mobile", item);
-            return false;
-          }
-          if (!man.name) {
-            showErrorMsg("Name", item);
-            return false;
-          }
-          linkMan.Id = man.accountId;
-          linkMan.Email = man.email;
-          linkMan.MessageLang = man.notifyLanguage;
-          linkMan.Mobile = man.mobile;
-          linkMan.Name = man.name;
-          bookDto.Linkmans.push(linkMan);
-        }
+    for (let j = 0; j < this.addContacts.length; j++) {
+      const man = this.addContacts[j];
+      const linkMan: OrderLinkmanDto = new OrderLinkmanDto();
+      if (!man.accountId) {
+        showErrorMsg("", j);
+        return false;
       }
+      if (!man.email) {
+        showErrorMsg("Email", j);
+        return false;
+      }
+      if (
+        !(
+          man.notifyLanguage == "" ||
+          man.notifyLanguage == "cn" ||
+          man.notifyLanguage == "en"
+        )
+      ) {
+        showErrorMsg(LanguageHelper.getNotifyLanguageTip(), j);
+        return false;
+      }
+      if (!man.mobile) {
+        showErrorMsg("Mobile", j);
+        return false;
+      }
+      if (!man.name) {
+        showErrorMsg("Name", j);
+        return false;
+      }
+      linkMan.Id = man.accountId;
+      linkMan.Email = man.email;
+      linkMan.MessageLang = man.notifyLanguage;
+      linkMan.Mobile = man.mobile;
+      linkMan.Name = man.name;
+      bookDto.Linkmans.push(linkMan);
     }
     return true;
   }
@@ -1118,7 +1115,6 @@ export class BookPage implements OnInit, AfterViewInit {
               } as TmcOutNumberInfo;
             })
         } as ICombindInfo;
-        combineInfo.addContacts = [];
         this.vmCombindInfos.push(combineInfo);
       }
       // if (!environment.production) {
@@ -1148,9 +1144,9 @@ export class BookPage implements OnInit, AfterViewInit {
       info.vmCredential = credential;
     }
   }
-  onContactsChange(contacts: AddContact[], info: ICombindInfo) {
-    if (info && contacts) {
-      info.addContacts = contacts;
+  onContactsChange(contacts: AddContact[]) {
+    if (contacts) {
+      this.addContacts = contacts;
     }
   }
 
@@ -1253,7 +1249,6 @@ interface ICombindInfo {
   credentialStaff: StaffEntity;
   isSkipApprove: boolean;
   notifyLanguage: string;
-  addContacts: AddContact[];
   credentialStaffMobiles: {
     checked: boolean;
     mobile: string;

@@ -43,11 +43,8 @@ export class FlightItemCabinsPage implements OnInit {
   vmFlightSegment: FlightSegmentEntity;
   FlightFareType = FlightFareType;
   currentViewtFlightSegment: CurrentViewtFlightSegment;
-  vmCabins: FlightCabinEntity[] = [];
-  vmPolicyCabins: FlightPolicy[] = [];
-  isShowPolicyCabins = false;
+  vmCabins: FlightPolicy[] = [];
   staff: StaffEntity;
-  loading = true;
   showOpenBtn$ = of(0);
   identity: IdentityEntity;
   filteredPolicyPassenger$: Observable<PassengerBookInfo<IFlightSegmentInfo>>;
@@ -113,20 +110,17 @@ export class FlightItemCabinsPage implements OnInit {
     if (!data) {
       return;
     }
-    this.vmPolicyCabins = this.flightService.filterPassengerPolicyCabins(
-      { data, flightSegment: this.vmFlightSegment });
-    if (
-      (data.passenger && data.passenger.AccountId) ||
-      (await this.staffService.isSelfBookType())
-    ) {
-      this.isShowPolicyCabins = true;
-      this.getPolicyCabins();
-    } else {
-      if (data.passenger && data.passenger.AccountId) {
-        this.isShowPolicyCabins = false;
-        this.showFlightCabins();
-      }
-    }
+    this.flightService.setPassengerBookInfosSource(
+      this.flightService.getPassengerBookInfos().map(it => {
+        it.isFilteredPolicy = it.id == data.id;
+        if (it.isFilteredPolicy) {
+          it.isAllowBookPolicy = data.isAllowBookPolicy;
+          it.isOnlyFilterMatchedPolicy = data.isOnlyFilterMatchedPolicy;
+        }
+        return it;
+      })
+    );
+    this.vmCabins = await this.getPolicyCabins();
   }
   async showSelectedInfos() {
     const modal = await this.modalCtrl.create({
@@ -149,17 +143,15 @@ export class FlightItemCabinsPage implements OnInit {
     m.backdropDismiss = false;
     await m.present();
   }
-  bookColor(cabin: any) {
-    if (this.isShowPolicyCabins) {
-      if (cabin) {
-        if (!cabin.IsAllowBook) {
-          return "danger";
-        }
-        if (cabin.Rules && cabin.Rules.length) {
-          return "warning";
-        }
-        return "success";
+  bookColor(cabin: FlightPolicy) {
+    if (cabin) {
+      if (!cabin.IsAllowBook) {
+        return "danger";
       }
+      if (cabin.Rules && cabin.Rules.length) {
+        return "warning";
+      }
+      return "success";
     }
     return "primary";
   }
@@ -173,16 +165,7 @@ export class FlightItemCabinsPage implements OnInit {
     this.showOpenBtn$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(map(infos => infos && infos.filter(it => !!it.bookInfo).length));
-    const bookInfos = this.flightService.getPassengerBookInfos();
-    if (
-      bookInfos.find(it => it.isFilteredPolicy)
-    ) {
-      this.isShowPolicyCabins = true;
-      this.vmPolicyCabins = await this.getPolicyCabins();
-    } else {
-      this.isShowPolicyCabins = false;
-      this.showFlightCabins();
-    }
+    this.vmCabins = await this.getPolicyCabins();
   }
 
   private async getPolicyCabins() {
@@ -195,28 +178,6 @@ export class FlightItemCabinsPage implements OnInit {
       policyCabins = policyCabins.filter(c => c.Cabin && this.filterConditions.cabins.some(it => it.id == c.Cabin.Type || (c.Cabin.TypeName && c.Cabin.TypeName.includes(it.label))))
     }
     console.log("showPolicyCabins ", policyCabins);
-    this.loading = false;
     return policyCabins;
-  }
-  private showFlightCabins() {
-    this.vmCabins = [];
-    if (this.currentViewtFlightSegment) {
-      this.loading = true;
-      let cabins = this.currentViewtFlightSegment.flightSegment.Cabins || [];
-      if (this.filterConditions && this.filterConditions.cabins && this.filterConditions.cabins.length) {
-        cabins = cabins.filter(c => this.filterConditions.cabins.some(it => it.id == c.Type || (c.TypeName && c.TypeName.includes(it.label))))
-      }
-      const loop = () => {
-        if (cabins.length) {
-          this.vmCabins.push(...cabins.splice(0, 1));
-          window.requestAnimationFrame(loop);
-        } else {
-          this.loading = false;
-        }
-      };
-      setTimeout(() => {
-        loop();
-      }, 0);
-    }
   }
 }

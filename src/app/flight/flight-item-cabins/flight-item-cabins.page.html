@@ -21,7 +21,7 @@
     </ion-buttons>
   </ion-toolbar>
   <ion-row *ngIf='(filteredPolicyPassenger$|async) as bookInfo' class='rule'>
-    <ion-col *ngIf='bookInfo.credential as credential'>
+    <ion-col *ngIf='bookInfo.credential as credential' text-center>
       <ion-text color='{{bookInfo.isOnlyFilterMatchedPolicy?"success":""}}' *ngIf='bookInfo.isFilteredPolicy'>
         当前已过滤【{{credential.CheckFirstName}}{{credential.CheckLastName}}】{{credential.Number}})差标
       </ion-text>
@@ -59,88 +59,48 @@
       红色代表违规不可预订
     </ion-label>
   </ion-toolbar>
-  <app-or-comp *ngIf='isShowPolicyCabins&&vmPolicyCabins?.length==0'>暂无符合差标数据</app-or-comp>
-  <ion-list margin-top *ngIf='!loading else fakeList'>
-    <ng-container *ngIf='isShowPolicyCabins else vmCabinsTempl'>
-      <ion-item *ngFor='let cabin of vmPolicyCabins'>
-        <div class='cabin-item'>
-          <ion-row margin-top>
-            <ion-col size='8'>
-              <ion-label (click)='openrules(cabin)'>
-                <h3 class='discount'>
-                  <ion-text color='dark' *ngIf='identity?.Numbers&&identity.Numbers["AgentId"] else aatemp'>
-                    <span
-                      *ngIf=' cabin.Cabin?.TypeName?.length > 4 ? cabin.Cabin?.TypeName?.replace("舱", "") : cabin.Cabin?.TypeName as cabinTypeName'></span>
-                    {{ cabin.Cabin?.Code }}(cabinTypeName)
-                  </ion-text>
-                  <ng-template #aatemp>
-                    <ion-text color='dark'>{{cabin.Cabin?.TypeName}}</ion-text>
-                  </ng-template>
-                  <ion-text color='dark'>{{cabin.Cabin?.Discount|discount}}</ion-text>
-                  <ion-text color='secondary' *ngIf='cabin.Cabin?.FareType==FlightFareType.Agreement'>
-                    <strong>协</strong>
-                  </ion-text>
-                </h3>
-                <h3>
-                  <ion-text color='secondary'>退改签政策详情&nbsp;> </ion-text>
-                </h3>
-                <h3>余票：{{cabin.Cabin?.Count}}&nbsp;张</h3>
-              </ion-label>
-            </ion-col>
-            <ion-col size='4'>
-              <ion-text color='danger'>￥{{cabin.Cabin?.SalesPrice}}</ion-text>
-              <ion-button [color]='bookColor(cabin)' margin-top expand='block' [disabled]='!cabin?.IsAllowBook'
-                (click)='onBookTicket(cabin.Cabin)'>
-                <ion-text [color]='bookColor(cabin)=="primary"?"dark":"light"'>预订</ion-text>
-              </ion-button>
-            </ion-col>
-          </ion-row>
-          <ion-row *ngIf='cabin?.Rules'>
-            <ion-col>
-              <ion-label *ngFor='let r of cabin.Rules' color='danger' text-wrap class='rule'>{{r}}</ion-label>
-            </ion-col>
-          </ion-row>
-        </div>
-      </ion-item>
-    </ng-container>
-    <ng-template #vmCabinsTempl>
-      <ion-item *ngFor='let cabin of vmCabins'>
-        <div class='cabin-item'>
-          <ion-row margin-top>
-            <ion-col size='8'>
-              <ion-label (click)='openrules(cabin)'>
-                <h3 class='discount'>
-                  <ion-text color='dark'>{{cabin?.Type|cabintype}}</ion-text>
-                  <ion-text color='dark'>{{cabin?.Discount|discount}}
-                  </ion-text>
-                </h3>
-                <h3>
-                  <ion-text color='secondary'>退改签政策详情&nbsp;> </ion-text>
-                </h3>
-                <h3>余票：{{cabin?.Count}}&nbsp;张</h3>
-              </ion-label>
-            </ion-col>
-            <ion-col size='4'>
-              <ion-label>
-                <h3 text-end class='book'>
-                  <ion-text color='danger'>￥{{cabin?.SalesPrice}}</ion-text>
-                  <ion-button [color]='bookColor(cabin)' margin-top expand='block' (click)='onBookTicket(cabin)'>
-                    <ion-text [color]='bookColor(cabin)=="primary"?"dark":"light"'>预订</ion-text>
-                  </ion-button>
-                </h3>
-              </ion-label>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col>
-              <ng-container *ngIf='cabin?.Rules'>
-                <ion-label *ngFor='let r of cabin.Rules' color='danger' text-wrap class='rule'>{{r}}</ion-label>
-              </ng-container>
-            </ion-col>
-          </ion-row>
-        </div>
-      </ion-item>
-    </ng-template>
+  <app-or-comp *ngIf='vmCabins?.length==0'>暂无符合差标数据</app-or-comp>
+  <ion-list margin-top>
+    <ion-item *ngFor='let cabin of vmCabins'>
+      <div class='cabin-item'>
+        <ion-row margin-top>
+          <ion-col size='8'>
+            <ion-label (click)='openrules(cabin)'>
+              <h3 class='discount'>
+                <ion-text color='dark' *ngIf='identity?.Numbers&&identity.Numbers["AgentId"] else aatemp'>
+                  <span
+                    *ngIf=' cabin.Cabin?.TypeName?.length > 4 ? cabin.Cabin?.TypeName?.replace("舱", "") : cabin.Cabin?.TypeName as cabinTypeName'></span>
+                  {{ cabin.Cabin?.Code }}(cabinTypeName)
+                </ion-text>
+                <ng-template #aatemp>
+                  <ion-text color='dark'>{{cabin.Cabin?.TypeName}}</ion-text>
+                </ng-template>
+                <ion-text color='dark'>{{cabin.Cabin?.Discount|discount}}</ion-text>
+                <ion-text color='secondary' *ngIf='cabin.Cabin?.FareType==FlightFareType.Agreement'>
+                  <strong>协</strong>
+                </ion-text>
+              </h3>
+              <h3>
+                <ion-text color='secondary'>退改签政策详情&nbsp;> </ion-text>
+              </h3>
+              <h3>余票：{{cabin.Cabin?.Count}}&nbsp;张</h3>
+            </ion-label>
+          </ion-col>
+          <ion-col size='4'>
+            <ion-text color='danger'>￥{{cabin.Cabin?.SalesPrice}}</ion-text>
+            <ion-button [color]='bookColor(cabin)' margin-top expand='block' [disabled]='!cabin?.IsAllowBook'
+              (click)='onBookTicket(cabin.Cabin)'>
+              <ion-text [color]='bookColor(cabin)=="primary"?"dark":"light"'>预订</ion-text>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row *ngIf='cabin?.Rules'>
+          <ion-col>
+            <ion-label *ngFor='let r of cabin.Rules' color='danger' text-wrap class='rule'>{{r}}</ion-label>
+          </ion-col>
+        </ion-row>
+      </div>
+    </ion-item>
   </ion-list>
   <ng-template #fakeList>
     <ion-list>
