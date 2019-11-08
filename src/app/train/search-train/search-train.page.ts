@@ -262,12 +262,18 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
   }
   onFromCitySelected(city: TrafficlineEntity) {
     if (city) {
-      this.fromCity = city;
+      this.trainService.setSearchTrainModel({
+        ...this.trainService.getSearchTrainModel(),
+        fromCity: city
+      })
     }
   }
   onToCitySelected(city: TrafficlineEntity) {
     if (city) {
-      this.toCity = city;
+      this.trainService.setSearchTrainModel({
+        ...this.trainService.getSearchTrainModel(),
+        toCity: city
+      })
     }
   }
   async canDeactivate() {

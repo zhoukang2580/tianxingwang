@@ -1,3 +1,5 @@
+import { LanguageHelper } from './../../../languageHelper';
+import { AppHelper } from './../../../appHelper';
 import { ModalController } from "@ionic/angular";
 import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 import { AddcontactsModalComponent } from "../addcontacts-modal/addcontacts-modal.component";
@@ -15,7 +17,13 @@ export class BookAddcontactsCompComponent implements OnInit {
     this.contactChange = new EventEmitter();
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
+  async remove(man: AddContact) {
+    const ok = await AppHelper.alert(LanguageHelper.getConfirmDeleteTip(), true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+    if (ok && man && this.addContacts) {
+      this.addContacts = this.addContacts.filter(it => it.accountId != man.accountId);
+    }
+  }
   async onAddContacts() {
     if (!this.addContacts) {
       this.addContacts = [];

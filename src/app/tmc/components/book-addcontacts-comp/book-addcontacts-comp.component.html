@@ -4,6 +4,7 @@
       <ion-item lines='none' class="ion-no-margin">
         <ion-label>旅客名称:</ion-label>
         <ion-input name='name' placeholder='请输入' (ionChange)='onChange()' [(ngModel)]='man.name'></ion-input>
+        <ion-icon name='trash' mode='ios' color='danger' (click)='remove(man)'></ion-icon> 
       </ion-item>
     </ion-col>
     <ion-col size='12'>

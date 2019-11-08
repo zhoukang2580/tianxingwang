@@ -86,6 +86,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
   tmc: TmcEntity;
   totalPriceSource: Subject<number>;
   isCanSave$ = of(false);
+  addContacts: AddContact[]=[];
   private isCheckingPay = false;
   private checkPayCountIntervalId: any;
   private checkPayCount = 5;
@@ -360,7 +361,6 @@ export class TrainBookPage implements OnInit, AfterViewInit {
             } as ITmcOutNumberInfo;
           });
 
-        combineInfo.addContacts = [];
         this.viewModel.combindInfos.push(combineInfo);
       }
     } catch (e) {
@@ -631,53 +631,50 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     item.isOpenrules = !item.isOpenrules;
   }
   private fillBookLinkmans(bookDto: OrderBookDto) {
+    if(!this.addContacts||!this.addContacts.length){
+      return true;
+    }
     bookDto.Linkmans = [];
-    const showErrorMsg = (msg: string, item: IPassengerBookInfo) => {
+    const showErrorMsg = (msg: string, idx:number) => {
       AppHelper.alert(
-        `联系人${(item.credentialStaff && item.credentialStaff.Name) ||
-        (item.credential && item.credential.Number)}信息${msg}不能为空`
+        `第${idx+1}个联系人的信息${msg}不能为空`
       );
     };
-    for (let i = 0; i < this.viewModel.combindInfos.length; i++) {
-      const item = this.viewModel.combindInfos[i];
-      if (item.addContacts) {
-        for (let j = 0; j < item.addContacts.length; j++) {
-          const man = item.addContacts[j];
-          const linkMan: OrderLinkmanDto = new OrderLinkmanDto();
-          if (!man.accountId) {
-            showErrorMsg("", item);
-            return false;
-          }
-          if (!man.email) {
-            showErrorMsg("Email", item);
-            return false;
-          }
-          if (
-            !(
-              man.notifyLanguage == "" ||
-              man.notifyLanguage == "cn" ||
-              man.notifyLanguage == "en"
-            )
-          ) {
-            showErrorMsg(LanguageHelper.getNotifyLanguageTip(), item);
-            return false;
-          }
-          if (!man.mobile) {
-            showErrorMsg("Mobile", item);
-            return false;
-          }
-          if (!man.name) {
-            showErrorMsg("Name", item);
-            return false;
-          }
-          linkMan.Id = man.accountId;
-          linkMan.Email = man.email;
-          linkMan.MessageLang = man.notifyLanguage;
-          linkMan.Mobile = man.mobile;
-          linkMan.Name = man.name;
-          bookDto.Linkmans.push(linkMan);
-        }
+    for (let j = 0; j < this.addContacts.length; j++) {
+      const man = this.addContacts[j];
+      const linkMan: OrderLinkmanDto = new OrderLinkmanDto();
+      if (!man.accountId) {
+        showErrorMsg("", j);
+        return false;
       }
+      if (!man.email) {
+        showErrorMsg("Email", j);
+        return false;
+      }
+      if (
+        !(
+          man.notifyLanguage == "" ||
+          man.notifyLanguage == "cn" ||
+          man.notifyLanguage == "en"
+        )
+      ) {
+        showErrorMsg(LanguageHelper.getNotifyLanguageTip(), j);
+        return false;
+      }
+      if (!man.mobile) {
+        showErrorMsg("Mobile", j);
+        return false;
+      }
+      if (!man.name) {
+        showErrorMsg("Name", j);
+        return false;
+      }
+      linkMan.Id = man.accountId;
+      linkMan.Email = man.email;
+      linkMan.MessageLang = man.notifyLanguage;
+      linkMan.Mobile = man.mobile;
+      linkMan.Name = man.name;
+      bookDto.Linkmans.push(linkMan);
     }
     return true;
   }
@@ -1026,9 +1023,9 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       item.otherOrganizationName = data.otherOrganizationName;
     }
   }
-  onContactsChange(contacts: AddContact[], info: IPassengerBookInfo) {
-    if (info && contacts) {
-      info.addContacts = contacts;
+  onContactsChange(contacts: AddContact[]) {
+    if (contacts) {
+      this.addContacts = contacts;
     }
   }
   onSavecredential(credential: CredentialsEntity, info: IPassengerBookInfo) {
@@ -1127,7 +1124,6 @@ interface IPassengerBookInfo {
   bookInfo: PassengerBookInfo<ITrainInfo>;
   isOpenrules?: boolean;
   travelType: OrderTravelType;
-  addContacts?: AddContact[];
   isOtherCostCenter?: boolean;
   otherCostCenterCode?: string;
   otherCostCenterName?: string;

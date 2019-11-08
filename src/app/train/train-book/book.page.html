@@ -183,16 +183,16 @@
             </ion-input>
           </ion-item>
         </ion-item-group>
-        <ion-item-group>
-          <ion-item-divider>
-            添加联系人：
-          </ion-item-divider>
-          <ion-item>
-            <app-book-addcontacts-comp [addContacts]='combindInfo?.addContacts'
-              (contactChange)='onContactsChange($event,combindInfo)'></app-book-addcontacts-comp>
-          </ion-item>
-        </ion-item-group>
       </ion-list>
+      <ion-item-group>
+        <ion-item-divider>
+          添加联系人：
+        </ion-item-divider>
+        <ion-item>
+          <app-book-addcontacts-comp [addContacts]='addContacts' (contactChange)='onContactsChange($event)'>
+          </app-book-addcontacts-comp>
+        </ion-item>
+      </ion-item-group>
       <ion-item-group>
         <ion-item-divider>
           支付方式：

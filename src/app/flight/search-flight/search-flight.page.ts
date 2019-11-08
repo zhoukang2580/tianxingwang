@@ -288,12 +288,18 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
   }
   onFromCitySelected(city: TrafficlineEntity) {
     if (city) {
-      this.fromCity = city;
+      this.flightService.setSearchFlightModel({
+        ...this.flightService.getSearchFlightModel(),
+        fromCity:city
+      })
     }
   }
   onToCitySelected(city: TrafficlineEntity) {
     if (city) {
-      this.toCity = city;
+      this.flightService.setSearchFlightModel({
+        ...this.flightService.getSearchFlightModel(),
+        toCity:city
+      })
     }
   }
 }
