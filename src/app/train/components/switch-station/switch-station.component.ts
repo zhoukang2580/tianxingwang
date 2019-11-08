@@ -78,30 +78,26 @@ export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
     this.isMoving = false;
   }
   onRotateIcon() {
-    if (this.isMoving) {
-      return;
-    }
-    this.isMoving = true;
     this.rotateIcon = !this.rotateIcon; // 控制图标旋转
     this.toggleCities = !this.toggleCities;
     let fromCity = this.vmFromCity;
     let toCity = this.vmToCity;
-    if (this.toggleCities) {
-      const temp = fromCity;
-      fromCity = toCity;
-      toCity = temp;
-    }
-    if (!fromCity || !toCity) {
-      return;
-    }
+    const temp = fromCity;
+    fromCity = toCity;
+    toCity = temp;
+    this.vmFromCity = fromCity;
+    this.vmToCity = toCity;
     if (this.vmFromCity) {
-      this.eFromCity.emit(this.toggleCities ? this.vmToCity : this.vmFromCity);
+      this.eFromCity.emit(fromCity);
     }
     if (this.vmToCity) {
-      this.eToCity.emit(this.toggleCities ? this.vmFromCity : this.vmToCity);
+      this.eToCity.emit(toCity);
     }
     console.log("出发城市：", fromCity.Nickname);
     console.log("目的城市：", toCity.Nickname);
+
+  }
+  private moveEle() {
     if (
       this.fromCityEle &&
       this.toCityEle &&
