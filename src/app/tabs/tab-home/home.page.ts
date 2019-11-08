@@ -1,3 +1,6 @@
+import { FlightService } from 'src/app/flight/flight.service';
+import { HotelService } from './../../hotel/hotel.service';
+import { TrainService } from 'src/app/train/train.service';
 import { StaffEntity } from 'src/app/hr/staff.service';
 import { StaffService } from "../../hr/staff.service";
 import { Notice, CmsService } from "./../../cms/cms.service";
@@ -35,12 +38,15 @@ export class HomePage implements OnInit {
     private payService: PayService,
     private cmsService: CmsService,
     private staffService: StaffService,
+    private trainService: TrainService,
+    private hotelService: HotelService,
+    private flightService: FlightService,
     route: ActivatedRoute
   ) {
     this.staff = null;
     this.selectedCompany$ = tmcService.getSelectedCompanySource();
     route.paramMap.subscribe(async p => {
-      
+      this.clearBookInfos();
       this.identity = await this.identityService
         .getIdentityAsync()
         .catch(_ => null);
@@ -87,7 +93,13 @@ export class HomePage implements OnInit {
   async getAgentNotices() {
     this.agentNotices = await this.cmsService.getAgentNotices(0).catch(_ => []);
   }
+  private clearBookInfos() {
+    this.flightService.removeAllBookInfos();
+    this.trainService.removeAllBookInfos();
+    this.hotelService.removeAllBookInfos();
+  }
   async check() {
+
     console.log("home check");
     try {
       // if (!this.staffService.staffCredentials || this.staffService.staffCredentials.length == 0) {
