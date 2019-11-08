@@ -59,7 +59,7 @@
       红色代表违规不可预订
     </ion-label>
   </ion-toolbar>
-  <app-or-comp *ngIf='vmCabins?.length==0'>暂无符合差标数据</app-or-comp>
+  <app-or-comp *ngIf='vmCabins?.length==0'>暂无数据</app-or-comp>
   <ion-list margin-top>
     <ion-item *ngFor='let cabin of vmCabins'>
       <div class='cabin-item'>
