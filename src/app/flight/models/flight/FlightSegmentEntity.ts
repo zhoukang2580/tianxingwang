@@ -18,6 +18,7 @@ export class FlightSegmentEntity {
   /// 航班最低价舱位
   /// </summary>
   LowestCabinCode: string;
+  LowestCabinId: string;
   /// <summary>
   /// 航班最低价舱位折扣
   /// </summary>

@@ -101,7 +101,7 @@
 <ion-footer color="primary">
   <ion-toolbar>
     <div class="tabs">
-      <div class="tab" [class.active]="activeTab === 'filter'" (click)="onFilter()">
+      <div class="tab" [class.active]="activeTab === 'filter'" (click)="onFilter()" [class.filtered]='isFiltered'>
         <ion-icon name="funnel"></ion-icon>
         <ion-note>筛选</ion-note>
       </div>

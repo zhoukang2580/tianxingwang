@@ -131,56 +131,57 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     const lowestFlightSegment = flights.find(
       fs => fs.Number == data.flightPolicy.LowerSegment.Number
     );
-    if (!lowestFlightSegment || !onePolicyFlights) {
+    if (!lowestFlightSegment || !onePolicyFlights||!onePolicyFlights.FlightPolicies) {
       AppHelper.alert(LanguageHelper.Flight.getTheLowestSegmentNotFoundTip());
-    } else {
-      const lowestCabin = (onePolicyFlights.FlightPolicies || []).find(
-        c =>
-          c.Id == data.flightPolicy.LowerSegment.LowestCabinId
+      return;
+    }
+    const lowestCabin = onePolicyFlights.FlightPolicies.find(
+      c =>
+        c.Id == data.flightPolicy.LowerSegment.LowestCabinId
+    );
+    debugger;
+    if (!lowestCabin) {
+      await AppHelper.alert(
+        LanguageHelper.Flight.getTheLowestCabinNotFoundTip()
       );
-      if (!lowestCabin) {
+      return "";
+    }
+    lowestCabin.Cabin = flights.reduce((acc, f) => (acc = [...acc, ...f.Cabins]), [] as FlightCabinEntity[]).find(
+      c => c.FlightNumber == lowestCabin.FlightNo && c.Id == lowestCabin.Id
+    );
+    const m = await this.modalCtrl.create({
+      component: SelectFlightsegmentCabinComponent,
+      componentProps: {
+        policiedCabins: [lowestCabin],
+        flightSegment: lowestFlightSegment
+      }
+    });
+    m.backdropDismiss = false;
+    await this.flightService.dismissTopOverlay();
+    await m.present();
+    const result = await m.onDidDismiss();
+    if (result.data) {
+      const cbin = result.data;
+      if (!cbin) {
         await AppHelper.alert(
           LanguageHelper.Flight.getTheLowestCabinNotFoundTip()
         );
-        return "";
-      }
-      lowestCabin.Cabin = flights.reduce((acc, f) => (acc = [...acc, ...f.Cabins]), [] as FlightCabinEntity[]).find(
-        c => c.FlightNumber == lowestCabin.FlightNo && c.Id == lowestCabin.Id
-      );
-      const m = await this.modalCtrl.create({
-        component: SelectFlightsegmentCabinComponent,
-        componentProps: {
-          policiedCabins: [lowestCabin],
-          flightSegment: lowestFlightSegment
-        }
-      });
-      m.backdropDismiss = false;
-      await this.flightService.dismissTopOverlay();
-      await m.present();
-      const result = await m.onDidDismiss();
-      if (result.data) {
-        const cbin = result.data;
-        if (!cbin) {
-          await AppHelper.alert(
-            LanguageHelper.Flight.getTheLowestCabinNotFoundTip()
-          );
-        } else {
-          const bookInfo: IFlightSegmentInfo = {
-            flightPolicy: cbin,
-            flightSegment: lowestFlightSegment,
-            tripType: data.tripType || TripType.departureTrip,
-            id: AppHelper.uuid(),
-            isLowerSegmentSelected: true
-          };
-          const newInfo: PassengerBookInfo<IFlightSegmentInfo> = {
-            id: AppHelper.uuid(),
-            passenger: old.passenger,
-            credential: old.credential,
-            isNotWhitelist: old.isNotWhitelist,
-            bookInfo
-          };
-          this.flightService.replacePassengerBookInfo(old, newInfo);
-        }
+      } else {
+        const bookInfo: IFlightSegmentInfo = {
+          flightPolicy: cbin,
+          flightSegment: lowestFlightSegment,
+          tripType: data.tripType || TripType.departureTrip,
+          id: AppHelper.uuid(),
+          isLowerSegmentSelected: true
+        };
+        const newInfo: PassengerBookInfo<IFlightSegmentInfo> = {
+          id: AppHelper.uuid(),
+          passenger: old.passenger,
+          credential: old.credential,
+          isNotWhitelist: old.isNotWhitelist,
+          bookInfo
+        };
+        this.flightService.replacePassengerBookInfo(old, newInfo);
       }
     }
   }

@@ -319,7 +319,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           Object.keys(this.filterComp.userOps).some(
             k => this.filterComp.userOps[k]
           );
-        await this.flightService.setDefaultFilteredPassenger();
         const segments = this.flightService.filterPassengerPolicyFlights(
           null,
           filteredFlightJourenyList,

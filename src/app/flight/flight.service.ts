@@ -258,6 +258,7 @@ export class FlightService {
           return it;
         })
       );
+      this.setDefaultFilteredPassenger();
       return this.getTotalFlySegments(flightJourneyList);
     }
   }
@@ -562,7 +563,7 @@ export class FlightService {
       item.isReplace = false;
       return item;
     });
-    if (isSelfBookType && arr.filter(it => !!it.bookInfo).length == 2) {
+    if (isSelfBookType && arr.filter(it => !!it.bookInfo).length == 2||arr.filter(it=>!!it.bookInfo).length==0) {
       this.setSearchFlightModel({
         ...this.getSearchFlightModel(),
         isLocked: false
@@ -577,18 +578,15 @@ export class FlightService {
     const passengerPolicies = this.currentViewtFlightSegment.totalPolicyFlights.find(
       itm => itm.PassengerKey == bookInfo.passenger.AccountId
     );
-    if (passengerPolicies) {
+    if (passengerPolicies&&passengerPolicies.FlightPolicies) {
       const cabin = passengerPolicies.FlightPolicies.find(
         item =>
-          item.CabinCode == flightCabin.Code &&
-          item.FlightNo == flightCabin.FlightNumber
+          item.Id==flightCabin.Id
       );
       if (cabin) {
-        cabin.Cabin =
-          cabin.Cabin ||
-          this.currentViewtFlightSegment.flightSegment.Cabins.find(
-            c => c.Code == cabin.CabinCode
-          );
+        cabin.Cabin = {...this.currentViewtFlightSegment.flightSegment.Cabins.find(
+            c => c.Id == cabin.Id
+          )};
         let tripType = TripType.departureTrip;
         if (bookInfo.isReplace) {
           if (bookInfo.bookInfo) {
@@ -850,6 +848,9 @@ export class FlightService {
               s.LowestFare = seg.LowestFare;
               s.IsStop = seg.IsStop;
               s.Number = seg.Number;
+              s.LowestCabinCode=seg.LowestCabinCode;
+              s.LowerFlightNumber=seg.LowerFlightNumber;
+              s.LowestCabinId=seg.LowestCabinId;
               if (seg.Cabins) {
                 s.Cabins = seg.Cabins.map(fare => {
                   const c = new FlightCabinEntity();
@@ -986,7 +987,7 @@ export class FlightService {
   async setDefaultFilteredPassenger(){
     const isStaff = await this.staffService.isSelfBookType();
     let bookInfos = this.getPassengerBookInfos();
-    if(bookInfos.length==1||isStaff){
+    if(!bookInfos.find(it=>it.isFilteredPolicy)&&( bookInfos.length==1||isStaff)){
       bookInfos=bookInfos.map((it,idx)=>{
         if(idx==0){
           it.isFilteredPolicy=true;
