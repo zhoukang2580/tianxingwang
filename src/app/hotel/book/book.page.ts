@@ -703,7 +703,7 @@ export class BookPage implements OnInit, AfterViewInit {
     });
     await this.initCombindInfos();
     await this.initSelfBookTypeCredentials();
-    await this.initTmcOutNumberInfos();
+    this.initTmcOutNumberInfos();
     await this.initOrderTravelPayTypes();
     console.log("combindInfos", this.combindInfos);
   }
@@ -1077,7 +1077,7 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     this.combindInfos.forEach(item => {
       item.tmcOutNumberInfos.forEach(it => {
-        if (true || it.isLoadNumber) {
+        if (it.isLoadNumber) {
           if (
             it.staffNumber &&
             !args.find(n => n.staffNumber == it.staffNumber)
@@ -1227,6 +1227,7 @@ export class BookPage implements OnInit, AfterViewInit {
       !arg.travelUrlInfos ||
       arg.travelUrlInfos.length == 0
     ) {
+
       return;
     }
     console.log("on select travel number", arg);
@@ -1330,6 +1331,7 @@ interface ITmcOutNumberInfo {
   staffOutNumber: string;
   isTravelNumber: boolean;
   isLoadNumber: boolean;
+  isNumberLoading:boolean;
   staffNumber: string;
   canSelect: boolean;
   isDisabled: boolean;

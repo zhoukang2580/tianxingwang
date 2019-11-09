@@ -227,7 +227,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     });
     await this.initCombindInfos();
     await this.initSelfBookTypeCredentials();
-    await this.initTmcOutNumberInfos();
+    this.initTmcOutNumberInfos();
     await this.initOrderTravelPayTypes();
     console.log("combindInfos", this.viewModel.combindInfos);
   }
@@ -911,7 +911,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     }
     this.viewModel.combindInfos.forEach(item => {
       item.tmcOutNumberInfos.forEach(it => {
-        if (true || it.isLoadNumber) {
+        if (it.isLoadNumber) {
           if (
             it.staffNumber &&
             !args.find(n => n.staffNumber == it.staffNumber)

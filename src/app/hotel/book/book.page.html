@@ -220,7 +220,7 @@
           </ion-item-divider>
           <ion-item *ngFor='let n of combindInfo?.tmcOutNumberInfos' (click)='onSelectTravelNumber(n,combindInfo)'>
             <ion-label>{{n.label}}:</ion-label>
-            <ion-input [disabled]='n.isDisabled' [value]='n.value' [(ngModel)]='n.value' placeholder="{{n.label}}">
+            <ion-input  [value]='n.value' [(ngModel)]='n.value' placeholder="{{n.isDisabled?'正在加载...':n.label}}">
             </ion-input>
           </ion-item>
         </ion-item-group>

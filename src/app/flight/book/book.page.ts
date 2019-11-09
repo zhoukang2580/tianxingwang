@@ -284,7 +284,7 @@ export class BookPage implements OnInit, AfterViewInit {
         console.log("notWhitelistCredentials", notWhitelistCredentials);
       }
       await this.initCombindInfos();
-      await this.initTmcOutNumberInfos();
+      this.initTmcOutNumberInfos();
       await this.initOrderTravelPayTypes();
       console.log("vmCombindInfos", this.vmCombindInfos);
     } catch (err) {
@@ -314,7 +314,7 @@ export class BookPage implements OnInit, AfterViewInit {
     this.vmCombindInfos.forEach(item => {
       if (item.tmcOutNumberInfos) {
         item.tmcOutNumberInfos.forEach(it => {
-          if (true || it.isLoadNumber) {
+          if (it.isLoadNumber) {
             if (
               it.staffNumber &&
               !args.find(n => n.staffNumber == it.staffNumber)
