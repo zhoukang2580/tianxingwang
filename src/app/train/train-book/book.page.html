@@ -179,7 +179,10 @@
           </ion-item-divider>
           <ion-item *ngFor='let n of combindInfo?.tmcOutNumberInfos' (click)='onSelectTravelNumber(n,combindInfo)'>
             <ion-label>{{n.label}}:</ion-label>
-            <ion-input  [value]='n.value' [(ngModel)]='n.value' placeholder="{{n.isDisabled?'正在加载...':n.label}}">
+            <ion-input 
+            [class.TravelNumber]='n.label' 
+            [disabled]='n.isDisabled' 
+            [value]='n.value' [(ngModel)]='n.value' placeholder="{{n.isLoadingNumber?'正在加载行程单号':n.label}}">
             </ion-input>
           </ion-item>
         </ion-item-group>

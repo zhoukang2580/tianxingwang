@@ -86,7 +86,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
   tmc: TmcEntity;
   totalPriceSource: Subject<number>;
   isCanSave$ = of(false);
-  addContacts: AddContact[]=[];
+  addContacts: AddContact[] = [];
   private isCheckingPay = false;
   private checkPayCountIntervalId: any;
   private checkPayCount = 5;
@@ -631,13 +631,13 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     item.isOpenrules = !item.isOpenrules;
   }
   private fillBookLinkmans(bookDto: OrderBookDto) {
-    if(!this.addContacts||!this.addContacts.length){
+    if (!this.addContacts || !this.addContacts.length) {
       return true;
     }
     bookDto.Linkmans = [];
-    const showErrorMsg = (msg: string, idx:number) => {
+    const showErrorMsg = (msg: string, idx: number) => {
       AppHelper.alert(
-        `第${idx+1}个联系人的信息${msg}不能为空`
+        `第${idx + 1}个联系人的信息${msg}不能为空`
       );
     };
     for (let j = 0; j < this.addContacts.length; j++) {
@@ -925,6 +925,11 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         }
       });
     });
+    this.viewModel.combindInfos.forEach(item => {
+      item.tmcOutNumberInfos.forEach(info => {
+        info.isLoadingNumber = true;
+      })
+    })
     const result = await this.tmcService.getTravelUrls(args);
     if (result) {
       this.viewModel.combindInfos.forEach(item =>
@@ -940,8 +945,15 @@ export class TrainBookPage implements OnInit, AfterViewInit {
           info.canSelect = !!(
             info.travelUrlInfos && info.travelUrlInfos.length
           ); // && info.canSelect;
+          info.isLoadingNumber = false;
         })
       );
+    } else {
+      this.viewModel.combindInfos.forEach(item => {
+        item.tmcOutNumberInfos.forEach(info => {
+          info.isLoadingNumber = false;
+        })
+      })
     }
   }
   onIllegalReason(
@@ -1035,11 +1047,42 @@ export class TrainBookPage implements OnInit, AfterViewInit {
   }
   async onSelectTravelNumber(arg: ITmcOutNumberInfo, item: IPassengerBookInfo) {
     if (
-      !arg.canSelect ||
-      !arg.travelUrlInfos ||
-      arg.travelUrlInfos.length == 0
+      !arg.canSelect
     ) {
       return;
+    }
+    if (!arg.travelUrlInfos || arg.travelUrlInfos.length == 0) {
+      item.tmcOutNumberInfos.forEach(info => {
+        info.isLoadingNumber = true;
+      })
+      const result = await this.tmcService.getTravelUrls([{
+        staffNumber: arg.staffNumber,
+        staffOutNumber: arg.staffOutNumber,
+        name: arg.label
+      }]);
+      if (result) {
+        item.tmcOutNumberInfos.forEach(info => {
+          info.travelUrlInfos = result[info.staffNumber];
+          if (
+            !info.value &&
+            info.travelUrlInfos &&
+            info.travelUrlInfos.length
+          ) {
+            info.value = info.travelUrlInfos[0].TravelNumber;
+          }
+          info.canSelect = !!(
+            info.travelUrlInfos && info.travelUrlInfos.length
+          ); // && info.canSelect;
+          info.isLoadingNumber = false;
+        })
+      } else {
+        item.tmcOutNumberInfos.forEach(info => {
+          info.isLoadingNumber = false;
+        })
+      }
+    }
+    if (!arg.travelUrlInfos || arg.travelUrlInfos.length == 0) {
+      await this.onSelectTravelNumber(arg,item);
     }
     console.log("on select travel number", arg);
     const p = await this.popoverCtrl.create({
@@ -1092,6 +1135,7 @@ interface ITmcOutNumberInfo {
   staffOutNumber: string;
   isTravelNumber: boolean;
   isLoadNumber: boolean;
+  isLoadingNumber: boolean;
   staffNumber: string;
   canSelect: boolean;
   isDisabled: boolean;

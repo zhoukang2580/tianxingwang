@@ -5,7 +5,11 @@ ion-item-divider[sticky] {
 .back-icon {
   color: rgba(var(--ion-color-dark-rgb), 0.5);
 }
-
+ion-input.TravelNumber {
+  input {
+    font-size: 0.8rem;
+  }
+}
 ion-content {
   --background: #f2f2f2;
   ion-list {
