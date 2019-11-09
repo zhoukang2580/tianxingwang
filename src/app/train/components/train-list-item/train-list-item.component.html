@@ -1,5 +1,5 @@
 <ng-container *ngIf='!seat else seatTemp'>
-  <div class='train-item'>
+  <div class='train-item' (click)='train["isShowSeats"]=!train["isShowSeats"]'>
     <div class='info'>
       <div class='time'>
         <strong>{{train?.StartShortTime}}</strong>
@@ -16,13 +16,13 @@
       </div>
     </div>
     <div>
-      <div class='price' (click)='train["isShowSeats"]=!train["isShowSeats"]'>￥{{getLowestSeatPrice()}}
+      <div class='price' >￥{{getLowestSeatPrice()}}
         <ng-container *ngIf='getSeats()?.length'>
           <ion-icon name="arrow-dropdown" color='secondary' *ngIf='train["isShowSeats"]'></ion-icon>
           <ion-icon name="arrow-dropup" color='secondary' *ngIf='!train["isShowSeats"]'></ion-icon>
         </ng-container>
       </div>
-      <ion-button (click)='onScheduls()' fill='clear' size='small' style="margin-left: 1em" color='secondary'>经停
+      <ion-button (click)='onScheduls($event)' fill='clear' size='small' style="margin-left: 1em" color='secondary'>经停信息
       </ion-button>
     </div>
   </div>
@@ -54,17 +54,6 @@
       </ion-col>
     </ion-row>
   </ion-grid>
-  <!-- <div class='seat'>
-    <div class='seat-item' text-nowrap *ngFor='let seat of getSeats()'>
-      <span>{{seat.SeatTypeName}}</span>
-      <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?seat.Count+"张":""}}</span>
-      <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"有":"无"}}票</span>
-      <ion-button *ngIf='showBookBtn' size='small' text-start [disabled]='getBookBtnColor(seat)=="danger"'
-        [color]='getBookBtnColor(seat)' (click)='onBookTicket(seat)'>预订
-      </ion-button>
-    </div>
-  </div> -->
-
 </ng-container>
 <ng-template #seatTemp>
   <div class='info'>

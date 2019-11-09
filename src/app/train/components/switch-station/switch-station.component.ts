@@ -58,8 +58,7 @@ export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
   @Input() vmToCity: TrafficlineEntity; // 界面上显示的目的城市
   isMoving: boolean;
   mode: string;
-  @Output() eFromCity: EventEmitter<TrafficlineEntity>;
-  @Output() eToCity: EventEmitter<TrafficlineEntity>;
+  @Output() eCities: EventEmitter<{ vmFrom: TrafficlineEntity; vmTo: TrafficlineEntity }>;
   constructor(
     plt: Platform,
     private render: Renderer2,
@@ -67,8 +66,7 @@ export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
     private modalCtrl: ModalController
   ) {
     this.mode = plt.is("ios") ? "ios" : plt.is("android") ? "md" : "";
-    this.eFromCity = new EventEmitter();
-    this.eToCity = new EventEmitter();
+    this.eCities = new EventEmitter();
   }
   onRotateIconDone(evt) {
     console.log("onRotateIconDone");
@@ -84,12 +82,7 @@ export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
     this.swap(this.vmFromCity, this.vmToCity);
     console.log("出发城市：", this.vmFromCity.Nickname);
     console.log("目的城市：", this.vmToCity.Nickname);
-    if (this.vmFromCity) {
-      this.eFromCity.emit(this.vmFromCity);
-    }
-    if (this.vmToCity) {
-      this.eToCity.emit(this.vmToCity);
-    }
+    this.eCities.emit({ vmFrom: this.vmFromCity, vmTo: this.vmToCity });
   }
   private swap(a: any, b: any) {
     const temp = a;
@@ -137,9 +130,9 @@ export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
 
   }
   async onSelectCity(fromCity: boolean) {
-   if(this.disabled){
-     return;
-   }
+    if (this.disabled) {
+      return;
+    }
     const m = await this.modalCtrl.create({
       component: SelectTrainStationModalComponent
     });
@@ -149,10 +142,11 @@ export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
     if (result && result.data) {
       const data = result.data as TrafficlineEntity;
       if (fromCity) {
-        this.eFromCity.emit(data);
+        this.vmFromCity = data;
       } else {
-        this.eToCity.emit(data);
+        this.vmToCity = data;
       }
+      this.eCities.emit({ vmTo: this.vmToCity, vmFrom: this.vmFromCity });
     }
   }
 }

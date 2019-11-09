@@ -33,8 +33,7 @@
           <ion-label><strong>往返</strong></ion-label>
         </ion-segment-button>
       </ion-segment>
-      <app-switch-station-comp [vmFromCity]="vmFromCity" (eToCity)='onToCitySelected($event)'
-        (eFromCity)='onFromCitySelected($event)' [vmToCity]="vmToCity" [disabled]='isDisabled'>
+      <app-switch-station-comp [vmFromCity]="vmFromCity" (eCities)='onCitiesSelected($event)' [vmToCity]="vmToCity" [disabled]='isDisabled'> 
       </app-switch-station-comp>
       <section class="flight-date">
         <app-search-day-comp [day]='goDate' (click)="onSelecDate(true,false)"
