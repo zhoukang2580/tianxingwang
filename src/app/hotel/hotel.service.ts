@@ -88,6 +88,9 @@ export class HotelService {
       identityService.getIdentitySource()
     ]).subscribe(async ([bookInfos, identity]) => {
       if (identity && identity.Id && identity.Ticket) {
+        if(this.isInitializingSelfBookInfos){
+          return;
+        }
         await this.initSelfBookTypeBookInfos();
       }
     });

@@ -64,17 +64,20 @@ ion-content {
   z-index: 99;
 }
 .login-loading {
+  display: none;
   position: fixed;
   top: 50%;
   left: 20%;
   right: 20%;
   height: 4em;
-  z-index: 100;
+  z-index: 10000;
   background-color: #fbf9fee3;
   transform: translateY(-50%);
   border-radius: 5px;
   color: black;
-  display: flex;
   align-items: center;
   justify-content: center;
+  &.isloading{
+    display: flex;
+  }
 }

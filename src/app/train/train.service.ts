@@ -92,6 +92,9 @@ export class TrainService {
       this.identityService.getIdentitySource()
     ]).subscribe(async ([infos, identity]) => {
       if (identity && identity.Ticket) {
+        if(this.isInitializingSelfBookInfos){
+          return;
+        }
         await this.initSelfBookTypeBookInfos();
       }
     });
