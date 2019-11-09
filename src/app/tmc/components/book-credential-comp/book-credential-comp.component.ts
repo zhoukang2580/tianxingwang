@@ -1,8 +1,9 @@
+import { Subscription } from 'rxjs';
 import { StaffService } from './../../../hr/staff.service';
 import { IonSelect } from '@ionic/angular';
 import { AppHelper } from "src/app/appHelper";
 import { Router } from "@angular/router";
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from "@angular/core";
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, AfterViewInit, OnDestroy } from "@angular/core";
 import { CredentialsEntity } from "../../models/CredentialsEntity";
 
 @Component({
@@ -10,7 +11,8 @@ import { CredentialsEntity } from "../../models/CredentialsEntity";
   templateUrl: "./book-credential-comp.component.html",
   styleUrls: ["./book-credential-comp.component.scss"]
 })
-export class BookCredentialCompComponent implements OnInit {
+export class BookCredentialCompComponent implements OnInit, AfterViewInit, OnDestroy {
+  private subscription = Subscription.EMPTY;
   @Input() credential: CredentialsEntity;
   @Input() credentials: CredentialsEntity[];
   // @Input() isFlightTrainHotel: "flight" | "train" | "hotel";
@@ -45,6 +47,16 @@ export class BookCredentialCompComponent implements OnInit {
   async ngOnInit() {
     // this.isFlightTrainHotel = "train";
     this.isSelf = await this.staffService.isSelfBookType();
+  }
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
+  ngAfterViewInit() {
+    if (this.ionSelect) {
+      this.subscription = this.ionSelect.ionChange.subscribe(_ => {
+        this.onSave();
+      });
+    }
   }
   openSelect() {
     if (!this.isModified) {
