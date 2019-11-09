@@ -654,10 +654,11 @@ export class BookPage implements OnInit, AfterViewInit {
         p.RoomPlan.Room = {
           Name:combindInfo.bookInfo.bookInfo.hotelRoom.Name,
           RoomPlans:combindInfo.bookInfo.bookInfo.hotelRoom.RoomPlans.map(it=>{
-            it.Room=new RoomEntity();
-            it.Room.Id=combindInfo.bookInfo.bookInfo.hotelRoom.Id;
-            it.Remark=p.RoomPlan.Remark;
-            return it;
+            const plan = new RoomPlanEntity();
+            plan.Room=new RoomEntity();
+            plan.Room.Id=combindInfo.bookInfo.bookInfo.hotelRoom.Id;
+            plan.Remark=p.RoomPlan.Remark;
+            return plan;
           }),
           Hotel: { Id: combindInfo.bookInfo.bookInfo.hotelEntity.Id }
         } as RoomEntity;
