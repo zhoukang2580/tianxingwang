@@ -1082,7 +1082,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       }
     }
     if (!arg.travelUrlInfos || arg.travelUrlInfos.length == 0) {
-      await this.onSelectTravelNumber(arg,item);
+      return;
     }
     console.log("on select travel number", arg);
     const p = await this.popoverCtrl.create({

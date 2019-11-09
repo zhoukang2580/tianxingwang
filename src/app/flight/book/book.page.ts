@@ -367,10 +367,41 @@ export class BookPage implements OnInit, AfterViewInit {
   }
   async onSelectTravelNumber(arg: TmcOutNumberInfo, item: ICombindInfo) {
     if (
-      !arg.canSelect ||
-      !arg.travelUrlInfos ||
-      arg.travelUrlInfos.length == 0
+      !arg.canSelect
     ) {
+      return;
+    }
+    if (!arg.travelUrlInfos || arg.travelUrlInfos.length == 0) {
+      item.tmcOutNumberInfos.forEach(info => {
+        info.isLoadingNumber = true;
+      })
+      const result = await this.tmcService.getTravelUrls([{
+        staffNumber: arg.staffNumber,
+        staffOutNumber: arg.staffOutNumber,
+        name: arg.label
+      }]);
+      if (result) {
+        item.tmcOutNumberInfos.forEach(info => {
+          info.travelUrlInfos = result[info.staffNumber];
+          if (
+            !info.value &&
+            info.travelUrlInfos &&
+            info.travelUrlInfos.length
+          ) {
+            info.value = info.travelUrlInfos[0].TravelNumber;
+          }
+          info.canSelect = !!(
+            info.travelUrlInfos && info.travelUrlInfos.length
+          ); // && info.canSelect;
+          info.isLoadingNumber = false;
+        })
+      } else {
+        item.tmcOutNumberInfos.forEach(info => {
+          info.isLoadingNumber = false;
+        })
+      }
+    }
+    if (!arg.travelUrlInfos || arg.travelUrlInfos.length == 0) {
       return;
     }
     console.log("on select travel number", arg);
@@ -1231,6 +1262,7 @@ interface TmcOutNumberInfo {
   staffOutNumber: string;
   isTravelNumber: boolean;
   isLoadNumber: boolean;
+  isLoadingNumber: boolean;
   staffNumber: string;
   canSelect: boolean;
   isDisabled: boolean;
