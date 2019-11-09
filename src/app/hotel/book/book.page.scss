@@ -2,6 +2,9 @@ ion-item-divider[sticky] {
   border-left: 4px solid var(--ion-color-secondary);
   z-index: 1000;
 }
+ion-input.TravelNumber input{
+  font-size: 0.8rem;
+}
 .price-list {
   background: white;
   position: fixed;
