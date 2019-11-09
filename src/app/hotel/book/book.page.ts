@@ -28,7 +28,9 @@ import {
   ViewChild,
   HostListener,
   HostBinding,
-  AfterViewInit
+  AfterViewInit,
+  QueryList,
+  ElementRef
 } from "@angular/core";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { OrderBookDto } from "src/app/order/models/OrderBookDto";
@@ -91,6 +93,7 @@ export class BookPage implements OnInit, AfterViewInit {
   }[];
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
   @ViewChild(IonContent) ionContent: IonContent;
+  @ViewChild("illegalReasonsEle") illegalReasonsEles: QueryList<ElementRef<HTMLElement>>;
   error: any;
   identity: IdentityEntity;
   bookInfos: PassengerBookInfo<IHotelInfo>[];
@@ -594,9 +597,9 @@ export class BookPage implements OnInit, AfterViewInit {
             LanguageHelper.Flight.getIllegalReasonTip(),
             combindInfo
           );
-          // if (this.illegalReasonsEles) {
-          //   this.moveRequiredEleToViewPort(this.illegalReasonsEles.first);
-          // }
+          if (this.illegalReasonsEles && this.illegalReasonsEles.first && this.illegalReasonsEles.first.nativeElement) {
+            this.scrollEleToView(this.illegalReasonsEles.first.nativeElement);
+          }
           return false;
         }
       }
@@ -1361,7 +1364,7 @@ interface ITmcOutNumberInfo {
   staffOutNumber: string;
   isTravelNumber: boolean;
   isLoadNumber: boolean;
-  isLoadingNumber:boolean;
+  isLoadingNumber: boolean;
   staffNumber: string;
   canSelect: boolean;
   isDisabled: boolean;

@@ -142,8 +142,8 @@
             </div>
           </ion-item>
           <ion-item *ngIf='combindInfo?.bookInfo?.bookInfo?.roomPlan?.Rules && !combindInfo?.isNotWhitelist'>
-            <div style='width: 100%'>
-              <app-book-illegal-reason-comp #illegalReasonsEle [illegalReasons]='illegalReasons'
+            <div style='width: 100%' #illegalReasonsEle>
+              <app-book-illegal-reason-comp  [illegalReasons]='illegalReasons'
                 [isAllowCustomReason]='tmc?.IsAllowCustomReason' (ionchange)='onIllegalReason($event,combindInfo)'>
               </app-book-illegal-reason-comp>
             </div>
