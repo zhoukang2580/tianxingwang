@@ -626,7 +626,7 @@ export class BookPage implements OnInit, AfterViewInit {
       p.OrganizationCode = combindInfo.otherOrganizationName
         ? ""
         : (combindInfo.organization && combindInfo.organization.Code) || "";
-      if (!this.tmc && this.tmc.OutNumberRequiryNameArray && this.tmc.OutNumberRequiryNameArray.length) {
+      if (this.tmc && this.tmc.OutNumberRequiryNameArray && this.tmc.OutNumberRequiryNameArray.length) {
         if (!combindInfo.tmcOutNumberInfos || combindInfo.tmcOutNumberInfos.some(it => this.tmc.OutNumberRequiryNameArray.some(k => it.key == k && !it.value))) {
           showErrorMsg("外部编号信息必填", combindInfo);
           console.log(this.outnumberEles.first);
