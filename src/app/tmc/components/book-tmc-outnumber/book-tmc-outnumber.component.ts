@@ -35,7 +35,7 @@ export class BookTmcOutnumberComponent implements OnInit {
         staffNumber: arg.staffNumber,
         staffOutNumber: arg.staffOutNumber,
         name: arg.label
-      }]);
+      }],true);
       if (result) {
         tmcOutNumberInfos.forEach(info => {
           info.travelUrlInfos = result[info.staffNumber];

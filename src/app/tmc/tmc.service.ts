@@ -345,7 +345,8 @@ export class TmcService {
       staffNumber: string;
       staffOutNumber: string;
       name: string;
-    }[]
+    }[],
+    isShowLoading:boolean=false
   ): Promise<{
     [staffNumber: string]: TravelUrlInfo[];
   }> {
@@ -356,7 +357,7 @@ export class TmcService {
     if (data && data.length) {
       for (let i = 0; i < data.length; i++) {
         const arg = data[i];
-        const res = this.getTravelUrl(arg);
+        const res = this.getTravelUrl(arg,isShowLoading);
         all.push(res);
       }
     }
@@ -372,12 +373,12 @@ export class TmcService {
     staffNumber: string;
     staffOutNumber: string;
     name: string;
-  }): Promise<{
+  },isShowLoading=false): Promise<{
     key: string;
     value: TravelUrlInfo[];
   }> {
     const req = new RequestEntity();
-    req.IsShowLoading = true;
+    req.IsShowLoading = isShowLoading;
     req.Method = "TmcApiBookUrl-Home-GetTravelUrl";
     req.Data = data;
     return this.apiService.getPromiseData<{
