@@ -36,7 +36,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   message: string;
   countDown: number;
   loginType = "user";
-  isLogining=false;
+  isLogining = false;
   isMobileNumberOk = false;
   isLoginOk = false;
   isShowWechatLogin: boolean;
@@ -52,10 +52,10 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     route: ActivatedRoute,
     private staffService: StaffService,
     private modalCtrl: ModalController,
-    private apiService:ApiService,
-    private trainServive:TrainService,
-    private hotelService:HotelService,
-    private flightService:FlightService
+    private apiService: ApiService,
+    private trainServive: TrainService,
+    private hotelService: HotelService,
+    private flightService: FlightService
   ) {
     this.config.set("swipeBackEnabled", false);
     this.isShowWechatLogin = AppHelper.isApp();
@@ -340,10 +340,20 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         }
       );
   }
- 
-  private async initializeSelfBookInfos(){
 
-    const staff = await this.staffService.getStaff();
+  private async initializeSelfBookInfos() {
+    try {
+      this.isLogining = true;
+      const staff = await this.staffService.getStaff();
+      if (staff) {
+        await this.hotelService.initSelfBookTypeBookInfos();
+        await this.flightService.initSelfBookTypeBookInfos();
+        await this.trainServive.initSelfBookTypeBookInfos();
+      }
+    } catch (e) {
+      this.isLogining = false;
+    }
+    this.isLogining = false;
   }
   async jump(
     isCheckDevice: boolean // 跳转

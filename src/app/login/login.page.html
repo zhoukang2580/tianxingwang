@@ -152,4 +152,5 @@
   </form> -->
 </ion-content>
 <app-slidvalidate-com *ngIf="isShowImageCode" (slideEvent)='onSlideEvent($event)'></app-slidvalidate-com>
-<div [class.isloading]='isLogining' class='login-loading'></div>
+<div class='shade' *ngIf='isLogining'></div>
+<div [class.isloading]='isLogining' class='login-loading'>正在登陆,请稍后...</div>

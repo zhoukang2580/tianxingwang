@@ -107,7 +107,7 @@ export class FlightService {
       }
     });
   }
-  private async initSelfBookTypeBookInfos() {
+  async initSelfBookTypeBookInfos() {
     this.apiService.showLoadingView();
     await this.checkOrAddSelfBookTypeBookInfo();
     this.apiService.hideLoadingView();

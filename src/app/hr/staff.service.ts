@@ -230,7 +230,6 @@ export class StaffService {
   private staff: StaffEntity;
   private subscription = Subscription.EMPTY;
   private isStaffCredentialsLoading = false;
-  private isStaffLoading = false;
   status = false;
   staffCredentials: MemberCredential[];
   constructor(
@@ -320,14 +319,8 @@ export class StaffService {
   //   })
   // }
   async getStaff(forceRefresh: boolean = false): Promise<StaffEntity> {
-    if (this.isStaffLoading) {
-      return Promise.resolve(this.staff);
-    }
-    this.isStaffLoading=true;
     const id = await this.identityService.getIdentityAsync().catch(_ => null);
     if (!id || !id.Id || !id.Ticket) {
-      // this.staff = {} as any;
-      this.isStaffLoading = false;
       return this.staff;
     }
     forceRefresh =
@@ -349,7 +342,6 @@ export class StaffService {
           this.staff.AccountId = this.staff.AccountId || id.Id;
           this.staff.Name = this.staff.Name || id.Name;
         }{
-          this.isStaffLoading = false;
           return this.staff;
         }
       }
@@ -361,7 +353,6 @@ export class StaffService {
     return this.apiService
       .getPromiseData<StaffEntity>(req)
       .then(staff => {
-        this.isStaffLoading = false;
         console.log("staff ", staff);
         this.staff = staff;
         this.status = true;
@@ -371,7 +362,6 @@ export class StaffService {
         }
         return staff
       }).catch(_ => {
-        this.isStaffLoading = false;
         return {} as StaffEntity;
       })
   }

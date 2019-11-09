@@ -274,7 +274,7 @@ export class HotelService {
       this.searchHotelModelSource.next(this.searchHotelModel);
     }
   }
-  private async initSelfBookTypeBookInfos() {
+  async initSelfBookTypeBookInfos() {
     const isSelf = await this.staffService.isSelfBookType();
     const infos = this.getBookInfos();
     console.log("initSelfBookTypeBookInfos", infos);
