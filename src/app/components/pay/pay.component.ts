@@ -15,13 +15,14 @@ export interface IPayWayItem {
 })
 export class PayComponent implements OnInit {
   payWays: IPayWayItem[];
-  isIos=false;
-  constructor(private popoverController: PopoverController,plt:Platform) {
-    this.isIos=plt.is("ios");
+  isIos = false;
+  constructor(private popoverController: PopoverController, plt: Platform) {
+    this.isIos = plt.is("ios");
   }
   async onSelectPayWay(payWay: IPayWayItem) {
-    this.payWays.forEach(it => {
+    this.payWays = this.payWays.map(it => {
       it.isChecked = it.value == payWay.value;
+      return it;
     });
   }
   async onDone() {
