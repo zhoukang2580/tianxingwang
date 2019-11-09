@@ -86,7 +86,9 @@ export class TmcService {
       );
       if (ok) {
         payResult = false;
-      } 
+      } else {
+        return await this.payOrder(tradeNo, key);
+      }
     } else {
       if (payWay.value == "ali") {
         payResult = await this.aliPay(tradeNo, key);
@@ -346,7 +348,7 @@ export class TmcService {
       staffOutNumber: string;
       name: string;
     }[],
-    isShowLoading:boolean=false
+    isShowLoading: boolean = false
   ): Promise<{
     [staffNumber: string]: TravelUrlInfo[];
   }> {
@@ -357,7 +359,7 @@ export class TmcService {
     if (data && data.length) {
       for (let i = 0; i < data.length; i++) {
         const arg = data[i];
-        const res = this.getTravelUrl(arg,isShowLoading);
+        const res = this.getTravelUrl(arg, isShowLoading);
         all.push(res);
       }
     }
@@ -373,7 +375,7 @@ export class TmcService {
     staffNumber: string;
     staffOutNumber: string;
     name: string;
-  },isShowLoading=false): Promise<{
+  }, isShowLoading = false): Promise<{
     key: string;
     value: TravelUrlInfo[];
   }> {
@@ -1135,7 +1137,7 @@ export interface PassengerBookInfo<T> {
   isReplace?: boolean;
   isOnlyFilterMatchedPolicy?: boolean;
   isFilteredPolicy?: boolean;// 完全符合差标
-  isAllowBookPolicy?:boolean;// 所有可预订
+  isAllowBookPolicy?: boolean;// 所有可预订
 }
 export class InitialBookDtoModel {
   ServiceFees: { [clientId: string]: string };
