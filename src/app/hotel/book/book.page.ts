@@ -628,7 +628,7 @@ export class BookPage implements OnInit, AfterViewInit {
         : (combindInfo.organization && combindInfo.organization.Code) || "";
       if (this.tmc && this.tmc.OutNumberRequiryNameArray && this.tmc.OutNumberRequiryNameArray.length) {
         if (!combindInfo.tmcOutNumberInfos || combindInfo.tmcOutNumberInfos.some(it => this.tmc.OutNumberRequiryNameArray.some(k => it.key == k && !it.value))) {
-          showErrorMsg("外部编号信息必填", combindInfo);
+          showErrorMsg("外部编号", combindInfo);
           console.log(this.outnumberEles.first);
           if (this.outnumberEles && this.outnumberEles.first && this.outnumberEles.first['el']) {
             this.scrollEleToView(this.outnumberEles.first['el']);
