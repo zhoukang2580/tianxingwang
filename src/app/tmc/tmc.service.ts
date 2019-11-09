@@ -77,6 +77,7 @@ export class TmcService {
   async payOrder(tradeNo: string, key = ""): Promise<boolean> {
     let payResult = false;
     const payWay = await this.payService.selectPayWay();
+    console.log('payway',payWay);
     if (!payWay) {
       const ok = await AppHelper.alert(
         LanguageHelper.Order.getGiveUpPayTip(),
