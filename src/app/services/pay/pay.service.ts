@@ -55,8 +55,8 @@ export class PayService {
                     resolve(r.Data.Number);
                   })
                   .catch(e => {
-                    AppHelper.alert(e.message || e);
-                    reject(e);
+                    // AppHelper.alert(e.message || e);
+                    reject(e.message || e);
                   });
               } else {
                 reject(r.Message);
@@ -66,7 +66,9 @@ export class PayService {
               reject(e);
             },
             () => {
-              sub.unsubscribe();
+              setTimeout(() => {
+                sub.unsubscribe();
+              }, 1000);
             }
           );
       });
@@ -160,8 +162,8 @@ export class PayService {
                     resolve(r.Data.Number);
                   })
                   .catch(e => {
-                    AppHelper.alert(e.message || e);
-                    reject(e);
+                    // AppHelper.alert(e.message || e);
+                    reject(e.message || e);
                   });
               }
             } else {
@@ -172,7 +174,9 @@ export class PayService {
             reject(e);
           },
           () => {
-            sub.unsubscribe();
+            setTimeout(() => {
+              sub.unsubscribe();
+            }, 1000);
           }
         );
       });
