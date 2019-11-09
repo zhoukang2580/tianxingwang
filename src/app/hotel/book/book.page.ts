@@ -652,7 +652,13 @@ export class BookPage implements OnInit, AfterViewInit {
         p.CheckinTime = combindInfo.arrivalHotelTime;
         p.RoomPlan = combindInfo.bookInfo.bookInfo.roomPlan;
         p.RoomPlan.Room = {
-          ...combindInfo.bookInfo.bookInfo.hotelRoom,
+          Name:combindInfo.bookInfo.bookInfo.hotelRoom.Name,
+          RoomPlans:combindInfo.bookInfo.bookInfo.hotelRoom.RoomPlans.map(it=>{
+            it.Room=new RoomEntity();
+            it.Room.Id=combindInfo.bookInfo.bookInfo.hotelRoom.Id;
+            it.Remark=p.RoomPlan.Remark;
+            return it;
+          }),
           Hotel: { Id: combindInfo.bookInfo.bookInfo.hotelEntity.Id }
         } as RoomEntity;
         p.RoomPlan.Room.Hotel = {
@@ -660,12 +666,7 @@ export class BookPage implements OnInit, AfterViewInit {
           Rooms: null,
           Id:combindInfo.bookInfo.bookInfo.hotelEntity.Id,
           HotelDayPrices: [],
-          HotelDetails: combindInfo.bookInfo.bookInfo.hotelEntity.HotelDetails.map(it => {
-            const Hotel = new HotelEntity();
-            Hotel.Id = it.Hotel && it.Hotel.Id||combindInfo.bookInfo.bookInfo.hotelEntity.Id;
-            it.Hotel = Hotel;
-            return it;
-          })
+          HotelDetails: []
         } as HotelEntity;
       }
       if (combindInfo.bookInfo) {
