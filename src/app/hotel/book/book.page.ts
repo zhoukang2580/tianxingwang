@@ -20,7 +20,8 @@ import {
   PopoverController,
   ModalController,
   IonContent,
-  IonItemGroup
+  IonItemGroup,
+  Platform
 } from "@ionic/angular";
 import { NavController } from "@ionic/angular";
 import {
@@ -90,7 +91,7 @@ export class BookPage implements OnInit, AfterViewInit {
   orderTravelPayType: any;
   orderTravelPayTypes: {
     label: string;
-    value: OrderTravelPayType;
+    value: OrderTravelPayType; 
     checked?: boolean;
   }[];
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
@@ -123,7 +124,8 @@ export class BookPage implements OnInit, AfterViewInit {
     private staffService: StaffService,
     private calendarService: CalendarService,
     private router: Router,
-    private payService: PayService
+    private payService: PayService,
+    private plt:Platform
   ) { }
   calcNights() {
     if (
@@ -625,7 +627,7 @@ export class BookPage implements OnInit, AfterViewInit {
         ? ""
         : (combindInfo.organization && combindInfo.organization.Code) || "";
       if (!this.tmc && this.tmc.OutNumberRequiryNameArray && this.tmc.OutNumberRequiryNameArray.length) {
-        if (!combindInfo.tmcOutNumberInfos || !combindInfo.tmcOutNumberInfos.some(it => this.tmc.OutNumberRequiryNameArray.some(k => it.key == k && !it.value))) {
+        if (!combindInfo.tmcOutNumberInfos || combindInfo.tmcOutNumberInfos.some(it => this.tmc.OutNumberRequiryNameArray.some(k => it.key == k && !it.value))) {
           showErrorMsg("外部编号信息必填", combindInfo);
           console.log(this.outnumberEles.first);
           if (this.outnumberEles && this.outnumberEles.first && this.outnumberEles.first['el']) {
@@ -970,7 +972,7 @@ export class BookPage implements OnInit, AfterViewInit {
       const scrollEle = await this.ionContent.getScrollElement();
       const rect = ele && ele.getBoundingClientRect();
       if (rect && scrollEle) {
-        scrollEle.scrollBy({ behavior: "smooth", top: rect.top });
+        scrollEle.scrollBy({ behavior: "smooth", top: rect.top-this.plt.height() / 2 });
       }
     }
   }
