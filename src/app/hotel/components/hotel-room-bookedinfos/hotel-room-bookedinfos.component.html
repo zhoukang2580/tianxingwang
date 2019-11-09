@@ -25,9 +25,7 @@
 </ion-content>
 <ion-footer *ngIf='!isShowChangeDateComp'>
   <ion-toolbar>
-    <ion-buttons slot='end'>
-      <ion-button (click)='nextStep()' color='secondary' [disabled]='!canGoToNext()'>下一步</ion-button>
-    </ion-buttons>
+    <ion-button slot='end' (click)='nextStep()'  color='secondary' [disabled]='!canGoToNext()' size='small'>下一步</ion-button>
   </ion-toolbar>
 </ion-footer>
 <app-room-detail [room]='curSelectedRoom' [roomImages]='roomImages' (close)='isShowRoomDetails=false' class="ion-page"
