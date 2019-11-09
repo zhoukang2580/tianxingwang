@@ -173,19 +173,8 @@
             </div>
           </ion-item>
         </ion-item-group>
-        <ion-item-group *ngIf='combindInfo?.tmcOutNumberInfos?.length'>
-          <ion-item-divider>
-            外部编号：
-          </ion-item-divider>
-          <ion-item *ngFor='let n of combindInfo?.tmcOutNumberInfos' (click)='onSelectTravelNumber(n,combindInfo)'>
-            <ion-label>{{n.label}}:</ion-label>
-            <ion-input 
-            [class.TravelNumber]='n.label' 
-            [disabled]='n.isDisabled' 
-            [value]='n.value' [(ngModel)]='n.value' placeholder="{{n.isLoadingNumber?'正在加载行程单号':n.label}}">
-            </ion-input>
-          </ion-item>
-        </ion-item-group>
+        <app-book-tmc-outnumber [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos'
+        (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'></app-book-tmc-outnumber>
       </ion-list>
       <ion-item-group>
         <ion-item-divider>

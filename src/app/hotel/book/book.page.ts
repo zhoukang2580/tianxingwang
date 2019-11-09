@@ -71,6 +71,7 @@ import { OrderCardEntity } from "src/app/order/models/OrderCardEntity";
 import { ProductItemType } from "src/app/tmc/models/ProductItems";
 import { HotelEntity } from '../models/HotelEntity';
 import { RoomEntity } from '../models/RoomEntity';
+import { ITmcOutNumberInfo } from 'src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component';
 @Component({
   selector: "app-book",
   templateUrl: "./book.page.html",
@@ -91,7 +92,7 @@ export class BookPage implements OnInit, AfterViewInit {
   orderTravelPayType: any;
   orderTravelPayTypes: {
     label: string;
-    value: OrderTravelPayType; 
+    value: OrderTravelPayType;
     checked?: boolean;
   }[];
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
@@ -125,7 +126,7 @@ export class BookPage implements OnInit, AfterViewInit {
     private calendarService: CalendarService,
     private router: Router,
     private payService: PayService,
-    private plt:Platform
+    private plt: Platform
   ) { }
   calcNights() {
     if (
@@ -972,7 +973,7 @@ export class BookPage implements OnInit, AfterViewInit {
       const scrollEle = await this.ionContent.getScrollElement();
       const rect = ele && ele.getBoundingClientRect();
       if (rect && scrollEle) {
-        scrollEle.scrollBy({ behavior: "smooth", top: rect.top-this.plt.height() / 2 });
+        scrollEle.scrollBy({ behavior: "smooth", top: rect.top - this.plt.height() / 2 });
       }
     }
   }
@@ -1237,76 +1238,30 @@ export class BookPage implements OnInit, AfterViewInit {
     );
   }
   async onSelectTravelNumber(
-    arg: ITmcOutNumberInfo,
+    arg: {
+      tmcOutNumberInfos: ITmcOutNumberInfo[];
+      tmcOutNumberInfo: ITmcOutNumberInfo,
+      travelUrlInfo: TravelUrlInfo
+    },
     item: IPassengerHotelBookInfo
   ) {
-    if (
-      !arg.canSelect
-    ) {
-      return;
-    }
-    if (!arg.travelUrlInfos || arg.travelUrlInfos.length == 0) {
-      item.tmcOutNumberInfos.forEach(info => {
-        info.isLoadingNumber = true;
-      })
-      const result = await this.tmcService.getTravelUrls([{
-        staffNumber: arg.staffNumber,
-        staffOutNumber: arg.staffOutNumber,
-        name: arg.label
-      }]);
-      if (result) {
-        item.tmcOutNumberInfos.forEach(info => {
-          info.travelUrlInfos = result[info.staffNumber];
-          if (
-            !info.value &&
-            info.travelUrlInfos &&
-            info.travelUrlInfos.length
-          ) {
-            info.value = info.travelUrlInfos[0].TravelNumber;
-          }
-          info.canSelect = !!(
-            info.travelUrlInfos && info.travelUrlInfos.length
-          ); // && info.canSelect;
-          info.isLoadingNumber = false;
-        })
-      } else {
-        item.tmcOutNumberInfos.forEach(info => {
-          info.isLoadingNumber = false;
-        })
+    item.tmcOutNumberInfos=arg.tmcOutNumberInfos;
+    const data = arg.travelUrlInfo;
+    if (data) {
+      if (data.CostCenterCode) {
+        item.costCenter.code = data.CostCenterCode;
       }
-    }
-    if (!arg.travelUrlInfos || arg.travelUrlInfos.length == 0) {
-      return;
-    }
-    console.log("on select travel number", arg);
-    const p = await this.popoverCtrl.create({
-      component: SelectTravelNumberComponent,
-      componentProps: {
-        travelInfos: arg.travelUrlInfos || []
-      },
-      translucent: true,
-      showBackdrop: true
-    });
-    await p.present();
-    const result = await p.onDidDismiss();
-    if (result && result.data) {
-      const data = result.data as TravelUrlInfo;
-      if (data) {
-        if (data.CostCenterCode) {
-          item.costCenter.code = data.CostCenterCode;
-        }
-        if (data.CostCenterName) {
-          item.costCenter.name = data.CostCenterName;
-        }
-        if (data.OrganizationCode) {
-          item.organization.Code = data.OrganizationCode;
-        }
-        if (data.OrganizationName) {
-          item.organization.Name = data.OrganizationName;
-        }
-        if (data.TravelNumber) {
-          arg.value = data.TravelNumber;
-        }
+      if (data.CostCenterName) {
+        item.costCenter.name = data.CostCenterName;
+      }
+      if (data.OrganizationCode) {
+        item.organization.Code = data.OrganizationCode;
+      }
+      if (data.OrganizationName) {
+        item.organization.Name = data.OrganizationName;
+      }
+      if (data.TravelNumber) {
+        arg.tmcOutNumberInfo.value = data.TravelNumber;
       }
     }
   }
@@ -1371,17 +1326,4 @@ export interface IPassengerHotelBookInfo {
   illegalReason?: string;
   otherIllegalReason?: string;
 }
-interface ITmcOutNumberInfo {
-  key: string;
-  label: string;
-  required: boolean;
-  value: string;
-  staffOutNumber: string;
-  isTravelNumber: boolean;
-  isLoadNumber: boolean;
-  isLoadingNumber: boolean;
-  staffNumber: string;
-  canSelect: boolean;
-  isDisabled: boolean;
-  travelUrlInfos: TravelUrlInfo[];
-}
+

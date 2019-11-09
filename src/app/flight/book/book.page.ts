@@ -69,6 +69,8 @@ import { RequestEntity } from "src/app/services/api/Request.entity";
 import { map, tap } from "rxjs/operators";
 import { AddContact } from "src/app/tmc/models/AddContact";
 import { environment } from "src/environments/environment";
+import { ITmcOutNumberInfo } from 'src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component';
+import { IPassengerHotelBookInfo } from 'src/app/hotel/book/book.page';
 
 @Component({
   selector: "app-book",
@@ -107,7 +109,7 @@ export class BookPage implements OnInit, AfterViewInit {
     Value: string;
     Text: string;
   };
-  addContacts: AddContact[]=[];
+  addContacts: AddContact[] = [];
   @ViewChildren("illegalReasonsEle", { read: ElementRef })
   illegalReasonsEles: QueryList<ElementRef<HTMLElement>>;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
@@ -365,74 +367,31 @@ export class BookPage implements OnInit, AfterViewInit {
   onShowFriendlyReminder(item: ICombindInfo) {
     item.showFriendlyReminder = !item.showFriendlyReminder;
   }
-  async onSelectTravelNumber(arg: TmcOutNumberInfo, item: ICombindInfo) {
-    if (
-      !arg.canSelect
-    ) {
-      return;
-    }
-    if (!arg.travelUrlInfos || arg.travelUrlInfos.length == 0) {
-      item.tmcOutNumberInfos.forEach(info => {
-        info.isLoadingNumber = true;
-      })
-      const result = await this.tmcService.getTravelUrls([{
-        staffNumber: arg.staffNumber,
-        staffOutNumber: arg.staffOutNumber,
-        name: arg.label
-      }]);
-      if (result) {
-        item.tmcOutNumberInfos.forEach(info => {
-          info.travelUrlInfos = result[info.staffNumber];
-          if (
-            !info.value &&
-            info.travelUrlInfos &&
-            info.travelUrlInfos.length
-          ) {
-            info.value = info.travelUrlInfos[0].TravelNumber;
-          }
-          info.canSelect = !!(
-            info.travelUrlInfos && info.travelUrlInfos.length
-          ); // && info.canSelect;
-          info.isLoadingNumber = false;
-        })
-      } else {
-        item.tmcOutNumberInfos.forEach(info => {
-          info.isLoadingNumber = false;
-        })
+  async onSelectTravelNumber(
+    arg: {
+      tmcOutNumberInfos: ITmcOutNumberInfo[];
+      tmcOutNumberInfo: ITmcOutNumberInfo,
+      travelUrlInfo: TravelUrlInfo
+    },
+    item: IPassengerHotelBookInfo
+  ) {
+    item.tmcOutNumberInfos = arg.tmcOutNumberInfos;
+    const data = arg.travelUrlInfo;
+    if (data) {
+      if (data.CostCenterCode) {
+        item.costCenter.code = data.CostCenterCode;
       }
-    }
-    if (!arg.travelUrlInfos || arg.travelUrlInfos.length == 0) {
-      return;
-    }
-    console.log("on select travel number", arg);
-    const p = await this.popoverCtrl.create({
-      component: SelectTravelNumberComponent,
-      componentProps: {
-        travelInfos: arg.travelUrlInfos || []
-      },
-      translucent: true,
-      showBackdrop: true
-    });
-    await p.present();
-    const result = await p.onDidDismiss();
-    if (result && result.data) {
-      const data = result.data as TravelUrlInfo;
-      if (data) {
-        if (data.CostCenterCode) {
-          item.costCenter.code = data.CostCenterCode;
-        }
-        if (data.CostCenterName) {
-          item.costCenter.name = data.CostCenterName;
-        }
-        if (data.OrganizationCode) {
-          item.organization.Code = data.OrganizationCode;
-        }
-        if (data.OrganizationName) {
-          item.organization.Name = data.OrganizationName;
-        }
-        if (data.TravelNumber) {
-          arg.value = data.TravelNumber;
-        }
+      if (data.CostCenterName) {
+        item.costCenter.name = data.CostCenterName;
+      }
+      if (data.OrganizationCode) {
+        item.organization.Code = data.OrganizationCode;
+      }
+      if (data.OrganizationName) {
+        item.organization.Name = data.OrganizationName;
+      }
+      if (data.TravelNumber) {
+        arg.tmcOutNumberInfo.value = data.TravelNumber;
       }
     }
   }
@@ -1143,7 +1102,7 @@ export class BookPage implements OnInit, AfterViewInit {
                 isTravelNumber: n == "TravelNumber",
                 canSelect: n == "TravelNumber",
                 isDisabled: !!(this.travelForm && n == "TravelNumber")
-              } as TmcOutNumberInfo;
+              } as ITmcOutNumberInfo;
             })
         } as ICombindInfo;
         this.vmCombindInfos.push(combineInfo);
@@ -1254,20 +1213,7 @@ export class BookPage implements OnInit, AfterViewInit {
     return false;
   }
 }
-interface TmcOutNumberInfo {
-  key: string;
-  label: string;
-  required: boolean;
-  value: string;
-  staffOutNumber: string;
-  isTravelNumber: boolean;
-  isLoadNumber: boolean;
-  isLoadingNumber: boolean;
-  staffNumber: string;
-  canSelect: boolean;
-  isDisabled: boolean;
-  travelUrlInfos: TravelUrlInfo[];
-}
+
 
 interface ICombindInfo {
   vmModal: PassengerBookInfo<IFlightSegmentInfo>;
@@ -1316,6 +1262,6 @@ interface ICombindInfo {
     insuranceResult: InsuranceProductEntity;
     checked: boolean;
   }[];
-  tmcOutNumberInfos: TmcOutNumberInfo[];
+  tmcOutNumberInfos: ITmcOutNumberInfo[];
   travelType: OrderTravelType; // 因公、因私
 }

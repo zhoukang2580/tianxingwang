@@ -68,6 +68,7 @@ import { OrderLinkmanDto } from "src/app/order/models/OrderLinkmanDto";
 import { ProductItemType } from "src/app/tmc/models/ProductItems";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { PayService } from "src/app/services/pay/pay.service";
+import { ITmcOutNumberInfo } from 'src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component';
 
 @Component({
   selector: "app-train-book",
@@ -293,7 +294,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
             checked: true
           };
         });
-        const combineInfo: IPassengerBookInfo = {} as any;
+        const combineInfo: ITrainPassengerBookInfo = {} as any;
         combineInfo.credential = bookInfo.credential;
         combineInfo.id = bookInfo.id;
         combineInfo.bookInfo = bookInfo;
@@ -573,7 +574,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     const day = this.calendarService.generateDayModel(moment(train.StartTime));
     return `${day.date} ${day.dayOfWeekName}`;
   }
-  getServiceFee(item: IPassengerBookInfo) {
+  getServiceFee(item: ITrainPassengerBookInfo) {
     const fee =
       this.initialBookDto &&
       this.initialBookDto.ServiceFees &&
@@ -581,7 +582,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     // console.log(item.id, fee, this.initialBookDto);
     return fee;
   }
-  isAllowSelectApprove(info: IPassengerBookInfo) {
+  isAllowSelectApprove(info: ITrainPassengerBookInfo) {
     const Tmc = this.initialBookDto.Tmc;
     const staff = info.credentialStaff;
     if (
@@ -626,7 +627,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     }
     return false;
   }
-  onOpenrules(item: IPassengerBookInfo) {
+  onOpenrules(item: ITrainPassengerBookInfo) {
     console.log("CombineedSelectedInfo", item);
     item.isOpenrules = !item.isOpenrules;
   }
@@ -679,7 +680,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     return true;
   }
   private fillBookPassengers(bookDto: OrderBookDto) {
-    const showErrorMsg = (msg: string, item: IPassengerBookInfo) => {
+    const showErrorMsg = (msg: string, item: ITrainPassengerBookInfo) => {
       AppHelper.alert(
         `${(item.credentialStaff && item.credentialStaff.Name) ||
         (item.credential &&
@@ -879,7 +880,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     }
     return true;
   }
-  async openApproverModal(item: IPassengerBookInfo) {
+  async openApproverModal(item: ITrainPassengerBookInfo) {
     const modal = await this.modalCtrl.create({
       component: SearchApprovalComponent
     });
@@ -962,13 +963,13 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       otherIllegalReason: string;
       illegalReason: string;
     },
-    info: IPassengerBookInfo
+    info: ITrainPassengerBookInfo
   ) {
     info.isOtherIllegalReason = reason.isOtherIllegalReason;
     info.illegalReason = reason.illegalReason;
     info.otherIllegalReason = reason.otherIllegalReason;
   }
-  async onModify(item: IPassengerBookInfo) {
+  async onModify(item: ITrainPassengerBookInfo) {
     if (!item.credentialsRequested) {
       const res: {
         [accountId: string]: CredentialsEntity[];
@@ -1011,7 +1012,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       otherCostCenterName: string;
       otherCostCenterCode: string;
     },
-    item: IPassengerBookInfo
+    item: ITrainPassengerBookInfo
   ) {
     console.log("oncostCenterchange", data, item);
     if (data.costCenter && item) {
@@ -1027,7 +1028,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       organization: OrganizationEntity;
       otherOrganizationName: string;
     },
-    item: IPassengerBookInfo
+    item: ITrainPassengerBookInfo
   ) {
     if (item && data.organization) {
       item.organization = data.organization;
@@ -1040,79 +1041,36 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       this.addContacts = contacts;
     }
   }
-  onSavecredential(credential: CredentialsEntity, info: IPassengerBookInfo) {
+  onSavecredential(credential: CredentialsEntity, info: ITrainPassengerBookInfo) {
     if (info && credential) {
       info.vmCredential = credential;
     }
   }
-  async onSelectTravelNumber(arg: ITmcOutNumberInfo, item: IPassengerBookInfo) {
-    if (
-      !arg.canSelect
-    ) {
-      return;
-    }
-    if (!arg.travelUrlInfos || arg.travelUrlInfos.length == 0) {
-      item.tmcOutNumberInfos.forEach(info => {
-        info.isLoadingNumber = true;
-      })
-      const result = await this.tmcService.getTravelUrls([{
-        staffNumber: arg.staffNumber,
-        staffOutNumber: arg.staffOutNumber,
-        name: arg.label
-      }]);
-      if (result) {
-        item.tmcOutNumberInfos.forEach(info => {
-          info.travelUrlInfos = result[info.staffNumber];
-          if (
-            !info.value &&
-            info.travelUrlInfos &&
-            info.travelUrlInfos.length
-          ) {
-            info.value = info.travelUrlInfos[0].TravelNumber;
-          }
-          info.canSelect = !!(
-            info.travelUrlInfos && info.travelUrlInfos.length
-          ); // && info.canSelect;
-          info.isLoadingNumber = false;
-        })
-      } else {
-        item.tmcOutNumberInfos.forEach(info => {
-          info.isLoadingNumber = false;
-        })
+  async onSelectTravelNumber(
+    arg: {
+      tmcOutNumberInfos: ITmcOutNumberInfo[];
+      tmcOutNumberInfo: ITmcOutNumberInfo,
+      travelUrlInfo: TravelUrlInfo
+    },
+    item: ITrainPassengerBookInfo
+  ) {
+    item.tmcOutNumberInfos = arg.tmcOutNumberInfos;
+    const data = arg.travelUrlInfo;
+    if (data) {
+      if (data.CostCenterCode) {
+        item.costCenter.code = data.CostCenterCode;
       }
-    }
-    if (!arg.travelUrlInfos || arg.travelUrlInfos.length == 0) {
-      return;
-    }
-    console.log("on select travel number", arg);
-    const p = await this.popoverCtrl.create({
-      component: SelectTravelNumberComponent,
-      componentProps: {
-        travelInfos: arg.travelUrlInfos || []
-      },
-      translucent: true,
-      showBackdrop: true
-    });
-    await p.present();
-    const result = await p.onDidDismiss();
-    if (result && result.data) {
-      const data = result.data as TravelUrlInfo;
-      if (data) {
-        if (data.CostCenterCode) {
-          item.costCenter.code = data.CostCenterCode;
-        }
-        if (data.CostCenterName) {
-          item.costCenter.name = data.CostCenterName;
-        }
-        if (data.OrganizationCode) {
-          item.organization.Code = data.OrganizationCode;
-        }
-        if (data.OrganizationName) {
-          item.organization.Name = data.OrganizationName;
-        }
-        if (data.TravelNumber) {
-          arg.value = data.TravelNumber;
-        }
+      if (data.CostCenterName) {
+        item.costCenter.name = data.CostCenterName;
+      }
+      if (data.OrganizationCode) {
+        item.organization.Code = data.OrganizationCode;
+      }
+      if (data.OrganizationName) {
+        item.organization.Name = data.OrganizationName;
+      }
+      if (data.TravelNumber) {
+        arg.tmcOutNumberInfo.value = data.TravelNumber;
       }
     }
   }
@@ -1127,26 +1085,12 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     return false;
   }
 }
-interface ITmcOutNumberInfo {
-  key: string;
-  label: string;
-  required: boolean;
-  value: string;
-  staffOutNumber: string;
-  isTravelNumber: boolean;
-  isLoadNumber: boolean;
-  isLoadingNumber: boolean;
-  staffNumber: string;
-  canSelect: boolean;
-  isDisabled: boolean;
-  travelUrlInfos: TravelUrlInfo[];
-}
 export interface IBookTrainViewModel {
   tmc: TmcEntity;
   orderTravelPayType: OrderTravelPayType;
   travelForm: TravelFormEntity;
   illegalReasons: IllegalReasonEntity[];
-  combindInfos: IPassengerBookInfo[];
+  combindInfos: ITrainPassengerBookInfo[];
   isCanSkipApproval$: Observable<boolean>;
   identity: IdentityEntity;
   orderTravelPayTypes: {
@@ -1155,7 +1099,7 @@ export interface IBookTrainViewModel {
     checked?: boolean;
   }[];
 }
-interface IPassengerBookInfo {
+interface ITrainPassengerBookInfo {
   isNotWhitelist?: boolean;
   vmCredential: CredentialsEntity;
   credential: CredentialsEntity;

@@ -55,8 +55,9 @@
               (到酒店支付)
             </ion-text>
           </ion-item-divider>
-          <app-room-show-item [attr.dataid]='combindInfo.id' [bookInfo]='combindInfo.bookInfo' (arrivalHotel)='onArrivalHotel($event,combindInfo)'
-            (showPriceDetailEvt)='onShowPriceDetails($event)' [disabledEdit]='true' [showRules]='false' (bedChange)='onBedchange($event,combindInfo)'>  
+          <app-room-show-item [attr.dataid]='combindInfo.id' [bookInfo]='combindInfo.bookInfo'
+            (arrivalHotel)='onArrivalHotel($event,combindInfo)' (showPriceDetailEvt)='onShowPriceDetails($event)'
+            [disabledEdit]='true' [showRules]='false' (bedChange)='onBedchange($event,combindInfo)'>
           </app-room-show-item>
           <ion-item *ngIf='getRuleMessage(combindInfo.bookInfo?.bookInfo?.roomPlan) as msg'>
             <div style='width: 100%;'>
@@ -67,7 +68,7 @@
           <ion-item>
             <div style='width: 100%;font-size: 0.9rem;'>
               <div>
-                <ion-button fill='clear'  style="margin-left: -1em;"
+                <ion-button fill='clear' style="margin-left: -1em;"
                   (click)='combindInfo["isShowRoomPlanRulesDesc"]=!combindInfo["isShowRoomPlanRulesDesc"]'
                   color='secondary'>
                   预订规则:
@@ -75,7 +76,7 @@
                   <ion-icon name="arrow-dropright" *ngIf='!combindInfo["isShowRoomPlanRulesDesc"]'></ion-icon>
                 </ion-button>
               </div>
-              <ion-label *ngIf='combindInfo["isShowRoomPlanRulesDesc"]' text-wrap color='danger' >
+              <ion-label *ngIf='combindInfo["isShowRoomPlanRulesDesc"]' text-wrap color='danger'>
                 {{getRoomPlanRulesDesc(combindInfo.bookInfo?.bookInfo?.roomPlan)}}2019年7月1日起，部分城市将不再主动提供牙刷等一次性日用品，建议自行准备。
               </ion-label>
             </div>
@@ -122,7 +123,8 @@
           </ion-item>
           <ion-item>
             <ion-label>持卡人证件号码:</ion-label>
-            <ion-input [(ngModel)]='combindInfo.creditCardPersionInfo.credentialNumber' type='text' placeholder="持卡人证件号码">
+            <ion-input [(ngModel)]='combindInfo.creditCardPersionInfo.credentialNumber' type='text'
+              placeholder="持卡人证件号码">
             </ion-input>
           </ion-item>
           <ion-item>
@@ -143,7 +145,7 @@
           </ion-item>
           <ion-item *ngIf='combindInfo?.bookInfo?.bookInfo?.roomPlan?.Rules && !combindInfo?.isNotWhitelist'>
             <div style='width: 100%' #illegalReasonsEle>
-              <app-book-illegal-reason-comp  [illegalReasons]='illegalReasons'
+              <app-book-illegal-reason-comp [illegalReasons]='illegalReasons'
                 [isAllowCustomReason]='tmc?.IsAllowCustomReason' (ionchange)='onIllegalReason($event,combindInfo)'>
               </app-book-illegal-reason-comp>
             </div>
@@ -214,19 +216,8 @@
             </ion-item>
           </ng-container>
         </ion-item-group>
-        <ion-item-group *ngIf='combindInfo?.tmcOutNumberInfos?.length' #outnumberEle>
-          <ion-item-divider>
-            外部编号：
-          </ion-item-divider>
-          <ion-item *ngFor='let n of combindInfo?.tmcOutNumberInfos' (click)='onSelectTravelNumber(n,combindInfo)'>
-            <ion-label style="opacity: 1;">{{n.label}}:</ion-label>
-            <ion-input [style.opacity]="n.isDisabled?0.8:1"
-            [class.TravelNumber]='n.label' 
-            [disabled]='n.isDisabled' 
-            [value]='n.value' [(ngModel)]='n.value' placeholder="{{n.isLoadingNumber?'正在加载行程单号':n.label}}">
-            </ion-input>
-          </ion-item>
-        </ion-item-group>
+        <app-book-tmc-outnumber [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos'
+          (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'></app-book-tmc-outnumber>
         <ion-item-group>
           <ion-item-divider>
             添加联系人：
@@ -237,7 +228,7 @@
           </ion-item>
         </ion-item-group>
       </ion-list>
-      <ion-item-group >
+      <ion-item-group>
         <ion-item-divider>
           支付方式：
         </ion-item-divider>
@@ -298,7 +289,8 @@
         <ion-text slot='end' color='danger'>￥{{totalPrice}}</ion-text>
       </ion-button>
     </ion-buttons>
-    <ion-button slot='end' color='secondary' [disabled]='isSubmitting' size='small' (click)='onBook(false)'> 提交</ion-button>
+    <ion-button slot='end' color='secondary' [disabled]='isSubmitting' size='small' (click)='onBook(false)'> 提交
+    </ion-button>
     <ion-buttons slot='end' *ngIf='identity?.Numbers?.AgentId'>
       <ion-button color='secondary' (click)='onBook(true)'>保存订单</ion-button>
     </ion-buttons>

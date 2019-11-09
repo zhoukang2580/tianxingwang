@@ -1,0 +1,11 @@
+<ion-item-group *ngIf='tmcOutNumberInfos?.length' #outnumberEle>
+  <ion-item-divider>
+    外部编号：
+  </ion-item-divider>
+  <ion-item *ngFor='let n of tmcOutNumberInfos' (click)='onSelectTravelNumber(n)'>
+    <ion-label style="opacity: 1;">{{n.label}}:</ion-label>
+    <ion-input [style.opacity]="n.isDisabled?0.8:1" [class.TravelNumber]='n.label' [disabled]='n.isDisabled'
+      [value]='n.value' [(ngModel)]='n.value' placeholder="{{n.isLoadingNumber?'正在加载行程单号':n.label}}">
+    </ion-input>
+  </ion-item>
+</ion-item-group>
