@@ -19,7 +19,8 @@ import {
   IonRefresher,
   PopoverController,
   ModalController,
-  IonContent
+  IonContent,
+  IonItemGroup
 } from "@ionic/angular";
 import { NavController } from "@ionic/angular";
 import {
@@ -30,7 +31,8 @@ import {
   HostBinding,
   AfterViewInit,
   QueryList,
-  ElementRef
+  ElementRef,
+  ViewChildren
 } from "@angular/core";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { OrderBookDto } from "src/app/order/models/OrderBookDto";
@@ -93,7 +95,8 @@ export class BookPage implements OnInit, AfterViewInit {
   }[];
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
   @ViewChild(IonContent) ionContent: IonContent;
-  @ViewChild("illegalReasonsEle") illegalReasonsEles: QueryList<ElementRef<HTMLElement>>;
+  @ViewChildren("illegalReasonsEle") illegalReasonsEles: QueryList<ElementRef<HTMLElement>>;
+  @ViewChildren("outnumberEle") outnumberEles: QueryList<IonItemGroup>;
   error: any;
   identity: IdentityEntity;
   bookInfos: PassengerBookInfo<IHotelInfo>[];
@@ -621,6 +624,16 @@ export class BookPage implements OnInit, AfterViewInit {
       p.OrganizationCode = combindInfo.otherOrganizationName
         ? ""
         : (combindInfo.organization && combindInfo.organization.Code) || "";
+      if (!this.tmc && this.tmc.OutNumberRequiryNameArray && this.tmc.OutNumberRequiryNameArray.length) {
+        if (!combindInfo.tmcOutNumberInfos || !combindInfo.tmcOutNumberInfos.some(it => this.tmc.OutNumberRequiryNameArray.some(k => it.key == k && !it.value))) {
+          showErrorMsg("外部编号信息必填", combindInfo);
+          console.log(this.outnumberEles.first);
+          if (this.outnumberEles && this.outnumberEles.first && this.outnumberEles.first['el']) {
+            this.scrollEleToView(this.outnumberEles.first['el']);
+          }
+          return false;
+        }
+      }
       if (combindInfo.tmcOutNumberInfos) {
         p.OutNumbers = {};
         combindInfo.tmcOutNumberInfos.forEach(it => {

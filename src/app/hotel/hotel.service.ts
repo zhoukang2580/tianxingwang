@@ -380,7 +380,7 @@ export class HotelService {
     const m = await this.modalCtrl.create({
       component: SelectDateComponent,
       componentProps: {
-        goArrivalTime: checkInDate.timeStamp,
+        goArrivalTime: checkInDate.date,
         tripType: tripType,
         isMulti: true,
         title,
