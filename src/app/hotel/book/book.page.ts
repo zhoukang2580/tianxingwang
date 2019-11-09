@@ -1,3 +1,4 @@
+import { BookTmcOutnumberComponent } from './../../tmc/components/book-tmc-outnumber/book-tmc-outnumber.component';
 import { PayService } from "src/app/services/pay/pay.service";
 import { Router } from "@angular/router";
 import { CalendarService } from "src/app/tmc/calendar.service";
@@ -98,7 +99,7 @@ export class BookPage implements OnInit, AfterViewInit {
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
   @ViewChild(IonContent) ionContent: IonContent;
   @ViewChildren("illegalReasonsEle") illegalReasonsEles: QueryList<ElementRef<HTMLElement>>;
-  @ViewChildren("outnumberEle") outnumberEles: QueryList<IonItemGroup>;
+  @ViewChildren(BookTmcOutnumberComponent) outnumberEles: QueryList<BookTmcOutnumberComponent>;
   error: any;
   identity: IdentityEntity;
   bookInfos: PassengerBookInfo<IHotelInfo>[];
@@ -225,7 +226,9 @@ export class BookPage implements OnInit, AfterViewInit {
       this.error = e;
     }
   }
-  ngAfterViewInit() { }
+  ngAfterViewInit() {
+    console.log("outnumberEles",this.outnumberEles.first);
+   }
   get totalPrice() {
     const infos = this.hotelService.getBookInfos();
     let totalPrice = infos.reduce((arr, item) => {
