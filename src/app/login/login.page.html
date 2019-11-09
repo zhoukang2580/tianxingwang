@@ -59,7 +59,7 @@
       <ion-label color="danger">{{ message }}</ion-label>
     </ion-item>
     <ion-button color='secondary' class='login-btn' expand='block' strong='true' (click)="onLoginButton('login')"
-      [disabled]="form.invalid || ((loading$ | async) )|| !isLoginOk">登录</ion-button>
+      [disabled]="form.invalid || (isLogining)|| !isLoginOk">登录</ion-button>
     <section class='register-forgetpassword'>
       <ion-button fill='clear' color='secondary' strong='true' (click)="forgetPassword()">忘记密码</ion-button>
       <!-- <span class='line'></span>
@@ -152,3 +152,4 @@
   </form> -->
 </ion-content>
 <app-slidvalidate-com *ngIf="isShowImageCode" (slideEvent)='onSlideEvent($event)'></app-slidvalidate-com>
+<div [class.isloading]='isLogining' class='login-loading'></div>

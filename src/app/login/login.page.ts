@@ -1,3 +1,6 @@
+import { FlightService } from './../flight/flight.service';
+import { HotelService } from './../hotel/hotel.service';
+import { TrainService } from './../train/train.service';
 import { ApiService } from './../services/api/api.service';
 import { StaffService } from './../hr/staff.service';
 import { IdentityEntity } from "./../services/identity/identity.entity";
@@ -33,7 +36,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   message: string;
   countDown: number;
   loginType = "user";
-  loading$: Observable<boolean>;
+  isLogining=false;
   isMobileNumberOk = false;
   isLoginOk = false;
   isShowWechatLogin: boolean;
@@ -49,10 +52,12 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     route: ActivatedRoute,
     private staffService: StaffService,
     private modalCtrl: ModalController,
-    private apiService:ApiService
+    private apiService:ApiService,
+    private trainServive:TrainService,
+    private hotelService:HotelService,
+    private flightService:FlightService
   ) {
     this.config.set("swipeBackEnabled", false);
-    this.loading$ = this.loginService.getLoading();
     this.isShowWechatLogin = AppHelper.isApp();
   }
   ngAfterViewInit() {
@@ -335,28 +340,15 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         }
       );
   }
-  private async checkStaff(count: number) {
+ 
+  private async initializeSelfBookInfos(){
+
     const staff = await this.staffService.getStaff();
-    await new Promise<any>(s => {
-      setTimeout(() => {
-        s();
-      }, 1000);
-    });
-    if (!staff && count < 10) {
-      await this.checkStaff(++count);
-    } else {
-      if (count > 10 || !staff) {
-        AppHelper.alert("登录失败");
-        this.router.navigate(['login']);
-      }
-    }
   }
   async jump(
     isCheckDevice: boolean // 跳转
   ) {
-    this.apiService.showLoadingView();
-    await this.checkStaff(0);
-    this.apiService.hideLoadingView();
+    await this.initializeSelfBookInfos();
     this.loginType = "user";
     const toPageRouter = this.loginService.getToPageRouter() || "";
     if (isCheckDevice && AppHelper.isApp()) {
