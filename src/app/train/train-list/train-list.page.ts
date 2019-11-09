@@ -53,6 +53,7 @@ import * as moment from "moment";
 import { LanguageHelper } from "src/app/languageHelper";
 import { map } from "rxjs/operators";
 import { Storage } from "@ionic/storage";
+import { SelectTrainStationModalComponent } from 'src/app/tmc/components/select-stations/select-station.component';
 @Component({
   selector: "app-train-list",
   templateUrl: "./train-list.page.html",
@@ -110,8 +111,8 @@ export class TrainListPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.route.queryParamMap.subscribe(async _ => {
       this.isShowRoundtripTip = await this.staffService.isSelfBookType();
-      if(_&&_.get("doRefresh")){
-        this.doRefresh(true,false);
+      if (_ && _.get("doRefresh")) {
+        this.doRefresh(true, false);
       }
     });
     this.curFilteredBookInfo$ = this.trainService
@@ -185,6 +186,28 @@ export class TrainListPage implements OnInit, OnDestroy {
       }
     });
     m.present();
+  }
+  async onSelectStation(isFrom: boolean) {
+    if (this.searchTrainModel) {
+      const m = await this.modalCtrl.create({
+        component: SelectTrainStationModalComponent
+      });
+      m.backdropDismiss = false;
+      m.present();
+      const result = await m.onDidDismiss();
+      if (result && result.data) {
+        const data = result.data as TrafficlineEntity;
+        if (isFrom) {
+          this.searchTrainModel.fromCity = data;
+        } else {
+          this.searchTrainModel.toCity = data;
+        }
+        this.searchTrainModel.FromStation = this.searchTrainModel.fromCity.Code;
+        this.searchTrainModel.ToStation = this.searchTrainModel.toCity.Code;
+        this.trainService.setSearchTrainModel(this.searchTrainModel);
+      }
+    }
+
   }
   private async loadPolicyedTrainsAsync(): Promise<TrainEntity[]> {
     // 先获取最新的数据
