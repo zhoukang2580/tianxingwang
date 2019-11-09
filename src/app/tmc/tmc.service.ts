@@ -86,9 +86,7 @@ export class TmcService {
       );
       if (ok) {
         payResult = false;
-      } else {
-        payResult = await this.payOrder(tradeNo, key);
-      }
+      } 
     } else {
       if (payWay.value == "ali") {
         payResult = await this.aliPay(tradeNo, key);
@@ -133,6 +131,7 @@ export class TmcService {
         res = true;
       } else {
         AppHelper.alert("处理支付失败");
+        res = false;
       }
     } else {
       AppHelper.alert("支付失败");
@@ -173,6 +172,7 @@ export class TmcService {
         res = true;
         AppHelper.alert(result)
       } else {
+        res = false;
         AppHelper.alert("处理支付失败");
       }
     } else {

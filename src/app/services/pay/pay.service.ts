@@ -56,7 +56,7 @@ export class PayService {
                   })
                   .catch(e => {
                     AppHelper.alert(e.message || e);
-                    resolve(r.Data.Number);
+                    reject(e);
                   });
               } else {
                 reject(r.Message);
@@ -69,7 +69,7 @@ export class PayService {
               sub.unsubscribe();
             }
           );
-      }).catch(() => null);
+      });
     } else if (AppHelper.isH5()) {
       req.Data.CreateType = "Mobile";
       this.payMobile(req, path);
@@ -161,7 +161,7 @@ export class PayService {
                   })
                   .catch(e => {
                     AppHelper.alert(e.message || e);
-                    resolve(r.Data.Number);
+                    reject(e);
                   });
               }
             } else {
@@ -175,7 +175,7 @@ export class PayService {
             sub.unsubscribe();
           }
         );
-      }).catch(() => null);
+      });
     } else if (AppHelper.isH5()) {
       req.Data.CreateType = "Mobile";
       this.payMobile(req, path);
@@ -209,7 +209,7 @@ export class PayService {
     return new Promise<any>((resolve, reject) => {
       const sub = this.apiService.getResponse<{}>(req).subscribe(
         r => {
-          if (r.Status) {
+          if (r && r.Status) {
             resolve(r.Data);
           } else {
             reject(r.Message);
@@ -219,10 +219,12 @@ export class PayService {
           reject(e);
         },
         () => {
-          sub.unsubscribe();
+          setTimeout(() => {
+            sub.unsubscribe();
+          }, 200);
         }
       );
-    }).catch(() => null);
+    });
   }
 }
 export interface Ali {
