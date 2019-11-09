@@ -142,29 +142,32 @@ export class TrainService {
         return it;
       })
     );
-    const selfPolicies = policies.find(
+    const onePolicies = policies.find(
       it => it.PassengerKey == bookInfo.passenger.AccountId
     );
-    let selfTrainNos: string[] = [];
-    if (selfPolicies) {
-      selfTrainNos = selfPolicies.TrainPolicies.map(it => it.TrainNo);
-      if (bookInfo.isOnlyFilterMatchedPolicy) {
-        selfTrainNos = selfPolicies.TrainPolicies.filter(
-          it => it.IsAllowBook && (!it.Rules || it.Rules.length == 0)
-        ).map(it => it.TrainNo);
+    let policyTrainNos: string[] = [];
+    let policyTrains = onePolicies.TrainPolicies;
+    if (policyTrains) {
+      if(bookInfo.isAllowBookPolicy){
+        policyTrains=policyTrains.filter(it=>it.IsAllowBook);
       }
+      if (bookInfo.isOnlyFilterMatchedPolicy) {
+        policyTrains = policyTrains.filter(
+          it => it.IsAllowBook && (!it.Rules || it.Rules.length == 0)
+        );
+      }
+      policyTrainNos=policyTrains.map(it=>it.TrainNo);
       result = trains.filter(
         t =>
-          selfTrainNos.includes(t.TrainNo) &&
+          policyTrainNos.includes(t.TrainNo) &&
           t.Seats &&
           t.Seats.some(s => +s.Count > 0)
       );
-
       result = result
         .map(it => {
           if (it.Seats) {
             it.Seats = it.Seats.map(s => {
-              const trainPolicy = selfPolicies.TrainPolicies.find(
+              const trainPolicy = onePolicies.TrainPolicies.find(
                 p => p.TrainNo == it.TrainNo && p.SeatType == s.SeatType
               );
               s.Policy = trainPolicy;

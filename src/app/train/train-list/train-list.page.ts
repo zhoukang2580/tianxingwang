@@ -474,16 +474,27 @@ export class TrainListPage implements OnInit, OnDestroy {
         // 强制从服务器端返回新数据
         data = await this.loadPolicyedTrainsAsync();
       }
-      // 根据筛选条件过滤航班信息：
-      const b = this.trainService.getBookInfos()[0];
-      if (b) {
-        b.isOnlyFilterMatchedPolicy = false;
+      {
+        // 根据筛选条件过滤航班信息：
+        const bookInfos = this.trainService.getBookInfos();
+        const isSelf = await this.staffService.isSelfBookType();
+        if (bookInfos.length == 1 || isSelf) {
+          this.trainService.setBookInfoSource(bookInfos.map((it, idx) => {
+            if (idx == 0) {
+              it.isFilteredPolicy = true;
+              it.isAllowBookPolicy = true;
+            }
+            // it.isOnlyFilterMatchedPolicy=false;
+            return it;
+          }))
+        }
+        const b = this.trainService.getBookInfos().find(it => it.isFilteredPolicy);
+        data = this.trainService.filterPassengerPolicyTrains(
+          b,
+          data,
+          this.passengersPolicies
+        );
       }
-      data = this.trainService.filterPassengerPolicyTrains(
-        await this.staffService.isSelfBookType() ? b : null,
-        data,
-        this.passengersPolicies
-      );
       data = this.filterTrains(data);
       this.vmTrains = data;
       this.apiService.hideLoadingView();
