@@ -1,6 +1,8 @@
+import { StaffService } from './../../../hr/staff.service';
+import { IonSelect } from '@ionic/angular';
 import { AppHelper } from "src/app/appHelper";
 import { Router } from "@angular/router";
-import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from "@angular/core";
 import { CredentialsEntity } from "../../models/CredentialsEntity";
 
 @Component({
@@ -15,8 +17,9 @@ export class BookCredentialCompComponent implements OnInit {
   @Output() savecredential: EventEmitter<any>;
   @Output() modify: EventEmitter<any>;
   isModified = false;
-
-  constructor(private router: Router) {
+  isSelf = true;
+  @ViewChild(IonSelect) ionSelect: IonSelect;
+  constructor(private router: Router, private staffService: StaffService) {
     this.savecredential = new EventEmitter();
     this.modify = new EventEmitter();
   }
@@ -39,7 +42,17 @@ export class BookCredentialCompComponent implements OnInit {
   onSave() {
     this.savecredential.emit(this.credential);
   }
-  ngOnInit() {
+  async ngOnInit() {
     // this.isFlightTrainHotel = "train";
+    this.isSelf = await this.staffService.isSelfBookType();
+  }
+  openSelect() {
+    if (!this.isModified) {
+      AppHelper.alert("请先点击修改");
+      return;
+    }
+    if (this.ionSelect) {
+      this.ionSelect.open();
+    }
   }
 }
