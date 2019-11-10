@@ -228,10 +228,8 @@ export interface HrEntity {
 })
 export class StaffService {
   private staff: StaffEntity;
-  private subscription = Subscription.EMPTY;
   private isStaffCredentialsLoading = false;
   private fetchingReq: { isFetching: boolean; promise: Promise<any> } = {} as any;
-  status = false;
   staffCredentials: MemberCredential[];
   constructor(
     private apiService: ApiService,
@@ -244,7 +242,6 @@ export class StaffService {
   private disposal() {
     this.staff = null;
     this.staffCredentials = null;
-    this.status = false;
   }
   async isSelfBookType(isShowLoading = true) {
     const t = (await this.getBookType()) === StaffBookType.Self;
@@ -269,7 +266,7 @@ export class StaffService {
     if (!id || !id.Id || !id.Ticket) {
       return this.staff;
     }
-    forceRefresh = forceRefresh || (!this.staff&&!this.fetchingReq.isFetching);
+    forceRefresh = forceRefresh || !this.staff;
     if(forceRefresh){
       if(this.staff){
         return this.staff;
@@ -303,9 +300,8 @@ export class StaffService {
         .getPromiseData<StaffEntity>(req)
         .then(staff => {
           this.fetchingReq = {} as any;
-          console.log("staff ", staff);
+          console.log("staff ", staff,`forceFetch=${forceRefresh}`,`isfetching=${this.fetchingReq.isFetching}`);
           this.staff = staff;
-          this.status = true;
           if (this.staff.BookType == StaffBookType.Self) {
             this.staff.AccountId = this.staff.AccountId || id.Id;
             this.staff.Name = this.staff.Name || id.Name;
@@ -313,7 +309,7 @@ export class StaffService {
           return staff
         }).catch(_ => {
           this.fetchingReq = {} as any;
-          return {} as StaffEntity;
+          return null as StaffEntity;
         })
     };
     return this.fetchingReq.promise;
