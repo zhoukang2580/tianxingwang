@@ -166,19 +166,6 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
     this.isCanleave = true;
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], { queryParams: { forType: FlightHotelTrainType.Flight } });
   }
-  onCities(evt: { vmFromCity: TrafficlineEntity, vmToCity: TrafficlineEntity }) {
-    console.log("oncitites", evt);
-    if (evt) {
-      const s = this.flightService.getSearchFlightModel();
-      if (evt.vmFromCity && evt.vmFromCity.Code) {
-        s.fromCity = evt.vmFromCity;
-      }
-      if (evt.vmToCity && evt.vmToCity.Code) {
-        s.toCity = evt.vmToCity;
-      }
-      this.flightService.setSearchFlightModel(s);
-    }
-  }
   ngOnDestroy(): void {
     console.log("on destroyed");
     this.searchConditionSubscription.unsubscribe();

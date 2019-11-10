@@ -97,6 +97,12 @@ import { DaysCalendarComponent } from "src/app/tmc/components/days-calendar/days
 })
 export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   private refMap = new WeakMap<FlightSegmentEntity, any>();
+  private filterConditionSubscription = Subscription.EMPTY;
+  private searchConditionSubscription = Subscription.EMPTY;
+  private selectPassengerSubscription = Subscription.EMPTY;
+  private selectCitySubscription = Subscription.EMPTY;
+  private selectDaySubscription = Subscription.EMPTY;
+  private isSelectFromCity;
   searchFlightModel: SearchFlightModel;
   filterCondition: FilterConditionModel;
   showAddPassenger = false;
@@ -106,10 +112,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   vmFlights: FlightSegmentEntity[]; // 用于视图展示
   vmToCity: TrafficlineEntity;
   vmFromCity: TrafficlineEntity;
-  filterConditionSubscription = Subscription.EMPTY;
-  searchConditionSubscription = Subscription.EMPTY;
-  selectPassengerSubscription = Subscription.EMPTY;
-  selectDaySubscription = Subscription.EMPTY;
   vmFlightJourneyList: FlightJourneyEntity[];
   totalFilteredSegments: FlightSegmentEntity[];
   policyflights: PassengerPolicyFlights[];
@@ -598,24 +600,8 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.isLoading = false;
   }
   onSelectCity(isFrom: boolean) {
+    this.isSelectFromCity=isFrom;
     this.flightService.setOpenCloseSelectCityPageSources(true);
-    const sub0 = this.flightService.getSelectedCity()
-      .pipe(finalize(() => {
-        setTimeout(() => {
-          if (sub0) {
-            sub0.unsubscribe();
-          }
-        }, 100);
-      }))
-      .subscribe(city => {
-        if (city) {
-          if (isFrom) {
-            this.flightService.setSearchFlightModel({ ...this.searchFlightModel, fromCity: city });
-          } else {
-            this.flightService.setSearchFlightModel({ ...this.searchFlightModel, toCity: city });
-          }
-        }
-      });
   }
   private async initSearchModelParams() {
     this.searchConditionSubscription = this.flightService.getSearchFlightModelSource().subscribe(m => {
@@ -625,6 +611,20 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         this.vmToCity = this.searchFlightModel.toCity;
       }
     });
+    this.selectCitySubscription = this.flightService.getSelectedCity()
+      .subscribe(city => {
+        if (city) {
+          if (this.isSelectFromCity == undefined) {
+            return;
+          }
+          if (this.isSelectFromCity) {
+            this.flightService.setSearchFlightModel({ ...this.searchFlightModel, fromCity: city });
+          } else {
+            this.flightService.setSearchFlightModel({ ...this.searchFlightModel, toCity: city });
+          }
+          this.isSelectFromCity = undefined;
+        }
+      });
   }
   async ngOnInit() {
     this.filteredPolicyPassenger$ = this.flightService
@@ -656,6 +656,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.selectDaySubscription.unsubscribe();
     this.filterConditionSubscription.unsubscribe();
     this.selectPassengerSubscription.unsubscribe();
+    this.selectCitySubscription.unsubscribe();
   }
 
   ngAfterViewInit() {

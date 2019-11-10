@@ -58,15 +58,14 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
   @Input() vmFromCity: TrafficlineEntity; // 界面上显示的出发城市
   @Input() vmToCity: TrafficlineEntity; // 界面上显示的目的城市
   isMoving: boolean;
+  private isSelectFromCity: boolean;
   mode: string;
-  @Output() eCity: EventEmitter<{ vmFromCity: TrafficlineEntity; vmToCity: TrafficlineEntity; }>;
   constructor(
     plt: Platform,
     private flightService: FlightService,
     private render: Renderer2
   ) {
     this.mode = plt.is("ios") ? "ios" : plt.is("android") ? "md" : "";
-    this.eCity = new EventEmitter();
   }
   onRotateIconDone(evt) {
     console.log("onRotateIconDone");
@@ -81,10 +80,14 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
     const temp = this.vmFromCity;
     this.vmFromCity = this.vmToCity;
     this.vmToCity = temp;
-    this.eCity.emit({
-      vmFromCity: this.vmFromCity,
-      vmToCity: this.vmToCity
-    });
+    const s = this.flightService.getSearchFlightModel();
+    if (this.vmFromCity) {
+      s.fromCity = this.vmFromCity;
+    }
+    if (this.vmToCity) {
+      s.toCity = this.vmToCity;
+    }
+    this.flightService.setSearchFlightModel(s);
     console.log("出发城市：", this.vmFromCity.Nickname);
     console.log("目的城市：", this.vmToCity.Nickname);
     // this.moveEle();
@@ -123,27 +126,28 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
     console.log("changes.toCity", changes.vmToCity);
   }
   ngOnInit() {
+    this.selectCitySubscription = this.flightService
+      .getSelectedCity()
+      .subscribe(c => {
+        console.log("isSelectFromCity",this.isSelectFromCity);
+        if (this.isSelectFromCity == undefined) {
+          return;
+        }
+        if (c) {
+          const s = this.flightService.getSearchFlightModel();
+          if (this.isSelectFromCity) {
+            s.fromCity = c;
+          } else {
+            s.toCity = c;
+          }
+          this.isSelectFromCity = undefined;
+          this.flightService.setSearchFlightModel(s);
+        }
+      });
 
   }
   onSelectCity(isFrom: boolean) {
-    this.selectCitySubscription.unsubscribe();
-    this.selectCitySubscription = this.flightService
-      .getSelectedCity()
-      .pipe(finalize(() => {
-        setTimeout(() => {
-          this.selectCitySubscription.unsubscribe();
-        }, 100);
-      }))
-      .subscribe(c => {
-        if (c&&c.Code) {
-          if (isFrom) {
-            this.vmFromCity = c;
-          } else {
-            this.vmToCity = c;
-          }
-          this.eCity.emit({ vmFromCity: this.vmFromCity, vmToCity: this.vmToCity });
-        }
-      });
+    this.isSelectFromCity = isFrom;
     if (this.disabled) {
       return;
     }
