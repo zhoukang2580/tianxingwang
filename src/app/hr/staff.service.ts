@@ -293,6 +293,7 @@ export class StaffService {
       }
     }
     const req = new RequestEntity();
+    req['forceRefresh']=forceRefresh;
     req.Method = "HrApiUrl-Staff-Get";
     req.IsShowLoading = isShowLoading;
     // this.staffSubscription.unsubscribe();

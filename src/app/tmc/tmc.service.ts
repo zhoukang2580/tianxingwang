@@ -53,6 +53,7 @@ export class TmcService {
   private localDomesticAirports: LocalStorageAirport;
   private selectedCompanySource: BehaviorSubject<string>;
   private companies: GroupCompanyEntity[];
+  private fetchingReq: { isFectching: boolean; promise: Promise<any> } = {} as any;
   private tmc: TmcEntity;
   private mobileTemplateSelectItemList: SelectItem[] = [];
   private emailTemplateSelectItemList: SelectItem[] = [];
@@ -588,9 +589,16 @@ export class TmcService {
     };
     req.IsShowLoading = isShowLoading;
     req.Timeout = 60;
-    return this.apiService.getPromiseData<{
-      [accountId: string]: CredentialsEntity[];
-    }>(req);
+    if (this.fetchingReq.isFectching) {
+      return this.fetchingReq.promise;
+    }
+    this.fetchingReq = {
+      isFectching: true,
+      promise: this.apiService.getPromiseData<{
+        [accountId: string]: CredentialsEntity[];
+      }>(req)
+    }
+    return this.fetchingReq.promise;
   }
   async getTmc(forceFetch = false): Promise<TmcEntity> {
     if (this.tmc && !forceFetch) {
