@@ -105,7 +105,7 @@ import { DaysCalendarComponent } from "src/app/tmc/components/days-calendar/days
       transition(
         "false <=> true",
         animate(
-          "500ms ease-in",
+          "200ms ease-in",
           style({
             transform: "rotateZ(360deg) scale(1.1)",
             opacity: 0.7
@@ -285,16 +285,18 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
   onSwapCity() {
     const s = this.flightService.getSearchFlightModel();
+    if(s.isLocked){
+      return;
+    }
     this.flightService.setSearchFlightModel({
       ...s,
       fromCity: s.toCity,
       toCity: s.fromCity
     });
-    this.isRotateIcon = true;
+    this.isRotateIcon = !this.isRotateIcon; // 控制图标旋转
   }
   onRotateIconDone(evt) {
     console.log("onRotateIconDone");
-    this.isRotateIcon = false;
   }
   async doRefresh(loadDataFromServer: boolean, keepSearchCondition: boolean) {
     if (this.timeoutid) {
