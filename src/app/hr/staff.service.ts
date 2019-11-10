@@ -269,31 +269,27 @@ export class StaffService {
     if (!id || !id.Id || !id.Ticket) {
       return this.staff;
     }
-    forceRefresh =
-      forceRefresh ||
-      !this.staff ||
-      (!this.staff.BookType && !(id.Numbers && id.Numbers.AgentId)) ||
-      (this.staff &&
-        (!(this.staff.IsConfirmInfo === undefined) &&
-          !this.staff.IsConfirmInfo)) ||
-      (this.staff &&
-        (!(this.staff.IsModifyPassword === undefined) &&
-          !this.staff.IsModifyPassword));
-    if (this.staff) {
-      if (
-        !forceRefresh ||
-        (this.staff.BookType === undefined && id.Numbers && id.Numbers.AgentId)
-      ) {
-        if (this.staff.BookType == StaffBookType.Self) {
-          this.staff.AccountId = this.staff.AccountId || id.Id;
-          this.staff.Name = this.staff.Name || id.Name;
-        } {
-          return this.staff;
-        }
+    forceRefresh = forceRefresh || !this.staff;
+    if(forceRefresh){
+      if(this.staff){
+        return this.staff;
       }
     }
+    // if (this.staff) {
+    //   if (
+    //     !forceRefresh ||
+    //     (this.staff.BookType === undefined && id.Numbers && id.Numbers.AgentId)
+    //   ) {
+    //     if (this.staff.BookType == StaffBookType.Self) {
+    //       this.staff.AccountId = this.staff.AccountId || id.Id;
+    //       this.staff.Name = this.staff.Name || id.Name;
+    //     } {
+    //       return this.staff;
+    //     }
+    //   }
+    // }
     const req = new RequestEntity();
-    req['forceRefresh']=forceRefresh;
+    req['forceRefresh'] = forceRefresh;
     req.Method = "HrApiUrl-Staff-Get";
     req.IsShowLoading = isShowLoading;
     // this.staffSubscription.unsubscribe();
