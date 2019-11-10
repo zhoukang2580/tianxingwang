@@ -92,6 +92,26 @@ import { DaysCalendarComponent } from "src/app/tmc/components/days-calendar/days
       state("true", style({ height: "*" })),
       state("false", style({ height: "0px" })),
       transition("false <=> true", animate(500))
+    ]),
+    trigger("rotateIcon", [
+      state(
+        "*",
+        style({
+          display: "inline-block",
+          transform: "rotateZ(-8deg) scale(1)",
+          opacity: 1
+        })
+      ),
+      transition(
+        "false <=> true",
+        animate(
+          "500ms ease-in",
+          style({
+            transform: "rotateZ(360deg) scale(1.1)",
+            opacity: 0.7
+          })
+        )
+      )
     ])
   ]
 })
@@ -102,10 +122,11 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   private selectPassengerSubscription = Subscription.EMPTY;
   private selectCitySubscription = Subscription.EMPTY;
   private selectDaySubscription = Subscription.EMPTY;
-  private isSelectFromCity:'isfrom'|"isTo"|"none";
+  private isSelectFromCity: 'isfrom' | "isTo" | "none";
   searchFlightModel: SearchFlightModel;
   filterCondition: FilterConditionModel;
   showAddPassenger = false;
+  isRotateIcon = false;
   @ViewChild("cnt") cnt: IonContent;
   @ViewChild("list") list: ElementRef<HTMLElement>;
   flightJourneyList: FlightJourneyEntity[]; // 保持和后台返回的数据一致
@@ -261,6 +282,19 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.searchFlightModel.Date = day.date;
     this.flightService.setSearchFlightModel(this.searchFlightModel);
     this.doRefresh(true, true);
+  }
+  onSwapCity() {
+    const s = this.flightService.getSearchFlightModel();
+    this.flightService.setSearchFlightModel({
+      ...s,
+      fromCity: s.toCity,
+      toCity: s.fromCity
+    });
+    this.isRotateIcon = true;
+  }
+  onRotateIconDone(evt) {
+    console.log("onRotateIconDone");
+    this.isRotateIcon = false;
   }
   async doRefresh(loadDataFromServer: boolean, keepSearchCondition: boolean) {
     if (this.timeoutid) {
@@ -600,7 +634,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.isLoading = false;
   }
   onSelectCity(isFrom: boolean) {
-    this.isSelectFromCity=isFrom?"isfrom":"isTo";
+    this.isSelectFromCity = isFrom ? "isfrom" : "isTo";
     this.flightService.setOpenCloseSelectCityPageSources(true);
   }
   private async initSearchModelParams() {
@@ -617,7 +651,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           if (this.isSelectFromCity == "none") {
             return;
           }
-          if (this.isSelectFromCity=="isfrom") {
+          if (this.isSelectFromCity == "isfrom") {
             this.flightService.setSearchFlightModel({ ...this.searchFlightModel, fromCity: city });
           } else {
             this.flightService.setSearchFlightModel({ ...this.searchFlightModel, toCity: city });

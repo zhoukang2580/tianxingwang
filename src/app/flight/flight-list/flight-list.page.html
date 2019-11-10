@@ -7,8 +7,10 @@
     </ion-buttons>
     <ion-title color='secondary' [attr.text-start]='showAddPassenger' [attr.text-center]='!showAddPassenger'>
       <ion-text (click)='onSelectCity(true)'>{{vmFromCity?.CityName}}</ion-text>
-      <i margin-start margin-end class='icon icon-flight-plane'></i>
-      <ion-text (click)='onSelectCity(false)'>{{ vmToCity?.CityName}}</ion-text> 
+      <div (@rotateIcon.done)='onRotateIconDone($event)' [@rotateIcon]='isRotateIcon' margin-start margin-end>
+        <i class='icon icon-flight-plane' (click)='onSwapCity()'></i>
+      </div>
+      <ion-text (click)='onSelectCity(false)'>{{ vmToCity?.CityName}}</ion-text>
     </ion-title>
     <ion-buttons slot='end'>
       <ion-button fill='clear' color='secondary' (click)='selectFilterPolicyPasseger()' size='small'>
@@ -122,4 +124,4 @@
 </ion-footer>
 
 <app-fly-filter [class.show]="showAdvSearchPage$ | async" [flights]="flightJourneyList"
-  [fromCityName]='vmFromCity?.CityName'  [toCityName]="vmToCity?.CityName"></app-fly-filter>
+  [fromCityName]='vmFromCity?.CityName' [toCityName]="vmToCity?.CityName"></app-fly-filter>
