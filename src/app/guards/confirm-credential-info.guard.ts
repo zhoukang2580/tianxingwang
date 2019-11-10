@@ -31,9 +31,6 @@ export class ConfirmCredentialInfoGuard
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
-    if(!this.staffService.status){
-      return true;
-    }
     return this.staffService
       .getStaff()
       .then(staff => {
