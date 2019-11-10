@@ -12,7 +12,7 @@ import { finalize } from 'rxjs/operators';
 export class ImageRecoverService {
   Failover: any;
   imageRecover: any;
-  private fetchingReq: { isFetching: boolean; response: Observable<any> } = {} as any;
+  private fetchingReq: { isFetching: boolean; promise: Promise<any> } = {} as any;
   constructor(
     private apiService: ApiService,
     identityService: IdentityService
@@ -42,40 +42,43 @@ export class ImageRecoverService {
     if (this.imageRecover) {
       return Promise.resolve(this.imageRecover);
     }
-    return new Promise<any>((resolve, reject) => {
-      const subscribtion = this.load().subscribe(
-        r => {
-          if (r && r.Status && r.Data) {
-            this.Failover = r.Data;
-            this.imageRecover = new window["Winner"].ImageRecover(r.Data);
-            resolve(this.imageRecover);
-          }
-          reject("");
-        },
-        error => {
-          reject(error);
-        },
-        () => {
-          setTimeout(() => {
-            if (subscribtion) {
-              subscribtion.unsubscribe();
+    if (this.fetchingReq.isFetching) {
+      return this.fetchingReq.promise;
+    }
+    this.fetchingReq = {
+      isFetching: true,
+      promise: new Promise<any>((resolve, reject) => {
+        const subscribtion = this.load().subscribe(
+          r => {
+            if (r && r.Status && r.Data) {
+              this.Failover = r.Data;
+              this.imageRecover = new window["Winner"].ImageRecover(r.Data);
+              resolve(this.imageRecover);
             }
-          }, 0);
-        }
-      );
-    }).catch(() => null);
+            reject("");
+          },
+          error => {
+            reject(error);
+          },
+          () => {
+            setTimeout(() => {
+              if (subscribtion) {
+                subscribtion.unsubscribe();
+              }
+            }, 0);
+          }
+        );
+      }).catch(() => null)
+    }
+    return this.fetchingReq.promise;
   }
 
   private load() {
-    if (this.fetchingReq.isFetching) {
-      return this.fetchingReq.response;
-    }
     const req = new RequestEntity();
     req.Method = "ApiHomeUrl-Home-GetImageRecoverAddress";
     req.Data = JSON.stringify({});
-    this.fetchingReq.response = this.apiService.getResponse<any>(req).pipe(finalize(() => {
+    return this.apiService.getResponse<any>(req).pipe(finalize(() => {
       this.fetchingReq = {} as any;
     }));
-    return this.fetchingReq.response;
   }
 }

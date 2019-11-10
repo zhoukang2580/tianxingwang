@@ -7,6 +7,142 @@ import { ApiService } from "src/app/services/api/api.service";
 import { Injectable } from "@angular/core";
 import { AccountEntity } from "../tmc/models/AccountEntity";
 import { TaskType } from "../workflow/models/TaskType";
+
+@Injectable({
+  providedIn: "root"
+})
+export class StaffService {
+  private staff: StaffEntity;
+  private isStaffCredentialsLoading = false;
+  private fetchingReq: { isFetching: boolean; promise: Promise<any> } = {} as any;
+  staffCredentials: MemberCredential[];
+  constructor(
+    private apiService: ApiService,
+    private identityService: IdentityService
+  ) {
+    this.identityService.getIdentitySource().subscribe(id => {
+      this.disposal();
+    });
+  }
+  private disposal() {
+    this.staff = null;
+    this.staffCredentials = null;
+  }
+  async isSelfBookType(isShowLoading = true) {
+    const t = (await this.getBookType()) === StaffBookType.Self;
+    console.log("isSelfbooktype ", await this.getBookType(isShowLoading), t);
+    return t;
+  }
+  async isAllBookType() {
+    const t = await this.getBookType();
+    return t === StaffBookType.All;
+  }
+  async isSecretaryBookType() {
+    const t = await this.getBookType();
+    return t == StaffBookType.Secretary;
+  }
+  private async getBookType(isShowLoading = true): Promise<StaffBookType> {
+    const s = await this.getStaff(isShowLoading).catch(_ => null);
+    return s && s.BookType;
+  }
+
+  async getStaff(forceRefresh: boolean = false, isShowLoading = false): Promise<StaffEntity> {
+    const id = await this.identityService.getIdentityAsync().catch(_ => null);
+    if (!id || !id.Id || !id.Ticket) {
+      return this.staff;
+    }
+    forceRefresh = forceRefresh || !this.staff;
+    if(!forceRefresh){
+      if(this.staff){
+        return this.staff;
+      }
+    }
+    // if (this.staff) {
+    //   if (
+    //     !forceRefresh ||
+    //     (this.staff.BookType === undefined && id.Numbers && id.Numbers.AgentId)
+    //   ) {
+    //     if (this.staff.BookType == StaffBookType.Self) {
+    //       this.staff.AccountId = this.staff.AccountId || id.Id;
+    //       this.staff.Name = this.staff.Name || id.Name;
+    //     } {
+    //       return this.staff;
+    //     }
+    //   }
+    // }
+    const req = new RequestEntity();
+    req['forceRefresh'] = forceRefresh;
+    req.Method = "HrApiUrl-Staff-Get";
+    req.IsShowLoading = isShowLoading;
+    // this.staffSubscription.unsubscribe();
+    const existing = this.fetchingReq.isFetching;
+    if (existing) {
+      return this.fetchingReq.promise;
+    }
+    this.fetchingReq = {
+      isFetching: true,
+      promise: this.apiService
+        .getPromiseData<StaffEntity>(req)
+        .then(staff => {
+          this.fetchingReq = {} as any;
+          console.log("staff ", staff,`forceFetch=${forceRefresh}`,`isfetching=${this.fetchingReq.isFetching}`);
+          this.staff = staff;
+          if (this.staff.BookType == StaffBookType.Self) {
+            this.staff.AccountId = this.staff.AccountId || id.Id;
+            this.staff.Name = this.staff.Name || id.Name;
+          }
+          return staff
+        }).catch(_ => {
+          this.fetchingReq = {} as any;
+          return null as StaffEntity;
+        })
+    };
+    return this.fetchingReq.promise;
+  }
+  async comfirmInfo(data: {
+    IsModifyPassword: boolean;
+    IsModifyCredentials: boolean;
+  }) {
+    const req = new RequestEntity();
+    req.Method = "HrApiUrl-Staff-ComfirmInfo";
+    req.Data = data;
+    req.IsShowLoading = true;
+    return this.apiService
+      .getPromiseData<any>(req)
+      .then(_ => true)
+      .catch(_ => false);
+  }
+  async comfirmInfoModifyPassword() {
+    return this.comfirmInfo({
+      IsModifyPassword: true,
+      IsModifyCredentials: false
+    });
+  }
+  async comfirmInfoModifyCredentials() {
+    return this.comfirmInfo({
+      IsModifyPassword: false,
+      IsModifyCredentials: true
+    });
+  }
+  async getStaffCredentials(AccountId: string, forceFetch = false): Promise<MemberCredential[]> {
+    const req = new RequestEntity();
+    req.Method = `TmcApiHomeUrl-Staff-Credentials`;
+    req.IsShowLoading = true;
+    req.Data = {
+      AccountId
+    };
+    if (!forceFetch) {
+      if (this.isStaffCredentialsLoading || this.staffCredentials && this.staffCredentials.length) {
+        return Promise.resolve(this.staffCredentials);
+      }
+    }
+    this.isStaffCredentialsLoading = true;
+    this.staffCredentials = await this.apiService
+      .getPromiseData<MemberCredential[]>(req).catch(_ => null);
+    this.isStaffCredentialsLoading = false;
+    return this.staffCredentials;
+  }
+}
 export enum StaffBookType {
   /// <summary>
   /// 秘书
@@ -222,139 +358,4 @@ export interface HrEntity {
     IsReality: boolean; //
   }; //
   Name: string; //
-}
-@Injectable({
-  providedIn: "root"
-})
-export class StaffService {
-  private staff: StaffEntity;
-  private isStaffCredentialsLoading = false;
-  private fetchingReq: { isFetching: boolean; promise: Promise<any> } = {} as any;
-  staffCredentials: MemberCredential[];
-  constructor(
-    private apiService: ApiService,
-    private identityService: IdentityService
-  ) {
-    this.identityService.getIdentitySource().subscribe(id => {
-      this.disposal();
-    });
-  }
-  private disposal() {
-    this.staff = null;
-    this.staffCredentials = null;
-  }
-  async isSelfBookType(isShowLoading = true) {
-    const t = (await this.getBookType()) === StaffBookType.Self;
-    console.log("isSelfbooktype ", await this.getBookType(isShowLoading), t);
-    return t;
-  }
-  async isAllBookType() {
-    const t = await this.getBookType();
-    return t === StaffBookType.All;
-  }
-  async isSecretaryBookType() {
-    const t = await this.getBookType();
-    return t == StaffBookType.Secretary;
-  }
-  private async getBookType(isShowLoading = true): Promise<StaffBookType> {
-    const s = await this.getStaff(isShowLoading).catch(_ => null);
-    return s && s.BookType;
-  }
-
-  async getStaff(forceRefresh: boolean = false, isShowLoading = false): Promise<StaffEntity> {
-    const id = await this.identityService.getIdentityAsync().catch(_ => null);
-    if (!id || !id.Id || !id.Ticket) {
-      return this.staff;
-    }
-    forceRefresh = forceRefresh || !this.staff;
-    if(!forceRefresh){
-      if(this.staff){
-        return this.staff;
-      }
-    }
-    // if (this.staff) {
-    //   if (
-    //     !forceRefresh ||
-    //     (this.staff.BookType === undefined && id.Numbers && id.Numbers.AgentId)
-    //   ) {
-    //     if (this.staff.BookType == StaffBookType.Self) {
-    //       this.staff.AccountId = this.staff.AccountId || id.Id;
-    //       this.staff.Name = this.staff.Name || id.Name;
-    //     } {
-    //       return this.staff;
-    //     }
-    //   }
-    // }
-    const req = new RequestEntity();
-    req['forceRefresh'] = forceRefresh;
-    req.Method = "HrApiUrl-Staff-Get";
-    req.IsShowLoading = isShowLoading;
-    // this.staffSubscription.unsubscribe();
-    const existing = this.fetchingReq.isFetching;
-    if (existing) {
-      return this.fetchingReq.promise;
-    }
-    this.fetchingReq = {
-      isFetching: true,
-      promise: this.apiService
-        .getPromiseData<StaffEntity>(req)
-        .then(staff => {
-          this.fetchingReq = {} as any;
-          console.log("staff ", staff,`forceFetch=${forceRefresh}`,`isfetching=${this.fetchingReq.isFetching}`);
-          this.staff = staff;
-          if (this.staff.BookType == StaffBookType.Self) {
-            this.staff.AccountId = this.staff.AccountId || id.Id;
-            this.staff.Name = this.staff.Name || id.Name;
-          }
-          return staff
-        }).catch(_ => {
-          this.fetchingReq = {} as any;
-          return null as StaffEntity;
-        })
-    };
-    return this.fetchingReq.promise;
-  }
-  async comfirmInfo(data: {
-    IsModifyPassword: boolean;
-    IsModifyCredentials: boolean;
-  }) {
-    const req = new RequestEntity();
-    req.Method = "HrApiUrl-Staff-ComfirmInfo";
-    req.Data = data;
-    req.IsShowLoading = true;
-    return this.apiService
-      .getPromiseData<any>(req)
-      .then(_ => true)
-      .catch(_ => false);
-  }
-  async comfirmInfoModifyPassword() {
-    return this.comfirmInfo({
-      IsModifyPassword: true,
-      IsModifyCredentials: false
-    });
-  }
-  async comfirmInfoModifyCredentials() {
-    return this.comfirmInfo({
-      IsModifyPassword: false,
-      IsModifyCredentials: true
-    });
-  }
-  async getStaffCredentials(AccountId: string, forceFetch = false): Promise<MemberCredential[]> {
-    const req = new RequestEntity();
-    req.Method = `TmcApiHomeUrl-Staff-Credentials`;
-    req.IsShowLoading = true;
-    req.Data = {
-      AccountId
-    };
-    if (!forceFetch) {
-      if (this.isStaffCredentialsLoading || this.staffCredentials && this.staffCredentials.length) {
-        return Promise.resolve(this.staffCredentials);
-      }
-    }
-    this.isStaffCredentialsLoading = true;
-    this.staffCredentials = await this.apiService
-      .getPromiseData<MemberCredential[]>(req).catch(_ => null);
-    this.isStaffCredentialsLoading = false;
-    return this.staffCredentials;
-  }
 }
