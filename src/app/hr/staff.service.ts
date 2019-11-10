@@ -267,7 +267,7 @@ export class StaffService {
       return this.staff;
     }
     forceRefresh = forceRefresh || !this.staff;
-    if(forceRefresh){
+    if(!forceRefresh){
       if(this.staff){
         return this.staff;
       }
