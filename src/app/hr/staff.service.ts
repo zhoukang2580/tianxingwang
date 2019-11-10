@@ -269,7 +269,7 @@ export class StaffService {
     if (!id || !id.Id || !id.Ticket) {
       return this.staff;
     }
-    forceRefresh = forceRefresh || !this.staff;
+    forceRefresh = forceRefresh || (!this.staff&&!this.fetchingReq.isFetching);
     if(forceRefresh){
       if(this.staff){
         return this.staff;
