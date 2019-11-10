@@ -230,6 +230,7 @@ export class StaffService {
   private staff: StaffEntity;
   private subscription = Subscription.EMPTY;
   private isStaffCredentialsLoading = false;
+  private fetchingReq: { isFetching: boolean; promise: Promise<any> } = {} as any;
   status = false;
   staffCredentials: MemberCredential[];
   constructor(
@@ -245,7 +246,7 @@ export class StaffService {
     this.staffCredentials = null;
     this.status = false;
   }
-  async isSelfBookType(isShowLoading=true) {
+  async isSelfBookType(isShowLoading = true) {
     const t = (await this.getBookType()) === StaffBookType.Self;
     console.log("isSelfbooktype ", await this.getBookType(isShowLoading), t);
     return t;
@@ -258,12 +259,12 @@ export class StaffService {
     const t = await this.getBookType();
     return t == StaffBookType.Secretary;
   }
-  private async getBookType(isShowLoading=true): Promise<StaffBookType> {
+  private async getBookType(isShowLoading = true): Promise<StaffBookType> {
     const s = await this.getStaff(isShowLoading).catch(_ => null);
     return s && s.BookType;
   }
-  
-  async getStaff(forceRefresh: boolean = false,isShowLoading=false): Promise<StaffEntity> {
+
+  async getStaff(forceRefresh: boolean = false, isShowLoading = false): Promise<StaffEntity> {
     const id = await this.identityService.getIdentityAsync().catch(_ => null);
     if (!id || !id.Id || !id.Ticket) {
       return this.staff;
@@ -286,7 +287,7 @@ export class StaffService {
         if (this.staff.BookType == StaffBookType.Self) {
           this.staff.AccountId = this.staff.AccountId || id.Id;
           this.staff.Name = this.staff.Name || id.Name;
-        }{
+        } {
           return this.staff;
         }
       }
@@ -295,20 +296,30 @@ export class StaffService {
     req.Method = "HrApiUrl-Staff-Get";
     req.IsShowLoading = isShowLoading;
     // this.staffSubscription.unsubscribe();
-    return this.apiService
-      .getPromiseData<StaffEntity>(req)
-      .then(staff => {
-        console.log("staff ", staff);
-        this.staff = staff;
-        this.status = true;
-        if (this.staff.BookType == StaffBookType.Self) {
-          this.staff.AccountId = this.staff.AccountId || id.Id;
-          this.staff.Name = this.staff.Name || id.Name;
-        }
-        return staff
-      }).catch(_ => {
-        return {} as StaffEntity;
-      })
+    const existing = this.fetchingReq.isFetching;
+    if (existing) {
+      return this.fetchingReq.promise;
+    }
+    this.fetchingReq = {
+      isFetching: true,
+      promise: this.apiService
+        .getPromiseData<StaffEntity>(req)
+        .then(staff => {
+          this.fetchingReq = {} as any;
+          console.log("staff ", staff);
+          this.staff = staff;
+          this.status = true;
+          if (this.staff.BookType == StaffBookType.Self) {
+            this.staff.AccountId = this.staff.AccountId || id.Id;
+            this.staff.Name = this.staff.Name || id.Name;
+          }
+          return staff
+        }).catch(_ => {
+          this.fetchingReq = {} as any;
+          return {} as StaffEntity;
+        })
+    };
+    return this.fetchingReq.promise;
   }
   async comfirmInfo(data: {
     IsModifyPassword: boolean;
@@ -335,19 +346,19 @@ export class StaffService {
       IsModifyCredentials: true
     });
   }
-  async getStaffCredentials(AccountId: string,forceFetch=false): Promise<MemberCredential[]> {
+  async getStaffCredentials(AccountId: string, forceFetch = false): Promise<MemberCredential[]> {
     const req = new RequestEntity();
     req.Method = `TmcApiHomeUrl-Staff-Credentials`;
     req.IsShowLoading = true;
     req.Data = {
       AccountId
     };
-    if(!forceFetch){
+    if (!forceFetch) {
       if (this.isStaffCredentialsLoading || this.staffCredentials && this.staffCredentials.length) {
         return Promise.resolve(this.staffCredentials);
       }
     }
-    this.isStaffCredentialsLoading=true;
+    this.isStaffCredentialsLoading = true;
     this.staffCredentials = await this.apiService
       .getPromiseData<MemberCredential[]>(req).catch(_ => null);
     this.isStaffCredentialsLoading = false;

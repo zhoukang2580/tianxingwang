@@ -36,6 +36,7 @@ export class IdentityService {
   private isLoading = false;
   private _IdentityEntity: IdentityEntity;
   private identitySource: Subject<IdentityEntity>;
+  private fetchingReq: { isFetching: boolean; promise: Promise<any> } = {} as any;
   constructor(private http: HttpClient) {
     this._IdentityEntity = new IdentityEntity();
     this._IdentityEntity.Ticket = AppHelper.getTicket();
@@ -67,25 +68,31 @@ export class IdentityService {
     ) {
       return Promise.resolve(this._IdentityEntity);
     }
-    return new Promise(s => {
-      const sub = this.loadIdentityEntity()
-        .pipe(
-          finalize(() => {
-            setTimeout(() => {
-              sub.unsubscribe();
-            }, 300);
-          })
-        )
-        .subscribe(
-          r => {
-            s(r);
-          },
-          e => {
-            AppHelper.alert(e);
-            s(null);
-          }
-        );
-    });
+    if (!this.fetchingReq.isFetching) {
+      this.fetchingReq = {
+        isFetching: true, promise: new Promise(s => {
+          const sub = this.loadIdentityEntity()
+            .pipe(
+              finalize(() => {
+                setTimeout(() => {
+                  this.fetchingReq = {} as any;
+                  sub.unsubscribe();
+                }, 300);
+              })
+            )
+            .subscribe(
+              r => {
+                s(r);
+              },
+              e => {
+                AppHelper.alert(e);
+                s(null);
+              }
+            );
+        })
+      }
+    }
+    return this.fetchingReq.promise;
   }
   getIdentitySource(): Observable<IdentityEntity> {
     return this.identitySource.asObservable();
