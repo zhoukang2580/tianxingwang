@@ -993,6 +993,7 @@ export class BookPage implements OnInit, AfterViewInit {
     bookDto.IsFromOffline = isSave;
     let canBook = false;
     let canBook2 = false;
+    const isSelf = await this.staffService.isSelfBookType();
     if (this.combindInfos) {
       const c = this.combindInfos.find(it => !it.arrivalHotelTime);
       if (c) {
@@ -1022,7 +1023,7 @@ export class BookPage implements OnInit, AfterViewInit {
             const canPay = true || (await this.checkPay(res.TradeNo));
             if (canPay) {
               const payResult = await this.tmcService.payOrder(res.TradeNo);
-              if (payResult) {
+              if (payResult || isSelf) {
                 this.goToMyOrders(ProductItemType.hotel);
               } else {
                 this.router.navigate([""]); // 回到首页
