@@ -1,3 +1,4 @@
+import { finalize } from 'rxjs/operators';
 import { FlightService } from "src/app/flight/flight.service";
 import {
   EventEmitter,
@@ -56,7 +57,6 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
   @Input() disabled = false; // 界面上显示的出发城市
   @Input() vmFromCity: TrafficlineEntity; // 界面上显示的出发城市
   @Input() vmToCity: TrafficlineEntity; // 界面上显示的目的城市
-  isSelectFromCity: boolean;
   isMoving: boolean;
   mode: string;
   @Output() eCity: EventEmitter<{ vmFromCity: TrafficlineEntity; vmToCity: TrafficlineEntity; }>;
@@ -123,24 +123,30 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
     console.log("changes.toCity", changes.vmToCity);
   }
   ngOnInit() {
+
+  }
+  onSelectCity(isFrom: boolean) {
+    this.selectCitySubscription.unsubscribe();
     this.selectCitySubscription = this.flightService
       .getSelectedCity()
+      .pipe(finalize(() => {
+        setTimeout(() => {
+          this.selectCitySubscription.unsubscribe();
+        }, 100);
+      }))
       .subscribe(c => {
-        if (c) {
-          if (this.isSelectFromCity) {
+        if (c&&c.Code) {
+          if (isFrom) {
             this.vmFromCity = c;
           } else {
             this.vmToCity = c;
           }
-          this.eCity.emit({vmFromCity:this.vmFromCity,vmToCity:this.vmToCity});
+          this.eCity.emit({ vmFromCity: this.vmFromCity, vmToCity: this.vmToCity });
         }
       });
-  }
-  onSelectCity(fromCity: boolean) {
     if (this.disabled) {
       return;
     }
     this.flightService.setOpenCloseSelectCityPageSources(true);
-    this.isSelectFromCity = fromCity;
   }
 }

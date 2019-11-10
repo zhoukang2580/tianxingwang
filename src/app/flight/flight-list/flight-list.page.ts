@@ -50,7 +50,8 @@ import {
   delay,
   map,
   filter,
-  reduce
+  reduce,
+  finalize
 } from "rxjs/operators";
 import * as moment from "moment";
 import { CalendarService } from "../../tmc/calendar.service";
@@ -193,8 +194,8 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       if (d && d.get("doRefresh")) {
         this.doRefresh(true, false);
       }
-      const filteredBookInfo = this.flightService.getPassengerBookInfos().find(it=>it.isFilteredPolicy);
-      if(filteredBookInfo){
+      const filteredBookInfo = this.flightService.getPassengerBookInfos().find(it => it.isFilteredPolicy);
+      if (filteredBookInfo) {
         this.filterPassengerPolicyFlights(filteredBookInfo);
       }
     });
@@ -455,7 +456,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async onSelectPassenger() {
     const removeitem = new EventEmitter<PassengerBookInfo<IFlightSegmentInfo>>();
-   const sub =  removeitem.subscribe(info=>{
+    const sub = removeitem.subscribe(info => {
       this.flightService.removePassengerBookInfo(info);
     })
     const m = await this.modalCtrl.create({
@@ -463,8 +464,8 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       componentProps: {
         isOpenPageAsModal: true,
         removeitem,
-        forType:FlightHotelTrainType.Flight,
-        bookInfos$:this.flightService.getPassengerBookInfoSource(),
+        forType: FlightHotelTrainType.Flight,
+        bookInfos$: this.flightService.getPassengerBookInfoSource(),
       }
     });
 
@@ -473,13 +474,13 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       .map(it => it.id);
     await m.present();
     await m.onDidDismiss();
-    if(sub){
+    if (sub) {
       sub.unsubscribe();
     }
     const newBookInfos = this.flightService
       .getPassengerBookInfos()
       .map(it => it.id);
-    console.log("old ",oldBookInfos.map(it => it), "new ", newBookInfos.map(it => it));
+    console.log("old ", oldBookInfos.map(it => it), "new ", newBookInfos.map(it => it));
     const isChange =
       oldBookInfos.length !== newBookInfos.length ||
       oldBookInfos.some(it => !newBookInfos.find(n => n == it)) ||
@@ -595,6 +596,26 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.hasDataSource.next(!!this.vmFlights.length && !this.isLoading);
     this.apiService.hideLoadingView();
     this.isLoading = false;
+  }
+  onSelectCity(isFrom: boolean) {
+    this.flightService.setOpenCloseSelectCityPageSources(true);
+    const sub0 = this.flightService.getSelectedCity()
+      .pipe(finalize(() => {
+        setTimeout(() => {
+          if (sub0) {
+            sub0.unsubscribe();
+          }
+        }, 100);
+      }))
+      .subscribe(city => {
+        if (city) {
+          if (isFrom) {
+            this.flightService.setSearchFlightModel({ ...this.searchFlightModel, fromCity: city });
+          } else {
+            this.flightService.setSearchFlightModel({ ...this.searchFlightModel, toCity: city });
+          }
+        }
+      });
   }
   private async initSearchModelParams() {
     this.searchConditionSubscription = this.flightService.getSearchFlightModelSource().subscribe(m => {

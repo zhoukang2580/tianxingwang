@@ -167,12 +167,17 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], { queryParams: { forType: FlightHotelTrainType.Flight } });
   }
   onCities(evt: { vmFromCity: TrafficlineEntity, vmToCity: TrafficlineEntity }) {
-    const s = this.flightService.getSearchFlightModel();
-    this.flightService.setSearchFlightModel({
-      ...s,
-      fromCity: evt.vmFromCity,
-      toCity: evt.vmToCity
-    })
+    console.log("oncitites", evt);
+    if (evt) {
+      const s = this.flightService.getSearchFlightModel();
+      if (evt.vmFromCity && evt.vmFromCity.Code) {
+        s.fromCity = evt.vmFromCity;
+      }
+      if (evt.vmToCity && evt.vmToCity.Code) {
+        s.toCity = evt.vmToCity;
+      }
+      this.flightService.setSearchFlightModel(s);
+    }
   }
   ngOnDestroy(): void {
     console.log("on destroyed");
@@ -180,21 +185,23 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
   }
 
   async initFlightCities() {
-    const vmFromCity = {} as any;
+    const vmFromCity = {} as TrafficlineEntity;
     vmFromCity.CityName =
       "北京";
+    vmFromCity.Nickname = vmFromCity.CityName;
     vmFromCity.Code = "BJS";
-    const vmToCity = {} as any;
+    const vmToCity = {} as TrafficlineEntity;
     vmToCity.CityName =
       "上海";
+    vmToCity.Nickname = vmToCity.CityName;
     // 出发城市，不是出发城市的那个机场
     vmToCity.Code = "SHA";
     const lastFromCity = await this.storage.get("fromCity").catch(_ => null) || vmFromCity;
     const lastToCity = await this.storage.get("toCity").catch(_ => null) || vmToCity;
     this.flightService.setSearchFlightModel({
       ...this.flightService.getSearchFlightModel(),
-      fromCity: vmFromCity,
-      toCity: vmToCity
+      fromCity: lastFromCity,
+      toCity: lastToCity
     })
   }
   async searchFlight() {
@@ -279,21 +286,5 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
       }
     }
     this.flightService.setSearchFlightModel(this.searchFlightModel);
-  }
-  onFromCitySelected(city: TrafficlineEntity) {
-    if (city) {
-      this.flightService.setSearchFlightModel({
-        ...this.flightService.getSearchFlightModel(),
-        fromCity: city
-      })
-    }
-  }
-  onToCitySelected(city: TrafficlineEntity) {
-    if (city) {
-      this.flightService.setSearchFlightModel({
-        ...this.flightService.getSearchFlightModel(),
-        toCity: city
-      })
-    }
   }
 }

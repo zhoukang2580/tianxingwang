@@ -131,6 +131,14 @@ export class FlightService {
   }
   setSearchFlightModel(m: SearchFlightModel) {
     console.log("setSearchFlightModel", m);
+    if(m){
+      if(m.fromCity){
+        m.FromCode=m.fromCity.Code;
+      }
+      if(m.toCity){
+        m.ToCode=m.toCity.Code;
+      }
+    }
     this.searchFlightModel = m;
     this.searchFlightModelSource.next(this.searchFlightModel);
   }
@@ -798,7 +806,7 @@ export class FlightService {
     return this.selectedCitySource.asObservable();
   }
   setSelectedCity(_selectedCity: TrafficlineEntity) {
-    this.selectedCitySource.next({ ..._selectedCity });
+    this.selectedCitySource.next(_selectedCity);
   }
   getOpenCloseSelectCityPageSources() {
     return this.openCloseSelectCitySources.asObservable();

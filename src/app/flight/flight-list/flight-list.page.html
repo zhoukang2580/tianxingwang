@@ -6,9 +6,9 @@
       </ion-button>
     </ion-buttons>
     <ion-title color='secondary' [attr.text-start]='showAddPassenger' [attr.text-center]='!showAddPassenger'>
-      <ion-text>{{vmFromCity?.CityName}}</ion-text>
-      <i class='icon icon-flight-plane'></i>
-      <ion-text>{{ vmToCity?.CityName}}</ion-text>
+      <ion-text (click)='onSelectCity(true)'>{{vmFromCity?.CityName}}</ion-text>
+      <i margin-start margin-end class='icon icon-flight-plane'></i>
+      <ion-text (click)='onSelectCity(false)'>{{ vmToCity?.CityName}}</ion-text> 
     </ion-title>
     <ion-buttons slot='end'>
       <ion-button fill='clear' color='secondary' (click)='selectFilterPolicyPasseger()' size='small'>

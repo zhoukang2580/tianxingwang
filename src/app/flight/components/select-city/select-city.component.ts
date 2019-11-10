@@ -366,6 +366,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isSearching = false;
     this.textSearchResults = null;
     this.isFiltering = false;
+    this.flightService.setSelectedCity(null);
     this.flightService.setOpenCloseSelectCityPageSources(false);
   }
   onNavLickClick(link: string) {
