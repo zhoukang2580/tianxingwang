@@ -45,9 +45,10 @@ interface ApiConfig {
 export class ApiService {
   private loadingSubject: Subject<boolean>;
   public apiConfig: ApiConfig;
+  private fetchingReq: { isFetching: boolean; promise: Promise<any> } = {} as any;
+
   private worker = null;
-  private isLoadingApiConfig = false;
-  private isAlert=false;
+  private isAlert = false;
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -235,12 +236,12 @@ export class ApiService {
             }
             if (r && !r.Status && r.Code && r.Code.toLowerCase() == "nologin") {
               const msg = r.Message || LanguageHelper.getApiExceptionTip();
-              if(msg==LanguageHelper.getApiExceptionTip()){
-                if(!this.isAlert){
+              if (msg == LanguageHelper.getApiExceptionTip()) {
+                if (!this.isAlert) {
                   this.alertCtrl
-                  .create({message:msg,buttons:[{text:LanguageHelper.getConfirmTip()}]}).then(_=>{
-                    this.isAlert=false;
-                  })
+                    .create({ message: msg, buttons: [{ text: LanguageHelper.getConfirmTip() }] }).then(_ => {
+                      this.isAlert = false;
+                    })
                 }
               }
             }
@@ -357,52 +358,53 @@ export class ApiService {
         return Promise.resolve(this.apiConfig);
       }
     }
-    if (this.isLoadingApiConfig) {
-      return Promise.reject("loading api config");
+    if (this.fetchingReq.isFetching) {
+      return this.fetchingReq.promise
     }
-    this.isLoadingApiConfig = true;
     const url = AppHelper.getApiUrl() + "/Home/ApiConfig";
     const due = 30 * 1000;
-    return new Promise<ApiConfig>(s => {
-      const sub = this.http
-        .get(url)
-        .pipe(
-          timeout(due),
-          finalize(() => {
-            this.isLoadingApiConfig = false;
-            setTimeout(() => {
-              if (sub) {
-                console.log("loadUrls unsubscribe");
-                sub.unsubscribe();
+    this.fetchingReq = {
+      isFetching: true, promise: new Promise<ApiConfig>(s => {
+        const sub = this.http
+          .get(url)
+          .pipe(
+            timeout(due),
+            finalize(() => {
+              setTimeout(() => {
+                if (sub) {
+                  console.log("loadUrls unsubscribe");
+                  sub.unsubscribe();
+                }
+              }, 3000);
+            })
+          )
+          .subscribe(
+            async (r: IResponse<ApiConfig>) => {
+              if (r.Data) {
+                await this.storage.set(`KEY_API_CONFIG`, r.Data);
+                this.apiConfig = r.Data;
+                const identityEntity = await this.identityService.getIdentityAsync();
+                if (identityEntity) {
+                  identityEntity.Token = r.Data.Token;
+                  this.identityService.setIdentity(identityEntity);
+                }
+                s(this.apiConfig);
+              } else {
+                s(null);
               }
-            }, 3000);
-          })
-        )
-        .subscribe(
-          async (r: IResponse<ApiConfig>) => {
-            if (r.Data) {
-              await this.storage.set(`KEY_API_CONFIG`, r.Data);
-              this.apiConfig = r.Data;
-              const identityEntity = await this.identityService.getIdentityAsync();
-              if (identityEntity) {
-                identityEntity.Token = r.Data.Token;
-                this.identityService.setIdentity(identityEntity);
-              }
-              s(this.apiConfig);
-            } else {
+            },
+            e => {
               s(null);
             }
-          },
-          e => {
-            s(null);
-          }
-        );
-    });
+          );
+      })
+    };
+    return this.fetchingReq.promise;
   }
   getSign(req: RequestEntity) {
     return md5(
       `${typeof req.Data === "string" ? req.Data : JSON.stringify(req.Data)}${
-        req.Timestamp
+      req.Timestamp
       }${req.Token}`
     ) as string;
   }
