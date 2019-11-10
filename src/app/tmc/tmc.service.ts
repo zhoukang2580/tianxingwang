@@ -77,7 +77,7 @@ export class TmcService {
   async payOrder(tradeNo: string, key = ""): Promise<boolean> {
     let payResult = false;
     const payWay = await this.payService.selectPayWay();
-    console.log('payway',payWay);
+    console.log('payway', payWay);
     if (!payWay) {
       const ok = await AppHelper.alert(
         LanguageHelper.Order.getGiveUpPayTip(),
@@ -579,14 +579,14 @@ export class TmcService {
   //   });
   // }
   async getPassengerCredentials(
-    accountIds: string[]
+    accountIds: string[], isShowLoading = false
   ): Promise<{ [accountId: string]: CredentialsEntity[] }> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Home-Credentials";
     req.Data = {
       AccountIds: accountIds.join(";")
     };
-    req.IsShowLoading = true;
+    req.IsShowLoading = isShowLoading;
     req.Timeout = 60;
     return this.apiService.getPromiseData<{
       [accountId: string]: CredentialsEntity[];

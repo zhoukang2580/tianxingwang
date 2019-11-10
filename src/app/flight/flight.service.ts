@@ -110,10 +110,8 @@ export class FlightService {
       }
     });
   }
-  async initSelfBookTypeBookInfos() {
-    this.apiService.showLoadingView();
-    await this.checkOrAddSelfBookTypeBookInfo();
-    this.apiService.hideLoadingView();
+  async initSelfBookTypeBookInfos(isShowLoading=true) {
+    await this.checkOrAddSelfBookTypeBookInfo(isShowLoading);
   }
   private disposal() {
     this.setSearchFlightModel(new SearchFlightModel());
@@ -691,17 +689,17 @@ export class FlightService {
     });
     this.dismissAllTopOverlays();
   }
-  async addOneBookInfoToSelfBookType() {
+  async addOneBookInfoToSelfBookType(isShowLoading=false) {
     console.log("addOneBookInfoToSelfBookType");
     let IdCredential: CredentialsEntity;
-    const staff: StaffEntity = await this.staffService.getStaff().catch(_ => null);
+    const staff: StaffEntity = await this.staffService.getStaff(isShowLoading).catch(_ => null);
     if (!staff || !staff.AccountId) {
       return;
     }
     if (this.getPassengerBookInfos().length) {
       return;
     }
-    if (!(await this.staffService.isSelfBookType())) {
+    if (!(await this.staffService.isSelfBookType(isShowLoading))) {
       return;
     }
     if (!this.selfCredentials || this.selfCredentials.length == 0) {
@@ -729,11 +727,11 @@ export class FlightService {
     this.addPassengerBookInfo(info);
     this.isInitializingSelfBookInfos = false;
   }
-  private async checkOrAddSelfBookTypeBookInfo() {
+  private async checkOrAddSelfBookTypeBookInfo(isShowLoading=true) {
     const bookInfos = this.getPassengerBookInfos();
-    const isSelf = await this.staffService.isSelfBookType();
+    const isSelf = await this.staffService.isSelfBookType(isShowLoading);
     if (isSelf && bookInfos.length === 0) {
-      await this.addOneBookInfoToSelfBookType();
+      await this.addOneBookInfoToSelfBookType(isShowLoading);
     }
     if (
       isSelf &&

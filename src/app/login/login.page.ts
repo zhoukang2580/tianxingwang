@@ -344,11 +344,11 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   private async initializeSelfBookInfos() {
     try {
       this.isLogining = true;
-      const staff = await this.staffService.getStaff();
+      const staff = await this.staffService.getStaff(false);
       if (staff) {
-        await this.hotelService.initSelfBookTypeBookInfos();
-        await this.flightService.initSelfBookTypeBookInfos();
-        await this.trainServive.initSelfBookTypeBookInfos();
+        await this.hotelService.initSelfBookTypeBookInfos(false);
+        await this.flightService.initSelfBookTypeBookInfos(false);
+        await this.trainServive.initSelfBookTypeBookInfos(false);
       }
     } catch (e) {
       this.isLogining = false;

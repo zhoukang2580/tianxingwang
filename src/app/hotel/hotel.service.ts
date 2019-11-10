@@ -277,8 +277,8 @@ export class HotelService {
       this.searchHotelModelSource.next(this.searchHotelModel);
     }
   }
-  async initSelfBookTypeBookInfos() {
-    const isSelf = await this.staffService.isSelfBookType();
+  async initSelfBookTypeBookInfos(isShowLoading=false) {
+    const isSelf = await this.staffService.isSelfBookType(isShowLoading);
     const infos = this.getBookInfos();
     console.log("initSelfBookTypeBookInfos", infos);
     if (infos.length === 0 && isSelf) {
@@ -287,10 +287,10 @@ export class HotelService {
       }
       this.isInitializingSelfBookInfos = true;
       let IdCredential: CredentialsEntity;
-      const staff = await this.staffService.getStaff();
+      const staff = await this.staffService.getStaff(isShowLoading);
       if (!this.selfCredentials || this.selfCredentials.length === 0) {
         const res = await this.tmcService
-          .getPassengerCredentials([staff.AccountId])
+          .getPassengerCredentials([staff.AccountId],isShowLoading)
           .catch(_ => ({ [staff.AccountId]: [] }));
         this.selfCredentials = res[staff.AccountId];
       }

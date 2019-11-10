@@ -476,19 +476,19 @@ export class TrainService {
     this.exchangedTrainTicketInfo = null;
     this.isInitializingSelfBookInfos = false;
   }
-  async initSelfBookTypeBookInfos() {
+  async initSelfBookTypeBookInfos(isShowLoading=false) {
     const infos = this.getBookInfos();
-    if (infos.length === 0 && (await this.staffService.isSelfBookType())) {
+    if (infos.length === 0 && (await this.staffService.isSelfBookType(isShowLoading))) {
       if (this.isInitializingSelfBookInfos) {
         return;
       }
       this.isInitializingSelfBookInfos = true;
       let IdCredential: CredentialsEntity;
-      if (await this.staffService.isSelfBookType()) {
-        const staff = await this.staffService.getStaff();
+      if (await this.staffService.isSelfBookType(isShowLoading)) {
+        const staff = await this.staffService.getStaff(isShowLoading);
         if (!this.selfCredentials || this.selfCredentials.length === 0) {
           const res = await this.tmcService
-            .getPassengerCredentials([staff.AccountId])
+            .getPassengerCredentials([staff.AccountId],isShowLoading)
             .catch(_ => ({ [staff.AccountId]: [] }));
           this.selfCredentials = res[staff.AccountId];
         }

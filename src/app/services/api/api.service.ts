@@ -343,7 +343,7 @@ export class ApiService {
         return throwError(error);
       }),
       finalize(() => {
-        this.setLoading(false, req.IsShowLoading);
+        this.setLoading(false, false);
       }),
       map(r => r as any)
     );
