@@ -485,7 +485,7 @@ export class TrainService {
       this.isInitializingSelfBookInfos = true;
       let IdCredential: CredentialsEntity;
       if (await this.staffService.isSelfBookType(isShowLoading)) {
-        const staff = await this.staffService.getStaff(isShowLoading);
+        const staff = await this.staffService.getStaff(false,isShowLoading);
         if (!this.selfCredentials || this.selfCredentials.length === 0) {
           const res = await this.tmcService
             .getPassengerCredentials([staff.AccountId],isShowLoading)

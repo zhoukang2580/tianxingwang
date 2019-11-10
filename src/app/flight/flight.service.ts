@@ -692,7 +692,7 @@ export class FlightService {
   async addOneBookInfoToSelfBookType(isShowLoading=false) {
     console.log("addOneBookInfoToSelfBookType");
     let IdCredential: CredentialsEntity;
-    const staff: StaffEntity = await this.staffService.getStaff(isShowLoading).catch(_ => null);
+    const staff: StaffEntity = await this.staffService.getStaff(false,isShowLoading).catch(_ => null);
     if (!staff || !staff.AccountId) {
       return;
     }
