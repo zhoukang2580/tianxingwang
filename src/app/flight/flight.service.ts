@@ -134,9 +134,11 @@ export class FlightService {
     if(m){
       if(m.fromCity){
         m.FromCode=m.fromCity.Code;
+        m.FromAsAirport=m.fromCity.Tag=='Airport';
       }
       if(m.toCity){
         m.ToCode=m.toCity.Code;
+        m.ToAsAirport=m.toCity.Tag=='Airport';
       }
     }
     this.searchFlightModel = m;
