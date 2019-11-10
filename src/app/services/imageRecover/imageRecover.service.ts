@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { IdentityService } from "./../identity/identity.service";
 import { RequestEntity } from "../api/Request.entity";
 import { Injectable } from "@angular/core";
@@ -11,7 +12,7 @@ import { finalize } from 'rxjs/operators';
 export class ImageRecoverService {
   Failover: any;
   imageRecover: any;
-  private isLoading = false;
+  private fetchingReq: { isFetching: boolean; response: Observable<any> } = {} as any;
   constructor(
     private apiService: ApiService,
     identityService: IdentityService
@@ -66,15 +67,15 @@ export class ImageRecoverService {
   }
 
   private load() {
-    if (this.isLoading) {
-      return throwError(null);
+    if (this.fetchingReq.isFetching) {
+      return this.fetchingReq.response;
     }
-    this.isLoading = true;
     const req = new RequestEntity();
     req.Method = "ApiHomeUrl-Home-GetImageRecoverAddress";
     req.Data = JSON.stringify({});
-    return this.apiService.getResponse<any>(req).pipe(finalize(() => {
-      this.isLoading = false;
+    this.fetchingReq.response = this.apiService.getResponse<any>(req).pipe(finalize(() => {
+      this.fetchingReq = {} as any;
     }));
+    return this.fetchingReq.response;
   }
 }
