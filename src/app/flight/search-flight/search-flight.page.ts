@@ -76,6 +76,8 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
         || moment().add(1, 'days').format("YYYY-MM-DD");
       const lastSelectedBackDate = moment(lastSelectedGoDate).add(1, 'days').format("YYYY-MM-DD");
       const s = this.flightService.getSearchFlightModel();
+      this.vmFromCity = s.fromCity;
+      this.vmToCity = s.toCity;
       s.Date = lastSelectedGoDate;
       s.BackDate = lastSelectedBackDate;
       this.flightService.setSearchFlightModel(s);
@@ -178,39 +180,21 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
   }
 
   async initFlightCities() {
-    this.vmFromCity = {} as any;
-    this.vmFromCity.CityName =
+    const vmFromCity = {} as any;
+    vmFromCity.CityName =
       "北京";
-    this.vmFromCity.Code = "BJS";
-    this.vmToCity = {} as any;
-    this.vmToCity.CityName =
+    vmFromCity.Code = "BJS";
+    const vmToCity = {} as any;
+    vmToCity.CityName =
       "上海";
     // 出发城市，不是出发城市的那个机场
-    this.vmToCity.Code = "SHA";
-    const lastFromCity = await this.storage.get("fromCity").catch(_ => null);
-    const lastToCity = await this.storage.get("toCity").catch(_ => null);
-    if (!lastFromCity || !lastToCity) {
-      // const cities = await this.flightService.getAllLocalAirports();
-      // if (cities && cities.length) {
-      //   const vmFromCity = ( cities.find(
-      //     c => c.Code.toUpperCase() == this.vmFromCity.Code
-      //   ));
-      //   const vmToCity = (this.vmToCity = cities.find(
-      //     c => c.Code.toUpperCase() == this.vmToCity.Code
-      //   ));
-      //   if (vmFromCity && vmToCity) {
-      //      this.vmFromCity = vmFromCity;
-      //     this.vmToCity = this.vmToCity = vmToCity;
-      //   }
-      // }
-    } else {
-      this.vmFromCity = lastFromCity;
-      this.vmToCity = lastToCity;
-    }
+    vmToCity.Code = "SHA";
+    const lastFromCity = await this.storage.get("fromCity").catch(_ => null) || vmFromCity;
+    const lastToCity = await this.storage.get("toCity").catch(_ => null) || vmToCity;
     this.flightService.setSearchFlightModel({
       ...this.flightService.getSearchFlightModel(),
-      fromCity: this.vmFromCity,
-      toCity: this.vmToCity
+      fromCity: vmFromCity,
+      toCity: vmToCity
     })
   }
   async searchFlight() {
