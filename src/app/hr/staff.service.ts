@@ -42,7 +42,7 @@ export class StaffService {
     return t == StaffBookType.Secretary;
   }
   private async getBookType(isShowLoading = true): Promise<StaffBookType> {
-    const s = await this.getStaff(isShowLoading).catch(_ => null);
+    const s = await this.getStaff(false,isShowLoading).catch(_ => null);
     return s && s.BookType;
   }
 
