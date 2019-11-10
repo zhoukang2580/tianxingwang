@@ -209,7 +209,7 @@
       <!-- 联系信息 -->
       <ion-list #link
         [class.link-has-items]='orderDetail.Order.OrderPassengers?.length||orderDetail.Order.OrderLinkmans?.length'
-        [attr.tabid]='getTabByLabel("联系")?.value' lines='none'>
+        [attr.tabid]='getTabByLabel("联系")?.value'>
         <ion-item-divider>{{getTabByLabel("联系")?.label}} </ion-item-divider>
         <ion-item *ngFor='let item of orderDetail.Order.OrderPassengers'>
           <div style='width: 100%;'>
