@@ -227,8 +227,8 @@ export class BookPage implements OnInit, AfterViewInit {
     }
   }
   ngAfterViewInit() {
-    console.log("outnumberEles",this.outnumberEles.first);
-   }
+    console.log("outnumberEles", this.outnumberEles.first);
+  }
   get totalPrice() {
     const infos = this.hotelService.getBookInfos();
     let totalPrice = infos.reduce((arr, item) => {
@@ -673,6 +673,14 @@ export class BookPage implements OnInit, AfterViewInit {
       ) {
         p.CheckinTime = combindInfo.arrivalHotelTime;
         p.RoomPlan = combindInfo.bookInfo.bookInfo.roomPlan;
+        p.RoomPlan.Room = {
+          ...p.RoomPlan.Room,
+          Hotel: {
+            Id: combindInfo.bookInfo.bookInfo.hotelEntity.Id,
+            Name: combindInfo.bookInfo.bookInfo.hotelEntity.Name,
+            Address: combindInfo.bookInfo.bookInfo.hotelEntity.Address
+          }
+        } as RoomEntity;
         // p.RoomPlan.Room = {
         //   Name:combindInfo.bookInfo.bookInfo.hotelRoom.Name,
         //   RoomPlans:combindInfo.bookInfo.bookInfo.hotelRoom.RoomPlans.map(it=>{
@@ -1248,7 +1256,7 @@ export class BookPage implements OnInit, AfterViewInit {
     },
     item: IPassengerHotelBookInfo
   ) {
-    item.tmcOutNumberInfos=arg.tmcOutNumberInfos;
+    item.tmcOutNumberInfos = arg.tmcOutNumberInfos;
     const data = arg.travelUrlInfo;
     if (data) {
       if (data.CostCenterCode) {
