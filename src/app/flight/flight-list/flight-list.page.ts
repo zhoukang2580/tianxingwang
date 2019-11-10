@@ -617,7 +617,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           if (this.isSelectFromCity == "none") {
             return;
           }
-          if (this.isSelectFromCity=="isFrom") {
+          if (this.isSelectFromCity=="isfrom") {
             this.flightService.setSearchFlightModel({ ...this.searchFlightModel, fromCity: city });
           } else {
             this.flightService.setSearchFlightModel({ ...this.searchFlightModel, toCity: city });
