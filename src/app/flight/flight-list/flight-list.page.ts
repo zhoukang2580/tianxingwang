@@ -102,7 +102,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   private selectPassengerSubscription = Subscription.EMPTY;
   private selectCitySubscription = Subscription.EMPTY;
   private selectDaySubscription = Subscription.EMPTY;
-  private isSelectFromCity;
+  private isSelectFromCity:'isfrom'|"isTo"|"none";
   searchFlightModel: SearchFlightModel;
   filterCondition: FilterConditionModel;
   showAddPassenger = false;
@@ -600,7 +600,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.isLoading = false;
   }
   onSelectCity(isFrom: boolean) {
-    this.isSelectFromCity=isFrom;
+    this.isSelectFromCity=isFrom?"isfrom":"isTo";
     this.flightService.setOpenCloseSelectCityPageSources(true);
   }
   private async initSearchModelParams() {
@@ -614,15 +614,15 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.selectCitySubscription = this.flightService.getSelectedCity()
       .subscribe(city => {
         if (city) {
-          if (this.isSelectFromCity == undefined) {
+          if (this.isSelectFromCity == "none") {
             return;
           }
-          if (this.isSelectFromCity) {
+          if (this.isSelectFromCity=="isFrom") {
             this.flightService.setSearchFlightModel({ ...this.searchFlightModel, fromCity: city });
           } else {
             this.flightService.setSearchFlightModel({ ...this.searchFlightModel, toCity: city });
           }
-          this.isSelectFromCity = undefined;
+          this.isSelectFromCity = "none";
         }
       });
   }

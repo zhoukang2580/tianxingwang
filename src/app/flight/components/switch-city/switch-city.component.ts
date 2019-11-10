@@ -49,6 +49,7 @@ import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
 })
 export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
   private selectCitySubscription = Subscription.EMPTY;
+  private isSelectFromCity: "isFrom" | "isTo" | "none";
   @ViewChild("fromCityEle") fromCityEle: IonText;
   @ViewChild("toCityEle") toCityEle: IonText;
   @ViewChild("flightcitieEle") flightcitieEle: ElementRef<HTMLElement>;
@@ -58,7 +59,6 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
   @Input() vmFromCity: TrafficlineEntity; // 界面上显示的出发城市
   @Input() vmToCity: TrafficlineEntity; // 界面上显示的目的城市
   isMoving: boolean;
-  private isSelectFromCity: boolean;
   mode: string;
   constructor(
     plt: Platform,
@@ -129,25 +129,25 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
     this.selectCitySubscription = this.flightService
       .getSelectedCity()
       .subscribe(c => {
-        console.log("isSelectFromCity",this.isSelectFromCity);
-        if (this.isSelectFromCity == undefined) {
+        console.log("isSelectFromCity", this.isSelectFromCity);
+        if (this.isSelectFromCity == "none") {
           return;
         }
         if (c) {
           const s = this.flightService.getSearchFlightModel();
-          if (this.isSelectFromCity) {
+          if (this.isSelectFromCity == 'isFrom') {
             s.fromCity = c;
           } else {
             s.toCity = c;
           }
-          this.isSelectFromCity = undefined;
+          this.isSelectFromCity = "none";
           this.flightService.setSearchFlightModel(s);
         }
       });
 
   }
   onSelectCity(isFrom: boolean) {
-    this.isSelectFromCity = isFrom;
+    this.isSelectFromCity = isFrom ? "isFrom" : "isTo";
     if (this.disabled) {
       return;
     }
