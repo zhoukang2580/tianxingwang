@@ -294,11 +294,7 @@
         <ion-icon name='arrow-dropup' slot='end' color='secondary' mode='md'></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-buttons slot='end'>
-      <ion-button color='secondary' (click)='bookFlight()'> 提交</ion-button>
-    </ion-buttons>
-    <ion-buttons slot='end' *ngIf='isCanSave'>
-      <ion-button color='secondary' (click)='bookFlight(true)'>保存订单</ion-button>
-    </ion-buttons>
+    <ion-button slot='end' size='small' *ngIf='isCanSave' color='secondary' (click)='bookFlight(true)'>保存订单</ion-button>
+    <ion-button slot='end' size='small' color='secondary' (click)='bookFlight()'> 提交</ion-button>
   </ion-toolbar>
 </ion-footer>
