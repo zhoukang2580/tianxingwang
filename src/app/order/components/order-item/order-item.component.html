@@ -94,7 +94,7 @@
       <ion-row>
         <ion-col>
           <ion-text color='danger'>
-            {{getTotalAmount(order,orderTrainTicket.Key) + trainInsuranceAmount(orderTrainTicket)}}
+            ￥{{getTotalAmount(order,orderTrainTicket.Key) + trainInsuranceAmount(orderTrainTicket)}}
             <span *ngIf="trainInsuranceAmount(orderTrainTicket) as amount">(含保险{{amount}})</span>
           </ion-text>
         </ion-col>
@@ -147,7 +147,7 @@
       </ion-row>
       <ion-row>
         <ion-col *ngIf='false'>
-          <ion-text color='danger'>{{getTotalAmount(order,orderHotel.Key)}}</ion-text>
+          <ion-text color='danger'>￥{{getTotalAmount(order,orderHotel.Key)}}</ion-text>
         </ion-col>
         <ion-col>
           {{orderHotel.StatusName}}
