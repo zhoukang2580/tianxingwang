@@ -47,6 +47,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
   isShowBookInfos$ = of(0);
   canAddPassengers$ = of(false);
   isCanleave = true;
+  isleave = true;
   constructor(
     private router: Router,
     route: ActivatedRoute,
@@ -69,6 +70,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
       .getPassengerBookInfoSource()
       .pipe(map(infos => infos && infos.length));
     route.queryParamMap.subscribe(async _ => {
+      this.isleave = false;
       this.isCanleave = false;
       const identity = await this.identityService.getIdentityAsync();
       this.disabled = this.searchFlightModel && this.searchFlightModel.isLocked;
@@ -87,7 +89,8 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
   }
   private checkBackDateIsAfterflyDate() {
     if (this.goDate && this.backDate) {
-      if (this.searchFlightModel && this.searchFlightModel.isRoundTrip && this.goDate.timeStamp > this.backDate.timeStamp) {
+      console.log(this.router.url.includes("search-flight"));
+      if (this.searchFlightModel && this.searchFlightModel.isRoundTrip && !this.isleave && this.goDate.timeStamp > this.backDate.timeStamp) {
         if (this.router.url.includes("search-flight")) {
           AppHelper.alert("您选择的去程日期在返程日期之后，返程日期自动更新为去程日期后一天");
         }
@@ -116,6 +119,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
     return `1`;
   }
   back() {
+    this.isleave = true;
     this.flightService.removeAllBookInfos();
     this.router.navigate([""]);
   }
@@ -169,6 +173,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
   }
   onSelectPassenger() {
     this.isCanleave = true;
+    this.isleave = true;
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], { queryParams: { forType: FlightHotelTrainType.Flight } });
   }
   ngOnDestroy(): void {
@@ -198,6 +203,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
   }
   async searchFlight() {
     this.isCanleave = true;
+    this.isleave = true;
     console.log(
       `出发城市" + 【${this.vmFromCity && this.vmFromCity.CityName}】`,
       `目的城市【${this.vmToCity && this.vmToCity.CityName}】`

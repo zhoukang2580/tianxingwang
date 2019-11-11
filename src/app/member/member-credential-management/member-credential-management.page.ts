@@ -91,10 +91,26 @@ export class MemberCredentialManagementPage
   }
   ngAfterViewInit() {
     // console.log(this.formEle);
+
     this.initializeValidate();
     this.addForm.changes.subscribe(el => {
       // console.log(el);
       if (el.last) {
+        const firstNameEle = this.addForm.last['el'].querySelector("[name='FirstName']") as HTMLInputElement;
+        const checkFirstNameEle = this.addForm.last['el'].querySelector("[name='CheckFirstName']") as HTMLInputElement;
+        const lastNameEle = this.addForm.last['el'].querySelector("[name='LastName']") as HTMLInputElement;
+        const checkLastNameEle = this.addForm.last['el'].querySelector("[name='CheckLastName']") as HTMLInputElement;
+        if (firstNameEle && checkFirstNameEle) {
+          firstNameEle.oninput = _ => {
+            checkFirstNameEle.value = firstNameEle.value;
+          }
+        }
+        if (lastNameEle && checkLastNameEle) {
+          lastNameEle.oninput = _ => {
+            checkLastNameEle.value = lastNameEle.value;
+          }
+        }
+
         this.initializeValidateAdd(el.last.el);
       }
     });
@@ -240,14 +256,6 @@ export class MemberCredentialManagementPage
         this.newCredentials = this.newCredentials.filter(it => it !== c);
       }
     });
-  }
-  onPropertyChange(c: MemberCredential, property: string) {
-    if (property == "LastName") {
-      c.CheckLastName = c.LastName;
-    }
-    if (property == "FirstName") {
-      c.CheckFirstName = c.FirstName;
-    }
   }
   async saveAdd(c: MemberCredential, container: HTMLElement) {
     c.FirstName = c.FirstName && c.FirstName.toUpperCase();
