@@ -64,12 +64,15 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input()
   // @HostBinding("@openclose")
   openclose = true;
+  isIos=false;
   constructor(
     private plt: Platform,
     private render: Renderer2,
     // private ngZone: NgZone,
     private flightService: FlightService
-  ) { }
+  ) {
+    this.isIos=plt.is("ios");
+   }
   ionViewWillEnter() {
     this.initHistoryCities();
     // console.log(this.domesticAirports.length);

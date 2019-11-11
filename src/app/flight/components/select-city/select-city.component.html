@@ -117,7 +117,7 @@
       </ng-template>
     </section>
   </div>
-  <div class='search-city-results' [class.show]='isSearching' (click)='onCloseSearchPanel($event)'>
+  <div class='search-city-results' [class.show]='isSearching'  [class.ios]='isIos' (click)='onCloseSearchPanel($event)'>
     <ng-container *ngIf='isFiltering else n'>
       <ion-label>正在搜索...</ion-label>
     </ng-container>

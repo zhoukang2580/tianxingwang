@@ -209,6 +209,9 @@ ion-row ion-col {
   transform: translateY(100%);
   opacity: 0;
   transition: all ease-in-out 100ms;
+  &.ios{
+    padding-top: 1em;
+  }
   &.show {
     transform: translateY(0);
     top: 3em;
