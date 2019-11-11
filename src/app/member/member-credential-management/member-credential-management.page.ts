@@ -147,9 +147,22 @@ export class MemberCredentialManagementPage
       await this.getCredentials();
     }
   }
+  private async tipMessage(c: MemberCredential) {
+    c.FirstName = c.FirstName && c.FirstName.toUpperCase();
+    c.LastName = c.LastName && c.LastName.toUpperCase();
+    c.CheckFirstName = c.CheckFirstName && c.CheckFirstName.toUpperCase();
+    c.CheckLastName = c.CheckLastName && c.CheckLastName.toUpperCase();
+    c.Number = c.Number && c.Number.toUpperCase();
+    const ok = await AppHelper.alert(`请确认您的证件姓名：${c.FirstName}${c.LastName},您的登机名：${c.CheckFirstName}${c.CheckLastName},证件号码：${c.Number}`, true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+    return ok;
+  }
   async saveModify(c: MemberCredential, el: HTMLElement) {
     const valid = await this.validateCredential(c, el);
+    const ok = await this.tipMessage(c);
     if (!valid) {
+      return;
+    }
+    if (!ok) {
       return;
     }
     await this.memberService
@@ -199,7 +212,7 @@ export class MemberCredentialManagementPage
     const item: MemberCredential = {
       Gender: "M",
       Type: CredentialsType.IdCard,
-      Id:AppHelper.uuid()
+      Id: AppHelper.uuid()
     } as any;
     this.newCredentials.unshift(item);
   }
@@ -262,31 +275,24 @@ export class MemberCredentialManagementPage
     });
   }
   async saveAdd(c: MemberCredential, container: HTMLElement) {
-    c.FirstName = c.FirstName && c.FirstName.toUpperCase();
-    c.LastName = c.LastName && c.LastName.toUpperCase();
-    c.CheckFirstName = c.CheckFirstName && c.CheckFirstName.toUpperCase();
-    c.CheckLastName = c.CheckLastName && c.CheckLastName.toUpperCase();
-    c.Number = c.Number && c.Number.toUpperCase();
-    const ok = await this.validateCredential(c, container);
+    let ok = await this.validateCredential(c, container);
+    ok = await this.tipMessage(c);
     console.log("validateCredential", ok);
-    if (ok) {
-      const ok = await AppHelper.alert(`请确认您的证件姓名：${c.FirstName}${c.LastName},您的登机名：${c.CheckFirstName}${c.CheckLastName},证件号码：${c.Number}`, true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
-      if (!ok) {
-        return;
-      }
-      const result = await this.memberService
-        .addCredentials(c)
-        .then(_ => true)
-        .catch(e => {
-          AppHelper.alert(e);
-          return false;
-        });
-      if (result) {
-        this.newCredentials = this.newCredentials.filter(it => it.Id !== c.Id);
-        console.log(this.newCredentials);
-      }
-      await this.getCredentials();
+    if (!ok) {
+      return;
     }
+    const result = await this.memberService
+      .addCredentials(c)
+      .then(_ => true)
+      .catch(e => {
+        AppHelper.alert(e);
+        return false;
+      });
+    if (result) {
+      this.newCredentials = this.newCredentials.filter(it => it.Id !== c.Id);
+      console.log(this.newCredentials);
+    }
+    await this.getCredentials();
   }
   async validateCredential(c: MemberCredential, container: HTMLElement) {
     if (!c) {
