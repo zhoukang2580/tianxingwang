@@ -96,21 +96,6 @@ export class MemberCredentialManagementPage
     this.addForm.changes.subscribe(el => {
       // console.log(el);
       if (el.last) {
-        const firstNameEle = this.addForm.last['el'].querySelector("[name='FirstName']") as HTMLInputElement;
-        const checkFirstNameEle = this.addForm.last['el'].querySelector("[name='CheckFirstName']") as HTMLInputElement;
-        const lastNameEle = this.addForm.last['el'].querySelector("[name='LastName']") as HTMLInputElement;
-        const checkLastNameEle = this.addForm.last['el'].querySelector("[name='CheckLastName']") as HTMLInputElement;
-        if (firstNameEle && checkFirstNameEle) {
-          firstNameEle.oninput = _ => {
-            checkFirstNameEle.value = firstNameEle.value;
-          }
-        }
-        if (lastNameEle && checkLastNameEle) {
-          lastNameEle.oninput = _ => {
-            checkLastNameEle.value = lastNameEle.value;
-          }
-        }
-
         this.initializeValidateAdd(el.last.el);
       }
     });
