@@ -95,7 +95,25 @@ export class MemberCredentialManagementPage
     this.initializeValidate();
     this.addForm.changes.subscribe(el => {
       // console.log(el);
-      if (el.last) {
+      if (el.last && el.last.el) {
+        if (this.newCredentials) {
+          const one = this.newCredentials.find(it => it.Id == this.addForm.last['el'].getAttribute("dataid"));
+          console.log("newCredentials 找到当前要修改的某个", one);
+          const inputFirstNameEle = this.addForm.last['el'].querySelector("input[name='FirstName']") as HTMLIonInputElement;
+          const inputLastNameEle = this.addForm.last['el'].querySelector("input[name='LastName']") as HTMLIonInputElement;
+          if (one) {
+            if (inputFirstNameEle) {
+              inputFirstNameEle.oninput = _ => {
+                one.CheckFirstName = inputFirstNameEle.value;
+              }
+            }
+            if (inputLastNameEle) {
+              inputLastNameEle.oninput = _ => {
+                one.CheckLastName = inputLastNameEle.value;
+              }
+            }
+          }
+        }
         this.initializeValidateAdd(el.last.el);
       }
     });
@@ -180,7 +198,8 @@ export class MemberCredentialManagementPage
   addCredential() {
     const item: MemberCredential = {
       Gender: "M",
-      Type: CredentialsType.IdCard
+      Type: CredentialsType.IdCard,
+      Id:AppHelper.uuid()
     } as any;
     this.newCredentials.unshift(item);
   }
