@@ -1,3 +1,6 @@
 ion-input.travel-number {
   font-size: 0.9rem;
+  input.disabled,input[disabled]{
+    opacity: 0.8;
+  }
 }
