@@ -241,6 +241,14 @@ export class MemberCredentialManagementPage
       }
     });
   }
+  onPropertyChange(c: MemberCredential, property: string) {
+    if (property == "LastName") {
+      c.CheckLastName = c.LastName;
+    }
+    if (property == "FirstName") {
+      c.CheckFirstName = c.FirstName;
+    }
+  }
   async saveAdd(c: MemberCredential, container: HTMLElement) {
     c.FirstName = c.FirstName && c.FirstName.toUpperCase();
     c.LastName = c.LastName && c.LastName.toUpperCase();
