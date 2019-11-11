@@ -469,7 +469,7 @@ export class TrainListPage implements OnInit, OnDestroy {
         }, 0);
       }
       this.isLoading = true;
-      let data: TrainEntity[] = this.trains;
+      let data: TrainEntity[] = JSON.parse(JSON.stringify(this.trains));
       if (loadDataFromServer) {
         // 强制从服务器端返回新数据
         data = await this.loadPolicyedTrainsAsync();
@@ -483,6 +483,7 @@ export class TrainListPage implements OnInit, OnDestroy {
             if (idx == 0) {
               it.isFilteredPolicy = true;
               it.isAllowBookPolicy = true;
+              it.isOnlyFilterMatchedPolicy=false;
             }
             // it.isOnlyFilterMatchedPolicy=false;
             return it;

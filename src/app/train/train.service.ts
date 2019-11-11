@@ -151,7 +151,7 @@ export class TrainService {
       it => it.PassengerKey == bookInfo.passenger.AccountId
     );
     let policyTrainNos: string[] = [];
-    let policyTrains = onePolicies.TrainPolicies;
+    let policyTrains = onePolicies && onePolicies.TrainPolicies;
     if (policyTrains) {
       if (bookInfo.isAllowBookPolicy) {
         policyTrains = policyTrains.filter(it => it.IsAllowBook);
@@ -168,31 +168,32 @@ export class TrainService {
           t.Seats &&
           t.Seats.some(s => +s.Count > 0)
       );
-      result = result
-        .map(it => {
-          if (it.Seats) {
-            it.Seats = it.Seats.map(s => {
-              const trainPolicy = onePolicies.TrainPolicies.find(
-                p => p.TrainNo == it.TrainNo && p.SeatType == s.SeatType
-              );
-              s.Policy = trainPolicy;
-              return s;
-            });
-            // if (bookInfo.isOnlyFilterMatchedPolicy) {
-            //   it.Seats = it.Seats.filter(
-            //     s =>
-            //       (!s.Policy || !s.Policy.Rules || !s.Policy.Rules.length) &&
-            //       +s.Count > 0
-            //   );
-            //   if (it.Seats.length == 0) {
-            //     return null;
-            //   }
-            // }
-          }
-          return it;
-        })
-        .filter(it => !!it);
+      result = this.filterTrainSeatPolicy(bookInfo, result, policyTrains);
     }
+    return result;
+  }
+  private filterTrainSeatPolicy(bookInfo: PassengerBookInfo<ITrainInfo>, trains: TrainEntity[], trainPolicies: TrainPolicyModel[]) {
+    const result = trains.map(it => {
+      if (it.Seats) {
+        it.Seats = it.Seats.map(s => {
+          const trainPolicy = trainPolicies.find(
+            p => p.TrainNo == it.TrainNo && p.SeatType == s.SeatType
+          );
+          s.Policy = trainPolicy;
+          return s;
+        });
+        if (bookInfo.isOnlyFilterMatchedPolicy) {
+          it.Seats = it.Seats.filter(
+            s => (!s.Policy || !s.Policy.Rules || !s.Policy.Rules.length) &&
+              +s.Count > 0);
+          if (it.Seats.length == 0) {
+            return null;
+          }
+        }
+      }
+      return it;
+    })
+      .filter(it => !!it);
     return result;
   }
   async reelectBookInfo(bookInfo: PassengerBookInfo<ITrainInfo>) {
