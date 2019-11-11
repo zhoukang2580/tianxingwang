@@ -235,6 +235,7 @@ export class FlightService {
     flightJourneyList: FlightJourneyEntity[],
     policyflights: PassengerPolicyFlights[]
   ): FlightSegmentEntity[] {
+    let segments = this.getTotalFlySegments(flightJourneyList);
     if (bookInfo && bookInfo.passenger && bookInfo.passenger.AccountId) {
       bookInfo.isFilteredPolicy = true;
       this.setPassengerBookInfosSource(
@@ -257,9 +258,15 @@ export class FlightService {
        flightPolicies=flightPolicies.filter(it=>!it.Rules||!it.Rules.length)
       }
       numbers=flightPolicies.map(it=>it.FlightNo);
-      const segments = this.getTotalFlySegments(flightJourneyList).filter(it=>numbers.includes(it.Number));
+      let temp =segments;
+      temp=[];
+      segments.filter(it=>numbers.includes(it.Number)).forEach(sg=>{
+        if(!temp.find(it=>it.Number==sg.Number)){
+          temp.push(sg);
+        }
+      });
+      segments=temp;
       console.log("过滤差标后的segments:",segments);
-      return segments;
     } else {
       this.setPassengerBookInfosSource(
         this.getPassengerBookInfos().map(it => {
@@ -270,8 +277,8 @@ export class FlightService {
         })
       );
       this.setDefaultFilteredPassenger();
-      return this.getTotalFlySegments(flightJourneyList);
     }
+    return segments;
   }
   getPassengerBookInfos() {
     this.passengerBookInfos = this.passengerBookInfos || [];

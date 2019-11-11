@@ -14,18 +14,13 @@ export class FilterPassengersPolicyComponent implements OnInit {
   @Input() bookInfos$: Observable<PassengerBookInfo<any>[]>;
   private bookInfos: PassengerBookInfo<any>[];
   selectedItem: PassengerBookInfo<any>;
-  isOnlyMatchPolicy: boolean;
-  isShowOnlyMatchSwitch = true;
-  isAllowBookPolicy = true;
   constructor(
     private popoverCtrl: PopoverController,
     private staffService: StaffService
   ) { }
   async onSelect(ok?: string) {
     if (this.selectedItem && this.selectedItem.id) {
-      console.log("selectedItem", this.selectedItem, this.isOnlyMatchPolicy, this.isAllowBookPolicy);
-      this.selectedItem.isOnlyFilterMatchedPolicy = !!this.isOnlyMatchPolicy;
-      this.selectedItem.isAllowBookPolicy = !!this.isAllowBookPolicy;
+      console.log("selectedItem", this.selectedItem);
     }
     const isSelf = await this.staffService.isSelfBookType();
     if (!isSelf) {
@@ -38,6 +33,12 @@ export class FilterPassengersPolicyComponent implements OnInit {
       const t = await this.popoverCtrl
         .dismiss(this.selectedItem)
         .catch(_ => void 0);
+    }
+  }
+  onMathRadioChange(evt: CustomEvent){
+    if(evt.detail && evt.detail.value){
+      this.selectedItem.isAllowBookPolicy=evt.detail && evt.detail.value=="isAllowBookPolicy";
+      this.selectedItem.isOnlyFilterMatchedPolicy=evt.detail && evt.detail.value=="isShowOnlyMatchSwitch";
     }
   }
   onSelectItem(evt: CustomEvent) {

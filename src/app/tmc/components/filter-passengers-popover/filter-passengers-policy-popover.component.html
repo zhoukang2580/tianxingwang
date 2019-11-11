@@ -9,13 +9,17 @@
       {{info?.credential?.Number}}</ion-label>
     <ion-radio [value]="info" [checked]='info.isFilteredPolicy'></ion-radio>
   </ion-item>
-  <ion-item *ngIf='isShowOnlyMatchSwitch'>
-    <ion-checkbox [(ngModel)]='isOnlyMatchPolicy' color='secondary' margin-end></ion-checkbox>
+</ion-radio-group>
+<ion-radio-group (ionChange)='onMathRadioChange($event)'>
+  <ion-item>
+    <ion-radio [checked]='selectedItem?.isOnlyFilterMatchedPolicy' value='isShowOnlyMatchSwitch' color='secondary'
+      margin-end></ion-radio>
     <ion-label class='sm-font-size' color='success'>完全符合差标
     </ion-label>
   </ion-item>
   <ion-item>
-    <ion-checkbox [(ngModel)]='isAllowBookPolicy' color='secondary' margin-end></ion-checkbox>
+    <ion-radio value='isAllowBookPolicy' [checked]='selectedItem?.isAllowBookPolicy' color='secondary' margin-end>
+    </ion-radio>
     <ion-label class='sm-font-size' color='secondary'>所有可预订</ion-label>
   </ion-item>
 </ion-radio-group>

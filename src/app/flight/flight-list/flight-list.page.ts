@@ -285,7 +285,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
   onSwapCity() {
     const s = this.flightService.getSearchFlightModel();
-    if(s.isLocked){
+    if (s.isLocked) {
       return;
     }
     this.flightService.setSearchFlightModel({
@@ -653,12 +653,15 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           if (this.isSelectFromCity == "none") {
             return;
           }
+          const s = this.flightService.getSearchFlightModel();
           if (this.isSelectFromCity == "isfrom") {
-            this.flightService.setSearchFlightModel({ ...this.searchFlightModel, fromCity: city });
-          } else {
-            this.flightService.setSearchFlightModel({ ...this.searchFlightModel, toCity: city });
+            s.fromCity = city;
+          }
+          if (this.isSelectFromCity == 'isTo') {
+            s.toCity = city;
           }
           this.isSelectFromCity = "none";
+          this.flightService.setSearchFlightModel(s);
         }
       });
   }
