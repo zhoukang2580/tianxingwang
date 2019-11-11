@@ -84,7 +84,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
       return keys.some(k => {
         // console.log(`key=${k}`, c[k]);
         const n = (c[k] && c[k] || "").toLowerCase();
-        return n.includes(name) || name==n;
+        return n.includes(name) || name == n;
       })
     }).slice(0, 20);
     this.isFiltering = false;
@@ -378,6 +378,8 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
   onCitySelected(city: TrafficlineEntity, isUserSelect?: boolean) {
+    this.isFiltering = false;
+    this.isSearching = false;
     for (let i = 0; i < this.listCitiesViewModel.length; i++) {
       const item = this.listCitiesViewModel[i];
       const lastSelectedCity = item.items.find(
