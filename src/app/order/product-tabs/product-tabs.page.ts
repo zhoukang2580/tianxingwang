@@ -159,6 +159,15 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     }
   }
   doRefresh(condition?: SearchTicketConditionModel) {
+    if(this.ionRefresher){
+      this.ionRefresher.disabled=true;
+      setTimeout(() => {
+        this.ionRefresher.disabled=false;
+      }, 200);
+    }
+    if(this.infiniteScroll){
+      this.infiniteScroll.disabled=false;
+    }
     if (this.activeTab.value == ProductItemType.waitingApprovalTask) {
       this.doRefreshTasks();
       return;
