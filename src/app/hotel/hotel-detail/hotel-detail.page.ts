@@ -50,7 +50,6 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   private hotelDayPrice: HotelDayPriceEntity;
   private scrollEle: HTMLElement;
   private headerHeight = 0;
-
   @ViewChild("header") headerEle: ElementRef<HTMLElement>;
   @ViewChild("bgPic") bgPicEle: ElementRef<HTMLElement>;
   @ViewChild(IonContent) ionCnt: IonContent;
@@ -70,7 +69,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   isMd = false;
   roomImages: string[] = [];
   curSelectedRoom: RoomEntity = {} as any;
-  color$ = of({});
+  colors = {};
   hotelDetailSub = Subscription.EMPTY;
   queryModelSub = Subscription.EMPTY;
   hotel: HotelEntity;
@@ -137,7 +136,6 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
         roomPlans = roomPlans.concat(r.RoomPlans);
       });
     }
-    const colors = {};
     const bookInfos = this.hotelService.getBookInfos();
     roomPlans.forEach(p => {
       let color = "success";
@@ -150,9 +148,8 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       if (this.hotelService.isFull(p)) {
         color = "danger_full";
       }
-      colors[p.Number] = color;
+      this.colors[this.hotelService.getRoomPlanUniqueId(p)] = color;
     });
-    this.color$ = of(colors);
   }
   private async getFilteredPassenger() {
     const popover = await this.popoverController.create({
@@ -178,46 +175,39 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       passengerId = data.passenger.AccountId;
     }
     const hotelPolicy = await this.getPolicy();
-    this.color$ = this.hotelService.getBookInfoSource().pipe(
-      map(_ => {
-        const colors = {};
-        if (hotelPolicy) {
-          const policies = hotelPolicy.find(
-            it => it.PassengerKey == passengerId
-          );
-          if (policies) {
-            if (this.hotel && this.hotel.Rooms) {
-              this.hotel.Rooms.forEach(r => {
-                if (r.RoomPlans) {
-                  r.RoomPlans.forEach(plan => {
-                    const p = policies.HotelPolicies.find(
-                      it => it.Number == plan.Number
-                    );
-                    if (p) {
-                      let color = "";
-                      if (p.IsAllowBook) {
-                        color =
-                          !p.Rules || !p.Rules.length ? "success" : "warning";
-                      } else {
-                        color = "danger_disabled";
-                      }
-                      if (this.hotelService.isFull(plan)) {
-                        color = "danger_full";
-                      }
-                      colors[p.Number] = color;
-                    }
-                  });
+    this.colors = {};
+    if (hotelPolicy) {
+      const policies = hotelPolicy.find(
+        it => it.PassengerKey == passengerId
+      );
+      if (policies) {
+        if (this.hotel && this.hotel.Rooms) {
+          this.hotel.Rooms.forEach(r => {
+            if (r.RoomPlans) {
+              r.RoomPlans.forEach(plan => {
+                const p = policies.HotelPolicies.find(
+                  it => it.UniqueIdId == this.hotelService.getRoomPlanUniqueId(plan)
+                );
+                if (p) {
+                  let color = "";
+                  if (p.IsAllowBook) {
+                    color =
+                      !p.Rules || !p.Rules.length ? "success" : "warning";
+                  } else {
+                    color = "danger_disabled";
+                  }
+                  if (this.hotelService.isFull(plan)) {
+                    color = "danger_full";
+                  }
+                  this.colors[p.UniqueIdId] = color;
                 }
               });
             }
-          }
+          });
         }
-        return colors;
-      }),
-      tap(colors => {
-        console.log("colors", colors);
-      })
-    );
+      }
+    }
+    console.log("filterPassengerPolicy",this.colors);
   }
   getWeekName(date: string) {
     if (date) {
@@ -397,7 +387,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   }
   segmentChanged(evt: CustomEvent) {
     this.isShowImages = false;
-    if(evt.stopPropagation){
+    if (evt.stopPropagation) {
       evt.stopPropagation();
     }
     if (evt.detail.value) {

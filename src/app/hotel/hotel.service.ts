@@ -66,7 +66,7 @@ export class HotelService {
   private lastUpdateTime = 0;
   private isInitializingSelfBookInfos = false;
   private conditionModel: HotelConditionModel;
-  private hotelPolicies: { [hotelId: string]: HotelPassengerModel[] };
+  // private hotelPolicies: { [hotelId: string]: HotelPassengerModel[] };
   private hotelQueryModel: HotelQueryEntity;
   constructor(
     private apiService: ApiService,
@@ -549,7 +549,7 @@ export class HotelService {
     );
   }
   async getHotelPolicy(roomPlans: RoomPlanEntity[], hotel: HotelEntity) {
-    console.log("getHotelPolicy", this.hotelPolicies);
+    // console.log("getHotelPolicy", this.hotelPolicies);
     // if (
     //   this.hotelPolicies &&
     //   this.hotelPolicies[hotel && hotel.Id] &&
@@ -558,12 +558,19 @@ export class HotelService {
     //   return [...this.hotelPolicies[hotel.Id]];
     // }
     const result = await this.getHotelPolicyAsync(roomPlans, hotel);
-    if (!this.hotelPolicies) {
-      this.hotelPolicies = { [hotel.Id]: result };
-    } else {
-      this.hotelPolicies[hotel.Id] = result;
-    }
+    // if (!this.hotelPolicies) {
+    //   this.hotelPolicies = { [hotel.Id]: result };
+    // } else {
+    //   this.hotelPolicies[hotel.Id] = result;
+    // }
     return result;
+  }
+  getRoomPlanUniqueId(p:RoomPlanEntity){
+    if(!p){
+      return "";
+    }
+    p.VariablesJsonObj=p.VariablesJsonObj||JSON.parse(p.Variables)||{};
+    return p.VariablesJsonObj['RoomPlanUniqueId'] as string;
   }
   private async getHotelPolicyAsync(
     rpls: RoomPlanEntity[],
@@ -572,7 +579,8 @@ export class HotelService {
     const roomPlans: RoomPlanEntity[] = [];
     if (rpls) {
       rpls.forEach(it => {
-        if (!roomPlans.find(i => i.Number == it.Number)) {
+        const id = this.getRoomPlanUniqueId(it);
+        if (!roomPlans.find(i => id==this.getRoomPlanUniqueId(i))) {
           roomPlans.push(it);
         }
       });
@@ -600,6 +608,7 @@ export class HotelService {
           p.IsAllowBook = true;
           p.Number = plan.Number;
           p.Rules = null;
+          p.UniqueIdId=this.getRoomPlanUniqueId(plan);
           policies.push(p);
         });
         notWhitelistPolicies.push({
@@ -623,7 +632,10 @@ export class HotelService {
         TotalAmount: it.TotalAmount,
         Number: it.Number,
         BeginDate: it.BeginDate,
-        EndDate: it.EndDate
+        EndDate: it.EndDate,
+        Room:{
+          Id:it.Room&&it.Room.Id
+        }
       } as RoomPlanEntity);
     });
     const city = this.getSearchHotelModel().destinationCity;

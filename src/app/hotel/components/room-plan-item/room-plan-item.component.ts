@@ -15,7 +15,7 @@ import { RoomEntity } from "../../models/RoomEntity";
 import { RoomPlanRuleType } from "../../models/RoomPlanRuleType";
 import { HotelSupplierType } from "../../models/HotelSupplierType";
 import { HotelBookType } from "../../models/HotelBookType";
-import { of } from "rxjs";
+import { of, Subscription } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { StaffService } from "src/app/hr/staff.service";
 import { HotelEntity } from "../../models/HotelEntity";
@@ -34,7 +34,8 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
   @Output() bookRoom: EventEmitter<any>;
   HotelBookType = HotelBookType;
   HotelPaymentType = HotelPaymentType;
-  @Input() color$ = of({});
+  @Input() colors: { [k: string]: string };
+  private colorsSubscription=Subscription.EMPTY;
   constructor(
     private hotelService: HotelService,
     private staffService: StaffService,
@@ -58,6 +59,9 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
         await m.present();
       }
     }
+  }
+  getRoomPlanUniqueId(plan: RoomPlanEntity) {
+    return `'${this.hotelService.getRoomPlanUniqueId(plan)}'`;
   }
   getRoomArea(room: RoomEntity) {
     return this.hotelService.getRoomArea(room);
@@ -83,73 +87,8 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
   onBook(roomPlan: RoomPlanEntity, color: string) {
     this.bookRoom.emit({ roomPlan: this.roomPlan, room: this.room, color });
   }
-  // private async initFilterPolicy() {
-  //   const isSelf = await this.staffService.isSelfBookType();
-  //   const bookInfos = this.hotelService.getBookInfos();
-  //   if (isSelf) {
-  //     if (bookInfos.length) {
-  //       if (bookInfos[0] && bookInfos[0].passenger) {
-  //         this.filterPassengerPolicy(
-  //           this.hotelService.getBookInfos()[0].passenger.AccountId
-  //         );
-  //       }
-  //     } else {
-  //       this.initUnFilterColors();
-  //     }
-  //   } else {
-  //     this.initUnFilterColors();
-  //   }
-  // }
-  // private initUnFilterColors() {
-  //   let roomPlans: RoomPlanEntity[] = [];
-  //   if (this.hotel && this.hotel.Rooms) {
-  //     this.hotel.Rooms.forEach(r => {
-  //       roomPlans = roomPlans.concat(r.RoomPlans);
-  //     });
-  //   }
-  //   const colors = {};
-  //   roomPlans.forEach(p => {
-  //     let color = "success";
-  //     if (this.isFull(p.Number)) {
-  //       color = "danger";
-  //     }
-  //     colors[p.Number] = color;
-  //   });
-  //   this.color$ = of(colors);
-  // }
-  // async filterPassengerPolicy(passengerId: string) {
-  //   const hotelPolicy = await this.getPolicy();
-  //   this.color$ = this.hotelService.getBookInfoSource().pipe(
-  //     map(_ => {
-  //       const colors = {};
-  //       console.log("hotelPolicy", hotelPolicy, this.room);
-  //       if (hotelPolicy) {
-  //         const policies = hotelPolicy.find(
-  //           it => it.PassengerKey == passengerId
-  //         );
-  //         if (policies) {
-  //           policies.HotelPolicies.forEach(p => {
-  //             let color = "";
-  //             if (p.IsAllowBook) {
-  //               color = !p.Rules || !p.Rules.length ? "success" : "warning";
-  //             } else {
-  //               color = "danger";
-  //             }
-  //             if (this.isFull(p.Number)) {
-  //               color = "danger";
-  //             }
-  //             colors[p.Number] = color;
-  //           });
-  //         }
-  //       }
-  //       return colors;
-  //     }),
-  //     tap(colors => {
-  //       console.log("colors", colors);
-  //     })
-  //   );
-  // }
-  ngOnInit() { }
+  ngOnInit() {
+  }
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.room && changes.room.firstChange) {
       // this.initFilterPolicy();

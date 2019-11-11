@@ -7,6 +7,7 @@ export class HotelPolicyModel {
   /// 价格计划Id
   /// </summary>
   Number: string;
+  UniqueIdId: string;
   /// <summary>
   /// 是否可预订
   /// </summary>
