@@ -30,7 +30,6 @@ import { PayService } from "../services/pay/pay.service";
 import { Router } from "@angular/router";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
-
 interface SelectItem {
   Value: string;
   Text: string;
@@ -53,7 +52,7 @@ export class TmcService {
   private localDomesticAirports: LocalStorageAirport;
   private selectedCompanySource: BehaviorSubject<string>;
   private companies: GroupCompanyEntity[];
-  private fetchingReq: { isFectching: boolean; promise: Promise<any> } = {} as any;
+  private fetchingCredentialReq: { [md5: string]: { isFectching: boolean; promise: Promise<any>; } } = {} as any;
   private tmc: TmcEntity;
   private mobileTemplateSelectItemList: SelectItem[] = [];
   private emailTemplateSelectItemList: SelectItem[] = [];
@@ -589,16 +588,21 @@ export class TmcService {
     };
     req.IsShowLoading = isShowLoading;
     req.Timeout = 60;
-    if (this.fetchingReq.isFectching) {
-      return this.fetchingReq.promise;
+    const md5 = AppHelper.md5Digest(JSON.stringify(req.Data), true);
+    if (this.fetchingCredentialReq.md5 
+      && this.fetchingCredentialReq[md5].isFectching 
+      && this.fetchingCredentialReq[md5].promise) {
+      return this.fetchingCredentialReq[md5].promise;
     }
-    this.fetchingReq = {
+    this.fetchingCredentialReq[md5] = {
       isFectching: true,
       promise: this.apiService.getPromiseData<{
         [accountId: string]: CredentialsEntity[];
-      }>(req)
+      }>(req).finally(() => {
+        this.fetchingCredentialReq[md5] = null;
+      })
     }
-    return this.fetchingReq.promise;
+    return this.fetchingCredentialReq[md5].promise;
   }
   async getTmc(forceFetch = false): Promise<TmcEntity> {
     if (this.tmc && !forceFetch) {
