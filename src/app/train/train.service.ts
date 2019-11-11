@@ -168,7 +168,7 @@ export class TrainService {
           t.Seats &&
           t.Seats.some(s => +s.Count > 0)
       );
-      result = this.filterTrainSeatPolicy(bookInfo, result, policyTrains);
+      result = this.filterTrainSeatPolicy(bookInfo, result, onePolicies.TrainPolicies);
     }
     return result;
   }
