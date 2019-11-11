@@ -366,8 +366,9 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isSearching = false;
     this.textSearchResults = null;
     this.isFiltering = false;
-    this.flightService.setSelectedCity(null);
-    this.flightService.setOpenCloseSelectCityPageSources(false);
+    setTimeout(() => {
+      this.flightService.setOpenCloseSelectCityPageSources(false);
+    }, 100);
   }
   onNavLickClick(link: string) {
     this.listCities.map(el => {
@@ -378,8 +379,6 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
   onCitySelected(city: TrafficlineEntity, isUserSelect?: boolean) {
-    this.isFiltering = false;
-    this.isSearching = false;
     for (let i = 0; i < this.listCitiesViewModel.length; i++) {
       const item = this.listCitiesViewModel[i];
       const lastSelectedCity = item.items.find(
@@ -392,7 +391,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     city.Selected = true;
     this.selectedCity = city;
-    this.flightService.setSelectedCity(this.selectedCity);
+    this.flightService.setSelectedCitySource(this.selectedCity);
     this.hotCities.map(hc => {
       hc.Selected = hc.Id === city.Id;
     });

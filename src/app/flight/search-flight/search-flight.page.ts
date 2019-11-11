@@ -87,6 +87,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
   }
   private checkBackDateIsAfterflyDate() {
     if (this.goDate && this.backDate) {
+      AppHelper.alert("您选择的去程日期在返程日期之后，返程日期自动更新为去程日期后一天");
       this.backDate = this.goDate.timeStamp > this.backDate.timeStamp ?
         this.calendarService.generateDayModel(moment(this.goDate.date).add(1, 'days')) : this.backDate;
     }

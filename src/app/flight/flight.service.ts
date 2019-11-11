@@ -118,7 +118,7 @@ export class FlightService {
     this.removeAllBookInfos();
     this.selectedCitySource.next(null);
     this.openCloseSelectCitySources.next(false);
-    this.setSelectedCity(null);
+    this.setSelectedCitySource(null);
     this.currentViewtFlightSegment = null;
     this.selfCredentials = null;
     this.isInitializingSelfBookInfos = false;
@@ -814,7 +814,7 @@ export class FlightService {
   getSelectedCity() {
     return this.selectedCitySource.asObservable();
   }
-  setSelectedCity(_selectedCity: TrafficlineEntity) {
+  setSelectedCitySource(_selectedCity: TrafficlineEntity) {
     this.selectedCitySource.next(_selectedCity);
   }
   getOpenCloseSelectCityPageSources() {
