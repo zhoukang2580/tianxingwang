@@ -39,7 +39,7 @@ export class BookTmcOutnumberComponent implements OnInit {
       if (result) {
         tmcOutNumberInfos.forEach(info => {
           info.loadTravelUrlErrorMsg = result[info.staffNumber] && result[info.staffNumber].Message;
-          info.travelUrlInfos = result[info.staffNumber].Data;
+          info.travelUrlInfos = result[info.staffNumber] && result[info.staffNumber].Data;
           if (
             !info.value &&
             info.travelUrlInfos &&

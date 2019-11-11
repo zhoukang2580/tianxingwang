@@ -360,7 +360,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
               canSelect: n == "TravelNumber",
               isDisabled: !!(this.viewModel.travelForm && n == "TravelNumber")
             } as ITmcOutNumberInfo;
-          })||[];
+          }) || [];
 
         this.viewModel.combindInfos.push(combineInfo);
       }
@@ -935,8 +935,8 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     if (result) {
       this.viewModel.combindInfos.forEach(item =>
         item.tmcOutNumberInfos.forEach(info => {
-          info.loadTravelUrlErrorMsg=result[info.staffNumber].Message;
-          info.travelUrlInfos = result[info.staffNumber].Data;
+          info.loadTravelUrlErrorMsg = result[info.staffNumber].Message;
+          info.travelUrlInfos = result[info.staffNumber] && result[info.staffNumber].Data;
           if (
             !info.value &&
             info.travelUrlInfos &&
