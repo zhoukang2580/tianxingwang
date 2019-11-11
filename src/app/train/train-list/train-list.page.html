@@ -8,7 +8,7 @@
     <ion-title color='secondary' class='sm-font-size' [class.text-start]='(isShowAddPassenger$|async)'
       [class.text-center]='!(isShowAddPassenger$|async)'>
       <ion-text (click)='onSelectStation(true)'>{{vmFromCity?.Nickname}}</ion-text>
-      <i class='icon icon-search-train'></i>
+      <i class='icon icon-search-train' (click)='onSwapStation()'></i>
       <ion-text (click)='onSelectStation(false)'>{{ vmToCity?.Nickname}}</ion-text>
     </ion-title>
     <ion-buttons slot='end'>

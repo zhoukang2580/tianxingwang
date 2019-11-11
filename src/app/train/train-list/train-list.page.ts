@@ -539,6 +539,14 @@ export class TrainListPage implements OnInit, OnDestroy {
     );
     return result;
   }
+  onSwapStation() {
+    const s = this.trainService.getSearchTrainModel();
+    this.trainService.setSearchTrainModel({
+      ...s,
+      fromCity: s.toCity,
+      toCity: s.fromCity
+    })
+  }
   onSelectPassenger() {
     this.goToSelectPassengerPage();
   }

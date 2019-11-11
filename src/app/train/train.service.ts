@@ -92,7 +92,7 @@ export class TrainService {
       this.identityService.getIdentitySource()
     ]).subscribe(async ([infos, identity]) => {
       if (identity && identity.Ticket) {
-        if(this.isInitializingSelfBookInfos){
+        if (this.isInitializingSelfBookInfos) {
           return;
         }
         await this.initSelfBookTypeBookInfos();
@@ -125,18 +125,20 @@ export class TrainService {
         this.getBookInfos().map(it => {
           it.isFilteredPolicy = false;
           it.isOnlyFilterMatchedPolicy = false;
+          it.isAllowBookPolicy = false;
           return it;
         })
       );
-      return result.map(it => {
-        if (it.Seats) {
-          it.Seats = it.Seats.map(s => {
-            s.Policy = null;
-            return s;
-          });
-        }
-        return it;
-      });
+      return result;
+      // return result.map(it => {
+      //   if (it.Seats) {
+      //     it.Seats = it.Seats.map(s => {
+      //       s.Policy = null;
+      //       return s;
+      //     });
+      //   }
+      //   return it;
+      // });
     }
     this.setBookInfoSource(
       this.getBookInfos().map(it => {
@@ -151,15 +153,15 @@ export class TrainService {
     let policyTrainNos: string[] = [];
     let policyTrains = onePolicies.TrainPolicies;
     if (policyTrains) {
-      if(bookInfo.isAllowBookPolicy){
-        policyTrains=policyTrains.filter(it=>it.IsAllowBook);
+      if (bookInfo.isAllowBookPolicy) {
+        policyTrains = policyTrains.filter(it => it.IsAllowBook);
       }
       if (bookInfo.isOnlyFilterMatchedPolicy) {
         policyTrains = policyTrains.filter(
           it => it.IsAllowBook && (!it.Rules || it.Rules.length == 0)
         );
       }
-      policyTrainNos=policyTrains.map(it=>it.TrainNo);
+      policyTrainNos = policyTrains.map(it => it.TrainNo);
       result = trains.filter(
         t =>
           policyTrainNos.includes(t.TrainNo) &&
@@ -176,16 +178,16 @@ export class TrainService {
               s.Policy = trainPolicy;
               return s;
             });
-            if (bookInfo.isOnlyFilterMatchedPolicy) {
-              it.Seats = it.Seats.filter(
-                s =>
-                  (!s.Policy || !s.Policy.Rules || !s.Policy.Rules.length) &&
-                  +s.Count > 0
-              );
-              if (it.Seats.length == 0) {
-                return null;
-              }
-            }
+            // if (bookInfo.isOnlyFilterMatchedPolicy) {
+            //   it.Seats = it.Seats.filter(
+            //     s =>
+            //       (!s.Policy || !s.Policy.Rules || !s.Policy.Rules.length) &&
+            //       +s.Count > 0
+            //   );
+            //   if (it.Seats.length == 0) {
+            //     return null;
+            //   }
+            // }
           }
           return it;
         })
@@ -215,7 +217,7 @@ export class TrainService {
     if (await this.staffService.isSelfBookType()) {
       this.setBookInfoSource([]);
     }
-    this.router.navigate([AppHelper.getRoutePath("train-list")],{queryParams:{doRefresh:true}});
+    this.router.navigate([AppHelper.getRoutePath("train-list")], { queryParams: { doRefresh: true } });
   }
   async checkCanAdd() {
     // if (this.getBookInfos().find(it => it.isReplace)) {
@@ -476,7 +478,7 @@ export class TrainService {
     this.exchangedTrainTicketInfo = null;
     this.isInitializingSelfBookInfos = false;
   }
-  async initSelfBookTypeBookInfos(isShowLoading=false) {
+  async initSelfBookTypeBookInfos(isShowLoading = false) {
     const infos = this.getBookInfos();
     if (infos.length === 0 && (await this.staffService.isSelfBookType(isShowLoading))) {
       if (this.isInitializingSelfBookInfos) {
@@ -485,10 +487,10 @@ export class TrainService {
       this.isInitializingSelfBookInfos = true;
       let IdCredential: CredentialsEntity;
       if (await this.staffService.isSelfBookType(isShowLoading)) {
-        const staff = await this.staffService.getStaff(false,isShowLoading);
+        const staff = await this.staffService.getStaff(false, isShowLoading);
         if (!this.selfCredentials || this.selfCredentials.length === 0) {
           const res = await this.tmcService
-            .getPassengerCredentials([staff.AccountId],isShowLoading)
+            .getPassengerCredentials([staff.AccountId], isShowLoading)
             .catch(_ => ({ [staff.AccountId]: [] }));
           this.selfCredentials = res[staff.AccountId];
         }
@@ -536,6 +538,12 @@ export class TrainService {
   setSearchTrainModel(m: SearchTrainModel) {
     console.log("setSearchTrainModel", m);
     this.searchModel = m || new SearchTrainModel();
+    if (m.fromCity) {
+      m.FromStation = m.fromCity.Code;
+    }
+    if (m.toCity) {
+      m.ToStation = m.toCity.Code;
+    }
     this.searchModelSource.next(this.searchModel);
   }
   addBookInfo(arg: PassengerBookInfo<ITrainInfo>) {
