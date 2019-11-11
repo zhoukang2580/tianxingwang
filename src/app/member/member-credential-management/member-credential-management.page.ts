@@ -42,7 +42,7 @@ export class MemberCredentialManagementPage
   requestCode: "issueNationality" | "identityNationality";
   private currentModifyItem: MemberCredential;
   @ViewChild("f") formEle: ElementRef<HTMLFormElement>;
-  @ViewChildren("modifyForm") modifyFormEles: QueryList<ElementRef<HTMLFormElement>>;
+  @ViewChildren("modifyForm") modifyFormEles: QueryList<IonGrid>;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   @ViewChildren("addForm") addForm: QueryList<IonGrid>;
   constructor(
@@ -89,6 +89,23 @@ export class MemberCredentialManagementPage
       });
     console.log(this.identityTypes);
   }
+  private initInputChanges(container: HTMLElement, credential: MemberCredential) {
+    console.log("newCredentials 找到当前要修改的某个", credential);
+    const inputFirstNameEle = container && container.querySelector("input[name='FirstName']") as HTMLIonInputElement;
+    const inputLastNameEle = container && container.querySelector("input[name='LastName']") as HTMLIonInputElement;
+    if (credential) {
+      if (inputFirstNameEle) {
+        inputFirstNameEle.oninput = _ => {
+          credential.CheckFirstName = inputFirstNameEle.value;
+        }
+      }
+      if (inputLastNameEle) {
+        inputLastNameEle.oninput = _ => {
+          credential.CheckLastName = inputLastNameEle.value;
+        }
+      }
+    }
+  }
   ngAfterViewInit() {
     // console.log(this.formEle);
 
@@ -98,31 +115,23 @@ export class MemberCredentialManagementPage
       if (el.last && el.last.el) {
         if (this.newCredentials) {
           const one = this.newCredentials.find(it => it.Id == this.addForm.last['el'].getAttribute("dataid"));
-          console.log("newCredentials 找到当前要修改的某个", one);
-          const inputFirstNameEle = this.addForm.last['el'].querySelector("input[name='FirstName']") as HTMLIonInputElement;
-          const inputLastNameEle = this.addForm.last['el'].querySelector("input[name='LastName']") as HTMLIonInputElement;
-          if (one) {
-            if (inputFirstNameEle) {
-              inputFirstNameEle.oninput = _ => {
-                one.CheckFirstName = inputFirstNameEle.value;
-              }
-            }
-            if (inputLastNameEle) {
-              inputLastNameEle.oninput = _ => {
-                one.CheckLastName = inputLastNameEle.value;
-              }
-            }
-          }
+          this.initInputChanges(this.addForm.last['el'], one);
         }
         this.initializeValidateAdd(el.last.el);
       }
     });
     this.modifyFormEles.changes.subscribe(_ => {
-      if (this.modifyFormEles.last) {
+      const container = this.modifyFormEles.find(it => it['el'] && it['el'].getAttribute("dataid") == (this.currentModifyItem && this.currentModifyItem.Id));
+      console.log("modifyFormEles,container", container)
+      if (container) {
+        if (this.credentials && this.currentModifyItem) {
+          const one = this.credentials.find(it => it.Id == (this.currentModifyItem.Id));
+          this.initInputChanges(container['el'], one);
+        }
         this.validatorService.initialize(
           "Beeant.Domain.Entities.Member.CredentialsEntity",
           "Modify",
-          this.modifyFormEles.last.nativeElement
+          container['el']
         );
       }
     })
@@ -396,6 +405,12 @@ export class MemberCredentialManagementPage
   togleModify(item: MemberCredential) {
     item.isModified = !item.isModified;
     this.currentModifyItem = item;
+    if (this.credentials) {
+      this.credentials = this.credentials.map(it => {
+        it.isModified = it.Id == item.Id;
+        return it;
+      })
+    }
     setTimeout(() => {
       this.initializeValidate();
     }, 100);
