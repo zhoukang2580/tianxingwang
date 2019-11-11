@@ -360,7 +360,15 @@ export class TmcService {
     if (data && data.length) {
       for (let i = 0; i < data.length; i++) {
         const arg = data[i];
-        const res = this.getTravelUrl(arg, isShowLoading);
+        const res = this.getTravelUrl(arg, isShowLoading).catch(_ => {
+          return {
+            key: arg.staffNumber,
+            value: {
+              Data: null,
+              Message: _.Message || _.message || _
+            } as ITravelUrlResult
+          }
+        });
         all.push(res);
       }
     }
@@ -372,7 +380,7 @@ export class TmcService {
     });
     return result;
   }
-  private async getTravelUrl(data: {
+  private getTravelUrl(data: {
     staffNumber: string;
     staffOutNumber: string;
     name: string;
@@ -386,7 +394,7 @@ export class TmcService {
     req.Data = data;
     return this.apiService.getPromiseData<{
       key: string;
-      value:ITravelUrlResult;
+      value: ITravelUrlResult;
     }>(req);
   }
   async searchLinkman(
@@ -505,7 +513,7 @@ export class TmcService {
     req.Data = {
       LastUpdateTime: this.localInternationAirports.LastUpdateTime
     };
-    req.IsShowLoading=true;
+    req.IsShowLoading = true;
     let st = window.performance.now();
     const r = await this.apiService
       .getPromiseData<{
@@ -590,8 +598,8 @@ export class TmcService {
     req.IsShowLoading = isShowLoading;
     req.Timeout = 60;
     const md5 = AppHelper.md5Digest(JSON.stringify(req.Data), true);
-    if (this.fetchingCredentialReq.md5 
-      && this.fetchingCredentialReq[md5].isFectching 
+    if (this.fetchingCredentialReq.md5
+      && this.fetchingCredentialReq[md5].isFectching
       && this.fetchingCredentialReq[md5].promise) {
       return this.fetchingCredentialReq[md5].promise;
     }
@@ -639,9 +647,9 @@ export class TmcService {
       .catch(_ => []);
   }
 }
-export interface ITravelUrlResult{
-  Data:TravelUrlInfo[];
-  Message:string;
+export interface ITravelUrlResult {
+  Data: TravelUrlInfo[];
+  Message: string;
 }
 export interface TravelUrlInfo {
   CostCenterCode: string;

@@ -1095,7 +1095,7 @@ export class BookPage implements OnInit, AfterViewInit {
                   key: n,
                   isLoadNumber: !!(this.tmc && this.tmc.GetTravelNumberUrl),
                   required:
-                    this.tmc &&
+                    this.tmc &&this.tmc.OutNumberRequiryNameArray&&
                     this.tmc.OutNumberRequiryNameArray.some(name => name == n),
                   value: this.getTravelFormNumber(n),
                   staffNumber: cstaff && cstaff.Number,
