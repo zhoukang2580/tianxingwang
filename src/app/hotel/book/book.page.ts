@@ -850,23 +850,23 @@ export class BookPage implements OnInit, AfterViewInit {
         };
         combineInfo.appovalStaff = cs && cs.DefaultApprover;
         combineInfo.tmcOutNumberInfos =
-          this.tmc &&
-          this.tmc.OutNumberNameArray.map(n => {
-            return {
-              label: n,
-              key: n,
-              isLoadNumber: !!(this.tmc && this.tmc.GetTravelNumberUrl),
-              required:
-                this.tmc &&
-                this.tmc.OutNumberRequiryNameArray.some(name => name == n),
-              value: this.getTravelFormNumber(n),
-              staffNumber: cstaff && cstaff.Number,
-              staffOutNumber: cstaff && cstaff.OutNumber,
-              isTravelNumber: n == "TravelNumber",
-              canSelect: n == "TravelNumber",
-              isDisabled: !!(this.travelForm && n == "TravelNumber")
-            } as ITmcOutNumberInfo;
-          });
+          (this.tmc &&
+            this.tmc.OutNumberNameArray || []).map(n => {
+              return {
+                label: n,
+                key: n,
+                isLoadNumber: !!(this.tmc && this.tmc.GetTravelNumberUrl),
+                required:
+                  this.tmc &&
+                  this.tmc.OutNumberRequiryNameArray.some(name => name == n),
+                value: this.getTravelFormNumber(n),
+                staffNumber: cstaff && cstaff.Number,
+                staffOutNumber: cstaff && cstaff.OutNumber,
+                isTravelNumber: n == "TravelNumber",
+                canSelect: n == "TravelNumber",
+                isDisabled: !!(this.travelForm && n == "TravelNumber")
+              } as ITmcOutNumberInfo;
+            });
 
         combineInfo.addContacts = [];
         this.combindInfos.push(combineInfo);

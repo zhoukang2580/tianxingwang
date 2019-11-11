@@ -157,15 +157,10 @@ export class SelectTrainStationModalComponent implements OnInit, AfterViewInit {
       this.vmStations = this.stations[this.activeLetter];
     } else {
       kw = kw.toLowerCase();
+      const keys = ['Code', 'Name', 'Nickname', 'EnglishName', 'CityName', 'Pinyin'];
       this.vmStations = this.allStations.filter(s => {
         return (
-          kw == s.FirstLetter.toLowerCase() ||
-          (s.Code && s.Code.toLowerCase().includes(kw)) ||
-          (s.Name && s.Name.toLowerCase().includes(kw)) ||
-          (s.Nickname && s.Nickname.toLowerCase().includes(kw)) ||
-          (s.EnglishName && s.EnglishName.toLowerCase().includes(kw)) ||
-          (s.CityName && s.CityName.toLowerCase().includes(kw)) ||
-          (s.Pinyin && s.Pinyin.toLowerCase().includes(kw))
+          kw == s.FirstLetter.toLowerCase() || keys.some(k => s[k] && (s[k].toLowerCase().includes(kw) || kw == s[k].toLowerCase()))
         );
       }).slice(0, 20);
       this.vmStations.sort((s1, s2) => s1.Sequence - s2.Sequence);

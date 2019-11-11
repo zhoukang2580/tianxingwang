@@ -344,7 +344,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         };
         combineInfo.appovalStaff = cs && cs.DefaultApprover;
         combineInfo.tmcOutNumberInfos =
-          this.tmc &&
+          this.tmc && this.tmc.OutNumberNameArray &&
           this.tmc.OutNumberNameArray.map(n => {
             return {
               label: n,
@@ -360,7 +360,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
               canSelect: n == "TravelNumber",
               isDisabled: !!(this.viewModel.travelForm && n == "TravelNumber")
             } as ITmcOutNumberInfo;
-          });
+          })||[];
 
         this.viewModel.combindInfos.push(combineInfo);
       }
