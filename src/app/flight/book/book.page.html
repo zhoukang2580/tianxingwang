@@ -56,8 +56,7 @@
                     <ion-text color='dark' class='small-font'>到</ion-text>
                     {{s?.flightSegment?.ToCityName}}
                     <!-- {{getTripTip(s)}} -->
-                    <span class='small-font'>【{{s?.flightPolicy?.Cabin?.Discount|discount}}】</span>
-                    <span class='small-font'>【{{combindInfo?.modal?.bookInfo?.flightPolicy?.Cabin?.TypeName}}】</span>
+                    <span class='small-font'>【{{combindInfo?.modal?.bookInfo?.flightPolicy?.Cabin?.TypeName}}{{s?.flightPolicy?.Cabin?.Discount|discount}}】</span>
                   </ion-text>
                 </strong>
               </div>
