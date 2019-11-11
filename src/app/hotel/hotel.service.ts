@@ -650,6 +650,7 @@ export class HotelService {
       .catch(_ => []);
     return whitelistPolicies.concat(notWhitelistPolicies);
   }
+  
   private loadHotelCitiesFromServer(lastUpdateTime: number) {
     const req = new RequestEntity();
     req.Method = `TmcApiHotelUrl-City-Gets`;

@@ -8,7 +8,7 @@
       </ion-buttons>
       <ion-title [class.has-add-passenger]='(isShowAddPassenger$|async)'>{{hotel?.Name}}</ion-title>
       <ion-buttons slot='end'>
-        <ion-button style="font-size: 0.8rem;" fill='clear' color='secondary' (click)='filterPassengerPolicy()'
+        <ion-button style="font-size: 0.8rem;" fill='clear' color='secondary' (click)='onFilteredPassenger()'
           size='small'>
           <ion-text>过滤差标</ion-text>
         </ion-button>

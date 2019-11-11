@@ -61,7 +61,7 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
     }
   }
   getRoomPlanUniqueId(plan: RoomPlanEntity) {
-    return `'${this.hotelService.getRoomPlanUniqueId(plan)}'`;
+    return this.hotelService.getRoomPlanUniqueId(plan);
   }
   getRoomArea(room: RoomEntity) {
     return this.hotelService.getRoomArea(room);
