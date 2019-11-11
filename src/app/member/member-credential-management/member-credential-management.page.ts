@@ -122,7 +122,7 @@ export class MemberCredentialManagementPage
     });
     this.modifyFormEles.changes.subscribe(_ => {
       const container = this.modifyFormEles.find(it => it['el'] && it['el'].getAttribute("dataid") == (this.currentModifyItem && this.currentModifyItem.Id));
-      console.log("modifyFormEles,container", container)
+      // console.log("modifyFormEles,container", container)
       if (container) {
         if (this.credentials && this.currentModifyItem) {
           const one = this.credentials.find(it => it.Id == (this.currentModifyItem.Id));
