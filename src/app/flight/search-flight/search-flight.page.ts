@@ -87,7 +87,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
   }
   private checkBackDateIsAfterflyDate() {
     if (this.goDate && this.backDate) {
-      if (this.searchFlightModel && this.searchFlightModel.isRoundTrip) {
+      if (this.searchFlightModel && this.searchFlightModel.isRoundTrip && this.goDate.timeStamp > this.backDate.timeStamp) {
         if (this.router.url.includes("search-flight")) {
           AppHelper.alert("您选择的去程日期在返程日期之后，返程日期自动更新为去程日期后一天");
         }
