@@ -24,7 +24,7 @@ export class BookTmcOutnumberComponent implements OnInit {
   ngOnInit() { }
   async onSelectTravelNumber(arg: ITmcOutNumberInfo) {
     const tmcOutNumberInfos = this.tmcOutNumberInfos;
-    if (!arg || !arg.canSelect || !tmcOutNumberInfos) {
+    if (!arg || !arg.canSelect) {
       return;
     }
     if (!arg.travelUrlInfos || arg.travelUrlInfos.length == 0) {
@@ -47,9 +47,6 @@ export class BookTmcOutnumberComponent implements OnInit {
           ) {
             info.value = info.travelUrlInfos[0].TravelNumber;
           }
-          info.canSelect = !!(
-            info.travelUrlInfos && info.travelUrlInfos.length
-          ); // && info.canSelect;
           info.isLoadingNumber = false;
         })
       } else {

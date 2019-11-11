@@ -944,9 +944,6 @@ export class TrainBookPage implements OnInit, AfterViewInit {
           ) {
             info.value = info.travelUrlInfos[0].TravelNumber;
           }
-          info.canSelect = !!(
-            info.travelUrlInfos && info.travelUrlInfos.length
-          ); // && info.canSelect;
           info.isLoadingNumber = false;
         })
       );

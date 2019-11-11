@@ -345,9 +345,6 @@ export class BookPage implements OnInit, AfterViewInit {
             ) {
               info.value = info.travelUrlInfos[0].TravelNumber;
             }
-            info.canSelect = !!(
-              info.travelUrlInfos && info.travelUrlInfos.length
-            ); // && info.canSelect;
           });
         }
       });
