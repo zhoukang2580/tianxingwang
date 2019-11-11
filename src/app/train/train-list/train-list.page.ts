@@ -271,7 +271,8 @@ export class TrainListPage implements OnInit, OnDestroy {
       return [];
     }
     console.log(`所有人的差标：`, this.passengersPolicies);
-    return (this.vmTrains = this.trains = trains);
+    this.trains = trains;
+    return (this.vmTrains = JSON.parse(JSON.stringify(this.trains)));
   }
   private async getWhitelistPolicyTrains(
     passengers: StaffEntity[],
@@ -370,7 +371,7 @@ export class TrainListPage implements OnInit, OnDestroy {
     const m = await this.modalCtrl.create({
       component: TrainFilterComponent,
       componentProps: {
-        trains: this.trains
+        trains: JSON.parse(JSON.stringify(this.trains))
       }
     });
     if (m) {
@@ -483,7 +484,7 @@ export class TrainListPage implements OnInit, OnDestroy {
             if (idx == 0) {
               it.isFilteredPolicy = true;
               it.isAllowBookPolicy = true;
-              it.isOnlyFilterMatchedPolicy=false;
+              it.isOnlyFilterMatchedPolicy = false;
             }
             // it.isOnlyFilterMatchedPolicy=false;
             return it;
@@ -532,7 +533,7 @@ export class TrainListPage implements OnInit, OnDestroy {
   private filterPassengerPolicyTrains(
     bookInfo: PassengerBookInfo<ITrainInfo>
   ): TrainEntity[] {
-    let result: TrainEntity[] = this.trains;
+    let result: TrainEntity[] = JSON.parse(JSON.stringify(this.trains));
     result = this.trainService.filterPassengerPolicyTrains(
       bookInfo,
       result,
