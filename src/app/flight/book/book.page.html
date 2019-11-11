@@ -53,10 +53,10 @@
               <div class='date'>
                 <strong>{{getDate(s?.flightSegment)}} <ion-text color='secondary'>
                     {{s?.flightSegment?.FromCityName}}
-                    <ion-text color='dark' class='small-font'>到</ion-text>
+                    <ion-text color='dark' style="font-size: 0.7rem;">到</ion-text>
                     {{s?.flightSegment?.ToCityName}}
                     <!-- {{getTripTip(s)}} -->
-                    <span style="font-size: 0.7rem;">【{{combindInfo?.modal?.bookInfo?.flightPolicy?.Cabin?.TypeName}}{{s?.flightPolicy?.Cabin?.Discount|discount}}】</span>
+                    <span >【{{combindInfo?.modal?.bookInfo?.flightPolicy?.Cabin?.TypeName}}{{s?.flightPolicy?.Cabin?.Discount|discount}}】</span>
                   </ion-text>
                 </strong>
               </div>
