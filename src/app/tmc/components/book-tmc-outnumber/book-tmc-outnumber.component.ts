@@ -18,8 +18,8 @@ export class BookTmcOutnumberComponent implements OnInit {
   }>;
   @Input() tmcOutNumberInfos: ITmcOutNumberInfo[];
   constructor(private popoverCtrl: PopoverController, private tmcService: TmcService) {
-    this.tmcOutNumber=new EventEmitter();
-   }
+    this.tmcOutNumber = new EventEmitter();
+  }
 
   ngOnInit() { }
   async onSelectTravelNumber(arg: ITmcOutNumberInfo) {
@@ -35,10 +35,11 @@ export class BookTmcOutnumberComponent implements OnInit {
         staffNumber: arg.staffNumber,
         staffOutNumber: arg.staffOutNumber,
         name: arg.label
-      }],true);
+      }], true);
       if (result) {
         tmcOutNumberInfos.forEach(info => {
-          info.travelUrlInfos = result[info.staffNumber];
+          info.loadTravelUrlErrorMsg = result[info.staffNumber] && result[info.staffNumber].Message;
+          info.travelUrlInfos = result[info.staffNumber].Data;
           if (
             !info.value &&
             info.travelUrlInfos &&
@@ -111,4 +112,5 @@ export interface ITmcOutNumberInfo {
   canSelect: boolean;
   isDisabled: boolean;
   travelUrlInfos: TravelUrlInfo[];
+  loadTravelUrlErrorMsg: string;
 }

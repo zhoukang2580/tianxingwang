@@ -1126,7 +1126,8 @@ export class BookPage implements OnInit, AfterViewInit {
     if (result) {
       this.combindInfos.forEach(item =>
         item.tmcOutNumberInfos.forEach(info => {
-          info.travelUrlInfos = result[info.staffNumber];
+          info.loadTravelUrlErrorMsg = result[info.staffNumber] && result[info.staffNumber].Message;
+          info.travelUrlInfos = result[info.staffNumber].Data;
           if (
             !info.value &&
             info.travelUrlInfos &&

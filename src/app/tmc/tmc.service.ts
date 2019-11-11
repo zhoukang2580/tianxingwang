@@ -351,12 +351,12 @@ export class TmcService {
     }[],
     isShowLoading: boolean = false
   ): Promise<{
-    [staffNumber: string]: TravelUrlInfo[];
+    [staffNumber: string]: ITravelUrlResult;
   }> {
     const result: {
-      [staffNumber: string]: TravelUrlInfo[];
+      [staffNumber: string]: ITravelUrlResult;
     } = {} as any;
-    const all: Promise<{ key: string; value: TravelUrlInfo[] }>[] = [];
+    const all: Promise<{ key: string; value: ITravelUrlResult }>[] = [];
     if (data && data.length) {
       for (let i = 0; i < data.length; i++) {
         const arg = data[i];
@@ -378,7 +378,7 @@ export class TmcService {
     name: string;
   }, isShowLoading = false): Promise<{
     key: string;
-    value: TravelUrlInfo[];
+    value: ITravelUrlResult;
   }> {
     const req = new RequestEntity();
     req.IsShowLoading = isShowLoading;
@@ -386,7 +386,7 @@ export class TmcService {
     req.Data = data;
     return this.apiService.getPromiseData<{
       key: string;
-      value: TravelUrlInfo[];
+      value:ITravelUrlResult;
     }>(req);
   }
   async searchLinkman(
@@ -638,6 +638,10 @@ export class TmcService {
       .getPromiseData<OrganizationEntity[]>(req)
       .catch(_ => []);
   }
+}
+export interface ITravelUrlResult{
+  Data:TravelUrlInfo[];
+  Message:string;
 }
 export interface TravelUrlInfo {
   CostCenterCode: string;
