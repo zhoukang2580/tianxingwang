@@ -5,6 +5,7 @@
   &.disabled {
     color: var(--ion-color-medium);
     .toogle-icon {
+      display: inline-block;
       i,
       ion-icon.rotate-icon {
         color: var(--ion-color-medium);

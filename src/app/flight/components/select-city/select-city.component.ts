@@ -84,7 +84,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
       return keys.some(k => {
         // console.log(`key=${k}`, c[k]);
         const n = (c[k] && c[k] || "").toLowerCase();
-        return n.includes(name) || name.includes(n);
+        return n.includes(name) || name==n;
       })
     }).slice(0, 20);
     this.isFiltering = false;
