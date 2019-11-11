@@ -344,7 +344,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         };
         combineInfo.appovalStaff = cs && cs.DefaultApprover;
         combineInfo.tmcOutNumberInfos =
-          this.tmc && this.tmc.OutNumberNameArray &&
+          this.tmc && this.tmc.OutNumberNameArray && this.tmc.OutNumberRequiryNameArray &&
           this.tmc.OutNumberNameArray.map(n => {
             return {
               label: n,
