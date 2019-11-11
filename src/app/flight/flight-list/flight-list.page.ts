@@ -592,7 +592,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     );
     this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
 
-    this.searchConditionSubscription.unsubscribe();
   }
   private async showSelectedInfos() {
     const modal = await this.modalCtrl.create({
@@ -696,6 +695,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.filterConditionSubscription.unsubscribe();
     this.selectPassengerSubscription.unsubscribe();
     this.selectCitySubscription.unsubscribe();
+    this.searchConditionSubscription.unsubscribe();
   }
 
   ngAfterViewInit() {
