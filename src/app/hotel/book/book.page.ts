@@ -857,7 +857,7 @@ export class BookPage implements OnInit, AfterViewInit {
                 key: n,
                 isLoadNumber: !!(this.tmc && this.tmc.GetTravelNumberUrl),
                 required:
-                  this.tmc &&this.tmc.OutNumberRequiryNameArray&&
+                  this.tmc && this.tmc.OutNumberRequiryNameArray &&
                   this.tmc.OutNumberRequiryNameArray.some(name => name == n),
                 value: this.getTravelFormNumber(n),
                 staffNumber: cstaff && cstaff.Number,
@@ -1023,11 +1023,7 @@ export class BookPage implements OnInit, AfterViewInit {
             const canPay = true || (await this.checkPay(res.TradeNo));
             if (canPay) {
               const payResult = await this.tmcService.payOrder(res.TradeNo);
-              if (payResult || isSelf) {
-                this.goToMyOrders(ProductItemType.hotel);
-              } else {
-                this.router.navigate([""]); // 回到首页
-              }
+              this.goToMyOrders(ProductItemType.hotel);
             } else {
               await AppHelper.alert(
                 LanguageHelper.Order.getBookTicketWaitingTip()
@@ -1035,10 +1031,15 @@ export class BookPage implements OnInit, AfterViewInit {
               this.goToMyOrders(ProductItemType.hotel);
             }
           } else {
-            // await AppHelper.alert(
-            //   LanguageHelper.Flight.getSaveBookOrderOkTip()
-            // );
-            this.router.navigate([""]);
+            if (isSave) {
+              await AppHelper.alert("订单已保存", true, LanguageHelper.getConfirmTip());
+              this.router.navigate([""]);
+            } else {
+              await AppHelper.alert(
+                LanguageHelper.Order.getBookTicketWaitingTip()
+              );
+              this.goToMyOrders(ProductItemType.hotel);
+            }
           }
         }
       }
@@ -1127,7 +1128,7 @@ export class BookPage implements OnInit, AfterViewInit {
       this.combindInfos.forEach(item =>
         item.tmcOutNumberInfos.forEach(info => {
           info.loadTravelUrlErrorMsg = result[info.staffNumber] && result[info.staffNumber].Message;
-          info.travelUrlInfos = result[info.staffNumber]&&result[info.staffNumber].Data;
+          info.travelUrlInfos = result[info.staffNumber] && result[info.staffNumber].Data;
           if (
             !info.value &&
             info.travelUrlInfos &&
