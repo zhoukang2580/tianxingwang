@@ -505,6 +505,7 @@ export class TmcService {
     req.Data = {
       LastUpdateTime: this.localInternationAirports.LastUpdateTime
     };
+    req.IsShowLoading=true;
     let st = window.performance.now();
     const r = await this.apiService
       .getPromiseData<{
