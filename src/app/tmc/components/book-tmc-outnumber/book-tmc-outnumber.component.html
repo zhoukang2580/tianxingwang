@@ -7,6 +7,6 @@
     <ion-input [style.opacity]="n.isDisabled?0.8:1" [class.travel-number]='n.canSelect' [disabled]='n.isDisabled'
       [value]='n.value' [(ngModel)]='n.value' placeholder="{{n.isLoadingNumber?'正在加载行程单号':(n.loadTravelUrlErrorMsg||'暂无数据')}}">
     </ion-input>
-    <ion-icon name='arrow-dropdown' color='secondary' size='small' *ngIf='n.canSelect'></ion-icon>
+    <ion-icon name='arrow-dropdown' color='secondary'  *ngIf='n.canSelect'></ion-icon>
   </ion-item>
 </ion-item-group>
