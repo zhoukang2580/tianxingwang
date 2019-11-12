@@ -39,9 +39,10 @@
           <ion-label>
             <div *ngFor='let  orderFlightTrip of orderFlightTicket.OrderFlightTrips'>
               <ng-container *ngIf='orderFlightTrip.Status == OrderFlightTripStatusType.Normal'>
-                {{orderFlightTrip.TakeoffTime?.substr(0,"yyyy-mm-dd".length)}}
-                {{orderFlightTrip.FromCityName}}←→{{orderFlightTrip.ToCityName}}
-                {{orderFlightTrip.FlightNumber}}{{getHHmm(orderFlightTrip.TakeoffTime)}}
+                <span>{{orderFlightTrip.TakeoffTime?.substr(0,"yyyy-mm-dd".length)}}</span>
+                <span>{{orderFlightTrip.FromCityName}}←→{{orderFlightTrip.ToCityName}}</span>
+                <span>{{orderFlightTrip.FlightNumber}}</span>
+                <span>{{getHHmm(orderFlightTrip.TakeoffTime)}}</span>
               </ng-container>
             </div>
           </ion-label>
@@ -84,9 +85,10 @@
         <ion-col>
           <ion-label>
             <div *ngFor='let orderTrainTrip of orderTrainTicket.OrderTrainTrips'>
-              {{orderTrainTrip.StartTime?.substr(0,"yyyy-mm-dd".length)}}
-              {{orderTrainTrip.FromStationName}}---{{orderTrainTrip.ToStationName}}
-              {{orderTrainTrip.TrainNo}}{{getHHmm(orderTrainTrip.StartTime)}}
+              <span>{{orderTrainTrip.StartTime?.substr(0,"yyyy-mm-dd".length)}}</span>
+              <span>{{orderTrainTrip.FromStationName}}---{{orderTrainTrip.ToStationName}}</span>
+              <span>{{orderTrainTrip.TrainNo}}</span>
+              <span>{{getHHmm(orderTrainTrip.StartTime)}}</span>
             </div>
           </ion-label>
         </ion-col>

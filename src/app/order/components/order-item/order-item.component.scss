@@ -38,3 +38,6 @@
 :host {
   width: 100%;
 }
+span + span {
+  margin-left: 0.5em;
+}
