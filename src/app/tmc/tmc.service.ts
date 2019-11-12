@@ -549,13 +549,13 @@ export class TmcService {
     }
     return local.Trafficlines;
   }
-  async checkPay(orderId: string): Promise<boolean> {
+  async checkPay(orderId: string,isshowLoading=true): Promise<boolean> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Home-CheckPay";
     req.Data = {
       OrderId: orderId
     };
-    req.IsShowLoading = true;
+    req.IsShowLoading = isshowLoading;
     req.Timeout = 60;
     return this.apiService
       .getPromiseData<boolean>(req)

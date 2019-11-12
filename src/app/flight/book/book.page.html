@@ -56,7 +56,7 @@
                     <ion-text color='dark' style="font-size: 0.7rem;">到</ion-text>
                     {{s?.flightSegment?.ToCityName}}
                     <!-- {{getTripTip(s)}} -->
-                    <span >【{{combindInfo?.modal?.bookInfo?.flightPolicy?.Cabin?.TypeName}}{{s?.flightPolicy?.Cabin?.Discount|discount}}】</span>
+                    <span>【{{combindInfo?.modal?.bookInfo?.flightPolicy?.Cabin?.TypeName}}{{s?.flightPolicy?.Cabin?.Discount|discount}}】</span>
                   </ion-text>
                 </strong>
               </div>
@@ -247,15 +247,15 @@
           </ion-item>
         </ion-item-group>
         <app-book-tmc-outnumber [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos'
-        (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'></app-book-tmc-outnumber>
+          (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'></app-book-tmc-outnumber>
       </ion-list>
       <ion-item-group>
         <ion-item-divider>
           添加联系人:
         </ion-item-divider>
         <ion-item>
-          <app-book-addcontacts-comp [addContacts]='addContacts' 
-            (contactChange)='onContactsChange($event)'></app-book-addcontacts-comp>
+          <app-book-addcontacts-comp [addContacts]='addContacts' (contactChange)='onContactsChange($event)'>
+          </app-book-addcontacts-comp>
         </ion-item>
       </ion-item-group>
       <ion-item-group>
@@ -297,3 +297,4 @@
     <ion-button slot='end' size='small' color='secondary' (click)='bookFlight()'> 提交</ion-button>
   </ion-toolbar>
 </ion-footer>
+<app-waiting-check-pay [isLoading]='true' *ngIf='isCheckingPay'>正在预定中，请稍后...</app-waiting-check-pay>

@@ -27,6 +27,7 @@ import { SearchDayComponent } from "./search-day/search-day.component";
 import { SelectDateComponent } from "./select-date/select-date.component";
 import { DaysCalendarComponent } from "./days-calendar/days-calendar.component";
 import { BookTmcOutnumberComponent } from './book-tmc-outnumber/book-tmc-outnumber.component';
+import { WaitingCheckPayComponent } from './waiting-check-pay/waiting-check-pay.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { BookTmcOutnumberComponent } from './book-tmc-outnumber/book-tmc-outnumb
     SearchDayComponent,
     SelectDateComponent,
     DaysCalendarComponent,
-    BookTmcOutnumberComponent
+    BookTmcOutnumberComponent,
+    WaitingCheckPayComponent
   ],
   imports: [
     CommonModule,
@@ -73,7 +75,8 @@ import { BookTmcOutnumberComponent } from './book-tmc-outnumber/book-tmc-outnumb
     SelectWheelComponent,
     SearchDayComponent,
     SelectDateComponent,
-    DaysCalendarComponent
+    DaysCalendarComponent,
+    WaitingCheckPayComponent
   ],
   entryComponents: [
     AddcontactsModalComponent,

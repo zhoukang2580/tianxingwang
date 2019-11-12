@@ -1028,8 +1028,6 @@ export class BookPage implements OnInit, AfterViewInit {
       if (res) {
         if (res.TradeNo) {
           this.isPlaceOrderOk=true;
-          this.hotelService.removeAllBookInfos();
-          this.combindInfos = [];
           if (
             !isSave &&
             isSelf &&
@@ -1052,6 +1050,8 @@ export class BookPage implements OnInit, AfterViewInit {
               );
             }
           }
+          this.hotelService.removeAllBookInfos();
+          this.combindInfos = [];
           setTimeout(async () => {
             this.hotelService.dismissAllTopOverlays();
             this.goToMyOrders(ProductItemType.hotel);

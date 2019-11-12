@@ -337,7 +337,7 @@ export class BookPage implements OnInit, AfterViewInit {
         if (item.tmcOutNumberInfos) {
           item.tmcOutNumberInfos.forEach(info => {
             info.loadTravelUrlErrorMsg = result[info.staffNumber] && result[info.staffNumber].Message;
-            info.travelUrlInfos =result[info.staffNumber]&& result[info.staffNumber].Data;
+            info.travelUrlInfos = result[info.staffNumber] && result[info.staffNumber].Data;
             if (
               !info.value &&
               info.travelUrlInfos &&
@@ -507,6 +507,7 @@ export class BookPage implements OnInit, AfterViewInit {
     bookDto.IsFromOffline = isSave;
     let canBook = false;
     let canBook2 = false;
+    const isSelf = await this.staffService.isSelfBookType();
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto);
     if (canBook && canBook2) {
@@ -519,11 +520,12 @@ export class BookPage implements OnInit, AfterViewInit {
           this.flightService.removeAllBookInfos();
           if (
             !isSave &&
-            (await this.staffService.isSelfBookType()) &&
+            isSelf &&
             this.orderTravelPayType == OrderTravelPayType.Person
           ) {
-            AppHelper.alert("正在预定中...", true);
+            this.isCheckingPay = true;
             const canPay = await this.checkPay(res.TradeNo);
+            this.isCheckingPay = false;
             const t = await this.modalCtrl.getTop();
             if (t) {
               t.dismiss().catch(_ => null);
@@ -559,21 +561,18 @@ export class BookPage implements OnInit, AfterViewInit {
   private async checkPay(tradeNo: string) {
     return new Promise<boolean>(s => {
       let loading = false;
-      this.isCheckingPay = true;
       this.checkPayCountIntervalId = setInterval(async () => {
         if (!loading) {
           loading = true;
-          const result = await this.tmcService.checkPay(tradeNo);
+          const result = await this.tmcService.checkPay(tradeNo, false);
           loading = false;
           this.checkPayCount--;
           if (!result) {
             if (this.checkPayCount < 0) {
               clearInterval(this.checkPayCountIntervalId);
               s(false);
-              this.isCheckingPay = false;
             }
           } else {
-            this.isCheckingPay = false;
             s(true);
           }
         }
@@ -1092,7 +1091,7 @@ export class BookPage implements OnInit, AfterViewInit {
                   key: n,
                   isLoadNumber: !!(this.tmc && this.tmc.GetTravelNumberUrl),
                   required:
-                    this.tmc &&this.tmc.OutNumberRequiryNameArray&&
+                    this.tmc && this.tmc.OutNumberRequiryNameArray &&
                     this.tmc.OutNumberRequiryNameArray.some(name => name == n),
                   value: this.getTravelFormNumber(n),
                   staffNumber: cstaff && cstaff.Number,
