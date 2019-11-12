@@ -1010,40 +1010,40 @@ export class BookPage implements OnInit, AfterViewInit {
     canBook2 = this.fillBookPassengers(bookDto);
     if (canBook && canBook2) {
       this.isSubmitting = true;
-      const res = await this.hotelService.onBook(bookDto).catch(e => {
-        AppHelper.alert(e);
-        return { TradeNo: "" };
-      });
+      const res = await this.hotelService.onBook(bookDto)
+        .catch(e => {
+          AppHelper.alert(e);
+          return { TradeNo: "" };
+        });
       this.isSubmitting = false;
       if (res) {
         if (res.TradeNo) {
           this.hotelService.removeAllBookInfos();
+          this.combindInfos = [];
           if (
             !isSave &&
-            (await this.staffService.isSelfBookType()) &&
+            isSelf &&
             bookDto.Passengers[0].TravelPayType == OrderTravelPayType.Person
           ) {
-            const canPay = true || (await this.checkPay(res.TradeNo));
+            const canPay = await this.checkPay(res.TradeNo);
             if (canPay) {
-              const payResult = await this.tmcService.payOrder(res.TradeNo);
+              await this.tmcService.payOrder(res.TradeNo);
               this.goToMyOrders(ProductItemType.hotel);
             } else {
               await AppHelper.alert(
                 LanguageHelper.Order.getBookTicketWaitingTip()
               );
-              this.goToMyOrders(ProductItemType.hotel);
             }
           } else {
             if (isSave) {
               await AppHelper.alert("订单已保存", true, LanguageHelper.getConfirmTip());
-              this.router.navigate([""]);
             } else {
               await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingTip()
+                "下单成功"
               );
-              this.goToMyOrders(ProductItemType.hotel);
             }
           }
+          this.goToMyOrders(ProductItemType.hotel);
         }
       }
     }
