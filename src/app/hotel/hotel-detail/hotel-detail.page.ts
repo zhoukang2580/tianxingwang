@@ -424,7 +424,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       return;
     }
     const removedBookInfos: PassengerBookInfo<IHotelInfo>[] = [];
-    const policies = await this.getPolicy();
+    const policies = this.hotelPolicy || await this.getPolicy();
     const bookInfos = this.hotelService.getBookInfos();
     const isSelf = await this.staffService.isSelfBookType();
     if (bookInfos.length === 0) {
@@ -505,9 +505,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       return false;
     }
     const p = policies.find(it => it.PassengerKey == passengerAccountId);
-    const policy = p.HotelPolicies.find(it => this.hotelService.getRoomPlanUniqueId(roomPlan) ==it.UniqueIdId );
+    const policy = p.HotelPolicies.find(it => this.hotelService.getRoomPlanUniqueId(roomPlan) == it.UniqueIdId);
     const passenger = this.hotelService.getBookInfos().find(it => it.passenger && it.passenger.AccountId == p.PassengerKey);
-    if (policy&&!policy.IsAllowBook) {
+    if (policy && !policy.IsAllowBook) {
       if (passenger && isAlert) {
         AppHelper.alert(`房客${passenger.passenger.Name}超标不可预订`)
       }
