@@ -17,7 +17,7 @@
   <div>
     <span>
       起飞: {{trip?.TakeoffTime?.substr(0,"yyyy-MM-dd".length)}}
-      <span margin-start margin-end>{{trip?.TakeoffTime?.substr("yyyy-MM-ddT".length,"HH:mm".length)}}</span>
+      <span>{{trip?.TakeoffTime?.substr("yyyy-MM-ddT".length,"HH:mm".length)}}</span>
     </span>
     <span>{{trip?.FromAirportName}}({{trip?.FromAirport}}){{trip?.FromTerminal}}</span>
   </div>
@@ -28,8 +28,8 @@
     <span *ngIf='trip?.CodeShareNumber'>
       ({{trip?.CodeShareNumber}}){{trip?.FlightNumber}}
     </span> -->
-    到达:<span>{{trip?.ArrivalTime?.substr(0,"yyyy-MM-dd".length)}}</span>
-    <span margin-start margin-end>{{trip?.ArrivalTime?.substr("yyyy-MM-ddT".length,"HH:mm".length)}}</span>
+    到达: <span>{{trip?.ArrivalTime?.substr(0,"yyyy-MM-dd".length)}}</span>
+    <span>{{trip?.ArrivalTime?.substr("yyyy-MM-ddT".length,"HH:mm".length)}}</span>
     <span>{{trip?.ToAirportName}}({{trip?.ToAirport}}){{trip?.ToTerminal}}</span>
   </div>
 </div>
@@ -49,18 +49,17 @@
         ({{orderFlightTrip.CarrierName}})
       </span>
       起飞:{{orderFlightTrip.TakeoffTime?.substr(0,"yyyy-MM-dd".length)}}
-      <span margin-start margin-end>{{orderFlightTrip.TakeoffTime?.substr("yyyy-MM-ddT".length,"HH:mm".length)}}</span>
+      <span>{{orderFlightTrip.TakeoffTime?.substr("yyyy-MM-ddT".length,"HH:mm".length)}}</span>
       <span>{{orderFlightTrip.FromAirportName}}({{orderFlightTrip.FromAirport}}){{orderFlightTrip.FromTerminal}}</span>
       <span>舱位:{{orderFlightTrip.CabinType|cabintype}}</span>
       <div>
         <span *ngIf='!orderFlightTrip.CodeShareNumber'>{{orderFlightTrip.FlightNumber}}</span>
         <span
           *ngIf='orderFlightTrip.CodeShareNumber'>({{orderFlightTrip.CodeShareNumber}}){{orderFlightTrip.FlightNumber}}</span>
-        <span>到达:{{orderFlightTrip.ArrivalTime?.substr(0,"yyyy-MM-dd".length)}}</span>
-        <span margin-start
-          margin-end>{{orderFlightTrip.ArrivalTime?.substr("yyyy-MM-ddT".length,"HH:mm".length)}}</span>
+        <span >到达:{{orderFlightTrip.ArrivalTime?.substr(0,"yyyy-MM-dd".length)}}</span>
+        <span >{{orderFlightTrip.ArrivalTime?.substr("yyyy-MM-ddT".length,"HH:mm".length)}}</span>
         <span>{{orderFlightTrip.ToAirportName}}({{orderFlightTrip.ToAirport}}){{orderFlightTrip.ToTerminal}}</span>
-        <span>机型：{{orderFlightTrip.PlaneType}}</span>
+        <span >机型：{{orderFlightTrip.PlaneType}}</span>
       </div>
     </div>
   </div>
