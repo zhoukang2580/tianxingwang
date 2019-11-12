@@ -507,6 +507,9 @@
 			},
 
 			_equalizePoints = function (p1, p2) {
+				if (!p1 || !p2) {
+					return;
+				}
 				p1.x = p2.x;
 				p1.y = p2.y;
 				if (p2.id) {
