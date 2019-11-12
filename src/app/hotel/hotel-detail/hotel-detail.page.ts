@@ -469,7 +469,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
           );
           const policy =
             p &&
-            p.HotelPolicies.find(it => it.Number == bookInfo.roomPlan.Number);
+            p.HotelPolicies.find(it => it.UniqueIdId == this.hotelService.getRoomPlanUniqueId(bookInfo.roomPlan));
           if (policy && policy.Rules) {
             const rules = {};
             policy.Rules.forEach(r => {
@@ -505,9 +505,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       return false;
     }
     const p = policies.find(it => it.PassengerKey == passengerAccountId);
-    const policy = p.HotelPolicies.find(it => it.Number == roomPlan.Number);
+    const policy = p.HotelPolicies.find(it => this.hotelService.getRoomPlanUniqueId(roomPlan) ==it.UniqueIdId );
     const passenger = this.hotelService.getBookInfos().find(it => it.passenger && it.passenger.AccountId == p.PassengerKey);
-    if (!policy.IsAllowBook) {
+    if (policy&&!policy.IsAllowBook) {
       if (passenger && isAlert) {
         AppHelper.alert(`房客${passenger.passenger.Name}超标不可预订`)
       }
