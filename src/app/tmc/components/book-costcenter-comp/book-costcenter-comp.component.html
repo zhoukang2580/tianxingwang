@@ -1,9 +1,9 @@
 <div [class.disabled]='isOtherCostCenter'>
-  <ion-item detail lines='none' [disabled]='isOtherCostCenter' no-margin no-padding (click)='searchCostCenter()'>
+  <ion-item  detail lines='none' [disabled]='isOtherCostCenter'  (click)='searchCostCenter()'>
     <ion-label>成本中心：</ion-label>
     <ion-label text-end>{{costCenter?.name}}</ion-label>
   </ion-item>
-  <ion-item lines='none' no-margin no-padding>
+  <ion-item lines='none' >
     <ion-label style='margin-right: 0.5em'>其他:</ion-label>
     <ion-checkbox color="secondary" (ionChange)='onCheckboxValueChange($event)' [(ngModel)]='isOtherCostCenter'></ion-checkbox>
     <ion-input [disabled]='!isOtherCostCenter' [(ngModel)]='otherCostCenterName' placeholder='名称'
