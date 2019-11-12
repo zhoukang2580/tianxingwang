@@ -465,20 +465,27 @@ export class FlightService {
   private async reselectNotSelfBookTypeSegments(
     arg: PassengerBookInfo<IFlightSegmentInfo>
   ) {
+    if(!arg||!arg.bookInfo||!arg.bookInfo.flightSegment){
+      return;
+    }
     const s = this.getSearchFlightModel();
+    const cities = await this.getAllLocalAirports();
     s.tripType = TripType.departureTrip;
+    s.Date=arg.bookInfo.flightSegment.TakeoffTime.substr(0,'yyyy-mm-dd'.length);
+    s.fromCity=cities.find(it=>it.Code==arg.bookInfo.flightSegment.FromAirport);
+    s.toCity=cities.find(it=>it.Code==arg.bookInfo.flightSegment.ToAirport);
     const arr = this.getPassengerBookInfos().map(item => {
       item.isReplace = item.id == arg.id;
       return item;
     });
-    this.apiService.showLoadingView();
-    await this.dismissAllTopOverlays();
-    this.apiService.hideLoadingView();
-    this.router.navigate([AppHelper.getRoutePath("search-flight")]).then(_ => {
-      this.setSearchFlightModel(s);
-    });
     this.passengerBookInfos = arr;
     this.setPassengerBookInfosSource(this.passengerBookInfos);
+    this.apiService.showLoadingView();
+    await this.dismissAllTopOverlays();
+    this.setSearchFlightModel(s);
+    this.apiService.hideLoadingView();
+    this.router.navigate([AppHelper.getRoutePath("flight-list")]).then(_ => {
+    });
   }
   async reselectPassengerFlightSegments(
     arg: PassengerBookInfo<IFlightSegmentInfo>
