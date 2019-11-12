@@ -388,32 +388,29 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       });
       if (res) {
         if (res.TradeNo) {
+          const isSelf = (await this.staffService.isSelfBookType());
           this.trainService.removeAllBookInfos();
+          this.viewModel.combindInfos = [];
           if (
             !isSave &&
-            (await this.staffService.isSelfBookType()) &&
-            bookDto.Passengers[0].TravelPayType == OrderTravelPayType.Person
+            isSelf &&
+            this.viewModel.orderTravelPayType == OrderTravelPayType.Person
           ) {
             const canPay = (await this.checkPay(res.TradeNo));
             if (canPay) {
-              const payResult = await this.tmcService.payOrder(res.TradeNo);
-              if (payResult) {
-                this.goToMyOrders(ProductItemType.train);
-              } else {
-                this.router.navigate([""]); // 回到首页
-              }
+              await this.tmcService.payOrder(res.TradeNo);
             } else {
               await AppHelper.alert(
                 LanguageHelper.Order.getBookTicketWaitingTip()
               );
-              this.goToMyOrders(ProductItemType.train);
             }
           } else {
-            // await AppHelper.alert(
-            //   LanguageHelper.Flight.getSaveBookOrderOkTip()
-            // );
-            this.router.navigate([""]);
+            await AppHelper.alert("下单成功");
           }
+          setTimeout(() => {
+            this.trainService.dismissAllTopOverlays();
+            this.goToMyOrders(ProductItemType.train);
+          }, 2000);
         }
       }
     }

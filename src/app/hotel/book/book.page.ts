@@ -1,6 +1,6 @@
 import { BookTmcOutnumberComponent } from './../../tmc/components/book-tmc-outnumber/book-tmc-outnumber.component';
 import { PayService } from "src/app/services/pay/pay.service";
-import { Router } from "@angular/router";
+import { Router, ActivatedRoute } from "@angular/router";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { RoomPlanEntity } from "./../models/RoomPlanEntity";
 import { StaffService } from "./../../hr/staff.service";
@@ -109,6 +109,7 @@ export class BookPage implements OnInit, AfterViewInit {
   travelForm: TravelFormEntity;
   isCheckingPay = false;
   isSubmitting = false;
+  isPlaceOrderOk = false;
   checkPayCountIntervalId: any;
   checkPayCount = 3;
   checkPayCountIntervalTime = 5 * 1000;
@@ -126,9 +127,16 @@ export class BookPage implements OnInit, AfterViewInit {
     private staffService: StaffService,
     private calendarService: CalendarService,
     private router: Router,
+    private route:ActivatedRoute,
     private payService: PayService,
     private plt: Platform
-  ) { }
+  ) {
+    route.queryParamMap.subscribe(_=>{
+      if(this.combindInfos&&this.combindInfos.length==0&&this.isPlaceOrderOk){
+        router.navigate(['']);
+      }
+    })
+   }
   calcNights() {
     if (
       this.curSelectedBookInfo &&
@@ -225,6 +233,7 @@ export class BookPage implements OnInit, AfterViewInit {
       console.log(e);
       this.error = e;
     }
+    this.isPlaceOrderOk=false;
   }
   ngAfterViewInit() {
     console.log("outnumberEles", this.outnumberEles.first);
@@ -1018,20 +1027,20 @@ export class BookPage implements OnInit, AfterViewInit {
       this.isSubmitting = false;
       if (res) {
         if (res.TradeNo) {
+          this.isPlaceOrderOk=true;
           this.hotelService.removeAllBookInfos();
           this.combindInfos = [];
           if (
             !isSave &&
             isSelf &&
-            bookDto.Passengers[0].TravelPayType == OrderTravelPayType.Person
+            this.orderTravelPayType == OrderTravelPayType.Person
           ) {
             const canPay = await this.checkPay(res.TradeNo);
             if (canPay) {
               await this.tmcService.payOrder(res.TradeNo);
-              this.goToMyOrders(ProductItemType.hotel);
             } else {
               await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingTip()
+                LanguageHelper.Order.getBookTicketWaitingTip(), true
               );
             }
           } else {
@@ -1043,7 +1052,10 @@ export class BookPage implements OnInit, AfterViewInit {
               );
             }
           }
-          this.goToMyOrders(ProductItemType.hotel);
+          setTimeout(async () => {
+            this.hotelService.dismissAllTopOverlays();
+            this.goToMyOrders(ProductItemType.hotel);
+          }, 2000);
         }
       }
     }
