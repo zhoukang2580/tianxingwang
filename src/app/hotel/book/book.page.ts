@@ -673,8 +673,10 @@ export class BookPage implements OnInit, AfterViewInit {
       ) {
         p.CheckinTime = combindInfo.arrivalHotelTime;
         p.RoomPlan = combindInfo.bookInfo.bookInfo.roomPlan;
+        const room = combindInfo.bookInfo.bookInfo.hotelEntity.Rooms && combindInfo.bookInfo.bookInfo.hotelEntity.Rooms.find(it => it.Id == (p.RoomPlan.Room && p.RoomPlan.Room.Id));
         p.RoomPlan.Room = {
           ...p.RoomPlan.Room,
+          Name: room && room.Name,
           Hotel: {
             Id: combindInfo.bookInfo.bookInfo.hotelEntity.Id,
             Name: combindInfo.bookInfo.bookInfo.hotelEntity.Name,
