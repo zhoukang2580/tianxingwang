@@ -632,6 +632,10 @@ export class HotelService {
       a.Number=it.Number;
       a.BeginDate=it.BeginDate;
       a.EndDate=it.EndDate;
+      if(it.Room){
+        a.Room=new RoomEntity();
+        a.Room.Id=it.Room.Id;
+      }
       if(it.Id=="0"||!it.Id){
         a.SupplierType=it.SupplierType;
       }else{
