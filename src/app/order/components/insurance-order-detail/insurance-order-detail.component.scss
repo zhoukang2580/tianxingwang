@@ -2,7 +2,7 @@ ion-row ion-col {
   align-self: flex-start;
   font-size: 0.8rem;
   &:first-child:not([size]) {
-    max-width: 15vw;
+    max-width: 20vw;
   }
   &:last-child {
     color: var(--ion-color-medium);
