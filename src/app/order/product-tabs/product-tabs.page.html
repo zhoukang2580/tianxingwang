@@ -106,7 +106,7 @@
                 发起时间： {{task.InsertTime}}
               </h4>
               <h4>
-                超时时间：{{task.ExpiredTime}}
+                超时时间：{{task.ExpiredTime?.startsWith("1800")?"":task.ExpiredTime}}
               </h4>
             </ion-label>
           </ion-item>
