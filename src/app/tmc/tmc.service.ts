@@ -74,7 +74,10 @@ export class TmcService {
     this.companies = null;
     this.tmc = null;
   }
-  async payOrder(tradeNo: string, key = ""): Promise<boolean> {
+  async payOrder(tradeNo: string, key = "",giveup=false): Promise<boolean> {
+    if(giveup){
+      return Promise.resolve(false);
+    }
     let payResult = false;
     const payWay = await this.payService.selectPayWay();
     console.log('payway', payWay);
@@ -86,9 +89,10 @@ export class TmcService {
         LanguageHelper.getNegativeTip()
       );
       if (ok) {
+        giveup=true;
         payResult = false;
       } else {
-        return await this.payOrder(tradeNo, key);
+        return await this.payOrder(tradeNo, key,giveup);
       }
     } else {
       if (payWay.value == "ali") {
