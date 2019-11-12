@@ -64,26 +64,26 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input()
   // @HostBinding("@openclose")
   openclose = true;
-  isIos=false;
+  isIos = false;
   constructor(
     private plt: Platform,
     private render: Renderer2,
     // private ngZone: NgZone,
     private flightService: FlightService
   ) {
-    this.isIos=plt.is("ios");
-   }
+    this.isIos = plt.is("ios");
+  }
   ionViewWillEnter() {
     this.initHistoryCities();
     // console.log(this.domesticAirports.length);
   }
-  onIonFocus(){
-    if(this.content&&this.plt.is("ios")){
-      this.render.setStyle(this.content['el'],'width','100vw');
+  onIonFocus() {
+    if (this.content && this.plt.is("ios")) {
+      this.render.setStyle(this.content['el'], 'width', '100vw');
     }
   }
-  onIonBlur(){
-    if(this.content&&this.plt.is("ios")){
+  onIonBlur() {
+    if (this.content && this.plt.is("ios")&&(!this.isFiltering||!this.isSearching)) {
       this.render.setStyle(this.content["el"], "width", "93vw");
     }
   }
@@ -96,14 +96,17 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
       const keys = `Code,Name,Nickname,CityName,Pinyin`.split(",");
       return keys.some(k => {
         // console.log(`key=${k}`, c[k]);
-        const n:string = (c[k] && c[k] || "").toLowerCase();
-        const reg=new RegExp("^[a-zA-Z]*$");
-        if(reg.test(name) && name.length==3)
+        const n: string = (c[k] && c[k] || "").toLowerCase();
+        if (name == '北京南苑') {
+          return n != name && n.includes("北京");
+        }
+        const reg = new RegExp("^[a-zA-Z]*$");
+        if (reg.test(name) && name.length == 3)
           return name == n;
         else
           return name == n || n.includes(name);
       })
-    }).slice(0, 20);
+    }).slice(0, 20).filter(it=>!it.IsDeprecated);
     this.isFiltering = false;
     // console.log(`name=${name}`, this.cities, this.textSearchResults);
   }
@@ -132,6 +135,12 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   async initData(forceRefresh: boolean = false) {
     this.initHistoryCities();
     this.domesticAirports = await this.loadDomesticAirports(forceRefresh);
+    this.domesticAirports = this.domesticAirports.map(it => {
+      if (it.Name == "北京南苑" || it.Nickname == "北京南苑" || it.CityName == "北京南苑") {
+        it.IsDeprecated = true;
+      }
+      return it;
+    })
     this.initHotCities();
     await this.initDomesticListCity();
     this.listCities.sort((a, b) => a.link.charCodeAt(0) - b.link.charCodeAt(0));
@@ -209,7 +218,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     return new Promise(done => {
       let cities: TrafficlineEntity[] = [];
       if (this.segmentValue == "domestic") {
-        cities = this.domesticAirports.slice(0);
+        cities = this.domesticAirports.slice(0).filter(it=>!it.IsDeprecated);
       } else {
         cities = this.internationalAirports.slice(0);
       }

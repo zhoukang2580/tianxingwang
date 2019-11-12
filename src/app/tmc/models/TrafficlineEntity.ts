@@ -1,5 +1,6 @@
 import { BaseEntity } from './BaseEntity';
 export class TrafficlineEntity extends BaseEntity {
+  IsDeprecated:boolean;
   /// <summary>
   /// 标签，Train Airport AirportCity
   /// </summary>

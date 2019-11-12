@@ -125,6 +125,7 @@
       <ion-list class='holder'>
       </ion-list>
       <ion-list *ngIf='textSearchResults?.length else nodatatempl'>
+        <ion-note *ngIf='vmKeyowrds=="北京南苑"' margin-start>您要找的是不是<ion-text color='secondary' (click)='vmKeyowrds="BJS";onSearchByKeywords()' margin-start>北京</ion-text></ion-note>
         <ion-item *ngFor='let item of textSearchResults' (click)='onCitySelected(item,true)'>
           <ion-label>
             <ion-text [color]="item?.Selected?'secondary':'dark'">{{item?.Nickname}}
