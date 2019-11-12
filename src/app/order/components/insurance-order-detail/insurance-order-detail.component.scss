@@ -1,18 +1,19 @@
 ion-row ion-col {
+  align-self: flex-start;
   font-size: 0.8rem;
   &:first-child:not([size]) {
-    max-width: 12vw;
+    max-width: 15vw;
   }
   &:last-child {
     color: var(--ion-color-medium);
   }
 }
-ion-grid {
-  font-size: 0.8rem;
-  ion-row {
-    border-top: 1px solid var(--ion-color-dark);
-  }
-  ion-row ion-col:last-child {
-    color: initial;
-  }
-}
+// ion-grid {
+//   font-size: 0.8rem;
+//   ion-row {
+//     border-top: 1px solid var(--ion-color-dark);
+//   }
+//   ion-row ion-col:last-child {
+//     color: initial;
+//   }
+// }
