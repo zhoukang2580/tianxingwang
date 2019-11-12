@@ -2,7 +2,7 @@
   <ion-text class='flight-cities disabled' #flightcitieEle [attr.mode]='mode'>
     <ion-skeleton-text style='width: 20%;height: 2em;' animated *ngIf='!vmFromCity'></ion-skeleton-text>
     <ion-text text-wrap color='medium' #fromCityEle *ngIf='vmFromCity'>
-      <h2 [class.left]='!toggleCities' [class.right]='toggleCities'>{{vmFromCity?.CityName}}
+      <h2 [class.left]='!toggleCities' [class.right]='toggleCities'>{{vmFromCity?.Nickname}}
         <ion-text *ngIf='vmFromCity?.Code'>({{vmFromCity?.Code}})</ion-text>
       </h2>
     </ion-text>
@@ -14,7 +14,7 @@
         (@rotateIcon.done)='onRotateIconDone($event)'></ion-icon>
     </div>
     <ion-text color='medium' text-wrap #toCityEle>
-      <h2 [class.left]='toggleCities' [class.right]='!toggleCities' *ngIf='vmToCity'>{{vmToCity?.CityName}}<ion-text
+      <h2 [class.left]='toggleCities' [class.right]='!toggleCities' *ngIf='vmToCity'>{{vmToCity?.Nickname}}<ion-text
         *ngIf="vmToCity?.Code">({{vmToCity?.Code}})</ion-text>
       </h2>
     </ion-text>
@@ -24,7 +24,7 @@
 <div class='flight-cities' #flightcitieEle [class.hide]='disabled' [attr.mode]='mode'>
   <ion-skeleton-text style='width: 20%;height:2em;' animated *ngIf='!vmFromCity'></ion-skeleton-text>
   <ion-text text-wrap (click)="onSelectCity(true)" color='dark' #fromCityEle *ngIf='vmFromCity'>
-    <h2 [class.left]='!toggleCities' [class.right]='toggleCities'>{{vmFromCity?.CityName}}<ion-text
+    <h2 [class.left]='!toggleCities' [class.right]='toggleCities'>{{vmFromCity?.Nickname}}<ion-text
         *ngIf='vmFromCity?.Code'>({{vmFromCity?.Code}})</ion-text>
     </h2>
   </ion-text>
@@ -33,7 +33,7 @@
   </div>
   <ion-skeleton-text style='width: 20%;height: 2em;' animated *ngIf='!vmToCity'></ion-skeleton-text>
   <ion-text (click)='onSelectCity(false)' color='dark' text-wrap #toCityEle *ngIf='vmToCity'>
-    <h2 [class.left]='toggleCities' [class.right]='!toggleCities'>{{vmToCity?.CityName}}<ion-text
+    <h2 [class.left]='toggleCities' [class.right]='!toggleCities'>{{vmToCity?.Nickname}}<ion-text
         *ngIf="vmToCity?.Code">({{vmToCity?.Code}})</ion-text>
     </h2>
   </ion-text>
@@ -41,7 +41,7 @@
 <div class='flight-cities' #flightcitieEle [class.disabled]='disabled' [attr.mode]='mode'>
   <ion-skeleton-text style='width: 20%;height:2em;' animated *ngIf='!vmFromCity'></ion-skeleton-text>
   <ion-text text-wrap (click)="onSelectCity(true)" color='dark' #fromCityEle *ngIf='vmFromCity'>
-    <h2 [class.left]='!toggleCities' [class.right]='toggleCities'>{{vmFromCity?.CityName}}<ion-text
+    <h2 [class.left]='!toggleCities' [class.right]='toggleCities'>{{vmFromCity?.Nickname}}<ion-text
         *ngIf=''>({{vmFromCity?.Code}})</ion-text>
     </h2>
   </ion-text>
@@ -50,7 +50,7 @@
   </div>
   <ion-skeleton-text style='width: 20%;height: 2em;' animated *ngIf='!vmToCity'></ion-skeleton-text>
   <ion-text (click)='onSelectCity(false)' color='dark' text-wrap #toCityEle *ngIf='vmToCity'>
-    <h2 [class.left]='toggleCities' [class.right]='!toggleCities'>{{vmToCity?.CityName}}<ion-text
+    <h2 [class.left]='toggleCities' [class.right]='!toggleCities'>{{vmToCity?.Nickname}}<ion-text
         *ngIf="">({{vmToCity?.Code}})</ion-text>
     </h2>
   </ion-text>
