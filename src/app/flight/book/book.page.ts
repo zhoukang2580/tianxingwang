@@ -526,29 +526,17 @@ export class BookPage implements OnInit, AfterViewInit {
             this.isCheckingPay = true;
             const canPay = await this.checkPay(res.TradeNo);
             this.isCheckingPay = false;
-            const t = await this.modalCtrl.getTop();
-            if (t) {
-              t.dismiss().catch(_ => null);
-            }
             if (canPay) {
-              const payResult = await this.tmcService.payOrder(res.TradeNo);
-              if (payResult) {
-                this.goToMyOrders(ProductItemType.plane);
-              } else {
-                this.router.navigate([""]); // 回到首页
-              }
+              await this.tmcService.payOrder(res.TradeNo);
             } else {
               await AppHelper.alert(
                 LanguageHelper.Order.getBookTicketWaitingTip()
               );
-              this.goToMyOrders(ProductItemType.plane);
             }
           } else {
-            // await AppHelper.alert(
-            //   LanguageHelper.Flight.getSaveBookOrderOkTip()
-            // );
-            this.router.navigate([""]);
+            await AppHelper.alert("下单成功!");
           }
+          this.goToMyOrders(ProductItemType.plane);
         }
       }
     }

@@ -127,16 +127,16 @@ export class BookPage implements OnInit, AfterViewInit {
     private staffService: StaffService,
     private calendarService: CalendarService,
     private router: Router,
-    private route:ActivatedRoute,
+    private route: ActivatedRoute,
     private payService: PayService,
     private plt: Platform
   ) {
-    route.queryParamMap.subscribe(_=>{
-      if(this.combindInfos&&this.combindInfos.length==0&&this.isPlaceOrderOk){
+    route.queryParamMap.subscribe(_ => {
+      if (this.combindInfos && this.combindInfos.length == 0 && this.isPlaceOrderOk) {
         router.navigate(['']);
       }
     })
-   }
+  }
   calcNights() {
     if (
       this.curSelectedBookInfo &&
@@ -233,7 +233,7 @@ export class BookPage implements OnInit, AfterViewInit {
       console.log(e);
       this.error = e;
     }
-    this.isPlaceOrderOk=false;
+    this.isPlaceOrderOk = false;
   }
   ngAfterViewInit() {
     console.log("outnumberEles", this.outnumberEles.first);
@@ -1027,13 +1027,15 @@ export class BookPage implements OnInit, AfterViewInit {
       this.isSubmitting = false;
       if (res) {
         if (res.TradeNo) {
-          this.isPlaceOrderOk=true;
+          this.isPlaceOrderOk = true;
           if (
             !isSave &&
             isSelf &&
             this.orderTravelPayType == OrderTravelPayType.Person
           ) {
+            this.isCheckingPay = true;
             const canPay = await this.checkPay(res.TradeNo);
+            this.isCheckingPay = false;
             if (canPay) {
               await this.tmcService.payOrder(res.TradeNo);
             } else {
@@ -1068,7 +1070,6 @@ export class BookPage implements OnInit, AfterViewInit {
   private async checkPay(tradeNo: string) {
     return new Promise<boolean>(s => {
       let loading = false;
-      this.isCheckingPay = true;
       if (this.checkPayCountIntervalId) {
         clearInterval(this.checkPayCountIntervalId);
       }
@@ -1082,10 +1083,8 @@ export class BookPage implements OnInit, AfterViewInit {
             if (this.checkPayCount < 0) {
               clearInterval(this.checkPayCountIntervalId);
               s(false);
-              this.isCheckingPay = false;
             }
           } else {
-            this.isCheckingPay = false;
             s(true);
           }
         }
