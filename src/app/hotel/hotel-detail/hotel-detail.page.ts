@@ -159,7 +159,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     return data;
   }
   private async filterPassengerPolicy(passengerId: string = "") {
-    const hotelPolicy = await this.getPolicy();
+    const hotelPolicy = this.hotelPolicy || await this.getPolicy();
     this.colors = {};
     if (hotelPolicy) {
       const policies = hotelPolicy.find(
