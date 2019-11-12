@@ -534,7 +534,11 @@ export class BookPage implements OnInit, AfterViewInit {
               );
             }
           } else {
-            await AppHelper.alert("下单成功!");
+            if (isSave) {
+              await AppHelper.alert("订单已保存");
+            } else {
+              await AppHelper.alert("下单成功!");
+            }
           }
           this.goToMyOrders(ProductItemType.plane);
         }

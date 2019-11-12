@@ -91,6 +91,7 @@ export class TmcService {
       if (ok) {
         giveup=true;
         payResult = false;
+        return payResult; 
       } else {
         return await this.payOrder(tradeNo, key,giveup);
       }

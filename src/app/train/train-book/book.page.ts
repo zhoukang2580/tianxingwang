@@ -88,7 +88,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
   totalPriceSource: Subject<number>;
   isCanSave$ = of(false);
   addContacts: AddContact[] = [];
-  private isCheckingPay = false;
+  isCheckingPay = false;
   private checkPayCountIntervalId: any;
   private checkPayCount = 5;
   private checkPayCountIntervalTime = 3 * 1000;
@@ -396,7 +396,9 @@ export class TrainBookPage implements OnInit, AfterViewInit {
             isSelf &&
             this.viewModel.orderTravelPayType == OrderTravelPayType.Person
           ) {
+            this.isCheckingPay = true;
             const canPay = (await this.checkPay(res.TradeNo));
+            this.isCheckingPay = false;
             if (canPay) {
               await this.tmcService.payOrder(res.TradeNo);
             } else {
@@ -405,12 +407,13 @@ export class TrainBookPage implements OnInit, AfterViewInit {
               );
             }
           } else {
-            await AppHelper.alert("下单成功");
+            if (isSave) {
+              await AppHelper.alert("订单已保存");
+            } else {
+              await AppHelper.alert("下单成功");
+            }
           }
-          setTimeout(() => {
-            this.trainService.dismissAllTopOverlays();
-            this.goToMyOrders(ProductItemType.train);
-          }, 2000);
+          this.goToMyOrders(ProductItemType.train);
         }
       }
     }
@@ -418,7 +421,6 @@ export class TrainBookPage implements OnInit, AfterViewInit {
   private async checkPay(tradeNo: string) {
     return new Promise<boolean>(s => {
       let loading = false;
-      this.isCheckingPay = true;
       if (this.checkPayCountIntervalId) {
         clearInterval(this.checkPayCountIntervalId);
       }
@@ -432,10 +434,8 @@ export class TrainBookPage implements OnInit, AfterViewInit {
             if (this.checkPayCount < 0) {
               clearInterval(this.checkPayCountIntervalId);
               s(false);
-              this.isCheckingPay = false;
             }
           } else {
-            this.isCheckingPay = false;
             s(true);
           }
         }

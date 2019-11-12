@@ -223,3 +223,4 @@
     <ion-button slot='end' size='small' *ngIf='isCanSave$|async' color='secondary' (click)='bookTrain(true)'>保存订单</ion-button>
   </ion-toolbar>
 </ion-footer>
+<app-waiting-check-pay [isLoading]='true' *ngIf='isCheckingPay'>正在预定中，请稍后...</app-waiting-check-pay> 
