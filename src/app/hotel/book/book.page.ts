@@ -678,7 +678,8 @@ export class BookPage implements OnInit, AfterViewInit {
           Hotel: {
             Id: combindInfo.bookInfo.bookInfo.hotelEntity.Id,
             Name: combindInfo.bookInfo.bookInfo.hotelEntity.Name,
-            Address: combindInfo.bookInfo.bookInfo.hotelEntity.Address
+            Address: combindInfo.bookInfo.bookInfo.hotelEntity.Address,
+            Phone: combindInfo.bookInfo.bookInfo.hotelEntity.Phone,
           }
         } as RoomEntity;
         // p.RoomPlan.Room = {
