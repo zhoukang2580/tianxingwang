@@ -33,9 +33,8 @@ export class SelectFlightsegmentCabinComponent implements OnInit {
         }
         return "warning";
       }
-      return "success";
     }
-    return "primary";
+    return "success";
   }
   ngOnInit() {}
   async openrules(cabin: any) {

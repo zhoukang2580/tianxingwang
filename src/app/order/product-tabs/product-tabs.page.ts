@@ -332,6 +332,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     try {
       if (this.infiniteScroll) {
         this.infiniteScroll.disabled = this.isLoading;
+        setTimeout(() => {
+          this.infiniteScroll.disabled=false;
+        }, 100);
       }
       if (this.loadDataSub) {
         this.loadDataSub.unsubscribe();
