@@ -38,6 +38,9 @@ ion-badge {
     width: 2em;
     height: 2em;
     margin-bottom: .5em;
+    img{
+      object-fit: fill;
+    }
   }
   ion-label{
     font-size: .8rem;
