@@ -627,16 +627,17 @@ export class HotelService {
     req.IsShowLoading = true;
     const arr: RoomPlanEntity[] = [];
     roomPlans.forEach(it => {
-      arr.push({
-        Id: it.Id,
-        TotalAmount: it.TotalAmount,
-        Number: it.Number,
-        BeginDate: it.BeginDate,
-        EndDate: it.EndDate,
-        Room:{
-          Id:it.Room&&it.Room.Id
-        }
-      } as RoomPlanEntity);
+      const a =new RoomPlanEntity();
+      a.TotalAmount=it.TotalAmount;
+      a.Number=it.Number;
+      a.BeginDate=it.BeginDate;
+      a.EndDate=it.EndDate;
+      if(it.Id=="0"||!it.Id){
+        a.SupplierType=it.SupplierType;
+      }else{
+        a.Id=it.Id;
+      }
+      arr.push(a);
     });
     const city = this.getSearchHotelModel().destinationCity;
     req.Data = {
