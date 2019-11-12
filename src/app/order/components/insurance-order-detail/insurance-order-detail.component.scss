@@ -8,6 +8,13 @@ ion-row ion-col {
     color: var(--ion-color-medium);
   }
 }
+.insurance-customer{
+  ion-row ion-col{
+    &:first-child{
+      max-width: 50vw;
+    }
+  }
+}
 // ion-grid {
 //   font-size: 0.8rem;
 //   ion-row {

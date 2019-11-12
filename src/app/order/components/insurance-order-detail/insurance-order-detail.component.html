@@ -83,58 +83,58 @@
           </ion-row>
         </ion-grid>
         <ion-item-divider>保客信息</ion-item-divider>
-        <ion-grid>
+        <ion-grid class='insurance-customer'>
           <ion-row>
-            <ion-col size="4">
+            <ion-col >
               登机证件类型信息
             </ion-col>
-            <ion-col size="8">
+            <ion-col>
               {{orderPassenger.CredentialsNumber}}
             </ion-col>
           </ion-row>
           <ion-row>
-            <ion-col size="4">旅客/证件姓名</ion-col>
-            <ion-col size="8">{{orderPassenger.Name}}</ion-col>
+            <ion-col >旅客/证件姓名</ion-col>
+            <ion-col >{{orderPassenger.Name}}</ion-col>
           </ion-row>
           <ion-row *ngIf='false'>
-            <ion-col size="4">登机姓名(18位)</ion-col>
-            <ion-col size="8">{{orderPassenger.CheckName}}</ion-col>
+            <ion-col >登机姓名(18位)</ion-col>
+            <ion-col >{{orderPassenger.CheckName}}</ion-col>
           </ion-row>
           <ion-row>
-            <ion-col size="4">联系方式</ion-col>
-            <ion-col size="8">{{orderPassenger.Mobile}}</ion-col>
+            <ion-col >联系方式</ion-col>
+            <ion-col >{{orderPassenger.Mobile}}</ion-col>
           </ion-row>
           <ion-row>
-            <ion-col size="4">邮箱地址</ion-col>
-            <ion-col size="8">{{orderPassenger.Email}}</ion-col>
+            <ion-col >邮箱地址</ion-col>
+            <ion-col >{{orderPassenger.Email}}</ion-col>
           </ion-row>
           <ion-row>
-            <ion-col size="4">旅客类型</ion-col>
-            <ion-col size="8">{{orderPassenger.PassengerTypeName}}</ion-col>
+            <ion-col >旅客类型</ion-col>
+            <ion-col >{{orderPassenger.PassengerTypeName}}</ion-col>
           </ion-row>
           <ion-row *ngIf='getOrderTravelsValues(orderInsurance.Key,"CostCenterName") as n'>
-            <ion-col size="4">成本中心名称</ion-col>
-            <ion-col size="8">{{n}}</ion-col>
+            <ion-col >成本中心名称</ion-col>
+            <ion-col >{{n}}</ion-col>
           </ion-row>
           <ion-row *ngIf='getOrderTravelsValues(orderInsurance.Key,"CostCenterCode") as c'>
-            <ion-col size="4">成本中心代码</ion-col>
-            <ion-col size="8">{{c}}</ion-col>
+            <ion-col >成本中心代码</ion-col>
+            <ion-col >{{c}}</ion-col>
           </ion-row>
           <ion-row *ngIf='getOrderTravelsValues(orderInsurance.Key,"OrganizationName") as o'>
-            <ion-col size="4">组织架构名称</ion-col>
-            <ion-col size="8">{{o}}</ion-col>
+            <ion-col >组织架构名称</ion-col>
+            <ion-col >{{o}}</ion-col>
           </ion-row>
           <ion-row *ngIf='getOrderTravelsValues(orderInsurance.Key,"OrganizationCode") as c'>
-            <ion-col size="4">组织架构代码</ion-col>
-            <ion-col size="8">{{c}}</ion-col>
+            <ion-col >组织架构代码</ion-col>
+            <ion-col >{{c}}</ion-col>
           </ion-row>
           <ion-row *ngIf='getOrderTravelsValues(orderInsurance.Key,"IllegalPolicy") as r'>
-            <ion-col size="4">违规事项</ion-col>
-            <ion-col size="8">{{r}}</ion-col>
+            <ion-col >违规事项</ion-col>
+            <ion-col >{{r}}</ion-col>
           </ion-row>
           <ion-row *ngIf='getOrderTravelsValues(orderInsurance.Key,"IllegalReason") as a'>
-            <ion-col size="4">违规原因</ion-col>
-            <ion-col size="8">{{a}}</ion-col>
+            <ion-col >违规原因</ion-col>
+            <ion-col >{{a}}</ion-col>
           </ion-row>
           <ion-row *ngIf='false && orderInsurance.Status != OrderInsuranceStatusType.Abolish 
               && orderInsurance.Status != OrderInsuranceStatusType.Abolishing'>

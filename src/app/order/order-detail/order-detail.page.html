@@ -108,7 +108,7 @@
         </ng-container>
       </ion-list>
       <!-- 旅客信息 -->
-      <ion-list #link [attr.tabid]='getTabByLabel("旅客")?.value' lines='none'>
+      <ion-list #link [attr.tabid]='getTabByLabel("旅客")?.value' lines='none' class='customer'>
         <ion-item-divider>{{getTabByLabel("旅客")?.label}}
           <ng-container *ngIf='orderDetail.Order.OrderFlightTickets?.length>1'>
             <ion-badge color='danger'>

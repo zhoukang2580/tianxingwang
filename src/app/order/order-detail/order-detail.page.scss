@@ -55,3 +55,8 @@ ion-list-header {
   color: var(--ion-color-secondary);
   // border-bottom: 1px dashed var(--ion-color-secondary);
 }
+.customer ion-row ion-col {
+  &:last-child {
+    color: var(--ion-color-medium);
+  }
+}
