@@ -77,17 +77,31 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     this.initHistoryCities();
     // console.log(this.domesticAirports.length);
   }
+  onIonFocus(){
+    if(this.content&&this.plt.is("ios")){
+      this.render.setStyle(this.content['el'],'width','100vw');
+    }
+  }
+  onIonBlur(){
+    if(this.content&&this.plt.is("ios")){
+      this.render.setStyle(this.content["el"], "width", "93vw");
+    }
+  }
   onSearchByKeywords() {
     this.isFiltering = true;
     let name = (this.vmKeyowrds && this.vmKeyowrds.trim()) || "";
     name = name.toLowerCase();
     this.isSearching = true;
     this.textSearchResults = (this.cities || []).filter(c => {
-      const keys = `Code,Name,Nickname,CityName,CityCode,Pinyin`.split(",");
+      const keys = `Code,Name,Nickname,CityName,Pinyin`.split(",");
       return keys.some(k => {
         // console.log(`key=${k}`, c[k]);
-        const n = (c[k] && c[k] || "").toLowerCase();
-        return name == n || n.includes(name);
+        const n:string = (c[k] && c[k] || "").toLowerCase();
+        const reg=new RegExp("^[a-zA-Z]*$");
+        if(reg.test(name) && name.length==3)
+          return name == n;
+        else
+          return name == n || n.includes(name);
       })
     }).slice(0, 20);
     this.isFiltering = false;

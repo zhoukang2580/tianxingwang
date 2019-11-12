@@ -42,7 +42,7 @@
   <ion-skeleton-text style='width: 20%;height:2em;' animated *ngIf='!vmFromCity'></ion-skeleton-text>
   <ion-text text-wrap (click)="onSelectCity(true)" color='dark' #fromCityEle *ngIf='vmFromCity'>
     <h2 [class.left]='!toggleCities' [class.right]='toggleCities'>{{vmFromCity?.CityName}}<ion-text
-        *ngIf='vmFromCity?.Code'>({{vmFromCity?.Code}})</ion-text>
+        *ngIf=''>({{vmFromCity?.Code}})</ion-text>
     </h2>
   </ion-text>
   <div class='toogle-icon' (click)='onRotateIcon()'>
@@ -51,7 +51,7 @@
   <ion-skeleton-text style='width: 20%;height: 2em;' animated *ngIf='!vmToCity'></ion-skeleton-text>
   <ion-text (click)='onSelectCity(false)' color='dark' text-wrap #toCityEle *ngIf='vmToCity'>
     <h2 [class.left]='toggleCities' [class.right]='!toggleCities'>{{vmToCity?.CityName}}<ion-text
-        *ngIf="vmToCity?.Code">({{vmToCity?.Code}})</ion-text>
+        *ngIf="">({{vmToCity?.Code}})</ion-text>
     </h2>
   </ion-text>
 </div>
