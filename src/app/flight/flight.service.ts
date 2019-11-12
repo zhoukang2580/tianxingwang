@@ -771,6 +771,9 @@ export class FlightService {
     let arr = this.getPassengerBookInfos();
     arr = arr.map(item => {
       if (item.id === old.id) {
+        newInfo.isFilteredPolicy=old.isFilteredPolicy;
+        newInfo.isAllowBookPolicy=old.isAllowBookPolicy;
+        newInfo.isOnlyFilterMatchedPolicy=old.isOnlyFilterMatchedPolicy;
         return newInfo;
       }
       return item;

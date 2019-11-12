@@ -139,7 +139,6 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
       c =>
         c.Id == data.flightPolicy.LowerSegment.LowestCabinId
     );
-    debugger;
     if (!lowestCabin) {
       await AppHelper.alert(
         LanguageHelper.Flight.getTheLowestCabinNotFoundTip()
@@ -172,7 +171,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
           flightSegment: lowestFlightSegment,
           tripType: data.tripType || TripType.departureTrip,
           id: AppHelper.uuid(),
-          isLowerSegmentSelected: true
+          isLowerSegmentSelected: true,
         };
         const newInfo: PassengerBookInfo<IFlightSegmentInfo> = {
           id: AppHelper.uuid(),
