@@ -579,6 +579,7 @@ export class FlightService {
         });
       }
     } else {
+      bookInfos = this.getPassengerBookInfos().filter(it=>!it.bookInfo);
       for (let i = 0; i < bookInfos.length; i++) {
         const bookInfo = bookInfos[i];
         bookInfo.bookInfo = this.getPolicyCabinBookInfo(bookInfo, flightCabin);

@@ -67,7 +67,7 @@ export class SelectPassengerPage
   private keyword: string;
   private isOpenPageAsModal = false;
   private forType:FlightHotelTrainType;
-  private  bookInfos: PassengerBookInfo<any>[];
+  private bookInfos: PassengerBookInfo<any>[];
   vmKeyword: string;
   removeitem: EventEmitter<PassengerBookInfo<any>>;
   isShowNewCredential = false;
@@ -140,7 +140,9 @@ export class SelectPassengerPage
   }
   async ngOnInit() {
     this.route.queryParamMap.subscribe(_ => {
-      this.forType =_.get("forType") as any as FlightHotelTrainType;
+      if(_.get("forType")){
+        this.forType = _.get("forType") as any as FlightHotelTrainType;
+      }
       this.getIdentityTypes();
       this.initPassengerTypes();
       this.initCredentialsRemarks();
