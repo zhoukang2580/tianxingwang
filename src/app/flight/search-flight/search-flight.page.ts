@@ -103,7 +103,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
     if (this.isCanleave) {
       return true;
     }
-    const bookInfos = this.flightService.getPassengerBookInfos();
+    const bookInfos = this.flightService.getPassengerBookInfos().filter(it => !!it.bookInfo);
     if (bookInfos.length) {
       return AppHelper.alert("是否放弃所选航班信息？", true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
     }
