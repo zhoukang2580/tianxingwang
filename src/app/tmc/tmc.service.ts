@@ -1,3 +1,4 @@
+import { Platform } from '@ionic/angular';
 import { finalize } from 'rxjs/operators';
 import { ProductItemType } from 'src/app/tmc/models/ProductItems';
 import { BaseEntity } from "./models/BaseEntity";
@@ -63,7 +64,8 @@ export class TmcService {
     private identityService: IdentityService,
     private orderService: OrderService,
     private payService: PayService,
-    private router: Router
+    private router: Router,
+    private platform:Platform
   ) {
     this.identityService.getIdentitySource().subscribe(id => {
       this.disposal();
@@ -73,6 +75,25 @@ export class TmcService {
   private disposal() {
     this.companies = null;
     this.tmc = null;
+  }
+  getChannel(){
+    let channel="H5";
+    if(AppHelper.isApp()){
+      if(this.platform.is("android")){
+        channel="android";
+      }
+      if(this.platform.is("ios")){
+        channel="ios"
+      }
+    }else{
+      if(AppHelper.isWechatH5()){
+        channel='WechatH5';
+      }
+      if(AppHelper.isDingtalkH5()){
+        channel='DingtalkH5';
+      }
+    }
+    return channel;
   }
   async payOrder(tradeNo: string, key = "", giveup = false): Promise<boolean> {
     if (giveup) {
