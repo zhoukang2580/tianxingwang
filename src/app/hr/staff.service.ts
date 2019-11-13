@@ -7,6 +7,7 @@ import { ApiService } from "src/app/services/api/api.service";
 import { Injectable } from "@angular/core";
 import { AccountEntity } from "../tmc/models/AccountEntity";
 import { TaskType } from "../workflow/models/TaskType";
+import { BaseSettingEntity } from '../tmc/models/BaseSettingEntity';
 
 @Injectable({
   providedIn: "root"
@@ -208,7 +209,7 @@ export enum PolicyType {
   /// </summary>
   UnOrder = 4
 }
-export class PolicyEntity {
+export class PolicyEntity extends  BaseSettingEntity {
   Setting: string;
   /// <summary>
   ///

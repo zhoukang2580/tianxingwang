@@ -35,7 +35,7 @@ import {
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { StaffEntity } from "src/app/hr/staff.service";
 import { Observable, Subscription, of } from "rxjs";
-import { map } from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
 import { LanguageHelper } from "src/app/languageHelper";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { Country } from "src/app/tmc/components/select-country/select-countrymodal.component";
@@ -67,6 +67,7 @@ export class SelectPassengerPage
   private keyword: string;
   private isOpenPageAsModal = false;
   private forType:FlightHotelTrainType;
+  private  bookInfos: PassengerBookInfo<any>[];
   vmKeyword: string;
   removeitem: EventEmitter<PassengerBookInfo<any>>;
   isShowNewCredential = false;
@@ -147,7 +148,10 @@ export class SelectPassengerPage
       this.initBookInfos();
       if (this.bookInfos$) {
         this.selectedPasengersNumber$ = this.bookInfos$.pipe(
-          map(infos => infos.length)
+          tap(infos=>{
+            this.bookInfos=infos;
+          }),
+          map(infos => infos.length),
         );
       }
       this.isCanDeactive = false;
@@ -189,6 +193,14 @@ export class SelectPassengerPage
       this.forType == FlightHotelTrainType.Hotel
     ) {
       this.bookInfos$ = this.hotelService.getBookInfoSource();
+    }
+    if (this.bookInfos$) {
+      this.bookInfos$=this.bookInfos$.pipe(
+        tap(infos=>{
+          this.bookInfos=infos;
+          console.log("bookinfos",this.bookInfos&&this.bookInfos.map(it=>it.passenger&&it.passenger.Policy&&it.passenger.Policy));
+        })
+      );
     }
   }
   private initCredentialsRemarks() {
