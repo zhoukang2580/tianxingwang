@@ -1173,6 +1173,7 @@ export class TmcEntity extends BaseEntity {
   WechatMchId: string;
   WechatMiniId: string;
   WechatMiniSecret: string;
+  RegionTypeValue: string;
   // =============== 微信支付配置 end ======
 }
 export interface PassengerBookInfo<T> {

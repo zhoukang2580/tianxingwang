@@ -72,7 +72,7 @@ export class HomePage implements OnInit {
     this.router.navigate(["account-security_en"]);
   }
   goToBulletinList(noticeType?: string) {
-    this.router.navigate([AppHelper.getRoutePath("bulletin-list")], {
+    this.router.navigate([AppHelper.getRoutePath(route)], {
       queryParams: { bulletinType: noticeType }
     });
   }
@@ -92,6 +92,41 @@ export class HomePage implements OnInit {
   }
   async getAgentNotices() {
     this.agentNotices = await this.cmsService.getAgentNotices(0).catch(_ => []);
+  }
+  async goToPage(name:string,params?:any){
+    const tmc = await this.tmcService.getTmc(true);
+    if(!tmc||!tmc.RegionTypeValue){
+      AppHelper.alert("您不能使用该功能");
+      return;
+    }
+    let route="";
+    if(name=='hotel'){
+      route='search-hotel';
+      if(!tmc.RegionTypeValue.toLowerCase().includes("hotel")){
+        AppHelper.alert("您不能使用该功能");
+        return;
+      }
+    }
+    if(name=='train'){
+      route='search-train';
+      if(!tmc.RegionTypeValue.toLowerCase().includes("train")){
+        AppHelper.alert("您不能使用该功能");
+        return;
+      }
+    }
+    if(name=='flight'){
+      route='search-flight';
+      if(!tmc.RegionTypeValue.toLowerCase().includes("flight")){
+        AppHelper.alert("您不能使用该功能");
+        return;
+      }
+    }
+    if(name=='bulletin'){
+      route='bulletin-lists';
+    }
+    this.router.navigate([AppHelper.getRoutePath(route)], {
+      queryParams: { bulletinType: params }
+    });
   }
   private clearBookInfos() {
     this.flightService.removeAllBookInfos();

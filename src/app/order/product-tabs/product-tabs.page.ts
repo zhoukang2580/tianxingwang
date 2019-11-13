@@ -233,7 +233,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       });
   }
   back() {
-    this.navCtrl.back();
+    this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
   }
   async openSearchModal() {
     const m = await this.modalCtrl.create({

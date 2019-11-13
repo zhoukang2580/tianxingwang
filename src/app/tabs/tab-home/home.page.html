@@ -42,7 +42,7 @@
   <ion-grid>
     <ion-row wrap>
       <ion-col size="4">
-        <div class="item" [routerLink]="['/search-flight']">
+        <div class="item" (click)='goToPage("flight")'>
           <ion-label>
             <i class="icon icon-home-plane"></i>
             <!-- <img src="assets/svgs/home-plane.svg" appLazyloadimage alt="机票"> -->
@@ -51,7 +51,7 @@
           <ion-ripple-effect></ion-ripple-effect>
         </div>
       </ion-col>
-      <ion-col [routerLink]="['/search-hotel']" size="4">
+      <ion-col (click)='goToPage("hotel")' size="4">
         <div class="item">
           <ion-label>
             <img src="assets/svgs/hotel.svg" alt="酒店" [style.height.em]='3'>
@@ -61,7 +61,7 @@
         </div>
         <ion-ripple-effect></ion-ripple-effect>
       </ion-col>
-      <ion-col [routerLink]="['/search-train']" size="4">
+      <ion-col (click)='goToPage("train")' size="4">
         <div class="item">
           <ion-label>
             <!-- <img src="assets/svgs/home-train.svg" appLazyloadimage alt="火车票"> -->
@@ -94,7 +94,7 @@
   </ion-grid>
   <ion-grid margin-top>
     <ion-row>
-      <ion-col (click)='goToBulletinList()' size="4">
+      <ion-col (click)='goToPage("bulletin")' size="4">
         <div class="item">
           <ion-label>
             <!-- <img src="assets/svgs/message.svg" appLazyloadimage alt="消息"> -->
