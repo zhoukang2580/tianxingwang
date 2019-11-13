@@ -290,6 +290,7 @@ export class MemberCredentialManagementPage
     if (!ok) {
       return;
     }
+    c.Id="0";
     const result = await this.memberService
       .addCredentials(c)
       .then(_ => true)
