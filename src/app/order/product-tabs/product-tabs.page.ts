@@ -129,21 +129,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     // const isSelfBookType = await this.staffService.isSelfBookType();
     if (order) {
       if (order.Status == OrderStatusType.WaitPay) {
-        if (
-          order.TravelPayType == OrderTravelPayType.Person
-        ) {
-          const result = await this.tmcService.payOrder(order.Id);
-          if (result) {
-
-          } else {
-            const ok = await AppHelper.alert(LanguageHelper.Order.getDonotSelectPayWayTip(), true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
-            if (ok) {
-
-            } else {
-              await this.onPay(order);
-            }
-          }
-        }
+        const result = await this.tmcService.payOrder(order.Id);
       }
     }
   }
