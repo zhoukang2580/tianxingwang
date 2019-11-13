@@ -92,7 +92,7 @@ export class CropAvatarPage implements OnInit,AfterViewInit {
     req.Data = {
       FileName: this.fileName
     };
-    req.FileValue = encodeURIComponent(vals[1]);
+    req.FileValue = vals[1];
     const uploadSubscription = this.apiService.getResponse<any>(req).subscribe(
       uploadRes => {
         this.uploaded = true;
