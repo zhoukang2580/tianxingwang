@@ -95,8 +95,8 @@ export class CropAvatarPage implements OnInit,AfterViewInit {
     req.FileValue = vals[1];
     const uploadSubscription = this.apiService.getResponse<any>(req).subscribe(
       uploadRes => {
-        this.uploaded = true;
         this.showCropBox = false;
+        this.uploaded = uploadRes.Status;
         if (uploadRes.Status) {
           this.goBack();
         }
