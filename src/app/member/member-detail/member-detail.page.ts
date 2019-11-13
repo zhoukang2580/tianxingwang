@@ -34,13 +34,13 @@ export class MemberDetailPage implements OnInit, OnDestroy {
     private navCtrl: NavController,
     private staffService: StaffService,
     private memberService: MemberService
-  ) {}
+  ) { }
   back() {
     this.navCtrl.back();
   }
   ngOnInit() {
     this.route.queryParamMap.subscribe(async _ => {
-      await this.load();
+      await this.load(AppHelper.getRouteData());
     });
     console.log("member detail ngOnInit");
     this.identitySubscription = this.identityService
@@ -60,10 +60,10 @@ export class MemberDetailPage implements OnInit, OnDestroy {
     // });
   }
 
-  async load() {
-    // if (this.memberDetails) {
-    //   return;
-    // }
+  async load(forceLoad = false) {
+    if (this.memberDetails && !forceLoad) {
+      return;
+    }
     const r = await this.memberService.getMemberDetails().catch(_ => null);
     if (r) {
       this.memberDetails = {
@@ -72,9 +72,6 @@ export class MemberDetailPage implements OnInit, OnDestroy {
         RealName: r.RealName,
         HeadUrl: r.HeadUrl || (await this.configService.get()).DefaultImageUrl
       } as any;
-    }
-    if (this.staff) {
-      return;
     }
     this.staff = await this.staffService.getStaff();
     if (this.staff) {

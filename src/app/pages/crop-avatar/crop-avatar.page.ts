@@ -98,6 +98,7 @@ export class CropAvatarPage implements OnInit,AfterViewInit {
         this.showCropBox = false;
         this.uploaded = uploadRes.Status;
         if (uploadRes.Status) {
+          AppHelper.setRouteData(true);
           this.goBack();
         }
       },
