@@ -201,9 +201,9 @@ export class BookPage implements OnInit, AfterViewInit {
         bookDto.Passengers.push(p);
       }
     });
-    if (isSelf && bookDto.Passengers.length == 2) {
-      bookDto.Passengers = [bookDto.Passengers[0]];
-    }
+    // if (isSelf && bookDto.Passengers.length == 2) {
+    //   bookDto.Passengers = [bookDto.Passengers[0]];
+    // }
     console.log("initializeBookDto", bookDto);
     this.initialBookDtoModel = await this.flightService.getInitializeBookDto(
       bookDto
@@ -1016,6 +1016,7 @@ export class BookPage implements OnInit, AfterViewInit {
           (this.initialBookDtoModel.Insurances &&
             this.initialBookDtoModel.Insurances[item.id]) ||
           [];
+        
         const insurances = insuranceProducts.map(insurance => {
           return {
             insuranceResult: insurance,
@@ -1096,18 +1097,8 @@ export class BookPage implements OnInit, AfterViewInit {
         } as ICombindInfo;
         this.vmCombindInfos.push(combineInfo);
       }
-      // if (!environment.production) {
-      //   if (!this.vmCombindInfos || this.vmCombindInfos.length == 0) {
-      //     this.vmCombindInfos = await this.storage.get(
-      //       "Flight-Book-Page-Mock-Data"
-      //     );
-      //   } else {
-      //     await this.storage.set(
-      //       "Flight-Book-Page-Mock-Data",
-      //       this.vmCombindInfos
-      //     );
-      //   }
-      // }
+
+
     } catch (e) {
       console.error(e);
     }

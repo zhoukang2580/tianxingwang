@@ -83,18 +83,11 @@ export class TmcService {
     console.log('payway', payWay);
     if (!payWay) {
       const ok = await AppHelper.alert(
-        LanguageHelper.Order.getGiveUpPayTip(),
+        LanguageHelper.Order.getDonotSelectPayWayTip(),
         true,
-        LanguageHelper.getYesTip(),
-        LanguageHelper.getNegativeTip()
+        LanguageHelper.getYesTip()
       );
-      if (ok) {
-        giveup=true;
-        payResult = false;
-        return payResult; 
-      } else {
-        return await this.payOrder(tradeNo, key,giveup);
-      }
+      return payResult; 
     } else {
       if (payWay.value == "ali") {
         payResult = await this.aliPay(tradeNo, key);

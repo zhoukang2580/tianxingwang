@@ -8,8 +8,8 @@ export class LanguageHelper {
     getStatusCancelTypeTip: () => {
       return "取消";
     },
-    getGiveUpPayTip: () => {
-      return "放弃支付?";
+    getDonotSelectPayWayTip: () => {
+      return "尚未选择支付方式?";
     },
     getStatusFinishTypeTip: () => {
       return "完成";

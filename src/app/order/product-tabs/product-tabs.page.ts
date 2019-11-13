@@ -136,7 +136,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
           if (result) {
 
           } else {
-            const ok = await AppHelper.alert(LanguageHelper.Order.getGiveUpPayTip(), true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+            const ok = await AppHelper.alert(LanguageHelper.Order.getDonotSelectPayWayTip(), true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
             if (ok) {
 
             } else {
