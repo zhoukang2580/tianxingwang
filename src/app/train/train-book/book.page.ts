@@ -418,6 +418,25 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       }
     }
   }
+  private getTotalServiceFees() {
+    let fees = 0;
+    if (this.initialBookDto && this.initialBookDto.ServiceFees) {
+      fees = Object.keys(this.initialBookDto.ServiceFees).reduce(
+        (acc, key) => {
+          const fee = +this.initialBookDto.ServiceFees[key];
+          acc = AppHelper.add(fee, acc);
+          return acc;
+        },
+        0
+      );
+    }
+    if (this.tmc && !this.tmc.IsShowServiceFee) {
+      if (this.viewModel && this.viewModel.orderTravelPayType != OrderTravelPayType.Person) {
+        fees = 0;
+      }
+    }
+    return fees as number;
+  }
   private async checkPay(tradeNo: string) {
     return new Promise<boolean>(s => {
       let loading = false;
@@ -472,17 +491,8 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         return arr;
       }, 0);
       // console.log("totalPrice ", totalPrice);
-      if (this.initialBookDto && this.initialBookDto.ServiceFees) {
-        const fees = Object.keys(this.initialBookDto.ServiceFees).reduce(
-          (acc, key) => {
-            const fee = +this.initialBookDto.ServiceFees[key];
-            acc = AppHelper.add(fee, acc);
-            return acc;
-          },
-          0
-        );
-        totalPrice = AppHelper.add(fees, totalPrice);
-      }
+      const fees=this.getTotalServiceFees();
+      totalPrice = AppHelper.add(fees, totalPrice);
       this.totalPriceSource.next(totalPrice);
     }
     // console.timeEnd("总计");

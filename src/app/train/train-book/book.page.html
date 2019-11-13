@@ -191,7 +191,7 @@
         </ion-item-divider>
         <ion-item>
           <div style='width: 100%'>
-            <ion-radio-group [(ngModel)]='viewModel.orderTravelPayType' name='travelPayType'>
+            <ion-radio-group [(ngModel)]='viewModel.orderTravelPayType' name='travelPayType' (ionChange)="calcTotalPrice()">
               <ion-item *ngFor='let pt of viewModel?.orderTravelPayTypes'>
                 <ion-label>{{pt.label}}</ion-label>
                 <ion-radio [value]="pt.value" [checked]='viewModel.orderTravelPayType==pt.value'>
