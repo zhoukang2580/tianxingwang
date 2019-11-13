@@ -15,6 +15,12 @@ ion-col {
   color: var(--ion-color-secondary);
 }
 ion-title {
+  &.text-start{
+    text-align: start;
+  }
+  &.text-center{
+    text-align: center;
+  }
   ion-text {
     font-size: 0.8rem;
     font-weight: bolder;

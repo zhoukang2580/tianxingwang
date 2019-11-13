@@ -35,15 +35,21 @@ export class FilterPassengersPolicyComponent implements OnInit {
         .catch(_ => void 0);
     }
   }
-  onMathRadioChange(evt: CustomEvent){
-    if(evt.detail && evt.detail.value){
-      this.selectedItem.isAllowBookPolicy=evt.detail && evt.detail.value=="isAllowBookPolicy";
-      this.selectedItem.isOnlyFilterMatchedPolicy=evt.detail && evt.detail.value=="isShowOnlyMatchSwitch";
+  onMathRadioChange(evt: CustomEvent) {
+    if (evt.detail && evt.detail.value) {
+      this.selectedItem.isAllowBookPolicy = evt.detail && evt.detail.value == "isAllowBookPolicy";
+      this.selectedItem.isOnlyFilterMatchedPolicy = evt.detail && evt.detail.value == "isShowOnlyMatchSwitch";
     }
   }
   onSelectItem(evt: CustomEvent) {
     if (evt.detail && evt.detail.value && evt.detail.value.passenger) {
       this.selectedItem = evt.detail.value;
+      if (this.bookInfos) {
+        this.bookInfos.forEach(it => {
+          it.isFilteredPolicy = it.id == this.selectedItem.id;
+          it.isAllowBookPolicy = it.id == this.selectedItem.id;
+        })
+      }
     }
   }
   async ngOnInit() {

@@ -502,6 +502,7 @@ export class FlightService {
     console.log("getPassengerBookInfos", this.getPassengerBookInfos());
   }
   async addOrReplaceSegmentInfo(flightCabin: FlightCabinEntity) {
+    debugger;
     const isSelfBookType = await this.staffService.isSelfBookType();
     let bookInfos = this.getPassengerBookInfos();
     let s = this.getSearchFlightModel();
@@ -579,11 +580,13 @@ export class FlightService {
         });
       }
     } else {
-      bookInfos = this.getPassengerBookInfos().filter(it=>!it.bookInfo);
-      for (let i = 0; i < bookInfos.length; i++) {
-        const bookInfo = bookInfos[i];
-        bookInfo.bookInfo = this.getPolicyCabinBookInfo(bookInfo, flightCabin);
+     const unselectBookInfos = this.getPassengerBookInfos().filter(it=>!it.bookInfo||!it.bookInfo.flightPolicy||it.isReplace);
+     bookInfos=bookInfos.map(item=>{
+      if(unselectBookInfos.find(it=>it.id==item.id)){
+        item.bookInfo = this.getPolicyCabinBookInfo(item, flightCabin);
       }
+       return item;
+     })
     }
     const arr = bookInfos.map(item => {
       item.isReplace = false;
