@@ -3,6 +3,7 @@
   height: 100vh;
   width: 100vw;
   z-index: 100001;
+  touch-action: none;
 }
 .shade {
   position: fixed;

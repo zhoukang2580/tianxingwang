@@ -3,12 +3,12 @@
     {{trip?.FromCityName}}
     <span class='stop-cities' [attr.stopcities]='trip?.StopCities'>---</span>
     {{trip?.ToCityName}}
-    <!-- <span *ngIf='!trip?.CodeShareNumber'>
+    <span *ngIf='!trip?.CodeShareNumber'>
       {{trip?.CarrierName}}
-    </span> -->
-    <!-- <span *ngIf='trip?.CodeShareNumber'>
+    </span>
+    <span *ngIf='trip?.CodeShareNumber'>
       ({{trip?.CarrierName}})
-    </span> -->
+    </span>
     <span class='line-vertical'>|</span>
     <span>{{trip?.PlaneType}}</span>
     <span class='line-vertical'>|</span>
