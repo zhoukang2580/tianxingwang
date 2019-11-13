@@ -72,7 +72,7 @@ export class HomePage implements OnInit {
     this.router.navigate(["account-security_en"]);
   }
   goToBulletinList(noticeType?: string) {
-    this.router.navigate([AppHelper.getRoutePath(route)], {
+    this.router.navigate([AppHelper.getRoutePath('bulletin-list')], {
       queryParams: { bulletinType: noticeType }
     });
   }
@@ -94,7 +94,7 @@ export class HomePage implements OnInit {
     this.agentNotices = await this.cmsService.getAgentNotices(0).catch(_ => []);
   }
   async goToPage(name:string,params?:any){
-    const tmc = await this.tmcService.getTmc(true);
+    const tmc = await this.tmcService.getTmc();
     if(!tmc||!tmc.RegionTypeValue){
       AppHelper.alert("您不能使用该功能");
       return;
@@ -122,7 +122,7 @@ export class HomePage implements OnInit {
       }
     }
     if(name=='bulletin'){
-      route='bulletin-lists';
+      route='bulletin-list';
     }
     this.router.navigate([AppHelper.getRoutePath(route)], {
       queryParams: { bulletinType: params }
