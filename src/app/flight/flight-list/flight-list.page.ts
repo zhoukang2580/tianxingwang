@@ -635,6 +635,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.isLoading = false;
   }
   onSelectCity(isFrom: boolean) {
+    if(this.searchFlightModel&&this.searchFlightModel.isLocked){
+      return;
+    }
     this.isSelectFromCity = isFrom ? "isfrom" : "isTo";
     this.flightService.setOpenCloseSelectCityPageSources(true);
   }

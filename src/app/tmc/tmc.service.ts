@@ -74,8 +74,8 @@ export class TmcService {
     this.companies = null;
     this.tmc = null;
   }
-  async payOrder(tradeNo: string, key = "",giveup=false): Promise<boolean> {
-    if(giveup){
+  async payOrder(tradeNo: string, key = "", giveup = false): Promise<boolean> {
+    if (giveup) {
       return Promise.resolve(false);
     }
     let payResult = false;
@@ -87,7 +87,7 @@ export class TmcService {
         true,
         LanguageHelper.getYesTip()
       );
-      return payResult; 
+      return payResult;
     } else {
       if (payWay.value == "ali") {
         payResult = await this.aliPay(tradeNo, key);
@@ -543,7 +543,7 @@ export class TmcService {
     }
     return local.Trafficlines;
   }
-  async checkPay(orderId: string,isshowLoading=true): Promise<boolean> {
+  async checkPay(orderId: string, isshowLoading = true): Promise<boolean> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Home-CheckPay";
     req.Data = {
@@ -595,7 +595,9 @@ export class TmcService {
     };
     req.IsShowLoading = isShowLoading;
     req.Timeout = 60;
-    const md5 = AppHelper.md5Digest(JSON.stringify(req.Data), true);
+    const d = JSON.stringify(req.Data);
+    const md5 = AppHelper.md5Digest((d || "").replace(" ", "").trim(), true);
+    console.log("TmcApiBookUrl-Home-Credentials ", this.fetchingCredentialReq);
     if (this.fetchingCredentialReq.md5
       && this.fetchingCredentialReq[md5].isFectching
       && this.fetchingCredentialReq[md5].promise) {

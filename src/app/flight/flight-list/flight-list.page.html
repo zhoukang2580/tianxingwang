@@ -5,7 +5,7 @@
         <ion-icon color='dark' name='arrow-back'></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title color='secondary' [attr.text-start]='showAddPassenger' [attr.text-center]='!showAddPassenger'>
+    <ion-title color='{{searchFlightModel?.isLocked?"medium":"secondary"}}' [attr.text-start]='showAddPassenger' [attr.text-center]='!showAddPassenger'>
       <ion-text (click)='onSelectCity(true)'>{{vmFromCity?.CityName}}</ion-text>
       <div (@rotateIcon.done)='onRotateIconDone($event)' [@rotateIcon]='isRotateIcon' margin-start margin-end>
         <i class='icon icon-flight-plane' (click)='onSwapCity()'></i>
