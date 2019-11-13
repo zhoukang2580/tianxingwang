@@ -26,7 +26,7 @@
     <ion-col size='1'>元</ion-col>
   </ion-row>
 </ion-grid>
-<ion-grid class="item">
+<ion-grid class="item" *ngIf='fees'>
   <ion-row>
     <ion-col>服务费</ion-col>
     <ion-col>{{fees}}</ion-col>

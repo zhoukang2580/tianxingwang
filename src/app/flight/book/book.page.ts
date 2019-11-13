@@ -201,9 +201,6 @@ export class BookPage implements OnInit, AfterViewInit {
         bookDto.Passengers.push(p);
       }
     });
-    // if (isSelf && bookDto.Passengers.length == 2) {
-    //   bookDto.Passengers = [bookDto.Passengers[0]];
-    // }
     console.log("initializeBookDto", bookDto);
     this.initialBookDtoModel = await this.flightService.getInitializeBookDto(
       bookDto
@@ -214,7 +211,7 @@ export class BookPage implements OnInit, AfterViewInit {
           const fees = {};
           Object.keys(this.initialBookDtoModel.ServiceFees).forEach(k => {
             infos.forEach(info => {
-              fees[info.id] = this.initialBookDtoModel.ServiceFees[k];
+              fees[info.id] = +this.initialBookDtoModel.ServiceFees[k] / 2;
             });
           });
           this.initialBookDtoModel.ServiceFees = fees;
@@ -459,17 +456,8 @@ export class BookPage implements OnInit, AfterViewInit {
         return arr;
       }, 0);
       // console.log("totalPrice ", totalPrice);
-      if (this.initialBookDtoModel && this.initialBookDtoModel.ServiceFees) {
-        const fees = Object.keys(this.initialBookDtoModel.ServiceFees).reduce(
-          (acc, key) => {
-            const fee = +this.initialBookDtoModel.ServiceFees[key];
-            acc = AppHelper.add(fee, acc);
-            return acc;
-          },
-          0
-        );
-        totalPrice = AppHelper.add(fees, totalPrice);
-      }
+      const fees = this.getTotalServiceFees();
+      totalPrice = AppHelper.add(fees, totalPrice);
       this.totalPriceSource.next(totalPrice);
     }
     // console.timeEnd("总计");
@@ -907,7 +895,28 @@ export class BookPage implements OnInit, AfterViewInit {
       this.initialBookDtoModel.ServiceFees[item.modal.id]
     );
   }
+  private getTotalServiceFees() {
+    let fees = 0;
+    if (this.initialBookDtoModel && this.initialBookDtoModel.ServiceFees) {
+      fees = Object.keys(this.initialBookDtoModel.ServiceFees).reduce(
+        (acc, key) => {
+          const fee = +this.initialBookDtoModel.ServiceFees[key];
+          acc = AppHelper.add(fee, acc);
+          return acc;
+        },
+        0
+      );
+    }
+    if (this.tmc && !this.tmc.IsShowServiceFee) {
+      if (this.orderTravelPayType != OrderTravelPayType.Person) {
+        fees = 0;
+      }
+    }
+    return fees as number;
+  }
   async onShowPriceDetail() {
+
+
     const p = await this.popoverCtrl.create({
       component: PriceDetailComponent,
       componentProps: {
@@ -945,19 +954,8 @@ export class BookPage implements OnInit, AfterViewInit {
               };
             })
             .filter(it => !!it.from),
-        fees:
-          this.initialBookDtoModel &&
-          this.initialBookDtoModel.ServiceFees &&
-          Object.keys(this.initialBookDtoModel.ServiceFees).reduce(
-            (acc, key) => {
-              acc = AppHelper.add(
-                acc,
-                +this.initialBookDtoModel.ServiceFees[key]
-              );
-              return acc;
-            },
-            0
-          )
+        fees: this.getTotalServiceFees()
+
       }
     });
     p.present();
@@ -1016,7 +1014,7 @@ export class BookPage implements OnInit, AfterViewInit {
           (this.initialBookDtoModel.Insurances &&
             this.initialBookDtoModel.Insurances[item.id]) ||
           [];
-        
+
         const insurances = insuranceProducts.map(insurance => {
           return {
             insuranceResult: insurance,
