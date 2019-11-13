@@ -142,7 +142,7 @@ export class IdentityService {
       }).pipe(
         map((r: IResponse<IdentityEntity>) => r),
         switchMap(r => {
-          if (r.Status) {
+          if (r&&r.Status) {
             this._IdentityEntity = {
               ...this._IdentityEntity,
               ...r.Data

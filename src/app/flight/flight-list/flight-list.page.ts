@@ -405,7 +405,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     const hasreselect = this.flightService
       .getPassengerBookInfos()
       .find(item => item.isReplace);
-    if (hasreselect) {
+    if (hasreselect&&hasreselect.passenger) {
       if (
         !passengers.find(p => p.AccountId == hasreselect.passenger.AccountId)
       ) {
