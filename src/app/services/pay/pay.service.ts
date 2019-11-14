@@ -171,7 +171,7 @@ export class PayService {
                     console.log("wechat 支付成功返回结果：" + typeof e);
                     console.log("wechat 支付成功返回结果：" + JSON.stringify(e));
                     // AppHelper.alert(e.message || e);
-                    reject(e.message || e);
+                    reject(e.message || (e||"").replace(",null",""));
                   });
               }
             } else {
