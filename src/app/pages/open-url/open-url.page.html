@@ -10,7 +10,7 @@
 </ion-header>
 
 <ion-content>
-  <div class='wrapper' *ngIf='(url$|async) as url'> 
+  <div class='wrapper' *ngIf='(url$|async) as url' [class.hidetop]='isHideTitle'> 
     <iframe [src]="url" #iframe></iframe>
   </div>
 </ion-content>
