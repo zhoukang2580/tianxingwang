@@ -10,7 +10,7 @@ export class DiscountPipe implements PipeTransform {
     if (isNaN(v)) {
       return value;
     }
-    if (v < 1) {
+    if (0 <v && v < 1) {
       return `${v * 1000 / 10}${LanguageHelper.getDiscountTip()}`;
     }
     return LanguageHelper.getFullPriceTip();

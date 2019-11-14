@@ -26,24 +26,24 @@
         <ion-item>
           <div style='width: 100%'>
             <ion-row>
-              <ion-col>订单编号:</ion-col>
+              <ion-col size='3'>订单编号:</ion-col>
               <ion-col>{{orderDetail.Order.Id}}</ion-col>
             </ion-row>
             <ion-row>
-              <ion-col>订单状态:</ion-col>
+              <ion-col size='3'>订单状态:</ion-col>
               <ion-col>{{orderDetail.Order.StatusName == "等待处理" ? "等待审批" : orderDetail.Order.StatusName}}
               </ion-col>
             </ion-row>
             <ion-row>
-              <ion-col>付款方式:</ion-col>
+              <ion-col size='3'>付款方式:</ion-col>
               <ion-col>{{orderDetail.TravelType}}-{{orderDetail.TravelPayType}}</ion-col>
             </ion-row>
             <ion-row>
-              <ion-col>完成时间:</ion-col>
+              <ion-col size='3'>完成时间:</ion-col>
               <ion-col>{{orderDetail.Order.InsertDateTime}}</ion-col>
             </ion-row>
             <ion-row (click)='showPricePopover()' *ngIf='tab?.value!=ProductItemType.hotel else hotelTempl'>
-              <ion-col>应收金额:</ion-col>
+              <ion-col size='3'>应收金额:</ion-col>
               <ion-col class='arrow-forward'>
                 <div>
                   {{getOrderTotalAmount()}}
@@ -56,7 +56,7 @@
             <ng-template #hotelTempl>
               <ng-container *ngIf='tmc?.IsShowServiceFee'>
                 <ion-row *ngFor='let orderHotel of orderDetail.Order.OrderHotels'>
-                  <ion-col>
+                  <ion-col size='3'>
                     <ng-container *ngIf='orderDetail.Order.OrderHotels.length>1'>
                       <strong *ngIf='orderHotel.HotelName as n'>
                         {{n.length>10?n.substr(0,10)+"...":n}}
@@ -70,7 +70,7 @@
               </ng-container>
             </ng-template>
             <ion-row *ngIf='tab?.value!=ProductItemType.hotel'>
-              <ion-col>已付金额:</ion-col>
+              <ion-col size='3'>已付金额:</ion-col>
               <ion-col>{{getOrderPayAmount()}}</ion-col>
             </ion-row>
           </div>
@@ -121,66 +121,68 @@
             </ion-select>
           </ng-container>
         </ion-item-divider>
-        <ion-item *ngIf='selectedTicket?.Passenger as p'>
-          <div style='width: 100%'>
-            <ion-row>
-              <ion-col>乘客姓名:</ion-col>
-              <ion-col>{{p.CheckName}} <span *ngIf='p.PassengerTypeName'>({{p.PassengerTypeName}})</span> </ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col>证件号码:</ion-col>
-              <ion-col>{{p.CredentialsNumber}}</ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col>联系电话:</ion-col>
-              <ion-col>{{p.Mobile}}</ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col>邮箱:</ion-col>
-              <ion-col>{{p.Email}}</ion-col>
-            </ion-row>
-            <ng-container *ngIf='getPassengerCostOrgInfo(p) as info'>
+        <ng-container *ngIf='getPassengerCostOrgInfo() as info'>
+          <ion-item *ngIf='info.Passenger as p'>
+            <div style='width: 100%'>
               <ion-row>
-                <ion-col style='align-self: flex-start;'>成本中心:</ion-col>
-                <ion-col>{{info.CostCenterCode}}-{{info.CostCenterName}}</ion-col>
+                <ion-col size='3'>乘客姓名:</ion-col>
+                <ion-col>{{p.CheckName}} <span *ngIf='p.PassengerTypeName'>({{p.PassengerTypeName}})</span> </ion-col>
               </ion-row>
               <ion-row>
-                <ion-col style='align-self: flex-start;'>组织架构:</ion-col>
-                <ion-col>{{info.OrganizationCode}}-{{info.OrganizationName}}</ion-col>
+                <ion-col size='3'>证件号码:</ion-col>
+                <ion-col>{{p.CredentialsNumber}}</ion-col>
               </ion-row>
               <ion-row>
-                <ion-col style='align-self: flex-start;'>外部编号:</ion-col>
+                <ion-col size='3'>联系电话:</ion-col>
+                <ion-col>{{p.Mobile}}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size='3'>邮箱:</ion-col>
+                <ion-col>{{p.Email}}</ion-col>
+              </ion-row>
+              <ng-container >
+                <ion-row>
+                  <ion-col size='3'>成本中心:</ion-col>
+                  <ion-col>{{info.CostCenterCode}}-{{info.CostCenterName}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size='3'>组织架构:</ion-col>
+                  <ion-col>{{info.OrganizationCode}}-{{info.OrganizationName}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size='3'>外部编号:</ion-col>
+                  <ion-col>
+                    <div *ngFor='let n of info.OutNumbers'>
+                      <span>{{n.Name}}:{{n.Number}}</span>
+                    </div>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size='3'>违规:</ion-col>
+                  <ion-col>{{info.IllegalPolicy}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size='3'>违规原因:</ion-col>
+                  <ion-col>{{info.IllegalReason}}</ion-col>
+                </ion-row>
+              </ng-container>
+              <ion-row *ngIf='canSendEmailMsg()'>
                 <ion-col>
-                  <div *ngFor='let n of info.OutNumbers'>
-                    <span>{{n.Name}}:{{n.Number}}</span>
-                  </div>
+                  <ion-button no-margin size='small' color='secondary' (click)='sendMsg(p)'>
+                    <ion-icon name="create" mode='ios' slot='start'></ion-icon>
+                    发送短信
+                  </ion-button>
+                </ion-col>
+                <ion-col>
+                  <ion-button no-margin size='small' color='secondary' (click)='sendEmail(p)'>
+                    <ion-icon name="mail" mode='ios' slot='start'></ion-icon>
+                    发送邮件
+                  </ion-button>
                 </ion-col>
               </ion-row>
-              <ion-row>
-                <ion-col style='align-self: flex-start;'>违规:</ion-col>
-                <ion-col>{{info.IllegalPolicy}}</ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col style='align-self: flex-start;'>违规原因:</ion-col>
-                <ion-col>{{info.IllegalReason}}</ion-col>
-              </ion-row>
-            </ng-container>
-            <ion-row *ngIf='canSendEmailMsg(p)'>
-              <ion-col>
-                <ion-button no-margin size='small' color='secondary' (click)='sendMsg(p)'>
-                  <ion-icon name="create" mode='ios' slot='start'></ion-icon>
-                  发送短信
-                </ion-button>
-              </ion-col>
-              <ion-col>
-                <ion-button no-margin size='small' color='secondary' (click)='sendEmail(p)'>
-                  <ion-icon name="mail" mode='ios' slot='start'></ion-icon>
-                  发送邮件
-                </ion-button>
-              </ion-col>
-            </ion-row>
-          </div>
-        </ion-item>
+            </div>
+          </ion-item>
+        </ng-container>
       </ion-list>
       <!-- 保险信息 *ngIf='(tab?.value == ProductItemType.train)||(tab?.value ==ProductItemType.plane)'-->
       <ion-list #link [attr.tabid]='getTabByLabel("保险")?.value' lines='none'

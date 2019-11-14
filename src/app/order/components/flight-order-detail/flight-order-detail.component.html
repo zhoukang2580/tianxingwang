@@ -14,14 +14,14 @@
     <span class='line-vertical'>|</span>
     <span>{{trip?.CabinType|cabintype}}{{trip?.Discount|discount}}</span>
   </div>
-  <div>
+  <div margin-start>
     <span>
       起飞: {{trip?.TakeoffTime?.substr(0,"yyyy-MM-dd".length)}}
       <span>{{trip?.TakeoffTime?.substr("yyyy-MM-ddT".length,"HH:mm".length)}}</span>
     </span>
     <span margin-start>{{trip?.FromAirportName}}({{trip?.FromAirport}}){{trip?.FromTerminal}}</span>
   </div>
-  <div>
+  <div margin-start>
     <!-- <span *ngIf='!trip?.CodeShareNumber'>
       {{trip?.FlightNumber}}
     </span>
