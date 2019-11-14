@@ -121,7 +121,7 @@
             </ion-select>
           </ng-container>
         </ion-item-divider>
-        <ion-item *ngFor='let p  of orderDetail.Order.OrderPassengers'>
+        <ion-item *ngIf='selectedTicket?.Passenger as p'>
           <div style='width: 100%'>
             <ion-row>
               <ion-col>乘客姓名:</ion-col>

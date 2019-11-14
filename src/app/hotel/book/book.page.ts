@@ -1054,10 +1054,8 @@ export class BookPage implements OnInit, AfterViewInit {
           }
           this.hotelService.removeAllBookInfos();
           this.combindInfos = [];
-          setTimeout(async () => {
-            this.hotelService.dismissAllTopOverlays();
-            this.goToMyOrders(ProductItemType.hotel);
-          }, 2000);
+          this.hotelService.dismissAllTopOverlays();
+          this.goToMyOrders(ProductItemType.hotel);
         }
       }
     }
@@ -1085,6 +1083,7 @@ export class BookPage implements OnInit, AfterViewInit {
               s(false);
             }
           } else {
+            clearInterval(this.checkPayCountIntervalId);
             s(true);
           }
         }

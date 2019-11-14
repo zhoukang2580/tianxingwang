@@ -152,11 +152,11 @@ export class TmcService {
         AppHelper.alert(result)
         res = true;
       } else {
-        AppHelper.alert("处理支付失败");
+        AppHelper.alert("订单处理支付失败");
         res = false;
       }
     } else {
-      AppHelper.alert("支付失败");
+      AppHelper.alert("微信支付失败");
       res = false;
     }
     return res;
@@ -195,10 +195,10 @@ export class TmcService {
         AppHelper.alert(result)
       } else {
         res = false;
-        AppHelper.alert("处理支付失败");
+        AppHelper.alert("订单处理支付失败");
       }
     } else {
-      AppHelper.alert("支付失败");
+      AppHelper.alert("支付宝支付失败");
       res = false;
     }
     return res;
