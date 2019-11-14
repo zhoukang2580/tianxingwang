@@ -95,29 +95,30 @@ export class HomePage implements OnInit {
   }
   async goToPage(name:string,params?:any){
     const tmc = await this.tmcService.getTmc();
+    const msg = "您没有预订权限";
     if(!tmc||!tmc.RegionTypeValue){
-      AppHelper.alert("您不能使用该功能");
+      AppHelper.alert(msg);
       return;
     }
     let route="";
     if(name=='hotel'){
       route='search-hotel';
       if(!tmc.RegionTypeValue.toLowerCase().includes("hotel")){
-        AppHelper.alert("您不能使用该功能");
+        AppHelper.alert(msg);
         return;
       }
     }
     if(name=='train'){
       route='search-train';
       if(!tmc.RegionTypeValue.toLowerCase().includes("train")){
-        AppHelper.alert("您不能使用该功能");
+        AppHelper.alert(msg);
         return;
       }
     }
     if(name=='flight'){
       route='search-flight';
       if(!tmc.RegionTypeValue.toLowerCase().includes("flight")){
-        AppHelper.alert("您不能使用该功能");
+        AppHelper.alert(msg);
         return;
       }
     }
