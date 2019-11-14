@@ -502,7 +502,6 @@ export class FlightService {
     console.log("getPassengerBookInfos", this.getPassengerBookInfos());
   }
   async addOrReplaceSegmentInfo(flightCabin: FlightCabinEntity) {
-    debugger;
     const isSelfBookType = await this.staffService.isSelfBookType();
     let bookInfos = this.getPassengerBookInfos();
     let s = this.getSearchFlightModel();
@@ -588,7 +587,7 @@ export class FlightService {
        return item;
      })
     }
-    const arr = bookInfos.map(item => {
+    let arr = bookInfos.map(item => {
       item.isReplace = false;
       return item;
     });
@@ -632,12 +631,14 @@ export class FlightService {
             }
           }
         }
-        return {
+        const info={
           flightSegment: this.currentViewtFlightSegment.flightSegment,
           flightPolicy: cabin,
           tripType,
-          id: AppHelper.uuid()
+          id: AppHelper.uuid(),
         } as IFlightSegmentInfo;
+        info.lowerSegmentInfo=this.getLowerFlight({...bookInfo,...info});
+        return info;
       }
     }
     return null;
@@ -1015,6 +1016,46 @@ export class FlightService {
   }
   private getHHmm(datetime: string) {
     return this.calendarService.getHHmm(datetime);
+  }
+  getLowerFlight(info: PassengerBookInfo<IFlightSegmentInfo>){
+    let result:{lowestCabin:FlightPolicy;lowestFlightSegment:FlightSegmentEntity}={
+      lowestCabin:null,
+      lowestFlightSegment:null
+    };
+    if(info.bookInfo&&info.bookInfo.lowerSegmentInfo&&info.bookInfo.lowerSegmentInfo.lowestCabin&&info.bookInfo.lowerSegmentInfo.lowestFlightSegment){
+      return info.bookInfo.lowerSegmentInfo;
+    }
+    if (!info || !info.bookInfo || !info.bookInfo.flightPolicy || !info.bookInfo.flightPolicy.LowerSegment) {
+      return result;
+    }
+    if (info.bookInfo.lowerSegmentInfo) {
+      AppHelper.alert("已经选择过更低航班");
+      return;
+    }
+    const data = info.bookInfo;
+    const flights = this.currentViewtFlightSegment.flightSegments;
+    const onePolicyFlights = this.currentViewtFlightSegment.totalPolicyFlights.find(
+      item => item.PassengerKey == info.passenger.AccountId
+    );
+    const lowestFlightSegment = flights.find(
+      fs => fs.Number == data.flightPolicy.LowerSegment.Number
+    );
+    if (!lowestFlightSegment || !onePolicyFlights||!onePolicyFlights.FlightPolicies) {
+      AppHelper.alert(LanguageHelper.Flight.getTheLowestSegmentNotFoundTip());
+      return;
+    }
+    const lowestCabin = onePolicyFlights.FlightPolicies.find(
+      c =>
+        c.Id == data.flightPolicy.LowerSegment.LowestCabinId
+    );
+    if (!lowestCabin) {
+     return result;
+    }
+    lowestCabin.Cabin = flights.reduce((acc, f) => (acc = [...acc, ...f.Cabins]), [] as FlightCabinEntity[]).find(
+      c => c.FlightNumber == lowestCabin.FlightNo && c.Id == lowestCabin.Id
+    );
+    result={lowestCabin,lowestFlightSegment};
+    return result;
   }
   async setDefaultFilteredPassenger(){
     const isStaff = await this.staffService.isSelfBookType();

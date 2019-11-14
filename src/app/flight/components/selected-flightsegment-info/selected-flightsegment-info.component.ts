@@ -98,12 +98,12 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     return takofftime;
   }
   async nextStep() {
-    const bookInfos = this.flightService.getPassengerBookInfos().filter(it=>!!it.bookInfo);
+    const bookInfos = this.flightService.getPassengerBookInfos().filter(it => !!it.bookInfo);
     const isSelf = await this.staffService.isSelfBookType();
     const s = this.flightService.getSearchFlightModel();
-    if(isSelf&& s.isRoundTrip&&bookInfos.length==1){
-      const ok = await AppHelper.alert("您尚未选择回程",true,LanguageHelper.getConfirmTip(),LanguageHelper.getCancelTip());
-      if(!ok){
+    if (isSelf && s.isRoundTrip && bookInfos.length == 1) {
+      const ok = await AppHelper.alert("您尚未选择回程", true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+      if (!ok) {
         return;
       }
     }
@@ -115,48 +115,16 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
   }
   showLowerSegment(info: PassengerBookInfo<IFlightSegmentInfo>) {
     const pfs = info.bookInfo;
-    return (
-      pfs &&
-      pfs.flightPolicy &&
-      pfs.flightPolicy.LowerSegment &&
-      !pfs.isLowerSegmentSelected &&
-      ((info.bookInfo && this.searchModel.tripType !== TripType.returnTrip) ||
-        pfs.tripType == TripType.returnTrip)
-    );
+    return (pfs && pfs.lowerSegmentInfo);
   }
-  async onSelectLowestSegment(old: PassengerBookInfo<IFlightSegmentInfo>) {
-    if (!old || !old.bookInfo || !old.bookInfo.flightPolicy || !old.bookInfo.flightPolicy.LowerSegment) {
-      return "";
-    }
-    if (old.bookInfo.isLowerSegmentSelected) {
-      AppHelper.alert("已经选择过更低航班");
-      return;
-    }
-    const data = old.bookInfo;
-    const flights = this.currentViewtFlightSegment.flightSegments;
-    const onePolicyFlights = this.currentViewtFlightSegment.totalPolicyFlights.find(
-      item => item.PassengerKey == old.passenger.AccountId
-    );
-    const lowestFlightSegment = flights.find(
-      fs => fs.Number == data.flightPolicy.LowerSegment.Number
-    );
-    if (!lowestFlightSegment || !onePolicyFlights||!onePolicyFlights.FlightPolicies) {
-      AppHelper.alert(LanguageHelper.Flight.getTheLowestSegmentNotFoundTip());
-      return;
-    }
-    const lowestCabin = onePolicyFlights.FlightPolicies.find(
-      c =>
-        c.Id == data.flightPolicy.LowerSegment.LowestCabinId
-    );
-    if (!lowestCabin) {
+  async onSelectLowestSegment(info: PassengerBookInfo<IFlightSegmentInfo>) {
+    const { lowestCabin, lowestFlightSegment } = this.flightService.getLowerFlight(info);
+    if (!lowestCabin||!lowestFlightSegment) {
       await AppHelper.alert(
         LanguageHelper.Flight.getTheLowestCabinNotFoundTip()
       );
       return "";
     }
-    lowestCabin.Cabin = flights.reduce((acc, f) => (acc = [...acc, ...f.Cabins]), [] as FlightCabinEntity[]).find(
-      c => c.FlightNumber == lowestCabin.FlightNo && c.Id == lowestCabin.Id
-    );
     const m = await this.modalCtrl.create({
       component: SelectFlightsegmentCabinComponent,
       componentProps: {
@@ -168,6 +136,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     await this.flightService.dismissTopOverlay();
     await m.present();
     const result = await m.onDidDismiss();
+    const data = info.bookInfo;
     if (result.data) {
       const cbin = result.data;
       if (!cbin) {
@@ -178,18 +147,19 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
         const bookInfo: IFlightSegmentInfo = {
           flightPolicy: cbin,
           flightSegment: lowestFlightSegment,
-          tripType: data.tripType || TripType.departureTrip,
+          tripType: data.tripType,
           id: AppHelper.uuid(),
-          isLowerSegmentSelected: true,
+          lowerSegmentInfo: null,
         };
+        bookInfo.flightPolicy.LowerSegment=null;// 更低价仅能选择一次.
         const newInfo: PassengerBookInfo<IFlightSegmentInfo> = {
           id: AppHelper.uuid(),
-          passenger: old.passenger,
-          credential: old.credential,
-          isNotWhitelist: old.isNotWhitelist,
+          passenger: info.passenger,
+          credential: info.credential,
+          isNotWhitelist: info.isNotWhitelist,
           bookInfo
         };
-        this.flightService.replacePassengerBookInfo(old, newInfo);
+        this.flightService.replacePassengerBookInfo(info, newInfo);
       }
     }
   }
