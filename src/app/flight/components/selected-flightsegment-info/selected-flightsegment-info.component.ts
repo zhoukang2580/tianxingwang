@@ -98,6 +98,15 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     return takofftime;
   }
   async nextStep() {
+    const bookInfos = this.flightService.getPassengerBookInfos().filter(it=>!!it.bookInfo);
+    const isSelf = await this.staffService.isSelfBookType();
+    const s = this.flightService.getSearchFlightModel();
+    if(isSelf&& s.isRoundTrip&&bookInfos.length==1){
+      const ok = await AppHelper.alert("您尚未选择回程",true,LanguageHelper.getConfirmTip(),LanguageHelper.getCancelTip());
+      if(!ok){
+        return;
+      }
+    }
     this.flightService.dismissAllTopOverlays();
     this.router.navigate([AppHelper.getRoutePath("flight-book")]);
   }
