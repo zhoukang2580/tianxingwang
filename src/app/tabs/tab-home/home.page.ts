@@ -102,7 +102,7 @@ export class HomePage implements OnInit {
     }
     let route="";
     
-    const tmcRegionTypeValue=tmc.RegionTypeValue;
+    const tmcRegionTypeValue=tmc.RegionTypeValue.toLowerCase();
     if(name=='hotel'){
       route='search-hotel';
       if(tmcRegionTypeValue.search("hotel")<0){
