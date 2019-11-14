@@ -220,13 +220,13 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         })
       )
       .subscribe(res => {
-        if (res && res.Data && res.Data.OrderTrips) {
+        if (res && res.Data && res.Data.Trips) {
           if (this.infiniteScroll) {
-            this.infiniteScroll.disabled = res.Data.OrderTrips.length === 0;
+            this.infiniteScroll.disabled = res.Data.Trips.length === 0;
             this.infiniteScroll.complete();
           }
-          if (res.Data.OrderTrips.length) {
-            this.myTrips = [...this.myTrips, ...res.Data.OrderTrips];
+          if (res.Data.Trips.length) {
+            this.myTrips = [...this.myTrips, ...res.Data.Trips];
             this.condition.pageIndex++;
           }
         }

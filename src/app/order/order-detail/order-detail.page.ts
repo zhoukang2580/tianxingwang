@@ -144,10 +144,15 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     }
   }
   getPassengerCostOrgInfo() {
-    const p: OrderPassengerEntity = this.orderDetail && this.orderDetail.Order && this.orderDetail.Order.OrderPassengers &&
+    let p: OrderPassengerEntity = this.orderDetail && this.orderDetail.Order && this.orderDetail.Order.OrderPassengers &&
       this.orderDetail.Order.OrderPassengers.find(it => it.Id == (this.selectedTicket
         && this.selectedTicket.Passenger
         && this.selectedTicket.Passenger.Id))
+    if (!p) {
+      if (this.orderDetail && this.orderDetail.Order && this.orderDetail.Order.OrderPassengers) {
+        p = this.orderDetail.Order.OrderPassengers[0];
+      }
+    }
     if (!p || !this.orderDetail.Order) {
       return;
     }
@@ -200,7 +205,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
           .join(",");
       }
       return {
-        Passenger:p,
+        Passenger: p,
         CostCenterCode,
         CostCenterName,
         OrganizationCode,

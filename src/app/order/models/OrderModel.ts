@@ -55,6 +55,7 @@ export class OrderModel {
   /// 订单行程
   /// </summary>
   OrderTrips: OrderTripModel[];
+  Trips: OrderTripModel[];
   OrderTasks: OrderTaskModel[];
   Passenger: string;
   FromCityName: string;

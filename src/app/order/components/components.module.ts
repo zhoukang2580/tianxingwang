@@ -21,6 +21,7 @@ import { TrainOrderDetailComponent } from 'src/app/order/components/train-order-
 import { FlightOrderDetailComponent } from './flight-order-detail/flight-order-detail.component';
 import { HotelOrderDetailComponent } from './hotel-order-detail/hotel-order-detail.component';
 import { InsuranceOrderDetailComponent } from './insurance-order-detail/insurance-order-detail.component';
+import { MyTripComponent } from './my-trip/my-trip.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { InsuranceOrderDetailComponent } from './insurance-order-detail/insuranc
     TrainOrderDetailComponent,
     FlightOrderDetailComponent,
     HotelOrderDetailComponent,
-    InsuranceOrderDetailComponent
+    InsuranceOrderDetailComponent,
+    MyTripComponent
   ],
   imports: [
     CommonModule,
@@ -56,7 +58,8 @@ import { InsuranceOrderDetailComponent } from './insurance-order-detail/insuranc
     TrainOrderDetailComponent,
     FlightOrderDetailComponent,
     HotelOrderDetailComponent,
-    InsuranceOrderDetailComponent
+    InsuranceOrderDetailComponent,
+    MyTripComponent
   ],
   entryComponents: [
     SearchTicketModalComponent,
