@@ -90,7 +90,7 @@
     <ng-container *ngIf='!isLoading else fakeList'>
       <ng-container *ngIf='tasks?.length else nomoredate'>
         <ion-list>
-          <ion-item detail *ngFor='let task of tasks' (click)='onTaskDetail(task)'>
+          <ion-item [attr.detail]='!!getTaskUrl(task)' *ngFor='let task of tasks' (click)='onTaskDetail(task)'>
             <ion-label>
               <h3>任务：
                 <ng-template #labelTemp>
