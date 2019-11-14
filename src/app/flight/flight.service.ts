@@ -1019,7 +1019,7 @@ export class FlightService {
   async setDefaultFilteredPassenger(){
     const isStaff = await this.staffService.isSelfBookType();
     let bookInfos = this.getPassengerBookInfos();
-    if(!bookInfos.find(it=>it.isFilteredPolicy)&&( bookInfos.length==1||isStaff)){
+    if(!bookInfos.find(it=>it.isFilteredPolicy)&&( bookInfos.length==1||isStaff||bookInfos.filter(it=>!!it.bookInfo).length==1)){
       bookInfos=bookInfos.map((it,idx)=>{
         if(idx==0){
           it.isFilteredPolicy=true;
