@@ -101,23 +101,25 @@ export class HomePage implements OnInit {
       return;
     }
     let route="";
+    
+    const tmcRegionTypeValue=tmc.RegionTypeValue;
     if(name=='hotel'){
       route='search-hotel';
-      if(!tmc.RegionTypeValue.toLowerCase().includes("hotel")){
+      if(tmcRegionTypeValue.search("hotel")<0){
         AppHelper.alert(msg);
         return;
       }
     }
     if(name=='train'){
       route='search-train';
-      if(!tmc.RegionTypeValue.toLowerCase().includes("train")){
+      if(tmcRegionTypeValue.search("train")<0){
         AppHelper.alert(msg);
         return;
       }
     }
     if(name=='flight'){
       route='search-flight';
-      if(!tmc.RegionTypeValue.toLowerCase().includes("flight")){
+      if(tmcRegionTypeValue.search("flight")<0){
         AppHelper.alert(msg);
         return;
       }
