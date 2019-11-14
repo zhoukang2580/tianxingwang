@@ -13,7 +13,6 @@ export class OrderItemPricePopoverComponent implements OnInit {
   orderItems: OrderItemEntity[];
   OrderItemHelper = OrderItemHelper;
   IsShowServiceFee = false;
-  isAgent=false;
   constructor() { }
   abs(item: number) {
     return Math.abs(item);
@@ -28,7 +27,7 @@ export class OrderItemPricePopoverComponent implements OnInit {
       return 0;
     }
     const tags = args instanceof Array ? args : [args];
-    return this.orderItems
+    const amount = this.orderItems
       .filter(it => tags.some(t => t == it.Tag))
       .reduce((acc, item) => {
         if (amountFromVariable) {
@@ -40,5 +39,6 @@ export class OrderItemPricePopoverComponent implements OnInit {
         }
         return acc;
       }, 0);
+    return amount > 0 ? amount : 0;
   }
 }
