@@ -1,3 +1,5 @@
+import { IdentityEntity } from 'src/app/services/identity/identity.entity';
+import { IdentityService } from 'src/app/services/identity/identity.service';
 import { OrderInsuranceEntity } from './../models/OrderInsuranceEntity';
 import { SelectTicketPopoverComponent } from "./../components/select-ticket-popover/select-ticket-popover.component";
 import { SendEmailComponent } from "../components/send-email/send-email.component";
@@ -56,6 +58,7 @@ export interface TabItem {
   styleUrls: ["./order-detail.page.scss"]
 })
 export class OrderDetailPage implements OnInit, AfterViewInit {
+  private identity: IdentityEntity;
   tmc: TmcEntity;
   title: string;
   tab: ProductItem;
@@ -79,7 +82,8 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     private modalCtrl: ModalController,
     private popoverCtrl: PopoverController,
     private domCtrl: DomController,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private identityService: IdentityService
   ) { }
   scrollTop: number;
 
@@ -462,12 +466,16 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     if (!Tmc.IsShowServiceFee) {
       orderItems = orderItems.filter(it => !(it.Tag || "").endsWith("Fee"));
     }
+    if (!this.identity) {
+      this.identity = await this.identityService.getIdentityAsync();
+    }
     const p = await this.popoverCtrl.create({
       component: OrderItemPricePopoverComponent,
       componentProps: {
         insurance: this.getInsuranceAmount(),
         IsShowServiceFee: Tmc.IsShowServiceFee,
         orderItems,
+        isAgent: this.identity && this.identity.Numbers && this.identity.Numbers["AgentId"] != 0,
         amount: orderItems.reduce(
           (acc, item) => (acc = AppHelper.add(acc, +item.Amount)),
           0

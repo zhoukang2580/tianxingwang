@@ -13,6 +13,7 @@ export class OrderItemPricePopoverComponent implements OnInit {
   orderItems: OrderItemEntity[];
   OrderItemHelper = OrderItemHelper;
   IsShowServiceFee = false;
+  isAgent=false;
   constructor() { }
   abs(item: number) {
     return Math.abs(item);
