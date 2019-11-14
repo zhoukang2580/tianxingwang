@@ -35,6 +35,9 @@
     }
   }
 }
+.ticket-trip + .ticket-trip {
+  border-top: 1px dashed var(--ion-color-dark);
+}
 :host {
   width: 100%;
 }

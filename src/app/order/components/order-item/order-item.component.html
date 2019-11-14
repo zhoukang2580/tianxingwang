@@ -25,8 +25,8 @@
     </ion-col>
   </ion-row>
   <ng-container *ngFor='let orderFlightTicket of order.OrderFlightTickets' class='order-flight-trip'>
-    <ng-container *ngFor='let orderFlightTrip of orderFlightTicket.OrderFlightTrips'>
-      <ion-row>
+    <ng-container *ngFor='let orderFlightTrip of orderFlightTicket.OrderFlightTrips;let first=first;let last=last;'>
+      <ion-row *ngIf='first'> 
         <ion-col>
           <ion-text color='ticketIsReject(orderFlightTicket)?"danger":""'>机票事务号:</ion-text>
         </ion-col>
@@ -34,7 +34,7 @@
           <ion-text color='ticketIsReject(orderFlightTicket)?"danger":""'>{{orderFlightTicket.Id}}</ion-text>
         </ion-col>
       </ion-row>
-      <ion-row>
+      <ion-row class='ticket-trip'>
         <ion-col>
           <ion-label>
             <div *ngFor='let  orderFlightTrip of orderFlightTicket.OrderFlightTrips'>
@@ -48,7 +48,7 @@
           </ion-label>
         </ion-col>
       </ion-row>
-      <ion-row>
+      <ion-row *ngIf='last'>
         <ion-col>
           <ion-text color='danger'>
             ￥{{getTotalAmount(order,orderFlightTicket.Key) + flightInsuranceAmount(orderFlightTicket)}}
