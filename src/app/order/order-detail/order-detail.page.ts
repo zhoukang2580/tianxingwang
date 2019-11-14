@@ -72,7 +72,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
   @ViewChild(IonHeader) headerEle: IonHeader;
   @ViewChild("cnt") ionContent: IonContent;
   scrollElement: HTMLElement;
-  selectedTicket: OrderFlightTicketEntity
+  selectedFlightTicket: OrderFlightTicketEntity;
   constructor(
     private plt: Platform,
     private route: ActivatedRoute,
@@ -104,7 +104,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     return infos;
   }
   canSendEmailMsg() {
-    const selectedTicket: OrderFlightTicketEntity = this.selectedTicket;
+    const selectedTicket: OrderFlightTicketEntity = this.selectedFlightTicket;
     if (selectedTicket) {
       return (
         selectedTicket.Status != OrderFlightTicketStatusType.Abolish &&
@@ -114,7 +114,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     return false;
   }
   async sendMsg(passenger: OrderPassengerEntity) {
-    const selectedTicket = this.selectedTicket;
+    const selectedTicket = this.selectedFlightTicket;
     if (selectedTicket) {
       const p = await this.modalCtrl.create({
         component: SendMsgComponent,
@@ -145,9 +145,9 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
   }
   getPassengerCostOrgInfo() {
     let p: OrderPassengerEntity = this.orderDetail && this.orderDetail.Order && this.orderDetail.Order.OrderPassengers &&
-      this.orderDetail.Order.OrderPassengers.find(it => it.Id == (this.selectedTicket
-        && this.selectedTicket.Passenger
-        && this.selectedTicket.Passenger.Id))
+      this.orderDetail.Order.OrderPassengers.find(it => it.Id == (this.selectedFlightTicket
+        && this.selectedFlightTicket.Passenger
+        && this.selectedFlightTicket.Passenger.Id))
     if (!p) {
       if (this.orderDetail && this.orderDetail.Order && this.orderDetail.Order.OrderPassengers) {
         p = this.orderDetail.Order.OrderPassengers[0];
@@ -156,11 +156,23 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     if (!p || !this.orderDetail.Order) {
       return;
     }
-    const ticket = this.selectedTicket;
+    const ticket = this.selectedFlightTicket;
+    const trainTicket = this.orderDetail.Order.OrderTrainTickets && this.orderDetail.Order.OrderTrainTickets[0];
+    let ticketKey
+    if ((ticket || trainTicket)) {
+      ticketKey = (ticket || trainTicket).Key;
+    }
+    if(!ticketKey){
+      ticketKey=this.orderDetail&&
+      this.orderDetail.Order&&
+      this.orderDetail.Order.OrderHotels&&
+      this.orderDetail.Order.OrderHotels[0]&&
+      this.orderDetail.Order.OrderHotels[0].Key;
+    }
     if (
       this.orderDetail &&
       this.orderDetail.Order &&
-      ticket
+      ticketKey
     ) {
       let CostCenterCode: string;
       let CostCenterName: string;
@@ -168,11 +180,11 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       let OrganizationName: string;
       const orderTravels = this.orderDetail.Order.OrderTravels || [];
       const IllegalPolicy = orderTravels
-        .filter(it => it.Key == ticket.Key)
+        .filter(it => it.Key == ticketKey)
         .map(it => it.IllegalPolicy)
         .join(",");
       const IllegalReason = orderTravels
-        .filter(it => it.Key == ticket.Key)
+        .filter(it => it.Key == ticketKey)
         .map(it => it.IllegalReason)
         .join(",");
       const OutNumbers = this.getOrderNumbers().concat(
@@ -184,22 +196,22 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
         this.orderDetail.Order.OrderTravels
       ) {
         CostCenterCode = this.orderDetail.Order.OrderTravels.filter(
-          it => it.Key == ticket.Key
+          it => it.Key == ticketKey
         )
           .map(it => it.CostCenterCode)
           .join(",");
         CostCenterName = this.orderDetail.Order.OrderTravels.filter(
-          it => it.Key == ticket.Key
+          it => it.Key == ticketKey
         )
           .map(it => it.CostCenterName)
           .join(",");
         OrganizationCode = this.orderDetail.Order.OrderTravels.filter(
-          it => it.Key == ticket.Key
+          it => it.Key == ticketKey
         )
           .map(it => it.OrganizationCode)
           .join(",");
         OrganizationName = this.orderDetail.Order.OrderTravels.filter(
-          it => it.Key == ticket.Key
+          it => it.Key == ticketKey
         )
           .map(it => it.OrganizationName)
           .join(",");
@@ -228,7 +240,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     return this.orderDetail.Order.OrderNumbers.filter(it => it.Tag == tag);
   }
   async sendEmail(passenger: OrderPassengerEntity) {
-    const selectedTicket = this.selectedTicket;
+    const selectedTicket = this.selectedFlightTicket;
     if (selectedTicket) {
       const p = await this.modalCtrl.create({
         component: SendEmailComponent,
@@ -369,7 +381,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
           );
         });
         if (tickets) {
-          this.selectedTicket = tickets[0];
+          this.selectedFlightTicket = tickets[0];
         }
       }
       if (this.orderDetail.Order) {

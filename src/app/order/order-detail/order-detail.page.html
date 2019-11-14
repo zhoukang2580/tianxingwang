@@ -42,7 +42,7 @@
               <ion-col size='3'>完成时间:</ion-col>
               <ion-col>{{orderDetail.Order.InsertDateTime}}</ion-col>
             </ion-row>
-            <ion-row (click)='showPricePopover()' *ngIf='tab?.value!=ProductItemType.hotel else hotelTempl'>
+            <ion-row (click)='showPricePopover()' >
               <ion-col size='3'>应收金额:</ion-col>
               <ion-col class='arrow-forward'>
                 <div>
@@ -69,7 +69,7 @@
                 </ion-row>
               </ng-container>
             </ng-template>
-            <ion-row *ngIf='tab?.value!=ProductItemType.hotel'>
+            <ion-row >
               <ion-col size='3'>已付金额:</ion-col>
               <ion-col>{{getOrderPayAmount()}}</ion-col>
             </ion-row>
@@ -110,12 +110,12 @@
       <!-- 旅客信息 -->
       <ion-list #link [attr.tabid]='getTabByLabel("旅客")?.value' lines='none' class='customer'>
         <ion-item-divider>{{getTabByLabel("旅客")?.label}}
-          <ng-container *ngIf='orderDetail.Order.OrderFlightTickets?.length>1'>
+          <ng-container *ngIf='orderDetail.Order?.OrderFlightTickets?.length>1'>
             <ion-badge color='danger'>
               {{orderDetail.Order.OrderFlightTickets?.length}}</ion-badge>
-            <ion-select slot='end' [compareWith]='compareFn' [(ngModel)]='selectedTicket' [okText]='"确定"'
+            <ion-select slot='end' [compareWith]='compareFn' [(ngModel)]='selectedFlightTicket' [okText]='"确定"'
               [cancelText]='"取消"'>
-              <ion-label>{{selectedTicket?.Id}}</ion-label>
+              <ion-label>{{selectedFlightTicket?.Id}}</ion-label>
               <ion-select-option *ngFor='let o of orderDetail.Order.OrderFlightTickets' [value]='o'>{{o.Id}}
               </ion-select-option>
             </ion-select>
