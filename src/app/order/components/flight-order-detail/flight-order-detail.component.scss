@@ -9,6 +9,7 @@ ion-item-divider {
 }
 .flight-trip {
   line-height: 2;
+  margin-bottom: .5em;
 }
 .flight-trip + .flight-trip{
   border-top: 1px dashed var(--ion-color-dark);
