@@ -101,6 +101,9 @@ export class OrderService {
     // req.IsShowLoading = true;
     req.Data = data;
     req.Method = `TmcApiOrderUrl-Travel-List`;
+    if (data.Type) {
+      req.Data['Type'] = data.Type;
+    }
     const result = this.apiService.getResponse<OrderModel>(req);
     return result;
   }

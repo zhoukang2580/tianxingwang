@@ -48,7 +48,7 @@
           </ion-label>
         </ion-col>
       </ion-row>
-      <ion-row *ngIf='last'>
+      <ion-row margin-bottom *ngIf='last'>
         <ion-col>
           <ion-text color='danger'>
             ￥{{getTotalAmount(order,orderFlightTicket.Key) + flightInsuranceAmount(orderFlightTicket)}}
