@@ -70,7 +70,7 @@ export class MyTripComponent implements OnInit {
       await this.tmcService.payOrder(tradeNo, key);
     }
   }
-  getTrainProducts(orderTrip: OrderTripModel, ) {
+  getTrainProducts(orderTrip: OrderTripModel ) {
     const types = [OrderInsuranceType.TrainAccident];
     if (!orderTrip || !orderTrip.InsuranceResult) {
       return [];

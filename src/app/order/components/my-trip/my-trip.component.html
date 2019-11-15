@@ -80,7 +80,7 @@
       </ion-button>
     </ng-container>
   </ng-container>
-  <ng-container *ngIf='getTrainProducts() as products'>
+  <ng-container *ngIf='getTrainProducts(trip) as products'>
     <ng-container *ngIf='products.length'>
       <ng-container *ngFor='let product of products '>
         <span>{{product.Name}}({{product.Price}})</span>
