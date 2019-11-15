@@ -1,2 +1,3 @@
-<div class='shade' *ngIf='isLoading'></div>
+<ion-backdrop *ngIf='isLoading' [visible]='true' [tappable]='false' [stopPropagation]='true'></ion-backdrop>
+<div class="shade"></div>
 <div [class.isloading]='isLoading' class='login-loading'><ng-content></ng-content></div>
