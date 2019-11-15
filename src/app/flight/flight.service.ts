@@ -1022,7 +1022,7 @@ export class FlightService {
       lowestCabin:null,
       lowestFlightSegment:null
     };
-    if(info.bookInfo&&info.bookInfo.lowerSegmentInfo&&info.bookInfo.lowerSegmentInfo.lowestCabin&&info.bookInfo.lowerSegmentInfo.lowestFlightSegment){
+    if(!info.isReplace && info.bookInfo&&info.bookInfo.lowerSegmentInfo&&info.bookInfo.lowerSegmentInfo.lowestCabin&&info.bookInfo.lowerSegmentInfo.lowestFlightSegment){
       return info.bookInfo.lowerSegmentInfo;
     }
     if (!info || !info.bookInfo || !info.bookInfo.flightPolicy || !info.bookInfo.flightPolicy.LowerSegment) {

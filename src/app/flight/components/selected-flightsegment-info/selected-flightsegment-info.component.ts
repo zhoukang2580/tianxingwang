@@ -115,7 +115,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
   }
   showLowerSegment(info: PassengerBookInfo<IFlightSegmentInfo>) {
     const pfs = info.bookInfo;
-    return (pfs && pfs.lowerSegmentInfo);
+    return (pfs && pfs.lowerSegmentInfo&&pfs.lowerSegmentInfo.lowestFlightSegment&&pfs.lowerSegmentInfo.lowestCabin);
   }
   async onSelectLowestSegment(info: PassengerBookInfo<IFlightSegmentInfo>) {
     const { lowestCabin, lowestFlightSegment } = this.flightService.getLowerFlight(info);
