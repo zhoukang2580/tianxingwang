@@ -4,7 +4,7 @@ export enum HotelBookType {
   /// </summary>
   Inventory = 1,
   /// <summary>
-  /// 艺龙预定
+  /// 艺龙预订
   /// </summary>
   Elong = 2,
   /// <summary>
