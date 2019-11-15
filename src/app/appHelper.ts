@@ -79,15 +79,13 @@ export class AppHelper {
       const buttons = [
 
       ];
-      if (userOp) {
-        if (cancelText) {
-          buttons.push({
-            text: cancelText,
-            handler: () => {
-              resolve(false);
-            }
-          });
-        }
+      if (cancelText) {
+        buttons.push({
+          text: cancelText,
+          handler: () => {
+            resolve(false);
+          }
+        });
       }
       if (confirmText) {
         buttons.push({
