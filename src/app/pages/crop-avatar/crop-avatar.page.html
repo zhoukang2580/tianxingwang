@@ -8,14 +8,18 @@
     <ion-title>头像</ion-title>
   </ion-toolbar>
 </ion-header>
-<div class='cropcontainer' [class.hidden]='!showCropBox'>
-  <ion-button color='light' fill='clear' class="cancel-btn" size='small' (click)='cancel()'>取消</ion-button>
-  <ion-button color='light' fill='clear' class="rotate-btn" size='small' (click)='rotate()'>旋转</ion-button>
-  <ion-button color='light' fill='clear' class="ok-btn" size='small' (click)='ok()'>完成</ion-button>
-  <img src="" id='image' alt="初始化的图片">
-</div>
-<div *ngIf='uploaded' class='result-image'>
-  <pinch-zoom height="600">
-    <img [src]="avatar" alt="裁切后的头像">
-  </pinch-zoom>
-</div>
+<ion-content>
+  <div *ngIf='uploaded' class='result-image'>
+    <pinch-zoom height="600">
+      <img [src]="avatar" alt="裁切后的头像">
+    </pinch-zoom>
+  </div>
+</ion-content>
+<ion-footer>
+  <div class='cropcontainer' [class.hidden]='!showCropBox'>
+    <ion-button color='light' fill='clear' class="cancel-btn" size='small' (click)='cancel()'>取消</ion-button>
+    <ion-button color='light' fill='clear' class="rotate-btn" size='small' (click)='rotate()'>旋转</ion-button>
+    <ion-button color='light' fill='clear' class="ok-btn" size='small' (click)='ok()'>完成</ion-button>
+    <img src="" id='image' alt="初始化的图片">
+  </div>
+</ion-footer>
