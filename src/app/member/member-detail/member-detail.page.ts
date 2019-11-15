@@ -70,7 +70,7 @@ export class MemberDetailPage implements OnInit, OnDestroy {
         ...this.memberDetails,
         Name: r.Name,
         RealName: r.RealName,
-        HeadUrl: r.HeadUrl || (await this.configService.get()).DefaultImageUrl
+        HeadUrl: `${r.HeadUrl || (await this.configService.get()).DefaultImageUrl}?v=${Date.now()}`
       } as any;
     }
     this.staff = await this.staffService.getStaff();
