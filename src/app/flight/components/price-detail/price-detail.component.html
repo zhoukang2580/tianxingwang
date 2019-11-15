@@ -1,6 +1,6 @@
 <ion-grid *ngFor='let item of priceInfos' class='item'>
   <ion-row *ngIf='item.passengerCredential'>
-    <ion-col>{{item.passengerCredential?.CheckFirstName}}{{item.passengerCredential?.CheckLastName}}<span *ngIf='item.passengerCredential?.Number as n'>{{n}}</span> </ion-col>
+    <ion-col>{{item.passengerCredential?.CheckFirstName}}{{item.passengerCredential?.CheckLastName}}<span *ngIf='item.passengerCredential?.Number as n'>({{n}})</span> </ion-col>
   </ion-row>
   <ion-row>
     <ion-col>
