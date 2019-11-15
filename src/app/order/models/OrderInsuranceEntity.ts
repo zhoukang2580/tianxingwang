@@ -38,6 +38,7 @@ export class OrderInsuranceEntity extends BaseVariablesEntity {
   ///
   /// </summary>
   BookCode: string;
+  TravelKey: string;
   /// <summary>
   ///
   /// </summary>

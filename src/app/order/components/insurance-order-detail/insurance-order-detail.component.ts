@@ -20,9 +20,10 @@ export class InsuranceOrderDetailComponent implements OnInit {
   OrderInsuranceStatusType = OrderInsuranceStatusType;
   OrderItemHelper = OrderItemHelper;
   @Input() order: OrderEntity;
+  @Input() selectedFlightTicketId: string;
   isAgent = of(false);
-  constructor(private identityService: IdentityService) { 
-    this.isAgent=identityService.getIdentitySource().pipe(map(id=>id&&id.Numbers&&id.Numbers['AgentId']));
+  constructor(private identityService: IdentityService) {
+    this.isAgent = identityService.getIdentitySource().pipe(map(id => id && id.Numbers && id.Numbers['AgentId']));
   }
 
   async ngOnInit() {
@@ -49,7 +50,15 @@ export class InsuranceOrderDetailComponent implements OnInit {
         .filter(it => Tag ? it.Tag == Tag : true)
         .reduce((acc, it) => (acc = AppHelper.add(acc, +it[name])), 0);
   }
-  getInsuranceInfos(orderInsurance: OrderInsuranceEntity) {
+  getInsuranceInfos() {
+    const selectedFlightTicket = this.order&&this.order.OrderFlightTickets&&this.order.OrderFlightTickets.find(it=>it.Id==this.selectedFlightTicketId);
+    if (!selectedFlightTicket) {
+      return;
+    }
+    const orderInsurance: OrderInsuranceEntity = this.order && this.order.OrderInsurances && this.order.OrderInsurances.find(it => it.TravelKey==selectedFlightTicket.Key);
+    if(!orderInsurance){
+      return;
+    }
     const orderItems = this.getOrderItems(orderInsurance.Key);
     const orderPays = this.GetOrderPays(orderInsurance.Key);
     const orderPassenger = this.order
@@ -58,7 +67,8 @@ export class InsuranceOrderDetailComponent implements OnInit {
     return {
       orderItems,
       orderPassenger,
-      orderPays
+      orderPays,
+      orderInsurance
     }
   }
   async canelInsurance() {

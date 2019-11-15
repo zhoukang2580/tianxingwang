@@ -188,7 +188,7 @@
       <ion-list #link [attr.tabid]='getTabByLabel("保险")?.value' lines='none'
         *ngIf="orderDetail.Order.OrderInsurances?.length&&orderDetail.Order.OrderTravels">
         <ion-item-divider>{{getTabByLabel("保险")?.label}} </ion-item-divider>
-        <app-insurance-order-detail [order]='orderDetail.Order'></app-insurance-order-detail>
+        <app-insurance-order-detail [order]='orderDetail.Order' [selectedFlightTicketId]='selectedFlightTicket?.Id'></app-insurance-order-detail>
       </ion-list>
       <!-- 审批记录 -->
       <ion-list #link [attr.tabid]='getTabByLabel("审批")?.value' lines='none'>
