@@ -52,11 +52,11 @@ export class PayService {
                   .pay(r.Data.Body)
                   .then(n => {
                     console.log("支付宝支付结果：", JSON.stringify(n));
-                    console.log("支付宝支付结果："+typeof n);
-                    if(n.resultStatus=='9000'){
+                    console.log("支付宝支付结果：" + typeof n);
+                    if (n.resultStatus == '9000') {
                       resolve(r.Data.Number);
-                    }else{
-                      reject(n.memo||n.result||n.resultStatus);
+                    } else {
+                      reject(n.memo || n.result || n.resultStatus);
                     }
                   })
                   .catch(e => {
@@ -164,14 +164,14 @@ export class PayService {
                   .pay(payInfo as any)
                   .then(n => {
                     console.log("wechat 支付成功返回结果：" + JSON.stringify(n));
-                    
+
                     resolve(r.Data.Number);
                   })
                   .catch(e => {
                     console.log("wechat 支付成功返回结果：" + typeof e);
                     console.log("wechat 支付成功返回结果：" + JSON.stringify(e));
                     // AppHelper.alert(e.message || e);
-                    reject(e.message || `微信支付结果：${e}`.replace(",(null)",""));
+                    reject(e.message || `${e}`.includes("-2") ? "用户取消" : `微信支付结果：${e}`.replace(",(null)", ""));
                   });
               }
             } else {
