@@ -227,21 +227,12 @@ export class TmcService {
       body: content
     };
     req.Method = "TmcApiOrderUrl-Order-SendEmail";
-    const result = await this.apiService
-      .getPromiseData<{
-        Status: boolean;
-        Id: string;
-        Message: string;
-      }>(req)
-      .catch(
-        e =>
-          ({
-            Status: false,
-            Id: "",
-            Message: e instanceof Error ? e.message : e.error || ""
-          } as any)
-      );
-    return result;
+    return this.apiService
+    .getPromiseData<{
+      Status: boolean;
+      Id: string;
+      Message: string;
+    }>(req);
   }
   async sendSms(
     toMobiles: string[],
@@ -259,21 +250,12 @@ export class TmcService {
       body: content
     };
     req.Method = "TmcApiOrderUrl-Order-SendSms";
-    const result = await this.apiService
-      .getPromiseData<{
-        Status: boolean;
-        Id: string;
-        Message: string;
-      }>(req)
-      .catch(
-        e =>
-          ({
-            Status: false,
-            Id: "",
-            Message: e instanceof Error ? e.message : e.error || ""
-          } as any)
-      );
-    return result;
+    return this.apiService
+    .getPromiseData<{
+      Status: boolean;
+      Id: string;
+      Message: string;
+    }>(req);
   }
   async getEmailTemplateSelectItemList() {
     if (

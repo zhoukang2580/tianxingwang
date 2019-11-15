@@ -1,4 +1,4 @@
-<ion-item *ngIf='getInsuranceInfos() as infos'>
+<ion-col *ngIf='getInsuranceInfos() as infos'>
   <ng-container *ngIf='infos.orderInsurance as orderInsurance'>
     <ng-container *ngIf='infos.orderPassenger as orderPassenger'>
       <div style='width: 100%;'>
@@ -173,4 +173,4 @@
       </div>
     </ng-container>
   </ng-container>
-</ion-item>
+</ion-col>

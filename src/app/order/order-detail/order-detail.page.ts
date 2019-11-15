@@ -134,11 +134,12 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
           data.mobiles,
           data.content,
           this.orderDetail.Order && this.orderDetail.Order.Id
-        );
-        if (res.Status) {
+        ).catch(_ => {
+          AppHelper.alert(_ || "短信发送失败");
+          return null;
+        });
+        if (res) {
           AppHelper.alert("短信已发送");
-        } else {
-          AppHelper.alert(res.Message || "短信发送失败");
         }
       }
     }
@@ -162,12 +163,12 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     if ((ticket || trainTicket)) {
       ticketKey = (ticket || trainTicket).Key;
     }
-    if(!ticketKey){
-      ticketKey=this.orderDetail&&
-      this.orderDetail.Order&&
-      this.orderDetail.Order.OrderHotels&&
-      this.orderDetail.Order.OrderHotels[0]&&
-      this.orderDetail.Order.OrderHotels[0].Key;
+    if (!ticketKey) {
+      ticketKey = this.orderDetail &&
+        this.orderDetail.Order &&
+        this.orderDetail.Order.OrderHotels &&
+        this.orderDetail.Order.OrderHotels[0] &&
+        this.orderDetail.Order.OrderHotels[0].Key;
     }
     if (
       this.orderDetail &&
@@ -262,12 +263,13 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
           data.subject,
           data.content,
           this.orderDetail.Order && this.orderDetail.Order.Id
-        );
-        if (res.Status) {
+        ).catch(_ => {
+          AppHelper.alert(_||"邮件发送失败");
+          return null;
+        });
+        if (res) {
           AppHelper.alert("邮件已发送");
-        } else {
-          AppHelper.alert(res.Message || "邮件发送失败");
-        }
+        } 
       }
     }
   }
