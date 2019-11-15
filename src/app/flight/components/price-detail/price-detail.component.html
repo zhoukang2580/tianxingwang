@@ -1,4 +1,7 @@
 <ion-grid *ngFor='let item of priceInfos' class='item'>
+  <ion-row *ngIf='item.passengerCredential'>
+    <ion-col>{{item.passengerCredential?.Name}} <span *ngIf='item.passengerCredential?.Number as n'>{{n}}</span> </ion-col>
+  </ion-row>
   <ion-row>
     <ion-col>
       <ion-text color='secondary'>{{item.from}}</ion-text>

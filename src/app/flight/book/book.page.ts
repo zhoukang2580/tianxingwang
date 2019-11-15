@@ -927,6 +927,7 @@ export class BookPage implements OnInit, AfterViewInit {
             .map(item => {
               const bookInfo = item.modal && item.modal.bookInfo;
               return {
+                passengerCredential:item.modal&&item.modal.credential,
                 from:
                   bookInfo &&
                   bookInfo.flightSegment &&
