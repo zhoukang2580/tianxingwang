@@ -166,9 +166,6 @@ export class FlightService {
     this.passengerBookInfos = args || [];
     this.passengerBookInfoSource.next(this.passengerBookInfos);
   }
-  // private setPassengerBookInfoSource(args: PassengerBookInfo[]) {
-  //   this.passengerBookInfoSource.next(args);
-  // }
   getPassengerBookInfoSource() {
     return this.passengerBookInfoSource.asObservable();
   }
@@ -417,7 +414,7 @@ export class FlightService {
     if (arg.bookInfo.tripType == TripType.returnTrip) {
       // 重选回程
       this.setPassengerBookInfosSource(this.getPassengerBookInfos().map(info=>{
-        info.bookInfo=info.id==arg.id?null:info.bookInfo;
+        info.isReplace=info.id==arg.id;
         return info;
       }))
       await this.onSelectReturnTrip();
@@ -512,56 +509,18 @@ export class FlightService {
         }
         bookInfos = this.getPassengerBookInfos();
         if (bookInfos.length) {
-          const info = this.getPolicyCabinBookInfo(bookInfos[0], flightCabin);
-          const go = this.passengerBookInfos.find(
-            it => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
-          );
-          const back = this.passengerBookInfos.find(
-            it => it.bookInfo && it.bookInfo.tripType == TripType.returnTrip
-          );
-          if (go && back) {
-            this.setSearchFlightModel({
-              ...this.getSearchFlightModel(),
-              isLocked: false
-            });
-          }
+          const go = bookInfos.find(it=>it.bookInfo&&it.bookInfo.tripType==TripType.departureTrip);
           s = this.getSearchFlightModel();
-          // debugger;
+          const info = this.getPolicyCabinBookInfo(bookInfos[0], flightCabin);
+          info.tripType = s.tripType;
+          if(info.lowerSegmentInfo){
+            info.lowerSegmentInfo.tripType=s.tripType;
+          }
           if (go) {
-            if (s.tripType == TripType.returnTrip) {
-              info.tripType = TripType.returnTrip;
-
-              bookInfos = [
-                go,
-                { ...bookInfos[0], bookInfo: info, id: AppHelper.uuid() }
-              ];
-            } else {
-              // 当前选择的是去程信息
-              // 选择了去程，未选择回程
-              info.tripType = TripType.departureTrip;
-              go.bookInfo = info;
-              const backInfo = back || {
-                ...go,
-                bookInfo: null,
-                id: AppHelper.uuid()
-              };
-              if (backInfo.bookInfo) {
-                if (
-                  !(
-                    (go.bookInfo.flightSegment &&
-                      go.bookInfo.flightSegment.FromCityName) ==
-                    (backInfo.bookInfo.flightSegment &&
-                      backInfo.bookInfo.flightSegment.ToCityName) &&
-                    (go.bookInfo.flightSegment &&
-                      go.bookInfo.flightSegment.ToCityName) ==
-                    (backInfo.bookInfo.flightSegment &&
-                      backInfo.bookInfo.flightSegment.FromCityName)
-                  )
-                ) {
-                  backInfo.bookInfo = null;
-                }
-              }
-              bookInfos = bookInfos = [go, backInfo]; // 更换去程信息，清空回程信息
+            if(s.tripType==TripType.departureTrip){
+              bookInfos=[{...go,bookInfo:info},{...go,bookInfo:null,id:AppHelper.uuid()}];
+            }else{
+              bookInfos=[go,{...go,bookInfo:info,id:AppHelper.uuid()}];
             }
           } else {
             info.tripType = TripType.departureTrip;
@@ -575,6 +534,9 @@ export class FlightService {
         bookInfos = [bookInfos[0]];
         bookInfos = bookInfos.map(it => {
           it.bookInfo = this.getPolicyCabinBookInfo(it, flightCabin);
+          if(it.bookInfo&&it.bookInfo.lowerSegmentInfo){
+            it.bookInfo.lowerSegmentInfo.tripType=TripType.departureTrip;
+          }
           return it;
         });
       }
@@ -587,16 +549,13 @@ export class FlightService {
        return item;
      })
     }
-    let arr = bookInfos.map(item => {
+    const arr = bookInfos.map(item => {
       item.isReplace = false;
+      if(item.bookInfo&&item.bookInfo.lowerSegmentInfo){
+        item.bookInfo.lowerSegmentInfo.tripType=item.bookInfo.tripType;
+      }
       return item;
     });
-    if (isSelfBookType && arr.filter(it => !!it.bookInfo).length == 2||arr.filter(it=>!!it.bookInfo).length==0) {
-      this.setSearchFlightModel({
-        ...this.getSearchFlightModel(),
-        isLocked: false
-      });
-    }
     this.setPassengerBookInfosSource(arr);
   }
   private getPolicyCabinBookInfo(
@@ -637,7 +596,7 @@ export class FlightService {
           tripType,
           id: AppHelper.uuid(),
         } as IFlightSegmentInfo;
-        info.lowerSegmentInfo=this.getLowerFlight({...bookInfo,...info});
+        info.lowerSegmentInfo=this.getLowerFlight({...bookInfo,bookInfo:{...bookInfo.bookInfo,...info}});
         return info;
       }
     }
@@ -673,16 +632,19 @@ export class FlightService {
   async onSelectReturnTrip() {
     console.log("onSelectReturnTrip");
     await this.dismissAllTopOverlays();
-    const s = this.getSearchFlightModel();
+    let s = this.getSearchFlightModel();
     const airports = await this.getAllLocalAirports();
-    const bookInfos = this.getPassengerBookInfos();
-    if (bookInfos.length < 2) {
-      await this.addOneBookInfoToSelfBookType();
-    }
-    s.tripType = TripType.returnTrip;
+    let bookInfos = this.getPassengerBookInfos();
     const goflightBookInfo = bookInfos.find(
       item => item.bookInfo && item.bookInfo.tripType == TripType.departureTrip
     );
+    if (bookInfos.filter(it=>!!it.bookInfo).length < 2&&goflightBookInfo) {
+      this.setPassengerBookInfosSource([goflightBookInfo,{...goflightBookInfo,bookInfo:null,id:AppHelper.uuid()}]);
+    }
+    bookInfos=this.getPassengerBookInfos();
+    s.tripType = TripType.returnTrip;
+    this.setSearchFlightModel(s);
+    s=this.getSearchFlightModel();
     if (
       !goflightBookInfo ||
       !goflightBookInfo.bookInfo ||
@@ -1018,20 +980,21 @@ export class FlightService {
     return this.calendarService.getHHmm(datetime);
   }
   getLowerFlight(info: PassengerBookInfo<IFlightSegmentInfo>){
-    let result:{lowestCabin:FlightPolicy;lowestFlightSegment:FlightSegmentEntity}={
+    let result:{lowestCabin:FlightPolicy;lowestFlightSegment:FlightSegmentEntity,tripType:TripType}={
       lowestCabin:null,
-      lowestFlightSegment:null
+      lowestFlightSegment:null,
+      tripType:null
     };
-    if(!info.isReplace && info.bookInfo&&info.bookInfo.lowerSegmentInfo&&info.bookInfo.lowerSegmentInfo.lowestCabin&&info.bookInfo.lowerSegmentInfo.lowestFlightSegment){
+    if(info&&!info.isReplace && info.bookInfo&&info.bookInfo.lowerSegmentInfo&&info.bookInfo.lowerSegmentInfo.lowestCabin&&info.bookInfo.lowerSegmentInfo.lowestFlightSegment&&info.bookInfo.lowerSegmentInfo.tripType==info.bookInfo.tripType){
       return info.bookInfo.lowerSegmentInfo;
     }
     if (!info || !info.bookInfo || !info.bookInfo.flightPolicy || !info.bookInfo.flightPolicy.LowerSegment) {
       return result;
     }
-    if (info.bookInfo.lowerSegmentInfo) {
-      AppHelper.alert("已经选择过更低航班");
-      return;
-    }
+    // if (info.bookInfo.lowerSegmentInfo) {
+    //   AppHelper.alert("已经选择过更低航班");
+    //   return;
+    // }
     const data = info.bookInfo;
     const flights = this.currentViewtFlightSegment.flightSegments;
     const onePolicyFlights = this.currentViewtFlightSegment.totalPolicyFlights.find(
@@ -1041,8 +1004,7 @@ export class FlightService {
       fs => fs.Number == data.flightPolicy.LowerSegment.Number
     );
     if (!lowestFlightSegment || !onePolicyFlights||!onePolicyFlights.FlightPolicies) {
-      AppHelper.alert(LanguageHelper.Flight.getTheLowestSegmentNotFoundTip());
-      return;
+      return result;
     }
     const lowestCabin = onePolicyFlights.FlightPolicies.find(
       c =>
@@ -1054,7 +1016,7 @@ export class FlightService {
     lowestCabin.Cabin = flights.reduce((acc, f) => (acc = [...acc, ...f.Cabins]), [] as FlightCabinEntity[]).find(
       c => c.FlightNumber == lowestCabin.FlightNo && c.Id == lowestCabin.Id
     );
-    result={lowestCabin,lowestFlightSegment};
+    result={lowestCabin,lowestFlightSegment,tripType:TripType.departureTrip};
     return result;
   }
   async setDefaultFilteredPassenger(){

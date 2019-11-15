@@ -224,9 +224,9 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
       const back = exists.find(
         it => it.bookInfo && it.bookInfo.tripType == TripType.returnTrip
       );
-      if (go && back && !exists.some(it => it.isReplace)) {
-        s.tripType = TripType.departureTrip;
-      }
+      // if (go && back && !exists.some(it => it.isReplace)) {
+      //   s.tripType = TripType.departureTrip;
+      // }
       if (go) {
         const arrivalDate = moment(go.bookInfo && go.bookInfo.flightSegment && go.bookInfo.flightSegment.ArrivalTime);
         if (

@@ -13,7 +13,7 @@ export interface IFlightSegmentInfo {
   flightPolicy: FlightPolicy;
   tripType?: TripType;
   id?: string;
-  lowerSegmentInfo?: {lowestCabin:FlightPolicy;lowestFlightSegment:FlightSegmentEntity};
+  lowerSegmentInfo?: {lowestCabin:FlightPolicy;lowestFlightSegment:FlightSegmentEntity,tripType:TripType};
 }
 
 export interface PassengerPolicyFlights {
