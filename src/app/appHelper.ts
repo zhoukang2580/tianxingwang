@@ -71,19 +71,22 @@ export class AppHelper {
   static alert(
     msg: any,
     userOp: boolean = false,
-    confirmText: string = LanguageHelper.getConfirmTip(),
-    cancelText: string = ""
+    cancelText: string = "",
+    confirmText: string = ""
   ) {
     return new Promise<boolean>(async (resolve, reject) => {
       await this.dismissAlertLayer();
       const buttons = [
-        {
+        
+      ];
+      if(confirmText){
+        buttons.push({
           text: confirmText,
           handler: () => {
             resolve(true);
           }
-        }
-      ];
+        });
+      }
       if (userOp) {
         if (cancelText) {
           buttons.push({
