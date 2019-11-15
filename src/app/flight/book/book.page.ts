@@ -553,6 +553,7 @@ export class BookPage implements OnInit, AfterViewInit {
               s(false);
             }
           } else {
+            clearInterval(this.checkPayCountIntervalId);
             s(true);
           }
         }

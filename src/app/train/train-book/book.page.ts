@@ -389,8 +389,6 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       if (res) {
         if (res.TradeNo) {
           const isSelf = (await this.staffService.isSelfBookType());
-          this.trainService.removeAllBookInfos();
-          this.viewModel.combindInfos = [];
           if (
             !isSave &&
             isSelf &&
@@ -413,6 +411,8 @@ export class TrainBookPage implements OnInit, AfterViewInit {
               await AppHelper.alert("下单成功");
             }
           }
+          this.trainService.removeAllBookInfos();
+          this.viewModel.combindInfos = [];
           this.goToMyOrders(ProductItemType.train);
         }
       }
@@ -455,6 +455,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
               s(false);
             }
           } else {
+            clearInterval(this.checkPayCountIntervalId);
             s(true);
           }
         }
@@ -942,7 +943,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     if (result) {
       this.viewModel.combindInfos.forEach(item =>
         item.tmcOutNumberInfos.forEach(info => {
-          info.loadTravelUrlErrorMsg = result[info.staffNumber].Message;
+          info.loadTravelUrlErrorMsg = result[info.staffNumber]&&result[info.staffNumber].Message;
           info.travelUrlInfos = result[info.staffNumber] && result[info.staffNumber].Data;
           if (
             !info.value &&
