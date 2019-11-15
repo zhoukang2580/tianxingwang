@@ -58,16 +58,9 @@ export class OrderService {
       map(res => {
         if (res.Data && res.Data.Tasks) {
           return res.Data.Tasks.map(it => {
-            const Name =
-              it.ExpiredTime &&
-                !it.ExpiredTime.startsWith("1800") &&
-                new Date(it.ExpiredTime).getTime() < new Date().getTime()
-                ? "已过期"
-                : it.Name;
             it.VariablesJsonObj =
               (it.Variables && JSON.parse(it.Variables)) || {};
-            it.VariablesJsonObj["TaskUrl"] =
-              Name == "已过期" ? "" : it.HandleUrl;
+            it.VariablesJsonObj["TaskUrl"] = it.HandleUrl;
             it.InsertTime = moment(it.InsertTime).format("YYYY-MM-DD HH:mm");
             it.ExpiredTime = moment(it.ExpiredTime).format("YYYY-MM-DD HH:mm");
             return it;

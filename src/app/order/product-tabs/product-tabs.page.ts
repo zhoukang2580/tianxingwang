@@ -274,6 +274,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     if (this.ionRefresher) {
       this.ionRefresher.complete();
     }
+    if(this.infiniteScroll){
+      this.infiniteScroll.disabled=false;
+    }
     this.doLoadMoreTasks();
   }
   private doLoadMoreTasks() {
@@ -295,7 +298,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
           }
         })
       )
-      .subscribe(async tasks => {
+      .subscribe(tasks => {
         if (tasks) {
           if (tasks.length) {
             this.tasks = this.tasks.concat(tasks);
