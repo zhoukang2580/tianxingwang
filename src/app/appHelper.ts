@@ -76,14 +76,15 @@ export class AppHelper {
   ) {
     return new Promise<boolean>(async (resolve, reject) => {
       await this.dismissAlertLayer();
-      const buttons = [
-
-      ];
+      const buttons = [];
+      let ok = false;
       if (cancelText) {
         buttons.push({
           text: cancelText,
+          role:"cancel",
           handler: () => {
-            resolve(false);
+            // resolve(false);
+            ok = false;
           }
         });
       }
@@ -91,11 +92,12 @@ export class AppHelper {
         buttons.push({
           text: confirmText,
           handler: () => {
-            resolve(true);
+            // resolve(true);
+            ok = true;
           }
         });
       }
-      (await this.alertController.create({
+      const a = await this.alertController.create({
         header: LanguageHelper.getMsgTip(),
         message:
           typeof msg === "string"
@@ -107,7 +109,14 @@ export class AppHelper {
                   : JSON.stringify(msg),
         backdropDismiss: !userOp,
         buttons
-      })).present();
+      });
+      await a.present();
+      await a.onDidDismiss();
+      if (userOp) {
+        resolve(ok)
+      } else {
+        resolve();
+      }
     });
   }
   static getDefaultAvatar() {
