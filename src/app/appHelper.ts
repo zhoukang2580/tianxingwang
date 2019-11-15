@@ -71,7 +71,7 @@ export class AppHelper {
   static alert(
     msg: any,
     userOp: boolean = false,
-    confirmText: string = "",
+    confirmText: string = LanguageHelper.getConfirmTip(),
     cancelText: string = ""
   ) {
     return new Promise<boolean>(async (resolve, reject) => {
