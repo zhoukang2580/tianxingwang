@@ -81,10 +81,6 @@
         </ng-template>
       </ng-container>
     </ng-container>
-    <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMoreOrders();loadMoreMyTrips()">
-      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
-      </ion-infinite-scroll-content>
-    </ion-infinite-scroll>
   </ng-container>
   <ng-template #waitingapprovalTempl>
     <ng-container *ngIf='!isLoading else fakeList'>
@@ -114,6 +110,10 @@
       </ng-container>
     </ng-container>
   </ng-template>
+  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMoreOrders();loadMoreMyTrips()">
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
 </ion-content>
 <ion-footer *ngIf='activeTab.value !== productItemType.waitingApprovalTask'>
   <ion-row>
