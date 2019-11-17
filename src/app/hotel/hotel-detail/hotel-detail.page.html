@@ -214,5 +214,5 @@
 <app-image-swiper [hasThumbs]='true' [imgStyle]='{objectFit:"contain"}' *ngIf="isShowImages" (close)='isShowImages=false' [imagesUrls]='getHotelImageUrls()' class='ion-page'>
 </app-image-swiper>
 <app-image-swiper class='ion-page' [imgStyle]='{objectFit:"contain"}' *ngIf="isShowRoomImages" [imagesUrls]="roomImages" (close)='onCloseRoomImages()'></app-image-swiper>
-<app-room-detail [room]='curSelectedRoom' [roomImages]='roomImages' (close)='isShowRoomDetails=false' class="ion-page"
+<app-room-detail [room]='curSelectedRoom' [roomImages]='roomImages' (close)='onCloseRoomDetail()' class="ion-page"
   *ngIf='isShowRoomDetails' (bookRoom)='onBookRoomPlan($event)'></app-room-detail>

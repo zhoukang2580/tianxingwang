@@ -235,6 +235,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       this.isShowRoomImages = false;
     }, 100);
   }
+  onCloseRoomDetail(){
+    this.isShowRoomDetails=false;
+  }
   onCloseHotelImages() {
     setTimeout(() => {
       this.isShowImages = false;
