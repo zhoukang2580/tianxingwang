@@ -136,7 +136,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
         this.swiper = swiper;
 
       }
-    }, 1000);
+    }, 300);
   }
   slidToPage(item: { active: boolean; url: string; idx: number }) {
     if (this.images) {
