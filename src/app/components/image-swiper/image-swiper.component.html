@@ -1,0 +1,35 @@
+<!-- Slider main container -->
+<div class="swiper-container" #swiperContainer>
+  <!-- Additional required wrapper -->
+  <div class="swiper-wrapper">
+    <!-- Slides -->
+    <div class="swiper-slide" *ngFor="let item of images">
+      <div [class.swiper-zoom-container]='zoom'>
+        <img [lazyloadImage]='item.url' appLazyloadimage [ngStyle]='imgStyle' />
+      </div>
+    </div>
+  </div>
+  <!-- If we need pagination -->
+  <div class="swiper-pagination" #pagination></div>
+
+  <!-- If we need navigation buttons -->
+  <!-- <div class="swiper-button-prev" #swiperbuttonprev></div>
+  <div class="swiper-button-next" #swiperbuttonnext></div> -->
+
+  <!-- If we need scrollbar -->
+  <!-- <div class="swiper-scrollbar"></div> -->
+</div>
+<div #thumbs class='swiper-container thumbs' [style.display]='hasThumbs?"block":"none"'>
+  <div class="swiper-wrapper">
+    <div class="swiper-slide" *ngFor="let item of images;let i=index;" [attr.dataid]='item.idx'
+      (click)='slidToPage(item)'>
+      <img [lazyloadImage]='item.url' appLazyloadimage />
+    </div>
+  </div>
+</div>
+<!-- fab placed to the bottom end -->
+<ion-fab vertical="{{fabvertical}}" horizontal="{{fabhorizontal}}" slot="fixed" (click)='onClose()'>
+  <ion-fab-button size='small'>
+    <ion-icon name="close-circle" color='danger'></ion-icon>
+  </ion-fab-button>
+</ion-fab>

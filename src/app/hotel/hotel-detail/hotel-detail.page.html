@@ -211,8 +211,8 @@
     </div>
   </ion-list>
 </ion-content>
-<app-browse-images *ngIf="isShowImages" [images]='getHotelImageUrls()' (close)='onCloseHotelImages()'>
-</app-browse-images>
-<app-browse-images *ngIf="isShowRoomImages" [images]="roomImages" (close)='onCloseRoomImages()'></app-browse-images>
+<app-image-swiper [imgStyle]='{objectFit:"contain"}' *ngIf="isShowImages" (close)='isShowImages=false' [imagesUrls]='getHotelImageUrls()' class='ion-page'>
+</app-image-swiper>
+<app-image-swiper class='ion-page' [imgStyle]='{objectFit:"contain"}' *ngIf="isShowRoomImages" [imagesUrls]="roomImages" (close)='onCloseRoomImages()'></app-image-swiper>
 <app-room-detail [room]='curSelectedRoom' [roomImages]='roomImages' (close)='isShowRoomDetails=false' class="ion-page"
   *ngIf='isShowRoomDetails' (bookRoom)='onBookRoomPlan($event)'></app-room-detail>

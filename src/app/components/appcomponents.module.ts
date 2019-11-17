@@ -1,3 +1,4 @@
+import { AppDirectivesModule } from './../directives/directives.module';
 import { MapComponent } from './../components/map/map.component';
 import { AppUpdateComponent } from "./appupdate/appupdate.component";
 import { NgModule } from "@angular/core";
@@ -13,8 +14,7 @@ import { TreeNgxModule } from "./tree-ngx/tree-ngx.module";
 import { TimelineComponent } from "./timeline/timeline.component";
 import { TimelineItemComponent } from "./timeline-item/timeline-item.component";
 import { PayComponent } from "./pay/pay.component";
-import { BrowseImagesComponent } from "./browse-images/browse-images.component";
-import { ImageScrollerComponent } from "./image-scroller/image-scroller.component";
+import { ImageSwiperComponent } from './image-swiper/image-swiper.component';
 @NgModule({
   declarations: [
     OrComponent,
@@ -27,11 +27,10 @@ import { ImageScrollerComponent } from "./image-scroller/image-scroller.componen
     TimelineComponent,
     TimelineItemComponent,
     PayComponent,
-    BrowseImagesComponent,
-    ImageScrollerComponent,
-    MapComponent
+    MapComponent,
+    ImageSwiperComponent
   ],
-  imports: [CommonModule, IonicModule, TreeNgxModule],
+  imports: [CommonModule, IonicModule, TreeNgxModule,AppDirectivesModule],
   exports: [
     OrComponent,
     PinchZoomComponent,
@@ -43,14 +42,12 @@ import { ImageScrollerComponent } from "./image-scroller/image-scroller.componen
     TimelineComponent,
     TimelineItemComponent,
     PayComponent,
-    BrowseImagesComponent,
-    ImageScrollerComponent,
-    MapComponent
+    MapComponent,
+    ImageSwiperComponent
   ],
   entryComponents: [
     LoginSkeletonPageComponent,
     PayComponent,
-    BrowseImagesComponent
   ]
 })
-export class AppComponentsModule {}
+export class AppComponentsModule { }

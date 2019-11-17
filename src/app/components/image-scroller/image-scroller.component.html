@@ -1,9 +1,0 @@
-<div class='close' (click)='onClose()'>
-  <ion-icon name="close-circle-outline" color='light'></ion-icon>
-</div>
-<div class='image-container' #imageContainer [style.width.px]='(images.length||1)*width'>
-  <div *ngFor='let img of images;let i=index;' class='img-item'>
-    <img [src]="img" alt="" #imgEle>
-  </div>
-</div>
-<ion-chip class='nums'>{{curIndex+1}}/{{images?.length}}</ion-chip>

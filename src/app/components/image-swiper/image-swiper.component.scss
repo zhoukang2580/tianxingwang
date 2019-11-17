@@ -1,0 +1,48 @@
+.swiper-slide {
+  width: 100%;
+  height: 100%;
+  background: black;
+  img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+}
+.swiper-container,
+.swiper-wrapper {
+  height: 100%;
+  width: 100%;
+}
+.swiper-container.thumbs {
+  overflow: auto;
+  padding: 0.5em;
+  max-height: 15vh;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  .swiper-slide {
+    margin-right: 1em;
+    opacity: 0.4;
+    &.swiper-slide-thumb-active {
+      opacity: 1;
+    }
+    width: 100px;
+  }
+}
+.swiper-pagination {
+  width: 5em;
+  padding: 0.2em;
+  border-radius: 0.2em;
+  background-color: rgba(var(--ion-color-dark-rgb), 0.5);
+  color: white;
+  position: absolute;
+  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+ion-button.close {
+  position: fixed;
+  bottom: 3em;
+  right: 0.5em;
+  z-index: 99;
+}

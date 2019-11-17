@@ -1,22 +1,22 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BrowseImagesComponent } from './browse-images.component';
+import { ImageSwiperComponent } from './image-swiper.component';
 
-describe('BrowseImagesComponent', () => {
-  let component: BrowseImagesComponent;
-  let fixture: ComponentFixture<BrowseImagesComponent>;
+describe('ImageSwiperComponent', () => {
+  let component: ImageSwiperComponent;
+  let fixture: ComponentFixture<ImageSwiperComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BrowseImagesComponent ],
+      declarations: [ ImageSwiperComponent ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BrowseImagesComponent);
+    fixture = TestBed.createComponent(ImageSwiperComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
