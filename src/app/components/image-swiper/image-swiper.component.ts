@@ -23,7 +23,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() pos: number = 0;
   @Input() imgStyle: any;
   @Output() close: EventEmitter<any>;
-  @Input() fabvertical:string='bottom';
+  @Input() fabvertical:string='top';
   @Input() fabhorizontal:string='end';
   images: { active: boolean; url: string; idx: number }[];
   constructor() {
