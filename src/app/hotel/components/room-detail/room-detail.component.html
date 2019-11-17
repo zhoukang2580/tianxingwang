@@ -1,7 +1,7 @@
 <ion-header *ngIf='roomImages?.length'>
   <ion-toolbar>
     <div class="images" #imagesEle>
-      <app-image-swiper [imagesUrls]='roomImages' [autoplay]='true'></app-image-swiper>
+      <app-image-swiper [imagesUrls]='roomImages' [autoplay]='true' (close)='onClose()'></app-image-swiper>
     </div>
   </ion-toolbar>
 </ion-header>

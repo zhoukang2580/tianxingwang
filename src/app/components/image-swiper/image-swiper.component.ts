@@ -42,6 +42,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
     console.log("ngAfterContentInit");
   }
   onClose() {
+    console.log("onClose");
     this.close.emit();
   }
   ngOnChanges(changes: SimpleChanges) {

@@ -236,7 +236,10 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     }, 100);
   }
   onCloseRoomDetail(){
-    this.isShowRoomDetails=false;
+    console.log("onCloseRoomDetail");
+    setTimeout(() => {
+      this.isShowRoomDetails=false;
+    }, 100);
   }
   onCloseHotelImages() {
     setTimeout(() => {
