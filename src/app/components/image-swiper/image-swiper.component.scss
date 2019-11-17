@@ -41,9 +41,16 @@
   left: 50%;
   transform: translateX(-50%);
 }
-ion-button.close {
-  position: fixed;
-  bottom: 3em;
-  right: 0.5em;
-  z-index: 99;
+ion-fab {
+  background: rgba(0, 0, 0, 0.8);
+  width: 1.5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 1.5em;
+  border-radius: 50%;
+  ion-icon {
+    height: 100%;
+    width: 100%;
+  }
 }
