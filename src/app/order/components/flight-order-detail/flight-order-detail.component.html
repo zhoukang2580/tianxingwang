@@ -3,7 +3,7 @@
     {{trip?.FromCityName}}
     <span class='stop-cities' [attr.stopcities]='trip?.StopCities'>---</span>
     {{trip?.ToCityName}}
-    <span *ngIf='!trip?.CodeShareNumber'>
+    <span>
       {{trip?.FlightNumber}}
     </span>
     <span *ngIf='trip?.CodeShareNumber'>

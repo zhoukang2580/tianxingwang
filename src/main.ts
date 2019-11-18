@@ -6,13 +6,13 @@ import { environment } from "./environments/environment";
 
 if (environment.production) {
   enableProdMode();
-  if (window["cordova"]) {
+  if (window["cordova"] && environment.isRealEnv) {
     if (window["VConsole"]) {
       var vConsole = new window["VConsole"]();
     }
   }
-  
-}else{
+
+} else {
   if (window["cordova"]) {
     if (window["VConsole"]) {
       var vConsole = new window["VConsole"]();

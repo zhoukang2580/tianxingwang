@@ -218,5 +218,5 @@
       </div>
     </ng-container>
   </ion-list>
-  <ion-list class='empty' *ngIf='hotel&&!hotel["ishoteldetails"]||!hotel["isShowMap"]'></ion-list>
+  <ion-list class='empty' *ngIf='hotel&&(!hotel["ishoteldetails"]||!hotel["isShowMap"])'></ion-list>
 </ion-content>

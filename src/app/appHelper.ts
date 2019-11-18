@@ -19,9 +19,9 @@ export class AppHelper {
   private static alertController: AlertController;
   private static modalController: ModalController;
   static _appDomain = environment.production || navigator.userAgent.includes("Mac OS") ? "testskytrip.com" : "testskytrip.com";
-  constructor(){
-    if(environment.production){
-      AppHelper._appDomain =  "sky-trip.com" ;
+  constructor() {
+    if (environment.production && environment.isRealEnv) {
+      AppHelper._appDomain = "sky-trip.com";
     }
   }
   static _domain;
@@ -85,7 +85,7 @@ export class AppHelper {
       if (cancelText) {
         buttons.push({
           text: cancelText,
-          role:"cancel",
+          role: "cancel",
           handler: () => {
             // resolve(false);
             ok = false;
@@ -402,10 +402,10 @@ export class AppHelper {
     return url.replace(this._appDomain, domain).replace("test.", "");
   }
   static getApiUrl() {
-    if (!environment.production) {
-      return "http://test.app.testskytrip.com";
+    if (environment.production && environment.isRealEnv) {
+      return "http://app." + this._appDomain;
     }
-    return "http://app." + this._appDomain;
+    return "http://test.app.testskytrip.com";
   }
   static getRoutePath(path: string) {
     const style = AppHelper.getStyle() || "";
