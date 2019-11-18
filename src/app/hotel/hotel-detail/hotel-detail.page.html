@@ -39,7 +39,7 @@
 <ion-content>
   <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'></ion-refresher>
   <div class='bg' #bgPic (click)='onShowHotelImages()' [class.md]='isMd'>
-    <ion-icon class='back-arrow' name="arrow-back" (click)='back()' color='{{backArrowColor}}'>
+    <ion-icon class='back-arrow' name="arrow-back" (click)='back($event)' color='{{backArrowColor}}'>
     </ion-icon>
     <ion-chip *ngIf='hotel?.HotelImages?.length as len' style="z-index: 99">
       1/{{len}}
@@ -160,54 +160,63 @@
     </ng-container>
   </ion-list>
   <ion-list #hotelInfo class='hotel-info'>
-    <ion-item-divider sticky (click)='hotel["isShowMap"]=!hotel["ishoteldetails"]'>酒店信息
-      <ion-icon name='arrow-dropdown' color='secondary' *ngIf='hotel&&!hotel["ishoteldetails"]'></ion-icon>
-      <ion-icon name='arrow-dropup' color='secondary' *ngIf='hotel&&hotel["ishoteldetails"]'></ion-icon>
+    <ion-item-divider sticky (click)='hotel["ishoteldetails"]=!hotel["ishoteldetails"]'>酒店信息
+      <ng-container *ngIf='hotel'>
+        <ion-icon name='arrow-dropdown' color='secondary' *ngIf='!hotel["ishoteldetails"]'></ion-icon>
+        <ion-icon name='arrow-dropup' color='secondary' *ngIf='hotel["ishoteldetails"]'></ion-icon>
+      </ng-container>
     </ion-item-divider>
-    <ion-grid *ngIf='hotel?.HotelDetails && hotel&&hotel["ishoteldetails"]'>
-      <ng-container *ngFor='let detail of hotel?.HotelDetails'>
-        <ion-row *ngIf='detail.Description'>
-          <ng-container *ngIf='!(detail.Tag=="IntroEditor"||detail.Tag=="Traffic" || (detail.Tag=="Description" && detail.Description?.length>=16)) else
-            otherTempl'>
-            <ion-col size='2'>{{detail.Name}}</ion-col>
-            <ion-col size='10'>
-              <ion-text color='medium'>
-                <span *ngIf='detail.Tag=="ArrivalTime"'>{{detail.Description}}点之后</span>
-                <span *ngIf='detail.Tag=="DepartureTime"'>{{detail.Description}}点之前</span>
-                <span *ngIf='detail.Tag!="DepartureTime"&&detail.Tag!="ArrivalTime"'>{{detail.Description}}</span>
-              </ion-text>
-            </ion-col>
-          </ng-container>
-          <ng-template #otherTempl>
-            <ion-col size='2'>
-              <ion-text fill='clear' (click)='detail["isShowMore"]=!detail["isShowMore"]' color='secondary'>
-                {{detail.Name}}
-                <ion-icon name="arrow-dropdown" *ngIf='detail["isShowMore"]'></ion-icon>
-                <ion-icon name="arrow-dropright" *ngIf='!detail["isShowMore"]'></ion-icon>
-              </ion-text>
-            </ion-col>
-            <ion-col size='10'>
-              <div class="text">
-                <ion-text color='medium' *ngIf='!detail["isShowMore"]'>
+    <ng-container *ngIf='hotel?.HotelDetails'>
+      <ion-grid *ngIf='hotel["ishoteldetails"]'>
+        <ng-container *ngFor='let detail of hotel?.HotelDetails'>
+          <ion-row *ngIf='detail.Description'>
+            <ng-container *ngIf='!(detail.Tag=="IntroEditor"||detail.Tag=="Traffic" || (detail.Tag=="Description" && detail.Description?.length>=16)) else
+              otherTempl'>
+              <ion-col size='2'>{{detail.Name}}</ion-col>
+              <ion-col size='10'>
+                <ion-text color='medium'>
+                  <span *ngIf='detail.Tag=="ArrivalTime"'>{{detail.Description}}点之后</span>
+                  <span *ngIf='detail.Tag=="DepartureTime"'>{{detail.Description}}点之前</span>
+                  <span *ngIf='detail.Tag!="DepartureTime"&&detail.Tag!="ArrivalTime"'>{{detail.Description}}</span>
+                </ion-text>
+              </ion-col>
+            </ng-container>
+            <ng-template #otherTempl>
+              <ion-col size='2'>
+                <ion-text fill='clear' (click)='detail["isShowMore"]=!detail["isShowMore"]' color='secondary'>
+                  {{detail.Name}}
+                  <ion-icon name="arrow-dropdown" *ngIf='detail["isShowMore"]'></ion-icon>
+                  <ion-icon name="arrow-dropright" *ngIf='!detail["isShowMore"]'></ion-icon>
+                </ion-text>
+              </ion-col>
+              <ion-col size='10'>
+                <div class="text">
+                  <ion-text color='medium' *ngIf='!detail["isShowMore"]'>
+                    {{detail.Description}}
+                  </ion-text>
+                </div>
+                <ion-text *ngIf='detail["isShowMore"]' color='medium'>
                   {{detail.Description}}
                 </ion-text>
-              </div>
-              <ion-text *ngIf='detail["isShowMore"]' color='medium'>
-                {{detail.Description}}
-              </ion-text>
-            </ion-col>
-          </ng-template>
-        </ion-row>
-      </ng-container>
-    </ion-grid>
+              </ion-col>
+            </ng-template>
+          </ion-row>
+        </ng-container>
+      </ion-grid>
+    </ng-container>
   </ion-list>
   <ion-list #trafficInfo class='traffic-info'>
     <ion-item-divider sticky (click)='hotel["isShowMap"]=!hotel["isShowMap"]'>交通信息
-      <ion-icon name='arrow-dropdown' color='secondary' *ngIf='hotel&&!hotel["isShowMap"]'></ion-icon>
-      <ion-icon name='arrow-dropup' color='secondary' *ngIf='hotel&&hotel["isShowMap"]'></ion-icon>
+      <ng-container *ngIf='hotel'>
+        <ion-icon name='arrow-dropdown' color='secondary' *ngIf='!hotel["isShowMap"]'></ion-icon>
+        <ion-icon name='arrow-dropup' color='secondary' *ngIf='hotel["isShowMap"]'></ion-icon>
+      </ng-container>
     </ion-item-divider>
-    <div class="traffic-map" *ngIf='hotel&&hotel["isShowMap"]'>
-      <app-map [lat]='hotel?.Lat' [lng]='hotel?.Lng'></app-map>
-    </div>
+    <ng-container *ngIf='hotel&&hotel["isShowMap"]'>
+      <div class="traffic-map">
+        <app-map [lat]='hotel?.Lat' [lng]='hotel?.Lng'></app-map>
+      </div>
+    </ng-container>
   </ion-list>
+  <ion-list class='empty' *ngIf='hotel&&!hotel["ishoteldetails"]||!hotel["isShowMap"]'></ion-list>
 </ion-content>

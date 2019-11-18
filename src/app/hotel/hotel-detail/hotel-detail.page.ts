@@ -568,7 +568,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   async onShowHotelImages(room: RoomEntity) {
     const m = await this.modalCtrl.create({
       component: ImageSwiperComponent,
+      // animated: false,
       componentProps: {
+        loop:false,
         imgStyle: { objectFit: "contain" },
         imagesUrls: this.getHotelImageUrls(),
         hasThumbs: true,

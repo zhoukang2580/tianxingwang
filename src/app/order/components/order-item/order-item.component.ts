@@ -48,9 +48,7 @@ export class OrderItemComponent implements OnInit {
   }
   onPay(evt: CustomEvent) {
     if (this.order) {
-      if (this.order.Status == OrderStatusType.WaitPay) {
-        this.payaction.emit(this.order);
-      }
+      this.payaction.emit(this.order);
     }
     evt.preventDefault();
     evt.stopPropagation();

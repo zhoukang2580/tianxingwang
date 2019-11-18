@@ -1,6 +1,6 @@
 import { ModalController } from '@ionic/angular';
 import { EventEmitter } from '@angular/core';
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, AfterContentInit, Input, OnChanges, SimpleChange, SimpleChanges, Output } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, Input, OnChanges, SimpleChanges, Output } from '@angular/core';
 import Swiper from 'swiper';
 @Component({
   selector: 'app-image-swiper',
@@ -9,13 +9,14 @@ import Swiper from 'swiper';
 })
 export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   private swiper: Swiper;
+  private thumbsSwiper: Swiper;
   @ViewChild("swiperContainer") swiperContainer: ElementRef<HTMLElement>;
   @ViewChild("swiperbuttonprev") preEle: ElementRef<HTMLElement>;
   @ViewChild("swiperbuttonnext") nextEle: ElementRef<HTMLElement>;
   @ViewChild("pagination") paginationEle: ElementRef<HTMLElement>;
   @ViewChild("thumbs") thumbs: ElementRef<HTMLElement>;
   @Input() hasThumbs = false;
-  @Input() effect: boolean | "fade" | "flip" | "cube" | "coverflow"='fade';
+  @Input() effect: boolean | "fade" | "flip" | "cube" | "coverflow" = 'fade';
   @Input() direction: "vertical" | "horizontal" = 'horizontal';
   @Input() pagination = null;
   @Input() autoplay = false;
@@ -38,31 +39,60 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   constructor(private modalCtrl: ModalController) {
     this.close = new EventEmitter();
   }
+  // ngDoCheck(){
+  //   console.log('ngdocheck');
+  // }
+  // ngAfterContentChecked(){
+  //   console.log("ngAfterContentChecked");
+  // }
+  // ngAfterViewChecked(){
+  //   console.log('ngAfterViewChecked');
+  // }
   ngOnInit() {
-    if (this.imagesUrls) {
-      this.images = this.imagesUrls && this.imagesUrls.map((it, idx) => {
-        return {
-          active: idx == (this.pos || 0),
-          url: it,
-          idx,
-        }
-      });
-    }
-
-    if (this.images && this.images.length > 15) {
-      const imgs = this.images.slice(0);
-      this.images = imgs.slice(0, 10);
-      setTimeout(() => {
-        this.images = this.images.concat(imgs.slice(10));
-        if (this.swiper && this.swiper.update) {
-          this.swiper.update();
-        }
-        console.log("this.images.length", this.images.length);
-      }, 1000);
-    }
+    // if (this.imagesUrls) {
+    //   const images = this.imagesUrls && this.imagesUrls.map((it, idx) => {
+    //     return {
+    //       active: idx == (this.pos || 0),
+    //       url: it,
+    //       idx,
+    //     }
+    //   });
+    //   this.images=[];
+    //   const loop = () => {
+    //     if (!images || !images.length) {
+    //       this.update();
+    //       return;
+    //     } else {
+    //       const one = images.splice(0,10);
+    //       this.images=this.images.concat(one);
+    //       this.update();
+    //       window.requestAnimationFrame(loop);
+    //     }
+    //   }
+    //   window.requestAnimationFrame(loop);
+    // }
+    this.images = this.imagesUrls && this.imagesUrls.map((it, idx) => {
+      return {
+        active: idx == (this.pos || 0),
+        url: it,
+        idx,
+      }
+    });
   }
   ngAfterContentInit() {
     console.log("ngAfterContentInit");
+  }
+  private update() {
+    setTimeout(() => {
+      if (this.swiper && this.swiper.update) {
+        this.swiper.update();
+      }
+      if (this.thumbsSwiper && this.thumbsSwiper.update) {
+        setTimeout(() => {
+          this.thumbsSwiper.update();
+        }, 100);
+      }
+    }, 100);
   }
   onClose() {
     console.log("onClose");
@@ -89,28 +119,13 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
           }
         }, 1000);
       }
-      if(changes.effect&& !changes.effect.currentValue){
-        if(this.swiper&&this.swiper.update){
-          this.swiper.params.effect=false;
+      if (changes.effect && !changes.effect.currentValue) {
+        if (this.swiper && this.swiper.update) {
+          this.swiper.params.effect = false;
           this.swiper.update();
         }
       }
     }
-    // console.log("ngOnChanges", changes);
-    // if (changes.imagesUrls && changes.imagesUrls.currentValue) {
-    //   this.images = this.imagesUrls.map((it, idx) => {
-    //     return {
-    //       active: idx == (this.pos || 0),
-    //       url: it,
-    //       idx
-    //     }
-    //   });
-    //   if (changes && changes.hasThumbs && changes.hasThumbs.currentValue) {
-    //     this.initThumbs();
-    //   } else {
-    //     this.init();
-    //   }
-    // }
   }
   init() {
     setTimeout(() => {
@@ -169,7 +184,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
             slidesPerView: 4,
             loop: false,
             loopedSlides: 5, //looped slides should be the same
-            // freeMode: true,
+            freeMode: true,
             watchSlidesVisibility: true,
             watchSlidesProgress: true,
           }
@@ -177,10 +192,10 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
             thumbsOptions.loop = true;
             thumbsOptions.loopedSlides = 5;
           }
-          const thumbsSwiper = new Swiper(this.thumbs.nativeElement, thumbsOptions);
+          this.thumbsSwiper = new Swiper(this.thumbs.nativeElement, thumbsOptions);
           params["thumbs"] =
             {
-              swiper: thumbsSwiper,
+              swiper: this.thumbsSwiper,
             }
         }
         if (this.loop) {
@@ -218,7 +233,6 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   ngAfterViewInit() {
     console.log("ngAfterViewInit")
     // this.init();
-
     if (this.hasThumbs) {
       this.initThumbs();
     } else {
