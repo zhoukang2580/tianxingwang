@@ -22,9 +22,9 @@ export class BulletinListPage implements OnInit {
     private router: Router,
     private navCtrl: NavController
   ) {
-    route.queryParams.subscribe(p => {
+    route.queryParamMap.subscribe(p => {
       console.log("BulletinListPage ", p);
-      this.bulletinType = p.bulletinType || "notice";
+      this.bulletinType = p.get('bulletinType') || "notice";
     });
   }
   back() {
