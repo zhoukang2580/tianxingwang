@@ -276,7 +276,7 @@ export class AppComponent
       return;
     }
     if (
-      this.router.url == "login" || this.router.url == "/tabs/home" || this.router.url == "/tabs/my" || this.router.url == "/tabs/trip"
+      this.router.url == "/login" || this.router.url == "/tabs/home" || this.router.url == "/tabs/my" || this.router.url == "/tabs/trip"
     ) {
       console.log("is exit app", Date.now() - this.lastClickTime);
       if (Date.now() - this.lastClickTime <= 2000) {
