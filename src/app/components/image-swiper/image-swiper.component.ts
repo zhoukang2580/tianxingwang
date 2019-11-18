@@ -1,5 +1,5 @@
 import { ModalController } from '@ionic/angular';
-import { EventEmitter } from '@angular/core';
+import { EventEmitter, ViewChildren, QueryList } from '@angular/core';
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, Input, OnChanges, SimpleChanges, Output } from '@angular/core';
 import Swiper from 'swiper';
 @Component({
@@ -10,6 +10,7 @@ import Swiper from 'swiper';
 export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   private swiper: Swiper;
   private thumbsSwiper: Swiper;
+  @ViewChildren("slides") private slideEles: QueryList<ElementRef<HTMLElement>>;
   @ViewChild("swiperContainer") swiperContainer: ElementRef<HTMLElement>;
   @ViewChild("swiperbuttonprev") preEle: ElementRef<HTMLElement>;
   @ViewChild("swiperbuttonnext") nextEle: ElementRef<HTMLElement>;
@@ -71,13 +72,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
     //   }
     //   window.requestAnimationFrame(loop);
     // }
-    this.images = this.imagesUrls && this.imagesUrls.map((it, idx) => {
-      return {
-        active: idx == (this.pos || 0),
-        url: it,
-        idx,
-      }
-    });
+    this.initImages();
   }
   ngAfterContentInit() {
     console.log("ngAfterContentInit");
@@ -85,12 +80,10 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   private update() {
     setTimeout(() => {
       if (this.swiper && this.swiper.update) {
-        this.swiper.update();
-      }
-      if (this.thumbsSwiper && this.thumbsSwiper.update) {
-        setTimeout(() => {
+        if (this.thumbsSwiper && this.thumbsSwiper.update) {
           this.thumbsSwiper.update();
-        }, 100);
+        }
+        this.swiper.update();
       }
     }, 100);
   }
@@ -126,8 +119,31 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
         }
       }
     }
+    if (changes.imagesUrls && changes.imagesUrls.currentValue && !changes.imagesUrls.firstChange) {
+      if (!this.images || this.images.length != this.imagesUrls.length) {
+        this.initImages();
+      }
+    }
   }
-  init() {
+  private initImages() {
+    console.log("initImages");
+    this.images = this.imagesUrls && this.imagesUrls.map((it, idx) => {
+      return {
+        active: idx == (this.pos || 0),
+        url: it,
+        idx,
+      }
+    });
+    if (this.swiper) {
+      if (this.swiper.init) {
+        if (this.thumbsSwiper && this.thumbsSwiper.init) {
+          this.thumbsSwiper.init();
+        }
+        this.swiper.init();
+      }
+    }
+  }
+  createSwiper() {
     setTimeout(() => {
       const that = this;
       if (this.swiperContainer && this.swiperContainer.nativeElement) {
@@ -135,6 +151,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
           autoplay: this.autoplay,//可选选项，自动滑动
           speed: this.autoplayspeed,
           effect: this.effect,
+          init: false,
           direction: this.direction,
           pagination: {
             el: this.paginationEle.nativeElement,
@@ -180,6 +197,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
         }
         if (this.hasThumbs) {
           const thumbsOptions = {
+            init: false,
             spaceBetween: 10,
             slidesPerView: 4,
             loop: false,
@@ -225,18 +243,25 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
       }
     }
   }
-  initThumbs() {
+  createThumbsSwiper() {
     setTimeout(() => {
-      this.init();
+      this.createSwiper();
     }, 100);
   }
   ngAfterViewInit() {
     console.log("ngAfterViewInit")
     // this.init();
     if (this.hasThumbs) {
-      this.initThumbs();
+      this.createThumbsSwiper();
     } else {
-      this.init();
+      this.createSwiper();
+    }
+    if (this.slideEles) {
+      this.slideEles.changes.subscribe(_ => {
+        if (this.slideEles.length == (this.imagesUrls&&this.imagesUrls.length)) {
+          this.update();
+        }
+      })
     }
   }
 

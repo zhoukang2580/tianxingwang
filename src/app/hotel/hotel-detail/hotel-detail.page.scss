@@ -138,25 +138,25 @@ ion-title.has-add-passenger {
   text-align: start;
   max-width: 85vw;
 }
-.ion-page {
-  z-index: 100;
-}
+
 .empty {
   min-height: 65vh;
 }
-.hotel-images{
-  app-image-swiper{
+.hotel-images {
+  app-image-swiper {
     display: block;
     height: 100%;
     width: 100%;
   }
-  position: fixed;
+  background-color: black;
+  z-index: 100;
+  position: absolute;
   width: 100vw;
   height: 100vh;
   bottom: 0;
   transform: translateY(100%);
   transition: transform ease-in-out 200ms;
-  &.show{
+  &.show {
     top: 0;
     transform: translateY(0);
   }

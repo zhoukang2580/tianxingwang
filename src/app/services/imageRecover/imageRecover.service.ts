@@ -48,7 +48,9 @@ export class ImageRecoverService {
     this.fetchingReq = {
       isFetching: true,
       promise: new Promise<any>((resolve, reject) => {
-        const subscribtion = this.load().subscribe(
+        const subscribtion = this.load().pipe(finalize(() => {
+          this.fetchingReq = null;
+        })).subscribe(
           r => {
             if (r && r.Status && r.Data) {
               this.Failover = r.Data;

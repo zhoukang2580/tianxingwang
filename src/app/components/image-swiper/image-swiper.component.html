@@ -3,7 +3,7 @@
   <!-- Additional required wrapper -->
   <div class="swiper-wrapper">
     <!-- Slides -->
-    <div class="swiper-slide" [ngStyle]="slideStyle" *ngFor="let item of images">
+    <div class="swiper-slide" [ngStyle]="slideStyle" #slides *ngFor="let item of images">
       <ng-container *ngIf='item.url else textTempl'>
         <div [class.swiper-zoom-container]='zoom'>
           <img [lazyloadImage]='item.url' appLazyloadimage [ngStyle]='imgStyle' />
