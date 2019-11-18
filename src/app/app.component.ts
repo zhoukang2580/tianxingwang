@@ -264,7 +264,8 @@ export class AppComponent
   private lastClickTime = 0;
   private async backButtonAction() {
     try{
-      console.log("backbutton url = " + this.router.url);
+      const curUrl = (this.router.url||"").toLowerCase();
+      console.log("backbutton url = " + curUrl);
       let count = 1;
       this.apiService.hideLoadingView();
       this.flightService.setOpenCloseSelectCityPageSources(false);
@@ -285,7 +286,7 @@ export class AppComponent
       }
       this.apiService.hideLoadingView();
       if (
-        this.router.url == "/login" || this.router.url == "/tabs/home" || this.router.url == "/tabs/my" || this.router.url == "/tabs/trip"
+        curUrl == "/login" || curUrl == "/tabs/home" || curUrl == "/tabs/my" || curUrl == "/tabs/trip"
       ) {
         console.log("is exit app", Date.now() - this.lastClickTime);
         if (Date.now() - this.lastClickTime <= 2000) {
