@@ -34,8 +34,11 @@ export class BulletinListPage implements OnInit {
     this.doRefresh();
   }
   viewNoticeUrl(notice: Notice) {
-    this.cmsService.setSelectedNotice(notice);
-    this.router.navigate([AppHelper.getRoutePath("view-bulletin-detail")]);
+    this.router.navigate([AppHelper.getRoutePath("view-bulletin-detail")], {
+      queryParams: {
+        noticeId: notice.Id
+      }
+    });
   }
   doRefresh() {
     this.loading = true;

@@ -120,7 +120,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
         }
       }
     }
-    if (changes.imagesUrls && changes.imagesUrls.currentValue && changes.imagesUrls.firstChange) {
+    if (changes.imagesUrls && changes.imagesUrls.currentValue && !this.isSwiperInit) {
       this.initImages();
     }
     if (changes.pos && changes.pos.currentValue == 0) {
@@ -135,7 +135,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   }
   private initImages() {
     this.images = [];
-    console.log("initImages",this.imagesUrls);
+    console.log("initImages", this.imagesUrls);
     const images = this.imagesUrls && this.imagesUrls.map((it, idx) => {
       return {
         active: idx == (this.pos || 0),
@@ -154,6 +154,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
         window.requestAnimationFrame(loop);
       }
     }
+    this.images = [];
     loop();
   }
   private initSwiper() {

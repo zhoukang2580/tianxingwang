@@ -7,14 +7,13 @@ export interface Notice {
   Title: string;
   InsertTime: string;
   Url: string;
+  Detail?:string;
 }
 @Injectable({
   providedIn: "root"
 })
 export class CmsService {
-  private selectedNoticeSource: Subject<Notice>;
   constructor(private apiService: ApiService) {
-    this.selectedNoticeSource = new BehaviorSubject(null);
   }
   async getNotices(PageIndex: number): Promise<Notice[]> {
     const req = new RequestEntity();
@@ -24,6 +23,14 @@ export class CmsService {
     };
     return this.apiService.getPromiseData<Notice[]>(req).catch(_ => []);
   }
+  async getNoticeDetail(noticeId: string): Promise<Notice> {
+    const req = new RequestEntity();
+    req.Method = "TmcApiHomeUrl-Cms-Detail";
+    req.Data = {
+      NoticeId:noticeId
+    };
+    return this.apiService.getPromiseData<Notice>(req);
+  }
   async getAgentNotices(PageIndex: number): Promise<Notice[]> {
     const req = new RequestEntity();
     req.Data = {
@@ -31,11 +38,5 @@ export class CmsService {
     };
     req.Method = "TmcApiHomeUrl-Cms-AgentNotice";
     return this.apiService.getPromiseData<Notice[]>(req).catch(_ => []);
-  }
-  getSelectedNotice() {
-    return this.selectedNoticeSource.asObservable();
-  }
-  setSelectedNotice(n: Notice) {
-    this.selectedNoticeSource.next(n);
   }
 }

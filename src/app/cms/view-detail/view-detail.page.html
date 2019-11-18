@@ -5,12 +5,25 @@
         <ion-icon name='arrow-back'></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>{{(notice$|async)?.Title}}</ion-title>
+    <ion-title>{{notice?.Title}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <div class='wrapper' *ngIf='(notice$|async)?.Url as url'>
-    <iframe [src]="url"></iframe>
-  </div>
+  <ng-container *ngIf='notice else nodata'>
+    <div class='wrapper' *ngIf='notice.Url as url else details'>
+      <iframe [src]="url"></iframe>
+    </div>
+    <ng-template #details>
+      <ng-container *ngIf='notice?.Detail as detail else nodata'>
+        <ion-label text-wrap>
+          <div class='detail' [innerHTML]='notice.Detail'>
+          </div>
+        </ion-label>
+      </ng-container>
+    </ng-template>
+  </ng-container>
+  <ng-template #nodata>
+    <app-or-comp>暂无数据</app-or-comp>
+  </ng-template>
 </ion-content>

@@ -1,3 +1,4 @@
+import { ActivatedRoute } from '@angular/router';
 import { environment } from "src/environments/environment";
 import { CmsService, Notice } from "./../cms.service";
 import { DomSanitizer } from "@angular/platform-browser";
@@ -12,31 +13,27 @@ import { NavController } from "@ionic/angular";
   styleUrls: ["./view-detail.page.scss"]
 })
 export class ViewDetailPage implements OnInit {
-  notice$: Observable<Notice>;
+  notice: Notice;
   constructor(
     private cmsService: CmsService,
     private sanitizer: DomSanitizer,
-    private navCtrl: NavController
-  ) {}
+    private navCtrl: NavController,
+    private route: ActivatedRoute
+  ) { }
   back() {
     this.navCtrl.back();
   }
   ngOnInit() {
-    this.notice$ = this.cmsService.getSelectedNotice().pipe(
-      tap(n => {
-        if (!environment.production) {
-          console.log(n);
+    this.route.queryParamMap.subscribe(async d => {
+      if (d) {
+        const id = d.get("noticeId");
+        if (id) {
+          this.notice = await this.cmsService.getNoticeDetail(id).catch(_ => null);
+          if (this.notice && this.notice.Url) {
+            this.notice.Url = this.sanitizer.bypassSecurityTrustResourceUrl(this.notice.Url) as string;
+          }
         }
-      }),
-      map(n => {
-        if (n && n.Url) {
-          return {
-            ...n,
-            Url: this.sanitizer.bypassSecurityTrustResourceUrl(n.Url) as string
-          };
-        }
-        return n;
-      })
-    );
+      }
+    })
   }
 }
