@@ -145,9 +145,9 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
     });
     // const loop = () => {
     //   if (!images || !images.length) {
-    if (this.swiper) {
-      this.initSwiper();
-    }
+    // if (this.swiper) {
+    //   this.initSwiper();
+    // }
     //     return;
     //   } else {
     //     this.images = this.images.concat(images.splice(0, 10));
@@ -175,7 +175,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
           autoplay: this.autoplay,//可选选项，自动滑动
           speed: this.autoplayspeed,
           effect: this.effect,
-          init: false,
+          init: true,
           direction: this.direction,
           pagination: {
             el: this.paginationEle.nativeElement,
@@ -221,7 +221,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
         }
         if (this.hasThumbs) {
           const thumbsOptions = {
-            init: false,
+            init: true,
             spaceBetween: 10,
             slidesPerView: 4,
             loop: false,
@@ -282,6 +282,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
     }
     if (this.slideEles) {
       this.slideEles.changes.subscribe(_ => {
+        console.log("slideEles",this.slideEles.length);
         if (this.slideEles.length == (this.imagesUrls && this.imagesUrls.length)) {
           this.initSwiper();
           this.update();
