@@ -1,3 +1,5 @@
+import { ImageSwiperComponent } from './../../components/image-swiper/image-swiper.component';
+import { RoomDetailComponent } from './../components/room-detail/room-detail.component';
 import { AppHelper } from "src/app/appHelper";
 import { HotelPolicyModel } from "./../models/HotelPolicyModel";
 import { ConfigEntity } from "./../../services/config/config.entity";
@@ -58,17 +60,14 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   @ViewChild("houseInfo") private houseInfoEle: IonList;
   @ViewChild("hotelInfo") private hotelInfoEle: IonList;
   @ViewChild("trafficInfo") private trafficInfoEle: IonList;
-  isShowImages = false;
   isShowBackArrow = true;
   backArrowColor = "light";
   queryModel: SearchHotelModel;
-  isShowRoomImages = false;
-  isShowRoomDetails = false;
   isShowAddPassenger$ = of(false);
   selectedPassengersNumbers$ = of(0);
   isMd = false;
-  roomImages: string[] = [];
-  curSelectedRoom: RoomEntity = {} as any;
+  // roomImages: string[] = [];
+  // curSelectedRoom: RoomEntity = {} as any;
   colors = {};
   hotelDetailSub = Subscription.EMPTY;
   queryModelSub = Subscription.EMPTY;
@@ -230,22 +229,6 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     });
     this.config = await this.configService.get().catch(_ => null);
   }
-  onCloseRoomImages() {
-    setTimeout(() => {
-      this.isShowRoomImages = false;
-    }, 100);
-  }
-  onCloseRoomDetail(){
-    console.log("onCloseRoomDetail");
-    setTimeout(() => {
-      this.isShowRoomDetails=false;
-    }, 100);
-  }
-  onCloseHotelImages() {
-    setTimeout(() => {
-      this.isShowImages = false;
-    }, 100);
-  }
   getHotelImageUrls() {
     let urls = [];
     urls =
@@ -387,7 +370,6 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     return this.hotelService.getBedType(room);
   }
   segmentChanged(evt: CustomEvent) {
-    this.isShowImages = false;
     if (evt.stopPropagation) {
       evt.stopPropagation();
     }
@@ -548,23 +530,51 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   private getAvgPrice(plan: RoomPlanEntity) {
     return this.hotelService.getAvgPrice(plan);
   }
-  onShowRoomDetails(room: RoomEntity) {
-    this.curSelectedRoom = room;
-    this.curSelectedRoom.Hotel = this.curSelectedRoom.Hotel || this.hotel;
-    this.roomImages = this.getRoomImages(room);
-    if (!this.roomImages || this.roomImages.length === 0) {
+  async onShowRoomDetails(room: RoomEntity) {
+    // this.curSelectedRoom = room;
+    // this.curSelectedRoom.Hotel = this.curSelectedRoom.Hotel || this.hotel;
+    let roomImages = this.getRoomImages(room);
+    if (!roomImages || roomImages.length === 0) {
       if (this.config && this.config.DefaultImageUrl) {
-        this.roomImages = [this.config.DefaultImageUrl];
+        roomImages = [this.config.DefaultImageUrl];
       }
     }
-    this.isShowRoomDetails = true;
-  }
-  onShowRoomImages(room: RoomEntity) {
-    this.roomImages = this.getRoomImages(room);
-    if (!this.roomImages || this.roomImages.length === 0) {
-      return;
+    const m = await this.modalCtrl.create({
+      component: RoomDetailComponent,
+      componentProps: {
+        room,
+        roomImages
+      }
+    });
+    if (m) {
+      await m.present();
+      const result = await m.onDidDismiss();
+      const data = result && result.data as RoomPlanEntity;
+      if (data) {
+
+      }
     }
-    this.isShowRoomImages = true;
+  }
+  async onShowRoomImages(room: RoomEntity) {
+    const m = await this.modalCtrl.create({
+      component: ImageSwiperComponent,
+      componentProps: {
+        imgStyle: { objectFit: "contain" },
+        imagesUrls: this.getRoomImages(room),
+      }
+    });
+    await m.present();
+  }
+  async onShowHotelImages(room: RoomEntity) {
+    const m = await this.modalCtrl.create({
+      component: ImageSwiperComponent,
+      componentProps: {
+        imgStyle: { objectFit: "contain" },
+        imagesUrls: this.getHotelImageUrls(),
+        hasThumbs: true,
+      }
+    });
+    await m.present();
   }
   onOpenMap() {
     this.segmentChanged({

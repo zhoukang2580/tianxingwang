@@ -1,3 +1,4 @@
+import { ModalController } from '@ionic/angular';
 import { EventEmitter } from '@angular/core';
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, AfterContentInit, Input, OnChanges, SimpleChange, SimpleChanges, Output } from '@angular/core';
 import Swiper from 'swiper';
@@ -23,10 +24,10 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() pos: number = 0;
   @Input() imgStyle: any;
   @Output() close: EventEmitter<any>;
-  @Input() fabvertical:string='top';
-  @Input() fabhorizontal:string='end';
+  @Input() fabvertical: string = 'top';
+  @Input() fabhorizontal: string = 'end';
   images: { active: boolean; url: string; idx: number }[];
-  constructor() {
+  constructor(private modalCtrl: ModalController) {
     this.close = new EventEmitter();
   }
   ngOnInit() {
@@ -44,6 +45,11 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   onClose() {
     console.log("onClose");
     this.close.emit();
+    this.modalCtrl.getTop().then(t => {
+      if (t) {
+        t.dismiss();
+      }
+    })
   }
   ngOnChanges(changes: SimpleChanges) {
     // console.log("ngOnChanges", changes);

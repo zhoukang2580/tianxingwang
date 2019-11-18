@@ -38,7 +38,7 @@
 </ion-header>
 <ion-content>
   <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'></ion-refresher>
-  <div class='bg' #bgPic (click)='isShowImages=true' [class.md]='isMd'>
+  <div class='bg' #bgPic (click)='onShowHotelImages()' [class.md]='isMd'>
     <ion-icon class='back-arrow' name="arrow-back" (click)='back()' color='{{backArrowColor}}'>
     </ion-icon>
     <ion-chip *ngIf='hotel?.HotelImages?.length as len' style="z-index: 99">
@@ -211,8 +211,3 @@
     </div>
   </ion-list>
 </ion-content>
-<app-image-swiper [hasThumbs]='true' [imgStyle]='{objectFit:"contain"}' *ngIf="isShowImages" (close)='isShowImages=false' [imagesUrls]='getHotelImageUrls()' class='ion-page'>
-</app-image-swiper>
-<app-image-swiper class='ion-page' [imgStyle]='{objectFit:"contain"}' *ngIf="isShowRoomImages" [imagesUrls]="roomImages" (close)='onCloseRoomImages()'></app-image-swiper>
-<app-room-detail [room]='curSelectedRoom' [roomImages]='roomImages' (close)='onCloseRoomDetail()' class="ion-page"
-  *ngIf='isShowRoomDetails' (bookRoom)='onBookRoomPlan($event)'></app-room-detail>

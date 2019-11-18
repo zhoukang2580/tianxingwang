@@ -48,6 +48,7 @@ import { ImageSwiperComponent } from './image-swiper/image-swiper.component';
   entryComponents: [
     LoginSkeletonPageComponent,
     PayComponent,
+    ImageSwiperComponent
   ]
 })
 export class AppComponentsModule { }

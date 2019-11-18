@@ -113,7 +113,7 @@ ion-card {
 
 ion-list {
   &.hotel-info {
-    min-height: 90vh;
+    // min-height: 90vh;
     background-color: blanchedalmond;
     ion-grid ion-row ion-col {
       align-self: flex-start;
@@ -126,7 +126,7 @@ ion-list {
     }
   }
   &.traffic-info {
-    min-height: 90vh;
+    // min-height: 90vh;
     background-color: antiquewhite;
     .traffic-map {
       width: 100vw;

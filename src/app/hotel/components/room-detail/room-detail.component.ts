@@ -14,7 +14,7 @@ import {
   SimpleChanges
 } from "@angular/core";
 import { RoomEntity } from "../../models/RoomEntity";
-import { DomController } from "@ionic/angular";
+import { DomController, ModalController } from "@ionic/angular";
 import { RoomPlanEntity } from "../../models/RoomPlanEntity";
 import { HotelSupplierType } from "../../models/HotelSupplierType";
 import { RoomPlanRuleType } from "../../models/RoomPlanRuleType";
@@ -40,7 +40,8 @@ export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
     private domCtrl: DomController,
     private identityService: IdentityService,
     private hotelService: HotelService,
-    private staffService: StaffService
+    private staffService: StaffService,
+    private modalCtrl:ModalController
   ) {
     this.close = new EventEmitter();
     this.bookRoom = new EventEmitter();
@@ -51,8 +52,12 @@ export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
   getAvgPrice(plan: RoomPlanEntity) {
     return this.hotelService.getAvgPrice(plan);
   }
-  onBook(plan: RoomPlanEntity) {
+  async onBook(plan: RoomPlanEntity) {
     this.bookRoom.emit(plan);
+    const m = await this.modalCtrl.getTop();
+    if(m){
+      m.dismiss(plan);
+    }
   }
   getBreakfast(plan: RoomPlanEntity) {
     return this.hotelService.getBreakfast(plan);
@@ -70,6 +75,11 @@ export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
   }
   ngAfterViewInit() {}
   onClose() {
+    this.modalCtrl.getTop().then(t=>{
+      if(t){
+        t.dismiss();
+      }
+    }).catch(_=>0);
     this.close.emit();
   }
 }
