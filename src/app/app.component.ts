@@ -19,7 +19,8 @@ import {
   ActionSheetController,
   LoadingController,
   NavController,
-  ModalController
+  ModalController,
+  PopoverController
 } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
@@ -87,6 +88,7 @@ export class AppComponent
     private configService: ConfigService,
     private apiService: ApiService,
     private alertController: AlertController,
+    private popCtrl: PopoverController,
     private toastController: ToastController,
     private actionSheetCtrl: ActionSheetController,
     private loadingCtrl: LoadingController,
@@ -261,35 +263,46 @@ export class AppComponent
 
   private lastClickTime = 0;
   private async backButtonAction() {
-    console.log("backbutton url = " + this.router.url);
-    let count = 1;
-    this.apiService.hideLoadingView();
-    this.flightService.setOpenCloseSelectCityPageSources(false);
-    const t = await this.modalController.getTop();
-    if (t) {
-      await t.dismiss().catch(_ => { });
-      return;
-    }
-    const a = await this.alertController.getTop();
-    if (a) {
-      await a.dismiss().catch(_ => { });
-      return;
-    }
-    if (
-      this.router.url == "/login" || this.router.url == "/tabs/home" || this.router.url == "/tabs/my" || this.router.url == "/tabs/trip"
-    ) {
-      console.log("is exit app", Date.now() - this.lastClickTime);
-      if (Date.now() - this.lastClickTime <= 2000) {
-        navigator["app"].exitApp();
-      } else {
-        AppHelper.toast(LanguageHelper.getAppDoubleClickExit());
-        this.lastClickTime = Date.now();
+    try{
+      console.log("backbutton url = " + this.router.url);
+      let count = 1;
+      this.apiService.hideLoadingView();
+      this.flightService.setOpenCloseSelectCityPageSources(false);
+      const t = await this.modalController.getTop();
+      if (t) {
+        await t.dismiss();
+        return;
       }
-    } else {
-      this.navCtrl.back();
-      count++;
-      console.log(`backbutton back count=${count}`);
-      // window.history.back();
+      const a = await this.alertController.getTop();
+      if (a) {
+        await a.dismiss();
+        return;
+      }
+      const p = await this.popCtrl.getTop();
+      if(p){
+        await p.dismiss();
+        return;
+      }
+      this.apiService.hideLoadingView();
+      if (
+        this.router.url == "/login" || this.router.url == "/tabs/home" || this.router.url == "/tabs/my" || this.router.url == "/tabs/trip"
+      ) {
+        console.log("is exit app", Date.now() - this.lastClickTime);
+        if (Date.now() - this.lastClickTime <= 2000) {
+          navigator["app"].exitApp();
+        } else {
+          AppHelper.toast(LanguageHelper.getAppDoubleClickExit());
+          this.lastClickTime = Date.now();
+        }
+      } else {
+        this.navCtrl.back();
+        count++;
+        console.log(`backbutton back count=${count}`);
+        // window.history.back();
+      }
+    }catch(e){
+      console.error(e);
     }
+    
   }
 }
