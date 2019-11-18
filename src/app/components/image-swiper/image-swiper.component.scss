@@ -24,7 +24,7 @@
   .swiper-slide {
     margin-right: 1em;
     opacity: 0.7;
-    &.swiper-slide-thumb-active {
+    &.swiper-slide-thumb-active,&.swiper-slide-active {
       opacity: 1;
     }
     width: 100px;
