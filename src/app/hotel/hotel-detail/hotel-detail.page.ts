@@ -62,6 +62,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   @ViewChild("hotelInfo") private hotelInfoEle: IonList;
   @ViewChild("trafficInfo") private trafficInfoEle: IonList;
   isShowBackArrow = true;
+  isHotelImages= false;
   backArrowColor = "light";
   queryModel: SearchHotelModel;
   isShowAddPassenger$ = of(false);
@@ -568,21 +569,22 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     await m.present();
   }
   async onShowHotelImages() {
-    this.apiService.showLoadingView();
-    const m = await this.modalCtrl.create({
-      component: ImageSwiperComponent,
-      // animated: false,
-      componentProps: {
-        loop: false,
-        imgStyle: { objectFit: "contain" },
-        imagesUrls: this.getHotelImageUrls(),
-        hasThumbs: true,
-      }
-    });
-    await m.present();
-    setTimeout(() => {
-      this.apiService.hideLoadingView();
-    }, 200);
+    // this.apiService.showLoadingView();
+    // const m = await this.modalCtrl.create({
+    //   component: ImageSwiperComponent,
+    //   // animated: false,
+    //   componentProps: {
+    //     loop: false,
+    //     imgStyle: { objectFit: "contain" },
+    //     imagesUrls: this.getHotelImageUrls(),
+    //     hasThumbs: true,
+    //   }
+    // });
+    // await m.present();
+    // setTimeout(() => {
+    //   this.apiService.hideLoadingView();
+    // }, 200);
+    this.isHotelImages=true;
   }
   onOpenMap() {
     this.segmentChanged({
