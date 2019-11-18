@@ -73,6 +73,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
   @ViewChild("cnt") ionContent: IonContent;
   scrollElement: HTMLElement;
   selectedFlightTicket: OrderFlightTicketEntity;
+  identity: IdentityEntity;
   constructor(
     private plt: Platform,
     private route: ActivatedRoute,
@@ -81,7 +82,8 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     private modalCtrl: ModalController,
     private popoverCtrl: PopoverController,
     private domCtrl: DomController,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private identityService: IdentityService
   ) { }
   scrollTop: number;
 
@@ -105,6 +107,9 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
   }
   canSendEmailMsg() {
     const selectedTicket: OrderFlightTicketEntity = this.selectedFlightTicket;
+    if (this.identity &&!(this.identity.Numbers && !!this.identity.Numbers['AgentId'])) {
+      return false;
+    }
     if (selectedTicket) {
       return (
         selectedTicket.Status != OrderFlightTicketStatusType.Abolish &&
@@ -114,6 +119,9 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     return false;
   }
   async sendMsg(passenger: OrderPassengerEntity) {
+    if (this.identity &&!(this.identity.Numbers && !!this.identity.Numbers['AgentId'])) {
+      return false;
+    }
     const selectedTicket = this.selectedFlightTicket;
     if (selectedTicket) {
       const p = await this.modalCtrl.create({
@@ -241,6 +249,9 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     return this.orderDetail.Order.OrderNumbers.filter(it => it.Tag == tag);
   }
   async sendEmail(passenger: OrderPassengerEntity) {
+    if (this.identity &&!(this.identity.Numbers && !!this.identity.Numbers['AgentId'])) {
+      return false;
+    }
     const selectedTicket = this.selectedFlightTicket;
     if (selectedTicket) {
       const p = await this.modalCtrl.create({
@@ -264,12 +275,12 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
           data.content,
           this.orderDetail.Order && this.orderDetail.Order.Id
         ).catch(_ => {
-          AppHelper.alert(_||"邮件发送失败");
+          AppHelper.alert(_ || "邮件发送失败");
           return null;
         });
         if (res) {
           AppHelper.alert("邮件已发送");
-        } 
+        }
       }
     }
   }
@@ -327,6 +338,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     });
     this.onTabActive(this.tabs[0]);
     this.tmc = await this.tmcService.getTmc();
+    this.identity = await this.identityService.getIdentityAsync();
   }
   getVariableObj(it: { Variables: string; VariablesDictionary: any }, key: string) {
     if (it) {

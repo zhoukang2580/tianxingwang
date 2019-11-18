@@ -123,7 +123,7 @@
         </ion-item-divider>
         <ng-container *ngIf='getPassengerCostOrgInfo() as info'>
           <ion-item *ngIf='info.Passenger as p'>
-            <div style='width: 100%'>
+            <div style='width: 100%'  class='passenger-info'>
               <ion-row>
                 <ion-col size='3'>乘客姓名:</ion-col>
                 <ion-col>{{p.CheckName}} <span *ngIf='p.PassengerTypeName'>({{p.PassengerTypeName}})</span> </ion-col>

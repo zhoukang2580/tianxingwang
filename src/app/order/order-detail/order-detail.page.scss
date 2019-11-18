@@ -6,6 +6,11 @@ ion-item-divider {
 ion-list ion-item {
   font-size: 0.8rem;
 }
+.passenger-info {
+  ion-row ion-col:first-child {
+    align-self: flex-start;
+  }
+}
 ion-list.link-has-items {
   min-height: 80vh;
 }
