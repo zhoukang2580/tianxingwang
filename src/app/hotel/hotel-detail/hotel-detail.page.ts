@@ -53,6 +53,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   private hotelDayPrice: HotelDayPriceEntity;
   private scrollEle: HTMLElement;
   private headerHeight = 0;
+  curHotelImagePos = 0;
   @ViewChild("header") headerEle: ElementRef<HTMLElement>;
   @ViewChild("bgPic") bgPicEle: ElementRef<HTMLElement>;
   @ViewChild(IonContent) ionCnt: IonContent;
@@ -62,7 +63,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   @ViewChild("hotelInfo") private hotelInfoEle: IonList;
   @ViewChild("trafficInfo") private trafficInfoEle: IonList;
   isShowBackArrow = true;
-  isHotelImages= false;
+  isHotelImages = false;
   backArrowColor = "light";
   queryModel: SearchHotelModel;
   isShowAddPassenger$ = of(false);
@@ -584,7 +585,11 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     // setTimeout(() => {
     //   this.apiService.hideLoadingView();
     // }, 200);
-    this.isHotelImages=true;
+    this.curHotelImagePos = 1;
+    setTimeout(() => {
+      this.curHotelImagePos = 0;
+    }, 0);
+    this.isHotelImages = true;
   }
   onOpenMap() {
     this.segmentChanged({

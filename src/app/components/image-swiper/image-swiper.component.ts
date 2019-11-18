@@ -10,6 +10,7 @@ import Swiper from 'swiper';
 export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   private swiper: Swiper;
   private thumbsSwiper: Swiper;
+  private isSwiperInit = false;
   @ViewChildren("slides") private slideEles: QueryList<ElementRef<HTMLElement>>;
   @ViewChild("swiperContainer") swiperContainer: ElementRef<HTMLElement>;
   @ViewChild("swiperbuttonprev") preEle: ElementRef<HTMLElement>;
@@ -119,27 +120,50 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
         }
       }
     }
-    if (changes.imagesUrls && changes.imagesUrls.currentValue && !changes.imagesUrls.firstChange) {
-      if (!this.images || this.images.length != this.imagesUrls.length) {
-        this.initImages();
+    if (changes.imagesUrls && changes.imagesUrls.currentValue) {
+      this.initImages();
+    }
+    if (changes.pos && changes.pos.currentValue == 0) {
+      console.log("this.pos", this.pos);
+      if (this.swiper) {
+        if (this.swiper.params) {
+          this.swiper.params.initialSlide = 0;
+          this.slidToPage(0);
+        }
       }
     }
   }
   private initImages() {
+    this.images = [];
     console.log("initImages");
-    this.images = this.imagesUrls && this.imagesUrls.map((it, idx) => {
+    const images = this.imagesUrls && this.imagesUrls.map((it, idx) => {
       return {
         active: idx == (this.pos || 0),
         url: it,
         idx,
       }
     });
-    if (this.swiper) {
+    const loop = () => {
+      if (!images || !images.length) {
+        if (this.swiper) {
+          this.initSwiper();
+        }
+        return;
+      } else {
+        this.images = this.images.concat(images.splice(0, 10));
+        window.requestAnimationFrame(loop);
+      }
+    }
+    loop();
+  }
+  private initSwiper() {
+    if (!this.isSwiperInit) {
       if (this.swiper.init) {
         if (this.thumbsSwiper && this.thumbsSwiper.init) {
           this.thumbsSwiper.init();
         }
         this.swiper.init();
+        this.isSwiperInit = true;
       }
     }
   }
@@ -226,20 +250,20 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
       }
     }, 300);
   }
-  slidToPage(item: { active: boolean; url: string; idx: number }) {
+  slidToPage(idx: number) {
     if (this.images) {
       this.images = this.images.map(it => {
-        it.active = it.idx == item.idx;
+        it.active = it.idx == idx;
         return it;
       })
     }
     if (this.loop) {
       if (this.swiper) {
-        this.swiper.slideToLoop(item.idx, 100, false);
+        this.swiper.slideToLoop(idx, 100, false);
       }
     } else {
       if (this.swiper) {
-        this.swiper.slideTo(item.idx, 100, false);
+        this.swiper.slideTo(idx, 100, false);
       }
     }
   }
@@ -258,7 +282,8 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
     }
     if (this.slideEles) {
       this.slideEles.changes.subscribe(_ => {
-        if (this.slideEles.length == (this.imagesUrls&&this.imagesUrls.length)) {
+        if (this.slideEles.length == (this.imagesUrls && this.imagesUrls.length)) {
+          this.initSwiper();
           this.update();
         }
       })

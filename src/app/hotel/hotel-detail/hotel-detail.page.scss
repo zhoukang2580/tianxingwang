@@ -143,14 +143,9 @@ ion-title.has-add-passenger {
   min-height: 65vh;
 }
 .hotel-images {
-  app-image-swiper {
-    display: block;
-    height: 100%;
-    width: 100%;
-  }
   background-color: black;
   z-index: 100;
-  position: absolute;
+  position: fixed;
   width: 100vw;
   height: 100vh;
   bottom: 0;

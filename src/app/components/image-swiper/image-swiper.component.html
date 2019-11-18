@@ -30,7 +30,7 @@
 <div #thumbs class='swiper-container thumbs' [style.display]='hasThumbs?"block":"none"'>
   <div class="swiper-wrapper">
     <div class="swiper-slide" *ngFor="let item of images;let i=index;" [attr.dataid]='item.idx'
-      (click)='slidToPage(item)'>
+      (click)='slidToPage(item.idx)'>
       <img [lazyloadImage]='item.url' appLazyloadimage />
     </div>
   </div>

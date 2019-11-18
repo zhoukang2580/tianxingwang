@@ -142,7 +142,7 @@ export class HomePage implements OnInit {
     this.hotelService.removeAllBookInfos();
   }
   async check() {
-
+    let retryCount=0;
     console.log("home check");
     try {
       // if (!this.staffService.staffCredentials || this.staffService.staffCredentials.length == 0) {
@@ -154,6 +154,13 @@ export class HomePage implements OnInit {
         this.clearIntervalIds();
       }
       if (!this.staff) {
+        retryCount++;
+        if(retryCount>10){
+          this.clearIntervalIds();
+          AppHelper.alert("请重新登录!");
+          this.router.navigate(["login"]);
+          return ;
+        }
         this.staff = await this.staffService.getStaff();
         const intervalId = setInterval(async () => {
           this.staff = await this.staffService.getStaff();
