@@ -176,6 +176,9 @@ export class ApiService {
         req.Url = url + "/" + urls[1] + "/" + urls[2];
       }
     }
+    if (req.IsReplaceDomain) {
+      req.Url = req.Url.replace(req.OldDomain, req.NewDomain);
+    }
     return req.Url;
   }
   async tryAutoLogin(orgReq: RequestEntity) {
