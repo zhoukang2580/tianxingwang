@@ -88,9 +88,8 @@ export class HomePage implements OnInit {
       };
       this.payService.process(req1);
     }
-    this.getAgentNotices();
   }
-  async getAgentNotices() {
+  private async getAgentNotices() {
     const agentNotices = await this.cmsService.getAgentNotices(0).catch(_ => [] as Notice[]);
     this.agentNotices = agentNotices.map((notice, index) => {
       return {
@@ -142,9 +141,10 @@ export class HomePage implements OnInit {
     this.hotelService.removeAllBookInfos();
   }
   async check() {
-    let retryCount=0;
+    let retryCount = 0;
     console.log("home check");
     try {
+      this.getAgentNotices();
       // if (!this.staffService.staffCredentials || this.staffService.staffCredentials.length == 0) {
       //   console.log("需要确认证件信息")
       //   this.router.navigate([AppHelper.getRoutePath("confirm-information")]);
@@ -155,11 +155,11 @@ export class HomePage implements OnInit {
       }
       if (!this.staff) {
         retryCount++;
-        if(retryCount>10){
+        if (retryCount > 10) {
           this.clearIntervalIds();
           AppHelper.alert("请重新登录!");
           this.router.navigate(["login"]);
-          return ;
+          return;
         }
         this.staff = await this.staffService.getStaff();
         const intervalId = setInterval(async () => {
