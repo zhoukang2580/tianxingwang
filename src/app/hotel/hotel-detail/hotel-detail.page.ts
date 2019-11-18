@@ -1,3 +1,4 @@
+import { ApiService } from 'src/app/services/api/api.service';
 import { ImageSwiperComponent } from './../../components/image-swiper/image-swiper.component';
 import { RoomDetailComponent } from './../components/room-detail/room-detail.component';
 import { AppHelper } from "src/app/appHelper";
@@ -92,6 +93,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     private staffService: StaffService,
     private modalCtrl: ModalController,
     plt: Platform,
+    private apiService: ApiService,
     private popoverController: PopoverController
   ) {
     this.isMd = plt.is("android");
@@ -565,18 +567,22 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     });
     await m.present();
   }
-  async onShowHotelImages(room: RoomEntity) {
+  async onShowHotelImages() {
+    this.apiService.showLoadingView();
     const m = await this.modalCtrl.create({
       component: ImageSwiperComponent,
       // animated: false,
       componentProps: {
-        loop:false,
+        loop: false,
         imgStyle: { objectFit: "contain" },
         imagesUrls: this.getHotelImageUrls(),
         hasThumbs: true,
       }
     });
     await m.present();
+    setTimeout(() => {
+      this.apiService.hideLoadingView();
+    }, 200);
   }
   onOpenMap() {
     this.segmentChanged({
