@@ -570,26 +570,26 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     await m.present();
   }
   async onShowHotelImages() {
-    // this.apiService.showLoadingView();
-    // const m = await this.modalCtrl.create({
-    //   component: ImageSwiperComponent,
-    //   // animated: false,
-    //   componentProps: {
-    //     loop: false,
-    //     imgStyle: { objectFit: "contain" },
-    //     imagesUrls: this.getHotelImageUrls(),
-    //     hasThumbs: true,
-    //   }
-    // });
-    // await m.present();
-    // setTimeout(() => {
-    //   this.apiService.hideLoadingView();
-    // }, 200);
-    this.curHotelImagePos = 1;
+    this.apiService.showLoadingView();
+    const m = await this.modalCtrl.create({
+      component: ImageSwiperComponent,
+      // animated: false,
+      componentProps: {
+        loop: false,
+        imgStyle: { objectFit: "contain" },
+        imagesUrls: this.getHotelImageUrls(),
+        hasThumbs: true,
+      }
+    });
+    await m.present();
     setTimeout(() => {
-      this.curHotelImagePos = 0;
-    }, 0);
-    this.isHotelImages = true;
+      this.apiService.hideLoadingView();
+    }, 100);
+    // this.curHotelImagePos = 1;
+    // setTimeout(() => {
+    //   this.curHotelImagePos = 0;
+    // }, 0);
+    // this.isHotelImages = true;
   }
   onOpenMap() {
     this.segmentChanged({
