@@ -20,7 +20,7 @@ export class AppHelper {
   private static modalController: ModalController;
   static _appDomain = environment.production || navigator.userAgent.includes("Mac OS") ? "testskytrip.com" : "beeant.com";
   constructor(){
-    if(environment.production){
+    if(true||environment.production){
       AppHelper._appDomain =  "sky-trip.com" ;
     }
   }
@@ -402,7 +402,10 @@ export class AppHelper {
     return url.replace(this._appDomain, domain).replace("test.", "");
   }
   static getApiUrl() {
-    return "http://test.app." + this._appDomain;
+    if (!environment.production) {
+      return "http://test.app.beeant.com";
+    }
+    return "http://app." + this._appDomain;
   }
   static getRoutePath(path: string) {
     const style = AppHelper.getStyle() || "";
