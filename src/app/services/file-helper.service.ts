@@ -177,7 +177,7 @@ export class FileHelperService {
     const req = new RequestEntity();
     req.Method = "ServiceVersionUrl-Home-Index";
     req.IsReplaceDomain=true;
-    req.OldDomain=AppHelper._domain;
+    req.OldDomain=AppHelper._appDomain;
     req.NewDomain="testskytrip.com";
     req.Data = {
       "Product": `${await this.getPackageName()}.${this.plt.is("ios") ? "ios"
