@@ -19,7 +19,11 @@ export class AppHelper {
   private static alertController: AlertController;
   private static modalController: ModalController;
   static _appDomain = environment.production || navigator.userAgent.includes("Mac OS") ? "testskytrip.com" : "beeant.com";
-  // static _appDomain =  "sky-trip.com" ;
+  constructor(){
+    if(environment.production){
+      AppHelper._appDomain =  "sky-trip.com" ;
+    }
+  }
   static _domain;
   static _queryParamers = {};
 
