@@ -27,7 +27,7 @@ export class HomePage implements OnInit {
   exitAppSub: Subject<number> = new BehaviorSubject(null);
   selectedCompany$: Observable<string>;
   companies: any[];
-  agentNotices: Notice[];
+  agentNotices: { text: string }[];
   canSelectCompany$ = of(false);
   staff: StaffEntity;
   constructor(
@@ -91,41 +91,46 @@ export class HomePage implements OnInit {
     this.getAgentNotices();
   }
   async getAgentNotices() {
-    this.agentNotices = await this.cmsService.getAgentNotices(0).catch(_ => []);
+    const agentNotices = await this.cmsService.getAgentNotices(0).catch(_ => [] as Notice[]);
+    this.agentNotices = agentNotices.map((notice, index) => {
+      return {
+        text: `${index + 1}.${notice.Title}`
+      }
+    });
   }
-  async goToPage(name:string,params?:any){
+  async goToPage(name: string, params?: any) {
     const tmc = await this.tmcService.getTmc();
     const msg = "您没有预订权限";
-    if(!tmc||!tmc.RegionTypeValue){
+    if (!tmc || !tmc.RegionTypeValue) {
       AppHelper.alert(msg);
       return;
     }
-    let route="";
-    
-    const tmcRegionTypeValue=tmc.RegionTypeValue.toLowerCase();
-    if(name=='hotel'){
-      route='search-hotel';
-      if(tmcRegionTypeValue.search("hotel")<0){
+    let route = "";
+
+    const tmcRegionTypeValue = tmc.RegionTypeValue.toLowerCase();
+    if (name == 'hotel') {
+      route = 'search-hotel';
+      if (tmcRegionTypeValue.search("hotel") < 0) {
         AppHelper.alert(msg);
         return;
       }
     }
-    if(name=='train'){
-      route='search-train';
-      if(tmcRegionTypeValue.search("train")<0){
+    if (name == 'train') {
+      route = 'search-train';
+      if (tmcRegionTypeValue.search("train") < 0) {
         AppHelper.alert(msg);
         return;
       }
     }
-    if(name=='flight'){
-      route='search-flight';
-      if(tmcRegionTypeValue.search("flight")<0){
+    if (name == 'flight') {
+      route = 'search-flight';
+      if (tmcRegionTypeValue.search("flight") < 0) {
         AppHelper.alert(msg);
         return;
       }
     }
-    if(name=='bulletin'){
-      route='bulletin-list';
+    if (name == 'bulletin') {
+      route = 'bulletin-list';
     }
     this.router.navigate([AppHelper.getRoutePath(route)], {
       queryParams: { bulletinType: params }

@@ -15,29 +15,51 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   @ViewChild("pagination") paginationEle: ElementRef<HTMLElement>;
   @ViewChild("thumbs") thumbs: ElementRef<HTMLElement>;
   @Input() hasThumbs = false;
-  @Input() effect: "fade" | "flip" | "cube" | "coverflow";
+  @Input() effect: boolean | "fade" | "flip" | "cube" | "coverflow"='fade';
+  @Input() direction: "vertical" | "horizontal" = 'horizontal';
   @Input() pagination = null;
   @Input() autoplay = false;
   @Input() zoom = true;
   @Input() loop = true;
+  @Input() isShowCloseBtn = true;
+  @Input() isShowPagination = true;
   @Input() imagesUrls: string[];
+  @Input() texts: { text: string; }[];
+  @Input() slideStyle: any = {
+    backgroundColor: 'black'
+  };
+  @Input() autoplayspeed: number = 300;
   @Input() pos: number = 0;
   @Input() imgStyle: any;
   @Output() close: EventEmitter<any>;
   @Input() fabvertical: string = 'top';
   @Input() fabhorizontal: string = 'end';
-  images: { active: boolean; url: string; idx: number }[];
+  images: { active: boolean; url?: string; idx: number; text?: string; }[];
   constructor(private modalCtrl: ModalController) {
     this.close = new EventEmitter();
   }
   ngOnInit() {
-    this.images = this.imagesUrls && this.imagesUrls.map((it, idx) => {
-      return {
-        active: idx == (this.pos || 0),
-        url: it,
-        idx
-      }
-    });
+    if (this.imagesUrls) {
+      this.images = this.imagesUrls && this.imagesUrls.map((it, idx) => {
+        return {
+          active: idx == (this.pos || 0),
+          url: it,
+          idx,
+        }
+      });
+    }
+
+    if (this.images && this.images.length > 15) {
+      const imgs = this.images.slice(0);
+      this.images = imgs.slice(0, 10);
+      setTimeout(() => {
+        this.images = this.images.concat(imgs.slice(10));
+        if (this.swiper && this.swiper.update) {
+          this.swiper.update();
+        }
+        console.log("this.images.length", this.images.length);
+      }, 1000);
+    }
   }
   ngAfterContentInit() {
     console.log("ngAfterContentInit");
@@ -52,6 +74,28 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
     })
   }
   ngOnChanges(changes: SimpleChanges) {
+    if (changes.texts && changes.texts.currentValue) {
+      if (this.texts) {
+        this.images = this.texts && this.texts.map((it, idx) => {
+          return {
+            active: idx == (this.pos || 0),
+            idx,
+            text: it.text
+          }
+        });
+        setTimeout(() => {
+          if (this.swiper && this.swiper.update) {
+            this.swiper.update();
+          }
+        }, 1000);
+      }
+      if(changes.effect&& !changes.effect.currentValue){
+        if(this.swiper&&this.swiper.update){
+          this.swiper.params.effect=false;
+          this.swiper.update();
+        }
+      }
+    }
     // console.log("ngOnChanges", changes);
     // if (changes.imagesUrls && changes.imagesUrls.currentValue) {
     //   this.images = this.imagesUrls.map((it, idx) => {
@@ -74,7 +118,9 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
       if (this.swiperContainer && this.swiperContainer.nativeElement) {
         const params: any = {
           autoplay: this.autoplay,//可选选项，自动滑动
+          speed: this.autoplayspeed,
           effect: this.effect,
+          direction: this.direction,
           pagination: {
             el: this.paginationEle.nativeElement,
             type: "fraction"
@@ -114,6 +160,8 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
           params.fadeEffect = {
             crossFade: true,
           }
+        } else if (!this.effect) {
+          params.effect = false;
         }
         if (this.hasThumbs) {
           const thumbsOptions = {

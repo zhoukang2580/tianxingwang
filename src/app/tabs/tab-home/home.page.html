@@ -35,9 +35,8 @@
     <img [src]='"assets/images/home_top_bg.png"' />
   </div>
   <ion-toolbar (click)='goToBulletinList("agentNotice")'>
-    <div class="marquee">
-      <ion-text *ngFor='let notice of agentNotices;let index = index;'>{{index+1}}.{{notice?.Title}}</ion-text>
-    </div>
+    <app-image-swiper [isShowCloseBtn]='false' [slideStyle]='{backgroundColor:"white",display:"flex",alignItems:"center",justifyContent:"flext-start"}' [autoplayspeed]='1000' [loop]='true' [effect]='false'
+      [isShowPagination]='false' [autoplay]='true' [direction]='"vertical"' [texts]='agentNotices'></app-image-swiper>
   </ion-toolbar>
   <ion-grid>
     <ion-row wrap>

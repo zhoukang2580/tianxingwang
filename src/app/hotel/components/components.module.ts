@@ -63,6 +63,6 @@ import { ShowMsgComponent } from './show-msg/show-msg.component';
     TmcComponentsModule,
     ChangeRoomplanDateComponent
   ],
-  entryComponents: [HotelRoomBookedinfosComponent,ShowMsgComponent]
+  entryComponents: [HotelRoomBookedinfosComponent,ShowMsgComponent,RoomDetailComponent]
 })
 export class HotelComponentsModule {}
