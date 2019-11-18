@@ -134,32 +134,31 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
     // }
   }
   private initImages() {
-    this.images = [];
-    console.log("initImages", this.imagesUrls);
-    const images = this.imagesUrls && this.imagesUrls.map((it, idx) => {
+    // this.images = [];
+    // console.log("initImages");
+    this.images = this.imagesUrls && this.imagesUrls.map((it, idx) => {
       return {
         active: idx == (this.pos || 0),
         url: it,
         idx,
       }
     });
-    const loop = () => {
-      if (!images || !images.length) {
-        if (this.swiper) {
-          this.initSwiper();
-        }
-        return;
-      } else {
-        this.images = this.images.concat(images.splice(0, 10));
-        window.requestAnimationFrame(loop);
-      }
+    // const loop = () => {
+    //   if (!images || !images.length) {
+    if (this.swiper) {
+      this.initSwiper();
     }
-    this.images = [];
-    loop();
+    //     return;
+    //   } else {
+    //     this.images = this.images.concat(images.splice(0, 10));
+    //     window.requestAnimationFrame(loop);
+    //   }
+    // }
+    // loop();
   }
   private initSwiper() {
     if (!this.isSwiperInit) {
-      if (this.swiper.init) {
+      if (this.swiper && this.swiper.init) {
         if (this.thumbsSwiper && this.thumbsSwiper.init) {
           this.thumbsSwiper.init();
         }
