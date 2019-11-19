@@ -239,7 +239,7 @@ export class AppComponent
       // this.router.navigate([AppHelper.getRoutePath("account-email")]);
       // this.router.navigate([AppHelper.getRoutePath("account-dingtalk")]);
       // this.router.navigate([AppHelper.getRoutePath("account-wechat")]);
-      // this.router.navigate([AppHelper.getRoutePath("account-bind")]);
+      this.router.navigate([AppHelper.getRoutePath("account-bind")]);
       // this.router.navigate([AppHelper.getRoutePath("account-mobile")]);
       // this.router.navigate([AppHelper.getRoutePath("account-device")]);
       // this.router.navigate([AppHelper.getRoutePath("change-password-by-msm-code")]);
@@ -256,7 +256,7 @@ export class AppComponent
       // this.router.navigate([AppHelper.getRoutePath("hotel-book")]);
       // this.router.navigate([AppHelper.getRoutePath("product-tabs")], { queryParams: { tabId: 3 } });
       // this.router.navigate([AppHelper.getRoutePath("tabs/trip")]);
-      this.router.navigate([AppHelper.getRoutePath("tabs/home")]);
+      // this.router.navigate([AppHelper.getRoutePath("tabs/home")]);
       // this.router.navigate([AppHelper.getRoutePath("order-detail")], { queryParams: { tabId: 1, orderId:  } });
     });
   }

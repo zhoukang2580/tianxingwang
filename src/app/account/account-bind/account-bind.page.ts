@@ -1,3 +1,4 @@
+import { finalize } from 'rxjs/operators';
 import { LoginService } from "../../services/login/login.service";
 import { FormBuilder } from "@angular/forms";
 import { FormGroup } from "@angular/forms";
@@ -16,6 +17,7 @@ import { NavController } from "@ionic/angular";
   styleUrls: ["./account-bind.page.scss"]
 })
 export class AccountBindPage implements OnInit, OnDestroy {
+  isSmsCodSendeDisabled = false;
   countDown = 0;
   countDownInterval: any;
   isDisableSendMobileCode = false;
@@ -36,7 +38,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
     private loginService: LoginService,
     private apiService: ApiService,
     private route: ActivatedRoute
-  ) {}
+  ) { }
   back() {
     this.navCtrl.back();
   }
@@ -67,6 +69,10 @@ export class AccountBindPage implements OnInit, OnDestroy {
   }
 
   sendMobileCode() {
+    if (this.isSmsCodSendeDisabled) {
+      AppHelper.alert("短信验证码已经发送，请稍后重试");
+      return;
+    }
     const req = new RequestEntity();
     req.Url = AppHelper.getApiUrl() + "/Home/SendIdentityMobileCode";
     req.Data = JSON.stringify({ Mobile: this.form.value.Mobile });
@@ -75,6 +81,11 @@ export class AccountBindPage implements OnInit, OnDestroy {
         SendInterval: number;
         ExpiredInterval: number;
       }>(req)
+      .pipe(finalize(() => {
+        setTimeout(() => {
+          this.isDisableSendMobileCode = false;
+        }, 200);
+      }))
       .subscribe(
         res => {
           if (!res.Status && res.Message) {
@@ -103,36 +114,26 @@ export class AccountBindPage implements OnInit, OnDestroy {
     if (this.bindMobileInfo.IsActiveMobile) {
       this.bindDevice();
     } else {
-      this.bindMobile();
       this.bindDevice();
+      this.bindMobile();
     }
   }
-  bindMobile() {
+  async bindMobile() {
     const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Mobile-Bind";
     req.Data = {
       Mobile: this.form.value.Mobile,
       MobileCode: this.form.value.MobileCode
     };
-    const sub = this.apiService
-      .getResponse<{
+    const res = await this.apiService
+      .getPromiseData<{
         SendInterval: number;
         ExpiredInterval: number;
-      }>(req)
-      .subscribe(
-        res => {
-          if (!res.Status) {
-            AppHelper.alert(res.Message);
-          }
-        },
-        e => {
-          AppHelper.alert(e);
-        },
-        () => {
-          sub.unsubscribe();
-        }
-      );
-    return sub;
+      }>(req).catch(_ => {
+        AppHelper.alert(_);
+        return false;
+      });
+    this.jump();
   }
   async bindDevice() {
     var uuid = await AppHelper.getDeviceId();
@@ -151,8 +152,8 @@ export class AccountBindPage implements OnInit, OnDestroy {
         ExpiredInterval: number;
       }>(req)
       .subscribe(
-        res => {},
-        e => {},
+        res => { },
+        e => { },
         () => {
           sub.unsubscribe();
         }
@@ -172,7 +173,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
     }, 1000);
   }
   jump() {
-    console.log("this.path",this.path);
+    console.log("this.path", this.path);
     this.router.navigate([AppHelper.getRoutePath("")]);
   }
   ngOnDestroy() {
