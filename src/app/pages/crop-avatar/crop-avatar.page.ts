@@ -70,7 +70,9 @@ export class CropAvatarPage implements OnInit,AfterViewInit {
         maxWidth: 800,
         maxHeight: 800,
         minWidth: 800,
-        minHeight: 800
+        minHeight: 800,
+        imageSmoothingEnabled:true,
+        imageSmoothingQuality:Cropper.ImageSmoothingQuality.Medium
       })
       .toDataURL();
     this.uploadImage(this.avatar);
