@@ -75,7 +75,7 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
         imageSmoothingEnabled: false,
         // imageSmoothingQuality: 'medium' as any,
       })
-      .toDataURL();
+      .toDataURL("image/jpeg", .8);
     this.uploadImage(this.avatar);
   }
   reset() {
