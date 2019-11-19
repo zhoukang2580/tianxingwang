@@ -10,7 +10,7 @@ import { RequestEntity } from "src/app/services/api/Request.entity";
   templateUrl: "./crop-avatar.page.html",
   styleUrls: ["./crop-avatar.page.scss"]
 })
-export class CropAvatarPage implements OnInit,AfterViewInit {
+export class CropAvatarPage implements OnInit, AfterViewInit {
   cropper: Cropper;
   showCropBox = false;
   @HostBinding("class.backdrop")
@@ -31,7 +31,7 @@ export class CropAvatarPage implements OnInit,AfterViewInit {
     this.fileReader = new FileReader();
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
   goBack() {
     this.navCtrl.back();
   }
@@ -71,8 +71,9 @@ export class CropAvatarPage implements OnInit,AfterViewInit {
         maxHeight: 800,
         minWidth: 800,
         minHeight: 800,
-        imageSmoothingEnabled:true,
-        imageSmoothingQuality:Cropper.ImageSmoothingQuality.Medium
+        // fillColor: '#fff',
+        imageSmoothingEnabled: false,
+        // imageSmoothingQuality: 'medium' as any,
       })
       .toDataURL();
     this.uploadImage(this.avatar);
