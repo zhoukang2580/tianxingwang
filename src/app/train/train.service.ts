@@ -575,6 +575,7 @@ export class TrainService {
       }
     });
     await m.present();
+    this.calendarService.setSelectedDaysSource(this.calendarService.getSelectedDays());
     const result = await m.onDidDismiss();
     return result && (result.data as DayModel[]);
   }

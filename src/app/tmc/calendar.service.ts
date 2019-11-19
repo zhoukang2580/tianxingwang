@@ -9,6 +9,7 @@ import { DayModel } from "./models/DayModel";
 })
 export class CalendarService {
   private selectedDaysSource: Subject<DayModel[]>;
+  private selectedDays: DayModel[];
   private dayOfWeekNames = {
     0: LanguageHelper.getSundayTip(),
     1: LanguageHelper.getMondayTip(),
@@ -52,10 +53,14 @@ export class CalendarService {
   getDayOfWeekNames() {
     return this.dayOfWeekNames;
   }
-  getSelectedDays() {
+  getSelectedDays(){
+    return this.selectedDays||[];
+  }
+  getSelectedDaysSource() {
     return this.selectedDaysSource.asObservable();
   }
   setSelectedDaysSource(days: DayModel[]) {
+    this.selectedDays=days;
     this.selectedDaysSource.next(days);
   }
   getMonth(d: DayModel) {

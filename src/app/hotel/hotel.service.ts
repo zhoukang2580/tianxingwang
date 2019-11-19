@@ -388,7 +388,8 @@ export class HotelService {
         forType: FlightHotelTrainType.Hotel
       }
     });
-    m.present();
+    await m.present();
+    this.calendarService.setSelectedDaysSource(this.calendarService.getSelectedDays());
     const result = await m.onDidDismiss();
     if (result.data) {
       const data = result.data as DayModel[];

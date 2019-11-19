@@ -401,6 +401,7 @@ export class FlightService {
       }
     });
     await m.present();
+    this.calendarService.setSelectedDaysSource(this.calendarService.getSelectedDays());
     const d = await m.onDidDismiss();
     return d && d.data as DayModel[];
   }

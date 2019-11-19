@@ -43,7 +43,7 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   ngOnInit() {
     this.initDays(moment().format("YYYY-MM-DD"));
-    this.subscription = this.calendarService.getSelectedDays().subscribe(days => {
+    this.subscription = this.calendarService.getSelectedDaysSource().subscribe(days => {
       if (days && days.length) {
         const selectedDate = days.find(it => it.selected);
         this.initDays(days[0].date, selectedDate);

@@ -51,7 +51,7 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.back.emit();
   }
   async ngOnInit() {
-    this.calendarService.getSelectedDays().subscribe(days => {
+    this.calendarService.getSelectedDaysSource().subscribe(days => {
       if (days && days.length) {
         const cur = days[0];
         if (cur) {
@@ -65,7 +65,16 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
         this.initCurYM();
       }
     })
-    this.initCurYM();
+    if(this.calendars&&this.calendars.length){
+      const c = this.calendars[0];
+      const y = +c.yearMonth.substr(0,4);
+      const m = +c.yearMonth.substr(5,2);
+      if(y&&m){
+        this.initCurYM(y,m);
+      }
+    }else{
+      this.initCurYM();
+    }
     const w = this.calendarService.getDayOfWeekNames();
     this.weeks = Object.keys(w).map(k => w[k]);
     // this.calendars = await this.calendarService.generateCanlender(12);
