@@ -400,8 +400,7 @@ export class FlightService {
         isMulti: isMulti
       }
     });
-    await m.present();
-    this.calendarService.setSelectedDaysSource(this.calendarService.getSelectedDays());
+   await m.present();
     const d = await m.onDidDismiss();
     return d && d.data as DayModel[];
   }

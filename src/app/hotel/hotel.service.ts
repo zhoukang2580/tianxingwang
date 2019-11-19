@@ -389,7 +389,7 @@ export class HotelService {
       }
     });
     await m.present();
-    this.calendarService.setSelectedDaysSource(this.calendarService.getSelectedDays());
+    // this.calendarService.setSelectedDaysSource(this.calendarService.getSelectedDays());
     const result = await m.onDidDismiss();
     if (result.data) {
       const data = result.data as DayModel[];
