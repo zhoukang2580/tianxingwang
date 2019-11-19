@@ -126,10 +126,8 @@ export class AccountBindPage implements OnInit, OnDestroy {
       MobileCode: this.form.value.MobileCode
     };
     const res = await this.apiService
-      .getPromiseData<{
-        SendInterval: number;
-        ExpiredInterval: number;
-      }>(req).catch(_ => {
+      .getPromiseData<any>(req)
+      .then(_ => true).catch(_ => {
         AppHelper.alert(_);
         return false;
       });
