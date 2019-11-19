@@ -305,10 +305,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.isLoading = true;
       this.flyDayService.setSelectedDaysSource([this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date)]);
       // this.moveDayToSearchDate();
-
-      if (this.list) {
-        this.list.nativeElement.innerHTML = "";
-      }
       if (this.refresher) {
         this.refresher.complete();
         setTimeout(() => {
@@ -316,7 +312,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         }, 100);
         setTimeout(() => {
           this.refresher.disabled = false;
-        }, 150);
+        }, 140);
+      }
+      if (this.list) {
+        this.list.nativeElement.innerHTML = "";
       }
       this.apiService.showLoadingView();
       if (!keepSearchCondition) {
@@ -349,6 +348,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         // 强制从服务器端返回新数据
         data = await this.loadPolicyedFlightsAsync(this.flightJourneyList);
       }
+     
       // 根据筛选条件过滤航班信息：
       const filteredFlightJourenyList = this.filterFlightJourneyList(data);
       this.isFiltered =

@@ -58,8 +58,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content #cnt>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh(true,false)" pullFactor="0.8" pullMin="100" pullMax="200">
-
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh(true,false)" >
   </ion-refresher>
   <app-or-comp *ngIf='isLoading'>
     <ion-label>{{currentProcessStatus||"数据即将加载完成"}}</ion-label>
