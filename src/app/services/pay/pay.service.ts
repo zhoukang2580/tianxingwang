@@ -54,7 +54,7 @@ export class PayService {
                     console.log("支付宝支付结果：", JSON.stringify(n));
                     console.log("支付宝支付结果：" + typeof n);
                     if (n.resultStatus == '9000') {
-                      resolve(r.Data.Number);
+                      resolve(r.Data.Number||"支付操作完成");
                     } else {
                       reject(n.memo || n.result || n.resultStatus);
                     }
@@ -131,6 +131,7 @@ export class PayService {
                   return false;
                 });
                 if (!ok) {
+                  reject("唤起微信支付失败");
                   return;
                 }
                 WechatHelper.wx.chooseWXPay({
@@ -140,7 +141,7 @@ export class PayService {
                   signType: r.Data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
                   paySign: r.Data.paySign, // 支付签名
                   success: res => {
-                    resolve(r.Data.Number);
+                    resolve(r.Data.Number||"支付操作完成");
                     //  if(res.errMsg=="chooseWXPay:ok")
                     //  {
                     //     resolve("success");
@@ -164,14 +165,13 @@ export class PayService {
                   .pay(payInfo as any)
                   .then(n => {
                     console.log("wechat 支付成功返回结果：" + JSON.stringify(n));
-
-                    resolve(r.Data.Number);
+                    resolve(r.Data.Number||"支付操作完成");
                   })
                   .catch(e => {
                     console.log("wechat 支付成功返回结果：" + typeof e);
                     console.log("wechat 支付成功返回结果：" + JSON.stringify(e));
                     // AppHelper.alert(e.message || e);
-                    reject(e.message || `${e}`.includes("-2") ? "用户取消" : `微信支付结果：${e}`.replace(",(null)", ""));
+                    reject(e.message || `${e}`.includes("-2") ? "用户取消" : `${e}`.includes("-1")?"签名错误、未注册APPID、项目设置APPID不正确、注册的APPID与设置的不匹配": `微信支付结果：${e}`.replace(",(null)", ""));
                   });
               }
             } else {

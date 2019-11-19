@@ -23,7 +23,8 @@ import {
   TravelFormEntity,
   TravelUrlInfo,
   PassengerBookInfo,
-  InitialBookDtoModel
+  InitialBookDtoModel,
+  IBookOrderResult
 } from "./../../tmc/tmc.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import {
@@ -84,7 +85,7 @@ import { IPassengerHotelBookInfo } from 'src/app/hotel/book/book.page';
   ]
 })
 export class BookPage implements OnInit, AfterViewInit {
-  isSubmitDisabled=false;
+  isSubmitDisabled = false;
   initialBookDtoModel: InitialBookDtoModel;
   errors: any;
   OrderTravelType = OrderTravelType;
@@ -492,7 +493,7 @@ export class BookPage implements OnInit, AfterViewInit {
     this.natCtrl.back();
   }
   async bookFlight(isSave: boolean = false) {
-    if(this.isSubmitDisabled){
+    if (this.isSubmitDisabled) {
       return;
     }
     const bookDto: OrderBookDto = new OrderBookDto();
@@ -503,13 +504,14 @@ export class BookPage implements OnInit, AfterViewInit {
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto);
     if (canBook && canBook2) {
-      const res = await this.flightService.bookFlight(bookDto).catch(e => {
+      const res: IBookOrderResult = await this.flightService.bookFlight(bookDto).catch(e => {
         AppHelper.alert(e);
-        return { TradeNo: "" };
+        return null;
       });
       if (res) {
         if (res.TradeNo) {
-          this.isSubmitDisabled=true;
+          AppHelper.toast('下单成功!',1400,"top");
+          this.isSubmitDisabled = true;
           this.flightService.removeAllBookInfos();
           if (
             !isSave &&
@@ -520,10 +522,14 @@ export class BookPage implements OnInit, AfterViewInit {
             const canPay = await this.checkPay(res.TradeNo);
             this.isCheckingPay = false;
             if (canPay) {
-              await this.tmcService.payOrder(res.TradeNo);
+              if (res.HasTasks) {
+                await AppHelper.alert(LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),true);
+              } else {
+                await this.tmcService.payOrder(res.TradeNo);
+              }
             } else {
               await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingTip()
+                LanguageHelper.Order.getBookTicketWaitingTip(),true
               );
             }
           } else {
@@ -932,7 +938,7 @@ export class BookPage implements OnInit, AfterViewInit {
             .map(item => {
               const bookInfo = item.modal && item.modal.bookInfo;
               return {
-                passengerCredential:item.modal&&item.modal.credential,
+                passengerCredential: item.modal && item.modal.credential,
                 from:
                   bookInfo &&
                   bookInfo.flightSegment &&

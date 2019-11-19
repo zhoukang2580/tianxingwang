@@ -6,7 +6,8 @@ import {
   TmcService,
   PassengerBookInfo,
   InitialBookDtoModel,
-  FlightHotelTrainType
+  FlightHotelTrainType,
+  IBookOrderResult
 } from "src/app/tmc/tmc.service";
 import {
   ModalController,
@@ -1087,7 +1088,7 @@ export class FlightService {
   async getAllLocalAirports() {
     return this.tmcService.getAllLocalAirports();
   }
-  async bookFlight(bookDto: OrderBookDto): Promise<{ TradeNo: string }> {
+  async bookFlight(bookDto: OrderBookDto): Promise<IBookOrderResult> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Flight-Book";
     
@@ -1095,7 +1096,7 @@ export class FlightService {
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;
-    return this.apiService.getPromiseData<{ TradeNo: string }>(req);
+    return this.apiService.getPromiseData<IBookOrderResult>(req);
   }
   async getPassengerCredentials(
     accountIds: string[]

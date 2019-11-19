@@ -1025,11 +1025,12 @@ export class BookPage implements OnInit, AfterViewInit {
       const res = await this.hotelService.onBook(bookDto)
         .catch(e => {
           AppHelper.alert(e);
-          return { TradeNo: "" };
+          return { TradeNo: "",HasTasks:true };
         });
       this.isSubmitDisabled = false;
       if (res) {
         if (res.TradeNo) {
+          AppHelper.toast('下单成功!',1400,"top");
           this.isSubmitDisabled=true;
           this.isPlaceOrderOk = true;
           if (
@@ -1041,7 +1042,11 @@ export class BookPage implements OnInit, AfterViewInit {
             const canPay = await this.checkPay(res.TradeNo);
             this.isCheckingPay = false;
             if (canPay) {
-              await this.tmcService.payOrder(res.TradeNo);
+              if (res.HasTasks) {
+                await AppHelper.alert(LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),true);
+              } else {
+                await this.tmcService.payOrder(res.TradeNo);
+              }
             } else {
               await AppHelper.alert(
                 LanguageHelper.Order.getBookTicketWaitingTip(), true

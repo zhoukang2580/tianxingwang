@@ -20,7 +20,8 @@ import {
   PassengerBookInfo,
   TmcService,
   InitialBookDtoModel,
-  FlightHotelTrainType
+  FlightHotelTrainType,
+  IBookOrderResult
 } from "../tmc/tmc.service";
 import { CredentialsType } from "../member/pipe/credential.pipe";
 import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
@@ -977,14 +978,14 @@ export class TrainService {
       return [];
     });
   }
-  async bookTrain(bookDto: OrderBookDto): Promise<{ TradeNo: string }> {
+  async bookTrain(bookDto: OrderBookDto): Promise<IBookOrderResult> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Train-Book";
     bookDto.Channel = this.tmcService.getChannel();
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;
-    return this.apiService.getPromiseData<{ TradeNo: string }>(req);
+    return this.apiService.getPromiseData<IBookOrderResult>(req);
   }
   removeAllBookInfos() {
     this.bookInfos = [];

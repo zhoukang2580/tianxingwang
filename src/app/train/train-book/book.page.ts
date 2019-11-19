@@ -1,3 +1,4 @@
+import { IBookOrderResult } from './../../tmc/tmc.service';
 import { OrderEntity } from 'src/app/order/models/OrderEntity';
 import { ITrainInfo } from "../train.service";
 import { CalendarService } from "../../tmc/calendar.service";
@@ -76,7 +77,7 @@ import { ITmcOutNumberInfo } from 'src/app/tmc/components/book-tmc-outnumber/boo
   styleUrls: ["./book.page.scss"]
 })
 export class TrainBookPage implements OnInit, AfterViewInit {
-  isSubmitDisabled=false;
+  isSubmitDisabled = false;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent) cnt: IonContent;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
@@ -370,7 +371,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     }
   }
   async bookTrain(isSave?: boolean) {
-    if(this.isSubmitDisabled){
+    if (this.isSubmitDisabled) {
       return;
     }
     const bookDto: OrderBookDto = new OrderBookDto();
@@ -386,13 +387,14 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       bookDto.Orders = [this.trainService.exchangedTrainTicketInfo.order];
     }
     if (canBook && canBook2) {
-      const res = await this.trainService.bookTrain(bookDto).catch(e => {
+      const res: IBookOrderResult = await this.trainService.bookTrain(bookDto).catch(e => {
         AppHelper.alert(e);
-        return { TradeNo: "" };
+        return null;
       });
       if (res) {
         if (res.TradeNo) {
-          this.isSubmitDisabled=true;
+          AppHelper.toast('下单成功!',1400,"top");
+          this.isSubmitDisabled = true;
           const isSelf = (await this.staffService.isSelfBookType());
           if (
             !isSave &&
@@ -403,17 +405,21 @@ export class TrainBookPage implements OnInit, AfterViewInit {
             const canPay = (await this.checkPay(res.TradeNo));
             this.isCheckingPay = false;
             if (canPay) {
-              await this.tmcService.payOrder(res.TradeNo);
+              if (res.HasTasks) {
+                await AppHelper.alert(LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),true);
+              } else {
+                await this.tmcService.payOrder(res.TradeNo);
+              }
             } else {
               await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingTip()
+                LanguageHelper.Order.getBookTicketWaitingTip(),true
               );
             }
           } else {
             if (isSave) {
-              await AppHelper.alert("订单已保存");
+              await AppHelper.alert("订单已保存",true);
             } else {
-              await AppHelper.alert("下单成功");
+              await AppHelper.alert("下单成功",true);
             }
           }
           this.trainService.removeAllBookInfos();
@@ -497,7 +503,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         return arr;
       }, 0);
       // console.log("totalPrice ", totalPrice);
-      const fees=this.getTotalServiceFees();
+      const fees = this.getTotalServiceFees();
       totalPrice = AppHelper.add(fees, totalPrice);
       this.totalPriceSource.next(totalPrice);
     }
@@ -948,7 +954,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     if (result) {
       this.viewModel.combindInfos.forEach(item =>
         item.tmcOutNumberInfos.forEach(info => {
-          info.loadTravelUrlErrorMsg = result[info.staffNumber]&&result[info.staffNumber].Message;
+          info.loadTravelUrlErrorMsg = result[info.staffNumber] && result[info.staffNumber].Message;
           info.travelUrlInfos = result[info.staffNumber] && result[info.staffNumber].Data;
           if (
             !info.value &&

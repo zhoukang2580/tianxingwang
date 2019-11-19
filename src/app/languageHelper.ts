@@ -28,6 +28,9 @@ export class LanguageHelper {
     },
     getBookTicketWaitingTip: () => {
       return "您的订单正在预订，请稍后到我的订单中支付";
+    },
+    getBookTicketWaitingApprovToPayTip: () => {
+      return "下单成功！您的订单需要审批，请于审批完成后到订单列表进行支付";
     }
   };
   static CurrencySymbols = {

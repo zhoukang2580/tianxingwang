@@ -11,7 +11,8 @@ import {
   PassengerBookInfo,
   TmcService,
   InitialBookDtoModel,
-  FlightHotelTrainType
+  FlightHotelTrainType,
+  IBookOrderResult
 } from "../tmc/tmc.service";
 import { Subject, combineLatest } from "rxjs";
 import { StaffService } from "../hr/staff.service";
@@ -734,7 +735,7 @@ export class HotelService {
       top = await this.modalCtrl.getTop();
     }
   }
-  async onBook(bookDto: OrderBookDto): Promise<{ TradeNo: string }> {
+  async onBook(bookDto: OrderBookDto): Promise<IBookOrderResult> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Hotel-Book";
     bookDto.Channel = this.tmcService.getChannel();
@@ -742,7 +743,7 @@ export class HotelService {
     req.IsShowLoading = true;
     req.Timeout = 60;
     this.apiService.showLoadingView();
-    return this.apiService.getPromiseData<{ TradeNo: string }>(req);
+    return this.apiService.getPromiseData<{ TradeNo: string;HasTasks:boolean; }>(req);
   }
 }
 export interface IHotelInfo {

@@ -143,7 +143,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   isSelfBookType = true;
   currentProcessStatus = "正在获取航班列表";
   st = 0;
-  timeoutid: any;
   selectedPassengersNumbers$: Observable<number>;
   goAndBackFlightDateTime$: Observable<{
     goArrivalDateTime: string;
@@ -299,84 +298,81 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     console.log("onRotateIconDone");
   }
   async doRefresh(loadDataFromServer: boolean, keepSearchCondition: boolean) {
-    if (this.timeoutid) {
-      clearTimeout(this.timeoutid);
-    }
-    this.timeoutid = setTimeout(async () => {
-      try {
-        if (this.isLoading) {
-          return;
-        }
-        this.isLoading = true;
-        this.flyDayService.setSelectedDaysSource([this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date)]);
-        // this.moveDayToSearchDate();
-
-        if (this.list) {
-          this.list.nativeElement.innerHTML = "";
-        }
-        if (this.refresher) {
-          this.refresher.complete();
-          this.refresher.disabled = true;
-          setTimeout(() => {
-            this.refresher.disabled = false;
-          }, 100);
-        }
-        this.apiService.showLoadingView();
-        if (!keepSearchCondition) {
-          if (this.filterComp) {
-            this.filterComp.onReset();
-          }
-          this.filterCondition = FilterConditionModel.init();
-          setTimeout(() => {
-            this.activeTab = "none";
-          }, 0);
-        }
-        this.vmFlights = [];
-        this.isLoading = true;
-        if (
-          !this.flightJourneyList ||
-          !this.flightJourneyList.length ||
-          loadDataFromServer
-        ) {
-          this.currentProcessStatus = "正在获取航班列表";
-          this.flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync();
-          if (this.flightJourneyList && this.flightJourneyList.length) {
-            await this.renderFlightList(
-              this.flightService.getTotalFlySegments(this.flightJourneyList)
-            );
-          }
-        }
-        let data = JSON.parse(JSON.stringify(this.flightJourneyList));
-        this.hasDataSource.next(false);
-        if (loadDataFromServer) {
-          // 强制从服务器端返回新数据
-          data = await this.loadPolicyedFlightsAsync(this.flightJourneyList);
-        }
-        // 根据筛选条件过滤航班信息：
-        const filteredFlightJourenyList = this.filterFlightJourneyList(data);
-        this.isFiltered =
-          this.filterComp &&
-          Object.keys(this.filterComp.userOps).some(
-            k => this.filterComp.userOps[k]
-          );
-        const segments = this.flightService.filterPassengerPolicyFlights(
-          null,
-          filteredFlightJourenyList,
-          this.policyflights
-        );
-        this.st = Date.now();
-        this.vmFlights = segments;
-        await this.renderFlightList(segments);
-        this.hasDataSource.next(!!this.vmFlights.length && !this.isLoading);
-        this.apiService.hideLoadingView();
-        this.isLoading = false;
-      } catch (e) {
-        if (!environment.production) {
-          console.error(e);
-        }
-        this.isLoading = false;
+    try {
+      if (this.isLoading) {
+        return;
       }
-    }, 0);
+      this.isLoading = true;
+      this.flyDayService.setSelectedDaysSource([this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date)]);
+      // this.moveDayToSearchDate();
+
+      if (this.list) {
+        this.list.nativeElement.innerHTML = "";
+      }
+      if (this.refresher) {
+        this.refresher.complete();
+        setTimeout(() => {
+          this.refresher.disabled = true;
+        }, 100);
+        setTimeout(() => {
+          this.refresher.disabled = false;
+        }, 150);
+      }
+      this.apiService.showLoadingView();
+      if (!keepSearchCondition) {
+        if (this.filterComp) {
+          this.filterComp.onReset();
+        }
+        this.filterCondition = FilterConditionModel.init();
+        setTimeout(() => {
+          this.activeTab = "none";
+        }, 0);
+      }
+      this.vmFlights = [];
+      this.isLoading = true;
+      if (
+        !this.flightJourneyList ||
+        !this.flightJourneyList.length ||
+        loadDataFromServer
+      ) {
+        this.currentProcessStatus = "正在获取航班列表";
+        this.flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync();
+        if (this.flightJourneyList && this.flightJourneyList.length) {
+          await this.renderFlightList(
+            this.flightService.getTotalFlySegments(this.flightJourneyList)
+          );
+        }
+      }
+      let data = JSON.parse(JSON.stringify(this.flightJourneyList));
+      this.hasDataSource.next(false);
+      if (loadDataFromServer) {
+        // 强制从服务器端返回新数据
+        data = await this.loadPolicyedFlightsAsync(this.flightJourneyList);
+      }
+      // 根据筛选条件过滤航班信息：
+      const filteredFlightJourenyList = this.filterFlightJourneyList(data);
+      this.isFiltered =
+        this.filterComp &&
+        Object.keys(this.filterComp.userOps).some(
+          k => this.filterComp.userOps[k]
+        );
+      const segments = this.flightService.filterPassengerPolicyFlights(
+        null,
+        filteredFlightJourenyList,
+        this.policyflights
+      );
+      this.st = Date.now();
+      this.vmFlights = segments;
+      await this.renderFlightList(segments);
+      this.hasDataSource.next(!!this.vmFlights.length && !this.isLoading);
+      this.apiService.hideLoadingView();
+      this.isLoading = false;
+    } catch (e) {
+      if (!environment.production) {
+        console.error(e);
+      }
+      this.isLoading = false;
+    }
   }
   private scrollToTop() {
     setTimeout(() => {

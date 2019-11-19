@@ -560,34 +560,7 @@ export class TmcService {
       .catch(_ => false);
   }
 
-  // async getPassengerCredentials(
-  //   accountIds: string[]
-  // ): Promise<{ [accountId: string]: CredentialsEntity[] }> {
-  //   const req = new RequestEntity();
-  //   req.Method = "TmcApiBookUrl-Home-Credentials";
-  //   req.Data = {
-  //     AccountIds: accountIds.join(";")
-  //   };
-  //   req.IsShowLoading = true;
-  //   req.Timeout = 60;
-  //   return new Promise<any>((s, rej) => {
-  //     if (this.getPassengerCredentialsSbuscription) {
-  //       this.getPassengerCredentialsSbuscription.unsubscribe();
-  //     }
-  //     this.getPassengerCredentialsSbuscription = this.apiService.getResponse<{
-  //       [accountId: string]: CredentialsEntity[];
-  //     }>(req)
-  //       .subscribe(res => {
-  //         if (res.Status) {
-  //           s(res.Data);
-  //         } else {
-  //           rej(res.Message);
-  //         }
-  //       }, e => {
-  //         rej(e);
-  //       });
-  //   });
-  // }
+  
   async getPassengerCredentials(
     accountIds: string[], isShowLoading = false
   ): Promise<{ [accountId: string]: CredentialsEntity[] }> {
@@ -662,7 +635,7 @@ export interface TravelUrlInfo {
   TravelNumber: string; // TR20190703763
   Trips: string[]; // 火车行程: 07-26 至 07-26 苏州 至 南京"
 }
-
+export interface IBookOrderResult{ TradeNo: string;HasTasks:boolean; }
 export class TravelFormEntity {
   Tmc: TmcEntity;
   /// <summary>
