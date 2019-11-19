@@ -164,14 +164,17 @@ export class ApiService {
     }
     return req;
   }
-  async getUrl(req: RequestEntity) {
-    if(req.Url){
-      console.log("指定了req.url="+req.Url);
-      return Promise.resolve(req.Url);
+  async getUrl(req: RequestEntity) :Promise<string>{
+    let url:string;
+    if(req.Url&&req.IsUseReqUrl){
+      url=req.Url;
     }
     req.Url = req.Url || AppHelper.getApiUrl() + "/Home/Proxy";
     if (!req.IsForward && !this.apiConfig) {
       await this.loadApiConfig();
+    }
+    if(url){
+      return url;
     }
     if (this.apiConfig && !req.IsForward && req.Method) {
       const urls = req.Method.split("-");

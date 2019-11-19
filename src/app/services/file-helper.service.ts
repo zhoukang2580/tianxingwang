@@ -177,6 +177,7 @@ export class FileHelperService {
     const req = new RequestEntity();
     req.Method = "ServiceVersionUrl-Home-Index";
     req.Url='http://test.version.testskytrip.com/home/index';
+    req.IsUseReqUrl=true;
     req.Data = {
       "Product": `${await this.getPackageName()}.${this.plt.is("ios") ? "ios"
         : "android"}`.toLowerCase()
