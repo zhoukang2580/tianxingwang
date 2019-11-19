@@ -134,6 +134,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
         return false;
       });
     if (res) {
+      await AppHelper.alert("绑定成功");
       this.jump();
     }
   }
