@@ -980,7 +980,7 @@ export class TrainService {
   async bookTrain(bookDto: OrderBookDto): Promise<{ TradeNo: string }> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Train-Book";
-    bookDto.Channel = "Mobile";
+    bookDto.Channel = this.tmcService.getChannel();
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;

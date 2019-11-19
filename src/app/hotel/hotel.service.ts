@@ -737,7 +737,7 @@ export class HotelService {
   async onBook(bookDto: OrderBookDto): Promise<{ TradeNo: string }> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Hotel-Book";
-    bookDto.Channel = "Mobile";
+    bookDto.Channel = this.tmcService.getChannel();
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;
