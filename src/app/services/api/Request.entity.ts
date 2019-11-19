@@ -14,8 +14,5 @@ export class RequestEntity {
   FileValue?: string;
   IsShowLoading?: boolean;
   IsForward?: boolean;
-  IsReplaceDomain?: boolean;
-  OldDomain?: string;
-  NewDomain?: string;
   Timeout?: number;
 }

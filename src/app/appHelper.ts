@@ -18,11 +18,8 @@ export class AppHelper {
   private static toastController: ToastController;
   private static alertController: AlertController;
   private static modalController: ModalController;
-  static _appDomain = environment.production || navigator.userAgent.includes("Mac OS") ? "testskytrip.com" : "testskytrip.com";
+  static _appDomain = environment.production ? "sky-trip.com" : "testskytrip.com";
   constructor() {
-    if (environment.production && environment.isRealEnv) {
-      AppHelper._appDomain = "sky-trip.com";
-    }
   }
   static _domain;
   static _queryParamers = {};
@@ -402,7 +399,7 @@ export class AppHelper {
     return url.replace(this._appDomain, domain).replace("test.", "");
   }
   static getApiUrl() {
-    if (environment.production && environment.isRealEnv) {
+    if (environment.production) {
       return "http://app." + this._appDomain;
     }
     return "http://test.app.testskytrip.com";

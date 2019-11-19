@@ -165,6 +165,10 @@ export class ApiService {
     return req;
   }
   async getUrl(req: RequestEntity) {
+    if(req.Url){
+      console.log("指定了req.url="+req.Url);
+      return Promise.resolve(req.Url);
+    }
     req.Url = req.Url || AppHelper.getApiUrl() + "/Home/Proxy";
     if (!req.IsForward && !this.apiConfig) {
       await this.loadApiConfig();
@@ -175,9 +179,6 @@ export class ApiService {
       if (url) {
         req.Url = url + "/" + urls[1] + "/" + urls[2];
       }
-    }
-    if (req.IsReplaceDomain) {
-      req.Url = req.Url.replace(req.OldDomain, req.NewDomain);
     }
     return req.Url;
   }
@@ -361,7 +362,7 @@ export class ApiService {
         return Promise.resolve(this.apiConfig);
       }
     }
-    if (this.fetchingReq.isFetching) {
+    if (this.fetchingReq&&this.fetchingReq.isFetching) {
       return this.fetchingReq.promise
     }
     const url = AppHelper.getApiUrl() + "/Home/ApiConfig";
@@ -374,6 +375,7 @@ export class ApiService {
             timeout(due),
             finalize(() => {
               setTimeout(() => {
+                this.fetchingReq=null;
                 if (sub) {
                   console.log("loadUrls unsubscribe");
                   sub.unsubscribe();
