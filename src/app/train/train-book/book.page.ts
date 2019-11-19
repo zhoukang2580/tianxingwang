@@ -76,6 +76,7 @@ import { ITmcOutNumberInfo } from 'src/app/tmc/components/book-tmc-outnumber/boo
   styleUrls: ["./book.page.scss"]
 })
 export class TrainBookPage implements OnInit, AfterViewInit {
+  isSubmitDisabled=false;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent) cnt: IonContent;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
@@ -369,6 +370,9 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     }
   }
   async bookTrain(isSave?: boolean) {
+    if(this.isSubmitDisabled){
+      return;
+    }
     const bookDto: OrderBookDto = new OrderBookDto();
     bookDto.IsFromOffline = isSave;
     let canBook = false;
@@ -388,6 +392,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       });
       if (res) {
         if (res.TradeNo) {
+          this.isSubmitDisabled=true;
           const isSelf = (await this.staffService.isSelfBookType());
           if (
             !isSave &&

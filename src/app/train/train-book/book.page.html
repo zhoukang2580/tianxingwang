@@ -219,8 +219,8 @@
         <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)}}</ion-text>
       </ion-button>
     </ion-buttons>
-    <ion-button slot='end' size='small' color='secondary' (click)='bookTrain()'> 提交</ion-button>
-    <ion-button slot='end' size='small' *ngIf='isCanSave$|async' color='secondary' (click)='bookTrain(true)'>保存订单</ion-button>
+    <ion-button slot='end' size='small' color='secondary' (click)='bookTrain()' [disabled]='isSubmitDisabled'> 提交</ion-button>
+    <ion-button slot='end' size='small' *ngIf='isCanSave$|async' color='secondary' (click)='bookTrain(true)' [disabled]='isSubmitDisabled'>保存订单</ion-button> 
   </ion-toolbar>
 </ion-footer>
 <app-waiting-check-pay [isLoading]='true' *ngIf='isCheckingPay'>正在预订中，请稍后...</app-waiting-check-pay> 

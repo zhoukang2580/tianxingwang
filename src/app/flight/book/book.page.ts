@@ -84,6 +84,7 @@ import { IPassengerHotelBookInfo } from 'src/app/hotel/book/book.page';
   ]
 })
 export class BookPage implements OnInit, AfterViewInit {
+  isSubmitDisabled=false;
   initialBookDtoModel: InitialBookDtoModel;
   errors: any;
   OrderTravelType = OrderTravelType;
@@ -491,6 +492,9 @@ export class BookPage implements OnInit, AfterViewInit {
     this.natCtrl.back();
   }
   async bookFlight(isSave: boolean = false) {
+    if(this.isSubmitDisabled){
+      return;
+    }
     const bookDto: OrderBookDto = new OrderBookDto();
     bookDto.IsFromOffline = isSave;
     let canBook = false;
@@ -505,6 +509,7 @@ export class BookPage implements OnInit, AfterViewInit {
       });
       if (res) {
         if (res.TradeNo) {
+          this.isSubmitDisabled=true;
           this.flightService.removeAllBookInfos();
           if (
             !isSave &&

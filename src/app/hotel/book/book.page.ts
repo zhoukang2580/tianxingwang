@@ -108,7 +108,7 @@ export class BookPage implements OnInit, AfterViewInit {
   illegalReasons: any[];
   travelForm: TravelFormEntity;
   isCheckingPay = false;
-  isSubmitting = false;
+  isSubmitDisabled = false;
   isPlaceOrderOk = false;
   checkPayCountIntervalId: any;
   checkPayCount = 3;
@@ -1001,6 +1001,9 @@ export class BookPage implements OnInit, AfterViewInit {
     }
   }
   async onBook(isSave: boolean) {
+    if(this.isSubmitDisabled){
+      return;
+    }
     const bookDto: OrderBookDto = new OrderBookDto();
     bookDto.IsFromOffline = isSave;
     let canBook = false;
@@ -1018,15 +1021,16 @@ export class BookPage implements OnInit, AfterViewInit {
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto);
     if (canBook && canBook2) {
-      this.isSubmitting = true;
+      this.isSubmitDisabled = true;
       const res = await this.hotelService.onBook(bookDto)
         .catch(e => {
           AppHelper.alert(e);
           return { TradeNo: "" };
         });
-      this.isSubmitting = false;
+      this.isSubmitDisabled = false;
       if (res) {
         if (res.TradeNo) {
+          this.isSubmitDisabled=true;
           this.isPlaceOrderOk = true;
           if (
             !isSave &&
