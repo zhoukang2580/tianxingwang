@@ -133,7 +133,9 @@ export class AccountBindPage implements OnInit, OnDestroy {
         AppHelper.alert(_);
         return false;
       });
-    this.jump();
+    if (res) {
+      this.jump();
+    }
   }
   async bindDevice() {
     var uuid = await AppHelper.getDeviceId();
