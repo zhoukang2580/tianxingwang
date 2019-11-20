@@ -30,16 +30,14 @@ export class CabinComponent
   @Input() flights: FlightJourneyEntity[];
   @Output() sCond: EventEmitter<any>; // 搜索条件
   cabins: SearchTypeModel[] = [];
-  get  isUnlimitRadioChecked(){
-    return this.cabins&&this.cabins.every(a => !a.isChecked);
-  }
+  isUnlimitRadioChecked = true;
   isSelf = true;
-  constructor(private cabinPipe: CabintypePipe, private staffService: StaffService) {
+  constructor(private staffService: StaffService) {
     this.sCond = new EventEmitter();
   }
   onUnlimit() {
     this.reset();
-    return this.cabins.every(a => !a.isChecked);
+    this.isUnlimitRadioChecked = this.cabins.every(a => !a.isChecked);
   }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.flights && changes.flights.currentValue) {
@@ -57,13 +55,12 @@ export class CabinComponent
   }
   onionChange(evt: CustomEvent | { id: string; detail: any }) {
     this.cabins = this.cabins.map(it => {
-      if (evt.detail) {
-        it.isChecked = it.id == evt.detail.value;
-      } else {
-        it.isChecked = it.id == evt['id'];
-      }
+      it.isChecked = it.id == (evt['id'] || evt.detail.value.id);
       return it;
-    })
+    });
+    setTimeout(() => {
+      this.isUnlimitRadioChecked=this.cabins.every(it=>!it.isChecked);
+    }, 100);
     this.onSearch();
   }
   onSearch() {
