@@ -57,9 +57,12 @@
     </ion-card-header>
     <ion-card-subtitle>
       <div class='grade-stars'>
-        <span>
-          <ion-text color='secondary'>评分</ion-text>{{hotel?.Grade}}
+        <span *ngIf='hotel?.Grade as grade else nograde'>
+          <ion-text color='secondary'>评分</ion-text>{{grade}}
         </span>
+        <ng-template #nograde>
+          暂无评分
+        </ng-template>
         <div class='stars' *ngIf='getStars(hotel) as stars'>
           <ng-container *ngFor='let s of stars'>
             <ion-icon name="star" color='danger' *ngIf='s>=1'></ion-icon>
@@ -221,6 +224,6 @@
   <ion-list class='empty' *ngIf='hotel&&(!hotel["ishoteldetails"]||!hotel["isShowMap"])'></ion-list>
 </ion-content>
 <!-- <div class='hotel-images' [class.show]='isHotelImages'>
-  <app-image-swiper (close)='isHotelImages=false' class='ion-page' [imagesUrls]='getHotelImageUrls()' [pos]='curHotelImagePos' 
-    [imgStyle]='{ objectFit: "contain" }' [hasThumbs]='true' [loop]='false'></app-image-swiper>
+  <app-image-swiper (close)='isHotelImages=false' class='ion-page' [imagesUrls]='hotelImageUrls'
+    [pos]='curHotelImagePos' [imgStyle]='{ objectFit: "contain" }' [hasThumbs]='true' [loop]='false'></app-image-swiper>
 </div> -->

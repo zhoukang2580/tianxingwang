@@ -80,6 +80,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   hotelPolicy: HotelPassengerModel[];
   rects: { [key in IHotelDetailTab]: ClientRect | DOMRect };
   bookedRoomPlan: { roomPlan: RoomPlanEntity; room: RoomEntity, color: string };
+  hotelImageUrls: string[];
   get totalNights() {
     return this.hotelService.calcTotalNights(this.queryModel.checkOutDate, this.queryModel.checkInDate);
   }
@@ -233,8 +234,8 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     });
     this.config = await this.configService.get().catch(_ => null);
   }
-  getHotelImageUrls() {
-    let urls = [];
+  private getHotelImageUrls() {
+    let urls:string[] = [];
     urls =
       this.hotel &&
       this.hotel.HotelImages &&
@@ -244,7 +245,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
         urls = [this.config.DefaultImageUrl];
       }
     }
-    return urls;
+    return urls || [];
   }
   getStars(hotel: HotelEntity) {
     if (hotel && hotel.Category) {
@@ -595,11 +596,26 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.apiService.hideLoadingView();
     }, 100);
-    // this.curHotelImagePos = 1;
-    // setTimeout(() => {
-    //   this.curHotelImagePos = 0;
-    // }, 0);
+    this.curHotelImagePos = 1;
+    setTimeout(() => {
+      this.curHotelImagePos = 0;
+    }, 0);
     // this.isHotelImages = true;
+    // if (!this.hotelImageUrls || this.hotelImageUrls.length != this.getHotelImageUrls().length){
+    //   this.hotelImageUrls=[];
+    //   this.apiService.hideLoadingView();
+    //   const imgs = this.getHotelImageUrls();
+    //   const loop = ()=>{
+    //     if(imgs.length){
+    //       const slice = imgs.splice(0,15);
+    //       this.hotelImageUrls=this.hotelImageUrls.concat(slice);
+    //       window.requestAnimationFrame(loop);
+    //     }else{
+    //       this.apiService.hideLoadingView();
+    //     }
+    //   }
+    //   loop();
+    // }
   }
   onOpenMap() {
     this.segmentChanged({

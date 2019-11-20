@@ -120,22 +120,23 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
         }
       }
     }
-    // if (changes.imagesUrls && changes.imagesUrls.currentValue && !this.isSwiperInit) {
-    //   this.initImages();
-    // }
-    // if (changes.pos && changes.pos.currentValue == 0) {
-    //   console.log("this.pos", this.pos);
-    //   if (this.swiper) {
-    //     if (this.swiper.params) {
-    //       this.swiper.params.initialSlide = 0;
-    //       this.slidToPage(0);
-    //     }
-    //   }
-    // }
+    if (changes.imagesUrls && changes.imagesUrls.currentValue && (!this.images||this.images.length==0)) {
+      this.initImages();
+    }
+    if (changes.imagesUrls && changes.imagesUrls.currentValue){
+      this.update();
+    }
+    if (changes.pos && changes.pos.currentValue == 0) {
+      console.log("this.pos", this.pos);
+      if (this.swiper) {
+        if (this.swiper.params) {
+          this.swiper.params.initialSlide = 0;
+          this.slidToPage(0);
+        }
+      }
+    }
   }
   private initImages() {
-    // this.images = [];
-    // console.log("initImages");
     this.images = this.imagesUrls && this.imagesUrls.map((it, idx) => {
       return {
         active: idx == (this.pos || 0),
@@ -143,18 +144,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
         idx,
       }
     });
-    // const loop = () => {
-    //   if (!images || !images.length) {
-    // if (this.swiper) {
-    //   this.initSwiper();
-    // }
-    //     return;
-    //   } else {
-    //     this.images = this.images.concat(images.splice(0, 10));
-    //     window.requestAnimationFrame(loop);
-    //   }
-    // }
-    // loop();
+    this.initSwiper();
   }
   private initSwiper() {
     if (!this.isSwiperInit) {
@@ -284,7 +274,6 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
       this.slideEles.changes.subscribe(_ => {
         console.log("slideEles",this.slideEles.length);
         if (this.slideEles.length == (this.imagesUrls && this.imagesUrls.length)) {
-          this.initSwiper();
           this.update();
         }
       })

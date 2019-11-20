@@ -31,7 +31,7 @@
   <div class="swiper-wrapper">
     <div class="swiper-slide" *ngFor="let item of images;let i=index;" [attr.dataid]='item.idx'
       (click)='slidToPage(item.idx)'>
-      <img [lazyloadImage]='item.url' appLazyloadimage />
+      <img [lazyloadImage]='item.url?.replace("640_960","70_70")' appLazyloadimage />
     </div>
   </div>
 </div>
