@@ -46,8 +46,9 @@ export class AircompanyComponent
   }
   reset() {
     if (this.aircompanies) {
-      this.aircompanies.forEach(c => {
+      this.aircompanies=this.aircompanies.map(c => {
         c.isChecked = false;
+        return c;
       });
       this.sCond.emit(this.aircompanies.filter(c => c.isChecked));
     }

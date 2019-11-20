@@ -37,8 +37,9 @@ export class AirtypeComponent
   }
   reset() {
     if (this.airtypes) {
-      this.airtypes.forEach(c => {
+      this.airtypes=this.airtypes.map(c => {
         c.isChecked = false;
+        return c;
       });
       this.sCond.emit(this.airtypes.filter(c => c.isChecked));
     }

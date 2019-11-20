@@ -407,16 +407,20 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       return;
     }
     const color = evt.color || "";
+    const removedBookInfos: PassengerBookInfo<IHotelInfo>[] = [];
+    const policies = this.hotelPolicy || await this.getPolicy();
+    const policy = policies&&policies.find(it=>!!it.HotelPolicies.find(k=>k.UniqueIdId==this.hotelService.getRoomPlanUniqueId(evt.roomPlan)));
+    const p = policy&&policy.HotelPolicies[0]&&policy.HotelPolicies[0];
+    console.log("onBookRoomPlan", evt.roomPlan,p);
     if (color.includes("disabled")) {
-      AppHelper.alert("超标不可预订");
+      this.hotelService.getRules(evt.roomPlan)
+      AppHelper.alert(`超标不可预订,${p&&p.Rules?p.Rules.join(","):""}`);
       return;
     }
     if (color.includes("full")) {
       AppHelper.alert("已满房，不可预订");
       return;
     }
-    const removedBookInfos: PassengerBookInfo<IHotelInfo>[] = [];
-    const policies = this.hotelPolicy || await this.getPolicy();
     const bookInfos = this.hotelService.getBookInfos();
     const isSelf = await this.staffService.isSelfBookType();
     if (bookInfos.length === 0) {

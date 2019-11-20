@@ -205,6 +205,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       .getHotelList(this.hotelQueryModel)
       .pipe(
         finalize(() => {
+          this.lastCityCode = this.searchHotelModel && this.searchHotelModel.destinationCity.CityCode;
           this.isLoading = false;
           setTimeout(() => {
             if (this.scroller) {

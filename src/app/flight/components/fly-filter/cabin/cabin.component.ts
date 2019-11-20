@@ -46,8 +46,9 @@ export class CabinComponent
   }
   reset() {
     if (this.cabins) {
-      this.cabins.forEach(c => {
+      this.cabins=this.cabins.map(c => {
         c.isChecked = false;
+        return c;
       });
       this.onSearch();
     }
