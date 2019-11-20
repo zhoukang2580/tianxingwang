@@ -165,29 +165,10 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
   }
 
   async remove(item: PassengerBookInfo<IFlightSegmentInfo>, message?: string) {
-    const al = await this.alertController.create({
-      header: LanguageHelper.getHintTip(),
-      message:
-        message || LanguageHelper.Flight.getConfirmRemoveFlightSegmentTip(),
-      buttons: [
-        {
-          text: LanguageHelper.getConfirmTip(),
-          handler: async () => {
-            await this.flightService.removePassengerBookInfo(item);
-            if (al) {
-              al.dismiss();
-            }
-          }
-        },
-        {
-          text: LanguageHelper.getCancelTip(),
-          handler: () => { }
-        }
-      ]
-    });
-    al.backdropDismiss = false;
-    await al.present();
-    await al.onDidDismiss();
+    const ok = await AppHelper.alert( message || LanguageHelper.Flight.getConfirmRemoveFlightSegmentTip(),true,LanguageHelper.getConfirmTip(),LanguageHelper.getCancelTip());
+    if(ok){
+      await this.flightService.removePassengerBookInfo(item);
+    }
   }
   getDate(s: FlightSegmentEntity) {
     if (!s) {
