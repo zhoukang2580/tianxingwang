@@ -65,7 +65,7 @@
 <ion-footer>
   <ion-toolbar>
     <ion-button slot='end' (click)='nextStep()' color='secondary'
-      [disabled]='(passengerAndBookInfos$|async).length <= 0'>下一步
+      [disabled]='bookInfos?.length <= 0'>下一步
     </ion-button>
   </ion-toolbar>
 </ion-footer>

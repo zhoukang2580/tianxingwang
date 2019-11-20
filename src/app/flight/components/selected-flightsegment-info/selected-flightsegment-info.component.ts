@@ -32,6 +32,7 @@ import { FlightCabinEntity } from '../../models/flight/FlightCabinEntity';
   styleUrls: ["./selected-flightsegment-info.component.scss"]
 })
 export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
+  bookInfos:PassengerBookInfo<IFlightSegmentInfo>[];
   passengerAndBookInfos$: Observable<PassengerBookInfo<IFlightSegmentInfo>[]>;
   searchModel: SearchFlightModel;
   searchModelSubscrition = Subscription.EMPTY;
@@ -62,6 +63,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
       .getPassengerBookInfoSource()
       .pipe(
         tap(async infos => {
+          this.bookInfos=infos.filter(it=>!!it.bookInfo);
           if (await this.staffService.isSelfBookType()) {
             const goinfo = infos.find(
               item =>
