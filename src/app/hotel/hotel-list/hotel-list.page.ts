@@ -87,9 +87,10 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   ) { }
   onSearchItemClick(item: { Text: string; Value: string }) {
     this.isShowSearchBar = false;
-    if (item) {
+    if (item&&item.Value) {
       this.hotelQueryModel.HotelId = item.Value;
-      this.keyowrds = this.hotelQueryModel.SearchKey = item.Text;
+      // this.keyowrds = this.hotelQueryModel.SearchKey = item.Text;
+      this.vmKeyowrds="";
       this.doRefresh(true);
     }
   }
@@ -118,6 +119,11 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       });
       this.subscriptions.push(sub);
     }
+  }
+  onSearch(){
+    this.doRefresh();
+    this.isShowSearchBar=false;
+    this.vmSearchTextList=[];
   }
   getStars(hotel: HotelEntity) {
     if (hotel && hotel.Category) {
@@ -176,6 +182,9 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.queryComp) {
       this.queryComp.onReset();
     }
+    const searchText=this.vmKeyowrds&&this.vmKeyowrds.trim();
+    this.hotelQueryModel.SearchKey=searchText&&!this.hotelQueryModel.HotelId?searchText:null;
+    this.vmKeyowrds="";
     if (!isKeepQueryCondition) {
       // if (this.queryComp) {
       //   this.queryComp.onReset();
@@ -211,7 +220,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
             if (this.scroller) {
               this.scroller.complete();
             }
-          }, 10);
+          }, 100);
         })
       )
       .subscribe(
@@ -256,12 +265,16 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   }
   onSearchClick() {
     this.isShowSearchBar = true;
-    this.hotelQueryModel.HotelId = "";
-    this.hotelQueryModel.SearchKey = "";
+    this.hotelQueryModel.HotelId = ``;
+    this.hotelQueryModel.SearchKey = null;
     this.keyowrds = this.vmKeyowrds = "";
     this.vmSearchTextList = [];
   }
   back() {
+    if(this.isShowSearchBar){
+      this.isShowSearchBar=false;
+      return ;
+    }
     this.router.navigate([AppHelper.getRoutePath("search-hotel")]);
   }
   ngOnDestroy() {
@@ -277,7 +290,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       this.isLeavePage = false;
       const c = this.hotelService.getSearchHotelModel();
       if (this.lastCityCode !== (c && c.destinationCity && c.destinationCity.CityCode)) {
-        this.doRefresh(true);
+        this.doRefresh(false);
       }
     });
     this.subscriptions.push(sub0);

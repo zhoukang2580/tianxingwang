@@ -7,15 +7,20 @@
     </ion-buttons>
     <app-date-city [checkInDate]='searchHotelModel?.checkInDate' *ngIf='!isShowSearchBar'
       [checkOutDate]='searchHotelModel?.checkOutDate' [city]='searchHotelModel?.destinationCity'
-      (cityClick)='onCityClick()' (dateChange)='onDateChange()' (searchBarClick)='onSearchClick()' [keywords]='keyowrds'>
+      (cityClick)='onCityClick()' (dateChange)='onDateChange()' (searchBarClick)='onSearchClick()'
+      [keywords]='keyowrds'>
     </app-date-city>
-    <ion-searchbar [debounce]='700' [(ngModel)]='vmKeyowrds' [animated]='true' placeholder=""
+    <ion-searchbar [debounce]='700' type='search' [(ngModel)]='vmKeyowrds' [animated]='true' placeholder=""
       (ionChange)='onSearchByKeywords()' mode='ios' *ngIf='isShowSearchBar'>
     </ion-searchbar>
+    <ion-buttons slot='end' *ngIf='isShowSearchBar'>
+      <ion-button color='secondary' size='small' (click)='onSearch()'>
+        搜索
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
   <ion-toolbar class='query-toolbar' #querytoolbar *ngIf='!isShowSearchBar'>
-    <app-hotel-query [conditions]='conditionModel' 
-      (hotelQueryChange)='onHotelQueryChange($event)'></app-hotel-query>
+    <app-hotel-query [conditions]='conditionModel' (hotelQueryChange)='onHotelQueryChange($event)'></app-hotel-query>
   </ion-toolbar>
 </ion-header>
 
@@ -41,7 +46,9 @@
               <ion-label>{{item?.Hotel?.Name}}</ion-label>
             </h3>
             <h5 class='grade-stars'>
-              {{item?.Hotel?.Grade}}
+              <span margin-end>
+                {{item?.Hotel?.Grade<="0"?"无评价":item?.Hotel?.Grade}}
+              </span>
               <div class='stars'>
                 <ng-container *ngFor='let s of getStars(item.Hotel)'>
                   <ion-icon name="star" color='danger' *ngIf='s>=1'></ion-icon>
