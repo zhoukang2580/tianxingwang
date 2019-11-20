@@ -679,7 +679,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         }
       });
     this.initSearchModelParams();
-    this.doRefresh(true, true);
+    this.doRefresh(true, false);
   }
   private notCurrentPage() {
     return !this.router.routerState.snapshot.url.includes("flight-list");
