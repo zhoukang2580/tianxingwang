@@ -53,14 +53,13 @@ export class CabinComponent
       this.onSearch();
     }
   }
-  onionChange(evt: CustomEvent | { id: string; detail: any }) {
+  onionChange(c: { id: string}) {
     this.cabins = this.cabins.map(it => {
-      it.isChecked = it.id == (evt['id'] || evt.detail.value.id);
+      it.isChecked = it.id ==c.id;
       return it;
     });
-    setTimeout(() => {
-      this.isUnlimitRadioChecked=this.cabins.every(it=>!it.isChecked);
-    }, 100);
+    console.log(this.cabins.map(it=>it.isChecked));
+    this.isUnlimitRadioChecked=this.cabins.every(it=>!it.isChecked);
     this.onSearch();
   }
   onSearch() {

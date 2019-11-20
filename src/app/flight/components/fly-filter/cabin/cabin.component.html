@@ -1,6 +1,6 @@
 <ion-list lines='none'>
   <ion-item (click)='onUnlimit()'>
-    <ion-label>不限{{isUnlimitRadioChecked}}</ion-label>
+    <ion-label>不限</ion-label>
     <ion-radio [checked]='isUnlimitRadioChecked'></ion-radio>
   </ion-item>
   <ng-template #normal>
@@ -10,10 +10,10 @@
     </ion-item>
   </ng-template>
   <ng-container *ngIf='isSelf else normal'>
-    <ion-radio-group (ionChange)='onionChange($event)'>
+    <ion-radio-group>
       <ion-item *ngFor="let c of cabins">
         <ion-label>{{c?.label}}</ion-label>
-        <ion-radio [value]="c" [checked]="c.isChecked"  slot="end"></ion-radio>
+        <ion-radio [value]="c" checked="{{c.isChecked}}" (ionSelect)='onionChange(c)' slot="end"></ion-radio>
       </ion-item>
     </ion-radio-group>
   </ng-container>
