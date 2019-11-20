@@ -30,7 +30,9 @@ export class CabinComponent
   @Input() flights: FlightJourneyEntity[];
   @Output() sCond: EventEmitter<any>; // 搜索条件
   cabins: SearchTypeModel[] = [];
-  isUnlimitRadioChecked = true;
+  get  isUnlimitRadioChecked(){
+    return this.cabins&&this.cabins.every(a => !a.isChecked);
+  }
   isSelf = true;
   constructor(private cabinPipe: CabintypePipe, private staffService: StaffService) {
     this.sCond = new EventEmitter();
@@ -46,21 +48,22 @@ export class CabinComponent
   }
   reset() {
     if (this.cabins) {
-      this.cabins=this.cabins.map(c => {
+      this.cabins = this.cabins.map(c => {
         c.isChecked = false;
         return c;
       });
       this.onSearch();
     }
   }
-  onionChange(evt:CustomEvent) {
-    this.cabins=this.cabins.map(it=>{
-      if(evt.detail){
-        it.isChecked=it.id==evt.detail.value;
+  onionChange(evt: CustomEvent | { id: string; detail: any }) {
+    this.cabins = this.cabins.map(it => {
+      if (evt.detail) {
+        it.isChecked = it.id == evt.detail.value;
+      } else {
+        it.isChecked = it.id == evt['id'];
       }
       return it;
     })
-    this.isUnlimitRadioChecked = !this.cabins.some(item => item.isChecked);
     this.onSearch();
   }
   onSearch() {
