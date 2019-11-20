@@ -32,7 +32,7 @@ export class CabinComponent
   cabins: SearchTypeModel[] = [];
   isUnlimitRadioChecked = true;
   isSelf = true;
-  constructor(private cabinPipe: CabintypePipe, private staff: StaffService) {
+  constructor(private cabinPipe: CabintypePipe, private staffService: StaffService) {
     this.sCond = new EventEmitter();
   }
   onUnlimit() {
@@ -53,14 +53,14 @@ export class CabinComponent
       this.onSearch();
     }
   }
-  onionChange(c: { id: string }) {
+  onionChange(evt:CustomEvent) {
+    this.cabins=this.cabins.map(it=>{
+      if(evt.detail){
+        it.isChecked=it.id==evt.detail.value;
+      }
+      return it;
+    })
     this.isUnlimitRadioChecked = !this.cabins.some(item => item.isChecked);
-    if (this.isSelf) {
-      this.cabins = this.cabins.map(it => {
-        it.isChecked = it.id == c.id;
-        return it;
-      })
-    }
     this.onSearch();
   }
   onSearch() {
@@ -97,6 +97,6 @@ export class CabinComponent
   ngAfterViewInit() { }
   ngOnDestroy() { }
   async ngOnInit() {
-    this.isSelf = await this.staff.isSelfBookType();
+    this.isSelf = await this.staffService.isSelfBookType();
   }
 }

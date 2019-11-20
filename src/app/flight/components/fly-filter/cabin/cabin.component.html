@@ -3,8 +3,18 @@
     <ion-label>不限</ion-label>
     <ion-radio [checked]='isUnlimitRadioChecked' (ionSelect)='reset()'></ion-radio>
   </ion-item>
-  <ion-item *ngFor="let c of cabins">
-    <ion-label>{{c?.label}}</ion-label>
-    <ion-checkbox #cbox slot="end" [(ngModel)]="c.isChecked" (ionChange)='onionChange(c)'></ion-checkbox>
-  </ion-item>
+  <ng-template #normal>
+    <ion-item *ngFor="let c of cabins">
+      <ion-label>{{c?.label}}</ion-label>
+      <ion-checkbox #cbox slot="end" [(ngModel)]="c.isChecked" (ionChange)='onionChange(c)'></ion-checkbox>
+    </ion-item>
+  </ng-template>
+  <ng-container *ngIf='isSelf else normal'>
+    <ion-radio-group (ionChange)='onionChange($event)'>
+      <ion-item *ngFor="let c of cabins">
+        <ion-label>{{c?.label}}</ion-label>
+        <ion-radio value="{{c.id}}" [checked]="c.isChecked"  slot="end"></ion-radio>
+      </ion-item>
+    </ion-radio-group>
+  </ng-container>
 </ion-list>

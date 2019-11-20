@@ -159,10 +159,13 @@ export class BookPage implements OnInit, AfterViewInit {
           it => it.PassengerClientId == item.id
         );
         if (plan && plan.GuaranteeStartTime && plan.GuaranteeEndTime) {
-          item.creditCardInfo.isShowCreditCard = moment(item.arrivalHotelTime).isBetween(
-            moment(plan.GuaranteeStartTime),
-            moment(plan.GuaranteeEndTime)
-          );
+          const date = moment(item.arrivalHotelTime);
+          const start = moment(plan.GuaranteeStartTime);
+          const end = moment(plan.GuaranteeEndTime);
+          const minutes = moment.duration(+date, 'minutes');
+          const startminutes = moment.duration(+date, 'minutes');
+          const endminutes = moment.duration(+date, 'minutes');
+          item.creditCardInfo.isShowCreditCard = date.isBetween(start, end) && (startminutes <= minutes && minutes <= endminutes);
         }
       }
     }
@@ -1001,7 +1004,7 @@ export class BookPage implements OnInit, AfterViewInit {
     }
   }
   async onBook(isSave: boolean) {
-    if(this.isSubmitDisabled){
+    if (this.isSubmitDisabled) {
       return;
     }
     const bookDto: OrderBookDto = new OrderBookDto();
@@ -1025,13 +1028,13 @@ export class BookPage implements OnInit, AfterViewInit {
       const res = await this.hotelService.onBook(bookDto)
         .catch(e => {
           AppHelper.alert(e);
-          return { TradeNo: "",HasTasks:true };
+          return { TradeNo: "", HasTasks: true };
         });
       this.isSubmitDisabled = false;
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast('下单成功!',1400,"top");
-          this.isSubmitDisabled=true;
+          AppHelper.toast('下单成功!', 1400, "top");
+          this.isSubmitDisabled = true;
           this.isPlaceOrderOk = true;
           if (
             !isSave &&
@@ -1043,7 +1046,7 @@ export class BookPage implements OnInit, AfterViewInit {
             this.isCheckingPay = false;
             if (canPay) {
               if (res.HasTasks) {
-                await AppHelper.alert(LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),true);
+                await AppHelper.alert(LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(), true);
               } else {
                 await this.tmcService.payOrder(res.TradeNo);
               }
