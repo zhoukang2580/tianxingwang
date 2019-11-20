@@ -46,9 +46,9 @@
           *ngIf='seat.SeatType != TrainSeatType.NoSeat'>余票:{{seat.Count?seat.Count+"张":""}}</span>
         <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"有":"无"}}票</span>
       </ion-col>
-      <ion-col>
-        <ion-button *ngIf='showBookBtn' size='small' text-start [disabled]='getBookBtnColor(seat)=="danger"'
-          [color]='getBookBtnColor(seat)' (click)='onBookTicket(seat)'>
+      <ion-col (click)='onBookTicket(seat)'>
+        <ion-button *ngIf='showBookBtn' size='small' text-start
+          [color]='getBookBtnColor(seat)' [disabled]='getBookBtnColor(seat)=="danger"'>
           <ion-text color='light'>预订</ion-text>
         </ion-button>
       </ion-col>

@@ -1,3 +1,5 @@
+import { TrainService } from 'src/app/train/train.service';
+import { AppHelper } from './../../../appHelper';
 import { ITrainInfo } from './../../train.service';
 import { Component, OnInit, Input, EventEmitter, Output } from "@angular/core";
 import { TrainEntity, TrainSeatType } from "../../models/TrainEntity";
@@ -18,7 +20,7 @@ export class TrainListItemComponent implements OnInit {
   @Output() bookTicket: EventEmitter<TrainSeatEntity>;
   @Output() seatPicker: EventEmitter<string>;
   TrainSeatType = TrainSeatType;
-  constructor() {
+  constructor(private trainService: TrainService) {
     this.scheduleEmit = new EventEmitter();
     this.bookTicket = new EventEmitter();
     this.seatPicker = new EventEmitter();
@@ -31,6 +33,20 @@ export class TrainListItemComponent implements OnInit {
     return this.train.Seats[0].SalesPrice;
   }
   onBookTicket(seat: TrainSeatEntity) {
+    if (this.getBookBtnColor(seat) == "danger") {
+      if (seat && seat.Policy && seat.Policy.Rules) {
+        let tip = '';
+        const bookInfos = this.trainService.getBookInfos();
+        if (bookInfos && bookInfos.length) {
+          const info = bookInfos.find(it => it.bookInfo && it.bookInfo.id == (this.bookInfo && this.bookInfo.id));
+          if (info && info.passenger && info.passenger.Policy) {
+            tip = info.passenger.Policy.TrainIllegalTip ? `(${info.passenger.Policy.TrainIllegalTip})` : "";
+          }
+        }
+        AppHelper.alert(seat.Policy.Rules.join(",") + tip);
+      }
+      return;
+    }
     if (this.train) {
       this.train.BookSeatType = seat.SeatType;
     }

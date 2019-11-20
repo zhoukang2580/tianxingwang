@@ -256,8 +256,10 @@ export class PolicyEntity extends  BaseSettingEntity {
   TrainType: PolicyType;
   TrainDescription: string;
   // ============== 火车站 end ============
-
+  TrainIllegalTip:string;
   //
+  HotelIllegalTip:string;
+  InternationalFlightIllegalTip:string;
 }
 export class StaffApprover {
   RealName: string;

@@ -227,7 +227,7 @@ export class TrainService {
     // }
     const bookInfos = this.getBookInfos().filter(it => !!it.bookInfo);
     if (!(await this.staffService.isSelfBookType())) {
-      if (bookInfos.length >= 9) {
+      if (bookInfos.length >= 5) {
         return false;
       }
     }

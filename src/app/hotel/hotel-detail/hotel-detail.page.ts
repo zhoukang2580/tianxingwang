@@ -409,12 +409,18 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     const color = evt.color || "";
     const removedBookInfos: PassengerBookInfo<IHotelInfo>[] = [];
     const policies = this.hotelPolicy || await this.getPolicy();
-    const policy = policies&&policies.find(it=>!!it.HotelPolicies.find(k=>k.UniqueIdId==this.hotelService.getRoomPlanUniqueId(evt.roomPlan)));
-    const p = policy&&policy.HotelPolicies[0]&&policy.HotelPolicies[0];
-    console.log("onBookRoomPlan", evt.roomPlan,p);
+    const policy = policies && policies.find(it => !!it.HotelPolicies.find(k => k.UniqueIdId == this.hotelService.getRoomPlanUniqueId(evt.roomPlan)));
+    const p = policy && policy.HotelPolicies[0] && policy.HotelPolicies[0];
+    console.log("onBookRoomPlan", evt.roomPlan, p);
     if (color.includes("disabled")) {
-      this.hotelService.getRules(evt.roomPlan)
-      AppHelper.alert(`超标不可预订,${p&&p.Rules?p.Rules.join(","):""}`);
+      let tip = '';
+      if (p) {
+        const info = this.hotelService.getBookInfos().find(it => it.isFilteredPolicy);
+        if (info && info.passenger && info.passenger.Policy && info.passenger.Policy.HotelIllegalTip) {
+          tip = `(${info.passenger.Policy.HotelIllegalTip})`;
+        }
+      }
+      AppHelper.alert(`超标不可预订,${p && p.Rules ? p.Rules.join(",") : ""}${tip}`);
       return;
     }
     if (color.includes("full")) {
