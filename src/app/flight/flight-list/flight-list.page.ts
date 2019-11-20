@@ -139,7 +139,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   priceOrderL2H: boolean; // 价格从低到高
   timeOrdM2N: boolean; // 时间从早到晚
   isLoading = false;
-  isFiltered = false;
   isSelfBookType = true;
   currentProcessStatus = "正在获取航班列表";
   st = 0;
@@ -156,6 +155,12 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   showAdvSearchPage$: Observable<boolean>;
   showSelectFlyDayPage$: Observable<boolean>;
   filteredPolicyPassenger$: Observable<PassengerBookInfo<IFlightSegmentInfo>>;
+  get isHasFiltered(){
+    return this.filterComp &&
+    Object.keys(this.filterComp.userOps).some(
+      k => this.filterComp.userOps[k]
+    );
+  }
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -352,11 +357,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
      
       // 根据筛选条件过滤航班信息：
       const filteredFlightJourenyList = this.filterFlightJourneyList(data);
-      this.isFiltered =
-        this.filterComp &&
-        Object.keys(this.filterComp.userOps).some(
-          k => this.filterComp.userOps[k]
-        );
       const segments = this.flightService.filterPassengerPolicyFlights(
         null,
         filteredFlightJourenyList,
