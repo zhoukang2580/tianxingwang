@@ -323,6 +323,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           this.filterComp.onReset();
         }
         this.filterCondition = FilterConditionModel.init();
+        this.flightService.setFilterConditionSource(this.filterCondition);
         setTimeout(() => {
           this.activeTab = "none";
         }, 0);
@@ -675,7 +676,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       .subscribe(filterCondition => {
         console.log("高阶查询", filterCondition);
         this.filterCondition = filterCondition;
-        if (this.filterCondition) {
+        if (this.filterCondition&&!this.isLoading) {
           // this.filterFlightJourneyList();
           this.doRefresh(false, true);
         }
