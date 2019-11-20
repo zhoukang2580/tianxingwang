@@ -91,6 +91,11 @@ export class FlightItemCabinsPage implements OnInit {
     }
     return `${t && t.format("MM月DD日")} ${d && d.dayOfWeekName} `;
   }
+  getFlightIllegalTip(){
+    const bookInfos=this.flightService.getPassengerBookInfos();
+    const info=bookInfos.find(it=>it.isFilteredPolicy);
+    return info&&info.passenger&&info.passenger.Policy&&info.passenger.Policy.FlightIllegalTip;
+  }
   async onBookTicket(flightCabin: FlightCabinEntity) {
     await this.flightService.addOrReplaceSegmentInfo(flightCabin);
     await this.showSelectedInfos();
