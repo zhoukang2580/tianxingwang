@@ -668,6 +668,8 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       .getPassengerBookInfoSource()
       .pipe(map(infos => infos.find(it => it.isFilteredPolicy)));
     this.activeTab = "filter";
+    this.initSearchModelParams();
+    this.doRefresh(true, false);
     this.filterConditionSubscription = this.flightService
       .getFilterConditionSource()
       .subscribe(filterCondition => {
@@ -678,8 +680,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           this.doRefresh(false, true);
         }
       });
-    this.initSearchModelParams();
-    this.doRefresh(true, false);
   }
   private notCurrentPage() {
     return !this.router.routerState.snapshot.url.includes("flight-list");

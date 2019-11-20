@@ -69,7 +69,7 @@ export class FlyFilterComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   onSearch() {
     // console.log(this.sForm.value);
-    this.flightService.setFilterCondition(this.sForm.value);
+    this.flightService.setFilterConditionSource(this.sForm.value);
     this.onCancel();
   }
   onReset() {

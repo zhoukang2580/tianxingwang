@@ -801,7 +801,7 @@ export class FlightService {
   setOpenCloseSelectCityPageSources(open: boolean) {
     this.openCloseSelectCitySources.next(open);
   }
-  setFilterCondition(advSCond: FilterConditionModel) {
+  setFilterConditionSource(advSCond: FilterConditionModel) {
     this.filterCondition=advSCond;
     this.filterCondSources.next(advSCond);
   }
