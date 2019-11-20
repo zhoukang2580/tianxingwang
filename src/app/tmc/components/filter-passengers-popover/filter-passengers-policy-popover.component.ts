@@ -39,6 +39,9 @@ export class FilterPassengersPolicyComponent implements OnInit {
     if (evt.detail && evt.detail.value) {
       this.selectedItem.isAllowBookPolicy = evt.detail && evt.detail.value == "isAllowBookPolicy";
       this.selectedItem.isOnlyFilterMatchedPolicy = evt.detail && evt.detail.value == "isShowOnlyMatchSwitch";
+    }else{
+      this.selectedItem.isAllowBookPolicy =false;
+      this.selectedItem.isOnlyFilterMatchedPolicy =false;
     }
   }
   onSelectItem(evt: CustomEvent) {

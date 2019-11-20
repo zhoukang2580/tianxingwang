@@ -235,7 +235,7 @@ export class FlightService {
   ): FlightSegmentEntity[] {
     let segments = this.getTotalFlySegments(flightJourneyList);
     if (bookInfo && bookInfo.passenger && bookInfo.passenger.AccountId) {
-      bookInfo.isFilteredPolicy = true;
+      bookInfo.isFilteredPolicy = bookInfo.isAllowBookPolicy||bookInfo.isOnlyFilterMatchedPolicy;
       this.setPassengerBookInfosSource(
         this.getPassengerBookInfos().map(it => {
           it.isFilteredPolicy = bookInfo.id == it.id;
@@ -1023,11 +1023,11 @@ export class FlightService {
   async setDefaultFilteredPassenger(){
     const isStaff = await this.staffService.isSelfBookType();
     let bookInfos = this.getPassengerBookInfos();
-    if(!bookInfos.find(it=>it.isFilteredPolicy)&&( bookInfos.length==1||isStaff||bookInfos.filter(it=>!!it.bookInfo).length==1)){
+    if(bookInfos.length==1||isStaff||bookInfos.filter(it=>!!it.bookInfo).length==1){
       bookInfos=bookInfos.map((it,idx)=>{
         if(idx==0){
           it.isFilteredPolicy=true;
-          it.isAllowBookPolicy=true;
+          // it.isAllowBookPolicy=true;
         }
         return it;
       })
