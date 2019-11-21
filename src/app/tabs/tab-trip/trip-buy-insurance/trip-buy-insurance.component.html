@@ -1,0 +1,35 @@
+<ng-container *ngIf='insurance'>
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons>
+        <ion-button (click)='back()'> 
+          <ion-icon name='arrow-back' color='dark'></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-title>保险</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-row>
+      <ion-col size='3'>保险险种</ion-col>
+      <ion-col>{{insurance.Name}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size='3'>投保金额</ion-col>
+      <ion-col>{{insurance.Price}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size='3'>保费金额</ion-col>
+      <ion-col>{{insurance.InsuredAmount}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size='3'>保险介绍</ion-col>
+      <ion-col>
+        <p class='clip-text' [class.show]='insurance["isShowDetail"]'
+          (click)='insurance["isShowDetail"]=!insurance["isShowDetail"]'>{{insurance.Detail}}
+        </p>
+      </ion-col>
+    </ion-row>
+    <ion-button margin-start margin-end expand='block' color='secondary' (click)='bookInsurance()'>购买</ion-button> 
+  </ion-content>
+</ng-container>

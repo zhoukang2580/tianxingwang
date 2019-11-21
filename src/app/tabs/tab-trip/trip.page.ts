@@ -1,4 +1,5 @@
-import { Platform } from '@ionic/angular';
+import { TripBuyInsuranceComponent } from './trip-buy-insurance/trip-buy-insurance.component';
+import { Platform, ModalController } from '@ionic/angular';
 import { TmcService } from 'src/app/tmc/tmc.service';
 import { Router } from '@angular/router';
 import { AppHelper } from 'src/app/appHelper';
@@ -34,13 +35,12 @@ export class TripPage implements OnInit {
   } as TravelModel;
   isLoading = false;
   loadMoreSubscription = Subscription.EMPTY;
-  selectedInsurance: InsuranceProductEntity;
-  selectedInsuranceTrip: OrderTripModel;
   constructor(
     private tmcService: TmcService,
     private apiservice: ApiService,
     private calendarService: CalendarService,
-    private plt:Platform,
+    private modalCtrl: ModalController,
+    private plt: Platform,
     private router: Router) { }
   private getTrips() {
     this.loadMoreSubscription.unsubscribe();
@@ -69,6 +69,9 @@ export class TripPage implements OnInit {
     this.searchCondition.PageIndex = 0;
     this.trips = [];
     if (this.ionRefresher) {
+      if (this.ionRefresher) {
+        this.ionRefresher.complete();
+      }
       this.ionRefresher.disabled = true;
       setTimeout(() => {
         this.ionRefresher.disabled = false;
@@ -85,9 +88,6 @@ export class TripPage implements OnInit {
         if (this.infiniteScroll) {
           this.infiniteScroll.complete();
         }
-        if (this.ionRefresher) {
-          this.ionRefresher.complete();
-        }
       })).subscribe(res => {
         const trips = res && res.Data && res.Data.Trips || [];
         if (trips.length) {
@@ -95,7 +95,7 @@ export class TripPage implements OnInit {
           this.searchCondition.PageIndex++;
         }
         if (this.infiniteScroll) {
-          this.infiniteScroll.disabled = trips.length == 0;
+          this.infiniteScroll.disabled = trips.length == 0 || this.searchCondition.PageSize > trips.length;
         }
       })
   }
@@ -123,12 +123,21 @@ export class TripPage implements OnInit {
     // console.log("get InsuranceProductEntity", products);
     return products;
   }
-  onShowSelectedInsurance(p?: InsuranceProductEntity, trip?: OrderTripModel, evt?: CustomEvent) {
-    this.selectedInsurance = p;
-    this.selectedInsuranceTrip = trip;
+  async onShowSelectedInsurance(p?: InsuranceProductEntity, trip?: OrderTripModel, evt?: CustomEvent) {
     if (evt) {
       evt.stopPropagation();
     }
+    if (!p || !trip) {
+      return;
+    }
+    const m = await this.modalCtrl.create({
+      component: TripBuyInsuranceComponent,
+      componentProps: {
+        trip,
+        insurance: p
+      }
+    });
+    m.present();
   }
   getDays(t1: string, t2: string) {
     const diff = this.calendarService.getDiffDays(t1, t2);
@@ -171,39 +180,5 @@ export class TripPage implements OnInit {
       }
     });
   }
-  async bookInsurance(trip?: OrderTripModel, evt?: CustomEvent) {
-    if (evt) {
-      evt.stopPropagation();
-    }
-    trip = trip || this.selectedInsuranceTrip;
-    if (!this.selectedInsurance || !trip) {
-      return;
-    }
-    let channel = "客户H5";
-    if(AppHelper.isApp()){
-      if(this.plt.is("android")){
-        channel="android";
-      }else if(this.plt.is("ios")){
-        channel="ios";
-      }
-    }
-    const req = new RequestEntity();
-    req.Method = `TmcApiOrderUrl-Insurance-Book`;
-    req.Data = {
-      key: trip.AdditionKey,
-      travelkey: trip.Key,
-      OrderId: trip.OrderId,
-      Product: JSON.stringify(this.selectedInsurance),
-      PassagerId: trip.PassengerId,
-      Channel:channel
-    };
-    req.IsShowLoading = true;
-    const order: { TradeNo: string; Key: string; } = await this.apiservice.getPromiseData<any>(req).catch(_ => {
-      AppHelper.alert(_.Message || _);
-      return null;
-    });
-    if (order) {
-      await this.payInsurance(order.Key, order.TradeNo);
-    }
-  }
+
 }
