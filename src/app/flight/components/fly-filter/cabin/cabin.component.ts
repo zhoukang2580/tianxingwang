@@ -54,10 +54,12 @@ export class CabinComponent
     }
   }
   onionChange(c: { id: string}) {
-    this.cabins = this.cabins.map(it => {
-      it.isChecked = it.id ==c.id;
-      return it;
-    });
+    if(this.isSelf){
+      this.cabins = this.cabins.map(it => {
+        it.isChecked = it.id ==c.id;
+        return it;
+      });
+    }
     console.log(this.cabins.map(it=>it.isChecked));
     this.isUnlimitRadioChecked=this.cabins.every(it=>!it.isChecked);
     this.onSearch();
