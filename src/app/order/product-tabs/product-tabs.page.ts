@@ -181,7 +181,6 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     this.activeTab = tab;
     this.title = tab.label + "订单";
     if (this.activeTab.value == ProductItemType.waitingApprovalTask) {
-      this.doRefreshTasks();
       this.title = tab.label;
     }
     this.doRefresh();
@@ -284,10 +283,8 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   }
   private doLoadMoreTasks() {
     if (this.activeTab.value != ProductItemType.waitingApprovalTask) {
-      this.isLoading = false;
       return;
     }
-    this.isLoading = this.curTaskPageIndex == 0;
     const pageSize = 15;
     this.loadDataSub = this.orderService
       .getOrderTasks({
@@ -322,12 +319,6 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   }
   private async doSearchOrderList() {
     try {
-      if (this.infiniteScroll) {
-        this.infiniteScroll.disabled = this.isLoading;
-        setTimeout(() => {
-          this.infiniteScroll.disabled = false;
-        }, 100);
-      }
       if (this.loadDataSub) {
         this.loadDataSub.unsubscribe();
       }
