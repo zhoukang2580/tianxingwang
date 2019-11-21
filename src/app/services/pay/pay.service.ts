@@ -60,15 +60,19 @@ export class PayService {
           messages.push(this.addPayMessage(_));
           return null;
         });
+        console.log('支付宝支付，payresult ', payresult);
         if (payresult) {
           if (payresult.resultStatus == '9000') {
             messages.push(this.addPayMessage("订单支付成功"));
           } else {
-            messages.push(this.addPayMessage(`${payresult.memo || payresult.result || payresult.resultStatus}`));
+            const info = payresult.memo || payresult.result || payresult.resultStatus;
+            if (info) {
+              messages.push(this.addPayMessage(`${info}`));
+            }
           }
         }
       };
-      if (messages.length) {
+      if (messages.filter(it => !!it.message).length) {
         messages.sort((a, b) => b.timeStamp - a.timeStamp);
         for (let i = 0; i < messages.length; i++) {
           if (messages[i].message) {
