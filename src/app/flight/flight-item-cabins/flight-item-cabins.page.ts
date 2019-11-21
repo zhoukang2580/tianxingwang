@@ -180,7 +180,7 @@ export class FlightItemCabinsPage implements OnInit {
     const bookInfo = isfilteredBookInfo;
     let policyCabins = this.flightService.filterPassengerPolicyCabins({ data: bookInfo, flightSegment: this.currentViewtFlightSegment.flightSegment });
     if (this.filterConditions && this.filterConditions.cabins && this.filterConditions.cabins.length) {
-      policyCabins = policyCabins.filter(c => c.Cabin && this.filterConditions.cabins.some(it => it.id == c.Cabin.Type || (c.Cabin.TypeName && c.Cabin.TypeName.includes(it.label))))
+      policyCabins = policyCabins.filter(c => c.Cabin && this.filterConditions.cabins.some(it => it.id == c.Cabin.Type))
     }
     console.log("showPolicyCabins ", policyCabins);
     return policyCabins;
