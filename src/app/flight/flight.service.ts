@@ -79,9 +79,7 @@ export class FlightService {
     private staffService: StaffService,
     private modalCtrl: ModalController,
     private router: Router,
-    private navCtrl: NavController,
-    private identityService: IdentityService,
-    private popoverController: PopoverController,
+    identityService:IdentityService,
     private tmcService: TmcService,
     private calendarService: CalendarService
   ) {
@@ -186,6 +184,7 @@ export class FlightService {
           return it;
         })
       );
+      this.policyFlightResults=this.policyFlightResults||[];
       const one = this.policyFlightResults.find(
         item => item.PassengerKey == data.passenger.AccountId
       );
