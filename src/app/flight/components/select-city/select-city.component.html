@@ -45,10 +45,10 @@
     <app-or-comp>暂无数据</app-or-comp>
   </ng-template>
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)='onActiveTab("hot")'>
+    <ion-fab-button (click)='onActiveTab("hot")' size='small' color='{{activeTab=="hot"?"secondary":""}}'>
       <ion-text color='danger'>热门</ion-text>
     </ion-fab-button>
-    <ion-fab-button (click)='onActiveTab("history")'>
+    <ion-fab-button (click)='onActiveTab("history")' size='small' color='{{activeTab=="history"?"secondary":""}}'>
       <!-- <ion-icon name="logo-instagram"></ion-icon> -->
       历史
     </ion-fab-button>
