@@ -179,6 +179,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   }
   onTabClick(tab: ProductItem) {
     this.isLoading=true;
+    this.loadDataSub.unsubscribe();
     this.activeTab = tab;
     this.title = tab.label + "订单";
     if (this.activeTab.value == ProductItemType.waitingApprovalTask) {
