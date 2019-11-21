@@ -1233,7 +1233,7 @@ export class FlightService {
         fly.FlightRoutes = fly.FlightRoutes.map(r => {
           r.FlightSegments = r.FlightSegments.filter(s =>
             s.Cabins && s.Cabins.some(c => this.filterCondition.cabins.some(
-              a => a.id == c.Type || (c.TypeName && c.TypeName.includes(a.label))
+              a => (c.TypeName && c.TypeName==(a.label))
             ))
           );
           return r;
