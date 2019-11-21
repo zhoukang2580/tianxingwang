@@ -49,9 +49,9 @@ export class OrderService {
     const result = this.apiService.getPromiseData<OrderDetailModel>(req);
     return result;
   }
-  getOrderTasks(data: OrderModel): Observable<TaskEntity[]> {
+  getOrderTasks(data: OrderModel,isShowLoading=false): Observable<TaskEntity[]> {
     const req = new RequestEntity();
-    req.IsShowLoading = true;
+    req.IsShowLoading = isShowLoading;
     req.Data = data;
     req.Method = `TmcApiOrderUrl-Task-List`;
     const result = this.apiService.getResponse<TaskModel>(req).pipe(

@@ -134,7 +134,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     }
   }
   loadMoreOrders() {
-    if (this.isShowMyTrips) {
+    if (this.isShowMyTrips || this.activeTab.value == ProductItemType.waitingApprovalTask) {
       return;
     }
     this.doSearchOrderList();
@@ -169,7 +169,12 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     this.myTrips = [];
     this.orderModel.Orders = [];
     this.scrollToTop();
+    this.loadMore();
+  }
+  loadMore() {
     this.loadMoreOrders();
+    this.loadMoreMyTrips();
+    this.doLoadMoreTasks();
   }
   onTabClick(tab: ProductItem) {
     this.activeTab = tab;
@@ -288,7 +293,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       .getOrderTasks({
         PageSize: pageSize,
         PageIndex: this.curTaskPageIndex
-      } as any)
+      } as any, this.curTaskPageIndex == 0)
       .pipe(
         finalize(() => {
           this.isLoading = false;
@@ -304,7 +309,6 @@ export class ProductTabsPage implements OnInit, OnDestroy {
             this.curTaskPageIndex++;
           }
           if (this.infiniteScroll) {
-            this.infiniteScroll.complete();
             this.infiniteScroll.disabled = tasks.length == 0 || tasks.length < pageSize;
           }
         }

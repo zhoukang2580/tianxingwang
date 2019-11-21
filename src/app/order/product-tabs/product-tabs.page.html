@@ -22,7 +22,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh();doRefreshTasks()">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh();">
   </ion-refresher>
 
   <ng-template #fakeList>
@@ -110,7 +110,7 @@
       </ng-container>
     </ng-container>
   </ng-template>
-  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMoreOrders();loadMoreMyTrips()">
+  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMore();">
     <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
     </ion-infinite-scroll-content>
   </ion-infinite-scroll>
