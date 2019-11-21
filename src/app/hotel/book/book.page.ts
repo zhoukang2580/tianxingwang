@@ -162,7 +162,7 @@ export class BookPage implements OnInit, AfterViewInit {
           const date = moment(item.arrivalHotelTime);
           const start = moment(plan.GuaranteeStartTime);
           const end = moment(plan.GuaranteeEndTime);
-          item.creditCardInfo.isShowCreditCard = +date <= +start && +date <= +end;
+          item.creditCardInfo.isShowCreditCard = +start <= +date && +date <= +end;
         }
       }
     }
