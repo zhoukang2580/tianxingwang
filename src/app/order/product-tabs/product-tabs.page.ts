@@ -338,9 +338,6 @@ export class ProductTabsPage implements OnInit, OnDestroy {
               if (this.infiniteScroll) {
                 this.infiniteScroll.complete();
               }
-              if (this.ionRefresher) {
-                this.ionRefresher.complete();
-              }
             }, 200);
           })
         )
