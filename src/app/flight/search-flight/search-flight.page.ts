@@ -41,13 +41,17 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
   vmToCity: TrafficlineEntity; // 界面上显示的城市
   showReturnTrip: boolean;
   disabled = false;
-  selectedPassengers$ = of(0);
   totalFlyDays: number;
   staff: StaffEntity;
   isShowBookInfos$ = of(0);
-  canAddPassengers$ = of(false);
   isCanleave = true;
   isleave = true;
+  get canAddPassengers() {
+    return this.staff && this.staff.BookType && this.staff.BookType != StaffBookType.Self;
+  }
+  get selectedPassengers(){
+    return this.flightService.getPassengerBookInfos().length;
+  }
   constructor(
     private router: Router,
     route: ActivatedRoute,
@@ -61,14 +65,6 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
     private tmcService: TmcService,
     private modalCtrl: ModalController
   ) {
-    this.canAddPassengers$ = from(staffService.getStaff()).pipe(
-      map(staff => {
-        return staff && staff.BookType != StaffBookType.Self;
-      })
-    );
-    this.selectedPassengers$ = this.flightService
-      .getPassengerBookInfoSource()
-      .pipe(map(infos => infos && infos.length));
     route.queryParamMap.subscribe(async _ => {
       this.isleave = false;
       this.isCanleave = false;

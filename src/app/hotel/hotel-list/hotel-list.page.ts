@@ -183,7 +183,10 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       this.queryComp.onReset();
     }
     const searchText=this.vmKeyowrds&&this.vmKeyowrds.trim();
-    this.hotelQueryModel.SearchKey=searchText&&!this.hotelQueryModel.HotelId?searchText:null;
+    if(searchText){
+      this.hotelQueryModel.HotelId="";
+    }
+    this.hotelQueryModel.SearchKey=searchText?searchText:null;
     this.vmKeyowrds="";
     if (!isKeepQueryCondition) {
       // if (this.queryComp) {

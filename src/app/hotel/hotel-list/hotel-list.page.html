@@ -47,7 +47,7 @@
             </h3>
             <h5 class='grade-stars'>
               <span margin-end>
-                {{item?.Hotel?.Grade<="0"?"无评价":item?.Hotel?.Grade}}
+                {{item?.Hotel?.Grade<="0"?"":item?.Hotel?.Grade}}
               </span>
               <div class='stars'>
                 <ng-container *ngFor='let s of getStars(item.Hotel)'>
