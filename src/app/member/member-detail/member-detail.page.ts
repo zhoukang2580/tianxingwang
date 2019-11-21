@@ -41,6 +41,7 @@ export class MemberDetailPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.route.queryParamMap.subscribe(async _ => {
       await this.load(AppHelper.getRouteData());
+      AppHelper.setRouteData(AppHelper.getRouteData());
     });
     console.log("member detail ngOnInit");
     this.identitySubscription = this.identityService

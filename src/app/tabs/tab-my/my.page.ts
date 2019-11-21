@@ -54,14 +54,15 @@ export class MyPage implements OnDestroy, OnInit {
         }
       });
     route.paramMap.subscribe(async _ => {
-      this.load();
+      this.load(AppHelper.getRouteData());
+      AppHelper.setRouteData(false);
       this.isShowMyOrderTabs =
         (await this.staffService.isSelfBookType()) ||
         (await this.staffService.isSecretaryBookType());
       console.log("can show tabs ", this.isShowMyOrderTabs);
     });
   }
-  contactUs(){
+  contactUs() {
     this.router.navigate([AppHelper.getRoutePath(`contact-us`)]);
   }
   private goToProductListPage() {
@@ -102,10 +103,10 @@ export class MyPage implements OnDestroy, OnInit {
     // };
   }
 
-  async load() {
+  async load(forceLoad = false) {
     console.log("my load this.model", this.Model);
     const req = new RequestEntity();
-    if (this.Model) {
+    if (this.Model && !forceLoad) {
       return this.Model;
     }
     req.Method = "ApiMemberUrl-Home-Get";
