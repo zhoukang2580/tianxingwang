@@ -282,6 +282,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       this.ionRefresher.complete();
     }
     this.doLoadMoreTasks();
+    this.scrollToTop();
   }
   private doLoadMoreTasks() {
     if (this.activeTab.value != ProductItemType.waitingApprovalTask) {
