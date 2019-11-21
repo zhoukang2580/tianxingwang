@@ -145,6 +145,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     }
   }
   doRefresh(condition?: SearchTicketConditionModel) {
+    this.isLoading = true;
     if (this.ionRefresher) {
       this.ionRefresher.complete();
       this.ionRefresher.disabled = true;
@@ -211,7 +212,6 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         : this.activeTab.value == ProductItemType.hotel
           ? "Hotel"
           : "Train";
-    this.isLoading = this.condition && this.condition.pageIndex == 0;
     this.loadDataSub = this.orderService
       .getMyTrips(m)
       .pipe(
@@ -265,11 +265,11 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     });
   }
   doRefreshTasks() {
+    this.isLoading = true;
     if (this.infiniteScroll) {
       this.infiniteScroll.disabled = false;
     }
     if (this.activeTab.value != ProductItemType.waitingApprovalTask) {
-      this.isLoading = false;
       return;
     }
     if (this.loadDataSub) {
@@ -338,7 +338,6 @@ export class ProductTabsPage implements OnInit, OnDestroy {
           : this.activeTab.value == ProductItemType.train
             ? "Train"
             : "Hotel";
-      this.isLoading = this.condition && this.condition.pageIndex == 0;
       this.loadDataSub = this.orderService
         .getOrderList(m)
         .pipe(
