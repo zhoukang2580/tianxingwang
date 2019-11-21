@@ -178,6 +178,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     this.doLoadMoreTasks();
   }
   onTabClick(tab: ProductItem) {
+    this.isLoading=true;
     this.activeTab = tab;
     this.title = tab.label + "订单";
     if (this.activeTab.value == ProductItemType.waitingApprovalTask) {
