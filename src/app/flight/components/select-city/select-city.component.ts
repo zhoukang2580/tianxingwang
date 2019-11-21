@@ -67,7 +67,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
           return name == n || n.includes(name);
       })
     }).slice(0, 50).filter(it => !it.IsDeprecated);
-    this.isSearching=false;
+    this.isSearching = false;
   }
   async ngOnInit() {
     this.doRefresh();
@@ -86,11 +86,11 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log("onDestroy");
   }
   async doRefresh(forceFetch = false) {
-    await this.initData(true).catch(_ => 0);
+    await this.initData(forceFetch).catch(_ => 0);
     if (this.refresher) {
       this.refresher.complete();
     }
-    this.textSearchResults = this.cities.slice(0, 100);
+    this.textSearchResults = this.cities.slice(0, 30);
   }
   segmentChanged(evt: CustomEvent) {
     // console.log(evt);

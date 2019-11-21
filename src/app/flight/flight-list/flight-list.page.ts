@@ -591,7 +591,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
 
   }
-  private async showSelectedInfos() {
+  async showSelectedInfos() {
     const modal = await this.modalCtrl.create({
       component: SelectedFlightsegmentInfoComponent
     });
