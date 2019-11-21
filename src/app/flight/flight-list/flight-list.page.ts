@@ -121,9 +121,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   private filterConditionSubscription = Subscription.EMPTY;
   private searchConditionSubscription = Subscription.EMPTY;
   private selectPassengerSubscription = Subscription.EMPTY;
-  private selectCitySubscription = Subscription.EMPTY;
   private selectDaySubscription = Subscription.EMPTY;
-  private isSelectFromCity: 'isfrom' | "isTo" | "none";
   searchFlightModel: SearchFlightModel;
   filterCondition: FilterConditionModel;
   showAddPassenger = false;
@@ -636,12 +634,17 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     if (this.searchFlightModel && this.searchFlightModel.isLocked) {
       return;
     }
-    this.isSelectFromCity = isFrom ? "isfrom" : "isTo";
     const m = await this.modalCtrl.create({ component: SelectCityComponent });
     m.present();
     const res = await m.onDidDismiss();
     if (res && res.data) {
-      this.flightService.setSelectedCitySource(res.data);
+      const s = this.flightService.getSearchFlightModel();
+      if (isFrom) {
+        s.fromCity = res.data;
+      } else {
+        s.toCity = res.data;
+      }
+      this.flightService.setSearchFlightModel(s);
     }
   }
   private async initSearchModelParams() {
@@ -652,23 +655,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         this.vmToCity = this.searchFlightModel.toCity;
       }
     });
-    this.selectCitySubscription = this.flightService.getSelectedCity()
-      .subscribe(city => {
-        if (city) {
-          if (this.isSelectFromCity == "none") {
-            return;
-          }
-          const s = this.flightService.getSearchFlightModel();
-          if (this.isSelectFromCity == "isfrom") {
-            s.fromCity = city;
-          }
-          if (this.isSelectFromCity == 'isTo') {
-            s.toCity = city;
-          }
-          this.isSelectFromCity = "none";
-          this.flightService.setSearchFlightModel(s);
-        }
-      });
   }
   async ngOnInit() {
     this.filteredPolicyPassenger$ = this.flightService
@@ -700,7 +686,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.selectDaySubscription.unsubscribe();
     this.filterConditionSubscription.unsubscribe();
     this.selectPassengerSubscription.unsubscribe();
-    this.selectCitySubscription.unsubscribe();
     this.searchConditionSubscription.unsubscribe();
   }
 

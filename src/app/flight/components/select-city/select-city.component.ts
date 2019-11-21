@@ -130,7 +130,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   goBack(city?: TrafficlineEntity) {
     this.vmKeyowrds = "";
     this.isSearching = false;
-    this.textSearchResults = null;
+    // this.textSearchResults = null;
     this.modalCtrl.dismiss(city);
   }
   async onCitySelected(city: TrafficlineEntity) {

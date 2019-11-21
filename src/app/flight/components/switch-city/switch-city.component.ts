@@ -50,7 +50,6 @@ import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
 })
 export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
   private selectCitySubscription = Subscription.EMPTY;
-  private isSelectFromCity: "isFrom" | "isTo" | "none";
   @ViewChild("fromCityEle") fromCityEle: IonText;
   @ViewChild("toCityEle") toCityEle: IonText;
   @ViewChild("flightcitieEle") flightcitieEle: ElementRef<HTMLElement>;
@@ -128,28 +127,8 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
     console.log("changes.toCity", changes.vmToCity);
   }
   ngOnInit() {
-    this.selectCitySubscription = this.flightService
-      .getSelectedCity()
-      .subscribe(c => {
-        console.log("isSelectFromCity", this.isSelectFromCity);
-        if (this.isSelectFromCity == "none") {
-          return;
-        }
-        if (c) {
-          const s = this.flightService.getSearchFlightModel();
-          if (this.isSelectFromCity == 'isFrom') {
-            s.fromCity = c;
-          } else {
-            s.toCity = c;
-          }
-          this.isSelectFromCity = "none";
-          this.flightService.setSearchFlightModel(s);
-        }
-      });
-
   }
   async onSelectCity(isFrom: boolean) {
-    this.isSelectFromCity = isFrom ? "isFrom" : "isTo";
     if (this.disabled) {
       return;
     }
@@ -157,7 +136,13 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
     m.present();
     const res = await m.onDidDismiss();
     if (res && res.data) {
-      this.flightService.setSelectedCitySource(res.data);
+      const s = this.flightService.getSearchFlightModel();
+      if (isFrom) {
+        s.fromCity = res.data;
+      } else {
+        s.toCity = res.data;
+      }
+      this.flightService.setSearchFlightModel(s);
     }
   }
 }

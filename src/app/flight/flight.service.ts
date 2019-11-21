@@ -69,7 +69,6 @@ export class FlightService {
   private filterPanelShowHideSource: Subject<boolean>;
   private filterCondSources: Subject<FilterConditionModel>;
 
-  private selectedCitySource: Subject<TrafficlineEntity>;
   private passengerBookInfos: PassengerBookInfo<IFlightSegmentInfo>[]; // 记录乘客及其研究选择的航班
   private isInitializingSelfBookInfos = false;
   private  filterCondition: FilterConditionModel;
@@ -87,7 +86,6 @@ export class FlightService {
   ) {
     this.searchFlightModel = new SearchFlightModel();
     this.searchFlightModel.tripType = TripType.departureTrip;
-    this.selectedCitySource = new BehaviorSubject(null);
     this.searchFlightModelSource = new BehaviorSubject(null);
     this.passengerBookInfos = [];
     this.passengerBookInfoSource = new BehaviorSubject(this.passengerBookInfos);
@@ -115,8 +113,6 @@ export class FlightService {
   private disposal() {
     this.setSearchFlightModel(new SearchFlightModel());
     this.removeAllBookInfos();
-    this.selectedCitySource.next(null);
-    this.setSelectedCitySource(null);
     this.currentViewtFlightSegment = null;
     this.selfCredentials = null;
     this.isInitializingSelfBookInfos = false;
@@ -785,12 +781,6 @@ export class FlightService {
       );
     }
     this.setPassengerBookInfosSource(this.passengerBookInfos);
-  }
-  getSelectedCity() {
-    return this.selectedCitySource.asObservable();
-  }
-  setSelectedCitySource(_selectedCity: TrafficlineEntity) {
-    this.selectedCitySource.next(_selectedCity);
   }
   setFilterConditionSource(advSCond: FilterConditionModel) {
     this.filterCondition=advSCond;
