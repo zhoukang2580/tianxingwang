@@ -134,8 +134,11 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     this.modalCtrl.dismiss(city);
   }
   async onCitySelected(city: TrafficlineEntity) {
-    if (!this.histories || !this.histories.find(it => it.Id == city.Id)) {
+    if (this.histories && !this.histories.find(it => it.Id == city.Id)) {
       this.histories.unshift(city);
+      if (this.histories.length > 20) {
+        this.histories = this.histories.slice(0, 20);
+      }
       await this.storage.set("historyDomesticAirports", this.histories);
     }
     this.goBack(city);

@@ -122,6 +122,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   private searchConditionSubscription = Subscription.EMPTY;
   private selectPassengerSubscription = Subscription.EMPTY;
   private selectDaySubscription = Subscription.EMPTY;
+  private isRotatingIcon = false;
   searchFlightModel: SearchFlightModel;
   filterCondition: FilterConditionModel;
   showAddPassenger = false;
@@ -288,17 +289,20 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
   onSwapCity() {
     const s = this.flightService.getSearchFlightModel();
-    if (s.isLocked) {
+    if (s.isLocked || this.isRotatingIcon) {
       return;
     }
+    this.isRotatingIcon = true;
     this.flightService.setSearchFlightModel({
       ...s,
       fromCity: s.toCity,
       toCity: s.fromCity
     });
     this.isRotateIcon = !this.isRotateIcon; // 控制图标旋转
+    this.doRefresh(true, false);
   }
   onRotateIconDone(evt) {
+    this.isRotatingIcon = false;
     console.log("onRotateIconDone");
   }
   async doRefresh(loadDataFromServer: boolean, keepSearchCondition: boolean) {
