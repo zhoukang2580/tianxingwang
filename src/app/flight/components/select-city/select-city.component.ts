@@ -1,8 +1,5 @@
-import { Subscription } from 'rxjs';
-import { LanguageHelper } from "./../../../languageHelper";
-import { AppHelper } from "src/app/appHelper";
+import { Storage } from '@ionic/storage';
 import { IonContent, Platform, IonRefresher, IonHeader, ModalController } from "@ionic/angular";
-import { takeUntil, tap, switchMap } from "rxjs/operators";
 import {
   Component,
   OnInit,
@@ -34,24 +31,42 @@ import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
 })
 export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   private cities: TrafficlineEntity[] = [];
+  private histories: TrafficlineEntity[] = [];
   textSearchResults: TrafficlineEntity[] = [];
   vmKeyowrds = "";
   isSearching = false;
+  activeTab = "";
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   segmentValue: "domestic" | "overseas" = "domestic";
   isIos = false;
+
   constructor(
     plt: Platform,
     private modalCtrl: ModalController,
-    private flightService: FlightService
+    private flightService: FlightService,
+    private storage: Storage
   ) {
     this.isIos = plt.is("ios");
   }
-  onSearchByKeywords() {
-    let name = (this.vmKeyowrds && this.vmKeyowrds.trim()) || "";
+  async onActiveTab(tab: string) {
+    this.activeTab = tab;
+    if (tab == 'hot') {
+      this.cities = this.cities || [];
+      this.textSearchResults = this.cities.filter(it => it.IsHot && !it.IsDeprecated);
+    }
+    if (tab == 'history') {
+      this.textSearchResults = this.histories || [];
+    }
+  }
+  onSearchByKeywords(kw: string = "") {
+    let name = kw || (this.vmKeyowrds && this.vmKeyowrds.trim()) || "";
     name = name.toLowerCase();
-    this.isSearching = true;
+    if (!name) {
+      this.textSearchResults = this.cities;
+      this.scrollToTop();
+      return;
+    }
     this.textSearchResults = (this.cities || []).filter(c => {
       const keys = `Code,Name,Nickname,CityName,Pinyin`.split(",");
       return keys.some(k => {
@@ -67,6 +82,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
           return name == n || n.includes(name);
       })
     }).slice(0, 50).filter(it => !it.IsDeprecated);
+    this.scrollToTop();
     this.isSearching = false;
   }
   async ngOnInit() {
@@ -74,12 +90,14 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   private async initData(forceRefresh: boolean = false) {
     this.cities = await this.flightService.getDomesticAirports(forceRefresh) || [];
+    this.cities.sort((c1, c2) => c1.Sequence - c2.Sequence);
     this.cities = this.cities.map(it => {
       if (it.Name == "北京南苑" || it.Nickname == "北京南苑" || it.CityName == "北京南苑") {
         it.IsDeprecated = true;
       }
       return it;
     })
+    this.histories = await this.storage.get("historyDomesticAirports") || [];
     return true;
   }
   ngOnDestroy() {
@@ -91,6 +109,12 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
       this.refresher.complete();
     }
     this.textSearchResults = this.cities.slice(0, 30);
+    this.scrollToTop();
+  }
+  scrollToTop() {
+    if (this.content) {
+      this.content.scrollToTop(100);
+    }
   }
   segmentChanged(evt: CustomEvent) {
     // console.log(evt);
@@ -109,7 +133,11 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     this.textSearchResults = null;
     this.modalCtrl.dismiss(city);
   }
-  onCitySelected(city: TrafficlineEntity) {
+  async onCitySelected(city: TrafficlineEntity) {
+    if (!this.histories || !this.histories.find(it => it.Id == city.Id)) {
+      this.histories.unshift(city);
+      await this.storage.set("historyDomesticAirports", this.histories);
+    }
     this.goBack(city);
     return false;
   }

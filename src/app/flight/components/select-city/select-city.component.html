@@ -20,29 +20,45 @@
   <ion-refresher (ionRefresh)='doRefresh(true)' slot='fixed'>
     <ion-refresher-content>正在刷新数据</ion-refresher-content>
   </ion-refresher>
-  <div class='search-city-results' [class.show]='true' [class.ios]='isIos'>
-    <ng-container *ngIf='isSearching else n'>
-      <ion-label>正在搜索...</ion-label>
-    </ng-container>
-    <ng-template #n>
-      <ion-list class='holder'>
-      </ion-list>
-      <ion-list *ngIf='textSearchResults?.length else nodatatempl'>
-        <ion-note *ngIf='vmKeyowrds=="北京南苑"' margin-start>您要找的是不是<ion-text color='secondary'
-            (click)='vmKeyowrds="BJS";onSearchByKeywords()' margin-start>北京</ion-text>
-        </ion-note>
-        <ion-item *ngFor='let item of textSearchResults' (click)='onCitySelected(item)'>
-          <ion-label>
-            <ion-text [color]="item?.Selected?'secondary':'dark'">{{item?.Nickname}}
-            </ion-text>
-            <ion-text *ngIf='item.Pinyin' color='medium'>({{item.Pinyin}})</ion-text>
-            <ion-text *ngIf='item.Code' color='medium'>({{item.Code}})</ion-text>
-          </ion-label>
-        </ion-item>
-      </ion-list>
-    </ng-template>
-    <ng-template #nodatatempl>
-      <app-or-comp>没有匹配的数据</app-or-comp>
-    </ng-template>
-  </div>
+  <ng-container *ngIf='isSearching else n'>
+    <ion-label>正在搜索...</ion-label>
+  </ng-container>
+  <ng-template #n>
+    <ion-list class='holder'>
+    </ion-list>
+    <ion-list *ngIf='textSearchResults?.length else nodatatempl'>
+      <ion-note *ngIf='vmKeyowrds=="北京南苑"' margin-start>您要找的是不是<ion-text color='secondary'
+          (click)='vmKeyowrds="BJS";onSearchByKeywords()' margin-start>北京</ion-text>
+      </ion-note>
+      <ion-item *ngFor='let item of textSearchResults' (click)='onCitySelected(item)'>
+        <ion-note *ngIf='item.IsHot' color='danger' class='hot' margin-end>热门</ion-note>
+        <ion-label>
+          <ion-text [color]="item?.Selected?'secondary':'dark'">{{item?.Nickname}}
+          </ion-text>
+          <ion-text *ngIf='item.Pinyin' color='medium'>({{item.Pinyin}})</ion-text>
+          <ion-text *ngIf='item.Code' color='medium'>({{item.Code}})</ion-text>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ng-template>
+  <ng-template #nodatatempl>
+    <app-or-comp>暂无数据</app-or-comp>
+  </ng-template>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button>
+      <ion-icon name="arrow-dropup"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button (click)='onActiveTab("hot")'>
+        <!-- <ion-icon name="logo-vimeo"></ion-icon> -->
+        <ion-text color='danger'>热门</ion-text>
+      </ion-fab-button>
+    </ion-fab-list>
+    <ion-fab-list side="start">
+      <ion-fab-button (click)='onActiveTab("history")'>
+        <!-- <ion-icon name="logo-instagram"></ion-icon> -->
+        历史
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
 </ion-content>
