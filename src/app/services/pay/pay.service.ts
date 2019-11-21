@@ -44,7 +44,8 @@ export class PayService {
       remark
     } as IPayMessage
   }
-  async alipay(req: RequestEntity, path: string): Promise<IPayMessage[] | any> {
+  async alipay(req: RequestEntity, path: string): Promise<boolean> {
+    let result = false;
     const messages: IPayMessage[] = [];
     if (AppHelper.isApp()) {
       req.IsShowLoading = true;
@@ -64,6 +65,7 @@ export class PayService {
         if (payresult) {
           if (payresult.resultStatus == '9000') {
             messages.push(this.addPayMessage("订单支付成功"));
+            result = true;
           } else {
             const info = payresult.memo || payresult.result || payresult.resultStatus;
             if (info) {
@@ -80,11 +82,12 @@ export class PayService {
           }
         }
       }
-      return messages;
     } else if (AppHelper.isH5()) {
+      result = true;
       req.Data.CreateType = "Mobile";
       this.payMobile(req, path);
     }
+    return result;
   }
   wechatpay(req: RequestEntity, path: string) {
     if (
@@ -218,6 +221,7 @@ export class PayService {
         "=" +
         (typeof req[r] == "string" ? req[r] : JSON.stringify(req[r]));
     }
+    console.log("paymobile", url);
     window.location.href = url;
   }
 
