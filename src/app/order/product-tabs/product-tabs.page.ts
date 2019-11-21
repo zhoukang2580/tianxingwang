@@ -145,14 +145,15 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     }
   }
   doRefresh(condition?: SearchTicketConditionModel) {
-    if(this.ionRefresher){
-      this.ionRefresher.disabled=true;
+    if (this.ionRefresher) {
+      this.ionRefresher.complete();
+      this.ionRefresher.disabled = true;
       setTimeout(() => {
-        this.ionRefresher.disabled=false;
+        this.ionRefresher.disabled = false;
       }, 200);
     }
-    if(this.infiniteScroll){
-      this.infiniteScroll.disabled=false;
+    if (this.infiniteScroll) {
+      this.infiniteScroll.disabled = false;
     }
     if (this.activeTab.value == ProductItemType.waitingApprovalTask) {
       this.doRefreshTasks();
@@ -168,9 +169,6 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     this.myTrips = [];
     this.orderModel.Orders = [];
     this.scrollToTop();
-    if (this.ionRefresher) {
-      this.ionRefresher.complete();
-    }
     this.loadMoreOrders();
   }
   onTabClick(tab: ProductItem) {
@@ -248,7 +246,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     if (result && result.data) {
       const condition = { ...this.condition, ...result.data };
       this.doRefresh(condition);
-    } 
+    }
     // else {
     //   this.doRefresh();
     // }
@@ -262,6 +260,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     });
   }
   doRefreshTasks() {
+    if (this.infiniteScroll) {
+      this.infiniteScroll.disabled = false;
+    }
     if (this.activeTab.value != ProductItemType.waitingApprovalTask) {
       this.isLoading = false;
       return;
@@ -274,9 +275,6 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     if (this.ionRefresher) {
       this.ionRefresher.complete();
     }
-    if(this.infiniteScroll){
-      this.infiniteScroll.disabled=false;
-    }
     this.doLoadMoreTasks();
   }
   private doLoadMoreTasks() {
@@ -285,16 +283,17 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       return;
     }
     this.isLoading = this.curTaskPageIndex == 0;
+    const pageSize = 15;
     this.loadDataSub = this.orderService
       .getOrderTasks({
-        PageSize: 15,
+        PageSize: pageSize,
         PageIndex: this.curTaskPageIndex
       } as any)
       .pipe(
         finalize(() => {
           this.isLoading = false;
-          if (this.ionRefresher) {
-            this.ionRefresher.complete();
+          if (this.infiniteScroll) {
+            this.infiniteScroll.complete();
           }
         })
       )
@@ -305,8 +304,8 @@ export class ProductTabsPage implements OnInit, OnDestroy {
             this.curTaskPageIndex++;
           }
           if (this.infiniteScroll) {
-            this.infiniteScroll.disabled = tasks.length == 0;
             this.infiniteScroll.complete();
+            this.infiniteScroll.disabled = tasks.length == 0 || tasks.length < pageSize;
           }
         }
       });
@@ -322,7 +321,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       if (this.infiniteScroll) {
         this.infiniteScroll.disabled = this.isLoading;
         setTimeout(() => {
-          this.infiniteScroll.disabled=false;
+          this.infiniteScroll.disabled = false;
         }, 100);
       }
       if (this.loadDataSub) {
