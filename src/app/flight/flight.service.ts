@@ -67,7 +67,6 @@ export class FlightService {
   >;
   private searchFlightModel: SearchFlightModel;
   private filterPanelShowHideSource: Subject<boolean>;
-  private openCloseSelectCitySources: Subject<boolean>;
   private filterCondSources: Subject<FilterConditionModel>;
 
   private selectedCitySource: Subject<TrafficlineEntity>;
@@ -93,7 +92,6 @@ export class FlightService {
     this.passengerBookInfos = [];
     this.passengerBookInfoSource = new BehaviorSubject(this.passengerBookInfos);
     this.filterPanelShowHideSource = new BehaviorSubject(false);
-    this.openCloseSelectCitySources = new BehaviorSubject(false);
     this.filterCondSources = new BehaviorSubject(null);
     this.worker = window["Worker"] ? new Worker("assets/worker.js") : null;
     identityService.getIdentitySource().subscribe(res => {
@@ -118,7 +116,6 @@ export class FlightService {
     this.setSearchFlightModel(new SearchFlightModel());
     this.removeAllBookInfos();
     this.selectedCitySource.next(null);
-    this.openCloseSelectCitySources.next(false);
     this.setSelectedCitySource(null);
     this.currentViewtFlightSegment = null;
     this.selfCredentials = null;
@@ -795,12 +792,6 @@ export class FlightService {
   setSelectedCitySource(_selectedCity: TrafficlineEntity) {
     this.selectedCitySource.next(_selectedCity);
   }
-  getOpenCloseSelectCityPageSources() {
-    return this.openCloseSelectCitySources.asObservable();
-  }
-  setOpenCloseSelectCityPageSources(open: boolean) {
-    this.openCloseSelectCitySources.next(open);
-  }
   setFilterConditionSource(advSCond: FilterConditionModel) {
     this.filterCondition=advSCond;
     this.filterCondSources.next(advSCond);
@@ -1131,141 +1122,99 @@ export class FlightService {
         return res;
       });
   }
-   filterByFlightDirect(flys: FlightJourneyEntity[]) {
-    let result = flys;
+   filterByFlightDirect(segs:FlightSegmentEntity[]) {
+    let result = segs;
     if (this.filterCondition&&this.filterCondition.onlyDirect) {
-      result = result.map(f => {
-        f.FlightRoutes = f.FlightRoutes.map(r => {
-          r.FlightSegments = r.FlightSegments.filter(s => !s.IsStop);
-          return r;
-        });
-        return f;
-      });
+      result = result.filter(s => !s.IsStop);
     }
     return result;
   }
    filterByFromAirports(
-    flys: FlightJourneyEntity[]
-  ): FlightJourneyEntity[] {
-    let result = flys;
+    segs:FlightSegmentEntity[]
+  ) {
+    let result = segs;
     if (
       this.filterCondition&&
       this.filterCondition.fromAirports &&
       this.filterCondition.fromAirports.length
     ) {
-      result = result.map(fly => {
-        fly.FlightRoutes = fly.FlightRoutes.map(r => {
-          r.FlightSegments = r.FlightSegments.filter(s =>
-            this.filterCondition.fromAirports.some(a => a.id === s.FromAirport)
-          );
-          return r;
-        });
-        return fly;
-      });
+      result = result.filter(s =>
+        this.filterCondition.fromAirports.some(a => a.id === s.FromAirport)
+      );
     }
     return result;
   }
    filterByToAirports(
-    flys: FlightJourneyEntity[]
-  ): FlightJourneyEntity[] {
-    let result = flys;
+    segs:FlightSegmentEntity[]
+  ){
+    let result = segs;
     if (
       this.filterCondition&&
       this.filterCondition.toAirports &&
       this.filterCondition.toAirports.length
     ) {
-      result = result.map(fly => {
-        fly.FlightRoutes = fly.FlightRoutes.map(r => {
-          r.FlightSegments = r.FlightSegments.filter(s =>
-            this.filterCondition.toAirports.some(a => a.id === s.ToAirport)
-          );
-          return r;
-        });
-        return fly;
-      });
+      result = result.filter(s =>
+        this.filterCondition.toAirports.some(a => a.id === s.ToAirport)
+      );
     }
     return result;
   }
    filterByAirportCompanies(
-    flys: FlightJourneyEntity[]
-  ): FlightJourneyEntity[] {
-    let result = flys;
+    segs:FlightSegmentEntity[]
+  ) {
+    let result = segs;
     if (
       this.filterCondition&&
       this.filterCondition.airCompanies &&
       this.filterCondition.airCompanies.length > 0
     ) {
-      result = result.map(fly => {
-        fly.FlightRoutes = fly.FlightRoutes.map(r => {
-          r.FlightSegments = r.FlightSegments.filter(s =>
-            this.filterCondition.airCompanies.some(a => a.id === s.Airline)
-          );
-          return r;
-        });
-        return fly;
-      });
+      result = result.filter(s =>
+        this.filterCondition.airCompanies.some(a => a.id === s.Airline)
+      );
     }
     return result;
   }
-   filterByAirTypes(flys: FlightJourneyEntity[]): FlightJourneyEntity[] {
-    let result = flys;
+   filterByAirTypes(segs:FlightSegmentEntity[]) {
+    let result = segs;
     if (
       this.filterCondition&&
       this.filterCondition.airTypes &&
       this.filterCondition.airTypes.length > 0
     ) {
-      result = result.map(fly => {
-        fly.FlightRoutes = fly.FlightRoutes.map(r => {
-          r.FlightSegments = r.FlightSegments.filter(s =>
-            this.filterCondition.airTypes.some(a => a.id === s.PlaneType)
-          );
-          return r;
-        });
-        return fly;
-      });
+      result = result.filter(s =>
+        this.filterCondition.airTypes.some(a => a.id === s.PlaneType)
+      );
     }
     return result;
   }
-   filterByCabins(flys: FlightJourneyEntity[]): FlightJourneyEntity[] {
-    let result = flys;
+   filterByCabins(segs:FlightSegmentEntity[]) {
+    let result = segs;
     if (this.filterCondition&&this.filterCondition.cabins && this.filterCondition.cabins.length > 0) {
-      result = result.map(fly => {
-        fly.FlightRoutes = fly.FlightRoutes.map(r => {
-          r.FlightSegments = r.FlightSegments.filter(s =>
-            s.Cabins && s.Cabins.some(c => this.filterCondition.cabins.some(
-              a => (c.TypeName && c.TypeName==(a.label))
-            ))
-          );
-          return r;
-        });
-        return fly;
-      });
+      result = result.filter(s =>
+        s.Cabins && s.Cabins.some(c => this.filterCondition.cabins.some(
+          a => (c.TypeName && c.TypeName==(a.label))
+        ))
+      );
     }
     return result;
   }
    filterByTakeOffTimeSpan(
-    flys: FlightJourneyEntity[]
-  ): FlightJourneyEntity[] {
-    let result = flys;
+    segs:FlightSegmentEntity[]
+  ){
+    let result = segs;
     if (this.filterCondition&&this.filterCondition.takeOffTimeSpan) {
       // console.log(this.filterCondition.takeOffTimeSpan);
-      result = result.map(fly => {
-        fly.FlightRoutes = fly.FlightRoutes.map(r => {
-          r.FlightSegments = r.FlightSegments.filter(s => {
-            // console.log(moment(s.TakeoffTime).hour());
-            return (
-              this.filterCondition.takeOffTimeSpan.lower <=
-              moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() &&
-              (moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() <
-                this.filterCondition.takeOffTimeSpan.upper ||
-                (moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() ==
-                  this.filterCondition.takeOffTimeSpan.upper &&
-                  moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").minutes() == 0))
-            );
-          });
-          return r;
-        });
-        return fly;
+      result = result.filter(s => {
+        // console.log(moment(s.TakeoffTime).hour());
+        return (
+          this.filterCondition.takeOffTimeSpan.lower <=
+          moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() &&
+          (moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() <
+            this.filterCondition.takeOffTimeSpan.upper ||
+            (moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() ==
+              this.filterCondition.takeOffTimeSpan.upper &&
+              moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").minutes() == 0))
+        );
       });
     }
     return result;

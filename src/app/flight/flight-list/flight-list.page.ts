@@ -73,6 +73,7 @@ import {
   FlightPolicy
 } from "../models/PassengerFlightInfo";
 import { DaysCalendarComponent } from "src/app/tmc/components/days-calendar/days-calendar.component";
+import { SelectCityComponent } from '../components/select-city/select-city.component';
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -155,11 +156,11 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   showAdvSearchPage$: Observable<boolean>;
   showSelectFlyDayPage$: Observable<boolean>;
   filteredPolicyPassenger$: Observable<PassengerBookInfo<IFlightSegmentInfo>>;
-  get isHasFiltered(){
+  get isHasFiltered() {
     return this.filterComp &&
-    Object.keys(this.filterComp.userOps).some(
-      k => this.filterComp.userOps[k]
-    );
+      Object.keys(this.filterComp.userOps).some(
+        k => this.filterComp.userOps[k]
+      );
   }
   constructor(
     private route: ActivatedRoute,
@@ -354,14 +355,14 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         // 强制从服务器端返回新数据
         data = await this.loadPolicyedFlightsAsync(this.flightJourneyList);
       }
-     
+
       // 根据筛选条件过滤航班信息：
-      const filteredFlightJourenyList = this.filterFlightJourneyList(data);
-      const segments = this.flightService.filterPassengerPolicyFlights(
+      let segments = this.flightService.filterPassengerPolicyFlights(
         null,
-        filteredFlightJourenyList,
+        data,
         this.policyflights
       );
+      segments = this.filterFlightSegmentsByConditions(segments);
       this.st = Date.now();
       this.vmFlights = segments;
       await this.renderFlightList(segments);
@@ -402,7 +403,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     const hasreselect = this.flightService
       .getPassengerBookInfos()
       .find(item => item.isReplace);
-    if (hasreselect&&hasreselect.passenger) {
+    if (hasreselect && hasreselect.passenger) {
       if (
         !passengers.find(p => p.AccountId == hasreselect.passenger.AccountId)
       ) {
@@ -631,12 +632,17 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.apiService.hideLoadingView();
     this.isLoading = false;
   }
-  onSelectCity(isFrom: boolean) {
-    if(this.searchFlightModel&&this.searchFlightModel.isLocked){
+  async onSelectCity(isFrom: boolean) {
+    if (this.searchFlightModel && this.searchFlightModel.isLocked) {
       return;
     }
     this.isSelectFromCity = isFrom ? "isfrom" : "isTo";
-    this.flightService.setOpenCloseSelectCityPageSources(true);
+    const m = await this.modalCtrl.create({ component: SelectCityComponent });
+    m.present();
+    const res = await m.onDidDismiss();
+    if (res && res.data) {
+      this.flightService.setSelectedCitySource(res.data);
+    }
   }
   private async initSearchModelParams() {
     this.searchConditionSubscription = this.flightService.getSearchFlightModelSource().subscribe(m => {
@@ -676,7 +682,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       .subscribe(filterCondition => {
         console.log("高阶查询", filterCondition);
         this.filterCondition = filterCondition;
-        if (this.filterCondition&&!this.isLoading) {
+        if (this.filterCondition && !this.isLoading) {
           // this.filterFlightJourneyList();
           this.doRefresh(false, true);
         }
@@ -818,6 +824,12 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     console.time("renderFlightList2");
     this.isLoading = true;
     const segments = fs.map(s => {
+      let lowestFare = +s.LowestFare;
+      if (s.Cabins) {
+        s.Cabins.forEach(c => {
+          lowestFare = Math.min(+c.SalesPrice, lowestFare);
+        })
+      }
       const template = `<div class='left'>
           <h4 class="time">
     <strong>${s.TakeoffShortTime}</strong>
@@ -853,7 +865,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           </div>
       </div>
       <div class="price">
-          ￥${s.LowestFare}
+          ￥${lowestFare}
       </div>`;
       return {
         item: s,
@@ -881,14 +893,14 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.scrollToTop();
     console.timeEnd("renderFlightList2");
   }
-  private filterFlightJourneyList(flys: FlightJourneyEntity[]) {
+  private filterFlightSegmentsByConditions(segs: FlightSegmentEntity[]) {
     console.log(
       "filterFlightJourneyList",
       this.filterCondition,
       "flights",
-      flys
+      segs
     );
-    let result = flys;
+    let result = segs;
     if (!this.filterCondition) {
       return result;
     }

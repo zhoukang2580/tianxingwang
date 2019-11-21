@@ -26,7 +26,6 @@ import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
 import { Router } from "@angular/router";
 import { AppHelper } from "./appHelper";
-import { ConfigService } from "./services/config/config.service";
 import { HttpClient } from "@angular/common/http";
 import { LanguageHelper } from "./languageHelper";
 import { WechatHelper } from "./wechatHelper";
@@ -85,22 +84,16 @@ export class AppComponent
     private modalController: ModalController,
     private statusBar: StatusBar,
     private router: Router,
-    private configService: ConfigService,
     private apiService: ApiService,
     private alertController: AlertController,
     private popCtrl: PopoverController,
     private toastController: ToastController,
-    private actionSheetCtrl: ActionSheetController,
-    private loadingCtrl: LoadingController,
     private http: HttpClient,
-    private flightService: FlightService,
-    private flydayService: CalendarService,
     messageService: MessageService
   ) {
     // console.log = this.log;
     // console.log(this.router.config);
     this.message$ = messageService.getMessage();
-    this.openSelectCity$ = flightService.getOpenCloseSelectCityPageSources();
     this.loading$ = apiService.getLoading();
     // if (!this.checkWechatOpenId() || !this.checkDingtalkUnionid()) return;
     if (this.platform.is("ios")) {
@@ -263,12 +256,11 @@ export class AppComponent
 
   private lastClickTime = 0;
   private async backButtonAction() {
-    try{
-      const curUrl = (this.router.url||"").toLowerCase();
+    try {
+      const curUrl = (this.router.url || "").toLowerCase();
       console.log("backbutton url = " + curUrl);
       let count = 1;
       this.apiService.hideLoadingView();
-      this.flightService.setOpenCloseSelectCityPageSources(false);
       const t = await this.modalController.getTop();
       if (t) {
         await t.dismiss();
@@ -280,7 +272,7 @@ export class AppComponent
         return;
       }
       const p = await this.popCtrl.getTop();
-      if(p){
+      if (p) {
         await p.dismiss();
         return;
       }
@@ -301,9 +293,9 @@ export class AppComponent
         console.log(`backbutton back count=${count}`);
         // window.history.back();
       }
-    }catch(e){
+    } catch (e) {
       console.error(e);
     }
-    
+
   }
 }

@@ -24,7 +24,7 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-  <ion-grid class='xs-font-size' [style.visibility]="!isLoading?'initial':'collapse'" appOpenSelectedBookInfos>
+  <ion-grid class='xs-font-size' [style.visibility]="!isLoading?'initial':'collapse'" (click)='showSelectedInfos()'>
     <ion-row>
       <ion-col>
         {{searchFlightModel?.Date}}共{{vmFlights?.length}}个航班

@@ -15,7 +15,6 @@ import { AirportsComponent } from "./fly-filter/airports/airports.component";
 import { AirtypeComponent } from "./fly-filter/airtype/airtype.component";
 import { CabinComponent } from "./fly-filter/cabin/cabin.component";
 import { SelectCityComponent } from "./select-city/select-city.component";
-import { FlightDirectivesModule } from "../directives/directives.module";
 import { TicketchangingComponent } from "./ticketchanging/ticketchanging.component";
 import { SelectedPassengersComponent } from "../../tmc/components/selected-passengers/selected-passengers.component";
 import { SelectedFlightsegmentInfoComponent } from "./selected-flightsegment-info/selected-flightsegment-info.component";
@@ -50,7 +49,6 @@ import { PriceDetailComponent } from './price-detail/price-detail.component';
     IonicModule,
     FlightPipesModule,
     ReactiveFormsModule,
-    FlightDirectivesModule,
     AppDirectivesModule,
     AppComponentsModule,
     TmcComponentsModule,
@@ -58,7 +56,6 @@ import { PriceDetailComponent } from './price-detail/price-detail.component';
   ],
   exports: [
     AppDirectivesModule,
-    FlightDirectivesModule,
     AppComponentsModule,
     FlightDynamicComponent,
     SwitchCityComponent,
@@ -81,7 +78,8 @@ import { PriceDetailComponent } from './price-detail/price-detail.component';
     SelectedFlightsegmentInfoComponent,
     SelectFlightsegmentCabinComponent,
     PriceDetailComponent,
-    SelectFlightPassengerComponent
+    SelectFlightPassengerComponent,
+    SelectCityComponent
   ]
 })
 export class FlightComponentsModule {}

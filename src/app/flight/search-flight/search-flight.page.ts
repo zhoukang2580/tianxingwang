@@ -29,7 +29,7 @@ import { SelectedFlightsegmentInfoComponent } from "../components/selected-fligh
   styleUrls: ["./search-flight.page.scss"]
 })
 export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate {
-  isSelf=false;
+  isSelf = false;
   toggleCities = false; // 没有切换城市顺序
   rotateIcon = false;
   isSingle = true;
@@ -47,7 +47,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
   isShowBookInfos$ = of(0);
   isCanleave = true;
   isleave = true;
-  get selectedPassengers(){
+  get selectedPassengers() {
     return this.flightService.getPassengerBookInfos().length;
   }
   constructor(
@@ -64,7 +64,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
     private modalCtrl: ModalController
   ) {
     route.queryParamMap.subscribe(async _ => {
-      this.isSelf=await this.staffService.isSelfBookType();
+      this.isSelf = await this.staffService.isSelfBookType();
       this.isleave = false;
       this.isCanleave = false;
       const identity = await this.identityService.getIdentityAsync();
@@ -170,6 +170,14 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
     this.isCanleave = true;
     this.isleave = true;
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], { queryParams: { forType: FlightHotelTrainType.Flight } });
+  }
+  async showSelectedInfos() {
+    const modal = await this.modalCtrl.create({
+      component: SelectedFlightsegmentInfoComponent
+    });
+    await this.flightService.dismissAllTopOverlays();
+    await modal.present();
+    await modal.onDidDismiss();
   }
   ngOnDestroy(): void {
     console.log("on destroyed");

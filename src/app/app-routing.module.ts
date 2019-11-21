@@ -68,6 +68,6 @@ const routes: Routes = [
       useHash: true
     })
   ],
-  exports: [RouterModule, MessageModule, FlightModule]
+  exports: [RouterModule, MessageModule]
 })
 export class AppRoutingModule {}

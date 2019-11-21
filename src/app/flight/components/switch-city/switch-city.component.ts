@@ -1,3 +1,4 @@
+import { SelectCityComponent } from './../select-city/select-city.component';
 import { finalize } from 'rxjs/operators';
 import { FlightService } from "src/app/flight/flight.service";
 import {
@@ -9,7 +10,7 @@ import {
   OnChanges,
   ElementRef
 } from "@angular/core";
-import { Platform, IonText } from "@ionic/angular";
+import { Platform, IonText, ModalController } from "@ionic/angular";
 import { Component, OnInit, Input, Renderer2 } from "@angular/core";
 import {
   trigger,
@@ -63,7 +64,8 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
   constructor(
     plt: Platform,
     private flightService: FlightService,
-    private render: Renderer2
+    private render: Renderer2,
+    private modalCtrl: ModalController
   ) {
     this.mode = plt.is("ios") ? "ios" : plt.is("android") ? "md" : "";
   }
@@ -146,11 +148,16 @@ export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
       });
 
   }
-  onSelectCity(isFrom: boolean) {
+  async onSelectCity(isFrom: boolean) {
     this.isSelectFromCity = isFrom ? "isFrom" : "isTo";
     if (this.disabled) {
       return;
     }
-    this.flightService.setOpenCloseSelectCityPageSources(true);
+    const m = await this.modalCtrl.create({ component: SelectCityComponent });
+    m.present();
+    const res = await m.onDidDismiss();
+    if (res && res.data) {
+      this.flightService.setSelectedCitySource(res.data);
+    }
   }
 }

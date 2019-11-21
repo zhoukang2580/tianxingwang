@@ -7,7 +7,7 @@
     </ion-buttons>
     <ion-text>{{getMothDay()}}</ion-text>
     <ion-buttons slot='end' *ngIf='(showOpenBtn$|async) as num'>
-      <ion-button fill='clear' color='secondary' appOpenSelectedBookInfos size='small'>
+      <ion-button fill='clear' color='secondary' (click)='showSelectedInfos()' size='small'>
         <ion-text class='xs-font-size'>
           已选行程
         </ion-text>

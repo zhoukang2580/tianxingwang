@@ -7,7 +7,6 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { FlightItemCabinsPage } from './flight-item-cabins.page';
-import { FlightDirectivesModule } from '../directives/directives.module';
 
 const routes: Routes = [
   {
@@ -23,8 +22,7 @@ const routes: Routes = [
     IonicModule,
     FlightComponentsModule,
     RouterModule.forChild(routes),
-    FlightDirectivesModule
   ],
   declarations: [FlightItemCabinsPage]
 })
-export class FlightItemCabinsPageModule {}
+export class FlightItemCabinsPageModule { }
