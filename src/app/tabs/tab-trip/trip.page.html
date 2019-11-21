@@ -13,7 +13,7 @@
       <ion-item *ngFor='let trip of trips' detail (click)='goToDetailPage(trip)'>
         <div style='width: 100%;'>
           <ion-row>
-            <ion-col>
+            <ion-col size='5'>
               订单编号
             </ion-col>
             <ion-col>
@@ -43,20 +43,30 @@
           </ion-row>
           <ion-row *ngIf='trip.Type=="Flight"'>
             <ion-col>
-              <strong>{{trip.StartTime?.substr(0,"yyyy-MM-dd".length)}}</strong>
-              <span margin-start margin-end>
-                {{trip.FromName}}←→{{trip.ToName}}
-              </span>
-              {{trip.Name}}<span margin-start></span>{{trip.EndTime?.substr("yyyy-MM-DDT".length,"HH:mm".length)}}
+              <div>
+                <strong>{{trip.StartTime?.substr(0,"yyyy-MM-dd".length)}} <span>
+                    {{trip.EndTime?.substr("yyyy-MM-DDT".length,"HH:mm".length)}}
+                  </span> <span>{{trip.Name}}</span></strong>
+              </div>
+              <div>
+                <span>
+                  {{trip.FromName}}←→{{trip.ToName}}
+                </span>
+              </div>
             </ion-col>
           </ion-row>
           <ion-row *ngIf='trip.Type=="Train"'>
             <ion-col>
-              <strong>{{trip.StartTime?.substr(0,"yyyy-MM-dd".length)}}</strong>
-              <span margin-start margin-end>
-                {{trip.FromName}}←→{{trip.ToName}}
-              </span>
-              {{trip.Name}}<span margin-start></span>{{trip.EndTime?.substr("yyyy-MM-DDT".length,"HH:mm".length)}}
+              <div>
+                <strong>{{trip.StartTime?.substr(0,"yyyy-MM-dd".length)}}
+                  <span>{{trip.EndTime?.substr("yyyy-MM-DDT".length,"HH:mm".length)}}</span>
+                  <span>{{trip.Name}}</span></strong>
+              </div>
+              <div>
+                <span>
+                  {{trip.FromName}}←→{{trip.ToName}}
+                </span>
+              </div>
             </ion-col>
           </ion-row>
           <ng-container *ngIf='trip.Type=="Hotel"'>
@@ -89,7 +99,8 @@
               </ng-container>
             </ng-container>
             <ng-container *ngIf='getOrderInsurad(trip) as orderInsurad'>
-              <ion-button color='secondary' (click)='payInsurance(orderInsurad.Key,trip.OrderId,$event)'>继续支付{{orderInsurad.Name}}
+              <ion-button color='secondary' (click)='payInsurance(orderInsurad.Key,trip.OrderId,$event)'>
+                继续支付{{orderInsurad.Name}}
               </ion-button>
             </ng-container>
           </ng-container>

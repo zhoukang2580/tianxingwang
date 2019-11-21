@@ -49,7 +49,7 @@ const routes: Routes = [
   imports: [
     RegisterModule,
     LoginModule,
-    // FlightModule,
+    FlightModule,
     AccountModule,
     HrModule,
     PasswordModule,
@@ -60,8 +60,8 @@ const routes: Routes = [
     TmcModule,
     OrderModule,
     MessageModule,
-    // TrainModule,
-    // HotelModule,
+    TrainModule,
+    HotelModule,
     RouterModule.forRoot(routes, {
       preloadingStrategy: PreloadAllModules,
       enableTracing: !true,
