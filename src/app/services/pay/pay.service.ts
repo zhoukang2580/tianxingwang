@@ -37,46 +37,46 @@ export class PayService {
     const result = await m.onDidDismiss();
     return result && result.data;
   }
-  alipay(req: RequestEntity, path: string) {
+  private addPayMessage(message: string, remark?: string) {
+    return {
+      timeStamp: Date.now(),
+      message,
+      remark
+    } as IPayMessage
+  }
+  async alipay(req: RequestEntity, path: string): Promise<IPayMessage[] | any> {
+    const messages: IPayMessage[] = [];
     if (AppHelper.isApp()) {
       req.IsShowLoading = true;
       req.Data.DataType = "json";
       req.Data.CreateType = "App";
-      return new Promise<any>((resolve, reject) => {
-        const sub = this.apiService
-          .getResponse<{ Body: string; Number: string }>(req)
-          .subscribe(
-            r => {
-              if (r.Status && r.Data) {
-                this.ali
-                  .pay(r.Data.Body)
-                  .then(n => {
-                    console.log("支付宝支付结果：", JSON.stringify(n));
-                    console.log("支付宝支付结果：" + typeof n);
-                    if (n.resultStatus == '9000') {
-                      resolve(r.Data.Number||"支付操作完成");
-                    } else {
-                      reject(n.memo || n.result || n.resultStatus);
-                    }
-                  })
-                  .catch(e => {
-                    // AppHelper.alert(e.message || e);
-                    reject(e.message || e);
-                  });
-              } else {
-                reject(r.Message);
-              }
-            },
-            e => {
-              reject(e);
-            },
-            () => {
-              setTimeout(() => {
-                sub.unsubscribe();
-              }, 1000);
-            }
-          );
+      await this.plt.ready();
+      const r: { Body: string; Number: string } = await this.apiService.getPromiseData<any>(req).catch(_ => {
+        messages.push({ timeStamp: Date.now(), message: _, remark: "ali" });
+        return null;
       });
+      if (r && r.Body) {
+        const payresult: IAliPayPluginPayResult = await this.ali.pay(r.Body).catch(_ => {
+          messages.push(this.addPayMessage(_));
+          return null;
+        });
+        if (payresult) {
+          if (payresult.resultStatus == '9000') {
+            messages.push(this.addPayMessage("订单支付成功"));
+          } else {
+            messages.push(this.addPayMessage(`${payresult.memo || payresult.result || payresult.resultStatus}`));
+          }
+        }
+      };
+      if (messages.length) {
+        messages.sort((a, b) => b.timeStamp - a.timeStamp);
+        for (let i = 0; i < messages.length; i++) {
+          if (messages[i].message) {
+            await AppHelper.alert(messages[i].message, true);
+          }
+        }
+      }
+      return messages;
     } else if (AppHelper.isH5()) {
       req.Data.CreateType = "Mobile";
       this.payMobile(req, path);
@@ -141,7 +141,7 @@ export class PayService {
                   signType: r.Data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
                   paySign: r.Data.paySign, // 支付签名
                   success: res => {
-                    resolve(r.Data.Number||"支付操作完成");
+                    resolve(r.Data.Number || "支付操作完成");
                     //  if(res.errMsg=="chooseWXPay:ok")
                     //  {
                     //     resolve("success");
@@ -165,13 +165,13 @@ export class PayService {
                   .pay(payInfo as any)
                   .then(n => {
                     console.log("wechat 支付成功返回结果：" + JSON.stringify(n));
-                    resolve(r.Data.Number||"支付操作完成");
+                    resolve(r.Data.Number || "支付操作完成");
                   })
                   .catch(e => {
                     console.log("wechat 支付成功返回结果：" + typeof e);
                     console.log("wechat 支付成功返回结果：" + JSON.stringify(e));
                     // AppHelper.alert(e.message || e);
-                    reject(e.message || `${e}`.includes("-2") ? "用户取消" : `${e}`.includes("-1")?"签名错误、未注册APPID、项目设置APPID不正确、注册的APPID与设置的不匹配": `微信支付结果：${e}`.replace(",(null)", ""));
+                    reject(e.message || `${e}`.includes("-2") ? "用户取消" : `${e}`.includes("-1") ? "签名错误、未注册APPID、项目设置APPID不正确、注册的APPID与设置的不匹配" : `微信支付结果：${e}`.replace(",(null)", ""));
                   });
               }
             } else {
@@ -239,49 +239,55 @@ export class PayService {
     });
   }
 }
+export interface IPayMessage {
+  timeStamp: number;
+  message?: string;
+  remark?: string;
+}
+export interface IAliPayPluginPayResult {
+  memo: string;
+  result: {
+    alipay_trade_app_pay_response: {
+      code: string; //10000,
+      msg: string; // Success,
+      app_id: string; // 2014072300007148,
+      out_trade_no: string; // 081622560194853,
+      trade_no: string; //2016081621001004400236957647,
+      total_amount: string; // 0.01,
+      seller_id: string; // 2088702849871851,
+      charset: string; // utf-8,
+      timestamp: string; // 2016-10-11 17:43:36
+      sub_code?: string;
+      sub_msg?: string;
+    };
+    sign: string; // ********,
+    sign_type: string; // RSA2
+  };
+  /**
+   * 返回码	 含义
+      9000	订单支付成功
+      8000	正在处理中，支付结果未知（有可能已经支付成功），请查询商户订单列表中订单的支付状态
+      4000	订单支付失败
+      5000	重复请求
+      6001	用户中途取消
+      6002	网络连接出错
+      6004	支付结果未知（有可能已经支付成功），请查询商户订单列表中订单的支付状态
+      其它	 其它支付错误
+   */
+  resultStatus:
+  | "9000"
+  | "8000"
+  | "4000"
+  | "5000"
+  | "6001"
+  | "6002"
+  | "6004"
+  | "其它"; // 9000
+}
 export interface Ali {
   pay: (
     payInfo: string
-  ) => Promise<{
-    memo: string;
-    result: {
-      alipay_trade_app_pay_response: {
-        code: string; //10000,
-        msg: string; // Success,
-        app_id: string; // 2014072300007148,
-        out_trade_no: string; // 081622560194853,
-        trade_no: string; //2016081621001004400236957647,
-        total_amount: string; // 0.01,
-        seller_id: string; // 2088702849871851,
-        charset: string; // utf-8,
-        timestamp: string; // 2016-10-11 17:43:36
-        sub_code?: string;
-        sub_msg?: string;
-      };
-      sign: string; // ********,
-      sign_type: string; // RSA2
-    };
-    /**
-     * 返回码	 含义
-        9000	订单支付成功
-        8000	正在处理中，支付结果未知（有可能已经支付成功），请查询商户订单列表中订单的支付状态
-        4000	订单支付失败
-        5000	重复请求
-        6001	用户中途取消
-        6002	网络连接出错
-        6004	支付结果未知（有可能已经支付成功），请查询商户订单列表中订单的支付状态
-        其它	 其它支付错误
-     */
-    resultStatus:
-    | "9000"
-    | "8000"
-    | "4000"
-    | "5000"
-    | "6001"
-    | "6002"
-    | "6004"
-    | "其它"; // 9000
-  }>;
+  ) => Promise<IAliPayPluginPayResult>;
 }
 interface Wechat {
   pay: (payInfo: any) => Promise<any>;
