@@ -1,8 +1,11 @@
 ion-content {
   ion-row ion-col {
     font-size: 0.8rem;
+    div{
+      line-height: 1.5;
+    }
   }
   span + span {
-    margin-right: 0.5em;
+    margin-left: 0.5em;
   }
 }

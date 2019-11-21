@@ -46,12 +46,13 @@
               <div>
                 <strong>{{trip.StartTime?.substr(0,"yyyy-MM-dd".length)}} <span>
                     {{trip.EndTime?.substr("yyyy-MM-DDT".length,"HH:mm".length)}}
-                  </span> <span>{{trip.Name}}</span></strong>
+                  </span></strong>
               </div>
               <div>
                 <span>
                   {{trip.FromName}}←→{{trip.ToName}}
-                </span>
+                </span> 
+                <span>{{trip.Name}}</span>
               </div>
             </ion-col>
           </ion-row>
@@ -60,12 +61,13 @@
               <div>
                 <strong>{{trip.StartTime?.substr(0,"yyyy-MM-dd".length)}}
                   <span>{{trip.EndTime?.substr("yyyy-MM-DDT".length,"HH:mm".length)}}</span>
-                  <span>{{trip.Name}}</span></strong>
+                 </strong>
               </div>
               <div>
                 <span>
                   {{trip.FromName}}←→{{trip.ToName}}
                 </span>
+                <span>{{trip.Name}}</span>
               </div>
             </ion-col>
           </ion-row>
