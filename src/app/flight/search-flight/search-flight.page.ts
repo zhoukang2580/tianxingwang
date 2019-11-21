@@ -29,7 +29,7 @@ import { SelectedFlightsegmentInfoComponent } from "../components/selected-fligh
   styleUrls: ["./search-flight.page.scss"]
 })
 export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate {
-  private isSelf=false;
+  isSelf=false;
   toggleCities = false; // 没有切换城市顺序
   rotateIcon = false;
   isSingle = true;
@@ -47,9 +47,6 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
   isShowBookInfos$ = of(0);
   isCanleave = true;
   isleave = true;
-  get canAddPassengers() {
-    return this.isSelf;
-  }
   get selectedPassengers(){
     return this.flightService.getPassengerBookInfos().length;
   }

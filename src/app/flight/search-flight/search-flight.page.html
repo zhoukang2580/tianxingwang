@@ -8,12 +8,12 @@
     <ion-text *ngIf='(isShowBookInfos$|async)'>机票查询</ion-text>
     <ion-title *ngIf='!(isShowBookInfos$|async)'>机票查询</ion-title>
     <ion-buttons slot='end' *ngIf='(isShowBookInfos$|async) as num'>
-      <ion-button fill='clear' color='secondary' size='small' appOpenSelectedBookInfos (click)='isCanleave=true'>已选航班<ion-badge slot='end'
-          color='danger'>
+      <ion-button fill='clear' color='secondary' size='small' appOpenSelectedBookInfos (click)='isCanleave=true'>已选航班
+        <ion-badge slot='end' color='danger'>
           {{num}}</ion-badge>
       </ion-button>
     </ion-buttons>
-    <ion-buttons slot='end' *ngIf='canAddPassengers'>
+    <ion-buttons slot='end' *ngIf='!isSelf'>
       <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()'>添加乘客<ion-badge
           color='danger'>
           <ion-text color='light'>{{selectedPassengers}}</ion-text>
@@ -44,12 +44,12 @@
         <app-search-day-comp *ngIf="!isSingle" [day]='backDate' (click)="onSelecFlyDate(false,true)">
         </app-search-day-comp>
       </section>
-      <ion-button style='width: 100%' (click)="searchFlight()" margin-top
-        *ngIf='!(canAddPassengers && selectedPassengers==0)' color="secondary" expand="block"> 
+      <ion-button style='width: 100%' (click)="searchFlight()" margin-top *ngIf='isSelf'
+        color="secondary" expand="block">
         <ion-text>查询航班</ion-text>
       </ion-button>
       <ion-button style='width: 100%' (click)="onSelectPassenger()" margin-top
-        *ngIf='canAddPassengers && selectedPassengers==0' color="secondary" expand="block">
+        *ngIf='(!isSelf && selectedPassengers==0)' color="secondary" expand="block">
         <ion-text>请添加乘客</ion-text>
       </ion-button>
     </ion-card-content>
