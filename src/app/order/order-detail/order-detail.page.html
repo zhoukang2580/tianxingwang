@@ -192,7 +192,7 @@
       </ion-list>
       <!-- 审批记录 -->
       <ion-list #link [attr.tabid]='getTabByLabel("审批")?.value' lines='none'>
-        <ion-item-divider>{{tabs[4].label}}</ion-item-divider>
+        <ion-item-divider>{{getTabByLabel("审批")?.label}}</ion-item-divider>
         <ion-item style='margin-top: 0.5em' *ngIf='orderDetail.Histories?.length'>
           <app-timeline [hideLastTimeLineTail]='false'>
             <app-timeline-item *ngFor='let history of orderDetail.Histories'>

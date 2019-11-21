@@ -60,6 +60,9 @@ export class TripPage implements OnInit {
       return r;
     }), finalize(() => {
       this.isLoading = false;
+      if(this.infiniteScroll){
+        this.infiniteScroll.complete();
+      }
     }));
   }
   ngOnInit() {
