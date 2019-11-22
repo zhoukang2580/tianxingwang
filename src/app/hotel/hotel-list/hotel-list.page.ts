@@ -182,12 +182,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.queryComp) {
       this.queryComp.onReset();
     }
-    const searchText=this.vmKeyowrds&&this.vmKeyowrds.trim();
-    if(searchText){
-      this.hotelQueryModel.HotelId="";
-    }
-    this.hotelQueryModel.SearchKey=searchText?searchText:null;
-    this.vmKeyowrds="";
+
     if (!isKeepQueryCondition) {
       // if (this.queryComp) {
       //   this.queryComp.onReset();
@@ -195,6 +190,12 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       this.hotelQueryModel = new HotelQueryEntity();
       this.hotelService.setHotelQuerySource(this.hotelQueryModel);
     }
+    const searchText=this.vmKeyowrds&&this.vmKeyowrds.trim();
+    if(searchText){
+      this.hotelQueryModel.HotelId="";
+    }
+    this.hotelQueryModel.SearchKey=searchText?searchText:null;
+    this.vmKeyowrds="";
     this.hotelQueryModel.PageIndex = 0;
     this.hotelQueryModel.PageSize = 20;
     this.hotelDayPrices = [];
