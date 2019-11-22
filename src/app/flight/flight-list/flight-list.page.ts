@@ -338,6 +338,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       }
       this.vmFlights = [];
       this.isLoading = true;
+      let data: FlightJourneyEntity[];
       if (
         !this.flightJourneyList ||
         !this.flightJourneyList.length ||
@@ -345,18 +346,17 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       ) {
         this.currentProcessStatus = "正在获取航班列表";
         this.flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync();
+        await this.flightService.setDefaultFilteredPassenger();
+        data = JSON.parse(JSON.stringify(this.flightJourneyList));
         if (this.flightJourneyList && this.flightJourneyList.length) {
           this.renderFlightList(
             this.flightService.getTotalFlySegments(this.flightJourneyList)
           );
         }
-      }
-      let data: FlightJourneyEntity[] = JSON.parse(JSON.stringify(this.flightJourneyList));
-      this.hasDataSource.next(false);
-      if (loadDataFromServer) {
         // 强制从服务器端返回新数据
         data = await this.loadPolicyedFlightsAsync(this.flightJourneyList);
       }
+      this.hasDataSource.next(false);
       const segments = this.filterFlightSegments(this.flightService.getTotalFlySegments(data));
       this.st = Date.now();
       this.vmFlights = segments;
@@ -669,6 +669,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
+    setTimeout(() => {
+      this.flyDayService.setSelectedDaysSource([this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date)]);
+    }, 10);
     // if (this.searchFlightModel && this.searchFlightModel.Date) {
     //   this.moveDayToSearchDate();
     // }
