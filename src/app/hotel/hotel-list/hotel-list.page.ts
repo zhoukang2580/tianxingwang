@@ -87,10 +87,10 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   ) { }
   onSearchItemClick(item: { Text: string; Value: string }) {
     this.isShowSearchBar = false;
-    if (item&&item.Value) {
+    if (item && item.Value) {
       this.hotelQueryModel.HotelId = item.Value;
-      // this.keyowrds = this.hotelQueryModel.SearchKey = item.Text;
-      this.vmKeyowrds="";
+      this.keyowrds = this.hotelQueryModel.SearchKey = item.Text;
+      this.vmKeyowrds = "";
       this.doRefresh(true);
     }
   }
@@ -120,10 +120,10 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       this.subscriptions.push(sub);
     }
   }
-  onSearch(){
+  onSearch() {
     this.doRefresh();
-    this.isShowSearchBar=false;
-    this.vmSearchTextList=[];
+    this.isShowSearchBar = false;
+    this.vmSearchTextList = [];
   }
   getStars(hotel: HotelEntity) {
     if (hotel && hotel.Category) {
@@ -190,12 +190,11 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       this.hotelQueryModel = new HotelQueryEntity();
       this.hotelService.setHotelQuerySource(this.hotelQueryModel);
     }
-    const searchText=this.vmKeyowrds&&this.vmKeyowrds.trim();
-    if(searchText){
-      this.hotelQueryModel.HotelId="";
+    const searchText = this.vmKeyowrds && this.vmKeyowrds.trim();
+    if (searchText) {
+      this.hotelQueryModel.SearchKey = searchText;
+      this.vmKeyowrds = "";
     }
-    this.hotelQueryModel.SearchKey=searchText?searchText:null;
-    this.vmKeyowrds="";
     this.hotelQueryModel.PageIndex = 0;
     this.hotelQueryModel.PageSize = 20;
     this.hotelDayPrices = [];
@@ -275,9 +274,9 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     this.vmSearchTextList = [];
   }
   back() {
-    if(this.isShowSearchBar){
-      this.isShowSearchBar=false;
-      return ;
+    if (this.isShowSearchBar) {
+      this.isShowSearchBar = false;
+      return;
     }
     this.router.navigate([AppHelper.getRoutePath("search-hotel")]);
   }
