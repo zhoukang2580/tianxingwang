@@ -1,3 +1,4 @@
+import { Observable, fromEvent, ReplaySubject } from 'rxjs';
 import { ModalController } from '@ionic/angular';
 import { EventEmitter, ViewChildren, QueryList } from '@angular/core';
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, Input, OnChanges, SimpleChanges, Output } from '@angular/core';
@@ -38,45 +39,16 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() fabvertical: string = 'top';
   @Input() fabhorizontal: string = 'end';
   images: { active: boolean; url?: string; idx: number; text?: string; }[];
+  scroll$:ReplaySubject<any>;
   constructor(private modalCtrl: ModalController) {
     this.close = new EventEmitter();
+    this.scroll$=new ReplaySubject();
   }
-  // ngDoCheck(){
-  //   console.log('ngdocheck');
-  // }
-  // ngAfterContentChecked(){
-  //   console.log("ngAfterContentChecked");
-  // }
-  // ngAfterViewChecked(){
-  //   console.log('ngAfterViewChecked');
-  // }
+
   ngOnInit() {
-    // if (this.imagesUrls) {
-    //   const images = this.imagesUrls && this.imagesUrls.map((it, idx) => {
-    //     return {
-    //       active: idx == (this.pos || 0),
-    //       url: it,
-    //       idx,
-    //     }
-    //   });
-    //   this.images=[];
-    //   const loop = () => {
-    //     if (!images || !images.length) {
-    //       this.update();
-    //       return;
-    //     } else {
-    //       const one = images.splice(0,10);
-    //       this.images=this.images.concat(one);
-    //       this.update();
-    //       window.requestAnimationFrame(loop);
-    //     }
-    //   }
-    //   window.requestAnimationFrame(loop);
-    // }
     this.initImages();
   }
   ngAfterContentInit() {
-    console.log("ngAfterContentInit");
   }
   private update() {
     setTimeout(() => {
@@ -120,10 +92,10 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
         }
       }
     }
-    if (changes.imagesUrls && changes.imagesUrls.currentValue && (!this.images||this.images.length==0)) {
+    if (changes.imagesUrls && changes.imagesUrls.currentValue && (!this.images || this.images.length == 0)) {
       this.initImages();
     }
-    if (changes.imagesUrls && changes.imagesUrls.currentValue){
+    if (changes.imagesUrls && changes.imagesUrls.currentValue) {
       this.update();
     }
     if (changes.pos && changes.pos.currentValue == 0) {
@@ -174,7 +146,17 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
           // spaceBetween: 10,
           zoom: this.zoom,
           loop: this.loop,
-          initialSlide: this.pos
+          initialSlide: this.pos,
+          // Disable preloading of all images
+          preloadImages: false,
+          // Enable lazy loading
+          lazy: true,
+          on:{
+            slideChange:_=>{
+              console.log("slideChange",_);
+              this.scroll$.next(" ");
+            }
+          }
         }
         if (this.effect == "coverflow") {
           params.effect = "coverflow";
@@ -219,6 +201,10 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
             freeMode: true,
             watchSlidesVisibility: true,
             watchSlidesProgress: true,
+            // Disable preloading of all images
+            preloadImages: false,
+            // Enable lazy loading
+            lazy: true
           }
           if (this.loop) {
             thumbsOptions.loop = true;
@@ -265,6 +251,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   ngAfterViewInit() {
     console.log("ngAfterViewInit")
     // this.init();
+    this.scroll$.next(" ");
     if (this.hasThumbs) {
       this.createThumbsSwiper();
     } else {
@@ -272,7 +259,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
     }
     if (this.slideEles) {
       this.slideEles.changes.subscribe(_ => {
-        console.log("slideEles",this.slideEles.length);
+        console.log("slideEles", this.slideEles.length);
         if (this.slideEles.length == (this.imagesUrls && this.imagesUrls.length)) {
           this.update();
         }

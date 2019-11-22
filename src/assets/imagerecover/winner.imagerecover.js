@@ -1,31 +1,31 @@
-﻿Winner.ImageRecover = function(failover) {
+﻿Winner.ImageRecover = function (failover) {
   this.Failover = failover; //{[[Url:"",IsNormal:true,GroupName:'']],DefaultUrl:''}
 };
 Winner.ImageRecover.prototype = {
-  Initialize: function(container) {
+  Initialize: function (container) {
     //加载css样式文件
     this.LoadImages(container || document);
   },
-  LoadImages: function(content) {
-    var allImages = content.getElementsByTagName("img");
+  LoadImages: function (content) {
+    var allImages = content instanceof HTMLImageElement ? [content] : content.getElementsByTagName("img");
     for (var i = 0; i < allImages.length; i++) {
       this.BindErrorEvent(allImages[i]);
     }
   },
-  BindErrorEvent: function(img) {
+  BindErrorEvent: function (img) {
     if (!img.onerror) {
       var self = this;
       var tempImg = document.createElement("img");
-      img.onerror = function() {
+      img.onerror = function () {
         self.Replace(img);
       };
-      tempImg.onerror = function() {
+      tempImg.onerror = function () {
         self.Replace(img);
       };
       tempImg.src = img.src;
     }
   },
-  Replace: function(img) {
+  Replace: function (img) {
     //替换
     if (
       img.src != undefined &&
@@ -60,7 +60,7 @@ Winner.ImageRecover.prototype = {
       img.src = this.Failover.DefaultUrl + "?v=" + date;
     }
   },
-  GetNode: function(url) {
+  GetNode: function (url) {
     //得到负载数据
     for (var i = 0; i < this.Failover.Nodes.length; i++) {
       if (url.indexOf(this.Failover.Nodes[i].Url) > -1) {

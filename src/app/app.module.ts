@@ -1,4 +1,4 @@
-import { AppHelper } from "./appHelper";
+import { AppHelper } from 'src/app/appHelper';
 import { NgModule, ErrorHandler } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { RouteReuseStrategy, Router } from "@angular/router";
@@ -48,7 +48,7 @@ import { IonicStorageModule } from "@ionic/storage";
     }),
     AppRoutingModule,
     AppComponentsModule,
-    IonicStorageModule.forRoot()
+    IonicStorageModule.forRoot(),
   ],
   providers: [
     StatusBar,

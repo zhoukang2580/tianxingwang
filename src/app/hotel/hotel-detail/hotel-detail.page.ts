@@ -21,7 +21,7 @@ import {
   EventEmitter
 } from "@angular/core";
 import { Observable, Subscription, of, combineLatest, from } from "rxjs";
-import { map, tap } from "rxjs/operators";
+import { map, tap, finalize } from "rxjs/operators";
 import {
   DomController,
   IonContent,
@@ -51,8 +51,8 @@ type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
 })
 export class HotelDetailPage implements OnInit, AfterViewInit {
   private hotelDayPrice: HotelDayPriceEntity;
-  private scrollEle: HTMLElement;
   private headerHeight = 0;
+  scrollEle: HTMLElement;
   curHotelImagePos = 0;
   @ViewChild("header") headerEle: ElementRef<HTMLElement>;
   @ViewChild("bgPic") bgPicEle: ElementRef<HTMLElement>;
@@ -265,9 +265,6 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     this.doRefresh();
   }
   async doRefresh() {
-    if (this.ionRefresher) {
-      this.ionRefresher.complete();
-    }
     // this.hotel = null;
     if (!this.config) {
       this.config = await this.configService.get().catch(_ => null);
@@ -290,7 +287,11 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
         tap(r => {
           console.log(r);
         })
-      )
+      ).pipe(finalize(()=>{
+        if (this.ionRefresher) {
+          this.ionRefresher.complete();
+        }
+      }))
       .subscribe(async hotel => {
         if (hotel) {
           this.hotel = hotel.Hotel;

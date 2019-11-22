@@ -14,7 +14,7 @@
     <ion-item detail cropAvatar upload-method="ApiMemberUrl-Home-UploadHeadImage">
       <ion-label>头像</ion-label>
       <ion-thumbnail slot='end'>
-        <img alt="头像" appLazyloadimage [lazyloadImage]="memberDetails?.HeadUrl">
+        <img alt="头像" appLazyloadimage [lazyLoad]="memberDetails?.HeadUrl">
       </ion-thumbnail>
     </ion-item>
     <ion-item>

@@ -16,7 +16,8 @@ import {
   ViewChildren,
   QueryList,
   AfterViewInit,
-  Renderer2
+  Renderer2,
+  AfterContentInit
 } from "@angular/core";
 import {
   NavController,
@@ -30,7 +31,7 @@ import {
   Platform,
   IonList
 } from "@ionic/angular";
-import { Subscription, Observable } from "rxjs";
+import { Subscription, Observable, BehaviorSubject, Subject, fromEvent, merge } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
 import {
   trigger,
@@ -49,7 +50,7 @@ import { FlightHotelTrainType, TmcService } from "src/app/tmc/tmc.service";
   templateUrl: "./hotel-list.page.html",
   styleUrls: ["./hotel-list.page.scss"]
 })
-export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
+export class HotelListPage implements OnInit, OnDestroy, AfterViewInit, AfterContentInit {
   private subscriptions: Subscription[] = [];
   private lastCityCode = "";
   @ViewChild(IonRefresher) refresher: IonRefresher;
@@ -72,8 +73,9 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   searchSubscription = Subscription.EMPTY;
   loadDataSub = Subscription.EMPTY;
   conditionModel: HotelConditionModel;
-  config$: Observable<ConfigEntity>;
-
+  config: ConfigEntity;
+  scroll$: Observable<any>;
+  scrollEle: HTMLElement;
   constructor(
     private navCtrl: NavController,
     private hotelService: HotelService,
@@ -83,8 +85,9 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     private plt: Platform,
     private route: ActivatedRoute,
     private tmcService: TmcService,
-    private configService: ConfigService
-  ) { }
+    private configService: ConfigService,
+  ) {
+  }
   onSearchItemClick(item: { Text: string; Value: string }) {
     this.isShowSearchBar = false;
     if (item && item.Value) {
@@ -94,7 +97,16 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       this.doRefresh(true);
     }
   }
-  ngAfterViewInit() {
+  async ngAfterContentInit() {
+
+  }
+  async ngAfterViewInit() {
+    this.scrollEle = await this.content.getScrollElement();
+    if (this.scrollEle) {
+      this.scroll$ = merge(
+        fromEvent(this.scrollEle, 'scroll')
+      );
+    }
     this.autofocusSearchBarInput();
     if (this.hotellist) {
       const sub = this.hotellist.changes.subscribe(_ => {
@@ -106,13 +118,15 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
                 this.querytoolbar["el"].clientHeight) ||
               (this.plt.is("ios") ? 44 : 56);
             if (height) {
-              this.domCtrl.write(_ => {
-                this.render.setStyle(
-                  this.hotellist.first["el"],
-                  "margin-top",
-                  `${height}px`
-                );
-              });
+              if (this.hotellist.first["el"]) {
+                this.domCtrl.write(_ => {
+                  this.render.setStyle(
+                    this.hotellist.first["el"],
+                    "margin-top",
+                    `${height}px`
+                  );
+                });
+              }
             }
           }, 10);
         }
@@ -176,13 +190,12 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     }, 200);
   }
   doRefresh(isKeepQueryCondition = false) {
-    if (this.refresher) {
-      this.refresher.complete();
-    }
     if (this.queryComp) {
       this.queryComp.onReset();
     }
-
+    if (this.scroller) {
+      this.scroller.disabled = false;
+    }
     if (!isKeepQueryCondition) {
       // if (this.queryComp) {
       //   this.queryComp.onReset();
@@ -219,11 +232,6 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
         finalize(() => {
           this.lastCityCode = this.searchHotelModel && this.searchHotelModel.destinationCity.CityCode;
           this.isLoading = false;
-          setTimeout(() => {
-            if (this.scroller) {
-              this.scroller.complete();
-            }
-          }, 100);
         })
       )
       .subscribe(
@@ -239,8 +247,21 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
             }
             console.log("this.scroller.disabled", this.scroller.disabled);
           }
+          if (this.refresher) {
+            if (this.hotelQueryModel.PageIndex <= 1) {
+              console.log("refresher complete");
+              this.refresher.complete();
+            }
+          }
+          if (this.scroller) {
+            this.scroller.complete();
+          }
         },
         e => {
+          if (this.scroller) {
+            this.scroller.complete();
+          }
+          this.refresher.complete();
           console.error(e);
         }
       );
@@ -286,8 +307,8 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     });
     this.subscriptions = null;
   }
-  ngOnInit() {
-    this.config$ = this.configService.getConfigSource();
+  async ngOnInit() {
+    this.config = await this.configService.getConfigAsync();
     const sub0 = this.route.queryParamMap.subscribe(_ => {
       this.isShowSearchBar = false;
       this.isLeavePage = false;

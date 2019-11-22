@@ -6,7 +6,9 @@
     <div class="swiper-slide" [ngStyle]="slideStyle" #slides *ngFor="let item of images">
       <ng-container *ngIf='item.url else textTempl'>
         <div [class.swiper-zoom-container]='zoom'>
-          <img [lazyloadImage]='item.url' appLazyloadimage [ngStyle]='imgStyle' />
+          <img  [lazyLoad]='item.url'  [customObservable]='scroll$' />  
+          <!-- <img class="swiper-lazy" data-src="{{item.url}}" />  -->
+          <!-- <div class="swiper-lazy-preloader"></div> -->
         </div>
       </ng-container>
       <ng-template #textTempl>
@@ -31,7 +33,8 @@
   <div class="swiper-wrapper">
     <div class="swiper-slide" *ngFor="let item of images;let i=index;" [attr.dataid]='item.idx'
       (click)='slidToPage(item.idx)'>
-      <img [lazyloadImage]='item.url?.replace("640_960","70_70")' appLazyloadimage />
+      <img class="swiper-lazy" data-src="{{item.url?.replace('640_960','70_70')}}" /> 
+      <div class="swiper-lazy-preloader"></div>
     </div>
   </div>
 </div>

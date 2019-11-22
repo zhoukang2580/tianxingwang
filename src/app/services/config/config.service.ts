@@ -6,14 +6,14 @@ import { ApiService } from "../api/api.service";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, from, of, Observable, throwError } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
-import { switchMap, tap, map, finalize } from "rxjs/operators";
+import { switchMap, tap, map, finalize, catchError, skipUntil } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root"
 })
 export class ConfigService {
   private config: ConfigEntity;
-  private isLoading=false;
+  private fetchConfig: { obs: Observable<any>; }
   constructor(
     private apiService: ApiService,
     identityService: IdentityService
@@ -35,6 +35,19 @@ export class ConfigService {
   disposal() {
     this.config = new ConfigEntity();
     this.config.Status = false;
+  }
+  getConfigAsync() {
+    return new Promise<ConfigEntity>(s => {
+      const sub = this.load()
+        .pipe(finalize(() => {
+          setTimeout(() => {
+            sub.unsubscribe();
+          }, 1000);
+        }))
+        .subscribe(config => {
+          s(config);
+        });
+    })
   }
   getConfigSource(): Observable<ConfigEntity> {
     return this.load();
@@ -60,48 +73,58 @@ export class ConfigService {
           },
           error => {
             reject(error);
-            if(subscription){
+            if (subscription) {
               subscription.unsubscribe();
             }
           },
-          () => {}
+          () => { }
         );
     });
   }
-  private load() {
+  private load():Observable<ConfigEntity> {
     if (this.config.Status) {
       return of(this.config);
     }
-    if(this.isLoading){
-      return throwError(null);
+    if (this.fetchConfig && this.fetchConfig.obs) {
+      return this.fetchConfig.obs;
     }
     const data = { domain: AppHelper.getDomain() };
-    this.isLoading=true;
-    return this.apiService
-      .send<{
-        DefaultImageUrl?: string;
-        FaviconImageUrl?: string;
-        PrerenderImageUrl?: string;
-        LogoImageUrl?: string;
-        Icp?: string;
-        Style?: string;
-      }>("ApiHomeUrl-Router-Get", data)
-      .pipe(
-        finalize(()=>{
-          this.isLoading=false;
-        }),
-        map(r => {
-          if (r.Data) {
-            this.config.Status = true;
-            this.config.DefaultImageUrl = r.Data.DefaultImageUrl;
-            this.config.FaviconImageUrl = r.Data.FaviconImageUrl;
-            this.config.PrerenderImageUrl = r.Data.PrerenderImageUrl;
-            this.config.LogoImageUrl = r.Data.LogoImageUrl;
-            this.config.Icp = r.Data.Icp;
-            this.config.Style = r.Data.Style;
-          }
-          return this.config;
-        })
-      );
+
+    this.fetchConfig = {
+      obs: this.apiService
+        .send<{
+          DefaultImageUrl?: string;
+          FaviconImageUrl?: string;
+          PrerenderImageUrl?: string;
+          LogoImageUrl?: string;
+          Icp?: string;
+          Style?: string;
+        }>("ApiHomeUrl-Router-Get", data)
+        .pipe(
+          finalize(() => {
+            this.fetchConfig = null;
+          }),
+          map(r => {
+            if (r.Data) {
+              this.config.Status = true;
+              this.config.DefaultImageUrl = r.Data.DefaultImageUrl;
+              this.config.FaviconImageUrl = r.Data.FaviconImageUrl;
+              this.config.PrerenderImageUrl = r.Data.PrerenderImageUrl;
+              this.config.LogoImageUrl = r.Data.LogoImageUrl;
+              this.config.Icp = r.Data.Icp;
+              this.config.Style = r.Data.Style;
+            }
+            return this.config;
+          }),
+          catchError(e => {
+            this.config.Status = false;
+            this.config.DefaultImageUrl = AppHelper.getDefaultAvatar();
+            this.config.FaviconImageUrl = AppHelper.getDefaultAvatar();
+            this.config.PrerenderImageUrl = AppHelper.getDefaultLoadingImage();
+            return of(this.config);
+          })
+        )
+    }
+    return this.fetchConfig.obs;
   }
 }

@@ -43,7 +43,8 @@ import { ImageSwiperComponent } from './image-swiper/image-swiper.component';
     TimelineItemComponent,
     PayComponent,
     MapComponent,
-    ImageSwiperComponent
+    ImageSwiperComponent,
+    AppDirectivesModule
   ],
   entryComponents: [
     LoginSkeletonPageComponent,

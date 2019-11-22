@@ -24,7 +24,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content #cnt>
   <ion-refresher slot='fixed' (ionRefresh)='doRefresh(false)'></ion-refresher>
   <ng-template #nosearchartempl>
     <ion-list *ngIf='!isSearching'>
@@ -39,7 +39,7 @@
       <ion-list *ngIf='!isLoading&&hotelDayPrices?.length else noMoreData' #hotellist class='hotel-list'>
         <ion-item *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
           <ion-thumbnail slot='start'>
-            <img [lazyloadImage]='item.Hotel?.FileName' appLazyloadimage />
+            <img [lazyLoad]='item.Hotel?.FileName'  [offset]='300' [scrollTarget]='scrollEle' />
           </ion-thumbnail>
           <ion-label>
             <h3 class='name'>
