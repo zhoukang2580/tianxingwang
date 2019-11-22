@@ -306,7 +306,11 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     console.log("onRotateIconDone");
   }
   async doRefresh(loadDataFromServer: boolean, keepSearchCondition: boolean) {
+    console.log(`doRefresh:loadDataFromServer=${loadDataFromServer},keepSearchCondition=${keepSearchCondition}`);
     try {
+      if(loadDataFromServer){
+        this.scrollToTop();
+      }
       if (this.isLoading) {
         return;
       }
@@ -338,7 +342,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       }
       this.vmFlights = [];
       this.isLoading = true;
-      let data: FlightJourneyEntity[];
+      let data: FlightJourneyEntity[] = JSON.parse(JSON.stringify(this.flightJourneyList));
       if (
         !this.flightJourneyList ||
         !this.flightJourneyList.length ||
@@ -385,110 +389,18 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     flightJourneyList: FlightJourneyEntity[]
   ): Promise<FlightJourneyEntity[]> {
     this.currentProcessStatus = "正在计算差标";
-    this.policyflights = [];
-    if (flightJourneyList.length == 0) {
-      return [];
-    }
-    let passengers = this.getUnSelectFlightSegmentPassengers();
-    if (passengers.length == 0) {
-      passengers = this.flightService
-        .getPassengerBookInfos()
-        .map(info => info.passenger);
-    }
-    const hasreselect = this.flightService
-      .getPassengerBookInfos()
-      .find(item => item.isReplace);
-    if (hasreselect && hasreselect.passenger) {
-      if (
-        !passengers.find(p => p.AccountId == hasreselect.passenger.AccountId)
-      ) {
-        passengers.push(hasreselect.passenger);
-      }
-    }
-    const hasNotWhitelist = passengers.find(p => p.isNotWhiteList);
-    const whitelist = passengers.map(p => p.AccountId);
-    if (hasNotWhitelist) {
-      let policyflights = [];
-      // 白名单的乘客
-      const ps = passengers.filter(p => !p.isNotWhiteList);
-      if (ps.length > 0) {
-        policyflights = await this.flightService.getPolicyflightsAsync(
-          flightJourneyList,
-          ps.map(p => p.AccountId)
-        );
-      }
-      // 非白名单可以预订所有的仓位
+    this.flightJourneyList = await this.flightService.loadPolicyedFlightsAsync(flightJourneyList);
+    this.policyflights = this.flightService.policyFlights;
+    return this.flightJourneyList;
+  }
 
-      const notWhitelistPolicyflights = this.getNotWhitelistCabins(
-        hasNotWhitelist.AccountId,
-        flightJourneyList
-      );
-      this.policyflights = policyflights.concat(notWhitelistPolicyflights);
-      console.log(this.policyflights);
-    } else {
-      if (whitelist.length) {
-        this.policyflights = await this.flightService.getPolicyflightsAsync(
-          flightJourneyList,
-          whitelist
-        );
-      }
-    }
-    if (
-      this.policyflights &&
-      this.policyflights.length === 0 &&
-      whitelist.length
-    ) {
-      flightJourneyList = [];
-      this.policyflights = [];
-      return [];
-    }
-    // const arr = passengers.map(it => {
-    //   const plicies = this.policyflights.find(
-    //     item => item.PassengerKey == it.AccountId
-    //   );
-    //   return {
-    //     PassengerKey: it.AccountId,
-    //     FlightPolicies: (plicies && plicies.FlightPolicies) || []
-    //   };
-    // });
-    // this.replaceCabinInfo(arr, flightJourneyList);
-    return (this.flightJourneyList = flightJourneyList);
-  }
-  private getNotWhitelistCabins(
-    passengerKey: string,
-    flightJ: FlightJourneyEntity[]
-  ): {
-    PassengerKey: string;
-    FlightPolicies: FlightPolicy[];
-  } {
-    const FlightPolicies: FlightPolicy[] = [];
-    flightJ.forEach(item => {
-      item.FlightRoutes.forEach(r => {
-        r.FlightSegments.forEach(s => {
-          s.Cabins.forEach(c => {
-            FlightPolicies.push({
-              Cabin: c,
-              Id: c.Id,
-              FlightNo: c.FlightNumber,
-              CabinCode: c.Code,
-              IsAllowBook: true, // 非白名单全部可预订
-              Discount: c.Discount,
-              LowerSegment: null,
-              Rules: []
-            });
-          });
-        });
-      });
-    });
-    return {
-      PassengerKey: passengerKey, // 非白名单的账号id 统一为一个，tmc的accountid
-      FlightPolicies
-    };
-  }
   async onSelectPassenger() {
     const removeitem = new EventEmitter<PassengerBookInfo<IFlightSegmentInfo>>();
-    const sub = removeitem.subscribe(info => {
-      this.flightService.removePassengerBookInfo(info);
+    const sub = removeitem.subscribe(async info => {
+      const ok = await AppHelper.alert(LanguageHelper.getConfirmDeleteTip(), true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+      if (ok) {
+        this.flightService.removePassengerBookInfo(info);
+      }
     })
     const m = await this.modalCtrl.create({
       component: SelectFlightPassengerComponent,
@@ -499,7 +411,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         bookInfos$: this.flightService.getPassengerBookInfoSource(),
       }
     });
-
     const oldBookInfos = this.flightService
       .getPassengerBookInfos()
       .map(it => it.id);
@@ -520,26 +431,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.doRefresh(true, false);
     }
   }
-  private getUnSelectFlightSegmentPassengers() {
-    return this.flightService
-      .getPassengerBookInfos()
-      .filter(
-        item =>
-          !item.bookInfo ||
-          !item.bookInfo.flightSegment ||
-          !item.bookInfo.flightPolicy
-      )
-      .map(item => item.passenger)
-      .reduce(
-        (arr, item) => {
-          if (!arr.find(i => i.AccountId == item.AccountId)) {
-            arr.push(item);
-          }
-          return arr;
-        },
-        [] as StaffEntity[]
-      );
-  }
+
 
   async goToFlightCabinsDetails(fs: FlightSegmentEntity) {
     await this.flightService.addOneBookInfoToSelfBookType();
@@ -679,30 +571,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
 
     // this.controlFooterShowHide();
   }
-  private controlFooterShowHide() {
-    const cnt = document.querySelector("ion-content");
-    fromEvent(cnt, "touchmove")
-      .pipe(
-        switchMap(() =>
-          this.cnt.ionScroll.pipe(
-            delay(0),
-            takeUntil(
-              this.cnt.ionScrollEnd.pipe(
-                tap(() => {
-                  console.log("滚动停止");
-                  this.ngZone.run(() => { });
-                })
-              )
-            )
-          )
-        )
-      )
-      .subscribe(() => {
-        this.ngZone.run(() => {
-          console.log("正在滚动");
-        });
-      });
-  }
+
   onFilter() {
     this.activeTab = "filter";
     this.flightService.setFilterPanelShow(true);

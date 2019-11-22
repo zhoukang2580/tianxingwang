@@ -161,19 +161,28 @@ export class SelectPassengerPage
   }
   private initRemoveitem() {
     this.removeitemSubscription = this.removeitem.subscribe(async info => {
-      const ok = await AppHelper.alert(LanguageHelper.getConfirmDeleteTip(),true,LanguageHelper.getConfirmTip(),LanguageHelper.getCancelTip());
+      let ok=false;
+      if(!this.isOpenPageAsModal){
+         ok = await AppHelper.alert(LanguageHelper.getConfirmDeleteTip(),true,LanguageHelper.getConfirmTip(),LanguageHelper.getCancelTip());
+      }
       if (info&&ok) {
         switch (+this.forType) {
           case +FlightHotelTrainType.Flight: {
-            this.flightService.removePassengerBookInfo(info);
+            if(!this.isOpenPageAsModal){
+              this.flightService.removePassengerBookInfo(info);
+            }
             break;
           }
           case +FlightHotelTrainType.Train: {
-            this.trainService.removeBookInfo(info);
+            if(!this.isOpenPageAsModal){
+              this.trainService.removeBookInfo(info);
+            }
             break;
           }
           case +FlightHotelTrainType.Hotel: {
-            this.hotelService.removeBookInfo(info);
+            if(!this.isOpenPageAsModal){
+              this.hotelService.removeBookInfo(info);
+            }
             break;
           }
         }

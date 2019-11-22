@@ -73,13 +73,13 @@ export class FlightService {
   private isInitializingSelfBookInfos = false;
   private filterCondition: FilterConditionModel;
   currentViewtFlightSegment: CurrentViewtFlightSegment;
-  private policyFlightResults: IPolicyFlightResult[];
+  policyFlights: PassengerPolicyFlights[];
   constructor(
     private apiService: ApiService,
     private staffService: StaffService,
     private modalCtrl: ModalController,
     private router: Router,
-    identityService:IdentityService,
+    identityService: IdentityService,
     private tmcService: TmcService,
     private calendarService: CalendarService
   ) {
@@ -184,8 +184,8 @@ export class FlightService {
           return it;
         })
       );
-      this.policyFlightResults=this.policyFlightResults||[];
-      const one = this.policyFlightResults.find(
+      this.policyFlights = this.policyFlights || [];
+      const one = this.policyFlights.find(
         item => item.PassengerKey == data.passenger.AccountId
       );
       if (one) {
@@ -220,6 +220,115 @@ export class FlightService {
     }
     console.log("filterPassengerPolicyCabins", policyCabins);
     return policyCabins;
+  }
+  private getUnSelectFlightSegmentPassengers() {
+    return this.getPassengerBookInfos()
+      .filter(
+        item =>
+          !item.bookInfo ||
+          !item.bookInfo.flightSegment ||
+          !item.bookInfo.flightPolicy
+      )
+      .map(item => item.passenger)
+      .reduce(
+        (arr, item) => {
+          if (!arr.find(i => i.AccountId == item.AccountId)) {
+            arr.push(item);
+          }
+          return arr;
+        },
+        [] as StaffEntity[]
+      );
+  }
+  async loadPolicyedFlightsAsync(flightJourneyList: FlightJourneyEntity[]) {
+    this.policyFlights = [];
+    if (flightJourneyList.length == 0) {
+      return [];
+    }
+    let passengers = this.getUnSelectFlightSegmentPassengers();
+    if (passengers.length == 0) {
+      passengers = this
+        .getPassengerBookInfos()
+        .map(info => info.passenger);
+    }
+    const hasreselect = this
+      .getPassengerBookInfos()
+      .find(item => item.isReplace);
+    if (hasreselect && hasreselect.passenger) {
+      if (
+        !passengers.find(p => p.AccountId == hasreselect.passenger.AccountId)
+      ) {
+        passengers.push(hasreselect.passenger);
+      }
+    }
+    const hasNotWhitelist = passengers.find(p => p.isNotWhiteList);
+    const whitelist = passengers.map(p => p.AccountId);
+    if (hasNotWhitelist) {
+      // 白名单的乘客
+      const ps = passengers.filter(p => !p.isNotWhiteList);
+      if (ps.length > 0) {
+        this.policyFlights = await this.getPolicyflightsAsync(
+          flightJourneyList,
+          ps.map(p => p.AccountId)
+        );
+      }
+      // 非白名单可以预订所有的仓位
+
+      const notWhitelistPolicyflights = this.getNotWhitelistCabins(
+        hasNotWhitelist.AccountId,
+        flightJourneyList
+      );
+      this.policyFlights = this.policyFlights.concat(notWhitelistPolicyflights);
+      console.log("loadPolicyedFlightsAsync, policyFlights:",this.policyFlights);
+    } else {
+      if (whitelist.length) {
+        this.policyFlights = await this.getPolicyflightsAsync(
+          flightJourneyList,
+          whitelist
+        );
+      }
+    }
+    if (
+      this.policyFlights &&
+      this.policyFlights.length === 0 &&
+      whitelist.length
+    ) {
+      flightJourneyList = [];
+      this.policyFlights = [];
+      return [];
+    }
+    return flightJourneyList;
+  }
+  private getNotWhitelistCabins(
+    passengerKey: string,
+    flightJ: FlightJourneyEntity[]
+  ): {
+    PassengerKey: string;
+    FlightPolicies: FlightPolicy[];
+  } {
+    const FlightPolicies: FlightPolicy[] = [];
+    flightJ.forEach(item => {
+      item.FlightRoutes.forEach(r => {
+        r.FlightSegments.forEach(s => {
+          s.Cabins.forEach(c => {
+            FlightPolicies.push({
+              Cabin: c,
+              Id: c.Id,
+              FlightNo: c.FlightNumber,
+              CabinCode: c.Code,
+              IsAllowBook: true, // 非白名单全部可预订
+              Discount: c.Discount,
+              LowerSegment: null,
+              Rules: []
+            });
+          });
+        });
+      });
+    });
+    return {
+      PassengerKey: passengerKey, // 非白名单的账号id 统一为一个，tmc的accountid
+      FlightPolicies
+    };
   }
   filterPassengerPolicyFlights(
     bookInfo: PassengerBookInfo<IFlightSegmentInfo>,
@@ -814,8 +923,7 @@ export class FlightService {
   async getPolicyflightsAsync(
     Flights: FlightJourneyEntity[],
     Passengers: string[]
-  ): Promise<IPolicyFlightResult[]> {
-    this.policyFlightResults = [];
+  ): Promise<PassengerPolicyFlights[]> {
     const req = new RequestEntity();
     req.Method = `TmcApiFlightUrl-Home-Policy`;
     req.Version = "2.0";
@@ -871,12 +979,11 @@ export class FlightService {
     req.IsShowLoading = true;
     req.Timeout = 60;
     const res = await this.apiService
-      .getPromiseData<IPolicyFlightResult[]>(req)
+      .getPromiseData<PassengerPolicyFlights[]>(req)
       .catch(_ => {
         AppHelper.alert(_);
         return [];
       });
-    this.policyFlightResults = res;
     return res;
   }
   sortByPrice(segments: FlightSegmentEntity[], l2h: boolean) {
@@ -999,21 +1106,38 @@ export class FlightService {
     lowestCabin.Cabin = flights.reduce((acc, f) => (acc = [...acc, ...f.Cabins]), [] as FlightCabinEntity[]).find(
       c => c.FlightNumber == lowestCabin.FlightNo && c.Id == lowestCabin.Id
     );
+    lowestCabin.LowerSegment = null;
+    lowestCabin.Rules = [];
     result = { lowestCabin, lowestFlightSegment, tripType: TripType.departureTrip };
     return result;
   }
   async setDefaultFilteredPassenger() {
-    const isStaff = await this.staffService.isSelfBookType();
+    const isSelfStaff = await this.staffService.isSelfBookType();
     let bookInfos = this.getPassengerBookInfos();
-    if (bookInfos.length == 1 || isStaff || bookInfos.filter(it => !!it.bookInfo).length == 1) {
+    if (isSelfStaff) {
       bookInfos = bookInfos.map((it, idx) => {
         if (idx == 0) {
           it.isFilteredPolicy = true;
-          // it.isAllowBookPolicy=true;
         }
         return it;
       })
+    } else {
+      if (bookInfos.length == 1) {
+        bookInfos = bookInfos.map((it, idx) => {
+          if (idx == 0) {
+            it.isFilteredPolicy = true;
+          }
+          return it;
+        })
+      } else {
+        bookInfos = bookInfos.map((it, idx) => {
+          it.isFilteredPolicy = false;
+          return it;
+        })
+      }
+
     }
+
     this.setPassengerBookInfosSource(bookInfos);
   }
   async getFlightJourneyDetailListAsync(): Promise<FlightJourneyEntity[]> {
@@ -1218,7 +1342,4 @@ export class FlightService {
     return result;
   }
 }
-export interface IPolicyFlightResult {
-  PassengerKey: string;
-  FlightPolicies: FlightPolicy[];
-}
+
