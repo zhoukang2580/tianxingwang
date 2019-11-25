@@ -243,9 +243,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       !(await this.staffService.isSelfBookType());
     return this.showAddPassenger;
   }
-  async isStaffTypeSelf() {
-    return await this.staffService.isSelfBookType();
-  }
   async onCalenderClick() {
     const d = await this.flightService.openCalendar(false);
     if (d && d.length) {
@@ -388,7 +385,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     const sub = removeitem.subscribe(async info => {
       const ok = await AppHelper.alert(LanguageHelper.getConfirmDeleteTip(), true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
       if (ok) {
-        this.flightService.removePassengerBookInfo(info);
+        this.flightService.removePassengerBookInfo(info,true);
       }
     })
     const m = await this.modalCtrl.create({
@@ -529,7 +526,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   async ngOnInit() {
     this.filteredPolicyPassenger$ = this.flightService
       .getPassengerBookInfoSource()
-      .pipe(map(infos => infos.find(it => it.isFilteredPolicy)));
+      .pipe(map(infos => infos.find(it => it.isFilteredPolicy)),delay(0));
     this.activeTab = "filter";
     this.initSearchModelParams();
     this.doRefresh(true, false);

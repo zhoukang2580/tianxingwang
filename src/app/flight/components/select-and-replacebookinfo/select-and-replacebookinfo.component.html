@@ -10,14 +10,14 @@
 </ion-header>
 <ion-content>
   <ion-item-group *ngFor='let bookInfo of  bookInfos'>
-    <ng-container *ngIf='bookInfo.info'>
-      <ion-item-divider color='primary' sticky>
+    <ng-container *ngIf='bookInfo.info' >
+      <ion-item-divider color='primary' sticky (click)='bookInfo.isSelected=!bookInfo.isSelected'>
         <ion-label color='dark'>
           {{bookInfo.info?.passenger?.Name}}{{bookInfo.info?.credential?.Number}}</ion-label>
-        <ion-checkbox slot='end' [(ngModel)]="bookInfo.isSelected" (ionChange)='onionChange(bookInfo.info)'>
+        <ion-checkbox slot='end' [(ngModel)]="bookInfo.isSelected">
         </ion-checkbox>
       </ion-item-divider>
-      <ion-item>
+      <ion-item (click)='bookInfo.isSelected=!bookInfo.isSelected'>
         <div class='detail'>
           <div class='date'>
             <strong>{{bookInfo.info?.bookInfo?.flightSegment?.TakeoffTime?.substr(0,"yyyy-MM-dd".length)}}</strong>

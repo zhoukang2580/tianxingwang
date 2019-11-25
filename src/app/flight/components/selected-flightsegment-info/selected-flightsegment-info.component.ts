@@ -166,7 +166,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
   async remove(item: PassengerBookInfo<IFlightSegmentInfo>, message?: string) {
     const ok = await AppHelper.alert( message || LanguageHelper.Flight.getConfirmRemoveFlightSegmentTip(),true,LanguageHelper.getConfirmTip(),LanguageHelper.getCancelTip());
     if(ok){
-      await this.flightService.removePassengerBookInfo(item);
+      await this.flightService.removePassengerBookInfo(item,false);
     }
   }
   getDate(s: FlightSegmentEntity) {

@@ -48,7 +48,8 @@
     </ng-container>
     <ion-row *ngIf='(filteredPolicyPassenger$|async) as bookInfo'>
       <ion-col *ngIf='bookInfo.credential as credential'>
-        <ion-text color='{{bookInfo.isOnlyFilterMatchedPolicy?"success":""}}' *ngIf='bookInfo.isOnlyFilterMatchedPolicy'>
+        <ion-text color='{{bookInfo.isOnlyFilterMatchedPolicy?"success":""}}'
+          *ngIf='bookInfo.isOnlyFilterMatchedPolicy'>
           当前已过滤(【{{credential.CheckFirstName}}{{credential.CheckLastName}}】{{credential.Number}})差标
         </ion-text>
       </ion-col>
@@ -155,5 +156,5 @@
   </ion-toolbar>
 </ion-footer>
 
-<app-fly-filter [class.show]="showAdvSearchPage$ | async" [flights]="flightJourneyList" [fromCityName]='vmFromCity?.CityName'
-  [toCityName]="vmToCity?.CityName"></app-fly-filter>
+<app-fly-filter [class.show]="showAdvSearchPage$ | async" [flights]="flightJourneyList"
+  [fromCityName]='vmFromCity?.CityName' [toCityName]="vmToCity?.CityName"></app-fly-filter>

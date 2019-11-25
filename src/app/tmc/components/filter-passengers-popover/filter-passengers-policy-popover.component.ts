@@ -31,12 +31,12 @@ export class FilterPassengersPolicyComponent implements OnInit {
     }
     if (this.selectedItem) {
       const t = await this.popoverCtrl
-        .dismiss(this.selectedItem)
+        .dismiss({ ...this.selectedItem })
         .catch(_ => void 0);
     }
   }
   async onMathRadioChange(evt: CustomEvent) {
-    this.selectedItem = this.selectedItem || this.bookInfos && this.bookInfos.find(it => it.isFilteredPolicy);
+    // this.selectedItem = this.selectedItem || this.bookInfos && this.bookInfos.find(it => it.isFilteredPolicy);
     if (!this.selectedItem) {
       AppHelper.alert("请勾选需过滤差标的账号");
       return;
@@ -45,13 +45,8 @@ export class FilterPassengersPolicyComponent implements OnInit {
   }
   onSelectItem(evt: CustomEvent) {
     if (evt.detail && evt.detail.value && evt.detail.value.passenger) {
-      this.selectedItem = { ...evt.detail.value };
-      if (this.bookInfos) {
-        this.bookInfos.forEach(it => {
-          it.isFilteredPolicy = it.id == this.selectedItem.id;
-          // it.isAllowBookPolicy = it.id == this.selectedItem.id;
-        })
-      }
+      this.selectedItem = evt.detail.value;
+      this.selectedItem.isFilteredPolicy = true;
     }
   }
   async ngOnInit() {
@@ -60,9 +55,11 @@ export class FilterPassengersPolicyComponent implements OnInit {
       tap(infos => {
         this.bookInfos = infos || [];
         if (this.bookInfos.length == 1 || isSelf) {
-          this.selectedItem = this.bookInfos[0];
-          this.selectedItem.isFilteredPolicy = true;
+          if (this.bookInfos.length) {
+            this.selectedItem = { ...this.bookInfos[0] };
+            this.selectedItem.isFilteredPolicy = true;
+          }
         }
-      }),delay(100))
+      }), delay(100))
   }
 }

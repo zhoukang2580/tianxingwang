@@ -169,7 +169,7 @@ export class SelectPassengerPage
         switch (+this.forType) {
           case +FlightHotelTrainType.Flight: {
             if(!this.isOpenPageAsModal){
-              this.flightService.removePassengerBookInfo(info);
+              this.flightService.removePassengerBookInfo(info,true);
             }
             break;
           }

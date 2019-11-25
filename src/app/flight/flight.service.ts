@@ -1,3 +1,4 @@
+import { SelectAndReplacebookinfoComponent } from './components/select-and-replacebookinfo/select-and-replacebookinfo.component';
 import { CalendarService } from "./../tmc/calendar.service";
 import { CredentialsType } from "./../member/pipe/credential.pipe";
 import { IdentityEntity } from "./../services/identity/identity.entity";
@@ -151,8 +152,8 @@ export class FlightService {
   // }
   setPassengerBookInfosSource(args: PassengerBookInfo<IFlightSegmentInfo>[]) {
     console.log("flight setPassengerBookInfos", args);
-    this.passengerBookInfos = args || [];
-    this.passengerBookInfoSource.next(this.passengerBookInfos);
+    this.passengerBookInfos = args;
+    this.passengerBookInfoSource.next(this.passengerBookInfos.slice(0));
   }
   getPassengerBookInfoSource() {
     return this.passengerBookInfoSource.asObservable();
@@ -174,12 +175,7 @@ export class FlightService {
       } as FlightPolicy
     });
     if (data && data.passenger && data.passenger.AccountId && data.isFilteredPolicy && data.isOnlyFilterMatchedPolicy) {
-      this.setPassengerBookInfosSource(
-        this.getPassengerBookInfos().map(it => {
-          it.isFilteredPolicy = it.id == data.id;
-          return it;
-        })
-      );
+
       this.policyFlights = this.policyFlights || [];
       const one = this.policyFlights.find(
         item => item.PassengerKey == data.passenger.AccountId
@@ -202,6 +198,12 @@ export class FlightService {
           return it;
         })
       }
+      // this.setPassengerBookInfosSource(
+      //   this.getPassengerBookInfos().map(it => {
+      //     it.isFilteredPolicy = it.id == data.id;
+      //     return it;
+      //   })
+      // );
     } else {
       this.setPassengerBookInfosSource(
         this.getPassengerBookInfos().map(it => {
@@ -672,7 +674,17 @@ export class FlightService {
     this.setPassengerBookInfosSource(arr);
   }
   private async selectAndReplaceBookInfos(flightCabin: FlightCabinEntity, flightSegment: FlightSegmentEntity, bookInfos: PassengerBookInfo<IFlightSegmentInfo>[]) {
-    const m = await this.modalCtrl.create({ component: '' });
+    const m = await this.modalCtrl.create({
+      component: SelectAndReplacebookinfoComponent, componentProps: {
+        bookInfos: this.getPassengerBookInfos().map(it => {
+          return {
+            info: it,
+            isSelected: false
+          }
+        })
+      }
+    });
+    await m.present();
     const result = await m.onDidDismiss();
     const data = result && result.data as PassengerBookInfo<IFlightSegmentInfo>[];
     if (data && data.length) {
@@ -913,7 +925,7 @@ export class FlightService {
     });
     this.setPassengerBookInfosSource(arr);
   }
-  async removePassengerBookInfo(p: PassengerBookInfo<IFlightSegmentInfo>) {
+  async removePassengerBookInfo(p: PassengerBookInfo<IFlightSegmentInfo>, isRemovePassenger: boolean) {
     const arg = { ...p };
     const isSelf = await this.staffService.isSelfBookType();
     if (isSelf) {
@@ -941,9 +953,16 @@ export class FlightService {
         }
       }
     } else {
-      this.passengerBookInfos = this.getPassengerBookInfos().filter(
-        it => it.id !== arg.id
-      );
+      if (isRemovePassenger) {
+        this.passengerBookInfos = this.getPassengerBookInfos().filter(it => it.id != arg.id);
+      } else {
+        this.passengerBookInfos = this.getPassengerBookInfos().map(
+          it => {
+            it.bookInfo = it.id == arg.id ? null : it.bookInfo;
+            return it;
+          }
+        );
+      }
     }
     this.setPassengerBookInfosSource(this.passengerBookInfos);
   }

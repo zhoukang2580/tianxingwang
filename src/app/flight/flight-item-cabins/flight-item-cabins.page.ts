@@ -139,13 +139,15 @@ export class FlightItemCabinsPage implements OnInit {
     if (!data) {
       return;
     }
-    this.flightService.setPassengerBookInfosSource(
-      this.flightService.getPassengerBookInfos().map(it => {
-        it.isFilteredPolicy = it.id == data.id;
-        it.isOnlyFilterMatchedPolicy = data.isOnlyFilterMatchedPolicy && it.isFilteredPolicy;
-        return it;
-      })
-    );
+    const arr = this.flightService.getPassengerBookInfos().map(it => {
+      it.isFilteredPolicy = it.id == data.id;
+      it.isOnlyFilterMatchedPolicy = data.isOnlyFilterMatchedPolicy&&it.isFilteredPolicy;
+      return it;
+    });
+    arr.forEach(it => {
+      console.log(it.credential.Name,it.id, it.isFilteredPolicy, it.isOnlyFilterMatchedPolicy);
+    });
+    this.flightService.setPassengerBookInfosSource(arr);
     this.vmCabins = this.getPolicyCabins();
   }
   async showSelectedInfos() {
