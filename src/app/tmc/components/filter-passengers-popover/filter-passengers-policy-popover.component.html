@@ -12,15 +12,15 @@
 </ion-radio-group>
 <ion-radio-group (ionChange)='onMathRadioChange($event)' allowEmptySelection='true'>
   <ion-item>
-    <ion-radio [checked]='selectedItem?.isOnlyFilterMatchedPolicy' value='isShowOnlyMatchSwitch' color='secondary'
-      margin-end></ion-radio>
-    <ion-label class='sm-font-size' color='success'>完全符合差标
+    <ion-checkbox [checked]='selectedItem?.isOnlyFilterMatchedPolicy' value='isShowOnlyMatchSwitch' color='secondary'
+      margin-end></ion-checkbox> 
+    <ion-label class='sm-font-size' color='success'>过滤差标
     </ion-label>
   </ion-item>
-  <ion-item>
+  <!-- <ion-item>
     <ion-radio value='isAllowBookPolicy' [checked]='selectedItem?.isAllowBookPolicy' color='secondary' margin-end>
     </ion-radio>
     <ion-label class='sm-font-size' color='secondary'>所有可预订</ion-label>
-  </ion-item>
+  </ion-item> -->
 </ion-radio-group>
 <ion-button expand="block" fill='clear' color='secondary' (click)='onSelect("ok")'>确定</ion-button>

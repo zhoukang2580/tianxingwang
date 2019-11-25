@@ -119,7 +119,7 @@ ion-title {
     align-items: center;
   }
 }
-.rotate-icon{
+.rotate-icon {
   margin: 0 1em;
   &.small-margin {
     margin: 0 0.15em;
@@ -142,4 +142,69 @@ app-fly-filter {
     z-index: 1000;
     opacity: 1;
   }
+}
+.flight {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.flight h4,
+.flight h5 {
+  margin: 0.3em 0;
+}
+.flight .list-item {
+  background-color: white;
+  padding: 0.5em 1em;
+}
+.flight .list-item {
+  border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.13);
+}
+.flight .list-item .left .airports,
+.flight .list-item,
+.flight .list-item .desc,
+.flight .list-item .price,
+.flight .list-item .left .time {
+  display: flex;
+  align-items: center;
+}
+.flight .list-item .desc {
+  margin: 0.3em 0;
+}
+.flight .list-item .desc img {
+  margin: 0 0.3em 0 0;
+  width: 1em;
+}
+
+.flight .list-item .left {
+  margin-right: 1em;
+  flex: 1;
+}
+
+.flight .list-item .left .airports,
+.flight .list-item .line,
+.flight .list-item .desc {
+  font-size: 0.8rem;
+}
+
+.flight .list-item .left .airports,
+.flight .list-item .left .time {
+  justify-content: space-between;
+}
+
+.flight .list-item .code-share-number {
+  color: var(--ion-color-secondary);
+}
+
+.flight .list-item .price {
+  align-items: center;
+  color: var(--ion-color-danger);
+}
+
+.flight .list-item .addoneday {
+  position: relative;
+  right: 0.2em;
+  bottom: 0.5em;
+  font-size: 0.6rem;
+  color: var(--ion-color-secondary);
 }

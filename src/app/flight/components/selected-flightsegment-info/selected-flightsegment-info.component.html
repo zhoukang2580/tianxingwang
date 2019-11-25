@@ -46,6 +46,10 @@
           <ion-label class='rules' color='danger' text-wrap>
             {{bookInfo.bookInfo?.flightPolicy?.Rules?.join("; ")}}
           </ion-label>
+          <ion-label *ngIf='getFlightIllegalTip() as tip' color='danger' text-wrap class='rules'>提示：({{tip}})
+          </ion-label>
+          <ion-label *ngIf='getFlightlegalTip() as tip' color='danger' text-wrap class='rules'>提示：({{tip}})
+          </ion-label>
           <ion-label class='rules' text-wrap color='dark' (click)='onSelectLowestSegment(bookInfo)'
             *ngIf='showLowerSegment(bookInfo)'>
             当前航班前后60分钟内有更低价航班:{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.Number}}&nbsp;
@@ -64,8 +68,7 @@
 </ion-content>
 <ion-footer>
   <ion-toolbar>
-    <ion-button slot='end' (click)='nextStep()' color='secondary'
-      [disabled]='bookInfos?.length <= 0'>下一步
+    <ion-button slot='end' (click)='nextStep()' color='secondary' [disabled]='bookInfos?.length <= 0'>下一步
     </ion-button>
   </ion-toolbar>
 </ion-footer>

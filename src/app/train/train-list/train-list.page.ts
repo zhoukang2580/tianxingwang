@@ -482,9 +482,9 @@ export class TrainListPage implements OnInit, OnDestroy {
         if (bookInfos.length == 1 || isSelf) {
           this.trainService.setBookInfoSource(bookInfos.map((it, idx) => {
             if (idx == 0) {
-              it.isFilteredPolicy = true;
-              it.isAllowBookPolicy = true;
-              it.isOnlyFilterMatchedPolicy = false;
+              // it.isFilteredPolicy = true;
+              // it.isAllowBookPolicy = true;
+              // it.isOnlyFilterMatchedPolicy = false;
             }
             // it.isOnlyFilterMatchedPolicy=false;
             return it;

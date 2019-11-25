@@ -125,8 +125,8 @@ export class TrainService {
       this.setBookInfoSource(
         this.getBookInfos().map(it => {
           it.isFilteredPolicy = false;
-          it.isOnlyFilterMatchedPolicy = false;
-          it.isAllowBookPolicy = false;
+          // it.isOnlyFilterMatchedPolicy = false;
+          // it.isAllowBookPolicy = false;
           return it;
         })
       );
@@ -144,7 +144,7 @@ export class TrainService {
     this.setBookInfoSource(
       this.getBookInfos().map(it => {
         it.isFilteredPolicy = it.id == bookInfo.id;
-        it.isOnlyFilterMatchedPolicy = bookInfo.isOnlyFilterMatchedPolicy;
+        // it.isOnlyFilterMatchedPolicy = bookInfo.isOnlyFilterMatchedPolicy;
         return it;
       })
     );
@@ -154,10 +154,10 @@ export class TrainService {
     let policyTrainNos: string[] = [];
     let policyTrains = onePolicies && onePolicies.TrainPolicies;
     if (policyTrains) {
-      if (bookInfo.isAllowBookPolicy) {
-        policyTrains = policyTrains.filter(it => it.IsAllowBook);
-      }
-      if (bookInfo.isOnlyFilterMatchedPolicy) {
+      // if (bookInfo.isAllowBookPolicy) {
+      //   policyTrains = policyTrains.filter(it => it.IsAllowBook);
+      // }
+      if (bookInfo.isFilteredPolicy) {
         policyTrains = policyTrains.filter(
           it => it.IsAllowBook && (!it.Rules || it.Rules.length == 0)
         );
@@ -183,7 +183,7 @@ export class TrainService {
           s.Policy = trainPolicy;
           return s;
         });
-        if (bookInfo.isOnlyFilterMatchedPolicy) {
+        if (bookInfo.isFilteredPolicy) {
           it.Seats = it.Seats.filter(
             s => (!s.Policy || !s.Policy.Rules || !s.Policy.Rules.length) &&
               +s.Count > 0);

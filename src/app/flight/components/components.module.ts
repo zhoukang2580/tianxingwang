@@ -23,6 +23,7 @@ import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module
 import { SelectFlightPassengerComponent } from "./select-flight-passenger/select-flight-passenger.component";
 import { MemberPipesModule } from "src/app/member/pipe/pipe.module";
 import { PriceDetailComponent } from './price-detail/price-detail.component';
+import { SelectAndReplacebookinfoComponent } from './select-and-replacebookinfo/select-and-replacebookinfo.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { PriceDetailComponent } from './price-detail/price-detail.component';
     SelectedFlightsegmentInfoComponent,
     SelectFlightsegmentCabinComponent,
     PriceDetailComponent,
-    SelectFlightPassengerComponent
+    SelectFlightPassengerComponent,
+    SelectAndReplacebookinfoComponent
   ],
   imports: [
     CommonModule,
@@ -70,6 +72,7 @@ import { PriceDetailComponent } from './price-detail/price-detail.component';
     SelectCityComponent,
     TicketchangingComponent,
     SelectedPassengersComponent,
+    SelectAndReplacebookinfoComponent
   ],
   entryComponents: [
     FlyFilterComponent,
@@ -79,7 +82,8 @@ import { PriceDetailComponent } from './price-detail/price-detail.component';
     SelectFlightsegmentCabinComponent,
     PriceDetailComponent,
     SelectFlightPassengerComponent,
-    SelectCityComponent
+    SelectCityComponent,
+    SelectAndReplacebookinfoComponent
   ]
 })
-export class FlightComponentsModule {}
+export class FlightComponentsModule { }

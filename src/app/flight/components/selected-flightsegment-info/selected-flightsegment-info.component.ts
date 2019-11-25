@@ -22,7 +22,6 @@ import { SelectFlightsegmentCabinComponent } from "../select-flightsegment-cabin
 import { TripType } from "src/app/tmc/models/TripType";
 import { PassengerBookInfo } from "src/app/tmc/tmc.service";
 import {
-  CurrentViewtFlightSegment,
   IFlightSegmentInfo
 } from "../../models/PassengerFlightInfo";
 import { FlightCabinEntity } from '../../models/flight/FlightCabinEntity';
@@ -38,7 +37,6 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
   searchModelSubscrition = Subscription.EMPTY;
   identity: IdentityEntity;
   showSelectReturnTripButton = false;
-  currentViewtFlightSegment: CurrentViewtFlightSegment;
   TripType = TripType;
   constructor(
     private modalCtrl: ModalController,
@@ -58,7 +56,6 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
       .subscribe(m => {
         this.searchModel = m;
       });
-    this.currentViewtFlightSegment = this.flightService.getCurrentViewtFlightSegment();
     this.passengerAndBookInfos$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(
@@ -178,6 +175,12 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     }
     const day = this.flydayService.generateDayModel(moment(s.TakeoffTime));
     return `${day.date} ${day.dayOfWeekName}`;
+  }
+  getFlightIllegalTip(info:PassengerBookInfo<IFlightSegmentInfo>) {
+    return info && info.passenger && info.passenger.Policy && info.passenger.Policy.FlightIllegalTip;
+  }
+  getFlightlegalTip(info:PassengerBookInfo<IFlightSegmentInfo>) {
+    return info && info.passenger && info.passenger.Policy && info.passenger.Policy.FlightLegalTip;
   }
   getTripTypeTip(info: IFlightSegmentInfo) {
     if (!info) {

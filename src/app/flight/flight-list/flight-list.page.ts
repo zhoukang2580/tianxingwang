@@ -129,13 +129,15 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   isRotateIcon = false;
   @ViewChild("cnt") cnt: IonContent;
   @ViewChild("list") list: ElementRef<HTMLElement>;
-  flightJourneyList: FlightJourneyEntity[]; // 保持和后台返回的数据一致
+  @ViewChildren("fli") liEles: QueryList<ElementRef<HTMLElement>>;
   vmFlights: FlightSegmentEntity[]; // 用于视图展示
   vmToCity: TrafficlineEntity;
   vmFromCity: TrafficlineEntity;
   vmFlightJourneyList: FlightJourneyEntity[];
+  get flightJourneyList() {
+    return this.flightService.flightJourneyList;
+  };
   totalFilteredSegments: FlightSegmentEntity[];
-  policyflights: PassengerPolicyFlights[];
   priceOrderL2H: boolean; // 价格从低到高
   timeOrdM2N: boolean; // 时间从早到晚
   isLoading = false;
@@ -181,7 +183,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       .pipe(map(item => item.length));
     this.hasDataSource = new BehaviorSubject(false);
     this.vmFlights = [];
-    this.flightJourneyList = [];
+    // this.flightJourneyList = [];
     this.searchFlightModel = new SearchFlightModel();
     this.goAndBackFlightDateTime$ = flightService
       .getPassengerBookInfoSource()
@@ -215,6 +217,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         })
       );
     this.route.queryParamMap.subscribe(async (d) => {
+      this.isSelfBookType = await this.staffService.isSelfBookType();
       this.showAddPassenger = await this.canShowAddPassenger();
       this.flightService.setFilterPanelShow(false);
       console.log("this.route.queryParamMap", this.searchFlightModel, d);
@@ -228,7 +231,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     });
     this.showAdvSearchPage$ = this.flightService.getFilterPanelShow();
   }
-
+  trackById(idx: number, item: FlightSegmentEntity) {
+    return item.Id;
+  }
   async canShowAddPassenger() {
     const identity = await this.identityService
       .getIdentityAsync()
@@ -308,7 +313,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   async doRefresh(loadDataFromServer: boolean, keepSearchCondition: boolean) {
     console.log(`doRefresh:loadDataFromServer=${loadDataFromServer},keepSearchCondition=${keepSearchCondition}`);
     try {
-      if(loadDataFromServer){
+      if (loadDataFromServer) {
         this.scrollToTop();
       }
       if (this.isLoading) {
@@ -342,26 +347,17 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       }
       this.vmFlights = [];
       this.isLoading = true;
-      let data: FlightJourneyEntity[] = JSON.parse(JSON.stringify(this.flightJourneyList));
-      if (
-        !this.flightJourneyList ||
-        !this.flightJourneyList.length ||
-        loadDataFromServer
-      ) {
-        this.currentProcessStatus = "正在获取航班列表";
-        this.flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync();
-        await this.flightService.setDefaultFilteredPassenger();
-        data = JSON.parse(JSON.stringify(this.flightJourneyList));
-        if (this.flightJourneyList && this.flightJourneyList.length) {
-          this.renderFlightList(
-            this.flightService.getTotalFlySegments(this.flightJourneyList)
-          );
-        }
-        // 强制从服务器端返回新数据
-        data = await this.loadPolicyedFlightsAsync(this.flightJourneyList);
+      this.currentProcessStatus = "正在获取航班列表";
+      const flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync(loadDataFromServer);
+      if (loadDataFromServer) {
+        this.currentProcessStatus = "正在计算差标";
+        await this.flightService.loadPolicyedFlightsAsync(flightJourneyList);
       }
+      this.renderFlightList(
+        this.flightService.getTotalFlySegments()
+      );
       this.hasDataSource.next(false);
-      const segments = this.filterFlightSegments(this.flightService.getTotalFlySegments(data));
+      const segments = this.filterFlightSegments(this.flightService.getTotalFlySegments());
       this.st = Date.now();
       this.vmFlights = segments;
       await this.renderFlightList(segments);
@@ -385,14 +381,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }, 100);
   }
-  private async loadPolicyedFlightsAsync(
-    flightJourneyList: FlightJourneyEntity[]
-  ): Promise<FlightJourneyEntity[]> {
-    this.currentProcessStatus = "正在计算差标";
-    this.flightJourneyList = await this.flightService.loadPolicyedFlightsAsync(flightJourneyList);
-    this.policyflights = this.flightService.policyFlights;
-    return this.flightJourneyList;
-  }
+
 
   async onSelectPassenger() {
     const removeitem = new EventEmitter<PassengerBookInfo<IFlightSegmentInfo>>();
@@ -470,12 +459,12 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       );
       return;
     }
-    this.flightService.setCurrentViewtFlightSegment(
-      fs,
-      this.flightService.getTotalFlySegments(this.flightJourneyList),
-      this.policyflights
-    );
-    this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
+    // this.flightService.setCurrentViewtFlightSegment(
+    //   fs,
+    //   this.flightService.getTotalFlySegments(this.flightJourneyList),
+    //   this.policyflights
+    // );
+    this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")], { queryParams: { "flightNo": fs.Number } });
 
   }
   async showSelectedInfos() {
@@ -502,6 +491,13 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     if (!data) {
       return;
     }
+    this.flightService.setPassengerBookInfosSource(this.flightService.getPassengerBookInfos().map(it => {
+      it.isFilteredPolicy = data.id == it.id;
+      if (it.isFilteredPolicy) {
+        it.isOnlyFilterMatchedPolicy = data.isOnlyFilterMatchedPolicy;
+      }
+      return it;
+    }))
     this.doRefresh(false, true);
   }
   async onSelectCity(isFrom: boolean) {
@@ -564,12 +560,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => {
       this.flyDayService.setSelectedDaysSource([this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date)]);
     }, 10);
-    // if (this.searchFlightModel && this.searchFlightModel.Date) {
-    //   this.moveDayToSearchDate();
-    // }
-    // console.dir(this.cnt);
-
-    // this.controlFooterShowHide();
+    this.liEles.changes.subscribe(_ => {
+      console.timeEnd("renderFlightList");
+    })
   }
 
   onFilter() {
@@ -655,78 +648,19 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.scrollToTop();
   }
 
-  private renderFlightList(fs: FlightSegmentEntity[]) {
-    console.time("renderFlightList");
-    console.log("renderlist 总数：", fs);
-    this.isLoading = true;
-    const segments = fs.map(s => {
+  private renderFlightList(fs: FlightSegmentEntity[] = []) {
+    fs.forEach(s => {
       let lowestFare = +s.LowestFare;
       if (s.Cabins && s.Cabins.length) {
         const cbs = s.Cabins.slice(0);
         cbs.sort((a, b) => +a.SalesPrice - +b.SalesPrice);
         lowestFare = +cbs[0].SalesPrice;
       }
-      const template = `<div class='left'>
-          <h4 class="time">
-    <strong>${s.TakeoffShortTime}</strong>
-              <span class="line">-----&nbsp;${
-        s.IsStop ? `经停` : `直飞`
-        }&nbsp;-----</span>
-              <strong>${s.ArrivalShortTime}
-                ${
-        s.AddOneDayTip
-          ? `<span class='addoneday'>${s.AddOneDayTip}</span>`
-          : ``
-        }
-              </strong>
-          </h4>
-          <div class="airports">
-              <span>${s.FromAirportName}${
-        s.FromTerminal ? `(${s.FromTerminal})` : ``
-        }</span>
-              <span>${s.ToAirportName}${
-        s.ToTerminal ? `(${s.ToTerminal})` : ``
-        }</span>
-          </div>
-          <div class="desc">
-              <img src="${s.AirlineSrc}" class="airlinesrc">
-              <label>${s.AirlineName}</label>
-              <label>|${s.Number}</label>
-              <label>|${s.PlaneType}</label>
-              ${
-        s.CodeShareNumber
-          ? `|<span class='code-share-number'>共享${s.CodeShareNumber}</span>`
-          : ``
-        }
-          </div>
-      </div>
-      <div class="price">
-          ￥${lowestFare}
-      </div>`;
-      return {
-        item: s,
-        templateHtmlString: template
-      };
-    });
-    //  segments = await this.flightService.getHtmlTemplate(fs, "");
-    // console.log("getHtmlTemplate", segments);
-    if (this.list) {
-      this.list.nativeElement.innerHTML = "";
-    }
-    this.refMap = new WeakMap<FlightSegmentEntity, any>();
-    segments.forEach(s => {
-      const li = document.createElement("li");
-      li.onclick = () => {
-        this.goToFlightCabinsDetails(s.item);
-      };
-      li.classList.add("list-item");
-      li.innerHTML = s.templateHtmlString;
-      this.refMap.set(s.item, li);
-      if (this.list) {
-        this.list.nativeElement.appendChild(li);
-      }
-    });
-    console.timeEnd("renderFlightList");
+      s.LowestFare = `${lowestFare}`;
+    })
+    console.time("renderFlightList");
+    this.vmFlights = fs;
+    return;
   }
   private filterFlightSegments(segs: FlightSegmentEntity[]) {
     let result = segs;
@@ -734,8 +668,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     const bookInfo = this.flightService.getPassengerBookInfos().find(it => it.isFilteredPolicy);
     result = this.flightService.filterPassengerPolicyFlights(
       bookInfo,
-      result,
-      this.policyflights
+      result
     );
     result = this.filterFlightSegmentsByConditions(result);
     return result;

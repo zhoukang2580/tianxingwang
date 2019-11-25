@@ -2,15 +2,12 @@ import { FlightCabinEntity } from './flight/FlightCabinEntity';
 import { FlightSegmentEntity } from './flight/FlightSegmentEntity';
 import { TripType } from 'src/app/tmc/models/TripType';
 
-export interface CurrentViewtFlightSegment {
-  flightSegment: FlightSegmentEntity;
-  flightSegments: FlightSegmentEntity[];
-  totalPolicyFlights: PassengerPolicyFlights[];
-}
+
 
 export interface IFlightSegmentInfo {
   flightSegment: FlightSegmentEntity;
   flightPolicy: FlightPolicy;
+  isDontAllowBook?:boolean;
   tripType?: TripType;
   id?: string;
   lowerSegmentInfo?: {lowestCabin:FlightPolicy;lowestFlightSegment:FlightSegmentEntity,tripType:TripType};
@@ -41,4 +38,5 @@ export interface FlightPolicy {
   Discount: string; // Decimal Yes 折扣率
   LowerSegment: FlightSegmentModel;
   Rules: string[]; // List<string> No 违反的差标信息
+  color:"secondary"|"success"|"danger"|"warning";
 }

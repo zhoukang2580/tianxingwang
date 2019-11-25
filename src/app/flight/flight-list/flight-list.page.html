@@ -5,9 +5,11 @@
         <ion-icon color='dark' name='arrow-back'></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title color='{{searchFlightModel?.isLocked?"medium":"secondary"}}' [class.text-start]='showAddPassenger' [class.text-center]='!showAddPassenger'>
+    <ion-title color='{{searchFlightModel?.isLocked?"medium":"secondary"}}' [class.text-start]='showAddPassenger'
+      [class.text-center]='!showAddPassenger'>
       <ion-text (click)='onSelectCity(true)'>{{vmFromCity?.CityName}}</ion-text>
-      <div (@rotateIcon.done)='onRotateIconDone($event)' [@rotateIcon]='isRotateIcon' class='rotate-icon' [class.small-margin]='showAddPassenger'>
+      <div (@rotateIcon.done)='onRotateIconDone($event)' [@rotateIcon]='isRotateIcon' class='rotate-icon'
+        [class.small-margin]='showAddPassenger'>
         <i class='icon icon-flight-plane' (click)='onSwapCity()'></i>
       </div>
       <ion-text (click)='onSelectCity(false)'>{{ vmToCity?.CityName}}</ion-text>
@@ -46,7 +48,7 @@
     </ng-container>
     <ion-row *ngIf='(filteredPolicyPassenger$|async) as bookInfo'>
       <ion-col *ngIf='bookInfo.credential as credential'>
-        <ion-text color='{{bookInfo.isOnlyFilterMatchedPolicy?"success":""}}' *ngIf='bookInfo.isFilteredPolicy'>
+        <ion-text color='{{bookInfo.isOnlyFilterMatchedPolicy?"success":""}}' *ngIf='bookInfo.isOnlyFilterMatchedPolicy'>
           当前已过滤(【{{credential.CheckFirstName}}{{credential.CheckLastName}}】{{credential.Number}})差标
         </ion-text>
       </ion-col>
@@ -58,7 +60,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content #cnt>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh(true,false)" >
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh(true,false)">
   </ion-refresher>
   <app-or-comp *ngIf='isLoading'>
     <ion-label>{{currentProcessStatus||"数据即将加载完成"}}</ion-label>
@@ -66,9 +68,40 @@
   <app-or-comp *ngIf='!isLoading&&vmFlights?.length==0'>
     <ion-label>暂无数据</ion-label>
   </app-or-comp>
-
-
-  <ul #list class='flight'>
+  <ul class='flight'>
+    <li *ngFor='let s of vmFlights; trackBy:trackById' class='list-item' #fli (click)='goToFlightCabinsDetails(s)'>
+      <div class='left'>
+        <h4 class="time">
+          <strong>{{s.TakeoffShortTime}}</strong>
+          <span class="line">-----&nbsp;{{s.IsStop ? "经停" : "直飞"}}&nbsp;-----</span>
+          <strong>{{s.ArrivalShortTime}}
+            <span *ngIf='s.AddOneDayTip' class='addoneday'>{{s.AddOneDayTip}</span>
+                </strong>
+        </h4>
+        <div class="airports">
+            <span>{{s.FromAirportName}}
+              <ng-container *ngIf='s.FromTerminal as t'>
+                ({{t}})
+              </ng-container>
+            </span>
+            <span>{{s.ToAirportName}}
+              <ng-container *ngIf='s.ToTerminal as t'>
+                ({{t}})
+              </ng-container>
+            </span>
+      </div>
+      <div class="desc">
+        <img [src]="s.AirlineSrc" class="airlinesrc">
+        <label>{{s.AirlineName}}</label>
+        <label>|{{s.Number}}</label>
+        <label>|{{s.PlaneType}}</label>
+        <label *ngIf='s.CodeShareNumber as n'>|<span class='code-share-number'>共享{{n}}</span> </label>
+      </div>
+      </div>
+      <div class="price">
+        ￥{{s.LowestFare}}
+      </div>
+    </li>
   </ul>
   <ng-container #fakeList *ngIf='isLoading'>
     <ion-list class='fakelist'>
@@ -122,5 +155,5 @@
   </ion-toolbar>
 </ion-footer>
 
-<app-fly-filter [class.show]="showAdvSearchPage$ | async" [flights]="flightJourneyList"
-  [fromCityName]='vmFromCity?.CityName' [toCityName]="vmToCity?.CityName"></app-fly-filter>
+<app-fly-filter [class.show]="showAdvSearchPage$ | async" [flights]="flightJourneyList" [fromCityName]='vmFromCity?.CityName'
+  [toCityName]="vmToCity?.CityName"></app-fly-filter>

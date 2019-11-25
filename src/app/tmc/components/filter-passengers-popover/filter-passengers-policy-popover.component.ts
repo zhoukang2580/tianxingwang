@@ -4,7 +4,7 @@ import { Component, OnInit, Input } from "@angular/core";
 import { Observable } from "rxjs";
 import { PopoverController } from "@ionic/angular";
 import { PassengerBookInfo } from "../../tmc.service";
-import { map, tap } from "rxjs/operators";
+import { map, delay, tap } from "rxjs/operators";
 @Component({
   selector: "app-filter-passengers-policy-popover",
   templateUrl: "./filter-passengers-policy-popover.component.html",
@@ -35,64 +35,34 @@ export class FilterPassengersPolicyComponent implements OnInit {
         .catch(_ => void 0);
     }
   }
-  onMathRadioChange(evt: CustomEvent) {
-    if (evt.detail && evt.detail.value) {
-      this.selectedItem.isAllowBookPolicy = evt.detail && evt.detail.value == "isAllowBookPolicy";
-      this.selectedItem.isOnlyFilterMatchedPolicy = evt.detail && evt.detail.value == "isShowOnlyMatchSwitch";
-    }else{
-      this.selectedItem.isAllowBookPolicy =false;
-      this.selectedItem.isOnlyFilterMatchedPolicy =false;
+  async onMathRadioChange(evt: CustomEvent) {
+    this.selectedItem = this.selectedItem || this.bookInfos && this.bookInfos.find(it => it.isFilteredPolicy);
+    if (!this.selectedItem) {
+      AppHelper.alert("请勾选需过滤差标的账号");
+      return;
     }
+    this.selectedItem.isOnlyFilterMatchedPolicy = evt.detail && evt.detail.value == "isShowOnlyMatchSwitch" && evt.detail.checked;
   }
   onSelectItem(evt: CustomEvent) {
     if (evt.detail && evt.detail.value && evt.detail.value.passenger) {
-      this.selectedItem = evt.detail.value;
+      this.selectedItem = { ...evt.detail.value };
       if (this.bookInfos) {
         this.bookInfos.forEach(it => {
           it.isFilteredPolicy = it.id == this.selectedItem.id;
-          it.isAllowBookPolicy = it.id == this.selectedItem.id;
+          // it.isAllowBookPolicy = it.id == this.selectedItem.id;
         })
       }
     }
   }
   async ngOnInit() {
-    if (this.bookInfos$ && (await this.staffService.isSelfBookType())) {
-      this.bookInfos$ = this.bookInfos$.pipe(
-        map(infos => {
-          if (infos && infos.length) {
-            const arr: PassengerBookInfo<any>[] = [];
-            infos.forEach(info => {
-              if (
-                !arr.find(
-                  it =>
-                    (it.credential && it.credential.Number) ==
-                    (info.credential && info.credential.Number) &&
-                    (it.credential && it.credential.Type) ==
-                    (info.credential && info.credential.Type)
-                )
-              ) {
-                info.isFilteredPolicy = true;
-                arr.push(info);
-              }
-            });
-            return arr;
-          }
-          return infos;
-        })
-      );
-    }
+    const isSelf = this.staffService.isSelfBookType();
     this.bookInfos$ = this.bookInfos$.pipe(
-      map(infos => {
-        if (infos.length == 1) {
-          return infos.map(info => {
-            info.isFilteredPolicy = true;
-            return info;
-          })
-        }
-        return infos;
-      }),
       tap(infos => {
-        this.bookInfos = infos;
-      }))
+        this.bookInfos = infos || [];
+        if (this.bookInfos.length == 1 || isSelf) {
+          this.selectedItem = this.bookInfos[0];
+          this.selectedItem.isFilteredPolicy = true;
+        }
+      }),delay(100))
   }
 }

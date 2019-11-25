@@ -1,0 +1,55 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-button (click)='back()'>
+        <ion-icon color='dark' name='arrow-back'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>当前已选择航班信息</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-item-group *ngFor='let bookInfo of  bookInfos'>
+    <ng-container *ngIf='bookInfo.info'>
+      <ion-item-divider color='primary' sticky>
+        <ion-label color='dark'>
+          {{bookInfo.info?.passenger?.Name}}{{bookInfo.info?.credential?.Number}}</ion-label>
+        <ion-checkbox slot='end' [(ngModel)]="bookInfo.isSelected" (ionChange)='onionChange(bookInfo.info)'>
+        </ion-checkbox>
+      </ion-item-divider>
+      <ion-item>
+        <div class='detail'>
+          <div class='date'>
+            <strong>{{bookInfo.info?.bookInfo?.flightSegment?.TakeoffTime?.substr(0,"yyyy-MM-dd".length)}}</strong>
+          </div>
+          <app-fly-list-item [flightSegment]='bookInfo.info?.bookInfo?.flightSegment' [showDetails]='true'
+            [flightPolicy]='bookInfo.info?.bookInfo?.flightPolicy'>
+          </app-fly-list-item>
+          <div>
+            <ion-row>
+              <ion-col text-end>
+                <div>
+                  <ion-label text-wrap color='danger'>税:￥{{bookInfo.info?.bookInfo?.flightSegment?.Tax}}</ion-label>
+                </div>
+                <div>
+                  <ion-label color='danger'>￥{{bookInfo.info?.bookInfo?.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
+                </div>
+              </ion-col>
+            </ion-row>
+          </div>
+          <ion-label class='rules' color='danger' text-wrap>
+            {{bookInfo.info?.bookInfo?.flightPolicy?.Rules?.join("; ")}}
+          </ion-label>
+        </div>
+      </ion-item>
+    </ng-container>
+  </ion-item-group>
+</ion-content>
+<ion-footer>
+  <ion-toolbar>
+    <ion-button slot='end' expand='block' (click)='onCancel()' color='secondary'>取消
+    </ion-button>
+    <ion-button slot='end' expand='block' (click)='onConfirm()' color='secondary'>确定
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>
