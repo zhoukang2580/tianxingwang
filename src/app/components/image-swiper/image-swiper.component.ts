@@ -1,3 +1,4 @@
+import { ConfigEntity } from './../../services/config/config.entity';
 import { Observable, fromEvent, ReplaySubject } from 'rxjs';
 import { ModalController } from '@ionic/angular';
 import { EventEmitter, ViewChildren, QueryList } from '@angular/core';
@@ -18,6 +19,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   @ViewChild("swiperbuttonnext") nextEle: ElementRef<HTMLElement>;
   @ViewChild("pagination") paginationEle: ElementRef<HTMLElement>;
   @ViewChild("thumbs") thumbs: ElementRef<HTMLElement>;
+  @Input() config : ConfigEntity;
   @Input() hasThumbs = false;
   @Input() effect: boolean | "fade" | "flip" | "cube" | "coverflow" = 'fade';
   @Input() direction: "vertical" | "horizontal" = 'horizontal';

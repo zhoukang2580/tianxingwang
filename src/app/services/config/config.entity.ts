@@ -7,5 +7,7 @@ export class ConfigEntity {
   Icp?: string;
   Style?: string;
   BaiduMapAk?:string;
+  AccountId?:string;
+  HrId?:string;
 }
 

@@ -58,7 +58,6 @@
     "js-pinyin": "^0.1.9",
     "md5": "^2.2.1",
     "moment": "^2.24.0",
-    "ng-lazyload-image": "^7.0.1",
     "phonegap-plugin-barcodescanner": "8.0.1",
     "rxjs": "^6.5.2",
     "swiper": "^4.5.1",

@@ -1,3 +1,4 @@
+import { ConfigEntity } from './../../services/config/config.entity';
 import { MemberService } from "./../member.service";
 import { StaffEntity, StaffService } from "./../../hr/staff.service";
 import { NavController } from "@ionic/angular";
@@ -22,6 +23,7 @@ import { PageModel } from "../member.service";
 export class MemberDetailPage implements OnInit, OnDestroy {
   memberDetails: PageModel;
   identity: IdentityEntity;
+  config: ConfigEntity;
   staff: StaffEntity;
   defaultAvatar = AppHelper.getDefaultAvatar();
   identitySubscription = Subscription.EMPTY;
@@ -40,6 +42,7 @@ export class MemberDetailPage implements OnInit, OnDestroy {
   }
   ngOnInit() {
     this.route.queryParamMap.subscribe(async _ => {
+      this.config = await this.configService.getConfigAsync();
       await this.load(AppHelper.getRouteData());
       AppHelper.setRouteData(AppHelper.getRouteData());
     });

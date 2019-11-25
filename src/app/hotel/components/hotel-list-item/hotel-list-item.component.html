@@ -1,6 +1,6 @@
 <ion-item no-margin no-padding lines='none'>
   <ion-thumbnail slot='start'>
-    <img [lazyLoad]='item?.Hotel?.FileName'  />
+    <img [lazyLoad]='item?.Hotel?.FileName' [defaultImage]='config?.PrerenderImageUrl' /> 
   </ion-thumbnail>
   <ion-label>
     <h1>

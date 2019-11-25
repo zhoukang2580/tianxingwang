@@ -18,6 +18,9 @@ if (environment.production) {
       var vConsole = new window["VConsole"]();
     }
   }
+  if (window["VConsole"]) {
+    var vConsole = new window["VConsole"]();
+  }
 }
 platformBrowserDynamic()
   .bootstrapModule(AppModule)

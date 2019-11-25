@@ -27,7 +27,7 @@ import { DingtalkHelper } from "../dingtalkHelper";
 })
 export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   loginEntity: RequestEntity;
-  pageInfo$: Observable<ConfigEntity>;
+  config: ConfigEntity;
   form: FormGroup;
   deviceInfo: any;
   loginSubscription = Subscription.EMPTY;
@@ -48,7 +48,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     private configService: ConfigService,
     private fb: FormBuilder,
     private router: Router,
-    private config: Config,
+    private ionConfig: Config,
     route: ActivatedRoute,
     private staffService: StaffService,
     private modalCtrl: ModalController,
@@ -57,8 +57,13 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     private hotelService: HotelService,
     private flightService: FlightService
   ) {
-    this.config.set("swipeBackEnabled", false);
+    this.ionConfig.set("swipeBackEnabled", false);
     this.isShowWechatLogin = AppHelper.isApp();
+    route.queryParamMap.subscribe(_ => {
+      this.configService.getConfigAsync().then(c => {
+        this.config = c;
+      });
+    })
   }
   ngAfterViewInit() {
     console.log("login page ngAfterViewInit");
@@ -90,7 +95,6 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       .subscribe(r => {
         this.identity = r;
       });
-    this.pageInfo$ = this.configService.getConfigSource();
     // this.fileInfo=this.fileService.fileInfo;
     this.loginEntity = new RequestEntity();
     this.loginEntity.Data = {};

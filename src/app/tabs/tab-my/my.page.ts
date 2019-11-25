@@ -1,3 +1,4 @@
+import { ConfigEntity } from './../../services/config/config.entity';
 import { MessageService } from "./../../message/message.service";
 import { AppHelper } from "src/app/appHelper";
 import { Component, OnInit } from "@angular/core";
@@ -34,6 +35,7 @@ export class MyPage implements OnDestroy, OnInit {
   msgCount$: Observable<number>;
   items: ProductItem[] = [];
   isShowMyOrderTabs = false;
+  config: ConfigEntity;
   constructor(
     private router: Router,
     plt: Platform,
@@ -56,6 +58,7 @@ export class MyPage implements OnDestroy, OnInit {
     route.paramMap.subscribe(async _ => {
       this.load(AppHelper.getRouteData());
       AppHelper.setRouteData(false);
+      this.config = await this.configService.getConfigAsync();
       this.isShowMyOrderTabs =
         (await this.staffService.isSelfBookType()) ||
         (await this.staffService.isSecretaryBookType());

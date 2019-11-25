@@ -1,3 +1,4 @@
+import { ConfigEntity } from './../../../services/config/config.entity';
 import { Component, OnInit, Input } from "@angular/core";
 import { HotelDayPriceEntity } from "../../models/HotelDayPriceEntity";
 
@@ -8,6 +9,7 @@ import { HotelDayPriceEntity } from "../../models/HotelDayPriceEntity";
 })
 export class HotelListItemComponent implements OnInit {
   @Input() item: HotelDayPriceEntity;
+  @Input() config:ConfigEntity;
   constructor() {}
 
   ngOnInit() {}

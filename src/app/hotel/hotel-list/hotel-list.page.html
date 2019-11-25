@@ -39,7 +39,7 @@
       <ion-list *ngIf='!isLoading&&hotelDayPrices?.length else noMoreData' #hotellist class='hotel-list'>
         <ion-item *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
           <ion-thumbnail slot='start'>
-            <img [lazyLoad]='item.Hotel?.FileName'  [offset]='300' [scrollTarget]='scrollEle' />
+            <img [lazyLoad]='item.Hotel?.FileName' [defaultImage]='config?.PrerenderImageUrl' />
           </ion-thumbnail>
           <ion-label>
             <h3 class='name'>
