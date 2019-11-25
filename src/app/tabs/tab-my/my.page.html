@@ -8,7 +8,7 @@
   <ion-list lines='none' class='top-panal'>
     <ion-item detail (click)='goToMyDetail()'>
       <ion-thumbnail>
-        <img alt="头像" [lazyLoad]="Model?.HeadUrl" [defaultImage]='config.PrerenderImageUrl'>
+        <img alt="头像" [lazyLoad]="Model?.HeadUrl" [defaultImage]='config?.PrerenderImageUrl'>
       </ion-thumbnail>
       <ion-label padding-start>
         <h3>{{Model?.RealName}}<ion-note class='account-type'></ion-note>

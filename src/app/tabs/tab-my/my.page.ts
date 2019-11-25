@@ -56,6 +56,7 @@ export class MyPage implements OnDestroy, OnInit {
         }
       });
     route.paramMap.subscribe(async _ => {
+      this.msgCount$ = this.messageService.getMsgCount();
       this.load(AppHelper.getRouteData());
       AppHelper.setRouteData(false);
       this.config = await this.configService.getConfigAsync();
@@ -96,7 +97,7 @@ export class MyPage implements OnDestroy, OnInit {
     if (this.items.length < 4) {
       this.items = this.items.filter(it => it.value != ProductItemType.more);
     }
-    this.msgCount$ = this.messageService.getMsgCount();
+    
     console.log("my ngOnInit");
     // this.Model = {
     //   Name: "",
