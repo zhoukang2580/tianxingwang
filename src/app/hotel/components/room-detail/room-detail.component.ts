@@ -1,3 +1,4 @@
+import { ConfigEntity } from './../../../services/config/config.entity';
 import { Observable, of } from "rxjs";
 import { HotelPassengerModel } from "./../../models/HotelPassengerModel";
 import { IdentityService } from "./../../../services/identity/identity.service";
@@ -29,6 +30,7 @@ import { map, tap } from "rxjs/operators";
 })
 export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() room: RoomEntity;
+  @Input() config: ConfigEntity;
   @Input() roomImages: string[];
   @Output() close: EventEmitter<any>;
   @Output() bookRoom: EventEmitter<any>;
@@ -41,7 +43,7 @@ export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
     private identityService: IdentityService,
     private hotelService: HotelService,
     private staffService: StaffService,
-    private modalCtrl:ModalController
+    private modalCtrl: ModalController
   ) {
     this.close = new EventEmitter();
     this.bookRoom = new EventEmitter();
@@ -55,7 +57,7 @@ export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
   async onBook(plan: RoomPlanEntity) {
     this.bookRoom.emit(plan);
     const m = await this.modalCtrl.getTop();
-    if(m){
+    if (m) {
       m.dismiss(plan);
     }
   }
@@ -73,13 +75,13 @@ export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
     if (changes && changes.hotelPolicy && changes.hotelPolicy.currentValue) {
     }
   }
-  ngAfterViewInit() {}
+  ngAfterViewInit() { }
   onClose() {
-    this.modalCtrl.getTop().then(t=>{
-      if(t){
+    this.modalCtrl.getTop().then(t => {
+      if (t) {
         t.dismiss();
       }
-    }).catch(_=>0);
+    }).catch(_ => 0);
     this.close.emit();
   }
 }

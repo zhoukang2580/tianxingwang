@@ -235,7 +235,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     this.config = await this.configService.get().catch(_ => null);
   }
   private getHotelImageUrls() {
-    let urls:string[] = [];
+    let urls: string[] = [];
     urls =
       this.hotel &&
       this.hotel.HotelImages &&
@@ -287,7 +287,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
         tap(r => {
           console.log(r);
         })
-      ).pipe(finalize(()=>{
+      ).pipe(finalize(() => {
         if (this.ionRefresher) {
           this.ionRefresher.complete();
         }
@@ -559,7 +559,8 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       component: RoomDetailComponent,
       componentProps: {
         room,
-        roomImages
+        roomImages,
+        config: this.config
       }
     });
     if (m) {
@@ -572,9 +573,11 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     }
   }
   async onShowRoomImages(room: RoomEntity) {
+    this.config = await this.configService.getConfigAsync();
     const m = await this.modalCtrl.create({
       component: ImageSwiperComponent,
       componentProps: {
+        config: this.config,
         imgStyle: { objectFit: "contain" },
         imagesUrls: this.getRoomImages(room),
       }
@@ -582,6 +585,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     await m.present();
   }
   async onShowHotelImages() {
+    this.config = await this.configService.getConfigAsync();
     this.apiService.showLoadingView();
     const m = await this.modalCtrl.create({
       component: ImageSwiperComponent,
@@ -591,6 +595,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
         imgStyle: { objectFit: "contain" },
         imagesUrls: this.getHotelImageUrls(),
         hasThumbs: true,
+        config: this.config
       }
     });
     await m.present();

@@ -2,10 +2,32 @@
   width: 100%;
   height: 100%;
   background: black;
-  img {
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
+  // img {
+  //   object-fit: cover;
+  //   width: 100%;
+  //   height: 100%;
+  // }
+}
+.divimg {
+  background-repeat: no-repeat;
+  height: 85vh;
+  width: 100vw;
+  background-position: center;
+  background-size: cover;
+  position: relative;
+  .logo {
+    position: absolute;
+    bottom: -0.5em;
+    right: -2.4em;
+    height: 6em;
+    background-repeat: no-repeat;
+    width: 11em;
+    // background-image: url(http://test.shared.testskytrip.com/img/logo.png);
+    z-index: 100;
+    background-color: white;
+    transform: scale(0.6);
+    background-blend-mode: luminosity;
+
   }
 }
 .swiper-container,
@@ -13,10 +35,23 @@
   height: 100%;
   width: 100%;
 }
+.swiper-container.main {
+  height: calc(100% - 15vh);
+  position: relative;
+  &::after {
+    position: absolute;
+    right: 0;
+    height: 2em;
+    background-color: red;
+    content: "";
+    z-index: 99;
+  }
+}
 .swiper-container.thumbs {
   overflow: auto;
   padding: 0.5em;
   max-height: 15vh;
+  height: 15vh;
   background-color: black;
   &::-webkit-scrollbar {
     display: none;
@@ -24,7 +59,8 @@
   .swiper-slide {
     margin-right: 1em;
     opacity: 0.7;
-    &.swiper-slide-thumb-active,&.swiper-slide-active {
+    &.swiper-slide-thumb-active,
+    &.swiper-slide-active {
       opacity: 1;
     }
     width: 100px;

@@ -42,6 +42,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() fabhorizontal: string = 'end';
   images: { active: boolean; url?: string; idx: number; text?: string; }[];
   scroll$:ReplaySubject<any>;
+  logoPath:string;
   constructor(private modalCtrl: ModalController) {
     this.close = new EventEmitter();
     this.scroll$=new ReplaySubject();

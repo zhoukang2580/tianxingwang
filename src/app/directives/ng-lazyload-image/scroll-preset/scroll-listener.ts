@@ -3,17 +3,17 @@ import { sampleTime, share, startWith } from 'rxjs/operators';
 
 const scrollListeners = new WeakMap<any, Observable<any>>();
 
-export function sampleObservable<T>(obs: Observable<T>, scheduler?: any): Observable<string | T> {
+export function sampleObservable<T>(obs: Observable<T>, scheduler?: any): Observable<T> {
   return obs.pipe(
     sampleTime(100, scheduler),
     share(),
-    startWith('')
+    startWith('' as any as T)
   );
 }
 
 // Only create one scroll listener per target and share the observable.
 // Typical, there will only be one observable per application
-export const getScrollListener = (scrollTarget?: HTMLElement | Window): Observable<string | Event> => {
+export const getScrollListener = (scrollTarget?: HTMLElement | Window): Observable<Event> => {
   if (!scrollTarget || typeof scrollTarget.addEventListener !== 'function') {
     console.warn('`addEventListener` on ' + scrollTarget + ' (scrollTarget) is not a function. Skipping this target');
     return empty();
@@ -33,5 +33,5 @@ export const getScrollListener = (scrollTarget?: HTMLElement | Window): Observab
 
   const listener = sampleObservable<Event>(srollEvent);
   scrollListeners.set(scrollTarget, listener);
-  return listener;
+  return listener as any ;
 };

@@ -8,6 +8,7 @@ import { lazyLoadImage } from './lazyload-image';
 import { Attributes, HookSet, ModuleOptions } from './types';
 import { getNavigator } from './util';
 import { ImageRecoverService } from 'src/app/services/imageRecover/imageRecover.service';
+import { AppHelper } from 'src/app/appHelper';
 @Directive({
   selector: '[lazyLoad]'
 })
@@ -28,15 +29,22 @@ export class LazyLoadImageDirective implements OnChanges, AfterContentInit, OnDe
   private hooks: HookSet<any>;
   private platformId: Object;
 
-  constructor(private imageRecoverService:ImageRecoverService, el: ElementRef, ngZone: NgZone, @Inject(PLATFORM_ID) platformId: Object, @Optional() @Inject('options') options?: ModuleOptions) {
+  constructor(private imageRecoverService: ImageRecoverService, el: ElementRef, ngZone: NgZone, @Inject(PLATFORM_ID) platformId: Object, @Optional() @Inject('options') options?: ModuleOptions) {
     this.elementRef = el;
     this.ngZone = ngZone;
     this.propertyChanges$ = new ReplaySubject();
     this.platformId = platformId;
     this.hooks = createHooks(platformId, options);
   }
+  private setDefaultImage(defaultImage: string = AppHelper.getDefaultLoadingImage()) {
+    if (this.elementRef.nativeElement instanceof HTMLImageElement) {
+      this.elementRef.nativeElement.src = defaultImage;
+    } else if (this.elementRef.nativeElement instanceof HTMLDivElement) {
+      this.elementRef.nativeElement.style.backgroundImage = defaultImage;
+    }
+  }
   ngOnInit() {
-
+    this.setDefaultImage(this.defaultImage);
   }
   ngOnChanges() {
     this.propertyChanges$.next({
