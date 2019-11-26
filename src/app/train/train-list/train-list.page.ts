@@ -437,33 +437,6 @@ export class TrainListPage implements OnInit, OnDestroy {
     await modal.present();
     await modal.onDidDismiss();
   }
-  // private moveDayToSearchDate(d?: DayModel) {
-  //   this.domCtrl.write(_ => {
-  //     if (this.daysCalendarComp) {
-  //       const day =
-  //         d ||
-  //         this.calendarService.generateDayModelByDate(
-  //           this.searchTrainModel.Date
-  //         );
-  //       setTimeout(() => {
-  //         if (this.daysCalendarComp) {
-  //           this.daysCalendarComp.onDaySelected(day);
-  //         }
-  //       }, 1000);
-  //     }
-  //   });
-  // }
-  private async setSelfFilterPolicy() {
-    const isSelf = await this.staffService.isSelfBookType();
-    // if (isSelf) {
-    //   this.trainService.setBookInfoSource(this.trainService.getBookInfos().map((it, idx) => {
-    //     if (idx == 0) {
-    //       it.isOnlyFilterMatchedPolicy = true;
-    //     }
-    //     return it;
-    //   }));
-    // }
-  }
   async doRefresh(loadDataFromServer: boolean, keepSearchCondition: boolean) {
     if (this.ionRefresher) {
       this.ionRefresher.disabled = true;
@@ -502,20 +475,6 @@ export class TrainListPage implements OnInit, OnDestroy {
         data = await this.loadPolicyedTrainsAsync();
       }
       {
-        // 根据筛选条件过滤航班信息：
-        const bookInfos = this.trainService.getBookInfos();
-        const isSelf = await this.staffService.isSelfBookType();
-        if (bookInfos.length == 1 || isSelf) {
-          this.trainService.setBookInfoSource(bookInfos.map((it, idx) => {
-            if (idx == 0) {
-              // it.isFilteredPolicy = true;
-              // it.isAllowBookPolicy = true;
-              // it.isOnlyFilterMatchedPolicy = false;
-            }
-            // it.isOnlyFilterMatchedPolicy=false;
-            return it;
-          }))
-        }
         const b = this.trainService.getBookInfos().find(it => it.isFilterPolicy);
         data = this.trainService.filterPassengerPolicyTrains(
           b,
@@ -523,6 +482,7 @@ export class TrainListPage implements OnInit, OnDestroy {
           this.passengersPolicies
         );
       }
+      // 根据筛选条件过滤航班信息：
       data = this.filterTrains(data);
       this.vmTrains = data;
       this.apiService.hideLoadingView();

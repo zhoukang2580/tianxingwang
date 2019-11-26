@@ -119,10 +119,25 @@ export class TrainService {
       !bookInfo ||
       !bookInfo.passenger ||
       !bookInfo.passenger.AccountId ||
+      !bookInfo.isFilterPolicy ||
       !policies ||
       !policies.length
     ) {
-      return result;
+      this.setBookInfoSource(
+        this.getBookInfos().map(it => {
+          it.isFilterPolicy = false;
+          return it;
+        })
+      );
+      return result.map(it => {
+        if (it.Seats) {
+          it.Seats = it.Seats.map(s => {
+            s.color = 'secondary';
+            return s;
+          })
+        }
+        return it;
+      });
       // return result.map(it => {
       //   if (it.Seats) {
       //     it.Seats = it.Seats.map(s => {
@@ -165,17 +180,9 @@ export class TrainService {
               p => p.TrainNo == it.TrainNo && p.SeatType == s.SeatType
             );
             s.Policy = trainPolicy;
-            s.color = trainPolicy && trainPolicy.color || "primary";
+            s.color = trainPolicy && trainPolicy.color || "secondary";
             return s;
           });
-          if (bookInfo.isFilterPolicy) {
-            it.Seats = it.Seats.filter(
-              s => (!s.Policy || !s.Policy.Rules || !s.Policy.Rules.length) &&
-                +s.Count > 0);
-            if (it.Seats.length == 0) {
-              return null;
-            }
-          }
         }
         return it;
       })
