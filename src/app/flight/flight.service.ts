@@ -522,8 +522,8 @@ export class FlightService {
       s.isLocked = false;
       s.fromCity = airports.find(c => c.Code == s.FromCode);
       s.toCity = airports.find(c => c.Code == s.ToCode);
-      s.fromCity={...s.fromCity,Tag:"AirportCity"};
-      s.toCity={...s.toCity,Tag:"AirportCity"};
+      s.fromCity = { ...s.fromCity, Tag: "AirportCity" };
+      s.toCity = { ...s.toCity, Tag: "AirportCity" };
       let arr = this.getPassengerBookInfos().map(item => {
         item.bookInfo = null;
         return item;
@@ -1174,6 +1174,14 @@ export class FlightService {
     );
     if (!lowestCabin) {
       return result;
+    }
+    if (!lowestCabin.Rules || !lowestCabin.Rules.length) {
+      lowestCabin.color = 'success';
+    } else {
+      lowestCabin.color = 'warning';
+    }
+    if (!lowestCabin.IsAllowBook) {
+      lowestCabin.color = 'danger';
     }
     lowestCabin = { ...lowestCabin };
     lowestCabin.Cabin = flights.reduce((acc, f) => (acc = [...acc, ...f.Cabins]), [] as FlightCabinEntity[]).find(
