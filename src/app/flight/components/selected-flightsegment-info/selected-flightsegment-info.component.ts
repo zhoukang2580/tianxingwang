@@ -31,13 +31,14 @@ import { FlightCabinEntity } from '../../models/flight/FlightCabinEntity';
   styleUrls: ["./selected-flightsegment-info.component.scss"]
 })
 export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
-  bookInfos:PassengerBookInfo<IFlightSegmentInfo>[];
+  bookInfos: PassengerBookInfo<IFlightSegmentInfo>[];
   passengerAndBookInfos$: Observable<PassengerBookInfo<IFlightSegmentInfo>[]>;
   searchModel: SearchFlightModel;
   searchModelSubscrition = Subscription.EMPTY;
   identity: IdentityEntity;
   showSelectReturnTripButton = false;
   TripType = TripType;
+  isSelf: boolean;
   constructor(
     private modalCtrl: ModalController,
     private flightService: FlightService,
@@ -51,6 +52,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     this.searchModelSubscrition.unsubscribe();
   }
   async ngOnInit() {
+    this.isSelf = await this.staffService.isSelfBookType();
     this.searchModelSubscrition = this.flightService
       .getSearchFlightModelSource()
       .subscribe(m => {
@@ -60,8 +62,8 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
       .getPassengerBookInfoSource()
       .pipe(
         tap(async infos => {
-          this.bookInfos=infos.filter(it=>!!it.bookInfo);
-          if (await this.staffService.isSelfBookType()) {
+          this.bookInfos = infos.filter(it => !!it.bookInfo);
+          if (this.isSelf) {
             const goinfo = infos.find(
               item =>
                 item.bookInfo &&
@@ -114,11 +116,11 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
   }
   showLowerSegment(info: PassengerBookInfo<IFlightSegmentInfo>) {
     const pfs = info.bookInfo;
-    return (pfs && pfs.lowerSegmentInfo&&pfs.lowerSegmentInfo.lowestFlightSegment&&pfs.lowerSegmentInfo.lowestCabin);
+    return (pfs && pfs.lowerSegmentInfo && pfs.lowerSegmentInfo.lowestFlightSegment && pfs.lowerSegmentInfo.lowestCabin);
   }
   async onSelectLowestSegment(info: PassengerBookInfo<IFlightSegmentInfo>) {
-    const { lowestCabin, lowestFlightSegment } =info.bookInfo&&info.bookInfo.lowerSegmentInfo;
-    if (!lowestCabin||!lowestFlightSegment) {
+    const { lowestCabin, lowestFlightSegment } = info.bookInfo && info.bookInfo.lowerSegmentInfo;
+    if (!lowestCabin || !lowestFlightSegment) {
       await AppHelper.alert(
         LanguageHelper.Flight.getTheLowestCabinNotFoundTip()
       );
@@ -150,7 +152,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
           id: AppHelper.uuid(),
           lowerSegmentInfo: null,
         };
-        bookInfo.flightPolicy.LowerSegment=null;// 更低价仅能选择一次.
+        bookInfo.flightPolicy.LowerSegment = null;// 更低价仅能选择一次.
         const newInfo: PassengerBookInfo<IFlightSegmentInfo> = {
           id: AppHelper.uuid(),
           passenger: info.passenger,
@@ -164,9 +166,9 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
   }
 
   async remove(item: PassengerBookInfo<IFlightSegmentInfo>, message?: string) {
-    const ok = await AppHelper.alert( message || LanguageHelper.Flight.getConfirmRemoveFlightSegmentTip(),true,LanguageHelper.getConfirmTip(),LanguageHelper.getCancelTip());
-    if(ok){
-      await this.flightService.removePassengerBookInfo(item,false);
+    const ok = await AppHelper.alert(message || LanguageHelper.Flight.getConfirmRemoveFlightSegmentTip(), true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+    if (ok) {
+      await this.flightService.removePassengerBookInfo(item, false);
     }
   }
   getDate(s: FlightSegmentEntity) {
@@ -176,14 +178,14 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     const day = this.flydayService.generateDayModel(moment(s.TakeoffTime));
     return `${day.date} ${day.dayOfWeekName}`;
   }
-  getFlightIllegalTip(info:PassengerBookInfo<IFlightSegmentInfo>) {
+  getFlightIllegalTip(info: PassengerBookInfo<IFlightSegmentInfo>) {
     return info && info.passenger && info.passenger.Policy && info.passenger.Policy.FlightIllegalTip;
   }
-  getFlightlegalTip(info:PassengerBookInfo<IFlightSegmentInfo>) {
+  getFlightlegalTip(info: PassengerBookInfo<IFlightSegmentInfo>) {
     return info && info.passenger && info.passenger.Policy && info.passenger.Policy.FlightLegalTip;
   }
   getTripTypeTip(info: IFlightSegmentInfo) {
-    if (!info) {
+    if (!info || !this.isSelf) {
       return "";
     }
     return `[${
