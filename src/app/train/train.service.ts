@@ -124,7 +124,7 @@ export class TrainService {
     ) {
       this.setBookInfoSource(
         this.getBookInfos().map(it => {
-          it.isOnlyFilterMatchedPolicy = false;
+          it.isFilterPolicy = false;
           // it.isOnlyFilterMatchedPolicy = false;
           // it.isAllowBookPolicy = false;
           return it;
@@ -143,7 +143,7 @@ export class TrainService {
     }
     this.setBookInfoSource(
       this.getBookInfos().map(it => {
-        it.isOnlyFilterMatchedPolicy = it.id == bookInfo.id;
+        it.isFilterPolicy = it.id == bookInfo.id;
         // it.isOnlyFilterMatchedPolicy = bookInfo.isOnlyFilterMatchedPolicy;
         return it;
       })
@@ -157,7 +157,7 @@ export class TrainService {
       // if (bookInfo.isAllowBookPolicy) {
       //   policyTrains = policyTrains.filter(it => it.IsAllowBook);
       // }
-      if (bookInfo.isOnlyFilterMatchedPolicy) {
+      if (bookInfo.isFilterPolicy) {
         policyTrains = policyTrains.filter(
           it => it.IsAllowBook && (!it.Rules || it.Rules.length == 0)
         );
@@ -183,7 +183,7 @@ export class TrainService {
           s.Policy = trainPolicy;
           return s;
         });
-        if (bookInfo.isOnlyFilterMatchedPolicy) {
+        if (bookInfo.isFilterPolicy) {
           it.Seats = it.Seats.filter(
             s => (!s.Policy || !s.Policy.Rules || !s.Policy.Rules.length) &&
               +s.Count > 0);
@@ -856,7 +856,7 @@ export class TrainService {
         passenger: info.BookStaff,
         credential: info.DefaultCredentials,
         id: AppHelper.uuid(),
-        isOnlyFilterMatchedPolicy: false
+        isFilterPolicy: false
       };
       books = [b];
       this.exchangedTrainTicketInfo = { ticket: JSON.parse(JSON.stringify(info.OrderTrainTicket)), order: JSON.parse(JSON.stringify(info.OrderTrainTicket.Order)) };

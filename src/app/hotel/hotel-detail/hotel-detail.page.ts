@@ -113,7 +113,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   private async initFilterPolicy() {
     const isSelf = await this.staffService.isSelfBookType();
     const bookInfos = this.hotelService.getBookInfos();
-    const filteredPassenger = this.hotelService.getBookInfos().find(it => it.isOnlyFilterMatchedPolicy);
+    const filteredPassenger = this.hotelService.getBookInfos().find(it => it.isFilterPolicy);
     if (filteredPassenger) {
       this.filterPassengerPolicy(filteredPassenger.passenger && filteredPassenger.passenger.AccountId);
     }
@@ -392,7 +392,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     if (color.includes("disabled")) {
       let tip = '';
       if (p) {
-        const info = this.hotelService.getBookInfos().find(it => it.isOnlyFilterMatchedPolicy);
+        const info = this.hotelService.getBookInfos().find(it => it.isFilterPolicy);
         if (info && info.passenger && info.passenger.Policy && info.passenger.Policy.HotelIllegalTip) {
           tip = `(${info.passenger.Policy.HotelIllegalTip})`;
         }

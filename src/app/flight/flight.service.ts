@@ -174,7 +174,7 @@ export class FlightService {
         color: "secondary"
       } as FlightPolicy
     });
-    if (data && data.passenger && data.passenger.AccountId && data.isOnlyFilterMatchedPolicy) {
+    if (data && data.passenger && data.passenger.AccountId && data.isFilterPolicy) {
 
       this.policyFlights = this.policyFlights || [];
       const one = this.policyFlights.find(
@@ -184,10 +184,15 @@ export class FlightService {
         policyCabins = one.FlightPolicies.filter(
           pc => pc.FlightNo == flightSegment.Number
         );
-        policyCabins = policyCabins.filter(
-          it => !it.Rules || it.Rules.length == 0
-        ).map(it => {
-          it.color = 'success';
+        policyCabins = policyCabins.map(it => {
+          if (!it.Rules || it.Rules.length == 0) {
+            it.color = 'success';
+          } else {
+            it.color = 'warning';
+          }
+          if (!it.IsAllowBook) {
+            it.color = 'danger';
+          }
           return it;
         });
         policyCabins = policyCabins.map(it => {
@@ -207,7 +212,7 @@ export class FlightService {
     } else {
       this.setPassengerBookInfosSource(
         this.getPassengerBookInfos().map(it => {
-          it.isOnlyFilterMatchedPolicy = false;
+          it.isFilterPolicy = false;
           return it;
         })
       );
@@ -336,7 +341,7 @@ export class FlightService {
     if (bookInfo && bookInfo.passenger && bookInfo.passenger.AccountId) {
       this.setPassengerBookInfosSource(
         this.getPassengerBookInfos().map(it => {
-          it.isOnlyFilterMatchedPolicy = bookInfo.id == it.id;
+          it.isFilterPolicy = bookInfo.id == it.id;
           return it;
         })
       );
@@ -348,7 +353,7 @@ export class FlightService {
         );
       let flightPolicies: FlightPolicy[] = passengerPolicies && passengerPolicies.FlightPolicies || [];
       flightPolicies = flightPolicies.slice(0);
-      if (bookInfo.isOnlyFilterMatchedPolicy) {
+      if (bookInfo.isFilterPolicy) {
         flightPolicies = flightPolicies.filter(it => !it.Rules || !it.Rules.length)
       }
       numbers = flightPolicies.map(it => it.FlightNo);
@@ -357,7 +362,7 @@ export class FlightService {
     } else {
       this.setPassengerBookInfosSource(
         this.getPassengerBookInfos().map(it => {
-          it.isOnlyFilterMatchedPolicy = false;
+          it.isFilterPolicy = false;
           return it;
         })
       );
@@ -928,7 +933,7 @@ export class FlightService {
       if (item.id === old.id) {
         // newInfo.isFilteredPolicy = old.isFilteredPolicy;
         // newInfo.isAllowBookPolicy = old.isAllowBookPolicy;
-        newInfo.isOnlyFilterMatchedPolicy = old.isOnlyFilterMatchedPolicy;
+        newInfo.isFilterPolicy = old.isFilterPolicy;
         return newInfo;
       }
       return item;
@@ -1187,21 +1192,26 @@ export class FlightService {
         return Promise.resolve(this.flightJourneyList);
       }
     }
-    const self = await this.staffService.isSecretaryBookType();
-    this.setPassengerBookInfosSource(this.getPassengerBookInfos().map((it, idx) => {
-      it.isOnlyFilterMatchedPolicy = false;
-      return it;
-    }))
     this.flightJourneyList = await this.getFlightJourneyDetails();
     return this.flightJourneyList || [];
   }
+  private async setDefaultFilterInfo() {
+    const self = await this.staffService.isSecretaryBookType();
+    const infos = this.getPassengerBookInfos();
+    const unselected = infos.find(it => !it.bookInfo);
+    const hasReplace = infos.find(it => it.isReplace);
+    this.setPassengerBookInfosSource(infos.map((it, idx) => {
+      if (self || infos.length == 1) {
+        it.isFilterPolicy = idx == 0;
+      } else {
+        it.isFilterPolicy = unselected && unselected.id == it.id || hasReplace && hasReplace.id == it.id;
+      }
+      return it;
+    }));
+  }
   private async getFlightJourneyDetails(): Promise<FlightJourneyEntity[]> {
     await this.checkOrAddSelfBookTypeBookInfo();
-    this.setPassengerBookInfosSource(this.getPassengerBookInfos().map(it => {
-      // it.isFilteredPolicy = false;
-      it.isOnlyFilterMatchedPolicy = false;
-      return it;
-    }))
+    await this.setDefaultFilterInfo();
     const req = new RequestEntity();
     req.Method = "TmcApiFlightUrl-Home-Detail ";
     const data = this.getSearchFlightModel();

@@ -22,8 +22,8 @@
   </ion-toolbar>
   <ion-row *ngIf='(filteredPolicyPassenger$|async) as bookInfo' class='rule'>
     <ion-col *ngIf='bookInfo.credential as credential' text-center>
-      <ion-text color='{{bookInfo.isOnlyFilterMatchedPolicy?"success":""}}' *ngIf='bookInfo.isFilteredPolicy'>
-        当前已过滤【{{credential.CheckFirstName}}{{credential.CheckLastName}}】{{credential.Number}})差标
+      <ion-text color='secondary'>
+        当前已过滤【{{credential.CheckFirstName}}{{credential.CheckLastName}}】({{credential.Number}})差标
       </ion-text>
     </ion-col>
   </ion-row>
@@ -50,14 +50,14 @@
     <ion-label color='success' margin-start>
       绿色代表符合差标
     </ion-label>
-    <!-- <div>
+    <div>
       <ion-label margin-start color='warning'>
         黄色代表违规可以预订
       </ion-label>
     </div>
     <ion-label color='danger' margin-start>
       红色代表违规不可预订
-    </ion-label> -->
+    </ion-label>
   </ion-toolbar>
   <!-- <ng-container *ngIf='!isSelf else other'>
     <ion-radio-group *ngIf='cabinTypes?.length' (ionChange)='onFilterCabinType($event)'>

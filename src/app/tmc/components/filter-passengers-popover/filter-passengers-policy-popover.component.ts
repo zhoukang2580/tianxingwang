@@ -16,7 +16,7 @@ export class FilterPassengersPolicyComponent implements OnInit, OnDestroy {
   bookInfos: PassengerBookInfo<any>[];
   selectedItem: PassengerBookInfo<any>;
   get isUnFilterPolicy() {
-    return this.bookInfos && this.bookInfos.every(it => !it.isOnlyFilterMatchedPolicy);
+    return this.bookInfos && this.bookInfos.every(it => !it.isFilterPolicy);
   };
   constructor(
     private popoverCtrl: PopoverController,
@@ -25,7 +25,7 @@ export class FilterPassengersPolicyComponent implements OnInit, OnDestroy {
   onUnFilterPolicy() {
     if (this.bookInfos) {
       this.bookInfos = this.bookInfos.map(it => {
-        it.isOnlyFilterMatchedPolicy = false;
+        it.isFilterPolicy = false;
         return it;
       });
     }
@@ -47,7 +47,7 @@ export class FilterPassengersPolicyComponent implements OnInit, OnDestroy {
     if (this.selectedItem) {
       const item = { ...this.selectedItem };
       if (this.isUnFilterPolicy) {
-        item.isOnlyFilterMatchedPolicy = false;
+        item.isFilterPolicy = false;
       }
       this.subscription.unsubscribe();
       const t = await this.popoverCtrl
@@ -61,12 +61,12 @@ export class FilterPassengersPolicyComponent implements OnInit, OnDestroy {
       AppHelper.alert("请勾选需过滤差标的账号");
       return;
     }
-    this.selectedItem.isOnlyFilterMatchedPolicy = evt.detail && evt.detail.value == "isShowOnlyMatchSwitch" && evt.detail.checked;
+    this.selectedItem.isFilterPolicy = evt.detail && evt.detail.value == "isShowOnlyMatchSwitch" && evt.detail.checked;
   }
   onSelectItem(evt: CustomEvent) {
     if (evt.detail && evt.detail.value && evt.detail.value.passenger) {
       this.selectedItem = evt.detail.value;
-      this.selectedItem.isOnlyFilterMatchedPolicy = true;
+      this.selectedItem.isFilterPolicy = true;
     }
   }
   async ngOnInit() {

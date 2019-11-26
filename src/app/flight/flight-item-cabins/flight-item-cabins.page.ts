@@ -27,7 +27,7 @@ import {
   IFlightSegmentInfo
 } from "../models/PassengerFlightInfo";
 import { of, Observable, Subscription } from "rxjs";
-import { map, tap } from "rxjs/operators";
+import { map, tap, filter } from "rxjs/operators";
 import { PassengerBookInfo } from "src/app/tmc/tmc.service";
 import { AppHelper } from "src/app/appHelper";
 import { FlightFareType } from '../models/flight/FlightFareType';
@@ -112,12 +112,12 @@ export class FlightItemCabinsPage implements OnInit {
   }
   getFlightIllegalTip() {
     const bookInfos = this.flightService.getPassengerBookInfos();
-    const info = bookInfos.find(it => it.isOnlyFilterMatchedPolicy);
+    const info = bookInfos.find(it => it.isFilterPolicy);
     return info && info.passenger && info.passenger.Policy && info.passenger.Policy.FlightIllegalTip;
   }
   getFlightlegalTip() {
     const bookInfos = this.flightService.getPassengerBookInfos();
-    const info = bookInfos.find(it => it.isOnlyFilterMatchedPolicy);
+    const info = bookInfos.find(it => it.isFilterPolicy);
     return info && info.passenger && info.passenger.Policy && info.passenger.Policy.FlightLegalTip;
   }
   async onBookTicket(flightCabin: FlightCabinEntity) {
@@ -140,7 +140,7 @@ export class FlightItemCabinsPage implements OnInit {
       return;
     }
     const arr = this.flightService.getPassengerBookInfos().map(it => {
-      it.isOnlyFilterMatchedPolicy = it.id == data.id && data.isOnlyFilterMatchedPolicy;
+      it.isFilterPolicy = it.id == data.id && data.isFilterPolicy;
       return it;
     });
     this.flightService.setPassengerBookInfosSource(arr);
@@ -193,7 +193,7 @@ export class FlightItemCabinsPage implements OnInit {
     })
     this.filteredPolicyPassenger$ = this.flightService
       .getPassengerBookInfoSource()
-      .pipe(map(infos => infos.find(it => it.isOnlyFilterMatchedPolicy)));
+      .pipe(map(infos=>infos.find(it=>it.isFilterPolicy)));
     this.showOpenBtn$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(map(infos => infos && infos.filter(it => !!it.bookInfo).length));
@@ -203,7 +203,7 @@ export class FlightItemCabinsPage implements OnInit {
   private getPolicyCabins() {
     const isfilteredBookInfo = this.flightService
       .getPassengerBookInfos()
-      .find(it => it.isOnlyFilterMatchedPolicy);
+      .find(it => it.isFilterPolicy);
     const bookInfo = isfilteredBookInfo;
     let policyCabins = this.flightService.filterPassengerPolicyCabins({ data: bookInfo, flightSegment: { ...this.vmFlightSegment } });
     if (this.filterConditions && this.filterConditions.cabins && this.filterConditions.cabins.length) {

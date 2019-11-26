@@ -224,7 +224,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       if (d && d.get("doRefresh")) {
         this.doRefresh(true, false);
       }
-      const filteredBookInfo = this.flightService.getPassengerBookInfos().find(it => it.isOnlyFilterMatchedPolicy);
+      const filteredBookInfo = this.flightService.getPassengerBookInfos().find(it => it.isFilterPolicy);
       if (filteredBookInfo) {
         this.doRefresh(false, true);
       }
@@ -489,7 +489,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     this.flightService.setPassengerBookInfosSource(this.flightService.getPassengerBookInfos().map(it => {
-      it.isOnlyFilterMatchedPolicy = data.id == it.id && data.isOnlyFilterMatchedPolicy;
+      it.isFilterPolicy = data.id == it.id && data.isFilterPolicy;
       return it;
     }))
     this.doRefresh(false, true);
@@ -523,7 +523,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   async ngOnInit() {
     this.filteredPolicyPassenger$ = this.flightService
       .getPassengerBookInfoSource()
-      .pipe(map(infos => infos.find(it => it.isOnlyFilterMatchedPolicy)), delay(0));
+      .pipe(map(infos => infos.find(it => it.isFilterPolicy)), delay(0));
     this.activeTab = "filter";
     this.initSearchModelParams();
     this.doRefresh(true, false);
@@ -659,7 +659,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   private filterFlightSegments(segs: FlightSegmentEntity[]) {
     let result = segs;
     // 根据筛选条件过滤航班信息：
-    const bookInfo = this.flightService.getPassengerBookInfos().find(it => it.isOnlyFilterMatchedPolicy);
+    const bookInfo = this.flightService.getPassengerBookInfos().find(it => it.isFilterPolicy);
     result = this.flightService.filterPassengerPolicyFlights(
       bookInfo,
       result

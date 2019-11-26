@@ -116,8 +116,8 @@ export class TrainListPage implements OnInit, OnDestroy {
       let isDoRefresh = false;
       if (this.currentSelectedPassengerIds && this.lastSelectedPassengerIds) {
         if (this.currentSelectedPassengerIds.length != this.lastSelectedPassengerIds.length ||
-          !this.currentSelectedPassengerIds.some(it => this.lastSelectedPassengerIds.find(id => id == it)) ||
-          !this.lastSelectedPassengerIds.some(it => this.currentSelectedPassengerIds.find(id => id == it))) {
+          !this.currentSelectedPassengerIds.some(it => !!this.lastSelectedPassengerIds.find(id => id == it)) ||
+          !this.lastSelectedPassengerIds.some(it => !!this.currentSelectedPassengerIds.find(id => id == it))) {
           isDoRefresh = true;
         }
       }
@@ -130,7 +130,7 @@ export class TrainListPage implements OnInit, OnDestroy {
     });
     this.curFilteredBookInfo$ = this.trainService
       .getBookInfoSource()
-      .pipe(map(infos => infos.find(info => info.isOnlyFilterMatchedPolicy)));
+      .pipe(map(infos => infos.find(info => info.isFilterPolicy)));
     this.goRoundTripDateTime$ = this.trainService.getBookInfoSource().pipe(
       map(infos => {
         const go = infos.find(
@@ -516,7 +516,7 @@ export class TrainListPage implements OnInit, OnDestroy {
             return it;
           }))
         }
-        const b = this.trainService.getBookInfos().find(it => it.isOnlyFilterMatchedPolicy);
+        const b = this.trainService.getBookInfos().find(it => it.isFilterPolicy);
         data = this.trainService.filterPassengerPolicyTrains(
           b,
           data,
