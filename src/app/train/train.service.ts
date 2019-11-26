@@ -122,12 +122,6 @@ export class TrainService {
       !policies ||
       !policies.length
     ) {
-      this.setBookInfoSource(
-        this.getBookInfos().map(it => {
-          it.isFilterPolicy = it.id == bookInfo.id;
-          return it;
-        })
-      );
       return result;
       // return result.map(it => {
       //   if (it.Seats) {
@@ -149,50 +143,43 @@ export class TrainService {
     const onePolicies = policies.find(
       it => it.PassengerKey == bookInfo.passenger.AccountId
     );
-    let policyTrainNos: string[] = [];
     let policyTrains = onePolicies && onePolicies.TrainPolicies;
     if (policyTrains) {
-      // if (bookInfo.isAllowBookPolicy) {
-      //   policyTrains = policyTrains.filter(it => it.IsAllowBook);
-      // }
       if (bookInfo.isFilterPolicy) {
-        policyTrains = policyTrains.filter(
-          it => it.IsAllowBook && (!it.Rules || it.Rules.length == 0)
-        );
-      }
-      policyTrainNos = policyTrains.map(it => it.TrainNo);
-      result = trains.filter(
-        t =>
-          policyTrainNos.includes(t.TrainNo) &&
-          t.Seats &&
-          t.Seats.some(s => +s.Count > 0)
-      );
-      result = this.filterTrainSeatPolicy(bookInfo, result, onePolicies.TrainPolicies);
-    }
-    return result;
-  }
-  private filterTrainSeatPolicy(bookInfo: PassengerBookInfo<ITrainInfo>, trains: TrainEntity[], trainPolicies: TrainPolicyModel[]) {
-    const result = trains.map(it => {
-      if (it.Seats) {
-        it.Seats = it.Seats.map(s => {
-          const trainPolicy = trainPolicies.find(
-            p => p.TrainNo == it.TrainNo && p.SeatType == s.SeatType
-          );
-          s.Policy = trainPolicy;
-          return s;
+        policyTrains = policyTrains.map(it => {
+          if (!it.Rules || it.Rules.length == 0) {
+            it.color = 'success';
+          } else {
+            it.color = 'warning';
+          }
+          if (!it.IsAllowBook) {
+            it.color = 'danger';
+          }
+          return it;
         });
-        if (bookInfo.isFilterPolicy) {
-          it.Seats = it.Seats.filter(
-            s => (!s.Policy || !s.Policy.Rules || !s.Policy.Rules.length) &&
-              +s.Count > 0);
-          if (it.Seats.length == 0) {
-            return null;
+      }
+      result = result.map(it => {
+        if (it.Seats) {
+          it.Seats = it.Seats.map(s => {
+            const trainPolicy = policyTrains.find(
+              p => p.TrainNo == it.TrainNo && p.SeatType == s.SeatType
+            );
+            s.Policy = trainPolicy;
+            s.color = trainPolicy && trainPolicy.color || "primary";
+            return s;
+          });
+          if (bookInfo.isFilterPolicy) {
+            it.Seats = it.Seats.filter(
+              s => (!s.Policy || !s.Policy.Rules || !s.Policy.Rules.length) &&
+                +s.Count > 0);
+            if (it.Seats.length == 0) {
+              return null;
+            }
           }
         }
-      }
-      return it;
-    })
-      .filter(it => !!it);
+        return it;
+      })
+    }
     return result;
   }
   async reelectBookInfo(bookInfo: PassengerBookInfo<ITrainInfo>) {
@@ -639,15 +626,18 @@ export class TrainService {
     return this.bookInfoSource.asObservable();
   }
   private async setDefaultFilterInfo() {
-    const self = await this.staffService.isSecretaryBookType();
+    const self = await this.staffService.isSelfBookType();
     const infos = this.getBookInfos();
     const unselected = infos.find(it => !it.bookInfo);
     const hasReplace = infos.find(it => it.isReplace);
+    const hasExchange = infos.find(it => it.bookInfo && it.bookInfo.isExchange);
     this.setBookInfoSource(infos.map((it, idx) => {
-      if (self || infos.length == 1) {
+      if (infos.length == 1 || self) {
         it.isFilterPolicy = idx == 0;
       } else {
-        it.isFilterPolicy = unselected && unselected.id == it.id || hasReplace && hasReplace.id == it.id;
+        it.isFilterPolicy = unselected && unselected.id == it.id ||
+          hasReplace && hasReplace.id == it.id ||
+          (hasExchange && hasExchange.id == (it.bookInfo && it.bookInfo.id));
       }
       return it;
     }));
@@ -1015,6 +1005,7 @@ export class TrainPolicyModel {
   /// 违反具体的差标
   /// </summary>
   Rules: string[];
+  color: "success" | "primary" | "warning" | "secondary" | "danger";
 }
 export class TrainPassengerModel {
   PassengerKey: string;

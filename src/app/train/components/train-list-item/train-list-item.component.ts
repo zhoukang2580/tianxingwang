@@ -33,7 +33,7 @@ export class TrainListItemComponent implements OnInit {
     return this.train.Seats[0].SalesPrice;
   }
   onBookTicket(seat: TrainSeatEntity) {
-    if (this.getBookBtnColor(seat) == "danger") {
+    if ((seat && seat.color) == "danger") {
       if (seat && seat.Policy && seat.Policy.Rules) {
         let tip = '';
         const bookInfos = this.trainService.getBookInfos();
@@ -54,18 +54,6 @@ export class TrainListItemComponent implements OnInit {
   }
   onSeatPicker(seat: string) {
     this.seatPicker.emit(seat);
-  }
-  getBookBtnColor(seat: TrainSeatEntity) {
-    if (seat && seat.Policy) {
-      if (!seat.Policy.IsAllowBook) {
-        return "danger";
-      }
-      if (seat.Policy.Rules && seat.Policy.Rules.length > 0) {
-        return "warning";
-      }
-      return "success";
-    }
-    return "secondary";
   }
   getSeats() {
     if (!this.train || !this.train.Seats || !this.train.Seats.length) {

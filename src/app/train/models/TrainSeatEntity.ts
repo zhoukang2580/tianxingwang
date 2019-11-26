@@ -27,4 +27,5 @@ export class TrainSeatEntity {
   /// 座位类型名称
   /// </summary>
   SeatTypeName: string;
+  color: "primary"|"secondary"|"danger"|"success"|"warning";
 }

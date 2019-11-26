@@ -16,7 +16,7 @@
       </div>
     </div>
     <div>
-      <div class='price' >￥{{getLowestSeatPrice()}}
+      <div class='price'>￥{{getLowestSeatPrice()}}
         <ng-container *ngIf='getSeats()?.length'>
           <ion-icon name="arrow-dropdown" color='secondary' *ngIf='train["isShowSeats"]'></ion-icon>
           <ion-icon name="arrow-dropup" color='secondary' *ngIf='!train["isShowSeats"]'></ion-icon>
@@ -34,7 +34,7 @@
     </ion-col>
   </ion-row>
   <ion-grid class='seats' *ngIf='train["isShowSeats"]'>
-    <ion-row *ngFor='let seat of getSeats()' [attr.color]='getBookBtnColor(seat)'>
+    <ion-row *ngFor='let seat of getSeats()' [attr.color]='seat.color'>
       <ion-col>{{seat.SeatTypeName}}</ion-col>
       <ion-col>
         <ion-text color='danger'>
@@ -47,8 +47,7 @@
         <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"有":"无"}}票</span>
       </ion-col>
       <ion-col (click)='onBookTicket(seat)'>
-        <ion-button *ngIf='showBookBtn' size='small' text-start
-          [color]='getBookBtnColor(seat)' [disabled]='getBookBtnColor(seat)=="danger"'>
+        <ion-button *ngIf='showBookBtn' size='small' text-start [color]='seat.color' [disabled]='seat.color=="danger"'>
           <ion-text color='light'>预订</ion-text>
         </ion-button>
       </ion-col>
