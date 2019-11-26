@@ -620,6 +620,14 @@ export class FlightService {
           if (go) {
             if (s.tripType == TripType.departureTrip) {
               bookInfos = [{ ...go, bookInfo: info }, { ...go, bookInfo: null, id: AppHelper.uuid() }];
+              // 判断机场
+              let showTip = go.bookInfo.flightSegment.FromCityName == flightSegment.ToCityName && go.bookInfo.flightSegment.ToCityName == flightSegment.FromCityName;
+              if(showTip){
+                showTip = go.bookInfo.flightSegment.FromAirport!=flightSegment.ToAirport||go.bookInfo.flightSegment.ToAirport!=flightSegment.FromAirport;
+                if(showTip){
+                 await AppHelper.alert(`回程航班出发机场与去程航班抵达机场不同， 请确保衔接时间充足。`,true);
+                }
+              }
             } else {
               bookInfos = [go, { ...go, bookInfo: info, id: AppHelper.uuid() }];
             }
@@ -729,6 +737,22 @@ export class FlightService {
       return it;
     });
     return bookInfos;
+  }
+  async checkIfIsRoundTripSameAirport() {
+    const isSelf = await this.staffService.isSelfBookType();
+    if (isSelf) {
+      const goInfo = this.getPassengerBookInfos().find(it => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip);
+      const goFlight = goInfo && goInfo.bookInfo && goInfo.bookInfo.flightSegment;
+      if (goFlight && this.searchFlightModel) {
+        const fromCode = goFlight.FromAirport;
+        const toCode = goFlight.ToAirport;
+        if (this.searchFlightModel.FromCode == toCode && this.searchFlightModel.ToCode == fromCode) {
+          return true;
+        };
+      }
+      return
+    }
+    return false;
   }
   private getPolicyCabinBookInfo(
     bookInfo: PassengerBookInfo<IFlightSegmentInfo>,

@@ -116,7 +116,21 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
   }
   showLowerSegment(info: PassengerBookInfo<IFlightSegmentInfo>) {
     const pfs = info.bookInfo;
-    return (pfs && pfs.lowerSegmentInfo && pfs.lowerSegmentInfo.lowestFlightSegment && pfs.lowerSegmentInfo.lowestCabin);
+    let show = !!(pfs && pfs.lowerSegmentInfo && pfs.lowerSegmentInfo.lowestFlightSegment && pfs.lowerSegmentInfo.lowestCabin);
+    if (this.isSelf && info.bookInfo && info.bookInfo.tripType == TripType.returnTrip) {
+      const bookInfos = this.flightService.getPassengerBookInfos();
+      const goInfo = bookInfos.find(it => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip);
+      const goFlight = goInfo && goInfo.bookInfo && goInfo.bookInfo.flightSegment;
+      if (goFlight && show &&
+        // 来回的机场要对应才计算
+        goFlight.FromAirport == info.bookInfo.flightSegment.ToAirport && goFlight.ToAirport == info.bookInfo.flightSegment.FromAirport
+      ) {
+        const arrivalTime = moment(goFlight.ArrivalTime).add(1, 'hours');
+        const loweerTime = moment(pfs.lowerSegmentInfo.lowestFlightSegment.TakeoffTime);
+        show = +loweerTime >= +arrivalTime;
+      }
+    }
+    return show;
   }
   async onSelectLowestSegment(info: PassengerBookInfo<IFlightSegmentInfo>) {
     const { lowestCabin, lowestFlightSegment } = info.bookInfo && info.bookInfo.lowerSegmentInfo;

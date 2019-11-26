@@ -200,7 +200,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           return {
             goArrivalDateTime:
               goInfo && goInfo.bookInfo && goInfo.bookInfo.flightSegment
-                ? moment(goInfo.bookInfo.flightSegment.TakeoffTime).format(
+                ? moment(goInfo.bookInfo.flightSegment.ArrivalTime).format(
                   "YYYY-MM-DD HH:mm"
                 )
                 : "",
@@ -354,10 +354,12 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         this.flightService.getTotalFlySegments()
       );
       this.hasDataSource.next(false);
-      const segments = this.filterFlightSegments(this.flightService.getTotalFlySegments());
+      let segments = this.filterFlightSegments(this.flightService.getTotalFlySegments());
+      if (await this.staffService.isSelfBookType()) {
+        segments = await this.filterSegmentsByGoArrivalTime(segments);
+      }
       this.st = Date.now();
-      this.vmFlights = segments;
-      await this.renderFlightList(segments);
+      this.renderFlightList(segments);
       this.hasDataSource.next(!!this.vmFlights.length && !this.isLoading);
       this.apiService.hideLoadingView();
       this.isLoading = false;
@@ -367,6 +369,18 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       }
       this.isLoading = false;
     }
+  }
+  private async filterSegmentsByGoArrivalTime(segments: FlightSegmentEntity[]) {
+    let result = segments;
+    if (await this.flightService.checkIfIsRoundTripSameAirport()) {
+      const info = this.flightService.getPassengerBookInfos().find(it => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip);
+      const goFlight = info && info.bookInfo && info.bookInfo.flightSegment;
+      if (goFlight) {
+        const arrivalTime = moment(goFlight.ArrivalTime).add(1, 'hours');
+        result = segments.filter(it => new Date(it.TakeoffTime).getTime() >= +arrivalTime)
+      }
+    }
+    return result;
   }
   private scrollToTop() {
     setTimeout(() => {
