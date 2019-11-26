@@ -51,7 +51,7 @@ import { FilterTrainCondition } from "../models/FilterCondition";
 import { TripType } from "src/app/tmc/models/TripType";
 import * as moment from "moment";
 import { LanguageHelper } from "src/app/languageHelper";
-import { map } from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
 import { Storage } from "@ionic/storage";
 import { SelectTrainStationModalComponent } from 'src/app/tmc/components/select-stations/select-station.component';
 @Component({
@@ -60,13 +60,15 @@ import { SelectTrainStationModalComponent } from 'src/app/tmc/components/select-
   styleUrls: ["./train-list.page.scss"]
 })
 export class TrainListPage implements OnInit, OnDestroy {
+  private daysCalendarComp: DaysCalendarComponent;
+  private lastSelectedPassengerIds: string[];
+  private currentSelectedPassengerIds: string[];
+  private trains: TrainEntity[] = [];
   @ViewChild(IonRefresher) private ionRefresher: IonRefresher;
+  @ViewChild("list") private list: ElementRef<HTMLElement>;
   @ViewChild(IonContent) private cnt: IonContent;
   @ViewChild(DaysCalendarComponent)
-  private daysCalendarComp: DaysCalendarComponent;
-  @ViewChild("list") private list: ElementRef<HTMLElement>;
   vmTrains: TrainEntity[] = [];
-  private trains: TrainEntity[] = [];
   isLoading = false;
   isFiltered = false;
   vmFromCity: TrafficlineEntity;
@@ -111,7 +113,18 @@ export class TrainListPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.route.queryParamMap.subscribe(async _ => {
       this.isShowRoundtripTip = await this.staffService.isSelfBookType();
+      let isDoRefresh = false;
+      if (this.currentSelectedPassengerIds && this.lastSelectedPassengerIds) {
+        if (this.currentSelectedPassengerIds.length != this.lastSelectedPassengerIds.length ||
+          !this.currentSelectedPassengerIds.some(it => this.lastSelectedPassengerIds.find(id => id == it)) ||
+          !this.lastSelectedPassengerIds.some(it => this.currentSelectedPassengerIds.find(id => id == it))) {
+          isDoRefresh = true;
+        }
+      }
       if (_ && _.get("doRefresh")) {
+        isDoRefresh = true;
+      }
+      if (isDoRefresh) {
         this.doRefresh(true, false);
       }
     });
@@ -161,7 +174,14 @@ export class TrainListPage implements OnInit, OnDestroy {
       });
     this.selectedPassengersNumbers$ = this.trainService
       .getBookInfoSource()
-      .pipe(map(infos => infos.length));
+      .pipe(tap(infos => {
+        this.currentSelectedPassengerIds = [];
+        infos.map(it => it.passenger && it.passenger.AccountId).forEach(it => {
+          if (it && !this.currentSelectedPassengerIds.find(id => id == it)) {
+            this.currentSelectedPassengerIds.push(it);
+          }
+        })
+      }), map(infos => infos.length));
     this.doRefresh(true, false);
   }
   async schedules(train: TrainEntity) {
@@ -360,6 +380,12 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.isLoading = false;
   }
   goToSelectPassengerPage() {
+    this.lastSelectedPassengerIds = [];
+    this.trainService.getBookInfos().map(it => it.passenger && it.passenger.AccountId).forEach(it => {
+      if (it && !this.lastSelectedPassengerIds.find(id => id == it)) {
+        this.lastSelectedPassengerIds.push(it);
+      }
+    });
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
       queryParams: {
         forType: FlightHotelTrainType.Train
