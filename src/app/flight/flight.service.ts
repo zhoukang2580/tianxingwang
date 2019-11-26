@@ -522,10 +522,9 @@ export class FlightService {
       s.isLocked = false;
       s.fromCity = airports.find(c => c.Code == s.FromCode);
       s.toCity = airports.find(c => c.Code == s.ToCode);
+      s.fromCity={...s.fromCity,Tag:"AirportCity"};
+      s.toCity={...s.toCity,Tag:"AirportCity"};
       let arr = this.getPassengerBookInfos().map(item => {
-        if (item.bookInfo && item.bookInfo.tripType == TripType.departureTrip) {
-          s.Date = item.bookInfo.flightSegment && item.bookInfo.flightSegment.TakeoffTime && item.bookInfo.flightSegment.TakeoffTime.substr(0, "2019-10-11".length);
-        }
         item.bookInfo = null;
         return item;
       });
@@ -604,7 +603,6 @@ export class FlightService {
         bookInfos = this.getPassengerBookInfos();
         if (bookInfos.length) {
           const go = bookInfos.find(it => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip);
-          s = this.getSearchFlightModel();
           const info = this.getPolicyCabinBookInfo(bookInfos[0], flightCabin, flightSegment);
           if (!info) {
             return;
@@ -620,12 +618,12 @@ export class FlightService {
           if (go) {
             if (s.tripType == TripType.departureTrip) {
               bookInfos = [{ ...go, bookInfo: info }, { ...go, bookInfo: null, id: AppHelper.uuid() }];
+            } else {
               // 判断机场
               const showTip = flightSegment.FromAirport != go.bookInfo.flightSegment.ToAirport;
               if (showTip) {
                 await AppHelper.alert(`回程航班出发机场与去程航班抵达机场不同， 请确保衔接时间充足。`, true);
               }
-            } else {
               bookInfos = [go, { ...go, bookInfo: info, id: AppHelper.uuid() }];
             }
           } else {
@@ -954,11 +952,6 @@ export class FlightService {
           this.passengerBookInfos = this.getPassengerBookInfos().filter(
             it => it.id !== arg.id
           );
-          this.setSearchFlightModel({
-            ...this.getSearchFlightModel(),
-            tripType: TripType.departureTrip,
-            isLocked: false,
-          });
         }
         if (arg.bookInfo.tripType == TripType.departureTrip) {
           this.passengerBookInfos = this.getPassengerBookInfos().map(item => {

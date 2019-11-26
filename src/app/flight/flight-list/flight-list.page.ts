@@ -316,6 +316,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       if (this.isLoading) {
         return;
       }
+      const isSelf = await this.staffService.isSelfBookType();
       this.isLoading = true;
       this.flyDayService.setSelectedDaysSource([this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date)]);
       // this.moveDayToSearchDate();
@@ -347,15 +348,17 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.currentProcessStatus = "正在获取航班列表";
       const flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync(loadDataFromServer);
       if (loadDataFromServer) {
+        let segments = this.flightService.getTotalFlySegments();
+        if (isSelf) {
+          segments = this.filterSegmentsByGoArrivalTime(segments);
+        }
+        this.vmFlights = segments;
         this.currentProcessStatus = "正在计算差标";
         await this.flightService.loadPolicyedFlightsAsync(flightJourneyList);
       }
-      this.renderFlightList(
-        this.flightService.getTotalFlySegments()
-      );
       this.hasDataSource.next(false);
       let segments = this.filterFlightSegments(this.flightService.getTotalFlySegments());
-      if (await this.staffService.isSelfBookType()) {
+      if (isSelf) {
         segments = this.filterSegmentsByGoArrivalTime(segments);
       }
       this.st = Date.now();
