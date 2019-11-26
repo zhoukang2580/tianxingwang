@@ -175,13 +175,13 @@ export class SelectPassengerPage
           }
           case +FlightHotelTrainType.Train: {
             if(!this.isOpenPageAsModal){
-              this.trainService.removeBookInfo(info,false);
+              this.trainService.removeBookInfo(info,true);
             }
             break;
           }
           case +FlightHotelTrainType.Hotel: {
             if(!this.isOpenPageAsModal){
-              this.hotelService.removeBookInfo(info);
+              this.hotelService.removeBookInfo(info,true);
             }
             break;
           }

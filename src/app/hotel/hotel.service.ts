@@ -321,35 +321,17 @@ export class HotelService {
       this.setBookInfos(bookInfos);
     }
   }
-  async removeBookInfo(bookInfo: PassengerBookInfo<IHotelInfo>) {
+   removeBookInfo(bookInfo: PassengerBookInfo<IHotelInfo>,isRemovePassenger:boolean) {
     const arg = { ...bookInfo };
-    const isSelf = await this.staffService.isSelfBookType();
-    if (isSelf) {
-      if (arg.bookInfo) {
-        if (arg.bookInfo.tripType == TripType.returnTrip) {
-          this.bookInfos = this.getBookInfos().filter(
-            it => it.id !== arg.id
-          );
-          this.setSearchHotelModel({
-            ...this.getSearchHotelModel(),
-            tripType: TripType.checkIn
-          });
+    if(isRemovePassenger){
+      this.bookInfos=this.bookInfos.filter(it=>it.id!==arg.id);
+    }else{
+      this.bookInfos=this.bookInfos.map(it=>{
+        if(it.id==arg.id){
+          it.bookInfo=null;
         }
-        if (arg.bookInfo.tripType == TripType.departureTrip) {
-          this.bookInfos = this.getBookInfos().map(item => {
-            item.bookInfo = null;
-            return item;
-          });
-          this.setSearchHotelModel({
-            ...this.getSearchHotelModel(),
-            tripType: TripType.checkIn
-          });
-        }
-      }
-    } else {
-      this.bookInfos = this.getBookInfos().filter(
-        it => it.id !== arg.id
-      );
+        return it;
+      })
     }
     this.setBookInfos(this.bookInfos);
   }

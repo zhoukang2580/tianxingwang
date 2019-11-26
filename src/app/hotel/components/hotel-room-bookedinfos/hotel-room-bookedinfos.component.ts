@@ -74,7 +74,7 @@ export class HotelRoomBookedinfosComponent implements OnInit {
       LanguageHelper.getCancelTip()
     );
     if (a) {
-      this.hotelService.removeBookInfo(bookInfo);
+      this.hotelService.removeBookInfo(bookInfo,false);
     }
   }
   calcNights() {

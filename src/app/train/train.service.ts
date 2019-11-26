@@ -652,7 +652,6 @@ export class TrainService {
   removeBookInfo(info: PassengerBookInfo<ITrainInfo>, isRemovePassenger: boolean) {
     if (info) {
       const delInfo = { ...info };
-
       const s = this.getSearchTrainModel();
       let bookInfos = this.bookInfos;
       if (isRemovePassenger) {
