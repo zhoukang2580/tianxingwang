@@ -19,7 +19,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   @ViewChild("swiperbuttonnext") nextEle: ElementRef<HTMLElement>;
   @ViewChild("pagination") paginationEle: ElementRef<HTMLElement>;
   @ViewChild("thumbs") thumbs: ElementRef<HTMLElement>;
-  @Input() config : ConfigEntity;
+  @Input() config: ConfigEntity;
   @Input() hasThumbs = false;
   @Input() effect: boolean | "fade" | "flip" | "cube" | "coverflow" = 'fade';
   @Input() direction: "vertical" | "horizontal" = 'horizontal';
@@ -40,12 +40,13 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   @Output() close: EventEmitter<any>;
   @Input() fabvertical: string = 'top';
   @Input() fabhorizontal: string = 'end';
+  @Input() hasLogo = false;
   images: { active: boolean; url?: string; idx: number; text?: string; }[];
-  scroll$:ReplaySubject<any>;
-  logoPath:string;
+  scroll$: ReplaySubject<any>;
+  logoPath: string;
   constructor(private modalCtrl: ModalController) {
     this.close = new EventEmitter();
-    this.scroll$=new ReplaySubject();
+    this.scroll$ = new ReplaySubject();
   }
 
   ngOnInit() {
@@ -154,9 +155,9 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
           preloadImages: false,
           // Enable lazy loading
           lazy: true,
-          on:{
-            slideChange:_=>{
-              console.log("slideChange",_);
+          on: {
+            slideChange: _ => {
+              console.log("slideChange", _);
               this.scroll$.next(" ");
             }
           }

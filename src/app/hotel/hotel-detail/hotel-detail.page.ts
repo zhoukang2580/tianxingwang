@@ -570,6 +570,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
         imgStyle: { objectFit: "contain" },
         imagesUrls: this.getHotelImageUrls(),
         hasThumbs: true,
+        hasLogo: true,
         config: this.config
       }
     });

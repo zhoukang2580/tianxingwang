@@ -10,7 +10,10 @@
 }
 .divimg {
   background-repeat: no-repeat;
-  height: 85vh;
+  height: 100%;
+  &.has-thumbs {
+    height: 85vh;
+  }
   width: 100vw;
   background-position: center;
   background-size: cover;
@@ -27,7 +30,6 @@
     background-color: white;
     transform: scale(0.6);
     background-blend-mode: luminosity;
-
   }
 }
 .swiper-container,
@@ -35,8 +37,11 @@
   height: 100%;
   width: 100%;
 }
-.swiper-container.main {
-  height: calc(100% - 15vh);
+.swiper-container.main.has-thumbs {
+  height: 100%;
+  &.has-thumbs {
+    height: calc(100% - 15vh);
+  }
   position: relative;
   &::after {
     position: absolute;
