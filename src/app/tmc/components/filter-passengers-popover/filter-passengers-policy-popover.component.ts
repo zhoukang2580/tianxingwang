@@ -52,6 +52,12 @@ export class FilterPassengersPolicyComponent implements OnInit {
   async ngOnInit() {
     const isSelf = this.staffService.isSelfBookType();
     this.bookInfos$ = this.bookInfos$.pipe(
+      map(infos=>{
+        if(infos.find(it=>it.isReplace)){
+          return infos.filter(it=>it.isReplace)
+        }
+        return infos;
+      }),
       tap(infos => {
         this.bookInfos = infos || [];
         if (this.bookInfos.length == 1 || isSelf) {

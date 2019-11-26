@@ -657,7 +657,7 @@ export class FlightService {
         if (cannotArr.length) {
           AppHelper.alert(`${cannotArr.join(",")}，超标不可预订`)
         }
-      } else {
+      } else if (!bookInfos.find(it => it.isReplace)) {
         const ok = await AppHelper.alert("是否替换旅客的航班信息？", true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
         if (ok) {
           bookInfos = await this.selectAndReplaceBookInfos(flightCabin, flightSegment, bookInfos);
