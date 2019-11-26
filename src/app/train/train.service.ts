@@ -124,9 +124,7 @@ export class TrainService {
     ) {
       this.setBookInfoSource(
         this.getBookInfos().map(it => {
-          it.isFilterPolicy = false;
-          // it.isOnlyFilterMatchedPolicy = false;
-          // it.isAllowBookPolicy = false;
+          it.isFilterPolicy = it.id == bookInfo.id;
           return it;
         })
       );
@@ -640,6 +638,20 @@ export class TrainService {
   getBookInfoSource() {
     return this.bookInfoSource.asObservable();
   }
+  private async setDefaultFilterInfo() {
+    const self = await this.staffService.isSecretaryBookType();
+    const infos = this.getBookInfos();
+    const unselected = infos.find(it => !it.bookInfo);
+    const hasReplace = infos.find(it => it.isReplace);
+    this.setBookInfoSource(infos.map((it, idx) => {
+      if (self || infos.length == 1) {
+        it.isFilterPolicy = idx == 0;
+      } else {
+        it.isFilterPolicy = unselected && unselected.id == it.id || hasReplace && hasReplace.id == it.id;
+      }
+      return it;
+    }));
+  }
   removeBookInfo(info: PassengerBookInfo<ITrainInfo>) {
     if (info) {
       const delInfo = { ...info };
@@ -711,6 +723,7 @@ export class TrainService {
   }
   async searchAsync(condition: SearchTrainModel): Promise<TrainEntity[]> {
     await this.initSelfBookTypeBookInfos();
+    await this.setDefaultFilterInfo();
     const req = new RequestEntity();
     req.Method = `TmcApiTrainUrl-Home-Search`;
     req.IsShowLoading = true;
@@ -856,7 +869,7 @@ export class TrainService {
         passenger: info.BookStaff,
         credential: info.DefaultCredentials,
         id: AppHelper.uuid(),
-        isFilterPolicy: false
+        isFilterPolicy: true
       };
       books = [b];
       this.exchangedTrainTicketInfo = { ticket: JSON.parse(JSON.stringify(info.OrderTrainTicket)), order: JSON.parse(JSON.stringify(info.OrderTrainTicket.Order)) };
