@@ -110,7 +110,7 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
     );
   }
   remove(bookInfo: PassengerBookInfo<ITrainInfo>) {
-    this.trainService.removeBookInfo(bookInfo);
+    this.trainService.removeBookInfo(bookInfo,false);
   }
   async reelect(bookInfo: PassengerBookInfo<ITrainInfo>) {
     await this.trainService.reelectBookInfo(bookInfo);

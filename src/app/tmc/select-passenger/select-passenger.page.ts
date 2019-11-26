@@ -175,7 +175,7 @@ export class SelectPassengerPage
           }
           case +FlightHotelTrainType.Train: {
             if(!this.isOpenPageAsModal){
-              this.trainService.removeBookInfo(info);
+              this.trainService.removeBookInfo(info,false);
             }
             break;
           }

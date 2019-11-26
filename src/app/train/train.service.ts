@@ -201,7 +201,7 @@ export class TrainService {
     const s = this.getSearchTrainModel();
     s.Date = bookInfo.bookInfo.trainEntity.StartTime && bookInfo.bookInfo.trainEntity.StartTime.substr(0, '2019-10-11'.length);
     s.BackDate = moment(s.Date)
-      .add(1, "days")
+      // .add(1, "days")
       .format("YYYY-MM-DD");
     s.tripType = TripType.departureTrip;
     s.isLocked = false;
@@ -209,7 +209,7 @@ export class TrainService {
       ...s
     });
     if (await this.staffService.isSelfBookType()) {
-      this.setBookInfoSource([]);
+      this.removeBookInfo(bookInfo, false);
     }
     this.router.navigate([AppHelper.getRoutePath("train-list")], { queryParams: { doRefresh: true } });
   }
@@ -649,17 +649,22 @@ export class TrainService {
       return it;
     }));
   }
-  removeBookInfo(info: PassengerBookInfo<ITrainInfo>) {
+  removeBookInfo(info: PassengerBookInfo<ITrainInfo>, isRemovePassenger: boolean) {
     if (info) {
       const delInfo = { ...info };
-      this.bookInfos = this.bookInfos.filter(item => item.id != info.id);
+
       const s = this.getSearchTrainModel();
-      let bookInfos = this.bookInfos.map(it => {
-        if (it.id == info.id) {
-          it.bookInfo = null;
-        }
-        return it;
-      });
+      let bookInfos = this.bookInfos;
+      if (isRemovePassenger) {
+        bookInfos = bookInfos.filter(item => item.id != info.id);
+      } else {
+        bookInfos = bookInfos.map(it => {
+          if (it.id == delInfo.id) {
+            it.bookInfo = null;
+          }
+          return it;
+        })
+      }
       if (
         s.isRoundTrip &&
         delInfo.bookInfo &&
