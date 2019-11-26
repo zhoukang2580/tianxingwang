@@ -108,7 +108,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.refresher) {
       this.refresher.complete();
     }
-    this.textSearchResults = this.cities.slice(0, 30);
+    this.textSearchResults = this.cities.filter(it=>it.IsHot).slice(0, 30);
     this.scrollToTop();
   }
   scrollToTop() {

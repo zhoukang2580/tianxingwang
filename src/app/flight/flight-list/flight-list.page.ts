@@ -660,10 +660,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     let result = segs;
     // 根据筛选条件过滤航班信息：
     const bookInfo = this.flightService.getPassengerBookInfos().find(it => it.isFilterPolicy);
-    result = this.flightService.filterPassengerPolicyFlights(
-      bookInfo,
-      result
-    );
+    // result = this.flightService.filterPassengerPolicyFlights(
+    //   bookInfo,
+    //   result
+    // );
     result = this.filterFlightSegmentsByConditions(result);
     return result;
   }
