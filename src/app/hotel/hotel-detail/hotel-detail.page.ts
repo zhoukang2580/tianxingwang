@@ -555,6 +555,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
         config: this.config,
         imgStyle: { objectFit: "contain" },
         imagesUrls: this.getRoomImages(room),
+        hasLogo:true,
       }
     });
     await m.present();

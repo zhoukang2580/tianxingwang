@@ -40,7 +40,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   @Output() close: EventEmitter<any>;
   @Input() fabvertical: string = 'top';
   @Input() fabhorizontal: string = 'end';
-  @Input() hasLogo = false;
+  @Input() hasLogo;
   images: { active: boolean; url?: string; idx: number; text?: string; }[];
   scroll$: ReplaySubject<any>;
   logoPath: string;
@@ -110,6 +110,11 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
           this.slidToPage(0);
         }
       }
+    }
+    if (this.swiper&&this.swiper.params) {
+      this.swiper.params.loop = this.loop;
+      this.swiper.params.autoplay = this.autoplay;
+      this.update();
     }
   }
   private initImages() {
