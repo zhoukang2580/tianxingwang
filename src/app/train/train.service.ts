@@ -124,7 +124,7 @@ export class TrainService {
     ) {
       this.setBookInfoSource(
         this.getBookInfos().map(it => {
-          it.isFilteredPolicy = false;
+          it.isOnlyFilterMatchedPolicy = false;
           // it.isOnlyFilterMatchedPolicy = false;
           // it.isAllowBookPolicy = false;
           return it;
@@ -143,7 +143,7 @@ export class TrainService {
     }
     this.setBookInfoSource(
       this.getBookInfos().map(it => {
-        it.isFilteredPolicy = it.id == bookInfo.id;
+        it.isOnlyFilterMatchedPolicy = it.id == bookInfo.id;
         // it.isOnlyFilterMatchedPolicy = bookInfo.isOnlyFilterMatchedPolicy;
         return it;
       })
@@ -157,7 +157,7 @@ export class TrainService {
       // if (bookInfo.isAllowBookPolicy) {
       //   policyTrains = policyTrains.filter(it => it.IsAllowBook);
       // }
-      if (bookInfo.isFilteredPolicy) {
+      if (bookInfo.isOnlyFilterMatchedPolicy) {
         policyTrains = policyTrains.filter(
           it => it.IsAllowBook && (!it.Rules || it.Rules.length == 0)
         );
@@ -183,7 +183,7 @@ export class TrainService {
           s.Policy = trainPolicy;
           return s;
         });
-        if (bookInfo.isFilteredPolicy) {
+        if (bookInfo.isOnlyFilterMatchedPolicy) {
           it.Seats = it.Seats.filter(
             s => (!s.Policy || !s.Policy.Rules || !s.Policy.Rules.length) &&
               +s.Count > 0);
@@ -855,32 +855,8 @@ export class TrainService {
       const b: PassengerBookInfo<ITrainInfo> = {
         passenger: info.BookStaff,
         credential: info.DefaultCredentials,
-        // isNotWhitelist?: boolean;
-        // bookInfo: {
-        //   trainEntity: {
-        //     FromStationCode: info.FromStation,
-        //     FromStationName: info.FromStationName,
-        //     ToStationCode: info.ToStation,
-        //     ToStationName: info.ToStationName,
-        //     ArrivalShortTime: this.calendarService.getHHmm(trip && trip.ArrivalTime),
-        //     ArrivalTimeStamp: +moment(trip && trip.ArrivalTime),
-        //     ArrivalTime: trip && trip.ArrivalTime,
-        //     StartShortTime: this.calendarService.getHHmm(trip && trip.StartTime),
-        //     StartTime: trip && trip.StartTime,
-        //     StartTimeStamp: +moment(trip && trip.StartTime),
-        //     TrainNo: trip && trip.TrainNo,
-        //     TrainCode: trip && trip.TrainCode
-        //   },
-        //   selectedSeat: {
-        //     SeatType: info.OrderTrainTicket.SeatType,
-        //     SeatTypeName: info.OrderTrainTicket.SeatTypeName,
-        //   },
-        //   tripType: TripType.departureTrip,
-        //   id: AppHelper.uuid(),
-        //   isExchange: true,
-        // } as ITrainInfo,
         id: AppHelper.uuid(),
-        isFilteredPolicy: true
+        isOnlyFilterMatchedPolicy: false
       };
       books = [b];
       this.exchangedTrainTicketInfo = { ticket: JSON.parse(JSON.stringify(info.OrderTrainTicket)), order: JSON.parse(JSON.stringify(info.OrderTrainTicket.Order)) };

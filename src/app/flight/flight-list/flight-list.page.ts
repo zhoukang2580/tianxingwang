@@ -224,7 +224,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       if (d && d.get("doRefresh")) {
         this.doRefresh(true, false);
       }
-      const filteredBookInfo = this.flightService.getPassengerBookInfos().find(it => it.isFilteredPolicy);
+      const filteredBookInfo = this.flightService.getPassengerBookInfos().find(it => it.isOnlyFilterMatchedPolicy);
       if (filteredBookInfo) {
         this.doRefresh(false, true);
       }
@@ -385,7 +385,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     const sub = removeitem.subscribe(async info => {
       const ok = await AppHelper.alert(LanguageHelper.getConfirmDeleteTip(), true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
       if (ok) {
-        this.flightService.removePassengerBookInfo(info,true);
+        this.flightService.removePassengerBookInfo(info, true);
       }
     })
     const m = await this.modalCtrl.create({
@@ -489,10 +489,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     this.flightService.setPassengerBookInfosSource(this.flightService.getPassengerBookInfos().map(it => {
-      it.isFilteredPolicy = data.id == it.id;
-      if (it.isFilteredPolicy) {
-        it.isOnlyFilterMatchedPolicy = data.isOnlyFilterMatchedPolicy;
-      }
+      it.isOnlyFilterMatchedPolicy = data.id == it.id && data.isOnlyFilterMatchedPolicy;
       return it;
     }))
     this.doRefresh(false, true);
@@ -526,7 +523,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   async ngOnInit() {
     this.filteredPolicyPassenger$ = this.flightService
       .getPassengerBookInfoSource()
-      .pipe(map(infos => infos.find(it => it.isFilteredPolicy)),delay(0));
+      .pipe(map(infos => infos.find(it => it.isOnlyFilterMatchedPolicy)), delay(0));
     this.activeTab = "filter";
     this.initSearchModelParams();
     this.doRefresh(true, false);
@@ -662,7 +659,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   private filterFlightSegments(segs: FlightSegmentEntity[]) {
     let result = segs;
     // 根据筛选条件过滤航班信息：
-    const bookInfo = this.flightService.getPassengerBookInfos().find(it => it.isFilteredPolicy);
+    const bookInfo = this.flightService.getPassengerBookInfos().find(it => it.isOnlyFilterMatchedPolicy);
     result = this.flightService.filterPassengerPolicyFlights(
       bookInfo,
       result

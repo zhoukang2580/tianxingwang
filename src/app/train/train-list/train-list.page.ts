@@ -117,7 +117,7 @@ export class TrainListPage implements OnInit, OnDestroy {
     });
     this.curFilteredBookInfo$ = this.trainService
       .getBookInfoSource()
-      .pipe(map(infos => infos.find(info => info.isFilteredPolicy)));
+      .pipe(map(infos => infos.find(info => info.isOnlyFilterMatchedPolicy)));
     this.goRoundTripDateTime$ = this.trainService.getBookInfoSource().pipe(
       map(infos => {
         const go = infos.find(
@@ -429,14 +429,14 @@ export class TrainListPage implements OnInit, OnDestroy {
   // }
   private async setSelfFilterPolicy() {
     const isSelf = await this.staffService.isSelfBookType();
-    if (isSelf) {
-      this.trainService.setBookInfoSource(this.trainService.getBookInfos().map((it, idx) => {
-        if (idx == 0) {
-          it.isFilteredPolicy = true;
-        }
-        return it;
-      }));
-    }
+    // if (isSelf) {
+    //   this.trainService.setBookInfoSource(this.trainService.getBookInfos().map((it, idx) => {
+    //     if (idx == 0) {
+    //       it.isOnlyFilterMatchedPolicy = true;
+    //     }
+    //     return it;
+    //   }));
+    // }
   }
   async doRefresh(loadDataFromServer: boolean, keepSearchCondition: boolean) {
     if (this.ionRefresher) {
@@ -490,7 +490,7 @@ export class TrainListPage implements OnInit, OnDestroy {
             return it;
           }))
         }
-        const b = this.trainService.getBookInfos().find(it => it.isFilteredPolicy);
+        const b = this.trainService.getBookInfos().find(it => it.isOnlyFilterMatchedPolicy);
         data = this.trainService.filterPassengerPolicyTrains(
           b,
           data,

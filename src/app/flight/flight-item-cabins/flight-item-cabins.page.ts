@@ -112,12 +112,12 @@ export class FlightItemCabinsPage implements OnInit {
   }
   getFlightIllegalTip() {
     const bookInfos = this.flightService.getPassengerBookInfos();
-    const info = bookInfos.find(it => it.isFilteredPolicy);
+    const info = bookInfos.find(it => it.isOnlyFilterMatchedPolicy);
     return info && info.passenger && info.passenger.Policy && info.passenger.Policy.FlightIllegalTip;
   }
   getFlightlegalTip() {
     const bookInfos = this.flightService.getPassengerBookInfos();
-    const info = bookInfos.find(it => it.isFilteredPolicy);
+    const info = bookInfos.find(it => it.isOnlyFilterMatchedPolicy);
     return info && info.passenger && info.passenger.Policy && info.passenger.Policy.FlightLegalTip;
   }
   async onBookTicket(flightCabin: FlightCabinEntity) {
@@ -140,12 +140,8 @@ export class FlightItemCabinsPage implements OnInit {
       return;
     }
     const arr = this.flightService.getPassengerBookInfos().map(it => {
-      it.isFilteredPolicy = it.id == data.id;
-      it.isOnlyFilterMatchedPolicy = data.isOnlyFilterMatchedPolicy&&it.isFilteredPolicy;
+      it.isOnlyFilterMatchedPolicy = it.id == data.id && data.isOnlyFilterMatchedPolicy;
       return it;
-    });
-    arr.forEach(it => {
-      console.log(it.credential.Name,it.id, it.isFilteredPolicy, it.isOnlyFilterMatchedPolicy);
     });
     this.flightService.setPassengerBookInfosSource(arr);
     this.vmCabins = this.getPolicyCabins();
@@ -207,7 +203,7 @@ export class FlightItemCabinsPage implements OnInit {
   private getPolicyCabins() {
     const isfilteredBookInfo = this.flightService
       .getPassengerBookInfos()
-      .find(it => it.isFilteredPolicy);
+      .find(it => it.isOnlyFilterMatchedPolicy);
     const bookInfo = isfilteredBookInfo;
     let policyCabins = this.flightService.filterPassengerPolicyCabins({ data: bookInfo, flightSegment: { ...this.vmFlightSegment } });
     if (this.filterConditions && this.filterConditions.cabins && this.filterConditions.cabins.length) {

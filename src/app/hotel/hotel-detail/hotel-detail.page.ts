@@ -113,32 +113,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   private async initFilterPolicy() {
     const isSelf = await this.staffService.isSelfBookType();
     const bookInfos = this.hotelService.getBookInfos();
-    // if (isSelf || bookInfos.length == 1) {
-    //   if (bookInfos.length) {
-    //     if (bookInfos[0] && bookInfos[0].passenger) {
-    //       this.hotelService.setBookInfos(
-    //         bookInfos.map((it, idx) => {
-    //           if (idx == 0) {
-    //             it.isFilteredPolicy = true;
-    //             it.isAllowBookPolicy = true;
-    //             it.isOnlyFilterMatchedPolicy = false;
-    //           }
-    //           return it;
-    //         })
-    //       );
-    //     }
-    //   }
-    // } else {
-    //   this.hotelService.setBookInfos(
-    //     bookInfos.map((it, idx) => {
-    //       it.isFilteredPolicy = false;
-    //       it.isAllowBookPolicy = false;
-    //       it.isOnlyFilterMatchedPolicy = false;
-    //       return it;
-    //     })
-    //   );
-    // }
-    const filteredPassenger = this.hotelService.getBookInfos().find(it => it.isFilteredPolicy);
+    const filteredPassenger = this.hotelService.getBookInfos().find(it => it.isOnlyFilterMatchedPolicy);
     if (filteredPassenger) {
       this.filterPassengerPolicy(filteredPassenger.passenger && filteredPassenger.passenger.AccountId);
     }
@@ -417,7 +392,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     if (color.includes("disabled")) {
       let tip = '';
       if (p) {
-        const info = this.hotelService.getBookInfos().find(it => it.isFilteredPolicy);
+        const info = this.hotelService.getBookInfos().find(it => it.isOnlyFilterMatchedPolicy);
         if (info && info.passenger && info.passenger.Policy && info.passenger.Policy.HotelIllegalTip) {
           tip = `(${info.passenger.Policy.HotelIllegalTip})`;
         }

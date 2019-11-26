@@ -1,26 +1,30 @@
-<ion-radio-group class='credentials-remark'  no-margin no-padding (ionChange)='onSelectItem($event)'
+<ion-radio-group class='credentials-remark' no-margin no-padding (ionChange)='onSelectItem($event)'
   name='CredentialsRemark'>
-  <ion-item *ngFor='let info of bookInfos$|async'>
+  <ion-item *ngFor='let info of bookInfos'>
     <ion-label class='sm-font-size' *ngIf='info?.credential?.FirstName&&info?.credential?.LastName'>
       {{info?.credential?.FirstName}}{{info?.credential?.LastName}} {{info?.credential?.Number}}</ion-label>
     <ion-label class='sm-font-size'
       *ngIf='!(info?.credential?.FirstName&&info?.credential?.LastName)&&info?.passenger?.Name'>
       {{info?.passenger?.Name}}
       {{info?.credential?.Number}}</ion-label>
-    <ion-radio [value]="info" [checked]='info.isFilteredPolicy'></ion-radio>
+    <ion-radio [value]="info" [checked]='info.isOnlyFilterMatchedPolicy'></ion-radio>
+  </ion-item>
+  <ion-item (click)='onUnFilterPolicy()'>
+    <ion-label  class='sm-font-size'  color='secondary'>不过滤差标</ion-label>
+    <ion-radio [value]='isUnFilterPolicy' [checked]='isUnFilterPolicy'></ion-radio>
   </ion-item>
 </ion-radio-group>
-<ion-radio-group (ionChange)='onMathRadioChange($event)' allowEmptySelection='true'>
+<!-- <ion-radio-group (ionChange)='onMathRadioChange($event)' allowEmptySelection='true'>
   <ion-item>
     <ion-checkbox [checked]='selectedItem?.isOnlyFilterMatchedPolicy' value='isShowOnlyMatchSwitch' color='secondary'
       margin-end></ion-checkbox> 
     <ion-label class='sm-font-size' color='success'>过滤差标
     </ion-label>
   </ion-item>
-  <!-- <ion-item>
+  <ion-item>
     <ion-radio value='isAllowBookPolicy' [checked]='selectedItem?.isAllowBookPolicy' color='secondary' margin-end>
     </ion-radio>
     <ion-label class='sm-font-size' color='secondary'>所有可预订</ion-label>
-  </ion-item> -->
-</ion-radio-group>
+  </ion-item>
+</ion-radio-group> -->
 <ion-button expand="block" fill='clear' color='secondary' (click)='onSelect("ok")'>确定</ion-button>

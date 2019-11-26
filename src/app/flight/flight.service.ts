@@ -174,7 +174,7 @@ export class FlightService {
         color: "secondary"
       } as FlightPolicy
     });
-    if (data && data.passenger && data.passenger.AccountId && data.isFilteredPolicy && data.isOnlyFilterMatchedPolicy) {
+    if (data && data.passenger && data.passenger.AccountId && data.isOnlyFilterMatchedPolicy) {
 
       this.policyFlights = this.policyFlights || [];
       const one = this.policyFlights.find(
@@ -207,7 +207,6 @@ export class FlightService {
     } else {
       this.setPassengerBookInfosSource(
         this.getPassengerBookInfos().map(it => {
-          it.isFilteredPolicy = false;
           it.isOnlyFilterMatchedPolicy = false;
           return it;
         })
@@ -240,22 +239,25 @@ export class FlightService {
     if (flightJourneyList.length == 0) {
       return [];
     }
-    let passengers = this.getUnSelectFlightSegmentPassengers();
-    if (passengers.length == 0) {
-      passengers = this
-        .getPassengerBookInfos()
-        .map(info => info.passenger);
-    }
-    const hasreselect = this
+    // let passengers = this.getUnSelectFlightSegmentPassengers();
+    // if (passengers.length == 0) {
+    //   passengers = this
+    //     .getPassengerBookInfos()
+    //     .map(info => info.passenger);
+    // }
+    // const hasreselect = this
+    //   .getPassengerBookInfos()
+    //   .find(item => item.isReplace);
+    // if (hasreselect && hasreselect.passenger) {
+    //   if (
+    //     !passengers.find(p => p.AccountId == hasreselect.passenger.AccountId)
+    //   ) {
+    //     passengers.push(hasreselect.passenger);
+    //   }
+    // }
+    const passengers = this
       .getPassengerBookInfos()
-      .find(item => item.isReplace);
-    if (hasreselect && hasreselect.passenger) {
-      if (
-        !passengers.find(p => p.AccountId == hasreselect.passenger.AccountId)
-      ) {
-        passengers.push(hasreselect.passenger);
-      }
-    }
+      .map(info => info.passenger);
     const hasNotWhitelist = passengers.find(p => p.isNotWhiteList);
     const whitelist = passengers.map(p => p.AccountId);
     if (hasNotWhitelist) {
@@ -334,7 +336,7 @@ export class FlightService {
     if (bookInfo && bookInfo.passenger && bookInfo.passenger.AccountId) {
       this.setPassengerBookInfosSource(
         this.getPassengerBookInfos().map(it => {
-          it.isFilteredPolicy = bookInfo.id == it.id;
+          it.isOnlyFilterMatchedPolicy = bookInfo.id == it.id;
           return it;
         })
       );
@@ -355,7 +357,6 @@ export class FlightService {
     } else {
       this.setPassengerBookInfosSource(
         this.getPassengerBookInfos().map(it => {
-          it.isFilteredPolicy = false;
           it.isOnlyFilterMatchedPolicy = false;
           return it;
         })
@@ -673,9 +674,18 @@ export class FlightService {
     });
     this.setPassengerBookInfosSource(arr);
   }
+  checkIfCabinIsAllowBook(bookInfo: PassengerBookInfo<IFlightSegmentInfo>,
+    flightCabin: FlightCabinEntity,
+    flightSegment: FlightSegmentEntity, ) {
+    const info = this.getPolicyCabinBookInfo(bookInfo, flightCabin, flightSegment);
+    return info && !info.isDontAllowBook;
+  }
   private async selectAndReplaceBookInfos(flightCabin: FlightCabinEntity, flightSegment: FlightSegmentEntity, bookInfos: PassengerBookInfo<IFlightSegmentInfo>[]) {
     const m = await this.modalCtrl.create({
       component: SelectAndReplacebookinfoComponent, componentProps: {
+        flightService: this,
+        flightSegment,
+        flightCabin,
         bookInfos: this.getPassengerBookInfos().map(it => {
           return {
             info: it,
@@ -916,9 +926,9 @@ export class FlightService {
     let arr = this.getPassengerBookInfos();
     arr = arr.map(item => {
       if (item.id === old.id) {
-        newInfo.isFilteredPolicy = old.isFilteredPolicy;
+        // newInfo.isFilteredPolicy = old.isFilteredPolicy;
         // newInfo.isAllowBookPolicy = old.isAllowBookPolicy;
-        // newInfo.isOnlyFilterMatchedPolicy = old.isOnlyFilterMatchedPolicy;
+        newInfo.isOnlyFilterMatchedPolicy = old.isOnlyFilterMatchedPolicy;
         return newInfo;
       }
       return item;
@@ -1179,11 +1189,6 @@ export class FlightService {
     }
     const self = await this.staffService.isSecretaryBookType();
     this.setPassengerBookInfosSource(this.getPassengerBookInfos().map((it, idx) => {
-      if (!self) {
-        it.isFilteredPolicy = false;
-      } else {
-        it.isFilteredPolicy = idx == 0;
-      }
       it.isOnlyFilterMatchedPolicy = false;
       return it;
     }))
@@ -1192,6 +1197,11 @@ export class FlightService {
   }
   private async getFlightJourneyDetails(): Promise<FlightJourneyEntity[]> {
     await this.checkOrAddSelfBookTypeBookInfo();
+    this.setPassengerBookInfosSource(this.getPassengerBookInfos().map(it => {
+      // it.isFilteredPolicy = false;
+      it.isOnlyFilterMatchedPolicy = false;
+      return it;
+    }))
     const req = new RequestEntity();
     req.Method = "TmcApiFlightUrl-Home-Detail ";
     const data = this.getSearchFlightModel();

@@ -1,7 +1,7 @@
 import { AppHelper } from 'src/app/appHelper';
 import { StaffService } from "./../../../hr/staff.service";
-import { Component, OnInit, Input } from "@angular/core";
-import { Observable } from "rxjs";
+import { Component, OnInit, Input, OnDestroy } from "@angular/core";
+import { Observable, Subscription } from "rxjs";
 import { PopoverController } from "@ionic/angular";
 import { PassengerBookInfo } from "../../tmc.service";
 import { map, delay, tap } from "rxjs/operators";
@@ -10,14 +10,29 @@ import { map, delay, tap } from "rxjs/operators";
   templateUrl: "./filter-passengers-policy-popover.component.html",
   styleUrls: ["./filter-passengers-policy-popover.component.scss"]
 })
-export class FilterPassengersPolicyComponent implements OnInit {
+export class FilterPassengersPolicyComponent implements OnInit, OnDestroy {
+  private subscription = Subscription.EMPTY;
   @Input() bookInfos$: Observable<PassengerBookInfo<any>[]>;
-  private bookInfos: PassengerBookInfo<any>[];
+  bookInfos: PassengerBookInfo<any>[];
   selectedItem: PassengerBookInfo<any>;
+  get isUnFilterPolicy() {
+    return this.bookInfos && this.bookInfos.every(it => !it.isOnlyFilterMatchedPolicy);
+  };
   constructor(
     private popoverCtrl: PopoverController,
     private staffService: StaffService
   ) { }
+  onUnFilterPolicy() {
+    if (this.bookInfos) {
+      this.bookInfos = this.bookInfos.map(it => {
+        it.isOnlyFilterMatchedPolicy = false;
+        return it;
+      });
+    }
+  }
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
   async onSelect(ok?: string) {
     if (this.selectedItem && this.selectedItem.id) {
       console.log("selectedItem", this.selectedItem);
@@ -30,8 +45,13 @@ export class FilterPassengersPolicyComponent implements OnInit {
       }
     }
     if (this.selectedItem) {
+      const item = { ...this.selectedItem };
+      if (this.isUnFilterPolicy) {
+        item.isOnlyFilterMatchedPolicy = false;
+      }
+      this.subscription.unsubscribe();
       const t = await this.popoverCtrl
-        .dismiss({ ...this.selectedItem })
+        .dismiss(item)
         .catch(_ => void 0);
     }
   }
@@ -46,15 +66,15 @@ export class FilterPassengersPolicyComponent implements OnInit {
   onSelectItem(evt: CustomEvent) {
     if (evt.detail && evt.detail.value && evt.detail.value.passenger) {
       this.selectedItem = evt.detail.value;
-      this.selectedItem.isFilteredPolicy = true;
+      this.selectedItem.isOnlyFilterMatchedPolicy = true;
     }
   }
   async ngOnInit() {
     const isSelf = this.staffService.isSelfBookType();
-    this.bookInfos$ = this.bookInfos$.pipe(
-      map(infos=>{
-        if(infos.find(it=>it.isReplace)){
-          return infos.filter(it=>it.isReplace)
+    this.subscription = this.bookInfos$.pipe(
+      map(infos => {
+        if (infos.find(it => it.isReplace)) {
+          return infos.filter(it => it.isReplace)
         }
         return infos;
       }),
@@ -63,9 +83,8 @@ export class FilterPassengersPolicyComponent implements OnInit {
         if (this.bookInfos.length == 1 || isSelf) {
           if (this.bookInfos.length) {
             this.selectedItem = { ...this.bookInfos[0] };
-            this.selectedItem.isFilteredPolicy = true;
           }
         }
-      }), delay(100))
+      }), delay(10)).subscribe();
   }
 }
