@@ -25,6 +25,7 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
   showSelectReturnTrip$ = of(false);
   TripType = TripType;
   isExchange = false;
+  isSelf = false;
   constructor(
     private modalCtrl: ModalController,
     private calendarService: CalendarService,
@@ -39,6 +40,9 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
     }
   }
   ngOnInit() {
+    this.staffService.isSelfBookType().then(is => {
+      this.isSelf = is;
+    });
     this.bookInfos$ = this.trainService.getBookInfoSource().pipe(
       tap(infos => {
         console.log("bookinfos", infos);
@@ -95,7 +99,7 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
     return "";
   }
   getTripTypeTip(info: ITrainInfo) {
-    if (!info) {
+    if (!info || !this.isSelf) {
       return "";
     }
     return `[${
@@ -110,7 +114,7 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
     );
   }
   remove(bookInfo: PassengerBookInfo<ITrainInfo>) {
-    this.trainService.removeBookInfo(bookInfo,false);
+    this.trainService.removeBookInfo(bookInfo, false);
   }
   async reelect(bookInfo: PassengerBookInfo<ITrainInfo>) {
     await this.trainService.reelectBookInfo(bookInfo);

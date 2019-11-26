@@ -1,3 +1,4 @@
+import { SelectAndReplaceTrainInfoComponent } from './select-and-replaceinfo/select-and-replaceinfo.component';
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
@@ -25,7 +26,8 @@ import { TrainTicketComponent } from './train-ticket/train-ticket.component';
     TrainFilterComponent,
     SeatPickerComponent,
     TrainRefundComponent,
-    TrainTicketComponent
+    TrainTicketComponent,
+    SelectAndReplaceTrainInfoComponent
   ],
   imports: [
     CommonModule,
@@ -50,7 +52,8 @@ import { TrainTicketComponent } from './train-ticket/train-ticket.component';
     SelectedTrainSegmentInfoComponent,
     TrainscheduleComponent,
     TrainFilterComponent,
-    TrainRefundComponent
+    TrainRefundComponent,
+    SelectAndReplaceTrainInfoComponent
   ]
 })
 export class TrainComponentsModule {}

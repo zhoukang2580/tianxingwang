@@ -5,7 +5,7 @@ import { ExchangeTrainModel } from './../order/models/ExchangeTrainModel';
 import { AppHelper } from "src/app/appHelper";
 import { ModalController, PopoverController } from "@ionic/angular";
 import { IdentityService } from "./../services/identity/identity.service";
-import { StaffService } from "./../hr/staff.service";
+import { StaffService, StaffEntity } from "./../hr/staff.service";
 import { Subject, BehaviorSubject, combineLatest } from "rxjs";
 import { ApiService } from "src/app/services/api/api.service";
 import { Injectable } from "@angular/core";
@@ -32,6 +32,7 @@ import { TrainSeatEntity } from "./models/TrainSeatEntity";
 import { Router } from "@angular/router";
 import { OrderBookDto } from "../order/models/OrderBookDto";
 import { DayModel } from "../tmc/models/DayModel";
+import { SelectAndReplaceTrainInfoComponent } from './components/select-and-replaceinfo/select-and-replaceinfo.component';
 const KEY_TRAIN_TRAFFICLINES_DATA = "train-traficlines-data";
 export class SearchTrainModel {
   TrainCode: string;
@@ -55,7 +56,7 @@ export interface ISelectedStation {
 }
 export interface ICurrentViewtTainItem {
   selectedSeat: TrainSeatEntity;
-  totalPolicies: TrainPassengerModel[];
+  // totalPolicies: TrainPassengerModel[];
   train: TrainEntity;
 }
 @Injectable({
@@ -66,6 +67,7 @@ export class TrainService {
     lastUpdateTime: 0,
     TrafficLines: []
   };
+  totalPolicies: TrainPassengerModel[];
   private selfCredentials: CredentialsEntity[];
   private searchModel: SearchTrainModel;
   private selectedStationSource: Subject<ISelectedStation>;
@@ -110,18 +112,17 @@ export class TrainService {
   }
   filterPassengerPolicyTrains(
     bookInfo: PassengerBookInfo<ITrainInfo>,
-    trains: TrainEntity[],
-    policies: TrainPassengerModel[]
+    trains: TrainEntity[]
   ): TrainEntity[] {
-    console.log(bookInfo, policies);
+    console.log(bookInfo, this.totalPolicies);
     let result = trains || [];
     if (
       !bookInfo ||
       !bookInfo.passenger ||
       !bookInfo.passenger.AccountId ||
       !bookInfo.isFilterPolicy ||
-      !policies ||
-      !policies.length
+      !this.totalPolicies ||
+      !this.totalPolicies.length
     ) {
       this.setBookInfoSource(
         this.getBookInfos().map(it => {
@@ -155,7 +156,7 @@ export class TrainService {
         return it;
       })
     );
-    const onePolicies = policies.find(
+    const onePolicies = this.totalPolicies.find(
       it => it.PassengerKey == bookInfo.passenger.AccountId
     );
     let policyTrains = onePolicies && onePolicies.TrainPolicies;
@@ -287,11 +288,11 @@ export class TrainService {
     if (
       currentViewtTainItem &&
       currentViewtTainItem.selectedSeat &&
-      currentViewtTainItem.totalPolicies &&
+      this.totalPolicies &&
       currentViewtTainItem.train
     ) {
       let bookInfos = this.getBookInfos();
-      const bookInfo = this.getTrainInfo(currentViewtTainItem);
+      const bookInfo = this.getTrainInfo(currentViewtTainItem, bookInfos[0]);
       if (
         bookInfo &&
         bookInfo.trainPolicy &&
@@ -368,11 +369,9 @@ export class TrainService {
         }
       }
       if (s.isRoundTrip) {
-        if (
-          bookInfos.find(
-            it => !it.bookInfo || it.bookInfo.tripType == TripType.returnTrip
-          )
-        ) {
+        if (bookInfos.find(
+          it => !it.bookInfo || it.bookInfo.tripType == TripType.returnTrip
+        )) {
           this.setSearchTrainModel({ ...s, isLocked: false });
         }
       }
@@ -380,90 +379,125 @@ export class TrainService {
     }
   }
   private getTrainInfo(
-    currentViewtTainItem: ICurrentViewtTainItem
+    currentViewtTainItem: ICurrentViewtTainItem,
+    info: PassengerBookInfo<ITrainInfo>
   ): ITrainInfo {
-    const bookInfos = this.getBookInfos();
-    if (bookInfos && bookInfos.length) {
-      const passenger = bookInfos[0].passenger;
-      const accountId = passenger && passenger.AccountId;
-      if (!currentViewtTainItem.selectedSeat.Policy) {
-        const policy = currentViewtTainItem.totalPolicies.find(
-          k => k.PassengerKey == accountId
-        );
-        if (policy) {
-          if (currentViewtTainItem.train.Seats) {
-            currentViewtTainItem.train.Seats.forEach(s => {
-              s.Policy = policy.TrainPolicies.find(
-                i =>
-                  i.TrainNo == currentViewtTainItem.train.TrainNo &&
-                  i.SeatType == s.SeatType
-              );
-            });
-          }
+    if (!info || !currentViewtTainItem || !this.totalPolicies) {
+      return null;
+    }
+    const passenger = info.passenger;
+    const accountId = passenger && passenger.AccountId;
+    if (!currentViewtTainItem.selectedSeat.Policy) {
+      const policy = this.totalPolicies.find(
+        k => k.PassengerKey == accountId
+      );
+      if (policy) {
+        if (currentViewtTainItem.train.Seats) {
+          currentViewtTainItem.train.Seats.forEach(s => {
+            s.Policy = policy.TrainPolicies.find(
+              i =>
+                i.TrainNo == currentViewtTainItem.train.TrainNo &&
+                i.SeatType == s.SeatType
+            );
+          });
         }
       }
-      const bookInfo: ITrainInfo = {
-        trainEntity: currentViewtTainItem.train,
-        trainPolicy: currentViewtTainItem.selectedSeat.Policy,
-        tripType: TripType.departureTrip,
-        id: AppHelper.uuid(),
-        selectedSeat: currentViewtTainItem.selectedSeat
-      };
-      return bookInfo;
     }
-    return null;
+    const bookInfo: ITrainInfo = {
+      trainEntity: currentViewtTainItem.train,
+      trainPolicy: currentViewtTainItem.selectedSeat.Policy,
+      tripType: TripType.departureTrip,
+      id: AppHelper.uuid(),
+      selectedSeat: currentViewtTainItem.selectedSeat,
+    };
+    if (currentViewtTainItem.selectedSeat.Policy) {
+      bookInfo.isAllowBook = currentViewtTainItem.selectedSeat.Policy.IsAllowBook;
+    }
+    return bookInfo;
   }
   private async addOrReselectNotSelfBookTypeBookInfo(
     currentViewtTainItem: ICurrentViewtTainItem
   ) {
-    if (
-      currentViewtTainItem &&
-      currentViewtTainItem.selectedSeat &&
-      currentViewtTainItem.totalPolicies &&
-      currentViewtTainItem.train
-    ) {
-      let bookInfos = this.getBookInfos();
-      bookInfos = bookInfos.map(bookInfo => {
-        const tripType = TripType.departureTrip;
-        if (!currentViewtTainItem.selectedSeat.Policy) {
-          const policy = currentViewtTainItem.totalPolicies.find(
-            k => k.PassengerKey == bookInfo.passenger.AccountId
-          );
-          if (policy) {
-            currentViewtTainItem.selectedSeat.Policy = policy.TrainPolicies.find(
-              i =>
-                i.TrainNo == currentViewtTainItem.train.TrainNo &&
-                i.SeatType == currentViewtTainItem.selectedSeat.SeatType
-            );
+    let bookInfos = this.getBookInfos();
+    {
+      const unselectBookInfos = this.getBookInfos().filter(it => !it.bookInfo || !it.bookInfo.trainPolicy || it.isReplace);
+      let cannotArr: string[] = [];
+      if (unselectBookInfos.length) {
+        bookInfos = bookInfos.map(item => {
+          if (unselectBookInfos.find(it => it.id == item.id)) {
+            const info = this.getTrainInfo(currentViewtTainItem, item);
+            if (info && !info.isAllowBook) {
+              let name: string;
+              if (item.credential) {
+                name = `${item.credential.CheckFirstName}${item.credential.CheckLastName}(${(item.credential.Number || "").substr(0, 6)}...)`;
+              }
+              cannotArr.push(name);
+            } else {
+              item.bookInfo = info;
+            }
           }
+          return item;
+        });
+        if (cannotArr.length) {
+          AppHelper.alert(`${cannotArr.join(",")}，超标不可预订`)
         }
-        bookInfo.bookInfo = {
-          trainEntity: currentViewtTainItem.train,
-          trainPolicy: currentViewtTainItem.selectedSeat.Policy,
-          tripType,
-          id: AppHelper.uuid(),
-          selectedSeat: currentViewtTainItem.selectedSeat
-        };
-        if (!currentViewtTainItem.selectedSeat.Policy.IsAllowBook) {
-          bookInfo.bookInfo = null;
+      } else if (!bookInfos.find(it => it.isReplace)) {
+        const ok = await AppHelper.alert("是否替换旅客的车次信息？", true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+        if (ok) {
+          bookInfos = await this.selectAndReplaceBookInfos(currentViewtTainItem, bookInfos);
         }
-
-        // 修改重选的火车信息,每次只能重选一个，所以直接覆盖重选的即可
-        if (bookInfo.isReplace) {
-          bookInfo.bookInfo = {
-            ...bookInfo,
-            trainEntity: currentViewtTainItem.train,
-            trainPolicy: currentViewtTainItem.selectedSeat.Policy,
-            tripType: TripType.departureTrip,
-            id: AppHelper.uuid(),
-            selectedSeat: currentViewtTainItem.selectedSeat
-          };
-          bookInfo.isReplace = false;
-        }
-        return bookInfo;
-      });
-      this.setBookInfoSource(bookInfos);
+      }
     }
+    const arr = bookInfos.map(item => {
+      item.isReplace = false;
+      return item;
+    });
+    this.setBookInfoSource(arr);
+  }
+  private async selectAndReplaceBookInfos(currentViewtTainItem: ICurrentViewtTainItem, bookInfos: PassengerBookInfo<ITrainInfo>[]) {
+    const m = await this.modalCtrl.create({
+      component: SelectAndReplaceTrainInfoComponent, componentProps: {
+        flightService: this,
+        train: currentViewtTainItem.train,
+        seat: currentViewtTainItem.selectedSeat,
+        bookInfos: this.getBookInfos().map(it => {
+          return {
+            info: it,
+            isSelected: false
+          }
+        })
+      }
+    });
+    await m.present();
+    const result = await m.onDidDismiss();
+    const data = result && result.data as PassengerBookInfo<ITrainInfo>[];
+    if (data && data.length) {
+      let cannotArr: string[] = [];
+      for (let i = 0; i < data.length; i++) {
+        const item = data[i];
+        const info = this.getTrainInfo(currentViewtTainItem, item);
+        if (info && !info.isAllowBook) {
+          let name: string;
+          if (item.credential) {
+            name = `${item.credential.CheckFirstName}${item.credential.CheckLastName}(${(item.credential.Number || "").substr(0, 6)}...)`;
+          }
+          cannotArr.push(name);
+        } else {
+          item.bookInfo = info;
+        }
+      }
+      if (cannotArr.length) {
+        AppHelper.alert(`${cannotArr.join(",")}，超标不可替换`);
+      }
+    }
+    bookInfos = bookInfos.map(it => {
+      const item = data.find(d => d.id == it.id);
+      if (item) {
+        it.bookInfo = item.bookInfo;
+      }
+      return it;
+    });
+    return bookInfos;
   }
   disposal() {
     this.setSearchTrainModel(new SearchTrainModel());
@@ -471,6 +505,133 @@ export class TrainService {
     this.selfCredentials = null;
     this.exchangedTrainTicketInfo = null;
     this.isInitializingSelfBookInfos = false;
+  }
+  async loadPolicyedTrainsAsync(): Promise<TrainEntity[]> {
+    // 先获取最新的数据
+    let trains: TrainEntity[] = [];
+    trains = await this.searchAsync(this.getSearchTrainModel());
+    if (trains.length == 0) {
+      return [];
+    }
+    let passengers = this.getUnSelectPassengers();
+    if (passengers.length == 0) {
+      passengers = this.getBookInfos().map(info => info.passenger);
+    }
+    const hasreselect = this
+      .getBookInfos()
+      .find(item => item.isReplace);
+    if (hasreselect) {
+      if (
+        !passengers.find(p => p.AccountId == hasreselect.passenger.AccountId)
+      ) {
+        passengers.push(hasreselect.passenger);
+      }
+    }
+    const notWhitelistPs = passengers.filter(p => p.isNotWhiteList); // 非白名单乘客
+    const whitelistPs = passengers.filter(p => !p.isNotWhiteList); // 白名单的乘客，需要计算差标
+    const whitelistAccountId = whitelistPs
+      .map(p => p.AccountId)
+      .reduce((acc, item) => {
+        if (!acc.find(it => it == item)) {
+          acc.push(item);
+        }
+        return acc;
+      }, []);
+    if (notWhitelistPs.length) {
+      const policyTrains = await this.getWhitelistPolicyTrains(
+        passengers,
+        trains
+      );
+
+      // 非白名单可以预订所有的仓位
+      const tmc = await this.tmcService.getTmc();
+      const notWhitelistTrains = this.getNotWhitelistPolicyTrains(
+        tmc && tmc.Account.Id,
+        trains
+      );
+      this.totalPolicies = policyTrains.concat([notWhitelistTrains]);
+    } else {
+      if (whitelistAccountId.length) {
+        this.totalPolicies = await this.policyAsync(
+          trains,
+          whitelistAccountId
+        );
+      }
+    }
+    if (
+      this.totalPolicies &&
+      this.totalPolicies.length === 0 &&
+      passengers.length
+    ) {
+      trains = [];
+      this.totalPolicies = [];
+      return [];
+    }
+    console.log(`所有人的差标：`, this.totalPolicies);
+    return trains;
+  }
+  private async getWhitelistPolicyTrains(
+    passengers: StaffEntity[],
+    trains: TrainEntity[]
+  ) {
+    trains = JSON.parse(JSON.stringify(trains || []));
+    let policyTrains: TrainPassengerModel[] = [];
+    const identity = await this.identityService.getIdentityAsync();
+    // 白名单的乘客
+    const ps = passengers.filter(p => !p.isNotWhiteList);
+    if (ps.length > 0) {
+      policyTrains = await this
+        .policyAsync(trains, ps.map(p => p.AccountId))
+        .catch(_ => []);
+    }
+    return policyTrains;
+  }
+  private getNotWhitelistPolicyTrains(
+    PassengerKey: string,
+    trains: TrainEntity[]
+  ): TrainPassengerModel {
+    trains = JSON.parse(JSON.stringify(trains || []));
+    const trainPolicie: TrainPassengerModel = new TrainPassengerModel();
+    trainPolicie.TrainPolicies = [];
+    trains.forEach(it => {
+      if (it.Seats) {
+        it.Seats.forEach(s => {
+          const p = new TrainPolicyModel();
+          p.IsAllowBook = true;
+          p.Rules = [];
+          p.TrainNo = it.TrainNo;
+          p.IsForceBook = it.IsForceBook;
+          p.SeatType = s.SeatType;
+          p.IsAllowBook = true;
+          p.Rules = null;
+          p.IsForceBook = false;
+          s.Policy = p;
+          trainPolicie.TrainPolicies.push(p);
+        });
+      }
+    });
+    // 非白名单的账号id 统一为一个，tmc的accountid
+    trainPolicie.PassengerKey = PassengerKey;
+    return trainPolicie;
+  }
+  private getUnSelectPassengers() {
+    return this.getBookInfos()
+      .filter(
+        item =>
+          !item.bookInfo ||
+          !item.bookInfo.trainEntity ||
+          !item.bookInfo.trainPolicy
+      )
+      .map(item => item.passenger)
+      .reduce(
+        (arr, item) => {
+          if (!arr.find(i => i.AccountId == item.AccountId)) {
+            arr.push(item);
+          }
+          return arr;
+        },
+        [] as StaffEntity[]
+      );
   }
   async initSelfBookTypeBookInfos(isShowLoading = false) {
     const infos = this.getBookInfos();
@@ -648,6 +809,10 @@ export class TrainService {
       }
       return it;
     }));
+  }
+  checkIfSeatIsAllowBook(info: PassengerBookInfo<ITrainInfo>, seat: TrainSeatEntity, train: TrainEntity) {
+    const trainInfo = this.getTrainInfo({ selectedSeat: seat, train, }, info);
+    return trainInfo && trainInfo.isAllowBook;
   }
   removeBookInfo(info: PassengerBookInfo<ITrainInfo>, isRemovePassenger: boolean) {
     if (info) {
@@ -997,6 +1162,7 @@ export interface ITrainInfo {
   pickSeat?: string;
   isLowerSegmentSelected?: boolean;
   isExchange?: boolean;// 是否是改签
+  isAllowBook?: boolean;// 是否允许预订
 }
 export class TrainPolicyModel {
   /// <summary>

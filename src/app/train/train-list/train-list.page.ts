@@ -78,7 +78,7 @@ export class TrainListPage implements OnInit, OnDestroy {
   isSortingTrains = false;
   isShowAddPassenger$ = of(false);
   isShowRoundtripTip = false;
-  passengersPolicies: TrainPassengerModel[];
+  // passengersPolicies: TrainPassengerModel[];
   activeTab: "filter" | "time" | "price" | "none"; // 当前激活的tab
   selectedPassengersNumbers$: Observable<number> = of(0);
   goRoundTripDateTime$: Observable<{
@@ -232,133 +232,9 @@ export class TrainListPage implements OnInit, OnDestroy {
   private async loadPolicyedTrainsAsync(): Promise<TrainEntity[]> {
     // 先获取最新的数据
     this.vmTrains = [];
-    let trains = await this.trainService.searchAsync(this.searchTrainModel);
-    if (trains.length == 0) {
-      return [];
-    }
-    let passengers = this.getUnSelectPassengers();
-    if (passengers.length == 0) {
-      passengers = this.trainService.getBookInfos().map(info => info.passenger);
-    }
-    const hasreselect = this.trainService
-      .getBookInfos()
-      .find(item => item.isReplace);
-    if (hasreselect) {
-      if (
-        !passengers.find(p => p.AccountId == hasreselect.passenger.AccountId)
-      ) {
-        passengers.push(hasreselect.passenger);
-      }
-    }
-    const notWhitelistPs = passengers.filter(p => p.isNotWhiteList); // 非白名单乘客
-    const whitelistPs = passengers.filter(p => !p.isNotWhiteList); // 白名单的乘客，需要计算差标
-    const whitelistAccountId = whitelistPs
-      .map(p => p.AccountId)
-      .reduce((acc, item) => {
-        if (!acc.find(it => it == item)) {
-          acc.push(item);
-        }
-        return acc;
-      }, []);
-    if (notWhitelistPs.length) {
-      const policyTrains = await this.getWhitelistPolicyTrains(
-        passengers,
-        trains
-      );
-
-      // 非白名单可以预订所有的仓位
-      const tmc = await this.tmcService.getTmc();
-      const notWhitelistTrains = this.getNotWhitelistPolicyTrains(
-        tmc && tmc.Account.Id,
-        trains
-      );
-      this.passengersPolicies = policyTrains.concat([notWhitelistTrains]);
-    } else {
-      if (whitelistAccountId.length) {
-        this.passengersPolicies = await this.trainService.policyAsync(
-          trains,
-          whitelistAccountId
-        );
-      }
-    }
-    if (
-      this.passengersPolicies &&
-      this.passengersPolicies.length === 0 &&
-      passengers.length
-    ) {
-      trains = [];
-      this.passengersPolicies = [];
-      return [];
-    }
-    console.log(`所有人的差标：`, this.passengersPolicies);
-    this.trains = trains;
+    this.trains = await this.trainService.loadPolicyedTrainsAsync();
     return (this.vmTrains = JSON.parse(JSON.stringify(this.trains)));
   }
-  private async getWhitelistPolicyTrains(
-    passengers: StaffEntity[],
-    trains: TrainEntity[]
-  ) {
-    trains = JSON.parse(JSON.stringify(trains || []));
-    let policyTrains: TrainPassengerModel[] = [];
-    const identity = await this.identityService.getIdentityAsync();
-    // 白名单的乘客
-    const ps = passengers.filter(p => !p.isNotWhiteList);
-    if (ps.length > 0) {
-      policyTrains = await this.trainService
-        .policyAsync(trains, ps.map(p => p.AccountId))
-        .catch(_ => []);
-    }
-    return policyTrains;
-  }
-  private getNotWhitelistPolicyTrains(
-    PassengerKey: string,
-    trains: TrainEntity[]
-  ): TrainPassengerModel {
-    trains = JSON.parse(JSON.stringify(trains || []));
-    const trainPolicie: TrainPassengerModel = new TrainPassengerModel();
-    trainPolicie.TrainPolicies = [];
-    trains.forEach(it => {
-      if (it.Seats) {
-        it.Seats.forEach(s => {
-          const p = new TrainPolicyModel();
-          p.IsAllowBook = true;
-          p.Rules = [];
-          p.TrainNo = it.TrainNo;
-          p.IsForceBook = it.IsForceBook;
-          p.SeatType = s.SeatType;
-          p.IsAllowBook = true;
-          p.Rules = null;
-          p.IsForceBook = false;
-          s.Policy = p;
-          trainPolicie.TrainPolicies.push(p);
-        });
-      }
-    });
-    // 非白名单的账号id 统一为一个，tmc的accountid
-    trainPolicie.PassengerKey = PassengerKey;
-    return trainPolicie;
-  }
-  private getUnSelectPassengers() {
-    return this.trainService
-      .getBookInfos()
-      .filter(
-        item =>
-          !item.bookInfo ||
-          !item.bookInfo.trainEntity ||
-          !item.bookInfo.trainPolicy
-      )
-      .map(item => item.passenger)
-      .reduce(
-        (arr, item) => {
-          if (!arr.find(i => i.AccountId == item.AccountId)) {
-            arr.push(item);
-          }
-          return arr;
-        },
-        [] as StaffEntity[]
-      );
-  }
-
   async filterPolicyTrains() {
     const popover = await this.popoverController.create({
       component: FilterPassengersPolicyComponent,
@@ -476,11 +352,7 @@ export class TrainListPage implements OnInit, OnDestroy {
       }
       {
         const b = this.trainService.getBookInfos().find(it => it.isFilterPolicy);
-        data = this.trainService.filterPassengerPolicyTrains(
-          b,
-          data,
-          this.passengersPolicies
-        );
+        data = this.trainService.filterPassengerPolicyTrains(b, data);
       }
       // 根据筛选条件过滤航班信息：
       data = this.filterTrains(data);
@@ -503,7 +375,6 @@ export class TrainListPage implements OnInit, OnDestroy {
     if (await this.trainService.checkCanAdd()) {
       const currentViewtTainItem: ICurrentViewtTainItem = {
         selectedSeat: seat,
-        totalPolicies: this.passengersPolicies,
         train: train
       };
       await this.trainService.addOrReselectBookInfo(currentViewtTainItem);
@@ -520,11 +391,7 @@ export class TrainListPage implements OnInit, OnDestroy {
     bookInfo: PassengerBookInfo<ITrainInfo>
   ): TrainEntity[] {
     let result: TrainEntity[] = JSON.parse(JSON.stringify(this.trains));
-    result = this.trainService.filterPassengerPolicyTrains(
-      bookInfo,
-      result,
-      this.passengersPolicies
-    );
+    result = this.trainService.filterPassengerPolicyTrains(bookInfo, result);
     return result;
   }
   onSwapStation() {
