@@ -476,7 +476,8 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     //   this.flightService.getTotalFlySegments(this.flightJourneyList),
     //   this.policyflights
     // );
-    this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")], { queryParams: { "flightNo": fs.Number } });
+    this.flightService.currentViewtFlightSegment = fs;
+    this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
 
   }
   async showSelectedInfos() {

@@ -71,7 +71,7 @@ export class FlightService {
   private passengerBookInfos: PassengerBookInfo<IFlightSegmentInfo>[]; // 记录乘客及其研究选择的航班
   private isInitializingSelfBookInfos = false;
   private filterCondition: FilterConditionModel;
-  // currentViewtFlightSegment: CurrentViewtFlightSegment;
+  currentViewtFlightSegment: FlightSegmentEntity;
   policyFlights: PassengerPolicyFlights[];
   flightJourneyList: FlightJourneyEntity[]; // 保持和后台返回的数据一致
   constructor(

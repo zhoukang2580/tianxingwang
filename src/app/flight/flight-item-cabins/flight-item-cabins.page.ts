@@ -65,9 +65,7 @@ export class FlightItemCabinsPage implements OnInit {
     private popoverController: PopoverController
   ) {
     activatedRoute.queryParamMap.subscribe(async p => {
-      if (p.get("flightNo")) {
-        this.vmFlightSegment = this.flightService.getTotalFlySegments().find(it => it.Number == p.get("flightNo"));
-      }
+      this.vmFlightSegment = this.flightService.currentViewtFlightSegment;
       this.isSelf = await this.staffService.isSelfBookType();
       this.cabinTypes = this.getCabinTypes();
       const identity = await this.identityService.getIdentityAsync().catch(_ => null)
@@ -107,6 +105,9 @@ export class FlightItemCabinsPage implements OnInit {
     let d: DayModel;
     if (t) {
       d = this.flydayService.generateDayModel(t);
+    }
+    if (!d || !t) {
+      return '';
     }
     return `${t && t.format("MM月DD日")} ${d && d.dayOfWeekName} `;
   }
@@ -193,7 +194,7 @@ export class FlightItemCabinsPage implements OnInit {
     })
     this.filteredPolicyPassenger$ = this.flightService
       .getPassengerBookInfoSource()
-      .pipe(map(infos=>infos.find(it=>it.isFilterPolicy)));
+      .pipe(map(infos => infos.find(it => it.isFilterPolicy)));
     this.showOpenBtn$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(map(infos => infos && infos.filter(it => !!it.bookInfo).length));
