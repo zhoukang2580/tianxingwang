@@ -356,7 +356,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.hasDataSource.next(false);
       let segments = this.filterFlightSegments(this.flightService.getTotalFlySegments());
       if (await this.staffService.isSelfBookType()) {
-        segments = await this.filterSegmentsByGoArrivalTime(segments);
+        segments = this.filterSegmentsByGoArrivalTime(segments);
       }
       this.st = Date.now();
       this.renderFlightList(segments);
@@ -370,15 +370,13 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.isLoading = false;
     }
   }
-  private async filterSegmentsByGoArrivalTime(segments: FlightSegmentEntity[]) {
+  private filterSegmentsByGoArrivalTime(segments: FlightSegmentEntity[]) {
     let result = segments;
-    if (await this.flightService.checkIfIsRoundTripSameAirport()) {
-      const info = this.flightService.getPassengerBookInfos().find(it => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip);
-      const goFlight = info && info.bookInfo && info.bookInfo.flightSegment;
-      if (goFlight) {
-        const arrivalTime = moment(goFlight.ArrivalTime).add(1, 'hours');
-        result = segments.filter(it => new Date(it.TakeoffTime).getTime() >= +arrivalTime)
-      }
+    const goInfo = this.flightService.getPassengerBookInfos().find(it => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip);
+    const goFlight = goInfo && goInfo.bookInfo && goInfo.bookInfo.flightSegment;
+    if (goFlight) {
+      const arrivalTime = moment(goFlight.ArrivalTime).add(1, 'hours');
+      result = segments.filter(it => new Date(it.TakeoffTime).getTime() >= +arrivalTime);
     }
     return result;
   }
