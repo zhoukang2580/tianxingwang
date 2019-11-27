@@ -21,7 +21,7 @@ export class FlightOrderDetailComponent implements OnInit {
       && this.order.OrderFlightTickets
         .filter(it => it.OrderFlightTrips
           && it.OrderFlightTrips
-            .filter(t => t.Status == OrderFlightTripStatusType.Exchange)
+            .filter(t => t.Status == OrderFlightTripStatusType.Exchange||t.Status == OrderFlightTripStatusType.Refund)
             .length > 0)
         .length > 0;
   }
@@ -30,7 +30,7 @@ export class FlightOrderDetailComponent implements OnInit {
     if (this.order && this.order.OrderFlightTickets) {
       this.order.OrderFlightTickets.forEach(t => {
         if (t.OrderFlightTrips) {
-          t.OrderFlightTrips.filter(it => AppHelper.getDate(it.InsertTime).getTime() < AppHelper.getDate(t.IssueTime).getTime() || AppHelper.getDate(t.IssueTime).getTime() <= AppHelper.getDate("1800/01/0100:00:00").getTime()).forEach(trip => {
+          t.OrderFlightTrips.filter(it => AppHelper.getDate(it.InsertTime).getTime() < AppHelper.getDate(t.IssueTime).getTime() || AppHelper.getDate(t.IssueTime).getTime() <= AppHelper.getDate("1800/01/01T00:00:00").getTime()).forEach(trip => {
             trip.VariablesJsonObj = trip.VariablesJsonObj || JSON.parse(trip.Variables) || {};
             trips.push(trip);
           })

@@ -42,7 +42,7 @@
               <ion-col size='3'>完成时间:</ion-col>
               <ion-col>{{orderDetail.Order.InsertDateTime}}</ion-col>
             </ion-row>
-            <ion-row (click)='showPricePopover()' >
+            <ion-row (click)='showPricePopover()'>
               <ion-col size='3'>应收金额:</ion-col>
               <ion-col class='arrow-forward'>
                 <div>
@@ -64,12 +64,12 @@
                     </ng-container>
                     服务费:
                   </ion-col>
-                  <ion-col >{{getHotelServiceFee(orderHotel.Key)}}
+                  <ion-col>{{getHotelServiceFee(orderHotel.Key)}}
                   </ion-col>
                 </ion-row>
               </ng-container>
             </ng-container>
-            <ion-row >
+            <ion-row>
               <ion-col size='3'>已付金额:</ion-col>
               <ion-col>{{getOrderPayAmount()}}</ion-col>
             </ion-row>
@@ -81,7 +81,7 @@
         <ng-container *ngIf='orderDetail.Order.OrderFlightTickets?.length'>
           <ng-container *ngIf='getTravelFlightTrips() as trips'>
             <ion-item-divider>
-              <ion-text color=''>出行航班信息</ion-text>
+              <ion-text color=''>航班信息</ion-text>
             </ion-item-divider>
             <ion-item>
               <app-flight-order-detail [trips]='trips' [order]='orderDetail.Order'></app-flight-order-detail>
@@ -113,7 +113,7 @@
           <ng-container *ngIf='orderDetail.Order?.OrderFlightTickets?.length>1'>
             <ion-badge color='danger'>
               {{orderDetail.Order.OrderFlightTickets?.length}}</ion-badge>
-            <ion-select slot='end' [compareWith]='compareFn' [(ngModel)]='selectedFlightTicket' [okText]='"确定"'
+            <ion-select slot='end' [compareWith]='compareFn' (ionChange)='onSelectFlightTicket($event)' [(ngModel)]='selectedFlightTicket' [okText]='"确定"'
               [cancelText]='"取消"'>
               <ion-label>{{selectedFlightTicket?.Id}}</ion-label>
               <ion-select-option *ngFor='let o of orderDetail.Order.OrderFlightTickets' [value]='o'>{{o.Id}}
@@ -123,7 +123,7 @@
         </ion-item-divider>
         <ng-container *ngIf='getPassengerCostOrgInfo() as info'>
           <ion-item *ngIf='info.Passenger as p'>
-            <div style='width: 100%'  class='passenger-info'>
+            <div style='width: 100%' class='passenger-info'>
               <ion-row>
                 <ion-col size='3'>乘客姓名:</ion-col>
                 <ion-col>{{p.CheckName}} <span *ngIf='p.PassengerTypeName'>({{p.PassengerTypeName}})</span> </ion-col>
@@ -140,7 +140,7 @@
                 <ion-col size='3'>邮箱:</ion-col>
                 <ion-col>{{p.Email}}</ion-col>
               </ion-row>
-              <ng-container >
+              <ng-container>
                 <ion-row>
                   <ion-col size='3'>成本中心:</ion-col>
                   <ion-col>{{info.CostCenterCode}}-{{info.CostCenterName}}</ion-col>
@@ -187,8 +187,20 @@
       <!-- 保险信息 *ngIf='(tab?.value == ProductItemType.train)||(tab?.value ==ProductItemType.plane)'-->
       <ion-list #link [attr.tabid]='getTabByLabel("保险")?.value' lines='none'
         *ngIf="orderDetail.Order.OrderInsurances?.length&&orderDetail.Order.OrderTravels">
-        <ion-item-divider>{{getTabByLabel("保险")?.label}} </ion-item-divider>
-        <app-insurance-order-detail [order]='orderDetail.Order' [selectedFlightTicketId]='selectedFlightTicket?.Id'></app-insurance-order-detail>
+        <ion-item-divider>{{getTabByLabel("保险")?.label}}
+          <ng-container *ngIf='orderDetail.Order.OrderInsurances?.length>1'>
+            <ion-badge color='danger'>
+              {{orderDetail.Order.OrderInsurances?.length}}</ion-badge>
+            <ion-select slot='end'  [(ngModel)]='selectedInsuranceId' [okText]='"确定"'
+              [cancelText]='"取消"'>
+              <ion-label>{{selectedInsuranceId}}</ion-label>
+              <ion-select-option *ngFor='let o of orderDetail.Order.OrderInsurances' [value]='o.Id'>{{o.Id}}
+              </ion-select-option>
+            </ion-select>
+          </ng-container>
+        </ion-item-divider>
+        <app-insurance-order-detail [order]='orderDetail.Order' [selectedInsuranceId]='selectedInsuranceId'>
+        </app-insurance-order-detail>
       </ion-list>
       <!-- 审批记录 -->
       <ion-list #link [attr.tabid]='getTabByLabel("审批")?.value' lines='none'>
@@ -237,7 +249,7 @@
           <div style='width: 100%;'>
             <ion-row>
               <ion-col size='3'>类型</ion-col>
-              <ion-col>联系人{{(i+1)}}</ion-col>
+              <ion-col>联系人{{getIndex(i)}}</ion-col>
             </ion-row>
             <ion-row>
               <ion-col size='3'>姓名</ion-col>

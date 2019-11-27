@@ -20,7 +20,7 @@ export class InsuranceOrderDetailComponent implements OnInit {
   OrderInsuranceStatusType = OrderInsuranceStatusType;
   OrderItemHelper = OrderItemHelper;
   @Input() order: OrderEntity;
-  @Input() selectedFlightTicketId: string;
+  @Input() selectedInsuranceId: string;
   isAgent = of(false);
   constructor(private identityService: IdentityService) {
     this.isAgent = identityService.getIdentitySource().pipe(map(id => id && id.Numbers && id.Numbers['AgentId']));
@@ -51,11 +51,7 @@ export class InsuranceOrderDetailComponent implements OnInit {
         .reduce((acc, it) => (acc = AppHelper.add(acc, +it[name])), 0);
   }
   getInsuranceInfos() {
-    const selectedFlightTicket = this.order&&this.order.OrderFlightTickets&&this.order.OrderFlightTickets.find(it=>it.Id==this.selectedFlightTicketId);
-    if (!selectedFlightTicket) {
-      return;
-    }
-    const orderInsurance: OrderInsuranceEntity = this.order && this.order.OrderInsurances && this.order.OrderInsurances.find(it => it.TravelKey==selectedFlightTicket.Key);
+    const orderInsurance: OrderInsuranceEntity = this.order && this.order.OrderInsurances && this.order.OrderInsurances.find(it => it.Id==this.selectedInsuranceId);
     if(!orderInsurance){
       return;
     }

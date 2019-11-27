@@ -73,6 +73,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
   @ViewChild("cnt") ionContent: IonContent;
   scrollElement: HTMLElement;
   selectedFlightTicket: OrderFlightTicketEntity;
+  selectedInsuranceId: string;
   identity: IdentityEntity;
   constructor(
     private plt: Platform,
@@ -90,6 +91,15 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
   compareFn(t1: OrderFlightTicketEntity, t2: OrderFlightTicketEntity) {
     return t1 && t2 && t1.Id == t2.Id;
   }
+  onSelectFlightTicket(evt: CustomEvent) {
+    console.log(evt.detail);
+    if (this.selectedFlightTicket) {
+      const orderInsurance: OrderInsuranceEntity = this.orderDetail && this.orderDetail.Order && this.orderDetail && this.orderDetail.Order.OrderInsurances && this.orderDetail && this.orderDetail.Order.OrderInsurances.find(it => it.TravelKey == this.selectedFlightTicket.Key);
+      if (orderInsurance) {
+        this.selectedInsuranceId = orderInsurance.Id;
+      }
+    }
+  }
   getTravelFlightTrips() {
     let infos: OrderFlightTripEntity[] = [];
     if (!this.orderDetail || !this.orderDetail.Order || !this.orderDetail.Order.OrderFlightTickets)
@@ -97,17 +107,20 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     this.orderDetail.Order.OrderFlightTickets.forEach(ticket => {
       if (ticket.OrderFlightTrips) {
         ticket.OrderFlightTrips.forEach(flightTrip => {
-          if (flightTrip.Status == OrderFlightTripStatusType.Normal)
+          if (flightTrip.Status == OrderFlightTripStatusType.Normal || flightTrip.Status == OrderFlightTripStatusType.Refund)
             infos.push(flightTrip);
         })
       }
     });
-    infos.sort((a, b) =>AppHelper.getDate(a.TakeoffTime).getTime() - AppHelper.getDate(b.TakeoffTime).getTime());
+    infos.sort((a, b) => AppHelper.getDate(a.TakeoffTime).getTime() - AppHelper.getDate(b.TakeoffTime).getTime());
     return infos;
+  }
+  getIndex(idx: number) {
+    return idx + 1;
   }
   canSendEmailMsg() {
     const selectedTicket: OrderFlightTicketEntity = this.selectedFlightTicket;
-    if (this.identity &&!(this.identity.Numbers && !!this.identity.Numbers['AgentId'])) {
+    if (this.identity && !(this.identity.Numbers && !!this.identity.Numbers['AgentId'])) {
       return false;
     }
     if (selectedTicket) {
@@ -119,7 +132,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     return false;
   }
   async sendMsg(passenger: OrderPassengerEntity) {
-    if (this.identity &&!(this.identity.Numbers && !!this.identity.Numbers['AgentId'])) {
+    if (this.identity && !(this.identity.Numbers && !!this.identity.Numbers['AgentId'])) {
       return false;
     }
     const selectedTicket = this.selectedFlightTicket;
@@ -249,7 +262,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     return this.orderDetail.Order.OrderNumbers.filter(it => it.Tag == tag);
   }
   async sendEmail(passenger: OrderPassengerEntity) {
-    if (this.identity &&!(this.identity.Numbers && !!this.identity.Numbers['AgentId'])) {
+    if (this.identity && !(this.identity.Numbers && !!this.identity.Numbers['AgentId'])) {
       return false;
     }
     const selectedTicket = this.selectedFlightTicket;
@@ -396,6 +409,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
         });
         if (tickets) {
           this.selectedFlightTicket = tickets[0];
+          this.onSelectFlightTicket({detail:{value:this.selectedFlightTicket}} as any);
         }
       }
       if (this.orderDetail.Order) {
