@@ -564,7 +564,7 @@ export class HotelService {
     // ) {
     //   return [...this.hotelPolicies[hotel.Id]];
     // }
-    
+    await this.setDefaultFilterPolicy();
     const result = await this.getHotelPolicyAsync(roomPlans, hotel);
     // if (!this.hotelPolicies) {
     //   this.hotelPolicies = { [hotel.Id]: result };
