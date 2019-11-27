@@ -4,7 +4,7 @@ import { DayModel } from "src/app/tmc/models/DayModel";
 import { TripType } from "src/app/tmc/models/TripType";
 import { HotelEntity } from "./models/HotelEntity";
 import { IdentityService } from "./../services/identity/identity.service";
-import { BehaviorSubject, throwError } from "rxjs";
+import { BehaviorSubject, throwError, from } from "rxjs";
 import { Injectable } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
 import {
@@ -27,7 +27,7 @@ import { RequestEntity } from "../services/api/Request.entity";
 import { Storage } from "@ionic/storage";
 import * as jsPy from "js-pinyin";
 import * as moment from "moment";
-import { filter, map } from "rxjs/operators";
+import { filter, map, switchMap } from "rxjs/operators";
 import { HotelQueryEntity } from "./models/HotelQueryEntity";
 import { HotelResultEntity } from "./models/HotelResultEntity";
 import { HotelModel } from "./models/HotelModel";
@@ -521,7 +521,9 @@ export class HotelService {
       hotelType: this.getSearchHotelModel().hotelType
     };
     // req.IsShowLoading = true;
-    return this.apiService.getResponse<HotelResultEntity>(req).pipe(
+    return from(this.setDefaultFilterPolicy())
+    .pipe(
+      switchMap(_=>this.apiService.getResponse<HotelResultEntity>(req)),
       map(result => {
         if (result && result.Data && result.Data.HotelDayPrices) {
           result.Data.HotelDayPrices = result.Data.HotelDayPrices.map(it => {
@@ -535,15 +537,7 @@ export class HotelService {
       })
     );
   }
-  async getHotelPolicy(roomPlans: RoomPlanEntity[], hotel: HotelEntity) {
-    // console.log("getHotelPolicy", this.hotelPolicies);
-    // if (
-    //   this.hotelPolicies &&
-    //   this.hotelPolicies[hotel && hotel.Id] &&
-    //   this.hotelPolicies[hotel && hotel.Id].length
-    // ) {
-    //   return [...this.hotelPolicies[hotel.Id]];
-    // }
+  private async setDefaultFilterPolicy(){
     const isSelf = await this.staffService.isSelfBookType();
     const bookInfos=this.getBookInfos();
     const unSelected = bookInfos.find(it=>!it.bookInfo);
@@ -560,6 +554,17 @@ export class HotelService {
         }))
       }
     }
+  }
+  async getHotelPolicy(roomPlans: RoomPlanEntity[], hotel: HotelEntity) {
+    // console.log("getHotelPolicy", this.hotelPolicies);
+    // if (
+    //   this.hotelPolicies &&
+    //   this.hotelPolicies[hotel && hotel.Id] &&
+    //   this.hotelPolicies[hotel && hotel.Id].length
+    // ) {
+    //   return [...this.hotelPolicies[hotel.Id]];
+    // }
+    
     const result = await this.getHotelPolicyAsync(roomPlans, hotel);
     // if (!this.hotelPolicies) {
     //   this.hotelPolicies = { [hotel.Id]: result };
