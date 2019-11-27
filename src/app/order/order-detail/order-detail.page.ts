@@ -102,7 +102,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
         })
       }
     });
-    infos.sort((a, b) => new Date(a.TakeoffTime).getTime() - new Date(b.TakeoffTime).getTime());
+    infos.sort((a, b) =>AppHelper.getDate(a.TakeoffTime).getTime() - AppHelper.getDate(b.TakeoffTime).getTime());
     return infos;
   }
   canSendEmailMsg() {
@@ -390,8 +390,8 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
         const tickets = this.orderDetail.Order.OrderFlightTickets.slice(0);
         tickets.sort((ta, tb) => {
           return (
-            new Date(tb.InsertTime).getTime() -
-            new Date(ta.InsertTime).getTime()
+            AppHelper.getDate(tb.InsertTime).getTime() -
+            AppHelper.getDate(ta.InsertTime).getTime()
           );
         });
         if (tickets) {

@@ -4,6 +4,7 @@ import { StaffEntity } from './../../../hr/staff.service';
 import { TrainEntity } from './../../models/TrainEntity';
 import { Component, OnInit, Input } from '@angular/core';
 import * as moment from 'moment';
+import { AppHelper } from 'src/app/appHelper';
 
 @Component({
   selector: 'app-train-ticket',
@@ -19,7 +20,7 @@ export class TrainTicketComponent implements OnInit {
   getDate(date: string) {
     if (date) {
       const wns = this.calendarService.getDayOfWeekNames();
-      const d = new Date(date);
+      const d = AppHelper.getDate(date);
       const m = d.getMonth() + 1;
       const day = d.getDate();
       const wn = wns[d.getDay()];

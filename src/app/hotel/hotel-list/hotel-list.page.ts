@@ -1,3 +1,4 @@
+import { AgentEntity } from './../../tmc/models/AgentEntity';
 import { ConfigEntity } from "./../../services/config/config.entity";
 import { ConfigService } from "./../../services/config/config.service";
 import { HotelConditionModel } from "src/app/hotel/models/ConditionModel";
@@ -74,6 +75,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit, AfterCon
   loadDataSub = Subscription.EMPTY;
   conditionModel: HotelConditionModel;
   config: ConfigEntity;
+  agent:AgentEntity;
   scroll$: Observable<any>;
   scrollEle: HTMLElement;
   constructor(
@@ -305,6 +307,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit, AfterCon
     this.subscriptions = null;
   }
   async ngOnInit() {
+    this.agent=await this.tmcService.getAgent();
     this.config = await this.configService.getConfigAsync();
     const sub0 = this.route.queryParamMap.subscribe(_ => {
       this.isShowSearchBar = false;

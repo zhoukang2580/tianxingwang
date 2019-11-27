@@ -908,10 +908,10 @@ export class TrainService {
         if (res) {
           result = res.map(it => {
             it.ArrivalTimeStamp = Math.floor(
-              new Date(it.ArrivalTime).getTime() / 1000
+              AppHelper.getDate(it.ArrivalTime).getTime() / 1000
             );
             it.StartTimeStamp = Math.floor(
-              new Date(it.StartTime).getTime() / 1000
+              AppHelper.getDate(it.StartTime).getTime() / 1000
             );
             it.AddOneDayTip = this.addoneday(it);
             it.StartShortTime = this.calendarService.getHHmm(it.StartTime);
@@ -1079,7 +1079,6 @@ export class TrainService {
   }
   private addoneday(s: TrainEntity) {
     const addDay = s.ArriveDays || "0";
-    // new Date(s.ArrivalTime).getDate() - new Date(s.StartTime).getDate();
     return +addDay > 0 ? "+" + addDay + LanguageHelper.getDayTip() : "";
   }
   async getInitializeBookDto(

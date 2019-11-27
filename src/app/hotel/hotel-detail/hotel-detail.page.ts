@@ -1,3 +1,4 @@
+import { AgentEntity } from './../../tmc/models/AgentEntity';
 import { ShowImagesComponent } from './../components/show-images/show-images.component';
 import { ApiService } from 'src/app/services/api/api.service';
 import { ImageSwiperComponent } from './../../components/image-swiper/image-swiper.component';
@@ -39,7 +40,7 @@ import { ConfigService } from "src/app/services/config/config.service";
 import { RoomEntity } from "../models/RoomEntity";
 import { RoomPlanEntity } from "../models/RoomPlanEntity";
 import { StaffService } from "src/app/hr/staff.service";
-import { PassengerBookInfo, FlightHotelTrainType } from "src/app/tmc/tmc.service";
+import { PassengerBookInfo, FlightHotelTrainType, TmcService } from "src/app/tmc/tmc.service";
 import { TripType } from "src/app/tmc/models/TripType";
 import { environment } from "src/environments/environment";
 import { FilterPassengersPolicyComponent } from "src/app/tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
@@ -77,6 +78,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   queryModelSub = Subscription.EMPTY;
   hotel: HotelEntity;
   config: ConfigEntity;
+  agent: AgentEntity;
   activeTab: IHotelDetailTab = "houseInfo";
   hotelPolicy: HotelPassengerModel[];
   rects: { [key in IHotelDetailTab]: ClientRect | DOMRect };
@@ -94,6 +96,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     private calendarService: CalendarService,
     private storage: Storage,
     private configService: ConfigService,
+    private tmcService: TmcService,
     private staffService: StaffService,
     private modalCtrl: ModalController,
     plt: Platform,
@@ -186,7 +189,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   }
   getWeekName(date: string) {
     if (date) {
-      const d = new Date(date);
+      const d = AppHelper.getDate(date);
       return this.calendarService.getDayOfWeekNames()[d.getDay()];
     }
   }
@@ -548,13 +551,14 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   }
   async onShowRoomImages(room: RoomEntity) {
     this.config = await this.configService.getConfigAsync();
+    this.agent = await this.tmcService.getAgent();
     const m = await this.modalCtrl.create({
       component: ImageSwiperComponent,
       componentProps: {
-        config: this.config,
-        imgStyle: { objectFit: "contain" },
+        logoUrl: this.agent && this.agent.LogoFullFileName,
+        prerenderImageUrl: this.config.PrerenderImageUrl,
+        // imgStyle: { objectFit: "contain" },
         imagesUrls: this.getRoomImages(room),
-        hasLogo: true,
       }
     });
     await m.present();

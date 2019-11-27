@@ -100,6 +100,7 @@ export class LoginService {
   logout() {
     const ticket = AppHelper.getTicket();
     if (ticket) {
+      AppHelper.setStorage("loginToken",null);
       const req = new RequestEntity();
       req.IsShowLoading = true;
       req.Method = "ApiLoginUrl-Home-Logout";

@@ -15,7 +15,7 @@
       <ion-text (click)='onSelectCity(false)'>{{ vmToCity?.CityName}}</ion-text>
     </ion-title>
     <ion-buttons slot='end'>
-      <ion-button fill='clear' color='secondary' (click)='selectFilterPolicyPasseger()' size='small'>
+      <ion-button fill='clear' color='secondary' *ngIf='' (click)='selectFilterPolicyPasseger()' size='small'>
         <ion-text class='sm-font-size'>过滤差标</ion-text>
       </ion-button>
       <ion-button fill='clear' *ngIf='showAddPassenger' color='secondary' size='small' (click)='onSelectPassenger()'>

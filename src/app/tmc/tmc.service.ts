@@ -55,6 +55,7 @@ export class TmcService {
   private companies: GroupCompanyEntity[];
   private fetchingCredentialReq: { [md5: string]: { isFectching: boolean; promise: Promise<any>; } } = {} as any;
   private tmc: TmcEntity;
+  private agent: AgentEntity;
   private mobileTemplateSelectItemList: SelectItem[] = [];
   private emailTemplateSelectItemList: SelectItem[] = [];
   public allLocalAirports: TrafficlineEntity[];
@@ -75,6 +76,7 @@ export class TmcService {
   private disposal() {
     this.companies = null;
     this.tmc = null;
+    this.agent=null;
   }
   getChannel(){
     let channel="H5";
@@ -588,6 +590,16 @@ export class TmcService {
       })
     }
     return this.fetchingCredentialReq[md5].promise;
+  }
+  async getAgent(forceFetch = false): Promise<AgentEntity> {
+    if (this.agent && !forceFetch) {
+      return Promise.resolve(this.agent);
+    }
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = "TmcApiHomeUrl-Agent-Agent";
+    this.agent = await this.apiService.getPromiseData<AgentEntity>(req);
+    return this.agent;
   }
   async getTmc(forceFetch = false): Promise<TmcEntity> {
     if (this.tmc && !forceFetch) {

@@ -19,7 +19,6 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   @ViewChild("swiperbuttonnext") nextEle: ElementRef<HTMLElement>;
   @ViewChild("pagination") paginationEle: ElementRef<HTMLElement>;
   @ViewChild("thumbs") thumbs: ElementRef<HTMLElement>;
-  @Input() config: ConfigEntity;
   @Input() hasThumbs = false;
   @Input() effect: boolean | "fade" | "flip" | "cube" | "coverflow" = 'fade';
   @Input() direction: "vertical" | "horizontal" = 'horizontal';
@@ -40,7 +39,8 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   @Output() close: EventEmitter<any>;
   @Input() fabvertical: string = 'top';
   @Input() fabhorizontal: string = 'end';
-  @Input() hasLogo;
+  @Input() logoUrl:string;
+  @Input() prerenderImageUrl:string;
   images: { active: boolean; url?: string; idx: number; text?: string; }[];
   scroll$: ReplaySubject<any>;
   logoPath: string;
