@@ -101,6 +101,7 @@ export class HotelService {
       this.disposal();
     });
   }
+  
   setHotelQuerySource(query:HotelQueryEntity) {
     this.hotelQueryModel=query;
     this.hotelQuerySource.next(query);
