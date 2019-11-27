@@ -1,3 +1,4 @@
+import { AppHelper } from './../../../appHelper';
 import { TmcService } from 'src/app/tmc/tmc.service';
 import { AgentEntity } from './../../../tmc/models/AgentEntity';
 import { ModalController } from '@ionic/angular';
@@ -18,6 +19,7 @@ export class ShowImagesComponent implements OnInit, AfterViewInit {
   swiper: Swiper;
   config: ConfigEntity;
   agent: AgentEntity;
+  zoom=AppHelper.isApp();
   @ViewChild("container") container: ElementRef<HTMLElement>;
   @ViewChild("thumbs") thumbsEle: ElementRef<HTMLElement>;
   @ViewChild("pagination") paginationEle: ElementRef<HTMLElement>;
@@ -36,7 +38,7 @@ export class ShowImagesComponent implements OnInit, AfterViewInit {
         },
         preloadImages: false,
         lazy: true,
-        // zoom:true,
+        zoom:this.zoom,
         // loadOnTransitionStart:true,
         thumbs: {
           swiper: thumbsSwiper
