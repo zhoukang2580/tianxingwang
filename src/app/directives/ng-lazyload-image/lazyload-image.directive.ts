@@ -46,7 +46,6 @@ export class LazyLoadImageDirective implements OnChanges, AfterContentInit, OnDe
     }
   }
   ngOnInit() {
-    this.setDefaultImage(this.defaultImage);
     this.scrollSubscription = this.propertyChanges$
       .pipe(
         tap(() => {
@@ -56,6 +55,7 @@ export class LazyLoadImageDirective implements OnChanges, AfterContentInit, OnDe
         switchMap(attributes => this.hooks.getObservable(attributes).pipe(lazyLoadImage(this.hooks, attributes)))
       )
       .subscribe(success => this.onLoad.emit(success));
+    this.setDefaultImage(this.defaultImage);
   }
   ngOnChanges(changes: SimpleChanges) {
     // console.log("changes.lazyLoad ", changes.lazyLoad.currentValue);

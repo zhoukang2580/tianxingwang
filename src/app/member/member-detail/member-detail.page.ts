@@ -51,10 +51,8 @@ export class MemberDetailPage implements OnInit, OnDestroy {
       .getIdentitySource()
       .subscribe(identity => {
         this.identity = identity;
-        if (!identity || !identity.Ticket) {
-          this.memberDetails = null;
-          this.staff = null;
-        }
+        this.memberDetails = null;
+        this.staff = null;
       });
     // AppHelper.setCallback((name: string, data: any) => {
     //   console.log("helper callback");
@@ -66,7 +64,7 @@ export class MemberDetailPage implements OnInit, OnDestroy {
 
   async load(forceLoad = false) {
     if (this.memberDetails && !forceLoad) {
-      return;
+      return this.memberDetails;
     }
     const r = await this.memberService.getMemberDetails().catch(_ => null);
     if (r) {
@@ -74,7 +72,7 @@ export class MemberDetailPage implements OnInit, OnDestroy {
         ...this.memberDetails,
         Name: r.Name,
         RealName: r.RealName,
-        HeadUrl: `${r.HeadUrl || (await this.configService.get()).DefaultImageUrl}?v=${Date.now()}`
+        HeadUrl: r.HeadUrl
       } as any;
     }
     this.staff = await this.staffService.getStaff();
