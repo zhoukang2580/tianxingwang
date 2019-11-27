@@ -1,0 +1,40 @@
+<!-- Slider main container -->
+<div class="swiper-container main" #container>
+  <!-- Additional required wrapper -->
+  <div class="swiper-wrapper">
+    <!-- Slides -->
+    <div class="swiper-slide " *ngFor='let img of images'>
+      <img [src]="config?.LogoImageUrl" class='logo' alt="公司logo">
+      <div class="swiper-zoom-container">
+        <!--<div [attr.data-background]="img.url" class='divimg' class="swiper-lazy">
+           <div [lazyLoad]='config?.LogoImageUrl' [defaultImage]='config?.PrerenderImageUrl' class='logo'></div> 
+           <div class="swiper-lazy-preloader"></div> 
+        </div>-->
+        <img [attr.data-src]="img.url" class="swiper-lazy">
+        <div class="swiper-lazy-preloader"></div>
+      </div>
+    </div>
+  </div>
+  <!-- If we need pagination -->
+  <!-- <div class="swiper-pagination"></div> -->
+
+  <!-- If we need navigation buttons -->
+  <!-- <div class="swiper-button-prev"></div>
+  <div class="swiper-button-next"></div> -->
+
+  <!-- If we need scrollbar -->
+  <!-- <div class="swiper-scrollbar"></div> -->
+</div>
+<div #thumbs class='swiper-container thumbs'>
+  <div class="swiper-wrapper">
+    <div class="swiper-slide" *ngFor="let item of images;let i=index;" [attr.dataid]='item.idx'
+      (click)='slidToPage(item.idx)'>
+      <img [lazyLoad]="item.url?.replace('640_960','70_70')" [defaultImage]='config?.PrerenderImageUrl' />
+      <!-- <div class="swiper-lazy-preloader"></div> -->
+    </div>
+  </div>
+</div>
+<ion-fab  vertical="vertical" horizontal="horizontal"
+  slot="fixed" (click)='onClose()'>
+  <ion-icon name="close-circle" color='light'></ion-icon>
+</ion-fab>

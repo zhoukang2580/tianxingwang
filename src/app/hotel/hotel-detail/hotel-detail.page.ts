@@ -1,3 +1,4 @@
+import { ShowImagesComponent } from './../components/show-images/show-images.component';
 import { ApiService } from 'src/app/services/api/api.service';
 import { ImageSwiperComponent } from './../../components/image-swiper/image-swiper.component';
 import { RoomDetailComponent } from './../components/room-detail/room-detail.component';
@@ -202,9 +203,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
         this.queryModel = m;
       });
     this.route.queryParamMap.subscribe(q => {
-      if (q.get("data")) {
-        this.hotelDayPrice = JSON.parse(q.get("data"));
-      }
+      this.hotelDayPrice = this.hotelService.curViewHotel;
       this.onSearch();
     });
     this.config = await this.configService.get().catch(_ => null);
@@ -555,7 +554,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
         config: this.config,
         imgStyle: { objectFit: "contain" },
         imagesUrls: this.getRoomImages(room),
-        hasLogo:true,
+        hasLogo: true,
       }
     });
     await m.present();
@@ -575,6 +574,16 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
         config: this.config
       }
     });
+    // const m = await this.modalCtrl.create({
+    //   component: ShowImagesComponent,
+    //   componentProps: {
+    //     images: this.getHotelImageUrls().map(it => {
+    //       return {
+    //         url: it
+    //       }
+    //     }),
+    //   }
+    // })
     await m.present();
     setTimeout(() => {
       this.apiService.hideLoadingView();

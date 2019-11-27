@@ -1,3 +1,4 @@
+import { ShowImagesComponent } from './show-images/show-images.component';
 import { AppComponentsModule } from "./../../components/appcomponents.module";
 import { AppDirectivesModule } from "./../../directives/directives.module";
 import { HotelListItemComponent } from "./hotel-list-item/hotel-list-item.component";
@@ -36,7 +37,8 @@ import { ShowMsgComponent } from './show-msg/show-msg.component';
     HotelRoomBookedinfosComponent,
     RoomShowItemComponent,
     ChangeRoomplanDateComponent,
-    ShowMsgComponent
+    ShowMsgComponent,
+    ShowImagesComponent
   ],
   imports: [
     CommonModule,
@@ -63,6 +65,6 @@ import { ShowMsgComponent } from './show-msg/show-msg.component';
     TmcComponentsModule,
     ChangeRoomplanDateComponent
   ],
-  entryComponents: [HotelRoomBookedinfosComponent,ShowMsgComponent,RoomDetailComponent]
+  entryComponents: [HotelRoomBookedinfosComponent,ShowMsgComponent,RoomDetailComponent,ShowImagesComponent]
 })
 export class HotelComponentsModule {}

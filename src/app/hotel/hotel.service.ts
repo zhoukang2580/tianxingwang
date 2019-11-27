@@ -69,6 +69,8 @@ export class HotelService {
   private conditionModel: HotelConditionModel;
   // private hotelPolicies: { [hotelId: string]: HotelPassengerModel[] };
   private hotelQueryModel: HotelQueryEntity;
+  curViewHotel:HotelDayPriceEntity;
+
   constructor(
     private apiService: ApiService,
     identityService: IdentityService,
