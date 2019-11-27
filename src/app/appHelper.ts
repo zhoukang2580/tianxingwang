@@ -559,4 +559,10 @@ export class AppHelper {
     }
     return 0;
   }
+  static getDate(datestr:string|number){
+    if(datestr && typeof datestr =='string'){
+      return new Date(datestr.replace(/-/g,'/').replace("T"," "));
+    }
+    return new Date(datestr);
+  }
 }

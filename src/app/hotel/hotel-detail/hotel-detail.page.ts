@@ -186,7 +186,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   }
   getWeekName(date: string) {
     if (date) {
-      const d = new Date(date);
+      const d = AppHelper.getDate(date);
       return this.calendarService.getDayOfWeekNames()[d.getDay()];
     }
   }

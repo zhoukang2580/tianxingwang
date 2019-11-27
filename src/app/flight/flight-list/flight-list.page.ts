@@ -379,7 +379,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     const goFlight = goInfo && goInfo.bookInfo && goInfo.bookInfo.flightSegment;
     if (goFlight) {
       const arrivalTime = moment(goFlight.ArrivalTime).add(1, 'hours');
-      result = segments.filter(it => new Date(`${it.TakeoffTime}`.replace(/-/g,'/')).getTime() >= +arrivalTime);
+      result = segments.filter(it => AppHelper.getDate(it.TakeoffTime).getTime() >= +arrivalTime);
     }
     return result;
   }

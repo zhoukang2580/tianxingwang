@@ -1084,12 +1084,7 @@ export class FlightService {
     }
   }
   private addoneday(s: FlightSegmentEntity) {
-    // const addDay =
-    //   moment(s.ArrivalTime, "YYYY-MM-DDTHH:mm:ss").date() -
-    //   moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").date();
-    // console.log(addDay);
     const addDay = moment(s.ArrivalTime).diff(moment(s.TakeoffTime), 'days');
-    // new Date(s.ArrivalTime).getDate() - new Date(s.TakeoffTime).getDate();
     return addDay > 0 ? "+" + addDay + LanguageHelper.getDayTip() : "";
   }
   getTotalFlySegments() {
@@ -1104,8 +1099,8 @@ export class FlightService {
         fj.FlightRoutes.forEach(r => {
           if (r.FlightSegments) {
             r.FlightSegments.forEach(seg => {
-              seg.TakeoffTimeStamp = new Date(`${seg.TakeoffTime}`.replace(/-/g,'/')).getTime();
-              seg.ArrivalTimeStamp = new Date(`${seg.ArrivalTime}`.replace(/-/g,'/')).getTime();
+              seg.TakeoffTimeStamp = AppHelper.getDate(seg.TakeoffTime).getTime();
+              seg.ArrivalTimeStamp = AppHelper.getDate(seg.ArrivalTime).getTime();
               seg.TakeoffShortTime = this.getHHmm(seg.TakeoffTime);
               seg.ArrivalShortTime = this.getHHmm(seg.ArrivalTime);
               seg.AddOneDayTip = this.addoneday(seg);
