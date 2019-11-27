@@ -124,12 +124,12 @@
             <div class='images-nums' *ngIf='images.length as len'>{{len}}张</div>
           </ng-container>
         </ion-thumbnail>
-        <ion-label class='item'>
+        <ion-label class='item' >
           <h3 style="display: inline-flex;">
             <ion-label margin-end>{{room.Name}}</ion-label>
             <ion-text color='secondary' (click)='onShowRoomDetails(room)'>详情</ion-text>
           </h3>
-          <h4 *ngIf='room.RoomDetails' (click)='onShowRoomDetails(room)'>
+          <h4 *ngIf='room.RoomDetails' (click)='room["isShowRoomPlans"]=!room["isShowRoomPlans"]'>
             <ion-label text-wrap>
               <div class="room-detail-desc">
                 <div *ngIf='getRoomArea(room) as it'>{{it.Description}}m²</div>
@@ -139,7 +139,7 @@
               </div>
             </ion-label>
           </h4>
-          <h3 text-end (click)='room["isShowRoomPlans"]=!room["isShowRoomPlans"]' style="padding-bottom: 0.5em;">
+          <h3 text-end  style="padding-bottom: 0.5em;" (click)='room["isShowRoomPlans"]=!room["isShowRoomPlans"]'>
             <ion-text color='danger' *ngIf='getRoomLowestAvgPrice(room) as price'>
               <strong><small style="font-size:.6rem;margin-right:0em;">￥</small><span
                   style="font-size: 1rem">{{price}}</span>

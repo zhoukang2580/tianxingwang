@@ -1,3 +1,4 @@
+import { AgentEntity } from './../../../tmc/models/AgentEntity';
 import { ConfigEntity } from './../../../services/config/config.entity';
 import { Observable, of } from "rxjs";
 import { HotelPassengerModel } from "./../../models/HotelPassengerModel";
@@ -31,6 +32,7 @@ import { map, tap } from "rxjs/operators";
 export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() room: RoomEntity;
   @Input() config: ConfigEntity;
+  @Input() agent: AgentEntity;
   @Input() roomImages: string[];
   @Output() close: EventEmitter<any>;
   @Output() bookRoom: EventEmitter<any>;

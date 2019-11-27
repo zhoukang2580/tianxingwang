@@ -8,7 +8,7 @@
         <div [class.swiper-zoom-container]='zoom'>
           <div [lazyLoad]='item.url' class='divimg' [class.has-thumbs]='hasThumbs'
             [defaultImage]='prerenderImageUrl'>
-            <div [lazyLoad]='logoUrl' class='logo' *ngIf='logoUrl'></div>
+            <div [lazyLoad]='logoUrl' class='logo' *ngIf='logoUrl||hasLogo'></div>
           </div>
           <!-- <img class="swiper-lazy" data-src="{{item.url}}" />  -->
           <!-- <div class="swiper-lazy-preloader"></div> -->

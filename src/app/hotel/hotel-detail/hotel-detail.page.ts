@@ -537,7 +537,8 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       componentProps: {
         room,
         roomImages,
-        config: this.config
+        config: this.config,
+        agent:this.agent
       }
     });
     if (m) {
@@ -556,6 +557,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       component: ImageSwiperComponent,
       componentProps: {
         logoUrl: this.agent && this.agent.LogoFullFileName,
+        hasLogo:true,
         prerenderImageUrl: this.config.PrerenderImageUrl,
         // imgStyle: { objectFit: "contain" },
         imagesUrls: this.getRoomImages(room),

@@ -40,6 +40,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() fabvertical: string = 'top';
   @Input() fabhorizontal: string = 'end';
   @Input() logoUrl:string;
+  @Input() hasLogo:string;
   @Input() prerenderImageUrl:string;
   images: { active: boolean; url?: string; idx: number; text?: string; }[];
   scroll$: ReplaySubject<any>;
