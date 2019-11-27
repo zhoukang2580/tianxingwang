@@ -1,19 +1,37 @@
 <section class="days" #daysContainer>
-  <article *ngFor='let item of days' [attr.date]='item?.date' #dayItem [class.active]='item.selected'
-    (click)='onDaySelected(item)'>
-    <ion-text>{{item?.desc}}</ion-text>
-    <ion-text text-nowrap>
-      <strong>
-        {{item?.date?.substring("2018-".length,"2018-10-21".length)}}
-      </strong>
-    </ion-text>
-    <ion-text class='price' color='danger' *ngIf='item?.price'>
-      ￥{{item?.price}}
-    </ion-text>
-    <ion-text class='price' color='dark' *ngIf='false&&!item?.price'>
-      查价
-    </ion-text>
-  </article>
+  <ng-container *ngIf='days.length else fackList'>
+    <article *ngFor='let item of days' [attr.date]='item?.date' #dayItem [class.active]='item.selected'
+      (click)='onDaySelected(item)'>
+      <ion-text>{{item?.desc}}</ion-text>
+      <ion-text text-nowrap>
+        <strong>
+          {{item?.date?.substring("2018-".length,"2018-10-21".length)}}
+        </strong>
+      </ion-text>
+      <ion-text class='price' color='danger' *ngIf='item?.price'>
+        ￥{{item?.price}}
+      </ion-text>
+      <ion-text class='price' color='dark' *ngIf='false&&!item?.price'>
+        查价
+      </ion-text>
+    </article>
+  </ng-container>
+  <ng-template #fackList>
+    <article *ngFor='let item of [1,2,3,4,5,6,7,8]'>
+      <ion-text>{{item}}</ion-text>
+      <ion-text text-nowrap>
+        <strong>
+          {{item?.date?.substring("2018-".length,"2018-10-21".length)}}
+        </strong>
+      </ion-text>
+      <ion-text class='price' color='danger' *ngIf='item?.price'>
+        ￥{{item?.price}}
+      </ion-text>
+      <ion-text class='price' color='dark' *ngIf='false&&!item?.price'>
+        查价
+      </ion-text>
+    </article>
+  </ng-template>
 </section>
 <section class="calendar" (click)='onCalendar()'>
   <i class="icon icon-calendar" color='secondary'></i>

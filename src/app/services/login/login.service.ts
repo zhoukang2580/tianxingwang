@@ -77,6 +77,7 @@ export class LoginService {
         Id: string; // ;
         Name: string; // "";
         IsShareTicket: boolean; // false;
+        Token:string;
         Numbers: { [key: string]: string };
       }>(req)
       .pipe(
@@ -86,6 +87,10 @@ export class LoginService {
             return throwError(r.Message);
           }
           this.identityService.setIdentity(r.Data);
+          if(r.Data && r.Data.Token)
+          {
+             AppHelper.setStorage("loginToken",r.Data.Token);
+          }
           return of( r.Data)
         }),
         tap(rid => {
