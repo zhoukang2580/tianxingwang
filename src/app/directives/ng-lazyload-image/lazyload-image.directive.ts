@@ -1,4 +1,4 @@
-import { OnInit } from '@angular/core';
+import { OnInit, SimpleChanges } from '@angular/core';
 import { isPlatformServer } from '@angular/common';
 import { AfterContentInit, Directive, ElementRef, EventEmitter, Inject, Input, NgZone, OnChanges, OnDestroy, Optional, Output, PLATFORM_ID } from '@angular/core';
 import { Observable, ReplaySubject, Subscription } from 'rxjs';
@@ -13,7 +13,7 @@ import { AppHelper } from 'src/app/appHelper';
   selector: '[lazyLoad]'
 })
 export class LazyLoadImageDirective implements OnChanges, AfterContentInit, OnDestroy, OnInit {
-  @Input('lazyLoad') lazyImage!: string; // The image to be lazy loaded
+  @Input() lazyLoad!: string; // The image to be lazy loaded
   @Input() defaultImage?: string; // The image to be displayed before lazyImage is loaded
   @Input() errorImage?: string; // The image to be displayed if lazyImage load fails
   @Input() scrollTarget?: any; // Scroll container that contains the image and emits scoll events
@@ -37,19 +37,31 @@ export class LazyLoadImageDirective implements OnChanges, AfterContentInit, OnDe
     this.hooks = createHooks(platformId, options);
   }
   private setDefaultImage(defaultImage: string = AppHelper.getDefaultLoadingImage()) {
-    if (this.elementRef.nativeElement instanceof HTMLImageElement) {
-      this.elementRef.nativeElement.src = defaultImage;
-    } else if (this.elementRef.nativeElement instanceof HTMLDivElement) {
-      this.elementRef.nativeElement.style.backgroundImage = defaultImage;
+    if (defaultImage) {
+      if (this.elementRef.nativeElement instanceof HTMLImageElement) {
+        this.elementRef.nativeElement.src = defaultImage;
+      } else if (this.elementRef.nativeElement instanceof HTMLDivElement) {
+        this.elementRef.nativeElement.style.backgroundImage = defaultImage;
+      }
     }
   }
   ngOnInit() {
     this.setDefaultImage(this.defaultImage);
+    this.scrollSubscription = this.propertyChanges$
+      .pipe(
+        tap(() => {
+          this.setupImageRecover();
+        }),
+        tap(attributes => this.hooks.setup(attributes)),
+        switchMap(attributes => this.hooks.getObservable(attributes).pipe(lazyLoadImage(this.hooks, attributes)))
+      )
+      .subscribe(success => this.onLoad.emit(success));
   }
-  ngOnChanges() {
+  ngOnChanges(changes: SimpleChanges) {
+    // console.log("changes.lazyLoad ", changes.lazyLoad.currentValue);
     this.propertyChanges$.next({
       element: this.elementRef.nativeElement,
-      imagePath: this.lazyImage,
+      imagePath: this.lazyLoad,
       defaultImagePath: this.defaultImage,
       errorImagePath: this.errorImage,
       useSrcset: this.useSrcset,
@@ -74,17 +86,17 @@ export class LazyLoadImageDirective implements OnChanges, AfterContentInit, OnDe
       return null;
     }
 
-    this.ngZone.runOutsideAngular(() => {
-      this.scrollSubscription = this.propertyChanges$
-        .pipe(
-          tap(() => {
-            this.setupImageRecover();
-          }),
-          tap(attributes => this.hooks.setup(attributes)),
-          switchMap(attributes => this.hooks.getObservable(attributes).pipe(lazyLoadImage(this.hooks, attributes)))
-        )
-        .subscribe(success => this.onLoad.emit(success));
-    });
+    // this.ngZone.runOutsideAngular(() => {
+    //   this.scrollSubscription = this.propertyChanges$
+    //     .pipe(
+    //       tap(() => {
+    //         this.setupImageRecover();
+    //       }),
+    //       tap(attributes => this.hooks.setup(attributes)),
+    //       switchMap(attributes => this.hooks.getObservable(attributes).pipe(lazyLoadImage(this.hooks, attributes)))
+    //     )
+    //     .subscribe(success => this.onLoad.emit(success));
+    // });
   }
 
   ngOnDestroy() {

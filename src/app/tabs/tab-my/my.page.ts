@@ -49,17 +49,14 @@ export class MyPage implements OnDestroy, OnInit {
     this.isIos = plt.is("ios");
     this.identitySubscription = this.identityService
       .getIdentitySource()
-      .subscribe(identity => {
-        if (!identity || !identity.Ticket) {
-          console.log("my page identity ", identity);
-          this.Model = null;
-        }
+      .subscribe(_ => {
+        this.Model = null;
       });
     route.paramMap.subscribe(async _ => {
       this.msgCount$ = this.messageService.getMsgCount();
-      this.load(AppHelper.getRouteData());
-      AppHelper.setRouteData(false);
       this.config = await this.configService.getConfigAsync();
+      this.load(AppHelper.getRouteData()||!this.Model||!this.Model.HeadUrl);
+      AppHelper.setRouteData(false);
       this.isShowMyOrderTabs =
         (await this.staffService.isSelfBookType()) ||
         (await this.staffService.isSecretaryBookType());
