@@ -238,6 +238,15 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit, AfterCon
       )
       .subscribe(
         result => {
+          if (this.refresher) {
+            if (this.hotelQueryModel.PageIndex < 1) {
+              console.log("refresher complete");
+              this.refresher.complete();
+            }
+          }
+          if (this.scroller) {
+            this.scroller.complete();
+          }
           if (result && result.Data && result.Data.HotelDayPrices) {
             const arr = result.Data.HotelDayPrices;
             if (this.scroller) {
@@ -248,15 +257,6 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit, AfterCon
               this.hotelDayPrices = [...this.hotelDayPrices, ...arr];
             }
             console.log("this.scroller.disabled", this.scroller.disabled);
-          }
-          if (this.refresher) {
-            if (this.hotelQueryModel.PageIndex <= 1) {
-              console.log("refresher complete");
-              this.refresher.complete();
-            }
-          }
-          if (this.scroller) {
-            this.scroller.complete();
           }
         },
         e => {
