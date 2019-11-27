@@ -19,7 +19,7 @@ export class TrainTicketComponent implements OnInit {
   getDate(date: string) {
     if (date) {
       const wns = this.calendarService.getDayOfWeekNames();
-      const d = new Date(date);
+      const d = new Date(`${date}`.replace(/-/g,'/'));
       const m = d.getMonth() + 1;
       const day = d.getDate();
       const wn = wns[d.getDay()];

@@ -1104,8 +1104,8 @@ export class FlightService {
         fj.FlightRoutes.forEach(r => {
           if (r.FlightSegments) {
             r.FlightSegments.forEach(seg => {
-              seg.TakeoffTimeStamp = new Date(seg.TakeoffTime).getTime();
-              seg.ArrivalTimeStamp = new Date(seg.ArrivalTime).getTime();
+              seg.TakeoffTimeStamp = new Date(`${seg.TakeoffTime}`.replace(/-/g,'/')).getTime();
+              seg.ArrivalTimeStamp = new Date(`${seg.ArrivalTime}`.replace(/-/g,'/')).getTime();
               seg.TakeoffShortTime = this.getHHmm(seg.TakeoffTime);
               seg.ArrivalShortTime = this.getHHmm(seg.ArrivalTime);
               seg.AddOneDayTip = this.addoneday(seg);

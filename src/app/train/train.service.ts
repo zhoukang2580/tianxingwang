@@ -908,10 +908,10 @@ export class TrainService {
         if (res) {
           result = res.map(it => {
             it.ArrivalTimeStamp = Math.floor(
-              new Date(it.ArrivalTime).getTime() / 1000
+              new Date(`${it.ArrivalTime}`.replace(/-/g,'/')).getTime() / 1000
             );
             it.StartTimeStamp = Math.floor(
-              new Date(it.StartTime).getTime() / 1000
+              new Date(`${it.StartTime}`.replace(/-/g,'/')).getTime() / 1000
             );
             it.AddOneDayTip = this.addoneday(it);
             it.StartShortTime = this.calendarService.getHHmm(it.StartTime);

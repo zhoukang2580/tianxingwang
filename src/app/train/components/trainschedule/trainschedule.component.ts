@@ -26,7 +26,7 @@ export class TrainscheduleComponent implements OnInit {
       Math.floor(Date.now() / 1000) >
       Math.floor(
         new Date(
-          `${now.getFullYear}-${now.getMonth() + 1}-${arrivalTime}`
+          `${now.getFullYear}-${now.getMonth() + 1}-${arrivalTime}`.replace(/-/g,'/')
         ).getTime() / 1000
       )
     );

@@ -102,7 +102,7 @@ export class CalendarService {
     const retD = new DayModel();
     if (typeof d === "number" || d instanceof Date) {
       const nowDate = new Date();
-      const date = typeof d === "number" ? new Date(d) : d;
+      const date = typeof d === "number" ? new Date(`${d}`.replace(/-/g,'/')) : d;
       retD.dayOfWeek = date.getDay();
       retD.day =
         date.getDate() < 10 ? `0${date.getDate()}` : `${date.getDate()}`;
