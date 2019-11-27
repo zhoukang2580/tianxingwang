@@ -4,7 +4,7 @@
   <div class="swiper-wrapper">
     <!-- Slides -->
     <div class="swiper-slide " *ngFor='let img of images'>
-      <img [src]="config?.LogoImageUrl" class='logo' alt="公司logo">
+      <img [src]="agent?.LogoFullFileName" class='logo' alt="公司logo">
       <div class="swiper-zoom-container">
         <!--<div [attr.data-background]="img.url" class='divimg' class="swiper-lazy">
            <div [lazyLoad]='config?.LogoImageUrl' [defaultImage]='config?.PrerenderImageUrl' class='logo'></div> 

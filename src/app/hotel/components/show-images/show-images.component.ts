@@ -1,3 +1,5 @@
+import { TmcService } from 'src/app/tmc/tmc.service';
+import { AgentEntity } from './../../../tmc/models/AgentEntity';
 import { ModalController } from '@ionic/angular';
 import { ConfigService } from './../../../services/config/config.service';
 import { ConfigEntity } from './../../../services/config/config.entity';
@@ -15,13 +17,14 @@ export class ShowImagesComponent implements OnInit, AfterViewInit {
   images: { url: string; active: boolean; idx: number }[];
   swiper: Swiper;
   config: ConfigEntity;
+  agent: AgentEntity;
   @ViewChild("container") container: ElementRef<HTMLElement>;
   @ViewChild("thumbs") thumbsEle: ElementRef<HTMLElement>;
   @ViewChild("pagination") paginationEle: ElementRef<HTMLElement>;
-  constructor(private configservice: ConfigService,private modalCtrl:ModalController) { }
+  constructor(private configservice: ConfigService, private tmcService: TmcService, private modalCtrl: ModalController) { }
   ngAfterViewInit() {
     setTimeout(() => {
-     const thumbsSwiper = new Swiper(this.thumbsEle.nativeElement, {
+      const thumbsSwiper = new Swiper(this.thumbsEle.nativeElement, {
         slidesPerView: 5,
       });
       this.swiper = new Swiper(this.container.nativeElement, {
@@ -32,7 +35,7 @@ export class ShowImagesComponent implements OnInit, AfterViewInit {
           type: "fraction"
         },
         preloadImages: false,
-        lazy:true,
+        lazy: true,
         // zoom:true,
         // loadOnTransitionStart:true,
         thumbs: {
@@ -43,6 +46,7 @@ export class ShowImagesComponent implements OnInit, AfterViewInit {
   }
   async ngOnInit() {
     this.config = await this.configservice.getConfigAsync();
+    this.agent = await this.tmcService.getAgent();
   }
   slidToPage(idx: number) {
     if (this.images) {
@@ -55,7 +59,7 @@ export class ShowImagesComponent implements OnInit, AfterViewInit {
       this.swiper.slideToLoop(idx, 100, false);
     }
   }
-  onClose(){
+  onClose() {
     this.modalCtrl.dismiss();
   }
 }
