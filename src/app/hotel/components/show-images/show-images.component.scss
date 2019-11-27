@@ -1,18 +1,18 @@
 .swiper-container.main {
-  height: calc(100% - 15vh);
+  height: 100%;
   width: 100%;
   .swiper-slide {
     position: relative;
-    &::after {
-      position: absolute;
-      right: 0;
-      bottom: 0.2em;
-      background-color: white;
-      display: inline-block;
-      height: 6em;
-      width: 7em;
-      content: "";
-    }
+    // &::after {
+    //   position: absolute;
+    //   right: 0;
+    //   bottom: 0.2em;
+    //   background-color: white;
+    //   display: inline-block;
+    //   height: 6em;
+    //   width: 7em;
+    //   content: "";
+    // }
     img.logo {
       max-width: 100%;
       border: 0;
@@ -21,10 +21,23 @@
       right: 0;
       z-index: 99;
       width: 7em;
-      height: 4em;
-      margin-bottom: 1em;
+      height: 3em;
+      background-color: white;
+      margin-bottom: 0.5em;
+      padding: .5em;
     }
   }
+}
+.swiper-pagination {
+  width: 5em;
+  padding: 0.2em;
+  border-radius: 0.2em;
+  background-color: rgba(var(--ion-color-dark-rgb), 0.5);
+  color: white;
+  position: absolute;
+  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
 }
 .swiper-container.thumbs {
   height: 15vh;
@@ -51,6 +64,7 @@
   width: 100%;
   background-position: center;
   position: relative;
+  object-fit: cover;
 }
 :host {
   background-color: black;

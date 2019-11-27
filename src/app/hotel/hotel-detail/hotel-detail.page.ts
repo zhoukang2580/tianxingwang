@@ -562,28 +562,28 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   async onShowHotelImages() {
     this.config = await this.configService.getConfigAsync();
     this.apiService.showLoadingView();
-    const m = await this.modalCtrl.create({
-      component: ImageSwiperComponent,
-      // animated: false,
-      componentProps: {
-        loop: false,
-        imgStyle: { objectFit: "contain" },
-        imagesUrls: this.getHotelImageUrls(),
-        hasThumbs: true,
-        hasLogo: true,
-        config: this.config
-      }
-    });
     // const m = await this.modalCtrl.create({
-    //   component: ShowImagesComponent,
+    //   component: ImageSwiperComponent,
+    //   // animated: false,
     //   componentProps: {
-    //     images: this.getHotelImageUrls().map(it => {
-    //       return {
-    //         url: it
-    //       }
-    //     }),
+    //     loop: false,
+    //     imgStyle: { objectFit: "contain" },
+    //     imagesUrls: this.getHotelImageUrls(),
+    //     hasThumbs: true,
+    //     hasLogo: true,
+    //     config: this.config
     //   }
-    // })
+    // });
+    const m = await this.modalCtrl.create({
+      component: ShowImagesComponent,
+      componentProps: {
+        images: this.getHotelImageUrls().map(it => {
+          return {
+            url: it
+          }
+        }),
+      }
+    })
     await m.present();
     setTimeout(() => {
       this.apiService.hideLoadingView();

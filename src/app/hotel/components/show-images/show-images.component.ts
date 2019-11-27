@@ -17,6 +17,7 @@ export class ShowImagesComponent implements OnInit, AfterViewInit {
   config: ConfigEntity;
   @ViewChild("container") container: ElementRef<HTMLElement>;
   @ViewChild("thumbs") thumbsEle: ElementRef<HTMLElement>;
+  @ViewChild("pagination") paginationEle: ElementRef<HTMLElement>;
   constructor(private configservice: ConfigService,private modalCtrl:ModalController) { }
   ngAfterViewInit() {
     setTimeout(() => {
@@ -26,6 +27,10 @@ export class ShowImagesComponent implements OnInit, AfterViewInit {
       this.swiper = new Swiper(this.container.nativeElement, {
         loop: true,
         // slidesPerView: 5,
+        pagination: {
+          el: this.paginationEle.nativeElement,
+          type: "fraction"
+        },
         preloadImages: false,
         lazy:true,
         // zoom:true,

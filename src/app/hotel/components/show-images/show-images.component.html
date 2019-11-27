@@ -15,6 +15,8 @@
       </div>
     </div>
   </div>
+  <div class="swiper-pagination" #pagination ></div>
+
   <!-- If we need pagination -->
   <!-- <div class="swiper-pagination"></div> -->
 
@@ -25,11 +27,11 @@
   <!-- If we need scrollbar -->
   <!-- <div class="swiper-scrollbar"></div> -->
 </div>
-<div #thumbs class='swiper-container thumbs'>
+<div #thumbs class='swiper-container thumbs' style='display:none'>
   <div class="swiper-wrapper">
-    <div class="swiper-slide" *ngFor="let item of images;let i=index;" [attr.dataid]='item.idx'
+    <div class="swiper-slide" *ngFor="let item of [];let i=index;" [attr.dataid]='item.idx'
       (click)='slidToPage(item.idx)'>
-      <img [lazyLoad]="item.url?.replace('640_960','70_70')" [defaultImage]='config?.PrerenderImageUrl' />
+      <img [lazyLoad]="item?.url?.replace('640_960','70_70')" [defaultImage]='config?.PrerenderImageUrl' />
       <!-- <div class="swiper-lazy-preloader"></div> -->
     </div>
   </div>
