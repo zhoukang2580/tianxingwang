@@ -20,16 +20,14 @@
   position: relative;
   .logo {
     position: absolute;
-    bottom: -0.5em;
-    right: -2.4em;
-    height: 6em;
+    bottom: 0;
+    right: 0;
+    height: 4em;
     background-repeat: no-repeat;
-    width: 11em;
-    // background-image: url(http://test.shared.testskytrip.com/img/logo.png);
+    width: 8em;
     z-index: 100;
     background-color: white;
-    transform: scale(0.6);
-    background-blend-mode: luminosity;
+    background-size: 100% 100%;
   }
 }
 .swiper-container,
