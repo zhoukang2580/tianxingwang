@@ -35,10 +35,8 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
   HotelBookType = HotelBookType;
   HotelPaymentType = HotelPaymentType;
   @Input() colors: { [k: string]: string };
-  private colorsSubscription=Subscription.EMPTY;
   constructor(
     private hotelService: HotelService,
-    private staffService: StaffService,
     private popoverCtrl: PopoverController
   ) {
     this.bookRoom = new EventEmitter();

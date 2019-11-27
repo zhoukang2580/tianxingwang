@@ -544,6 +544,22 @@ export class HotelService {
     // ) {
     //   return [...this.hotelPolicies[hotel.Id]];
     // }
+    const isSelf = await this.staffService.isSelfBookType();
+    const bookInfos=this.getBookInfos();
+    const unSelected = bookInfos.find(it=>!it.bookInfo);
+    if(isSelf||bookInfos.length==1){
+      this.setBookInfos(bookInfos.map((it,idx)=>{
+        it.isFilterPolicy=idx==0;
+        return it;
+      }));
+    }else{
+      if(unSelected){
+        this.setBookInfos(bookInfos.map(it=>{
+          it.isFilterPolicy=it.id==unSelected.id;
+          return it;
+        }))
+      }
+    }
     const result = await this.getHotelPolicyAsync(roomPlans, hotel);
     // if (!this.hotelPolicies) {
     //   this.hotelPolicies = { [hotel.Id]: result };
