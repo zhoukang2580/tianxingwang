@@ -55,7 +55,7 @@ export class MyPage implements OnDestroy, OnInit {
     route.paramMap.subscribe(async _ => {
       this.msgCount$ = this.messageService.getMsgCount();
       this.config = await this.configService.getConfigAsync();
-      this.load(AppHelper.getRouteData()||!this.Model||!this.Model.HeadUrl);
+      this.load(AppHelper.getRouteData() || !this.Model || !this.Model.HeadUrl);
       AppHelper.setRouteData(false);
       this.isShowMyOrderTabs =
         (await this.staffService.isSelfBookType()) ||
@@ -94,7 +94,7 @@ export class MyPage implements OnDestroy, OnInit {
     if (this.items.length < 4) {
       this.items = this.items.filter(it => it.value != ProductItemType.more);
     }
-    
+
     console.log("my ngOnInit");
     // this.Model = {
     //   Name: "",
@@ -105,19 +105,13 @@ export class MyPage implements OnDestroy, OnInit {
   }
 
   async load(forceLoad = false) {
-    console.log("my load this.model", this.Model);
     const req = new RequestEntity();
     if (this.Model && !forceLoad) {
       return this.Model;
     }
     req.Method = "ApiMemberUrl-Home-Get";
-    const r = await this.apiService.getPromiseData<PageModel>(req).catch(_ => null);
-    const config = await this.configService.get().catch(_ => null);
-    console.log("my load ApiMemberUrl-Home-Get", r);
-    this.Model = { ...this.Model, ...r };
-    if (this.Model && !this.Model.HeadUrl) {
-      this.Model.HeadUrl = config && config.DefaultImageUrl;
-    }
+    this.Model = await this.apiService.getPromiseData<PageModel>(req).catch(_ => null);
+    console.log("my load this.model", this.Model);
   }
   credentialManagement() {
     this.router.navigate([
