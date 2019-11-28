@@ -598,7 +598,7 @@ export class TmcService {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Agent-Agent";
-    this.agent = await this.apiService.getPromiseData<AgentEntity>(req);
+    this.agent = await this.apiService.getPromiseData<AgentEntity>(req).catch(_=>null);
     return this.agent;
   }
   async getTmc(forceFetch = false): Promise<TmcEntity> {
