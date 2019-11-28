@@ -387,20 +387,21 @@ export class TrainService {
     }
     const passenger = info.passenger;
     const accountId = passenger && passenger.AccountId;
-    if (!currentViewtTainItem.selectedSeat.Policy) {
-      const policy = this.totalPolicies.find(
-        k => k.PassengerKey == accountId
-      );
-      if (policy) {
-        if (currentViewtTainItem.train.Seats) {
-          currentViewtTainItem.train.Seats.forEach(s => {
-            s.Policy = policy.TrainPolicies.find(
-              i =>
-                i.TrainNo == currentViewtTainItem.train.TrainNo &&
-                i.SeatType == s.SeatType
-            );
-          });
-        }
+    const policy = this.totalPolicies.find(
+      k => k.PassengerKey == accountId
+    );
+    if (policy) {
+      if (currentViewtTainItem.train.Seats) {
+        currentViewtTainItem.train.Seats.forEach(s => {
+          s.Policy = policy.TrainPolicies.find(
+            i =>
+              i.TrainNo == currentViewtTainItem.train.TrainNo &&
+              i.SeatType == s.SeatType
+          );
+          if (currentViewtTainItem.selectedSeat.SeatType == s.SeatType) {
+            currentViewtTainItem.selectedSeat.Policy = s.Policy;
+          }
+        });
       }
     }
     const bookInfo: ITrainInfo = {
@@ -432,6 +433,7 @@ export class TrainService {
                 name = `${item.credential.CheckFirstName}${item.credential.CheckLastName}(${(item.credential.Number || "").substr(0, 6)}...)`;
               }
               cannotArr.push(name);
+              item.bookInfo = null;
             } else {
               item.bookInfo = info;
             }
@@ -513,20 +515,21 @@ export class TrainService {
     if (trains.length == 0) {
       return [];
     }
-    let passengers = this.getUnSelectPassengers();
-    if (passengers.length == 0) {
-      passengers = this.getBookInfos().map(info => info.passenger);
-    }
-    const hasreselect = this
-      .getBookInfos()
-      .find(item => item.isReplace);
-    if (hasreselect) {
-      if (
-        !passengers.find(p => p.AccountId == hasreselect.passenger.AccountId)
-      ) {
-        passengers.push(hasreselect.passenger);
-      }
-    }
+    // let passengers = this.getUnSelectPassengers();
+    // if (passengers.length == 0) {
+    //   passengers = this.getBookInfos().map(info => info.passenger);
+    // }
+    // const hasreselect = this
+    //   .getBookInfos()
+    //   .find(item => item.isReplace);
+    // if (hasreselect) {
+    //   if (
+    //     !passengers.find(p => p.AccountId == hasreselect.passenger.AccountId)
+    //   ) {
+    //     passengers.push(hasreselect.passenger);
+    //   }
+    // }
+    const passengers = this.getBookInfos().map(info => info.passenger)
     const notWhitelistPs = passengers.filter(p => p.isNotWhiteList); // 非白名单乘客
     const whitelistPs = passengers.filter(p => !p.isNotWhiteList); // 白名单的乘客，需要计算差标
     const whitelistAccountId = whitelistPs

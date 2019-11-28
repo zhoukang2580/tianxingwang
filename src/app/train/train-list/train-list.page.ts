@@ -114,6 +114,8 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.route.queryParamMap.subscribe(async _ => {
       this.isShowRoundtripTip = await this.staffService.isSelfBookType();
       let isDoRefresh = false;
+      this.currentSelectedPassengerIds = this.trainService
+        .getBookInfos().map(it => it.passenger && it.passenger.AccountId);
       if (this.currentSelectedPassengerIds && this.lastSelectedPassengerIds) {
         if (this.currentSelectedPassengerIds.length != this.lastSelectedPassengerIds.length ||
           !this.currentSelectedPassengerIds.some(it => !!this.lastSelectedPassengerIds.find(id => id == it)) ||
@@ -174,14 +176,7 @@ export class TrainListPage implements OnInit, OnDestroy {
       });
     this.selectedPassengersNumbers$ = this.trainService
       .getBookInfoSource()
-      .pipe(tap(infos => {
-        this.currentSelectedPassengerIds = [];
-        infos.map(it => it.passenger && it.passenger.AccountId).forEach(it => {
-          if (it && !this.currentSelectedPassengerIds.find(id => id == it)) {
-            this.currentSelectedPassengerIds.push(it);
-          }
-        })
-      }), map(infos => infos.length));
+      .pipe(map(infos => infos.length));
     this.doRefresh(true, false);
   }
   async schedules(train: TrainEntity) {
@@ -256,12 +251,7 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.isLoading = false;
   }
   goToSelectPassengerPage() {
-    this.lastSelectedPassengerIds = [];
-    this.trainService.getBookInfos().map(it => it.passenger && it.passenger.AccountId).forEach(it => {
-      if (it && !this.lastSelectedPassengerIds.find(id => id == it)) {
-        this.lastSelectedPassengerIds.push(it);
-      }
-    });
+    this.lastSelectedPassengerIds = this.trainService.getBookInfos().map(it => it.passenger && it.passenger.AccountId);
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
       queryParams: {
         forType: FlightHotelTrainType.Train
