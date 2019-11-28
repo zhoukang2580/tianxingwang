@@ -1,3 +1,4 @@
+import { interval } from 'rxjs';
 import { Observable, Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { Attributes } from '../types';
@@ -28,8 +29,16 @@ export const getIntersectionObserver = (attributes: Attributes): Observable<Inte
   let observer = observers.get(scrollContainerKey);
 
   if (!observer) {
-    observer = new IntersectionObserver(loadingCallback, options);
-    observers.set(scrollContainerKey, observer);
+    if ('IntersectionObserver' in window) {
+      if (!('MutationObserver' in window)) {
+        IntersectionObserver.prototype['POLL_INTERVAL'] =
+          IntersectionObserver.prototype['THROTTLE_TIMEOUT'] || 100;
+      }
+      observer = new IntersectionObserver(loadingCallback, options);
+      observers.set(scrollContainerKey, observer);
+    } else {
+      alert('当前浏览器不支持 IntersectionObserver');
+    }
   }
 
   observer.observe(attributes.element);

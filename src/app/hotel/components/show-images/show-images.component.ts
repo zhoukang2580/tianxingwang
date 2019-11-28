@@ -7,7 +7,7 @@ import { ConfigEntity } from './../../../services/config/config.entity';
 import { ElementRef } from '@angular/core';
 import { AfterViewInit, ViewChild } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
-import Swiper from 'swiper';
+import Swiper from 'swiper'; 
 
 @Component({
   selector: 'app-show-images',
