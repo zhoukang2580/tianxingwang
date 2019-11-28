@@ -510,7 +510,7 @@ export class SelectPassengerPage
     if (
       this.forType == FlightHotelTrainType.Flight
     ) {
-      const can = this.flightService.getPassengerBookInfos().length<=9
+      const can = this.flightService.getPassengerBookInfos().length<9
       if (!can) {
         AppHelper.alert(LanguageHelper.Flight.getCannotBookMorePassengerTip());
         return false;
@@ -522,7 +522,7 @@ export class SelectPassengerPage
     if (
       this.forType == FlightHotelTrainType.Train
     ) {
-      if (this.trainService.getBookInfos().length>5) {
+      if (this.trainService.getBookInfos().length>4) {
         AppHelper.alert(LanguageHelper.Train.getCannotBookMorePassengerTip());
         return false;
       }

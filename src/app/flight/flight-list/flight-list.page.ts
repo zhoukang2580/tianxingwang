@@ -436,30 +436,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
 
   async goToFlightCabinsDetails(fs: FlightSegmentEntity) {
     await this.flightService.addOneBookInfoToSelfBookType();
-    const isSelf = await this.staffService.isSelfBookType();
-    if (
-      !isSelf &&
-      this.flightService.getPassengerBookInfos().map(item => item.passenger)
-        .length == 0
-    ) {
-      await AppHelper.alert(
-        LanguageHelper.Flight.getMustAddOnePassengerTip(),
-        true,
-        LanguageHelper.getConfirmTip()
-      );
-      await this.onSelectPassenger();
-      return;
-    }
-    const canbookMore = await this.flightService.canBookMoreFlightSegment(fs);
-    if (!canbookMore) {
-      await AppHelper.alert(
-        LanguageHelper.Flight.getCannotBookMoreFlightSegmentTip(),
-        true,
-        LanguageHelper.getConfirmTip()
-      );
-      await this.showSelectedInfos();
-      return;
-    }
     const validate = await this.flightService.canBookReturnTripFlightSegment(
       fs
     );
