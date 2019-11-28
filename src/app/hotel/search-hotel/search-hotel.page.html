@@ -10,12 +10,19 @@
     <ion-buttons class='small-font' slot='end'>
       <ion-button *ngIf='isShowSelectedInfos$ |async' fill='clear' color='secondary' size='small'
         (click)='onShowSelectedBookInfos()'>已选行程<ion-badge color='danger'>
-          <ion-text color='light'>{{selectedPassengers$|async}}</ion-text>
+          <ion-text color='light'>{{selectedPassengers}}</ion-text>
         </ion-badge>
       </ion-button>
-      <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()' *ngIf='canAddPassengers'>
-        添加乘客<ion-badge color='danger'>
-          <ion-text color='light'>{{selectedPassengers$|async}}</ion-text>
+      <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()'
+        *ngIf='canAddPassengers&&!selectedPassengers'>
+        添加旅客<ion-badge color='danger'>
+          <ion-text color='light'>{{selectedPassengers}}</ion-text>
+        </ion-badge>
+      </ion-button>
+      <ion-button fill='clear' color='secondary' size='small' (click)='onOpenSelectedPassengers()'
+        *ngIf='canAddPassengers&&selectedPassengers'>
+        已选旅客<ion-badge color='danger'>
+          <ion-text color='light'>{{selectedPassengers}}</ion-text>
         </ion-badge>
       </ion-button>
     </ion-buttons>
@@ -55,10 +62,10 @@
         </app-search-day-comp>
       </section>
       <ion-button margin-top style='width: 100%' (click)="onSearchHotel()"
-        *ngIf='!((canAddPassengers) && (selectedPassengers$|async)==0)' color="secondary" expand="block">
+        *ngIf='!((canAddPassengers) && selectedPassengers==0)' color="secondary" expand="block">
         <ion-text>查询酒店</ion-text>
       </ion-button>
-      <ion-button *ngIf='(canAddPassengers) && (selectedPassengers$|async)==0' margin-top style='width: 100%'
+      <ion-button *ngIf='(canAddPassengers) && selectedPassengers==0' margin-top style='width: 100%'
         (click)='onSelectPassenger()' color="secondary" expand="block">
         <ion-text>请添加乘客
         </ion-text>

@@ -1,19 +1,21 @@
+import { LanguageHelper } from './../../languageHelper';
 import { ImageRecoverService } from "./../../services/imageRecover/imageRecover.service";
 import { DayModel } from "src/app/tmc/models/DayModel";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { CalendarService } from "src/app/tmc/calendar.service";
-import { FlightHotelTrainType } from "./../../tmc/tmc.service";
+import { FlightHotelTrainType, PassengerBookInfo } from "./../../tmc/tmc.service";
 import { TmcService } from "src/app/tmc/tmc.service";
-import { HotelService } from "./../hotel.service";
+import { HotelService, IHotelInfo } from "./../hotel.service";
 import { Router, ActivatedRoute, NavigationEnd } from "@angular/router";
 import { Observable, Subscription, from, of } from "rxjs";
-import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
-import { NavController } from "@ionic/angular";
+import { Component, OnInit, OnDestroy, AfterViewInit, EventEmitter } from "@angular/core";
+import { NavController, ModalController } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import { StaffService } from "src/app/hr/staff.service";
 import { map } from "rxjs/operators";
 import * as moment from "moment";
 import { TripType } from "src/app/tmc/models/TripType";
+import { SelectedPassengersComponent } from 'src/app/tmc/components/selected-passengers/selected-passengers.component';
 @Component({
   selector: "app-search-hotel",
   templateUrl: "./search-hotel.page.html",
@@ -23,7 +25,9 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   isShowSelectedInfos$: Observable<boolean>;
   canAddPassengers = false;
-  selectedPassengers$ = of(0);
+  get selectedPassengers() {
+    return this.hotelService.getBookInfos().length
+  };
   get totalFlyDays() {
     if (this.checkInDate && this.checkOutDate) {
       const nums =
@@ -47,6 +51,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     private navCtrl: NavController,
     private route: ActivatedRoute,
     private tmcSerivce: TmcService,
+    private modalController: ModalController,
     private staffService: StaffService,
     private calendarService: CalendarService
   ) {
@@ -73,9 +78,6 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   }
   ngOnInit() {
     this.onPosition();
-    this.selectedPassengers$ = this.hotelService
-      .getBookInfoSource()
-      .pipe(map(infos => infos.length));
     this.initCheckInCheckOutDate();
     const sub = this.hotelService.getSearchHotelModelSource().subscribe(m => {
       this.activeTab = m.hotelType;
@@ -129,6 +131,25 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   onShowSelectedBookInfos() { }
   onSelectPassenger() {
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], { queryParams: { forType: FlightHotelTrainType.Hotel } });
+  }
+  async onOpenSelectedPassengers() {
+    const removeitem = new EventEmitter();
+    removeitem.subscribe(async (info: PassengerBookInfo<IHotelInfo>) => {
+      const ok = await AppHelper.alert(LanguageHelper.getConfirmDeleteTip(), true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+      if (ok) {
+        this.hotelService.removeBookInfo(info, true);
+      }
+    });
+    const m = await this.modalController.create({
+      component: SelectedPassengersComponent,
+      componentProps: {
+        bookInfos$: this.hotelService.getBookInfoSource(),
+        removeitem: removeitem
+      }
+    });
+    await m.present();
+    await m.onDidDismiss();
+    removeitem.unsubscribe();
   }
   async onSelecDate(isCheckIn: boolean) {
     const days = await this.hotelService.openCalendar(
