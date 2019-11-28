@@ -52,7 +52,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
         if (code) {
           const data = {
             Code: code,
-            WechatSdkType: "App"
+            SdkType: "App"
           };
           this.bindCode(data);
         }

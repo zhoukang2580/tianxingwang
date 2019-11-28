@@ -104,7 +104,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       MobileCode: [null], // 手机验证码
       Mobile: [null], // 手机号
       WechatCode: [null],
-      WechatSdkType: [null],
+      SdkType: [null],
       DingtalkCode: [null]
     });
     this.form.controls["Mobile"].valueChanges.subscribe((m: string) => {
@@ -151,7 +151,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         const code = await this.getWechatCode(appId).catch(() => null);
         if (code) {
           this.loginType = "wechat";
-          this.form.patchValue({ WechatCode: code, WechatSdkType: "App" });
+          this.form.patchValue({ WechatCode: code, SdkType: "App" });
           this.login();
         }
       }
@@ -251,7 +251,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           });
         break;
       case "wechat": {
-        this.loginEntity.Data.SdkType = this.form.value.WechatSdkType;
+        this.loginEntity.Data.SdkType = this.form.value.SdkType;
         this.loginEntity.Data.Code = this.form.value.WechatCode;
         this.loginSubscription = this.loginService
           .login("ApiLoginUrl-Home-WechatLogin", this.loginEntity)
