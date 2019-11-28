@@ -2,6 +2,7 @@ import { interval } from 'rxjs';
 import { Observable, Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { Attributes } from '../types';
+import { environment } from 'src/environments/environment';
 type ObserverOptions = {
   root: Element | null;
   rootMargin?: string;
@@ -37,7 +38,9 @@ export const getIntersectionObserver = (attributes: Attributes): Observable<Inte
       observer = new IntersectionObserver(loadingCallback, options);
       observers.set(scrollContainerKey, observer);
     } else {
-      alert('当前浏览器不支持 IntersectionObserver');
+      if(!environment.production){
+        alert('当前浏览器不支持 IntersectionObserver');
+      }
     }
   }
 
