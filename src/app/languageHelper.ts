@@ -2,6 +2,9 @@ export class LanguageHelper {
   static Train = {
     getDontAllowBookTip: () => {
       return "当前座位违反差标，不能预订";
+    },
+    getCannotBookMorePassengerTip: () => {
+      return "不能添加更多旅客";
     }
   };
   static Order = {
@@ -114,9 +117,14 @@ export class LanguageHelper {
       return "茶点或小吃";
     }
   };
+  static Hotel = {
+    getCannotBookMoreHotelPassengerTip: () => {
+      return `您已添加旅客`;
+    }
+  }
   static Flight = {
     getMustAddOnePassengerTip: () => {
-      return "请添加择乘客";
+      return "请添加择旅客";
     },
     getSaveBookOrderOkTip: () => {
       return "您的预订已完成";
@@ -140,10 +148,10 @@ export class LanguageHelper {
       return `请先选择去程`;
     },
     getAddMorePassengersTip: () => {
-      return `完成添加乘客？`;
+      return `完成添加旅客？`;
     },
     getMustSelectPassengerTypeTip: () => {
-      return `请选择乘客类型`;
+      return `请选择旅客类型`;
     },
     getMustSelectOneCredentialTip: () => {
       return `请选择一个证件`;
@@ -158,7 +166,7 @@ export class LanguageHelper {
       return `客户`;
     },
     getPassengerTypeOtherTip: () => {
-      return `其它乘客类别`;
+      return `其它旅客类别`;
     },
     getNotWhitelistingTip: () => {
       return `非白名单`;
@@ -181,8 +189,9 @@ export class LanguageHelper {
     getIsReSelectDepartureTip: () => {
       return `是否更新 [去程]？`;
     },
+
     getCannotBookMorePassengerTip: () => {
-      return `不能添加更多乘客`;
+      return `不能添加更多旅客`;
     },
     getCannotBookMoreFlightSegmentTip: () => {
       return `不能预订更多航班`;
@@ -245,7 +254,7 @@ export class LanguageHelper {
     return "该人员证件号为空，不可添加";
   }
   static getSelectPassengersTip() {
-    return "请添加乘客";
+    return "请添加旅客";
   }
   static getRoundTripTotalDaysTip(num: number) {
     return `共${num}天`;

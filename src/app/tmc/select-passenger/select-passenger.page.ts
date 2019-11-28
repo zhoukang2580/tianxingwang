@@ -493,26 +493,14 @@ export class SelectPassengerPage
     };
     action();
   }
-  private async canAddMorePassenger(
-    passengerBookInfos: PassengerBookInfo<any>[]
-  ) {
-    if (
-      !(await this.staffService.isSelfBookType()) &&
-      passengerBookInfos.length >= 9
-    ) {
-      AppHelper.alert(LanguageHelper.Flight.getCannotBookMorePassengerTip());
-      return false;
-    }
-    return true;
-  }
   private async onAddPassengerBookInfo(
     passengerBookInfo: PassengerBookInfo<any>
   ) {
     if (
       this.forType == FlightHotelTrainType.Hotel
     ) {
-      const can = this.canAddMorePassenger(this.hotelService.getBookInfos());
-      if (!can) {
+      if (this.hotelService.getBookInfos().length>1) {
+        AppHelper.alert(LanguageHelper.Hotel.getCannotBookMoreHotelPassengerTip());
         return false;
       }
       const bookInfos = this.hotelService.getBookInfos();
@@ -522,10 +510,9 @@ export class SelectPassengerPage
     if (
       this.forType == FlightHotelTrainType.Flight
     ) {
-      const can = this.canAddMorePassenger(
-        this.flightService.getPassengerBookInfos()
-      );
+      const can = this.flightService.getPassengerBookInfos().length<=9
       if (!can) {
+        AppHelper.alert(LanguageHelper.Flight.getCannotBookMorePassengerTip());
         return false;
       }
       const bookInfos = this.flightService.getPassengerBookInfos();
@@ -535,7 +522,8 @@ export class SelectPassengerPage
     if (
       this.forType == FlightHotelTrainType.Train
     ) {
-      if (!this.canAddMorePassenger(this.trainService.getBookInfos())) {
+      if (this.trainService.getBookInfos().length>5) {
+        AppHelper.alert(LanguageHelper.Train.getCannotBookMorePassengerTip());
         return false;
       }
       const bookInfos = this.trainService.getBookInfos();
