@@ -457,7 +457,7 @@ export class TrainService {
   private async selectAndReplaceBookInfos(currentViewtTainItem: ICurrentViewtTainItem, bookInfos: PassengerBookInfo<ITrainInfo>[]) {
     const m = await this.modalCtrl.create({
       component: SelectAndReplaceTrainInfoComponent, componentProps: {
-        flightService: this,
+        trainService: this,
         train: currentViewtTainItem.train,
         seat: currentViewtTainItem.selectedSeat,
         bookInfos: this.getBookInfos().map(it => {
