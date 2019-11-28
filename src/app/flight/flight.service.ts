@@ -657,6 +657,7 @@ export class FlightService {
                 name = `${item.credential.CheckFirstName}${item.credential.CheckLastName}(${(item.credential.Number || "").substr(0, 6)}...)`;
               }
               cannotArr.push(name);
+              item.bookInfo=null;
             } else {
               item.bookInfo = info;
             }
@@ -716,6 +717,7 @@ export class FlightService {
             name = `${item.credential.CheckFirstName}${item.credential.CheckLastName}(${(item.credential.Number || "").substr(0, 6)}...)`;
           }
           cannotArr.push(name);
+          item.bookInfo=null;
         } else {
           item.bookInfo = info;
         }
@@ -733,7 +735,7 @@ export class FlightService {
     });
     return bookInfos;
   }
-  private getPolicyCabinBookInfo(
+  getPolicyCabinBookInfo(
     bookInfo: PassengerBookInfo<IFlightSegmentInfo>,
     flightCabin: FlightCabinEntity,
     flightSegment: FlightSegmentEntity,

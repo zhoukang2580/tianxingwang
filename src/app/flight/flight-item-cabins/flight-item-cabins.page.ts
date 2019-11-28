@@ -1,3 +1,4 @@
+import { LanguageHelper } from 'src/app/languageHelper';
 import { FilterConditionModel } from 'src/app/flight/models/flight/advanced-search-cond/FilterConditionModel';
 import { FlightCabinEntity } from "./../models/flight/FlightCabinEntity";
 import { IdentityService } from "./../../services/identity/identity.service";
@@ -122,6 +123,18 @@ export class FlightItemCabinsPage implements OnInit {
     return info && info.passenger && info.passenger.Policy && info.passenger.Policy.FlightLegalTip;
   }
   async onBookTicket(flightCabin: FlightCabinEntity) {
+    // const bookInfos = this.flightService.getPassengerBookInfos();
+    // for (let i = 0; i < bookInfos.length; i++) {
+    //   const item = bookInfos[i];
+    //   const info = this.flightService.getPolicyCabinBookInfo(item, flightCabin, this.vmFlightSegment);
+    //   if (info && info.isDontAllowBook) {
+    //     const name = `${item.credential.CheckFirstName}${item.credential.CheckLastName}(${(item.credential.Number || "").substr(0, 6)}...)`;
+    //     const ok = await AppHelper.alert(`${name}超标不可预订,是否继续？`, true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+    //     if (!ok) {
+    //       return;
+    //     }
+    //   }
+    // }
     await this.flightService.addOrReplaceSegmentInfo(flightCabin, this.vmFlightSegment);
     await this.showSelectedInfos();
   }
