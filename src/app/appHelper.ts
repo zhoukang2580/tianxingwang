@@ -402,7 +402,7 @@ export class AppHelper {
     if (environment.production) {
       return "http://app." + this._appDomain;
     }
-    return "http://test.app.testskytrip.com";
+    return "http://test.app." + this._appDomain;
   }
   static getRoutePath(path: string) {
     const style = AppHelper.getStyle() || "";
