@@ -499,7 +499,7 @@ export class SelectPassengerPage
     if (
       this.forType == FlightHotelTrainType.Hotel
     ) {
-      if (this.hotelService.getBookInfos().length>1) {
+      if (this.hotelService.getBookInfos().length>0) {
         AppHelper.alert(LanguageHelper.Hotel.getCannotBookMoreHotelPassengerTip());
         return false;
       }
