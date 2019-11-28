@@ -43,7 +43,7 @@ export class MemberDetailPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.route.queryParamMap.subscribe(async _ => {
       this.config = await this.configService.getConfigAsync();
-      await this.load(AppHelper.getRouteData());
+      this.load(AppHelper.getRouteData());
       AppHelper.setRouteData(AppHelper.getRouteData());
     });
     console.log("member detail ngOnInit");
@@ -61,9 +61,17 @@ export class MemberDetailPage implements OnInit, OnDestroy {
     //   }
     // });
   }
-
+  private addVersionToUrl(url: string) {
+    if (url) {
+      url = url.includes("?v") ? url.substr(0, url.indexOf("?")) + `?v=${Date.now()}` : `${url}?v=${Date.now()}`
+    }
+    return url;
+  }
   async load(forceLoad = false) {
     if (this.memberDetails && !forceLoad) {
+      if (this.memberDetails.HeadUrl) {
+        this.memberDetails.HeadUrl = this.addVersionToUrl(this.memberDetails.HeadUrl);
+      }
       return this.memberDetails;
     }
     const r = await this.memberService.getMemberDetails().catch(_ => null);
@@ -72,7 +80,7 @@ export class MemberDetailPage implements OnInit, OnDestroy {
         ...this.memberDetails,
         Name: r.Name,
         RealName: r.RealName,
-        HeadUrl: r.HeadUrl
+        HeadUrl: this.addVersionToUrl(r.HeadUrl)
       } as any;
     }
     this.staff = await this.staffService.getStaff();

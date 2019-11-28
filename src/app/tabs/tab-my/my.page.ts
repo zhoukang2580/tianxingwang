@@ -107,11 +107,23 @@ export class MyPage implements OnDestroy, OnInit {
   async load(forceLoad = false) {
     const req = new RequestEntity();
     if (this.Model && !forceLoad) {
+      if (this.Model && this.Model.HeadUrl) {
+        this.Model.HeadUrl = this.addVersionToUrl(this.Model.HeadUrl);
+      }
       return this.Model;
     }
     req.Method = "ApiMemberUrl-Home-Get";
     this.Model = await this.apiService.getPromiseData<PageModel>(req).catch(_ => null);
+    if (this.Model && this.Model.HeadUrl) {
+      this.Model.HeadUrl = this.addVersionToUrl(this.Model.HeadUrl);
+    }
     console.log("my load this.model", this.Model);
+  }
+  private addVersionToUrl(url: string) {
+    if (url) {
+      url = url.includes("?v") ? url.substr(0, url.indexOf("?")) + `?v=${Date.now()}` : `${url}?v=${Date.now()}`
+    }
+    return url;
   }
   credentialManagement() {
     this.router.navigate([
