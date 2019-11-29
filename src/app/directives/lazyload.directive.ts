@@ -1,12 +1,9 @@
-import { ElementRef } from '@angular/core';
-import { OnDestroy } from '@angular/core';
-import { Renderer2 } from '@angular/core';
-import { OnInit, OnChanges, Input } from '@angular/core';
+import { OnInit, OnChanges, Input,OnDestroy,Renderer2 ,ElementRef} from '@angular/core';
 import { Directive } from '@angular/core';
 import { ImageRecoverService } from '../services/imageRecover/imageRecover.service';
 
 @Directive({
-  selector: '[lazyload]'
+  selector: '[lazyLoad]'
 })
 export class LazyloadDirective implements OnInit, OnChanges, OnDestroy {
   private io: IntersectionObserver;
