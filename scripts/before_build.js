@@ -117,13 +117,14 @@ module.exports = function (ctx) {
     const wechatPlugin = config.getPlugin("cordova-wechat-plugin");
     if (wechatPlugin) {
       const appid = wechatPlugin.variables["WECHATAPPID"];
+      console.log("WECHATAPPID",appid);
       if (appid) {
         var pluginXmlStr = fs.readFileSync(
           path.join(ctx.opts.projectRoot, "cordova-wechat-plugin", "plugin.xml"),
           { encoding: "utf8" }
         );
         if (pluginXmlStr) {
-          pluginXmlStr = pluginXmlStr.replace(/<preferance name='WECHATAPPID' default='test'\/>/, `<preferance name='WECHATAPPID' default='${appid}'/>`);
+          pluginXmlStr = pluginXmlStr.replace(/<preferance name='WECHATAPPID' default=?.+\/>/, `<preferance name='WECHATAPPID' default='${appid}'/>`);
           fs.writeFileSync(
             path.join(ctx.opts.projectRoot, "cordova-wechat-plugin", "plugin.xml"),
             pluginXmlStr,

@@ -44,7 +44,7 @@
 
     <!-- ios -->
     <platform name="ios">
-        <preferance name='WECHATAPPID' default='wx0839a418ccafdf36'/>
+        <preferance name='WECHATAPPID' default=''/>
         <config-file target="config.xml" parent="/*">
             <feature name="Wechat">
                 <param name="ios-package" value="CDVWechat"/>
