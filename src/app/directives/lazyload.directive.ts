@@ -1,4 +1,4 @@
-import { OnInit, OnChanges, Input,OnDestroy,Renderer2 ,ElementRef} from '@angular/core';
+import { OnInit, OnChanges, Input, OnDestroy, Renderer2, ElementRef } from '@angular/core';
 import { Directive } from '@angular/core';
 import { ImageRecoverService } from '../services/imageRecover/imageRecover.service';
 
@@ -9,7 +9,7 @@ export class LazyloadDirective implements OnInit, OnChanges, OnDestroy {
   private io: IntersectionObserver;
   @Input() lazyLoad: string;
   @Input() defaultImage: string;
-  constructor(private imageRecoverService: ImageRecoverService,private el: ElementRef<HTMLDivElement | HTMLImageElement>, private render: Renderer2) { }
+  constructor(private imageRecoverService: ImageRecoverService, private el: ElementRef<HTMLDivElement | HTMLImageElement>, private render: Renderer2) { }
   ngOnChanges() {
     this.setupImageRecover();
     this.setDefaultImage();
@@ -36,9 +36,9 @@ export class LazyloadDirective implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy() {
     this.removeIO();
   }
-  private load(src: string=null) {
+  private load(src: string = null) {
     if (this.el.nativeElement instanceof HTMLDivElement) {
-      this.render.setStyle(this.el.nativeElement, 'backgroudImage', src || this.lazyLoad);
+      this.render.setStyle(this.el.nativeElement, 'backgroudImage', `url(${src || this.lazyLoad})`);
     } else {
       this.el.nativeElement.src = src || this.lazyLoad;
     }
