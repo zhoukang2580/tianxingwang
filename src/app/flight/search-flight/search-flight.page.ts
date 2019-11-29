@@ -185,17 +185,41 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
   }
 
   async initFlightCities() {
-    const vmFromCity = {} as TrafficlineEntity;
-    vmFromCity.CityName =
-      "北京";
-    vmFromCity.Nickname = vmFromCity.CityName;
-    vmFromCity.Code = "BJS";
-    const vmToCity = {} as TrafficlineEntity;
-    vmToCity.CityName =
-      "上海";
-    vmToCity.Nickname = vmToCity.CityName;
-    // 出发城市，不是出发城市的那个机场
-    vmToCity.Code = "SHA";
+    const vmFromCity: TrafficlineEntity = {
+      AirportCityCode: "BJS",
+      CityCode: "1101",
+      CityName: "北京",
+      Code: "BJS",
+      CountryCode: "CN",
+      Description: "",
+      EnglishName: "Beijing",
+      Id: "9278",
+      Initial: "bj",
+      IsHot: true,
+      Name: "北京",
+      Nickname: "北京",
+      Pinyin: "Beijing",
+      Sequence: 2,
+      Tag: "AirportCity",
+    } as TrafficlineEntity;
+    const vmToCity = {
+      AirportCityCode: "SHA",
+      CityCode: "3101",
+      CityName: "上海",
+      Code: "SHA",
+      CountryCode: "CN",
+      Description: "",
+      EnglishName: "Shanghai",
+      Id: "9260",
+      Initial: "",
+      IsHot: true,
+      Name: "上海",
+      Nickname: "上海",
+      Pinyin: "Shanghai",
+      Sequence: 1,
+      // 出发城市，不是出发城市的那个机场
+      Tag: "AirportCity"
+    } as TrafficlineEntity;
     const lastFromCity = await this.storage.get("fromCity").catch(_ => null) || vmFromCity;
     const lastToCity = await this.storage.get("toCity").catch(_ => null) || vmToCity;
     this.flightService.setSearchFlightModel({
