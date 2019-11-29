@@ -36,6 +36,7 @@
   </ng-template>
   <ng-template #listTemp>
     <ng-container *ngIf='!isShowSearchBar else nosearchartempl'>
+      <ion-list></ion-list>
       <ion-list *ngIf='!isLoading&&hotelDayPrices?.length else noMoreData' #hotellist class='hotel-list'>
         <ion-item *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
           <ion-thumbnail slot='start'>
@@ -44,11 +45,11 @@
           </ion-thumbnail>
           <ion-label>
             <h3 class='name'>
-              <ion-label>{{item?.Hotel?.Name}}</ion-label>
+              <ion-label>{{item.Hotel?.Name}}</ion-label>
             </h3>
             <h5 class='grade-stars'>
               <span margin-end>
-                {{item?.Hotel?.Grade<="0"?"":item?.Hotel?.Grade}}
+                {{item.Hotel?.Grade<="0"?"":item.Hotel?.Grade}}
               </span>
               <div class='stars'>
                 <ng-container *ngFor='let s of getStars(item.Hotel)'>
@@ -58,8 +59,8 @@
               </div>
             </h5>
             <h6 class='address-price'>
-              <ion-label>{{item?.Hotel?.Address}}</ion-label>
-              <ion-text color='danger'><small>￥</small> <strong>{{item?.Hotel?.VariablesJsonObj?.AvgPrice}}</strong>
+              <ion-label>{{item.Hotel?.Address}}</ion-label>
+              <ion-text color='danger'><small>￥</small> <strong>{{getAvgPrice(item.Hotel)}}</strong>
                 <small>起</small> </ion-text>
             </h6>
           </ion-label>
@@ -67,7 +68,8 @@
       </ion-list>
     </ng-container>
     <ng-template #noMoreData>
-      <div style='margin-top: 56px;'>
+      <ion-list></ion-list>
+      <div style='margin-top: 1em;'>
         <app-or-comp>暂无数据</app-or-comp>
       </div>
     </ng-template>

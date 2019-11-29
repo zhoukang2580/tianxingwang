@@ -60,7 +60,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit, AfterCon
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(HotelQueryComponent) queryComp: HotelQueryComponent;
   @ViewChildren(IonSearchbar) searchbarEls: QueryList<IonSearchbar>;
-  @ViewChildren("hotellist") hotellist: QueryList<IonList>;
+  // @ViewChildren("hotellist") hotellist: QueryList<IonList>;
   @HostBinding("class.show-search-bar") isShowSearchBar = false;
   isLoading = false;
   isLeavePage = false;
@@ -75,7 +75,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit, AfterCon
   loadDataSub = Subscription.EMPTY;
   conditionModel: HotelConditionModel;
   config: ConfigEntity;
-  agent:AgentEntity;
+  agent: AgentEntity;
   scroll$: Observable<any>;
   scrollEle: HTMLElement;
   constructor(
@@ -110,31 +110,31 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit, AfterCon
       );
     }
     this.autofocusSearchBarInput();
-    if (this.hotellist) {
-      const sub = this.hotellist.changes.subscribe(_ => {
-        if (this.hotellist && this.hotellist.first) {
-          setTimeout(() => {
-            const height =
-              (this.querytoolbar &&
-                this.querytoolbar["el"] &&
-                this.querytoolbar["el"].clientHeight) ||
-              (this.plt.is("ios") ? 44 : 56);
-            if (height) {
-              if (this.hotellist.first["el"]) {
-                this.domCtrl.write(_ => {
-                  this.render.setStyle(
-                    this.hotellist.first["el"],
-                    "margin-top",
-                    `${height}px`
-                  );
-                });
-              }
-            }
-          }, 10);
-        }
-      });
-      this.subscriptions.push(sub);
-    }
+    // if (this.hotellist) {
+    //   const sub = this.hotellist.changes.subscribe(_ => {
+    //     if (this.hotellist && this.hotellist.first) {
+    //       setTimeout(() => {
+    //         const height =
+    //           (this.querytoolbar &&
+    //             this.querytoolbar["el"] &&
+    //             this.querytoolbar["el"].clientHeight) ||
+    //           (this.plt.is("ios") ? 44 : 56);
+    //         if (height) {
+    //           if (this.hotellist.first["el"]) {
+    //             this.domCtrl.write(_ => {
+    //               this.render.setStyle(
+    //                 this.hotellist.first["el"],
+    //                 "margin-top",
+    //                 `${height}px`
+    //               );
+    //             });
+    //           }
+    //         }
+    //       }, 10);
+    //     }
+    //   });
+    //   this.subscriptions.push(sub);
+    // }
   }
   onSearch() {
     this.doRefresh();
@@ -277,7 +277,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit, AfterCon
     }
   }
   goToDetail(item: HotelDayPriceEntity) {
-    this.hotelService.curViewHotel=item;
+    this.hotelService.curViewHotel = item;
     this.router.navigate([AppHelper.getRoutePath("hotel-detail")]);
   }
   onCityClick() {
@@ -306,8 +306,14 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit, AfterCon
     });
     this.subscriptions = null;
   }
+  getAvgPrice(hotel: HotelEntity) {
+    if (hotel) {
+      hotel.VariablesJsonObj = hotel.VariablesJsonObj || JSON.parse(hotel.Variables) || {};
+      return hotel.VariablesJsonObj.AvgPrice;
+    }
+  }
   async ngOnInit() {
-    this.agent=await this.tmcService.getAgent();
+    this.agent = await this.tmcService.getAgent();
     this.config = await this.configService.getConfigAsync();
     const sub0 = this.route.queryParamMap.subscribe(_ => {
       this.isShowSearchBar = false;
