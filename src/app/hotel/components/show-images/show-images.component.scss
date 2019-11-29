@@ -28,7 +28,7 @@
     }
   }
 }
-.swiper-lazy-wrapper{
+.swiper-lazy-wrapper {
   height: 100%;
   width: 100%;
 }
@@ -74,14 +74,14 @@
   background-color: black;
 }
 ion-fab {
-  background: rgba(0, 0, 0, 0.8);
-  width: 1.5em;
+  background: var(--ion-color-danger);
+  width: 2em;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 1.5em;
+  height: 2em;
   border-radius: 50%;
-  top: 1.3em;
+  top: 2.3em;
   right: 1.3em;
   ion-icon {
     height: 100%;

@@ -38,7 +38,8 @@ export class LazyloadDirective implements OnInit, OnChanges, OnDestroy {
   }
   private load(src: string = null) {
     if (this.el.nativeElement instanceof HTMLDivElement) {
-      this.render.setStyle(this.el.nativeElement, 'background-image', `url(${src || this.lazyLoad})`);
+      // this.render.setStyle(this.el.nativeElement, 'background-image', `url(${src || this.lazyLoad})`);
+      this.render.setProperty(this.el.nativeElement,'backgroundImage',`url(${src || this.lazyLoad})`);
     } else {
       this.el.nativeElement.src = src || this.lazyLoad;
     }
