@@ -5,10 +5,14 @@
     <!-- Slides -->
     <div class="swiper-slide" [ngStyle]="slideStyle" #slides *ngFor="let item of images">
       <ng-container *ngIf='item.url else textTempl'>
-        <div [class.swiper-zoom-container]='zoom'>
-          <div [lazyLoad]='item.url' class='divimg' [class.has-thumbs]='hasThumbs'
+        <div [class.swiper-zoom-container]='zoom' class='img-wrapper'>
+          <!-- <div [lazyLoad]='item.url' class='divimg' [class.has-thumbs]='hasThumbs'
             [defaultImage]='prerenderImageUrl'> 
             <div [lazyLoad]='logoUrl' class='logo' *ngIf='logoUrl||hasLogo'></div> 
+          </div> -->
+          <div class='divimg' [class.has-thumbs]='hasThumbs'>
+            <img [lazyLoad]='item.url' [defaultImage]='prerenderImageUrl'>
+            <img [lazyLoad]='logoUrl' class='logo' *ngIf='logoUrl||hasLogo' />
           </div>
           <!-- <img class="swiper-lazy" data-src="{{item.url}}" />  -->
           <!-- <div class="swiper-lazy-preloader"></div> -->
@@ -36,7 +40,7 @@
   <div class="swiper-wrapper">
     <div class="swiper-slide" *ngFor="let item of images;let i=index;" [attr.dataid]='item.idx'
       (click)='slidToPage(item.idx)'>
-      <img [lazyLoad]="item.url?.replace('640_960','70_70')" [defaultImage]='prerenderImageUrl' /> 
+      <img [lazyLoad]="item.url?.replace('640_960','70_70')" [defaultImage]='prerenderImageUrl' />
       <!-- <div class="swiper-lazy-preloader"></div> -->
     </div>
   </div>

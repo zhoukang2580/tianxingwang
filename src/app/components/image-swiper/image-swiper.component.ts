@@ -1,3 +1,4 @@
+import { AppHelper } from './../../appHelper';
 import { ConfigEntity } from './../../services/config/config.entity';
 import { Observable, fromEvent, ReplaySubject } from 'rxjs';
 import { ModalController } from '@ionic/angular';
@@ -24,8 +25,8 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() direction: "vertical" | "horizontal" = 'horizontal';
   @Input() pagination = null;
   @Input() autoplay = false;
-  @Input() zoom = true;
-  @Input() loop = true;
+  @Input() zoom = AppHelper.isApp();
+  @Input() loop;
   @Input() isShowCloseBtn = true;
   @Input() isShowPagination = true;
   @Input() imagesUrls: string[];

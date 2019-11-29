@@ -553,14 +553,24 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   async onShowRoomImages(room: RoomEntity) {
     this.config = await this.configService.getConfigAsync();
     this.agent = await this.tmcService.getAgent();
+    // const m = await this.modalCtrl.create({
+    //   component: ImageSwiperComponent,
+    //   componentProps: {
+    //     logoUrl: this.agent && this.agent.LogoFullFileName,
+    //     hasLogo:true,
+    //     prerenderImageUrl: this.config.PrerenderImageUrl,
+    //     // imgStyle: { objectFit: "contain" },
+    //     imagesUrls: this.getRoomImages(room),
+    //   }
+    // });
     const m = await this.modalCtrl.create({
-      component: ImageSwiperComponent,
+      component: ShowImagesComponent,
       componentProps: {
-        logoUrl: this.agent && this.agent.LogoFullFileName,
-        hasLogo:true,
-        prerenderImageUrl: this.config.PrerenderImageUrl,
-        // imgStyle: { objectFit: "contain" },
-        imagesUrls: this.getRoomImages(room),
+        images: this.getRoomImages(room).map(it => {
+          return {
+            url: it
+          }
+        }),
       }
     });
     await m.present();

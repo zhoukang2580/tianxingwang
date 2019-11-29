@@ -7,7 +7,7 @@
 <ion-content>
   <ion-list lines='none' class='top-panal'>
     <ion-item detail (click)='goToMyDetail()'>
-      <ion-thumbnail>
+      <ion-thumbnail slot='start'>
         <img alt="头像" [lazyLoad]="Model?.HeadUrl" [defaultImage]='config?.PrerenderImageUrl'>
         <!-- <ion-img [src]='Model?.HeadUrl'></ion-img> -->
       </ion-thumbnail>
