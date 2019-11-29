@@ -120,16 +120,6 @@ export class FlightService {
   }
   setSearchFlightModel(m: SearchFlightModel) {
     console.log("setSearchFlightModel", m);
-    if (m) {
-      if (m.fromCity) {
-        m.FromCode = m.fromCity.Code;
-        m.FromAsAirport = m.fromCity.Tag == 'Airport';
-      }
-      if (m.toCity) {
-        m.ToCode = m.toCity.Code;
-        m.ToAsAirport = m.toCity.Tag == 'Airport';
-      }
-    }
     this.searchFlightModel = m;
     this.searchFlightModelSource.next(this.searchFlightModel);
   }
@@ -139,17 +129,6 @@ export class FlightService {
   getSearchFlightModelSource() {
     return this.searchFlightModelSource.asObservable();
   }
-  // setCurrentViewtFlightSegment(
-  //   s: FlightSegmentEntity,
-  //   fs: FlightSegmentEntity[],
-  //   policyFlights: PassengerPolicyFlights[]
-  // ) {
-  //   this.currentViewtFlightSegment = {
-  //     flightSegment: s,
-  //     flightSegments: fs,
-  //     totalPolicyFlights: policyFlights
-  //   };
-  // }
   setPassengerBookInfosSource(args: PassengerBookInfo<IFlightSegmentInfo>[]) {
     console.log("flight setPassengerBookInfos", args);
     this.passengerBookInfos = args;
@@ -858,12 +837,12 @@ export class FlightService {
     }).then(_ => {
       this.setSearchFlightModel({
         ...s,
-        FromCode: goflight.ToAirport,
-        ToCode: goflight.FromAirport,
+        FromCode: toCity.AirportCityCode,
+        ToCode: fromCity.AirportCityCode,
         ToAsAirport: false,
         FromAsAirport: false,
-        fromCity: { ...toCity, Tag: "AirportCity" },
-        toCity: { ...fromCity, Tag: "AirportCity" },
+        fromCity: {...toCity},
+        toCity: {...fromCity},
         Date: s.BackDate,
         tripType: TripType.returnTrip,
         isLocked: true
