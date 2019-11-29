@@ -107,8 +107,10 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     this.orderDetail.Order.OrderFlightTickets.forEach(ticket => {
       if (ticket.OrderFlightTrips) {
         ticket.OrderFlightTrips.forEach(flightTrip => {
-          if (flightTrip.Status == OrderFlightTripStatusType.Normal || flightTrip.Status == OrderFlightTripStatusType.Refund)
+          if (flightTrip.Status == OrderFlightTripStatusType.Normal || flightTrip.Status == OrderFlightTripStatusType.Refund) {
+            flightTrip.OrderFlightTicket = { TicketType: ticket.TicketType } as OrderFlightTicketEntity;
             infos.push(flightTrip);
+          }
         })
       }
     });
@@ -409,7 +411,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
         });
         if (tickets) {
           this.selectedFlightTicket = tickets[0];
-          this.onSelectFlightTicket({detail:{value:this.selectedFlightTicket}} as any);
+          this.onSelectFlightTicket({ detail: { value: this.selectedFlightTicket } } as any);
         }
       }
       if (this.orderDetail.Order) {

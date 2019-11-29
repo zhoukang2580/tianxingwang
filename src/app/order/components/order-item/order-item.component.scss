@@ -22,6 +22,9 @@
     &:last-child {
       margin-bottom: 0.5em;
     }
+    ion-col:first-child {
+      color: var(--ion-color-medium);
+    }
   }
   ion-row ion-col:not(.non-flex) {
     display: flex;
@@ -35,10 +38,20 @@
       padding: 0;
     }
   }
+  .passenger ion-row {
+    margin: 0;
+    padding: 0;
+  }
 }
 
-.ticket-trip + .ticket-trip {
+.ticket-trip {
+  line-height: 1.6;
+}
+.ticket-trip + .ticket-trip{
   border-top: 1px dashed var(--ion-color-dark);
+}
+.order-item ion-row.ticket-trip {
+  padding-left: 1em;
 }
 :host {
   width: 100%;

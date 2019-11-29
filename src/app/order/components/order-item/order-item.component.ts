@@ -1,3 +1,4 @@
+import { OrderFlightTripEntity } from './../../models/OrderFlightTripEntity';
 import { PassengerBookInfo } from 'src/app/tmc/tmc.service';
 import { TrainService, ITrainInfo } from './../../../train/train.service';
 import { CalendarService } from './../../../tmc/calendar.service';
@@ -57,7 +58,34 @@ export class OrderItemComponent implements OnInit {
     if (evt) { evt.stopPropagation(); }
     return this.trainService.onExchange(orderTrainTicket);
   }
-  async onRefund(evt: CustomEvent, orderTrainTicket: OrderTrainTicketEntity) {
+  showRefundBtn(orderFlightTicket: OrderFlightTicketEntity) {
+    const channel = this.order && this.order.Channel.toUpperCase();
+    if (!channel) {
+      return false;
+    }
+    return  "客户PC 代理PC 客户H5 代理H5 ANDROID IOS 代理ANDROID 代理IOS 代理接口".includes(channel)
+      && orderFlightTicket.Status == OrderFlightTicketStatusType.Issued && this.tmc && this.tmc.FlightIsAllowRefund
+      && (orderFlightTicket.Supplier != "0")
+  }
+  getDateWeekName(date:string){
+    if(!date){
+      return '';
+    }
+    const d = this.calendarService.generateDayModelByDate(date);
+    return d.dayOfWeekName;
+  }
+  async onRefundFlightTicket(evt: CustomEvent, orderTrainTicket: OrderTrainTicketEntity) {
+    if (evt) {
+      evt.stopPropagation();
+    }
+    if (orderTrainTicket) {
+      // const isRefund = await this.trainService.refund(orderTrainTicket.Id);
+      // if (isRefund) {
+      //   this.refundTicket.emit();
+      // }
+    }
+  }
+  async onRefundTrainTicket(evt: CustomEvent, orderTrainTicket: OrderTrainTicketEntity) {
     if (evt) {
       evt.stopPropagation();
     }

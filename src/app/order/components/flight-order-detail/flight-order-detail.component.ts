@@ -4,6 +4,7 @@ import { Component, OnInit, Input } from "@angular/core";
 import { OrderFlightTripEntity } from 'src/app/order/models/OrderFlightTripEntity';
 import { OrderFlightTripStatusType } from 'src/app/order/models/OrderFlightTripStatusType';
 import { AppHelper } from 'src/app/appHelper';
+import { OrderFlightTicketType } from '../../models/OrderFlightTicketType';
 @Component({
   selector: "app-flight-order-detail",
   templateUrl: "./flight-order-detail.component.html",
@@ -12,6 +13,7 @@ import { AppHelper } from 'src/app/appHelper';
 export class FlightOrderDetailComponent implements OnInit {
   @Input() trips: OrderFlightTripEntity[];
   @Input() order: OrderEntity;
+  OrderFlightTicketType=OrderFlightTicketType;
   OrderFlightTicketStatusType = OrderFlightTicketStatusType;
   constructor() { }
   ngOnInit() { }
@@ -21,7 +23,7 @@ export class FlightOrderDetailComponent implements OnInit {
       && this.order.OrderFlightTickets
         .filter(it => it.OrderFlightTrips
           && it.OrderFlightTrips
-            .filter(t => t.Status == OrderFlightTripStatusType.Exchange||t.Status == OrderFlightTripStatusType.Refund)
+            .filter(t => t.Status == OrderFlightTripStatusType.Exchange)
             .length > 0)
         .length > 0;
   }

@@ -1,5 +1,6 @@
 <div class='flight-trip' *ngFor='let trip of trips'>
-  <div>机票状态:<ion-text color='danger'>{{trip.StatusName}}</ion-text></div>
+  <div>机票状态:<ion-text color='danger'>{{trip.StatusName}}</ion-text>
+  </div>
   <div>
     {{trip?.FromCityName}}
     <span class='stop-cities' [attr.stopcities]='trip?.StopCities'>---</span>
@@ -13,7 +14,8 @@
     <span class='line-vertical'>|</span>
     <span>{{trip?.PlaneType}}</span>
     <span class='line-vertical'>|</span>
-    <span>{{trip?.CabinType|cabintype}}{{trip?.Discount|discount}}</span>
+    <span>{{trip?.CabinType|cabintype}}<ng-container *ngIf='trip.OrderFlightTicket?.TicketType==OrderFlightTicketType.Domestic'>{{trip?.Discount|discount}}</ng-container>
+      </span>
   </div>
   <div margin-start>
     <span>
@@ -33,32 +35,6 @@
     <ion-text color='medium'>原始航班信息</ion-text>
   </ion-item-divider>
   <div *ngFor='let trip of getOriginalFlightTrips()'>
-    <!-- <div>
-      {{orderFlightTrip.FromCityName}}
-      <span class='stop-cities' [attr.stopcities]='orderFlightTrip.StopCities'>---</span>
-      {{orderFlightTrip.ToCityName}}
-      <span>
-        {{orderFlightTrip.FlightNumber}}
-      </span>
-      <span *ngIf='orderFlightTrip.CodeShareNumber'>
-        ({{orderFlightTrip.CodeShareNumber}})
-      </span>
-      <div margin-start>
-        起飞:{{orderFlightTrip.TakeoffTime?.substr(0,"yyyy-MM-dd".length)}}
-        <span>{{orderFlightTrip.TakeoffTime?.substr("yyyy-MM-ddT".length,"HH:mm".length)}}</span>
-        <span>{{orderFlightTrip.FromAirportName}}({{orderFlightTrip.FromAirport}}){{orderFlightTrip.FromTerminal}}</span>
-        <span>舱位:{{orderFlightTrip.CabinType|cabintype}}</span>
-      </div>
-      <div margin-start>
-        <span *ngIf='!orderFlightTrip.CodeShareNumber'>{{orderFlightTrip.FlightNumber}}</span>
-        <span
-          *ngIf='orderFlightTrip.CodeShareNumber'>({{orderFlightTrip.CodeShareNumber}}){{orderFlightTrip.FlightNumber}}</span>
-        <span>到达:{{orderFlightTrip.ArrivalTime?.substr(0,"yyyy-MM-dd".length)}}</span>
-        <span>{{orderFlightTrip.ArrivalTime?.substr("yyyy-MM-ddT".length,"HH:mm".length)}}</span>
-        <span>{{orderFlightTrip.ToAirportName}}({{orderFlightTrip.ToAirport}}){{orderFlightTrip.ToTerminal}}</span>
-        <span>机型：{{orderFlightTrip.PlaneType}}</span>
-      </div>
-    </div> -->
     <div>
       {{trip?.FromCityName}}
       <span class='stop-cities' [attr.stopcities]='trip?.StopCities'>---</span>
@@ -72,7 +48,8 @@
       <span class='line-vertical'>|</span>
       <span>{{trip?.PlaneType}}</span>
       <span class='line-vertical'>|</span>
-      <span>{{trip?.CabinType|cabintype}}{{trip?.Discount|discount}}</span>
+      <span>{{trip?.CabinType|cabintype}}<ng-container *ngIf='trip.OrderFlightTicket?.TicketType==OrderFlightTicketType.Domestic'>{{trip?.Discount|discount}}</ng-container>
+        </span>
     </div>
     <div margin-start>
       <span>
