@@ -7,21 +7,22 @@ import { CropAvatarDirective } from "./crop-avatar.directive";
 import { ShowtipDirective } from "./showtip.directive";
 import { AutoGrowDirective } from "./auto-grow.directive";
 import { SetErrorImageProps, Attributes } from './ng-lazyload-image/types';
-import { LazyLoadImageModule } from './ng-lazyload-image/lazyload-image.module';
 import { scrollPreset } from './ng-lazyload-image/scroll-preset';
+import { LazyloadDirective } from './lazyload.directive';
 
 @NgModule({
   declarations: [
     CropAvatarDirective,
     ShowtipDirective,
     AutoGrowDirective,
+    LazyloadDirective,
   ],
-  imports: [CommonModule, LazyLoadImageModule],
+  imports: [CommonModule],
   exports: [
     CropAvatarDirective,
     ShowtipDirective,
     AutoGrowDirective,
-    LazyLoadImageModule
+    LazyloadDirective
   ]
 })
 export class AppDirectivesModule {
