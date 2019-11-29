@@ -26,6 +26,9 @@
 
 <ion-content #cnt>
   <ion-refresher slot='fixed' (ionRefresh)='doRefresh(false)'></ion-refresher>
+  <ion-list></ion-list>
+  <ion-list></ion-list>
+  <ion-list></ion-list>
   <ng-template #nosearchartempl>
     <ion-list *ngIf='!isSearching'>
       <ion-item *ngFor='let item of vmSearchTextList' (click)='onSearchItemClick(item)'>
@@ -36,7 +39,6 @@
   </ng-template>
   <ng-template #listTemp>
     <ng-container *ngIf='!isShowSearchBar else nosearchartempl'>
-      <ion-list></ion-list>
       <ion-list *ngIf='!isLoading&&hotelDayPrices?.length else noMoreData' #hotellist class='hotel-list'>
         <ion-item *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
           <ion-thumbnail slot='start'>

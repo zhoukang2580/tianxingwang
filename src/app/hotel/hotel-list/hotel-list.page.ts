@@ -277,7 +277,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit, AfterCon
     }
   }
   goToDetail(item: HotelDayPriceEntity) {
-    this.hotelService.curViewHotel = item;
+    this.hotelService.curViewHotel = {...item};
     this.router.navigate([AppHelper.getRoutePath("hotel-detail")]);
   }
   onCityClick() {
