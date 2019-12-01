@@ -25,7 +25,9 @@
 </ion-header>
 
 <ion-content #cnt>
-  <ion-refresher slot='fixed' (ionRefresh)='doRefresh(false)'></ion-refresher>
+  <ion-refresher slot='fixed' (ionRefresh)='doRefresh(false)'>
+    <ion-refresher-content>正在刷新...</ion-refresher-content>
+  </ion-refresher>
   <ion-list>
     <ion-item></ion-item>
   </ion-list>
@@ -45,7 +47,7 @@
             <img [lazyLoad]='item.Hotel?.FileName' [defaultImage]='config?.PrerenderImageUrl' />
             <!-- <ion-img [src]='item.Hotel?.FileName'  ></ion-img> -->
           </ion-thumbnail>
-          <ion-label>
+          <ion-label style="margin-left:.5em">
             <h3 class='name'>
               <ion-label>{{item.Hotel?.Name}}</ion-label>
             </h3>
