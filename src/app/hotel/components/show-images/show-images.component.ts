@@ -19,7 +19,7 @@ export class ShowImagesComponent implements OnInit, AfterViewInit {
   swiper: Swiper;
   config: ConfigEntity;
   agent: AgentEntity;
-  zoom=AppHelper.isApp();
+  zoom=false;
   @ViewChild("container") container: ElementRef<HTMLElement>;
   @ViewChild("thumbs") thumbsEle: ElementRef<HTMLElement>;
   @ViewChild("pagination") paginationEle: ElementRef<HTMLElement>;
@@ -30,7 +30,7 @@ export class ShowImagesComponent implements OnInit, AfterViewInit {
         slidesPerView: 5,
       });
       this.swiper = new Swiper(this.container.nativeElement, {
-        loop: true,
+        loop: false,
         // slidesPerView: 5,
         pagination: {
           el: this.paginationEle.nativeElement,
