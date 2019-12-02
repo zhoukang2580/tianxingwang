@@ -21,7 +21,7 @@
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
-    <ion-toolbar #toolbarsegment *ngIf='!isShowBackArrow'>
+    <ion-toolbar #toolbarsegment [@hideShowAnimate]='!isShowBackArrow'>
       <ion-segment (ionChange)="segmentChanged($event)" color="secondary">
         <ion-segment-button value="houseInfo" [checked]='activeTab=="houseInfo"'>
           <ion-label>房型</ion-label>

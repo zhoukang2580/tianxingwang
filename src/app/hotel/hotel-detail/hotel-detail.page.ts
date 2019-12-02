@@ -44,12 +44,26 @@ import { PassengerBookInfo, FlightHotelTrainType, TmcService } from "src/app/tmc
 import { TripType } from "src/app/tmc/models/TripType";
 import { environment } from "src/environments/environment";
 import { FilterPassengersPolicyComponent } from "src/app/tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
+import { trigger, transition, style, animate, state } from '@angular/animations';
 type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
 
 @Component({
   selector: "app-hotel-detail",
   templateUrl: "./hotel-detail.page.html",
-  styleUrls: ["./hotel-detail.page.scss"]
+  styleUrls: ["./hotel-detail.page.scss"],
+  animations: [
+    trigger('hideShowAnimate', [
+      state('true', style({ opacity: 1, height: "*" })),
+      state('false', style({ opacity: 0, height: 0 })),
+      transition('false=>true', [
+        style({ opacity: 0, height: 0 }),
+        animate('200ms', style({ opacity: 1, height: "*" })),
+      ]),
+      transition('true=>false', [
+        animate('200ms', style({ opacity: 0, height: 0 }))
+      ])
+    ]),
+  ]
 })
 export class HotelDetailPage implements OnInit, AfterViewInit {
   private hotelDayPrice: HotelDayPriceEntity;
@@ -538,7 +552,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
         room,
         roomImages,
         config: this.config,
-        agent:this.agent
+        agent: this.agent
       }
     });
     if (m) {
@@ -695,7 +709,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       this.scrollEle.onscroll = () => {
         let bottom = 0;
         this.domCtrl.read(_ => {
-          this.isShowBackArrow = this.scrollEle.scrollTop < 10;
+          this.domCtrl.write(_ => {
+            this.isShowBackArrow = this.scrollEle.scrollTop < 10;
+          });
           let opacity = 0;
           const bottomRect =
             this.bgPicEle &&
