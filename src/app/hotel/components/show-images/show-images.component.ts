@@ -32,6 +32,7 @@ export class ShowImagesComponent implements OnInit, AfterViewInit {
       this.swiper = new Swiper(this.container.nativeElement, {
         loop: false,
         // slidesPerView: 5,
+        effect:'fade',
         pagination: {
           el: this.paginationEle.nativeElement,
           type: "fraction"
