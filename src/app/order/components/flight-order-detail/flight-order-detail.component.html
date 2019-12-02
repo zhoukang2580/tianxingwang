@@ -1,5 +1,5 @@
 <div class='flight-trip' *ngFor='let trip of trips;let first=first;'>
-  <div *ngIf='first'>机票状态:<ion-text color='danger' >{{order?.OrderFlightTickets[0]?.StatusName}}</ion-text>
+  <div *ngIf='first'>机票状态:<ion-text color='danger' >{{trip.OrderFlightTicket?.StatusName}}</ion-text>
   </div>
   <div>
     {{trip?.FromCityName}}

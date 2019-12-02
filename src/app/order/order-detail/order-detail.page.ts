@@ -108,7 +108,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       if (ticket.OrderFlightTrips) {
         ticket.OrderFlightTrips.forEach(flightTrip => {
           if (flightTrip.Status == OrderFlightTripStatusType.Normal || flightTrip.Status == OrderFlightTripStatusType.Refund) {
-            flightTrip.OrderFlightTicket = { TicketType: ticket.TicketType } as OrderFlightTicketEntity;
+            flightTrip.OrderFlightTicket = { TicketType: ticket.TicketType,StatusName:ticket.StatusName } as OrderFlightTicketEntity;
             infos.push(flightTrip);
           }
         })
