@@ -7,9 +7,17 @@
     </ion-buttons>
     <ion-title color='secondary' class='sm-font-size' [class.text-start]='(isShowAddPassenger$|async)'
       [class.text-center]='!(isShowAddPassenger$|async)'>
-      <ion-text (click)='onSelectStation(true)'>{{vmFromCity?.Nickname}}</ion-text>
+      <ion-text (click)='onSelectStation(true)' class='from-station'>
+        <span>
+            {{vmFromCity?.Nickname}}
+        </span>
+        <ion-icon name='arrow-dropdown'></ion-icon>
+      </ion-text>
       <i class='icon icon-search-train' (click)='onSwapStation()'></i>
-      <ion-text (click)='onSelectStation(false)'>{{ vmToCity?.Nickname}}</ion-text>
+      <ion-text (click)='onSelectStation(false)' class='to-station'>
+       <span>{{ vmToCity?.Nickname}}</span> 
+       <ion-icon name='arrow-dropdown'></ion-icon>
+      </ion-text>
     </ion-title>
     <ion-buttons slot='end'>
       <ion-button fill='clear' color='secondary' (click)='filterPolicyTrains()' size='small'>

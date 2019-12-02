@@ -1,6 +1,14 @@
 ion-content {
   --background: #f2f2f2;
 }
+ion-text {
+  &.from-city,
+  &.to-city {
+    display: inline-flex;
+    flex-flow: column nowrap;
+    align-items: center;
+  }
+}
 ion-list.fakelist {
   margin-top: 0;
 }

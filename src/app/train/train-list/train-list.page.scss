@@ -9,6 +9,14 @@ ul.train {
     padding: 0.5em;
   }
 }
+ion-text {
+  &.from-station,
+  &.to-station {
+    display: inline-flex;
+    flex-flow: column nowrap;
+    align-items: center;
+  }
+}
 ion-content {
   --backround: #f2f2f2;
 }
@@ -21,10 +29,10 @@ ion-title {
     text-align: center;
   }
 }
-.xs-font-size{
+.xs-font-size {
   font-size: 0.6rem;
 }
-.sm-font-size{
+.sm-font-size {
   font-size: 0.8rem;
 }
 .tabs {
@@ -55,9 +63,9 @@ ion-title {
     }
   }
 }
-ion-list.fakelist{
+ion-list.fakelist {
   margin-top: 0;
 }
-.icon-search-train{
+.icon-search-train {
   margin: 0 1em;
 }

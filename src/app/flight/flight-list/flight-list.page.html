@@ -7,12 +7,22 @@
     </ion-buttons>
     <ion-title color='{{searchFlightModel?.isLocked?"medium":"secondary"}}' [class.text-start]='showAddPassenger'
       [class.text-center]='!showAddPassenger'>
-      <ion-text (click)='onSelectCity(true)'>{{vmFromCity?.CityName}}</ion-text>
+      <ion-text (click)='onSelectCity(true)' class='from-city'>
+        <span>
+          {{vmFromCity?.CityName}}
+        </span>
+        <ion-icon name='arrow-dropdown' *ngIf='!searchFlightModel?.isLocked'></ion-icon>
+      </ion-text>
       <div (@rotateIcon.done)='onRotateIconDone($event)' [@rotateIcon]='isRotateIcon' class='rotate-icon'
         [class.small-margin]='showAddPassenger'>
         <i class='icon icon-flight-plane' (click)='onSwapCity()'></i>
       </div>
-      <ion-text (click)='onSelectCity(false)'>{{ vmToCity?.CityName}}</ion-text>
+      <ion-text (click)='onSelectCity(false)' class='to-city'>
+        <span>
+          {{ vmToCity?.CityName}}
+        </span>
+        <ion-icon name='arrow-dropdown' *ngIf='!searchFlightModel?.isLocked'></ion-icon>
+      </ion-text>
     </ion-title>
     <ion-buttons slot='end'>
       <ion-button fill='clear' color='secondary' *ngIf='' (click)='selectFilterPolicyPasseger()' size='small'>
