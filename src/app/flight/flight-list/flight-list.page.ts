@@ -298,7 +298,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.flightService.setSearchFlightModel({
       ...s,
       fromCity: s.toCity,
-      toCity: s.fromCity
+      toCity: s.fromCity,
+      FromCode:s.toCity.Code,
+      ToCode:s.fromCity.Code,
     });
     this.isRotateIcon = !this.isRotateIcon; // 控制图标旋转
     this.doRefresh(true, false);
