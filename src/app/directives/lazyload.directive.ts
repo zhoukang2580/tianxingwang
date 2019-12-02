@@ -40,7 +40,7 @@ export class LazyloadDirective implements OnInit, OnChanges, OnDestroy, AfterCon
   private load(src: string = null) {
     let url = decodeURIComponent(src || this.lazyLoad);
     url = `${url}`.replace(/\?v=\d+/g, "");
-    console.log('load url:', url);
+    // console.log('load url:', url);
     if (this.el.nativeElement instanceof HTMLDivElement) {
       this.render.setStyle(this.el.nativeElement, 'background-image', `url(${url})`);
       // this.render.setProperty(this.el.nativeElement,'backgroundImage',`${src || this.lazyLoad}`);
