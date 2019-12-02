@@ -59,16 +59,10 @@ export class ApiService {
   ) {
     this.loadingSubject = new BehaviorSubject(false);
     setTimeout(() => {
-      console.log("loadApiConfig");
       this.loadApiConfig(true)
-        .then(_ => {
-          console.log("loadApiConfig complete");
-        })
-        .catch(e => {
-          console.log("loadApiConfig error", e);
-        });
+        .then(_ => { })
+        .catch(e => { });
     }, 0);
-    // this.worker = window["Worker"] ? new Worker("assets/worker.js") : null;
   }
   getLoading() {
     return this.loadingSubject.asObservable().pipe(delay(0));
@@ -186,7 +180,8 @@ export class ApiService {
     return req.Url;
   }
   async tryAutoLogin(orgReq: RequestEntity) {
-    const req = this.createRequest();
+    let req = this.createRequest();
+    req = { ...orgReq, ...req };
     if (AppHelper.isApp()) {
       const device = await AppHelper.getDeviceId();
       req.Method = "ApiLoginUrl-Home-DeviceLogin";
@@ -225,7 +220,7 @@ export class ApiService {
     return new Promise((resolve, reject) => {
       const subscribtion = this.http
         .post(url, formObj, {
-          headers: { "content-type": "application/x-www-form-urlencoded" },
+          headers: { "content-type": "application/x-www-form-urlencoded", "x-requested-with": "XMLHttpRequest" },
           observe: "body"
         })
         .pipe(
@@ -241,19 +236,15 @@ export class ApiService {
               this.identityService.setIdentity(id);
               return this.sendRequest(orgReq, false);
             }
-            if (r && !r.Status && r.Code && r.Code.toLowerCase() == "nologin") {
-              const msg = r.Message || LanguageHelper.getApiExceptionTip();
-              if (msg == LanguageHelper.getApiExceptionTip()) {
-                if (!this.isAlert) {
-                  this.alertCtrl
-                    .create({ message: msg, buttons: [{ text: LanguageHelper.getConfirmTip() }] }).then(_ => {
-                      this.isAlert = false;
-                    })
-                }
+            this.identityService.removeIdentity();
+            if (orgReq.IsRedirctLogin == false) {
+              if (r.Message) {
+                AppHelper.alert(r.Message);
               }
             }
-            this.identityService.removeIdentity();
-            this.router.navigate([AppHelper.getRoutePath("login")]);
+            else {
+              this.router.navigate([AppHelper.getRoutePath("login")]);
+            }
             return of(r);
           })
         )
@@ -291,7 +282,6 @@ export class ApiService {
     this.setLoading(true, req.IsShowLoading);
     let due = req.Timeout || 30 * 1000;
     due = due < 1000 ? due * 1000 : due;
-    due = environment.disableNetWork ? 1 : due;
     return from(this.loadApiConfig()).pipe(
       switchMap(config => {
         if (!config) {
@@ -304,35 +294,32 @@ export class ApiService {
         const formObj = Object.keys(req)
           .map(k => `${k}=${encodeURIComponent(req[k])}`)
           .join("&");
-        // if (environment.enableLocalData) {
-        //   return from(this.storage.get(md5(req.Method + req.Data))).pipe(switchMap((r:IResponse<any>) => {
-        //     if (r&&r.Status) {
-        //       return of(r);
-        //     }
-        //     return this.http.post(url, `${formObj}&Sign=${this.getSign(req)}`, {
-        //       headers: { "content-type": "application/x-www-form-urlencoded" },
-        //       observe: "body"
-        //     }).pipe(
-        //       switchMap(r =>
-        //         from(this.storage.set(md5(req.Method + req.Data), r)).pipe(map(_ => r)))
-        //     );
-        //   }))
-        // }
         return this.http.post(url, `${formObj}&Sign=${this.getSign(req)}`, {
-          headers: { "content-type": "application/x-www-form-urlencoded" },
+          headers: { "content-type": "application/x-www-form-urlencoded", "x-requested-with": "XMLHttpRequest" },
           observe: "body"
         });
       }),
       timeout(due),
-      // tap(r => console.log(r)),
+      tap(r => console.log(r)),
       map(r => r as any),
       switchMap((r: IResponse<any>) => {
-        console.log("Apiservice get response ", r);
-        if (isCheckLogin && r && r.Code && r.Code.toUpperCase() === "NOLOGIN") {
+        if (isCheckLogin && r.Code && r.Code.toUpperCase() === "NOLOGIN") {
           return from(this.tryAutoLogin(req));
-        } else if (r && r.Code && r.Code.toUpperCase() === "NOLOGIN") {
+        } else if (r.Code && r.Code.toUpperCase() === "NOLOGIN") {
           this.identityService.removeIdentity();
-          // this.router.navigate([AppHelper.getRoutePath("login")]);
+          if (req.IsRedirctLogin == false) {
+            if (r.Message) {
+              AppHelper.alert(r.Message);
+            }
+          }
+          else {
+            this.router.navigate([AppHelper.getRoutePath("login")]);
+          }
+
+        }
+        else if(r.Code &&  r.Code.toUpperCase() === "NOAUTHORIZE")
+        {
+          this.router.navigate([AppHelper.getRoutePath("no-authorize")]);
         }
         return of(r);
       }),

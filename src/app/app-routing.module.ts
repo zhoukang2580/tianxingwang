@@ -1,3 +1,4 @@
+import { NoAuthorizePage } from './pages/no-authorize/no-authorize.page';
 import { AppHelper } from "src/app/appHelper";
 import { NgModule } from "@angular/core";
 import { PreloadAllModules, RouterModule, Routes } from "@angular/router";
@@ -34,6 +35,7 @@ const routes: Routes = [
     loadChildren: "./pages/open-url/open-url.module#OpenUrlPageModule"
   },
   { path: 'contact-us', loadChildren: './pages/contact-us/contact-us.module#ContactUsPageModule' },
+  { path: 'no-authorize', loadChildren: "./pages/no-authorize/no-authorize.module#NoAuthorizePageModule" },
   {
     path: "",
     component: TabsPage,

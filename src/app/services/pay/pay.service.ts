@@ -207,12 +207,12 @@ export class PayService {
       "/home/Pay?path=" +
       encodeURIComponent(
         AppHelper.getRedirectUrl() +
-        "?path=" +
-        path +
-        "&ticket=" +
-        AppHelper.getTicket() +
-        "&openid" +
-        (WechatHelper.openId || "")
+          "?path=" +
+          path +
+          "&ticket=" +
+          AppHelper.getTicket() +
+          "&openid" +
+          (WechatHelper.openId || "")
       );
     for (let r in req) {
       url +=
@@ -221,7 +221,6 @@ export class PayService {
         "=" +
         (typeof req[r] == "string" ? req[r] : JSON.stringify(req[r]));
     }
-    console.log("paymobile", url);
     window.location.href = url;
   }
 

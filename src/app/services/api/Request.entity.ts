@@ -14,6 +14,7 @@ export class RequestEntity {
   FileValue?: string;
   IsShowLoading?: boolean;
   IsUseReqUrl?: boolean;
+  IsRedirctLogin?: boolean;
   IsForward?: boolean;
   Timeout?: number;
 }
