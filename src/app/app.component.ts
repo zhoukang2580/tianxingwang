@@ -215,9 +215,9 @@ export class AppComponent
     } else if (!AppHelper.getTicket() && unloginPath) {
       this.router.navigate([AppHelper.getRoutePath(unloginPath)]);
     } else if (hash) {
-      this.jumpToRoute("").then(() => {
-        this.jumpToRoute(path);
-      });
+      this.jumpToRoute(path);
+      // this.jumpToRoute("").then(() => {
+      // });
     } else {
       this.router.navigate([AppHelper.getRoutePath("")]);
     }
