@@ -5,7 +5,7 @@
     <!-- Slides -->
     <div class="swiper-slide" [ngStyle]="slideStyle" #slides *ngFor="let item of images">
       <ng-container *ngIf='item.url else textTempl'>
-        <div [class.swiper-zoom-container]='zoom' class='img-wrapper'>
+        <div [class.swiper-zoom-container]='false' class='img-wrapper'>
           <!-- <div [lazyLoad]='item.url' class='divimg' [class.has-thumbs]='hasThumbs'
             [defaultImage]='prerenderImageUrl'> 
             <div [lazyLoad]='logoUrl' class='logo' *ngIf='logoUrl||hasLogo'></div> 

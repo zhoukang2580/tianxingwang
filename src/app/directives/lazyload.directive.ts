@@ -12,8 +12,6 @@ export class LazyloadDirective implements OnInit, OnChanges, OnDestroy, AfterCon
   @Input() defaultImage: string;
   constructor(private imageRecoverService: ImageRecoverService, private el: ElementRef<HTMLDivElement | HTMLImageElement>, private render: Renderer2) { }
   ngOnChanges() {
-    this.setDefaultImage();
-    this.setupImageRecover();
     this.addIO();
   }
   ngAfterContentInit() {
@@ -69,7 +67,7 @@ export class LazyloadDirective implements OnInit, OnChanges, OnDestroy, AfterCon
         // because there will only ever be one instance
         // of the element we are observing
         // we can just use data[0]
-        if (data[0].isIntersecting) {
+        if (data.find(it=>it.isIntersecting)) {
           this.load();
           this.removeIO();
         }

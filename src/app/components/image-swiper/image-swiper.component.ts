@@ -25,7 +25,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() direction: "vertical" | "horizontal" = 'horizontal';
   @Input() pagination = null;
   @Input() autoplay = false;
-  @Input() zoom = AppHelper.isApp();
+  @Input() zoom = false;//AppHelper.isApp();
   @Input() loop;
   @Input() isShowCloseBtn = true;
   @Input() isShowPagination = true;
