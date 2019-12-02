@@ -132,6 +132,14 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     }
     return show;
   }
+  private checkAirportChange(info: PassengerBookInfo<IFlightSegmentInfo>, lowestFlightSegment: FlightSegmentEntity) {
+    if (info && info.bookInfo && info.bookInfo.flightSegment && lowestFlightSegment) {
+      if (info.bookInfo.flightSegment.ToAirport != lowestFlightSegment.ToAirport) {
+        return true;
+      }
+    }
+    return false;
+  }
   async onSelectLowestSegment(info: PassengerBookInfo<IFlightSegmentInfo>) {
     const { lowestCabin, lowestFlightSegment } = info.bookInfo && info.bookInfo.lowerSegmentInfo;
     if (!lowestCabin || !lowestFlightSegment) {
@@ -139,6 +147,12 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
         LanguageHelper.Flight.getTheLowestCabinNotFoundTip()
       );
       return "";
+    }
+    if (this.checkAirportChange(info, lowestFlightSegment)) {
+      const ok = await AppHelper.alert(`机场将由【${info.bookInfo.flightSegment.ToAirportName}】 变更为 【${lowestFlightSegment.ToAirportName}】，是否继续？`, true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+      if (!ok) {
+        return;
+      }
     }
     const m = await this.modalCtrl.create({
       component: SelectFlightsegmentCabinComponent,
@@ -165,6 +179,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
           tripType: data.tripType,
           id: AppHelper.uuid(),
           lowerSegmentInfo: null,
+          originalBookInfo: { ...info }
         };
         bookInfo.flightPolicy.LowerSegment = null;// 更低价仅能选择一次.
         const newInfo: PassengerBookInfo<IFlightSegmentInfo> = {
@@ -172,7 +187,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
           passenger: info.passenger,
           credential: info.credential,
           isNotWhitelist: info.isNotWhitelist,
-          bookInfo
+          bookInfo,
         };
         this.flightService.replacePassengerBookInfo(info, newInfo);
       }

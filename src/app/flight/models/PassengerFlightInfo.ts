@@ -1,6 +1,7 @@
 import { FlightCabinEntity } from './flight/FlightCabinEntity';
 import { FlightSegmentEntity } from './flight/FlightSegmentEntity';
 import { TripType } from 'src/app/tmc/models/TripType';
+import { PassengerBookInfo } from 'src/app/tmc/tmc.service';
 
 
 
@@ -11,6 +12,7 @@ export interface IFlightSegmentInfo {
   tripType?: TripType;
   id?: string;
   lowerSegmentInfo?: {lowestCabin:FlightPolicy;lowestFlightSegment:FlightSegmentEntity,tripType:TripType};
+  originalBookInfo?:PassengerBookInfo<IFlightSegmentInfo>;
 }
 
 export interface PassengerPolicyFlights {

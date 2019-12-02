@@ -564,9 +564,17 @@ export class FlightService {
       return false;
     }
     if (await this.staffService.isSelfBookType()) {
-      await this.reselectSelfBookTypeSegment(arg);
+      if(arg.bookInfo.originalBookInfo){
+        await this.reselectSelfBookTypeSegment(arg.bookInfo.originalBookInfo);
+      }else{
+        await this.reselectSelfBookTypeSegment(arg);
+      }
     } else {
-      await this.reselectNotSelfBookTypeSegments(arg);
+      if(arg.bookInfo.originalBookInfo){
+        await this.reselectNotSelfBookTypeSegments(arg.bookInfo.originalBookInfo);
+      }else{
+        await this.reselectNotSelfBookTypeSegments(arg);
+      }
     }
     console.log("getPassengerBookInfos", this.getPassengerBookInfos());
   }
@@ -636,7 +644,7 @@ export class FlightService {
                 name = `${item.credential.CheckFirstName}${item.credential.CheckLastName}(${(item.credential.Number || "").substr(0, 6)}...)`;
               }
               cannotArr.push(name);
-              item.bookInfo=null;
+              item.bookInfo = null;
             } else {
               item.bookInfo = info;
             }
@@ -696,7 +704,7 @@ export class FlightService {
             name = `${item.credential.CheckFirstName}${item.credential.CheckLastName}(${(item.credential.Number || "").substr(0, 6)}...)`;
           }
           cannotArr.push(name);
-          item.bookInfo=null;
+          item.bookInfo = null;
         } else {
           item.bookInfo = info;
         }
@@ -841,8 +849,8 @@ export class FlightService {
         ToCode: fromCity.AirportCityCode,
         ToAsAirport: false,
         FromAsAirport: false,
-        fromCity: {...toCity},
-        toCity: {...fromCity},
+        fromCity: { ...toCity },
+        toCity: { ...fromCity },
         Date: s.BackDate,
         tripType: TripType.returnTrip,
         isLocked: true

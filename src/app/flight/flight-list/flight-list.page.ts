@@ -358,7 +358,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       }
       this.hasDataSource.next(false);
       let segments = this.filterFlightSegments(this.flightService.getTotalFlySegments());
-      if (isSelf) {
+      if (isSelf && this.searchFlightModel.tripType == TripType.returnTrip) {
         segments = this.filterSegmentsByGoArrivalTime(segments);
       }
       this.st = Date.now();
