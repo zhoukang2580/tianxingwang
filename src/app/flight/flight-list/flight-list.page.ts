@@ -247,7 +247,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     const d = await this.flightService.openCalendar(false);
     if (d && d.length) {
       const go = d[0];
-      this.flyDayService.setSelectedDaysSource([this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date)]);
+      // this.flyDayService.setSelectedDaysSource([this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date)]);
       this.onChangedDay(go, true);
     }
   }
@@ -500,6 +500,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       } else {
         s.toCity = res.data;
       }
+      s.FromCode = s.fromCity.Code;
+      s.ToCode = s.toCity.Code;
+      s.FromAsAirport = s.fromCity.Tag == "Airport";
+      s.ToAsAirport = s.fromCity.Tag == "Airport";
       this.flightService.setSearchFlightModel(s);
     }
   }
