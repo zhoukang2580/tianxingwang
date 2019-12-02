@@ -242,6 +242,10 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit, AfterCon
             if (this.hotelQueryModel.PageIndex < 1) {
               console.log("refresher complete");
               this.refresher.complete();
+              this.refresher.disabled = true;
+              setTimeout(() => {
+                this.refresher.disabled = false;
+              }, 100);
             }
           }
           if (this.scroller) {
@@ -277,7 +281,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit, AfterCon
     }
   }
   goToDetail(item: HotelDayPriceEntity) {
-    this.hotelService.curViewHotel = {...item};
+    this.hotelService.curViewHotel = { ...item };
     this.router.navigate([AppHelper.getRoutePath("hotel-detail")]);
   }
   onCityClick() {

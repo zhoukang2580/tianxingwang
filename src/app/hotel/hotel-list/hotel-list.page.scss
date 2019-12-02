@@ -31,6 +31,9 @@ ion-content {
   // .hotel-list {
   //   margin-top: 56px;
   // }
+  .pos.ios {
+    padding-top: 0.5em;
+  }
 }
 ion-toolbar.ios {
   --border-width: 0;
@@ -38,7 +41,7 @@ ion-toolbar.ios {
 small {
   font-size: 0.6rem;
 }
-ion-thumbnail img{
+ion-thumbnail img {
   min-width: 4em;
   min-height: 4em;
 }
