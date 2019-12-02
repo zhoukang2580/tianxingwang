@@ -501,8 +501,8 @@ export class FlightService {
       s.isLocked = false;
       s.fromCity = airports.find(c => c.Code == s.FromCode);
       s.toCity = airports.find(c => c.Code == s.ToCode);
-      s.fromCity = { ...s.fromCity, Tag: "AirportCity" };
-      s.toCity = { ...s.toCity, Tag: "AirportCity" };
+      s.FromAsAirport=s.fromCity.Tag=='Airport';
+      s.ToAsAirport=s.toCity.Tag=='Airport';
       let arr = this.getPassengerBookInfos().map(item => {
         item.bookInfo = null;
         return item;

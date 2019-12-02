@@ -299,8 +299,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       ...s,
       fromCity: s.toCity,
       toCity: s.fromCity,
-      FromCode:s.toCity.Code,
-      ToCode:s.fromCity.Code,
+      FromCode: s.toCity.Code,
+      ToCode: s.fromCity.Code,
+      FromAsAirport: s.toCity.Tag == "Airport",
+      ToAsAirport: s.fromCity.Tag == "Airport",
     });
     this.isRotateIcon = !this.isRotateIcon; // 控制图标旋转
     this.doRefresh(true, false);
