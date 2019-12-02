@@ -608,7 +608,10 @@ export class TmcService {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Tmc-GetTmc";
-    this.tmc = await this.apiService.getPromiseData<TmcEntity>(req);
+    this.tmc = await this.apiService.getPromiseData<TmcEntity>(req).catch(_=>{
+      AppHelper.alert(_);
+      return null;
+    });
     return this.tmc;
   }
   async getCostCenter(
