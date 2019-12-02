@@ -390,7 +390,8 @@ export class TrainListPage implements OnInit, OnDestroy {
       ...s,
       fromCity: s.toCity,
       toCity: s.fromCity
-    })
+    });
+    this.doRefresh(true, false);
   }
   onSelectPassenger() {
     this.goToSelectPassengerPage();
