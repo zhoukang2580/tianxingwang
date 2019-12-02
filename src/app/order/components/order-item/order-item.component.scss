@@ -50,9 +50,6 @@
 .ticket-trip + .ticket-trip{
   border-top: 1px dashed var(--ion-color-dark);
 }
-.order-item ion-row.ticket-trip {
-  padding-left: 1em;
-}
 :host {
   width: 100%;
 }
