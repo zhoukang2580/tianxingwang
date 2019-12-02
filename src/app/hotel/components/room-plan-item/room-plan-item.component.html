@@ -14,8 +14,9 @@
       </span>
       <span class='desc'>{{roomPlan?.Facility}}</span>
     </div>
-    <div class="room-detail-desc"
-      *ngIf='roomPlan?.BookType == HotelBookType.Elong || roomPlan?.BookType == HotelBookType.Inventory'>
+
+    <div class="room-detail-desc">
+      <!-- *ngIf='roomPlan?.BookType == HotelBookType.Elong || roomPlan?.BookType == HotelBookType.Inventory' -->
       <ion-text color='secondary' class='desc' (click)='showRoomRateRuleMessage(roomPlan)'>{{getRules(roomPlan)}}
       </ion-text>
       （即时确认）
