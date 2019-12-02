@@ -191,7 +191,7 @@
                   <ion-icon name="arrow-dropright" *ngIf='!detail["isShowMore"]'></ion-icon>
                 </ion-text>
               </ion-col>
-              <ion-col size='10'>
+              <ion-col size='10' (click)='detail["isShowMore"]=!detail["isShowMore"]'>
                 <div class="text">
                   <ion-text color='medium' *ngIf='!detail["isShowMore"]'>
                     {{detail.Description}}
