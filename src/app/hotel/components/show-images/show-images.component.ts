@@ -39,6 +39,7 @@ export class ShowImagesComponent implements OnInit, AfterViewInit {
         },
         preloadImages: false,
         lazy: true,
+        loadPrevNextAmount: 2,
         zoom:this.zoom,
         // loadOnTransitionStart:true,
         thumbs: {
