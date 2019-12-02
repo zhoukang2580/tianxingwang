@@ -246,7 +246,10 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         ).find(it => it.Account.Id == bookInfo.passenger.AccountId);
         const cstaff = cs && cs.CredentialStaff;
         const credentials = [];
-        const arr = cstaff && cstaff.Approvers && cstaff.Approvers;
+        const arr = cstaff && cstaff.Approvers && cstaff.Approvers.map(it => {
+          it.RealName = it.Account && it.Account.RealName || "";
+          return it;
+        });;
         let credentialStaffApprovers: {
           Tag: string;
           Type: TaskType;
@@ -346,14 +349,14 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         };
         combineInfo.appovalStaff = cs && cs.DefaultApprover;
         combineInfo.tmcOutNumberInfos =
-          this.tmc && this.tmc.OutNumberNameArray && this.tmc.OutNumberRequiryNameArray &&
+          this.tmc && this.tmc.OutNumberNameArray &&
           this.tmc.OutNumberNameArray.map(n => {
             return {
               label: n,
               key: n,
               isLoadNumber: !!(this.tmc && this.tmc.GetTravelNumberUrl),
               required:
-                this.tmc &&
+                this.tmc && this.tmc.OutNumberRequiryNameArray &&
                 this.tmc.OutNumberRequiryNameArray.some(name => name == n),
               value: this.getTravelFormNumber(n),
               staffNumber: cstaff && cstaff.Number,
@@ -393,7 +396,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       });
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast('下单成功!',1400,"top");
+          AppHelper.toast('下单成功!', 1400, "top");
           this.isSubmitDisabled = true;
           const isSelf = (await this.staffService.isSelfBookType());
           if (
@@ -406,20 +409,20 @@ export class TrainBookPage implements OnInit, AfterViewInit {
             this.isCheckingPay = false;
             if (canPay) {
               if (res.HasTasks) {
-                await AppHelper.alert(LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),true);
+                await AppHelper.alert(LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(), true);
               } else {
                 await this.tmcService.payOrder(res.TradeNo);
               }
             } else {
               await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingTip(),true
+                LanguageHelper.Order.getBookTicketWaitingTip(), true
               );
             }
           } else {
             if (isSave) {
-              await AppHelper.alert("订单已保存",true);
+              await AppHelper.alert("订单已保存", true);
             } else {
-              await AppHelper.alert("下单成功",true);
+              await AppHelper.alert("下单成功", true);
             }
           }
           this.trainService.removeAllBookInfos();

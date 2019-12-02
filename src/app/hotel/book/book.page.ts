@@ -761,7 +761,10 @@ export class BookPage implements OnInit, AfterViewInit {
         ).find(it => it.Account.Id == bookInfo.passenger.AccountId);
         const cstaff = cs && cs.CredentialStaff;
         const credentials = [];
-        const arr = cstaff && cstaff.Approvers && cstaff.Approvers;
+        const arr = cstaff && cstaff.Approvers && cstaff.Approvers.map(it=>{
+          it.RealName=it.Account&&it.Account.RealName||"";
+          return it;
+        });
         let credentialStaffApprovers: {
           Tag: string;
           Type: TaskType;

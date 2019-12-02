@@ -164,7 +164,7 @@
                     <app-timeline-item *ngFor='let it of combindInfo?.credentialStaffApprovers'>
                       第{{it.Tag}}级审批:
                       <ion-label text-wrap *ngFor='let ap of it.approvers;let last'>
-                        {{ap.Name}}({{it?.Type==1?"所有通过":"任意通过"}})
+                        {{ap.RealName}}({{it?.Type==1?"所有通过":"任意通过"}})
                       </ion-label>
                     </app-timeline-item>
                   </app-timeline>
@@ -174,7 +174,7 @@
           </ion-item>
         </ion-item-group>
         <app-book-tmc-outnumber [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos'
-        (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'></app-book-tmc-outnumber>
+          (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'></app-book-tmc-outnumber>
       </ion-list>
       <ion-item-group>
         <ion-item-divider>
@@ -191,7 +191,8 @@
         </ion-item-divider>
         <ion-item>
           <div style='width: 100%'>
-            <ion-radio-group [(ngModel)]='viewModel.orderTravelPayType' name='travelPayType' (ionChange)="calcTotalPrice()">
+            <ion-radio-group [(ngModel)]='viewModel.orderTravelPayType' name='travelPayType'
+              (ionChange)="calcTotalPrice()">
               <ion-item *ngFor='let pt of viewModel?.orderTravelPayTypes'>
                 <ion-label>{{pt.label}}</ion-label>
                 <ion-radio [value]="pt.value" [checked]='viewModel.orderTravelPayType==pt.value'>
@@ -219,8 +220,10 @@
         <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)}}</ion-text>
       </ion-button>
     </ion-buttons>
-    <ion-button slot='end' size='small' color='secondary' (click)='bookTrain()' [disabled]='isSubmitDisabled'> 提交</ion-button>
-    <ion-button slot='end' size='small' *ngIf='isCanSave$|async' color='secondary' (click)='bookTrain(true)' [disabled]='isSubmitDisabled'>保存订单</ion-button> 
+    <ion-button slot='end' size='small' color='secondary' (click)='bookTrain()' [disabled]='isSubmitDisabled'> 提交
+    </ion-button>
+    <ion-button slot='end' size='small' *ngIf='isCanSave$|async' color='secondary' (click)='bookTrain(true)'
+      [disabled]='isSubmitDisabled'>保存订单</ion-button>
   </ion-toolbar>
 </ion-footer>
-<app-waiting-check-pay [isLoading]='true' *ngIf='isCheckingPay'>正在预订中，请稍后...</app-waiting-check-pay> 
+<app-waiting-check-pay [isLoading]='true' *ngIf='isCheckingPay'>正在预订中，请稍后...</app-waiting-check-pay>

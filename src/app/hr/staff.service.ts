@@ -265,6 +265,7 @@ export class StaffApprover {
   RealName: string;
   Tag: string;
   Type: TaskType;
+  Account:AccountEntity;
 }
 export class StaffEntity {
   isNotWhiteList: boolean;
