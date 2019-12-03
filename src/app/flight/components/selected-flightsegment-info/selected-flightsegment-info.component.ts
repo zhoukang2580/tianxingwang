@@ -151,7 +151,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
       );
       return "";
     }
-    if (this.checkAirportChange(info, lowestFlightSegment)) {
+    if (info.bookInfo && info.bookInfo.tripType == TripType.departureTrip &&this.checkAirportChange(info, lowestFlightSegment)) {
       const ok = await AppHelper.alert(`抵达机场将由【${info.bookInfo.flightSegment.ToAirportName}】 变更为 【${lowestFlightSegment.ToAirportName}】，是否继续？`, true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
       if (!ok) {
         return;

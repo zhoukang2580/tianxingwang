@@ -68,6 +68,7 @@ export class SelectPassengerPage
   private isOpenPageAsModal = false;
   private forType:FlightHotelTrainType;
   private bookInfos: PassengerBookInfo<any>[];
+  isShow=true;
   vmKeyword: string;
   removeitem: EventEmitter<PassengerBookInfo<any>>;
   isShowNewCredential = false;
@@ -109,7 +110,7 @@ export class SelectPassengerPage
     private flightService: FlightService,
     private trainService: TrainService,
     private hotelService: HotelService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {
     this.removeitem = new EventEmitter();
   }
@@ -454,10 +455,11 @@ export class SelectPassengerPage
     }
     const passengerBookInfo: PassengerBookInfo<any> = {
       credential: ({
-        ...selectedCredential
+        ...selectedCredential,
+        CheckName:`${selectedCredential.CheckFirstName}${selectedCredential.CheckLastName}`
       } as any) as CredentialsEntity,
       isNotWhitelist: this.selectedPassenger.isNotWhiteList,
-      passenger: this.selectedPassenger
+      passenger: {...this.selectedPassenger,Name:this.selectedPassenger.Name||`${selectedCredential.CheckFirstName}${selectedCredential.CheckLastName}`}
     };
     const canAdd = await this.onAddPassengerBookInfo(passengerBookInfo);
     this.isCanDeactive = true;
