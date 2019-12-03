@@ -400,7 +400,7 @@ export class AppHelper {
   }
   static getApiUrl() {
     if (environment.production) {
-      return "http://app." + this._appDomain;
+      return "https://app." + this._appDomain;
     }
     return "http://test.app." + this._appDomain;
   }
