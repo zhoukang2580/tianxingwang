@@ -29,7 +29,10 @@ import {
   OnInit,
   ViewChild,
   ElementRef,
-  OnDestroy
+  OnDestroy,
+  AfterViewInit,
+  QueryList,
+  ViewChildren
 } from "@angular/core";
 import {
   IonRefresher,
@@ -59,15 +62,15 @@ import { SelectTrainStationModalComponent } from 'src/app/tmc/components/select-
   templateUrl: "./train-list.page.html",
   styleUrls: ["./train-list.page.scss"]
 })
-export class TrainListPage implements OnInit, OnDestroy {
-  private daysCalendarComp: DaysCalendarComponent;
+export class TrainListPage implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild(DaysCalendarComponent) private daysCalendarComp: DaysCalendarComponent;
+  @ViewChild(IonRefresher) private ionRefresher: IonRefresher;
+  @ViewChild(IonContent) private cnt: IonContent;
+  @ViewChildren("li") private liEles: QueryList<any>;
+  private renderCountPerTime=50;
   private lastSelectedPassengerIds: string[];
   private currentSelectedPassengerIds: string[];
   private trains: TrainEntity[] = [];
-  @ViewChild(IonRefresher) private ionRefresher: IonRefresher;
-  @ViewChild("list") private list: ElementRef<HTMLElement>;
-  @ViewChild(IonContent) private cnt: IonContent;
-  @ViewChild(DaysCalendarComponent)
   vmTrains: TrainEntity[] = [];
   isLoading = false;
   isFiltered = false;
@@ -109,6 +112,14 @@ export class TrainListPage implements OnInit, OnDestroy {
   }
   ngOnDestroy() {
     this.searchModalSubscription.unsubscribe();
+  }
+  ngAfterViewInit() {
+    if (this.liEles) {
+      this.liEles.changes.subscribe(_ => {
+        const trains = (this.trains || []).slice(this.vmTrains.length, this.renderCountPerTime + this.vmTrains.length);
+        this.renderList(trains);
+      })
+    }
   }
   ngOnInit() {
     this.route.queryParamMap.subscribe(async _ => {
@@ -202,6 +213,9 @@ export class TrainListPage implements OnInit, OnDestroy {
     });
     m.present();
   }
+  trackBy(idx: number, train: TrainEntity) {
+    return train && train.TrainCode;
+  }
   async onSelectStation(isFrom: boolean) {
     if (this.searchTrainModel) {
       const m = await this.modalCtrl.create({
@@ -228,7 +242,14 @@ export class TrainListPage implements OnInit, OnDestroy {
     // 先获取最新的数据
     this.vmTrains = [];
     this.trains = await this.trainService.loadPolicyedTrainsAsync();
-    return (this.vmTrains = JSON.parse(JSON.stringify(this.trains)));
+    return JSON.parse(JSON.stringify(this.trains));
+  }
+  private renderList(trains: TrainEntity[]) {
+    if (trains && trains.length) {
+      window.requestAnimationFrame(() => {
+        this.vmTrains = this.vmTrains.concat(trains);
+      });
+    }
   }
   async filterPolicyTrains() {
     const popover = await this.popoverController.create({
@@ -346,7 +367,7 @@ export class TrainListPage implements OnInit, OnDestroy {
       }
       // 根据筛选条件过滤航班信息：
       data = this.filterTrains(data);
-      this.vmTrains = data;
+      this.vmTrains = data.slice(0, this.renderCountPerTime);
       this.apiService.hideLoadingView();
       this.isLoading = false;
       if (this.ionRefresher) {
