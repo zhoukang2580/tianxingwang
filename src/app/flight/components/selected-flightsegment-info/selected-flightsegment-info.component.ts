@@ -137,6 +137,9 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
       if (info.bookInfo.flightSegment.ToAirport != lowestFlightSegment.ToAirport) {
         return true;
       }
+      if (info.bookInfo.flightSegment.FromAirport != lowestFlightSegment.FromAirport) {
+        return true;
+      }
     }
     return false;
   }
@@ -149,7 +152,13 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
       return "";
     }
     if (this.checkAirportChange(info, lowestFlightSegment)) {
-      const ok = await AppHelper.alert(`机场将由【${info.bookInfo.flightSegment.ToAirportName}】 变更为 【${lowestFlightSegment.ToAirportName}】，是否继续？`, true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+      const ok = await AppHelper.alert(`抵达机场将由【${info.bookInfo.flightSegment.ToAirportName}】 变更为 【${lowestFlightSegment.ToAirportName}】，是否继续？`, true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+      if (!ok) {
+        return;
+      }
+    }
+    if (this.checkAirportChange(info, lowestFlightSegment)) {
+      const ok = await AppHelper.alert(`出发机场将由【${info.bookInfo.flightSegment.ToAirportName}】 变更为 【${lowestFlightSegment.ToAirportName}】，是否继续？`, true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
       if (!ok) {
         return;
       }
