@@ -2,7 +2,6 @@ import { IdentityService } from "src/app/services/identity/identity.service";
 import { RequestEntity } from "../../services/api/Request.entity";
 import { ApiService } from "../../services/api/api.service";
 import { LanguageHelper } from "../../languageHelper";
-import { TmcService } from "../../tmc/tmc.service";
 import { StaffService, StaffEntity } from "../staff.service";
 import { Component, OnInit } from "@angular/core";
 
@@ -24,7 +23,6 @@ export class ConfirmInformationPage implements OnInit {
     private staffService: StaffService,
     private apiService: ApiService,
     private navCtrl: NavController,
-    // private tmcService: TmcService,
     private router: Router,
     private route: ActivatedRoute,
     private identityService: IdentityService

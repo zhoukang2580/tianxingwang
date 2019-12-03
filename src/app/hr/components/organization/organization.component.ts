@@ -1,3 +1,4 @@
+import { TmcService } from 'src/app/tmc/tmc.service';
 import { OrganizationEntity } from "../../../hr/staff.service";
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { ModalController, IonRefresher } from "@ionic/angular";
@@ -7,8 +8,6 @@ import {
   TreeOptions,
   TreeCallbacks
 } from "src/app/components/tree-ngx";
-const ORGANIZATION_PREFERANCE_KEY = "organization_preferance_key";
-const ORGANIZATION_PREFERANCE_KEY_MODE = "organization_preferance_key_mode";
 interface LocalOrganizationEntity {
   data: OrganizationEntity[];
   lastUpdateTime: number;
@@ -35,7 +34,8 @@ export class OrganizationComponent implements OnInit {
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
   constructor(
     private modalCtrl: ModalController,
-    private storage: Storage
+    private storage: Storage,
+    private tmcService:TmcService
   ) {}
   async back() {
     const t = await this.modalCtrl.getTop();
@@ -125,11 +125,9 @@ export class OrganizationComponent implements OnInit {
   }
   async changeMode() {
     this.isTreeMode = !this.isTreeMode;
-    await this.storage.set(ORGANIZATION_PREFERANCE_KEY_MODE,this.isTreeMode);
     this.doRefresh();
   }
   async ngOnInit() {
-    this.isTreeMode = await this.storage.get(ORGANIZATION_PREFERANCE_KEY_MODE);
     this.callbacks = {
       nameClick: (item: NodeItem<OrganizationEntity>) => {
         this.selectedNode = item.item;
@@ -152,30 +150,12 @@ export class OrganizationComponent implements OnInit {
   }
   async doRefresh(forceFetch = false) {
     this.isLoading = true;
-    const local: LocalOrganizationEntity = await this.storage.get(
-      ORGANIZATION_PREFERANCE_KEY
-    );
-    if (
-      !forceFetch &&
-      local &&
-      Date.now() - local.lastUpdateTime < 10 * 60 * 1000 &&
-      local.data &&
-      local.data.length
-    ) {
-      this.originalNodes = local.data;
-    } else {
-      this.originalNodes = [];
-    }
     if (this.originalNodes.length == 0) {
-      this.originalNodes = ([]).map(
+      this.originalNodes = (await this.tmcService.getOrganizations()).map(
         it => {
           return { ...it, ParentId: it && it.Parent.Id };
         }
       );
-      await this.storage.set(ORGANIZATION_PREFERANCE_KEY, {
-        lastUpdateTime: Date.now(),
-        data: this.originalNodes
-      } as LocalOrganizationEntity);
     }
     this.nodeItems = this.originalNodes.map(item => {
       return {

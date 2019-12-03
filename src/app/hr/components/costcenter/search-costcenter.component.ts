@@ -1,3 +1,4 @@
+import { TmcService } from 'src/app/tmc/tmc.service';
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { IonRefresher, ModalController } from "@ionic/angular";
 interface OptionItem {
@@ -17,9 +18,10 @@ export class CostcenterComponent implements OnInit {
   @ViewChild(IonRefresher) refresher: IonRefresher;
   constructor(
     private modalCtrl: ModalController,
-  ) {}
+    private tmcService: TmcService
+  ) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
   doRefresh() {
     this.vmKeyword = "";
   }
@@ -29,7 +31,7 @@ export class CostcenterComponent implements OnInit {
     this.loading = false;
   }
   private async loadMore() {
-    this.constCenters = [];
+    this.constCenters = await this.tmcService.getCostCenter(this.vmKeyword);
   }
   onSelect(item: OptionItem) {
     this.selectedCostCenter = item;
@@ -38,7 +40,7 @@ export class CostcenterComponent implements OnInit {
   async back() {
     const t = await this.modalCtrl.getTop();
     if (t) {
-      t.dismiss(this.selectedCostCenter).catch(_ => {});
+      t.dismiss(this.selectedCostCenter).catch(_ => { });
     }
   }
 }
