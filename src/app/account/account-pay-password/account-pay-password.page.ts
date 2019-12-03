@@ -9,7 +9,7 @@ import { NavController } from "@ionic/angular";
 export class AccountPayPasswordPage implements OnInit {
   constructor(private navCtrl: NavController) {}
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   ngOnInit() {}
 }

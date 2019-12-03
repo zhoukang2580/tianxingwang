@@ -110,7 +110,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     this.totalPriceSource = new BehaviorSubject(0);
   }
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   async doRefresh() {
     try {

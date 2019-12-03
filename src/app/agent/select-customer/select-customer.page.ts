@@ -40,7 +40,7 @@ export class SelectCustomerPage implements OnInit, OnDestroy {
       });
   }
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   ngOnDestroy() {
     this.identitySubscription.unsubscribe();

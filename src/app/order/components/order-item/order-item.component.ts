@@ -63,12 +63,16 @@ export class OrderItemComponent implements OnInit {
     if (!channel) {
       return false;
     }
-    return  "客户PC 代理PC 客户H5 代理H5 ANDROID IOS 代理ANDROID 代理IOS 代理接口".includes(channel)
+    return "客户PC 代理PC 客户H5 代理H5 ANDROID IOS 代理ANDROID 代理IOS 代理接口".includes(channel)
       && orderFlightTicket.Status == OrderFlightTicketStatusType.Issued && this.tmc && this.tmc.FlightIsAllowRefund
       && (orderFlightTicket.Supplier != "0")
   }
-  getDateWeekName(date:string){
-    if(!date){
+  getPassenger(ticket: OrderFlightTicketEntity) {
+    const p = this.order && this.order.OrderPassengers||[];
+    return p.find(it => it.Id == (ticket.Passenger && ticket.Passenger.Id));
+  }
+  getDateWeekName(date: string) {
+    if (!date) {
       return '';
     }
     const d = this.calendarService.generateDayModelByDate(date);

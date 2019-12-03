@@ -108,13 +108,16 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       if (ticket.OrderFlightTrips) {
         ticket.OrderFlightTrips.forEach(flightTrip => {
           if (flightTrip.Status == OrderFlightTripStatusType.Normal || flightTrip.Status == OrderFlightTripStatusType.Refund) {
-            flightTrip.OrderFlightTicket = { TicketType: ticket.TicketType,StatusName:ticket.StatusName } as OrderFlightTicketEntity;
+            flightTrip.OrderFlightTicket = { TicketType: ticket.TicketType, StatusName: ticket.StatusName, Id: ticket.Id } as OrderFlightTicketEntity;
             infos.push(flightTrip);
           }
         })
       }
     });
     infos.sort((a, b) => AppHelper.getDate(a.TakeoffTime).getTime() - AppHelper.getDate(b.TakeoffTime).getTime());
+    if (this.selectedFlightTicket) {
+      infos = infos.filter(it => it.OrderFlightTicket.Id == this.selectedFlightTicket.Id);
+    }
     return infos;
   }
   getIndex(idx: number) {
@@ -531,7 +534,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     p.present();
   }
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
 
   onTabActive(tab: TabItem) {

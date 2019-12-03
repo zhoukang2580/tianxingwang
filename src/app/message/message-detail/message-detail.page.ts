@@ -117,7 +117,7 @@ export class MessageDetailPage implements OnInit, AfterViewInit {
       this.isShowLink = false;
       return;
     }
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   onShowDetail(url: string) {
     this.isShowLink = true;

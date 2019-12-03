@@ -61,7 +61,7 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     });
   }
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   ngOnDestroy() {
     this.subscriptions.forEach(sub => {

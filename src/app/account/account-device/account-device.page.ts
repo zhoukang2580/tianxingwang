@@ -24,7 +24,7 @@ export class AccountDevicePage implements OnInit, OnDestroy {
     this.load();
   }
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   load() {
     const req = new RequestEntity();

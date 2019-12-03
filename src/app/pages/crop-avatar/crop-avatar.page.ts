@@ -33,7 +33,7 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
 
   ngOnInit() { }
   goBack() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   ngAfterViewInit() {
     this.croppedImage = document.getElementById("image") as HTMLImageElement;
@@ -41,12 +41,18 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
       if (d && d.get("cropAvatar")) {
         this.method = d.get("method");
         this.fileName = d.get("fileName");
-        this.croppedImage.src = AppHelper.getRouteData();
+        const fileObj = AppHelper.getRouteData();
+        // console.log("objectUrl=", fileObj);
+        this.croppedImage.src = fileObj;
+        // this.croppedImage.onload = _ => {
+        //   window.URL=window.URL||window['webkitURL'];
+        //   window.URL.revokeObjectURL(fileObj);
+        // }
         if (this.croppedImage) {
           AppHelper.setRouteData(null);
           this.reset();
         } else {
-          this.navCtrl.back();
+          this.navCtrl.pop();
         }
       }
     });
@@ -58,7 +64,7 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
   }
   cancel() {
     // this.showCropBox = false;
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
 
   ok() {

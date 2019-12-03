@@ -1,3 +1,6 @@
+import { AgentEntity } from './../../tmc/models/AgentEntity';
+import { ActivatedRoute } from '@angular/router';
+import { TmcService } from './../../tmc/tmc.service';
 import { NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
@@ -8,12 +11,15 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./contact-us.page.scss'],
 })
 export class ContactUsPage implements OnInit {
-
-  constructor(private router: Router, private navCtrl: NavController) { }
+  agent: AgentEntity;
+  constructor(private router: Router, private navCtrl: NavController, private tmcService: TmcService, private route: ActivatedRoute) { }
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   ngOnInit() {
+    this.route.queryParamMap.subscribe(async _ => {
+      this.agent = await this.tmcService.getAgent();
+    })
   }
 
 }

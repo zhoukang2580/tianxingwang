@@ -7,5 +7,19 @@
 <ion-content>
   <ion-list>
     <ion-item-divider>{{companyName}}</ion-item-divider>
+    <ion-item detail (click)='onSelectOrg()'>
+      <ion-label>部门</ion-label>
+      <ion-label>{{organization}} <ng-container *ngIf='organizationCode as code'>({{code}})</ng-container>
+      </ion-label>
+    </ion-item>
+    <ion-item detail (click)='onSelectCostCenter()'>
+      <ion-label>成本中心</ion-label>
+      <ion-label>{{costcenter}} <ng-container *ngIf='costcenterCode as code'>({{code}})</ng-container>
+      </ion-label>
+    </ion-item>
+    <ion-item detail (click)='onSelectStandard()'>
+      <ion-label>差标</ion-label>
+      <ion-label>{{standard}}</ion-label>
+    </ion-item>
   </ion-list>
 </ion-content>

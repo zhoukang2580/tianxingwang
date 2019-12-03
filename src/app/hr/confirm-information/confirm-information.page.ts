@@ -64,7 +64,7 @@ export class ConfirmInformationPage implements OnInit {
       .catch(_ => []);
   }
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   async ngOnInit() { }
   async confirmPassword() {

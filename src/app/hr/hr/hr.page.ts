@@ -13,8 +13,17 @@ export class HrPage implements OnInit {
   organizationCode:string;
   costcenter:string;
   costcenterCode:string;
+  standard:any;
   constructor(private router:Router) { }
+  async onSelectCostCenter(){
 
+  }
+  async onSelectOrg(){
+
+  }
+  async onSelectStandard(){
+    
+  }
   ngOnInit() {
   }
 

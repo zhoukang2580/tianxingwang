@@ -53,7 +53,7 @@ export class AccountPasswordPage implements OnInit, OnDestroy {
     this.passwordModel = new PasswordModel();
   }
   back(){
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   forgetPassword() {
     this.router.navigate([

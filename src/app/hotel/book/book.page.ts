@@ -205,7 +205,7 @@ export class BookPage implements OnInit, AfterViewInit {
     this.isShowPriceDetail = false;
   }
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   async doRefresh() {
     try {

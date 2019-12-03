@@ -11,7 +11,8 @@ let routes: Route[] = [
   {
     path: "confirm-information",
     loadChildren:`./confirm-information/confirm-information.module#ConfirmInformationPageModule`
-  },  { path: 'hr', loadChildren: './hr/hr.module#HrPageModule' },
+  },
+  { path: 'hr', loadChildren: './hr/hr.module#HrPageModule' },
 
 ];
 

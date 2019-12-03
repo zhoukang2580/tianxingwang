@@ -35,7 +35,7 @@ export class PasswordValidPage implements OnInit {
     });
   }
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   check() {
     const req = new RequestEntity();
