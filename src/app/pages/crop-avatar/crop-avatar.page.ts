@@ -41,12 +41,13 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
       if (d && d.get("cropAvatar")) {
         this.method = d.get("method");
         this.fileName = d.get("fileName");
-        const objectURL = AppHelper.getRouteData();
-        console.log("objectUrl=", objectURL);
-        this.croppedImage.src = objectURL;
-        this.croppedImage.onload = _ => {
-          window.URL.revokeObjectURL(objectURL);
-        }
+        const fileObj = AppHelper.getRouteData();
+        // console.log("objectUrl=", fileObj);
+        this.croppedImage.src = fileObj;
+        // this.croppedImage.onload = _ => {
+        //   window.URL=window.URL||window['webkitURL'];
+        //   window.URL.revokeObjectURL(fileObj);
+        // }
         if (this.croppedImage) {
           AppHelper.setRouteData(null);
           this.reset();
