@@ -85,6 +85,7 @@ import { IPassengerHotelBookInfo } from 'src/app/hotel/book/book.page';
   ]
 })
 export class BookPage implements OnInit, AfterViewInit {
+  vmCombindInfos: ICombindInfo[] = [];
   isSubmitDisabled = false;
   initialBookDtoModel: InitialBookDtoModel;
   errors: any;
@@ -98,7 +99,6 @@ export class BookPage implements OnInit, AfterViewInit {
   checkPayCountIntervalTime = 3 * 1000;
   checkPayCountIntervalId: any;
   totalPriceSource: Subject<number>;
-  vmCombindInfos: ICombindInfo[] = [];
   tmc: TmcEntity;
   travelForm: TravelFormEntity;
   illegalReasons: IllegalReasonEntity[] = [];
@@ -163,6 +163,18 @@ export class BookPage implements OnInit, AfterViewInit {
     );
   }
   private async initOrderTravelPayTypes() {
+    const bookInfos = this.flightService.getPassengerBookInfos();
+    const cabinPaytypes: string[] = [];
+    bookInfos.forEach(info => {
+      if (info.bookInfo && info.bookInfo.flightPolicy && info.bookInfo.flightPolicy.OrderTravelPays) {
+        const arr = info.bookInfo.flightPolicy.OrderTravelPays.split(",");
+        arr.forEach(t => {
+          if (!cabinPaytypes.find(type => type == t)) {
+            cabinPaytypes.push(t);
+          };
+        })
+      }
+    })
     this.tmc = this.tmc || (await this.getTmc());
     this.identity = await this.identityService
       .getIdentityAsync()
@@ -174,11 +186,13 @@ export class BookPage implements OnInit, AfterViewInit {
     const arr = Object.keys(this.initialBookDtoModel.PayTypes);
     this.orderTravelPayTypes = [];
     arr.forEach(it => {
-      if (!this.orderTravelPayTypes.find(item => item.value == +it)) {
-        this.orderTravelPayTypes.push({
-          label: this.initialBookDtoModel.PayTypes[it],
-          value: +it
-        });
+      if (cabinPaytypes.find(t => t == this.initialBookDtoModel.PayTypes[it])) {
+        if (!this.orderTravelPayTypes.find(item => item.value == +it)) {
+          this.orderTravelPayTypes.push({
+            label: this.initialBookDtoModel.PayTypes[it],
+            value: +it
+          });
+        }
       }
     });
     console.log("initOrderTravelPayTypes", this.orderTravelPayTypes);
@@ -492,6 +506,37 @@ export class BookPage implements OnInit, AfterViewInit {
   back() {
     this.natCtrl.back();
   }
+  private getGroupedCombindInfo(arr: ICombindInfo[], tmc: TmcEntity) {
+    const group = arr.reduce((acc, item) => {
+      const id = tmc && tmc.Account && tmc.Account.Id || (item.vmModal && item.vmModal.passenger && item.vmModal.passenger.AccountId);
+      if (id) {
+        if (acc[id]) {
+          acc[id].push(item);
+        } else {
+          acc[id] = [item];
+        }
+      }
+      return acc;
+    }, {} as { [accountId: string]: ICombindInfo[] });
+    return group;
+  }
+  private fillGroupConbindInfoApprovalInfo(arr: ICombindInfo[]) {
+    const group = this.getGroupedCombindInfo(arr, this.tmc);
+    let result = arr;
+    result = [];
+    Object.keys(group).forEach(key => {
+      if (group[key].length) {
+        const first = group[key][0];
+        result = result.concat(group[key].map(it => {
+          it.appovalStaff = first.appovalStaff;
+          it.notifyLanguage = first.notifyLanguage;
+          it.isSkipApprove = first.isSkipApprove;
+          return it;
+        }));
+      }
+    });
+    return result;
+  }
   async bookFlight(isSave: boolean = false) {
     if (this.isSubmitDisabled) {
       return;
@@ -501,8 +546,9 @@ export class BookPage implements OnInit, AfterViewInit {
     let canBook = false;
     let canBook2 = false;
     const isSelf = await this.staffService.isSelfBookType();
+    const arr = this.fillGroupConbindInfoApprovalInfo(this.vmCombindInfos);
     canBook = this.fillBookLinkmans(bookDto);
-    canBook2 = this.fillBookPassengers(bookDto);
+    canBook2 = this.fillBookPassengers(bookDto, arr);
     if (canBook && canBook2) {
       const res: IBookOrderResult = await this.flightService.bookFlight(bookDto).catch(e => {
         AppHelper.alert(e);
@@ -510,7 +556,7 @@ export class BookPage implements OnInit, AfterViewInit {
       });
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast('下单成功!',1400,"top");
+          AppHelper.toast('下单成功!', 1400, "top");
           this.isSubmitDisabled = true;
           this.flightService.removeAllBookInfos();
           if (
@@ -523,13 +569,13 @@ export class BookPage implements OnInit, AfterViewInit {
             this.isCheckingPay = false;
             if (canPay) {
               if (res.HasTasks) {
-                await AppHelper.alert(LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),true);
+                await AppHelper.alert(LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(), true);
               } else {
                 await this.tmcService.payOrder(res.TradeNo);
               }
             } else {
               await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingTip(),true
+                LanguageHelper.Order.getBookTicketWaitingTip(), true
               );
             }
           } else {
@@ -619,7 +665,7 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     return true;
   }
-  private fillBookPassengers(bookDto: OrderBookDto) {
+  private fillBookPassengers(bookDto: OrderBookDto, combindInfos: ICombindInfo[]) {
     const showErrorMsg = (msg: string, item: ICombindInfo) => {
       AppHelper.alert(
         `${(item.credentialStaff && item.credentialStaff.Name) ||
@@ -630,8 +676,8 @@ export class BookPage implements OnInit, AfterViewInit {
       );
     };
     bookDto.Passengers = [];
-    for (let i = 0; i < this.vmCombindInfos.length; i++) {
-      const combindInfo = this.vmCombindInfos[i];
+    for (let i = 0; i < combindInfos.length; i++) {
+      const combindInfo = combindInfos[i];
       if (
         this.isAllowSelectApprove(combindInfo) &&
         !combindInfo.appovalStaff &&
@@ -983,8 +1029,8 @@ export class BookPage implements OnInit, AfterViewInit {
         );
         const cstaff = cs && cs.CredentialStaff;
         const credentials = [];
-        const arr = cstaff && cstaff.Approvers && cstaff.Approvers.map(it=>{
-          it.RealName=it.Account&&it.Account.RealName||"";
+        const arr = cstaff && cstaff.Approvers && cstaff.Approvers.map(it => {
+          it.RealName = it.Account && it.Account.RealName || "";
           return it;
         });
         let credentialStaffApprovers: {
@@ -1042,6 +1088,7 @@ export class BookPage implements OnInit, AfterViewInit {
           };
         });
         const combineInfo: ICombindInfo = {
+          id: AppHelper.uuid(),
           vmCredential: item.credential,
           isSkipApprove: false,
           credentials: credentials || [],
@@ -1111,10 +1158,27 @@ export class BookPage implements OnInit, AfterViewInit {
         } as ICombindInfo;
         this.vmCombindInfos.push(combineInfo);
       }
-
-
+      await this.initCombineInfosShowApproveInfo();
     } catch (e) {
       console.error(e);
+    }
+  }
+  private async initCombineInfosShowApproveInfo() {
+    if (!this.tmc) {
+      this.tmc = await this.tmcService.getTmc();
+    }
+    if (this.vmCombindInfos) {
+      this.vmCombindInfos = this.vmCombindInfos.map(item => {
+        return item;
+      })
+      const group = this.getGroupedCombindInfo(this.vmCombindInfos, this.tmc);
+      this.vmCombindInfos = [];
+      Object.keys(group).forEach(key => {
+        if (group[key].length) {
+          group[key][0].isShowApprovalInfo = true;
+        }
+        this.vmCombindInfos = this.vmCombindInfos.concat(group[key]);
+      })
     }
   }
   private isShowInsurances(takeoffTime: string) {
@@ -1210,6 +1274,7 @@ export class BookPage implements OnInit, AfterViewInit {
 
 
 interface ICombindInfo {
+  id: string;
   vmModal: PassengerBookInfo<IFlightSegmentInfo>;
   modal: PassengerBookInfo<IFlightSegmentInfo>;
   passengerDto: PassengerDto;
@@ -1221,6 +1286,7 @@ interface ICombindInfo {
   credentialStaff: StaffEntity;
   isSkipApprove: boolean;
   notifyLanguage: string;
+  isShowApprovalInfo: boolean;
   credentialStaffMobiles: {
     checked: boolean;
     mobile: string;

@@ -20,8 +20,8 @@
           [成人]
           {{combindInfo?.modal?.credential?.Number}}
         </ion-item-divider>
-        <ion-item-group>
-          <ion-item class="ion-no-margin">
+        <ion-item-group *ngIf='combindInfo.isShowApprovalInfo'>
+          <ion-item class="ion-no-margin" >
             <ion-label>通知语言:</ion-label>
             <ion-select value='cn' okText="确定" cancelText="取消" [(ngModel)]='combindInfo.notifyLanguage'>
               <ion-select-option value=''>不发</ion-select-option>
