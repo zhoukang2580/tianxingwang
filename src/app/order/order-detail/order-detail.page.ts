@@ -531,7 +531,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     p.present();
   }
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
 
   onTabActive(tab: TabItem) {

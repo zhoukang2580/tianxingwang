@@ -40,7 +40,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
     private route: ActivatedRoute
   ) { }
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   ngOnInit() {
     this.form = this.fb.group({

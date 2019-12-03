@@ -533,7 +533,7 @@ export class TrainListPage implements OnInit, OnDestroy {
   }
 
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   private sortTrains(key: "price" | "time") {
     if (this.isSortingTrains) {

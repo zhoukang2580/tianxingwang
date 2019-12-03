@@ -41,7 +41,7 @@ export class AccountSecurityPage implements OnInit, OnDestroy {
       });
   }
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   ngOnInit() {
     this.deviceSubscription = this.load();

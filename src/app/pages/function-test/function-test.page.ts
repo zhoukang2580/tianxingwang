@@ -50,7 +50,7 @@ export class FunctionTestPage implements OnInit {
     });
   }
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   showModal() {
     // this.router.navigate([AppHelper.getRoutePath('scan')]);

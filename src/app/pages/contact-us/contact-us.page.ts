@@ -11,7 +11,8 @@ export class ContactUsPage implements OnInit {
 
   constructor(private router: Router, private navCtrl: NavController) { }
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
+    
   }
   ngOnInit() {
   }

@@ -288,7 +288,7 @@ export class AppComponent
           this.lastClickTime = Date.now();
         }
       } else {
-        this.navCtrl.back();
+        this.navCtrl.pop();
         count++;
         console.log(`backbutton back count=${count}`);
         // window.history.back();

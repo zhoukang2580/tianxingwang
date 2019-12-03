@@ -38,7 +38,7 @@ export class MemberDetailPage implements OnInit, OnDestroy {
     private memberService: MemberService
   ) { }
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   ngOnInit() {
     this.route.queryParamMap.subscribe(async _ => {

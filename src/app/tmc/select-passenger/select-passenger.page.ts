@@ -636,7 +636,7 @@ export class SelectPassengerPage
   }
   back() {
     if (!this.isOpenPageAsModal) {
-      this.navCtrl.back();
+      this.navCtrl.pop();
     } else {
       this.modalController.getTop().then(t => {
         if (t) {

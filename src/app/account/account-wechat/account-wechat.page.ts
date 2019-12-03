@@ -22,7 +22,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
   @ViewChild("List") deviceList: IonList;
   constructor(private apiService: ApiService, private navCtrl: NavController) {}
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   ngOnInit() {
     this.isShowBindButton =

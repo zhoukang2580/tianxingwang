@@ -43,7 +43,7 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
     });
   }
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   ngAfterViewInit() {
     if (this.iframes) {

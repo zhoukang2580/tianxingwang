@@ -16,7 +16,7 @@ export class AccountSettingPage implements OnInit {
     private navCtrl: NavController
   ) {}
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   ngOnInit() {}
   logout() {

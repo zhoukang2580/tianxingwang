@@ -24,7 +24,7 @@ export class ProductListPage implements OnInit {
     });
   }
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   goToProductTab(tab: ProductItem) {
     this.router.navigate([AppHelper.getRoutePath(`product-tabs`)], {

@@ -28,7 +28,7 @@ export class BulletinListPage implements OnInit {
     });
   }
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   ngOnInit() {
     this.doRefresh();

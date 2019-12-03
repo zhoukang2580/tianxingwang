@@ -21,7 +21,7 @@ export class ViewDetailPage implements OnInit {
     private route: ActivatedRoute
   ) { }
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   ngOnInit() {
     this.route.queryParamMap.subscribe(async d => {

@@ -81,7 +81,7 @@ export class MessageListPage implements OnInit, AfterViewInit {
     // }
   }
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   onEdit() {
     this.open = !this.open;

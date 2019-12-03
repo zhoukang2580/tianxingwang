@@ -27,7 +27,7 @@ export class PasswordCheckPage implements OnInit, OnDestroy {
     private navCtrl: NavController
   ) {}
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   ngOnInit() {}
   ngOnDestroy() {

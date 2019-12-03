@@ -60,7 +60,7 @@ export class MemberCredentialManagementPage
     });
   }
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   ngOnInit() {
     this.doRefresh();
