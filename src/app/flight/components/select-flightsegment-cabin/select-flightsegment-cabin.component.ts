@@ -40,7 +40,7 @@ export class SelectFlightsegmentCabinComponent implements OnInit {
   async openrules(cabin: any) {
     const m = await this.popoverCtrl.create({
       component: TicketchangingComponent,
-      componentProps: { cabin: cabin.Cabin },
+      componentProps: { cabin: cabin },
       showBackdrop: true,
       cssClass: "ticket-changing"
     });

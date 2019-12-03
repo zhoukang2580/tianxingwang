@@ -87,8 +87,8 @@
                 <h3 class='discount'>
                   <ion-text color='dark' *ngIf='identity?.Numbers&&identity.Numbers["AgentId"] else aatemp'>
                     <span
-                      *ngIf=' cabin.Cabin?.TypeName?.length > 4 ? cabin.Cabin?.TypeName?.replace("舱", "") : cabin.Cabin?.TypeName as cabinTypeName'></span>
-                    {{ cabin.Cabin?.Code }}(cabinTypeName)
+                      *ngIf=' cabin.Cabin?.TypeName?.length > 4 ? cabin.Cabin?.TypeName?.replace("舱", "") : cabin.Cabin?.TypeName'></span>
+                    {{ cabin.Cabin?.Code }}({{cabin.Cabin?.TypeName}})
                   </ion-text>
                   <ng-template #aatemp>
                     <ion-text color='dark'>{{cabin.Cabin?.TypeName}}</ion-text>
@@ -96,6 +96,9 @@
                   <ion-text color='dark'>{{cabin.Cabin?.Discount|discount}}</ion-text>
                   <ion-text color='secondary' *ngIf='cabin.Cabin?.FareType==FlightFareType.Agreement'>
                     <strong>协</strong>
+                  </ion-text>
+                  <ion-text color='secondary' *ngIf='cabin?.OrderTravelPayNames'>
+                    <strong>政</strong>
                   </ion-text>
                 </h3>
                 <h3>

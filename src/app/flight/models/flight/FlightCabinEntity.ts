@@ -116,8 +116,7 @@ export class FlightCabinEntity {
   /// <summary>
   /// 运价类型名称
   /// </summary>
-  FareTypeName
-      : string;
+  FareTypeName : string;
   /// <summary>
   /// 来源名称
   /// </summary>

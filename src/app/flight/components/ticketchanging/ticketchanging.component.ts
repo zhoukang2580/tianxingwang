@@ -1,6 +1,6 @@
-import { Component, OnInit, Input } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import {  PopoverController } from "@ionic/angular";
-import { FlightCabinEntity } from '../../models/flight/FlightCabinEntity';
+import { FlightPolicy } from '../../models/PassengerFlightInfo';
 
 @Component({
   selector: "app-ticketchanging-comp",
@@ -8,7 +8,7 @@ import { FlightCabinEntity } from '../../models/flight/FlightCabinEntity';
   styleUrls: ["./ticketchanging.component.scss"]
 })
 export class TicketchangingComponent implements OnInit {
-  cabin: FlightCabinEntity;
+  cabin: FlightPolicy;
   constructor(private popoverCtrl: PopoverController) {}
   async cancel() {
     const m = await this.popoverCtrl.getTop();

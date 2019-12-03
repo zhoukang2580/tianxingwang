@@ -173,7 +173,7 @@ export class FlightItemCabinsPage implements OnInit {
     // this.popoverController.dismiss().catch(_ => {});
     const m = await this.popoverController.create({
       component: TicketchangingComponent,
-      componentProps: { cabin: cabin.Cabin },
+      componentProps: { cabin: cabin },
       showBackdrop: true,
       cssClass: "ticket-changing"
       // animated: false

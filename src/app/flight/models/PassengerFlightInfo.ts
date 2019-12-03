@@ -8,11 +8,11 @@ import { PassengerBookInfo } from 'src/app/tmc/tmc.service';
 export interface IFlightSegmentInfo {
   flightSegment: FlightSegmentEntity;
   flightPolicy: FlightPolicy;
-  isDontAllowBook?:boolean;
+  isDontAllowBook?: boolean;
   tripType?: TripType;
   id?: string;
-  lowerSegmentInfo?: {lowestCabin:FlightPolicy;lowestFlightSegment:FlightSegmentEntity,tripType:TripType};
-  originalBookInfo?:PassengerBookInfo<IFlightSegmentInfo>;
+  lowerSegmentInfo?: { lowestCabin: FlightPolicy; lowestFlightSegment: FlightSegmentEntity, tripType: TripType };
+  originalBookInfo?: PassengerBookInfo<IFlightSegmentInfo>;
 }
 
 export interface PassengerPolicyFlights {
@@ -32,6 +32,8 @@ export interface FlightSegmentModel {
   IsStop: boolean; // Bool 是否经停
 }
 export interface FlightPolicy {
+  OrderTravelPays?: string;
+  OrderTravelPayNames?: string;
   Cabin: FlightCabinEntity; // 记录原始的cabin
   FlightNo: string; // String Yes 航班号
   Id: string; // String Yes 航班号
@@ -40,5 +42,5 @@ export interface FlightPolicy {
   Discount: string; // Decimal Yes 折扣率
   LowerSegment: FlightSegmentModel;
   Rules: string[]; // List<string> No 违反的差标信息
-  color:"secondary"|"success"|"danger"|"warning";
+  color: "secondary" | "success" | "danger" | "warning";
 }
