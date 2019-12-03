@@ -67,10 +67,11 @@ export class TrainListPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonRefresher) private ionRefresher: IonRefresher;
   @ViewChild(IonContent) private cnt: IonContent;
   @ViewChildren("li") private liEles: QueryList<any>;
-  private renderCountPerTime=50;
+  private renderCountPerTime = 50;
   private lastSelectedPassengerIds: string[];
   private currentSelectedPassengerIds: string[];
   private trains: TrainEntity[] = [];
+  private trainsForRender: TrainEntity[] = [];
   vmTrains: TrainEntity[] = [];
   isLoading = false;
   isFiltered = false;
@@ -116,8 +117,8 @@ export class TrainListPage implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit() {
     if (this.liEles) {
       this.liEles.changes.subscribe(_ => {
-        const trains = (this.trains || []).slice(this.vmTrains.length, this.renderCountPerTime + this.vmTrains.length);
-        this.renderList(trains);
+        const trains = (this.trainsForRender || []).splice(0, this.renderCountPerTime);
+        this.renderList(JSON.parse(JSON.stringify(trains)));
       })
     }
   }
@@ -325,6 +326,7 @@ export class TrainListPage implements OnInit, OnDestroy, AfterViewInit {
     await modal.onDidDismiss();
   }
   async doRefresh(loadDataFromServer: boolean, keepSearchCondition: boolean) {
+    this.trainsForRender = [];
     if (this.ionRefresher) {
       this.ionRefresher.disabled = true;
       this.ionRefresher.complete();
@@ -361,13 +363,14 @@ export class TrainListPage implements OnInit, OnDestroy, AfterViewInit {
         // 强制从服务器端返回新数据
         data = await this.loadPolicyedTrainsAsync();
       }
+      data = this.filterTrains(data);
       {
         const b = this.trainService.getBookInfos().find(it => it.isFilterPolicy);
         data = this.trainService.filterPassengerPolicyTrains(b, data);
       }
       // 根据筛选条件过滤航班信息：
-      data = this.filterTrains(data);
-      this.vmTrains = data.slice(0, this.renderCountPerTime);
+      this.trainsForRender = data;
+      this.vmTrains = this.trainsForRender.splice(0, this.renderCountPerTime);
       this.apiService.hideLoadingView();
       this.isLoading = false;
       if (this.ionRefresher) {
@@ -453,11 +456,11 @@ export class TrainListPage implements OnInit, OnDestroy, AfterViewInit {
     ) {
       return trains.filter(train => {
         const t = train.StartShortTime.split(":");
-        const time = t && t.length && +t[0];
+        const h = +t[0];
+        const m = +t[1];
         return (
-          time &&
-          this.filterCondition.departureTimeSpan.lower <= time &&
-          time <= this.filterCondition.departureTimeSpan.upper
+          this.filterCondition.departureTimeSpan.lower <= h &&
+          (h < this.filterCondition.departureTimeSpan.upper || h == this.filterCondition.departureTimeSpan.upper && m <= 0)
         );
       });
     }
