@@ -164,7 +164,7 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
           lazy: true,
           on: {
             slideChange: _ => {
-              console.log("slideChange", _);
+              // console.log("slideChange", _);
               this.scroll$.next(" ");
             }
           }
