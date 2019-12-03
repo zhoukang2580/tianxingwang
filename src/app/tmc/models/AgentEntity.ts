@@ -198,4 +198,15 @@ export class AgentEntity {
     /// </summary>
     InsuranceSupplierType: InsuranceSupplierType;
 
+    Address: string;//;"上海肇嘉浜路376号轻工大厦3楼"
+    HotelBookMobile:string;//; ""
+    Id:number;// 10000
+    Linkman:string;// "张俊"
+    //Name: "上海东美在线旅行社有限公司"
+    Nickname:string;// "东美在线"
+    Postcode:string;// "200031"
+    Remark: string;//
+    Telephone:string;// "400-66-88868"
+    LogoUrl:string;// "400-66-88868"
+
 }

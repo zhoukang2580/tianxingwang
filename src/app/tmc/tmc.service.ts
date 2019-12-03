@@ -66,7 +66,7 @@ export class TmcService {
     private orderService: OrderService,
     private payService: PayService,
     private router: Router,
-    private platform:Platform
+    private platform: Platform
   ) {
     this.identityService.getIdentitySource().subscribe(id => {
       this.disposal();
@@ -76,23 +76,23 @@ export class TmcService {
   private disposal() {
     this.companies = null;
     this.tmc = null;
-    this.agent=null;
+    this.agent = null;
   }
-  getChannel(){
-    let channel="H5";
-    if(AppHelper.isApp()){
-      if(this.platform.is("android")){
-        channel="android";
+  getChannel() {
+    let channel = "H5";
+    if (AppHelper.isApp()) {
+      if (this.platform.is("android")) {
+        channel = "android";
       }
-      if(this.platform.is("ios")){
-        channel="ios"
+      if (this.platform.is("ios")) {
+        channel = "ios"
       }
-    }else{
-      if(AppHelper.isWechatH5()){
-        channel='WechatH5';
+    } else {
+      if (AppHelper.isWechatH5()) {
+        channel = 'WechatH5';
       }
-      if(AppHelper.isDingtalkH5()){
-        channel='DingtalkH5';
+      if (AppHelper.isDingtalkH5()) {
+        channel = 'DingtalkH5';
       }
     }
     return channel;
@@ -230,11 +230,11 @@ export class TmcService {
     };
     req.Method = "TmcApiOrderUrl-Order-SendEmail";
     return this.apiService
-    .getPromiseData<{
-      Status: boolean;
-      Id: string;
-      Message: string;
-    }>(req);
+      .getPromiseData<{
+        Status: boolean;
+        Id: string;
+        Message: string;
+      }>(req);
   }
   async sendSms(
     toMobiles: string[],
@@ -253,11 +253,11 @@ export class TmcService {
     };
     req.Method = "TmcApiOrderUrl-Order-SendSms";
     return this.apiService
-    .getPromiseData<{
-      Status: boolean;
-      Id: string;
-      Message: string;
-    }>(req);
+      .getPromiseData<{
+        Status: boolean;
+        Id: string;
+        Message: string;
+      }>(req);
   }
   async getEmailTemplateSelectItemList() {
     if (
@@ -562,7 +562,7 @@ export class TmcService {
       .catch(_ => false);
   }
 
-  
+
   async getPassengerCredentials(
     accountIds: string[], isShowLoading = false
   ): Promise<{ [accountId: string]: CredentialsEntity[] }> {
@@ -598,7 +598,12 @@ export class TmcService {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Agent-Agent";
-    this.agent = await this.apiService.getPromiseData<AgentEntity>(req).catch(_=>null);
+    this.agent = await this.apiService.getPromiseData<{ Agent: AgentEntity }>(req).then(r => {
+      if (r && r.Agent) {
+        return { ...r.Agent, LogoFileName: r.Agent.LogoUrl, LogoFullFileName: r.Agent.LogoUrl }
+      }
+      return r;
+    }).catch(_ => null);
     return this.agent;
   }
   async getTmc(forceFetch = false): Promise<TmcEntity> {
@@ -608,7 +613,7 @@ export class TmcService {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Tmc-GetTmc";
-    this.tmc = await this.apiService.getPromiseData<TmcEntity>(req).catch(_=>{
+    this.tmc = await this.apiService.getPromiseData<TmcEntity>(req).catch(_ => {
       AppHelper.alert(_);
       return null;
     });
@@ -650,7 +655,7 @@ export interface TravelUrlInfo {
   TravelNumber: string; // TR20190703763
   Trips: string[]; // 火车行程: 07-26 至 07-26 苏州 至 南京"
 }
-export interface IBookOrderResult{ TradeNo: string;HasTasks:boolean; }
+export interface IBookOrderResult { TradeNo: string; HasTasks: boolean; }
 export class TravelFormEntity {
   Tmc: TmcEntity;
   /// <summary>

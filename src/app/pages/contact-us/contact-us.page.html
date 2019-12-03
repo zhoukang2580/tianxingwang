@@ -10,5 +10,36 @@
 </ion-header>
 
 <ion-content>
-
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-label color='dark'>{{agent?.Name}}</ion-label>
+        <ion-text *ngIf='agent?.Nickname as nn'>({{nn}})</ion-text>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size='2'>
+        <ion-label>电话</ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-label>{{agent?.Telephone}}</ion-label>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size='2'>
+        <ion-label>地址</ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-label>{{agent?.Address}}</ion-label>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size='2'>
+        <ion-label>邮编</ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-label>{{agent?.Postcode}}</ion-label>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>
