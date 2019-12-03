@@ -79,7 +79,7 @@
     <ion-label>暂无数据</ion-label>
   </app-or-comp>
   <ul class='flight'>
-    <li *ngFor='let s of vmFlights; trackBy:trackById' class='list-item' #fli (click)='goToFlightCabinsDetails(s)'>
+    <li *ngFor='let s of vmFlights; trackBy:trackById' class='list-item' #fli (click)='goToFlightCabinsDetails(s)' [class.shade]='isHasFiltered&&!s.Cabins?.length'>
       <div class='left'>
         <h4 class="time">
           <strong>{{s.TakeoffShortTime}}</strong>

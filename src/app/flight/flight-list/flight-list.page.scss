@@ -164,6 +164,9 @@ app-fly-filter {
 .flight .list-item {
   background-color: white;
   padding: 0.5em 1em;
+  &.shade{
+    background-color: #eee;
+  }
 }
 .flight .list-item {
   border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.13);

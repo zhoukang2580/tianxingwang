@@ -456,6 +456,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     //   this.flightService.getTotalFlySegments(this.flightJourneyList),
     //   this.policyflights
     // );
+    // if(this.isHasFiltered&&!fs.Cabins.length){
+    //   AppHelper.alert("没有符合条件的舱位");
+    //   return;
+    // }
     this.flightService.currentViewtFlightSegment = fs;
     this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
 
