@@ -914,7 +914,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     const result = await modal.onDidDismiss();
     if (result && result.data) {
       const res = result.data as { Text: string; Value: string };
-      const [name, emmail, mobile] = res.Text.split("|");
+      const [name, emmail, number] = res.Text.split("|");
       item.appovalStaff =
         item.appovalStaff ||
         ({
@@ -922,9 +922,8 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         } as any);
       item.appovalStaff.AccountId = item.appovalStaff.Account.Id = res.Value;
       item.appovalStaff.Email = item.appovalStaff.Account.Email = emmail;
-      item.appovalStaff.Mobile = item.appovalStaff.Account.Mobile = mobile;
+      item.appovalStaff.Number = number;
       item.appovalStaff.Name = item.appovalStaff.Account.Name = name;
-      item.appovalStaff.Number = "";
     }
   }
   private async initTmcOutNumberInfos() {
