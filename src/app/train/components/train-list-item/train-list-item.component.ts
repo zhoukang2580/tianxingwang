@@ -42,6 +42,10 @@ export class TrainListItemComponent implements OnInit {
     train.isShowSeats = !train.isShowSeats;
   }
   onBookTicket(seat: TrainSeatEntity) {
+    if(seat&&+seat.Count<=0){
+      AppHelper.alert("余票不足!");
+      return;
+    }
     if ((seat && seat.color) == "danger") {
       if (seat && seat.Policy && seat.Policy.Rules) {
         let tip = '';
