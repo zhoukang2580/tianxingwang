@@ -32,7 +32,7 @@ import { environment } from "src/environments/environment";
   providedIn: "root"
 })
 export class IdentityService {
-
+  private fetchingReq: { isFetching: boolean; promise: Promise<any> } = {} as any;
   private _IdentityEntity: IdentityEntity;
   private identitySource: Subject<IdentityEntity>;
   constructor(private http: HttpClient) {
@@ -64,27 +64,31 @@ export class IdentityService {
     ) {
       return Promise.resolve(this._IdentityEntity);
     }
-    return new Promise(s => {
-      const sub = this.loadIdentityEntity()
-        .pipe(
-          finalize(() => {
-            setTimeout(() => {
-              if (sub) {
-                sub.unsubscribe();
+    if (!this.fetchingReq.isFetching) {
+      this.fetchingReq = {
+        isFetching: true, promise: new Promise(s => {
+          const sub = this.loadIdentityEntity()
+            .pipe(
+              finalize(() => {
+                setTimeout(() => {
+                  this.fetchingReq = {} as any;
+                  sub.unsubscribe();
+                }, 300);
+              })
+            )
+            .subscribe(
+              r => {
+                s(r);
+              },
+              e => {
+                AppHelper.alert(e);
+                s(null);
               }
-            }, 300);
-          })
-        )
-        .subscribe(
-          r => {
-            s(r);
-          },
-          e => {
-            AppHelper.alert(e);
-            s(null);
-          }
-        );
-    });
+            );
+        })
+      }
+    }
+    return this.fetchingReq.promise;
   }
   getIdentitySource(): Observable<IdentityEntity> {
     return this.identitySource.asObservable();
