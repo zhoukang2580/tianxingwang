@@ -53,14 +53,10 @@ type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
   styleUrls: ["./hotel-detail.page.scss"],
   animations: [
     trigger('hideShowAnimate', [
-      state('true', style({ opacity: 1, height: "*",zIndex:10 })),
-      state('false', style({ opacity: 0, height: 0,zIndex:-1 })),
-      transition('false=>true', [
-        style({ opacity: 0, height: 0 }),
-        animate('200ms', style({ opacity: 1, height: "*" })),
-      ]),
-      transition('true=>false', [
-        animate('200ms', style({ opacity: 0, height: 0 }))
+      state('true', style({ opacity: 1, height: "*", zIndex: 10, transform: 'scaleX(1)' })),
+      state('false', style({ opacity: 0, height: 0, zIndex: -100, transform: 'scaleX(0)' })),
+      transition('*<=>*', [
+        animate('100ms'),
       ])
     ]),
   ]
@@ -367,8 +363,8 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     return this.hotelService.getBedType(room);
   }
   segmentChanged(evt: CustomEvent) {
-    if(this.isShowBackArrow){
-      return ;
+    if (this.isShowBackArrow) {
+      return;
     }
     if (evt.stopPropagation) {
       evt.stopPropagation();

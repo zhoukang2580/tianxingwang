@@ -7,7 +7,7 @@
         </ion-button>
       </ion-buttons>
       <ion-title [class.has-add-passenger]='(isShowAddPassenger$|async)'>{{hotel?.Name}}</ion-title>
-      <ion-buttons slot='end'>
+      <ion-buttons slot='end' *ngIf='!isShowBackArrow'>
         <ion-button style="font-size: 0.8rem;" fill='clear' color='secondary' (click)='onFilteredPassenger()'
           size='small'>
           <ion-text>过滤差标</ion-text>
@@ -120,11 +120,12 @@
       <ion-item>
         <ion-thumbnail (click)='onShowRoomImages(room)'>
           <ng-container *ngIf='getRoomImages(room) as images'>
-            <img [lazyLoad]='images[0]?.replace("Mobile640_960", "Hotel70_70")||(config?.DefaultImageUrl)' [defaultImage]='config?.PrerenderImageUrl'/> 
+            <img [lazyLoad]='images[0]?.replace("Mobile640_960", "Hotel70_70")||(config?.DefaultImageUrl)'
+              [defaultImage]='config?.PrerenderImageUrl' />
             <div class='images-nums' *ngIf='images.length as len'>{{len}}张</div>
           </ng-container>
         </ion-thumbnail>
-        <ion-label class='item' >
+        <ion-label class='item'>
           <h3 style="display: inline-flex;">
             <ion-label margin-end>{{room.Name}}</ion-label>
             <ion-text color='secondary' (click)='onShowRoomDetails(room)'>详情</ion-text>
@@ -139,7 +140,7 @@
               </div>
             </ion-label>
           </h4>
-          <h3 text-end  style="padding-bottom: 0.5em;" (click)='room["isShowRoomPlans"]=!room["isShowRoomPlans"]'>
+          <h3 text-end style="padding-bottom: 0.5em;" (click)='room["isShowRoomPlans"]=!room["isShowRoomPlans"]'>
             <ion-text color='danger' *ngIf='getRoomLowestAvgPrice(room) as price'>
               <strong><small style="font-size:.6rem;margin-right:0em;">￥</small><span
                   style="font-size: 1rem">{{price}}</span>
