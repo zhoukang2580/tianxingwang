@@ -140,7 +140,8 @@ export class FlightService {
   filterPassengerPolicyCabins(
     { data, flightSegment }: { data: PassengerBookInfo<IFlightSegmentInfo>; flightSegment: FlightSegmentEntity; }) {
     let policyCabins: FlightPolicy[] = [];
-    policyCabins = (flightSegment.Cabins || []).map(it => {
+    const cabins = JSON.parse(JSON.stringify(flightSegment.Cabins)) || [];
+    policyCabins = (cabins).map(it => {
       return {
         Cabin: it,
         OrderTravelPayNames: it.FlightPolicy && it.FlightPolicy.OrderTravelPayNames,
@@ -152,7 +153,7 @@ export class FlightService {
         Discount: it.Discount,
         LowerSegment: it.LowerSegment,
         Rules: [],
-        color: "secondary"
+        color: "secondary",
       } as FlightPolicy
     });
     if (data && data.passenger && data.passenger.AccountId && data.isFilterPolicy) {
@@ -180,6 +181,10 @@ export class FlightService {
           const fc = flightSegment.Cabins && flightSegment.Cabins.find(f => f.Id == it.Id);
           if (fc) {
             it.Cabin = { ...fc };
+            if(fc.FlightPolicy){
+              it.OrderTravelPayNames=fc.FlightPolicy.OrderTravelPayNames;
+              it.OrderTravelPays=fc.FlightPolicy.OrderTravelPays;
+            }
           }
           return it;
         })
