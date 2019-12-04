@@ -16,7 +16,9 @@ export class FlightPolicyEntity {
     /// 航公公司
     /// </summary>
     Airline: string;// 
+    OrderTravelPays: string;
 
+    OrderTravelPayNames: string;
     /// <summary>
     /// 规则管理
     /// </summary>

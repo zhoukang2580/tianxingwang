@@ -143,6 +143,8 @@ export class FlightService {
     policyCabins = (flightSegment.Cabins || []).map(it => {
       return {
         Cabin: it,
+        OrderTravelPayNames: it.FlightPolicy && it.FlightPolicy.OrderTravelPayNames,
+        OrderTravelPays: it.FlightPolicy && it.FlightPolicy.OrderTravelPays,
         FlightNo: flightSegment.Number,
         Id: it.Id,
         CabinCode: it.Code,
@@ -501,8 +503,8 @@ export class FlightService {
       s.isLocked = false;
       s.fromCity = airports.find(c => c.Code == s.FromCode);
       s.toCity = airports.find(c => c.Code == s.ToCode);
-      s.FromAsAirport=s.fromCity.Tag=='Airport';
-      s.ToAsAirport=s.toCity.Tag=='Airport';
+      s.FromAsAirport = s.fromCity.Tag == 'Airport';
+      s.ToAsAirport = s.toCity.Tag == 'Airport';
       let arr = this.getPassengerBookInfos().map(item => {
         item.bookInfo = null;
         return item;
@@ -564,15 +566,15 @@ export class FlightService {
       return false;
     }
     if (await this.staffService.isSelfBookType()) {
-      if(arg.bookInfo.originalBookInfo){
+      if (arg.bookInfo.originalBookInfo) {
         await this.reselectSelfBookTypeSegment(arg.bookInfo.originalBookInfo);
-      }else{
+      } else {
         await this.reselectSelfBookTypeSegment(arg);
       }
     } else {
-      if(arg.bookInfo.originalBookInfo){
+      if (arg.bookInfo.originalBookInfo) {
         await this.reselectNotSelfBookTypeSegments(arg.bookInfo.originalBookInfo);
-      }else{
+      } else {
         await this.reselectNotSelfBookTypeSegments(arg);
       }
     }
