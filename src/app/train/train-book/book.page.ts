@@ -112,7 +112,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
   back() {
     this.navCtrl.pop();
   }
-  async doRefresh() {
+  async doRefresh(byUser: boolean) {
     try {
       if (this.ionRefresher) {
         this.ionRefresher.complete();
@@ -120,6 +120,12 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         setTimeout(() => {
           this.ionRefresher.disabled = false;
         }, 300);
+      }
+      if (byUser) {
+        const ok = await AppHelper.alert("刷新将重新初始化页面，是否刷新？", true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+        if (!ok) {
+          return;
+        }
       }
       this.error = "";
       this.identity = await this.identityService.getIdentityAsync();
@@ -168,7 +174,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     return this.initialBookDto;
   }
   ngOnInit() {
-    this.doRefresh();
+    this.doRefresh(false);
     this.isCanSave$ = this.identityService.getIdentitySource().pipe(map(id => id && id.Numbers && id.Numbers["AgentId"]));
   }
   ngAfterViewInit() {
@@ -382,7 +388,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     bookDto.IsFromOffline = isSave;
     let canBook = false;
     let canBook2 = false;
-    this.viewModel.combindInfos=this.fillGroupConbindInfoApprovalInfo(this.viewModel.combindInfos);
+    this.viewModel.combindInfos = this.fillGroupConbindInfoApprovalInfo(this.viewModel.combindInfos);
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto);
     if (this.trainService.exchangedTrainTicketInfo) {
@@ -909,7 +915,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
   }
   private getGroupedCombindInfo(arr: ITrainPassengerBookInfo[], tmc: TmcEntity) {
     const group = arr.reduce((acc, item) => {
-      const id = (item && item.bookInfo.passenger && item.bookInfo.passenger.AccountId)||tmc && tmc.Account && tmc.Account.Id ;
+      const id = (item && item.bookInfo.passenger && item.bookInfo.passenger.AccountId) || tmc && tmc.Account && tmc.Account.Id;
       if (id) {
         if (acc[id]) {
           acc[id].push(item);
@@ -942,7 +948,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     if (!this.tmc) {
       this.tmc = await this.tmcService.getTmc();
     }
-    if (this.viewModel&&this.viewModel.combindInfos) {
+    if (this.viewModel && this.viewModel.combindInfos) {
       const group = this.getGroupedCombindInfo(this.viewModel.combindInfos, this.tmc);
       this.viewModel.combindInfos = [];
       Object.keys(group).forEach(key => {

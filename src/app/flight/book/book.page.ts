@@ -141,7 +141,7 @@ export class BookPage implements OnInit, AfterViewInit {
         return !!(id && id.Numbers && id.Numbers['AgentId']);
       })
       setTimeout(() => {
-        this.refresh();
+        this.refresh(false);
       }, 200);
     });
     this.isCanSkipApproval$ = combineLatest([
@@ -267,7 +267,7 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     return "";
   }
-  async refresh() {
+  async refresh(byUser:boolean) {
     try {
       if (this.ionRefresher) {
         this.ionRefresher.complete();
@@ -275,6 +275,12 @@ export class BookPage implements OnInit, AfterViewInit {
         setTimeout(() => {
           this.ionRefresher.disabled = false;
         }, 300);
+      }
+      if (byUser) {
+        const ok = await AppHelper.alert("刷新将重新初始化页面，是否刷新？", true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+        if (!ok) {
+          return;
+        }
       }
       this.errors = "";
       this.vmCombindInfos = [];

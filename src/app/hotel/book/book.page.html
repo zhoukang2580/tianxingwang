@@ -13,7 +13,7 @@
 
 <ion-content>
   <ng-container *ngIf='!error else retryTempl'>
-    <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'></ion-refresher>
+    <ion-refresher slot='fixed' (ionRefresh)='doRefresh(true)'></ion-refresher>
     <ng-container *ngIf='combindInfos?.length'>
       <ion-list *ngFor="let combindInfo of combindInfos" lines='none'>
         <ion-item-divider color='primary' sticky>

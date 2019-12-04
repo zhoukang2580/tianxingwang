@@ -207,7 +207,7 @@ export class BookPage implements OnInit, AfterViewInit {
   back() {
     this.navCtrl.pop();
   }
-  async doRefresh() {
+  async doRefresh(byUser:boolean) {
     try {
       if (this.ionRefresher) {
         this.ionRefresher.complete();
@@ -215,6 +215,12 @@ export class BookPage implements OnInit, AfterViewInit {
         setTimeout(() => {
           this.ionRefresher.disabled = false;
         }, 300);
+      }
+      if (byUser) {
+        const ok = await AppHelper.alert("刷新将重新初始化页面，是否刷新？", true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+        if (!ok) {
+          return;
+        }
       }
       this.error = "";
       this.identity = await this.identityService.getIdentityAsync();
@@ -957,7 +963,7 @@ export class BookPage implements OnInit, AfterViewInit {
     return initialBookDto;
   }
   ngOnInit() {
-    this.doRefresh();
+    this.doRefresh(false);
   }
   get hotelPaymentType(): HotelPaymentType {
     if (
