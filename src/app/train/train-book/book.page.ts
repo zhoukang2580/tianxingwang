@@ -174,6 +174,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     return this.initialBookDto;
   }
   ngOnInit() {
+    this.trainService.setBookInfoSource(this.trainService.getBookInfos().filter(it => !!it.bookInfo));
     this.doRefresh(false);
     this.isCanSave$ = this.identityService.getIdentitySource().pipe(map(id => id && id.Numbers && id.Numbers["AgentId"]));
   }

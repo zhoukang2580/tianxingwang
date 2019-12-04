@@ -131,11 +131,6 @@ export class BookPage implements OnInit, AfterViewInit {
     private payService: PayService,
     private plt: Platform
   ) {
-    route.queryParamMap.subscribe(_ => {
-      if (this.combindInfos && this.combindInfos.length == 0 && this.isPlaceOrderOk) {
-        router.navigate(['']);
-      }
-    })
   }
   calcNights() {
     if (
@@ -963,6 +958,7 @@ export class BookPage implements OnInit, AfterViewInit {
     return initialBookDto;
   }
   ngOnInit() {
+    this.hotelService.setBookInfos(this.hotelService.getBookInfos().filter(it=>!!it.bookInfo))
     this.doRefresh(false);
   }
   get hotelPaymentType(): HotelPaymentType {

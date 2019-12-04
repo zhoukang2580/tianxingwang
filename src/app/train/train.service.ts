@@ -405,7 +405,7 @@ export class TrainService {
       }
     }
     const bookInfo: ITrainInfo = {
-      trainEntity: currentViewtTainItem.train,
+      trainEntity: { ...currentViewtTainItem.train, BookSeatLocation: "" },
       trainPolicy: currentViewtTainItem.selectedSeat.Policy,
       tripType: TripType.departureTrip,
       id: AppHelper.uuid(),

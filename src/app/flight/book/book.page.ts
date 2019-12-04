@@ -135,6 +135,7 @@ export class BookPage implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
+    this.flightService.setPassengerBookInfosSource(this.flightService.getPassengerBookInfos().filter(it => !!it.bookInfo))
     // 秘书和特殊角色可以跳过审批(如果有审批人)
     this.route.queryParamMap.subscribe(async () => {
       this.isCanSave = await this.identityService.getIdentityAsync().catch(_ => null as IdentityEntity).then(id => {
@@ -267,7 +268,7 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     return "";
   }
-  async refresh(byUser:boolean) {
+  async refresh(byUser: boolean) {
     try {
       if (this.ionRefresher) {
         this.ionRefresher.complete();
@@ -515,7 +516,7 @@ export class BookPage implements OnInit, AfterViewInit {
   }
   private getGroupedCombindInfo(arr: ICombindInfo[], tmc: TmcEntity) {
     const group = arr.reduce((acc, item) => {
-      const id = (item.modal && item.modal.passenger && item.modal.passenger.AccountId)||tmc && tmc.Account && tmc.Account.Id ;
+      const id = (item.modal && item.modal.passenger && item.modal.passenger.AccountId) || tmc && tmc.Account && tmc.Account.Id;
       if (id) {
         if (acc[id]) {
           acc[id].push(item);
@@ -929,7 +930,7 @@ export class BookPage implements OnInit, AfterViewInit {
       item.appovalStaff.Email = item.appovalStaff.Account.Email = emmail;
       // item.appovalStaff.Mobile = item.appovalStaff.Account.Mobile = mobile;
       item.appovalStaff.Name = item.appovalStaff.Account.Name = name;
-      item.appovalStaff.Number=number;
+      item.appovalStaff.Number = number;
     }
   }
 
