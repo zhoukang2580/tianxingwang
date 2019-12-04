@@ -921,6 +921,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       item.appovalStaff.Email = item.appovalStaff.Account.Email = emmail;
       item.appovalStaff.Mobile = item.appovalStaff.Account.Mobile = mobile;
       item.appovalStaff.Name = item.appovalStaff.Account.Name = name;
+      item.appovalStaff.Number="";
     }
   }
   private async initTmcOutNumberInfos() {

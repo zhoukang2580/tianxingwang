@@ -42,7 +42,7 @@
     </ion-row>
     <ion-row>
       <ion-col>
-        <ion-text color='secondary'>{{searchTrainModel?.Date}}共{{vmTrains?.length}}趟火车</ion-text>
+        <ion-text color='secondary'>{{searchTrainModel?.Date}}共{{trainsCount}}趟火车</ion-text>
         <ion-text color='danger' *ngIf='isFiltered'>(筛选后)</ion-text>
       </ion-col>
     </ion-row>
@@ -80,6 +80,9 @@
       </app-train-list-item>
     </li>
   </ul>
+  <ion-infinite-scroll (ionInfinite)='loadMore()' threshold='50%'>
+    <ion-infinite-scroll-content>加载更多...</ion-infinite-scroll-content>
+  </ion-infinite-scroll>
   <ng-container #fakeList *ngIf='isLoading'>
     <ion-list class='fakelist'>
       <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8]'>
@@ -110,7 +113,7 @@
 <ion-footer color="primary">
   <ion-toolbar>
     <div class="tabs">
-      <div class="tab" [class.active]="activeTab === 'filter'" (click)="onFilter()">
+      <div class="tab" [class.active]="activeTab === 'filter'" [class.filtered]='isFiltered' (click)="onFilter()">
         <ion-icon name="funnel"></ion-icon>
         <ion-note>筛选</ion-note>
       </div>

@@ -61,6 +61,20 @@ ion-title {
         color: var(--ion-color-secondary);
       }
     }
+    &.filtered {
+      position: relative;
+      &::after {
+        position: absolute;
+        content: "";
+        height: 0.5em;
+        width: 0.5em;
+        background-color: var(--ion-color-danger);
+        display: block;
+        left: calc(50% + 0.9em);
+        transform: translateX(-50%);
+        border-radius: 50%;
+      }
+    }
   }
 }
 ion-list.fakelist {

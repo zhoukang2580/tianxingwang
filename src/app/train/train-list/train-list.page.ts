@@ -32,7 +32,8 @@ import {
   OnDestroy,
   AfterViewInit,
   QueryList,
-  ViewChildren
+  ViewChildren,
+  AfterContentInit
 } from "@angular/core";
 import {
   IonRefresher,
@@ -40,7 +41,8 @@ import {
   DomController,
   PopoverController,
   NavController,
-  ModalController
+  ModalController,
+  IonInfiniteScroll
 } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
@@ -62,19 +64,22 @@ import { SelectTrainStationModalComponent } from 'src/app/tmc/components/select-
   templateUrl: "./train-list.page.html",
   styleUrls: ["./train-list.page.scss"]
 })
-export class TrainListPage implements OnInit, OnDestroy, AfterViewInit {
+export class TrainListPage implements OnInit, OnDestroy {
   @ViewChild(DaysCalendarComponent) private daysCalendarComp: DaysCalendarComponent;
   @ViewChild(IonRefresher) private ionRefresher: IonRefresher;
+  @ViewChild(IonInfiniteScroll) private scroller: IonInfiniteScroll;
   @ViewChild(IonContent) private cnt: IonContent;
-  @ViewChildren("li") private liEles: QueryList<any>;
-  private renderCountPerTime = 50;
+  private pageSize = 100;
   private lastSelectedPassengerIds: string[];
   private currentSelectedPassengerIds: string[];
   private trains: TrainEntity[] = [];
   private trainsForRender: TrainEntity[] = [];
+  trainsCount = 0;
   vmTrains: TrainEntity[] = [];
   isLoading = false;
-  isFiltered = false;
+  get isFiltered() {
+    return this.filterCondition && (this.filterCondition.arrivalStations && this.filterCondition.arrivalStations.length || this.filterCondition.departureStations && this.filterCondition.departureStations.length || this.filterCondition.trainTypes && this.filterCondition.trainTypes.length || this.filterCondition.departureTimeSpan && (this.filterCondition.departureTimeSpan.lower > 0 && this.filterCondition.departureTimeSpan.upper < 24))
+  };
   vmFromCity: TrafficlineEntity;
   vmToCity: TrafficlineEntity;
   searchTrainModel: SearchTrainModel;
@@ -114,14 +119,7 @@ export class TrainListPage implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy() {
     this.searchModalSubscription.unsubscribe();
   }
-  ngAfterViewInit() {
-    if (this.liEles) {
-      this.liEles.changes.subscribe(_ => {
-        const trains = (this.trainsForRender || []).splice(0, this.renderCountPerTime);
-        this.renderList(JSON.parse(JSON.stringify(trains)));
-      })
-    }
-  }
+
   ngOnInit() {
     this.route.queryParamMap.subscribe(async _ => {
       this.isShowRoundtripTip = await this.staffService.isSelfBookType();
@@ -245,11 +243,17 @@ export class TrainListPage implements OnInit, OnDestroy, AfterViewInit {
     this.trains = await this.trainService.loadPolicyedTrainsAsync();
     return JSON.parse(JSON.stringify(this.trains));
   }
-  private renderList(trains: TrainEntity[]) {
-    if (trains && trains.length) {
-      window.requestAnimationFrame(() => {
-        this.vmTrains = this.vmTrains.concat(trains);
-      });
+  loadMore() {
+    const trains = this.trainsForRender.splice(0, this.pageSize);
+    if (this.scroller) {
+      this.scroller.complete();
+    }
+    if (trains.length) {
+      this.vmTrains = this.vmTrains.concat(trains);
+    } else {
+      if (this.scroller) {
+        this.scroller.disabled = true;
+      }
     }
   }
   async filterPolicyTrains() {
@@ -327,6 +331,10 @@ export class TrainListPage implements OnInit, OnDestroy, AfterViewInit {
   }
   async doRefresh(loadDataFromServer: boolean, keepSearchCondition: boolean) {
     this.trainsForRender = [];
+    this.trainsCount = 0;
+    if (this.scroller) {
+      this.scroller.disabled = false;
+    }
     if (this.ionRefresher) {
       this.ionRefresher.disabled = true;
       this.ionRefresher.complete();
@@ -370,7 +378,8 @@ export class TrainListPage implements OnInit, OnDestroy, AfterViewInit {
       }
       // 根据筛选条件过滤航班信息：
       this.trainsForRender = data;
-      this.vmTrains = this.trainsForRender.splice(0, this.renderCountPerTime);
+      this.trainsCount = data.length;
+      this.vmTrains = this.trainsForRender.splice(0, this.pageSize);
       this.apiService.hideLoadingView();
       this.isLoading = false;
       if (this.ionRefresher) {
