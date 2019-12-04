@@ -509,7 +509,7 @@ export class BookPage implements OnInit, AfterViewInit {
   }
   private getGroupedCombindInfo(arr: ICombindInfo[], tmc: TmcEntity) {
     const group = arr.reduce((acc, item) => {
-      const id = tmc && tmc.Account && tmc.Account.Id || (item.vmModal && item.vmModal.passenger && item.vmModal.passenger.AccountId);
+      const id = (item.modal && item.modal.passenger && item.modal.passenger.AccountId)||tmc && tmc.Account && tmc.Account.Id ;
       if (id) {
         if (acc[id]) {
           acc[id].push(item);
@@ -1170,9 +1170,6 @@ export class BookPage implements OnInit, AfterViewInit {
       this.tmc = await this.tmcService.getTmc();
     }
     if (this.vmCombindInfos) {
-      this.vmCombindInfos = this.vmCombindInfos.map(item => {
-        return item;
-      })
       const group = this.getGroupedCombindInfo(this.vmCombindInfos, this.tmc);
       this.vmCombindInfos = [];
       Object.keys(group).forEach(key => {

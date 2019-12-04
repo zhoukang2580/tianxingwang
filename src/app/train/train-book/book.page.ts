@@ -229,6 +229,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       } as IllegalReasonEntity;
     });
     await this.initCombindInfos();
+    await this.initCombineInfosShowApproveInfo();
     await this.initSelfBookTypeCredentials();
     this.initTmcOutNumberInfos();
     await this.initOrderTravelPayTypes();
@@ -381,6 +382,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     bookDto.IsFromOffline = isSave;
     let canBook = false;
     let canBook2 = false;
+    this.viewModel.combindInfos=this.fillGroupConbindInfoApprovalInfo(this.viewModel.combindInfos);
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto);
     if (this.trainService.exchangedTrainTicketInfo) {
@@ -905,6 +907,52 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     }
     return true;
   }
+  private getGroupedCombindInfo(arr: ITrainPassengerBookInfo[], tmc: TmcEntity) {
+    const group = arr.reduce((acc, item) => {
+      const id = (item && item.bookInfo.passenger && item.bookInfo.passenger.AccountId)||tmc && tmc.Account && tmc.Account.Id ;
+      if (id) {
+        if (acc[id]) {
+          acc[id].push(item);
+        } else {
+          acc[id] = [item];
+        }
+      }
+      return acc;
+    }, {} as { [accountId: string]: ITrainPassengerBookInfo[] });
+    return group;
+  }
+  private fillGroupConbindInfoApprovalInfo(arr: ITrainPassengerBookInfo[]) {
+    const group = this.getGroupedCombindInfo(arr, this.tmc);
+    let result = arr;
+    result = [];
+    Object.keys(group).forEach(key => {
+      if (group[key].length) {
+        const first = group[key][0];
+        result = result.concat(group[key].map(it => {
+          it.appovalStaff = first.appovalStaff;
+          it.notifyLanguage = first.notifyLanguage;
+          it.isSkipApprove = first.isSkipApprove;
+          return it;
+        }));
+      }
+    });
+    return result;
+  }
+  private async initCombineInfosShowApproveInfo() {
+    if (!this.tmc) {
+      this.tmc = await this.tmcService.getTmc();
+    }
+    if (this.viewModel&&this.viewModel.combindInfos) {
+      const group = this.getGroupedCombindInfo(this.viewModel.combindInfos, this.tmc);
+      this.viewModel.combindInfos = [];
+      Object.keys(group).forEach(key => {
+        if (group[key].length) {
+          group[key][0].isShowApprovalInfo = true;
+        }
+        this.viewModel.combindInfos = this.viewModel.combindInfos.concat(group[key]);
+      })
+    }
+  }
   async openApproverModal(item: ITrainPassengerBookInfo) {
     const modal = await this.modalCtrl.create({
       component: SearchApprovalComponent
@@ -1123,6 +1171,7 @@ export interface IBookTrainViewModel {
   }[];
 }
 interface ITrainPassengerBookInfo {
+  isShowApprovalInfo?: boolean;
   isNotWhitelist?: boolean;
   vmCredential: CredentialsEntity;
   credential: CredentialsEntity;

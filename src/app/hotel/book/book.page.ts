@@ -744,6 +744,7 @@ export class BookPage implements OnInit, AfterViewInit {
       } as IllegalReasonEntity;
     });
     await this.initCombindInfos();
+    await this.initCombineInfosShowApproveInfo();
     await this.initSelfBookTypeCredentials();
     this.initTmcOutNumberInfos();
     await this.initOrderTravelPayTypes();
@@ -1021,6 +1022,7 @@ export class BookPage implements OnInit, AfterViewInit {
         return;
       }
     }
+    this.combindInfos = this.fillGroupConbindInfoApprovalInfo(this.combindInfos);
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto);
     if (canBook && canBook2) {
@@ -1101,6 +1103,52 @@ export class BookPage implements OnInit, AfterViewInit {
         }
       }, this.checkPayCountIntervalTime);
     });
+  }
+  private getGroupedCombindInfo(arr: IPassengerHotelBookInfo[], tmc: TmcEntity) {
+    const group = arr.reduce((acc, item) => {
+      const id = (item && item.bookInfo.passenger && item.bookInfo.passenger.AccountId)||tmc && tmc.Account && tmc.Account.Id ;
+      if (id) {
+        if (acc[id]) {
+          acc[id].push(item);
+        } else {
+          acc[id] = [item];
+        }
+      }
+      return acc;
+    }, {} as { [accountId: string]: IPassengerHotelBookInfo[] });
+    return group;
+  }
+  private async initCombineInfosShowApproveInfo() {
+    if (!this.tmc) {
+      this.tmc = await this.tmcService.getTmc();
+    }
+    if (this.combindInfos) {
+      const group = this.getGroupedCombindInfo(this.combindInfos, this.tmc);
+      this.combindInfos = [];
+      Object.keys(group).forEach(key => {
+        if (group[key].length) {
+          group[key][0].isShowApprovalInfo = true;
+        }
+        this.combindInfos = this.combindInfos.concat(group[key]);
+      })
+    }
+  }
+  private fillGroupConbindInfoApprovalInfo(arr: IPassengerHotelBookInfo[]) {
+    const group = this.getGroupedCombindInfo(arr, this.tmc);
+    let result = arr;
+    result = [];
+    Object.keys(group).forEach(key => {
+      if (group[key].length) {
+        const first = group[key][0];
+        result = result.concat(group[key].map(it => {
+          it.appovalStaff = first.appovalStaff;
+          it.notifyLanguage = first.notifyLanguage;
+          it.isSkipApprove = first.isSkipApprove;
+          return it;
+        }));
+      }
+    });
+    return result;
   }
   async openApproverModal(item: IPassengerHotelBookInfo) {
     const modal = await this.modalCtrl.create({
@@ -1319,6 +1367,7 @@ export interface IPassengerHotelBookInfo {
     credentialNumber: string;
     name: string;
   };
+  isShowApprovalInfo: boolean;
   isNotWhitelist?: boolean;
   vmCredential: CredentialsEntity;
   credential: CredentialsEntity;
