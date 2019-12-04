@@ -99,15 +99,11 @@ export class ApiService {
   getResponse<T>(req: RequestEntity): Observable<IResponse<T>> {
     return this.sendRequest(req, true);
   }
-  getPromiseData<T>(req: RequestEntity): Promise<T> {
+  getPromise<T>(req: RequestEntity): Promise<IResponse<T>> {
     return new Promise((resolve, reject) => {
       const sub = this.getResponse<T>(req).subscribe(
         r => {
-          if (r && r.Status) {
-            resolve(r.Data);
-          } else {
-            reject((r && r.Message) || LanguageHelper.getApiExceptionTip());
-          }
+          resolve(r);
         },
         e => {
           reject(e);
@@ -125,14 +121,18 @@ export class ApiService {
       );
     });
   }
-  getPromise<T>(req: RequestEntity): Promise<IResponse<T>> {
+  getPromiseData<T>(req: RequestEntity): Promise<T> {
     return new Promise((resolve, reject) => {
       const sub = this.getResponse<T>(req).subscribe(
         r => {
-          resolve(r);
+          if (r.Status) {
+            resolve(r.Data);
+          } else {
+            reject(r.Message || r);
+          }
         },
         e => {
-          reject(e);
+          reject(e.Message || e);
         },
         () => {
           setTimeout(() => {
@@ -158,16 +158,17 @@ export class ApiService {
     }
     return req;
   }
-  async getUrl(req: RequestEntity) :Promise<string>{
-    let url:string;
-    if(req.Url&&req.IsUseReqUrl){
-      url=req.Url;
+  async getUrl(req: RequestEntity): Promise<string> {
+    let url: string;
+    if (req.Url) {
+      url = req.Url;
+      return url;
     }
     req.Url = req.Url || AppHelper.getApiUrl() + "/Home/Proxy";
     if (!req.IsForward && !this.apiConfig) {
       await this.loadApiConfig();
     }
-    if(url){
+    if (url) {
       return url;
     }
     if (this.apiConfig && !req.IsForward && req.Method) {
@@ -213,14 +214,15 @@ export class ApiService {
       req.Method = orgReq.Method;
     }
     const formObj = Object.keys(req)
+      .filter(it => it != "Url" && it != "IsShowLoading")
       .map(k => `${k}=${req[k]}`)
       .join("&");
 
     const url = await this.getUrl(req);
     return new Promise((resolve, reject) => {
       const subscribtion = this.http
-        .post(url, formObj, {
-          headers: { "content-type": "application/x-www-form-urlencoded", "x-requested-with": "XMLHttpRequest" },
+        .post(url, `${formObj}&Sign=${this.getSign(req)}&x-requested-with=XMLHttpRequest`, {
+          headers: { "content-type": "application/x-www-form-urlencoded"},
           observe: "body"
         })
         .pipe(
@@ -278,7 +280,6 @@ export class ApiService {
     if (req.Data && typeof req.Data != "string") {
       req.Data = JSON.stringify(req.Data);
     }
-
     this.setLoading(true, req.IsShowLoading);
     let due = req.Timeout || 30 * 1000;
     due = due < 1000 ? due * 1000 : due;
@@ -292,10 +293,12 @@ export class ApiService {
       switchMap(url => {
         req.Token = this.apiConfig.Token;
         const formObj = Object.keys(req)
+          .filter(it => it != "Url" && it != "IsShowLoading")
           .map(k => `${k}=${encodeURIComponent(req[k])}`)
           .join("&");
-        return this.http.post(url, `${formObj}&Sign=${this.getSign(req)}`, {
-          headers: { "content-type": "application/x-www-form-urlencoded", "x-requested-with": "XMLHttpRequest" },
+        // console.log(`${formObj}&Sign=${this.getSign(req)}`);
+        return this.http.post(url, `${formObj}&Sign=${this.getSign(req)}&x-requested-with=XMLHttpRequest`, {
+          headers: { "content-type": "application/x-www-form-urlencoded"},
           observe: "body"
         });
       }),
@@ -315,10 +318,8 @@ export class ApiService {
           else {
             this.router.navigate([AppHelper.getRoutePath("login")]);
           }
-
         }
-        else if(r.Code &&  r.Code.toUpperCase() === "NOAUTHORIZE")
-        {
+        else if (r.Code && r.Code.toUpperCase() === "NOAUTHORIZE") {
           this.router.navigate([AppHelper.getRoutePath("no-authorize")]);
         }
         return of(r);
@@ -352,7 +353,7 @@ export class ApiService {
         return Promise.resolve(this.apiConfig);
       }
     }
-    if (this.fetchingReq&&this.fetchingReq.isFetching) {
+    if (this.fetchingReq && this.fetchingReq.isFetching) {
       return this.fetchingReq.promise
     }
     const url = AppHelper.getApiUrl() + "/Home/ApiConfig";
@@ -365,7 +366,7 @@ export class ApiService {
             timeout(due),
             finalize(() => {
               setTimeout(() => {
-                this.fetchingReq=null;
+                this.fetchingReq = null;
                 if (sub) {
                   console.log("loadUrls unsubscribe");
                   sub.unsubscribe();

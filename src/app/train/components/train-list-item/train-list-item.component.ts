@@ -32,6 +32,15 @@ export class TrainListItemComponent implements OnInit {
     this.train.Seats.sort((a, b) => +a.SalesPrice - +b.SalesPrice);
     return this.train.Seats[0].SalesPrice;
   }
+  showOpenCloseIcon() {
+    return this.train && this.train.Seats && this.train.Seats.some(it => +it.Count > 0);
+  }
+  onShowSeats(train: TrainEntity) {
+    if (!train || train.Seats.every(it => +it.Count <= 0)) {
+      return;
+    }
+    train.isShowSeats = !train.isShowSeats;
+  }
   onBookTicket(seat: TrainSeatEntity) {
     if ((seat && seat.color) == "danger") {
       if (seat && seat.Policy && seat.Policy.Rules) {
@@ -60,9 +69,7 @@ export class TrainListItemComponent implements OnInit {
       return [];
     }
 
-    return this.train.Seats.filter(
-      seat => +seat.Count > 0 && +seat.SalesPrice > 0
-    );
+    return this.train.Seats;
   }
   ngOnInit() { }
   onScheduls(evt: CustomEvent) {

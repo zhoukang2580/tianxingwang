@@ -48,8 +48,8 @@ export class LogService {
         .join("&");
       const url = AppHelper.getApiUrl();
       return this.http
-        .post(`${url}/Home/Proxy`, formObj, {
-          headers: { "content-type": "application/x-www-form-urlencoded" },
+        .post(`${url}/Home/Proxy`, `${formObj}&x-requested-with=XMLHttpRequest`, {
+          headers: { "content-type": "application/x-www-form-urlencoded"},
           observe: "body"
         })
         .pipe(

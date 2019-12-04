@@ -892,6 +892,9 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         combindInfo.bookInfo.bookInfo.trainPolicy
       ) {
         p.Train = combindInfo.bookInfo.bookInfo.trainEntity;
+        if (p.Train && p.Train.BookSeatLocation && !p.Train.BookSeatLocation.startsWith('1')) {
+          p.Train.BookSeatLocation = `1${p.Train.BookSeatLocation}`
+        }
         p.Train.BookSeatType =
           combindInfo.bookInfo.bookInfo.trainPolicy.SeatType;
       }
@@ -921,7 +924,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       item.appovalStaff.Email = item.appovalStaff.Account.Email = emmail;
       item.appovalStaff.Mobile = item.appovalStaff.Account.Mobile = mobile;
       item.appovalStaff.Name = item.appovalStaff.Account.Name = name;
-      item.appovalStaff.Number="";
+      item.appovalStaff.Number = "";
     }
   }
   private async initTmcOutNumberInfos() {

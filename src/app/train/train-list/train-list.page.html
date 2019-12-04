@@ -9,14 +9,14 @@
       [class.text-center]='!(isShowAddPassenger$|async)'>
       <ion-text (click)='onSelectStation(true)' class='from-station'>
         <span>
-            {{vmFromCity?.Nickname}}
+          {{vmFromCity?.Nickname}}
         </span>
         <ion-icon name='arrow-dropdown'></ion-icon>
       </ion-text>
       <i class='icon icon-search-train' (click)='onSwapStation()'></i>
       <ion-text (click)='onSelectStation(false)' class='to-station'>
-       <span>{{ vmToCity?.Nickname}}</span> 
-       <ion-icon name='arrow-dropdown'></ion-icon>
+        <span>{{ vmToCity?.Nickname}}</span>
+        <ion-icon name='arrow-dropdown'></ion-icon>
       </ion-text>
     </ion-title>
     <ion-buttons slot='end'>
@@ -80,9 +80,7 @@
       </app-train-list-item>
     </li>
   </ul>
-  <ion-infinite-scroll (ionInfinite)='loadMore()' threshold='50%'>
-    <ion-infinite-scroll-content>加载更多...</ion-infinite-scroll-content>
-  </ion-infinite-scroll>
+
   <ng-container #fakeList *ngIf='isLoading'>
     <ion-list class='fakelist'>
       <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8]'>
@@ -109,6 +107,9 @@
       </ion-item>
     </ion-list>
   </ng-container>
+  <ion-infinite-scroll (ionInfinite)='loadMore()' threshold='20%'>
+    <ion-infinite-scroll-content>加载更多...</ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>
 <ion-footer color="primary">
   <ion-toolbar>

@@ -32,11 +32,9 @@ import { environment } from "src/environments/environment";
   providedIn: "root"
 })
 export class IdentityService {
-  private status = false;
-  private isLoading = false;
+
   private _IdentityEntity: IdentityEntity;
   private identitySource: Subject<IdentityEntity>;
-  private fetchingReq: { isFetching: boolean; promise: Promise<any> } = {} as any;
   constructor(private http: HttpClient) {
     this._IdentityEntity = new IdentityEntity();
     this._IdentityEntity.Ticket = AppHelper.getTicket();
@@ -47,12 +45,10 @@ export class IdentityService {
     this._IdentityEntity = info;
     AppHelper.setStorage("ticket", info.Ticket);
     AppHelper.setStorage("loginToken", info.Token);
-    // console.log("set identity ",info);
-    this.status = !!(info && info.Ticket && info.Id);
     this.identitySource.next(this._IdentityEntity);
   }
-  getStatus() {
-    return this.status;
+  getStatus():boolean {
+    return !!(this._IdentityEntity && this._IdentityEntity.Ticket && this._IdentityEntity.Id);
   }
   removeIdentity() {
     this._IdentityEntity.Ticket = null;
@@ -68,31 +64,27 @@ export class IdentityService {
     ) {
       return Promise.resolve(this._IdentityEntity);
     }
-    if (!this.fetchingReq.isFetching) {
-      this.fetchingReq = {
-        isFetching: true, promise: new Promise(s => {
-          const sub = this.loadIdentityEntity()
-            .pipe(
-              finalize(() => {
-                setTimeout(() => {
-                  this.fetchingReq = {} as any;
-                  sub.unsubscribe();
-                }, 300);
-              })
-            )
-            .subscribe(
-              r => {
-                s(r);
-              },
-              e => {
-                AppHelper.alert(e);
-                s(null);
+    return new Promise(s => {
+      const sub = this.loadIdentityEntity()
+        .pipe(
+          finalize(() => {
+            setTimeout(() => {
+              if (sub) {
+                sub.unsubscribe();
               }
-            );
-        })
-      }
-    }
-    return this.fetchingReq.promise;
+            }, 300);
+          })
+        )
+        .subscribe(
+          r => {
+            s(r);
+          },
+          e => {
+            AppHelper.alert(e);
+            s(null);
+          }
+        );
+    });
   }
   getIdentitySource(): Observable<IdentityEntity> {
     return this.identitySource.asObservable();
@@ -136,13 +128,13 @@ export class IdentityService {
       .join("&");
     const url = req.Url || AppHelper.getApiUrl() + "/Home/Proxy";
     return this.http
-      .post(url, formObj, {
-        headers: { "content-type": "application/x-www-form-urlencoded" },
+      .post(url, `${formObj}&x-requested-with=XMLHttpRequest`, {
+        headers: { "content-type": "application/x-www-form-urlencoded"},
         observe: "body"
       }).pipe(
         map((r: IResponse<IdentityEntity>) => r),
         switchMap(r => {
-          if (r&&r.Status) {
+          if (r.Status) {
             this._IdentityEntity = {
               ...this._IdentityEntity,
               ...r.Data

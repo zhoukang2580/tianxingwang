@@ -69,7 +69,7 @@ export class TrainListPage implements OnInit, OnDestroy {
   @ViewChild(IonRefresher) private ionRefresher: IonRefresher;
   @ViewChild(IonInfiniteScroll) private scroller: IonInfiniteScroll;
   @ViewChild(IonContent) private cnt: IonContent;
-  private pageSize = 100;
+  private pageSize = 20;
   private lastSelectedPassengerIds: string[];
   private currentSelectedPassengerIds: string[];
   private trains: TrainEntity[] = [];
@@ -243,18 +243,22 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.trains = await this.trainService.loadPolicyedTrainsAsync();
     return JSON.parse(JSON.stringify(this.trains));
   }
-  loadMore() {
-    const trains = this.trainsForRender.splice(0, this.pageSize);
+  private closeScroller(trains: any[] = []) {
     if (this.scroller) {
       this.scroller.complete();
-    }
-    if (trains.length) {
-      this.vmTrains = this.vmTrains.concat(trains);
-    } else {
       if (this.scroller) {
-        this.scroller.disabled = true;
+        this.scroller.disabled = trains.length == 0 || trains.length < this.pageSize;
       }
     }
+  }
+  loadMore() {
+    const trains = this.trainsForRender.splice(0, this.pageSize);
+    this.closeScroller(trains);
+    requestAnimationFrame(() => {
+      if (trains.length) {
+        this.vmTrains = this.vmTrains.concat(trains);
+      }
+    })
   }
   async filterPolicyTrains() {
     const popover = await this.popoverController.create({
@@ -379,7 +383,11 @@ export class TrainListPage implements OnInit, OnDestroy {
       // 根据筛选条件过滤航班信息：
       this.trainsForRender = data;
       this.trainsCount = data.length;
-      this.vmTrains = this.trainsForRender.splice(0, this.pageSize);
+      const trains = this.trainsForRender.splice(0, this.pageSize);
+      requestAnimationFrame(_ => {
+        this.closeScroller(trains);
+      });
+      this.vmTrains = trains;
       this.apiService.hideLoadingView();
       this.isLoading = false;
       if (this.ionRefresher) {
@@ -590,13 +598,24 @@ export class TrainListPage implements OnInit, OnDestroy {
       this.sortByTime(this.timeOrdM2N);
     }
     this.scrollToTop();
+    let data = this.filterTrains(this.trains);
+    const b = this.trainService.getBookInfos().find(it => it.isFilterPolicy);
+    data = this.trainService.filterPassengerPolicyTrains(b, data);
+    // 根据筛选条件过滤航班信息：
+    this.trainsForRender = data;
+    this.trainsCount = data.length;
+    const trains = this.trainsForRender.splice(0, this.pageSize);
+    requestAnimationFrame(_ => {
+      this.closeScroller(trains);
+    });
+    this.vmTrains = trains;
     this.isSortingTrains = false;
     this.isLoading = false;
   }
   private sortByPrice(priceOrderL2H: boolean) {
     console.time("sortByPrice");
-    if (this.vmTrains) {
-      this.vmTrains.sort((a, b) => {
+    if (this.trains) {
+      this.trains.sort((a, b) => {
         const sub =
           this.getTrainLowestSeatPrice(a) - this.getTrainLowestSeatPrice(b);
         return priceOrderL2H ? sub : -sub;
@@ -614,8 +633,8 @@ export class TrainListPage implements OnInit, OnDestroy {
     return +train.Seats[0].SalesPrice;
   }
   private sortByTime(timeOrdM2N: Boolean) {
-    if (this.vmTrains) {
-      this.vmTrains.sort((a, b) => {
+    if (this.trains) {
+      this.trains.sort((a, b) => {
         const sub = a && b && a.StartTimeStamp - b.StartTimeStamp;
         return timeOrdM2N ? sub : -sub;
       });
