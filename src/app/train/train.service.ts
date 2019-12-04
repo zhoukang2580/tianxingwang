@@ -508,27 +508,13 @@ export class TrainService {
     this.exchangedTrainTicketInfo = null;
     this.isInitializingSelfBookInfos = false;
   }
-  async loadPolicyedTrainsAsync(): Promise<TrainEntity[]> {
+  async loadPolicyedTrainsAsync(fn: (status: string) => any): Promise<TrainEntity[]> {
     // 先获取最新的数据
     let trains: TrainEntity[] = [];
     trains = await this.searchAsync(this.getSearchTrainModel());
     if (trains.length == 0) {
       return [];
     }
-    // let passengers = this.getUnSelectPassengers();
-    // if (passengers.length == 0) {
-    //   passengers = this.getBookInfos().map(info => info.passenger);
-    // }
-    // const hasreselect = this
-    //   .getBookInfos()
-    //   .find(item => item.isReplace);
-    // if (hasreselect) {
-    //   if (
-    //     !passengers.find(p => p.AccountId == hasreselect.passenger.AccountId)
-    //   ) {
-    //     passengers.push(hasreselect.passenger);
-    //   }
-    // }
     const passengers = this.getBookInfos().map(info => info.passenger)
     const notWhitelistPs = passengers.filter(p => p.isNotWhiteList); // 非白名单乘客
     const whitelistPs = passengers.filter(p => !p.isNotWhiteList); // 白名单的乘客，需要计算差标
@@ -543,7 +529,8 @@ export class TrainService {
     if (notWhitelistPs.length) {
       const policyTrains = await this.getWhitelistPolicyTrains(
         passengers,
-        trains
+        trains,
+        fn
       );
 
       // 非白名单可以预订所有的仓位
@@ -558,6 +545,8 @@ export class TrainService {
         this.totalPolicies = await this.policyAsync(
           trains,
           whitelistAccountId
+          ,
+          fn
         );
       }
     }
@@ -575,7 +564,8 @@ export class TrainService {
   }
   private async getWhitelistPolicyTrains(
     passengers: StaffEntity[],
-    trains: TrainEntity[]
+    trains: TrainEntity[],
+    fn: (status: string) => any
   ) {
     trains = JSON.parse(JSON.stringify(trains || []));
     let policyTrains: TrainPassengerModel[] = [];
@@ -584,7 +574,7 @@ export class TrainService {
     const ps = passengers.filter(p => !p.isNotWhiteList);
     if (ps.length > 0) {
       policyTrains = await this
-        .policyAsync(trains, ps.map(p => p.AccountId))
+        .policyAsync(trains, ps.map(p => p.AccountId), fn)
         .catch(_ => []);
     }
     return policyTrains;
@@ -1061,9 +1051,10 @@ export class TrainService {
       console.error(e);
     }
   }
-  policyAsync(
+  async policyAsync(
     trains: TrainEntity[],
-    passengerIds: string[]
+    passengerIds: string[],
+    fn: (status: string) => any
   ): Promise<TrainPassengerModel[]> {
     const req = new RequestEntity();
     req.Method = `TmcApiTrainUrl-Home-Policy`;
@@ -1074,11 +1065,18 @@ export class TrainService {
       Passengers: passengerIds.join(","),
       Trains: JSON.stringify(trains)
     };
-    return this.apiService
+    if (fn) {
+      fn("正在获取差标");
+    }
+    const result = await this.apiService
       .getPromiseData<TrainPassengerModel[]>(req)
       .catch(_ => {
         return [];
       });
+    if (fn) {
+      fn("获取差标完成");
+    }
+    return result;
   }
   private addoneday(s: TrainEntity) {
     const addDay = s.ArriveDays || "0";

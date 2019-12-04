@@ -1,10 +1,8 @@
 import { IBookOrderResult } from './../../tmc/tmc.service';
-import { OrderEntity } from 'src/app/order/models/OrderEntity';
 import { ITrainInfo } from "../train.service";
 import { CalendarService } from "../../tmc/calendar.service";
 import { TrainEntity } from "../models/TrainEntity";
 import { InsuranceProductEntity } from "../../insurance/models/InsuranceProductEntity";
-import { OrderLinkmanEntity } from "../../order/models/OrderLinkmanEntity";
 import * as moment from "moment";
 import {
   OrderTravelPayType,
@@ -61,13 +59,11 @@ import { map, tap } from "rxjs/operators";
 import { StaffService } from "src/app/hr/staff.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { SearchApprovalComponent } from "src/app/tmc/components/search-approval/search-approval.component";
-import { SelectTravelNumberComponent } from "src/app/tmc/components/select-travel-number-popover/select-travel-number-popover.component";
 import { AddContact } from "src/app/tmc/models/AddContact";
 import { LanguageHelper } from "src/app/languageHelper";
 import { TaskType } from "src/app/workflow/models/TaskType";
 import { OrderLinkmanDto } from "src/app/order/models/OrderLinkmanDto";
 import { ProductItemType } from "src/app/tmc/models/ProductItems";
-import { RequestEntity } from "src/app/services/api/Request.entity";
 import { PayService } from "src/app/services/pay/pay.service";
 import { ITmcOutNumberInfo } from 'src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component';
 
@@ -77,6 +73,9 @@ import { ITmcOutNumberInfo } from 'src/app/tmc/components/book-tmc-outnumber/boo
   styleUrls: ["./book.page.scss"]
 })
 export class TrainBookPage implements OnInit, AfterViewInit {
+  private checkPayCountIntervalId: any;
+  private checkPayCount = 5;
+  private checkPayCountIntervalTime = 3 * 1000;
   isSubmitDisabled = false;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent) cnt: IonContent;
@@ -91,9 +90,11 @@ export class TrainBookPage implements OnInit, AfterViewInit {
   isCanSave$ = of(false);
   addContacts: AddContact[] = [];
   isCheckingPay = false;
-  private checkPayCountIntervalId: any;
-  private checkPayCount = 5;
-  private checkPayCountIntervalTime = 3 * 1000;
+  orderTravelPayTypes: {
+    label: string;
+    value: OrderTravelPayType;
+    checked?: boolean;
+  }[];
   constructor(
     private trainService: TrainService,
     private storage: Storage,
@@ -240,7 +241,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     await this.initSelfBookTypeCredentials();
     this.initTmcOutNumberInfos();
     await this.initOrderTravelPayTypes();
-    console.log("combindInfos", this.viewModel.combindInfos);
+    console.log("viewModel", this.viewModel);
   }
   private async initCombindInfos() {
     try {
@@ -487,7 +488,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
   }
 
   calcTotalPrice() {
-    // console.time("总计");
+    console.log("this.viewModel.orderTravelPayType",this.viewModel.orderTravelPayType);
     if (this.viewModel && this.viewModel.combindInfos) {
       let totalPrice = this.viewModel.combindInfos.reduce((arr, item) => {
         if (
@@ -550,6 +551,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
   }
   private async initOrderTravelPayTypes() {
     // console.log("initOrderTravelPayTypes", this.initialBookDto);
+    this.orderTravelPayTypes = [];
     this.tmc = this.tmc || (await this.tmcService.getTmc());
     this.identity = await this.identityService
       .getIdentityAsync()
@@ -563,20 +565,30 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     }
     this.viewModel.orderTravelPayType = this.tmc && this.tmc.TrainPayType;
     const arr = Object.keys(this.initialBookDto.PayTypes);
-    this.viewModel.orderTravelPayTypes = [];
     arr.forEach(it => {
-      if (!this.viewModel.orderTravelPayTypes.find(item => item.value == +it)) {
-        this.viewModel.orderTravelPayTypes.push({
+      if (!this.orderTravelPayTypes.find(item => item.value == +it)) {
+        this.orderTravelPayTypes.push({
           label: this.initialBookDto.PayTypes[it],
-          value: +it
+          value: +it,
+          checked: +it == +this.tmc.TrainPayType
         });
       }
     });
+    this.orderTravelPayTypes = this.orderTravelPayTypes.map(it => {
+      it.checked = +it.value == +this.tmc.TrainPayType;
+      return it;
+    });
     console.log(
       "initOrderTravelPayTypes",
-      this.viewModel.orderTravelPayTypes,
+      this.orderTravelPayTypes,
       `viewModel.orderTravelPayType=${this.viewModel.orderTravelPayType}`
     );
+  }
+  onOrderTravelPayTypeSelect(pt:{value:number}){
+    this.orderTravelPayTypes = this.orderTravelPayTypes.map(it => {
+      it.checked = +it.value == pt.value;
+      return it;
+    });
   }
   private async initSelfBookTypeCredentials(): Promise<CredentialsEntity[]> {
     if (await this.staffService.isSelfBookType()) {
@@ -1171,11 +1183,6 @@ export interface IBookTrainViewModel {
   combindInfos: ITrainPassengerBookInfo[];
   isCanSkipApproval$: Observable<boolean>;
   identity: IdentityEntity;
-  orderTravelPayTypes: {
-    label: string;
-    value: OrderTravelPayType;
-    checked?: boolean;
-  }[];
 }
 interface ITrainPassengerBookInfo {
   isShowApprovalInfo?: boolean;

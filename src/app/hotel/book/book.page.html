@@ -240,7 +240,8 @@
                 <ion-item
                   *ngIf='checkOrderTravelPayType(pt.value)||(pt.value == OrderTravelPayType.Credit&&identity?.Numbers?.AgentId)'>
                   <ion-label>{{pt.label}}</ion-label>
-                  <ion-radio [value]="pt.value" [checked]='tmc?.HotelPayType==pt.value'>
+                  <ion-radio [value]="pt.value" (ionSelect)='onOrderTravelPayTypeSelect(pt)'
+                    [class.radio-checked]='orderTravelPayType==pt.value'>
                   </ion-radio>
                 </ion-item>
               </ng-container>

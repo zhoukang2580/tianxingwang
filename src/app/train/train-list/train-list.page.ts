@@ -69,11 +69,12 @@ export class TrainListPage implements OnInit, OnDestroy {
   @ViewChild(IonRefresher) private ionRefresher: IonRefresher;
   @ViewChild(IonInfiniteScroll) private scroller: IonInfiniteScroll;
   @ViewChild(IonContent) private cnt: IonContent;
-  private pageSize = 20;
+  private pageSize = 15;
   private lastSelectedPassengerIds: string[];
   private currentSelectedPassengerIds: string[];
   private trains: TrainEntity[] = [];
   private trainsForRender: TrainEntity[] = [];
+  progressName = "";
   trainsCount = 0;
   vmTrains: TrainEntity[] = [];
   isLoading = false;
@@ -240,7 +241,9 @@ export class TrainListPage implements OnInit, OnDestroy {
   private async loadPolicyedTrainsAsync(): Promise<TrainEntity[]> {
     // 先获取最新的数据
     this.vmTrains = [];
-    this.trains = await this.trainService.loadPolicyedTrainsAsync();
+    this.trains = await this.trainService.loadPolicyedTrainsAsync((status) => {
+      this.progressName = status;
+    });
     return JSON.parse(JSON.stringify(this.trains));
   }
   private closeScroller(trains: any[] = []) {
@@ -372,6 +375,7 @@ export class TrainListPage implements OnInit, OnDestroy {
       this.isLoading = true;
       let data: TrainEntity[] = JSON.parse(JSON.stringify(this.trains));
       if (loadDataFromServer) {
+        this.progressName = '正在获取火车票列表';
         // 强制从服务器端返回新数据
         data = await this.loadPolicyedTrainsAsync();
       }

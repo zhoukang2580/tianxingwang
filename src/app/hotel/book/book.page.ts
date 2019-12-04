@@ -261,6 +261,12 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     return totalPrice;
   }
+  onOrderTravelPayTypeSelect(pt:{value:number}){
+    this.orderTravelPayTypes = this.orderTravelPayTypes.map(it => {
+      it.checked = +it.value == pt.value;
+      return it;
+    });
+  }
   private async initOrderTravelPayTypes() {
     // console.log("initOrderTravelPayTypes", this.initialBookDto);
     this.tmc = this.tmc || (await this.tmcService.getTmc());

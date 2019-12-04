@@ -129,12 +129,12 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
           this.isSingle = !s.isRoundTrip;
         }
       });
-    this.canAddPassengers = !(await this.staffService.isSelfBookType());
     await this.initTrainCities();
     this.route.queryParamMap.subscribe(async _ => {
+      this.canAddPassengers = !(await this.staffService.isSelfBookType());
       await this.initTrainDays();
       this.staff = await this.staffService.getStaff();
-      this.canAddPassengers = await this.staffService.isAllBookType() || await this.staffService.isSecretaryBookType();
+      // this.canAddPassengers = await this.staffService.isAllBookType() || await this.staffService.isSecretaryBookType();
       if (await this.isStaffTypeSelf()) {
         this.isDisabled =
           this.searchTrainModel && this.searchTrainModel.isLocked;
