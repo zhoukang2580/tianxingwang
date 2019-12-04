@@ -151,7 +151,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
       );
       return "";
     }
-    if (info.bookInfo && info.bookInfo.tripType == TripType.departureTrip &&this.checkAirportChange(info, lowestFlightSegment)) {
+    if (info.bookInfo && info.bookInfo.tripType == TripType.departureTrip && this.checkAirportChange(info, lowestFlightSegment)) {
       const ok = await AppHelper.alert(`抵达机场将由【${info.bookInfo.flightSegment.ToAirportName}】 变更为 【${lowestFlightSegment.ToAirportName}】，是否继续？`, true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
       if (!ok) {
         return;
@@ -188,7 +188,13 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
           tripType: data.tripType,
           id: AppHelper.uuid(),
           lowerSegmentInfo: null,
-          originalBookInfo: { ...info }
+          originalBookInfo: {
+            ...info,
+            bookInfo: {
+              ...info.bookInfo,
+              lowerSegmentInfo: null
+            }
+          }
         };
         bookInfo.flightPolicy.LowerSegment = null;// 更低价仅能选择一次.
         const newInfo: PassengerBookInfo<IFlightSegmentInfo> = {
