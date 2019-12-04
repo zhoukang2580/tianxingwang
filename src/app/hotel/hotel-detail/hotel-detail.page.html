@@ -37,7 +37,7 @@
   </div>
 </ion-header>
 <ion-content>
-  <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'></ion-refresher>
+  <ion-refresher slot='fixed' (ionRefresh)='doRefresh()' pullMin='100'></ion-refresher>
   <div class='bg' #bgPic (click)='onShowHotelImages()' [class.md]='isMd'>
     <ion-icon class='back-arrow' name="arrow-back" (click)='back($event)' color='{{backArrowColor}}'>
     </ion-icon>

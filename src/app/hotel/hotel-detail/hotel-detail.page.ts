@@ -53,8 +53,8 @@ type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
   styleUrls: ["./hotel-detail.page.scss"],
   animations: [
     trigger('hideShowAnimate', [
-      state('true', style({ opacity: 1, height: "*", zIndex: 10, transform: 'scaleX(1)' })),
-      state('false', style({ opacity: 0, height: 0, zIndex: -100, transform: 'scaleX(0)' })),
+      state('true', style({ visibility: "initial" })),
+      state('false', style({ visibility: "collapse" })),
       transition('*<=>*', [
         animate('100ms'),
       ])
