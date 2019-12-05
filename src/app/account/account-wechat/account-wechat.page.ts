@@ -71,12 +71,8 @@ export class AccountWechatPage implements OnInit, OnDestroy {
           AppHelper.getDomain() +
           "&ticket=" +
           AppHelper.getTicket() +
-          "&path=" +
-          encodeURIComponent(
-            AppHelper.getRedirectUrl() +
-              "?path=account-wechat&openid=" +
-              (WechatHelper.openId || "")
-          );
+          "&path=account-wechat&openid=" +
+          (WechatHelper.openId || "");
         AppHelper.redirect(url);
       }
     } catch (e) {

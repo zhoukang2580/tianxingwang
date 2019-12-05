@@ -45,10 +45,7 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
         AppHelper.getDomain() +
         "&ticket=" +
         AppHelper.getTicket() +
-        "&path=" +
-        encodeURIComponent(
-          AppHelper.getApiUrl() + "/index.html?path=account-dingtalk"
-        );
+        "&path=account-dingtalk";
       AppHelper.redirect(url);
     }
   }

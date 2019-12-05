@@ -34,7 +34,7 @@ export class MyPage implements OnDestroy, OnInit {
   identitySubscription = Subscription.EMPTY;
   msgCount$: Observable<number>;
   items: ProductItem[] = [];
-  isShowMyOrderTabs = false;
+  isShowMyOrderTabs = true;
   config: ConfigEntity;
   constructor(
     private router: Router,
@@ -57,7 +57,7 @@ export class MyPage implements OnDestroy, OnInit {
       this.config = await this.configService.getConfigAsync();
       this.load(AppHelper.getRouteData() || !this.Model || !this.Model.HeadUrl);
       AppHelper.setRouteData(false);
-      this.isShowMyOrderTabs =
+      this.isShowMyOrderTabs = true ||
         (await this.staffService.isSelfBookType()) ||
         (await this.staffService.isSecretaryBookType());
       console.log("can show tabs ", this.isShowMyOrderTabs);

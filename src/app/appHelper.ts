@@ -18,7 +18,7 @@ export class AppHelper {
   private static toastController: ToastController;
   private static alertController: AlertController;
   private static modalController: ModalController;
-  static _appDomain = environment.production ? "sky-trip.com" : "testskytrip.com";
+  static _appDomain = environment.production ? "sky-trip.com" : "beeant.com";
   constructor() {
   }
   static _domain;

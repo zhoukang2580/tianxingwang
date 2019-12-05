@@ -25,7 +25,7 @@ import { File } from "@ionic-native/file/ngx";
 import { AppVersion } from "@ionic-native/app-version/ngx";
 import { WebView } from "@ionic-native/ionic-webview/ngx";
 import { IonicStorageModule } from "@ionic/storage";
-@NgModule({
+@NgModule({ 
   declarations: [AppComponent],
   entryComponents: [],
   imports: [
