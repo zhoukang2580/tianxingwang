@@ -79,7 +79,7 @@ export class TrainListPage implements OnInit, OnDestroy {
   vmTrains: TrainEntity[] = [];
   isLoading = false;
   get isFiltered() {
-    return this.filterCondition && (this.filterCondition.arrivalStations && this.filterCondition.arrivalStations.length || this.filterCondition.departureStations && this.filterCondition.departureStations.length || this.filterCondition.trainTypes && this.filterCondition.trainTypes.length || this.filterCondition.departureTimeSpan && (this.filterCondition.departureTimeSpan.lower > 0 && this.filterCondition.departureTimeSpan.upper < 24))
+    return this.filterCondition && (this.filterCondition.arrivalStations && this.filterCondition.arrivalStations.length || this.filterCondition.departureStations && this.filterCondition.departureStations.length || this.filterCondition.trainTypes && this.filterCondition.trainTypes.length || this.filterCondition.departureTimeSpan && (this.filterCondition.departureTimeSpan.lower > 0 || this.filterCondition.departureTimeSpan.upper < 24))
   };
   vmFromCity: TrafficlineEntity;
   vmToCity: TrafficlineEntity;
