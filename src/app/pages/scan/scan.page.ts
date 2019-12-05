@@ -1,3 +1,4 @@
+import { NavController } from '@ionic/angular';
 import { IdentityEntity } from "./../../services/identity/identity.entity";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Component, OnInit, OnDestroy } from "@angular/core";
@@ -35,7 +36,8 @@ export class ScanPage implements OnInit, OnDestroy {
     private router: Router,
     private identityService: IdentityService,
     private http: HttpClient,
-    activatedRoute: ActivatedRoute
+    activatedRoute: ActivatedRoute,
+    private navCtrl: NavController
   ) {
     this.subscription = activatedRoute.paramMap.subscribe(p => {
       this.scan(p.get("scanResult"));
@@ -44,6 +46,9 @@ export class ScanPage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscription.unsubscribe();
     this.identitySubscription.unsubscribe();
+  }
+  back() {
+    this.navCtrl.pop();
   }
   ngOnInit() {
     this.identitySubscription = this.identityService
@@ -143,6 +148,6 @@ export class ScanPage implements OnInit, OnDestroy {
     this.hideConfirmPage();
     this.hideIframePage();
     this.hideResultTextPage();
-    window.history.back();
+    this.back();
   }
 }

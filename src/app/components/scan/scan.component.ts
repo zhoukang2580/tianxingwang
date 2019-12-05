@@ -97,7 +97,8 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
         return false;
       },
       fail: err => {
-        AppHelper.alert(err);
+        // AppHelper.alert(err);
+        console.error(err);
         return false;
       }
     });
