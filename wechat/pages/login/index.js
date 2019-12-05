@@ -43,6 +43,9 @@ Page(
                 wx.setStorageSync("args", { IsOpen: true, ticket: r.data.Data.Ticket, openid: r.data.Data.OpenId});
                 wx.navigateBack();
               }
+              else{
+                wx.navigateBack();
+              }
             },
           })
         }
