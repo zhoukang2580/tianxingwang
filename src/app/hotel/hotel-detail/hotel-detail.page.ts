@@ -363,9 +363,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     return this.hotelService.getBedType(room);
   }
   segmentChanged(evt: CustomEvent) {
-    if (this.isShowBackArrow) {
-      return;
-    }
+    // if (this.isShowBackArrow) {
+    //   return;
+    // }
     if (evt.stopPropagation) {
       evt.stopPropagation();
     }
@@ -377,6 +377,16 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     this.initRects();
     if (this.rects[tab]) {
       this.scrollToPoint(this.rects[tab]);
+    }
+    if(tab=="hotelInfo"){
+       if(this.hotel){
+         this.hotel['ishoteldetails']=true;
+       }
+    }
+    if(tab=="trafficInfo"){
+      if(this.hotel){
+        this.hotel['isShowMap']=true;
+      }
     }
   }
   private scrollToPoint(tab: ClientRect | DOMRect) {
