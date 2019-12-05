@@ -35,7 +35,8 @@ import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 import {
   PassengerPolicyFlights,
   FlightPolicy,
-  IFlightSegmentInfo
+  IFlightSegmentInfo,
+  FlightSegmentModel
 } from "./models/PassengerFlightInfo";
 import { OrderBookDto } from "../order/models/OrderBookDto";
 import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
@@ -1117,10 +1118,11 @@ export class FlightService {
     return this.calendarService.getHHmm(datetime);
   }
   getLowerFlight(info: PassengerBookInfo<IFlightSegmentInfo>) {
-    let result: { lowestCabin: FlightPolicy; lowestFlightSegment: FlightSegmentEntity, tripType: TripType } = {
+    let result: { lowestCabin: FlightPolicy;originalLowerSegment:FlightSegmentModel, lowestFlightSegment: FlightSegmentEntity, tripType: TripType } = {
       lowestCabin: null,
       lowestFlightSegment: null,
-      tripType: null
+      tripType: null,
+      originalLowerSegment:null,
     };
     // if (info && !info.isReplace && info.bookInfo && info.bookInfo.lowerSegmentInfo && info.bookInfo.lowerSegmentInfo.lowestCabin && info.bookInfo.lowerSegmentInfo.lowestFlightSegment && info.bookInfo.lowerSegmentInfo.tripType == info.bookInfo.tripType) {
     //   return info.bookInfo.lowerSegmentInfo;
@@ -1163,8 +1165,9 @@ export class FlightService {
       c => c.FlightNumber == lowestCabin.FlightNo && c.Id == lowestCabin.Id
     );
     lowestCabin.LowerSegment = null;
-    // lowestCabin.Rules = [];
-    result = { lowestCabin:{...lowestCabin}, lowestFlightSegment:{...lowestFlightSegment}, tripType: TripType.departureTrip };
+    // 违反出发时间前后60分钟内最低价航班的政策
+    lowestCabin.Rules = lowestCabin.Rules&&lowestCabin.Rules.filter(it=>!(/前后\d+分钟/.test(it)));
+    result = { lowestCabin:{...lowestCabin}, lowestFlightSegment:{...lowestFlightSegment}, tripType: TripType.departureTrip,originalLowerSegment:info.bookInfo.flightPolicy.LowerSegment };
     return result;
   }
   async getFlightJourneyDetailListAsync(loadDataFromServer: boolean) {
