@@ -77,7 +77,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
       this.vmToCity = s.toCity;
       s.Date = lastSelectedGoDate;
       s.BackDate = lastSelectedBackDate;
-      if(!s.isLocked){
+      if (!s.isLocked) {
         this.flightService.setSearchFlightModel(s);
       }
       // this.calendarService.setSelectedDaysSource([this.goDate, this.backDate]);
@@ -127,6 +127,10 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
       ...this.flightService.getSearchFlightModel(),
       isRoundTrip: !this.isSingle
     });
+    this.flightService.setPassengerBookInfosSource(this.flightService.getPassengerBookInfos().map(it => {
+      it.bookInfo = null;
+      return it;
+    }))
   }
   getMonth(d: DayModel) {
     return +this.calendarService.getMonth(d);

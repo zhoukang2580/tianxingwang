@@ -59,7 +59,8 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
       s => {
         if (s.Status) {
           this.load();
-        } else if (s.Message) {
+        } 
+        if (s.Message) {
           AppHelper.alert(s.Message);
         }
       },
