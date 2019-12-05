@@ -1207,6 +1207,7 @@ export class FlightService {
     }));
   }
   private async getFlightJourneyDetails(): Promise<FlightJourneyEntity[]> {
+    this.flightJourneyList=[];
     await this.checkOrAddSelfBookTypeBookInfo();
     await this.setDefaultFilterInfo();
     const req = new RequestEntity();

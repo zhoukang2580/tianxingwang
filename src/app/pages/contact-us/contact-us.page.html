@@ -10,36 +10,42 @@
 </ion-header>
 
 <ion-content>
-  <ion-grid>
-    <ion-row>
-      <ion-col>
-        <ion-label color='dark'>{{agent?.Name}}</ion-label>
-        <ion-text *ngIf='agent?.Nickname as nn'>({{nn}})</ion-text>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col size='2'>
-        <ion-label>电话</ion-label>
-      </ion-col>
-      <ion-col>
-        <ion-label>{{agent?.Telephone}}</ion-label>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col size='2'>
-        <ion-label>地址</ion-label>
-      </ion-col>
-      <ion-col>
-        <ion-label>{{agent?.Address}}</ion-label>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col size='2'>
-        <ion-label>邮编</ion-label>
-      </ion-col>
-      <ion-col>
-        <ion-label>{{agent?.Postcode}}</ion-label>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  <ion-list>
+    <ion-item *ngIf='tmc?.FieldHotline'>
+      <ion-label>驻场电话</ion-label>
+      <ion-label>{{tmc.FieldHotline}}</ion-label>
+    </ion-item>
+    <ion-item *ngIf='tmc?.FlightHotline'>
+      <ion-label>飞机票专员</ion-label>
+      <ion-label>{{tmc.FlightHotline}}</ion-label>
+    </ion-item>
+    <ion-item *ngIf='tmc?.TrainHotline'>
+      <ion-label>火车票专员</ion-label>
+      <ion-label>{{tmc.TrainHotline}}</ion-label>
+    </ion-item>
+    <ion-item *ngIf='tmc?.HotelHotline'>
+      <ion-label>酒店预订专员</ion-label>
+      <ion-label>{{tmc.HotelHotline}}</ion-label>
+    </ion-item>
+    <ion-item *ngIf='tmc?.MangerHotline'>
+      <ion-label>销售经理</ion-label>
+      <ion-label>{{tmc.MangerHotline}}</ion-label>
+    </ion-item>
+    <ion-item *ngIf='tmc?.CustomerHotline'>
+      <ion-label>客服经理</ion-label>
+      <ion-label>{{tmc.CustomerHotline}}</ion-label>
+    </ion-item>
+    <ion-item *ngIf='tmc?.EmergencyHotline'>
+      <ion-label>紧急直线</ion-label>
+      <ion-label>{{tmc.EmergencyHotline}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>客服专线</ion-label>
+      <ion-label>{{tmc?.Hotline}}</ion-label>
+    </ion-item>
+  </ion-list>
 </ion-content>
+<ion-footer>
+  <div>上海东美在线旅行社 版权所有</div>
+  <p>&copy; {{date}} DongMeiOnline.All Rights Reserved</p>
+</ion-footer>
