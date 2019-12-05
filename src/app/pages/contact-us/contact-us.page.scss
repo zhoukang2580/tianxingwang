@@ -1,9 +1,15 @@
 ion-row ion-col:first-child {
   color: var(--ion-color-medium);
 }
-ion-item ion-label:first-child {
-  flex: 0.3;
-  color: var(--ion-color-medium);
+ion-item ion-label {
+  &:first-child{
+    flex: 0.3;
+    color: var(--ion-color-medium);
+    align-self: flex-start;
+  }
+  &:last-child{
+    white-space: pre-wrap;
+  }
 }
 ion-label {
   user-select: text;
