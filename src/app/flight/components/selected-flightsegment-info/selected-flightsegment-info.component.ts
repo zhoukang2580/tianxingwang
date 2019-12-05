@@ -151,14 +151,17 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
       );
       return "";
     }
-    if (info.bookInfo && info.bookInfo.tripType == TripType.departureTrip && this.checkAirportChange(info, lowestFlightSegment)) {
-      const ok = await AppHelper.alert(`抵达机场将由【${info.bookInfo.flightSegment.ToAirportName}】 变更为 【${lowestFlightSegment.ToAirportName}】，是否继续？`, true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
-      if (!ok) {
-        return;
+    let tip=[];
+    if(info&&info.bookInfo&&info.bookInfo.flightSegment){
+      if(info.bookInfo.flightSegment.ToAirport!=lowestFlightSegment.ToAirport){
+        tip.push(`抵达机场将由【${info.bookInfo.flightSegment.ToAirportName}】 变更为 【${lowestFlightSegment.ToAirportName}】`);
+      }
+      if(info.bookInfo.flightSegment.FromAirport!=lowestFlightSegment.FromAirport){
+        tip.push(`出发机场将由【${info.bookInfo.flightSegment.FromAirportName}】 变更为 【${lowestFlightSegment.FromAirportName}】`);
       }
     }
-    if (info.bookInfo && info.bookInfo.tripType == TripType.returnTrip && this.checkAirportChange(info, lowestFlightSegment)) {
-      const ok = await AppHelper.alert(`出发机场将由【${info.bookInfo.flightSegment.FromAirportName}】 变更为 【${lowestFlightSegment.FromAirportName}】，是否继续？`, true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+    if(tip.length){
+      const ok = await AppHelper.alert(`${tip.join(";")}，是否继续？`, true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
       if (!ok) {
         return;
       }

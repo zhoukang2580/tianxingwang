@@ -227,25 +227,9 @@ export class FlightService {
   }
   async loadPolicyedFlightsAsync(flightJourneyList: FlightJourneyEntity[]) {
     this.policyFlights = [];
-    if (flightJourneyList.length == 0) {
+    if (!flightJourneyList||flightJourneyList.length == 0) {
       return [];
     }
-    // let passengers = this.getUnSelectFlightSegmentPassengers();
-    // if (passengers.length == 0) {
-    //   passengers = this
-    //     .getPassengerBookInfos()
-    //     .map(info => info.passenger);
-    // }
-    // const hasreselect = this
-    //   .getPassengerBookInfos()
-    //   .find(item => item.isReplace);
-    // if (hasreselect && hasreselect.passenger) {
-    //   if (
-    //     !passengers.find(p => p.AccountId == hasreselect.passenger.AccountId)
-    //   ) {
-    //     passengers.push(hasreselect.passenger);
-    //   }
-    // }
     const passengers = this
       .getPassengerBookInfos()
       .map(info => info.passenger);
@@ -771,8 +755,8 @@ export class FlightService {
           }
         }
         const info = {
-          flightSegment: flightSegment,
-          flightPolicy: flihgtPolicyCabin,
+          flightSegment: {...flightSegment},
+          flightPolicy: {...flihgtPolicyCabin},
           tripType,
           id: AppHelper.uuid(),
         } as IFlightSegmentInfo;
@@ -1138,9 +1122,9 @@ export class FlightService {
       lowestFlightSegment: null,
       tripType: null
     };
-    if (info && !info.isReplace && info.bookInfo && info.bookInfo.lowerSegmentInfo && info.bookInfo.lowerSegmentInfo.lowestCabin && info.bookInfo.lowerSegmentInfo.lowestFlightSegment && info.bookInfo.lowerSegmentInfo.tripType == info.bookInfo.tripType) {
-      return info.bookInfo.lowerSegmentInfo;
-    }
+    // if (info && !info.isReplace && info.bookInfo && info.bookInfo.lowerSegmentInfo && info.bookInfo.lowerSegmentInfo.lowestCabin && info.bookInfo.lowerSegmentInfo.lowestFlightSegment && info.bookInfo.lowerSegmentInfo.tripType == info.bookInfo.tripType) {
+    //   return info.bookInfo.lowerSegmentInfo;
+    // }
     if (!info || !info.bookInfo || !info.bookInfo.flightPolicy || !info.bookInfo.flightPolicy.LowerSegment) {
       return result;
     }
@@ -1180,7 +1164,7 @@ export class FlightService {
     );
     lowestCabin.LowerSegment = null;
     // lowestCabin.Rules = [];
-    result = { lowestCabin, lowestFlightSegment, tripType: TripType.departureTrip };
+    result = { lowestCabin:{...lowestCabin}, lowestFlightSegment:{...lowestFlightSegment}, tripType: TripType.departureTrip };
     return result;
   }
   async getFlightJourneyDetailListAsync(loadDataFromServer: boolean) {

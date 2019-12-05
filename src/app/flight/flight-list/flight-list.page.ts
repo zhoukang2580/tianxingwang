@@ -68,10 +68,6 @@ import { SelectedFlightsegmentInfoComponent } from "../components/selected-fligh
 import { TripType } from "src/app/tmc/models/TripType";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { FilterPassengersPolicyComponent } from "../../tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
-import {
-  PassengerPolicyFlights,
-  FlightPolicy
-} from "../models/PassengerFlightInfo";
 import { DaysCalendarComponent } from "src/app/tmc/components/days-calendar/days-calendar.component";
 import { SelectCityComponent } from '../components/select-city/select-city.component';
 @Component({
