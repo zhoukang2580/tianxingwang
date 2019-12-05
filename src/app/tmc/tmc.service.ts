@@ -29,6 +29,7 @@ import { InsuranceProductEntity } from "../insurance/models/InsuranceProductEnti
 import { LanguageHelper } from "../languageHelper";
 import { PayService } from "../services/pay/pay.service";
 import { Router } from "@angular/router";
+import { TmcDataEntity } from './models/TmcDataEntity';
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -618,6 +619,15 @@ export class TmcService {
       return null;
     });
     return this.tmc;
+  }
+  async getTmcData(): Promise<TmcDataEntity> {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = "TmcApiHomeUrl-Tmc-GetTmcData";
+    return this.apiService.getPromiseData<TmcDataEntity>(req).catch(_ => {
+      AppHelper.alert(_);
+      return null;
+    });
   }
   async getCostCenter(
     name: string

@@ -464,6 +464,15 @@ export class AppHelper {
       }
     }
   }
+  static removeQueryParamers(key:string) {
+    try{
+       this._queryParamers[key]=null;
+    }
+    catch(ex)
+    {
+
+    }
+  }
   static getQueryParamers() {
     return this._queryParamers as any;
   }

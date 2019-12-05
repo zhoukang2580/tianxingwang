@@ -1,3 +1,4 @@
+import { TmcDataEntity } from './../../tmc/models/TmcDataEntity';
 import { AgentEntity } from './../../tmc/models/AgentEntity';
 import { ActivatedRoute } from '@angular/router';
 import { TmcService, TmcEntity } from './../../tmc/tmc.service';
@@ -12,19 +13,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ContactUsPage implements OnInit {
   // agent: AgentEntity;
-  tmc: any;
+  tmc: TmcDataEntity;
   constructor(private router: Router, private navCtrl: NavController, private tmcService: TmcService, private route: ActivatedRoute) { }
   back() {
     this.navCtrl.pop();
   }
   ngOnInit() {
     this.route.queryParamMap.subscribe(async _ => {
-      this.tmc = await this.tmcService.getTmc(true);
+      this.tmc = await this.tmcService.getTmcData();
     })
   }
-  get date(){
-    const d=new Date();
-    return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+  get date() {
+    const d = new Date();
+    return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
   }
 
 }
