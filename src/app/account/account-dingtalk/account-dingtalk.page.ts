@@ -34,6 +34,7 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
           Code: paramters.dingtalkcode
         };
         this.bindCode(data);
+        AppHelper.removeQueryParamers("dingtalkcode");
       }
     }
   }
@@ -58,6 +59,8 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
       s => {
         if (s.Status) {
           this.load();
+        } else if (s.Message) {
+          AppHelper.alert(s.Message);
         }
       },
       n => {

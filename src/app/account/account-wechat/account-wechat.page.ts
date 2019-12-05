@@ -42,6 +42,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
         };
         this.bindCode(data);
       }
+      AppHelper.removeQueryParamers("wechatcode");
     }
   }
   async bind() {
