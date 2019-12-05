@@ -77,7 +77,9 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
       this.vmToCity = s.toCity;
       s.Date = lastSelectedGoDate;
       s.BackDate = lastSelectedBackDate;
-      this.flightService.setSearchFlightModel(s);
+      if(!s.isLocked){
+        this.flightService.setSearchFlightModel(s);
+      }
       // this.calendarService.setSelectedDaysSource([this.goDate, this.backDate]);
       this.showReturnTrip = await this.isStaffTypeSelf();
     });

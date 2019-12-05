@@ -137,7 +137,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
       if (info.bookInfo.flightSegment.ToAirport != lowestFlightSegment.ToAirport) {
         return true;
       }
-      if (info.bookInfo.flightSegment.FromAirport != lowestFlightSegment.FromAirport) {
+      if (info.bookInfo.tripType == TripType.returnTrip && info.bookInfo.flightSegment.FromAirport != lowestFlightSegment.FromAirport) {
         return true;
       }
     }
