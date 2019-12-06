@@ -20,7 +20,8 @@
       </ion-text>
     </ion-title>
     <ion-buttons slot='end'>
-      <ion-button fill='clear' color='secondary' (click)='filterPolicyTrains()' size='small'>
+      <ion-button style='margin: 0; margin-right: -0.5em;' fill='clear' color='secondary' (click)='filterPolicyTrains()'
+        size='small'>
         <ion-text class='sm-font-size'>过滤差标</ion-text>
       </ion-button>
       <ion-button fill='clear' *ngIf='(isShowAddPassenger$|async)' color='secondary' size='small'
