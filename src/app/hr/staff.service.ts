@@ -14,7 +14,7 @@ import { BaseSettingEntity } from '../tmc/models/BaseSettingEntity';
 })
 export class StaffService {
   private staff: StaffEntity;
-  private isStaffCredentialsLoading = false;
+  private fetchingReqStaffCredentials: { isFetching: boolean; promise: Promise<any> } = {} as any;;
   private fetchingReq: { isFetching: boolean; promise: Promise<any> } = {} as any;
   staffCredentials: MemberCredential[];
   constructor(
@@ -43,7 +43,7 @@ export class StaffService {
     return t == StaffBookType.Secretary;
   }
   private async getBookType(isShowLoading = true): Promise<StaffBookType> {
-    const s = await this.getStaff(false,isShowLoading).catch(_ => null);
+    const s = await this.getStaff(false, isShowLoading).catch(_ => null);
     return s && s.BookType;
   }
 
@@ -53,8 +53,8 @@ export class StaffService {
       return this.staff;
     }
     forceRefresh = forceRefresh || !this.staff;
-    if(!forceRefresh){
-      if(this.staff){
+    if (!forceRefresh) {
+      if (this.staff) {
         return this.staff;
       }
     }
@@ -86,7 +86,7 @@ export class StaffService {
         .getPromiseData<StaffEntity>(req)
         .then(staff => {
           this.fetchingReq = {} as any;
-          console.log("staff ", staff,`forceFetch=${forceRefresh}`,`isfetching=${this.fetchingReq.isFetching}`);
+          console.log("staff ", staff, `forceFetch=${forceRefresh}`, `isfetching=${this.fetchingReq.isFetching}`);
           this.staff = staff;
           if (this.staff.BookType == StaffBookType.Self) {
             this.staff.AccountId = this.staff.AccountId || id.Id;
@@ -133,15 +133,27 @@ export class StaffService {
       AccountId
     };
     if (!forceFetch) {
-      if (this.isStaffCredentialsLoading || this.staffCredentials && this.staffCredentials.length) {
+      if (this.staffCredentials && this.staffCredentials.length) {
         return Promise.resolve(this.staffCredentials);
       }
     }
-    this.isStaffCredentialsLoading = true;
-    this.staffCredentials = await this.apiService
-      .getPromiseData<MemberCredential[]>(req).catch(_ => null);
-    this.isStaffCredentialsLoading = false;
-    return this.staffCredentials;
+    if (this.fetchingReqStaffCredentials) {
+      return this.fetchingReqStaffCredentials.promise;
+    }
+    this.fetchingReqStaffCredentials = {
+      isFetching: true,
+      promise: this.apiService
+        .getPromiseData<MemberCredential[]>(req)
+        .then(res => {
+          this.staffCredentials = res;
+          return res;
+        })
+        .catch(_ => null as MemberCredential[])
+        .finally(() => {
+          this.fetchingReqStaffCredentials = null;
+        })
+    }
+    return this.fetchingReqStaffCredentials.promise;
   }
 }
 export enum StaffBookType {
@@ -209,7 +221,7 @@ export enum PolicyType {
   /// </summary>
   UnOrder = 4
 }
-export class PolicyEntity extends  BaseSettingEntity {
+export class PolicyEntity extends BaseSettingEntity {
   Setting: string;
   /// <summary>
   ///
@@ -256,16 +268,16 @@ export class PolicyEntity extends  BaseSettingEntity {
   TrainType: PolicyType;
   TrainDescription: string;
   // ============== 火车站 end ============
-  TrainIllegalTip:string;
+  TrainIllegalTip: string;
   //
-  HotelIllegalTip:string;
-  InternationalFlightIllegalTip:string;
+  HotelIllegalTip: string;
+  InternationalFlightIllegalTip: string;
 }
 export class StaffApprover {
   RealName: string;
   Tag: string;
   Type: TaskType;
-  Account:AccountEntity;
+  Account: AccountEntity;
 }
 export class StaffEntity {
   isNotWhiteList: boolean;

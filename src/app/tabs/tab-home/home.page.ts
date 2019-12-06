@@ -144,10 +144,10 @@ export class HomePage implements OnInit {
   }
   async check() {
     let retryCount = 0;
-    console.log("home check");
     try {
       this.getAgentNotices();
       this.staff = await this.staffService.getStaff();
+      console.log("home check",this.staff);
       if (this.staff && !(await this.staffService.getStaffCredentials(this.staff.AccountId)).length) {
         console.log("需要确认证件信息");
         this.navCtrl.navigateRoot('confirm-information');
