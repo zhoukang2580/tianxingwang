@@ -1,4 +1,3 @@
-import { BMapWX } from './bmapWx';
 import { AppHelper } from './../../appHelper';
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
@@ -345,8 +344,9 @@ export class MapService {
             reject(error);
           },
           {
-            enableHighAccuracy: true,
-            timeout: 3 * 1000
+            enableHighAccuracy: false,
+            timeout: 3 * 1000,            //获取位置允许的最长时间
+            maximumAge: 1000          //多久更新获取一次位置       
           }
         );
       });
