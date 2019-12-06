@@ -1,3 +1,4 @@
+import { NavController } from '@ionic/angular';
 import { FlightService } from 'src/app/flight/flight.service';
 import { HotelService } from './../../hotel/hotel.service';
 import { TrainService } from 'src/app/train/train.service';
@@ -41,6 +42,7 @@ export class HomePage implements OnInit {
     private trainService: TrainService,
     private hotelService: HotelService,
     private flightService: FlightService,
+    private navCtrl: NavController,
     route: ActivatedRoute
   ) {
     this.staff = null;
@@ -145,11 +147,12 @@ export class HomePage implements OnInit {
     console.log("home check");
     try {
       this.getAgentNotices();
-      // if (!this.staffService.staffCredentials || this.staffService.staffCredentials.length == 0) {
-      //   console.log("需要确认证件信息")
-      //   this.router.navigate([AppHelper.getRoutePath("confirm-information")]);
-      //   return false;
-      // }
+      this.staff = await this.staffService.getStaff();
+      if (this.staff && !(await this.staffService.getStaffCredentials(this.staff.AccountId)).length) {
+        console.log("需要确认证件信息");
+        this.navCtrl.navigateRoot('confirm-information');
+        return false;
+      }
       if (this.intervalIds && this.intervalIds.length) {
         this.clearIntervalIds();
       }

@@ -76,6 +76,9 @@ export class FilterPassengersPolicyComponent implements OnInit, OnDestroy {
         if (infos.find(it => it.isReplace)) {
           return infos.filter(it => it.isReplace)
         }
+        if(isSelf){
+          return [infos[0]];
+        }
         return infos;
       }),
       tap(infos => {

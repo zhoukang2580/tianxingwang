@@ -1,8 +1,10 @@
+import { BMapWX } from './bmapWx';
+import { AppHelper } from './../../appHelper';
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { Injectable } from "@angular/core";
-const BMap = window["BMap"];
+export const baiduMapAk = `BFddaa13ba2d76f4806d1abb98ef907c`;
 export interface MapPoint {
   lng: string;
   lat: string;
@@ -14,13 +16,31 @@ export interface MapPoint {
 })
 export class MapService {
   private static TAG = "map 定位";
-  constructor(private apiService: ApiService) {}
+  private st = Date.now();
+  constructor(private apiService: ApiService) {
+    this.st = Date.now();
+    if (!AppHelper.isWechatMini()) {
+      this.initBMap();
+    }
+  }
+  private initBMap() {
+    setTimeout(() => {
+      try {
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = `https://api.map.baidu.com/getscript?v=3.0&ak=${baiduMapAk}&services=&t=20191126111618"></script>`;
+        (function () { window['BMAP_PROTOCOL'] = "https"; window['BMap_loadScriptTime'] = (new Date).getTime(); document.head.appendChild(script); })();
+      } catch (e) {
+        console.error(e);
+      }
+    }, 1000);
+  }
   private convertPoint(curPoint: MapPoint): Promise<MapPoint> {
     return new Promise((s, reject) => {
       if (!curPoint) {
         reject("要转换的point不存在");
       }
-      const convertor = new BMap.Convertor();
+      const convertor = new window["BMap"].Convertor();
       const pointArr = [];
       pointArr.push(curPoint);
       convertor.translate(pointArr, 1, 5, data => {
@@ -55,13 +75,13 @@ export class MapService {
       7: `服务不可用`,
       8: `超时`
     };
-    if (!BMap) {
+    if (!window["BMap"]) {
       return Promise.reject("地图加载失败");
     }
     return new Promise<MapPoint>((s, reject) => {
-      const map = new BMap.Map("allmap");
+      const map = new window["BMap"].Map("allmap");
       let point: MapPoint;
-      const geolocation = new BMap.Geolocation();
+      const geolocation = new window["BMap"].Geolocation();
       setTimeout(() => {
         reject("定位超时");
       }, 10 * 1000);
@@ -111,10 +131,10 @@ export class MapService {
     }).catch(_ => null);
   }
   private getCityFromMap(p: MapPoint): Promise<AddressComponents> {
-    if (!BMap) {
+    if (!window["BMap"]) {
       return Promise.reject("地图加载失败");
     }
-    const geoc = new BMap.Geocoder();
+    const geoc = new window["BMap"].Geocoder();
     return new Promise<AddressComponents>((s, reject) => {
       geoc.getLocation(p, rs => {
         const addComp: AddressComponents = rs && rs.addressComponents;
@@ -122,8 +142,14 @@ export class MapService {
       });
     });
   }
-  async getCurMapPoint(){
+  async getCurMapPoint() {
     return this.getCurrentPosition();
+  }
+  private async getCurrentCityPositionInWechatMini(): Promise<{
+    city: TrafficlineEntity;
+    position: any;
+  }> {
+    return null;
   }
   async getCurrentCityPosition(): Promise<{
     city: TrafficlineEntity;
@@ -202,11 +228,11 @@ export class MapService {
   }
   private getCityNameByIp() {
     return new Promise<string>(s => {
-      if (!BMap) {
+      if (!window["BMap"]) {
         console.error("getCityNameByIp,BMap 地图尚未加载。。。");
         s(null);
       }
-      const myCity = new BMap.LocalCity();
+      const myCity = new window["BMap"].LocalCity();
       myCity.get((rs: { name: string }) => {
         if (rs && rs.name) {
           s(rs.name);
@@ -235,7 +261,7 @@ export class MapService {
         navigator.geolocation.getCurrentPosition(
           async position => {
             if (position && position.coords) {
-              const curPoint = new BMap.Point(
+              const curPoint = new window["BMap"].Point(
                 position.coords.longitude,
                 position.coords.latitude
               );
