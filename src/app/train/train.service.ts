@@ -1106,6 +1106,13 @@ export class TrainService {
           });
           res.ServiceFees = fees;
         }
+        const notWhiteList = bookInfos.filter(it => it.isNotWhitelist);
+        if (notWhiteList.length) {
+          const fee = +res.ServiceFees[notWhiteList[0].id] / notWhiteList.length;
+          notWhiteList.forEach(info => {
+            res.ServiceFees[info.id] = `${fee}`;
+          });
+        }
         res.Staffs = res.Staffs || [];
         res.Staffs = res.Staffs.map(it => {
           return {

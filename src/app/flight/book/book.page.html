@@ -35,7 +35,7 @@
           </ion-item>
           <ion-item class="ion-no-margin" *ngIf='tmc?.IsShowServiceFee || identity?.Numbers?.AgentId'>
             <ion-label>服务费:</ion-label>
-            <ion-label slot='end' text-end padding-end>{{getServiceFee(combindInfo)}}</ion-label>
+            <ion-label slot='end' text-end padding-end>{{combindInfo.serviceFee}}</ion-label>
           </ion-item>
           <ion-item class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)'
             (click)='openApproverModal(combindInfo)'>

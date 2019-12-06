@@ -236,6 +236,17 @@ export class BookPage implements OnInit, AfterViewInit {
         }
       }
     }
+    if (this.initialBookDtoModel && this.initialBookDtoModel.ServiceFees) {
+      // 处理非白名单
+      const bookInfos = this.flightService.getPassengerBookInfos();
+      const notWhiteList = bookInfos.filter(it => it.isNotWhitelist);
+      if (notWhiteList.length) {
+        const fee = +this.initialBookDtoModel.ServiceFees[notWhiteList[0].id] / notWhiteList.length;
+        notWhiteList.forEach(info => {
+          this.initialBookDtoModel.ServiceFees[info.id] = `${fee}`;
+        });
+      }
+    }
     return this.initialBookDtoModel;
   }
   ngAfterViewInit() {
@@ -955,12 +966,12 @@ export class BookPage implements OnInit, AfterViewInit {
       });
     }
   }
-  getServiceFee(item: ICombindInfo) {
+  private getServiceFee(item: ICombindInfo) {
     return (
       this.initialBookDtoModel &&
       this.initialBookDtoModel.ServiceFees &&
-      this.initialBookDtoModel.ServiceFees[item.modal.id]
-    );
+      + this.initialBookDtoModel.ServiceFees[item.modal.id]
+    ) || 0;
   }
   private getTotalServiceFees() {
     let fees = 0;
@@ -1182,6 +1193,13 @@ export class BookPage implements OnInit, AfterViewInit {
       Object.keys(group).forEach(key => {
         if (group[key].length) {
           group[key][0].isShowApprovalInfo = true;
+          if (this.initialBookDtoModel && this.initialBookDtoModel.ServiceFees) {
+            const showTotalFees = group[key]
+              .reduce(
+                (acc, it) => (acc = AppHelper.add(acc, this.getServiceFee(it)))
+                , 0);
+            group[key][0].serviceFee = showTotalFees;
+          }
         }
         this.vmCombindInfos = this.vmCombindInfos.concat(group[key]);
       })
@@ -1292,6 +1310,7 @@ interface ICombindInfo {
   credentialStaff: StaffEntity;
   isSkipApprove: boolean;
   notifyLanguage: string;
+  serviceFee: number;
   isShowApprovalInfo: boolean;
   credentialStaffMobiles: {
     checked: boolean;

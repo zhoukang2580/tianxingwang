@@ -488,7 +488,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
   }
 
   calcTotalPrice() {
-    console.log("this.viewModel.orderTravelPayType",this.viewModel.orderTravelPayType);
+    console.log("this.viewModel.orderTravelPayType", this.viewModel.orderTravelPayType);
     if (this.viewModel && this.viewModel.combindInfos) {
       let totalPrice = this.viewModel.combindInfos.reduce((arr, item) => {
         if (
@@ -584,7 +584,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       `viewModel.orderTravelPayType=${this.viewModel.orderTravelPayType}`
     );
   }
-  onOrderTravelPayTypeSelect(pt:{value:number}){
+  onOrderTravelPayTypeSelect(pt: { value: number }) {
     this.orderTravelPayTypes = this.orderTravelPayTypes.map(it => {
       it.checked = +it.value == pt.value;
       return it;
@@ -617,13 +617,13 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     const day = this.calendarService.generateDayModel(moment(train.StartTime));
     return `${day.date} ${day.dayOfWeekName}`;
   }
-  getServiceFee(item: ITrainPassengerBookInfo) {
+  private getServiceFee(item: ITrainPassengerBookInfo) {
     const fee =
       this.initialBookDto &&
       this.initialBookDto.ServiceFees &&
       this.initialBookDto.ServiceFees[item.id];
     // console.log(item.id, fee, this.initialBookDto);
-    return fee;
+    return +fee || 0;
   }
   isAllowSelectApprove(info: ITrainPassengerBookInfo) {
     const Tmc = this.initialBookDto.Tmc;
@@ -967,6 +967,13 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       Object.keys(group).forEach(key => {
         if (group[key].length) {
           group[key][0].isShowApprovalInfo = true;
+          if (this.initialBookDto && this.initialBookDto.ServiceFees) {
+            const showTotalFees = group[key]
+              .reduce(
+                (acc, it) => (acc = AppHelper.add(acc, this.getServiceFee(it)))
+                , 0);
+            group[key][0].serviceFee = showTotalFees;
+          }
         }
         this.viewModel.combindInfos = this.viewModel.combindInfos.concat(group[key]);
       })
@@ -1186,6 +1193,7 @@ export interface IBookTrainViewModel {
 }
 interface ITrainPassengerBookInfo {
   isShowApprovalInfo?: boolean;
+  serviceFee: number;
   isNotWhitelist?: boolean;
   vmCredential: CredentialsEntity;
   credential: CredentialsEntity;
