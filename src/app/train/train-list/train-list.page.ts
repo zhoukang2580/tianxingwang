@@ -412,6 +412,25 @@ export class TrainListPage implements OnInit, OnDestroy {
         selectedSeat: seat,
         train: train
       };
+      const isSelf = await this.staffService.isSelfBookType();
+
+      if(isSelf){
+        const bookInfos = this.trainService.getBookInfos();
+        const bookInfo = this.trainService.getTrainInfo(currentViewtTainItem, { ...bookInfos[0] });
+        if (
+          bookInfo &&
+          bookInfo.trainPolicy &&
+          !bookInfo.trainPolicy.IsAllowBook
+        ) {
+          let rules = (bookInfo.trainPolicy.Rules || []);
+          AppHelper.alert(
+            `${rules.join("; ") + rules ? "," : ""}不可预订`,
+            true,
+            LanguageHelper.getConfirmTip()
+          );
+          return;
+        }
+      }
       await this.trainService.addOrReselectBookInfo(currentViewtTainItem);
     }
     await this.showSelectedInfos();

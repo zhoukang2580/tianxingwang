@@ -292,14 +292,15 @@ export class TrainService {
       currentViewtTainItem.train
     ) {
       let bookInfos = this.getBookInfos();
-      const bookInfo = this.getTrainInfo(currentViewtTainItem, bookInfos[0]);
+      const bookInfo = this.getTrainInfo(currentViewtTainItem, { ...bookInfos[0] });
       if (
         bookInfo &&
         bookInfo.trainPolicy &&
         !bookInfo.trainPolicy.IsAllowBook
       ) {
+        let rules = (bookInfo.trainPolicy.Rules || []);
         AppHelper.alert(
-          LanguageHelper.Train.getDontAllowBookTip(),
+          `${rules.join("; ") + rules ? "," : ""}不可预订`,
           true,
           LanguageHelper.getConfirmTip()
         );
@@ -378,7 +379,7 @@ export class TrainService {
       this.setBookInfoSource(bookInfos);
     }
   }
-  private getTrainInfo(
+  getTrainInfo(
     currentViewtTainItem: ICurrentViewtTainItem,
     info: PassengerBookInfo<ITrainInfo>
   ): ITrainInfo {
@@ -406,10 +407,10 @@ export class TrainService {
     }
     const bookInfo: ITrainInfo = {
       trainEntity: { ...currentViewtTainItem.train, BookSeatLocation: "" },
-      trainPolicy: currentViewtTainItem.selectedSeat.Policy,
+      trainPolicy: { ...currentViewtTainItem.selectedSeat.Policy },
       tripType: TripType.departureTrip,
       id: AppHelper.uuid(),
-      selectedSeat: currentViewtTainItem.selectedSeat,
+      selectedSeat: { ...currentViewtTainItem.selectedSeat },
     };
     if (currentViewtTainItem.selectedSeat.Policy) {
       bookInfo.isAllowBook = currentViewtTainItem.selectedSeat.Policy.IsAllowBook;
