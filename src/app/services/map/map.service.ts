@@ -235,13 +235,13 @@ export class MapService {
         position: latLng
       };
     }
-    if (!latLng) {
-      latLng = await this.getCurrentPostionByNavigator().catch(_ => {
-        console.error("getCurrentPostionByNavigator", _);
-        return null;
-      });
-      console.log("getCurrentPostionByNavigator", latLng);
-    }
+    // if (!latLng) {
+    //   latLng = await this.getCurrentPostionByNavigator().catch(_ => {
+    //     console.error("getCurrentPostionByNavigator", _);
+    //     return null;
+    //   });
+    //   console.log("getCurrentPostionByNavigator", latLng);
+    // }
     console.log("getCurrentCityPosition after", latLng);
     if (latLng) {
       const city = await this.getCityByMap(latLng).catch(_ => {
