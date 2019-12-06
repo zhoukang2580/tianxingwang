@@ -128,8 +128,9 @@ export class FlightItemCabinsPage implements OnInit {
       const bookInfos = this.flightService.getPassengerBookInfos();
       const bookInfo = bookInfos[0];
       const info = this.flightService.getPolicyCabinBookInfo(bookInfo, flightCabin, this.vmFlightSegment);
+      const rules = (info.flightPolicy && info.flightPolicy.Rules) || [];
       if (info && info.isDontAllowBook) {
-        AppHelper.alert(`${info.flightPolicy && (info.flightPolicy.Rules || []).join("; ")},不可预订`, true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+        AppHelper.alert(`${rules.join("; ") + rules.length ? "," : ""}不可预订`, true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
         return;
       }
     }

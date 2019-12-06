@@ -424,7 +424,7 @@ export class TrainListPage implements OnInit, OnDestroy {
         ) {
           let rules = (bookInfo.trainPolicy.Rules || []);
           AppHelper.alert(
-            `${rules.join("; ") + rules ? "," : ""}不可预订`,
+            `${rules.join("; ") + rules.length ? "," : ""}不可预订`,
             true,
             LanguageHelper.getConfirmTip()
           );
