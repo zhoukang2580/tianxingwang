@@ -4,6 +4,7 @@ import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { Injectable } from "@angular/core";
+import { WechatHelper } from 'src/app/wechatHelper';
 export const baiduMapAk = `BFddaa13ba2d76f4806d1abb98ef907c`;
 export interface MapPoint {
   lng: string;
@@ -149,7 +150,59 @@ export class MapService {
     city: TrafficlineEntity;
     position: any;
   }> {
-    return null;
+    let result: {
+      city: TrafficlineEntity;
+      position: any;
+    };
+    if (window['wx']) {
+      const latLng = await this.wxGetLocation();
+      if (latLng) {
+        const p: MapPoint = {
+          lng: latLng.latitude,
+          lat: latLng.longitude
+        };
+        const city = await this.getCityByMap(p).catch(_ => {
+          console.error("getCityByMap", _);
+          return null;
+        });
+        if (city) {
+          result = {
+            city: {
+              CityName: city.CityName,
+              CityCode: city.CityCode
+            } as any,
+            position: latLng
+          };
+        }
+      } else {
+        return null;
+      }
+    }
+    return result;
+  }
+  private async wxGetLocation(): Promise<{ longitude: string; latitude: string; }> {
+    return WechatHelper.ready()
+      .then(() => {
+        return new Promise<{ longitude: string; latitude: string; }>(resolve => {
+          WechatHelper.wx.getLocation({
+            type: 'wgs84', //默认为 wgs84 返回 gps 坐标，gcj02 返回可用于 wx.openLocation 的坐标 
+            success: function (res) {
+              //  res中longitude和latitude就是所获的的用户位置
+              const longitude = res.longitude
+              const latitude = res.latitude
+              //调用坐标解析方法
+              resolve({ longitude, latitude });
+            }, fail: function (e) {
+              console.error(e);
+              resolve(null);
+            }
+          })
+        })
+      })
+      .catch(e => {
+        console.log(e);
+        return null;
+      });
   }
   async getCurrentCityPosition(): Promise<{
     city: TrafficlineEntity;
@@ -159,6 +212,10 @@ export class MapService {
       city: TrafficlineEntity;
       position: any;
     };
+    if (AppHelper.isWechatMini()) {
+      result = await this.getCurrentCityPositionInWechatMini();
+      return;
+    }
     let latLng: MapPoint = await this.getCurrentPosition().catch(_ => {
       console.error("getCurrentPosition error", _);
       return void 0;

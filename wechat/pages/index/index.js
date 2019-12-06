@@ -17,7 +17,7 @@ Page({
   },
   onShow: function() {
     var args = wx.getStorageSync("args");
-    var url = "http://localhost:4201";
+    var url = "https://app.sky-trip.com";
     if (args) {
       if (args.wechatminicode)
       {
