@@ -46,8 +46,15 @@
       </ion-toolbar>
       <div class='destination' lines='none' detail>
         <ion-label>目的地：</ion-label>
-        <ion-label (click)='onSearchCity()'>{{curPos?.CityName}}</ion-label>
-        <ion-button fill='clear' color='secondary' size='small' (click)='onPosition()' [disabled]='isPositioning'>
+        <ion-label (click)='onSearchCity()'>
+          <ng-container *ngIf='isPositioning else no'>
+            正在定位...
+          </ng-container>
+          <ng-template #no>
+            {{curPos?.CityName}}
+          </ng-template>
+        </ion-label>
+        <ion-button fill='clear' color='secondary' size='small' (click)='onPosition()'>
           <div class='pos' slot='end'>
             <ion-icon name="locate" mode='md' size='small' color='secondary'></ion-icon>
             我的位置
