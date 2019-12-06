@@ -320,6 +320,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit, AfterCon
     this.agent = await this.tmcService.getAgent();
     this.config = await this.configService.getConfigAsync();
     const sub0 = this.route.queryParamMap.subscribe(_ => {
+      this.hotelService.curViewHotel=null;
       this.isShowSearchBar = false;
       this.isLeavePage = false;
       const c = this.hotelService.getSearchHotelModel();

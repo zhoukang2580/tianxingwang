@@ -892,6 +892,7 @@ export class BookPage implements OnInit, AfterViewInit {
             });
 
         combineInfo.addContacts = [];
+        combineInfo.isShowRoomPlanRulesDesc=true;
         this.combindInfos.push(combineInfo);
       }
     } catch (e) {
@@ -1382,6 +1383,7 @@ export interface IPassengerHotelBookInfo {
   credentials: CredentialsEntity[];
   notifyLanguage: string;
   isSkipApprove: boolean;
+  isShowRoomPlanRulesDesc: boolean;
   id: string;
   appovalStaff: StaffEntity;
   credentialStaff: StaffEntity;
