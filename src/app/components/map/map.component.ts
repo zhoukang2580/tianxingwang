@@ -9,7 +9,7 @@ import {
   OnChanges,
   SimpleChanges
 } from "@angular/core";
-const BMap = window["BMap"];
+// const BMap = window["BMap"];
 const BMapLib = window["BMapLib"];
 @Component({
   selector: "app-map",
@@ -22,7 +22,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges {
   @ViewChild("container") private container: ElementRef<HTMLElement>;
   map: any;
   private curLatLng: MapPoint;
-  constructor(private mapService: MapService) {}
+  constructor(private mapService: MapService) { }
   private async getCurPosition() {
     this.curLatLng = await this.mapService.getCurMapPoint().catch(_ => {
       console.error("获取当前位置失败", _);
@@ -42,24 +42,24 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges {
       this.lat = (this.curLatLng && this.curLatLng.lat) || "40.057031";
       this.lng = (this.curLatLng && this.curLatLng.lng) || "116.307852";
     }
-    if (BMap.Map) {
-      this.map = new BMap.Map(container);
+    if (window["BMap"] && window["BMap"].Map) {
+      this.map = new window["BMap"].Map(container);
       if (this.map) {
-        const point = new BMap.Point(this.lng, this.lat);
-        this.map.centerAndZoom(point, 17);
-        this.map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
-        const marker = new BMap.Marker(point); // 创建标注
+        const point = new window["BMap"].Point(this.lng, this.lat);
+        this.map.centerAndZoom(point, 14);
+        // this.map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
+        const marker = new window["BMap"].Marker(point); // 创建标注
         marker.setAnimation(window["BMAP_ANIMATION_BOUNCE"]); // 跳动的动画
         this.map.addOverlay(marker); // 将标注添加到地图中
         setTimeout(() => {
           this.initAndPanToMarker({ lat: this.lat, lng: this.lng });
-        }, 1000);
+        }, 200);
       }
     }
   }
   private initAndPanToMarker(p: MapPoint) {
-    const point = new BMap.Point(p.lng || this.lng, p.lat || this.lat);
-    const marker = new BMap.Marker(point); // 创建标注
+    const point = new window["BMap"].Point(p.lng || this.lng, p.lat || this.lat);
+    const marker = new window["BMap"].Marker(point); // 创建标注
     // const content =
     //   '<div style="margin:0;line-height:20px;padding:2px;">' +
     //   '<img src="../img/baidu.jpg" alt="" style="float:right;zoom:1;overflow:hidden;width:100px;height:100px;margin-left:3px;"/>' +
@@ -95,7 +95,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges {
       if (this.map) {
         setTimeout(() => {
           this.initAndPanToMarker({ lat: this.lat, lng: this.lng });
-        }, 1000);
+        }, 200);
       }
     }
   }
@@ -105,7 +105,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges {
         this.initMap(this.container.nativeElement).catch(e => {
           console.error(e);
         });
-      }, 1000);
+      }, 200);
     }
   }
 }

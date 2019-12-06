@@ -50,11 +50,10 @@ export enum FlightHotelTrainType {
 })
 export class TmcService {
   private localInternationAirports: LocalStorageAirport;
-  private getPassengerCredentialsSbuscription = Subscription.EMPTY;
   private localDomesticAirports: LocalStorageAirport;
   private selectedCompanySource: BehaviorSubject<string>;
   private companies: GroupCompanyEntity[];
-  private fetchingCredentialReq: { [md5: string]: { isFectching: boolean; promise: Promise<any>; } } = {} as any;
+  // private fetchingCredentialReq: { [md5: string]: { isFectching: boolean; promise: Promise<any>; } } = {} as any;
   private tmc: TmcEntity;
   private agent: AgentEntity;
   private mobileTemplateSelectItemList: SelectItem[] = [];
@@ -574,23 +573,9 @@ export class TmcService {
     };
     req.IsShowLoading = isShowLoading;
     req.Timeout = 60;
-    const d = JSON.stringify(req.Data);
-    const md5 = AppHelper.md5Digest((d || "").replace(" ", "").trim(), true);
-    console.log("TmcApiBookUrl-Home-Credentials ", this.fetchingCredentialReq);
-    if (this.fetchingCredentialReq.md5
-      && this.fetchingCredentialReq[md5].isFectching
-      && this.fetchingCredentialReq[md5].promise) {
-      return this.fetchingCredentialReq[md5].promise;
-    }
-    this.fetchingCredentialReq[md5] = {
-      isFectching: true,
-      promise: this.apiService.getPromiseData<{
-        [accountId: string]: CredentialsEntity[];
-      }>(req).finally(() => {
-        this.fetchingCredentialReq[md5] = null;
-      })
-    }
-    return this.fetchingCredentialReq[md5].promise;
+    return this.apiService.getPromiseData<{
+      [accountId: string]: CredentialsEntity[];
+    }>(req);
   }
   async getAgent(forceFetch = false): Promise<AgentEntity> {
     if (this.agent && !forceFetch) {

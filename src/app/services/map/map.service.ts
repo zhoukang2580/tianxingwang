@@ -144,6 +144,12 @@ export class MapService {
     });
   }
   async getCurMapPoint() {
+    if (AppHelper.isWechatMini()) {
+      const latLng = await this.wxGetLocation();
+      if (latLng) {
+        return { lat: latLng.latitude, lng: latLng.longitude } as MapPoint;
+      }
+    }
     return this.getCurrentPosition();
   }
   private async getCurrentCityPositionInWechatMini(): Promise<{

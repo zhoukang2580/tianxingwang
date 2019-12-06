@@ -56,6 +56,7 @@ export interface LocalHotelCityCache {
   providedIn: "root"
 })
 export class HotelService {
+  private fetchPassengerCredentials:{promise:Promise<any>};
   private bookInfos: PassengerBookInfo<IHotelInfo>[];
   private bookInfoSource: Subject<PassengerBookInfo<IHotelInfo>[]>;
   private searchHotelModelSource: Subject<SearchHotelModel>;
@@ -281,6 +282,17 @@ export class HotelService {
       this.searchHotelModelSource.next(this.searchHotelModel);
     }
   }
+  private getPassengerCredentials(accountIds:string[],isShowLoading:boolean){
+    if(this.fetchPassengerCredentials&&this.fetchPassengerCredentials.promise){
+      return this.fetchPassengerCredentials.promise;
+    }
+    this.fetchPassengerCredentials={
+      promise:this.tmcService.getPassengerCredentials(accountIds,isShowLoading).finally(()=>{
+        this.fetchPassengerCredentials=null;
+      })
+    }
+    return this.fetchPassengerCredentials.promise;
+  }
   async initSelfBookTypeBookInfos(isShowLoading=false) {
     const isSelf = await this.staffService.isSelfBookType(isShowLoading);
     const infos = this.getBookInfos();
@@ -293,8 +305,7 @@ export class HotelService {
       let IdCredential: CredentialsEntity;
       const staff = await this.staffService.getStaff(false,isShowLoading);
       if (!this.selfCredentials || this.selfCredentials.length === 0) {
-        const res = await this.tmcService
-          .getPassengerCredentials([staff.AccountId],isShowLoading)
+        const res = await this.getPassengerCredentials([staff.AccountId],isShowLoading)
           .catch(_ => ({ [staff.AccountId]: [] }));
         this.selfCredentials = res[staff.AccountId];
       }

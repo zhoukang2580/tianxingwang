@@ -61,6 +61,7 @@ export class SearchFlightModel {
 })
 export class FlightService {
   private worker = null;
+  private fetchPassengerCredentials: { promise: Promise<any> };
   private selfCredentials: CredentialsEntity[];
   private searchFlightModelSource: Subject<SearchFlightModel>;
   private passengerBookInfoSource: Subject<
@@ -182,9 +183,9 @@ export class FlightService {
           const fc = flightSegment.Cabins && flightSegment.Cabins.find(f => f.Id == it.Id);
           if (fc) {
             it.Cabin = { ...fc };
-            if(fc.FlightPolicy){
-              it.OrderTravelPayNames=fc.FlightPolicy.OrderTravelPayNames;
-              it.OrderTravelPays=fc.FlightPolicy.OrderTravelPays;
+            if (fc.FlightPolicy) {
+              it.OrderTravelPayNames = fc.FlightPolicy.OrderTravelPayNames;
+              it.OrderTravelPays = fc.FlightPolicy.OrderTravelPays;
             }
           }
           return it;
@@ -228,7 +229,7 @@ export class FlightService {
   }
   async loadPolicyedFlightsAsync(flightJourneyList: FlightJourneyEntity[]) {
     this.policyFlights = [];
-    if (!flightJourneyList||flightJourneyList.length == 0) {
+    if (!flightJourneyList || flightJourneyList.length == 0) {
       return [];
     }
     const passengers = this
@@ -756,8 +757,8 @@ export class FlightService {
           }
         }
         const info = {
-          flightSegment: {...flightSegment},
-          flightPolicy: {...flihgtPolicyCabin},
+          flightSegment: { ...flightSegment },
+          flightPolicy: { ...flihgtPolicyCabin },
           tripType,
           id: AppHelper.uuid(),
         } as IFlightSegmentInfo;
@@ -1118,11 +1119,11 @@ export class FlightService {
     return this.calendarService.getHHmm(datetime);
   }
   getLowerFlight(info: PassengerBookInfo<IFlightSegmentInfo>) {
-    let result: { lowestCabin: FlightPolicy;originalLowerSegment:FlightSegmentModel, lowestFlightSegment: FlightSegmentEntity, tripType: TripType } = {
+    let result: { lowestCabin: FlightPolicy; originalLowerSegment: FlightSegmentModel, lowestFlightSegment: FlightSegmentEntity, tripType: TripType } = {
       lowestCabin: null,
       lowestFlightSegment: null,
       tripType: null,
-      originalLowerSegment:null,
+      originalLowerSegment: null,
     };
     // if (info && !info.isReplace && info.bookInfo && info.bookInfo.lowerSegmentInfo && info.bookInfo.lowerSegmentInfo.lowestCabin && info.bookInfo.lowerSegmentInfo.lowestFlightSegment && info.bookInfo.lowerSegmentInfo.tripType == info.bookInfo.tripType) {
     //   return info.bookInfo.lowerSegmentInfo;
@@ -1166,8 +1167,8 @@ export class FlightService {
     );
     lowestCabin.LowerSegment = null;
     // 违反出发时间前后60分钟内最低价航班的政策
-    lowestCabin.Rules = lowestCabin.Rules&&lowestCabin.Rules.filter(it=>!(/前后\d+分钟/.test(it)));
-    result = { lowestCabin:{...lowestCabin}, lowestFlightSegment:{...lowestFlightSegment}, tripType: TripType.departureTrip,originalLowerSegment:info.bookInfo.flightPolicy.LowerSegment };
+    lowestCabin.Rules = lowestCabin.Rules && lowestCabin.Rules.filter(it => !(/前后\d+分钟/.test(it)));
+    result = { lowestCabin: { ...lowestCabin }, lowestFlightSegment: { ...lowestFlightSegment }, tripType: TripType.departureTrip, originalLowerSegment: info.bookInfo.flightPolicy.LowerSegment };
     return result;
   }
   async getFlightJourneyDetailListAsync(loadDataFromServer: boolean) {
@@ -1194,7 +1195,7 @@ export class FlightService {
     }));
   }
   private async getFlightJourneyDetails(): Promise<FlightJourneyEntity[]> {
-    this.flightJourneyList=[];
+    this.flightJourneyList = [];
     await this.checkOrAddSelfBookTypeBookInfo();
     await this.setDefaultFilterInfo();
     const req = new RequestEntity();
@@ -1262,7 +1263,15 @@ export class FlightService {
   async getPassengerCredentials(
     accountIds: string[]
   ): Promise<{ [accountId: string]: CredentialsEntity[] }> {
-    return this.tmcService.getPassengerCredentials(accountIds);
+    if (this.fetchPassengerCredentials&&this.fetchPassengerCredentials.promise) {
+      return this.fetchPassengerCredentials.promise;
+    }
+    this.fetchPassengerCredentials = {
+      promise: this.tmcService.getPassengerCredentials(accountIds).finally(() => {
+        this.fetchPassengerCredentials = null;
+      })
+    }
+    return this.fetchPassengerCredentials.promise;
   }
 
   async getInitializeBookDto(

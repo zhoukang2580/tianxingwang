@@ -52,8 +52,8 @@ export class HomePage implements OnInit {
       this.identity = await this.identityService
         .getIdentityAsync()
         .catch(_ => null);
-      // console.log("返回到首页 ",p.keys);
       this.check();
+      // console.log("返回到首页 ",p.keys);
       if (p.get("selectedCompany")) {
         this.tmcService.setSelectedCompany(p.get("selectedCompany"));
       }
@@ -147,8 +147,10 @@ export class HomePage implements OnInit {
     try {
       this.getAgentNotices();
       this.staff = await this.staffService.getStaff();
-      console.log("home check",this.staff);
-      if (this.staff && !(await this.staffService.getStaffCredentials(this.staff.AccountId)).length) {
+      const staffCredentials = await this.staffService.getStaffCredentials(this.staff.AccountId);
+      console.log("home check", staffCredentials);
+
+      if (this.staff && !staffCredentials || !staffCredentials.length) {
         console.log("需要确认证件信息");
         this.navCtrl.navigateRoot('confirm-information');
         return false;

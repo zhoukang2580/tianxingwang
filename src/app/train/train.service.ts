@@ -67,7 +67,7 @@ export class TrainService {
     lastUpdateTime: 0,
     TrafficLines: []
   };
-  totalPolicies: TrainPassengerModel[];
+  private fetchPassengerCredentials: { promise: Promise<any> };
   private selfCredentials: CredentialsEntity[];
   private searchModel: SearchTrainModel;
   private selectedStationSource: Subject<ISelectedStation>;
@@ -75,6 +75,7 @@ export class TrainService {
   private bookInfoSource: Subject<PassengerBookInfo<ITrainInfo>[]>;
   private searchModelSource: Subject<SearchTrainModel>;
   private isInitializingSelfBookInfos = false;
+  totalPolicies: TrainPassengerModel[];
   exchangedTrainTicketInfo: { order: OrderEntity, ticket: OrderTrainTicketEntity };
   constructor(
     private apiService: ApiService,
@@ -106,9 +107,17 @@ export class TrainService {
     });
   }
   async getPassengerCredentials(
-    accountIds: string[]
+    accountIds: string[], isShowLoading = false
   ): Promise<{ [accountId: string]: CredentialsEntity[] }> {
-    return this.tmcService.getPassengerCredentials(accountIds);
+    if (this.fetchPassengerCredentials&&this.fetchPassengerCredentials.promise) {
+      return this.fetchPassengerCredentials.promise;
+    }
+    this.fetchPassengerCredentials = {
+      promise: this.tmcService.getPassengerCredentials(accountIds, isShowLoading).finally(() => {
+        this.fetchPassengerCredentials = null;
+      })
+    }
+    return this.fetchPassengerCredentials.promise;
   }
   filterPassengerPolicyTrains(
     bookInfo: PassengerBookInfo<ITrainInfo>,

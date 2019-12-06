@@ -137,7 +137,7 @@ export class StaffService {
         return Promise.resolve(this.staffCredentials);
       }
     }
-    if (this.fetchingReqStaffCredentials) {
+    if (this.fetchingReqStaffCredentials&&this.fetchingReqStaffCredentials.promise) {
       return this.fetchingReqStaffCredentials.promise;
     }
     this.fetchingReqStaffCredentials = {
@@ -148,7 +148,7 @@ export class StaffService {
           this.staffCredentials = res;
           return res;
         })
-        .catch(_ => null as MemberCredential[])
+        .catch(_ => [] as MemberCredential[])
         .finally(() => {
           this.fetchingReqStaffCredentials = null;
         })
