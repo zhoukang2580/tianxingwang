@@ -46,6 +46,7 @@
       border-radius: 5px;
       font-size: 0.8rem;
       ion-button {
+        --background-activated:var(--ion-color-secondary);
         --background: tomato;
         ion-text {
           font-size: 1rem;
