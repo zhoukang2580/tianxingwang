@@ -401,19 +401,15 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       } else {
         //To_B是转到百度，To_G是转到GCJ - 02（谷歌，高德，腾讯）
 
-        var TO_BLNG = function (lng) { return lng + 0.0065; };
+        var BTO_TLNG = function (lng) { return lng - 0.0065; };
 
-        var TO_BLAT = function (lat) { return lat + 0.0060; };
-
-        var TO_GLNG = function (lng) { return lng - 0.0065; };
-
-        var TO_GLAT = function (lat) { return lat - 0.0060; };
+        var BTO_TLAT = function (lat) { return lat - 0.006109; };
         // 小程序中显示地图
         const lat = this.hotel.Lat;
         const lng = this.hotel.Lng;
         if (window['wx'] && window['wx'].miniProgram) {
           window['wx'].miniProgram.navigateTo({
-            url: `/pages/map/map?lat=${TO_BLAT(lat)}&lng=${TO_BLNG(lng)}&hotelName=${this.hotel.Name}&bmapAk=v7ZHTrOQZqCV2iDbQnkHoOeVEkrn8ktE`
+            url: `/pages/map/map?lat=${BTO_TLAT(lat)}&lng=${BTO_TLNG(lng)}&hotelName=${this.hotel.Name}&bmapAk=v7ZHTrOQZqCV2iDbQnkHoOeVEkrn8ktE`
           })
         }
       }

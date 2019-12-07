@@ -1,6 +1,6 @@
 // 引用百度地图微信小程序JSAPI模块 
-var bmap = require('../../lib/bmap-wx.min.js');
-var wxMarkerData = []; 
+// var bmap = require('../../lib/bmap-wx.min.js');
+// var wxMarkerData = []; 
 
 // pages/map.js
 Page({
@@ -26,7 +26,7 @@ Page({
    */
   onLoad: function(options) {
     console.log(options);
-    var BMap = new bmap.BMapWX({ ak: options.bmapAk});
+    // var BMap = new bmap.BMapWX({ ak: options.bmapAk});
     var fail = function (data) {
       console.log(data);
     };
@@ -46,8 +46,8 @@ Page({
     // 发起regeocoding检索请求 
     
     const title = options.hotelName;
-    const lat = options.lat;
-    const lng = options.lng;
+    const lat = options.lat - 0.006109*2;
+    const lng = options.lng - 2 * 0.0065;
     console.log(`酒店${title}所在的lat:${lat},lng:${lng}`);
     if (title) {
       wx.setNavigationBarTitle({
@@ -56,20 +56,44 @@ Page({
     }
     var that = this;
     if (!lat || !lng) {
-      BMap.regeocoding({
-        fail: fail,
-        success: success
-        // iconPath: '../../img/marker_red.png',
-        // iconTapPath: '../../img/marker_red.png'
-      }); 
+      // BMap.regeocoding({
+      //   fail: fail,
+      //   success: success
+      //   // iconPath: '../../img/marker_red.png',
+      //   // iconTapPath: '../../img/marker_red.png'
+      // }); 
+      wx.getLocation({
+        type: "wgs84",
+        success: function (res) {
+          var latitude = res.latitude;
+          var longitude = res.longitude;
+          //console.log(res.latitude);
+          that.setData({
+            latitude: res.latitude,
+            longitude: res.longitude,
+            markers: [{
+              latitude: res.latitude,
+              longitude: res.longitude
+            }]
+          })
+        }
+      })
     } else {
-      BMap.regeocoding({
-        location: `${lat},${lng}`,
-        fail: fail,
-        success: success,
-        iconPath: '../../images/icon_cur_position_sm.png',
-        iconTapPath: '../../images/icon_cur_position_sm.png'
-      }); 
+      that.setData({
+        latitude: lat,
+        longitude: lng,
+        markers: [{
+          latitude: lat,
+          longitude: lng
+        }]
+      })
+      // BMap.regeocoding({
+      //   location: `${lat},${lng}`,
+      //   fail: fail,
+      //   success: success,
+      //   iconPath: '../../images/icon_cur_position_sm.png',
+      //   iconTapPath: '../../images/icon_cur_position_sm.png'
+      // }); 
     }
   },
 
