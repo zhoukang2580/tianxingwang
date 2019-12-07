@@ -46,8 +46,8 @@ Page({
     // 发起regeocoding检索请求 
     
     const title = options.hotelName;
-    const lat = options.lat - 0.006109*2;
-    const lng = options.lng - 2 * 0.0065;
+    const lat = options.lat;
+    const lng = options.lng;
     console.log(`酒店${title}所在的lat:${lat},lng:${lng}`);
     if (title) {
       wx.setNavigationBarTitle({
