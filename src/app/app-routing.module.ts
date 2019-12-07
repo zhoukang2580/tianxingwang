@@ -36,6 +36,7 @@ const routes: Routes = [
   },
   { path: 'contact-us', loadChildren: './pages/contact-us/contact-us.module#ContactUsPageModule' },
   { path: 'no-authorize', loadChildren: "./pages/no-authorize/no-authorize.module#NoAuthorizePageModule" },
+  { path: 'developer-options', loadChildren: './pages/developer-options/developer-options.module#DeveloperOptionsPageModule' },
   {
     path: "",
     component: TabsPage,
@@ -45,6 +46,7 @@ const routes: Routes = [
     loadChildren: "./page404/page404.module#Page404PageModule",
     matcher: AppHelper.matchDefaultRoute
   },
+
 
 ];
 @NgModule({

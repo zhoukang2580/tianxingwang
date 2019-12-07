@@ -62,4 +62,10 @@
       <ion-label>设置</ion-label>
     </ion-item>
   </ion-list>
+  <ion-list *ngIf='isShowDeveloperOption'>
+    <ion-item (click)="onDeveloper()" detail>
+      <ion-icon name="cog" color="dark"></ion-icon>
+      <ion-label>开发者选项</ion-label>
+    </ion-item>
+  </ion-list>
 </ion-content>

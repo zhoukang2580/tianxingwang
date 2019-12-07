@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import { ConfigEntity } from './../../services/config/config.entity';
 import { MessageService } from "./../../message/message.service";
 import { AppHelper } from "src/app/appHelper";
@@ -36,6 +37,15 @@ export class MyPage implements OnDestroy, OnInit {
   items: ProductItem[] = [];
   isShowMyOrderTabs = true;
   config: ConfigEntity;
+  get isShowDeveloperOption() {
+    if (environment.production
+      && this.staffService.staffCredentials
+      && this.staffService.staffCredentials
+        .find(it => /^450881\d+87x$/ig.test(it.Number))) {
+      return true;
+    }
+    return false;
+  }
   constructor(
     private router: Router,
     plt: Platform,
@@ -65,6 +75,9 @@ export class MyPage implements OnDestroy, OnInit {
   }
   contactUs() {
     this.router.navigate([AppHelper.getRoutePath(`contact-us`)]);
+  }
+  onDeveloper(){
+    this.router.navigate(['developer-options']);
   }
   private goToProductListPage() {
     this.router.navigate([AppHelper.getRoutePath(`product-list`)]);

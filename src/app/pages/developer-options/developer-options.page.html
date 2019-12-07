@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-button color='dark' (click)='back()'>
+        <ion-icon name='arrow-back'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>开发者选项配置</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngIf='VConsole'>
+      <ion-label>
+        VConsole
+      </ion-label>
+      <ion-toggle color="secondary" (ionChange)='onVConsoleChange($event)'></ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        输出日志
+      </ion-label>
+      <ion-toggle color="secondary" (ionChange)='onLogChange($event)'></ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        当前应用版本
+      </ion-label>
+      <ion-label>{{currentVersion}}</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
