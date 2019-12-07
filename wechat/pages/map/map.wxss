@@ -1,0 +1,4 @@
+/* pages/map.wxss */
+page{
+  height: 100%;
+}

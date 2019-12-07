@@ -3,8 +3,14 @@
     "pages/index/index",
     "pages/login/index",
     "pages/pay/index",
+    "pages/map/map",
     "pages/logs/logs"
   ],
+  "permission": {
+    "scope.userLocation": {
+      "desc": "小程序希望能够获取您的位置信息"
+    }
+  },
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",

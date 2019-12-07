@@ -201,11 +201,15 @@ export class AppComponent
   }
   initializeApp() {
     // this.backButtonAction();
-    AppHelper.isWechatMiniAsync().then(isMini => {
-      if (isMini) {
+    if (!AppHelper.isApp()) {
+      const back = window.history.back;
+      try {
         window.history.back = this.navCtrl.pop;
+      } catch (e) {
+        window.history.back = back;
+        console.error(e);
       }
-    })
+    }
     AppHelper.getDomain(); //
     AppHelper.setQueryParamers();
     this.showErrorMsg();

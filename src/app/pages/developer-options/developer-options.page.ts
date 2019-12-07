@@ -35,8 +35,9 @@ export class DeveloperOptionsPage implements OnInit {
     const isShowVConsole = evt.detail.checked;
     if (isShowVConsole) {
       if (window['vConsole']) {
-        window['vConsole']=new VConsole();
+        window['vConsole'].destroy();
       }
+      window['vConsole'] = new VConsole();
     } else {
       if (window['vConsole']) {
         window['vConsole'].destroy();
