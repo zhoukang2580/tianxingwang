@@ -1,3 +1,4 @@
+import { MemberService, MemberCredential } from './../../member/member.service';
 import { NavController } from '@ionic/angular';
 import { FlightService } from 'src/app/flight/flight.service';
 import { HotelService } from './../../hotel/hotel.service';
@@ -9,8 +10,8 @@ import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { ApiService } from "./../../services/api/api.service";
 import { AppHelper } from "src/app/appHelper";
-import { Component, OnInit } from "@angular/core";
-import { Observable, Subject, BehaviorSubject, from, of } from "rxjs";
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Observable, Subject, BehaviorSubject, from, of, Subscription } from "rxjs";
 import { ActivatedRoute, Router, NavigationEnd } from "@angular/router";
 import { PayService } from "src/app/services/pay/pay.service";
 import { TmcService } from "src/app/tmc/tmc.service";
@@ -20,12 +21,14 @@ import { tap, shareReplay, map } from "rxjs/operators";
   templateUrl: "home.page.html",
   styleUrls: ["home.page.scss"]
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
   private intervalIds: any[] = [];
+  private staffCredentials: MemberCredential[];
+  private subscription = Subscription.EMPTY;
+  private exitAppSub: Subject<number> = new BehaviorSubject(null);
   identity: IdentityEntity;
   aliPayResult$: Observable<any>;
   wxPayResult$: Observable<any>;
-  exitAppSub: Subject<number> = new BehaviorSubject(null);
   selectedCompany$: Observable<string>;
   companies: any[];
   agentNotices: { text: string }[];
@@ -43,6 +46,7 @@ export class HomePage implements OnInit {
     private hotelService: HotelService,
     private flightService: FlightService,
     private navCtrl: NavController,
+    private memberService: MemberService,
     route: ActivatedRoute
   ) {
     this.staff = null;
@@ -64,6 +68,9 @@ export class HomePage implements OnInit {
       })
     );
   }
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
   private clearIntervalIds() {
     this.intervalIds.forEach(i => {
       clearInterval(i);
@@ -79,6 +86,9 @@ export class HomePage implements OnInit {
     });
   }
   async ngOnInit() {
+    this.subscription = this.identityService.getIdentitySource().subscribe(_ => {
+      this.staffCredentials = null;
+    });
     const paramters = AppHelper.getQueryParamers();
     if (paramters.wechatPayResultNumber) {
       const req1 = this.apiService.createRequest();
@@ -147,13 +157,17 @@ export class HomePage implements OnInit {
     try {
       this.getAgentNotices();
       this.staff = await this.staffService.getStaff();
-      const staffCredentials = await this.staffService.getStaffCredentials(this.staff.AccountId);
-      console.log("home check", staffCredentials);
-
-      if (this.staff && !staffCredentials || !staffCredentials.length) {
-        console.log("需要确认证件信息");
-        this.navCtrl.navigateRoot('confirm-information');
-        return false;
+      console.log("home check", this.staffCredentials);
+      if (this.staff && this.staff.AccountId) {
+        this.staffCredentials = await this.staffService.getStaffCredentials(this.staff.AccountId);
+        if (!this.staffCredentials || !this.staffCredentials.length) {
+          this.staffCredentials = await this.memberService.getCredentials(this.staff.AccountId);
+        }
+        if (!this.staffCredentials || !this.staffCredentials.length) {
+          console.log("需要确认证件信息");
+          this.navCtrl.navigateRoot('confirm-information');
+          return false;
+        }
       }
       if (this.intervalIds && this.intervalIds.length) {
         this.clearIntervalIds();
