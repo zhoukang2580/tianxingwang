@@ -18,7 +18,6 @@ Page({
   onShow: function() {
     var args = wx.getStorageSync("args");
     var url = "https://app.sky-trip.com";
-    var url = "http://test.ionic.beeant.com";
     if (args) {
       if (args.wechatminicode)
       {

@@ -166,8 +166,8 @@ export class MapService {
       const latLng = await this.wxGetLocation();
       if (latLng) {
         const p: MapPoint = {
-          lng: latLng.latitude,
-          lat: latLng.longitude
+          lng: latLng.longitude,
+          lat: latLng.latitude
         };
         const city = await this.getCityByMap(p).catch(_ => {
           console.error("getCityByMap", _);
@@ -199,6 +199,7 @@ export class MapService {
               const longitude = res.longitude
               const latitude = res.latitude
               //调用坐标解析方法
+              console.log("wxGetLocation,success", res);
               resolve({ longitude, latitude });
             }, fail: function (e) {
               console.error(e);
@@ -208,7 +209,7 @@ export class MapService {
         })
       })
       .catch(e => {
-        console.log(e);
+        console.log("wxGetLocation", e);
         return null;
       });
   }
@@ -216,11 +217,12 @@ export class MapService {
     city: TrafficlineEntity;
     position: any;
   }> {
+    const isMini = await AppHelper.isWechatMiniAsync() || AppHelper.isWechatMini();
     let result: {
       city: TrafficlineEntity;
       position: any;
     };
-    if (AppHelper.isWechatMini()) {
+    if (isMini) {
       result = await this.getCurrentCityPositionInWechatMini();
       return;
     }

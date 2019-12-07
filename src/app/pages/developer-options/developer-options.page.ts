@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import { FileHelperService } from 'src/app/services/file-helper.service';
 import { NavController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
@@ -10,6 +11,10 @@ const VConsole = window['VConsole'];
 export class DeveloperOptionsPage implements OnInit {
   private version: string;
   VConsole = VConsole;
+  showLog = !environment.production;
+  get vConsole() {
+    return !!window['vConsole'];
+  }
   get currentVersion() {
     if (this.version) {
       return this.version;
@@ -25,6 +30,7 @@ export class DeveloperOptionsPage implements OnInit {
   }
   onLogChange(evt: CustomEvent) {
     const isLog = evt.detail.checked;
+    this.showLog = isLog;
     if (isLog) {
       console.log = console.info;
     } else {
@@ -36,10 +42,12 @@ export class DeveloperOptionsPage implements OnInit {
     if (isShowVConsole) {
       if (window['vConsole']) {
         window['vConsole'].destroy();
+        window['vConsole'] = null;
       }
       window['vConsole'] = new VConsole();
     } else {
       if (window['vConsole']) {
+        window['vConsole'] = null;
         window['vConsole'].destroy();
       }
     }

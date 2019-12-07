@@ -15,13 +15,13 @@
       <ion-label>
         VConsole
       </ion-label>
-      <ion-toggle color="secondary" (ionChange)='onVConsoleChange($event)'></ion-toggle>
+      <ion-toggle color="secondary" (ionChange)='onVConsoleChange($event)' [checked]='!!vConsole'></ion-toggle>
     </ion-item>
     <ion-item>
       <ion-label>
         输出日志
       </ion-label>
-      <ion-toggle color="secondary" (ionChange)='onLogChange($event)'></ion-toggle>
+      <ion-toggle color="secondary" (ionChange)='onLogChange($event)' [checked]='showLog'></ion-toggle>
     </ion-item>
     <ion-item>
       <ion-label>

@@ -211,16 +211,18 @@
     </ng-container>
   </ion-list>
   <ion-list #trafficInfo class='traffic-info'>
-    <ion-item-divider sticky (click)='hotel["isShowMap"]=!hotel["isShowMap"]'>交通信息
-      <ng-container *ngIf='hotel'>
-        <ion-icon name='arrow-dropdown' color='secondary' *ngIf='!hotel["isShowMap"]'></ion-icon>
-        <ion-icon name='arrow-dropup' color='secondary' *ngIf='hotel["isShowMap"]'></ion-icon>
-      </ng-container>
-    </ion-item-divider>
-    <ng-container *ngIf='hotel&&hotel["isShowMap"]'>
-      <div class="traffic-map">
-        <app-map [lat]='hotel?.Lat' [lng]='hotel?.Lng'></app-map>
-      </div>
+    <ng-container *ngIf='isShowTrafficInfo'>
+        <ion-item-divider sticky (click)='hotel["isShowMap"]=!hotel["isShowMap"]'>交通信息
+            <ng-container *ngIf='hotel'>
+              <ion-icon name='arrow-dropdown' color='secondary' *ngIf='!hotel["isShowMap"]'></ion-icon>
+              <ion-icon name='arrow-dropup' color='secondary' *ngIf='hotel["isShowMap"]'></ion-icon>
+            </ng-container>
+          </ion-item-divider>
+          <ng-container *ngIf='hotel&&hotel["isShowMap"]'>
+            <div class="traffic-map">
+              <app-map [lat]='hotel?.Lat' [lng]='hotel?.Lng'></app-map>
+            </div>
+          </ng-container>
     </ng-container>
   </ion-list>
   <ion-list class='empty' *ngIf='hotel&&(!hotel["ishoteldetails"]||!hotel["isShowMap"])'></ion-list>

@@ -66,6 +66,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   private headerHeight = 0;
   scrollEle: HTMLElement;
   curHotelImagePos = 0;
+  isShowTrafficInfo = true;
   @ViewChild("header") headerEle: ElementRef<HTMLElement>;
   @ViewChild("bgPic") bgPicEle: ElementRef<HTMLElement>;
   @ViewChild(IonContent) ionCnt: IonContent;
@@ -204,6 +205,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     }
   }
   async ngOnInit() {
+    AppHelper.isWechatMiniAsync().then(isMini => {
+      this.isShowTrafficInfo = !isMini;
+    });
     this.isShowAddPassenger$ = from(this.staffService.isSelfBookType()).pipe(
       map(isSelf => !isSelf)
     );
@@ -378,14 +382,25 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     if (this.rects[tab]) {
       this.scrollToPoint(this.rects[tab]);
     }
-    if(tab=="hotelInfo"){
-       if(this.hotel){
-         this.hotel['ishoteldetails']=true;
-       }
+    if (tab == "hotelInfo") {
+      if (this.hotel) {
+        this.hotel['ishoteldetails'] = true;
+      }
     }
-    if(tab=="trafficInfo"){
-      if(this.hotel){
-        this.hotel['isShowMap']=true;
+    if (tab == "trafficInfo") {
+      if (this.isShowTrafficInfo) {
+        if (this.hotel) {
+          this.hotel['isShowMap'] = true;
+        }
+      } else {
+        // 小程序中显示地图
+        const lat = this.hotel.Lat;
+        const lng = this.hotel.Lng;
+        if (window['wx'] && window['wx'].miniProgram) {
+          window['wx'].miniProgram.navigateTo({
+            url: `/pages/map/map?lat=${lat}&lng=${lng}`
+          })
+        }
       }
     }
   }
