@@ -286,19 +286,19 @@ export class AppHelper {
     }
   }
   static isWechatMiniAsync() {
-    if (!window['wx'] || !window['wx'].miniProgram) {
-      return Promise.resolve(false);
-    }
     return new Promise<boolean>(resolve => {
-      window['wx'].miniProgram.getEnv(function (res) {
-        console.log(res.miniprogram) // true
-        if (res.miniprogram) {
-          resolve(true);
-        } else {
-          //非小程序环境
+      function ready() {
+        console.log(window['__wxjs_environment'] === 'miniprogram') // true
+        resolve(window['__wxjs_environment'] === 'miniprogram');
+      }
+      if (!window['WeixinJSBridge'] || !window['WeixinJSBridge'].invoke) {
+        document.addEventListener('WeixinJSBridgeReady', ready, false);
+        setTimeout(() => {
           resolve(false);
-        }
-      })
+        }, 3000);
+      } else {
+        ready();
+      }
     });
   }
   static isWechatMini() {
