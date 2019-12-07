@@ -6,20 +6,27 @@ import { environment } from "./environments/environment";
 
 if (environment.production) {
   enableProdMode();
-  // if (window["cordova"]) {
-  //   if (window["VConsole"]) {
-  //     var vConsole = new window["VConsole"]();
+  // if (window["VConsole"]) {
+  //   if( window['vConsole'] ){
+  //     window['vConsole'] .destroy();
   //   }
+  //   window['vConsole'] = new window["VConsole"]();
   // }
 
 } else {
   if (window["cordova"]) {
     if (window["VConsole"]) {
-      var vConsole = new window["VConsole"]();
+      if( window['vConsole'] ){
+        window['vConsole'] .destroy();
+      }
+      window['vConsole'] = new window["VConsole"]();
     }
   }
   // if (window["VConsole"]) {
-  //   var vConsole = new window["VConsole"]();
+  //   if( window['vConsole'] ){
+  //     window['vConsole'] .destroy();
+  //   }
+  //   window['vConsole'] = new window["VConsole"]();
   // }
 }
 platformBrowserDynamic()

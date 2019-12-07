@@ -186,23 +186,26 @@ export class AppComponent
     }
     return true;
   }
- 
-  getPath()
-  {
+
+  getPath() {
     let path = AppHelper.getQueryString("path");
     path = decodeURIComponent(path);
     let hash = window.location.hash;
     if (hash && !path) {
       path = hash.replace("#", "");
     }
-    if(!path)
-    {
-        path="/tabs/home";
+    if (!path) {
+      path = "/tabs/home";
     }
     return path;
   }
   initializeApp() {
-    this.backButtonAction();
+    // this.backButtonAction();
+    AppHelper.isWechatMiniAsync().then(isMini => {
+      if (isMini) {
+        window.history.back = this.navCtrl.pop;
+      }
+    })
     AppHelper.getDomain(); //
     AppHelper.setQueryParamers();
     this.showErrorMsg();
@@ -210,7 +213,7 @@ export class AppComponent
       return;
     }
     const unloginPath = AppHelper.getQueryString("unloginpath");
-    let path =this.getPath();  
+    let path = this.getPath();
     if (!AppHelper.getTicket() && unloginPath) {
       this.router.navigate([AppHelper.getRoutePath(unloginPath)]);
     }

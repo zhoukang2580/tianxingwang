@@ -8,7 +8,6 @@ const VConsole = window['VConsole'];
   styleUrls: ['./developer-options.page.scss'],
 })
 export class DeveloperOptionsPage implements OnInit {
-  private vConsole: any;
   private version: string;
   VConsole = VConsole;
   get currentVersion() {
@@ -35,10 +34,12 @@ export class DeveloperOptionsPage implements OnInit {
   onVConsoleChange(evt: CustomEvent) {
     const isShowVConsole = evt.detail.checked;
     if (isShowVConsole) {
-      this.vConsole = new VConsole();
+      if (window['vConsole']) {
+        window['vConsole']=new VConsole();
+      }
     } else {
-      if (this.vConsole) {
-        this.vConsole.destroy();
+      if (window['vConsole']) {
+        window['vConsole'].destroy();
       }
     }
   }
