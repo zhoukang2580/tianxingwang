@@ -19,9 +19,12 @@ export class MapService {
   private st = Date.now();
   constructor(private apiService: ApiService) {
     this.st = Date.now();
-    if (!AppHelper.isWechatMini()) {
-      this.initBMap();
-    }
+    AppHelper.isWechatMiniAsync().then(isMini => {
+      console.log("map service 是否是小程序环境：", isMini);
+      if (!isMini) {
+        this.initBMap();
+      }
+    })
   }
   private initBMap() {
     setTimeout(() => {
@@ -143,7 +146,7 @@ export class MapService {
     });
   }
   async getCurMapPoint() {
-    if (AppHelper.isWechatMini()) {
+    if (await AppHelper.isWechatMiniAsync()) {
       const latLng = await this.wxGetLocation();
       if (latLng) {
         return { lat: latLng.latitude, lng: latLng.longitude } as MapPoint;

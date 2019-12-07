@@ -285,6 +285,22 @@ export class AppHelper {
       return false;
     }
   }
+  static isWechatMiniAsync() {
+    if (!window['wx'] || !window['wx'].miniProgram) {
+      return Promise.resolve(false);
+    }
+    return new Promise<boolean>(resolve => {
+      window['wx'].miniProgram.getEnv(function (res) {
+        console.log(res.miniprogram) // true
+        if (res.miniprogram) {
+          resolve(true);
+        } else {
+          //非小程序环境
+          resolve(false);
+        }
+      })
+    });
+  }
   static isWechatMini() {
     const ua = window.navigator.userAgent.toLowerCase();
     if (
@@ -464,12 +480,11 @@ export class AppHelper {
       }
     }
   }
-  static removeQueryParamers(key:string) {
-    try{
-       this._queryParamers[key]=null;
+  static removeQueryParamers(key: string) {
+    try {
+      this._queryParamers[key] = null;
     }
-    catch(ex)
-    {
+    catch (ex) {
 
     }
   }
@@ -568,9 +583,9 @@ export class AppHelper {
     }
     return 0;
   }
-  static getDate(datestr:string|number){
-    if(datestr && typeof datestr =='string'){
-      return new Date(datestr.replace(/-/g,'/').replace("T"," "));
+  static getDate(datestr: string | number) {
+    if (datestr && typeof datestr == 'string') {
+      return new Date(datestr.replace(/-/g, '/').replace("T", " "));
     }
     return new Date(datestr);
   }
