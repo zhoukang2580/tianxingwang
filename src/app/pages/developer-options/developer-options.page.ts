@@ -9,9 +9,14 @@ const VConsole = window['VConsole'];
 })
 export class DeveloperOptionsPage implements OnInit {
   private vConsole: any;
+  private version: string;
   VConsole = VConsole;
   get currentVersion() {
-    return this.flieService.getLocalHcpVersion();
+    if (this.version) {
+      return this.version;
+    }
+    this.version = this.flieService.getLocalHcpVersion();
+    return this.version;
   };
   constructor(private navCtrl: NavController, private flieService: FileHelperService) { }
   back() {
