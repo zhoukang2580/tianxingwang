@@ -57,19 +57,17 @@ export class WechatHelper {
 
   static openId: string;
   static getHashedCurPageUrl() {
-    return md5(
-      encodeURIComponent(
-        window.location.href.substring(0, window.location.href.indexOf("#"))
-      )
-    );
+    const href = window.location.href;
+    const url = href.substring(0, href.indexOf("#")).trim();
+    console.log('getHashedCurPageUrl window.location.href', window.location.href, `url=${url}`);
+    return md5(url);
   }
   static async getJssdk() {
-    if (
-      !this.jssdkUrlConfig.find(
-        item => item.pageUrlHash == this.getHashedCurPageUrl()
-      )
+    if (!this.jssdkUrlConfig.length || !this.jssdkUrlConfig.find(
+      item => item.pageUrlHash == this.getHashedCurPageUrl()
+    )
     ) {
-      console.log("接口获取");
+      console.log("接口获取 jssdkInfo");
       const jssdkInfo = await this.requestJssdk().catch(_ => null);
       if (jssdkInfo) {
         this.jssdkUrlConfig = this.jssdkUrlConfig.filter(
@@ -81,13 +79,14 @@ export class WechatHelper {
         });
         return jssdkInfo;
       }
-      return Promise.reject("");
+      return Promise.reject("接口获取 jssdkInfo 失败");
     } else {
-      console.log("直接返回");
-      console.log(
-        this.jssdkUrlConfig[this.getHashedCurPageUrl()],
-        this.jssdkUrlConfig,
-        this.getHashedCurPageUrl()
+      console.log("从 jssdkUrlConfig 直接返回");
+      console.log(`this.jssdkUrlConfig`, this.jssdkUrlConfig,
+        `this.getHashedCurPageUrl()=${this.getHashedCurPageUrl()}`,
+        this.jssdkUrlConfig.find(
+          item => item.pageUrlHash == this.getHashedCurPageUrl()
+        )
       );
       return Promise.resolve(
         this.jssdkUrlConfig.find(

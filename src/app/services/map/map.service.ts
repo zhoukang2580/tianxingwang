@@ -189,30 +189,24 @@ export class MapService {
     return result;
   }
   private async wxGetLocation(): Promise<{ longitude: string; latitude: string; }> {
-    return WechatHelper.ready()
-      .then(() => {
-        return new Promise<{ longitude: string; latitude: string; }>(resolve => {
-          WechatHelper.wx.getLocation({
-            type: 'wgs84', //默认为 wgs84 返回 gps 坐标，gcj02 返回可用于 wx.openLocation 的坐标 
-            success: function (res) {
-              //  res中longitude和latitude就是所获的的用户位置
-              const longitude = res.longitude
-              const latitude = res.latitude
-              //调用坐标解析方法
-              console.log("wxGetLocation,success", res);
-              resolve({ longitude, latitude });
-            }, fail: function (e) {
-              console.error(e);
-              resolve(null);
-            }
-          })
-        })
+    return new Promise<{ longitude: string; latitude: string; }>(resolve => {
+      WechatHelper.wx.getLocation({
+        type: 'wgs84', //默认为 wgs84 返回 gps 坐标，gcj02 返回可用于 wx.openLocation 的坐标 
+        success: function (res) {
+          //  res中longitude和latitude就是所获的的用户位置
+          const longitude = res.longitude
+          const latitude = res.latitude
+          //调用坐标解析方法
+          console.log("wxGetLocation,success", res);
+          resolve({ longitude, latitude });
+        }, fail: function (e) {
+          console.error(e);
+          resolve(null);
+        }
       })
-      .catch(e => {
-        console.log("wxGetLocation", e);
-        return null;
-      });
+    });
   }
+  
   async getCurrentCityPosition(): Promise<{
     city: TrafficlineEntity;
     position: any;

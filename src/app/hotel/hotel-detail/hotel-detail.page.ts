@@ -1,3 +1,4 @@
+import { baiduMapAk } from './../../services/map/map.service';
 import { AgentEntity } from './../../tmc/models/AgentEntity';
 import { ShowImagesComponent } from './../components/show-images/show-images.component';
 import { ApiService } from 'src/app/services/api/api.service';
@@ -380,7 +381,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   private scrollToTab(tab: IHotelDetailTab) {
     this.initRects();
     if (this.rects[tab]) {
-      this.scrollToPoint(this.rects[tab]);
+      if (this.isShowTrafficInfo) {
+        this.scrollToPoint(this.rects[tab]);
+      }
     }
     if (tab == "hotelInfo") {
       if (this.hotel) {
@@ -388,17 +391,29 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       }
     }
     if (tab == "trafficInfo") {
+      if (!this.hotel) {
+        return;
+      }
       if (this.isShowTrafficInfo) {
         if (this.hotel) {
           this.hotel['isShowMap'] = true;
         }
       } else {
+        //To_B是转到百度，To_G是转到GCJ - 02（谷歌，高德，腾讯）
+
+        var TO_BLNG = function (lng) { return lng + 0.0065; };
+
+        var TO_BLAT = function (lat) { return lat + 0.0060; };
+
+        var TO_GLNG = function (lng) { return lng - 0.0065; };
+
+        var TO_GLAT = function (lat) { return lat - 0.0060; };
         // 小程序中显示地图
         const lat = this.hotel.Lat;
         const lng = this.hotel.Lng;
         if (window['wx'] && window['wx'].miniProgram) {
           window['wx'].miniProgram.navigateTo({
-            url: `/pages/map/map?lat=${lat}&lng=${lng}`
+            url: `/pages/map/map?lat=${TO_BLAT(lat)}&lng=${TO_BLNG(lng)}&hotelName=${this.hotel.Name}&bmapAk=v7ZHTrOQZqCV2iDbQnkHoOeVEkrn8ktE`
           })
         }
       }

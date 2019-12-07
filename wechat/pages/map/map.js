@@ -1,3 +1,7 @@
+// 引用百度地图微信小程序JSAPI模块 
+var bmap = require('../../lib/bmap-wx.min.js');
+var wxMarkerData = []; 
+
 // pages/map.js
 Page({
 
@@ -21,35 +25,51 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function(options) {
+    console.log(options);
+    var BMap = new bmap.BMapWX({ ak: options.bmapAk});
+    var fail = function (data) {
+      console.log(data);
+    };
+    var success = function (data) {
+      console.log("解析成功：",data);
+      wxMarkerData = data.wxMarkerData;
+      that.setData({
+        markers: wxMarkerData
+      });
+      that.setData({
+        latitude: wxMarkerData[0].latitude
+      });
+      that.setData({
+        longitude: wxMarkerData[0].longitude
+      });
+    }
+    // 发起regeocoding检索请求 
+    
+    const title = options.hotelName;
     const lat = options.lat;
     const lng = options.lng;
+    console.log(`酒店${title}所在的lat:${lat},lng:${lng}`);
+    if (title) {
+      wx.setNavigationBarTitle({
+        title
+      })
+    }
     var that = this;
     if (!lat || !lng) {
-      wx.getLocation({
-        type: "wgs84",
-        success: function(res) {
-          var latitude = res.latitude;
-          var longitude = res.longitude;
-          //console.log(res.latitude);
-          that.setData({
-            latitude: res.latitude,
-            longitude: res.longitude,
-            markers: [{
-              latitude: res.latitude,
-              longitude: res.longitude
-            }]
-          })
-        }
-      })
+      BMap.regeocoding({
+        fail: fail,
+        success: success
+        // iconPath: '../../img/marker_red.png',
+        // iconTapPath: '../../img/marker_red.png'
+      }); 
     } else {
-      that.setData({
-        latitude: lat,
-        longitude: lng,
-        markers: [{
-          latitude: lat,
-          longitude: lng
-        }]
-      })
+      BMap.regeocoding({
+        location: `${lat},${lng}`,
+        fail: fail,
+        success: success,
+        iconPath: '../../images/icon_cur_position_sm.png',
+        iconTapPath: '../../images/icon_cur_position_sm.png'
+      }); 
     }
   },
 
