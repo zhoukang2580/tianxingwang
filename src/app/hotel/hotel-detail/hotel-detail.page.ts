@@ -403,7 +403,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
 
         var BTO_TLNG = function (lng) { return lng - 0.0065; };
 
-        var BTO_TLAT = function (lat) { return lat - 0.006109; };
+        var BTO_TLAT = function (lat) { return lat - 0.00615; };
         // 小程序中显示地图
         const lat = this.hotel.Lat;
         const lng = this.hotel.Lng;
