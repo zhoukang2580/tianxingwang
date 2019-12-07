@@ -63,6 +63,7 @@ export class WechatHelper {
     return md5(url);
   }
   static async getJssdk() {
+    return this.requestJssdk();
     if (!this.jssdkUrlConfig.length || !this.jssdkUrlConfig.find(
       item => item.pageUrlHash == this.getHashedCurPageUrl()
     )
@@ -136,11 +137,12 @@ export class WechatHelper {
       console.log("jssdk加载失败，wx对象不存在");
       return Promise.reject(LanguageHelper.getJSSDKNotExistsTip());
     }
-    const info = await this.getJssdk().catch(_ => null);
+    let err;
+    const info = await this.getJssdk().catch(_ => { err = _; return null; });
 
     if (!info) {
       console.log("接口请求错误");
-      return Promise.reject("");
+      return Promise.reject(err||"获取jssdk 失败");
     }
     return new Promise<boolean>(resove => {
       this.wx.config({
