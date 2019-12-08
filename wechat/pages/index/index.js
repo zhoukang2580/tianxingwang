@@ -49,7 +49,8 @@ Page({
         lat = res.latitude;
         lng = res.longitude;
         if (lat && lng) {
-          url = url.includes("?") ? url + "&lat=" + lat + "&lng=" + lng : url + "?lat=" + lat + "&lng=" + lng;
+          url += (url.includes("?") ? "&" : "?") + "lat=" + lat;
+          url += (url.includes("?") ? "&" : "?") + "lng=" + lng;
         }
         console.log(url);
         this.setData({

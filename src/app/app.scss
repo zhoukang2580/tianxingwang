@@ -182,3 +182,6 @@ input {
   width: 80vw;
   left: 10vw;
 }
+body{
+  touch-action: none;
+}
