@@ -257,7 +257,7 @@ export class MapService {
     };
     if (isMini) {
       result = await this.getCurrentCityPositionInWechatMini();
-      return;
+      return result;
     }
     let latLng: MapPoint = await this.getCurrentPosition().catch(_ => {
       console.error("getCurrentPosition error", _);
