@@ -1,4 +1,3 @@
-import { Router, ParamMap } from '@angular/router';
 import { AppHelper } from './../../appHelper';
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
@@ -18,11 +17,10 @@ export interface MapPoint {
 export class MapService {
   private static TAG = "map 定位";
   private st = Date.now();
-  private queryParamMap: ParamMap;
-  constructor(private apiService: ApiService, private router: Router) {
-    const tree = this.router.parseUrl(window.location.href);
-    console.log("MapService,tree", tree);
-    this.queryParamMap = tree.queryParamMap;
+  private querys: any;
+  constructor(private apiService: ApiService) {
+    this.querys = AppHelper.getQueryParamers();
+    console.log("MapService,tree", this.querys);
     this.st = Date.now();
     AppHelper.isWechatMiniAsync().then(isMini => {
       console.log("map service 是否是小程序环境：", isMini);
@@ -167,11 +165,11 @@ export class MapService {
       city: TrafficlineEntity;
       position: any;
     };
-    console.log("getCurrentCityPositionInWechatMini queryParamMap", this.queryParamMap);
-    if (!this.queryParamMap) {
+    console.log("getCurrentCityPositionInWechatMini queryParamMap", this.querys);
+    if (!this.querys) {
       return null;
     }
-    const latLng = { longitude: this.queryParamMap.get("lng"), latitude: this.queryParamMap.get('lat') };
+    const latLng = { longitude: this.querys["lng"], latitude: this.querys['lat'] };
     console.log("getCurrentCityPositionInWechatMini ", latLng);
     if (latLng.latitude && latLng.longitude) {
       const p: MapPoint = {
