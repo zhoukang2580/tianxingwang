@@ -19,30 +19,44 @@ Page({
     var args = wx.getStorageSync("args");
     var url = "https://app.sky-trip.com";
     if (args) {
-      if (args.wechatminicode)
-      {
+      if (args.wechatminicode) {
         url += (url.includes("?") ? "&" : "?") + "wechatminicode=" + args.wechatminicode;
       }
       if (args.IsOpen) {
-        url += (url.includes("?") ? "&" : "?")+"IsOpen=" + args.IsOpen;
+        url += (url.includes("?") ? "&" : "?") + "IsOpen=" + args.IsOpen;
       }
       if (args.openid) {
-        url += (url.includes("?") ? "&" : "?") +"openid=" + args.openid;
+        url += (url.includes("?") ? "&" : "?") + "openid=" + args.openid;
       }
       if (args.ticket) {
-        url += (url.includes("?") ? "&" : "?") +"ticket=" + args.ticket;
+        url += (url.includes("?") ? "&" : "?") + "ticket=" + args.ticket;
       }
       if (args.path) {
-        url += (url.includes("?") ? "&" : "?") +"path=" + args.path;
+        url += (url.includes("?") ? "&" : "?") + "path=" + args.path;
       }
       if (args.wechatPayResult) {
         url += (url.includes("?") ? "&" : "?") + "wechatPayResult=" + args.wechatPayResult;
       }
     }
-   
-    this.setData({
-      url: url
-    });
+    var lat;
+    var lng;
+    const st =Date.now();
+    wx.getLocation({
+      success: function(res) {
+        console.log(res,'定位完成耗时 '+(Date.now()-st)+" ms");
+      },
+      complete: (res) => {
+        lat = res.latitude;
+        lng = res.longitude;
+        if (lat && lng) {
+          url = url.includes("?") ? url + "&lat=" + lat + "&lng=" + lng : url + "?lat=" + lat + "&lng=" + lng;
+        }
+        console.log(url);
+        this.setData({
+          url:url
+        });
+      }
+    })
     wx.clearStorageSync();
   },
   onLoad: function(args) {

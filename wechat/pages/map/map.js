@@ -26,25 +26,7 @@ Page({
    */
   onLoad: function(options) {
     console.log(options);
-    // var BMap = new bmap.BMapWX({ ak: options.bmapAk});
-    var fail = function (data) {
-      console.log(data);
-    };
-    var success = function (data) {
-      console.log("解析成功：",data);
-      wxMarkerData = data.wxMarkerData;
-      that.setData({
-        markers: wxMarkerData
-      });
-      that.setData({
-        latitude: wxMarkerData[0].latitude
-      });
-      that.setData({
-        longitude: wxMarkerData[0].longitude
-      });
-    }
     // 发起regeocoding检索请求 
-    
     const title = options.hotelName;
     const lat = options.lat;
     const lng = options.lng;
