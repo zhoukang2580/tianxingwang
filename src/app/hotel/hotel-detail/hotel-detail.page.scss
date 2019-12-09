@@ -100,6 +100,9 @@ ion-card {
   .room-info,
   .room-plans {
     width: 100%;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   .item-wrapper {

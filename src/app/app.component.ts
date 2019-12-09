@@ -199,8 +199,18 @@ export class AppComponent
     }
     return path;
   }
+  private registerScrollLisenter(){
+    if (AppHelper.isWechatH5()&&this.platform.is("android")) {
+      document.body.addEventListener('touchmove', function (e) {
+        // console.log('indexhtml script e',e,window._isPreventDefault)
+        if (window['_isPreventDefault'])
+          e.preventDefault(); //阻止默认的处理方式(阻止下拉滑动的效果)
+      }, { passive: false }); //passive 参数不能省略，用来兼容ios和android 
+    }
+  }
   initializeApp() {
     // this.backButtonAction();
+    this.registerScrollLisenter();
     if (!AppHelper.isApp()) {
       const back = window.history.back;
       try {
