@@ -81,11 +81,8 @@ export class AccountMobilePage implements OnInit, OnDestroy {
         r => {
           if (r.Status && r.Data) {
             if ((r.Data.Action as string).toLowerCase() == "finish") {
-              AppHelper.alert(LanguageHelper.getBindMobileSuccess(), true).then(
-                () => {
-                  this.back();
-                }
-              );
+              AppHelper.alert(LanguageHelper.getBindMobileSuccess(), true);
+              this.back();
               return;
             }
             r.Data.Mobile = "";
@@ -140,7 +137,7 @@ export class AccountMobilePage implements OnInit, OnDestroy {
       .subscribe(
         res => {
           if (!res.Status && res.Message) {
-            AppHelper.alert(res.Message);
+            AppHelper.alert(res.Message||"请稍后重试");
             return;
           }
           this.startCountDonw(res.Data.SendInterval);

@@ -10,6 +10,7 @@ import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 import { TrainComponentsModule } from '../components/traincomponents.module';
 import { TrainBookPage } from './book.page';
 import { ConfirmCredentialInfoGuard } from 'src/app/guards/confirm-credential-info.guard';
+import { AppDirectivesModule } from 'src/app/directives/directives.module';
 
 const routes: Routes = [
   {
@@ -27,7 +28,8 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     TmcComponentsModule,
     AppComponentsModule,
-    TrainComponentsModule
+    TrainComponentsModule,
+    AppDirectivesModule
   ],
   declarations: [TrainBookPage]
 })

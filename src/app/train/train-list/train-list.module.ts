@@ -9,6 +9,7 @@ import { IonicModule } from "@ionic/angular";
 import { TrainListPage } from "./train-list.page";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
 import { TrainComponentsModule } from "../components/traincomponents.module";
+import { AppDirectivesModule } from 'src/app/directives/directives.module';
 
 const routes: Routes = [
   {
@@ -25,7 +26,8 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     TmcComponentsModule,
     AppComponentsModule,
-    TrainComponentsModule
+    TrainComponentsModule,
+    AppDirectivesModule
   ],
   declarations: [TrainListPage]
 })
