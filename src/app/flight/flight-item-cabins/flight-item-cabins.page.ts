@@ -123,6 +123,13 @@ export class FlightItemCabinsPage implements OnInit {
     return info && info.passenger && info.passenger.Policy && info.passenger.Policy.FlightLegalTip;
   }
   async onBookTicket(flightCabin: FlightCabinEntity) {
+    if (!this.flightService.policyFlights || !this.flightService.policyFlights.length) {
+      await this.flightService.loadPolicyedFlightsAsync(this.flightService.flightJourneyList);
+      if (!this.flightService.policyFlights || !this.flightService.policyFlights.length) {
+        AppHelper.alert("差标获取失败");
+        return;
+      }
+    }
     const isSelf = await this.staffService.isSelfBookType();
     if (isSelf) {
       const bookInfos = this.flightService.getPassengerBookInfos();
