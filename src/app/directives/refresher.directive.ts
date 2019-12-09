@@ -50,6 +50,7 @@ export class RefresherDirective implements OnInit, AfterViewInit, OnDestroy {
   }
   ngAfterViewInit() {
     setTimeout(async () => {
+      window['_isPreventDefault'] = true;
       if (this.el.nativeElement) {
         // console.dir(this.el);
         this.el.nativeElement['pullFactor'] = 1.1;
