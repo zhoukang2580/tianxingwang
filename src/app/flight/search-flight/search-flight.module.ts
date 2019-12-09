@@ -1,3 +1,4 @@
+import { AuthorityGuard } from 'src/app/guards/authority.guard';
 import { CandeactivateGuard } from './../../guards/candeactivate.guard';
 import { SearchFlightPage } from "./../search-flight/search-flight.page";
 import { AgentGuard } from "../../guards/agent.guard";
@@ -18,7 +19,7 @@ const routes: Routes = [
   {
     path: "",
     component: SearchFlightPage,
-    canActivate: [TmcGuard,ConfirmCredentialInfoGuard],
+    canActivate: [AuthorityGuard,TmcGuard,ConfirmCredentialInfoGuard],
     canDeactivate:[CandeactivateGuard]
   }
 ];

@@ -57,11 +57,9 @@ export class FilterPassengersPolicyComponent implements OnInit, OnDestroy {
   }
   async onMathRadioChange(evt: CustomEvent) {
     // this.selectedItem = this.selectedItem || this.bookInfos && this.bookInfos.find(it => it.isFilteredPolicy);
-    if (!this.selectedItem) {
-      AppHelper.alert("请勾选需过滤差标的账号");
-      return;
+    if (this.selectedItem) {
+      this.selectedItem.isFilterPolicy = evt.detail && evt.detail.value == "isShowOnlyMatchSwitch" && evt.detail.checked;
     }
-    this.selectedItem.isFilterPolicy = evt.detail && evt.detail.value == "isShowOnlyMatchSwitch" && evt.detail.checked;
   }
   onSelectItem(evt: CustomEvent) {
     if (evt.detail && evt.detail.value && evt.detail.value.passenger) {

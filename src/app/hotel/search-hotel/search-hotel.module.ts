@@ -9,12 +9,13 @@ import { IonicModule } from "@ionic/angular";
 import { SearchHotelPage } from "./search-hotel.page";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 import { ConfirmCredentialInfoGuard } from 'src/app/guards/confirm-credential-info.guard';
+import { AuthorityGuard } from 'src/app/guards/authority.guard';
 
 const routes: Routes = [
   {
     path: "",
     component: SearchHotelPage,
-    canActivate: [ConfirmCredentialInfoGuard]
+    canActivate: [AuthorityGuard,ConfirmCredentialInfoGuard]
   }
 ];
 

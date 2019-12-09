@@ -96,6 +96,7 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
         });
     }
     if (!this.identityService.getStatus()) {
+      console.log("authority state.url",state.url);
       this.loginService.setToPageRouter(state.url);
       this.router.navigate([AppHelper.getRoutePath("login")]);
       return false;
