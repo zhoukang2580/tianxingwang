@@ -27,11 +27,10 @@ export class AccountMobilePage implements OnInit, OnDestroy {
   isShowImageCode: boolean;
   constructor(
     private fb: FormBuilder,
-    private identityService: IdentityService,
-    private router: Router,
     private navController: NavController,
-    private apiService: ApiService
-  ) {}
+    private apiService: ApiService,
+    private router: Router
+  ) { }
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -53,14 +52,14 @@ export class AccountMobilePage implements OnInit, OnDestroy {
         r => {
           this.setResult(r);
         },
-        e => {},
+        e => { },
         () => {
           scription.unsubscribe();
         }
       );
   }
-  back() {
-    this.navController.back();
+  async back() {
+    await this.navController.pop();
   }
   sendAction() {
     const req = new RequestEntity();
@@ -79,10 +78,19 @@ export class AccountMobilePage implements OnInit, OnDestroy {
       }>(req)
       .subscribe(
         r => {
-          if (r.Status && r.Data) {
+          if (!r.Status) {
+            AppHelper.alert("验证码错误!");
+            return;
+          }
+          if (r.Data) {
             if ((r.Data.Action as string).toLowerCase() == "finish") {
               AppHelper.alert(LanguageHelper.getBindMobileSuccess(), true);
               this.back();
+              setTimeout(() => {
+                if (this.router.url == '/account-mobile') {
+                  this.navController.navigateRoot("", { replaceUrl: true });
+                }
+              }, 300);
               return;
             }
             r.Data.Mobile = "";
@@ -90,7 +98,7 @@ export class AccountMobilePage implements OnInit, OnDestroy {
           }
           this.setResult(r);
         },
-        e => {},
+        e => { },
         () => {
           scription.unsubscribe();
         }
@@ -137,7 +145,7 @@ export class AccountMobilePage implements OnInit, OnDestroy {
       .subscribe(
         res => {
           if (!res.Status && res.Message) {
-            AppHelper.alert(res.Message||"请稍后重试");
+            AppHelper.alert(res.Message || "请稍后重试");
             return;
           }
           this.startCountDonw(res.Data.SendInterval);

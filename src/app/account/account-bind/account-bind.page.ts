@@ -35,7 +35,6 @@ export class AccountBindPage implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private navCtrl: NavController,
     private router: Router,
-    private loginService: LoginService,
     private apiService: ApiService,
     private route: ActivatedRoute
   ) { }

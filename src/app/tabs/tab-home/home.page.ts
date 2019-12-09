@@ -52,6 +52,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.staff = null;
     this.selectedCompany$ = tmcService.getSelectedCompanySource();
     route.paramMap.subscribe(async p => {
+      this.navCtrl.navigateRoot(this.router.url,{replaceUrl:true});
       this.clearBookInfos();
       this.identity = await this.identityService
         .getIdentityAsync()

@@ -27,8 +27,6 @@ export class AccountEmailPage implements OnInit {
   isShowImageCode: boolean;
   constructor(
     private fb: FormBuilder,
-    private identityService: IdentityService,
-    private router: Router,
     private navController: NavController,
     private apiService: ApiService
   ) {}

@@ -508,7 +508,7 @@ export class LanguageHelper {
     return "提示";
   }
   static getBindMobileSuccess() {
-    return "手机绑定成功";
+    return "完成手机绑定";
   }
   static getBindEmailSuccess() {
     return "邮箱绑定成功";

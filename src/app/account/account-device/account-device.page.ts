@@ -18,7 +18,7 @@ export class AccountDevicePage implements OnInit, OnDestroy {
   toggleChecked = false;
   items: Item[] = [];
   @ViewChild("List") deviceList: IonList;
-  constructor(private apiService: ApiService, private navCtrl: NavController) {}
+  constructor(private apiService: ApiService, private navCtrl: NavController) { }
 
   ngOnInit() {
     this.load();
@@ -58,14 +58,15 @@ export class AccountDevicePage implements OnInit, OnDestroy {
         AppHelper.alert(n);
       },
       () => {
-        if (deviceSubscription) {
-          deviceSubscription.unsubscribe();
-        }
+        setTimeout(() => {
+          if (deviceSubscription) {
+            deviceSubscription.unsubscribe();
+          }
+        }, 100);
       }
     );
   }
-  itemClick() {}
-  ngOnDestroy() {}
+  ngOnDestroy() { }
   toggleDeleteButton() {
     this.deviceList.closeSlidingItems();
     setTimeout(
