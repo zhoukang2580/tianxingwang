@@ -128,9 +128,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   async onPay(order: OrderEntity) {
     // const isSelfBookType = await this.staffService.isSelfBookType();
     if (order) {
-      if (order.Status == OrderStatusType.WaitPay) {
-        const result = await this.tmcService.payOrder(order.Id);
-      }
+      const result = await this.tmcService.payOrder(order.Id);
+      // if (order.Status == OrderStatusType.WaitPay) {
+      // }
     }
   }
   loadMoreOrders() {
