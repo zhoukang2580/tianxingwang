@@ -30,7 +30,7 @@ if (environment.production) {
   //   window['vConsole'] = new window["VConsole"]();
   // }
 }
-if (AppHelper.isWechatH5) {
+if (AppHelper.isWechatH5()) {
   document.body.addEventListener('touchmove', function (e) {
     // console.log('indexhtml script e',e,window._isPreventDefault)
     if (window['_isPreventDefault'])
