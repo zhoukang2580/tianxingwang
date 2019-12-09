@@ -180,7 +180,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
   }
   jump() {
     console.log("this.path", this.path);
-    this.router.navigate([AppHelper.getRoutePath("")]);
+    this.router.navigate([AppHelper.getRoutePath(this.path || "")]);
   }
   ngOnDestroy() {
     this.paramsSubscription.unsubscribe();
