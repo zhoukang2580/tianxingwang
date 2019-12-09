@@ -1,15 +1,12 @@
-import { StaffBookType } from "src/app/hr/staff.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
-import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { TrainFilterComponent } from "./../components/train-filter/train-filter.component";
 import { TrainscheduleComponent } from "./../components/trainschedule/trainschedule.component";
 import { TrainSeatEntity } from "./../models/TrainSeatEntity";
 import {
-  TrainPassengerModel,
   ICurrentViewtTainItem,
   ITrainInfo
 } from "./../train.service";
-import { StaffService, StaffEntity } from "./../../hr/staff.service";
+import { StaffService } from "./../../hr/staff.service";
 import { ApiService } from "./../../services/api/api.service";
 import { CalendarService } from "./../../tmc/calendar.service";
 import { TrafficlineEntity } from "./../../tmc/models/TrafficlineEntity";
@@ -17,10 +14,8 @@ import { TrainEntity } from "./../models/TrainEntity";
 import {
   TrainService,
   SearchTrainModel,
-  TrainPolicyModel
 } from "src/app/train/train.service";
 import {
-  TmcService,
   PassengerBookInfo,
   FlightHotelTrainType
 } from "src/app/tmc/tmc.service";
@@ -28,17 +23,11 @@ import {
   Component,
   OnInit,
   ViewChild,
-  ElementRef,
   OnDestroy,
-  AfterViewInit,
-  QueryList,
-  ViewChildren,
-  AfterContentInit
 } from "@angular/core";
 import {
   IonRefresher,
   IonContent,
-  DomController,
   PopoverController,
   NavController,
   ModalController,
@@ -50,7 +39,7 @@ import { DayModel } from "src/app/tmc/models/DayModel";
 import { DaysCalendarComponent } from "src/app/tmc/components/days-calendar/days-calendar.component";
 // tslint:disable-next-line: max-line-length
 import { FilterPassengersPolicyComponent } from "src/app/tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
-import { Observable, of, Subscription, combineLatest, from } from "rxjs";
+import { Observable, of, Subscription, from } from "rxjs";
 import { SelectedTrainSegmentInfoComponent } from "../components/selected-train-segment-info/selected-train-segment-info.component";
 import { FilterTrainCondition } from "../models/FilterCondition";
 import { TripType } from "src/app/tmc/models/TripType";
@@ -101,11 +90,9 @@ export class TrainListPage implements OnInit, OnDestroy {
   searchModalSubscription = Subscription.EMPTY;
   curFilteredBookInfo$: Observable<PassengerBookInfo<ITrainInfo>>;
   constructor(
-    private tmcService: TmcService,
     private trainService: TrainService,
     private router: Router,
     private storage: Storage,
-    private domCtrl: DomController,
     private calendarService: CalendarService,
     private route: ActivatedRoute,
     private apiService: ApiService,
