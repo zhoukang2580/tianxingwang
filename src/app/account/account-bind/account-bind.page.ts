@@ -152,7 +152,13 @@ export class AccountBindPage implements OnInit, OnDestroy {
         ExpiredInterval: number;
       }>(req)
       .subscribe(
-        res => { },
+        res => {
+          if (!res.Status) {
+            if (res.Message) {
+              AppHelper.alert(res.Message)
+            }
+          }
+        },
         e => { },
         () => {
           sub.unsubscribe();
