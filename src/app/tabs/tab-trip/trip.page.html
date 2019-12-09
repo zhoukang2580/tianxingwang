@@ -13,7 +13,7 @@
       <ion-item *ngFor='let trip of trips' detail (click)='goToDetailPage(trip)'>
         <div style='width: 100%;'>
           <ion-row>
-            <ion-col size='5'>
+            <ion-col size='3'>
               订单编号
             </ion-col>
             <ion-col>
@@ -24,7 +24,7 @@
             </ion-col>
           </ion-row>
           <ion-row>
-            <ion-col size='5'>
+            <ion-col size='3'>
               <ng-container [ngSwitch]='trip.Type'>
                 <div *ngSwitchCase='"Flight"'>
                   机票事务号
@@ -73,7 +73,7 @@
           </ion-row>
           <ng-container *ngIf='trip.Type=="Hotel"'>
             <ion-row>
-              <ion-col>
+              <ion-col size='3'>
                 酒店名称
               </ion-col>
               <ion-col>
@@ -121,6 +121,6 @@
     <app-or-comp>暂无数据</app-or-comp>
   </ng-template>
   <ion-infinite-scroll (ionInfinite)='loadMoreTrips()'>
-    <ion-infinite-scroll-content>正在加载更多...</ion-infinite-scroll-content>
+    <ion-infinite-scroll-content>正在加载...</ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>
