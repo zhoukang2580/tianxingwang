@@ -480,12 +480,12 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     });
     await popover.present();
     const d = await popover.onDidDismiss();
-    const data = d.data as PassengerBookInfo<IFlightSegmentInfo>;
+    const data = d.data as PassengerBookInfo<IFlightSegmentInfo> | "isUnFilterPolicy";
     if (!data) {
       return;
     }
     this.flightService.setPassengerBookInfosSource(this.flightService.getPassengerBookInfos().map(it => {
-      it.isFilterPolicy = data.id == it.id && data.isFilterPolicy;
+      it.isFilterPolicy = data != 'isUnFilterPolicy' ? data.id == it.id && data.isFilterPolicy : false;
       return it;
     }))
     this.doRefresh(false, true);

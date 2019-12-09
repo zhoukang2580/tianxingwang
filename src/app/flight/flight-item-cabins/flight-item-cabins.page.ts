@@ -155,12 +155,12 @@ export class FlightItemCabinsPage implements OnInit {
     });
     await popover.present();
     const d = await popover.onDidDismiss();
-    const data = d && (d.data as PassengerBookInfo<IFlightSegmentInfo>);
+    const data = d && (d.data as PassengerBookInfo<IFlightSegmentInfo> | "isUnFilterPolicy");
     if (!data) {
       return;
     }
     const arr = this.flightService.getPassengerBookInfos().map(it => {
-      it.isFilterPolicy = it.id == data.id && data.isFilterPolicy;
+      it.isFilterPolicy = data != 'isUnFilterPolicy' ? it.id == data.id && data.isFilterPolicy : false;
       return it;
     });
     this.flightService.setPassengerBookInfosSource(arr);

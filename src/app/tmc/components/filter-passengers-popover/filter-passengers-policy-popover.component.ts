@@ -37,22 +37,32 @@ export class FilterPassengersPolicyComponent implements OnInit, OnDestroy {
     if (this.selectedItem && this.selectedItem.id) {
       console.log("selectedItem", this.selectedItem);
     }
-    const isSelf = await this.staffService.isSelfBookType();
-    if (!isSelf) {
-      if (!this.selectedItem && this.bookInfos && this.bookInfos.length > 1) {
-        AppHelper.alert("请勾选需过滤差标的账号");
-        return;
-      }
-    }
+    // const isSelf = await this.staffService.isSelfBookType();
+    // if (!isSelf) {
+    //   if (!this.selectedItem && this.bookInfos && this.bookInfos.length > 1) {
+    //     AppHelper.alert("请勾选需过滤差标的账号");
+    //     return;
+    //   }
+    // }
     if (this.selectedItem) {
       const item = { ...this.selectedItem };
       if (this.isUnFilterPolicy) {
         item.isFilterPolicy = false;
       }
       this.subscription.unsubscribe();
-      const t = await this.popoverCtrl
+      await this.popoverCtrl
         .dismiss(item)
         .catch(_ => void 0);
+    } else {
+      if (this.isUnFilterPolicy) {
+        await this.popoverCtrl
+          .dismiss("isUnFilterPolicy")
+          .catch(_ => void 0);
+      } else {
+        await this.popoverCtrl
+          .dismiss()
+          .catch(_ => void 0);
+      }
     }
   }
   async onMathRadioChange(evt: CustomEvent) {

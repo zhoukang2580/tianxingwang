@@ -278,7 +278,12 @@ export class TrainListPage implements OnInit, OnDestroy {
     if (!d.data) {
       return;
     }
-    let data = this.filterPassengerPolicyTrains(d.data);
+    let data;
+    if (d.data == 'isUnFilterPolicy') {
+      data = this.filterPassengerPolicyTrains(null);
+    } else {
+      data = this.filterPassengerPolicyTrains(d.data);
+    }
     data = this.filterTrains(data);
     this.vmTrains = data;
     this.isLoading = false;
@@ -414,7 +419,7 @@ export class TrainListPage implements OnInit, OnDestroy {
       };
       const isSelf = await this.staffService.isSelfBookType();
 
-      if(isSelf){
+      if (isSelf) {
         const bookInfos = this.trainService.getBookInfos();
         const bookInfo = this.trainService.getTrainInfo(currentViewtTainItem, { ...bookInfos[0] });
         if (
