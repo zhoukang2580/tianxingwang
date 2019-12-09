@@ -43,10 +43,10 @@ export class RefresherDirective implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     document.body.removeEventListener("touchstart", this.scrollStart.bind(this));
     document.body.removeEventListener("touchmove", this.scrollFn.bind(this));
-    document.body.removeEventListener("touchend", this.touchend.bind(this));
+    // document.body.removeEventListener("touchend", this.touchend.bind(this));
   }
   private touchend() {
-    window['_isPreventDefault'] = false;
+    // window['_isPreventDefault'] = false;
   }
   ngAfterViewInit() {
     setTimeout(async () => {
@@ -63,7 +63,7 @@ export class RefresherDirective implements OnInit, AfterViewInit, OnDestroy {
           this.scroller = await this.content.getScrollElement();
           document.body.addEventListener("touchmove", this.scrollFn.bind(this), false);
           document.body.addEventListener("touchstart", this.scrollStart.bind(this), false);
-          document.body.addEventListener("touchend", this.touchend.bind(this), false);
+          // document.body.addEventListener("touchend", this.touchend.bind(this), false);
         }
       }
     }, 1000);
