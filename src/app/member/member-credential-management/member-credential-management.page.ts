@@ -35,7 +35,7 @@ import { IdentityService } from "src/app/services/identity/identity.service";
   styleUrls: ["./member-credential-management.page.scss"]
 })
 export class MemberCredentialManagementPage
-  implements OnInit, AfterViewInit, CanComponentDeactivate,OnDestroy {
+  implements OnInit, AfterViewInit, CanComponentDeactivate, OnDestroy {
   private timemoutid;
   identityTypes: { key: string; value: string }[];
   credentials: MemberCredential[];
@@ -66,9 +66,9 @@ export class MemberCredentialManagementPage
   back() {
     this.navCtrl.pop();
   }
-  ngOnDestroy(){
-    document.body.removeEventListener("focusin",this.focusin.bind(this));
-    document.body.removeEventListener("focusout",this.focusout.bind(this));
+  ngOnDestroy() {
+    document.body.removeEventListener("focusin", this.focusin.bind(this));
+    document.body.removeEventListener("focusout", this.focusout.bind(this));
   }
   ngOnInit() {
     this.doRefresh();
@@ -266,13 +266,21 @@ export class MemberCredentialManagementPage
     );
   }
 
-  async selectIdentityNationality(item: MemberCredential) {
+  async selectIdentityNationality(item: MemberCredential, evt: CustomEvent) {
+    if (evt) {
+      evt.stopPropagation();
+      evt.preventDefault();
+    }
     this.currentModifyItem = item;
     this.requestCode = "identityNationality";
     this.isCanDeactive = true;
     await this.selectCountry();
   }
-  async selectIssueNationality(item: MemberCredential) {
+  async selectIssueNationality(item: MemberCredential, evt: CustomEvent) {
+    if (evt) {
+      evt.stopPropagation();
+      evt.preventDefault();
+    }
     this.isCanDeactive = true;
     this.currentModifyItem = item;
     this.requestCode = "issueNationality";
@@ -305,17 +313,12 @@ export class MemberCredentialManagementPage
     }
   }
   async removeAdd(c: MemberCredential) {
-    let ok = false;
-    if (AppHelper.isWechatH5() && this.plt.is("ios")) {
-      ok = window.confirm(LanguageHelper.getConfirmDeleteTip());
-    } else {
-      ok = await AppHelper.alert(
-        LanguageHelper.getConfirmDeleteTip(),
-        true,
-        LanguageHelper.getConfirmTip(),
-        LanguageHelper.getCancelTip()
-      );
-    }
+    const ok = await AppHelper.alert(
+      LanguageHelper.getConfirmDeleteTip(),
+      true,
+      LanguageHelper.getConfirmTip(),
+      LanguageHelper.getCancelTip()
+    );
     if (ok) {
       this.newCredentials = this.newCredentials.filter(it => it !== c);
     }
