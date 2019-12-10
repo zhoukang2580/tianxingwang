@@ -16,9 +16,8 @@ Page({
     })
   },
   onShow: function() {
-    debugger;
     var args = wx.getStorageSync("args");
-    var url = "http://test.ionic.beeant.com";
+    var url = "https://app.sky-trip.com";
     if (args) {
       if (args.wechatminicode) {
         url += (url.includes("?") ? "&" : "?") + "wechatminicode=" + args.wechatminicode;
