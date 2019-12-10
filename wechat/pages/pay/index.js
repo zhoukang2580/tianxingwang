@@ -16,6 +16,7 @@ Page({
     })
   },
   onLoad: function(args) {
+    debugger;
     if (args) {
       wx.requestPayment({
         timeStamp: args.timeStamp,

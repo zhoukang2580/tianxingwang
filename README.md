@@ -55,3 +55,4 @@
 5. 非常重要的注意点，如果是ios热更，一定要用mac进行build ios 生成的 xxx.ios.zip文件，否则更新失败！！！
 ## 发布
 `ng build --prod --base-href /www/`
+ng serve --disableHostCheck
