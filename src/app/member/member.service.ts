@@ -4,6 +4,7 @@ import { RequestEntity } from "../services/api/Request.entity";
 import { CredentialsType } from "./pipe/credential.pipe";
 import { AccountEntity } from "../tmc/models/AccountEntity";
 export class MemberCredential {
+  isAdd?: boolean;
   isModified?: boolean;
   isNotWhiteList: boolean;
   variables: any;
