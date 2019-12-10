@@ -81,9 +81,6 @@ export class FilterPassengersPolicyComponent implements OnInit, OnDestroy {
     const isSelf = await this.staffService.isSelfBookType();
     this.subscription = this.bookInfos$.pipe(
       map(infos => {
-        if (infos.find(it => it.isReplace)) {
-          return infos.filter(it => it.isReplace)
-        }
         if (isSelf) {
           return [infos[0]];
         }

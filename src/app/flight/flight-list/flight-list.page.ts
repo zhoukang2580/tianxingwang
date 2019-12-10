@@ -436,26 +436,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
 
   async goToFlightCabinsDetails(fs: FlightSegmentEntity) {
     await this.flightService.addOneBookInfoToSelfBookType();
-    const validate = await this.flightService.canBookReturnTripFlightSegment(
-      fs
-    );
-    if (!validate) {
-      AppHelper.alert(
-        LanguageHelper.Flight.getBackDateCannotBeforeGoDateTip(),
-        true,
-        LanguageHelper.getConfirmTip()
-      );
-      return;
-    }
-    // this.flightService.setCurrentViewtFlightSegment(
-    //   fs,
-    //   this.flightService.getTotalFlySegments(this.flightJourneyList),
-    //   this.policyflights
-    // );
-    // if(this.isHasFiltered&&!fs.Cabins.length){
-    //   AppHelper.alert("没有符合条件的舱位");
-    //   return;
-    // }
     this.flightService.currentViewtFlightSegment = fs;
     this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
 

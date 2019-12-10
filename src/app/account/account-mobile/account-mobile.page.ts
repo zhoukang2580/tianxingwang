@@ -88,7 +88,7 @@ export class AccountMobilePage implements OnInit, OnDestroy {
               this.back();
               setTimeout(() => {
                 if (this.router.url == '/account-mobile') {
-                  this.navController.navigateRoot("", { replaceUrl: true });
+                  this.router.navigate([""]);
                 }
               }, 300);
               return;

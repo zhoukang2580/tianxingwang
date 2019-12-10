@@ -109,7 +109,7 @@ export class TrainService {
   async getPassengerCredentials(
     accountIds: string[], isShowLoading = false
   ): Promise<{ [accountId: string]: CredentialsEntity[] }> {
-    if (this.fetchPassengerCredentials&&this.fetchPassengerCredentials.promise) {
+    if (this.fetchPassengerCredentials && this.fetchPassengerCredentials.promise) {
       return this.fetchPassengerCredentials.promise;
     }
     this.fetchPassengerCredentials = {
@@ -203,7 +203,6 @@ export class TrainService {
     if (!bookInfo || !bookInfo.bookInfo || !bookInfo.bookInfo.trainPolicy || !bookInfo.bookInfo.trainEntity) {
       return;
     }
-    bookInfo.isReplace = true;
     const m = await this.modalCtrl.getTop();
     if (m) {
       m.dismiss();
@@ -221,6 +220,12 @@ export class TrainService {
     if (await this.staffService.isSelfBookType()) {
       this.removeBookInfo(bookInfo, false);
     }
+    this.setBookInfoSource(this.getBookInfos().map(it => {
+      if (it.id == bookInfo.id) {
+        it.bookInfo = null;
+      }
+      return it;
+    }))
     this.router.navigate([AppHelper.getRoutePath("train-list")], { queryParams: { doRefresh: true } });
   }
   async checkCanAdd() {
@@ -431,7 +436,7 @@ export class TrainService {
   ) {
     let bookInfos = this.getBookInfos();
     {
-      const unselectBookInfos = this.getBookInfos().filter(it => !it.bookInfo || !it.bookInfo.trainPolicy || it.isReplace);
+      const unselectBookInfos = this.getBookInfos().filter(it => !it.bookInfo || !it.bookInfo.trainPolicy);
       let cannotArr: string[] = [];
       if (unselectBookInfos.length) {
         bookInfos = bookInfos.map(item => {
@@ -453,18 +458,13 @@ export class TrainService {
         if (cannotArr.length) {
           AppHelper.alert(`${cannotArr.join(",")}，超标不可预订`)
         }
-      } else if (!bookInfos.find(it => it.isReplace)) {
+      } else {
         const ok = await AppHelper.alert("是否替换旅客的车次信息？", true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
         if (ok) {
           bookInfos = await this.selectAndReplaceBookInfos(currentViewtTainItem, bookInfos);
         }
       }
     }
-    const arr = bookInfos.map(item => {
-      item.isReplace = false;
-      return item;
-    });
-    this.setBookInfoSource(arr);
   }
   private async selectAndReplaceBookInfos(currentViewtTainItem: ICurrentViewtTainItem, bookInfos: PassengerBookInfo<ITrainInfo>[]) {
     const m = await this.modalCtrl.create({
@@ -800,14 +800,12 @@ export class TrainService {
     const self = await this.staffService.isSelfBookType();
     const infos = this.getBookInfos();
     const unselected = infos.find(it => !it.bookInfo);
-    const hasReplace = infos.find(it => it.isReplace);
     const hasExchange = infos.find(it => it.bookInfo && it.bookInfo.isExchange);
     this.setBookInfoSource(infos.map((it, idx) => {
       if (infos.length == 1 || self) {
         it.isFilterPolicy = idx == 0;
       } else {
         it.isFilterPolicy = unselected && unselected.id == it.id ||
-          hasReplace && hasReplace.id == it.id ||
           (hasExchange && hasExchange.id == (it.bookInfo && it.bookInfo.id));
       }
       return it;

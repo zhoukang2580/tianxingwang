@@ -166,7 +166,7 @@ export class HomePage implements OnInit, OnDestroy {
         }
         if (!this.staffCredentials || !this.staffCredentials.length) {
           console.log("需要确认证件信息");
-          this.navCtrl.navigateRoot('confirm-information');
+          this.router.navigate([AppHelper.getRoutePath('confirm-information')]);
           return false;
         }
       }

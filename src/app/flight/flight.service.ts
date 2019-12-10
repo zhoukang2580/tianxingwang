@@ -345,61 +345,6 @@ export class FlightService {
     this.passengerBookInfos = this.passengerBookInfos || [];
     return this.passengerBookInfos;
   }
-  async canBookReturnTripFlightSegment(flightSegment: FlightSegmentEntity) {
-    if (
-      !flightSegment ||
-      this.searchFlightModel.tripType !== TripType.returnTrip
-    ) {
-      return true;
-    }
-    if (await this.staffService.isSelfBookType()) {
-      if (this.searchFlightModel.isRoundTrip) {
-        const infos = this.getPassengerBookInfos();
-        const info = infos.find(
-          item =>
-            item.bookInfo &&
-            item.bookInfo.flightSegment &&
-            item.bookInfo.tripType == TripType.departureTrip
-        );
-        const goFlight = info && info.bookInfo && info.bookInfo.flightSegment;
-        if (goFlight) {
-          const takeoffTime = moment(flightSegment.TakeoffTime);
-          const arrivalTime = moment(goFlight.ArrivalTime);
-          return (
-            takeoffTime.date() == arrivalTime.date() ||
-            +arrivalTime <= +takeoffTime
-          );
-        }
-      }
-      return !this.checkIfExcessMaxLimitedBookTickets(1);
-    } else {
-      return !this.checkIfExcessMaxLimitedBookTickets(9);
-    }
-  }
-  async canBookMoreFlightSegment(flightSegment: FlightSegmentEntity) {
-    if (!flightSegment) {
-      return true;
-    }
-    if (await this.staffService.isSelfBookType()) {
-      return true;
-    }
-    return !this.checkIfExcessMaxLimitedBookTickets(9);
-  }
-  private checkIfExcessMaxLimitedBookTickets(max: number) {
-    return (
-      this.getPassengerBookInfos().reduce((sum, item) => {
-        if (!item.isReplace) {
-          if (
-            item.bookInfo &&
-            (item.bookInfo.flightPolicy || item.bookInfo.flightSegment)
-          ) {
-            sum++;
-          }
-        }
-        return sum;
-      }, 0) >= max
-    );
-  }
   async selectTripType(): Promise<TripType> {
     const ok = await AppHelper.alert(
       LanguageHelper.Flight.getTripTypeTip(),
@@ -478,7 +423,7 @@ export class FlightService {
     if (arg.bookInfo.tripType == TripType.returnTrip) {
       // 重选回程
       this.setPassengerBookInfosSource(this.getPassengerBookInfos().map(info => {
-        info.isReplace = info.id == arg.id;
+        info.bookInfo = info.id == arg.id?null:info.bookInfo;
         return info;
       }))
       await this.onSelectReturnTrip();
@@ -536,12 +481,12 @@ export class FlightService {
     s.Date = arg.bookInfo.flightSegment.TakeoffTime.substr(0, 'yyyy-mm-dd'.length);
     s.fromCity = cities.find(it => it.Code == arg.bookInfo.flightSegment.FromAirport);
     s.toCity = cities.find(it => it.Code == arg.bookInfo.flightSegment.ToAirport);
-    const arr = this.getPassengerBookInfos().map(item => {
-      item.isReplace = item.id == arg.id;
-      return item;
-    });
-    this.passengerBookInfos = arr;
-    this.setPassengerBookInfosSource(this.passengerBookInfos);
+    this.setPassengerBookInfosSource(this.getPassengerBookInfos().map(it=>{
+      if(it.id==arg.id){
+        it.bookInfo=null;
+      }
+      return it;
+    }))
     this.apiService.showLoadingView();
     await this.dismissAllTopOverlays();
     this.setSearchFlightModel(s);
@@ -625,7 +570,7 @@ export class FlightService {
         });
       }
     } else {
-      const unselectBookInfos = this.getPassengerBookInfos().filter(it => !it.bookInfo || !it.bookInfo.flightPolicy || it.isReplace);
+      const unselectBookInfos = this.getPassengerBookInfos().filter(it => !it.bookInfo || !it.bookInfo.flightPolicy);
       let cannotArr: string[] = [];
       if (unselectBookInfos.length) {
         bookInfos = bookInfos.map(item => {
@@ -647,7 +592,7 @@ export class FlightService {
         if (cannotArr.length) {
           AppHelper.alert(`${cannotArr.join(",")}，超标不可预订`)
         }
-      } else if (!bookInfos.find(it => it.isReplace)) {
+      } else {
         const ok = await AppHelper.alert("是否替换旅客的航班信息？", true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
         if (ok) {
           bookInfos = await this.selectAndReplaceBookInfos(flightCabin, flightSegment, bookInfos);
@@ -655,7 +600,6 @@ export class FlightService {
       }
     }
     const arr = bookInfos.map(item => {
-      item.isReplace = false;
       if (item.bookInfo && item.bookInfo.lowerSegmentInfo) {
         item.bookInfo.lowerSegmentInfo.tripType = item.bookInfo.tripType;
       }
@@ -741,19 +685,13 @@ export class FlightService {
           };
         }
         let tripType = TripType.departureTrip;
-        if (bookInfo.isReplace) {
-          if (bookInfo.bookInfo) {
-            tripType = bookInfo.bookInfo.tripType;
-          }
-        } else {
-          if (this.getSearchFlightModel().isRoundTrip) {
-            const go = this.getPassengerBookInfos().find(
-              it =>
-                it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
-            );
-            if (go) {
-              tripType = TripType.returnTrip;
-            }
+        if (this.getSearchFlightModel().isRoundTrip) {
+          const go = this.getPassengerBookInfos().find(
+            it =>
+              it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
+          );
+          if (go) {
+            tripType = TripType.returnTrip;
           }
         }
         const info = {
@@ -1183,13 +1121,12 @@ export class FlightService {
   private async setDefaultFilterInfo() {
     const self = await this.staffService.isSelfBookType();
     const infos = this.getPassengerBookInfos();
-    const unselected = infos.find(it => !it.bookInfo);
-    const hasReplace = infos.find(it => it.isReplace);
+    const unselected = infos.filter(it => !it.bookInfo);
     this.setPassengerBookInfosSource(infos.map((it, idx) => {
       if (infos.length == 1 || self) {
         it.isFilterPolicy = idx == 0;
       } else {
-        it.isFilterPolicy = unselected && unselected.id == it.id || hasReplace && hasReplace.id == it.id;
+        it.isFilterPolicy = unselected.length==1 && unselected[0].id == it.id;
       }
       return it;
     }));
