@@ -10,12 +10,10 @@ export class RefresherDirective implements OnInit, AfterViewInit, OnDestroy {
   private isWechatH5 = /micromessenger/gi.test(window.navigator.userAgent);
   private scroller: HTMLElement;
   private startY = 0;
-  private scrollTop = 0;
   private content: HTMLIonContentElement;
   constructor(private el: ElementRef<HTMLElement>, private plt: Platform) { }
   private scrollStart(evt: TouchEvent) {
     this.startY = evt.touches[0] && evt.touches[0].clientY;
-    this.scrollTop = this.scroller && this.scroller.scrollTop;
     if (!this.scroller) {
       this.content = this.el.nativeElement.closest("ion-content");
       if (this.content) {
@@ -31,9 +29,10 @@ export class RefresherDirective implements OnInit, AfterViewInit, OnDestroy {
     const delta = evt.touches[0] && evt.touches[0].clientY - this.startY;
     if (evt) {
       if (evt.cancelable) {
-        window['_isPreventDefault'] = delta >= 0 && this.scrollTop <= 0;
-        console.log("detal", delta, this.scrollTop, window['_isPreventDefault'])
-        if (delta >= 0 && this.scrollTop <= 0) {
+        const scrollTop = this.scroller && this.scroller.scrollTop || 0;
+        window['_isPreventDefault'] = delta >= 0 && scrollTop <= 0;
+        console.log("detal", delta, this.scroller.scrollTop, window['_isPreventDefault'])
+        if (delta >= 0 && scrollTop <= 0) {
           // console.log("detal", delta)
           evt.preventDefault();
         }
@@ -43,10 +42,10 @@ export class RefresherDirective implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     document.body.removeEventListener("touchstart", this.scrollStart.bind(this));
     document.body.removeEventListener("touchmove", this.scrollFn.bind(this));
-    // document.body.removeEventListener("touchend", this.touchend.bind(this));
+    document.body.removeEventListener("touchend", this.touchend.bind(this));
   }
   private touchend() {
-    // window['_isPreventDefault'] = false;
+    window['_isPreventDefault'] = false;
   }
   ngAfterViewInit() {
     setTimeout(async () => {
@@ -63,7 +62,7 @@ export class RefresherDirective implements OnInit, AfterViewInit, OnDestroy {
           this.scroller = await this.content.getScrollElement();
           document.body.addEventListener("touchmove", this.scrollFn.bind(this), false);
           document.body.addEventListener("touchstart", this.scrollStart.bind(this), false);
-          // document.body.addEventListener("touchend", this.touchend.bind(this), false);
+          document.body.addEventListener("touchend", this.touchend.bind(this), false);
         }
       }
     }, 1000);
