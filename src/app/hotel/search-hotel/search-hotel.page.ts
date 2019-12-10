@@ -161,13 +161,14 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       this.checkOutDate = days[1];
     }
   }
-  onSearchHotel() {
+  async onSearchHotel() {
     this.hotelService.setSearchHotelModel({
       ...this.hotelService.getSearchHotelModel(),
       checkInDate: this.checkInDate.date,
       checkOutDate: this.checkOutDate.date,
       destinationCity: this.destinationCity,
     });
+    await this.hotelService.getConditions();
     this.router.navigate([AppHelper.getRoutePath("hotel-list")]).then(_ => {
       this.isLeavePage = true;
     });
