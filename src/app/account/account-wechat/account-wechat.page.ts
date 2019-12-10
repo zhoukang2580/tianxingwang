@@ -35,14 +35,18 @@ export class AccountWechatPage implements OnInit, OnDestroy {
           Code: paramters.wechatcode
         };
         this.bindCode(data);
+        AppHelper.removeQueryParamers("wechatcode");
       } else if (paramters.wechatminicode) {
         const data = {
           Code: paramters.wechatminicode,
+          NickName:paramters.wechatmininickname,
           SdkType: "Mini"
         };
         this.bindCode(data);
+        AppHelper.removeQueryParamers("wechatminicode");
+        AppHelper.removeQueryParamers("wechatmininickname");
       }
-      AppHelper.removeQueryParamers("wechatcode");
+  
     }
   }
   async bind() {
@@ -62,7 +66,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
           url:
             "/pages/login/index?ticket=" +
             AppHelper.getTicket() +
-            "&path=account-wechat&openid=" +
+            "&path=account-wechat&IsForbidOpenId=true&openid=" +
             (WechatHelper.openId || "")
         });
       } else if (AppHelper.isWechatH5()) {
@@ -85,10 +89,14 @@ export class AccountWechatPage implements OnInit, OnDestroy {
     req.Method = "ApiPasswordUrl-Wechat-Bind";
     req.IsShowLoading = true;
     req.Data = data;
-    let deviceSubscription = this.apiService.getResponse<{}>(req).subscribe(
+    let deviceSubscription = this.apiService.getResponse<{OpenId:string}>(req).subscribe(
       s => {
         if (s.Status) {
           this.load();
+          if(s.Data && s.Data.OpenId)
+          {
+            WechatHelper.openId=s.Data.OpenId;
+          }
         } 
         if (s.Message) {
           AppHelper.alert(s.Message);

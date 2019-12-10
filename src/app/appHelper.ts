@@ -464,7 +464,7 @@ export class AppHelper {
     }
     return md5(content);
   }
-  static setQueryParamers() {
+  static initlizeQueryParamers() {
     let name: string = "";
     let value: string = "";
     let str = location.href;
@@ -478,6 +478,14 @@ export class AppHelper {
         value = arr[i].substr(num + 1);
         this._queryParamers[name] = decodeURIComponent(value);
       }
+    }
+  }
+  static setQueryParamers(key: string,value:string) {
+    try {
+      this._queryParamers[key] = value;
+    }
+    catch (ex) {
+
     }
   }
   static removeQueryParamers(key: string) {

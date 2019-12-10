@@ -136,30 +136,24 @@ export class AppComponent
     console.log("ngAfterContentInit");
   }
   checkWechatOpenId() {
+    debugger;
     const paramters = AppHelper.getQueryParamers();
     console.log("checkWechatOpenId", paramters);
     if (paramters.openid) {
       WechatHelper.openId = paramters.openid || "";
     } else if (paramters.IsForbidOpenId) {
       return true;
-    } else if (AppHelper.isWechatMini()) {
-      if(!AppHelper.checkQueryString("wechatminicode"))
-        {
-          return true;//绑定
-        }
-        if(!AppHelper.getTicket() && AppHelper.checkQueryString("openid"))
-        {
-          return true;//获取到openid
-        }
+    } else if (AppHelper.isWechatMini() && !WechatHelper.openId && !AppHelper.checkQueryString("wechatminicode")) {
       WechatHelper.wx.miniProgram.navigateTo({
         url:
           "/pages/login/index?IsLogin=true&IsForbidOpenId=true&domain=" +
           AppHelper.getDomain() +
+          "&ticket=" +AppHelper.getTicket()+
           "&getUrl=" +
           encodeURIComponent(AppHelper.getApiUrl() + "/home/GetWechatUser")
       });
       return false;
-    } else if (AppHelper.isWechatH5() && !AppHelper.checkQueryString("openid")) {
+    } else if (AppHelper.isWechatH5() && !WechatHelper.openId) {
       let url =
       AppHelper.getApiUrl() +
       "/home/GetWechatCode?IsLogin=true&IsForbidOpenId=true&path=" +
@@ -216,7 +210,7 @@ export class AppComponent
       }
     }
     AppHelper.getDomain(); //
-    AppHelper.setQueryParamers();
+    AppHelper.initlizeQueryParamers();
     this.showErrorMsg();
     if (!this.checkWechatOpenId() || !this.checkDingtalkUnionid()) {
       return;

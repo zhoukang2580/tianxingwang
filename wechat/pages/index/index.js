@@ -35,6 +35,9 @@ Page({
       if (args.path) {
         url += (url.includes("?") ? "&" : "?") + "path=" + args.path;
       }
+      if (args.nickName) {
+        url += (url.includes("?") ? "&" : "?") + "wechatmininickname=" + args.nickName;
+      }
       if (args.wechatPayResult) {
         url += (url.includes("?") ? "&" : "?") + "wechatPayResult=" + args.wechatPayResult;
       }

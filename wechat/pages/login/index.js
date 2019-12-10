@@ -18,6 +18,7 @@ Page(
   },
 
   onLoad: function (args) {
+    debugger;
     wx.login({
       success:(res)=>
       {
@@ -29,7 +30,7 @@ Page(
           var code = res.code
           wx.request({
             url: geturl,
-            data: {IsLogin:true, domain: args.domain, code: res.code, SdkType:"Mini"},
+            data: {IsLogin:true, domain: args.domain,ticket:args.ticket, code: res.code, SdkType:"Mini"},
             header: {},
             method: 'GET',
             dataType: 'json',
@@ -51,8 +52,37 @@ Page(
         }
         else if(args)
         {
-          wx.setStorageSync("args", { wechatminicode: res.code, openid: args.openid, ticket: args.ticket, path: args.path});
-          wx.navigateBack();
+          wx.getSetting({
+            complete(getres) {
+              if (!getres.authSetting['scope.userInfo']) {
+                wx.authorize({
+                  scope: 'scope.userInfo',
+                  complete() {
+                    wx.getUserInfo({
+                      success: userRes => {
+    
+                      },
+                      fail: error => {
+             
+                      }
+                      , 
+                      complete: function (userRes)
+                      {
+                        let nickname = userRes && userRes.nickName ? userRes.nickName:"";
+                        wx.setStorageSync("args", { wechatminicode: res.code, openid: args.openid, ticket: args.ticket, path: args.path, IsForbidOpenId: args.IsForbidOpenId, nickName: nickname});
+                        wx.navigateBack();
+                      }
+                    })
+                  },
+                  fail:er=>{
+                
+                  }
+                })
+              }
+            }
+          })
+        
+        
         }
      
       }
