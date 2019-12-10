@@ -7,6 +7,7 @@ Page({
     motto: 'Hello World',
     userInfo: {},
     hasUserInfo: false,
+    showAuthorization: !!(app.globalData&&app.globalData.userInfo),
     canIUse: wx.canIUse('button.open-type.getUserInfo')
   },
   //事件处理函数
@@ -16,6 +17,7 @@ Page({
     })
   },
   onShow: function() {
+    debugger
     var args = wx.getStorageSync("args");
     var url = "https://app.sky-trip.com";
     if (args) {
@@ -41,30 +43,27 @@ Page({
         url += (url.includes("?") ? "&" : "?") + "wechatPayResult=" + args.wechatPayResult;
       }
     }
-        this.setData({
-          url:url
-        });
     var lat;
     var lng;
-    const st =Date.now();
+    const st = Date.now();
+    var that = this;
     wx.getLocation({
-      success: function(res) {
-        console.log(res,'定位完成耗时 '+(Date.now()-st)+" ms");
-      },
       complete: (res) => {
-        lat = res.latitude;
-        lng = res.longitude;
+        lat = res && res.latitude;
+        lng = res && res.longitude;
         if (lat && lng) {
           url += (url.includes("?") ? "&" : "?") + "lat=" + lat;
           url += (url.includes("?") ? "&" : "?") + "lng=" + lng;
         }
+        that.setData({
+          url: url
+        });
         console.log(url);
       }
     })
     wx.clearStorageSync();
   },
   onLoad: function(args) {
-
     if (app.globalData.userInfo) {
       this.setData({
         userInfo: app.globalData.userInfo,

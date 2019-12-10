@@ -43,16 +43,17 @@ export class HomePage implements OnInit, OnDestroy {
     private cmsService: CmsService,
     private staffService: StaffService,
     private trainService: TrainService,
-    private hotelService: HotelService,
-    private flightService: FlightService,
     private navCtrl: NavController,
     private memberService: MemberService,
-    route: ActivatedRoute
+    private trainServive: TrainService,
+    private hotelService: HotelService,
+    private flightService: FlightService,
+    route: ActivatedRoute,
   ) {
     this.staff = null;
     this.selectedCompany$ = tmcService.getSelectedCompanySource();
     route.paramMap.subscribe(async p => {
-      this.navCtrl.navigateRoot(this.router.url,{replaceUrl:true});
+      this.navCtrl.navigateRoot(this.router.url, { replaceUrl: true });
       this.clearBookInfos();
       this.identity = await this.identityService
         .getIdentityAsync()
@@ -86,6 +87,17 @@ export class HomePage implements OnInit, OnDestroy {
       queryParams: { bulletinType: noticeType }
     });
   }
+  private async initializeSelfBookInfos() {
+    try {
+      const staff = await this.staffService.getStaff(false);
+      if (staff) {
+        await this.hotelService.initSelfBookTypeBookInfos(false);
+        await this.flightService.initSelfBookTypeBookInfos(false);
+        await this.trainServive.initSelfBookTypeBookInfos(false);
+      }
+    } catch (e) {
+    }
+  }
   async ngOnInit() {
     this.subscription = this.identityService.getIdentitySource().subscribe(_ => {
       this.staffCredentials = null;
@@ -101,6 +113,7 @@ export class HomePage implements OnInit, OnDestroy {
       };
       this.payService.process(req1);
     }
+    this.initializeSelfBookInfos();
   }
   private async getAgentNotices() {
     const agentNotices = await this.cmsService.getAgentNotices(0).catch(_ => [] as Notice[]);

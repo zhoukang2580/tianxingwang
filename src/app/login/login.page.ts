@@ -1,14 +1,10 @@
-import { FlightService } from './../flight/flight.service';
-import { HotelService } from './../hotel/hotel.service';
-import { TrainService } from './../train/train.service';
-import { ApiService } from './../services/api/api.service';
 import { StaffService } from './../hr/staff.service';
 import { IdentityEntity } from "./../services/identity/identity.entity";
 import { LoginService } from "../services/login/login.service";
 import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
 import { FormBuilder, FormGroup } from "@angular/forms";
-import { Observable, interval, Subscription } from "rxjs";
+import { interval, Subscription } from "rxjs";
 import { AppHelper } from "../appHelper";
 import { LanguageHelper } from "../languageHelper";
 import { ConfigEntity } from "../services/config/config.entity";
@@ -16,9 +12,7 @@ import { ConfigService } from "../services/config/config.service";
 import { Config, ModalController } from "@ionic/angular";
 import { finalize } from "rxjs/operators";
 import { RequestEntity } from "../services/api/Request.entity";
-import { WechatHelper } from "../wechatHelper";
 import { IdentityService } from "../services/identity/identity.service";
-import { DingtalkHelper } from "../dingtalkHelper";
 
 @Component({
   selector: "app-login",
@@ -51,11 +45,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     private ionConfig: Config,
     route: ActivatedRoute,
     private staffService: StaffService,
-    private modalCtrl: ModalController,
-    private apiService: ApiService,
-    private trainServive: TrainService,
-    private hotelService: HotelService,
-    private flightService: FlightService
+    private modalCtrl: ModalController
   ) {
     this.ionConfig.set("swipeBackEnabled", false);
     this.isShowWechatLogin = AppHelper.isApp();
@@ -345,24 +335,10 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       );
   }
 
-  private async initializeSelfBookInfos() {
-    try {
-      this.isLogining = true;
-      const staff = await this.staffService.getStaff(false);
-      if (staff) {
-        await this.hotelService.initSelfBookTypeBookInfos(false);
-        await this.flightService.initSelfBookTypeBookInfos(false);
-        await this.trainServive.initSelfBookTypeBookInfos(false);
-      }
-    } catch (e) {
-      this.isLogining = false;
-    }
-    this.isLogining = false;
-  }
+ 
   async jump(
     isCheckDevice: boolean // 跳转
   ) {
-    await this.initializeSelfBookInfos();
     this.loginType = "user";
     const toPageRouter = this.loginService.getToPageRouter() || "";
     if (isCheckDevice && AppHelper.isApp()) {

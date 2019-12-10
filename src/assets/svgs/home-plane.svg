@@ -1,0 +1,21 @@
+<svg width="45" height="45" xmlns="http://www.w3.org/2000/svg">
+ <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+
+ <title>路径</title>
+ <desc>Created with Sketch.</desc>
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="47" width="47" y="-1" x="-1"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <g fill-rule="evenodd" fill="none" id="页面1">
+   <g fill-rule="nonzero" fill="#2596D9" id="机票查询">
+    <g id="飞机">
+     <path id="路径" d="m25.11477,24.970093l15.255729,-15.257227c0,0 2.541377,-2.541627 0,-5.083254c-2.541378,-2.541627 -5.082755,0 -5.082755,0l-8.900419,8.901293l-19.073393,-3.818039l-2.541377,2.541627l15.255728,7.628614l-7.120335,7.121034l-6.866571,-0.761368l-2.541377,2.541627l8.900419,3.818039l3.813932,8.897561l2.541378,-2.541627l-0.761294,-6.867245l7.120335,-7.121035z"/>
+     <polygon points="34.5,37.93115234375 31.575096130371094,20.5 26.5,26.5543212890625 32.346641540527344,40.5 " id="路径"/>
+    </g>
+   </g>
+  </g>
+ </g>
+</svg>

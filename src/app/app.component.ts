@@ -136,7 +136,6 @@ export class AppComponent
     console.log("ngAfterContentInit");
   }
   checkWechatOpenId() {
-    debugger;
     const paramters = AppHelper.getQueryParamers();
     console.log("checkWechatOpenId", paramters);
     if (paramters.openid) {

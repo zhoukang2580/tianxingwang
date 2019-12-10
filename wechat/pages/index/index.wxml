@@ -1,4 +1,8 @@
 <!--index.wxml-->
-
+<view wx:if="{{showAuthorization}}">
+  <open-data type="userAvatarUrl"></open-data>
+  <open-data type="userGender" lang="zh_CN"></open-data>
+</view>
+<view wx:if="{{!showAuthorization}}">
   <web-view src="{{url}}"></web-view>
-
+</view>

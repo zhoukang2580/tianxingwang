@@ -2,8 +2,7 @@
 //获取应用实例
 const app = getApp()
 
-Page(
-  {
+Page({
   data: {
     motto: 'Hello World',
     userInfo: {},
@@ -17,74 +16,93 @@ Page(
     })
   },
 
-  onLoad: function (args) {
-    debugger;
+  onLoad: function(args) {
     wx.login({
-      success:(res)=>
-      {
-         
-        if (args && args.IsLogin)
-        {
+      success: (res) => {
+        if (args && args.IsLogin) {
           var geturl = decodeURIComponent(args.getUrl);
-          var domain=args.domain;
+          var domain = args.domain;
           var code = res.code
           wx.request({
             url: geturl,
-            data: {IsLogin:true, domain: args.domain,ticket:args.ticket, code: res.code, SdkType:"Mini"},
+            data: {
+              IsLogin: true,
+              domain: args.domain,
+              ticket: args.ticket,
+              code: res.code,
+              SdkType: "Mini"
+            },
             header: {},
             method: 'GET',
             dataType: 'json',
-            success: function(r) {
-            },
+            success: function(r) {},
             fail: function(r) {
-         
+
             },
-            complete: (r)=> {
+            complete: (r) => {
               if (r && r.data && r.data.Data) {
-                wx.setStorageSync("args", { IsForbidOpenId: true, ticket: r.data.Data.Ticket, openid: r.data.Data.OpenId});
+                wx.setStorageSync("args", {
+                  IsForbidOpenId: true,
+                  ticket: r.data.Data.Ticket,
+                  openid: r.data.Data.OpenId
+                });
                 wx.navigateBack();
-              }
-              else{
+              } else {
                 wx.navigateBack();
               }
             },
           })
-        }
-        else if(args)
-        {
+        } else if (args) {
           wx.getSetting({
             complete(getres) {
-              if (!getres.authSetting['scope.userInfo']) {
+              if (getres && getres.authorize && getres.authSetting['scope.userInfo']) {
+                wx.getUserInfo({
+                  complete: function(infoRes) {
+                    const userRes = infoRes.userInfo;
+                    console.log("userRes", userRes);
+                    let nickname = userRes && userRes.nickName ? userRes.nickName : "";
+                    wx.setStorageSync("args", {
+                      wechatminicode: res.code,
+                      openid: args.openid,
+                      ticket: args.ticket,
+                      path: args.path,
+                      gender: userRes.genger,
+                      IsForbidOpenId: args.IsForbidOpenId,
+                      nickName: nickname
+                    });
+                    wx.navigateBack();
+                  }
+                })
+              } else {
                 wx.authorize({
                   scope: 'scope.userInfo',
-                  complete() {
+                  complete(res) {
                     wx.getUserInfo({
-                      success: userRes => {
-    
-                      },
-                      fail: error => {
-             
-                      }
-                      , 
-                      complete: function (userRes)
-                      {
-                        let nickname = userRes && userRes.nickName ? userRes.nickName:"";
-                        wx.setStorageSync("args", { wechatminicode: res.code, openid: args.openid, ticket: args.ticket, path: args.path, IsForbidOpenId: args.IsForbidOpenId, nickName: nickname});
+                      complete: function(infoRes) {
+                        const userRes = infoRes.userInfo;
+                        debugger;
+                        let nickname = userRes && userRes.nickName ? userRes.nickName : "";
+                        wx.setStorageSync("args", {
+                          wechatminicode: res.code,
+                          openid: args.openid,
+                          ticket: args.ticket,
+                          path: args.path,
+                          gender: userRes.genger,
+                          IsForbidOpenId: args.IsForbidOpenId,
+                          nickName: nickname
+                        });
                         wx.navigateBack();
                       }
                     })
-                  },
-                  fail:er=>{
-                
                   }
                 })
               }
             }
           })
-        
-        
+
+
         }
-     
+
       }
     })
     if (app.globalData.userInfo) {
@@ -92,7 +110,7 @@ Page(
         userInfo: app.globalData.userInfo,
         hasUserInfo: true
       })
-    } else if (this.data.canIUse){
+    } else if (this.data.canIUse) {
       // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
       // 所以此处加入 callback 以防止这种情况
       app.userInfoReadyCallback = res => {
