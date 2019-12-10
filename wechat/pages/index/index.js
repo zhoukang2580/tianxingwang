@@ -42,6 +42,9 @@ Page({
         url += (url.includes("?") ? "&" : "?") + "wechatPayResult=" + args.wechatPayResult;
       }
     }
+        this.setData({
+          url:url
+        });
     var lat;
     var lng;
     const st =Date.now();
@@ -57,9 +60,6 @@ Page({
           url += (url.includes("?") ? "&" : "?") + "lng=" + lng;
         }
         console.log(url);
-        this.setData({
-          url:url
-        });
       }
     })
     wx.clearStorageSync();

@@ -41,7 +41,7 @@ Page(
             },
             complete: (r)=> {
               if (r && r.data && r.data.Data) {
-                wx.setStorageSync("args", { IsOpen: true, ticket: r.data.Data.Ticket, openid: r.data.Data.OpenId});
+                wx.setStorageSync("args", { IsForbidOpenId: true, ticket: r.data.Data.Ticket, openid: r.data.Data.OpenId});
                 wx.navigateBack();
               }
               else{
