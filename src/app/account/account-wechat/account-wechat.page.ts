@@ -40,7 +40,6 @@ export class AccountWechatPage implements OnInit, OnDestroy {
           Code: paramters.wechatminicode,
           SdkType: "Mini"
         };
-        debugger;
         this.bindCode(data);
       }
       AppHelper.removeQueryParamers("wechatcode");

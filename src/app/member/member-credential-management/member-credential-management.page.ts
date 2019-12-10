@@ -221,7 +221,8 @@ export class MemberCredentialManagementPage
     const item: MemberCredential = {
       Gender: "M",
       Type: CredentialsType.IdCard,
-      Id: AppHelper.uuid()
+      Id: AppHelper.uuid(),
+      isAdd:true
     } as any;
     this.newCredentials.unshift(item);
   }

@@ -142,7 +142,15 @@ export class AppComponent
       WechatHelper.openId = paramters.openid || "";
     } else if (paramters.IsForbidOpenId) {
       return true;
-    } else if (AppHelper.isWechatMini() && !AppHelper.getTicket()) {
+    } else if (AppHelper.isWechatMini()) {
+      if(!AppHelper.checkQueryString("wechatminicode"))
+        {
+          return true;//绑定
+        }
+        if(!AppHelper.getTicket() && AppHelper.checkQueryString("openid"))
+        {
+          return true;//获取到openid
+        }
       WechatHelper.wx.miniProgram.navigateTo({
         url:
           "/pages/login/index?IsLogin=true&IsForbidOpenId=true&domain=" +
@@ -151,20 +159,18 @@ export class AppComponent
           encodeURIComponent(AppHelper.getApiUrl() + "/home/GetWechatUser")
       });
       return false;
-    } else if (AppHelper.isWechatH5()) {
-      if (!AppHelper.checkQueryString("openid")) {
-        let url =
-          AppHelper.getApiUrl() +
-          "/home/GetWechatCode?IsLogin=true&IsForbidOpenId=true&path=" +
-          this.getPath() +
-          "&domain=" +
-          AppHelper.getDomain() +
-          "&ticket=" +
-          AppHelper.getTicket();
-        AppHelper.redirect(url);
-        return false;
+    } else if (AppHelper.isWechatH5() && !AppHelper.checkQueryString("openid")) {
+      let url =
+      AppHelper.getApiUrl() +
+      "/home/GetWechatCode?IsLogin=true&IsForbidOpenId=true&path=" +
+      this.getPath() +
+      "&domain=" +
+      AppHelper.getDomain() +
+      "&ticket=" +
+      AppHelper.getTicket();
+    AppHelper.redirect(url);
+    return false;
       }
-    }
     return true;
   }
   checkDingtalkUnionid() {

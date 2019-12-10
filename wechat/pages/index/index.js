@@ -23,8 +23,8 @@ Page({
       if (args.wechatminicode) {
         url += (url.includes("?") ? "&" : "?") + "wechatminicode=" + args.wechatminicode;
       }
-      if (args.IsOpen) {
-        url += (url.includes("?") ? "&" : "?") + "IsOpen=" + args.IsOpen;
+      if (args.IsForbidOpenId) {
+        url += (url.includes("?") ? "&" : "?") + "IsForbidOpenId=" + args.IsForbidOpenId;
       }
       if (args.openid) {
         url += (url.includes("?") ? "&" : "?") + "openid=" + args.openid;
