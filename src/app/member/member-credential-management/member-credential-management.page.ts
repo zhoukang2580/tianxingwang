@@ -7,7 +7,8 @@ import {
   IonRefresher,
   IonGrid,
   NavController,
-  ModalController
+  ModalController,
+  Platform
 } from "@ionic/angular";
 import {
   Component,
@@ -17,7 +18,8 @@ import {
   AfterViewInit,
   ViewChildren,
   QueryList,
-  NgZone
+  NgZone,
+  OnDestroy
 } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
 import { AppHelper } from "src/app/appHelper";
@@ -33,7 +35,8 @@ import { IdentityService } from "src/app/services/identity/identity.service";
   styleUrls: ["./member-credential-management.page.scss"]
 })
 export class MemberCredentialManagementPage
-  implements OnInit, AfterViewInit, CanComponentDeactivate {
+  implements OnInit, AfterViewInit, CanComponentDeactivate, OnDestroy {
+  private timemoutid;
   identityTypes: { key: string; value: string }[];
   credentials: MemberCredential[];
   newCredentials: MemberCredential[] = []; // 新增的证件
@@ -50,6 +53,7 @@ export class MemberCredentialManagementPage
     private validatorService: ValidatorService,
     private memberService: MemberService,
     private route: ActivatedRoute,
+    private plt: Platform,
     private ngZone: NgZone,
     private identityService: IdentityService,
     private navCtrl: NavController,
@@ -62,9 +66,14 @@ export class MemberCredentialManagementPage
   back() {
     this.navCtrl.pop();
   }
+  ngOnDestroy() {
+    document.body.removeEventListener("focusin", this.focusin.bind(this));
+    document.body.removeEventListener("focusout", this.focusout.bind(this));
+  }
   ngOnInit() {
     this.doRefresh();
     this.getIdentityTypes();
+    this.keyboardEvents();
   }
   async doRefresh() {
     await this.getCredentials();
@@ -105,6 +114,29 @@ export class MemberCredentialManagementPage
         }
       }
     }
+  }
+  private focusout() {
+    // 软键盘关闭事件
+    if (this.timemoutid) {
+      clearTimeout(this.timemoutid)
+    }
+    this.timemoutid = setTimeout(function () {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth'
+      }) // =======当键盘收起的时候让页面回到原始位置
+    }, 200)
+  }
+  private focusin() {
+    // 软键盘弹起事件
+    if (this.timemoutid) {
+      clearTimeout(this.timemoutid);
+    }
+  }
+  private keyboardEvents() {
+    document.body.addEventListener('focusin', this.focusout.bind(this), false)
+    document.body.addEventListener('focusout', this.focusout.bind(this), false);
   }
   ngAfterViewInit() {
     // console.log(this.formEle);
@@ -222,7 +254,7 @@ export class MemberCredentialManagementPage
       Gender: "M",
       Type: CredentialsType.IdCard,
       Id: AppHelper.uuid(),
-      isAdd:true
+      isAdd: true
     } as any;
     this.newCredentials.unshift(item);
   }
@@ -234,13 +266,21 @@ export class MemberCredentialManagementPage
     );
   }
 
-  async selectIdentityNationality(item: MemberCredential) {
+  async selectIdentityNationality(item: MemberCredential, evt: CustomEvent) {
+    if (evt) {
+      evt.stopPropagation();
+      evt.preventDefault();
+    }
     this.currentModifyItem = item;
     this.requestCode = "identityNationality";
     this.isCanDeactive = true;
     await this.selectCountry();
   }
-  async selectIssueNationality(item: MemberCredential) {
+  async selectIssueNationality(item: MemberCredential, evt: CustomEvent) {
+    if (evt) {
+      evt.stopPropagation();
+      evt.preventDefault();
+    }
     this.isCanDeactive = true;
     this.currentModifyItem = item;
     this.requestCode = "issueNationality";
@@ -272,17 +312,16 @@ export class MemberCredentialManagementPage
       }
     }
   }
-  removeAdd(c: MemberCredential) {
-    AppHelper.alert(
+  async removeAdd(c: MemberCredential) {
+    const ok = await AppHelper.alert(
       LanguageHelper.getConfirmDeleteTip(),
       true,
       LanguageHelper.getConfirmTip(),
       LanguageHelper.getCancelTip()
-    ).then(ok => {
-      if (ok) {
-        this.newCredentials = this.newCredentials.filter(it => it !== c);
-      }
-    });
+    );
+    if (ok) {
+      this.newCredentials = this.newCredentials.filter(it => it !== c);
+    }
   }
   async saveAdd(c: MemberCredential, container: HTMLElement) {
     let ok = await this.validateCredential(c, container);
@@ -291,7 +330,7 @@ export class MemberCredentialManagementPage
     if (!ok) {
       return;
     }
-    c.Id="0";
+    c.Id = "0";
     const result = await this.memberService
       .addCredentials(c)
       .then(_ => true)

@@ -176,8 +176,7 @@ export class FileHelperService {
     this.logMessage(`this.appVersion.getPackageName=${await this.getPackageName()}`);
     const req = new RequestEntity();
     req.Method = "ServiceVersionUrl-Home-Index";
-    req.Url='http://test.version.testskytrip.com/home/index';
-    req.IsUseReqUrl=true;
+    req.Url = 'http://test.version.testskytrip.com/home/index';
     req.Data = {
       "Product": `${await this.getPackageName()}.${this.plt.is("ios") ? "ios"
         : "android"}`.toLowerCase()
@@ -403,11 +402,11 @@ export class FileHelperService {
    * @param onprogress 下载进度回调函数
    */
   private downLoadFile(url: string, destFilePathDir: string, fileName: string, onprogress: (hcp: IHcpUpdateModel) => void) {
-    if(this.plt.is("ios")){
-      return new Promise<IHcpUpdateModel>(async (resolve, reject)=>{
-       const result =  await this.download(`${destFilePathDir}/${fileName}`,url,evt=>{
-          if(evt.lengthComputable){
-            if(onprogress){
+    if (this.plt.is("ios")) {
+      return new Promise<IHcpUpdateModel>(async (resolve, reject) => {
+        const result = await this.download(`${destFilePathDir}/${fileName}`, url, evt => {
+          if (evt.lengthComputable) {
+            if (onprogress) {
               onprogress({
                 total: evt.total,
                 loaded: evt.loaded,
@@ -415,7 +414,7 @@ export class FileHelperService {
               } as IHcpUpdateModel)
             }
           }
-        }).catch(_=>{
+        }).catch(_ => {
           reject(_);
           return null;
         });
@@ -624,10 +623,15 @@ export class FileHelperService {
       }
       const apkUrl = `${up.Version[0].DownloadUrl}/${up.Version[0].Folder}`;
       this.logMessage(`apkurl =${apkUrl}`);
+      if (!apkUrl.includes(".apk")) {
+        reject(`apk 下载路径${apkUrl}错误`);
+        return;
+      }
       const newApkPath = await this.downloadApk(apkUrl, onprogress, up.Version[0].Md5);
       resolve(newApkPath);
     }).catch(err => {
       this.logError(`updateApk 出错`, err);
+      AppHelper.alert(err);
       return "";
     });
   }
