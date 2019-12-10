@@ -142,7 +142,7 @@ export class AppComponent
       WechatHelper.openId = paramters.openid || "";
     } else if (paramters.IsForbidOpenId) {
       return true;
-    } else if (AppHelper.isWechatMini()) {
+    } else if (AppHelper.isWechatMini() && !AppHelper.getTicket()) {
       WechatHelper.wx.miniProgram.navigateTo({
         url:
           "/pages/login/index?IsLogin=true&IsForbidOpenId=true&domain=" +
