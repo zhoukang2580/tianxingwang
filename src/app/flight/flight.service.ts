@@ -972,9 +972,15 @@ export class FlightService {
       return fj;
     });
     // console.log(flights);
+    const accountIds = [];
+    Passengers.forEach(id => {
+      if (!accountIds.find(it => it == id)) {
+        accountIds.push(id);
+      }
+    })
     req.Data = {
       Flights: JSON.stringify(flights),
-      Passengers: Passengers.join(",")
+      Passengers: accountIds.join(",")
     };
     req.IsShowLoading = true;
     req.Timeout = 60;
