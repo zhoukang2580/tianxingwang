@@ -423,7 +423,7 @@ export class FlightService {
     if (arg.bookInfo.tripType == TripType.returnTrip) {
       // 重选回程
       this.setPassengerBookInfosSource(this.getPassengerBookInfos().map(info => {
-        info.bookInfo = info.id == arg.id?null:info.bookInfo;
+        info.bookInfo = info.id == arg.id ? null : info.bookInfo;
         return info;
       }))
       await this.onSelectReturnTrip();
@@ -481,12 +481,6 @@ export class FlightService {
     s.Date = arg.bookInfo.flightSegment.TakeoffTime.substr(0, 'yyyy-mm-dd'.length);
     s.fromCity = cities.find(it => it.Code == arg.bookInfo.flightSegment.FromAirport);
     s.toCity = cities.find(it => it.Code == arg.bookInfo.flightSegment.ToAirport);
-    this.setPassengerBookInfosSource(this.getPassengerBookInfos().map(it=>{
-      if(it.id==arg.id){
-        it.bookInfo=null;
-      }
-      return it;
-    }))
     this.apiService.showLoadingView();
     await this.dismissAllTopOverlays();
     this.setSearchFlightModel(s);
@@ -495,12 +489,19 @@ export class FlightService {
     });
   }
   async reselectPassengerFlightSegments(
-    arg: PassengerBookInfo<IFlightSegmentInfo>
+    info: PassengerBookInfo<IFlightSegmentInfo>
   ) {
-    console.log("reselectPassengerFlightSegments", arg);
-    if (!arg || !arg.bookInfo) {
+    console.log("reselectPassengerFlightSegments", info);
+    if (!info || !info.bookInfo) {
       return false;
     }
+    const arg = JSON.parse(JSON.stringify(info));
+    this.setPassengerBookInfosSource(this.getPassengerBookInfos().map(it => {
+      if (it.id == arg.id) {
+        it.bookInfo = null;
+      }
+      return it;
+    }));
     if (await this.staffService.isSelfBookType()) {
       if (arg.bookInfo.originalBookInfo) {
         await this.reselectSelfBookTypeSegment(arg.bookInfo.originalBookInfo);
@@ -1126,7 +1127,7 @@ export class FlightService {
       if (infos.length == 1 || self) {
         it.isFilterPolicy = idx == 0;
       } else {
-        it.isFilterPolicy = unselected.length==1 && unselected[0].id == it.id;
+        it.isFilterPolicy = unselected.length == 1 && unselected[0].id == it.id;
       }
       return it;
     }));
@@ -1200,7 +1201,7 @@ export class FlightService {
   async getPassengerCredentials(
     accountIds: string[]
   ): Promise<{ [accountId: string]: CredentialsEntity[] }> {
-    if (this.fetchPassengerCredentials&&this.fetchPassengerCredentials.promise) {
+    if (this.fetchPassengerCredentials && this.fetchPassengerCredentials.promise) {
       return this.fetchPassengerCredentials.promise;
     }
     this.fetchPassengerCredentials = {
