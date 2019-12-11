@@ -292,7 +292,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
     console.log("search-flight", s);
     // this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(s.Date)]);
     this.flightService.setSearchFlightModel(s);
-    this.router.navigate([AppHelper.getRoutePath("flight-list")]);
+    this.router.navigate([AppHelper.getRoutePath("flight-list")],{queryParams:{doRefresh:true}});
     const identity = await this.identityService.getIdentityAsync();
     if (identity) {
       await this.storage.set(`last_selected_flight_goDate_${identity.Id}`, s.Date);

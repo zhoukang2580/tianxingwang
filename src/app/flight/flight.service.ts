@@ -485,8 +485,9 @@ export class FlightService {
     await this.dismissAllTopOverlays();
     this.setSearchFlightModel(s);
     this.apiService.hideLoadingView();
-    this.router.navigate([AppHelper.getRoutePath("flight-list")]).then(_ => {
-    });
+    this.router.navigate([AppHelper.getRoutePath("flight-list")], {
+      queryParams: { doRefresh: true }
+    })
   }
   async reselectPassengerFlightSegments(
     info: PassengerBookInfo<IFlightSegmentInfo>

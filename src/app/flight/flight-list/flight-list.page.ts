@@ -124,7 +124,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   showAddPassenger = false;
   isRotateIcon = false;
   @ViewChild("cnt") cnt: IonContent;
-  @ViewChild("list") list: ElementRef<HTMLElement>;
   @ViewChildren("fli") liEles: QueryList<ElementRef<HTMLElement>>;
   vmFlights: FlightSegmentEntity[]; // 用于视图展示
   vmToCity: TrafficlineEntity;
@@ -316,21 +315,16 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       if (this.isLoading) {
         return;
       }
-      const isSelf = await this.staffService.isSelfBookType();
       this.isLoading = true;
       this.flyDayService.setSelectedDaysSource([this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date)]);
+      const isSelf = await this.staffService.isSelfBookType();
       // this.moveDayToSearchDate();
       if (this.refresher) {
         this.refresher.complete();
-        setTimeout(() => {
-          this.refresher.disabled = true;
-        }, 100);
+        this.refresher.disabled = true;
         setTimeout(() => {
           this.refresher.disabled = false;
-        }, 140);
-      }
-      if (this.list) {
-        this.list.nativeElement.innerHTML = "";
+        }, 100);
       }
       this.apiService.showLoadingView();
       if (!keepSearchCondition) {
@@ -548,7 +542,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.isLoading = true;
     this.activeTab = "time";
     this.timeOrdM2N = !this.timeOrdM2N;
-    await this.sortFlights("time");
+    this.sortFlights("time");
     this.isLoading = false;
     console.timeEnd("time");
   }
@@ -557,11 +551,11 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.isLoading = true;
     this.activeTab = "price";
     this.priceOrderL2H = !this.priceOrderL2H;
-    await this.sortFlights("price");
+    this.sortFlights("price");
     this.isLoading = false;
     console.timeEnd("price");
   }
-  private async sortFlights(key: "price" | "time") {
+  private sortFlights(key: "price" | "time") {
     if (!this.filterCondition) {
       this.filterCondition = FilterConditionModel.init();
     }
@@ -575,24 +569,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         this.vmFlights,
         this.priceOrderL2H
       );
-      let isRerender = false;
-      for (let i = 0; i < segments.length; i++) {
-        const s = segments[i];
-        const li = this.refMap.get(s);
-        if (!li) {
-          isRerender = true;
-          break;
-        }
-        if (this.list) {
-          const old = this.list.nativeElement.childNodes[i];
-          this.list.nativeElement.insertBefore(li, old);
-        }
-      }
-      if (isRerender) {
-        console.log(`重新渲染整个列表`);
-        this.renderFlightList(segments);
-      }
-      // this.renderFlightList2(segments);
+      this.renderFlightList(segments);
     }
     if (key === "time") {
       this.filterCondition.timeFromM2N = this.timeOrdM2N ? "am2pm" : "pm2am";
@@ -601,23 +578,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         this.vmFlights,
         this.timeOrdM2N
       );
-      let isRerender = false;
-      for (let i = 0; i < segments.length; i++) {
-        const s = segments[i];
-        const li = this.refMap.get(s);
-        if (!li) {
-          isRerender = true;
-          break;
-        }
-        if (this.list) {
-          const old = this.list.nativeElement.childNodes[i];
-          this.list.nativeElement.insertBefore(li, old);
-        }
-      }
-      if (isRerender) {
-        console.log(`重新渲染整个列表`);
-        await this.renderFlightList(segments);
-      }
+      this.renderFlightList(segments);
     }
     this.scrollToTop();
   }
