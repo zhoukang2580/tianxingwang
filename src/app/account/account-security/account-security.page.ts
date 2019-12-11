@@ -1,6 +1,6 @@
 import { AppHelper } from "./../../appHelper";
 import { Component, OnInit, OnDestroy } from "@angular/core";
-import { Router } from "@angular/router";
+import { Router, ActivatedRoute } from "@angular/router";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { ApiService } from "src/app/services/api/api.service";
@@ -25,6 +25,7 @@ interface Item {
 export class AccountSecurityPage implements OnInit, OnDestroy {
   identityEntity: IdentityEntity;
   identityEntitySubscription = Subscription.EMPTY;
+  subscription = Subscription.EMPTY;
   deviceSubscription = Subscription.EMPTY;
   accountInfo: Item;
 
@@ -32,23 +33,28 @@ export class AccountSecurityPage implements OnInit, OnDestroy {
     private router: Router,
     private identityService: IdentityService,
     private apiService: ApiService,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private route: ActivatedRoute
   ) {
     this.identityEntitySubscription = this.identityService
       .getIdentitySource()
       .subscribe(identity => {
         this.identityEntity = identity;
       });
+
   }
   back() {
     this.navCtrl.pop();
   }
   ngOnInit() {
-    this.deviceSubscription = this.load();
+    this.subscription = this.route.queryParamMap.subscribe(_ => {
+      this.deviceSubscription = this.load();
+    })
   }
   ngOnDestroy() {
     this.identityEntitySubscription.unsubscribe();
     this.deviceSubscription.unsubscribe();
+    this.subscription.unsubscribe();
   }
   load() {
     const req = new RequestEntity();
@@ -60,7 +66,7 @@ export class AccountSecurityPage implements OnInit, OnDestroy {
         r => {
           this.accountInfo = r;
         },
-        () => {}
+        () => { }
       );
   }
   goToEmailPage() {
