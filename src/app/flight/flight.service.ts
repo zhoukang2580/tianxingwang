@@ -142,6 +142,9 @@ export class FlightService {
   filterPassengerPolicyCabins(
     { data, flightSegment }: { data: PassengerBookInfo<IFlightSegmentInfo>; flightSegment: FlightSegmentEntity; }) {
     let policyCabins: FlightPolicy[] = [];
+    if (!flightSegment) {
+      return policyCabins;
+    }
     const cabins = JSON.parse(JSON.stringify(flightSegment.Cabins)) || [];
     policyCabins = (cabins).map(it => {
       return {

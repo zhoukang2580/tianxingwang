@@ -17,14 +17,6 @@ import * as moment from "moment";
 import { environment } from "src/environments/environment";
 import { FlightSegmentEntity } from "../../models/flight/FlightSegmentEntity";
 import { LanguageHelper } from "src/app/languageHelper";
-import {
-  trigger,
-  state,
-  style,
-  transition,
-  animate
-} from "@angular/animations";
-import { ModalController, DomController } from "@ionic/angular";
 import { FlightPolicy } from '../../models/PassengerFlightInfo';
 
 @Component({
@@ -39,20 +31,14 @@ export class FlyListItemComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() flightPolicy: FlightPolicy;
   showIndex = !environment.production;
   constructor(
-    private calendarService: CalendarService,
-    private render: Renderer2,
-    private domCtrl: DomController
+    private calendarService: CalendarService
   ) {
   }
   ngOnChanges(changes: SimpleChanges) {
   }
   ngAfterViewInit() {}
   addoneday() {
-    const addDay =
-      moment(this.flightSegment.ArrivalTime).date() -
-      moment(this.flightSegment.TakeoffTime).date();
-    // console.log(addDay);
-    return addDay > 0 ? "+" + addDay + LanguageHelper.getDayTip() : "";
+    return this.flightSegment&&this.flightSegment.AddOneDayTip;
   }
   getDateWeek() {
     const d = this.calendarService.generateDayModel(

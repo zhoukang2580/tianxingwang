@@ -1,3 +1,8 @@
 .detail {
   width: 100%;
 }
+ion-toolbar {
+  ion-button:last-child {
+    flex: 1;
+  }
+}

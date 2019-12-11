@@ -199,15 +199,15 @@ export class AppComponent
   }
   initializeApp() {
     // this.backButtonAction();
-    if (!AppHelper.isApp()) {
-      const back = window.history.back;
-      try {
-        window.history.back = this.navCtrl.pop;
-      } catch (e) {
-        window.history.back = back;
-        console.error(e);
-      }
-    }
+    // if (!AppHelper.isApp()) {
+    //   const back = window.history.back;
+    //   try {
+    //     window.history.back = this.navCtrl.pop;
+    //   } catch (e) {
+    //     window.history.back = back;
+    //     console.error(e);
+    //   }
+    // }
     AppHelper.getDomain(); //
     AppHelper.initlizeQueryParamers();
     this.showErrorMsg();
