@@ -38,10 +38,10 @@ export class FlyListItemComponent implements OnInit, AfterViewInit, OnChanges {
   }
   ngAfterViewInit() { }
   addoneday() {
-    if (!this.flightSegment||!this.flightSegment.ArrivalTime||!this.flightSegment.TakeoffTime) {
+    if (!this.flightSegment || !this.flightSegment.ArrivalTime || !this.flightSegment.TakeoffTime) {
       return;
     }
-    const addDay = moment(this.flightSegment.ArrivalTime).diff(moment(this.flightSegment.TakeoffTime), 'days');
+    const addDay = moment(this.flightSegment.ArrivalTime).date() - moment(this.flightSegment.TakeoffTime).date();
     return addDay > 0 ? "+" + addDay + LanguageHelper.getDayTip() : "";
   }
   getDateWeek() {
