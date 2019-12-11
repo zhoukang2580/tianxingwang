@@ -221,6 +221,7 @@ export class TrainService {
       this.removeBookInfo(bookInfo, false);
     }
     this.setBookInfoSource(this.getBookInfos().map(it => {
+      it.isReselect = it.id == bookInfo.id;
       if (it.id == bookInfo.id) {
         it.bookInfo = null;
       }
@@ -295,6 +296,10 @@ export class TrainService {
     } else {
       await this.addOrReselectNotSelfBookTypeBookInfo(currentViewtTainItem);
     }
+    this.setBookInfoSource(this.getBookInfos().map(it => {
+      it.isReselect = false;
+      return it;
+    }));
   }
   private async addOrReselectSelfBookTypeBookInfo(
     currentViewtTainItem: ICurrentViewtTainItem
@@ -801,11 +806,12 @@ export class TrainService {
     const infos = this.getBookInfos();
     const unselected = infos.find(it => !it.bookInfo);
     const hasExchange = infos.find(it => it.bookInfo && it.bookInfo.isExchange);
+    const hasReselect = infos.find(it => it.isReselect);
     this.setBookInfoSource(infos.map((it, idx) => {
       if (infos.length == 1 || self) {
         it.isFilterPolicy = idx == 0;
       } else {
-        it.isFilterPolicy = unselected && unselected.id == it.id ||
+        it.isFilterPolicy = unselected && unselected.id == it.id || (hasReselect && hasReselect.id == it.id) ||
           (hasExchange && hasExchange.id == (it.bookInfo && it.bookInfo.id));
       }
       return it;

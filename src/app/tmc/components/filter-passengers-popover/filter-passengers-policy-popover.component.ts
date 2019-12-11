@@ -92,6 +92,12 @@ export class FilterPassengersPolicyComponent implements OnInit, OnDestroy {
           if (this.bookInfos.length) {
             this.selectedItem = { ...this.bookInfos[0] };
           }
+        } else {
+          const isReselect = infos.find(it => it.isReselect);
+          if (isReselect) {
+            isReselect.isFilterPolicy = true;
+            this.selectedItem = { ...isReselect }
+          }
         }
       }), delay(10)).subscribe();
   }

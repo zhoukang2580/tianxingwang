@@ -1152,7 +1152,7 @@ export interface PassengerBookInfo<T> {
   isNotWhitelist?: boolean;
   bookInfo?: T;
   id?: string;
-  // isReplace?: boolean;
+  isReselect?: boolean;// 是否重选
   isFilterPolicy?: boolean;// 完全符合差标
   // isFilteredPolicy?: boolean;// 是否过滤差标
   // isAllowBookPolicy?: boolean;// 所有可预订

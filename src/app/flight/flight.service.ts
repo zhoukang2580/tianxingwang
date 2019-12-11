@@ -497,6 +497,7 @@ export class FlightService {
     }
     const arg = JSON.parse(JSON.stringify(info));
     this.setPassengerBookInfosSource(this.getPassengerBookInfos().map(it => {
+      it.isReselect = it.id == arg.id;
       if (it.id == arg.id) {
         it.bookInfo = null;
       }
@@ -604,6 +605,7 @@ export class FlightService {
       if (item.bookInfo && item.bookInfo.lowerSegmentInfo) {
         item.bookInfo.lowerSegmentInfo.tripType = item.bookInfo.tripType;
       }
+      item.isReselect = false;
       return item;
     });
     this.setPassengerBookInfosSource(arr);
@@ -1129,11 +1131,12 @@ export class FlightService {
     const self = await this.staffService.isSelfBookType();
     const infos = this.getPassengerBookInfos();
     const unselected = infos.filter(it => !it.bookInfo);
+    const isReselect = infos.find(it => it.isReselect);
     this.setPassengerBookInfosSource(infos.map((it, idx) => {
       if (infos.length == 1 || self) {
         it.isFilterPolicy = idx == 0;
       } else {
-        it.isFilterPolicy = unselected.length == 1 && unselected[0].id == it.id;
+        it.isFilterPolicy = unselected.length == 1 && unselected[0].id == it.id || (isReselect && isReselect.id == it.id);
       }
       return it;
     }));
