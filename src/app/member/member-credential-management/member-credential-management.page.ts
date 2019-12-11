@@ -256,7 +256,9 @@ export class MemberCredentialManagementPage
       Id: AppHelper.uuid(),
       isAdd: true
     } as any;
-    this.newCredentials.unshift(item);
+    if(!this.newCredentials.find(it=>it.isAdd)){
+      this.newCredentials.unshift(item);
+    }
   }
   initializeValidateAdd(el: HTMLFormElement) {
     this.validatorService.initialize(
