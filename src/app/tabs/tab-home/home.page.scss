@@ -30,6 +30,9 @@ ion-grid ion-row ion-col {
       margin-top: 0.5rem;
     }
     ion-label {
+      img{
+        max-width: 3em;
+      }
       // background: var(--ion-color-primary);
       // padding: 0;
       // margin: 0;
