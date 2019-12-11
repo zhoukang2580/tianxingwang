@@ -36,9 +36,13 @@ export class FlyListItemComponent implements OnInit, AfterViewInit, OnChanges {
   }
   ngOnChanges(changes: SimpleChanges) {
   }
-  ngAfterViewInit() {}
+  ngAfterViewInit() { }
   addoneday() {
-    return this.flightSegment&&this.flightSegment.AddOneDayTip;
+    if (!this.flightSegment||!this.flightSegment.ArrivalTime||!this.flightSegment.TakeoffTime) {
+      return;
+    }
+    const addDay = moment(this.flightSegment.ArrivalTime).diff(moment(this.flightSegment.TakeoffTime), 'days');
+    return addDay > 0 ? "+" + addDay + LanguageHelper.getDayTip() : "";
   }
   getDateWeek() {
     const d = this.calendarService.generateDayModel(
@@ -49,6 +53,6 @@ export class FlyListItemComponent implements OnInit, AfterViewInit, OnChanges {
       d.date.length
     )} ${this.calendarService.getWeekName(d)}`;
   }
-  ngOnInit() {}
+  ngOnInit() { }
 
 }
