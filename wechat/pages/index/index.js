@@ -17,7 +17,6 @@ Page({
     })
   },
   onShow: function() {
-    debugger
     var args = wx.getStorageSync("args");
     var url = "https://app.sky-trip.com";
     if (args) {

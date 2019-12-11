@@ -4,6 +4,7 @@ const app = getApp()
 
 Page({
   data: {
+    isShowAuthorizeButton: false,
     motto: 'Hello World',
     userInfo: {},
     hasUserInfo: false,
@@ -15,8 +16,26 @@ Page({
       url: '../logs/logs'
     })
   },
-
+  onGotUserInfo: function(e) {
+    const that = this;
+    console.log(e.detail.errMsg)
+    console.log(e.detail.userInfo)
+    console.log(e.detail.rawData);
+    const userRes = e && e.detail && e.detail.userInfo;
+    let nickname = userRes && userRes.nickName ? userRes.nickName : "";
+    wx.setStorageSync("args", {
+      wechatminicode: that.data.code,
+      openid: that.data.openid,
+      ticket: that.data.ticket,
+      path: that.data.path,
+      gender: userRes&&userRes.gender||"",
+      IsForbidOpenId: that.data.IsForbidOpenId,
+      nickName: nickname
+    });
+    wx.navigateBack();
+  },
   onLoad: function(args) {
+    const that = this;
     wx.login({
       success: (res) => {
         if (args && args.IsLogin) {
@@ -35,10 +54,6 @@ Page({
             header: {},
             method: 'GET',
             dataType: 'json',
-            success: function(r) {},
-            fail: function(r) {
-
-            },
             complete: (r) => {
               if (r && r.data && r.data.Data) {
                 wx.setStorageSync("args", {
@@ -46,16 +61,14 @@ Page({
                   ticket: r.data.Data.Ticket,
                   openid: r.data.Data.OpenId
                 });
-                wx.navigateBack();
-              } else {
-                wx.navigateBack();
               }
-            },
+              wx.navigateBack();
+            }
           })
         } else if (args) {
           wx.getSetting({
             complete(getres) {
-              if (getres && getres.authorize && getres.authSetting['scope.userInfo']) {
+              if (getres && getres.authSetting && getres.authSetting['scope.userInfo']) {
                 wx.getUserInfo({
                   complete: function(infoRes) {
                     const userRes = infoRes.userInfo;
@@ -66,41 +79,26 @@ Page({
                       openid: args.openid,
                       ticket: args.ticket,
                       path: args.path,
-                      gender: userRes.genger,
                       IsForbidOpenId: args.IsForbidOpenId,
+                      gender: userRes.gender || "",
                       nickName: nickname
                     });
                     wx.navigateBack();
                   }
                 })
               } else {
-                wx.authorize({
-                  scope: 'scope.userInfo',
-                  complete(res) {
-                    wx.getUserInfo({
-                      complete: function(infoRes) {
-                        const userRes = infoRes.userInfo;
-                        debugger;
-                        let nickname = userRes && userRes.nickName ? userRes.nickName : "";
-                        wx.setStorageSync("args", {
-                          wechatminicode: res.code,
-                          openid: args.openid,
-                          ticket: args.ticket,
-                          path: args.path,
-                          gender: userRes.genger,
-                          IsForbidOpenId: args.IsForbidOpenId,
-                          nickName: nickname
-                        });
-                        wx.navigateBack();
-                      }
-                    })
-                  }
+                // 通过用户点击按钮，授权后调用接口，获取用户昵称
+                that.setData({
+                  isShowAuthorizeButton: true,
+                  code:res.code,
+                  openid: args.openid,
+                  ticket: args.ticket,
+                  path: args.path,
+                  IsForbidOpenId: args.IsForbidOpenId,
                 })
               }
             }
           })
-
-
         }
 
       }

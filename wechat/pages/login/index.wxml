@@ -1,1 +1,1 @@
-
+<button wx:if='{{isShowAuthorizeButton}}' open-type="getUserInfo" lang="zh_CN" type="primary"  bindgetuserinfo="onGotUserInfo">获取用户昵称</button>
