@@ -993,10 +993,9 @@ export class BookPage implements OnInit, AfterViewInit {
     return fees as number;
   }
   async onShowPriceDetail() {
-
-
     const p = await this.popoverCtrl.create({
       component: PriceDetailComponent,
+      cssClass:"ticket-changing",
       componentProps: {
         priceInfos:
           this.vmCombindInfos &&
