@@ -123,6 +123,10 @@ export class FlightService {
   setSearchFlightModel(m: SearchFlightModel) {
     console.log("setSearchFlightModel", m);
     this.searchFlightModel = m;
+    if (m && m.toCity && m.fromCity) {
+      this.searchFlightModel.ToCode = m.ToAsAirport ? m.toCity.Code : m.toCity.AirportCityCode;
+      this.searchFlightModel.FromCode = m.FromAsAirport ? m.fromCity.Code : m.fromCity.AirportCityCode;
+    }
     this.searchFlightModelSource.next(this.searchFlightModel);
   }
   getSearchFlightModel() {
@@ -142,7 +146,7 @@ export class FlightService {
   filterPassengerPolicyCabins(
     { data, flightSegment }: { data: PassengerBookInfo<IFlightSegmentInfo>; flightSegment: FlightSegmentEntity; }) {
     let policyCabins: FlightPolicy[] = [];
-    if (!flightSegment||!flightSegment.Cabins) {
+    if (!flightSegment || !flightSegment.Cabins) {
       return policyCabins;
     }
     const cabins = JSON.parse(JSON.stringify(flightSegment.Cabins)) || [];

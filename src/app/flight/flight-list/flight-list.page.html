@@ -9,7 +9,7 @@
       [class.text-center]='!showAddPassenger'>
       <ion-text (click)='onSelectCity(true)' class='from-city'>
         <span>
-          {{vmFromCity?.CityName}}
+          {{searchFlightModel?.fromCity?.CityName}}
         </span>
         <ion-icon name='arrow-dropdown' *ngIf='!searchFlightModel?.isLocked'></ion-icon>
       </ion-text>
@@ -19,7 +19,7 @@
       </div>
       <ion-text (click)='onSelectCity(false)' class='to-city'>
         <span>
-          {{ vmToCity?.CityName}}
+          {{ searchFlightModel?.toCity?.CityName}}
         </span>
         <ion-icon name='arrow-dropdown' *ngIf='!searchFlightModel?.isLocked'></ion-icon>
       </ion-text>
@@ -166,4 +166,4 @@
 </ion-footer>
 
 <app-fly-filter [class.show]="showAdvSearchPage$ | async" [flights]="flightJourneyList"
-  [fromCityName]='vmFromCity?.CityName' [toCityName]="vmToCity?.CityName"></app-fly-filter>
+  [fromCityName]='searchFlightModel?.fromCity?.CityName' [toCityName]="searchFlightModel?.toCity?.CityName"></app-fly-filter>

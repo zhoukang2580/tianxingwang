@@ -126,8 +126,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("cnt") cnt: IonContent;
   @ViewChildren("fli") liEles: QueryList<ElementRef<HTMLElement>>;
   vmFlights: FlightSegmentEntity[]; // 用于视图展示
-  vmToCity: TrafficlineEntity;
-  vmFromCity: TrafficlineEntity;
   vmFlightJourneyList: FlightJourneyEntity[];
   get flightJourneyList() {
     return this.flightService.flightJourneyList;
@@ -488,10 +486,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   private async initSearchModelParams() {
     this.searchConditionSubscription = this.flightService.getSearchFlightModelSource().subscribe(m => {
       this.searchFlightModel = m;
-      if (this.searchFlightModel) {
-        this.vmFromCity = this.searchFlightModel.fromCity;
-        this.vmToCity = this.searchFlightModel.toCity;
-      }
     });
   }
   async ngOnInit() {
@@ -500,7 +494,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       .pipe(map(infos => infos.find(it => it.isFilterPolicy)), delay(0));
     this.activeTab = "filter";
     this.initSearchModelParams();
-    this.doRefresh(true, false);
     this.filterConditionSubscription = this.flightService
       .getFilterConditionSource()
       .subscribe(filterCondition => {
