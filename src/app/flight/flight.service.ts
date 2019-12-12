@@ -446,8 +446,6 @@ export class FlightService {
       s.isLocked = false;
       s.fromCity = airports.find(c => c.Code == s.FromCode);
       s.toCity = airports.find(c => c.Code == s.ToCode);
-      s.FromAsAirport = s.fromCity.Tag == 'Airport';
-      s.ToAsAirport = s.toCity.Tag == 'Airport';
       let arr = this.getPassengerBookInfos().map(item => {
         item.bookInfo = null;
         return item;
@@ -488,6 +486,8 @@ export class FlightService {
     s.Date = arg.bookInfo.flightSegment.TakeoffTime.substr(0, 'yyyy-mm-dd'.length);
     s.fromCity = cities.find(it => it.Code == arg.bookInfo.flightSegment.FromAirport);
     s.toCity = cities.find(it => it.Code == arg.bookInfo.flightSegment.ToAirport);
+    s.FromAsAirport = false;
+    s.ToAsAirport = false;
     this.apiService.showLoadingView();
     await this.dismissAllTopOverlays();
     this.setSearchFlightModel(s);
