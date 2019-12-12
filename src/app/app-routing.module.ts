@@ -43,8 +43,9 @@ const routes: Routes = [
     pathMatch: "full"
   },
   {
+    path: "**",
     loadChildren: "./page404/page404.module#Page404PageModule",
-    matcher: AppHelper.matchDefaultRoute
+    // matcher: AppHelper.matchDefaultRoute
   },
 
 
@@ -74,4 +75,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule, MessageModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }
