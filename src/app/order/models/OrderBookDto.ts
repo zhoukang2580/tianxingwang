@@ -1,14 +1,14 @@
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
-import { AccountEntity } from "src/app/tmc/models/AccountEntity";
 import { TmcEntity } from "src/app/tmc/tmc.service";
 import { AgentEntity } from "src/app/tmc/models/AgentEntity";
 import { OrderEntity } from "./OrderEntity";
-import { ErrorInfo } from "src/app/tmc/models/ErrorInfo";
 import { CityEntity } from "src/app/tmc/models/CityEntity";
 import { OrderLinkmanDto } from "./OrderLinkmanDto";
 import { PassengerDto } from "src/app/tmc/models/PassengerDto";
 import { OrderExpressDto } from "./OrderExpressDto";
 import { AgentDataEntity } from "src/app/tmc/models/AgentDataEntity";
+import { AccountEntity } from 'src/app/account/models/AccountEntity';
+import { ErrorInfo } from 'src/app/models/ErrorInfo';
 
 export class OrderBookDto {
   /// <summary>

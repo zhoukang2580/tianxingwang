@@ -1,5 +1,5 @@
-import { BaseEntity } from "src/app/tmc/models/BaseEntity";
 import { RoomPlanRuleEntity } from "./RoomPlanRuleEntity";
+import { BaseEntity } from 'src/app/models/BaseEntity';
 export class RoomPlanRuleLangEntity extends BaseEntity {
   /// <summary>
   /// 房型

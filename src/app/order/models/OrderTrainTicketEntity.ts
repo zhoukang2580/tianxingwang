@@ -1,4 +1,3 @@
-import { BaseVariablesEntity } from "./../../tmc/models/BaseVariablesEntity";
 import { OrderEntity, OrderItemEntity } from "./OrderEntity";
 import { OrderPassengerEntity } from "./OrderPassengerEntity";
 import { TrainBookType } from "src/app/train/models/TrainBookType";
@@ -8,6 +7,7 @@ import { TrainSeatType } from "src/app/train/models/TrainEntity";
 import { OrderTrainTicketStatusType } from "./OrderTrainTicketStatusType";
 import { OrderTrainTripEntity } from "./OrderTrainTripEntity";
 import { OrderInvoiceEntity } from "./OrderInvoiceEntity";
+import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
 export class OrderTrainTicketEntity extends BaseVariablesEntity {
   /// <summary>
   /// 乘客

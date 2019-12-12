@@ -1,5 +1,5 @@
 import { OrderEntity } from "./OrderEntity";
-import { AccountEntity } from "src/app/tmc/models/AccountEntity";
+import { AccountEntity } from 'src/app/account/models/AccountEntity';
 
 export class OrderTagEntity {
   /// <summary>

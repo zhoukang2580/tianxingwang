@@ -1,4 +1,4 @@
-import { BaseVariablesEntity } from "src/app/tmc/models/BaseVariablesEntity";
+import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
 
 export class BrandEntity extends BaseVariablesEntity {
   /// <summary>

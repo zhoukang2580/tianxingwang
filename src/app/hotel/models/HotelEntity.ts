@@ -1,4 +1,3 @@
-import { BaseVariablesEntity } from "src/app/tmc/models/BaseVariablesEntity";
 import { HotelThemeEntity } from "./HotelThemeEntity";
 import { HotelServiceEntity } from "./HotelServiceEntity";
 import { HotelFacilityEntity } from "./HotelFacilityEntity";
@@ -14,6 +13,7 @@ import { HotelSummaryEntity } from "./HotelSummaryEntity";
 import { HotelDetailEntity } from "./HotelDetailEntity";
 import { HotelCoordinateType } from "./HotelCoordinateType";
 import { BrandEntity } from "./BrandEntity";
+import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
 
 export class HotelEntity extends BaseVariablesEntity {
   /// <summary>

@@ -1,6 +1,6 @@
-import { BaseVariablesEntity } from "src/app/tmc/models/BaseVariablesEntity";
 import { OrderItemEntity, OrderEntity } from "./OrderEntity";
 import { OrderNumberEntity } from './OrderNumberEntity';
+import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
 
 export class OrderProductEntity extends BaseVariablesEntity {
   /// <summary>

@@ -5,9 +5,9 @@ import { IdentityService } from "src/app/services/identity/identity.service";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
 import { Injectable } from "@angular/core";
-import { AccountEntity } from "../tmc/models/AccountEntity";
 import { TaskType } from "../workflow/models/TaskType";
-import { BaseSettingEntity } from '../tmc/models/BaseSettingEntity';
+import { BaseSettingEntity } from '../models/BaseSettingEntity';
+import { AccountEntity } from '../account/models/AccountEntity';
 
 @Injectable({
   providedIn: "root"

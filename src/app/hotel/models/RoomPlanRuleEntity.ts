@@ -1,7 +1,7 @@
-import { BaseVariablesEntity } from "src/app/tmc/models/BaseVariablesEntity";
 import { RoomPlanEntity } from "./RoomPlanEntity";
 import { RoomPlanRuleType } from "./RoomPlanRuleType";
 import { RoomPlanRuleLangEntity } from "./RoomPlanRuleLangEntity";
+import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
 export class RoomPlanRuleEntity extends BaseVariablesEntity {
   /// <summary>
   /// 房型

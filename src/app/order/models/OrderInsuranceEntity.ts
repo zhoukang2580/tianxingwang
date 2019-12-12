@@ -1,4 +1,3 @@
-import { BaseVariablesEntity } from "src/app/tmc/models/BaseVariablesEntity";
 import { OrderTravelPayType, OrderTravelEntity } from "./OrderTravelEntity";
 import { InsuranceBookType } from "src/app/insurance/models/InsuranceBookType";
 import { OrderEntity, OrderItemEntity } from "./OrderEntity";
@@ -8,6 +7,7 @@ import { OrderFlightTripEntity } from "./OrderFlightTripEntity";
 import { OrderTrainTicketEntity } from "./OrderTrainTicketEntity";
 import { OrderInvoiceEntity } from "./OrderInvoiceEntity";
 import { OrderInsuranceStatusType } from "./OrderInsuranceStatusType";
+import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
 
 export class OrderInsuranceEntity extends BaseVariablesEntity {
   /// <summary>

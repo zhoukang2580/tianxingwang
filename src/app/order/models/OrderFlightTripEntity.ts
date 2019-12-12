@@ -1,7 +1,7 @@
-import { BaseVariablesEntity } from "./../../tmc/models/BaseVariablesEntity";
 import { OrderFlightTicketEntity } from "./OrderFlightTicketEntity";
 import { OrderInsuranceEntity } from "./OrderInsuranceEntity";
 import { OrderFlightTripStatusType } from "./OrderFlightTripStatusType";
+import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
 export class OrderFlightTripEntity extends BaseVariablesEntity {
   /// <summary>
   /// 订单机票

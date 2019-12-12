@@ -1,9 +1,9 @@
-import { AccountEntity } from "src/app/tmc/models/AccountEntity";
-import { BaseEntity } from "src/app/tmc/models/BaseEntity";
 import { TaskType } from "./TaskType";
 import { TaskStatusType } from "./TaskStatusType";
 import { HistoryEntity } from "src/app/order/models/HistoryEntity";
-import { BaseVariablesEntity } from 'src/app/tmc/models/BaseVariablesEntity';
+import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
+import { BaseEntity } from 'src/app/models/BaseEntity';
+import { AccountEntity } from 'src/app/account/models/AccountEntity';
 
 export class TaskEntity extends BaseVariablesEntity {
   public Consumer: BaseEntity;

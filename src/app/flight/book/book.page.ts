@@ -1,6 +1,5 @@
 import { PriceDetailComponent } from "./../components/price-detail/price-detail.component";
 import { PayService } from "./../../services/pay/pay.service";
-import { AccountEntity } from "./../../tmc/models/AccountEntity";
 import { OrderBookDto } from "./../../order/models/OrderBookDto";
 import { ActivatedRoute, Router } from "@angular/router";
 import { InsuranceProductEntity } from "./../../insurance/models/InsuranceProductEntity";
@@ -72,6 +71,7 @@ import { AddContact } from "src/app/tmc/models/AddContact";
 import { environment } from "src/environments/environment";
 import { ITmcOutNumberInfo } from 'src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component';
 import { IPassengerHotelBookInfo } from 'src/app/hotel/book/book.page';
+import { AccountEntity } from 'src/app/account/models/AccountEntity';
 
 @Component({
   selector: "app-book",

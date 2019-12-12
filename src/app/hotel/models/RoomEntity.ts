@@ -1,7 +1,7 @@
-import { BaseVariablesEntity } from "src/app/tmc/models/BaseVariablesEntity";
 import { HotelEntity } from "./HotelEntity";
 import { RoomPlanEntity } from './RoomPlanEntity';
 import { RoomAmenityEntity } from './RoomAmenityEntity';
+import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
 
 export class RoomEntity extends BaseVariablesEntity {
   /// <summary>

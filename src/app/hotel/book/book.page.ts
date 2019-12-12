@@ -40,7 +40,6 @@ import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { OrderBookDto } from "src/app/order/models/OrderBookDto";
 import { AppHelper } from "src/app/appHelper";
 import { PassengerDto } from "src/app/tmc/models/PassengerDto";
-import { AccountEntity } from "src/app/tmc/models/AccountEntity";
 import { Storage } from "@ionic/storage";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import {
@@ -73,6 +72,7 @@ import { ProductItemType } from "src/app/tmc/models/ProductItems";
 import { HotelEntity } from '../models/HotelEntity';
 import { RoomEntity } from '../models/RoomEntity';
 import { ITmcOutNumberInfo } from 'src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component';
+import { AccountEntity } from 'src/app/account/models/AccountEntity';
 @Component({
   selector: "app-book",
   templateUrl: "./book.page.html",

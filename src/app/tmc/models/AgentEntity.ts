@@ -1,9 +1,9 @@
-import { AccountEntity } from './AccountEntity';
 import { AgentSmsType } from './AgentSmsType';
 import { FlightSupplierType } from '../../flight/models/flight/FlightSupplierType';
 import { TrainSupplierType } from 'src/app/train/models/TrainSupplierType';
 import { InsuranceSupplierType } from 'src/app/insurance/models/InsuranceSupplierType';
 import { HotelSupplierType } from 'src/app/hotel/models/HotelSupplierType';
+import { AccountEntity } from 'src/app/account/models/AccountEntity';
 
 export class AgentEntity {
     /// <summary>

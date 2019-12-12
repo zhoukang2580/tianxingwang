@@ -1,7 +1,7 @@
-import { BaseVariablesEntity } from "./../../tmc/models/BaseVariablesEntity";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { PassengerType } from "src/app/tmc/models/PassengerDto";
 import { OrderEntity } from './OrderEntity';
+import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
 
 export class OrderPassengerEntity extends BaseVariablesEntity {
   /// <summary>

@@ -1,8 +1,8 @@
-import { BaseVariablesEntity } from "src/app/tmc/models/BaseVariablesEntity";
-import { AccountEntity } from "src/app/tmc/models/AccountEntity";
 import { TaskEntity } from "src/app/workflow/models/TaskEntity";
 import { TaskStatusType } from "src/app/workflow/models/TaskStatusType";
 import { TaskType } from 'src/app/workflow/models/TaskType';
+import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
+import { AccountEntity } from 'src/app/account/models/AccountEntity';
 
 export class HistoryEntity extends BaseVariablesEntity {
   Task: TaskEntity;

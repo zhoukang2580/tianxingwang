@@ -1,8 +1,8 @@
-import { BaseEntity } from "src/app/tmc/models/BaseEntity";
-import { AccountEntity } from "src/app/tmc/models/AccountEntity";
 import { AccountBalanceType } from "./AccountBalanceType";
 import { AccountItemStatusType } from "./AccountItemStatusType";
 import { AccountBalanceEntity } from "./AccountBalanceEntity";
+import { BaseEntity } from 'src/app/models/BaseEntity';
+import { AccountEntity } from './AccountEntity';
 
 export class AccountItemEntity extends BaseEntity {
   /// <summary>

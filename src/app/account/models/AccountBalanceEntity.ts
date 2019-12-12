@@ -1,5 +1,5 @@
 import { AccountBalanceType } from "./AccountBalanceType";
-import { AccountEntity } from "src/app/tmc/models/AccountEntity";
+import { AccountEntity } from './AccountEntity';
 
 export class AccountBalanceEntity {
   /// <summary>
@@ -16,4 +16,4 @@ export class AccountBalanceEntity {
   Balance: string;
 
   TypeName: string;
-}
+} 

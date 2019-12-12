@@ -1,4 +1,3 @@
-import { BaseVariablesEntity } from "src/app/tmc/models/BaseVariablesEntity";
 import { OrderEntity, OrderItemEntity } from "./OrderEntity";
 import { FlightBookType } from "src/app/flight/models/flight/FlightBookType";
 import { OrderPassengerEntity } from "./OrderPassengerEntity";
@@ -11,6 +10,7 @@ import { OrderFlightTripEntity } from "./OrderFlightTripEntity";
 import { OrderInsuranceEntity, OrderPayEntity } from "./OrderInsuranceEntity";
 import { OrderInvoiceEntity } from "./OrderInvoiceEntity";
 import { OrderAttachmentEntity } from "./OrderAttachmentEntity";
+import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
 
 export class OrderFlightTicketEntity extends BaseVariablesEntity {
   BookType: FlightBookType;

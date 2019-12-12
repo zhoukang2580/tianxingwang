@@ -1,9 +1,9 @@
-import { BaseVariablesEntity } from "src/app/tmc/models/BaseVariablesEntity";
-import { AccountEntity } from "src/app/tmc/models/AccountEntity";
 import { OrderEntity } from "src/app/order/models/OrderEntity";
 import { HotelCommentType } from "./HotelCommentType";
 import { HotelCommentStatusType } from "./HotelCommentStatusType";
 import { HotelEntity } from "./HotelEntity";
+import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
+import { AccountEntity } from 'src/app/account/models/AccountEntity';
 
 export class HotelCommentEntity extends BaseVariablesEntity {
   /// <summary>

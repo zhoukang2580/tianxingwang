@@ -1,4 +1,5 @@
-import { BaseEntity } from './BaseEntity';
+import { BaseEntity } from 'src/app/models/BaseEntity';
+
 export class TrafficlineEntity extends BaseEntity {
   IsDeprecated:boolean;
   /// <summary>

@@ -1,6 +1,6 @@
 import { HotelEntity } from "./HotelEntity";
 import { GeoEntity } from "./GeoEntity";
-import { BaseVariablesEntity } from "src/app/tmc/models/BaseVariablesEntity";
+import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
 
 export class HotelGeoEntity extends BaseVariablesEntity {
   /// <summary>

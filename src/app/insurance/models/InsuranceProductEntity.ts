@@ -1,7 +1,7 @@
-import { BaseVariablesEntity } from 'src/app/tmc/models/BaseVariablesEntity';
 import { InsuranceSupplierType } from "./InsuranceSupplierType";
 import { InsuranceBookType } from "./InsuranceBookType";
 import { OrderInsuranceType } from "./OrderInsuranceType";
+import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
 
 export class InsuranceProductEntity extends BaseVariablesEntity {
   /// <summary>

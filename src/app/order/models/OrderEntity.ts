@@ -4,7 +4,6 @@ import {
   OrderTravelPayType,
   OrderTravelType
 } from "./OrderTravelEntity";
-import { AccountEntity } from "src/app/tmc/models/AccountEntity";
 import { OrderFlightTicketEntity } from "./OrderFlightTicketEntity";
 import { OrderTrainTicketEntity } from "./OrderTrainTicketEntity";
 import { OrderHotelEntity } from "./OrderHotelEntity";
@@ -21,10 +20,11 @@ import { OrderExpressEntity } from "./OrderExpressEntity";
 import { OrderCardEntity } from "./OrderCardEntity";
 import { OrderComplaintEntity } from "./OrderComplaintEntity";
 import { OrderInvoiceEntity } from "./OrderInvoiceEntity";
-import { BaseVariablesEntity } from "src/app/tmc/models/BaseVariablesEntity";
 import { OrderProductEntity } from "./OrderProductEntity";
 import { OrderNumberEntity } from "./OrderNumberEntity";
 import { TaskEntity } from 'src/app/workflow/models/TaskEntity';
+import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
+import { AccountEntity } from 'src/app/account/models/AccountEntity';
 
 export class OrderEntity extends BaseVariablesEntity {
 

@@ -1,5 +1,5 @@
-import { BaseVariablesEntity } from "./../../tmc/models/BaseVariablesEntity";
 import { OrderTrainTicketEntity } from "./OrderTrainTicketEntity";
+import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
 export class OrderTrainTripEntity extends BaseVariablesEntity {
   /// <summary>
   /// 所属申请单

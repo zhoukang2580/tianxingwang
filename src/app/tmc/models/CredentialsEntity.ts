@@ -1,6 +1,6 @@
 import { StaffEntity } from "src/app/hr/staff.service";
-import { AccountEntity } from "./AccountEntity";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
+import { AccountEntity } from 'src/app/account/models/AccountEntity';
 
 export class CredentialsEntity {
   Id: string;

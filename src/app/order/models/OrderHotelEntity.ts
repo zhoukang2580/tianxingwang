@@ -1,4 +1,3 @@
-import { BaseVariablesEntity } from "./../../tmc/models/BaseVariablesEntity";
 import { OrderTravelEntity } from "./OrderTravelEntity";
 import { OrderCardEntity } from "./OrderCardEntity";
 import { OrderInvoiceEntity } from "./OrderInvoiceEntity";
@@ -8,6 +7,7 @@ import { HotelBookType } from "src/app/hotel/models/HotelBookType";
 import { HotelPaymentType } from "src/app/hotel/models/HotelPaymentType";
 import { OrderPassengerEntity } from "./OrderPassengerEntity";
 import { RoomPlanEntity } from "src/app/hotel/models/RoomPlanEntity";
+import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
 
 export class OrderHotelEntity extends BaseVariablesEntity {
   /// <summary>

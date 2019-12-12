@@ -37,7 +37,6 @@ import {
 } from "@angular/core";
 import { AppHelper } from "src/app/appHelper";
 import { PassengerDto } from "src/app/tmc/models/PassengerDto";
-import { AccountEntity } from "src/app/tmc/models/AccountEntity";
 import {
   NavController,
   IonCheckbox,
@@ -66,6 +65,7 @@ import { OrderLinkmanDto } from "src/app/order/models/OrderLinkmanDto";
 import { ProductItemType } from "src/app/tmc/models/ProductItems";
 import { PayService } from "src/app/services/pay/pay.service";
 import { ITmcOutNumberInfo } from 'src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component';
+import { AccountEntity } from 'src/app/account/models/AccountEntity';
 
 @Component({
   selector: "app-train-book",

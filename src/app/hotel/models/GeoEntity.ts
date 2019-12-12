@@ -1,8 +1,8 @@
-import { BaseVariablesEntity } from "src/app/tmc/models/BaseVariablesEntity";
 import { HotelGeoEntity } from "./HotelGeoEntity";
 import { GraphicsPath } from "./GraphicsPath";
 import { Region } from "./Region";
 import { GeoLangEntity } from "./GeoLangEntity";
+import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
 
 export class GeoEntity extends BaseVariablesEntity {
   /// <summary>

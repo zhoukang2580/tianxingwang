@@ -4,7 +4,6 @@ import { TrainService } from "./../../train/train.service";
 import { FlightHotelTrainType, PassengerBookInfo } from "./../tmc.service";
 import { CredentialsEntity } from "../models/CredentialsEntity";
 import { TmcService } from "../tmc.service";
-import { AccountEntity } from "../models/AccountEntity";
 import { MemberService, MemberCredential } from "../../member/member.service";
 import { CanComponentDeactivate } from "../../guards/candeactivate.guard";
 import { StaffService, StaffBookType } from "../../hr/staff.service";
@@ -49,6 +48,7 @@ import {
   transition,
   animate
 } from "@angular/animations";
+import { AccountEntity } from 'src/app/account/models/AccountEntity';
 export const NOT_WHITE_LIST = "notwhitelist";
 @Component({
   selector: "app-select-passenger",
