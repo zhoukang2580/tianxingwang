@@ -169,9 +169,8 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       destinationCity: this.destinationCity,
     });
     await this.hotelService.getConditions();
-    this.router.navigate([AppHelper.getRoutePath("hotel-list")]).then(_ => {
-      this.isLeavePage = true;
-    });
+    this.isLeavePage = true;
+    this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
   }
   back() {
     this.router.navigate([AppHelper.getRoutePath("")]);

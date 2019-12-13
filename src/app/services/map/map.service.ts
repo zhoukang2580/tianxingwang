@@ -90,7 +90,7 @@ export class MapService {
       const geolocation = new window["BMap"].Geolocation();
       setTimeout(() => {
         reject("定位超时");
-      }, 10 * 1000);
+      }, 5 * 1000);
       geolocation.getCurrentPosition(
         (r: {
           address: {
@@ -309,21 +309,22 @@ export class MapService {
           };
         }
       }
-    } else {
-      const name = await this.getCityNameByIp().catch(_ => {
-        console.error("getCityNameByIp", _);
-        return null;
-      });
-      if (name) {
-        result = {
-          city: {
-            CityCode: "",
-            CityName: name
-          } as any,
-          position: ""
-        };
-      }
-    }
+    } 
+    // else {
+    //   const name = await this.getCityNameByIp().catch(_ => {
+    //     console.error("getCityNameByIp", _);
+    //     return null;
+    //   });
+    //   if (name) {
+    //     result = {
+    //       city: {
+    //         CityCode: "",
+    //         CityName: name
+    //       } as any,
+    //       position: ""
+    //     };
+    //   }
+    // }
     return result;
   }
   private getCityNameByIp() {
