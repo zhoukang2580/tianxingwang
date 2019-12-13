@@ -38,8 +38,8 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
   searchConditionSubscription = Subscription.EMPTY;
   searchFlightModel: SearchFlightModel;
   isMoving: boolean;
-  vmFromCity: TrafficlineEntity; // 界面上显示的城市
-  vmToCity: TrafficlineEntity; // 界面上显示的城市
+  // vmFromCity: TrafficlineEntity; // 界面上显示的城市
+  // vmToCity: TrafficlineEntity; // 界面上显示的城市
   showReturnTrip: boolean;
   disabled = false;
   totalFlyDays: number;
@@ -68,13 +68,13 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
       this.isleave = false;
       this.isCanleave = false;
       const identity = await this.identityService.getIdentityAsync();
-      this.disabled = this.searchFlightModel && this.searchFlightModel.isLocked;
+      // this.disabled = this.searchFlightModel && this.searchFlightModel.isLocked;
       const lastSelectedGoDate = await this.storage.get(`last_selected_flight_goDate_${identity && identity.Id}`)
         || moment().add(1, 'days').format("YYYY-MM-DD");
       const lastSelectedBackDate = moment(lastSelectedGoDate).add(1, 'days').format("YYYY-MM-DD");
       const s = this.flightService.getSearchFlightModel();
-      this.vmFromCity = s.fromCity;
-      this.vmToCity = s.toCity;
+      // this.vmFromCity = s.fromCity;
+      // this.vmToCity = s.toCity;
       s.Date = lastSelectedGoDate;
       s.BackDate = lastSelectedBackDate;
       if (!s.isLocked) {
@@ -155,8 +155,8 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
         this.searchFlightModel = s;
         if (s) {
           this.disabled = s.isLocked;
-          this.vmFromCity = s.fromCity;
-          this.vmToCity = s.toCity;
+          // this.vmFromCity = s.fromCity;
+          // this.vmToCity = s.toCity;
           this.isSingle = !s.isRoundTrip;
           this.goDate = this.calendarService.generateDayModelByDate(s.Date);
           this.backDate = this.calendarService.generateDayModelByDate(s.BackDate);
@@ -237,13 +237,9 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
   async searchFlight() {
     this.isCanleave = true;
     this.isleave = true;
-    console.log(
-      `出发城市" + 【${this.vmFromCity && this.vmFromCity.CityName}】`,
-      `目的城市【${this.vmToCity && this.vmToCity.CityName}】`
-    );
     console.log(`启程日期${this.goDate.date},返程日期：${this.backDate.date}`);
-    this.storage.set("fromCity", this.vmFromCity);
-    this.storage.set("toCity", this.vmToCity);
+    this.storage.set("fromCity", this.searchFlightModel.fromCity);
+    this.storage.set("toCity", this.searchFlightModel.toCity);
 
     const s: SearchFlightModel = this.searchFlightModel || new SearchFlightModel();
     // s.tripType = TripType.departureTrip;
@@ -277,13 +273,9 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
       s.tripType = TripType.departureTrip;
     }
     s.Date = this.goDate.date;
-    s.FromCode = this.vmFromCity.Code;
-    s.ToCode = this.vmToCity.Code;
-    s.ToAsAirport = this.vmToCity.Tag === "Airport"; // Airport 以到达 机场 查询;AirportCity 以城市查询
-    s.FromAsAirport = this.vmFromCity.Tag === "Airport"; // Airport 以出发 机场 查询
+    s.ToAsAirport = this.searchFlightModel.toCity.Tag === "Airport"; // Airport 以到达 机场 查询;AirportCity 以城市查询
+    s.FromAsAirport = this.searchFlightModel.fromCity.Tag === "Airport"; // Airport 以出发 机场 查询
     s.isRoundTrip = !this.isSingle;
-    s.fromCity = this.vmFromCity;
-    s.toCity = this.vmToCity;
     s.BackDate = this.backDate.date;
     if (this.disabled) {
       s.Date = s.BackDate;
