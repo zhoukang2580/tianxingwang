@@ -18,7 +18,6 @@ export class MapService {
   private static TAG = "map 定位";
   private st = Date.now();
   private querys: any;
-  private latestLatLng: { lat: string; lng: string; city: TrafficlineEntity; lastTime: number };
   constructor(private apiService: ApiService) {
     this.querys = AppHelper.getQueryParamers();
     console.log("MapService,tree", this.querys);
@@ -255,15 +254,7 @@ export class MapService {
       city: TrafficlineEntity;
       position: any;
     };
-    if (this.latestLatLng 
-      && this.latestLatLng.lat 
-      && this.latestLatLng.lng 
-      && this.latestLatLng.lastTime 
-      && (Date.now() - this.latestLatLng.lastTime) <= 1 * 60 * 1000) {
-      result.city = this.latestLatLng.city;
-      result.position = { lat: this.latestLatLng.lat, lng: this.latestLatLng.lng };
-      return result;
-    }
+
     const isMini = await AppHelper.isWechatMiniAsync() || AppHelper.isWechatMini();
     if (isMini) {
       result = await this.getCurrentCityPositionInWechatMini();
@@ -304,12 +295,6 @@ export class MapService {
           } as any,
           position: latLng
         };
-        this.latestLatLng = {
-          lat: latLng.lat,
-          lng: latLng.lng,
-          city: result.city,
-          lastTime: Date.now()
-        }
       } else {
         const cityFromMap = await this.getCityFromMap(latLng).catch(_ => {
           console.error("getCityFromMap", _);
@@ -350,6 +335,11 @@ export class MapService {
         s(null);
       }
       const myCity = new window["BMap"].LocalCity();
+      let timeout = false;
+      setTimeout(() => {
+        timeout = true;
+        s(null);
+      }, 5 * 1000);
       myCity.get((rs: {
         center: {
           lat: string;// 31.236304654494646
@@ -359,6 +349,9 @@ export class MapService {
         level: number;
         name: string;
       }) => {
+        if (timeout) {
+          return;
+        }
         if (rs && rs.name && rs.center) {
           s({ lat: rs.center.lat, lng: rs.center.lng, cityName: rs.name });
         } else {
