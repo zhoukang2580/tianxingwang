@@ -226,8 +226,20 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
       // 出发城市，不是出发城市的那个机场
       Tag: "AirportCity"
     } as TrafficlineEntity;
-    const lastFromCity = await this.storage.get("fromCity").catch(_ => null) || vmFromCity;
-    const lastToCity = await this.storage.get("toCity").catch(_ => null) || vmToCity;
+    const lastFromCity = await this.storage.get("fromCity")
+      .then((c: TrafficlineEntity) => {
+        if (!c.Code) {
+          return null;
+        }
+        return c;
+      }).catch(_ => null) || vmFromCity;
+    const lastToCity = await this.storage.get("toCity")
+      .then((c: TrafficlineEntity) => {
+        if (!c.Code) {
+          return null;
+        }
+        return c;
+      }).catch(_ => null) || vmToCity;
     this.flightService.setSearchFlightModel({
       ...this.flightService.getSearchFlightModel(),
       fromCity: lastFromCity,

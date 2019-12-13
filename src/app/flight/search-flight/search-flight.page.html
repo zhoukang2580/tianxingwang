@@ -35,7 +35,7 @@
           <ion-label><strong>往返</strong></ion-label>
         </ion-segment-button>
       </ion-segment>
-      <app-switch-city-comp [vmFromCity]="searchFlightModel?.fromCity" [vmToCity]="searchFlightModel.toCity" [disabled]='disabled'>
+      <app-switch-city-comp [vmFromCity]="searchFlightModel?.fromCity" [vmToCity]="searchFlightModel?.toCity" [disabled]='disabled'>
       </app-switch-city-comp>
       <section class="flight-date">
         <app-search-day-comp [day]='goDate' (click)="onSelecFlyDate(true,false)" [disabled]='disabled'>

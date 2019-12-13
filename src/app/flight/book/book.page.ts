@@ -992,6 +992,9 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     return fees as number;
   }
+  getInsuranceDetails(detail:string){
+    return detail&&detail.split("\n").join("<br/>");
+  }
   async onShowPriceDetail() {
     const p = await this.popoverCtrl.create({
       component: PriceDetailComponent,
