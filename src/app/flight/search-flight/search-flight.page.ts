@@ -292,10 +292,13 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
     console.log("search-flight", s);
     // this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(s.Date)]);
     this.flightService.setSearchFlightModel(s);
-    this.router.navigate([AppHelper.getRoutePath("flight-list")],{queryParams:{doRefresh:true}});
+    this.router.navigate([AppHelper.getRoutePath("flight-list")], { queryParams: { doRefresh: true } });
+    this.cachLastSelectedFlightGoDate(s.Date);
+  }
+  private async cachLastSelectedFlightGoDate(date: string) {
     const identity = await this.identityService.getIdentityAsync();
     if (identity) {
-      await this.storage.set(`last_selected_flight_goDate_${identity.Id}`, s.Date);
+      await this.storage.set(`last_selected_flight_goDate_${identity.Id}`, date);
     }
   }
   getDayDesc(d: DayModel) {
@@ -316,6 +319,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
         }
       }
     }
+    this.cachLastSelectedFlightGoDate(this.searchFlightModel.Date);
     this.flightService.setSearchFlightModel(this.searchFlightModel);
   }
 }
