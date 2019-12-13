@@ -104,17 +104,15 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       this.curPos = curPos.city;
       const cities = await this.hotelService.getHotelCityAsync();
       if (cities) {
-        const c = cities.find(
-          it =>
-            it.CityCode == this.curPos.CityCode ||
-            this.curPos.CityName.includes(it.Name) ||
-            it.Name.includes(this.curPos.CityName)
-        );
+        const c = cities.find(it => it.CityCode == this.curPos.CityCode);
         if (c) {
           this.hotelService.setSearchHotelModel({
             ...this.hotelService.getSearchHotelModel(),
             destinationCity: c
           });
+          await this.hotelService.getConditions();
+        } else {
+          this.curPos = { CityName: "定位出错啦" } as any;
         }
       }
     } else {
