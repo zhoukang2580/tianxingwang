@@ -255,7 +255,11 @@ export class MapService {
       city: TrafficlineEntity;
       position: any;
     };
-    if (this.latestLatLng && (Date.now() - this.latestLatLng.lastTime) <= 1 * 60 * 1000) {
+    if (this.latestLatLng 
+      && this.latestLatLng.lat 
+      && this.latestLatLng.lng 
+      && this.latestLatLng.lastTime 
+      && (Date.now() - this.latestLatLng.lastTime) <= 1 * 60 * 1000) {
       result.city = this.latestLatLng.city;
       result.position = { lat: this.latestLatLng.lat, lng: this.latestLatLng.lng };
       return result;
@@ -265,7 +269,7 @@ export class MapService {
       result = await this.getCurrentCityPositionInWechatMini();
       return result;
     }
-    let latLng: MapPoint =(await this.getPosByIp()) || await this.getCurrentPosition().catch(_ => {
+    let latLng: MapPoint = (await this.getPosByIp()) || await this.getCurrentPosition().catch(_ => {
       console.error("getCurrentPosition error", _);
       return void 0;
     });
