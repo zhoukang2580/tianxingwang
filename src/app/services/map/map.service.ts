@@ -18,6 +18,7 @@ export class MapService {
   private static TAG = "map 定位";
   private st = Date.now();
   private querys: any;
+  private latestLatLng: { lat: string; lng: string; city: TrafficlineEntity; lastTime: number };
   constructor(private apiService: ApiService) {
     this.querys = AppHelper.getQueryParamers();
     console.log("MapService,tree", this.querys);
@@ -250,11 +251,16 @@ export class MapService {
     city: TrafficlineEntity;
     position: any;
   }> {
-    const isMini = await AppHelper.isWechatMiniAsync() || AppHelper.isWechatMini();
     let result: {
       city: TrafficlineEntity;
       position: any;
     };
+    if (this.latestLatLng && (Date.now() - this.latestLatLng.lastTime) <= 1 * 60 * 1000) {
+      result.city = this.latestLatLng.city;
+      result.position = { lat: this.latestLatLng.lat, lng: this.latestLatLng.lng };
+      return result;
+    }
+    const isMini = await AppHelper.isWechatMiniAsync() || AppHelper.isWechatMini();
     if (isMini) {
       result = await this.getCurrentCityPositionInWechatMini();
       return result;
@@ -294,6 +300,12 @@ export class MapService {
           } as any,
           position: latLng
         };
+        this.latestLatLng = {
+          lat: latLng.lat,
+          lng: latLng.lng,
+          city: result.city,
+          lastTime: Date.now()
+        }
       } else {
         const cityFromMap = await this.getCityFromMap(latLng).catch(_ => {
           console.error("getCityFromMap", _);
@@ -309,7 +321,7 @@ export class MapService {
           };
         }
       }
-    } 
+    }
     // else {
     //   const name = await this.getCityNameByIp().catch(_ => {
     //     console.error("getCityNameByIp", _);
