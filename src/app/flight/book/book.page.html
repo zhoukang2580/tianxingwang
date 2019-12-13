@@ -199,11 +199,11 @@
                       </ion-button>
                     </ion-col>
                   </ion-row>
-                  <div [@showHide]='insuranceEle.checked' style='width: 100%;'>
+                  <div [@showHide]='insuranceEle.checked' style='width: 100%;' (click)='insuranceEle.checked=!insuranceEle.checked'>
                     <ion-row>
                       <ion-col>
                         <ion-label color='medium' text-wrap class='small-font'>
-                          <div [innerHtml]='getInsuranceDetails(insurance.insuranceResult?.Detail)'></div>
+                          <div style="user-select: text;" [innerHtml]='getInsuranceDetails(insurance.insuranceResult?.Detail)'></div>
                         </ion-label>
                       </ion-col>
                     </ion-row>
