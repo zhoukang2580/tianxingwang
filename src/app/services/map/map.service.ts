@@ -133,7 +133,7 @@ export class MapService {
             reject(status[geolocation.getStatus()] || geolocation.getStatus());
           }
         },
-        { enableHighAccuracy: true }
+        { enableHighAccuracy: false }
       );
     }).catch(_ => null);
   }
