@@ -114,7 +114,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
             ...this.hotelService.getSearchHotelModel(),
             destinationCity: c
           });
-          await this.hotelService.getConditions();
+          await this.hotelService.getConditions(true);
         } else {
           this.curPos = { CityName: "定位出错啦" } as any;
         }

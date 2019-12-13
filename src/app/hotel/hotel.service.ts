@@ -203,6 +203,8 @@ export class HotelService {
     );
   }
   async getConditions(forceFetch = false) {
+    const city = this.getSearchHotelModel().destinationCity;
+    forceFetch=forceFetch||city.Code!=(this.conditionModel&&this.conditionModel.city&&this.conditionModel.city.Code);
     if (
       forceFetch ||
       !this.conditionModel ||
@@ -210,7 +212,6 @@ export class HotelService {
       !this.conditionModel.Brands ||
       !this.conditionModel.Geos
     ) {
-      const city = this.getSearchHotelModel().destinationCity;
       this.conditionModel = await this.getHotelConditions(
         city && city.Code
       ).catch(_ => null);
