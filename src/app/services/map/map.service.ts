@@ -91,7 +91,7 @@ export class MapService {
       const geolocation = new window["BMap"].Geolocation();
       setTimeout(() => {
         reject("定位超时");
-      }, 5 * 1000);
+      }, 10 * 1000);
       geolocation.getCurrentPosition(
         (r: {
           address: {
@@ -265,7 +265,7 @@ export class MapService {
       result = await this.getCurrentCityPositionInWechatMini();
       return result;
     }
-    let latLng: MapPoint = await this.getCurrentPosition().catch(_ => {
+    let latLng: MapPoint =(await this.getPosByIp()) || await this.getCurrentPosition().catch(_ => {
       console.error("getCurrentPosition error", _);
       return void 0;
     });
@@ -339,16 +339,24 @@ export class MapService {
     // }
     return result;
   }
-  private getCityNameByIp() {
-    return new Promise<string>(s => {
+  private getPosByIp(): Promise<MapPoint> {
+    return new Promise<MapPoint>(s => {
       if (!window["BMap"]) {
         console.error("getCityNameByIp,BMap 地图尚未加载。。。");
         s(null);
       }
       const myCity = new window["BMap"].LocalCity();
-      myCity.get((rs: { name: string }) => {
-        if (rs && rs.name) {
-          s(rs.name);
+      myCity.get((rs: {
+        center: {
+          lat: string;// 31.236304654494646
+          lng: string;// 121.48023738884737
+        };
+        code: number;
+        level: number;
+        name: string;
+      }) => {
+        if (rs && rs.name && rs.center) {
+          s({ lat: rs.center.lat, lng: rs.center.lng, cityName: rs.name });
         } else {
           s(null);
         }
