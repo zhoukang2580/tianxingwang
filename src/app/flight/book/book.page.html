@@ -104,14 +104,17 @@
                 </div>
                 <div class='refund-change-info' [@showHide]='combindInfo?.openrules'>
                   <ion-label text-wrap *ngIf='s?.flightPolicy?.Cabin?.RefundChange?.RefundDetail?.Befores?.length'>
-                    退票规则:{{s?.flightPolicy?.Cabin?.RefundChange?.RefundDetail?.Befores?.join("")}}
+                    退票规则:<ion-text color='medium'>
+                      {{s?.flightPolicy?.Cabin?.RefundChange?.RefundDetail?.Befores?.join("")}}</ion-text>
                   </ion-label>
                   <ion-label text-wrap *ngIf='s?.flightPolicy?.Cabin?.RefundChange?.ChangeDetail?.Befores?.length'>
-                    改期规则:{{s?.flightPolicy?.Cabin?.RefundChange?.ChangeDetail?.Befores?.join("")}}
+                    改期规则:<ion-text color='medium'>
+                      {{s?.flightPolicy?.Cabin?.RefundChange?.ChangeDetail?.Befores?.join("")}}</ion-text>
                   </ion-label>
                   <ion-label text-wrap
                     *ngIf='s?.flightPolicy?.Cabin?.RefundChange?.EndorsementDetail?.Endorsements?.length'>
-                    其它规则:{{s?.flightPolicy?.Cabin?.RefundChange?.EndorsementDetail?.Endorsements?.join("")}}
+                    其它规则:<ion-text color='medium'>
+                      {{s?.flightPolicy?.Cabin?.RefundChange?.EndorsementDetail?.Endorsements?.join("")}}</ion-text>
                   </ion-label>
                 </div>
               </div>
@@ -195,15 +198,18 @@
                       <ion-button fill='clear' (click)='insuranceEle.checked=!insuranceEle.checked' expand='full'
                         color='secondary'>
                         详情
-                        <ion-icon name="arrow-dropright" class='arrow-dropright' [class.dropdown]='insuranceEle.checked'></ion-icon>
+                        <ion-icon name="arrow-dropright" class='arrow-dropright'
+                          [class.dropdown]='insuranceEle.checked'></ion-icon>
                       </ion-button>
                     </ion-col>
                   </ion-row>
-                  <div [@showHide]='insuranceEle.checked' style='width: 100%;' (click)='insuranceEle.checked=!insuranceEle.checked'>
+                  <div [@showHide]='insuranceEle.checked' style='width: 100%;'
+                    (click)='insuranceEle.checked=!insuranceEle.checked'>
                     <ion-row>
                       <ion-col>
                         <ion-label color='medium' text-wrap class='small-font'>
-                          <div style="user-select: text;" [innerHtml]='getInsuranceDetails(insurance.insuranceResult?.Detail)'></div>
+                          <div style="user-select: text;"
+                            [innerHtml]='getInsuranceDetails(insurance.insuranceResult?.Detail)'></div>
                         </ion-label>
                       </ion-col>
                     </ion-row>
