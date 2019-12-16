@@ -1174,7 +1174,10 @@ export class FlightService {
             if (it.FlightRoutes) {
               it.FlightRoutes = it.FlightRoutes.map(r => {
                 if (r.FlightSegments) {
-                  r.FlightSegments = r.FlightSegments.map(s => {
+                  r.FlightSegments = r.FlightSegments.filter(seg => {
+                    const now = new Date().getTime() + 45 * 60 * 1000;
+                    return Math.floor(AppHelper.getDate(seg.TakeoffTime).getTime()) >= Math.floor(now);
+                  }).map(s => {
                     return {
                       ...s,
                       ...s["flightSegment"]
