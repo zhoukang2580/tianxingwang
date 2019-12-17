@@ -160,13 +160,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private flightService: FlightService,
-    private ngZone: NgZone,
-    private navCtrl: NavController,
     private flyDayService: CalendarService,
     private staffService: StaffService,
     private apiService: ApiService,
     private identityService: IdentityService,
-    private domCtrl: DomController,
     private modalCtrl: ModalController,
     private popoverController: PopoverController,
     private storage: Storage
@@ -233,7 +230,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     if (go) {
       if (!this.vmFlights || !this.vmFlights.length) {
         let arrival = go.bookInfo.flightSegment.ArrivalTime || "";
-        arrival=moment(arrival).add(1,'hours').format("YYYY-MM-DD HH:mm");
+        arrival = moment(arrival).add(1, 'hours').format("YYYY-MM-DD HH:mm");
         return `${arrival.replace("T", " ")}之后已无航班`;
       }
     } else {
@@ -371,6 +368,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.hasDataSource.next(!!this.vmFlights.length && !this.isLoading);
       this.apiService.hideLoadingView();
       this.isLoading = false;
+      if (this.activeTab != 'none' && this.activeTab != 'filter') {
+        this.sortFlights(this.activeTab);
+      }
     } catch (e) {
       if (!environment.production) {
         console.error(e);
