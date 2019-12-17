@@ -1,0 +1,66 @@
+<div style="width: 100%;" *ngIf='trip'>
+  <ion-card>
+    <ion-item lines='none'>
+      <ion-label color='secondary'>
+        <img src="assets/svgs/home-plane.svg" alt="机票">
+        <strong margin-start>机票</strong>
+      </ion-label>
+      <ion-button [disabled]='true' fill="clear" color='secondary' slot="end">{{trip.Status}}</ion-button>
+    </ion-item>
+    <ion-card-content>
+      <div class='ticket'>
+        <div class="start">
+          <div>{{trip.FromName?.replace("国际机场","")?.replace("机场","")}}</div>
+          <div>
+            <strong>{{getStHHmm()}}</strong>
+          </div>
+        </div>
+        <div class="center">
+          <div class='stop-line-stop' [attr.data]='trip?.Name'>
+            <div class="line"></div>
+          </div>
+        </div>
+        <div class="end" text-end>
+          <div>{{trip.ToName?.replace("国际机场","")?.replace("机场","")}}</div>
+          <div>
+            <strong>{{getEndHHmm()}}</strong>
+          </div>
+        </div>
+      </div>
+      <div class='time'>
+        <ion-text color='dark'>起飞日期：{{getDate()}}</ion-text>
+      </div>
+      <div class="passenger" *ngIf='trip.Passenger'>
+        <strong>
+          {{trip.Passenger.Name}}:
+        </strong>
+        <span>{{trip.Passenger.CredentialsNumber}}</span>
+      </div>
+      <ion-text color='medium'>
+        <p>
+          订单编号：<span>{{trip.OrderId}}</span>
+        </p>
+        <p>
+          机票事务号：<span>{{trip.OrderTicketId}}</span>
+        </p>
+      </ion-text>
+      <div class='btns'>
+        <ng-container *ngIf='getProducts() as products'>
+          <ng-container *ngIf='products.length && getDays(trip.StartTime)>=1'>
+            <ng-container *ngFor='let p of products'>
+              <ion-button color='secondary' *ngIf='check(p.InsuranceType)' size='small'
+                (click)='onShowSelectedInsurance(p,trip,$event)'>
+                {{p.Name}}({{p.Price}})
+              </ion-button>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+        <ng-container *ngIf='getOrderInsurad() as orderInsurad'>
+          <ion-button color='secondary' (click)='payInsurance(orderInsurad.Key,trip.OrderId,$event)' size='small'>
+            继续支付{{orderInsurad.Name}}
+          </ion-button>
+        </ng-container>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</div>

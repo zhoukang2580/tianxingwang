@@ -1,0 +1,53 @@
+.ticket {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  strong {
+    font-size: 1.3rem;
+  }
+}
+.time,
+.passenger {
+  font-size: 0.8rem;
+  margin: .5em 0;
+}
+.time {
+  margin: 0.5em 0;
+}
+.stop-line-stop {
+  position: relative;
+  margin: 0 1em;
+  padding: 1em 0;
+  justify-content: center;
+  &::after {
+    content: attr(data);
+    top: 0%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%, 0);
+  }
+  .line {
+    background-color: rgba(var(--ion-color-dark-rgb), 0.3);
+    height: 1px;
+    width: 5em;
+    position: relative;
+    top: 0.5em;
+    &::after {
+      content: "";
+      position: absolute;
+      right: 0em;
+      top: -0.2em;
+      display: block;
+      height: 1px;
+      width: 0.5em;
+      transform: rotate(45deg);
+      background-color: inherit;
+    }
+  }
+}
+ion-button {
+  --opacity: 1;
+}
+span{
+    user-select: text;
+}
