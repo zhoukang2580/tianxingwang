@@ -42,6 +42,11 @@ Page({
         url += (url.includes("?") ? "&" : "?") + "wechatPayResult=" + args.wechatPayResult;
       }
     }
+    var orgUrl=this.data.url;
+    if (orgUrl && orgUrl.indexOf(url)>-1)
+    {
+        return;
+    }
     var lat;
     var lng;
     const st = Date.now();
