@@ -69,8 +69,9 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
       this.isCanleave = false;
       const identity = await this.identityService.getIdentityAsync();
       // this.disabled = this.searchFlightModel && this.searchFlightModel.isLocked;
-      const lastSelectedGoDate = await this.storage.get(`last_selected_flight_goDate_${identity && identity.Id}`)
-        || moment().add(1, 'days').format("YYYY-MM-DD");
+      let lastSelectedGoDate = await this.storage.get(`last_selected_flight_goDate_${identity && identity.Id}`);
+      const nextDate = moment().add(1, 'days').format("YYYY-MM-DD");
+      lastSelectedGoDate = lastSelectedGoDate && this.calendarService.generateDayModelByDate(lastSelectedGoDate).timeStamp >= this.calendarService.generateDayModelByDate(nextDate).timeStamp ? lastSelectedGoDate : nextDate
       const lastSelectedBackDate = moment(lastSelectedGoDate).add(1, 'days').format("YYYY-MM-DD");
       const s = this.flightService.getSearchFlightModel();
       // this.vmFromCity = s.fromCity;

@@ -59,10 +59,10 @@ export class TripPage implements OnInit {
       }
       return r;
     }), finalize(() => {
-      this.isLoading = false;
-      if(this.infiniteScroll){
+      if (this.infiniteScroll) {
         this.infiniteScroll.complete();
       }
+      this.isLoading = false;
     }));
   }
   ngOnInit() {
@@ -102,30 +102,7 @@ export class TripPage implements OnInit {
         }
       })
   }
-  check(orderTrip: OrderTripModel, type: OrderInsuranceType) {
-    const OrderInsurances = orderTrip && orderTrip.OrderInsurances;
-    if (!OrderInsurances) { return true; }
-    const count = OrderInsurances
-      .filter(s => s.InsuranceType == type
-        && s.Status != OrderInsuranceStatusType.Abolish
-        && s.Status != OrderInsuranceStatusType.Refunded)
-      .length;
-    if (count > 0) { return false; }
-    return true;
-  }
-  getProducts(orderTrip: OrderTripModel) {
-    let products: InsuranceProductEntity[] = [];
-    if (!orderTrip) {
-      return products;
-    }
-    const types = [OrderInsuranceType.FlightAccident, OrderInsuranceType.FlightDelay];
-    products = orderTrip.InsuranceResult
-      && orderTrip.InsuranceResult.Products
-      && orderTrip.InsuranceResult.Products
-        .filter(it => types.some(t => t == it.InsuranceType)) || [];
-    // console.log("get InsuranceProductEntity", products);
-    return products;
-  }
+
   async onShowSelectedInsurance(p?: InsuranceProductEntity, trip?: OrderTripModel, evt?: CustomEvent) {
     if (evt) {
       evt.stopPropagation();
@@ -142,27 +119,14 @@ export class TripPage implements OnInit {
     });
     m.present();
   }
-  getDays(t1: string, t2: string) {
-    const diff = this.calendarService.getDiffDays(t1, t2);
-    // console.log("getdays", diff)
-    return diff;
-  }
-  getOrderInsurad(orderTrip: OrderTripModel) {
-    if (!orderTrip || !orderTrip.OrderInsurances) {
-      return;
-    }
-    return orderTrip.OrderInsurances
-      .find(it => it.Status == OrderInsuranceStatusType.Booking && it.TravelPayType == OrderTravelPayType.Person);
-  }
-  async payInsurance(key: string, tradeNo: string, evt?: CustomEvent) {
-    if (evt) {
-      evt.stopPropagation();
-    }
-    if (key && tradeNo) {
-      await this.tmcService.payOrder(tradeNo, key);
+
+
+  async payInsurance(d: { key: string, tradeNo: string}) {
+    if (d && d.key && d.tradeNo) {
+      await this.tmcService.payOrder(d.tradeNo, d.key);
     }
   }
-  getTrainProducts(orderTrip: OrderTripModel, ) {
+  getTrainProducts(orderTrip: OrderTripModel ) {
     const types = [OrderInsuranceType.TrainAccident];
     if (!orderTrip || !orderTrip.InsuranceResult) {
       return [];

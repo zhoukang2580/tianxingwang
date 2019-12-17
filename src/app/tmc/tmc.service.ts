@@ -29,6 +29,7 @@ import { Router } from "@angular/router";
 import { TmcDataEntity } from './models/TmcDataEntity';
 import { AccountEntity } from '../account/models/AccountEntity';
 import { BaseEntity } from '../models/BaseEntity';
+import { TravelModel } from '../order/models/TravelModel';
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -76,6 +77,14 @@ export class TmcService {
     this.companies = null;
     this.tmc = null;
     this.agent = null;
+  }
+  getTrips(type: "Flight" | "Train" | "Hotel" = null) {
+    const req = new RequestEntity();
+    req.Method = `TmcApiOrderUrl-Travel-List`;
+    if (type) {
+      req.Data['Type'] = type
+    }
+    return this.apiService.getPromiseData<TravelModel>(req);
   }
   getChannel() {
     let channel = "H5";

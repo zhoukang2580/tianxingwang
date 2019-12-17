@@ -53,18 +53,39 @@ export class CalendarService {
   getDayOfWeekNames() {
     return this.dayOfWeekNames;
   }
-  getSelectedDays(){
-    return this.selectedDays||[];
+  getSelectedDays() {
+    return this.selectedDays || [];
   }
   getSelectedDaysSource() {
     return this.selectedDaysSource.asObservable();
   }
   setSelectedDaysSource(days: DayModel[]) {
-    this.selectedDays=days;
+    this.selectedDays = days;
     this.selectedDaysSource.next(days);
   }
   getMonth(d: DayModel) {
     return d.date.substring("2018-".length + 1, "2018-11".length);
+  }
+  getDescOfDate(date: string) {
+    const curDay = moment(); // 今天
+    const d = this.generateDayModelByDate(date);
+
+    // console.log(d.date);
+    switch (date) {
+      case this.generateDayModel(curDay).date: {
+        return LanguageHelper.getTodayTip();
+      }
+
+      case this.generateDayModel(curDay.add(1, "days")).date: {
+        return LanguageHelper.getTomorrowTip();
+      }
+      case this.generateDayModel(curDay.add(1, "days")).date: {
+        return LanguageHelper.getTheDayAfterTomorrowTip();
+      }
+
+      default:
+        return d.dayOfWeekName;
+    }
   }
   getDescOfDay(d: DayModel) {
     const curDay = moment(); // 今天

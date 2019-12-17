@@ -73,13 +73,14 @@
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh(true,false)">
   </ion-refresher>
   <app-or-comp *ngIf='isLoading'>
-    <ion-label>{{currentProcessStatus||"数据即将加载完成"}}</ion-label>
+    {{currentProcessStatus||"数据即将加载完成"}}
   </app-or-comp>
   <app-or-comp *ngIf='!isLoading&&vmFlights?.length==0'>
-    <ion-label>暂无数据</ion-label>
+    <div [innerHtml]='getNoMoreDataDesc()'></div>
   </app-or-comp>
   <ul class='flight'>
-    <li *ngFor='let s of vmFlights; trackBy:trackById' class='list-item' #fli (click)='goToFlightCabinsDetails(s)' [class.shade]='isHasFiltered&&!s.Cabins?.length'>
+    <li *ngFor='let s of vmFlights; trackBy:trackById' class='list-item' #fli (click)='goToFlightCabinsDetails(s)'
+      [class.shade]='isHasFiltered&&!s.Cabins?.length'>
       <div class='left'>
         <h4 class="time">
           <strong>{{s.TakeoffShortTime}}</strong>
@@ -166,4 +167,5 @@
 </ion-footer>
 
 <app-fly-filter [class.show]="showAdvSearchPage$ | async" [flights]="flightJourneyList"
-  [fromCityName]='searchFlightModel?.fromCity?.CityName' [toCityName]="searchFlightModel?.toCity?.CityName"></app-fly-filter>
+  [fromCityName]='searchFlightModel?.fromCity?.CityName' [toCityName]="searchFlightModel?.toCity?.CityName">
+</app-fly-filter>

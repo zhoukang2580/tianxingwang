@@ -48,9 +48,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private hotelService: HotelService,
-    private navCtrl: NavController,
-    private route: ActivatedRoute,
-    private tmcSerivce: TmcService,
+    route: ActivatedRoute,
     private modalController: ModalController,
     private staffService: StaffService,
     private calendarService: CalendarService

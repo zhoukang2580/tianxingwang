@@ -1,0 +1,29 @@
+span {
+  user-select: text;
+  margin-right: 1em;
+}
+strong {
+  font-size: 1.1rem;
+}
+small {
+  font-size: 0.6rem;
+  margin: 0 0.5em;
+}
+ion-button {
+  --opacity: 1;
+}
+.passenger {
+  font-size: 0.8rem;
+  margin: 0.5em 0;
+}
+img {
+  height: 2em;
+  width: 2em;
+}
+ion-label.title {
+  display: flex;
+  align-items: center;
+}
+ion-card ion-card-content{
+  padding: 0.5em 1em;
+}

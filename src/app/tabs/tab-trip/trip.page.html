@@ -9,113 +9,19 @@
 <ion-content>
   <ion-refresher (ionRefresh)='doRefresh()' slot='fixed'></ion-refresher>
   <ng-container *ngIf='!isLoading '>
-    <ion-list *ngIf='trips?.length else nomoredata'>
-      <ion-item *ngFor='let trip of trips' detail (click)='goToDetailPage(trip)'>
-        <div style='width: 100%;'>
-          <ion-row>
-            <ion-col size='3'>
-              订单编号
-            </ion-col>
-            <ion-col>
-              <span>{{trip.OrderId}}</span>
-            </ion-col>
-            <ion-col text-end>
-              <span>{{trip.Status}}</span>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size='3'>
-              <ng-container [ngSwitch]='trip.Type'>
-                <div *ngSwitchCase='"Flight"'>
-                  机票事务号
-                </div>
-                <div *ngSwitchCase='"Train"'>
-                  火车票事务号
-                </div>
-                <div *ngSwitchCase='"Hotel"'>
-                  酒店事务号
-                </div>
-              </ng-container>
-            </ion-col>
-            <ion-col>
-              {{trip.OrderTicketId}}
-            </ion-col>
-          </ion-row>
-          <ion-row *ngIf='trip.Type=="Flight"'>
-            <ion-col>
-              <div>
-                <strong>{{trip.StartTime?.substr(0,"yyyy-MM-dd".length)}} <span>
-                    {{trip.EndTime?.substr("yyyy-MM-DDT".length,"HH:mm".length)}}
-                    <span>{{trip.Name}}</span>
-                  </span></strong>
-              </div>
-              <div>
-                <span>
-                  {{trip.FromName}}←→{{trip.ToName}}
-                </span>
-              </div>
-            </ion-col>
-          </ion-row>
-          <ion-row *ngIf='trip.Type=="Train"'>
-            <ion-col>
-              <div>
-                <strong>{{trip.StartTime?.substr(0,"yyyy-MM-dd".length)}}
-                  <span>{{trip.EndTime?.substr("yyyy-MM-DDT".length,"HH:mm".length)}}</span>
-                </strong>
-              </div>
-              <div>
-                <span>
-                  {{trip.FromName}}←→{{trip.ToName}}
-                </span>
-                <span>{{trip.Name}}</span>
-              </div>
-            </ion-col>
-          </ion-row>
+    <ng-container *ngIf='trips?.length else nomoredata'>
+      <ng-container *ngFor='let trip of trips' (click)='goToDetailPage(trip)'>
+          <ng-container *ngIf='trip.Type=="Train"'>
+            <app-train-trip [trip]="trip"></app-train-trip>
+          </ng-container>
           <ng-container *ngIf='trip.Type=="Hotel"'>
-            <ion-row>
-              <ion-col size='3'>
-                酒店名称
-              </ion-col>
-              <ion-col>
-                {{trip.Name}}
-              </ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col>
-                入住:{{trip.StartTime?.substr(0,"yyyy-MM-dd".length)}}
-              </ion-col>
-              <ion-col>
-                离店:{{trip.EndTime?.substr(0,"yyyy-MM-dd".length)}}
-              </ion-col>
-            </ion-row>
+            <app-hotel-trip [trip]="trip"></app-hotel-trip>
           </ng-container>
           <ng-container *ngIf='trip.Type == "Flight"'>
-            <ng-container *ngIf='getProducts(trip) as products'>
-              <ng-container *ngIf='products.length && getDays(trip.StartTime)>=1'>
-                <ng-container *ngFor='let p of products'>
-                  <ion-button color='secondary' *ngIf='check(trip,p.InsuranceType)'
-                    (click)='onShowSelectedInsurance(p,trip,$event)'>
-                    {{p.Name}}({{p.Price}})
-                  </ion-button>
-                </ng-container>
-              </ng-container>
-            </ng-container>
-            <ng-container *ngIf='getOrderInsurad(trip) as orderInsurad'>
-              <ion-button color='secondary' (click)='payInsurance(orderInsurad.Key,trip.OrderId,$event)'>
-                继续支付{{orderInsurad.Name}}
-              </ion-button>
-            </ng-container>
+            <app-flight-trip [trip]="trip" (payInsuranceEvt)="payInsurance($event)"></app-flight-trip>
           </ng-container>
-          <ng-container *ngIf='getTrainProducts(trip) as products'>
-            <ng-container *ngIf='products.length'>
-              <ng-container *ngFor='let product of products '>
-                <span>{{product.Name}}({{product.Price}})</span>
-              </ng-container>
-            </ng-container>
-          </ng-container>
-        </div>
-      </ion-item>
-    </ion-list>
+      </ng-container>
+    </ng-container>
   </ng-container>
   <ng-template #nomoredata>
     <app-or-comp>暂无数据</app-or-comp>
