@@ -227,6 +227,19 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   trackById(idx: number, item: FlightSegmentEntity) {
     return item.Id;
   }
+  getNoMoreDataDesc() {
+    const bookInfos = this.flightService.getPassengerBookInfos();
+    const go = bookInfos.find(it => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip);
+    if (go) {
+      if (!this.vmFlights || !this.vmFlights.length) {
+        let arrival = go.bookInfo.flightSegment.ArrivalTime || "";
+        arrival=moment(arrival).add(1,'hours').format("YYYY-MM-DD HH:mm");
+        return `${arrival.replace("T", " ")}之后已无航班`;
+      }
+    } else {
+      return "未查到符合条件的航班信息<br/>请更改查询条件重新查询"
+    }
+  }
   async canShowAddPassenger() {
     const identity = await this.identityService
       .getIdentityAsync()

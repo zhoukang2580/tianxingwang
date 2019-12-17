@@ -76,7 +76,7 @@
     <ion-label>{{currentProcessStatus||"数据即将加载完成"}}</ion-label>
   </app-or-comp>
   <app-or-comp *ngIf='!isLoading&&vmFlights?.length==0'>
-    <ion-label>暂无数据</ion-label>
+    <div [innerHtml]='getNoMoreDataDesc()'></div>
   </app-or-comp>
   <ul class='flight'>
     <li *ngFor='let s of vmFlights; trackBy:trackById' class='list-item' #fli (click)='goToFlightCabinsDetails(s)' [class.shade]='isHasFiltered&&!s.Cabins?.length'>
