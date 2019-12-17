@@ -167,7 +167,9 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
   }
   async initTrainDays() {
     const identity = await this.identityService.getIdentityAsync();
-    const lastSelectedGoDate = await this.storage.get(`last_selected_train_goDate_${identity && identity.Id}`) || moment().format("YYYY-MM-DD");
+    let lastSelectedGoDate = await this.storage.get(`last_selected_train_goDate_${identity && identity.Id}`) || moment().format("YYYY-MM-DD");
+    const nextDate = moment().add(1, 'days').format("YYYY-MM-DD");
+    lastSelectedGoDate = lastSelectedGoDate && this.calendarService.generateDayModelByDate(lastSelectedGoDate).timeStamp >= this.calendarService.generateDayModelByDate(nextDate).timeStamp ? lastSelectedGoDate : nextDate
     this.trainService.setSearchTrainModel({
       ...this.trainService.getSearchTrainModel(),
       Date: lastSelectedGoDate
