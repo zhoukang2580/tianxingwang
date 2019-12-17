@@ -17,5 +17,10 @@ ion-button {
   margin: 0.5em 0;
 }
 img {
-  height: 3em;
+  height: 2em;
+  width: 2em;
+}
+ion-label.title {
+  display: flex;
+  align-items: center;
 }

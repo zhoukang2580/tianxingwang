@@ -46,7 +46,7 @@
   }
 }
 .btns {
-  border-top: 1px solid rgba(var(--ion-color-dark-rgb), 0.3);
+  border-top: 1px solid rgba(var(--ion-color-dark-rgb), 0.15);
   margin-top: 0.5em;
 }
 ion-button {
@@ -56,5 +56,11 @@ span {
   user-select: text;
 }
 img {
-  width: 3em;
+  height: 2em;
+  width: 2em;
 }
+ion-label.title {
+  display: flex;
+  align-items: center;
+}
+
