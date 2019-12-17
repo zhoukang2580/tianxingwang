@@ -370,9 +370,9 @@ export class TrainBookPage implements OnInit, AfterViewInit {
               value: this.getTravelFormNumber(n),
               staffNumber: cstaff && cstaff.Number,
               staffOutNumber: cstaff && cstaff.OutNumber,
-              isTravelNumber: n == "TravelNumber",
-              canSelect: n == "TravelNumber",
-              isDisabled: !!(this.viewModel.travelForm && n == "TravelNumber")
+              isTravelNumber: n.toLowerCase() == "TravelNumber".toLowerCase(),
+              canSelect: n.toLowerCase() == "TravelNumber".toLowerCase(),
+              isDisabled: !!(this.viewModel.travelForm && n.toLowerCase() == "TravelNumber".toLowerCase())
             } as ITmcOutNumberInfo;
           }) || [];
 

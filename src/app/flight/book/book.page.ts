@@ -992,13 +992,13 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     return fees as number;
   }
-  getInsuranceDetails(detail:string){
-    return detail&&detail.split("\n").join("<br/>");
+  getInsuranceDetails(detail: string) {
+    return detail && detail.split("\n").join("<br/>");
   }
   async onShowPriceDetail() {
     const p = await this.popoverCtrl.create({
       component: PriceDetailComponent,
-      cssClass:"ticket-changing",
+      cssClass: "ticket-changing",
       componentProps: {
         priceInfos:
           this.vmCombindInfos &&
@@ -1172,9 +1172,9 @@ export class BookPage implements OnInit, AfterViewInit {
                   value: this.getTravelFormNumber(n),
                   staffNumber: cstaff && cstaff.Number,
                   staffOutNumber: cstaff && cstaff.OutNumber,
-                  isTravelNumber: n == "TravelNumber",
-                  canSelect: n == "TravelNumber",
-                  isDisabled: !!(this.travelForm && n == "TravelNumber")
+                  isTravelNumber: n.toLowerCase() == "TravelNumber".toLowerCase(),
+                  canSelect: n.toLowerCase() == "TravelNumber".toLowerCase(),
+                  isDisabled: !!(this.travelForm && n.toLowerCase() == "TravelNumber".toLowerCase())
                 } as ITmcOutNumberInfo;
               })
         } as ICombindInfo;
