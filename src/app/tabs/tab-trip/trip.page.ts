@@ -1,3 +1,4 @@
+import { ActivatedRoute } from '@angular/router';
 import { TripBuyInsuranceComponent } from './trip-buy-insurance/trip-buy-insurance.component';
 import { Platform, ModalController } from '@ionic/angular';
 import { TmcService } from 'src/app/tmc/tmc.service';
@@ -38,9 +39,7 @@ export class TripPage implements OnInit {
   constructor(
     private tmcService: TmcService,
     private apiservice: ApiService,
-    private calendarService: CalendarService,
-    private modalCtrl: ModalController,
-    private plt: Platform,
+    private route: ActivatedRoute,
     private router: Router) { }
   private getTrips() {
     this.loadMoreSubscription.unsubscribe();
@@ -66,7 +65,9 @@ export class TripPage implements OnInit {
     }));
   }
   ngOnInit() {
-    this.doRefresh();
+    this.route.queryParamMap.subscribe(_=>{
+      this.doRefresh();
+    })
   }
   doRefresh() {
     this.searchCondition.PageIndex = 0;
@@ -102,36 +103,10 @@ export class TripPage implements OnInit {
         }
       })
   }
-
-  async onShowSelectedInsurance(p?: InsuranceProductEntity, trip?: OrderTripModel, evt?: CustomEvent) {
-    if (evt) {
-      evt.stopPropagation();
-    }
-    if (!p || !trip) {
-      return;
-    }
-    const m = await this.modalCtrl.create({
-      component: TripBuyInsuranceComponent,
-      componentProps: {
-        trip,
-        insurance: p
-      }
-    });
-    m.present();
-  }
-
-
-  async payInsurance(d: { key: string, tradeNo: string}) {
+  async payInsurance(d: { key: string, tradeNo: string }) {
     if (d && d.key && d.tradeNo) {
       await this.tmcService.payOrder(d.tradeNo, d.key);
     }
-  }
-  getTrainProducts(orderTrip: OrderTripModel ) {
-    const types = [OrderInsuranceType.TrainAccident];
-    if (!orderTrip || !orderTrip.InsuranceResult) {
-      return [];
-    }
-    return orderTrip.InsuranceResult.Products.filter(it => types.some(t => t == it.InsuranceType));
   }
   goToDetailPage(trip: OrderTripModel) {
     if (!trip) {
