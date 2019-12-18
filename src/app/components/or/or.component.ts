@@ -19,6 +19,7 @@ export class OrComponent implements OnInit, AfterViewInit {
     div.style.visibility = 'hidden';
     div.classList.add("size-of-fonts");
     div.style.position = 'absolute';
+    this.el.nativeElement.appendChild(div);
     const or = this.el.nativeElement.querySelector(".or") as HTMLElement;
     let size = 16 * 0.8;
     if (or) {
@@ -27,7 +28,6 @@ export class OrComponent implements OnInit, AfterViewInit {
       div.style.fontFamily = or.style.fontFamily;
       requestAnimationFrame(_ => {
         div.innerText = this.el.nativeElement.innerText;
-        this.el.nativeElement.appendChild(div);
       })
     }
     const leftEle: HTMLElement = this.el.nativeElement.querySelector(".left");
@@ -36,11 +36,22 @@ export class OrComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       if (leftEle && rightEle) {
         const innerWidth = this.plt.width();
-        const clientWidth = div.clientWidth >= innerWidth * 0.5 ? innerWidth * 0.5 : div.clientWidth;
-        const padding = + (getComputedStyle(or).paddingLeft.replace("px", '') + getComputedStyle(or).paddingRight.replace("px", '') || 0);
-        width = Math.floor((innerWidth - padding - clientWidth) / 2);
-        this.render.setStyle(leftEle, 'width', `${width}px`);
-        this.render.setStyle(rightEle, 'width', `${width}px`);
+        if (div.clientWidth == 0) {
+          requestAnimationFrame(_ => {
+            div.innerText = this.el.nativeElement.innerText;
+            const clientWidth = div.clientWidth >= innerWidth * 0.5 ? innerWidth * 0.5 : div.clientWidth;
+            const padding = + (getComputedStyle(or).paddingLeft.replace("px", '') + getComputedStyle(or).paddingRight.replace("px", '') || 0);
+            width = Math.floor((innerWidth - padding - clientWidth) / 2);
+            this.render.setStyle(leftEle, 'width', `${width}px`);
+            this.render.setStyle(rightEle, 'width', `${width}px`);
+          })
+        } else {
+          const clientWidth = div.clientWidth >= innerWidth * 0.5 ? innerWidth * 0.5 : div.clientWidth;
+          const padding = + (getComputedStyle(or).paddingLeft.replace("px", '') + getComputedStyle(or).paddingRight.replace("px", '') || 0);
+          width = Math.floor((innerWidth - padding - clientWidth) / 2);
+          this.render.setStyle(leftEle, 'width', `${width}px`);
+          this.render.setStyle(rightEle, 'width', `${width}px`);
+        }
       }
     }, 100);
   }
