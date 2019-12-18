@@ -299,3 +299,4 @@ dist/
 .angulardoc.json
 .ionide/symbolCache.db
 .ionide
+.angulardoc.json
