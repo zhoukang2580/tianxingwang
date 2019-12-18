@@ -97,7 +97,7 @@
                   <ion-text color='secondary' *ngIf='cabin.Cabin?.FareType==FlightFareType.Agreement'>
                     <strong>协</strong>
                   </ion-text>
-                  <ion-text color='secondary' *ngIf='cabin?.OrderTravelPayNames'>
+                  <ion-text color='secondary' *ngIf='cabin?.OrderTravelPayNames&&isAgent'>
                     <strong>政</strong>
                   </ion-text>
                 </h3>

@@ -59,9 +59,7 @@ export class FlightItemCabinsPage implements OnInit {
     private modalCtrl: ModalController,
     private flydayService: CalendarService,
     private staffService: StaffService,
-    private alertCtrl: AlertController,
     private identityService: IdentityService,
-    private navCtrl: NavController,
     private router: Router,
     private popoverController: PopoverController
   ) {
@@ -80,6 +78,9 @@ export class FlightItemCabinsPage implements OnInit {
         this.staff.Name = identity && identity.Name;
       }
     });
+  }
+  get isAgent(){
+    return this.identity&&this.identity.Numbers&&this.identity.Numbers['AgentId'];
   }
   back() {
     this.router.navigate([AppHelper.getRoutePath("flight-list")]);

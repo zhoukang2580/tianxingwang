@@ -14,8 +14,9 @@ export class SelectFlightsegmentCabinComponent implements OnInit {
   @Input() policiedCabins: FlightPolicy[];
   @Input() flightSegment: FlightSegmentEntity;
   @Output() selectcabin: EventEmitter<any>;
-  FlightFareType=FlightFareType;
-  constructor(private modalCtrl: ModalController,private popoverCtrl:PopoverController) {
+  @Input() isAgent = false;
+  FlightFareType = FlightFareType;
+  constructor(private modalCtrl: ModalController, private popoverCtrl: PopoverController) {
     this.selectcabin = new EventEmitter();
   }
   back() {
@@ -36,7 +37,7 @@ export class SelectFlightsegmentCabinComponent implements OnInit {
     }
     return "success";
   }
-  ngOnInit() {}
+  ngOnInit() { }
   async openrules(cabin: any) {
     const m = await this.popoverCtrl.create({
       component: TicketchangingComponent,

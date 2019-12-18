@@ -1,3 +1,4 @@
+import { IdentityService } from './../../../services/identity/identity.service';
 import { CredentialsEntity } from "./../../../tmc/models/CredentialsEntity";
 import { SearchFlightModel } from "./../../flight.service";
 import { Observable, Subscription } from "rxjs";
@@ -31,10 +32,11 @@ import { FlightCabinEntity } from '../../models/flight/FlightCabinEntity';
   styleUrls: ["./selected-flightsegment-info.component.scss"]
 })
 export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
+  private searchModelSubscrition = Subscription.EMPTY;
+  private subscrition = Subscription.EMPTY;
   bookInfos: PassengerBookInfo<IFlightSegmentInfo>[];
   passengerAndBookInfos$: Observable<PassengerBookInfo<IFlightSegmentInfo>[]>;
   searchModel: SearchFlightModel;
-  searchModelSubscrition = Subscription.EMPTY;
   identity: IdentityEntity;
   showSelectReturnTripButton = false;
   TripType = TripType;
@@ -42,14 +44,14 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
   constructor(
     private modalCtrl: ModalController,
     private flightService: FlightService,
-    private alertController: AlertController,
     private flydayService: CalendarService,
     private staffService: StaffService,
     private router: Router,
-    private navCtrl: NavController
+    private IdentityService: IdentityService
   ) { }
   ngOnDestroy() {
     this.searchModelSubscrition.unsubscribe();
+    this.subscrition.unsubscribe();
   }
   async ngOnInit() {
     this.isSelf = await this.staffService.isSelfBookType();
@@ -85,6 +87,9 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
           }
         })
       );
+    this.subscrition = this.IdentityService.getIdentitySource().subscribe(identity => {
+      this.identity = identity;
+    })
   }
   async back() {
     const t = await this.modalCtrl.getTop();
@@ -151,16 +156,16 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
       );
       return "";
     }
-    let tip=[];
-    if(info&&info.bookInfo&&info.bookInfo.flightSegment){
-      if(info.bookInfo.flightSegment.ToAirport!=lowestFlightSegment.ToAirport){
+    let tip = [];
+    if (info && info.bookInfo && info.bookInfo.flightSegment) {
+      if (info.bookInfo.flightSegment.ToAirport != lowestFlightSegment.ToAirport) {
         tip.push(`抵达机场将由【${info.bookInfo.flightSegment.ToAirportName}】 变更为 【${lowestFlightSegment.ToAirportName}】`);
       }
-      if(info.bookInfo.flightSegment.FromAirport!=lowestFlightSegment.FromAirport){
+      if (info.bookInfo.flightSegment.FromAirport != lowestFlightSegment.FromAirport) {
         tip.push(`出发机场将由【${info.bookInfo.flightSegment.FromAirportName}】 变更为 【${lowestFlightSegment.FromAirportName}】`);
       }
     }
-    if(tip.length){
+    if (tip.length) {
       const ok = await AppHelper.alert(`${tip.join(";")}，是否继续？`, true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
       if (!ok) {
         return;
@@ -170,7 +175,8 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
       component: SelectFlightsegmentCabinComponent,
       componentProps: {
         policiedCabins: [lowestCabin],
-        flightSegment: lowestFlightSegment
+        flightSegment: lowestFlightSegment,
+        isAgent: this.identity && this.identity.Numbers && this.identity.Numbers['AgentId']
       }
     });
     m.backdropDismiss = false;
