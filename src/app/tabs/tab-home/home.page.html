@@ -5,12 +5,18 @@
         <app-scan-comp></app-scan-comp>
       </ion-button>
     </ion-buttons>
-    <ion-title text-center appShowtip>
+    <!-- <ion-title text-center appShowtip>
       <ng-container *ngIf='canSelectCompany$|async'>
         <ion-text *ngIf='selectedCompany$|async as company'>{{company}}</ion-text>
       </ng-container>
       {{identity?.Name}}
-    </ion-title>
+    </ion-title> -->
+    <div (click)='goToBulletinList("agentNotice")'>
+      <app-image-swiper [isShowCloseBtn]='false'
+        [slideStyle]='{backgroundColor:"white",display:"flex",alignItems:"center",justifyContent:"flext-start"}'
+        [autoplayspeed]='1000' [loop]='true' [effect]='false' [isShowPagination]='false' [autoplay]='true'
+        [direction]='"vertical"' [texts]='agentNotices'></app-image-swiper>
+    </div>
     <ion-buttons slot='end' *ngIf='identity?.Numbers?.AgentId;else selectCompany'>
       <ion-button fill='clear' size='small' (click)='onSwitchCustomer()'>
         <ion-chip color='success'>
@@ -34,17 +40,14 @@
   <div class="img">
     <img [src]='"assets/images/home_top_bg.png"' />
   </div>
-  <ion-toolbar (click)='goToBulletinList("agentNotice")'>
-    <app-image-swiper [isShowCloseBtn]='false' [slideStyle]='{backgroundColor:"white",display:"flex",alignItems:"center",justifyContent:"flext-start"}' [autoplayspeed]='1000' [loop]='true' [effect]='false'
-      [isShowPagination]='false' [autoplay]='true' [direction]='"vertical"' [texts]='agentNotices'></app-image-swiper>
-  </ion-toolbar>
+
   <ion-grid>
     <ion-row wrap>
       <ion-col size="4">
         <div class="item" (click)='goToPage("flight")'>
           <ion-label>
             <!-- <i class="icon icon-home-plane"></i> -->
-            <img src="assets/svgs/home-plane.svg"  alt="机票">
+            <img src="assets/svgs/home-plane.svg" alt="机票">
           </ion-label>
           <ion-text>国内机票</ion-text>
           <ion-ripple-effect></ion-ripple-effect>
@@ -63,7 +66,7 @@
       <ion-col (click)='goToPage("train")' size="4">
         <div class="item">
           <ion-label>
-            <img src="assets/svgs/home-train.svg"  alt="火车票">
+            <img src="assets/svgs/home-train.svg" alt="火车票">
             <!-- <i class="icon icon-home-train"></i> -->
           </ion-label>
           <ion-text>火车票</ion-text>
@@ -96,7 +99,7 @@
       <ion-col (click)='goToPage("bulletin","notice")' size="4">
         <div class="item">
           <ion-label>
-            <img src="assets/svgs/announcement.svg"  alt="公告">
+            <img src="assets/svgs/announcement.svg" alt="公告">
             <!-- <i class="icon icon-announcement"></i> -->
           </ion-label>
           <ion-text style="margin-top: 0;">公告</ion-text>
