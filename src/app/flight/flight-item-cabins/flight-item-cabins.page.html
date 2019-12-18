@@ -118,10 +118,10 @@
           <ion-row *ngIf='cabin?.Rules'>
             <ion-col>
               <ion-label *ngFor='let r of cabin.Rules' color='danger' text-wrap class='rule'>{{r}}</ion-label>
-              <!-- <ion-label *ngIf='getFlightIllegalTip() as tip' color='danger' text-wrap class='rule'>提示：({{tip}})
+              <ion-label *ngIf='getFlightIllegalTip() as tip' color='danger' text-wrap class='rule'>提示：({{tip}})
               </ion-label>
               <ion-label *ngIf='getFlightlegalTip() as tip' color='danger' text-wrap class='rule'>提示：({{tip}})
-              </ion-label> -->
+              </ion-label>
             </ion-col>
           </ion-row>
         </div>
