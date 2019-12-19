@@ -102,6 +102,9 @@ export class TmcService {
       if (AppHelper.isDingtalkH5()) {
         channel = 'DingtalkH5';
       }
+      if(AppHelper.isWechatMini()){
+        channel = 'WechatMini';
+      }
     }
     return channel;
   }
