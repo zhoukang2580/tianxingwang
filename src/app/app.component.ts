@@ -171,7 +171,7 @@ export class AppComponent
     if (paramters.IsForbidOpenId) {
       return true;
     } else if (AppHelper.isDingtalkH5()) {
-      if (!AppHelper.checkQueryString("unionid")) {
+      if (!AppHelper.checkQueryString("dingtalkcode")) {
         const url =
           AppHelper.getApiUrl() +
           "/home/GetDingtalkCode?IsLogin=true&IsForbidOpenId=true&path=" +

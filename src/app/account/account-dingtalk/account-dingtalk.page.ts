@@ -46,7 +46,7 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
         AppHelper.getDomain() +
         "&ticket=" +
         AppHelper.getTicket() +
-        "&path=account-dingtalk";
+        "&path=account-dingtalk&IsForbidOpenId=true";
       AppHelper.redirect(url);
     }
   }
