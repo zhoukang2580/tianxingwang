@@ -251,16 +251,16 @@ export class MapService {
     let result: {
       city: TrafficlineEntity;
       position: { lat: string; lng: string; cityName: string; };
-    }={} as any;
+    } = {} as any;
     const isMini = await AppHelper.isWechatMiniAsync() || AppHelper.isWechatMini();
     if (isMini) {
       result = await this.getCurrentCityPositionInWechatMini();
       return result;
     }
-    const latLng: MapPoint = (await this.getPosByIp()) || await this.getCurrentPosition().catch(_ => {
+    const latLng: MapPoint = await this.getCurrentPosition().catch(_ => {
       console.error("getLatLng error", _);
       return void 0;
-    });
+    }) || (await this.getPosByIp());
     console.log("getLatLng 结束：", Date.now() - st);
     console.log("getLatLng", latLng);
     if (latLng) {
