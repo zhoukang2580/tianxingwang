@@ -56,3 +56,11 @@
 ## 发布
 `ng build --prod --base-href /www/`
 ng serve --disableHostCheck
+
+
+## ios 发布app说明
+执行命令前，先到config.xml修改版本号
+1. 首先执行 `sudo ionic cordova build ios --prod`
+2. 用 xcode 打开 platforms/ios/项目
+3. 到xcode target 的选项卡中打开 info，修改打包的bundle identifier为： `com.eskytrip.zhaozuomingios`
+4. 执行archive打包，传到iTunes,提交审核

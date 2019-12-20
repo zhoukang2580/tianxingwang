@@ -7,9 +7,11 @@ import { CredentialsEntity } from 'src/app/tmc/models/CredentialsEntity';
   styleUrls: ["./price-detail.component.scss"]
 })
 export class PriceDetailComponent implements OnInit {
-  fees: number;
+  isSelf: boolean;
+  fees: {[id:string]:number};
   priceInfos: {
-    passengerCredential:CredentialsEntity,
+    id:string;
+    passengerCredential: CredentialsEntity,
     from: string;
     to: string;
     price: number;
@@ -19,9 +21,9 @@ export class PriceDetailComponent implements OnInit {
       price: number;
     };
   }[];
-  constructor() {}
+  constructor() { }
 
   ngOnInit() {
-    console.log("priceInfos", this.priceInfos);
+    console.log("priceInfos", this.priceInfos,this.fees);
   }
 }

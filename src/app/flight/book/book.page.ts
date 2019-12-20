@@ -996,6 +996,7 @@ export class BookPage implements OnInit, AfterViewInit {
     return detail && detail.split("\n").join("<br/>");
   }
   async onShowPriceDetail() {
+    const isSelf = await this.staffService.isSelfBookType();
     const p = await this.popoverCtrl.create({
       component: PriceDetailComponent,
       cssClass: "ticket-changing",
@@ -1006,6 +1007,7 @@ export class BookPage implements OnInit, AfterViewInit {
             .map(item => {
               const bookInfo = item.modal && item.modal.bookInfo;
               return {
+                id:item.modal.id,
                 passengerCredential: item.modal && item.modal.credential,
                 from:
                   bookInfo &&
@@ -1035,11 +1037,18 @@ export class BookPage implements OnInit, AfterViewInit {
               };
             })
             .filter(it => !!it.from),
-        fees: this.getTotalServiceFees()
-
+        fees: this.getTicketsFees(),
+        isSelf
       }
     });
     p.present();
+  }
+  private getTicketsFees(){
+    const bookInfos = this.flightService.getPassengerBookInfos();
+    return bookInfos.reduce((acc,it)=>{
+      acc= {...acc,[it.id]:this.initialBookDtoModel&&this.initialBookDtoModel.ServiceFees[it.id]};
+      return acc;
+    },{})
   }
   private async initCombindInfos() {
     try {

@@ -179,6 +179,15 @@ app-fly-filter {
   display: flex;
   align-items: center;
 }
+.flight .list-item{
+  .left{
+    width: 90vw;
+  }
+  .price{
+    width: calc(10vw - 1em);
+    margin-right: 1.5em;
+  }
+}
 .flight .list-item .desc {
   margin: 0.3em 0;
 }

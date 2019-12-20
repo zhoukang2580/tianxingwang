@@ -38,7 +38,7 @@
     "cordova-ali-plugin": "file:cordova-ali-plugin",
     "cordova-android": "^8.0.0",
     "cordova-hcp-plugin": "file:cordova-hcp-plugin",
-    "cordova-ios": "^5.0.1",
+    "cordova-ios": "^5.1.1",
     "cordova-plugin-add-swift-support": "2.0.2",
     "cordova-plugin-app-version": "0.1.9",
     "cordova-plugin-console": "1.1.0",
@@ -127,8 +127,8 @@
       "cordova-plugin-zip": {}
     },
     "platforms": [
-      "ios",
-      "android"
+      "android",
+      "ios"
     ]
   }
 }
