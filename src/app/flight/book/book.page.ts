@@ -1044,6 +1044,10 @@ export class BookPage implements OnInit, AfterViewInit {
     p.present();
   }
   private getTicketsFees(){
+    const totalFees=this.getTotalServiceFees();
+    if(!totalFees){
+      return null;
+    }
     const bookInfos = this.flightService.getPassengerBookInfos();
     return bookInfos.reduce((acc,it)=>{
       acc= {...acc,[it.id]:this.initialBookDtoModel&&this.initialBookDtoModel.ServiceFees[it.id]};
