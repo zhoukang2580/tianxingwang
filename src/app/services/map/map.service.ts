@@ -247,7 +247,7 @@ export class MapService {
     };
   }
   async getLatLng() {
-    const st=Date.now();
+    const st = Date.now();
     let result: {
       city: TrafficlineEntity;
       position: { lat: string; lng: string; cityName: string; };
@@ -260,9 +260,9 @@ export class MapService {
     const latLng: MapPoint = await this.getCurrentPosition().catch(_ => {
       console.error("getLatLng error", _);
       return void 0;
-    }) ||  (await this.getPosByIp()) ;
-    console.log("getLatLng 结束：",Date.now()-st);
-    console.log("getLatLng",latLng);
+    }) || (await this.getPosByIp());
+    console.log("getLatLng 结束：", Date.now() - st);
+    console.log("getLatLng", latLng);
     if (latLng) {
       result.position = {
         lat: latLng.lat,
@@ -272,7 +272,7 @@ export class MapService {
     }
     return result;
   }
- async getCurrentCityPosition(): Promise<{
+  async getCurrentCityPosition(): Promise<{
     city: TrafficlineEntity;
     position: any;
   }> {
@@ -286,12 +286,10 @@ export class MapService {
       result = await this.getCurrentCityPositionInWechatMini();
       return result;
     }
-    console.time("getCurrentPosition");
-    let latLng: MapPoint = (await this.getPosByIp()) || await this.getCurrentPosition().catch(_ => {
+    let latLng: MapPoint = await this.getCurrentPosition().catch(_ => {
       console.error("getCurrentPosition error", _);
       return void 0;
-    });
-    console.timeEnd("getCurrentPosition");
+    }) || (await this.getPosByIp());
     console.log("getCurrentPosition", latLng);
     if (latLng) {
       result = {
