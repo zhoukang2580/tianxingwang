@@ -62,5 +62,5 @@ ng serve --disableHostCheck
 执行命令前，先到config.xml修改版本号
 1. 首先执行 `sudo ionic cordova build ios --prod`
 2. 用 xcode 打开 platforms/ios/项目
-3. 到xcode target 的选项卡中打开 info，修改打包的bundle identifier为： `com.eskytrip.zhaozuomingios`，如果要修改微信appid ,修改最底下的url types 的schema `https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=8_5`
+3. 到xcode target 的选项卡中打开 info，修改打包的bundle identifier为： `com.eskytrip.zhaozuomingios`，如果要修改微信appid ,修改最底下的url types 的schema `https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=8_5`,位置访问，需要在info标签下面新增 key =`Privacy - Location Always Usage Description`和`Privacy - Location Usage Description`
 4. 执行archive打包，传到iTunes,提交审核
