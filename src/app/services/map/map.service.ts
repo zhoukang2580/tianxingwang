@@ -90,7 +90,7 @@ export class MapService {
       const geolocation = new window["BMap"].Geolocation();
       setTimeout(() => {
         reject("定位超时");
-      }, 10 * 1000);
+      }, 5 * 1000);
       geolocation.getCurrentPosition(
         (r: {
           address: {
@@ -247,6 +247,7 @@ export class MapService {
     };
   }
   async getLatLng() {
+    const st=Date.now();
     let result: {
       city: TrafficlineEntity;
       position: { lat: string; lng: string; cityName: string; };
@@ -256,12 +257,11 @@ export class MapService {
       result = await this.getCurrentCityPositionInWechatMini();
       return result;
     }
-    console.time("getLatLng");
-    const latLng: MapPoint = (await this.getPosByIp()) || await this.getCurrentPosition().catch(_ => {
+    const latLng: MapPoint = await this.getCurrentPosition().catch(_ => {
       console.error("getLatLng error", _);
       return void 0;
-    });
-    console.timeEnd("getLatLng");
+    }) ||  (await this.getPosByIp()) ;
+    console.log("getLatLng 结束：",Date.now()-st);
     console.log("getLatLng",latLng);
     if (latLng) {
       result.position = {
