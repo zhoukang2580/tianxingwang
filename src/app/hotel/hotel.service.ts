@@ -256,9 +256,9 @@ export class HotelService {
     this.setSearchHotelModel(m);
   }
   async getCurPosition() {
-    const res = await this.mapService.getLatLng();
-    const cities = await this.getHotelCityAsync();
-    if (cities && res && res.position) {
+    const res = await this.mapService.getLatLng().catch(_=>null);
+    if (res && res.position) {
+      const cities = await this.getHotelCityAsync();
       res.city = cities.find(c => c.Name.includes(res.position.cityName) || res.position.cityName.includes(c.Name))
     }
     return res.city ? res : await this.mapService.getCurrentCityPosition();
@@ -414,7 +414,7 @@ export class HotelService {
       const local = await this.getHotelCitiesFromLocalCache();
       if (local) {
         this.lastUpdateTime = local.LastUpdateTime;
-        this.localHotelCities = local.HotelCities;
+        this.localHotelCities = local.HotelCities||[];
       }
     }
     if (

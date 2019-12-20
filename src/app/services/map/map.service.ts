@@ -134,7 +134,7 @@ export class MapService {
         },
         { enableHighAccuracy: false }
       );
-    }).catch(_ => null);
+    });
   }
   private getCityFromMap(p: MapPoint): Promise<AddressComponents> {
     if (!window["BMap"]) {
@@ -251,16 +251,16 @@ export class MapService {
     let result: {
       city: TrafficlineEntity;
       position: { lat: string; lng: string; cityName: string; };
-    };
+    }={} as any;
     const isMini = await AppHelper.isWechatMiniAsync() || AppHelper.isWechatMini();
     if (isMini) {
       result = await this.getCurrentCityPositionInWechatMini();
       return result;
     }
-    const latLng: MapPoint = await this.getCurrentPosition().catch(_ => {
+    const latLng: MapPoint = (await this.getPosByIp()) || await this.getCurrentPosition().catch(_ => {
       console.error("getLatLng error", _);
       return void 0;
-    }) || (await this.getPosByIp());
+    });
     console.log("getLatLng 结束：", Date.now() - st);
     console.log("getLatLng", latLng);
     if (latLng) {
@@ -270,7 +270,7 @@ export class MapService {
         cityName: latLng.cityName
       }
     }
-    return result;
+    return result.position && result.position.lat && result.position.lng ? result : null;
   }
   async getCurrentCityPosition(): Promise<{
     city: TrafficlineEntity;
@@ -286,10 +286,10 @@ export class MapService {
       result = await this.getCurrentCityPositionInWechatMini();
       return result;
     }
-    let latLng: MapPoint = await this.getCurrentPosition().catch(_ => {
+    let latLng: MapPoint = await this.getLatLng().catch(_ => {
       console.error("getCurrentPosition error", _);
       return void 0;
-    }) || (await this.getPosByIp());
+    });
     console.log("getCurrentPosition", latLng);
     if (latLng) {
       result = {
@@ -337,21 +337,6 @@ export class MapService {
         }
       }
     }
-    // else {
-    //   const name = await this.getCityNameByIp().catch(_ => {
-    //     console.error("getCityNameByIp", _);
-    //     return null;
-    //   });
-    //   if (name) {
-    //     result = {
-    //       city: {
-    //         CityCode: "",
-    //         CityName: name
-    //       } as any,
-    //       position: ""
-    //     };
-    //   }
-    // }
     return result;
   }
   private getPosByIp(): Promise<MapPoint> {
