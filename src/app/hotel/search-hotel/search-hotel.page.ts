@@ -96,7 +96,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     this.curPos = { CityName: "正在定位..." } as any;
     const curPos: {
       city: TrafficlineEntity;
-      position: any;
+      position: {lat:string;lng:string;cityName:string;};
     } = await this.hotelService.getCurPosition().catch(_ => null);
     if (this.isLeavePage) {
       return;

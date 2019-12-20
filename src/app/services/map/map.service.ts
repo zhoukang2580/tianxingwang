@@ -246,7 +246,33 @@ export class MapService {
       latitude: lats
     };
   }
-  async getCurrentCityPosition(): Promise<{
+  async getLatLng() {
+    let result: {
+      city: TrafficlineEntity;
+      position: { lat: string; lng: string; cityName: string; };
+    };
+    const isMini = await AppHelper.isWechatMiniAsync() || AppHelper.isWechatMini();
+    if (isMini) {
+      result = await this.getCurrentCityPositionInWechatMini();
+      return result;
+    }
+    console.time("getLatLng");
+    const latLng: MapPoint = (await this.getPosByIp()) || await this.getCurrentPosition().catch(_ => {
+      console.error("getLatLng error", _);
+      return void 0;
+    });
+    console.timeEnd("getLatLng");
+    console.log("getLatLng",latLng);
+    if (latLng) {
+      result.position = {
+        lat: latLng.lat,
+        lng: latLng.lng,
+        cityName: latLng.cityName
+      }
+    }
+    return result;
+  }
+ async getCurrentCityPosition(): Promise<{
     city: TrafficlineEntity;
     position: any;
   }> {
@@ -260,10 +286,12 @@ export class MapService {
       result = await this.getCurrentCityPositionInWechatMini();
       return result;
     }
+    console.time("getCurrentPosition");
     let latLng: MapPoint = (await this.getPosByIp()) || await this.getCurrentPosition().catch(_ => {
       console.error("getCurrentPosition error", _);
       return void 0;
     });
+    console.timeEnd("getCurrentPosition");
     console.log("getCurrentPosition", latLng);
     if (latLng) {
       result = {

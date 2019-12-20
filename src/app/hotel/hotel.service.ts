@@ -56,7 +56,7 @@ export interface LocalHotelCityCache {
   providedIn: "root"
 })
 export class HotelService {
-  private fetchPassengerCredentials:{promise:Promise<any>};
+  private fetchPassengerCredentials: { promise: Promise<any> };
   private bookInfos: PassengerBookInfo<IHotelInfo>[];
   private bookInfoSource: Subject<PassengerBookInfo<IHotelInfo>[]>;
   private searchHotelModelSource: Subject<SearchHotelModel>;
@@ -70,7 +70,7 @@ export class HotelService {
   private conditionModel: HotelConditionModel;
   // private hotelPolicies: { [hotelId: string]: HotelPassengerModel[] };
   private hotelQueryModel: HotelQueryEntity;
-  curViewHotel:HotelDayPriceEntity;
+  curViewHotel: HotelDayPriceEntity;
 
   constructor(
     private apiService: ApiService,
@@ -92,7 +92,7 @@ export class HotelService {
       identityService.getIdentitySource()
     ]).subscribe(async ([bookInfos, identity]) => {
       if (identity && identity.Id && identity.Ticket) {
-        if(this.isInitializingSelfBookInfos){
+        if (this.isInitializingSelfBookInfos) {
           return;
         }
         await this.initSelfBookTypeBookInfos();
@@ -102,16 +102,16 @@ export class HotelService {
       this.disposal();
     });
   }
-  
-  setHotelQuerySource(query:HotelQueryEntity) {
-    this.hotelQueryModel=query;
+
+  setHotelQuerySource(query: HotelQueryEntity) {
+    this.hotelQueryModel = query;
     this.hotelQuerySource.next(query);
   }
   getHotelQuerySource() {
     return this.hotelQuerySource.asObservable();
   }
   getHotelQueryModel() {
-    if(!this.hotelQueryModel){
+    if (!this.hotelQueryModel) {
       this.setHotelQuerySource(new HotelQueryEntity());
     }
     return this.hotelQueryModel;
@@ -204,7 +204,7 @@ export class HotelService {
   }
   async getConditions(forceFetch = false) {
     const city = this.getSearchHotelModel().destinationCity;
-    forceFetch=forceFetch||city.Code!=(this.conditionModel&&this.conditionModel.city&&this.conditionModel.city.Code);
+    forceFetch = forceFetch || city.Code != (this.conditionModel && this.conditionModel.city && this.conditionModel.city.Code);
     if (
       forceFetch ||
       !this.conditionModel ||
@@ -255,8 +255,13 @@ export class HotelService {
     m.hotelType = "normal";
     this.setSearchHotelModel(m);
   }
-  getCurPosition() {
-    return this.mapService.getCurrentCityPosition();
+  async getCurPosition() {
+    const res = await this.mapService.getLatLng();
+    const cities = await this.getHotelCityAsync();
+    if (cities && res && res.position) {
+      res.city = cities.find(c => c.Name.includes(res.position.cityName) || res.position.cityName.includes(c.Name))
+    }
+    return res.city ? res : await this.mapService.getCurrentCityPosition();
   }
   getSearchHotelModelSource() {
     return this.searchHotelModelSource.asObservable();
@@ -283,18 +288,18 @@ export class HotelService {
       this.searchHotelModelSource.next(this.searchHotelModel);
     }
   }
-  private getPassengerCredentials(accountIds:string[],isShowLoading:boolean){
-    if(this.fetchPassengerCredentials&&this.fetchPassengerCredentials.promise){
+  private getPassengerCredentials(accountIds: string[], isShowLoading: boolean) {
+    if (this.fetchPassengerCredentials && this.fetchPassengerCredentials.promise) {
       return this.fetchPassengerCredentials.promise;
     }
-    this.fetchPassengerCredentials={
-      promise:this.tmcService.getPassengerCredentials(accountIds,isShowLoading).finally(()=>{
-        this.fetchPassengerCredentials=null;
+    this.fetchPassengerCredentials = {
+      promise: this.tmcService.getPassengerCredentials(accountIds, isShowLoading).finally(() => {
+        this.fetchPassengerCredentials = null;
       })
     }
     return this.fetchPassengerCredentials.promise;
   }
-  async initSelfBookTypeBookInfos(isShowLoading=false) {
+  async initSelfBookTypeBookInfos(isShowLoading = false) {
     const isSelf = await this.staffService.isSelfBookType(isShowLoading);
     const infos = this.getBookInfos();
     console.log("initSelfBookTypeBookInfos", infos);
@@ -304,9 +309,9 @@ export class HotelService {
       }
       this.isInitializingSelfBookInfos = true;
       let IdCredential: CredentialsEntity;
-      const staff = await this.staffService.getStaff(false,isShowLoading);
+      const staff = await this.staffService.getStaff(false, isShowLoading);
       if (!this.selfCredentials || this.selfCredentials.length === 0) {
-        const res = await this.getPassengerCredentials([staff.AccountId],isShowLoading)
+        const res = await this.getPassengerCredentials([staff.AccountId], isShowLoading)
           .catch(_ => ({ [staff.AccountId]: [] }));
         this.selfCredentials = res[staff.AccountId];
       }
@@ -336,14 +341,14 @@ export class HotelService {
       this.setBookInfos(bookInfos);
     }
   }
-   removeBookInfo(bookInfo: PassengerBookInfo<IHotelInfo>,isRemovePassenger:boolean) {
+  removeBookInfo(bookInfo: PassengerBookInfo<IHotelInfo>, isRemovePassenger: boolean) {
     const arg = { ...bookInfo };
-    if(isRemovePassenger){
-      this.bookInfos=this.bookInfos.filter(it=>it.id!==arg.id);
-    }else{
-      this.bookInfos=this.bookInfos.map(it=>{
-        if(it.id==arg.id){
-          it.bookInfo=null;
+    if (isRemovePassenger) {
+      this.bookInfos = this.bookInfos.filter(it => it.id !== arg.id);
+    } else {
+      this.bookInfos = this.bookInfos.map(it => {
+        if (it.id == arg.id) {
+          it.bookInfo = null;
         }
         return it;
       })
@@ -475,13 +480,13 @@ export class HotelService {
     return local;
   }
   getHotelList(query: HotelQueryEntity) {
-    const hotelquery :HotelQueryEntity= {
+    const hotelquery: HotelQueryEntity = {
       ...query,
-      starAndPrices:null,
-      locationAreas:null,
-      ranks:null,
-      filters:null,
-      City:null
+      starAndPrices: null,
+      locationAreas: null,
+      ranks: null,
+      filters: null,
+      City: null
     };
     const req = new RequestEntity();
     req.Method = `TmcApiHotelUrl-Home-List`;
@@ -534,34 +539,34 @@ export class HotelService {
     };
     // req.IsShowLoading = true;
     return from(this.setDefaultFilterPolicy())
-    .pipe(
-      switchMap(_=>this.apiService.getResponse<HotelResultEntity>(req)),
-      map(result => {
-        if (result && result.Data && result.Data.HotelDayPrices) {
-          result.Data.HotelDayPrices = result.Data.HotelDayPrices.map(it => {
-            if (it.Hotel && it.Hotel.Variables) {
-              it.Hotel.VariablesJsonObj = JSON.parse(it.Hotel.Variables);
-            }
-            return it;
-          });
-        }
-        return result;
-      })
-    );
+      .pipe(
+        switchMap(_ => this.apiService.getResponse<HotelResultEntity>(req)),
+        map(result => {
+          if (result && result.Data && result.Data.HotelDayPrices) {
+            result.Data.HotelDayPrices = result.Data.HotelDayPrices.map(it => {
+              if (it.Hotel && it.Hotel.Variables) {
+                it.Hotel.VariablesJsonObj = JSON.parse(it.Hotel.Variables);
+              }
+              return it;
+            });
+          }
+          return result;
+        })
+      );
   }
-  private async setDefaultFilterPolicy(){
+  private async setDefaultFilterPolicy() {
     const isSelf = await this.staffService.isSelfBookType();
-    const bookInfos=this.getBookInfos();
-    const unSelected = bookInfos.find(it=>!it.bookInfo);
-    if(isSelf||bookInfos.length==1){
-      this.setBookInfos(bookInfos.map((it,idx)=>{
-        it.isFilterPolicy=idx==0;
+    const bookInfos = this.getBookInfos();
+    const unSelected = bookInfos.find(it => !it.bookInfo);
+    if (isSelf || bookInfos.length == 1) {
+      this.setBookInfos(bookInfos.map((it, idx) => {
+        it.isFilterPolicy = idx == 0;
         return it;
       }));
-    }else{
-      if(unSelected){
-        this.setBookInfos(bookInfos.map(it=>{
-          it.isFilterPolicy=it.id==unSelected.id;
+    } else {
+      if (unSelected) {
+        this.setBookInfos(bookInfos.map(it => {
+          it.isFilterPolicy = it.id == unSelected.id;
           return it;
         }))
       }
@@ -585,11 +590,11 @@ export class HotelService {
     // }
     return result;
   }
-  getRoomPlanUniqueId(p:RoomPlanEntity){
-    if(!p){
+  getRoomPlanUniqueId(p: RoomPlanEntity) {
+    if (!p) {
       return "";
     }
-    p.VariablesJsonObj=p.VariablesJsonObj||JSON.parse(p.Variables)||{};
+    p.VariablesJsonObj = p.VariablesJsonObj || JSON.parse(p.Variables) || {};
     return p.VariablesJsonObj['RoomPlanUniqueId'] as string;
   }
   private async getHotelPolicyAsync(
@@ -600,7 +605,7 @@ export class HotelService {
     if (rpls) {
       rpls.forEach(it => {
         const id = this.getRoomPlanUniqueId(it);
-        if (!roomPlans.find(i => id==this.getRoomPlanUniqueId(i))) {
+        if (!roomPlans.find(i => id == this.getRoomPlanUniqueId(i))) {
           roomPlans.push(it);
         }
       });
@@ -628,7 +633,7 @@ export class HotelService {
           p.IsAllowBook = true;
           p.Number = plan.Number;
           p.Rules = null;
-          p.UniqueIdId=this.getRoomPlanUniqueId(plan);
+          p.UniqueIdId = this.getRoomPlanUniqueId(plan);
           policies.push(p);
         });
         notWhitelistPolicies.push({
@@ -647,19 +652,19 @@ export class HotelService {
     req.IsShowLoading = true;
     const arr: RoomPlanEntity[] = [];
     roomPlans.forEach(it => {
-      const a =new RoomPlanEntity();
-      a.TotalAmount=it.TotalAmount;
-      a.Number=it.Number;
-      a.BeginDate=it.BeginDate;
-      a.EndDate=it.EndDate;
-      if(it.Room){
-        a.Room=new RoomEntity();
-        a.Room.Id=it.Room.Id;
+      const a = new RoomPlanEntity();
+      a.TotalAmount = it.TotalAmount;
+      a.Number = it.Number;
+      a.BeginDate = it.BeginDate;
+      a.EndDate = it.EndDate;
+      if (it.Room) {
+        a.Room = new RoomEntity();
+        a.Room.Id = it.Room.Id;
       }
-      if(it.Id=="0"||!it.Id){
-        a.SupplierType=it.SupplierType;
-      }else{
-        a.Id=it.Id;
+      if (it.Id == "0" || !it.Id) {
+        a.SupplierType = it.SupplierType;
+      } else {
+        a.Id = it.Id;
       }
       arr.push(a);
     });
@@ -675,7 +680,7 @@ export class HotelService {
       .catch(_ => []);
     return whitelistPolicies.concat(notWhitelistPolicies);
   }
-  
+
   private loadHotelCitiesFromServer(lastUpdateTime: number) {
     const req = new RequestEntity();
     req.Method = `TmcApiHotelUrl-City-Gets`;
@@ -762,7 +767,7 @@ export class HotelService {
     req.IsShowLoading = true;
     req.Timeout = 60;
     this.apiService.showLoadingView();
-    return this.apiService.getPromiseData<{ TradeNo: string;HasTasks:boolean; }>(req);
+    return this.apiService.getPromiseData<{ TradeNo: string; HasTasks: boolean; }>(req);
   }
 }
 export interface IHotelInfo {
