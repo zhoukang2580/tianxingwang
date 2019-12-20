@@ -140,8 +140,13 @@ export class AppUpdateComponent implements OnInit {
   }
   async iosUpdate() {
     try {
-      await AppHelper.alert(`ios 更新需要跳转到 App Store，尚未完成该功能`, true);
-      this.forceUpdate=false;
+     const ok =  await AppHelper.alert(`ios 更新需要跳转到 App Store，现在跳转更新？`, true,LanguageHelper.getConfirmTip(),LanguageHelper.getCancelTip());
+     if(ok){
+       this.forceUpdate=true;
+       window.location.href=encodeURIComponent(`https://apps.apple.com/cn/app/东美在线/id1347643172`);
+     }else{
+       this.forceUpdate=false;
+     }
       //TODO:ios 跳转页面更新 app
     } catch (e) {
       this.forceUpdate = false;
