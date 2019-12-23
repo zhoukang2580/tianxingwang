@@ -33,7 +33,20 @@ module.exports = function (ctx) {
       </network-security-config>
       `.trim();
     fs.writeFileSync(tgtXmlPath, xml);
-
+    const configxml= path.resolve(
+      projectRoot,
+      "config.xml"
+    );
+    const assetsConfigxml= path.resolve(
+      projectRoot,
+      "src",
+      "assets",
+      "config.xml"
+    );
+    if(fs.existsSync(assetsConfigxml)){
+      fs.unlinkSync(assetsConfigxml);
+    }
+    fs.copyFileSync(configxml,assetsConfigxml);
     // fs.writeFileSync(
     //   network_security_configxmlPath,
     //   network_security_configxml

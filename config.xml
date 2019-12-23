@@ -27,6 +27,7 @@
     <preference name="LogLevel" value="VERBOSE" />
     <preference name="errorUrl" value="cordovaError.html" />
     <preference name="FullscreenNotImmersive" value="true" />
+    <preference name="WECHATAPPID" value="wx58e8910e60cd69ac" />
     <hook src="scripts/before_build.js" type="before_build" />
     <hook src="scripts/zipfile_before_build.js" type="before_build" />
     <hook src="scripts/after_build.js" type="after_build" />
@@ -111,6 +112,5 @@
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.1.3" />
     <plugin name="cordova-plugin-console" spec="~1.1.0" />
     <plugin name="cordova-wechat-plugin" spec="./cordova-wechat-plugin">
-        <variable name="WECHATAPPID" value="wx58e8910e60cd69ac" />
     </plugin>
 </widget>

@@ -19,8 +19,7 @@ export class AppHelper {
   private static alertController: AlertController;
   private static modalController: ModalController;
   static _appDomain = environment.production ? "sky-trip.com" : "beeant.com";
-  constructor() {
-  }
+  constructor() {}
   static _domain;
   static _queryParamers = {};
 
@@ -54,10 +53,10 @@ export class AppHelper {
           typeof msg === "string"
             ? msg
             : msg instanceof Error
-              ? msg.message
-              : typeof msg === "object" && msg.message
-                ? msg.message
-                : JSON.stringify(msg),
+            ? msg.message
+            : typeof msg === "object" && msg.message
+            ? msg.message
+            : JSON.stringify(msg),
         position: position as any,
         duration: duration
       });
@@ -104,17 +103,19 @@ export class AppHelper {
           typeof msg === "string"
             ? msg
             : msg instanceof Error
-              ? msg.message
-              : typeof msg === "object" && msg.message
-                ? msg.message : msg.Message ? msg.Message
-                  : JSON.stringify(msg),
+            ? msg.message
+            : typeof msg === "object" && msg.message
+            ? msg.message
+            : msg.Message
+            ? msg.Message
+            : JSON.stringify(msg),
         backdropDismiss: !userOp,
         buttons
       });
       await a.present();
       await a.onDidDismiss();
       if (userOp) {
-        resolve(ok)
+        resolve(ok);
       } else {
         resolve();
       }
@@ -192,26 +193,18 @@ export class AppHelper {
               fr.onload = () => {
                 // console.log("读取完成", fr.result);
                 if (fr.result) {
-                  const configXmlStr = fr.result as string;
-                  if (
-                    configXmlStr
-                      .split("variable")
-                      .find(item => item.includes("WECHATAPPID")) &&
-                    configXmlStr
-                      .split("variable")
-                      .find(item => item.includes("WECHATAPPID"))
-                      .split(" ")
-                      .find(item => item.includes("value"))
-                      .includes("=")
-                  ) {
-                    const appid = configXmlStr
-                      .split("variable")
-                      .find(item => item.includes("WECHATAPPID"))
-                      .split(" ")
-                      .find(item => item.includes("value"))
-                      .split("=")[1]
-                      .replace(/"/g, "");
-                    resolve(appid);
+                  const configXmlStr = (fr.result || "") as string;
+                  const p = configXmlStr
+                    .split("/>")
+                    .find(it => it.includes("WECHATAPPID"));
+                  const appId =
+                    p &&
+                    p
+                      .substring(p.indexOf(`value="`) + `value="`.length)
+                      .trim()
+                      .replace(/\"/g, "");
+                  if (appId) {
+                    resolve(appId);
                   } else {
                     reject("variable WECHATAPPID can not be found");
                   }
@@ -288,11 +281,11 @@ export class AppHelper {
   static isWechatMiniAsync() {
     return new Promise<boolean>(resolve => {
       function ready() {
-        console.log(window['__wxjs_environment'] === 'miniprogram') // true
-        resolve(window['__wxjs_environment'] === 'miniprogram');
+        console.log(window["__wxjs_environment"] === "miniprogram"); // true
+        resolve(window["__wxjs_environment"] === "miniprogram");
       }
-      if (!window['WeixinJSBridge'] || !window['WeixinJSBridge'].invoke) {
-        document.addEventListener('WeixinJSBridgeReady', ready, false);
+      if (!window["WeixinJSBridge"] || !window["WeixinJSBridge"].invoke) {
+        document.addEventListener("WeixinJSBridgeReady", ready, false);
         setTimeout(() => {
           resolve(false);
         }, 3000);
@@ -449,11 +442,11 @@ export class AppHelper {
       console.log("matchDefaultRoute path after", path);
       return path && url[0].path.match(new RegExp(`${path}_*`, "gi"))
         ? (route.redirectTo = `/${path == "null" ? "" : path}`) && {
-          consumed: [new UrlSegment(path, {})]
-        }
+            consumed: [new UrlSegment(path, {})]
+          }
         : {
-          consumed: [new UrlSegment("", {})]
-        };
+            consumed: [new UrlSegment("", {})]
+          };
     } catch (e) {
       console.error("matchDefaultRoute", e);
     }
@@ -480,21 +473,15 @@ export class AppHelper {
       }
     }
   }
-  static setQueryParamers(key: string,value:string) {
+  static setQueryParamers(key: string, value: string) {
     try {
       this._queryParamers[key] = value;
-    }
-    catch (ex) {
-
-    }
+    } catch (ex) {}
   }
   static removeQueryParamers(key: string) {
     try {
       this._queryParamers[key] = null;
-    }
-    catch (ex) {
-
-    }
+    } catch (ex) {}
   }
   static getQueryParamers() {
     return this._queryParamers as any;
@@ -592,8 +579,8 @@ export class AppHelper {
     return 0;
   }
   static getDate(datestr: string | number) {
-    if (datestr && typeof datestr == 'string') {
-      return new Date(datestr.replace(/-/g, '/').replace("T", " "));
+    if (datestr && typeof datestr == "string") {
+      return new Date(datestr.replace(/-/g, "/").replace("T", " "));
     }
     return new Date(datestr);
   }
