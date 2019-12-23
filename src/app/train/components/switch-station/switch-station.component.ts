@@ -54,15 +54,18 @@ export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
   toggleCities = false; // 没有切换城市顺序
   rotateIcon = false;
   @Input() disabled = false; // 界面上显示的出发城市
+  @Input() isExchange = false; // 界面上显示的出发城市
   @Input() vmFromCity: TrafficlineEntity; // 界面上显示的出发城市
   @Input() vmToCity: TrafficlineEntity; // 界面上显示的目的城市
   isMoving: boolean;
   mode: string;
-  @Output() eCities: EventEmitter<{ vmFrom: TrafficlineEntity; vmTo: TrafficlineEntity }>;
+  @Output() eCities: EventEmitter<{
+    vmFrom: TrafficlineEntity;
+    vmTo: TrafficlineEntity;
+  }>;
   constructor(
     plt: Platform,
     private render: Renderer2,
-    private trainService: TrainService,
     private modalCtrl: ModalController
   ) {
     this.mode = plt.is("ios") ? "ios" : plt.is("android") ? "md" : "";
@@ -80,13 +83,13 @@ export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
     this.toggleCities = !this.toggleCities;
     // this.moveEle();
     const temp = this.vmFromCity;
-    this.vmFromCity=this.vmToCity;
-    this.vmToCity=temp;
+    this.vmFromCity = this.vmToCity;
+    this.vmToCity = temp;
     console.log("出发城市：", this.vmFromCity.Nickname);
     console.log("目的城市：", this.vmToCity.Nickname);
     this.eCities.emit({ vmFrom: this.vmFromCity, vmTo: this.vmToCity });
   }
- 
+
   private moveEle() {
     if (
       this.fromCityEle &&
@@ -118,17 +121,18 @@ export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
       }
     }
   }
-  ngOnDestroy() {
-  }
+  ngOnDestroy() {}
   ngOnChanges(changes: SimpleChanges) {
     // console.log("changes", changes);
     // console.log("changes.toCity", changes.vmToCity);
   }
-  ngOnInit() {
-
-  }
+  ngOnInit() {}
   async onSelectCity(fromCity: boolean) {
-    if (this.disabled) {
+    if (this.isExchange) {
+      if (fromCity) {
+        return;
+      }
+    } else if (this.disabled) {
       return;
     }
     const m = await this.modalCtrl.create({

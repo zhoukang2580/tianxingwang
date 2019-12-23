@@ -136,7 +136,7 @@
           车票状态
           <span style='margin-left: 0.5em;'>{{orderTrainTicket.StatusName}}</span>
           <ion-button (click)='onExchange($event,orderTrainTicket)' color='secondary'
-            *ngIf='false && orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !=0 && orderTrainTicket.BookType != TrainBookType.Offline'>
+            *ngIf='orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !=0 && orderTrainTicket.BookType != TrainBookType.Offline'>
             <span>改签</span>
           </ion-button>
           <ion-button (click)='onRefundTrainTicket($event,orderTrainTicket)' color='secondary'

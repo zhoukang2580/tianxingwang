@@ -1,4 +1,5 @@
-import { IBookOrderResult } from './../../tmc/tmc.service';
+import { SearchTrainModel } from "./../train.service";
+import { IBookOrderResult } from "./../../tmc/tmc.service";
 import { ITrainInfo } from "../train.service";
 import { CalendarService } from "../../tmc/calendar.service";
 import { TrainEntity } from "../models/TrainEntity";
@@ -33,7 +34,8 @@ import {
   ViewChildren,
   ViewChild,
   QueryList,
-  AfterViewInit
+  AfterViewInit,
+  OnDestroy
 } from "@angular/core";
 import { AppHelper } from "src/app/appHelper";
 import { PassengerDto } from "src/app/tmc/models/PassengerDto";
@@ -52,7 +54,8 @@ import {
   from,
   combineLatest,
   Subject,
-  BehaviorSubject
+  BehaviorSubject,
+  Subscription
 } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { StaffService } from "src/app/hr/staff.service";
@@ -64,18 +67,20 @@ import { TaskType } from "src/app/workflow/models/TaskType";
 import { OrderLinkmanDto } from "src/app/order/models/OrderLinkmanDto";
 import { ProductItemType } from "src/app/tmc/models/ProductItems";
 import { PayService } from "src/app/services/pay/pay.service";
-import { ITmcOutNumberInfo } from 'src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component';
-import { AccountEntity } from 'src/app/account/models/AccountEntity';
+import { ITmcOutNumberInfo } from "src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component";
+import { AccountEntity } from "src/app/account/models/AccountEntity";
 
 @Component({
   selector: "app-train-book",
   templateUrl: "./book.page.html",
   styleUrls: ["./book.page.scss"]
 })
-export class TrainBookPage implements OnInit, AfterViewInit {
+export class TrainBookPage implements OnInit, AfterViewInit,OnDestroy {
   private checkPayCountIntervalId: any;
   private checkPayCount = 5;
   private checkPayCountIntervalTime = 3 * 1000;
+  private subscription = Subscription.EMPTY;
+  searchTrainModel: SearchTrainModel;
   isSubmitDisabled = false;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent) cnt: IonContent;
@@ -102,10 +107,8 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     private identityService: IdentityService,
     private staffService: StaffService,
     private modalCtrl: ModalController,
-    private popoverCtrl: PopoverController,
     private tmcService: TmcService,
     private router: Router,
-    private payService: PayService,
     private calendarService: CalendarService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
@@ -123,7 +126,12 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         }, 300);
       }
       if (byUser) {
-        const ok = await AppHelper.alert("刷新将重新初始化页面，是否刷新？", true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+        const ok = await AppHelper.alert(
+          "刷新将重新初始化页面，是否刷新？",
+          true,
+          LanguageHelper.getConfirmTip(),
+          LanguageHelper.getCancelTip()
+        );
         if (!ok) {
           return;
         }
@@ -174,10 +182,22 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     await this.storage.set("mock-initialBookDto-train", this.initialBookDto);
     return this.initialBookDto;
   }
+  ngOnDestroy(){
+    this.subscription.unsubscribe();
+  }
   ngOnInit() {
-    this.trainService.setBookInfoSource(this.trainService.getBookInfos().filter(it => !!it.bookInfo));
+    this.trainService.setBookInfoSource(
+      this.trainService.getBookInfos().filter(it => !!it.bookInfo)
+    );
     this.doRefresh(false);
-    this.isCanSave$ = this.identityService.getIdentitySource().pipe(map(id => id && id.Numbers && id.Numbers["AgentId"]));
+    this.isCanSave$ = this.identityService
+      .getIdentitySource()
+      .pipe(map(id => id && id.Numbers && id.Numbers["AgentId"]));
+    this.subscription = this.trainService
+      .getSearchTrainModelSource()
+      .subscribe(s => {
+        this.searchTrainModel = s;
+      });
   }
   ngAfterViewInit() {
     if (this.checkboxes) {
@@ -199,14 +219,16 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       if (item.bookInfo.trainEntity) {
         item.bookInfo.trainEntity.BookSeatLocation = seat || "";
       }
-      this.trainService.setBookInfoSource(this.trainService.getBookInfos().map(it => {
-        if (it.id == item.id) {
-          if (it.bookInfo && it.bookInfo.trainEntity) {
-            it.bookInfo.trainEntity.BookSeatLocation = seat || "";
+      this.trainService.setBookInfoSource(
+        this.trainService.getBookInfos().map(it => {
+          if (it.id == item.id) {
+            if (it.bookInfo && it.bookInfo.trainEntity) {
+              it.bookInfo.trainEntity.BookSeatLocation = seat || "";
+            }
           }
-        }
-        return it;
-      }));
+          return it;
+        })
+      );
     }
   }
   private async initializeViewModel() {
@@ -255,10 +277,13 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         ).find(it => it.Account.Id == bookInfo.passenger.AccountId);
         const cstaff = cs && cs.CredentialStaff;
         const credentials = [];
-        const arr = cstaff && cstaff.Approvers && cstaff.Approvers.map(it => {
-          it.RealName = it.Account && it.Account.RealName || "";
-          return it;
-        });;
+        const arr =
+          cstaff &&
+          cstaff.Approvers &&
+          cstaff.Approvers.map(it => {
+            it.RealName = (it.Account && it.Account.RealName) || "";
+            return it;
+          });
         let credentialStaffApprovers: {
           Tag: string;
           Type: TaskType;
@@ -266,17 +291,14 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         }[];
         if (arr) {
           arr.sort((a, b) => a.Tag && b.Tag && +a.Tag - +b.Tag);
-          const tempObj = arr.reduce(
-            (obj, it) => {
-              if (obj[it.Tag]) {
-                obj[it.Tag].push(it);
-              } else {
-                obj[it.Tag] = [it];
-              }
-              return obj;
-            },
-            {} as { [Tag: string]: StaffApprover[] }
-          );
+          const tempObj = arr.reduce((obj, it) => {
+            if (obj[it.Tag]) {
+              obj[it.Tag].push(it);
+            } else {
+              obj[it.Tag] = [it];
+            }
+            return obj;
+          }, {} as { [Tag: string]: StaffApprover[] });
           credentialStaffApprovers = Object.keys(tempObj).map(key => {
             const it = tempObj[key][0];
             return {
@@ -324,28 +346,28 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = this.isShowInsurances(
           bookInfo.bookInfo &&
-          bookInfo.bookInfo.trainEntity &&
-          bookInfo.bookInfo.trainEntity.StartTime
+            bookInfo.bookInfo.trainEntity &&
+            bookInfo.bookInfo.trainEntity.StartTime
         )
           ? insurances
           : [];
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-              return {
-                checked: idx == 0,
-                mobile
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  mobile
+                };
+              })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-              return {
-                checked: idx == 0,
-                email
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  email
+                };
+              })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
@@ -358,23 +380,29 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         };
         combineInfo.appovalStaff = cs && cs.DefaultApprover;
         combineInfo.tmcOutNumberInfos =
-          this.tmc && this.tmc.OutNumberNameArray &&
-          this.tmc.OutNumberNameArray.map(n => {
-            return {
-              label: n,
-              key: n,
-              isLoadNumber: !!(this.tmc && this.tmc.GetTravelNumberUrl),
-              required:
-                this.tmc && this.tmc.OutNumberRequiryNameArray &&
-                this.tmc.OutNumberRequiryNameArray.some(name => name == n),
-              value: this.getTravelFormNumber(n),
-              staffNumber: cstaff && cstaff.Number,
-              staffOutNumber: cstaff && cstaff.OutNumber,
-              isTravelNumber: n.toLowerCase() == "TravelNumber".toLowerCase(),
-              canSelect: n.toLowerCase() == "TravelNumber".toLowerCase(),
-              isDisabled: !!(this.viewModel.travelForm && n.toLowerCase() == "TravelNumber".toLowerCase())
-            } as ITmcOutNumberInfo;
-          }) || [];
+          (this.tmc &&
+            this.tmc.OutNumberNameArray &&
+            this.tmc.OutNumberNameArray.map(n => {
+              return {
+                label: n,
+                key: n,
+                isLoadNumber: !!(this.tmc && this.tmc.GetTravelNumberUrl),
+                required:
+                  this.tmc &&
+                  this.tmc.OutNumberRequiryNameArray &&
+                  this.tmc.OutNumberRequiryNameArray.some(name => name == n),
+                value: this.getTravelFormNumber(n),
+                staffNumber: cstaff && cstaff.Number,
+                staffOutNumber: cstaff && cstaff.OutNumber,
+                isTravelNumber: n.toLowerCase() == "TravelNumber".toLowerCase(),
+                canSelect: n.toLowerCase() == "TravelNumber".toLowerCase(),
+                isDisabled: !!(
+                  this.viewModel.travelForm &&
+                  n.toLowerCase() == "TravelNumber".toLowerCase()
+                )
+              } as ITmcOutNumberInfo;
+            })) ||
+          [];
 
         this.viewModel.combindInfos.push(combineInfo);
       }
@@ -390,42 +418,53 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     bookDto.IsFromOffline = isSave;
     let canBook = false;
     let canBook2 = false;
-    this.viewModel.combindInfos = this.fillGroupConbindInfoApprovalInfo(this.viewModel.combindInfos);
+    this.viewModel.combindInfos = this.fillGroupConbindInfoApprovalInfo(
+      this.viewModel.combindInfos
+    );
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto);
     if (this.trainService.exchangedTrainTicketInfo) {
       if (this.trainService.exchangedTrainTicketInfo.order) {
-        this.trainService.exchangedTrainTicketInfo.order.OrderTrainTickets = this.trainService.exchangedTrainTicketInfo.order.OrderTrainTickets || [this.trainService.exchangedTrainTicketInfo.ticket];
+        this.trainService.exchangedTrainTicketInfo.order.OrderTrainTickets = this
+          .trainService.exchangedTrainTicketInfo.order.OrderTrainTickets || [
+          this.trainService.exchangedTrainTicketInfo.ticket
+        ];
       }
       bookDto.Orders = [this.trainService.exchangedTrainTicketInfo.order];
     }
     if (canBook && canBook2) {
-      const res: IBookOrderResult = await this.trainService.bookTrain(bookDto).catch(e => {
-        AppHelper.alert(e);
-        return null;
-      });
+      const res: IBookOrderResult = await this.trainService
+        .bookTrain(bookDto)
+        .catch(e => {
+          AppHelper.alert(e);
+          return null;
+        });
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast('下单成功!', 1400, "top");
+          AppHelper.toast("下单成功!", 1400, "top");
           this.isSubmitDisabled = true;
-          const isSelf = (await this.staffService.isSelfBookType());
+          const isSelf = await this.staffService.isSelfBookType();
           if (
             !isSave &&
             isSelf &&
             this.viewModel.orderTravelPayType == OrderTravelPayType.Person
           ) {
             this.isCheckingPay = true;
-            const canPay = (await this.checkPay(res.TradeNo));
+            const canPay = await this.checkPay(res.TradeNo);
             this.isCheckingPay = false;
             if (canPay) {
               if (res.HasTasks) {
-                await AppHelper.alert(LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(), true);
+                await AppHelper.alert(
+                  LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
+                  true
+                );
               } else {
                 await this.tmcService.payOrder(res.TradeNo);
               }
             } else {
               await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingTip(), true
+                LanguageHelper.Order.getBookTicketWaitingTip(),
+                true
               );
             }
           } else {
@@ -445,17 +484,17 @@ export class TrainBookPage implements OnInit, AfterViewInit {
   private getTotalServiceFees() {
     let fees = 0;
     if (this.initialBookDto && this.initialBookDto.ServiceFees) {
-      fees = Object.keys(this.initialBookDto.ServiceFees).reduce(
-        (acc, key) => {
-          const fee = +this.initialBookDto.ServiceFees[key];
-          acc = AppHelper.add(fee, acc);
-          return acc;
-        },
-        0
-      );
+      fees = Object.keys(this.initialBookDto.ServiceFees).reduce((acc, key) => {
+        const fee = +this.initialBookDto.ServiceFees[key];
+        acc = AppHelper.add(fee, acc);
+        return acc;
+      }, 0);
     }
     if (this.tmc && !this.tmc.IsShowServiceFee) {
-      if (this.viewModel && this.viewModel.orderTravelPayType != OrderTravelPayType.Person) {
+      if (
+        this.viewModel &&
+        this.viewModel.orderTravelPayType != OrderTravelPayType.Person
+      ) {
         fees = 0;
       }
     }
@@ -488,7 +527,10 @@ export class TrainBookPage implements OnInit, AfterViewInit {
   }
 
   calcTotalPrice() {
-    console.log("this.viewModel.orderTravelPayType", this.viewModel.orderTravelPayType);
+    console.log(
+      "this.viewModel.orderTravelPayType",
+      this.viewModel.orderTravelPayType
+    );
     if (this.viewModel && this.viewModel.combindInfos) {
       let totalPrice = this.viewModel.combindInfos.reduce((arr, item) => {
         if (
@@ -680,9 +722,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     }
     bookDto.Linkmans = [];
     const showErrorMsg = (msg: string, idx: number) => {
-      AppHelper.alert(
-        `第${idx + 1}个联系人的信息${msg}不能为空`
-      );
+      AppHelper.alert(`第${idx + 1}个联系人的信息${msg}不能为空`);
     };
     for (let j = 0; j < this.addContacts.length; j++) {
       const man = this.addContacts[j];
@@ -726,9 +766,9 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     const showErrorMsg = (msg: string, item: ITrainPassengerBookInfo) => {
       AppHelper.alert(
         `${(item.credentialStaff && item.credentialStaff.Name) ||
-        (item.credential &&
-          item.credential.CheckFirstName +
-          item.credential.CheckLastName)} 【${item.credential &&
+          (item.credential &&
+            item.credential.CheckFirstName +
+              item.credential.CheckLastName)} 【${item.credential &&
           item.credential.Number}】 ${msg} 信息不能为空`
       );
     };
@@ -751,10 +791,10 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       p.ApprovalId =
         (this.isAllowSelectApprove(combindInfo) &&
           !combindInfo.isSkipApprove &&
-          (combindInfo.appovalStaff &&
-            (combindInfo.appovalStaff.AccountId ||
-              (combindInfo.appovalStaff.Account &&
-                combindInfo.appovalStaff.Account.Id)))) ||
+          combindInfo.appovalStaff &&
+          (combindInfo.appovalStaff.AccountId ||
+            (combindInfo.appovalStaff.Account &&
+              combindInfo.appovalStaff.Account.Id))) ||
         "0";
       if (
         !(
@@ -810,7 +850,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
           p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-          }`;
+        }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -824,7 +864,7 @@ export class TrainBookPage implements OnInit, AfterViewInit {
           p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-          }`;
+        }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -913,8 +953,12 @@ export class TrainBookPage implements OnInit, AfterViewInit {
         combindInfo.bookInfo.bookInfo.trainPolicy
       ) {
         p.Train = combindInfo.bookInfo.bookInfo.trainEntity;
-        if (p.Train && p.Train.BookSeatLocation && !p.Train.BookSeatLocation.startsWith('1')) {
-          p.Train.BookSeatLocation = `1${p.Train.BookSeatLocation}`
+        if (
+          p.Train &&
+          p.Train.BookSeatLocation &&
+          !p.Train.BookSeatLocation.startsWith("1")
+        ) {
+          p.Train.BookSeatLocation = `1${p.Train.BookSeatLocation}`;
         }
         p.Train.BookSeatType =
           combindInfo.bookInfo.bookInfo.trainPolicy.SeatType;
@@ -926,9 +970,16 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     }
     return true;
   }
-  private getGroupedCombindInfo(arr: ITrainPassengerBookInfo[], tmc: TmcEntity) {
+  private getGroupedCombindInfo(
+    arr: ITrainPassengerBookInfo[],
+    tmc: TmcEntity
+  ) {
     const group = arr.reduce((acc, item) => {
-      const id = (item && item.bookInfo.passenger && item.bookInfo.passenger.AccountId) || tmc && tmc.Account && tmc.Account.Id;
+      const id =
+        (item &&
+          item.bookInfo.passenger &&
+          item.bookInfo.passenger.AccountId) ||
+        (tmc && tmc.Account && tmc.Account.Id);
       if (id) {
         if (acc[id]) {
           acc[id].push(item);
@@ -947,12 +998,14 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     Object.keys(group).forEach(key => {
       if (group[key].length) {
         const first = group[key][0];
-        result = result.concat(group[key].map(it => {
-          it.appovalStaff = first.appovalStaff;
-          it.notifyLanguage = first.notifyLanguage;
-          it.isSkipApprove = first.isSkipApprove;
-          return it;
-        }));
+        result = result.concat(
+          group[key].map(it => {
+            it.appovalStaff = first.appovalStaff;
+            it.notifyLanguage = first.notifyLanguage;
+            it.isSkipApprove = first.isSkipApprove;
+            return it;
+          })
+        );
       }
     });
     return result;
@@ -962,21 +1015,26 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       this.tmc = await this.tmcService.getTmc();
     }
     if (this.viewModel && this.viewModel.combindInfos) {
-      const group = this.getGroupedCombindInfo(this.viewModel.combindInfos, this.tmc);
+      const group = this.getGroupedCombindInfo(
+        this.viewModel.combindInfos,
+        this.tmc
+      );
       this.viewModel.combindInfos = [];
       Object.keys(group).forEach(key => {
         if (group[key].length) {
           group[key][0].isShowApprovalInfo = true;
           if (this.initialBookDto && this.initialBookDto.ServiceFees) {
-            const showTotalFees = group[key]
-              .reduce(
-                (acc, it) => (acc = AppHelper.add(acc, this.getServiceFee(it)))
-                , 0);
+            const showTotalFees = group[key].reduce(
+              (acc, it) => (acc = AppHelper.add(acc, this.getServiceFee(it))),
+              0
+            );
             group[key][0].serviceFee = showTotalFees;
           }
         }
-        this.viewModel.combindInfos = this.viewModel.combindInfos.concat(group[key]);
-      })
+        this.viewModel.combindInfos = this.viewModel.combindInfos.concat(
+          group[key]
+        );
+      });
     }
   }
   async openApproverModal(item: ITrainPassengerBookInfo) {
@@ -1028,14 +1086,16 @@ export class TrainBookPage implements OnInit, AfterViewInit {
     this.viewModel.combindInfos.forEach(item => {
       item.tmcOutNumberInfos.forEach(info => {
         info.isLoadingNumber = true;
-      })
-    })
+      });
+    });
     const result = await this.tmcService.getTravelUrls(args);
     if (result) {
       this.viewModel.combindInfos.forEach(item =>
         item.tmcOutNumberInfos.forEach(info => {
-          info.loadTravelUrlErrorMsg = result[info.staffNumber] && result[info.staffNumber].Message;
-          info.travelUrlInfos = result[info.staffNumber] && result[info.staffNumber].Data;
+          info.loadTravelUrlErrorMsg =
+            result[info.staffNumber] && result[info.staffNumber].Message;
+          info.travelUrlInfos =
+            result[info.staffNumber] && result[info.staffNumber].Data;
           if (
             !info.value &&
             info.travelUrlInfos &&
@@ -1050,8 +1110,8 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       this.viewModel.combindInfos.forEach(item => {
         item.tmcOutNumberInfos.forEach(info => {
           info.isLoadingNumber = false;
-        })
-      })
+        });
+      });
     }
   }
   onIllegalReason(
@@ -1138,7 +1198,10 @@ export class TrainBookPage implements OnInit, AfterViewInit {
       this.addContacts = contacts;
     }
   }
-  onSavecredential(credential: CredentialsEntity, info: ITrainPassengerBookInfo) {
+  onSavecredential(
+    credential: CredentialsEntity,
+    info: ITrainPassengerBookInfo
+  ) {
     if (info && credential) {
       info.vmCredential = credential;
     }
@@ -1146,8 +1209,8 @@ export class TrainBookPage implements OnInit, AfterViewInit {
   async onSelectTravelNumber(
     arg: {
       tmcOutNumberInfos: ITmcOutNumberInfo[];
-      tmcOutNumberInfo: ITmcOutNumberInfo,
-      travelUrlInfo: TravelUrlInfo
+      tmcOutNumberInfo: ITmcOutNumberInfo;
+      travelUrlInfo: TravelUrlInfo;
     },
     item: ITrainPassengerBookInfo
   ) {
@@ -1173,11 +1236,20 @@ export class TrainBookPage implements OnInit, AfterViewInit {
   }
   isShowApprove(combindInfo: PassengerBookInfo<ITrainInfo>) {
     const Tmc = this.tmc;
-    if (!Tmc || Tmc.TrainApprovalType == TmcApprovalType.None || Tmc.FlightApprovalType == 0)
+    if (
+      !Tmc ||
+      Tmc.TrainApprovalType == TmcApprovalType.None ||
+      Tmc.FlightApprovalType == 0
+    )
       return false;
-    if (Tmc.TrainApprovalType == TmcApprovalType.Approver)
-      return true;
-    if (Tmc.TrainApprovalType == TmcApprovalType.ExceedPolicyApprover && (combindInfo && combindInfo.bookInfo && combindInfo.bookInfo.trainPolicy && combindInfo.bookInfo.trainPolicy.Rules))
+    if (Tmc.TrainApprovalType == TmcApprovalType.Approver) return true;
+    if (
+      Tmc.TrainApprovalType == TmcApprovalType.ExceedPolicyApprover &&
+      combindInfo &&
+      combindInfo.bookInfo &&
+      combindInfo.bookInfo.trainPolicy &&
+      combindInfo.bookInfo.trainPolicy.Rules
+    )
       return true;
     return false;
   }

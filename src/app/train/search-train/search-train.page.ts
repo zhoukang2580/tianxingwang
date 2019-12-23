@@ -1,5 +1,5 @@
-import { LanguageHelper } from 'src/app/languageHelper';
-import { CanComponentDeactivate } from 'src/app/guards/candeactivate.guard';
+import { LanguageHelper } from "src/app/languageHelper";
+import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { FlightHotelTrainType } from "./../../tmc/tmc.service";
 import { TrainService, SearchTrainModel } from "./../train.service";
 import { TrafficlineEntity } from "./../../tmc/models/TrafficlineEntity";
@@ -27,7 +27,8 @@ import { SelectedTrainSegmentInfoComponent } from "../components/selected-train-
   templateUrl: "./search-train.page.html",
   styleUrls: ["./search-train.page.scss"]
 })
-export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate {
+export class SearchTrainPage
+  implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate {
   private isCanLeave = true;
   toggleCities = false; // 没有切换城市顺序
   rotateIcon = false;
@@ -61,20 +62,25 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     private calendarService: CalendarService,
     private tmcService: TmcService,
     private modalCtrl: ModalController
-  ) {
-
-  }
+  ) {}
   private checkBackDateIsAfterGoDate() {
-    if (!this.goDate || (this.goDate.timeStamp < Math.floor(new Date().getTime() / 1000))) {
+    if (
+      !this.goDate ||
+      this.goDate.timeStamp < Math.floor(new Date().getTime() / 1000)
+    ) {
       this.goDate = this.calendarService.generateDayModel(moment());
     }
     if (this.goDate && this.backDate) {
-      this.backDate = this.goDate.timeStamp > this.backDate.timeStamp ?
-        this.calendarService.generateDayModel(moment(this.goDate.date).add(1, 'days')) : this.backDate;
+      this.backDate =
+        this.goDate.timeStamp > this.backDate.timeStamp
+          ? this.calendarService.generateDayModel(
+              moment(this.goDate.date).add(1, "days")
+            )
+          : this.backDate;
     }
   }
   back() {
-    this.router.navigate(['']);
+    this.router.navigate([""]);
   }
   async onShowSelectedBookInfos() {
     const m = await this.modalCtrl.create({
@@ -140,8 +146,11 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
           this.searchTrainModel && this.searchTrainModel.isLocked;
       }
       const searchTrainModel = this.trainService.getSearchTrainModel();
-      this.searchTrainModel.isExchange = searchTrainModel.isExchange
-        || !!this.trainService.getBookInfos().find(it => it.bookInfo && it.bookInfo.isExchange);
+      this.searchTrainModel.isExchange =
+        searchTrainModel.isExchange ||
+        !!this.trainService
+          .getBookInfos()
+          .find(it => it.bookInfo && it.bookInfo.isExchange);
       this.isCanLeave = this.searchTrainModel.isExchange ? false : true;
       this.selectedPassengers = this.trainService.getBookInfos().length;
       this.selectedBookInfos = this.trainService
@@ -151,14 +160,18 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
   }
   calcTotalFlyDays(): number {
     if (this.backDate && this.goDate) {
-      const nums = Math.abs(moment(this.backDate.date).diff(moment(this.goDate.date), 'days'));
+      const nums = Math.abs(
+        moment(this.backDate.date).diff(moment(this.goDate.date), "days")
+      );
       return nums <= 0 ? 1 : nums;
     }
     return 1;
   }
 
   onSelectPassenger() {
-    this.router.navigate([AppHelper.getRoutePath("select-passenger")], { queryParams: { forType: FlightHotelTrainType.Train } });
+    this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
+      queryParams: { forType: FlightHotelTrainType.Train }
+    });
   }
 
   ngOnDestroy(): void {
@@ -167,16 +180,32 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
   }
   async initTrainDays() {
     const identity = await this.identityService.getIdentityAsync();
-    let lastSelectedGoDate = await this.storage.get(`last_selected_train_goDate_${identity && identity.Id}`) || moment().format("YYYY-MM-DD");
-    const nextDate = moment().add(1, 'days').format("YYYY-MM-DD");
-    lastSelectedGoDate = lastSelectedGoDate && this.calendarService.generateDayModelByDate(lastSelectedGoDate).timeStamp >= this.calendarService.generateDayModelByDate(nextDate).timeStamp ? lastSelectedGoDate : nextDate
+    let lastSelectedGoDate =
+      (await this.storage.get(
+        `last_selected_train_goDate_${identity && identity.Id}`
+      )) || moment().format("YYYY-MM-DD");
+    const nextDate = moment()
+      .add(1, "days")
+      .format("YYYY-MM-DD");
+    lastSelectedGoDate =
+      lastSelectedGoDate &&
+      this.calendarService.generateDayModelByDate(lastSelectedGoDate)
+        .timeStamp >=
+        this.calendarService.generateDayModelByDate(nextDate).timeStamp
+        ? lastSelectedGoDate
+        : nextDate;
     this.trainService.setSearchTrainModel({
       ...this.trainService.getSearchTrainModel(),
       Date: lastSelectedGoDate
     });
   }
   async initTrainCities() {
-    if (this.fromCity && this.fromCity.Code && this.toCity && this.toCity.Code) {
+    if (
+      this.fromCity &&
+      this.fromCity.Code &&
+      this.toCity &&
+      this.toCity.Code
+    ) {
       return;
     }
     this.fromCity = this.vmFromCity = {} as any;
@@ -234,11 +263,13 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
     console.log("search-train", s);
     this.isCanLeave = true;
     this.trainService.setSearchTrainModel(s);
-    this.router.navigate([AppHelper.getRoutePath("train-list")]).then(_ => {
-    });
+    this.router.navigate([AppHelper.getRoutePath("train-list")]).then(_ => {});
     const identity = await this.identityService.getIdentityAsync();
     if (identity) {
-      await this.storage.set(`last_selected_train_goDate_${identity && identity.Id}`, s.Date);
+      await this.storage.set(
+        `last_selected_train_goDate_${identity && identity.Id}`,
+        s.Date
+      );
     }
   }
   getDayDesc(d: DayModel) {
@@ -268,7 +299,7 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
         ...this.trainService.getSearchTrainModel(),
         fromCity: c.vmFrom,
         toCity: c.vmTo
-      })
+      });
     }
   }
   async canDeactivate() {
@@ -276,7 +307,12 @@ export class SearchTrainPage implements OnInit, OnDestroy, AfterViewInit, CanCom
       return true;
     }
     if (this.trainService.exchangedTrainTicketInfo) {
-      const ok = await AppHelper.alert("是否放弃改签？", true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+      const ok = await AppHelper.alert(
+        "是否放弃改签？",
+        true,
+        LanguageHelper.getConfirmTip(),
+        LanguageHelper.getCancelTip()
+      );
       if (ok) {
         this.trainService.exchangedTrainTicketInfo = null;
         this.trainService.setSearchTrainModel({

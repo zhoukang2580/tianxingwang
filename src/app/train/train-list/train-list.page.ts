@@ -2,29 +2,18 @@ import { IdentityService } from "src/app/services/identity/identity.service";
 import { TrainFilterComponent } from "./../components/train-filter/train-filter.component";
 import { TrainscheduleComponent } from "./../components/trainschedule/trainschedule.component";
 import { TrainSeatEntity } from "./../models/TrainSeatEntity";
-import {
-  ICurrentViewtTainItem,
-  ITrainInfo
-} from "./../train.service";
+import { ICurrentViewtTainItem, ITrainInfo } from "./../train.service";
 import { StaffService } from "./../../hr/staff.service";
 import { ApiService } from "./../../services/api/api.service";
 import { CalendarService } from "./../../tmc/calendar.service";
 import { TrafficlineEntity } from "./../../tmc/models/TrafficlineEntity";
 import { TrainEntity } from "./../models/TrainEntity";
-import {
-  TrainService,
-  SearchTrainModel,
-} from "src/app/train/train.service";
+import { TrainService, SearchTrainModel } from "src/app/train/train.service";
 import {
   PassengerBookInfo,
   FlightHotelTrainType
 } from "src/app/tmc/tmc.service";
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  OnDestroy,
-} from "@angular/core";
+import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
 import {
   IonRefresher,
   IonContent,
@@ -47,14 +36,15 @@ import * as moment from "moment";
 import { LanguageHelper } from "src/app/languageHelper";
 import { map, tap } from "rxjs/operators";
 import { Storage } from "@ionic/storage";
-import { SelectTrainStationModalComponent } from 'src/app/tmc/components/select-stations/select-station.component';
+import { SelectTrainStationModalComponent } from "src/app/tmc/components/select-stations/select-station.component";
 @Component({
   selector: "app-train-list",
   templateUrl: "./train-list.page.html",
   styleUrls: ["./train-list.page.scss"]
 })
 export class TrainListPage implements OnInit, OnDestroy {
-  @ViewChild(DaysCalendarComponent) private daysCalendarComp: DaysCalendarComponent;
+  @ViewChild(DaysCalendarComponent)
+  private daysCalendarComp: DaysCalendarComponent;
   @ViewChild(IonRefresher) private ionRefresher: IonRefresher;
   @ViewChild(IonInfiniteScroll) private scroller: IonInfiniteScroll;
   @ViewChild(IonContent) private cnt: IonContent;
@@ -68,8 +58,19 @@ export class TrainListPage implements OnInit, OnDestroy {
   vmTrains: TrainEntity[] = [];
   isLoading = false;
   get isFiltered() {
-    return this.filterCondition && (this.filterCondition.arrivalStations && this.filterCondition.arrivalStations.length || this.filterCondition.departureStations && this.filterCondition.departureStations.length || this.filterCondition.trainTypes && this.filterCondition.trainTypes.length || this.filterCondition.departureTimeSpan && (this.filterCondition.departureTimeSpan.lower > 0 || this.filterCondition.departureTimeSpan.upper < 24))
-  };
+    return (
+      this.filterCondition &&
+      ((this.filterCondition.arrivalStations &&
+        this.filterCondition.arrivalStations.length) ||
+        (this.filterCondition.departureStations &&
+          this.filterCondition.departureStations.length) ||
+        (this.filterCondition.trainTypes &&
+          this.filterCondition.trainTypes.length) ||
+        (this.filterCondition.departureTimeSpan &&
+          (this.filterCondition.departureTimeSpan.lower > 0 ||
+            this.filterCondition.departureTimeSpan.upper < 24)))
+    );
+  }
   vmFromCity: TrafficlineEntity;
   vmToCity: TrafficlineEntity;
   searchTrainModel: SearchTrainModel;
@@ -113,11 +114,19 @@ export class TrainListPage implements OnInit, OnDestroy {
       this.isShowRoundtripTip = await this.staffService.isSelfBookType();
       let isDoRefresh = false;
       this.currentSelectedPassengerIds = this.trainService
-        .getBookInfos().map(it => it.passenger && it.passenger.AccountId);
+        .getBookInfos()
+        .map(it => it.passenger && it.passenger.AccountId);
       if (this.currentSelectedPassengerIds && this.lastSelectedPassengerIds) {
-        if (this.currentSelectedPassengerIds.length != this.lastSelectedPassengerIds.length ||
-          !this.currentSelectedPassengerIds.some(it => !!this.lastSelectedPassengerIds.find(id => id == it)) ||
-          !this.lastSelectedPassengerIds.some(it => !!this.currentSelectedPassengerIds.find(id => id == it))) {
+        if (
+          this.currentSelectedPassengerIds.length !=
+            this.lastSelectedPassengerIds.length ||
+          !this.currentSelectedPassengerIds.some(
+            it => !!this.lastSelectedPassengerIds.find(id => id == it)
+          ) ||
+          !this.lastSelectedPassengerIds.some(
+            it => !!this.currentSelectedPassengerIds.find(id => id == it)
+          )
+        ) {
           isDoRefresh = true;
         }
       }
@@ -162,11 +171,7 @@ export class TrainListPage implements OnInit, OnDestroy {
       .getSearchTrainModelSource()
       .subscribe(modal => {
         this.searchTrainModel = modal;
-        console.log(
-          "getSearchTrainModelSource",
-          modal,
-          this.isLoading
-        );
+        console.log("getSearchTrainModelSource", modal, this.isLoading);
         if (this.searchTrainModel) {
           this.vmFromCity = modal.fromCity;
           this.vmToCity = modal.toCity;
@@ -205,6 +210,9 @@ export class TrainListPage implements OnInit, OnDestroy {
   }
   async onSelectStation(isFrom: boolean) {
     if (this.searchTrainModel) {
+      if (isFrom && this.searchTrainModel.isExchange) {
+        return;
+      }
       const m = await this.modalCtrl.create({
         component: SelectTrainStationModalComponent
       });
@@ -223,12 +231,11 @@ export class TrainListPage implements OnInit, OnDestroy {
         this.trainService.setSearchTrainModel(this.searchTrainModel);
       }
     }
-
   }
   private async loadPolicyedTrainsAsync(): Promise<TrainEntity[]> {
     // 先获取最新的数据
     this.vmTrains = [];
-    this.trains = await this.trainService.loadPolicyedTrainsAsync((status) => {
+    this.trains = await this.trainService.loadPolicyedTrainsAsync(status => {
       this.progressName = status;
     });
     return JSON.parse(JSON.stringify(this.trains));
@@ -237,7 +244,8 @@ export class TrainListPage implements OnInit, OnDestroy {
     if (this.scroller) {
       this.scroller.complete();
       if (this.scroller) {
-        this.scroller.disabled = trains.length == 0 || trains.length < this.pageSize;
+        this.scroller.disabled =
+          trains.length == 0 || trains.length < this.pageSize;
       }
     }
   }
@@ -248,7 +256,7 @@ export class TrainListPage implements OnInit, OnDestroy {
       if (trains.length) {
         this.vmTrains = this.vmTrains.concat(trains);
       }
-    })
+    });
   }
   async filterPolicyTrains() {
     const popover = await this.popoverController.create({
@@ -266,7 +274,7 @@ export class TrainListPage implements OnInit, OnDestroy {
       return;
     }
     let data;
-    if (d.data == 'isUnFilterPolicy') {
+    if (d.data == "isUnFilterPolicy") {
       data = this.filterPassengerPolicyTrains(null);
     } else {
       data = this.filterPassengerPolicyTrains(d.data);
@@ -276,7 +284,9 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.isLoading = false;
   }
   goToSelectPassengerPage() {
-    this.lastSelectedPassengerIds = this.trainService.getBookInfos().map(it => it.passenger && it.passenger.AccountId);
+    this.lastSelectedPassengerIds = this.trainService
+      .getBookInfos()
+      .map(it => it.passenger && it.passenger.AccountId);
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
       queryParams: {
         forType: FlightHotelTrainType.Train
@@ -354,7 +364,11 @@ export class TrainListPage implements OnInit, OnDestroy {
       }
       // this.moveDayToSearchDate();
       if (this.searchTrainModel) {
-        this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(this.searchTrainModel.Date)]);
+        this.calendarService.setSelectedDaysSource([
+          this.calendarService.generateDayModelByDate(
+            this.searchTrainModel.Date
+          )
+        ]);
       }
 
       this.apiService.showLoadingView();
@@ -367,13 +381,15 @@ export class TrainListPage implements OnInit, OnDestroy {
       this.isLoading = true;
       let data: TrainEntity[] = JSON.parse(JSON.stringify(this.trains));
       if (loadDataFromServer) {
-        this.progressName = '正在获取火车票列表';
+        this.progressName = "正在获取火车票列表";
         // 强制从服务器端返回新数据
         data = await this.loadPolicyedTrainsAsync();
       }
       data = this.filterTrains(data);
       {
-        const b = this.trainService.getBookInfos().find(it => it.isFilterPolicy);
+        const b = this.trainService
+          .getBookInfos()
+          .find(it => it.isFilterPolicy);
         data = this.trainService.filterPassengerPolicyTrains(b, data);
       }
       // 根据筛选条件过滤航班信息：
@@ -408,13 +424,15 @@ export class TrainListPage implements OnInit, OnDestroy {
 
       if (isSelf) {
         const bookInfos = this.trainService.getBookInfos();
-        const bookInfo = this.trainService.getTrainInfo(currentViewtTainItem, { ...bookInfos[0] });
+        const bookInfo = this.trainService.getTrainInfo(currentViewtTainItem, {
+          ...bookInfos[0]
+        });
         if (
           bookInfo &&
           bookInfo.trainPolicy &&
           !bookInfo.trainPolicy.IsAllowBook
         ) {
-          let rules = (bookInfo.trainPolicy.Rules || []);
+          let rules = bookInfo.trainPolicy.Rules || [];
           AppHelper.alert(
             `${rules.join("; ") + rules.length ? "," : ""}不可预订`,
             true,
@@ -441,6 +459,9 @@ export class TrainListPage implements OnInit, OnDestroy {
     return result;
   }
   onSwapStation() {
+    if (this.searchTrainModel && this.searchTrainModel.isExchange) {
+      return;
+    }
     const s = this.trainService.getSearchTrainModel();
     this.trainService.setSearchTrainModel({
       ...s,
@@ -492,7 +513,8 @@ export class TrainListPage implements OnInit, OnDestroy {
         const m = +t[1];
         return (
           this.filterCondition.departureTimeSpan.lower <= h &&
-          (h < this.filterCondition.departureTimeSpan.upper || h == this.filterCondition.departureTimeSpan.upper && m <= 0)
+          (h < this.filterCondition.departureTimeSpan.upper ||
+            (h == this.filterCondition.departureTimeSpan.upper && m <= 0))
         );
       });
     }
@@ -544,9 +566,7 @@ export class TrainListPage implements OnInit, OnDestroy {
     return trains;
   }
   async onChangedDay(day: DayModel, byUser: boolean) {
-    if (
-      !byUser
-    ) {
+    if (!byUser) {
       return;
     }
     if (!this.filterCondition) {
@@ -555,12 +575,17 @@ export class TrainListPage implements OnInit, OnDestroy {
     this.filterCondition.priceFromL2H = "initial";
     this.filterCondition.timeFromM2N = "initial";
     this.activeTab = "none";
-    const identity = await this.identityService.getIdentityAsync().catch(_ => null);
+    const identity = await this.identityService
+      .getIdentityAsync()
+      .catch(_ => null);
     if (this.searchTrainModel) {
       if (this.searchTrainModel.tripType == TripType.departureTrip) {
         this.searchTrainModel.Date = day.date;
         if (identity) {
-          await this.storage.set(`last_selected_train_goDate_${identity.Id}`, day.date);
+          await this.storage.set(
+            `last_selected_train_goDate_${identity.Id}`,
+            day.date
+          );
         }
       } else {
         this.searchTrainModel.BackDate = day.date;
@@ -584,7 +609,10 @@ export class TrainListPage implements OnInit, OnDestroy {
         Date: days[0].date
       });
       this.calendarService.setSelectedDaysSource(days);
-      this.onChangedDay(this.calendarService.generateDayModelByDate(this.searchTrainModel.Date), true);
+      this.onChangedDay(
+        this.calendarService.generateDayModelByDate(this.searchTrainModel.Date),
+        true
+      );
     }
   }
 

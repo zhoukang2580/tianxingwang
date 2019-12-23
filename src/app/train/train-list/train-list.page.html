@@ -5,16 +5,20 @@
         <ion-icon color='dark' name='arrow-back'></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title color='secondary' class='sm-font-size' [class.text-start]='(isShowAddPassenger$|async)'
+    <ion-title class='sm-font-size' [class.text-start]='(isShowAddPassenger$|async)'
       [class.text-center]='!(isShowAddPassenger$|async)'>
-      <ion-text (click)='onSelectStation(true)' class='from-station'>
+      <ion-text (click)='onSelectStation(true)' color='{{!searchTrainModel?.isExchange?"secondary":"medium"}}'
+        class='from-station'>
         <span>
           {{vmFromCity?.Nickname}}
         </span>
-        <ion-icon name='arrow-dropdown'></ion-icon>
+        <ion-icon name='arrow-dropdown' *ngIf='!searchTrainModel?.isExchange'></ion-icon>
       </ion-text>
-      <i class='icon icon-search-train' (click)='onSwapStation()'></i>
-      <ion-text (click)='onSelectStation(false)' class='to-station'>
+      <ion-text color='{{!searchTrainModel?.isExchange?"secondary":"medium"}}'>
+        <i class='icon icon-search-train' (click)='onSwapStation()'></i>
+      </ion-text>
+      <ion-text (click)='onSelectStation(false)' color='{{!searchTrainModel?.isExchange?"secondary":"medium"}}'
+        class='to-station'>
         <span>{{ vmToCity?.Nickname}}</span>
         <ion-icon name='arrow-dropdown'></ion-icon>
       </ion-text>
