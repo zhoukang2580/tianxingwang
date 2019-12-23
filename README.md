@@ -57,7 +57,9 @@
 `ng build --prod --base-href /www/`
 ng serve --disableHostCheck
 
-
+## 修改wechat app id 
+1. 到项目目录下面找到config.xml，找到里面的 `<preference name="WECHATAPPID" value="wx58e8910e60cd69ac" />`
+2. 将其值修改对应的appid即可
 ## ios 发布app说明
 执行命令前，先到config.xml修改版本号
 1. 首先执行 `sudo ionic cordova build ios --prod`
