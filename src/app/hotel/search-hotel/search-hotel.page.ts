@@ -1,21 +1,30 @@
-import { LanguageHelper } from './../../languageHelper';
+import { LanguageHelper } from "./../../languageHelper";
 import { ImageRecoverService } from "./../../services/imageRecover/imageRecover.service";
 import { DayModel } from "src/app/tmc/models/DayModel";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { CalendarService } from "src/app/tmc/calendar.service";
-import { FlightHotelTrainType, PassengerBookInfo } from "./../../tmc/tmc.service";
+import {
+  FlightHotelTrainType,
+  PassengerBookInfo
+} from "./../../tmc/tmc.service";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { HotelService, IHotelInfo } from "./../hotel.service";
 import { Router, ActivatedRoute, NavigationEnd } from "@angular/router";
 import { Observable, Subscription, from, of } from "rxjs";
-import { Component, OnInit, OnDestroy, AfterViewInit, EventEmitter } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  AfterViewInit,
+  EventEmitter
+} from "@angular/core";
 import { NavController, ModalController } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import { StaffService } from "src/app/hr/staff.service";
 import { map } from "rxjs/operators";
 import * as moment from "moment";
 import { TripType } from "src/app/tmc/models/TripType";
-import { SelectedPassengersComponent } from 'src/app/tmc/components/selected-passengers/selected-passengers.component';
+import { SelectedPassengersComponent } from "src/app/tmc/components/selected-passengers/selected-passengers.component";
 @Component({
   selector: "app-search-hotel",
   templateUrl: "./search-hotel.page.html",
@@ -26,13 +35,16 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   isShowSelectedInfos$: Observable<boolean>;
   canAddPassengers = false;
   get selectedPassengers() {
-    return this.hotelService.getBookInfos().length
-  };
+    return this.hotelService.getBookInfos().length;
+  }
   get totalFlyDays() {
     if (this.checkInDate && this.checkOutDate) {
-      const nums =
-        Math.abs(moment(this.checkOutDate.date).diff(
-          moment(this.checkInDate.date), 'days'))
+      const nums = Math.abs(
+        moment(this.checkOutDate.date).diff(
+          moment(this.checkInDate.date),
+          "days"
+        )
+      );
       return nums <= 0 ? 1 : nums;
     }
     return 0;
@@ -41,7 +53,30 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   destinationCity: TrafficlineEntity;
   checkInDate: DayModel;
   checkOutDate: DayModel;
-  curPos: TrafficlineEntity = {} as any;
+  curPos: TrafficlineEntity = {
+    Name: "北京",
+    Code: "1101",
+    CountryCode: "CN",
+    CountryName: null,
+    Pinyin: "beijing",
+    Initial: "BJ",
+    IsShow: false,
+    IsHot: true,
+    Sequence: 99,
+    Errors: null,
+    HandleResult: null,
+    Id: 1,
+    InsertTime: "0001-01-01T00:00:00",
+    UpdateTime: "0001-01-01T00:00:00",
+    Version: 0,
+    SaveType: 0,
+    Language: null,
+    SaveSequence: 0,
+    Properties: null,
+    WhereExp: null,
+    Parameters: null,
+    FirstLetter: "B"
+  } as any;
   isPositioning = false;
   activeTab = "normal";
   isLeavePage = false;
@@ -93,17 +128,15 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   }
   async onPosition() {
     this.isPositioning = true;
-    this.curPos = { CityName: "正在定位..." } as any;
-    const curPos: {
-      city: TrafficlineEntity;
-      position: {lat:string;lng:string;cityName:string;};
-    } = await this.hotelService.getCurPosition().catch(_ => null);
+    // this.curPos = { CityName: "正在定位..." } as any;
+    // const curPos: {
+    //   city: TrafficlineEntity;
+    //   position: { lat: string; lng: string; cityName: string };
+    // } = await this.hotelService.getCurPosition().catch(_ => null);
     if (this.isLeavePage) {
       return;
     }
-    if (curPos) {
-      this.curPos = curPos.city;
-      this.curPos.Code = curPos.city.CityCode;
+    if (this.curPos) {
       const cities = await this.hotelService.getHotelCityAsync();
       if (cities) {
         const c = cities.find(it => it.Code == this.curPos.Code);
@@ -114,11 +147,11 @@ export class SearchHotelPage implements OnInit, OnDestroy {
           });
           await this.hotelService.getConditions(true);
         } else {
-          this.curPos = { CityName: "定位出错啦" } as any;
+          this.curPos = { CityName: "请选择目的地" } as any;
         }
       }
     } else {
-      this.curPos = { CityName: "定位出错啦" } as any;
+      this.curPos = { CityName: "请选择目的地" } as any;
     }
     this.isPositioning = false;
   }
@@ -128,14 +161,21 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       moment().add(1, "days")
     );
   }
-  onShowSelectedBookInfos() { }
+  onShowSelectedBookInfos() {}
   onSelectPassenger() {
-    this.router.navigate([AppHelper.getRoutePath("select-passenger")], { queryParams: { forType: FlightHotelTrainType.Hotel } });
+    this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
+      queryParams: { forType: FlightHotelTrainType.Hotel }
+    });
   }
   async onOpenSelectedPassengers() {
     const removeitem = new EventEmitter();
     removeitem.subscribe(async (info: PassengerBookInfo<IHotelInfo>) => {
-      const ok = await AppHelper.alert(LanguageHelper.getConfirmDeleteTip(), true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+      const ok = await AppHelper.alert(
+        LanguageHelper.getConfirmDeleteTip(),
+        true,
+        LanguageHelper.getConfirmTip(),
+        LanguageHelper.getCancelTip()
+      );
       if (ok) {
         this.hotelService.removeBookInfo(info, true);
       }
@@ -166,7 +206,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       ...this.hotelService.getSearchHotelModel(),
       checkInDate: this.checkInDate.date,
       checkOutDate: this.checkOutDate.date,
-      destinationCity: this.destinationCity,
+      destinationCity: this.destinationCity
     });
     await this.hotelService.getConditions();
     this.isLeavePage = true;
