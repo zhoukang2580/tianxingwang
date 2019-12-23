@@ -64,3 +64,13 @@ ng serve --disableHostCheck
 2. 用 xcode 打开 platforms/ios/项目
 3. 到xcode target 的选项卡中打开 info，修改打包的bundle identifier为： `com.eskytrip.zhaozuomingios`，如果要修改微信appid ,修改最底下的url types 的schema `https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=8_5`,位置访问，需要在info标签下面新增 key =`Privacy - Location Always Usage Description`和`Privacy - Location Usage Description`
 4. 执行archive打包，传到iTunes,提交审核
+
+## 旧版本Android 微信配置
+1. AppID：wx58e8910e60cd69ac
+2. com.dmonline.v2
+3. `Android平台
+应用下载地址：未填写
+
+应用签名：58c29cb32a1fbc7b1c95e5e7961e46df
+
+包名：com.dmonline.v2` 
