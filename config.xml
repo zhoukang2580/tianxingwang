@@ -111,6 +111,6 @@
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.1.3" />
     <plugin name="cordova-plugin-console" spec="~1.1.0" />
     <plugin name="cordova-wechat-plugin" spec="./cordova-wechat-plugin">
-        <variable name="WECHATAPPID" value="wx0839a418ccafdf36" />
+        <variable name="WECHATAPPID" value="wx58e8910e60cd69ac" />
     </plugin>
 </widget>
