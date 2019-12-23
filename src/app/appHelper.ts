@@ -203,7 +203,8 @@ export class AppHelper {
                       .substring(p.indexOf(`value="`) + `value="`.length)
                       .trim()
                       .replace(/\"/g, "");
-                  if (appId) {
+                  if (appId.trim()) {
+                    console.log("getWechatAppId appid = ", appId);
                     resolve(appId);
                   } else {
                     reject("variable WECHATAPPID can not be found");
