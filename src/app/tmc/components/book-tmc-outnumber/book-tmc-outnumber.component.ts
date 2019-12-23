@@ -1,45 +1,56 @@
-import { EventEmitter } from '@angular/core';
-import { TmcService } from './../../tmc.service';
-import { PopoverController } from '@ionic/angular';
-import { Component, OnInit, Input, Output } from '@angular/core';
-import { TravelUrlInfo } from '../../tmc.service';
-import { SelectTravelNumberComponent } from '../select-travel-number-popover/select-travel-number-popover.component';
+import { EventEmitter } from "@angular/core";
+import { TmcService } from "./../../tmc.service";
+import { PopoverController } from "@ionic/angular";
+import { Component, OnInit, Input, Output } from "@angular/core";
+import { TravelUrlInfo } from "../../tmc.service";
+import { SelectTravelNumberComponent } from "../select-travel-number-popover/select-travel-number-popover.component";
 
 @Component({
-  selector: 'app-book-tmc-outnumber',
-  templateUrl: './book-tmc-outnumber.component.html',
-  styleUrls: ['./book-tmc-outnumber.component.scss'],
+  selector: "app-book-tmc-outnumber",
+  templateUrl: "./book-tmc-outnumber.component.html",
+  styleUrls: ["./book-tmc-outnumber.component.scss"]
 })
 export class BookTmcOutnumberComponent implements OnInit {
   @Output() tmcOutNumber: EventEmitter<{
     tmcOutNumberInfos: ITmcOutNumberInfo[];
-    tmcOutNumberInfo: ITmcOutNumberInfo,
-    travelUrlInfo: TravelUrlInfo
+    tmcOutNumberInfo: ITmcOutNumberInfo;
+    travelUrlInfo: TravelUrlInfo;
   }>;
+  @Input() isExchange: boolean;
   @Input() tmcOutNumberInfos: ITmcOutNumberInfo[];
-  constructor(private popoverCtrl: PopoverController, private tmcService: TmcService) {
+  constructor(
+    private popoverCtrl: PopoverController,
+    private tmcService: TmcService
+  ) {
     this.tmcOutNumber = new EventEmitter();
   }
 
-  ngOnInit() { }
+  ngOnInit() {}
   async onSelectTravelNumber(arg: ITmcOutNumberInfo) {
     const tmcOutNumberInfos = this.tmcOutNumberInfos;
-    if (!arg || !arg.canSelect) {
+    if (!arg || !arg.canSelect || this.isExchange) {
       return;
     }
     if (!arg.travelUrlInfos || arg.travelUrlInfos.length == 0) {
       tmcOutNumberInfos.forEach(info => {
         info.isLoadingNumber = true;
-      })
-      const result = await this.tmcService.getTravelUrls([{
-        staffNumber: arg.staffNumber,
-        staffOutNumber: arg.staffOutNumber,
-        name: arg.label
-      }], true);
+      });
+      const result = await this.tmcService.getTravelUrls(
+        [
+          {
+            staffNumber: arg.staffNumber,
+            staffOutNumber: arg.staffOutNumber,
+            name: arg.label
+          }
+        ],
+        true
+      );
       if (result) {
         tmcOutNumberInfos.forEach(info => {
-          info.loadTravelUrlErrorMsg = result[info.staffNumber] && result[info.staffNumber].Message;
-          info.travelUrlInfos = result[info.staffNumber] && result[info.staffNumber].Data;
+          info.loadTravelUrlErrorMsg =
+            result[info.staffNumber] && result[info.staffNumber].Message;
+          info.travelUrlInfos =
+            result[info.staffNumber] && result[info.staffNumber].Data;
           if (
             !info.value &&
             info.travelUrlInfos &&
@@ -48,11 +59,11 @@ export class BookTmcOutnumberComponent implements OnInit {
             info.value = info.travelUrlInfos[0].TravelNumber;
           }
           info.isLoadingNumber = false;
-        })
+        });
       } else {
         tmcOutNumberInfos.forEach(info => {
           info.isLoadingNumber = false;
-        })
+        });
       }
     }
     if (!arg.travelUrlInfos || arg.travelUrlInfos.length == 0) {
@@ -68,14 +79,14 @@ export class BookTmcOutnumberComponent implements OnInit {
       showBackdrop: true
     });
     await p.present();
-    const result = await p.onDidDismiss();
-    if (result && result.data) {
-      const data = result.data as TravelUrlInfo;
+    const res = await p.onDidDismiss();
+    if (res && res.data) {
+      const data = res.data as TravelUrlInfo;
       this.tmcOutNumber.emit({
         tmcOutNumberInfo: arg,
         tmcOutNumberInfos: this.tmcOutNumberInfos,
         travelUrlInfo: data
-      })
+      });
       // if (data) {
       //   if (data.CostCenterCode) {
       //     item.costCenter.code = data.CostCenterCode;

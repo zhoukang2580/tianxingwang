@@ -22,7 +22,7 @@
           [成人]
           {{combindInfo?.credential?.Number}}
         </ion-item-divider>
-        <ion-item-group *ngIf='combindInfo.isShowApprovalInfo'> 
+        <ion-item-group *ngIf='combindInfo.isShowApprovalInfo'>
           <ion-item class="ion-no-margin">
             <ion-label>通知语言:</ion-label>
             <ion-select value='cn' okText="确定" cancelText="取消" [(ngModel)]='combindInfo.notifyLanguage'>
@@ -39,14 +39,25 @@
             <ion-label>服务费:</ion-label>
             <ion-label slot='end' text-end padding-end>{{combindInfo.serviceFee}}</ion-label>
           </ion-item>
-          <ion-item class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)'
-            (click)='openApproverModal(combindInfo)'>
-            <ion-label>
-              审批人:<ion-text *ngIf='combindInfo?.appovalStaff'>
-                {{combindInfo?.appovalStaff?.Name}}|{{combindInfo?.appovalStaff?.Email||combindInfo?.appovalStaff?.Account?.Email}}|{{combindInfo?.appovalStaff?.Number||combindInfo?.appovalStaff?.Mobile}}
-              </ion-text>
-            </ion-label>
-          </ion-item>
+          <ng-container *ngIf='!searchTrainModel?.isExchange else exApproval'>
+            <ion-item class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)'
+              (click)='openApproverModal(combindInfo)'>
+              <ion-label>
+                审批人:<ion-text *ngIf='combindInfo?.appovalStaff'>
+                  {{combindInfo?.appovalStaff?.Name}}|{{combindInfo?.appovalStaff?.Email||combindInfo?.appovalStaff?.Account?.Email}}|{{combindInfo?.appovalStaff?.Number||combindInfo?.appovalStaff?.Mobile}}
+                </ion-text>
+              </ion-label>
+            </ion-item>
+          </ng-container>
+          <ng-template #exApproval>
+            <ion-item class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)' disabled>
+              <ion-label>
+                审批人:<ion-text *ngIf='combindInfo?.appovalStaff'>
+                  {{combindInfo?.appovalStaff?.Name}}|{{combindInfo?.appovalStaff?.Email||combindInfo?.appovalStaff?.Account?.Email}}|{{combindInfo?.appovalStaff?.Number||combindInfo?.appovalStaff?.Mobile}}
+                </ion-text>
+              </ion-label>
+            </ion-item>
+          </ng-template>
         </ion-item-group>
         <ion-item-group>
           <ion-item-divider>车票预订信息:</ion-item-divider>
@@ -69,9 +80,15 @@
           <ion-item>
             <div style='width: 100%'>
               <app-book-credential-comp [credential]='combindInfo?.vmCredential'
+                *ngIf='!searchTrainModel?.isExchange else excredentialTemp'
                 (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo?.credentials'
                 (modify)='onModify(combindInfo)'>
               </app-book-credential-comp>
+              <ng-template #excredentialTemp>
+                <app-book-credential-comp [credential]='combindInfo?.vmCredential' [isExchange]='true'
+                  (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo?.credentials'>
+                </app-book-credential-comp>
+              </ng-template>
             </div>
           </ion-item>
           <ion-item *ngIf='combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules?.length && !combindInfo?.isNotWhitelist'>
@@ -99,11 +116,12 @@
             联系方式:
           </ion-item-divider>
           <div class='mobiles'>
-            <ion-item *ngFor='let mobile of combindInfo?.credentialStaffMobiles'>
+            <ion-item *ngFor='let mobile of combindInfo?.credentialStaffMobiles'
+              [disabled]='searchTrainModel?.isExchange'>
               <ion-checkbox color="secondary" [(ngModel)]="mobile.checked"></ion-checkbox>
               <ion-label style='margin-left: 0.5em'>{{mobile.mobile}}</ion-label>
             </ion-item>
-            <ion-item>
+            <ion-item [disabled]='searchTrainModel?.isExchange'>
               <ion-label style='margin-right: 0.5em'>其他号码：</ion-label>
               <ion-input [(ngModel)]="combindInfo.credentialStaffOtherMobile" placeholder='请输入其他号码'></ion-input>
             </ion-item>
@@ -114,11 +132,12 @@
             联系邮箱:
           </ion-item-divider>
           <div class='emails'>
-            <ion-item *ngFor='let email of combindInfo?.credentialStaffEmails'>
+            <ion-item *ngFor='let email of combindInfo?.credentialStaffEmails'
+              [disabled]='searchTrainModel?.isExchange'>
               <ion-checkbox color="secondary" [(ngModel)]="email.checked"></ion-checkbox>
               <ion-label style='margin-left: 0.5em'>{{email.email}}</ion-label>
             </ion-item>
-            <ion-item no-margin>
+            <ion-item no-margin [disabled]='searchTrainModel?.isExchange'>
               <ion-label>其他邮箱：</ion-label>
               <ion-input [(ngModel)]="combindInfo.credentialStaffOtherEmail" placeholder='请输入其他邮箱'></ion-input>
             </ion-item>
@@ -128,7 +147,7 @@
           <ion-item-divider>
             保险:
           </ion-item-divider>
-          <ion-item>
+          <ion-item [disabled]='searchTrainModel?.isExchange'>
             <div *ngFor='let insurance of combindInfo?.insuranceProducts' style='width: 100%'>
               <ion-row>
                 <ion-col size='9'>
@@ -176,13 +195,14 @@
           </ion-item>
         </ion-item-group>
         <app-book-tmc-outnumber [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos'
-          (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'></app-book-tmc-outnumber>
+          [isExchange]='searchTrainModel?.isExchange' (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'>
+        </app-book-tmc-outnumber>
       </ion-list>
       <ion-item-group>
         <ion-item-divider>
           添加联系人：
         </ion-item-divider>
-        <ion-item>
+        <ion-item [disabled]='searchTrainModel?.isExchange'>
           <app-book-addcontacts-comp [addContacts]='addContacts' (contactChange)='onContactsChange($event)'>
           </app-book-addcontacts-comp>
         </ion-item>
@@ -191,13 +211,14 @@
         <ion-item-divider>
           支付方式：
         </ion-item-divider>
-        <ion-item>
+        <ion-item [disabled]='searchTrainModel?.isExchange'>
           <div style='width: 100%'>
             <ion-radio-group [(ngModel)]='viewModel.orderTravelPayType' name='travelPayType'
               (ionChange)="calcTotalPrice()">
               <ion-item *ngFor='let pt of orderTravelPayTypes'>
                 <ion-label>{{pt.label}}</ion-label>
-                <ion-radio [value]="pt.value" (ionSelect)='onOrderTravelPayTypeSelect(pt)' [class.radio-checked]='pt.checked'>
+                <ion-radio [value]="pt.value" (ionSelect)='onOrderTravelPayTypeSelect(pt)'
+                  [class.radio-checked]='pt.checked'>
                 </ion-radio>
               </ion-item>
             </ion-radio-group>

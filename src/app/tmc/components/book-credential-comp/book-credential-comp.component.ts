@@ -1,9 +1,18 @@
-import { Subscription } from 'rxjs';
-import { StaffService } from './../../../hr/staff.service';
-import { IonSelect } from '@ionic/angular';
+import { Subscription } from "rxjs";
+import { StaffService } from "./../../../hr/staff.service";
+import { IonSelect } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import { Router } from "@angular/router";
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild, AfterViewInit, OnDestroy } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  ViewChild,
+  AfterViewInit,
+  OnDestroy
+} from "@angular/core";
 import { CredentialsEntity } from "../../models/CredentialsEntity";
 
 @Component({
@@ -11,8 +20,10 @@ import { CredentialsEntity } from "../../models/CredentialsEntity";
   templateUrl: "./book-credential-comp.component.html",
   styleUrls: ["./book-credential-comp.component.scss"]
 })
-export class BookCredentialCompComponent implements OnInit, AfterViewInit, OnDestroy {
+export class BookCredentialCompComponent
+  implements OnInit, AfterViewInit, OnDestroy {
   private subscription = Subscription.EMPTY;
+  @Input() isExchange: boolean;
   @Input() credential: CredentialsEntity;
   @Input() credentials: CredentialsEntity[];
   // @Input() isFlightTrainHotel: "flight" | "train" | "hotel";
@@ -31,6 +42,9 @@ export class BookCredentialCompComponent implements OnInit, AfterViewInit, OnDes
     );
   }
   onModify() {
+    if (this.isExchange) {
+      return;
+    }
     this.isModified = !this.isModified;
     if (this.isModified) {
       this.modify.emit();
@@ -59,6 +73,9 @@ export class BookCredentialCompComponent implements OnInit, AfterViewInit, OnDes
     }
   }
   openSelect() {
+    if (this.isExchange) {
+      return;
+    }
     if (!this.isModified) {
       AppHelper.alert("请先点击修改");
       return;

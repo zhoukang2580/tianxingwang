@@ -7,6 +7,7 @@ import { IllegalReasonEntity } from "../../tmc.service";
   styleUrls: ["./book-illegal-reason-comp.component.scss"]
 })
 export class BookIllegalReasonCompComponent implements OnInit {
+  @Input() disabled: boolean;
   @Input() isAllowCustomReason: boolean;
   @Input() illegalReasons: IllegalReasonEntity[] = [];
   @Output() ionchange: EventEmitter<any>;

@@ -17,8 +17,7 @@
       <ion-text color='{{!searchTrainModel?.isExchange?"secondary":"medium"}}'>
         <i class='icon icon-search-train' (click)='onSwapStation()'></i>
       </ion-text>
-      <ion-text (click)='onSelectStation(false)' color='{{!searchTrainModel?.isExchange?"secondary":"medium"}}'
-        class='to-station'>
+      <ion-text (click)='onSelectStation(false)'  class='to-station' color='secondary'>
         <span>{{ vmToCity?.Nickname}}</span>
         <ion-icon name='arrow-dropdown'></ion-icon>
       </ion-text>
