@@ -127,7 +127,7 @@
             <ion-select slot='end' [compareWith]='compareFn' (ionChange)='onSelectTrainTicket($event)'
               [(ngModel)]='selectedTrainTicket' [okText]='"确定"' [cancelText]='"取消"'>
               <ion-label>{{selectedTrainTicket?.Id}}</ion-label>
-              <ion-select-option *ngFor='let o of orderDetail.Order.OrderFlightTickets' [value]='o'>{{o.Id}}
+              <ion-select-option *ngFor='let o of orderDetail.Order.OrderTrainTickets' [value]='o'>{{o.Id}}
               </ion-select-option>
             </ion-select>
           </ng-container>
