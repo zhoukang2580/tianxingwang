@@ -697,7 +697,7 @@ export class BookPage implements OnInit, AfterViewInit {
     bookDto.Passengers = [];
     for (let i = 0; i < combindInfos.length; i++) {
       const combindInfo = combindInfos[i];
-      const accountId = combindInfo.modal.passenger.AccountId || this.tmc && this.tmc.Account.Id;
+      const accountId = combindInfo.modal.passenger.AccountId || this.tmc && this.tmc.Account && this.tmc.Account.Id;
       if (
         this.isAllowSelectApprove(combindInfo) &&
         !combindInfo.appovalStaff &&
@@ -1177,7 +1177,7 @@ export class BookPage implements OnInit, AfterViewInit {
         combineInfo.modal = item;
         combineInfo.vmModal = { ...item };
         combineInfo.appovalStaff = cs && cs.DefaultApprover;
-        const accountId = item.passenger.AccountId || this.tmc && this.tmc.Account.Id;
+        const accountId = item.passenger.AccountId || this.tmc && this.tmc.Account && this.tmc.Account.Id;
         const tmcOutNumberInfos = accountIdTmcOutNumberInfosMap[accountId];
         combineInfo.tmcOutNumberInfos = tmcOutNumberInfos ||
           (this.tmc &&
