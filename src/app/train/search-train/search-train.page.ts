@@ -61,7 +61,7 @@ export class SearchTrainPage
     private calendarService: CalendarService,
     private modalCtrl: ModalController
   ) { }
- 
+
   back() {
     this.router.navigate([""]);
   }
@@ -137,7 +137,7 @@ export class SearchTrainPage
         .filter(it => it.bookInfo).length;
     });
   }
-  
+
 
   onSelectPassenger() {
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
@@ -162,8 +162,9 @@ export class SearchTrainPage
     const nextDate = moment()
       .add(1, "days")
       .format("YYYY-MM-DD");
+    const now = moment().format("YYYY-MM-DD");
     if (trip) {
-      lastSelectedGoDate = +moment(trip.StartTime) >= +moment(lastSelectedGoDate) ? trip.StartTime : lastSelectedGoDate;
+      lastSelectedGoDate = +moment(trip.StartTime) >= +moment(now) ? trip.StartTime : now;
     }
     lastSelectedGoDate =
       lastSelectedGoDate &&

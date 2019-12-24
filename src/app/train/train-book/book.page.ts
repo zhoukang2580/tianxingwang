@@ -445,7 +445,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
       }
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast("下单成功!", 1400, "top");
+          AppHelper.toast(exchangeInfo && exchangeInfo.exchangeInfo ? "改签成功" : "下单成功!", 1400, "top");
           this.isSubmitDisabled = true;
           const isSelf = await this.staffService.isSelfBookType();
           if (
@@ -459,7 +459,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
             if (canPay) {
               if (res.HasTasks) {
                 await AppHelper.alert(
-                  LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
+                  exchangeInfo && exchangeInfo.exchangeInfo ? "改签成功" : LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
                   true
                 );
               } else {
@@ -475,7 +475,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
             if (isSave) {
               await AppHelper.alert("订单已保存", true);
             } else {
-              await AppHelper.alert("下单成功", true);
+              await AppHelper.alert(exchangeInfo && exchangeInfo.exchangeInfo ? "改签成功" : "下单成功", true);
             }
           }
           this.trainService.removeAllBookInfos();
@@ -565,7 +565,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
         return arr;
       }, 0);
       // console.log("totalPrice ", totalPrice);
-      const fees =!exchange? this.getTotalServiceFees():+(this.tmc&&this.tmc.TrainExchangeOnlineFee);
+      const fees = !exchange ? this.getTotalServiceFees() : +(this.tmc && this.tmc.TrainExchangeOnlineFee);
       totalPrice = AppHelper.add(fees, totalPrice);
       const info = this.trainService.getBookInfos().find(it => !!it.exchangeInfo);
       if (info && info.exchangeInfo) {
