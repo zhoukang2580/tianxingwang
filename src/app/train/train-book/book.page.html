@@ -77,7 +77,7 @@
         </ion-item-group>
         <ion-item-group>
           <ion-item-divider>旅客信息：</ion-item-divider>
-          <ion-item>
+          <ion-item [disabled]='searchTrainModel?.isExchange'>
             <div style='width: 100%'>
               <app-book-credential-comp [credential]='combindInfo?.vmCredential'
                 *ngIf='!searchTrainModel?.isExchange else excredentialTemp'

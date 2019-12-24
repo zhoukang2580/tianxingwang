@@ -27,7 +27,7 @@
         size='small'>
         <ion-text class='sm-font-size'>过滤差标</ion-text>
       </ion-button>
-      <ion-button fill='clear' *ngIf='(isShowAddPassenger$|async)' color='secondary' size='small'
+      <ion-button fill='clear' *ngIf='(isShowAddPassenger$|async)&&!searchTrainModel?.isExchange' color='secondary' size='small'
         (click)='onSelectPassenger()'>
         <ion-text class='sm-font-size'>添加旅客</ion-text>
         <ion-badge color='danger' *ngIf='selectedPassengersNumbers$|async as n'>

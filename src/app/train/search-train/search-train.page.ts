@@ -35,7 +35,6 @@ export class SearchTrainPage
   rotateIcon = false;
   isSingle = true;
   goDate: DayModel;
-  backDate: DayModel;
   isShowSelectedInfos$ = of(false);
   canAddPassengers = false;
   // selectDaySubscription = Subscription.EMPTY;
@@ -62,22 +61,7 @@ export class SearchTrainPage
     private calendarService: CalendarService,
     private modalCtrl: ModalController
   ) { }
-  private checkBackDateIsAfterGoDate() {
-    if (
-      !this.goDate ||
-      this.goDate.timeStamp < Math.floor(new Date().getTime() / 1000)
-    ) {
-      this.goDate = this.calendarService.generateDayModel(moment());
-    }
-    if (this.goDate && this.backDate) {
-      this.backDate =
-        this.goDate.timeStamp > this.backDate.timeStamp
-          ? this.calendarService.generateDayModel(
-            moment(this.goDate.date).add(1, "days")
-          )
-          : this.backDate;
-    }
-  }
+ 
   back() {
     this.router.navigate([""]);
   }
@@ -127,10 +111,6 @@ export class SearchTrainPage
           this.fromCity = this.vmFromCity = s.fromCity || this.fromCity;
           this.toCity = this.vmToCity = s.toCity || this.toCity;
           this.goDate = this.calendarService.generateDayModelByDate(s.Date);
-          this.backDate = this.calendarService.generateDayModelByDate(
-            s.BackDate
-          );
-          this.checkBackDateIsAfterGoDate();
           this.isSingle = !s.isRoundTrip;
         }
       });
@@ -157,15 +137,7 @@ export class SearchTrainPage
         .filter(it => it.bookInfo).length;
     });
   }
-  calcTotalFlyDays(): number {
-    if (this.backDate && this.goDate) {
-      const nums = Math.abs(
-        moment(this.backDate.date).diff(moment(this.goDate.date), "days")
-      );
-      return nums <= 0 ? 1 : nums;
-    }
-    return 1;
-  }
+  
 
   onSelectPassenger() {
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
@@ -248,7 +220,7 @@ export class SearchTrainPage
       `出发城市" + 【${this.fromCity && this.fromCity.Nickname}】`,
       `目的城市【${this.toCity && this.toCity.Nickname}】`
     );
-    console.log(`启程日期${this.goDate.date},返程日期：${this.backDate.date}`);
+    console.log(`启程日期${this.goDate.date}`);
     this.storage.set("fromTrainStation", this.fromCity);
     this.storage.set("toTrainStation", this.toCity);
     const s = this.searchTrainModel || new SearchTrainModel();
@@ -259,10 +231,6 @@ export class SearchTrainPage
     s.isRoundTrip = !this.isSingle;
     s.fromCity = this.fromCity;
     s.toCity = this.toCity;
-    s.BackDate = this.backDate.date;
-    if (this.isDisabled) {
-      s.Date = s.BackDate;
-    }
     if (!s.isRoundTrip) {
       s.tripType = TripType.departureTrip;
     }
@@ -292,9 +260,9 @@ export class SearchTrainPage
         if (isGo) {
           this.searchTrainModel.Date = days[0].date;
         }
-        if (isBack) {
-          this.searchTrainModel.BackDate = days[0].date;
-        }
+        // if (isBack) {
+        //   this.searchTrainModel.BackDate = days[0].date;
+        // }
         this.trainService.setSearchTrainModel(this.searchTrainModel);
       }
     }

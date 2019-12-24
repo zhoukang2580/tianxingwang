@@ -37,7 +37,6 @@ const KEY_TRAIN_TRAFFICLINES_DATA = "train-traficlines-data";
 export class SearchTrainModel {
   TrainCode: string;
   Date: string;
-  BackDate: string;
   FromStation: string;
   fromCity: TrafficlineEntity;
   toCity: TrafficlineEntity;
@@ -204,9 +203,6 @@ export class TrainService {
     s.Date =
       bookInfo.bookInfo.trainEntity.StartTime &&
       bookInfo.bookInfo.trainEntity.StartTime.substr(0, "2019-10-11".length);
-    s.BackDate = moment(s.Date)
-      // .add(1, "days")
-      .format("YYYY-MM-DD");
     s.tripType = TripType.departureTrip;
     s.isLocked = false;
     this.setSearchTrainModel({
@@ -264,10 +260,6 @@ export class TrainService {
       );
       backParams.FromStation = go.bookInfo.trainEntity.ToStationCode;
       backParams.ToStation = go.bookInfo.trainEntity.FromStationCode;
-      if (+moment(s.BackDate) - +moment(s.Date) < 0) {
-        s.BackDate = s.Date;
-      }
-      backParams.Date = s.BackDate;
       backParams.isLocked = true;
       backParams.tripType = TripType.returnTrip;
       this.calendarService.setSelectedDaysSource([
@@ -1070,7 +1062,6 @@ export class TrainService {
         fromCity,
         toCity,
         Date: info.GoDate,
-        BackDate: info.BackDate || moment().format("YYYY-MM-DD")
       });
       this.router.navigate([AppHelper.getRoutePath("search-train")]);
     } catch (e) {

@@ -590,9 +590,7 @@ export class TrainListPage implements OnInit, OnDestroy {
             day.date
           );
         }
-      } else {
-        this.searchTrainModel.BackDate = day.date;
-      }
+      } 
     }
     this.trainService.setSearchTrainModel(this.searchTrainModel);
     this.doRefresh(true, true);

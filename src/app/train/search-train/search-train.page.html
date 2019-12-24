@@ -43,8 +43,8 @@
           [disabled]='isDisabled&&!(searchTrainModel?.isExchange)'>
         </app-search-day-comp>
         <!-- <div *ngIf="">{{ calcTotalFlyDays() }}天</div>   -->
-        <app-search-day-comp *ngIf="!isSingle" [day]='backDate' (click)="onSelecDate(false,true)">
-        </app-search-day-comp>
+        <!-- <app-search-day-comp *ngIf="!isSingle" [day]='backDate' (click)="onSelecDate(false,true)">
+        </app-search-day-comp> -->
       </section>
       <ion-button margin-top style='width: 100%' (click)="searchTrain()"
         *ngIf='!(canAddPassengers&& selectedPassengers==0)' color="secondary" expand="block">
