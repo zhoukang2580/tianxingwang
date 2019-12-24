@@ -48,15 +48,9 @@ export class SearchTrainModel {
   isRoundTrip?: boolean; // 是否是往返
   isExchange?: boolean; // 是否是改签
 }
-export interface ISelectedStation {
-  isSelectFrom: boolean;
-  isSelectTo: boolean;
-  fromStation: TrafficlineEntity;
-  toStation: TrafficlineEntity;
-}
+
 export interface ICurrentViewtTainItem {
   selectedSeat: TrainSeatEntity;
-  // totalPolicies: TrainPassengerModel[];
   train: TrainEntity;
 }
 @Injectable({
@@ -70,16 +64,11 @@ export class TrainService {
   private fetchPassengerCredentials: { promise: Promise<any> };
   private selfCredentials: CredentialsEntity[];
   private searchModel: SearchTrainModel;
-  private selectedStationSource: Subject<ISelectedStation>;
   private bookInfos: PassengerBookInfo<ITrainInfo>[] = [];
   private bookInfoSource: Subject<PassengerBookInfo<ITrainInfo>[]>;
   private searchModelSource: Subject<SearchTrainModel>;
   private isInitializingSelfBookInfos = false;
   totalPolicies: TrainPassengerModel[];
-  exchangedTrainTicketInfo: {
-    order: OrderEntity;
-    ticket: OrderTrainTicketEntity;
-  };
   constructor(
     private apiService: ApiService,
     private storage: Storage,
@@ -93,7 +82,6 @@ export class TrainService {
   ) {
     this.bookInfoSource = new BehaviorSubject([]);
     this.searchModelSource = new BehaviorSubject(new SearchTrainModel());
-    this.selectedStationSource = new BehaviorSubject(null);
     combineLatest([
       this.getBookInfoSource(),
       this.identityService.getIdentitySource()
@@ -157,15 +145,6 @@ export class TrainService {
         }
         return it;
       });
-      // return result.map(it => {
-      //   if (it.Seats) {
-      //     it.Seats = it.Seats.map(s => {
-      //       s.Policy = null;
-      //       return s;
-      //     });
-      //   }
-      //   return it;
-      // });
     }
     this.setBookInfoSource(
       this.getBookInfos().map(it => {
@@ -250,23 +229,12 @@ export class TrainService {
     });
   }
   async checkCanAdd() {
-    // if (this.getBookInfos().find(it => it.isReplace)) {
-    //   return true;
-    // }
     const bookInfos = this.getBookInfos().filter(it => !!it.bookInfo);
     if (!(await this.staffService.isSelfBookType())) {
       if (bookInfos.length >= 5) {
         return false;
       }
     }
-    // if (await this.staffService.isSelfBookType()) {
-    //   if (bookInfos.length == 2 && this.getSearchTrainModel().isRoundTrip) {
-    //     return false;
-    //   }
-    //   if (bookInfos.length == 1 && !this.getSearchTrainModel().isRoundTrip) {
-    //     return false;
-    //   }
-    // }
     return true;
   }
   async selectReturnTrip() {
@@ -481,7 +449,7 @@ export class TrainService {
               if (item.credential) {
                 name = `${item.credential.CheckFirstName}${
                   item.credential.CheckLastName
-                }(${(item.credential.Number || "").substr(0, 6)}...)`;
+                  }(${(item.credential.Number || "").substr(0, 6)}...)`;
               }
               cannotArr.push(name);
               item.bookInfo = null;
@@ -541,7 +509,7 @@ export class TrainService {
           if (item.credential) {
             name = `${item.credential.CheckFirstName}${
               item.credential.CheckLastName
-            }(${(item.credential.Number || "").substr(0, 6)}...)`;
+              }(${(item.credential.Number || "").substr(0, 6)}...)`;
           }
           cannotArr.push(name);
         } else {
@@ -565,7 +533,6 @@ export class TrainService {
     this.setSearchTrainModel(new SearchTrainModel());
     this.setBookInfoSource([]);
     this.selfCredentials = null;
-    this.exchangedTrainTicketInfo = null;
     this.isInitializingSelfBookInfos = false;
   }
   async loadPolicyedTrainsAsync(
@@ -670,22 +637,6 @@ export class TrainService {
     trainPolicie.PassengerKey = PassengerKey;
     return trainPolicie;
   }
-  private getUnSelectPassengers() {
-    return this.getBookInfos()
-      .filter(
-        item =>
-          !item.bookInfo ||
-          !item.bookInfo.trainEntity ||
-          !item.bookInfo.trainPolicy
-      )
-      .map(item => item.passenger)
-      .reduce((arr, item) => {
-        if (!arr.find(i => i.AccountId == item.AccountId)) {
-          arr.push(item);
-        }
-        return arr;
-      }, [] as StaffEntity[]);
-  }
   async initSelfBookTypeBookInfos(isShowLoading = false) {
     const infos = this.getBookInfos();
     if (
@@ -730,12 +681,6 @@ export class TrainService {
         this.isInitializingSelfBookInfos = false;
       }
     }
-  }
-  setSelectedStation(station: ISelectedStation) {
-    this.selectedStationSource.next(station);
-  }
-  getSelectedStationSource() {
-    return this.selectedStationSource.asObservable();
   }
   getSearchTrainModelSource() {
     return this.searchModelSource.asObservable();
@@ -996,7 +941,7 @@ export class TrainService {
     let i = 10;
     let top = await this.modalCtrl.getTop();
     while (top && --i > 0) {
-      await top.dismiss().catch(_ => {});
+      await top.dismiss().catch(_ => { });
       top = await this.modalCtrl.getTop();
     }
   }
@@ -1096,17 +1041,18 @@ export class TrainService {
         passenger.AccountId =
           passenger.AccountId || (passenger.Account && passenger.Account.Id);
       }
+      const exchangedInfo = {
+        ticket: JSON.parse(JSON.stringify(info.OrderTrainTicket)),
+        order: JSON.parse(JSON.stringify(info.OrderTrainTicket.Order))
+      };
       const b: PassengerBookInfo<ITrainInfo> = {
         passenger: info.BookStaff,
         credential: info.DefaultCredentials,
         id: AppHelper.uuid(),
-        isFilterPolicy: true
+        isFilterPolicy: true,
+        exchangeInfo:exchangedInfo
       };
       books = [b];
-      this.exchangedTrainTicketInfo = {
-        ticket: JSON.parse(JSON.stringify(info.OrderTrainTicket)),
-        order: JSON.parse(JSON.stringify(info.OrderTrainTicket.Order))
-      };
       const fromCity = trainStations.find(it => it.Code == info.FromStation);
       const toCity = trainStations.find(it => it.Code == info.ToStation);
       console.log(
@@ -1224,6 +1170,15 @@ export class TrainService {
       return [];
     });
   }
+  async exchangeBook(bookDto: OrderBookDto): Promise<IBookOrderResult> {
+    const req = new RequestEntity();
+    req.Method = "TmcApiBookUrl-Train-ExchangeBook";
+    bookDto.Channel = this.tmcService.getChannel();
+    req.Data = bookDto;
+    req.IsShowLoading = true;
+    req.Timeout = 60;
+    return this.apiService.getPromiseData<IBookOrderResult>(req);
+  }
   async bookTrain(bookDto: OrderBookDto): Promise<IBookOrderResult> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Train-Book";
@@ -1235,7 +1190,6 @@ export class TrainService {
   }
   removeAllBookInfos() {
     this.bookInfos = [];
-    this.exchangedTrainTicketInfo = null;
     this.setBookInfoSource(this.bookInfos);
   }
 }

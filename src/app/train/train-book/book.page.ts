@@ -69,13 +69,14 @@ import { ProductItemType } from "src/app/tmc/models/ProductItems";
 import { PayService } from "src/app/services/pay/pay.service";
 import { ITmcOutNumberInfo } from "src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component";
 import { AccountEntity } from "src/app/account/models/AccountEntity";
+import { OrderTrainTicketEntity } from 'src/app/order/models/OrderTrainTicketEntity';
 
 @Component({
   selector: "app-train-book",
   templateUrl: "./book.page.html",
   styleUrls: ["./book.page.scss"]
 })
-export class TrainBookPage implements OnInit, AfterViewInit,OnDestroy {
+export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
   private checkPayCountIntervalId: any;
   private checkPayCount = 5;
   private checkPayCountIntervalTime = 3 * 1000;
@@ -182,7 +183,7 @@ export class TrainBookPage implements OnInit, AfterViewInit,OnDestroy {
     await this.storage.set("mock-initialBookDto-train", this.initialBookDto);
     return this.initialBookDto;
   }
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.subscription.unsubscribe();
   }
   ngOnInit() {
@@ -346,28 +347,28 @@ export class TrainBookPage implements OnInit, AfterViewInit,OnDestroy {
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = this.isShowInsurances(
           bookInfo.bookInfo &&
-            bookInfo.bookInfo.trainEntity &&
-            bookInfo.bookInfo.trainEntity.StartTime
+          bookInfo.bookInfo.trainEntity &&
+          bookInfo.bookInfo.trainEntity.StartTime
         )
           ? insurances
           : [];
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile
-                };
-              })
+              return {
+                checked: idx == 0,
+                mobile
+              };
+            })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email
-                };
-              })
+              return {
+                checked: idx == 0,
+                email
+              };
+            })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
@@ -414,6 +415,7 @@ export class TrainBookPage implements OnInit, AfterViewInit,OnDestroy {
     if (this.isSubmitDisabled) {
       return;
     }
+    const exchangeInfo = this.trainService.getBookInfos().find(it => !!it.exchangeInfo);
     const bookDto: OrderBookDto = new OrderBookDto();
     bookDto.IsFromOffline = isSave;
     let canBook = false;
@@ -423,18 +425,12 @@ export class TrainBookPage implements OnInit, AfterViewInit,OnDestroy {
     );
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto);
-    if (this.trainService.exchangedTrainTicketInfo) {
-      if (this.trainService.exchangedTrainTicketInfo.order) {
-        this.trainService.exchangedTrainTicketInfo.order.OrderTrainTickets = this
-          .trainService.exchangedTrainTicketInfo.order.OrderTrainTickets || [
-          this.trainService.exchangedTrainTicketInfo.ticket
-        ];
-      }
-      bookDto.Orders = [this.trainService.exchangedTrainTicketInfo.order];
+    if (exchangeInfo && exchangeInfo.exchangeInfo && exchangeInfo.exchangeInfo.ticket) {
+      bookDto.TicketId = exchangeInfo.exchangeInfo.ticket.Id;
     }
     if (canBook && canBook2) {
-      const res: IBookOrderResult = await this.trainService
-        .bookTrain(bookDto)
+      const res: IBookOrderResult = await (exchangeInfo.exchangeInfo ? this.trainService.exchangeBook(bookDto) : this.trainService
+        .bookTrain(bookDto))
         .catch(e => {
           AppHelper.alert(e);
           return null;
@@ -766,9 +762,9 @@ export class TrainBookPage implements OnInit, AfterViewInit,OnDestroy {
     const showErrorMsg = (msg: string, item: ITrainPassengerBookInfo) => {
       AppHelper.alert(
         `${(item.credentialStaff && item.credentialStaff.Name) ||
-          (item.credential &&
-            item.credential.CheckFirstName +
-              item.credential.CheckLastName)} 【${item.credential &&
+        (item.credential &&
+          item.credential.CheckFirstName +
+          item.credential.CheckLastName)} 【${item.credential &&
           item.credential.Number}】 ${msg} 信息不能为空`
       );
     };
@@ -850,7 +846,7 @@ export class TrainBookPage implements OnInit, AfterViewInit,OnDestroy {
           p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-        }`;
+          }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -864,7 +860,7 @@ export class TrainBookPage implements OnInit, AfterViewInit,OnDestroy {
           p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-        }`;
+          }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];

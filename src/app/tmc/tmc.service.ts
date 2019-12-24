@@ -1,3 +1,4 @@
+import { OrderFlightTicketEntity } from './../order/models/OrderFlightTicketEntity';
 import { Platform } from '@ionic/angular';
 import { finalize } from 'rxjs/operators';
 import { ProductItemType } from 'src/app/tmc/models/ProductItems';
@@ -30,6 +31,8 @@ import { TmcDataEntity } from './models/TmcDataEntity';
 import { AccountEntity } from '../account/models/AccountEntity';
 import { BaseEntity } from '../models/BaseEntity';
 import { TravelModel } from '../order/models/TravelModel';
+import { OrderEntity } from '../order/models/OrderEntity';
+import { OrderTrainTicketEntity } from '../order/models/OrderTrainTicketEntity';
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -102,7 +105,7 @@ export class TmcService {
       if (AppHelper.isDingtalkH5()) {
         channel = 'DingtalkH5';
       }
-      if(AppHelper.isWechatMini()){
+      if (AppHelper.isWechatMini()) {
         channel = 'WechatMini';
       }
     }
@@ -1167,6 +1170,10 @@ export interface PassengerBookInfo<T> {
   isFilterPolicy?: boolean;// 完全符合差标
   // isFilteredPolicy?: boolean;// 是否过滤差标
   // isAllowBookPolicy?: boolean;// 所有可预订
+  exchangeInfo?: {
+    order: OrderEntity;
+    ticket: OrderTrainTicketEntity|OrderFlightTicketEntity;
+  }
 }
 export class InitialBookDtoModel {
   ServiceFees: { [clientId: string]: string };
