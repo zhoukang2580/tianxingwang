@@ -2,7 +2,7 @@
   <ion-item-divider>
     <ion-text [color]='isExchange?"medium":"dark"'>外部编号：</ion-text>
   </ion-item-divider>
-  <ion-item *ngFor='let n of tmcOutNumberInfos' (click)='onSelectTravelNumber(n)' [disabled]='n.isDisabled||isExchange'>
+  <ion-item *ngFor='let n of tmcOutNumberInfos' (click)='onSelectTravelNumber(n)' [disabled]='n.isDisabled||isExchange' style="margin: 0 .5em;">
     <ion-label>{{n.label}}:</ion-label>
     <ion-input [class.travel-number]='n.canSelect'
       [disabled]='n.isDisabled||isExchange' [value]='n.value' [(ngModel)]='n.value'
