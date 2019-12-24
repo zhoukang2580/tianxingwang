@@ -381,7 +381,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
           name: cstaff && cstaff.CostCenter && cstaff.CostCenter.Name
         };
         combineInfo.appovalStaff = cs && cs.DefaultApprover;
-        const accountId = bookInfo.passenger.AccountId || this.tmc && this.tmc.Account.Id;
+        const accountId = bookInfo.passenger.AccountId || (this.tmc && this.tmc.Account && this.tmc.Account.Id);
         const tmcOutNumberInfos = accountIdTmcOutNumberInfosMap[accountId];
         combineInfo.tmcOutNumberInfos = tmcOutNumberInfos ||
           (this.tmc &&
@@ -831,7 +831,9 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
       if (!info) {
         continue;
       }
+      const accountId = combindInfo.bookInfo.passenger.AccountId || (this.tmc && this.tmc.Account && this.tmc.Account.Id);
       const p = new PassengerDto();
+      p.ClientId = accountId;
       p.ApprovalId =
         (this.isAllowSelectApprove(combindInfo) &&
           !combindInfo.isSkipApprove &&
@@ -965,13 +967,16 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
       p.OrganizationCode = combindInfo.otherOrganizationName
         ? ""
         : (combindInfo.organization && combindInfo.organization.Code) || "";
+      const exists = bookDto.Passengers.find(it => it.ClientId == accountId);
       if (combindInfo.tmcOutNumberInfos) {
-        p.OutNumbers = {};
-        combindInfo.tmcOutNumberInfos.forEach(it => {
-          if (it.value) {
-            p.OutNumbers[it.key] = it.value;
-          }
-        });
+        if (!exists || !exists.OutNumbers) {
+          p.OutNumbers = {};
+          combindInfo.tmcOutNumberInfos.forEach(it => {
+            if (it.value) {
+              p.OutNumbers[it.key] = it.value;
+            }
+          });
+        }
       }
       if (!combindInfo.travelType) {
         showErrorMsg(LanguageHelper.Flight.getTravelTypeTip(), combindInfo);
