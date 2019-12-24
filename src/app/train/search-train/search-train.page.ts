@@ -163,9 +163,6 @@ export class SearchTrainPage
       .add(1, "days")
       .format("YYYY-MM-DD");
     const now = moment().format("YYYY-MM-DD");
-    if (trip) {
-      lastSelectedGoDate = +moment(trip.StartTime) >= +moment() ? moment(trip.StartTime).format("YYYY-MM-DD") : now;
-    }
     lastSelectedGoDate =
       lastSelectedGoDate &&
         this.calendarService.generateDayModelByDate(lastSelectedGoDate)
@@ -173,6 +170,9 @@ export class SearchTrainPage
         this.calendarService.generateDayModelByDate(nextDate).timeStamp
         ? lastSelectedGoDate
         : nextDate;
+    if (trip) {
+      lastSelectedGoDate = +moment(trip.StartTime) >= +moment() ? moment(trip.StartTime).format("YYYY-MM-DD") : now;
+    }
     this.trainService.setSearchTrainModel({
       ...this.trainService.getSearchTrainModel(),
       Date: lastSelectedGoDate
