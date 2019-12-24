@@ -1,4 +1,4 @@
-<ng-container *ngFor='let orderTrainTicket of trainTickets'>
+<ng-container *ngFor='let orderTrainTicket of getCurrentPassengerTicket()'>
   <ng-container *ngIf='orderTrainTicket.Status!=OrderTrainTicketStatusType.ChangeTicket'>
     <ion-row>
       <ion-col>
@@ -14,11 +14,12 @@
     <ng-container *ngFor='let orderTrainTrip of orderTrainTicket.OrderTrainTrips'>
       <ion-row>
         <ion-col>
-            {{orderTrainTrip.FromStationName}}
-            <span [attr.travelminutes]='orderTrainTrip.TravelMinutes'
-              [attr.traincode]='orderTrainTrip.TrainCode'>---</span>
+          {{orderTrainTrip.FromStationName}}
+          <span [attr.travelminutes]='orderTrainTrip.TravelMinutes'
+            [attr.traincode]='orderTrainTrip.TrainCode'>---</span>
+          <span>{{orderTrainTrip.ToStationName}}</span>
+          <span>席别:{{orderTrainTicket.SeatTypeName}}</span>
         </ion-col>
-        <span>{{orderTrainTrip.ToStationName}}</span>
       </ion-row>
       <ion-row>
         <ion-col>
@@ -28,15 +29,13 @@
         </ion-col>
       </ion-row>
       <ion-row>
-        <span>席别:{{orderTrainTicket.SeatTypeName}}</span>
-
+        <ion-col>
+          <span>到达:{{orderTrainTrip.ArrivalTime?.substr(0,"yyyy-MM-dd".length)}}</span>
+          <span>{{orderTrainTrip.ArrivalTime?.substr("yyyy-MM-ddT".length,'"HH:mm"'.length)}}</span>
+          <span>{{orderTrainTrip.ToStationName}}({{orderTrainTrip.ToStationCode}})</span>
+          <span>信息:{{orderTrainTicket.Detail}}</span>
+        </ion-col>
       </ion-row>
-      <div>
-        <span>到达:{{orderTrainTrip.ArrivalTime?.substr(0,"yyyy-MM-dd".length)}}</span>
-        <span>{{orderTrainTrip.ArrivalTime?.substr("yyyy-MM-ddT".length,'"HH:mm"'.length)}}</span>
-        <span>{{orderTrainTrip.ToStationName}}({{orderTrainTrip.ToStationCode}})</span>
-        <span>信息:{{orderTrainTicket.Detail}}</span>
-      </div>
     </ng-container>
   </ng-container>
 </ng-container>

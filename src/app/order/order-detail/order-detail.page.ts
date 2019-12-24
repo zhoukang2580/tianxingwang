@@ -44,6 +44,7 @@ import { OrderEntity, OrderItemEntity } from "../models/OrderEntity";
 import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
 import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
 import { OrderPayEntity } from "../models/OrderPayEntity";
+import { OrderTrainTicketEntity } from '../models/OrderTrainTicketEntity';
 
 export interface TabItem {
   label: string;
@@ -73,6 +74,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
   @ViewChild("cnt") ionContent: IonContent;
   scrollElement: HTMLElement;
   selectedFlightTicket: OrderFlightTicketEntity;
+  selectedTrainTicket: OrderTrainTicketEntity;
   selectedInsuranceId: string;
   identity: IdentityEntity;
   constructor(
@@ -95,6 +97,15 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     console.log(evt.detail);
     if (this.selectedFlightTicket) {
       const orderInsurance: OrderInsuranceEntity = this.orderDetail && this.orderDetail.Order && this.orderDetail && this.orderDetail.Order.OrderInsurances && this.orderDetail && this.orderDetail.Order.OrderInsurances.find(it => it.TravelKey == this.selectedFlightTicket.Key);
+      if (orderInsurance) {
+        this.selectedInsuranceId = orderInsurance.Id;
+      }
+    }
+  }
+  onSelectTrainTicket(evt: CustomEvent) {
+    console.log(evt.detail);
+    if (this.selectedTrainTicket) {
+      const orderInsurance: OrderInsuranceEntity = this.orderDetail && this.orderDetail.Order && this.orderDetail && this.orderDetail.Order.OrderInsurances && this.orderDetail && this.orderDetail.Order.OrderInsurances.find(it => it.TravelKey == this.selectedTrainTicket.Key);
       if (orderInsurance) {
         this.selectedInsuranceId = orderInsurance.Id;
       }
@@ -171,10 +182,12 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     }
   }
   getPassengerCostOrgInfo() {
+    const passengerId = (this.selectedFlightTicket
+      && this.selectedFlightTicket.Passenger
+      && this.selectedFlightTicket.Passenger.Id) ||
+      (this.selectedTrainTicket && this.selectedTrainTicket.Passenger && this.selectedTrainTicket.Passenger.Id);
     let p: OrderPassengerEntity = this.orderDetail && this.orderDetail.Order && this.orderDetail.Order.OrderPassengers &&
-      this.orderDetail.Order.OrderPassengers.find(it => it.Id == (this.selectedFlightTicket
-        && this.selectedFlightTicket.Passenger
-        && this.selectedFlightTicket.Passenger.Id))
+      this.orderDetail.Order.OrderPassengers.find(it => it.Id == passengerId)
     if (!p) {
       if (this.orderDetail && this.orderDetail.Order && this.orderDetail.Order.OrderPassengers) {
         p = this.orderDetail.Order.OrderPassengers[0];
@@ -183,7 +196,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     if (!p || !this.orderDetail.Order) {
       return;
     }
-    const ticket = this.selectedFlightTicket;
+    const ticket = this.selectedFlightTicket || this.selectedTrainTicket;
     const trainTicket = this.orderDetail.Order.OrderTrainTickets && this.orderDetail.Order.OrderTrainTickets[0];
     let ticketKey
     if ((ticket || trainTicket)) {
@@ -415,6 +428,23 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
         if (tickets) {
           this.selectedFlightTicket = tickets[0];
           this.onSelectFlightTicket({ detail: { value: this.selectedFlightTicket } } as any);
+        }
+      }
+      if (
+        this.orderDetail.Order &&
+        this.orderDetail.Order.OrderTrainTickets &&
+        this.orderDetail.Order.OrderTrainTickets.length
+      ) {
+        const tickets = this.orderDetail.Order.OrderTrainTickets.slice(0);
+        tickets.sort((ta, tb) => {
+          return (
+            AppHelper.getDate(tb.InsertTime).getTime() -
+            AppHelper.getDate(ta.InsertTime).getTime()
+          );
+        });
+        if (tickets) {
+          this.selectedTrainTicket = tickets[0];
+          this.onSelectTrainTicket({ detail: { value: this.selectedTrainTicket } } as any);
         }
       }
       if (this.orderDetail.Order) {

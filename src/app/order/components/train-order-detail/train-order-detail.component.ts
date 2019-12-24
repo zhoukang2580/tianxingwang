@@ -11,11 +11,15 @@ import { OrderTrainTicketStatusType } from 'src/app/order/models/OrderTrainTicke
 export class TrainOrderDetailComponent implements OnInit {
   @Input() trainTickets: OrderTrainTicketEntity[];
   @Input() order: OrderEntity;
-  OrderTrainTicketStatusType=OrderTrainTicketStatusType;
+  @Input() passengerId: string;
+  OrderTrainTicketStatusType = OrderTrainTicketStatusType;
   constructor() { }
 
   ngOnInit() { }
-
-
+  getCurrentPassengerTicket() {
+    if (!this.passengerId) {
+      return this.trainTickets;
+    }
+    return this.trainTickets && this.trainTickets.filter(it => it.Passenger && it.Passenger.Id == this.passengerId)
+  }
 }
-        

@@ -84,7 +84,7 @@
               <ion-text color=''>航班信息</ion-text>
             </ion-item-divider>
             <ion-item>
-              <app-flight-order-detail [trips]='trips'  [order]='orderDetail.Order'></app-flight-order-detail>
+              <app-flight-order-detail [trips]='trips' [order]='orderDetail.Order'></app-flight-order-detail>
             </ion-item>
           </ng-container>
         </ng-container>
@@ -93,7 +93,8 @@
             <ion-text color=''>火车车次信息</ion-text>
           </ion-item-divider>
           <ion-item>
-            <app-train-order-detail [trainTickets]='orderDetail.Order.OrderTrainTickets' [order]='orderDetail.Order'>
+            <app-train-order-detail [trainTickets]='orderDetail.Order.OrderTrainTickets'
+              [passengerId]='selectedTrainTicket?.Passenger?.Id' [order]='orderDetail.Order'>
             </app-train-order-detail>
           </ion-item>
         </ng-container>
@@ -113,9 +114,19 @@
           <ng-container *ngIf='orderDetail.Order?.OrderFlightTickets?.length>1'>
             <ion-badge color='danger'>
               {{orderDetail.Order.OrderFlightTickets?.length}}</ion-badge>
-            <ion-select slot='end' [compareWith]='compareFn' (ionChange)='onSelectFlightTicket($event)' [(ngModel)]='selectedFlightTicket' [okText]='"确定"'
-              [cancelText]='"取消"'>
+            <ion-select slot='end' [compareWith]='compareFn' (ionChange)='onSelectFlightTicket($event)'
+              [(ngModel)]='selectedFlightTicket' [okText]='"确定"' [cancelText]='"取消"'>
               <ion-label>{{selectedFlightTicket?.Id}}</ion-label>
+              <ion-select-option *ngFor='let o of orderDetail.Order.OrderFlightTickets' [value]='o'>{{o.Id}}
+              </ion-select-option>
+            </ion-select>
+          </ng-container>
+          <ng-container *ngIf='orderDetail.Order?.OrderTrainTickets?.length>1'>
+            <ion-badge color='danger'>
+              {{orderDetail.Order.OrderTrainTickets?.length}}</ion-badge>
+            <ion-select slot='end' [compareWith]='compareFn' (ionChange)='onSelectTrainTicket($event)'
+              [(ngModel)]='selectedTrainTicket' [okText]='"确定"' [cancelText]='"取消"'>
+              <ion-label>{{selectedTrainTicket?.Id}}</ion-label>
               <ion-select-option *ngFor='let o of orderDetail.Order.OrderFlightTickets' [value]='o'>{{o.Id}}
               </ion-select-option>
             </ion-select>
@@ -191,8 +202,7 @@
           <ng-container *ngIf='orderDetail.Order.OrderInsurances?.length>1'>
             <ion-badge color='danger'>
               {{orderDetail.Order.OrderInsurances?.length}}</ion-badge>
-            <ion-select slot='end'  [(ngModel)]='selectedInsuranceId' [okText]='"确定"'
-              [cancelText]='"取消"'>
+            <ion-select slot='end' [(ngModel)]='selectedInsuranceId' [okText]='"确定"' [cancelText]='"取消"'>
               <ion-label>{{selectedInsuranceId}}</ion-label>
               <ion-select-option *ngFor='let o of orderDetail.Order.OrderInsurances' [value]='o.Id'>{{o.Id}}
               </ion-select-option>
