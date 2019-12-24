@@ -180,7 +180,7 @@ export class SearchTrainPage
   async initTrainDays() {
     const infos = this.trainService.getBookInfos();
     const exchangeInfo = infos.find(it => !!it.exchangeInfo);
-    const ticket = exchangeInfo.exchangeInfo && exchangeInfo.exchangeInfo && exchangeInfo.exchangeInfo.ticket as OrderTrainTicketEntity;
+    const ticket = exchangeInfo && exchangeInfo.exchangeInfo && exchangeInfo.exchangeInfo.ticket as OrderTrainTicketEntity;
     const trip = ticket && ticket.OrderTrainTrips && ticket.OrderTrainTrips[0];
     const identity = await this.identityService.getIdentityAsync();
     let lastSelectedGoDate =
