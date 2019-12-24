@@ -270,6 +270,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     try {
       this.viewModel.combindInfos = [];
       const bookInfos = this.trainService.getBookInfos();
+      const accountIdTmcOutNumberInfosMap: { [accountId: string]: ITmcOutNumberInfo[] } = {} as any;
       for (let i = 0; i < bookInfos.length; i++) {
         const bookInfo = bookInfos[i];
         const cs = (
@@ -380,7 +381,9 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
           name: cstaff && cstaff.CostCenter && cstaff.CostCenter.Name
         };
         combineInfo.appovalStaff = cs && cs.DefaultApprover;
-        combineInfo.tmcOutNumberInfos =
+        const accountId = bookInfo.passenger.AccountId || this.tmc && this.tmc.Account.Id;
+        const tmcOutNumberInfos = accountIdTmcOutNumberInfosMap[accountId];
+        combineInfo.tmcOutNumberInfos = tmcOutNumberInfos ||
           (this.tmc &&
             this.tmc.OutNumberNameArray &&
             this.tmc.OutNumberNameArray.map(n => {
@@ -404,7 +407,9 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
               } as ITmcOutNumberInfo;
             })) ||
           [];
-
+        if (!accountIdTmcOutNumberInfosMap[accountId]) {
+          accountIdTmcOutNumberInfosMap[accountId] = combineInfo.tmcOutNumberInfos;
+        }
         this.viewModel.combindInfos.push(combineInfo);
       }
     } catch (e) {
@@ -428,7 +433,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     if (exchangeInfo && exchangeInfo.exchangeInfo && exchangeInfo.exchangeInfo.ticket) {
       bookDto.TicketId = exchangeInfo.exchangeInfo.ticket.Id;
     }
-    const exchangeTip="改签申请提交成功";
+    const exchangeTip = "改签申请提交成功";
     if (canBook && canBook2) {
       let res: IBookOrderResult;
       if (exchangeInfo && exchangeInfo.exchangeInfo) {
@@ -1061,7 +1066,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
       this.viewModel.combindInfos = [];
       Object.keys(group).forEach(key => {
         if (group[key].length) {
-          group[key][0].isShowApprovalInfo = true;
+          group[key][0].isShowGroupedInfo = true;
           if (this.initialBookDto && this.initialBookDto.ServiceFees) {
             const showTotalFees = group[key].reduce(
               (acc, it) => (acc = AppHelper.add(acc, this.getServiceFee(it))),
@@ -1303,7 +1308,7 @@ export interface IBookTrainViewModel {
   identity: IdentityEntity;
 }
 interface ITrainPassengerBookInfo {
-  isShowApprovalInfo?: boolean;
+  isShowGroupedInfo?: boolean;
   serviceFee: number;
   isNotWhitelist?: boolean;
   vmCredential: CredentialsEntity;

@@ -11,11 +11,13 @@ import { SelectTravelNumberComponent } from "../select-travel-number-popover/sel
   styleUrls: ["./book-tmc-outnumber.component.scss"]
 })
 export class BookTmcOutnumberComponent implements OnInit {
+  private timer: any;
   @Output() tmcOutNumber: EventEmitter<{
     tmcOutNumberInfos: ITmcOutNumberInfo[];
     tmcOutNumberInfo: ITmcOutNumberInfo;
     travelUrlInfo: TravelUrlInfo;
   }>;
+  @Input() isShowGroupedInfo: boolean;
   @Input() isExchange: boolean;
   @Input() tmcOutNumberInfos: ITmcOutNumberInfo[];
   constructor(
@@ -24,11 +26,24 @@ export class BookTmcOutnumberComponent implements OnInit {
   ) {
     this.tmcOutNumber = new EventEmitter();
   }
-
-  ngOnInit() {}
+  onChange(arg: ITmcOutNumberInfo) {
+    if (this.timer) {
+      clearTimeout(this.timer);
+    }
+    this.timer = setTimeout(() => {
+      this.tmcOutNumber.emit({
+        tmcOutNumberInfo: arg,
+        tmcOutNumberInfos: this.tmcOutNumberInfos,
+        travelUrlInfo: {
+          TravelNumber: arg.value
+        } as any
+      });
+    }, 300);
+  }
+  ngOnInit() { }
   async onSelectTravelNumber(arg: ITmcOutNumberInfo) {
     const tmcOutNumberInfos = this.tmcOutNumberInfos;
-    if (!arg || !arg.canSelect || this.isExchange) {
+    if (!arg || !arg.canSelect || this.isExchange || !this.isShowGroupedInfo) {
       return;
     }
     if (!arg.travelUrlInfos || arg.travelUrlInfos.length == 0) {
