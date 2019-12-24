@@ -138,7 +138,7 @@
         </ion-col>
       </ion-row>
       <ion-row text-end>
-        <ion-col>
+        <ion-col style="justify-content: flex-end;">
           <ion-button (click)='onExchange($event,orderTrainTicket)' color='secondary'
             *ngIf='orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !=0 && orderTrainTicket.BookType != TrainBookType.Offline'>
             <span>改签</span>
