@@ -1173,6 +1173,7 @@ export interface PassengerBookInfo<T> {
   exchangeInfo?: {
     order: OrderEntity;
     ticket: OrderTrainTicketEntity|OrderFlightTicketEntity;
+    insurnanceAmount?:number;
   }
 }
 export class InitialBookDtoModel {

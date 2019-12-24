@@ -1,3 +1,4 @@
+import { OrderTrainTicketEntity } from './../../order/models/OrderTrainTicketEntity';
 import { LanguageHelper } from "src/app/languageHelper";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { FlightHotelTrainType } from "./../../tmc/tmc.service";
@@ -53,14 +54,12 @@ export class SearchTrainPage
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private navCtrl: NavController,
     private storage: Storage,
     private staffService: StaffService,
     private identityService: IdentityService,
     private apiService: ApiService,
     private trainService: TrainService,
     private calendarService: CalendarService,
-    private tmcService: TmcService,
     private modalCtrl: ModalController
   ) { }
   private checkBackDateIsAfterGoDate() {
@@ -138,6 +137,12 @@ export class SearchTrainPage
     await this.initTrainCities();
     this.route.queryParamMap.subscribe(async _ => {
       this.canAddPassengers = !(await this.staffService.isSelfBookType());
+      const searchTrainModel = this.trainService.getSearchTrainModel();
+      this.searchTrainModel.isExchange =
+        searchTrainModel.isExchange ||
+        !!this.trainService
+          .getBookInfos()
+          .find(it => it.bookInfo && it.bookInfo.isExchange);
       await this.initTrainDays();
       this.staff = await this.staffService.getStaff();
       // this.canAddPassengers = await this.staffService.isAllBookType() || await this.staffService.isSecretaryBookType();
@@ -145,12 +150,6 @@ export class SearchTrainPage
         this.isDisabled =
           this.searchTrainModel && this.searchTrainModel.isLocked;
       }
-      const searchTrainModel = this.trainService.getSearchTrainModel();
-      this.searchTrainModel.isExchange =
-        searchTrainModel.isExchange ||
-        !!this.trainService
-          .getBookInfos()
-          .find(it => it.bookInfo && it.bookInfo.isExchange);
       this.isCanLeave = this.searchTrainModel.isExchange ? false : true;
       this.selectedPassengers = this.trainService.getBookInfos().length;
       this.selectedBookInfos = this.trainService
@@ -179,6 +178,10 @@ export class SearchTrainPage
     this.searchConditionSubscription.unsubscribe();
   }
   async initTrainDays() {
+    const infos = this.trainService.getBookInfos();
+    const exchangeInfo = infos.find(it => !!it.exchangeInfo);
+    const ticket = exchangeInfo.exchangeInfo && exchangeInfo.exchangeInfo && exchangeInfo.exchangeInfo.ticket as OrderTrainTicketEntity;
+    const trip = ticket && ticket.OrderTrainTrips && ticket.OrderTrainTrips[0];
     const identity = await this.identityService.getIdentityAsync();
     let lastSelectedGoDate =
       (await this.storage.get(
@@ -187,6 +190,9 @@ export class SearchTrainPage
     const nextDate = moment()
       .add(1, "days")
       .format("YYYY-MM-DD");
+    if (trip) {
+      lastSelectedGoDate = +moment(trip.StartTime) >= +moment(lastSelectedGoDate) ? trip.StartTime : lastSelectedGoDate;
+    }
     lastSelectedGoDate =
       lastSelectedGoDate &&
         this.calendarService.generateDayModelByDate(lastSelectedGoDate)

@@ -1033,9 +1033,6 @@ export class TrainService {
         return;
       }
       let books = this.getBookInfos();
-      const trip =
-        info.OrderTrainTicket.OrderTrainTrips &&
-        info.OrderTrainTicket.OrderTrainTrips[0];
       const passenger = info.BookStaff;
       if (passenger) {
         passenger.AccountId =
@@ -1043,14 +1040,15 @@ export class TrainService {
       }
       const exchangedInfo = {
         ticket: JSON.parse(JSON.stringify(info.OrderTrainTicket)),
-        order: JSON.parse(JSON.stringify(info.OrderTrainTicket.Order))
+        order: JSON.parse(JSON.stringify(info.OrderTrainTicket.Order)),
+        insuranceResult: info.InsurnanceAmount
       };
       const b: PassengerBookInfo<ITrainInfo> = {
         passenger: info.BookStaff,
         credential: info.DefaultCredentials,
         id: AppHelper.uuid(),
         isFilterPolicy: true,
-        exchangeInfo:exchangedInfo
+        exchangeInfo: exchangedInfo
       };
       books = [b];
       const fromCity = trainStations.find(it => it.Code == info.FromStation);

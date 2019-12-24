@@ -1,3 +1,4 @@
+import { InsuranceResultEntity } from './../../tmc/models/Insurance/InsuranceResultEntity';
 import { CredentialsEntity } from 'src/app/tmc/models/CredentialsEntity';
 import { TravelFormEntity, TmcEntity } from 'src/app/tmc/tmc.service';
 import { PassengerDto } from 'src/app/tmc/models/PassengerDto';
@@ -8,7 +9,7 @@ import { OrderTrainTicketEntity } from './OrderTrainTicketEntity';
 import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
 
 export class ExchangeTrainModel {
-     TravelForm: TravelFormEntity;
+    TravelForm: TravelFormEntity;
     Action: string;
     /// <summary>
     /// 去程日期
@@ -45,7 +46,7 @@ export class ExchangeTrainModel {
     /// <summary>
     /// 是否回城
     /// </summary>
-     IsBack: boolean;
+    IsBack: boolean;
     /// <summary>
     /// 乘客
     /// </summary>
@@ -57,39 +58,39 @@ export class ExchangeTrainModel {
     /// <summary>
     /// 类型
     /// </summary>
-     VoyageType: any;
+    VoyageType: any;
     /// <summary>
     /// 航班返回结果
     /// </summary>
-     TrainResult: any;
+    TrainResult: any;
     /// <summary>
     /// TmcData
     /// </summary>
-     TmcData: any;
+    TmcData: any;
     /// <summary>
     /// 代理
     /// </summary>
-     Agent: AgentEntity;
+    Agent: AgentEntity;
     /// <summary>
     /// 当前身份
     /// </summary>
-     Identity: IdentityEntity;
+    Identity: IdentityEntity;
     /// <summary>
     /// 当前身份
     /// </summary>
-     Tmc: TmcEntity;
+    Tmc: TmcEntity;
     /// <summary>
     /// 当前员工
     /// </summary>
-     BookStaff: StaffEntity;
+    BookStaff: StaffEntity;
     /// <summary>
     /// 改签车票信息
     /// </summary>
-     OrderTrainTicket: OrderTrainTicketEntity;
+    OrderTrainTicket: OrderTrainTicketEntity;
     /// <summary>
     /// 证件
     /// </summary>
-     DefaultCredentials: CredentialsEntity;
+    DefaultCredentials: CredentialsEntity;
     /// <summary>
     /// 是否代理
     /// </summary>
@@ -102,6 +103,7 @@ export class ExchangeTrainModel {
     Trafficlines: TrafficlineEntity[];
     IsAllowModify: boolean;
     StaffBookType: StaffBookType;
+    InsurnanceAmount: number;
 
 
 }

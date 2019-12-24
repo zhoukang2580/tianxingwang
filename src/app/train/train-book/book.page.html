@@ -198,11 +198,11 @@
           [isExchange]='searchTrainModel?.isExchange' (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'>
         </app-book-tmc-outnumber>
       </ion-list>
-      <ion-item-group>
+      <ion-item-group *ngIf='!searchTrainModel?.isExchange'>
         <ion-item-divider>
           添加联系人：
         </ion-item-divider>
-        <ion-item [disabled]='searchTrainModel?.isExchange'>
+        <ion-item>
           <app-book-addcontacts-comp [addContacts]='addContacts' (contactChange)='onContactsChange($event)'>
           </app-book-addcontacts-comp>
         </ion-item>
