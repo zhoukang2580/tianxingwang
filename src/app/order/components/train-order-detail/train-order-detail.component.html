@@ -31,13 +31,16 @@
         </ion-col>
       </ion-row>
       <ion-row>
+
         <ion-col>
           <span>到达:{{orderTrainTrip.ArrivalTime?.substr(0,"yyyy-MM-dd".length)}}</span>
           <span>{{orderTrainTrip.ArrivalTime?.substr("yyyy-MM-ddT".length,'"HH:mm"'.length)}}</span>
           <span>{{orderTrainTrip.ToStationName}}({{orderTrainTrip.ToStationCode}})</span>
-          <span>信息:{{orderTrainTicket.Detail}}</span>
         </ion-col>
       </ion-row>
+      <ion-label text-wrap *ngIf='orderTrainTicket.Detail'>
+        <span >信息:{{orderTrainTicket.Detail}}</span>
+      </ion-label>
     </ng-container>
   </ng-container>
 </ng-container>
