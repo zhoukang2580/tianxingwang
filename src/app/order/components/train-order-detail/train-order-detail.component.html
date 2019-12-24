@@ -14,7 +14,9 @@
     <ng-container *ngFor='let orderTrainTrip of orderTrainTicket.OrderTrainTrips'>
       <ion-row>
         <ion-col>
-          {{orderTrainTrip.FromStationName}}
+          <span>
+            {{orderTrainTrip.FromStationName}}
+          </span>
           <span [attr.travelminutes]='orderTrainTrip.TravelMinutes'
             [attr.traincode]='orderTrainTrip.TrainCode'>---</span>
           <span>{{orderTrainTrip.ToStationName}}</span>
