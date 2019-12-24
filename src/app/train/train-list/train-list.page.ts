@@ -229,6 +229,9 @@ export class TrainListPage implements OnInit, OnDestroy {
         this.searchTrainModel.FromStation = this.searchTrainModel.fromCity.Code;
         this.searchTrainModel.ToStation = this.searchTrainModel.toCity.Code;
         this.trainService.setSearchTrainModel(this.searchTrainModel);
+        if(!isFrom&&this.searchTrainModel.isExchange){
+          this.doRefresh(true,false);
+        }
       }
     }
   }
