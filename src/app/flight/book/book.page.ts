@@ -697,6 +697,7 @@ export class BookPage implements OnInit, AfterViewInit {
     bookDto.Passengers = [];
     for (let i = 0; i < combindInfos.length; i++) {
       const combindInfo = combindInfos[i];
+      const accountId = combindInfo.modal.passenger.AccountId || this.tmc && this.tmc.Account.Id;
       if (
         this.isAllowSelectApprove(combindInfo) &&
         !combindInfo.appovalStaff &&
@@ -707,6 +708,7 @@ export class BookPage implements OnInit, AfterViewInit {
       }
       const info = combindInfo.modal.bookInfo;
       const p = new PassengerDto();
+      p.ClientId = accountId;
       p.ApprovalId =
         (this.isAllowSelectApprove(combindInfo) &&
           !combindInfo.isSkipApprove &&
@@ -839,13 +841,16 @@ export class BookPage implements OnInit, AfterViewInit {
       p.OrganizationCode = combindInfo.otherOrganizationName
         ? ""
         : (combindInfo.organization && combindInfo.organization.Code) || "";
+      const exists = bookDto.Passengers.find(it => it.ClientId == accountId);
       if (combindInfo.tmcOutNumberInfos) {
-        p.OutNumbers = {};
-        combindInfo.tmcOutNumberInfos.forEach(it => {
-          if (it.value) {
-            p.OutNumbers[it.key] = it.value;
-          }
-        });
+        if (!exists || !exists.OutNumbers) {
+          p.OutNumbers = {};
+          combindInfo.tmcOutNumberInfos.forEach(it => {
+            if (it.value) {
+              p.OutNumbers[it.key] = it.value;
+            }
+          });
+        }
       }
       if (!combindInfo.travelType) {
         showErrorMsg(LanguageHelper.Flight.getTravelTypeTip(), combindInfo);
@@ -1007,7 +1012,7 @@ export class BookPage implements OnInit, AfterViewInit {
             .map(item => {
               const bookInfo = item.modal && item.modal.bookInfo;
               return {
-                id:item.modal.id,
+                id: item.modal.id,
                 passengerCredential: item.modal && item.modal.credential,
                 from:
                   bookInfo &&
@@ -1043,19 +1048,20 @@ export class BookPage implements OnInit, AfterViewInit {
     });
     p.present();
   }
-  private getTicketsFees(){
-    const totalFees=this.getTotalServiceFees();
-    if(!totalFees){
+  private getTicketsFees() {
+    const totalFees = this.getTotalServiceFees();
+    if (!totalFees) {
       return null;
     }
     const bookInfos = this.flightService.getPassengerBookInfos();
-    return bookInfos.reduce((acc,it)=>{
-      acc= {...acc,[it.id]:this.initialBookDtoModel&&this.initialBookDtoModel.ServiceFees[it.id]};
+    return bookInfos.reduce((acc, it) => {
+      acc = { ...acc, [it.id]: this.initialBookDtoModel && this.initialBookDtoModel.ServiceFees[it.id] };
       return acc;
-    },{})
+    }, {})
   }
   private async initCombindInfos() {
     try {
+      const accountIdTmcOutNumberInfosMap: { [accountId: string]: ITmcOutNumberInfo[] } = {} as any;
       const pfs = this.flightService.getPassengerBookInfos().filter(it => !!it.bookInfo);
       for (let i = 0; i < pfs.length; i++) {
         const item = pfs[i];
@@ -1122,75 +1128,79 @@ export class BookPage implements OnInit, AfterViewInit {
               insuranceProducts.length == 1
           };
         });
-        const combineInfo: ICombindInfo = {
-          id: AppHelper.uuid(),
-          vmCredential: item.credential,
-          isSkipApprove: false,
-          credentials: credentials || [],
-          openrules: false,
-          credentialStaff: cstaff,
-          isOtherIllegalReason: false,
-          showFriendlyReminder: false,
-          isOtherOrganization: false,
-          notifyLanguage: "cn",
-          travelType: OrderTravelType.Business, // 默认全部因公
-          insuranceProducts: this.isShowInsurances(
-            item.bookInfo &&
-            item.bookInfo.flightSegment &&
-            item.bookInfo.flightSegment.TakeoffTime
-          )
-            ? insurances
-            : [],
-          credentialStaffMobiles:
-            cstaff && cstaff.Account && cstaff.Account.Mobile
-              ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile
-                };
-              })
-              : [],
-          credentialStaffEmails:
-            cstaff && cstaff.Account && cstaff.Account.Email
-              ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email
-                };
-              })
-              : [],
-          credentialStaffApprovers,
-          organization: {
-            Code: cstaff && cstaff.Organization && cstaff.Organization.Code,
-            Name: cstaff && cstaff.Organization && cstaff.Organization.Name
-          },
-          costCenter: {
-            code: cstaff && cstaff.CostCenter && cstaff.CostCenter.Code,
-            name: cstaff && cstaff.CostCenter && cstaff.CostCenter.Name
-          },
-          modal: item,
-          vmModal: { ...item },
-          appovalStaff: cs && cs.DefaultApprover,
-          tmcOutNumberInfos:
-            (this.tmc &&
-              this.tmc.OutNumberNameArray &&
-              this.tmc.OutNumberNameArray || []).map(n => {
-                return {
-                  label: n,
-                  key: n,
-                  isLoadNumber: !!(this.tmc && this.tmc.GetTravelNumberUrl),
-                  required:
-                    this.tmc && this.tmc.OutNumberRequiryNameArray &&
-                    this.tmc.OutNumberRequiryNameArray.some(name => name == n),
-                  value: this.getTravelFormNumber(n),
-                  staffNumber: cstaff && cstaff.Number,
-                  staffOutNumber: cstaff && cstaff.OutNumber,
-                  isTravelNumber: n.toLowerCase() == "TravelNumber".toLowerCase(),
-                  canSelect: n.toLowerCase() == "TravelNumber".toLowerCase(),
-                  isDisabled: !!(this.travelForm && n.toLowerCase() == "TravelNumber".toLowerCase())
-                } as ITmcOutNumberInfo;
-              })
-        } as ICombindInfo;
+        const combineInfo: ICombindInfo = {} as ICombindInfo;
+        combineInfo.id = AppHelper.uuid();
+        combineInfo.vmCredential = item.credential;
+        combineInfo.isSkipApprove = false;
+        combineInfo.credentials = credentials || [];
+        combineInfo.openrules = false;
+        combineInfo.credentialStaff = cstaff;
+        combineInfo.isOtherIllegalReason = false;
+        combineInfo.showFriendlyReminder = false;
+        combineInfo.isOtherOrganization = false;
+        combineInfo.notifyLanguage = "cn";
+        combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
+        combineInfo.insuranceProducts = this.isShowInsurances(
+          item.bookInfo &&
+          item.bookInfo.flightSegment &&
+          item.bookInfo.flightSegment.TakeoffTime
+        )
+          ? insurances
+          : [];
+        combineInfo.credentialStaffMobiles =
+          cstaff && cstaff.Account && cstaff.Account.Mobile
+            ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
+              return {
+                checked: idx == 0,
+                mobile
+              };
+            })
+            : [];
+        combineInfo.credentialStaffEmails =
+          cstaff && cstaff.Account && cstaff.Account.Email
+            ? cstaff.Account.Email.split(",").map((email, idx) => {
+              return {
+                checked: idx == 0,
+                email
+              };
+            })
+            : [];
+        combineInfo.credentialStaffApprovers = credentialStaffApprovers;
+        combineInfo.organization = {
+          Code: cstaff && cstaff.Organization && cstaff.Organization.Code,
+          Name: cstaff && cstaff.Organization && cstaff.Organization.Name
+        } as any;
+        combineInfo.costCenter = {
+          code: cstaff && cstaff.CostCenter && cstaff.CostCenter.Code,
+          name: cstaff && cstaff.CostCenter && cstaff.CostCenter.Name
+        };
+        combineInfo.modal = item;
+        combineInfo.vmModal = { ...item };
+        combineInfo.appovalStaff = cs && cs.DefaultApprover;
+        const accountId = item.passenger.AccountId || this.tmc && this.tmc.Account.Id;
+        const tmcOutNumberInfos = accountIdTmcOutNumberInfosMap[accountId];
+        combineInfo.tmcOutNumberInfos = tmcOutNumberInfos ||
+          (this.tmc &&
+            this.tmc.OutNumberNameArray &&
+            this.tmc.OutNumberNameArray || []).map(n => {
+              return {
+                label: n,
+                key: n,
+                isLoadNumber: !!(this.tmc && this.tmc.GetTravelNumberUrl),
+                required:
+                  this.tmc && this.tmc.OutNumberRequiryNameArray &&
+                  this.tmc.OutNumberRequiryNameArray.some(name => name == n),
+                value: this.getTravelFormNumber(n),
+                staffNumber: cstaff && cstaff.Number,
+                staffOutNumber: cstaff && cstaff.OutNumber,
+                isTravelNumber: n.toLowerCase() == "TravelNumber".toLowerCase(),
+                canSelect: n.toLowerCase() == "TravelNumber".toLowerCase(),
+                isDisabled: !!(this.travelForm && n.toLowerCase() == "TravelNumber".toLowerCase())
+              } as ITmcOutNumberInfo;
+            })
+        if (!accountIdTmcOutNumberInfosMap[accountId]) {
+          accountIdTmcOutNumberInfosMap[accountId] = combineInfo.tmcOutNumberInfos;
+        }
         this.vmCombindInfos.push(combineInfo);
       }
       await this.initCombineInfosShowApproveInfo();
@@ -1207,7 +1217,7 @@ export class BookPage implements OnInit, AfterViewInit {
       this.vmCombindInfos = [];
       Object.keys(group).forEach(key => {
         if (group[key].length) {
-          group[key][0].isShowApprovalInfo = true;
+          group[key][0].isShowGroupedInfo = true;
           if (this.initialBookDtoModel && this.initialBookDtoModel.ServiceFees) {
             const showTotalFees = group[key]
               .reduce(
@@ -1326,7 +1336,7 @@ interface ICombindInfo {
   isSkipApprove: boolean;
   notifyLanguage: string;
   serviceFee: number;
-  isShowApprovalInfo: boolean;
+  isShowGroupedInfo: boolean;
   credentialStaffMobiles: {
     checked: boolean;
     mobile: string;

@@ -20,7 +20,7 @@
           [成人]
           {{combindInfo?.modal?.credential?.Number}}
         </ion-item-divider>
-        <ion-item-group *ngIf='combindInfo.isShowApprovalInfo'>
+        <ion-item-group *ngIf='combindInfo.isShowGroupedInfo'>
           <ion-item class="ion-no-margin">
             <ion-label>通知语言:</ion-label>
             <ion-select value='cn' okText="确定" cancelText="取消" [(ngModel)]='combindInfo.notifyLanguage'>
@@ -258,7 +258,8 @@
             </div>
           </ion-item>
         </ion-item-group>
-        <app-book-tmc-outnumber [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos'
+        <app-book-tmc-outnumber [isShowGroupedInfo]="combindInfo.isShowGroupedInfo"
+          [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos'
           (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'></app-book-tmc-outnumber>
       </ion-list>
       <ion-item-group>
