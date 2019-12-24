@@ -164,7 +164,7 @@ export class SearchTrainPage
       .format("YYYY-MM-DD");
     const now = moment().format("YYYY-MM-DD");
     if (trip) {
-      lastSelectedGoDate = +moment(trip.StartTime) >= +moment(now) ? trip.StartTime : now;
+      lastSelectedGoDate = +moment(trip.StartTime) >= +moment() ? moment(trip.StartTime).format("YYYY-MM-DD") : now;
     }
     lastSelectedGoDate =
       lastSelectedGoDate &&
