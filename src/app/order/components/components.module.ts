@@ -15,8 +15,6 @@ import { ProductInsuranceComponent } from "./product-insurance/product-insurance
 import { ProductTrainComponent } from "./product-train/product-train.component";
 import { ProductPlaneComponent } from "./product-plane/product-plane.component";
 import { SelectTicketPopoverComponent } from "./select-ticket-popover/select-ticket-popover.component";
-import { OrderTrainTripComponent } from "./order-train-trip/order-train-trip.component";
-import { OrderTripItemComponent } from './order-trip-item/order-trip-item.component';
 import { TrainOrderDetailComponent } from 'src/app/order/components/train-order-detail/train-order-detail.component';
 import { FlightOrderDetailComponent } from './flight-order-detail/flight-order-detail.component';
 import { HotelOrderDetailComponent } from './hotel-order-detail/hotel-order-detail.component';
@@ -36,8 +34,6 @@ import { MyTripComponent } from './my-trip/my-trip.component';
     ProductTrainComponent,
     ProductPlaneComponent,
     SelectTicketPopoverComponent,
-    OrderTrainTripComponent,
-    OrderTripItemComponent,
     TrainOrderDetailComponent,
     FlightOrderDetailComponent,
     HotelOrderDetailComponent,
@@ -53,8 +49,6 @@ import { MyTripComponent } from './my-trip/my-trip.component';
   ],
   exports: [
     OrderItemComponent,
-    OrderTrainTripComponent,
-    OrderTripItemComponent,
     TrainOrderDetailComponent,
     FlightOrderDetailComponent,
     HotelOrderDetailComponent,

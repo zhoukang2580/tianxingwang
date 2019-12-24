@@ -62,7 +62,7 @@ export class SearchTrainPage
     private calendarService: CalendarService,
     private tmcService: TmcService,
     private modalCtrl: ModalController
-  ) {}
+  ) { }
   private checkBackDateIsAfterGoDate() {
     if (
       !this.goDate ||
@@ -74,8 +74,8 @@ export class SearchTrainPage
       this.backDate =
         this.goDate.timeStamp > this.backDate.timeStamp
           ? this.calendarService.generateDayModel(
-              moment(this.goDate.date).add(1, "days")
-            )
+            moment(this.goDate.date).add(1, "days")
+          )
           : this.backDate;
     }
   }
@@ -189,8 +189,8 @@ export class SearchTrainPage
       .format("YYYY-MM-DD");
     lastSelectedGoDate =
       lastSelectedGoDate &&
-      this.calendarService.generateDayModelByDate(lastSelectedGoDate)
-        .timeStamp >=
+        this.calendarService.generateDayModelByDate(lastSelectedGoDate)
+          .timeStamp >=
         this.calendarService.generateDayModelByDate(nextDate).timeStamp
         ? lastSelectedGoDate
         : nextDate;
@@ -263,7 +263,7 @@ export class SearchTrainPage
     console.log("search-train", s);
     this.isCanLeave = true;
     this.trainService.setSearchTrainModel(s);
-    this.router.navigate([AppHelper.getRoutePath("train-list")]).then(_ => {});
+    this.router.navigate([AppHelper.getRoutePath("train-list")]).then(_ => { });
     const identity = await this.identityService.getIdentityAsync();
     if (identity) {
       await this.storage.set(
@@ -306,7 +306,10 @@ export class SearchTrainPage
     if (this.isCanLeave) {
       return true;
     }
-    if (this.trainService.exchangedTrainTicketInfo) {
+    const bookInfos = this.trainService.getBookInfos();
+    const info = bookInfos.find(it => !!it.exchangeInfo);
+    const exchangeInfo = info && info.exchangeInfo;
+    if (exchangeInfo) {
       const ok = await AppHelper.alert(
         "是否放弃改签？",
         true,
@@ -314,7 +317,6 @@ export class SearchTrainPage
         LanguageHelper.getCancelTip()
       );
       if (ok) {
-        this.trainService.exchangedTrainTicketInfo = null;
         this.trainService.setSearchTrainModel({
           ...this.trainService.getSearchTrainModel(),
           isExchange: false,

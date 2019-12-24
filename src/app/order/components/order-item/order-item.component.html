@@ -126,7 +126,7 @@
         </ion-col>
       </ion-row>
       <ion-row>
-        <ion-col>
+        <ion-col size='3'>
           <ion-text color='danger'>
             ￥{{getTotalAmount(order,orderTrainTicket.Key) + trainInsuranceAmount(orderTrainTicket)}}
             <span *ngIf="trainInsuranceAmount(orderTrainTicket) as amount">(含保险{{amount}})</span>
@@ -135,16 +135,19 @@
         <ion-col>
           车票状态
           <span style='margin-left: 0.5em;'>{{orderTrainTicket.StatusName}}</span>
+        </ion-col>
+      </ion-row>
+      <ion-row text-end>
+        <ion-col>
           <ion-button (click)='onExchange($event,orderTrainTicket)' color='secondary'
             *ngIf='orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !=0 && orderTrainTicket.BookType != TrainBookType.Offline'>
             <span>改签</span>
           </ion-button>
           <ion-button (click)='onRefundTrainTicket($event,orderTrainTicket)' color='secondary'
             *ngIf='(orderTrainTicket.Status == OrderTrainTicketStatusType.Issued || orderTrainTicket.Status == OrderTrainTicketStatusType.Exchanged) 
-          &&  tmc?.TrainIsAllowRefund && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
+        &&  tmc?.TrainIsAllowRefund && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
             <span>退票</span>
           </ion-button>
-
         </ion-col>
       </ion-row>
     </ng-container>
