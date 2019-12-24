@@ -429,12 +429,20 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
       bookDto.TicketId = exchangeInfo.exchangeInfo.ticket.Id;
     }
     if (canBook && canBook2) {
-      const res: IBookOrderResult = await (exchangeInfo.exchangeInfo ? this.trainService.exchangeBook(bookDto) : this.trainService
-        .bookTrain(bookDto))
-        .catch(e => {
+      let res: IBookOrderResult;
+      if (exchangeInfo && exchangeInfo.exchangeInfo) {
+        res = await this.trainService.exchangeBook(bookDto).catch(e => {
           AppHelper.alert(e);
           return null;
         });
+      } else {
+        res = await this.trainService
+          .bookTrain(bookDto)
+          .catch(e => {
+            AppHelper.alert(e);
+            return null;
+          });
+      }
       if (res) {
         if (res.TradeNo) {
           AppHelper.toast("下单成功!", 1400, "top");
