@@ -98,13 +98,10 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
   constructor(
-    private navCtrl: NavController,
     private modalCtrl: ModalController,
     route: ActivatedRoute,
     private tmcService: TmcService,
     private router: Router,
-    private payService: PayService,
-    private staffService: StaffService,
     private apiService: ApiService,
     private orderService: OrderService,
     private identityService: IdentityService
@@ -120,6 +117,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         this.title = tab.label;
       }
       this.isOpenUrl = false;
+      if(d&&d.get('doRefresh')=='true'){
+        this.doRefresh();
+      }
     });
   }
   ngOnDestroy() {

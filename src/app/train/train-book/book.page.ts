@@ -480,7 +480,13 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
           }
           this.trainService.removeAllBookInfos();
           this.viewModel.combindInfos = [];
-          this.goToMyOrders(ProductItemType.train);
+          this.trainService.setSearchTrainModel({
+            ...this.trainService.getSearchTrainModel(),
+            isExchange: false,
+            isLocked: false
+          });
+          const isExchange = exchangeInfo && !!exchangeInfo.exchangeInfo;
+          this.goToMyOrders(ProductItemType.train, isExchange);
         }
       }
     }
@@ -581,9 +587,9 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     }
     // console.timeEnd("总计");
   }
-  private goToMyOrders(tab: ProductItemType) {
+  private goToMyOrders(tab: ProductItemType, isExchange = false) {
     this.router.navigate(["product-tabs"], {
-      queryParams: { tabId: tab }
+      queryParams: { tabId: tab, doRefresh: isExchange }
     });
   }
   private isShowInsurances(takeoffTime: string) {
@@ -637,6 +643,18 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
       it.checked = +it.value == +this.tmc.TrainPayType;
       return it;
     });
+    const info = this.trainService.getBookInfos().find(it => !!it.exchangeInfo);
+    const exchangeInfo = info && info.exchangeInfo;
+    if (exchangeInfo && exchangeInfo.ticket && exchangeInfo.ticket.Order && exchangeInfo.ticket.Order.Variables) {
+      exchangeInfo.ticket.Order.VariablesJsonObj = exchangeInfo.ticket.Order.VariablesJsonObj || JSON.parse(exchangeInfo.ticket.Order.Variables);
+      if (exchangeInfo.ticket.Order.VariablesJsonObj['TravelPayType']) {
+        this.viewModel.orderTravelPayType = +exchangeInfo.ticket.Order.VariablesJsonObj['TravelPayType'];
+        this.orderTravelPayTypes = this.orderTravelPayTypes.map(it => {
+          it.checked = +it.value == +exchangeInfo.ticket.Order.VariablesJsonObj['TravelPayType'];
+          return it;
+        });
+      }
+    }
     console.log(
       "initOrderTravelPayTypes",
       this.orderTravelPayTypes,
