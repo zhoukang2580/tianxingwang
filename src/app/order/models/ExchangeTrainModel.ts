@@ -104,6 +104,4 @@ export class ExchangeTrainModel {
     IsAllowModify: boolean;
     StaffBookType: StaffBookType;
     InsurnanceAmount: number;
-
-
 }

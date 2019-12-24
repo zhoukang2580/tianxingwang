@@ -674,12 +674,15 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     return `${day.date} ${day.dayOfWeekName}`;
   }
   private getServiceFee(item: ITrainPassengerBookInfo) {
-    const fee =
+    let fee =
       this.initialBookDto &&
       this.initialBookDto.ServiceFees &&
-      this.initialBookDto.ServiceFees[item.id];
+      +this.initialBookDto.ServiceFees[item.id] || 0;
     // console.log(item.id, fee, this.initialBookDto);
-    return +fee || 0;
+    if (this.searchTrainModel && this.searchTrainModel.isExchange) {
+      fee = this.tmc && +this.tmc.TrainExchangeOnlineFee;
+    }
+    return fee || 0;
   }
   isAllowSelectApprove(info: ITrainPassengerBookInfo) {
     const Tmc = this.initialBookDto.Tmc;
