@@ -6,7 +6,7 @@ ion-item-divider[sticky] {
   color: rgba(var(--ion-color-dark-rgb), 0.5);
 }
 ion-input.TravelNumber{
-  opacity: .8;
+  // opacity: .8;
   font-size: 0.8rem;
 }
 ion-content {
@@ -18,14 +18,14 @@ ion-content {
     padding: 0.3em 0;
     margin: 1em 0;
   }
-  ion-label {
-    opacity: 0.9;
-  }
+  // ion-label {
+  //   opacity: 0.9;
+  // }
 
-  .disabled ion-item {
-    // color: var(--ion-color-medium);
-    opacity: 1;
-  }
+  // .disabled ion-item {
+  //   // color: var(--ion-color-medium);
+  //   opacity: 1;
+  // }
   ion-col {
     align-self: center;
   }

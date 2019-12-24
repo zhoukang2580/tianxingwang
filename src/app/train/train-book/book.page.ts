@@ -531,6 +531,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   calcTotalPrice() {
+    const exchange = this.trainService.getBookInfos().find(it => !!it.exchangeInfo);
     console.log(
       "this.viewModel.orderTravelPayType",
       this.viewModel.orderTravelPayType
@@ -551,25 +552,27 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
 
           arr = AppHelper.add(arr, +((seat && seat.SalesPrice) || 0));
         }
-        if (item.insuranceProducts) {
-          arr += item.insuranceProducts
-            .filter(it => it.checked)
-            .reduce((sum, it) => {
-              sum = AppHelper.add(+it.insuranceResult.Price, sum);
-              return sum;
-            }, 0);
+        if (!exchange) {
+          if (item.insuranceProducts) {
+            arr += item.insuranceProducts
+              .filter(it => it.checked)
+              .reduce((sum, it) => {
+                sum = AppHelper.add(+it.insuranceResult.Price, sum);
+                return sum;
+              }, 0);
+          }
         }
         return arr;
       }, 0);
       // console.log("totalPrice ", totalPrice);
-      const fees = this.getTotalServiceFees();
+      const fees =!exchange? this.getTotalServiceFees():+(this.tmc&&this.tmc.TrainExchangeOnlineFee);
       totalPrice = AppHelper.add(fees, totalPrice);
       const info = this.trainService.getBookInfos().find(it => !!it.exchangeInfo);
       if (info && info.exchangeInfo) {
         const ticket = info.exchangeInfo.ticket as OrderTrainTicketEntity;
         const insurnanceAmount = info.exchangeInfo.insurnanceAmount;
         if (ticket) {
-          totalPrice -= +ticket.TicketPrice;
+          totalPrice += -ticket.TicketPrice;
         } else {
           totalPrice += +insurnanceAmount;
         }
