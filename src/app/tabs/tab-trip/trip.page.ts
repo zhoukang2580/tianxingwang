@@ -40,6 +40,7 @@ export class TripPage implements OnInit {
     private tmcService: TmcService,
     private apiservice: ApiService,
     private route: ActivatedRoute,
+    private modalCtrl: ModalController,
     private router: Router) { }
   private getTrips() {
     this.loadMoreSubscription.unsubscribe();
@@ -65,7 +66,7 @@ export class TripPage implements OnInit {
     }));
   }
   ngOnInit() {
-    this.route.queryParamMap.subscribe(_=>{
+    this.route.queryParamMap.subscribe(_ => {
       this.doRefresh();
     })
   }
@@ -102,6 +103,24 @@ export class TripPage implements OnInit {
           this.infiniteScroll.disabled = trips.length == 0 || this.searchCondition.PageSize > trips.length;
         }
       })
+  }
+  async onShowSelectedInsurance(d: { p: InsuranceProductEntity, trip: OrderTripModel, evt: CustomEvent }) {
+    if (d.evt) {
+      d.evt.stopPropagation();
+    }
+    if (!d.p || !d.trip) {
+      return;
+    }
+    const m = await this.modalCtrl.create({
+      component: TripBuyInsuranceComponent,
+      componentProps: {
+        trip: d.trip,
+        insurance: d.p
+      }
+    });
+    m.present();
+    await m.onDidDismiss();
+    this.doRefresh();
   }
   async payInsurance(d: { key: string, tradeNo: string }) {
     if (d && d.key && d.tradeNo) {

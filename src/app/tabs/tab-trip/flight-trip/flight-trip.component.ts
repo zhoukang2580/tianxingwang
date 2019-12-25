@@ -16,8 +16,10 @@ import { TripBuyInsuranceComponent } from '../trip-buy-insurance/trip-buy-insura
 export class FlightTripComponent implements OnInit {
   @Input() trip: OrderTripModel;
   @Output() payInsuranceEvt: EventEmitter<any>;
+  @Output() showInsuranceEvt: EventEmitter<any>;
   constructor(private calendarService: CalendarService, private modalCtrl: ModalController) {
     this.payInsuranceEvt = new EventEmitter();
+    this.showInsuranceEvt = new EventEmitter();
   }
 
   ngOnInit() { }
@@ -63,33 +65,34 @@ export class FlightTripComponent implements OnInit {
     if (!p || !trip) {
       return;
     }
-    const m = await this.modalCtrl.create({
-      component: TripBuyInsuranceComponent,
-      componentProps: {
-        trip,
-        insurance: p
-      }
-    });
-    m.present();
+    this.showInsuranceEvt.emit({ p, trip, evt });
+    // const m = await this.modalCtrl.create({
+    //   component: TripBuyInsuranceComponent,
+    //   componentProps: {
+    //     trip,
+    //     insurance: p
+    //   }
+    // });
+    // m.present();
   }
   getDate() {
     const str = this.trip && this.trip.StartTime && this.trip.StartTime.replace("T", " ") || "";
-    return `${str.substr(0, 4)}年${str.substr(5,2)}月${str.substr('yyyy-mm-'.length,2)}日 ${this.calendarService.getDescOfDate(str.substr(0,'yyyy-mm-dd'.length))}`
+    return `${str.substr(0, 4)}年${str.substr(5, 2)}月${str.substr('yyyy-mm-'.length, 2)}日 ${this.calendarService.getDescOfDate(str.substr(0, 'yyyy-mm-dd'.length))}`
   }
   getStHHmm() {
     const str = this.trip && this.trip.StartTime && this.trip.StartTime.replace("T", " ") || "";
     return str.substr('yyyy-mm-ddT'.length, 'hh:mm'.length);
   }
-  getEndHHmm(){
+  getEndHHmm() {
     const str = this.trip && this.trip.EndTime && this.trip.EndTime.replace("T", " ") || "";
     return str.substr('yyyy-mm-ddT'.length, 'hh:mm'.length);
   }
-  payInsurance(key: string, tradeNo: string,evt:CustomEvent) {
+  payInsurance(key: string, tradeNo: string, evt: CustomEvent) {
     if (evt) {
       evt.stopPropagation();
     }
     this.payInsuranceEvt.emit({
-      evt:evt,
+      evt: evt,
       key,
       tradeNo
     })

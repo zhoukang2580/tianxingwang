@@ -11,15 +11,16 @@
   <ng-container *ngIf='!isLoading '>
     <ng-container *ngIf='trips?.length else nomoredata'>
       <div *ngFor='let trip of trips' (click)='goToDetailPage(trip)'>
-          <ng-container *ngIf='trip.Type=="Train"'>
-            <app-train-trip [trip]="trip"></app-train-trip>
-          </ng-container>
-          <ng-container *ngIf='trip.Type=="Hotel"'>
-            <app-hotel-trip [trip]="trip"></app-hotel-trip>
-          </ng-container>
-          <ng-container *ngIf='trip.Type == "Flight"'>
-            <app-flight-trip [trip]="trip" (payInsuranceEvt)="payInsurance($event)"></app-flight-trip>
-          </ng-container>
+        <ng-container *ngIf='trip.Type=="Train"'>
+          <app-train-trip [trip]="trip"></app-train-trip>
+        </ng-container>
+        <ng-container *ngIf='trip.Type=="Hotel"'>
+          <app-hotel-trip [trip]="trip"></app-hotel-trip>
+        </ng-container>
+        <ng-container *ngIf='trip.Type == "Flight"'>
+          <app-flight-trip [trip]="trip" (showInsuranceEvt)='onShowSelectedInsurance($event)'
+            (payInsuranceEvt)="payInsurance($event)"></app-flight-trip>
+        </ng-container>
       </div>
     </ng-container>
   </ng-container>
