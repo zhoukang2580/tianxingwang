@@ -33,6 +33,7 @@ import { Router } from "@angular/router";
 import { OrderBookDto } from "../order/models/OrderBookDto";
 import { DayModel } from "../tmc/models/DayModel";
 import { SelectAndReplaceTrainInfoComponent } from "./components/select-and-replaceinfo/select-and-replaceinfo.component";
+import { AccountEntity } from '../account/models/AccountEntity';
 const KEY_TRAIN_TRAFFICLINES_DATA = "train-traficlines-data";
 export class SearchTrainModel {
   TrainCode: string;
@@ -1025,10 +1026,15 @@ export class TrainService {
         return;
       }
       let books = this.getBookInfos();
-      const passenger = info.BookStaff;
+      let passenger = info.BookStaff;
       if (passenger) {
         passenger.AccountId =
           passenger.AccountId || (passenger.Account && passenger.Account.Id);
+      } else {
+        // 如果是非白名单
+        passenger = new StaffEntity();
+        passenger.Account = new AccountEntity();
+        passenger.Account.Id = passenger.AccountId = info.Tmc && info.Tmc.Account && info.Tmc.Account.Id;
       }
       const exchangedInfo = {
         ticket: JSON.parse(JSON.stringify(info.OrderTrainTicket)),
@@ -1036,7 +1042,8 @@ export class TrainService {
         insuranceResult: info.InsurnanceAmount
       };
       const b: PassengerBookInfo<ITrainInfo> = {
-        passenger: info.BookStaff,
+        passenger,
+        isNotWhitelist: !info.BookStaff,
         credential: info.DefaultCredentials,
         id: AppHelper.uuid(),
         isFilterPolicy: true,
