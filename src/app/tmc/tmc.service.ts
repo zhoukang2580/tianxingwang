@@ -664,7 +664,7 @@ export interface TravelUrlInfo {
   TravelNumber: string; // TR20190703763
   Trips: string[]; // 火车行程: 07-26 至 07-26 苏州 至 南京"
 }
-export interface IBookOrderResult { TradeNo: string; HasTasks: boolean; }
+export interface IBookOrderResult { TradeNo: string; HasTasks: boolean;Message:string; }
 export class TravelFormEntity {
   Tmc: TmcEntity;
   /// <summary>

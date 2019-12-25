@@ -474,7 +474,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
             if (canPay) {
               if (res.HasTasks) {
                 await AppHelper.alert(
-                  exchangeInfo && exchangeInfo.exchangeInfo ? exchangeTip : LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
+                  exchangeInfo && exchangeInfo.exchangeInfo ? res.Message || exchangeTip : LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
                   true
                 );
               } else {
@@ -490,7 +490,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
             if (isSave) {
               await AppHelper.alert("订单已保存", true);
             } else {
-              await AppHelper.alert(exchangeInfo && exchangeInfo.exchangeInfo ? exchangeTip : "下单成功", true);
+              await AppHelper.alert(exchangeInfo && exchangeInfo.exchangeInfo ? res.Message || exchangeTip : "下单成功", true);
             }
           }
           this.trainService.removeAllBookInfos();
