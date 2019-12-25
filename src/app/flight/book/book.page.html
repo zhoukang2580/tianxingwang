@@ -97,12 +97,10 @@
         </ion-item-group>
         <ion-item-group *ngIf='combindInfo?.modal?.bookInfo as s'>
           <ion-item-divider>旅客信息:</ion-item-divider>
-          <ion-item>
-            <app-book-credential-comp [credential]='combindInfo.vmCredential'
-              (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo.credentials'
-              (modify)='onModify(combindInfo)'>
-            </app-book-credential-comp>
-          </ion-item>
+          <app-book-credential-comp [credential]='combindInfo.vmCredential'
+            (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo.credentials'
+            (modify)='onModify(combindInfo)'>
+          </app-book-credential-comp>
           <ion-item *ngIf='s?.flightPolicy?.Rules?.length && !combindInfo?.modal.isNotWhitelist'>
             <app-book-illegal-reason-comp #illegalReasonsEle [illegalReasons]='illegalReasons'
               [isAllowCustomReason]='tmc?.IsAllowCustomReason' (ionchange)='onIllegalReason($event,combindInfo)'>
