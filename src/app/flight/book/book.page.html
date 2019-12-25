@@ -234,12 +234,12 @@
         </ion-item-group>
         <ng-container *ngIf='combindInfo.isShowGroupedInfo'>
           <ion-item-group>
-            <ion-item-divider color='primary' sticky>
+            <ion-list-header color='primary' sticky>
               <ion-label text-wrap *ngIf='getGroupedTitle(combindInfo) as title'>
                 {{title}}
                 【{{tmc?.Name}}】
               </ion-label>
-            </ion-item-divider>
+            </ion-list-header>
             <ion-item class="ion-no-margin">
               <ion-label>通知语言:</ion-label>
               <ion-select value='cn' okText="确定" cancelText="取消" [(ngModel)]='combindInfo.notifyLanguage'>
