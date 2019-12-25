@@ -1237,6 +1237,36 @@ export class FlightService {
   ): Promise<InitialBookDtoModel> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Flight-Initialize";
+    bookDto = {
+      ...bookDto,
+       Passengers: bookDto.Passengers.map(p => {
+         if(p.Policy){
+           p.Policy={
+             ...p.Policy,
+             FlightDescription:null,
+             TrainDescription:null,
+             TrainSeatType:null,
+             TrainSeatTypeName:null,
+             TrainUpperSeatType:null,
+             TrainUpperSeatTypeArray:null,
+             TrainUpperSeatTypeName:null,
+             HotelDescription:null,
+             Setting:null,
+           }
+         }
+        if (p.FlightSegment && p.FlightSegment.Cabins) {
+          p.FlightSegment = {
+            ...p.FlightSegment,
+            Cabins: p.FlightSegment.Cabins.map(c => {
+              c.RefundChange = null;
+              c.Variables = null;
+              return c;
+            })
+          }
+        }
+        return p;
+      })
+    };
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;

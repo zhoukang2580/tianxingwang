@@ -68,7 +68,7 @@ export class OrderItemComponent implements OnInit {
       && (orderFlightTicket.Supplier != "0")
   }
   getPassenger(ticket: OrderFlightTicketEntity) {
-    const p = this.order && this.order.OrderPassengers||[];
+    const p = this.order && this.order.OrderPassengers || [];
     return p.find(it => it.Id == (ticket.Passenger && ticket.Passenger.Id));
   }
   getDateWeekName(date: string) {
@@ -149,7 +149,7 @@ export class OrderItemComponent implements OnInit {
         .filter(it => it.Key == key && !(it.Tag || "").endsWith("Fee"))
         .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
     }
-    return amount;
+    return amount > 0 ? amount : 0;
   }
   ticketIsReject(orderFlightTicket: { Variables: string; VariablesJsonObj: any }) {
     orderFlightTicket.VariablesJsonObj = orderFlightTicket.VariablesJsonObj || JSON.parse(orderFlightTicket.Variables) || {};

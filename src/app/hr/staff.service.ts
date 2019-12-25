@@ -269,8 +269,14 @@ export class PolicyEntity extends BaseSettingEntity {
   TrainDescription: string;
   // ============== 火车站 end ============
   TrainIllegalTip: string;
+  TrainSeatType: string;
+  TrainSeatTypeName: string;
+  TrainUpperSeatType: string;
+  TrainUpperSeatTypeName: string;
+  TrainUpperSeatTypeArray: string[];
   //
   HotelIllegalTip: string;
+  HotelDescription: string;
   InternationalFlightIllegalTip: string;
 }
 export class StaffApprover {

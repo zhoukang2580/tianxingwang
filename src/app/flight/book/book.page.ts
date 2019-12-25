@@ -539,6 +539,15 @@ export class BookPage implements OnInit, AfterViewInit {
     }, {} as { [accountId: string]: ICombindInfo[] });
     return group;
   }
+  getGroupedTitle(item: ICombindInfo) {
+    const group = this.getGroupedCombindInfo(this.vmCombindInfos, this.tmc);
+    if (group) {
+      const accountId = item.modal.passenger.AccountId || this.tmc && this.tmc.Account && this.tmc.Account.Id;
+      if (group[accountId]) {
+        return group[accountId].join("、");
+      }
+    }
+  }
   private fillGroupConbindInfoApprovalInfo(arr: ICombindInfo[]) {
     const group = this.getGroupedCombindInfo(arr, this.tmc);
     let result = arr;
