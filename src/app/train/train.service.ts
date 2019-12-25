@@ -1035,6 +1035,7 @@ export class TrainService {
         passenger = new StaffEntity();
         passenger.Account = new AccountEntity();
         passenger.Account.Id = passenger.AccountId = info.Tmc && info.Tmc.Account && info.Tmc.Account.Id;
+        passenger.isNotWhiteList=true;
       }
       const exchangedInfo = {
         ticket: JSON.parse(JSON.stringify(info.OrderTrainTicket)),
