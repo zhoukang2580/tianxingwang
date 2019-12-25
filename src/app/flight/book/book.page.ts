@@ -544,7 +544,7 @@ export class BookPage implements OnInit, AfterViewInit {
     if (group) {
       const accountId = item.modal.passenger.AccountId || this.tmc && this.tmc.Account && this.tmc.Account.Id;
       if (group[accountId]) {
-        return group[accountId].join("、");
+        return group[accountId].map(it => it.modal.credential.CheckName).join("、");
       }
     }
   }
@@ -1203,7 +1203,7 @@ export class BookPage implements OnInit, AfterViewInit {
                 staffNumber: cstaff && cstaff.Number,
                 staffOutNumber: cstaff && cstaff.OutNumber,
                 isTravelNumber: n.toLowerCase() == "TravelNumber".toLowerCase(),
-                canSelect: n.toLowerCase() == "TravelNumber".toLowerCase(),
+                canSelect: true || n.toLowerCase() == "TravelNumber".toLowerCase(),
                 isDisabled: !!(this.travelForm && n.toLowerCase() == "TravelNumber".toLowerCase())
               } as ITmcOutNumberInfo;
             })

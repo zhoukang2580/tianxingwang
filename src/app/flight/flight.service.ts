@@ -1254,6 +1254,9 @@ export class FlightService {
              Setting:null,
            }
          }
+         if(p.FlightCabin){
+           p.FlightCabin={...p.FlightCabin,RefundChange:null,Variables:null}
+         }
         if (p.FlightSegment && p.FlightSegment.Cabins) {
           p.FlightSegment = {
             ...p.FlightSegment,
