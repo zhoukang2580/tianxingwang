@@ -1280,6 +1280,8 @@ export class FlightService {
         res.IllegalReasons = res.IllegalReasons || [];
         res.Insurances = res.Insurances || {};
         res.ServiceFees = res.ServiceFees || ({} as any);
+        console.log("平均前",{...res.ServiceFees});
+        // 后台计算服务费根据 item.passenger.AccountId 累加,所以现在需要给每一个 item.passenger.AccountId 平均服务费
         const fees = {};
         Object.keys(res.ServiceFees).forEach(k => {
           let count = 1;
@@ -1289,6 +1291,7 @@ export class FlightService {
           }
           fees[k] = +res.ServiceFees[k] / count;
         });
+        console.log("平均后",res.ServiceFees);
         res.ServiceFees = fees;
         res.Staffs = res.Staffs || [];
         res.Staffs = res.Staffs.map(it => {

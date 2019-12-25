@@ -223,30 +223,30 @@ export class BookPage implements OnInit, AfterViewInit {
     this.initialBookDtoModel = await this.flightService.getInitializeBookDto(
       bookDto
     );
-    if (isSelf) {
-      if (this.initialBookDtoModel && infos.length == 2) {
-        if (this.initialBookDtoModel.ServiceFees) {
-          const fees = {};
-          Object.keys(this.initialBookDtoModel.ServiceFees).forEach(k => {
-            infos.forEach(info => {
-              fees[info.id] = +this.initialBookDtoModel.ServiceFees[k] / 2;
-            });
-          });
-          this.initialBookDtoModel.ServiceFees = fees;
-        }
-      }
-    }
-    if (this.initialBookDtoModel && this.initialBookDtoModel.ServiceFees) {
-      // 处理非白名单
-      const bookInfos = this.flightService.getPassengerBookInfos();
-      const notWhiteList = bookInfos.filter(it => it.isNotWhitelist);
-      if (notWhiteList.length) {
-        const fee = +this.initialBookDtoModel.ServiceFees[notWhiteList[0].id] / notWhiteList.length;
-        notWhiteList.forEach(info => {
-          this.initialBookDtoModel.ServiceFees[info.id] = `${fee}`;
-        });
-      }
-    }
+    // if (isSelf) {
+    //   if (this.initialBookDtoModel && infos.length == 2) {
+    //     if (this.initialBookDtoModel.ServiceFees) {
+    //       const fees = {};
+    //       Object.keys(this.initialBookDtoModel.ServiceFees).forEach(k => {
+    //         infos.forEach(info => {
+    //           fees[info.id] = +this.initialBookDtoModel.ServiceFees[k] / 2;
+    //         });
+    //       });
+    //       this.initialBookDtoModel.ServiceFees = fees;
+    //     }
+    //   }
+    // }
+    // if (this.initialBookDtoModel && this.initialBookDtoModel.ServiceFees) {
+    //   // 处理非白名单
+    //   const bookInfos = this.flightService.getPassengerBookInfos();
+    //   const notWhiteList = bookInfos.filter(it => it.isNotWhitelist);
+    //   if (notWhiteList.length) {
+    //     const fee = +this.initialBookDtoModel.ServiceFees[notWhiteList[0].id] / notWhiteList.length;
+    //     notWhiteList.forEach(info => {
+    //       this.initialBookDtoModel.ServiceFees[info.id] = `${fee}`;
+    //     });
+    //   }
+    // }
     return this.initialBookDtoModel;
   }
   ngAfterViewInit() {
@@ -980,7 +980,7 @@ export class BookPage implements OnInit, AfterViewInit {
       });
     }
   }
-  private getServiceFee(item: ICombindInfo) {
+  private getOneServiceFee(item: ICombindInfo) {
     return (
       this.initialBookDtoModel &&
       this.initialBookDtoModel.ServiceFees &&
@@ -1231,7 +1231,7 @@ export class BookPage implements OnInit, AfterViewInit {
           if (this.initialBookDtoModel && this.initialBookDtoModel.ServiceFees) {
             const showTotalFees = group[key]
               .reduce(
-                (acc, it) => (acc = AppHelper.add(acc, this.getServiceFee(it)))
+                (acc, it) => (acc = AppHelper.add(acc, this.getOneServiceFee(it)))
                 , 0);
             group[key][idx].serviceFee = showTotalFees;
           }
