@@ -1291,7 +1291,7 @@ export class FlightService {
           }
           fees[k] = +res.ServiceFees[k] / count;
         });
-        console.log("平均后",res.ServiceFees);
+        console.log("平均后",fees);
         res.ServiceFees = fees;
         res.Staffs = res.Staffs || [];
         res.Staffs = res.Staffs.map(it => {

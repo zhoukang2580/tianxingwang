@@ -1104,6 +1104,39 @@ export class TrainService {
   ): Promise<InitialBookDtoModel> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Train-Initialize";
+    bookDto = {
+      ...bookDto,
+      Passengers: bookDto.Passengers.map(p => {
+        if (p.Policy) {
+          p.Policy = {
+            ...p.Policy,
+            FlightDescription: null,
+            TrainDescription: null,
+            TrainSeatType: null,
+            TrainSeatTypeName: null,
+            TrainUpperSeatType: null,
+            TrainUpperSeatTypeArray: null,
+            TrainUpperSeatTypeName: null,
+            HotelDescription: null,
+            Setting: null,
+          }
+        }
+        if (p.FlightCabin) {
+          p.FlightCabin = { ...p.FlightCabin, RefundChange: null, Variables: null }
+        }
+        if (p.FlightSegment && p.FlightSegment.Cabins) {
+          p.FlightSegment = {
+            ...p.FlightSegment,
+            Cabins: p.FlightSegment.Cabins.map(c => {
+              c.RefundChange = null;
+              c.Variables = null;
+              return c;
+            })
+          }
+        }
+        return p;
+      })
+    };
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;
@@ -1115,21 +1148,16 @@ export class TrainService {
         res.IllegalReasons = res.IllegalReasons || [];
         res.Insurances = res.Insurances || {};
         res.ServiceFees = res.ServiceFees || ({} as any);
-        if (bookInfos.length == 2 && isSelf) {
-          const fees = {};
-          Object.keys(res.ServiceFees).forEach(k => {
-            fees[k] = +res.ServiceFees[k] / 2;
-          });
-          res.ServiceFees = fees;
-        }
-        const notWhiteList = bookInfos.filter(it => it.isNotWhitelist);
-        if (notWhiteList.length) {
-          const fee =
-            +res.ServiceFees[notWhiteList[0].id] / notWhiteList.length;
-          notWhiteList.forEach(info => {
-            res.ServiceFees[info.id] = `${fee}`;
-          });
-        }
+        // 后台计算服务费根据 item.passenger.AccountId 累加,所以现在需要给每一个 item.passenger.AccountId 平均服务费
+        const fees = {};
+        Object.keys(res.ServiceFees).forEach(k => {
+          let count = 1;
+          const one = bookInfos.find(it => it.id == k);
+          if (one && one.passenger) {
+            count = bookInfos.filter(it => it.passenger && it.passenger.AccountId == one.passenger.AccountId).length;
+          }
+          fees[k] = +res.ServiceFees[k] / count;
+        });
         res.Staffs = res.Staffs || [];
         res.Staffs = res.Staffs.map(it => {
           return {

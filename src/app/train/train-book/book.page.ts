@@ -399,7 +399,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
                 staffNumber: cstaff && cstaff.Number,
                 staffOutNumber: cstaff && cstaff.OutNumber,
                 isTravelNumber: n.toLowerCase() == "TravelNumber".toLowerCase(),
-                canSelect: n.toLowerCase() == "TravelNumber".toLowerCase(),
+                canSelect: true || n.toLowerCase() == "TravelNumber".toLowerCase(),
                 isDisabled: !!(
                   this.viewModel.travelForm &&
                   n.toLowerCase() == "TravelNumber".toLowerCase()
@@ -414,6 +414,15 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
       }
     } catch (e) {
       console.error(e);
+    }
+  }
+  getGroupedTitle(item: ITrainPassengerBookInfo) {
+    const group = this.getGroupedCombindInfo(this.viewModel.combindInfos, this.tmc);
+    if (group) {
+      const accountId = item.bookInfo && item.bookInfo.passenger && item.bookInfo.passenger.AccountId || this.tmc && this.tmc.Account && this.tmc.Account.Id;
+      if (group[accountId]) {
+        return group[accountId].map(it => `${it.credential.CheckName}(${it.credential.Number})`).join("、");
+      }
     }
   }
   async bookTrain(isSave?: boolean) {
@@ -700,7 +709,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     const day = this.calendarService.generateDayModel(moment(train.StartTime));
     return `${day.date} ${day.dayOfWeekName}`;
   }
-  private getServiceFee(item: ITrainPassengerBookInfo) {
+  private getOneServiceFee(item: ITrainPassengerBookInfo) {
     let fee =
       this.initialBookDto &&
       this.initialBookDto.ServiceFees &&
@@ -1046,12 +1055,13 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     result = [];
     Object.keys(group).forEach(key => {
       if (group[key].length) {
-        const first = group[key][0];
+        const idx = group[key].length - 1;
+        const last = group[key][idx];
         result = result.concat(
           group[key].map(it => {
-            it.appovalStaff = first.appovalStaff;
-            it.notifyLanguage = first.notifyLanguage;
-            it.isSkipApprove = first.isSkipApprove;
+            it.appovalStaff = last.appovalStaff;
+            it.notifyLanguage = last.notifyLanguage;
+            it.isSkipApprove = last.isSkipApprove;
             return it;
           })
         );
@@ -1071,13 +1081,14 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
       this.viewModel.combindInfos = [];
       Object.keys(group).forEach(key => {
         if (group[key].length) {
-          group[key][0].isShowGroupedInfo = true;
+          const idx = group[key].length - 1;
+          group[key][idx].isShowGroupedInfo = true;
           if (this.initialBookDto && this.initialBookDto.ServiceFees) {
             const showTotalFees = group[key].reduce(
-              (acc, it) => (acc = AppHelper.add(acc, this.getServiceFee(it))),
+              (acc, it) => (acc = AppHelper.add(acc, this.getOneServiceFee(it))),
               0
             );
-            group[key][0].serviceFee = showTotalFees;
+            group[key][idx].serviceFee = showTotalFees;
           }
         }
         this.viewModel.combindInfos = this.viewModel.combindInfos.concat(
