@@ -1204,7 +1204,7 @@ export class BookPage implements OnInit, AfterViewInit {
                 staffOutNumber: cstaff && cstaff.OutNumber,
                 isTravelNumber: n.toLowerCase() == "TravelNumber".toLowerCase(),
                 canSelect: true || n.toLowerCase() == "TravelNumber".toLowerCase(),
-                isDisabled: !!(this.travelForm && n.toLowerCase() == "TravelNumber".toLowerCase())
+                isDisabled: false && !!(this.travelForm && n.toLowerCase() == "TravelNumber".toLowerCase())
               } as ITmcOutNumberInfo;
             })
         if (!accountIdTmcOutNumberInfosMap[accountId]) {

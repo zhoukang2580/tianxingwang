@@ -400,7 +400,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
                 staffOutNumber: cstaff && cstaff.OutNumber,
                 isTravelNumber: n.toLowerCase() == "TravelNumber".toLowerCase(),
                 canSelect: true || n.toLowerCase() == "TravelNumber".toLowerCase(),
-                isDisabled: !!(
+                isDisabled: false && !!(
                   this.viewModel.travelForm &&
                   n.toLowerCase() == "TravelNumber".toLowerCase()
                 )
