@@ -1239,24 +1239,24 @@ export class FlightService {
     req.Method = "TmcApiBookUrl-Flight-Initialize";
     bookDto = {
       ...bookDto,
-       Passengers: bookDto.Passengers.map(p => {
-         if(p.Policy){
-           p.Policy={
-             ...p.Policy,
-             FlightDescription:null,
-             TrainDescription:null,
-             TrainSeatType:null,
-             TrainSeatTypeName:null,
-             TrainUpperSeatType:null,
-             TrainUpperSeatTypeArray:null,
-             TrainUpperSeatTypeName:null,
-             HotelDescription:null,
-             Setting:null,
-           }
-         }
-         if(p.FlightCabin){
-           p.FlightCabin={...p.FlightCabin,RefundChange:null,Variables:null}
-         }
+      Passengers: bookDto.Passengers.map(p => {
+        if (p.Policy) {
+          p.Policy = {
+            ...p.Policy,
+            FlightDescription: null,
+            TrainDescription: null,
+            TrainSeatType: null,
+            TrainSeatTypeName: null,
+            TrainUpperSeatType: null,
+            TrainUpperSeatTypeArray: null,
+            TrainUpperSeatTypeName: null,
+            HotelDescription: null,
+            Setting: null,
+          }
+        }
+        if (p.FlightCabin) {
+          p.FlightCabin = { ...p.FlightCabin, RefundChange: null, Variables: null }
+        }
         if (p.FlightSegment && p.FlightSegment.Cabins) {
           p.FlightSegment = {
             ...p.FlightSegment,
@@ -1276,9 +1276,20 @@ export class FlightService {
     return this.apiService
       .getPromiseData<InitialBookDtoModel>(req)
       .then(res => {
+        const bookInfos = this.getPassengerBookInfos();
         res.IllegalReasons = res.IllegalReasons || [];
         res.Insurances = res.Insurances || {};
         res.ServiceFees = res.ServiceFees || ({} as any);
+        const fees = {};
+        Object.keys(res.ServiceFees).forEach(k => {
+          let count = 1;
+          const one = bookInfos.find(it => it.id == k);
+          if (one && one.passenger) {
+            count = bookInfos.filter(it => it.passenger && it.passenger.AccountId == one.passenger.AccountId).length;
+          }
+          fees[k] = +res.ServiceFees[k] / count;
+        });
+        res.ServiceFees = fees;
         res.Staffs = res.Staffs || [];
         res.Staffs = res.Staffs.map(it => {
           return {

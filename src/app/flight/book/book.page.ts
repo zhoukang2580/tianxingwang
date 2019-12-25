@@ -544,7 +544,7 @@ export class BookPage implements OnInit, AfterViewInit {
     if (group) {
       const accountId = item.modal.passenger.AccountId || this.tmc && this.tmc.Account && this.tmc.Account.Id;
       if (group[accountId]) {
-        return group[accountId].map(it => it.modal.credential.CheckName).join("、");
+        return group[accountId].map(it => `${it.modal.credential.CheckName}(${it.modal.credential.Number})`).join("、");
       }
     }
   }
