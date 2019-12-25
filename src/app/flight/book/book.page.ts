@@ -545,11 +545,11 @@ export class BookPage implements OnInit, AfterViewInit {
     result = [];
     Object.keys(group).forEach(key => {
       if (group[key].length) {
-        const first = group[key][0];
+        const last = group[key][group[key].length - 1];
         result = result.concat(group[key].map(it => {
-          it.appovalStaff = first.appovalStaff;
-          it.notifyLanguage = first.notifyLanguage;
-          it.isSkipApprove = first.isSkipApprove;
+          it.appovalStaff = last.appovalStaff;
+          it.notifyLanguage = last.notifyLanguage;
+          it.isSkipApprove = last.isSkipApprove;
           return it;
         }));
       }
@@ -1217,13 +1217,14 @@ export class BookPage implements OnInit, AfterViewInit {
       this.vmCombindInfos = [];
       Object.keys(group).forEach(key => {
         if (group[key].length) {
-          group[key][0].isShowGroupedInfo = true;
+          const idx = group[key].length - 1;
+          group[key][idx].isShowGroupedInfo = true;
           if (this.initialBookDtoModel && this.initialBookDtoModel.ServiceFees) {
             const showTotalFees = group[key]
               .reduce(
                 (acc, it) => (acc = AppHelper.add(acc, this.getServiceFee(it)))
                 , 0);
-            group[key][0].serviceFee = showTotalFees;
+            group[key][idx].serviceFee = showTotalFees;
           }
         }
         this.vmCombindInfos = this.vmCombindInfos.concat(group[key]);

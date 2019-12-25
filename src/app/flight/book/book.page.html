@@ -20,32 +20,6 @@
           [成人]
           {{combindInfo?.modal?.credential?.Number}}
         </ion-item-divider>
-        <ion-item-group *ngIf='combindInfo.isShowGroupedInfo'>
-          <ion-item class="ion-no-margin">
-            <ion-label>通知语言:</ion-label>
-            <ion-select value='cn' okText="确定" cancelText="取消" [(ngModel)]='combindInfo.notifyLanguage'>
-              <ion-select-option value=''>不发</ion-select-option>
-              <ion-select-option value='cn'>中文</ion-select-option>
-              <ion-select-option value='en'>英文</ion-select-option>
-            </ion-select>
-          </ion-item>
-          <ion-item class="ion-no-margin" *ngIf='isCanSkipApproval$|async'>
-            <ion-label style='margin-right: 0.5em'>跳过审批:</ion-label>
-            <ion-checkbox margin-end color="secondary" [(ngModel)]='combindInfo.isSkipApprove'></ion-checkbox>
-          </ion-item>
-          <ion-item class="ion-no-margin" *ngIf='tmc?.IsShowServiceFee || identity?.Numbers?.AgentId'>
-            <ion-label>服务费:</ion-label>
-            <ion-label slot='end' text-end padding-end>{{combindInfo.serviceFee}}</ion-label>
-          </ion-item>
-          <ion-item class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)'
-            (click)='openApproverModal(combindInfo)'>
-            <ion-label>
-              审批人:<ion-text *ngIf='combindInfo?.appovalStaff'>
-                {{combindInfo?.appovalStaff?.Name}}|{{combindInfo?.appovalStaff?.Email||combindInfo?.appovalStaff?.Account?.Email}}|{{combindInfo?.appovalStaff?.Number||combindInfo?.appovalStaff?.Mobile}}
-              </ion-text>
-            </ion-label>
-          </ion-item>
-        </ion-item-group>
         <ion-item-group *ngIf='combindInfo?.modal?.bookInfo as s'>
           <ion-item-divider>预订航班信息:</ion-item-divider>
           <div style='width: 100%' class='detail'>
@@ -258,9 +232,42 @@
             </div>
           </ion-item>
         </ion-item-group>
-        <app-book-tmc-outnumber [isShowGroupedInfo]="combindInfo.isShowGroupedInfo"
-          [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos'
-          (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'></app-book-tmc-outnumber>
+        <ng-container *ngIf='combindInfo.isShowGroupedInfo'>
+          <ion-item-divider color='primary' sticky>
+            <ion-label text-wrap *ngFor='let it of vmCombindInfos;let last=last;'>
+              {{it?.modal?.credential?.CheckName}} <span *ngIf='!last'>、</span>
+            </ion-label>
+            【{{tmc?.Name}}】
+          </ion-item-divider>
+          <ion-item-group>
+            <ion-item class="ion-no-margin">
+              <ion-label>通知语言:</ion-label>
+              <ion-select value='cn' okText="确定" cancelText="取消" [(ngModel)]='combindInfo.notifyLanguage'>
+                <ion-select-option value=''>不发</ion-select-option>
+                <ion-select-option value='cn'>中文</ion-select-option>
+                <ion-select-option value='en'>英文</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-item class="ion-no-margin" *ngIf='isCanSkipApproval$|async'>
+              <ion-label style='margin-right: 0.5em'>跳过审批:</ion-label>
+              <ion-checkbox margin-end color="secondary" [(ngModel)]='combindInfo.isSkipApprove'></ion-checkbox>
+            </ion-item>
+            <ion-item class="ion-no-margin" *ngIf='tmc?.IsShowServiceFee || identity?.Numbers?.AgentId'>
+              <ion-label>服务费:</ion-label>
+              <ion-label slot='end' text-end padding-end>{{combindInfo.serviceFee}}</ion-label>
+            </ion-item>
+            <ion-item class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)'
+              (click)='openApproverModal(combindInfo)'>
+              <ion-label>
+                审批人:<ion-text *ngIf='combindInfo?.appovalStaff'>
+                  {{combindInfo?.appovalStaff?.Name}}|{{combindInfo?.appovalStaff?.Email||combindInfo?.appovalStaff?.Account?.Email}}|{{combindInfo?.appovalStaff?.Number||combindInfo?.appovalStaff?.Mobile}}
+                </ion-text>
+              </ion-label>
+            </ion-item>
+          </ion-item-group>
+          <app-book-tmc-outnumber [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos'
+            (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'></app-book-tmc-outnumber>
+        </ng-container>
       </ion-list>
       <ion-item-group>
         <ion-item-divider>
