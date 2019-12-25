@@ -767,7 +767,7 @@ export class HotelService {
     req.IsShowLoading = true;
     req.Timeout = 60;
     this.apiService.showLoadingView();
-    return this.apiService.getPromiseData<{ TradeNo: string; HasTasks: boolean; }>(req);
+    return this.apiService.getPromiseData<IBookOrderResult>(req);
   }
 }
 export interface IHotelInfo {
