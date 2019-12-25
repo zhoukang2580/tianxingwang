@@ -270,6 +270,16 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     try {
       this.viewModel.combindInfos = [];
       const bookInfos = this.trainService.getBookInfos();
+      const exchangeInfo = bookInfos.find(it => !!it.exchangeInfo);
+      const exchange = exchangeInfo && exchangeInfo.exchangeInfo;
+      const ticket = exchange && exchange.ticket;
+      let notityLang = "cn";
+      if (ticket && ticket.Passenger) {
+        ticket.Passenger.VariablesJsonObj = ticket.Passenger.VariablesJsonObj || JSON.parse(ticket.Passenger.Variables);
+        if (ticket.Passenger.VariablesJsonObj['MessageLang']) {
+          notityLang = ticket.Passenger.VariablesJsonObj['MessageLang']
+        }
+      }
       const accountIdTmcOutNumberInfosMap: { [accountId: string]: ITmcOutNumberInfo[] } = {} as any;
       for (let i = 0; i < bookInfos.length; i++) {
         const bookInfo = bookInfos[i];
@@ -344,7 +354,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.isOtherIllegalReason = false;
         combineInfo.isShowFriendlyReminder = false;
         combineInfo.isOtherOrganization = false;
-        combineInfo.notifyLanguage = "cn";
+        combineInfo.notifyLanguage = notityLang;
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = this.isShowInsurances(
           bookInfo.bookInfo &&
@@ -353,6 +363,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
         )
           ? insurances
           : [];
+
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
@@ -362,6 +373,11 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
               };
             })
             : [];
+        if (this.searchTrainModel && this.searchTrainModel.isExchange) {
+          if (!combineInfo.credentialStaffMobiles.length && bookInfo.passenger && bookInfo.passenger.Mobile) {
+            combineInfo.credentialStaffMobiles = [{ checked: true, mobile: bookInfo.passenger.Mobile }];
+          }
+        }
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
@@ -371,6 +387,11 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
               };
             })
             : [];
+        if (this.searchTrainModel && this.searchTrainModel.isExchange) {
+          if (!combineInfo.credentialStaffEmails.length && bookInfo.passenger && bookInfo.passenger.Mobile) {
+            combineInfo.credentialStaffEmails = [{ checked: true, email: bookInfo.passenger.Email }];
+          }
+        }
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
           Code: cstaff && cstaff.Organization && cstaff.Organization.Code,
