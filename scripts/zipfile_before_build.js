@@ -43,10 +43,10 @@ module.exports = async function (ctx) {
     path.join(ctx.opts.projectRoot, "config.xml")
   );
   const packageName = config.packageName();
-  console.log("version ",config.version());
-  console.log("packageName  ",config.version());
-  console.log("ios_CFBundleIdentifier ",config.ios_CFBundleIdentifier());
-  console.log("android_packageName ",config.android_packageName());
+  console.log("version ", config.version());
+  console.log("packageName  ", config.version());
+  console.log("ios_CFBundleIdentifier ", config.ios_CFBundleIdentifier());
+  console.log("android_packageName ", config.android_packageName());
 
 
   const zipFileName = packageName + "." + (ctx.opts.platforms.includes("ios") ? "ios" : "android") + ".zip";
@@ -80,6 +80,19 @@ module.exports = async function (ctx) {
   );
   var compressingComplete = false;
   var s = Date.now();
+  const delFiles = fread(
+    ctx.opts.projectRoot,
+    p => p.includes(packageName)
+  );
+  if (delFiles && delFiles.length) {
+    for (let i = 0; i < delFiles.length; i++) {
+      const delFile = path.join(ctx.opts.projectRoot, delFiles[i]);
+      if (fs.existsSync(delFile)) {
+        fs.unlinkSync(delFile);
+        console.log(`成功删除文件 ${delFile}`);
+      }
+    }
+  }
   await compressing.zip
     .compressDir(wwwPath, path.join(ctx.opts.projectRoot, zipFileName))
     .then(() => {
@@ -88,12 +101,8 @@ module.exports = async function (ctx) {
         fs.unlinkSync(destZipFilePath);
         console.log(`成功删除文件${destZipFilePath}`);
       }
-      const delZipFile = packageName + "." + (ctx.opts.platforms.includes("ios") ? "android" : "ios") + ".zip";
-      const delFile = path.join(ctx.opts.projectRoot, delZipFile);
-      if (fs.existsSync(delFile)) {
-        fs.unlinkSync(delFile);
-        console.log(`成功删除文件 ${delFile}`);
-      }
+      // const delZipFile = packageName + "." + (ctx.opts.platforms.includes("ios") ? "android" : "ios") + ".zip";
+      
       // s = Date.now();
       // fs.copyFileSync(
       //   path.join(ctx.opts.projectRoot, "DongmeiIonic.zip"),
