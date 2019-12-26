@@ -282,6 +282,9 @@ export class FileHelperService {
         const isHashMatch = await this.checkHcpZipFileMd5(hcpMd5, zipFile.nativePath);
         if (!isHashMatch) {
           reject(`更新失败，文件已损坏`);
+          this.removeFile(zp.nativeURL, this.updateZipFileName).catch(_ => {
+            console.error(_);
+          });
           return false;
         }
         const path = `${this.dataDirectory}${this.updateDirectoryName}`;
