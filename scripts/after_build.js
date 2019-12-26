@@ -33,6 +33,7 @@ module.exports = async function (ctx) {
             path.join(ctx.opts.projectRoot, "config.xml")
         );
         const packageName = config.packageName();
+        var zipFilePath=path.join(ctx.opts.projectRoot,`${packageName}.${ctx.opts.platforms.includes('android')?"android":"ios"}.zip`);
         if (ctx.opts.options && ctx.opts.options.release) {
             const releaseApkDir = path.join(ctx.opts.projectRoot, "platforms", "android", "app", "build", "outputs", "apk", "release");
             var releaseHashedApkName = `${packageName}.${await hashFile(path.join(releaseApkDir, 'app-release.apk'))}.apk`;
@@ -40,10 +41,19 @@ module.exports = async function (ctx) {
         } else {
             const debugApkDir = path.join(ctx.opts.projectRoot, "platforms", "android", "app", "build", "outputs", "apk", "debug");
             var debugHashedApkName = `${packageName}.${await hashFile(path.join(debugApkDir, 'app-debug.apk'))}.apk`;
-
+            
             debugBuild(debugHashedApkName,debugApkDir);
         }
         function releaseBuild(releaseHashedApkName,releaseApkDir) {
+            hashFile(zipFilePath).then(hash=>{
+                const newPath = zipFilePath.replace(".zip",`${hash}.zip`);
+                fs.renameSync(zipFilePath,`${newPath}`);
+            }).catch(e=>{
+                if(fs.existsSync(zipFilePath)){
+                    fs.unlinkSync(zipFilePath);
+                }
+                console.error(e);
+            })
             const releaseFiles = readDirRecursive(releaseApkDir, f => f.includes(".apk") && f.includes(packageName));
             for (let i = 0; i < releaseFiles.length; i++) {
                 if (fs.existsSync(path.join(releaseApkDir, releaseFiles[i]))) {
