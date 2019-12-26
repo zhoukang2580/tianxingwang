@@ -607,7 +607,10 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
         return arr;
       }, 0);
       // console.log("totalPrice ", totalPrice);
-      const fees = !exchange ? this.getTotalServiceFees() : +(this.tmc && this.tmc.TrainExchangeOnlineFee);
+      let fees = this.getTotalServiceFees();
+      if (fees && exchange) {
+        fees = +(this.tmc && this.tmc.TrainExchangeOnlineFee) || 0;
+      }
       totalPrice = AppHelper.add(fees, totalPrice);
       const info = this.trainService.getBookInfos().find(it => !!it.exchangeInfo);
       if (info && info.exchangeInfo) {
