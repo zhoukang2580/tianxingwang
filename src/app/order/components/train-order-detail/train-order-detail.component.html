@@ -1,5 +1,5 @@
 <ng-container *ngFor='let orderTrainTicket of getCurrentPassengerTicket()'>
-  <ng-container *ngIf='orderTrainTicket.Status!=OrderTrainTicketStatusType.ChangeTicket'>
+  <ng-container *ngIf='true||orderTrainTicket.Status!=OrderTrainTicketStatusType.ChangeTicket'>
     <ion-row>
       <ion-col>
         {{orderTrainTicket.Id=="0"?"":"火车票事务号"}}
@@ -39,7 +39,7 @@
         </ion-col>
       </ion-row>
       <ion-label text-wrap *ngIf='orderTrainTicket.Detail'>
-        <span >信息:{{orderTrainTicket.Detail}}</span>
+        <span>信息:{{orderTrainTicket.Detail}}</span>
       </ion-label>
     </ng-container>
   </ng-container>
