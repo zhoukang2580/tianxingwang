@@ -46,7 +46,7 @@ module.exports = async function (ctx) {
         }
         function releaseBuild(releaseHashedApkName,releaseApkDir) {
             hashFile(zipFilePath).then(hash=>{
-                const newPath = zipFilePath.replace(".zip",`${hash}.zip`);
+                const newPath = zipFilePath.replace(".zip",`.${hash}.zip`);
                 fs.renameSync(zipFilePath,`${newPath}`);
             }).catch(e=>{
                 if(fs.existsSync(zipFilePath)){
