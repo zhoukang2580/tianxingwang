@@ -33,6 +33,7 @@ interface IUpdateList {
     Remove?: boolean;// 是否清除基础数据,
     Md5?: string;// apk Md5,
     Hotfix?: {
+      Md5?: string;// 热更 Md5,
       DownloadUrl?: string;
       Ignore?: boolean;// 是否可以忽略
     }
@@ -177,7 +178,7 @@ export class FileHelperService {
     const req = new RequestEntity();
     req.Method = "ServiceVersionUrl-Home-Index";
     // req.Url = 'http://test.version.testskytrip.com/home/index';
-    const pkgName = `com.skytrip.dmonline`||await this.getPackageName();
+    const pkgName = `com.skytrip.dmonline` || await this.getPackageName();
     req.Data = {
       "Product": `${pkgName}.${this.plt.is("ios") ? "ios"
         : "android"}`.toLowerCase()
@@ -226,6 +227,13 @@ export class FileHelperService {
       ignore: up.Version[0].Hotfix.Ignore
     };
   }
+  private async checkHcpZipFileMd5(serverHcpMd5: string, downloadedZipFilePath: string) {
+    if (!serverHcpMd5 || !downloadedZipFilePath) {
+      return Promise.resolve(false);
+    }
+    const hash = await this.hcpPlugin.getHash(downloadedZipFilePath).catch(_ => "");
+    return hash == serverHcpMd5;
+  }
   hcpUpdate(onprogress: (hcp: IHcpUpdateModel) => void): Promise<string> {
     // if (!AppHelper.isApp()) {
     //   return Promise.resolve("");
@@ -253,6 +261,7 @@ export class FileHelperService {
           return false;
         }
         const hcpRes = updateList.Version[0].Hotfix && updateList.Version[0].Hotfix.DownloadUrl;
+        const hcpMd5 = updateList.Version[0].Hotfix && updateList.Version[0].Hotfix.Md5;
         if (!hcpRes) {
           reject("没有热更版本");
         }
@@ -269,6 +278,10 @@ export class FileHelperService {
         if (!zipFileExists) {
           reject(`zipFile是否存在 ${zipFileExists ? "存在" : "不存在"}`)
           return false;
+        }
+        const isHashMatch = await this.checkHcpZipFileMd5(hcpMd5, zipFile.nativePath);
+        if (!isHashMatch) {
+          reject(`更新失败，文件已损坏`);
         }
         const path = `${this.dataDirectory}${this.updateDirectoryName}`;
         const serverVersionDirectory = `${this.www}_${this.serverVersion}`.replace(/\./g, "_");
