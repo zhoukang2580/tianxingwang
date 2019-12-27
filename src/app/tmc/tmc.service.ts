@@ -600,7 +600,7 @@ export class TmcService {
     req.Method = "TmcApiHomeUrl-Agent-Agent";
     this.agent = await this.apiService.getPromiseData<{ Agent: AgentEntity }>(req).then(r => {
       if (r && r.Agent) {
-        return { ...r.Agent, LogoFileName: r.Agent.LogoUrl, LogoFullFileName: r.Agent.LogoUrl }
+        return { ...r.Agent, LogoFileName: r.Agent.LogoUrl || `assets/images/Logodm.png`, LogoFullFileName: r.Agent.LogoUrl || `assets/images/Logodm.png` }
       }
       return r;
     }).catch(_ => null);
@@ -664,7 +664,7 @@ export interface TravelUrlInfo {
   TravelNumber: string; // TR20190703763
   Trips: string[]; // 火车行程: 07-26 至 07-26 苏州 至 南京"
 }
-export interface IBookOrderResult { TradeNo: string; HasTasks: boolean;Message:string; }
+export interface IBookOrderResult { TradeNo: string; HasTasks: boolean; Message: string; }
 export class TravelFormEntity {
   Tmc: TmcEntity;
   /// <summary>
@@ -1172,8 +1172,8 @@ export interface PassengerBookInfo<T> {
   // isAllowBookPolicy?: boolean;// 所有可预订
   exchangeInfo?: {
     order: OrderEntity;
-    ticket: OrderTrainTicketEntity|OrderFlightTicketEntity;
-    insurnanceAmount?:number;
+    ticket: OrderTrainTicketEntity | OrderFlightTicketEntity;
+    insurnanceAmount?: number;
   }
 }
 export class InitialBookDtoModel {

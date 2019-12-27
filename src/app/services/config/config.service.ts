@@ -81,6 +81,7 @@ export class ConfigService {
           this.config.DefaultImageUrl = AppHelper.getDefaultAvatar();
           this.config.FaviconImageUrl = AppHelper.getDefaultAvatar();
           this.config.PrerenderImageUrl = AppHelper.getDefaultLoadingImage();
+          this.config.LogoImageUrl=`assets/images/Logodm.png`;
         })
         .finally(() => {
           this.fetchConfig = null;
