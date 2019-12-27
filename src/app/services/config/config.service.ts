@@ -70,7 +70,7 @@ export class ConfigService {
           this.config.DefaultImageUrl = res.DefaultImageUrl;
           this.config.FaviconImageUrl = res.FaviconImageUrl;
           this.config.PrerenderImageUrl = res.PrerenderImageUrl;
-          this.config.LogoImageUrl = res.LogoImageUrl;
+          this.config.LogoImageUrl = res.LogoImageUrl||`assets/images/Logodm.png`;
           this.config.Icp = res.Icp;
           this.config.Style = res.Style;
         }
