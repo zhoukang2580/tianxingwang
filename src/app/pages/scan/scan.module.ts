@@ -1,3 +1,4 @@
+import { AppDirectivesModule } from './../../directives/directives.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -19,8 +20,9 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
+    AppDirectivesModule,
     RouterModule.forChild(routes)
   ],
   declarations: [ScanPage]
 })
-export class ScanPageModule {}
+export class ScanPageModule { }

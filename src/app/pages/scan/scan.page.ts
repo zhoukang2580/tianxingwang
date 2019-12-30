@@ -1,3 +1,4 @@
+import { ApiService } from './../../services/api/api.service';
 import { NavController } from '@ionic/angular';
 import { IdentityEntity } from "./../../services/identity/identity.entity";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -10,6 +11,7 @@ import { Subscription } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
 import { HttpClient } from "@angular/common/http";
 import { map, switchMap } from "rxjs/operators";
+import { RequestEntity } from 'src/app/services/api/Request.entity';
 
 @Component({
   selector: "app-scan",
@@ -28,6 +30,13 @@ export class ScanPage implements OnInit, OnDestroy {
   private _iframeSrc: any;
   subscription = Subscription.EMPTY;
   identitySubscription = Subscription.EMPTY;
+  defaultImage=AppHelper.getDefaultAvatar();
+  Model: {
+    Name: string;
+    RealName: string;
+    Mobile: string;
+    HeadUrl: string;
+  }
   get iframeSrc() {
     return this.sanitizer.bypassSecurityTrustResourceUrl(this._iframeSrc);
   }
@@ -37,7 +46,8 @@ export class ScanPage implements OnInit, OnDestroy {
     private identityService: IdentityService,
     private http: HttpClient,
     activatedRoute: ActivatedRoute,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private apiService: ApiService
   ) {
     this.subscription = activatedRoute.paramMap.subscribe(p => {
       this.scan(p.get("scanResult"));
@@ -88,10 +98,21 @@ export class ScanPage implements OnInit, OnDestroy {
     this.result = r;
 
     if (this.checkLogin()) {
+      this.load();
       this.showConfirmPage();
     } else {
       this.handle();
     }
+  }
+  private async load() {
+    const req = new RequestEntity();
+    req.Method = "ApiMemberUrl-Home-Get";
+    this.Model = await this.apiService.getPromiseData<{
+      Name: string;
+      RealName: string;
+      Mobile: string;
+      HeadUrl: string;
+    }>(req).catch(_ => null);
   }
   checkUrl() {
     return (
@@ -117,11 +138,12 @@ export class ScanPage implements OnInit, OnDestroy {
       if (this.identity) {
         const subscribtion = this.http
           .get(
-            this.result + "&ticket=" + this.identity.Ticket + "&datatype=json"
+            this.result + "&ticket=" + this.identity.Ticket + "&datatype=json&x-requested-with=XMLHttpRequest"
           )
           .subscribe(
             (s: any) => {
               this.identity.WebTicket = s.TicketId;
+              this.identityService.setIdentity(this.identity);
               this.close();
             },
             e => {
