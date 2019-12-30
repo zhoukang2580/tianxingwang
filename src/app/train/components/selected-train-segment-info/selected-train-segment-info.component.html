@@ -34,7 +34,7 @@
             </ion-button>
           </div>
           <ion-label class='train-item'>
-            <app-train-list-item [seat]='bookInfo.bookInfo?.selectedSeat'
+            <app-train-list-item [seat]='bookInfo.bookInfo?.selectedSeat' [isShowSelectSeatLocation]="false"
               [selectSeatLocation]='bookInfo?.bookInfo?.trainEntity?.BookSeatLocation'
               (seatPicker)='onSeatPicked($event,bookInfo)' [bookInfo]='bookInfo?.bookInfo'
               [train]='bookInfo?.bookInfo?.trainEntity'>

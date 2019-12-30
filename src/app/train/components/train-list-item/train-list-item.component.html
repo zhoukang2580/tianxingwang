@@ -57,7 +57,7 @@
   <div class='info'>
     <div class='time'>
       <strong>{{train?.StartShortTime}}</strong>
-      <div class='travel-time-name'>全程{{train?.TravelTimeName?.replace("h","时").replace("m",'分')}}</div>
+      <div class='travel-time-name'>约{{train?.TravelTimeName?.replace("h","时").replace("m",'分')}}</div>
       <strong [class.has-add-day-tip]='train?.AddOneDayTip'
         [attr.adddaytip]='train?.AddOneDayTip'>{{train?.ArrivalShortTime}}</strong>
     </div>
@@ -77,7 +77,7 @@
     </div>
     <div class='price' style='margin-left: auto'>￥{{seat.SalesPrice}}</div>
   </div>
-  <div *ngIf='!bookInfo?.isExchange'>
+  <div *ngIf='!bookInfo?.isExchange&&isShowSelectSeatLocation'>
     <app-seat-picker [selectdSeat]='seat' [selectSeatLocation]='selectSeatLocation' (seatPicker)='onSeatPicker($event)'>
     </app-seat-picker>
   </div>

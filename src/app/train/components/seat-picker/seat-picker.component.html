@@ -4,12 +4,16 @@
       二等座
     </div>
     <div class="jin" #jin [attr.trainseattype]='selectdSeat.SeatType'>
-      <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="A" title="靠窗">A</div>
-      <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="B" title="中间">B</div>
-      <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="C" title="靠过道">C</div>
+      <span>窗</span>
+      <div class="selectSeatLocation" (click)='onSelect($event)' name="divSeatLocation" val="A" title="靠窗">A</div>
+      <div class="selectSeatLocation" (click)='onSelect($event)' name="divSeatLocation" val="B" title="中间">B</div>
+      <div class="selectSeatLocation" (click)='onSelect($event)' name="divSeatLocation" val="C" title="靠过道">C</div>
       <div class="selectSeatLocationBlank">&nbsp;</div>
-      <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="D" title="靠过道">D</div>
-      <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="F" title="靠窗">F</div>
+      <span>过道</span>
+      <div class="selectSeatLocationBlank">&nbsp;</div>
+      <div class="selectSeatLocation" (click)='onSelect($event)' name="divSeatLocation" val="D" title="靠过道">D</div>
+      <div class="selectSeatLocation" (click)='onSelect($event)' name="divSeatLocation" val="F" title="靠窗">F</div>
+      <span style="margin-left: .5em;">窗</span>
     </div>
   </ng-container>
   <ng-container *ngSwitchCase='TrainSeatType.FirstClassSeat'>
@@ -17,11 +21,15 @@
       一等座
     </div>
     <div class="jin" #jin [attr.trainseattype]='selectdSeat.SeatType'>
-      <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="A" title="靠窗">A</div>
-      <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="C" title="靠过道">C</div>
+      <span>窗</span>
+      <div class="selectSeatLocation" (click)='onSelect($event)' name="divSeatLocation" val="A" title="靠窗">A</div>
+      <div class="selectSeatLocation" (click)='onSelect($event)' name="divSeatLocation" val="C" title="靠过道">C</div>
       <div class="selectSeatLocationBlank">&nbsp;</div>
-      <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="D" title="靠过道">D</div>
-      <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="F" title="靠窗">F</div>
+      <span>过道</span>
+      <div class="selectSeatLocationBlank">&nbsp;</div>
+      <div class="selectSeatLocation" (click)='onSelect($event)' name="divSeatLocation" val="D" title="靠过道">D</div>
+      <div class="selectSeatLocation" (click)='onSelect($event)' name="divSeatLocation" val="F" title="靠窗">F</div>
+      <span style="margin-left: .5em;">窗</span>
     </div>
   </ng-container>
   <ng-container *ngSwitchCase='TrainSeatType.BusinessSeat'>
@@ -29,10 +37,14 @@
       商务座
     </div>
     <div class="jin" #jin [attr.trainseattype]='selectdSeat.SeatType'>
-      <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="A" title="靠窗">A</div>
-      <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="C" title="靠过道">C</div>
+      <span>窗</span>
+      <div class="selectSeatLocation" (click)='onSelect($event)' name="divSeatLocation" val="A" title="靠窗">A</div>
+      <div class="selectSeatLocation" (click)='onSelect($event)' name="divSeatLocation" val="C" title="靠过道">C</div>
       <div class="selectSeatLocationBlank">&nbsp;</div>
-      <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="F" title="靠窗">F</div>
+      <span>过道</span>
+      <div class="selectSeatLocationBlank">&nbsp;</div>
+      <div class="selectSeatLocation" (click)='onSelect($event)' name="divSeatLocation" val="F" title="靠窗">F</div>
+      <span style="margin-left: .5em;">窗</span>
     </div>
   </ng-container>
   <ng-container *ngSwitchCase='TrainSeatType.SpecialSeat'>
@@ -40,10 +52,14 @@
       特等座
     </div>
     <div class="jin" #jin [attr.trainseattype]='selectdSeat.SeatType'>
-      <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="A" title="靠窗">A</div>
-      <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="C" title="靠过道">C</div>
+      <span>窗</span>
+      <div class="selectSeatLocation" (click)='onSelect($event)' name="divSeatLocation" val="A" title="靠窗">A</div>
+      <div class="selectSeatLocation" (click)='onSelect($event)' name="divSeatLocation" val="C" title="靠过道">C</div>
       <div class="selectSeatLocationBlank">&nbsp;</div>
-      <div class="selectSeatLocation"  (click)='onSelect($event)' name="divSeatLocation" val="F" title="靠窗">F</div>
+      <span>过道</span>
+      <div class="selectSeatLocationBlank">&nbsp;</div>
+      <div class="selectSeatLocation" (click)='onSelect($event)' name="divSeatLocation" val="F" title="靠窗">F</div>
+      <span style="margin-left: .5em;">窗</span>
     </div>
   </ng-container>
   <ng-container *ngSwitchDefault>

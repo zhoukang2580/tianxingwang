@@ -11,6 +11,7 @@ import { TrainSeatEntity } from "../../models/TrainSeatEntity";
   styleUrls: ["./train-list-item.component.scss"]
 })
 export class TrainListItemComponent implements OnInit {
+  @Input() isShowSelectSeatLocation: boolean = true;
   @Input() selectSeatLocation: string;
   @Input() showBookBtn = true;
   @Input() seat: TrainSeatEntity;
@@ -42,7 +43,7 @@ export class TrainListItemComponent implements OnInit {
     train.isShowSeats = !train.isShowSeats;
   }
   onBookTicket(seat: TrainSeatEntity) {
-    if(seat&&+seat.Count<=0){
+    if (seat && +seat.Count <= 0) {
       AppHelper.alert("余票不足!");
       return;
     }
