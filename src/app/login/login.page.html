@@ -6,7 +6,7 @@
 
 <ion-content padding>
   <ion-toolbar text-center>
-    <img  [lazyLoad]="config?.LogoImageUrl" alt="公司logo" class='logo' [defaultImage]='config?.PrerenderImageUrl' />
+    <img [lazyLoad]="config?.LogoImageUrl" alt="公司logo" class='logo' [defaultImage]='config?.PrerenderImageUrl' />
   </ion-toolbar>
   <form [formGroup]='form' padding>
     <ion-segment (ionChange)="segmentChanged($event)" value="user" color='secondary'>
@@ -58,8 +58,10 @@
     <ion-item lines='none' *ngIf="message" class='err-msg'>
       <ion-label color="danger">{{ message }}</ion-label>
     </ion-item>
-    <ion-button color='secondary' class='login-btn' expand='block' strong='true' (click)="onLoginButton('login')"
-      [disabled]="form.invalid || (isLogining)|| !isLoginOk">登录</ion-button>
+    <ion-button color='secondary' class='login-btn' expand='block' strong='true' (click)="onLoginButton('login')">
+      <span *ngIf="!isLogining">登录</span>
+      <span *ngIf="isLogining">正在登录...</span>
+    </ion-button>
     <section class='register-forgetpassword'>
       <ion-button fill='clear' color='secondary' strong='true' (click)="forgetPassword()">忘记密码</ion-button>
       <!-- <span class='line'></span>
@@ -74,82 +76,6 @@
       </div>
     </ion-item>
   </form>
-  <!-- <form [formGroup]="form" padding>
-    <section [class.hidden]="loginType != 'user'">
-      <ion-row>
-        <ion-col size="4">
-          <ion-label position="floating">用户名</ion-label>
-        </ion-col>
-        <ion-col>
-          <ion-input type="text" formControlName="Name" placeholder="用户名"></ion-input>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size="4">
-          <ion-label position="floating">密码</ion-label>
-        </ion-col>
-        <ion-col>
-          <ion-input type="password" placeholder="密码" formControlName="Password"></ion-input>
-        </ion-col>
-      </ion-row>
-
-    </section>
-    <section [class.hidden]="loginType != 'mobile'">
-      <ion-row>
-        <ion-col size="3">
-          <ion-label position="floating">手机号</ion-label>
-        </ion-col>
-        <ion-col>
-          <ion-input placeholder="手机号" formControlName="Mobile" type="number" min="11"></ion-input>
-        </ion-col>
-        <ion-col size="4" *ngIf="!countDown || countDown <= 0; else countdownEle">
-          <ion-button size="small" fill="outline" color="dark" [disabled]="!isMobileNumberOk"
-            (click)="showImageCode('sendmobilecode')">
-            <span [style.font-size.rem]="0.8">发送验证码</span>
-          </ion-button>
-        </ion-col>
-        <ng-template #countdownEle>
-          <ion-col class="down-count" size="2">
-            <ion-label color="medium">{{ countDown }} s</ion-label>
-          </ion-col>
-        </ng-template>
-      </ion-row>
-
-
-      <ion-row>
-        <ion-col size="4">
-          <ion-label position="floating">短信验证码</ion-label>
-        </ion-col>
-        <ion-col>
-          <ion-input placeholder="请输入收到短信验证码" formControlName="MobileCode"></ion-input>
-        </ion-col>
-      </ion-row>
-    </section>
-    <ion-button (click)="onLoginButton('login')" [disabled]="form.invalid || (false&&(loading$ | async) )|| !isLoginOk"
-      expand="block" color='primary'> 登录</ion-button>
-    <ion-item lines='none' class='btns'>
-      <section slot="start">
-        <ion-note color="dark" (click)="forgetPassword()">忘记密码？</ion-note>
-        <ion-note color="dark" (click)="register()">注册</ion-note>
-      </section>
-      <ion-button size='' color="dark" slot="end" fill='clear'>
-        <span *ngIf="loginType == 'user'" (click)="switchLoginType('mobile')">手机号登录</span>
-        <span *ngIf="loginType != 'user'" (click)="switchLoginType('user')">用户名登录</span>
-      </ion-button>
-    </ion-item>
-    <ion-item lines='none' *ngIf="message" class='err-msg'>
-      <ion-label color="danger">{{ message }}</ion-label>
-    </ion-item>
-    <app-slidvalidate-com *ngIf="isShowImageCode" (slideEvent)='onSlideEvent($event)'></app-slidvalidate-com>
-    <app-or-comp *ngIf="isShowWechatLogin">第三方登陆</app-or-comp>
-    <ion-item *ngIf="isShowWechatLogin" (click)='loginByWechat()' lines='none' text-center>
-      <div class='third-party-logo'>
-        <ion-thumbnail>
-          <img src="assets/images/weixin-logo.png" alt="微信图标">
-        </ion-thumbnail>
-      </div>
-    </ion-item>
-  </form> -->
 </ion-content>
 <app-slidvalidate-com *ngIf="isShowImageCode" (slideEvent)='onSlideEvent($event)'></app-slidvalidate-com>
 <div class='shade' *ngIf='isLogining'></div>

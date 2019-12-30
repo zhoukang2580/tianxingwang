@@ -48,7 +48,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     private modalCtrl: ModalController
   ) {
     this.ionConfig.set("swipeBackEnabled", false);
-    this.isShowWechatLogin = AppHelper.isApp();
+    this.isShowWechatLogin = false && AppHelper.isApp();
     route.queryParamMap.subscribe(_ => {
       this.configService.getConfigAsync().then(c => {
         this.config = c;
@@ -208,7 +208,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           this.message = LanguageHelper.getLoginMobileTip();
           return;
         }
-        if (!this.loginEntity.Data.MobileCode) {
+        if (!this.loginEntity.Data.Code) {
           this.message = LanguageHelper.getMobileCodeTip();
           return;
         }
@@ -335,7 +335,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       );
   }
 
- 
+
   async jump(
     isCheckDevice: boolean // 跳转
   ) {

@@ -19,7 +19,7 @@
         </div>
       </ng-container>
       <ng-template #textTempl>
-        <span *ngIf='item.text else nodata'>{{item.text}}</span>
+        <span *ngIf='item.text else nodata' style="font-size: 0.9rem;">{{item.text}}</span>
       </ng-template>
       <ng-template #nodata>
         <app-or-comp>暂无数据</app-or-comp>
