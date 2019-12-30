@@ -23,12 +23,14 @@ interface Item {
   styleUrls: ["./account-security.page.scss"]
 })
 export class AccountSecurityPage implements OnInit, OnDestroy {
+  wechatList: { Name: string; }[];
   identityEntity: IdentityEntity;
   identityEntitySubscription = Subscription.EMPTY;
   subscription = Subscription.EMPTY;
   deviceSubscription = Subscription.EMPTY;
   accountInfo: Item;
-
+  isShowDingtalk = AppHelper.isDingtalkH5() || AppHelper.isApp();
+  isShowWechat = AppHelper.isWechatH5() || AppHelper.isWechatMini() || AppHelper.isApp();
   constructor(
     private router: Router,
     private identityService: IdentityService,
@@ -43,13 +45,33 @@ export class AccountSecurityPage implements OnInit, OnDestroy {
       });
 
   }
+  private loadWechatList() {
+    const req = new RequestEntity();
+    req.Method = "ApiPasswordUrl-Wechat-List";
+    let deviceSubscription = this.apiService
+      .getResponse<Item[]>(req)
+      .pipe(map(r => r.Data))
+      .subscribe(
+        r => {
+          this.wechatList = r;
+        },
+        () => {
+          setTimeout(() => {
+            if (deviceSubscription) {
+              deviceSubscription.unsubscribe();
+            }
+          }, 1000);
+        }
+      );
+  }
   back() {
     this.navCtrl.pop();
   }
   ngOnInit() {
     this.subscription = this.route.queryParamMap.subscribe(_ => {
       this.deviceSubscription = this.load();
-    })
+      this.loadWechatList();
+    });
   }
   ngOnDestroy() {
     this.identityEntitySubscription.unsubscribe();
