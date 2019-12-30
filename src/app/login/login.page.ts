@@ -202,6 +202,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           );
         break;
       case "mobile":
+        this.loginEntity.Data.Password="";
         this.loginEntity.Data.Mobile = this.form.value.Mobile;
         this.loginEntity.Data.Code = this.form.value.MobileCode;
         if (!this.loginEntity.Data.Mobile) {
