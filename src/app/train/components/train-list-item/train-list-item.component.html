@@ -3,16 +3,19 @@
     <div class='info'>
       <div class='time'>
         <strong>{{train?.StartShortTime}}</strong>
-        <div class='travel-time-name'>全程{{train?.TravelTimeName?.replace("h","时").replace("m",'分')}}</div>
+        <div class='travel-time-name'>约{{train?.TravelTimeName?.replace("h","时").replace("m",'分')}}
+        </div>
         <strong [class.has-add-day-tip]='train?.AddOneDayTip'
           [attr.adddaytip]='train?.AddOneDayTip'>{{train?.ArrivalShortTime}}</strong>
       </div>
       <div class='station'>
-        <div>{{train?.FromStationName}}</div>
+        <div class='from-station-name'>{{train?.FromStationName}}</div>
         <div class='stop-line-stop' [attr.data]='train?.TrainCode'>
-          <div class="line"></div>
+          <div class="line">
+            <img src="assets/svgs/accessByIdCard.svg" class='access-by-IdCard' *ngIf='train?.IsAccessByIdCard' alt="">
+          </div>
         </div>
-        <div>{{train?.ToStationName}}</div>
+        <div class='to-station-name'>{{train?.ToStationName}}</div>
       </div>
     </div>
     <div>
@@ -62,11 +65,13 @@
         [attr.adddaytip]='train?.AddOneDayTip'>{{train?.ArrivalShortTime}}</strong>
     </div>
     <div class='station'>
-      <div>{{train?.FromStationName}}</div>
+      <div class='from-station-name'>{{train?.FromStationName}}</div>
       <div class='stop-line-stop' [attr.data]='train?.TrainCode'>
-        <div class="line"></div>
+        <div class="line">
+          <img src="assets/svgs/accessByIdCard.svg" class='access-by-IdCard' *ngIf='train?.IsAccessByIdCard' alt="">
+        </div>
       </div>
-      <div>{{train?.ToStationName}}</div>
+      <div class='to-station-name'>{{train?.ToStationName}}</div>
     </div>
   </div>
   <div class='seat' *ngIf='seat'>

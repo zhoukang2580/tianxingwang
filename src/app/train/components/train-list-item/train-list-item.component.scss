@@ -32,6 +32,15 @@
     }
   }
 }
+.station .from-station-name {
+  min-width: 4em;
+}
+img.access-by-IdCard {
+  width: 1.5em;
+  position: absolute;
+  left: -0.5em;
+  top: -1.6em;
+}
 // .seat-count {
 //   color: var(--ion-color-danger);
 // }
