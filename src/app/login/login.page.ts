@@ -172,6 +172,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   async login() {
+    this.isLogining = true;
     this.loginEntity.IsShowLoading = true;
     switch (this.loginType) {
       case "user":
@@ -187,6 +188,10 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         }
         this.loginSubscription = this.loginService
           .login("ApiLoginUrl-Home-Login", this.loginEntity)
+          .pipe(finalize(() => {
+            this.isLogining = false;
+          })
+          )
           .subscribe(
             r => {
               if (!r.Ticket) {
@@ -202,7 +207,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           );
         break;
       case "mobile":
-        this.loginEntity.Data.Password="";
+        this.loginEntity.Data.Password = "";
         this.loginEntity.Data.Mobile = this.form.value.Mobile;
         this.loginEntity.Data.Code = this.form.value.MobileCode;
         if (!this.loginEntity.Data.Mobile) {
@@ -215,6 +220,9 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         }
         this.loginSubscription = this.loginService
           .login("ApiLoginUrl-Home-MobileLogin", this.loginEntity)
+          .pipe(finalize(() => {
+            this.isLogining = false;
+          }))
           .subscribe(
             r => {
               if (r.Ticket) {
@@ -233,6 +241,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           .pipe(
             finalize(() => {
               this.loginType = "user";
+              this.isLogining = false;
             })
           )
           .subscribe(r => {
@@ -249,6 +258,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           .pipe(
             finalize(() => {
               this.loginType = "user";
+              this.isLogining = false;
             })
           )
           .subscribe(
@@ -273,6 +283,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
             finalize(() => {
               setTimeout(() => {
                 this.loginType = "user";
+                this.isLogining = false;
               }, 100);
             })
           )
