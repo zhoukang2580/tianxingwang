@@ -18,7 +18,7 @@
         <div class='to-station-name'>{{train?.ToStationName}}</div>
       </div>
     </div>
-    <div>
+    <div class='right'>
       <div class='price'>￥{{getLowestSeatPrice()}}
         <ng-container *ngIf='showOpenCloseIcon()'>
           <ion-icon name="arrow-dropdown" color='secondary' *ngIf='train["isShowSeats"]'></ion-icon>
