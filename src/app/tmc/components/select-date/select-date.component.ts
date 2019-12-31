@@ -88,9 +88,9 @@ export class SelectDateComponent implements OnInit, OnDestroy {
                 d.enabled =
                   goDate.format("YYYY-MM-DD") == d.date ||
                   +moment(d.date) >= +goDate;
-                  if (type == FlightHotelTrainType.Train) {
-                    d.enabled = d.timeStamp <= endDay.timeStamp ? d.enabled : false;
-                  }
+                if (type == FlightHotelTrainType.Train) {
+                  d.enabled = d.timeStamp <= endDay.timeStamp ? d.enabled : false;
+                }
               });
             });
           }
@@ -130,17 +130,17 @@ export class SelectDateComponent implements OnInit, OnDestroy {
         m + 1 > 12 ? 1 : m + 1
       )
     ];
-    if(this.forType!=FlightHotelTrainType.Train){
+    if (this.forType != FlightHotelTrainType.Train) {
       this.yms.push(this.calendarService.generateYearNthMonthCalendar(
         m + 2 > 12 ? y + 1 : y,
-        m + 2 > 12 ? 1 : m + 2
+        m + 2 > 12 ? m + 2 - 12 : m + 2
       ))
     }
     this.checkYms();
   }
   async cancel() {
     console.log("select date component cancel ", this.selectedDays);
-    if(this.selectedDays&&this.selectedDays.length){
+    if (this.selectedDays && this.selectedDays.length) {
       this.calendarService.setSelectedDaysSource(this.selectedDays);
     }
     const m = await this.modalCtrl.getTop();
