@@ -209,6 +209,7 @@ export class TrainListPage implements OnInit, OnDestroy {
     return train && train.TrainCode;
   }
   async onSelectStation(isFrom: boolean) {
+    this.scrollToTop();
     if (this.searchTrainModel) {
       if (isFrom && this.searchTrainModel.isExchange) {
         return;
