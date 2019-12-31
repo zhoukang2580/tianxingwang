@@ -42,11 +42,9 @@
           <div>
             <ion-row>
               <ion-col text-end>
-                <div>
-                  <ion-label text-wrap color='danger'>税:￥{{bookInfo.bookInfo?.flightSegment?.Tax}}</ion-label>
-                </div>
-                <div>
-                  <ion-label color='danger'>￥{{bookInfo.bookInfo?.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
+                <div style="display: flex;align-items: center;">
+                  <ion-label text-wrap color='danger'>税费：￥{{bookInfo.bookInfo?.flightSegment?.Tax}}</ion-label>
+                  <ion-label color='danger' margin-start>机票票价：￥{{bookInfo.bookInfo?.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
                 </div>
               </ion-col>
             </ion-row>

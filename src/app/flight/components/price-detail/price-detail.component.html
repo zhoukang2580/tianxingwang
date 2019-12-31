@@ -21,7 +21,7 @@
     <ion-col size='1'>元</ion-col>
   </ion-row>
   <ion-row>
-    <ion-col>税</ion-col>
+    <ion-col>税费：</ion-col>
     <ion-col>{{item.tax}}</ion-col>
     <ion-col size='1'>元</ion-col>
   </ion-row>
@@ -31,7 +31,7 @@
     <ion-col size='1'>元</ion-col>
   </ion-row>
   <ion-row *ngIf='fees&&fees[item.id]'>
-    <ion-col>服务费</ion-col>
+    <ion-col>服务费：</ion-col>
     <ion-col>{{fees[item.id]}}</ion-col>
     <ion-col size='1'>元</ion-col>
   </ion-row>

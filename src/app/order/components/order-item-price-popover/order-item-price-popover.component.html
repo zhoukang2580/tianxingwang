@@ -5,7 +5,7 @@
     <ion-col>元</ion-col>
   </ion-row>
   <ion-row *ngIf='getAmount(OrderItemHelper.FlightTicketTax) as amount'>
-    <ion-col size='6'>税收</ion-col>
+    <ion-col size='6'>税费</ion-col>
     <ion-col class='price'>{{abs(amount)}}</ion-col>
     <ion-col>元</ion-col>
   </ion-row>
@@ -30,7 +30,7 @@
     <ion-col>元</ion-col>
   </ion-row>
   <ion-row *ngIf='getAmount([OrderItemHelper.FlightTicketExchangeTax]) as amount'>
-    <ion-col size='6'>改签税</ion-col>
+    <ion-col size='6'>改签税费</ion-col>
     <ion-col class='price'>{{abs(amount)}}</ion-col>
     <ion-col>元</ion-col>
   </ion-row>
@@ -63,7 +63,7 @@
     <ion-col>元</ion-col>
   </ion-row>
   <ion-row *ngIf='getAmount([OrderItemHelper.FlightTicketRefundTax]) as amount'>
-    <ion-col size='6'>退票税收</ion-col>
+    <ion-col size='6'>退票税费</ion-col>
     <ion-col class='price'>{{abs(amount)}}</ion-col>
     <ion-col>元</ion-col>
   </ion-row>
@@ -73,7 +73,7 @@
     <ion-col>元</ion-col>
   </ion-row>
   <ion-row *ngIf='getAmount([OrderItemHelper.FlightTicketRefundUsedTax]) as amount'>
-    <ion-col size='6'>退票已用税收</ion-col>
+    <ion-col size='6'>退票已用税费</ion-col>
     <ion-col class='price'>{{abs(amount)}}</ion-col>
     <ion-col>元</ion-col>
   </ion-row>
