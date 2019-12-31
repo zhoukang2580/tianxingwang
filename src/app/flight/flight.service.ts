@@ -413,7 +413,8 @@ export class FlightService {
         tripType: tripType || s.tripType || TripType.departureTrip,
         forType: FlightHotelTrainType.Flight,
         isMulti: isMulti
-      }
+      },
+      animated:false
     });
     await m.present();
     const d = await m.onDidDismiss();
