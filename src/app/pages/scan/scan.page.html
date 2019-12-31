@@ -10,24 +10,20 @@
 </ion-header>
 
 <ion-content>
-  <main *ngIf='isShowConfirm||isShowIframe||isShowText'>
-    <div class='confirm' *ngIf="isShowConfirm&&checkLogin()">
-      <div class='confirm'>
-        <ion-avatar size='large'>
-          <img [lazyLoad]='Model?.HeadUrl' alt="logo" [defaultImage]='defaultImage'>
-        </ion-avatar>
-        <div>{{Model?.RealName}}</div>
-      </div>
-      <ion-button [style.width.vw]='65' color='secondary' expand='block' (click)="onConfirm()">允许登录</ion-button>
-      <ion-button color='danger' fill='clear' [style.width.vw]='40' size='samll' margin-top (click)='onCancel()'>
-        <ion-text color='light'>取消</ion-text>
-      </ion-button>
+  <div class='check-login' *ngIf="true||isShowConfirm&&checkLogin()">
+    <div class='container-flex'>
+      <ion-avatar size='large'>
+        <img [lazyLoad]='Model?.HeadUrl' alt="logo" [defaultImage]='defaultImage'>
+      </ion-avatar>
+      <div>{{Model?.RealName}}</div>
     </div>
-    <div *ngIf='isShowIframe' class='iframe-wrapper'>
-      <iframe [src]="iframeSrc" frameborder="0"></iframe>
-    </div>
-    <ion-item lines='none' padding *ngIf='isShowText'>
-      <ion-textarea color='dark' readonly value="{{result}}"></ion-textarea>
-    </ion-item>
-  </main>
+    <ion-button color='secondary' expand='block' (click)="onConfirm()">允许登录</ion-button>
+    <ion-button color='danger' fill='clear' expand='block' margin-top (click)='onCancel()'> 取消 </ion-button>
+  </div>
+  <div *ngIf='isShowIframe' class='iframe-wrapper'>
+    <iframe [src]="iframeSrc" frameborder="0"></iframe>
+  </div>
+  <ion-item lines='none' padding *ngIf='isShowText'>
+    <ion-textarea color='dark' readonly value="{{result}}"></ion-textarea>
+  </ion-item>
 </ion-content>

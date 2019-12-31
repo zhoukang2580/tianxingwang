@@ -1,37 +1,37 @@
-.confirm {
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
+.container-flex {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+.check-login {
+  ion-avatar {
+    width: 7em;
+    height: 7em;
+  }
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 10vw;
+  right: 10vw;
+}
+.iframe-wrapper {
+  width: 100vw;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  iframe {
     width: 100%;
-  }
-  main{
-   height: 100vh;
-    .close{
-      display: block;
-      position: absolute;
-      left: 0.3em;
-      top: 0.2em;
-      font-size: 2rem;
-    }
-    .iframe-wrapper {
-      width: 100vw;
-      height: 100vh;
-      overflow-x: hidden;;
-      overflow-y: auto;
-      iframe {
-        width: 100%;
-        height: 100%;
-        &::-webkit-scrollbar {
-          display: none;
-        }
-      }
-      &::-webkit-scrollbar {
-        display: none;
-      }
-    }
-    ion-textarea{
-     user-select: initial;   
+    height: 100%;
+    &::-webkit-scrollbar {
+      display: none;
     }
   }
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+ion-textarea {
+  user-select: initial;
+}

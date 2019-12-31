@@ -30,7 +30,7 @@ export class ScanPage implements OnInit, OnDestroy {
   private _iframeSrc: any;
   subscription = Subscription.EMPTY;
   identitySubscription = Subscription.EMPTY;
-  defaultImage=AppHelper.getDefaultAvatar();
+  defaultImage = AppHelper.getDefaultAvatar();
   Model: {
     Name: string;
     RealName: string;
@@ -67,24 +67,24 @@ export class ScanPage implements OnInit, OnDestroy {
         this.identity = r;
       });
   }
-  showIframePage(src: string) {
+  private showIframePage(src: string) {
     this._iframeSrc = src;
     this.isShowIframe = true;
   }
-  hideIframePage() {
+  private hideIframePage() {
     this.isShowIframe = false;
     this._iframeSrc = null;
   }
-  showTextPage() {
+  private showTextPage() {
     this.isShowText = true;
   }
-  hideResultTextPage() {
+  private hideResultTextPage() {
     this.isShowText = false;
   }
-  showConfirmPage() {
+  private showConfirmPage() {
     this.isShowConfirm = true;
   }
-  hideConfirmPage() {
+  private hideConfirmPage() {
     this.isShowConfirm = false;
   }
 
@@ -94,7 +94,7 @@ export class ScanPage implements OnInit, OnDestroy {
   onCancel() {
     this.close();
   }
-  scan(r: any) {
+  private scan(r: any) {
     this.result = r;
 
     if (this.checkLogin()) {
@@ -114,7 +114,7 @@ export class ScanPage implements OnInit, OnDestroy {
       HeadUrl: string;
     }>(req).catch(_ => null);
   }
-  checkUrl() {
+  private checkUrl() {
     return (
       this.result &&
       (this.result.toLowerCase().startsWith("http://") ||
@@ -127,13 +127,13 @@ export class ScanPage implements OnInit, OnDestroy {
       this.result.toLowerCase().includes("/home/setidentity?key=")
     );
   }
-  checkInvitation() {
+  private checkInvitation() {
     return (
       this.checkUrl() &&
       this.result.toLowerCase().includes("/www/index.html?path=hr-invitation")
     );
   }
-  handle() {
+  private handle() {
     if (this.checkLogin()) {
       if (this.identity) {
         const subscribtion = this.http
@@ -166,7 +166,7 @@ export class ScanPage implements OnInit, OnDestroy {
       this.showTextPage();
     }
   }
-  close() {
+  private close() {
     this.hideConfirmPage();
     this.hideIframePage();
     this.hideResultTextPage();
