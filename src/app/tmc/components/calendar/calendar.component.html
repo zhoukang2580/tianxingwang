@@ -39,7 +39,7 @@
   </ion-grid>
   <ion-grid *ngFor='let ym of calendars;' class='calendar'>
     <div class='shadow-month'>
-      {{ym.yearMonth?.substr(6,2)<"10"?ym.yearMonth?.substr(6,2)?.replace('0',""):ym.yearMonth?.substr(6,2)}}</div>
+      {{ym.yearMonth?.substr(5,2)<"10"?ym.yearMonth?.substr(5,2)?.replace('0',""):ym.yearMonth?.substr(5,2)}}</div>
     <ion-row>
       <ion-col>{{ym.yearMonth?.substr(0,4)}}年</ion-col>
     </ion-row>
