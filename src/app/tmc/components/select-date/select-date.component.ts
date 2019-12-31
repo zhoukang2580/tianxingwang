@@ -22,8 +22,8 @@ export class SelectDateComponent implements OnInit, OnDestroy {
   private curSelectedYear: string;
   private curSelectedMonth: number;
   private goArrivalTime: string;
-  private forType: FlightHotelTrainType;
   private isCurrentSelectedOk = false;
+  forType: FlightHotelTrainType;
   yms: AvailableDate[];
   title: string;
   delayBackTime = 200;
@@ -128,12 +128,14 @@ export class SelectDateComponent implements OnInit, OnDestroy {
       this.calendarService.generateYearNthMonthCalendar(
         m + 1 > 12 ? y + 1 : y,
         m + 1 > 12 ? 1 : m + 1
-      ),
-      this.calendarService.generateYearNthMonthCalendar(
-        m + 2 > 12 ? y + 1 : y,
-        m + 2 > 12 ? 1 : m + 1
       )
     ];
+    if(this.forType!=FlightHotelTrainType.Train){
+      this.yms.push(this.calendarService.generateYearNthMonthCalendar(
+        m + 2 > 12 ? y + 1 : y,
+        m + 2 > 12 ? 1 : m + 1
+      ))
+    }
     this.checkYms();
   }
   async cancel() {

@@ -1,3 +1,4 @@
+import { FlightHotelTrainType } from './../../tmc.service';
 import { Subscription } from 'rxjs';
 import {
   Component,
@@ -29,6 +30,7 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy, OnCh
   @ViewChild('yearSelectEle') yearSelectEle: IonSelect;
   @ViewChild('monthSelectEle') monthSelectEle: IonSelect;
   @Input() title: string;
+  @Input() forType: FlightHotelTrainType;
   @Input() calendars: AvailableDate[];
   @Output() yearChange: EventEmitter<any>;
   @Output() monthChange: EventEmitter<any>;
@@ -182,7 +184,14 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy, OnCh
       this.monthChange.emit(this.month);
     }
   }
-  ngAfterViewInit() { }
+  ngAfterViewInit() {
+    if (this.forType == FlightHotelTrainType.Train) {
+      if (this.scroller) {
+        this.scroller.disabled = true;
+      }
+    }
+
+  }
   private async showDateSelectWheel() {
     const p = await this.popoverCtrl.create({
       component: DateSelectWheelPopoverComponent,
