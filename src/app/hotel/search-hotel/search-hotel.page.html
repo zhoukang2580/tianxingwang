@@ -25,6 +25,9 @@
           <ion-text color='light'>{{selectedPassengers}}</ion-text>
         </ion-badge>
       </ion-button>
+      <ion-button fill='clear' color='secondary' size='small' (click)='onShowStandardDesc()' *ngIf='isSelf'>
+        差旅标准
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>

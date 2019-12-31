@@ -18,13 +18,14 @@ import {
   AfterViewInit,
   EventEmitter
 } from "@angular/core";
-import { NavController, ModalController } from "@ionic/angular";
+import { NavController, ModalController, PopoverController } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import { StaffService } from "src/app/hr/staff.service";
 import { map } from "rxjs/operators";
 import * as moment from "moment";
 import { TripType } from "src/app/tmc/models/TripType";
 import { SelectedPassengersComponent } from "src/app/tmc/components/selected-passengers/selected-passengers.component";
+import { ShowStandardDetailsComponent } from 'src/app/tmc/components/show-standard-details/show-standard-details.component';
 @Component({
   selector: "app-search-hotel",
   templateUrl: "./search-hotel.page.html",
@@ -34,6 +35,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   isShowSelectedInfos$: Observable<boolean>;
   canAddPassengers = false;
+  isSelf = false;
   get selectedPassengers() {
     return this.hotelService.getBookInfos().length;
   }
@@ -86,13 +88,36 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     route: ActivatedRoute,
     private modalController: ModalController,
     private staffService: StaffService,
-    private calendarService: CalendarService
+    private calendarService: CalendarService,
+    private popoverCtrl: PopoverController
   ) {
     const sub = route.queryParamMap.subscribe(async _ => {
       this.isLeavePage = false;
       this.canAddPassengers = !(await this.staffService.isSelfBookType());
+      this.isSelf = await this.staffService.isSelfBookType();
     });
     this.subscriptions.push(sub);
+  }
+  async onShowStandardDesc() {
+    this.isSelf = await this.staffService.isSelfBookType();
+    if (!this.isSelf) {
+      return;
+    }
+    let s = await this.staffService.getStaff()
+    if (!s) {
+      s = await this.staffService.getStaff(true);
+    }
+    if (!s || !s.Policy || !s.Policy.HotelDescription) {
+      return;
+    }
+    const p = await this.popoverCtrl.create({
+      component: ShowStandardDetailsComponent,
+      componentProps: {
+        details: s.Policy.HotelDescription.split("。")
+      },
+      cssClass: "ticket-changing"
+    });
+    p.present();
   }
   segmentChanged(ev: CustomEvent) {
     // console.log("Segment changed", ev);
@@ -161,7 +186,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       moment().add(1, "days")
     );
   }
-  onShowSelectedBookInfos() {}
+  onShowSelectedBookInfos() { }
   onSelectPassenger() {
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
       queryParams: { forType: FlightHotelTrainType.Hotel }

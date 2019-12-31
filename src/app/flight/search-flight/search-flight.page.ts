@@ -1,3 +1,4 @@
+import { ShowStandardDetailsComponent } from './../../tmc/components/show-standard-details/show-standard-details.component';
 import { CanComponentDeactivate } from 'src/app/guards/candeactivate.guard';
 import { LanguageHelper } from 'src/app/languageHelper';
 import { TmcService, FlightHotelTrainType } from "src/app/tmc/tmc.service";
@@ -18,7 +19,7 @@ import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import * as moment from "moment";
 import { Subscription, of, from } from "rxjs";
 import { DayModel } from "../../tmc/models/DayModel";
-import { NavController, ModalController } from "@ionic/angular";
+import { NavController, ModalController, PopoverController } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
 import { map } from "rxjs/operators";
@@ -61,7 +62,8 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
     private staffService: StaffService,
     private apiService: ApiService,
     private tmcService: TmcService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private popoverCtrl: PopoverController
   ) {
     route.queryParamMap.subscribe(async _ => {
       this.isSelf = await this.staffService.isSelfBookType();
@@ -106,6 +108,27 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
       return AppHelper.alert("是否放弃所选航班信息？", true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
     }
     return true;
+  }
+  async onShowStandardDesc() {
+    this.isSelf = await this.staffService.isSelfBookType();
+    if (!this.isSelf) {
+      return;
+    }
+    let s = await this.staffService.getStaff()
+    if (!s) {
+      s = await this.staffService.getStaff(true);
+    }
+    if (!s || !s.Policy || !s.Policy.FlightDescription) {
+      return;
+    }
+    const p = await this.popoverCtrl.create({
+      component: ShowStandardDetailsComponent,
+      componentProps: {
+        details: s.Policy.FlightDescription.split(",")
+      },
+      cssClass: "ticket-changing"
+    });
+    p.present();
   }
   private calcTotalFlyDays() {
     if (this.backDate && this.goDate) {

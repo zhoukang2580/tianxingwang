@@ -14,7 +14,7 @@ import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import * as moment from "moment";
 import { Subscription, Observable, of, from } from "rxjs";
 import { DayModel } from "../../tmc/models/DayModel";
-import { ModalController, NavController } from "@ionic/angular";
+import { ModalController, NavController, PopoverController } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import { TripType } from "src/app/tmc/models/TripType";
@@ -23,6 +23,7 @@ import { CalendarService } from "src/app/tmc/calendar.service";
 import { PassengerBookInfo, TmcService } from "src/app/tmc/tmc.service";
 import { map } from "rxjs/operators";
 import { SelectedTrainSegmentInfoComponent } from "../components/selected-train-segment-info/selected-train-segment-info.component";
+import { ShowStandardDetailsComponent } from 'src/app/tmc/components/show-standard-details/show-standard-details.component';
 @Component({
   selector: "app-search-train",
   templateUrl: "./search-train.page.html",
@@ -47,6 +48,7 @@ export class SearchTrainPage
   toCity: TrafficlineEntity; // 切换后，真实的目的城市
   showReturnTrip = false;
   isDisabled = false;
+  isSelf = false;
   selectedPassengers: number;
   selectedBookInfos: number;
   staff: StaffEntity;
@@ -59,7 +61,8 @@ export class SearchTrainPage
     private apiService: ApiService,
     private trainService: TrainService,
     private calendarService: CalendarService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private popoverCtrl: PopoverController
   ) { }
 
   back() {
@@ -91,6 +94,27 @@ export class SearchTrainPage
   }
   async isStaffTypeSelf() {
     return await this.staffService.isSelfBookType();
+  }
+  async onShowStandardDesc() {
+    this.isSelf = await this.staffService.isSelfBookType();
+    if (!this.isSelf) {
+      return;
+    }
+    let s = await this.staffService.getStaff()
+    if (!s) {
+      s = await this.staffService.getStaff(true);
+    }
+    if (!s || !s.Policy || !s.Policy.TrainDescription) {
+      return;
+    }
+    const p = await this.popoverCtrl.create({
+      component: ShowStandardDetailsComponent,
+      componentProps: {
+        details: s.Policy.TrainDescription.split("。")
+      },
+      cssClass: "ticket-changing"
+    });
+    p.present();
   }
   async ngOnInit() {
     this.isShowSelectedInfos$ = this.trainService
@@ -125,8 +149,9 @@ export class SearchTrainPage
           .find(it => it.bookInfo && it.bookInfo.isExchange);
       await this.initTrainDays();
       this.staff = await this.staffService.getStaff();
+      this.isSelf = await this.isStaffTypeSelf();
       // this.canAddPassengers = await this.staffService.isAllBookType() || await this.staffService.isSecretaryBookType();
-      if (await this.isStaffTypeSelf()) {
+      if (this.isSelf) {
         this.isDisabled =
           this.searchTrainModel && this.searchTrainModel.isLocked;
       }
