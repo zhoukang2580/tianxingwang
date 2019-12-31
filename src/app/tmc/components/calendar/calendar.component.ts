@@ -70,7 +70,7 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy, OnCh
     let nextM = m;
     this.page.m = m;
     this.page.y = y;
-    for (let i = 1; i <= 3; i++) {
+    for (let i = 1; i <= 6; i++) {
       nextM = ++nextM;
       if (nextM > 12) {
         y += 1;

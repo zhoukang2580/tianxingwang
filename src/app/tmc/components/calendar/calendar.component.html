@@ -37,10 +37,10 @@
       </ion-col>
     </ion-row>
   </ion-grid>
-  <ion-grid *ngFor='let ym of calendars;let first = first;let last=last' class='calendar'
-    [attr.ymonth]='getMonth(ym.yearMonth)'>
+  <ion-grid *ngFor='let ym of calendars;' class='calendar'>
+    <div class='shadow-month'>{{ym.yearMonth?.substr(0,4)}}</div>
     <ion-row>
-      <ion-col>{{ym.yearMonth?.substr(0,4)}}年</ion-col>
+      <ion-col>{{ym.yearMonth?.substr(6,2)?.replace("0","")}}年</ion-col>
     </ion-row>
     <ion-row>
       <ion-col text-center *ngFor='let day of ym.dayList' size='{{12/7}}' class='day' [class.active]='day.selected'
@@ -48,11 +48,6 @@
         [attr.first-selected-day]='day?.firstSelected' [attr.last-selected-day]='day?.lastSelected'
         [class.last-month-day]="day?.isLastMonthDay" [class.not-enabled]='!(day?.enabled)' [class.today]='day.isToday'>
         <app-day [dayModel]='day' (daySelected)='onDaySelected(day)'></app-day>
-      </ion-col>
-    </ion-row>
-    <ion-row *ngIf='last' style="margin:1em 0;padding:1em 0;">
-      <ion-col class="md hydrated">
-        <div margin-top margin-bottom></div>
       </ion-col>
     </ion-row>
   </ion-grid>

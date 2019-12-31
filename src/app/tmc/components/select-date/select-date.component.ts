@@ -133,7 +133,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
     if(this.forType!=FlightHotelTrainType.Train){
       this.yms.push(this.calendarService.generateYearNthMonthCalendar(
         m + 2 > 12 ? y + 1 : y,
-        m + 2 > 12 ? 1 : m + 1
+        m + 2 > 12 ? 1 : m + 2
       ))
     }
     this.checkYms();
