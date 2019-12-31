@@ -128,6 +128,10 @@ export class SelectDateComponent implements OnInit, OnDestroy {
       this.calendarService.generateYearNthMonthCalendar(
         m + 1 > 12 ? y + 1 : y,
         m + 1 > 12 ? 1 : m + 1
+      ),
+      this.calendarService.generateYearNthMonthCalendar(
+        m + 2 > 12 ? y + 1 : y,
+        m + 2 > 12 ? 1 : m + 1
       )
     ];
     this.checkYms();

@@ -7,20 +7,24 @@ import {
   Input,
   AfterViewInit,
   ViewChild,
-  OnDestroy
+  OnDestroy,
+  OnChanges,
+  SimpleChanges
 } from "@angular/core";
 import { AvailableDate } from "../../models/AvailableDate";
 import { CalendarService } from "../../calendar.service";
 import { DayModel } from "../../models/DayModel";
-import { PopoverController, IonSelect } from "@ionic/angular";
+import { PopoverController, IonSelect, IonInfiniteScroll } from "@ionic/angular";
 import { DateSelectWheelPopoverComponent } from "../date-select-wheel-popover/date-select-wheel-popover.component";
 @Component({
   selector: "app-calendar",
   templateUrl: "./calendar.component.html",
   styleUrls: ["./calendar.component.scss"]
 })
-export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
   private subscription = Subscription.EMPTY;
+  private page: { m: number; y: number };
+  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   weeks: string[];
   @ViewChild('yearSelectEle') yearSelectEle: IonSelect;
   @ViewChild('monthSelectEle') monthSelectEle: IonSelect;
@@ -46,6 +50,40 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes && changes.calendars && changes.calendars.currentValue) {
+      const first = this.calendars[0];
+      if (first) {
+        const [y, m] = first.yearMonth.split("-");
+        this.page = {
+          y: +y,
+          m: +m
+        }
+      }
+    }
+  }
+  loadMore() {
+    let [y, m] = this.calendars[this.calendars.length - 1].yearMonth.split("-").map(it => +it);
+    let result: AvailableDate[] = [];
+    let nextM = m;
+    this.page.m = m;
+    this.page.y = y;
+    for (let i = 1; i <= 3; i++) {
+      nextM = ++nextM;
+      if (nextM > 12) {
+        y += 1;
+        nextM = 1;
+      }
+      result.push(this.calendarService.generateYearNthMonthCalendar(
+        y,
+        nextM
+      ))
+    }
+    this.calendars = this.calendars.concat(result);
+    if (this.scroller) {
+      this.scroller.complete();
+    }
+  }
   cancel() {
     this.subscription.unsubscribe();
     this.back.emit();
@@ -65,14 +103,14 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
         this.initCurYM();
       }
     })
-    if(this.calendars&&this.calendars.length){
+    if (this.calendars && this.calendars.length) {
       const c = this.calendars[0];
-      const y = +c.yearMonth.substr(0,4);
-      const m = +c.yearMonth.substr(5,2);
-      if(y&&m){
-        this.initCurYM(y,m);
+      const y = +c.yearMonth.substr(0, 4);
+      const m = +c.yearMonth.substr(5, 2);
+      if (y && m) {
+        this.initCurYM(y, m);
       }
-    }else{
+    } else {
       this.initCurYM();
     }
     const w = this.calendarService.getDayOfWeekNames();
@@ -84,6 +122,7 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.year = curY;
     const curM = m;
     this.month = curM;
+    this.page = { y, m };
     this.months = new Array(12).fill(0).map((it, idx) => {
       const m = idx + 1;
       return {
