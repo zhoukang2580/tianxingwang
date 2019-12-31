@@ -7,7 +7,12 @@
     </ion-buttons>
     <ion-title>登录设备</ion-title>
     <ion-buttons slot="end">
-      <ion-button fill="clear"  (click)="toggleDeleteButton()">编辑</ion-button>
+      <ion-buttons slot="end">
+        <ion-button (click)="toggleDeleteButton()">
+          <ion-text color='secondary' *ngIf='!toggleChecked'>编辑</ion-text>
+          <ion-text color='secondary' *ngIf='toggleChecked'>完成</ion-text>
+        </ion-button>
+      </ion-buttons>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -16,7 +21,7 @@
     <ion-text>最近登录设备：您可以删除列表中的设备，删除后在该设备登录应用需要进行身份验证。</ion-text>
   </ion-toolbar>
   <ion-list #List (ionDrag)='onSlidingItemDrag()'>
-    <ion-item-sliding  *ngFor="let item of items">
+    <ion-item-sliding *ngFor="let item of items">
       <ion-item>
         <ion-label>{{ item?.Name }}</ion-label>
         <ion-button color="danger" size='small' *ngIf="toggleChecked" (click)="delete(item)">
@@ -24,7 +29,7 @@
         </ion-button>
       </ion-item>
       <ion-item-options side='end' (click)="delete(item)">
-        <ion-item-option color="danger" >
+        <ion-item-option color="danger">
           <ion-text color='light'>删除</ion-text>
         </ion-item-option>
       </ion-item-options>

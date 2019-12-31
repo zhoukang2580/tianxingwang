@@ -7,7 +7,12 @@
     </ion-buttons>
     <ion-title>微信维护</ion-title>
     <ion-buttons slot="end">
-      <ion-button fill="clear"  (click)="toggleDeleteButton()">编辑</ion-button>
+      <ion-buttons slot="end">
+        <ion-button (click)="toggleDeleteButton()">
+          <ion-text color='secondary' *ngIf='!toggleChecked'>编辑</ion-text>
+          <ion-text color='secondary' *ngIf='toggleChecked'>完成</ion-text>
+        </ion-button>
+      </ion-buttons>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -27,8 +32,8 @@
     </ion-item-sliding>
 
   </ion-list>
- <section class="bottom">
-  <ion-button (click)="bind()" *ngIf='isShowBindButton'>绑定微信</ion-button>
- </section>
+  <section class="bottom">
+    <ion-button (click)="bind()"  color='secondary'  *ngIf='isShowBindButton'>绑定微信</ion-button>
+  </section>
 
 </ion-content>

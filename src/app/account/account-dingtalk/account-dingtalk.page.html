@@ -7,12 +7,15 @@
     </ion-buttons>
     <ion-title>钉钉维护</ion-title>
     <ion-buttons slot="end">
-      <ion-button fill="clear"  (click)="toggleDeleteButton()">编辑</ion-button>
+      <ion-button (click)="toggleDeleteButton()">
+        <ion-text color='secondary' *ngIf='!toggleChecked'>编辑</ion-text>
+        <ion-text color='secondary' *ngIf='toggleChecked'>完成</ion-text>
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content>
-
+  <ion-label color='medium' *ngIf='items?.length==0' text-center style='width:100%'>请至钉钉的应用“天行商旅”中绑定账号</ion-label>
   <ion-list #List (ionDrag)='onSlidingItemDrag()'>
     <ion-item-sliding (click)="itemClick()" *ngFor="let item of items">
       <ion-item>
@@ -21,13 +24,13 @@
       </ion-item>
       <ion-item-options side='end'>
         <ion-item-option color="danger" (click)="delete(item)">
-          删除
+          <ion-text color='light'>删除</ion-text>
         </ion-item-option>
       </ion-item-options>
     </ion-item-sliding>
 
   </ion-list>
   <section class="bottom">
-    <ion-button (click)="bind()" *ngIf='isShowBindButton'>绑定钉钉</ion-button>
-   </section>
+    <ion-button (click)="bind()" color='secondary' *ngIf='isShowBindButton'>绑定钉钉</ion-button>
+  </section>
 </ion-content>

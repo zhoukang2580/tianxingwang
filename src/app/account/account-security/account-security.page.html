@@ -35,6 +35,7 @@
     </ion-item>
     <ion-item detail (click)="goToDingding()" *ngIf='isShowDingtalk'>
       <ion-label>钉钉</ion-label>
+      <ion-label *ngIf='dingtalkList?.length'>{{dingtalkList[0].Name}}</ion-label>
     </ion-item>
   </ion-list>
   <ion-list>

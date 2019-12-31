@@ -24,6 +24,7 @@ interface Item {
 })
 export class AccountSecurityPage implements OnInit, OnDestroy {
   wechatList: { Name: string; }[];
+  dingtalkList: { Name: string; }[];
   identityEntity: IdentityEntity;
   identityEntitySubscription = Subscription.EMPTY;
   subscription = Subscription.EMPTY;
@@ -44,6 +45,25 @@ export class AccountSecurityPage implements OnInit, OnDestroy {
         this.identityEntity = identity;
       });
 
+  }
+  private loadDingtalkList() {
+    const req = new RequestEntity();
+    req.Method = "ApiPasswordUrl-DingTalk-List";
+    let deviceSubscription = this.apiService
+      .getResponse<Item[]>(req)
+      .pipe(map(r => r.Data))
+      .subscribe(
+        r => {
+          this.dingtalkList = r;
+        },
+        () => {
+          setTimeout(() => {
+            if (deviceSubscription) {
+              deviceSubscription.unsubscribe();
+            }
+          }, 1000);
+        }
+      );
   }
   private loadWechatList() {
     const req = new RequestEntity();
@@ -71,6 +91,7 @@ export class AccountSecurityPage implements OnInit, OnDestroy {
     this.subscription = this.route.queryParamMap.subscribe(_ => {
       this.deviceSubscription = this.load();
       this.loadWechatList();
+      this.loadDingtalkList();
     });
   }
   ngOnDestroy() {
