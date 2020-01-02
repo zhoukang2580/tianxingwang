@@ -10,7 +10,7 @@ import { Subscription } from "rxjs";
 
 import { AppHelper } from "src/app/appHelper";
 import { HttpClient } from "@angular/common/http";
-import { map, switchMap } from "rxjs/operators";
+import { map, switchMap, finalize } from "rxjs/operators";
 import { RequestEntity } from 'src/app/services/api/Request.entity';
 
 @Component({
@@ -136,15 +136,24 @@ export class ScanPage implements OnInit, OnDestroy {
   private handle() {
     if (this.checkLogin()) {
       if (this.identity) {
+        this.apiService.showLoadingView();
         const subscribtion = this.http
           .get(
             this.result + "&ticket=" + this.identity.Ticket + "&datatype=json&x-requested-with=XMLHttpRequest"
           )
+          .pipe(finalize(() => {
+            setTimeout(() => {
+              this.apiService.showLoadingView();
+            }, 200);
+          }))
           .subscribe(
-            (s: any) => {
+            async (s: any) => {
               this.identity.WebTicket = s.TicketId;
               this.identityService.setIdentity(this.identity);
-              this.close();
+              await AppHelper.toast(`登录成功!`, 1400, 'middle');
+              setTimeout(() => {
+                this.close();
+              }, 1400);
             },
             e => {
               AppHelper.alert(e);
