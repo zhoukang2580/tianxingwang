@@ -1,4 +1,3 @@
-import { StaffService } from './../hr/staff.service';
 import { IdentityEntity } from "./../services/identity/identity.entity";
 import { LoginService } from "../services/login/login.service";
 import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
@@ -44,7 +43,6 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private ionConfig: Config,
     route: ActivatedRoute,
-    private staffService: StaffService,
     private modalCtrl: ModalController
   ) {
     this.ionConfig.set("swipeBackEnabled", false);
