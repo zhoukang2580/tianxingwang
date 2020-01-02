@@ -45,7 +45,10 @@ interface ApiConfig {
 export class ApiService {
   private loadingSubject: Subject<boolean>;
   public apiConfig: ApiConfig;
-  private fetchingReq: { isFetching: boolean; promise: Promise<any> } = {} as any;
+  private fetchingReq: {
+    isFetching: boolean;
+    promise: Promise<any>;
+  } = {} as any;
 
   private worker = null;
   private isAlert = false;
@@ -58,11 +61,14 @@ export class ApiService {
     private storage: Storage
   ) {
     this.loadingSubject = new BehaviorSubject(false);
-    setTimeout(() => {
-      this.loadApiConfig(true)
-        .then(_ => { })
-        .catch(e => { });
-    }, 0);
+    this.storage.get(`KEY_API_CONFIG`).then(config => {
+      if (config) {
+        this.apiConfig = config;
+      }
+    });
+    this.loadApiConfig(true)
+      .then(_ => {})
+      .catch(e => {});
   }
   getLoading() {
     return this.loadingSubject.asObservable().pipe(delay(0));
@@ -221,10 +227,16 @@ export class ApiService {
     const url = await this.getUrl(req);
     return new Promise((resolve, reject) => {
       const subscribtion = this.http
-        .post(url, `${formObj}&Sign=${this.getSign(req)}&x-requested-with=XMLHttpRequest`, {
-          headers: { "content-type": "application/x-www-form-urlencoded"},
-          observe: "body"
-        })
+        .post(
+          url,
+          `${formObj}&Sign=${this.getSign(
+            req
+          )}&x-requested-with=XMLHttpRequest`,
+          {
+            headers: { "content-type": "application/x-www-form-urlencoded" },
+            observe: "body"
+          }
+        )
         .pipe(
           map(r => r as any),
           switchMap((r: IResponse<any>) => {
@@ -243,8 +255,7 @@ export class ApiService {
               if (r.Message) {
                 AppHelper.alert(r.Message);
               }
-            }
-            else {
+            } else {
               this.router.navigate([AppHelper.getRoutePath("login")]);
             }
             return of(r);
@@ -297,10 +308,16 @@ export class ApiService {
           .map(k => `${k}=${encodeURIComponent(req[k])}`)
           .join("&");
         // console.log(`${formObj}&Sign=${this.getSign(req)}`);
-        return this.http.post(url, `${formObj}&Sign=${this.getSign(req)}&x-requested-with=XMLHttpRequest`, {
-          headers: { "content-type": "application/x-www-form-urlencoded"},
-          observe: "body"
-        });
+        return this.http.post(
+          url,
+          `${formObj}&Sign=${this.getSign(
+            req
+          )}&x-requested-with=XMLHttpRequest`,
+          {
+            headers: { "content-type": "application/x-www-form-urlencoded" },
+            observe: "body"
+          }
+        );
       }),
       timeout(due),
       tap(r => console.log(r)),
@@ -314,12 +331,10 @@ export class ApiService {
             if (r.Message) {
               AppHelper.alert(r.Message);
             }
-          }
-          else {
+          } else {
             this.router.navigate([AppHelper.getRoutePath("login")]);
           }
-        }
-        else if (r.Code && r.Code.toUpperCase() === "NOAUTHORIZE") {
+        } else if (r.Code && r.Code.toUpperCase() === "NOAUTHORIZE") {
           this.router.navigate([AppHelper.getRoutePath("no-authorize")]);
         }
         return of(r);
@@ -354,12 +369,13 @@ export class ApiService {
       }
     }
     if (this.fetchingReq && this.fetchingReq.isFetching) {
-      return this.fetchingReq.promise
+      return this.fetchingReq.promise;
     }
     const url = AppHelper.getApiUrl() + "/Home/ApiConfig";
     const due = 30 * 1000;
     this.fetchingReq = {
-      isFetching: true, promise: new Promise<ApiConfig>(s => {
+      isFetching: true,
+      promise: new Promise<ApiConfig>(s => {
         const sub = this.http
           .get(url)
           .pipe(
@@ -377,7 +393,7 @@ export class ApiService {
           .subscribe(
             async (r: IResponse<ApiConfig>) => {
               if (r.Data) {
-                await this.storage.set(`KEY_API_CONFIG`, r.Data);
+                this.storage.set(`KEY_API_CONFIG`, r.Data);
                 this.apiConfig = r.Data;
                 const identityEntity = await this.identityService.getIdentityAsync();
                 if (identityEntity) {
@@ -400,7 +416,7 @@ export class ApiService {
   getSign(req: RequestEntity) {
     return md5(
       `${typeof req.Data === "string" ? req.Data : JSON.stringify(req.Data)}${
-      req.Timestamp
+        req.Timestamp
       }${req.Token}`
     ) as string;
   }
