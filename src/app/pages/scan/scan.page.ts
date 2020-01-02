@@ -150,10 +150,8 @@ export class ScanPage implements OnInit, OnDestroy {
             async (s: any) => {
               this.identity.WebTicket = s.TicketId;
               this.identityService.setIdentity(this.identity);
-              await AppHelper.toast(`登录成功!`, 1400, 'middle');
-              setTimeout(() => {
-                this.close();
-              }, 1400);
+              await AppHelper.toast(`登录成功!`, 1400, 'middle').catch(_ => 0);
+              this.close();
             },
             e => {
               AppHelper.alert(e);
