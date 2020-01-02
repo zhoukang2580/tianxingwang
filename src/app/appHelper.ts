@@ -64,6 +64,8 @@ export class AppHelper {
         t.present();
         t.onDidDismiss().then(_ => {
           resolve();
+        }).catch(_=>{
+          reject();
         })
       }
     });
