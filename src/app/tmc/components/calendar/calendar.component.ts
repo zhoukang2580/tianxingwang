@@ -197,9 +197,11 @@ export class CalendarComponent
         this.scroller.disabled = true;
       }
     }
-    setTimeout(() => {
-      this.loadMore();
-    }, 3 * 1000);
+    if(this.forType!=FlightHotelTrainType.Train){
+      setTimeout(() => {
+        this.loadMore();
+      }, 1.2 * 1000);
+    }
   }
   private async showDateSelectWheel() {
     const p = await this.popoverCtrl.create({

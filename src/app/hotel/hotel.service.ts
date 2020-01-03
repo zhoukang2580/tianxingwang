@@ -389,7 +389,7 @@ export class HotelService {
         title,
         forType: FlightHotelTrainType.Hotel
       },
-      animated:false
+      // animated:false
     });
     await m.present();
     // this.calendarService.setSelectedDaysSource(this.calendarService.getSelectedDays());

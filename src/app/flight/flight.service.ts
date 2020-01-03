@@ -414,7 +414,7 @@ export class FlightService {
         forType: FlightHotelTrainType.Flight,
         isMulti: isMulti
       },
-      animated:false
+      // animated:false
     });
     await m.present();
     const d = await m.onDidDismiss();
