@@ -251,11 +251,13 @@ export class CalendarService {
             d.lunarInfo.lunarDayName;
           d.descPos = "bottom";
           d.descColor = "medium";
+          // d.desc = this.getJQ(d);
           if (d.lunarInfo.lunarFestival || d.lunarInfo.solarFestival) {
             d.desc = d.lunarInfo.lunarFestival || d.lunarInfo.solarFestival;
             d.descColor = "danger";
           }
-          d.desc = this.getJQ(d);
+          d.desc =
+            d.desc && d.desc.length > 4 ? `${d.desc.substr(0, 4)}...` : d.desc;
         }
       }
     }
