@@ -37,7 +37,7 @@ export class DayComponent implements OnInit {
       this.dayModel.color = this.dayModel.isToday
         ? this.dayModel.color || "light"
         : "warning";
-      this.dayModel.dayoff = true;
+      // this.dayModel.dayoff = true;
     }
     if (week === 0) {
       this.dayModel.toolTipPos = "end";

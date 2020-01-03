@@ -3,7 +3,8 @@ import { Injectable } from "@angular/core";
 import * as moment from "moment";
 import { AvailableDate } from "./models/AvailableDate";
 import { LanguageHelper } from "../languageHelper";
-import { DayModel } from "./models/DayModel";
+import { DayModel, ILunarInfo } from "./models/DayModel";
+const lunarCalendar = window["LunarCalendar"];
 @Injectable({
   providedIn: "root"
 })
@@ -48,7 +49,7 @@ export class CalendarService {
   getDiffDays(t1: string, t2: string) {
     const mt1 = t1 ? moment(t1) : moment();
     const mt2 = t2 ? moment(t2) : moment();
-    return mt1.diff(mt2, 'days');
+    return mt1.diff(mt2, "days");
   }
   getDayOfWeekNames() {
     return this.dayOfWeekNames;
@@ -157,7 +158,7 @@ export class CalendarService {
       retD.toolTipPos = "center";
       this.setWeekName(retD);
     }
-    return retD;
+    return this.initDayDescInfo(retD);
   }
   private setWeekName(d: DayModel) {
     d.dayOfWeek = d.dayOfWeek || new Date(d.timeStamp * 1000).getDay();
@@ -171,7 +172,6 @@ export class CalendarService {
     return wn;
   }
   generateYearNthMonthCalendar(year: number, month: number): AvailableDate {
-    console.time("generateYearNthMonthCalendar");
     const iM = moment(`${year}-${month}-01`, "YYYY-MM-DD"); // 第i个月
     // console.log("generateYearNthMonthCalendar", iM.format('YYYY-MM-DD'), year, month);
     const calender: AvailableDate = {
@@ -198,7 +198,7 @@ export class CalendarService {
         .subtract(1, "days") // 上个月的最后一天
         .date();
       // console.log(lastMDay);
-      for (let d = lastMDay, j = curWeek; j > 0; d-- , j--) {
+      for (let d = lastMDay, j = curWeek; j > 0; d--, j--) {
         const date = curMFistDate
           .subtract(1, "days") // 应该是上个月的日期
           .date(d);
@@ -213,11 +213,61 @@ export class CalendarService {
       const dayOfiM = iM.startOf("month").date(j); // 每月的j号
       calender.dayList.push(this.generateDayModel(dayOfiM));
     }
-    console.timeEnd("generateYearNthMonthCalendar");
-    return calender;
+    const clnder = this.initDaysDayOff(calender);
+    console.log("generateYearNthMonthCalendar", clnder);
+    return clnder;
   }
-  generateCanlender2(months: number) {
-    console.time("generateCanlender");
+  private initDaysDayOff(c: AvailableDate) {
+    if (c.dayList && c.dayList.some(it => !!it.lunarInfo)) {
+      const cx = c.dayList.find(
+        it => it.desc && (it.desc.includes("除夕") || it.desc.includes("国庆"))
+      );
+      let endtime = 0;
+      if (cx) {
+        endtime = cx.timeStamp + 7 * 24 * 3600;
+      }
+      c.dayList = c.dayList.map(it => {
+        if (cx) {
+          it.dayoff = it.timeStamp < endtime && it.timeStamp >= cx.timeStamp;
+        }
+        return it;
+      });
+    }
+    return c;
+  }
+  private initDayDescInfo(d: DayModel) {
+    if (lunarCalendar && lunarCalendar.calendar) {
+      const [y, m, date] = d.date.split("-");
+      const arr: { monthData: ILunarInfo[] } = lunarCalendar.calendar(y, m);
+      if (arr && arr.monthData) {
+        d.lunarInfo = arr.monthData.find(
+          it => it.year == +y && it.month == +m && it.day == +date
+        );
+        if (d.lunarInfo) {
+          d.holiday = d.lunarInfo.lunarFestival || d.lunarInfo.solarFestival;
+          d.desc =
+            d.lunarInfo.lunarFestival ||
+            d.lunarInfo.solarFestival ||
+            d.lunarInfo.lunarDayName;
+          d.descPos = "bottom";
+          d.descColor = "medium";
+          if (d.lunarInfo.lunarFestival || d.lunarInfo.solarFestival) {
+            d.desc = d.lunarInfo.lunarFestival || d.lunarInfo.solarFestival;
+            d.descColor = "danger";
+          }
+          d.desc = this.getJQ(d);
+        }
+      }
+    }
+    return d;
+  }
+  private getJQ(d: DayModel) {
+    if (d.desc && d.desc.length <= 4) {
+      return d.desc;
+    }
+    return "";
+  }
+  private generateCanlender2(months: number) {
     const calender: AvailableDate[] = [];
     for (let i = 0; i < months; i++) {
       const st = Date.now();
@@ -247,7 +297,7 @@ export class CalendarService {
           .subtract(1, "days") // 上个月的最后一天
           .date();
         // console.log(lastMDay);
-        for (let d = lastMDay, j = curWeek; j > 0; d-- , j--) {
+        for (let d = lastMDay, j = curWeek; j > 0; d--, j--) {
           const date = curMFistDate
             .subtract(1, "days") // 应该是上个月的日期
             .date(d);
@@ -264,13 +314,10 @@ export class CalendarService {
       }
       console.log(`第${i}个月日期生成耗时：${Date.now() - st} ms`);
     }
-    console.timeEnd("generateCanlender");
     return Promise.resolve(calender);
   }
-  generateNthCanlender(nthMonth: number) {
+  private generateNthCanlender(nthMonth: number) {
     return Promise.resolve().then(_ => {
-      console.log("generateCanlender", nthMonth);
-      console.time("generateCanlender");
       const calendar: AvailableDate[] = [];
       for (let i = 0; i < nthMonth; i++) {
         const curDate = new Date();
@@ -311,7 +358,7 @@ export class CalendarService {
           const lastMDay = new Date(curMFistDate.setSeconds(-1));
 
           // console.log("lastMDay", this.format(lastMDay));
-          for (let d = lastMDay.getDate(), j = curWeek; j > 0; d-- , j--) {
+          for (let d = lastMDay.getDate(), j = curWeek; j > 0; d--, j--) {
             const date = new Date(lastMDay.setDate(d));
             // console.log(this.format(date));
             const lsmd = this.generateDayModel(date);
@@ -326,7 +373,6 @@ export class CalendarService {
         }
         // console.log(`第${i}个月日期生成耗时：${Date.now() - st} ms`);
       }
-      console.timeEnd("generateCanlender");
       // console.log(calendar);
       return calendar;
     });

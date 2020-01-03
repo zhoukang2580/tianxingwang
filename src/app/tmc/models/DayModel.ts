@@ -40,4 +40,24 @@ export class DayModel {
     | "light"
     | "medium"
     | "dark";
+  lunarInfo: ILunarInfo;
+}
+export interface ILunarInfo {
+  year: number; // 2020
+  month: number; // 1
+  day: number; // 8
+  zodiac: string; // "猪"
+  GanZhiYear: string; // "己亥"
+  GanZhiMonth: string; // "丁丑"
+  GanZhiDay: string; // "庚戌"
+  worktime: number; // 0
+  term: string; // undefined
+  lunarYear: number; // 2019
+  lunarMonth: number; // 12
+  lunarDay: number; // 14
+  lunarMonthName: string; // "十二月"
+  lunarDayName: string; // "十四"
+  lunarLeapMonth: string; // 0
+  solarFestival: string; // undefined
+  lunarFestival: string; // 除夕
 }

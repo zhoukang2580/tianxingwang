@@ -58,6 +58,9 @@
               },
               {
                 "input": "node_modules/vconsole/dist/vconsole.min.js"
+              },
+              {
+                "input": "node_modules/lunar-calendar/lib/LunarCalendar.js"
               }
             ]
           },

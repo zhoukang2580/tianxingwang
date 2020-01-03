@@ -1,4 +1,4 @@
-import { TmcService, FlightHotelTrainType } from 'src/app/tmc/tmc.service';
+import { TmcService, FlightHotelTrainType } from "src/app/tmc/tmc.service";
 import { ModalController } from "@ionic/angular";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Subscription } from "rxjs";
@@ -15,7 +15,6 @@ import { TripType } from "src/app/tmc/models/TripType";
   styleUrls: ["./select-date.component.scss"]
 })
 export class SelectDateComponent implements OnInit, OnDestroy {
-
   private _selectedDays: DayModel[] = [];
   private timeoutId: any;
   private tripType: TripType;
@@ -49,7 +48,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
     private calendarService: CalendarService,
     private modalCtrl: ModalController,
     private tmcService: TmcService
-  ) { }
+  ) {}
   ngOnDestroy() {
     this.multiSub.unsubscribe();
   }
@@ -72,7 +71,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
     }
     this.generateYearNthMonthCalendar();
   }
-  checkYms() {
+  private checkYms() {
     if (this.yms && this.yms.length) {
       const type = this.forType;
       if (
@@ -82,14 +81,17 @@ export class SelectDateComponent implements OnInit, OnDestroy {
         if (this.goArrivalTime) {
           const goDate = moment(this.goArrivalTime);
           if (this.yms.length) {
-            const endDay = this.calendarService.generateDayModel(moment().add(30, 'days'));
+            const endDay = this.calendarService.generateDayModel(
+              moment().add(30, "days")
+            );
             this.yms.forEach(day => {
               day.dayList.forEach(d => {
                 d.enabled =
                   goDate.format("YYYY-MM-DD") == d.date ||
                   +moment(d.date) >= +goDate;
                 if (type == FlightHotelTrainType.Train) {
-                  d.enabled = d.timeStamp <= endDay.timeStamp ? d.enabled : false;
+                  d.enabled =
+                    d.timeStamp <= endDay.timeStamp ? d.enabled : false;
                 }
               });
             });
@@ -97,7 +99,9 @@ export class SelectDateComponent implements OnInit, OnDestroy {
         }
       } else {
         const today = this.calendarService.generateDayModel(moment());
-        const endDay = this.calendarService.generateDayModel(moment().add(30, 'days'));
+        const endDay = this.calendarService.generateDayModel(
+          moment().add(30, "days")
+        );
         this.yms.forEach(day => {
           day.dayList.forEach(d => {
             d.enabled = d.timeStamp > today.timeStamp || d.date == today.date;
@@ -121,10 +125,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
     let y = +this.curSelectedYear;
     let m = +this.curSelectedMonth;
     this.yms = [
-      this.calendarService.generateYearNthMonthCalendar(
-        y,
-        m
-      ),
+      this.calendarService.generateYearNthMonthCalendar(y, m),
       this.calendarService.generateYearNthMonthCalendar(
         m + 1 > 12 ? y + 1 : y,
         m + 1 > 12 ? 1 : m + 1
@@ -145,12 +146,11 @@ export class SelectDateComponent implements OnInit, OnDestroy {
     }
     const m = await this.modalCtrl.getTop();
     if (m) {
-      await m.dismiss(this.selectedDays).catch(_ => { });
+      await m.dismiss(this.selectedDays).catch(_ => {});
     }
     this.isCurrentSelectedOk = false;
   }
   onDaySelected(d: DayModel) {
-
     if (!d || !d.date || this.isCurrentSelectedOk) {
       return;
     }
@@ -172,14 +172,15 @@ export class SelectDateComponent implements OnInit, OnDestroy {
         if (d.timeStamp < this.selectedDays[0].timeStamp) {
           d.desc =
             this.tripType == TripType.checkIn ||
-              this.tripType == TripType.checkOut
+            this.tripType == TripType.checkOut
               ? LanguageHelper.getCheckInTip()
               : LanguageHelper.getDepartureTip();
           d.hasToolTip = true;
-          d.toolTipMsg = this.tripType == TripType.checkIn ||
+          d.toolTipMsg =
+            this.tripType == TripType.checkIn ||
             this.tripType == TripType.checkOut
-            ? LanguageHelper.getSelectCheckOutDate()
-            : LanguageHelper.getBackDateTip();
+              ? LanguageHelper.getSelectCheckOutDate()
+              : LanguageHelper.getBackDateTip();
           this.selectedDays = [d];
           // AppHelper.toast(LanguageHelper.getSelectFlyBackDate(), 1000, "top");
         } else {
@@ -189,19 +190,29 @@ export class SelectDateComponent implements OnInit, OnDestroy {
           d.hasToolTip = true;
           d.desc =
             this.tripType == TripType.checkIn ||
-              this.tripType == TripType.checkOut
+            this.tripType == TripType.checkOut
               ? LanguageHelper.getCheckOutTip()
               : LanguageHelper.getReturnTripTip();
           if (this.selectedDays[0].timeStamp == d.timeStamp) {
-            this.selectedDays[0].desc = this.tripType == TripType.checkIn ||
+            this.selectedDays[0].desc =
+              this.tripType == TripType.checkIn ||
               this.tripType == TripType.checkOut
-              ? LanguageHelper.getCheckInOutTip()
-              : LanguageHelper.getRoundTripTip();
+                ? LanguageHelper.getCheckInOutTip()
+                : LanguageHelper.getRoundTripTip();
           } else {
-            d.toolTipMsg = this.tripType == TripType.checkIn ||
+            d.toolTipMsg =
+              this.tripType == TripType.checkIn ||
               this.tripType == TripType.checkOut
-              ? LanguageHelper.getCheckInOutTotalDaysTip(Math.abs(moment(this.selectedDays[0].date).diff(d.date, 'days')))
-              : LanguageHelper.getRoundTripTotalDaysTip(Math.abs(moment(this.selectedDays[0].date).diff(d.date, 'days')));
+                ? LanguageHelper.getCheckInOutTotalDaysTip(
+                    Math.abs(
+                      moment(this.selectedDays[0].date).diff(d.date, "days")
+                    )
+                  )
+                : LanguageHelper.getRoundTripTotalDaysTip(
+                    Math.abs(
+                      moment(this.selectedDays[0].date).diff(d.date, "days")
+                    )
+                  );
           }
           this.selectedDays.push(d);
         }
@@ -211,11 +222,17 @@ export class SelectDateComponent implements OnInit, OnDestroy {
         d.descPos = "top";
         d.hasToolTip = true;
         console.log("tripType", this.tripType);
-        if (this.tripType == TripType.returnTrip || this.tripType == TripType.departureTrip) {
+        if (
+          this.tripType == TripType.returnTrip ||
+          this.tripType == TripType.departureTrip
+        ) {
           d.desc = LanguageHelper.getDepartureTip();
           d.toolTipMsg = LanguageHelper.getSelectFlyBackDate();
         }
-        if (this.tripType == TripType.checkIn || this.tripType == TripType.checkOut) {
+        if (
+          this.tripType == TripType.checkIn ||
+          this.tripType == TripType.checkOut
+        ) {
           d.desc = LanguageHelper.getCheckInTip();
           d.toolTipMsg = LanguageHelper.getSelectCheckOutDate();
         } else {
@@ -264,9 +281,12 @@ export class SelectDateComponent implements OnInit, OnDestroy {
       });
     });
     if (this.isMulti) {
-      this.isCurrentSelectedOk = this.selectedDays && this.selectedDays.length > 1;
+      this.isCurrentSelectedOk =
+        this.selectedDays && this.selectedDays.length > 1;
     } else {
-      this.isCurrentSelectedOk = !!(this.selectedDays && this.selectedDays.length);
+      this.isCurrentSelectedOk = !!(
+        this.selectedDays && this.selectedDays.length
+      );
     }
     if (this.selectedDays && this.selectedDays.length) {
       const first = this.selectedDays[0];
@@ -279,12 +299,13 @@ export class SelectDateComponent implements OnInit, OnDestroy {
           first.lastSelected = false;
           this.yms.forEach(ym => {
             ym.dayList.forEach(it => {
-              it.isBetweenDays = it.timeStamp > first.timeStamp && it.timeStamp < last.timeStamp;
+              it.isBetweenDays =
+                it.timeStamp > first.timeStamp && it.timeStamp < last.timeStamp;
               if (it.isBetweenDays) {
                 it.selected = true;
               }
-            })
-          })
+            });
+          });
         }
       }
     }

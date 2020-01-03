@@ -1,10 +1,11 @@
 <div class='day' (click)="toggleSelected()" [class.hasToolTip]='dayModel?.hasToolTip'
   [attr.toolTipMsg]="dayModel?.toolTipMsg" [attr.toolTipPos]="dayModel?.toolTipPos"
   [class.is-last-month-day]="dayModel?.isLastMonthDay">
-  <div class='top' *ngIf="dayModel?.dayoff||dayModel?.desc&&dayModel?.descPos=='top'">
-    <div [attr.color]='dayModel?.isToday?"light":"danger"' class='dayoff' *ngIf="">休
+  <div class='top'>
+    <div [attr.color]='dayModel?.isToday?"light":"danger"' class='dayoff' *ngIf="dayModel?.dayoff">休
     </div>
-    <div [attr.color]='dayModel?.descColor' class='desc' *ngIf='dayModel?.desc' text-nowrap>{{dayModel?.desc}}</div>
+    <div [attr.color]='dayModel?.descColor' class='desc' *ngIf="dayModel?.desc&&dayModel?.descPos=='top'" text-nowrap>
+      {{dayModel?.desc}}</div>
   </div>
   <div class='content' [class.today]='dayModel.isToday' [class.has-top-desc]='dayModel?.desc&&dayModel?.descPos=="top"'>
     <div [attr.color]='dayModel?.color' *ngIf='!dayModel?.isToday'>
