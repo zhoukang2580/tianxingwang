@@ -254,10 +254,17 @@ export class CalendarService {
           // d.desc = this.getJQ(d);
           if (d.lunarInfo.lunarFestival || d.lunarInfo.solarFestival) {
             d.desc = d.lunarInfo.lunarFestival || d.lunarInfo.solarFestival;
+            if (
+              d.desc &&
+              d.lunarInfo.lunarMonthName &&
+              d.lunarInfo.lunarMonthName.includes("润")
+            ) {
+              d.desc = d.lunarInfo.lunarDayName;
+            }
             d.descColor = "danger";
           }
           d.desc =
-            d.desc && d.desc.length > 4 ? `${d.desc.substr(0, 4)}...` : d.desc;
+            d.desc && d.desc.length > 3 ? `${d.desc.substr(0, 3)}...` : d.desc;
         }
       }
     }
