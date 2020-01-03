@@ -220,7 +220,7 @@ export class CalendarService {
   private initDaysDayOff(c: AvailableDate) {
     if (c.dayList && c.dayList.some(it => !!it.lunarInfo)) {
       const cx = c.dayList.find(
-        it => it.desc && (it.desc.includes("除夕") || it.desc.includes("国庆"))
+        it => it.desc && (it.desc.includes("除夕") || it.date.includes("10-01"))
       );
       let endtime = 0;
       if (cx) {
@@ -265,7 +265,7 @@ export class CalendarService {
     if (d.desc && d.desc.length <= 4) {
       return d.desc;
     }
-    return "";
+    return d.lunarInfo && d.lunarInfo.lunarDayName;
   }
   private generateCanlender2(months: number) {
     const calender: AvailableDate[] = [];
