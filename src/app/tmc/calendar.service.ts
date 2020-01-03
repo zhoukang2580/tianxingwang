@@ -255,9 +255,9 @@ export class CalendarService {
           if (d.lunarInfo.lunarFestival || d.lunarInfo.solarFestival) {
             d.desc = d.lunarInfo.lunarFestival || d.lunarInfo.solarFestival;
             if (
-              d.desc &&
+              d.lunarInfo.lunarFestival &&
               d.lunarInfo.lunarMonthName &&
-              d.lunarInfo.lunarMonthName.includes("润")
+              d.lunarInfo.lunarMonthName.includes("闰")
             ) {
               d.desc = d.lunarInfo.lunarDayName;
             }
