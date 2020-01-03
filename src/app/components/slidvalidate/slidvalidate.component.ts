@@ -120,9 +120,9 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
 
   getRandomImgSrc(useDefaultImage: boolean = false) {
     if (useDefaultImage) {
-      return `assets/images/sliding0.jpg`;
+      return `assets/images/sliding${Math.floor(Math.random() * 4)}.jpg`;
     }
-    return `assets/images/sliding1.jpg`;
+    return `assets/images/sliding${Math.floor(Math.random() * 4)}.jpg`;
     // return `//picsum.photos/${this.w}/150/?image=` + this.getRandomNumberByRange(0, 1084);
     // const images = ['airplane-l.jpg', 'airplane.jpg', 'train.jpg'];
     // return "assets/images/" + images[Math.floor(Math.random() * images.length)];
