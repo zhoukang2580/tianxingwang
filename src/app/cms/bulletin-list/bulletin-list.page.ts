@@ -14,6 +14,7 @@ export class BulletinListPage implements OnInit {
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   bulletines: Notice[] = [];
   bulletinType: string;
+  title: string;
   currentPage = 0;
   loading = true;
   constructor(
@@ -24,7 +25,8 @@ export class BulletinListPage implements OnInit {
   ) {
     route.queryParamMap.subscribe(p => {
       console.log("BulletinListPage ", p);
-      this.bulletinType = p.get('bulletinType') || "notice";
+      this.bulletinType = p.get("bulletinType") || "notice";
+      this.title = p.get("bulletinType") == "notice" ? "通知" : "温馨提醒";
     });
   }
   back() {
