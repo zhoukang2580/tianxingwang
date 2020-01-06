@@ -56,6 +56,9 @@ ul {
     font-family: serif;
     font-size: 15rem;
   }
+  &.last {
+    padding-bottom: 2em;
+  }
 }
 .weeks {
   position: sticky;
