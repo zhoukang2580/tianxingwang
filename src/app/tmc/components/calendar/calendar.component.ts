@@ -88,7 +88,7 @@ export class CalendarComponent
     let nextM = m;
     this.page.m = m;
     this.page.y = y;
-    for (let i = 1; i <= 6; i++) {
+    for (let i = 1; i <= 3; i++) {
       nextM = ++nextM;
       if (nextM > 12) {
         y += 1;
