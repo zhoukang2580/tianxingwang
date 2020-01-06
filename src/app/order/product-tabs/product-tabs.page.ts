@@ -1,4 +1,4 @@
-import { IdentityService } from './../../services/identity/identity.service';
+import { IdentityService } from "./../../services/identity/identity.service";
 import { OrderTripModel } from "./../models/OrderTripModel";
 import { OrderService } from "./../order.service";
 import { ApiService } from "./../../services/api/api.service";
@@ -34,7 +34,7 @@ import { LanguageHelper } from "src/app/languageHelper";
 import { OrderTaskModel } from "../models/OrderTaskModel";
 import { TaskEntity } from "src/app/workflow/models/TaskEntity";
 import { TaskModel } from "../models/TaskModel";
-import { IdentityEntity } from 'src/app/services/identity/identity.entity';
+import { IdentityEntity } from "src/app/services/identity/identity.entity";
 export const ORDER_TABS: ProductItem[] = [
   {
     label: "机票",
@@ -108,7 +108,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   ) {
     route.queryParamMap.subscribe(d => {
       if (d && d.get("tabId")) {
-        const tab = ORDER_TABS.find(it => it.value == +(d.get('tabId')));
+        const tab = ORDER_TABS.find(it => it.value == +d.get("tabId"));
         console.log("product-tabs", tab);
         const plane = ORDER_TABS.find(it => it.value == ProductItemType.plane);
         this.activeTab = this.isOpenUrl
@@ -117,7 +117,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         this.title = tab.label;
       }
       this.isOpenUrl = false;
-      if(d&&d.get('doRefresh')=='true'){
+      if (d && d.get("doRefresh") == "true") {
         this.doRefresh();
       }
     });
@@ -134,7 +134,10 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     }
   }
   loadMoreOrders() {
-    if (this.isShowMyTrips || this.activeTab.value == ProductItemType.waitingApprovalTask) {
+    if (
+      this.isShowMyTrips ||
+      this.activeTab.value == ProductItemType.waitingApprovalTask
+    ) {
       return;
     }
     this.doSearchOrderList();
@@ -178,7 +181,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     this.doLoadMoreTasks();
   }
   onTabClick(tab: ProductItem) {
-    this.isLoading=true;
+    this.isLoading = true;
     this.loadDataSub.unsubscribe();
     this.activeTab = tab;
     this.title = tab.label + "订单";
@@ -211,8 +214,8 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       this.activeTab.value == ProductItemType.plane
         ? "Flight"
         : this.activeTab.value == ProductItemType.hotel
-          ? "Hotel"
-          : "Train";
+        ? "Hotel"
+        : "Train";
     this.loadDataSub = this.orderService
       .getMyTrips(m)
       .pipe(
@@ -290,10 +293,13 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     }
     const pageSize = 15;
     this.loadDataSub = this.orderService
-      .getOrderTasks({
-        PageSize: pageSize,
-        PageIndex: this.curTaskPageIndex
-      } as any, this.curTaskPageIndex == 0)
+      .getOrderTasks(
+        {
+          PageSize: pageSize,
+          PageIndex: this.curTaskPageIndex
+        } as any,
+        this.curTaskPageIndex == 0
+      )
       .pipe(
         finalize(() => {
           this.isLoading = false;
@@ -309,7 +315,8 @@ export class ProductTabsPage implements OnInit, OnDestroy {
             this.curTaskPageIndex++;
           }
           if (this.infiniteScroll) {
-            this.infiniteScroll.disabled = tasks.length == 0 || tasks.length < pageSize;
+            this.infiniteScroll.disabled =
+              tasks.length == 0 || tasks.length < pageSize;
           }
         }
       });
@@ -330,8 +337,8 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         this.activeTab.value == ProductItemType.plane
           ? "Flight"
           : this.activeTab.value == ProductItemType.train
-            ? "Train"
-            : "Hotel";
+          ? "Train"
+          : "Hotel";
       this.loadDataSub = this.orderService
         .getOrderList(m)
         .pipe(
@@ -372,15 +379,19 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   async onTaskDetail(task: TaskEntity) {
     const url = this.getTaskUrl(task);
     if (url) {
-      const identity: IdentityEntity = await this.identityService.getIdentityAsync()
+      const identity: IdentityEntity = await this.identityService
+        .getIdentityAsync()
         .catch(_ => null);
-      const sign = this.apiService.getSign({ Token: identity && identity.Token } as any);
+      const sign = this.apiService.getSign({
+        Token: identity && identity.Token
+      } as any);
       this.router
         .navigate(["open-url"], {
           queryParams: {
-            url: `${url}?sign=${sign}&taskid=${task.Id}&ticket=${identity && identity.Ticket}`,
+            url: `${url}?sign=${sign}&taskid=${task.Id}&ticket=${identity &&
+              identity.Ticket}`,
             title: task && task.Name,
-            tabId: this.activeTab.value,
+            tabId: this.activeTab.value
           }
         })
         .then(_ => {
@@ -473,12 +484,14 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       ...model,
       ...data
     };
-    model.StartDate =
-      data.fromDate ||
+    if (data.fromDate) {
+      model.StartDate = data.fromDate;
+    }
+    model.EndDate =
+      data.toDate ||
       moment()
         .startOf("year")
         .format("YYYY-MM-DD");
-    model.EndDate = data.toDate;
     model.Id = data.orderNumber;
     model.Status = data.orderStatus;
     model.Passenger = data.passengerName;
@@ -521,7 +534,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     try {
       this.tmc = await this.tmcService.getTmc(true);
       this.doRefresh();
-      this.tabs = ORDER_TABS.filter(t => t.value != ProductItemType.more && t.isDisplay);
+      this.tabs = ORDER_TABS.filter(
+        t => t.value != ProductItemType.more && t.isDisplay
+      );
     } catch (e) {
       console.error(e);
     }
@@ -533,13 +548,14 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       return amount;
     }
     if (Tmc.IsShowServiceFee) {
-      amount = order.OrderItems
-        .filter(it => it.Key == key)
-        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+      amount = order.OrderItems.filter(it => it.Key == key).reduce(
+        (acc, it) => (acc = AppHelper.add(acc, +it.Amount)),
+        0
+      );
     } else {
-      amount = order.OrderItems
-        .filter(it => it.Key == key && !(it.Tag || "").endsWith("Fee"))
-        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+      amount = order.OrderItems.filter(
+        it => it.Key == key && !(it.Tag || "").endsWith("Fee")
+      ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
     }
     return amount;
   }
@@ -553,7 +569,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       ((order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
         OrderTravelPayType.Credit ||
         (order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
-        OrderTravelPayType.Person) &&
+          OrderTravelPayType.Person) &&
       order.Status != OrderStatusType.Cancel;
     if (!rev) {
       return false;
