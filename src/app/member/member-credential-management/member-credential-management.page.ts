@@ -1,3 +1,4 @@
+import { Subscription, fromEvent } from "rxjs";
 import {
   Country,
   SelectCountryModalComponent
@@ -37,6 +38,7 @@ import { IdentityService } from "src/app/services/identity/identity.service";
 export class MemberCredentialManagementPage
   implements OnInit, AfterViewInit, CanComponentDeactivate, OnDestroy {
   private timemoutid;
+  private subscriptions: Subscription[] = [];
   identityTypes: { key: string; value: string }[];
   credentials: MemberCredential[];
   newCredentials: MemberCredential[] = []; // 新增的证件
@@ -69,6 +71,7 @@ export class MemberCredentialManagementPage
   ngOnDestroy() {
     document.body.removeEventListener("focusin", this.focusin.bind(this));
     document.body.removeEventListener("focusout", this.focusout.bind(this));
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
   ngOnInit() {
     this.doRefresh();
@@ -98,35 +101,72 @@ export class MemberCredentialManagementPage
       });
     console.log(this.identityTypes);
   }
-  private initInputChanges(container: HTMLElement, credential: MemberCredential) {
+  private onIdNumberInputChange(idInputEle: HTMLInputElement) {
+    if (!idInputEle) {
+      return;
+    }
+    const sub0 = fromEvent(idInputEle, "blur").subscribe(evt => {
+      const value = idInputEle.value.trim();
+      if (value) {
+        const one =
+          this.newCredentials && this.newCredentials.find(it => it.isAdd);
+        if (one && one.Type == CredentialsType.IdCard) {
+          const b = this.getBirthByIdNumber(value);
+          if (b) {
+            const str = `${b.substr(0, 4)}-${b.substr(4, 2)}-${b.substr(6, 2)}`;
+            one.Birthday = this.plt.is("ios") ? str.replace(/-/g, "/") : str;
+          } else {
+            one.Birthday = null;
+          }
+        }
+      }
+    });
+    this.subscriptions.push(sub0);
+  }
+  private initInputChanges(
+    container: HTMLElement,
+    credential: MemberCredential
+  ) {
     console.log("newCredentials 找到当前要修改的某个", credential);
-    const inputFirstNameEle = container && container.querySelector("input[name='FirstName']") as HTMLIonInputElement;
-    const inputLastNameEle = container && container.querySelector("input[name='LastName']") as HTMLIonInputElement;
+    const idInputEle =
+      container &&
+      (container.querySelector("input[name='Number']") as HTMLInputElement);
+    this.onIdNumberInputChange(idInputEle);
+    const inputFirstNameEle =
+      container &&
+      (container.querySelector(
+        "input[name='FirstName']"
+      ) as HTMLIonInputElement);
+    const inputLastNameEle =
+      container &&
+      (container.querySelector(
+        "input[name='LastName']"
+      ) as HTMLIonInputElement);
     if (credential) {
       if (inputFirstNameEle) {
         inputFirstNameEle.oninput = _ => {
           credential.CheckFirstName = inputFirstNameEle.value;
-        }
+        };
       }
       if (inputLastNameEle) {
         inputLastNameEle.oninput = _ => {
           credential.CheckLastName = inputLastNameEle.value;
-        }
+        };
       }
     }
   }
   private focusout() {
     // 软键盘关闭事件
     if (this.timemoutid) {
-      clearTimeout(this.timemoutid)
+      clearTimeout(this.timemoutid);
     }
-    this.timemoutid = setTimeout(function () {
+    this.timemoutid = setTimeout(function() {
       window.scrollTo({
         top: 0,
         left: 0,
-        behavior: 'smooth'
-      }) // =======当键盘收起的时候让页面回到原始位置
-    }, 200)
+        behavior: "smooth"
+      }); // =======当键盘收起的时候让页面回到原始位置
+    }, 200);
   }
   private focusin() {
     // 软键盘弹起事件
@@ -135,38 +175,54 @@ export class MemberCredentialManagementPage
     }
   }
   private keyboardEvents() {
-    document.body.addEventListener('focusin', this.focusout.bind(this), false)
-    document.body.addEventListener('focusout', this.focusout.bind(this), false);
+    document.body.addEventListener("focusin", this.focusout.bind(this), false);
+    document.body.addEventListener("focusout", this.focusout.bind(this), false);
+  }
+  private getBirthByIdNumber(idNumber: string = "") {
+    if (idNumber && idNumber.length == 18) {
+      return idNumber.substr(6, 8);
+    }
+    return "";
   }
   ngAfterViewInit() {
     // console.log(this.formEle);
-
     this.initializeValidate();
-    this.addForm.changes.subscribe(el => {
+    const sub = this.addForm.changes.subscribe(el => {
       // console.log(el);
       if (el.last && el.last.el) {
         if (this.newCredentials) {
-          const one = this.newCredentials.find(it => it.Id == this.addForm.last['el'].getAttribute("dataid"));
-          this.initInputChanges(this.addForm.last['el'], one);
+          const one = this.newCredentials.find(
+            it => it.Id == this.addForm.last["el"].getAttribute("dataid")
+          );
+          this.initInputChanges(this.addForm.last["el"], one);
         }
         this.initializeValidateAdd(el.last.el);
       }
     });
-    this.modifyFormEles.changes.subscribe(_ => {
-      const container = this.modifyFormEles.find(it => it['el'] && it['el'].getAttribute("dataid") == (this.currentModifyItem && this.currentModifyItem.Id));
+    this.subscriptions.push(sub);
+    const sub1 = this.modifyFormEles.changes.subscribe(_ => {
+      const container = this.modifyFormEles.find(
+        it =>
+          it["el"] &&
+          it["el"].getAttribute("dataid") ==
+            (this.currentModifyItem && this.currentModifyItem.Id)
+      );
       // console.log("modifyFormEles,container", container)
       if (container) {
         if (this.credentials && this.currentModifyItem) {
-          const one = this.credentials.find(it => it.Id == (this.currentModifyItem.Id));
-          this.initInputChanges(container['el'], one);
+          const one = this.credentials.find(
+            it => it.Id == this.currentModifyItem.Id
+          );
+          this.initInputChanges(container["el"], one);
         }
         this.validatorService.initialize(
           "Beeant.Domain.Entities.Member.CredentialsEntity",
           "Modify",
-          container['el']
+          container["el"]
         );
       }
-    })
+    });
+    this.subscriptions.push(sub1);
   }
   async removeExistCredential(c: MemberCredential) {
     const comfirmDel = await AppHelper.alert(
@@ -194,7 +250,12 @@ export class MemberCredentialManagementPage
     c.CheckFirstName = c.CheckFirstName && c.CheckFirstName.toUpperCase();
     c.CheckLastName = c.CheckLastName && c.CheckLastName.toUpperCase();
     c.Number = c.Number && c.Number.toUpperCase();
-    const ok = await AppHelper.alert(`请确认您的证件姓名：${c.FirstName}${c.LastName},您的登机名：${c.CheckFirstName}${c.CheckLastName},证件号码：${c.Number}`, true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+    const ok = await AppHelper.alert(
+      `请确认您的证件姓名：${c.FirstName}${c.LastName},您的登机名：${c.CheckFirstName}${c.CheckLastName},证件号码：${c.Number}`,
+      true,
+      LanguageHelper.getConfirmTip(),
+      LanguageHelper.getCancelTip()
+    );
     return ok;
   }
   async saveModify(c: MemberCredential, el: HTMLElement) {
@@ -227,9 +288,11 @@ export class MemberCredentialManagementPage
   }
   async getCredentials() {
     this.loading = true;
-    const identity = await this.identityService.getIdentityAsync().catch(_ => null);
+    const identity = await this.identityService
+      .getIdentityAsync()
+      .catch(_ => null);
     if (!identity) {
-      return this.credentials = [];
+      return (this.credentials = []);
     }
     const credentials = await this.memberService.getCredentials(
       identity && identity.Id
@@ -256,7 +319,7 @@ export class MemberCredentialManagementPage
       Id: AppHelper.uuid(),
       isAdd: true
     } as any;
-    if(!this.newCredentials.find(it=>it.isAdd)){
+    if (!this.newCredentials.find(it => it.isAdd)) {
       this.newCredentials.unshift(item);
     }
   }
@@ -452,7 +515,7 @@ export class MemberCredentialManagementPage
       this.credentials = this.credentials.map(it => {
         it.isModified = it.Id == item.Id;
         return it;
-      })
+      });
     }
     setTimeout(() => {
       this.initializeValidate();
