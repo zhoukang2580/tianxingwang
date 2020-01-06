@@ -96,10 +96,10 @@ export class CalendarComponent
       }
       result.push(this.calendarService.generateYearNthMonthCalendar(y, nextM));
     }
-    this.calendars = this.calendars.concat(result);
     if (this.scroller) {
       this.scroller.complete();
     }
+    this.calendars = this.calendars.concat(result);
   }
   cancel() {
     this.subscription.unsubscribe();

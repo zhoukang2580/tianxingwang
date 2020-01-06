@@ -41,7 +41,7 @@ ul {
 .calendar {
   margin-bottom: 2em;
   position: relative;
-  &::after {
+  .shadow-month {
     position: absolute;
     left: 0;
     right: 0;
@@ -56,9 +56,7 @@ ul {
     font-family: serif;
     font-size: 15rem;
   }
-  &.last {
-    padding-bottom: 2em;
-  }
+  padding-bottom: 2em;
 }
 .weeks {
   position: sticky;
