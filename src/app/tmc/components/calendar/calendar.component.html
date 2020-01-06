@@ -5,62 +5,30 @@
     </ion-buttons>
     <ion-title text-center>{{title||"日历"}}</ion-title>
   </ion-toolbar>
-  <!-- <ion-grid class='weeks'>
-    <ion-row style="margin-top: 1em;padding-bottom: 1em;">
-      <ion-col class='ym'>
-        <div class='ym'>
-          <div class='ym' (click)='onNextMonth(-1)'>
-            <span>前一月</span>
-          </div>
-          <div (click)='onChangeYear()' margin-start>
-            {{year}}年<ion-icon  name="arrow-dropdown" mode='md'></ion-icon>
-          </div>
-          <div (click)='onChangeMonth()' margin-end >
-            {{month}}月 <ion-icon  name="arrow-dropdown" mode='md'></ion-icon>
-          </div>
-          <div class='ym' (click)='onNextMonth(1)' >
-            <span>后一月</span>
-          </div>
-        </div>
-      </ion-col>
-    </ion-row>
-
-  </ion-grid> -->
 </ion-header>
-<ion-content style='--offset-bottom: -1em'>
-  <ion-grid class='weeks'>
-    <ion-row>
-      <ion-col *ngFor='let w of weeks;let first=first;let last=last' size='{{12/7}}'>
-        <ion-text color='{{first||last?"danger":"secondary"}}'>
-          {{w}}
-        </ion-text>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-  <ion-grid *ngFor='let ym of calendars;' class='calendar'>
-    <div class='shadow-month'>
-      {{ym.yearMonth?.substr(5,2)<"10"?ym.yearMonth?.substr(5,2)?.replace('0',""):ym.yearMonth?.substr(5,2)}}</div>
-    <ion-row>
-      <ion-col>{{ym.yearMonth?.substr(0,4)}}年</ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col text-center *ngFor='let day of ym.dayList' size='{{12/7}}' class='day' [class.active]='day.selected'
-        [class.selected]="day?.selected" [class.today]='day?.isToday' [class.between-selected-days]='day?.isBetweenDays'
-        [attr.first-selected-day]='day?.firstSelected' [attr.last-selected-day]='day?.lastSelected'
-        [class.last-month-day]="day?.isLastMonthDay" [class.not-enabled]='!(day?.enabled)' [class.today]='day.isToday'>
-        <app-day [dayModel]='day' (daySelected)='onDaySelected(day)'></app-day>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+<ion-content>
+  <ion-refresher (ionRefresh)='onPreviousMonth()'>
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ul class='weeks'>
+    <li *ngFor='let w of weeks;let first=first;let last=last'>
+      <ion-text color='{{first||last?"danger":"secondary"}}'>
+        {{w}}
+      </ion-text>
+    </li>
+  </ul>
+  <ul *ngFor='let ym of calendars;' class='calendar'
+    [attr.month]='ym.yearMonth?.substr(5,2)<"10"?ym.yearMonth?.substr(5,2)?.replace("0",""):ym.yearMonth?.substr(5,2)'>
+    <li style="width: 100%;display: block;height: 1em;">
+      <strong>{{ym.yearMonth?.substr(0,4)}}年</strong>
+    </li>
+    <li *ngFor='let day of ym.dayList' class='day' [ngClass]='clazz(day)'>
+      <app-day [dayModel]='day' (daySelected)='onDaySelected(day)'></app-day>
+    </li>
+    <!-- <div class='shadow-month'>
+      {{ym.yearMonth?.substr(5,2)<"10"?ym.yearMonth?.substr(5,2)?.replace('0',""):ym.yearMonth?.substr(5,2)}}</div> -->
+  </ul>
   <ion-infinite-scroll (ionInfinite)='loadMore()'>
     <ion-infinite-scroll-content></ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>
-<ion-select style="display:none" #yearSelectEle [okText]='"确定"' [cancelText]='"取消"' [(ngModel)]='year'
-  (ionChange)='onYearChanged()'>
-  <ion-select-option *ngFor='let y of years' [value]='y.year' [selected]='y.selected'>{{y.year}}年</ion-select-option>
-</ion-select>
-<ion-select style="display:none" #monthSelectEle [okText]='"确定"' [cancelText]='"取消"' [(ngModel)]='month'
-  (ionChange)='onMonthChanged()'>
-  <ion-select-option *ngFor='let m of months' [value]='m.month' [selected]='m.selected'>{{m.month}}月</ion-select-option>
-</ion-select>

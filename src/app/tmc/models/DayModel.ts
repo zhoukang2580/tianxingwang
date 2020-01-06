@@ -28,8 +28,8 @@ export class DayModel {
   toolTipMsg?: string; // 给用户的提示信息
   hasToolTip?: boolean; // 是否给用户提示信息
   toolTipPos?: "start" | "center" | "end"; // 提示条的位置
-  desc?: string; // 描述文字,比如酒店的入住，离店,机票的去程，返程
-  descPos?: "top" | "bottom"; // 顶部、底部
+  topDesc?: string; // 描述文字,比如酒店的入住，离店,机票的去程，返程
+  bottomDesc?: string; // 描述文字,比如酒店的入住，离店,机票的去程，返程
   descColor?:
     | "primary"
     | "secondary"

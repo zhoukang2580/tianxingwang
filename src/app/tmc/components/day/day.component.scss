@@ -1,13 +1,12 @@
 .day {
-  display: flex;
-  flex-flow: column nowrap;
-  align-items: center;
-  justify-content: center;
-  padding: 0.8em;
-  height: 3em;
+  // display: flex;
+  // flex-flow: column nowrap;
+  // align-items: center;
+  // justify-content: center;
+  height: 100%;
   width: 100%;
   position: relative;
-  $toolTipWidth: 7em;
+  $toolTipWidth: 10em;
   &.hasToolTip[toolTipPos="start"]::before {
     content: attr(toolTipMsg);
     width: $toolTipWidth;
@@ -84,48 +83,49 @@
   }
   .dayoff {
     margin-right: auto;
+    padding-left: 0.5em;
   }
-  .content.has-top-desc {
-    margin-top: 0.5em;
-  }
-  .content:not(.today) {
-    font-size: 1.1rem;
-    &.today {
-      color: white;
-    }
-  }
-  .top {
-    padding: 0 0.2em;
-    position: absolute;
-    left: 0;
-    top: 0;
-  }
+
+  // .top {
+  //   padding: 0 0.2em;
+  //   position: absolute;
+  //   left: 0;
+  //   top: 0;
+  // }
   .content,
   .top,
+  .desc,
   .bottom {
+    min-height: 1rem;
     font-size: 0.6rem;
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
     justify-content: center;
     width: 100%;
-    [color="light"] {
-      color:var(--ion-color-light);
+  }
+  .content {
+    font-size: 1.1rem;
+  }
+  &:not(.selected) {
+    .color-light {
+      color: var(--ion-color-light);
     }
-    [color="primary"] {
-      color:var(--ion-color-primary);
+    .color-primary {
+      color: var(--ion-color-primary);
     }
-    [color="dark"] {
-      color:var(--ion-color-dark);
+    .color-dark {
+      color: var(--ion-color-dark);
     }
-    [color="danger"] {
-      color:var(--ion-color-danger);
+    .color-danger {
+      color: var(--ion-color-danger);
     }
-    [color="medium"] {
-      color:var(--ion-color-medium);
+    .color-medium {
+      color: var(--ion-color-medium);
     }
   }
 }
+
 :host {
   width: 100%;
   height: 100%;

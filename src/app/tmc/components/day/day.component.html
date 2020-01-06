@@ -1,21 +1,25 @@
-<div class='day' (click)="toggleSelected()" [class.hasToolTip]='dayModel?.hasToolTip'
-  [attr.toolTipMsg]="dayModel?.toolTipMsg" [attr.toolTipPos]="dayModel?.toolTipPos"
-  [class.is-last-month-day]="dayModel?.isLastMonthDay">
+<div class='day' [class.selected]='dayModel?.selected' (click)="toggleSelected()"
+  [class.hasToolTip]='dayModel?.hasToolTip' [attr.toolTipMsg]="dayModel?.toolTipMsg"
+  [attr.toolTipPos]="dayModel?.toolTipPos" [class.is-last-month-day]="dayModel?.isLastMonthDay">
   <div class='top'>
-    <div [attr.color]='dayModel?.isToday?"light":"danger"' class='dayoff' *ngIf="dayModel?.dayoff">休
+    <div class='dayoff color-danger' *ngIf="dayModel?.dayoff">
+      休
     </div>
-    <div [attr.color]='dayModel?.descColor' class='desc' *ngIf="dayModel?.desc&&dayModel?.descPos=='top'" text-nowrap>
-      {{dayModel?.desc}}</div>
+    <div class='desc color-{{dayModel?.descColor}}' *ngIf="dayModel?.topDesc" text-nowrap>
+      {{dayModel?.topDesc}}
+    </div>
   </div>
-  <div class='content' [class.today]='dayModel.isToday' [class.has-top-desc]='dayModel?.desc&&dayModel?.descPos=="top"'>
-    <div [attr.color]='dayModel?.color' *ngIf='!dayModel?.isToday'>
-      <ion-text color='{{dayModel?.dayoff?"danger":""}}'>{{dayModel?.day}}</ion-text>
+  <div class="content color-{{dayModel?.dayoff?'danger':dayModel?.color}}">
+    <div *ngIf='!dayModel?.isToday'>
+      {{dayModel?.day}}
     </div>
-    <div [attr.color]='dayModel?.color' *ngIf='dayModel?.isToday'>
+    <div *ngIf='dayModel?.isToday'>
       {{dayModel?.displayName}}
     </div>
   </div>
-  <div class='bottom' *ngIf='dayModel?.desc&&dayModel?.descPos=="bottom"'>
-    <div [attr.color]='dayModel?.descColor' *ngIf='dayModel?.desc' text-nowrap>{{dayModel?.desc}}</div>
+  <div class='bottom  color-{{dayModel?.descColor}}'>
+    <div text-nowrap *ngIf='dayModel?.bottomDesc'>
+      {{dayModel?.bottomDesc?.includes("程")?dayModel?.lunarInfo?.lunarDayName:dayModel?.bottomDesc}}
+    </div>
   </div>
 </div>

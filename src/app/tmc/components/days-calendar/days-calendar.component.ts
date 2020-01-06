@@ -60,7 +60,7 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
       const nextDay = moment(date).add(i, "days");
       const day = this.calendarService.generateDayModel(nextDay);
       day.dayOfWeekName = this.calendarService.getWeekName(day);
-      day.desc = this.calendarService.getDescOfDay(day);
+      day.topDesc = this.calendarService.getDescOfDay(day);
       day.selected = (selectedDate && selectedDate.date == day.date) || i == 0;
       this.days.push(day);
     }
@@ -73,7 +73,7 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
       }
       day.dayOfWeekName = this.calendarService.getWeekName(day);
-      day.desc = this.calendarService.getDescOfDay(day);
+      day.topDesc = this.calendarService.getDescOfDay(day);
       this.days.unshift(day);
     }
     console.log("days calendar", `n=${n}`, this.days)

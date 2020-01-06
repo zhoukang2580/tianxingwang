@@ -214,13 +214,13 @@ export class CalendarService {
       calender.dayList.push(this.generateDayModel(dayOfiM));
     }
     const clnder = this.initDaysDayOff(calender);
-    console.log("generateYearNthMonthCalendar", clnder);
+    // console.log("generateYearNthMonthCalendar", clnder);
     return clnder;
   }
   private initDaysDayOff(c: AvailableDate) {
     if (c.dayList && c.dayList.some(it => !!it.lunarInfo)) {
       const cx = c.dayList.find(
-        it => it.desc && (it.desc.includes("除夕") || it.date.includes("10-01"))
+        it => it.bottomDesc && (it.bottomDesc.includes("除夕") || it.date.includes("10-01"))
       );
       let endtime = 0;
       if (cx) {
@@ -245,34 +245,33 @@ export class CalendarService {
         );
         if (d.lunarInfo) {
           d.holiday = d.lunarInfo.lunarFestival || d.lunarInfo.solarFestival;
-          d.desc =
+          d.bottomDesc =
             d.lunarInfo.lunarFestival ||
             d.lunarInfo.solarFestival ||
             d.lunarInfo.lunarDayName;
-          d.descPos = "bottom";
           d.descColor = "medium";
           // d.desc = this.getJQ(d);
           if (d.lunarInfo.lunarFestival || d.lunarInfo.solarFestival) {
-            d.desc = d.lunarInfo.lunarFestival || d.lunarInfo.solarFestival;
+            d.bottomDesc = d.lunarInfo.lunarFestival || d.lunarInfo.solarFestival;
             if (
               d.lunarInfo.lunarFestival &&
               d.lunarInfo.lunarMonthName &&
               d.lunarInfo.lunarMonthName.includes("闰")
             ) {
-              d.desc = d.lunarInfo.lunarDayName;
+              d.bottomDesc = d.lunarInfo.lunarDayName;
             }
             d.descColor = "danger";
           }
-          d.desc =
-            d.desc && d.desc.length > 3 ? `${d.desc.substr(0, 3)}...` : d.desc;
+          d.bottomDesc =
+            d.bottomDesc && d.bottomDesc.length > 3 ? `${d.bottomDesc.substr(0, 3)}...` : d.bottomDesc;
         }
       }
     }
     return d;
   }
   private getJQ(d: DayModel) {
-    if (d.desc && d.desc.length <= 4) {
-      return d.desc;
+    if (d.bottomDesc && d.bottomDesc.length <= 4) {
+      return d.bottomDesc;
     }
     return d.lunarInfo && d.lunarInfo.lunarDayName;
   }

@@ -18,7 +18,8 @@ import { DayModel } from "../../models/DayModel";
 import {
   PopoverController,
   IonSelect,
-  IonInfiniteScroll
+  IonInfiniteScroll,
+  IonRefresher
 } from "@ionic/angular";
 import { DateSelectWheelPopoverComponent } from "../date-select-wheel-popover/date-select-wheel-popover.component";
 @Component({
@@ -31,9 +32,8 @@ export class CalendarComponent
   private subscription = Subscription.EMPTY;
   private page: { m: number; y: number };
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
+  @ViewChild(IonRefresher) refresher: IonRefresher;
   weeks: string[];
-  @ViewChild("yearSelectEle") yearSelectEle: IonSelect;
-  @ViewChild("monthSelectEle") monthSelectEle: IonSelect;
   @Input() title: string;
   @Input() forType: FlightHotelTrainType;
   @Input() calendars: AvailableDate[];
@@ -45,14 +45,25 @@ export class CalendarComponent
   month: number;
   months: { month: number; selected: boolean }[];
   years: { year: number; selected: boolean }[] = [];
-  constructor(
-    private calendarService: CalendarService,
-    private popoverCtrl: PopoverController
-  ) {
+  constructor(private calendarService: CalendarService) {
     this.back = new EventEmitter();
     this.daySelected = new EventEmitter();
     this.yearChange = new EventEmitter();
     this.monthChange = new EventEmitter();
+  }
+  clazz(day: DayModel) {
+    if (!day) {
+      return {};
+    }
+    return {
+      active: day.selected,
+      today: day.isToday,
+      [`between-selected-days`]: day.isBetweenDays,
+      [`first-selected-day`]: day.firstSelected,
+      [`last-selected-day`]: day.lastSelected,
+      [`last-month-day`]: day.isLastMonthDay,
+      [`not-enabled`]: !day.enabled
+    };
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();
@@ -73,7 +84,7 @@ export class CalendarComponent
     let [y, m] = this.calendars[this.calendars.length - 1].yearMonth
       .split("-")
       .map(it => +it);
-    let result: AvailableDate[] = [];
+    const result: AvailableDate[] = [];
     let nextM = m;
     this.page.m = m;
     this.page.y = y;
@@ -93,6 +104,38 @@ export class CalendarComponent
   cancel() {
     this.subscription.unsubscribe();
     this.back.emit();
+  }
+  onPreviousMonth() {
+    if (this.calendars && this.calendars.length) {
+      const [year, month] = this.calendars[0].yearMonth
+        .split("-")
+        .map(it => +it);
+      const curM = new Date().getMonth() + 1;
+      const curY = new Date().getFullYear();
+      const months = curY == year ? Math.abs(month - curM) : 1;
+      let y = year;
+      let m = month;
+      for (let i = m + 1; i <= months; i++) {
+        if (month == 1) {
+          y = y - 1;
+          m = 12;
+          this.calendars.unshift(
+            this.calendarService.generateYearNthMonthCalendar(y, m)
+          );
+          break;
+        } else {
+          this.calendars.unshift(
+            this.calendarService.generateYearNthMonthCalendar(y, i)
+          );
+        }
+      }
+      if (this.refresher) {
+        this.refresher.disabled = true;
+      }
+    }
+    if (this.refresher) {
+      this.refresher.complete();
+    }
   }
   async ngOnInit() {
     this.calendarService.getSelectedDaysSource().subscribe(days => {
@@ -133,10 +176,10 @@ export class CalendarComponent
     this.month = curM;
     this.page = { y, m };
     this.months = new Array(12).fill(0).map((it, idx) => {
-      const m = idx + 1;
+      const m1 = idx + 1;
       return {
-        selected: m == curM,
-        month: m
+        selected: m1 == curM,
+        month: m1
       };
     });
     this.years = new Array(10).fill(0).map((it, idx) => {
@@ -145,51 +188,6 @@ export class CalendarComponent
         year: curY + idx
       };
     });
-    // console.log("years", this.years, 'months', this.months);
-  }
-  onNextMonth(n: number) {
-    this.month += n;
-    let yearChanged = false;
-    if (this.month > 12) {
-      this.month = 1;
-      this.year = this.year + 1;
-      yearChanged = true;
-    }
-    if (this.month < 1) {
-      this.month = 12;
-      this.year = this.year - 1;
-      yearChanged = true;
-    }
-    if (this.year <= 1900) {
-      this.year = 1900;
-      this.month = 1;
-      yearChanged = true;
-    }
-    this.onMonthChanged();
-    if (yearChanged) {
-      this.onYearChanged();
-      this.onMonthChanged();
-    }
-  }
-  onChangeYear() {
-    if (this.yearSelectEle) {
-      this.yearSelectEle.open();
-    }
-  }
-  onChangeMonth() {
-    if (this.monthSelectEle) {
-      this.monthSelectEle.open();
-    }
-  }
-  onYearChanged() {
-    if (this.year) {
-      this.yearChange.emit(this.year);
-    }
-  }
-  onMonthChanged() {
-    if (this.month) {
-      this.monthChange.emit(this.month);
-    }
   }
   ngAfterViewInit() {
     if (this.forType == FlightHotelTrainType.Train) {
@@ -197,49 +195,14 @@ export class CalendarComponent
         this.scroller.disabled = true;
       }
     }
-    if(this.forType!=FlightHotelTrainType.Train){
-      setTimeout(() => {
-        this.loadMore();
-      }, 1.2 * 1000);
-    }
-  }
-  private async showDateSelectWheel() {
-    const p = await this.popoverCtrl.create({
-      component: DateSelectWheelPopoverComponent,
-      cssClass: "date-select-wheel",
-      showBackdrop: true,
-      translucent: false,
-      backdropDismiss: false,
-      animated: false,
-      componentProps: {
-        isShowDay: false
-      }
-    });
-    p.present();
-    const result = await p.onDidDismiss();
-    if (result && result.data) {
-      const data = result.data as { year: number; month: number; day: number };
-      this.yearChange.emit(data.year);
-      this.monthChange.emit(data.month);
-    }
-  }
-  getMonth(ym: string) {
-    if (!ym) {
-      return ym;
-    }
-    if (ym.includes("-")) {
-      const [y, m] = ym.split("-");
-      if (y && y.length == 4) {
-        return +m;
-      }
-    }
-    return ym || "";
   }
   onDaySelected(day: DayModel) {
     this.calendars.forEach(c => {
-      c.dayList.forEach(d => {
-        d.selected = d.date == day.date;
-      });
+      if (c.dayList) {
+        c.dayList.forEach(d => {
+          d.selected = d.date == day.date;
+        });
+      }
     });
     this.daySelected.emit(day);
   }

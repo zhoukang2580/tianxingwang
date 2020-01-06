@@ -46,8 +46,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
   selectedSub = Subscription.EMPTY;
   constructor(
     private calendarService: CalendarService,
-    private modalCtrl: ModalController,
-    private tmcService: TmcService
+    private modalCtrl: ModalController
   ) {}
   ngOnDestroy() {
     this.multiSub.unsubscribe();
@@ -85,15 +84,17 @@ export class SelectDateComponent implements OnInit, OnDestroy {
               moment().add(30, "days")
             );
             this.yms.forEach(day => {
-              day.dayList.forEach(d => {
-                d.enabled =
-                  goDate.format("YYYY-MM-DD") == d.date ||
-                  +moment(d.date) >= +goDate;
-                if (type == FlightHotelTrainType.Train) {
+              if (day.dayList) {
+                day.dayList.forEach(d => {
                   d.enabled =
-                    d.timeStamp <= endDay.timeStamp ? d.enabled : false;
-                }
-              });
+                    goDate.format("YYYY-MM-DD") == d.date ||
+                    +moment(d.date) >= +goDate;
+                  if (type == FlightHotelTrainType.Train) {
+                    d.enabled =
+                      d.timeStamp <= endDay.timeStamp ? d.enabled : false;
+                  }
+                });
+              }
             });
           }
         }
@@ -103,12 +104,14 @@ export class SelectDateComponent implements OnInit, OnDestroy {
           moment().add(30, "days")
         );
         this.yms.forEach(day => {
-          day.dayList.forEach(d => {
-            d.enabled = d.timeStamp > today.timeStamp || d.date == today.date;
-            if (type == FlightHotelTrainType.Train) {
-              d.enabled = d.timeStamp <= endDay.timeStamp ? d.enabled : false;
-            }
-          });
+          if (day.dayList) {
+            day.dayList.forEach(d => {
+              d.enabled = d.timeStamp > today.timeStamp || d.date == today.date;
+              if (type == FlightHotelTrainType.Train) {
+                d.enabled = d.timeStamp <= endDay.timeStamp ? d.enabled : false;
+              }
+            });
+          }
         });
       }
     }
@@ -162,15 +165,14 @@ export class SelectDateComponent implements OnInit, OnDestroy {
       return;
     }
     d.selected = true;
-    d.desc = LanguageHelper.getDepartureTip();
-    d.descPos = "top";
+    d.topDesc = LanguageHelper.getDepartureTip();
     d.descColor = "light";
     d.firstSelected = true;
     d.lastSelected = true;
     if (this.isMulti) {
       if (this.selectedDays.length) {
         if (d.timeStamp < this.selectedDays[0].timeStamp) {
-          d.desc =
+          d.topDesc =
             this.tripType == TripType.checkIn ||
             this.tripType == TripType.checkOut
               ? LanguageHelper.getCheckInTip()
@@ -186,15 +188,14 @@ export class SelectDateComponent implements OnInit, OnDestroy {
         } else {
           d.firstSelected = true;
           d.lastSelected = true;
-          d.descPos = "top";
           d.hasToolTip = true;
-          d.desc =
+          d.topDesc =
             this.tripType == TripType.checkIn ||
             this.tripType == TripType.checkOut
               ? LanguageHelper.getCheckOutTip()
               : LanguageHelper.getReturnTripTip();
           if (this.selectedDays[0].timeStamp == d.timeStamp) {
-            this.selectedDays[0].desc =
+            this.selectedDays[0].topDesc =
               this.tripType == TripType.checkIn ||
               this.tripType == TripType.checkOut
                 ? LanguageHelper.getCheckInOutTip()
@@ -219,21 +220,20 @@ export class SelectDateComponent implements OnInit, OnDestroy {
       } else {
         d.firstSelected = true;
         d.lastSelected = true;
-        d.descPos = "top";
         d.hasToolTip = true;
         console.log("tripType", this.tripType);
         if (
           this.tripType == TripType.returnTrip ||
           this.tripType == TripType.departureTrip
         ) {
-          d.desc = LanguageHelper.getDepartureTip();
+          d.topDesc = LanguageHelper.getDepartureTip();
           d.toolTipMsg = LanguageHelper.getSelectFlyBackDate();
         }
         if (
           this.tripType == TripType.checkIn ||
           this.tripType == TripType.checkOut
         ) {
-          d.desc = LanguageHelper.getCheckInTip();
+          d.topDesc = LanguageHelper.getCheckInTip();
           d.toolTipMsg = LanguageHelper.getSelectCheckOutDate();
         } else {
         }
@@ -242,43 +242,48 @@ export class SelectDateComponent implements OnInit, OnDestroy {
     } else {
       d.firstSelected = true;
       d.lastSelected = true;
-      d.descPos = "top";
-      d.desc = LanguageHelper.getDepartureTip();
+      d.topDesc = LanguageHelper.getDepartureTip();
       if (this.tripType == TripType.returnTrip) {
-        d.desc = LanguageHelper.getReturnTripTip();
+        d.topDesc = LanguageHelper.getReturnTripTip();
         d.hasToolTip = false;
         d.toolTipMsg = null;
       }
       if (this.tripType == TripType.departureTrip) {
-        d.desc = LanguageHelper.getDepartureTip();
+        d.topDesc = LanguageHelper.getDepartureTip();
         d.hasToolTip = false;
         d.toolTipMsg = null;
       }
       if (this.tripType == TripType.checkOut) {
-        d.desc = LanguageHelper.getCheckOutTip();
+        d.topDesc = LanguageHelper.getCheckOutTip();
         d.hasToolTip = false;
       }
       if (this.tripType == TripType.checkIn) {
-        d.desc = LanguageHelper.getCheckInTip();
+        d.topDesc = LanguageHelper.getCheckInTip();
         d.hasToolTip = false;
       }
       this.selectedDays = [d];
     }
     this.yms.map(item => {
-      item.dayList.forEach(dt => {
-        dt.selected = this.isMulti
-          ? this.selectedDays.some(it => it.date === dt.date)
-          : dt.date === d.date;
-        dt.lastSelected = false;
-        dt.firstSelected = false;
-        if (!dt.selected) {
-          dt.desc = null;
-          dt.descColor = null;
-          dt.descPos = null;
-          dt.hasToolTip = false;
-          dt.toolTipMsg = null;
-        }
-      });
+      if (item.dayList) {
+        item.dayList.forEach(dt => {
+          dt.selected = this.isMulti
+            ? this.selectedDays.some(it => it.date === dt.date)
+            : dt.date === d.date;
+          dt.lastSelected = false;
+          dt.firstSelected = false;
+          if (!dt.selected) {
+            // dt.desc = null;
+            dt.descColor =
+              dt.lunarInfo &&
+              (dt.lunarInfo.lunarFestival || dt.lunarInfo.solarFestival)
+                ? "danger"
+                : "medium";
+            dt.topDesc = null;
+            dt.hasToolTip = false;
+            dt.toolTipMsg = null;
+          }
+        });
+      }
     });
     if (this.isMulti) {
       this.isCurrentSelectedOk =
@@ -298,13 +303,16 @@ export class SelectDateComponent implements OnInit, OnDestroy {
           last.firstSelected = false;
           first.lastSelected = false;
           this.yms.forEach(ym => {
-            ym.dayList.forEach(it => {
-              it.isBetweenDays =
-                it.timeStamp > first.timeStamp && it.timeStamp < last.timeStamp;
-              if (it.isBetweenDays) {
-                it.selected = true;
-              }
-            });
+            if (ym.dayList) {
+              ym.dayList.forEach(it => {
+                it.isBetweenDays =
+                  it.timeStamp > first.timeStamp &&
+                  it.timeStamp < last.timeStamp;
+                if (it.isBetweenDays) {
+                  it.selected = true;
+                }
+              });
+            }
           });
         }
       }
