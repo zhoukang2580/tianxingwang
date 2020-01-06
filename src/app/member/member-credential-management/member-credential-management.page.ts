@@ -101,25 +101,39 @@ export class MemberCredentialManagementPage
       });
     console.log(this.identityTypes);
   }
+  onIdTypeChange() {
+    if (this.addForm && this.addForm.last && this.addForm.last["el"]) {
+      const idInputEle = this.addForm.last["el"].querySelector(
+        "input[name='Number']"
+      ) as HTMLInputElement;
+      this.changeBirthByIdNumber(idInputEle);
+    }
+  }
+  private changeBirthByIdNumber(idInputEle: HTMLInputElement) {
+    if (!idInputEle) {
+      return;
+    }
+    const value = idInputEle.value.trim();
+    if (value) {
+      const one =
+        this.newCredentials && this.newCredentials.find(it => it.isAdd);
+      if (one && one.Type == CredentialsType.IdCard) {
+        const b = this.getBirthByIdNumber(value);
+        if (b) {
+          const str = `${b.substr(0, 4)}-${b.substr(4, 2)}-${b.substr(6, 2)}`;
+          one.Birthday = this.plt.is("ios") ? str.replace(/-/g, "/") : str;
+        } else {
+          one.Birthday = null;
+        }
+      }
+    }
+  }
   private onIdNumberInputChange(idInputEle: HTMLInputElement) {
     if (!idInputEle) {
       return;
     }
     const sub0 = fromEvent(idInputEle, "blur").subscribe(evt => {
-      const value = idInputEle.value.trim();
-      if (value) {
-        const one =
-          this.newCredentials && this.newCredentials.find(it => it.isAdd);
-        if (one && one.Type == CredentialsType.IdCard) {
-          const b = this.getBirthByIdNumber(value);
-          if (b) {
-            const str = `${b.substr(0, 4)}-${b.substr(4, 2)}-${b.substr(6, 2)}`;
-            one.Birthday = this.plt.is("ios") ? str.replace(/-/g, "/") : str;
-          } else {
-            one.Birthday = null;
-          }
-        }
-      }
+      this.changeBirthByIdNumber(idInputEle);
     });
     this.subscriptions.push(sub0);
   }
