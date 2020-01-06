@@ -88,7 +88,7 @@ export class CalendarComponent
     let nextM = m;
     this.page.m = m;
     this.page.y = y;
-    for (let i = 1; i <= 3; i++) {
+    for (let i = 1; i <= 1; i++) {
       nextM = ++nextM;
       if (nextM > 12) {
         y += 1;
@@ -96,10 +96,10 @@ export class CalendarComponent
       }
       result.push(this.calendarService.generateYearNthMonthCalendar(y, nextM));
     }
+    this.calendars = this.calendars.concat(result);
     if (this.scroller) {
       this.scroller.complete();
     }
-    this.calendars = this.calendars.concat(result);
   }
   cancel() {
     this.subscription.unsubscribe();
