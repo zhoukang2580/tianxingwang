@@ -112,21 +112,30 @@ export class CalendarComponent
         .map(it => +it);
       const curM = new Date().getMonth() + 1;
       const curY = new Date().getFullYear();
-      const months = curY == year ? Math.abs(month - curM) : 1;
-      let y = year;
-      let m = month;
-      for (let i = m + 1; i <= months; i++) {
-        if (month == 1) {
-          y = y - 1;
-          m = 12;
+      const months = Math.min(
+        6,
+        curY == year && curM > month ? curM - month : 1
+      );
+      if (months > 1) {
+        for (let i = 1; i <= months; i++) {
           this.calendars.unshift(
-            this.calendarService.generateYearNthMonthCalendar(y, m)
+            this.calendarService.generateYearNthMonthCalendar(year, month - i)
           );
-          break;
-        } else {
-          this.calendars.unshift(
-            this.calendarService.generateYearNthMonthCalendar(y, i)
+        }
+      } else {
+        if (this.refresher) {
+          this.refresher.disabled = true;
+          let calendar = this.calendarService.generateYearNthMonthCalendar(
+            year,
+            month - 1
           );
+          if (month - 1 <= 0) {
+            calendar = this.calendarService.generateYearNthMonthCalendar(
+              year - 1,
+              12
+            );
+          }
+          this.calendars.unshift(calendar);
         }
       }
       if (this.refresher) {
