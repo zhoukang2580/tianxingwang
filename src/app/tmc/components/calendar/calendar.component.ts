@@ -31,6 +31,7 @@ export class CalendarComponent
   implements OnInit, AfterViewInit, OnDestroy, OnChanges {
   private subscription = Subscription.EMPTY;
   private page: { m: number; y: number };
+  private destroyed = false;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   weeks: string[];
@@ -66,6 +67,7 @@ export class CalendarComponent
     };
   }
   ngOnDestroy() {
+    this.destroyed = true;
     this.subscription.unsubscribe();
   }
   ngOnChanges(changes: SimpleChanges) {
@@ -148,6 +150,9 @@ export class CalendarComponent
   }
   async ngOnInit() {
     this.calendarService.getSelectedDaysSource().subscribe(days => {
+      if (this.destroyed) {
+        return;
+      }
       if (days && days.length) {
         const cur = days[0];
         if (cur) {
