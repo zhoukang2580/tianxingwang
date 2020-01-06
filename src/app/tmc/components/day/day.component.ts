@@ -21,7 +21,7 @@ export class DayComponent implements OnInit {
     }
     this.isToday();
   }
-  isToday() {
+  private isToday() {
     const curDate = moment().format("YYYY-MM-DD");
     // console.log(curDate,this.dayModel.date);
     if (curDate === this.dayModel.date) {
@@ -36,7 +36,9 @@ export class DayComponent implements OnInit {
     if (week === 6 || week === 0) {
       this.dayModel.color = this.dayModel.isToday
         ? this.dayModel.color || "light"
-        : "warning";
+        : this.dayModel.enabled
+        ? "warning"
+        : "medium";
       // this.dayModel.dayoff = true;
     }
     if (week === 0) {
