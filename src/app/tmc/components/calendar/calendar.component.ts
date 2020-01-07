@@ -31,7 +31,6 @@ export class CalendarComponent
   implements OnInit, AfterViewInit, OnDestroy, OnChanges {
   private subscription = Subscription.EMPTY;
   private page: { m: number; y: number };
-  private destroyed = false;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   weeks: string[];
@@ -67,7 +66,6 @@ export class CalendarComponent
     };
   }
   ngOnDestroy() {
-    this.destroyed = true;
     this.subscription.unsubscribe();
   }
   ngOnChanges(changes: SimpleChanges) {
@@ -100,6 +98,8 @@ export class CalendarComponent
     }
     this.calendars = this.calendars.concat(result);
     if (this.scroller) {
+      const curY = new Date().getFullYear();
+      this.scroller.disabled = curY + 1 == y && nextM == 1;
       this.scroller.complete();
     }
   }
@@ -149,23 +149,6 @@ export class CalendarComponent
     }
   }
   async ngOnInit() {
-    this.calendarService.getSelectedDaysSource().subscribe(days => {
-      if (this.destroyed) {
-        return;
-      }
-      if (days && days.length) {
-        const cur = days[0];
-        if (cur) {
-          const y = +cur.date.substr(0, 4);
-          const m = +cur.date.substr("yyyy-".length, 2);
-          this.initCurYM(y, m);
-        } else {
-          this.initCurYM();
-        }
-      } else {
-        this.initCurYM();
-      }
-    });
     if (this.calendars && this.calendars.length) {
       const c = this.calendars[0];
       const y = +c.yearMonth.substr(0, 4);

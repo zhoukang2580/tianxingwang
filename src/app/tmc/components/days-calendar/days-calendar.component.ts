@@ -1,4 +1,4 @@
-import { Subscription } from 'rxjs';
+import { Subscription } from "rxjs";
 import { Platform, DomController } from "@ionic/angular";
 import { DayModel } from "../../models/DayModel";
 import {
@@ -15,7 +15,7 @@ import {
   OnDestroy
 } from "@angular/core";
 import * as moment from "moment";
-import { CalendarService } from 'src/app/tmc/calendar.service';
+import { CalendarService } from "src/app/tmc/calendar.service";
 @Component({
   selector: "app-days-calendar",
   templateUrl: "./days-calendar.component.html",
@@ -43,15 +43,19 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   ngOnInit() {
     this.initDays(moment().format("YYYY-MM-DD"));
-    this.subscription = this.calendarService.getSelectedDaysSource().subscribe(days => {
-      if (days && days.length) {
-        const selectedDate = days.find(it => it.selected);
-        this.initDays(days[0].date, selectedDate);
-        this.moveDateToView();
-      } else {
-        this.initDays(moment().format("YYYY-MM-DD"))
-      }
-    });
+    this.subscription = this.calendarService
+      .getSelectedDaysSource()
+      .subscribe(days => {
+        setTimeout(() => {
+          if (days && days.length) {
+            const selectedDate = days.find(it => it.selected);
+            this.initDays(days[0].date, selectedDate);
+            this.moveDateToView();
+          } else {
+            this.initDays(moment().format("YYYY-MM-DD"));
+          }
+        }, 0);
+      });
     // console.log(this.days);
   }
   private initDays(date: string, selectedDate: DayModel = null) {
@@ -64,7 +68,7 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
       day.selected = (selectedDate && selectedDate.date == day.date) || i == 0;
       this.days.push(day);
     }
-    let n = Math.abs(moment().diff(moment(date), 'days'));
+    let n = Math.abs(moment().diff(moment(date), "days"));
     n = n > 10 ? 7 : n;
     for (let i = -1; i >= -n; i--) {
       const nextDay = moment(date).add(i, "days");
@@ -76,7 +80,7 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
       day.topDesc = this.calendarService.getDescOfDay(day);
       this.days.unshift(day);
     }
-    console.log("days calendar", `n=${n}`, this.days)
+    console.log("days calendar", `n=${n}`, this.days);
   }
   onCalendar() {
     this.calenderClick.emit();
@@ -131,15 +135,19 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
     if (daysEle && selectedEle) {
-      const clientRect = selectedEle.getBoundingClientRect();
-      // console.dir(daysEle);
-      const dist =
-        clientRect.width / 2 + clientRect.left - this.plt.width() / 2;
-      // console.dir(dist);
-      daysEle.scrollBy({
-        left: dist,
-        top: 0,
-        behavior: "smooth"
+      this.domCtrl.read(_ => {
+        const clientRect = selectedEle.getBoundingClientRect();
+        // console.dir(daysEle);
+        const dist =
+          clientRect.width / 2 + clientRect.left - this.plt.width() / 2;
+        // console.dir(dist);
+        this.domCtrl.write(_ => {
+          daysEle.scrollBy({
+            left: dist,
+            top: 0,
+            behavior: "smooth"
+          });
+        });
       });
     }
     if (byUser) {

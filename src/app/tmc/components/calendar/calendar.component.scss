@@ -21,7 +21,8 @@ ul {
       background-color: rgba(var(--ion-color-dark-rgb), 0.15);
     }
     &.last-month-day {
-      visibility: collapse;
+      visibility: hidden;
+      pointer-events: none;
     }
     &.last-selected-day {
       border-top-right-radius: 4px;
