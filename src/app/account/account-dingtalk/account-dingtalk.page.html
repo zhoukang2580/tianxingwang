@@ -15,8 +15,8 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-toolbar *ngIf='items?.length==0' text-center>
-    <ion-label color='medium'  style='width:100%'>请至钉钉的应用“天行商旅”中绑定账号</ion-label>
+  <ion-toolbar *ngIf='items?.length==0&&isShowBindButton' text-center>
+    <ion-label color='medium' style='width:100%'>请至钉钉的应用“天行商旅”中绑定账号</ion-label>
   </ion-toolbar>
   <ion-list #List (ionDrag)='onSlidingItemDrag()'>
     <ion-item-sliding (click)="itemClick()" *ngFor="let item of items">
