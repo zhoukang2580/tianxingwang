@@ -52,15 +52,15 @@
               <ion-label>{{item.Hotel?.Name}}</ion-label>
             </h3>
             <h5 class='grade-stars'>
-              <span margin-end>
-                {{item.Hotel?.Grade<="0"?"":item.Hotel?.Grade}}
-              </span>
-              <div class='stars'>
+              <div class='stars' margin-end>
                 <ng-container *ngFor='let s of getStars(item.Hotel)'>
                   <ion-icon name="star" color='danger' *ngIf='s>=1'></ion-icon>
                   <ion-icon name='star-half' color='danger' *ngIf='s<1'></ion-icon>
                 </ng-container>
               </div>
+              <span *ngIf='item.Hotel?.Grade as grade'>
+                {{grade}}分
+              </span>
             </h5>
             <h6 class='address-price'>
               <ion-label>{{item.Hotel?.Address}}</ion-label>
