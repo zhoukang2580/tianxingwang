@@ -18,7 +18,13 @@ app-image-swiper {
     height: 45vh;
   }
 }
-
+.announcement {
+  display: flex;
+  align-items: center;
+  img {
+    width: 1em;
+  }
+}
 ion-grid ion-row ion-col {
   outline: none;
   .item {
@@ -30,7 +36,7 @@ ion-grid ion-row ion-col {
       margin-top: 0.5rem;
     }
     ion-label {
-      img{
+      img {
         max-width: 3em;
       }
       // background: var(--ion-color-primary);
