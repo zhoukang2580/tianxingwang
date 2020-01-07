@@ -62,6 +62,10 @@
                 {{grade}}分
               </span>
             </h5>
+            <h5 class='grade-stars' *ngIf='item.Hotel?.VariablesJsonObj["GeoDistance"] as distance'>
+              <ion-icon name="pin" color='secondary'></ion-icon>
+              距离{{distance.substring(0,distance.indexOf(','))}}直线距离约{{distance.substring(distance.indexOf(',')+1)}}km
+            </h5>
             <h6 class='address-price'>
               <ion-label>{{item.Hotel?.Address}}</ion-label>
               <ion-text color='danger'><small>￥</small> <strong>{{getAvgPrice(item.Hotel)}}</strong>
@@ -89,11 +93,11 @@
             <ion-skeleton-text animated style="width:90%"></ion-skeleton-text>
           </h1>
           <h1>
-            <ion-skeleton-text  style="width:40%"></ion-skeleton-text>
+            <ion-skeleton-text style="width:40%"></ion-skeleton-text>
           </h1>
           <h1 style="display:flex;justify-content:space-between;align-items: center;">
             <ion-skeleton-text animated style="width:70%"></ion-skeleton-text>
-            <ion-skeleton-text  style="width:10%"></ion-skeleton-text>
+            <ion-skeleton-text style="width:10%"></ion-skeleton-text>
           </h1>
         </ion-label>
       </ion-item>

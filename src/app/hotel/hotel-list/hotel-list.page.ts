@@ -110,31 +110,6 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit, AfterCon
       );
     }
     this.autofocusSearchBarInput();
-    // if (this.hotellist) {
-    //   const sub = this.hotellist.changes.subscribe(_ => {
-    //     if (this.hotellist && this.hotellist.first) {
-    //       setTimeout(() => {
-    //         const height =
-    //           (this.querytoolbar &&
-    //             this.querytoolbar["el"] &&
-    //             this.querytoolbar["el"].clientHeight) ||
-    //           (this.plt.is("ios") ? 44 : 56);
-    //         if (height) {
-    //           if (this.hotellist.first["el"]) {
-    //             this.domCtrl.write(_ => {
-    //               this.render.setStyle(
-    //                 this.hotellist.first["el"],
-    //                 "margin-top",
-    //                 `${height}px`
-    //               );
-    //             });
-    //           }
-    //         }
-    //       }, 10);
-    //     }
-    //   });
-    //   this.subscriptions.push(sub);
-    // }
   }
   onSearch() {
     this.doRefresh();

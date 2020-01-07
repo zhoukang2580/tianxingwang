@@ -120,7 +120,9 @@ export class HotelService {
     return this.getRoomRateRule(roomPlan);
   }
   getRoomRateRuleMessage(roomPlan: RoomPlanEntity) {
-    if (!roomPlan || !roomPlan.RoomPlanRules) { return ""; }
+    if (!roomPlan || !roomPlan.RoomPlanRules) {
+      return "";
+    }
     return roomPlan.RoomPlanRules.map(it => it.Description).join(",");
   }
   getAvgPrice(plan: RoomPlanEntity) {
@@ -204,7 +206,12 @@ export class HotelService {
   }
   async getConditions(forceFetch = false) {
     const city = this.getSearchHotelModel().destinationCity;
-    forceFetch = forceFetch || city.Code != (this.conditionModel && this.conditionModel.city && this.conditionModel.city.Code);
+    forceFetch =
+      forceFetch ||
+      city.Code !=
+        (this.conditionModel &&
+          this.conditionModel.city &&
+          this.conditionModel.city.Code);
     if (
       forceFetch ||
       !this.conditionModel ||
@@ -256,10 +263,14 @@ export class HotelService {
     this.setSearchHotelModel(m);
   }
   async getCurPosition() {
-    const res = await this.mapService.getLatLng().catch(_=>null);
+    const res = await this.mapService.getLatLng().catch(_ => null);
     if (res && res.position) {
       const cities = await this.getHotelCityAsync();
-      res.city = cities.find(c => c.Name.includes(res.position.cityName) || res.position.cityName.includes(c.Name))
+      res.city = cities.find(
+        c =>
+          c.Name.includes(res.position.cityName) ||
+          res.position.cityName.includes(c.Name)
+      );
     }
     return res.city ? res : await this.mapService.getCurrentCityPosition();
   }
@@ -283,20 +294,28 @@ export class HotelService {
         m.hotelType == "normal"
           ? ""
           : m.hotelType == "agreement"
-            ? "Agreement"
-            : "SpecialPrice";
+          ? "Agreement"
+          : "SpecialPrice";
       this.searchHotelModelSource.next(this.searchHotelModel);
     }
   }
-  private getPassengerCredentials(accountIds: string[], isShowLoading: boolean) {
-    if (this.fetchPassengerCredentials && this.fetchPassengerCredentials.promise) {
+  private getPassengerCredentials(
+    accountIds: string[],
+    isShowLoading: boolean
+  ) {
+    if (
+      this.fetchPassengerCredentials &&
+      this.fetchPassengerCredentials.promise
+    ) {
       return this.fetchPassengerCredentials.promise;
     }
     this.fetchPassengerCredentials = {
-      promise: this.tmcService.getPassengerCredentials(accountIds, isShowLoading).finally(() => {
-        this.fetchPassengerCredentials = null;
-      })
-    }
+      promise: this.tmcService
+        .getPassengerCredentials(accountIds, isShowLoading)
+        .finally(() => {
+          this.fetchPassengerCredentials = null;
+        })
+    };
     return this.fetchPassengerCredentials.promise;
   }
   async initSelfBookTypeBookInfos(isShowLoading = false) {
@@ -311,8 +330,10 @@ export class HotelService {
       let IdCredential: CredentialsEntity;
       const staff = await this.staffService.getStaff(false, isShowLoading);
       if (!this.selfCredentials || this.selfCredentials.length === 0) {
-        const res = await this.getPassengerCredentials([staff.AccountId], isShowLoading)
-          .catch(_ => ({ [staff.AccountId]: [] }));
+        const res = await this.getPassengerCredentials(
+          [staff.AccountId],
+          isShowLoading
+        ).catch(_ => ({ [staff.AccountId]: [] }));
         this.selfCredentials = res[staff.AccountId];
       }
       IdCredential =
@@ -341,7 +362,10 @@ export class HotelService {
       this.setBookInfos(bookInfos);
     }
   }
-  removeBookInfo(bookInfo: PassengerBookInfo<IHotelInfo>, isRemovePassenger: boolean) {
+  removeBookInfo(
+    bookInfo: PassengerBookInfo<IHotelInfo>,
+    isRemovePassenger: boolean
+  ) {
     const arg = { ...bookInfo };
     if (isRemovePassenger) {
       this.bookInfos = this.bookInfos.filter(it => it.id !== arg.id);
@@ -351,7 +375,7 @@ export class HotelService {
           it.bookInfo = null;
         }
         return it;
-      })
+      });
     }
     this.setBookInfos(this.bookInfos);
   }
@@ -370,7 +394,7 @@ export class HotelService {
     return this.bookInfoSource.asObservable();
   }
   calcTotalNights(d1: string, d2: string) {
-    return Math.abs(moment(d1).diff(moment(d2), 'days'))
+    return Math.abs(moment(d1).diff(moment(d2), "days"));
   }
   async openCalendar(
     checkInDate?: DayModel,
@@ -388,7 +412,7 @@ export class HotelService {
         isMulti: true,
         title,
         forType: FlightHotelTrainType.Hotel
-      },
+      }
       // animated:false
     });
     await m.present();
@@ -415,7 +439,7 @@ export class HotelService {
       const local = await this.getHotelCitiesFromLocalCache();
       if (local) {
         this.lastUpdateTime = local.LastUpdateTime;
-        this.localHotelCities = local.HotelCities||[];
+        this.localHotelCities = local.HotelCities || [];
       }
     }
     if (
@@ -426,9 +450,9 @@ export class HotelService {
       return this.localHotelCities;
     }
     this.localHotelCities = this.localHotelCities || [];
-    const cs = await this.loadHotelCitiesFromServer(this.lastUpdateTime).catch(
-      _ => ({ HotelCities: [] as TrafficlineEntity[] })
-    );
+    const cs = await this.loadHotelCitiesFromServer(
+      this.lastUpdateTime
+    ).catch(_ => ({ HotelCities: [] as TrafficlineEntity[] }));
     if (cs && cs.HotelCities && cs.HotelCities.length) {
       const arr = cs.HotelCities.map(item => {
         if (!item.Pinyin) {
@@ -491,6 +515,9 @@ export class HotelService {
     };
     const req = new RequestEntity();
     req.Method = `TmcApiHotelUrl-Home-List`;
+    if (query.searchGeoId) {
+      req["searchGeoId"] = query.searchGeoId;
+    }
     const city = this.getSearchHotelModel().destinationCity;
     hotelquery.CityCode = city && city.Code;
     hotelquery.BeginDate = this.getSearchHotelModel().checkInDate;
@@ -539,37 +566,40 @@ export class HotelService {
       hotelType: this.getSearchHotelModel().hotelType
     };
     // req.IsShowLoading = true;
-    return from(this.setDefaultFilterPolicy())
-      .pipe(
-        switchMap(_ => this.apiService.getResponse<HotelResultEntity>(req)),
-        map(result => {
-          if (result && result.Data && result.Data.HotelDayPrices) {
-            result.Data.HotelDayPrices = result.Data.HotelDayPrices.map(it => {
-              if (it.Hotel && it.Hotel.Variables) {
-                it.Hotel.VariablesJsonObj = JSON.parse(it.Hotel.Variables);
-              }
-              return it;
-            });
-          }
-          return result;
-        })
-      );
+    return from(this.setDefaultFilterPolicy()).pipe(
+      switchMap(_ => this.apiService.getResponse<HotelResultEntity>(req)),
+      map(result => {
+        if (result && result.Data && result.Data.HotelDayPrices) {
+          result.Data.HotelDayPrices = result.Data.HotelDayPrices.map(it => {
+            if (it.Hotel && it.Hotel.Variables) {
+              it.Hotel.VariablesJsonObj = JSON.parse(it.Hotel.Variables);
+            }
+            return it;
+          });
+        }
+        return result;
+      })
+    );
   }
   private async setDefaultFilterPolicy() {
     const isSelf = await this.staffService.isSelfBookType();
     const bookInfos = this.getBookInfos();
     const unSelected = bookInfos.find(it => !it.bookInfo);
     if (isSelf || bookInfos.length == 1) {
-      this.setBookInfos(bookInfos.map((it, idx) => {
-        it.isFilterPolicy = idx == 0;
-        return it;
-      }));
+      this.setBookInfos(
+        bookInfos.map((it, idx) => {
+          it.isFilterPolicy = idx == 0;
+          return it;
+        })
+      );
     } else {
       if (unSelected) {
-        this.setBookInfos(bookInfos.map(it => {
-          it.isFilterPolicy = it.id == unSelected.id;
-          return it;
-        }))
+        this.setBookInfos(
+          bookInfos.map(it => {
+            it.isFilterPolicy = it.id == unSelected.id;
+            return it;
+          })
+        );
       }
     }
   }
@@ -596,7 +626,7 @@ export class HotelService {
       return "";
     }
     p.VariablesJsonObj = p.VariablesJsonObj || JSON.parse(p.Variables) || {};
-    return p.VariablesJsonObj['RoomPlanUniqueId'] as string;
+    return p.VariablesJsonObj["RoomPlanUniqueId"] as string;
   }
   private async getHotelPolicyAsync(
     rpls: RoomPlanEntity[],
@@ -756,7 +786,7 @@ export class HotelService {
     let i = 10;
     let top = await this.modalCtrl.getTop();
     while (top && --i > 0) {
-      await top.dismiss().catch(_ => { });
+      await top.dismiss().catch(_ => {});
       top = await this.modalCtrl.getTop();
     }
   }

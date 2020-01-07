@@ -23,9 +23,7 @@ import {
 import { trigger, transition, animate } from "@angular/animations";
 import { HotelConditionModel } from "../../models/ConditionModel";
 import { Storage } from "@ionic/storage";
-import {
-  RecommendRankComponent
-} from "./recommend-rank/recommend-rank.component";
+import { RecommendRankComponent } from "./recommend-rank/recommend-rank.component";
 import { QueryTabComponent } from "./query-tab/query-tab.component";
 import { BrandEntity } from "../../models/BrandEntity";
 import { IGeoTab, IGeoItem } from "./hotel-geo/hotel-geo.component";
@@ -35,7 +33,7 @@ import {
   HotelStarPriceComponent
 } from "./hotel-starprice/hotel-starprice.component";
 import { environment } from "src/environments/environment";
-import { Subscription } from 'rxjs';
+import { Subscription } from "rxjs";
 interface ITab {
   label: string;
   id: string;
@@ -103,16 +101,32 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
     }
   }
   isStarPriceHasConditionFiltered() {
-    return this.hotelQueryModel && this.hotelQueryModel.starAndPrices && this.hotelQueryModel.starAndPrices.some(t => t.hasItemSelected);
+    return (
+      this.hotelQueryModel &&
+      this.hotelQueryModel.starAndPrices &&
+      this.hotelQueryModel.starAndPrices.some(t => t.hasItemSelected)
+    );
   }
   isLocationAreasHasConditionFiltered() {
-    return this.hotelQueryModel && this.hotelQueryModel.locationAreas && this.hotelQueryModel.locationAreas.some(it => it.hasFilterItem);
+    return (
+      this.hotelQueryModel &&
+      this.hotelQueryModel.locationAreas &&
+      this.hotelQueryModel.locationAreas.some(it => it.hasFilterItem)
+    );
   }
   isRanksHasConditionFiltered() {
-    return this.hotelQueryModel && this.hotelQueryModel.ranks && this.hotelQueryModel.ranks.some(it => it.value != 'Category');
+    return (
+      this.hotelQueryModel &&
+      this.hotelQueryModel.ranks &&
+      this.hotelQueryModel.ranks.some(it => it.value != "Category")
+    );
   }
   isFiltersConditionFiltered() {
-    return this.hotelQueryModel && this.hotelQueryModel.filters && this.hotelQueryModel.filters.some(it => it.hasFilterItem);
+    return (
+      this.hotelQueryModel &&
+      this.hotelQueryModel.filters &&
+      this.hotelQueryModel.filters.some(it => it.hasFilterItem)
+    );
   }
   onActiveTab(tab: ITab) {
     if (this.queryTabComps) {
@@ -124,9 +138,17 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
   }
   onStarPriceChange() {
     let query = { ...this.hotelService.getHotelQueryModel() };
-    if (query && query.starAndPrices && query.starAndPrices.some(it => it.hasItemSelected)) {
-      const customeprice = query.starAndPrices.find(it => it.tag == "customeprice");
-      const starAndPrices = query.starAndPrices.filter(it => it.hasItemSelected).filter(it => !!it);
+    if (
+      query &&
+      query.starAndPrices &&
+      query.starAndPrices.some(it => it.hasItemSelected)
+    ) {
+      const customeprice = query.starAndPrices.find(
+        it => it.tag == "customeprice"
+      );
+      const starAndPrices = query.starAndPrices
+        .filter(it => it.hasItemSelected)
+        .filter(it => !!it);
       console.log("onStarPriceChange starAndPrices ", starAndPrices);
       this.hideQueryPannel();
       const tabs = starAndPrices.filter(
@@ -139,18 +161,15 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
       console.log("price customeprice", tabs, query);
       let { lower, upper } = tabs
         .map(tab => tab.items)
-        .reduce(
-          (p, items) => {
-            items
-              .filter(it => it.isSelected)
-              .forEach(item => {
-                p.lower = Math.min(item.minPrice, p.lower) || item.minPrice;
-                p.upper = Math.max(item.maxPrice, p.upper) || item.maxPrice;
-              });
-            return p;
-          },
-          {} as { lower: number; upper: number }
-        );
+        .reduce((p, items) => {
+          items
+            .filter(it => it.isSelected)
+            .forEach(item => {
+              p.lower = Math.min(item.minPrice, p.lower) || item.minPrice;
+              p.upper = Math.max(item.maxPrice, p.upper) || item.maxPrice;
+            });
+          return p;
+        }, {} as { lower: number; upper: number });
       if (customeprice && customeprice.hasItemSelected) {
         upper = customeprice.items[0].maxPrice;
         lower = customeprice.items[0].minPrice;
@@ -184,18 +203,49 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
     const query = this.hotelService.getHotelQueryModel();
     if (query && query.locationAreas) {
       query.Geos = query.Geos || [];
-      const geoTabs = query.locationAreas.filter(tab => tab.hasFilterItem)
+      const geoTabs = query.locationAreas.filter(tab => tab.hasFilterItem);
       console.log("geo 搜索", geoTabs);
       if (geoTabs.length) {
+        const metroIds = [];
         geoTabs.forEach(tab => {
           tab.items.forEach(item => {
-            if (item.items && item.items.length) {// level 3
+            if (item.items && item.items.length) {
+              // level 3
               item.items.forEach(t => {
                 if (t.isSelected) {
+                  if (tab.tag == "Metro") {
+                    let selectedId;
+                    if (tab.items) {
+                      tab.items.forEach(third => {
+                        if (third.items) {
+                          third.items.forEach(m => {
+                            if (m.isSelected) {
+                              selectedId = m.id;
+                            }
+                            metroIds.push(m.id);
+                          });
+                        }
+                      });
+                      if (selectedId) {
+                        query.searchGeoId = selectedId;
+                      } else {
+                        delete query.searchGeoId;
+                      }
+                    }
+                  }
+                  if (query.Geos.length) {
+                    if (metroIds.length) {
+                      // 移除已经选择过的地铁站
+                      query.Geos = query.Geos.filter(
+                        it => !metroIds.some(md => md == it)
+                      );
+                    }
+                  }
                   query.Geos.push(t.id);
                 }
-              })
-            } else {// level 2
+              });
+            } else {
+              // level 2
               if (item.isSelected) {
                 query.Geos.push(item.id);
               }
@@ -217,7 +267,9 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
       this.doRefresh(query);
       return;
     }
-    const filter: IFilterTab<any>[] = query.filters.filter(it => it.hasFilterItem);
+    const filter: IFilterTab<any>[] = query.filters.filter(
+      it => it.hasFilterItem
+    );
     const theme = filter.find(it => it.tag == "Theme");
     const brand = filter.find(it => it.tag == "Brand");
     const services = filter.find(it => it.tag == "Service");
@@ -306,9 +358,11 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
     this.hotelService.setHotelQuerySource(query);
   }
   ngOnInit() {
-    this.hotelQueryModelSub = this.hotelService.getHotelQuerySource().subscribe(query => {
-      this.hotelQueryModel = query;
-    })
+    this.hotelQueryModelSub = this.hotelService
+      .getHotelQuerySource()
+      .subscribe(query => {
+        this.hotelQueryModel = query;
+      });
   }
   doRefresh(query?: HotelQueryEntity) {
     this.hotelQueryModel = new HotelQueryEntity();

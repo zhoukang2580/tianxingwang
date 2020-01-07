@@ -80,7 +80,7 @@ export class HotelStarPriceComponent
     if (evt.detail.value) {
       this.value = evt.detail.value as ILowerUper;
       const value = { ...this.value };
-      value.upper = this.value.upper >= 1000 ? Infinity : this.value.upper;
+      value.upper = this.value.upper > 1000 ? Infinity : this.value.upper;
       this.customepriceTab.items[0].minPrice = value.lower;
       this.customepriceTab.items[0].maxPrice = value.upper;
       this.customepriceTab.hasItemSelected =
@@ -155,17 +155,24 @@ export class HotelStarPriceComponent
   }
   onResetCustomePrice(isUnlimited = false) {
     if (this.rangeEle) {
-      this.value = { lower: 0, upper: 1000 };
+      this.value = { lower: 0, upper: 1001 };
       // console.log("重置自定义价格，onResetCustomePrice", this.value);
       this.customepriceTab.items[0].minPrice = this.value.lower;
       this.customepriceTab.items[0].maxPrice = this.value.upper;
       this.customepriceTab.hasItemSelected = false;
       this.rangeEle.value = this.value;
       if (this.hotelQuery.starAndPrices) {
+        const beforeHastab = this.hotelQuery.starAndPrices.find(
+          it => it.tag == "customeprice"
+        );
         this.hotelQuery.starAndPrices = this.hotelQuery.starAndPrices.filter(
           it => it.tag != "customeprice"
         );
-        if (this.value.lower > 0 || this.value.upper < Infinity) {
+        if (
+          (beforeHastab && this.value.lower > 0) ||
+          this.value.upper < 1001 ||
+          this.value.upper < Infinity
+        ) {
           this.customepriceTab.hasItemSelected = true;
           this.hotelQuery.starAndPrices.push(this.customepriceTab);
         }
