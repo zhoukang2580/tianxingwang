@@ -31,7 +31,7 @@ export class TrainListItemComponent implements OnInit {
       evt.preventDefault();
       evt.stopPropagation();
     }
-    AppHelper.toast("可刷身份证进站", 1400, "middle");
+    AppHelper.toast("可刷身份证进站", 1000, "middle");
   }
   getLowestSeatPrice() {
     if (!this.train || !this.train.Seats || !this.train.Seats.length) {
