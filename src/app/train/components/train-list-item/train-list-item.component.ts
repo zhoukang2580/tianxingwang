@@ -1,6 +1,6 @@
-import { TrainService } from 'src/app/train/train.service';
-import { AppHelper } from './../../../appHelper';
-import { ITrainInfo } from './../../train.service';
+import { TrainService } from "src/app/train/train.service";
+import { AppHelper } from "./../../../appHelper";
+import { ITrainInfo } from "./../../train.service";
 import { Component, OnInit, Input, EventEmitter, Output } from "@angular/core";
 import { TrainEntity, TrainSeatType } from "../../models/TrainEntity";
 import { TrainSeatEntity } from "../../models/TrainSeatEntity";
@@ -26,6 +26,13 @@ export class TrainListItemComponent implements OnInit {
     this.bookTicket = new EventEmitter();
     this.seatPicker = new EventEmitter();
   }
+  onShowTip(evt: CustomEvent) {
+    if (evt) {
+      evt.preventDefault();
+      evt.stopPropagation();
+    }
+    AppHelper.toast("可刷身份证进站", 1400, "middle");
+  }
   getLowestSeatPrice() {
     if (!this.train || !this.train.Seats || !this.train.Seats.length) {
       return "";
@@ -34,7 +41,11 @@ export class TrainListItemComponent implements OnInit {
     return this.train.Seats[0].SalesPrice;
   }
   showOpenCloseIcon() {
-    return this.train && this.train.Seats && this.train.Seats.some(it => +it.Count > 0);
+    return (
+      this.train &&
+      this.train.Seats &&
+      this.train.Seats.some(it => +it.Count > 0)
+    );
   }
   onShowSeats(train: TrainEntity) {
     if (!train || train.Seats.every(it => +it.Count <= 0)) {
@@ -49,12 +60,18 @@ export class TrainListItemComponent implements OnInit {
     }
     if ((seat && seat.color) == "danger") {
       if (seat && seat.Policy && seat.Policy.Rules) {
-        let tip = '';
+        let tip = "";
         const bookInfos = this.trainService.getBookInfos();
         if (bookInfos && bookInfos.length) {
-          const info = bookInfos.find(it => it.bookInfo && it.bookInfo.id == (this.bookInfo && this.bookInfo.id));
+          const info = bookInfos.find(
+            it =>
+              it.bookInfo &&
+              it.bookInfo.id == (this.bookInfo && this.bookInfo.id)
+          );
           if (info && info.passenger && info.passenger.Policy) {
-            tip = info.passenger.Policy.TrainIllegalTip ? `(${info.passenger.Policy.TrainIllegalTip})` : "";
+            tip = info.passenger.Policy.TrainIllegalTip
+              ? `(${info.passenger.Policy.TrainIllegalTip})`
+              : "";
           }
         }
         AppHelper.alert(seat.Policy.Rules.join(",") + tip);
@@ -76,7 +93,7 @@ export class TrainListItemComponent implements OnInit {
 
     return this.train.Seats;
   }
-  ngOnInit() { }
+  ngOnInit() {}
   onScheduls(evt: CustomEvent) {
     if (evt) {
       evt.stopPropagation();
