@@ -49,7 +49,6 @@ export class DayComponent implements OnInit {
     }
   }
   toggleSelected() {
-    this.dayModel.selected = !this.dayModel.selected;
     this.daySelected.emit(this.dayModel);
   }
 }

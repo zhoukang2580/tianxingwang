@@ -17,7 +17,7 @@ ul {
     border-radius: 0;
     z-index: 1;
     position: relative;
-    &.not-enabled {
+    &.not-enabled:not(.active) {
       background-color: rgba(var(--ion-color-dark-rgb), 0.15);
     }
     &.last-month-day {

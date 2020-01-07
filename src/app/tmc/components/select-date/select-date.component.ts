@@ -184,6 +184,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
               ? LanguageHelper.getSelectCheckOutDate()
               : LanguageHelper.getBackDateTip();
           this.selectedDays = [d];
+          this.checkHotelSelectedDate(d);
           // AppHelper.toast(LanguageHelper.getSelectFlyBackDate(), 1000, "top");
         } else {
           d.firstSelected = true;
@@ -238,6 +239,7 @@ export class SelectDateComponent implements OnInit, OnDestroy {
         } else {
         }
         this.selectedDays = [d];
+        this.checkHotelSelectedDate(d);
       }
     } else {
       d.firstSelected = true;
@@ -327,6 +329,19 @@ export class SelectDateComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         this.cancel();
       }, this.delayBackTime);
+    }
+  }
+  private checkHotelSelectedDate(selectedBeginDay: DayModel) {
+    if (this.forType == FlightHotelTrainType.Hotel) {
+      this.yms = this.yms.map(it => {
+        if (it.dayList) {
+          it.dayList = it.dayList.map(itm => {
+            itm.enabled = itm.enabled && itm.timeStamp > selectedBeginDay.timeStamp;
+            return itm;
+          });
+        }
+        return it;
+      });
     }
   }
 }

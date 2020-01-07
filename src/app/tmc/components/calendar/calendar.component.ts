@@ -194,13 +194,13 @@ export class CalendarComponent
     }
   }
   onDaySelected(day: DayModel) {
-    this.calendars.forEach(c => {
-      if (c.dayList) {
-        c.dayList.forEach(d => {
-          d.selected = d.date == day.date;
-        });
-      }
-    });
+    // this.calendars.forEach(c => {
+    //   if (c.dayList) {
+    //     c.dayList.forEach(d => {
+    //       d.selected = d.enabled && d.date == day.date;
+    //     });
+    //   }
+    // });
     this.daySelected.emit(day);
   }
 }
