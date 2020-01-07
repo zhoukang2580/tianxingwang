@@ -90,11 +90,11 @@ export class HomePage implements OnInit, OnDestroy {
   private async initializeSelfBookInfos() {
     try {
       const staff = await this.staffService.getStaff(false);
-      if (staff) {
-        await this.hotelService.initSelfBookTypeBookInfos(false);
-        await this.flightService.initSelfBookTypeBookInfos(false);
-        await this.trainServive.initSelfBookTypeBookInfos(false);
-      }
+      // if (staff) {
+      //   await this.hotelService.initSelfBookTypeBookInfos(false);
+      //   await this.flightService.initSelfBookTypeBookInfos(false);
+      //   await this.trainServive.initSelfBookTypeBookInfos(false);
+      // }
     } catch (e) {
     }
   }

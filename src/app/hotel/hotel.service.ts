@@ -87,17 +87,6 @@ export class HotelService {
     this.hotelQuerySource = new BehaviorSubject(new HotelQueryEntity());
     this.conditionModelSource = new BehaviorSubject(null);
     this.initSearchHotelModel();
-    combineLatest([
-      this.getBookInfoSource(),
-      identityService.getIdentitySource()
-    ]).subscribe(async ([bookInfos, identity]) => {
-      if (identity && identity.Id && identity.Ticket) {
-        if (this.isInitializingSelfBookInfos) {
-          return;
-        }
-        await this.initSelfBookTypeBookInfos();
-      }
-    });
     identityService.getIdentitySource().subscribe(res => {
       this.disposal();
     });
@@ -318,10 +307,9 @@ export class HotelService {
     };
     return this.fetchPassengerCredentials.promise;
   }
-  async initSelfBookTypeBookInfos(isShowLoading = false) {
+  private async initSelfBookTypeBookInfos(isShowLoading = false) {
     const isSelf = await this.staffService.isSelfBookType(isShowLoading);
     const infos = this.getBookInfos();
-    console.log("initSelfBookTypeBookInfos", infos);
     if (infos.length === 0 && isSelf) {
       if (this.isInitializingSelfBookInfos) {
         return;
@@ -567,6 +555,7 @@ export class HotelService {
     };
     // req.IsShowLoading = true;
     return from(this.setDefaultFilterPolicy()).pipe(
+      switchMap(_=>from(this.initSelfBookTypeBookInfos())),
       switchMap(_ => this.apiService.getResponse<HotelResultEntity>(req)),
       map(result => {
         if (result && result.Data && result.Data.HotelDayPrices) {

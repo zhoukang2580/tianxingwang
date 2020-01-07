@@ -35,6 +35,10 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   isShowWechatLogin: boolean;
   isShowImageCode: boolean;
   SlideEventType: string;
+  // private mockDeviceInfo = {
+  //   Device: `accw125487df1254accw125487df1254`,
+  //   DeviceName: `pc模拟测试`
+  // };
   constructor(
     private loginService: LoginService,
     private identityService: IdentityService,
@@ -51,7 +55,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       this.configService.getConfigAsync().then(c => {
         this.config = c;
       });
-    })
+    });
   }
   ngAfterViewInit() {
     console.log("login page ngAfterViewInit");
@@ -63,7 +67,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     while (--i > 0 && t) {
       t = await this.modalCtrl.getTop();
       if (t) {
-        await t.dismiss().catch(_ => { });
+        await t.dismiss().catch(_ => {});
       }
     }
   }
@@ -112,8 +116,8 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.autoLogin();
   }
   autoLogin() {
-    if (!this.identity || !this.identity.Ticket) {
-      if (AppHelper.isApp()) {
+    if (!this.identity || !this.identity.Id) {
+      if (AppHelper.isApp() || true) {
         this.loginType = "device";
         this.login();
       }
@@ -184,11 +188,18 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           this.message = LanguageHelper.getLoginPasswordTip();
           return;
         }
+        if (AppHelper.isApp()) {
+          this.loginEntity.Data.Device = await AppHelper.getDeviceId();
+          this.loginEntity.Data.DeviceName = await AppHelper.getDeviceName();
+        }
+        // this.loginEntity.Data.Device = this.mockDeviceInfo.Device;
+        // this.loginEntity.Data.DeviceName = this.mockDeviceInfo.DeviceName;
         this.loginSubscription = this.loginService
           .login("ApiLoginUrl-Home-Login", this.loginEntity)
-          .pipe(finalize(() => {
-            this.isLogining = false;
-          })
+          .pipe(
+            finalize(() => {
+              this.isLogining = false;
+            })
           )
           .subscribe(
             r => {
@@ -216,11 +227,17 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           this.message = LanguageHelper.getMobileCodeTip();
           return;
         }
+        if (AppHelper.isApp()) {
+          this.loginEntity.Data.Device = await AppHelper.getDeviceId();
+          this.loginEntity.Data.DeviceName = await AppHelper.getDeviceName();
+        }
         this.loginSubscription = this.loginService
           .login("ApiLoginUrl-Home-MobileLogin", this.loginEntity)
-          .pipe(finalize(() => {
-            this.isLogining = false;
-          }))
+          .pipe(
+            finalize(() => {
+              this.isLogining = false;
+            })
+          )
           .subscribe(
             r => {
               if (r.Ticket) {
@@ -234,6 +251,10 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         break;
       case "dingtalk":
         this.loginEntity.Data.Code = this.form.value.DingtalkCode;
+        if (AppHelper.isApp()) {
+          this.loginEntity.Data.Device = await AppHelper.getDeviceId();
+          this.loginEntity.Data.DeviceName = await AppHelper.getDeviceName();
+        }
         this.loginSubscription = this.loginService
           .login("ApiLoginUrl-Home-DingTalkLogin", this.loginEntity)
           .pipe(
@@ -251,6 +272,10 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       case "wechat": {
         this.loginEntity.Data.SdkType = this.form.value.SdkType;
         this.loginEntity.Data.Code = this.form.value.WechatCode;
+        if (AppHelper.isApp()) {
+          this.loginEntity.Data.Device = await AppHelper.getDeviceId();
+          this.loginEntity.Data.DeviceName = await AppHelper.getDeviceName();
+        }
         this.loginSubscription = this.loginService
           .login("ApiLoginUrl-Home-WechatLogin", this.loginEntity)
           .pipe(
@@ -274,6 +299,8 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       case "device":
         this.loginEntity.Data.Device = await AppHelper.getDeviceId();
         this.loginEntity.Data.DeviceName = await AppHelper.getDeviceName();
+        // this.loginEntity.Data.Device = this.mockDeviceInfo.Device;
+        // this.loginEntity.Data.DeviceName = this.mockDeviceInfo.DeviceName;
         this.loginEntity.Data.Token = AppHelper.getStorage("loginToken");
         this.loginSubscription = this.loginService
           .login("ApiLoginUrl-Home-DeviceLogin", this.loginEntity)
@@ -344,7 +371,6 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         }
       );
   }
-
 
   async jump(
     isCheckDevice: boolean // 跳转

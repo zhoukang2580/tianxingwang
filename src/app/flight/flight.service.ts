@@ -96,17 +96,17 @@ export class FlightService {
     identityService.getIdentitySource().subscribe(res => {
       this.disposal();
     });
-    combineLatest([
-      identityService.getIdentitySource(),
-      this.getPassengerBookInfoSource()
-    ]).subscribe(async ([identity, infos]) => {
-      if (identity && identity.Id && identity.Ticket && infos.length == 0) {
-        if (this.isInitializingSelfBookInfos) {
-          return;
-        }
-        await this.initSelfBookTypeBookInfos();
-      }
-    });
+    // combineLatest([
+    //   identityService.getIdentitySource(),
+    //   this.getPassengerBookInfoSource()
+    // ]).subscribe(async ([identity, infos]) => {
+    //   if (identity && identity.Id && identity.Ticket && infos.length == 0) {
+    //     if (this.isInitializingSelfBookInfos) {
+    //       return;
+    //     }
+    //     await this.initSelfBookTypeBookInfos();
+    //   }
+    // });
   }
   async initSelfBookTypeBookInfos(isShowLoading = true) {
     await this.checkOrAddSelfBookTypeBookInfo(isShowLoading);

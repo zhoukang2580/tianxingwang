@@ -44,7 +44,6 @@ export class IdentityService {
   setIdentity(info: IdentityEntity) {
     this._IdentityEntity = info;
     AppHelper.setStorage("ticket", info.Ticket);
-    AppHelper.setStorage("loginToken", info.Token);
     this.identitySource.next(this._IdentityEntity);
   }
   getStatus():boolean {

@@ -2,7 +2,8 @@ ion-content {
   position: relative;
   .bottom {
     position: absolute;
-    bottom: 7em;
+    top: 50%;
+    transform: translateY(-50%);
     left: 0;
     right: 0;
     display: flex;

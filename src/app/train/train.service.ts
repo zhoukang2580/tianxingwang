@@ -33,7 +33,7 @@ import { Router } from "@angular/router";
 import { OrderBookDto } from "../order/models/OrderBookDto";
 import { DayModel } from "../tmc/models/DayModel";
 import { SelectAndReplaceTrainInfoComponent } from "./components/select-and-replaceinfo/select-and-replaceinfo.component";
-import { AccountEntity } from '../account/models/AccountEntity';
+import { AccountEntity } from "../account/models/AccountEntity";
 const KEY_TRAIN_TRAFFICLINES_DATA = "train-traficlines-data";
 export class SearchTrainModel {
   TrainCode: string;
@@ -82,17 +82,6 @@ export class TrainService {
   ) {
     this.bookInfoSource = new BehaviorSubject([]);
     this.searchModelSource = new BehaviorSubject(new SearchTrainModel());
-    combineLatest([
-      this.getBookInfoSource(),
-      this.identityService.getIdentitySource()
-    ]).subscribe(async ([infos, identity]) => {
-      if (identity && identity.Ticket) {
-        if (this.isInitializingSelfBookInfos) {
-          return;
-        }
-        await this.initSelfBookTypeBookInfos();
-      }
-    });
     identityService.getIdentitySource().subscribe(res => {
       this.disposal();
     });
@@ -442,7 +431,7 @@ export class TrainService {
               if (item.credential) {
                 name = `${item.credential.CheckFirstName}${
                   item.credential.CheckLastName
-                  }(${(item.credential.Number || "").substr(0, 6)}...)`;
+                }(${(item.credential.Number || "").substr(0, 6)}...)`;
               }
               cannotArr.push(name);
               item.bookInfo = null;
@@ -502,7 +491,7 @@ export class TrainService {
           if (item.credential) {
             name = `${item.credential.CheckFirstName}${
               item.credential.CheckLastName
-              }(${(item.credential.Number || "").substr(0, 6)}...)`;
+            }(${(item.credential.Number || "").substr(0, 6)}...)`;
           }
           cannotArr.push(name);
         } else {
@@ -630,7 +619,7 @@ export class TrainService {
     trainPolicie.PassengerKey = PassengerKey;
     return trainPolicie;
   }
-  async initSelfBookTypeBookInfos(isShowLoading = false) {
+  private async initSelfBookTypeBookInfos(isShowLoading = false) {
     const infos = this.getBookInfos();
     if (
       infos.length === 0 &&
@@ -934,7 +923,7 @@ export class TrainService {
     let i = 10;
     let top = await this.modalCtrl.getTop();
     while (top && --i > 0) {
-      await top.dismiss().catch(_ => { });
+      await top.dismiss().catch(_ => {});
       top = await this.modalCtrl.getTop();
     }
   }
@@ -1034,10 +1023,11 @@ export class TrainService {
         // 如果是非白名单
         passenger = new StaffEntity();
         passenger.Account = new AccountEntity();
-        passenger.Account.Id = passenger.AccountId = info.Tmc && info.Tmc.Account && info.Tmc.Account.Id;
-        passenger.isNotWhiteList=true;
-        passenger.Mobile=info.OrderTrainTicket.Passenger.Mobile;
-        passenger.Email=info.OrderTrainTicket.Passenger.Email;
+        passenger.Account.Id = passenger.AccountId =
+          info.Tmc && info.Tmc.Account && info.Tmc.Account.Id;
+        passenger.isNotWhiteList = true;
+        passenger.Mobile = info.OrderTrainTicket.Passenger.Mobile;
+        passenger.Email = info.OrderTrainTicket.Passenger.Email;
       }
       const exchangedInfo = {
         ticket: JSON.parse(JSON.stringify(info.OrderTrainTicket)),
@@ -1071,7 +1061,7 @@ export class TrainService {
         isRoundTrip: false,
         fromCity,
         toCity,
-        Date: info.GoDate,
+        Date: info.GoDate
       });
       this.router.navigate([AppHelper.getRoutePath("search-train")]);
     } catch (e) {
@@ -1128,11 +1118,15 @@ export class TrainService {
             TrainUpperSeatTypeArray: null,
             TrainUpperSeatTypeName: null,
             HotelDescription: null,
-            Setting: null,
-          }
+            Setting: null
+          };
         }
         if (p.FlightCabin) {
-          p.FlightCabin = { ...p.FlightCabin, RefundChange: null, Variables: null }
+          p.FlightCabin = {
+            ...p.FlightCabin,
+            RefundChange: null,
+            Variables: null
+          };
         }
         if (p.FlightSegment && p.FlightSegment.Cabins) {
           p.FlightSegment = {
@@ -1142,7 +1136,7 @@ export class TrainService {
               c.Variables = null;
               return c;
             })
-          }
+          };
         }
         return p;
       })
@@ -1164,7 +1158,11 @@ export class TrainService {
           let count = 1;
           const one = bookInfos.find(it => it.id == k);
           if (one && one.passenger) {
-            count = bookInfos.filter(it => it.passenger && it.passenger.AccountId == one.passenger.AccountId).length;
+            count = bookInfos.filter(
+              it =>
+                it.passenger &&
+                it.passenger.AccountId == one.passenger.AccountId
+            ).length;
           }
           fees[k] = +res.ServiceFees[k] / count;
         });
