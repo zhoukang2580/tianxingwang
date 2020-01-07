@@ -78,6 +78,8 @@ export class FlyFilterComponent implements OnInit, OnDestroy, AfterViewInit {
     this.airTypeComp.reset();
     this.timeComp.reset();
     this.cabinComp.reset();
+    this.fromAirportsComp.reset();
+    this.toAirportsComp.reset();
   }
   onTimeSpanSCond(sCond: { lower: number; upper: number }) {
     this.sForm.patchValue({

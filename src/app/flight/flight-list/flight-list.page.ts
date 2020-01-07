@@ -143,7 +143,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     backTakeOffDateTime: string;
   }>;
   @ViewChild(FlyFilterComponent) filterComp: FlyFilterComponent;
-  @ViewChild(DaysCalendarComponent) daysCalendarComp: DaysCalendarComponent;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   activeTab: "filter" | "time" | "price" | "none"; // 当前激活的tab
   hasDataSource: Subject<boolean>;
