@@ -1,9 +1,9 @@
-import { MemberService, MemberCredential } from './../../member/member.service';
-import { NavController } from '@ionic/angular';
-import { FlightService } from 'src/app/flight/flight.service';
-import { HotelService } from './../../hotel/hotel.service';
-import { TrainService } from 'src/app/train/train.service';
-import { StaffEntity } from 'src/app/hr/staff.service';
+import { MemberService, MemberCredential } from "./../../member/member.service";
+import { NavController } from "@ionic/angular";
+import { FlightService } from "src/app/flight/flight.service";
+import { HotelService } from "./../../hotel/hotel.service";
+import { TrainService } from "src/app/train/train.service";
+import { StaffEntity } from "src/app/hr/staff.service";
 import { StaffService } from "../../hr/staff.service";
 import { Notice, CmsService } from "./../../cms/cms.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
@@ -11,7 +11,14 @@ import { IdentityService } from "src/app/services/identity/identity.service";
 import { ApiService } from "./../../services/api/api.service";
 import { AppHelper } from "src/app/appHelper";
 import { Component, OnInit, OnDestroy } from "@angular/core";
-import { Observable, Subject, BehaviorSubject, from, of, Subscription } from "rxjs";
+import {
+  Observable,
+  Subject,
+  BehaviorSubject,
+  from,
+  of,
+  Subscription
+} from "rxjs";
 import { ActivatedRoute, Router, NavigationEnd } from "@angular/router";
 import { PayService } from "src/app/services/pay/pay.service";
 import { TmcService } from "src/app/tmc/tmc.service";
@@ -48,7 +55,7 @@ export class HomePage implements OnInit, OnDestroy {
     private trainServive: TrainService,
     private hotelService: HotelService,
     private flightService: FlightService,
-    route: ActivatedRoute,
+    route: ActivatedRoute
   ) {
     this.staff = null;
     this.selectedCompany$ = tmcService.getSelectedCompanySource();
@@ -83,7 +90,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.router.navigate(["account-security_en"]);
   }
   goToBulletinList(noticeType?: string) {
-    this.router.navigate([AppHelper.getRoutePath('bulletin-list')], {
+    this.router.navigate([AppHelper.getRoutePath("bulletin-list")], {
       queryParams: { bulletinType: noticeType }
     });
   }
@@ -95,13 +102,14 @@ export class HomePage implements OnInit, OnDestroy {
       //   await this.flightService.initSelfBookTypeBookInfos(false);
       //   await this.trainServive.initSelfBookTypeBookInfos(false);
       // }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
   async ngOnInit() {
-    this.subscription = this.identityService.getIdentitySource().subscribe(_ => {
-      this.staffCredentials = null;
-    });
+    this.subscription = this.identityService
+      .getIdentitySource()
+      .subscribe(_ => {
+        this.staffCredentials = null;
+      });
     const paramters = AppHelper.getQueryParamers();
     if (paramters.wechatPayResultNumber) {
       const req1 = this.apiService.createRequest();
@@ -116,11 +124,13 @@ export class HomePage implements OnInit, OnDestroy {
     this.initializeSelfBookInfos();
   }
   private async getAgentNotices() {
-    const agentNotices = await this.cmsService.getAgentNotices(0).catch(_ => [] as Notice[]);
+    const agentNotices = await this.cmsService
+      .getAgentNotices(0)
+      .catch(_ => [] as Notice[]);
     this.agentNotices = agentNotices.map((notice, index) => {
       return {
         text: `${index + 1}.${notice.Title}`
-      }
+      };
     });
   }
   async goToPage(name: string, params?: any) {
@@ -133,29 +143,29 @@ export class HomePage implements OnInit, OnDestroy {
     let route = "";
 
     const tmcRegionTypeValue = tmc.RegionTypeValue.toLowerCase();
-    if (name == 'hotel') {
-      route = 'search-hotel';
+    if (name == "hotel") {
+      route = "search-hotel";
       if (tmcRegionTypeValue.search("hotel") < 0) {
         AppHelper.alert(msg);
         return;
       }
     }
-    if (name == 'train') {
-      route = 'search-train';
+    if (name == "train") {
+      route = "search-train";
       if (tmcRegionTypeValue.search("train") < 0) {
         AppHelper.alert(msg);
         return;
       }
     }
-    if (name == 'flight') {
-      route = 'search-flight';
+    if (name == "flight") {
+      route = "search-flight";
       if (tmcRegionTypeValue.search("flight") < 0) {
         AppHelper.alert(msg);
         return;
       }
     }
-    if (name == 'bulletin') {
-      route = 'bulletin-list';
+    if (name == "bulletin") {
+      route = "bulletin-list";
     }
     this.router.navigate([AppHelper.getRoutePath(route)], {
       queryParams: { bulletinType: params }
@@ -173,13 +183,17 @@ export class HomePage implements OnInit, OnDestroy {
       this.staff = await this.staffService.getStaff();
       console.log("home check", this.staffCredentials);
       if (this.staff && this.staff.AccountId) {
-        this.staffCredentials = await this.staffService.getStaffCredentials(this.staff.AccountId);
+        this.staffCredentials = await this.staffService.getStaffCredentials(
+          this.staff.AccountId
+        );
         if (!this.staffCredentials || !this.staffCredentials.length) {
-          this.staffCredentials = await this.memberService.getCredentials(this.staff.AccountId);
+          this.staffCredentials = await this.memberService.getCredentials(
+            this.staff.AccountId
+          );
         }
         if (!this.staffCredentials || !this.staffCredentials.length) {
           console.log("需要确认证件信息");
-          this.router.navigate([AppHelper.getRoutePath('confirm-information')]);
+          this.router.navigate([AppHelper.getRoutePath("confirm-information")]);
           return false;
         }
       }

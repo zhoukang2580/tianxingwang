@@ -13,13 +13,13 @@ import { TimeoutError } from "rxjs";
 import * as uuidJs from "uuid-js";
 export class AppHelper {
   static httpClient: HttpClient;
-  private static _deviceName: string;
+  private static _deviceName: "ios" | "android";
   private static _routeData: any;
   private static toastController: ToastController;
   private static alertController: AlertController;
   private static modalController: ModalController;
   static _appDomain = environment.production ? "sky-trip.com" : "beeant.com";
-  constructor() { }
+  constructor() {}
   static _domain;
   static _queryParamers = {};
 
@@ -53,20 +53,22 @@ export class AppHelper {
           typeof msg === "string"
             ? msg
             : msg instanceof Error
-              ? msg.message
-              : typeof msg === "object" && msg.message
-                ? msg.message
-                : JSON.stringify(msg),
+            ? msg.message
+            : typeof msg === "object" && msg.message
+            ? msg.message
+            : JSON.stringify(msg),
         position: position as any,
         duration: duration
       });
       if (t) {
         t.present();
-        t.onDidDismiss().then(_ => {
-          resolve();
-        }).catch(_=>{
-          reject();
-        })
+        t.onDidDismiss()
+          .then(_ => {
+            resolve();
+          })
+          .catch(_ => {
+            reject();
+          });
       }
     });
   }
@@ -108,12 +110,12 @@ export class AppHelper {
           typeof msg === "string"
             ? msg
             : msg instanceof Error
-              ? msg.message
-              : typeof msg === "object" && msg.message
-                ? msg.message
-                : msg.Message
-                  ? msg.Message
-                  : JSON.stringify(msg),
+            ? msg.message
+            : typeof msg === "object" && msg.message
+            ? msg.message
+            : msg.Message
+            ? msg.Message
+            : JSON.stringify(msg),
         backdropDismiss: !userOp,
         buttons
       });
@@ -139,34 +141,51 @@ export class AppHelper {
     this.httpClient = httpClient;
   }
   static getDeviceId() {
-    return new Promise<string>((resolve, reject) => {
-      if (this.isH5()) {
-        resolve("");
-      }
-      document.addEventListener(
-        "deviceready",
-        async () => {
-          try {
-            const hcp = window["hcp"]; // 插件获取
-            if (!hcp) {
-              reject("hcp 未安装");
-              return;
-            }
-            const uuid = await hcp.getUUID();
-            if (uuid) {
-              resolve(`${uuid}`.replace(/-/g, "").toLowerCase());
-            } else {
-              reject("can't get uuid");
-            }
-          } catch (e) {
-            reject(e);
-          }
-        },
-        false
-      );
-    }).catch(ex => {
-      return "";
-    });
+    // if (this._deviceName == "ios") {
+    //   return new Promise<string>((resolve, reject) => {
+    //     if (this.isH5()) {
+    //       resolve("");
+    //     }
+    //     document.addEventListener(
+    //       "deviceready",
+    //       async () => {
+    //         try {
+    //           const hcp = window["hcp"]; // 插件获取
+    //           if (!hcp) {
+    //             reject("hcp 未安装");
+    //             return;
+    //           }
+    //           const uuid = await hcp.getUUID();
+    //           console.log("hcp get uuid =" + uuid);
+    //           if (uuid) {
+    //             resolve(`${uuid}`.replace(/-/g, "").toLowerCase());
+    //           } else {
+    //             reject("can't get uuid");
+    //           }
+    //         } catch (e) {
+    //           reject(e);
+    //         }
+    //       },
+    //       false
+    //     );
+    //   }).catch(ex => {
+    //     return "";
+    //   });
+    // }
+    if (this.isH5()) {
+      return Promise.resolve("");
+    }
+    let local = AppHelper.getStorage<string>("_UUId_DeviceId_");
+    console.log("local uuid ", local);
+    if (local) {
+      return Promise.resolve(local);
+    }
+    local = AppHelper.uuid(64)
+      .replace(/-/g, "")
+      .substr(0, 32);
+    console.log("新生成的uuid", local);
+    AppHelper.setStorage<string>("_UUId_DeviceId_", local);
+    return Promise.resolve(local);
   }
 
   static async dismissAlertLayer() {
@@ -235,7 +254,7 @@ export class AppHelper {
     }
     return Promise.reject("httpclient is null");
   }
-  static setDeviceName(name: string) {
+  static setDeviceName(name: "ios" | "android") {
     this._deviceName = name;
   }
   static getDeviceName() {
@@ -448,11 +467,11 @@ export class AppHelper {
       console.log("matchDefaultRoute path after", path);
       return path && url[0].path.match(new RegExp(`${path}_*`, "gi"))
         ? (route.redirectTo = `/${path == "null" ? "" : path}`) && {
-          consumed: [new UrlSegment(path, {})]
-        }
+            consumed: [new UrlSegment(path, {})]
+          }
         : {
-          consumed: [new UrlSegment("", {})]
-        };
+            consumed: [new UrlSegment("", {})]
+          };
     } catch (e) {
       console.error("matchDefaultRoute", e);
     }
@@ -482,12 +501,12 @@ export class AppHelper {
   static setQueryParamers(key: string, value: string) {
     try {
       this._queryParamers[key] = value;
-    } catch (ex) { }
+    } catch (ex) {}
   }
   static removeQueryParamers(key: string) {
     try {
       this._queryParamers[key] = null;
-    } catch (ex) { }
+    } catch (ex) {}
   }
   static getQueryParamers() {
     return this._queryParamers as any;

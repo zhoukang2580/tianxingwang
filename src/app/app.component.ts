@@ -1,4 +1,4 @@
-import { environment } from 'src/environments/environment';
+import { environment } from "src/environments/environment";
 import { MessageModel, MessageService } from "./message/message.service";
 
 import {
@@ -39,7 +39,7 @@ import {
   transition,
   animate
 } from "@angular/animations";
-import { ImageRecoverService } from './services/imageRecover/imageRecover.service';
+import { ImageRecoverService } from "./services/imageRecover/imageRecover.service";
 export interface App {
   loadUrl: (
     url: string,
@@ -97,7 +97,7 @@ export class AppComponent
     private imageRecoverService: ImageRecoverService,
     messageService: MessageService
   ) {
-    window['isAndroid']=this.platform.is("android");
+    window["isAndroid"] = this.platform.is("android");
     this.message$ = messageService.getMessage();
     this.loading$ = apiService.getLoading();
     if (this.platform.is("ios")) {
@@ -115,9 +115,13 @@ export class AppComponent
       this.splashScreen.show();
       console.log(`platform ready`);
       this.app = navigator["app"];
-      document.addEventListener("backbutton", () => {
-        this.backButtonAction();
-      }, false);
+      document.addEventListener(
+        "backbutton",
+        () => {
+          this.backButtonAction();
+        },
+        false
+      );
       this.statusBar.styleDefault();
       if (AppHelper.isApp() && this.platform.is("android")) {
         setTimeout(async () => {
@@ -127,8 +131,7 @@ export class AppComponent
       }
     });
   }
-  ngOnChanges() {
-  }
+  ngOnChanges() {}
   ngAfterViewInit() {
     this.splashScreen.hide();
   }
@@ -142,28 +145,33 @@ export class AppComponent
       WechatHelper.openId = paramters.openid || "";
     } else if (paramters.IsForbidOpenId) {
       return true;
-    } else if (AppHelper.isWechatMini() && !WechatHelper.openId && !AppHelper.checkQueryString("wechatminicode")) {
+    } else if (
+      AppHelper.isWechatMini() &&
+      !WechatHelper.openId &&
+      !AppHelper.checkQueryString("wechatminicode")
+    ) {
       WechatHelper.wx.miniProgram.navigateTo({
         url:
           "/pages/login/index?IsLogin=true&IsForbidOpenId=true&domain=" +
           AppHelper.getDomain() +
-          "&ticket=" +AppHelper.getTicket()+
+          "&ticket=" +
+          AppHelper.getTicket() +
           "&getUrl=" +
           encodeURIComponent(AppHelper.getApiUrl() + "/home/GetWechatUser")
       });
       return false;
     } else if (AppHelper.isWechatH5() && !WechatHelper.openId) {
       let url =
-      AppHelper.getApiUrl() +
-      "/home/GetWechatCode?IsLogin=true&IsForbidOpenId=true&path=" +
-      this.getPath() +
-      "&domain=" +
-      AppHelper.getDomain() +
-      "&ticket=" +
-      AppHelper.getTicket();
-    AppHelper.redirect(url);
-    return false;
-      }
+        AppHelper.getApiUrl() +
+        "/home/GetWechatCode?IsLogin=true&IsForbidOpenId=true&path=" +
+        this.getPath() +
+        "&domain=" +
+        AppHelper.getDomain() +
+        "&ticket=" +
+        AppHelper.getTicket();
+      AppHelper.redirect(url);
+      return false;
+    }
     return true;
   }
   checkDingtalkUnionid() {
@@ -218,18 +226,15 @@ export class AppComponent
     let path = this.getPath();
     if (!AppHelper.getTicket() && unloginPath) {
       this.router.navigate([AppHelper.getRoutePath(unloginPath)]);
-    }
-    else if (AppHelper.getTicket() || path) {
+    } else if (AppHelper.getTicket() || path) {
       if (AppHelper.getQueryString("unroutehome") != "true") {
         this.jumpToRoute("").then(() => {
           this.jumpToRoute(path);
         });
-      }
-      else {
+      } else {
         this.jumpToRoute(path);
       }
-    }
-    else {
+    } else {
       this.router.navigate([AppHelper.getRoutePath("")]);
     }
     // this.jumpToRoute("mms-home")
@@ -242,7 +247,6 @@ export class AppComponent
   }
   private jumpToRoute(route: string) {
     return this.router.navigate([AppHelper.getRoutePath(route)]).then(() => {
-
       if (!environment.production) {
         // AppHelper.getQueryParamers()['mmsid'] = 2;
         // this.router.navigate(['mms-order-lottery'], { queryParams: { mmsid: 2 } });
@@ -280,7 +284,10 @@ export class AppComponent
       }
       this.apiService.hideLoadingView();
       if (
-        curUrl == "/login" || curUrl == "/tabs/home" || curUrl == "/tabs/my" || curUrl == "/tabs/trip"
+        curUrl == "/login" ||
+        curUrl == "/tabs/home" ||
+        curUrl == "/tabs/my" ||
+        curUrl == "/tabs/trip"
       ) {
         console.log("is exit app", Date.now() - this.lastClickTime);
         if (Date.now() - this.lastClickTime <= 2000) {
@@ -298,6 +305,5 @@ export class AppComponent
     } catch (e) {
       console.error(e);
     }
-
   }
 }

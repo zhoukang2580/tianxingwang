@@ -35,10 +35,10 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   isShowWechatLogin: boolean;
   isShowImageCode: boolean;
   SlideEventType: string;
-  // private mockDeviceInfo = {
-  //   Device: `accw125487df1254accw125487df1254`,
-  //   DeviceName: `pc模拟测试`
-  // };
+  private mockDeviceInfo = {
+    Device: `accw125487df1254accw125487df1254`,
+    DeviceName: `pc模拟测试`
+  };
   constructor(
     private loginService: LoginService,
     private identityService: IdentityService,
@@ -116,7 +116,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.autoLogin();
   }
   autoLogin() {
-    if (!this.identity || !this.identity.Id) {
+    if (!this.identityService.getStatus()) {
       if (AppHelper.isApp() || true) {
         this.loginType = "device";
         this.login();
@@ -173,6 +173,11 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       this.login();
     }
   }
+  private hideLoadingStatus() {
+    setTimeout(() => {
+      this.isLogining = false;
+    }, 200);
+  }
   async login() {
     this.isLogining = true;
     this.loginEntity.IsShowLoading = true;
@@ -198,7 +203,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           .login("ApiLoginUrl-Home-Login", this.loginEntity)
           .pipe(
             finalize(() => {
-              this.isLogining = false;
+              this.hideLoadingStatus();
             })
           )
           .subscribe(
@@ -235,7 +240,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           .login("ApiLoginUrl-Home-MobileLogin", this.loginEntity)
           .pipe(
             finalize(() => {
-              this.isLogining = false;
+              this.hideLoadingStatus();
             })
           )
           .subscribe(
@@ -260,7 +265,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           .pipe(
             finalize(() => {
               this.loginType = "user";
-              this.isLogining = false;
+              this.hideLoadingStatus();
             })
           )
           .subscribe(r => {
@@ -281,7 +286,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           .pipe(
             finalize(() => {
               this.loginType = "user";
-              this.isLogining = false;
+              this.hideLoadingStatus();
             })
           )
           .subscribe(
@@ -308,7 +313,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
             finalize(() => {
               setTimeout(() => {
                 this.loginType = "user";
-                this.isLogining = false;
+                this.hideLoadingStatus();
               }, 100);
             })
           )

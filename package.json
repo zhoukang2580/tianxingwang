@@ -116,7 +116,6 @@
       "cordova-plugin-ionic-webview": {
         "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
       },
-      "cordova-hcp-plugin": {},
       "cordova-plugin-device": {},
       "cordova-ali-plugin": {},
       "cordova-wechat-plugin": {
@@ -126,7 +125,8 @@
       "cordova-sqlite-storage": {},
       "cordova-plugin-file": {},
       "cordova-plugin-file-transfer": {},
-      "cordova-plugin-zip": {}
+      "cordova-plugin-zip": {},
+      "cordova-hcp-plugin": {}
     },
     "platforms": [
       "android",

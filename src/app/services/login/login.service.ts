@@ -77,7 +77,7 @@ export class LoginService {
         Id: string; // ;
         Name: string; // "";
         IsShareTicket: boolean; // false;
-        Token:string;
+        Token: string;
         Numbers: { [key: string]: string };
       }>(req)
       .pipe(
@@ -87,20 +87,18 @@ export class LoginService {
             return throwError(r.Message);
           }
           this.identityService.setIdentity(r.Data);
-          if(r.Data && r.Data.Token)
-          {
-             AppHelper.setStorage("loginToken",r.Data.Token);
+          if (r.Data && r.Data.Token) {
+            AppHelper.setStorage("loginToken", r.Data.Token);
           }
-          return of( r.Data)
+          return of(r.Data);
         }),
-        tap(rid => {
-        })
+        tap(rid => {})
       );
   }
   logout() {
     const ticket = AppHelper.getTicket();
     if (ticket) {
-      AppHelper.setStorage("loginToken",null);
+      AppHelper.setStorage("loginToken", null);
       const req = new RequestEntity();
       req.IsShowLoading = true;
       req.Method = "ApiLoginUrl-Home-Logout";
