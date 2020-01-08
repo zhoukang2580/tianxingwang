@@ -26,7 +26,7 @@
     </ion-card-header>
     <ion-card-content>
       <ion-row>
-        <ion-col size='2.4' *ngFor='let item of items;let last = last;'>
+        <ion-col  *ngFor='let item of items;let last = last;'>
           <div class='produc-item' (click)='onProductClick(item)'>
             <ion-avatar size='small'>
               <img [src]="item.imageSrc" alt="">

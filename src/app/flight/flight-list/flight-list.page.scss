@@ -161,70 +161,24 @@ app-fly-filter {
 .flight h5 {
   margin: 0.3em 0;
 }
-.flight .list-item {
-  background-color: white;
-  padding: 0.5em 1em;
-  &.shade{
-    background-color: #eee;
-  }
-}
-.flight .list-item {
-  border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.13);
-}
-.flight .list-item .left .airports,
-.flight .list-item,
-.flight .list-item .desc,
-.flight .list-item .price,
-.flight .list-item .left .time {
+.lowest-item {
   display: flex;
-  align-items: center;
-}
-.flight .list-item{
-  .left{
-    width: 90vw;
-  }
-  .price{
-    width: calc(10vw - 1em);
-    margin-right: 1.5em;
+  ion-button {
+    margin-left: auto;
   }
 }
-.flight .list-item .desc {
-  margin: 0.3em 0;
-}
-.flight .list-item .desc img {
-  margin: 0 0.3em 0 0;
-  width: 1em;
-}
-
-.flight .list-item .left {
-  margin-right: 1em;
-  flex: 1;
-}
-
-.flight .list-item .left .airports,
-.flight .list-item .line,
-.flight .list-item .desc {
-  font-size: 0.8rem;
-}
-
-.flight .list-item .left .airports,
-.flight .list-item .left .time {
-  justify-content: space-between;
-}
-
-.flight .list-item .code-share-number {
-  color: var(--ion-color-secondary);
-}
-
-.flight .list-item .price {
-  align-items: center;
-  color: var(--ion-color-danger);
-}
-
-.flight .list-item .addoneday {
-  position: relative;
-  right: 0.2em;
-  bottom: 0.5em;
-  font-size: 0.6rem;
-  color: var(--ion-color-secondary);
+.flight.recomend {
+  app-flight-segment-item {
+    width: 100%;
+  }
+  li {
+    position: relative;
+    margin: 0.5em;
+    border-radius: 0.3em;
+    ion-button {
+      position: absolute;
+      right: 0.5em;
+      bottom: 0.5em;
+    }
+  }
 }

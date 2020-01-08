@@ -24,6 +24,7 @@ import { SelectFlightPassengerComponent } from "./select-flight-passenger/select
 import { MemberPipesModule } from "src/app/member/pipe/pipe.module";
 import { PriceDetailComponent } from './price-detail/price-detail.component';
 import { SelectAndReplacebookinfoComponent } from './select-and-replacebookinfo/select-and-replacebookinfo.component';
+import { FlightSegmentItemComponent } from './flight-segment-item/flight-segment-item.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { SelectAndReplacebookinfoComponent } from './select-and-replacebookinfo/
     SelectFlightsegmentCabinComponent,
     PriceDetailComponent,
     SelectFlightPassengerComponent,
-    SelectAndReplacebookinfoComponent
+    SelectAndReplacebookinfoComponent,
+    FlightSegmentItemComponent
   ],
   imports: [
     CommonModule,
@@ -72,7 +74,8 @@ import { SelectAndReplacebookinfoComponent } from './select-and-replacebookinfo/
     SelectCityComponent,
     TicketchangingComponent,
     SelectedPassengersComponent,
-    SelectAndReplacebookinfoComponent
+    SelectAndReplacebookinfoComponent,
+    FlightSegmentItemComponent
   ],
   entryComponents: [
     FlyFilterComponent,

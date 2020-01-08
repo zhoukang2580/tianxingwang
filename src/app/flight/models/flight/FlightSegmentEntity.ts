@@ -8,6 +8,7 @@ import { FlightPolicy } from "../PassengerFlightInfo";
 import { FlightFareType } from "./FlightFareType";
 
 export class FlightSegmentEntity {
+  isLowestPrice: boolean;
   // flightSegment:FlightSegmentEntity;
   Id: string;
   /// <summary>
