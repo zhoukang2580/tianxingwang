@@ -365,6 +365,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       `doRefresh:loadDataFromServer=${loadDataFromServer},keepSearchCondition=${keepSearchCondition}`
     );
     try {
+      this.lowestPriceSegments = [];
       if (loadDataFromServer) {
         this.scrollToTop();
       }
