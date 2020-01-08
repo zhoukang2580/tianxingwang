@@ -49,8 +49,12 @@ export class AirportsComponent
   }
   reset() {
     if (this.airports) {
-      this.airports.forEach(c => {
+      this.airports = this.airports.map(c => {
         c.isChecked = false;
+        return c;
+      });
+      this.sCond.emit({
+        airports: this.airports.filter(a => a.isChecked)
       });
     }
   }
