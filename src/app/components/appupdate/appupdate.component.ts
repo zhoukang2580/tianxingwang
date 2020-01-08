@@ -159,7 +159,7 @@ export class AppUpdateComponent implements OnInit {
       ex.Error = e instanceof Error ? e.name : e;
       ex.Message = `${msg}, ${e instanceof Error ? e.message : typeof e === 'string' ? e : JSON.stringify(e)}`;
       ex.Method = "app update";
-      this.logService.sendException(ex);
+      this.logService.addException(ex);
     } catch (e) {
       console.error(e);
     }

@@ -1,6 +1,6 @@
-import { HotelQueryEntity } from './../../../models/HotelQueryEntity';
+import { HotelQueryEntity } from "./../../../models/HotelQueryEntity";
 import { Component, OnInit, Output, EventEmitter, Input } from "@angular/core";
-import { HotelService } from 'src/app/hotel/hotel.service';
+import { HotelService } from "src/app/hotel/hotel.service";
 @Component({
   selector: "app-recommend-rank",
   templateUrl: "./recommend-rank.component.html",
@@ -17,37 +17,47 @@ export class RecommendRankComponent implements OnInit {
     this.hotelQuery.ranks = [];
     this.hotelQuery.ranks.push({
       id: 0,
-      label: "默认排序",
+      label: "星级【低-高↑】",
       value: "Category",
-      orderBy: "PriceDesc",
+      orderBy: "CategoryAsc",
       isSelected: true
     });
-    // this.hotelQuery.ranks.push({
-    //   id: 1,
-    //   label: "口碑高-低",
-    //   value: "Grade",
-    //   orderBy: "Desc"
-    // });
+    this.hotelQuery.ranks.push({
+      id: 1,
+      label: "星级【高-低↓】",
+      value: "Category",
+      orderBy: "CategoryDesc",
+      isSelected: false
+    });
     this.hotelQuery.ranks.push({
       id: 2,
-      label: "价格低-高",
+      label: "价格【低-高↑】",
       value: "Price",
       orderBy: "PriceAsc"
     });
     this.hotelQuery.ranks.push({
       id: 3,
-      label: "价格高-低",
+      label: "价格【高-低↓】",
       value: "Price",
       orderBy: "PriceDesc"
     });
-    let rank = this.hotelQuery.ranks.find(it => it.isSelected) || this.hotelQuery.ranks[0];
+    let rank =
+      this.hotelQuery.ranks.find(it => it.isSelected) ||
+      this.hotelQuery.ranks[0];
     if (this.hotelQuery) {
-      rank = this.hotelQuery.ranks.find(it => it.orderBy == this.hotelQuery.Orderby) || rank;
+      rank =
+        this.hotelQuery.ranks.find(
+          it => it.orderBy == this.hotelQuery.Orderby
+        ) || rank;
     }
     rank.isSelected = true;
+    this.hotelService.setHotelQuerySource(this.hotelQuery);
   }
   ngOnInit() {
-    if(this.hotelQuery&&(!this.hotelQuery.ranks||this.hotelQuery.ranks.length==0)){
+    if (
+      this.hotelQuery &&
+      (!this.hotelQuery.ranks || this.hotelQuery.ranks.length == 0)
+    ) {
       this.onReset();
     }
   }
@@ -64,7 +74,7 @@ export class RecommendRankComponent implements OnInit {
 export interface IRankItem {
   id: number;
   label: string;
-  orderBy: "PriceAsc" | "PriceDesc";
+  orderBy: "PriceAsc" | "PriceDesc" | "CategoryAsc" | "CategoryDesc";
   isSelected?: boolean;
-  value: "Category"|"Price";
+  value: "Category" | "Price";
 }

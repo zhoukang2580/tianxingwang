@@ -6,23 +6,27 @@ import { AppHelper } from "../../appHelper";
 import { HttpClient } from "@angular/common/http";
 import { ExceptionEntity } from "./exception.entity";
 import { IdentityService } from "../../services/identity/identity.service";
-import { catchError } from "rxjs/operators";
+import { catchError, finalize } from "rxjs/operators";
 @Injectable({
   providedIn: "root"
 })
 export class LogService {
-  identityEntity: IdentityEntity;
-  constructor(
-    private http: HttpClient,
-    private identityService: IdentityService
-  ) {
+  private exceptions: ExceptionEntity[] = [];
+  private identityEntity: IdentityEntity;
+  constructor(private http: HttpClient, identityService: IdentityService) {
     identityService.getIdentitySource().subscribe(r => {
       this.identityEntity = r;
     });
+    setInterval(_ => {
+      this.sendException();
+    }, 3000);
   }
-
-  async sendException(ex: ExceptionEntity) {
+  private async sendException() {
     try {
+      const ex: ExceptionEntity = this.exceptions[0];
+      if (!ex) {
+        return true;
+      }
       const identity = this.identityEntity;
       const req = new RequestEntity();
       req.Timestamp = Math.floor(Date.now() / 1000);
@@ -48,23 +52,36 @@ export class LogService {
         .join("&");
       const url = AppHelper.getApiUrl();
       return this.http
-        .post(`${url}/Home/Proxy`, `${formObj}&x-requested-with=XMLHttpRequest`, {
-          headers: { "content-type": "application/x-www-form-urlencoded"},
-          observe: "body"
-        })
+        .post(
+          `${url}/Home/Proxy`,
+          `${formObj}&x-requested-with=XMLHttpRequest`,
+          {
+            headers: { "content-type": "application/x-www-form-urlencoded" },
+            observe: "body"
+          }
+        )
         .pipe(
           catchError(e => {
             return throwError(e instanceof Error ? e : new Error(e));
           })
         )
         .subscribe(
-          () => {},
+          () => {
+            this.exceptions = this.exceptions.filter(it => it !== ex);
+          },
           e => {
             console.error("sendException", e);
           }
         );
     } catch (err) {
-      // console.error(err);
+      console.error(err);
+      return false;
+    }
+  }
+  addException(ex: ExceptionEntity) {
+    this.exceptions.unshift(ex);
+    if (this.exceptions.length > 500) {
+      this.exceptions = this.exceptions.slice(0, 500);
     }
   }
 }

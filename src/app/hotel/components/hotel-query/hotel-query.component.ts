@@ -26,7 +26,11 @@ import { Storage } from "@ionic/storage";
 import { RecommendRankComponent } from "./recommend-rank/recommend-rank.component";
 import { QueryTabComponent } from "./query-tab/query-tab.component";
 import { BrandEntity } from "../../models/BrandEntity";
-import { IGeoTab, IGeoItem } from "./hotel-geo/hotel-geo.component";
+import {
+  IGeoTab,
+  IGeoItem,
+  HotelGeoComponent
+} from "./hotel-geo/hotel-geo.component";
 import {
   IStarPriceTab,
   IStarPriceTabItem,
@@ -55,50 +59,17 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
   private hotelQueryModel: HotelQueryEntity;
   private hotelQueryModelSub = Subscription.EMPTY;
   @Output() hotelQueryChange: EventEmitter<any>;
-  @ViewChildren(QueryTabComponent) queryTabComps: QueryList<QueryTabComponent>;
-  @ViewChild(HotelFilterComponent) hotelFilterComp: HotelFilterComponent;
-  @ViewChild(HotelStarPriceComponent)
-  @ViewChild(RecommendRankComponent)
-  hotelRecommendRankComp: RecommendRankComponent;
+  @ViewChildren(QueryTabComponent) private queryTabComps: QueryList<
+    QueryTabComponent
+  >;
   @Input() conditions: HotelConditionModel;
-  hotelStarPriceComp: HotelStarPriceComponent;
   isActiveTab = false;
   activeTab: ITab;
-  constructor(
-    private hotelService: HotelService,
-    private storage: Storage,
-    private tmcService: TmcService
-  ) {
+  constructor(private hotelService: HotelService) {
     this.hotelQueryChange = new EventEmitter();
   }
   ngOnDestroy() {
     this.hotelQueryModelSub.unsubscribe();
-  }
-
-  async onReset() {
-    // this.conditions = await this.storage.get("mock-hotel-condition");
-    console.log("query component ,onreset", this.conditions);
-    this.hotelQueryModel = new HotelQueryEntity();
-    this.hotelService.setHotelQuerySource(this.hotelQueryModel);
-    if (this.hotelFilterComp) {
-      this.hotelFilterComp.onReset();
-    }
-    if (this.queryTabComps) {
-      this.queryTabComps.forEach(it => {
-        if (it) {
-          it.onReset();
-        }
-      });
-    }
-    if (this.hotelFilterComp) {
-      this.hotelFilterComp.onReset();
-    }
-    if (this.hotelRecommendRankComp) {
-      this.hotelRecommendRankComp.onReset();
-    }
-    if (this.hotelStarPriceComp) {
-      this.hotelStarPriceComp.onReset();
-    }
   }
   isStarPriceHasConditionFiltered() {
     return (
@@ -129,15 +100,20 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
     );
   }
   onActiveTab(tab: ITab) {
+    if (!tab) {
+      return;
+    }
     if (this.queryTabComps) {
       this.queryTabComps.forEach(comp => {
-        comp.isActive = comp.label == tab.label && tab.isActive;
+        if (comp) {
+          comp.isActive = comp.label == tab.label && tab.isActive;
+        }
       });
     }
     this.activeTab = tab;
   }
   onStarPriceChange() {
-    let query = { ...this.hotelService.getHotelQueryModel() };
+    const query = { ...this.hotelService.getHotelQueryModel() };
     if (
       query &&
       query.starAndPrices &&
@@ -201,6 +177,7 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
   }
   onFilterGeo() {
     const query = this.hotelService.getHotelQueryModel();
+    query.searchGeoId = "";
     if (query && query.locationAreas) {
       query.Geos = query.Geos || [];
       const geoTabs = query.locationAreas.filter(tab => tab.hasFilterItem);
@@ -226,11 +203,7 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
                           });
                         }
                       });
-                      if (selectedId) {
-                        query.searchGeoId = selectedId;
-                      } else {
-                        delete query.searchGeoId;
-                      }
+                      query.searchGeoId = selectedId || "";
                     }
                   }
                   if (query.Geos.length) {
@@ -252,8 +225,11 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
             }
           });
         });
-        this.hotelService.setHotelQuerySource(query);
       }
+      if (query.Geos && query.Geos.length && !query.searchGeoId) {
+        query.searchGeoId = query.Geos[0];
+      }
+      this.hotelService.setHotelQuerySource(query);
       this.doRefresh(query);
     }
   }
@@ -357,6 +333,28 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
     }
     this.hotelService.setHotelQuerySource(query);
   }
+  async onReset() {
+    // this.conditions = await this.storage.get("mock-hotel-condition");
+    console.log("query component ,onreset", this.conditions);
+    this.hotelQueryModel = new HotelQueryEntity();
+    this.hotelService.setHotelQuerySource(this.hotelQueryModel);
+    if (this.queryTabComps) {
+      this.queryTabComps.forEach(it => {
+        if (it) {
+          it.onReset();
+        }
+      });
+    }
+    if (this.hotelQueryModel) {
+      this.hotelQueryModel.searchGeoId = "";
+      this.hotelQueryModel.ranks = [];
+      this.hotelQueryModel.starAndPrices = [];
+      this.hotelQueryModel.locationAreas = [];
+      this.hotelQueryModel.filters = [];
+    }
+    this.hideQueryPannel();
+    this.hotelService.setHotelQuerySource(this.hotelQueryModel);
+  }
   ngOnInit() {
     this.hotelQueryModelSub = this.hotelService
       .getHotelQuerySource()
@@ -368,7 +366,11 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
     this.hotelQueryModel = new HotelQueryEntity();
     if (query) {
       this.hotelQueryModel = {
-        ...query
+        ...query,
+        searchGeoId:
+          query.Geos && query.Geos.length && !query.searchGeoId
+            ? query.Geos[0]
+            : query.searchGeoId || ""
       };
     }
     this.hideQueryPannel();
@@ -378,13 +380,6 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
     this.hotelQueryChange.emit(this.hotelQueryModel);
   }
   private hideQueryPannel() {
-    // if (this.queryTabComps) {
-    //   this.queryTabComps.forEach(tab => {
-    //     if (tab) {
-    //       tab.onReset();
-    //     }
-    //   });
-    // }
     setTimeout(() => {
       this.activeTab = {
         label: "initial",

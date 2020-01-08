@@ -79,7 +79,10 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
           if (!this.hotelQuery.locationAreas) {
             this.resetTabs();
           } else {
-            this.onTabClick(this.hotelQuery.locationAreas[0]);
+            this.onTabClick(
+              this.hotelQuery.locationAreas.find(it => it.active) ||
+                this.hotelQuery.locationAreas[0]
+            );
           }
         }
       });
@@ -91,6 +94,25 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
     const tab: IGeoTab<IGeoItem<
       GeoEntity
     >> = this.hotelQuery.locationAreas.find(it => it.active);
+    this.hotelQuery.Geos = [];
+    this.hotelQuery.locationAreas = this.hotelQuery.locationAreas.map(t => {
+      if (!t.active) {
+        t.hasFilterItem = false;
+        if (t.items) {
+          t.items = t.items.map(m => {
+            m.isSelected = false;
+            if (m.items) {
+              m.items = m.items.map(s => {
+                s.isSelected = false;
+                return s;
+              });
+            }
+            return m;
+          });
+        }
+      }
+      return t;
+    });
     if (item.level == "second") {
       this.thirdItems = item.items;
     }
@@ -201,14 +223,19 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
     this.hotelQuery.locationAreas = [];
     this.initMetros();
     this.initOtherTabs();
-    if (this.hotelQuery.locationAreas && this.hotelQuery.locationAreas[0]) {
-      this.onTabClick(this.hotelQuery.locationAreas[0]);
+    if (this.hotelQuery.locationAreas) {
+      const tab: IGeoTab<IGeoItem<GeoEntity>> =
+        this.hotelQuery.locationAreas.find(it => it.active) ||
+        this.hotelQuery.locationAreas[0];
+      this.onTabClick(tab);
     }
+    this.hotelService.setHotelQuerySource(this.hotelQuery);
   }
   async onReset() {
     if (this.hotelQuery) {
       this.hotelQuery.locationAreas = null;
-      this.hotelService.setHotelQuerySource(this.hotelQuery);
+      this.hotelQuery.Geos = [];
+      this.hotelQuery.searchGeoId = "";
       await this.resetTabs();
     }
   }

@@ -1,5 +1,5 @@
-import { Subscription } from 'rxjs';
-import { HotelQueryEntity } from 'src/app/hotel/models/HotelQueryEntity';
+import { Subscription } from "rxjs";
+import { HotelQueryEntity } from "src/app/hotel/models/HotelQueryEntity";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { HotelService } from "./../../../hotel.service";
 import { AmenityEntity } from "./../../../models/AmenityEntity";
@@ -71,12 +71,14 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     this.conditionModel = await this.hotelService.getConditions();
     const query = this.hotelService.getHotelQueryModel();
-    this.subscription = this.hotelService.getHotelQuerySource().subscribe(query => {
-      this.hotelQuery = query;
-      if (this.hotelQuery && !this.hotelQuery.filters) {
-        this.onReset();
-      }
-    })
+    this.subscription = this.hotelService
+      .getHotelQuerySource()
+      .subscribe(query => {
+        this.hotelQuery = query;
+        if (this.hotelQuery && !this.hotelQuery.filters) {
+          this.onReset();
+        }
+      });
     if (query && !query.filters) {
       this.onReset();
     } else {
@@ -285,6 +287,7 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
   }
   onReset() {
     if (this.hotelQuery) {
+      this.hotelQuery.searchGeoId = "";
       this.hotelQuery.filters = null;
     }
     this.resetTabs();

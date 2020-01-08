@@ -1,9 +1,8 @@
-import { AgentEntity } from './../../tmc/models/AgentEntity';
+import { AgentEntity } from "./../../tmc/models/AgentEntity";
 import { ConfigEntity } from "./../../services/config/config.entity";
 import { ConfigService } from "./../../services/config/config.service";
 import { HotelConditionModel } from "src/app/hotel/models/ConditionModel";
 import { HotelEntity } from "./../models/HotelEntity";
-import { HotelResultEntity } from "./../models/HotelResultEntity";
 import { HotelQueryComponent } from "./../components/hotel-query/hotel-query.component";
 import { HotelQueryEntity } from "./../models/HotelQueryEntity";
 import { Router, ActivatedRoute } from "@angular/router";
@@ -17,41 +16,32 @@ import {
   ViewChildren,
   QueryList,
   AfterViewInit,
-  Renderer2,
   AfterContentInit
 } from "@angular/core";
 import {
-  NavController,
   IonContent,
-  IonHeader,
   IonSearchbar,
   IonRefresher,
   IonInfiniteScroll,
-  IonToolbar,
-  DomController,
-  Platform,
-  IonList
-} from "@ionic/angular";
-import { Subscription, Observable, BehaviorSubject, Subject, fromEvent, merge } from "rxjs";
-import { AppHelper } from "src/app/appHelper";
+  IonToolbar} from "@ionic/angular";
 import {
-  trigger,
-  state,
-  style,
-  transition,
-  animate
-} from "@angular/animations";
-import { QueryTabComponent } from "../components/hotel-query/query-tab/query-tab.component";
+  Subscription,
+  Observable,
+  fromEvent,
+  merge
+} from "rxjs";
+import { AppHelper } from "src/app/appHelper";
 import { HotelDayPriceEntity } from "../models/HotelDayPriceEntity";
 import { finalize } from "rxjs/operators";
-import { FlightHotelTrainType, TmcService } from "src/app/tmc/tmc.service";
+import { TmcService } from "src/app/tmc/tmc.service";
 
 @Component({
   selector: "app-hotel-list",
   templateUrl: "./hotel-list.page.html",
   styleUrls: ["./hotel-list.page.scss"]
 })
-export class HotelListPage implements OnInit, OnDestroy, AfterViewInit, AfterContentInit {
+export class HotelListPage
+  implements OnInit, OnDestroy, AfterViewInit, AfterContentInit {
   private subscriptions: Subscription[] = [];
   private lastCityCode = "";
   @ViewChild(IonRefresher) refresher: IonRefresher;
@@ -79,17 +69,12 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit, AfterCon
   scroll$: Observable<any>;
   scrollEle: HTMLElement;
   constructor(
-    private navCtrl: NavController,
     private hotelService: HotelService,
     private router: Router,
-    private domCtrl: DomController,
-    private render: Renderer2,
-    private plt: Platform,
     private route: ActivatedRoute,
     private tmcService: TmcService,
-    private configService: ConfigService,
-  ) {
-  }
+    private configService: ConfigService
+  ) {}
   onSearchItemClick(item: { Text: string; Value: string }) {
     this.isShowSearchBar = false;
     if (item && item.Value) {
@@ -99,15 +84,11 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit, AfterCon
       this.doRefresh(true);
     }
   }
-  async ngAfterContentInit() {
-
-  }
+  async ngAfterContentInit() {}
   async ngAfterViewInit() {
     this.scrollEle = await this.content.getScrollElement();
     if (this.scrollEle) {
-      this.scroll$ = merge(
-        fromEvent(this.scrollEle, 'scroll')
-      );
+      this.scroll$ = merge(fromEvent(this.scrollEle, "scroll"));
     }
     this.autofocusSearchBarInput();
   }
@@ -207,7 +188,9 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit, AfterCon
       .getHotelList(this.hotelQueryModel)
       .pipe(
         finalize(() => {
-          this.lastCityCode = this.searchHotelModel && this.searchHotelModel.destinationCity.CityCode;
+          this.lastCityCode =
+            this.searchHotelModel &&
+            this.searchHotelModel.destinationCity.CityCode;
           this.isLoading = false;
         })
       )
@@ -287,19 +270,21 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit, AfterCon
   }
   getAvgPrice(hotel: HotelEntity) {
     if (hotel) {
-      hotel.VariablesJsonObj = hotel.VariablesJsonObj || JSON.parse(hotel.Variables) || {};
+      hotel.VariablesJsonObj =
+        hotel.VariablesJsonObj || JSON.parse(hotel.Variables) || {};
       return hotel.VariablesJsonObj.AvgPrice;
     }
   }
   async ngOnInit() {
-    this.agent = await this.tmcService.getAgent();
-    this.config = await this.configService.getConfigAsync();
     const sub0 = this.route.queryParamMap.subscribe(_ => {
-      this.hotelService.curViewHotel=null;
+      this.hotelService.curViewHotel = null;
       this.isShowSearchBar = false;
       this.isLeavePage = false;
       const c = this.hotelService.getSearchHotelModel();
-      if (this.lastCityCode !== (c && c.destinationCity && c.destinationCity.CityCode)) {
+      if (
+        this.lastCityCode !==
+        (c && c.destinationCity && c.destinationCity.CityCode)
+      ) {
         this.doRefresh(false);
       }
     });
@@ -323,5 +308,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit, AfterCon
     this.subscriptions.push(sub);
     this.subscriptions.push(sub1);
     this.doRefresh();
+    this.agent = await this.tmcService.getAgent();
+    this.config = await this.configService.getConfigAsync();
   }
 }

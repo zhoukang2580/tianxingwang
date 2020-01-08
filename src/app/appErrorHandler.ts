@@ -15,7 +15,7 @@ export class AppErrorHandler implements ErrorHandler {
             });
           }, 5000);
         if(environment.production){
-            this.logService.sendException({
+            this.logService.addException({
                 Message: LanguageHelper.getApiMobileAppError(),
                 Method: "AppErrorHandler",
                 Error: error

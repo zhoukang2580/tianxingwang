@@ -247,8 +247,10 @@ export class HotelStarPriceComponent
       });
     const q = this.hotelService.getHotelQueryModel();
     this.hotelQuery = q;
-    if (q && !q.starAndPrices) {
-      this.onReset();
+    if ((q && !q.starAndPrices) || !q.starAndPrices.length) {
+      setTimeout(() => {
+        this.onReset();
+      }, 200);
     }
   }
 }

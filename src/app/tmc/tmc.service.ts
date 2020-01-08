@@ -1,38 +1,28 @@
-import { OrderFlightTicketEntity } from './../order/models/OrderFlightTicketEntity';
-import { Platform } from '@ionic/angular';
-import { finalize } from 'rxjs/operators';
-import { ProductItemType } from 'src/app/tmc/models/ProductItems';
+import { OrderFlightTicketEntity } from "./../order/models/OrderFlightTicketEntity";
+import { Platform } from "@ionic/angular";
 import { AppHelper } from "./../appHelper";
 import { OrganizationEntity, StaffApprover } from "./../hr/staff.service";
 import { AgentEntity } from "./models/AgentEntity";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
-import { BehaviorSubject, of, Subscription } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 import { Injectable } from "@angular/core";
 import { MemberCredential } from "../member/member.service";
 import { OrderTravelPayType } from "../order/models/OrderTravelEntity";
 import { StaffEntity } from "../hr/staff.service";
-import { InsuranceResultEntity } from "./models/Insurance/InsuranceResultEntity";
-import { OrderBookDto } from "../order/models/OrderBookDto";
 import { CredentialsEntity } from "./models/CredentialsEntity";
 import { TrafficlineEntity } from "./models/TrafficlineEntity";
 import { Storage } from "@ionic/storage";
 import * as jsPy from "js-pinyin";
-import { OrderModel } from "../order/models/OrderModel";
-import { OrderService } from "../order/order.service";
-import { IFlightSegmentInfo } from "../flight/models/PassengerFlightInfo";
-import { ITrainInfo } from "../train/train.service";
 import { InsuranceProductEntity } from "../insurance/models/InsuranceProductEntity";
-import { LanguageHelper } from "../languageHelper";
 import { PayService } from "../services/pay/pay.service";
-import { Router } from "@angular/router";
-import { TmcDataEntity } from './models/TmcDataEntity';
-import { AccountEntity } from '../account/models/AccountEntity';
-import { BaseEntity } from '../models/BaseEntity';
-import { TravelModel } from '../order/models/TravelModel';
-import { OrderEntity } from '../order/models/OrderEntity';
-import { OrderTrainTicketEntity } from '../order/models/OrderTrainTicketEntity';
+import { TmcDataEntity } from "./models/TmcDataEntity";
+import { AccountEntity } from "../account/models/AccountEntity";
+import { BaseEntity } from "../models/BaseEntity";
+import { TravelModel } from "../order/models/TravelModel";
+import { OrderEntity } from "../order/models/OrderEntity";
+import { OrderTrainTicketEntity } from "../order/models/OrderTrainTicketEntity";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -66,12 +56,10 @@ export class TmcService {
     private apiService: ApiService,
     private storage: Storage,
     private identityService: IdentityService,
-    private orderService: OrderService,
     private payService: PayService,
-    private router: Router,
     private platform: Platform
   ) {
-    this.identityService.getIdentitySource().subscribe(id => {
+    this.identityService.getIdentitySource().subscribe(() => {
       this.disposal();
     });
     this.selectedCompanySource = new BehaviorSubject(null);
@@ -85,7 +73,7 @@ export class TmcService {
     const req = new RequestEntity();
     req.Method = `TmcApiOrderUrl-Travel-List`;
     if (type) {
-      req.Data['Type'] = type
+      req.Data["Type"] = type;
     }
     return this.apiService.getPromiseData<TravelModel>(req);
   }
@@ -96,17 +84,17 @@ export class TmcService {
         channel = "android";
       }
       if (this.platform.is("ios")) {
-        channel = "ios"
+        channel = "ios";
       }
     } else {
       if (AppHelper.isWechatH5()) {
-        channel = 'WechatH5';
+        channel = "WechatH5";
       }
       if (AppHelper.isDingtalkH5()) {
-        channel = 'DingtalkH5';
+        channel = "DingtalkH5";
       }
       if (AppHelper.isWechatMini()) {
-        channel = 'WechatMini';
+        channel = "WechatMini";
       }
     }
     return channel;
@@ -117,13 +105,8 @@ export class TmcService {
     }
     let payResult = false;
     const payWay = await this.payService.selectPayWay();
-    console.log('payway', payWay);
+    console.log("payway", payWay);
     if (!payWay) {
-      const ok = await AppHelper.alert(
-        LanguageHelper.Order.getDonotSelectPayWayTip(),
-        true,
-        LanguageHelper.getYesTip()
-      );
       return payResult;
     } else {
       if (payWay.value == "ali") {
@@ -135,7 +118,11 @@ export class TmcService {
     }
     return payResult;
   }
-  private async wechatPay(tradeNo: string, key: string = "", method: string = "TmcApiOrderUrl-Pay-Create") {
+  private async wechatPay(
+    tradeNo: string,
+    key: string = "",
+    method: string = "TmcApiOrderUrl-Pay-Create"
+  ) {
     let res = false;
     const req = new RequestEntity();
     req.Method = method;
@@ -147,12 +134,11 @@ export class TmcService {
       IsApp: AppHelper.isApp()
     };
     if (key) {
-      req.Data['Key'] = key;
+      req.Data["Key"] = key;
     }
-    const r = await this.payService
-      .wechatpay(req, "").catch(_ => {
-        AppHelper.alert(_);
-      });
+    const r = await this.payService.wechatpay(req, "").catch(_ => {
+      AppHelper.alert(_);
+    });
     if (r) {
       const req1 = new RequestEntity();
       req1.Method = "TmcApiOrderUrl-Pay-Process";
@@ -165,7 +151,7 @@ export class TmcService {
         AppHelper.alert(_);
       });
       if (result) {
-        AppHelper.alert(result)
+        AppHelper.alert(result);
         res = true;
       } else {
         // AppHelper.alert("订单处理支付失败");
@@ -177,7 +163,11 @@ export class TmcService {
     }
     return res;
   }
-  private async aliPay(tradeNo: string, key: string = "", method: string = "TmcApiOrderUrl-Pay-Create") {
+  private async aliPay(
+    tradeNo: string,
+    key: string = "",
+    method: string = "TmcApiOrderUrl-Pay-Create"
+  ) {
     let res = false;
     const req = new RequestEntity();
     req.Method = method;
@@ -189,7 +179,7 @@ export class TmcService {
       OrderId: tradeNo
     };
     if (key) {
-      req.Data['Key'] = key;
+      req.Data["Key"] = key;
     }
     const r = await this.payService.alipay(req, "").catch(e => {
       AppHelper.alert(e);
@@ -202,13 +192,12 @@ export class TmcService {
         OutTradeNo: r,
         Type: "2"
       };
-      const result = await this.payService.process(req1)
-        .catch(_ => {
-          AppHelper.alert(_);
-        });
+      const result = await this.payService.process(req1).catch(_ => {
+        AppHelper.alert(_);
+      });
       if (result) {
         res = true;
-        AppHelper.alert(result)
+        AppHelper.alert(result);
       } else {
         res = false;
         // AppHelper.alert("订单处理支付失败");
@@ -243,12 +232,11 @@ export class TmcService {
       body: content
     };
     req.Method = "TmcApiOrderUrl-Order-SendEmail";
-    return this.apiService
-      .getPromiseData<{
-        Status: boolean;
-        Id: string;
-        Message: string;
-      }>(req);
+    return this.apiService.getPromiseData<{
+      Status: boolean;
+      Id: string;
+      Message: string;
+    }>(req);
   }
   async sendSms(
     toMobiles: string[],
@@ -266,12 +254,11 @@ export class TmcService {
       body: content
     };
     req.Method = "TmcApiOrderUrl-Order-SendSms";
-    return this.apiService
-      .getPromiseData<{
-        Status: boolean;
-        Id: string;
-        Message: string;
-      }>(req);
+    return this.apiService.getPromiseData<{
+      Status: boolean;
+      Id: string;
+      Message: string;
+    }>(req);
   }
   async getEmailTemplateSelectItemList() {
     if (
@@ -384,7 +371,7 @@ export class TmcService {
               Data: null,
               Message: _.Message || _.message || _
             } as ITravelUrlResult
-          }
+          };
         });
         all.push(res);
       }
@@ -397,11 +384,14 @@ export class TmcService {
     });
     return result;
   }
-  private getTravelUrl(data: {
-    staffNumber: string;
-    staffOutNumber: string;
-    name: string;
-  }, isShowLoading = false): Promise<{
+  private getTravelUrl(
+    data: {
+      staffNumber: string;
+      staffOutNumber: string;
+      name: string;
+    },
+    isShowLoading = false
+  ): Promise<{
     key: string;
     value: ITravelUrlResult;
   }> {
@@ -576,9 +566,9 @@ export class TmcService {
       .catch(_ => false);
   }
 
-
   async getPassengerCredentials(
-    accountIds: string[], isShowLoading = false
+    accountIds: string[],
+    isShowLoading = false
   ): Promise<{ [accountId: string]: CredentialsEntity[] }> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Home-Credentials";
@@ -598,12 +588,19 @@ export class TmcService {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Agent-Agent";
-    this.agent = await this.apiService.getPromiseData<{ Agent: AgentEntity }>(req).then(r => {
-      if (r && r.Agent) {
-        return { ...r.Agent, LogoFileName: r.Agent.LogoUrl || `assets/images/Logodm.png`, LogoFullFileName: r.Agent.LogoUrl || `assets/images/Logodm.png` }
-      }
-      return r;
-    }).catch(_ => null);
+    this.agent = await this.apiService
+      .getPromiseData<{ Agent: AgentEntity }>(req)
+      .then(r => {
+        if (r && r.Agent) {
+          return {
+            ...r.Agent,
+            LogoFileName: r.Agent.LogoUrl || `assets/images/Logodm.png`,
+            LogoFullFileName: r.Agent.LogoUrl || `assets/images/Logodm.png`
+          };
+        }
+        return r;
+      })
+      .catch(_ => null);
     return this.agent;
   }
   async getTmc(forceFetch = false): Promise<TmcEntity> {
@@ -664,7 +661,11 @@ export interface TravelUrlInfo {
   TravelNumber: string; // TR20190703763
   Trips: string[]; // 火车行程: 07-26 至 07-26 苏州 至 南京"
 }
-export interface IBookOrderResult { TradeNo: string; HasTasks: boolean; Message: string; }
+export interface IBookOrderResult {
+  TradeNo: string;
+  HasTasks: boolean;
+  Message: string;
+}
 export class TravelFormEntity {
   Tmc: TmcEntity;
   /// <summary>
@@ -1166,15 +1167,15 @@ export interface PassengerBookInfo<T> {
   isNotWhitelist?: boolean;
   bookInfo?: T;
   id?: string;
-  isReselect?: boolean;// 是否重选
-  isFilterPolicy?: boolean;// 完全符合差标
+  isReselect?: boolean; // 是否重选
+  isFilterPolicy?: boolean; // 完全符合差标
   // isFilteredPolicy?: boolean;// 是否过滤差标
   // isAllowBookPolicy?: boolean;// 所有可预订
   exchangeInfo?: {
     order: OrderEntity;
     ticket: OrderTrainTicketEntity | OrderFlightTicketEntity;
     insurnanceAmount?: number;
-  }
+  };
 }
 export class InitialBookDtoModel {
   ServiceFees: { [clientId: string]: string };
