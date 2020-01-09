@@ -487,7 +487,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     if (data.fromDate) {
       model.StartDate = data.fromDate;
     }
-    model.EndDate = data.toDate || moment().format("YYYY-MM-DD");
+    if (data.toDate) {
+      model.EndDate = data.toDate || moment().format("YYYY-MM-DD");
+    }
     model.Id = data.orderNumber;
     model.Status = data.orderStatus;
     model.Passenger = data.passengerName;
