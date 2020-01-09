@@ -7,7 +7,7 @@ Winner.ImageRecover.prototype = {
     this.LoadImages(container || document);
   },
   LoadImages: function (content) {
-    var allImages = content instanceof HTMLImageElement ? [content] : content.getElementsByTagName("img");
+    var allImages = content.getElementsByTagName("img") || [content];
     for (var i = 0; i < allImages.length; i++) {
       this.BindErrorEvent(allImages[i]);
     }
