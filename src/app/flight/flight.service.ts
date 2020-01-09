@@ -725,7 +725,7 @@ export class FlightService {
     const data =
       result && (result.data as PassengerBookInfo<IFlightSegmentInfo>[]);
     if (data && data.length) {
-      let cannotArr: string[] = [];
+      const cannotArr: string[] = [];
       for (let i = 0; i < data.length; i++) {
         const item = data[i];
         const info = this.getPolicyCabinBookInfo(
@@ -777,8 +777,11 @@ export class FlightService {
       );
       if (flihgtPolicyCabin) {
         if (flightSegment.Cabins) {
+          const c = flightSegment.Cabins.find(
+            c => c.Id == flihgtPolicyCabin.Id
+          );
           flihgtPolicyCabin.Cabin = {
-            ...flightSegment.Cabins.find(c => c.Id == flihgtPolicyCabin.Id)
+            ...c
           };
         }
         let tripType = TripType.departureTrip;

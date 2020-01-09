@@ -128,6 +128,12 @@
       </ng-container>
     </ion-item>
   </ion-list>
+  <div class='show-more'>
+    <ion-chip color='secondary' (click)='onShowMoreCabins()' *ngIf='hasMoreCabins'>
+      <ion-label>显示全部</ion-label>
+      <ion-icon name="arrow-forward" mode='ios'></ion-icon>
+    </ion-chip>
+  </div>
   <ng-template #fakeList>
     <ion-list>
       <ion-item *ngFor='let cabin of [1,2,3]'>

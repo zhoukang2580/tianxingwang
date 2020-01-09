@@ -1,5 +1,5 @@
-import { LanguageHelper } from 'src/app/languageHelper';
-import { FilterConditionModel } from 'src/app/flight/models/flight/advanced-search-cond/FilterConditionModel';
+import { LanguageHelper } from "src/app/languageHelper";
+import { FilterConditionModel } from "src/app/flight/models/flight/advanced-search-cond/FilterConditionModel";
 import { FlightCabinEntity } from "./../models/flight/FlightCabinEntity";
 import { IdentityService } from "./../../services/identity/identity.service";
 import {
@@ -31,9 +31,10 @@ import { of, Observable, Subscription } from "rxjs";
 import { map, tap, filter } from "rxjs/operators";
 import { PassengerBookInfo } from "src/app/tmc/tmc.service";
 import { AppHelper } from "src/app/appHelper";
-import { FlightFareType } from '../models/flight/FlightFareType';
-import { IdentityEntity } from 'src/app/services/identity/identity.entity';
-import { SearchTypeModel } from '../models/flight/advanced-search-cond/SearchTypeModel';
+import { FlightFareType } from "../models/flight/FlightFareType";
+import { IdentityEntity } from "src/app/services/identity/identity.entity";
+import { SearchTypeModel } from "../models/flight/advanced-search-cond/SearchTypeModel";
+import { FlightCabinType } from "../models/flight/FlightCabinType";
 
 @Component({
   selector: "app-flight-item-cabins",
@@ -41,9 +42,13 @@ import { SearchTypeModel } from '../models/flight/advanced-search-cond/SearchTyp
   styleUrls: ["./flight-item-cabins.page.scss"]
 })
 export class FlightItemCabinsPage implements OnInit {
+  private cabins: FlightPolicy[] = [];
+  private economyClassCabins: FlightPolicy[] = []; // 显示经济舱的最低价、协议价、全价
+  private moreCabins: FlightPolicy[] = []; // 显示更多价格
+  vmCabins: FlightPolicy[] = [];
+  hasMoreCabins = true;
   vmFlightSegment: FlightSegmentEntity;
   FlightFareType = FlightFareType;
-  vmCabins: FlightPolicy[] = [];
   staff: StaffEntity;
   showOpenBtn$ = of(0);
   identity: IdentityEntity;
@@ -67,7 +72,9 @@ export class FlightItemCabinsPage implements OnInit {
       this.vmFlightSegment = this.flightService.currentViewtFlightSegment;
       this.isSelf = await this.staffService.isSelfBookType();
       this.cabinTypes = this.getCabinTypes();
-      const identity = await this.identityService.getIdentityAsync().catch(_ => null)
+      const identity = await this.identityService
+        .getIdentityAsync()
+        .catch(_ => null);
       this.identity = identity;
       this.staff = await this.staffService.getStaff();
       if (
@@ -79,8 +86,10 @@ export class FlightItemCabinsPage implements OnInit {
       }
     });
   }
-  get isAgent(){
-    return this.identity&&this.identity.Numbers&&this.identity.Numbers['AgentId'];
+  get isAgent() {
+    return (
+      this.identity && this.identity.Numbers && this.identity.Numbers["AgentId"]
+    );
   }
   back() {
     this.router.navigate([AppHelper.getRoutePath("flight-list")]);
@@ -94,39 +103,55 @@ export class FlightItemCabinsPage implements OnInit {
             id: c.Type,
             label: c.TypeName,
             isChecked: false
-          })
+          });
         }
-      })
+      });
     }
     return cts;
   }
   getMothDay() {
-    const t =
-      this.vmFlightSegment &&
-      moment(this.vmFlightSegment.TakeoffTime);
+    const t = this.vmFlightSegment && moment(this.vmFlightSegment.TakeoffTime);
     let d: DayModel;
     if (t) {
       d = this.flydayService.generateDayModel(t);
     }
     if (!d || !t) {
-      return '';
+      return "";
     }
     return `${t && t.format("MM月DD日")} ${d && d.dayOfWeekName} `;
   }
   getFlightIllegalTip() {
     const bookInfos = this.flightService.getPassengerBookInfos();
     const info = bookInfos.find(it => it.isFilterPolicy);
-    return info && info.passenger && info.passenger.Policy && info.passenger.Policy.FlightIllegalTip;
+    return (
+      info &&
+      info.passenger &&
+      info.passenger.Policy &&
+      info.passenger.Policy.FlightIllegalTip
+    );
   }
   getFlightlegalTip() {
     const bookInfos = this.flightService.getPassengerBookInfos();
     const info = bookInfos.find(it => it.isFilterPolicy);
-    return info && info.passenger && info.passenger.Policy && info.passenger.Policy.FlightLegalTip;
+    return (
+      info &&
+      info.passenger &&
+      info.passenger.Policy &&
+      info.passenger.Policy.FlightLegalTip
+    );
   }
   async onBookTicket(flightCabin: FlightCabinEntity) {
-    if (!this.flightService.policyFlights || !this.flightService.policyFlights.length) {
-      await this.flightService.loadPolicyedFlightsAsync(this.flightService.flightJourneyList);
-      if (!this.flightService.policyFlights || !this.flightService.policyFlights.length) {
+    if (
+      !this.flightService.policyFlights ||
+      !this.flightService.policyFlights.length
+    ) {
+      await this.flightService.loadPolicyedFlightsAsync(
+        this.flightService.flightJourneyList
+      );
+      if (
+        !this.flightService.policyFlights ||
+        !this.flightService.policyFlights.length
+      ) {
         AppHelper.alert("差标获取失败");
         return;
       }
@@ -135,14 +160,30 @@ export class FlightItemCabinsPage implements OnInit {
     if (isSelf) {
       const bookInfos = this.flightService.getPassengerBookInfos();
       const bookInfo = bookInfos[0];
-      const info = this.flightService.getPolicyCabinBookInfo(bookInfo, flightCabin, this.vmFlightSegment);
+      const info = this.flightService.getPolicyCabinBookInfo(
+        bookInfo,
+        flightCabin,
+        this.vmFlightSegment
+      );
       const rules = (info.flightPolicy && info.flightPolicy.Rules) || [];
       if (info && info.isDontAllowBook) {
-        AppHelper.alert(`${rules.join("; ") + rules.length ? "," : ""}不可预订`, true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+        let msg = rules.join(";");
+        if (rules.length) {
+          msg += ",不可预订";
+        }
+        AppHelper.alert(
+          msg,
+          true,
+          LanguageHelper.getConfirmTip(),
+          LanguageHelper.getCancelTip()
+        );
         return;
       }
     }
-    await this.flightService.addOrReplaceSegmentInfo(flightCabin, this.vmFlightSegment);
+    await this.flightService.addOrReplaceSegmentInfo(
+      flightCabin,
+      this.vmFlightSegment
+    );
     await this.showSelectedInfos();
   }
   async filterPolicyFlights() {
@@ -156,16 +197,60 @@ export class FlightItemCabinsPage implements OnInit {
     });
     await popover.present();
     const d = await popover.onDidDismiss();
-    const data = d && (d.data as PassengerBookInfo<IFlightSegmentInfo> | "isUnFilterPolicy");
+    const data =
+      d &&
+      (d.data as PassengerBookInfo<IFlightSegmentInfo> | "isUnFilterPolicy");
     if (!data) {
       return;
     }
     const arr = this.flightService.getPassengerBookInfos().map(it => {
-      it.isFilterPolicy = data != 'isUnFilterPolicy' ? it.id == data.id && data.isFilterPolicy : false;
+      it.isFilterPolicy =
+        data != "isUnFilterPolicy"
+          ? it.id == data.id && data.isFilterPolicy
+          : false;
       return it;
     });
     this.flightService.setPassengerBookInfosSource(arr);
-    this.vmCabins = this.getPolicyCabins();
+    this.cabins = this.getPolicyCabins();
+    this.initVmCabins(this.cabins);
+  }
+  onShowMoreCabins() {
+    this.vmCabins = this.economyClassCabins.concat(this.moreCabins);
+    this.hasMoreCabins = false;
+  }
+  private initVmCabins(cabins: FlightPolicy[]) {
+    if (!cabins || !cabins.length) {
+      return;
+    }
+    this.moreCabins = [];
+    this.economyClassCabins = [];
+    cabins.forEach(it => {
+      if (
+        it.Cabin &&
+        it.Cabin.Type == FlightCabinType.Y &&
+        // 最低价
+        (it.Cabin.SalesPrice == this.vmFlightSegment.LowestFare ||
+          // 全价
+          +it.Cabin.Discount >= 1 ||
+          // 协议价
+          +it.Cabin.FareType == FlightFareType.Agreement)
+      ) {
+        this.economyClassCabins.push(it);
+      } else {
+        this.moreCabins.push(it);
+      }
+    });
+    this.hasMoreCabins = !!this.moreCabins.length;
+    this.economyClassCabins.sort(
+      (a, b) => +a.Cabin.SalesPrice - +b.Cabin.SalesPrice
+    );
+    this.moreCabins.sort((a, b) => +a.Cabin.SalesPrice - +b.Cabin.SalesPrice);
+    if (this.economyClassCabins && this.economyClassCabins.length) {
+      this.vmCabins = this.economyClassCabins;
+    } else {
+      this.hasMoreCabins = false;
+      this.vmCabins = this.moreCabins;
+    }
   }
   async showSelectedInfos() {
     const modal = await this.modalCtrl.create({
@@ -192,8 +277,12 @@ export class FlightItemCabinsPage implements OnInit {
     console.log(evt, this.cabinTypes);
     if (evt && evt.detail) {
       const cabins = this.cabinTypes.filter(it => it.isChecked);
-      this.flightService.setFilterConditionSource({ ...this.flightService.getFilterCondition(), cabins })
-      this.vmCabins = this.getPolicyCabins();
+      this.flightService.setFilterConditionSource({
+        ...this.flightService.getFilterCondition(),
+        cabins
+      });
+      this.cabins = this.getPolicyCabins();
+      this.initVmCabins(this.cabins);
     }
   }
   onionChange(c: { id: string }) {
@@ -205,20 +294,23 @@ export class FlightItemCabinsPage implements OnInit {
     }
   }
   async ngOnInit() {
-    this.filterConditionSub = this.flightService.getFilterConditionSource().subscribe(c => {
-      this.filterConditions = c;
-      const cabin = c && c.cabins.find(it => it.isChecked);
-      if (cabin) {
-        this.selectedCabinType = +cabin.id;
-      }
-    })
+    this.filterConditionSub = this.flightService
+      .getFilterConditionSource()
+      .subscribe(c => {
+        this.filterConditions = c;
+        const cabin = c && c.cabins.find(it => it.isChecked);
+        if (cabin) {
+          this.selectedCabinType = +cabin.id;
+        }
+      });
     this.filteredPolicyPassenger$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(map(infos => infos.find(it => it.isFilterPolicy)));
     this.showOpenBtn$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(map(infos => infos && infos.filter(it => !!it.bookInfo).length));
-    this.vmCabins = this.getPolicyCabins();
+    this.cabins = this.getPolicyCabins();
+    this.initVmCabins(this.cabins);
   }
 
   private getPolicyCabins() {
@@ -226,9 +318,20 @@ export class FlightItemCabinsPage implements OnInit {
       .getPassengerBookInfos()
       .find(it => it.isFilterPolicy);
     const bookInfo = isfilteredBookInfo;
-    let policyCabins = this.flightService.filterPassengerPolicyCabins({ data: bookInfo, flightSegment: { ...this.vmFlightSegment } });
-    if (this.filterConditions && this.filterConditions.cabins && this.filterConditions.cabins.length) {
-      policyCabins = policyCabins.filter(c => c.Cabin && this.filterConditions.cabins.some(it => it.id == c.Cabin.Type))
+    let policyCabins = this.flightService.filterPassengerPolicyCabins({
+      data: bookInfo,
+      flightSegment: { ...this.vmFlightSegment }
+    });
+    if (
+      this.filterConditions &&
+      this.filterConditions.cabins &&
+      this.filterConditions.cabins.length
+    ) {
+      policyCabins = policyCabins.filter(
+        c =>
+          c.Cabin &&
+          this.filterConditions.cabins.some(it => it.id == c.Cabin.Type)
+      );
     }
     console.log("showPolicyCabins ", policyCabins);
     return policyCabins;
