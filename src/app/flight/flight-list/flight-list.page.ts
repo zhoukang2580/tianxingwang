@@ -704,7 +704,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     return this.lowestPriceSegments;
   }
   private renderFlightList(fs: FlightSegmentEntity[] = []) {
-    this.vmFlights = this.calcLowestPrice(fs);
+    this.vmFlights = this.calcLowestPrice(fs).filter(
+      it => it.Cabins && it.Cabins.length
+    );
     return;
   }
   private filterFlightSegments(segs: FlightSegmentEntity[]) {
