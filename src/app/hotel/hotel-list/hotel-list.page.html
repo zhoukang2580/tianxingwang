@@ -62,7 +62,7 @@
                 {{grade}}分
               </span>
             </h5>
-            <p class='grade-stars' *ngIf='item.Hotel?.VariablesJsonObj["GeoDistance"] as distance'>
+            <p class='grade-stars' text-wrap *ngIf='item.Hotel?.VariablesJsonObj["GeoDistance"] as distance'>
               <ion-icon name="pin" color='secondary'></ion-icon>
               距离{{distance.substring(0,distance.indexOf(','))}}直线距离约{{distance.substring(distance.indexOf(',')+1)}}km
             </p>
