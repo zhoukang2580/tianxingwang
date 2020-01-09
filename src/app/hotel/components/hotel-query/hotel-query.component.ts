@@ -158,12 +158,14 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
         query.EndPrice = upper == Infinity ? "10000000" : `${upper}`;
       }
       const stars = starAndPrices.find(it => it.tag == "stars");
+      query.Stars = null;
       if (stars && stars.items && stars.items.some(it => it.isSelected)) {
         query.Stars = stars.items
           .filter(it => it.isSelected)
           .map(it => it.value);
       }
       const types = starAndPrices.find(it => it.tag == "types");
+      query.Categories = null;
       if (types && types.items && types.items.some(it => it.isSelected)) {
         query.Categories = types.items
           .filter(it => it.isSelected)

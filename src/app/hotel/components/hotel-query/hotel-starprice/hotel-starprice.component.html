@@ -22,7 +22,7 @@
         <span>￥{{value?.lower}}</span>
         <span>￥{{value?.upper>=1000?"1000+":value?.upper}}</span>
       </div>
-      <ion-button (click)='onResetCustomePrice(true)' size='small' color='secondary'>不限</ion-button>
+      <ion-button (click)='onResetCustomePrice()' size='small' color='secondary'>不限</ion-button>
     </ion-list-header>
     <ion-item>
       <ion-range (ionChange)='onPriceRangeChange($event)' min="0" pin="true" dualKnobs="true" max="1001" step="100" 
