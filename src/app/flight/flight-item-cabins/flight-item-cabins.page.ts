@@ -224,28 +224,36 @@ export class FlightItemCabinsPage implements OnInit {
     }
     this.moreCabins = [];
     this.economyClassCabins = [];
+    let lowestPrice = Infinity;
+    if (this.vmFlightSegment && this.vmFlightSegment.Cabins) {
+      this.vmFlightSegment.Cabins.forEach(it => {
+        lowestPrice = Math.min(+it.SalesPrice, lowestPrice);
+      });
+    }
     cabins.forEach(it => {
       if (
         it.Cabin &&
         it.Cabin.Type == FlightCabinType.Y &&
         // 最低价
-        (it.Cabin.SalesPrice == this.vmFlightSegment.LowestFare ||
+        (it.Cabin.SalesPrice == `${lowestPrice}` ||
           // 全价
           +it.Cabin.Discount >= 1 ||
           // 协议价
           +it.Cabin.FareType == FlightFareType.Agreement)
       ) {
         this.economyClassCabins.push(it);
-      } else {
+      } else if (it.Cabin) {
         this.moreCabins.push(it);
       }
     });
     this.hasMoreCabins = !!this.moreCabins.length;
-    this.economyClassCabins.sort(
-      (a, b) => +a.Cabin.SalesPrice - +b.Cabin.SalesPrice
+    this.economyClassCabins.sort((a, b) =>
+      b.Cabin && a.Cabin ? +a.Cabin.SalesPrice - +b.Cabin.SalesPrice : 0
     );
-    this.moreCabins.sort((a, b) => +a.Cabin.SalesPrice - +b.Cabin.SalesPrice);
-    if (this.economyClassCabins && this.economyClassCabins.length) {
+    this.moreCabins.sort((a, b) =>
+      a.Cabin && b.Cabin ? +a.Cabin.SalesPrice - +b.Cabin.SalesPrice : 0
+    );
+    if (this.economyClassCabins.length) {
       this.vmCabins = this.economyClassCabins;
     } else {
       this.hasMoreCabins = false;
