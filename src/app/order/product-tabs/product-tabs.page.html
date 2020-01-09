@@ -23,6 +23,7 @@
 
 <ion-content>
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh();">
+    <ion-refresher-content>正在获取...</ion-refresher-content>
   </ion-refresher>
 
   <ng-template #fakeList>
@@ -111,7 +112,8 @@
     </ng-container>
   </ng-template>
   <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMore();">
-    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
+    <ion-infinite-scroll-content>
+      正在加载...
     </ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>
