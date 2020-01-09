@@ -113,11 +113,13 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this.setLoginButton();
-    this.autoLogin();
+    setTimeout(() => {
+      this.autoLogin();
+    }, 0);
   }
   autoLogin() {
     if (!this.identityService.getStatus()) {
-      if (AppHelper.isApp() || true) {
+      if (AppHelper.isApp()) {
         this.loginType = "device";
         this.login();
       }
