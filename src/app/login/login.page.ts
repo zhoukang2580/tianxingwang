@@ -60,6 +60,9 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit() {
     console.log("login page ngAfterViewInit");
     this.dismissAllOverlayer();
+    setTimeout(() => {
+      this.autoLogin();
+    }, 1000);
   }
   private async dismissAllOverlayer() {
     let i = 10;
@@ -113,11 +116,8 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this.setLoginButton();
-    setTimeout(() => {
-      this.autoLogin();
-    }, 0);
   }
-  autoLogin() {
+  private autoLogin() {
     if (!this.identityService.getStatus()) {
       if (AppHelper.isApp()) {
         this.loginType = "device";
