@@ -96,7 +96,7 @@ export class IdentityService {
   getIdentitySource(): Observable<IdentityEntity> {
     return this.identitySource.asObservable();
   }
-  private checkTicketAsync(t: string = "") {
+  checkTicketAsync(t: string = "") {
     return new Promise<IdentityEntity>(s => {
       const sub = this.checkTicket(t)
         .pipe(
@@ -184,7 +184,8 @@ export class IdentityService {
     if (ticket) {
       return this.checkTicket(ticket);
     }
-    this._IdentityEntity = null;
+    this._IdentityEntity.Ticket = null;
+    this._IdentityEntity.Id = null;
     return of(this._IdentityEntity);
   }
 }
