@@ -41,7 +41,7 @@ export class HotelListPage
   implements OnInit, OnDestroy, AfterViewInit, AfterContentInit {
   private subscriptions: Subscription[] = [];
   private lastCityCode = "";
-  isIos = false;
+  private timer;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   @ViewChild("querytoolbar") querytoolbar: IonToolbar;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
@@ -50,14 +50,14 @@ export class HotelListPage
   @ViewChildren(IonSearchbar) searchbarEls: QueryList<IonSearchbar>;
   // @ViewChildren("hotellist") hotellist: QueryList<IonList>;
   @HostBinding("class.show-search-bar") isShowSearchBar = false;
-  isLoading = false;
   isLeavePage = false;
   searchHotelModel: SearchHotelModel;
   hotelQueryModel: HotelQueryEntity = new HotelQueryEntity();
   hotelDayPrices: HotelDayPriceEntity[] = [];
   vmKeyowrds = "";
   keyowrds = "";
-  isSearching = false;
+  isSearchingList = false;
+  isSearchingText = false;
   vmSearchTextList: { Text: string; Value: string }[] = [];
   searchSubscription = Subscription.EMPTY;
   loadDataSub = Subscription.EMPTY;
@@ -71,17 +71,14 @@ export class HotelListPage
     private router: Router,
     private route: ActivatedRoute,
     private tmcService: TmcService,
-    private configService: ConfigService,
-    plt: Platform
-  ) {
-    this.isIos = plt.is("ios");
-  }
+    private configService: ConfigService
+  ) {}
   onSearchItemClick(item: { Text: string; Value: string }) {
     this.isShowSearchBar = false;
     if (item && item.Value) {
       this.hotelQueryModel.HotelId = item.Value;
       this.keyowrds = this.hotelQueryModel.SearchKey = item.Text;
-      this.vmKeyowrds = "";
+      // this.vmKeyowrds = "";
       this.doRefresh(true);
     }
   }
@@ -127,28 +124,34 @@ export class HotelListPage
     }
   }
   onSearchByKeywords() {
-    // console.log("onSearchByKeywords",this.vmKeyowrds);
+    console.log("onSearchByKeywords vmKeyowrds=", this.vmKeyowrds);
+    if (this.timer) {
+      clearTimeout(this.timer);
+    }
+    if (this.isSearchingList) {
+      return;
+    }
     const name = (this.vmKeyowrds && this.vmKeyowrds.trim()) || "";
-    this.searchSubscription.unsubscribe();
-    this.isSearching = true;
-    this.searchSubscription = this.hotelService
-      .searchHotelByText(name)
-      .pipe(finalize(() => (this.isSearching = false)))
-      .subscribe(kvs => {
-        this.vmSearchTextList = kvs;
-      });
+    this.timer = setTimeout(() => {
+      this.searchSubscription.unsubscribe();
+      this.isSearchingText = true;
+      this.searchSubscription = this.hotelService
+        .searchHotelByText(name)
+        .pipe(finalize(() => (this.isSearchingText = false)))
+        .subscribe(kvs => {
+          this.vmSearchTextList = kvs;
+        });
+    }, 300);
   }
   onHotelQueryChange(query: HotelQueryEntity) {
     this.hotelQueryModel = {
       ...query
     };
     this.hotelDayPrices = [];
-    this.isLoading = true;
-    setTimeout(() => {
-      this.doRefresh(true);
-    }, 200);
+    this.doRefresh(true);
   }
   doRefresh(isKeepQueryCondition = false) {
+    clearTimeout(this.timer);
     if (this.queryComp) {
       this.queryComp.onReset();
     }
@@ -165,14 +168,14 @@ export class HotelListPage
     const searchText = this.vmKeyowrds && this.vmKeyowrds.trim();
     if (searchText) {
       this.hotelQueryModel.SearchKey = searchText;
-      this.vmKeyowrds = "";
     }
     this.hotelQueryModel.PageIndex = 0;
     this.hotelQueryModel.PageSize = 20;
     this.hotelDayPrices = [];
     this.scrollToTop();
-    this.loadMore();
     this.hotelService.setHotelQuerySource(this.hotelQueryModel);
+    this.isSearchingList = true;
+    this.loadMore();
   }
   private scrollToTop() {
     if (this.content) {
@@ -183,8 +186,6 @@ export class HotelListPage
     if (this.loadDataSub) {
       this.loadDataSub.unsubscribe();
     }
-    this.isLoading =
-      this.hotelQueryModel && this.hotelQueryModel.PageIndex == 0;
     this.loadDataSub = this.hotelService
       .getHotelList(this.hotelQueryModel)
       .pipe(
@@ -192,7 +193,9 @@ export class HotelListPage
           this.lastCityCode =
             this.searchHotelModel &&
             this.searchHotelModel.destinationCity.CityCode;
-          this.isLoading = false;
+          setTimeout(() => {
+            this.isSearchingList = false;
+          }, 100);
         })
       )
       .subscribe(

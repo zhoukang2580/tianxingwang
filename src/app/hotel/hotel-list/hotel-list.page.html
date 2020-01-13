@@ -10,12 +10,12 @@
       (cityClick)='onCityClick()' (dateChange)='onDateChange()' (searchBarClick)='onSearchClick()'
       [keywords]='keyowrds'>
     </app-date-city>
-    <form (ngSubmit)='onSearch()' *ngIf='isShowSearchBar'>
-      <ion-searchbar [debounce]='700' type='search' [(ngModel)]='vmKeyowrds' [animated]='true' placeholder=""
+    <form (ngSubmit)='onSearch()' [style.display]='isShowSearchBar?"flex":"none"'>
+      <ion-searchbar name='searchbar' [(ngModel)]='vmKeyowrds' type='search' animated='true' placeholder=""
         (ionChange)='onSearchByKeywords()' mode='ios'>
       </ion-searchbar>
       <ion-buttons slot='end'>
-        <ion-button type='submit' color='secondary' size='small' (click)='onSearch()'>
+        <ion-button type='submit' color='secondary' size='small'>
           搜索
         </ion-button>
       </ion-buttons>
@@ -34,20 +34,19 @@
     <ion-item></ion-item>
   </ion-list>
   <ng-template #nosearchartempl>
-    <ion-list *ngIf='!isSearching'>
+    <ion-list *ngIf='!isSearchingText'>
       <ion-item *ngFor='let item of vmSearchTextList' (click)='onSearchItemClick(item)'>
         {{item.Text}}
       </ion-item>
     </ion-list>
-    <ion-label *ngIf='isSearching'>正在查询...</ion-label>
+    <ion-label *ngIf='isSearchingText'>正在查询...</ion-label>
   </ng-template>
   <ng-template #listTemp>
     <ng-container *ngIf='!isShowSearchBar else nosearchartempl'>
-      <ion-list *ngIf='!isLoading&&hotelDayPrices?.length else noMoreData' #hotellist class='hotel-list'>
+      <ion-list *ngIf='!isSearchingList&&hotelDayPrices?.length else noMoreData' #hotellist class='hotel-list'>
         <ion-item *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
           <ion-thumbnail slot='start'>
             <img [lazyLoad]='item.Hotel?.FileName' [defaultImage]='config?.PrerenderImageUrl' />
-            <!-- <ion-img [src]='item.Hotel?.FileName'  ></ion-img> -->
           </ion-thumbnail>
           <ion-label style="margin-left:.5em">
             <h3 class='name'>
@@ -82,11 +81,11 @@
     <ng-template #noMoreData>
       <ion-list></ion-list>
       <div style='margin-top: 1em;'>
-        <app-or-comp>暂无数据</app-or-comp>
+        <app-or-comp *ngIf='!isSearchingList'>暂无数据</app-or-comp>
       </div>
     </ng-template>
   </ng-template>
-  <ng-container #fakeList *ngIf='isLoading else listTemp'>
+  <ng-container #fakeList *ngIf='isSearchingList else listTemp'>
     <ion-list class='fakelist'>
       <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8,9,10,11]'>
         <ion-thumbnail>
