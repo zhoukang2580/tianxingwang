@@ -31,6 +31,9 @@ ion-content {
   // .hotel-list {
   //   margin-top: 56px;
   // }
+  .pos.md{
+    margin-top: -1em;
+  }
   .pos.ios {
     padding-top: 0.5em;
   }
@@ -44,4 +47,10 @@ small {
 ion-thumbnail img {
   min-width: 4em;
   min-height: 4em;
+}
+form{
+  display: flex;
+  align-items: center;
+  padding: 0;
+  background-color:transparent;
 }

@@ -23,13 +23,10 @@ import {
   IonSearchbar,
   IonRefresher,
   IonInfiniteScroll,
-  IonToolbar} from "@ionic/angular";
-import {
-  Subscription,
-  Observable,
-  fromEvent,
-  merge
-} from "rxjs";
+  IonToolbar,
+  Platform
+} from "@ionic/angular";
+import { Subscription, Observable, fromEvent, merge } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
 import { HotelDayPriceEntity } from "../models/HotelDayPriceEntity";
 import { finalize } from "rxjs/operators";
@@ -44,6 +41,7 @@ export class HotelListPage
   implements OnInit, OnDestroy, AfterViewInit, AfterContentInit {
   private subscriptions: Subscription[] = [];
   private lastCityCode = "";
+  isIos = false;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   @ViewChild("querytoolbar") querytoolbar: IonToolbar;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
@@ -73,8 +71,11 @@ export class HotelListPage
     private router: Router,
     private route: ActivatedRoute,
     private tmcService: TmcService,
-    private configService: ConfigService
-  ) {}
+    private configService: ConfigService,
+    plt: Platform
+  ) {
+    this.isIos = plt.is("ios");
+  }
   onSearchItemClick(item: { Text: string; Value: string }) {
     this.isShowSearchBar = false;
     if (item && item.Value) {

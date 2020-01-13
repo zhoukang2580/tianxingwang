@@ -1,9 +1,9 @@
-import { baiduMapAk, MapService } from './../../services/map/map.service';
-import { AgentEntity } from './../../tmc/models/AgentEntity';
-import { ShowImagesComponent } from './../components/show-images/show-images.component';
-import { ApiService } from 'src/app/services/api/api.service';
-import { ImageSwiperComponent } from './../../components/image-swiper/image-swiper.component';
-import { RoomDetailComponent } from './../components/room-detail/room-detail.component';
+import { baiduMapAk, MapService } from "./../../services/map/map.service";
+import { AgentEntity } from "./../../tmc/models/AgentEntity";
+import { ShowImagesComponent } from "./../components/show-images/show-images.component";
+import { ApiService } from "src/app/services/api/api.service";
+import { ImageSwiperComponent } from "./../../components/image-swiper/image-swiper.component";
+import { RoomDetailComponent } from "./../components/room-detail/room-detail.component";
 import { AppHelper } from "src/app/appHelper";
 import { HotelPolicyModel } from "./../models/HotelPolicyModel";
 import { ConfigEntity } from "./../../services/config/config.entity";
@@ -41,11 +41,21 @@ import { ConfigService } from "src/app/services/config/config.service";
 import { RoomEntity } from "../models/RoomEntity";
 import { RoomPlanEntity } from "../models/RoomPlanEntity";
 import { StaffService } from "src/app/hr/staff.service";
-import { PassengerBookInfo, FlightHotelTrainType, TmcService } from "src/app/tmc/tmc.service";
+import {
+  PassengerBookInfo,
+  FlightHotelTrainType,
+  TmcService
+} from "src/app/tmc/tmc.service";
 import { TripType } from "src/app/tmc/models/TripType";
 import { environment } from "src/environments/environment";
 import { FilterPassengersPolicyComponent } from "src/app/tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
-import { trigger, transition, style, animate, state } from '@angular/animations';
+import {
+  trigger,
+  transition,
+  style,
+  animate,
+  state
+} from "@angular/animations";
 type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
 
 @Component({
@@ -53,13 +63,11 @@ type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
   templateUrl: "./hotel-detail.page.html",
   styleUrls: ["./hotel-detail.page.scss"],
   animations: [
-    trigger('hideShowAnimate', [
-      state('true', style({ visibility: "initial" })),
-      state('false', style({ visibility: "collapse" })),
-      transition('*<=>*', [
-        animate('100ms'),
-      ])
-    ]),
+    trigger("hideShowAnimate", [
+      state("true", style({ visibility: "initial" })),
+      state("false", style({ visibility: "collapse" })),
+      transition("*<=>*", [animate("100ms")])
+    ])
   ]
 })
 export class HotelDetailPage implements OnInit, AfterViewInit {
@@ -85,7 +93,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   isMd = false;
   // roomImages: string[] = [];
   // curSelectedRoom: RoomEntity = {} as any;
-  colors = {};
+  colors: { [key: string]: string } = {};
   hotelDetailSub = Subscription.EMPTY;
   queryModelSub = Subscription.EMPTY;
   hotel: HotelEntity;
@@ -94,13 +102,16 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   activeTab: IHotelDetailTab = "houseInfo";
   hotelPolicy: HotelPassengerModel[];
   rects: { [key in IHotelDetailTab]: ClientRect | DOMRect };
-  bookedRoomPlan: { roomPlan: RoomPlanEntity; room: RoomEntity, color: string };
+  bookedRoomPlan: { roomPlan: RoomPlanEntity; room: RoomEntity; color: string };
   hotelImageUrls: string[];
   get totalNights() {
-    return this.hotelService.calcTotalNights(this.queryModel.checkOutDate, this.queryModel.checkInDate);
+    return this.hotelService.calcTotalNights(
+      this.queryModel.checkOutDate,
+      this.queryModel.checkInDate
+    );
   }
   constructor(
-    private mapService:MapService,
+    private mapService: MapService,
     private route: ActivatedRoute,
     private hotelService: HotelService,
     private router: Router,
@@ -125,14 +136,20 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
   }
   onSelectPassenger() {
-    this.router.navigate([AppHelper.getRoutePath("select-passenger")], { queryParams: { forType: FlightHotelTrainType.Hotel } });
+    this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
+      queryParams: { forType: FlightHotelTrainType.Hotel }
+    });
   }
   private async initFilterPolicy() {
     const isSelf = await this.staffService.isSelfBookType();
     const bookInfos = this.hotelService.getBookInfos();
-    const filteredPassenger = this.hotelService.getBookInfos().find(it => it.isFilterPolicy);
+    const filteredPassenger = this.hotelService
+      .getBookInfos()
+      .find(it => it.isFilterPolicy);
     if (filteredPassenger) {
-      this.filterPassengerPolicy(filteredPassenger.passenger && filteredPassenger.passenger.AccountId);
+      this.filterPassengerPolicy(
+        filteredPassenger.passenger && filteredPassenger.passenger.AccountId
+      );
     }
   }
 
@@ -155,25 +172,23 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     return data;
   }
   private async filterPassengerPolicy(passengerId: string = "") {
-    const hotelPolicy = this.hotelPolicy || await this.getPolicy();
+    const hotelPolicy = this.hotelPolicy || (await this.getPolicy());
     this.colors = {};
     if (hotelPolicy) {
-      const policies = hotelPolicy.find(
-        it => it.PassengerKey == passengerId
-      );
+      const policies = hotelPolicy.find(it => it.PassengerKey == passengerId);
       if (policies) {
         if (this.hotel && this.hotel.Rooms) {
           this.hotel.Rooms.forEach(r => {
             if (r.RoomPlans) {
               r.RoomPlans.forEach(plan => {
                 const p = policies.HotelPolicies.find(
-                  it => it.UniqueIdId == this.hotelService.getRoomPlanUniqueId(plan)
+                  it =>
+                    it.UniqueIdId == this.hotelService.getRoomPlanUniqueId(plan)
                 );
                 if (p) {
                   let color = "";
                   if (p.IsAllowBook) {
-                    color =
-                      !p.Rules || !p.Rules.length ? "success" : "warning";
+                    color = !p.Rules || !p.Rules.length ? "success" : "warning";
                   } else {
                     color = "danger_disabled";
                   }
@@ -204,6 +219,15 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     if (date) {
       const d = AppHelper.getDate(date);
       return this.calendarService.getDayOfWeekNames()[d.getDay()];
+    }
+  }
+  isFullOnly(ps: RoomPlanEntity[]) {
+    if (ps && ps.length) {
+      return ps.every(p =>
+        this.colors[this.hotelService.getRoomPlanUniqueId(p)].includes(
+          "danger_full"
+        )
+      );
     }
   }
   async ngOnInit() {
@@ -280,32 +304,38 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
         tap(r => {
           console.log(r);
         })
-      ).pipe(finalize(() => {
-        if (this.ionRefresher) {
-          this.ionRefresher.complete();
-        }
-      }))
-      .subscribe(async hotel => {
-        if (hotel) {
-          this.hotel = hotel.Hotel;
-          if (this.hotel) {
-            this.hotelDayPrice.Hotel = this.hotel;
-            this.initBgPic(this.hotel.FileName);
-            this.hotelPolicy = await this.getPolicy();
-            if (!environment.production) {
-              this.storage.set("mock-hotel-detail", this.hotel);
-            }
-            await this.ionCnt.scrollToTop();
-            this.initFilterPolicy();
-            this.checkIfBookedRoomPlan();
-            setTimeout(() => {
-              this.initRects();
-            }, 1000);
+      )
+      .pipe(
+        finalize(() => {
+          if (this.ionRefresher) {
+            this.ionRefresher.complete();
           }
+        })
+      )
+      .subscribe(
+        async hotel => {
+          if (hotel) {
+            this.hotel = hotel.Hotel;
+            if (this.hotel) {
+              this.hotelDayPrice.Hotel = this.hotel;
+              this.initBgPic(this.hotel.FileName);
+              this.hotelPolicy = await this.getPolicy();
+              if (!environment.production) {
+                this.storage.set("mock-hotel-detail", this.hotel);
+              }
+              await this.ionCnt.scrollToTop();
+              this.initFilterPolicy();
+              this.checkIfBookedRoomPlan();
+              setTimeout(() => {
+                this.initRects();
+              }, 1000);
+            }
+          }
+        },
+        e => {
+          AppHelper.alert(e.Message || e);
         }
-      }, e => {
-        AppHelper.alert(e.Message || e);
-      });
+      );
   }
   private checkIfBookedRoomPlan() {
     if (this.bookedRoomPlan && this.hotel.Rooms) {
@@ -388,7 +418,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     }
     if (tab == "hotelInfo") {
       if (this.hotel) {
-        this.hotel['ishoteldetails'] = true;
+        this.hotel["ishoteldetails"] = true;
       }
     }
     if (tab == "trafficInfo") {
@@ -397,17 +427,20 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       }
       if (this.isShowTrafficInfo) {
         if (this.hotel) {
-          this.hotel['isShowMap'] = true;
+          this.hotel["isShowMap"] = true;
         }
       } else {
         // 小程序中显示地图
         const lat = this.hotel.Lat;
         const lng = this.hotel.Lng;
-        const {longitude,latitude}=this.mapService.bMapTransqqMap(lng,lat);
-        if (window['wx'] && window['wx'].miniProgram) {
-          window['wx'].miniProgram.navigateTo({
+        const { longitude, latitude } = this.mapService.bMapTransqqMap(
+          lng,
+          lat
+        );
+        if (window["wx"] && window["wx"].miniProgram) {
+          window["wx"].miniProgram.navigateTo({
             url: `/pages/map/map?lat=${latitude}&lng=${longitude}&hotelName=${this.hotel.Name}`
-          })
+          });
         }
       }
     }
@@ -426,26 +459,48 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       // console.log("header", hh);
     }
   }
-  async onBookRoomPlan(evt: { roomPlan: RoomPlanEntity; room: RoomEntity, color: string }) {
+  async onBookRoomPlan(evt: {
+    roomPlan: RoomPlanEntity;
+    room: RoomEntity;
+    color: string;
+  }) {
     console.log("onBookRoomPlan", evt.roomPlan);
     if (!evt || !evt.room || !evt.roomPlan) {
       return;
     }
     const color = evt.color || "";
     const removedBookInfos: PassengerBookInfo<IHotelInfo>[] = [];
-    const policies = this.hotelPolicy || await this.getPolicy();
-    const policy = policies && policies.find(it => !!it.HotelPolicies.find(k => k.UniqueIdId == this.hotelService.getRoomPlanUniqueId(evt.roomPlan)));
+    const policies = this.hotelPolicy || (await this.getPolicy());
+    const policy =
+      policies &&
+      policies.find(
+        it =>
+          !!it.HotelPolicies.find(
+            k =>
+              k.UniqueIdId ==
+              this.hotelService.getRoomPlanUniqueId(evt.roomPlan)
+          )
+      );
     const p = policy && policy.HotelPolicies[0] && policy.HotelPolicies[0];
     console.log("onBookRoomPlan", evt.roomPlan, p);
     if (color.includes("disabled")) {
-      let tip = '';
+      let tip = "";
       if (p) {
-        const info = this.hotelService.getBookInfos().find(it => it.isFilterPolicy);
-        if (info && info.passenger && info.passenger.Policy && info.passenger.Policy.HotelIllegalTip) {
+        const info = this.hotelService
+          .getBookInfos()
+          .find(it => it.isFilterPolicy);
+        if (
+          info &&
+          info.passenger &&
+          info.passenger.Policy &&
+          info.passenger.Policy.HotelIllegalTip
+        ) {
           tip = `(${info.passenger.Policy.HotelIllegalTip})`;
         }
       }
-      AppHelper.alert(`超标不可预订,${p && p.Rules ? p.Rules.join(",") : ""}${tip}`);
+      AppHelper.alert(
+        `超标不可预订,${p && p.Rules ? p.Rules.join(",") : ""}${tip}`
+      );
       return;
     }
     if (color.includes("full")) {
@@ -496,7 +551,11 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
           );
           const policy =
             p &&
-            p.HotelPolicies.find(it => it.UniqueIdId == this.hotelService.getRoomPlanUniqueId(bookInfo.roomPlan));
+            p.HotelPolicies.find(
+              it =>
+                it.UniqueIdId ==
+                this.hotelService.getRoomPlanUniqueId(bookInfo.roomPlan)
+            );
           if (policy && policy.Rules) {
             const rules = {};
             policy.Rules.forEach(r => {
@@ -532,17 +591,21 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       return false;
     }
     const p = policies.find(it => it.PassengerKey == passengerAccountId);
-    const policy = p.HotelPolicies.find(it => this.hotelService.getRoomPlanUniqueId(roomPlan) == it.UniqueIdId);
-    const passenger = this.hotelService.getBookInfos().find(it => it.passenger && it.passenger.AccountId == p.PassengerKey);
+    const policy = p.HotelPolicies.find(
+      it => this.hotelService.getRoomPlanUniqueId(roomPlan) == it.UniqueIdId
+    );
+    const passenger = this.hotelService
+      .getBookInfos()
+      .find(it => it.passenger && it.passenger.AccountId == p.PassengerKey);
     if (policy && !policy.IsAllowBook) {
       if (passenger && isAlert) {
-        AppHelper.alert(`房客${passenger.passenger.Name}超标不可预订`)
+        AppHelper.alert(`房客${passenger.passenger.Name}超标不可预订`);
       }
       return false;
     }
     if (this.hotelService.isFull(roomPlan)) {
       if (passenger && isAlert) {
-        AppHelper.alert(`满房不可预订`)
+        AppHelper.alert(`满房不可预订`);
       }
       return false;
     }
@@ -590,9 +653,8 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     if (m) {
       await m.present();
       const result = await m.onDidDismiss();
-      const data = result && result.data as RoomPlanEntity;
+      const data = result && (result.data as RoomPlanEntity);
       if (data) {
-
       }
     }
   }
@@ -615,8 +677,8 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
         images: this.getRoomImages(room).map(it => {
           return {
             url: it
-          }
-        }),
+          };
+        })
       }
     });
     await m.present();
@@ -642,10 +704,10 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
         images: this.getHotelImageUrls().map(it => {
           return {
             url: it
-          }
-        }),
+          };
+        })
       }
-    })
+    });
     await m.present();
     setTimeout(() => {
       this.apiService.hideLoadingView();
@@ -763,7 +825,8 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
           } else {
             opacity = 0;
           }
-          opacity = opacity < 0.35 || this.scrollEle.scrollTop == 0 ? 0 : opacity;
+          opacity =
+            opacity < 0.35 || this.scrollEle.scrollTop == 0 ? 0 : opacity;
           this.render.setStyle(
             this.headerEle.nativeElement,
             "zIndex",

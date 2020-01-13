@@ -3,59 +3,59 @@
 }
 
 .bg {
-  background-image   : url(/assets/images/loading.gif);
+  background-image: url(/assets/images/loading.gif);
   background-position: center center;
-  background-size    : cover;
-  height             : 30vh;
-  background-color   : aliceblue;
-  position           : relative;
+  background-size: cover;
+  height: 30vh;
+  background-color: aliceblue;
+  position: relative;
 
   &.md ion-chip {
     bottom: calc(var(--h) - 0.5em);
   }
 
   ion-chip {
-    position  : absolute;
-    right     : 1em;
-    bottom    : calc(var(--h) - 1.5em);
-    color     : white;
+    position: absolute;
+    right: 1em;
+    bottom: calc(var(--h) - 1.5em);
+    color: white;
     background: rgba(var(--ion-color-dark-rgb), 0.5);
   }
 
   .back-arrow {
     position: fixed;
-    left    : 0.5em;
-    top     : 1.5em;
+    left: 0.5em;
+    top: 1.5em;
   }
 }
 
 .arrow-icon {
   font-size: 1.5rem;
-  position : relative;
-  top      : 0.2em;
+  position: relative;
+  top: 0.2em;
 }
 
 .header {
-  position  : fixed;
-  left      : 0;
-  right     : 0;
-  height    : 3em;
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 3em;
   background: transparent;
-  opacity   : 0;
-  z-index   : 0;
+  opacity: 0;
+  z-index: 0;
   transition: opacity 100ms ease-in-out;
 }
 
 ion-card {
-  z-index   : 100;
-  position  : relative;
-  top       : calc(-1 * var(--h));
+  z-index: 100;
+  position: relative;
+  top: calc(-1 * var(--h));
   background: white;
 
   .grade-stars,
   .position {
     margin-left: 1em;
-    display    : flex;
+    display: flex;
     align-items: center;
 
     .stars {
@@ -64,14 +64,14 @@ ion-card {
   }
 
   .position {
-    margin-left : auto;
+    margin-left: auto;
     margin-right: 1em;
 
     ion-label {
-      max-width    : 16em;
-      overflow     : hidden;
+      max-width: 16em;
+      overflow: hidden;
       text-overflow: ellipsis;
-      white-space  : nowrap;
+      white-space: nowrap;
     }
   }
 
@@ -80,15 +80,15 @@ ion-card {
   }
 
   .date {
-    margin         : 0.5em 0;
-    display        : flex;
-    align-items    : center;
+    margin: 0.5em 0;
+    display: flex;
+    align-items: center;
     justify-content: space-around;
-    color          : var(--ion-color-secondary);
+    color: var(--ion-color-secondary);
 
     .weekName {
       font-size: 0.7rem;
-      color    : var(--ion-color-medium);
+      color: var(--ion-color-medium);
     }
   }
 }
@@ -117,53 +117,53 @@ ion-card {
   }
 
   .room-plans app-room-plan-item {
-    display       : block;
-    width         : 100%;
+    display: block;
+    width: 100%;
     padding-bottom: 2em;
-    border-top    : 1px dashed rgba(var(--ion-color-dark-rgb), 0.12);
+    border-top: 1px dashed rgba(var(--ion-color-dark-rgb), 0.12);
   }
 
   .room-info {
-    position        : sticky;
-    top             : 0;
-    display         : flex;
-    align-items     : flex-start;
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: flex-start;
     background-color: white;
-    z-index         : 10;
+    z-index: 10;
   }
 
   .item-wrapper ion-thumbnail {
     align-self: flex-start;
-    min-width : 5em;
+    min-width: 5em;
     min-height: 5em;
     margin-top: 2px;
-    position  : relative;
+    position: relative;
 
     .images-nums {
-      position        : absolute;
-      right           : 0.2em;
-      bottom          : 0.2em;
-      padding         : 0.3em;
-      color           : white;
+      position: absolute;
+      right: 0.2em;
+      bottom: 0.2em;
+      padding: 0.3em;
+      color: white;
       background-color: rgba(0, 0, 0, 0.5);
-      border-radius   : 0.2em;
-      font-size       : 0.5rem;
+      border-radius: 0.2em;
+      font-size: 0.5rem;
     }
   }
 
   ion-label.item {
-    width : 100%;
+    width: 100%;
     margin: 0 0 0 0.5em;
   }
 
   .room-detail-desc span {
     margin-right: 1em;
-    font-size   : 0.8rem;
+    font-size: 0.8rem;
   }
 
   .name {
-    display        : flex;
-    align-items    : center;
+    display: flex;
+    align-items: center;
     justify-content: space-between;
   }
 }
@@ -178,9 +178,9 @@ ion-list {
     }
 
     .text {
-      min-width    : 100%;
-      overflow     : hidden;
-      white-space  : nowrap;
+      min-width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
       text-overflow: ellipsis;
     }
   }
@@ -190,7 +190,7 @@ ion-list {
     background-color: antiquewhite;
 
     .traffic-map {
-      width : 100vw;
+      width: 100vw;
       height: 100vh;
     }
   }
@@ -198,7 +198,7 @@ ion-list {
 
 ion-title.has-add-passenger {
   text-align: start;
-  max-width : 85vw;
+  max-width: 85vw;
 }
 
 .empty {
@@ -207,16 +207,24 @@ ion-title.has-add-passenger {
 
 .hotel-images {
   background-color: black;
-  z-index         : 100;
-  position        : fixed;
-  width           : 100vw;
-  height          : 100vh;
-  bottom          : 0;
-  transform       : translateY(100%);
-  transition      : transform ease-in-out 200ms;
+  z-index: 100;
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  bottom: 0;
+  transform: translateY(100%);
+  transition: transform ease-in-out 200ms;
 
   &.show {
-    top      : 0;
+    top: 0;
     transform: translateY(0);
+  }
+}
+.show-desc {
+  position: relative;
+  ion-button {
+    position: absolute;
+    right: 0;
+    top: 50%;
   }
 }

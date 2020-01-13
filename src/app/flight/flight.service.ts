@@ -840,7 +840,7 @@ export class FlightService {
   }
   async onSelectReturnTrip() {
     console.log("onSelectReturnTrip");
-    await this.dismissAllTopOverlays();
+    // await this.dismissAllTopOverlays();
     let s = this.getSearchFlightModel();
     const airports = await this.getAllLocalAirports();
     let bookInfos = this.getPassengerBookInfos();
@@ -874,26 +874,23 @@ export class FlightService {
       backDay = goDay;
     }
     s.BackDate = backDay.format("YYYY-MM-DD");
-    this.router
-      .navigate([AppHelper.getRoutePath("flight-list")], {
-        queryParams: {
-          doRefresh: true
-        }
-      })
-      .then(_ => {
-        this.setSearchFlightModel({
-          ...s,
-          FromCode: toCity.AirportCityCode,
-          ToCode: fromCity.AirportCityCode,
-          ToAsAirport: false,
-          FromAsAirport: false,
-          fromCity: { ...toCity },
-          toCity: { ...fromCity },
-          Date: s.BackDate,
-          tripType: TripType.returnTrip,
-          isLocked: true
-        });
-      });
+    this.setSearchFlightModel({
+      ...s,
+      FromCode: toCity.AirportCityCode,
+      ToCode: fromCity.AirportCityCode,
+      ToAsAirport: false,
+      FromAsAirport: false,
+      fromCity: { ...toCity },
+      toCity: { ...fromCity },
+      Date: s.BackDate,
+      tripType: TripType.returnTrip,
+      isLocked: true
+    });
+    this.router.navigate([AppHelper.getRoutePath("flight-list")], {
+      queryParams: {
+        doRefresh: true
+      }
+    });
     this.dismissAllTopOverlays();
   }
   async addOneBookInfoToSelfBookType(isShowLoading = false) {

@@ -6,7 +6,7 @@ import { HotelPaymentType } from "./HotelPaymentType";
 import { HotelSupplierType } from "./HotelSupplierType";
 import { RoomEntity } from "./RoomEntity";
 import { RoomPlanRuleEntity } from "./RoomPlanRuleEntity";
-import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
+import { BaseVariablesEntity } from "src/app/models/BaseVariablesEntity";
 
 export class RoomPlanEntity extends BaseVariablesEntity {
   Variables: string;
@@ -125,4 +125,5 @@ export class RoomPlanEntity extends BaseVariablesEntity {
   DataEntity: RoomPlanEntity;
 
   Langs: RoomPlanItemLangEntity[];
+  isFull: boolean; // 是否满房
 }

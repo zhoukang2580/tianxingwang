@@ -251,7 +251,12 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         if (cabin) {
           await this.flightService.addOrReplaceSegmentInfo(cabin, s);
           const r = await this.showSelectedInfos(true);
-          if (this.router.url.includes("flight-list") && r) {
+          if (
+            this.router.url.includes("flight-list") &&
+            r &&
+            this.flightService.getSearchFlightModel().tripType ==
+              TripType.returnTrip
+          ) {
             this.doRefresh(true, true);
           }
         } else {
@@ -683,7 +688,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.scrollToTop();
   }
   private calcLowestPrice(fs: FlightSegmentEntity[]) {
-    const data = this.flightService.getTotalFlySegments();
+    const data = fs;
     let lowestPrice = Infinity;
     data.forEach(s => {
       let lowestFare = +s.LowestFare;

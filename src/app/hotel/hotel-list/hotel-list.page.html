@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar class='toolbar'>
     <ion-buttons slot='start'>
       <ion-button color='dark' (click)='back()'>
         <ion-icon name='arrow-back'></ion-icon>
@@ -10,14 +10,16 @@
       (cityClick)='onCityClick()' (dateChange)='onDateChange()' (searchBarClick)='onSearchClick()'
       [keywords]='keyowrds'>
     </app-date-city>
-    <ion-searchbar [debounce]='700' type='search' [(ngModel)]='vmKeyowrds' [animated]='true' placeholder=""
-      (ionChange)='onSearchByKeywords()' mode='ios' *ngIf='isShowSearchBar'>
-    </ion-searchbar>
-    <ion-buttons slot='end' *ngIf='isShowSearchBar'>
-      <ion-button color='secondary' size='small' (click)='onSearch()'>
-        搜索
-      </ion-button>
-    </ion-buttons>
+    <form (ngSubmit)='onSearch()' *ngIf='isShowSearchBar'>
+      <ion-searchbar [debounce]='700' type='search' [(ngModel)]='vmKeyowrds' [animated]='true' placeholder=""
+        (ionChange)='onSearchByKeywords()' mode='ios'>
+      </ion-searchbar>
+      <ion-buttons slot='end'>
+        <ion-button type='submit' color='secondary' size='small' (click)='onSearch()'>
+          搜索
+        </ion-button>
+      </ion-buttons>
+    </form>
   </ion-toolbar>
   <ion-toolbar class='query-toolbar' #querytoolbar *ngIf='!isShowSearchBar'>
     <app-hotel-query [conditions]='conditionModel' (hotelQueryChange)='onHotelQueryChange($event)'></app-hotel-query>
@@ -28,7 +30,7 @@
   <ion-refresher slot='fixed' (ionRefresh)='doRefresh(false)'>
     <ion-refresher-content>正在加载...</ion-refresher-content>
   </ion-refresher>
-  <ion-list class='pos'>
+  <ion-list class='pos' *ngIf='!isShowSearchBar'>
     <ion-item></ion-item>
   </ion-list>
   <ng-template #nosearchartempl>

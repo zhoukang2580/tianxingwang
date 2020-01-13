@@ -42,9 +42,9 @@ export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
   color$: Observable<{ [roomPlanId: string]: string }> = of({});
   constructor(
     private domCtrl: DomController,
+    private staffService: StaffService,
     private identityService: IdentityService,
     private hotelService: HotelService,
-    private staffService: StaffService,
     private modalCtrl: ModalController
   ) {
     this.close = new EventEmitter();
