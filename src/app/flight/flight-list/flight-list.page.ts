@@ -250,7 +250,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           );
         if (cabin) {
           await this.flightService.addOrReplaceSegmentInfo(cabin, s);
-          this.showSelectedInfos();
+          const r = await this.showSelectedInfos(true);
+          if (this.router.url.includes("flight-list") && r) {
+            this.doRefresh(true, true);
+          }
         } else {
           AppHelper.alert("超标不可预订");
           s["disabled"] = true;
@@ -368,6 +371,13 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.lowestPriceSegments = [];
       if (loadDataFromServer) {
         this.scrollToTop();
+        setTimeout(() => {
+          this.flyDayService.setSelectedDaysSource([
+            this.flyDayService.generateDayModelByDate(
+              this.searchFlightModel.Date
+            )
+          ]);
+        }, 200);
       }
       if (this.isLoading) {
         return;
@@ -515,14 +525,14 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.flightService.currentViewtFlightSegment = fs;
     this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
   }
-  async showSelectedInfos() {
+  async showSelectedInfos(isRefresh = false) {
     const modal = await this.modalCtrl.create({
       component: SelectedFlightsegmentInfoComponent
     });
     await this.flightService.dismissAllTopOverlays();
     await modal.present();
     await modal.onDidDismiss();
-    return "ok";
+    return isRefresh;
   }
 
   async selectFilterPolicyPasseger() {
