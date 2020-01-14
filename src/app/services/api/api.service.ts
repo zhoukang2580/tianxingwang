@@ -361,10 +361,15 @@ export class ApiService {
   }
   private async loadApiConfig(forceRefresh = false): Promise<ApiConfig> {
     if (!forceRefresh) {
-      if (!this.apiConfig) {
-        this.apiConfig = await this.storage.get(`KEY_API_CONFIG`);
+      if (!this.apiConfig || !this.apiConfig.Urls) {
+        const local = await this.storage.get(`KEY_API_CONFIG`);
+        if (typeof local == "string") {
+          this.apiConfig = JSON.parse(local);
+        } else {
+          this.apiConfig = local;
+        }
       }
-      if (this.apiConfig) {
+      if (this.apiConfig && this.apiConfig.Urls) {
         return Promise.resolve(this.apiConfig);
       }
     }
@@ -393,11 +398,16 @@ export class ApiService {
           .subscribe(
             async (r: IResponse<ApiConfig>) => {
               if (r.Data) {
-                this.storage.set(`KEY_API_CONFIG`, r.Data);
-                this.apiConfig = r.Data;
+                const local = r.Data;
+                if (typeof local == "string") {
+                  this.apiConfig = JSON.parse(window.atob(local));
+                } else {
+                  this.apiConfig = local;
+                }
+                this.storage.set(`KEY_API_CONFIG`, this.apiConfig);
                 const identityEntity = await this.identityService.getIdentityAsync();
                 if (identityEntity) {
-                  identityEntity.Token = r.Data.Token;
+                  identityEntity.Token = this.apiConfig.Token;
                   this.identityService.setIdentity(identityEntity);
                 }
                 s(this.apiConfig);
