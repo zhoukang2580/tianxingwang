@@ -868,12 +868,12 @@ export class FlightService {
     const goflight = goflightBookInfo.bookInfo.flightSegment;
     const fromCity = airports.find(c => c.Code == goflight.FromAirport);
     const toCity = airports.find(c => c.Code == goflight.ToAirport);
-    const goDay = moment(goflight.ArrivalTime);
-    let backDay = moment(s.BackDate);
-    if (+backDay < +moment(goDay.format("YYYY-MM-DD"))) {
-      backDay = goDay;
-    }
-    s.BackDate = backDay.format("YYYY-MM-DD");
+    // const goDay = moment(goflight.ArrivalTime);
+    // let backDay = moment(s.BackDate);
+    // if (+backDay < +moment(goDay.format("YYYY-MM-DD"))) {
+    //   backDay = goDay;
+    // }
+    // s.BackDate = backDay.format("YYYY-MM-DD");
     this.setSearchFlightModel({
       ...s,
       FromCode: toCity.AirportCityCode,

@@ -1,6 +1,6 @@
-import { ShowStandardDetailsComponent } from './../../tmc/components/show-standard-details/show-standard-details.component';
-import { CanComponentDeactivate } from 'src/app/guards/candeactivate.guard';
-import { LanguageHelper } from 'src/app/languageHelper';
+import { ShowStandardDetailsComponent } from "./../../tmc/components/show-standard-details/show-standard-details.component";
+import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
+import { LanguageHelper } from "src/app/languageHelper";
 import { TmcService, FlightHotelTrainType } from "src/app/tmc/tmc.service";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { IdentityService } from "../../services/identity/identity.service";
@@ -19,7 +19,11 @@ import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import * as moment from "moment";
 import { Subscription, of, from } from "rxjs";
 import { DayModel } from "../../tmc/models/DayModel";
-import { NavController, ModalController, PopoverController } from "@ionic/angular";
+import {
+  NavController,
+  ModalController,
+  PopoverController
+} from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
 import { map } from "rxjs/operators";
@@ -29,7 +33,8 @@ import { SelectedFlightsegmentInfoComponent } from "../components/selected-fligh
   templateUrl: "./search-flight.page.html",
   styleUrls: ["./search-flight.page.scss"]
 })
-export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate {
+export class SearchFlightPage
+  implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate {
   isSelf = false;
   toggleCities = false; // 没有切换城市顺序
   rotateIcon = false;
@@ -71,10 +76,22 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
       this.isCanleave = false;
       const identity = await this.identityService.getIdentityAsync();
       // this.disabled = this.searchFlightModel && this.searchFlightModel.isLocked;
-      let lastSelectedGoDate = await this.storage.get(`last_selected_flight_goDate_${identity && identity.Id}`);
-      const nextDate = moment().add(1, 'days').format("YYYY-MM-DD");
-      lastSelectedGoDate = lastSelectedGoDate && this.calendarService.generateDayModelByDate(lastSelectedGoDate).timeStamp >= this.calendarService.generateDayModelByDate(nextDate).timeStamp ? lastSelectedGoDate : nextDate
-      const lastSelectedBackDate = moment(lastSelectedGoDate).add(1, 'days').format("YYYY-MM-DD");
+      let lastSelectedGoDate = await this.storage.get(
+        `last_selected_flight_goDate_${identity && identity.Id}`
+      );
+      const nextDate = moment()
+        .add(1, "days")
+        .format("YYYY-MM-DD");
+      lastSelectedGoDate =
+        lastSelectedGoDate &&
+        this.calendarService.generateDayModelByDate(lastSelectedGoDate)
+          .timeStamp >=
+          this.calendarService.generateDayModelByDate(nextDate).timeStamp
+          ? lastSelectedGoDate
+          : nextDate;
+      const lastSelectedBackDate = moment(lastSelectedGoDate)
+        .add(1, "days")
+        .format("YYYY-MM-DD");
       const s = this.flightService.getSearchFlightModel();
       // this.vmFromCity = s.fromCity;
       // this.vmToCity = s.toCity;
@@ -90,22 +107,40 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
   private checkBackDateIsAfterflyDate() {
     if (this.goDate && this.backDate) {
       console.log(this.router.url.includes("search-flight"));
-      if (this.searchFlightModel && this.searchFlightModel.isRoundTrip && !this.isleave && this.goDate.timeStamp > this.backDate.timeStamp) {
+      if (
+        this.searchFlightModel &&
+        this.searchFlightModel.isRoundTrip &&
+        !this.isleave &&
+        this.goDate.timeStamp > this.backDate.timeStamp
+      ) {
         if (this.router.url.includes("search-flight")) {
-          AppHelper.alert("您选择的去程日期在返程日期之后，返程日期自动更新为去程日期后一天");
+          AppHelper.alert(
+            "您选择的去程日期在返程日期之后，返程日期自动更新为去程日期后一天"
+          );
         }
       }
-      this.backDate = this.goDate.timeStamp > this.backDate.timeStamp ?
-        this.calendarService.generateDayModel(moment(this.goDate.date).add(1, 'days')) : this.backDate;
+      this.backDate =
+        this.goDate.timeStamp > this.backDate.timeStamp
+          ? this.calendarService.generateDayModel(
+              moment(this.goDate.date).add(1, "days")
+            )
+          : this.backDate;
     }
   }
   async canDeactivate() {
     if (this.isCanleave) {
       return true;
     }
-    const bookInfos = this.flightService.getPassengerBookInfos().filter(it => !!it.bookInfo);
+    const bookInfos = this.flightService
+      .getPassengerBookInfos()
+      .filter(it => !!it.bookInfo);
     if (bookInfos.length) {
-      return AppHelper.alert("是否放弃所选航班信息？", true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+      return AppHelper.alert(
+        "是否放弃所选航班信息？",
+        true,
+        LanguageHelper.getConfirmTip(),
+        LanguageHelper.getCancelTip()
+      );
     }
     return true;
   }
@@ -114,7 +149,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
     if (!this.isSelf) {
       return;
     }
-    let s = await this.staffService.getStaff()
+    let s = await this.staffService.getStaff();
     if (!s) {
       s = await this.staffService.getStaff(true);
     }
@@ -132,9 +167,9 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
   }
   private calcTotalFlyDays() {
     if (this.backDate && this.goDate) {
-      const nums =
-        Math.abs(moment(this.backDate.date).diff(
-          moment(this.goDate.date), 'days'));
+      const nums = Math.abs(
+        moment(this.backDate.date).diff(moment(this.goDate.date), "days")
+      );
       return nums <= 0 ? 1 : nums;
     }
     return `1`;
@@ -151,10 +186,12 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
       ...this.flightService.getSearchFlightModel(),
       isRoundTrip: !this.isSingle
     });
-    this.flightService.setPassengerBookInfosSource(this.flightService.getPassengerBookInfos().map(it => {
-      it.bookInfo = null;
-      return it;
-    }))
+    this.flightService.setPassengerBookInfosSource(
+      this.flightService.getPassengerBookInfos().map(it => {
+        it.bookInfo = null;
+        return it;
+      })
+    );
   }
   getMonth(d: DayModel) {
     return +this.calendarService.getMonth(d);
@@ -183,7 +220,9 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
           // this.vmToCity = s.toCity;
           this.isSingle = !s.isRoundTrip;
           this.goDate = this.calendarService.generateDayModelByDate(s.Date);
-          this.backDate = this.calendarService.generateDayModelByDate(s.BackDate);
+          this.backDate = this.calendarService.generateDayModelByDate(
+            s.BackDate
+          );
           this.checkBackDateIsAfterflyDate();
         }
       });
@@ -199,7 +238,9 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
   onSelectPassenger() {
     this.isCanleave = true;
     this.isleave = true;
-    this.router.navigate([AppHelper.getRoutePath("select-passenger")], { queryParams: { forType: FlightHotelTrainType.Flight } });
+    this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
+      queryParams: { forType: FlightHotelTrainType.Flight }
+    });
   }
   async showSelectedInfos() {
     const modal = await this.modalCtrl.create({
@@ -230,7 +271,7 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
       Nickname: "北京",
       Pinyin: "Beijing",
       Sequence: 2,
-      Tag: "AirportCity",
+      Tag: "AirportCity"
     } as TrafficlineEntity;
     const vmToCity = {
       AirportCityCode: "SHA",
@@ -250,25 +291,31 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
       // 出发城市，不是出发城市的那个机场
       Tag: "AirportCity"
     } as TrafficlineEntity;
-    const lastFromCity = await this.storage.get("fromCity")
-      .then((c: TrafficlineEntity) => {
-        if (!c.Code) {
-          return null;
-        }
-        return c;
-      }).catch(_ => null) || vmFromCity;
-    const lastToCity = await this.storage.get("toCity")
-      .then((c: TrafficlineEntity) => {
-        if (!c.Code) {
-          return null;
-        }
-        return c;
-      }).catch(_ => null) || vmToCity;
+    const lastFromCity =
+      (await this.storage
+        .get("fromCity")
+        .then((c: TrafficlineEntity) => {
+          if (!c.Code) {
+            return null;
+          }
+          return c;
+        })
+        .catch(_ => null)) || vmFromCity;
+    const lastToCity =
+      (await this.storage
+        .get("toCity")
+        .then((c: TrafficlineEntity) => {
+          if (!c.Code) {
+            return null;
+          }
+          return c;
+        })
+        .catch(_ => null)) || vmToCity;
     this.flightService.setSearchFlightModel({
       ...this.flightService.getSearchFlightModel(),
       fromCity: lastFromCity,
       toCity: lastToCity
-    })
+    });
   }
   async searchFlight() {
     this.isCanleave = true;
@@ -277,12 +324,12 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
     this.storage.set("fromCity", this.searchFlightModel.fromCity);
     this.storage.set("toCity", this.searchFlightModel.toCity);
 
-    const s: SearchFlightModel = this.searchFlightModel || new SearchFlightModel();
+    const s: SearchFlightModel =
+      this.searchFlightModel || new SearchFlightModel();
     // s.tripType = TripType.departureTrip;
     const staff = await this.staffService.getStaff().catch(_ => null);
     if (staff && staff.BookType == StaffBookType.Self) {
-      const exists = this.flightService
-        .getPassengerBookInfos();
+      const exists = this.flightService.getPassengerBookInfos();
       const go = exists.find(
         it => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
       );
@@ -293,7 +340,11 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
       //   s.tripType = TripType.departureTrip;
       // }
       if (go) {
-        const arrivalDate = moment(go.bookInfo && go.bookInfo.flightSegment && go.bookInfo.flightSegment.ArrivalTime);
+        const arrivalDate = moment(
+          go.bookInfo &&
+            go.bookInfo.flightSegment &&
+            go.bookInfo.flightSegment.ArrivalTime
+        );
         if (
           +moment(this.backDate.date) <
           +moment(arrivalDate.format("YYYY-MM-DD"))
@@ -320,13 +371,18 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
     console.log("search-flight", s);
     // this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(s.Date)]);
     this.flightService.setSearchFlightModel(s);
-    this.router.navigate([AppHelper.getRoutePath("flight-list")], { queryParams: { doRefresh: true } });
+    this.router.navigate([AppHelper.getRoutePath("flight-list")], {
+      queryParams: { doRefresh: true }
+    });
     this.cachLastSelectedFlightGoDate(s.Date);
   }
   private async cachLastSelectedFlightGoDate(date: string) {
     const identity = await this.identityService.getIdentityAsync();
     if (identity) {
-      await this.storage.set(`last_selected_flight_goDate_${identity.Id}`, date);
+      await this.storage.set(
+        `last_selected_flight_goDate_${identity.Id}`,
+        date
+      );
     }
   }
   getDayDesc(d: DayModel) {
@@ -336,7 +392,10 @@ export class SearchFlightPage implements OnInit, OnDestroy, AfterViewInit, CanCo
     if (this.disabled) {
       return;
     }
-    const dates = await this.flightService.openCalendar(false, flyTo ? TripType.departureTrip : backDate ? TripType.returnTrip : null);
+    const dates = await this.flightService.openCalendar(
+      false,
+      flyTo ? TripType.departureTrip : backDate ? TripType.returnTrip : null
+    );
     if (dates && dates.length) {
       if (dates.length && this.searchFlightModel) {
         if (flyTo) {
