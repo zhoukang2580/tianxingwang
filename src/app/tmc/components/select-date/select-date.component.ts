@@ -124,12 +124,12 @@ export class SelectDateComponent implements OnInit, OnDestroy {
     this.curSelectedMonth = month;
     this.generateYearNthMonthCalendar();
   }
-  private generateYearNthMonthCalendar() {
+  private async generateYearNthMonthCalendar() {
     let y = +this.curSelectedYear;
     let m = +this.curSelectedMonth;
     this.yms = [
-      this.calendarService.generateYearNthMonthCalendar(y, m),
-      this.calendarService.generateYearNthMonthCalendar(
+      await this.calendarService.generateYearNthMonthCalendar(y, m),
+      await this.calendarService.generateYearNthMonthCalendar(
         m + 1 > 12 ? y + 1 : y,
         m + 1 > 12 ? 1 : m + 1
       )
@@ -336,7 +336,8 @@ export class SelectDateComponent implements OnInit, OnDestroy {
       this.yms = this.yms.map(it => {
         if (it.dayList) {
           it.dayList = it.dayList.map(itm => {
-            itm.enabled = itm.enabled && itm.timeStamp > selectedBeginDay.timeStamp;
+            itm.enabled =
+              itm.enabled && itm.timeStamp > selectedBeginDay.timeStamp;
             return itm;
           });
         }

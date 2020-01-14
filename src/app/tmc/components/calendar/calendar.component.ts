@@ -80,7 +80,7 @@ export class CalendarComponent
       }
     }
   }
-  loadMore() {
+  async loadMore() {
     let [y, m] = this.calendars[this.calendars.length - 1].yearMonth
       .split("-")
       .map(it => +it);
@@ -94,7 +94,9 @@ export class CalendarComponent
         y += 1;
         nextM = 1;
       }
-      result.push(this.calendarService.generateYearNthMonthCalendar(y, nextM));
+      result.push(
+        await this.calendarService.generateYearNthMonthCalendar(y, nextM)
+      );
     }
     this.calendars = this.calendars.concat(result);
     if (this.scroller) {
@@ -107,7 +109,7 @@ export class CalendarComponent
     this.subscription.unsubscribe();
     this.back.emit();
   }
-  onPreviousMonth() {
+  async onPreviousMonth() {
     if (this.calendars && this.calendars.length) {
       const [year, month] = this.calendars[0].yearMonth
         .split("-")
@@ -121,18 +123,21 @@ export class CalendarComponent
       if (months > 1) {
         for (let i = 1; i <= months; i++) {
           this.calendars.unshift(
-            this.calendarService.generateYearNthMonthCalendar(year, month - i)
+            await this.calendarService.generateYearNthMonthCalendar(
+              year,
+              month - i
+            )
           );
         }
       } else {
         if (this.refresher) {
           this.refresher.disabled = true;
-          let calendar = this.calendarService.generateYearNthMonthCalendar(
+          let calendar = await this.calendarService.generateYearNthMonthCalendar(
             year,
             month - 1
           );
           if (month - 1 <= 0) {
-            calendar = this.calendarService.generateYearNthMonthCalendar(
+            calendar = await this.calendarService.generateYearNthMonthCalendar(
               year - 1,
               12
             );

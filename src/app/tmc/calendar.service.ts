@@ -1,16 +1,21 @@
+import { RequestEntity } from "src/app/services/api/Request.entity";
+import { ApiService } from "src/app/services/api/api.service";
 import { Subject, BehaviorSubject } from "rxjs";
 import { Injectable } from "@angular/core";
 import * as moment from "moment";
 import { AvailableDate } from "./models/AvailableDate";
 import { LanguageHelper } from "../languageHelper";
 import { DayModel, ILunarInfo } from "./models/DayModel";
+import { Storage } from "@ionic/storage";
 const lunarCalendar = window["LunarCalendar"];
+const _KEY_HOLIDAYS = "_key_holidays";
 @Injectable({
   providedIn: "root"
 })
 export class CalendarService {
   private selectedDaysSource: Subject<DayModel[]>;
   private selectedDays: DayModel[];
+  private holidays: ICalendarEntity[] = [];
   private dayOfWeekNames = {
     0: LanguageHelper.getSundayTip(),
     1: LanguageHelper.getMondayTip(),
@@ -20,8 +25,39 @@ export class CalendarService {
     5: LanguageHelper.getFridayTip(),
     6: LanguageHelper.getSaturdayTip()
   };
-  constructor() {
+  constructor(private apiService: ApiService, private storage: Storage) {
     this.selectedDaysSource = new BehaviorSubject([]);
+  }
+  async getHolidays(forceFetch = false) {
+    if (!this.holidays) {
+      this.holidays = (await this.storage.get(_KEY_HOLIDAYS)) || [];
+    }
+    if (!forceFetch) {
+      if (this.holidays.length) {
+        return Promise.resolve(this.holidays);
+      }
+    }
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = `ApiHomeUrl-Home-GetCalendar`;
+    req.Data = {
+      beginDate: moment()
+        .startOf("year")
+        .add(-3, "months")
+        .format("YYYY-MM-DD")
+    };
+    this.holidays = await this.apiService
+      .getPromiseData<ICalendarEntity[]>(req)
+      .catch(_ => []);
+    if (this.holidays.length) {
+      this.cacheHolidays(this.holidays);
+    }
+    return this.holidays;
+  }
+  private async cacheHolidays(holidays: ICalendarEntity[]) {
+    if (holidays) {
+      await this.storage.set(_KEY_HOLIDAYS, holidays);
+    }
   }
   getHHmm(datetime: string) {
     if (datetime) {
@@ -171,7 +207,10 @@ export class CalendarService {
     d.dayOfWeekName = wn;
     return wn;
   }
-  generateYearNthMonthCalendar(year: number, month: number): AvailableDate {
+  async generateYearNthMonthCalendar(
+    year: number,
+    month: number
+  ): Promise<AvailableDate> {
     const iM = moment(`${year}-${month}-01`, "YYYY-MM-DD"); // 第i个月
     // console.log("generateYearNthMonthCalendar", iM.format('YYYY-MM-DD'), year, month);
     const calender: AvailableDate = {
@@ -213,24 +252,22 @@ export class CalendarService {
       const dayOfiM = iM.startOf("month").date(j); // 每月的j号
       calender.dayList.push(this.generateDayModel(dayOfiM));
     }
-    const clnder = this.initDaysDayOff(calender);
+    const holidays = await this.getHolidays();
+    const clnder = this.initDaysDayOff(calender, holidays);
     // console.log("generateYearNthMonthCalendar", clnder);
-    return clnder;
+    return Promise.resolve(clnder);
   }
-  private initDaysDayOff(c: AvailableDate) {
-    if (c.dayList && c.dayList.some(it => !!it.lunarInfo)) {
-      const cx = c.dayList.find(
-        it => it.bottomDesc && (it.bottomDesc.includes("除夕") || it.date.includes("10-01"))
-      );
-      let endtime = 0;
-      if (cx) {
-        endtime = cx.timeStamp + 7 * 24 * 3600;
-      }
-      c.dayList = c.dayList.map(it => {
-        if (cx) {
-          it.dayoff = it.timeStamp < endtime && it.timeStamp >= cx.timeStamp;
-        }
-        return it;
+  private initDaysDayOff(c: AvailableDate, holidays: ICalendarEntity[]) {
+    if (holidays && holidays.length) {
+      holidays.forEach(hd => {
+        c.dayList.forEach(d => {
+          if (hd.Date.substr(0, 10) == d.date) {
+            d.dayoff = true;
+            if (!c.dayList.find(it => it.bottomDesc == hd.Name)) {
+              d.bottomDesc = hd.Name;
+            }
+          }
+        });
       });
     }
     return c;
@@ -252,7 +289,8 @@ export class CalendarService {
           d.descColor = "medium";
           // d.desc = this.getJQ(d);
           if (d.lunarInfo.lunarFestival || d.lunarInfo.solarFestival) {
-            d.bottomDesc = d.lunarInfo.lunarFestival || d.lunarInfo.solarFestival;
+            d.bottomDesc =
+              d.lunarInfo.lunarFestival || d.lunarInfo.solarFestival;
             if (
               d.lunarInfo.lunarFestival &&
               d.lunarInfo.lunarMonthName &&
@@ -263,126 +301,38 @@ export class CalendarService {
             d.descColor = "danger";
           }
           d.bottomDesc =
-            d.bottomDesc && d.bottomDesc.length > 3 ? `${d.bottomDesc.substr(0, 3)}...` : d.bottomDesc;
+            d.bottomDesc && d.bottomDesc.length > 3
+              ? `${d.bottomDesc.substr(0, 3)}...`
+              : d.bottomDesc;
         }
       }
     }
     return d;
   }
-  private getJQ(d: DayModel) {
-    if (d.bottomDesc && d.bottomDesc.length <= 4) {
-      return d.bottomDesc;
-    }
-    return d.lunarInfo && d.lunarInfo.lunarDayName;
-  }
-  private generateCanlender2(months: number) {
-    const calender: AvailableDate[] = [];
-    for (let i = 0; i < months; i++) {
-      const st = Date.now();
-      const iM = moment().add(i, "months"); // 第i个月
-      const item: AvailableDate = {
-        dayList: [],
-        disabled: false,
-        yearMonth: iM.format("YYYY-MM")
-      };
-      calender.push(item);
-      const dayCountOfiM = iM
-        .startOf("month")
-        .date(1) // 每月的一号
-        .add(1, "months") // 下个月的一号
-        .subtract(1, "days") // 这个月的最后一天
-        .date(); // 最后一天是几，代表这个月有几天
-      const curMFistDate = moment(iM)
-        .startOf("month")
-        .date(1);
-      // console.log("curMoment", curMoment.format("YYYY-MM-DD"));
-      const curWeek = curMFistDate.weekday();
-      // console.log(curMFistDate.format("YYYY-MM-DD"), curWeek);
-      if (curWeek !== 0) {
-        // 如果不是从星期天，第一个位置开始，那么前面几个应该是上一个月的日期
-        // 上一个月的最后那几天
-        const lastMDay = curMFistDate
-          .subtract(1, "days") // 上个月的最后一天
-          .date();
-        // console.log(lastMDay);
-        for (let d = lastMDay, j = curWeek; j > 0; d--, j--) {
-          const date = curMFistDate
-            .subtract(1, "days") // 应该是上个月的日期
-            .date(d);
-          const lsmd = this.generateDayModel(date);
-          lsmd.isLastMonthDay = true; // 是上个月的日期
-          item.dayList.unshift(lsmd);
-        }
-        // console.log(dayList);
-      }
-      for (let j = 1; j <= dayCountOfiM; j++) {
-        // 第 i 个月的第 j 天
-        const dayOfiM = iM.startOf("month").date(j); // 每月的j号
-        item.dayList.push(this.generateDayModel(dayOfiM));
-      }
-      console.log(`第${i}个月日期生成耗时：${Date.now() - st} ms`);
-    }
-    return Promise.resolve(calender);
-  }
-  private generateNthCanlender(nthMonth: number) {
-    return Promise.resolve().then(_ => {
-      const calendar: AvailableDate[] = [];
-      for (let i = 0; i < nthMonth; i++) {
-        const curDate = new Date();
-        const iDate = new Date(
-          curDate.getFullYear(),
-          curDate.getMonth() + i,
-          curDate.getDate()
-        ); // 第i个月
-        const curMYear = iDate.getFullYear();
-        const curMMonth = iDate.getMonth() + 1;
-        const fullMonth = curMMonth < 10 ? `0${curMMonth}` : curMMonth + 1;
-        const st = Date.now();
-        // console.log(this.format(iDate), iDate);
-        const item = {
-          dayList: [],
-          disabled: false,
-          yearMonth: `${curMYear}-${fullMonth}`
-        };
-        calendar.push(item);
-        const nextIMonthStart = new Date(
-          iDate.getFullYear(),
-          iDate.getMonth() + 1,
-          1
-        );
-        const dayCountOfiM =
-          new Date(nextIMonthStart.setDate(-1)).getDate() + 1;
-        const curMFistDate = new Date(iDate.setDate(1));
-        // console.log(
-        //   "curMFistDate",
-        //   this.format(curMFistDate),
-        //   "dayCountOfiM",
-        //   dayCountOfiM
-        // );
-        const curWeek = curMFistDate.getDay();
-        if (curWeek !== 0) {
-          // 如果不是从星期天，第一个位置开始，那么前面几个应该是上一个月的日期
-          // 上一个月的最后那几天
-          const lastMDay = new Date(curMFistDate.setSeconds(-1));
+}
+export interface ICalendarEntity {
+  /// <summary>
+  /// 是否上班
+  /// </summary>
+  IsWork: boolean;
 
-          // console.log("lastMDay", this.format(lastMDay));
-          for (let d = lastMDay.getDate(), j = curWeek; j > 0; d--, j--) {
-            const date = new Date(lastMDay.setDate(d));
-            // console.log(this.format(date));
-            const lsmd = this.generateDayModel(date);
-            lsmd.isLastMonthDay = true; // 是上个月的日期
-            item.dayList.unshift(lsmd);
-          }
-          // console.log(dayList);
-        }
-        for (let j = 1; j <= dayCountOfiM; j++) {
-          // 第 i 个月的第 j 天
-          item.dayList.push(this.generateDayModel(iDate.setDate(j)));
-        }
-        // console.log(`第${i}个月日期生成耗时：${Date.now() - st} ms`);
-      }
-      // console.log(calendar);
-      return calendar;
-    });
-  }
+  /// <summary>
+  /// 节日名称
+  /// </summary>
+  Name: string;
+
+  /// <summary>
+  /// 描述
+  /// </summary>
+  Description: string;
+
+  /// <summary>
+  /// 农历
+  /// </summary>
+  LunarDate: string;
+
+  /// <summary>
+  /// 具体日期
+  /// </summary>
+  Date: string;
 }
