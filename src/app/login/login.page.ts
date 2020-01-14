@@ -50,7 +50,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     private modalCtrl: ModalController
   ) {
     this.ionConfig.set("swipeBackEnabled", false);
-    this.isShowWechatLogin = false && AppHelper.isApp();
+    this.isShowWechatLogin =  AppHelper.isApp();
     route.queryParamMap.subscribe(_ => {
       this.configService.getConfigAsync().then(c => {
         this.config = c;

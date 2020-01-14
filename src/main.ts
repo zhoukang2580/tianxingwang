@@ -15,7 +15,7 @@ if (environment.production) {
   // }
 
 } else {
-  if (window["cordova"]) {
+  if (window["cordova"]||navigator.userAgent.toLowerCase().includes("iphone")) {
     if (window["VConsole"]) {
       if (window['vConsole']) {
         window['vConsole'].destroy();
