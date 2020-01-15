@@ -76,7 +76,7 @@
           </ion-item>
         </ion-list>
         <ng-template #nomoredate>
-          <app-or-comp *ngIf='(orderModel?.Orders||myTrips||tasks)?.length==0'>
+          <app-or-comp *ngIf='!this.isLoading&&(orderModel?.Orders||myTrips||tasks)?.length==0'>
             暂无数据
           </app-or-comp>
         </ng-template>
@@ -111,9 +111,9 @@
       </ng-container>
     </ng-container>
   </ng-template>
-  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMore();">
+  <ion-infinite-scroll (ionInfinite)="loadMore();">
     <ion-infinite-scroll-content>
-      正在加载...
+      {{loadMoreErrMsg||"正在加载..."}}
     </ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>

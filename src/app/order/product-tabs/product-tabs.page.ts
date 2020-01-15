@@ -26,8 +26,8 @@ import { OrderFlightTicketStatusType } from "src/app/order/models/OrderFlightTic
 import { OrderTrainTicketStatusType } from "src/app/order/models/OrderTrainTicketStatusType";
 import { OrderFlightTicketEntity } from "src/app/order/models/OrderFlightTicketEntity";
 import * as moment from "moment";
-import { Subscription, from } from "rxjs";
-import { finalize } from "rxjs/operators";
+import { Subscription, from, of } from "rxjs";
+import { finalize, catchError } from "rxjs/operators";
 import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { LanguageHelper } from "src/app/languageHelper";
@@ -80,6 +80,7 @@ export const ORDER_TABS: ProductItem[] = [
 })
 export class ProductTabsPage implements OnInit, OnDestroy {
   private condition: SearchTicketConditionModel = new SearchTicketConditionModel();
+  private readonly pageSize = 20;
   loadDataSub = Subscription.EMPTY;
   productItemType = ProductItemType;
   activeTab: ProductItem;
@@ -94,6 +95,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   isShowMyTrips = false;
   myTrips: OrderTripModel[];
   isOpenUrl = false;
+  loadMoreErrMsg: string;
   @ViewChild(IonContent) ionContent: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
@@ -149,6 +151,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   }
   doRefresh(condition?: SearchTicketConditionModel) {
     this.isLoading = true;
+    this.condition = condition || new SearchTicketConditionModel();
+    this.condition.pageIndex = 0;
+    this.loadMoreErrMsg = "";
     if (this.ionRefresher) {
       this.ionRefresher.complete();
       this.ionRefresher.disabled = true;
@@ -164,8 +169,6 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       return;
     }
     this.isShowMyTrips = false;
-    this.condition = condition || new SearchTicketConditionModel();
-    this.condition.pageIndex = 0;
     if (this.infiniteScroll) {
       this.infiniteScroll.disabled = false;
     }
@@ -210,6 +213,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       this.loadDataSub.unsubscribe();
     }
     const m = this.transformSearchCondition(this.condition);
+    m.PageSize = this.pageSize;
     m.Type =
       this.activeTab.value == ProductItemType.plane
         ? "Flight"
@@ -221,23 +225,30 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       .pipe(
         finalize(() => {
           this.isLoading = false;
-          if (this.ionRefresher) {
-            this.ionRefresher.complete();
-          }
         })
       )
-      .subscribe(res => {
-        if (res && res.Data && res.Data.Trips) {
-          if (this.infiniteScroll) {
-            this.infiniteScroll.disabled = res.Data.Trips.length === 0;
-            this.infiniteScroll.complete();
+      .subscribe(
+        res => {
+          if (this.ionRefresher && this.condition.pageIndex < 1) {
+            this.ionRefresher.complete();
           }
-          if (res.Data.Trips.length) {
-            this.myTrips = [...this.myTrips, ...res.Data.Trips];
-            this.condition.pageIndex++;
+          if (res && res.Data && res.Data.Trips) {
+            if (this.infiniteScroll) {
+              this.infiniteScroll.disabled =
+                res.Data.Trips.length === 0 ||
+                res.Data.Trips.length < this.pageSize;
+              this.infiniteScroll.complete();
+            }
+            if (res.Data.Trips.length) {
+              this.myTrips = [...this.myTrips, ...res.Data.Trips];
+              this.condition.pageIndex++;
+            }
           }
+        },
+        err => {
+          this.loadMoreErrMsg = err.Message || err;
         }
-      });
+      );
   }
   back() {
     this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
@@ -308,18 +319,23 @@ export class ProductTabsPage implements OnInit, OnDestroy {
           }
         })
       )
-      .subscribe(tasks => {
-        if (tasks) {
-          if (tasks.length) {
-            this.tasks = this.tasks.concat(tasks);
-            this.curTaskPageIndex++;
+      .subscribe(
+        tasks => {
+          if (tasks) {
+            if (tasks.length) {
+              this.tasks = this.tasks.concat(tasks);
+              this.curTaskPageIndex++;
+            }
+            if (this.infiniteScroll) {
+              this.infiniteScroll.disabled =
+                tasks.length == 0 || tasks.length < pageSize;
+            }
           }
-          if (this.infiniteScroll) {
-            this.infiniteScroll.disabled =
-              tasks.length == 0 || tasks.length < pageSize;
-          }
+        },
+        err => {
+          this.loadMoreErrMsg = err.Message || err;
         }
-      });
+      );
   }
   getTaskOrderId(task: TaskEntity) {
     return task && task.VariablesJsonObj["OrderId"];
@@ -333,6 +349,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         this.loadDataSub.unsubscribe();
       }
       const m = this.transformSearchCondition(this.condition);
+      m.PageSize = this.pageSize;
       m.Type =
         this.activeTab.value == ProductItemType.plane
           ? "Flight"
@@ -344,11 +361,6 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         .pipe(
           finalize(() => {
             this.isLoading = false;
-            setTimeout(() => {
-              if (this.infiniteScroll) {
-                this.infiniteScroll.complete();
-              }
-            }, 200);
           })
         )
         .subscribe(
@@ -356,6 +368,14 @@ export class ProductTabsPage implements OnInit, OnDestroy {
             let result: OrderModel = res.Status ? res.Data : null;
             this.dataCount = result && result.DataCount;
             result = this.combineInfo(result);
+            if (this.infiniteScroll) {
+              this.infiniteScroll.complete();
+            }
+            if (result && result.Orders && result.Orders) {
+              this.infiniteScroll.disabled =
+                result.Orders.length == 0 ||
+                result.Orders.length < this.pageSize;
+            }
             if (result && result.Orders && result.Orders.length) {
               this.condition.pageIndex++;
               if (this.orderModel) {
@@ -369,6 +389,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
             }
           },
           e => {
+            this.loadMoreErrMsg = e.Message || e;
             console.error(e);
           }
         );
