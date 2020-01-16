@@ -958,7 +958,7 @@ export class BookPage implements OnInit, AfterViewInit {
       bookDto
     );
     console.log("initializeBookDto", initialBookDto);
-    await this.storage.set("mock-initialBookDto-hotel", initialBookDto);
+    // await this.storage.set("mock-initialBookDto-hotel", initialBookDto);
     return initialBookDto;
   }
   ngOnInit() {
