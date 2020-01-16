@@ -196,7 +196,7 @@ export class CalendarService {
       retD.toolTipPos = "center";
       this.setWeekName(retD);
     }
-    return retD; // this.initDayDescInfo(retD);
+    return this.initDayDescInfo(retD);
   }
   private setWeekName(d: DayModel) {
     d.dayOfWeek = d.dayOfWeek || new Date(d.timeStamp * 1000).getDay();
@@ -291,29 +291,8 @@ export class CalendarService {
           it => it.year == +y && it.month == +m && it.day == +date
         );
         if (d.lunarInfo) {
-          d.holiday = d.lunarInfo.lunarFestival || d.lunarInfo.solarFestival;
-          d.bottomDesc =
-            d.lunarInfo.lunarFestival ||
-            d.lunarInfo.solarFestival ||
-            d.lunarInfo.lunarDayName;
+          d.bottomDesc = d.lunarInfo.lunarDayName;
           d.descColor = "medium";
-          // d.desc = this.getJQ(d);
-          if (d.lunarInfo.lunarFestival || d.lunarInfo.solarFestival) {
-            d.bottomDesc =
-              d.lunarInfo.lunarFestival || d.lunarInfo.solarFestival;
-            if (
-              d.lunarInfo.lunarFestival &&
-              d.lunarInfo.lunarMonthName &&
-              d.lunarInfo.lunarMonthName.includes("闰")
-            ) {
-              d.bottomDesc = d.lunarInfo.lunarDayName;
-            }
-            d.descColor = "danger";
-          }
-          d.bottomDesc =
-            d.bottomDesc && d.bottomDesc.length > 3
-              ? `${d.bottomDesc.substr(0, 3)}...`
-              : d.bottomDesc;
         }
       }
     }
