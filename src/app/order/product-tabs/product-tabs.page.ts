@@ -2,15 +2,11 @@ import { IdentityService } from "./../../services/identity/identity.service";
 import { OrderTripModel } from "./../models/OrderTripModel";
 import { OrderService } from "./../order.service";
 import { ApiService } from "./../../services/api/api.service";
-import { StaffService } from "src/app/hr/staff.service";
-import { PayService } from "src/app/services/pay/pay.service";
 import { AppHelper } from "src/app/appHelper";
 import { OrderModel } from "src/app/order/models/OrderModel";
 import { TmcEntity, TmcService } from "../../tmc/tmc.service";
 import { ActivatedRoute, Router } from "@angular/router";
-import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import {
-  NavController,
   ModalController,
   IonInfiniteScroll,
   IonRefresher,
@@ -26,53 +22,13 @@ import { OrderFlightTicketStatusType } from "src/app/order/models/OrderFlightTic
 import { OrderTrainTicketStatusType } from "src/app/order/models/OrderTrainTicketStatusType";
 import { OrderFlightTicketEntity } from "src/app/order/models/OrderFlightTicketEntity";
 import * as moment from "moment";
-import { Subscription, from, of } from "rxjs";
-import { finalize, catchError } from "rxjs/operators";
+import { Subscription } from "rxjs";
+import { finalize } from "rxjs/operators";
 import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
-import { RequestEntity } from "src/app/services/api/Request.entity";
-import { LanguageHelper } from "src/app/languageHelper";
-import { OrderTaskModel } from "../models/OrderTaskModel";
 import { TaskEntity } from "src/app/workflow/models/TaskEntity";
-import { TaskModel } from "../models/TaskModel";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
-export const ORDER_TABS: ProductItem[] = [
-  {
-    label: "机票",
-    value: ProductItemType.plane,
-    imageSrc: "assets/svgs/product-plane.svg",
-    isDisplay: true
-  },
-  {
-    label: "酒店",
-    value: ProductItemType.hotel,
-    imageSrc: "assets/svgs/product-hotel.svg",
-    isDisplay: true
-  },
-  {
-    label: "火车票",
-    value: ProductItemType.train,
-    imageSrc: "assets/svgs/product-train.svg",
-    isDisplay: true
-  },
-  {
-    label: "保险",
-    value: ProductItemType.insurance,
-    imageSrc: "assets/svgs/product-insurance.svg",
-    isDisplay: !true
-  },
-  {
-    label: "待审任务",
-    value: ProductItemType.waitingApprovalTask,
-    imageSrc: "assets/images/projectcheck.png",
-    isDisplay: true
-  },
-  {
-    label: "更多",
-    value: ProductItemType.more,
-    imageSrc: "assets/svgs/product-more.svg",
-    isDisplay: true
-  }
-];
+import { ORDER_TABS } from '../product-list/product-list.page';
+
 @Component({
   selector: "app-product-tabs",
   templateUrl: "./product-tabs.page.html",
@@ -130,7 +86,6 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   async onPay(order: OrderEntity) {
     // const isSelfBookType = await this.staffService.isSelfBookType();
     if (order) {
-      const result = await this.tmcService.payOrder(order.Id);
       // if (order.Status == OrderStatusType.WaitPay) {
       // }
     }

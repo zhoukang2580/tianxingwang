@@ -13,9 +13,9 @@ import { ConfigService } from "src/app/services/config/config.service";
 import { Subscription, Observable, of, from, combineLatest } from "rxjs";
 import { Platform } from "@ionic/angular";
 import { ProductItem, ProductItemType } from "src/app/tmc/models/ProductItems";
-import { ORDER_TABS } from "src/app/order/product-tabs/product-tabs.page";
 import { StaffService } from "src/app/hr/staff.service";
 import { tap, map } from "rxjs/operators";
+import { ORDER_TABS } from 'src/app/order/product-list/product-list.page';
 interface PageModel {
   Name: string;
   RealName: string;

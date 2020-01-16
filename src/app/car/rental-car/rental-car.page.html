@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-button (click)='back()'>
+        <ion-icon color='dark' name='arrow-back'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>租车</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list lines='none'>
+    <ion-item >
+      <ion-label color='secondary'>
+        <i class='icon icon-mobile'></i>
+      </ion-label>
+      <ion-input type='tel' [attr.autofocus]='!mobile' [(ngModel)]='mobile' placeholder="请输入手机号码"></ion-input>
+    </ion-item>
+  </ion-list>
+  <ion-button expand='block' color='secondary' (click)='onRentalCar()'>前往租车</ion-button>
+</ion-content>

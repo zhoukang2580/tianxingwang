@@ -18,6 +18,7 @@ import { OrderModule } from "./order/order.module";
 import { HrModule } from "./hr/hr.module";
 import { TrainModule } from "./train/train.module";
 import { HotelModule } from "./hotel/hotel.module";
+import { CarModule } from './car/car.module';
 
 const routes: Routes = [
   {
@@ -67,6 +68,7 @@ const routes: Routes = [
     MessageModule,
     TrainModule,
     HotelModule,
+    CarModule,
     RouterModule.forRoot(routes, {
       preloadingStrategy: PreloadAllModules,
       enableTracing: !true,

@@ -164,6 +164,14 @@ export class HomePage implements OnInit, OnDestroy {
         return;
       }
     }
+    if (name == "rentalCar") {
+      route = "rental-car";
+      //todo:
+      // if (tmcRegionTypeValue.search("flight") < 0) {
+      //   AppHelper.alert(msg);
+      //   return;
+      // }
+    }
     if (name == "bulletin") {
       route = "bulletin-list";
     }

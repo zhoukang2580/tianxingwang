@@ -104,6 +104,16 @@
   </ion-grid>
   <ion-grid margin-top>
     <ion-row>
+      <ion-col (click)='goToPage("rentalCar")' size="4">
+        <div class="item">
+          <ion-label>
+            <img src="assets/svgs/home-rentalCar.svg" alt="租车" [style.height.em]='3'>
+            <!-- <i class="icon icon-hotel"></i> -->
+          </ion-label>
+          <ion-text>租车</ion-text>
+        </div>
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-col>
       <ion-col (click)='goToPage("bulletin","notice")' size="4">
         <div class="item">
           <ion-label>
