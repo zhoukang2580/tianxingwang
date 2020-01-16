@@ -291,11 +291,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
         const credentials = [];
         const arr =
           cstaff &&
-          cstaff.Approvers &&
-          cstaff.Approvers.map(it => {
-            it.RealName = (it.Account && it.Account.RealName) || "";
-            return it;
-          });
+          cstaff.Approvers;
         let credentialStaffApprovers: {
           Tag: string;
           Type: TaskType;

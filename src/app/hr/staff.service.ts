@@ -280,10 +280,10 @@ export class PolicyEntity extends BaseSettingEntity {
   InternationalFlightIllegalTip: string;
 }
 export class StaffApprover {
-  RealName: string;
+  Name: string;
   Tag: string;
   Type: TaskType;
-  Account: AccountEntity;
+  // Account: AccountEntity;
 }
 export class StaffEntity {
   isNotWhiteList: boolean;
