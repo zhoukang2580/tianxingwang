@@ -1,7 +1,6 @@
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import {
   HttpClient,
-  HttpParams,
   HttpErrorResponse
 } from "@angular/common/http";
 import { Injectable } from "@angular/core";
@@ -15,9 +14,7 @@ import {
   finalize,
   switchMap,
   timeout,
-  delay,
-  exhaust
-} from "rxjs/operators";
+  delay} from "rxjs/operators";
 import { IResponse } from "./IResponse";
 import {
   of,
@@ -31,7 +28,6 @@ import {
 import { ExceptionEntity } from "../log/exception.entity";
 import { Router } from "@angular/router";
 import { IdentityService } from "../identity/identity.service";
-import { LoadingController, AlertController } from "@ionic/angular";
 import { LanguageHelper } from "src/app/languageHelper";
 import { environment } from "src/environments/environment";
 import { Storage } from "@ionic/storage";
@@ -49,15 +45,10 @@ export class ApiService {
     isFetching: boolean;
     promise: Promise<any>;
   } = {} as any;
-
-  private worker = null;
-  private isAlert = false;
   constructor(
     private http: HttpClient,
     private router: Router,
     private identityService: IdentityService,
-    private loadingCtrl: LoadingController,
-    private alertCtrl: AlertController,
     private storage: Storage
   ) {
     this.loadingSubject = new BehaviorSubject(false);
@@ -68,7 +59,7 @@ export class ApiService {
     });
     this.loadApiConfig(true)
       .then(_ => {})
-      .catch(e => {});
+      .catch(() => {});
   }
   getLoading() {
     return this.loadingSubject.asObservable().pipe(delay(0));
@@ -415,7 +406,7 @@ export class ApiService {
                 s(null);
               }
             },
-            e => {
+            () => {
               s(null);
             }
           );

@@ -50,11 +50,13 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     private modalCtrl: ModalController
   ) {
     this.ionConfig.set("swipeBackEnabled", false);
-    this.isShowWechatLogin =  AppHelper.isApp();
+    this.isShowWechatLogin = AppHelper.isApp();
     route.queryParamMap.subscribe(_ => {
-      this.configService.getConfigAsync().then(c => {
-        this.config = c;
-      });
+      setTimeout(() => {
+        this.configService.getConfigAsync().then(c => {
+          this.config = c;
+        });
+      }, 1000);
     });
   }
   ngAfterViewInit() {
@@ -62,7 +64,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.dismissAllOverlayer();
     setTimeout(() => {
       this.autoLogin();
-    }, 1000);
+    }, 1500);
   }
   private async dismissAllOverlayer() {
     let i = 10;

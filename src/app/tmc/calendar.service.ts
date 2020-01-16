@@ -31,7 +31,7 @@ export class CalendarService {
   async getHolidays(forceFetch = false) {
     if (!this.holidays) {
       const local = await this.storage.get(_KEY_HOLIDAYS);
-      this.holidays = (local && local.lenth) || [];
+      this.holidays = (local && local.lenth && local) || [];
     }
     if (!forceFetch) {
       if (this.holidays.length) {

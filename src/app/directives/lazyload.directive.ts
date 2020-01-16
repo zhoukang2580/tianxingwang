@@ -46,7 +46,7 @@ export class LazyloadDirective
       !this.el.nativeElement.dataset ||
       !this.el.nativeElement.dataset["isInitialized"]
     ) {
-      this.imageRecoverService.initialize(this.el.nativeElement);
+      await this.imageRecoverService.initialize(this.el.nativeElement);
       this.el.nativeElement.dataset["isInitialized"] = "isInitialized";
     }
   }
