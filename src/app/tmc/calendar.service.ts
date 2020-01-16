@@ -265,7 +265,7 @@ export class CalendarService {
         c.dayList.forEach(d => {
           if (hd.Date.substr(0, 10) == d.date) {
             d.dayoff = true;
-            if (!c.dayList.find(it => it.bottomDesc == hd.Name)) {
+            if (hd.Name && !c.dayList.find(it => it.bottomDesc == hd.Name)) {
               d.bottomDesc = hd.Name;
               if (d.date.includes("10-01")) {
                 if (!d.bottomDesc.includes("国庆")) {
