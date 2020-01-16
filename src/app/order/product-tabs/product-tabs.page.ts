@@ -356,6 +356,16 @@ export class ProductTabsPage implements OnInit, OnDestroy {
           : this.activeTab.value == ProductItemType.train
           ? "Train"
           : "Hotel";
+      if (
+        this.orderModel &&
+        this.orderModel.Orders &&
+        this.orderModel.Orders.length &&
+        !m.EndDate
+      ) {
+        m.EndDate = this.orderModel.Orders[
+          this.orderModel.Orders.length - 1
+        ].InsertTime;
+      }
       this.loadDataSub = this.orderService
         .getOrderList(m)
         .pipe(

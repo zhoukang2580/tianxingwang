@@ -30,7 +30,8 @@ export class CalendarService {
   }
   async getHolidays(forceFetch = false) {
     if (!this.holidays) {
-      this.holidays = (await this.storage.get(_KEY_HOLIDAYS)) || [];
+      const local = await this.storage.get(_KEY_HOLIDAYS);
+      this.holidays = (local && local.lenth) || [];
     }
     if (!forceFetch) {
       if (this.holidays.length) {
@@ -40,6 +41,7 @@ export class CalendarService {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = `ApiHomeUrl-Home-GetCalendar`;
+    req.Timeout = 5 * 1000;
     req.Data = {
       beginDate: moment()
         .startOf("year")
@@ -55,7 +57,7 @@ export class CalendarService {
     return this.holidays;
   }
   private async cacheHolidays(holidays: ICalendarEntity[]) {
-    if (holidays) {
+    if (holidays && holidays.length) {
       await this.storage.set(_KEY_HOLIDAYS, holidays);
     }
   }
@@ -194,7 +196,7 @@ export class CalendarService {
       retD.toolTipPos = "center";
       this.setWeekName(retD);
     }
-    return this.initDayDescInfo(retD);
+    return retD; // this.initDayDescInfo(retD);
   }
   private setWeekName(d: DayModel) {
     d.dayOfWeek = d.dayOfWeek || new Date(d.timeStamp * 1000).getDay();
@@ -265,6 +267,14 @@ export class CalendarService {
             d.dayoff = true;
             if (!c.dayList.find(it => it.bottomDesc == hd.Name)) {
               d.bottomDesc = hd.Name;
+              if (d.date.includes("10-01")) {
+                if (!d.bottomDesc.includes("国庆")) {
+                  d.bottomDesc = `${d.bottomDesc.replace("节", "")},国庆`;
+                }
+              }
+              if (d.bottomDesc) {
+                d.descColor = "danger";
+              }
             }
           }
         });

@@ -20,6 +20,9 @@ ion-list {
     margin-bottom: 0.35em;
   }
 }
+ion-footer {
+  --background: white;
+}
 ion-footer ion-row ion-col {
   position: relative;
   &:not(:last-child)::after {
