@@ -257,8 +257,9 @@ export class HotelService {
       const cities = await this.getHotelCityAsync();
       res.city = cities.find(
         c =>
-          c.Name.includes(res.position.cityName) ||
-          res.position.cityName.includes(c.Name)
+          c.Name &&
+          (c.Name.includes(res.position.cityName) ||
+            res.position.cityName.includes(c.Name))
       );
     }
     return res.city ? res : await this.mapService.getCurrentCityPosition();
@@ -555,7 +556,7 @@ export class HotelService {
     };
     // req.IsShowLoading = true;
     return from(this.setDefaultFilterPolicy()).pipe(
-      switchMap(_=>from(this.initSelfBookTypeBookInfos())),
+      switchMap(_ => from(this.initSelfBookTypeBookInfos())),
       switchMap(_ => this.apiService.getResponse<HotelResultEntity>(req)),
       map(result => {
         if (result && result.Data && result.Data.HotelDayPrices) {

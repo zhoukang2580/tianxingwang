@@ -83,7 +83,9 @@ export class OrderItemHelper {
     return orderItems == null
       ? 0
       : orderItems
-          .filter(it => it.Tag.includes("Flight") && it.Tag.endsWith("Fee"))
+          .filter(
+            it => it.Tag && it.Tag.includes("Flight") && it.Tag.endsWith("Fee")
+          )
           .reduce((acc, it) => (acc += +it.Amount), 0);
   }
   public static GetFlightAllTicketPrice(orderItems: OrderItemEntity[]) {
@@ -92,6 +94,7 @@ export class OrderItemHelper {
       : orderItems
           .filter(
             it =>
+              it.Tag &&
               it.Tag.includes("Flight") &&
               !it.Tag.endsWith("Fee") &&
               !it.Tag.endsWith("Tax")

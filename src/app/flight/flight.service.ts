@@ -326,42 +326,7 @@ export class FlightService {
       FlightPolicies
     };
   }
-  // filterPassengerPolicyFlights(
-  //   bookInfo: PassengerBookInfo<IFlightSegmentInfo>,
-  //   segments: FlightSegmentEntity[]
-  // ): FlightSegmentEntity[] {
-  //   segments = segments || [];
-  //   if (bookInfo && bookInfo.passenger && bookInfo.passenger.AccountId) {
-  //     this.setPassengerBookInfosSource(
-  //       this.getPassengerBookInfos().map(it => {
-  //         it.isFilterPolicy = bookInfo.id == it.id;
-  //         return it;
-  //       })
-  //     );
-  //     let numbers: string[] = [];
-  //     const passengerPolicies: PassengerPolicyFlights =
-  //       this.policyFlights &&
-  //       this.policyFlights.find(
-  //         pl => pl.PassengerKey == bookInfo.passenger.AccountId
-  //       );
-  //     let flightPolicies: FlightPolicy[] = passengerPolicies && passengerPolicies.FlightPolicies || [];
-  //     flightPolicies = flightPolicies.slice(0);
-  //     if (bookInfo.isFilterPolicy) {
-  //       flightPolicies = flightPolicies.filter(it => !it.Rules || !it.Rules.length)
-  //     }
-  //     numbers = flightPolicies.map(it => it.FlightNo);
-  //     segments = segments.filter(it => numbers.includes(it.Number));
-  //     console.log("过滤差标后的segments:", segments);
-  //   } else {
-  //     this.setPassengerBookInfosSource(
-  //       this.getPassengerBookInfos().map(it => {
-  //         it.isFilterPolicy = false;
-  //         return it;
-  //       })
-  //     );
-  //   }
-  //   return segments;
-  // }
+  
   getPassengerBookInfos() {
     this.passengerBookInfos = this.passengerBookInfos || [];
     return this.passengerBookInfos;

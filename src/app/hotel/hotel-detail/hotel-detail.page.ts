@@ -223,10 +223,13 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   }
   isFullOnly(ps: RoomPlanEntity[]) {
     if (ps && ps.length) {
-      return ps.every(p =>
-        this.colors[this.hotelService.getRoomPlanUniqueId(p)].includes(
-          "danger_full"
-        )
+      return ps.every(
+        p =>
+          this.hotelService.getRoomPlanUniqueId(p) &&
+          this.colors[this.hotelService.getRoomPlanUniqueId(p)] &&
+          this.colors[this.hotelService.getRoomPlanUniqueId(p)].includes(
+            "danger_full"
+          )
       );
     }
   }
