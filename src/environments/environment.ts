@@ -6,7 +6,8 @@ export const environment = {
   production: false,
   localhost: false,
   disableNetWork: !true,
-  enableLocalData: true
+  enableLocalData: true,
+  mockProBuild: true
 };
 
 /*

@@ -18,7 +18,10 @@ export class AppHelper {
   private static toastController: ToastController;
   private static alertController: AlertController;
   private static modalController: ModalController;
-  static _appDomain = environment.production ? "sky-trip.com" : "beeant.com";
+  static _appDomain =
+    environment.production && !environment.mockProBuild
+      ? "sky-trip.com"
+      : "beeant.com";
   constructor() {}
   static _domain;
   static _queryParamers = {};
@@ -434,6 +437,9 @@ export class AppHelper {
   }
   static getApiUrl() {
     if (environment.production) {
+      if (environment.mockProBuild) {
+        return "http://app." + this._appDomain;
+      }
       return "https://app." + this._appDomain;
     }
     return "http://test.app." + this._appDomain;
