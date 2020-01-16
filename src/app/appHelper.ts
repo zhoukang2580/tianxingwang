@@ -436,10 +436,7 @@ export class AppHelper {
     return url.replace(this._appDomain, domain).replace("test.", "");
   }
   static getApiUrl() {
-    if (environment.production) {
-      if (environment.mockProBuild) {
-        return "http://app." + this._appDomain;
-      }
+    if (environment.production&&!environment.mockProBuild) {
       return "https://app." + this._appDomain;
     }
     return "http://test.app." + this._appDomain;

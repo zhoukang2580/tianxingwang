@@ -3,6 +3,6 @@ export const environment = {
   localhost: false,
   disableNetWork: false,
   enableLocalData:false,
-  mockProBuild:false,
+  mockProBuild:!false,
 };
  
