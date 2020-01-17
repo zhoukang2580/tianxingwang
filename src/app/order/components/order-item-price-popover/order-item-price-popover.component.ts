@@ -7,7 +7,8 @@ import {
   OnInit,
   AfterViewInit,
   ViewChildren,
-  QueryList
+  QueryList,
+  Renderer2
 } from "@angular/core";
 import { OrderItemEntity, OrderEntity } from "../../models/OrderEntity";
 import { IonGrid } from "@ionic/angular";
@@ -23,7 +24,7 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
   orderItems: OrderItemEntity[];
   OrderItemHelper = OrderItemHelper;
   // IsShowServiceFee = false;
-  constructor() {}
+  constructor(private render: Renderer2) {}
   abs(item: number) {
     return Math.abs(item);
   }
@@ -31,8 +32,10 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
     if (this.iongrids) {
       setTimeout(() => {
         if (this.iongrids && this.iongrids.length) {
+          let maxHeight = 0;
           this.iongrids.forEach(it => {
             if (it["el"]) {
+              maxHeight = Math.max(maxHeight, it["el"].clientHeight);
               const prices = it["el"].querySelectorAll(".price");
               const amountEle = it["el"].querySelector(".amount");
               let amount = 0;
@@ -45,6 +48,9 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
                 amountEle.textContent = `${amount}`;
               }
             }
+            requestAnimationFrame(_ => {
+              this.render.setStyle(it["el"], "height", `${maxHeight}px`);
+            });
           });
         }
       }, 200);

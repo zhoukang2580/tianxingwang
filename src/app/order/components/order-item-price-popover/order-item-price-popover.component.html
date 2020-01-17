@@ -1,14 +1,12 @@
 <ion-content padding>
   <div class='container'>
     <ion-grid *ngFor='let t of order?.OrderFlightTickets'>
-      <ion-row *ngIf='getPassenger(t) as p'>
-        <ion-col>
-          <div>
-            <div>{{p.CheckName}}</div>
-            <div>{{p.CredentialsNumber}}</div>
-          </div>
-        </ion-col>
-      </ion-row>
+      <div *ngIf='getPassenger(t) as p'>
+        <div>
+          <div>{{p.CheckName}}</div>
+          <div>{{p.CredentialsNumber}}</div>
+        </div>
+      </div>
       <ion-row *ngIf='getAmount(t,OrderItemHelper.FlightTicket) as amount'>
         <ion-col size='7'>票面价</ion-col>
         <ion-col class='price'>{{abs(amount)}}</ion-col>
