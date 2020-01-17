@@ -985,6 +985,8 @@ export enum TmcHotelFeeType {
   Order = 2
 }
 export class TmcEntity extends BaseEntity {
+  GroupCompanyName: string; // "爱普科斯";
+  Name: string; // "爱普科斯（上海）产品服务有限公司";
   /// <summary>
   /// 是否可以自定义违规理由
   /// </summary>
@@ -1025,7 +1027,6 @@ export class TmcEntity extends BaseEntity {
   Agent: AgentEntity;
   GroupCompany: GroupCompanyEntity;
   Account: AccountEntity;
-  Name: string;
   IsUsed: boolean;
   IsUsedName: string;
   Code: string;

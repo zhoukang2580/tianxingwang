@@ -15,16 +15,19 @@
     padding: 0;
   }
   ion-row {
-    padding: 0.1em 0;
-    &:first-child {
-      margin-top: 0.5em;
-    }
-    &:last-child {
-      margin-bottom: 0.5em;
+    margin: 0.5em 0;
+    &.action-btns {
+      ion-col {
+        justify-content: flex-end;
+      }
     }
     ion-col:first-child {
+      align-self: flex-start;
       color: var(--ion-color-medium);
     }
+  }
+  .select-text{
+    user-select: text;
   }
   ion-row ion-col:not(.non-flex) {
     display: flex;
@@ -47,7 +50,7 @@
 .ticket-trip {
   line-height: 1.6;
 }
-.ticket-trip + .ticket-trip{
+.ticket-trip + .ticket-trip {
   border-top: 1px dashed var(--ion-color-dark);
 }
 :host {

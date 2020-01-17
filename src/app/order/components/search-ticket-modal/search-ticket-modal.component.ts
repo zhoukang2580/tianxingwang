@@ -86,9 +86,9 @@ export class SearchTicketModalComponent implements OnInit {
       { label: "完成", value: OrderStatusType.Finish },
       { label: "取消", value: OrderStatusType.Cancel }
     ];
-    this.condition.vmFromDate = moment()
-      .startOf("year")
-      .format("YYYY-MM-DD");
-    console.log(this.condition);
+    // this.condition.vmFromDate = moment()
+    //   .startOf("year")
+    //   .format("YYYY-MM-DD");
+    // console.log(this.condition);
   }
 }
