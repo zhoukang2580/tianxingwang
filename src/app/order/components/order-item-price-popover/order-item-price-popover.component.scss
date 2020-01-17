@@ -1,11 +1,23 @@
-.price{
+.price {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+ion-col {
+  align-self: flex-start;
+}
+ion-content {
+  font-size: 0.9rem;
+  .container {
     display: flex;
-    justify-content: flex-end;
     align-items: center;
-}
-ion-col{
-    align-self: flex-start;
-}
-ion-content{
-    font-size: .9rem;
+    overflow: auto;
+    ion-grid {
+      padding-right: 1em;
+      min-width: 50vw;
+      &:not(:last-child) {
+        border-right: 1px solid gray;
+      }
+    }
+  }
 }

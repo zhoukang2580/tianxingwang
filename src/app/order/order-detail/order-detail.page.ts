@@ -1,6 +1,6 @@
-import { IdentityEntity } from 'src/app/services/identity/identity.entity';
-import { IdentityService } from 'src/app/services/identity/identity.service';
-import { OrderInsuranceEntity } from './../models/OrderInsuranceEntity';
+import { IdentityEntity } from "src/app/services/identity/identity.entity";
+import { IdentityService } from "src/app/services/identity/identity.service";
+import { OrderInsuranceEntity } from "./../models/OrderInsuranceEntity";
 import { SelectTicketPopoverComponent } from "./../components/select-ticket-popover/select-ticket-popover.component";
 import { SendEmailComponent } from "../components/send-email/send-email.component";
 import { OrderFlightTicketEntity } from "../models/OrderFlightTicketEntity";
@@ -44,7 +44,7 @@ import { OrderEntity, OrderItemEntity } from "../models/OrderEntity";
 import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
 import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
 import { OrderPayEntity } from "../models/OrderPayEntity";
-import { OrderTrainTicketEntity } from '../models/OrderTrainTicketEntity';
+import { OrderTrainTicketEntity } from "../models/OrderTrainTicketEntity";
 
 export interface TabItem {
   label: string;
@@ -87,7 +87,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     private domCtrl: DomController,
     private orderService: OrderService,
     private identityService: IdentityService
-  ) { }
+  ) {}
   scrollTop: number;
 
   compareFn(t1: OrderFlightTicketEntity, t2: OrderFlightTicketEntity) {
@@ -96,7 +96,15 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
   onSelectFlightTicket(evt: CustomEvent) {
     console.log(evt.detail);
     if (this.selectedFlightTicket) {
-      const orderInsurance: OrderInsuranceEntity = this.orderDetail && this.orderDetail.Order && this.orderDetail && this.orderDetail.Order.OrderInsurances && this.orderDetail && this.orderDetail.Order.OrderInsurances.find(it => it.TravelKey == this.selectedFlightTicket.Key);
+      const orderInsurance: OrderInsuranceEntity =
+        this.orderDetail &&
+        this.orderDetail.Order &&
+        this.orderDetail &&
+        this.orderDetail.Order.OrderInsurances &&
+        this.orderDetail &&
+        this.orderDetail.Order.OrderInsurances.find(
+          it => it.TravelKey == this.selectedFlightTicket.Key
+        );
       if (orderInsurance) {
         this.selectedInsuranceId = orderInsurance.Id;
       }
@@ -105,7 +113,15 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
   onSelectTrainTicket(evt: CustomEvent) {
     console.log(evt.detail);
     if (this.selectedTrainTicket) {
-      const orderInsurance: OrderInsuranceEntity = this.orderDetail && this.orderDetail.Order && this.orderDetail && this.orderDetail.Order.OrderInsurances && this.orderDetail && this.orderDetail.Order.OrderInsurances.find(it => it.TravelKey == this.selectedTrainTicket.Key);
+      const orderInsurance: OrderInsuranceEntity =
+        this.orderDetail &&
+        this.orderDetail.Order &&
+        this.orderDetail &&
+        this.orderDetail.Order.OrderInsurances &&
+        this.orderDetail &&
+        this.orderDetail.Order.OrderInsurances.find(
+          it => it.TravelKey == this.selectedTrainTicket.Key
+        );
       if (orderInsurance) {
         this.selectedInsuranceId = orderInsurance.Id;
       }
@@ -113,21 +129,38 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
   }
   getTravelFlightTrips() {
     let infos: OrderFlightTripEntity[] = [];
-    if (!this.orderDetail || !this.orderDetail.Order || !this.orderDetail.Order.OrderFlightTickets)
+    if (
+      !this.orderDetail ||
+      !this.orderDetail.Order ||
+      !this.orderDetail.Order.OrderFlightTickets
+    )
       return infos;
     this.orderDetail.Order.OrderFlightTickets.forEach(ticket => {
       if (ticket.OrderFlightTrips) {
         ticket.OrderFlightTrips.forEach(flightTrip => {
-          if (flightTrip.Status == OrderFlightTripStatusType.Normal || flightTrip.Status == OrderFlightTripStatusType.Refund) {
-            flightTrip.OrderFlightTicket = { TicketType: ticket.TicketType, StatusName: ticket.StatusName, Id: ticket.Id } as OrderFlightTicketEntity;
+          if (
+            flightTrip.Status == OrderFlightTripStatusType.Normal ||
+            flightTrip.Status == OrderFlightTripStatusType.Refund
+          ) {
+            flightTrip.OrderFlightTicket = {
+              TicketType: ticket.TicketType,
+              StatusName: ticket.StatusName,
+              Id: ticket.Id
+            } as OrderFlightTicketEntity;
             infos.push(flightTrip);
           }
-        })
+        });
       }
     });
-    infos.sort((a, b) => AppHelper.getDate(a.TakeoffTime).getTime() - AppHelper.getDate(b.TakeoffTime).getTime());
+    infos.sort(
+      (a, b) =>
+        AppHelper.getDate(a.TakeoffTime).getTime() -
+        AppHelper.getDate(b.TakeoffTime).getTime()
+    );
     if (this.selectedFlightTicket) {
-      infos = infos.filter(it => it.OrderFlightTicket.Id == this.selectedFlightTicket.Id);
+      infos = infos.filter(
+        it => it.OrderFlightTicket.Id == this.selectedFlightTicket.Id
+      );
     }
     return infos;
   }
@@ -136,7 +169,10 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
   }
   canSendEmailMsg() {
     const selectedTicket: OrderFlightTicketEntity = this.selectedFlightTicket;
-    if (this.identity && !(this.identity.Numbers && !!this.identity.Numbers['AgentId'])) {
+    if (
+      this.identity &&
+      !(this.identity.Numbers && !!this.identity.Numbers["AgentId"])
+    ) {
       return false;
     }
     if (selectedTicket) {
@@ -148,7 +184,10 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     return false;
   }
   async sendMsg(passenger: OrderPassengerEntity) {
-    if (this.identity && !(this.identity.Numbers && !!this.identity.Numbers['AgentId'])) {
+    if (
+      this.identity &&
+      !(this.identity.Numbers && !!this.identity.Numbers["AgentId"])
+    ) {
       return false;
     }
     const selectedTicket = this.selectedFlightTicket;
@@ -167,14 +206,16 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
           mobiles: string[];
           content: string;
         };
-        const res = await this.tmcService.sendSms(
-          data.mobiles,
-          data.content,
-          this.orderDetail.Order && this.orderDetail.Order.Id
-        ).catch(_ => {
-          AppHelper.alert(_ || "短信发送失败");
-          return null;
-        });
+        const res = await this.tmcService
+          .sendSms(
+            data.mobiles,
+            data.content,
+            this.orderDetail.Order && this.orderDetail.Order.Id
+          )
+          .catch(_ => {
+            AppHelper.alert(_ || "短信发送失败");
+            return null;
+          });
         if (res) {
           AppHelper.alert("短信已发送");
         }
@@ -182,14 +223,24 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     }
   }
   getPassengerCostOrgInfo() {
-    const passengerId = (this.selectedFlightTicket
-      && this.selectedFlightTicket.Passenger
-      && this.selectedFlightTicket.Passenger.Id) ||
-      (this.selectedTrainTicket && this.selectedTrainTicket.Passenger && this.selectedTrainTicket.Passenger.Id);
-    let p: OrderPassengerEntity = this.orderDetail && this.orderDetail.Order && this.orderDetail.Order.OrderPassengers &&
-      this.orderDetail.Order.OrderPassengers.find(it => it.Id == passengerId)
+    const passengerId =
+      (this.selectedFlightTicket &&
+        this.selectedFlightTicket.Passenger &&
+        this.selectedFlightTicket.Passenger.Id) ||
+      (this.selectedTrainTicket &&
+        this.selectedTrainTicket.Passenger &&
+        this.selectedTrainTicket.Passenger.Id);
+    let p: OrderPassengerEntity =
+      this.orderDetail &&
+      this.orderDetail.Order &&
+      this.orderDetail.Order.OrderPassengers &&
+      this.orderDetail.Order.OrderPassengers.find(it => it.Id == passengerId);
     if (!p) {
-      if (this.orderDetail && this.orderDetail.Order && this.orderDetail.Order.OrderPassengers) {
+      if (
+        this.orderDetail &&
+        this.orderDetail.Order &&
+        this.orderDetail.Order.OrderPassengers
+      ) {
         p = this.orderDetail.Order.OrderPassengers[0];
       }
     }
@@ -197,23 +248,22 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       return;
     }
     const ticket = this.selectedFlightTicket || this.selectedTrainTicket;
-    const trainTicket = this.orderDetail.Order.OrderTrainTickets && this.orderDetail.Order.OrderTrainTickets[0];
-    let ticketKey
-    if ((ticket || trainTicket)) {
+    const trainTicket =
+      this.orderDetail.Order.OrderTrainTickets &&
+      this.orderDetail.Order.OrderTrainTickets[0];
+    let ticketKey;
+    if (ticket || trainTicket) {
       ticketKey = (ticket || trainTicket).Key;
     }
     if (!ticketKey) {
-      ticketKey = this.orderDetail &&
+      ticketKey =
+        this.orderDetail &&
         this.orderDetail.Order &&
         this.orderDetail.Order.OrderHotels &&
         this.orderDetail.Order.OrderHotels[0] &&
         this.orderDetail.Order.OrderHotels[0].Key;
     }
-    if (
-      this.orderDetail &&
-      this.orderDetail.Order &&
-      ticketKey
-    ) {
+    if (this.orderDetail && this.orderDetail.Order && ticketKey) {
       let CostCenterCode: string;
       let CostCenterName: string;
       let OrganizationCode: string;
@@ -229,7 +279,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
         .join(",");
       const OutNumbers = this.getOrderNumbers().concat(
         this.getOrderNumbers("OutNumber")
-      )
+      );
       if (
         this.orderDetail &&
         this.orderDetail.Order &&
@@ -280,7 +330,10 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     return this.orderDetail.Order.OrderNumbers.filter(it => it.Tag == tag);
   }
   async sendEmail(passenger: OrderPassengerEntity) {
-    if (this.identity && !(this.identity.Numbers && !!this.identity.Numbers['AgentId'])) {
+    if (
+      this.identity &&
+      !(this.identity.Numbers && !!this.identity.Numbers["AgentId"])
+    ) {
       return false;
     }
     const selectedTicket = this.selectedFlightTicket;
@@ -300,15 +353,17 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
           subject: string;
           content: string;
         };
-        const res = await this.tmcService.sendEmail(
-          data.emails,
-          data.subject,
-          data.content,
-          this.orderDetail.Order && this.orderDetail.Order.Id
-        ).catch(_ => {
-          AppHelper.alert(_ || "邮件发送失败");
-          return null;
-        });
+        const res = await this.tmcService
+          .sendEmail(
+            data.emails,
+            data.subject,
+            data.content,
+            this.orderDetail.Order && this.orderDetail.Order.Id
+          )
+          .catch(_ => {
+            AppHelper.alert(_ || "邮件发送失败");
+            return null;
+          });
         if (res) {
           AppHelper.alert("邮件已发送");
         }
@@ -359,8 +414,13 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       if (q.get("tab")) {
         this.tab = this.tab || JSON.parse(q.get("tab"));
         this.title = this.tab.label + "订单";
-        if (!(this.tab.value == ProductItemType.train || this.tab.value == ProductItemType.plane)) {
-          this.tabs = this.tabs.filter(it => it.label != '保险信息');
+        if (
+          !(
+            this.tab.value == ProductItemType.train ||
+            this.tab.value == ProductItemType.plane
+          )
+        ) {
+          this.tabs = this.tabs.filter(it => it.label != "保险信息");
         }
       }
       if (q.get("orderId")) {
@@ -371,18 +431,24 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     this.tmc = await this.tmcService.getTmc();
     this.identity = await this.identityService.getIdentityAsync();
   }
-  getVariableObj(it: { Variables: string; VariablesDictionary: any }, key: string) {
+  getVariableObj(
+    it: { Variables: string; VariablesDictionary: any },
+    key: string
+  ) {
     if (it) {
-      it.VariablesDictionary = it.VariablesDictionary || JSON.parse(it.Variables) || {};
+      it.VariablesDictionary =
+        it.VariablesDictionary || JSON.parse(it.Variables) || {};
       return it.VariablesDictionary[key];
     }
   }
   getHotelServiceFee(orderHotelKey: string) {
-    return this.orderDetail
-      && this.orderDetail.Order.OrderItems
-      && this.orderDetail.Order.OrderItems
-        .filter(it => it.Key == orderHotelKey && (it.Tag || "").includes("Fee"))
-        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+    return (
+      this.orderDetail &&
+      this.orderDetail.Order.OrderItems &&
+      this.orderDetail.Order.OrderItems.filter(
+        it => it.Key == orderHotelKey && (it.Tag || "").includes("Fee")
+      ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0)
+    );
   }
   getTotalAmount(order: OrderEntity, key: string) {
     let amount = 0;
@@ -391,13 +457,14 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       return amount;
     }
     if (Tmc.IsShowServiceFee) {
-      amount = order.OrderItems
-        .filter(it => it.Key == key)
-        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+      amount = order.OrderItems.filter(it => it.Key == key).reduce(
+        (acc, it) => (acc = AppHelper.add(acc, +it.Amount)),
+        0
+      );
     } else {
-      amount = order.OrderItems
-        .filter(it => it.Key == key && !(it.Tag || "").endsWith("Fee"))
-        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+      amount = order.OrderItems.filter(
+        it => it.Key == key && !(it.Tag || "").endsWith("Fee")
+      ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
     }
     return amount;
   }
@@ -407,7 +474,9 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       return;
     }
     this.isLoading = true;
-    this.orderDetail = await this.orderService.getOrderDetailAsync(orderId).catch(_ => null);
+    this.orderDetail = await this.orderService
+      .getOrderDetailAsync(orderId)
+      .catch(_ => null);
     this.isLoading = false;
     if (!this.tmc) {
       this.tmc = await this.tmcService.getTmc(true);
@@ -427,7 +496,9 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
         });
         if (tickets) {
           this.selectedFlightTicket = tickets[0];
-          this.onSelectFlightTicket({ detail: { value: this.selectedFlightTicket } } as any);
+          this.onSelectFlightTicket({
+            detail: { value: this.selectedFlightTicket }
+          } as any);
         }
       }
       if (
@@ -444,7 +515,9 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
         });
         if (tickets) {
           this.selectedTrainTicket = tickets[0];
-          this.onSelectTrainTicket({ detail: { value: this.selectedTrainTicket } } as any);
+          this.onSelectTrainTicket({
+            detail: { value: this.selectedTrainTicket }
+          } as any);
         }
       }
       if (this.orderDetail.Order) {
@@ -469,15 +542,18 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     let amount = 0;
     const order = this.orderDetail && this.orderDetail.Order;
     const Tmc = this.tmc;
-    if (!Tmc || !order || !order.OrderItems)
+    if (!Tmc || !order || !order.OrderItems) {
       return amount;
+    }
     if (Tmc.IsShowServiceFee) {
-      amount = order.OrderItems
-        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+      amount = order.OrderItems.reduce(
+        (acc, it) => (acc = AppHelper.add(acc, +it.Amount)),
+        0
+      );
     } else {
-      amount = order.OrderItems
-        .filter(it => !(it.Tag || "").endsWith("Fee"))
-        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+      amount = order.OrderItems.filter(
+        it => !(it.Tag || "").endsWith("Fee")
+      ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
     }
     return amount < 0 ? 0 : amount;
   }
@@ -494,22 +570,30 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     const Tmc = this.tmc;
     let amount = 0;
     const order = this.orderDetail && this.orderDetail.Order;
-    if (!Tmc || !order) { return amount; }
+    if (!Tmc || !order) {
+      return amount;
+    }
     amount = (order.OrderPays || [])
       .filter(it => it.Status == OrderPayStatusType.Effective)
       .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
-    if (amount == 0) { return amount; }
-    if (Tmc.IsShowServiceFee || !order.OrderItems) {
+    if (amount == 0) {
       return amount;
     }
-    else {
-      return amount - (order.OrderItems || [])
-        .filter(it => !(it.Tag || "").endsWith("Fee"))
-        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+    if (Tmc.IsShowServiceFee || !order.OrderItems) {
+      return amount;
+    } else {
+      return (
+        amount -
+        (order.OrderItems || [])
+          .filter(it => !(it.Tag || "").endsWith("Fee"))
+          .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0)
+      );
     }
   }
   getTabByLabel(label: string) {
-    return this.tabs && this.tabs.find(it => it.label && it.label.includes(label));
+    return (
+      this.tabs && this.tabs.find(it => it.label && it.label.includes(label))
+    );
   }
   getInsuranceAmount() {
     if (
@@ -528,7 +612,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
           if (!flightTripkeys.find(k => k == trip.Key)) {
             flightTripkeys.push(trip.Key);
           }
-        })
+        });
       }
     });
     const keys = this.orderDetail.Order.OrderInsurances.filter(
@@ -552,6 +636,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     const p = await this.popoverCtrl.create({
       component: OrderItemPricePopoverComponent,
       componentProps: {
+        order:this.orderDetail&&this.orderDetail.Order,
         insurance: this.getInsuranceAmount(),
         IsShowServiceFee: Tmc.IsShowServiceFee,
         orderItems,
@@ -658,4 +743,3 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     }
   }
 }
-
