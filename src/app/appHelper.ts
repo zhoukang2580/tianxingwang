@@ -21,7 +21,7 @@ export class AppHelper {
   static _appDomain =
     environment.production && !environment.mockProBuild
       ? "sky-trip.com"
-      : "beeant.com";
+      : "testskytrip.com";
   constructor() {}
   static _domain;
   static _queryParamers = {};

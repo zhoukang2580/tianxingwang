@@ -19,7 +19,7 @@ export class RentalCarPage implements OnInit {
     private route: ActivatedRoute
   ) {}
   back() {
-    this.navCtrl.back();
+    this.navCtrl.pop();
   }
   async onRentalCar() {
     if (!this.mobile) {
