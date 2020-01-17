@@ -3,8 +3,8 @@
     <ion-grid *ngFor='let t of order?.OrderFlightTickets'>
       <div *ngIf='getPassenger(t) as p'>
         <div>
-          <div>{{p.CheckName}}</div>
-          <div>{{p.CredentialsNumber}}</div>
+          <span>{{p.CheckName}}</span>
+          <span>{{p.CredentialsNumber}}</span>
         </div>
       </div>
       <ion-row *ngIf='getAmount(t,OrderItemHelper.FlightTicket) as amount'>
