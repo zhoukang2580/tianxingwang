@@ -20,6 +20,7 @@ import { TrainSupplierType } from "src/app/train/models/TrainSupplierType";
 import { TripType } from "src/app/tmc/models/TripType";
 import * as moment from "moment";
 import { Router } from "@angular/router";
+import { OrderPassengerEntity } from "../../models/OrderPassengerEntity";
 @Component({
   selector: "app-order-item",
   templateUrl: "./order-item.component.html",
@@ -242,5 +243,40 @@ export class OrderItemComponent implements OnInit {
       );
     }
     return amount;
+  }
+  private getInterOrderAmount() {
+    return (
+      this.order &&
+      this.order.OrderFlightTickets &&
+      this.order.OrderFlightTickets.reduce(
+        (acc, it) => (acc += this.getTotalAmount(this.order, it.Key)),
+        0
+      )
+    );
+  }
+  getPassengerTicketStatus(p: OrderPassengerEntity) {
+    return (
+      this.order &&
+      this.order.OrderFlightTickets &&
+      this.order.OrderFlightTickets.find(
+        t => t.Passenger && t.Passenger.Id == (p && p.Id)
+      )
+    );
+  }
+  private getInterInsuranceAmount() {
+    return (
+      this.order &&
+      this.order.OrderFlightTickets &&
+      this.order.OrderFlightTickets.reduce(
+        (acc, it) => (acc += this.flightInsuranceAmount(it)),
+        0
+      )
+    );
+  }
+  getInterTotalAmount() {
+    return {
+      amount: this.getInterOrderAmount(),
+      insurance: this.getInterInsuranceAmount()
+    };
   }
 }

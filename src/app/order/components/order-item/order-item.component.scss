@@ -16,6 +16,14 @@
   }
   ion-row {
     margin: 0.5em 0;
+    &.order-id {
+      user-select: text;
+    }
+    &.passenger {
+      ion-label {
+        display: block;
+      }
+    }
     &.action-btns {
       ion-col {
         justify-content: flex-end;
@@ -25,9 +33,6 @@
       align-self: flex-start;
       color: var(--ion-color-medium);
     }
-  }
-  .select-text{
-    user-select: text;
   }
   ion-row ion-col:not(.non-flex) {
     display: flex;
@@ -58,4 +63,8 @@
 }
 span + span {
   margin-left: 0.5em;
+}
+span.line {
+  margin: 0 0.2em;
+  opacity: 0.4;
 }
