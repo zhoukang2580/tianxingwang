@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>订单</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-toolbar text-center>
+      <div class='tabs'>
+        <ion-button [color]='tab.value==tab.value?"secondary":"dark"' (click)='onActiveTab(tab)' *ngFor='let t of tabs'
+          fill='clear' [class.active]='t.value==tab.value'>{{t.label}}
+        </ion-button>
+      </div>
+    </ion-toolbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh();">
+    <ion-refresher-content>正在获取...</ion-refresher-content>
+  </ion-refresher>
+  <ion-list lines='none' *ngIf='orderList?.length else nomoredate'>
+    <ion-item *ngFor='let order of orderList' (click)='goToDetailPage(order.Id)'>
+      <app-order-item [order]='order' [isAgent]='true' (refundTicket)='doRefresh();'>
+      </app-order-item>
+    </ion-item>
+  </ion-list>
+  <ng-template #nomoredate>
+    <app-or-comp *ngIf='!isLoading'>
+      暂无数据
+    </app-or-comp>
+  </ng-template>
+  <ng-template #fakeList>
+    <ion-list>
+      <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8]'>
+        <div style='width: 100%;'>
+          <ion-row>
+            <ion-col size='10'>
+              <ion-label>
+                <h2>
+                  <ion-skeleton-text animated style='width: 100%'></ion-skeleton-text>
+                </h2>
+                <h2>
+                  <ion-skeleton-text style='width: 100%'></ion-skeleton-text>
+                </h2>
+                <div style='display: flex;align-items: center;'>
+                  <ion-skeleton-text animated style="width: 1.2em;height:1.2em;border-radius:100%;margin-right: 0.5em;">
+                  </ion-skeleton-text>
+                  <ion-skeleton-text style='width: 90%'></ion-skeleton-text>
+                </div>
+              </ion-label>
+            </ion-col>
+            <ion-col size='2' style="align-self: center;display: flex;justify-content: center;align-items: center">
+              <ion-skeleton-text animated style='width: 50%'></ion-skeleton-text>
+            </ion-col>
+          </ion-row>
+        </div>
+      </ion-item>
+    </ion-list>
+  </ng-template>
+</ion-content>
