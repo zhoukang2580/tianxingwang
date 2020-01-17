@@ -8,13 +8,14 @@ ion-col {
 }
 ion-content {
   font-size: 0.9rem;
-  .container {
+  .swiper-slide {
+    width: 100%;
     display: flex;
     align-items: center;
     overflow: auto;
     ion-grid {
       padding-right: 1em;
-      min-width: 60vw;
+      // min-width: 60vw;
       &:not(:last-child) {
         border-right: 1px solid gray;
       }
