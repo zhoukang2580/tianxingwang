@@ -1,4 +1,4 @@
-<ion-header text-center>
+<ion-header class='ion-text-center'>
   <ion-toolbar>
     <ion-buttons slot='start'>
       <ion-button (click)='back()'>
@@ -9,8 +9,8 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-toolbar text-center>
-    <ion-label no-margin no-padding>
+  <ion-toolbar class='ion-text-center'>
+    <ion-label class='ion-no-margin ion-no-padding'>
       <strong>{{flightSegment?.FromCityName}} 到 {{flightSegment?.ToCityName}}</strong>
     </ion-label>
     <ion-item lines='none'>
@@ -21,21 +21,21 @@
     <div>
       过滤差标：
     </div>
-    <ion-label color='success' margin-start>
+    <ion-label color='success' class='ion-margin-start'>
       绿色代表符合差标
     </ion-label>
     <div>
-      <ion-label margin-start color='warning'>
+      <ion-label class='ion-margin-start' color='warning'>
         黄色代表违规可以预订
       </ion-label>
     </div>
-    <ion-label color='danger' margin-start>
+    <ion-label color='danger' class='ion-margin-start'>
       红色代表违规不可预订
     </ion-label>
   </ion-toolbar>
   <ion-item *ngFor='let cabin of policiedCabins'>
     <div class='cabin-item'>
-      <ion-row margin-top>
+      <ion-row class='ion-margin-top'>
         <ion-col size='8'>
           <ion-label (click)='openrules(cabin)'>
             <h3 class='discount'>
@@ -56,9 +56,9 @@
         </ion-col>
         <ion-col size='4'>
           <ion-label>
-            <h3 text-end class='book'>
+            <h3  class='book ion-text-end'>
               <ion-text color='danger'>￥{{cabin?.Cabin?.SalesPrice}}</ion-text>
-              <ion-button [color]='bookColor(cabin)' margin-top expand='block' [disabled]='!cabin?.IsAllowBook'
+              <ion-button [color]='bookColor(cabin)' class='ion-margin-top' expand='block' [disabled]='!cabin?.IsAllowBook'
                 (click)='onBookTicket(cabin)'>
                 <ion-text color='light'>预订</ion-text>
               </ion-button>
@@ -69,7 +69,7 @@
       <ion-row>
         <ion-col>
           <ng-container *ngIf='cabin?.Rules'>
-            <ion-label *ngFor='let r of cabin.Rules' color='danger' text-wrap class='rule'>{{r}}</ion-label>
+            <ion-label *ngFor='let r of cabin.Rules' color='danger'  class='rule ion-text-wrap'>{{r}}</ion-label>
           </ng-container>
         </ion-col>
       </ion-row>

@@ -16,7 +16,7 @@
     </div>
     <ng-template #details>
       <ng-container *ngIf='notice?.Detail as detail else nodata'>
-        <ion-label text-wrap>
+        <ion-label class='ion-text-wrap'>
           <div class='detail' [innerHTML]='notice.Detail'>
           </div>
         </ion-label>

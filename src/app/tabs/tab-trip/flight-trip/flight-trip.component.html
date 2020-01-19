@@ -3,7 +3,7 @@
     <ion-item lines='none'>
       <ion-label color='secondary' class='title'>
         <img src="assets/svgs/home-plane.svg" alt="机票">
-        <strong margin-start>机票</strong>
+        <strong class='ion-margin-start'>机票</strong>
       </ion-label>
       <ion-button [disabled]='true' fill="clear" color='secondary' slot="end">{{trip.Status}}</ion-button>
     </ion-item>
@@ -20,7 +20,7 @@
             <div class="line"></div>
           </div>
         </div>
-        <div class="end" text-end>
+        <div class="end ion-text-end" >
           <div>{{trip.ToName?.replace("国际机场","")?.replace("机场","")}}</div>
           <div>
             <strong>{{getEndHHmm()}}</strong>

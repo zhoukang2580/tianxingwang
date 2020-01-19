@@ -4,11 +4,11 @@
   </ion-toolbar>
 </ion-header> -->
 
-<ion-content padding>
-  <ion-toolbar text-center>
+<ion-content class='ion-padding'>
+  <ion-toolbar class='ion-text-center'>
     <img [lazyLoad]="config?.LogoImageUrl" alt="公司logo" class='logo' [defaultImage]='config?.PrerenderImageUrl||"assets/images/Logodm.png"' />
   </ion-toolbar>
-  <form [formGroup]='form' padding>
+  <form [formGroup]='form' class='ion-padding'>
     <ion-segment (ionChange)="segmentChanged($event)" value="user" color='secondary'>
       <ion-segment-button value="user">
         <ion-label>账号密码登录</ion-label>
@@ -69,7 +69,7 @@
     </section>
     <ng-container *ngIf="isShowWechatLogin">
       <app-or-comp>第三方登录</app-or-comp>
-      <ion-item (click)='loginByWechat()' lines='none' text-center>
+      <ion-item (click)='loginByWechat()' lines='none' class='ion-text-center'>
         <div class='third-party-logo'>
           <ion-thumbnail>
             <img src="assets/images/weixin-logo.png" alt="微信图标">

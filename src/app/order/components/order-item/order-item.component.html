@@ -205,7 +205,7 @@
       <ion-row>
         <ion-col size='3'>行程信息</ion-col>
         <ion-col>
-          <ion-label margin-start>
+          <ion-label class='ion-margin-start'>
             <div *ngFor='let orderTrainTrip of orderTrainTicket.OrderTrainTrips'>
               <span>{{orderTrainTrip.StartTime?.substr(0,"yyyy-mm-dd".length)}}</span>
               <span>{{orderTrainTrip.FromStationName}}---{{orderTrainTrip.ToStationName}}</span>
@@ -227,7 +227,7 @@
           <span style='margin-left: 0.5em;'>{{orderTrainTicket.StatusName}}</span>
         </ion-col>
       </ion-row>
-      <ion-row text-end>
+      <ion-row class='ion-text-end'>
         <ion-col style="justify-content: flex-end;">
           <ion-button (click)='onExchange($event,orderTrainTicket)' color='secondary'
             *ngIf='orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !=0 && orderTrainTicket.BookType != TrainBookType.Offline'>
@@ -264,7 +264,7 @@
         <ion-col style="align-self: flex-start;" size='3'>旅客信息</ion-col>
         <ion-col>
           <ion-text color='dark' *ngIf='getPassenger(orderHotel) as p'>
-            {{p.CheckName}} <span margin-start>{{p.CredentialsNumber}}</span>
+            {{p.CheckName}} <span class='ion-margin-start'>{{p.CredentialsNumber}}</span>
           </ion-text>
         </ion-col>
       </ion-row>

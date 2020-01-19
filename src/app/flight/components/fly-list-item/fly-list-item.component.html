@@ -1,4 +1,4 @@
-<div class='fly-item' no-margin no-padding>
+<div class='fly-item ion-no-margin ion-no-padding'>
   <div class='info'>
     <h3 class='time'>
       <strong>{{flightSegment?.TakeoffTime?.substring("2018-10-22T".length,"2018-10-22T21:20".length)}}</strong>
@@ -9,12 +9,12 @@
         [attr.addoneday]='addoneday()'>{{flightSegment?.ArrivalTime?.substring("2018-10-22T".length,"2018-10-22T21:20".length)}}</strong>
     </h3>
     <h3 class='airports'>
-      <ion-text text-nowrap color='medium' class="from-city">
+      <ion-text  color='medium' class="from-city ion-text-nowrap">
         {{flightSegment?.FromAirportName}}
         <span *ngIf='flightSegment?.FromTerminal'>({{flightSegment?.FromTerminal}})</span>
       </ion-text>
 
-      <ion-text text-nowrap color='medium' class="to-city">
+      <ion-text color='medium' class="to-city ion-text-nowrap">
         {{flightSegment?.ToAirportName}} <span *ngIf='flightSegment?.ToTerminal'>
           ({{flightSegment?.ToTerminal}})
         </span>
@@ -24,7 +24,7 @@
       <ion-thumbnail size='small'>
         <img [src]='flightSegment?.AirlineSrc'/>
       </ion-thumbnail>
-      <ion-text text-nowrap color='medium'>{{flightSegment?.AirlineName}} {{flightSegment?.Number}}</ion-text>
+      <ion-text class='ion-text-nowrap' color='medium'>{{flightSegment?.AirlineName}} {{flightSegment?.Number}}</ion-text>
       <ion-text color='medium'> <span class='seperator'>|</span>{{flightSegment?.PlaneType}}</ion-text>
       <ion-text color='medium' *ngIf='showDetails'> <span class='seperator'>|</span>{{flightSegment?.FlyTimeName}}
       </ion-text>
@@ -37,7 +37,7 @@
       </ion-text>
     </h4>
   </div>
-  <div class="price" no-margin no-padding text-center *ngIf='!showDetails'>
+  <div class="price" class='ion-text-center ion-no-margin ion-no-padding' *ngIf='!showDetails'>
     <h3>
       <ion-text class='jiage'>￥{{(flightPolicy?.Cabin?.SalesPrice)|flightprice}}</ion-text>
     </h3>

@@ -42,13 +42,13 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
   isShowFabButton = false;
   isLoading = false;
   subscriptions: Subscription[] = [];
-  @ViewChild(IonRefresher) refresher: IonRefresher;
-  @ViewChild("hot") hotEle: IonGrid;
-  @ViewChild("lettersEle") lettersEle: IonGrid;
-  @ViewChild("historyEl") historyEl: IonGrid;
-  @ViewChild(IonContent) ionContent: IonContent;
-  @ViewChild(IonHeader) ionHeader: IonHeader;
-  @ViewChild("firstLetterEl") firstLetterEl: IonList;
+  @ViewChild(IonRefresher, { static: false }) refresher: IonRefresher;
+  @ViewChild("hot", { static: false }) hotEle: IonGrid;
+  @ViewChild("lettersEle", { static: false }) lettersEle: IonGrid;
+  @ViewChild("historyEl", { static: false }) historyEl: IonGrid;
+  @ViewChild(IonContent, { static: false }) ionContent: IonContent;
+  @ViewChild(IonHeader, { static: false }) ionHeader: IonHeader;
+  @ViewChild("firstLetterEl", { static: false }) firstLetterEl: IonList;
   constructor(
     private navCtrl: NavController,
     private domCtrl: DomController,
@@ -120,11 +120,15 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
       city.Selected = true;
       const old = this.hotelService.getSearchHotelModel();
       await this.initHistoryCity(city);
-      if (old && old.destinationCity && old.destinationCity.CityCode != city.CityCode) {
+      if (
+        old &&
+        old.destinationCity &&
+        old.destinationCity.CityCode != city.CityCode
+      ) {
         const query = this.hotelService.getHotelQueryModel();
         this.hotelService.setSearchHotelModel({
           ...old,
-          destinationCity: city,
+          destinationCity: city
         });
         await this.hotelService.getConditions(true);
         query.locationAreas = null;
@@ -159,7 +163,7 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     this.subscriptions.push(sub);
   }
   onSelectLetter(letter: string) {
-    if (letter == '热门') {
+    if (letter == "热门") {
       this.ionContent.scrollToTop(100);
       return;
     }
@@ -286,17 +290,19 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     } else {
       if (this.allCities) {
         kw = kw.toLowerCase();
-        this.vmCities = this.allCities.filter(s => {
-          return (
-            kw == s.FirstLetter.toLowerCase() ||
-            (s.Name && s.Name.toLowerCase().includes(kw)) ||
-            (s.Code && s.Code.toLowerCase().includes(kw)) ||
-            (s.Nickname && s.Nickname.toLowerCase().includes(kw)) ||
-            (s.EnglishName && s.EnglishName.toLowerCase().includes(kw)) ||
-            (s.CityName && s.CityName.toLowerCase().includes(kw)) ||
-            (s.Pinyin && s.Pinyin.toLowerCase().includes(kw))
-          );
-        }).slice(0, 20);
+        this.vmCities = this.allCities
+          .filter(s => {
+            return (
+              kw == s.FirstLetter.toLowerCase() ||
+              (s.Name && s.Name.toLowerCase().includes(kw)) ||
+              (s.Code && s.Code.toLowerCase().includes(kw)) ||
+              (s.Nickname && s.Nickname.toLowerCase().includes(kw)) ||
+              (s.EnglishName && s.EnglishName.toLowerCase().includes(kw)) ||
+              (s.CityName && s.CityName.toLowerCase().includes(kw)) ||
+              (s.Pinyin && s.Pinyin.toLowerCase().includes(kw))
+            );
+          })
+          .slice(0, 20);
         this.vmCities.sort((s1, s2) => s1.Sequence - s2.Sequence);
         this.renderList();
         this.activeLetter = "";

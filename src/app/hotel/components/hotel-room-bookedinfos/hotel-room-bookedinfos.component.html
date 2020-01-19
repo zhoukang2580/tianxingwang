@@ -15,7 +15,7 @@
     <ng-container *ngIf='bookInfo?.bookInfo'>
       <ion-item-divider sticky>
         <ion-label color='dark'>{{bookInfo?.passenger?.Name}}{{bookInfo?.credential?.Number}}</ion-label>
-        <ion-icon name='trash' color='danger' (click)='onRemoveBookInfo(bookInfo)' slot='end' margin-end></ion-icon>
+        <ion-icon name='trash' color='danger' (click)='onRemoveBookInfo(bookInfo)' slot='end' class='ion-margin-end'></ion-icon>
       </ion-item-divider>
       <app-room-show-item [bookInfo]='bookInfo' (changeDate)='onChangeDate(bookInfo)' (bedChange)='onbedChange($event,bookInfo)'
         (showRoomDetail)='onShowRoomDetail(bookInfo)' (showPriceDetailEvt)='onShowPriceDetails($event)'>
@@ -39,7 +39,7 @@
   <ul>
     <li *ngFor='let d of dates'>
       <span>{{d.date}}</span>
-      <ion-label margin-start>1&times;<small>￥</small>{{d.price}}</ion-label>
+      <ion-label class='ion-margin-start'>1&times;<small>￥</small>{{d.price}}</ion-label>
     </li>
   </ul>
 </div>

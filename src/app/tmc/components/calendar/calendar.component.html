@@ -3,11 +3,11 @@
     <ion-buttons slot="start">
       <ion-button fill="clear" color='dark' (click)="cancel()">取消</ion-button>
     </ion-buttons>
-    <ion-title text-center>{{title||"日历"}}</ion-title>
+    <ion-title class='ion-text-center'>{{title||"日历"}}</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-refresher (ionRefresh)='onPreviousMonth()'>
+  <ion-refresher (ionRefresh)='onPreviousMonth()' slot='fixed'>
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
   <ul class='weeks'>

@@ -3,7 +3,7 @@
     <ion-label *ngIf='isIos'>
       请选择支付方式
     </ion-label>
-    <ion-title text-center *ngIf='!isIos'>
+    <ion-title class='ion-text-center' *ngIf='!isIos'>
       请选择支付方式
     </ion-title>
   </ion-toolbar>
@@ -21,10 +21,10 @@
 </ion-content>
 <ion-footer>
   <ion-row>
-    <ion-col text-center>
+    <ion-col class='ion-text-center'>
       <ion-button color='medium' fill='clear' expand='full' (click)='onCancel()'>取消</ion-button>
     </ion-col>
-    <ion-col text-center>
+    <ion-col class='ion-text-center'>
       <ion-button color='secondary' fill='clear' expand='full' (click)='onDone()'>确定</ion-button>
     </ion-col>
   </ion-row>

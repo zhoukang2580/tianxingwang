@@ -3,7 +3,7 @@
     <ion-title>订单</ion-title>
   </ion-toolbar>
   <ion-toolbar>
-    <ion-toolbar text-center>
+    <ion-toolbar class='ion-text-center'>
       <div class='tabs'>
         <ion-button [color]='tab.value==tab.value?"secondary":"dark"' (click)='onActiveTab(tab)' *ngFor='let t of tabs'
           fill='clear' [class.active]='t.value==tab.value'>{{t.label}}

@@ -46,9 +46,9 @@ export class MemberCredentialManagementPage
   isCanDeactive = false;
   requestCode: "issueNationality" | "identityNationality";
   private currentModifyItem: MemberCredential;
-  @ViewChild("f") formEle: ElementRef<HTMLFormElement>;
+  @ViewChild("f", { static: false }) formEle: ElementRef<HTMLFormElement>;
   @ViewChildren("modifyForm") modifyFormEles: QueryList<IonGrid>;
-  @ViewChild(IonRefresher) refresher: IonRefresher;
+  @ViewChild(IonRefresher, { static: false }) refresher: IonRefresher;
   @ViewChildren("addForm") addForm: QueryList<IonGrid>;
   constructor(
     private router: Router,

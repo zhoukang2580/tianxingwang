@@ -53,7 +53,7 @@
               <ion-label>{{item.Hotel?.Name}}</ion-label>
             </h3>
             <h5 class='grade-stars'>
-              <div class='stars' margin-end>
+              <div class='stars' class='ion-margin-end'>
                 <ng-container *ngFor='let s of getStars(item.Hotel)'>
                   <ion-icon name="star" color='danger' *ngIf='s>=1'></ion-icon>
                   <ion-icon name='star-half' color='danger' *ngIf='s<1'></ion-icon>
@@ -63,7 +63,7 @@
                 {{grade}}分
               </span>
             </h5>
-            <p class='grade-stars' text-wrap *ngIf='item.Hotel?.VariablesJsonObj["GeoDistance"] as distance'>
+            <p class='grade-stars ion-text-wrap' *ngIf='item.Hotel?.VariablesJsonObj["GeoDistance"] as distance'>
               <ion-icon name="pin" color='secondary'></ion-icon>
               <ion-label>
                 距离{{distance.substring(0,distance.indexOf(','))}}直线距离约{{distance.substring(distance.indexOf(',')+1)}}km
@@ -80,7 +80,7 @@
     </ng-container>
     <ng-template #noMoreData>
       <ion-list></ion-list>
-      <div style='margin-top: 1em;'>
+      <div class='ion-margin-top'>
         <app-or-comp *ngIf='!isSearchingList'>暂无数据</app-or-comp>
       </div>
     </ng-template>

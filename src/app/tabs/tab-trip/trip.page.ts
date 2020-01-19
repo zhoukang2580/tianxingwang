@@ -27,8 +27,8 @@ import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
   styleUrls: ["trip.page.scss"]
 })
 export class TripPage implements OnInit {
-  @ViewChild(IonRefresher) ionRefresher: IonRefresher;
-  @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
+  @ViewChild(IonRefresher, { static: false }) ionRefresher: IonRefresher;
+  @ViewChild(IonInfiniteScroll, { static: false }) infiniteScroll: IonInfiniteScroll;
   trips: OrderTripModel[];
   private searchCondition: TravelModel = {
     PageIndex: 0,

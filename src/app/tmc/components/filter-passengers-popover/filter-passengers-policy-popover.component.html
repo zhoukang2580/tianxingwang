@@ -1,4 +1,4 @@
-<ion-radio-group class='credentials-remark' no-margin no-padding (ionChange)='onSelectItem($event)'
+<ion-radio-group class='credentials-remark ion-no-margin ion-no-padding'  (ionChange)='onSelectItem($event)'
   name='CredentialsRemark'>
   <ion-item *ngFor='let info of bookInfos'>
     <ion-label class='sm-font-size' *ngIf='info?.credential?.FirstName&&info?.credential?.LastName'>
@@ -17,12 +17,12 @@
 <!-- <ion-radio-group (ionChange)='onMathRadioChange($event)' allowEmptySelection='true'>
   <ion-item>
     <ion-checkbox [checked]='selectedItem?.isOnlyFilterMatchedPolicy' value='isShowOnlyMatchSwitch' color='secondary'
-      margin-end></ion-checkbox> 
+      class='ion-margin-end'></ion-checkbox> 
     <ion-label class='sm-font-size' color='success'>过滤差标
     </ion-label>
   </ion-item>
   <ion-item>
-    <ion-radio value='isAllowBookPolicy' [checked]='selectedItem?.isAllowBookPolicy' color='secondary' margin-end>
+    <ion-radio value='isAllowBookPolicy' [checked]='selectedItem?.isAllowBookPolicy' color='secondary' class='ion-margin-end'>
     </ion-radio>
     <ion-label class='sm-font-size' color='secondary'>所有可预订</ion-label>
   </ion-item>

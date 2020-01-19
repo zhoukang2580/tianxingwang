@@ -1,7 +1,5 @@
 {
-  "name": "Phone",
-  "integrations": {
-    "cordova": {}
-  },
+  "name": "upgrade",
+  "integrations": {},
   "type": "angular"
 }

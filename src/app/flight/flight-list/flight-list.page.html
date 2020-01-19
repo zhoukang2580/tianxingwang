@@ -1,12 +1,12 @@
-<ion-header text-center>
+<ion-header class='ion-text-center'>
   <ion-toolbar>
     <ion-buttons slot='start'>
       <ion-button (click)='back()'>
         <ion-icon color='dark' name='arrow-back'></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title color='{{searchFlightModel?.isLocked?"medium":"secondary"}}' [class.text-start]='showAddPassenger'
-      [class.text-center]='!showAddPassenger'>
+    <ion-title color='{{searchFlightModel?.isLocked?"medium":"secondary"}}' [class.ion-text-start]='showAddPassenger'
+      [class.ion-text-center]='!showAddPassenger'>
       <ion-text (click)='onSelectCity(true)' class='from-city'>
         <span>
           {{searchFlightModel?.fromCity?.CityName}}

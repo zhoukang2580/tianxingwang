@@ -21,12 +21,12 @@ import { TakeOffTimeSpanComponent } from "./take-off-timespan/take-off-timespan.
   styleUrls: ["./fly-filter.component.scss"]
 })
 export class FlyFilterComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild(TakeOffTimeSpanComponent) timeComp: TakeOffTimeSpanComponent;
-  @ViewChild(CabinComponent) cabinComp: CabinComponent;
-  @ViewChild(AirtypeComponent) airTypeComp: AirtypeComponent;
-  @ViewChild("fromAirports") fromAirportsComp: AirportsComponent;
-  @ViewChild("toAirports") toAirportsComp: AirportsComponent;
-  @ViewChild(AircompanyComponent) airCompanyComp: AircompanyComponent;
+  @ViewChild(TakeOffTimeSpanComponent, { static: false }) timeComp: TakeOffTimeSpanComponent;
+  @ViewChild(CabinComponent, { static: false }) cabinComp: CabinComponent;
+  @ViewChild(AirtypeComponent, { static: false }) airTypeComp: AirtypeComponent;
+  @ViewChild("fromAirports", { static: false }) fromAirportsComp: AirportsComponent;
+  @ViewChild("toAirports", { static: false }) toAirportsComp: AirportsComponent;
+  @ViewChild(AircompanyComponent, { static: false }) airCompanyComp: AircompanyComponent;
   @Input() flights: FlightJourneyEntity[];
   @Input() toCityName: string; // 比如上海
   @Input() fromCityName: string; // 比如上海

@@ -24,7 +24,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-card padding>
+  <ion-card class='ion-padding'>
     <ion-card-subtitle *ngIf='disabled' color='danger'>当前正在选择回程</ion-card-subtitle>
     <ion-card-content>
       <ion-segment (ionChange)="segmentChanged($event)" [value]="isSingle?'single':'roundtrip'" color='secondary'
@@ -46,11 +46,11 @@
         <app-search-day-comp *ngIf="!isSingle" [day]='backDate' (click)="onSelecFlyDate(false,true)">
         </app-search-day-comp>
       </section>
-      <ion-button style='width: 100%' (click)="searchFlight()" margin-top
+      <ion-button style='width: 100%' (click)="searchFlight()" class='ion-margin-top'
         *ngIf='isSelf||(!isSelf&&selectedPassengers>0)' color="secondary" expand="block">
         <ion-text>查询航班</ion-text>
       </ion-button>
-      <ion-button style='width: 100%' (click)="onSelectPassenger()" margin-top
+      <ion-button style='width: 100%' (click)="onSelectPassenger()" class='ion-margin-top'
         *ngIf='(!isSelf && selectedPassengers==0)' color="secondary" expand="block">
         <ion-text>请添加乘客</ion-text>
       </ion-button>

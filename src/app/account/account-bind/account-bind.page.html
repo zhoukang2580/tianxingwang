@@ -10,7 +10,7 @@
 </ion-header>
 
 <ion-content>
-  <form [formGroup]='form' padding>
+  <form [formGroup]='form' class='ion-padding'>
     <ion-grid>
       <ion-row>
         <ion-col size="3">
@@ -44,12 +44,12 @@
 
     </ion-grid>
   </form>
-  <ion-row text-center>
+  <ion-row class='ion-text-center'>
     <ion-col>
-      <ion-button fill='clear' (click)='jump()' color='secondary' text-end>跳过</ion-button>
+      <ion-button fill='clear' (click)='jump()' color='secondary' class='ion-text-end'>跳过</ion-button>
     </ion-col>
     <ion-col>
-      <ion-button fill='clear' (click)='bind()' color='secondary' text-end>下一步</ion-button>
+      <ion-button fill='clear' (click)='bind()' color='secondary' class='ion-text-end'>下一步</ion-button>
     </ion-col>
   </ion-row>
 

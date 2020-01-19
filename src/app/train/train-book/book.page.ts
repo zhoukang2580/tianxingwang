@@ -84,8 +84,8 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
   searchTrainModel: SearchTrainModel;
   isSubmitDisabled = false;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
-  @ViewChild(IonContent) cnt: IonContent;
-  @ViewChild(IonRefresher) ionRefresher: IonRefresher;
+  @ViewChild(IonContent, { static: false }) cnt: IonContent;
+  @ViewChild(IonRefresher, { static: false }) ionRefresher: IonRefresher;
   initialBookDto: InitialBookDtoModel;
   bookInfos: PassengerBookInfo<ITrainInfo>[];
   viewModel: IBookTrainViewModel = {} as any;

@@ -5,7 +5,7 @@
     <div class='dayoff color-danger' *ngIf="dayModel?.dayoff">
       休
     </div>
-    <div class='desc color-{{dayModel?.descColor}}' *ngIf="dayModel?.topDesc" text-nowrap>
+    <div class='desc color-{{dayModel?.descColor}} ion-text-nowrap' *ngIf="dayModel?.topDesc" >
       {{dayModel?.topDesc}}
     </div>
   </div>
@@ -18,7 +18,7 @@
     </div>
   </div>
   <div class='bottom  color-{{dayModel?.descColor}}'>
-    <div text-nowrap *ngIf='dayModel?.bottomDesc'>
+    <div class='ion-text-nowrap' *ngIf='dayModel?.bottomDesc'>
       {{dayModel?.bottomDesc?.includes("程")?dayModel?.lunarInfo?.lunarDayName:dayModel?.bottomDesc}}
     </div>
   </div>

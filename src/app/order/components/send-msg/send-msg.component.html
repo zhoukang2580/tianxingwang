@@ -9,7 +9,7 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-content padding>
+<ion-content class='ion-padding'>
 
   <div [style.display]='!isAddingMobile?"initial":"none"'>
     <ion-row>
@@ -36,7 +36,7 @@
     <ion-label color='medium'>短信将发送到下列手机号：</ion-label>
     <div class='emails'>
       <div class='email-item'>
-        <ion-label margin-end color='medium'>手机号:</ion-label>
+        <ion-label class='ion-margin-end' color='medium'>手机号:</ion-label>
         <div *ngFor='let m of mobiles' class='email'>
           <span (click)='edit(m)'>{{m}}</span>
           <ion-icon name="close-circle" class='remove-icon' color='danger' (click)='remove(m)'></ion-icon>
@@ -46,7 +46,7 @@
         (click)='onAddMobileMode()'></ion-icon>
     </div>
     <div class='content'>
-      <ion-label text-wrap>
+      <ion-label class='ion-text-wrap'>
         <div *ngIf='isLoading'>正在加载...</div>
         <!-- <div #content [style.display]='msgContent?"block":"none"' class='email-content'></div> -->
         <textarea type='email' placeholder="短信内容" [(ngModel)]='msgContent' appAutoGrow></textarea>

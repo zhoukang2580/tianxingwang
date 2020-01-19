@@ -47,7 +47,7 @@
     </ng-template>
   </ng-container>
   <ng-template #addTempl>
-    <ion-item-group *ngFor='let item of staffCredentails' margin-bottom>
+    <ion-item-group *ngFor='let item of staffCredentails' class='ion-margin-bottom'>
       <ng-container *ngIf='item!=vmNewCredential'>
         <ion-item-divider color='primary'>
           <ion-item slot='start' style='width: 100%' lines='none'>
@@ -137,8 +137,8 @@
         </ion-item-divider>
         <ion-grid #addForm>
           <ion-row>
-            <ion-col no-margin no-padding class="id-type">
-              <ion-item lines='none' no-margin no-padding>
+            <ion-col  class="id-type ion-no-margin ion-no-padding">
+              <ion-item lines='none' class='ion-no-margin ion-no-padding'>
                 <ion-label style="opacity: 1">证件类型：</ion-label>
                 <ion-select [(ngModel)]='vmNewCredential.Type' name='Type' okText="确定" cancelText="取消"
                   [disabled]='vmNewCredential?.Id !=selectedCredentialId' [compareWith]='compareFn'>
@@ -190,14 +190,14 @@
             <ion-col>
               <ion-label>国籍：</ion-label>
             </ion-col>
-            <ion-col text-end [class.disabled]='vmNewCredential?.Id !=selectedCredentialId'>
-              <input type="text" style='border: none' text-end [class.validctrlsucess]='!!vmNewCredential.Country'
+            <ion-col class='ion-text-end' [class.disabled]='vmNewCredential?.Id !=selectedCredentialId'>
+              <input type="text" style='border: none' class='ion-text-end' [class.validctrlsucess]='!!vmNewCredential.Country'
                 [class.validerrormess]='!vmNewCredential.Country' [class.validctrlerror]='!vmNewCredential.Country'
                 [disabled]='true' [class.disabled]='vmNewCredential?.Id !=selectedCredentialId'
                 value="{{vmNewCredential.Country?.Name}}({{vmNewCredential.Country?.Code}})" name='Country'
                 ValidateName="Country">
             </ion-col>
-            <ion-col size='1' class='arrow-forward' text-end
+            <ion-col size='1' class='arrow-forward' class='ion-text-end'
               [class.disabled]='vmNewCredential?.Id !=selectedCredentialId'>
               <ion-icon name='arrow-forward' size='small' color='medium' mode='ios'></ion-icon>
             </ion-col>
@@ -206,15 +206,15 @@
             <ion-col>
               <ion-label>发证国籍：</ion-label>
             </ion-col>
-            <ion-col text-end>
-              <input type="text" text-end [class.validerrormess]='!vmNewCredential.IssueCountry'
+            <ion-col class='ion-text-end'>
+              <input type="text" class='ion-text-end' [class.validerrormess]='!vmNewCredential.IssueCountry'
                 [class.validctrlsucess]="!!vmNewCredential.IssueCountry"
                 [class.validctrlerror]='!vmNewCredential.IssueCountry'
                 [class.disabled]='vmNewCredential?.Id !=selectedCredentialId' [disabled]='true'
                 value="{{vmNewCredential.IssueCountry?.Name}}({{vmNewCredential.IssueCountry?.Code}})"
                 name='IssueCountry' style='border: none' ValidateName="IssueCountry">
             </ion-col>
-            <ion-col size='1' class='arrow-forward' text-end
+            <ion-col size='1' class='arrow-forward ion-text-end' 
               [class.disabled]='vmNewCredential?.Id !=selectedCredentialId'>
               <ion-icon name='arrow-forward' size='small' color='medium' mode='ios'></ion-icon>
             </ion-col>
@@ -222,12 +222,12 @@
           <ion-row>
             <ion-col>性别：</ion-col>
             <ion-col>
-              <ion-radio-group no-margin no-padding [(ngModel)]='vmNewCredential.Gender'
+              <ion-radio-group class='ion-no-margin ion-no-padding'[(ngModel)]='vmNewCredential.Gender'
                 [disabled]='vmNewCredential?.Id !=selectedCredentialId' name='Gender' class='gender'>
                 <ion-radio value="M" [disabled]='vmNewCredential?.Id !=selectedCredentialId'
                   [checked]='vmNewCredential.Gender=="M"'></ion-radio>
                 <ion-label slot='start'>男</ion-label>
-                <ion-label margin-start padding-start></ion-label>
+                <ion-label class='ion-margin-start ion-padding-start' ></ion-label>
                 <ion-radio value="F" [disabled]='vmNewCredential?.Id !=selectedCredentialId'></ion-radio>
                 <ion-label>女</ion-label>
               </ion-radio-group>
@@ -251,12 +251,12 @@
           </ion-row>
           <ion-row>
             <ion-col>
-              <ion-item no-margin no-padding lines='none'>
+              <ion-item class='ion-no-margin ion-no-padding' lines='none'>
                 乘客类别：
               </ion-item>
             </ion-col>
             <ion-col size='7'>
-              <ion-radio-group class='credentials-remark' no-margin no-padding
+              <ion-radio-group class='credentials-remark ion-no-margin ion-no-padding'
                 [(ngModel)]='vmNewCredential.CredentialsRemark' name='CredentialsRemark'>
                 <ion-item *ngFor='let r of credentialsRemarks'
                   [style.opacity]='vmNewCredential?.Id !=selectedCredentialId?0.7:1'
@@ -271,7 +271,7 @@
       </ion-item-group>
     </ng-container>
     <ng-container *ngIf='frqPassengerCredentials&&frqPassengerCredentials.length'>
-      <ion-item-divider color='primary' margin-top>
+      <ion-item-divider color='primary' class='ion-margin-top'>
         <ion-text color='secondary'>常旅客</ion-text> 
       </ion-item-divider>
       <ion-item-group *ngFor='let item of frqPassengerCredentials' (click)='onSelectCredential(item.Id)'>

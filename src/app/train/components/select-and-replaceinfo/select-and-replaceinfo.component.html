@@ -45,7 +45,7 @@
                 <div class="line"></div>
               </div>
             </div>
-            <div class="end" text-end>
+            <div class="end text-end">
               <div>{{train?.ToStationName}}</div>
               <div>
                 <strong>{{bookInfo.info.bookInfo?.trainEntity?.ArrivalTime?.substr("yyyy-MM-ddT".length,'hh:mm'.length)}}</strong>
@@ -75,14 +75,14 @@
             </div>
             <div>
               <ion-row>
-                <ion-col text-end>
+                <ion-col class='ion-text-end'>
                   <div>
                     <ion-label color='danger'>￥{{bookInfo.info?.bookInfo?.selectedSeat?.SalesPrice}}</ion-label>
                   </div>
                 </ion-col>
               </ion-row>
             </div>
-            <ion-label class='rules' color='danger' text-wrap>
+            <ion-label class='rules' color='danger' class='ion-text-wrap'>
               {{bookInfo.info?.bookInfo?.trainPolicy?.Rules?.join("; ")}}
             </ion-label>
           </div>

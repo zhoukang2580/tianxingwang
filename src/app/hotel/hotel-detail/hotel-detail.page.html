@@ -91,7 +91,7 @@
       <ion-card-header>
         <ion-skeleton-text style="height: 1.25em;width:80%"></ion-skeleton-text>
       </ion-card-header>
-      <ion-card-subtitle padding-start>
+      <ion-card-subtitle class='ion-padding-start'>
         <ion-skeleton-text style="height: 1.25em;width:40%;margin-left: 1em;"></ion-skeleton-text>
       </ion-card-subtitle>
       <ion-card-content>
@@ -104,7 +104,7 @@
     </ion-card>
   </ng-template>
   <ion-list class='room-list' #houseInfo>
-    <div style="font-size: 0.7rem;" margin-start>
+    <div style="font-size: 0.7rem;" class='ion-margin-start'>
       <div>
         <ion-text color='success'>绿色代表符合差标</ion-text>
       </div>
@@ -129,11 +129,11 @@
             </ion-thumbnail>
             <ion-label class='item'>
               <h3 style="display: inline-flex;">
-                <ion-label margin-end>{{room.Name}}</ion-label>
+                <ion-label class='ion-margin-end'>{{room.Name}}</ion-label>
                 <ion-text color='secondary' (click)='onShowRoomDetails(room)'>详情</ion-text>
               </h3>
               <h4 *ngIf='room.RoomDetails' class='show-desc' (click)='room["isShowRoomPlans"]=!room["isShowRoomPlans"]'>
-                <ion-label text-wrap>
+                <ion-label class='ion-text-wrap'>
                   <div class="room-detail-desc">
                     <div *ngIf='getRoomArea(room) as it'>{{it.Description}}m²</div>
                     <div *ngIf='getBedType(room) as it'>{{it.Description}}</div>
@@ -145,7 +145,7 @@
                   <ion-text color='light'>已满房</ion-text>
                 </ion-button>
               </h4>
-              <h3 text-end style="padding-bottom: 0.5em;" (click)='room["isShowRoomPlans"]=!room["isShowRoomPlans"]'>
+              <h3 class='ion-text-end' style="padding-bottom: 0.5em;" (click)='room["isShowRoomPlans"]=!room["isShowRoomPlans"]'>
                 <ion-text color='danger' *ngIf='getRoomLowestAvgPrice(room) as price'>
                   <strong><small style="font-size:.6rem;margin-right:0em;">￥</small><span
                       style="font-size: 1rem">{{price}}</span>

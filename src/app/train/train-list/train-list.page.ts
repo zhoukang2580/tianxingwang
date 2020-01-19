@@ -43,11 +43,13 @@ import { SelectTrainStationModalComponent } from "src/app/tmc/components/select-
   styleUrls: ["./train-list.page.scss"]
 })
 export class TrainListPage implements OnInit, OnDestroy {
-  @ViewChild(DaysCalendarComponent)
+  @ViewChild(DaysCalendarComponent, { static: false })
   private daysCalendarComp: DaysCalendarComponent;
-  @ViewChild(IonRefresher) private ionRefresher: IonRefresher;
-  @ViewChild(IonInfiniteScroll) private scroller: IonInfiniteScroll;
-  @ViewChild(IonContent) private cnt: IonContent;
+  @ViewChild(IonRefresher, { static: false })
+  private ionRefresher: IonRefresher;
+  @ViewChild(IonInfiniteScroll, { static: false })
+  private scroller: IonInfiniteScroll;
+  @ViewChild(IonContent, { static: false }) private cnt: IonContent;
   private pageSize = 15;
   private lastSelectedPassengerIds: string[];
   private currentSelectedPassengerIds: string[];
@@ -230,8 +232,8 @@ export class TrainListPage implements OnInit, OnDestroy {
         this.searchTrainModel.FromStation = this.searchTrainModel.fromCity.Code;
         this.searchTrainModel.ToStation = this.searchTrainModel.toCity.Code;
         this.trainService.setSearchTrainModel(this.searchTrainModel);
-        if(!isFrom&&this.searchTrainModel.isExchange){
-          this.doRefresh(true,false);
+        if (!isFrom && this.searchTrainModel.isExchange) {
+          this.doRefresh(true, false);
         }
       }
     }
@@ -591,7 +593,7 @@ export class TrainListPage implements OnInit, OnDestroy {
             day.date
           );
         }
-      } 
+      }
     }
     this.trainService.setSearchTrainModel(this.searchTrainModel);
     this.doRefresh(true, true);

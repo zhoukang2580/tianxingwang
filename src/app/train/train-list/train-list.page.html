@@ -1,12 +1,12 @@
-<ion-header text-center>
+<ion-header class='ion-text-center'>
   <ion-toolbar>
     <ion-buttons slot='start'>
       <ion-button (click)='back()'>
         <ion-icon color='dark' name='arrow-back'></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title class='sm-font-size' [class.text-start]='(isShowAddPassenger$|async)'
-      [class.text-center]='!(isShowAddPassenger$|async)'>
+    <ion-title class='sm-font-size' [class.ion-text-start]='(isShowAddPassenger$|async)'
+      [class.ion-text-center]='!(isShowAddPassenger$|async)'>
       <ion-text (click)='onSelectStation(true)' color='{{!searchTrainModel?.isExchange?"secondary":"medium"}}'
         class='from-station'>
         <span>

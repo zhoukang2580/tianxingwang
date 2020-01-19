@@ -1,10 +1,10 @@
 <div *ngIf='open' class="toast-wrapper">
   <ion-item lines='none'>
-    <ion-label no-margin no-padding>
+    <ion-label class='ion-no-margin ion-no-padding'>
       <h4>
         <ion-icon name="notifications" color='secondary'></ion-icon>
         {{message?.Title}}
-        <ion-text margin-start>{{message?.InsertTime}}</ion-text>
+        <ion-text class='ion-margin-start'>{{message?.InsertTime}}</ion-text>
       </h4>
       <p>
         {{message?.Detail}}

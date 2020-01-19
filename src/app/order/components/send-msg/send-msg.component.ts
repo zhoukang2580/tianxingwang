@@ -30,7 +30,7 @@ export class SendMsgComponent implements OnInit, AfterViewInit, OnDestroy {
   msgContent: string;
   isAddingMobile = false;
   isLoading = false;
-  @ViewChild("content") content: ElementRef<HTMLElement>;
+  @ViewChild("content", { static: false }) content: ElementRef<HTMLElement>;
   @ViewChildren(IonSelect) ionSelects: QueryList<IonSelect>;
   ionSelectsSubscribtion = Subscription.EMPTY;
   selectItemList: { Text: string; Value: string }[] = [];

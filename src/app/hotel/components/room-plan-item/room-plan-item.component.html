@@ -26,7 +26,7 @@
       [class.can-not-be-book]='color.includes("danger")' [attr.color]='color.includes("danger")?"danger":color'>
       <ion-text color='danger' class='avg-price'>￥{{getAvgPrice(roomPlan)}}</ion-text>
       <div class="btn-book" (click)='onBook(roomPlan,color)'>
-        <ion-button slot='end' no-margin [disabled]='color.includes("danger")' expand='full'>
+        <ion-button slot='end' class='ion-no-margin' [disabled]='color.includes("danger")' expand='full'>
           <ion-text color='light'>{{color.includes('danger_full')?"满房":color.includes("disabled")?"超标":"预订"}}
           </ion-text>
         </ion-button>

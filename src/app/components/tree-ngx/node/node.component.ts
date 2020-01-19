@@ -10,7 +10,7 @@ import { TreeService } from '../service/tree-service';
 })
 export class NodeComponent implements OnChanges, AfterViewInit {
 
-  @ViewChild('nodeCheckbox') nodeCheckbox: ElementRef;
+  @ViewChild('nodeCheckbox', { static: false }) nodeCheckbox: ElementRef;
 
   @Input() state: NodeState;
   @Input() selectedState: NodeSelectedState;

@@ -1,4 +1,4 @@
-import { TmcService } from 'src/app/tmc/tmc.service';
+import { TmcService } from "src/app/tmc/tmc.service";
 import { OrganizationEntity } from "../../../hr/staff.service";
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { ModalController, IonRefresher } from "@ionic/angular";
@@ -31,11 +31,11 @@ export class OrganizationComponent implements OnInit {
   isTreeMode;
   private rootDeptName = "部门";
   private selectedNode: OrganizationEntity;
-  @ViewChild(IonRefresher) ionRefresher: IonRefresher;
+  @ViewChild(IonRefresher, { static: false }) ionRefresher: IonRefresher;
   constructor(
     private modalCtrl: ModalController,
     private storage: Storage,
-    private tmcService:TmcService
+    private tmcService: TmcService
   ) {}
   async back() {
     const t = await this.modalCtrl.getTop();

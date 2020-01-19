@@ -12,7 +12,7 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-  <ion-toolbar text-center>
+  <ion-toolbar class='ion-text-center'>
     <div class='tabs'>
       <ion-button [color]='activeTab.value==tab.value?"secondary":"dark"' (click)='onTabClick(tab)'
         *ngFor='let tab of tabs' fill='clear' [class.active]='activeTab.value==tab.value'>{{tab.label}}
@@ -93,7 +93,7 @@
                 <ng-template #labelTemp>
                   <span>{{task.Name}}</span>
                 </ng-template>
-                <ion-text text-wrap *ngIf='getTaskUrl(task) as url else labelTemp' color='secondary'>
+                <ion-text class='ion-text-wrap' *ngIf='getTaskUrl(task) as url else labelTemp' color='secondary'>
                   {{task.Name}}</ion-text>
               </h3>
               <h4>
@@ -119,15 +119,15 @@
 </ion-content>
 <ion-footer *ngIf='activeTab.value !== productItemType.waitingApprovalTask'>
   <ion-row>
-    <ion-col text-center>
+    <ion-col class='ion-text-center'>
       <ion-button color='secondary' fill='clear' size='small' (click)='doRefresh()'>
         全部<span slot='end' *ngIf='dataCount'>({{dataCount}})</span>
       </ion-button>
     </ion-col>
-    <ion-col text-center>
+    <ion-col class='ion-text-center'>
       <ion-button color='secondary' fill='clear' size='small' (click)='onshowMyTrips()'>待出行订单</ion-button>
     </ion-col>
-    <ion-col text-center *ngIf='false'>
+    <ion-col class='ion-text-center' *ngIf='false'>
       <ion-button color='secondary' fill='clear' size='small' (click)='historyTrips()'>历史订单</ion-button>
     </ion-col>
   </ion-row>

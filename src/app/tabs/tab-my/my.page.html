@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-title text-capitalize>我的</ion-title>
+    <ion-title class="ion-text-capitalize">我的</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -11,7 +11,7 @@
         <img alt="头像" [lazyLoad]="Model?.HeadUrl" [defaultImage]='config?.PrerenderImageUrl'>
         <!-- <ion-img [src]='Model?.HeadUrl'></ion-img> -->
       </ion-thumbnail>
-      <ion-label padding-start>
+      <ion-label class='ion-padding-start'>
         <h3>{{Model?.RealName}}<ion-note class='account-type'></ion-note>
         </h3>
         <h4>
@@ -31,7 +31,7 @@
             <ion-avatar size='small'>
               <img [src]="item.imageSrc" alt="">
             </ion-avatar>
-            <ion-label text-center>{{item.label}}</ion-label>
+            <ion-label class='ion-text-center'>{{item.label}}</ion-label>
           </div>
         </ion-col>
       </ion-row>

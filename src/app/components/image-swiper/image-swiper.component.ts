@@ -15,11 +15,11 @@ export class ImageSwiperComponent implements OnInit, AfterViewInit, OnChanges {
   private thumbsSwiper: Swiper;
   private isSwiperInit = false;
   @ViewChildren("slides") private slideEles: QueryList<ElementRef<HTMLElement>>;
-  @ViewChild("swiperContainer") swiperContainer: ElementRef<HTMLElement>;
-  @ViewChild("swiperbuttonprev") preEle: ElementRef<HTMLElement>;
-  @ViewChild("swiperbuttonnext") nextEle: ElementRef<HTMLElement>;
-  @ViewChild("pagination") paginationEle: ElementRef<HTMLElement>;
-  @ViewChild("thumbs") thumbs: ElementRef<HTMLElement>;
+  @ViewChild("swiperContainer", { static: false }) swiperContainer: ElementRef<HTMLElement>;
+  @ViewChild("swiperbuttonprev", { static: false }) preEle: ElementRef<HTMLElement>;
+  @ViewChild("swiperbuttonnext", { static: false }) nextEle: ElementRef<HTMLElement>;
+  @ViewChild("pagination", { static: false }) paginationEle: ElementRef<HTMLElement>;
+  @ViewChild("thumbs", { static: false }) thumbs: ElementRef<HTMLElement>;
   @Input() hasThumbs = false;
   @Input() effect: boolean | "fade" | "flip" | "cube" | "coverflow" = 'fade';
   @Input() direction: "vertical" | "horizontal" = 'horizontal';

@@ -18,7 +18,7 @@
   <ion-list *ngIf='!loading else loadingTemp'>
       <ng-container *ngIf='bulletines.length;else nomoredata'>
         <ion-item *ngFor='let notice of bulletines' detail (click)='viewNoticeUrl(notice)'>
-          <ion-label text-nowrap>{{notice?.Title}}</ion-label>
+          <ion-label class='ion-text-nowrap'>{{notice?.Title}}</ion-label>
         </ion-item>
         <ng-template #nomoredata>
           <app-or-comp>暂无数据</app-or-comp>

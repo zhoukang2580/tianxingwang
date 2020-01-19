@@ -17,7 +17,7 @@
 </ion-header>
 <ion-content>
   <ion-toolbar class='name-paths' *ngIf='!isTreeMode&&currentSelectedNodePaths?.length'>
-    <ion-label text-wrap style="margin-left: .5em">
+    <ion-label class='ion-text-wrap' style="margin-left: .5em">
       <ion-text color='secondary' *ngFor='let node of currentSelectedNodePaths;let last=last;'
         (click)='onNextHierachy(node)'>
         {{node.Name}}
@@ -33,10 +33,10 @@
   <ng-container *ngIf='!isTreeMode else treeTempl'>
     <ng-container *ngIf='!isLoading else loadingTemp'>
       <ng-container *ngIf='currentSelectedNodeChildren?.length else nodataTemp'>
-        <ion-row *ngFor='let node of currentSelectedNodeChildren' padding-start>
+        <ion-row *ngFor='let node of currentSelectedNodeChildren' class='ion-padding-start'>
           <ion-col (click)='onItemSelect(node)'>{{node.Name}}</ion-col>
           <ng-container *ngIf='!vmKeyword&&getChildren(node).length'>
-            <ion-col size='1.6' class='next-hierarchy' text-end (click)='onNextHierachy(node)'>
+            <ion-col size='1.6' class='next-hierarchy ion-text-end'  (click)='onNextHierachy(node)'>
               <ion-text color='secondary'>
                 <i class='icon icon-organization'></i>
               </ion-text>

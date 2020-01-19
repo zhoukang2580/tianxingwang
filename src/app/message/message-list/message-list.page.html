@@ -35,7 +35,7 @@
               <ion-note>
                 {{item.InsertTime}}
               </ion-note>
-              <ion-note margin-start *ngIf='!item.IsRead' color='success'>未读</ion-note>
+              <ion-note class='ion-margin-start' *ngIf='!item.IsRead' color='success'>未读</ion-note>
             </h3>
             <p #msgDetial [attr.msgdetail]='item.Detail' [attr.msgid]='item.Id'></p>
           </ion-label>
@@ -102,7 +102,7 @@
               <ion-note>
                 {{item?.InsertTime}}
               </ion-note>
-              <ion-note margin-start *ngIf='!item?.IsRead' color='success'>未读</ion-note>
+              <ion-note class='ion-margin-start' *ngIf='!item?.IsRead' color='success'>未读</ion-note>
             </h3>
             <p>{{item?.Detail}}</p>
           </ion-label>

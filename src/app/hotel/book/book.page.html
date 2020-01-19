@@ -33,11 +33,11 @@
           </ion-item>
           <ion-item class="ion-no-margin" *ngIf='isCanSkipApproval$|async'>
             <ion-label style='margin-right: 0.5em'>跳过审批:</ion-label>
-            <ion-checkbox margin-end color="secondary" [(ngModel)]='combindInfo.isSkipApprove'></ion-checkbox>
+            <ion-checkbox class='ion-margin-end' color="secondary" [(ngModel)]='combindInfo.isSkipApprove'></ion-checkbox>
           </ion-item>
           <ion-item class="ion-no-margin" *ngIf='tmc?.IsShowServiceFee || identity?.Numbers?.AgentId'>
             <ion-label>服务费:</ion-label>
-            <ion-label slot='end' text-end padding-end>{{getServiceFee(combindInfo)}}元</ion-label>
+            <ion-label slot='end' class='ion-text-end ion-padding-end'>{{getServiceFee(combindInfo)}}元</ion-label>
           </ion-item>
           <ion-item class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)'
             (click)='openApproverModal(combindInfo)'>
@@ -61,7 +61,7 @@
           </app-room-show-item>
           <ion-item *ngIf='getRuleMessage(combindInfo.bookInfo?.bookInfo?.roomPlan) as msg'>
             <div style='width: 100%;'>
-              <ion-label style='font-size: 0.9rem;' text-wrap color='danger'>超标:{{msg}}
+              <ion-label style='font-size: 0.9rem;' class='ion-text-wrap' color='danger'>超标:{{msg}}
               </ion-label>
             </div>
           </ion-item>
@@ -76,7 +76,7 @@
                   <ion-icon name="arrow-dropright" *ngIf='!combindInfo["isShowRoomPlanRulesDesc"]'></ion-icon>
                 </ion-button>
               </div>
-              <ion-label *ngIf='combindInfo["isShowRoomPlanRulesDesc"]' text-wrap color='danger'>
+              <ion-label *ngIf='combindInfo["isShowRoomPlanRulesDesc"]' class='ion-text-wrap' color='danger'>
                 {{getRoomPlanRulesDesc(combindInfo.bookInfo?.bookInfo?.roomPlan)}}2019年7月1日起，部分城市将不再主动提供牙刷等一次性日用品，建议自行准备。
               </ion-label>
             </div>
@@ -187,7 +187,7 @@
               <ion-checkbox color="secondary" [(ngModel)]="email.checked"></ion-checkbox>
               <ion-label style='margin-left: 0.5em'>{{email.email}}</ion-label>
             </ion-item>
-            <ion-item no-margin>
+            <ion-item class='ion-no-margin'>
               <ion-label>其他邮箱：</ion-label>
               <ion-input [(ngModel)]="combindInfo.credentialStaffOtherEmail" placeholder='请输入其他邮箱'></ion-input>
             </ion-item>
@@ -205,7 +205,7 @@
                     <app-timeline [hideLastTimeLineTail]='false'>
                       <app-timeline-item *ngFor='let it of combindInfo?.credentialStaffApprovers'>
                         第{{it.Tag}}级审批:
-                        <ion-label text-wrap *ngFor='let ap of it.approvers;let last'>
+                        <ion-label class='ion-text-wrap' *ngFor='let ap of it.approvers;let last'>
                           {{ap.Name}}({{it?.Type==1?"所有通过":"任意通过"}})
                         </ion-label>
                       </app-timeline-item>
@@ -276,7 +276,7 @@
   </ng-container>
   <ng-template #retryTempl>
     <ion-row style="position: relative;top:35%">
-      <ion-col text-center>
+      <ion-col class='ion-text-center'>
         <ion-label color='danger'>请求数据出错</ion-label>
         <ion-button fill='clear' expand='block' color='secondary' (click)='doRefresh()'>点击重试</ion-button>
       </ion-col>
@@ -303,7 +303,7 @@
   <ul>
     <li *ngFor='let d of dates'>
       <span>{{d.date}}</span>
-      <ion-label margin-start>1&times;<small>￥</small>{{d.price}}</ion-label>
+      <ion-label class='ion-margin-start'>1&times;<small>￥</small>{{d.price}}</ion-label>
     </li>
   </ul>
 </div>

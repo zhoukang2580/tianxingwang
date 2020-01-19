@@ -5,7 +5,7 @@
         <app-scan-comp></app-scan-comp>
       </ion-button>
     </ion-buttons>
-    <ion-title text-center appShowtip>
+    <ion-title class='ion-text-center' appShowtip>
       <ng-container *ngIf='canSelectCompany$|async'>
         <ion-text *ngIf='selectedCompany$|async as company'>{{company}}</ion-text>
       </ng-container>
@@ -102,7 +102,7 @@
       </ion-col> -->
     </ion-row>
   </ion-grid>
-  <ion-grid margin-top>
+  <ion-grid class='ion-margin-top'>
     <ion-row>
       <ion-col (click)='goToPage("rentalCar")' size="4">
         <div class="item">

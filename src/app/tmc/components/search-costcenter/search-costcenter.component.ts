@@ -15,7 +15,7 @@ export class SearchCostcenterComponent implements OnInit {
   constCenters: OptionItem[];
   loading = false;
   vmKeyword = "";
-  @ViewChild(IonRefresher) refresher: IonRefresher;
+  @ViewChild(IonRefresher, { static: false }) refresher: IonRefresher;
   constructor(
     private modalCtrl: ModalController,
     private tmcService: TmcService

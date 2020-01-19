@@ -1,11 +1,11 @@
-<ion-header text-center>
+<ion-header class='ion-text-center'>
   <ion-toolbar>
     <ion-buttons slot='start'>
       <ion-button (click)='back()'>
         <ion-icon color='dark' name='arrow-back'></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title text-center color='secondary'>
+    <ion-title class='ion-text-center' color='secondary'>
       <ion-text>{{vmFromCity?.Nickname}}</ion-text>
       <i class='icon icon-search-train'></i>
       <ion-text>{{ vmToCity?.Nickname}}</ion-text>
@@ -19,12 +19,12 @@
 </ion-header>
 <ion-content>
   <ion-grid>
-    <ion-row *ngFor='let item of schedules;let i=index;' text-center
+    <ion-row *ngFor='let item of schedules;let i=index;' class='ion-text-center'
       [class.time-color]='getTimeColor(item.ArriveTime)||getTimeColor(item.StartTime)'>
-      <ion-col size='1' text-start>
+      <ion-col size='1' class='ion-text-start'>
         <div class='station-no'>{{item.StationNo}}</div>
       </ion-col>
-      <ion-col text-start>{{item.StationName}}</ion-col>
+      <ion-col class='ion-text-start'>{{item.StationName}}</ion-col>
       <ion-col>{{item.ArriveTime}}</ion-col>
       <ion-col>{{item.StartTime}}</ion-col>
       <ion-col>{{item.StayTime}}</ion-col>

@@ -14,7 +14,7 @@
     </ion-item-divider>
     <ion-item-group>
       <ion-item *ngIf='room?.RoomDetails'>
-        <ion-label text-wrap>
+        <ion-label class='ion-text-wrap'>
           <ng-container *ngFor='let it of room.RoomDetails'>
             <ng-container *ngIf='it.Description'>
               <span class='name'>{{it.Name}}：</span>

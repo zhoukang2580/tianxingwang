@@ -15,7 +15,7 @@ export class AddcontactsModalComponent implements OnInit {
   items: OptionItem[];
   loading = false;
   vmKeyword = "";
-  @ViewChild(IonRefresher) refresher: IonRefresher;
+  @ViewChild(IonRefresher, { static: false }) refresher: IonRefresher;
   constructor(
     private modalCtrl: ModalController,
     private tmcService: TmcService

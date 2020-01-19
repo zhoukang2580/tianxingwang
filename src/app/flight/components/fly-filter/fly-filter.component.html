@@ -8,7 +8,7 @@
     <ion-title>过滤航班</ion-title>
   </ion-toolbar>
   <ion-toolbar slot='fixed' #toolbar>
-    <ion-row text-center margin-top>
+    <ion-row  class='ion-margin-top ion-text-center'>
       <ion-col>
         <ion-button color='dark' fill='outline' size='small' (click)='onCancel()'>
           取消
@@ -29,9 +29,9 @@
 </ion-header>
 
 
-<ion-content margin-top>
+<ion-content class='ion-margin-top'>
   <form (ngSubmit)="onSearch()" [formGroup]='sForm'>
-    <ion-list lines='none' no-margin #ionlist>
+    <ion-list lines='none' class='ion-no-margin' #ionlist>
       <ion-item>
         <ion-label>仅直达</ion-label>
         <ion-toggle formControlName='onlyDirect'></ion-toggle>

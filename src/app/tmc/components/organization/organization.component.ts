@@ -33,7 +33,7 @@ export class OrganizationComponent implements OnInit {
   isTreeMode;
   private rootDeptName = "部门";
   private selectedNode: OrganizationEntity;
-  @ViewChild(IonRefresher) ionRefresher: IonRefresher;
+  @ViewChild(IonRefresher, { static: false }) ionRefresher: IonRefresher;
   constructor(
     private modalCtrl: ModalController,
     private tmcService: TmcService,

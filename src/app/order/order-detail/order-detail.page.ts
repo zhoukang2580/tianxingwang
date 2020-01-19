@@ -69,9 +69,9 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
   isLoading = false;
   @ViewChildren("info") tabEles: QueryList<IonButton>;
   @ViewChildren("link") linkEles: QueryList<IonList>;
-  @ViewChild("infos") infosContainer: ElementRef<HTMLElement>;
-  @ViewChild(IonHeader) headerEle: IonHeader;
-  @ViewChild("cnt") ionContent: IonContent;
+  @ViewChild("infos", { static: false }) infosContainer: ElementRef<HTMLElement>;
+  @ViewChild(IonHeader, { static: false }) headerEle: IonHeader;
+  @ViewChild("cnt", { static: false }) ionContent: IonContent;
   scrollElement: HTMLElement;
   selectedFlightTicket: OrderFlightTicketEntity;
   selectedTrainTicket: OrderTrainTicketEntity;

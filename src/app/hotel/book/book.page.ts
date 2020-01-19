@@ -96,8 +96,8 @@ export class BookPage implements OnInit, AfterViewInit {
     value: OrderTravelPayType;
     checked?: boolean;
   }[];
-  @ViewChild(IonRefresher) ionRefresher: IonRefresher;
-  @ViewChild(IonContent) ionContent: IonContent;
+  @ViewChild(IonRefresher, { static: false }) ionRefresher: IonRefresher;
+  @ViewChild(IonContent, { static: false }) ionContent: IonContent;
   @ViewChildren("illegalReasonsEle") illegalReasonsEles: QueryList<ElementRef<HTMLElement>>;
   @ViewChildren(BookTmcOutnumberComponent) outnumberEles: QueryList<BookTmcOutnumberComponent>;
   error: any;

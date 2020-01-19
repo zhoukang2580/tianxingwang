@@ -22,7 +22,7 @@ import Swiper from 'swiper';
 })
 export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
   private swiper: Swiper;
-  @ViewChild("container") container: ElementRef<HTMLElement>;
+  @ViewChild("container", { static: false }) container: ElementRef<HTMLElement>;
   @ViewChildren(IonGrid) iongrids: QueryList<IonGrid>;
   order: OrderEntity;
   amount: number;

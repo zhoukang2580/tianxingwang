@@ -18,7 +18,7 @@
   <ion-list *ngIf='!loading;else loadingTemp'>
     <ng-container *ngIf='customers.length;else nodata'>
       <ion-item *ngFor='let item of customers' detail (click)='onSelect(item)'>
-        <ion-label text-wrap>
+        <ion-label class='ion-text-wrap'>
           {{item?.Name}}
         </ion-label>
       </ion-item>

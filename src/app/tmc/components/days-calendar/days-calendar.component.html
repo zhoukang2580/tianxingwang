@@ -3,7 +3,7 @@
     <article *ngFor='let item of days' [attr.date]='item?.date' #dayItem [class.active]='item.selected'
       (click)='onDaySelected(item)'>
       <ion-text>{{item?.topDesc}}</ion-text>
-      <ion-text text-nowrap>
+      <ion-text class='ion-text-nowrap'>
         <strong>
           {{item?.date?.substring("2018-".length,"2018-10-21".length)}}
         </strong>

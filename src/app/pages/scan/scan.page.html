@@ -11,19 +11,19 @@
 
 <ion-content>
   <div class='check-login' *ngIf="isShowConfirm&&checkLogin()">
-    <div class='container-flex' margin-bottom>
+    <div class='container-flex' class='ion-margin-bottom'>
       <ion-avatar size='large'>
         <img [lazyLoad]='Model?.HeadUrl' alt="logo" [defaultImage]='defaultImage'>
       </ion-avatar>
       <div>{{Model?.RealName}}</div>
     </div>
-    <ion-button margin-top color='secondary' expand='block' (click)="onConfirm()">允许登录</ion-button>
-    <ion-button color='danger'  expand='block' margin-top (click)='onCancel()'> <ion-text color='light'>取消</ion-text> </ion-button>
+    <ion-button class='ion-margin-top' color='secondary' expand='block' (click)="onConfirm()">允许登录</ion-button>
+    <ion-button color='danger'  expand='block' class='ion-margin-top' (click)='onCancel()'> <ion-text color='light'>取消</ion-text> </ion-button>
   </div>
   <div *ngIf='isShowIframe' class='iframe-wrapper'>
     <iframe [src]="iframeSrc" frameborder="0"></iframe>
   </div>
-  <ion-item lines='none' padding *ngIf='isShowText'>
+  <ion-item lines='none' class='ion-padding' *ngIf='isShowText'>
     <ion-textarea color='dark' readonly value="{{result}}"></ion-textarea>
   </ion-item>
 </ion-content>

@@ -9,7 +9,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-item-group *ngFor='let s of bookInfos$|async' margin-bottom>
+  <ion-item-group *ngFor='let s of bookInfos$|async' class='ion-margin-bottom'>
     <ion-item-divider >
       <ion-text appShowtip>{{s?.credential?.FirstName}}{{s?.credential?.LastName}} {{s?.credential?.Number}}</ion-text>
       <ion-button fill='clear'  slot='end' (click)='remove(s)'>

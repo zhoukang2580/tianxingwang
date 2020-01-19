@@ -15,7 +15,7 @@ export class SearchApprovalComponent implements OnInit {
    approvals: AppovalOption[];
   loading = false;
   vmKeyword = "";
-  @ViewChild(IonRefresher) refresher: IonRefresher;
+  @ViewChild(IonRefresher, { static: false }) refresher: IonRefresher;
   constructor(
     private modalCtrl: ModalController,
     private tmcService: TmcService

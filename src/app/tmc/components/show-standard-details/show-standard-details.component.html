@@ -3,10 +3,10 @@
     <ion-buttons slot='start'>
       <ion-button fill='clear' color='light' (click)='back()'>取消</ion-button>
     </ion-buttons>
-    <ion-title text-center>{{title}}</ion-title>
+    <ion-title class='ion-text-center'>{{title}}</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content padding-end>
+<ion-content class='ion-padding-end'>
   <ol>
     <li *ngFor='let desc of details'>{{desc}}</li>
   </ol>

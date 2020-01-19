@@ -3,7 +3,7 @@
     <ion-buttons slot='start'>
       <ion-button fill='clear' color='light' (click)='cancel()'>取消</ion-button>
     </ion-buttons>
-    <ion-title text-center>退改政策</ion-title>
+    <ion-title class='ion-text-center'>退改政策</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-grid *ngIf='cabin?.Cabin as cb'>
@@ -17,7 +17,7 @@
       退票条件
     </ion-col>
     <ion-col size='8'>
-      <!-- <ion-label text-wrap>{{cb?.RefundChange?.RefundDetail?.Befores?.join("")}}</ion-label> -->
+      <!-- <ion-label class='ion-text-wrap'>{{cb?.RefundChange?.RefundDetail?.Befores?.join("")}}</ion-label> -->
       <div *ngFor='let item of cb?.RefundChange?.RefundDetail?.Befores'>
         {{item}} 
       </div>&nbsp;
@@ -28,7 +28,7 @@
       更改条件
     </ion-col>
     <ion-col size='8'>
-      <!-- <ion-label text-wrap>{{cb?.RefundChange?.ChangeDetail?.Befores?.join("")}}</ion-label> -->
+      <!-- <ion-label class='ion-text-wrap'>{{cb?.RefundChange?.ChangeDetail?.Befores?.join("")}}</ion-label> -->
       <div *ngFor='let item of cb?.RefundChange?.ChangeDetail?.Befores'>
         {{item}} 
       </div>&nbsp;
@@ -39,7 +39,7 @@
       签转条件
     </ion-col>
     <ion-col size='8'>
-      <ion-label text-wrap>{{cb?.RefundChange?.EndorsementDetail?.Endorsements?.join("")}} &nbsp;</ion-label>
+      <ion-label class='ion-text-wrap'>{{cb?.RefundChange?.EndorsementDetail?.Endorsements?.join("")}} &nbsp;</ion-label>
     </ion-col>
   </ion-row>
   <ion-row>
@@ -47,7 +47,7 @@
       行李限额
     </ion-col>
     <ion-col size='8'>
-      <ion-label text-wrap>
+      <ion-label class='ion-text-wrap'>
         {{cb?.RefundChange?.BaggageAllowance}} &nbsp;
       </ion-label>
     </ion-col>

@@ -17,17 +17,17 @@
     <span>{{trip?.CabinType|cabintype}}<ng-container *ngIf='trip.OrderFlightTicket?.TicketType==OrderFlightTicketType.Domestic'>{{trip?.Discount|discount}}</ng-container>
       </span>
   </div>
-  <div margin-start>
+  <div class='ion-margin-start'>
     <span>
       起飞: {{trip?.TakeoffTime?.substr(0,"yyyy-MM-dd".length)}}
       <span>{{trip?.TakeoffTime?.substr("yyyy-MM-ddT".length,"HH:mm".length)}}</span>
     </span>
-    <span margin-start>{{trip?.FromAirportName}}({{trip?.FromAirport}}){{trip?.FromTerminal}}</span>
+    <span class='ion-margin-start'>{{trip?.FromAirportName}}({{trip?.FromAirport}}){{trip?.FromTerminal}}</span>
   </div>
-  <div margin-start>
+  <div class='ion-margin-start'>
     到达: <span>{{trip?.ArrivalTime?.substr(0,"yyyy-MM-dd".length)}}</span>
     <span>{{trip?.ArrivalTime?.substr("yyyy-MM-ddT".length,"HH:mm".length)}}</span>
-    <span margin-start>{{trip?.ToAirportName}}({{trip?.ToAirport}}){{trip?.ToTerminal}}</span>
+    <span class='ion-margin-start'>{{trip?.ToAirportName}}({{trip?.ToAirport}}){{trip?.ToTerminal}}</span>
   </div>
 </div>
 <ng-container *ngIf='hasOriginalFlightTrip()'>
@@ -51,17 +51,17 @@
       <span>{{trip?.CabinType|cabintype}}<ng-container *ngIf='trip.OrderFlightTicket?.TicketType==OrderFlightTicketType.Domestic'>{{trip?.Discount|discount}}</ng-container>
         </span>
     </div>
-    <div margin-start>
+    <div class='ion-margin-start'>
       <span>
         起飞: {{trip?.TakeoffTime?.substr(0,"yyyy-MM-dd".length)}}
         <span>{{trip?.TakeoffTime?.substr("yyyy-MM-ddT".length,"HH:mm".length)}}</span>
       </span>
-      <span margin-start>{{trip?.FromAirportName}}({{trip?.FromAirport}}){{trip?.FromTerminal}}</span>
+      <span class='ion-margin-start'>{{trip?.FromAirportName}}({{trip?.FromAirport}}){{trip?.FromTerminal}}</span>
     </div>
-    <div margin-start>
+    <div class='ion-margin-start'>
       到达: <span>{{trip?.ArrivalTime?.substr(0,"yyyy-MM-dd".length)}}</span>
       <span>{{trip?.ArrivalTime?.substr("yyyy-MM-ddT".length,"HH:mm".length)}}</span>
-      <span margin-start>{{trip?.ToAirportName}}({{trip?.ToAirport}}){{trip?.ToTerminal}}</span>
+      <span class='ion-margin-start'>{{trip?.ToAirportName}}({{trip?.ToAirport}}){{trip?.ToTerminal}}</span>
     </div>
   </div>
 </ng-container>

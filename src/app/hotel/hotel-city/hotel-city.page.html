@@ -14,8 +14,8 @@
       字母索引
     </ion-row>
     <ion-row>
-      <ion-col *ngFor='let letter of letters' (click)='onSelectLetter(letter)' no-margin no-padding size='1.5'>
-        <ion-button fill='clear' color='secondary' size='small' no-margin>
+      <ion-col *ngFor='let letter of letters' (click)='onSelectLetter(letter)' class='ion-no-margin ion-no-padding' size='1.5'>
+        <ion-button fill='clear' color='secondary' size='small' class='ion-no-margin'>
           {{letter}}
         </ion-button>
       </ion-col>

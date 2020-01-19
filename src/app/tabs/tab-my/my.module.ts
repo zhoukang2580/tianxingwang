@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MyPage } from './my.page';
-import { TranslateModule } from '@ngx-translate/core';
+// import { TranslateModule } from '@ngx-translate/core';
 import { AuthorityGuard } from 'src/app/guards/authority.guard';
 import { AppDirectivesModule } from 'src/app/directives/directives.module';
 let routes: Route[] = [
@@ -35,7 +35,7 @@ let routes: Route[] = [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    TranslateModule.forChild(),
+    // TranslateModule.forChild(),
     RouterModule.forChild(routes),
     AppDirectivesModule
   ],

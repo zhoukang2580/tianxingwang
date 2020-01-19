@@ -35,7 +35,7 @@ export class SendEmailComponent implements OnInit, AfterViewInit, OnDestroy {
   emailContent: string;
   isAddingEmail = false;
   isLoading = false;
-  @ViewChild("content") content: ElementRef<HTMLElement>;
+  @ViewChild("content", { static: false }) content: ElementRef<HTMLElement>;
   @ViewChildren(IonSelect) ionSelects: QueryList<IonSelect>;
   ionSelectsSubscribtion = Subscription.EMPTY;
   selectItemList: { Text: string; Value: string }[] = [];

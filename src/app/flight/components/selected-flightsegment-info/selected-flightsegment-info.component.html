@@ -41,22 +41,22 @@
           </app-fly-list-item>
           <div>
             <ion-row>
-              <ion-col text-end>
+              <ion-col class='ion-text-end'>
                 <div style="display: flex;align-items: center;justify-content: flex-end;width: 100%;">
                   <ion-label color='danger'>机票票价:￥{{bookInfo.bookInfo?.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
-                  <ion-label color='danger' margin-start>税费:￥{{bookInfo.bookInfo?.flightSegment?.Tax}}</ion-label>
+                  <ion-label color='danger' class='ion-margin-start'>税费:￥{{bookInfo.bookInfo?.flightSegment?.Tax}}</ion-label>
                 </div>
               </ion-col>
             </ion-row>
           </div>
-          <ion-label class='rules' color='danger' text-wrap>
+          <ion-label class='rules ion-text-wrap' color='danger' >
             {{bookInfo.bookInfo?.flightPolicy?.Rules?.join("; ")}}
           </ion-label>
-          <ion-label *ngIf='getFlightIllegalTip() as tip' color='danger' text-wrap class='rules'>提示：({{tip}})
+          <ion-label *ngIf='getFlightIllegalTip() as tip' color='danger'  class='rules ion-text-wrap'>提示：({{tip}})
           </ion-label>
-          <ion-label *ngIf='getFlightlegalTip() as tip' color='danger' text-wrap class='rules'>提示：({{tip}})
+          <ion-label *ngIf='getFlightlegalTip() as tip' color='danger'  class='rules ion-text-wrap'>提示：({{tip}})
           </ion-label>
-          <ion-label class='rules' text-wrap color='dark' (click)='onSelectLowestSegment(bookInfo)'
+          <ion-label class='rules ion-text-wrap'  color='dark' (click)='onSelectLowestSegment(bookInfo)'
             *ngIf='showLowerSegment(bookInfo)'>
             当前航班前后60分钟内有更低价航班:{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.Number}}&nbsp;
             {{getTime(bookInfo.bookInfo?.flightPolicy?.LowerSegment?.TakeoffTime)}},价格:￥{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.LowestFare}}

@@ -48,7 +48,7 @@
         <span class='seat-count'>余票:{{seat.Count?seat.Count+"张":""}}</span>
       </ion-col>
       <ion-col (click)='onBookTicket(seat)'>
-        <ion-button *ngIf='showBookBtn' size='small' text-start [color]='seat.color'
+        <ion-button *ngIf='showBookBtn' size='small' class='ion-text-start' [color]='seat.color'
           [disabled]='seat.color=="danger"||seat.Count=="0"'>
           <ion-text color='light'>预订</ion-text>
         </ion-button>

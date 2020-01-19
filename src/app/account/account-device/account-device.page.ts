@@ -17,7 +17,7 @@ type Item = {
 export class AccountDevicePage implements OnInit, OnDestroy {
   toggleChecked = false;
   items: Item[] = [];
-  @ViewChild("List") deviceList: IonList;
+  @ViewChild("List", { static: false }) deviceList: IonList;
   constructor(private apiService: ApiService, private navCtrl: NavController) { }
 
   ngOnInit() {

@@ -6,7 +6,7 @@
     <ion-col>
       <span>{{trip.OrderId}}</span>
     </ion-col>
-    <ion-col text-end>
+    <ion-col class='ion-text-end'>
       <span>{{trip.Status}}</span>
     </ion-col>
   </ion-row>
@@ -31,19 +31,19 @@
   <ion-row *ngIf='trip.Type=="Flight"'>
     <ion-col>
       <strong>{{trip.StartTime?.substr(0,"yyyy-MM-dd".length)}}</strong>
-      <span margin-start margin-end>
+      <span class='ion-margin-start ion-margin-end'>
         {{trip.FromName}}←→{{trip.ToName}}
       </span>
-      {{trip.Name}}<span margin-start></span>{{trip.EndTime?.substr("yyyy-MM-DDT".length,"HH:mm".length)}}
+      {{trip.Name}}<span class='ion-margin-start'></span>{{trip.EndTime?.substr("yyyy-MM-DDT".length,"HH:mm".length)}}
     </ion-col>
   </ion-row>
   <ion-row *ngIf='trip.Type=="Train"'>
     <ion-col>
       <strong>{{trip.StartTime?.substr(0,"yyyy-MM-dd".length)}}</strong>
-      <span margin-start margin-end>
+      <span class='ion-margin-start ion-margin-end'>
         {{trip.FromName}}←→{{trip.ToName}}
       </span>
-      {{trip.Name}}<span margin-start></span>{{trip.EndTime?.substr("yyyy-MM-DDT".length,"HH:mm".length)}}
+      {{trip.Name}}<span class='ion-margin-start'></span>{{trip.EndTime?.substr("yyyy-MM-DDT".length,"HH:mm".length)}}
     </ion-col>
   </ion-row>
   <ng-container *ngIf='trip.Type=="Hotel"'>

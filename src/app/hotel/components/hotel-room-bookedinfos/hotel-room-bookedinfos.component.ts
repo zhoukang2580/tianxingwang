@@ -36,7 +36,7 @@ export class HotelRoomBookedinfosComponent implements OnInit {
   @HostBinding("class.show-price-detail") isShowPriceDetail = false;
   roomImages: string[];
   config: ConfigEntity;
-  @ViewChild(IonRefresher) ionRefresher: IonRefresher;
+  @ViewChild(IonRefresher, { static: false }) ionRefresher: IonRefresher;
   dates: { date: string; price: string }[] = [];
   constructor(
     private modalCtrl: ModalController,

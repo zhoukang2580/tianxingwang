@@ -127,7 +127,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   filterCondition: FilterConditionModel;
   showAddPassenger = false;
   isRotateIcon = false;
-  @ViewChild("cnt") cnt: IonContent;
+  @ViewChild("cnt", { static: false }) cnt: IonContent;
   @ViewChildren("fli") liEles: QueryList<ElementRef<HTMLElement>>;
   vmFlights: FlightSegmentEntity[]; // 用于视图展示
   vmFlightJourneyList: FlightJourneyEntity[];
@@ -146,8 +146,8 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     goArrivalDateTime: string;
     backTakeOffDateTime: string;
   }>;
-  @ViewChild(FlyFilterComponent) filterComp: FlyFilterComponent;
-  @ViewChild(IonRefresher) refresher: IonRefresher;
+  @ViewChild(FlyFilterComponent, { static: false }) filterComp: FlyFilterComponent;
+  @ViewChild(IonRefresher, { static: false }) refresher: IonRefresher;
   activeTab: "filter" | "time" | "price" | "none"; // 当前激活的tab
   hasDataSource: Subject<boolean>;
   showAdvSearchPage$: Observable<boolean>;

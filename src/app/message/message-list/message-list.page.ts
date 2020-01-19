@@ -43,9 +43,9 @@ export class MessageListPage implements OnInit, AfterViewInit {
   loading = false;
   open = false;
   isSelectAll = false;
-  @ViewChild(IonList) ionList: IonList;
-  @ViewChild(IonRefresher) refresher: IonRefresher;
-  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
+  @ViewChild(IonList, { static: false }) ionList: IonList;
+  @ViewChild(IonRefresher, { static: false }) refresher: IonRefresher;
+  @ViewChild(IonInfiniteScroll, { static: false }) scroller: IonInfiniteScroll;
   @ViewChildren("msgDetial") msgDetialEles: QueryList<ElementRef<HTMLElement>>;
   constructor(
     private messageService: MessageService,

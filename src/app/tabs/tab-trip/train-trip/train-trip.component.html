@@ -2,7 +2,7 @@
   <ion-item lines='none'>
     <ion-label color='secondary'>
       <i slot='start' class='icon icon-search-train'></i>
-      <strong margin-start>火车</strong>
+      <strong class='ion-margin-start'>火车</strong>
     </ion-label>
     <ion-button disabled color='secondary' slot='end' fill='clear'>{{trip?.Status}}</ion-button>
   </ion-item>
@@ -19,7 +19,7 @@
           <div class="line"></div>
         </div>
       </div>
-      <div class="end" text-end>
+      <div class="end ion-text-end" >
         <div>{{trip.ToName}}</div>
         <div>
           <strong>{{getEndHHmm()}}</strong>
@@ -43,8 +43,8 @@
         火车票事务号：<span>{{trip?.OrderTicketId}}</span>
       </p>
     </ion-text>
-    <ion-label text-wrap *ngIf='getTrainProducts(trip) as products'>
-      <span *ngFor='let product of products ' margin-end>{{product.Name}}({{product.Price}})</span>
+    <ion-label class='ion-text-wrap' *ngIf='getTrainProducts(trip) as products'>
+      <span *ngFor='let product of products ' class='ion-margin-end'>{{product.Name}}({{product.Price}})</span>
     </ion-label>
   </ion-card-content>
 </ion-card>

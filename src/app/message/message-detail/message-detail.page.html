@@ -9,15 +9,15 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content class='ion-padding'>
   <ng-container *ngIf='!isShowLink;else detailTempl'>
-    <h3 padding-start no-margin>
+    <h3  class='ion-padding-start ion-no-margin'>
       {{message?.Title}}
     </h3>
-    <h6 padding-start>{{message?.InsertTime}}</h6>
+    <h6 class='ion-padding-start'>{{message?.InsertTime}}</h6>
     <div class='detail' #msgdetail [attr.msgdetail]='message?.Detail' [attr.msgid]='message?.Id'>
     </div>
-    <ion-button margin-top color='secondary' *ngIf='message?.Url' expand='block' (click)="onShowDetail(message?.Url)">显示详情
+    <ion-button class='ion-margin-top' color='secondary' *ngIf='message?.Url' expand='block' (click)="onShowDetail(message?.Url)">显示详情
     </ion-button>
   </ng-container>
   <ng-template #detailTempl>
