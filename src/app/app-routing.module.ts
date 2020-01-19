@@ -1,4 +1,4 @@
-import { NoAuthorizePage } from './pages/no-authorize/no-authorize.page';
+import { NoAuthorizePage } from "./pages/no-authorize/no-authorize.page";
 import { AppHelper } from "src/app/appHelper";
 import { NgModule } from "@angular/core";
 import { PreloadAllModules, RouterModule, Routes } from "@angular/router";
@@ -18,7 +18,8 @@ import { OrderModule } from "./order/order.module";
 import { HrModule } from "./hr/hr.module";
 import { TrainModule } from "./train/train.module";
 import { HotelModule } from "./hotel/hotel.module";
-import { CarModule } from './car/car.module';
+import { CarModule } from "./car/car.module";
+import { HotelInternationalModule } from "./hotel-international/hotel-international.module";
 
 const routes: Routes = [
   {
@@ -35,9 +36,20 @@ const routes: Routes = [
     path: "open-url",
     loadChildren: "./pages/open-url/open-url.module#OpenUrlPageModule"
   },
-  { path: 'contact-us', loadChildren: './pages/contact-us/contact-us.module#ContactUsPageModule' },
-  { path: 'no-authorize', loadChildren: "./pages/no-authorize/no-authorize.module#NoAuthorizePageModule" },
-  { path: 'developer-options', loadChildren: './pages/developer-options/developer-options.module#DeveloperOptionsPageModule' },
+  {
+    path: "contact-us",
+    loadChildren: "./pages/contact-us/contact-us.module#ContactUsPageModule"
+  },
+  {
+    path: "no-authorize",
+    loadChildren:
+      "./pages/no-authorize/no-authorize.module#NoAuthorizePageModule"
+  },
+  {
+    path: "developer-options",
+    loadChildren:
+      "./pages/developer-options/developer-options.module#DeveloperOptionsPageModule"
+  },
   {
     path: "",
     component: TabsPage,
@@ -45,11 +57,9 @@ const routes: Routes = [
   },
   {
     path: "**",
-    loadChildren: "./page404/page404.module#Page404PageModule",
+    loadChildren: "./page404/page404.module#Page404PageModule"
     // matcher: AppHelper.matchDefaultRoute
-  },
-
-
+  }
 ];
 @NgModule({
   imports: [
@@ -69,6 +79,7 @@ const routes: Routes = [
     TrainModule,
     HotelModule,
     CarModule,
+    HotelInternationalModule,
     RouterModule.forRoot(routes, {
       preloadingStrategy: PreloadAllModules,
       enableTracing: !true,
@@ -77,4 +88,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule, MessageModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
