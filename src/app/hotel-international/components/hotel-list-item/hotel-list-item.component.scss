@@ -1,0 +1,27 @@
+ion-thumbnail {
+    width: 7em;
+    height: 7em;
+    margin: 0 0.5em 0 -0.5em;
+  }
+  h2.ion-text-end {
+    ion-text,
+    small {
+      font-size: 0.8rem;
+    }
+    color: var(--ion-color-danger);
+    .price {
+    //   margin: 0 -0.1em 0 -0.15em;
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+  }
+  ion-label {
+    .name {
+      font-size: 1rem;
+      font-weight: bold;
+    }
+    .sub-name {
+      font-size: 0.8rem;
+    }
+  }
+  
