@@ -1,8 +1,8 @@
+import { RequestEntity } from "src/app/services/api/Request.entity";
 import { AppHelper } from "./../appHelper";
 import { BehaviorSubject } from "rxjs";
 import { Subject } from "rxjs";
 import { ApiService } from "./../services/api/api.service";
-import { RequestEntity } from "./../services/api/Request.entity";
 import { TrafficlineEntity } from "./../tmc/models/TrafficlineEntity";
 import { Injectable } from "@angular/core";
 import { Storage } from "@ionic/storage";
@@ -15,9 +15,18 @@ export class InternationalHotelService {
   private searchConditon: IInterHotelSearchCondition;
   private searchConditionSource: Subject<IInterHotelSearchCondition>;
   private cities: TrafficlineEntity[];
+  private countries: CountryEntity[];
   private fetchCities: { promise: Promise<TrafficlineEntity[]> };
   constructor(private apiService: ApiService, private storage: Storage) {
     this.searchConditionSource = new BehaviorSubject(null);
+  }
+  async getCountries() {
+    if (this.countries && this.countries.length) {
+      return Promise.resolve(this.countries);
+    }
+    const req = new RequestEntity();
+    req.Method = "TmcApiInternationalHotelUrl-Country-GetCoutries";
+    return this.apiService.getPromiseData<CountryEntity[]>(req);
   }
   async getCities(forceFetch = false) {
     if (!forceFetch) {
@@ -30,7 +39,7 @@ export class InternationalHotelService {
     }
     const req = new RequestEntity();
     req.IsShowLoading = true;
-    req.Method = ``;
+    req.Method = "TmcApiInternationalHotelUrl-City-Gets";
     req.Data = {};
     if (this.fetchCities && this.fetchCities.promise) {
       return this.fetchCities.promise;
