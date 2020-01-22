@@ -5,12 +5,17 @@ import { Routes, RouterModule } from "@angular/router";
 export const routes: Routes = [
   {
     path: "message-list",
-    loadChildren: "./message-list/message-list.module#MessageListPageModule"
+    loadChildren: () =>
+      import("./message-list/message-list.module").then(
+        m => m.MessageListPageModule
+      )
   },
   {
     path: "message-detail",
-    loadChildren:
-      "./message-detail/message-detail.module#MessageDetailPageModule"
+    loadChildren: () =>
+      import("./message-detail/message-detail.module").then(
+        m => m.MessageDetailPageModule
+      )
   }
 ];
 @NgModule({

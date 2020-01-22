@@ -4,15 +4,24 @@ import { Routes, RouterModule } from "@angular/router";
 export const routes: Routes = [
   {
     path: "product-list",
-    loadChildren: "./product-list/product-list.module#ProductListPageModule"
+    loadChildren: () =>
+      import("./product-list/product-list.module").then(
+        m => m.ProductListPageModule
+      )
   },
   {
     path: "product-tabs",
-    loadChildren: "./product-tabs/product-tabs.module#ProductTabsPageModule"
+    loadChildren: () =>
+      import("./product-tabs/product-tabs.module").then(
+        m => m.ProductTabsPageModule
+      )
   },
   {
     path: "order-detail",
-    loadChildren: "./order-detail/order-detail.module#OrderDetailPageModule"
+    loadChildren: () =>
+      import("./order-detail/order-detail.module").then(
+        m => m.OrderDetailPageModule
+      )
   }
 ];
 @NgModule({

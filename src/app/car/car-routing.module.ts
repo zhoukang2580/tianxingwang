@@ -4,7 +4,8 @@ import { CommonModule } from "@angular/common";
 export const routes: Routes = [
   {
     path: "rental-car",
-    loadChildren: `./rental-car/rental-car.module#RentalCarPageModule`
+    loadChildren: () =>
+      import(`./rental-car/rental-car.module`).then(m => m.RentalCarPageModule)
   }
 ];
 @NgModule({

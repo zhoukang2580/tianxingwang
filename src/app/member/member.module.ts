@@ -4,12 +4,17 @@ import { Routes, RouterModule } from "@angular/router";
 const routes: Routes = [
   {
     path: "member-detail",
-    loadChildren: "./member-detail/member-detail.module#MemberDetailPageModule"
+    loadChildren: () =>
+      import("./member-detail/member-detail.module").then(
+        m => m.MemberDetailPageModule
+      )
   },
   {
     path: "member-credential-management",
-    loadChildren:
-      "./member-credential-management/member-credential-management.module#MemberCredentialManagementPageModule"
+    loadChildren: () =>
+      import(
+        "./member-credential-management/member-credential-management.module"
+      ).then(m => m.MemberCredentialManagementPageModule)
   }
 ];
 @NgModule({
@@ -17,4 +22,4 @@ const routes: Routes = [
   imports: [CommonModule, RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class MemberModule { }
+export class MemberModule {}

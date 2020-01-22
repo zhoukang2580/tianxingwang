@@ -24,31 +24,55 @@ import { HotelInternationalModule } from "./hotel-international/hotel-internatio
 const routes: Routes = [
   {
     path: "crop-avatar",
-    loadChildren: "./pages/crop-avatar/crop-avatar.module#CropAvatarPageModule"
+    loadChildren: () =>
+      import("./pages/crop-avatar/crop-avatar.module").then(
+        m => m.CropAvatarPageModule
+      )
   },
   {
     path: "function-test",
-    loadChildren:
-      "./pages/function-test/function-test.module#FunctionTestPageModule"
+    loadChildren: () =>
+      import("./pages/function-test/function-test.module").then(
+        m => m.FunctionTestPageModule
+      )
   },
-  { path: "scan", loadChildren: "./pages/scan/scan.module#ScanPageModule" },
+  {
+    path: "scan",
+    loadChildren: () =>
+      import("./pages/scan/scan.module").then(m => m.ScanPageModule)
+  },
   {
     path: "open-url",
-    loadChildren: "./pages/open-url/open-url.module#OpenUrlPageModule"
+    loadChildren: () =>
+      import("./pages/open-url/open-url.module").then(m => m.OpenUrlPageModule)
   },
   {
     path: "contact-us",
-    loadChildren: "./pages/contact-us/contact-us.module#ContactUsPageModule"
+    loadChildren: () =>
+      import("./pages/contact-us/contact-us.module").then(
+        m => m.ContactUsPageModule
+      )
   },
   {
     path: "no-authorize",
-    loadChildren:
-      "./pages/no-authorize/no-authorize.module#NoAuthorizePageModule"
+    loadChildren: () =>
+      import("./pages/no-authorize/no-authorize.module").then(
+        m => m.NoAuthorizePageModule
+      )
   },
   {
     path: "developer-options",
-    loadChildren:
-      "./pages/developer-options/developer-options.module#DeveloperOptionsPageModule"
+    loadChildren: () =>
+      import("./pages/developer-options/developer-options.module").then(
+        m => m.DeveloperOptionsPageModule
+      )
+  },
+  {
+    path: "open-my-calendar",
+    loadChildren: () =>
+      import("./pages/open-my-calendar/open-my-calendar.module").then(
+        m => m.OpenMyCalendarPageModule
+      )
   },
   {
     path: "",
@@ -57,7 +81,8 @@ const routes: Routes = [
   },
   {
     path: "**",
-    loadChildren: "./page404/page404.module#Page404PageModule"
+    loadChildren: () =>
+      import("./page404/page404.module").then(m => m.Page404PageModule)
     // matcher: AppHelper.matchDefaultRoute
   }
 ];

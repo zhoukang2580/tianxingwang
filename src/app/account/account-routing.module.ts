@@ -1,59 +1,79 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule, Route } from "@angular/router";
-import { AuthorityGuard } from '../guards/authority.guard';
+import { AuthorityGuard } from "../guards/authority.guard";
 
 let routes: Route[] = [
   {
     path: "account-setting",
-    loadChildren:
-      "./account-setting/account-setting.module#AccountSettingPageModule"
+    loadChildren: () =>
+      import("./account-setting/account-setting.module").then(
+        m => m.AccountSettingPageModule
+      )
   },
   {
     path: "account-security",
-    loadChildren:
-      "./account-security/account-security.module#AccountSecurityPageModule"
+    loadChildren: () =>
+      import("./account-security/account-security.module").then(
+        m => m.AccountSecurityPageModule
+      )
   },
-  // {
-  //   path: "account-security_en",
-  //   loadChildren:
-  //     "./account-security/en/account-security-en.module#AccountSecurityEnPageModule"
-  // },
   {
     path: "account-device",
-    loadChildren:
-      "./account-device/account-device.module#AccountDevicePageModule"
+    loadChildren: () =>
+      import("./account-device/account-device.module").then(
+        m => m.AccountDevicePageModule
+      )
   },
   {
     path: "account-dingtalk",
-    loadChildren:
-      "./account-dingtalk/account-dingtalk.module#AccountDingtalkPageModule"
+    loadChildren: () =>
+      import("./account-dingtalk/account-dingtalk.module").then(
+        m => m.AccountDingtalkPageModule
+      )
   },
   {
     path: "account-wechat",
-    loadChildren:
-      "./account-wechat/account-wechat.module#AccountWechatPageModule"
+    loadChildren: () =>
+      import("./account-wechat/account-wechat.module").then(
+        m => m.AccountWechatPageModule
+      )
   },
   {
     path: "account-email",
-    loadChildren: "./account-email/account-email.module#AccountEmailPageModule"
+    loadChildren: () =>
+      import("./account-email/account-email.module").then(
+        m => m.AccountEmailPageModule
+      )
   },
   {
     path: "account-password",
-    loadChildren:
-      "./account-password/account-password.module#AccountPasswordPageModule"
+    loadChildren: () =>
+      import("./account-password/account-password.module").then(
+        m => m.AccountPasswordPageModule
+      )
   },
   {
     path: "account-pay-password",
-    loadChildren:
-      "./account-pay-password/account-pay-password.module#AccountPayPasswordPageModule"
+    loadChildren: () =>
+      import("./account-pay-password/account-pay-password.module").then(
+        m => m.AccountPayPasswordPageModule
+      )
   },
   {
     path: "account-bind",
-    loadChildren: "./account-bind/account-bind.page.module#AccountBindPageModule"
+    loadChildren: () =>
+      import("./account-bind/account-bind.page.module").then(
+        m => m.AccountBindPageModule
+      )
   },
-  { path: 'account-mobile', loadChildren: './account-mobile/account-mobile.module#AccountMobilePageModule' }
-
+  {
+    path: "account-mobile",
+    loadChildren: () =>
+      import("./account-mobile/account-mobile.module").then(
+        m => m.AccountMobilePageModule
+      )
+  }
 ];
 
 @NgModule({
@@ -61,4 +81,4 @@ let routes: Route[] = [
   imports: [CommonModule, RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class AccountRoutingModule { }
+export class AccountRoutingModule {}

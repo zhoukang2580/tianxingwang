@@ -11,24 +11,7 @@ let routes: Route[] = [
   { path: '', component: MyPage },
 
 ];
-// (()=>{
-//   routes=routes.map(r => {
-//     if (r.loadChildren) {
-//       return {
-//         ...r,
-//         canLoad: [AuthorityGuard]
-//       }
-//     }
-//     if(r.component){
-//       return {
-//         ...r,
-//         canActivate:[AuthorityGuard]
-//       }
-//     }
-//     return r;
-//   });
-// })()
-// .map(r => ({ ...r, canLoad: [AuthorityGuard] }));
+
 @NgModule({
   imports: [
     IonicModule,

@@ -4,11 +4,17 @@ import { Routes, RouterModule } from "@angular/router";
 export const routes: Routes = [
   {
     path: "bulletin-list",
-    loadChildren: "./bulletin-list/bulletin-list.module#BulletinListPageModule"
+    loadChildren: () =>
+      import("./bulletin-list/bulletin-list.module").then(
+        m => m.BulletinListPageModule
+      )
   },
   {
     path: "view-bulletin-detail",
-    loadChildren: "./view-detail/view-detail.module#ViewDetailPageModule"
+    loadChildren: () =>
+      import("./view-detail/view-detail.module").then(
+        m => m.ViewDetailPageModule
+      )
   }
 ];
 @NgModule({

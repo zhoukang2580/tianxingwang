@@ -8,7 +8,11 @@ import { AppComponentsModule } from "../components/appcomponents.module";
   imports: [
     CommonModule,
     RouterModule.forChild([
-      { path: "login", loadChildren: "./login.page.module#LoginPageModule" }
+      {
+        path: "login",
+        loadChildren: () =>
+          import("./login.page.module").then(m => m.LoginPageModule)
+      }
     ]),
     AppComponentsModule
   ],

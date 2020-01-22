@@ -4,11 +4,16 @@ import { NgModule } from "@angular/core";
 const routes: Routes = [
   {
     path: "select-customer",
-    loadChildren:
-      "./select-customer/select-customer.module#SelectCustomerPageModule"
-  },  { path: 'order-list', loadChildren: './order-list/order-list.module#OrderListPageModule' },
-
-
+    loadChildren: () =>
+      import("./select-customer/select-customer.module").then(
+        m => m.SelectCustomerPageModule
+      )
+  },
+  {
+    path: "order-list",
+    loadChildren: () =>
+      import("./order-list/order-list.module").then(m => m.OrderListPageModule)
+  }
 ];
 @NgModule({
   imports: [RouterModule.forChild(routes)],

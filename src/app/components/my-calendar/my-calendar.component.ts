@@ -8,7 +8,9 @@ import {
   AfterViewInit,
   OnDestroy,
   ViewChildren,
-  QueryList
+  QueryList,
+  Output,
+  EventEmitter
 } from "@angular/core";
 import * as moment from "moment";
 import { fromEvent, Subscription } from "rxjs";
@@ -18,6 +20,8 @@ import { fromEvent, Subscription } from "rxjs";
   styleUrls: ["./my-calendar.component.scss"]
 })
 export class MyCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
+  @Output() dateSelect: EventEmitter<IDay>;
+  @Input() openAsModal: boolean;
   @Input() date: string;
   @ViewChild("years", { static: false }) yearsContainer: ElementRef<
     HTMLElement
@@ -30,7 +34,9 @@ export class MyCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
   vmYears: IYear[];
   monthDates: IMonthDate[];
   weeks: IWeek[];
-  constructor(private plt: Platform, private modalCtrl: ModalController) {}
+  constructor(private plt: Platform, private modalCtrl: ModalController) {
+    this.dateSelect = new EventEmitter();
+  }
   ngAfterViewInit() {
     const subscription = fromEvent(
       this.yearsContainer.nativeElement,
@@ -61,11 +67,14 @@ export class MyCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
       })
     );
     console.timeEnd("back");
-    const t = await this.modalCtrl.getTop();
-    if (t) {
-      this.isDateSelected = false;
-      t.dismiss(date);
+    if (this.openAsModal) {
+      const t = await this.modalCtrl.getTop();
+      if (t) {
+        this.isDateSelected = false;
+        t.dismiss(date);
+      }
     }
+    this.dateSelect.emit(date);
   }
   ngOnInit() {
     this.monthDates = [];

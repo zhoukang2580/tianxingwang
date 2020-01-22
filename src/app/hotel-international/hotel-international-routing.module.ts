@@ -5,7 +5,10 @@ import { Routes } from "@angular/router";
 export const routes: Routes = [
   {
     path: "international-hotel-list",
-    loadChildren: `./international-hotel-list/international-hotel-list.module#InternationalHotelListPageModule`
+    loadChildren: () =>
+      import(`./international-hotel-list/international-hotel-list.module`).then(
+        m => m.InternationalHotelListPageModule
+      )
   }
 ];
 @NgModule({

@@ -1,22 +1,27 @@
 import { RouterModule, Routes } from "@angular/router";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { ConfirmCredentialInfoGuard } from '../guards/confirm-credential-info.guard';
+import { ConfirmCredentialInfoGuard } from "../guards/confirm-credential-info.guard";
 export const routes: Routes = [
   {
     path: "train-list",
     canActivate: [ConfirmCredentialInfoGuard],
-    loadChildren: "./train-list/train-list.module#TrainListPageModule"
+    loadChildren: () =>
+      import("./train-list/train-list.module").then(m => m.TrainListPageModule)
   },
   {
     path: "search-train",
     canActivate: [ConfirmCredentialInfoGuard],
-    loadChildren: "./search-train/search-train.module#SearchTrainPageModule"
+    loadChildren: () =>
+      import("./search-train/search-train.module").then(
+        m => m.SearchTrainPageModule
+      )
   },
   {
     path: "train-book",
     canActivate: [ConfirmCredentialInfoGuard],
-    loadChildren: "./train-book/book.module#TrainBookPageModule"
+    loadChildren: () =>
+      import("./train-book/book.module").then(m => m.TrainBookPageModule)
   }
 ];
 @NgModule({
@@ -24,4 +29,4 @@ export const routes: Routes = [
   imports: [CommonModule, RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class TrainRoutingModule { }
+export class TrainRoutingModule {}

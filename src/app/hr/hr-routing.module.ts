@@ -5,15 +5,22 @@ import { RouterModule, Route } from "@angular/router";
 let routes: Route[] = [
   {
     path: "hr-invitation",
-    loadChildren:
-      "./hr-invitation/hr-invitation.module#HrInvitationPageModule"
+    loadChildren: () =>
+      import("./hr-invitation/hr-invitation.module").then(
+        m => m.HrInvitationPageModule
+      )
   },
   {
     path: "confirm-information",
-    loadChildren:`./confirm-information/confirm-information.module#ConfirmInformationPageModule`
+    loadChildren: () =>
+      import(`./confirm-information/confirm-information.module`).then(
+        m => m.ConfirmInformationPageModule
+      )
   },
-  { path: 'hr', loadChildren: './hr/hr.module#HrPageModule' },
-
+  {
+    path: "hr",
+    loadChildren: () => import("./hr/hr.module").then(m => m.HrPageModule)
+  }
 ];
 
 @NgModule({
@@ -21,4 +28,4 @@ let routes: Route[] = [
   imports: [CommonModule, RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class HrRoutingModule { }
+export class HrRoutingModule {}

@@ -48,7 +48,11 @@ export class MemberCredentialManagementPage
   modifyCredential: MemberCredential; // 新增的证件
   loading = false;
   isCanDeactive = false;
-  requestCode: "issueNationality" | "identityNationality";
+  requestCode:
+    | "issueNationality"
+    | "identityNationality"
+    | "birthDate"
+    | "expireDate";
   isModify = false;
   @ViewChild("form", { static: false }) formEle: ElementRef<HTMLFormElement>;
   @ViewChildren("credentialItem") credentialItem: QueryList<
@@ -70,6 +74,17 @@ export class MemberCredentialManagementPage
   ) {
     route.queryParamMap.subscribe(p => {
       this.isCanDeactive = false;
+      if (this.modifyCredential) {
+        if (p.get("date")) {
+          if (this.requestCode == "birthDate") {
+            this.modifyCredential.Birthday = p.get("date");
+          }
+          if (this.requestCode == "expireDate") {
+            this.modifyCredential.ExpirationDate = p.get("date");
+          }
+          this.requestCode = null;
+        }
+      }
     });
   }
   back() {
@@ -165,16 +180,34 @@ export class MemberCredentialManagementPage
     return d;
   }
   async onSelectBirthDate() {
-    const d = await this.onSelectDate();
-    if (d) {
-      this.modifyCredential.Birthday = d.date;
-    }
+    // const d = await this.onSelectDate();
+    // if (d) {
+    //   this.modifyCredential.Birthday = d.date;
+    // }
+    this.isCanDeactive = true;
+    const path = this.getCurUrl();
+    this.requestCode = "birthDate";
+    this.router.navigate(["open-my-calendar"], {
+      queryParams: { backRouteUrl: path }
+    });
   }
   async onSelectExpireDate() {
-    const d = await this.onSelectDate();
-    if (d) {
-      this.modifyCredential.ExpirationDate = d.date;
-    }
+    // const d = await this.onSelectDate();
+    // if (d) {
+    //   this.modifyCredential.ExpirationDate = d.date;
+    // }
+    this.isCanDeactive = true;
+    const path = this.getCurUrl();
+    this.requestCode = "expireDate";
+    this.router.navigate(["open-my-calendar"], {
+      queryParams: { backRouteUrl: path },
+    });
+  }
+  private getCurUrl() {
+    const path = this.router.url.includes("#")
+      ? this.router.url.substr(0, this.router.url.indexOf("#"))
+      : this.router.url;
+    return path;
   }
   private changeBirthByIdNumber(idInputEle: HTMLInputElement) {
     if (!idInputEle) {
