@@ -1,5 +1,5 @@
-import { AppDirectivesModule } from './../directives/directives.module';
-import { MapComponent } from './../components/map/map.component';
+import { AppDirectivesModule } from "./../directives/directives.module";
+import { MapComponent } from "./../components/map/map.component";
 import { AppUpdateComponent } from "./appupdate/appupdate.component";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
@@ -14,8 +14,9 @@ import { TreeNgxModule } from "./tree-ngx/tree-ngx.module";
 import { TimelineComponent } from "./timeline/timeline.component";
 import { TimelineItemComponent } from "./timeline-item/timeline-item.component";
 import { PayComponent } from "./pay/pay.component";
-import { ImageSwiperComponent } from './image-swiper/image-swiper.component';
-import { RefresherComponent } from './refresher';
+import { ImageSwiperComponent } from "./image-swiper/image-swiper.component";
+import { RefresherComponent } from "./refresher";
+import { MyCalendarComponent } from './my-calendar/my-calendar.component';
 @NgModule({
   declarations: [
     OrComponent,
@@ -30,9 +31,10 @@ import { RefresherComponent } from './refresher';
     PayComponent,
     MapComponent,
     ImageSwiperComponent,
-    RefresherComponent
+    RefresherComponent,
+    MyCalendarComponent
   ],
-  imports: [CommonModule, IonicModule, TreeNgxModule,AppDirectivesModule],
+  imports: [CommonModule, IonicModule, TreeNgxModule, AppDirectivesModule],
   exports: [
     OrComponent,
     PinchZoomComponent,
@@ -47,12 +49,14 @@ import { RefresherComponent } from './refresher';
     MapComponent,
     ImageSwiperComponent,
     AppDirectivesModule,
-    RefresherComponent
+    RefresherComponent,
+    MyCalendarComponent
   ],
   entryComponents: [
     LoginSkeletonPageComponent,
     PayComponent,
-    ImageSwiperComponent
+    ImageSwiperComponent,
+    MyCalendarComponent
   ]
 })
-export class AppComponentsModule { }
+export class AppComponentsModule {}

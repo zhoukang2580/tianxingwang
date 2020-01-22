@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-button (click)='back()'>
+        <ion-icon name='arrow-back' color='dark'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>选择日期</ion-title>
+    <ion-button slot='end' (click)='onYearSelected(null,true)' color='secondary'>今年</ion-button>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ul class="years" #years>
+      <li *ngFor='let y of vmYears' #yearItems [attr.dataid]='y.year' [class.active]='y.isActive'
+        (click)='onYearSelected(y.year,true)'>
+        {{y.year}}</li>
+    </ul>
+    <ul class="week">
+      <li *ngFor='let week of weeks'>
+        <ion-text color='{{week.color}}'>{{week.label}}</ion-text>
+      </li>
+    </ul>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ul class='month-days' *ngFor='let md of monthDates'>
+    <li class='year-month'>{{md.year}}年{{md.month}}月</li>
+    <li *ngFor='let d of md.days' [ngClass]='clazz(d)' (click)='onDateSelect(d)'>{{d.day}}</li>
+    <div class='shade-month'>{{md.month}}</div>
+  </ul>
+</ion-content>

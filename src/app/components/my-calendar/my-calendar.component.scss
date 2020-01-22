@@ -1,0 +1,81 @@
+ul {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  list-style-type: none;
+  &,
+  li {
+    margin: 0;
+    padding: 0;
+  }
+  &.years {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    align-items: center;
+    flex-flow: row nowrap;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    li {
+      padding: 1em;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 4px;
+      margin: 0.5em;
+    }
+  }
+  &.week {
+    li {
+      width: calc(100% / 7);
+      height: 2em;
+      padding: 0.5em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+  &.month-days {
+    position: relative;
+    margin-bottom: 2em;
+    .shade-month {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10rem;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      opacity: 0.2;
+    }
+    li {
+      position: relative;
+      z-index: 99;
+      height: 3.5em;
+      width: calc(100% / 7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      &.year-month{
+        width: 100%;
+      }
+      &.active {
+        border-radius: 5px;
+      }
+      &.is-last-month-date {
+        user-select: none;
+        pointer-events: none;
+        touch-action: none;
+        color: var(--ion-color-medium);
+        opacity: 0.8;
+      }
+    }
+  }
+  li:not(.is-last-month-date).active {
+    background-color: var(--ion-color-secondary);
+    color: white;
+  }
+}

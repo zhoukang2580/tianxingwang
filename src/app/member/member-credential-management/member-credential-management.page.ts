@@ -1,3 +1,4 @@
+import { MyCalendarComponent } from "./../../components/my-calendar/my-calendar.component";
 import { Subscription, fromEvent } from "rxjs";
 import {
   Country,
@@ -116,7 +117,7 @@ export class MemberCredentialManagementPage
       this.changeBirthByIdNumber(idInputEle);
     }
   }
-  onSaveCredential(c: MemberCredential) {
+  async onSaveCredential(c: MemberCredential) {
     if (c) {
       if (c.isAdd) {
         this.saveAdd(
@@ -151,11 +152,28 @@ export class MemberCredentialManagementPage
     });
     this.subscriptions.push(this.subscription);
   }
-  onSelectDate(input: HTMLInputElement) {
-    if (input) {
-      setTimeout(() => {
-        input.click();
-      }, 0);
+  private async onSelectDate() {
+    let d: { date: string };
+    const m = await this.modalController.create({
+      component: MyCalendarComponent
+    });
+    m.present();
+    const data = await m.onDidDismiss();
+    if (data && data.data) {
+      d = data.data;
+    }
+    return d;
+  }
+  async onSelectBirthDate() {
+    const d = await this.onSelectDate();
+    if (d) {
+      this.modifyCredential.Birthday = d.date;
+    }
+  }
+  async onSelectExpireDate() {
+    const d = await this.onSelectDate();
+    if (d) {
+      this.modifyCredential.ExpirationDate = d.date;
     }
   }
   private changeBirthByIdNumber(idInputEle: HTMLInputElement) {
@@ -322,11 +340,13 @@ export class MemberCredentialManagementPage
         if (_.Message) {
           AppHelper.alert(_.Message);
         }
+        return true;
       })
       .catch(e => {
         AppHelper.alert(e);
       });
     await this.getCredentials();
+    this.modifyCredential = null;
   }
   initializeValidate() {
     this.validatorService.initialize(
@@ -456,10 +476,8 @@ export class MemberCredentialManagementPage
         AppHelper.alert(e);
         return false;
       });
-    if (result) {
-      this.modifyCredential = null;
-    }
     await this.getCredentials();
+    this.modifyCredential = null;
   }
   async validateCredential(c: MemberCredential, container: HTMLElement) {
     if (!c) {
