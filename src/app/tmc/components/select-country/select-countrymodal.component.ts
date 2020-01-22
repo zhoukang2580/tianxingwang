@@ -1,14 +1,10 @@
+import { RefresherComponent } from "./../../../components/refresher/refresher.component";
 import { AppHelper } from "../../../appHelper";
 import { ApiService } from "src/app/services/api/api.service";
 import { RequestEntity } from "../../../services/api/Request.entity";
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import {
-  NavController,
-  IonRefresher,
-  IonInfiniteScroll,
-  ModalController
-} from "@ionic/angular";
+import { IonInfiniteScroll, ModalController } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 export interface Country {
   Id: string;
@@ -22,6 +18,7 @@ export interface Country {
   styleUrls: ["./select-countrymodal.component.scss"]
 })
 export class SelectCountryModalComponent implements OnInit {
+  private isRefreshe = false;
   title: string;
   requestCode: string;
   countries: Country[] = [];
@@ -31,7 +28,8 @@ export class SelectCountryModalComponent implements OnInit {
   loading = false;
   keyword = "";
   selectedItem: Country;
-  @ViewChild(IonRefresher, { static: false }) refresher: IonRefresher;
+  @ViewChild(RefresherComponent, { static: false })
+  refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll, { static: false }) scroller: IonInfiniteScroll;
   constructor(
     route: ActivatedRoute,
@@ -84,8 +82,9 @@ export class SelectCountryModalComponent implements OnInit {
         this.currentPage++;
       }
     }
-    if (this.refresher) {
+    if (this.refresher && this.isRefreshe) {
       this.refresher.complete();
+      this.isRefreshe = false;
     }
     if (this.scroller) {
       setTimeout(() => {
@@ -94,6 +93,7 @@ export class SelectCountryModalComponent implements OnInit {
     }
   }
   doRefresh(clearSearch: boolean) {
+    this.isRefreshe = true;
     this.keyword = clearSearch ? "" : this.keyword;
     if (this.scroller) {
       this.scroller.disabled = false;

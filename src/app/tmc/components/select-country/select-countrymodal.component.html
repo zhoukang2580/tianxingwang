@@ -14,11 +14,11 @@
 </ion-header>
 
 <ion-content>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh(true)">
+  <app-refresher slot="fixed" (ionRefresh)="doRefresh(true)">
     <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="下拉刷新" refreshingSpinner="circles"
       refreshingText="正在加载...">
     </ion-refresher-content>
-  </ion-refresher>
+  </app-refresher>
   <ion-list *ngIf='!loading else loadingTemp'>
     <ng-container *ngIf='viewModelItems.length else nodata'>
       <ion-item *ngFor='let item of viewModelItems;' (click)='onItemClick(item)' detail>
