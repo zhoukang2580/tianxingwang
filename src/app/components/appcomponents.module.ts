@@ -15,6 +15,7 @@ import { TimelineComponent } from "./timeline/timeline.component";
 import { TimelineItemComponent } from "./timeline-item/timeline-item.component";
 import { PayComponent } from "./pay/pay.component";
 import { ImageSwiperComponent } from './image-swiper/image-swiper.component';
+import { RefresherComponent } from './refresher';
 @NgModule({
   declarations: [
     OrComponent,
@@ -28,7 +29,8 @@ import { ImageSwiperComponent } from './image-swiper/image-swiper.component';
     TimelineItemComponent,
     PayComponent,
     MapComponent,
-    ImageSwiperComponent
+    ImageSwiperComponent,
+    RefresherComponent
   ],
   imports: [CommonModule, IonicModule, TreeNgxModule,AppDirectivesModule],
   exports: [
@@ -44,7 +46,8 @@ import { ImageSwiperComponent } from './image-swiper/image-swiper.component';
     PayComponent,
     MapComponent,
     ImageSwiperComponent,
-    AppDirectivesModule
+    AppDirectivesModule,
+    RefresherComponent
   ],
   entryComponents: [
     LoginSkeletonPageComponent,

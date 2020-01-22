@@ -1,3 +1,4 @@
+import { AppComponentsModule } from './../../components/appcomponents.module';
 import { CandeactivateGuard } from "./../../guards/candeactivate.guard";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
@@ -25,7 +26,8 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     MemberPipesModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    AppComponentsModule
   ],
   declarations: [MemberCredentialManagementPage]
 })

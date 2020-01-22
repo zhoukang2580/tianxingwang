@@ -1,4 +1,5 @@
 .flight-date {
+  padding-right: 2px;
   margin-top: 1em;
   display: flex;
   align-items: center;
@@ -20,7 +21,7 @@
   font-size: 1rem;
   display: flex;
   align-items: center;
-  margin: 0.5em 0;
+  margin: 1em 0;
   ion-button {
     margin-left: auto;
     font-size: 0.6rem;
@@ -39,3 +40,53 @@
     }
   }
 }
+ion-card-header {
+  padding-top: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+.segments {
+  display: flex;
+  align-items: center;
+  background-color: #eee;
+  position: relative;
+  .segment-button {
+    padding: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    &.active {
+      background-color: white;
+      ion-label {
+        color: var(--ion-color-secondary);
+      }
+    }
+    &.left.active {
+      border-top-right-radius: 0.5em;
+    }
+    &.right.active {
+      border-top-left-radius: 0.5em;
+    }
+  }
+  .indicator {
+    position: absolute;
+    height: 3px;
+    border-radius: 10px;
+    background-color: var(--ion-color-secondary);
+    bottom: -0.5em;
+    transform-origin: left top;
+    transition: transform ease-in-out 100ms;
+    &.left{
+      left: 45%;
+      right: 45%;
+      transform: translate3d(-255%, 0, 0);
+    }
+    &.right{
+      left: 45%;
+      right: 45%;
+      transform: translate3d(255%, 0, 0);
+    }
+  }
+}
+

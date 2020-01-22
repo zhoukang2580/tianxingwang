@@ -18,7 +18,7 @@ export class ImageRecoverService {
   } = {} as any;
   constructor(
     private apiService: ApiService,
-    identityService: IdentityService
+    private identityService: IdentityService
   ) {
     identityService.getIdentitySource().subscribe(identity => {
       if (!identity || !identity.Ticket) {
@@ -47,6 +47,9 @@ export class ImageRecoverService {
     }
     if (this.fetchingReq.isFetching) {
       return this.fetchingReq.promise;
+    }
+    if (!this.identityService.getStatus()) {
+      return Promise.resolve(null);
     }
     this.fetchingReq = {
       isFetching: true,

@@ -1,3 +1,4 @@
+import { InternationalHotelService } from "./../../hotel-international/international-hotel.service";
 import { LanguageHelper } from "./../../languageHelper";
 import { ImageRecoverService } from "./../../services/imageRecover/imageRecover.service";
 import { DayModel } from "src/app/tmc/models/DayModel";
@@ -40,6 +41,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   isShowSelectedInfos$: Observable<boolean>;
   canAddPassengers = false;
   isSelf = false;
+  isDomestic = true;
   get selectedPassengers() {
     return this.hotelService.getBookInfos().length;
   }
@@ -93,7 +95,8 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     private modalController: ModalController,
     private staffService: StaffService,
     private calendarService: CalendarService,
-    private popoverCtrl: PopoverController
+    private popoverCtrl: PopoverController,
+    private internationalHotelService: InternationalHotelService
   ) {
     const sub = route.queryParamMap.subscribe(async _ => {
       this.isLeavePage = false;
@@ -101,6 +104,9 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       this.isSelf = await this.staffService.isSelfBookType();
     });
     this.subscriptions.push(sub);
+  }
+  onToggleDomestic() {
+    this.isDomestic = !this.isDomestic;
   }
   async onShowStandardDesc() {
     this.isSelf = await this.staffService.isSelfBookType();
@@ -153,7 +159,10 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     this.subscriptions.push(sub);
   }
   onSearchCity() {
-    this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
+    if (this.isDomestic) {
+      this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
+    } else {
+    }
   }
   async onPosition() {
     this.isPositioning = true;
@@ -213,7 +222,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       component: SelectedPassengersComponent,
       componentProps: {
         bookInfos$: this.hotelService.getBookInfoSource(),
-        removeitem: removeitem
+        removeitem
       }
     });
     await m.present();
@@ -231,24 +240,33 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     }
   }
   async onSearchHotel() {
-    this.hotelService.setSearchHotelModel({
-      ...this.hotelService.getSearchHotelModel(),
-      checkInDate: this.checkInDate.date,
-      checkOutDate: this.checkOutDate.date,
-      destinationCity: this.destinationCity
-    });
-    this.hotelService.setHotelQuerySource({
-      ...this.hotelService.getHotelQueryModel(),
-      ranks: null,
-      starAndPrices: null,
-      Geos: null,
-      locationAreas: null,
-      searchGeoId: null,
-      filters: null
-    });
-    await this.hotelService.getConditions();
-    this.isLeavePage = true;
-    this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
+    if (this.isDomestic) {
+      this.hotelService.setSearchHotelModel({
+        ...this.hotelService.getSearchHotelModel(),
+        checkInDate: this.checkInDate.date,
+        checkOutDate: this.checkOutDate.date,
+        destinationCity: this.destinationCity
+      });
+      this.hotelService.setHotelQuerySource({
+        ...this.hotelService.getHotelQueryModel(),
+        ranks: null,
+        starAndPrices: null,
+        Geos: null,
+        locationAreas: null,
+        searchGeoId: null,
+        filters: null
+      });
+      await this.hotelService.getConditions();
+      this.isLeavePage = true;
+      this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
+    } else {
+      this.internationalHotelService.setSearchConditionSource({
+        ...this.internationalHotelService.getSearchCondition(),
+        checkinDate: this.checkInDate.date,
+        checkoutDate: this.checkOutDate.date,
+        destinationCity: this.destinationCity
+      });
+    }
   }
   back() {
     this.router.navigate([AppHelper.getRoutePath("")]);

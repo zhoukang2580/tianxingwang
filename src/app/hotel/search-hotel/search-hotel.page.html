@@ -32,22 +32,33 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-card class='ion-padding'>
+  <ion-card>
+    <ion-card-header>
+      <div class='segments'>
+        <div class="segment-button left" [class.active]='isDomestic' (click)='onToggleDomestic()'>
+          <ion-label>国内酒店</ion-label>
+        </div>
+        <div class="segment-button right" [class.active]='!isDomestic' (click)='onToggleDomestic()'>
+          <ion-label>国外*港澳台</ion-label>
+        </div>
+        <div class='indicator' [class.left]='isDomestic' [class.right]='!isDomestic'></div>
+      </div>
+    </ion-card-header>
     <ion-card-content>
-      <ion-toolbar>
-        <ion-segment (ionChange)="segmentChanged($event)" color="secondary">
-          <ion-segment-button value="normal" [checked]='activeTab=="normal"'>
+      <div class='ion-padding-top'>
+        <ion-segment mode='ios' (ionChange)="segmentChanged($event)" color="secondary">
+          <ion-segment-button mode='ios' value="normal" [checked]='activeTab=="normal"'>
             <ion-label>非协议酒店</ion-label>
           </ion-segment-button>
-          <ion-segment-button value="agreement" [checked]='activeTab=="agreement"'>
+          <ion-segment-button mode='ios' value="agreement" [checked]='activeTab=="agreement"'>
             <ion-label>协议酒店</ion-label>
           </ion-segment-button>
-          <ion-segment-button value="specialprice" [checked]='activeTab=="specialprice"'>
+          <ion-segment-button mode='ios' value="specialprice" [checked]='activeTab=="specialprice"'>
             <ion-label>特价酒店</ion-label>
           </ion-segment-button>
         </ion-segment>
-      </ion-toolbar>
-      <div class='destination' lines='none' detail class='ion-margin-bottom'>
+      </div>
+      <div class='destination' lines='none' detail>
         <ion-label>目的地：</ion-label>
         <ion-label (click)='onSearchCity()'>
           <ng-container *ngIf='isPositioning else no'>
