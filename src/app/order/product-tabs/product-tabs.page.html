@@ -63,11 +63,6 @@
             </app-order-item>
           </ion-item>
         </ion-list>
-        <ng-template #nomoredate>
-          <app-or-comp *ngIf='(orderModel?.Orders||myTrips||tasks)?.length==0'>
-            暂无数据
-          </app-or-comp>
-        </ng-template>
       </ng-container>
       <ng-container *ngIf='isShowMyTrips'>
         <ion-list lines='none' *ngIf='myTrips?.length else nomoredate'>
@@ -75,14 +70,14 @@
             <app-my-trip [trip]='trip'></app-my-trip>
           </ion-item>
         </ion-list>
-        <ng-template #nomoredate>
-          <app-or-comp *ngIf='!this.isLoading&&(orderModel?.Orders||myTrips||tasks)?.length==0'>
-            暂无数据
-          </app-or-comp>
-        </ng-template>
       </ng-container>
     </ng-container>
   </ng-container>
+  <ng-template #nomoredate>
+    <app-or-comp *ngIf='!this.isLoading&&(orderModel?.Orders||myTrips||tasks)?.length==0'>
+      暂无数据
+    </app-or-comp>
+  </ng-template>
   <ng-template #waitingapprovalTempl>
     <ng-container *ngIf='!isLoading else fakeList'>
       <ng-container *ngIf='tasks?.length else nomoredate'>

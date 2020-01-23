@@ -120,7 +120,7 @@ export class MemberCredentialManagementPage
       });
     console.log(this.identityTypes);
   }
-  private onIdTypeChange() {
+  onIdTypeChange() {
     if (
       this.addFormEles &&
       this.addFormEles.last &&
@@ -324,7 +324,7 @@ export class MemberCredentialManagementPage
       }
     }, 200);
   }
-  private async removeExistCredential(c: MemberCredential) {
+   async removeExistCredential(c: MemberCredential) {
     const comfirmDel = await AppHelper.alert(
       LanguageHelper.getConfirmDeleteTip(),
       true,

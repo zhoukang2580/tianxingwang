@@ -8,7 +8,7 @@ import { Directive, ElementRef, HostListener } from "@angular/core";
 export class ShowtipDirective {
   constructor(private el: ElementRef, private toastCtrl: ToastController) {}
   @HostListener("click", ["$event"])
-  async showTip() {
+  async showTip(evt: any = null) {
     try {
       let div = document.getElementById("calcTextWidttDiv");
       if (!div) {
@@ -45,7 +45,7 @@ export class ShowtipDirective {
           // showCloseButton: true,
           // mode:"md",
           keyboardClose: true,
-          translucent:true,
+          translucent: true,
           closeButtonText: LanguageHelper.getCloseTip(),
           duration: Math.min(duration || 2000, 10 * 1000)
         })).present();

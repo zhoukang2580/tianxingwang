@@ -230,7 +230,7 @@
       <ion-row class='ion-text-end'>
         <ion-col style="justify-content: flex-end;">
           <ion-button (click)='onExchange($event,orderTrainTicket)' color='secondary'
-            *ngIf='orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !=0 && orderTrainTicket.BookType != TrainBookType.Offline'>
+            *ngIf='orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
             <span>改签</span>
           </ion-button>
           <ion-button (click)='onRefundTrainTicket($event,orderTrainTicket)' color='secondary'

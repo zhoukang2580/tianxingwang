@@ -54,7 +54,7 @@
         <ion-label>
           床型需求（尽量安排）
         </ion-label>
-        <ion-select value="brown" okText="确定" (ionChange)='onBedChange(bookInfo)' [compareWith]='bedCompareFn'
+        <ion-select value="brown" okText="确定" (ionChange)='onBedChange()' [compareWith]='bedCompareFn'
           cancelText="取消" [(ngModel)]='bookInfo?.bookInfo?.roomPlan.Remark'>
           <ion-select-option value="">请选择 </ion-select-option>
           <ion-select-option value="大床">大床 </ion-select-option>

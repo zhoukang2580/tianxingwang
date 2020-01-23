@@ -46,7 +46,7 @@
       </ion-text>
       <div class='btns'>
         <ng-container *ngIf='getProducts() as products'>
-          <ng-container *ngIf='products.length && getDays(trip.StartTime)>=1'>
+          <ng-container *ngIf='products.length && getDays(trip.StartTime,trip.EndTime)>=1'>
             <ng-container *ngFor='let p of products'>
               <ion-button color='secondary' *ngIf='check(p.InsuranceType)' size='small'
                 (click)='onShowSelectedInsurance(p,trip,$event)'>

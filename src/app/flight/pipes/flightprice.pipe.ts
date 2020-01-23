@@ -4,7 +4,7 @@ import { Pipe, PipeTransform } from "@angular/core";
   name: "flightprice"
 })
 export class FlightpricePipe implements PipeTransform {
-  transform(value: string, args?: any): any {
+  transform(value: string|number, args?: any): any {
     if (!value || !+value) {
       return value;
     }

@@ -374,7 +374,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       }
     }
   }
-  private getRoomImages(room: RoomEntity) {
+  getRoomImages(room: RoomEntity) {
     const images = this.hotel && this.hotel.HotelImages;
     if (room && images) {
       const roomImages = images

@@ -54,7 +54,7 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
     this.bedChange = new EventEmitter();
   }
   @HostListener("click")
-  private closePriceDetail() {
+  closePriceDetail() {
     this.showPriceDetailEvt.emit({ isShow: false, bookInfo: this.bookInfo });
     this.isShowPriceDetail = false;
   }

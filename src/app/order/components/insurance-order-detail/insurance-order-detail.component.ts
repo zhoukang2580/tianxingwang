@@ -43,7 +43,7 @@ export class InsuranceOrderDetailComponent implements OnInit {
         .filter(it => it.Key == key && it.Status == OrderPayStatusType.Effective)
         .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
   }
-  getOrderItemsSum(Tag: string, name: string = "Amount") {
+  getOrderItemsSum(Tag: string="", name: string = "Amount") {
     return this.order
       && this.order.OrderItems
       && this.order.OrderItems

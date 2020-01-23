@@ -16,15 +16,15 @@
     </ion-refresher-content>
   </ion-refresher>
   <ion-list *ngIf='!loading else loadingTemp'>
-      <ng-container *ngIf='bulletines.length;else nomoredata'>
-        <ion-item *ngFor='let notice of bulletines' detail (click)='viewNoticeUrl(notice)'>
-          <ion-label class='ion-text-nowrap'>{{notice?.Title}}</ion-label>
-        </ion-item>
-        <ng-template #nomoredata>
-          <app-or-comp>暂无数据</app-or-comp>
-        </ng-template>
-      </ng-container>
+    <ng-container *ngIf='bulletines.length else nomoredata'>
+      <ion-item *ngFor='let notice of bulletines' detail (click)='viewNoticeUrl(notice)'>
+        <ion-label class='ion-text-nowrap'>{{notice?.Title}}</ion-label>
+      </ion-item>
+    </ng-container>
   </ion-list>
+  <ng-template #nomoredata>
+    <app-or-comp>暂无数据</app-or-comp>
+  </ng-template>
   <ng-template #loadingTemp>
     正在加载...
   </ng-template>

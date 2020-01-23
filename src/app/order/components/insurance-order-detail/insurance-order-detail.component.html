@@ -159,7 +159,7 @@
             <ion-col size>客户</ion-col>
             <ion-col size="4">{{getOrderItemsSum(OrderItemHelper.Insurance)}}</ion-col>
             <ion-col size="4">{{getOrderItemsSum(OrderItemHelper.InsuranceRefundDeduction)}}</ion-col>
-            <ion-col size="4">{{getOrderItemsSum()}}</ion-col>
+            <ion-col size="4">{{getOrderItemsSum(null,"Amount")}}</ion-col>
             <ion-col size="4">{{getOrderPaysAmount(orderInsurance.Key)}}</ion-col>
           </ion-row>
           <ion-row *ngIf='isAgent|async'>

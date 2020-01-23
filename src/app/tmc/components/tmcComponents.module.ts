@@ -88,8 +88,6 @@ import { ShowStandardDetailsComponent } from './show-standard-details/show-stand
     SearchApprovalComponent,
     SearchCostcenterComponent,
     SelectTravelNumberComponent,
-    AddcontactsModalComponent,
-    AddcontactsModalComponent,
     OrganizationComponent,
     CalendarComponent,
     SelectCountryModalComponent,

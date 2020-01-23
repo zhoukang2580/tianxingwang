@@ -52,9 +52,9 @@
           <ion-label class='rules ion-text-wrap' color='danger' >
             {{bookInfo.bookInfo?.flightPolicy?.Rules?.join("; ")}}
           </ion-label>
-          <ion-label *ngIf='getFlightIllegalTip() as tip' color='danger'  class='rules ion-text-wrap'>提示：({{tip}})
+          <ion-label *ngIf='getFlightIllegalTip(bookInfo) as tip' color='danger'  class='rules ion-text-wrap'>提示：({{tip}})
           </ion-label>
-          <ion-label *ngIf='getFlightlegalTip() as tip' color='danger'  class='rules ion-text-wrap'>提示：({{tip}})
+          <ion-label *ngIf='getFlightlegalTip(bookInfo) as tip' color='danger'  class='rules ion-text-wrap'>提示：({{tip}})
           </ion-label>
           <ion-label class='rules ion-text-wrap'  color='dark' (click)='onSelectLowestSegment(bookInfo)'
             *ngIf='showLowerSegment(bookInfo)'>

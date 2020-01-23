@@ -66,7 +66,7 @@
   </ng-container>
   <ng-container *ngIf='trip.Type == "Flight"'>
     <ng-container *ngIf='getProducts(trip) as products'>
-      <ng-container *ngIf='products.length && getDays(trip.StartTime)>=1'>
+      <ng-container *ngIf='products.length && getDays(trip.StartTime,trip.EndTime)>=1'>
         <ng-container *ngFor='let p of products'>
           <ion-button color='secondary' *ngIf='check(trip,p.InsuranceType)' 
             (click)='onShowSelectedInsurance(p,trip,$event)'>

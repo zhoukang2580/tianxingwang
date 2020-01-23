@@ -15,7 +15,7 @@ import { TimelineComponent } from "./timeline/timeline.component";
 import { TimelineItemComponent } from "./timeline-item/timeline-item.component";
 import { PayComponent } from "./pay/pay.component";
 import { ImageSwiperComponent } from "./image-swiper/image-swiper.component";
-import { RefresherComponent } from "./refresher";
+import { RefresherComponent, RefresherModule } from "./refresher";
 import { MyCalendarComponent } from './my-calendar/my-calendar.component';
 @NgModule({
   declarations: [
@@ -31,10 +31,9 @@ import { MyCalendarComponent } from './my-calendar/my-calendar.component';
     PayComponent,
     MapComponent,
     ImageSwiperComponent,
-    RefresherComponent,
     MyCalendarComponent
   ],
-  imports: [CommonModule, IonicModule, TreeNgxModule, AppDirectivesModule],
+  imports: [CommonModule, IonicModule, TreeNgxModule, AppDirectivesModule,RefresherModule],
   exports: [
     OrComponent,
     PinchZoomComponent,
@@ -49,7 +48,7 @@ import { MyCalendarComponent } from './my-calendar/my-calendar.component';
     MapComponent,
     ImageSwiperComponent,
     AppDirectivesModule,
-    RefresherComponent,
+    RefresherModule,
     MyCalendarComponent
   ],
   entryComponents: [
