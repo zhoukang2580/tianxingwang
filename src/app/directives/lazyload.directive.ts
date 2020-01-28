@@ -54,7 +54,7 @@ export class LazyloadDirective
     this.removeIO();
   }
   private load(src: string = null) {
-    let url = decodeURIComponent(src || this.lazyLoad);
+    let url = decodeURIComponent(src || this.lazyLoad || this.defaultImage);
     url = `${url}`.replace(/\?v=\d+/g, "");
     // console.log('load url:', url);
     if (this.el.nativeElement instanceof HTMLDivElement) {
@@ -66,7 +66,7 @@ export class LazyloadDirective
       // this.render.setProperty(this.el.nativeElement,'backgroundImage',`${src || this.lazyLoad}`);
       // this.el.nativeElement.style.backgroundImage=`${src || this.lazyLoad}`;
     } else {
-      if(url){
+      if (url) {
         this.render.setProperty(this.el.nativeElement, "src", url);
       }
       // this.el.nativeElement.src = src || this.lazyLoad;
