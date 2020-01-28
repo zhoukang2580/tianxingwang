@@ -30,8 +30,8 @@ export class LazyloadDirective
   }
   ngAfterContentInit() {}
   ngOnInit() {
-    this.setupImageRecover();
     this.setDefaultImage();
+    this.setupImageRecover();
   }
   private setDefaultImage() {
     if (this.defaultImage) {
@@ -66,7 +66,9 @@ export class LazyloadDirective
       // this.render.setProperty(this.el.nativeElement,'backgroundImage',`${src || this.lazyLoad}`);
       // this.el.nativeElement.style.backgroundImage=`${src || this.lazyLoad}`;
     } else {
-      this.render.setProperty(this.el.nativeElement, "src", url);
+      if(url){
+        this.render.setProperty(this.el.nativeElement, "src", url);
+      }
       // this.el.nativeElement.src = src || this.lazyLoad;
     }
   }
