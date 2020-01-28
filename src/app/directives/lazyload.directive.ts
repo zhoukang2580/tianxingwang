@@ -90,7 +90,7 @@ export class LazyloadDirective
       "IntersectionObserver" in window &&
       "IntersectionObserverEntry" in window
     ) {
-      console.log("当前浏览器支持：IntersectionObserver");
+      // console.log("当前浏览器支持：IntersectionObserver");
       this.removeIO();
       this.io = new IntersectionObserver(data => {
         // because there will only ever be one instance
@@ -109,7 +109,7 @@ export class LazyloadDirective
       this.io.observe(this.el.nativeElement);
     } else {
       // fall back to setTimeout for Safari and IE
-      console.error("当前浏览器不支持：IntersectionObserver");
+      // console.error("当前浏览器不支持：IntersectionObserver");
       setTimeout(() => this.load(), 200);
     }
   }
