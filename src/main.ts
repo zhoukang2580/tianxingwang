@@ -1,10 +1,17 @@
-import { AppHelper } from './app/appHelper';
 import { enableProdMode } from "@angular/core";
 import { platformBrowserDynamic } from "@angular/platform-browser-dynamic";
 
 import { AppModule } from "./app/app.module";
 import { environment } from "./environments/environment";
-
+import { hmrBootstrap } from "./hmr";
+// const module = window["module"];
+const bootstrap = () =>
+  platformBrowserDynamic()
+    .bootstrapModule(AppModule)
+    .catch(err => {
+      console.log(err);
+      return null;
+    });
 if (environment.production) {
   enableProdMode();
   // if (window["VConsole"]) {
@@ -13,7 +20,6 @@ if (environment.production) {
   //   }
   //   window['vConsole'] = new window["VConsole"]();
   // }
-
 } else {
   // if (window["cordova"]||navigator.userAgent.toLowerCase().includes("iphone")) {
   //   if (window["VConsole"]) {
@@ -29,8 +35,11 @@ if (environment.production) {
   //   }
   //   window['vConsole'] = new window["VConsole"]();
   // }
+  console.log(module);
+  if (module["hot"]) {
+    hmrBootstrap(module, bootstrap);
+  } else {
+    console.log("Amm..HMR is not enabled for webpack");
+    bootstrap();
+  }
 }
-
-platformBrowserDynamic()
-  .bootstrapModule(AppModule)
-  .catch(err => console.log(err));

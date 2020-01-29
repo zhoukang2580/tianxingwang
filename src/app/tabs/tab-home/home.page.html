@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar color='primary'>
     <ion-buttons slot='start'>
-      <ion-button fill='clear'>
+      <ion-button fill='clear' *ngIf='canShow'>
         <app-scan-comp></app-scan-comp>
       </ion-button>
     </ion-buttons>
@@ -42,7 +42,7 @@
   </div>
   <ion-toolbar>
     <div (click)='goToBulletinList("agentNotice")' class='announcement'>
-      <img src="assets/svgs/announcement.svg" alt="通知">
+      <img src="assets/svgs/announcement.svg" alt="通知图片">
       <app-image-swiper [isShowCloseBtn]='false'
         [slideStyle]='{backgroundColor:"white",display:"flex",alignItems:"center",justifyContent:"flext-start"}'
         [autoplayspeed]='1000' [loop]='true' [effect]='false' [isShowPagination]='false' [autoplay]='true'

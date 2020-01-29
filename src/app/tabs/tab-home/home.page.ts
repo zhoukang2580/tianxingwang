@@ -41,6 +41,7 @@ export class HomePage implements OnInit, OnDestroy {
   agentNotices: { text: string }[];
   canSelectCompany$ = of(false);
   staff: StaffEntity;
+  canShow = AppHelper.isApp() || AppHelper.isWechatH5();
   constructor(
     private identityService: IdentityService,
     private router: Router,
