@@ -1,0 +1,21 @@
+<div class="container" [class.show-image]='isShowImage'>
+  <ion-slides (ionSlideDidChange)='onSlideDidChange()' (ionSlideWillChange)='onSlideWillChange()'
+    (ionSlideTouchEnd)='onSlideTouchEnd()' (ionSlideTouchStart)='onSlideTouchStart($event)'
+    (ionSlidesDidLoad)='onSlidesDidLoad()' [options]='options'>
+    <ion-slide *ngFor='let it of items'>
+      <div class="inner" *ngIf='it.imageUrl'>
+        <img #img [lazyLoad]='it.imageUrl' class="pic" [defaultImage]='defaultImage' alt="图片">
+        <ion-text color='light'>
+          <div>{{it.desc}}</div>
+        </ion-text>
+        <div class="logo" *ngIf='logoUrl'>
+          <img [src]="logoUrl" alt="logo">
+        </div>
+      </div>
+      <ion-text *ngIf='!it.imageUrl'>
+        {{it.text}}
+      </ion-text>
+    </ion-slide>
+  </ion-slides>
+  <ion-text color='light' *ngIf='isShowImage' class="indicator">{{curIndex}}/{{items?.length}}</ion-text>
+</div>

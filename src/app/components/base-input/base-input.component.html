@@ -1,0 +1,13 @@
+<ion-item>
+  <ion-label [class.required]='required' position="{{position}}" class='ion-text-wrap'>{{label}}</ion-label>
+  <ion-input [attr.required]='required'  [disabled]='disabled' clearInput='true' type="{{type}}"
+    (ionChange)='onInputChange()' [(ngModel)]='model' name='mymodel'></ion-input>
+  <ng-container *ngIf='originalType=="password"'>
+    <ion-button fill='clear' (click)='onToggleEye()'>
+      <ion-icon name="eye" *ngIf='eyeOn'>
+      </ion-icon>
+      <ion-icon name="eye-off" *ngIf='!eyeOn'>
+      </ion-icon>
+    </ion-button>
+  </ng-container>
+</ion-item>

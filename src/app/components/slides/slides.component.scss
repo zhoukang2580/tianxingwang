@@ -1,0 +1,61 @@
+.swiper-slide {
+  display: block;
+  height: 100%;
+  text-align: inherit !important;
+}
+ion-slides {
+  height: 100%;
+}
+.container{
+  position: relative;
+}
+img.pic {
+  width: 100%;
+  object-fit: contain;
+  height: 100%;
+}
+.inner {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  right: 0;
+  .logo {
+    // width: 5em;
+    // height: 3em;
+    // position: absolute;
+    // right: 0;
+    // bottom: 1.6em;
+    // background-color: white;
+    // z-index: 10;
+    width: 6em;
+    height: 4em;
+    position: absolute;
+    right: 0;
+    bottom: 0.5em;
+    background-color: white;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+.swiper-wrapper {
+  height: 100%;
+}
+.container.show-image {
+  background-color: black;
+  height: 100%;
+}
+.indicator {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: absolute;
+  bottom: 1em;
+  width: 5em;
+  text-align: center;
+  z-index: 99;
+  padding: 0.25em 0.5em;
+  display: block;
+  border-radius: 4px;
+  right: 1em;
+}

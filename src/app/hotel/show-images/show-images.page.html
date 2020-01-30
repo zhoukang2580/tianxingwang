@@ -1,0 +1,14 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-button color='dark' (click)='back()'>
+        <ion-icon name='arrow-back'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{hotel?.name}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <app-slides [items]='images' [defaultImage]='config?.PrerenderImageUrl' [logoUrl]='config?.LogoImageUrl'>
+  </app-slides>
+</ion-content>
