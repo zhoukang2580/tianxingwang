@@ -1,3 +1,5 @@
+import { filter } from "rxjs/operators";
+import { Subscription } from "rxjs";
 import {
   animate,
   style,
@@ -5,8 +7,8 @@ import {
   state,
   trigger
 } from "@angular/animations";
-import { Component, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
+import { Component, OnInit, HostBinding } from "@angular/core";
+import { Router, NavigationStart } from "@angular/router";
 
 @Component({
   selector: "app-tabs",
@@ -37,13 +39,27 @@ import { Router } from "@angular/router";
   ]
 })
 export class TabsPage implements OnInit {
+  private subscription = Subscription.EMPTY;
+  // @HostBinding("class.ion-page-hidden")
+  private isHidden;
   tab: string;
   constructor(private router: Router) {
     // this.tab = "home";
   }
-  ngOnInit() {}
-  onIonTabsWillChange(evt:{tab:string}){
+  ngOnInit() {
+    this.subscription = this.router.events
+      .pipe(filter(evt => evt instanceof NavigationStart))
+      .subscribe((evt: NavigationStart) => {
+        const url = evt.url;
+        this.isHidden = !(
+          "/" == url ||
+          ["tabs/my", "tabs/home", "tabs/trip"].some(it => url.includes(it))
+        );
+        console.log("导航开始", url, "isHidden", this.isHidden);
+      });
+  }
+  onIonTabsWillChange(evt: { tab: string }) {
     console.log(evt);
-    this.tab=evt.tab;
+    this.tab = evt.tab;
   }
 }

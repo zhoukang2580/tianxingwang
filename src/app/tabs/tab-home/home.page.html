@@ -11,12 +11,6 @@
       </ng-container>
       {{identity?.Name}}
     </ion-title>
-    <!-- <div (click)='goToBulletinList("agentNotice")'>
-      <app-image-swiper [isShowCloseBtn]='false'
-        [slideStyle]='{backgroundColor:"white",display:"flex",alignItems:"center",justifyContent:"flext-start"}'
-        [autoplayspeed]='1000' [loop]='true' [effect]='false' [isShowPagination]='false' [autoplay]='true'
-        [direction]='"vertical"' [texts]='agentNotices'></app-image-swiper>
-    </div> -->
     <ion-buttons slot='end' *ngIf='identity?.Numbers?.AgentId;else selectCompany'>
       <ion-button fill='clear' size='small' (click)='onSwitchCustomer()'>
         <ion-chip color='success'>
@@ -40,13 +34,11 @@
   <div class="img">
     <img [src]='"assets/images/home_top_bg.png"' />
   </div>
-  <ion-toolbar>
+  <ion-toolbar class="text-swiper">
     <div (click)='goToBulletinList("agentNotice")' class='announcement'>
       <img src="assets/svgs/announcement.svg" alt="通知图片">
-      <app-image-swiper [isShowCloseBtn]='false'
-        [slideStyle]='{backgroundColor:"white",display:"flex",alignItems:"center",justifyContent:"flext-start"}'
-        [autoplayspeed]='1000' [loop]='true' [effect]='false' [isShowPagination]='false' [autoplay]='true'
-        [direction]='"vertical"' [texts]='agentNotices'></app-image-swiper>
+      <app-slides [items]='agentNotices' [options]='options'></app-slides>
+        
     </div>
   </ion-toolbar>
   <ion-grid>

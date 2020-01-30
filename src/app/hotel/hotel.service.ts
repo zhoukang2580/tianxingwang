@@ -71,6 +71,7 @@ export class HotelService {
   // private hotelPolicies: { [hotelId: string]: HotelPassengerModel[] };
   private hotelQueryModel: HotelQueryEntity;
   curViewHotel: HotelDayPriceEntity;
+  showImages:any[];
 
   constructor(
     private apiService: ApiService,

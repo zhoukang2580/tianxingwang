@@ -1,10 +1,14 @@
 ion-header ion-title {
   font-size: 0.9rem;
 }
-app-image-swiper {
+app-slides {
   height: 3em;
   width: 100%;
   display: block;
+}
+app-slides {
+  height: 2em;
+  overflow: auto;
 }
 .img {
   --background: white;

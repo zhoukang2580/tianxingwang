@@ -14,15 +14,15 @@ import { AppComponentsModule } from "src/app/components/appcomponents.module";
     IonicModule,
     CommonModule,
     FormsModule,
+    AppComponentsModule,
+    AppDirectivesModule,
     RouterModule.forChild([
       {
         path: "",
         component: HomePage,
         canActivate: [TmcGuard]
       }
-    ]),
-    AppComponentsModule,
-    AppDirectivesModule
+    ])
   ],
   declarations: [HomePage]
 })

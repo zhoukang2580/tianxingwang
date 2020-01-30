@@ -25,6 +25,8 @@
   例如：
   `ng serve --host dev.app.beeant.com --port 4500 --open`
   `ng serve --vendorChunk=true --sourceMap=false --optimization=false --hmr=true --commonChunk=true --disableHostCheck`
+## 开发阶段使用热加载模块，提高编译速度
+  `ng serve --hmr`
 ## 关于路由的简单逻辑
 1. 路由跳转，如果有定义这个路由，说明页面存在，或者，如果新增某个风格的页面，路由也是存在的，所以，一旦路由不存在，则跳转到默认路由
 2. 路由的路径统一跳转，需要注意格式，每个路由定义的规则是，标准路由名称_style_language，即，标准路由名称定义第一个，后面是不同风格和语言的路由定义

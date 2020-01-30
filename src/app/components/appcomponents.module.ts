@@ -1,3 +1,5 @@
+import { SlidesComponent } from './slides/slides.component';
+import { FormsModule } from '@angular/forms';
 import { AppDirectivesModule } from "./../directives/directives.module";
 import { MapComponent } from "./../components/map/map.component";
 import { AppUpdateComponent } from "./appupdate/appupdate.component";
@@ -14,9 +16,9 @@ import { TreeNgxModule } from "./tree-ngx/tree-ngx.module";
 import { TimelineComponent } from "./timeline/timeline.component";
 import { TimelineItemComponent } from "./timeline-item/timeline-item.component";
 import { PayComponent } from "./pay/pay.component";
-import { ImageSwiperComponent } from "./image-swiper/image-swiper.component";
-import { RefresherComponent, RefresherModule } from "./refresher";
+import { RefresherModule } from "./refresher";
 import { MyCalendarComponent } from './my-calendar/my-calendar.component';
+import { BaseInputComponent } from './base-input/base-input.component';
 @NgModule({
   declarations: [
     OrComponent,
@@ -30,11 +32,13 @@ import { MyCalendarComponent } from './my-calendar/my-calendar.component';
     TimelineItemComponent,
     PayComponent,
     MapComponent,
-    ImageSwiperComponent,
-    MyCalendarComponent
+    SlidesComponent,
+    MyCalendarComponent,
+    BaseInputComponent
   ],
-  imports: [CommonModule, IonicModule, TreeNgxModule, AppDirectivesModule,RefresherModule],
+  imports: [CommonModule, IonicModule,FormsModule, TreeNgxModule, AppDirectivesModule,RefresherModule],
   exports: [
+    BaseInputComponent,
     OrComponent,
     PinchZoomComponent,
     SlidvalidateComponent,
@@ -46,7 +50,7 @@ import { MyCalendarComponent } from './my-calendar/my-calendar.component';
     TimelineItemComponent,
     PayComponent,
     MapComponent,
-    ImageSwiperComponent,
+    SlidesComponent,
     AppDirectivesModule,
     RefresherModule,
     MyCalendarComponent
@@ -54,7 +58,6 @@ import { MyCalendarComponent } from './my-calendar/my-calendar.component';
   entryComponents: [
     LoginSkeletonPageComponent,
     PayComponent,
-    ImageSwiperComponent,
     MyCalendarComponent
   ]
 })

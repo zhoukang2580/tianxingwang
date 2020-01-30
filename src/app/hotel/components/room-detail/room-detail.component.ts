@@ -1,5 +1,5 @@
-import { AgentEntity } from './../../../tmc/models/AgentEntity';
-import { ConfigEntity } from './../../../services/config/config.entity';
+import { AgentEntity } from "./../../../tmc/models/AgentEntity";
+import { ConfigEntity } from "./../../../services/config/config.entity";
 import { Observable, of } from "rxjs";
 import { HotelPassengerModel } from "./../../models/HotelPassengerModel";
 import { IdentityService } from "./../../../services/identity/identity.service";
@@ -36,6 +36,8 @@ export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() roomImages: string[];
   @Output() close: EventEmitter<any>;
   @Output() bookRoom: EventEmitter<any>;
+  hotelName:string;
+  images: any[];
   curIndex = 0;
   isAgent = false;
   HotelBookType = HotelBookType;
@@ -66,24 +68,40 @@ export class RoomDetailComponent implements OnInit, AfterViewInit, OnChanges {
   getBreakfast(plan: RoomPlanEntity) {
     return this.hotelService.getBreakfast(plan);
   }
+  back() {
+    this.modalCtrl.getTop().then(t => {
+      if (t) {
+        t.dismiss();
+      }
+    });
+  }
   async ngOnInit() {
+    if (this.roomImages) {
+      this.images = this.roomImages.map(it => {
+        return {
+          imageUrl: it
+        };
+      });
+    }
     const identity = await this.identityService.getIdentityAsync();
     if (identity) {
       this.isAgent = identity.Numbers && !!identity.Numbers["AgentId"];
     }
-
   }
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.hotelPolicy && changes.hotelPolicy.currentValue) {
     }
   }
-  ngAfterViewInit() { }
+  ngAfterViewInit() {}
   onClose() {
-    this.modalCtrl.getTop().then(t => {
-      if (t) {
-        t.dismiss();
-      }
-    }).catch(_ => 0);
+    this.modalCtrl
+      .getTop()
+      .then(t => {
+        if (t) {
+          t.dismiss();
+        }
+      })
+      .catch(_ => 0);
     this.close.emit();
   }
 }

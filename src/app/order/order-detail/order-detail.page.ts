@@ -635,6 +635,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     }
     const p = await this.popoverCtrl.create({
       component: OrderItemPricePopoverComponent,
+      cssClass:"ticket-changing",
       componentProps: {
         order:this.orderDetail&&this.orderDetail.Order,
         insurance: this.getInsuranceAmount(),

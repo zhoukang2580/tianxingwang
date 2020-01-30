@@ -14,14 +14,12 @@ import {
 } from "@angular/core";
 import { OrderItemEntity, OrderEntity } from "../../models/OrderEntity";
 import { IonGrid } from "@ionic/angular";
-import Swiper from 'swiper';
 @Component({
   selector: "app-order-item-price-popover",
   templateUrl: "./order-item-price-popover.component.html",
   styleUrls: ["./order-item-price-popover.component.scss"]
 })
 export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
-  private swiper: Swiper;
   @ViewChild("container", { static: false }) container: ElementRef<HTMLElement>;
   @ViewChildren(IonGrid) iongrids: QueryList<IonGrid>;
   order: OrderEntity;
@@ -35,14 +33,6 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
   }
   ngAfterViewInit() {
     this.calcTotalPrice();
-    setTimeout(() => {
-      this.initSwiper();
-    }, 300);
-  }
-  private initSwiper() {
-    this.swiper = new Swiper(this.container.nativeElement, {
-      loop: false
-    });
   }
   private calcTotalPrice() {
     if (this.iongrids) {

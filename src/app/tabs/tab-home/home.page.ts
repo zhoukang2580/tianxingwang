@@ -42,6 +42,7 @@ export class HomePage implements OnInit, OnDestroy {
   canSelectCompany$ = of(false);
   staff: StaffEntity;
   canShow = AppHelper.isApp() || AppHelper.isWechatH5();
+  options={};
   constructor(
     private identityService: IdentityService,
     private router: Router,
@@ -106,6 +107,13 @@ export class HomePage implements OnInit, OnDestroy {
     } catch (e) {}
   }
   async ngOnInit() {
+    this.options = {
+      loop: true,
+      height: 64,
+      autoplay: true,
+      speed: 1000,
+      direction: "vertical"
+    };
     this.subscription = this.identityService
       .getIdentitySource()
       .subscribe(_ => {

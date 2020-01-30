@@ -1,16 +1,21 @@
-<ion-header *ngIf='roomImages?.length'>
+<ion-header >
   <ion-toolbar>
-    <div class="images" #imagesEle>
-      <app-image-swiper [loop]='false' [logoUrl]='agent?.LogoFullFileName'
-        [prerenderImageUrl]='config?.PrerenderImageUrl' [imagesUrls]='roomImages' [autoplay]='true' (close)='onClose()'>
-      </app-image-swiper>
-    </div>
+    <ion-buttons>
+      <ion-button (click)='back()'>
+        <ion-icon name='arrow-back' color='dark'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{hotelName}}</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content>
+  <div class="images"  *ngIf='roomImages?.length'>
+    <app-slides [items]='images' [logoUrl]='agent?.LogoFullFileName' [defaultImage]='config?.PrerenderImageUrl'>
+    </app-slides>
+  </div>
   <ion-list class="house-info">
     <ion-item-divider>
-      {{room?.Hotel?.Name}}
+      {{room?.Name}}详情
     </ion-item-divider>
     <ion-item-group>
       <ion-item *ngIf='room?.RoomDetails'>

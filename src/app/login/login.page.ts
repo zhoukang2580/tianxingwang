@@ -32,6 +32,8 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   isLogining = false;
   isMobileNumberOk = false;
   isLoginOk = false;
+  eyeOn = false;
+  eyeType = "password";
   isShowWechatLogin: boolean;
   isShowImageCode: boolean;
   SlideEventType: string;
@@ -58,6 +60,14 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         });
       }, 1000);
     });
+  }
+  onToggleEye() {
+    this.eyeOn = !this.eyeOn;
+    if (this.eyeOn) {
+      this.eyeType = "text";
+    } else {
+      this.eyeType = "password";
+    }
   }
   ngAfterViewInit() {
     console.log("login page ngAfterViewInit");

@@ -1,8 +1,6 @@
 import { baiduMapAk, MapService } from "./../../services/map/map.service";
 import { AgentEntity } from "./../../tmc/models/AgentEntity";
-import { ShowImagesComponent } from "./../components/show-images/show-images.component";
 import { ApiService } from "src/app/services/api/api.service";
-import { ImageSwiperComponent } from "./../../components/image-swiper/image-swiper.component";
 import { RoomDetailComponent } from "./../components/room-detail/room-detail.component";
 import { AppHelper } from "src/app/appHelper";
 import { HotelPolicyModel } from "./../models/HotelPolicyModel";
@@ -80,7 +78,8 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   @ViewChild("bgPic", { static: false }) bgPicEle: ElementRef<HTMLElement>;
   @ViewChild(IonContent, { static: false }) ionCnt: IonContent;
   @ViewChild(IonRefresher, { static: false }) ionRefresher: IonRefresher;
-  @ViewChild("toolbarsegment", { static: false }) private toolbarsegmentEle: IonToolbar;
+  @ViewChild("toolbarsegment", { static: false })
+  private toolbarsegmentEle: IonToolbar;
   @ViewChild("houseInfo", { static: false }) private houseInfoEle: IonList;
   @ViewChild("hotelInfo", { static: false }) private hotelInfoEle: IonList;
   @ViewChild("trafficInfo", { static: false }) private trafficInfoEle: IonList;
@@ -648,6 +647,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       component: RoomDetailComponent,
       componentProps: {
         room,
+        hotelName:this.hotel&&this.hotel.Name,
         roomImages,
         config: this.config,
         agent: this.agent
@@ -662,36 +662,52 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     }
   }
   async onShowRoomImages(room: RoomEntity) {
-    this.config = await this.configService.getConfigAsync();
-    this.agent = await this.tmcService.getAgent();
+    this.hotelService.showImages = this.getRoomImages(room).map(it => {
+      return {
+        url: it
+      };
+    });
+    this.router.navigate(["hotel-show-images"], {
+      queryParams: { hotelName: this.hotel && this.hotel.Name  }
+    });
+    // this.config = await this.configService.getConfigAsync();
+    // this.agent = await this.tmcService.getAgent();
     // const m = await this.modalCtrl.create({
     //   component: ImageSwiperComponent,
     //   componentProps: {
     //     logoUrl: this.agent && this.agent.LogoFullFileName,
     //     hasLogo:true,
     //     prerenderImageUrl: this.config.PrerenderImageUrl,
-    //     // imgStyle: { objectFit: "contain" },
+    // imgStyle: { objectFit: "contain" },
     //     imagesUrls: this.getRoomImages(room),
     //   }
     // });
-    const m = await this.modalCtrl.create({
-      component: ShowImagesComponent,
-      componentProps: {
-        images: this.getRoomImages(room).map(it => {
-          return {
-            url: it
-          };
-        })
-      }
-    });
-    await m.present();
+    // const m = await this.modalCtrl.create({
+    //   component: ShowImagesPage,
+    //   componentProps: {
+    //     images: this.getRoomImages(room).map(it => {
+    //       return {
+    //         url: it
+    //       };
+    //     })
+    //   }
+    // });
+    // await m.present();
   }
   async onShowHotelImages() {
-    this.config = await this.configService.getConfigAsync();
-    this.apiService.showLoadingView();
+    this.hotelService.showImages = this.getHotelImageUrls().map(it => {
+      return {
+        url: it
+      };
+    });
+    this.router.navigate(["hotel-show-images"], {
+      queryParams: { hotelName:  this.hotel && this.hotel.Name  }
+    });
+    // this.config = await this.configService.getConfigAsync();
+    // this.apiService.showLoadingView();
     // const m = await this.modalCtrl.create({
     //   component: ImageSwiperComponent,
-    //   // animated: false,
+    // animated: false,
     //   componentProps: {
     //     loop: false,
     //     imgStyle: { objectFit: "contain" },
@@ -701,24 +717,24 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     //     config: this.config
     //   }
     // });
-    const m = await this.modalCtrl.create({
-      component: ShowImagesComponent,
-      componentProps: {
-        images: this.getHotelImageUrls().map(it => {
-          return {
-            url: it
-          };
-        })
-      }
-    });
-    await m.present();
-    setTimeout(() => {
-      this.apiService.hideLoadingView();
-    }, 100);
-    this.curHotelImagePos = 1;
-    setTimeout(() => {
-      this.curHotelImagePos = 0;
-    }, 0);
+    // const m = await this.modalCtrl.create({
+    //   component: ShowImagesPage,
+    //   componentProps: {
+    //     images: this.getHotelImageUrls().map(it => {
+    //       return {
+    //         url: it
+    //       };
+    //     })
+    //   }
+    // });
+    // await m.present();
+    // setTimeout(() => {
+    //   this.apiService.hideLoadingView();
+    // }, 100);
+    // this.curHotelImagePos = 1;
+    // setTimeout(() => {
+    //   this.curHotelImagePos = 0;
+    // }, 0);
     // this.isHotelImages = true;
     // if (!this.hotelImageUrls || this.hotelImageUrls.length != this.getHotelImageUrls().length){
     //   this.hotelImageUrls=[];
