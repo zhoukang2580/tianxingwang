@@ -1,6 +1,6 @@
 <div class="container" [class.show-image]='isShowImage'>
   <ion-slides (ionSlideDidChange)='onSlideDidChange()' (ionSlideWillChange)='onSlideWillChange()'
-    (ionSlideTouchEnd)='onSlideTouchEnd()' (ionSlideTouchStart)='onSlideTouchStart($event)'
+    (ionSlideTouchEnd)='onSlideTouchEnd()' (ionSlideTouchStart)='onSlideTouchStart()'
     (ionSlidesDidLoad)='onSlidesDidLoad()' [options]='options'>
     <ion-slide *ngFor='let it of items'>
       <div class="inner" *ngIf='it.imageUrl'>

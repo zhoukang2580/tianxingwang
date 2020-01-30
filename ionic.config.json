@@ -1,5 +1,7 @@
 {
   "name": "upgrade",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }
