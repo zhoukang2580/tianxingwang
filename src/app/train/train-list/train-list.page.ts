@@ -13,7 +13,13 @@ import {
   PassengerBookInfo,
   FlightHotelTrainType
 } from "src/app/tmc/tmc.service";
-import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  OnDestroy,
+  AfterViewInit
+} from "@angular/core";
 import {
   IonRefresher,
   IonContent,
@@ -28,13 +34,13 @@ import { DayModel } from "src/app/tmc/models/DayModel";
 import { DaysCalendarComponent } from "src/app/tmc/components/days-calendar/days-calendar.component";
 // tslint:disable-next-line: max-line-length
 import { FilterPassengersPolicyComponent } from "src/app/tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
-import { Observable, of, Subscription, from } from "rxjs";
+import { Observable, of, Subscription, from, fromEvent } from "rxjs";
 import { SelectedTrainSegmentInfoComponent } from "../components/selected-train-segment-info/selected-train-segment-info.component";
 import { FilterTrainCondition } from "../models/FilterCondition";
 import { TripType } from "src/app/tmc/models/TripType";
 import * as moment from "moment";
 import { LanguageHelper } from "src/app/languageHelper";
-import { map, tap } from "rxjs/operators";
+import { map, tap, switchMap } from "rxjs/operators";
 import { Storage } from "@ionic/storage";
 import { SelectTrainStationModalComponent } from "src/app/tmc/components/select-stations/select-station.component";
 @Component({
@@ -42,7 +48,7 @@ import { SelectTrainStationModalComponent } from "src/app/tmc/components/select-
   templateUrl: "./train-list.page.html",
   styleUrls: ["./train-list.page.scss"]
 })
-export class TrainListPage implements OnInit, OnDestroy {
+export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(DaysCalendarComponent, { static: false })
   private daysCalendarComp: DaysCalendarComponent;
   @ViewChild(IonRefresher, { static: false })
@@ -55,6 +61,8 @@ export class TrainListPage implements OnInit, OnDestroy {
   private currentSelectedPassengerIds: string[];
   private trains: TrainEntity[] = [];
   private trainsForRender: TrainEntity[] = [];
+  private subscriptions: Subscription[] = [];
+  isShowFab = false;
   progressName = "";
   trainsCount = 0;
   vmTrains: TrainEntity[] = [];
@@ -109,8 +117,21 @@ export class TrainListPage implements OnInit, OnDestroy {
   }
   ngOnDestroy() {
     this.searchModalSubscription.unsubscribe();
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
-
+  ngAfterViewInit() {
+    if (this.cnt) {
+      const sub = from(this.cnt.getScrollElement())
+        .pipe(
+          switchMap(el => fromEvent(el, "scroll").pipe(map(_ => el.scrollTop))),
+          map(top => top > 0)
+        )
+        .subscribe(isShowFab => {
+          this.isShowFab = isShowFab;
+        });
+      this.subscriptions.push(sub);
+    }
+  }
   ngOnInit() {
     this.route.queryParamMap.subscribe(async _ => {
       this.isShowRoundtripTip = await this.staffService.isSelfBookType();
@@ -506,6 +527,9 @@ export class TrainListPage implements OnInit, OnDestroy {
     result = this.filterByDepartureStations(result);
     result = this.filterByArrivalStations(result);
     return result;
+  }
+  onScrollToTop() {
+    this.scrollToTop();
   }
   private filterByDepartureTimespan(trains: TrainEntity[]) {
     if (

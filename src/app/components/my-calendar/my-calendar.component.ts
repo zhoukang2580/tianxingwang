@@ -26,7 +26,6 @@ export class MyCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("years", { static: false }) yearsContainer: ElementRef<
     HTMLElement
   >;
-  @ViewChildren("yearItems") yearItems: QueryList<ElementRef<HTMLElement>>;
   private subscriptions: Subscription[] = [];
   private totalYears = 260;
   private isDateSelected = false;
@@ -50,11 +49,10 @@ export class MyCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
       //   this.onUnshifYears();
       // }
     });
-    const subscription2 = this.yearItems.changes.subscribe(_ => {
+    setTimeout(() => {
       this.moveToCenter(false);
-    });
+    }, 200);
     this.subscriptions.push(subscription);
-    this.subscriptions.push(subscription2);
   }
   async back() {
     let date: IDay;

@@ -17,8 +17,27 @@ ion-text {
     align-items: center;
   }
 }
+ion-fab {
+  ion-fab-button {
+    width: 3em;
+    height: 3em;
+    margin-bottom: 2em;
+  }
+  transform: scale(0);
+  opacity: 0;
+  &.show {
+    transform: scale(1);
+    opacity: 1;
+  }
+  transition: all ease-in-out 200ms;
+}
 ion-content {
   --backround: #f2f2f2;
+  .content-header {
+    // position: sticky;
+    // top: 0;
+    text-align: center;
+  }
 }
 ion-title {
   font-size: 0.9rem;

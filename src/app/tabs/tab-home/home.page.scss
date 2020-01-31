@@ -26,7 +26,10 @@ app-slides {
   display: flex;
   align-items: center;
   img {
-    width: 1em;
+    width: 1.5em;
+    align-self: flex-start;
+    padding-top: 0.2em;
+    margin-left: 0.5em;
   }
 }
 ion-grid ion-row ion-col {

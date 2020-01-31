@@ -23,7 +23,8 @@ p.grade-stars {
   font-size: 0.8rem;
 }
 .query-toolbar {
-  position: fixed;
+  position: sticky;
+  top: 0;
 }
 ion-content {
   position: relative;

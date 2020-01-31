@@ -27,12 +27,17 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
   orderItems: OrderItemEntity[];
   OrderItemHelper = OrderItemHelper;
   // IsShowServiceFee = false;
-  constructor(private render: Renderer2) { }
+  constructor(private render: Renderer2) {}
   abs(item: number) {
     return Math.abs(item);
   }
   ngAfterViewInit() {
     this.calcTotalPrice();
+    if (this.order && this.order.OrderFlightTickets) {
+      if (this.order.OrderFlightTickets.length) {
+        AppHelper.toast("可以左右滑动查看",1000,'middle');
+      }
+    }
   }
   private calcTotalPrice() {
     if (this.iongrids) {
@@ -62,7 +67,7 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
       }, 200);
     }
   }
-  ngOnInit() { }
+  ngOnInit() {}
   getPassenger(t: OrderFlightTicketEntity): OrderPassengerEntity {
     if (!t || !t.Passenger) {
       return null;

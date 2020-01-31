@@ -1,4 +1,4 @@
-import { AppHelper } from 'src/app/appHelper';
+import { AppHelper } from "src/app/appHelper";
 import { NgModule, ErrorHandler } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { RouteReuseStrategy, Router } from "@angular/router";
@@ -25,7 +25,20 @@ import { File } from "@ionic-native/file/ngx";
 import { AppVersion } from "@ionic-native/app-version/ngx";
 import { WebView } from "@ionic-native/ionic-webview/ngx";
 import { IonicStorageModule } from "@ionic/storage";
-@NgModule({ 
+import { Animation, AnimationBuilder, AnimationController } from "@ionic/core";
+export function navAnimations(AnimationC: Animation, baseEl) {
+  const animation: Animation = new AnimationC();
+  animation
+    .addElement(baseEl)
+    .easing("cubic-bezier(0.32,0.72,0,1)")
+    .beforeStyles({ opacity: 1 })
+    .fromTo("translateX", "-100%", 0)
+    .fromTo("opacity", 0, 1)
+    .duration(300);
+  console.log("baseEl", baseEl);
+  return Promise.resolve(animation);
+}
+@NgModule({
   declarations: [AppComponent],
   entryComponents: [],
   imports: [
@@ -36,7 +49,8 @@ import { IonicStorageModule } from "@ionic/storage";
       backButtonText: "",
       loadingSpinner: "crescent",
       swipeBackEnabled: false,
-      hardwareBackButton: !true
+      hardwareBackButton: !true,
+      // navAnimation: navAnimations
     }),
     HttpClientModule,
     // TranslateModule.forRoot({
@@ -48,7 +62,7 @@ import { IonicStorageModule } from "@ionic/storage";
     // }),
     AppRoutingModule,
     AppComponentsModule,
-    IonicStorageModule.forRoot(),
+    IonicStorageModule.forRoot()
   ],
   providers: [
     StatusBar,

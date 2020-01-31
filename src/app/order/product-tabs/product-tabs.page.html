@@ -12,6 +12,9 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
+</ion-header>
+
+<ion-content>
   <ion-toolbar class='ion-text-center'>
     <div class='tabs'>
       <ion-button [color]='activeTab.value==tab.value?"secondary":"dark"' (click)='onTabClick(tab)'
@@ -19,9 +22,6 @@
       </ion-button>
     </div>
   </ion-toolbar>
-</ion-header>
-
-<ion-content>
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh();">
     <ion-refresher-content>正在获取...</ion-refresher-content>
   </ion-refresher>

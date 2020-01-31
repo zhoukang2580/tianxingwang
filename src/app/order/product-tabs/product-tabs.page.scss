@@ -13,6 +13,10 @@
 }
 ion-content {
   --background: #f2f2f2;
+  ion-toolbar{
+    position: sticky;
+    top: 0;
+  }
 }
 ion-list {
   background: transparent;

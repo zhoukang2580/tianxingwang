@@ -109,7 +109,6 @@ export class HomePage implements OnInit, OnDestroy {
   async ngOnInit() {
     this.options = {
       loop: true,
-      height: 64,
       autoplay: true,
       speed: 1000,
       direction: "vertical"
