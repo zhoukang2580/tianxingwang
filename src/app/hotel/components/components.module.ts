@@ -12,9 +12,7 @@ import { HotelGeoComponent } from "./hotel-query/hotel-geo/hotel-geo.component";
 import { QueryTabComponent } from "./hotel-query/query-tab/query-tab.component";
 import { RecommendRankComponent } from "./hotel-query/recommend-rank/recommend-rank.component";
 import { HotelFilterComponent } from "./hotel-query/hotel-filter/hotel-filter.component";
-import { RoomDetailComponent } from "./room-detail/room-detail.component";
 import { RoomPlanItemComponent } from "./room-plan-item/room-plan-item.component";
-import { HotelRoomBookedinfosComponent } from "./hotel-room-bookedinfos/hotel-room-bookedinfos.component";
 import { RoomShowItemComponent } from "./room-show-item/room-show-item.component";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 import { ChangeRoomplanDateComponent } from './change-roomplan-date/change-roomplan-date.component';
@@ -31,9 +29,7 @@ import { ShowMsgComponent } from './show-msg/show-msg.component';
     HotelStarPriceComponent,
     HotelStarPriceComponent,
     HotelListItemComponent,
-    RoomDetailComponent,
     RoomPlanItemComponent,
-    HotelRoomBookedinfosComponent,
     RoomShowItemComponent,
     ChangeRoomplanDateComponent,
     ShowMsgComponent,
@@ -56,13 +52,11 @@ import { ShowMsgComponent } from './show-msg/show-msg.component';
     RecommendRankComponent,
     HotelStarPriceComponent,
     HotelStarPriceComponent,
-    RoomDetailComponent,
     RoomPlanItemComponent,
-    HotelRoomBookedinfosComponent,
     RoomShowItemComponent,
     TmcComponentsModule,
     ChangeRoomplanDateComponent
   ],
-  entryComponents: [HotelRoomBookedinfosComponent,ShowMsgComponent,RoomDetailComponent]
+  entryComponents: [ShowMsgComponent]
 })
 export class HotelComponentsModule {}

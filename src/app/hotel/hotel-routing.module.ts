@@ -23,6 +23,20 @@ export const routes: Routes = [
       )
   },
   {
+    path: "hotel-room-detail",
+    loadChildren: () =>
+      import("./room-detail/room-detail.module").then(
+        m => m.RoomDetailPageModule
+      )
+  },
+  {
+    path: "hotel-room-bookedinfos",
+    loadChildren: () =>
+      import("./hotel-room-bookedinfos/hotel-room-bookedinfos.module").then(
+        m => m.HotelRoomBookedInfosPageModule
+      )
+  },
+  {
     path: "hotel-list",
     loadChildren: () =>
       import("./hotel-list/hotel-list.module").then(m => m.HotelListPageModule)

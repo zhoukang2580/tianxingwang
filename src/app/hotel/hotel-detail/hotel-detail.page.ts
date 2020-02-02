@@ -1,11 +1,9 @@
 import { baiduMapAk, MapService } from "./../../services/map/map.service";
 import { AgentEntity } from "./../../tmc/models/AgentEntity";
 import { ApiService } from "src/app/services/api/api.service";
-import { RoomDetailComponent } from "./../components/room-detail/room-detail.component";
 import { AppHelper } from "src/app/appHelper";
 import { HotelPolicyModel } from "./../models/HotelPolicyModel";
 import { ConfigEntity } from "./../../services/config/config.entity";
-import { HotelRoomBookedinfosComponent } from "./../components/hotel-room-bookedinfos/hotel-room-bookedinfos.component";
 import { LanguageHelper } from "./../../languageHelper";
 import { HotelPassengerModel } from "./../models/HotelPassengerModel";
 import { HotelEntity } from "./../models/HotelEntity";
@@ -614,10 +612,11 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     return true;
   }
   private async onShowBookInfos() {
-    const m = await this.modalCtrl.create({
-      component: HotelRoomBookedinfosComponent
-    });
-    await m.present();
+    // const m = await this.modalCtrl.create({
+    //   component: HotelRoomBookedinfosComponent
+    // });
+    // await m.present();
+    this.router.navigate(['hotel-room-bookedinfos']);
   }
   getRoomLowestAvgPrice(room: RoomEntity) {
     let result = 0;
@@ -643,23 +642,31 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
         roomImages = [this.config.DefaultImageUrl];
       }
     }
-    const m = await this.modalCtrl.create({
-      component: RoomDetailComponent,
-      componentProps: {
-        room,
-        hotelName:this.hotel&&this.hotel.Name,
-        roomImages,
-        config: this.config,
-        agent: this.agent
-      }
-    });
-    if (m) {
-      await m.present();
-      const result = await m.onDidDismiss();
-      const data = result && (result.data as RoomPlanEntity);
-      if (data) {
-      }
-    }
+    this.hotelService.showRoomDetailInfo = {
+      hotel: this.hotel,
+      room,
+      roomImages,
+      config: this.config,
+      agent: this.agent
+    };
+    this.router.navigate(["hotel-room-detail"]);
+    // const m = await this.modalCtrl.create({
+    //   component: RoomDetailComponent,
+    //   componentProps: {
+    //     room,
+    //     hotelName:this.hotel&&this.hotel.Name,
+    //     roomImages,
+    //     config: this.config,
+    //     agent: this.agent
+    //   }
+    // });
+    // if (m) {
+    //   await m.present();
+    //   const result = await m.onDidDismiss();
+    //   const data = result && (result.data as RoomPlanEntity);
+    //   if (data) {
+    //   }
+    // }
   }
   async onShowRoomImages(room: RoomEntity) {
     this.hotelService.showImages = this.getRoomImages(room).map(it => {
@@ -668,7 +675,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       };
     });
     this.router.navigate(["hotel-show-images"], {
-      queryParams: { hotelName: this.hotel && this.hotel.Name  }
+      queryParams: { hotelName: this.hotel && this.hotel.Name }
     });
     // this.config = await this.configService.getConfigAsync();
     // this.agent = await this.tmcService.getAgent();
@@ -701,7 +708,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       };
     });
     this.router.navigate(["hotel-show-images"], {
-      queryParams: { hotelName:  this.hotel && this.hotel.Name  }
+      queryParams: { hotelName: this.hotel && this.hotel.Name }
     });
     // this.config = await this.configService.getConfigAsync();
     // this.apiService.showLoadingView();

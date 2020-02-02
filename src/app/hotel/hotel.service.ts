@@ -5,7 +5,7 @@ import { TripType } from "src/app/tmc/models/TripType";
 import { HotelEntity } from "./models/HotelEntity";
 import { IdentityService } from "./../services/identity/identity.service";
 import { BehaviorSubject, throwError, from } from "rxjs";
-import { Injectable } from "@angular/core";
+import { Injectable, EventEmitter } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
 import {
   PassengerBookInfo,
@@ -40,6 +40,8 @@ import { HotelPolicyModel } from "./models/HotelPolicyModel";
 import { HotelSupplierType } from "./models/HotelSupplierType";
 import { RoomPlanRuleType } from "./models/RoomPlanRuleType";
 import { OrderBookDto } from "../order/models/OrderBookDto";
+import { ConfigEntity } from "../services/config/config.entity";
+import { AgentEntity } from "../tmc/models/AgentEntity";
 export class SearchHotelModel {
   checkInDate: string;
   checkOutDate: string;
@@ -71,8 +73,16 @@ export class HotelService {
   // private hotelPolicies: { [hotelId: string]: HotelPassengerModel[] };
   private hotelQueryModel: HotelQueryEntity;
   curViewHotel: HotelDayPriceEntity;
-  showImages:any[];
-
+  showImages: any[];
+  showRoomDetailInfo: {
+    room: RoomEntity;
+    config: ConfigEntity;
+    agent?: AgentEntity;
+    roomImages: string[];
+    close?: EventEmitter<any>;
+    bookRoom?: EventEmitter<any>;
+    hotel: HotelEntity;
+  };
   constructor(
     private apiService: ApiService,
     identityService: IdentityService,
