@@ -24,15 +24,12 @@
 </ion-header>
 
 <ion-content #cnt>
-  <ion-toolbar class='query-toolbar' #querytoolbar *ngIf='!isShowSearchBar'>
-    <app-hotel-query [conditions]='conditionModel' (hotelQueryChange)='onHotelQueryChange($event)'></app-hotel-query>
-  </ion-toolbar>
   <ion-refresher slot='fixed' (ionRefresh)='doRefresh(false)'>
     <ion-refresher-content>正在加载...</ion-refresher-content>
   </ion-refresher>
-  <!-- <ion-list class='pos' *ngIf='!isShowSearchBar'>
-    <ion-item></ion-item>
-  </ion-list> -->
+  <ion-toolbar class='query-toolbar' #querytoolbar *ngIf='!isShowSearchBar'>
+    <app-hotel-query [conditions]='conditionModel' (hotelQueryChange)='onHotelQueryChange($event)'></app-hotel-query>
+  </ion-toolbar>
   <ng-template #nosearchartempl>
     <ion-list *ngIf='!isSearchingText'>
       <ion-item *ngFor='let item of vmSearchTextList' (click)='onSearchItemClick(item)'>
