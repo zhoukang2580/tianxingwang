@@ -1,5 +1,5 @@
-import { iosTransitionAnimation } from "./animations/ion-transition";
-import { AppHelper } from "src/app/appHelper";
+import { mdTransitionAnimation } from "./animations/md.transition";
+import { iosTransitionAnimation } from "./animations/ios-transition";
 import { NgModule, ErrorHandler } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { RouteReuseStrategy, Router } from "@angular/router";
@@ -30,21 +30,11 @@ import { IonicStorageModule } from "@ionic/storage";
 import { Animation, AnimationBuilder, AnimationController } from "@ionic/core";
 let curPlt: "ios" | "md";
 export function navAnimations(AnimationC: Animation, baseEl, opts) {
-
-  // const animation: Animation = new AnimationC();
-  // animation
-  //   .addElement(baseEl)
-  //   .easing("cubic-bezier(0.32,0.72,0,1)")
-  //   .beforeStyles({ opacity: 1 })
-  //   .fromTo("translateX", "-100%", 0)
-  //   .fromTo("opacity", 0, 1)
-  //   .duration(300);
-  // console.log("baseEl", baseEl);
-  const animation = iosTransitionAnimation(baseEl, opts);
-  if (curPlt == "ios") {
-    return Promise.resolve(animation);
-  }
-  return Promise.resolve(null);
+  const animation: any =
+    curPlt == "ios"
+      ? iosTransitionAnimation(baseEl, opts)
+      : mdTransitionAnimation(baseEl, opts);
+  return Promise.resolve(animation);
 }
 @NgModule({
   declarations: [AppComponent],

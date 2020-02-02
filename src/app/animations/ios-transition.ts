@@ -1,6 +1,9 @@
 import { createAnimation } from "@ionic/core";
-import { AnimationBuilder } from "@angular/animations";
-import { Animation } from "./animation-interface";
+import {
+  Animation,
+  TransitionOptions,
+  getIonPageElement
+} from "./animation-interface";
 const DURATION = 300;
 
 const getClonedElement = (tagName: string): any => {
@@ -783,59 +786,3 @@ export const iosTransitionAnimation = (
     throw err;
   }
 };
-export function getIonPageElement(element: HTMLElement) {
-  if (element.classList.contains("ion-page")) {
-    return element;
-  }
-
-  const ionPage = element.querySelector(
-    ":scope > .ion-page, :scope > ion-nav, :scope > ion-tabs"
-  );
-  if (ionPage) {
-    return ionPage;
-  }
-  // idk, return the original element so at least something animates and we don't have a null pointer
-  return element;
-}
-
-export interface TransitionResult {
-  hasCompleted: boolean;
-  animation?: Animation;
-}
-export interface RouterOutletOptions {
-  animated?: boolean;
-  animationBuilder?: AnimationBuilder;
-  duration?: number;
-  easing?: string;
-  showGoBack?: boolean;
-  direction?: NavDirection;
-  deepWait?: boolean;
-  mode?: Mode;
-  keyboardClose?: boolean;
-  skipIfBusy?: boolean;
-  progressAnimation?: boolean;
-}
-export interface NavOptions extends RouterOutletOptions {
-  progressAnimation?: boolean;
-  updateURL?: boolean;
-  delegate?: FrameworkDelegate;
-  viewIsReady?: (enteringEl: HTMLElement) => Promise<any>;
-}
-export interface FrameworkDelegate {
-  attachViewToDom(
-    container: any,
-    component: any,
-    propsOrDataObj?: any,
-    cssClasses?: string[]
-  ): Promise<HTMLElement>;
-  removeViewFromDom(container: any, component: any): Promise<void>;
-}
-
-export type NavDirection = "back" | "forward";
-export type Mode = "ios" | "md";
-export interface TransitionOptions extends NavOptions {
-  progressCallback?: (ani: Animation | undefined) => void;
-  baseEl: any;
-  enteringEl: HTMLElement;
-  leavingEl: HTMLElement | undefined;
-}
