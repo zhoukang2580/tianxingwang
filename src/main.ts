@@ -22,6 +22,7 @@ if (environment.production) {
   //   }
   //   window['vConsole'] = new window["VConsole"]();
   // }
+  bootstrap();
 } else {
   // if (window["cordova"]||navigator.userAgent.toLowerCase().includes("iphone")) {
   //   if (window["VConsole"]) {
