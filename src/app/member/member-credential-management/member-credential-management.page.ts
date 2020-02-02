@@ -88,7 +88,7 @@ export class MemberCredentialManagementPage
     });
   }
   back() {
-    this.navCtrl.pop();
+    this.navCtrl.back();
   }
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());

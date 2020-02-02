@@ -1,3 +1,4 @@
+import { iosTransitionAnimation } from "./animations/ion-transition";
 import { AppHelper } from "src/app/appHelper";
 import { NgModule, ErrorHandler } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
@@ -5,7 +6,8 @@ import { RouteReuseStrategy, Router } from "@angular/router";
 import {
   IonicModule,
   IonicRouteStrategy,
-  LoadingController
+  LoadingController,
+  Platform
 } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
@@ -26,17 +28,23 @@ import { AppVersion } from "@ionic-native/app-version/ngx";
 import { WebView } from "@ionic-native/ionic-webview/ngx";
 import { IonicStorageModule } from "@ionic/storage";
 import { Animation, AnimationBuilder, AnimationController } from "@ionic/core";
-export function navAnimations(AnimationC: Animation, baseEl) {
-  const animation: Animation = new AnimationC();
-  animation
-    .addElement(baseEl)
-    .easing("cubic-bezier(0.32,0.72,0,1)")
-    .beforeStyles({ opacity: 1 })
-    .fromTo("translateX", "-100%", 0)
-    .fromTo("opacity", 0, 1)
-    .duration(300);
-  console.log("baseEl", baseEl);
-  return Promise.resolve(animation);
+let curPlt: "ios" | "md";
+export function navAnimations(AnimationC: Animation, baseEl, opts) {
+
+  // const animation: Animation = new AnimationC();
+  // animation
+  //   .addElement(baseEl)
+  //   .easing("cubic-bezier(0.32,0.72,0,1)")
+  //   .beforeStyles({ opacity: 1 })
+  //   .fromTo("translateX", "-100%", 0)
+  //   .fromTo("opacity", 0, 1)
+  //   .duration(300);
+  // console.log("baseEl", baseEl);
+  const animation = iosTransitionAnimation(baseEl, opts);
+  if (curPlt == "ios") {
+    return Promise.resolve(animation);
+  }
+  return Promise.resolve(null);
 }
 @NgModule({
   declarations: [AppComponent],
@@ -50,7 +58,7 @@ export function navAnimations(AnimationC: Animation, baseEl) {
       loadingSpinner: "crescent",
       swipeBackEnabled: false,
       hardwareBackButton: !true,
-      // navAnimation: navAnimations
+      navAnimation: navAnimations
     }),
     HttpClientModule,
     // TranslateModule.forRoot({
@@ -82,7 +90,8 @@ export function navAnimations(AnimationC: Animation, baseEl) {
   bootstrap: [AppComponent]
 })
 export class AppModule {
-  constructor(router: Router) {
+  constructor(router: Router, plt: Platform) {
+    curPlt = plt.is("ios") ? "ios" : "md";
     console.log("AppModule", router.config);
   }
 }
