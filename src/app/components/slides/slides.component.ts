@@ -30,7 +30,7 @@ export class SlidesComponent implements OnInit, OnChanges {
   @Input() options;
   @Input() logoUrl;
   @Input() defaultImage='assets/loading.gif';
-  isShowImage = true;
+  isShowImage = false;
   curIndex: number;
   
   constructor() {}
