@@ -1,16 +1,17 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <ion-button color='dark' (click)='back()'>
+      <!-- <ion-button color='dark' (click)='back()'>
         <ion-icon name='arrow-back'></ion-icon>
-      </ion-button>
+      </ion-button> -->
+      <ion-back-button defaultHref=""></ion-back-button>
+
     </ion-buttons>
     <ion-title>{{title}}</ion-title>
     <ion-buttons slot='end'>
-      <!-- <ion-button color='primary' (click)='openSearchModal()'>
+      <ion-button color='primary' (click)='openSearchModal()'>
         <ion-icon name="search" color='secondary'></ion-icon>
-      </ion-button> -->
-      <ion-back-button defaultHref=""></ion-back-button>
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
