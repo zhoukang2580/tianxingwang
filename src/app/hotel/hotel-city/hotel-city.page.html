@@ -1,30 +1,32 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <ion-button fill='clear' (click)='back()'>
+      <!-- <ion-button fill='clear' (click)='back()'>
         <ion-icon name='arrow-back' color='dark'></ion-icon>
-      </ion-button>
+      </ion-button> -->
+      <ion-back-button defaultHref=""></ion-back-button>
     </ion-buttons>
     <ion-searchbar mode='ios' debounce="700" animated placeholder="输入中文、拼音、首字母、城市代码" (ionChange)='doSearch()'
       [(ngModel)]='vmKeyword'>
     </ion-searchbar>
   </ion-toolbar>
-  <ion-grid *ngIf='letters&&letters.length' #lettersEle>
+</ion-header>
+<ion-content [scrollEvents]='true' (ionScroll)='onScroll($event)'>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh(true)">
+  </ion-refresher>
+  <ion-grid *ngIf='letters&&letters.length' class="letters-index" #lettersEle>
     <ion-row>
       字母索引
     </ion-row>
     <ion-row>
-      <ion-col *ngFor='let letter of letters' (click)='onSelectLetter(letter)' class='ion-no-margin ion-no-padding' size='1.5'>
+      <ion-col *ngFor='let letter of letters' (click)='onSelectLetter(letter)' class='ion-no-margin ion-no-padding'
+        size='1.5'>
         <ion-button fill='clear' color='secondary' size='small' class='ion-no-margin'>
           {{letter}}
         </ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>
-</ion-header>
-<ion-content [scrollEvents]='true' (ionScroll)='onScroll($event)'>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh(true)">
-  </ion-refresher>
   <ng-container *ngIf='!isLoading else loadingTemp'>
     <ion-grid *ngIf='hotCities&&hotCities.length' #hot>
       <ion-row>
