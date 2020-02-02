@@ -27,7 +27,7 @@ import { File } from "@ionic-native/file/ngx";
 import { AppVersion } from "@ionic-native/app-version/ngx";
 import { WebView } from "@ionic-native/ionic-webview/ngx";
 import { IonicStorageModule } from "@ionic/storage";
-import { Animation, AnimationBuilder, AnimationController } from "@ionic/core";
+import { Animation } from "@ionic/core";
 let curPlt: "ios" | "md";
 export function navAnimations(AnimationC: Animation, baseEl, opts) {
   const animation: any =
