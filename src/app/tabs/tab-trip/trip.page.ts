@@ -13,7 +13,7 @@ import { Subscription } from "rxjs";
 import { IonRefresher, IonInfiniteScroll } from "@ionic/angular";
 import { OrderModel } from "./../../order/models/OrderModel";
 import { ApiService } from "./../../services/api/api.service";
-import { Component, ViewChild, OnInit } from "@angular/core";
+import { Component, ViewChild, OnInit, OnDestroy } from "@angular/core";
 import { OrderTripModel } from "src/app/order/models/OrderTripModel";
 import { OrderInsuranceType } from "src/app/insurance/models/OrderInsuranceType";
 import { OrderInsuranceStatusType } from "src/app/order/models/OrderInsuranceStatusType";
@@ -26,9 +26,10 @@ import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
   templateUrl: "trip.page.html",
   styleUrls: ["trip.page.scss"]
 })
-export class TripPage implements OnInit {
+export class TripPage implements OnInit, OnDestroy {
   @ViewChild(IonRefresher, { static: false }) ionRefresher: IonRefresher;
-  @ViewChild(IonInfiniteScroll, { static: false }) infiniteScroll: IonInfiniteScroll;
+  @ViewChild(IonInfiniteScroll, { static: false })
+  infiniteScroll: IonInfiniteScroll;
   trips: OrderTripModel[];
   private searchCondition: TravelModel = {
     PageIndex: 0,
@@ -36,6 +37,7 @@ export class TripPage implements OnInit {
   } as TravelModel;
   isLoading = false;
   loadMoreSubscription = Subscription.EMPTY;
+  private subscriptions: Subscription[] = [];
   constructor(
     private tmcService: TmcService,
     private apiservice: ApiService,
@@ -69,12 +71,21 @@ export class TripPage implements OnInit {
       })
     );
   }
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
   ngOnInit() {
-    this.route.queryParamMap.subscribe(_ => {
+    const sub = this.route.queryParamMap.subscribe(_ => {
       this.doRefresh();
     });
+    this.subscriptions.push(sub);
+    // const sub2 = this.router.events.subscribe(_ => {
+    //   this.loadMoreSubscription.unsubscribe();
+    // });
+    // this.subscriptions.push(sub2);
   }
   doRefresh() {
+    this.loadMoreSubscription.unsubscribe();
     this.searchCondition.PageIndex = 0;
     this.trips = [];
     if (this.ionRefresher) {

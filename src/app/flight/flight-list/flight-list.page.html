@@ -1,9 +1,10 @@
 <ion-header class='ion-text-center'>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <ion-button (click)='back()'>
+      <!-- <ion-button (click)='back()'>
         <ion-icon color='dark' name='arrow-back'></ion-icon>
-      </ion-button>
+      </ion-button> -->
+      <ion-back-button defaultHref=""></ion-back-button>
     </ion-buttons>
     <ion-title color='{{searchFlightModel?.isLocked?"medium":"secondary"}}' [class.ion-text-start]='showAddPassenger'
       [class.ion-text-center]='!showAddPassenger'>

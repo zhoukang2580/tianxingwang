@@ -2,9 +2,10 @@
   <div class='header' #header>
     <ion-toolbar>
       <ion-buttons slot='start'>
-        <ion-button color='dark' (click)='back($event)'>
+        <!-- <ion-button color='dark' (click)='back($event)'>
           <ion-icon name='arrow-back'></ion-icon>
-        </ion-button>
+        </ion-button> -->
+        <ion-back-button defaultHref=""></ion-back-button>
       </ion-buttons>
       <ion-title [class.has-add-passenger]='(isShowAddPassenger$|async)'>{{hotel?.Name}}</ion-title>
       <ion-buttons slot='end' *ngIf='!isShowBackArrow'>

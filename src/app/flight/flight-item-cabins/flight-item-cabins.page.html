@@ -1,9 +1,10 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <ion-button (click)='back()'>
+      <!-- <ion-button (click)='back()'>
         <ion-icon color='dark' name='arrow-back'></ion-icon>
-      </ion-button>
+      </ion-button> -->
+      <ion-back-button defaultHref=""></ion-back-button>
     </ion-buttons>
     <ion-text>{{getMothDay()}}</ion-text>
     <ion-buttons slot='end' *ngIf='(showOpenBtn$|async) as num'>
