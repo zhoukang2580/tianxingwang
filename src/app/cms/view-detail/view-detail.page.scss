@@ -18,7 +18,8 @@
 .detail {
   // text-indent: 2em;
   padding: 0.5em 1em;
-  pre {
+  pre,
+  .normal {
     white-space: normal;
   }
 }
