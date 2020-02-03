@@ -1,3 +1,4 @@
+import { flyInOut } from "./../../animations/flyInOut";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { TrainFilterComponent } from "./../components/train-filter/train-filter.component";
 import { TrainscheduleComponent } from "./../components/trainschedule/trainschedule.component";
@@ -43,10 +44,23 @@ import { LanguageHelper } from "src/app/languageHelper";
 import { map, tap, switchMap } from "rxjs/operators";
 import { Storage } from "@ionic/storage";
 import { SelectTrainStationModalComponent } from "src/app/tmc/components/select-stations/select-station.component";
+import { trigger, transition, style, animate } from '@angular/animations';
 @Component({
   selector: "app-train-list",
   templateUrl: "./train-list.page.html",
-  styleUrls: ["./train-list.page.scss"]
+  styleUrls: ["./train-list.page.scss"],
+  animations: [
+    trigger("flyInOut", [
+      transition(":enter", [
+        style({ opacity: 0, transform: "translateX(-10%)" }),
+        animate("200ms", style({ opacity: 1, transform: "translateX(0)" }))
+      ]),
+      transition(":leave", [
+        style({ transform: "translateX(-10%)" }),
+        animate("200ms", style({ opacity: 0, transform: "translateX(100%)" }))
+      ])
+    ])
+  ]
 })
 export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(DaysCalendarComponent, { static: false })
