@@ -16,13 +16,13 @@ const bootstrap = () =>
     });
 if (environment.production) {
   enableProdMode();
+  bootstrap();
   // if (window["VConsole"]) {
   //   if( window['vConsole'] ){
   //     window['vConsole'] .destroy();
   //   }
   //   window['vConsole'] = new window["VConsole"]();
   // }
-  bootstrap();
 } else {
   // if (window["cordova"]||navigator.userAgent.toLowerCase().includes("iphone")) {
   //   if (window["VConsole"]) {

@@ -1,16 +1,18 @@
+import { Subscription } from "rxjs";
 import { AppHelper } from "./../../appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
 import { TmcService } from "./../../tmc/tmc.service";
 import { NavController } from "@ionic/angular";
 import { CarService } from "./../car.service";
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 
 @Component({
   selector: "app-rental-car",
   templateUrl: "./rental-car.page.html",
   styleUrls: ["./rental-car.page.scss"]
 })
-export class RentalCarPage implements OnInit {
+export class RentalCarPage implements OnInit, OnDestroy {
+  private subscription = Subscription.EMPTY;
   mobile: string;
   constructor(
     private carService: CarService,
@@ -37,8 +39,11 @@ export class RentalCarPage implements OnInit {
       });
     }
   }
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
   ngOnInit() {
-    this.route.queryParamMap.subscribe(p => {
+    this.subscription = this.route.queryParamMap.subscribe(p => {
       this.getAccountInfo();
     });
   }

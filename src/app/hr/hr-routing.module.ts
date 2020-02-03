@@ -13,7 +13,7 @@ let routes: Route[] = [
   {
     path: "confirm-information",
     loadChildren: () =>
-      import(`./confirm-information/confirm-information.module`).then(
+      import("./confirm-information/confirm-information.module").then(
         m => m.ConfirmInformationPageModule
       )
   },

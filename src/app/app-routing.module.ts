@@ -88,6 +88,7 @@ const routes: Routes = [
 ];
 @NgModule({
   imports: [
+    CarModule,
     RegisterModule,
     LoginModule,
     FlightModule,
@@ -103,7 +104,6 @@ const routes: Routes = [
     MessageModule,
     TrainModule,
     HotelModule,
-    CarModule,
     HotelInternationalModule,
     RouterModule.forRoot(routes, {
       preloadingStrategy: PreloadAllModules,

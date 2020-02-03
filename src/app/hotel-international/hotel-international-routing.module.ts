@@ -6,7 +6,7 @@ export const routes: Routes = [
   {
     path: "international-hotel-list",
     loadChildren: () =>
-      import(`./international-hotel-list/international-hotel-list.module`).then(
+      import("./international-hotel-list/international-hotel-list.module").then(
         m => m.InternationalHotelListPageModule
       )
   }

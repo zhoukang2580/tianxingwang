@@ -80,6 +80,11 @@ export class TripPage implements OnInit, OnDestroy {
     });
     this.subscriptions.push(sub);
     // const sub2 = this.router.events.subscribe(_ => {
+    //   this.isLoading = false;
+    //   this.trips = [];
+    //   if (this.infiniteScroll) {
+    //     this.infiniteScroll.disabled = true;
+    //   }
     //   this.loadMoreSubscription.unsubscribe();
     // });
     // this.subscriptions.push(sub2);
@@ -106,6 +111,7 @@ export class TripPage implements OnInit, OnDestroy {
     this.loadMoreSubscription = this.getTrips()
       .pipe(
         finalize(() => {
+          this.isLoading = false;
           if (this.infiniteScroll) {
             this.infiniteScroll.complete();
           }

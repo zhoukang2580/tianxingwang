@@ -5,7 +5,7 @@ export const routes: Routes = [
   {
     path: "rental-car",
     loadChildren: () =>
-      import(`./rental-car/rental-car.module`).then(m => m.RentalCarPageModule)
+      import("./rental-car/rental-car.module").then(m => m.RentalCarPageModule)
   }
 ];
 @NgModule({
