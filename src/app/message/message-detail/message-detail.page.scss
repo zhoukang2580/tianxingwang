@@ -1,23 +1,28 @@
 .wrapper {
-    height: 100%;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  iframe {
+    border: none;
     width: 100%;
-    overflow: hidden;
+    height: 100%;
     &::-webkit-scrollbar {
       display: none;
     }
-    iframe {
-      border: none;
-      width: 100%;
-      height: 100%;
-      &::-webkit-scrollbar {
-        display: none;
-      }
-    }
   }
-  .detail{
-      text-indent: 2em;
-      background-color: white;
+}
+.detail {
+  text-indent: 2em;
+  background-color: white;
+  pre,
+  div,
+  * {
+    white-space: normal;
   }
-  ion-content{
-    --background:white;
-  }
+}
+ion-content {
+  --background: white;
+}

@@ -1,5 +1,5 @@
 import { MemberService, MemberCredential } from "./../../member/member.service";
-import { NavController } from "@ionic/angular";
+import { NavController, DomController, IonSlides } from "@ionic/angular";
 import { FlightService } from "src/app/flight/flight.service";
 import { HotelService } from "./../../hotel/hotel.service";
 import { TrainService } from "src/app/train/train.service";
@@ -10,14 +10,24 @@ import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { ApiService } from "./../../services/api/api.service";
 import { AppHelper } from "src/app/appHelper";
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChildren,
+  QueryList,
+  ElementRef,
+  ViewChild,
+  Renderer2
+} from "@angular/core";
 import {
   Observable,
   Subject,
   BehaviorSubject,
   from,
   of,
-  Subscription
+  Subscription,
+  interval
 } from "rxjs";
 import { ActivatedRoute, Router, NavigationEnd } from "@angular/router";
 import { PayService } from "src/app/services/pay/pay.service";
@@ -32,17 +42,18 @@ export class HomePage implements OnInit, OnDestroy {
   private intervalIds: any[] = [];
   private staffCredentials: MemberCredential[];
   private subscription = Subscription.EMPTY;
+  @ViewChild(IonSlides, { static: false }) slidesEle: IonSlides;
   private exitAppSub: Subject<number> = new BehaviorSubject(null);
   identity: IdentityEntity;
   aliPayResult$: Observable<any>;
   wxPayResult$: Observable<any>;
   selectedCompany$: Observable<string>;
   companies: any[];
-  agentNotices: { text: string }[];
+  agentNotices: { text: string; active?: boolean; id: number }[];
   canSelectCompany$ = of(false);
   staff: StaffEntity;
   canShow = AppHelper.isApp() || AppHelper.isWechatH5();
-  options={};
+  options = {};
   constructor(
     private identityService: IdentityService,
     private router: Router,
@@ -54,7 +65,6 @@ export class HomePage implements OnInit, OnDestroy {
     private trainService: TrainService,
     private navCtrl: NavController,
     private memberService: MemberService,
-    private trainServive: TrainService,
     private hotelService: HotelService,
     private flightService: FlightService,
     route: ActivatedRoute
@@ -106,6 +116,11 @@ export class HomePage implements OnInit, OnDestroy {
       // }
     } catch (e) {}
   }
+  onSlideTouchEnd() {
+    if (this.slidesEle) {
+      this.slidesEle.startAutoplay();
+    }
+  }
   async ngOnInit() {
     this.options = {
       loop: true,
@@ -137,10 +152,13 @@ export class HomePage implements OnInit, OnDestroy {
       .catch(_ => [] as Notice[]);
     this.agentNotices = agentNotices.map((notice, index) => {
       return {
-        text: `${index + 1}.${notice.Title}`
+        text: `${index + 1}.${notice.Title}`,
+        id: index,
+        active: index == 0
       };
     });
   }
+
   async goToPage(name: string, params?: any) {
     const tmc = await this.tmcService.getTmc();
     const msg = "您没有预订权限";

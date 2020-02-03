@@ -200,7 +200,7 @@ export class MemberCredentialManagementPage
     const path = this.getCurUrl();
     this.requestCode = "expireDate";
     this.router.navigate(["open-my-calendar"], {
-      queryParams: { backRouteUrl: path },
+      queryParams: { backRouteUrl: path }
     });
   }
   private getCurUrl() {
@@ -324,7 +324,7 @@ export class MemberCredentialManagementPage
       }
     }, 200);
   }
-   async removeExistCredential(c: MemberCredential) {
+  async removeExistCredential(c: MemberCredential) {
     const comfirmDel = await AppHelper.alert(
       LanguageHelper.getConfirmDeleteTip(),
       true,
@@ -496,6 +496,9 @@ export class MemberCredentialManagementPage
   }
   async saveAdd(c: MemberCredential, container: HTMLElement) {
     let ok = await this.validateCredential(c, container);
+    if (!ok) {
+      return;
+    }
     ok = await this.tipMessage(c);
     console.log("validateCredential", ok);
     if (!ok) {
@@ -509,6 +512,9 @@ export class MemberCredentialManagementPage
         AppHelper.alert(e);
         return false;
       });
+    if (!result) {
+      return;
+    }
     await this.getCredentials();
     this.modifyCredential = null;
   }

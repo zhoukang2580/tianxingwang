@@ -34,11 +34,15 @@
   <div class="img">
     <img [src]='"assets/images/home_top_bg.png"' />
   </div>
-  <ion-toolbar class="text-swiper">
-    <div (click)='goToBulletinList("agentNotice")' class='announcement'>
-      <img src="assets/svgs/announcement.svg" alt="通知图片">
-      <app-slides [items]='agentNotices' [options]='options'></app-slides>
-    </div>
+  <ion-toolbar class="text-swiper" (click)='goToBulletinList("agentNotice")'> 
+    <ion-slides  class="announcement-container" [options]='options' (ionSlideTouchEnd)='onSlideTouchEnd()'>
+      <ion-slide *ngFor='let n of agentNotices'>
+        <div class='announcement'>
+          <img src="assets/svgs/announcement.svg" alt="通知图片">
+          <div class="text ion-text-start">{{n.text}}</div>
+        </div>
+      </ion-slide>
+    </ion-slides>
   </ion-toolbar>
   <ion-grid>
     <ion-row wrap>
