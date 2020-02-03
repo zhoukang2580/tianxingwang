@@ -17,11 +17,9 @@
 .detail {
   text-indent: 2em;
   background-color: white;
-  pre,
-  div,
-  * {
-    white-space: normal;
-  }
+}
+pre {
+  white-space: normal;
 }
 ion-content {
   --background: white;
