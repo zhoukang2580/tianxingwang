@@ -72,6 +72,7 @@ export class TripPage implements OnInit, OnDestroy {
     );
   }
   ngOnDestroy() {
+    console.log("ondestroy trip page");
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
   ngOnInit() {
