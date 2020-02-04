@@ -162,7 +162,7 @@ input {
   display: inline-block;
 }
 .ticket-changing {
-  .popover-content{
+  .popover-content {
     width: 80vw;
     // --max-height: 65%;
     // --border-radius: 0.5em;
@@ -181,4 +181,7 @@ input {
 .train-refund-comp .popover-content {
   width: 80vw;
   left: 10vw;
+}
+a {
+  color: var(--ion-color-secondary);
 }
