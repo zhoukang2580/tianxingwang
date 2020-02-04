@@ -1,5 +1,4 @@
 import { TabsPage } from "./../tabs.page";
-import { MockTripData } from "./mockdata";
 import { ActivatedRoute, NavigationStart } from "@angular/router";
 import { TripBuyInsuranceComponent } from "./trip-buy-insurance/trip-buy-insurance.component";
 import { Platform, ModalController } from "@ionic/angular";
