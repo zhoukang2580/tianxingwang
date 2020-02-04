@@ -1,10 +1,10 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <!-- <ion-button color='dark' (click)='back()'>
+      <ion-button color='dark' (click)='back()'>
         <ion-icon name='arrow-back'></ion-icon>
-      </ion-button> -->
-      <ion-back-button defaultHref=""></ion-back-button>
+      </ion-button>
+      <!-- <ion-back-button defaultHref=""></ion-back-button> -->
     </ion-buttons>
     <ion-title>{{notice?.Title}}</ion-title>
   </ion-toolbar>
@@ -16,7 +16,7 @@
       <iframe [src]="url"></iframe>
     </div>
     <ng-template #details>
-      <ng-container *ngIf='notice?.Detail as detail else nodata'>
+      <ng-container  *ngIf='notice?.Detail as detail else nodata'>
         <ion-label class='ion-text-wrap'>
           <div class='detail' [innerHTML]='notice.Detail' #detailInfo>
           </div>
