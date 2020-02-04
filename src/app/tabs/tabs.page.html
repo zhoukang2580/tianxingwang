@@ -1,4 +1,4 @@
-<ion-tabs color='primary' (ionTabsWillChange)='onIonTabsWillChange($event)'>
+<ion-tabs color='primary' (ionTabsDidChange)='onTabChanged($event)' (ionTabsWillChange)='onIonTabsWillChange($event)'>
   <ion-tab-bar slot="bottom" translucent='false'>
     <ion-tab-button tab="home">
       <!-- <i class='icon icon-tab-home {{tab==="home"?"active":""}}'></i> -->

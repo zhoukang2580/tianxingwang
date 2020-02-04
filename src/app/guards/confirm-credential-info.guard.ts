@@ -34,7 +34,7 @@ export class ConfirmCredentialInfoGuard
     return this.staffService
       .getStaff()
       .then(staff => {
-        console.log("ConfirmCredentialInfoGuard", staff,this.staffService.staffCredentials);
+        // console.log("ConfirmCredentialInfoGuard", staff,this.staffService.staffCredentials);
         if (
           staff &&
           staff.IsConfirmInfo != undefined &&
@@ -53,7 +53,7 @@ export class ConfirmCredentialInfoGuard
         return true;
       })
       .catch(_ => {
-        console.log("ConfirmCredentialInfoGuard", _);
+        // console.log("ConfirmCredentialInfoGuard", _);
         return true;
       });
   }

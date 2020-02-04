@@ -9,6 +9,7 @@ import {
 } from "@angular/animations";
 import { Component, OnInit, HostBinding } from "@angular/core";
 import { Router, NavigationStart } from "@angular/router";
+import { TripPage } from "./tab-trip/trip.page";
 
 @Component({
   selector: "app-tabs",
@@ -43,6 +44,7 @@ export class TabsPage implements OnInit {
   // @HostBinding("class.ion-page-hidden")
   // private isHidden;
   tab: string;
+  tabChangeHooks: () => any;
   constructor(private router: Router) {
     // this.tab = "home";
   }
@@ -58,8 +60,12 @@ export class TabsPage implements OnInit {
     //     console.log("导航开始", url, "isHidden", this.isHidden);
     //   });
   }
+  onTabChanged(evt: { tab: string }) {}
   onIonTabsWillChange(evt: { tab: string }) {
     console.log(evt);
     this.tab = evt.tab;
+    if (this.tabChangeHooks) {
+      this.tabChangeHooks();
+    }
   }
 }

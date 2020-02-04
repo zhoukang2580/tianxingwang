@@ -1,4 +1,6 @@
-import { ActivatedRoute } from "@angular/router";
+import { TabsPage } from "./../tabs.page";
+import { MockTripData } from "./mockdata";
+import { ActivatedRoute, NavigationStart } from "@angular/router";
 import { TripBuyInsuranceComponent } from "./trip-buy-insurance/trip-buy-insurance.component";
 import { Platform, ModalController } from "@ionic/angular";
 import { TmcService } from "src/app/tmc/tmc.service";
@@ -8,12 +10,18 @@ import { OrderEntity } from "src/app/order/models/OrderEntity";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { InsuranceProductEntity } from "src/app/insurance/models/InsuranceProductEntity";
 import { CalendarService } from "./../../tmc/calendar.service";
-import { finalize, map } from "rxjs/operators";
-import { Subscription } from "rxjs";
+import { finalize, map, filter } from "rxjs/operators";
+import { Subscription, interval, of } from "rxjs";
 import { IonRefresher, IonInfiniteScroll } from "@ionic/angular";
 import { OrderModel } from "./../../order/models/OrderModel";
 import { ApiService } from "./../../services/api/api.service";
-import { Component, ViewChild, OnInit, OnDestroy } from "@angular/core";
+import {
+  Component,
+  ViewChild,
+  OnInit,
+  OnDestroy,
+  Optional
+} from "@angular/core";
 import { OrderTripModel } from "src/app/order/models/OrderTripModel";
 import { OrderInsuranceType } from "src/app/insurance/models/OrderInsuranceType";
 import { OrderInsuranceStatusType } from "src/app/order/models/OrderInsuranceStatusType";
@@ -27,30 +35,34 @@ import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
   styleUrls: ["trip.page.scss"]
 })
 export class TripPage implements OnInit, OnDestroy {
-  @ViewChild(IonRefresher, { static: false }) ionRefresher: IonRefresher;
-  @ViewChild(IonInfiniteScroll, { static: false })
-  infiniteScroll: IonInfiniteScroll;
-  trips: OrderTripModel[];
+  private loadMoreSubscription = Subscription.EMPTY;
   private searchCondition: TravelModel = {
     PageIndex: 0,
     PageSize: 15
   } as TravelModel;
-  isLoading = false;
-  loadMoreSubscription = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
+  @ViewChild(IonRefresher, { static: false }) ionRefresher: IonRefresher;
+  @ViewChild(IonInfiniteScroll, { static: false })
+  infiniteScroll: IonInfiniteScroll;
+  trips: OrderTripModel[];
+  isLoading = false;
   constructor(
     private tmcService: TmcService,
     private apiservice: ApiService,
     private route: ActivatedRoute,
     private modalCtrl: ModalController,
-    private router: Router
-  ) {}
+    private router: Router,
+    @Optional() private tabs: TabsPage
+  ) {
+    console.log(tabs);
+  }
   private getTrips() {
     this.loadMoreSubscription.unsubscribe();
     this.isLoading = this.searchCondition.PageIndex == 0;
     const req = new RequestEntity();
     req.Method = `TmcApiOrderUrl-Travel-List`;
     req.Data = this.searchCondition;
+    // return of({ Status: true, Data: MockTripData } as any);
     return this.apiservice.getResponse<TravelModel>(req).pipe(
       map(r => {
         if (r.Data && r.Data.Trips) {
@@ -75,20 +87,28 @@ export class TripPage implements OnInit, OnDestroy {
     console.log("ondestroy trip page");
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
+
   ngOnInit() {
+    if (this.tabs) {
+      this.tabs.tabChangeHooks = () => {
+        this.loadMoreSubscription.unsubscribe();
+      };
+    }
+    const sub0 = this.router.events
+      .pipe(filter(it => it instanceof NavigationStart))
+      .subscribe(_ => {
+        this.loadMoreSubscription.unsubscribe();
+        if (this.infiniteScroll) {
+          this.infiniteScroll.disabled = true;
+        }
+      });
     const sub = this.route.queryParamMap.subscribe(_ => {
-      this.doRefresh();
+      setTimeout(() => {
+        this.doRefresh();
+      }, 200);
     });
+    this.subscriptions.push(sub0);
     this.subscriptions.push(sub);
-    // const sub2 = this.router.events.subscribe(_ => {
-    //   this.isLoading = false;
-    //   this.trips = [];
-    //   if (this.infiniteScroll) {
-    //     this.infiniteScroll.disabled = true;
-    //   }
-    //   this.loadMoreSubscription.unsubscribe();
-    // });
-    // this.subscriptions.push(sub2);
   }
   doRefresh() {
     this.loadMoreSubscription.unsubscribe();

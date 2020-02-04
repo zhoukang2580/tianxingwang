@@ -62,7 +62,7 @@ export class MyPage implements OnDestroy, OnInit {
       .subscribe(_ => {
         this.Model = null;
       });
-    route.paramMap.subscribe(async _ => {
+    route.queryParamMap.subscribe(async _ => {
       this.msgCount$ = this.messageService.getMsgCount();
       this.config = await this.configService.getConfigAsync();
       this.load(AppHelper.getRouteData() || !this.Model || !this.Model.HeadUrl);
@@ -70,7 +70,7 @@ export class MyPage implements OnDestroy, OnInit {
       this.isShowMyOrderTabs = true ||
         (await this.staffService.isSelfBookType()) ||
         (await this.staffService.isSecretaryBookType());
-      console.log("can show tabs ", this.isShowMyOrderTabs);
+      // console.log("can show tabs ", this.isShowMyOrderTabs);
     });
   }
   contactUs() {
