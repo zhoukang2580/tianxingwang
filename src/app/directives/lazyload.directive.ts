@@ -61,7 +61,7 @@ export class LazyloadDirective
       this.render.setStyle(
         this.el.nativeElement,
         "background-image",
-        `url(${url})`
+        `url('${url}')`
       );
       // this.render.setProperty(this.el.nativeElement,'backgroundImage',`${src || this.lazyLoad}`);
       // this.el.nativeElement.style.backgroundImage=`${src || this.lazyLoad}`;
