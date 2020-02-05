@@ -205,8 +205,10 @@ export class RentalCarPage implements OnInit, OnDestroy {
     if (info) {
       this.defaultMobile = info.Mobile;
       this.mobile = info.Mobile;
-      if (this.mobile) {
+      if (!this.mobile) {
         this.onModify();
+      } else {
+        this.searchMobiles = [];
       }
     }
     this.checkIfMobileVerified();
