@@ -376,7 +376,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     if (room && images) {
       const roomImages = images
         .filter(it => it.Room && it.Room.Id == room.Id)
-        .map(it => it.FileName && it.FileName);
+        .map(it => it.FullFileName && it.FullFileName);
       return roomImages;
     }
   }
