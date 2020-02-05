@@ -32,6 +32,7 @@ export class RentalCarPage implements OnInit, OnDestroy {
   fetching = "正在获取默认手机号";
   verifySmsCode = "";
   isMobileVerified = false;
+  isMobileValid = false;
   constructor(
     private carService: CarService,
     private navCtrl: NavController,
@@ -58,6 +59,7 @@ export class RentalCarPage implements OnInit, OnDestroy {
     this.checkIfMobileVerified();
   }
   private checkIfMobileVerified() {
+    this.validateMobile();
     if (this.mobile && this.defaultMobile) {
       this.isMobileVerified = this.mobile == this.defaultMobile;
       if (this.isMobileVerified) {
@@ -196,6 +198,9 @@ export class RentalCarPage implements OnInit, OnDestroy {
     this.subscription = this.route.queryParamMap.subscribe(p => {
       this.getAccountInfo();
     });
+  }
+  private validateMobile() {
+    this.isMobileValid = this.mobile && this.mobile.length == 11;
   }
   private async getAccountInfo() {
     const info = await this.carService

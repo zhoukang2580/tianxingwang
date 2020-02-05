@@ -25,12 +25,14 @@
     <ng-container *ngIf='searchMobiles?.length==0'>
       <ion-item *ngIf='!isMobileVerified'>
         <ion-label>短信验证码</ion-label>
-        <ion-input type='tel'  [required]='true' [clearInput]='true'
-          [clearOnEdit]='true' [(ngModel)]='verifySmsCode' placeholder="请输入验证码">
+        <ion-input type='tel' [required]='true' [clearInput]='true' [clearOnEdit]='true' [(ngModel)]='verifySmsCode'
+          placeholder="请输入验证码">
         </ion-input>
-        <ion-button slot='end' color='secondary' fill='outline' *ngIf='!isSending&&(!countDown||countDown <= 0)'
-          (click)="sendCode()">
-          发送验证码</ion-button>
+        <ion-button slot='end' color='{{isMobileValid? "secondary":"danger"}}' fill='outline'
+          [disabled]='!isMobileValid' *ngIf='!isSending&&(!countDown||countDown <= 0)' (click)="sendCode()">
+          <span *ngIf='isMobileValid'>发送验证码</span>
+          <span *ngIf='!isMobileValid'>手机号错误</span>
+        </ion-button>
         <ion-button slot='end' fill='outline' [disabled]='true' color='medium' *ngIf='isSending||countDown'>
           {{countDown}}
           秒后重发
