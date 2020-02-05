@@ -12,12 +12,26 @@
 
 <ion-content class='ion-padding'>
   <ion-list lines='none'>
-    <ion-item >
+    <ion-item>
       <ion-label color='secondary'>
         <i class='icon icon-mobile'></i>
       </ion-label>
-      <ion-input type='tel' [attr.autofocus]='!mobile' [(ngModel)]='mobile' placeholder="请输入手机号码"></ion-input>
+      <ion-input type='tel' (ionBlur)='onBlur()' [clearInput]='true' [attr.autofocus]='!mobile' [required]='true'
+        [(ngModel)]='mobile' #mobileInput placeholder="{{fetching?fetching:'请输入手机号码'}}"></ion-input>
+      <ion-button slot='end' color='secondary' fill='outline' *ngIf='!isSending&&(!countDown||countDown <= 0)'
+        (click)="sendCode()">
+        发送验证码</ion-button>
+      <ion-button slot='end' fill='outline' [disabled]='true' color='medium' *ngIf='isSending||countDown'>{{countDown}}
+        秒后重发
+      </ion-button>
+    </ion-item>
+    <ion-item>
+      <ion-label>请输入验证码</ion-label>
+      <ion-input type='tel' [attr.autofocus]='!verifySmsCode'  [required]='true' [clearInput]='true' [clearOnEdit]='true' [(ngModel)]='verifySmsCode' placeholder="请输入验证码">
+      </ion-input>
     </ion-item>
   </ion-list>
-  <ion-button expand='block' color='secondary' (click)='onRentalCar()'>前往租车</ion-button>
+  <ion-button expand='block' color='danger' fill='clear' *ngIf='message as emsg'>{{emsg}}</ion-button>
+  <ion-button expand='block' color='secondary' (click)='validateCode()' *ngIf='!isMobileVerified'>请先验证手机号</ion-button>
+  <ion-button expand='block' color='secondary' (click)='onRentalCar()' *ngIf='isMobileVerified'>前往租车</ion-button>
 </ion-content>
