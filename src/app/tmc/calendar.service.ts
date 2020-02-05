@@ -31,10 +31,11 @@ export class CalendarService {
   async getHolidays(forceFetch = false) {
     if (!this.holidays) {
       const local = await this.storage.get(_KEY_HOLIDAYS);
-      this.holidays = (local && local.lenth && local) || [];
+      this.holidays =
+        (local && Array.isArray(local) && local.length && local) || [];
     }
     if (!forceFetch) {
-      if (this.holidays.length) {
+      if (Array.isArray(this.holidays) && this.holidays.length) {
         return Promise.resolve(this.holidays);
       }
     }
@@ -50,7 +51,11 @@ export class CalendarService {
     };
     this.holidays = await this.apiService
       .getPromiseData<ICalendarEntity[]>(req)
-      .catch(_ => []);
+      .catch(_ => {
+        // console.error(_);
+        return [];
+      });
+    this.holidays = Array.isArray(this.holidays) ? this.holidays : [];
     if (this.holidays.length) {
       this.cacheHolidays(this.holidays);
     }

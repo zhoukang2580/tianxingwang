@@ -6,15 +6,20 @@ import { environment } from "./environments/environment";
 import { hmrBootstrap } from "./hmr";
 import { enableDebugTools } from "@angular/platform-browser";
 // const module = window["module"];
+const meta=document.createElement("meta");
+const head=document.querySelector("head");
+meta.content=`upgrade-insecure-requests`;
+meta.httpEquiv=`Content-Security-Policy`;
 const bootstrap = () =>
-  platformBrowserDynamic()
-    .bootstrapModule(AppModule)
+platformBrowserDynamic()
+.bootstrapModule(AppModule)
 
-    .catch(err => {
-      console.log(err);
-      return null;
-    });
+.catch(err => {
+  console.log(err);
+  return null;
+});
 if (environment.production) {
+  head.appendChild(meta);
   enableProdMode();
   bootstrap();
   // if (window["VConsole"]) {
