@@ -19,7 +19,9 @@ platformBrowserDynamic()
   return null;
 });
 if (environment.production) {
-  head.appendChild(meta);
+  if(!environment.mockProBuild){
+    head.appendChild(meta);
+  }
   enableProdMode();
   bootstrap();
   // if (window["VConsole"]) {
