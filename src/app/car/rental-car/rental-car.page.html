@@ -16,22 +16,27 @@
       <ion-label color='secondary'>
         <i class='icon icon-mobile'></i>
       </ion-label>
-      <ion-input type='tel' (ionBlur)='onBlur()' (ionChange)='onChange()' [clearInput]='true' [attr.autofocus]='!mobile'
-        [required]='true' [(ngModel)]='mobile' #mobileInput placeholder="{{fetching?fetching:'请输入手机号码'}}">
+      <ion-input type='tel' (ionBlur)='onBlur()' [disabled]='!isModify' (ionChange)='onChange()' [clearInput]='true'
+        [attr.autofocus]='!mobile' [required]='true' [(ngModel)]='mobile' #mobileInput
+        placeholder="{{fetching?fetching:'请输入手机号码'}}">
       </ion-input>
-      <ion-button slot='end' color='secondary' fill='outline' *ngIf='!isSending&&(!countDown||countDown <= 0)'
-        (click)="sendCode()">
-        发送验证码</ion-button>
-      <ion-button slot='end' fill='outline' [disabled]='true' color='medium' *ngIf='isSending||countDown'>{{countDown}}
-        秒后重发
-      </ion-button>
+      <ion-button slot='end' color='secondary' (click)="onModify()">修改</ion-button>
     </ion-item>
-    <ion-item *ngIf='searchMobiles?.length==0'>
-      <ion-label>请输入验证码</ion-label>
-      <ion-input type='tel' [attr.autofocus]='!verifySmsCode' [required]='true' [clearInput]='true' [clearOnEdit]='true'
-        [(ngModel)]='verifySmsCode' placeholder="请输入验证码">
-      </ion-input>
-    </ion-item>
+    <ng-container *ngIf='searchMobiles?.length==0'>
+      <ion-item *ngIf='!isMobileVerified'>
+        <ion-label>短信验证码</ion-label>
+        <ion-input type='tel'  [required]='true' [clearInput]='true'
+          [clearOnEdit]='true' [(ngModel)]='verifySmsCode' placeholder="请输入验证码">
+        </ion-input>
+        <ion-button slot='end' color='secondary' fill='outline' *ngIf='!isSending&&(!countDown||countDown <= 0)'
+          (click)="sendCode()">
+          发送验证码</ion-button>
+        <ion-button slot='end' fill='outline' [disabled]='true' color='medium' *ngIf='isSending||countDown'>
+          {{countDown}}
+          秒后重发
+        </ion-button>
+      </ion-item>
+    </ng-container>
   </ion-list>
   <div class="search-result" *ngIf='searchMobiles?.length'>
     <ul>

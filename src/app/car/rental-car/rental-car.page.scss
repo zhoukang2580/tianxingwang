@@ -2,6 +2,14 @@
   padding-top: 0.3em;
   display: block;
 }
+ion-item.item-interactive-disabled {
+  ion-label,
+  ion-input,
+  ion-input input {
+    opacity: 0.8;
+    font-weight: bold;
+  }
+}
 .search-result {
   position: absolute;
   left: 1em;

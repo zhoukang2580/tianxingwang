@@ -28,6 +28,7 @@ export class RentalCarPage implements OnInit, OnDestroy {
   message: string;
   countDown: number;
   isSending = false;
+  isModify = false;
   fetching = "正在获取默认手机号";
   verifySmsCode = "";
   isMobileVerified = false;
@@ -40,8 +41,17 @@ export class RentalCarPage implements OnInit, OnDestroy {
   back() {
     this.navCtrl.pop();
   }
-
+  onModify() {
+    this.isModify = true;
+    this.mobile = "";
+    if (this.mobileInput) {
+      setTimeout(() => {
+        this.mobileInput.setFocus();
+      }, 200);
+    }
+  }
   onBlur() {
+    this.isModify = false;
     if (!this.mobile) {
       this.mobile = this.defaultMobile;
     }
@@ -170,16 +180,15 @@ export class RentalCarPage implements OnInit, OnDestroy {
   }
   private initLocalMobiles() {
     this.carService.getLocalMobiles().then(res => {
-      this.verifiedMobiles = (res &&
-        res.mobiles &&
-        res.mobiles.length &&
-        res.mobiles) || [
-        "18817263748",
-        "18817263788",
-        "18817268765",
-        "18817368765",
-        "18817268765"
-      ];
+      this.verifiedMobiles =
+        (res && res.mobiles && res.mobiles.length && res.mobiles) ||
+        [
+          // "18817263748",
+          // "18817263788",
+          // "18817268765",
+          // "18817368765",
+          // "18817268765"
+        ];
     });
   }
   ngOnInit() {
@@ -196,6 +205,9 @@ export class RentalCarPage implements OnInit, OnDestroy {
     if (info) {
       this.defaultMobile = info.Mobile;
       this.mobile = info.Mobile;
+      if (this.mobile) {
+        this.onModify();
+      }
     }
     this.checkIfMobileVerified();
   }
