@@ -1,6 +1,7 @@
-import { finalize } from "rxjs/operators";
+import { flyInOut } from "./../../animations/flyInOut";
+import { finalize, debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { LoginService } from "./../../services/login/login.service";
-import { Subscription, interval } from "rxjs";
+import { Subscription, interval, of } from "rxjs";
 import { AppHelper } from "./../../appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
 import { TmcService } from "./../../tmc/tmc.service";
@@ -12,13 +13,17 @@ import { RequestEntity } from "src/app/services/api/Request.entity";
 @Component({
   selector: "app-rental-car",
   templateUrl: "./rental-car.page.html",
-  styleUrls: ["./rental-car.page.scss"]
+  styleUrls: ["./rental-car.page.scss"],
+  animations: [flyInOut]
 })
 export class RentalCarPage implements OnInit, OnDestroy {
   @ViewChild("mobileInput", { static: false }) mobileInput: IonInput;
   private subscription = Subscription.EMPTY;
   private senSmsCodeSubscription = Subscription.EMPTY;
+  private inputMobuleSubscription = Subscription.EMPTY;
   private defaultMobile = "";
+  private verifiedMobiles: string[];
+  searchMobiles: string[];
   mobile: string;
   message: string;
   countDown: number;
@@ -35,6 +40,7 @@ export class RentalCarPage implements OnInit, OnDestroy {
   back() {
     this.navCtrl.pop();
   }
+
   onBlur() {
     if (!this.mobile) {
       this.mobile = this.defaultMobile;
@@ -42,6 +48,13 @@ export class RentalCarPage implements OnInit, OnDestroy {
     this.checkIfMobileVerified();
   }
   private checkIfMobileVerified() {
+    if (this.mobile && this.defaultMobile) {
+      this.isMobileVerified = this.mobile == this.defaultMobile;
+      if (this.isMobileVerified) {
+        this.carService.addVerifiedMobile(this.mobile);
+      }
+      return;
+    }
     if (this.mobile) {
       this.carService.checkIfMobileIsVerified(this.mobile).then(res => {
         this.isMobileVerified = res;
@@ -59,6 +72,27 @@ export class RentalCarPage implements OnInit, OnDestroy {
         }
       }
     });
+  }
+  onSelect(one: string) {
+    this.searchMobiles = [];
+    this.mobile = one;
+  }
+  onChange() {
+    this.inputMobuleSubscription.unsubscribe();
+    this.searchMobiles = [];
+    this.inputMobuleSubscription = of(this.mobile)
+      .pipe(debounceTime(240), distinctUntilChanged())
+      .subscribe(_ => {
+        if (this.verifiedMobiles && this.verifiedMobiles.length) {
+          const one = this.verifiedMobiles.find(it => it == this.mobile);
+          if (!one) {
+            this.searchMobiles = this.verifiedMobiles.filter(it =>
+              it.includes(this.mobile)
+            );
+          }
+        }
+        this.checkIfMobileVerified();
+      });
   }
   validateCode() {
     if (!this.verifySmsCode) {
@@ -134,7 +168,22 @@ export class RentalCarPage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
+  private initLocalMobiles() {
+    this.carService.getLocalMobiles().then(res => {
+      this.verifiedMobiles = (res &&
+        res.mobiles &&
+        res.mobiles.length &&
+        res.mobiles) || [
+        "18817263748",
+        "18817263788",
+        "18817268765",
+        "18817368765",
+        "18817268765"
+      ];
+    });
+  }
   ngOnInit() {
+    this.initLocalMobiles();
     this.subscription = this.route.queryParamMap.subscribe(p => {
       this.getAccountInfo();
     });

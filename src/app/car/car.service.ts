@@ -55,7 +55,7 @@ export class CarService {
     };
     return this.fetchPromise.promise;
   }
-  private addVerifiedMobile(mobile: string) {
+ addVerifiedMobile(mobile: string) {
     return this.cacheVerifiedMobile(mobile);
   }
   private async cacheVerifiedMobile(mobile: string) {
@@ -98,7 +98,7 @@ export class CarService {
     }
     if (
       Date.now() - this.verifiedMobiles.lastUpdateTime >
-      6 * 24 * 3600 * 1000
+      30 * 24 * 3600 * 1000
     ) {
       this.verifiedMobiles = result;
     }
@@ -121,6 +121,9 @@ export class CarService {
       AppHelper.alert(e);
       return "";
     });
+  }
+  getLocalMobiles(){
+   return this.loadLocalVerifiedMobiles();   
   }
   validateMobileCode(mobile: string, mobileCode: string) {
     const req = new RequestEntity();

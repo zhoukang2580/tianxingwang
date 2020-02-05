@@ -2,3 +2,25 @@
   padding-top: 0.3em;
   display: block;
 }
+.search-result {
+  position: absolute;
+  left: 1em;
+  top: 4em;
+  width: 15em;
+  background: white;
+  z-index: 99;
+  ul {
+    list-style-type: none;
+    &,
+    li {
+      margin: 0;
+      padding: 0;
+    }
+    li {
+      padding: 1em;
+    }
+    li + li {
+      border-top: 1px solid rgba(0, 0, 0, 0.12);
+    }
+  }
+}
