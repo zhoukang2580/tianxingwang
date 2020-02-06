@@ -32,11 +32,10 @@
     </ion-button>
   </ion-toolbar>
 </ion-footer>
-<!-- <app-room-detail [room]='curSelectedRoom' [roomImages]='roomImages' (close)='isShowRoomDetails=false' class="ion-page"
-  [class.show]='isShowRoomDetails'></app-room-detail> -->
 <app-change-roomplan-date (close)='isShowChangeDateComp=false' *ngIf='isShowChangeDateComp' (confirm)='onConfirm()'
   (openCalendar)='onOpenCalendar($event)'>
 </app-change-roomplan-date>
+<ion-backdrop *ngIf='isShowPriceDetail'></ion-backdrop>
 <div [class.show]='isShowPriceDetail' class="price-list">
   <ion-item-divider>{{calcNights()}}晚,共<small>￥</small>{{curSelectedBookInfo?.bookInfo?.roomPlan?.TotalAmount}}
   </ion-item-divider>
