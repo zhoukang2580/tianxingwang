@@ -96,7 +96,7 @@ export class InternationalHotelBookinfosPage implements OnInit {
   }
   onShowPriceDetails(evt: {
     isShow: boolean;
-    bookInfo: PassengerBookInfo<IInterHotelInfo>;
+    bookInfo?: PassengerBookInfo<IInterHotelInfo>;
   }) {
     if(evt.bookInfo){
       this.curSelectedBookInfo = evt.bookInfo;
