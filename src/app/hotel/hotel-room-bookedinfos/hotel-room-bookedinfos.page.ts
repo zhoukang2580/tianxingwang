@@ -96,7 +96,9 @@ export class HotelRoomBookedinfosPage implements OnInit {
     isShow: boolean;
     bookInfo: PassengerBookInfo<IHotelInfo>;
   }) {
-    this.curSelectedBookInfo = evt.bookInfo;
+    if(evt.bookInfo){
+      this.curSelectedBookInfo = evt.bookInfo;
+    }
     if (evt.isShow) {
       this.dates = [];
       const n = this.calcNights();

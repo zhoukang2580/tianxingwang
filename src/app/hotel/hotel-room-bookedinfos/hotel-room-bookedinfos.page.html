@@ -35,7 +35,7 @@
 <app-change-roomplan-date (close)='isShowChangeDateComp=false' *ngIf='isShowChangeDateComp' (confirm)='onConfirm()'
   (openCalendar)='onOpenCalendar($event)'>
 </app-change-roomplan-date>
-<ion-backdrop *ngIf='isShowPriceDetail'></ion-backdrop>
+<ion-backdrop *ngIf='isShowPriceDetail' (ionBackdropTap)='onShowPriceDetails({isShow:false})'></ion-backdrop>
 <div [class.show]='isShowPriceDetail' class="price-list">
   <ion-item-divider>{{calcNights()}}晚,共<small>￥</small>{{curSelectedBookInfo?.bookInfo?.roomPlan?.TotalAmount}}
   </ion-item-divider>
