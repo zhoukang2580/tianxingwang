@@ -8,9 +8,27 @@ import {
   EventEmitter,
   OnDestroy,
   AfterViewInit,
-  ViewEncapsulation
+  ViewEncapsulation,
+  HostBinding,
+  Renderer2
 } from "@angular/core";
+const enum RefresherState {
+  // tslint:disable-next-line: no-bitwise
+  Inactive = 1 << 0,
+  // tslint:disable-next-line: no-bitwise
+  Pulling = 1 << 1,
+  // tslint:disable-next-line: no-bitwise
+  Ready = 1 << 2,
+  // tslint:disable-next-line: no-bitwise
+  Refreshing = 1 << 3,
+  // tslint:disable-next-line: no-bitwise
+  Cancelling = 1 << 4,
+  // tslint:disable-next-line: no-bitwise
+  Completing = 1 << 5,
 
+  // tslint:disable-next-line: no-bitwise
+  _BUSY_ = Refreshing | Cancelling | Completing
+}
 @Component({
   selector: "app-refresher",
   templateUrl: "./refresher.component.html",
@@ -24,10 +42,11 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
   private scrollEl?: HTMLElement;
   private startY = 0;
   private intervalId;
+  // tslint:disable-next-line: variable-name
   private _disabled;
   private isMoveBeginRefresh = false;
   private subscriptions: Subscription[] = [];
-  constructor(private el: ElementRef<HTMLElement>) {
+  constructor(private el: ElementRef<HTMLElement>, private render: Renderer2) {
     this.ionRefresh = new EventEmitter();
     this.ionPull = new EventEmitter();
     this.ionStart = new EventEmitter();
@@ -47,6 +66,11 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   @Input() set disabled(value: boolean) {
     this._disabled = value;
+    this.render.setStyle(
+      this.el.nativeElement,
+      "display",
+      `${value ? "none" : ""}`
+    );
     if (this._disabled) {
       this.close(RefresherState.Inactive, this.closeDuration);
     }
@@ -118,7 +142,6 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
   @Output() ionStart!: EventEmitter<void>;
 
   private async connectedCallback() {
-    console.time("scrollEl");
     if (this.el.nativeElement.getAttribute("slot") !== "fixed") {
       console.error('Make sure you use: <app-refresher slot="fixed">');
       return;
@@ -137,7 +160,6 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
         this.intervalId = setInterval(async _ => {
           this.scrollEl = await contentEl.getScrollElement();
           if (this.scrollEl) {
-            console.timeEnd("scrollEl");
             clearInterval(this.intervalId);
             s();
           }
@@ -233,6 +255,7 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!this.scrollEl) {
       return false;
     }
+
     // this method can get called like a bazillion times per second,
     // so it's built to be as efficient as possible, and does its
     // best to do any DOM read/writes only when absolutely necessary
@@ -282,7 +305,6 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
         this.progress = 0;
         return;
       }
-
       // content scrolled all the way to the top, and dragging down
       this.state = RefresherState.Pulling;
     }
@@ -291,7 +313,9 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
     if (ev.cancelable) {
       ev.preventDefault();
     }
-
+    if (this._disabled) {
+      return;
+    }
     // the refresher is actively pulling at this point
     // move the scroll element within the content element
     if (deltaY < this.pullMax) {
@@ -420,16 +444,7 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
     };
   }
 }
-const enum RefresherState {
-  Inactive = 1 << 0,
-  Pulling = 1 << 1,
-  Ready = 1 << 2,
-  Refreshing = 1 << 3,
-  Cancelling = 1 << 4,
-  Completing = 1 << 5,
 
-  _BUSY_ = Refreshing | Cancelling | Completing
-}
 interface RefresherEventDetail {
   complete(): void;
 }
