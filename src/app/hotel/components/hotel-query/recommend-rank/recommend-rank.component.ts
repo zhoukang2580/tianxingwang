@@ -1,4 +1,4 @@
-import { HotelQueryEntity } from "./../../../models/HotelQueryEntity";
+import { HotelQueryEntity, IRankItem } from "./../../../models/HotelQueryEntity";
 import { Component, OnInit, Output, EventEmitter, Input } from "@angular/core";
 import { HotelService } from "src/app/hotel/hotel.service";
 @Component({
@@ -71,10 +71,3 @@ export class RecommendRankComponent implements OnInit {
   }
 }
 
-export interface IRankItem {
-  id: number;
-  label: string;
-  orderBy: "PriceAsc" | "PriceDesc" | "CategoryAsc" | "CategoryDesc";
-  isSelected?: boolean;
-  value: "Category" | "Price";
-}

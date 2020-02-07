@@ -1,16 +1,6 @@
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { HotelPaymentType } from "./HotelPaymentType";
 import { TmcEntity } from "src/app/tmc/tmc.service";
-import {
-  IStarPriceTabItem,
-  IStarPriceTab
-} from "../components/hotel-query/hotel-starprice/hotel-starprice.component";
-import { IRankItem } from "../components/hotel-query/recommend-rank/recommend-rank.component";
-import {
-  IGeoTab,
-  IGeoItem,
-  IMetros
-} from "../components/hotel-query/hotel-geo/hotel-geo.component";
 import { GeoEntity } from "./GeoEntity";
 import {
   IFilterTab,
@@ -18,7 +8,89 @@ import {
 } from "../components/hotel-query/hotel-filter/hotel-filter.component";
 import { BrandEntity } from "./BrandEntity";
 import { AmenityEntity } from "./AmenityEntity";
-
+export interface IStarPriceTab<T> {
+  isActive?: boolean;
+  id?: string;
+  label: string;
+  items: T[];
+  hasItemSelected?: boolean;
+  tag: "stars" | "customeprice" | "price" | "types";
+}
+export interface IStarPriceTabItem {
+  label: string;
+  value?: string;
+  id: string;
+  isSelected?: boolean;
+  isMulti?: boolean;
+  minPrice: number;
+  maxPrice: number;
+}
+export interface IMetros {
+  hasItemSelected?: boolean;
+  line: string;
+  stops: {
+    isSelected: boolean;
+    stop: GeoEntity;
+  }[];
+}
+export interface IGeoTab<T> {
+  id: string;
+  label: string;
+  active?: boolean;
+  hasFilterItem?: boolean;
+  isMulti?: boolean;
+  items?: T[];
+  tag?:
+    | "Metro"
+    | "RailwayStation"
+    | "CarStation"
+    | "Airport"
+    | "District"
+    | "Mall"
+    | "CommericalCenter"
+    | "Landmark"
+    | "Hospital"
+    | "University"
+    | "Venue"
+    | "InFeatureSpot"
+    | "OutFeatureSpot"
+    | "Group"
+    | "Company";
+}
+export interface IGeoItem<T> {
+  id?: string;
+  label: string;
+  items?: IGeoItem<T>[];
+  parentId?: string;
+  isSelected?: boolean;
+  isMulti?: boolean;
+  level: "normal" | "second" | "third";
+  tag: string;
+}
+export interface IRankItem {
+  id: number;
+  label: string;
+  orderBy: "PriceAsc" | "PriceDesc" | "CategoryAsc" | "CategoryDesc";
+  isSelected?: boolean;
+  value: "Category" | "Price";
+}
+export interface IStarPriceTab<T> {
+  isActive?: boolean;
+  id?: string;
+  label: string;
+  items: T[];
+  hasItemSelected?: boolean;
+  tag: "stars" | "customeprice" | "price" | "types";
+}
+export interface IStarPriceTabItem {
+  label: string;
+  value?: string;
+  id: string;
+  isSelected?: boolean;
+  isMulti?: boolean;
+  minPrice: number;
+  maxPrice: number;
+}
 export class HotelQueryEntity {
   starAndPrices: IStarPriceTab<IStarPriceTabItem>[];
   ranks: IRankItem[];

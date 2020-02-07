@@ -1,4 +1,5 @@
 .flight-date {
+  width: 100%;
   padding-right: 2px;
   margin-top: 1em;
   display: flex;
@@ -22,10 +23,16 @@
   display: flex;
   align-items: center;
   margin: 1em 0;
+  ion-item {
+    width: 100%;
+    ion-label:first-child {
+      flex: 0.3;
+    }
+  }
   ion-button {
     margin-left: auto;
     font-size: 0.6rem;
-    &.ios{
+    &.ios {
       height: 5em;
     }
     .pos {
@@ -77,16 +84,15 @@ ion-card-header {
     bottom: -0.5em;
     transform-origin: left top;
     transition: transform ease-in-out 100ms;
-    &.left{
+    &.left {
       left: 45%;
       right: 45%;
       transform: translate3d(-255%, 0, 0);
     }
-    &.right{
+    &.right {
       left: 45%;
       right: 45%;
       transform: translate3d(255%, 0, 0);
     }
   }
 }
-

@@ -1,6 +1,12 @@
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { DayModel } from "../../models/DayModel";
-import { Component, OnInit, Input, HostBinding } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  Input,
+  HostBinding,
+  OnChanges
+} from "@angular/core";
 import * as moment from "moment";
 
 @Component({
@@ -9,7 +15,7 @@ import * as moment from "moment";
   styleUrls: ["./search-day.component.scss"]
 })
 export class SearchDayComponent implements OnInit {
-  @Input() day: DayModel;
+  @Input() day: DayModel | string;
   @Input()
   @HostBinding("class.disabled")
   disabled: boolean;
@@ -18,15 +24,20 @@ export class SearchDayComponent implements OnInit {
   constructor(private calendarService: CalendarService) {}
 
   ngOnInit() {}
+  transform() {
+    return typeof this.day == "string"
+      ? this.calendarService.generateDayModelByDate(this.day)
+      : this.day;
+  }
   getYearMonth() {
     if (!this.day) {
       return "";
     }
-    return moment(this.day.date).format("YYYY.MM");
+    return this.transform().date;
   }
   getDayDesc() {
     if (this.day) {
-      return this.calendarService.getDescOfDay(this.day);
+      return this.calendarService.getDescOfDay(this.transform());
     }
   }
 }

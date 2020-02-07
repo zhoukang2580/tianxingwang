@@ -59,30 +59,49 @@
           </ion-segment-button>
         </ion-segment>
       </div>
-      <div class='destination' lines='none' detail>
-        <ion-label>目的地：</ion-label>
-        <ion-label (click)='onSearchCity()'>
-          <ng-container *ngIf='isPositioning else no'>
-            请选择目的地
-          </ng-container>
-          <ng-template #no>
-            {{curPos?.CityName}}
-          </ng-template>
-        </ion-label>
-        <ion-button fill='clear' *ngIf='' color='secondary' size='small' (click)='onPosition()'>
-          <div class='pos' slot='end'>
-            <ion-icon name="locate" mode='md' size='small' color='secondary'></ion-icon>
-            我的位置
-          </div>
-        </ion-button>
+      <ion-item lines='none' class="ion-margin-top">
+        <section class="flight-date">
+          <app-search-day-comp [day]='isDomestic?searchHotelModel?.checkInDate:interHotelSearchCondition?.checkinDate'
+            [isCheckIn]='true' (click)="onSelecDate(true)" [disabled]='false'>
+          </app-search-day-comp>
+          <div *ngIf='totalFlyDays'>共{{ totalFlyDays}}晚</div>
+          <app-search-day-comp [day]='isDomestic?searchHotelModel?.checkOutDate:interHotelSearchCondition?.checkoutDate'
+            [isCheckOut]='true' (click)="onSelecDate(false)" [disabled]='false'>
+          </app-search-day-comp>
+        </section>
+      </ion-item>
+      <div class='destination' lines='none' detail *ngIf='isDomestic' (click)='onSearchCity()'>
+        <ion-item lines='none'>
+          <ion-label>目的地</ion-label>
+          <ion-label>
+            <ng-container *ngIf='isPositioning else no'>
+              请选择目的地
+            </ng-container>
+            <ng-template #no>
+              <ion-label class="ion-text-wrap">
+                <h2>{{searchHotelModel?.destinationCity?.Name}}</h2>
+              </ion-label>
+            </ng-template>
+          </ion-label>
+          <ion-button fill='clear' *ngIf='' color='secondary' size='small' (click)='onPosition()'>
+            <div class='pos' slot='end'>
+              <ion-icon name="locate" mode='md' size='small' color='secondary'></ion-icon>
+              我的位置
+            </div>
+          </ion-button>
+        </ion-item>
       </div>
-      <section class="flight-date">
-        <app-search-day-comp [day]='checkInDate' [isCheckIn]='true' (click)="onSelecDate(true)" [disabled]='false'>
-        </app-search-day-comp>
-        <div *ngIf='totalFlyDays'>共{{ totalFlyDays}}晚</div>
-        <app-search-day-comp [day]='checkOutDate' [isCheckOut]='true' (click)="onSelecDate(false)" [disabled]='false'>
-        </app-search-day-comp>
-      </section>
+      <div *ngIf='!isDomestic'>
+        <div class='destination' (click)='onSearchCity()'>
+          <ion-item lines='none'>
+            <ion-label>目的地</ion-label>
+            <ion-label>
+              {{interHotelSearchCondition?.destinationCity?.Name}}
+              <ion-text color='medium'>{{interHotelSearchCondition?.destinationCity?.EnglishName}}</ion-text>
+            </ion-label>
+          </ion-item>
+        </div>
+      </div>
       <ion-button class='ion-margin-top' style='width: 100%' (click)="onSearchHotel()"
         *ngIf='!((canAddPassengers) && selectedPassengers==0)' color="secondary" expand="block">
         <ion-text>查询酒店</ion-text>

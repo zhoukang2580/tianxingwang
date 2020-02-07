@@ -28,6 +28,12 @@ export class CalendarService {
   constructor(private apiService: ApiService, private storage: Storage) {
     this.selectedDaysSource = new BehaviorSubject([]);
   }
+  getMoment(addDays: number = 0) {
+    if (addDays) {
+      return moment().add(addDays, "days");
+    }
+    return moment();
+  }
   async getHolidays(forceFetch = false) {
     if (!this.holidays) {
       const local = await this.storage.get(_KEY_HOLIDAYS);

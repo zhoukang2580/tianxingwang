@@ -13,6 +13,7 @@ export class CountryEntity extends BaseEntity {
   ///  代码
   /// </summary>
   EnglishName: string;
+  CountryName: string;
   /// <summary>
   ///  代码
   /// </summary>

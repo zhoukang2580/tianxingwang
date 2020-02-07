@@ -29,10 +29,11 @@ export class SlidesComponent implements OnInit, OnChanges {
   @Input() direction = "horizontal";
   @Input() options;
   @Input() logoUrl;
-  @Input() defaultImage='assets/loading.gif';
+  @Input() defaultImage = "assets/loading.gif";
+  @Input() bgColorBlack = false;
   isShowImage = false;
   curIndex: number;
-  
+
   constructor() {}
 
   ngOnInit() {}
@@ -67,14 +68,12 @@ export class SlidesComponent implements OnInit, OnChanges {
       }
     }
   }
-  async onSlideWillChange(){
+  async onSlideWillChange() {
     if (!this.swiper) {
       this.swiper = await this.slides.getSwiper();
     }
     const idx = (this.swiper && this.swiper.realIndex) || 0;
     this.curIndex = idx + 1;
-
   }
-  async onSlideDidChange() {
-  }
+  async onSlideDidChange() {}
 }

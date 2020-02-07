@@ -1,3 +1,4 @@
+import { PinFabComponent } from './pin-fab/pin-fab.component';
 import { SlidesComponent } from './slides/slides.component';
 import { FormsModule } from '@angular/forms';
 import { AppDirectivesModule } from "./../directives/directives.module";
@@ -34,10 +35,12 @@ import { BaseInputComponent } from './base-input/base-input.component';
     MapComponent,
     SlidesComponent,
     MyCalendarComponent,
-    BaseInputComponent
+    BaseInputComponent,
+    PinFabComponent
   ],
   imports: [CommonModule, IonicModule,FormsModule, TreeNgxModule, AppDirectivesModule,RefresherModule],
   exports: [
+    PinFabComponent,
     BaseInputComponent,
     OrComponent,
     PinchZoomComponent,

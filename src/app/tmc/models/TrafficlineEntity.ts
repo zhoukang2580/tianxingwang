@@ -1,7 +1,7 @@
-import { BaseEntity } from 'src/app/models/BaseEntity';
+import { BaseEntity } from "src/app/models/BaseEntity";
 
 export class TrafficlineEntity extends BaseEntity {
-  IsDeprecated:boolean;
+  IsDeprecated: boolean;
   /// <summary>
   /// 标签，Train Airport AirportCity
   /// </summary>
@@ -66,5 +66,8 @@ export class TrafficlineEntity extends BaseEntity {
   EnglishName: string;
   Selected?: boolean;
   Id: string;
-  FirstLetter:string;
+  FirstLetter: string;
+  DestinationAreaTypeName: string;
+  DestinationAreaType: any;
+  CountryName: string;
 }

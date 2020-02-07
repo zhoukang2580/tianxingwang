@@ -1,4 +1,4 @@
-<div class="container" [class.show-image]='isShowImage'>
+<div class="container" [class.show-image]='isShowImage&&bgColorBlack'>
   <ion-slides (ionSlideDidChange)='onSlideDidChange()' (ionSlideWillChange)='onSlideWillChange()'
     (ionSlideTouchEnd)='onSlideTouchEnd()' (ionSlideTouchStart)='onSlideTouchStart()'
     (ionSlidesDidLoad)='onSlidesDidLoad()' [options]='options'>

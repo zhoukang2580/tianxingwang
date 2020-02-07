@@ -1,0 +1,13 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-back-button defaultHref="" ></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{hotel?.name}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <app-slides [items]='images' [bgColorBlack]='true'  [defaultImage]='config?.PrerenderImageUrl' >
+  </app-slides>
+  
+</ion-content>

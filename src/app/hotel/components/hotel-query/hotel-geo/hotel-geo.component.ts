@@ -13,42 +13,9 @@ import {
   OnDestroy
 } from "@angular/core";
 import { HotelConditionModel } from "src/app/hotel/models/ConditionModel";
-import { HotelQueryEntity } from "src/app/hotel/models/HotelQueryEntity";
+import { HotelQueryEntity, IGeoItem, IGeoTab } from "src/app/hotel/models/HotelQueryEntity";
 import { Subscription } from "rxjs";
-export interface IGeoTab<T> {
-  id: string;
-  label: string;
-  active?: boolean;
-  hasFilterItem?: boolean;
-  isMulti?: boolean;
-  items?: T[];
-  tag?:
-    | "Metro"
-    | "RailwayStation"
-    | "CarStation"
-    | "Airport"
-    | "District"
-    | "Mall"
-    | "CommericalCenter"
-    | "Landmark"
-    | "Hospital"
-    | "University"
-    | "Venue"
-    | "InFeatureSpot"
-    | "OutFeatureSpot"
-    | "Group"
-    | "Company";
-}
-export interface IGeoItem<T> {
-  id?: string;
-  label: string;
-  items?: IGeoItem<T>[];
-  parentId?: string;
-  isSelected?: boolean;
-  isMulti?: boolean;
-  level: "normal" | "second" | "third";
-  tag: string;
-}
+
 @Component({
   selector: "app-hotel-geo",
   templateUrl: "./hotel-geo.component.html",
@@ -391,11 +358,4 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
     }
   }
 }
-export interface IMetros {
-  hasItemSelected?: boolean;
-  line: string;
-  stops: {
-    isSelected: boolean;
-    stop: GeoEntity;
-  }[];
-}
+

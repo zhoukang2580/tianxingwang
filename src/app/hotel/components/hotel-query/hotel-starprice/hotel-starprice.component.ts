@@ -11,25 +11,9 @@ import {
   OnDestroy
 } from "@angular/core";
 import { IonRange } from "@ionic/angular";
-import { HotelQueryEntity } from "src/app/hotel/models/HotelQueryEntity";
+import { HotelQueryEntity, IStarPriceTab, IStarPriceTabItem } from "src/app/hotel/models/HotelQueryEntity";
 import { HotelService } from "src/app/hotel/hotel.service";
-export interface IStarPriceTab<T> {
-  isActive?: boolean;
-  id?: string;
-  label: string;
-  items: T[];
-  hasItemSelected?: boolean;
-  tag: "stars" | "customeprice" | "price" | "types";
-}
-export interface IStarPriceTabItem {
-  label: string;
-  value?: string;
-  id: string;
-  isSelected?: boolean;
-  isMulti?: boolean;
-  minPrice: number;
-  maxPrice: number;
-}
+
 interface ILowerUper {
   lower: number;
   upper: number;

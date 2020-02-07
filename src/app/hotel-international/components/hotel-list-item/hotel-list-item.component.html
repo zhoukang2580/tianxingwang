@@ -1,27 +1,27 @@
-<ion-item>
+<ion-item @fadeInOut>
   <ion-thumbnail slot='start'>
-    <img src="https://userimg.qunarzz.com/imgs/201912/14/C.EfLcfJHZlgvGPolIf480.jpg" alt="图片">
+    <img [lazyLoad]='hotel?.FullFileName' [defaultImage]='defaultImage' alt="图片">
   </ion-thumbnail>
   <ion-label>
-    <h1 class='name'>曼谷JW万豪酒店</h1>
-    <h2 class='sub-name'>JW Marriott Hotel Bangkok</h2>
+    <h1 class='name'>{{hotel?.Name}}</h1>
+    <h2 class='sub-name' *ngIf='hotel?.enName as n'>{{n}}</h2>
     <h3>
-      <ng-container *ngFor='let i of [1,2,3,4,0.5]'>
+      <ng-container *ngFor='let i of hotel?.grades'>
         <ion-icon name='star' *ngIf='i>=1' color='danger'></ion-icon>
         <ion-icon name='star-half' *ngIf='i<1' color='danger'></ion-icon>
       </ng-container>
-      <ion-text class='ion-margin-start' color='secondary'>4.5分</ion-text>
+      <ion-text class='ion-margin-start' color='secondary' *ngIf='hotel?.Grade as g'>{{g}}分</ion-text>
     </h3>
     <p>
       <ion-icon name='pin' color='secondary'> </ion-icon>
-      距市中心直线3.5公里，素坤逸地区，近娜娜广场
+      {{hotel?.Address}}
     </p>
     <h2 class='ion-text-end'>
-      <ion-text color='medium'>
+      <ion-text color='medium' *ngIf=''>
         含税总价
       </ion-text>
       <small>￥</small>
-      <span class='price'>1045</span>
+      <span class='price'>{{hotel?.avgPrice}}</span>
       <small>起</small>
     </h2>
   </ion-label>

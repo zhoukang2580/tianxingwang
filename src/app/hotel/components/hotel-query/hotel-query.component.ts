@@ -25,18 +25,6 @@ import { HotelConditionModel } from "../../models/ConditionModel";
 import { Storage } from "@ionic/storage";
 import { RecommendRankComponent } from "./recommend-rank/recommend-rank.component";
 import { QueryTabComponent } from "./query-tab/query-tab.component";
-import { BrandEntity } from "../../models/BrandEntity";
-import {
-  IGeoTab,
-  IGeoItem,
-  HotelGeoComponent
-} from "./hotel-geo/hotel-geo.component";
-import {
-  IStarPriceTab,
-  IStarPriceTabItem,
-  HotelStarPriceComponent
-} from "./hotel-starprice/hotel-starprice.component";
-import { environment } from "src/environments/environment";
 import { Subscription } from "rxjs";
 interface ITab {
   label: string;

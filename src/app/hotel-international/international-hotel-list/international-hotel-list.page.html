@@ -1,11 +1,82 @@
-<ion-header>
+<ion-header size='large'>
   <ion-toolbar>
-    <ion-title>international-hotel-list</ion-title>
+    <ion-buttons slot='start'>
+      <ion-back-button defaultHref=""></ion-back-button>
+    </ion-buttons>
+    <ion-buttons class="bar">
+      <div class="date" (click)='onChangeDate()'>
+        <div style="padding: 0.35em 0">
+          <span>住</span><span class="checkin">{{searchCondition?.checkinDate?.substring(5)}}</span>
+        </div>
+        <div>
+          <span>离</span> <span class="checkout">{{searchCondition?.checkoutDate?.substring(5)}}</span>
+        </div>
+      </div>
+      <ion-text class="ion-margin-start name" color='secondary' (click)='onChangeCity()'>
+        {{searchCondition?.destinationCity?.Name}}
+      </ion-text>
+      <div class="search" (click)='onSearchText()'>
+        <ion-icon name='search'></ion-icon>
+        <div class="ion-text-nowrap keyword-hint" [class.center]='!searchCondition?.searchText?.Text'>
+          {{searchCondition?.searchText?.Text||"关键字/酒店名"}}</div>
+        <ion-icon name='close' size='large' *ngIf='searchCondition?.searchText?.Text' (click)='onClearText($event)'>
+        </ion-icon>
+      </div>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
-
 <ion-content>
-  <ion-list lines='full'>
-    <app-hotel-list-item *ngFor='let i of [1,2,3,4,5,6,7,8,9,10,11,12]'></app-hotel-list-item>
-  </ion-list>
+  <ion-refresher slot='fixed' (ionRefresh)='doRefresh()' [disabled]='isShowPanel' *ngIf='isShowPanel'>
+    <ion-refresher-content>正在加载...</ion-refresher-content>
+  </ion-refresher>
+  <app-refresher slot='fixed' (ionRefresh)='doRefresh()' [disabled]='isShowPanel' *ngIf='!isShowPanel'>
+    <ion-refresher-content>正在加载...</ion-refresher-content>
+  </app-refresher>
+  <app-inter-hotel-query (showPanel)='onShowPanel($event)' (queryFilter)='onQueryFilter()'></app-inter-hotel-query>
+  <ng-container *ngIf='isLoading else showlist'>
+    <ion-list>
+      <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8,9,10,11,12,13]' class="fake">
+        <ion-thumbnail style="width: 6em;height: 6em;">
+          <ion-skeleton-text style="width: 6em;height: 6em;" animated></ion-skeleton-text>
+        </ion-thumbnail>
+        <ion-label class="ion-margin-start">
+          <h2>
+            <ion-skeleton-text style="width:60%;" animated></ion-skeleton-text>
+          </h2>
+          <h2>
+            <ion-skeleton-text style="width:70%"></ion-skeleton-text>
+          </h2>
+          <h2>
+            <ion-skeleton-text style="width:80%" animated></ion-skeleton-text>
+          </h2>
+          <h2>
+            <ion-skeleton-text style="width:90%" animated></ion-skeleton-text>
+          </h2>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+  <ng-template #showlist>
+    <ng-template #nodata>
+      <app-or-comp>暂无数据</app-or-comp>
+    </ng-template>
+    <ion-list lines='full' *ngIf='hotels?.length else nodata'>
+      <app-hotel-list-item *ngFor='let hotel of hotels' (click)='onViewHotel(hotel)' [hotel]='hotel'
+        [defaultImage]='defaultImage'></app-hotel-list-item>
+    </ion-list>
+  </ng-template>
+  <ion-infinite-scroll (ionInfinite)='loadMore()'>
+    <ion-infinite-scroll-content>正在加载...</ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+  <!-- <div class="backdrop ion-page" #backdrop [class.show]='isShowPanel'>
+  </div> -->
+  <!-- <ion-fab vertical="bottom" [class.solid]='isScrolling' horizontal="end" slot="fixed" *ngIf='isShowFab' @showfab
+    (click)='onScrollToTop()'>
+    <ion-fab-button>
+      <ion-icon name="arrow-dropup"></ion-icon>
+    </ion-fab-button>
+  </ion-fab> -->
+  <ion-fab  (click)='onScrollToTop()'  >
+    <app-pin-fab horizontal="end" vertical="bottom"></app-pin-fab> 
+  </ion-fab>
 </ion-content>

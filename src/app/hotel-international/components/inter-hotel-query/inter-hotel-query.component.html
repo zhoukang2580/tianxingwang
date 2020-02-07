@@ -1,0 +1,19 @@
+<div class="container">
+  <ion-buttons>
+    <ion-label *ngFor='let t of tabs' color='{{t.active?"secondary":""}}' (click)='onToggleTab(t)'>
+      <span [class.has-selected-item]="checkHasItemSelected(t)">
+        {{t.name}}
+      </span>
+      <ion-icon name='arrow-dropup' *ngIf='t.active'></ion-icon>
+      <ion-icon name='arrow-dropdown' *ngIf='!t.active'></ion-icon>
+    </ion-label>
+  </ion-buttons>
+  <ion-list *ngIf='tab?.tab=="rank"' [@openClose]='tab?.active'>
+    <ion-item *ngFor="let rank of ranks" (click)='onRank(rank)'>
+      <ion-label>{{rank.label}}</ion-label>
+      <ion-radio value="{{rank.orderBy}}" [checked]='rank.isSelected'></ion-radio>
+    </ion-item>
+  </ion-list>
+  <app-inter-hotel-starprice *ngIf='tab?.tab=="starsAndPrice"' [@openClose]='tab?.active'
+    (starPriceChange)='onStarPriceChange()'></app-inter-hotel-starprice>
+</div>
