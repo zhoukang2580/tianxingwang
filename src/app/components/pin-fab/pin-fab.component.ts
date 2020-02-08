@@ -59,6 +59,7 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
   private scrollTimer: number;
   private isInitStyle = false;
   private isShowFab = false;
+  private isAnimationAdded = false;
   private scrollTimerSubscription = Subscription.EMPTY;
   constructor(
     private render: Renderer2,
@@ -108,12 +109,21 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
   private addAnimation() {
+    if(this.isAnimationAdded){
+      return;
+    }
     this.render.setStyle(this.ionFabBtn, "animation-name", "fabAnimation", 2);
-    this.render.setStyle(this.ionFabBtn, "-webkit-animation-name", "fabAnimation", 2);
+    this.render.setStyle(
+      this.ionFabBtn,
+      "-webkit-animation-name",
+      "fabAnimation",
+      2
+    );
   }
   private removeAnimation() {
     this.render.removeStyle(this.ionFabBtn, "animation-name", 2);
     this.render.removeStyle(this.ionFabBtn, "-webkit-animation-name", 2);
+    this.isAnimationAdded=false;
   }
   private checkIsScrolling() {
     this.scrollTimerSubscription.unsubscribe();
