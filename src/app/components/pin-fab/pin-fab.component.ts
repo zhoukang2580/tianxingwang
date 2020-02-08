@@ -26,7 +26,29 @@ import { tap, map, switchMap } from "rxjs/operators";
 @Component({
   selector: "app-pin-fab",
   templateUrl: "./pin-fab.component.html",
-  styleUrls: ["./pin-fab.component.scss"]
+  styleUrls: ["./pin-fab.component.scss"],
+  animations: [
+    trigger("showfab", [
+      state("true", style({ opacity: 1, transform: "translateX(0) scale(1)" })),
+      state(
+        "false",
+        style({ opacity: 0, transform: "translateX(100%) scale(0.1)" })
+      ),
+      transition("*=>true", [
+        style({ opacity: 0, transform: "translateX(100%) scale(0.1)" }),
+        animate(
+          "200ms ease-in",
+          style({ opacity: 1, transform: "translateX(0) scale(1)" })
+        )
+      ]),
+      transition("*=>false", [
+        animate(
+          "200ms 100ms ease-out",
+          style({ opacity: 0, transform: "translateX(100%) scale(0.1)" })
+        )
+      ])
+    ])
+  ]
 })
 export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
   // @HostBinding("@showfab") showfab;
@@ -86,6 +108,9 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
       this.stopCheck();
       this.removeAnimation();
     }
+    this.domCtrl.write(_ => {
+      this.render.setProperty(this.fab["el"], "@showfab", isShow);
+    });
   }
   private addAnimation() {
     if (this.isAnimationAdded) {
@@ -110,8 +135,8 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
   private checkIsScrolling() {
     this.scrollTimerSubscription.unsubscribe();
     this.isScrollingCheck = true;
-    this.scrollTimerSubscription = interval(100).subscribe(_ => {
-      const isScrolling = Date.now() - this.scrollTimer < 130;
+    this.scrollTimerSubscription = interval(120).subscribe(_ => {
+      const isScrolling = Date.now() - this.scrollTimer < 230;
       // console.log("isscrolling", Date.now() - this.scrollTimer);
       if (isScrolling) {
         if (!this.isInitStyle) {
