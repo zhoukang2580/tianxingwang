@@ -23,8 +23,8 @@ import { Component, OnInit, ViewChild } from "@angular/core";
   animations: [flyInOut]
 })
 export class SearchByTextPage implements OnInit {
-  @ViewChild(RefresherComponent, { static: false }) refresh: RefresherComponent;
-  @ViewChild(IonInfiniteScroll, { static: false }) scroller: IonInfiniteScroll;
+  @ViewChild(RefresherComponent) refresh: RefresherComponent;
+  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   private pageIndex = 0;
   private subscription = Subscription.EMPTY;
   searchText: string;

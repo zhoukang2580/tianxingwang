@@ -42,11 +42,11 @@ export class HotelListPage
   private subscriptions: Subscription[] = [];
   private lastCityCode = "";
   private timer;
-  @ViewChild(IonRefresher, { static: false }) refresher: IonRefresher;
-  @ViewChild("querytoolbar", { static: false }) querytoolbar: IonToolbar;
-  @ViewChild(IonInfiniteScroll, { static: false }) scroller: IonInfiniteScroll;
-  @ViewChild(IonContent, { static: false }) content: IonContent;
-  @ViewChild(HotelQueryComponent, { static: false }) queryComp: HotelQueryComponent;
+  @ViewChild(IonRefresher) refresher: IonRefresher;
+  @ViewChild("querytoolbar") querytoolbar: IonToolbar;
+  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
+  @ViewChild(IonContent) content: IonContent;
+  @ViewChild(HotelQueryComponent) queryComp: HotelQueryComponent;
   @ViewChildren(IonSearchbar) searchbarEls: QueryList<IonSearchbar>;
   // @ViewChildren("hotellist") hotellist: QueryList<IonList>;
   @HostBinding("class.show-search-bar") isShowSearchBar = false;

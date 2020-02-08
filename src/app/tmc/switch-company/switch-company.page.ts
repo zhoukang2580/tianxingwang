@@ -30,7 +30,7 @@ export class SwitchCompanyPage implements OnInit, OnDestroy {
   loading: boolean;
   identitySubscription = Subscription.EMPTY;
   identity: IdentityEntity;
-  @ViewChild(IonRefresher, { static: false }) ionrefresher: IonRefresher;
+  @ViewChild(IonRefresher) ionrefresher: IonRefresher;
   constructor(
     private apiService: ApiService,
     private identityService: IdentityService,

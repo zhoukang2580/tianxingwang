@@ -25,7 +25,7 @@ export class TrainFilterComponent implements OnInit {
   trainTypes: TrainFilterItemModel[];
   depatureStations: TrainFilterItemModel[];
   arrivalStations: TrainFilterItemModel[];
-  @ViewChild(TimeSpanComponent, { static: false }) timeSpanComp: TimeSpanComponent;
+  @ViewChild(TimeSpanComponent) timeSpanComp: TimeSpanComponent;
   filterCondition: FilterTrainCondition;
   constructor(private modalCtrl: ModalController) {
     this.filterConditionChange = new EventEmitter();

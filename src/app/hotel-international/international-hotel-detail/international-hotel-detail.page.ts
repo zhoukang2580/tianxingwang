@@ -49,11 +49,11 @@ import { RoomEntity } from 'src/app/hotel/models/RoomEntity';
 })
 export class InternationalHotelDetailPage
   implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild(IonRefresher, { static: false }) refresher: IonRefresher;
-  @ViewChild("bg", { static: false }) bgEle: ElementRef<HTMLElement>;
-  @ViewChild(IonContent, { static: false }) content: IonContent;
-  @ViewChild(IonHeader, { static: false }) ionHeader: IonHeader;
-  @ViewChild("hotelInfo", { static: false }) hotelInfoEle: IonList;
+  @ViewChild(IonRefresher) refresher: IonRefresher;
+  @ViewChild("bg") bgEle: ElementRef<HTMLElement>;
+  @ViewChild(IonContent) content: IonContent;
+  @ViewChild(IonHeader) ionHeader: IonHeader;
+  @ViewChild("hotelInfo") hotelInfoEle: IonList;
   private subscription = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
   private scrollEl: HTMLElement;

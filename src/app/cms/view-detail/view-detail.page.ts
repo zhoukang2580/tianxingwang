@@ -26,7 +26,7 @@ import { NavController } from "@ionic/angular";
 })
 export class ViewDetailPage
   implements OnInit, AfterContentChecked, OnDestroy {
-  @ViewChild("detailInfo", { static: false }) detailInfoEle: ElementRef<
+  @ViewChild("detailInfo") detailInfoEle: ElementRef<
     HTMLElement
   >;
   notice: Notice;

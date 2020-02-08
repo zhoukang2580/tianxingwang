@@ -52,9 +52,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   myTrips: OrderTripModel[];
   isOpenUrl = false;
   loadMoreErrMsg: string;
-  @ViewChild(IonContent, { static: false }) ionContent: IonContent;
-  @ViewChild(IonInfiniteScroll, { static: false }) infiniteScroll: IonInfiniteScroll;
-  @ViewChild(IonRefresher, { static: false }) ionRefresher: IonRefresher;
+  @ViewChild(IonContent) ionContent: IonContent;
+  @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
+  @ViewChild(IonRefresher) ionRefresher: IonRefresher;
   constructor(
     private modalCtrl: ModalController,
     route: ActivatedRoute,

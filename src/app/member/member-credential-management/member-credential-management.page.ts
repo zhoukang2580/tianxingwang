@@ -54,11 +54,11 @@ export class MemberCredentialManagementPage
     | "birthDate"
     | "expireDate";
   isModify = false;
-  @ViewChild("form", { static: false }) formEle: ElementRef<HTMLFormElement>;
+  @ViewChild("form") formEle: ElementRef<HTMLFormElement>;
   @ViewChildren("credentialItem") credentialItem: QueryList<
     ElementRef<HTMLElement>
   >;
-  @ViewChild(RefresherComponent, { static: false })
+  @ViewChild(RefresherComponent)
   refresher: RefresherComponent;
   @ViewChildren("addForm") addFormEles: QueryList<ElementRef<HTMLElement>>;
   constructor(

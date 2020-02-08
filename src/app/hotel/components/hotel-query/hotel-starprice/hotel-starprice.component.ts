@@ -43,7 +43,7 @@ export class HotelStarPriceComponent
   };
   value: ILowerUper = { lower: 0, upper: Infinity };
   hotelQuery: HotelQueryEntity;
-  @ViewChild(IonRange, { static: false }) rangeEle: IonRange;
+  @ViewChild(IonRange) rangeEle: IonRange;
   @Output() starPriceChange: EventEmitter<any>;
   constructor(private hotelService: HotelService) {
     this.starPriceChange = new EventEmitter();

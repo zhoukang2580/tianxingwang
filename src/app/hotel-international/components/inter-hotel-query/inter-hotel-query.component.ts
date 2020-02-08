@@ -38,8 +38,8 @@ interface ITab {
   ]
 })
 export class InterHotelQueryComponent implements OnInit, OnDestroy {
-  @ViewChild(IonRange, { static: false }) rangeEle: IonRange;
-  @ViewChild(InterHotelStarPriceComponent, { static: false })
+  @ViewChild(IonRange) rangeEle: IonRange;
+  @ViewChild(InterHotelStarPriceComponent)
   starAndPriceComp: InterHotelStarPriceComponent;
   private subscriptions: Subscription[] = [];
   starAndPrices: any[];

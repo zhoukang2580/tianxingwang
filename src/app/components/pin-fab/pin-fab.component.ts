@@ -52,9 +52,7 @@ import { tap, map, switchMap } from "rxjs/operators";
 })
 export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
   // @HostBinding("@showfab") showfab;
-  @ViewChild("canvas", { static: false }) canvasEl: ElementRef<
-    HTMLCanvasElement
-  >;
+  @ViewChild("canvas") canvasEl: ElementRef<HTMLCanvasElement>;
   @Input() name = "arrow-dropup";
   @Input() vertical = "bottom";
   @Input() horizontal = "end";

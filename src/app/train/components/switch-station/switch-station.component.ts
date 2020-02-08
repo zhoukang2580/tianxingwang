@@ -48,9 +48,9 @@ import { SelectTrainStationModalComponent } from "src/app/tmc/components/select-
   ]
 })
 export class SwitchStationComponent implements OnInit, OnDestroy, OnChanges {
-  @ViewChild("fromCityEle", { static: false }) fromCityEle: IonText;
-  @ViewChild("toCityEle", { static: false }) toCityEle: IonText;
-  @ViewChild("flightcities", { static: false }) flightcitieEle: ElementRef<HTMLElement>;
+  @ViewChild("fromCityEle") fromCityEle: IonText;
+  @ViewChild("toCityEle") toCityEle: IonText;
+  @ViewChild("flightcities") flightcitieEle: ElementRef<HTMLElement>;
   toggleCities = false; // 没有切换城市顺序
   rotateIcon = false;
   @Input() disabled = false; // 界面上显示的出发城市

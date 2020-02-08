@@ -16,13 +16,13 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
   PI = Math.PI;
   L = this.l + this.r * 2 + 3; // 滑块实际边长
   isIE = window.navigator.userAgent.indexOf('Trident') > -1;
-  @ViewChild('pic', { static: false }) pic: ElementRef;
+  @ViewChild('pic') pic: ElementRef;
   picContainerEle: HTMLElement;
   canvasCtx: CanvasRenderingContext2D;
   blockCtx: CanvasRenderingContext2D;
-  @ViewChild('canvas', { static: false })
+  @ViewChild('canvas')
   canvasEl: ElementRef; // 画布
-  @ViewChild('blockcanvas', { static: false })
+  @ViewChild('blockcanvas')
   blockCanvasEl: ElementRef;
   canvas: HTMLCanvasElement; // 画布
   block: HTMLCanvasElement;

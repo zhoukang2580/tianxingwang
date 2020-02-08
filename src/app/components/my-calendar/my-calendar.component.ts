@@ -23,13 +23,13 @@ export class MyCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() dateSelect: EventEmitter<IDay>;
   @Input() openAsModal: boolean;
   @Input() date: string;
-  @ViewChild("years", { static: false }) yearsContainer: ElementRef<
+  @ViewChild("years") yearsContainer: ElementRef<
     HTMLElement
   >;
   private subscriptions: Subscription[] = [];
   private totalYears = 260;
   private isDateSelected = false;
-  @ViewChild(IonContent, { static: false }) content: IonContent;
+  @ViewChild(IonContent) content: IonContent;
   vmYears: IYear[];
   monthDates: IMonthDate[];
   weeks: IWeek[];

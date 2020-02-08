@@ -42,13 +42,13 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
   isShowFabButton = false;
   isLoading = false;
   subscriptions: Subscription[] = [];
-  @ViewChild(IonRefresher, { static: false }) refresher: IonRefresher;
-  @ViewChild("hot", { static: false }) hotEle: IonGrid;
-  @ViewChild("lettersEle", { static: false }) lettersEle: IonGrid;
-  @ViewChild("historyEl", { static: false }) historyEl: IonGrid;
-  @ViewChild(IonContent, { static: false }) ionContent: IonContent;
-  @ViewChild(IonHeader, { static: false }) ionHeader: IonHeader;
-  @ViewChild("firstLetterEl", { static: false }) firstLetterEl: IonList;
+  @ViewChild(IonRefresher) refresher: IonRefresher;
+  @ViewChild("hot") hotEle: IonGrid;
+  @ViewChild("lettersEle") lettersEle: IonGrid;
+  @ViewChild("historyEl") historyEl: IonGrid;
+  @ViewChild(IonContent) ionContent: IonContent;
+  @ViewChild(IonHeader) ionHeader: IonHeader;
+  @ViewChild("firstLetterEl") firstLetterEl: IonList;
   constructor(
     private navCtrl: NavController,
     private domCtrl: DomController,

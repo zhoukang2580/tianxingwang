@@ -36,7 +36,7 @@ export class HotelRoomBookedinfosPage implements OnInit {
   @HostBinding("class.show-price-detail") isShowPriceDetail = false;
   roomImages: string[];
   config: ConfigEntity;
-  @ViewChild(IonRefresher, { static: false }) ionRefresher: IonRefresher;
+  @ViewChild(IonRefresher) ionRefresher: IonRefresher;
   dates: { date: string; price: string }[] = [];
   constructor(
     private modalCtrl: ModalController,
@@ -74,7 +74,7 @@ export class HotelRoomBookedinfosPage implements OnInit {
       LanguageHelper.getCancelTip()
     );
     if (a) {
-      this.hotelService.removeBookInfo(bookInfo,false);
+      this.hotelService.removeBookInfo(bookInfo, false);
     }
   }
   calcNights() {
@@ -96,7 +96,7 @@ export class HotelRoomBookedinfosPage implements OnInit {
     isShow: boolean;
     bookInfo?: PassengerBookInfo<IHotelInfo>;
   }) {
-    if(evt.bookInfo){
+    if (evt.bookInfo) {
       this.curSelectedBookInfo = evt.bookInfo;
     }
     if (evt.isShow) {
@@ -238,9 +238,9 @@ export class HotelRoomBookedinfosPage implements OnInit {
     this.isShowRoomDetails = true;
     this.hotelService.showRoomDetailInfo = {
       hotel: bookInfo.bookInfo.hotelEntity,
-      room:bookInfo.bookInfo.hotelRoom,
-      roomImages:this.roomImages,
-      config: this.config,
+      room: bookInfo.bookInfo.hotelRoom,
+      roomImages: this.roomImages,
+      config: this.config
       // agent: this.agent
     };
     this.router.navigate(["hotel-room-detail"]);

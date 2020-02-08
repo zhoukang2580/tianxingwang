@@ -62,7 +62,7 @@ export class PinchZoomComponent implements OnInit {
   @HostBinding("style.overflow") hostOverflow: string;
   @HostBinding("style.height") hostHeight: string;
 
-  @ViewChild("content", { static: false }) contentElement: ElementRef;
+  @ViewChild("content") contentElement: ElementRef;
 
   constructor(private elementRef: ElementRef, private render: Renderer2) {}
 

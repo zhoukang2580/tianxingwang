@@ -72,9 +72,9 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChildren("continentTab") continentTabs: QueryList<
     ElementRef<HTMLElement>
   >;
-  @ViewChild("searchcity", { static: false }) searchcityEle: IonSearchbar;
-  @ViewChild(IonContent, { static: false }) content: IonContent;
-  @ViewChild(IonInfiniteScroll, { static: false }) scroller: IonInfiniteScroll;
+  @ViewChild("searchcity") searchcityEle: IonSearchbar;
+  @ViewChild(IonContent) content: IonContent;
+  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   selectedCountry: any;
   selectedCity: any;
   isSearchingCountry = false;

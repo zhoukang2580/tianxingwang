@@ -17,7 +17,7 @@ import { RequestEntity } from "src/app/services/api/Request.entity";
   animations: [flyInOut]
 })
 export class RentalCarPage implements OnInit, OnDestroy {
-  @ViewChild("mobileInput", { static: false }) mobileInput: IonInput;
+  @ViewChild("mobileInput") mobileInput: IonInput;
   private subscription = Subscription.EMPTY;
   private senSmsCodeSubscription = Subscription.EMPTY;
   private inputMobuleSubscription = Subscription.EMPTY;

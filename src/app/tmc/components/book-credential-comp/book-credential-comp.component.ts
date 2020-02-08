@@ -31,7 +31,7 @@ export class BookCredentialCompComponent
   @Output() modify: EventEmitter<any>;
   isModified = false;
   isSelf = true;
-  @ViewChild(IonSelect, { static: false }) ionSelect: IonSelect;
+  @ViewChild(IonSelect) ionSelect: IonSelect;
   constructor(private router: Router, private staffService: StaffService) {
     this.savecredential = new EventEmitter();
     this.modify = new EventEmitter();

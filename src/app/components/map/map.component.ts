@@ -19,7 +19,7 @@ const BMapLib = window["BMapLib"];
 export class MapComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() lat: string;
   @Input() lng: string;
-  @ViewChild("container", { static: false }) private container: ElementRef<HTMLElement>;
+  @ViewChild("container") private container: ElementRef<HTMLElement>;
   map: any;
   private curLatLng: MapPoint;
   constructor(private mapService: MapService) { }

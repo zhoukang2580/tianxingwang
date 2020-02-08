@@ -94,8 +94,8 @@ export class SelectPassengerPage
   }[];
   bookInfos$: Observable<PassengerBookInfo<any>[]>;
   requestCode: "issueNationality" | "identityNationality";
-  @ViewChild(IonRefresher, { static: false }) ionrefresher: IonRefresher;
-  @ViewChild(IonInfiniteScroll, { static: false }) scroller: IonInfiniteScroll;
+  @ViewChild(IonRefresher) ionrefresher: IonRefresher;
+  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChildren("addForm") addForm: QueryList<IonGrid>;
   title = "选择旅客";
   constructor(

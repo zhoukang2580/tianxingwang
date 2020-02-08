@@ -26,8 +26,8 @@ import { NodeSelectedState } from "./model/node-selected-state";
   providers: [TreeService]
 })
 export class TreeNgxComponent implements OnInit, OnDestroy, OnChanges {
-  @ContentChild("nodeNameTemplate", { static: false }) nodeNameTemplate: TemplateRef<any>;
-  @ContentChild("nodeCollapsibleTemplate", { static: false }) nodeCollapsibleTemplate: TemplateRef<
+  @ContentChild("nodeNameTemplate") nodeNameTemplate: TemplateRef<any>;
+  @ContentChild("nodeCollapsibleTemplate") nodeCollapsibleTemplate: TemplateRef<
     any
   >;
 

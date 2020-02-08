@@ -24,7 +24,7 @@ interface IItem {
 export class SlidesComponent implements OnInit, OnChanges {
   private swiper;
   @ViewChildren("img") imgs: QueryList<ElementRef<HTMLImageElement>>;
-  @ViewChild(IonSlides, { static: false }) slides: IonSlides;
+  @ViewChild(IonSlides) slides: IonSlides;
   @Input() items: IItem[];
   @Input() direction = "horizontal";
   @Input() options;

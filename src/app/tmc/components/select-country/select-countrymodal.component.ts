@@ -28,9 +28,9 @@ export class SelectCountryModalComponent implements OnInit {
   loading = false;
   keyword = "";
   selectedItem: Country;
-  @ViewChild(RefresherComponent, { static: false })
+  @ViewChild(RefresherComponent)
   refresher: RefresherComponent;
-  @ViewChild(IonInfiniteScroll, { static: false }) scroller: IonInfiniteScroll;
+  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   constructor(
     route: ActivatedRoute,
     private apiService: ApiService,

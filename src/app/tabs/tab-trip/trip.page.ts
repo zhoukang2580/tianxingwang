@@ -40,8 +40,8 @@ export class TripPage implements OnInit, OnDestroy {
     PageSize: 15
   } as TravelModel;
   private subscriptions: Subscription[] = [];
-  @ViewChild(IonRefresher, { static: false }) ionRefresher: IonRefresher;
-  @ViewChild(IonInfiniteScroll, { static: false })
+  @ViewChild(IonRefresher) ionRefresher: IonRefresher;
+  @ViewChild(IonInfiniteScroll)
   infiniteScroll: IonInfiniteScroll;
   trips: OrderTripModel[];
   isLoading = false;

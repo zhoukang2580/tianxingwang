@@ -50,9 +50,9 @@ import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
 })
 export class SwitchCityComponent implements OnInit, OnDestroy, OnChanges {
   private selectCitySubscription = Subscription.EMPTY;
-  @ViewChild("fromCityEle", { static: false }) fromCityEle: IonText;
-  @ViewChild("toCityEle", { static: false }) toCityEle: IonText;
-  @ViewChild("flightcitieEle", { static: false }) flightcitieEle: ElementRef<HTMLElement>;
+  @ViewChild("fromCityEle") fromCityEle: IonText;
+  @ViewChild("toCityEle") toCityEle: IonText;
+  @ViewChild("flightcitieEle") flightcitieEle: ElementRef<HTMLElement>;
   toggleCities = false; // 没有切换城市顺序
   rotateIcon = false;
   @Input() disabled = false; // 界面上显示的出发城市

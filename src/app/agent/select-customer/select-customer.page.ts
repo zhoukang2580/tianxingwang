@@ -23,7 +23,7 @@ export class SelectCustomerPage implements OnInit, OnDestroy {
   selectedItem: TmcEntity;
   identityEntity: IdentityEntity;
   identitySubscription = Subscription.EMPTY;
-  @ViewChild(IonRefresher, { static: false }) ionrefresher: IonRefresher;
+  @ViewChild(IonRefresher) ionrefresher: IonRefresher;
   constructor(
     private agentService: AgentService,
     private identityService: IdentityService,

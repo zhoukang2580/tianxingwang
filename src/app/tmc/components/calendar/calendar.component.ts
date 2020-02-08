@@ -31,8 +31,8 @@ export class CalendarComponent
   implements OnInit, AfterViewInit, OnDestroy, OnChanges {
   private subscription = Subscription.EMPTY;
   private page: { m: number; y: number };
-  @ViewChild(IonInfiniteScroll, { static: false }) scroller: IonInfiniteScroll;
-  @ViewChild(IonRefresher, { static: false }) refresher: IonRefresher;
+  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
+  @ViewChild(IonRefresher) refresher: IonRefresher;
   weeks: string[];
   @Input() title: string;
   @Input() forType: FlightHotelTrainType;

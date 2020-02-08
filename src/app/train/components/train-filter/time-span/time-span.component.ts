@@ -16,7 +16,7 @@ import { IonRange, DomController } from "@ionic/angular";
 export class TimeSpanComponent implements OnInit, AfterViewInit, OnDestroy {
   time: "forenoon" | "afternoon" | "none" | "night";
   @Output() sCond: EventEmitter<any>;
-  @ViewChild("range", { static: false }) range: IonRange;
+  @ViewChild("range") range: IonRange;
   timeSpan: { lower: number; upper: number } = {
     lower: 0,
     upper: 24

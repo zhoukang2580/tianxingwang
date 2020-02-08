@@ -36,8 +36,8 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   vmKeyowrds = "";
   isSearching = false;
   activeTab = "";
-  @ViewChild(IonContent, { static: false }) content: IonContent;
-  @ViewChild(IonRefresher, { static: false }) refresher: IonRefresher;
+  @ViewChild(IonContent) content: IonContent;
+  @ViewChild(IonRefresher) refresher: IonRefresher;
   segmentValue: "domestic" | "overseas" = "domestic";
   isIos = false;
 

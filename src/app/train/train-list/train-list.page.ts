@@ -63,13 +63,13 @@ import { trigger, transition, style, animate } from '@angular/animations';
   ]
 })
 export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild(DaysCalendarComponent, { static: false })
+  @ViewChild(DaysCalendarComponent)
   private daysCalendarComp: DaysCalendarComponent;
-  @ViewChild(IonRefresher, { static: false })
+  @ViewChild(IonRefresher)
   private ionRefresher: IonRefresher;
-  @ViewChild(IonInfiniteScroll, { static: false })
+  @ViewChild(IonInfiniteScroll)
   private scroller: IonInfiniteScroll;
-  @ViewChild(IonContent, { static: false }) private cnt: IonContent;
+  @ViewChild(IonContent) private cnt: IonContent;
   private pageSize = 15;
   private lastSelectedPassengerIds: string[];
   private currentSelectedPassengerIds: string[];

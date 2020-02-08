@@ -115,8 +115,8 @@ export class BookPage implements OnInit, AfterViewInit {
   @ViewChildren("illegalReasonsEle", { read: ElementRef })
   illegalReasonsEles: QueryList<ElementRef<HTMLElement>>;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
-  @ViewChild(IonContent, { static: false }) cnt: IonContent;
-  @ViewChild(IonRefresher, { static: false }) ionRefresher: IonRefresher;
+  @ViewChild(IonContent) cnt: IonContent;
+  @ViewChild(IonRefresher) ionRefresher: IonRefresher;
   constructor(
     private flightService: FlightService,
     private staffService: StaffService,

@@ -38,7 +38,7 @@ export class InternationalHotelBookinfosPage implements OnInit {
   @HostBinding("class.show-price-detail") isShowPriceDetail = false;
   roomImages: string[];
   config: ConfigEntity;
-  @ViewChild(IonRefresher, { static: false }) ionRefresher: IonRefresher;
+  @ViewChild(IonRefresher) ionRefresher: IonRefresher;
   dates: { date: string; price: string }[] = [];
   constructor(
     private modalCtrl: ModalController,

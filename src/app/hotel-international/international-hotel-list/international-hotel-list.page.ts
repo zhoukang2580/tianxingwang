@@ -37,13 +37,13 @@ export class InternationalHotelListPage
   implements OnInit, OnDestroy, AfterViewInit {
   private subscription = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
-  @ViewChild(InterHotelQueryComponent, { static: false })
+  @ViewChild(InterHotelQueryComponent)
   queryComp: InterHotelQueryComponent;
-  @ViewChild(IonContent, { static: false }) private content: IonContent;
-  @ViewChild(IonInfiniteScroll, { static: false })
+  @ViewChild(IonContent) private content: IonContent;
+  @ViewChild(IonInfiniteScroll)
   private scroller: IonInfiniteScroll;
-  @ViewChild(IonRefresher, { static: false }) private refresher: IonRefresher;
-  @ViewChild(RefresherComponent, { static: false })
+  @ViewChild(IonRefresher) private refresher: IonRefresher;
+  @ViewChild(RefresherComponent)
   private refresher2: RefresherComponent;
   private isDoRefresh = false;
   private oldSearchText: ISearchTextValue;

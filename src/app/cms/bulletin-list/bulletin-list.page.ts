@@ -10,8 +10,8 @@ import { CmsService, Notice } from "../cms.service";
   styleUrls: ["./bulletin-list.page.scss"]
 })
 export class BulletinListPage implements OnInit {
-  @ViewChild(IonRefresher, { static: false }) refresher: IonRefresher;
-  @ViewChild(IonInfiniteScroll, { static: false }) scroller: IonInfiniteScroll;
+  @ViewChild(IonRefresher) refresher: IonRefresher;
+  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   bulletines: Notice[] = [];
   bulletinType: string;
   title: string;

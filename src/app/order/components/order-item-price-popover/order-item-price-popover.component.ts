@@ -20,7 +20,7 @@ import { IonGrid } from "@ionic/angular";
   styleUrls: ["./order-item-price-popover.component.scss"]
 })
 export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
-  @ViewChild("container", { static: false }) container: ElementRef<HTMLElement>;
+  @ViewChild("container") container: ElementRef<HTMLElement>;
   @ViewChildren(IonGrid) iongrids: QueryList<IonGrid>;
   order: OrderEntity;
   amount: number;

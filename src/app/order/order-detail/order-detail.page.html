@@ -82,7 +82,7 @@
         <ng-container *ngIf='orderDetail.Order.OrderFlightTickets?.length'>
           <ng-container *ngIf='getTravelFlightTrips() as trips'>
             <ion-item-divider>
-              <ion-text color=''>航班信息</ion-text>
+              <ion-text>航班信息</ion-text>
             </ion-item-divider>
             <ion-item>
               <app-flight-order-detail [trips]='trips' [order]='orderDetail.Order'></app-flight-order-detail>

@@ -41,10 +41,10 @@ export class SelectAirportsModalComponent implements OnInit, AfterViewInit {
   selectedItem: TrafficlineEntity;
   isShowFabButton = false;
   scrollEle: HTMLElement;
-  @ViewChild(IonRefresher, { static: false }) refresher: IonRefresher;
-  @ViewChild("hot", { static: false }) hotEle: IonGrid;
-  @ViewChild("lettersEle", { static: false }) lettersEle: IonGrid;
-  @ViewChild(IonContent, { static: false }) ionContent: IonContent;
+  @ViewChild(IonRefresher) refresher: IonRefresher;
+  @ViewChild("hot") hotEle: IonGrid;
+  @ViewChild("lettersEle") lettersEle: IonGrid;
+  @ViewChild(IonContent) ionContent: IonContent;
   constructor(
     private tmcService: TmcService,
     private modalCtrl: ModalController,

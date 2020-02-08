@@ -25,7 +25,7 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
   private subscription = Subscription.EMPTY;
   @Output() itemSelected: EventEmitter<DayModel>;
   @Output() calenderClick: EventEmitter<any>;
-  @ViewChild("daysContainer", { static: false }) daysEle: ElementRef<HTMLElement>;
+  @ViewChild("daysContainer") daysEle: ElementRef<HTMLElement>;
   @ViewChildren("dayItem") dayItems: QueryList<ElementRef<HTMLElement>>;
   days: DayModel[];
   constructor(

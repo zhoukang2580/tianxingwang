@@ -42,7 +42,7 @@ export class HomePage implements OnInit, OnDestroy {
   private intervalIds: any[] = [];
   private staffCredentials: MemberCredential[];
   private subscription = Subscription.EMPTY;
-  @ViewChild(IonSlides, { static: false }) slidesEle: IonSlides;
+  @ViewChild(IonSlides) slidesEle: IonSlides;
   private exitAppSub: Subject<number> = new BehaviorSubject(null);
   identity: IdentityEntity;
   aliPayResult$: Observable<any>;

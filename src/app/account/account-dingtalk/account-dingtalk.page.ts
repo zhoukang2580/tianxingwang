@@ -19,7 +19,7 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
   toggleChecked = false;
   items: Item[] = [];
   isShowBindButton: boolean;
-  @ViewChild("List", { static: false }) deviceList: IonList;
+  @ViewChild("List") deviceList: IonList;
   constructor(private apiService: ApiService, private navCtrl: NavController) {}
   back() {
     this.navCtrl.pop();

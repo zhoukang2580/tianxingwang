@@ -28,8 +28,8 @@ export class ScrollWheelItem {
 })
 export class SelectWheelComponent
   implements OnInit, OnDestroy, AfterViewInit, OnChanges {
-  @ViewChild("scrollEle", { static: false }) scrollEle: ElementRef<HTMLElement>;
-  @ViewChild("wheelcontainer", { static: false }) wheelcontainer: ElementRef<HTMLElement>;
+  @ViewChild("scrollEle") scrollEle: ElementRef<HTMLElement>;
+  @ViewChild("wheelcontainer") wheelcontainer: ElementRef<HTMLElement>;
   @ViewChildren("liEle") liEles: QueryList<ElementRef<HTMLElement>>;
   @Input() items: ScrollWheelItem[];
   @HostBinding("class.show")
