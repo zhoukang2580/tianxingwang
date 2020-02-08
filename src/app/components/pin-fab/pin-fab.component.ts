@@ -52,13 +52,15 @@ import { tap, map, switchMap } from "rxjs/operators";
 })
 export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
   // @HostBinding("@showfab") showfab;
+  @ViewChild("canvas", { static: false }) canvasEl: ElementRef<
+    HTMLCanvasElement
+  >;
   @Input() name = "arrow-dropup";
   @Input() vertical = "bottom";
   @Input() horizontal = "end";
   private subscriptions: Subscription[] = [];
   private isScrollingCheck = false;
   private content: IonContent;
-  private ionFabBtn: HTMLElement;
   private scrollTimer: number;
   private isInitStyle = false;
   private isShowFab = false;
@@ -74,6 +76,64 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy() {
     this.isScrollingCheck = false;
     this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+  private draw(start = true) {
+    let aniFrame;
+    if (!start) {
+      if (aniFrame) {
+        window.cancelAnimationFrame(aniFrame);
+      }
+      return;
+    }
+    if (this.canvasEl && this.canvasEl.nativeElement) {
+      const canvas = this.canvasEl.nativeElement;
+      const ctx = canvas.getContext("2d");
+      const w = canvas.width;
+      const h = canvas.height;
+      const unit = 16;
+      let opacity = 1;
+      let dir;
+      ctx.arc(w / 2, h / 2, 2 * Math.PI, 0, 0, true);
+      ctx.fill();
+      drawCircle("#3880ff", "white");
+      function drawCircle(fillColor = "#3880ff", strokeColor = "white") {
+        ctx.clearRect(0, 0, w, h);
+        if (!start) {
+          return;
+        }
+        ctx.globalAlpha = opacity;
+        ctx.beginPath();
+        ctx.arc(w / 2, h / 2, w / 2, 0, 2 * Math.PI);
+        ctx.fillStyle = fillColor || "white";
+        ctx.fill();
+        // ctx.save();
+        ctx.beginPath();
+        ctx.strokeStyle = strokeColor || "black";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        // ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(w / 3, (h + unit / 2) / 2);
+        ctx.lineTo(w / 2, (h + unit / 2) / 3);
+        ctx.lineTo((2 * w) / 3, (h + unit / 2) / 2);
+        ctx.stroke();
+        if (aniFrame) {
+          cancelAnimationFrame(aniFrame);
+        }
+        const increment = 0.005;
+        aniFrame = requestAnimationFrame(_ => {
+          if (dir) {
+            opacity += increment;
+          } else {
+            opacity -= increment;
+          }
+          if (opacity <= 0.2 || opacity >= 1) {
+            dir = !dir;
+          }
+          drawCircle(fillColor, strokeColor);
+        });
+      }
+    }
   }
   async ngAfterViewInit() {
     if (this.fab && this.fab["el"]) {
@@ -99,7 +159,6 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
       console.error("请将组件放于<ion-content>内部的<ion-fab>xxx</ion-fab>");
       return;
     }
-    this.ionFabBtn = this.el.nativeElement.querySelector("ion-fab-button");
     await this.startCheck();
     this.checkIsScrolling();
   }
@@ -116,21 +175,11 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.isAnimationAdded) {
       return;
     }
-    this.isAnimationAdded = true;
-    this.render.removeClass(this.ionFabBtn, `activated`);
-    this.render.setStyle(this.ionFabBtn, "animation-name", "fabAnimation", 2);
-    this.render.setStyle(
-      this.ionFabBtn,
-      "-webkit-animation-name",
-      "fabAnimation",
-      2
-    );
+    this.draw();
   }
   private removeAnimation() {
-    this.render.removeStyle(this.ionFabBtn, "animation-name", 2);
-    this.render.removeStyle(this.ionFabBtn, "-webkit-animation-name", 2);
-    this.render.removeClass(this.ionFabBtn, `activated`);
     this.isAnimationAdded = false;
+    this.draw(false);
   }
   private checkIsScrolling() {
     this.scrollTimerSubscription.unsubscribe();
@@ -142,17 +191,13 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
         if (!this.isInitStyle) {
           this.isInitStyle = true;
           this.removeAnimation();
-          if (this.ionFabBtn) {
-            this.render.addClass(this.ionFabBtn, "scrolling");
-          }
+          this.render.addClass(this.canvasEl.nativeElement, "scrolling");
         }
       } else {
         this.stopCheck();
         this.isInitStyle = false;
+        this.render.removeClass(this.canvasEl.nativeElement, "scrolling");
         this.addAnimation();
-        if (this.ionFabBtn) {
-          this.render.removeClass(this.ionFabBtn, "scrolling");
-        }
       }
     });
     this.subscriptions.push(this.scrollTimerSubscription);

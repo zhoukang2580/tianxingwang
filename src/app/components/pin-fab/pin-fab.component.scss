@@ -1,35 +1,8 @@
-ion-fab-button {
-  ion-icon {
-    color: rgba(var(--ion-color-dark-rgb), 0.5);
-  }
-  --transition: all 100ms ease-in-out;
-  transition: all 100ms ease-in-out;
-  --ripple-color: var(--ion-color-primary);
-  --background: rgba(var(--ion-color-primary-rgb), 0.12);
+canvas {
+  transition:all 200ms ease-in-out;
   transform: translateX(0%) scale(1);
   &.scrolling {
     transform: translateX(100%) scale(0.1);
     --background: var(--ion-color-primary);
-  }
-  animation-timing-function: ease-in-out;
-  animation-duration: 1400ms;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-
-  @keyframes fabAnimation {
-    from {
-      --background: rgba(var(--ion-color-primary-rgb), 0.5);
-      opacity: 0.3;
-      ion-icon {
-        color: rgba(var(--ion-color-dark-rgb), 0.3);
-      }
-    }
-    to {
-      --background: rgba(var(--ion-color-primary-rgb), 1);
-      opacity: 1;
-      ion-icon {
-        color: rgba(var(--ion-color-dark-rgb), 1);
-      }
-    }
   }
 }
