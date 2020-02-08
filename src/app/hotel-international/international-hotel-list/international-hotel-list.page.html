@@ -33,6 +33,7 @@
     <ion-refresher-content>正在加载...</ion-refresher-content>
   </app-refresher>
   <app-inter-hotel-query (showPanel)='onShowPanel($event)' (queryFilter)='onQueryFilter()'></app-inter-hotel-query>
+  <div class="empty-padding"></div>
   <ng-container *ngIf='isLoading else showlist'>
     <ion-list>
       <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8,9,10,11,12,13]' class="fake">
@@ -68,14 +69,6 @@
   <ion-infinite-scroll (ionInfinite)='loadMore()'>
     <ion-infinite-scroll-content>正在加载...</ion-infinite-scroll-content>
   </ion-infinite-scroll>
-  <!-- <div class="backdrop ion-page" #backdrop [class.show]='isShowPanel'>
-  </div> -->
-  <!-- <ion-fab vertical="bottom" [class.solid]='isScrolling' horizontal="end" slot="fixed" *ngIf='isShowFab' @showfab
-    (click)='onScrollToTop()'>
-    <ion-fab-button>
-      <ion-icon name="arrow-dropup"></ion-icon>
-    </ion-fab-button>
-  </ion-fab> -->
   <ion-fab  (click)='onScrollToTop()'  >
     <app-pin-fab horizontal="end" vertical="bottom"></app-pin-fab> 
   </ion-fab>

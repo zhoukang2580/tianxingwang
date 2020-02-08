@@ -1,9 +1,10 @@
+import { ConfigService } from "src/app/services/config/config.service";
 import { InterHotelQueryComponent } from "./../components/inter-hotel-query/inter-hotel-query.component";
 import { Router, ActivatedRoute } from "@angular/router";
 import { ImageRecoverService } from "./../../services/imageRecover/imageRecover.service";
 import { RefresherComponent } from "./../../components/refresher/refresher.component";
 import { finalize, switchMap, map, mergeMap, tap } from "rxjs/operators";
-import { Subscription, fromEvent, from, interval } from "rxjs";
+import { Subscription, fromEvent, from, interval, of } from "rxjs";
 import {
   InternationalHotelService,
   IInterHotelSearchCondition,
@@ -25,7 +26,7 @@ import {
   style,
   state
 } from "@angular/animations";
-import { HotelEntity } from 'src/app/hotel/models/HotelEntity';
+import { HotelEntity } from "src/app/hotel/models/HotelEntity";
 
 @Component({
   selector: "app-international-hotel-list",
@@ -36,7 +37,6 @@ export class InternationalHotelListPage
   implements OnInit, OnDestroy, AfterViewInit {
   private subscription = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
-  @ViewChild("backdrop", { static: false }) backdropEl: ElementRef<HTMLElement>;
   @ViewChild(InterHotelQueryComponent, { static: false })
   queryComp: InterHotelQueryComponent;
   @ViewChild(IonContent, { static: false }) private content: IonContent;
@@ -58,26 +58,13 @@ export class InternationalHotelListPage
     private hotelService: InternationalHotelService,
     private imageRecoverService: ImageRecoverService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private configService: ConfigService
   ) {}
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
-  ngAfterViewInit() {
-    if (this.backdropEl) {
-      this.subscriptions.push(
-        from(["scroll", "touchmove", "touchstart", "touchend"])
-          .pipe(mergeMap(o => fromEvent(this.backdropEl.nativeElement, o)))
-          .subscribe(evt => {
-            if (this.isShowPanel) {
-              if (evt.cancelable) {
-                evt.preventDefault();
-              }
-            }
-          })
-      );
-    }
-  }
+  ngAfterViewInit() {}
   onShowPanel(evt: { active: boolean }) {
     console.log("onshowpanel", evt);
     this.isShowPanel = evt && evt.active;
@@ -148,7 +135,16 @@ export class InternationalHotelListPage
       })
     );
   }
+  private loadConfig() {
+    this.configService
+      .getConfigAsync()
+      .then(c => {
+        this.defaultImage = c.PrerenderImageUrl || c.DefaultImageUrl;
+      })
+      .catch(_ => null);
+  }
   doRefresh(keepFilterCondition = false) {
+    this.loadConfig();
     this.hotels = [];
     this.pageIndex = 0;
     this.subscription.unsubscribe();

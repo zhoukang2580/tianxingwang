@@ -2,6 +2,7 @@
   background-color: rgba(var(--ion-color-dark-rgb), 0.5);
 }
 .name {
+  font-size: 1rem;
   font-weight: bold;
 }
 .address-price {
@@ -32,7 +33,7 @@ ion-content {
   // .hotel-list {
   //   margin-top: 56px;
   // }
-  .pos.md{
+  .pos.md {
     margin-top: -1em;
   }
   .pos.ios {
@@ -45,13 +46,14 @@ ion-toolbar.ios {
 small {
   font-size: 0.6rem;
 }
-ion-thumbnail img {
-  min-width: 4em;
-  min-height: 4em;
+ion-thumbnail {
+  width: 5em;
+  height: 5em;
+  margin-left: -0.5em;
 }
-form{
+form {
   display: flex;
   align-items: center;
   padding: 0;
-  background-color:transparent;
+  background-color: transparent;
 }

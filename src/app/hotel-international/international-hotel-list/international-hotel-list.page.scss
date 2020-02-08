@@ -57,15 +57,15 @@ ion-header {
     padding: 0.5em 0;
   }
 }
-// app-inter-hotel-query {
-//   background-color: rgba(0, 0, 0, 0.5);
-//   z-index: 100;
-//   position: absolute;
-//   left: 0;
-//   right: 0;
-//   top: 0;
-//   touch-action: none;
-// }
+app-inter-hotel-query {
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  touch-action: none;
+}
 .backdrop.ion-page.show {
   z-index: 99;
   background-color: rgba(0, 0, 0, 0.5);

@@ -41,12 +41,12 @@
   </ng-template>
   <ng-template #listTemp>
     <ng-container *ngIf='!isShowSearchBar else nosearchartempl'>
-      <ion-list *ngIf='!isSearchingList&&hotelDayPrices?.length else noMoreData' #hotellist class='hotel-list'>
+      <ion-list *ngIf='!isSearchingList&&hotelDayPrices?.length else noMoreData' #hotellist class='hotel-list' lines='full'>
         <ion-item *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
           <ion-thumbnail slot='start'>
             <img [lazyLoad]='item.Hotel?.FileName' [defaultImage]='config?.PrerenderImageUrl' />
           </ion-thumbnail>
-          <ion-label style="margin-left:.5em">
+          <ion-label class="ion-no-margin">
             <h3 class='name'>
               <ion-label>{{item.Hotel?.Name}}</ion-label>
             </h3>

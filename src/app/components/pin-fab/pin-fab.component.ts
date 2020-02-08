@@ -34,13 +34,13 @@ import { tap, map, switchMap } from "rxjs/operators";
       transition("*=>true", [
         style({ opacity: 0, transform: "translateX(100%) scale(0.1)" }),
         animate(
-          "300ms ease-in",
+          "200ms ease-in",
           style({ opacity: 1, transform: "translateX(0) scale(1)" })
         )
       ]),
       transition("*=>false", [
         animate(
-          "300ms 100ms ease-out",
+          "200ms 100ms ease-out",
           style({ opacity: 0, transform: "translateX(100%) scale(0.1)" })
         )
       ])
@@ -109,6 +109,7 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   private addAnimation() {
     this.render.setStyle(this.ionFabBtn, "animation-name", "fabAnimation", 2);
+    this.render.setStyle(this.ionFabBtn, "-webkit-animation-name", "fabAnimation", 2);
   }
   private removeAnimation() {
     this.render.removeStyle(this.ionFabBtn, "animation-name", 2);
@@ -118,7 +119,7 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
     this.scrollTimerSubscription.unsubscribe();
     this.isScrollingCheck = true;
     this.scrollTimerSubscription = interval(100).subscribe(_ => {
-      const isScrolling = Date.now() - this.scrollTimer < 300;
+      const isScrolling = Date.now() - this.scrollTimer < 130;
       // console.log("isscrolling", Date.now() - this.scrollTimer);
       if (isScrolling) {
         if (!this.isInitStyle) {

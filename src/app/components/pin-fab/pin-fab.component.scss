@@ -1,14 +1,16 @@
 ion-fab-button {
-  //   transition: all 200ms ease-in-out;
+  transition: all 100ms ease-in-out;
   --background: rgba(var(--ion-color-secondary-rgb), 0.12);
   &.scrolling {
     --background: var(--ion-color-secondary);
+    transform: translateX(100%);
   }
   animation-timing-function: ease-in-out;
   animation-duration: 1400ms;
   animation-iteration-count: infinite;
-    // animation-direction: alternate;
-//   animation-name: fabAnimation;
+  // animation-direction: alternate;
+  //   animation-name: fabAnimation;
+
   @keyframes fabAnimation {
     from {
       --background: rgba(var(--ion-color-secondary-rgb), 0.12);
