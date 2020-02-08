@@ -7,7 +7,10 @@ import {
   Input,
   AfterViewInit,
   HostBinding,
-  Optional
+  Optional,
+  ViewContainerRef,
+  TemplateRef,
+  ViewChild
 } from "@angular/core";
 import {
   trigger,
@@ -23,29 +26,7 @@ import { tap, map, switchMap } from "rxjs/operators";
 @Component({
   selector: "app-pin-fab",
   templateUrl: "./pin-fab.component.html",
-  styleUrls: ["./pin-fab.component.scss"],
-  animations: [
-    trigger("showfab", [
-      state("true", style({ opacity: 1, transform: "translateX(0) scale(1)" })),
-      state(
-        "false",
-        style({ opacity: 0, transform: "translateX(100%) scale(0.1)" })
-      ),
-      transition("*=>true", [
-        style({ opacity: 0, transform: "translateX(100%) scale(0.1)" }),
-        animate(
-          "200ms ease-in",
-          style({ opacity: 1, transform: "translateX(0) scale(1)" })
-        )
-      ]),
-      transition("*=>false", [
-        animate(
-          "200ms 100ms ease-out",
-          style({ opacity: 0, transform: "translateX(100%) scale(0.1)" })
-        )
-      ])
-    ])
-  ]
+  styleUrls: ["./pin-fab.component.scss"]
 })
 export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
   // @HostBinding("@showfab") showfab;
@@ -77,6 +58,7 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
       this.domCtrl.write(_ => {
         this.showFab(false);
         this.render.setAttribute(this.fab["el"], "edge", "");
+        this.render.setAttribute(this.fab["el"], "mode", "ios");
         this.render.setAttribute(
           this.fab["el"],
           "vertical",
@@ -92,7 +74,7 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     this.content = this.el.nativeElement.closest("ion-content") as any;
     if (!this.content) {
-      console.error("请将指令放于<ion-content>内部:<ion-fab appPinFab>");
+      console.error("请将组件放于<ion-content>内部的<ion-fab>xxx</ion-fab>");
       return;
     }
     this.ionFabBtn = this.el.nativeElement.querySelector("ion-fab-button");
@@ -104,14 +86,13 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
       this.stopCheck();
       this.removeAnimation();
     }
-    this.domCtrl.write(_ => {
-      this.render.setProperty(this.fab["el"], "@showfab", isShow);
-    });
   }
   private addAnimation() {
-    if(this.isAnimationAdded){
+    if (this.isAnimationAdded) {
       return;
     }
+    this.isAnimationAdded = true;
+    this.render.removeClass(this.ionFabBtn, `activated`);
     this.render.setStyle(this.ionFabBtn, "animation-name", "fabAnimation", 2);
     this.render.setStyle(
       this.ionFabBtn,
@@ -123,7 +104,8 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
   private removeAnimation() {
     this.render.removeStyle(this.ionFabBtn, "animation-name", 2);
     this.render.removeStyle(this.ionFabBtn, "-webkit-animation-name", 2);
-    this.isAnimationAdded=false;
+    this.render.removeClass(this.ionFabBtn, `activated`);
+    this.isAnimationAdded = false;
   }
   private checkIsScrolling() {
     this.scrollTimerSubscription.unsubscribe();
@@ -135,13 +117,17 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
         if (!this.isInitStyle) {
           this.isInitStyle = true;
           this.removeAnimation();
-          this.render.addClass(this.ionFabBtn, "scrolling");
+          if (this.ionFabBtn) {
+            this.render.addClass(this.ionFabBtn, "scrolling");
+          }
         }
       } else {
         this.stopCheck();
         this.isInitStyle = false;
         this.addAnimation();
-        this.render.removeClass(this.ionFabBtn, "scrolling");
+        if (this.ionFabBtn) {
+          this.render.removeClass(this.ionFabBtn, "scrolling");
+        }
       }
     });
     this.subscriptions.push(this.scrollTimerSubscription);

@@ -1,22 +1,27 @@
 ion-fab-button {
-  transition: all 100ms ease-in-out;
-  --background: rgba(var(--ion-color-secondary-rgb), 0.12);
+  ion-icon {
+    color: rgba(var(--ion-color-dark-rgb), 0.5);
+  }
+  --transition: all 100ms ease-in-out;
+  --ripple-color: var(--ion-color-primary);
+  --background: rgba(var(--ion-color-primary-rgb), 0.12);
+  transform: translateX(0%) scale(1);
   &.scrolling {
-    --background: var(--ion-color-secondary);
-    transform: translateX(100%);
+    transform: translateX(100%) scale(0.1);
+    --background: var(--ion-color-primary);
   }
   animation-timing-function: ease-in-out;
   animation-duration: 1400ms;
   animation-iteration-count: infinite;
-  // animation-direction: alternate;
-  //   animation-name: fabAnimation;
+  animation-direction: alternate;
 
   @keyframes fabAnimation {
     from {
-      --background: rgba(var(--ion-color-secondary-rgb), 0.12);
+      --background: rgba(var(--ion-color-primary-rgb), 0.5);
     }
     to {
-      --background: rgba(var(--ion-color-secondary-rgb), 0.42);
+      --background: rgba(var(--ion-color-primary-rgb), 1);
+      opacity: 0.5;
     }
   }
 }
