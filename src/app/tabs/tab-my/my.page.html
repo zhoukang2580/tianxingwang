@@ -62,6 +62,12 @@
       <ion-label>设置</ion-label>
     </ion-item>
   </ion-list>
+  <ion-list>
+    <ion-item (click)="onLanguageSettings()" detail>
+      <ion-icon name="cog" color="dark"></ion-icon>
+      <ion-label>语言设置</ion-label>
+    </ion-item>
+  </ion-list>
   <ion-list *ngIf='isShowDeveloperOption'>
     <ion-item (click)="onDeveloper()" detail>
       <ion-icon name="cog" color="dark"></ion-icon>

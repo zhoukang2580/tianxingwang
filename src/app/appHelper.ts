@@ -436,13 +436,16 @@ export class AppHelper {
     return url.replace(this._appDomain, domain).replace("test.", "");
   }
   static getApiUrl() {
-    if (environment.production&&!environment.mockProBuild) {
+    if (environment.production && !environment.mockProBuild) {
       return "https://app." + this._appDomain;
     }
     return "http://test.app." + this._appDomain;
   }
   static getRoutePath(path: string) {
     const style = AppHelper.getStyle() || "";
+    if (path.lastIndexOf("_") != -1) {
+      path = path.substring(0, path.lastIndexOf("_"));
+    }
     path =
       path && path.length > 0 ? `${path}${style ? "_" + style : ""}` : path;
     console.log(`get style=${style}, Route Path=${path}`);

@@ -25,9 +25,19 @@ const routes: Routes = [
           import("./tab-home/home.module").then(m => m.HomePageModule)
       },
       {
+        path: "home_en",
+        loadChildren: () =>
+          import("./tab-home_en/home_en.module").then(m => m.HomeEnPageModule)
+      },
+      {
         path: "my",
         loadChildren: () =>
           import("./tab-my/my.module").then(m => m.MyPageModule)
+      },
+      {
+        path: "my_en",
+        loadChildren: () =>
+          import("./tab-my_en/my_en.module").then(m => m.MyEnPageModule)
       },
       {
         path: "trip",

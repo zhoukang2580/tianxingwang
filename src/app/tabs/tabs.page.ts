@@ -1,3 +1,4 @@
+import { AppHelper } from "./../appHelper";
 import { filter } from "rxjs/operators";
 import { Subscription } from "rxjs";
 import {
@@ -47,6 +48,10 @@ export class TabsPage implements OnInit {
   tabChangeHooks: () => any;
   constructor(private router: Router) {
     // this.tab = "home";
+  }
+  onTabActive(tab: string) {
+    this.tab = tab;
+    this.router.navigate([AppHelper.getRoutePath(`tabs/${tab}`)]);
   }
   ngOnInit() {
     // this.subscription = this.router.events

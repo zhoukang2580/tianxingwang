@@ -19,8 +19,8 @@
 <ion-content>
   <ion-toolbar class='ion-text-center'>
     <div class='tabs'>
-      <ion-button [color]='activeTab.value==tab.value?"secondary":"dark"' (click)='onTabClick(tab)'
-        *ngFor='let tab of tabs' fill='clear' [class.active]='activeTab.value==tab.value'>{{tab.label}}
+      <ion-button [color]='activeTab?.value==tab.value?"secondary":"dark"' (click)='onTabClick(tab)'
+        *ngFor='let tab of tabs' fill='clear' [class.active]='activeTab?.value==tab.value'>{{tab.label}}
       </ion-button>
     </div>
   </ion-toolbar>
@@ -56,7 +56,7 @@
       </ion-item>
     </ion-list>
   </ng-template>
-  <ng-container *ngIf='activeTab.value!==productItemType.waitingApprovalTask else waitingapprovalTempl'>
+  <ng-container *ngIf='activeTab?.value!==productItemType.waitingApprovalTask else waitingapprovalTempl'>
     <ng-container *ngIf='!isLoading else fakeList'>
       <ng-container *ngIf='!isShowMyTrips'>
         <ion-list lines='none' *ngIf='orderModel?.Orders?.length else nomoredate'>
@@ -114,7 +114,7 @@
     </ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>
-<ion-footer *ngIf='activeTab.value !== productItemType.waitingApprovalTask'>
+<ion-footer *ngIf='activeTab?.value !== productItemType.waitingApprovalTask'>
   <ion-row>
     <ion-col class='ion-text-center'>
       <ion-button color='secondary' fill='clear' size='small' (click)='doRefresh()'>
