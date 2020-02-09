@@ -7,7 +7,9 @@ import {
   QueryList,
   ElementRef,
   OnChanges,
-  SimpleChanges
+  SimpleChanges,
+  AfterViewInit,
+  ChangeDetectionStrategy
 } from "@angular/core";
 import { IonSlides } from "@ionic/angular";
 interface IItem {
@@ -17,14 +19,15 @@ interface IItem {
   desc: string;
 }
 @Component({
-  selector: "app-slides",
+  selector: "app-ion-slides",
   templateUrl: "./slides.component.html",
   styleUrls: ["./slides.component.scss"]
+  // changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SlidesComponent implements OnInit, OnChanges {
+export class SlidesComponent implements OnInit, OnChanges, AfterViewInit {
   private swiper;
   @ViewChildren("img") imgs: QueryList<ElementRef<HTMLImageElement>>;
-  @ViewChild(IonSlides) slides: IonSlides;
+  @ViewChild(IonSlides, { static: true }) slides: IonSlides;
   @Input() items: IItem[];
   @Input() direction = "horizontal";
   @Input() options;
@@ -35,17 +38,22 @@ export class SlidesComponent implements OnInit, OnChanges {
   curIndex: number;
 
   constructor() {}
-
-  ngOnInit() {}
+  async ngAfterViewInit() {}
+  async ngOnInit() {
+    if (this.options) {
+      this.options.autoplay = this.options.autoplay || false;
+    }
+    if (this.slides) {
+      this.swiper = await this.slides.getSwiper();
+      console.log("ngOnInit", this.swiper);
+    }
+  }
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.items && changes.items.currentValue) {
       this.isShowImage = this.items.some(it => !!it.imageUrl);
     }
   }
   async onSlidesDidLoad() {
-    if (this.slides) {
-      this.swiper = await this.slides.getSwiper();
-    }
     this.onSlideWillChange();
   }
   onSlideTouchStart() {
@@ -58,10 +66,6 @@ export class SlidesComponent implements OnInit, OnChanges {
     if (this.slides) {
       this.slides.stopAutoplay();
     }
-    // console.log(this.swiper);
-    // if(this.swiper&&this.swiper.autoplay&&this.swiper.autoplay.stop){
-    //   this.swiper.autoplay.stop();
-    // }
   }
   private startAutoPlay() {
     if (this.options && this.options.autoplay) {
@@ -71,11 +75,10 @@ export class SlidesComponent implements OnInit, OnChanges {
     }
   }
   async onSlideWillChange() {
-    console.log("this.swiper  this.slides", this.swiper, this.slides);
+    console.log("this.swiper", this.swiper);
     if (!this.swiper) {
       this.swiper = await this.slides.getSwiper();
     }
-    console.log("this.swiper ", this.swiper);
     const idx = (this.swiper && this.swiper.realIndex) || 0;
     this.curIndex = idx + 1;
   }

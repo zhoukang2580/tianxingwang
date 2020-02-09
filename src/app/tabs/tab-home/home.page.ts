@@ -126,7 +126,9 @@ export class HomePage implements OnInit, OnDestroy {
       loop: true,
       autoplay: true,
       speed: 1000,
-      direction: "vertical"
+      direction: "vertical",
+      freeMode: true,
+      isShowText: true
     };
     this.subscription = this.identityService
       .getIdentitySource()

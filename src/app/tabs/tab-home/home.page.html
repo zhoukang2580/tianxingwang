@@ -34,7 +34,7 @@
   <div class="img">
     <img [src]='"assets/images/home_top_bg.png"' />
   </div>
-  <ion-toolbar class="text-swiper" (click)='goToBulletinList("agentNotice")'> 
+  <ion-toolbar class="text-swiper" (click)='goToBulletinList("agentNotice")'>
     <ion-slides  class="announcement-container" [options]='options' (ionSlideTouchEnd)='onSlideTouchEnd()'>
       <ion-slide *ngFor='let n of agentNotices'>
         <div class='announcement'>
@@ -43,6 +43,7 @@
         </div>
       </ion-slide>
     </ion-slides>
+    <!-- <app-swiper-slides [options]='options' [items]='agentNotices'></app-swiper-slides> -->
   </ion-toolbar>
   <ion-grid>
     <ion-row wrap>

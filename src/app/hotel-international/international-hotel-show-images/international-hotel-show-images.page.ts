@@ -17,6 +17,7 @@ export class InternationalHotelShowImagesPage
   hotel: any;
   images: { url: string; active: boolean; idx: number }[];
   config: ConfigEntity;
+  initPos = 0;
   // agent: AgentEntity;
   constructor(
     private configservice: ConfigService,
@@ -39,6 +40,7 @@ export class InternationalHotelShowImagesPage
           name: q.get("hotelName")
         };
       }
+      this.initPos = +q.get("initPos") || 0;
     });
     this.config = await this.configservice.getConfigAsync();
     // this.agent = await this.tmcService.getAgent();

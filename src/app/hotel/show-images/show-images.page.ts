@@ -22,6 +22,7 @@ export class ShowImagesPage implements OnInit, AfterViewInit, OnDestroy {
   images: { url: string; active: boolean; idx: number }[];
   config: ConfigEntity;
   // agent: AgentEntity;
+  initPos: number;
   constructor(
     private configservice: ConfigService,
     private plt: Platform,
@@ -44,6 +45,7 @@ export class ShowImagesPage implements OnInit, AfterViewInit, OnDestroy {
           name: q.get("hotelName")
         };
       }
+      this.initPos = +q.get("initPos") || 0;
     });
     this.config = await this.configservice.getConfigAsync();
     // this.agent = await this.tmcService.getAgent();

@@ -36,10 +36,10 @@ import { FilterPassengersPolicyComponent } from "src/app/tmc/components/filter-p
 import { PassengerBookInfo } from "src/app/tmc/tmc.service";
 import { StaffService } from "src/app/hr/staff.service";
 import { TripType } from "src/app/tmc/models/TripType";
-import { HotelPassengerModel } from 'src/app/hotel/models/HotelPassengerModel';
-import { HotelEntity } from 'src/app/hotel/models/HotelEntity';
-import { RoomPlanEntity } from 'src/app/hotel/models/RoomPlanEntity';
-import { RoomEntity } from 'src/app/hotel/models/RoomEntity';
+import { HotelPassengerModel } from "src/app/hotel/models/HotelPassengerModel";
+import { HotelEntity } from "src/app/hotel/models/HotelEntity";
+import { RoomPlanEntity } from "src/app/hotel/models/RoomPlanEntity";
+import { RoomEntity } from "src/app/hotel/models/RoomEntity";
 
 @Component({
   selector: "app-international-hotel-detail",
@@ -60,6 +60,7 @@ export class InternationalHotelDetailPage
   private agent: any;
   private hotelPolicy: HotelPassengerModel[];
   private isAutoOpenHotelInfoDetails = true;
+  private curSlideIndx = 0;
   hotel: HotelEntity;
   config: ConfigEntity;
   hotelImages: { imageUrl: string }[];
@@ -255,7 +256,9 @@ export class InternationalHotelDetailPage
       });
       this.hotelDetails = [];
       Object.keys(temp).forEach(tag => {
-        const sep = tag.toLowerCase().includes("facilit") ? `<span class='line'>|</span>` : ",";
+        const sep = tag.toLowerCase().includes("facilit")
+          ? `<span class='line'>|</span>`
+          : ",";
         if (temp[tag] && temp[tag].length) {
           this.hotelDetails.push({
             Tag: tag,
@@ -295,7 +298,7 @@ export class InternationalHotelDetailPage
       queryParams: { hotelName: this.hotel && this.hotel.Name }
     });
   }
-   getRoomImages(room: RoomEntity) {
+  getRoomImages(room: RoomEntity) {
     const images = this.hotel && this.hotel.HotelImages;
     if (room && images) {
       const roomImages = images
@@ -303,6 +306,9 @@ export class InternationalHotelDetailPage
         .map(it => it.FullFileName && it.FullFileName);
       return roomImages;
     }
+  }
+  onSlideChange(idx: number) {
+    this.curSlideIndx = idx;
   }
   getRoomLowestAvgPrice(room: RoomEntity) {
     let result = 0;
@@ -536,7 +542,10 @@ export class InternationalHotelDetailPage
   onShowHotelImages() {
     this.hotelService.showImages = this.getHotelImages();
     this.router.navigate(["international-hotel-show-images"], {
-      queryParams: { hotelName: this.hotel && this.hotel.Name }
+      queryParams: {
+        hotelName: this.hotel && this.hotel.Name,
+        initPos: this.curSlideIndx || 0
+      }
     });
   }
   onOpenCalendar() {

@@ -3,32 +3,29 @@
 }
 
 .bg {
-  background-image: url(/assets/images/loading.gif);
-  background-position: center center;
-  background-size: cover;
   height: 30vh;
-  background-color: aliceblue;
+  width: 100%;
+  min-height: 30vh;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  background-color: #eee;
   position: relative;
-
-  &.md ion-chip {
-    bottom: calc(var(--h) - 0.5em);
-  }
-
-  ion-chip {
+  .back-button {
     position: absolute;
-    right: 1em;
-    bottom: calc(var(--h) - 1.5em);
+    left: 1em;
+    top: 2em;
+    width: 3em;
+    height: 3em;
+    z-index: 99;
     color: white;
-    background: rgba(var(--ion-color-dark-rgb), 0.5);
-  }
-
-  .back-arrow {
-    position: fixed;
-    left: 0.5em;
-    top: 1.5em;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
-
 .arrow-icon {
   font-size: 1.5rem;
   position: relative;
@@ -49,7 +46,14 @@
 ion-card {
   z-index: 100;
   position: relative;
-  top: calc(-1 * var(--h));
+  &.ios {
+    top: -3.5em;
+    margin-bottom: 3em;
+  }
+  &.md {
+    top: -2.5em;
+    margin-bottom: 2em;
+  }
   background: white;
 
   .grade-stars,

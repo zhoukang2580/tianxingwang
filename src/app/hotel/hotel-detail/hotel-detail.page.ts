@@ -69,6 +69,7 @@ type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
 export class HotelDetailPage implements OnInit, AfterViewInit {
   private hotelDayPrice: HotelDayPriceEntity;
   private headerHeight = 0;
+  private curPos = 0;
   scrollEle: HTMLElement;
   curHotelImagePos = 0;
   isShowTrafficInfo = true;
@@ -100,7 +101,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   hotelPolicy: HotelPassengerModel[];
   rects: { [key in IHotelDetailTab]: ClientRect | DOMRect };
   bookedRoomPlan: { roomPlan: RoomPlanEntity; room: RoomEntity; color: string };
-  hotelImageUrls: string[];
+  hotelImages: { imageUrl: string }[];
   get totalNights() {
     return this.hotelService.calcTotalNights(
       this.queryModel.checkOutDate,
@@ -125,6 +126,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     private popoverController: PopoverController
   ) {
     this.isMd = plt.is("android");
+  }
+  onSlideChange(idx: number) {
+    this.curPos = idx;
   }
   back(evt?: CustomEvent) {
     if (evt) {
@@ -330,12 +334,18 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
                 this.initRects();
               }, 1000);
             }
+            this.initHotelImages();
           }
         },
         e => {
           AppHelper.alert(e.Message || e);
         }
       );
+  }
+  private initHotelImages() {
+    this.hotelImages = this.getHotelImageUrls().map(it => {
+      return { imageUrl: it };
+    });
   }
   private checkIfBookedRoomPlan() {
     if (this.bookedRoomPlan && this.hotel.Rooms) {
@@ -616,7 +626,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     //   component: HotelRoomBookedinfosComponent
     // });
     // await m.present();
-    this.router.navigate(['hotel-room-bookedinfos']);
+    this.router.navigate(["hotel-room-bookedinfos"]);
   }
   getRoomLowestAvgPrice(room: RoomEntity) {
     let result = 0;
@@ -671,7 +681,8 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   async onShowRoomImages(room: RoomEntity) {
     this.hotelService.showImages = this.getRoomImages(room).map(it => {
       return {
-        url: it
+        url: it,
+        imageUrl: it
       };
     });
     this.router.navigate(["hotel-show-images"], {
@@ -704,11 +715,15 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   async onShowHotelImages() {
     this.hotelService.showImages = this.getHotelImageUrls().map(it => {
       return {
-        url: it
+        url: it,
+        imageUrl: it
       };
     });
     this.router.navigate(["hotel-show-images"], {
-      queryParams: { hotelName: this.hotel && this.hotel.Name }
+      queryParams: {
+        hotelName: this.hotel && this.hotel.Name,
+        initPos: this.curPos
+      }
     });
     // this.config = await this.configService.getConfigAsync();
     // this.apiService.showLoadingView();

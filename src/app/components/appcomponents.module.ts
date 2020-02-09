@@ -20,9 +20,11 @@ import { PayComponent } from "./pay/pay.component";
 import { RefresherModule } from "./refresher";
 import { MyCalendarComponent } from './my-calendar/my-calendar.component';
 import { BaseInputComponent } from './base-input/base-input.component';
+import { SwiperSlidesComponent } from './swiper-slides/swiper-slides.component';
 @NgModule({
   declarations: [
     OrComponent,
+    SwiperSlidesComponent,
     PinchZoomComponent,
     SlidvalidateComponent,
     ScanComponent,
@@ -40,6 +42,7 @@ import { BaseInputComponent } from './base-input/base-input.component';
   ],
   imports: [CommonModule, IonicModule,FormsModule, TreeNgxModule, AppDirectivesModule,RefresherModule],
   exports: [
+    SwiperSlidesComponent,
     PinFabComponent,
     BaseInputComponent,
     OrComponent,
@@ -56,11 +59,6 @@ import { BaseInputComponent } from './base-input/base-input.component';
     SlidesComponent,
     AppDirectivesModule,
     RefresherModule,
-    MyCalendarComponent
-  ],
-  entryComponents: [
-    LoginSkeletonPageComponent,
-    PayComponent,
     MyCalendarComponent
   ]
 })

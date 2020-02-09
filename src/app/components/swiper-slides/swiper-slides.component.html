@@ -1,0 +1,29 @@
+<div class="swiper-container" #container [class.black]='bgColorBlack'>
+  <div class="swiper-wrapper">
+    <div class="swiper-slide" #slide *ngFor='let it of vmItems'>
+      <div class="inner" *ngIf='!options?.isShowText'>
+        <img #img [lazyLoad]='it.imageUrl' class="pic" [defaultImage]='defaultImage' alt="图片">
+        <ion-text color='light'>
+          <div>{{it.desc}}</div>
+        </ion-text>
+        <div class="logo" *ngIf='logoUrl'>
+          <img [src]="logoUrl" alt="logo">
+        </div>
+      </div>
+      <ion-text *ngIf='options?.isShowText'>
+        {{it.text}}
+      </ion-text>
+    </div>
+  </div>
+  <!-- 如果需要分页器 -->
+  <!-- <div class="swiper-pagination"></div> -->
+
+  <!-- 如果需要导航按钮 -->
+  <!-- <div class="swiper-button-prev"></div> -->
+  <!-- <div class="swiper-button-next"></div> -->
+
+  <!-- 如果需要滚动条 -->
+  <!-- <div class="swiper-scrollbar"></div> -->
+  <ion-text color='light' *ngIf='!options?.isShowText&&items?.length' class="indicator">{{curIndex}}/{{items?.length}}
+  </ion-text>
+</div>

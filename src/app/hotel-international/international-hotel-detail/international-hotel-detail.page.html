@@ -16,8 +16,8 @@
       <div class="back-button" *ngIf='isHeaderHide' (click)='back($event)'>
         <ion-icon name='arrow-back'></ion-icon>
       </div>
-      <app-slides [options]='{autoplay:true}' [items]='hotelImages' [defaultImage]='config?.DefaultImageUrl'>
-      </app-slides>
+      <app-swiper-slides (slideChange)='onSlideChange($event)' [options]='{autoplay:true}' [items]='hotelImages' [defaultImage]='config?.DefaultImageUrl'>
+      </app-swiper-slides>
     </div>
     <ion-card *ngIf='hotel else fakeCard'>
       <ion-card-header>
