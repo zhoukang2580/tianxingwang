@@ -37,7 +37,6 @@ import { InterHotelStarPriceComponent } from "./inter-hotel-query/inter-hotel-st
     InterRoomShowItemComponent,
     ChangeInterRoomPlanDateComponent,
     InterHotelStarPriceComponent
-  ],
-  entryComponents: [InterShowMsgComponent]
+  ]
 })
 export class HotelInternationalComponentsModule {}

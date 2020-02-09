@@ -135,6 +135,13 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   async ngAfterViewInit() {
     if (this.fab && this.fab["el"]) {
+      this.subscriptions.push(
+        fromEvent(this.fab["el"], "click").subscribe(_ => {
+          if (this.content) {
+            this.content.scrollToTop();
+          }
+        })
+      );
       this.domCtrl.write(_ => {
         this.showFab(false);
         this.render.setAttribute(this.fab["el"], "edge", "");
