@@ -42,8 +42,10 @@ export class SlidesComponent implements OnInit, OnChanges {
       this.isShowImage = this.items.some(it => !!it.imageUrl);
     }
   }
-  onSlidesDidLoad() {
-    // this.onSlideDidChange();
+  async onSlidesDidLoad() {
+    if (this.slides) {
+      this.swiper = await this.slides.getSwiper();
+    }
     this.onSlideWillChange();
   }
   onSlideTouchStart() {
@@ -69,9 +71,11 @@ export class SlidesComponent implements OnInit, OnChanges {
     }
   }
   async onSlideWillChange() {
+    console.log("this.swiper  this.slides", this.swiper, this.slides);
     if (!this.swiper) {
       this.swiper = await this.slides.getSwiper();
     }
+    console.log("this.swiper ", this.swiper);
     const idx = (this.swiper && this.swiper.realIndex) || 0;
     this.curIndex = idx + 1;
   }
