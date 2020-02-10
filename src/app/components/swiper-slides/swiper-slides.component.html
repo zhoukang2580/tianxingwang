@@ -1,7 +1,7 @@
 <div class="swiper-container" #container [class.black]='bgColorBlack'>
   <div class="swiper-wrapper">
     <div class="swiper-slide" #slide *ngFor='let it of vmItems'>
-      <div class="inner" *ngIf='!options?.isShowText'>
+      <div class="inner" *ngIf='!options?.isShowText||it.imageUrl'>
         <img #img [lazyLoad]='it.imageUrl' class="pic" [defaultImage]='defaultImage' alt="图片">
         <ion-text color='light'>
           <div>{{it.desc}}</div>

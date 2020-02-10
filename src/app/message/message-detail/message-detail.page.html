@@ -23,7 +23,8 @@
   </ng-container>
   <ng-template #detailTempl>
     <div class='wrapper' *ngIf='(url$|async) as url'>
-      <iframe [src]="url" #iframe></iframe>
+      <!-- <iframe [src]="url" #iframe></!--> -->
+      <a [href]='url'></a>
     </div>
   </ng-template>
 </ion-content>

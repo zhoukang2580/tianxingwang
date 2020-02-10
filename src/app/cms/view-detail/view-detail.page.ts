@@ -1,3 +1,5 @@
+import { AppHelper } from "./../../appHelper";
+import { HttpClient } from "@angular/common/http";
 import { ActivatedRoute } from "@angular/router";
 import { environment } from "src/environments/environment";
 import { CmsService, Notice } from "./../cms.service";
@@ -24,11 +26,8 @@ import { NavController } from "@ionic/angular";
   templateUrl: "./view-detail.page.html",
   styleUrls: ["./view-detail.page.scss"]
 })
-export class ViewDetailPage
-  implements OnInit, AfterContentChecked, OnDestroy {
-  @ViewChild("detailInfo") detailInfoEle: ElementRef<
-    HTMLElement
-  >;
+export class ViewDetailPage implements OnInit, AfterContentChecked, OnDestroy {
+  @ViewChild("detailInfo") detailInfoEle: ElementRef<HTMLElement>;
   notice: Notice;
   private subscriptions: Subscription[] = [];
   constructor(
@@ -36,7 +35,8 @@ export class ViewDetailPage
     private sanitizer: DomSanitizer,
     private navCtrl: NavController,
     private route: ActivatedRoute,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private http: HttpClient
   ) {}
   back() {
     if (this.notice && this.notice.Url) {
@@ -59,11 +59,30 @@ export class ViewDetailPage
             .getNoticeDetail(id)
             .catch(_ => null);
           if (this.notice && this.notice.Url) {
-            this.onOpenLink(this.notice.Url);
+            const url = this.notice.Url;
+            this.notice.Url = "";
+            this.onOpenLink(url);
           }
+          this.processLinks();
         }
       }
     });
+  }
+  private processLinks() {
+    if (this.notice && this.notice.Detail) {
+      const cntContainsLinks = this.notice.Detail.match(
+        /(\s*\w*http[s].*?)(?=<\/[^a])/gi
+      );
+      let detail = this.notice.Detail;
+      console.log("detail before", detail);
+      if (cntContainsLinks && cntContainsLinks.length) {
+        cntContainsLinks.forEach(a => {
+          detail = detail.replace(a, `<a href=${a}></a>`);
+        });
+      }
+      console.log("detail after", detail);
+      this.notice.Detail = detail;
+    }
   }
   ngAfterContentChecked() {
     if (this.detailInfoEle) {
@@ -108,9 +127,26 @@ export class ViewDetailPage
   }
   private onOpenLink(url: string) {
     if (url) {
-      this.notice.Url = this.sanitizer.bypassSecurityTrustResourceUrl(
-        url
-      ) as string;
+      // this.notice.Url = url;
+      this.http.get(url, { responseType: "arraybuffer" }).subscribe(
+        res => {
+          console.log(res);
+          this.notice.Url = this.sanitizer.bypassSecurityTrustResourceUrl(
+            url
+          ) as string;
+        },
+        e => {
+          console.error(e);
+          AppHelper.alert(
+            "需要使用浏览器打开，将离开应用，是否打开？",
+            true,
+            "确定",
+            "取消"
+          ).then(ok => {
+            window.open(url);
+          });
+        }
+      );
     }
   }
 }

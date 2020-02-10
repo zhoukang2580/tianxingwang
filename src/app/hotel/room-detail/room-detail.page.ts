@@ -86,6 +86,14 @@ export class RoomDetailPage
       this.hotelName =
         this.hotelService.showRoomDetailInfo.hotel &&
         this.hotelService.showRoomDetailInfo.hotel.Name;
+      if (this.roomImages) {
+        debugger
+        this.images = this.roomImages.map(it => {
+          return {
+            imageUrl: it
+          };
+        });
+      }
     }
   }
   back() {
@@ -96,14 +104,6 @@ export class RoomDetailPage
     });
   }
   async ngOnInit() {
-
-    if (this.roomImages) {
-      this.images = this.roomImages.map(it => {
-        return {
-          imageUrl: it
-        };
-      });
-    }
     const identity = await this.identityService.getIdentityAsync();
     if (identity) {
       this.isAgent = identity.Numbers && !!identity.Numbers["AgentId"];
