@@ -143,7 +143,9 @@ export class ViewDetailPage implements OnInit, AfterContentChecked, OnDestroy {
             "确定",
             "取消"
           ).then(ok => {
-            window.open(url);
+            if(ok){
+              window.open(url,"_blank");
+            }
           });
         }
       );

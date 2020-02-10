@@ -30,7 +30,11 @@ export class CarService {
     private apiService: ApiService,
     private storage: Storage,
     private identityService: IdentityService
-  ) {}
+  ) {
+    this.identityService.getIdentitySource().subscribe(_ => {
+      this.accountInfo = null;
+    });
+  }
   getAccountInfo(forceFetch = false) {
     if (!forceFetch) {
       if (this.accountInfo) {
@@ -55,7 +59,7 @@ export class CarService {
     };
     return this.fetchPromise.promise;
   }
- addVerifiedMobile(mobile: string) {
+  addVerifiedMobile(mobile: string) {
     return this.cacheVerifiedMobile(mobile);
   }
   private async cacheVerifiedMobile(mobile: string) {
@@ -122,8 +126,8 @@ export class CarService {
       return "";
     });
   }
-  getLocalMobiles(){
-   return this.loadLocalVerifiedMobiles();   
+  getLocalMobiles() {
+    return this.loadLocalVerifiedMobiles();
   }
   validateMobileCode(mobile: string, mobileCode: string) {
     const req = new RequestEntity();
