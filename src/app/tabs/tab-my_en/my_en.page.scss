@@ -1,0 +1,60 @@
+ion-content {
+  --background: #f2f2f2;
+}
+ion-thumbnail {
+  --border-radius: 4px;
+}
+
+.account-type {
+  font-size: 0.7rem;
+  padding-left: 0.5em;
+}
+ion-card-content {
+  margin: 0 -0.5em;
+}
+ion-list {
+  &:first-child ion-item {
+    padding: 0.5em 0;
+  }
+  ion-item {
+    ion-icon + ion-label {
+      padding-left: 1em;
+    }
+  }
+}
+
+ion-badge {
+  color: white;
+}
+.top-panal {
+  padding-bottom: 4em;
+}
+.produc-item {
+  width: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+  padding-top: 0.5em;
+  ion-avatar {
+    width: 2em;
+    height: 2em;
+    margin-bottom: 0.5em;
+    img {
+      object-fit: fill;
+    }
+  }
+  ion-label {
+    font-size: 0.8rem;
+  }
+}
+ion-card {
+  position: relative;
+  margin-top: -4.8em;
+  &.is-ios {
+    margin-top: -5.2em;
+  }
+}
+ion-card-header {
+  border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.12);
+}

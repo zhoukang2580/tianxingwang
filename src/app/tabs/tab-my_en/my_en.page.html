@@ -1,0 +1,77 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title class="ion-text-capitalize">我的英文版</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list lines='none' class='top-panal'>
+    <ion-item detail (click)='goToMyDetail()'>
+      <ion-thumbnail slot='start'>
+        <img alt="头像" [lazyLoad]="Model?.HeadUrl" [defaultImage]='config?.PrerenderImageUrl'>
+        <!-- <ion-img [src]='Model?.HeadUrl'></ion-img> -->
+      </ion-thumbnail>
+      <ion-label class='ion-padding-start'>
+        <h3>{{Model?.RealName}}<ion-note class='account-type'></ion-note>
+        </h3>
+        <h4>
+          <ion-note>账号: {{Model?.Name || Model?.Mobile}}</ion-note>
+        </h4>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-card color='primary' mode='ios' [class.is-ios]='isIos' *ngIf='isShowMyOrderTabs'>
+    <ion-card-header>
+      <strong>My Orders</strong>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-row>
+        <ion-col *ngFor='let item of items;let last = last;'>
+          <div class='produc-item' (click)='onProductClick(item)'>
+            <ion-avatar size='small'>
+              <img [src]="item.imageSrc" alt="">
+            </ion-avatar>
+            <ion-label class='ion-text-center'>{{item.label}}</ion-label>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
+  <ion-list>
+    <ion-item detail (click)='credentialManagement()'>
+      <ion-icon name="cog" color="dark"></ion-icon>
+      <ion-label>Identity Management</ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-list>
+    <ion-item detail (click)='contactUs()'>
+      <ion-icon name="cog" color="dark"></ion-icon>
+      <ion-label>Contact Us</ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-list>
+    <ion-item (click)="goTomessageList()" detail>
+      <ion-icon name="cog" color="dark"></ion-icon>
+      <ion-label>Messages</ion-label>
+      <ion-badge color="danger" *ngIf='msgCount$|async as count'>{{count}}</ion-badge>
+    </ion-item>
+  </ion-list>
+  <ion-list>
+    <ion-item (click)="onSettings()" detail>
+      <ion-icon name="cog" color="dark"></ion-icon>
+      <ion-label>Settings</ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-list>
+    <ion-item (click)="onLanguageSettings()" detail>
+      <ion-icon name="cog" color="dark"></ion-icon>
+      <ion-label>Language</ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-list *ngIf='isShowDeveloperOption'>
+    <ion-item (click)="onDeveloper()" detail>
+      <ion-icon name="cog" color="dark"></ion-icon>
+      <ion-label>开发者选项</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
