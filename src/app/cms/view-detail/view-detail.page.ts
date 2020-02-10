@@ -19,7 +19,7 @@ import {
 } from "@angular/core";
 import { Observable, Subscription, fromEvent } from "rxjs";
 import { map, tap, subscribeOn } from "rxjs/operators";
-import { NavController } from "@ionic/angular";
+import { NavController, Platform } from "@ionic/angular";
 
 @Component({
   selector: "app-view-detail",
@@ -36,7 +36,8 @@ export class ViewDetailPage implements OnInit, AfterContentChecked, OnDestroy {
     private navCtrl: NavController,
     private route: ActivatedRoute,
     private cdRef: ChangeDetectorRef,
-    private http: HttpClient
+    private http: HttpClient,
+    private plt: Platform
   ) {}
   back() {
     if (this.notice && this.notice.Url) {
@@ -143,8 +144,14 @@ export class ViewDetailPage implements OnInit, AfterContentChecked, OnDestroy {
             "确定",
             "取消"
           ).then(ok => {
-            if(ok){
-              window.open(url,"_blank");
+            if (ok) {
+              if (!AppHelper.isApp()) {
+                if (this.plt.is("ios")) {
+                  window.location.href = url;
+                } else {
+                  window.open(url, "_blank");
+                }
+              }
             }
           });
         }
