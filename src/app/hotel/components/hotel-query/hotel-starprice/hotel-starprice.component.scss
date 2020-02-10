@@ -11,6 +11,7 @@ ion-chip {
   justify-content: center;
 }
 .wrapper {
+  -webkit-overflow-scrolling: touch;
   height: 60vh;
   overflow: auto;
 }

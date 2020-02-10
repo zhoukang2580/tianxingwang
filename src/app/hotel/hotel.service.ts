@@ -1,10 +1,11 @@
+import { environment } from "src/environments/environment";
 import { RoomEntity } from "./models/RoomEntity";
 import { AppHelper } from "src/app/appHelper";
 import { DayModel } from "src/app/tmc/models/DayModel";
 import { TripType } from "src/app/tmc/models/TripType";
 import { HotelEntity } from "./models/HotelEntity";
 import { IdentityService } from "./../services/identity/identity.service";
-import { BehaviorSubject, throwError, from } from "rxjs";
+import { BehaviorSubject, throwError, from, of } from "rxjs";
 import { Injectable, EventEmitter } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
 import {
@@ -27,7 +28,7 @@ import { RequestEntity } from "../services/api/Request.entity";
 import { Storage } from "@ionic/storage";
 import * as jsPy from "js-pinyin";
 import * as moment from "moment";
-import { filter, map, switchMap } from "rxjs/operators";
+import { filter, map, switchMap, delay } from "rxjs/operators";
 import { HotelQueryEntity } from "./models/HotelQueryEntity";
 import { HotelResultEntity } from "./models/HotelResultEntity";
 import { HotelModel } from "./models/HotelModel";
@@ -72,6 +73,7 @@ export class HotelService {
   private conditionModel: HotelConditionModel;
   // private hotelPolicies: { [hotelId: string]: HotelPassengerModel[] };
   private hotelQueryModel: HotelQueryEntity;
+  private testData: { [pageIndex: number]: any[] };
   curViewHotel: HotelDayPriceEntity;
   showImages: any[];
   showRoomDetailInfo: {
@@ -518,6 +520,23 @@ export class HotelService {
     if (query.searchGeoId) {
       req["searchGeoId"] = query.searchGeoId;
     }
+    if (!environment.production) {
+      if (!this.testData) {
+        this.storage.get("test_big_hote_list").then(res => {
+          this.testData = res;
+        });
+      } else {
+        console.log(
+          `大约加载本地${Object.keys(this.testData).length *
+            20}条记录，返回第${query.PageIndex + 1}批数据,已经加载${20 *
+            query.PageIndex || 20}条记录`
+        );
+        const test = this.testData[query.PageIndex];
+        if (test) {
+          return of({ Data: { HotelDayPrices: test } }).pipe(delay(0));
+        }
+      }
+    }
     const city = this.getSearchHotelModel().destinationCity;
     hotelquery.CityCode = city && city.Code;
     hotelquery.BeginDate = this.getSearchHotelModel().checkInDate;
@@ -541,6 +560,14 @@ export class HotelService {
             }
             return it;
           });
+          if (this.testData) {
+            this.testData[query.PageIndex] = result.Data.HotelDayPrices;
+            if (!environment.production) {
+              this.storage.set("test_big_hote_list", this.testData);
+            }
+          } else {
+            this.testData = {} as any;
+          }
         }
         return result;
       })

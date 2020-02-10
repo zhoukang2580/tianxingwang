@@ -3,6 +3,7 @@
   height: 55vh;
   ul {
     overflow: auto;
+    -webkit-overflow-scrolling: touch;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -71,5 +72,5 @@
   }
 }
 :host {
-  display: block;
+  background: white;
 }

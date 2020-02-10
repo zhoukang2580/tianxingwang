@@ -556,19 +556,19 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
           removedBookInfos.push(info);
         }
         if (bookInfo) {
-          const p = policies.find(
+          const p2 = policies.find(
             it => it.PassengerKey == info.passenger.AccountId
           );
-          const policy =
-            p &&
-            p.HotelPolicies.find(
+          const policy2 =
+            p2 &&
+            p2.HotelPolicies.find(
               it =>
                 it.UniqueIdId ==
                 this.hotelService.getRoomPlanUniqueId(bookInfo.roomPlan)
             );
-          if (policy && policy.Rules) {
+          if (policy2 && policy2.Rules) {
             const rules = {};
-            policy.Rules.forEach(r => {
+            policy2.Rules.forEach(r => {
               rules[AppHelper.uuid()] = r;
             });
             bookInfo.roomPlan.Rules = bookInfo.roomPlan.Rules || rules;
@@ -678,7 +678,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     //   }
     // }
   }
-  async onShowRoomImages(room: RoomEntity) {
+  onShowRoomImages(room: RoomEntity) {
     this.hotelService.showImages = this.getRoomImages(room).map(it => {
       return {
         url: it,
@@ -688,29 +688,6 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     this.router.navigate(["hotel-show-images"], {
       queryParams: { hotelName: this.hotel && this.hotel.Name }
     });
-    // this.config = await this.configService.getConfigAsync();
-    // this.agent = await this.tmcService.getAgent();
-    // const m = await this.modalCtrl.create({
-    //   component: ImageSwiperComponent,
-    //   componentProps: {
-    //     logoUrl: this.agent && this.agent.LogoFullFileName,
-    //     hasLogo:true,
-    //     prerenderImageUrl: this.config.PrerenderImageUrl,
-    // imgStyle: { objectFit: "contain" },
-    //     imagesUrls: this.getRoomImages(room),
-    //   }
-    // });
-    // const m = await this.modalCtrl.create({
-    //   component: ShowImagesPage,
-    //   componentProps: {
-    //     images: this.getRoomImages(room).map(it => {
-    //       return {
-    //         url: it
-    //       };
-    //     })
-    //   }
-    // });
-    // await m.present();
   }
   async onShowHotelImages() {
     this.hotelService.showImages = this.getHotelImageUrls().map(it => {
@@ -725,54 +702,6 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
         initPos: this.curPos
       }
     });
-    // this.config = await this.configService.getConfigAsync();
-    // this.apiService.showLoadingView();
-    // const m = await this.modalCtrl.create({
-    //   component: ImageSwiperComponent,
-    // animated: false,
-    //   componentProps: {
-    //     loop: false,
-    //     imgStyle: { objectFit: "contain" },
-    //     imagesUrls: this.getHotelImageUrls(),
-    //     hasThumbs: true,
-    //     hasLogo: true,
-    //     config: this.config
-    //   }
-    // });
-    // const m = await this.modalCtrl.create({
-    //   component: ShowImagesPage,
-    //   componentProps: {
-    //     images: this.getHotelImageUrls().map(it => {
-    //       return {
-    //         url: it
-    //       };
-    //     })
-    //   }
-    // });
-    // await m.present();
-    // setTimeout(() => {
-    //   this.apiService.hideLoadingView();
-    // }, 100);
-    // this.curHotelImagePos = 1;
-    // setTimeout(() => {
-    //   this.curHotelImagePos = 0;
-    // }, 0);
-    // this.isHotelImages = true;
-    // if (!this.hotelImageUrls || this.hotelImageUrls.length != this.getHotelImageUrls().length){
-    //   this.hotelImageUrls=[];
-    //   this.apiService.hideLoadingView();
-    //   const imgs = this.getHotelImageUrls();
-    //   const loop = ()=>{
-    //     if(imgs.length){
-    //       const slice = imgs.splice(0,15);
-    //       this.hotelImageUrls=this.hotelImageUrls.concat(slice);
-    //       window.requestAnimationFrame(loop);
-    //     }else{
-    //       this.apiService.hideLoadingView();
-    //     }
-    //   }
-    //   loop();
-    // }
   }
   onOpenMap() {
     this.segmentChanged({

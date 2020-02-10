@@ -6,31 +6,55 @@
       </ion-button> -->
       <ion-back-button defaultHref=""></ion-back-button>
     </ion-buttons>
-    <app-date-city [checkInDate]='searchHotelModel?.checkInDate' *ngIf='!isShowSearchBar'
-      [checkOutDate]='searchHotelModel?.checkOutDate' [city]='searchHotelModel?.destinationCity'
-      (cityClick)='onCityClick()' (dateChange)='onDateChange()' (searchBarClick)='onSearchClick()'
-      [keywords]='keyowrds'>
-    </app-date-city>
-    <form (ngSubmit)='onSearch()' [style.display]='isShowSearchBar?"flex":"none"'>
-      <ion-searchbar name='searchbar' [(ngModel)]='vmKeyowrds' type='search' animated='true' placeholder=""
-        (ionChange)='onSearchByKeywords()' mode='ios'>
-      </ion-searchbar>
-      <ion-buttons slot='end'>
-        <ion-button type='submit' color='secondary' size='small'>
-          搜索
-        </ion-button>
-      </ion-buttons>
-    </form>
+    <div class="query">
+      <app-date-city [checkInDate]='searchHotelModel?.checkInDate' *ngIf='!isShowSearchBar'
+        [checkOutDate]='searchHotelModel?.checkOutDate' [city]='searchHotelModel?.destinationCity'
+        (cityClick)='onCityClick()' (dateChange)='onDateChange()' (searchBarClick)='onSearchClick()'
+        [keywords]='keyowrds'>
+      </app-date-city>
+      <form (ngSubmit)='onSearch()' [style.display]='isShowSearchBar?"flex":"none"'>
+        <ion-searchbar name='searchbar' [(ngModel)]='vmKeyowrds' type='search' animated='true' placeholder=""
+          (ionChange)='onSearchByKeywords()' mode='ios'>
+        </ion-searchbar>
+        <ion-buttons slot='end'>
+          <ion-button type='submit' color='secondary' size='small'>
+            搜索
+          </ion-button>
+        </ion-buttons>
+      </form>
+      <app-hotel-query (activeFilter)='onActiveFilter($event)' (hotelQueryChange)='onHotelQueryChange($event)'>
+      </app-hotel-query>
+    </div>
   </ion-toolbar>
 </ion-header>
-
-<ion-content #cnt>
+<!-- {{hotelDayPrices?.length}}条记录 -->
+<div #backdrop class="backdrop {{classMode}}" (click)='onBackdropClick($event)' [class.show]='filterTab.isActive'></div>
+<!-- <app-recommend-rank class="filter-condition {{classMode}}" (rank)='onRank()'
+  [class.show]='filterTab?.label=="推荐排序"&&filterTab.isActive'>
+</app-recommend-rank>
+<app-hotel-starprice class="filter-condition {{classMode}}" [class.show]='filterTab?.label=="星级价格"&&filterTab.isActive'
+  (starPriceChange)='onStarPriceChange()'></app-hotel-starprice>
+<app-hotel-filter class="filter-condition {{classMode}}" [class.show]='filterTab?.label=="筛选"&&filterTab.isActive'
+  (filter)='onFilter()'>
+</app-hotel-filter>
+<app-hotel-geo class="filter-condition {{classMode}}" [class.show]='filterTab?.label=="位置区域"&&filterTab.isActive'
+  (geoFilterChange)='onFilterGeo()'>
+</app-hotel-geo> -->
+<app-recommend-rank class="filter-groups {{classMode}}" (rank)='onRank()'
+  *ngIf='filterTab?.label=="推荐排序"&&filterTab.isActive' fadeDown >
+</app-recommend-rank>
+<app-hotel-starprice class="filter-groups {{classMode}}" *ngIf='filterTab?.label=="星级价格"&&filterTab.isActive' fadeDown
+  (starPriceChange)='onStarPriceChange()'></app-hotel-starprice>
+<app-hotel-filter class="filter-groups {{classMode}}" *ngIf='filterTab?.label=="筛选"&&filterTab.isActive' fadeDown
+  (filter)='onFilter()'>
+</app-hotel-filter>
+<app-hotel-geo class="filter-groups {{classMode}}" *ngIf='filterTab?.label=="位置区域"&&filterTab.isActive'
+  (geoFilterChange)='onFilterGeo()' fadeDown>
+</app-hotel-geo>
+<ion-content #cnt [scrollY]='!filterTab.isActive'>
   <ion-refresher slot='fixed' (ionRefresh)='doRefresh(false)'>
     <ion-refresher-content>正在加载...</ion-refresher-content>
   </ion-refresher>
-  <ion-toolbar class='query-toolbar' #querytoolbar *ngIf='!isShowSearchBar'>
-    <app-hotel-query [conditions]='conditionModel' (hotelQueryChange)='onHotelQueryChange($event)'></app-hotel-query>
-  </ion-toolbar>
   <ng-template #nosearchartempl>
     <ion-list *ngIf='!isSearchingText'>
       <ion-item *ngFor='let item of vmSearchTextList' (click)='onSearchItemClick(item)'>
@@ -41,25 +65,27 @@
   </ng-template>
   <ng-template #listTemp>
     <ng-container *ngIf='!isShowSearchBar else nosearchartempl'>
-      <ion-list *ngIf='!isSearchingList&&hotelDayPrices?.length else noMoreData' #hotellist class='hotel-list' lines='full'>
-        <ion-item *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
+      <ion-list *ngIf='!isSearchingList&&hotelDayPrices?.length else noMoreData' #hotellist class='hotel-list'
+        lines='full'>
+        <ion-item #hotelItemEl *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
           <ion-thumbnail slot='start'>
             <img [lazyLoad]='item.Hotel?.FileName' [defaultImage]='config?.PrerenderImageUrl' />
+            <!-- <img [src]="item.Hotel?.FileName" alt=""> -->
           </ion-thumbnail>
           <ion-label class="ion-no-margin">
             <h3 class='name'>
-              <ion-label>{{item.Hotel?.Name}}</ion-label>
+              {{item.Hotel?.Name}}
             </h3>
             <h5 class='grade-stars'>
-              <div class='stars' class='ion-margin-end'>
-                <ng-container *ngFor='let s of getStars(item.Hotel)'>
+              <div class='stars' class='ion-margin-end' *ngIf='item.Hotel["stars"] as stars'>
+                <ng-container *ngFor='let s of stars'>
                   <ion-icon name="star" color='danger' *ngIf='s>=1'></ion-icon>
                   <ion-icon name='star-half' color='danger' *ngIf='s<1'></ion-icon>
                 </ng-container>
               </div>
-              <span *ngIf='item.Hotel?.Grade as grade'>
+              <ng-container *ngIf='item.Hotel?.Grade as grade'>
                 {{grade}}分
-              </span>
+              </ng-container>
             </h5>
             <p class='grade-stars ion-text-wrap' *ngIf='item.Hotel?.VariablesJsonObj["GeoDistance"] as distance'>
               <ion-icon name="pin" color='secondary'></ion-icon>
@@ -68,8 +94,8 @@
               </ion-label>
             </p>
             <h6 class='address-price'>
-              <ion-label>{{item.Hotel?.Address}}</ion-label>
-              <ion-text color='danger'><small>￥</small> <strong>{{getAvgPrice(item.Hotel)}}</strong>
+              {{item.Hotel?.Address}}
+              <ion-text color='danger'><small>￥</small> <strong>{{item.Hotel["avgPrice"]}}</strong>
                 <small>起</small> </ion-text>
             </h6>
           </ion-label>
@@ -87,9 +113,9 @@
     <ion-list class='fakelist'>
       <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8,9,10,11]'>
         <ion-thumbnail>
-          <ion-skeleton-text animated style='height:3em;width:3em'></ion-skeleton-text>
+          <ion-skeleton-text animated style='height:100%;width:100%'></ion-skeleton-text>
         </ion-thumbnail>
-        <ion-label>
+        <ion-label class="ion-margin-start">
           <h1>
             <ion-skeleton-text animated style="width:90%"></ion-skeleton-text>
           </h1>
@@ -104,7 +130,7 @@
       </ion-item>
     </ion-list>
   </ng-container>
-  <ion-infinite-scroll (ionInfinite)="loadMore()">
+  <ion-infinite-scroll (ionInfinite)="loadMore()" threshold='20%'>
     <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="正在加载..."></ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>

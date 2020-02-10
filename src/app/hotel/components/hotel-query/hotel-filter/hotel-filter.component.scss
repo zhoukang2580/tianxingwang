@@ -37,7 +37,8 @@
     overflow: scroll;
   }
   .items {
-    overflow: scroll;
+    -webkit-overflow-scrolling: touch;
+    overflow: auto;
     width: 75%;
     ul {
       margin: 0;
