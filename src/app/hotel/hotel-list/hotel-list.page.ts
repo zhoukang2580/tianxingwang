@@ -1,3 +1,7 @@
+import { RecommendRankComponent } from "./../components/recommend-rank/recommend-rank.component";
+import { HotelFilterComponent } from "./../components/hotel-filter/hotel-filter.component";
+import { HotelStarPriceComponent } from "./../components/hotel-starprice/hotel-starprice.component";
+import { HotelGeoComponent } from "./../components/hotel-geo/hotel-geo.component";
 import { ScrollerComponent } from "./../../components/scroller/scroller.component";
 import { RefresherComponent } from "./../../components/refresher/refresher.component";
 import { fadeInOut } from "./../../animations/fadeInOut";
@@ -31,14 +35,15 @@ import {
   IonToolbar,
   Platform,
   IonItem,
-  DomController
+  DomController,
+  IonInfiniteScroll,
+  ModalController
 } from "@ionic/angular";
 import { Subscription, Observable, fromEvent, merge } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
 import { HotelDayPriceEntity } from "../models/HotelDayPriceEntity";
 import { finalize } from "rxjs/operators";
 import { TmcService } from "src/app/tmc/tmc.service";
-import { IFilterTab } from "../components/hotel-query/hotel-filter/hotel-filter.component";
 import {
   trigger,
   state,
@@ -46,6 +51,7 @@ import {
   transition,
   animate
 } from "@angular/animations";
+import { IFilterTab } from "../components/hotel-filter/hotel-filter.component";
 
 @Component({
   selector: "app-hotel-list",
@@ -80,6 +86,7 @@ export class HotelListPage
   private timer;
   classMode: "ios" | "md";
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
+  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChild("querytoolbar") querytoolbar: IonToolbar;
   @ViewChild("backdrop") backdropEl: ElementRef<HTMLElement>;
   @ViewChild(IonContent) content: IonContent;
@@ -116,7 +123,8 @@ export class HotelListPage
     private tmcService: TmcService,
     private configService: ConfigService,
     plt: Platform,
-    private domCtrl: DomController
+    private domCtrl: DomController,
+    private modalCtrl: ModalController
   ) {
     this.classMode = plt.is("ios") ? "ios" : "md";
   }
@@ -129,6 +137,7 @@ export class HotelListPage
       this.doRefresh(true);
     }
   }
+
   onBackdropClick(evt: CustomEvent) {
     if (evt) {
       evt.stopPropagation();
@@ -216,17 +225,15 @@ export class HotelListPage
   }
   doRefresh(isKeepQueryCondition = false) {
     clearTimeout(this.timer);
-    if (this.queryComp) {
-      this.queryComp.onReset();
-    }
+    this.hideQueryPannel();
     this.status = {
       isLoading: false,
       disabled: false
     };
     if (!isKeepQueryCondition) {
-      // if (this.queryComp) {
-      //   this.queryComp.onReset();
-      // }
+      if (this.queryComp) {
+        this.queryComp.onReset();
+      }
       this.hotelQueryModel = new HotelQueryEntity();
       this.hotelService.setHotelQuerySource(this.hotelQueryModel);
     }
@@ -247,6 +254,10 @@ export class HotelListPage
       this.content.scrollToTop(100);
     }
   }
+  itemHeightFn(item: any, index: number) {
+    // console.log(item);
+    return 90;
+  }
   loadMore() {
     if (this.loadDataSub) {
       this.loadDataSub.unsubscribe();
@@ -262,10 +273,13 @@ export class HotelListPage
             this.isSearchingList = false;
           }, 100);
           setTimeout(() => {
+            if (this.scroller) {
+              this.scroller.complete();
+            }
             if (this.status) {
               this.status.isLoading = false;
             }
-          }, 200);
+          }, 350);
         })
       )
       .subscribe(
@@ -277,11 +291,15 @@ export class HotelListPage
               setTimeout(() => {
                 this.refresher.complete();
                 this.refresher.disabled = !true;
-              }, 100);
+              }, 300);
             }
           }
           if (result && result.Data && result.Data.HotelDayPrices) {
             const arr = result.Data.HotelDayPrices;
+            if (this.scroller) {
+              this.scroller.disabled =
+                arr.length < (this.hotelQueryModel.PageSize || 20);
+            }
             this.status.disabled =
               arr.length < (this.hotelQueryModel.PageSize || 20);
             if (arr.length) {
@@ -390,9 +408,13 @@ export class HotelListPage
   }
 
   // 条件筛选
-  onActiveFilter(tab: { label: string; isActive: boolean }) {
+  onActiveFilter(tab: {
+    label: "位置区域" | "推荐排序" | "筛选" | "星级价格" | "none";
+    isActive: boolean;
+  }) {
     this.filterTab = tab || { label: "none", isActive: false };
   }
+
   private hideQueryPannel() {
     this.filterTab.label = "none";
     this.filterTab.isActive = false;
@@ -518,6 +540,7 @@ export class HotelListPage
         query.searchGeoId = query.Geos[0];
       }
       this.hotelService.setHotelQuerySource(query);
+      this.hideQueryPannel();
       this.doRefresh(true);
     }
   }
@@ -620,6 +643,51 @@ export class HotelListPage
       query.Orderby = tab.orderBy;
       this.hotelService.setHotelQuerySource(query);
       this.doRefresh(true);
+    }
+  }
+  private async checkAndOpenModal(tab: {
+    label: "位置区域" | "推荐排序" | "筛选" | "星级价格" | "none";
+    isActive: boolean;
+  }) {
+    if (tab.label == "位置区域") {
+      const m = await this.modalCtrl.create({
+        component: HotelGeoComponent,
+        backdropDismiss: false,
+        cssClass: "domestic-hotel-filter-condition"
+      });
+      m.present();
+      const result = await m.onDidDismiss();
+      this.onFilterGeo();
+    }
+    if (tab.label == "星级价格") {
+      const m = await this.modalCtrl.create({
+        component: HotelStarPriceComponent,
+        backdropDismiss: false,
+        cssClass: "domestic-hotel-filter-condition"
+      });
+      m.present();
+      await m.onDidDismiss();
+      this.onStarPriceChange();
+    }
+    if (tab.label == "筛选") {
+      const m = await this.modalCtrl.create({
+        component: HotelFilterComponent,
+        backdropDismiss: false,
+        cssClass: "domestic-hotel-filter-condition"
+      });
+      m.present();
+      await m.onDidDismiss();
+      this.onFilter();
+    }
+    if (tab.label == "推荐排序") {
+      const m = await this.modalCtrl.create({
+        component: RecommendRankComponent,
+        backdropDismiss: false,
+        cssClass: "domestic-hotel-filter-condition"
+      });
+      m.present();
+      await m.onDidDismiss();
+      this.onRank();
     }
   }
   // 条件筛选 end

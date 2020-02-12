@@ -520,7 +520,7 @@ export class HotelService {
     if (query.searchGeoId) {
       req["searchGeoId"] = query.searchGeoId;
     }
-    if (!environment.production) {
+    if (!environment.production&&false) {
       if (!this.testData) {
         this.storage.get("test_big_hote_list").then(res => {
           this.testData = res;

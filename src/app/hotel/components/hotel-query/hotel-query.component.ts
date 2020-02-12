@@ -10,8 +10,8 @@ import {
   EventEmitter,
   OnDestroy
 } from "@angular/core";
-import { QueryTabComponent } from "./query-tab/query-tab.component";
 import { Subscription } from "rxjs";
+import { QueryTabComponent } from '../query-tab/query-tab.component';
 interface ITab {
   label: string;
   id: string;

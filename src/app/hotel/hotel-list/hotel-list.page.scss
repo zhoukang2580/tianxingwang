@@ -5,6 +5,9 @@
   font-size: 1rem;
   font-weight: bold;
 }
+.virtual-item {
+  border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.15);
+}
 .address-price {
   strong {
     font-size: 1rem;
@@ -44,33 +47,7 @@ ion-header ion-toolbar {
     }
   }
 }
-ul {
-  list-style-type: none;
-  &,
-  li {
-    margin: 0;
-    padding: 0;
-  }
-  li {
-    display: flex;
-    flex-flow: row nowrap;
-    .img {
-      img,ion-img {
-        height: 5em;
-        width: 5em;
-        margin-right: 0.5em;
-        min-height: 5em;
-        min-width: 5em;
-        object-fit: cover;
-      }
-    }
-    h3,
-    h5,
-    h6 {
-      margin: 0;
-    }
-  }
-}
+
 ion-content {
   position: relative;
   .pos.md {
@@ -90,12 +67,20 @@ small {
 ion-thumbnail {
   width: 5em;
   height: 5em;
+  width: 5em;
+  height: 5em;
   margin-left: -0.5em;
-  img {
+  .div-img,
+  img,
+  ion-img {
+    transition: opacity 100ms ease-in-out;
     width: 5em;
     height: 5em;
-    min-width: 4.5em;
-    min-height: 4.5em;
+    min-width: 5em;
+    min-height: 5em;
+  }
+  .div-img{
+    background-size: cover;
   }
 }
 form {
@@ -113,12 +98,12 @@ form {
   top: 6.5em;
   background-color: white;
   opacity: 0;
-  // transform: translate3d(0, -200%, 0);
-  // transition: all 200ms ease-in-out;
+  transform: translate3d(0, -200%, 0);
+  transition: all 200ms ease-in-out;
   &.show {
     opacity: 1;
     display: block;
-    // transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
   }
   animation-duration: 0.2s;
   animation-fill-mode: both;
@@ -133,7 +118,7 @@ form {
       transform: translate3d(0, 0, 0);
     }
   }
-  animation-name: fadeInOut;
+  // animation-name: fadeInOut;
 }
 .filter-groups {
   animation-duration: 0.2s;
@@ -154,7 +139,7 @@ form {
   position: fixed;
   left: 0;
   right: 0;
-  top: 6.5em;
+  top: 6.4em;
   background-color: white;
 }
 .backdrop {
@@ -172,4 +157,3 @@ form {
     visibility: visible;
   }
 }
-

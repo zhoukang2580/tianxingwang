@@ -30,7 +30,7 @@ export class LazyloadDirective
     private domCtrl: DomController
   ) {}
   ngOnChanges() {
-    console.log("lazyload changes");
+    // console.log("lazyload changes",this.el.nativeElement,this.lazyLoad);
     this.addIO();
   }
   ngAfterContentInit() {}
@@ -95,11 +95,9 @@ export class LazyloadDirective
     setTimeout(() => {
       const one = this.queue.shift();
       if (one) {
-        this.domCtrl.write(_ => {
-          this.load(one);
-        });
+        this.load(one);
       }
-    }, 500);
+    }, 200);
   }
   private addIO() {
     if (!this.lazyLoad) {
@@ -126,15 +124,15 @@ export class LazyloadDirective
           setTimeout(() => {
             this.load();
             this.removeIO();
-          }, 1000);
+          }, 200);
         }
       });
       this.io.observe(this.el.nativeElement);
     } else {
       // fall back to setTimeout for Safari and IE
       // console.error("当前浏览器不支持：IntersectionObserver");
-      this.addToQueue(this.lazyLoad);
-      // setTimeout(() => this.load(), 200);
+      // this.addToQueue(this.lazyLoad);
+      setTimeout(() => this.load(), 200);
     }
   }
 }

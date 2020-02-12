@@ -1,7 +1,15 @@
 ion-thumbnail {
+  min-width: 7em;
+  min-height: 7em;
   width: 7em;
   height: 7em;
   margin-left: -0.5em;
+  img {
+    min-width: 7em;
+    min-height: 7em;
+    width: 7em;
+    height: 7em;
+  }
 }
 h2.ion-text-end {
   ion-text,
@@ -16,7 +24,7 @@ h2.ion-text-end {
   }
 }
 ion-label {
-  p{
+  p {
     display: flex;
     align-items: center;
   }
