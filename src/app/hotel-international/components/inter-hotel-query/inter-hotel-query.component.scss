@@ -12,13 +12,14 @@ ion-buttons {
 }
 .container {
   background-color: white;
+  padding: 0 0.5em;
 }
 .has-selected-item {
   position: relative;
   &::after {
     position: absolute;
-    right: -0.2em;
-    top: 0;
+    right: -0.7em;
+    top: -0.5em;
     content: "";
     display: block;
     width: 0.5em;

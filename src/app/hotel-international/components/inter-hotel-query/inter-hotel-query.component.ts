@@ -18,24 +18,23 @@ import {
 } from "@angular/animations";
 import { AppHelper } from "src/app/appHelper";
 import { IonRange } from "@ionic/angular";
-import { InterHotelStarPriceComponent } from "./inter-hotel-starprice/inter-hotel-starprice.component";
-import { HotelQueryEntity, IRankItem } from 'src/app/hotel/models/HotelQueryEntity';
+import {
+  HotelQueryEntity,
+  IRankItem
+} from "src/app/hotel/models/HotelQueryEntity";
+import { InterHotelStarPriceComponent } from "../inter-hotel-starprice/inter-hotel-starprice.component";
 interface ITab {
-  tab: "rank" | "starsAndPrice";
-  name: "推荐排序" | "星级价格";
+  label: "rank" | "starsAndPrice" | "close";
+  name: "推荐排序" | "房价/星级";
   active?: boolean;
+  id: string;
 }
 @Component({
   selector: "app-inter-hotel-query",
   templateUrl: "./inter-hotel-query.component.html",
   styleUrls: ["./inter-hotel-query.component.scss"],
-  animations: [
-    trigger("openClose", [
-      state("true", style({ height: "*", opacity: 1 })),
-      state("false", style({ height: "0", opacity: 0 })),
-      transition("true<=>false", animate("200ms"))
-    ])
-  ]
+
+  exportAs: "hotelQueryComp"
 })
 export class InterHotelQueryComponent implements OnInit, OnDestroy {
   @ViewChild(IonRange) rangeEle: IonRange;
@@ -48,10 +47,9 @@ export class InterHotelQueryComponent implements OnInit, OnDestroy {
   tab: ITab;
   hotelQuery: HotelQueryEntity;
   @Output() queryFilter: EventEmitter<any>;
-  @Output() showPanel: EventEmitter<any>;
+  isShowPanel = false;
   constructor(private hotelService: InternationalHotelService) {
     this.queryFilter = new EventEmitter();
-    this.showPanel = new EventEmitter();
   }
 
   ngOnInit() {
@@ -66,26 +64,26 @@ export class InterHotelQueryComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
   private onShowPanel() {
-    this.showPanel.emit(this.tabs.find(it => it.active));
+    this.isShowPanel = this.tabs.some(it => it.active);
   }
-  onToggleTab(tab: ITab) {
-    if (!tab) {
-      return;
-    }
-    if (tab.tab == (this.tab && this.tab.tab)) {
-      this.tab.active = !this.tab.active;
+  onTabClick(tab: ITab) {
+    const active = tab.active;
+    this.tabs = this.tabs.map(it => {
+      it.active = false;
+      return it;
+    });
+    if (this.tab && this.tab.id == tab.id) {
+      this.tab.active = !active;
     } else {
-      this.tabs = this.tabs.map(t => {
-        t.active = t.tab == tab.tab;
-        return t;
-      });
+      tab.active = true;
       this.tab = tab;
     }
+    // this.tab.active = !this.tab.active;
     this.onShowPanel();
   }
   checkHasItemSelected(tab: ITab) {
     if (tab) {
-      if (tab.tab == "starsAndPrice") {
+      if (tab.label == "starsAndPrice") {
         return !!(
           this.hotelQuery &&
           this.hotelQuery.starAndPrices &&
@@ -97,8 +95,12 @@ export class InterHotelQueryComponent implements OnInit, OnDestroy {
   }
   private initTabs() {
     this.tabs = [];
-    this.tabs.push({ name: "推荐排序", tab: "rank" });
-    this.tabs.push({ name: "星级价格", tab: "starsAndPrice" });
+    this.tabs.push({ name: "推荐排序", label: "rank", id: "1" });
+    this.tabs.push({ name: "房价/星级", label: "starsAndPrice", id: "2" });
+    this.tabs = this.tabs.map(it => {
+      it.active = false;
+      return it;
+    });
   }
   private observeHotelQuery() {
     this.subscriptions.push(
@@ -142,101 +144,10 @@ export class InterHotelQueryComponent implements OnInit, OnDestroy {
     }
     rank.isSelected = true;
   }
-  onRank(r: IRankItem) {
-    if (r) {
-      this.ranks = this.ranks.map(it => {
-        it.isSelected = it.id == r.id;
-        return it;
-      });
-      if (this.hotelQuery) {
-        this.hotelQuery.Orderby = r.orderBy;
-        this.hotelService.setHotelQuerySource(this.hotelQuery);
-        setTimeout(() => {
-          this.onToggleTab(this.tab);
-        }, 200);
-        this.queryFilter.emit();
-      }
-    }
-  }
-  hideQueryPannel() {
-    if (this.tabs) {
-      this.tabs = this.tabs.map(t => {
-        t.active = false;
-        return t;
-      });
-    }
-  }
-  onStarPriceChange() {
-    const query = { ...this.hotelService.getHotelQueryModel() };
-    if (
-      query &&
-      query.starAndPrices &&
-      query.starAndPrices.some(it => it.hasItemSelected)
-    ) {
-      const customeprice = query.starAndPrices.find(
-        it => it.tag == "customeprice"
-      );
-      const starAndPrices = query.starAndPrices
-        .filter(it => it.hasItemSelected)
-        .filter(it => !!it);
-      console.log("onStarPriceChange starAndPrices ", starAndPrices);
-      const tabs = starAndPrices.filter(
-        it => it.tag == "price" || it.tag == "customeprice"
-      );
-      if (tabs.filter(it => it.hasItemSelected).length == 0) {
-        delete query.BeginPrice;
-        delete query.EndPrice;
-      }
-      console.log("price customeprice", tabs, query);
-      let { lower, upper } = tabs
-        .map(tab => tab.items)
-        .reduce((p, items) => {
-          items
-            .filter(it => it.isSelected)
-            .forEach(item => {
-              p.lower = Math.min(item.minPrice, p.lower) || item.minPrice;
-              p.upper = Math.max(item.maxPrice, p.upper) || item.maxPrice;
-            });
-          return p;
-        }, {} as { lower: number; upper: number });
-      if (customeprice && customeprice.hasItemSelected) {
-        upper = customeprice.items[0].maxPrice;
-        lower = customeprice.items[0].minPrice;
-      }
-      console.log("价格：", lower, upper);
-      if (lower == 0 || lower) {
-        query.BeginPrice = lower + "";
-      }
-      if (upper) {
-        query.EndPrice = upper == Infinity ? "10000000" : `${upper}`;
-      }
-      const stars = starAndPrices.find(it => it.tag == "stars");
-      query.Stars = null;
-      if (stars && stars.items && stars.items.some(it => it.isSelected)) {
-        query.Stars = stars.items
-          .filter(it => it.isSelected)
-          .map(it => it.value);
-      }
-      const types = starAndPrices.find(it => it.tag == "types");
-      query.Categories = null;
-      if (types && types.items && types.items.some(it => it.isSelected)) {
-        query.Categories = types.items
-          .filter(it => it.isSelected)
-          .map(it => it.value);
-      }
-    } else {
-      query.Stars = null;
-      query.Categories = null;
-    }
-    this.hotelService.setHotelQuerySource(query);
-    this.hideQueryPannel();
-    this.queryFilter.emit();
-  }
   onResetFilters() {
     this.onResetRanks();
     if (this.starAndPriceComp) {
       this.starAndPriceComp.onReset();
     }
-    this.hideQueryPannel();
   }
 }

@@ -5,7 +5,7 @@ import { DayModel } from "src/app/tmc/models/DayModel";
 import { TripType } from "src/app/tmc/models/TripType";
 import { HotelEntity } from "./models/HotelEntity";
 import { IdentityService } from "./../services/identity/identity.service";
-import { BehaviorSubject, throwError, from, of } from "rxjs";
+import { BehaviorSubject, throwError, from, of, Observable } from "rxjs";
 import { Injectable, EventEmitter } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
 import {
@@ -520,7 +520,7 @@ export class HotelService {
     if (query.searchGeoId) {
       req["searchGeoId"] = query.searchGeoId;
     }
-    if (!environment.production&&false) {
+    if (!environment.production && false) {
       if (!this.testData) {
         this.storage.get("test_big_hote_list").then(res => {
           this.testData = res;
@@ -751,10 +751,19 @@ export class HotelService {
       HotelCities: TrafficlineEntity[];
     }>(req);
   }
-  searchHotelByText(keyword: string) {
+    searchHotelByText(
+    keyword: string,
+    pageIndex: number
+  ): Observable<
+    {
+      Text: string;
+      Value: string;
+    }[]
+  > {
     const req = new RequestEntity();
     req.Method = `TmcApiHotelUrl-Home-SearchHotel`;
     req.Data = {
+      PageIndex: pageIndex,
       CityCode:
         this.getSearchHotelModel().destinationCity &&
         this.getSearchHotelModel().destinationCity.Code,

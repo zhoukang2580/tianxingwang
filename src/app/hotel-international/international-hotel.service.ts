@@ -243,13 +243,13 @@ export class InternationalHotelService {
     const req = new RequestEntity();
     req.Method = `TmcApiInternationalHotelUrl-Home-List`;
     const cond = this.getSearchCondition();
-    console.log("hotelQueryModel", this.hotelQueryModel);
+    // console.log("hotelQueryModel", this.hotelQueryModel);
     this.hotelQueryModel.Tag = cond.tag;
     req.Data = {
       ...this.hotelQueryModel,
       travelformid: AppHelper.getQueryParamers()["travelformid"] || "",
       hotelType: cond.hotelType,
-      starAndPrices: [],
+      starAndPrices: null,
       PageSize: 20,
       BeginDate: cond.checkinDate,
       EndDate: cond.checkoutDate,

@@ -16,6 +16,13 @@ export const routes: Routes = [
       import("./hotel-city/hotel-city.module").then(m => m.HotelCityPageModule)
   },
   {
+    path: "search-hotel-bytext",
+    loadChildren: () =>
+      import("./search-hotel-byTtext/search-hotel-byText.module").then(
+        m => m.SearchHotelByTextPageModule
+      )
+  },
+  {
     path: "hotel-show-images",
     loadChildren: () =>
       import("./show-images/show-images.module").then(

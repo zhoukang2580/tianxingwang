@@ -3,7 +3,7 @@
     <ion-buttons slot='start'>
       <ion-back-button defaultHref=""></ion-back-button>
     </ion-buttons>
-    <ion-buttons class="bar">
+    <div class="bar">
       <div class="date" (click)='onChangeDate()'>
         <div style="padding: 0.35em 0">
           <span>住</span><span class="checkin">{{searchCondition?.checkinDate?.substring(5)}}</span>
@@ -22,18 +22,21 @@
         <ion-icon name='close' size='large' *ngIf='searchCondition?.searchText?.Text' (click)='onClearText($event)'>
         </ion-icon>
       </div>
-    </ion-buttons>
+      <app-inter-hotel-query class="{{classMode}}" (queryFilter)='onQueryFilter()'></app-inter-hotel-query>
+    </div>
   </ion-toolbar>
 </ion-header>
+<div class='backdrop' *ngIf='queryComp.isShowPanel'></div>
+<app-inter-recommend-rank class='query-condition' [@openClose]='!!queryComp?.tab?.active&&queryComp?.tab?.label=="rank"'
+  (rank)='onRank($event)'>
+</app-inter-recommend-rank>
+<app-inter-hotel-starprice class='query-condition'
+  [@openClose]='!!queryComp?.tab?.active&&queryComp?.tab?.label=="starsAndPrice"'
+  (starPriceChange)='onStarPriceChange()'></app-inter-hotel-starprice>
 <ion-content>
-  <ion-refresher slot='fixed' (ionRefresh)='doRefresh()' [disabled]='isShowPanel' *ngIf='isShowPanel'>
-    <ion-refresher-content>正在加载...</ion-refresher-content>
-  </ion-refresher>
-  <app-refresher slot='fixed' (ionRefresh)='doRefresh()' [disabled]='isShowPanel' *ngIf='!isShowPanel'>
+  <app-refresher slot='fixed' (ionRefresh)='doRefresh()'>
     <ion-refresher-content>正在加载...</ion-refresher-content>
   </app-refresher>
-  <app-inter-hotel-query (showPanel)='onShowPanel($event)' (queryFilter)='onQueryFilter()'></app-inter-hotel-query>
-  <div class="empty-padding"></div>
   <ng-container *ngIf='isLoading else showlist'>
     <ion-list>
       <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8,9,10,11,12,13]' class="fake">
@@ -61,15 +64,17 @@
     <ng-template #nodata>
       <app-or-comp>暂无数据</app-or-comp>
     </ng-template>
-    <ion-list lines='full' *ngIf='hotels?.length else nodata'>
-      <app-hotel-list-item *ngFor='let hotel of hotels' (click)='onViewHotel(hotel)' [hotel]='hotel'
-        [defaultImage]='defaultImage'></app-hotel-list-item>
-    </ion-list>
+    <ng-container *ngIf='hotels?.length else nodata'>
+      <ion-list lines='full' *ngIf='hotels?.length else nodata'>
+        <app-hotel-list-item *ngFor='let hotel of hotels' (click)='onViewHotel(hotel)' [hotel]='hotel'
+          [defaultImage]='defaultImage'></app-hotel-list-item>
+      </ion-list>
+    </ng-container>
   </ng-template>
   <ion-infinite-scroll (ionInfinite)='loadMore()'>
     <ion-infinite-scroll-content>正在加载...</ion-infinite-scroll-content>
   </ion-infinite-scroll>
-  <ion-fab >
-    <app-pin-fab horizontal="end" vertical="bottom"></app-pin-fab> 
+  <ion-fab>
+    <app-pin-fab horizontal="end" vertical="bottom"></app-pin-fab>
   </ion-fab>
 </ion-content>

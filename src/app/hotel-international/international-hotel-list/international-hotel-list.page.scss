@@ -1,11 +1,19 @@
 ion-header {
-  //   ion-buttons.bar {
-  //     background-color: rgba(var(--ion-color-secondary-rgb), 0.12);
-  //     border: 1px solid var(--ion-color-secondary);
-  //     border-radius: 5px;
-  //   }
   ion-toolbar {
     padding: 0.5em;
+    ion-buttons {
+      align-self: flex-start;
+    }
+    .bar {
+      padding-bottom: 4.5em;
+      position: relative;
+      display: flex;
+      align-items: center;
+      app-inter-hotel-query {
+        top: initial;
+        bottom: 0;
+      }
+    }
   }
   .date {
     margin-left: 0.5em;
@@ -57,6 +65,26 @@ ion-header {
     padding: 0.5em 0;
   }
 }
+.query-condition {
+  position: fixed;
+  top: 8.5em;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  background-color: white;
+}
+.backdrop {
+  position: fixed;
+  top: 8em;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+  width: 100vw;
+  background-color: rgba(var(--ion-color-dark-rgb), 0.5);
+  overflow: hidden;
+  height: 100%;
+}
+
 app-inter-hotel-query {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 100;
@@ -65,6 +93,11 @@ app-inter-hotel-query {
   right: 0;
   top: 0;
   touch-action: none;
+  &.ios {
+    margin: 0 -1em 0 -2em;
+  }
+  &.md {
+  }
 }
 .backdrop.ion-page.show {
   z-index: 99;

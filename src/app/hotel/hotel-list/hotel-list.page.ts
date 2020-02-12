@@ -58,12 +58,22 @@ import { IFilterTab } from "../components/hotel-filter/hotel-filter.component";
   templateUrl: "./hotel-list.page.html",
   styleUrls: ["./hotel-list.page.scss"],
   animations: [
-    flyInOut,
+    // flyInOut,
     fadeInOut,
-    trigger("openclose", [
-      state("true", style({ height: "*", opacity: 1 })),
-      state("false", style({ height: "0", opacity: 0 })),
-      transition("true<=>false", animate("200ms"))
+    trigger("flyInOut", [
+      // state("true", style({ transform: "translate3d(0,0,0)", opacity: 1 })),
+      // state("false", style({ transform: "translate3d(100%,0,0)", opacity: 0 })),
+      transition(":enter,false=>true", [
+        style({ transform: "translate3d(-100%,0,0)", opacity: 0 }),
+        animate("200ms", style({ transform: "translate3d(0,0,0)", opacity: 1 }))
+      ]),
+      transition(
+        ":leave,true=>false",
+        animate(
+          "200ms",
+          style({ transform: "translate3d(100%,0,0)", opacity: 1 })
+        )
+      )
     ]),
     trigger("fadeDown", [
       state("true", style({ transform: "translate3d(0,0,0)", opacity: 1 })),
@@ -93,16 +103,10 @@ export class HotelListPage
   @ViewChild(HotelQueryComponent) queryComp: HotelQueryComponent;
   @ViewChildren(IonSearchbar) searchbarEls: QueryList<IonSearchbar>;
   @ViewChildren(IonItem) hotelItemEl: QueryList<any>;
-  @HostBinding("class.show-search-bar") isShowSearchBar = false;
   isLeavePage = false;
   searchHotelModel: SearchHotelModel;
   hotelQueryModel: HotelQueryEntity = new HotelQueryEntity();
   hotelDayPrices: HotelDayPriceEntity[] = [];
-  vmKeyowrds = "";
-  keyowrds = "";
-  isSearchingList = false;
-  isSearchingText = false;
-  vmSearchTextList: { Text: string; Value: string }[] = [];
   searchSubscription = Subscription.EMPTY;
   loadDataSub = Subscription.EMPTY;
   conditionModel: HotelConditionModel;
@@ -128,16 +132,6 @@ export class HotelListPage
   ) {
     this.classMode = plt.is("ios") ? "ios" : "md";
   }
-  onSearchItemClick(item: { Text: string; Value: string }) {
-    this.isShowSearchBar = false;
-    if (item && item.Value) {
-      this.hotelQueryModel.HotelId = item.Value;
-      this.keyowrds = this.hotelQueryModel.SearchKey = item.Text;
-      // this.vmKeyowrds = "";
-      this.doRefresh(true);
-    }
-  }
-
   onBackdropClick(evt: CustomEvent) {
     if (evt) {
       evt.stopPropagation();
@@ -165,8 +159,6 @@ export class HotelListPage
   }
   onSearch() {
     this.doRefresh();
-    this.isShowSearchBar = false;
-    this.vmSearchTextList = [];
   }
   private getStars(hotel: HotelEntity) {
     if (hotel && hotel.Category) {
@@ -196,26 +188,6 @@ export class HotelListPage
       this.subscriptions.push(sub);
     }
   }
-  onSearchByKeywords() {
-    console.log("onSearchByKeywords vmKeyowrds=", this.vmKeyowrds);
-    if (this.timer) {
-      clearTimeout(this.timer);
-    }
-    if (this.isSearchingList) {
-      return;
-    }
-    const name = (this.vmKeyowrds && this.vmKeyowrds.trim()) || "";
-    this.timer = setTimeout(() => {
-      this.searchSubscription.unsubscribe();
-      this.isSearchingText = true;
-      this.searchSubscription = this.hotelService
-        .searchHotelByText(name)
-        .pipe(finalize(() => (this.isSearchingText = false)))
-        .subscribe(kvs => {
-          this.vmSearchTextList = kvs;
-        });
-    }, 300);
-  }
   onHotelQueryChange(query: HotelQueryEntity) {
     this.hotelQueryModel = {
       ...query
@@ -237,16 +209,11 @@ export class HotelListPage
       this.hotelQueryModel = new HotelQueryEntity();
       this.hotelService.setHotelQuerySource(this.hotelQueryModel);
     }
-    const searchText = this.vmKeyowrds && this.vmKeyowrds.trim();
-    if (searchText) {
-      this.hotelQueryModel.SearchKey = searchText;
-    }
     this.hotelQueryModel.PageIndex = 0;
     this.hotelQueryModel.PageSize = 20;
     this.hotelDayPrices = [];
     this.scrollToTop();
     this.hotelService.setHotelQuerySource(this.hotelQueryModel);
-    this.isSearchingList = true;
     this.loadMore();
   }
   private scrollToTop() {
@@ -269,9 +236,6 @@ export class HotelListPage
           this.lastCityCode =
             this.searchHotelModel &&
             this.searchHotelModel.destinationCity.CityCode;
-          setTimeout(() => {
-            this.isSearchingList = false;
-          }, 100);
           setTimeout(() => {
             if (this.scroller) {
               this.scroller.complete();
@@ -343,17 +307,9 @@ export class HotelListPage
     this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
   }
   onSearchClick() {
-    this.isShowSearchBar = true;
-    this.hotelQueryModel.HotelId = ``;
-    this.hotelQueryModel.SearchKey = null;
-    this.keyowrds = this.vmKeyowrds = "";
-    this.vmSearchTextList = [];
+    this.router.navigate([AppHelper.getRoutePath("search-hotel-bytext")]);
   }
   back() {
-    if (this.isShowSearchBar) {
-      this.isShowSearchBar = false;
-      return;
-    }
     this.router.navigate([AppHelper.getRoutePath("search-hotel")]);
   }
   ngOnDestroy() {
@@ -373,7 +329,6 @@ export class HotelListPage
     const sub0 = this.route.queryParamMap.subscribe(_ => {
       this.hideQueryPannel();
       this.hotelService.curViewHotel = null;
-      this.isShowSearchBar = false;
       this.isLeavePage = false;
       const c = this.hotelService.getSearchHotelModel();
       if (
