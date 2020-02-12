@@ -1,3 +1,4 @@
+import { DomController } from "@ionic/angular";
 import { AppHelper } from "./../appHelper";
 import { DomSanitizer } from "@angular/platform-browser";
 import {
@@ -18,20 +19,26 @@ import { ImageRecoverService } from "../services/imageRecover/imageRecover.servi
 export class LazyloadDirective
   implements OnInit, OnChanges, OnDestroy, AfterContentInit {
   private io: IntersectionObserver;
+  private queue: string[];
   @Input() lazyLoad: string;
+  @Input() recoverImage = true;
   @Input() defaultImage: string;
   constructor(
     private imageRecoverService: ImageRecoverService,
     private el: ElementRef<HTMLDivElement | HTMLImageElement>,
-    private render: Renderer2
+    private render: Renderer2,
+    private domCtrl: DomController
   ) {}
   ngOnChanges() {
+    console.log("lazyload changes");
     this.addIO();
   }
   ngAfterContentInit() {}
   ngOnInit() {
     this.setDefaultImage();
-    this.setupImageRecover();
+    if (this.recoverImage) {
+      this.setupImageRecover();
+    }
   }
   private setDefaultImage() {
     if (this.defaultImage) {
@@ -57,26 +64,42 @@ export class LazyloadDirective
     let url = decodeURIComponent(src || this.lazyLoad || this.defaultImage);
     url = `${url}`.replace(/\?v=\d+/g, "");
     // console.log('load url:', url);
-    if (this.el.nativeElement instanceof HTMLDivElement) {
-      this.render.setStyle(
-        this.el.nativeElement,
-        "background-image",
-        `url('${url}')`
-      );
-      // this.render.setProperty(this.el.nativeElement,'backgroundImage',`${src || this.lazyLoad}`);
-      // this.el.nativeElement.style.backgroundImage=`${src || this.lazyLoad}`;
-    } else {
-      if (url) {
-        this.render.setProperty(this.el.nativeElement, "src", url);
+    this.domCtrl.write(_ => {
+      if (this.el.nativeElement instanceof HTMLDivElement) {
+        this.render.setStyle(
+          this.el.nativeElement,
+          "background-image",
+          `url('${url}')`
+        );
+        // this.render.setProperty(this.el.nativeElement,'backgroundImage',`${src || this.lazyLoad}`);
+        // this.el.nativeElement.style.backgroundImage=`${src || this.lazyLoad}`;
+      } else {
+        if (url) {
+          this.render.setProperty(this.el.nativeElement, "src", url);
+        }
+        // this.el.nativeElement.src = src || this.lazyLoad;
       }
-      // this.el.nativeElement.src = src || this.lazyLoad;
-    }
+    });
   }
   private removeIO() {
     if (this.io) {
       this.io.disconnect();
       this.io = undefined;
     }
+  }
+  private addToQueue(url: string) {
+    if (!this.queue) {
+      this.queue = [];
+    }
+    this.queue.push(url);
+    setTimeout(() => {
+      const one = this.queue.shift();
+      if (one) {
+        this.domCtrl.write(_ => {
+          this.load(one);
+        });
+      }
+    }, 500);
   }
   private addIO() {
     if (!this.lazyLoad) {
@@ -103,14 +126,15 @@ export class LazyloadDirective
           setTimeout(() => {
             this.load();
             this.removeIO();
-          }, 200);
+          }, 1000);
         }
       });
       this.io.observe(this.el.nativeElement);
     } else {
       // fall back to setTimeout for Safari and IE
       // console.error("当前浏览器不支持：IntersectionObserver");
-      setTimeout(() => this.load(), 200);
+      this.addToQueue(this.lazyLoad);
+      // setTimeout(() => this.load(), 200);
     }
   }
 }

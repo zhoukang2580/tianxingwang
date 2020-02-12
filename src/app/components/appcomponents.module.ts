@@ -1,6 +1,6 @@
-import { PinFabComponent } from './pin-fab/pin-fab.component';
-import { SlidesComponent } from './slides/slides.component';
-import { FormsModule } from '@angular/forms';
+import { PinFabComponent } from "./pin-fab/pin-fab.component";
+import { SlidesComponent } from "./slides/slides.component";
+import { FormsModule } from "@angular/forms";
 import { AppDirectivesModule } from "./../directives/directives.module";
 import { MapComponent } from "./../components/map/map.component";
 import { AppUpdateComponent } from "./appupdate/appupdate.component";
@@ -18,9 +18,10 @@ import { TimelineComponent } from "./timeline/timeline.component";
 import { TimelineItemComponent } from "./timeline-item/timeline-item.component";
 import { PayComponent } from "./pay/pay.component";
 import { RefresherModule } from "./refresher";
-import { MyCalendarComponent } from './my-calendar/my-calendar.component';
-import { BaseInputComponent } from './base-input/base-input.component';
-import { SwiperSlidesComponent } from './swiper-slides/swiper-slides.component';
+import { MyCalendarComponent } from "./my-calendar/my-calendar.component";
+import { BaseInputComponent } from "./base-input/base-input.component";
+import { SwiperSlidesComponent } from "./swiper-slides/swiper-slides.component";
+import { ScrollerComponent } from "./scroller/scroller.component";
 @NgModule({
   declarations: [
     OrComponent,
@@ -38,9 +39,17 @@ import { SwiperSlidesComponent } from './swiper-slides/swiper-slides.component';
     SlidesComponent,
     MyCalendarComponent,
     BaseInputComponent,
-    PinFabComponent
+    PinFabComponent,
+    ScrollerComponent
   ],
-  imports: [CommonModule, IonicModule,FormsModule, TreeNgxModule, AppDirectivesModule,RefresherModule],
+  imports: [
+    CommonModule,
+    IonicModule,
+    FormsModule,
+    TreeNgxModule,
+    AppDirectivesModule,
+    RefresherModule
+  ],
   exports: [
     SwiperSlidesComponent,
     PinFabComponent,
@@ -59,7 +68,8 @@ import { SwiperSlidesComponent } from './swiper-slides/swiper-slides.component';
     SlidesComponent,
     AppDirectivesModule,
     RefresherModule,
-    MyCalendarComponent
+    MyCalendarComponent,
+    ScrollerComponent
   ]
 })
 export class AppComponentsModule {}

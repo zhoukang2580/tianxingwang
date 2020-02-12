@@ -1,3 +1,6 @@
+import { ScrollerComponent } from "./../../components/scroller/scroller.component";
+import { RefresherComponent } from "./../../components/refresher/refresher.component";
+import { fadeInOut } from "./../../animations/fadeInOut";
 import { flyInOut } from "./../../animations/flyInOut";
 import { Storage } from "@ionic/storage";
 import { AgentEntity } from "./../../tmc/models/AgentEntity";
@@ -19,16 +22,16 @@ import {
   QueryList,
   AfterViewInit,
   AfterContentInit,
-  ElementRef
+  ElementRef,
+  EventEmitter
 } from "@angular/core";
 import {
   IonContent,
   IonSearchbar,
-  IonRefresher,
-  IonInfiniteScroll,
   IonToolbar,
   Platform,
-  IonItem
+  IonItem,
+  DomController
 } from "@ionic/angular";
 import { Subscription, Observable, fromEvent, merge } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
@@ -50,6 +53,7 @@ import {
   styleUrls: ["./hotel-list.page.scss"],
   animations: [
     flyInOut,
+    fadeInOut,
     trigger("openclose", [
       state("true", style({ height: "*", opacity: 1 })),
       state("false", style({ height: "0", opacity: 0 })),
@@ -75,15 +79,13 @@ export class HotelListPage
   private lastCityCode = "";
   private timer;
   classMode: "ios" | "md";
-  @ViewChild(IonRefresher) refresher: IonRefresher;
+  @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild("querytoolbar") querytoolbar: IonToolbar;
   @ViewChild("backdrop") backdropEl: ElementRef<HTMLElement>;
-  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(HotelQueryComponent) queryComp: HotelQueryComponent;
   @ViewChildren(IonSearchbar) searchbarEls: QueryList<IonSearchbar>;
   @ViewChildren(IonItem) hotelItemEl: QueryList<any>;
-  // @ViewChildren("hotellist") hotellist: QueryList<IonList>;
   @HostBinding("class.show-search-bar") isShowSearchBar = false;
   isLeavePage = false;
   searchHotelModel: SearchHotelModel;
@@ -99,8 +101,10 @@ export class HotelListPage
   conditionModel: HotelConditionModel;
   config: ConfigEntity;
   agent: AgentEntity;
-  scroll$: Observable<any>;
-  scrollEle: HTMLElement;
+  status: {
+    isLoading: boolean;
+    disabled: boolean;
+  };
   filterTab = {
     label: "none",
     isActive: false
@@ -111,7 +115,8 @@ export class HotelListPage
     private route: ActivatedRoute,
     private tmcService: TmcService,
     private configService: ConfigService,
-    plt: Platform
+    plt: Platform,
+    private domCtrl: DomController
   ) {
     this.classMode = plt.is("ios") ? "ios" : "md";
   }
@@ -146,10 +151,6 @@ export class HotelListPage
           evt.stopPropagation();
         })
       );
-    }
-    this.scrollEle = await this.content.getScrollElement();
-    if (this.scrollEle) {
-      this.scroll$ = merge(fromEvent(this.scrollEle, "scroll"));
     }
     this.autofocusSearchBarInput();
   }
@@ -218,9 +219,10 @@ export class HotelListPage
     if (this.queryComp) {
       this.queryComp.onReset();
     }
-    if (this.scroller) {
-      this.scroller.disabled = false;
-    }
+    this.status = {
+      isLoading: false,
+      disabled: false
+    };
     if (!isKeepQueryCondition) {
       // if (this.queryComp) {
       //   this.queryComp.onReset();
@@ -259,6 +261,11 @@ export class HotelListPage
           setTimeout(() => {
             this.isSearchingList = false;
           }, 100);
+          setTimeout(() => {
+            if (this.status) {
+              this.status.isLoading = false;
+            }
+          }, 200);
         })
       )
       .subscribe(
@@ -273,16 +280,10 @@ export class HotelListPage
               }, 100);
             }
           }
-          if (this.scroller) {
-            setTimeout(() => {
-              this.scroller.complete();
-            }, 200);
-          }
           if (result && result.Data && result.Data.HotelDayPrices) {
             const arr = result.Data.HotelDayPrices;
-            if (this.scroller) {
-              this.scroller.disabled = arr.length == 0;
-            }
+            this.status.disabled =
+              arr.length < (this.hotelQueryModel.PageSize || 20);
             if (arr.length) {
               this.hotelQueryModel.PageIndex++;
               this.hotelDayPrices = [
@@ -296,13 +297,10 @@ export class HotelListPage
                 })
               ];
             }
-            console.log("this.scroller.disabled", this.scroller.disabled);
+            // console.log("this.scroller.disabled", this.scroller.disabled);
           }
         },
         e => {
-          if (this.scroller) {
-            this.scroller.complete();
-          }
           this.refresher.complete();
           console.error(e);
         }

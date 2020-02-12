@@ -15,6 +15,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
 }
 .grade-stars {
   display: flex;
@@ -43,6 +44,33 @@ ion-header ion-toolbar {
     }
   }
 }
+ul {
+  list-style-type: none;
+  &,
+  li {
+    margin: 0;
+    padding: 0;
+  }
+  li {
+    display: flex;
+    flex-flow: row nowrap;
+    .img {
+      img,ion-img {
+        height: 5em;
+        width: 5em;
+        margin-right: 0.5em;
+        min-height: 5em;
+        min-width: 5em;
+        object-fit: cover;
+      }
+    }
+    h3,
+    h5,
+    h6 {
+      margin: 0;
+    }
+  }
+}
 ion-content {
   position: relative;
   .pos.md {
@@ -52,6 +80,7 @@ ion-content {
     padding-top: 0.5em;
   }
 }
+
 ion-toolbar.ios {
   --border-width: 0;
 }
@@ -62,6 +91,12 @@ ion-thumbnail {
   width: 5em;
   height: 5em;
   margin-left: -0.5em;
+  img {
+    width: 5em;
+    height: 5em;
+    min-width: 4.5em;
+    min-height: 4.5em;
+  }
 }
 form {
   display: flex;
@@ -100,7 +135,7 @@ form {
   }
   animation-name: fadeInOut;
 }
-.filter-groups{
+.filter-groups {
   animation-duration: 0.2s;
   animation-fill-mode: both;
   animation-timing-function: ease-in-out;

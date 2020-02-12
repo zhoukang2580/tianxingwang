@@ -8,7 +8,7 @@
   <base href="/" />
 
   <meta name="viewport"
-    content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0,minimal-ui, maximum-scale=1.0, user-scalable=no" />
   <!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> -->
   <meta name="format-detection" content="telephone=no" />
   <meta name="msapplication-tap-highlight" content="no" />
@@ -37,6 +37,9 @@
     }
   </script> -->
   <script type="text/javascript">
+
+
+
     document.body.addEventListener('touchmove', function (e) {
       // console.log('indexhtml script e',e,window._isPreventDefault)
       if (window['_isPreventDefault'] && window['isAndroid'])
