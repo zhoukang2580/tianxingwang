@@ -44,9 +44,6 @@
               },
               {
                 "input": "src/assets/iconfont/font.css"
-              },
-              {
-                "input": "node_modules/swiper/css/swiper.css"
               }
             ],
             "scripts": [
@@ -107,7 +104,8 @@
           "options": {
             "browserTarget": "app:build",
             "proxyConfig": "proxy.config.json",
-            "open": true
+            "open": true,
+            "disableHostCheck": true
           },
           "configurations": {
             "production": {
