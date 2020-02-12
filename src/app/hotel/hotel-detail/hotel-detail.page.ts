@@ -251,7 +251,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       });
     this.route.queryParamMap.subscribe(q => {
       this.hotelDayPrice = this.hotelService.curViewHotel;
-      this.onSearch();
+      if(!this.hotelPolicy){
+        this.onSearch();
+      }
     });
     this.config = await this.configService.get().catch(_ => null);
   }
@@ -324,9 +326,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
               this.hotelDayPrice.Hotel = this.hotel;
               this.initBgPic(this.hotel.FileName);
               this.hotelPolicy = await this.getPolicy();
-              if (!environment.production) {
-                this.storage.set("mock-hotel-detail", this.hotel);
-              }
+              // if (!environment.production) {
+              //   this.storage.set("mock-hotel-detail", this.hotel);
+              // }
               await this.ionCnt.scrollToTop();
               this.initFilterPolicy();
               this.checkIfBookedRoomPlan();

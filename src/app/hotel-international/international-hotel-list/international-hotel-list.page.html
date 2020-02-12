@@ -26,7 +26,7 @@
     </div>
   </ion-toolbar>
 </ion-header>
-<div class='backdrop' *ngIf='queryComp.isShowPanel'></div>
+<div class='backdrop' *ngIf='queryComp?.isShowPanel'></div>
 <app-inter-recommend-rank class='query-condition' [@openClose]='!!queryComp?.tab?.active&&queryComp?.tab?.label=="rank"'
   (rank)='onRank($event)'>
 </app-inter-recommend-rank>
