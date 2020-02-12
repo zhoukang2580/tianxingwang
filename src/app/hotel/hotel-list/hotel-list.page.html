@@ -9,7 +9,7 @@
     <div class="query">
       <app-date-city [checkInDate]='searchHotelModel?.checkInDate' [checkOutDate]='searchHotelModel?.checkOutDate'
         [city]='searchHotelModel?.destinationCity' (cityClick)='onCityClick()' (dateChange)='onDateChange()'
-        (searchBarClick)='onSearchClick()' [keywords]='hotelQueryModel?.SearchKey||"地名/酒店/关键字"'>
+        (searchBarClick)='onSearchByText()' [keywords]='searchHotelModel?.searchText?.Text||"地名/酒店/关键字"'>
       </app-date-city>
       <!-- <ion-note style="position: absolute;">{{hotelDayPrices?.length}}</ion-note> -->
       <app-hotel-query (activeFilter)='onActiveFilter($event)' (hotelQueryChange)='onHotelQueryChange($event)'>
@@ -21,8 +21,8 @@
 <app-recommend-rank class="filter-condition  {{classMode}}" (rank)='onRank()'
   *ngIf='filterTab?.label=="推荐排序"&&filterTab.isActive' @flyInOut>
 </app-recommend-rank>
-<app-hotel-starprice class="filter-condition  {{classMode}}" *ngIf='filterTab?.label=="星级价格"&&filterTab.isActive' @flyInOut
-  (starPriceChange)='onStarPriceChange()'></app-hotel-starprice>
+<app-hotel-starprice class="filter-condition  {{classMode}}" *ngIf='filterTab?.label=="星级价格"&&filterTab.isActive'
+  @flyInOut (starPriceChange)='onStarPriceChange()'></app-hotel-starprice>
 <app-hotel-filter class="filter-condition  {{classMode}}" *ngIf='filterTab?.label=="筛选"&&filterTab.isActive' @flyInOut
   (filter)='onFilter()'>
 </app-hotel-filter>
@@ -33,7 +33,7 @@
   <app-refresher slot='fixed' (ionRefresh)='doRefresh(false)'>
     <ion-refresher-content>正在加载...</ion-refresher-content>
   </app-refresher>
-  <ng-container *ngIf='hotelDayPrices'>
+  <ng-container *ngIf='hotelDayPrices?.length else fakeList'>
     <ion-list lines='full'>
       <ion-item *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
         <ion-thumbnail slot='start'>
@@ -112,10 +112,10 @@
       <app-or-comp>暂无数据</app-or-comp>
     </div>
   </ng-template>
-  <ng-container #fakeList>
-    <ion-list class='fakelist'>
+  <ng-template #fakeList>
+    <ion-list class='fakelist' *ngIf='isLoadingHotels else noMoreData'>
       <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8,9,10,11]'>
-        <ion-thumbnail>
+        <ion-thumbnail style="margin-bottom: 0.25em;">
           <ion-skeleton-text animated style='height:100%;width:100%'></ion-skeleton-text>
         </ion-thumbnail>
         <ion-label class="ion-margin-start">
@@ -132,7 +132,7 @@
         </ion-label>
       </ion-item>
     </ion-list>
-  </ng-container>
+  </ng-template>
   <ion-infinite-scroll (ionInfinite)="loadMore()" threshold='100px'>
     <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="正在加载..."></ion-infinite-scroll-content>
   </ion-infinite-scroll>

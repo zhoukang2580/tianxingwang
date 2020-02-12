@@ -2,12 +2,27 @@ import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { HotelPaymentType } from "./HotelPaymentType";
 import { TmcEntity } from "src/app/tmc/tmc.service";
 import { GeoEntity } from "./GeoEntity";
-import {
-  IFilterTab,
-  IFilterTabItem
-} from "../components/hotel-query/hotel-filter/hotel-filter.component";
+
 import { BrandEntity } from "./BrandEntity";
 import { AmenityEntity } from "./AmenityEntity";
+export interface IFilterTab<T> {
+  hasFilterItem?: boolean;
+  active?: boolean;
+  label: string;
+  items: T[];
+  order?: number;
+  tag?: "Brand" | "Service" | "Theme" | "Facility";
+  id?: string;
+}
+export interface IFilterTabItem<T> {
+  isMulti?: boolean;
+  label: string;
+  items: T[];
+  order?: number;
+  tag?: string;
+  id?: string;
+  showAll?: boolean;
+}
 export interface IStarPriceTab<T> {
   isActive?: boolean;
   id?: string;

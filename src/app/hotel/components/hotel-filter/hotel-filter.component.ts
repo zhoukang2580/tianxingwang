@@ -1,5 +1,5 @@
 import { Subscription } from "rxjs";
-import { HotelQueryEntity } from "src/app/hotel/models/HotelQueryEntity";
+import { HotelQueryEntity, IFilterTabItem, IFilterTab } from "src/app/hotel/models/HotelQueryEntity";
 import { TmcService } from "src/app/tmc/tmc.service";
 import {
   Component,
@@ -16,24 +16,7 @@ import { HotelConditionModel } from "src/app/hotel/models/ConditionModel";
 import { ToastController, ModalController } from "@ionic/angular";
 import { AmenityEntity } from "../../models/AmenityEntity";
 import { HotelService } from "../../hotel.service";
-export interface IFilterTab<T> {
-  hasFilterItem?: boolean;
-  active?: boolean;
-  label: string;
-  items: T[];
-  order?: number;
-  tag?: "Brand" | "Service" | "Theme" | "Facility";
-  id?: string;
-}
-export interface IFilterTabItem<T> {
-  isMulti?: boolean;
-  label: string;
-  items: T[];
-  order?: number;
-  tag?: string;
-  id?: string;
-  showAll?: boolean;
-}
+
 @Component({
   selector: "app-hotel-filter",
   templateUrl: "./hotel-filter.component.html",

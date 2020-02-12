@@ -50,6 +50,7 @@ export class SearchHotelModel {
   destinationCity: TrafficlineEntity;
   tag: "Agreement" | "" | "SpecialPrice";
   hotelType: "agreement" | "normal" | "specialprice";
+  searchText: { Value: string; Text: string };
 }
 export interface LocalHotelCityCache {
   LastUpdateTime: number;
@@ -517,6 +518,7 @@ export class HotelService {
     };
     const req = new RequestEntity();
     req.Method = `TmcApiHotelUrl-Home-List`;
+
     if (query.searchGeoId) {
       req["searchGeoId"] = query.searchGeoId;
     }
@@ -537,7 +539,8 @@ export class HotelService {
         }
       }
     }
-    const city = this.getSearchHotelModel().destinationCity;
+    const cond = this.getSearchHotelModel();
+    const city = cond.destinationCity;
     hotelquery.CityCode = city && city.Code;
     hotelquery.BeginDate = this.getSearchHotelModel().checkInDate;
     hotelquery.EndDate = this.getSearchHotelModel().checkOutDate;
@@ -548,6 +551,12 @@ export class HotelService {
       travelformid: AppHelper.getQueryParamers()["travelformid"] || "",
       hotelType: this.getSearchHotelModel().hotelType
     };
+    if (cond && cond.searchText) {
+      req.Data["SearchKey"] = cond.searchText.Text;
+      if (cond.searchText.Value) {
+        req.Data["HotelId"] = cond.searchText.Value;
+      }
+    }
     // req.IsShowLoading = true;
     return this.apiService.getResponse<HotelResultEntity>(req).pipe(
       map(result => {
@@ -751,7 +760,7 @@ export class HotelService {
       HotelCities: TrafficlineEntity[];
     }>(req);
   }
-    searchHotelByText(
+  searchHotelByText(
     keyword: string,
     pageIndex: number
   ): Observable<

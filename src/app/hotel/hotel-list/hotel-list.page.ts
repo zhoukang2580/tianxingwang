@@ -13,7 +13,7 @@ import { ConfigService } from "./../../services/config/config.service";
 import { HotelConditionModel } from "src/app/hotel/models/ConditionModel";
 import { HotelEntity } from "./../models/HotelEntity";
 import { HotelQueryComponent } from "./../components/hotel-query/hotel-query.component";
-import { HotelQueryEntity } from "./../models/HotelQueryEntity";
+import { HotelQueryEntity, IFilterTab } from "./../models/HotelQueryEntity";
 import { Router, ActivatedRoute } from "@angular/router";
 import { HotelService, SearchHotelModel } from "./../hotel.service";
 import {
@@ -51,7 +51,7 @@ import {
   transition,
   animate
 } from "@angular/animations";
-import { IFilterTab } from "../components/hotel-filter/hotel-filter.component";
+import { ISearchTextValue } from "src/app/hotel-international/international-hotel.service";
 
 @Component({
   selector: "app-hotel-list",
@@ -92,8 +92,8 @@ import { IFilterTab } from "../components/hotel-filter/hotel-filter.component";
 export class HotelListPage
   implements OnInit, OnDestroy, AfterViewInit, AfterContentInit {
   private subscriptions: Subscription[] = [];
-  private lastCityCode = "";
-  private timer;
+  private oldSearchText: ISearchTextValue;
+  private oldDestinationCode: string;
   classMode: "ios" | "md";
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
@@ -104,6 +104,7 @@ export class HotelListPage
   @ViewChildren(IonSearchbar) searchbarEls: QueryList<IonSearchbar>;
   @ViewChildren(IonItem) hotelItemEl: QueryList<any>;
   isLeavePage = false;
+  isLoadingHotels = false;
   searchHotelModel: SearchHotelModel;
   hotelQueryModel: HotelQueryEntity = new HotelQueryEntity();
   hotelDayPrices: HotelDayPriceEntity[] = [];
@@ -127,7 +128,6 @@ export class HotelListPage
     private tmcService: TmcService,
     private configService: ConfigService,
     plt: Platform,
-    private domCtrl: DomController,
     private modalCtrl: ModalController
   ) {
     this.classMode = plt.is("ios") ? "ios" : "md";
@@ -156,9 +156,6 @@ export class HotelListPage
       );
     }
     this.autofocusSearchBarInput();
-  }
-  onSearch() {
-    this.doRefresh();
   }
   private getStars(hotel: HotelEntity) {
     if (hotel && hotel.Category) {
@@ -196,7 +193,6 @@ export class HotelListPage
     this.doRefresh(true);
   }
   doRefresh(isKeepQueryCondition = false) {
-    clearTimeout(this.timer);
     this.hideQueryPannel();
     this.status = {
       isLoading: false,
@@ -206,6 +202,10 @@ export class HotelListPage
       if (this.queryComp) {
         this.queryComp.onReset();
       }
+      this.hotelService.setSearchHotelModel({
+        ...this.hotelService.getSearchHotelModel(),
+        searchText: null
+      });
       this.hotelQueryModel = new HotelQueryEntity();
       this.hotelService.setHotelQuerySource(this.hotelQueryModel);
     }
@@ -229,21 +229,24 @@ export class HotelListPage
     if (this.loadDataSub) {
       this.loadDataSub.unsubscribe();
     }
+    this.isLoadingHotels = true;
     this.loadDataSub = this.hotelService
       .getHotelList(this.hotelQueryModel)
       .pipe(
         finalize(() => {
-          this.lastCityCode =
-            this.searchHotelModel &&
-            this.searchHotelModel.destinationCity.CityCode;
+          this.oldSearchText = this.searchHotelModel.searchText;
+          this.oldDestinationCode =
+          this.searchHotelModel &&
+          this.searchHotelModel.destinationCity.CityCode;
           setTimeout(() => {
+            this.isLoadingHotels = false;
             if (this.scroller) {
               this.scroller.complete();
             }
             if (this.status) {
               this.status.isLoading = false;
             }
-          }, 350);
+          }, 200);
         })
       )
       .subscribe(
@@ -255,7 +258,7 @@ export class HotelListPage
               setTimeout(() => {
                 this.refresher.complete();
                 this.refresher.disabled = !true;
-              }, 300);
+              }, 200);
             }
           }
           if (result && result.Data && result.Data.HotelDayPrices) {
@@ -301,13 +304,30 @@ export class HotelListPage
     this.router.navigate([AppHelper.getRoutePath("hotel-detail")]);
   }
   onCityClick() {
-    if (this.searchHotelModel && this.searchHotelModel.destinationCity) {
-      this.lastCityCode = this.searchHotelModel.destinationCity.CityCode;
-    }
     this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
   }
-  onSearchClick() {
+  onSearchByText() {
     this.router.navigate([AppHelper.getRoutePath("search-hotel-bytext")]);
+  }
+  private checkDestinationChanged() {
+    if (this.searchHotelModel) {
+      return (
+        !this.searchHotelModel.destinationCity ||
+        this.searchHotelModel.destinationCity.Code != this.oldDestinationCode
+      );
+    }
+    return false;
+  }
+  private checkSearchTextChanged() {
+    if (this.searchHotelModel) {
+      return (
+        !this.searchHotelModel.searchText ||
+        !this.oldSearchText ||
+        this.searchHotelModel.searchText.Value != this.oldSearchText.Value ||
+        this.searchHotelModel.searchText.Text != this.oldSearchText.Text
+      );
+    }
+    return false;
   }
   back() {
     this.router.navigate([AppHelper.getRoutePath("search-hotel")]);
@@ -330,12 +350,9 @@ export class HotelListPage
       this.hideQueryPannel();
       this.hotelService.curViewHotel = null;
       this.isLeavePage = false;
-      const c = this.hotelService.getSearchHotelModel();
-      if (
-        this.lastCityCode !==
-        (c && c.destinationCity && c.destinationCity.CityCode)
-      ) {
-        this.doRefresh(false);
+      const changed = this.checkSearchTextChanged();
+      if (changed || this.checkDestinationChanged()) {
+        this.doRefresh(true);
       }
     });
     this.subscriptions.push(sub0);
@@ -371,8 +388,10 @@ export class HotelListPage
   }
 
   private hideQueryPannel() {
-    this.filterTab.label = "none";
-    this.filterTab.isActive = false;
+    if (this.filterTab) {
+      this.filterTab.label = "none";
+      this.filterTab.isActive = false;
+    }
   }
   onStarPriceChange() {
     const query = { ...this.hotelService.getHotelQueryModel() };

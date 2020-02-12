@@ -96,9 +96,9 @@ export class SearchHotelByTextPage implements OnInit {
     this.onSearch();
   }
   onSelect(it?: ISearchTextValue) {
-    this.hotelService.setHotelQuerySource({
-      ...this.hotelService.getHotelQueryModel(),
-      SearchKey: (it && it.Value) || it.Text || ""
+    this.hotelService.setSearchHotelModel({
+      ...this.hotelService.getSearchHotelModel(),
+      searchText: it
     });
     setTimeout(() => {
       this.navCtrl.back();
