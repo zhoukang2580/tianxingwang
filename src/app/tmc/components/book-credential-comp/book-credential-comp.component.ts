@@ -11,9 +11,12 @@ import {
   EventEmitter,
   ViewChild,
   AfterViewInit,
-  OnDestroy
+  OnDestroy,
+  OnChanges,
+  SimpleChanges
 } from "@angular/core";
 import { CredentialsEntity } from "../../models/CredentialsEntity";
+import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 
 @Component({
   selector: "app-book-credential-comp",
@@ -29,12 +32,15 @@ export class BookCredentialCompComponent
   // @Input() isFlightTrainHotel: "flight" | "train" | "hotel";
   @Output() savecredential: EventEmitter<any>;
   @Output() modify: EventEmitter<any>;
+  @Output() managementCredentials: EventEmitter<any>;
+  @Input() canMaintainCredentials;
+  @Input() canEdit;
   isModified = false;
-  isSelf = true;
   @ViewChild(IonSelect) ionSelect: IonSelect;
-  constructor(private router: Router, private staffService: StaffService) {
+  constructor(private router: Router) {
     this.savecredential = new EventEmitter();
     this.modify = new EventEmitter();
+    this.managementCredentials = new EventEmitter();
   }
   compareFn(t1: CredentialsEntity, t2: CredentialsEntity) {
     return (
@@ -51,16 +57,14 @@ export class BookCredentialCompComponent
     }
   }
   onMaintainCredentials() {
-    this.router.navigate([
-      AppHelper.getRoutePath("member-credential-management")
-    ]);
+    this.managementCredentials.emit();
   }
   onSave() {
     this.savecredential.emit(this.credential);
   }
   async ngOnInit() {
     // this.isFlightTrainHotel = "train";
-    this.isSelf = await this.staffService.isSelfBookType();
+    // this.isSelf = await this.staffService.isSelfBookType();
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();

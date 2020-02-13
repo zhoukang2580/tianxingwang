@@ -1,9 +1,12 @@
+import { CredentialsEntity } from "./../tmc/models/CredentialsEntity";
 import { IdentityService } from "./../services/identity/identity.service";
 import { CredentialsType } from "./../member/pipe/credential.pipe";
 import {
   TmcService,
   PassengerBookInfo,
-  FlightHotelTrainType
+  FlightHotelTrainType,
+  InitialBookDtoModel,
+  IBookOrderResult
 } from "src/app/tmc/tmc.service";
 import { TripType } from "src/app/tmc/models/TripType";
 import { ModalController } from "@ionic/angular";
@@ -31,6 +34,7 @@ import { DayModel } from "../tmc/models/DayModel";
 import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
 import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 import { CountryEntity } from "../tmc/models/CountryEntity";
+import { OrderBookDto } from "../order/models/OrderBookDto";
 
 export const KEY_INTERNATIONAL_HOTEL_TRAFFICLINES =
   "key_international_hotel_trafficlines";
@@ -53,7 +57,9 @@ export interface IshowRoomDetailInfo {
   providedIn: "root"
 })
 export class InternationalHotelService {
-  private fetchPassengerCredentials: { promise: Promise<any> };
+  private fetchPassengerCredentials: {
+    promise: Promise<{ [accountId: string]: CredentialsEntity[] }>;
+  };
   private isInitializingSelfBookInfos: { promise: Promise<any> };
   private bookInfos: PassengerBookInfo<IInterHotelInfo>[];
   private bookInfoSource: Subject<PassengerBookInfo<IInterHotelInfo>[]>;
@@ -65,11 +71,10 @@ export class InternationalHotelService {
   private countries: ILocalCache<CountryEntity[]>;
   private fetchTrafficlines: { promise: Promise<TrafficlineEntity[]> };
   private fetchCountries: { promise: Promise<CountryEntity[]> };
-  private selfCredentials: any[];
+  private selfCredentials: CredentialsEntity[];
   private conditionModel: HotelConditionModel;
-  viewHotel: HotelEntity = !environment.production
-    ? (MOCK_HOTEL_DETIAL_INFO as any)
-    : null; // 查看详情的hotel
+  // = !environment.production    ? (MOCK_HOTEL_DETIAL_INFO as any)    : null; // 查看详情的hotel
+  viewHotel: HotelEntity;
   showRoomDetailInfo: IshowRoomDetailInfo;
   showImages: any[];
   constructor(
@@ -88,6 +93,50 @@ export class InternationalHotelService {
       this.disposal();
     });
   }
+  async onBook(bookDto: OrderBookDto): Promise<IBookOrderResult> {
+    const req = new RequestEntity();
+    req.Method = "TmcApiBookUrl-InternationalHotel-Book";
+    bookDto.Channel = this.tmcService.getChannel();
+    req.Data = bookDto;
+    req.IsShowLoading = true;
+    req.Timeout = 60;
+    this.apiService.showLoadingView();
+    return this.apiService.getPromiseData<IBookOrderResult>(req);
+  }
+  async getInitializeBookDto(
+    bookDto: OrderBookDto
+  ): Promise<InitialBookDtoModel> {
+    const req = new RequestEntity();
+    req.Method = "TmcApiBookUrl-InternationalHotel-Initialize";
+    req.Data = bookDto;
+    req.IsShowLoading = true;
+    req.Timeout = 60;
+    const isSelf = await this.staffService.isSelfBookType();
+    const bookInfos = this.getBookInfos();
+    return this.apiService
+      .getPromiseData<InitialBookDtoModel>(req)
+      .then(res => {
+        res.IllegalReasons = res.IllegalReasons || [];
+        res.Insurances = res.Insurances || {};
+        res.ServiceFees = res.ServiceFees || ({} as any);
+        if (bookInfos.length == 2 && isSelf) {
+          const fees = {};
+          Object.keys(res.ServiceFees).forEach(k => {
+            fees[k] = +res.ServiceFees[k] / 2;
+          });
+        }
+        res.Staffs = res.Staffs || [];
+        res.Staffs = res.Staffs.map(it => {
+          return {
+            ...it,
+            CredentialStaff: { ...it } as any
+          };
+        });
+        res.Tmc = res.Tmc || ({} as any);
+        res.TravelFrom = res.TravelFrom || ({} as any);
+        return res;
+      });
+  }
   private disposal() {
     this.removeAllBookInfos();
     this.showImages = [];
@@ -97,8 +146,8 @@ export class InternationalHotelService {
   }
   private initSearchCondition() {
     this.searchConditon = {
-      checkinDate: this.calendarService.getMoment(1).format("YYYY-MM-DD"),
-      checkoutDate: this.calendarService.getMoment(2).format("YYYY-MM-DD"),
+      checkinDate: this.calendarService.getMoment(4).format("YYYY-MM-DD"),
+      checkoutDate: this.calendarService.getMoment(5).format("YYYY-MM-DD"),
       adultCount: 1,
       childCount: 0,
       hotelType: "normal",

@@ -31,11 +31,12 @@ export class CalendarService {
   diff(d2: string, d1: string, unit: any): number {
     return moment(d2).diff(moment(d1), unit);
   }
-  getMoment(addDays: number = 0) {
+  getMoment(addDays: number = 0, date: string | number = "") {
+    const m = date ? moment(date) : moment();
     if (addDays) {
-      return moment().add(addDays, "days");
+      return m.add(addDays, "days");
     }
-    return moment();
+    return m;
   }
   async getHolidays(forceFetch = false) {
     if (!this.holidays) {

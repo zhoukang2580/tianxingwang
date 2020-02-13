@@ -16,12 +16,15 @@
         <div>
           {{bookInfo?.bookInfo?.roomPlan?.Name}}
         </div>
-        <ion-label class='price ion-text-end ion-text-wrap' *ngIf='bookInfo?.bookInfo?.roomPlan?.TotalAmount as m'
-          color='danger'>
-          共<small>￥</small>{{m}}<ion-text color='secondary' (click)='onShowPriceDetail()'>
+        <div class='price ion-text-end ion-text-wrap' *ngIf='bookInfo?.bookInfo?.roomPlan?.TotalAmount as m'>
+          共
+          <ion-text color='danger'>
+            <small>￥</small>{{m}}
+          </ion-text>
+          <ion-text color='secondary' (click)='onShowPriceDetail()'>
             明细
           </ion-text>
-        </ion-label>
+        </div>
       </div>
       <div class="dashed-line"></div>
       <div (click)='onShowRoomDetail()'>

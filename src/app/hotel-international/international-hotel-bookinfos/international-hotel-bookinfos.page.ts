@@ -192,7 +192,7 @@ export class InternationalHotelBookinfosPage implements OnInit {
     this.changeDateBookInfo = null;
   }
   async nextStep() {
-    await this.router.navigate([AppHelper.getRoutePath("inter-hotel-book")]);
+    await this.router.navigate([AppHelper.getRoutePath("international-hotel-book")]);
     await this.hotelService.dismissAllTopOverlays();
   }
   onbedChange(bed: string, bookInfo: PassengerBookInfo<IInterHotelInfo>) {

@@ -1,14 +1,13 @@
-<div [class.disabled]='isOtherOrganization'>
-    <ion-item detail lines='none' [disabled]='isOtherOrganization' 
-      (click)='searchOrganization()'>
-      <ion-label>部门：</ion-label>
-      <ion-label class='ion-text-end'>{{organization?.Name}}</ion-label>
-    </ion-item>
-    <ion-item lines='none' >
-      <ion-label style='margin-right: 0.5em'>其他:</ion-label>
-      <ion-checkbox color="secondary" [(ngModel)]="isOtherOrganization" (ionChange)='onValueChange()'></ion-checkbox>
-      <ion-input [disabled]='!isOtherOrganization' (ionChange)='onValueChange()'
-        [(ngModel)]='otherOrganizationName' placeholder='名称'>
-      </ion-input>
-    </ion-item>
-  </div>
+<ion-item detail lines='none' [disabled]='false&&isOtherOrganization' (click)='searchOrganization()'>
+  <ion-label>
+    <strong>部门:</strong>
+  </ion-label>
+  <ion-label class='ion-text-end'>{{organization?.Name}}</ion-label>
+</ion-item>
+<ion-item lines='none'>
+  <ion-checkbox color="secondary" class="ion-margin-end" [(ngModel)]="isOtherOrganization" (ionChange)='onValueChange()'></ion-checkbox>
+  <ion-label style='margin-right: 0.5em'>其他</ion-label>
+  <ion-input [disabled]='false&&!isOtherOrganization' (ionChange)='onValueChange()' [(ngModel)]='otherOrganizationName'
+    placeholder='名称'>
+  </ion-input>
+</ion-item>

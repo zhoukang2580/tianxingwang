@@ -129,9 +129,13 @@ export class InternationalHotelDetailPage
     this.initQueryModel();
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(() => {
+        this.hotel = this.hotelService.viewHotel;
         this.staffService.isSelfBookType().then(self => {
           this.canAddPassengers = !self;
         });
+        setTimeout(() => {
+          this.doRefresh();
+        }, 240);
       })
     );
     this.subscriptions.push(
@@ -435,13 +439,14 @@ export class InternationalHotelDetailPage
             this.initFilterPolicy();
           }
         });
+    } else {
+      if (this.refresher) {
+        this.refresher.complete();
+      }
     }
   }
   ngAfterViewInit() {
     this.hideHeader(true);
-    setTimeout(() => {
-      this.doRefresh();
-    }, 240);
     this.checkScroll();
     this.content.getScrollElement().then(c => {
       this.scrollEl = c;
@@ -501,9 +506,10 @@ export class InternationalHotelDetailPage
 
     if (!this.checkIfPassengerSelected() && !isself) {
       const ok = await AppHelper.alert(
-        "请先添加旅客(Please Add Passengers)",
+        "是否先添加旅客(Please Add Passengers)",
         true,
-        "确定"
+        LanguageHelper.getYesTip(),
+        LanguageHelper.getNegativeTip()
       );
       if (ok) {
         this.onSelectPassenger(evt);
@@ -722,7 +728,7 @@ export class InternationalHotelDetailPage
           const top = scroll.scrollTop;
           const delta = top - (h - 2 * headerH);
           const opacity = delta / headerH;
-          console.log(this.scrollEl.scrollHeight);
+          // console.log(this.scrollEl.scrollHeight);
           if (delta >= 0) {
             this.changeHeaderOpacity(opacity);
           } else {

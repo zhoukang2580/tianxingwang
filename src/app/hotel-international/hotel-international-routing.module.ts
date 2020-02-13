@@ -47,7 +47,7 @@ export const routes: Routes = [
     loadChildren: () => import('./international-hotel-bookinfos/international-hotel-bookinfos.module').then( m => m.InternationalHotelBookinfosPageModule)
   },
   {
-    path: 'inter-hotel-book',
+    path: 'international-hotel-book',
     loadChildren: () => import('./inter-hotel-book/inter-hotel-book.module').then( m => m.InterHotelBookPageModule)
   },
   {

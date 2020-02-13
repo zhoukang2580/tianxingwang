@@ -66,9 +66,9 @@ export const NOT_WHITE_LIST = "notwhitelist";
 export class SelectPassengerPage
   implements OnInit, CanComponentDeactivate, AfterViewInit, OnDestroy {
   private keyword: string;
-  private isOpenPageAsModal = false;// 设置是否通过modalcontroller打开
+  private isOpenPageAsModal = false; // 设置是否通过modalcontroller打开
   private forType: FlightHotelTrainType; // isOpenPageAsModal 传入参数
-  private bookInfos: PassengerBookInfo<any>[]; 
+  private bookInfos: PassengerBookInfo<any>[];
   removeitem: EventEmitter<PassengerBookInfo<any>>; // isOpenPageAsModal 传入参数
   isShow = true;
   vmKeyword: string;
@@ -432,6 +432,22 @@ export class SelectPassengerPage
         LanguageHelper.getCancelTip()
       );
       return;
+    }
+    if (this.forType == FlightHotelTrainType.HotelInternational) {
+      const isPsssportOrHmPass =
+        selectedCredential.Type == CredentialsType.Passport ||
+        selectedCredential.Type == CredentialsType.HmPass;
+      if (!isPsssportOrHmPass) {
+        const ok = await AppHelper.alert(
+          "当前选择的证件不是护照或者港澳台通行证，是否继续？",
+          true,
+          LanguageHelper.getYesTip(),
+          LanguageHelper.getNegativeTip()
+        );
+        if (!ok) {
+          return;
+        }
+      }
     }
     if (
       this.vmNewCredential &&

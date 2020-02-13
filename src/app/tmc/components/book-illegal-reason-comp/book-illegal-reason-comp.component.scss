@@ -1,4 +1,9 @@
-:host {
-    width: 100%;
+ion-item {
+  &.item-disabled {
+    ion-input {
+      input {
+        opacity: 1;
+      }
+    }
   }
-  
+}

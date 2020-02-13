@@ -3,7 +3,7 @@
   <ion-toolbar>
     <ion-buttons slot='start'>
       <!-- <ion-button (click)='back()'>
-        <ion-icon color='dark' name='arrow-back'></ion-icon>
+        <ion-icon name='arrow-back'></ion-icon>
       </ion-button> -->
       <ion-back-button defaultHref=""></ion-back-button>
     </ion-buttons>
@@ -279,7 +279,7 @@
     <ion-row style="position: relative;top:35%">
       <ion-col class='ion-text-center'>
         <ion-label color='danger'>请求数据出错</ion-label>
-        <ion-button fill='clear' expand='block' color='secondary' (click)='doRefresh(true)'>点击重试</ion-button>
+        <ion-button fill='clear' expand='block' color='secondary' (click)='doRefresh(false)'>点击重试</ion-button>
       </ion-col>
     </ion-row>
   </ng-template>

@@ -46,13 +46,14 @@ ion-card {
     top: calc(-1 * var(--h) - 1em);
   }
   background: white;
-
+  .grade-stars {
+    margin-left: 1.5em;
+  }
   .grade-stars,
   .position {
     margin-left: 1em;
     display: flex;
     align-items: center;
-
     .stars {
       margin-left: 1em;
     }
@@ -120,7 +121,7 @@ ion-card {
   }
 
   .room-plans app-inter-room-plan-item {
-    border-top: 1px dashed rgba(var(--ion-color-secondary-rgb),0.5);
+    border-top: 1px dashed rgba(var(--ion-color-secondary-rgb), 0.5);
   }
 
   .room-info {
