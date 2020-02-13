@@ -70,11 +70,13 @@ import { HotelEntity } from "../models/HotelEntity";
 import { RoomEntity } from "../models/RoomEntity";
 import { ITmcOutNumberInfo } from "src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component";
 import { AccountEntity } from "src/app/account/models/AccountEntity";
+import { flyInOut } from 'src/app/animations/flyInOut';
 @Component({
   selector: "app-book",
   templateUrl: "./book.page.html",
   styleUrls: ["./book.page.scss"],
   animations: [
+    flyInOut,
     trigger("showHide", [
       state("true", style({ display: "initial" })),
       state("false", style({ display: "none" }))

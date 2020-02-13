@@ -119,20 +119,18 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
       }
       city.Selected = true;
       const old = this.hotelService.getSearchHotelModel();
+      const oldCode =
+        old && old.destinationCity && old.destinationCity.CityCode;
       await this.initHistoryCity(city);
-      if (
-        old &&
-        old.destinationCity &&
-        old.destinationCity.CityCode != city.CityCode
-      ) {
-        const query = this.hotelService.getHotelQueryModel();
-        this.hotelService.setSearchHotelModel({
-          ...old,
-          destinationCity: city
-        });
-        await this.hotelService.getConditions(true);
-        query.locationAreas = null;
-        this.hotelService.setHotelQuerySource(query);
+      const query = this.hotelService.getHotelQueryModel();
+      this.hotelService.setSearchHotelModel({
+        ...old,
+        destinationCity: city
+      });
+      query.locationAreas = null;
+      this.hotelService.setHotelQuerySource(query);
+      if (oldCode != city.CityCode) {
+        this.hotelService.getConditions(true);
       }
     }
     setTimeout(() => {

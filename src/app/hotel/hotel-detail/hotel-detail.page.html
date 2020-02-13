@@ -161,7 +161,7 @@
               </h3>
             </ion-label>
           </div>
-          <div class='room-plans' *ngIf='room["isShowRoomPlans"]'>
+          <div class='room-plans' *ngIf='room["isShowRoomPlans"]' @flyInOut>
             <app-room-plan-item *ngFor='let plan of room.RoomPlans' [colors]='colors' [room]='room' [roomPlan]='plan'
               [hotel]='hotel' (bookRoom)='onBookRoomPlan($event)'>
             </app-room-plan-item>

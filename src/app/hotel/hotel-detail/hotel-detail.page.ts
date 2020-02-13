@@ -1,3 +1,4 @@
+import { flyInOut } from "./../../animations/flyInOut";
 import { baiduMapAk, MapService } from "./../../services/map/map.service";
 import { AgentEntity } from "./../../tmc/models/AgentEntity";
 import { ApiService } from "src/app/services/api/api.service";
@@ -44,6 +45,7 @@ import {
 } from "src/app/tmc/tmc.service";
 import { TripType } from "src/app/tmc/models/TripType";
 import { environment } from "src/environments/environment";
+// tslint:disable-next-line: max-line-length
 import { FilterPassengersPolicyComponent } from "src/app/tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
 import {
   trigger,
@@ -59,6 +61,7 @@ type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
   templateUrl: "./hotel-detail.page.html",
   styleUrls: ["./hotel-detail.page.scss"],
   animations: [
+    flyInOut,
     trigger("hideShowAnimate", [
       state("true", style({ visibility: "initial" })),
       state("false", style({ visibility: "collapse" })),
@@ -251,7 +254,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       });
     this.route.queryParamMap.subscribe(q => {
       this.hotelDayPrice = this.hotelService.curViewHotel;
-      if(!this.hotelPolicy){
+      if (!this.hotelPolicy) {
         this.onSearch();
       }
     });
