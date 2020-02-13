@@ -1118,7 +1118,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       if (c) {
         AppHelper.alert("请选择到店时间");
         const ele = document.querySelector(
-          `app-room-show-item[dataid='${c.id}']`
+          `app-inter-room-show-item[dataid='${c.id}']`
         );
         this.scrollEleToView(ele);
         return;

@@ -458,7 +458,7 @@ export class InternationalHotelDetailPage
   onSearch() {
     this.doRefresh();
   }
-  private async onSelectPassenger(room?: {
+  async onSelectPassenger(room?: {
     roomPlan: RoomPlanEntity;
     room: RoomEntity;
     color: string;

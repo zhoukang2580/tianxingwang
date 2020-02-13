@@ -178,7 +178,7 @@ export class InternationalHotelListPage
     this.hotelService.setHotelQuerySource(query);
     this.onQueryFilter();
   }
-  private onQueryFilter() {
+  onQueryFilter() {
     this.hideQueryPannel();
     this.doRefresh(true);
   }
