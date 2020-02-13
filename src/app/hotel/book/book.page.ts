@@ -34,7 +34,8 @@ import {
   AfterViewInit,
   QueryList,
   ElementRef,
-  ViewChildren
+  ViewChildren,
+  OnDestroy
 } from "@angular/core";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { OrderBookDto } from "src/app/order/models/OrderBookDto";
@@ -53,7 +54,7 @@ import {
 } from "src/app/order/models/OrderTravelEntity";
 import { AddContact } from "src/app/tmc/models/AddContact";
 import { TaskType } from "src/app/workflow/models/TaskType";
-import { of, combineLatest, from } from "rxjs";
+import { of, combineLatest, from, Subscription } from "rxjs";
 import { OrderLinkmanDto } from "src/app/order/models/OrderLinkmanDto";
 import { LanguageHelper } from "src/app/languageHelper";
 import { SelectTravelNumberComponent } from "src/app/tmc/components/select-travel-number-popover/select-travel-number-popover.component";
@@ -80,8 +81,10 @@ import { AccountEntity } from "src/app/account/models/AccountEntity";
     ])
   ]
 })
-export class BookPage implements OnInit, AfterViewInit {
+export class BookPage implements OnInit, AfterViewInit, OnDestroy {
   private initialBookDto: InitialBookDtoModel;
+  private isManagentCredentails = false;
+  private subscriptions: Subscription[] = [];
   HotelPaymentType = HotelPaymentType;
   CredentialsType = CredentialsType;
   combindInfos: IPassengerHotelBookInfo[];
@@ -127,10 +130,18 @@ export class BookPage implements OnInit, AfterViewInit {
     private staffService: StaffService,
     private calendarService: CalendarService,
     private router: Router,
-    private route: ActivatedRoute,
     private payService: PayService,
-    private plt: Platform
-  ) {}
+    private plt: Platform,
+    route: ActivatedRoute
+  ) {
+    this.subscriptions.push(
+      route.queryParamMap.subscribe(() => {
+        if (this.isManagentCredentails) {
+          this.doRefresh(false);
+        }
+      })
+    );
+  }
   calcNights() {
     if (
       this.curSelectedBookInfo &&
@@ -144,6 +155,9 @@ export class BookPage implements OnInit, AfterViewInit {
         "days"
       );
     }
+  }
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
   onArrivalHotel(arrivalTime: string, item: IPassengerHotelBookInfo) {
     if (item && arrivalTime) {
@@ -166,6 +180,13 @@ export class BookPage implements OnInit, AfterViewInit {
     if (bookInfo && bookInfo.bookInfo && bookInfo.bookInfo.roomPlan) {
       bookInfo.bookInfo.roomPlan.Remark = bed;
     }
+  }
+  onManagementCredentials(item: IPassengerHotelBookInfo) {
+    item.credentialsRequested = false;
+    this.isManagentCredentails = true;
+    this.router.navigate([
+      AppHelper.getRoutePath("member-credential-management")
+    ]);
   }
   onShowPriceDetails(evt: {
     isShow: boolean;
@@ -242,7 +263,7 @@ export class BookPage implements OnInit, AfterViewInit {
     this.isPlaceOrderOk = false;
   }
   ngAfterViewInit() {
-    console.log("outnumberEles", this.outnumberEles.first);
+    // console.log("outnumberEles", this.outnumberEles.first);
   }
   get totalPrice() {
     const infos = this.hotelService.getBookInfos();
@@ -685,9 +706,9 @@ export class BookPage implements OnInit, AfterViewInit {
           if (
             this.outnumberEles &&
             this.outnumberEles.first &&
-            this.outnumberEles.first["el"]
+            this.outnumberEles.first.nativeElement
           ) {
-            this.scrollEleToView(this.outnumberEles.first["el"]);
+            this.scrollEleToView(this.outnumberEles.first.nativeElement);
           }
           return false;
         }
@@ -1420,7 +1441,7 @@ export class BookPage implements OnInit, AfterViewInit {
     }
   }
 }
-export interface IPassengerHotelBookInfo {
+interface IPassengerHotelBookInfo {
   arrivalHotelTime: string;
   creditCardInfo: {
     isShowCreditCard: boolean;
@@ -1438,6 +1459,7 @@ export interface IPassengerHotelBookInfo {
     name: string;
   };
   isShowApprovalInfo: boolean;
+  isCanEditCrendentails: boolean;
   isNotWhitelist?: boolean;
   vmCredential: CredentialsEntity;
   credential: CredentialsEntity;

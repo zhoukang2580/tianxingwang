@@ -134,11 +134,13 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     private payService: PayService,
     private plt: Platform
   ) {
-    route.queryParamMap.subscribe(() => {
-      if (this.isManagentCredentails) {
-        this.doRefresh(false);
-      }
-    });
+    this.subscriptions.push(
+      route.queryParamMap.subscribe(() => {
+        if (this.isManagentCredentails) {
+          this.doRefresh(false);
+        }
+      })
+    );
   }
   calcNights() {
     if (
@@ -721,9 +723,9 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           if (
             this.outnumberEles &&
             this.outnumberEles.first &&
-            this.outnumberEles.first["el"]
+            this.outnumberEles.first.nativeElement
           ) {
-            this.scrollEleToView(this.outnumberEles.first["el"]);
+            this.scrollEleToView(this.outnumberEles.first.nativeElement);
           }
           return false;
         }

@@ -1,4 +1,4 @@
-import { EventEmitter } from "@angular/core";
+import { EventEmitter, ElementRef } from "@angular/core";
 import { TmcService } from "./../../tmc.service";
 import { PopoverController } from "@ionic/angular";
 import { Component, OnInit, Input, Output } from "@angular/core";
@@ -12,6 +12,7 @@ import { SelectTravelNumberComponent } from "../select-travel-number-popover/sel
 })
 export class BookTmcOutnumberComponent implements OnInit {
   private timer: any;
+  nativeElement: HTMLElement;
   @Output() tmcOutNumber: EventEmitter<{
     tmcOutNumberInfos: ITmcOutNumberInfo[];
     tmcOutNumberInfo: ITmcOutNumberInfo;
@@ -22,9 +23,11 @@ export class BookTmcOutnumberComponent implements OnInit {
   @Input() tmcOutNumberInfos: ITmcOutNumberInfo[];
   constructor(
     private popoverCtrl: PopoverController,
-    private tmcService: TmcService
+    private tmcService: TmcService,
+    el: ElementRef<HTMLElement>
   ) {
     this.tmcOutNumber = new EventEmitter();
+    this.nativeElement = el.nativeElement;
   }
   onChange(arg: ITmcOutNumberInfo) {
     if (this.timer) {
@@ -40,7 +43,7 @@ export class BookTmcOutnumberComponent implements OnInit {
       });
     }, 300);
   }
-  ngOnInit() { }
+  ngOnInit() {}
   async onSelectTravelNumber(arg: ITmcOutNumberInfo) {
     const tmcOutNumberInfos = this.tmcOutNumberInfos;
     if (!arg || !arg.canSelect || this.isExchange || !this.isShowGroupedInfo) {
