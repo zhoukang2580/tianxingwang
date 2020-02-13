@@ -1,70 +1,28 @@
-.order-item {
-  .agent-book,
-  .agreement {
-    font-size: 0.6rem;
-    color: var(--ion-color-danger);
-  }
-  .order-flight-trip + .order-flight-trip {
-    border-top: 1px dashed rgba(var(--ion-color-dark-rgb), 0.12);
-    margin-bottom: 0.5em;
-  }
-  width: 100%;
-  ion-row,
-  ion-col {
-    margin: 0;
-    padding: 0;
-  }
-  ion-row {
-    margin: 0.5em 0;
-    &.order-id {
-      user-select: text;
-    }
-    &.passenger {
-      ion-label {
-        display: block;
-      }
-    }
-    &.action-btns {
-      ion-col {
-        justify-content: flex-end;
-      }
-    }
-    ion-col:first-child {
-      align-self: flex-start;
-      color: var(--ion-color-medium);
-    }
-  }
-  ion-row ion-col:not(.non-flex) {
-    display: flex;
-    align-items: center;
-  }
-  ion-col {
-    align-self: center;
-    font-size: 0.75rem;
-    ion-label {
-      margin: 0;
-      padding: 0;
-    }
-  }
-  .passenger ion-row {
-    margin: 0;
-    padding: 0;
-  }
-}
-
-.ticket-trip {
-  line-height: 1.6;
-}
-.ticket-trip + .ticket-trip {
-  border-top: 1px dashed var(--ion-color-dark);
-}
 :host {
   width: 100%;
 }
-span + span {
-  margin-left: 0.5em;
+ion-row {
+  &.action-btns {
+    ion-col {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right:1em ;
+    }
+  }
+  ion-col {
+    &.status {
+      padding-right: 1em;
+      font-size: 1.1rem;
+      text-align: end;
+    }
+    align-self: flex-start;
+    font-size: 0.9rem;
+    &:not(.dark) {
+      color: var(--ion-color-medium);
+    }
+  }
 }
-span.line {
-  margin: 0 0.2em;
-  opacity: 0.4;
+.select-text {
+  user-select: text;
 }

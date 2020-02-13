@@ -56,7 +56,6 @@ import {
   ITmcOutNumberInfo
 } from "src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
-import { IHotelInfo } from "src/app/hotel/hotel.service";
 import { of, combineLatest, from, Subscription } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
 import { LanguageHelper } from "src/app/languageHelper";
@@ -105,7 +104,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   >;
   error: any;
   identity: IdentityEntity;
-  bookInfos: PassengerBookInfo<IHotelInfo>[];
+  bookInfos: PassengerBookInfo<IInterHotelInfo>[];
   tmc: TmcEntity;
   isCanSkipApproval$ = of(false);
   illegalReasons: any[];
@@ -177,14 +176,14 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       }
     }
   }
-  onBedchange(bed: string, bookInfo: PassengerBookInfo<IHotelInfo>) {
+  onBedchange(bed: string, bookInfo: PassengerBookInfo<IInterHotelInfo>) {
     if (bookInfo && bookInfo.bookInfo && bookInfo.bookInfo.roomPlan) {
       bookInfo.bookInfo.roomPlan.Remark = bed;
     }
   }
   onShowPriceDetails(evt: {
     isShow: boolean;
-    bookInfo: PassengerBookInfo<IHotelInfo>;
+    bookInfo: PassengerBookInfo<IInterHotelInfo>;
   }) {
     this.curSelectedBookInfo = evt.bookInfo;
     if (evt.isShow) {
@@ -1505,7 +1504,7 @@ interface IPassengerHotelBookInfo {
   id: string;
   appovalStaff: StaffEntity;
   credentialStaff: StaffEntity;
-  bookInfo: PassengerBookInfo<IHotelInfo>;
+  bookInfo: PassengerBookInfo<IInterHotelInfo>;
   isOpenrules?: boolean;
   travelType: OrderTravelType;
   addContacts?: AddContact[];

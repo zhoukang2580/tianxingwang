@@ -70,8 +70,8 @@ import { map, tap } from "rxjs/operators";
 import { AddContact } from "src/app/tmc/models/AddContact";
 import { environment } from "src/environments/environment";
 import { ITmcOutNumberInfo } from 'src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component';
-import { IPassengerHotelBookInfo } from 'src/app/hotel/book/book.page';
 import { AccountEntity } from 'src/app/account/models/AccountEntity';
+import { IHotelInfo } from 'src/app/hotel/hotel.service';
 
 @Component({
   selector: "app-book",
@@ -1328,7 +1328,69 @@ export class BookPage implements OnInit, AfterViewInit {
   }
 }
 
+interface IPassengerHotelBookInfo {
+  arrivalHotelTime: string;
+  creditCardInfo: {
+    isShowCreditCard: boolean;
+    creditCardType: string;
+    creditCardNumber: string;
+    creditCardCvv: string;
+    creditCardExpirationDate: string;
+    expirationYear: string;
+    expirationMonth: string;
+    years: number[];
+  };
+  creditCardPersionInfo: {
+    credentialType: string;
+    credentialNumber: string;
+    name: string;
+  };
+  isShowApprovalInfo: boolean;
+  isNotWhitelist?: boolean;
+  vmCredential: CredentialsEntity;
+  credential: CredentialsEntity;
+  credentials: CredentialsEntity[];
+  notifyLanguage: string;
+  isSkipApprove: boolean;
+  isCanEditCrendentails: boolean;
+  isShowRoomPlanRulesDesc: boolean;
+  id: string;
+  appovalStaff: StaffEntity;
+  credentialStaff: StaffEntity;
+  bookInfo: PassengerBookInfo<IHotelInfo>;
+  isOpenrules?: boolean;
+  travelType: OrderTravelType;
+  addContacts?: AddContact[];
+  isOtherCostCenter?: boolean;
+  otherCostCenterCode?: string;
+  otherCostCenterName?: string;
+  isOtherOrganization?: boolean;
+  costCenter: { code: string; name: string };
+  organization: OrganizationEntity;
+  otherOrganizationName: string;
+  credentialStaffMobiles: {
+    checked: boolean;
+    mobile: string;
+  }[];
+  credentialStaffOtherMobile: string;
+  credentialStaffEmails: {
+    checked: boolean;
+    email: string;
+  }[];
+  credentialStaffOtherEmail: string;
 
+  credentialStaffApprovers: {
+    Tag: string;
+    Type: TaskType;
+    approvers: StaffApprover[];
+  }[];
+  tmcOutNumberInfos: ITmcOutNumberInfo[];
+  credentialsRequested?: boolean;
+  isOtherIllegalReason?: boolean;
+  isShowFriendlyReminder?: boolean;
+  illegalReason?: string;
+  otherIllegalReason?: string;
+}
 interface ICombindInfo {
   id: string;
   vmModal: PassengerBookInfo<IFlightSegmentInfo>;
