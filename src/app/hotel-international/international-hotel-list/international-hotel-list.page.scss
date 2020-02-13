@@ -94,9 +94,10 @@ app-inter-hotel-query {
   top: 0;
   touch-action: none;
   &.ios {
-    margin: 0 -1em 0 -2em;
+    left: -2em;
   }
   &.md {
+    left: -4em;
   }
 }
 .backdrop.ion-page.show {

@@ -120,7 +120,9 @@ export class SwiperSlidesComponent
   }
   private onTouchEnd() {
     // console.log("touchEnd");
-    this.startAutoPlay();
+    setTimeout(() => {
+      this.startAutoPlay();
+    }, 1000);
   }
   private slideToSlide(idx: number) {
     return new Promise(resolve => {
@@ -156,16 +158,18 @@ export class SwiperSlidesComponent
     // }
   }
   private loadMore() {
-    let items = [];
-    if (false && this.items.length <= 100) {
-      this.vmItems = this.items;
-    } else {
-      items = this.items.slice(
-        this.vmItems.length,
-        this.vmItems.length + this.pageSize
-      );
-      if (items.length) {
-        this.vmItems = this.vmItems.concat(items);
+    if (this.items) {
+      let items = [];
+      if (false && this.items.length <= 100) {
+        this.vmItems = this.items;
+      } else {
+        items = this.items.slice(
+          this.vmItems.length,
+          this.vmItems.length + this.pageSize
+        );
+        if (items.length) {
+          this.vmItems = this.vmItems.concat(items);
+        }
       }
     }
   }
@@ -238,7 +242,6 @@ export class SwiperSlidesComponent
       // console.log("onchanges this.curIndex", this.curIndex);
     }
     if (changes.items && changes.items.currentValue) {
-      // console.log("总数", this.items.length);
       this.items = this.items.map((it, idx) => {
         return {
           idx,
@@ -246,12 +249,17 @@ export class SwiperSlidesComponent
           text: it.text
         };
       });
-      this.initVmItems();
+      setTimeout(() => {
+        this.initVmItems();
+      }, 0);
     }
   }
   private initVmItems() {
     this.vmItems = [];
     this.loadMore();
+    // if (this.items) {
+    //   console.log("图片总数", this.items.length, "vmItems", this.vmItems);
+    // }
   }
   private update() {
     // console.log("swiper update");

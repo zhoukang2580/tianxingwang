@@ -17,8 +17,8 @@ import {
   OnDestroy
 } from "@angular/core";
 import { ModalController } from "@ionic/angular";
-import { HotelBookType } from 'src/app/hotel/models/HotelBookType';
-import { RoomPlanEntity } from 'src/app/hotel/models/RoomPlanEntity';
+import { HotelBookType } from "src/app/hotel/models/HotelBookType";
+import { RoomPlanEntity } from "src/app/hotel/models/RoomPlanEntity";
 @Component({
   selector: "app-room-detail",
   templateUrl: "./international-room-detail.page.html",
@@ -76,6 +76,8 @@ export class InternationalRoomDetailPage
       this.config = this.hotelService.showRoomDetailInfo.config;
       this.agent = this.hotelService.showRoomDetailInfo.agent;
       this.roomImages = this.hotelService.showRoomDetailInfo.roomImages;
+      this.images =
+        this.roomImages && this.roomImages.map(it => ({ imageUrl: it }));
       this.hotelName =
         this.hotelService.showRoomDetailInfo.hotel &&
         this.hotelService.showRoomDetailInfo.hotel.Name;
@@ -89,6 +91,7 @@ export class InternationalRoomDetailPage
     });
   }
   async ngOnInit() {
+    this.roomImages = this.hotelService.showRoomDetailInfo&& this.hotelService.showRoomDetailInfo.roomImages;
     if (this.roomImages) {
       this.images = this.roomImages.map(it => {
         return {

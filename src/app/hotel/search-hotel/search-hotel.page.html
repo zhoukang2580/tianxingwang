@@ -6,12 +6,12 @@
       </ion-button> -->
       <ion-back-button defaultHref=""></ion-back-button>
     </ion-buttons>
-    <ion-text *ngIf='isShowSelectedInfos$ |async'>酒店查询</ion-text>
-    <ion-title *ngIf='!(isShowSelectedInfos$ |async)'>酒店查询</ion-title>
+    <ion-text *ngIf='isShowSelectedInfos'>酒店查询</ion-text>
+    <ion-title *ngIf='!(isShowSelectedInfos)'>酒店查询</ion-title>
     <ion-buttons class='small-font' slot='end'>
-      <ion-button *ngIf='isShowSelectedInfos$ |async' fill='clear' color='secondary' size='small'
+      <ion-button *ngIf='isShowSelectedInfos' fill='clear' color='secondary' size='small'
         (click)='onShowSelectedBookInfos()'>已选行程<ion-badge color='danger'>
-          <ion-text color='light'>{{selectedPassengers}}</ion-text>
+          <ion-text color='light'>{{selectedBookInfosNumber}}</ion-text>
         </ion-badge>
       </ion-button>
       <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()'
@@ -34,7 +34,7 @@
 </ion-header>
 <ion-content>
   <ion-card>
-    <ion-card-header>
+    <ion-card-header *ngIf=''>
       <div class='segments'>
         <div class="segment-button left" [class.active]='isDomestic' (click)='onToggleDomestic()'>
           <ion-label>国内酒店</ion-label>
@@ -48,13 +48,13 @@
     <ion-card-content>
       <div class='ion-padding-top'>
         <ion-segment mode='ios' (ionChange)="segmentChanged($event)" color="secondary">
-          <ion-segment-button mode='ios' value="normal" [checked]='activeTab=="normal"'>
+          <ion-segment-button mode='ios' value="normal" [checked]='searchHotelModel?.hotelType=="normal"'>
             <ion-label>非协议酒店</ion-label>
           </ion-segment-button>
-          <ion-segment-button mode='ios' value="agreement" [checked]='activeTab=="agreement"'>
+          <ion-segment-button mode='ios' value="agreement" [checked]='searchHotelModel?.hotelType=="agreement"'>
             <ion-label>协议酒店</ion-label>
           </ion-segment-button>
-          <ion-segment-button mode='ios' value="specialprice" [checked]='activeTab=="specialprice"'>
+          <ion-segment-button mode='ios' value="specialprice" [checked]='searchHotelModel?.hotelType=="specialprice"'>
             <ion-label>特价酒店</ion-label>
           </ion-segment-button>
         </ion-segment>

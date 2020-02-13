@@ -88,6 +88,7 @@ export class InternationalHotelService {
       checkoutDate: this.calendarService.getMoment(2).format("YYYY-MM-DD"),
       adultCount: 1,
       childCount: 0,
+      hotelType:"normal",
       country: { Code: "CN" } as any,
       destinationCity: {
         CityCode: "US1576",

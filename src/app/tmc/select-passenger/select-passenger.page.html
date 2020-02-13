@@ -24,8 +24,8 @@
       refreshingText="正在加载...">
     </ion-refresher-content>
   </ion-refresher>
-  <ion-toolbar #toolbar>
-    <ion-searchbar debounce="700" animated placeholder="员工号、姓名、手机号、空格键 开始查询" (ionChange)='onSearch($event)'
+  <ion-toolbar #toolbar class="search">
+    <ion-searchbar debounce="300" class="ion-no-margin ion-no-padding" animated placeholder="员工号、姓名、手机号、空格键 开始查询" (ionChange)='onSearch($event)'
       [(ngModel)]='vmKeyword'>
     </ion-searchbar>
   </ion-toolbar>

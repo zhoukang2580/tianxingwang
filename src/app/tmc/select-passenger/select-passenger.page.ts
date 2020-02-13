@@ -1,3 +1,4 @@
+import { InternationalHotelService } from './../../hotel-international/international-hotel.service';
 import { HotelService } from "./../../hotel/hotel.service";
 import { SelectCountryModalComponent } from "../components/select-country/select-countrymodal.component";
 import { TrainService } from "./../../train/train.service";
@@ -48,7 +49,7 @@ import {
   transition,
   animate
 } from "@angular/animations";
-import { AccountEntity } from 'src/app/account/models/AccountEntity';
+import { AccountEntity } from "src/app/account/models/AccountEntity";
 export const NOT_WHITE_LIST = "notwhitelist";
 @Component({
   selector: "app-select-passenger",
@@ -66,9 +67,9 @@ export class SelectPassengerPage
   implements OnInit, CanComponentDeactivate, AfterViewInit, OnDestroy {
   private keyword: string;
   private isOpenPageAsModal = false;
-  private forType:FlightHotelTrainType;
+  private forType: FlightHotelTrainType;
   private bookInfos: PassengerBookInfo<any>[];
-  isShow=true;
+  isShow = true;
   vmKeyword: string;
   removeitem: EventEmitter<PassengerBookInfo<any>>;
   isShowNewCredential = false;
@@ -110,7 +111,8 @@ export class SelectPassengerPage
     private flightService: FlightService,
     private trainService: TrainService,
     private hotelService: HotelService,
-    private route: ActivatedRoute,
+    private interHotelService: InternationalHotelService,
+    private route: ActivatedRoute
   ) {
     this.removeitem = new EventEmitter();
   }
@@ -141,8 +143,8 @@ export class SelectPassengerPage
   }
   async ngOnInit() {
     this.route.queryParamMap.subscribe(_ => {
-      if(_.get("forType")){
-        this.forType = _.get("forType") as any as FlightHotelTrainType;
+      if (_.get("forType")) {
+        this.forType = (_.get("forType") as any) as FlightHotelTrainType;
       }
       this.getIdentityTypes();
       this.initPassengerTypes();
@@ -151,10 +153,10 @@ export class SelectPassengerPage
       this.initBookInfos();
       if (this.bookInfos$) {
         this.selectedPasengersNumber$ = this.bookInfos$.pipe(
-          tap(infos=>{
-            this.bookInfos=infos;
+          tap(infos => {
+            this.bookInfos = infos;
           }),
-          map(infos => infos.length),
+          map(infos => infos.length)
         );
       }
       this.isCanDeactive = false;
@@ -162,27 +164,38 @@ export class SelectPassengerPage
   }
   private initRemoveitem() {
     this.removeitemSubscription = this.removeitem.subscribe(async info => {
-      let ok=false;
-      if(!this.isOpenPageAsModal){
-         ok = await AppHelper.alert(LanguageHelper.getConfirmDeleteTip(),true,LanguageHelper.getConfirmTip(),LanguageHelper.getCancelTip());
+      let ok = false;
+      if (!this.isOpenPageAsModal) {
+        ok = await AppHelper.alert(
+          LanguageHelper.getConfirmDeleteTip(),
+          true,
+          LanguageHelper.getConfirmTip(),
+          LanguageHelper.getCancelTip()
+        );
       }
-      if (info&&ok) {
+      if (info && ok) {
         switch (+this.forType) {
           case +FlightHotelTrainType.Flight: {
-            if(!this.isOpenPageAsModal){
-              this.flightService.removePassengerBookInfo(info,true);
+            if (!this.isOpenPageAsModal) {
+              this.flightService.removePassengerBookInfo(info, true);
             }
             break;
           }
           case +FlightHotelTrainType.Train: {
-            if(!this.isOpenPageAsModal){
-              this.trainService.removeBookInfo(info,true);
+            if (!this.isOpenPageAsModal) {
+              this.trainService.removeBookInfo(info, true);
             }
             break;
           }
           case +FlightHotelTrainType.Hotel: {
-            if(!this.isOpenPageAsModal){
-              this.hotelService.removeBookInfo(info,true);
+            if (!this.isOpenPageAsModal) {
+              this.hotelService.removeBookInfo(info, true);
+            }
+            break;
+          }
+          case +FlightHotelTrainType.HotelInternational: {
+            if (!this.isOpenPageAsModal) {
+              this.interHotelService.removeBookInfo(info, true);
             }
             break;
           }
@@ -191,26 +204,29 @@ export class SelectPassengerPage
     });
   }
   private initBookInfos() {
-    if (
-      this.forType== FlightHotelTrainType.Flight
-    ) {
+    if (this.forType == FlightHotelTrainType.Flight) {
       this.bookInfos$ = this.flightService.getPassengerBookInfoSource();
     }
-    if (
-      this.forType == FlightHotelTrainType.Train
-    ) {
+    if (this.forType == FlightHotelTrainType.Train) {
       this.bookInfos$ = this.trainService.getBookInfoSource();
     }
-    if (
-      this.forType == FlightHotelTrainType.Hotel
-    ) {
+    if (this.forType == FlightHotelTrainType.Hotel) {
       this.bookInfos$ = this.hotelService.getBookInfoSource();
     }
+    if (this.forType == FlightHotelTrainType.HotelInternational) {
+      this.bookInfos$ = this.interHotelService.getBookInfoSource();
+    }
     if (this.bookInfos$) {
-      this.bookInfos$=this.bookInfos$.pipe(
-        tap(infos=>{
-          this.bookInfos=infos;
-          console.log("bookinfos",this.bookInfos&&this.bookInfos.map(it=>it.passenger&&it.passenger.Policy&&it.passenger.Policy));
+      this.bookInfos$ = this.bookInfos$.pipe(
+        tap(infos => {
+          this.bookInfos = infos;
+          console.log(
+            "bookinfos",
+            this.bookInfos &&
+              this.bookInfos.map(
+                it => it.passenger && it.passenger.Policy && it.passenger.Policy
+              )
+          );
         })
       );
     }
@@ -267,7 +283,7 @@ export class SelectPassengerPage
     const staff = await this.staffService.getStaff();
     const can =
       !!(identity && identity.Numbers && identity.Numbers.AgentId) ||
-      (staff&&staff.BookType) == StaffBookType.All;
+      (staff && staff.BookType) == StaffBookType.All;
     console.log("can add not whitelist ", can);
     return can;
   }
@@ -456,10 +472,15 @@ export class SelectPassengerPage
     const passengerBookInfo: PassengerBookInfo<any> = {
       credential: ({
         ...selectedCredential,
-        CheckName:`${selectedCredential.CheckFirstName}${selectedCredential.CheckLastName}`
+        CheckName: `${selectedCredential.CheckFirstName}${selectedCredential.CheckLastName}`
       } as any) as CredentialsEntity,
       isNotWhitelist: this.selectedPassenger.isNotWhiteList,
-      passenger: {...this.selectedPassenger,Name:this.selectedPassenger.Name||`${selectedCredential.CheckFirstName}${selectedCredential.CheckLastName}`}
+      passenger: {
+        ...this.selectedPassenger,
+        Name:
+          this.selectedPassenger.Name ||
+          `${selectedCredential.CheckFirstName}${selectedCredential.CheckLastName}`
+      }
     };
     const canAdd = await this.onAddPassengerBookInfo(passengerBookInfo);
     this.isCanDeactive = true;
@@ -498,21 +519,30 @@ export class SelectPassengerPage
   private async onAddPassengerBookInfo(
     passengerBookInfo: PassengerBookInfo<any>
   ) {
-    if (
-      this.forType == FlightHotelTrainType.Hotel
-    ) {
-      if (this.hotelService.getBookInfos().length>0) {
-        AppHelper.alert(LanguageHelper.Hotel.getCannotBookMoreHotelPassengerTip());
+    if (this.forType == FlightHotelTrainType.HotelInternational) {
+      if (this.interHotelService.getBookInfos().length > 0) {
+        AppHelper.alert(
+          LanguageHelper.Hotel.getCannotBookMoreHotelPassengerTip()
+        );
+        return false;
+      }
+      const bookInfos = this.interHotelService.getBookInfos();
+      this.checkNewCredentialId(passengerBookInfo, bookInfos);
+      this.interHotelService.addBookInfo(passengerBookInfo);
+    }
+    if (this.forType == FlightHotelTrainType.Hotel) {
+      if (this.hotelService.getBookInfos().length > 0) {
+        AppHelper.alert(
+          LanguageHelper.Hotel.getCannotBookMoreHotelPassengerTip()
+        );
         return false;
       }
       const bookInfos = this.hotelService.getBookInfos();
       this.checkNewCredentialId(passengerBookInfo, bookInfos);
       this.hotelService.addBookInfo(passengerBookInfo);
     }
-    if (
-      this.forType == FlightHotelTrainType.Flight
-    ) {
-      const can = this.flightService.getPassengerBookInfos().length<9
+    if (this.forType == FlightHotelTrainType.Flight) {
+      const can = this.flightService.getPassengerBookInfos().length < 9;
       if (!can) {
         AppHelper.alert(LanguageHelper.Flight.getCannotBookMorePassengerTip());
         return false;
@@ -521,10 +551,8 @@ export class SelectPassengerPage
       this.checkNewCredentialId(passengerBookInfo, bookInfos);
       this.flightService.addPassengerBookInfo(passengerBookInfo);
     }
-    if (
-      this.forType == FlightHotelTrainType.Train
-    ) {
-      if (this.trainService.getBookInfos().length>4) {
+    if (this.forType == FlightHotelTrainType.Train) {
+      if (this.trainService.getBookInfos().length > 4) {
         AppHelper.alert(LanguageHelper.Train.getCannotBookMorePassengerTip());
         return false;
       }

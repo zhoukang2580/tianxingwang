@@ -1,14 +1,14 @@
-<ion-header >
+<ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <ion-back-button defaultHref='' ></ion-back-button>
+      <ion-back-button defaultHref=''></ion-back-button>
     </ion-buttons>
     <ion-title>{{hotelName}}</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <div class="images"  *ngIf='roomImages?.length'>
-    <app-swiper-slides [items]='images' [logoUrl]='agent?.LogoFullFileName' [defaultImage]='config?.PrerenderImageUrl'>
+  <div class="images" *ngIf='roomImages?.length'>
+    <app-swiper-slides [items]='images' [defaultImage]='config?.PrerenderImageUrl' [options]="{autoplay:true}">
     </app-swiper-slides>
   </div>
   <ion-list class="house-info">

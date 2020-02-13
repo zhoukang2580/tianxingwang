@@ -49,6 +49,10 @@ export const routes: Routes = [
   {
     path: 'inter-hotel-book',
     loadChildren: () => import('./inter-hotel-book/inter-hotel-book.module').then( m => m.InterHotelBookPageModule)
+  },
+  {
+    path: 'search-international-hotel',
+    loadChildren: () => import('./search-international-hotel/search-international-hotel.module').then( m => m.SearchInternationalHotelPageModule)
   }
 ];
 @NgModule({

@@ -31,12 +31,17 @@ import { ShowStandardDetailsComponent } from "src/app/tmc/components/show-standa
 })
 export class SearchHotelPage implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
-  isShowSelectedInfos$: Observable<boolean>;
+  get isShowSelectedInfos() {
+    return this.hotelService.getBookInfos().some(it => !!it.bookInfo);
+  }
   canAddPassengers = false;
   isSelf = false;
   isDomestic = true;
   searchHotelModel: SearchHotelModel;
   interHotelSearchCondition: IInterHotelSearchCondition;
+  get selectedBookInfosNumber() {
+    return this.hotelService.getBookInfos().filter(it => !!it.bookInfo).length;
+  }
   get selectedPassengers() {
     return this.hotelService.getBookInfos().length;
   }
@@ -47,8 +52,9 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       this.searchHotelModel.checkOutDate
     ) {
       const nums = Math.abs(
-        moment(this.searchHotelModel.checkOutDate).diff(
-          moment(this.searchHotelModel.checkInDate),
+        this.calendarService.diff(
+          this.searchHotelModel.checkOutDate,
+          this.searchHotelModel.checkInDate,
           "days"
         )
       );
@@ -58,7 +64,6 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   }
   disabled: boolean;
   isPositioning = false;
-  activeTab = "normal";
   isLeavePage = false;
   constructor(
     private router: Router,
@@ -85,7 +90,6 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     );
     this.subscriptions.push(
       this.hotelService.getSearchHotelModelSource().subscribe(m => {
-        this.activeTab = m.hotelType;
         this.searchHotelModel = m;
       })
     );
@@ -169,10 +173,16 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     }
     this.isPositioning = false;
   }
-  onShowSelectedBookInfos() {}
+  onShowSelectedBookInfos() {
+    this.router.navigate([AppHelper.getRoutePath("hotel-room-bookedinfos")]);
+  }
   onSelectPassenger() {
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
-      queryParams: { forType: FlightHotelTrainType.Hotel }
+      queryParams: {
+        forType: this.isDomestic
+          ? FlightHotelTrainType.Hotel
+          : FlightHotelTrainType.HotelInternational
+      }
     });
   }
   async onOpenSelectedPassengers() {

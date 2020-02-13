@@ -36,6 +36,7 @@ interface LocalStorageAirport {
 export enum FlightHotelTrainType {
   Flight = 1,
   Hotel = 2,
+  HotelInternational = 4,
   Train = 3
 }
 @Injectable({

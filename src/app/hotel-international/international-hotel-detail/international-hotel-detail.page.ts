@@ -90,7 +90,14 @@ export class InternationalHotelDetailPage
       evt.stopImmediatePropagation();
       evt.preventDefault();
     }
-    this.navCtrl.pop();
+    this.navCtrl.pop().then(_ => {
+      console.log("pop ok");
+      setTimeout(() => {
+        if (this.router.url.includes("hotel-detail")) {
+          this.navCtrl.back();
+        }
+      }, 0);
+    });
   }
   getBgPic() {
     return (

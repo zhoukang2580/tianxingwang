@@ -171,6 +171,13 @@ export class HomePage implements OnInit, OnDestroy {
     let route = "";
 
     const tmcRegionTypeValue = tmc.RegionTypeValue.toLowerCase();
+    if (name == "international-hotel") {
+      route = "search-international-hotel";
+      if (tmcRegionTypeValue.search("internationalhot") < 0) {
+        AppHelper.alert(msg);
+        return;
+      }
+    }
     if (name == "hotel") {
       route = "search-hotel";
       if (tmcRegionTypeValue.search("hotel") < 0) {
@@ -194,11 +201,10 @@ export class HomePage implements OnInit, OnDestroy {
     }
     if (name == "rentalCar") {
       route = "rental-car";
-      //todo:
-      // if (tmcRegionTypeValue.search("flight") < 0) {
-      //   AppHelper.alert(msg);
-      //   return;
-      // }
+      if (tmcRegionTypeValue.search("car") < 0) {
+        AppHelper.alert(msg);
+        return;
+      }
     }
     if (name == "bulletin") {
       route = "bulletin-list";

@@ -28,6 +28,9 @@ export class CalendarService {
   constructor(private apiService: ApiService, private storage: Storage) {
     this.selectedDaysSource = new BehaviorSubject([]);
   }
+  diff(d2: string, d1: string, unit: any): number {
+    return moment(d2).diff(moment(d1), unit);
+  }
   getMoment(addDays: number = 0) {
     if (addDays) {
       return moment().add(addDays, "days");

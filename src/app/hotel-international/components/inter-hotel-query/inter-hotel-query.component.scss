@@ -13,6 +13,14 @@ ion-buttons {
 .container {
   background-color: white;
   padding: 0 0.5em;
+  ion-buttons:last-child {
+    &.md {
+      margin-right: -1em;
+    }
+    &.ios {
+      margin-right: -0.5em;
+    }
+  }
 }
 .has-selected-item {
   position: relative;
