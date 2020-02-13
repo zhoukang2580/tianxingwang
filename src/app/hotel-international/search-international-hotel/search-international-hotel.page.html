@@ -15,15 +15,15 @@
         </ion-badge>
       </ion-button>
       <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()'
-        *ngIf='canAddPassengers&&!selectedPassengers'>
+        *ngIf='canAddPassengers&&!selectedPassengers?.length'>
         添加旅客<ion-badge color='danger'>
-          <ion-text color='light'>{{selectedPassengers}}</ion-text>
+          <ion-text color='light'>{{selectedPassengers?.length}}</ion-text>
         </ion-badge>
       </ion-button>
       <ion-button fill='clear' color='secondary' size='small' (click)='onOpenSelectedPassengers()'
-        *ngIf='canAddPassengers&&selectedPassengers'>
+        *ngIf='canAddPassengers&&selectedPassengers?.length'>
         已选旅客<ion-badge color='danger'>
-          <ion-text color='light'>{{selectedPassengers}}</ion-text>
+          <ion-text color='light'>{{selectedPassengers?.length}}</ion-text>
         </ion-badge>
       </ion-button>
       <ion-button fill='clear' color='secondary' size='small' (click)='onShowStandardDesc()' *ngIf='isSelf'>
@@ -50,12 +50,12 @@
       </div>
       <ion-item lines='none' style="margin-left: -1em;margin-right:-1em;" class="ion-margin-top">
         <section class="flight-date">
-          <app-search-day-comp [day]='searchCondition?.checkinDate'
-            [isCheckIn]='true' (click)="onSelecDate(true)" [disabled]='false'>
+          <app-search-day-comp [day]='searchCondition?.checkinDate' [isCheckIn]='true' (click)="onSelecDate(true)"
+            [disabled]='false'>
           </app-search-day-comp>
           <div *ngIf='totalFlyDays'>共{{ totalFlyDays}}晚</div>
-          <app-search-day-comp [day]='searchCondition?.checkoutDate'
-            [isCheckOut]='true' (click)="onSelecDate(false)" [disabled]='false'>
+          <app-search-day-comp [day]='searchCondition?.checkoutDate' [isCheckOut]='true' (click)="onSelecDate(false)"
+            [disabled]='false'>
           </app-search-day-comp>
         </section>
       </ion-item>
@@ -68,11 +68,10 @@
           </ion-label>
         </ion-item>
       </div>
-      <ion-button class='ion-margin-top' style='width: 100%' (click)="onSearchHotel()"
-        *ngIf='!((canAddPassengers) && selectedPassengers==0)' color="secondary" expand="block">
+      <ion-button class='ion-margin-top' style='width: 100%' (click)="onSearchHotel()" color="secondary" expand="block">
         <ion-text>查询酒店</ion-text>
       </ion-button>
-      <ion-button *ngIf='(canAddPassengers) && selectedPassengers==0' class='ion-margin-top' style='width: 100%'
+      <ion-button *ngIf='false&&(canAddPassengers) && selectedPassengers?.length==0' class='ion-margin-top' style='width: 100%'
         (click)='onSelectPassenger()' color="secondary" expand="block">
         <ion-text>请添加乘客
         </ion-text>

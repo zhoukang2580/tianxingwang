@@ -1,3 +1,4 @@
+import { IHotelInfo } from "./../../hotel/hotel.service";
 import { CalendarService } from "./../../tmc/calendar.service";
 import { StaffService } from "./../../hr/staff.service";
 import { ModalController, PopoverController } from "@ionic/angular";
@@ -28,11 +29,9 @@ export class SearchInternationalHotelPage implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   canAddPassengers = false;
   isSelf = false;
+  selectedPassengers: PassengerBookInfo<IHotelInfo>[];
   get selectedPassengersNumbers() {
     return this.hotelService.getBookInfos().filter(it => !!it.bookInfo).length;
-  }
-  get selectedPassengers() {
-    return this.hotelService.getBookInfos().length;
   }
   get isShowSelectedInfos() {
     return this.hotelService.getBookInfos().some(it => !!it.bookInfo);
@@ -93,6 +92,11 @@ export class SearchInternationalHotelPage implements OnInit, OnDestroy {
       this.route.queryParamMap.subscribe(async _ => {
         this.isSelf = await this.staffService.isSelfBookType();
         this.canAddPassengers = !this.isSelf;
+      })
+    );
+    this.subscriptions.push(
+      this.hotelService.getBookInfoSource().subscribe(infos => {
+        this.selectedPassengers = infos;
       })
     );
     this.subscriptions.push(

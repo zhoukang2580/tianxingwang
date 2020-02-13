@@ -1,3 +1,5 @@
+import { IHotelInfo } from "./../../hotel/hotel.service";
+import { SelectPassengerPage } from "src/app/tmc/select-passenger/select-passenger.page";
 import { fadeInOut } from "./../../animations/fadeInOut";
 import { flyInOut } from "./../../animations/flyInOut";
 import { AppHelper } from "./../../appHelper";
@@ -18,7 +20,8 @@ import {
   OnDestroy,
   ElementRef,
   AfterViewInit,
-  Renderer2
+  Renderer2,
+  EventEmitter
 } from "@angular/core";
 import {
   IonRefresher,
@@ -28,18 +31,24 @@ import {
   Platform,
   NavController,
   PopoverController,
-  IonList
+  IonList,
+  ModalController
 } from "@ionic/angular";
 import { ActivatedRoute, Router } from "@angular/router";
 // tslint:disable-next-line: max-line-length
 import { FilterPassengersPolicyComponent } from "src/app/tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
-import { PassengerBookInfo } from "src/app/tmc/tmc.service";
+import {
+  PassengerBookInfo,
+  FlightHotelTrainType
+} from "src/app/tmc/tmc.service";
 import { StaffService } from "src/app/hr/staff.service";
 import { TripType } from "src/app/tmc/models/TripType";
 import { HotelPassengerModel } from "src/app/hotel/models/HotelPassengerModel";
 import { HotelEntity } from "src/app/hotel/models/HotelEntity";
 import { RoomPlanEntity } from "src/app/hotel/models/RoomPlanEntity";
 import { RoomEntity } from "src/app/hotel/models/RoomEntity";
+import { LanguageHelper } from "src/app/languageHelper";
+import { SelectedPassengersComponent } from "src/app/tmc/components/selected-passengers/selected-passengers.component";
 
 @Component({
   selector: "app-international-hotel-detail",
@@ -54,6 +63,9 @@ export class InternationalHotelDetailPage
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(IonHeader) ionHeader: IonHeader;
   @ViewChild("hotelInfo") hotelInfoEle: IonList;
+  get isShowSelectedInfos() {
+    return this.hotelService.getBookInfos().some(it => !!it.bookInfo);
+  }
   private subscription = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
   private scrollEl: HTMLElement;
@@ -61,6 +73,8 @@ export class InternationalHotelDetailPage
   private hotelPolicy: HotelPassengerModel[];
   private isAutoOpenHotelInfoDetails = true;
   private curSlideIndx = 0;
+  canAddPassengers = false;
+  selectedPassengers: PassengerBookInfo<IInterHotelInfo>[];
   hotel: HotelEntity;
   config: ConfigEntity;
   hotelImages: { imageUrl: string }[];
@@ -83,7 +97,8 @@ export class InternationalHotelDetailPage
     private plt: Platform, // private calendarService
     private navCtrl: NavController,
     private popoverController: PopoverController,
-    private staffService: StaffService
+    private staffService: StaffService,
+    private modalController: ModalController
   ) {}
   back(evt: CustomEvent) {
     if (evt) {
@@ -112,6 +127,42 @@ export class InternationalHotelDetailPage
     this.colors = {};
     this.hotel = this.hotelService.viewHotel;
     this.initQueryModel();
+    this.subscriptions.push(
+      this.route.queryParamMap.subscribe(() => {
+        this.staffService.isSelfBookType().then(self => {
+          this.canAddPassengers = !self;
+        });
+      })
+    );
+    this.subscriptions.push(
+      this.hotelService.getBookInfoSource().subscribe(bookinfos => {
+        this.selectedPassengers = bookinfos;
+      })
+    );
+  }
+  async onOpenSelectedPassengers() {
+    const removeitem = new EventEmitter();
+    removeitem.subscribe(async (info: PassengerBookInfo<IInterHotelInfo>) => {
+      const ok = await AppHelper.alert(
+        LanguageHelper.getConfirmDeleteTip(),
+        true,
+        LanguageHelper.getConfirmTip(),
+        LanguageHelper.getCancelTip()
+      );
+      if (ok) {
+        this.hotelService.removeBookInfo(info, true);
+      }
+    });
+    const m = await this.modalController.create({
+      component: SelectedPassengersComponent,
+      componentProps: {
+        bookInfos$: this.hotelService.getBookInfoSource(),
+        removeitem
+      }
+    });
+    await m.present();
+    await m.onDidDismiss();
+    removeitem.unsubscribe();
   }
   private observeScrollIsShowHoteldetails() {
     this.domCtrl.read(_ => {
@@ -145,11 +196,13 @@ export class InternationalHotelDetailPage
     const filteredPassenger = this.hotelService
       .getBookInfos()
       .find(it => it.isFilterPolicy);
-    if (filteredPassenger) {
-      this.filterPassengerPolicy(
-        filteredPassenger.passenger && filteredPassenger.passenger.AccountId
-      );
-    }
+    this.filterPassengerPolicy(
+      filteredPassenger &&
+        filteredPassenger.passenger &&
+        filteredPassenger.passenger.AccountId
+    );
+    // if (filteredPassenger) {
+    // }
   }
 
   async onFilteredPassenger() {
@@ -400,7 +453,41 @@ export class InternationalHotelDetailPage
   onSearch() {
     this.doRefresh();
   }
-  private onSelectPassenger() {}
+  private async onSelectPassenger(room?: {
+    roomPlan: RoomPlanEntity;
+    room: RoomEntity;
+    color: string;
+  }) {
+    const remove = new EventEmitter<PassengerBookInfo<IHotelInfo>>();
+    const sub = remove.subscribe(info => {
+      const ok = AppHelper.alert(
+        LanguageHelper.getConfirmDeleteTip(),
+        true,
+        LanguageHelper.getConfirmTip(),
+        LanguageHelper.getCancelTip()
+      );
+      if (ok) {
+        this.hotelService.removeBookInfo(info, true);
+      }
+    });
+    const m = await this.modalController.create({
+      component: SelectPassengerPage,
+      componentProps: {
+        forType: FlightHotelTrainType.HotelInternational,
+        removeitem: remove,
+        isOpenPageAsModal: true
+      }
+    });
+    m.present();
+    await m.onDidDismiss();
+    sub.unsubscribe();
+    if (room) {
+      await this.onBookRoomPlan(room);
+    }
+  }
+  private checkIfPassengerSelected() {
+    return this.selectedPassengers && this.selectedPassengers.length > 0;
+  }
   async onBookRoomPlan(evt: {
     roomPlan: RoomPlanEntity;
     room: RoomEntity;
@@ -410,9 +497,24 @@ export class InternationalHotelDetailPage
     if (!evt || !evt.room || !evt.roomPlan) {
       return;
     }
+    const isself = await this.staffService.isSelfBookType();
+
+    if (!this.checkIfPassengerSelected() && !isself) {
+      const ok = await AppHelper.alert(
+        "请先添加旅客(Please Add Passengers)",
+        true,
+        "确定"
+      );
+      if (ok) {
+        this.onSelectPassenger(evt);
+      }
+      return;
+    }
     const color = evt.color || "";
     const removedBookInfos: PassengerBookInfo<IInterHotelInfo>[] = [];
-    const policies = this.hotelPolicy || (await this.getPolicy());
+    const policies =
+      (this.hotelPolicy && this.hotelPolicy.length && this.hotelPolicy) ||
+      (await this.getPolicy());
     const policy =
       policies &&
       policies.find(
@@ -526,6 +628,9 @@ export class InternationalHotelDetailPage
       return false;
     }
     const p = policies.find(it => it.PassengerKey == passengerAccountId);
+    if (!p || !p.HotelPolicies) {
+      return false;
+    }
     const policy = p.HotelPolicies.find(
       it => this.hotelService.getRoomPlanUniqueId(roomPlan) == it.UniqueIdId
     );

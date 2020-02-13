@@ -1,4 +1,4 @@
-import { InternationalHotelService } from './../../hotel-international/international-hotel.service';
+import { InternationalHotelService } from "./../../hotel-international/international-hotel.service";
 import { HotelService } from "./../../hotel/hotel.service";
 import { SelectCountryModalComponent } from "../components/select-country/select-countrymodal.component";
 import { TrainService } from "./../../train/train.service";
@@ -66,12 +66,12 @@ export const NOT_WHITE_LIST = "notwhitelist";
 export class SelectPassengerPage
   implements OnInit, CanComponentDeactivate, AfterViewInit, OnDestroy {
   private keyword: string;
-  private isOpenPageAsModal = false;
-  private forType: FlightHotelTrainType;
-  private bookInfos: PassengerBookInfo<any>[];
+  private isOpenPageAsModal = false;// 设置是否通过modalcontroller打开
+  private forType: FlightHotelTrainType; // isOpenPageAsModal 传入参数
+  private bookInfos: PassengerBookInfo<any>[]; 
+  removeitem: EventEmitter<PassengerBookInfo<any>>; // isOpenPageAsModal 传入参数
   isShow = true;
   vmKeyword: string;
-  removeitem: EventEmitter<PassengerBookInfo<any>>;
   isShowNewCredential = false;
   credentialsRemarks: { key: string; value: string }[];
   selectedCredentialId: string;

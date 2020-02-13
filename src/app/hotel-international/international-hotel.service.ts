@@ -1,3 +1,5 @@
+import { IdentityService } from "./../services/identity/identity.service";
+import { CredentialsType } from "./../member/pipe/credential.pipe";
 import {
   TmcService,
   PassengerBookInfo,
@@ -76,11 +78,22 @@ export class InternationalHotelService {
     private calendarService: CalendarService,
     private modalCtrl: ModalController,
     private staffService: StaffService,
-    private tmcService: TmcService
+    private tmcService: TmcService,
+    identityService: IdentityService
   ) {
     this.initSearchCondition();
     this.bookInfoSource = new BehaviorSubject([]);
     this.hotelQuerySource = new BehaviorSubject(new HotelQueryEntity());
+    identityService.getIdentitySource().subscribe(() => {
+      this.disposal();
+    });
+  }
+  private disposal() {
+    this.removeAllBookInfos();
+    this.showImages = [];
+    this.showRoomDetailInfo = null;
+    this.selfCredentials = [];
+    this.viewHotel = null;
   }
   private initSearchCondition() {
     this.searchConditon = {
@@ -88,7 +101,7 @@ export class InternationalHotelService {
       checkoutDate: this.calendarService.getMoment(2).format("YYYY-MM-DD"),
       adultCount: 1,
       childCount: 0,
-      hotelType:"normal",
+      hotelType: "normal",
       country: { Code: "CN" } as any,
       destinationCity: {
         CityCode: "US1576",
@@ -338,7 +351,7 @@ export class InternationalHotelService {
           const isSelf = await this.staffService.isSelfBookType(isShowLoading);
           const infos = this.getBookInfos();
           if (infos.length === 0 && isSelf) {
-            let IdCredential: any;
+            let passportOrHmPass: any;
             const staff = await this.staffService.getStaff(
               false,
               isShowLoading
@@ -350,14 +363,18 @@ export class InternationalHotelService {
               ).catch(_ => ({ [staff.AccountId]: [] }));
               this.selfCredentials = res[staff.AccountId];
             }
-            IdCredential =
+            passportOrHmPass =
               this.selfCredentials &&
-              this.selfCredentials.find(c => c.Type == 1);
+              this.selfCredentials.find(
+                c =>
+                  c.Type == CredentialsType.Passport ||
+                  c.Type == CredentialsType.HmPass
+              );
             const i: PassengerBookInfo<IInterHotelInfo> = {
               id: AppHelper.uuid(),
               passenger: staff,
               credential:
-                IdCredential ||
+                passportOrHmPass ||
                 (this.selfCredentials &&
                   this.selfCredentials.length &&
                   this.selfCredentials[0]) ||

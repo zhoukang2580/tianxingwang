@@ -87,7 +87,6 @@ export class RoomDetailPage
         this.hotelService.showRoomDetailInfo.hotel &&
         this.hotelService.showRoomDetailInfo.hotel.Name;
       if (this.roomImages) {
-        debugger
         this.images = this.roomImages.map(it => {
           return {
             imageUrl: it

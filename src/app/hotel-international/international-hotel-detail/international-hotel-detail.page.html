@@ -3,7 +3,24 @@
     <ion-buttons slot='start'>
       <ion-back-button defaultHref='' (click)='back($event)'></ion-back-button>
     </ion-buttons>
-    <ion-title>{{hotel?.Name}}</ion-title>
+    <ion-text *ngIf='isShowSelectedInfos else titletpl'>{{hotel?.Name}}</ion-text>
+    <ng-template #titletpl>
+      <ion-title>{{hotel?.Name}}</ion-title>
+    </ng-template>
+    <ion-buttons slot='end'>
+      <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()'
+        *ngIf='canAddPassengers&&!selectedPassengers?.length'>
+        添加旅客<ion-badge color='danger'>
+          <ion-text color='light'>{{selectedPassengers?.length}}</ion-text>
+        </ion-badge>
+      </ion-button>
+      <ion-button fill='clear' color='secondary' size='small' (click)='onOpenSelectedPassengers()'
+        *ngIf='canAddPassengers&&selectedPassengers?.length'>
+        已选旅客<ion-badge color='danger'>
+          <ion-text color='light'>{{selectedPassengers?.length}}</ion-text>
+        </ion-badge>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -16,7 +33,8 @@
       <div class="back-button" *ngIf='isHeaderHide' (click)='back($event)'>
         <ion-icon name='arrow-back'></ion-icon>
       </div>
-      <app-swiper-slides (slideChange)='onSlideChange($event)' [options]='{autoplay:true}' [items]='hotelImages' [defaultImage]='config?.DefaultImageUrl'>
+      <app-swiper-slides (slideChange)='onSlideChange($event)' [options]='{autoplay:true}' [items]='hotelImages'
+        [defaultImage]='config?.DefaultImageUrl'>
       </app-swiper-slides>
     </div>
     <ion-card *ngIf='hotel else fakeCard'>
