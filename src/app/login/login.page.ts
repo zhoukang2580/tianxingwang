@@ -399,7 +399,9 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     if (isCheckDevice && AppHelper.isApp()) {
       await this.checkIsDeviceBinded();
     } else {
-      this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
+      this.router.navigate([AppHelper.getRoutePath(toPageRouter)]).then(() => {
+        this.loginService.setToPageRouter("");
+      });
     }
   }
   async checkIsDeviceBinded() {
