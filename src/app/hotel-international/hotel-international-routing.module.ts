@@ -53,6 +53,10 @@ export const routes: Routes = [
   {
     path: 'search-international-hotel',
     loadChildren: () => import('./search-international-hotel/search-international-hotel.module').then( m => m.SearchInternationalHotelPageModule)
+  },
+  {
+    path: 'room-count-children',
+    loadChildren: () => import('./room-count-children/room-count-children.module').then( m => m.RoomCountChildrenPageModule)
   }
 ];
 @NgModule({

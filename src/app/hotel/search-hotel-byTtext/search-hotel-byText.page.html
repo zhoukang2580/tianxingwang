@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <ion-back-button defaultHref=""></ion-back-button>
+      <app-back-button defaultHref=""></app-back-button>
     </ion-buttons>
     <form (ngSubmit)='onSelect()'>
       <ion-searchbar animated='true' name='searchbar' (ionChange)='onSearch()' [(ngModel)]='searchText' type='search'>

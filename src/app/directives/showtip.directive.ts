@@ -46,7 +46,13 @@ export class ShowtipDirective {
           // mode:"md",
           keyboardClose: true,
           translucent: true,
-          closeButtonText: LanguageHelper.getCloseTip(),
+          buttons: [
+            {
+              side: "end",
+              role:"cancel",
+              text: LanguageHelper.getCloseTip()
+            }
+          ],
           duration: Math.min(duration || 2000, 10 * 1000)
         })).present();
         if (toast) {

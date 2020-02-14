@@ -39,7 +39,11 @@ export class ViewDetailPage implements OnInit, AfterContentChecked, OnDestroy {
     private http: HttpClient,
     private plt: Platform
   ) {}
-  back() {
+  back(evt?: CustomEvent) {
+    if (evt) {
+      evt.preventDefault();
+      evt.stopPropagation();
+    }
     if (this.notice && this.notice.Url) {
       this.notice.Url = "";
       // this.initialAnchors();

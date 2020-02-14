@@ -1,0 +1,21 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <app-back-button ></app-back-button>
+    </ion-buttons>
+    <ion-title>每间人数</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item>
+      <ion-label>成人</ion-label>
+      <ion-button fill='clear' slot='end' color='secondary'>
+        <ion-icon name="remove-outline"></ion-icon>
+        <input type='number' [(ngModel)]='searchCondition.adultCount'>
+        <ion-icon name='add-outline'></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>

@@ -1,10 +1,8 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <!-- <ion-button (click)='back()'>
-        <ion-icon name='arrow-back'></ion-icon>
-      </ion-button> -->
-      <ion-back-button defaultHref=""></ion-back-button>
+
+      <app-back-button defaultHref=""></app-back-button>
     </ion-buttons>
     <ion-text *ngIf='(isShowBookInfos$|async)'>机票查询</ion-text>
     <ion-title *ngIf='!(isShowBookInfos$|async)'>机票查询</ion-title>

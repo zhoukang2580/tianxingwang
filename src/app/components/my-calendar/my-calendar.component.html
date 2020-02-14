@@ -1,9 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <ion-button (click)='back()'>
-        <ion-icon name='arrow-back' color='dark'></ion-icon>
-      </ion-button>
+      <app-back-button defaultHref="" (click)='back($event)'></app-back-button>
     </ion-buttons>
     <ion-title>选择日期</ion-title>
     <ion-button slot='end' (click)='onYearSelected(null,true)' color='secondary'>今年</ion-button>

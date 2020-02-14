@@ -1,10 +1,8 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <!-- <ion-button color='dark' (click)='back()'>
-        <ion-icon name='arrow-back'></ion-icon>
-      </ion-button> -->
-      <ion-back-button defaultHref=""></ion-back-button>
+
+      <app-back-button defaultHref=""></app-back-button>
     </ion-buttons>
     <ion-text *ngIf='isShowSelectedInfos'>酒店查询</ion-text>
     <ion-title *ngIf='!(isShowSelectedInfos)'>酒店查询</ion-title>
@@ -47,14 +45,14 @@
     </ion-card-header>
     <ion-card-content>
       <div class='ion-padding-top'>
-        <ion-segment mode='ios' (ionChange)="segmentChanged($event)" color="secondary">
-          <ion-segment-button mode='ios' value="normal" [checked]='searchHotelModel?.hotelType=="normal"'>
+        <ion-segment  (ionChange)="segmentChanged($event)" value="{{searchHotelModel?.hotelType}}" color="secondary">
+          <ion-segment-button  value="normal" >
             <ion-label>非协议酒店</ion-label>
           </ion-segment-button>
-          <ion-segment-button mode='ios' value="agreement" [checked]='searchHotelModel?.hotelType=="agreement"'>
+          <ion-segment-button  value="agreement" >
             <ion-label>协议酒店</ion-label>
           </ion-segment-button>
-          <ion-segment-button mode='ios' value="specialprice" [checked]='searchHotelModel?.hotelType=="specialprice"'>
+          <ion-segment-button  value="specialprice" >
             <ion-label>特价酒店</ion-label>
           </ion-segment-button>
         </ion-segment>

@@ -1,9 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <ion-button (click)='onCancel()'>
-        <ion-icon name='arrow-back'></ion-icon>
-      </ion-button>
+      <app-back-button defaultHref="" (click)='onCancel($event)'></app-back-button>
     </ion-buttons>
     <ion-title>过滤航班</ion-title>
   </ion-toolbar>

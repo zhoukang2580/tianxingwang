@@ -21,7 +21,7 @@
     <div class='right'>
       <div class='price'>￥{{getLowestSeatPrice()}}
         <ng-container *ngIf='showOpenCloseIcon()'>
-          <ion-icon name="arrow-dropdown" color='secondary' *ngIf='train["isShowSeats"]'></ion-icon>
+          <ion-icon name='caret-down-outline' color='secondary' *ngIf='train["isShowSeats"]'></ion-icon>
           <ion-icon name="arrow-dropup" color='secondary' *ngIf='!train["isShowSeats"]'></ion-icon>
         </ng-container>
       </div>

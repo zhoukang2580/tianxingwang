@@ -1,99 +1,55 @@
 .flight-date {
+  width: 100%;
+  padding-right: 2px;
+  margin-top: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .date-week {
+    display: flex;
+    align-items: flex-end;
+    margin: 0 0.5rem;
+    h2 {
+      font-size: 1.2rem;
+    }
+    h6 {
+      margin-left: 0.5rem;
+      font-size: 0.7rem;
+    }
+  }
+}
+.destination {
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  margin: 1em -1em;
+  ion-item {
     width: 100%;
-    padding-right: 2px;
-    margin-top: 1em;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    .date-week {
+    ion-label:first-child {
+      flex: 0.3;
+    }
+  }
+  ion-button {
+    margin-left: auto;
+    font-size: 0.6rem;
+    &.ios {
+      height: 5em;
+    }
+    .pos {
+      height: 100%;
       display: flex;
-      align-items: flex-end;
-      margin: 0 0.5rem;
-      h2 {
-        font-size: 1.2rem;
-      }
-      h6 {
-        margin-left: 0.5rem;
-        font-size: 0.7rem;
-      }
-    }
-  }
-  .destination {
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    margin: 1em 0;
-    ion-item {
-      width: 100%;
-      ion-label:first-child {
-        flex: 0.3;
-      }
-    }
-    ion-button {
-      margin-left: auto;
-      font-size: 0.6rem;
-      &.ios {
-        height: 5em;
-      }
-      .pos {
-        height: 100%;
-        display: flex;
-        flex-flow: column nowrap;
-        justify-content: center;
-        align-items: center;
-      }
-      .pos ion-icon {
-        font-size: 1rem;
-      }
-    }
-  }
-  ion-card-header {
-    padding-top: 0;
-    padding-left: 0;
-    padding-right: 0;
-  }
-  .segments {
-    display: flex;
-    align-items: center;
-    background-color: #eee;
-    position: relative;
-    .segment-button {
-      padding: 1em;
-      display: flex;
-      align-items: center;
+      flex-flow: column nowrap;
       justify-content: center;
-      flex: 1;
-      &.active {
-        background-color: white;
-        ion-label {
-          color: var(--ion-color-secondary);
-        }
-      }
-      &.left.active {
-        border-top-right-radius: 0.5em;
-      }
-      &.right.active {
-        border-top-left-radius: 0.5em;
-      }
+      align-items: center;
     }
-    .indicator {
-      position: absolute;
-      height: 3px;
-      border-radius: 10px;
-      background-color: var(--ion-color-secondary);
-      bottom: -0.5em;
-      transform-origin: left top;
-      transition: transform ease-in-out 100ms;
-      &.left {
-        left: 45%;
-        right: 45%;
-        transform: translate3d(-255%, 0, 0);
-      }
-      &.right {
-        left: 45%;
-        right: 45%;
-        transform: translate3d(255%, 0, 0);
-      }
+    .pos ion-icon {
+      font-size: 1rem;
     }
   }
-  
+}
+ion-card-header {
+  padding-top: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+

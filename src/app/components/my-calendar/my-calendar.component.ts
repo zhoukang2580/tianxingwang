@@ -54,9 +54,12 @@ export class MyCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 200);
     this.subscriptions.push(subscription);
   }
-  async back() {
+  async back(evt?:CustomEvent) {
+    if(evt){
+      evt.preventDefault();
+      evt.stopPropagation();
+    }
     let date: IDay;
-    console.time("back");
     this.monthDates.forEach(it =>
       it.days.forEach(d => {
         if (d.isActive) {
@@ -64,7 +67,6 @@ export class MyCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       })
     );
-    console.timeEnd("back");
     if (this.openAsModal) {
       const t = await this.modalCtrl.getTop();
       if (t) {

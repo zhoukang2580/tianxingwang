@@ -1,10 +1,7 @@
 <ion-header class='ion-text-center'>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <!-- <ion-button (click)='back()'>
-        <ion-icon name='arrow-back'></ion-icon>
-      </ion-button> -->
-      <ion-back-button defaultHref=''></ion-back-button>
+      <app-back-button defaultHref=''></app-back-button>
     </ion-buttons>
     <ion-title class='sm-font-size' [class.ion-text-start]='(isShowAddPassenger$|async)'
       [class.ion-text-center]='!(isShowAddPassenger$|async)'>
@@ -13,14 +10,14 @@
         <span>
           {{vmFromCity?.Nickname}}
         </span>
-        <ion-icon name='arrow-dropdown' *ngIf='!searchTrainModel?.isExchange'></ion-icon>
+        <ion-icon name='caret-down-outline' *ngIf='!searchTrainModel?.isExchange'></ion-icon>
       </ion-text>
       <ion-text color='{{!searchTrainModel?.isExchange?"secondary":"medium"}}'>
         <i class='icon icon-search-train' (click)='onSwapStation()'></i>
       </ion-text>
       <ion-text (click)='onSelectStation(false)' class='to-station' color='secondary'>
         <span>{{ vmToCity?.Nickname}}</span>
-        <ion-icon name='arrow-dropdown'></ion-icon>
+        <ion-icon name='caret-down-outline'></ion-icon>
       </ion-text>
     </ion-title>
     <ion-buttons slot='end'>

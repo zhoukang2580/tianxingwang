@@ -1,10 +1,8 @@
 <ion-header>
   <ion-toolbar class='toolbar'>
     <ion-buttons slot='start'>
-      <!-- <ion-button color='dark' (click)='back()'>
-        <ion-icon name='arrow-back'></ion-icon>
-      </ion-button> -->
-      <ion-back-button defaultHref=""></ion-back-button>
+
+      <app-back-button defaultHref=""></app-back-button>
     </ion-buttons>
     <div class="query">
       <app-date-city [checkInDate]='searchHotelModel?.checkInDate' [checkOutDate]='searchHotelModel?.checkOutDate'
@@ -55,7 +53,7 @@
             </ng-container>
           </h5>
           <p class='grade-stars ion-text-wrap' *ngIf='item.Hotel?.VariablesJsonObj["GeoDistance"] as distance'>
-            <ion-icon name="pin" color='secondary'></ion-icon>
+            <ion-icon name="location" color='secondary'></ion-icon>
             <ion-label>
               距离{{distance.substring(0,distance.indexOf(','))}}直线距离约{{distance.substring(distance.indexOf(',')+1)}}km
             </ion-label>
@@ -91,7 +89,7 @@
               </ng-container>
             </h5>
             <p class='grade-stars ion-text-wrap' *ngIf='item.Hotel?.VariablesJsonObj["GeoDistance"] as distance'>
-              <ion-icon name="pin" color='secondary'></ion-icon>
+              <ion-icon name="location" color='secondary'></ion-icon>
               <ion-label>
                 距离{{distance.substring(0,distance.indexOf(','))}}直线距离约{{distance.substring(distance.indexOf(',')+1)}}km
               </ion-label>

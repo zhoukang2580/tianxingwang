@@ -27,7 +27,7 @@ import { File } from "@ionic-native/file/ngx";
 import { AppVersion } from "@ionic-native/app-version/ngx";
 import { WebView } from "@ionic-native/ionic-webview/ngx";
 import { IonicStorageModule } from "@ionic/storage";
-import { Animation } from "@ionic/core";
+import { Animation } from "./animations/animation-interface";
 let curPlt: "ios" | "md";
 export function navAnimations(AnimationC: Animation, baseEl, opts) {
   const animation: any =
@@ -43,12 +43,11 @@ export function navAnimations(AnimationC: Animation, baseEl, opts) {
     BrowserModule,
     BrowserAnimationsModule,
     IonicModule.forRoot({
-      backButtonIcon: "arrow-back",
       backButtonText: "",
       loadingSpinner: "crescent",
       swipeBackEnabled: false,
       hardwareBackButton: !true,
-      navAnimation: navAnimations
+      // navAnimation: navAnimations
     }),
     HttpClientModule,
     // TranslateModule.forRoot({

@@ -60,7 +60,6 @@ import { FlightSegmentItemComponent } from './flight-segment-item/flight-segment
   ],
   exports: [
     AppDirectivesModule,
-    AppComponentsModule,
     FlightDynamicComponent,
     SwitchCityComponent,
     FlyListItemComponent,
@@ -75,18 +74,8 @@ import { FlightSegmentItemComponent } from './flight-segment-item/flight-segment
     TicketchangingComponent,
     SelectedPassengersComponent,
     SelectAndReplacebookinfoComponent,
-    FlightSegmentItemComponent
-  ],
-  entryComponents: [
-    FlyFilterComponent,
-    TicketchangingComponent,
-    SelectedPassengersComponent,
-    SelectedFlightsegmentInfoComponent,
-    SelectFlightsegmentCabinComponent,
-    PriceDetailComponent,
-    SelectFlightPassengerComponent,
-    SelectCityComponent,
-    SelectAndReplacebookinfoComponent
+    FlightSegmentItemComponent,
+    AppComponentsModule
   ]
 })
 export class FlightComponentsModule { }

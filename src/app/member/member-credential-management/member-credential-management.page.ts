@@ -258,12 +258,12 @@ export class MemberCredentialManagementPage
     if (credential) {
       if (inputFirstNameEle) {
         inputFirstNameEle.oninput = _ => {
-          credential.CheckFirstName = inputFirstNameEle.value;
+          credential.CheckFirstName = inputFirstNameEle.value as string;
         };
       }
       if (inputLastNameEle) {
         inputLastNameEle.oninput = _ => {
-          credential.CheckLastName = inputLastNameEle.value;
+          credential.CheckLastName = inputLastNameEle.value as string;
         };
       }
     }

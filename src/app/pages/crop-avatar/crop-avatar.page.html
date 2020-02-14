@@ -1,9 +1,7 @@
 <ion-header [class.hidden]='!uploaded||showCropBox'>
   <ion-toolbar color='primary'>
-    <ion-buttons slot='start' (click)='goBack()'>
-      <ion-nav-pop>
-        <ion-icon name='arrow-back'></ion-icon>
-      </ion-nav-pop>
+    <ion-buttons slot='start' >
+      <app-back-button (click)='goBack()'> </app-back-button>
     </ion-buttons>
     <ion-title>头像</ion-title>
   </ion-toolbar>

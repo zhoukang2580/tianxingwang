@@ -1,5 +1,11 @@
-import { Storage } from '@ionic/storage';
-import { IonContent, Platform, IonRefresher, IonHeader, ModalController } from "@ionic/angular";
+import { Storage } from "@ionic/storage";
+import {
+  IonContent,
+  Platform,
+  IonRefresher,
+  IonHeader,
+  ModalController
+} from "@ionic/angular";
 import {
   Component,
   OnInit,
@@ -16,7 +22,7 @@ import {
   transition
 } from "@angular/animations";
 import { FlightService } from "../../flight.service";
-import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
+import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 @Component({
   selector: "app-select-city-comp",
   templateUrl: "./select-city.component.html",
@@ -51,11 +57,13 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   async onActiveTab(tab: string) {
     this.activeTab = tab;
-    if (tab == 'hot') {
+    if (tab == "hot") {
       this.cities = this.cities || [];
-      this.textSearchResults = this.cities.filter(it => it.IsHot && !it.IsDeprecated);
+      this.textSearchResults = this.cities.filter(
+        it => it.IsHot && !it.IsDeprecated
+      );
     }
-    if (tab == 'history') {
+    if (tab == "history") {
       this.textSearchResults = this.histories || [];
     }
   }
@@ -67,21 +75,22 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
       this.scrollToTop();
       return;
     }
-    this.textSearchResults = (this.cities || []).filter(c => {
-      const keys = `Code,Name,Nickname,CityName,Pinyin`.split(",");
-      return keys.some(k => {
-        // console.log(`key=${k}`, c[k]);
-        const n: string = (c[k] && c[k] || "").toLowerCase();
-        if (name == '北京南苑') {
-          return n != name && n.includes("北京");
-        }
-        const reg = new RegExp("^[a-zA-Z]*$");
-        if (reg.test(name) && name.length == 3)
-          return name == n;
-        else
-          return name == n || n.includes(name);
+    this.textSearchResults = (this.cities || [])
+      .filter(c => {
+        const keys = `Code,Name,Nickname,CityName,Pinyin`.split(",");
+        return keys.some(k => {
+          // console.log(`key=${k}`, c[k]);
+          const n: string = ((c[k] && c[k]) || "").toLowerCase();
+          if (name == "北京南苑") {
+            return n != name && n.includes("北京");
+          }
+          const reg = new RegExp("^[a-zA-Z]*$");
+          if (reg.test(name) && name.length == 3) return name == n;
+          else return name == n || n.includes(name);
+        });
       })
-    }).slice(0, 50).filter(it => !it.IsDeprecated);
+      .slice(0, 50)
+      .filter(it => !it.IsDeprecated);
     this.scrollToTop();
     this.isSearching = false;
   }
@@ -89,15 +98,20 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     this.doRefresh();
   }
   private async initData(forceRefresh: boolean = false) {
-    this.cities = await this.flightService.getDomesticAirports(forceRefresh) || [];
+    this.cities =
+      (await this.flightService.getDomesticAirports(forceRefresh)) || [];
     this.cities.sort((c1, c2) => c1.Sequence - c2.Sequence);
     this.cities = this.cities.map(it => {
-      if (it.Name == "北京南苑" || it.Nickname == "北京南苑" || it.CityName == "北京南苑") {
+      if (
+        it.Name == "北京南苑" ||
+        it.Nickname == "北京南苑" ||
+        it.CityName == "北京南苑"
+      ) {
         it.IsDeprecated = true;
       }
       return it;
-    })
-    this.histories = await this.storage.get("historyDomesticAirports") || [];
+    });
+    this.histories = (await this.storage.get("historyDomesticAirports")) || [];
     return true;
   }
   ngOnDestroy() {
@@ -108,7 +122,7 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.refresher) {
       this.refresher.complete();
     }
-    this.textSearchResults = this.cities.filter(it=>it.IsHot).slice(0, 30);
+    this.textSearchResults = this.cities.filter(it => it.IsHot).slice(0, 30);
     this.scrollToTop();
   }
   scrollToTop() {
@@ -124,10 +138,15 @@ export class SelectCityComponent implements OnInit, OnDestroy, AfterViewInit {
     console.time("initListCity");
     console.timeEnd("initListCity");
   }
-  ngAfterViewInit() {
-
+  ngAfterViewInit() {}
+  back(evt?: CustomEvent) {
+    if (evt) {
+      evt.preventDefault();
+      evt.stopPropagation();
+    }
+    this.goBack();
   }
-  goBack(city?: TrafficlineEntity) {
+  private goBack(city?: TrafficlineEntity) {
     this.vmKeyowrds = "";
     this.isSearching = false;
     // this.textSearchResults = null;

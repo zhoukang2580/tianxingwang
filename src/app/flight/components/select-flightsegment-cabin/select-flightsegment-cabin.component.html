@@ -1,9 +1,7 @@
 <ion-header class='ion-text-center'>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <ion-button (click)='back()'>
-        <ion-icon name='arrow-back'></ion-icon>
-      </ion-button>
+      <app-back-button defaultHref=''  (click)='back($event)'></app-back-button>
     </ion-buttons>
     <ion-text>请选择舱位</ion-text>
   </ion-toolbar>

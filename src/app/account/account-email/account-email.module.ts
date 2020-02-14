@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 
 import { AccountEmailPage } from './account-email.page';
 import { AuthorityGuard } from 'src/app/guards/authority.guard';
+import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 
 const routes: Routes = [
   {
@@ -22,7 +23,8 @@ const routes: Routes = [
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    AppComponentsModule
   ],
   declarations: [AccountEmailPage]
 })

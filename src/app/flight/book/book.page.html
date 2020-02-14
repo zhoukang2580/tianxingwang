@@ -1,10 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <!-- <ion-button (click)='back()'>
-        <ion-icon name='arrow-back'></ion-icon>
-      </ion-button> -->
-      <ion-back-button defaultHref=''></ion-back-button>
+      <app-back-button></app-back-button>
     </ion-buttons>
     <ion-title>确认信息</ion-title>
   </ion-toolbar>
@@ -53,7 +50,7 @@
                 <ion-button fill='clear' class='change-policy-btn' (click)='onShowFriendlyReminder(combindInfo)'
                   color='secondary'>
                   温馨提醒
-                  <ion-icon name="arrow-dropdown" *ngIf='combindInfo?.showFriendlyReminder'></ion-icon>
+                  <ion-icon name='caret-down-outline' *ngIf='combindInfo?.showFriendlyReminder'></ion-icon>
                   <ion-icon name="arrow-dropright" *ngIf='!combindInfo?.showFriendlyReminder'></ion-icon>
                 </ion-button>
                 <div>
@@ -74,7 +71,7 @@
                   <ion-button fill='clear' class='change-policy-btn' (click)='onOpenrules(combindInfo)'
                     color='secondary'>
                     退改签政策
-                    <ion-icon name="arrow-dropdown" *ngIf='combindInfo?.openrules'></ion-icon>
+                    <ion-icon name='caret-down-outline' *ngIf='combindInfo?.openrules'></ion-icon>
                     <ion-icon name="arrow-dropright" *ngIf='!combindInfo?.openrules'></ion-icon>
                   </ion-button>
                 </div>
@@ -101,7 +98,7 @@
         </ion-item-group>
         <ion-item-group *ngIf='combindInfo?.modal?.bookInfo as s'>
           <ion-item-divider>旅客信息:</ion-item-divider>
-          <app-book-credential-comp [credential]='combindInfo.vmCredential' 
+          <app-book-credential-comp [credential]='combindInfo.vmCredential'
             (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo.credentials'
             (modify)='onModify(combindInfo)'>
           </app-book-credential-comp>
@@ -183,7 +180,7 @@
                     (click)='insuranceEle.checked=!insuranceEle.checked'>
                     <ion-row>
                       <ion-col>
-                        <ion-label color='medium'  class='small-font ion-text-wrap'>
+                        <ion-label color='medium' class='small-font ion-text-wrap'>
                           <div style="user-select: text;"
                             [innerHtml]='getInsuranceDetails(insurance.insuranceResult?.Detail)'></div>
                         </ion-label>
@@ -222,12 +219,11 @@
               <ion-radio-group [(ngModel)]='combindInfo.travelType' name='travelType'>
                 <ion-item *ngIf='checkOrderTravelType(OrderTravelType.Business)'>
                   <ion-label>因公</ion-label>
-                  <ion-radio [value]="OrderTravelType.Business"
-                    [checked]='checkOrderTravelType(OrderTravelType.Business)'></ion-radio>
+                  <ion-radio [value]="OrderTravelType.Business"></ion-radio>
                 </ion-item>
                 <ion-item *ngIf='checkOrderTravelType(OrderTravelType.Person)'>
                   <ion-label>因私</ion-label>
-                  <ion-radio [value]="OrderTravelType.Person" [checked]='checkOrderTravelType(OrderTravelType.Person)'>
+                  <ion-radio [value]="OrderTravelType.Person">
                   </ion-radio>
                 </ion-item>
               </ion-radio-group>
@@ -290,7 +286,7 @@
             <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType' (ionChange)='calcTotalPrice()'>
               <ion-item *ngFor='let pt of orderTravelPayTypes'>
                 <ion-label>{{pt.label}}</ion-label>
-                <ion-radio [value]="pt.value" [checked]='orderTravelPayType==pt.value'>
+                <ion-radio [value]="pt.value">
                 </ion-radio>
               </ion-item>
             </ion-radio-group>

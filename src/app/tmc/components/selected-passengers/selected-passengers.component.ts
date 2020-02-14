@@ -2,7 +2,7 @@ import { ModalController } from "@ionic/angular";
 import { Component, OnInit, Input, EventEmitter, Output } from "@angular/core";
 import { Observable } from "rxjs";
 import {} from "events";
-import { PassengerBookInfo } from '../../tmc.service';
+import { PassengerBookInfo } from "../../tmc.service";
 
 @Component({
   selector: "app-selected-passengers",
@@ -19,7 +19,11 @@ export class SelectedPassengersComponent implements OnInit {
     this.removeitem.emit(info);
   }
   ngOnInit() {}
-  async back() {
+  async back(evt?: CustomEvent) {
+    if (evt) {
+      evt.preventDefault();
+      evt.stopImmediatePropagation();
+    }
     const t = await this.modalCtrl.getTop();
     if (t) {
       t.dismiss().catch(_ => {});

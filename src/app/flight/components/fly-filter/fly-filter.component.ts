@@ -63,7 +63,11 @@ export class FlyFilterComponent implements OnInit, OnDestroy, AfterViewInit {
   onTabClick(tab: number) {
     this.tab = tab;
   }
-  onCancel() {
+  onCancel(evt?:CustomEvent) {
+    if(evt){
+      evt.preventDefault();
+      evt.stopPropagation();
+    }
     // this.onReset();
     this.flightService.setFilterPanelShow(false);
   }

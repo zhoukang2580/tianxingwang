@@ -22,6 +22,7 @@ import { MyCalendarComponent } from "./my-calendar/my-calendar.component";
 import { BaseInputComponent } from "./base-input/base-input.component";
 import { SwiperSlidesComponent } from "./swiper-slides/swiper-slides.component";
 import { ScrollerComponent } from "./scroller/scroller.component";
+import { BackButtonComponent } from "./back-button/back-button.component";
 @NgModule({
   declarations: [
     OrComponent,
@@ -40,7 +41,8 @@ import { ScrollerComponent } from "./scroller/scroller.component";
     MyCalendarComponent,
     BaseInputComponent,
     PinFabComponent,
-    ScrollerComponent
+    ScrollerComponent,
+    BackButtonComponent
   ],
   imports: [
     CommonModule,
@@ -51,6 +53,7 @@ import { ScrollerComponent } from "./scroller/scroller.component";
     RefresherModule
   ],
   exports: [
+    BackButtonComponent,
     SwiperSlidesComponent,
     PinFabComponent,
     BaseInputComponent,

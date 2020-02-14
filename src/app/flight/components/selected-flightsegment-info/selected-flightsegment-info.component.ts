@@ -1,4 +1,4 @@
-import { IdentityService } from './../../../services/identity/identity.service';
+import { IdentityService } from "./../../../services/identity/identity.service";
 import { CredentialsEntity } from "./../../../tmc/models/CredentialsEntity";
 import { SearchFlightModel } from "./../../flight.service";
 import { Observable, Subscription } from "rxjs";
@@ -22,10 +22,8 @@ import { tap, map, reduce } from "rxjs/operators";
 import { SelectFlightsegmentCabinComponent } from "../select-flightsegment-cabin/select-flightsegment-cabin.component";
 import { TripType } from "src/app/tmc/models/TripType";
 import { PassengerBookInfo } from "src/app/tmc/tmc.service";
-import {
-  IFlightSegmentInfo
-} from "../../models/PassengerFlightInfo";
-import { FlightCabinEntity } from '../../models/flight/FlightCabinEntity';
+import { IFlightSegmentInfo } from "../../models/PassengerFlightInfo";
+import { FlightCabinEntity } from "../../models/flight/FlightCabinEntity";
 @Component({
   selector: "app-selected-flightsegment-info",
   templateUrl: "./selected-flightsegment-info.component.html",
@@ -48,7 +46,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     private staffService: StaffService,
     private router: Router,
     private IdentityService: IdentityService
-  ) { }
+  ) {}
   ngOnDestroy() {
     this.searchModelSubscrition.unsubscribe();
     this.subscrition.unsubscribe();
@@ -87,14 +85,20 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
           }
         })
       );
-    this.subscrition = this.IdentityService.getIdentitySource().subscribe(identity => {
-      this.identity = identity;
-    })
+    this.subscrition = this.IdentityService.getIdentitySource().subscribe(
+      identity => {
+        this.identity = identity;
+      }
+    );
   }
-  async back() {
+  async back(evt?: CustomEvent) {
+    if (evt) {
+      evt.preventDefault();
+      evt.stopPropagation();
+    }
     const t = await this.modalCtrl.getTop();
     if (t) {
-      t.dismiss().catch(_ => { });
+      t.dismiss().catch(_ => {});
     }
   }
   getTime(takofftime: string) {
@@ -104,11 +108,18 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     return takofftime;
   }
   async nextStep() {
-    const bookInfos = this.flightService.getPassengerBookInfos().filter(it => !!it.bookInfo);
+    const bookInfos = this.flightService
+      .getPassengerBookInfos()
+      .filter(it => !!it.bookInfo);
     const isSelf = await this.staffService.isSelfBookType();
     const s = this.flightService.getSearchFlightModel();
     if (isSelf && s.isRoundTrip && bookInfos.length == 1) {
-      const ok = await AppHelper.alert("您尚未选择回程", true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+      const ok = await AppHelper.alert(
+        "您尚未选择回程",
+        true,
+        LanguageHelper.getConfirmTip(),
+        LanguageHelper.getCancelTip()
+      );
       if (!ok) {
         return;
       }
@@ -121,35 +132,67 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
   }
   showLowerSegment(info: PassengerBookInfo<IFlightSegmentInfo>) {
     const pfs = info.bookInfo;
-    let show = !!(pfs && pfs.lowerSegmentInfo && pfs.lowerSegmentInfo.lowestFlightSegment && pfs.lowerSegmentInfo.lowestCabin);
-    if (this.isSelf && info.bookInfo && info.bookInfo.tripType == TripType.returnTrip) {
+    let show = !!(
+      pfs &&
+      pfs.lowerSegmentInfo &&
+      pfs.lowerSegmentInfo.lowestFlightSegment &&
+      pfs.lowerSegmentInfo.lowestCabin
+    );
+    if (
+      this.isSelf &&
+      info.bookInfo &&
+      info.bookInfo.tripType == TripType.returnTrip
+    ) {
       const bookInfos = this.flightService.getPassengerBookInfos();
-      const goInfo = bookInfos.find(it => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip);
-      const goFlight = goInfo && goInfo.bookInfo && goInfo.bookInfo.flightSegment;
-      if (goFlight && show &&
+      const goInfo = bookInfos.find(
+        it => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
+      );
+      const goFlight =
+        goInfo && goInfo.bookInfo && goInfo.bookInfo.flightSegment;
+      if (
+        goFlight &&
+        show &&
         // 来回的机场要对应才计算
-        goFlight.FromAirport == info.bookInfo.flightSegment.ToAirport && goFlight.ToAirport == info.bookInfo.flightSegment.FromAirport
+        goFlight.FromAirport == info.bookInfo.flightSegment.ToAirport &&
+        goFlight.ToAirport == info.bookInfo.flightSegment.FromAirport
       ) {
-        const arrivalTime = moment(goFlight.ArrivalTime).add(1, 'hours');
-        const loweerTime = moment(pfs.lowerSegmentInfo.lowestFlightSegment.TakeoffTime);
+        const arrivalTime = moment(goFlight.ArrivalTime).add(1, "hours");
+        const loweerTime = moment(
+          pfs.lowerSegmentInfo.lowestFlightSegment.TakeoffTime
+        );
         show = +loweerTime >= +arrivalTime;
       }
     }
     return show;
   }
-  private checkAirportChange(info: PassengerBookInfo<IFlightSegmentInfo>, lowestFlightSegment: FlightSegmentEntity) {
-    if (info && info.bookInfo && info.bookInfo.flightSegment && lowestFlightSegment) {
-      if (info.bookInfo.flightSegment.ToAirport != lowestFlightSegment.ToAirport) {
+  private checkAirportChange(
+    info: PassengerBookInfo<IFlightSegmentInfo>,
+    lowestFlightSegment: FlightSegmentEntity
+  ) {
+    if (
+      info &&
+      info.bookInfo &&
+      info.bookInfo.flightSegment &&
+      lowestFlightSegment
+    ) {
+      if (
+        info.bookInfo.flightSegment.ToAirport != lowestFlightSegment.ToAirport
+      ) {
         return true;
       }
-      if (info.bookInfo.tripType == TripType.returnTrip && info.bookInfo.flightSegment.FromAirport != lowestFlightSegment.FromAirport) {
+      if (
+        info.bookInfo.tripType == TripType.returnTrip &&
+        info.bookInfo.flightSegment.FromAirport !=
+          lowestFlightSegment.FromAirport
+      ) {
         return true;
       }
     }
     return false;
   }
   async onSelectLowestSegment(info: PassengerBookInfo<IFlightSegmentInfo>) {
-    const { lowestCabin, lowestFlightSegment } = info.bookInfo && info.bookInfo.lowerSegmentInfo;
+    const { lowestCabin, lowestFlightSegment } =
+      info.bookInfo && info.bookInfo.lowerSegmentInfo;
     if (!lowestCabin || !lowestFlightSegment) {
       await AppHelper.alert(
         LanguageHelper.Flight.getTheLowestCabinNotFoundTip()
@@ -158,15 +201,29 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     }
     let tip = [];
     if (info && info.bookInfo && info.bookInfo.flightSegment) {
-      if (info.bookInfo.flightSegment.ToAirport != lowestFlightSegment.ToAirport) {
-        tip.push(`抵达机场将由【${info.bookInfo.flightSegment.ToAirportName}】 变更为 【${lowestFlightSegment.ToAirportName}】`);
+      if (
+        info.bookInfo.flightSegment.ToAirport != lowestFlightSegment.ToAirport
+      ) {
+        tip.push(
+          `抵达机场将由【${info.bookInfo.flightSegment.ToAirportName}】 变更为 【${lowestFlightSegment.ToAirportName}】`
+        );
       }
-      if (info.bookInfo.flightSegment.FromAirport != lowestFlightSegment.FromAirport) {
-        tip.push(`出发机场将由【${info.bookInfo.flightSegment.FromAirportName}】 变更为 【${lowestFlightSegment.FromAirportName}】`);
+      if (
+        info.bookInfo.flightSegment.FromAirport !=
+        lowestFlightSegment.FromAirport
+      ) {
+        tip.push(
+          `出发机场将由【${info.bookInfo.flightSegment.FromAirportName}】 变更为 【${lowestFlightSegment.FromAirportName}】`
+        );
       }
     }
     if (tip.length) {
-      const ok = await AppHelper.alert(`${tip.join(";")}，是否继续？`, true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+      const ok = await AppHelper.alert(
+        `${tip.join(";")}，是否继续？`,
+        true,
+        LanguageHelper.getConfirmTip(),
+        LanguageHelper.getCancelTip()
+      );
       if (!ok) {
         return;
       }
@@ -176,7 +233,10 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
       componentProps: {
         policiedCabins: [lowestCabin],
         flightSegment: lowestFlightSegment,
-        isAgent: this.identity && this.identity.Numbers && this.identity.Numbers['AgentId']
+        isAgent:
+          this.identity &&
+          this.identity.Numbers &&
+          this.identity.Numbers["AgentId"]
       }
     });
     m.backdropDismiss = false;
@@ -205,13 +265,13 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
             }
           }
         };
-        bookInfo.flightPolicy.LowerSegment = null;// 更低价仅能选择一次.
+        bookInfo.flightPolicy.LowerSegment = null; // 更低价仅能选择一次.
         const newInfo: PassengerBookInfo<IFlightSegmentInfo> = {
           id: AppHelper.uuid(),
           passenger: info.passenger,
           credential: info.credential,
           isNotWhitelist: info.isNotWhitelist,
-          bookInfo,
+          bookInfo
         };
         this.flightService.replacePassengerBookInfo(info, newInfo);
       }
@@ -219,7 +279,12 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
   }
 
   async remove(item: PassengerBookInfo<IFlightSegmentInfo>, message?: string) {
-    const ok = await AppHelper.alert(message || LanguageHelper.Flight.getConfirmRemoveFlightSegmentTip(), true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+    const ok = await AppHelper.alert(
+      message || LanguageHelper.Flight.getConfirmRemoveFlightSegmentTip(),
+      true,
+      LanguageHelper.getConfirmTip(),
+      LanguageHelper.getCancelTip()
+    );
     if (ok) {
       await this.flightService.removePassengerBookInfo(item, false);
     }
@@ -232,10 +297,20 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     return `${day.date} ${day.dayOfWeekName}`;
   }
   getFlightIllegalTip(info: PassengerBookInfo<IFlightSegmentInfo>) {
-    return info && info.passenger && info.passenger.Policy && info.passenger.Policy.FlightIllegalTip;
+    return (
+      info &&
+      info.passenger &&
+      info.passenger.Policy &&
+      info.passenger.Policy.FlightIllegalTip
+    );
   }
   getFlightlegalTip(info: PassengerBookInfo<IFlightSegmentInfo>) {
-    return info && info.passenger && info.passenger.Policy && info.passenger.Policy.FlightLegalTip;
+    return (
+      info &&
+      info.passenger &&
+      info.passenger.Policy &&
+      info.passenger.Policy.FlightLegalTip
+    );
   }
   getTripTypeTip(info: IFlightSegmentInfo) {
     if (!info || !this.isSelf) {
@@ -245,7 +320,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
       info.tripType == TripType.departureTrip
         ? LanguageHelper.getDepartureTip()
         : LanguageHelper.getReturnTripTip()
-      }]`;
+    }]`;
   }
 
   async onSelectReturnTrip() {

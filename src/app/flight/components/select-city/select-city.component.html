@@ -1,9 +1,7 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot='start' (click)='goBack()'>
-      <ion-button fill='clear'>
-        <ion-icon class='icon-back' color='dark' name='arrow-back' slot='icon-only'></ion-icon>
-      </ion-button>
+    <ion-buttons slot='start'>
+      <app-back-button defaultHref=''  (click)='back($event)'></app-back-button>
     </ion-buttons>
     <ion-searchbar type='search' [debounce]='240' [(ngModel)]='vmKeyowrds' [animated]='true' placeholder="城市名称/拼音/三字码"
       (ionChange)='onSearchByKeywords()' mode='ios'>

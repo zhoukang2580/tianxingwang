@@ -1,9 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <ion-button (click)='back()'>
-        <ion-icon name='arrow-back'></ion-icon>
-      </ion-button>
+      <app-back-button defaultHref='' (click)='back($event)'></app-back-button>
     </ion-buttons>
     <ion-title>当前已选择航班信息</ion-title>
   </ion-toolbar>
@@ -44,19 +42,21 @@
               <ion-col class='ion-text-end'>
                 <div style="display: flex;align-items: center;justify-content: flex-end;width: 100%;">
                   <ion-label color='danger'>机票票价:￥{{bookInfo.bookInfo?.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
-                  <ion-label color='danger' class='ion-margin-start'>税费:￥{{bookInfo.bookInfo?.flightSegment?.Tax}}</ion-label>
+                  <ion-label color='danger' class='ion-margin-start'>税费:￥{{bookInfo.bookInfo?.flightSegment?.Tax}}
+                  </ion-label>
                 </div>
               </ion-col>
             </ion-row>
           </div>
-          <ion-label class='rules ion-text-wrap' color='danger' >
+          <ion-label class='rules ion-text-wrap' color='danger'>
             {{bookInfo.bookInfo?.flightPolicy?.Rules?.join("; ")}}
           </ion-label>
-          <ion-label *ngIf='getFlightIllegalTip(bookInfo) as tip' color='danger'  class='rules ion-text-wrap'>提示：({{tip}})
+          <ion-label *ngIf='getFlightIllegalTip(bookInfo) as tip' color='danger' class='rules ion-text-wrap'>
+            提示：({{tip}})
           </ion-label>
-          <ion-label *ngIf='getFlightlegalTip(bookInfo) as tip' color='danger'  class='rules ion-text-wrap'>提示：({{tip}})
+          <ion-label *ngIf='getFlightlegalTip(bookInfo) as tip' color='danger' class='rules ion-text-wrap'>提示：({{tip}})
           </ion-label>
-          <ion-label class='rules ion-text-wrap'  color='dark' (click)='onSelectLowestSegment(bookInfo)'
+          <ion-label class='rules ion-text-wrap' color='dark' (click)='onSelectLowestSegment(bookInfo)'
             *ngIf='showLowerSegment(bookInfo)'>
             当前航班前后60分钟内有更低价航班:{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.Number}}&nbsp;
             {{getTime(bookInfo.bookInfo?.flightPolicy?.LowerSegment?.TakeoffTime)}},价格:￥{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.LowestFare}}

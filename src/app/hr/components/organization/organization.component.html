@@ -1,9 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <ion-button (click)='back()'>
-        <ion-icon name='arrow-back'></ion-icon>
-      </ion-button>
+      <app-back-button></app-back-button>
     </ion-buttons>
     <ion-searchbar mode='ios' debounce="700" animated placeholder="请输入部门名称" (ionChange)='doSearch()'
       [(ngModel)]='vmKeyword'>
@@ -36,7 +34,7 @@
         <ion-row *ngFor='let node of currentSelectedNodeChildren' class='ion-padding-start'>
           <ion-col (click)='onItemSelect(node)'>{{node.Name}}</ion-col>
           <ng-container *ngIf='!vmKeyword&&getChildren(node).length'>
-            <ion-col size='1.6' class='next-hierarchy ion-text-end'  (click)='onNextHierachy(node)'>
+            <ion-col size='1.6' class='next-hierarchy ion-text-end' (click)='onNextHierachy(node)'>
               <ion-text color='secondary'>
                 <i class='icon icon-organization'></i>
               </ion-text>

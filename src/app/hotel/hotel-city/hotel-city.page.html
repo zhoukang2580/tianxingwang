@@ -1,10 +1,8 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <!-- <ion-button fill='clear' (click)='back()'>
-        <ion-icon name='arrow-back' color='dark'></ion-icon>
-      </ion-button> -->
-      <ion-back-button defaultHref=""></ion-back-button>
+
+      <app-back-button defaultHref=""></app-back-button>
     </ion-buttons>
     <ion-searchbar mode='ios' debounce="700" animated placeholder="输入中文/拼音/首字母/城市代码" (ionChange)='doSearch()'
       [(ngModel)]='vmKeyword'>

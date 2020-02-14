@@ -1,4 +1,4 @@
-import { flyInOut } from './../../animations/flyInOut';
+import { flyInOut } from "./../../animations/flyInOut";
 import { InternationalHotelService } from "./../../hotel-international/international-hotel.service";
 import { HotelService } from "./../../hotel/hotel.service";
 import { SelectCountryModalComponent } from "../components/select-country/select-countrymodal.component";
@@ -704,7 +704,11 @@ export class SelectPassengerPage
       return false;
     }
   }
-  back() {
+  back(evt?: CustomEvent) {
+    if (evt) {
+      evt.preventDefault();
+      evt.stopPropagation();
+    }
     if (!this.isOpenPageAsModal) {
       this.navCtrl.pop();
     } else {

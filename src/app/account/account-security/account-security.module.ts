@@ -7,6 +7,7 @@ import { IonicModule } from "@ionic/angular";
 
 import { AccountSecurityPage } from "./account-security.page";
 import { AuthorityGuard } from 'src/app/guards/authority.guard';
+import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 
 const routes: Routes = [
   {
@@ -21,7 +22,8 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    AppComponentsModule
   ],
   declarations: [AccountSecurityPage]
 })

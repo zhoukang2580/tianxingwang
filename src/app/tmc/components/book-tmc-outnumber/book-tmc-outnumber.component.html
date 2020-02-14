@@ -9,6 +9,6 @@
       [value]='n.value' [(ngModel)]='n.value'
       placeholder="{{n.isLoadingNumber?'正在加载行程单号':(n.loadTravelUrlErrorMsg||'暂无数据')}}">
     </ion-input>
-    <ion-icon name='arrow-dropdown' color='secondary' *ngIf='n.canSelect&&!isExchange&&isShowGroupedInfo'></ion-icon>
+    <ion-icon name='caret-down-outline' color='secondary' *ngIf='n.canSelect&&!isExchange&&isShowGroupedInfo'></ion-icon>
   </ion-item>
 </ng-container>

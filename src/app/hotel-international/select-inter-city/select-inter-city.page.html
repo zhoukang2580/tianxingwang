@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <ion-back-button defaultHref='' (click)='back()'></ion-back-button>
+      <app-back-button defaultHref='' (click)='back()'></app-back-button>
     </ion-buttons>
     <form (ngSubmit)='onSearchCities()'>
       <ion-searchbar animated='true' #searchcity (ionFocus)='onSearchCityFocus()' name='searchbar'

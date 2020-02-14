@@ -2,10 +2,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <!-- <ion-button (click)='back()'>
-        <ion-icon name='arrow-back'></ion-icon>
-      </ion-button> -->
-      <ion-back-button defaultHref=""></ion-back-button>
+      <app-back-button></app-back-button>
     </ion-buttons>
     <ion-title>信息确认</ion-title>
   </ion-toolbar>
@@ -82,7 +79,7 @@
                   (click)='combindInfo["isShowRoomPlanRulesDesc"]=!combindInfo["isShowRoomPlanRulesDesc"]'
                   color='secondary'>
                   预订规则:
-                  <ion-icon name="arrow-dropdown" *ngIf='combindInfo["isShowRoomPlanRulesDesc"]'></ion-icon>
+                  <ion-icon name='caret-down-outline' *ngIf='combindInfo["isShowRoomPlanRulesDesc"]'></ion-icon>
                   <ion-icon name="arrow-dropright" *ngIf='!combindInfo["isShowRoomPlanRulesDesc"]'></ion-icon>
                 </ion-button>
               </div>
@@ -146,7 +143,8 @@
         </ion-list>
         <ion-list>
           <ion-list-header><strong>旅客信息</strong></ion-list-header>
-          <app-book-credential-comp [credential]='combindInfo?.vmCredential' [canMaintainCredentials]='combindInfo.isCanEditCrendentails'
+          <app-book-credential-comp [credential]='combindInfo?.vmCredential'
+            [canMaintainCredentials]='combindInfo.isCanEditCrendentails'
             (savecredential)='onSavecredential($event,combindInfo)'
             (managementCredentials)='onManagementCredentials(combindInfo)' [credentials]='combindInfo?.credentials'
             (modify)='onModify(combindInfo)'>
@@ -253,7 +251,7 @@
         <ng-template #zhifu2>
           <ion-item *ngIf='hotelPaymentType==HotelPaymentType.SelfPay&&notShowServiceFee() else zhifu3'>
             <ion-label>前台现付</ion-label>
-            <ion-radio value="Company" [checked]='true'>
+            <ion-radio value="Company">
             </ion-radio>
           </ion-item>
         </ng-template>
@@ -265,7 +263,7 @@
                   <ion-item
                     *ngIf='checkOrderTravelPayType(pt.value)||(pt.value==OrderTravelPayType.Credit&&identity?.Numbers?.AgentId)'>
                     <ion-label>前台现付(服务费:{{pt.label}})</ion-label>
-                    <ion-radio [value]="pt.value" [checked]='tmc?.HotelPayType==pt.value'>
+                    <ion-radio [value]="pt.value">
                     </ion-radio>
                   </ion-item>
                 </ng-container>

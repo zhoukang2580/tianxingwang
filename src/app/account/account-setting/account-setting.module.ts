@@ -1,18 +1,19 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Routes, RouterModule } from '@angular/router';
+import { AppComponentsModule } from "./../../components/appcomponents.module";
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { Routes, RouterModule } from "@angular/router";
 
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from "@ionic/angular";
 
-import { AccountSettingPage } from './account-setting.page';
-import { AuthorityGuard } from 'src/app/guards/authority.guard';
+import { AccountSettingPage } from "./account-setting.page";
+import { AuthorityGuard } from "src/app/guards/authority.guard";
 
 const routes: Routes = [
   {
-    path: '',
+    path: "",
     component: AccountSettingPage,
-    canActivate:[AuthorityGuard]
+    canActivate: [AuthorityGuard]
   }
 ];
 
@@ -21,7 +22,8 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    AppComponentsModule
   ],
   declarations: [AccountSettingPage]
 })

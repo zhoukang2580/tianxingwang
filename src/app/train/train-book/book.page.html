@@ -1,10 +1,8 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <!-- <ion-button (click)='back()'>
-        <ion-icon name='arrow-back'></ion-icon>
-      </ion-button> -->
-      <ion-back-button defaultHref=''></ion-back-button>
+
+      <app-back-button defaultHref=''></app-back-button>
     </ion-buttons>
     <ion-title>确认信息</ion-title>
   </ion-toolbar>
@@ -125,7 +123,7 @@
                 <ion-col size='3'>
                   <ion-button fill='clear' (click)='insuranceEle.checked=!insuranceEle.checked' color='secondary'>
                     详情
-                    <ion-icon name="arrow-dropdown" *ngIf='insuranceEle.checked'></ion-icon>
+                    <ion-icon name='caret-down-outline' *ngIf='insuranceEle.checked'></ion-icon>
                     <ion-icon name="arrow-dropright" *ngIf='!insuranceEle.checked'></ion-icon>
                   </ion-button>
                 </ion-col>

@@ -87,6 +87,7 @@ export class InternationalHotelDetailPage
     Description: string;
   }[];
   colors: {};
+  isIos = false;
   constructor(
     private hotelService: InternationalHotelService,
     private route: ActivatedRoute,
@@ -99,7 +100,9 @@ export class InternationalHotelDetailPage
     private popoverController: PopoverController,
     private staffService: StaffService,
     private modalController: ModalController
-  ) {}
+  ) {
+    this.isIos = plt.is("ios");
+  }
   back(evt: CustomEvent) {
     if (evt) {
       evt.stopImmediatePropagation();

@@ -1,11 +1,10 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <ion-button color='dark' (click)='back()'>
-        <ion-icon name='arrow-back'></ion-icon>
-      </ion-button>
+
+      <app-back-button defaultHref='' (click)='back($event)'></app-back-button>
     </ion-buttons>
-    <ion-title>{{title}}</ion-title> 
+    <ion-title>{{title}}</ion-title>
     <ion-buttons slot='end'>
       <ion-button fill='clear' color='secondary' size='small' (click)='onShow()'>
         已选乘客
@@ -54,8 +53,8 @@
             <ion-label>
               {{item.Type|credential}}
             </ion-label>
-            <ion-radio slot='end' name='credentialType' [checked]='item.Id==selectedCredentialId'
-              (ionSelect)='onSelectCredential(item.Id)' value="{{item.Id}}"></ion-radio>
+            <ion-radio slot='end' name='credentialType' (ionSelect)='onSelectCredential(item.Id)' value="{{item.Id}}">
+            </ion-radio>
           </ion-item>
         </ion-item-divider>
         <ion-item lines='none' (click)='onSelectCredential(item.Id)'>
@@ -130,14 +129,13 @@
               <ion-text *ngIf='vmNewCredential?.isNotWhiteList'>证件：</ion-text>
             </ion-label>
             <ion-radio slot='end' name='credentialType' value="{{vmNewCredential?.Id}}"
-              [checked]='vmNewCredential?.Id==selectedCredentialId'
               (ionSelect)='onSelectCredential(vmNewCredential?.Id)'>
             </ion-radio>
           </ion-item>
         </ion-item-divider>
         <ion-grid #addForm>
           <ion-row>
-            <ion-col  class="id-type ion-no-margin ion-no-padding">
+            <ion-col class="id-type ion-no-margin ion-no-padding">
               <ion-item lines='none' class='ion-no-margin ion-no-padding'>
                 <ion-label style="opacity: 1">证件类型：</ion-label>
                 <ion-select [(ngModel)]='vmNewCredential.Type' name='Type' okText="确定" cancelText="取消"
@@ -191,9 +189,10 @@
               <ion-label>国籍：</ion-label>
             </ion-col>
             <ion-col class='ion-text-end' [class.disabled]='vmNewCredential?.Id !=selectedCredentialId'>
-              <input type="text" style='border: none' class='ion-text-end' [class.validctrlsucess]='!!vmNewCredential.Country'
-                [class.validerrormess]='!vmNewCredential.Country' [class.validctrlerror]='!vmNewCredential.Country'
-                [disabled]='true' [class.disabled]='vmNewCredential?.Id !=selectedCredentialId'
+              <input type="text" style='border: none' class='ion-text-end'
+                [class.validctrlsucess]='!!vmNewCredential.Country' [class.validerrormess]='!vmNewCredential.Country'
+                [class.validctrlerror]='!vmNewCredential.Country' [disabled]='true'
+                [class.disabled]='vmNewCredential?.Id !=selectedCredentialId'
                 value="{{vmNewCredential.Country?.Name}}({{vmNewCredential.Country?.Code}})" name='Country'
                 ValidateName="Country">
             </ion-col>
@@ -214,7 +213,7 @@
                 value="{{vmNewCredential.IssueCountry?.Name}}({{vmNewCredential.IssueCountry?.Code}})"
                 name='IssueCountry' style='border: none' ValidateName="IssueCountry">
             </ion-col>
-            <ion-col size='1' class='arrow-forward ion-text-end' 
+            <ion-col size='1' class='arrow-forward ion-text-end'
               [class.disabled]='vmNewCredential?.Id !=selectedCredentialId'>
               <ion-icon name='arrow-forward' size='small' color='medium' mode='ios'></ion-icon>
             </ion-col>
@@ -222,12 +221,11 @@
           <ion-row>
             <ion-col>性别：</ion-col>
             <ion-col>
-              <ion-radio-group class='ion-no-margin ion-no-padding'[(ngModel)]='vmNewCredential.Gender'
+              <ion-radio-group class='ion-no-margin ion-no-padding' [(ngModel)]='vmNewCredential.Gender'
                 [disabled]='vmNewCredential?.Id !=selectedCredentialId' name='Gender' class='gender'>
-                <ion-radio value="M" [disabled]='vmNewCredential?.Id !=selectedCredentialId'
-                  [checked]='vmNewCredential.Gender=="M"'></ion-radio>
+                <ion-radio value="M" [disabled]='vmNewCredential?.Id !=selectedCredentialId'></ion-radio>
                 <ion-label slot='start'>男</ion-label>
-                <ion-label class='ion-margin-start ion-padding-start' ></ion-label>
+                <ion-label class='ion-margin-start ion-padding-start'></ion-label>
                 <ion-radio value="F" [disabled]='vmNewCredential?.Id !=selectedCredentialId'></ion-radio>
                 <ion-label>女</ion-label>
               </ion-radio-group>
@@ -262,7 +260,7 @@
                   [style.opacity]='vmNewCredential?.Id !=selectedCredentialId?0.7:1'
                   [disabled]='vmNewCredential?.Id !=selectedCredentialId'>
                   <ion-label>{{r.value}}</ion-label>
-                  <ion-radio value="{{r.value}}" [checked]='r.key=="客户"'></ion-radio>
+                  <ion-radio value="{{r.value}}"></ion-radio>
                 </ion-item>
               </ion-radio-group>
             </ion-col>
@@ -272,7 +270,7 @@
     </ng-container>
     <ng-container *ngIf='frqPassengerCredentials&&frqPassengerCredentials.length'>
       <ion-item-divider color='primary' class='ion-margin-top'>
-        <ion-text color='secondary'>常旅客</ion-text> 
+        <ion-text color='secondary'>常旅客</ion-text>
       </ion-item-divider>
       <ion-item-group *ngFor='let item of frqPassengerCredentials' (click)='onSelectCredential(item.Id)'>
         <ion-item-divider color='primary'>
@@ -280,8 +278,8 @@
             <ion-label>
               {{item.Type|credential}}
             </ion-label>
-            <ion-radio slot='end' name='credentialType' value="{{item.Id}}" [checked]='item.Id==selectedCredentialId'
-              (ionSelect)='onSelectCredential(item.Id)'></ion-radio>
+            <ion-radio slot='end' name='credentialType' value="{{item.Id}}" (ionSelect)='onSelectCredential(item.Id)'>
+            </ion-radio>
           </ion-item>
         </ion-item-divider>
         <ion-item lines='none'>

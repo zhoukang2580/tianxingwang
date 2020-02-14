@@ -1,15 +1,17 @@
 import { createAnimation } from "@ionic/core";
 import {
-  Animation,
   TransitionOptions,
-  getIonPageElement
+  getIonPageElement,
+  Animation
 } from "./animation-interface";
+
 export const mdTransitionAnimation = (
   _: HTMLElement,
   opts: TransitionOptions
 ): Animation => {
   const OFF_BOTTOM = "40px";
   const CENTER = "0px";
+
   const backDirection = opts.direction === "back";
   const enteringEl = opts.enteringEl;
   const leavingEl = opts.leavingEl;
@@ -60,5 +62,5 @@ export const mdTransitionAnimation = (
     rootTransition.addAnimation(leavingPage);
   }
 
-  return rootTransition;
+  return rootTransition as any as Animation;
 };
