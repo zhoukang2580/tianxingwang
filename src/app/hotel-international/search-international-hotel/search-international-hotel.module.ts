@@ -1,3 +1,4 @@
+import { AppComponentsModule } from "./../../components/appcomponents.module";
 import { TmcComponentsModule } from "./../../tmc/components/tmcComponents.module";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
@@ -15,7 +16,8 @@ import { SearchInternationalHotelPage } from "./search-international-hotel.page"
     FormsModule,
     IonicModule,
     SearchInternationalHotelPageRoutingModule,
-    TmcComponentsModule
+    TmcComponentsModule,
+    AppComponentsModule
   ],
   declarations: [SearchInternationalHotelPage]
 })

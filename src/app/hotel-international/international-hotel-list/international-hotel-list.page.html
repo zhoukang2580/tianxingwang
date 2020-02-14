@@ -22,16 +22,20 @@
         <ion-icon name='close' size='large' *ngIf='searchCondition?.searchText?.Text' (click)='onClearText($event)'>
         </ion-icon>
       </div>
+      <div class="customer-count" (click)='onModifyAdultCount()'>
+        入住人数 <ion-text class="ion-margin-start" color='secondary'>
+          {{searchCondition?.adultCount}}成人{{searchCondition?.children?.length}}儿童</ion-text>
+      </div>
       <app-inter-hotel-query class="{{classMode}}" (queryFilter)='onQueryFilter()'></app-inter-hotel-query>
     </div>
   </ion-toolbar>
 </ion-header>
 <div class='backdrop' *ngIf='queryComp?.isShowPanel'></div>
-<app-inter-recommend-rank class='query-condition' [@openClose]='!!queryComp?.tab?.active&&queryComp?.tab?.label=="rank"'
+<app-inter-recommend-rank class='query-condition' [@flyInOut]='!!queryComp?.tab?.active&&queryComp?.tab?.label=="rank"'
   (rank)='onRank($event)'>
 </app-inter-recommend-rank>
 <app-inter-hotel-starprice class='query-condition'
-  [@openClose]='!!queryComp?.tab?.active&&queryComp?.tab?.label=="starsAndPrice"'
+  [@flyInOut]='!!queryComp?.tab?.active&&queryComp?.tab?.label=="starsAndPrice"'
   (starPriceChange)='onStarPriceChange()'></app-inter-hotel-starprice>
 <ion-content>
   <app-refresher slot='fixed' (ionRefresh)='doRefresh()'>

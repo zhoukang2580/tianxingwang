@@ -1,21 +1,48 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <app-back-button ></app-back-button>
+      <app-back-button></app-back-button>
     </ion-buttons>
-    <ion-title>每间人数</ion-title>
+    <ion-title>入住人信息</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
+  <ion-list class='ion-margin-vertical' lines='full'>
+    <ion-item-divider>每间人数</ion-item-divider>
     <ion-item>
-      <ion-label>成人</ion-label>
-      <ion-button fill='clear' slot='end' color='secondary'>
-        <ion-icon name="remove-outline"></ion-icon>
+      <ion-label class='ion-padding-vertical'>成人</ion-label>
+      <div class="item-count">
+        <ion-icon name="remove-outline" (click)='onAdd(-1)' class='substract'
+          [class.disabled]='searchCondition?.adultCount<=1'></ion-icon>
         <input type='number' [(ngModel)]='searchCondition.adultCount'>
-        <ion-icon name='add-outline'></ion-icon>
-      </ion-button>
+        <ion-icon name='add-outline' class="add" (click)='onAdd(1)'></ion-icon>
+      </div>
     </ion-item>
+    <ion-item-sliding *ngFor='let c of searchCondition?.children;let idx=index;' @flyInOut>
+      <ion-item detail (click)='onModifyChildAge(c)'>
+        <ion-label>
+          添加儿童{{idx+1}}
+        </ion-label>
+        <ion-button slot='end' color='secondary' fill='clear'>{{c.age>0?c.age:"小于1"}}岁</ion-button>
+      </ion-item>
+      <ion-item-options side="end" >
+        <ion-item-option color="danger" >
+          <ion-button (click)='onRemove(c)' fill='clear' size='small'>
+            <ion-icon name='trash' color='light'></ion-icon>
+          </ion-button>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
   </ion-list>
+  <!-- <ion-note class="ion-margin-start" *ngIf='searchCondition?.children?.length'>左滑删除新增项</ion-note> -->
+  <ion-button color='secondary' expand='full' fill='clear' class="ion-margin-horizontal" (click)='onAddChild()'>
+    <ion-icon name='add'>
+    </ion-icon>
+    添加儿童
+  </ion-button>
 </ion-content>
+<ion-footer>
+  <ion-button color='secondary' class="ion-margin-horizontal" fill='solid' expand='full' (click)='onConfirm()'>确定
+  </ion-button>
+</ion-footer>

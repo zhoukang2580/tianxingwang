@@ -67,7 +67,10 @@
       </div>
       <ion-item detail (click)='onAddAdultAndChildren()' style='margin:1em -1em'>
         <ion-label>
-          {{searchCondition?.adultCount}}成人{{searchCondition?.childCount}}间{{searchCondition?.childCount}}儿童
+          入住人数
+        </ion-label>
+        <ion-label slot='end'>
+          {{searchCondition?.adultCount}}成人{{searchCondition?.children?.length}}儿童
         </ion-label>
       </ion-item>
       <ion-button class='ion-margin-top' style='width: 100%' (click)="onSearchHotel()" color="secondary" expand="block">

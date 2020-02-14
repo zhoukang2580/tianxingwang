@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <app-back-button (click)='back()'>
+      <app-back-button (click)='back()' customeback='customeback'>
       </app-back-button>
     </ion-buttons>
     <ion-searchbar mode='ios' debounce="700" animated placeholder="请输入部门名称" (ionChange)='doSearch()'

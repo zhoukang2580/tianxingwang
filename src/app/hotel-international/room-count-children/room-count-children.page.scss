@@ -1,0 +1,35 @@
+.item-count {
+  --bcolor: var(--ion-color-secondary);
+  //   border: 1px solid var(--bcolor);
+  border-radius: 0.3em;
+  display: flex;
+  align-items: center;
+  ion-icon {
+    font-size: 2em;
+    color: var(--bcolor);
+    border: 1px solid var(--bcolor);
+    padding: 0.1em;
+  }
+  ion-icon.substract {
+    border-top-left-radius: 0.2em;
+    border-bottom-left-radius: 0.2em;
+    &.disabled {
+      border-color: var(--ion-color-medium);
+      color: var(--ion-color-medium);
+    }
+  }
+  ion-icon.add {
+    border-top-right-radius: 0.2em;
+    border-bottom-right-radius: 0.2em;
+  }
+  input {
+    padding: 0.55em;
+    width: 3em;
+    border: none;
+    border: 1px solid var(--bcolor);
+    border-left: none;
+    border-right: none;
+    text-align: center;
+    outline: none;
+  }
+}

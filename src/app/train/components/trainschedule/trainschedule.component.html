@@ -1,7 +1,7 @@
 <ion-header class='ion-text-center'>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <app-back-button (click)='back()'>
+      <app-back-button (click)='back()' customeback='customeback'>
       </app-back-button>
     </ion-buttons>
     <ion-title class='ion-text-center' color='secondary'>
@@ -10,7 +10,7 @@
       <ion-text>{{ vmToCity?.Nickname}}</ion-text>
     </ion-title>
     <ion-buttons slot='end' class='h'>
-      <app-back-button (click)='back()'>
+      <app-back-button (click)='back()' customeback='customeback'>
       </app-back-button>
     </ion-buttons>
   </ion-toolbar>

@@ -8,6 +8,7 @@ import {
   Optional,
   Attribute
 } from "@angular/core";
+import { CandeactivateGuard } from "src/app/guards/candeactivate.guard";
 
 @Component({
   selector: "app-back-button",
@@ -22,17 +23,24 @@ export class BackButtonComponent implements OnInit, AfterViewInit {
     private navCtrl: NavController,
     platform: Platform,
     private el: ElementRef<HTMLElement>,
-    @Optional() @Attribute("(click)") private method: (...args) => any,
-    @Optional() @Attribute("defaultHref") private method2: (...args) => any
+    @Optional() @Attribute("customeback") private customeback: any,
+    @Optional() @Attribute("defaultHref") private defaultHref: string
   ) {
     this.isIos = platform.is("ios");
-    // console.log(this.el, this.method);
   }
-  back(evt: CustomEvent) {
-    console.log(evt, evt.preventDefault, evt.stopPropagation);
-    // evt.preventDefault();
-    // evt.stopPropagation();
-    console.log("app-back-button curUrl:", this.curUrl);
+  back(evt?: CustomEvent) {
+    console.log("app-back-button curUrl:", this.curUrl, this.customeback);
+    if (!this.customeback) {
+      if (evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+      }
+      this.navCtrl.pop().then(() => {
+        if (this.router.url.includes(this.curUrl)) {
+          this.navCtrl.navigateBack(this.defaultHref || "");
+        }
+      });
+    }
   }
   ngOnInit() {}
   ngAfterViewInit() {

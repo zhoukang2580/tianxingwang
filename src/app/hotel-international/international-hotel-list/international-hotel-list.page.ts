@@ -1,3 +1,4 @@
+import { AppHelper } from "./../../appHelper";
 import { ConfigService } from "src/app/services/config/config.service";
 import { InterHotelQueryComponent } from "./../components/inter-hotel-query/inter-hotel-query.component";
 import { Router, ActivatedRoute } from "@angular/router";
@@ -32,14 +33,42 @@ import {
   state
 } from "@angular/animations";
 import { HotelEntity } from "src/app/hotel/models/HotelEntity";
-import { IRankItem } from 'src/app/hotel/models/HotelQueryEntity';
+import { IRankItem } from "src/app/hotel/models/HotelQueryEntity";
 
 @Component({
   selector: "app-international-hotel-list",
   templateUrl: "./international-hotel-list.page.html",
   styleUrls: ["./international-hotel-list.page.scss"],
   animations: [
-    trigger("openClose", [
+    trigger("hide", [
+      state(
+        "true",
+        style({ transform: "translate3d(0,-100%,0)", opacity: 1, height: "*" })
+      ),
+      state(
+        "false",
+        style({ transform: "translate3d(0,-100%,0)", opacity: 0, height: "0" })
+      ),
+      transition("false=>true", [
+        style({ transform: "translate3d(0,0,0)", opacity: 1 }),
+        animate(
+          "100ms",
+          style({ transform: "translate3d(0,0,0)", opacity: 1, height: "0" })
+        )
+      ]),
+      transition(
+        "true=>false",
+        animate(
+          "100ms",
+          style({
+            transform: "translate3d(0,-100%,0)",
+            opacity: 1,
+            height: "*"
+          })
+        )
+      )
+    ]),
+    trigger("flyInOut", [
       state("true", style({ transform: "translate3d(0,0,0)", opacity: 1 })),
       state("false", style({ transform: "translate3d(100%,0,0)", opacity: 0 })),
       transition("false=>true", [
@@ -77,6 +106,7 @@ export class InternationalHotelListPage
   defaultImage = "";
   searchCondition: IInterHotelSearchCondition;
   classMode: "ios" | "md";
+  isHideHeader = false;
   constructor(
     private hotelService: InternationalHotelService,
     private imageRecoverService: ImageRecoverService,
@@ -90,7 +120,20 @@ export class InternationalHotelListPage
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
-  ngAfterViewInit() {}
+  onModifyAdultCount() {
+    this.router.navigate([AppHelper.getRoutePath("room-count-children")]);
+  }
+  ngAfterViewInit() {
+    this.content.getScrollElement().then(el => {
+      this.subscriptions.push(
+        fromEvent(el, "scroll")
+          .pipe(map(evt => (evt.target as HTMLElement).scrollTop))
+          .subscribe(top => {
+            this.isHideHeader = top >= 0;
+          })
+      );
+    });
+  }
   itemHeightFn() {
     return 123;
   }

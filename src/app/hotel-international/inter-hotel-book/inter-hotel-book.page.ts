@@ -254,20 +254,20 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       }
       this.tmc = this.initialBookDto.Tmc;
       await this.initializeViewModel();
-      if (!environment.production) {
-        if (this.combindInfos && this.combindInfos.length) {
-          window.localStorage.setItem(
-            "this.initialInterHotelBookDto",
-            JSON.stringify(this.combindInfos)
-          );
-        }
-        const local = window.localStorage.getItem(
-          "this.initialInterHotelBookDto"
-        );
-        if (local) {
-          this.combindInfos = JSON.parse(local);
-        }
-      }
+      // if (!environment.production) {
+      //   if (this.combindInfos && this.combindInfos.length) {
+      //     window.localStorage.setItem(
+      //       "this.initialInterHotelBookDto",
+      //       JSON.stringify(this.combindInfos)
+      //     );
+      //   }
+      //   const local = window.localStorage.getItem(
+      //     "this.initialInterHotelBookDto"
+      //   );
+      //   if (local) {
+      //     this.combindInfos = JSON.parse(local);
+      //   }
+      // }
       console.log("getInitializeBookDto", this.initialBookDto);
     } catch (e) {
       console.log(e);
@@ -1113,17 +1113,17 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     let canBook = false;
     let canBook2 = false;
     const isSelf = await this.staffService.isSelfBookType();
-    if (this.combindInfos) {
-      const c = this.combindInfos.find(it => !it.arrivalHotelTime);
-      if (c) {
-        AppHelper.alert("请选择到店时间");
-        const ele = document.querySelector(
-          `app-inter-room-show-item[dataid='${c.id}']`
-        );
-        this.scrollEleToView(ele);
-        return;
-      }
-    }
+    // if (this.combindInfos) {
+    //   const c = this.combindInfos.find(it => !it.arrivalHotelTime);
+    //   if (c) {
+    //     AppHelper.alert("请选择到店时间");
+    //     const ele = document.querySelector(
+    //       `app-inter-room-show-item[dataid='${c.id}']`
+    //     );
+    //     this.scrollEleToView(ele);
+    //     return;
+    //   }
+    // }
     this.combindInfos = this.fillGroupConbindInfoApprovalInfo(
       this.combindInfos
     );

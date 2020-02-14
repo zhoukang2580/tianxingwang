@@ -148,8 +148,8 @@ export class InternationalHotelService {
     this.searchConditon = {
       checkinDate: this.calendarService.getMoment(4).format("YYYY-MM-DD"),
       checkoutDate: this.calendarService.getMoment(5).format("YYYY-MM-DD"),
-      adultCount: 1,
-      childCount: 0,
+      adultCount: 2,
+      children: [],
       hotelType: "normal",
       country: { Code: "CN" } as any,
       destinationCity: {
@@ -293,8 +293,11 @@ export class InternationalHotelService {
       CityCode: cond.destinationCity && cond.destinationCity.Code,
       NationalityCode: cond.country && cond.country.Code,
       AdultCount: cond.adultCount,
-      ChildCount: cond.childCount,
-      ChildAges: cond.childAges,
+      ChildCount: (cond.children && cond.children.length) || 0,
+      ChildAges:
+        cond.children && cond.children.length
+          ? cond.children.map(it => it.age).join(",")
+          : "",
       Langs: ["cn"],
       IsLoadDetail: true
     };
@@ -804,8 +807,7 @@ export interface IInterHotelSearchCondition {
   destinationCity: TrafficlineEntity;
   country: CountryEntity;
   adultCount: number;
-  childCount: number;
-  childAges: number;
+  children: { age: number }[];
   searchText: ISearchTextValue;
   tripType: TripType;
   tag: "Agreement" | "" | "SpecialPrice";
