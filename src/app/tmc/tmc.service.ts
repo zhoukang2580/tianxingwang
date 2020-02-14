@@ -997,6 +997,7 @@ export class TmcEntity extends BaseEntity {
   /// 校验行程单
   /// </summary>
   CheckTravelUrl: string;
+  InternationalHotelApprovalType: TmcApprovalType;
 
   /// <summary>
   /// 获取员工行程单列表

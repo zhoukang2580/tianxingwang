@@ -144,6 +144,19 @@
         </ion-list>
         <ion-list>
           <ion-list-header><strong>旅客信息</strong></ion-list-header>
+          <ion-item *ngFor='let c of combindInfo.checkInPersonInfos'>
+            <ion-button size='small' fill='clear' (click)='onRemoveCheckInPersion(c,combindInfo)'>
+              <ion-icon name='trash' color='danger'></ion-icon>
+            </ion-button>
+            <ion-label>{{c.isMain?"主入住人":"其他入住人"}}:</ion-label>
+            <ion-input [(ngModel)]='c.lastName' placeholder='姓氏(英文/拼音)'></ion-input>
+            <ion-input [(ngModel)]='c.firstName' placeholder='名字(英文/拼音)'></ion-input>
+          </ion-item>
+          <ion-button color='secondary' expand='full' class='ion-padding-horizontal' fill='clear'
+            (click)='onAddCheckInPersion(combindInfo)'>
+            <ion-icon name='add-outline'></ion-icon>
+            添加入住人
+          </ion-button>
           <app-book-credential-comp [credential]='combindInfo?.vmCredential'
             [canMaintainCredentials]='combindInfo.isCanEditCrendentails'
             (savecredential)='onSavecredential($event,combindInfo)'

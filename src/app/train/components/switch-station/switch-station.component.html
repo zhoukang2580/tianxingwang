@@ -5,7 +5,7 @@
     </h2>
   </ion-text>
   <div class='toogle-icon' (click)='onRotateIcon()'>
-    <ion-icon name="swap"></ion-icon>
+    <ion-icon  name="swap-horizontal-outline"></ion-icon>
   </div>
   <ion-skeleton-text style='width: 20%;height: 2em;' animated *ngIf='!vmToCity'></ion-skeleton-text>
   <ion-text (click)='onSelectCity(false)'  class='ion-text-wrap' #toCityEle *ngIf='vmToCity'>
@@ -21,7 +21,7 @@
       </h2>
     </ion-text>
     <div class='toogle-icon'>
-      <ion-icon name="swap"></ion-icon>
+      <ion-icon  name="swap-horizontal-outline"></ion-icon>
     </div>
     <ion-skeleton-text style='width: 20%;height: 2em;' animated *ngIf='!vmToCity'></ion-skeleton-text>
     <ion-text (click)='onSelectCity(false)' color='secondary' class='ion-text-wrap' #toCityEle *ngIf='vmToCity'>

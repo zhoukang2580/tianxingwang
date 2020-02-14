@@ -115,10 +115,13 @@
   <ion-infinite-scroll (ionInfinite)='loadMore()' threshold='20%'>
     <ion-infinite-scroll-content>加载更多...</ion-infinite-scroll-content>
   </ion-infinite-scroll>
-  <ion-fab vertical="bottom" [class.show]='isShowFab' (click)='onScrollToTop()' horizontal="end" edge slot="fixed">
+  <!-- <ion-fab vertical="bottom" [class.show]='isShowFab' (click)='onScrollToTop()' horizontal="end" edge slot="fixed">
     <ion-fab-button color='secondary'>
-      <ion-icon name="arrow-dropup-circle"></ion-icon>
+      <ion-icon name="chevron-up-outline"></ion-icon>
     </ion-fab-button>
+  </ion-fab> -->
+  <ion-fab>
+    <app-pin-fab></app-pin-fab>
   </ion-fab>
 </ion-content>
 <ion-footer color="primary">

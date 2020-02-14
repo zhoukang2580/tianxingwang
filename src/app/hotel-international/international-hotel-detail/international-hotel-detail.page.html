@@ -1,17 +1,16 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <app-back-button defaultHref='' (click)='back($event)'></app-back-button>
+      <app-back-button defaultHref=''></app-back-button>
     </ion-buttons>
     <ion-text *ngIf='isShowSelectedInfos else titletpl'>{{hotel?.Name}}</ion-text>
     <ng-template #titletpl>
       <ion-title>{{hotel?.Name}}</ion-title>
     </ng-template>
     <ion-buttons slot='end'>
-      <ion-button fill='clear' color='secondary' *ngIf='canAddPassengers' (click)='onFilteredPassenger()'
-      size='small'>
-      <ion-text>过滤差标</ion-text>
-    </ion-button>
+      <ion-button fill='clear' color='secondary' *ngIf='canAddPassengers' (click)='onFilteredPassenger()' size='small'>
+        <ion-text>过滤差标</ion-text>
+      </ion-button>
       <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()'
         *ngIf='canAddPassengers&&!selectedPassengers?.length'>
         添加旅客<ion-badge color='danger'>
@@ -34,7 +33,7 @@
   </ion-refresher>
   <ng-container *ngIf='hotel else retry'>
     <div class="bg" #bg (click)='onShowHotelImages()'>
-      <div class="back-button" *ngIf='isHeaderHide' (click)='back($event)'>
+      <div class="back-button" *ngIf='isHeaderHide'>
         <app-back-button></app-back-button>
       </div>
       <app-swiper-slides (slideChange)='onSlideChange($event)' [options]='{autoplay:true}' [items]='hotelImages'
@@ -159,7 +158,7 @@
                   </ion-text>
                   <ion-icon class='arrow-icon' name='caret-down-outline' mode='ios' color='secondary'
                     *ngIf='!room["isShowRoomPlans"]'></ion-icon>
-                  <ion-icon class='arrow-icon' name="arrow-dropup" mode='ios' color='secondary'
+                  <ion-icon class='arrow-icon' name="caret-up-outline" mode='ios' color='secondary'
                     *ngIf='room["isShowRoomPlans"]'></ion-icon>
                 </h3>
               </ion-label>
@@ -177,31 +176,22 @@
       <ion-item-divider (click)='onToggleOpenStatus(hotel,"ishoteldetails")'>酒店信息
         <ng-container *ngIf='hotel'>
           <ion-icon name='caret-down-outline' color='secondary' *ngIf='!hotel["ishoteldetails"]'></ion-icon>
-          <ion-icon name='arrow-dropup' color='secondary' *ngIf='hotel["ishoteldetails"]'></ion-icon>
+          <ion-icon name='caret-up-outline' color='secondary' *ngIf='hotel["ishoteldetails"]'></ion-icon>
         </ng-container>
       </ion-item-divider>
       <ng-container *ngIf='hotel?.HotelDetails'>
         <ion-grid *ngIf='hotel["ishoteldetails"]' @fadeInOut>
           <ng-container *ngFor='let detail of hotelDetails'>
-            <ion-row *ngIf='detail.Description'>
+            <ion-row *ngIf='detail.Description' class="detail-info">
               <ion-col size='2'>
-                <ion-text fill='clear' (click)='detail["isShowMore"]=!detail["isShowMore"]'>
+                <ion-text fill='clear' (click)='detail["isShowMoreDesc"]=!detail["isShowMoreDesc"]'>
                   {{detail.Name}}
                 </ion-text>
               </ion-col>
-              <ion-col size='10' (click)='detail["isShowMore"]=!detail["isShowMore"]'>
+              <ion-col size='10' (click)='onToggleDetails(detail)'>
                 <ion-text color='medium'>
-                  <div class="inner-html clip-text" [class.show]='detail["isShowMore"]'
-                    [innerHTML]='detail.Description'></div>
-                  <ion-button color='secondary' fill='clear' style="display: inherit;"
-                    *ngIf='detail.Description?.length>22'>
-                    <ng-container *ngIf='!detail["isShowMore"]'>展开
-                      <ion-icon name='caret-down-outline'></ion-icon>
-                    </ng-container>
-                    <ng-container *ngIf='detail["isShowMore"]'>收起
-                      <ion-icon name='arrow-dropup'></ion-icon>
-                    </ng-container>
-                  </ion-button>
+                  <div [innerHTML]='detail["isShowMoreDesc"]?detail.Description:detail.OverviewDesc'
+                    class='description inner-html' [class.show]='detail["isShowMoreDesc"]'></div>
                 </ion-text>
               </ion-col>
             </ion-row>
@@ -214,7 +204,7 @@
         <ion-item-divider (click)='hotel["isShowMap"]=!hotel["isShowMap"]'>交通信息
           <ng-container *ngIf='hotel'>
             <ion-icon name='caret-down-outline' color='secondary' *ngIf='!hotel["isShowMap"]'></ion-icon>
-            <ion-icon name='arrow-dropup' color='secondary' *ngIf='hotel["isShowMap"]'></ion-icon>
+            <ion-icon name='caret-up-outline' color='secondary' *ngIf='hotel["isShowMap"]'></ion-icon>
           </ng-container>
         </ion-item-divider>
         <ng-container *ngIf='hotel&&hotel["isShowMap"]'>

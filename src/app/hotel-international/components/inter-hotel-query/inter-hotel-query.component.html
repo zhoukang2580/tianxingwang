@@ -4,7 +4,7 @@
       <span [class.has-selected-item]="checkHasItemSelected(t)">
         {{t.name}}
       </span>
-      <ion-icon name='arrow-dropup' *ngIf='t.active'></ion-icon>
+      <ion-icon name='caret-up-outline' *ngIf='t.active'></ion-icon>
       <ion-icon name='caret-down-outline' *ngIf='!t.active'></ion-icon>
     </ion-label>
   </ion-buttons>

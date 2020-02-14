@@ -74,7 +74,7 @@ export class InternationalHotelService {
   private selfCredentials: CredentialsEntity[];
   private conditionModel: HotelConditionModel;
   // = !environment.production    ? (MOCK_HOTEL_DETIAL_INFO as any)    : null; // 查看详情的hotel
-  viewHotel: HotelEntity;
+  viewHotel: HotelEntity= !environment.production    ? (MOCK_HOTEL_DETIAL_INFO as any)    : null; // 查看详情的hotel;
   showRoomDetailInfo: IshowRoomDetailInfo;
   showImages: any[];
   constructor(
@@ -142,7 +142,9 @@ export class InternationalHotelService {
     this.showImages = [];
     this.showRoomDetailInfo = null;
     this.selfCredentials = [];
-    this.viewHotel = null;
+    if(environment.production){
+      this.viewHotel = null;
+    }
   }
   private initSearchCondition() {
     this.searchConditon = {
@@ -282,9 +284,9 @@ export class InternationalHotelService {
     const req = new RequestEntity();
     req.Method = `TmcApiInternationalHotelUrl-Home-Detail`;
     const cond = this.getSearchCondition();
-    // if (!environment.production) {
-    //   return of((MOCK_HOTEL_DETIAL_INFO as any) as HotelEntity);
-    // }
+    if (!environment.production) {
+      return of((MOCK_HOTEL_DETIAL_INFO as any) as HotelEntity);
+    }
     req.IsShowLoading = true;
     req.Data = {
       HotelId: id,

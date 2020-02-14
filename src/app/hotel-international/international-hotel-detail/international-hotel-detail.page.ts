@@ -85,6 +85,7 @@ export class InternationalHotelDetailPage
     Tag: string;
     Name: string;
     Description: string;
+    OverviewDesc: string;
   }[];
   colors: {};
   isIos = false;
@@ -103,20 +104,6 @@ export class InternationalHotelDetailPage
   ) {
     this.isIos = plt.is("ios");
   }
-  back(evt: CustomEvent) {
-    if (evt) {
-      evt.stopImmediatePropagation();
-      evt.preventDefault();
-    }
-    this.navCtrl.pop().then(_ => {
-      console.log("pop ok");
-      setTimeout(() => {
-        if (this.router.url.includes("hotel-detail")) {
-          this.navCtrl.back();
-        }
-      }, 0);
-    });
-  }
   getBgPic() {
     return (
       this.hotel &&
@@ -132,7 +119,6 @@ export class InternationalHotelDetailPage
     this.initQueryModel();
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(() => {
-        this.hotel = this.hotelService.viewHotel;
         this.staffService.isSelfBookType().then(self => {
           this.canAddPassengers = !self;
         });
@@ -189,6 +175,9 @@ export class InternationalHotelDetailPage
         }
       }
     });
+  }
+  onToggleDetails(detail: { isShowMoreDesc: boolean }) {
+    detail.isShowMoreDesc = !detail.isShowMoreDesc;
   }
   onToggleOpenStatus(obj: any, pro: "ishoteldetails" | "") {
     if (obj) {
@@ -322,15 +311,40 @@ export class InternationalHotelDetailPage
         }
       });
       this.hotelDetails = [];
+      const showOpen = `<span class='open-close-arrow'></span>`;
       Object.keys(temp).forEach(tag => {
         const sep = tag.toLowerCase().includes("facilit")
           ? `<span class='line'>|</span>`
           : ",";
         if (temp[tag] && temp[tag].length) {
+          const description = temp[tag].map(it => it.Description).join(sep);
+          let overviewDesc = description;
+          const len = 21 * 2;
+          const res = description.match(/<\s*(\w+)\s*>.*?<\/\s*\1\s*>/i);
+          const el = res && res[1];
+          const index = res && res.index;
+          if (index && el) {
+            if (index >= len) {
+              const str1 = description.substring(0, len);
+              overviewDesc = `${str1}...${showOpen}</${el}>`;
+            } else {
+              const str1 = description.substring(0, len);
+              overviewDesc = `${str1}...${showOpen}</${el}>`;
+            }
+          } else {
+            if (description.length > len) {
+              const str1 = description.substring(0, len);
+              overviewDesc = `${str1}...${showOpen}</${el}>`;
+            }
+          }
+          let tempDescription = description;
+          const mat = tempDescription.match(/.+<\s*(?!\/\w+)\s*>/gi);
+          console.log("tempDescription", tempDescription, mat);
           this.hotelDetails.push({
             Tag: tag,
             Name: temp[tag][0].Name,
-            Description: temp[tag].map(it => it.Description).join(sep)
+            Description: description,
+            OverviewDesc: overviewDesc
           });
         }
       });
@@ -422,6 +436,7 @@ export class InternationalHotelDetailPage
   }
   doRefresh() {
     this.initConfig();
+    this.hotel = this.hotelService.viewHotel;
     if (this.hotel) {
       this.subscription.unsubscribe();
       this.subscription = this.hotelService

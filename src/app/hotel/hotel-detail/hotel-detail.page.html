@@ -154,7 +154,7 @@
                 </ion-text>
                 <ion-icon class='arrow-icon' name='caret-down-outline' mode='ios' color='secondary'
                   *ngIf='!room["isShowRoomPlans"]'></ion-icon>
-                  <ion-icon class='arrow-icon' name="arrow-dropup" mode='ios' color='secondary'
+                  <ion-icon class='arrow-icon' name="caret-up-outline" mode='ios' color='secondary'
                     *ngIf='room["isShowRoomPlans"]'></ion-icon>
               </h3>
             </ion-label>
@@ -173,7 +173,7 @@
       酒店信息
       <ng-container *ngIf='hotel'>
         <ion-icon name='caret-down-outline' color='secondary' *ngIf='!hotel["ishoteldetails"]'></ion-icon>
-        <ion-icon name='arrow-dropup' color='secondary' *ngIf='hotel["ishoteldetails"]'></ion-icon>
+        <ion-icon name='caret-up-outline' color='secondary' *ngIf='hotel["ishoteldetails"]'></ion-icon>
       </ng-container>
     </ion-item-divider>
     <ng-container *ngIf='hotel?.HotelDetails'>
@@ -220,7 +220,7 @@
       <ion-item-divider (click)='hotel["isShowMap"]=!hotel["isShowMap"]'>交通信息
         <ng-container *ngIf='hotel'>
           <ion-icon name='caret-down-outline' color='secondary' *ngIf='!hotel["isShowMap"]'></ion-icon>
-          <ion-icon name='arrow-dropup' color='secondary' *ngIf='hotel["isShowMap"]'></ion-icon>
+          <ion-icon name='caret-up-outline' color='secondary' *ngIf='hotel["isShowMap"]'></ion-icon>
         </ng-container>
       </ion-item-divider>
       <ng-container *ngIf='hotel&&hotel["isShowMap"]'>

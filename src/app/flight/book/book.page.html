@@ -309,7 +309,7 @@
     <ion-buttons slot='start'>
       <ion-button color='secondary' (click)='onShowPriceDetail()'>总计:
         <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)|flightprice:"1"}}</ion-text>
-        <ion-icon name='arrow-dropup' slot='end' color='secondary' mode='md'></ion-icon>
+        <ion-icon name='caret-up-outline' slot='end' color='secondary' mode='md'></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-button slot='end' size='small' *ngIf='isCanSave' color='secondary' (click)='bookFlight(true)'

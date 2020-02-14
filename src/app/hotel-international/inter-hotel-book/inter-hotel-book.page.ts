@@ -84,6 +84,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   private initialBookDto: InitialBookDtoModel;
   private isManagentCredentails = false;
   private subscriptions: Subscription[] = [];
+  checkInPersionCount = 1;
   HotelPaymentType = HotelPaymentType;
   CredentialsType = CredentialsType;
   combindInfos: IPassengerHotelBookInfo[];
@@ -138,6 +139,13 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         if (this.isManagentCredentails) {
           this.doRefresh(false);
         }
+      })
+    );
+  }
+  private initCheckingInPersonInfos() {
+    this.subscriptions.push(
+      this.hotelService.getSearchConditionSource().subscribe(c => {
+        this.checkInPersionCount = (c && c.adultCount) || 1;
       })
     );
   }
@@ -344,47 +352,76 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     const Tmc = this.tmc;
     if (
       !Tmc ||
-      Tmc.HotelApprovalType == TmcApprovalType.None ||
-      Tmc.HotelApprovalType == 0
+      Tmc.InternationalHotelApprovalType == TmcApprovalType.None ||
+      Tmc.InternationalHotelApprovalType == 0
     ) {
       return false;
     }
-    if (Tmc.HotelApprovalType == TmcApprovalType.Approver) {
+    if (Tmc.InternationalHotelApprovalType == TmcApprovalType.Approver) {
       return true;
     }
     if (
-      Tmc.HotelApprovalType == TmcApprovalType.ExceedPolicyApprover &&
+      Tmc.InternationalHotelApprovalType ==
+        TmcApprovalType.ExceedPolicyApprover &&
       this.getRuleMessage(item.bookInfo.bookInfo.roomPlan)
     ) {
       return true;
     }
     return false;
   }
+  onAddCheckInPersion(combindInfo: IPassengerHotelBookInfo) {
+    if (combindInfo) {
+      if (!combindInfo.checkInPersonInfos) {
+        combindInfo.checkInPersonInfos = [
+          {
+            isMain: true,
+            firstName: combindInfo.credential.LastName,
+            lastName: combindInfo.credential.FirstName
+          }
+        ];
+      } else {
+        if (combindInfo.checkInPersonInfos.length < this.checkInPersionCount) {
+          combindInfo.checkInPersonInfos.push({} as any);
+        } else {
+          AppHelper.alert(
+            "不能添加更多入住信息！",
+            true,
+            LanguageHelper.getConfirmTip()
+          );
+        }
+      }
+    }
+  }
+  onRemoveCheckInPersion(c, combindInfo: IPassengerHotelBookInfo) {
+    combindInfo.checkInPersonInfos = combindInfo.checkInPersonInfos.filter(
+      it => it != c
+    );
+  }
   isAllowSelectApprove(info: IPassengerHotelBookInfo) {
     const Tmc = this.initialBookDto.Tmc;
     const staff = info.credentialStaff;
     if (
       !Tmc ||
-      Tmc.HotelApprovalType == TmcApprovalType.None ||
-      Tmc.HotelApprovalType == 0
+      Tmc.InternationalHotelApprovalType == TmcApprovalType.None ||
+      Tmc.InternationalHotelApprovalType == 0
     ) {
       return false;
     }
     if (!staff) {
       return true;
     }
-    if (Tmc.HotelApprovalType == TmcApprovalType.Free) {
+    if (Tmc.InternationalHotelApprovalType == TmcApprovalType.Free) {
       return true;
     }
     if (
       (!staff.Approvers || staff.Approvers.length == 0) &&
-      Tmc.HotelApprovalType == TmcApprovalType.Approver
+      Tmc.InternationalHotelApprovalType == TmcApprovalType.Approver
     ) {
       return true;
     }
 
     if (
-      Tmc.HotelApprovalType == TmcApprovalType.ExceedPolicyFree &&
+      Tmc.InternationalHotelApprovalType == TmcApprovalType.ExceedPolicyFree &&
       info.bookInfo.bookInfo &&
       info.bookInfo.bookInfo &&
       info.bookInfo.bookInfo.roomPlan.Rules &&
@@ -1048,6 +1085,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     return initialBookDto;
   }
   ngOnInit() {
+    this.initCheckingInPersonInfos();
     this.hotelService.setBookInfos(
       this.hotelService.getBookInfos().filter(it => !!it.bookInfo)
     );
@@ -1477,6 +1515,11 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
 }
 interface IPassengerHotelBookInfo {
   arrivalHotelTime: string;
+  checkInPersonInfos: {
+    lastName: string;
+    firstName: string;
+    isMain: boolean;
+  }[];
   creditCardInfo: {
     isShowCreditCard: boolean;
     creditCardType: string;
