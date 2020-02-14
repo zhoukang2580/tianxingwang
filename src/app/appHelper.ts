@@ -454,34 +454,6 @@ export class AppHelper {
     }
     return path;
   }
-  static matchDefaultRoute(
-    url: UrlSegment[],
-    group: UrlSegmentGroup,
-    route: Route
-  ) {
-    try {
-      console.log(url, group, route, route.loadChildren);
-      let path: string = "/tabs/home";
-      if (url.length === 1) {
-        path = url[0].path;
-        console.log("path", path);
-        path = path.match(new RegExp(`${path}_*`, "gi"))
-          ? path.substring(0, path.lastIndexOf("_"))
-          : path;
-        // const pathExists = fetch(route.loadChildren.toString());
-      }
-      console.log("matchDefaultRoute path after", path);
-      return path && url[0].path.match(new RegExp(`${path}_*`, "gi"))
-        ? (route.redirectTo = `/${path == "null" ? "" : path}`) && {
-            consumed: [new UrlSegment(path, {})]
-          }
-        : {
-            consumed: [new UrlSegment("", {})]
-          };
-    } catch (e) {
-      console.error("matchDefaultRoute", e);
-    }
-  }
   static md5Digest(content: string, toLowerCase: boolean = true) {
     if (toLowerCase) {
       return `${md5(content)}`.toLowerCase();

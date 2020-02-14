@@ -15,14 +15,14 @@ import { IResponse } from "../api/IResponse";
 })
 export class LoginService {
   identity: IdentityEntity;
-  private _imageValue: string;
+  private imageValue: string;
   set ImageValue(value: string) {
-    this._imageValue = value;
+    this.imageValue = value;
   }
   get ImageValue() {
-    return encodeURIComponent(this._imageValue);
+    return encodeURIComponent(this.imageValue);
   }
-  private _toPageRouter: string; // 因要授权而不能跳转的页面
+  private toPageRouter: string; // 因要授权而不能跳转的页面
   constructor(
     private identityService: IdentityService,
     private router: Router,
@@ -34,10 +34,10 @@ export class LoginService {
     });
   }
   setToPageRouter(pageRouter: string) {
-    this._toPageRouter = pageRouter;
+    this.toPageRouter = pageRouter;
   }
   getToPageRouter() {
-    return this._toPageRouter || "";
+    return this.toPageRouter || "";
   }
 
   checkIsDeviceBinded(deviceNumber: string) {

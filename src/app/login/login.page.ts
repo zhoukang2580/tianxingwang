@@ -396,6 +396,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   ) {
     this.loginType = "user";
     const toPageRouter = this.loginService.getToPageRouter() || "";
+    console.log("toPageRouter", toPageRouter);
     if (isCheckDevice && AppHelper.isApp()) {
       await this.checkIsDeviceBinded();
     } else {
