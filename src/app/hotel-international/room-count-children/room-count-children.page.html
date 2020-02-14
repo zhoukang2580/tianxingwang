@@ -27,8 +27,8 @@
         <ion-button slot='end' color='secondary' fill='clear'>{{c.age>0?c.age:"小于1"}}岁</ion-button>
       </ion-item>
       <ion-item-options side="end" >
-        <ion-item-option color="danger" >
-          <ion-button (click)='onRemove(c)' fill='clear' size='small'>
+        <ion-item-option color="danger" (click)='onRemove(c)' >
+          <ion-button  fill='clear' size='small'>
             <ion-icon name='trash' color='light'></ion-icon>
           </ion-button>
         </ion-item-option>
