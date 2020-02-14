@@ -32,7 +32,7 @@
   <ng-container *ngIf='vmStaffs else addTempl'>
     <ion-list *ngIf='!loading;else loadingTemp'>
       <ng-container *ngIf='vmStaffs?.length;else nodata'>
-        <ion-item *ngFor='let item of vmStaffs' detail (click)='onSelect(item)'>
+        <ion-item *ngFor='let item of vmStaffs' @flyInOut detail (click)='onSelect(item)'>
           <ion-label color='medium'>
             <ion-text color='dark'>{{item?.Name}}</ion-text>
             {{item?.CredentialsInfo}}

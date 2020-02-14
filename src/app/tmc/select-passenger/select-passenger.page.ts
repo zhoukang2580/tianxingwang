@@ -1,3 +1,4 @@
+import { flyInOut } from './../../animations/flyInOut';
 import { InternationalHotelService } from "./../../hotel-international/international-hotel.service";
 import { HotelService } from "./../../hotel/hotel.service";
 import { SelectCountryModalComponent } from "../components/select-country/select-countrymodal.component";
@@ -56,6 +57,7 @@ export const NOT_WHITE_LIST = "notwhitelist";
   templateUrl: "./select-passenger.page.html",
   styleUrls: ["./select-passenger.page.scss"],
   animations: [
+    flyInOut,
     trigger("openclose", [
       state("true", style({ height: "*", opacity: "1" })),
       state("false", style({ height: "0", opacity: "0" })),
@@ -358,12 +360,34 @@ export class SelectPassengerPage
     this.frqPassengerCredentials = null; // 是否显示常旅客
     // 白名单
     if (!s.isNotWhiteList) {
-      this.staffCredentails = await this.getCredentials(s.AccountId);
-      const first =
+      const staffCredentails = await this.getCredentials(s.AccountId);
+      if (this.forType == FlightHotelTrainType.HotelInternational) {
+        const temp = staffCredentails.filter(
+          it =>
+            it.Type == CredentialsType.Passport ||
+            CredentialsType.HmPass == it.Type
+        );
+        const temp2 = staffCredentails.filter(
+          it =>
+            !(
+              it.Type == CredentialsType.Passport ||
+              CredentialsType.HmPass == it.Type
+            )
+        );
+        this.staffCredentails = temp.concat(temp2);
+      } else {
+        this.staffCredentails = staffCredentails;
+      }
+      let first =
         this.staffCredentails.find(it => it.Type == CredentialsType.IdCard) ||
         this.staffCredentails.length
           ? this.staffCredentails[0]
           : null;
+      if (this.forType == FlightHotelTrainType.HotelInternational) {
+        first = this.staffCredentails.find(
+          it => it.Type == CredentialsType.Passport
+        );
+      }
       if (first) {
         this.selectedCredentialId = first.Id;
       }
