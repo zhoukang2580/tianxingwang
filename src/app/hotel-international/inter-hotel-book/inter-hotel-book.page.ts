@@ -1412,12 +1412,15 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       }
     }
     if (item.credentials) {
+      const isSelf = await this.staffService.isSelfBookType();
       item.credentials = item.credentials.filter(it => !!it.Number);
-      item.isCanEditCrendentails = !item.credentials.find(
-        it =>
-          it.Type == CredentialsType.Passport ||
-          it.Type == CredentialsType.HmPass
-      );
+      item.isCanEditCrendentails =
+        isSelf &&
+        !item.credentials.find(
+          it =>
+            it.Type == CredentialsType.Passport ||
+            it.Type == CredentialsType.HmPass
+        );
     }
     console.log("onModify", item.credentials);
   }
