@@ -1,4 +1,4 @@
-<ion-item lines='none' class="ion-no-margin ion-no-padding">
+<div class="container">
     <ion-input class="input-box" placeholder='{{label}}' [(ngModel)]='value' [value]='keyValue?.Text'
         [clearInput]='false' (ionChange)='isShowSearchIcon=true' (ionFocus)='isShowSearchIcon=true'></ion-input>
     <ng-container>
@@ -6,4 +6,4 @@
         <ion-icon name='search' *ngIf='isShowSearchIcon' class="search" color='secondary'
             (click)='onOpenSearchModal($event)'></ion-icon>
     </ng-container>
-</ion-item>
+</div>

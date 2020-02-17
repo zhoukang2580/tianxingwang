@@ -25,6 +25,7 @@ import { ScrollerComponent } from "./scroller/scroller.component";
 import { BackButtonComponent } from "./back-button/back-button.component";
 import { AddNumberComponent } from './add-number/add-number.component';
 import { ComboboxComponent } from './combobox/combobox.component';
+import { ComboboxModalComponent } from './combobox-modal/combobox-modal.component';
 @NgModule({
   declarations: [
     OrComponent,
@@ -46,7 +47,8 @@ import { ComboboxComponent } from './combobox/combobox.component';
     ScrollerComponent,
     BackButtonComponent,
     AddNumberComponent,
-    ComboboxComponent
+    ComboboxComponent,
+    ComboboxModalComponent
   ],
   imports: [
     CommonModule,
@@ -78,7 +80,8 @@ import { ComboboxComponent } from './combobox/combobox.component';
     AppDirectivesModule,
     RefresherModule,
     MyCalendarComponent,
-    ScrollerComponent
+    ScrollerComponent,
+    ComboboxModalComponent
   ]
 })
 export class AppComponentsModule {}
