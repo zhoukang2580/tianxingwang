@@ -1,14 +1,12 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-buttons slot='start'>
-      <app-back-button defaultHref='' (click)='back()'></app-back-button>
-    </ion-buttons>
+  <ion-buttons>
+    <app-back-button defaultHref='' (click)='back()'></app-back-button>
     <form (ngSubmit)='onSearchCities()'>
       <ion-searchbar animated='true' #searchcity (ionFocus)='onSearchCityFocus()' name='searchbar'
         [(ngModel)]='searchCityKeyWords' type='search' (ionChange)='onSearchCities()'>
       </ion-searchbar>
     </form>
-  </ion-toolbar>
+  </ion-buttons>
 </ion-header>
 <ion-content>
   <ion-toolbar *ngIf='tabs'>

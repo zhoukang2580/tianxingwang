@@ -124,7 +124,7 @@ export class InternationalHotelDetailPage
         });
         setTimeout(() => {
           this.doRefresh();
-        }, 240);
+        }, 500);
       })
     );
     this.subscriptions.push(
@@ -337,9 +337,9 @@ export class InternationalHotelDetailPage
               overviewDesc = `${str1}...${showOpen}</${el}>`;
             }
           }
-          let tempDescription = description;
+          const tempDescription = description;
           const mat = tempDescription.match(/.+<\s*(?!\/\w+)\s*>/gi);
-          console.log("tempDescription", tempDescription, mat);
+          // console.log("tempDescription", tempDescription, mat);
           this.hotelDetails.push({
             Tag: tag,
             Name: temp[tag][0].Name,

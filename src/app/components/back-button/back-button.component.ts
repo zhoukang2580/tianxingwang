@@ -27,27 +27,35 @@ export class BackButtonComponent implements OnInit, AfterViewInit {
     platform: Platform,
     private el: ElementRef<HTMLElement>,
     @Optional() @Attribute("customeback") private customeback: any,
-    @Optional() @Attribute("defaultHref") private defaultHref: string
+    @Optional() @Attribute("defaultHref") private defaultHref: string,
+    @Optional() @Attribute("color") public color: string
   ) {
     this.isIos = platform.is("ios");
   }
   back(evt?: CustomEvent) {
-    console.log("app-back-button curUrl:", this.curUrl, this.customeback);
+    console.log(
+      "app-back-button curUrl:",
+      this.curUrl,
+      "customeback " + this.customeback
+    );
     if (typeof this.backFn == "function") {
       this.backFn(evt);
       return;
     }
     if (!this.customeback && !this.customeBack) {
-      if (evt) {
-        evt.preventDefault();
-        evt.stopPropagation();
-      }
-      this.navCtrl.pop().then(() => {
-        if (this.router.url.includes(this.curUrl)) {
-          this.navCtrl.navigateBack(this.defaultHref || "");
-        }
-      });
+      this.backToPrePage(evt);
     }
+  }
+  backToPrePage(evt?: CustomEvent) {
+    if (evt) {
+      evt.preventDefault();
+      evt.stopPropagation();
+    }
+    this.navCtrl.pop().then(() => {
+      if (this.router.url.includes(this.curUrl)) {
+        this.navCtrl.navigateBack(this.defaultHref || "");
+      }
+    });
   }
   ngOnInit() {}
   ngAfterViewInit() {

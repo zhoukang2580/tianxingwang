@@ -29,12 +29,12 @@ import { WebView } from "@ionic-native/ionic-webview/ngx";
 import { IonicStorageModule } from "@ionic/storage";
 import { Animation } from "./animations/animation-interface";
 let curPlt: "ios" | "md";
-export function navAnimations(AnimationC: Animation, baseEl, opts) {
-  const animation: any =
+export function navAnimations(baseEl, opts) {
+  const animation =
     curPlt == "ios"
       ? iosTransitionAnimation(baseEl, opts)
       : mdTransitionAnimation(baseEl, opts);
-  return Promise.resolve(animation);
+  return animation;
 }
 @NgModule({
   declarations: [AppComponent],
@@ -47,7 +47,7 @@ export function navAnimations(AnimationC: Animation, baseEl, opts) {
       loadingSpinner: "crescent",
       swipeBackEnabled: false,
       hardwareBackButton: !true,
-      // navAnimation: navAnimations
+      // navAnimation: navAnimations as any
     }),
     HttpClientModule,
     // TranslateModule.forRoot({

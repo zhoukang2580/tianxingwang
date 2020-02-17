@@ -1,10 +1,18 @@
+import { BackButtonComponent } from "./../../components/back-button/back-button.component";
 import { AppHelper } from "./../../appHelper";
 import { ConfigService } from "src/app/services/config/config.service";
 import { InterHotelQueryComponent } from "./../components/inter-hotel-query/inter-hotel-query.component";
-import { Router, ActivatedRoute } from "@angular/router";
+import { Router, ActivatedRoute, NavigationStart } from "@angular/router";
 import { ImageRecoverService } from "./../../services/imageRecover/imageRecover.service";
 import { RefresherComponent } from "./../../components/refresher/refresher.component";
-import { finalize, switchMap, map, mergeMap, tap } from "rxjs/operators";
+import {
+  finalize,
+  switchMap,
+  map,
+  mergeMap,
+  tap,
+  filter
+} from "rxjs/operators";
 import { Subscription, fromEvent, from, interval, of } from "rxjs";
 import {
   InternationalHotelService,
@@ -92,6 +100,7 @@ export class InternationalHotelListPage
   implements OnInit, OnDestroy, AfterViewInit {
   private subscription = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
+  @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
   @ViewChild(InterHotelQueryComponent) queryComp: InterHotelQueryComponent;
   @ViewChild(IonContent) private content: IonContent;
   @ViewChild(IonInfiniteScroll) private scroller: IonInfiniteScroll;
@@ -112,10 +121,15 @@ export class InternationalHotelListPage
     private router: Router,
     private route: ActivatedRoute,
     private configService: ConfigService,
-    private domCtrl: DomController,
     plt: Platform
   ) {
     this.classMode = plt.is("ios") ? "ios" : "md";
+  }
+  back(evt?: CustomEvent) {
+    this.hideQueryPannel();
+    setTimeout(() => {
+      this.backBtn.backToPrePage(evt);
+    }, 300);
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();
@@ -143,7 +157,9 @@ export class InternationalHotelListPage
   hideQueryPannel() {
     if (this.queryComp) {
       // this.queryComp.tab.label = "close";
-      this.queryComp.tab.active = false;
+      if (this.queryComp.tab) {
+        this.queryComp.tab.active = false;
+      }
     }
   }
   onStarPriceChange() {
@@ -225,9 +241,18 @@ export class InternationalHotelListPage
   }
   ngOnInit() {
     this.subscriptions.push(
+      this.router.events
+        .pipe(filter(e => e instanceof NavigationStart))
+        .subscribe(() => {
+          this.hideQueryPannel();
+        })
+    );
+    this.subscriptions.push(
       this.route.queryParamMap.subscribe(q => {
         if (this.checkSearchTextChanged() || this.checkDestinationChanged()) {
-          this.doRefresh(true);
+          setTimeout(() => {
+            this.doRefresh(true);
+          }, 200);
         }
       })
     );
@@ -239,7 +264,7 @@ export class InternationalHotelListPage
     });
     setTimeout(() => {
       this.doRefresh();
-    }, 230);
+    }, 500);
   }
   onSearchText() {
     this.router.navigate(["search-by-text"]);

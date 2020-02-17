@@ -27,7 +27,6 @@ export class LazyloadDirective
   constructor(
     private imageRecoverService: ImageRecoverService,
     private el: ElementRef<HTMLDivElement | HTMLImageElement>,
-    private render: Renderer2,
     private ngZone: NgZone
   ) {}
   ngOnChanges() {
@@ -71,18 +70,10 @@ export class LazyloadDirective
     // console.log('load url:', url);
     this.ngZone.runOutsideAngular(() => {
       if (this.el.nativeElement instanceof HTMLDivElement) {
-        this.render.setStyle(
-          this.el.nativeElement,
-          "background-image",
-          `url('${url}')`
-        );
         // this.render.setProperty(this.el.nativeElement,'backgroundImage',`${src || this.lazyLoad}`);
-        // this.el.nativeElement.style.backgroundImage=`${src || this.lazyLoad}`;
+        this.el.nativeElement.style.backgroundImage = `url('${url}')`;
       } else {
-        if (url) {
-          this.render.setProperty(this.el.nativeElement, "src", url);
-        }
-        // this.el.nativeElement.src = src || this.lazyLoad;
+        this.el.nativeElement.src = url || this.lazyLoad;
       }
     });
   }

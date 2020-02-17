@@ -1,13 +1,10 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-buttons slot='start'>
-
-      <app-back-button defaultHref=""></app-back-button>
-    </ion-buttons>
+  <ion-buttons>
+    <app-back-button defaultHref=""></app-back-button>
     <ion-searchbar mode='ios' debounce="700" animated placeholder="输入中文/拼音/首字母/城市代码" (ionChange)='doSearch()'
-      [(ngModel)]='vmKeyword'>
+      [(ngModel)]='vmKeyword' class="ion-margin-end">
     </ion-searchbar>
-  </ion-toolbar>
+  </ion-buttons>
 </ion-header>
 <ion-content [scrollEvents]='true' (ionScroll)='onScroll($event)'>
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh(true)">
