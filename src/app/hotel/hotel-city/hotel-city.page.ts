@@ -130,7 +130,7 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
       query.locationAreas = null;
       this.hotelService.setHotelQuerySource(query);
       if (oldCode != city.CityCode) {
-        this.hotelService.getConditions(true);
+       await this.hotelService.getConditions(true);
       }
     }
     setTimeout(() => {

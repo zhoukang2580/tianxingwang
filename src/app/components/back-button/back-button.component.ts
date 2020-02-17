@@ -6,7 +6,8 @@ import {
   AfterViewInit,
   ElementRef,
   Optional,
-  Attribute
+  Attribute,
+  Input
 } from "@angular/core";
 import { CandeactivateGuard } from "src/app/guards/candeactivate.guard";
 
@@ -18,6 +19,8 @@ import { CandeactivateGuard } from "src/app/guards/candeactivate.guard";
 export class BackButtonComponent implements OnInit, AfterViewInit {
   private curUrl: string;
   isIos = false;
+  @Input() customeBack: boolean;
+  @Input() backFn: (...args) => any;
   constructor(
     private router: Router,
     private navCtrl: NavController,
@@ -30,7 +33,11 @@ export class BackButtonComponent implements OnInit, AfterViewInit {
   }
   back(evt?: CustomEvent) {
     console.log("app-back-button curUrl:", this.curUrl, this.customeback);
-    if (!this.customeback) {
+    if (typeof this.backFn == "function") {
+      this.backFn(evt);
+      return;
+    }
+    if (!this.customeback && !this.customeBack) {
       if (evt) {
         evt.preventDefault();
         evt.stopPropagation();

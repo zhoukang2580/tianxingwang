@@ -20,7 +20,12 @@ import {
   state
 } from "@angular/animations";
 import { Subscription, interval, fromEvent, from } from "rxjs";
-import { IonContent, IonFab, DomController } from "@ionic/angular";
+import {
+  IonContent,
+  IonFab,
+  DomController,
+  IonFabButton
+} from "@ionic/angular";
 import { tap, map, switchMap } from "rxjs/operators";
 
 @Component({
@@ -56,14 +61,13 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() name = "arrow-dropup";
   @Input() vertical = "bottom";
   @Input() horizontal = "end";
+  @ViewChild(IonFabButton, { static: true }) private fabBtn: IonFabButton;
   private subscriptions: Subscription[] = [];
-  private isScrollingCheck = false;
   private content: IonContent;
-  private scrollTimer: number;
-  private isInitStyle = false;
-  private isShowFab = false;
-  private isAnimationAdded = false;
-  private scrollTimerSubscription = Subscription.EMPTY;
+  private scrollEl: HTMLElement;
+  private timer = Subscription.EMPTY;
+  private lastTime = 0;
+  private isScrolling = false;
   constructor(
     private render: Renderer2,
     private el: ElementRef<HTMLElement>,
@@ -72,7 +76,6 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
   ) {}
   ngOnInit() {}
   ngOnDestroy() {
-    this.isScrollingCheck = false;
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
   private draw(start = true) {
@@ -143,7 +146,6 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
         })
       );
       this.domCtrl.write(_ => {
-        this.showFab(false);
         this.render.setAttribute(this.fab["el"], "edge", "");
         this.render.setAttribute(this.fab["el"], "mode", "ios");
         this.render.setAttribute(
@@ -164,76 +166,61 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
       console.error("请将组件放于<ion-content>内部的<ion-fab>xxx</ion-fab>");
       return;
     }
-    await this.startCheck();
-    this.checkIsScrolling();
-  }
-  private showFab(isShow: boolean) {
-    if (!isShow) {
-      this.stopCheck();
-      this.removeAnimation();
-    }
-    this.domCtrl.write(_ => {
-      this.render.setProperty(this.fab["el"], "@showfab", isShow);
-    });
-  }
-  private addAnimation() {
-    if (this.isAnimationAdded) {
-      return;
-    }
-    this.draw();
-  }
-  private removeAnimation() {
-    this.isAnimationAdded = false;
-    this.draw(false);
+    this.scrollEl = await this.content.getScrollElement();
+    this.checkStatus();
   }
   private checkIsScrolling() {
-    this.scrollTimerSubscription.unsubscribe();
-    this.isScrollingCheck = true;
-    this.scrollTimerSubscription = interval(120).subscribe(_ => {
-      const isScrolling = Date.now() - this.scrollTimer < 230;
-      // console.log("isscrolling", Date.now() - this.scrollTimer);
-      if (isScrolling) {
-        if (!this.isInitStyle) {
-          this.isInitStyle = true;
-          this.removeAnimation();
-          this.render.addClass(this.canvasEl.nativeElement, "scrolling");
-        }
-      } else {
-        this.stopCheck();
-        this.isInitStyle = false;
-        this.render.removeClass(this.canvasEl.nativeElement, "scrolling");
-        this.addAnimation();
-      }
-    });
-    this.subscriptions.push(this.scrollTimerSubscription);
-  }
-
-  private async startCheck() {
-    if (this.content) {
-      const el = await this.content.getScrollElement();
-      if (el) {
-        this.subscriptions.push(
-          fromEvent(el, "scroll")
-            .pipe(
-              tap(_ => {
-                this.scrollTimer = Date.now();
-              }),
-              map(evt => (evt.target as HTMLElement).scrollTop)
-            )
-            .subscribe(top => {
-              this.isShowFab = top >= 20;
-              if (!this.isScrollingCheck) {
-                this.checkIsScrolling();
-              }
-              this.showFab(this.isShowFab);
-            })
-        );
-      }
+    if (this.timer) {
+      this.timer.unsubscribe();
     }
-    return true;
+    this.timer = interval(200).subscribe(() => {
+      this.isScrolling = Date.now() - this.lastTime < 120;
+      if (this.isScrolling) {
+        return;
+      }
+      this.timer.unsubscribe();
+      this.domCtrl.write(() => {
+        const top = this.scrollEl && this.scrollEl.scrollTop;
+        if (top > 20) {
+          if (this.fabBtn) {
+            if (this.fabBtn["el"].classList.contains("hide")) {
+              this.domCtrl.write(() => {
+                this.render.removeClass(this.el.nativeElement, "hide");
+                this.render.removeClass(this.fabBtn["el"], "hide");
+                // this.draw(true);
+              });
+            }
+          }
+        } else {
+          if (this.fabBtn) {
+            if (!this.fabBtn["el"].classList.contains("hide")) {
+              this.domCtrl.write(() => {
+                // this.draw(false);
+                this.render.addClass(this.fabBtn["el"], "hide");
+                this.render.addClass(this.el.nativeElement, "hide");
+              });
+            }
+          }
+        }
+      });
+    });
+    this.subscriptions.push(this.timer);
   }
-  private stopCheck() {
-    this.isScrollingCheck = false;
-    this.scrollTimerSubscription.unsubscribe();
+  private checkStatus() {
+    const el = this.scrollEl;
+    if (!el) {
+      return;
+    }
+    this.subscriptions.push(
+      fromEvent(el, "touchstart").subscribe(() => {
+        this.checkIsScrolling();
+      })
+    );
+    this.checkIsScrolling();
+    this.subscriptions.push(
+      fromEvent(el, "scroll").subscribe((evt: TouchEvent) => {
+        this.lastTime = Date.now();
+      })
+    );
   }
 }

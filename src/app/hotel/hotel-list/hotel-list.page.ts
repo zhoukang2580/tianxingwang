@@ -12,7 +12,10 @@ import { ConfigEntity } from "./../../services/config/config.entity";
 import { ConfigService } from "./../../services/config/config.service";
 import { HotelConditionModel } from "src/app/hotel/models/ConditionModel";
 import { HotelEntity } from "./../models/HotelEntity";
-import { HotelQueryComponent } from "./../components/hotel-query/hotel-query.component";
+import {
+  HotelQueryComponent,
+  IHotelQueryCompTab
+} from "./../components/hotel-query/hotel-query.component";
 import { HotelQueryEntity, IFilterTab } from "./../models/HotelQueryEntity";
 import { Router, ActivatedRoute } from "@angular/router";
 import { HotelService, SearchHotelModel } from "./../hotel.service";
@@ -98,7 +101,6 @@ export class HotelListPage
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChild("querytoolbar") querytoolbar: IonToolbar;
-  @ViewChild("backdrop") backdropEl: ElementRef<HTMLElement>;
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(HotelQueryComponent) queryComp: HotelQueryComponent;
   @ViewChildren(IonSearchbar) searchbarEls: QueryList<IonSearchbar>;
@@ -117,10 +119,7 @@ export class HotelListPage
     isLoading: boolean;
     disabled: boolean;
   };
-  filterTab = {
-    label: "none",
-    isActive: false
-  };
+  filterTab: IHotelQueryCompTab;
   constructor(
     private hotelService: HotelService,
     private router: Router,
@@ -131,6 +130,10 @@ export class HotelListPage
     private modalCtrl: ModalController
   ) {
     this.classMode = plt.is("ios") ? "ios" : "md";
+    this.filterTab = {
+      isActive: false,
+      label: ""
+    } as any;
   }
   onBackdropClick(evt: CustomEvent) {
     if (evt) {
@@ -141,20 +144,6 @@ export class HotelListPage
   }
   async ngAfterContentInit() {}
   async ngAfterViewInit() {
-    // this.hotelItemEl.changes.subscribe(_ => {
-    //   if (this.hotelDayPrices.length < 200) {
-    //     console.log("加载更多");
-    //     this.loadMore();
-    //   }
-    // });
-    if (this.backdropEl && this.backdropEl.nativeElement) {
-      this.subscriptions.push(
-        fromEvent(this.backdropEl.nativeElement, "touchmove").subscribe(evt => {
-          evt.preventDefault();
-          evt.stopPropagation();
-        })
-      );
-    }
     this.autofocusSearchBarInput();
   }
   private getStars(hotel: HotelEntity) {
@@ -236,8 +225,8 @@ export class HotelListPage
         finalize(() => {
           this.oldSearchText = this.searchHotelModel.searchText;
           this.oldDestinationCode =
-          this.searchHotelModel &&
-          this.searchHotelModel.destinationCity.CityCode;
+            this.searchHotelModel &&
+            this.searchHotelModel.destinationCity.CityCode;
           setTimeout(() => {
             this.isLoadingHotels = false;
             if (this.scroller) {
@@ -330,7 +319,10 @@ export class HotelListPage
     return false;
   }
   back() {
-    this.router.navigate([AppHelper.getRoutePath("search-hotel")]);
+    this.hideQueryPannel();
+    setTimeout(() => {
+      this.router.navigate([AppHelper.getRoutePath("search-hotel")]);
+    }, 200);
   }
   ngOnDestroy() {
     this.subscriptions.forEach(sub => {
@@ -378,20 +370,17 @@ export class HotelListPage
     this.agent = await this.tmcService.getAgent();
     this.config = await this.configService.getConfigAsync();
   }
-
-  // 条件筛选
-  onActiveFilter(tab: {
-    label: "位置区域" | "推荐排序" | "筛选" | "星级价格" | "none";
-    isActive: boolean;
-  }) {
-    this.filterTab = tab || { label: "none", isActive: false };
-  }
-
   private hideQueryPannel() {
-    if (this.filterTab) {
-      this.filterTab.label = "none";
+    if (this.queryComp) {
+      this.queryComp.queryTabComps.forEach(tab => {
+        tab.isActive = false;
+      });
       this.filterTab.isActive = false;
+      this.onActiveFilter(this.filterTab);
     }
+  }
+  onActiveFilter(tab: IHotelQueryCompTab) {
+    this.filterTab = tab;
   }
   onStarPriceChange() {
     const query = { ...this.hotelService.getHotelQueryModel() };

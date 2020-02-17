@@ -7,6 +7,7 @@ import { CredentialsEntity } from './CredentialsEntity';
 import { OrderCardEntity } from 'src/app/order/models/OrderCardEntity';
 import { TrainEntity } from 'src/app/train/models/TrainEntity';
 import { RoomPlanEntity } from 'src/app/hotel/models/RoomPlanEntity';
+import { OrderHotelType } from 'src/app/order/models/OrderHotelEntity';
 export enum PassengerType {
   /// <summary>
   /// 成人
@@ -90,6 +91,7 @@ export class PassengerDto {
   FreeCancelTime: string;
 
   CustomerName: string;
+  ChildrenName: string;
 
   AdditionKey: string;
   /// <summary>
@@ -163,4 +165,5 @@ export class PassengerDto {
   ///
   /// </summary>
   IsSkipApprove: boolean;
+  OrderHotelType: OrderHotelType;
 }

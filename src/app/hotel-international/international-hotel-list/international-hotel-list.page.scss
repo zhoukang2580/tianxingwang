@@ -72,24 +72,43 @@ ion-header {
 }
 .query-condition {
   position: fixed;
-  top: 8.5em;
+  top: 10.2em;
   left: 0;
   right: 0;
-  z-index: 99;
+  z-index: 1000;
+  margin-top: -0.25em;
   background-color: white;
+  transition: all 200ms ease-in-out;
+  opacity: 0;
+  transform: translate3d(-100%, 0, 0);
+  &.show {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 .backdrop {
   position: fixed;
   top: 8em;
   left: 0;
   bottom: 0;
-  z-index: 100;
+  z-index: 1;
   width: 100vw;
   background-color: rgba(var(--ion-color-dark-rgb), 0.5);
   overflow: hidden;
   height: 100%;
+  transform: translate3d(0, 200%, 0);
+  &.show {
+    transform: translate3d(0, 0, 0);
+  }
 }
-
+ion-infinite-scroll {
+  bottom: 0;
+  background-color: white;
+  visibility: hidden;
+  &.infinite-scroll-loading {
+    visibility: visible;
+  }
+}
 app-inter-hotel-query {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 100;

@@ -262,12 +262,14 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
       !this.isFirstInit ? 500 : 0
     );
   }
-  async onGoToTop() {
+  onGoToTop() {
     if (this.content) {
-      const ele = await this.content.getScrollElement();
-      if (ele && ele.scrollTop > 0) {
-        this.content.scrollToTop(100);
-      }
+      requestAnimationFrame(async () => {
+        const ele = await this.content.getScrollElement();
+        if (ele && ele.scrollTop > 0) {
+          this.content.scrollToTop(100);
+        }
+      });
     }
   }
   private scrollTabToCenter(ele: HTMLElement) {

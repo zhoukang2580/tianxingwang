@@ -970,6 +970,23 @@ export enum TmcApprovalType {
   /// </summary>
   ExceedPolicyApprover = 5
 }
+export enum TmcApprovalExpiredType {
+  /// 不处理
+  /// </summary>
+  None = 1,
+  /// <summary>
+  /// 通过
+  /// </summary>
+  Passed = 2,
+  /// <summary>
+  /// 拒绝
+  /// </summary>
+  Rejected = 3,
+  /// <summary>
+  /// 关闭
+  /// </summary>
+  Closed = 4
+}
 export interface GroupCompanyEntity extends BaseEntity {
   Code: string;
   Name: string;
@@ -997,7 +1014,6 @@ export class TmcEntity extends BaseEntity {
   /// 校验行程单
   /// </summary>
   CheckTravelUrl: string;
-  InternationalHotelApprovalType: TmcApprovalType;
 
   /// <summary>
   /// 获取员工行程单列表
@@ -1141,6 +1157,25 @@ export class TmcEntity extends BaseEntity {
   HotelCancelFailureNoticeType: string;
 
   // =============== 酒店短信配置 end     =========
+  // =============== 海外酒店短信配置 start   =========
+  // 下单类型
+  InternationalHotelPayType: OrderTravelPayType;
+  // 审批类型
+  InternationalHotelApprovalType: TmcApprovalType;
+  InternationalHotelApprovalExpiredType: TmcApprovalExpiredType;
+  /// 下单支付选项
+  InternationalHotelOrderPayType: string;
+  // 服务费
+  InternationalHotelPrepayOnlineFee: string;
+  InternationalHotelSelfPayOnlineFee: string;
+  InternationalHotelSettleOnlineFee: string;
+  InternationalHotelPrepayOfflineFee: string;
+  InternationalHotelSelfPayOfflineFee: string;
+  InternationalHotelSettleOfflineFee: string;
+  InternationalHotelAgreementSettleApiFee: string;
+  InternationalHotelFeeType: TmcHotelFeeType;
+
+  // ===============海外酒店短信配置 end     =========
 
   // =============== 保险短信配置 start     =========
   InsuranceBookNoticeType: string;

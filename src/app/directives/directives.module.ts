@@ -1,4 +1,3 @@
-import { RefresherDirective } from './refresher.directive';
 import { LazyloadDirective } from './lazyload.directive';
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
@@ -12,7 +11,6 @@ import { AutoGrowDirective } from "./auto-grow.directive";
     ShowtipDirective,
     AutoGrowDirective,
     LazyloadDirective,
-    RefresherDirective
   ],
   imports: [CommonModule],
   exports: [
@@ -20,7 +18,6 @@ import { AutoGrowDirective } from "./auto-grow.directive";
     ShowtipDirective,
     AutoGrowDirective,
     LazyloadDirective,
-    RefresherDirective
   ]
 })
 export class AppDirectivesModule {

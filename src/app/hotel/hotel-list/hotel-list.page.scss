@@ -1,32 +1,6 @@
 :host.show-search-bar {
   background-color: rgba(var(--ion-color-dark-rgb), 0.5);
 }
-.name {
-  font-size: 1rem;
-  font-weight: bold;
-}
-.virtual-item {
-  border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.15);
-}
-.address-price {
-  strong {
-    font-size: 1rem;
-  }
-  ion-label {
-    flex: 1;
-  }
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-.grade-stars {
-  display: flex;
-  align-items: center;
-}
-p.grade-stars {
-  font-size: 0.8rem;
-}
 ion-header ion-toolbar {
   ion-buttons {
     align-self: flex-start;
@@ -67,49 +41,70 @@ ion-content {
 ion-toolbar.ios {
   --border-width: 0;
 }
-small {
-  font-size: 0.6rem;
-}
-ion-thumbnail {
-  width: 5em;
-  height: 5em;
-  width: 5em;
-  height: 5em;
-  margin-left: -0.5em;
-  .div-img,
-  img,
-  ion-img {
-    transition: opacity 100ms ease-in-out;
-    width: 5em;
-    height: 5em;
-    min-width: 5em;
-    min-height: 5em;
-  }
-  .div-img {
-    background-size: cover;
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  li {
+    display: flex;
+    align-items: flex-start;
+    padding: 0.15em 0;
+    border-top: 1px solid rgba(var(--ion-color-dark-rgb), 0.15);
+    img {
+      margin-right: 0.5em;
+      height: 7em;
+      width: 7em;
+      object-fit: cover;
+      min-width: 7em;
+      min-height: 7em;
+    }
+    .right-side {
+      width: 100%;
+      .address-price {
+        margin: 0;
+        padding: 0;
+        padding-right: 1em;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+      }
+      .grade-stars {
+        margin: 0;
+        padding: 0.25em 0;
+        display: flex;
+        align-items: center;
+      }
+    }
   }
 }
 .filter-condition {
-  z-index: 100;
+  z-index: 200;
   position: fixed;
   left: 0;
   right: 0;
   top: 6.4em;
   background-color: white;
+  transform: translate3d(0, 300%, 0);
+  transition: all 200ms ease-in-out;
+  opacity: 0;
+  &.show {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 .backdrop {
   position: fixed;
-  top: 8em;
+  top: 0;
   left: 0;
   bottom: 0;
-  z-index: 100;
+  z-index: -100;
   width: 100vw;
   background-color: rgba(var(--ion-color-dark-rgb), 0.5);
-  visibility: hidden;
   overflow: hidden;
   height: 100%;
   &.show {
-    visibility: visible;
+    z-index: 1;
   }
 }

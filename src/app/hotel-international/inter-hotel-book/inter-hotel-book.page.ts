@@ -73,6 +73,7 @@ import { ProductItemType } from "src/app/tmc/models/ProductItems";
 import { SearchApprovalComponent } from "src/app/tmc/components/search-approval/search-approval.component";
 import { AddContact } from "src/app/tmc/models/AddContact";
 import { BookCostcenterCompComponent } from "src/app/tmc/components/book-costcenter-comp/book-costcenter-comp.component";
+import { OrderHotelType } from "src/app/order/models/OrderHotelEntity";
 
 @Component({
   selector: "app-inter-hotel-book",
@@ -323,7 +324,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     if (!this.initialBookDto || !this.initialBookDto.PayTypes) {
       return;
     }
-    this.orderTravelPayType = this.tmc && this.tmc.HotelPayType;
+    this.orderTravelPayType = this.tmc && this.tmc.InternationalHotelPayType;
     const arr = Object.keys(this.initialBookDto.PayTypes);
     this.orderTravelPayTypes = [];
     arr.forEach(it => {
@@ -638,6 +639,16 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       p.TicketNum = "";
       p.Credentials = new CredentialsEntity();
       p.Credentials = { ...combindInfo.vmCredential };
+      if (combindInfo.checkInPersonInfos) {
+        p.CustomerName = combindInfo.checkInPersonInfos
+          .filter(it => !it.isChild && it.firstName && it.lastName)
+          .map(it => `${it.lastName},${it.firstName}`)
+          .join("/");
+        p.ChildrenName = combindInfo.checkInPersonInfos
+          .filter(it => it.isChild && it.firstName && it.lastName)
+          .map(it => `${it.lastName},${it.firstName}`)
+          .join("/");
+      }
       if (!combindInfo.vmCredential.Type) {
         showErrorMsg(LanguageHelper.getCredentialTypeTip(), combindInfo);
         return false;
@@ -836,6 +847,8 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       if (combindInfo.bookInfo) {
         p.Policy = combindInfo.bookInfo.passenger.Policy;
       }
+      p.OrderHotelType = OrderHotelType.International;
+
       bookDto.Passengers.push(p);
     }
     return true;
@@ -1522,6 +1535,7 @@ interface IPassengerHotelBookInfo {
     lastName: string;
     firstName: string;
     isMain: boolean;
+    isChild?: boolean;
   }[];
   creditCardInfo: {
     isShowCreditCard: boolean;

@@ -778,8 +778,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       this.scrollEle.onscroll = () => {
         let bottom = 0;
         this.domCtrl.read(_ => {
+          const top = this.scrollEle.scrollTop;
           this.domCtrl.write(_ => {
-            this.isShowBackArrow = this.scrollEle.scrollTop < 10;
+            this.isShowBackArrow = top < 10;
           });
           let opacity = 0;
           const bottomRect =
@@ -801,7 +802,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
             opacity = 0;
           }
           opacity =
-            opacity < 0.35 || this.scrollEle.scrollTop == 0 ? 0 : opacity;
+            opacity < 0.35 || top == 0 ? 0 : opacity;
           this.render.setStyle(
             this.headerEle.nativeElement,
             "zIndex",

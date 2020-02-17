@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <app-back-button (click)='back($event)' customeback="customeback"></app-back-button>
+      <app-back-button [backFn]='back'></app-back-button>
     </ion-buttons>
     <ion-title>{{notice?.Title}}</ion-title>
   </ion-toolbar>

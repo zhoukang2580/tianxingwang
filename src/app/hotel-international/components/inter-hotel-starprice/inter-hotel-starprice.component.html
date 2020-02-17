@@ -1,6 +1,20 @@
 <div class='wrapper'>
+  <ion-list color='light'>
+    <ion-item-divider>自定义价格
+      <div class='custome-price'>
+        <span>￥{{value?.lower}}</span>
+        <span>￥{{value?.upper>=1000?"1000+":value?.upper}}</span>
+      </div>
+      <ion-button (click)='onResetCustomePrice()' size='small' fill='solid' color='secondary'>不限</ion-button>
+    </ion-item-divider>
+    <ion-item>
+      <ion-range (ionChange)='onPriceRangeChange($event)' min="0" pin="true" dualKnobs="true" max="1001" step="100"
+        snaps="" ticks="false" color="secondary">
+      </ion-range>
+    </ion-item>
+  </ion-list>
   <ion-list *ngFor='let tab of hotelQuery?.starAndPrices'>
-    <ng-container *ngIf='!tab.tag?.includes("custome") else cust'>
+    <ng-container *ngIf='!tab.tag?.includes("custome")'>
       <ion-item-divider>{{tab?.label}}
         <ion-button slot='end' (click)='resetItems(tab)' color='secondary' size='small'>不限</ion-button>
       </ion-item-divider>
@@ -16,20 +30,6 @@
       </ion-item>
     </ng-container>
   </ion-list>
-  <ng-template #cust>
-    <ion-list-header>自定义价格
-      <div class='custome-price'>
-        <span>￥{{value?.lower}}</span>
-        <span>￥{{value?.upper>=1000?"1000+":value?.upper}}</span>
-      </div>
-      <ion-button (click)='onResetCustomePrice()' size='small' color='secondary'>不限</ion-button>
-    </ion-list-header>
-    <ion-item>
-      <ion-range (ionChange)='onPriceRangeChange($event)' min="0" pin="true" dualKnobs="true" max="1001" step="100"
-        snaps="true" ticks="false" color="secondary">
-      </ion-range>
-    </ion-item>
-  </ng-template>
 </div>
 <ion-footer>
   <ion-row>

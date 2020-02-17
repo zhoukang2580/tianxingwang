@@ -256,8 +256,8 @@ export class AppComponent
         // this.router.navigate(['mms-home'],{queryParams:{mmsid:2}});
         // this.router.navigate(['mms-admin-wechat'],{queryParams:{mmsid:2}});
         // this.router.navigate(['international-hotel-book']);
-        this.router.navigate(['international-hotel-detail']);
-        // this.router.navigate(['search-international-hotel']);
+        // this.router.navigate(['international-hotel-detail']);
+        this.router.navigate(['international-hotel-list']);
         // this.router.navigate(['product-tabs'],{queryParams:{tabId:3}});
       }
     });

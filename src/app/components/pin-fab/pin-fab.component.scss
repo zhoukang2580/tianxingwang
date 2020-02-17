@@ -1,7 +1,12 @@
-canvas {
-  transition:all 200ms ease-in-out;
+canvas,
+ion-fab-button {
+  transition: all 200ms ease-in-out;
   transform: translateX(0%) scale(1);
-  &.scrolling {
+  --background: rgba(var(--ion-color-secondary-rgb), 0.5);
+  ion-icon{
+    color: white;
+  }
+  &.hide {
     transform: translateX(100%) scale(0.1);
     --background: var(--ion-color-primary);
   }

@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <app-back-button (click)='back()' customeback='customeback'>
+      <app-back-button [backFn]='back' >
       </app-back-button>
     </ion-buttons>
     <ng-template #el>

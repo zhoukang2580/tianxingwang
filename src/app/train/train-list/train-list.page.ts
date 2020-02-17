@@ -76,7 +76,6 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
   private trains: TrainEntity[] = [];
   private trainsForRender: TrainEntity[] = [];
   private subscriptions: Subscription[] = [];
-  isShowFab = false;
   progressName = "";
   trainsCount = 0;
   vmTrains: TrainEntity[] = [];
@@ -134,17 +133,6 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
   ngAfterViewInit() {
-    if (this.cnt) {
-      const sub = from(this.cnt.getScrollElement())
-        .pipe(
-          switchMap(el => fromEvent(el, "scroll").pipe(map(_ => el.scrollTop))),
-          map(top => top > 0)
-        )
-        .subscribe(isShowFab => {
-          this.isShowFab = isShowFab;
-        });
-      this.subscriptions.push(sub);
-    }
   }
   ngOnInit() {
     this.route.queryParamMap.subscribe(async _ => {

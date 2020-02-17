@@ -24,20 +24,15 @@
       </div>
       <div class="customer-count" (click)='onModifyAdultCount()'>
         入住人数 <ion-text class="ion-margin-start" color='secondary'>
-          {{searchCondition?.adultCount}}成人{{searchCondition?.children?.length}}儿童</ion-text>
+          {{searchCondition?.adultCount}}成人{{searchCondition?.children?.length}}儿童
+          <ion-note>{{hotels?.length}}</ion-note>
+        </ion-text>
       </div>
       <app-inter-hotel-query class="{{classMode}}" (queryFilter)='onQueryFilter()'></app-inter-hotel-query>
     </div>
   </ion-toolbar>
 </ion-header>
-<div class='backdrop' *ngIf='queryComp?.isShowPanel'></div>
-<app-inter-recommend-rank class='query-condition' [@flyInOut]='!!queryComp?.tab?.active&&queryComp?.tab?.label=="rank"'
-  (rank)='onRank($event)'>
-</app-inter-recommend-rank>
-<app-inter-hotel-starprice class='query-condition'
-  [@flyInOut]='!!queryComp?.tab?.active&&queryComp?.tab?.label=="starsAndPrice"'
-  (starPriceChange)='onStarPriceChange()'></app-inter-hotel-starprice>
-<ion-content>
+<ion-content [scrollY]='!queryComp?.tab?.active'>
   <app-refresher slot='fixed' (ionRefresh)='doRefresh()'>
     <ion-refresher-content>正在加载...</ion-refresher-content>
   </app-refresher>
@@ -75,10 +70,17 @@
       </ion-list>
     </ng-container>
   </ng-template>
-  <ion-infinite-scroll (ionInfinite)='loadMore()'>
-    <ion-infinite-scroll-content>正在加载...</ion-infinite-scroll-content>
-  </ion-infinite-scroll>
   <ion-fab>
     <app-pin-fab horizontal="end" vertical="bottom"></app-pin-fab>
   </ion-fab>
+  <ion-infinite-scroll (ionInfinite)='loadMore()' slot="fixed">
+    <ion-infinite-scroll-content>正在加载...</ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>
+<div class='backdrop' [class.show]='queryComp?.tab?.active'></div>
+<app-inter-recommend-rank class='query-condition' [class.show]='!!queryComp?.tab?.active&&queryComp?.tab?.label=="rank"'
+  (rank)='onRank($event)'>
+</app-inter-recommend-rank>
+<app-inter-hotel-starprice class='query-condition'
+  [class.show]='!!queryComp?.tab?.active&&queryComp?.tab?.label=="starsAndPrice"'
+  (starPriceChange)='onStarPriceChange()'></app-inter-hotel-starprice>

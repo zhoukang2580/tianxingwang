@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-buttons slot='start'>
 
-      <app-back-button defaultHref='' customeback='customeback' (click)='back($event)'></app-back-button>
+      <app-back-button defaultHref='' [backFn]='back'></app-back-button>
     </ion-buttons>
     <ion-title>{{title}}</ion-title>
     <ion-buttons slot='end'>

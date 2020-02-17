@@ -1,0 +1,7 @@
+<div class="container">
+  <div class="substract" [class.disabled]='addNumber<=min' (click)='onAdd(-1,$event)'></div>
+  <div class="input">
+    <input type="number" #input [(ngModel)]="addNumber">
+  </div>
+  <div class="add" [class.disabled]='addNumber>=max' (click)='onAdd(1,$event)'></div>
+</div>

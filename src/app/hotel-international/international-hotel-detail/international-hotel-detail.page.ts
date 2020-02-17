@@ -737,21 +737,23 @@ export class InternationalHotelDetailPage
       const sub = fromEvent(scroll, "scroll")
         .pipe(debounceTime(10))
         .subscribe(evt => {
-          this.observeScrollIsShowHoteldetails();
-          if (scroll.scrollHeight < 1.31 * this.plt.height()) {
-            this.isHeaderHide = true;
-          }
-          const headerH =
-            (this.ionHeader && this.ionHeader["el"].offsetHeight) || 44;
-          const top = scroll.scrollTop;
-          const delta = top - (h - 2 * headerH);
-          const opacity = delta / headerH;
-          // console.log(this.scrollEl.scrollHeight);
-          if (delta >= 0) {
-            this.changeHeaderOpacity(opacity);
-          } else {
-            this.hideHeader(true);
-          }
+          this.domCtrl.read(() => {
+            const top = scroll.scrollTop;
+            this.observeScrollIsShowHoteldetails();
+            if (scroll.scrollHeight < 1.31 * this.plt.height()) {
+              this.isHeaderHide = true;
+            }
+            const headerH =
+              (this.ionHeader && this.ionHeader["el"].offsetHeight) || 44;
+            const delta = top - (h - 2 * headerH);
+            const opacity = delta / headerH;
+            // console.log(this.scrollEl.scrollHeight);
+            if (delta >= 0) {
+              this.changeHeaderOpacity(opacity);
+            } else {
+              this.hideHeader(true);
+            }
+          });
         });
       this.subscriptions.push(sub);
     });

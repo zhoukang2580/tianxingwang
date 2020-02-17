@@ -1,0 +1,22 @@
+<ion-header>
+  <form (ngSubmit)='onTextChange(true)'>
+    <ion-buttons slot='start'>
+      <ion-button (click)='back()'>
+        <ion-icon name='arrow-back'></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-searchbar class="ion-no-margin ion-no-padding" name='searchbar' animated placeholder='查询'
+      [(ngModel)]='keyValue' (ionChange)='onTextChange(false)' debounce=300>
+    </ion-searchbar>
+    <ion-button class="search" type='search' color='secondary' size='small'>搜索</ion-button>
+  </form>
+</ion-header>
+<ion-content>
+  <ion-list *ngIf='dataSource|async as data'>
+    <ion-item *ngFor='let t of data' (click)='onClick(t)' @flyInOut>
+      <ion-label class='ion-text-wrap'>
+        {{t.Text}}
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

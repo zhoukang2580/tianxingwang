@@ -105,12 +105,12 @@ export class InterHotelStarPriceComponent
         id: AppHelper.uuid(),
         label: "价格",
         tag: "price",
-        items: ["150以下", "150-300", "300-450", "450-600", "600以上"].map(
+        items: ["400以下", "401-700", "701-1000", "1001-1300", "1300以上"].map(
           (it, idx) => {
             const minPrice =
-              idx === 0 ? 0 : it.includes("上") ? 600 : it.split("-")[0];
+              idx === 0 ? 0 : it.includes("上") ? 1300 : it.split("-")[0];
             const maxPrice =
-              idx === 0 ? 150 : it.includes("上") ? Infinity : it.split("-")[1];
+              idx === 0 ? 400 : it.includes("上") ? Infinity : it.split("-")[1];
             return {
               label: `${it}`,
               isMulti: false,

@@ -12,7 +12,7 @@ import {
 } from "@angular/core";
 import { Subscription } from "rxjs";
 import { QueryTabComponent } from '../query-tab/query-tab.component';
-interface ITab {
+export interface IHotelQueryCompTab {
   label: string;
   id: string;
   isActive?: boolean;
@@ -32,13 +32,13 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
     isLocationAreas: boolean;
   };
 
-  @Output() activeFilter: EventEmitter<any>;
+  @Output() activeFilter: EventEmitter<IHotelQueryCompTab>;
   @Output() hotelQueryChange: EventEmitter<any>;
-  @ViewChildren(QueryTabComponent) private queryTabComps: QueryList<
+  @ViewChildren(QueryTabComponent)  queryTabComps: QueryList<
     QueryTabComponent
   >;
   isActiveTab = false;
-  activeTab: ITab;
+  activeTab: IHotelQueryCompTab;
   constructor(private hotelService: HotelService) {
     this.activeFilter = new EventEmitter();
     this.hotelQueryChange = new EventEmitter();
@@ -46,7 +46,7 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.hotelQueryModelSub.unsubscribe();
   }
-  onActiveTab(tab: ITab) {
+  onActiveTab(tab: IHotelQueryCompTab) {
     if (!tab) {
       return;
     }

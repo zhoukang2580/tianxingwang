@@ -23,6 +23,8 @@ import { BaseInputComponent } from "./base-input/base-input.component";
 import { SwiperSlidesComponent } from "./swiper-slides/swiper-slides.component";
 import { ScrollerComponent } from "./scroller/scroller.component";
 import { BackButtonComponent } from "./back-button/back-button.component";
+import { AddNumberComponent } from './add-number/add-number.component';
+import { ComboboxComponent } from './combobox/combobox.component';
 @NgModule({
   declarations: [
     OrComponent,
@@ -42,7 +44,9 @@ import { BackButtonComponent } from "./back-button/back-button.component";
     BaseInputComponent,
     PinFabComponent,
     ScrollerComponent,
-    BackButtonComponent
+    BackButtonComponent,
+    AddNumberComponent,
+    ComboboxComponent
   ],
   imports: [
     CommonModule,
@@ -53,6 +57,8 @@ import { BackButtonComponent } from "./back-button/back-button.component";
     RefresherModule
   ],
   exports: [
+    ComboboxComponent,
+    AddNumberComponent,
     BackButtonComponent,
     SwiperSlidesComponent,
     PinFabComponent,

@@ -1,3 +1,4 @@
+import { IonContent } from "@ionic/angular";
 import { Subscription, fromEvent } from "rxjs";
 import {
   Component,
@@ -10,7 +11,8 @@ import {
   AfterViewInit,
   ViewEncapsulation,
   HostBinding,
-  Renderer2
+  Renderer2,
+  Optional
 } from "@angular/core";
 const enum RefresherState {
   // tslint:disable-next-line: no-bitwise
@@ -41,12 +43,22 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
   private progress = 0;
   private scrollEl?: HTMLElement;
   private startY = 0;
-  private intervalId;
-  // tslint:disable-next-line: variable-name
   private _disabled;
   private isMoveBeginRefresh = false;
   private subscriptions: Subscription[] = [];
-  constructor(private el: ElementRef<HTMLElement>, private render: Renderer2) {
+  clazz: {
+    "refresher-active": boolean; // this.state !== RefresherState.Inactive,
+    "refresher-pulling": boolean; // this.state === RefresherState.Pulling,
+    "refresher-ready": boolean; // this.state === RefresherState.Ready,
+    "refresher-refreshing": boolean; // this.state === RefresherState.Refreshing,
+    "refresher-cancelling": boolean; // this.state === RefresherState.Cancelling,
+    "refresher-completing": boolean; // this.state === RefresherState.Completing
+  };
+  constructor(
+    private el: ElementRef<HTMLElement>,
+    private render: Renderer2,
+    @Optional() private content: IonContent
+  ) {
     this.ionRefresh = new EventEmitter();
     this.ionPull = new EventEmitter();
     this.ionStart = new EventEmitter();
@@ -153,18 +165,8 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     this.scrollEl = await contentEl.getScrollElement();
     if (!this.scrollEl) {
-      await new Promise<any>(s => {
-        if (this.intervalId) {
-          clearInterval(this.intervalId);
-        }
-        this.intervalId = setInterval(async _ => {
-          this.scrollEl = await contentEl.getScrollElement();
-          if (this.scrollEl) {
-            clearInterval(this.intervalId);
-            s();
-          }
-        }, 100);
-      });
+      console.error("scroll element 未找到");
+      return;
     }
     if (this.scrollEl) {
       const startSub = fromEvent(this.scrollEl, "touchstart").subscribe(
@@ -407,6 +409,14 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
     // reset set the styles on the scroll element
     // set that the refresh is actively cancelling/completing
     this.state = state;
+    this.clazz = {
+      "refresher-active": this.state !== RefresherState.Inactive,
+      "refresher-pulling": this.state === RefresherState.Pulling,
+      "refresher-ready": this.state === RefresherState.Ready,
+      "refresher-refreshing": this.state === RefresherState.Refreshing,
+      "refresher-cancelling": this.state === RefresherState.Cancelling,
+      "refresher-completing": this.state === RefresherState.Completing
+    };
     this.setCss(0, this.closeDuration, true, delay);
   }
 
@@ -425,23 +435,6 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
       style.transitionDelay = delay;
       style.overflow = overflowVisible ? "hidden" : "";
     }
-  }
-  // @HostBinding('class.refresher') private refresherclass = true;
-  // @HostBinding('class.refresher-active') private get active() { return this.state !== RefresherState.Inactive; }
-  // @HostBinding('class.refresher-pulling') private get pulling() { return this.state == RefresherState.Pulling; }
-  // @HostBinding('class.refresher-ready') private get ready() { return this.state == RefresherState.Ready; }
-  // @HostBinding('class.refresher-refreshing') private get refreshing() { return this.state == RefresherState.Refreshing; }
-  // @HostBinding('class.refresher-cancelling') private get cancelling() { return this.state == RefresherState.Cancelling; }
-  // @HostBinding('class.refresher-completing') private get completing() { return this.state == RefresherState.Completing; }
-  get getClazz() {
-    return {
-      "refresher-active": this.state !== RefresherState.Inactive,
-      "refresher-pulling": this.state === RefresherState.Pulling,
-      "refresher-ready": this.state === RefresherState.Ready,
-      "refresher-refreshing": this.state === RefresherState.Refreshing,
-      "refresher-cancelling": this.state === RefresherState.Cancelling,
-      "refresher-completing": this.state === RefresherState.Completing
-    };
   }
 }
 

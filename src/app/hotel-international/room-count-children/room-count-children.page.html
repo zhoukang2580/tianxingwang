@@ -12,12 +12,9 @@
     <ion-item-divider>每间人数</ion-item-divider>
     <ion-item>
       <ion-label class='ion-padding-vertical'>成人</ion-label>
-      <div class="item-count">
-        <ion-icon name="remove-outline" (click)='onAdd(-1)' class='substract'
-          [class.disabled]='searchCondition?.adultCount<=1'></ion-icon>
-        <input type='number' [(ngModel)]='searchCondition.adultCount'>
-        <ion-icon name='add-outline' class="add" (click)='onAdd(1)'></ion-icon>
-      </div>
+      <ion-label slot='end'>
+        <app-add-number min="0" [(addNumber)]='searchCondition.adultCount'></app-add-number>
+      </ion-label>
     </ion-item>
     <ion-item-sliding *ngFor='let c of searchCondition?.children;let idx=index;' @flyInOut>
       <ion-item detail (click)='onModifyChildAge(c)'>

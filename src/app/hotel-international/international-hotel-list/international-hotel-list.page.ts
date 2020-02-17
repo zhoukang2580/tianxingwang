@@ -17,13 +17,16 @@ import {
   OnDestroy,
   ViewChild,
   AfterViewInit,
-  ElementRef
+  ElementRef,
+  ViewContainerRef,
+  TemplateRef
 } from "@angular/core";
 import {
   IonInfiniteScroll,
   IonContent,
   IonRefresher,
-  Platform
+  Platform,
+  DomController
 } from "@ionic/angular";
 import {
   trigger,
@@ -89,14 +92,11 @@ export class InternationalHotelListPage
   implements OnInit, OnDestroy, AfterViewInit {
   private subscription = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
-  @ViewChild(InterHotelQueryComponent)
-  queryComp: InterHotelQueryComponent;
+  @ViewChild(InterHotelQueryComponent) queryComp: InterHotelQueryComponent;
   @ViewChild(IonContent) private content: IonContent;
-  @ViewChild(IonInfiniteScroll)
-  private scroller: IonInfiniteScroll;
+  @ViewChild(IonInfiniteScroll) private scroller: IonInfiniteScroll;
   @ViewChild(IonRefresher) private refresher: IonRefresher;
-  @ViewChild(RefresherComponent)
-  private refresher2: RefresherComponent;
+  @ViewChild(RefresherComponent) private refresher2: RefresherComponent;
   private isDoRefresh = false;
   private oldSearchText: ISearchTextValue;
   private oldDestinationCode: string;
@@ -106,13 +106,13 @@ export class InternationalHotelListPage
   defaultImage = "";
   searchCondition: IInterHotelSearchCondition;
   classMode: "ios" | "md";
-  isHideHeader = false;
   constructor(
     private hotelService: InternationalHotelService,
     private imageRecoverService: ImageRecoverService,
     private router: Router,
     private route: ActivatedRoute,
     private configService: ConfigService,
+    private domCtrl: DomController,
     plt: Platform
   ) {
     this.classMode = plt.is("ios") ? "ios" : "md";
@@ -123,17 +123,7 @@ export class InternationalHotelListPage
   onModifyAdultCount() {
     this.router.navigate([AppHelper.getRoutePath("room-count-children")]);
   }
-  ngAfterViewInit() {
-    this.content.getScrollElement().then(el => {
-      this.subscriptions.push(
-        fromEvent(el, "scroll")
-          .pipe(map(evt => (evt.target as HTMLElement).scrollTop))
-          .subscribe(top => {
-            this.isHideHeader = top >= 0;
-          })
-      );
-    });
-  }
+  ngAfterViewInit() {}
   itemHeightFn() {
     return 123;
   }

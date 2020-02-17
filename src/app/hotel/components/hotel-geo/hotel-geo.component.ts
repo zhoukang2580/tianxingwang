@@ -1,4 +1,4 @@
-import { ModalController } from "@ionic/angular";
+import { ModalController, DomController } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import {
   Component,
@@ -35,7 +35,8 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
   normalItems: IGeoItem<GeoEntity>[];
   constructor(
     private hotelService: HotelService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private domCtrl: DomController
   ) {
     this.geoFilterChange = new EventEmitter();
   }
@@ -154,19 +155,21 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
     scrollItemsNum = 0
   ) {
     if (container) {
-      const ele = container.querySelector(`[dataid='${eleDataId}']`);
-      const rect = ele && ele.getBoundingClientRect();
-      const h =
-        container.getBoundingClientRect() &&
-        container.getBoundingClientRect().height;
-      if (ele && rect) {
-        container.scrollBy({
-          top: rect.top - h / 2,
-          behavior: scrollItemsNum > 50 ? "auto" : "smooth"
-        });
-      } else {
-        container.scrollTop = 0;
-      }
+      this.domCtrl.read(() => {
+        const ele = container.querySelector(`[dataid='${eleDataId}']`);
+        const rect = ele && ele.getBoundingClientRect();
+        const h =
+          container.getBoundingClientRect() &&
+          container.getBoundingClientRect().height;
+        if (ele && rect) {
+          container.scrollBy({
+            top: rect.top - h / 2,
+            behavior: scrollItemsNum > 50 ? "auto" : "smooth"
+          });
+        } else {
+          container.scrollTop = 0;
+        }
+      });
     }
   }
   onTabClick(tab: IGeoTab<IGeoItem<GeoEntity>>) {

@@ -8,7 +8,8 @@ import {
   OnDestroy,
   Renderer2,
   ElementRef,
-  AfterContentInit
+  AfterContentInit,
+  NgZone
 } from "@angular/core";
 import { Directive } from "@angular/core";
 import { ImageRecoverService } from "../services/imageRecover/imageRecover.service";
@@ -27,18 +28,22 @@ export class LazyloadDirective
     private imageRecoverService: ImageRecoverService,
     private el: ElementRef<HTMLDivElement | HTMLImageElement>,
     private render: Renderer2,
-    private domCtrl: DomController
+    private ngZone: NgZone
   ) {}
   ngOnChanges() {
     // console.log("lazyload changes",this.el.nativeElement,this.lazyLoad);
-    this.addIO();
+    this.ngZone.runOutsideAngular(() => {
+      this.addIO();
+    });
   }
   ngAfterContentInit() {}
   ngOnInit() {
-    this.setDefaultImage();
-    if (this.recoverImage) {
-      this.setupImageRecover();
-    }
+    this.ngZone.runOutsideAngular(() => {
+      this.setDefaultImage();
+      if (this.recoverImage) {
+        this.setupImageRecover();
+      }
+    });
   }
   private setDefaultImage() {
     if (this.defaultImage) {
@@ -64,7 +69,7 @@ export class LazyloadDirective
     let url = decodeURIComponent(src || this.lazyLoad || this.defaultImage);
     url = `${url}`.replace(/\?v=\d+/g, "");
     // console.log('load url:', url);
-    this.domCtrl.write(_ => {
+    this.ngZone.runOutsideAngular(() => {
       if (this.el.nativeElement instanceof HTMLDivElement) {
         this.render.setStyle(
           this.el.nativeElement,
