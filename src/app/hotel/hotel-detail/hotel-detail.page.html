@@ -39,7 +39,7 @@
   <ion-refresher slot='fixed' (ionRefresh)='doRefresh()' pullMin='100'></ion-refresher>
   <div class="bg" #bg (click)='onShowHotelImages()'>
     <div class="back-button" (click)='back($event)'>
-      <app-back-button></app-back-button>
+      <app-back-button color='light'></app-back-button>
     </div>
     <app-swiper-slides (slideChange)='onSlideChange($event)' [options]='{autoplay:true}' [items]='hotelImages'
       [defaultImage]='config?.DefaultImageUrl'>

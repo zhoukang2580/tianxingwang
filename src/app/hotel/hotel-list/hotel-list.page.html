@@ -8,7 +8,7 @@
         [city]='searchHotelModel?.destinationCity' (cityClick)='onCityClick()' (dateChange)='onDateChange()'
         (searchBarClick)='onSearchByText()' [keywords]='searchHotelModel?.searchText?.Text||"地名/酒店/关键字"'>
       </app-date-city>
-      <ion-note style="position: absolute;">{{hotelDayPrices?.length}}</ion-note>
+      <!-- <ion-note style="position: absolute;">{{hotelDayPrices?.length}}</ion-note> -->
       <app-hotel-query (activeFilter)='onActiveFilter($event)' (hotelQueryChange)='onHotelQueryChange($event)'>
       </app-hotel-query>
     </div>

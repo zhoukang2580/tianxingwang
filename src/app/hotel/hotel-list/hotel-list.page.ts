@@ -344,7 +344,9 @@ export class HotelListPage
       this.isLeavePage = false;
       const changed = this.checkSearchTextChanged();
       if (changed || this.checkDestinationChanged()) {
-        this.doRefresh(true);
+        setTimeout(() => {
+          this.doRefresh(true);
+        }, 200);
       }
     });
     this.subscriptions.push(sub0);
@@ -366,7 +368,9 @@ export class HotelListPage
     });
     this.subscriptions.push(sub);
     this.subscriptions.push(sub1);
-    this.doRefresh();
+    setTimeout(() => {
+      this.doRefresh();
+    }, 500);
     this.agent = await this.tmcService.getAgent();
     this.config = await this.configService.getConfigAsync();
   }

@@ -121,7 +121,7 @@ export class InternationalHotelListPage
     private router: Router,
     private route: ActivatedRoute,
     private configService: ConfigService,
-    plt: Platform
+    private plt: Platform
   ) {
     this.classMode = plt.is("ios") ? "ios" : "md";
   }
@@ -250,9 +250,12 @@ export class InternationalHotelListPage
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(q => {
         if (this.checkSearchTextChanged() || this.checkDestinationChanged()) {
-          setTimeout(() => {
-            this.doRefresh(true);
-          }, 200);
+          setTimeout(
+            () => {
+              this.doRefresh(true);
+            },
+            this.plt.is("ios") ? 300 : 200
+          );
         }
       })
     );
@@ -262,9 +265,12 @@ export class InternationalHotelListPage
         this.defaultImage = res.DefaultUrl;
       }
     });
-    setTimeout(() => {
-      this.doRefresh();
-    }, 500);
+    setTimeout(
+      () => {
+        this.doRefresh();
+      },
+      this.plt.is("ios") ? 500 : 200
+    );
   }
   onSearchText() {
     this.router.navigate(["search-by-text"]);

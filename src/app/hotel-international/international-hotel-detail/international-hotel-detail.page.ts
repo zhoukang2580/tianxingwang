@@ -122,9 +122,12 @@ export class InternationalHotelDetailPage
         this.staffService.isSelfBookType().then(self => {
           this.canAddPassengers = !self;
         });
-        setTimeout(() => {
-          this.doRefresh();
-        }, 500);
+        setTimeout(
+          () => {
+            this.doRefresh();
+          },
+          this.plt.is("ios") ? 500 : 200
+        );
       })
     );
     this.subscriptions.push(
