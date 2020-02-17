@@ -2,7 +2,7 @@
   <ion-radio-group>
     <ion-item *ngFor='let r of hotelQuery?.ranks' (click)='onSelect(r)'>
       <ion-label color='{{r.isSelected?"secondary":"dark"}}'>{{r.label}}</ion-label>
-      <ion-radio [checked]='r.isSelected'></ion-radio>
+      <ion-radio [value]='r.value'></ion-radio>
     </ion-item>
   </ion-radio-group>
 </ion-list>

@@ -7,11 +7,11 @@
       *ngIf='!(info?.credential?.FirstName&&info?.credential?.LastName)&&info?.passenger?.Name'>
       {{info?.passenger?.Name}}
       {{info?.credential?.Number}}</ion-label>
-    <ion-radio [value]="info" [checked]='info.isFilterPolicy'></ion-radio>
+    <ion-radio [value]="info"></ion-radio>
   </ion-item>
   <ion-item (click)='onUnFilterPolicy()'>
     <ion-label  class='sm-font-size'  color='secondary'>不过滤差标</ion-label>
-    <ion-radio [value]='isUnFilterPolicy' [checked]='isUnFilterPolicy'></ion-radio>
+    <ion-radio  ></ion-radio>
   </ion-item>
 </ion-radio-group>
 <!-- <ion-radio-group (ionChange)='onMathRadioChange($event)' allowEmptySelection='true'>

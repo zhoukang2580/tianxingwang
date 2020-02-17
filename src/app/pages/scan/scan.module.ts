@@ -1,3 +1,4 @@
+import { AppComponentsModule } from './../../components/appcomponents.module';
 import { AppDirectivesModule } from './../../directives/directives.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -21,7 +22,8 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     AppDirectivesModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    AppComponentsModule
   ],
   declarations: [ScanPage]
 })

@@ -1,16 +1,16 @@
-import { NavController } from '@ionic/angular';
-import { Component, OnInit } from '@angular/core';
-import { RequestEntity } from 'src/app/services/api/Request.entity';
-import { ApiService } from 'src/app/services/api/api.service';
-import { switchMap } from 'rxjs/operators';
-import { Router, ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
-import { AppHelper } from 'src/app/appHelper';
+import { NavController } from "@ionic/angular";
+import { Component, OnInit } from "@angular/core";
+import { RequestEntity } from "src/app/services/api/Request.entity";
+import { ApiService } from "src/app/services/api/api.service";
+import { switchMap } from "rxjs/operators";
+import { Router, ActivatedRoute } from "@angular/router";
+import { of } from "rxjs";
+import { AppHelper } from "src/app/appHelper";
 
 @Component({
-  selector: 'app-password-valid',
-  templateUrl: './password-valid.page.html',
-  styleUrls: ['./password-valid.page.scss'],
+  selector: "app-password-valid",
+  templateUrl: "./password-valid.page.html",
+  styleUrls: ["./password-valid.page.scss"]
 })
 export class PasswordValidPage implements OnInit {
   model: any;
@@ -25,7 +25,12 @@ export class PasswordValidPage implements OnInit {
   }[];
   countDown = 0;
   countDownInterval: any;
-  constructor(private apiService: ApiService, private router: Router, private activatedRoute: ActivatedRoute, private navCtrl: NavController) { }
+  constructor(
+    private apiService: ApiService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private navCtrl: NavController
+  ) {}
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe(p => {
@@ -50,7 +55,6 @@ export class PasswordValidPage implements OnInit {
       .getResponse<{
         ValidTypes: []; // "";
         AccountId: string; // ;
-
       }>(req)
       .pipe(
         switchMap(r => {
@@ -60,16 +64,21 @@ export class PasswordValidPage implements OnInit {
             return of(r.Data);
           }
           if (r.Data) {
-            this.router.navigate([AppHelper.getRoutePath("password-reset"), { Name: this.name }]);
+            this.router.navigate([
+              AppHelper.getRoutePath("password-reset"),
+              { Name: this.name }
+            ]);
           }
           return of(r.Data);
         })
-
-      ).subscribe(r => { },
-        (e) => { },
+      )
+      .subscribe(
+        r => {},
+        e => {},
         () => {
           des.unsubscribe();
-        });
+        }
+      );
   }
   private startCountDonw(countdownTime: number) {
     this.countDown = countdownTime;
@@ -85,25 +94,29 @@ export class PasswordValidPage implements OnInit {
   }
 
   sendMobileCode() {
-
     const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Home-SendCode";
     req.IsShowLoading = true;
     req.Data = { ValidateType: this.model, Name: this.name };
-    const sub = this.apiService.getResponse<{
-      SendInterval: number;
-      ExpiredInterval: number;
-    }>(req).subscribe(res => {
-      if (res.Data)
-        this.startCountDonw(res.Data.SendInterval || 0);
-    }, e => {
-      AppHelper.alert(e);
-    }, () => {
-      setTimeout(() => {
-        if (sub) {
-          sub.unsubscribe();
+    const sub = this.apiService
+      .getResponse<{
+        SendInterval: number;
+        ExpiredInterval: number;
+      }>(req)
+      .subscribe(
+        res => {
+          if (res.Data) this.startCountDonw(res.Data.SendInterval || 0);
+        },
+        e => {
+          AppHelper.alert(e);
+        },
+        () => {
+          setTimeout(() => {
+            if (sub) {
+              sub.unsubscribe();
+            }
+          }, 100);
         }
-      }, 100);
-    });
+      );
   }
 }

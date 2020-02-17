@@ -32,6 +32,7 @@
     </div>
   </ion-toolbar>
 </ion-header>
+<app-combobox [data]='[{Text:"123456"},{Text:"123456"}]'></app-combobox>
 <ion-content [scrollY]='!queryComp?.tab?.active'>
   <app-refresher slot='fixed' (ionRefresh)='doRefresh()'>
     <ion-refresher-content>正在加载...</ion-refresher-content>

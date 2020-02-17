@@ -12,11 +12,13 @@
   </form>
 </ion-header>
 <ion-content>
-  <ion-list *ngIf='dataSource|async as data'>
-    <ion-item *ngFor='let t of data' (click)='onClick(t)' @flyInOut>
-      <ion-label class='ion-text-wrap'>
-        {{t.Text}}
-      </ion-label>
-    </ion-item>
-  </ion-list>
+  <ng-container *ngIf='dataSource'>
+    <ion-list *ngIf='dataSource|async as data'>
+      <ion-item *ngFor='let t of data' (click)='onClick(t)' @flyInOut>
+        <ion-label class='ion-text-wrap'>
+          {{t.Text}}
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ng-container>
 </ion-content>

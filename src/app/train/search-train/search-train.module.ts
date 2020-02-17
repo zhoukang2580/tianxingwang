@@ -1,5 +1,6 @@
-import { ConfirmCredentialInfoGuard } from './../../guards/confirm-credential-info.guard';
-import { CandeactivateGuard } from './../../guards/candeactivate.guard';
+import { AppComponentsModule } from "./../../components/appcomponents.module";
+import { ConfirmCredentialInfoGuard } from "./../../guards/confirm-credential-info.guard";
+import { CandeactivateGuard } from "./../../guards/candeactivate.guard";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -12,13 +13,13 @@ import { TmcGuard } from "src/app/guards/tmc.guard";
 import { SearchTrainPage } from "./search-train.page";
 import { TrainComponentsModule } from "../components/traincomponents.module";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
-import { AuthorityGuard } from 'src/app/guards/authority.guard';
+import { AuthorityGuard } from "src/app/guards/authority.guard";
 
 const routes: Routes = [
   {
     path: "",
     component: SearchTrainPage,
-    canActivate: [AuthorityGuard,TmcGuard,ConfirmCredentialInfoGuard],
+    canActivate: [AuthorityGuard, TmcGuard, ConfirmCredentialInfoGuard],
     canDeactivate: [CandeactivateGuard]
   }
 ];
@@ -31,7 +32,8 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     AppDirectivesModule,
     TmcComponentsModule,
-    TrainComponentsModule
+    TrainComponentsModule,
+    AppComponentsModule
   ],
   declarations: [SearchTrainPage],
   entryComponents: []

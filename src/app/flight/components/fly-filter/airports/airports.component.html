@@ -4,7 +4,7 @@
   </ion-list-header>
   <ion-item>
     <ion-label>不限</ion-label>
-    <ion-radio [checked]='isUnlimitRadioChecked' (ionSelect)='reset()'></ion-radio>
+    <ion-radio  (ionSelect)='reset()'></ion-radio>
   </ion-item>
   <ion-item *ngFor="let entry of airports">
     <ion-label>{{entry?.label}}</ion-label>

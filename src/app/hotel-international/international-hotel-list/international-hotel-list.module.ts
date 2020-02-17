@@ -21,7 +21,7 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    HotelInternationalComponentsModule
+    HotelInternationalComponentsModule,
   ],
   declarations: [InternationalHotelListPage]
 })

@@ -23,9 +23,6 @@ export class DeveloperOptionsPage implements OnInit {
     return this.version;
   };
   constructor(private navCtrl: NavController, private flieService: FileHelperService) { }
-  back() {
-    this.navCtrl.pop();
-  }
   ngOnInit() {
   }
   onLogChange(evt: CustomEvent) {

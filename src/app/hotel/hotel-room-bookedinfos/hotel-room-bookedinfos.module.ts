@@ -1,4 +1,5 @@
-import { HotelComponentsModule } from './../components/components.module';
+import { AppComponentsModule } from "./../../components/appcomponents.module";
+import { HotelComponentsModule } from "./../components/components.module";
 import { RouterModule } from "@angular/router";
 import { FormsModule } from "@angular/forms";
 import { CommonModule } from "@angular/common";
@@ -13,6 +14,7 @@ import { HotelRoomBookedinfosPage } from "./hotel-room-bookedinfos.page";
     CommonModule,
     FormsModule,
     HotelComponentsModule,
+    AppComponentsModule,
     RouterModule.forChild([
       {
         path: "",

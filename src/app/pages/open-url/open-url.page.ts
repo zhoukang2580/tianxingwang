@@ -42,9 +42,6 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
       this.isHideTitle = h == 'true';
     });
   }
-  back() {
-    this.navCtrl.pop();
-  }
   ngAfterViewInit() {
     if (this.iframes) {
       this.iframes.changes.subscribe(async _ => {
