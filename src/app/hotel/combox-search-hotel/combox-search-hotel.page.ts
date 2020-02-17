@@ -19,11 +19,11 @@ interface ISearchTextValue {
 }
 @Component({
   selector: "app-search-hotel-byText",
-  templateUrl: "./search-hotel-byText.page.html",
-  styleUrls: ["./search-hotel-byText.page.scss"],
+  templateUrl: "./combox-search-hotel.page.html",
+  styleUrls: ["./combox-search-hotel.page.scss"],
   animations: [flyInOut]
 })
-export class SearchHotelByTextPage implements OnInit {
+export class ComboxSearchHotelPage implements OnInit {
   @ViewChild(RefresherComponent) refresh: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   private pageIndex = 0;

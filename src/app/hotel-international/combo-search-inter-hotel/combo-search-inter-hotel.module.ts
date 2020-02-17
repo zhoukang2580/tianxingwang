@@ -4,19 +4,20 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
+import { ComboSearchInterHotelPageRoutingModule } from './combo-search-inter-hotel-routing.module';
+import { ComboSearchInterHotelPage } from './combo-search-inter-hotel.page';
 
-import { SearchByTextPageRoutingModule } from './search-by-text-routing.module';
 
-import { SearchByTextPage } from './search-by-text.page';
+
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    SearchByTextPageRoutingModule,
+    ComboSearchInterHotelPageRoutingModule,
     AppComponentsModule
   ],
-  declarations: [SearchByTextPage]
+  declarations: [ComboSearchInterHotelPage]
 })
-export class SearchByTextPageModule {}
+export class ComboSearchInterHotelPageModule {}

@@ -296,7 +296,7 @@ export class HotelListPage
     this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
   }
   onSearchByText() {
-    this.router.navigate([AppHelper.getRoutePath("search-hotel-bytext")]);
+    this.router.navigate([AppHelper.getRoutePath("combox-search-hotel")]);
   }
   private checkDestinationChanged() {
     if (this.searchHotelModel) {

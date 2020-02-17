@@ -16,10 +16,10 @@ export const routes: Routes = [
       import("./hotel-city/hotel-city.module").then(m => m.HotelCityPageModule)
   },
   {
-    path: "search-hotel-bytext",
+    path: "combox-search-hotel",
     loadChildren: () =>
-      import("./search-hotel-byTtext/search-hotel-byText.module").then(
-        m => m.SearchHotelByTextPageModule
+      import("./combox-search-hotel/combox-search-hotel.module").then(
+        m => m.ComboxSearchHotelPageModule
       )
   },
   {

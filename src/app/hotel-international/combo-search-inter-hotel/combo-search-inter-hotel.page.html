@@ -1,20 +1,20 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot='start'>
+    <ion-buttons>
       <app-back-button defaultHref=""></app-back-button>
-    </ion-buttons>
-    <form (ngSubmit)='onSelect()'>
-      <ion-searchbar animated='true' name='searchbar' (ionChange)='onSearch()' [(ngModel)]='searchText' type='search'>
-      </ion-searchbar>
+      <form (ngSubmit)='onSelect()'>
+        <ion-searchbar animated='true' name='searchbar' (ionChange)='onSearch()' [(ngModel)]='searchText' type='search'>
+        </ion-searchbar>
+      </form>
       <ion-button color='secondary' fill='clear' type='submit' (click)='onSelect()'>确认</ion-button>
-    </form>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <app-refresher slot='fixed' (ionRefresh)='doRefresh()'>
+  <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'>
     <ion-refresher-content>正在加载...</ion-refresher-content>
-  </app-refresher>
+  </ion-refresher>
   <ion-list *ngIf='searchResult?.length else fakeList'>
     <ion-item *ngFor='let t of searchResult' @flyInOut (click)='onSelect(t)'>
       <ion-label class="ion-text-wrap">

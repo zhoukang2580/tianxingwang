@@ -1,12 +1,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { SearchHotelByTextPage } from './search-hotel-byText.page';
-
+import { ComboSearchInterHotelPage } from './combo-search-inter-hotel.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: SearchHotelByTextPage
+    component: ComboSearchInterHotelPage
   }
 ];
 
@@ -14,4 +13,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class SearchByTextPageRoutingModule {}
+export class ComboSearchInterHotelPageRoutingModule {}

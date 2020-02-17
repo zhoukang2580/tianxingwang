@@ -1,12 +1,9 @@
-<div class="container">
-  <ion-buttons>
-    <ion-label *ngFor='let t of tabs' color='{{t.active?"secondary":""}}' (click)='onTabClick(t)'>
-      <span [class.has-selected-item]="checkHasItemSelected(t)">
-        {{t.name}}
-      </span>
-      <ion-icon name='caret-up-outline' *ngIf='t.active'></ion-icon>
-      <ion-icon name='caret-down-outline' *ngIf='!t.active'></ion-icon>
-    </ion-label>
-  </ion-buttons>
-
-</div>
+<ion-buttons>
+  <ion-button *ngFor='let t of tabs' color='{{t.active?"secondary":"dark"}}' (click)='onTabClick(t)'>
+    <span [class.has-selected-item]="checkHasItemSelected(t)">
+      {{t.name}}
+    </span>
+    <ion-icon name='caret-up-outline' *ngIf='t.active'></ion-icon>
+    <ion-icon name='caret-down-outline' *ngIf='!t.active'></ion-icon>
+  </ion-button>
+</ion-buttons>

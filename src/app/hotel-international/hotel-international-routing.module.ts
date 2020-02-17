@@ -39,8 +39,8 @@ export const routes: Routes = [
       ).then(m => m.InternationalRoomDetailPageModule)
   },
   {
-    path: 'search-by-text',
-    loadChildren: () => import('./search-by-text/search-by-text.module').then( m => m.SearchByTextPageModule)
+    path: 'combo-search-inter-hotel',
+    loadChildren: () => import('./combo-search-inter-hotel/combo-search-inter-hotel.module').then( m => m.ComboSearchInterHotelPageModule)
   },
   {
     path: 'international-hotel-bookinfos',

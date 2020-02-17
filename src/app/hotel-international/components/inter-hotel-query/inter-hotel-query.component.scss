@@ -7,21 +7,9 @@ ion-list.md {
   }
 }
 ion-buttons {
-  padding: 1em;
   justify-content: space-between;
 }
-.container {
-  background-color: white;
-  padding: 0 0.5em;
-  ion-buttons:last-child {
-    &.md {
-      margin-right: -1em;
-    }
-    &.ios {
-      margin-right: -0.5em;
-    }
-  }
-}
+
 .has-selected-item {
   position: relative;
   &::after {
@@ -35,4 +23,7 @@ ion-buttons {
     background-color: var(--ion-color-danger);
     border-radius: 50%;
   }
+}
+:host{
+  background-color: white;
 }

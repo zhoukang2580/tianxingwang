@@ -273,7 +273,7 @@ export class InternationalHotelListPage
     );
   }
   onSearchText() {
-    this.router.navigate(["search-by-text"]);
+    this.router.navigate(["combo-search-inter-hotel"]);
   }
   private checkDestinationChanged() {
     if (this.searchCondition) {

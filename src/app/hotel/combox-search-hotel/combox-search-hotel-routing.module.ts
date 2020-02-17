@@ -1,11 +1,12 @@
-import { SearchHotelByTextPage } from './../../hotel/search-hotel-byTtext/search-hotel-byText.page';
+import { ComboxSearchHotelPage } from './combox-search-hotel.page';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+
 
 const routes: Routes = [
   {
     path: '',
-    component: SearchHotelByTextPage
+    component: ComboxSearchHotelPage
   }
 ];
 
@@ -13,4 +14,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class SearchByTextPageRoutingModule {}
+export class ComboxSearchHotelPageRoutingModule {}

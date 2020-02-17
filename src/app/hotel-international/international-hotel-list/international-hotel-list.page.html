@@ -1,38 +1,42 @@
 <ion-header size='large'>
   <ion-toolbar>
-    <ion-buttons slot='start'>
-      <app-back-button defaultHref="" [backFn]='back.bind(this)'></app-back-button>
+    <ion-buttons>
+      <app-back-button style="align-self: flex-start;padding-top: 0.5em;" defaultHref="" [backFn]='back.bind(this)'>
+      </app-back-button>
+      <div class="bar">
+        <div class="date" (click)='onChangeDate()'>
+          <div style="padding: 0.35em 0">
+            <span>住</span><span class="checkin">{{searchCondition?.checkinDate?.substring(5)}}</span>
+          </div>
+          <div>
+            <span>离</span> <span class="checkout">{{searchCondition?.checkoutDate?.substring(5)}}</span>
+          </div>
+        </div>
+        <div class="name-search">
+          <div class="name">
+            <ion-text color='secondary' (click)='onChangeCity()'>
+              {{searchCondition?.destinationCity?.Name}}
+            </ion-text>
+          </div>
+          <ion-buttons (click)='onSearchText()' class="search-box">
+            <ion-icon name='search' style="font-size: 1rem;"></ion-icon>
+            <div class="hint" [class.center]='!searchCondition?.searchText?.Text'>
+              {{searchCondition?.searchText?.Text||"关键字/酒店名"}}</div>
+            <ion-icon name='close' style="font-size: 1rem;" [style.visibility]='searchCondition?.searchText?.Text?"visible":"hidden"' (click)='onClearText($event)'>
+            </ion-icon>
+          </ion-buttons>
+        </div>
+        <div class="customer-count" (click)='onModifyAdultCount()'>
+          入住人数 <ion-text class="ion-margin-start" color='secondary'>
+            {{searchCondition?.adultCount}}成人{{searchCondition?.children?.length}}儿童
+            <ion-note>{{hotels?.length}}</ion-note>
+          </ion-text>
+        </div>
+        <app-inter-hotel-query class="{{classMode}}" (queryFilter)='onQueryFilter()'></app-inter-hotel-query>
+      </div>
     </ion-buttons>
-    <div class="bar">
-      <div class="date" (click)='onChangeDate()'>
-        <div style="padding: 0.35em 0">
-          <span>住</span><span class="checkin">{{searchCondition?.checkinDate?.substring(5)}}</span>
-        </div>
-        <div>
-          <span>离</span> <span class="checkout">{{searchCondition?.checkoutDate?.substring(5)}}</span>
-        </div>
-      </div>
-      <ion-text class="ion-margin-start name" color='secondary' (click)='onChangeCity()'>
-        {{searchCondition?.destinationCity?.Name}}
-      </ion-text>
-      <div class="search" (click)='onSearchText()'>
-        <ion-icon name='search'></ion-icon>
-        <div class="ion-text-nowrap keyword-hint" [class.center]='!searchCondition?.searchText?.Text'>
-          {{searchCondition?.searchText?.Text||"关键字/酒店名"}}</div>
-        <ion-icon name='close' size='large' *ngIf='searchCondition?.searchText?.Text' (click)='onClearText($event)'>
-        </ion-icon>
-      </div>
-      <div class="customer-count" (click)='onModifyAdultCount()'>
-        入住人数 <ion-text class="ion-margin-start" color='secondary'>
-          {{searchCondition?.adultCount}}成人{{searchCondition?.children?.length}}儿童
-          <ion-note>{{hotels?.length}}</ion-note>
-        </ion-text>
-      </div>
-      <app-inter-hotel-query class="{{classMode}}" (queryFilter)='onQueryFilter()'></app-inter-hotel-query>
-    </div>
   </ion-toolbar>
 </ion-header>
-<app-combobox [data]='[{Text:"123456"},{Text:"123456"}]'></app-combobox>
 <ion-content [scrollY]='!queryComp?.tab?.active'>
   <app-refresher slot='fixed' (ionRefresh)='doRefresh()'>
     <ion-refresher-content>正在加载...</ion-refresher-content>

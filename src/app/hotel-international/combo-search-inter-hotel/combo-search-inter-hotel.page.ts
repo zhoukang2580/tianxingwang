@@ -1,6 +1,6 @@
 import { flyInOut } from "./../../animations/flyInOut";
 import { RefresherComponent } from "./../../components/refresher/refresher.component";
-import { NavController, IonInfiniteScroll } from "@ionic/angular";
+import { NavController, IonInfiniteScroll, IonRefresher } from "@ionic/angular";
 import {
   distinctUntilChanged,
   switchMap,
@@ -18,12 +18,12 @@ import { Component, OnInit, ViewChild } from "@angular/core";
 
 @Component({
   selector: "app-search-by-text",
-  templateUrl: "./search-by-text.page.html",
-  styleUrls: ["./search-by-text.page.scss"],
+  templateUrl: "./combo-search-inter-hotel.page.html",
+  styleUrls: ["./combo-search-inter-hotel.page.scss"],
   animations: [flyInOut]
 })
-export class SearchByTextPage implements OnInit {
-  @ViewChild(RefresherComponent) refresh: RefresherComponent;
+export class ComboSearchInterHotelPage implements OnInit {
+  @ViewChild(IonRefresher) refresher: IonRefresher;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   private pageIndex = 0;
   private subscription = Subscription.EMPTY;
@@ -48,15 +48,15 @@ export class SearchByTextPage implements OnInit {
       )
       .subscribe(res => {
         this.searchResult = res.Data;
-        this.enableScroller(res.Data.length >= 20);
+        this.enableScroller(res.Data && res.Data.length >= 20);
       });
   }
   private load(name: string) {
     return this.hotelService.searchHotel(name, this.pageIndex).pipe(
       finalize(() => {
         if (this.pageIndex <= 1) {
-          if (this.refresh) {
-            this.refresh.complete();
+          if (this.refresher) {
+            this.refresher.complete();
           }
         }
         if (this.scroller) {
@@ -70,14 +70,27 @@ export class SearchByTextPage implements OnInit {
     );
   }
   loadMore(name: string = "") {
-    this.subscription = this.load(name).subscribe(res => {
-      const arr = (res && res.Data) || [];
-      this.enableScroller(arr.length >= 20);
-      if (arr.length) {
-        this.pageIndex++;
-        this.searchResult = this.searchResult.concat(res.Data);
-      }
-    });
+    this.subscription = this.load(name)
+      .pipe(
+        finalize(() => {
+          if (this.scroller) {
+            this.scroller.complete();
+          }
+          if (this.refresher && this.pageIndex <= 1) {
+            this.refresher.complete();
+          }
+        })
+      )
+      .subscribe(res => {
+        const arr = (res && res.Data) || [];
+        this.enableScroller(arr.length >= 20);
+        if (arr.length) {
+          this.pageIndex++;
+          setTimeout(() => {
+            this.searchResult = this.searchResult.concat(res.Data);
+          }, 200);
+        }
+      });
   }
   private enableScroller(enable: boolean) {
     if (this.scroller) {
