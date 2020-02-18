@@ -20,7 +20,7 @@
             <div class="line"></div>
           </div>
         </div>
-        <div class="end ion-text-end" >
+        <div class="end ion-text-end">
           <div>{{trip.ToName?.replace("国际机场","")?.replace("机场","")}}</div>
           <div>
             <strong>{{getEndHHmm()}}</strong>
@@ -45,15 +45,11 @@
         </p>
       </ion-text>
       <div class='btns'>
-        <ng-container *ngIf='getProducts() as products'>
-          <ng-container *ngIf='products.length && getDays(trip.StartTime,trip.EndTime)>=1'>
-            <ng-container *ngFor='let p of products'>
-              <ion-button color='secondary' *ngIf='check(p.InsuranceType)' size='small'
-                (click)='onShowSelectedInsurance(p,trip,$event)'>
-                {{p.Name}}({{p.Price}})
-              </ion-button>
-            </ng-container>
-          </ng-container>
+        <ng-container *ngFor='let p of products'>
+          <ion-button color='secondary' size='small'
+            (click)='onShowSelectedInsurance(p,trip,$event)'>
+            {{p.Name}}({{p.Price}})
+          </ion-button>
         </ng-container>
         <ng-container *ngIf='getOrderInsurad() as orderInsurad'>
           <ion-button color='secondary' (click)='payInsurance(orderInsurad.Key,trip.OrderId,$event)' size='small'>
