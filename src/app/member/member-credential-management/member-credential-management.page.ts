@@ -222,7 +222,7 @@ export class MemberCredentialManagementPage
           const str = `${b.substr(0, 4)}-${b.substr(4, 2)}-${b.substr(6, 2)}`;
           one.Birthday = this.plt.is("ios") ? str.replace(/-/g, "/") : str;
         } else {
-          one.Birthday = null;
+          // one.Birthday = null;
         }
       }
     }
