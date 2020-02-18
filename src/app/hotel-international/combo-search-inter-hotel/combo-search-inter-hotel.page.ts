@@ -29,6 +29,7 @@ export class ComboSearchInterHotelPage implements OnInit {
   private subscription = Subscription.EMPTY;
   searchText: string;
   searchResult: ISearchTextValue[];
+  isLoading = false;
   constructor(
     private hotelService: InternationalHotelService,
     private navCtrl: NavController
@@ -52,6 +53,7 @@ export class ComboSearchInterHotelPage implements OnInit {
       });
   }
   private load(name: string) {
+    this.isLoading = true;
     return this.hotelService.searchHotel(name, this.pageIndex).pipe(
       finalize(() => {
         if (this.pageIndex <= 1) {
@@ -62,6 +64,9 @@ export class ComboSearchInterHotelPage implements OnInit {
         if (this.scroller) {
           this.scroller.complete();
         }
+        setTimeout(() => {
+          this.isLoading = false;
+        }, 200);
       }),
       catchError(e => {
         console.error(e);

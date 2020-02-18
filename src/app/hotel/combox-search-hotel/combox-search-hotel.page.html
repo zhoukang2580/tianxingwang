@@ -1,13 +1,13 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot='start'>
+    <ion-buttons>
       <app-back-button defaultHref=""></app-back-button>
-    </ion-buttons>
-    <form (ngSubmit)='onSelect()'>
-      <ion-searchbar animated='true' name='searchbar' (ionChange)='onSearch()' [(ngModel)]='searchText' type='search'>
-      </ion-searchbar>
+      <form (ngSubmit)='onSelect()'>
+        <ion-searchbar animated='true' name='searchbar' (ionChange)='onSearch()' [(ngModel)]='searchText' type='search'>
+        </ion-searchbar>
+      </form>
       <ion-button color='secondary' fill='clear' type='submit' (click)='onSelect()'>确认</ion-button>
-    </form>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -15,13 +15,18 @@
   <app-refresher slot='fixed' (ionRefresh)='doRefresh()'>
     <ion-refresher-content>正在加载...</ion-refresher-content>
   </app-refresher>
-  <ion-list *ngIf='searchResult?.length else fakeList'>
-    <ion-item *ngFor='let t of searchResult' @flyInOut (click)='onSelect(t)'>
-      <ion-label class="ion-text-wrap">
-        {{t.Text}}
-      </ion-label>
-    </ion-item>
-  </ion-list>
+  <ng-container *ngIf='isLoading else fakeList'>
+    <ion-list *ngIf='searchResult?.length else nodata'>
+      <ion-item *ngFor='let t of searchResult' @flyInOut (click)='onSelect(t)'>
+        <ion-label class="ion-text-wrap">
+          {{t.Text}}
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+  <ng-template #nodata>
+    <app-or-comp>暂无数据</app-or-comp>
+  </ng-template>
   <ng-template #fakeList>
     <ion-list>
       <ion-item *ngFor='let t of [5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];let odd=odd;let even=even;'>

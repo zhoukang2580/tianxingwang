@@ -15,9 +15,9 @@
   </ion-toolbar>
 </ion-header>
 <ion-content #cnt [scrollY]='!filterTab.isActive'>
-  <app-refresher slot='fixed' (ionRefresh)='doRefresh(false)'>
+  <ion-refresher slot='fixed' (ionRefresh)='doRefresh(false)'>
     <ion-refresher-content>正在加载...</ion-refresher-content>
-  </app-refresher>
+  </ion-refresher>
   <ng-container *ngIf='hotelDayPrices?.length else fakeList'>
     <ul>
       <li *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
@@ -87,15 +87,17 @@
     <app-pin-fab horizontal="end" vertical="bottom"></app-pin-fab>
   </ion-fab>
 </ion-content>
-<div class="backdrop {{classMode}}" (click)='onBackdropClick($event)' [class.show]='filterTab.isActive'></div>
+<div class="backdrop {{classMode}}" (click)='onBackdropClick($event)' [class.show]='isShowBackdrop'></div>
 <app-recommend-rank class="filter-condition  {{classMode}}" (rank)='onRank()'
-  [class.show]='filterTab?.label=="推荐排序"&&filterTab.isActive'>
+  (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
+  [@queryPanelShowHide]='filterTab?.label=="推荐排序"&&filterTab.isActive'>
 </app-recommend-rank>
-<app-hotel-starprice class="filter-condition  {{classMode}}" [class.show]='filterTab?.label=="星级价格"&&filterTab.isActive'
-  (starPriceChange)='onStarPriceChange()'></app-hotel-starprice>
-<app-hotel-filter class="filter-condition  {{classMode}}" [class.show]='filterTab?.label=="筛选"&&filterTab.isActive'
-  (filter)='onFilter()'>
+<app-hotel-starprice class="filter-condition  {{classMode}}" (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
+  [@queryPanelShowHide]='filterTab?.label=="星级价格"&&filterTab.isActive' (starPriceChange)='onStarPriceChange()'>
+</app-hotel-starprice>
+<app-hotel-filter class="filter-condition  {{classMode}}" (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
+  [@queryPanelShowHide]='filterTab?.label=="筛选"&&filterTab.isActive' (filter)='onFilter()'>
 </app-hotel-filter>
-<app-hotel-geo class="filter-condition  {{classMode}}" [class.show]='filterTab?.label=="位置区域"&&filterTab.isActive'
-  (geoFilterChange)='onFilterGeo()'>
+<app-hotel-geo class="filter-condition  {{classMode}}" (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
+  [@queryPanelShowHide]='filterTab?.label=="位置区域"&&filterTab.isActive' (geoFilterChange)='onFilterGeo()'>
 </app-hotel-geo>

@@ -30,6 +30,7 @@ export class ComboxSearchHotelPage implements OnInit {
   private subscription = Subscription.EMPTY;
   searchText: string;
   searchResult: ISearchTextValue[];
+  isLoading = false;
   constructor(
     private hotelService: HotelService,
     private navCtrl: NavController
@@ -53,6 +54,7 @@ export class ComboxSearchHotelPage implements OnInit {
       });
   }
   private load(name: string) {
+    this.isLoading = true;
     return this.hotelService.searchHotelByText(name, this.pageIndex).pipe(
       finalize(() => {
         if (this.pageIndex <= 1) {
@@ -63,6 +65,9 @@ export class ComboxSearchHotelPage implements OnInit {
         if (this.scroller) {
           this.scroller.complete();
         }
+        setTimeout(() => {
+          this.isLoading = false;
+        }, 200);
       }),
       map(r => ({ Data: r })),
       catchError(e => {

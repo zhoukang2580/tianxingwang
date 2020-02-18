@@ -40,7 +40,8 @@ import {
   IonItem,
   DomController,
   IonInfiniteScroll,
-  ModalController
+  ModalController,
+  IonRefresher
 } from "@ionic/angular";
 import { Subscription, Observable, fromEvent, merge } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
@@ -61,34 +62,22 @@ import { ISearchTextValue } from "src/app/hotel-international/international-hote
   templateUrl: "./hotel-list.page.html",
   styleUrls: ["./hotel-list.page.scss"],
   animations: [
-    // flyInOut,
-    fadeInOut,
-    trigger("flyInOut", [
-      // state("true", style({ transform: "translate3d(0,0,0)", opacity: 1 })),
-      // state("false", style({ transform: "translate3d(100%,0,0)", opacity: 0 })),
-      transition(":enter,false=>true", [
-        style({ transform: "translate3d(-100%,0,0)", opacity: 0 }),
+    trigger("queryPanelShowHide", [
+      state("true", style({ transform: "translate3d(0,0,0)", opacity: 1 })),
+      state("false", style({ transform: "translate3d(0,200%,0)", opacity: 0 })),
+      transition("false=>true", [
         animate("200ms", style({ transform: "translate3d(0,0,0)", opacity: 1 }))
       ]),
       transition(
-        ":leave,true=>false",
+        "true=>false",
         animate(
-          "200ms",
-          style({ transform: "translate3d(100%,0,0)", opacity: 1 })
+          "100ms",
+          style({
+            transform: "translate3d(0,200%,0)",
+            opacity: 0
+          })
         )
       )
-    ]),
-    trigger("fadeDown", [
-      state("true", style({ transform: "translate3d(0,0,0)", opacity: 1 })),
-      state(
-        "false",
-        style({ transform: "translate3d(0,-150%,0)", opacity: 0 })
-      ),
-
-      transition("true<=>false", [
-        style({ transform: "translate3d(0,-100%,0)" }),
-        animate("200ms")
-      ])
     ])
   ]
 })
@@ -98,7 +87,7 @@ export class HotelListPage
   private oldSearchText: ISearchTextValue;
   private oldDestinationCode: string;
   classMode: "ios" | "md";
-  @ViewChild(RefresherComponent) refresher: RefresherComponent;
+  @ViewChild(IonRefresher) refresher: IonRefresher;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChild("querytoolbar") querytoolbar: IonToolbar;
   @ViewChild(IonContent) content: IonContent;
@@ -120,6 +109,7 @@ export class HotelListPage
     disabled: boolean;
   };
   filterTab: IHotelQueryCompTab;
+  isShowBackdrop = false;
   constructor(
     private hotelService: HotelService,
     private router: Router,
@@ -145,6 +135,9 @@ export class HotelListPage
   async ngAfterContentInit() {}
   async ngAfterViewInit() {
     this.autofocusSearchBarInput();
+  }
+  onQueryPanelShowHideEnd() {
+    this.isShowBackdrop = !this.isShowBackdrop;
   }
   private getStars(hotel: HotelEntity) {
     if (hotel && hotel.Category) {

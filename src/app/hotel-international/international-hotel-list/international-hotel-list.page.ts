@@ -1,3 +1,4 @@
+import { fadeInOut } from './../../animations/fadeInOut';
 import { BackButtonComponent } from "./../../components/back-button/back-button.component";
 import { AppHelper } from "./../../appHelper";
 import { ConfigService } from "src/app/services/config/config.service";
@@ -51,6 +52,7 @@ import { IRankItem } from "src/app/hotel/models/HotelQueryEntity";
   templateUrl: "./international-hotel-list.page.html",
   styleUrls: ["./international-hotel-list.page.scss"],
   animations: [
+    fadeInOut,
     trigger("queryPanelShowHide", [
       state("true", style({ transform: "translate3d(0,0,0)", opacity: 1 })),
       state("false", style({ transform: "translate3d(0,200%,0)", opacity: 0 })),
