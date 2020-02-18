@@ -47,6 +47,8 @@ export function navAnimations(baseEl, opts) {
       loadingSpinner: "crescent",
       swipeBackEnabled: false,
       hardwareBackButton: !true,
+      refreshingIcon: "bubbles",
+      refreshingSpinner: "crescent"
       // navAnimation: navAnimations as any
     }),
     HttpClientModule,

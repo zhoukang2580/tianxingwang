@@ -1,5 +1,4 @@
 @import "./refresher.vars";
-
 .refresher {
   left: 0;
   right: 0;
@@ -14,6 +13,7 @@
   z-index: $z-index-refresher;
   &.refresher-active {
     display: block;
+    z-index: 1;
   }
 }
 // Refresher Content
@@ -24,6 +24,7 @@ ion-refresher-content {
   flex-direction: column;
   justify-content: center;
   height: 100%;
+  width: 100%;
 }
 
 .refresher-pulling,

@@ -1,8 +1,11 @@
-import { fadeInOut } from './../../animations/fadeInOut';
+import { fadeInOut } from "./../../animations/fadeInOut";
 import { BackButtonComponent } from "./../../components/back-button/back-button.component";
 import { AppHelper } from "./../../appHelper";
 import { ConfigService } from "src/app/services/config/config.service";
-import { InterHotelQueryComponent } from "./../components/inter-hotel-query/inter-hotel-query.component";
+import {
+  InterHotelQueryComponent,
+  IInterHotelQueryTab
+} from "./../components/inter-hotel-query/inter-hotel-query.component";
 import { Router, ActivatedRoute, NavigationStart } from "@angular/router";
 import { ImageRecoverService } from "./../../services/imageRecover/imageRecover.service";
 import { RefresherComponent } from "./../../components/refresher/refresher.component";
@@ -46,6 +49,7 @@ import {
 } from "@angular/animations";
 import { HotelEntity } from "src/app/hotel/models/HotelEntity";
 import { IRankItem } from "src/app/hotel/models/HotelQueryEntity";
+import { PinFabComponent } from "src/app/components/pin-fab/pin-fab.component";
 
 @Component({
   selector: "app-international-hotel-list",
@@ -54,9 +58,16 @@ import { IRankItem } from "src/app/hotel/models/HotelQueryEntity";
   animations: [
     fadeInOut,
     trigger("queryPanelShowHide", [
-      state("true", style({ transform: "translate3d(0,0,0)", opacity: 1 })),
-      state("false", style({ transform: "translate3d(0,200%,0)", opacity: 0 })),
+      state(
+        "true",
+        style({ transform: "translate3d(0,0,0)", opacity: 1, zIndex: 100 })
+      ),
+      state(
+        "false",
+        style({ transform: "translate3d(0,200%,0)", opacity: 0, zIndex: -100 })
+      ),
       transition("false=>true", [
+        style({ zIndex: 1 }),
         animate("200ms", style({ transform: "translate3d(0,0,0)", opacity: 1 }))
       ]),
       transition(
@@ -77,21 +88,24 @@ export class InternationalHotelListPage
   private subscription = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
-  @ViewChild(InterHotelQueryComponent) queryComp: InterHotelQueryComponent;
+  @ViewChild(InterHotelQueryComponent)
+  private queryComp: InterHotelQueryComponent;
   @ViewChild(IonContent) private content: IonContent;
   @ViewChild(IonInfiniteScroll) private scroller: IonInfiniteScroll;
-  @ViewChild(IonRefresher) private refresher: IonRefresher;
-  @ViewChild(RefresherComponent) private refresher2: RefresherComponent;
+  @ViewChild(RefresherComponent) private refresher: RefresherComponent;
+  @ViewChild(PinFabComponent) pinFabComp: PinFabComponent;
   private isDoRefresh = false;
   private oldSearchText: ISearchTextValue;
   private oldDestinationCode: string;
   isShowBackDrop = false;
+  filterTab: IInterHotelQueryTab;
   isLoading = false;
   hotels: HotelEntity[];
   pageIndex = 0;
   defaultImage = "";
   searchCondition: IInterHotelSearchCondition;
   classMode: "ios" | "md";
+  totalHotels = 0;
   constructor(
     private hotelService: InternationalHotelService,
     private imageRecoverService: ImageRecoverService,
@@ -118,9 +132,6 @@ export class InternationalHotelListPage
   itemHeightFn() {
     return 123;
   }
-  onScrollToTop() {
-    this.scrollToTop();
-  }
   onRank(r: IRankItem) {
     const hotelQuery = this.hotelService.getHotelQueryModel();
     if (r) {
@@ -131,15 +142,27 @@ export class InternationalHotelListPage
       }
     }
   }
+  onShowPanel(tab: IInterHotelQueryTab) {
+    this.filterTab = tab;
+    if (tab && tab.active) {
+      if (this.hotels && this.hotels.length > 2 * 20) {
+        this.hotels = this.hotels.slice(0, 20);
+        const hotelQuery = this.hotelService.getHotelQueryModel();
+        hotelQuery.PageIndex = 1;
+        if (this.scroller) {
+          this.scroller.disabled = false;
+        }
+        this.hotelService.setHotelQuerySource(hotelQuery);
+      }
+    }
+    this.scrollToTop();
+  }
   onQueryPanelShowHideEnd() {
-    this.isShowBackDrop = !this.isShowBackDrop;
+    this.isShowBackDrop = this.filterTab && this.filterTab.active;
   }
   hideQueryPannel() {
-    if (this.queryComp) {
-      // this.queryComp.tab.label = "close";
-      if (this.queryComp.tab) {
-        this.queryComp.tab.active = false;
-      }
+    if (this.filterTab) {
+      this.filterTab.active = false;
     }
     this.isShowBackDrop = false;
   }
@@ -300,6 +323,7 @@ export class InternationalHotelListPage
     this.pageIndex = 0;
     this.subscription.unsubscribe();
     this.isDoRefresh = true;
+    this.totalHotels = 0;
     if (!keepFilterCondition) {
       this.hotelService.setSearchConditionSource({
         ...this.hotelService.getSearchCondition(),
@@ -330,7 +354,11 @@ export class InternationalHotelListPage
   }
   private scrollToTop() {
     if (this.content) {
-      this.content.scrollToTop(100);
+      this.content.scrollToTop(60).then(() => {
+        if (this.pinFabComp) {
+          this.pinFabComp.hide = true;
+        }
+      });
     }
   }
   loadMore() {
@@ -351,6 +379,7 @@ export class InternationalHotelListPage
       )
       .subscribe(
         r => {
+          this.totalHotels = r && r.Data && r.Data.DataCount;
           const arr = (r && r.Data && r.Data.HotelDayPrices) || [];
           this.completeScroller();
           this.enableScroller(arr.length >= 20);
@@ -372,9 +401,6 @@ export class InternationalHotelListPage
   private completeRefresher() {
     if (this.refresher) {
       this.refresher.complete();
-    }
-    if (this.refresher2) {
-      this.refresher2.complete();
     }
   }
   private completeScroller() {

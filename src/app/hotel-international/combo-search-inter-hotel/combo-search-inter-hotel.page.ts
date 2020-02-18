@@ -1,3 +1,4 @@
+import { ActivatedRoute } from "@angular/router";
 import { flyInOut } from "./../../animations/flyInOut";
 import { RefresherComponent } from "./../../components/refresher/refresher.component";
 import { NavController, IonInfiniteScroll, IonRefresher } from "@ionic/angular";
@@ -14,7 +15,7 @@ import {
   InternationalHotelService,
   ISearchTextValue
 } from "./../international-hotel.service";
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
 
 @Component({
   selector: "app-search-by-text",
@@ -22,20 +23,27 @@ import { Component, OnInit, ViewChild } from "@angular/core";
   styleUrls: ["./combo-search-inter-hotel.page.scss"],
   animations: [flyInOut]
 })
-export class ComboSearchInterHotelPage implements OnInit {
-  @ViewChild(IonRefresher) refresher: IonRefresher;
+export class ComboSearchInterHotelPage implements OnInit, OnDestroy {
+  @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   private pageIndex = 0;
   private subscription = Subscription.EMPTY;
+  private subscription2 = Subscription.EMPTY;
   searchText: string;
   searchResult: ISearchTextValue[];
   isLoading = false;
   constructor(
     private hotelService: InternationalHotelService,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private route: ActivatedRoute
   ) {}
+  ngOnDestroy() {
+    this.subscription2.unsubscribe();
+  }
   ngOnInit() {
-    this.doRefresh();
+    this.subscription2 = this.route.queryParamMap.subscribe(() => {
+      this.doRefresh();
+    });
   }
   onSearch() {
     this.subscription.unsubscribe();

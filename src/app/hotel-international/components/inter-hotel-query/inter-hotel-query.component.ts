@@ -23,7 +23,7 @@ import {
   IRankItem
 } from "src/app/hotel/models/HotelQueryEntity";
 import { InterHotelStarPriceComponent } from "../inter-hotel-starprice/inter-hotel-starprice.component";
-interface ITab {
+export interface IInterHotelQueryTab {
   label: "rank" | "starsAndPrice" | "close";
   name: "推荐排序" | "房价/星级";
   active?: boolean;
@@ -34,7 +34,7 @@ interface ITab {
   templateUrl: "./inter-hotel-query.component.html",
   styleUrls: ["./inter-hotel-query.component.scss"],
 
-  exportAs: "hotelQueryComp"
+  // exportAs: "hotelQueryComp"
 })
 export class InterHotelQueryComponent implements OnInit, OnDestroy {
   @ViewChild(IonRange) rangeEle: IonRange;
@@ -43,13 +43,15 @@ export class InterHotelQueryComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   starAndPrices: any[];
   ranks: IRankItem[];
-  tabs: ITab[] = [];
-  tab: ITab;
+  tabs: IInterHotelQueryTab[] = [];
+  tab: IInterHotelQueryTab;
   hotelQuery: HotelQueryEntity;
   @Output() queryFilter: EventEmitter<any>;
+  @Output() showPanel: EventEmitter<any>;
   isShowPanel = false;
   constructor(private hotelService: InternationalHotelService) {
     this.queryFilter = new EventEmitter();
+    this.showPanel = new EventEmitter();
   }
 
   ngOnInit() {
@@ -65,8 +67,9 @@ export class InterHotelQueryComponent implements OnInit, OnDestroy {
   }
   private onShowPanel() {
     this.isShowPanel = this.tabs.some(it => it.active);
+    this.showPanel.emit(this.tab);
   }
-  onTabClick(tab: ITab) {
+  onTabClick(tab: IInterHotelQueryTab) {
     const active = tab.active;
     this.tabs = this.tabs.map(it => {
       it.active = false;
@@ -81,7 +84,7 @@ export class InterHotelQueryComponent implements OnInit, OnDestroy {
     // this.tab.active = !this.tab.active;
     this.onShowPanel();
   }
-  checkHasItemSelected(tab: ITab) {
+  checkHasItemSelected(tab: IInterHotelQueryTab) {
     if (tab) {
       if (tab.label == "starsAndPrice") {
         return !!(

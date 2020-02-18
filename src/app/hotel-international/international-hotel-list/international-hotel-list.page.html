@@ -30,16 +30,16 @@
         <div class="customer-count" (click)='onModifyAdultCount()'>
           入住人数 <ion-text class="ion-margin-start" color='secondary'>
             {{searchCondition?.adultCount}}成人{{searchCondition?.children?.length}}儿童
-            <ion-note>{{hotels?.length}}</ion-note>
           </ion-text>
         </div>
-        <app-inter-hotel-query  class="{{classMode}}" (queryFilter)='onQueryFilter()'></app-inter-hotel-query>
       </div>
     </ion-buttons>
   </ion-toolbar>
+  <app-inter-hotel-query (showPanel)='onShowPanel($event)' class="{{classMode}}" (queryFilter)='onQueryFilter()'>
+  </app-inter-hotel-query>
 </ion-header>
-<ion-content [scrollY]='!queryComp?.tab?.active'>
-  <app-refresher slot='fixed' (ionRefresh)='doRefresh()'>
+<ion-content [scrollY]='!(filterTab&&filterTab.active)'>
+  <app-refresher slot='fixed' (ionRefresh)='doRefresh()' [disabled]='filterTab&&filterTab.isActive'>
     <ion-refresher-content>正在加载...</ion-refresher-content>
   </app-refresher>
   <ng-container *ngIf='isLoading else showlist'>
@@ -77,7 +77,14 @@
     </ng-container>
   </ng-template>
   <ion-fab>
-    <app-pin-fab horizontal="end" vertical="bottom"></app-pin-fab>
+    <app-pin-fab horizontal="end" vertical="bottom" >
+      <div *ngIf='hotels?.length&&totalHotels'>
+        <ion-text color='light'>
+          <div style="border-bottom: 1px solid white;"> {{hotels.length}}</div>
+          <div> {{totalHotels}}</div>
+        </ion-text>
+      </div>
+    </app-pin-fab>
   </ion-fab>
   <ion-infinite-scroll (ionInfinite)='loadMore()' slot="fixed">
     <ion-infinite-scroll-content>正在加载...</ion-infinite-scroll-content>
@@ -85,9 +92,10 @@
 </ion-content>
 <div class='backdrop' [class.show]='isShowBackDrop'></div>
 <app-inter-recommend-rank class='query-condition'
-  [@queryPanelShowHide]='!!queryComp?.tab?.active&&queryComp?.tab?.label=="rank"' (rank)='onRank($event)'
+  [@queryPanelShowHide]='filterTab&&filterTab.active&&filterTab.label=="rank"' (rank)='onRank($event)'
   (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'>
 </app-inter-recommend-rank>
 <app-inter-hotel-starprice class='query-condition' (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
-  [@queryPanelShowHide]='!!queryComp?.tab?.active&&queryComp?.tab?.label=="starsAndPrice"'
-  (starPriceChange)='onStarPriceChange()'></app-inter-hotel-starprice>
+  [@queryPanelShowHide]='filterTab&&filterTab.active&&filterTab.label=="starsAndPrice"'
+  (starPriceChange)='onStarPriceChange()'>
+</app-inter-hotel-starprice>

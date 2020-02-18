@@ -17,7 +17,7 @@ ion-header {
     }
     .customer-count {
       position: absolute;
-      bottom: 2.3em;
+      bottom: 2em;
       left: 0.3em;
     }
     .date {
@@ -33,7 +33,7 @@ ion-header {
       min-width: 5em;
     }
     .name-search {
-      font-size: 0.7rem;
+      font-size: 0.9rem;
       padding-top: 0.2em;
       flex: 1;
       .name {
@@ -64,9 +64,10 @@ ion-header {
   top: 7.2em;
   left: 0;
   right: 0;
-  z-index: 1000;
   margin-top: -0.25em;
   background-color: white;
+  opacity: 0;
+  z-index: -1000;
 }
 .backdrop {
   position: fixed;
@@ -74,12 +75,15 @@ ion-header {
   left: 0;
   bottom: 0;
   z-index: -100;
+  opacity: 0;
   width: 100vw;
   background-color: rgba(var(--ion-color-dark-rgb), 0.5);
   overflow: hidden;
   height: 100%;
+  top: 6em;
   &.show {
     z-index: 1;
+    opacity: 1;
   }
 }
 ion-infinite-scroll {
@@ -93,21 +97,12 @@ ion-infinite-scroll {
 app-inter-hotel-query {
   z-index: 100;
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
+  left: 1em;
+  right: 1em;
+  bottom: 0.5em;
   touch-action: none;
-  &.ios {
-    left: -2em;
-  }
-  &.md {
-    left: -4em;
-  }
 }
-.backdrop.ion-page.show {
-  z-index: 99;
-  background-color: rgba(0, 0, 0, 0.5);
-}
+
 .empty-padding {
   padding-top: 3em;
 }

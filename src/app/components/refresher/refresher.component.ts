@@ -33,9 +33,7 @@ const enum RefresherState {
 }
 @Component({
   selector: "app-refresher",
-  templateUrl: "./refresher.component.html",
-  styleUrls: ["./refresher.component.scss"],
-  encapsulation: ViewEncapsulation.ShadowDom
+  templateUrl: "./refresher.component.html"
 })
 export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
   private appliedStyles = false;
@@ -46,6 +44,7 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
   private _disabled;
   private isMoveBeginRefresh = false;
   private subscriptions: Subscription[] = [];
+  @HostBinding("style.width") width = "100%";
   clazz: {
     "refresher-active": boolean; // this.state !== RefresherState.Inactive,
     "refresher-pulling": boolean; // this.state === RefresherState.Pulling,
@@ -254,7 +253,7 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private onMove(detail: TouchEvent) {
-    if (!this.scrollEl) {
+    if (!this.scrollEl||this._disabled) {
       return false;
     }
 
@@ -409,14 +408,7 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
     // reset set the styles on the scroll element
     // set that the refresh is actively cancelling/completing
     this.state = state;
-    this.clazz = {
-      "refresher-active": this.state !== RefresherState.Inactive,
-      "refresher-pulling": this.state === RefresherState.Pulling,
-      "refresher-ready": this.state === RefresherState.Ready,
-      "refresher-refreshing": this.state === RefresherState.Refreshing,
-      "refresher-cancelling": this.state === RefresherState.Cancelling,
-      "refresher-completing": this.state === RefresherState.Completing
-    };
+
     this.setCss(0, this.closeDuration, true, delay);
   }
 
@@ -435,6 +427,14 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
       style.transitionDelay = delay;
       style.overflow = overflowVisible ? "hidden" : "";
     }
+    this.clazz = {
+      "refresher-active": this.state !== RefresherState.Inactive,
+      "refresher-pulling": this.state === RefresherState.Pulling,
+      "refresher-ready": this.state === RefresherState.Ready,
+      "refresher-refreshing": this.state === RefresherState.Refreshing,
+      "refresher-cancelling": this.state === RefresherState.Cancelling,
+      "refresher-completing": this.state === RefresherState.Completing
+    };
   }
 }
 

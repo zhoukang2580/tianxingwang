@@ -12,10 +12,10 @@
 </ion-header>
 
 <ion-content>
-  <app-refresher slot='fixed' (ionRefresh)='doRefresh()'>
+  <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'>
     <ion-refresher-content>正在加载...</ion-refresher-content>
-  </app-refresher>
-  <ng-container *ngIf='isLoading else fakeList'>
+  </ion-refresher>
+  <ng-container *ngIf='!isLoading else fakeList'>
     <ion-list *ngIf='searchResult?.length else nodata'>
       <ion-item *ngFor='let t of searchResult' @flyInOut (click)='onSelect(t)'>
         <ion-label class="ion-text-wrap">

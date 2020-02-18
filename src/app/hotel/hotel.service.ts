@@ -74,7 +74,9 @@ export class HotelService {
   private conditionModel: HotelConditionModel;
   // private hotelPolicies: { [hotelId: string]: HotelPassengerModel[] };
   private hotelQueryModel: HotelQueryEntity;
-  private testData: { [pageIndex: number]: any[] };
+  private testData: {
+    [pageIndex: number]: { HotelDayPrices: any[]; DataCount?: number };
+  };
   curViewHotel: HotelDayPriceEntity;
   showImages: any[];
   showRoomDetailInfo: {
@@ -522,7 +524,7 @@ export class HotelService {
     if (query.searchGeoId) {
       req["searchGeoId"] = query.searchGeoId;
     }
-    if (!environment.production && false) {
+    if (!environment.production&&false) {
       if (!this.testData) {
         this.storage.get("test_big_hote_list").then(res => {
           this.testData = res;
@@ -535,7 +537,12 @@ export class HotelService {
         );
         const test = this.testData[query.PageIndex];
         if (test) {
-          return of({ Data: { HotelDayPrices: test } }).pipe(delay(0));
+          return of({
+            Data: {
+              HotelDayPrices: test.HotelDayPrices,
+              DataCount: test.DataCount
+            }
+          }).pipe(delay(0));
         }
       }
     }
@@ -570,7 +577,10 @@ export class HotelService {
             return it;
           });
           if (this.testData) {
-            this.testData[query.PageIndex] = result.Data.HotelDayPrices;
+            this.testData[query.PageIndex] = {
+              HotelDayPrices: result.Data.HotelDayPrices,
+              DataCount: result.Data.DataCount
+            };
             if (!environment.production) {
               this.storage.set("test_big_hote_list", this.testData);
             }

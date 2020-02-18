@@ -29,13 +29,6 @@ ion-content {
   ion-fab {
     bottom: 3em;
   }
-  position: relative;
-  .pos.md {
-    margin-top: -1em;
-  }
-  .pos.ios {
-    padding-top: 0.5em;
-  }
 }
 
 ion-toolbar.ios {
@@ -60,14 +53,8 @@ ul {
     }
     .right-side {
       width: 100%;
-      .address-price {
-        margin: 0;
-        padding: 0;
-        padding-right: 1em;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
+      .name {
+        font-weight: bold;
       }
       .grade-stars {
         margin: 0;
@@ -83,7 +70,7 @@ ul {
   position: fixed;
   left: 0;
   right: 0;
-  top: 6.4em;
+  top: 5.45em;
   background-color: white;
 }
 
@@ -93,11 +80,13 @@ ul {
   left: 0;
   bottom: 0;
   z-index: -100;
+  opacity: 0;
   width: 100vw;
   background-color: rgba(var(--ion-color-dark-rgb), 0.5);
   overflow: hidden;
   height: 100%;
   &.show {
+    opacity: 1;
     z-index: 1;
   }
 }

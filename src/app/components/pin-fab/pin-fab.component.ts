@@ -10,7 +10,8 @@ import {
   Optional,
   ViewContainerRef,
   TemplateRef,
-  ViewChild
+  ViewChild,
+  ChangeDetectionStrategy
 } from "@angular/core";
 import {
   trigger,
@@ -53,7 +54,7 @@ import { tap, map, switchMap } from "rxjs/operators";
         )
       ])
     ])
-  ]
+  ],changeDetection:ChangeDetectionStrategy.OnPush
 })
 export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
   // @HostBinding("@showfab") showfab;
@@ -61,6 +62,12 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() name = "arrow-dropup";
   @Input() vertical = "bottom";
   @Input() horizontal = "end";
+  @Input() set hide(value: boolean) {
+    console.log("fab hide", value);
+    if (value) {
+      this.showFab(false);
+    }
+  }
   @ViewChild(IonFabButton, { static: true }) private fabBtn: IonFabButton;
   private subscriptions: Subscription[] = [];
   private content: IonContent;
@@ -142,6 +149,7 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
         fromEvent(this.fab["el"], "click").subscribe(_ => {
           if (this.content) {
             this.content.scrollToTop();
+            this.checkIsScrolling();
           }
         })
       );
@@ -161,6 +169,7 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
         this.render.setAttribute(this.fab["el"], "slot", "fixed");
       });
     }
+    this.showFab(false);
     this.content = this.el.nativeElement.closest("ion-content") as any;
     if (!this.content) {
       console.error("请将组件放于<ion-content>内部的<ion-fab>xxx</ion-fab>");
@@ -168,6 +177,27 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     this.scrollEl = await this.content.getScrollElement();
     this.checkStatus();
+  }
+  private showFab(show = false) {
+    if (this.fabBtn) {
+      if (show) {
+        if (this.fabBtn["el"].classList.contains("hide")) {
+          this.domCtrl.write(() => {
+            this.render.removeClass(this.el.nativeElement, "hide");
+            this.render.removeClass(this.fabBtn["el"], "hide");
+            // this.draw(true);
+          });
+        }
+      } else {
+        if (!this.fabBtn["el"].classList.contains("hide")) {
+          this.domCtrl.write(() => {
+            // this.draw(false);
+            this.render.addClass(this.fabBtn["el"], "hide");
+            this.render.addClass(this.el.nativeElement, "hide");
+          });
+        }
+      }
+    }
   }
   private checkIsScrolling() {
     if (this.timer) {
@@ -181,26 +211,10 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
       this.timer.unsubscribe();
       this.domCtrl.write(() => {
         const top = this.scrollEl && this.scrollEl.scrollTop;
-        if (top > 20) {
-          if (this.fabBtn) {
-            if (this.fabBtn["el"].classList.contains("hide")) {
-              this.domCtrl.write(() => {
-                this.render.removeClass(this.el.nativeElement, "hide");
-                this.render.removeClass(this.fabBtn["el"], "hide");
-                // this.draw(true);
-              });
-            }
-          }
+        if (top > 10) {
+          this.showFab(true);
         } else {
-          if (this.fabBtn) {
-            if (!this.fabBtn["el"].classList.contains("hide")) {
-              this.domCtrl.write(() => {
-                // this.draw(false);
-                this.render.addClass(this.fabBtn["el"], "hide");
-                this.render.addClass(this.el.nativeElement, "hide");
-              });
-            }
-          }
+          this.showFab(false);
         }
       });
     });

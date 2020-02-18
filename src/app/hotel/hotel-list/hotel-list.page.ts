@@ -1,3 +1,4 @@
+import { PinFabComponent } from "./../../components/pin-fab/pin-fab.component";
 import { RecommendRankComponent } from "./../components/recommend-rank/recommend-rank.component";
 import { HotelFilterComponent } from "./../components/hotel-filter/hotel-filter.component";
 import { HotelStarPriceComponent } from "./../components/hotel-starprice/hotel-starprice.component";
@@ -63,9 +64,16 @@ import { ISearchTextValue } from "src/app/hotel-international/international-hote
   styleUrls: ["./hotel-list.page.scss"],
   animations: [
     trigger("queryPanelShowHide", [
-      state("true", style({ transform: "translate3d(0,0,0)", opacity: 1 })),
-      state("false", style({ transform: "translate3d(0,200%,0)", opacity: 0 })),
+      state(
+        "true",
+        style({ transform: "translate3d(0,0,0)", opacity: 1, zIndex: 100 })
+      ),
+      state(
+        "false",
+        style({ transform: "translate3d(0,200%,0)", opacity: 0, zIndex: -100 })
+      ),
       transition("false=>true", [
+        style({ zIndex: 1 }),
         animate("200ms", style({ transform: "translate3d(0,0,0)", opacity: 1 }))
       ]),
       transition(
@@ -87,13 +95,14 @@ export class HotelListPage
   private oldSearchText: ISearchTextValue;
   private oldDestinationCode: string;
   classMode: "ios" | "md";
-  @ViewChild(IonRefresher) refresher: IonRefresher;
+  @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChild("querytoolbar") querytoolbar: IonToolbar;
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(HotelQueryComponent) queryComp: HotelQueryComponent;
   @ViewChildren(IonSearchbar) searchbarEls: QueryList<IonSearchbar>;
   @ViewChildren(IonItem) hotelItemEl: QueryList<any>;
+  @ViewChild(PinFabComponent) pinFabComp: PinFabComponent;
   isLeavePage = false;
   isLoadingHotels = false;
   searchHotelModel: SearchHotelModel;
@@ -110,6 +119,7 @@ export class HotelListPage
   };
   filterTab: IHotelQueryCompTab;
   isShowBackdrop = false;
+  totalHotels = 0;
   constructor(
     private hotelService: HotelService,
     private router: Router,
@@ -194,13 +204,18 @@ export class HotelListPage
     this.hotelQueryModel.PageIndex = 0;
     this.hotelQueryModel.PageSize = 20;
     this.hotelDayPrices = [];
+    this.totalHotels = 0;
     this.scrollToTop();
     this.hotelService.setHotelQuerySource(this.hotelQueryModel);
     this.loadMore();
   }
   private scrollToTop() {
     if (this.content) {
-      this.content.scrollToTop(100);
+      this.content.scrollToTop(60).then(() => {
+        if (this.pinFabComp) {
+          this.pinFabComp.hide = true;
+        }
+      });
     }
   }
   itemHeightFn(item: any, index: number) {
@@ -244,6 +259,9 @@ export class HotelListPage
             }
           }
           if (result && result.Data && result.Data.HotelDayPrices) {
+            if (this.hotelQueryModel && this.hotelQueryModel.PageIndex == 0) {
+              this.totalHotels = result.Data.DataCount; // 总数
+            }
             const arr = result.Data.HotelDayPrices;
             if (this.scroller) {
               this.scroller.disabled =
@@ -377,7 +395,18 @@ export class HotelListPage
     }
   }
   onActiveFilter(tab: IHotelQueryCompTab) {
-    this.filterTab = tab;
+    if (this.hotelDayPrices && this.hotelDayPrices.length > 2 * 20) {
+      this.hotelDayPrices = this.hotelDayPrices.slice(0, 20);
+      this.hotelQueryModel.PageIndex = 1;
+      if (this.scroller) {
+        this.scroller.disabled = false;
+      }
+    }
+    if (this.content) {
+      this.content.scrollToTop(100).then(() => {
+        this.filterTab = tab;
+      });
+    }
   }
   onStarPriceChange() {
     const query = { ...this.hotelService.getHotelQueryModel() };
