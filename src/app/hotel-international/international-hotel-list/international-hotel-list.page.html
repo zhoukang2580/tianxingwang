@@ -39,7 +39,7 @@
   </app-inter-hotel-query>
 </ion-header>
 <ion-content [scrollY]='!(filterTab&&filterTab.active)'>
-  <app-refresher slot='fixed' (ionRefresh)='doRefresh()' [disabled]='filterTab&&filterTab.isActive'>
+  <app-refresher slot='fixed' (ionRefresh)='doRefresh()' [disabled]='filterTab&&filterTab.active'>
     <ion-refresher-content>正在加载...</ion-refresher-content>
   </app-refresher>
   <ng-container *ngIf='isLoading else showlist'>
