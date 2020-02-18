@@ -42,7 +42,7 @@ ion-header {
         text-overflow: ellipsis;
       }
       .search-box {
-        border: 1px solid rgba(var(--ion-color-dark-rgb), 0.5);
+        border: 1px solid rgba(var(--ion-color-dark-rgb), 0.35);
         flex: 1;
         .hint {
           max-width: 18em;
@@ -61,19 +61,12 @@ ion-header {
 }
 .query-condition {
   position: fixed;
-  top: 7.5em;
+  top: 7.2em;
   left: 0;
   right: 0;
   z-index: 1000;
   margin-top: -0.25em;
   background-color: white;
-  transition: all 200ms ease-in-out;
-  opacity: 0;
-  transform: translate3d(0, 200%, 0);
-  &.show {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
 }
 .backdrop {
   position: fixed;

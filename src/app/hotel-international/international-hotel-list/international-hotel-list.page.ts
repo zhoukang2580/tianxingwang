@@ -51,46 +51,20 @@ import { IRankItem } from "src/app/hotel/models/HotelQueryEntity";
   templateUrl: "./international-hotel-list.page.html",
   styleUrls: ["./international-hotel-list.page.scss"],
   animations: [
-    trigger("hide", [
-      state(
-        "true",
-        style({ transform: "translate3d(0,-100%,0)", opacity: 1, height: "*" })
-      ),
-      state(
-        "false",
-        style({ transform: "translate3d(0,-100%,0)", opacity: 0, height: "0" })
-      ),
+    trigger("queryPanelShowHide", [
+      state("true", style({ transform: "translate3d(0,0,0)", opacity: 1 })),
+      state("false", style({ transform: "translate3d(0,200%,0)", opacity: 0 })),
       transition("false=>true", [
-        style({ transform: "translate3d(0,0,0)", opacity: 1 }),
-        animate(
-          "100ms",
-          style({ transform: "translate3d(0,0,0)", opacity: 1, height: "0" })
-        )
+        animate("200ms", style({ transform: "translate3d(0,0,0)", opacity: 1 }))
       ]),
       transition(
         "true=>false",
         animate(
           "100ms",
           style({
-            transform: "translate3d(0,-100%,0)",
-            opacity: 1,
-            height: "*"
+            transform: "translate3d(0,200%,0)",
+            opacity: 0
           })
-        )
-      )
-    ]),
-    trigger("flyInOut", [
-      state("true", style({ transform: "translate3d(0,0,0)", opacity: 1 })),
-      state("false", style({ transform: "translate3d(100%,0,0)", opacity: 0 })),
-      transition("false=>true", [
-        style({ transform: "translate3d(-100%,0,0)", opacity: 1 }),
-        animate("100ms", style({ transform: "translate3d(0,0,0)", opacity: 1 }))
-      ]),
-      transition(
-        "true=>false",
-        animate(
-          "100ms",
-          style({ transform: "translate3d(100%,0,0)", opacity: 1 })
         )
       )
     ])
@@ -109,6 +83,7 @@ export class InternationalHotelListPage
   private isDoRefresh = false;
   private oldSearchText: ISearchTextValue;
   private oldDestinationCode: string;
+  isShowBackDrop = false;
   isLoading = false;
   hotels: HotelEntity[];
   pageIndex = 0;
@@ -154,6 +129,9 @@ export class InternationalHotelListPage
       }
     }
   }
+  onQueryPanelShowHideEnd() {
+    this.isShowBackDrop = !this.isShowBackDrop;
+  }
   hideQueryPannel() {
     if (this.queryComp) {
       // this.queryComp.tab.label = "close";
@@ -161,6 +139,7 @@ export class InternationalHotelListPage
         this.queryComp.tab.active = false;
       }
     }
+    this.isShowBackDrop = false;
   }
   onStarPriceChange() {
     const query = { ...this.hotelService.getHotelQueryModel() };

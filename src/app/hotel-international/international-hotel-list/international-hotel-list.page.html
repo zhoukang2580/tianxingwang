@@ -22,7 +22,8 @@
             <ion-icon name='search' style="font-size: 1rem;"></ion-icon>
             <div class="hint" [class.center]='!searchCondition?.searchText?.Text'>
               {{searchCondition?.searchText?.Text||"关键字/酒店名"}}</div>
-            <ion-icon name='close' style="font-size: 1rem;" [style.visibility]='searchCondition?.searchText?.Text?"visible":"hidden"' (click)='onClearText($event)'>
+            <ion-icon name='close' style="font-size: 1rem;"
+              [style.visibility]='searchCondition?.searchText?.Text?"visible":"hidden"' (click)='onClearText($event)'>
             </ion-icon>
           </ion-buttons>
         </div>
@@ -82,10 +83,11 @@
     <ion-infinite-scroll-content>正在加载...</ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>
-<div class='backdrop' [class.show]='queryComp?.tab?.active'></div>
-<app-inter-recommend-rank class='query-condition' [class.show]='!!queryComp?.tab?.active&&queryComp?.tab?.label=="rank"'
-  (rank)='onRank($event)'>
+<div class='backdrop' [class.show]='isShowBackDrop'></div>
+<app-inter-recommend-rank class='query-condition'
+  [@queryPanelShowHide]='!!queryComp?.tab?.active&&queryComp?.tab?.label=="rank"' (rank)='onRank($event)'
+  (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'>
 </app-inter-recommend-rank>
-<app-inter-hotel-starprice class='query-condition'
-  [class.show]='!!queryComp?.tab?.active&&queryComp?.tab?.label=="starsAndPrice"'
+<app-inter-hotel-starprice class='query-condition' (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
+  [@queryPanelShowHide]='!!queryComp?.tab?.active&&queryComp?.tab?.label=="starsAndPrice"'
   (starPriceChange)='onStarPriceChange()'></app-inter-hotel-starprice>
