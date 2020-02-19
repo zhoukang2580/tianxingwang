@@ -1,9 +1,9 @@
 <ion-header>
   <ion-buttons>
-    <app-back-button defaultHref='' (click)='back()'></app-back-button>
+    <app-back-button></app-back-button>
     <form (ngSubmit)='onSearchCities()'>
-      <ion-searchbar animated='true' #searchcity (ionFocus)='onSearchCityFocus()' name='searchbar'
-        [(ngModel)]='searchCityKeyWords' type='search' (ionChange)='onSearchCities()'>
+      <ion-searchbar animated='true' #searchcity name='searchbar' [(ngModel)]='searchCityKeyWords' type='search'
+        (ionChange)='onSearchCities()'>
       </ion-searchbar>
     </form>
   </ion-buttons>
@@ -15,49 +15,23 @@
         [class.active]='t.active'>{{t.name}}</div>
     </div>
   </ion-toolbar>
-  <ion-list>
-    <ion-item class='country' [class.search-country]='isSearchingCountry'>
-      <ion-label>国籍</ion-label>
-      <ion-label class='national-label' (click)='onToggleSearchingCountry()' *ngIf='!isSearchingCountry'>
-        {{selectedCountry?.Name}}</ion-label>
-      <ion-label *ngIf='isSearchingCountry' class='ion-no-padding ion-no-margin'>
-        <div>
-          <ion-searchbar #searchCountryEle animated (ionChange)='onSearchCountry()' [(ngModel)]='searchCountrykeywords'>
-          </ion-searchbar>
-        </div>
-      </ion-label>
-    </ion-item>
-    <ng-container *ngIf='isSearchingCountry'>
-      <ng-container *ngIf='isLoadingCountries else loadedC'>
-        正在加载...
-      </ng-container>
-      <ng-template #loadedC>
-        <ion-note class="ion-margin-start">请选择国籍：</ion-note>
-        <ion-item *ngFor='let c of searchCountries' @flyInOut (click)='onSelectCountry(c)'>
-          <ion-label>{{c.Name}}</ion-label>
-        </ion-item>
-      </ng-template>
-    </ng-container>
-  </ion-list>
-  <ng-container *ngIf='!isSearchingCountry'>
-    <ng-container *ngIf='isLoadingContinents else listtemp'>
-      正在加载...
-    </ng-container>
-    <ng-template #listtemp>
-      <ion-note class="ion-margin-start sticky">请选择城市：</ion-note>
-      <ion-list>
-        <ion-item *ngFor='let it of searchCities;let i=index;' @flyInOut (click)='onCitySelected(it)'>
-          <ion-label [class.active]='it.selected' class='ion-text-wrap'>
-            <h2>{{it.Name}}
-              <span *ngIf='it.CityName as n'>,{{n}}</span>
-              <span *ngIf='it.CountryName as n'>,{{n}}</span>
-            </h2>
-            <p *ngIf='it.EnglishName' class='ion-text-wrap'>{{it.EnglishName}}</p>
-          </ion-label>
-        </ion-item>
-      </ion-list>
-    </ng-template>
+  <ng-container *ngIf='isLoadingContinents else listtemp'>
+    正在加载...
   </ng-container>
+  <ng-template #listtemp>
+    <ion-note class="ion-margin-start sticky">请选择城市：</ion-note>
+    <ion-list>
+      <ion-item *ngFor='let it of searchCities;let i=index;' @flyInOut (click)='onCitySelected(it)'>
+        <ion-label [class.active]='it.selected' class='ion-text-wrap'>
+          <h2>{{it.Name}}
+            <span *ngIf='it.CityName as n'>,{{n}}</span>
+            <span *ngIf='it.CountryName as n'>,{{n}}</span>
+          </h2>
+          <p *ngIf='it.EnglishName' class='ion-text-wrap'>{{it.EnglishName}}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ng-template>
   <ion-infinite-scroll (ionInfinite)="loadMoreData()">
     <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="加载更多...">
     </ion-infinite-scroll-content>

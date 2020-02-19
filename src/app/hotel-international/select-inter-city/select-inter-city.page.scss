@@ -1,16 +1,4 @@
-.country {
-  &.search-country {
-    z-index: 99;
-    position: sticky;
-    top: 0;
-  }
-  ion-label {
-    flex: 1;
-    &:first-child {
-      flex: 0.2;
-    }
-  }
-}
+
 .continents {
   display: flex;
   align-items: center;

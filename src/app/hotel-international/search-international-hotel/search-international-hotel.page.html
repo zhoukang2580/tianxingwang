@@ -65,6 +65,15 @@
           </ion-label>
         </ion-item>
       </div>
+      <div class='destination' (click)='onSelectNationality()'>
+        <ion-item lines='none' detail>
+          <ion-label>国籍</ion-label>
+          <ion-label>
+            {{searchCondition?.country?.Name}}
+            <ion-text color='medium'>{{searchCondition?.country?.EnglishName}}</ion-text>
+          </ion-label>
+        </ion-item>
+      </div>
       <ion-item detail (click)='onAddAdultAndChildren()' style='margin:1em -1em'>
         <ion-label>
           入住人数

@@ -1,3 +1,4 @@
+import { BackButtonComponent } from './../../components/back-button/back-button.component';
 import { Subscription, of } from "rxjs";
 import { InternationalHotelService } from "./../international-hotel.service";
 import {
@@ -54,16 +55,14 @@ type ITab = {
   ]
 })
 export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
-  private countries: any[];
   private subscriptions: Subscription[] = [];
-  private searchCountrySubscription = Subscription.EMPTY;
   private searchCitySubscription = Subscription.EMPTY;
   private trafficlines: TrafficlineEntity[];
   private pageSize = 25;
   private isFirstInit = false;
-  searchCountries: any[];
   searchCities: any[];
   searchContinents: any[];
+  selectedCity: any;
   tabs: ITab[];
   tab: ITab;
   searchCityKeyWords = "";
@@ -75,25 +74,16 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("searchcity") searchcityEle: IonSearchbar;
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
-  selectedCountry: any;
-  selectedCity: any;
-  isSearchingCountry = false;
-  isLoadingCountries = false;
+  @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
   isLoadingContinents = false;
   constructor(
     private internationalHotelService: InternationalHotelService,
     private plt: Platform,
     private navCtrl: NavController
-  ) {}
-  async onToggleSearchingCountry() {
-    if (!this.countries || this.countries.length) {
-      await this.getCountries();
-    }
-    this.isSearchingCountry = !this.isSearchingCountry;
-  }
+  ) { }
+
   ngOnDestroy() {
     this.isFirstInit = true;
-    this.searchCountrySubscription.unsubscribe();
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
   onActiveTab(tab: ITab) {
@@ -116,16 +106,15 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
   }
   onCitySelected(city: any) {
     console.log("选择的城市", city);
-    // this.totalCities = this.totalCities.map(it => {
-    //   it.selected = it == city;
-    //   return it;
-    // });
-    if (this.selectedCountry) {
-      this.selectedCity = city;
-      setTimeout(() => {
-        this.back();
-      }, 200);
+    if (this.selectedCity) {
+      this.internationalHotelService.setSearchConditionSource({
+        ...this.internationalHotelService.getSearchCondition(),
+        destinationCity: this.selectedCity,
+      });
     }
+    setTimeout(() => {
+      this.back();
+    }, 200);
   }
   private enableScroller(enabled = true) {
     if (this.scroller) {
@@ -133,35 +122,11 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   back() {
-    if (this.selectedCountry && this.selectedCity) {
-      this.internationalHotelService.setSearchConditionSource({
-        ...this.internationalHotelService.getSearchCondition(),
-        destinationCity: this.selectedCity,
-        country: this.selectedCountry
-      });
-    }
-    this.navCtrl.back();
+    this.backBtn.backToPrePage();
   }
-  private filterCountries(countries: any[], name: string) {
-    const keys = ["Code", "Name", "PinYin", "EnglishName"];
-    name = (name || "").trim().toLowerCase();
-    let tempCountries = countries;
-    if (name) {
-      tempCountries = countries.filter(c => {
-        return keys.some(key => {
-          const value: string = (c[key] || "").trim().toLowerCase();
-          return value == name || value.includes(name) || name.includes(value);
-        });
-      });
-    }
-    return tempCountries.slice(
-      this.searchCountries.length,
-      this.searchCountries.length + this.pageSize
-    );
-  }
+
   private filterCities(
     cities: TrafficlineEntity[],
-    countries: CountryEntity[],
     name: string = ""
   ) {
     cities = cities || [];
@@ -192,70 +157,35 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
       this.searchCities.length,
       this.searchCities.length + this.pageSize
     );
-    if (countries) {
-      result = result.map(it => {
-        const c = countries.find(con => con.Code == it.CountryCode);
-        it.CountryName = c && `${c.Name}(${c.EnglishName})`;
-        return it;
-      });
-    }
     return result;
-  }
-  private initTotalCities() {
-    // if (!this.totalCities || !this.totalCities.length) {
-    //   this.totalCities = this.totalCities || [];
-    // }
   }
   async loadMoreData() {
     let arr: any[];
-    if (!this.countries) {
-      await this.getCountries();
-    }
-    if (this.isSearchingCountry) {
-      arr = this.filterCountries(this.countries, this.searchCountrykeywords);
-      if (this.scroller) {
-        this.scroller.complete();
-      }
-      if (arr && arr.length) {
-        this.searchCountries = this.searchCountries.concat(arr);
-      }
+    const tab = this.tabs && this.tabs.find(it => it.active);
+    if (tab) {
+      arr = this.filterCities(
+        tab.trafficlines,
+        this.searchCityKeyWords
+      );
     } else {
-      const tab = this.tabs && this.tabs.find(it => it.active);
-      if (tab) {
-        arr = this.filterCities(
-          tab.trafficlines,
-          this.countries,
-          this.searchCityKeyWords
-        );
-      } else {
-        this.initTotalCities();
-        arr = this.filterCities(
-          this.trafficlines,
-          this.countries,
-          this.searchCityKeyWords
-        );
-      }
-      if (this.scroller) {
-        this.scroller.complete();
-      }
-      if (arr && arr.length) {
-        this.searchCities = this.searchCities.concat(arr);
-      }
+      arr = this.filterCities(
+        this.trafficlines,
+        this.searchCityKeyWords
+      );
+    }
+    if (this.scroller) {
+      this.scroller.complete();
+    }
+    if (arr && arr.length) {
+      this.searchCities = this.searchCities.concat(arr);
     }
     this.enableScroller(arr.length > this.pageSize);
   }
   ngOnInit() {
     this.searchCities = [];
-    this.searchCountries = [];
-    this.selectedCountry = {
-      Name: "中国",
-      Code: "CN"
-    };
     setTimeout(
       async () => {
-        this.getCountries();
         await this.getTrafficlines();
-        this.initTotalCities();
         this.isFirstInit = true;
         this.loadMoreData();
       },
@@ -322,28 +252,8 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
       this.subscriptions.push(sub1);
     }
   }
-  onSearchCityFocus() {
-    this.isSearchingCountry = false;
-  }
-  onSelectCountry(country: any) {
-    this.selectedCountry = country;
-    this.isSearchingCountry = false;
-    this.onGoToTop();
-  }
-  onSearchCountry() {
-    this.searchCountrySubscription.unsubscribe();
-    this.searchCountrySubscription = of(this.searchCountrykeywords)
-      .pipe(
-        tap(v => console.log(v)),
-        debounceTime(300),
-        take(1)
-      )
-      .subscribe((name: string) => {
-        this.searchCountries = [];
-        this.loadMoreData();
-        this.onGoToTop();
-      });
-  }
+
+
   private initTabs() {
     this.tabs = [];
     if (this.trafficlines) {
@@ -372,11 +282,5 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
     this.isLoadingContinents = false;
     this.initTabs();
   }
-  private async getCountries() {
-    this.isLoadingCountries = true;
-    this.countries = await this.internationalHotelService
-      .getCountries()
-      .catch(_ => []);
-    this.isLoadingCountries = false;
-  }
+
 }

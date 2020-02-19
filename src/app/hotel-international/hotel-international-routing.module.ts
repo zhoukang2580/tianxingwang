@@ -57,7 +57,11 @@ export const routes: Routes = [
   {
     path: 'room-count-children',
     loadChildren: () => import('./room-count-children/room-count-children.module').then( m => m.RoomCountChildrenPageModule)
+  },  {
+    path: 'select-nationality',
+    loadChildren: () => import('./select-nationality/select-nationality.module').then( m => m.SelectNationalityPageModule)
   }
+
 ];
 @NgModule({
   declarations: [],

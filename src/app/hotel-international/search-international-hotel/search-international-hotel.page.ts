@@ -62,9 +62,12 @@ export class SearchInternationalHotelPage implements OnInit, OnDestroy {
     private popoverCtrl: PopoverController,
     private route: ActivatedRoute,
     private calendarService: CalendarService
-  ) {}
+  ) { }
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+  onSelectNationality() {
+    this.router.navigate([AppHelper.getRoutePath('select-nationality')])
   }
   async onShowStandardDesc() {
     const isSelf = await this.staffService.isSelfBookType();
