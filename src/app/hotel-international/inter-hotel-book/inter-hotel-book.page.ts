@@ -1,3 +1,4 @@
+import { BookCredentialCompComponent } from "./../../tmc/components/book-credential-comp/book-credential-comp.component";
 import { flyInOut } from "./../../animations/flyInOut";
 import { environment } from "./../../../environments/environment";
 import {
@@ -102,6 +103,9 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     BookCostcenterCompComponent
   >;
   @ViewChildren(BookTmcOutnumberComponent) outnumberEles: QueryList<
+    BookTmcOutnumberComponent
+  >;
+  @ViewChildren(BookCredentialCompComponent) credentialEles: QueryList<
     BookTmcOutnumberComponent
   >;
   error: any;
@@ -650,6 +654,12 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           .join("/");
       }
       if (!combindInfo.vmCredential.Type) {
+        const c = this.credentialEles.find(
+          it => it.nativeElement.getAttribute("id") == combindInfo.id
+        );
+        if (c) {
+          this.scrollEleToView(c.nativeElement);
+        }
         showErrorMsg(LanguageHelper.getCredentialTypeTip(), combindInfo);
         return false;
       }

@@ -36,7 +36,7 @@ ion-content {
     }
   }
 }
-@import '../app/components/refresher/refresher.scss';
+@import "../app/components/refresher/refresher.scss";
 .inner-html {
   .line {
     margin: 0 0.2em;
@@ -231,8 +231,9 @@ a {
   color: var(--ion-color-secondary);
 }
 ion-action-sheet.language {
-  --color: var(--ion-color-secondary);
+  --button-color: var(--ion-color-secondary);
 }
+
 .domestic-hotel-filter-condition {
   top: 6.5em;
 }

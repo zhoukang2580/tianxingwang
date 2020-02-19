@@ -157,7 +157,7 @@
             <ion-icon name='add-outline'></ion-icon>
             添加入住人
           </ion-button>
-          <app-book-credential-comp [credential]='combindInfo?.vmCredential'
+          <app-book-credential-comp [credential]='combindInfo?.vmCredential' [attr.id]='combindInfo.id'
             [canMaintainCredentials]='combindInfo.isCanEditCrendentails'
             (savecredential)='onSavecredential($event,combindInfo)'
             (managementCredentials)='onManagementCredentials(combindInfo)' [credentials]='combindInfo?.credentials'
