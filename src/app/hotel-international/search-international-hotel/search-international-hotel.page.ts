@@ -91,7 +91,6 @@ export class SearchInternationalHotelPage implements OnInit, OnDestroy {
     this.router.navigate([AppHelper.getRoutePath("room-count-children")]);
   }
   ngOnInit() {
-    this.onAddAdultAndChildren();
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(async _ => {
         this.isSelf = await this.staffService.isSelfBookType();
