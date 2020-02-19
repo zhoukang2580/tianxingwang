@@ -284,9 +284,9 @@ export class InternationalHotelService {
     const req = new RequestEntity();
     req.Method = `TmcApiInternationalHotelUrl-Home-Detail`;
     const cond = this.getSearchCondition();
-    if (!environment.production) {
-      return of((MOCK_HOTEL_DETIAL_INFO as any) as HotelEntity);
-    }
+    // if (!environment.production) {
+    //   return of((MOCK_HOTEL_DETIAL_INFO as any) as HotelEntity);
+    // }
     req.IsShowLoading = true;
     req.Data = {
       HotelId: id,

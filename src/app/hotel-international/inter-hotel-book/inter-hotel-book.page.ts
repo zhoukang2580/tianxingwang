@@ -102,6 +102,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChildren(BookCostcenterCompComponent) illegalReasonComps: QueryList<
     BookCostcenterCompComponent
   >;
+  @ViewChildren("approvalEl") approvalEls: QueryList<{ el: HTMLElement }>;
   @ViewChildren(BookTmcOutnumberComponent) outnumberEles: QueryList<
     BookTmcOutnumberComponent
   >;
@@ -566,6 +567,14 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         !combindInfo.appovalStaff &&
         !combindInfo.isSkipApprove
       ) {
+        if (this.approvalEls) {
+          const el = this.approvalEls.find(
+            it => it.el && it.el.getAttribute("id") == combindInfo.id
+          );
+          if (el) {
+            this.scrollEleToView(el.el);
+          }
+        }
         showErrorMsg(LanguageHelper.Flight.getApproverTip(), combindInfo);
         return;
       }
@@ -641,6 +650,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       p.CardName = "";
       p.CardNumber = "";
       p.TicketNum = "";
+
       p.Credentials = new CredentialsEntity();
       p.Credentials = { ...combindInfo.vmCredential };
       if (combindInfo.checkInPersonInfos) {
@@ -835,30 +845,21 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
             Phone: combindInfo.bookInfo.bookInfo.hotelEntity.Phone
           }
         } as RoomEntity;
-        // p.RoomPlan.Room = {
-        //   Name:combindInfo.bookInfo.bookInfo.hotelRoom.Name,
-        //   RoomPlans:combindInfo.bookInfo.bookInfo.hotelRoom.RoomPlans.map(it=>{
-        //     const plan = new RoomPlanEntity();
-        //     plan.Room=new RoomEntity();
-        //     plan.Room.Id=combindInfo.bookInfo.bookInfo.hotelRoom.Id;
-        //     plan.Remark=p.RoomPlan.Remark;
-        //     return plan;
-        //   }),
-        //   Hotel: { Id: combindInfo.bookInfo.bookInfo.hotelEntity.Id }
-        // } as RoomEntity;
-        // p.RoomPlan.Room.Hotel = {
-        //   // ...combindInfo.bookInfo.bookInfo.hotelEntity,
-        //   Rooms: null,
-        //   Id:combindInfo.bookInfo.bookInfo.hotelEntity.Id,
-        //   HotelDayPrices: [],
-        //   HotelDetails: []
-        // } as HotelEntity;
       }
       if (combindInfo.bookInfo) {
         p.Policy = combindInfo.bookInfo.passenger.Policy;
+        if (
+          combindInfo.bookInfo.bookInfo &&
+          combindInfo.bookInfo.bookInfo.roomPlan &&
+          combindInfo.bookInfo.bookInfo.roomPlan.BeginDate
+        ) {
+          p.CheckinTime = `${combindInfo.bookInfo.bookInfo.roomPlan.BeginDate.substr(
+            0,
+            10
+          )}T14:00:00`;
+        }
       }
       p.OrderHotelType = OrderHotelType.International;
-
       bookDto.Passengers.push(p);
     }
     return true;
