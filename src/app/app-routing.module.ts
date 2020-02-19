@@ -20,6 +20,7 @@ import { TrainModule } from "./train/train.module";
 import { HotelModule } from "./hotel/hotel.module";
 import { CarModule } from "./car/car.module";
 import { HotelInternationalModule } from "./hotel-international/hotel-international.module";
+import { WorkflowModule } from "./workflow/workflow.module";
 
 const routes: Routes = [
   {
@@ -83,6 +84,13 @@ const routes: Routes = [
     path: "**",
     loadChildren: () =>
       import("./page404/page404.module").then(m => m.Page404PageModule)
+  },
+  {
+    path: "workflow-list",
+    loadChildren: () =>
+      import("./workflow/workflow-list/workflow-list.module").then(
+        m => m.WorkflowListPageModule
+      )
   }
 ];
 @NgModule({
@@ -104,6 +112,7 @@ const routes: Routes = [
     TrainModule,
     HotelModule,
     HotelInternationalModule,
+    WorkflowModule,
     RouterModule.forRoot(routes, {
       preloadingStrategy: PreloadAllModules,
       enableTracing: !true,

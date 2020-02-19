@@ -78,6 +78,9 @@ export class MyPage implements OnDestroy, OnInit {
       // console.log("can show tabs ", this.isShowMyOrderTabs);
     });
   }
+  goToWorkflow() {
+    this.router.navigate([AppHelper.getRoutePath("workflow-list")]);
+  }
   contactUs() {
     this.router.navigate([AppHelper.getRoutePath(`contact-us`)]);
   }

@@ -1,0 +1,84 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <app-back-button></app-back-button>
+    </ion-buttons>
+    <ion-title>{{title}}</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment (ionChange)="onSegmentChanged($event)" color="secondary" [value]='tab'>
+      <ion-segment-button value="task">
+        <ion-label>待我审批</ion-label>
+        <ion-icon name="camera"></ion-icon>
+      </ion-segment-button>
+      <ion-segment-button value="notify">
+        <ion-label>抄送我的</ion-label>
+        <ion-icon name="bookmark"></ion-icon>
+      </ion-segment-button>
+      <ion-segment-button value="history">
+        <ion-label>我审批的</ion-label>
+        <ion-icon name="bookmark"></ion-icon>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <app-refresher slot='fixed' (ionRefresh)='doRefresh()'>
+    <ion-refresher-content>正在刷新...</ion-refresher-content>
+  </app-refresher>
+  <ng-container *ngIf='isLoading else fackList'>
+    <ng-container [ngSwitch]='tab'>
+      <ng-container *ngSwitchCase='"task"'>
+        <ng-container *ngIf='tasks?.length else nodata'>
+          <ion-list>
+            <ion-item *ngFor='let t of tasks'>
+              <ion-label>
+                <h2>
+                  <ion-row>
+                    <ion-col size='9'>{{t.Name}}</ion-col>
+                    <ion-col size='3'>{{t.StatusName}}</ion-col>
+                  </ion-row>
+                </h2>
+                <h2 class="time ion-text-end">{{t.InsertDateTime?.replace("T"," ")}}</h2>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngSwitchCase='"history"'>
+        <ng-container *ngIf='histories?.length else nodata'>
+          <ion-list></ion-list>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngSwitchCase='"notify"'>
+        <ng-container *ngIf='notifies?.length else nodata'>
+          <ion-list></ion-list>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+  <ng-template #nodata>
+    <app-or-comp>暂无数据</app-or-comp>
+  </ng-template>
+  <ng-template #fackList>
+    <ion-list>
+      <ion-item *ngFor='let it of [1,2,3,4,5,6,7,8,9,10,11,12,13]'>
+        <ion-label>
+          <h3>
+            <ion-skeleton-text animated style="width: 70%;"></ion-skeleton-text>
+          </h3>
+          <h3>
+            <ion-skeleton-text style="width: 70%;"></ion-skeleton-text>
+          </h3>
+          <h3>
+            <ion-skeleton-text style="width: 70%;"></ion-skeleton-text>
+          </h3>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ng-template>
+  <ion-infinite-scroll (ionInfinite)='loadMore()'>
+    <ion-infinite-scroll-content>正在加载...</ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>
