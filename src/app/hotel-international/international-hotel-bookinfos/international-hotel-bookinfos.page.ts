@@ -195,7 +195,9 @@ export class InternationalHotelBookinfosPage implements OnInit {
   async nextStep() {
     const one = this.checkCredentialValidate();
     if (one) {
-      AppHelper.alert(`请检查${one.credential.Name}[${one.credential.Number}]证件类型`);
+      const name = one.credential && (one.credential.Name || (`${one.credential.LastName} ${one.credential.FirstName
+        } `))
+      AppHelper.alert(`请检查${name} [${one.credential.Number}]证件类型`);
       return;
     }
     await this.router.navigate([AppHelper.getRoutePath("international-hotel-book")]);
