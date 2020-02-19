@@ -20,7 +20,7 @@
       </ion-label>
     </ion-item>
   </ion-list>
-  <ion-card color='primary' *ngIf='isShowMyOrderTabs'>
+  <ion-card color='primary' mode='ios' *ngIf='isShowMyOrderTabs'>
     <ion-card-header>
       <strong>我的订单</strong>
     </ion-card-header>
@@ -31,7 +31,7 @@
             <ion-avatar size='small'>
               <img [src]="item.imageSrc" alt="">
             </ion-avatar>
-            <ion-label class='ion-text-center'>{{item.label}}</ion-label>
+            <ion-label class='ion-text-center ion-text-nowrap'>{{item.label}}</ion-label>
           </div>
         </ion-col>
       </ion-row>

@@ -40,9 +40,9 @@
         </ion-row>
         <ion-row *ngIf='order.OrderFlightTickets[0].OrderFlightTrips as trips;'>
           <ion-col size='3'>行程信息</ion-col>
-          <ion-col>
+          <ion-col size='9'>
             <div>
-              <div color='dark' class='ticket-trip' *ngFor='let orderFlightTrip of trips; let first=first;'>
+              <div class='ticket-trip' *ngFor='let orderFlightTrip of trips; let first=first;'>
                 <ng-container *ngIf='orderFlightTrip.Status == OrderFlightTripStatusType.Normal'>
                   <div>
                     <span>
@@ -51,7 +51,7 @@
                     <span *ngIf='getDateWeekName(orderFlightTrip.TakeoffTime?.substr(0,"yyyy-mm-dd".length)) as n'>
                       ({{n}})
                     </span>
-                    <span class="ion-margin-start ion-margin-end">
+                    <span style="margin: 0 0.5em;">
                       {{getHHmm(orderFlightTrip.TakeoffTime)}}
                     </span>
                     <span>
@@ -115,21 +115,21 @@
         <ion-row *ngIf='order?.OrderPassengers?.length'>
           <ion-col size='3'>旅客信息</ion-col>
           <ion-col>
-            <ion-text color='dark' *ngIf='getPassenger(orderFlightTicket) as p'>
+            <ion-text  *ngIf='getPassenger(orderFlightTicket) as p'>
               {{p.CheckName}} <span>{{p.CredentialsNumber}}</span>
             </ion-text>
           </ion-col>
         </ion-row>
         <ion-row *ngIf='orderFlightTicket.OrderFlightTrips as trips;'>
           <ion-col size='3'>行程信息</ion-col>
-          <ion-col style='display: block;'>
-            <ion-label color='dark' class='ticket-trip' *ngFor='let orderFlightTrip of trips; let first=first;'>
+          <ion-col size='9'>
+            <ion-label class='ticket-trip' *ngFor='let orderFlightTrip of trips; let first=first;'>
               <ng-container *ngIf='orderFlightTrip.Status == OrderFlightTripStatusType.Normal'>
                 <div>
                   <span>{{orderFlightTrip.TakeoffTime?.substr(0,"yyyy-mm-dd".length)}}</span>
                   <span
                     *ngIf='getDateWeekName(orderFlightTrip.TakeoffTime?.substr(0,"yyyy-mm-dd".length)) as n'>({{n}})</span>
-                  <span class="ion-margin-start ion-margin-end">{{getHHmm(orderFlightTrip.TakeoffTime)}}</span>
+                  <span style="margin: 0 0.5em;">{{getHHmm(orderFlightTrip.TakeoffTime)}}</span>
                   <span>{{orderFlightTrip.FlightNumber}}</span>
                 </div>
                 <div>

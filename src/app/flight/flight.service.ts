@@ -92,7 +92,9 @@ export class FlightService {
     this.passengerBookInfoSource = new BehaviorSubject(this.passengerBookInfos);
     this.filterPanelShowHideSource = new BehaviorSubject(false);
     this.filterCondSources = new BehaviorSubject(null);
-    this.worker = window["Worker"] ? new Worker("assets/worker.js") : null;
+    this.worker = window["Worker"]
+      ? new Worker("../../assets/worker.js", { type: "module" })
+      : null;
     identityService.getIdentitySource().subscribe(res => {
       this.disposal();
     });
@@ -326,7 +328,7 @@ export class FlightService {
       FlightPolicies
     };
   }
-  
+
   getPassengerBookInfos() {
     this.passengerBookInfos = this.passengerBookInfos || [];
     return this.passengerBookInfos;

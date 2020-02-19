@@ -47,11 +47,9 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     private configService: ConfigService,
     private fb: FormBuilder,
     private router: Router,
-    private ionConfig: Config,
     route: ActivatedRoute,
     private modalCtrl: ModalController
   ) {
-    this.ionConfig.set("swipeBackEnabled", false);
     this.isShowWechatLogin = AppHelper.isApp();
     route.queryParamMap.subscribe(_ => {
       setTimeout(() => {
