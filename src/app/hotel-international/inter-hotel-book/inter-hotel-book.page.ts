@@ -667,13 +667,17 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           .join("/");
       }
       if (!combindInfo.vmCredential.Type || !this.checkCredentialValidate(combindInfo)) {
+        const tip = !combindInfo.vmCredential.Type ? LanguageHelper.getCredentialTypeTip() : "请选择合适的证件";
+        showErrorMsg(tip, combindInfo);
+        if (!this.checkCredentialValidate(combindInfo)) {
+
+        }
         const c = this.credentialEles.find(
           it => it.nativeElement.getAttribute("id") == combindInfo.id
         );
         if (c) {
           this.scrollEleToView(c.nativeElement);
         }
-        showErrorMsg(LanguageHelper.getCredentialTypeTip(), combindInfo);
         return false;
       }
       p.Credentials.Type = combindInfo.vmCredential.Type;
@@ -1168,7 +1172,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       }
     }
   }
-  private  checkCredentialValidate(combineInfo: IPassengerHotelBookInfo) {
+  private checkCredentialValidate(combineInfo: IPassengerHotelBookInfo) {
     return combineInfo.credential && (combineInfo.credential.Type == CredentialsType.HmPass || combineInfo.credential.Type == CredentialsType.Passport);
   }
   async onBook(isSave: boolean) {

@@ -21,6 +21,7 @@ import { IInterHotelInfo } from "../international-hotel.service";
 import { RoomEntity } from 'src/app/hotel/models/RoomEntity';
 import { HotelEntity } from 'src/app/hotel/models/HotelEntity';
 import { RoomPlanEntity } from 'src/app/hotel/models/RoomPlanEntity';
+import { CredentialsType } from 'src/app/member/pipe/credential.pipe';
 
 @Component({
   selector: "app-international-hotel-bookinfos",
@@ -98,7 +99,7 @@ export class InternationalHotelBookinfosPage implements OnInit {
     isShow: boolean;
     bookInfo?: PassengerBookInfo<IInterHotelInfo>;
   }) {
-    if(evt.bookInfo){
+    if (evt.bookInfo) {
       this.curSelectedBookInfo = evt.bookInfo;
     }
     if (evt.isShow) {
@@ -192,6 +193,11 @@ export class InternationalHotelBookinfosPage implements OnInit {
     this.changeDateBookInfo = null;
   }
   async nextStep() {
+    const one = this.checkCredentialValidate();
+    if (one) {
+      AppHelper.alert(`请检查${one.credential.Name}[${one.credential.Number}]证件类型`);
+      return;
+    }
     await this.router.navigate([AppHelper.getRoutePath("international-hotel-book")]);
     await this.hotelService.dismissAllTopOverlays();
   }
@@ -257,6 +263,10 @@ export class InternationalHotelBookinfosPage implements OnInit {
   }
   canGoToNext() {
     return true;
+  }
+  private checkCredentialValidate() {
+    const infos = this.hotelService.getBookInfos();
+    return infos.find(it => !it.credential || !(it.credential.Type == CredentialsType.HmPass || it.credential.Type == CredentialsType.Passport));
   }
   async ngOnInit() {
     this.config = await this.configService.get().catch(_ => null);
