@@ -2,7 +2,8 @@
   <ion-toolbar>
     <ion-buttons>
       <app-back-button></app-back-button>
-      <ion-searchbar #searchCountryEle animated (ionChange)='onSearchCountry()' [(ngModel)]='keywords'>
+      <ion-searchbar class="searchbar" #searchCountryEle animated (ionChange)='onSearchCountry()'
+        [(ngModel)]='keywords'>
       </ion-searchbar>
     </ion-buttons>
   </ion-toolbar>

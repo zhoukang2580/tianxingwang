@@ -35,8 +35,8 @@ export class SelectNationalityPage implements OnInit, OnDestroy {
     } as CountryEntity;
     this.keywords = '';
     this.countries = [];
-    await this.loadCountries();
     this.searchCountries = [];
+    await this.loadCountries();
     this.loadMore();
   }
   ngOnInit() {
@@ -84,6 +84,7 @@ export class SelectNationalityPage implements OnInit, OnDestroy {
   }
   loadMore() {
     const arr = this.filterCountries(this.countries, this.keywords);
+    console.log(arr);
     if (this.scroller) {
       this.scroller.complete();
     }
