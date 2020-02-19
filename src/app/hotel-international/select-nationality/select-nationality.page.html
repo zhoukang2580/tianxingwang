@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons>
+      <app-back-button></app-back-button>
+      <ion-searchbar #searchCountryEle animated (ionChange)='onSearchCountry()' [(ngModel)]='keywords'>
+      </ion-searchbar>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <app-refresher (ionRefresh)="doRefresh()" slot='fixed'>
+    <ion-refresher-content></ion-refresher-content>
+  </app-refresher>
+  <ion-list>
+    <ng-container *ngIf='isLoadingCountries else loadedC'>
+      正在加载...
+    </ng-container>
+    <ng-template #loadedC>
+      <ion-item *ngFor='let c of searchCountries' @flyInOut (click)='onSelectCountry(c)'>
+        <ion-label class="ion-text-wrap">{{c.Name}}</ion-label>
+      </ion-item>
+    </ng-template>
+  </ion-list>
+</ion-content>
