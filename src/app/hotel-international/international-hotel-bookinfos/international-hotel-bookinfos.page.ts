@@ -195,7 +195,7 @@ export class InternationalHotelBookinfosPage implements OnInit {
   async nextStep() {
     const one = this.checkCredentialValidate();
     if (one) {
-      const name = one.credential && (one.credential.Name || (`${one.credential.LastName} ${one.credential.FirstName
+      const name = one.credential && (one.credential.Name || (`${one.credential.FirstName} ${one.credential.LastName
         } `))
       AppHelper.alert(`请检查${name} [${one.credential.Number}]证件类型`);
       return;
@@ -264,7 +264,7 @@ export class InternationalHotelBookinfosPage implements OnInit {
     this.router.navigate(["international-room-detail"]);
   }
   canGoToNext() {
-    return true;
+    return this.hotelService.getBookInfos().some(it => it.bookInfo && it.bookInfo.hotelEntity);
   }
   private checkCredentialValidate() {
     const infos = this.hotelService.getBookInfos();
