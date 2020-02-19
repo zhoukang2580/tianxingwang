@@ -97,7 +97,7 @@ export class SelectNationalityPage implements OnInit, OnDestroy {
     this.isLoadingCountries = true;
     this.countries = await this.hotelService
       .getCountries()
-      .catch(_ => []);
+      .catch(e => { console.error(e); return [] });
     this.isLoadingCountries = false;
   }
   private filterCountries(countries: any[], name: string) {
