@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-buttons slot='start'>
 
-      <app-back-button defaultHref='' [backFn]='back'></app-back-button>
+      <app-back-button defaultHref='' [backFn]='back.bind(this)'></app-back-button>
     </ion-buttons>
     <ion-title>当前已选择的乘客信息</ion-title>
   </ion-toolbar>

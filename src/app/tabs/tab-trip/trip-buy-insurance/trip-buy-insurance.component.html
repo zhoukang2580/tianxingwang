@@ -2,7 +2,7 @@
   <ion-header>
     <ion-toolbar>
       <ion-buttons>
-        <app-back-button [backFn]='back' >
+        <app-back-button [backFn]='back.bind(this)' >
         </app-back-button>
       </ion-buttons>
       <ion-title>保险</ion-title>

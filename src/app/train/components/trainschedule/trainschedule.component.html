@@ -1,7 +1,7 @@
 <ion-header class='ion-text-center'>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <app-back-button [backFn]='back' >
+      <app-back-button [backFn]='back.bind(this)' >
       </app-back-button>
     </ion-buttons>
     <ion-title class='ion-text-center' color='secondary'>
@@ -9,8 +9,8 @@
       <i class='icon icon-search-train'></i>
       <ion-text>{{ vmToCity?.Nickname}}</ion-text>
     </ion-title>
-    <ion-buttons slot='end' class='h'>
-      <app-back-button [backFn]='back' >
+    <ion-buttons slot='end' class='collapse'>
+      <app-back-button [backFn]='back.bind(this)' >
       </app-back-button>
     </ion-buttons>
   </ion-toolbar>
