@@ -59,7 +59,7 @@
       <div class='destination' (click)='onSearchCity()'>
         <ion-item lines='full' detail>
           <ion-label>目的地</ion-label>
-          <ion-label>
+          <ion-label class="ion-text-wrap">
             {{searchCondition?.destinationCity?.Name}}
             <p>{{searchCondition?.destinationCity?.EnglishName}}</p>
           </ion-label>
@@ -68,7 +68,7 @@
       <div class='destination' (click)='onSelectNationality()'>
         <ion-item detail lines='full'>
           <ion-label>国籍</ion-label>
-          <ion-label>
+          <ion-label class="ion-text-wrap">
             {{searchCondition?.country?.Name}}
             <p>{{searchCondition?.country?.EnglishName}}</p>
           </ion-label>
