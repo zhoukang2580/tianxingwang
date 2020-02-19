@@ -1,3 +1,5 @@
+import { OnDestroy } from '@angular/core';
+import { Subscription, fromEvent } from 'rxjs';
 import { Component, OnInit, AfterViewInit, Renderer2, EventEmitter, Output, ViewChild, ElementRef } from '@angular/core';
 import { AppHelper } from 'src/app/appHelper';
 import { Platform, ToastController } from '@ionic/angular';
@@ -8,7 +10,8 @@ import { LanguageHelper } from 'src/app/languageHelper';
   templateUrl: './slidvalidate.component.html',
   styleUrls: ['./slidvalidate.component.scss'],
 })
-export class SlidvalidateComponent implements OnInit, AfterViewInit {
+export class SlidvalidateComponent implements OnInit, AfterViewInit, OnDestroy {
+  private subscriptions: Subscription[] = [];
   l = 42; // 滑块边长
   r = 9; // 滑块半径
   w = 310; // canvas宽度
@@ -46,6 +49,9 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.w = this.plt.width() - 5 * 16;
     this.h = Math.floor(this.plt.height() * 0.3);
+  }
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe())
   }
   ngAfterViewInit() {
     // this.w = this.el.clientWidth;
@@ -299,12 +305,12 @@ export class SlidvalidateComponent implements OnInit, AfterViewInit {
         }, 1000)
       }
     }
-    this.slider.addEventListener('mousedown', handleDragStart.bind(this));
-    this.slider.addEventListener('touchstart', handleDragStart.bind(this));
-    this.slider.addEventListener('mousemove', handleDragMove.bind(this));
-    this.slider.addEventListener('touchmove', handleDragMove.bind(this));
-    this.slider.addEventListener('mouseup', handleDragEnd.bind(this));
-    this.slider.addEventListener('touchend', handleDragEnd.bind(this));
+    this.subscriptions.push(fromEvent(this.slider, 'mousedown', { passive: true }).subscribe(evt => handleDragStart(evt)));
+    this.subscriptions.push(fromEvent(this.slider, 'touchstart', { passive: true }).subscribe(evt => handleDragStart(evt)));
+    this.subscriptions.push(fromEvent(this.slider, 'mousemove', { passive: true }).subscribe(evt => handleDragMove(evt)));
+    this.subscriptions.push(fromEvent(this.slider, 'touchmove', { passive: true }).subscribe(evt => handleDragMove(evt)));
+    this.subscriptions.push(fromEvent(this.slider, 'mouseup', { passive: true }).subscribe(evt => handleDragEnd(evt)));
+    this.subscriptions.push(fromEvent(this.slider, 'touchend', { passive: true }).subscribe(evt => handleDragEnd(evt)));
   }
 
   verify() {

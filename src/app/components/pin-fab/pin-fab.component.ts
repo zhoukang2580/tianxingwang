@@ -54,7 +54,7 @@ import { tap, map, switchMap } from "rxjs/operators";
         )
       ])
     ])
-  ],changeDetection:ChangeDetectionStrategy.OnPush
+  ], changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
   // @HostBinding("@showfab") showfab;
@@ -80,8 +80,20 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
     private el: ElementRef<HTMLElement>,
     @Optional() private fab: IonFab,
     private domCtrl: DomController
-  ) {}
-  ngOnInit() {}
+  ) {
+    if (typeof Worker !== 'undefined') {
+      // Create a new
+      const worker = new Worker('./pin-fab.worker', { type: 'module' });
+      worker.onmessage = ({ data }) => {
+        console.log(`page got message: ${data}`);
+      };
+      worker.postMessage('hello');
+    } else {
+      // Web Workers are not supported in this environment.
+      // You should add a fallback so that your program still executes correctly.
+    }
+  }
+  ngOnInit() { }
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
@@ -238,3 +250,4 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
     );
   }
 }
+
