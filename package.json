@@ -32,7 +32,7 @@
     "@ionic/angular": "^5.0.0",
     "@ionic/storage": "^2.2.0",
     "cordova-ali-plugin": "file:cordova-ali-plugin",
-    "cordova-android": "^8.0.0",
+    "cordova-android": "^8.1.0",
     "cordova-hcp-plugin": "file:cordova-hcp-plugin",
     "cordova-ios": "^5.1.1",
     "cordova-plugin-add-swift-support": "2.0.2",
@@ -105,7 +105,22 @@
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-console": {},
       "cordova-wechat-plugin": {},
-      "cordova-hcp-plugin": {}
+      "cordova-hcp-plugin": {},
+      "cordova-ali-plugin": {},
+      "cordova-plugin-add-swift-support": {},
+      "cordova-plugin-app-version": {},
+      "cordova-plugin-device": {},
+      "cordova-plugin-file": {},
+      "cordova-plugin-file-transfer": {},
+      "cordova-plugin-ionic-webview": {
+        "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
+      },
+      "cordova-plugin-splashscreen": {},
+      "cordova-plugin-zip": {},
+      "cordova-sqlite-storage": {},
+      "phonegap-plugin-barcodescanner": {
+        "ANDROID_SUPPORT_V4_VERSION": "27.+"
+      }
     },
     "platforms": [
       "android"
