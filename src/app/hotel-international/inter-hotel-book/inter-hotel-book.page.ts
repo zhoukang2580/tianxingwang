@@ -84,7 +84,7 @@ import { OrderHotelType } from "src/app/order/models/OrderHotelEntity";
 })
 export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   private initialBookDto: InitialBookDtoModel;
-  private isManagentCredentails = false;
+  // private isManagentCredentails = false;
   private subscriptions: Subscription[] = [];
   checkInPersionCount = 1;
   HotelPaymentType = HotelPaymentType;
@@ -142,9 +142,9 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   ) {
     this.subscriptions.push(
       route.queryParamMap.subscribe(() => {
-        if (this.isManagentCredentails) {
-          this.doRefresh(false);
-        }
+        this.doRefresh(false);
+        // if (this.isManagentCredentails) {
+        // }
       })
     );
   }
@@ -866,7 +866,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   }
   onManagementCredentials(item: IPassengerHotelBookInfo) {
     item.credentialsRequested = false;
-    this.isManagentCredentails = true;
+    // this.isManagentCredentails = true;
     this.router.navigate([
       AppHelper.getRoutePath("member-credential-management")
     ]);
@@ -1113,7 +1113,6 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     this.hotelService.setBookInfos(
       this.hotelService.getBookInfos().filter(it => !!it.bookInfo)
     );
-    this.doRefresh(false);
   }
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
