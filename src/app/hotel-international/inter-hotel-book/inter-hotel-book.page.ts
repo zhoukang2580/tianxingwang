@@ -1168,7 +1168,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       }
     }
   }
-  private async checkCredentialValidate(combineInfo: IPassengerHotelBookInfo) {
+  private  checkCredentialValidate(combineInfo: IPassengerHotelBookInfo) {
     return combineInfo.credential && (combineInfo.credential.Type == CredentialsType.HmPass || combineInfo.credential.Type == CredentialsType.Passport);
   }
   async onBook(isSave: boolean) {
