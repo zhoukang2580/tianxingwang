@@ -31,8 +31,7 @@ export class MyPage implements OnDestroy, OnInit {
   Model: PageModel;
   isIos = false;
   defaultAvatar = AppHelper.getDefaultAvatar();
-  subscription = Subscription.EMPTY;
-  identitySubscription = Subscription.EMPTY;
+  subscriptions: Subscription[] = [];
   msgCount$: Observable<number>;
   items: ProductItem[] = [];
   isShowMyOrderTabs = true;
@@ -55,28 +54,17 @@ export class MyPage implements OnDestroy, OnInit {
     private identityService: IdentityService,
     private configService: ConfigService,
     private apiService: ApiService,
-    route: ActivatedRoute,
+    private route: ActivatedRoute,
     private messageService: MessageService,
     private staffService: StaffService,
     private actionSheetCtrl: ActionSheetController
   ) {
     this.isIos = plt.is("ios");
-    this.identitySubscription = this.identityService
-      .getIdentitySource()
-      .subscribe(_ => {
+    this.subscriptions.push(
+      this.identityService.getIdentitySource().subscribe(_ => {
         this.Model = null;
-      });
-    route.queryParamMap.subscribe(async _ => {
-      this.msgCount$ = this.messageService.getMsgCount();
-      this.config = await this.configService.getConfigAsync();
-      this.load(AppHelper.getRouteData() || !this.Model || !this.Model.HeadUrl);
-      AppHelper.setRouteData(false);
-      this.isShowMyOrderTabs =
-        true ||
-        (await this.staffService.isSelfBookType()) ||
-        (await this.staffService.isSecretaryBookType());
-      // console.log("can show tabs ", this.isShowMyOrderTabs);
-    });
+      })
+    );
   }
   goToWorkflow() {
     this.router.navigate([AppHelper.getRoutePath("workflow-list")]);
@@ -150,13 +138,21 @@ export class MyPage implements OnDestroy, OnInit {
       this.items = this.items.filter(it => it.value != ProductItemType.more);
     }
 
-    console.log("my ngOnInit");
-    // this.Model = {
-    //   Name: "",
-    //   RealName: "",
-    //   Mobile: "",
-    //   HeadUrl: ""
-    // };
+    this.subscriptions.push(
+      this.route.queryParamMap.subscribe(async _ => {
+        this.msgCount$ = this.messageService.getMsgCount();
+        this.config = await this.configService.getConfigAsync();
+        this.load(
+          AppHelper.getRouteData() || !this.Model || !this.Model.HeadUrl
+        );
+        AppHelper.setRouteData(false);
+        this.isShowMyOrderTabs =
+          true ||
+          (await this.staffService.isSelfBookType()) ||
+          (await this.staffService.isSecretaryBookType());
+        // console.log("can show tabs ", this.isShowMyOrderTabs);
+      })
+    );
   }
 
   async load(forceLoad = false) {
@@ -190,8 +186,7 @@ export class MyPage implements OnDestroy, OnInit {
     ]);
   }
   ngOnDestroy() {
-    this.subscription.unsubscribe();
-    this.identitySubscription.unsubscribe();
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
   goToMyDetail() {
     this.router.navigate([AppHelper.getRoutePath("member-detail")]);

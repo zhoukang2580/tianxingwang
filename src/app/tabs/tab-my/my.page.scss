@@ -12,17 +12,6 @@ ion-thumbnail {
 ion-card-content {
   margin: 0 -0.5em;
 }
-ion-list {
-  &:first-child ion-item {
-    padding: 0.5em 0;
-  }
-  ion-item {
-    ion-icon + ion-label {
-      padding-left: 1em;
-    }
-  }
-}
-
 ion-badge {
   color: white;
 }
@@ -50,16 +39,14 @@ ion-badge {
 }
 ion-card {
   position: relative;
-  &.ios {
-    margin-top: -5em;
-  }
-  &.md {
-    margin-top: -4.8em;
-  }
+  margin-top: -4em;
 }
 ion-card-header {
   border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.12);
 }
-ion-list {
+ion-list:not(.top-panal) {
   margin: 1em 0;
+  &.md {
+    padding: 0;
+  }
 }
