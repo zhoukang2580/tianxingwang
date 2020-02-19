@@ -27,7 +27,7 @@
   <app-refresher slot='fixed' (ionRefresh)='doRefresh()'>
     <ion-refresher-content>正在刷新...</ion-refresher-content>
   </app-refresher>
-  <ng-container *ngIf='isLoading else fackList'>
+  <ng-container *ngIf='!isLoading else fackList'>
     <ng-container [ngSwitch]='tab'>
       <ng-container *ngSwitchCase='"task"'>
         <ng-container *ngIf='tasks?.length else nodata'>
@@ -35,12 +35,14 @@
             <ion-item *ngFor='let t of tasks'>
               <ion-label>
                 <h2>
-                  <ion-row>
-                    <ion-col size='9'>{{t.Name}}</ion-col>
-                    <ion-col size='3'>{{t.StatusName}}</ion-col>
-                  </ion-row>
+                  {{t.Number}}
                 </h2>
-                <h2 class="time ion-text-end">{{t.InsertDateTime?.replace("T"," ")}}</h2>
+                <h2>
+                  {{t.Name}}
+                </h2>
+                <p>
+                  过期时间：<span>{{t.ExpiredTime?.replace("T"," ")}}</span>
+                </p>
               </ion-label>
             </ion-item>
           </ion-list>

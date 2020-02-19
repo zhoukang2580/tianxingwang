@@ -78,6 +78,7 @@ export class WorkflowListPage implements OnInit, OnDestroy {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
   loadMore() {
+    this.isLoading = true;
     const tab = this.tab;
     if (tab == "task") {
       this.loadSubscription = this.workflowApiService
@@ -85,6 +86,11 @@ export class WorkflowListPage implements OnInit, OnDestroy {
         .pipe(
           finalize(() => {
             this.isLoading = false;
+            if (this.refresher) {
+              if (this.query.pageIndex <= 1) {
+                this.refresher.complete();
+              }
+            }
           })
         )
         .subscribe(res => {
@@ -105,6 +111,11 @@ export class WorkflowListPage implements OnInit, OnDestroy {
         .pipe(
           finalize(() => {
             this.isLoading = false;
+            if (this.refresher) {
+              if (this.query.pageIndex <= 1) {
+                this.refresher.complete();
+              }
+            }
           })
         )
         .subscribe(res => {
@@ -125,6 +136,11 @@ export class WorkflowListPage implements OnInit, OnDestroy {
         .pipe(
           finalize(() => {
             this.isLoading = false;
+            if (this.refresher) {
+              if (this.query.pageIndex <= 1) {
+                this.refresher.complete();
+              }
+            }
           })
         )
         .subscribe(res => {
