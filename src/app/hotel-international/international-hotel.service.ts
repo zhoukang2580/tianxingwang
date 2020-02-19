@@ -74,7 +74,7 @@ export class InternationalHotelService {
   private selfCredentials: CredentialsEntity[];
   private conditionModel: HotelConditionModel;
   // = !environment.production    ? (MOCK_HOTEL_DETIAL_INFO as any)    : null; // 查看详情的hotel
-  viewHotel: HotelEntity= !environment.production    ? (MOCK_HOTEL_DETIAL_INFO as any)    : null; // 查看详情的hotel;
+  viewHotel: HotelEntity = !environment.production ? (MOCK_HOTEL_DETIAL_INFO as any) : null; // 查看详情的hotel;
   showRoomDetailInfo: IshowRoomDetailInfo;
   showImages: any[];
   constructor(
@@ -142,7 +142,7 @@ export class InternationalHotelService {
     this.showImages = [];
     this.showRoomDetailInfo = null;
     this.selfCredentials = [];
-    if(environment.production){
+    if (environment.production) {
       this.viewHotel = null;
     }
   }
@@ -153,7 +153,11 @@ export class InternationalHotelService {
       adultCount: 2,
       children: [],
       hotelType: "normal",
-      country: { Code: "CN" } as any,
+      country: {
+        Name: "中国",
+        EnglishName:"China",
+        Code: "CN"
+      } as CountryEntity,
       destinationCity: {
         CityCode: "US1576",
         CityEnglishName: "",
@@ -179,9 +183,9 @@ export class InternationalHotelService {
     forceFetch =
       forceFetch ||
       city.Code !=
-        (this.conditionModel &&
-          this.conditionModel.city &&
-          this.conditionModel.city.Code);
+      (this.conditionModel &&
+        this.conditionModel.city &&
+        this.conditionModel.city.Code);
     if (
       forceFetch ||
       !this.conditionModel ||
@@ -239,19 +243,16 @@ export class InternationalHotelService {
     return this.hotelQueryModel || new HotelQueryEntity();
   }
   async getCountries(forceFetch = false) {
+    if (!this.countries) {
+      this.countries = await this.getLocalCountries();
+    }
     if (!forceFetch) {
-      if (!this.countries) {
-        this.countries = await this.getLocalCountries();
-      }
       if (this.countries && this.countries.data && this.countries.data.length) {
         return Promise.resolve(this.countries.data);
       }
     }
     if (this.fetchCountries && this.fetchCountries.promise) {
       return this.fetchCountries.promise;
-    }
-    if (!this.countries) {
-      this.countries = await this.getLocalCountries();
     }
     const req = new RequestEntity();
     req.Method = "TmcApiInternationalHotelUrl-Country-GetCoutries";
@@ -712,7 +713,7 @@ export class InternationalHotelService {
     let i = 10;
     let top = await this.modalCtrl.getTop();
     while (top && --i > 0) {
-      await top.dismiss().catch(_ => {});
+      await top.dismiss().catch(_ => { });
       top = await this.modalCtrl.getTop();
     }
   }

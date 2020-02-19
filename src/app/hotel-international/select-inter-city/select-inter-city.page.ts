@@ -106,6 +106,7 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
   }
   onCitySelected(city: any) {
     console.log("选择的城市", city);
+    this.selectedCity=city;
     if (this.selectedCity) {
       this.internationalHotelService.setSearchConditionSource({
         ...this.internationalHotelService.getSearchCondition(),

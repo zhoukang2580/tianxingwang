@@ -1,8 +1,9 @@
+import { RefresherComponent } from './../../components/refresher/refresher.component';
 import { BackButtonComponent } from './../../components/back-button/back-button.component';
 import { OnDestroy } from '@angular/core';
 import { Subscription, of } from 'rxjs';
 import { InternationalHotelService } from './../international-hotel.service';
-import { IonInfiniteScroll, IonContent } from '@ionic/angular';
+import { IonInfiniteScroll, IonContent, IonRefresher } from '@ionic/angular';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CountryEntity } from 'src/app/tmc/models/CountryEntity';
 import { tap, debounceTime, take } from 'rxjs/operators';
@@ -21,6 +22,7 @@ export class SelectNationalityPage implements OnInit, OnDestroy {
 
   @ViewChild(BackButtonComponent) private backbtn: BackButtonComponent;
   @ViewChild(IonContent) content: IonContent;
+  @ViewChild(RefresherComponent) refresher: RefresherComponent;
   keywords: string;
   searchCountries: CountryEntity[];
   selectedCountry: CountryEntity;
@@ -28,28 +30,25 @@ export class SelectNationalityPage implements OnInit, OnDestroy {
   isLoadingCountries = false;
   constructor(private hotelService: InternationalHotelService) { }
   async  doRefresh() {
-
-    this.selectedCountry = {
-      Name: "中国",
-      Code: "CN"
-    } as CountryEntity;
     this.keywords = '';
     this.countries = [];
     this.searchCountries = [];
-    await this.loadCountries();
+    await this.getCountries();
+    if (this.scroller) {
+      this.scroller.disabled = false;
+    }
     this.loadMore();
+    if (this.refresher) {
+      this.refresher.complete();
+    }
   }
   ngOnInit() {
-    this.doRefresh();
+    requestAnimationFrame(()=>{
+      this.doRefresh();
+    })
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();
-  }
-  private async loadCountries() {
-    this.isLoadingCountries = true;
-    if (!this.countries || this.countries.length) {
-      await this.getCountries();
-    }
   }
   onSearchCountry() {
     this.subscription.unsubscribe();
@@ -87,6 +86,7 @@ export class SelectNationalityPage implements OnInit, OnDestroy {
     console.log(arr);
     if (this.scroller) {
       this.scroller.complete();
+      this.scroller.disabled = arr.length < this.pageSize;
     }
     this.isLoadingCountries = false;
     if (arr && arr.length) {
@@ -99,6 +99,7 @@ export class SelectNationalityPage implements OnInit, OnDestroy {
       .getCountries()
       .catch(e => { console.error(e); return [] });
     this.isLoadingCountries = false;
+    return this.countries;
   }
   private filterCountries(countries: any[], name: string) {
     const keys = ["Code", "Name", "PinYin", "EnglishName"];

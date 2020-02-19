@@ -57,7 +57,7 @@
         </section>
       </ion-item>
       <div class='destination' (click)='onSearchCity()'>
-        <ion-item lines='none' detail>
+        <ion-item lines='full' detail>
           <ion-label>目的地</ion-label>
           <ion-label>
             {{searchCondition?.destinationCity?.Name}}
@@ -66,7 +66,7 @@
         </ion-item>
       </div>
       <div class='destination' (click)='onSelectNationality()'>
-        <ion-item lines='none' detail>
+        <ion-item detail lines='full'>
           <ion-label>国籍</ion-label>
           <ion-label>
             {{searchCondition?.country?.Name}}
@@ -74,14 +74,16 @@
           </ion-label>
         </ion-item>
       </div>
-      <ion-item detail (click)='onAddAdultAndChildren()' style='margin:1em -1em'>
-        <ion-label>
-          入住人数
-        </ion-label>
-        <ion-label slot='end'>
-          {{searchCondition?.adultCount}}成人{{searchCondition?.children?.length}}儿童
-        </ion-label>
-      </ion-item>
+      <div class="destination">
+        <ion-item lines='full' detail (click)='onAddAdultAndChildren()'>
+          <ion-label>
+            入住人数
+          </ion-label>
+          <ion-label>
+            {{searchCondition?.adultCount}}成人{{searchCondition?.children?.length}}儿童
+          </ion-label>
+        </ion-item>
+      </div>
       <ion-button class='ion-margin-top' style='width: 100%' (click)="onSearchHotel()" color="secondary" expand="block">
         <ion-text>查询酒店</ion-text>
       </ion-button>
