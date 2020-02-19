@@ -3,11 +3,11 @@
     <ion-buttons slot='start'>
       <app-back-button defaultHref=''></app-back-button>
     </ion-buttons>
-    <ion-text *ngIf='isShowSelectedInfos else titletpl'>{{hotel?.Name}}</ion-text>
+    <ion-text *ngIf='!isSelf else titletpl'>{{hotel?.Name}}</ion-text>
     <ng-template #titletpl>
       <ion-title>{{hotel?.Name}}</ion-title>
     </ng-template>
-    <ion-buttons slot='end'>
+    <ion-buttons slot='end' [class.can-add-passengers]='!isSelf'>
       <ion-button fill='clear' color='secondary' *ngIf='canAddPassengers' (click)='onFilteredPassenger()' size='small'>
         <ion-text>过滤差标</ion-text>
       </ion-button>

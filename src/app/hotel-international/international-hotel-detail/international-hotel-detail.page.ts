@@ -63,9 +63,7 @@ export class InternationalHotelDetailPage
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(IonHeader) ionHeader: IonHeader;
   @ViewChild("hotelInfo") hotelInfoEle: IonList;
-  get isShowSelectedInfos() {
-    return this.hotelService.getBookInfos().some(it => !!it.bookInfo);
-  }
+  isSelf = true;
   private subscription = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
   private scrollEl: HTMLElement;
@@ -120,6 +118,7 @@ export class InternationalHotelDetailPage
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(() => {
         this.staffService.isSelfBookType().then(self => {
+          this.isSelf = self;
           this.canAddPassengers = !self;
         });
         setTimeout(

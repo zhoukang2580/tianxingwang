@@ -1,7 +1,11 @@
 :host {
   --h: 2em;
 }
-
+.can-add-passengers{
+  ion-button{
+    font-size: 0.7rem;
+  }
+}
 .bg {
   height: 30vh;
   width: 100%;
