@@ -74,7 +74,9 @@ export class InternationalHotelService {
   private selfCredentials: CredentialsEntity[];
   private conditionModel: HotelConditionModel;
   // = !environment.production    ? (MOCK_HOTEL_DETIAL_INFO as any)    : null; // 查看详情的hotel
-  viewHotel: HotelEntity = !environment.production ? (MOCK_HOTEL_DETIAL_INFO as any) : null; // 查看详情的hotel;
+  viewHotel: HotelEntity = !environment.production
+    ? (MOCK_HOTEL_DETIAL_INFO as any)
+    : null; // 查看详情的hotel;
   showRoomDetailInfo: IshowRoomDetailInfo;
   showImages: any[];
   constructor(
@@ -155,7 +157,7 @@ export class InternationalHotelService {
       hotelType: "normal",
       country: {
         Name: "中国",
-        EnglishName:"China",
+        EnglishName: "China",
         Code: "CN"
       } as CountryEntity,
       destinationCity: {
@@ -183,9 +185,9 @@ export class InternationalHotelService {
     forceFetch =
       forceFetch ||
       city.Code !=
-      (this.conditionModel &&
-        this.conditionModel.city &&
-        this.conditionModel.city.Code);
+        (this.conditionModel &&
+          this.conditionModel.city &&
+          this.conditionModel.city.Code);
     if (
       forceFetch ||
       !this.conditionModel ||
@@ -574,7 +576,9 @@ export class InternationalHotelService {
     if (!roomPlan || !roomPlan.RoomPlanRules) {
       return "";
     }
-    return roomPlan.RoomPlanRules.map(it => it.Description).join(",");
+    return roomPlan.RoomPlanRules.filter(it => it.Name == "DidIncrease")
+      .map(it => it.Description)
+      .join(",");
   }
   async openCalendar(
     checkInDate?: DayModel | string,
@@ -713,7 +717,7 @@ export class InternationalHotelService {
     let i = 10;
     let top = await this.modalCtrl.getTop();
     while (top && --i > 0) {
-      await top.dismiss().catch(_ => { });
+      await top.dismiss().catch(_ => {});
       top = await this.modalCtrl.getTop();
     }
   }
