@@ -269,7 +269,7 @@ export class AppComponent
         // this.router.navigate(['international-hotel-detail']);
         // this.router.navigate(['international-hotel-list']);
         // this.router.navigate(['workflow-list']);
-        this.router.navigate(['function-test']);
+        // this.router.navigate(['function-test']);
         // this.router.navigate(['product-tabs'],{queryParams:{tabId:3}});
       }
     });
