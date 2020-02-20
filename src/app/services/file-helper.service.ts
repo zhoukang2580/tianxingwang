@@ -109,15 +109,15 @@ export class FileHelperService {
   }
 
   private reloadHcpPage() {
-    const hcp = window["hcp"];
-    if (hcp) {
-      hcp.loadHcpPage();
+    if (this.hcpPlugin) {
+      this.hcpPlugin.loadHcpPage();
     }
   }
   private onResume() {
-    setTimeout(() => {
+    const ok = window.confirm("是否加载页面？");
+    if (ok) {
       this.reloadHcpPage();
-    }, 0);
+    }
   }
   private async clearLocalHcpVersionIfAppUpdated() {
     if (AppHelper.isApp()) {
@@ -209,6 +209,8 @@ export class FileHelperService {
     req.Data = {
       Name: `${pkgName}.${this.plt.is("ios") ? "ios" : "android"}`.toLowerCase()
     };
+    this.logMessage("apiconfig", this.apiService.apiConfig);
+    this.logMessage("requrl", await this.apiService.getUrl(req));
     if (AppHelper.isFunction(onprogress)) {
       onprogress({
         total: 100,
@@ -755,7 +757,7 @@ export class FileHelperService {
   ): Promise<{ isCanUpdate: boolean; ignore: boolean }> {
     await this.plt.ready();
     const up = await this.getServerVersion(onprogress);
-    this.logMessage(`checkAppUpdate`, up);
+    this.logMessage(`checkAppUpdate ${new Date().toLocaleString()}`, up);
     this.localVersion = await this.getLocalVersionNumber();
     if (!up || !up.Version || !up.DownloadUrl) {
       this.logMessage(
