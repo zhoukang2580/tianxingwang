@@ -50,7 +50,7 @@ export class BackButtonComponent implements OnInit, AfterViewInit {
       "app-back-button curUrl:",
       this.curUrl,
       "customeback = " + this.customeback,
-      this.router.url.match(this.curUrl)
+      this.router.url.split("?")[0]
     );
     this.navCtrl.pop().then(() => {
       console.log(

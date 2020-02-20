@@ -366,9 +366,6 @@ export class InternationalHotelListPage
       .pipe(
         finalize(() => {
           this.oldSearchText = this.searchCondition.searchText;
-          if (this.pageIndex <= 1) {
-            this.completeRefresher();
-          }
           this.isLoading = false;
         })
       )
@@ -378,6 +375,9 @@ export class InternationalHotelListPage
           const arr = (r && r.Data && r.Data.HotelDayPrices) || [];
           this.completeScroller();
           this.enableScroller(arr.length >= 20);
+          if (this.pageIndex <= 1) {
+            this.completeRefresher();
+          }
           if (arr.length) {
             this.pageIndex++;
             this.hotels = this.hotels.concat(arr.map(it => it.Hotel));
