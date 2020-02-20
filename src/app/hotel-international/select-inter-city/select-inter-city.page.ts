@@ -143,15 +143,13 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
       tempCities = cities.filter(c => {
         return keys.some(key => {
           const value: string = (c[key] || "").trim().toLowerCase();
-          const ok =
-            value &&
-            (value == name || value.includes(name) || name.includes(value));
+          const ok = value && (value == name || value.includes(name));
           return ok;
         });
       });
     }
-    console.log(name, tempCities);
-    let result = tempCities.slice(
+    // console.log(name, tempCities);
+    const result = tempCities.slice(
       this.searchCities.length,
       this.searchCities.length + this.pageSize
     );

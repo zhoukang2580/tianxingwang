@@ -160,7 +160,7 @@ export class InternationalHotelService {
         EnglishName: "China",
         Code: "CN"
       } as CountryEntity,
-      destinationCity: {
+      destinationCity: ({
         CityCode: "US1576",
         CityEnglishName: "",
         CityName: "奥兰多",
@@ -175,8 +175,13 @@ export class InternationalHotelService {
         Name: "奥兰多",
         Nickname: "奥兰多",
         Pinyin: "aolanduo",
-        Tag: "InternationalHotel"
-      } as any
+        Tag: "InternationalHotel",
+        Country: {
+          Name: "美国",
+          EnglishName: "Usa",
+          Code: "US"
+        }
+      } as any) as TrafficlineEntity
     } as IInterHotelSearchCondition;
     this.searchConditionSource = new BehaviorSubject(this.searchConditon);
   }

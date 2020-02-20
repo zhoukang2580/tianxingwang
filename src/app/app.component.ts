@@ -116,6 +116,13 @@ export class AppComponent
       console.log(`platform ready`);
       this.app = navigator["app"];
       document.addEventListener(
+        "start",
+        () => {
+          this.reloadHcpPage();
+        },
+        false
+      );
+      document.addEventListener(
         "backbutton",
         () => {
           this.backButtonAction();
@@ -130,6 +137,9 @@ export class AppComponent
         }, 5000);
       }
     });
+  }
+  private reloadHcpPage(){
+    
   }
   ngOnChanges() {}
   ngAfterViewInit() {
