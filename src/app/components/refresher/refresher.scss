@@ -14,6 +14,9 @@
   &.refresher-active {
     display: block;
     z-index: 1;
+    ion-refresher-content{
+      opacity: 1;
+    }
   }
 }
 // Refresher Content
@@ -34,7 +37,7 @@ ion-refresher-content {
 }
 .refresher {
   ion-refresher-content{
-    visibility: collapse;
+    opacity: 0;
   }
   .refresher-pulling-icon,
   .refresher-refreshing-icon {
@@ -58,14 +61,12 @@ ion-refresher-content {
 // --------------------------------------------------
 
 .refresher-pulling ion-refresher-content {
-  visibility: visible;
   .refresher-pulling {
     display: block;
   }
 }
 
 .refresher-ready ion-refresher-content {
-  visibility: visible;
   .refresher-pulling {
     display: block;
   }
@@ -76,14 +77,12 @@ ion-refresher-content {
 }
 
 .refresher-refreshing ion-refresher-content {
-  visibility: visible;
   .refresher-refreshing {
     display: block;
   }
 }
 
 .refresher-cancelling ion-refresher-content {
-  visibility: visible;
   .refresher-pulling {
     display: block;
   }
@@ -94,7 +93,6 @@ ion-refresher-content {
 }
 
 .refresher-completing ion-refresher-content {
-  visibility: visible;
   .refresher-refreshing {
     display: block;
   }

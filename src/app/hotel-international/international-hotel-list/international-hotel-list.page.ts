@@ -322,6 +322,9 @@ export class InternationalHotelListPage
     this.pageIndex = 0;
     this.subscription.unsubscribe();
     this.totalHotels = 0;
+    if (this.scroller) {
+      this.scroller.disabled = true;
+    }
     if (!keepFilterCondition) {
       this.hotelService.setSearchConditionSource({
         ...this.hotelService.getSearchCondition(),

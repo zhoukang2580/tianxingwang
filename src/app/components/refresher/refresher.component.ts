@@ -253,7 +253,7 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private onMove(detail: TouchEvent) {
-    if (!this.scrollEl||this._disabled) {
+    if (!this.scrollEl || this._disabled) {
       return false;
     }
 
@@ -428,7 +428,8 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
       style.overflow = overflowVisible ? "hidden" : "";
     }
     this.clazz = {
-      "refresher-active": this.state !== RefresherState.Inactive,
+      "refresher-active":
+        this.state !== RefresherState.Inactive && this.progress > 0,
       "refresher-pulling": this.state === RefresherState.Pulling,
       "refresher-ready": this.state === RefresherState.Ready,
       "refresher-refreshing": this.state === RefresherState.Refreshing,
