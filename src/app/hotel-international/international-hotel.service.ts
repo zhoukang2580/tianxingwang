@@ -623,7 +623,7 @@ export class InternationalHotelService {
     }
     return obj;
   }
-  async getTrafficlines(forceFetch = false) {
+  async getTrafficlinesAsync(forceFetch = false) {
     if (!forceFetch) {
       if (
         !this.trafficlines ||
@@ -650,10 +650,17 @@ export class InternationalHotelService {
     if (this.fetchTrafficlines && this.fetchTrafficlines.promise) {
       return this.fetchTrafficlines.promise;
     }
+    const countries = await this.getCountries();
     this.fetchTrafficlines = {
       promise: this.apiService
         .getPromiseData<TrafficlineEntity[]>(req)
         .then(res => {
+          if (countries && countries.length) {
+            res = res.map(it => {
+              it.Country = countries.find(c => c.Code == it.CountryCode);
+              return it;
+            });
+          }
           this.trafficlines.data = res;
           this.cacheTrafficlines(this.trafficlines.data);
           return res;
@@ -664,12 +671,26 @@ export class InternationalHotelService {
     };
     return this.fetchTrafficlines.promise;
   }
+  private searchHotelCities(name: string, pageIndex: number, pageSize = 20) {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = "TmcApiInternationalHotelUrl-Trafficline-Search";
+    req.Data = {
+      Name: name,
+      PageIndex: pageIndex,
+      lang: AppHelper.getLanguage() || "cn",
+      PageSize: pageSize
+    };
+    return this.apiService.getResponse<ISearchTextValue[]>(req);
+  }
   private async cacheTrafficlines(list: TrafficlineEntity[]) {
-    if (list && list.length) {
-      await this.storage.set(KEY_INTERNATIONAL_HOTEL_TRAFFICLINES, {
-        lastUpdateTime: Date.now(),
-        data: list
-      } as ILocalCache<TrafficlineEntity[]>);
+    if (AppHelper.isApp()) {
+      if (list && list.length) {
+        await this.storage.set(KEY_INTERNATIONAL_HOTEL_TRAFFICLINES, {
+          lastUpdateTime: Date.now(),
+          data: list
+        } as ILocalCache<TrafficlineEntity[]>);
+      }
     }
   }
   private async getLocalTrafficlines(): Promise<

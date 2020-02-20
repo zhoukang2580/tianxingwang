@@ -22,10 +22,12 @@
     <ion-note class="ion-margin-start sticky">请选择城市：</ion-note>
     <ion-list>
       <ion-item *ngFor='let it of searchCities;let i=index;' @flyInOut (click)='onCitySelected(it)'>
-        <ion-label [class.active]='it.selected' class='ion-text-wrap'>
+        <ion-label [class.active]='it.Selected' class='ion-text-wrap'>
           <h2>{{it.Name}}
-            <span *ngIf='it.CityName as n'>,{{n}}</span>
-            <span *ngIf='it.CountryName as n'>,{{n}}</span>
+            <ion-text color='medium' *ngIf='it.Country as c'>
+              <span *ngIf='c.Name as n'>,{{n}}</span>
+              <span *ngIf='c.EnglishName as n'>,{{n}}</span>
+            </ion-text>
           </h2>
           <p *ngIf='it.EnglishName' class='ion-text-wrap'>{{it.EnglishName}}</p>
         </ion-label>

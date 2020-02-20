@@ -1,4 +1,4 @@
-import { BackButtonComponent } from './../../components/back-button/back-button.component';
+import { BackButtonComponent } from "./../../components/back-button/back-button.component";
 import { Subscription, of } from "rxjs";
 import { InternationalHotelService } from "./../international-hotel.service";
 import {
@@ -60,7 +60,7 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
   private trafficlines: TrafficlineEntity[];
   private pageSize = 25;
   private isFirstInit = false;
-  searchCities: any[];
+  searchCities: TrafficlineEntity[];
   searchContinents: any[];
   selectedCity: any;
   tabs: ITab[];
@@ -80,7 +80,7 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
     private internationalHotelService: InternationalHotelService,
     private plt: Platform,
     private navCtrl: NavController
-  ) { }
+  ) {}
 
   ngOnDestroy() {
     this.isFirstInit = true;
@@ -106,11 +106,11 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
   }
   onCitySelected(city: any) {
     console.log("选择的城市", city);
-    this.selectedCity=city;
+    this.selectedCity = city;
     if (this.selectedCity) {
       this.internationalHotelService.setSearchConditionSource({
         ...this.internationalHotelService.getSearchCondition(),
-        destinationCity: this.selectedCity,
+        destinationCity: this.selectedCity
       });
     }
     setTimeout(() => {
@@ -126,10 +126,7 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
     this.backBtn.backToPrePage();
   }
 
-  private filterCities(
-    cities: TrafficlineEntity[],
-    name: string = ""
-  ) {
+  private filterCities(cities: TrafficlineEntity[], name: string = "") {
     cities = cities || [];
     const keys = [
       "Name",
@@ -164,15 +161,9 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
     let arr: any[];
     const tab = this.tabs && this.tabs.find(it => it.active);
     if (tab) {
-      arr = this.filterCities(
-        tab.trafficlines,
-        this.searchCityKeyWords
-      );
+      arr = this.filterCities(tab.trafficlines, this.searchCityKeyWords);
     } else {
-      arr = this.filterCities(
-        this.trafficlines,
-        this.searchCityKeyWords
-      );
+      arr = this.filterCities(this.trafficlines, this.searchCityKeyWords);
     }
     if (this.scroller) {
       this.scroller.complete();
@@ -254,7 +245,6 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-
   private initTabs() {
     this.tabs = [];
     if (this.trafficlines) {
@@ -278,10 +268,9 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
   private async getTrafficlines() {
     this.isLoadingContinents = true;
     this.trafficlines = await this.internationalHotelService
-      .getTrafficlines()
+      .getTrafficlinesAsync()
       .catch(_ => []);
     this.isLoadingContinents = false;
     this.initTabs();
   }
-
 }

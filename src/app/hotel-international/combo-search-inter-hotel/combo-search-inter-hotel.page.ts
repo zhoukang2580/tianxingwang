@@ -39,6 +39,7 @@ export class ComboSearchInterHotelPage implements OnInit, OnDestroy {
   ) {}
   ngOnDestroy() {
     this.subscription2.unsubscribe();
+    this.subscription.unsubscribe();
   }
   ngOnInit() {
     this.subscription2 = this.route.queryParamMap.subscribe(() => {
@@ -61,7 +62,7 @@ export class ComboSearchInterHotelPage implements OnInit, OnDestroy {
       });
   }
   private load(name: string) {
-    this.isLoading = true;
+    this.isLoading = !this.searchResult || !this.searchResult.length;
     return this.hotelService.searchHotel(name, this.pageIndex).pipe(
       finalize(() => {
         if (this.pageIndex <= 1) {
@@ -72,9 +73,7 @@ export class ComboSearchInterHotelPage implements OnInit, OnDestroy {
         if (this.scroller) {
           this.scroller.complete();
         }
-        setTimeout(() => {
-          this.isLoading = false;
-        }, 200);
+        this.isLoading = false;
       }),
       catchError(e => {
         console.error(e);
@@ -99,9 +98,7 @@ export class ComboSearchInterHotelPage implements OnInit, OnDestroy {
         this.enableScroller(arr.length >= 20);
         if (arr.length) {
           this.pageIndex++;
-          setTimeout(() => {
-            this.searchResult = this.searchResult.concat(res.Data);
-          }, 200);
+          this.searchResult = this.searchResult.concat(res.Data);
         }
       });
   }

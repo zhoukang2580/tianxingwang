@@ -40,9 +40,6 @@
           <ion-segment-button value="agreement">
             <ion-label>协议酒店</ion-label>
           </ion-segment-button>
-          <ion-segment-button value="specialprice">
-            <ion-label>特价酒店</ion-label>
-          </ion-segment-button>
         </ion-segment>
       </div>
       <ion-item lines='none' style="margin-left: -1em;margin-right:-1em;" class="ion-margin-top">
@@ -61,7 +58,14 @@
           <ion-label>目的地</ion-label>
           <ion-label class="ion-text-wrap">
             {{searchCondition?.destinationCity?.Name}}
-            <p>{{searchCondition?.destinationCity?.EnglishName}}</p>
+            <ion-text *ngIf='searchCondition?.destinationCity?.Country' color='medium' class="ion-margin-start">
+              {{searchCondition?.destinationCity?.Country?.Name}}
+            </ion-text>
+            <p>
+              {{searchCondition?.destinationCity?.EnglishName}}
+              <span
+                *ngIf='searchCondition?.destinationCity?.Country?.EnglishName' class="ion-text-start">({{searchCondition?.destinationCity?.Country?.EnglishName}})</span>
+            </p>
           </ion-label>
         </ion-item>
       </div>

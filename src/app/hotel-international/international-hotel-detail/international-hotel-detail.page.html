@@ -131,8 +131,6 @@
               <ion-label class='item ion-text-wrap'>
                 <h3 style="display: inline-flex;">
                   <ion-text style="font-weight: bold;">{{room.Name}}
-                    <ion-text class="ion-margin-start ion-text-nowrap" color='secondary'
-                      (click)='onShowRoomDetails(room)'>详情</ion-text>
                   </ion-text>
                 </h3>
                 <h4 *ngIf='room.RoomDetails' class='show-desc'
@@ -149,6 +147,9 @@
                     <ion-text color='light'>已满房</ion-text>
                   </ion-button>
                 </h4>
+                <ion-button color='secondary' (click)='onShowRoomDetails(room)'>
+                  详情
+                </ion-button>
                 <h3 class='ion-text-end' style="padding-bottom: 0.5em;"
                   (click)='room["isShowRoomPlans"]=!room["isShowRoomPlans"]'>
                   <ion-text color='danger' *ngIf='getRoomLowestAvgPrice(room) as price'>

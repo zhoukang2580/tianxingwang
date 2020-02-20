@@ -1,42 +1,46 @@
 <ion-header size='large'>
   <ion-toolbar>
     <ion-buttons>
-      <app-back-button style="align-self: flex-start;padding-top: 0.5em;" defaultHref="" [backFn]='back.bind(this)'>
+      <app-back-button defaultHref="" [backFn]='back.bind(this)'>
       </app-back-button>
       <div class="bar">
-        <div class="date" (click)='onChangeDate()'>
-          <div style="padding: 0.35em 0">
-            <span>住</span><span class="checkin">{{searchCondition?.checkinDate?.substring(5)}}</span>
+        <div class="date">
+          <div (click)='onChangeDate()' class="checkin-checkout-date">
+            <div>
+              <span>住</span><span class="checkin">{{searchCondition?.checkinDate?.substring(5)}}</span>
+            </div>
+            <div>
+              <span>离</span> <span class="checkout">{{searchCondition?.checkoutDate?.substring(5)}}</span>
+            </div>
           </div>
-          <div>
-            <span>离</span> <span class="checkout">{{searchCondition?.checkoutDate?.substring(5)}}</span>
-          </div>
-        </div>
-        <div class="name-search">
-          <div class="name">
-            <ion-text color='secondary' (click)='onChangeCity()'>
-              {{searchCondition?.destinationCity?.Name}}
-            </ion-text>
-          </div>
-          <ion-buttons (click)='onSearchText()' class="search-box">
+          <div class="search-box" (click)='onSearchText()'>
             <ion-icon name='search' style="font-size: 1rem;"></ion-icon>
-            <div class="hint" [class.center]='!searchCondition?.searchText?.Text'>
-              {{searchCondition?.searchText?.Text||"关键字/酒店名"}}</div>
+            <div class='hint'>
+              {{searchCondition?.searchText?.Text||"关键字/酒店名"}}
+            </div>
             <ion-icon name='close' style="font-size: 1rem;"
               [style.visibility]='searchCondition?.searchText?.Text?"visible":"hidden"' (click)='onClearText($event)'>
             </ion-icon>
-          </ion-buttons>
+          </div>
         </div>
-        <div class="customer-count" (click)='onModifyAdultCount()'>
-          入住人数 <ion-text class="ion-margin-start" color='secondary'>
+        <div class="name">
+          <ion-text color='secondary' (click)='onChangeCity()'>
+            {{searchCondition?.destinationCity?.Name}}
+          </ion-text>
+        </div>
+
+        <div (click)='onModifyAdultCount()' *ngIf=''>
+          <ion-text color='secondary'>
             {{searchCondition?.adultCount}}成人{{searchCondition?.children?.length}}儿童
           </ion-text>
         </div>
       </div>
     </ion-buttons>
+    <div>
+      <app-inter-hotel-query (showPanel)='onShowPanel($event)' class="{{classMode}}" (queryFilter)='onQueryFilter()'>
+      </app-inter-hotel-query>
+    </div>
   </ion-toolbar>
-  <app-inter-hotel-query (showPanel)='onShowPanel($event)' class="{{classMode}}" (queryFilter)='onQueryFilter()'>
-  </app-inter-hotel-query>
 </ion-header>
 <ion-content [scrollY]='!(filterTab&&filterTab.active)'>
   <app-refresher slot='fixed' (ionRefresh)='doRefresh()' [disabled]='filterTab&&filterTab.active'>
@@ -77,7 +81,7 @@
     </ng-container>
   </ng-template>
   <ion-fab>
-    <app-pin-fab horizontal="end" vertical="bottom" >
+    <app-pin-fab horizontal="end" vertical="bottom">
       <div *ngIf='hotels?.length&&totalHotels'>
         <ion-text color='light'>
           <div style="border-bottom: 1px solid white;"> {{hotels.length}}</div>

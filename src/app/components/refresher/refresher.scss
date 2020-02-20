@@ -33,6 +33,9 @@ ion-refresher-content {
   width: 100%;
 }
 .refresher {
+  ion-refresher-content{
+    visibility: collapse;
+  }
   .refresher-pulling-icon,
   .refresher-refreshing-icon {
     transform-origin: center;
@@ -55,12 +58,14 @@ ion-refresher-content {
 // --------------------------------------------------
 
 .refresher-pulling ion-refresher-content {
+  visibility: visible;
   .refresher-pulling {
     display: block;
   }
 }
 
 .refresher-ready ion-refresher-content {
+  visibility: visible;
   .refresher-pulling {
     display: block;
   }
@@ -71,12 +76,14 @@ ion-refresher-content {
 }
 
 .refresher-refreshing ion-refresher-content {
+  visibility: visible;
   .refresher-refreshing {
     display: block;
   }
 }
 
 .refresher-cancelling ion-refresher-content {
+  visibility: visible;
   .refresher-pulling {
     display: block;
   }
@@ -87,6 +94,7 @@ ion-refresher-content {
 }
 
 .refresher-completing ion-refresher-content {
+  visibility: visible;
   .refresher-refreshing {
     display: block;
   }

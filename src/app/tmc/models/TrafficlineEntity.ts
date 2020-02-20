@@ -1,3 +1,4 @@
+import { CountryEntity } from "./CountryEntity";
 import { BaseEntity } from "src/app/models/BaseEntity";
 
 export class TrafficlineEntity extends BaseEntity {
@@ -69,5 +70,5 @@ export class TrafficlineEntity extends BaseEntity {
   FirstLetter: string;
   DestinationAreaTypeName: string;
   DestinationAreaType: any;
-  CountryName: string;
+  Country: CountryEntity;
 }
