@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50px" height="50px" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 53.2 (72643) - https://sketchapp.com -->
+    <title>Group 19</title>
+    <desc>Created with Sketch.</desc>
+    <g id="页面1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group-19">
+            <g id="Group-18">
+                <rect id="Rectangle" fill="#2596D9" x="0" y="0" width="50" height="50"></rect>
+                <rect id="Rectangle" fill="#FFFFFF" x="14" y="12" width="22" height="27"></rect>
+                <polygon id="Rectangle" fill="#2596D9" points="9 26 23 26 23 28 9 28"></polygon>
+                <polygon id="Rectangle" fill="#FFFFFF" points="9 26 14 26 14 28 9 28"></polygon>
+                <path d="M24.0036229,26.9511526 L24.2560218,27.2035514 L20.3466059,31.1129673 L18.9323923,29.6987538 L21.6799935,26.9511526 L18.9323923,24.2035514 L20.3466059,22.7893378 L24.2560218,26.6987538 L24.0036229,26.9511526 Z" id="Combined-Shape" fill="#2596D9"></path>
+                <path d="M28.0602326,12 L28.0602326,20.0164684 L36,20.0164684 L36,14 C36,12.8954305 35.1045695,12 34,12 L28.0602326,12 Z" id="Path-97" fill="#2596D9"></path>
+                <path d="M30,12 L30,18.0415411 L36.5228055,18.0415411 L36.5228055,14 C36.5228055,12.8954305 35.627375,12 34.5228055,12 L30,12 Z" id="Path-97" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>

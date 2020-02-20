@@ -1,4 +1,9 @@
-import { HttpClient, HttpResponse } from "@angular/common/http";
+import { finalize } from "rxjs/operators";
+import {
+  HttpClient,
+  HttpResponse,
+  HttpErrorResponse
+} from "@angular/common/http";
 import { Injectable, NgZone } from "@angular/core";
 import { File, FileEntry, DirectoryEntry, Entry } from "@ionic-native/file/ngx";
 import { Platform } from "@ionic/angular";
@@ -85,6 +90,7 @@ export class FileHelperService {
       // if(this.plt.is("ios")&&window['cordova'].file){
       //   this.dataDirectory=window['cordova'].file.dataDirectory;
       // }
+      document.addEventListener("resume", () => this.onResume(), false);
       await this.clearLocalHcpVersionIfAppUpdated();
       this.localVersion = await this.getLocalVersionNumber();
       this.fileInfo.dataDrectory = this.dataDirectory;
@@ -100,6 +106,18 @@ export class FileHelperService {
       // this.logMessage(JSON.stringify(this.fileInfo, null, 2));
       this.createUpdateWwwDirectory();
     });
+  }
+
+  private reloadHcpPage() {
+    const hcp = window["hcp"];
+    if (hcp) {
+      hcp.loadHcpPage();
+    }
+  }
+  private onResume() {
+    setTimeout(() => {
+      this.reloadHcpPage();
+    }, 0);
   }
   private async clearLocalHcpVersionIfAppUpdated() {
     if (AppHelper.isApp()) {
@@ -199,7 +217,7 @@ export class FileHelperService {
       } as IHcpUpdateModel);
     }
     return new Promise<IUpdateList>((resolve, reject) => {
-      const sub = this.apiService.getResponse<IUpdateList>(req).subscribe(
+      const sub = this.apiService.getResponse<string>(req).subscribe(
         r => {
           if (AppHelper.isFunction(onprogress)) {
             onprogress({
@@ -209,7 +227,7 @@ export class FileHelperService {
             } as IHcpUpdateModel);
           }
           if (r.Status && r.Data) {
-            resolve(r.Data);
+            resolve(JSON.parse(r.Data));
           } else {
             reject(r.Message);
           }
@@ -442,7 +460,7 @@ export class FileHelperService {
   private async getLocalVersionNumber() {
     await this.plt.ready();
     if (!AppHelper.isApp()) {
-      return `1.0.0`;
+      return `3.1.0`;
     }
     return this.appVersion.getVersionNumber();
   }
@@ -512,7 +530,7 @@ export class FileHelperService {
     fileName: string,
     onprogress: (hcp: IHcpUpdateModel) => void
   ) {
-    if (this.plt.is("ios")) {
+    if (AppHelper.isApp() && this.plt.is("ios")) {
       return new Promise<IHcpUpdateModel>(async (resolve, reject) => {
         const result = await this.download(
           `${destFilePathDir}/${fileName}`,
@@ -561,60 +579,58 @@ export class FileHelperService {
                 taskDesc: LanguageHelper.getFileDownloadingTip()
               } as IHcpUpdateModel);
             }
-            if (this.plt.is("ios")) {
-              if (evt.body && evt.status == 200 && evt.type == 4) {
-                // if (!AppHelper.isApp()) {
-                //   console.log(evt);
-                //   resolve({
-                //     hcpUpdateComplete: true,
-                //     nativePath: ``
-                //   } as IHcpUpdateModel);
-                //   return;
-                // }
-                const result = await this.writeContentToFile(
-                  destFilePathDir,
-                  fileName,
-                  evt.body,
-                  onprogress
-                ).catch(e => {
-                  reject(e);
-                  return null as IHcpUpdateModel;
-                });
-                this.logMessage("result ", result);
-                if (result) {
-                  resolve(result);
+            if (AppHelper.isApp()) {
+              if (this.plt.is("ios")) {
+                if (evt.body && evt.status == 200 && evt.type == 4) {
+                  const result = await this.writeContentToFile(
+                    destFilePathDir,
+                    fileName,
+                    evt.body,
+                    onprogress
+                  ).catch(e => {
+                    reject(e);
+                    return null as IHcpUpdateModel;
+                  });
+                  this.logMessage("result ", result);
+                  if (result) {
+                    resolve(result);
+                  }
+                } else {
+                  // reject(evt.statusText);
                 }
-              } else {
-                // reject(evt.statusText);
               }
-            }
-            if (this.plt.is("android")) {
-              if (evt instanceof HttpResponse) {
-                if (!AppHelper.isApp()) {
-                  console.log(evt);
-                  resolve({
-                    hcpUpdateComplete: true,
-                    nativePath: ``
-                  } as IHcpUpdateModel);
-                  return;
+              if (this.plt.is("android")) {
+                if (evt instanceof HttpResponse) {
+                  const result = await this.writeContentToFile(
+                    destFilePathDir,
+                    fileName,
+                    evt.body,
+                    onprogress
+                  ).catch(e => {
+                    reject(e);
+                    return null as IHcpUpdateModel;
+                  });
+                  if (result) {
+                    resolve(result);
+                  }
                 }
-                const result = await this.writeContentToFile(
-                  destFilePathDir,
-                  fileName,
-                  evt.body,
-                  onprogress
-                ).catch(e => {
-                  reject(e);
-                  return null as IHcpUpdateModel;
-                });
-                if (result) {
-                  resolve(result);
-                }
+              }
+            } else {
+              if (evt.body && evt.status == 200 && evt.type == 4) {
+                console.log(evt);
+                resolve({
+                  hcpUpdateComplete: true,
+                  nativePath: ``
+                } as IHcpUpdateModel);
               }
             }
           },
           e => {
-            reject(e);
+            if (e instanceof HttpErrorResponse) {
+              reject("网络错误或资源不存在," + e.message);
+            } else {
+              reject(e);
+            }
           },
           () => {
             if (sub) {
@@ -770,38 +786,50 @@ export class FileHelperService {
    * 更新 apk，仅 Android 平台能够在应用内更新，ios需要到App Store 下载更新
    * @param onprogress
    */
-  updateApk(onprogress: (hcp: IHcpUpdateModel) => void) {
-    return new Promise<string>(async (resolve, reject) => {
+  async updateApk(onprogress: (hcp: IHcpUpdateModel) => void) {
+    const result = {
+      msg: "",
+      status: false,
+      newApkPath: ""
+    };
+    try {
       await this.plt.ready();
       const up = await this.getServerVersion(onprogress);
       this.logMessage(`updateApk`, up);
       this.localVersion = await this.getLocalVersionNumber();
-
       if (!up || !up.Version || up.Version.length === 0 || !up.DownloadUrl) {
-        reject("初始化提前完成");
-        return false;
+        result.msg = "初始化提前完成";
+        result.status = false;
       }
       this.serverVersion = up.Version;
       if (
         !this.checkIfUpdateAppByVersion(this.serverVersion, this.localVersion)
       ) {
-        this.logMessage(`无需更新`);
-        resolve("");
-        return false;
+        result.msg = "无需更新";
+        result.status = false;
       }
       const apkUrl = `${up.ApkDownloadUrl}`;
       this.logMessage(`apkurl =${apkUrl}`);
       if (!apkUrl.includes(".apk")) {
-        reject(`apk 下载路径${apkUrl}错误`);
-        return;
+        result.msg = `apk 下载路径${apkUrl}错误`;
+        result.status = false;
       }
       const newApkPath = await this.downloadApk(apkUrl, onprogress, up.ApkMd5);
-      resolve(newApkPath);
-    }).catch(err => {
+      result.newApkPath = newApkPath;
+      result.status = true;
+      result.msg = "更新完成";
+    } catch (err) {
       this.logError(`updateApk 出错`, err);
-      AppHelper.alert(err);
-      return "";
-    });
+      AppHelper.toast(err, 2000, "bottom");
+      result.status = true;
+      result.msg = "更新完成";
+    }
+    onprogress({
+      hcpUpdateComplete: true,
+      taskDesc: result.msg,
+      url: result.newApkPath
+    } as IHcpUpdateModel);
+    return result.newApkPath;
   }
   private getFileMeta(filePath: string): Promise<any> {
     return new Promise(async (resolve, rej) => {
@@ -858,6 +886,7 @@ export class FileHelperService {
       this.dataDirectory,
       this.updateDirectoryName
     );
+    // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < apks.length; i++) {
       const apk = apks[i];
       const apkP = await this.getParent(apk);
@@ -871,6 +900,9 @@ export class FileHelperService {
     ).then(file => {
       return file.nativePath;
     });
+    if (!downloadApkUrl) {
+      return null;
+    }
     apkExists = await this.checkApkMd5(downloadApkUrl, Md5);
     this.logMessage("检查下载的apk md5 , ok ? " + apkExists);
     if (apkExists) {
@@ -879,7 +911,10 @@ export class FileHelperService {
     return null;
   }
   private async checkApkMd5(apkPath: string, serverMd5: string) {
-    return (await this.hcpPlugin.getHash(apkPath)) == serverMd5;
+    if (AppHelper.isApp()) {
+      return (await this.hcpPlugin.getHash(apkPath)) == serverMd5;
+    }
+    return true;
   }
   private async checkPathOrFileExists(filePath: string) {
     if (!AppHelper.isApp()) {

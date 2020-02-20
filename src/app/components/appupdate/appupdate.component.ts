@@ -29,6 +29,7 @@ export class AppUpdateComponent implements OnInit {
     if(AppHelper.isApp()){
       this.appUpdate();
     }
+    this.appUpdate();
   }
   /**
    * 
