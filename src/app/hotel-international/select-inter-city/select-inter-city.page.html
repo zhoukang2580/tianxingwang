@@ -29,7 +29,10 @@
               <span *ngIf='c.EnglishName as n'>,{{n}}</span>
             </ion-text>
           </h2>
-          <p *ngIf='it.EnglishName' class='ion-text-wrap'>{{it.EnglishName}}</p>
+          <p *ngIf='it.EnglishName' class='ion-text-wrap'>
+            <ng-container *ngIf='it.CityName as n'>{{n}},</ng-container>
+            {{it.EnglishName}}
+          </p>
         </ion-label>
       </ion-item>
     </ion-list>
@@ -39,6 +42,13 @@
     </ion-infinite-scroll-content>
   </ion-infinite-scroll>
   <ion-fab>
-    <app-pin-fab vertical="bottom" horizontal="end"></app-pin-fab>
+    <app-pin-fab vertical="bottom" horizontal="end">
+      <div *ngIf='searchCities?.length&&totalMatchCities?.length'>
+        <ion-text color='light'>
+          <div style="border-bottom: 1px solid white;"> {{searchCities.length}}</div>
+          <div> {{totalMatchCities.length}}</div>
+        </ion-text>
+      </div>
+    </app-pin-fab>
   </ion-fab>
 </ion-content>

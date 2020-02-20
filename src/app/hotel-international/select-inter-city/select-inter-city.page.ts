@@ -61,6 +61,7 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
   private pageSize = 25;
   private isFirstInit = false;
   searchCities: TrafficlineEntity[];
+  totalMatchCities: TrafficlineEntity[];
   searchContinents: any[];
   selectedCity: any;
   tabs: ITab[];
@@ -149,6 +150,7 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
       });
     }
     // console.log(name, tempCities);
+    this.totalMatchCities = tempCities;
     const result = tempCities.slice(
       this.searchCities.length,
       this.searchCities.length + this.pageSize
