@@ -462,15 +462,12 @@ export class SelectPassengerPage
         selectedCredential.Type == CredentialsType.Passport ||
         selectedCredential.Type == CredentialsType.HmPass;
       if (!isPsssportOrHmPass) {
-        const ok = await AppHelper.alert(
-          "当前选择的证件不是护照或者港澳台通行证，是否继续？",
+        await AppHelper.alert(
+          "需要维护护照或者港澳台通行证",
           true,
-          LanguageHelper.getYesTip(),
-          LanguageHelper.getNegativeTip()
+          LanguageHelper.getConfirmTip()
         );
-        if (!ok) {
-          return;
-        }
+        return;
       }
     }
     if (
