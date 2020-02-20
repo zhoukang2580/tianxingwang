@@ -399,43 +399,67 @@ export class InternationalHotelService {
     };
     return this.fetchPassengerCredentials.promise;
   }
+  isPassportHmTwPass(type: CredentialsType) {
+    return (
+      type == CredentialsType.Passport ||
+      type == CredentialsType.HmPass ||
+      type == CredentialsType.TwPass
+    );
+  }
+  async checkCredentialValidate(infos: PassengerBookInfo<IInterHotelInfo>[]) {
+    const isSelf = await this.staffService.isSelfBookType();
+    if (isSelf) {
+      const one = infos.find(it => !it.credential || !it.credential.Number);
+      if (one) {
+        await this.initSelfBookTypeBookInfos(true);
+      }
+    } else {
+      const res = await this.getPassengerCredentials(
+        infos.map(it => it.passenger && it.passenger.AccountId),
+        true
+      ).catch(_ => ({} as { [accountId: string]: [] }));
+      this.setBookInfos(
+        this.getBookInfos().map(it => {
+          const o = infos.find(itm => itm.id == it.id);
+          if (o) {
+            if (res[it.passenger.AccountId]) {
+              it.credential = res[it.passenger.AccountId].find(c =>
+                this.isPassportHmTwPass(c.Type)
+              );
+              o.credential = it.credential;
+            }
+          }
+          return it;
+        })
+      );
+    }
+  }
   private async initSelfBookTypeBookInfos(isShowLoading = false) {
     if (this.isInitializingSelfBookInfos) {
-      await this.isInitializingSelfBookInfos.promise;
+      return this.isInitializingSelfBookInfos.promise;
     } else {
       this.isInitializingSelfBookInfos = {
         promise: new Promise(async resolve => {
           const isSelf = await this.staffService.isSelfBookType(isShowLoading);
           const infos = this.getBookInfos();
           if (infos.length === 0 && isSelf) {
-            let passportOrHmPass: any;
+            let passportOrHmTwPass: any;
             const staff = await this.staffService.getStaff(
               false,
               isShowLoading
             );
-            if (!this.selfCredentials || this.selfCredentials.length === 0) {
-              const res = await this.getPassengerCredentials(
-                [staff.AccountId],
-                isShowLoading
-              ).catch(_ => ({ [staff.AccountId]: [] }));
-              this.selfCredentials = res[staff.AccountId];
-            }
-            passportOrHmPass =
+            const res = await this.getPassengerCredentials(
+              [staff.AccountId],
+              isShowLoading
+            ).catch(_ => ({ [staff.AccountId]: [] }));
+            this.selfCredentials = res[staff.AccountId];
+            passportOrHmTwPass =
               this.selfCredentials &&
-              this.selfCredentials.find(
-                c =>
-                  c.Type == CredentialsType.Passport ||
-                  c.Type == CredentialsType.HmPass
-              );
+              this.selfCredentials.find(c => this.isPassportHmTwPass(c.Type));
             const i: PassengerBookInfo<IInterHotelInfo> = {
               id: AppHelper.uuid(),
               passenger: staff,
-              credential:
-                passportOrHmPass ||
-                (this.selfCredentials &&
-                  this.selfCredentials.length &&
-                  this.selfCredentials[0]) ||
-                {}
+              credential: passportOrHmTwPass
             };
             this.addBookInfo(i);
             resolve();

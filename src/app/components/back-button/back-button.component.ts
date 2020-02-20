@@ -33,11 +33,6 @@ export class BackButtonComponent implements OnInit, AfterViewInit {
     this.isIos = platform.is("ios");
   }
   back(evt?: CustomEvent) {
-    console.log(
-      "app-back-button curUrl:",
-      this.curUrl,
-      "customeback " + this.customeback
-    );
     if (typeof this.backFn == "function") {
       this.backFn(evt);
       return;
@@ -51,10 +46,23 @@ export class BackButtonComponent implements OnInit, AfterViewInit {
       evt.preventDefault();
       evt.stopPropagation();
     }
+    console.log(
+      "app-back-button curUrl:",
+      this.curUrl,
+      "customeback = " + this.customeback,
+      this.router.url.match(this.curUrl)
+    );
     this.navCtrl.pop().then(() => {
-      if (this.router.url.includes(this.curUrl)) {
-        this.navCtrl.navigateBack(this.defaultHref || "");
-      }
+      console.log(
+        "app-back-button pop 后 curUrl:",
+        this.router.url.split("?")[0],
+        "customeback " + this.customeback
+      );
+      requestAnimationFrame(() => {
+        if (this.router.url.split("?")[0] == this.curUrl) {
+          this.navCtrl.navigateBack(this.defaultHref || "");
+        }
+      });
     });
   }
   ngOnInit() {}

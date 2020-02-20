@@ -18,10 +18,10 @@ import { LanguageHelper } from "src/app/languageHelper";
 import * as moment from "moment";
 import { map, tap } from "rxjs/operators";
 import { IInterHotelInfo } from "../international-hotel.service";
-import { RoomEntity } from 'src/app/hotel/models/RoomEntity';
-import { HotelEntity } from 'src/app/hotel/models/HotelEntity';
-import { RoomPlanEntity } from 'src/app/hotel/models/RoomPlanEntity';
-import { CredentialsType } from 'src/app/member/pipe/credential.pipe';
+import { RoomEntity } from "src/app/hotel/models/RoomEntity";
+import { HotelEntity } from "src/app/hotel/models/HotelEntity";
+import { RoomPlanEntity } from "src/app/hotel/models/RoomPlanEntity";
+import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 
 @Component({
   selector: "app-international-hotel-bookinfos",
@@ -193,14 +193,20 @@ export class InternationalHotelBookinfosPage implements OnInit {
     this.changeDateBookInfo = null;
   }
   async nextStep() {
-    const one = this.checkCredentialValidate();
+    const one = await this.checkCredentialValidate();
     if (one) {
-      const name = one.credential && (one.credential.Name || (`${one.credential.FirstName} ${one.credential.LastName
-        } `))
-      AppHelper.alert(`请检查${name} [${one.credential.Number}]证件类型`);
+      const name =
+        (one.credential &&
+          (one.credential.Name ||
+            `${one.credential.FirstName} ${one.credential.LastName} `)) ||
+        "";
+      const cnumber = (one.credential && one.credential.Number) || "";
+      AppHelper.alert(`请检查${name}  ${cnumber} 证件类型`);
       return;
     }
-    await this.router.navigate([AppHelper.getRoutePath("international-hotel-book")]);
+    await this.router.navigate([
+      AppHelper.getRoutePath("international-hotel-book")
+    ]);
     await this.hotelService.dismissAllTopOverlays();
   }
   onbedChange(bed: string, bookInfo: PassengerBookInfo<IInterHotelInfo>) {
@@ -264,11 +270,24 @@ export class InternationalHotelBookinfosPage implements OnInit {
     this.router.navigate(["international-room-detail"]);
   }
   canGoToNext() {
-    return this.hotelService.getBookInfos().some(it => it.bookInfo && it.bookInfo.hotelEntity);
+    return this.hotelService
+      .getBookInfos()
+      .some(it => it.bookInfo && it.bookInfo.hotelEntity);
   }
-  private checkCredentialValidate() {
+  private async checkCredentialValidate() {
     const infos = this.hotelService.getBookInfos();
-    return infos.find(it => !it.credential || !(it.credential.Type == CredentialsType.HmPass || it.credential.Type == CredentialsType.Passport));
+    await this.hotelService.checkCredentialValidate(
+      infos.filter(
+        it =>
+          !it.credential ||
+          !this.hotelService.isPassportHmTwPass(it.credential.Type)
+      )
+    );
+    return infos.find(
+      it =>
+        !it.credential ||
+        !this.hotelService.isPassportHmTwPass(it.credential.Type)
+    );
   }
   async ngOnInit() {
     this.config = await this.configService.get().catch(_ => null);

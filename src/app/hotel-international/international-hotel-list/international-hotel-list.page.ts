@@ -94,7 +94,6 @@ export class InternationalHotelListPage
   @ViewChild(IonInfiniteScroll) private scroller: IonInfiniteScroll;
   @ViewChild(RefresherComponent) private refresher: RefresherComponent;
   @ViewChild(PinFabComponent) pinFabComp: PinFabComponent;
-  private isDoRefresh = false;
   private oldSearchText: ISearchTextValue;
   private oldDestinationCode: string;
   isShowBackDrop = false;
@@ -322,7 +321,6 @@ export class InternationalHotelListPage
     this.hotels = [];
     this.pageIndex = 0;
     this.subscription.unsubscribe();
-    this.isDoRefresh = true;
     this.totalHotels = 0;
     if (!keepFilterCondition) {
       this.hotelService.setSearchConditionSource({
@@ -368,13 +366,10 @@ export class InternationalHotelListPage
       .pipe(
         finalize(() => {
           this.oldSearchText = this.searchCondition.searchText;
-          if (this.isDoRefresh) {
+          if (this.pageIndex <= 1) {
             this.completeRefresher();
           }
-          this.isDoRefresh = false;
-          setTimeout(() => {
-            this.isLoading = false;
-          }, 100);
+          this.isLoading = false;
         })
       )
       .subscribe(
