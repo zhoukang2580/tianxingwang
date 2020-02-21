@@ -38,32 +38,6 @@ ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
-  li {
-    display: flex;
-    align-items: flex-start;
-    padding: 0.15em 0;
-    border-top: 1px solid rgba(var(--ion-color-dark-rgb), 0.15);
-    img {
-      margin-right: 0.5em;
-      height: 7em;
-      width: 7em;
-      object-fit: cover;
-      min-width: 7em;
-      min-height: 7em;
-    }
-    .right-side {
-      width: 100%;
-      .name {
-        font-weight: bold;
-      }
-      .grade-stars {
-        margin: 0;
-        padding: 0.25em 0;
-        display: flex;
-        align-items: center;
-      }
-    }
-  }
 }
 .filter-condition {
   z-index: 200;

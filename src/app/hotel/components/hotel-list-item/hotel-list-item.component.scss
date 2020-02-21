@@ -1,5 +1,39 @@
-ion-thumbnail {
-  width: 7em;
-  height: 7em;
-  margin: 0 0.5em 0 -0.5em;
+.hotel-item {
+  display: flex;
+  align-items: center;
+  padding: 0.15em 0;
+  border-top: 1px solid rgba(var(--ion-color-dark-rgb), 0.15);
+  .hotel-img {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 5em;
+    width: 5em;
+    margin-right: 0.5em;
+  }
+  img {
+    margin-right: 0.5em;
+    height: 7em;
+    width: 7em;
+    object-fit: cover;
+    min-width: 7em;
+    min-height: 7em;
+  }
+  .right-side {
+    font-size: 0.8rem;
+    flex: 1;
+    .name {
+      font-weight: bold;
+    }
+    .grade-stars {
+      font-size: inherit;
+      margin: 0;
+      padding: 0.25em 0;
+      display: flex;
+      align-items: center;
+    }
+    .location{
+      padding: 0.25em 0;
+    }
+  }
 }

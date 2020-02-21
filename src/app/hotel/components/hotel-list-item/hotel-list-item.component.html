@@ -1,16 +1,32 @@
-<ion-item class='ion-no-margin ion-no-padding' lines='none'>
-  <ion-thumbnail slot='start'>
-    <img [lazyLoad]='item?.Hotel?.FileName' [defaultImage]='config?.PrerenderImageUrl' /> 
-  </ion-thumbnail>
-  <ion-label>
-    <h1>
-      <strong>{{item?.Hotel?.Name}}</strong>
-    </h1>
-    <h1>
-      {{item?.Hotel?.Grade}}
-    </h1>
-    <h1>
-      {{item?.Hotel?.Address}}
-    </h1>
-  </ion-label>
-</ion-item>
+<div class="hotel-item">
+  <div class="hotel-img" [lazyLoad]='item?.Hotel?.FileName' [defaultImage]='config?.PrerenderImageUrl'></div>
+  <div class="right-side">
+    <div class='name ion-text-wrap'>
+      {{item.Hotel?.Name}}
+    </div>
+    <div class='grade-stars'>
+      <div class='stars' class='ion-margin-end' *ngIf='item.Hotel["stars"] as stars'>
+        <ng-container *ngFor='let s of stars'>
+          <ion-icon name="star" color='danger' *ngIf='s>=1'></ion-icon>
+          <ion-icon name='star-half' color='danger' *ngIf='s<1'></ion-icon>
+        </ng-container>
+      </div>
+      <ng-container *ngIf='item.Hotel?.Grade as grade'>
+        {{grade}}分
+      </ng-container>
+    </div>
+    <div class='ion-text-wrap location' *ngIf='item.Hotel?.VariablesJsonObj["GeoDistance"] as distance'>
+      <ion-icon name="location" color='secondary'></ion-icon>
+      <ion-label color='medium'>
+        距离{{distance.substring(0,distance.indexOf(','))}}直线距离约{{distance.substring(distance.indexOf(',')+1)}}km
+      </ion-label>
+    </div>
+    <div>
+      <div class="ion-text-wrap">{{item.Hotel?.Address}}</div>
+      <div class="ion-text-end ion-padding-end">
+        <ion-text color='danger'><small>￥</small> <strong>{{item.Hotel["avgPrice"]}}</strong>
+          <small>起</small> </ion-text>
+      </div>
+    </div>
+  </div>
+</div>
