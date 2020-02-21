@@ -82,7 +82,7 @@ module.exports = function (context) {
                       const distFile =   fs.readFileSync(distPath1,{encoding:"utf8"});
                       if(distFile){
                          const str= distFile.replace(/^package.*;/g,"package "+packageName+".wxapi;");
-                         console.log(str);
+                        //  console.log(str);
                           fs.writeFileSync(distPath1,str,{encoding:"utf8"});
                       }
                     }
@@ -94,7 +94,7 @@ module.exports = function (context) {
                       const distFile =   fs.readFileSync(distpayPath,{encoding:"utf8"});
                       if(distFile){
                          const str= distFile.replace(/^package.*;/g,"package "+packageName+".wxapi;");
-                         console.log(str);
+                        //  console.log(str);
                           fs.writeFileSync(distpayPath,str,{encoding:"utf8"});
                       }
                     }

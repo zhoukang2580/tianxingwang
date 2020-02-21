@@ -1,6 +1,86 @@
 const fs = require("fs");
 const path = require("path");
+function delDir(p, delSelf) {
+  let files = [];
+  if (fs.existsSync(p)) {
+    files = fs.readdirSync(p);
+    files.forEach((file, index) => {
+      let curPath = path.join(p, file);
+      if (fs.statSync(curPath).isDirectory()) {
+        delDir(curPath,true); //递归删除文件夹
+      } else {
+        fs.unlinkSync(curPath,true); //删除文件
+      }
+    });
+    if (delSelf) {
+      fs.rmdirSync(p);
+    }
+  }
+}
+
+function copyDir(src, dst) {
+  let paths = fs.readdirSync(src); //同步读取当前目录
+  paths.forEach(function (fpath) {
+    var _src = path.join(src, fpath);
+    var _dst = path.join(dst, fpath);
+    const stats = fs.statSync(_src);
+    if (stats.isFile()) { //如果是个文件则拷贝 
+      let readable = fs.createReadStream(_src);//创建读取流
+      let writable = fs.createWriteStream(_dst);//创建写入流
+      readable.pipe(writable);
+    } else if (stats.isDirectory()) { //是目录则 递归 
+      checkDirectory(_src, _dst, copyDir);
+    }
+  });
+}
+function checkDirectory(src, dst, callback) {
+  try {
+    fs.accessSync(dst, fs.constants.F_OK);
+  } catch (err) {
+    fs.mkdirSync(dst);
+    callback(src, dst);
+  }
+  callback(src, dst);
+};
 module.exports = function (ctx) {
+  let statTime = Date.now();
+  function copyProductionWwwToProjectRoot() {
+    try {
+      const json = fs.readFileSync(path.join(ctx.opts.projectRoot, 'angular.json'), { encoding: "utf8" });
+      if (json) {
+        const obj = JSON.parse(json);
+        if (obj && obj.projects.app.architect.build.options.outputPath) {
+          const outputPath = path.resolve(ctx.opts.projectRoot, obj.projects.app.architect.build.options.outputPath);
+          console.log("dist", outputPath);
+          const wwwPath = path.join(ctx.opts.projectRoot, 'www');
+          if (fs.existsSync(wwwPath)) {
+            statTime = Date.now();
+            delDir(wwwPath, true);
+            console.log("删除旧 www 耗时：", Date.now() - statTime);
+          }
+          if (fs.existsSync(outputPath)) {
+            if (!fs.existsSync(wwwPath, 'www')) {
+              fs.mkdirSync(wwwPath);
+            }
+            copyDir(outputPath, wwwPath);
+            console.log("拷贝www耗时：", Date.now() - statTime);
+          }
+        }
+      }
+    } catch (e) {
+      console.error("拷贝www目录失败", e);
+    }
+  }
+  function copyCordovaErrorHtml() {
+    const wwwPath = path.join(ctx.opts.projectRoot, 'www');
+    const name='cordovaError.html';
+    const errorhtmlPath = path.join(ctx.opts.projectRoot, 'src', name);
+    if (fs.existsSync(errorhtmlPath)) {
+      fs.copyFileSync(errorhtmlPath,path.join(wwwPath,name), { encoding: "utf8" });
+    }
+  }
+  copyProductionWwwToProjectRoot();
+  copyCordovaErrorHtml();
   if (ctx.opts.platforms.includes("android")) {
     const projectRoot = ctx.opts.projectRoot;
     const tgtXmlPath = path.resolve(
@@ -33,20 +113,20 @@ module.exports = function (ctx) {
       </network-security-config>
       `.trim();
     fs.writeFileSync(tgtXmlPath, xml);
-    const configxml= path.resolve(
+    const configxml = path.resolve(
       projectRoot,
       "config.xml"
     );
-    const assetsConfigxml= path.resolve(
+    const assetsConfigxml = path.resolve(
       projectRoot,
       "src",
       "assets",
       "config.xml"
     );
-    if(fs.existsSync(assetsConfigxml)){
+    if (fs.existsSync(assetsConfigxml)) {
       fs.unlinkSync(assetsConfigxml);
     }
-    fs.copyFileSync(configxml,assetsConfigxml);
+    fs.copyFileSync(configxml, assetsConfigxml);
     // fs.writeFileSync(
     //   network_security_configxmlPath,
     //   network_security_configxml
@@ -157,8 +237,8 @@ module.exports = function (ctx) {
   //   }
   //   // throw 'error';
   // }
-  if (ctx.opts.platforms.includes("ios")) {return;}
-  if(fs.existsSync(path.join(ctx.opts.projectRoot,'build-extras.gradle'))){
-    fs.copyFileSync(path.join(ctx.opts.projectRoot,'build-extras.gradle'),path.join(ctx.opts.projectRoot,'platforms','android','app','build-extras.gradle'));
+  if (ctx.opts.platforms.includes("ios")) { return; }
+  if (fs.existsSync(path.join(ctx.opts.projectRoot, 'build-extras.gradle'))) {
+    fs.copyFileSync(path.join(ctx.opts.projectRoot, 'build-extras.gradle'), path.join(ctx.opts.projectRoot, 'platforms', 'android', 'app', 'build-extras.gradle'));
   }
 };

@@ -5,6 +5,22 @@ const fs = require("fs");
 const fread = require("fs-readdir-recursive");
 const crypto = require("crypto");
 // const { spawn } = require("child_process");
+const { PerformanceObserver, performance } = require('perf_hooks');
+
+const obs = new PerformanceObserver((items) => {
+    console.log(items,items.getEntries()[0].duration);
+    performance.clearMarks();
+});
+obs.observe({ entryTypes: ['measure'] });
+
+performance.mark('A');
+setTimeout(
+    () => {
+        performance.mark('B');
+        performance.measure('A to B', 'A', 'B');
+
+    }, 2000)
+return
 function hashFile(filename) {
     return new Promise(function (s) {
         var hash = crypto.createHash("md5"),
@@ -32,8 +48,8 @@ var files = fread(
     p => !p.includes(".zip") && !p.includes("filesHash.json")
 );
 var md5JsonFiles = [];
-const stats=fs.statSync(path.join(wwwPath, "filesHash.json"))
-console.log("stats",stats,new Date(stats.birthtimeMs).toLocaleString());
+const stats = fs.statSync(path.join(wwwPath, "filesHash.json"))
+console.log("stats", stats, new Date(stats.birthtimeMs).toLocaleString());
 
 const old = JSON.parse(fs.readFileSync(path.join(wwwPath, "filesHash.json"), { encoding: "utf-8" }));
 console.log(`文件总数${old.length}个`, `实际文件个数${files.length}`)
@@ -49,7 +65,7 @@ for (let i = 0; i < files.length; i++) {
 Promise.all(ps).then(res => {
     // console.log(res)
     for (let i = 0; i < files.length; i++) {
-        const file=files[i];
+        const file = files[i];
         const hash = res[i];
         const o = old.find(it => it.file == file);
         if (o && o.hash != hash) {
