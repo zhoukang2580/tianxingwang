@@ -1,29 +1,24 @@
-<ion-item>
-  <ion-thumbnail slot='start'>
-    <img [lazyLoad]='hotel?.FullFileName' [defaultImage]='defaultImage' alt="图片">
-    <!-- <img [src]='hotel?.FullFileName'  alt="图片"/> -->
-  </ion-thumbnail>
-  <ion-label>
-    <h1 class='name'>{{hotel?.Name}}</h1>
-    <h2 class='sub-name' *ngIf='hotel?.enName as n'>{{n}}</h2>
-    <h3>
+<div class="hotel-item ">
+  <!-- <div class="hotel-img" [lazyLoad]='hotel?.FileName' [defaultImage]='defaultImage'></div> -->
+  <img class="hotel-img" [lazyLoad]='hotel?.FileName' [defaultImage]='defaultImage' alt="酒店图片">
+  <div class="right-side ion-padding-end">
+    <div class='name'>{{hotel?.Name}}</div>
+    <div class='sub-name' *ngIf='hotel?.enName as n'>{{n}}</div>
+    <div class="grade-stars">
       <ng-container *ngFor='let i of hotel?.grades'>
         <ion-icon name='star' *ngIf='i>=1' color='danger'></ion-icon>
         <ion-icon name='star-half' *ngIf='i<1' color='danger'></ion-icon>
       </ng-container>
       <ion-text class='ion-margin-start' color='secondary' *ngIf='hotel?.Grade as g'>{{g}}分</ion-text>
-    </h3>
-    <p>
+    </div>
+    <div class="location">
       <ion-icon name='location' color='secondary'> </ion-icon>
       {{hotel?.Address}}
-    </p>
-    <h2 class='ion-text-end'>
-      <ion-text color='medium' *ngIf=''>
-        含税总价
-      </ion-text>
+    </div>
+    <div class="ion-text-end price" >
       <small>￥</small>
-      <span class='price'>{{hotel?.avgPrice}}</span>
+      <span >{{hotel?.avgPrice}}</span>
       <small>起</small>
-    </h2>
-  </ion-label>
-</ion-item>
+    </div>
+  </div>
+</div>

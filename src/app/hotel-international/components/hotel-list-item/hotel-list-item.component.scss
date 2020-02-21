@@ -1,43 +1,37 @@
-ion-thumbnail {
-  min-width: 7em;
-  min-height: 7em;
-  width: 7em;
-  height: 7em;
-  margin-left: -0.5em;
-  img {
-    min-width: 7em;
-    min-height: 7em;
-    width: 7em;
-    height: 7em;
+.hotel-item {
+  display: flex;
+  align-items: center;
+  padding: 0.15em 0;
+  border-top: 1px solid rgba(var(--ion-color-dark-rgb), 0.15);
+  .hotel-img {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 5em;
+    width: 5em;
+    margin-right: 0.5em;
   }
-}
-h2.ion-text-end {
-  ion-text,
-  small {
+  .right-side {
     font-size: 0.8rem;
-  }
-  color: var(--ion-color-danger);
-  .price {
-    //   margin: 0 -0.1em 0 -0.15em;
-    font-weight: 700;
-    font-size: 1.25rem;
-  }
-}
-ion-label {
-  p {
-    display: flex;
-    align-items: center;
-  }
-  .name {
-    font-size: 1rem;
-    font-weight: bold;
-  }
-  .sub-name {
-    font-size: 0.8rem;
-  }
-  .name,
-  .sub-name {
-    overflow: hidden;
-    text-overflow: ellipsis;
+    flex: 1;
+    .name {
+      font-weight: bold;
+    }
+    .grade-stars {
+      font-size: inherit;
+      margin: 0;
+      padding: 0.25em 0;
+      display: flex;
+      align-items: center;
+    }
+    .location {
+      padding: 0.25em 0;
+    }
+    .price {
+      small {
+        font-size: 0.7rem;
+      }
+      color: var(--ion-color-danger);
+    }
   }
 }

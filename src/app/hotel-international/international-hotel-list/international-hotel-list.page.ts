@@ -60,14 +60,24 @@ import { PinFabComponent } from "src/app/components/pin-fab/pin-fab.component";
     trigger("queryPanelShowHide", [
       state(
         "true",
-        style({ transform: "translate3d(0,0,0)", opacity: 1, zIndex: 100 })
+        style({
+          willChange: "auto",
+          transform: "translate3d(0,0,0)",
+          opacity: 1,
+          zIndex: 100
+        })
       ),
       state(
         "false",
-        style({ transform: "translate3d(0,200%,0)", opacity: 0, zIndex: -100 })
+        style({
+          willChange: "auto",
+          transform: "translate3d(0,200%,0)",
+          opacity: 0,
+          zIndex: -100
+        })
       ),
       transition("false=>true", [
-        style({ zIndex: 1 }),
+        style({ zIndex: 1, willChange: "transform,opacity" }),
         animate("200ms", style({ transform: "translate3d(0,0,0)", opacity: 1 }))
       ]),
       transition(
@@ -75,6 +85,7 @@ import { PinFabComponent } from "src/app/components/pin-fab/pin-fab.component";
         animate(
           "100ms",
           style({
+            willChange: "transform,opacity",
             transform: "translate3d(0,200%,0)",
             opacity: 0
           })
@@ -144,15 +155,15 @@ export class InternationalHotelListPage
   onShowPanel(tab: IInterHotelQueryTab) {
     this.filterTab = tab;
     if (tab && tab.active) {
-      if (this.hotels && this.hotels.length > 2 * 20) {
-        this.hotels = this.hotels.slice(0, 20);
-        const hotelQuery = this.hotelService.getHotelQueryModel();
-        hotelQuery.PageIndex = 1;
-        if (this.scroller) {
-          this.scroller.disabled = false;
-        }
-        this.hotelService.setHotelQuerySource(hotelQuery);
-      }
+      // if (this.hotels && this.hotels.length > 2 * 20) {
+      //   this.hotels = this.hotels.slice(0, 20);
+      //   const hotelQuery = this.hotelService.getHotelQueryModel();
+      //   hotelQuery.PageIndex = 1;
+      //   if (this.scroller) {
+      //     this.scroller.disabled = false;
+      //   }
+      //   this.hotelService.setHotelQuerySource(hotelQuery);
+      // }
     }
     this.scrollToTop();
   }
