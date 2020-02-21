@@ -105,7 +105,6 @@
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-console": {},
       "cordova-wechat-plugin": {},
-      "cordova-hcp-plugin": {},
       "cordova-ali-plugin": {},
       "cordova-plugin-add-swift-support": {},
       "cordova-plugin-app-version": {},
@@ -120,7 +119,8 @@
       "cordova-sqlite-storage": {},
       "phonegap-plugin-barcodescanner": {
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
-      }
+      },
+      "cordova-hcp-plugin": {}
     },
     "platforms": [
       "android"

@@ -174,6 +174,7 @@ public class Hcp extends CordovaPlugin {
                         return;
                     }
                     if (destroyed || !webView.getUrl().contains("_app_file_")) {
+                        Log.d(TAG,"webview加载热更URL="+path+" 加载前URL="+webView.getUrl());
                         webView.loadUrlIntoView(path, false);
                         webView.clearHistory();
                     }

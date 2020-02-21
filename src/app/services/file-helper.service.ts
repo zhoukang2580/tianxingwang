@@ -90,7 +90,6 @@ export class FileHelperService {
       // if(this.plt.is("ios")&&window['cordova'].file){
       //   this.dataDirectory=window['cordova'].file.dataDirectory;
       // }
-      document.addEventListener("resume", () => this.onResume(), false);
       await this.clearLocalHcpVersionIfAppUpdated();
       this.localVersion = await this.getLocalVersionNumber();
       this.fileInfo.dataDrectory = this.dataDirectory;
@@ -108,17 +107,6 @@ export class FileHelperService {
     });
   }
 
-  private reloadHcpPage() {
-    if (this.hcpPlugin) {
-      this.hcpPlugin.loadHcpPage();
-    }
-  }
-  private onResume() {
-    const ok = window.confirm("是否加载页面？");
-    if (ok) {
-      this.reloadHcpPage();
-    }
-  }
   private async clearLocalHcpVersionIfAppUpdated() {
     if (AppHelper.isApp()) {
       const curRunningVersionStr = await this.getLocalVersionNumber();
@@ -398,7 +386,7 @@ export class FileHelperService {
         await this.listDirFiles(this.dataDirectory, this.updateDirectoryName);
         resolve(this.webView.convertFileSrc(vpPath));
       } catch (e) {
-        this.logMessage(`热更失败 ${JSON.stringify(e, null, 2)}`);
+        this.logMessage(`热更失败 `,e);
         reject(e);
         return false;
       }

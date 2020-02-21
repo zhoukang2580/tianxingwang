@@ -25,13 +25,13 @@
     <preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="3000" />
     <preference name="LogLevel" value="VERBOSE" />
-    <preference name="errorUrl" value="cordovaError.html" />
     <preference name="FullscreenNotImmersive" value="true" />
     <preference name="WECHATAPPID" value="wx0839a418ccafdf36" />
     <hook src="scripts/before_build.js" type="before_build" />
     <hook src="scripts/zipfile_before_build.js" type="before_build" />
     <hook src="scripts/after_build.js" type="after_build" />
     <platform name="android">
+        <preference name="errorUrl" value="file:///android_asset/www/cordovaError.html" />
         <hook src="scripts/wechat-plugin-hook.js" type="before_build" />
         <allow-intent href="market:*" />
         <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
@@ -54,6 +54,7 @@
         <splash density="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
     </platform>
     <platform name="ios">
+        <preference name="errorUrl" value="ionic://app/cordovaError.html" />
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
         <icon height="57" src="resources/ios/icon/icon.png" width="57" />
@@ -113,5 +114,4 @@
     <plugin name="cordova-plugin-console" spec="~1.1.0" />
     <plugin name="cordova-wechat-plugin" spec="./cordova-wechat-plugin">
     </plugin>
-    <plugin name="cordova-hcp-plugin" spec="./cordova-hcp-plugin" />
 </widget>
