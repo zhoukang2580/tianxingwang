@@ -1,3 +1,4 @@
+import { FileHelperService } from 'src/app/services/file-helper.service';
 import { AppHelper } from "./../../appHelper";
 import { HttpClient } from "@angular/common/http";
 import { ActivatedRoute } from "@angular/router";
@@ -37,8 +38,9 @@ export class ViewDetailPage implements OnInit, AfterContentChecked, OnDestroy {
     private route: ActivatedRoute,
     private cdRef: ChangeDetectorRef,
     private http: HttpClient,
-    private plt: Platform
-  ) {}
+    private plt: Platform,
+    private fileService: FileHelperService
+  ) { }
   back(evt?: CustomEvent) {
     if (evt) {
       evt.preventDefault();
@@ -155,8 +157,12 @@ export class ViewDetailPage implements OnInit, AfterContentChecked, OnDestroy {
                 } else {
                   window.open(url, "_blank");
                 }
-              }else{
-                window.open(url, "_blank");
+              } else {
+                if (this.plt.is("ios")) {
+                  window.open(url, "_blank");
+                } else {
+                  this.fileService.app.loadUrl(url, { openexternal: true });
+                }
               }
             }
           });
