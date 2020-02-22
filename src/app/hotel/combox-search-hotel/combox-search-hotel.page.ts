@@ -1,3 +1,4 @@
+import { RefresherComponent } from 'src/app/components/refresher';
 import { ActivatedRoute } from "@angular/router";
 import { flyInOut } from "./../../animations/flyInOut";
 import { RefresherComponent } from "./../../components/refresher/refresher.component";
@@ -25,7 +26,7 @@ interface ISearchTextValue {
   animations: [flyInOut]
 })
 export class ComboxSearchHotelPage implements OnInit, OnDestroy {
-  @ViewChild(IonRefresher) refresh: IonRefresher;
+  @ViewChild(RefresherComponent) refresh: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   private pageIndex = 0;
   private subscription = Subscription.EMPTY;
