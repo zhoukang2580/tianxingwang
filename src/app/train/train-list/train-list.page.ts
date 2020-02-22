@@ -1,3 +1,4 @@
+import { RefresherComponent } from './../../components/refresher/refresher.component';
 import { flyInOut } from "./../../animations/flyInOut";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { TrainFilterComponent } from "./../components/train-filter/train-filter.component";
@@ -65,8 +66,8 @@ import { trigger, transition, style, animate } from '@angular/animations';
 export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(DaysCalendarComponent)
   private daysCalendarComp: DaysCalendarComponent;
-  @ViewChild(IonRefresher)
-  private ionRefresher: IonRefresher;
+  @ViewChild(RefresherComponent)
+  private ionRefresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll)
   private scroller: IonInfiniteScroll;
   @ViewChild(IonContent) private cnt: IonContent;

@@ -68,9 +68,9 @@
       </app-days-calendar>
     </ion-toolbar>
   </div>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh(true,false)">
+  <app-refresher slot="fixed" (ionRefresh)="doRefresh(true,false)">
     <ion-refresher-content>正在刷新...</ion-refresher-content>
-  </ion-refresher>
+  </app-refresher>
   <app-or-comp *ngIf='isLoading'>
     {{progressName}}
   </app-or-comp>
