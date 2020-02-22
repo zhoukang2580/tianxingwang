@@ -1,6 +1,23 @@
 {
-  "appId": "com.dm.online",
-  "appName": "东美在线",
+  "appId": "com.skytrip.dmonline",
+  "appName": "App",
   "bundledWebRuntime": false,
-  "webDir": "www"
+  "webDir": "www",
+  "npmClient": "npm",
+  "cordova": {
+    "preferences": {
+      "ScrollEnabled": "false",
+      "android-minSdkVersion": "19",
+      "android-targetSdkVersion": "27",
+      "BackupWebStorage": "none",
+      "SplashMaintainAspectRatio": "true",
+      "FadeSplashScreenDuration": "300",
+      "SplashShowOnlyFirstTime": "false",
+      "SplashScreen": "screen",
+      "SplashScreenDelay": "3000",
+      "LogLevel": "VERBOSE",
+      "FullscreenNotImmersive": "true",
+      "WECHATAPPID": "wx0839a418ccafdf36"
+    }
+  }
 }

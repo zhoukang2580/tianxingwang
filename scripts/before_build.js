@@ -7,9 +7,9 @@ function delDir(p, delSelf) {
     files.forEach((file, index) => {
       let curPath = path.join(p, file);
       if (fs.statSync(curPath).isDirectory()) {
-        delDir(curPath,true); //递归删除文件夹
+        delDir(curPath, true); //递归删除文件夹
       } else {
-        fs.unlinkSync(curPath,true); //删除文件
+        fs.unlinkSync(curPath, true); //删除文件
       }
     });
     if (delSelf) {
@@ -42,45 +42,57 @@ function checkDirectory(src, dst, callback) {
   }
   callback(src, dst);
 };
-module.exports = function (ctx) {
+function checkAngularJsonOutPutPath(ctx) {
+  const json = fs.readFileSync(path.join(ctx.opts.projectRoot, 'angular.json'), { encoding: "utf8" });
+  if (json) {
+    const obj = JSON.parse(json);
+    if (obj.projects.app.architect.build.options.outputPath != "www") {
+      throw new Error(`请将 angular.json 文件中的 outputPath 的值更改为默认值 www ，然后重新编译 ionic cordova build android --prod --release`);
+    }
+  }
+}
+function copyProductionWwwToProjectRoot(ctx) {
   let statTime = Date.now();
-  function copyProductionWwwToProjectRoot() {
-    try {
-      const json = fs.readFileSync(path.join(ctx.opts.projectRoot, 'angular.json'), { encoding: "utf8" });
-      if (json) {
-        const obj = JSON.parse(json);
-        if (obj && obj.projects.app.architect.build.options.outputPath) {
-          const outputPath = path.resolve(ctx.opts.projectRoot, obj.projects.app.architect.build.options.outputPath);
-          console.log("dist", outputPath);
-          const wwwPath = path.join(ctx.opts.projectRoot, 'www');
-          if (fs.existsSync(wwwPath)) {
-            statTime = Date.now();
-            delDir(wwwPath, true);
-            console.log("删除旧 www 耗时：", Date.now() - statTime);
+  try {
+    const json = fs.readFileSync(path.join(ctx.opts.projectRoot, 'angular.json'), { encoding: "utf8" });
+    if (json) {
+      const obj = JSON.parse(json);
+      if (obj && obj.projects.app.architect.build.options.outputPath) {
+        const outputPath = path.resolve(ctx.opts.projectRoot, obj.projects.app.architect.build.options.outputPath);
+        console.log("dist", outputPath);
+        const wwwPath = path.join(ctx.opts.projectRoot, 'www');
+        if (fs.existsSync(wwwPath)) {
+          statTime = Date.now();
+          delDir(wwwPath, true);
+          console.log("删除旧 www 耗时：", Date.now() - statTime);
+        } else {
+          throw new Error("请先执行编译操作 ionic cordova build android")
+        }
+        if (fs.existsSync(outputPath)) {
+          if (!fs.existsSync(wwwPath, 'www')) {
+            fs.mkdirSync(wwwPath);
           }
-          if (fs.existsSync(outputPath)) {
-            if (!fs.existsSync(wwwPath, 'www')) {
-              fs.mkdirSync(wwwPath);
-            }
-            copyDir(outputPath, wwwPath);
-            console.log("拷贝www耗时：", Date.now() - statTime);
-          }
+          copyDir(outputPath, wwwPath);
+          console.log("拷贝www耗时：", Date.now() - statTime);
         }
       }
-    } catch (e) {
-      console.error("拷贝www目录失败", e);
     }
+  } catch (e) {
+    console.error("拷贝www目录失败", e);
   }
-  function copyCordovaErrorHtml() {
-    const wwwPath = path.join(ctx.opts.projectRoot, 'www');
-    const name='cordovaError.html';
-    const errorhtmlPath = path.join(ctx.opts.projectRoot, 'src', name);
-    if (fs.existsSync(errorhtmlPath)) {
-      fs.copyFileSync(errorhtmlPath,path.join(wwwPath,name), { encoding: "utf8" });
-    }
+}
+function copyCordovaErrorHtml(ctx) {
+  const wwwPath = path.join(ctx.opts.projectRoot, 'www');
+  const name = 'cordovaError.html';
+  const errorhtmlPath = path.join(ctx.opts.projectRoot, 'src', name);
+  if (fs.existsSync(errorhtmlPath)) {
+    fs.copyFileSync(errorhtmlPath, path.join(wwwPath, name), { encoding: "utf8" });
   }
-  copyProductionWwwToProjectRoot();
-  copyCordovaErrorHtml();
+}
+module.exports = function (ctx) {
+  checkAngularJsonOutPutPath(ctx);
+  // copyProductionWwwToProjectRoot();
+  copyCordovaErrorHtml(ctx);
   if (ctx.opts.platforms.includes("android")) {
     const projectRoot = ctx.opts.projectRoot;
     const tgtXmlPath = path.resolve(

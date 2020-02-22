@@ -59,6 +59,51 @@ exports.getHash = function(arg0) {
     );
   });
 };
+exports.getWebViewUrl = function() {
+  return new Promise((resolve, reject) => {
+    exec(
+      webviewUrl => {
+        resolve(webviewUrl);
+      },
+      error => {
+        reject(error);
+      },
+      "Hcp",
+      "getWebViewUrl",
+      []
+    );
+  });
+};
+exports.getStartIndexPath = function() {
+  return new Promise((resolve, reject) => {
+    exec(
+      startIndex => {
+        resolve(startIndex);
+      },
+      error => {
+        reject(error);
+      },
+      "Hcp",
+      "getStartIndexPath",
+      []
+    );
+  });
+};
+exports.loadHcpPage = function() {
+  return new Promise((resolve, reject) => {
+    exec(
+      () => {
+        resolve();
+      },
+      error => {
+        reject(error);
+      },
+      "Hcp",
+      "loadHcpPage",
+      []
+    );
+  });
+};
 exports.checkPathOrFileExists = function(arg0) {
   return new Promise((resolve, reject) => {
     exec(

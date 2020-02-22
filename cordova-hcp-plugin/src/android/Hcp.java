@@ -1,7 +1,9 @@
 package com.beeant.plugin.hcp;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -14,8 +16,13 @@ import android.provider.Settings;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.webkit.WebView;
+import android.widget.Toast;
 
 import com.beeant.plugin.hcp.utils.MD5;
+import com.ionicframework.cordova.webview.IonicWebViewEngine;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -39,6 +46,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 public class Hcp extends CordovaPlugin {
+    private  IonicWebViewEngine ionicWebViewEngine;
     private final String TAG = "HCP";
     private static final String FILE_PREFIX = "file://";
     private static final String LOCAL_ASSETS_FOLDER = "file:///android_asset/www";
@@ -47,11 +55,52 @@ public class Hcp extends CordovaPlugin {
     private boolean destroyed;
 
     @Override
-    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
-        super.initialize(cordova, webView);
+    public void pluginInitialize(){
         preferences = cordova.getActivity().getPreferences(0);
-        loadHcpPage();
-        Log.d(TAG, "initialize");
+        ionicWebViewEngine = (IonicWebViewEngine) webView.getEngine();
+        changeBasePath();
+    }
+    private  void  changeBasePath(){
+        String hcpPage=getHcpStartIndex();
+        if(!TextUtils.isEmpty(hcpPage)){
+            String base=hcpPage.replace("/index.html","");
+            if(checkInstallNewVersionApk()){
+               return;
+            }
+            Log.d(TAG,"base ="+base);
+            ionicWebViewEngine.setServerBasePath(base);
+        }
+        Log.d(TAG, "initialize getServerBasePath="+(ionicWebViewEngine!=null?ionicWebViewEngine.getServerBasePath():null));
+    }
+    @Override
+    public boolean onOverrideUrlLoading(String url) {
+        Log.d(TAG,"onOverrideUrlLoading Url="+url);
+        return super.onOverrideUrlLoading(url);
+    }
+
+    private void showDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(cordova.getActivity());
+        builder.setTitle("请回答");
+        builder.setMessage("你觉得我好看吗？？");
+        builder.setPositiveButton("当然是好看了！！", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(cordova.getActivity(), "嘻嘻嘻", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNeutralButton("我觉得一般", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(cordova.getActivity(), "那你再瞅瞅~", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("我觉得不好看", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(cordova.getActivity(), "嘤嘤嘤", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.show();
     }
 
     @Override
@@ -77,6 +126,7 @@ public class Hcp extends CordovaPlugin {
     @Override
     public void onDestroy() {
         destroyed = true;
+        Log.d(TAG, "hcp plugin  onDestroy ");
         super.onDestroy();
     }
 
@@ -86,6 +136,11 @@ public class Hcp extends CordovaPlugin {
         if (TextUtils.equals("openHcpPage", action)) {
             mMallbackContext = callbackContext;
             this.openHcpPage(args.optString(0), callbackContext);
+            return true;
+        }
+        if (TextUtils.equals("loadHcpPage", action)) {
+            callbackContext.success();
+            this.loadHcpPage();
             return true;
         }
         if (TextUtils.equals("saveHcpPath", action)) {
@@ -101,6 +156,20 @@ public class Hcp extends CordovaPlugin {
             cordova.getThreadPool().execute(() -> {
                 this.getHash(args.optString(0), callbackContext);
             });
+            return true;
+        }
+        if (TextUtils.equals("getWebViewUrl", action)) {
+            cordova.getActivity().runOnUiThread(() -> {
+                String url = webView.getUrl();
+                Log.d(TAG, "getWebViewUrl " + url);
+                callbackContext.success(url);
+            });
+            return true;
+        }
+        if (TextUtils.equals("getStartIndexPath", action)) {
+            String path = getHcpStartIndex();
+            Log.d(TAG, "getStartIndexPath " + path);
+            callbackContext.success(path);
             return true;
         }
         if (TextUtils.equals("checkPathOrFileExists", action)) {
@@ -135,26 +204,52 @@ public class Hcp extends CordovaPlugin {
      */
     private String getUuid() {
         String uuid = Settings.System.getString(this.cordova.getActivity().getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
-        Log.d(TAG,"getUuid "+uuid);
+        Log.d(TAG, "getUuid " + uuid);
         return uuid;
     }
 
     public void getUUID(CallbackContext callbackContext) {
-        String uuid = getUuid()+Build.FINGERPRINT;
-        Log.d(TAG,"Build.FINGERPRINT: "+Build.FINGERPRINT+" uuid "+uuid);
+        String uuid = getUuid() + Build.FINGERPRINT;
+        Log.d(TAG, "Build.FINGERPRINT: " + Build.FINGERPRINT + " uuid " + uuid);
         MD5 md5 = MD5.getInstance();
         md5.write(uuid.getBytes(StandardCharsets.UTF_8), uuid.getBytes(StandardCharsets.UTF_8).length);
         String hash = md5.calculateHash();
-        Log.d(TAG,"hash = "+hash);
+        Log.d(TAG, "hash = " + hash);
         callbackContext.success(hash);
 
 
     }
 
+    private String getHcpStartIndex() {
+        String loadIndexPagePath=this.preferences.getString("loadIndexPagePath", null);
+        Log.d(TAG,"loadIndexPagePath"+loadIndexPagePath);
+        return loadIndexPagePath;
+    }
+    private  boolean checkInstallNewVersionApk(){
+        String path = getHcpStartIndex();
+        String curVersion = this.getVersion();
+        Log.d("Hcp", "curVersion: " + curVersion);
+        String subVersion = null;
+        if (!TextUtils.isEmpty(curVersion)) {
+            String[] vers = curVersion.split("\\.");
+            subVersion = vers[0] + "_" + vers[1];// 前两位判断是否是主版本更新，最后一位是热更新
+            Log.d(TAG, "curversion subVersion" + subVersion);
+        }
+        Log.d("Hcp", "curVersion: " + subVersion);
+        Log.d("Hcp", "热更插件加载页面 " + path + " webView url " + webView.getUrl());
+        if (path != null) {
+            if (subVersion != null && !path.contains(subVersion)) {
+                Log.d(TAG, "安装了新新版本");
+                preferences.edit().putString("loadIndexPagePath", null).apply();
+                return true;
+            }
+        }
+        return false;
+    }
     private void loadHcpPage() {
         cordova.getActivity().runOnUiThread(() -> {
             try {
-                String path = this.preferences.getString("loadIndexPagePath", null);
+                String path = getHcpStartIndex();
                 String curVersion = this.getVersion();
                 Log.d("Hcp", "curVersion: " + curVersion);
                 String subVersion = null;
@@ -165,17 +260,15 @@ public class Hcp extends CordovaPlugin {
                 }
                 Log.d("Hcp", "curVersion: " + subVersion);
                 Log.d("Hcp", "热更插件加载页面 " + path + " webView url " + webView.getUrl());
-                Log.d("Hcp", "destroyed||webView.getUrl().contains(LOCAL_ASSETS_FOLDER)"
-                        + (destroyed || !webView.getUrl().contains("_app_file_")));
+                String webviewUrl = webView.getUrl();
                 if (path != null) {
-                    if (subVersion != null && !path.contains(subVersion)) {
-                        Log.d(TAG, "安装了新新版本");
-                        preferences.edit().putString("loadIndexPagePath", null).apply();
+                    if(checkInstallNewVersionApk()){
                         return;
                     }
-                    if (destroyed || !webView.getUrl().contains("_app_file_")) {
-                        Log.d(TAG,"webview加载热更URL="+path+" 加载前URL="+webView.getUrl());
-                        webView.loadUrlIntoView(path, false);
+                    if (destroyed || null == webviewUrl || !webviewUrl.contains("_app_file_")) {
+                        Log.d(TAG, "webview加载热更URL=" + path + " 加载前URL=" + webviewUrl);
+                        webView.clearHistory();
+                        webView.loadUrlIntoView(path,false);
                         webView.clearHistory();
                     }
                 }
@@ -226,6 +319,7 @@ public class Hcp extends CordovaPlugin {
     }
 
     private void openHcpPage(String path, CallbackContext callbackContext) {
+        Log.d(TAG,"openHcpPage path="+path);
         cordova.getThreadPool().execute(new Runnable() {
             @Override
             public void run() {
@@ -237,6 +331,7 @@ public class Hcp extends CordovaPlugin {
                 preferences.edit().putString("loadIndexPagePath", path).apply();
                 cordova.getActivity().runOnUiThread(() -> {
                     webView.loadUrlIntoView(path, false);
+                    webView.clearHistory();
                 });
             }
         });
@@ -277,6 +372,7 @@ public class Hcp extends CordovaPlugin {
             MD5 md5 = MD5.getInstance();
             try {
                 String hash = md5.getHash(file.getAbsolutePath());
+                Log.d(TAG,"hash = "+hash+" path ="+path);
                 callbackContext.success(hash);
             } catch (IOException e) {
                 callbackContext.error(e.getMessage());

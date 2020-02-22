@@ -24,6 +24,8 @@ interface Hcp {
   openAPK: (apkFilePath: string) => Promise<any>; // 仅Android可用
   loadHcpPage: () => Promise<any>; // 仅Android可用
   checkPathOrFileExists: (filePath: string) => Promise<void>;
+  getStartIndexPath: () => Promise<string>;
+  getWebViewUrl: () => Promise<string>;
 }
 interface IMd5JsonFile {
   file: string;
@@ -63,6 +65,7 @@ export class FileHelperService {
   private serverVersion: string;
   private dataDirectory: string;
   private hcpPlugin: Hcp;
+  startIndexPath: string;
   fileInfo: any = {};
   constructor(
     private webView: WebView,
@@ -106,7 +109,27 @@ export class FileHelperService {
       this.createUpdateWwwDirectory();
     });
   }
-
+  async getStartIndexPath() {
+    await this.plt.ready();
+    if (!this.hcpPlugin) {
+      this.hcpPlugin = window['hcp'];
+    }
+    return this.hcpPlugin && this.hcpPlugin.getStartIndexPath();
+  }
+  async loadHcpPage() {
+    await this.plt.ready();
+    if (!this.hcpPlugin) {
+      this.hcpPlugin = window['hcp'];
+    }
+    return this.hcpPlugin && this.hcpPlugin.loadHcpPage();
+  }
+  async getWebViewUrl() {
+    await this.plt.ready();
+    if (!this.hcpPlugin) {
+      this.hcpPlugin = window['hcp'];
+    }
+    return this.hcpPlugin && this.hcpPlugin.getWebViewUrl();
+  }
   private async clearLocalHcpVersionIfAppUpdated() {
     if (AppHelper.isApp()) {
       const curRunningVersionStr = await this.getLocalVersionNumber();
@@ -177,7 +200,7 @@ export class FileHelperService {
         return null as DirectoryEntry;
       });
   }
-  async openNewVersion(newVersionPagePath: string) {
+ private async openNewVersion(newVersionPagePath: string) {
     return this.hcpPlugin.openHcpPage(newVersionPagePath);
   }
   private async getPackageName() {
@@ -197,8 +220,8 @@ export class FileHelperService {
     req.Data = {
       Name: `${pkgName}.${this.plt.is("ios") ? "ios" : "android"}`.toLowerCase()
     };
-    this.logMessage("apiconfig", this.apiService.apiConfig);
-    this.logMessage("requrl", await this.apiService.getUrl(req));
+    // this.logMessage("apiconfig", this.apiService.apiConfig);
+    // this.logMessage("requrl", await this.apiService.getUrl(req));
     if (AppHelper.isFunction(onprogress)) {
       onprogress({
         total: 100,
@@ -304,7 +327,7 @@ export class FileHelperService {
         this.logMessage(`下载的热更zip 文件URL ${url}`);
         const zipFile = await this.downloadZipFile(url, onprogress).catch(_ => {
           this.logMessage(`zipFile 异常 ${url}`);
-          return null;
+          return null as IHcpUpdateModel;
         });
         const f = await this.getFileEntry(zipFile.nativePath);
         const zp = await this.getParent(f);
@@ -319,10 +342,12 @@ export class FileHelperService {
           reject(`zipFile是否存在 ${zipFileExists ? "存在" : "不存在"}`);
           return false;
         }
+        this.logMessage("zipFile 计算hash ")
         const isHashMatch = await this.checkHcpZipFileMd5(
           hcpMd5,
           zipFile.nativePath
         );
+        this.logMessage("zipFile 计算hash  isHashMatch=", isHashMatch)
         if (!isHashMatch) {
           reject(`更新失败，文件已损坏`);
           this.removeFile(zp.nativeURL, this.updateZipFileName).catch(_ => {
@@ -344,18 +369,18 @@ export class FileHelperService {
         const unZipOk = !AppHelper.isApp()
           ? 0
           : await this.zip.unzip(
-              zipFile.nativePath,
-              direntry.toInternalURL(),
-              evt => {
-                this.ngZone.run(() => {
-                  onprogress({
-                    total: evt.total,
-                    loaded: evt.loaded,
-                    taskDesc: LanguageHelper.getHcpUnZipTip()
-                  } as IHcpUpdateModel);
-                });
-              }
-            );
+            zipFile.nativePath,
+            direntry.toInternalURL(),
+            evt => {
+              this.ngZone.run(() => {
+                onprogress({
+                  total: evt.total,
+                  loaded: evt.loaded,
+                  taskDesc: LanguageHelper.getHcpUnZipTip()
+                } as IHcpUpdateModel);
+              });
+            }
+          );
         if (unZipOk !== 0) {
           reject(`解压文件失败`);
           return false;
@@ -386,7 +411,7 @@ export class FileHelperService {
         await this.listDirFiles(this.dataDirectory, this.updateDirectoryName);
         resolve(this.webView.convertFileSrc(vpPath));
       } catch (e) {
-        this.logMessage(`热更失败 `,e);
+        this.logMessage(`热更失败 `, e);
         reject(e);
         return false;
       }
@@ -465,7 +490,7 @@ export class FileHelperService {
       );
       const curUsingVersionDir = `${
         this.www
-      }_${this.getLocalHcpVersion()}`.replace(/\./g, "_");
+        }_${this.getLocalHcpVersion()}`.replace(/\./g, "_");
       const downloadedLatestApk =
         `${this.serverVersion}`.replace(/\./g, "_") + ".apk";
       for (let i = 0; i < versionFiles.length; i++) {
@@ -519,7 +544,7 @@ export class FileHelperService {
     destFilePathDir: string,
     fileName: string,
     onprogress: (hcp: IHcpUpdateModel) => void
-  ) {
+  ): Promise<IHcpUpdateModel> {
     if (AppHelper.isApp() && this.plt.is("ios")) {
       return new Promise<IHcpUpdateModel>(async (resolve, reject) => {
         const result = await this.download(
@@ -555,14 +580,16 @@ export class FileHelperService {
         })
         .subscribe(
           async (evt: any) => {
-            this.logMessage("evt", evt);
+            if (evt.body && evt.status == 200 && evt.type == 4) {
+              this.logMessage("文件下载完成");
+            }
             if (evt.total) {
-              this.logMessage(
-                `正在下载文件 ${Math.floor(
-                  (evt.loaded / evt.total) * 100
-                ).toFixed(2)}% evt.body=`,
-                evt.body
-              );
+              // this.logMessage(
+              //   `正在下载文件 ${Math.floor(
+              //     (evt.loaded / evt.total) * 100
+              //   ).toFixed(2)}% evt.body=`,
+              //   evt.body
+              // );
               onprogress({
                 total: evt.total,
                 loaded: evt.loaded,
@@ -590,7 +617,10 @@ export class FileHelperService {
                 }
               }
               if (this.plt.is("android")) {
+                this.logMessage("文件下载完成，evt instanceof HttpResponse", evt instanceof HttpResponse);
+                this.logMessage("文件下载完成，evt instanceof HttpResponse", evt.body);
                 if (evt instanceof HttpResponse) {
+                  this.logMessage("文件下载完成，开始写入本地")
                   const result = await this.writeContentToFile(
                     destFilePathDir,
                     fileName,
@@ -598,6 +628,7 @@ export class FileHelperService {
                     onprogress
                   ).catch(e => {
                     reject(e);
+                    this.logMessage("文件下载完成，写入本地失败", e);
                     return null as IHcpUpdateModel;
                   });
                   if (result) {
@@ -671,7 +702,7 @@ export class FileHelperService {
               destFilePathDir.endsWith("/")
                 ? destFilePathDir
                 : destFilePathDir + "/"
-            }${fileName}`
+              }${fileName}`
           } as IHcpUpdateModel);
         } else {
           reject("文件写入失败");
@@ -682,7 +713,7 @@ export class FileHelperService {
           fileName,
           true
         );
-        this.logMessage("writeContentToFile", fileEntry);
+        this.logMessage("文件writeContentToFile 完成", fileEntry);
         if (!fileEntry) {
           reject(`【${this.updateZipFileName}】文件创建失败`);
           return;
@@ -849,7 +880,7 @@ export class FileHelperService {
     this.logMessage(`要下载的应用地址: ` + apkUrl);
     const apkPath = `${this.dataDirectory}${
       this.updateDirectoryName
-    }/${this.serverVersion.replace(/\./g, "_")}.apk`;
+      }/${this.serverVersion.replace(/\./g, "_")}.apk`;
     onprogress({
       total: 100,
       loaded: 90,
@@ -882,7 +913,7 @@ export class FileHelperService {
       const apkP = await this.getParent(apk);
       await this.removeFile(apkP.nativeURL, apk.name);
     }
-    const downloadApkUrl = await this.downLoadFile(
+    const downloadedApkUrl = await this.downLoadFile(
       apkUrl,
       `${this.dataDirectory}${this.updateDirectoryName}`,
       `${this.serverVersion.replace(/\./g, "_")}.apk`,
@@ -890,13 +921,13 @@ export class FileHelperService {
     ).then(file => {
       return file.nativePath;
     });
-    if (!downloadApkUrl) {
+    if (!downloadedApkUrl) {
       return null;
     }
-    apkExists = await this.checkApkMd5(downloadApkUrl, Md5);
+    apkExists = await this.checkApkMd5(downloadedApkUrl, Md5);
     this.logMessage("检查下载的apk md5 , ok ? " + apkExists);
     if (apkExists) {
-      return downloadApkUrl;
+      return downloadedApkUrl;
     }
     return null;
   }
@@ -968,10 +999,10 @@ export class FileHelperService {
     return serverVersion == this.getLocalHcpVersion();
   }
   private removeFile(path: string, file: string) {
-    this.logMessage(`删除文件${path}/${file}`);
+    this.logMessage(`删除文件${path}${file}`);
     return this.file.removeFile(path, file).catch(e => {
       this.logMessage(
-        `删除文件${path}/${file}失败，${JSON.stringify(e, null, 2)}`
+        `删除文件${path}${file}失败，${JSON.stringify(e, null, 2)}`
       );
       return {
         success: false,
@@ -987,15 +1018,15 @@ export class FileHelperService {
       .listDir(path, dir)
       .then(en => {
         this.logMessage(`列出文件夹${path}/${dir}下面的所有文件：`);
-        en.forEach(item => {
-          this.logMessage(`【${item.name}】`);
+        en.forEach((item,idx) => {
+          this.logMessage(`第${idx+1}个文件【${item.name}】`);
         });
         return en;
       })
       .catch(e => {
         this.logMessage(
           `列出文件夹${path}/${dir}下面的所有文件抛出异常` +
-            JSON.stringify(e, null, 2)
+          JSON.stringify(e, null, 2)
         );
         return [] as Entry[];
       });
@@ -1142,7 +1173,7 @@ export class FileHelperService {
   private checkDirExists(path: string, dirName: string) {
     this.logMessage(
       `检查路径${path}${
-        (path || "").endsWith("/") ? "" : "/"
+      (path || "").endsWith("/") ? "" : "/"
       }${dirName}是否存在`
     );
     return this.file
@@ -1150,7 +1181,7 @@ export class FileHelperService {
       .then(_ => {
         this.logMessage(
           `路径${path}${
-            (path || "").endsWith("/") ? "" : "/"
+          (path || "").endsWith("/") ? "" : "/"
           }${dirName}是否存在?${_}】`
         );
         return true;
@@ -1240,8 +1271,8 @@ export class FileHelperService {
         const origiFileMd5 = originFile.hash;
         const path = dirEntry.toInternalURL().endsWith("/")
           ? dirEntry
-              .toInternalURL()
-              .substring(0, dirEntry.toInternalURL().lastIndexOf("/"))
+            .toInternalURL()
+            .substring(0, dirEntry.toInternalURL().lastIndexOf("/"))
           : dirEntry.toInternalURL();
         const donwloadmd5 = await this.getFileMd5(path, f.name);
         if (!donwloadmd5) {
@@ -1265,12 +1296,12 @@ export class FileHelperService {
       this.logMessage(`-----------完成文件校验-----------`);
       this.logMessage(
         `总共有${
-          checkMd5Failures.filter(item => !item.downloadMd5 || !item.md5).length
+        checkMd5Failures.filter(item => !item.downloadMd5 || !item.md5).length
         }个文件md5不存在`
       );
       this.logMessage(
         `总共校验${files.length}个文件，其中${
-          checkMd5Failures.length
+        checkMd5Failures.length
         }个校验失败，校验详细结果:${JSON.stringify(checkMd5Failures, null, 2)}`
       );
       return checkMd5Failures.length === 0;

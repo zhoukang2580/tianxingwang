@@ -81,3 +81,7 @@ ng serve --disableHostCheck
 应用签名：58c29cb32a1fbc7b1c95e5e7961e46df
 
 包名：com.dmonline.v2` 
+
+## app打包注意事项
+1. 如果angular.json里面的outputPath不是默认值，需要先将angular.json里面的outputPath改为默认值，即www
+2. 执行ionic cordova build android --prod --release 生成 android apk

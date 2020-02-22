@@ -180,6 +180,9 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   onLoginButton(type: string) {
     console.log("onLoginButton login type " + type);
     if (this.loginType == "user") {
+      if(!this.checkRquired()){
+        return;
+      }
       this.showImageCode(type);
     } else {
       this.login();
@@ -189,6 +192,19 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     setTimeout(() => {
       this.isLogining = false;
     }, 200);
+  }
+  private checkRquired(){
+    this.loginEntity.Data.Name = this.form.value.Name;
+    this.loginEntity.Data.Password = this.form.value.Password;
+    if (!this.loginEntity.Data.Name) {
+      this.message = LanguageHelper.getLoginNameTip();
+      return false;
+    }
+    if (!this.loginEntity.Data.Password) {
+      this.message = LanguageHelper.getLoginPasswordTip();
+      return false;
+    }
+    return true;
   }
   async login() {
     this.isLogining = true;

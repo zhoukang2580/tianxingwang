@@ -29,7 +29,7 @@ export class AppUpdateComponent implements OnInit {
     if(AppHelper.isApp()){
       this.appUpdate();
     }
-    this.appUpdate();
+    // this.appUpdate();
   }
   /**
    * 
@@ -62,9 +62,10 @@ export class AppUpdateComponent implements OnInit {
             };
           });
         });
-        if (this.forceUpdate && filePath.includes("index.html")) {
-          await this.fileService.openNewVersion(filePath);
-        }
+        // if (this.forceUpdate && filePath.includes("index.html")) {
+        //   await this.fileService.openNewVersion(filePath);
+        // }
+        await this.fileService.loadHcpPage();
         this.forceUpdate = false;
       }
     } catch (e) {

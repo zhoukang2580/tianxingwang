@@ -1,3 +1,4 @@
+import { FileHelperService } from 'src/app/services/file-helper.service';
 import { environment } from "src/environments/environment";
 import { MessageModel, MessageService } from "./message/message.service";
 
@@ -74,7 +75,7 @@ export interface App {
 })
 export class AppComponent
   implements AfterViewInit, AfterContentInit, OnChanges {
-  app: App;
+  app: App=window.navigator['app'];
   message$: Observable<MessageModel>;
   openSelectCity$: Observable<boolean>;
   showFlyDayPage$: Observable<boolean>;
@@ -95,7 +96,8 @@ export class AppComponent
     private loadingCtrl: LoadingController,
     private http: HttpClient,
     private imageRecoverService: ImageRecoverService,
-    messageService: MessageService
+    messageService: MessageService,
+    private fileService: FileHelperService
   ) {
     window["isAndroid"] = this.platform.is("android");
     this.message$ = messageService.getMessage();
@@ -116,13 +118,6 @@ export class AppComponent
       console.log(`platform ready`);
       this.app = navigator["app"];
       document.addEventListener(
-        "start",
-        () => {
-          this.reloadHcpPage();
-        },
-        false
-      );
-      document.addEventListener(
         "backbutton",
         () => {
           this.backButtonAction();
@@ -138,10 +133,7 @@ export class AppComponent
       }
     });
   }
-  private reloadHcpPage(){
-    
-  }
-  ngOnChanges() {}
+  ngOnChanges() { }
   ngAfterViewInit() {
     this.splashScreen.hide();
   }
@@ -304,7 +296,7 @@ export class AppComponent
         curUrl == "/tabs/my" ||
         curUrl == "/tabs/trip"
       ) {
-        console.log("is exit app", Date.now() - this.lastClickTime);
+        // console.log("is exit app", Date.now() - this.lastClickTime);
         if (Date.now() - this.lastClickTime <= 2000) {
           navigator["app"].exitApp();
         } else {
@@ -312,7 +304,11 @@ export class AppComponent
           this.lastClickTime = Date.now();
         }
       } else {
-        this.navCtrl.pop();
+        if(this.app){
+          this.app.backHistory();
+        }else{
+          this.navCtrl.pop();
+        }
         count++;
         console.log(`backbutton back count=${count}`);
         // window.history.back();
