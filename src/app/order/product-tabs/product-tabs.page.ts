@@ -251,8 +251,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         {
           PageSize: pageSize,
           PageIndex: this.curTaskPageIndex
-        } as any,
-        this.curTaskPageIndex == 0
+        } as any
       )
       .pipe(
         finalize(() => {
