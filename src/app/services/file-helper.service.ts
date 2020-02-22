@@ -38,6 +38,8 @@ interface IUpdateList {
   ApkMd5: string;
   Version: string; // "2.0";
   Ignore: boolean;
+  EnabledHcpUpdate: boolean;
+  EnabledAppUpdate: boolean;
 }
 
 interface IHcpUpdateModel {
@@ -257,12 +259,10 @@ export class FileHelperService {
       );
     });
   }
-  async checkHcpUpdate(
-    test: boolean = false
-  ): Promise<{ isHcpCanUpdate: boolean; ignore?: boolean }> {
+  async checkHcpUpdate(): Promise<{ isHcpCanUpdate: boolean; ignore?: boolean }> {
     await this.plt.ready();
     const up = await this.getServerVersion().catch(e => null as IUpdateList);
-    if (!up || !up.Version) {
+    if (!up || !up.Version || !up.EnabledHcpUpdate) {
       return { isHcpCanUpdate: false };
     }
     this.serverVersion = up.Version;
@@ -306,8 +306,8 @@ export class FileHelperService {
           this.serverVersion,
           this.localVersion
         );
-        if (!versionUpdate) {
-          reject("版本无需热更");
+        if (!versionUpdate || !update.EnabledAppUpdate) {
+          reject("无需更新App");
           return false;
         }
         const localExists = this.checkLocalExists(this.serverVersion);
@@ -1018,8 +1018,8 @@ export class FileHelperService {
       .listDir(path, dir)
       .then(en => {
         this.logMessage(`列出文件夹${path}/${dir}下面的所有文件：`);
-        en.forEach((item,idx) => {
-          this.logMessage(`第${idx+1}个文件【${item.name}】`);
+        en.forEach((item, idx) => {
+          this.logMessage(`第${idx + 1}个文件【${item.name}】`);
         });
         return en;
       })
