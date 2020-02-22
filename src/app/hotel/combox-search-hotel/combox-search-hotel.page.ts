@@ -1,7 +1,6 @@
 import { RefresherComponent } from 'src/app/components/refresher';
 import { ActivatedRoute } from "@angular/router";
 import { flyInOut } from "./../../animations/flyInOut";
-import { RefresherComponent } from "./../../components/refresher/refresher.component";
 import { NavController, IonInfiniteScroll, IonRefresher } from "@ionic/angular";
 import {
   distinctUntilChanged,
