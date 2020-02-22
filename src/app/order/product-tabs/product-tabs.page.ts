@@ -167,13 +167,16 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       this.activeTab.value == ProductItemType.plane
         ? "Flight"
         : this.activeTab.value == ProductItemType.hotel
-        ? "Hotel"
-        : "Train";
+          ? "Hotel"
+          : "Train";
     this.loadDataSub = this.orderService
       .getMyTrips(m)
       .pipe(
         finalize(() => {
           this.isLoading = false;
+          if (this.ionRefresher&&this.condition.pageIndex<=1) {
+            this.ionRefresher.complete();
+          }
         })
       )
       .subscribe(
@@ -266,6 +269,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
           if (this.infiniteScroll) {
             this.infiniteScroll.complete();
           }
+          if (this.ionRefresher&&this.condition.pageIndex<=1) {
+            this.ionRefresher.complete();
+          }
         })
       )
       .subscribe(
@@ -303,8 +309,8 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         this.activeTab.value == ProductItemType.plane
           ? "Flight"
           : this.activeTab.value == ProductItemType.train
-          ? "Train"
-          : "Hotel";
+            ? "Train"
+            : "Hotel";
       if (
         this.orderModel &&
         this.orderModel.Orders &&
@@ -320,6 +326,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         .pipe(
           finalize(() => {
             this.isLoading = false;
+            if (this.ionRefresher&&this.condition.pageIndex<=1) {
+              this.ionRefresher.complete();
+            }
           })
         )
         .subscribe(
@@ -547,7 +556,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       ((order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
         OrderTravelPayType.Credit ||
         (order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
-          OrderTravelPayType.Person) &&
+        OrderTravelPayType.Person) &&
       order.Status != OrderStatusType.Cancel;
     if (!rev) {
       return false;
