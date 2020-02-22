@@ -155,6 +155,8 @@ export class ViewDetailPage implements OnInit, AfterContentChecked, OnDestroy {
                 } else {
                   window.open(url, "_blank");
                 }
+              }else{
+                window.open(url, "_blank");
               }
             }
           });

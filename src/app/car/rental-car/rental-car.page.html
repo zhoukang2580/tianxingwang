@@ -48,6 +48,6 @@
   <ng-container *ngIf='searchMobiles?.length==0'>
     <ion-button expand='block' color='danger' fill='clear' *ngIf='message as emsg'>{{emsg}}</ion-button>
     <ion-button expand='block' color='secondary' (click)='validateCode()' *ngIf='!isMobileVerified'>请先验证手机号</ion-button>
-    <ion-button expand='block' color='secondary' (click)='onRentalCar()' *ngIf='isMobileVerified'>前往租车</ion-button>
+    <ion-button expand='block' color='secondary' (click)='onRentalCar()' *ngIf='isMobileVerified'>前往用车</ion-button>
   </ng-container>
 </ion-content>
