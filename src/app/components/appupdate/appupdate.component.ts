@@ -62,10 +62,10 @@ export class AppUpdateComponent implements OnInit {
             };
           });
         });
-        // if (this.forceUpdate && filePath.includes("index.html")) {
-        //   await this.fileService.openNewVersion(filePath);
-        // }
-        await this.fileService.loadHcpPage();
+        if (this.forceUpdate && filePath.includes("index.html")) {
+          await this.fileService.openNewVersion(filePath);
+        }
+        // await this.fileService.loadHcpPage();
         this.forceUpdate = false;
       }
     } catch (e) {

@@ -171,7 +171,7 @@ export class RentalCarPage implements OnInit, OnDestroy {
       this.router.navigate(["open-url"], {
         queryParams: {
           url,
-          title: "租车",
+          title: "用车",
           isHideTitle: AppHelper.isDingtalkH5() || AppHelper.isWechatH5()
         }
       });

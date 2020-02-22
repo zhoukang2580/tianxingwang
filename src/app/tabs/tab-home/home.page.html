@@ -1,9 +1,7 @@
 <ion-header>
   <ion-toolbar color='primary'>
-    <ion-buttons slot='start'>
-      <ion-button fill='clear' *ngIf='canShow'>
-        <app-scan-comp></app-scan-comp>
-      </ion-button>
+    <ion-buttons slot='start' class="ion-margin-start" *ngIf='canShow'>
+      <app-scan-comp></app-scan-comp>
     </ion-buttons>
     <ion-title class='ion-text-center' appShowtip>
       <ng-container *ngIf='canSelectCompany$|async'>
@@ -11,21 +9,19 @@
       </ng-container>
       {{identity?.Name}}
     </ion-title>
-    <ion-buttons slot='end' *ngIf='identity?.Numbers?.AgentId;else selectCompany'>
-      <ion-button fill='clear' size='small' (click)='onSwitchCustomer()'>
+    <ion-buttons slot='end' >
+      <ion-button fill='clear' size='small' (click)='onSwitchCustomer()' *ngIf='identity?.Numbers?.AgentId;else selectCompany'>
         <ion-chip color='success'>
           <ion-label>切换客户</ion-label>
         </ion-chip>
       </ion-button>
     </ion-buttons>
     <ng-template #selectCompany>
-      <ion-buttons slot='end' *ngIf="(canSelectCompany$|async)&&companies?.length>1">
-        <ion-button fill='clear' size='small' (click)='onSwitchCompany()'>
+        <ion-button fill='clear' size='small' (click)='onSwitchCompany()' *ngIf="(canSelectCompany$|async)&&companies?.length>1">
           <ion-chip color='success'>
             <ion-label>切换公司</ion-label>
           </ion-chip>
         </ion-button>
-      </ion-buttons>
     </ng-template>
   </ion-toolbar>
 </ion-header>

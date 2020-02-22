@@ -1,5 +1,6 @@
 ion-header {
   ion-toolbar {
+    --ion-safe-area-top: 1em;
     ion-buttons {
       app-back-button {
         align-self: flex-start;

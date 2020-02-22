@@ -200,7 +200,7 @@ export class FileHelperService {
         return null as DirectoryEntry;
       });
   }
- private async openNewVersion(newVersionPagePath: string) {
+  async openNewVersion(newVersionPagePath: string) {
     return this.hcpPlugin.openHcpPage(newVersionPagePath);
   }
   private async getPackageName() {
