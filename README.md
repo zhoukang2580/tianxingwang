@@ -55,7 +55,7 @@
 ## 更新app过程
 1. 到config.xml修改版本号，修改主、次版本号需要重新发布到appstore或者安卓市场，如果修改的是热更版本号，也就是最后一位，则不需要重新发布应用
 2. 执行生产环境打包，生产android的apk，用mac打包，生成iphone的app，分别发布到市场
-3. 如果不需要发布应用，仅发布热更，则将生成的xxx.xxx.xxx(包名).android.zip放到热更的Android目录下，同理，将生成的xxx.xxx.xxx.ios.zip放到ios的下载目录
+3. 如果不需要发布应用，仅发布热更，先用生成apk的命令正常打包，然后在项目目录下找到xxx.xxx.android.hash.zip的文件，ios则是 包名.ios.hash.zip，将文件复制到service.version站点的download目录下面，并且将文件名的hash剪切，将这个hash复制到Applications下面对应的 xxx.android.json或者xxx.ios.json文件的MD5对应的地方，注意，不是apkmd5,apkmd5是更新apk时候，用于校验apk的hash值用的。最后将版本号修改即可。注意看config.xml里面的版本号前两位，需要保持一致，最后一位是热更新用的，增加最后一位即可。
 4. 最后修改updateList.xml修改对应的配置项。其中的Value=config.xml的版本号，其中的version节点对应Android的apk更新，其内部的hotfix对应热更的www目录。md5的值在编译生成的output目录的xxx.apk路径中很长的一段字符串就是对应的md5
 5. 非常重要的注意点，如果是ios热更，一定要用mac进行build ios 生成的 xxx.ios.zip文件，否则更新失败！！！
 ## 发布
