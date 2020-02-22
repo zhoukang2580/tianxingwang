@@ -110,13 +110,6 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     this.condition = condition || new SearchTicketConditionModel();
     this.condition.pageIndex = 0;
     this.loadMoreErrMsg = "";
-    if (this.ionRefresher) {
-      this.ionRefresher.complete();
-      this.ionRefresher.disabled = true;
-      setTimeout(() => {
-        this.ionRefresher.disabled = false;
-      }, 200);
-    }
     if (this.infiniteScroll) {
       this.infiniteScroll.disabled = false;
     }
@@ -126,7 +119,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     }
     this.isShowMyTrips = false;
     if (this.infiniteScroll) {
-      this.infiniteScroll.disabled = false;
+      this.infiniteScroll.disabled = true;
     }
     this.orderModel = new OrderModel();
     this.myTrips = [];
