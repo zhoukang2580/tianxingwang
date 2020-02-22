@@ -20,7 +20,7 @@ const bootstrap = () =>
     });
 if (environment.production) {
   if (!environment.mockProBuild) {
-    head.appendChild(meta);
+    // head.appendChild(meta);
   }
   enableProdMode();
   bootstrap();
