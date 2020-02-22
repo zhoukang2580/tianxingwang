@@ -1,3 +1,4 @@
+import { RefresherComponent } from 'src/app/components/refresher';
 import { BookTmcOutnumberComponent } from "./../../tmc/components/book-tmc-outnumber/book-tmc-outnumber.component";
 import { PayService } from "src/app/services/pay/pay.service";
 import { Router, ActivatedRoute } from "@angular/router";
@@ -97,7 +98,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     value: OrderTravelPayType;
     checked?: boolean;
   }[];
-  @ViewChild(IonRefresher) ionRefresher: IonRefresher;
+  @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
   @ViewChild(IonContent) ionContent: IonContent;
   @ViewChildren("illegalReasonsEle") illegalReasonsEles: QueryList<
     ElementRef<HTMLElement>

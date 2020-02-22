@@ -9,7 +9,7 @@
 
 <ion-content>
   <ng-container *ngIf='!errors else errorTemp'>
-    <ion-refresher slot='fixed' (ionRefresh)='refresh(true)'></ion-refresher>
+    <app-refresher slot='fixed' (ionRefresh)='refresh(true)'></app-refresher>
     <ng-container *ngIf='vmCombindInfos?.length'>
       <ion-list *ngFor='let combindInfo of vmCombindInfos' lines='none'>
         <ion-item-divider color='primary' sticky>

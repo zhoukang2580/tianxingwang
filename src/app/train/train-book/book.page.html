@@ -10,9 +10,9 @@
 
 <ion-content>
   <ng-container *ngIf='!error else retryTempl'>
-    <ion-refresher slot='fixed' (ionRefresh)='doRefresh(true)'>
+    <app-refresher slot='fixed' (ionRefresh)='doRefresh(true)'>
       <ion-refresher-content>正在刷新...</ion-refresher-content>
-    </ion-refresher>
+    </app-refresher>
     <ng-container *ngIf='viewModel?.combindInfos?.length'>
       <ion-list *ngFor="let combindInfo of viewModel?.combindInfos" lines='none'>
         <ion-item-divider color='primary' sticky>

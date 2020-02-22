@@ -76,6 +76,7 @@ import { SearchApprovalComponent } from "src/app/tmc/components/search-approval/
 import { AddContact } from "src/app/tmc/models/AddContact";
 import { BookCostcenterCompComponent } from "src/app/tmc/components/book-costcenter-comp/book-costcenter-comp.component";
 import { OrderHotelType } from "src/app/order/models/OrderHotelEntity";
+import { RefresherComponent } from 'src/app/components/refresher';
 
 @Component({
   selector: "app-inter-hotel-book",
@@ -98,7 +99,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     value: OrderTravelPayType;
     checked?: boolean;
   }[];
-  @ViewChild(IonRefresher) ionRefresher: IonRefresher;
+  @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
   @ViewChild(IonContent) ionContent: IonContent;
   @ViewChildren(BookCostcenterCompComponent) illegalReasonComps: QueryList<
     BookCostcenterCompComponent

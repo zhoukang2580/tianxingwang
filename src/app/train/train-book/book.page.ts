@@ -1,3 +1,4 @@
+import { RefresherComponent } from 'src/app/components/refresher';
 import { SearchTrainModel } from "./../train.service";
 import { IBookOrderResult } from "./../../tmc/tmc.service";
 import { ITrainInfo } from "../train.service";
@@ -85,7 +86,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
   isSubmitDisabled = false;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent) cnt: IonContent;
-  @ViewChild(IonRefresher) ionRefresher: IonRefresher;
+  @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
   initialBookDto: InitialBookDtoModel;
   bookInfos: PassengerBookInfo<ITrainInfo>[];
   viewModel: IBookTrainViewModel = {} as any;

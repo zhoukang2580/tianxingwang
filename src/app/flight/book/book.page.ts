@@ -72,6 +72,7 @@ import { environment } from "src/environments/environment";
 import { ITmcOutNumberInfo } from 'src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component';
 import { AccountEntity } from 'src/app/account/models/AccountEntity';
 import { IHotelInfo } from 'src/app/hotel/hotel.service';
+import { RefresherComponent } from 'src/app/components/refresher';
 
 @Component({
   selector: "app-book",
@@ -116,7 +117,7 @@ export class BookPage implements OnInit, AfterViewInit {
   illegalReasonsEles: QueryList<ElementRef<HTMLElement>>;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent) cnt: IonContent;
-  @ViewChild(IonRefresher) ionRefresher: IonRefresher;
+  @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
   constructor(
     private flightService: FlightService,
     private staffService: StaffService,

@@ -11,7 +11,7 @@
 
 <ion-content>
   <ng-container *ngIf='!error else retryTempl'>
-    <ion-refresher slot='fixed' (ionRefresh)='doRefresh(true)'></ion-refresher>
+    <app-refresher slot='fixed' (ionRefresh)='doRefresh(true)'></app-refresher>
     <ng-container *ngIf='combindInfos?.length'>
       <ng-container *ngFor="let combindInfo of combindInfos">
         <ion-list lines='none'>
