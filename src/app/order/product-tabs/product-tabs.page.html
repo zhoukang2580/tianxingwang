@@ -22,10 +22,6 @@
       </ion-button>
     </div>
   </ion-toolbar>
-  <app-refresher slot="fixed" (ionRefresh)="doRefresh();">
-    <ion-refresher-content>正在获取...</ion-refresher-content>
-  </app-refresher>
-
   <ng-template #fakeList>
     <ion-list>
       <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8]'>

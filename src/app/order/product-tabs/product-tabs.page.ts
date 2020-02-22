@@ -55,7 +55,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   loadMoreErrMsg: string;
   @ViewChild(IonContent) ionContent: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
-  @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
+  // @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
   constructor(
     private modalCtrl: ModalController,
     route: ActivatedRoute,
@@ -174,16 +174,10 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       .pipe(
         finalize(() => {
           this.isLoading = false;
-          if (this.ionRefresher&&this.condition.pageIndex<=1) {
-            this.ionRefresher.complete();
-          }
         })
       )
       .subscribe(
         res => {
-          if (this.ionRefresher && this.condition.pageIndex < 1) {
-            this.ionRefresher.complete();
-          }
           if (res && res.Data && res.Data.Trips) {
             if (this.infiniteScroll) {
               this.infiniteScroll.disabled =
@@ -244,9 +238,6 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     }
     this.tasks = [];
     this.curTaskPageIndex = 0;
-    if (this.ionRefresher) {
-      this.ionRefresher.complete();
-    }
     this.doLoadMoreTasks();
     this.scrollToTop();
   }
@@ -268,9 +259,6 @@ export class ProductTabsPage implements OnInit, OnDestroy {
           this.isLoading = false;
           if (this.infiniteScroll) {
             this.infiniteScroll.complete();
-          }
-          if (this.ionRefresher&&this.condition.pageIndex<=1) {
-            this.ionRefresher.complete();
           }
         })
       )
@@ -326,9 +314,6 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         .pipe(
           finalize(() => {
             this.isLoading = false;
-            if (this.ionRefresher&&this.condition.pageIndex<=1) {
-              this.ionRefresher.complete();
-            }
           })
         )
         .subscribe(
