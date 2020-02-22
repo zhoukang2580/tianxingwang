@@ -28,9 +28,9 @@
 </ion-header>
 
 <ion-content>
-  <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'>
+  <app-refresher slot='fixed' (ionRefresh)='doRefresh()'>
     <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
+  </app-refresher>
   <ng-container *ngIf='hotel else retry'>
     <div class="bg" #bg (click)='onShowHotelImages()'>
       <div class="back-button" *ngIf='isHeaderHide'>

@@ -1,3 +1,4 @@
+import { RefresherComponent } from './../../components/refresher/refresher.component';
 import { IHotelInfo } from "./../../hotel/hotel.service";
 import { SelectPassengerPage } from "src/app/tmc/select-passenger/select-passenger.page";
 import { fadeInOut } from "./../../animations/fadeInOut";
@@ -58,7 +59,7 @@ import { SelectedPassengersComponent } from "src/app/tmc/components/selected-pas
 })
 export class InternationalHotelDetailPage
   implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild(IonRefresher) refresher: IonRefresher;
+  @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild("bg") bgEle: ElementRef<HTMLElement>;
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(IonHeader) ionHeader: IonHeader;

@@ -17,9 +17,9 @@
 </ion-header>
 
 <ion-content>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh();">
+  <!-- <app-refresher slot="fixed" (ionRefresh)="doRefresh();">
     <ion-refresher-content>正在获取...</ion-refresher-content>
-  </ion-refresher>
+  </app-refresher> -->
   <ion-list lines='none' *ngIf='orderList?.length else nomoredate'>
     <ion-item *ngFor='let order of orderList' (click)='goToDetailPage(order.Id)'>
       <app-order-item [order]='order' [isAgent]='true' (refundTicket)='doRefresh();'>

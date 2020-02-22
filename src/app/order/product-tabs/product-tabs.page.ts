@@ -1,3 +1,4 @@
+import { RefresherComponent } from './../../components/refresher/refresher.component';
 import { IdentityService } from "./../../services/identity/identity.service";
 import { OrderTripModel } from "./../models/OrderTripModel";
 import { OrderService } from "./../order.service";
@@ -54,7 +55,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   loadMoreErrMsg: string;
   @ViewChild(IonContent) ionContent: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
-  @ViewChild(IonRefresher) ionRefresher: IonRefresher;
+  @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
   constructor(
     private modalCtrl: ModalController,
     route: ActivatedRoute,

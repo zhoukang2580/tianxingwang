@@ -22,9 +22,9 @@
       </ion-button>
     </div>
   </ion-toolbar>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh();">
+  <app-refresher slot="fixed" (ionRefresh)="doRefresh();">
     <ion-refresher-content>正在获取...</ion-refresher-content>
-  </ion-refresher>
+  </app-refresher>
 
   <ng-template #fakeList>
     <ion-list>
