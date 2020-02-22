@@ -1,103 +1,105 @@
 @import "./refresher.vars";
-.refresher {
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  display: none;
-  position: absolute;
-  text-align: center;
-  width: 100%;
-  height: $refresher-height;
-
-  z-index: $z-index-refresher;
-  &.refresher-active {
-    display: block;
-    z-index: 1;
-    ion-refresher-content{
-      opacity: 1;
+.app-refresher{
+  .refresher {
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: none;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    height: $refresher-height;
+  
+    z-index: $z-index-refresher;
+    &.refresher-active {
+      display: block;
+      z-index: 1;
+      ion-refresher-content{
+        opacity: 1;
+      }
     }
   }
-}
-// Refresher Content
-// --------------------------------------------------
-
-ion-refresher-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 100%;
-  width: 100%;
-}
-
-.refresher-pulling,
-.refresher-refreshing {
-  display: none;
-  width: 100%;
-}
-.refresher {
-  ion-refresher-content{
-    opacity: 0;
+  // Refresher Content
+  // --------------------------------------------------
+  
+  ion-refresher-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
   }
-  .refresher-pulling-icon,
-  .refresher-refreshing-icon {
-    transform-origin: center;
-
-    transition: 200ms;
-
-    font-size: $refresher-icon-font-size;
-
+  
+  .refresher-pulling,
+  .refresher-refreshing {
+    display: none;
+    width: 100%;
+  }
+  .refresher {
+    ion-refresher-content{
+      opacity: 0;
+    }
+    .refresher-pulling-icon,
+    .refresher-refreshing-icon {
+      transform-origin: center;
+  
+      transition: 200ms;
+  
+      font-size: $refresher-icon-font-size;
+  
+      text-align: center;
+    }
+  }
+  
+  .refresher-pulling-text,
+  .refresher-refreshing-text {
+    font-size: $refresher-text-font-size;
     text-align: center;
   }
-}
-
-.refresher-pulling-text,
-.refresher-refreshing-text {
-  font-size: $refresher-text-font-size;
-  text-align: center;
-}
-
-// Refresher Content States
-// --------------------------------------------------
-
-.refresher-pulling ion-refresher-content {
-  .refresher-pulling {
-    display: block;
+  
+  // Refresher Content States
+  // --------------------------------------------------
+  
+  .refresher-pulling ion-refresher-content {
+    .refresher-pulling {
+      display: block;
+    }
   }
-}
-
-.refresher-ready ion-refresher-content {
-  .refresher-pulling {
-    display: block;
+  
+  .refresher-ready ion-refresher-content {
+    .refresher-pulling {
+      display: block;
+    }
+  
+    .refresher-pulling-icon {
+      transform: rotate(180deg);
+    }
   }
-
-  .refresher-pulling-icon {
-    transform: rotate(180deg);
+  
+  .refresher-refreshing ion-refresher-content {
+    .refresher-refreshing {
+      display: block;
+    }
   }
-}
-
-.refresher-refreshing ion-refresher-content {
-  .refresher-refreshing {
-    display: block;
+  
+  .refresher-cancelling ion-refresher-content {
+    .refresher-pulling {
+      display: block;
+    }
+  
+    .refresher-pulling-icon {
+      transform: scale(0);
+    }
   }
-}
-
-.refresher-cancelling ion-refresher-content {
-  .refresher-pulling {
-    display: block;
-  }
-
-  .refresher-pulling-icon {
-    transform: scale(0);
-  }
-}
-
-.refresher-completing ion-refresher-content {
-  .refresher-refreshing {
-    display: block;
-  }
-
-  .refresher-refreshing-icon {
-    transform: scale(0);
+  
+  .refresher-completing ion-refresher-content {
+    .refresher-refreshing {
+      display: block;
+    }
+  
+    .refresher-refreshing-icon {
+      transform: scale(0);
+    }
   }
 }
