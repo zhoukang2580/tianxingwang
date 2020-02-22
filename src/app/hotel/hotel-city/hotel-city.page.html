@@ -7,8 +7,8 @@
   </ion-buttons>
 </ion-header>
 <ion-content [scrollEvents]='true' (ionScroll)='onScroll($event)'>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh(true)">
-  </ion-refresher>
+  <app-refresher slot="fixed" (ionRefresh)="doRefresh(true)">
+  </app-refresher>
   <ion-grid *ngIf='letters&&letters.length' class="letters-index" #lettersEle>
     <ion-row>
       字母索引

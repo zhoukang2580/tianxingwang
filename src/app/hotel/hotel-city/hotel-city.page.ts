@@ -1,3 +1,4 @@
+import { RefresherComponent } from 'src/app/components/refresher';
 import { ActivatedRoute } from "@angular/router";
 import { HotelService } from "./../hotel.service";
 import { TrafficlineEntity } from "./../../tmc/models/TrafficlineEntity";
@@ -42,7 +43,7 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
   isShowFabButton = false;
   isLoading = false;
   subscriptions: Subscription[] = [];
-  @ViewChild(IonRefresher) refresher: IonRefresher;
+  @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild("hot") hotEle: IonGrid;
   @ViewChild("lettersEle") lettersEle: IonGrid;
   @ViewChild("historyEl") historyEl: IonGrid;
