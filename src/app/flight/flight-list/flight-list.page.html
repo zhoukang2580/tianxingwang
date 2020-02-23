@@ -39,7 +39,7 @@
     <ion-row>
       <ion-col>
         {{searchFlightModel?.Date}}共{{vmFlights?.length}}个航班
-        <ion-text color='danger' *ngIf='filterCondition?.isFiltered'>(筛选后)</ion-text>
+        <ion-text color='danger' *ngIf='filterConditionIsFiltered'>(筛选后)</ion-text>
       </ion-col>
     </ion-row>
     <ng-container *ngIf='isSelfBookType'>
@@ -79,14 +79,14 @@
   </app-or-comp>
   <ul class='flight recomend' *ngIf='lowestPriceSegments?.length==1'>
     <li *ngFor='let s of lowestPriceSegments' class='lowest-item' (click)='goToFlightCabinsDetails(s)'>
-      <app-flight-segment-item [segment]='s' [isRecomendSegment]='true' [isHasFiltered]='filterCondition?.isFiltered'>
+      <app-flight-segment-item [segment]='s' [isRecomendSegment]='true' [isHasFiltered]='filterConditionIsFiltered'>
       </app-flight-segment-item>
       <ion-button color='secondary' (click)='onBookLowestSegment($event,s)' [disabled]='s["disabled"]'>预订</ion-button>
     </li>
   </ul>
   <ul class='flight'>
     <li *ngFor='let s of vmFlights; trackBy:trackById' #fli (click)='goToFlightCabinsDetails(s)'>
-      <app-flight-segment-item [segment]='s' [isHasFiltered]='filterCondition?.isFiltered'></app-flight-segment-item>
+      <app-flight-segment-item [segment]='s' [isHasFiltered]='filterConditionIsFiltered'></app-flight-segment-item>
     </li>
   </ul>
   <ng-container #fakeList *ngIf='isLoading'>
@@ -121,7 +121,7 @@
 <ion-footer color="primary">
   <ion-toolbar>
     <div class="tabs">
-      <div class="tab" [class.active]="activeTab === 'filter'" (click)="onFilter()" [class.filtered]='filterCondition?.isFiltered'>
+      <div class="tab" [class.active]="activeTab === 'filter'" (click)="onFilter()" [class.filtered]='filterConditionIsFiltered'>
         <ion-icon name="funnel"></ion-icon>
         <ion-note>筛选</ion-note>
       </div>

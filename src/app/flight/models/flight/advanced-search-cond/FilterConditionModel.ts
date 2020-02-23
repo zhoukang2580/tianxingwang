@@ -24,7 +24,6 @@ export class FilterConditionModel {
   toCity:TrafficlineEntity;
   priceFromL2H?: "low2Height" | "height2Low" | "initial";
   timeFromM2N?: "am2pm" | "pm2am" | "initial";
-  isFiltered = false;
   static init() {
     const condition = new FilterConditionModel();
     condition.userOps = {
@@ -36,7 +35,6 @@ export class FilterConditionModel {
       airTypeOp: false,
       cabinOp: false
     };
-    condition.isFiltered = false;
     condition.airCompanies = [];
     condition.airTypes = [];
     condition.fromAirports = [];

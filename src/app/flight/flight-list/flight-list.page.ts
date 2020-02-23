@@ -142,6 +142,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   hasDataSource: Subject<boolean>;
   showSelectFlyDayPage$: Observable<boolean>;
   filteredPolicyPassenger$: Observable<PassengerBookInfo<IFlightSegmentInfo>>;
+  get filterConditionIsFiltered() {
+    return this.filterCondition && this.filterCondition.userOps && Object.keys(this.filterCondition.userOps).some(k => this.filterCondition.userOps[k]);
+  }
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -316,7 +319,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.filterCondition.priceFromL2H = "initial";
       this.filterCondition.timeFromM2N = "initial";
     }
-    this.activeTab = this.filterCondition && this.filterCondition.isFiltered
+    this.activeTab = this.filterConditionIsFiltered
       ? "filter"
       : "none";
     this.searchFlightModel.Date = day.date;
@@ -391,7 +394,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       const flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync(
         loadDataFromServer
       );
-      this.initFilterConditionInfo();
       if (loadDataFromServer) {
         let segments = this.flightService.getTotalFlySegments();
         if (isSelf) {
@@ -415,6 +417,9 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       this.isLoading = false;
       if (this.activeTab != "none" && this.activeTab != "filter") {
         this.sortFlights(this.activeTab);
+      }
+      if (loadDataFromServer || !keepSearchCondition) {
+        this.initFilterConditionInfo();
       }
     } catch (e) {
       if (!environment.production) {
@@ -581,7 +586,6 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.initSearchModelParams();
     const filterConditionSubscription = this.flightService
       .getFilterConditionSource()
-      .pipe(delay(0))
       .subscribe(filterCondition => {
         this.filterCondition = { ...filterCondition };
       });
@@ -695,11 +699,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     const res = await m.onDidDismiss();
     if (res && res.data) {
       const { confirm, filterCondition }: { confirm: boolean; filterCondition: FilterConditionModel } = res.data;
-      console.log("onFilter filtercondition",filterCondition);
+      console.log("onFilter filtercondition", filterCondition);
       if (confirm) {
-        filterCondition.isFiltered = Object.keys(filterCondition.userOps).some(k => filterCondition.userOps[k]);
         this.flightService.setFilterConditionSource(filterCondition);
-        this.doRefresh(true, true);
+        this.doRefresh(false, true);
       }
     }
   }
@@ -774,7 +777,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
   }
   private initLowestPriceSegments(totalFlySegments: FlightSegmentEntity[]) {
     this.lowestPriceSegments =
-      this.filterCondition && this.filterCondition.isFiltered || this.activeTab != "none"
+      this.filterConditionIsFiltered || this.activeTab != "none"
         ? []
         : totalFlySegments.filter(it => it.isLowestPrice);
     return this.lowestPriceSegments;
