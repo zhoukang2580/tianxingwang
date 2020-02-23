@@ -15,6 +15,7 @@ import {
   OnDestroy,
   AfterViewInit
 } from "@angular/core";
+import { TakeOffTimeSpanComponent } from './take-off-timespan/take-off-timespan.component';
 @Component({
   selector: "app-fly-filter",
   templateUrl: "./fly-filter.component.html",
@@ -26,6 +27,7 @@ export class FlyFilterComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("toAirports") toAirports: AircompanyComponent;
   @ViewChild(AirtypeComponent) airTypeComp: AirtypeComponent;
   @ViewChild(CabinComponent) cabinComp: CabinComponent;
+  @ViewChild(TakeOffTimeSpanComponent) timeSpanComp: TakeOffTimeSpanComponent;
   filterCondition: FilterConditionModel;
   tab: number;
   userOps: any;
@@ -55,6 +57,10 @@ export class FlyFilterComponent implements OnInit, OnDestroy, AfterViewInit {
     this.airCompanyComp.onReset();
     this.airTypeComp.onReset();
     this.cabinComp.onReset();
+    this.timeSpanComp.onReset();
+    if (this.filterCondition) {
+      this.filterCondition.onlyDirect = false;
+    }
   }
 
 }

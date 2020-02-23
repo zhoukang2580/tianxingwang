@@ -22,7 +22,6 @@ export class TakeOffTimeSpanComponent implements OnInit, AfterViewInit {
   @Input() filterCondition: FilterConditionModel;
   @Output() filterConditionChange: EventEmitter<FilterConditionModel>;
   @ViewChild("range") range: IonRange;
-  private subscription = Subscription.EMPTY;
   constructor(private domCtrl: DomController) {
     this.filterConditionChange = new EventEmitter();
   }
@@ -37,7 +36,7 @@ export class TakeOffTimeSpanComponent implements OnInit, AfterViewInit {
   }
   ngOnInit() {
   }
-  reset() {
+  onReset() {
     this.init();
   }
   private init() {
@@ -48,7 +47,6 @@ export class TakeOffTimeSpanComponent implements OnInit, AfterViewInit {
     }, 100);
   }
   ngOnDestroy() {
-    this.subscription.unsubscribe();
   }
   onTimeSelect(time: "forenoon" | "afternoon" | "none" | "night") {
     this.time = time;

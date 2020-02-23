@@ -1450,7 +1450,7 @@ export class FlightService {
       this.filterCondition.fromAirports.length
     ) {
       result = result.filter(s =>
-        this.filterCondition.fromAirports.some(a => a.id === s.FromAirport)
+        this.filterCondition.fromAirports.some(a => a.id === s.FromAirport&&a.isChecked)
       );
     }
     return result;
@@ -1460,10 +1460,10 @@ export class FlightService {
     if (
       this.filterCondition &&
       this.filterCondition.toAirports &&
-      this.filterCondition.toAirports.length
+      this.filterCondition.toAirports.filter(it=>it.isChecked).length
     ) {
       result = result.filter(s =>
-        this.filterCondition.toAirports.some(a => a.id === s.ToAirport)
+        this.filterCondition.toAirports.filter(it=>it.isChecked).some(a => a.id === s.ToAirport)
       );
     }
     return result;
@@ -1473,10 +1473,10 @@ export class FlightService {
     if (
       this.filterCondition &&
       this.filterCondition.airCompanies &&
-      this.filterCondition.airCompanies.length > 0
+      this.filterCondition.airCompanies.filter(it=>it.isChecked).length > 0
     ) {
       result = result.filter(s =>
-        this.filterCondition.airCompanies.some(a => a.id === s.Airline)
+        this.filterCondition.airCompanies.filter(it=>it.isChecked).some(a => a.id === s.Airline)
       );
     }
     return result;
@@ -1486,10 +1486,10 @@ export class FlightService {
     if (
       this.filterCondition &&
       this.filterCondition.airTypes &&
-      this.filterCondition.airTypes.length > 0
+      this.filterCondition.airTypes.filter(it=>it.isChecked).length > 0
     ) {
       result = result.filter(s =>
-        this.filterCondition.airTypes.some(a => a.id === s.PlaneType)
+        this.filterCondition.airTypes.filter(it=>it.isChecked).some(a => a.id === s.PlaneType)
       );
     }
     return result;
@@ -1499,11 +1499,11 @@ export class FlightService {
     if (
       this.filterCondition &&
       this.filterCondition.cabins &&
-      this.filterCondition.cabins.length > 0
+      this.filterCondition.cabins.filter(it=>it.isChecked).length > 0
     ) {
       result = result.map(s => {
         s.Cabins = s.Cabins.filter(c =>
-          this.filterCondition.cabins.some(a => a.id == c.Type)
+          this.filterCondition.cabins.filter(it=>it.isChecked).some(a => a.id == c.Type)
         );
         return s;
       });

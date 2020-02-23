@@ -31,9 +31,7 @@ export class AirportsComponent
     this.filterConditionChange = new EventEmitter();
   }
 
-  onionChange() {
-    this.search()
-  }
+
   onReset() {
     if (this.filterCondition) {
       if (this.isFromAirports) {
@@ -43,18 +41,19 @@ export class AirportsComponent
             return it;
           })
         }
-        this.filterCondition.userOps = {
-          ...this.filterCondition.userOps,
-          fromAirportOp: false
-        }
       } else {
-        this.filterCondition.userOps = {
-          ...this.filterCondition.userOps,
-          toAirportOp: false
+        if (this.filterCondition.toAirports) {
+          this.filterCondition.toAirports = this.filterCondition.toAirports.map(it => {
+            it.isChecked = false
+            return it;
+          })
         }
       }
       this.search();
     }
+  }
+  onionChange(){
+    this.search();
   }
   private search() {
     if (this.filterCondition) {

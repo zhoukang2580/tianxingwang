@@ -610,6 +610,8 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     if (!this.filterCondition) {
       this.filterCondition = FilterConditionModel.init();
     }
+    this.filterCondition.fromCity = this.searchFlightModel.fromCity;
+    this.filterCondition.toCity = this.searchFlightModel.toCity;
     if (this.flightJourneyList) {
       this.filterCondition.airCompanies = []
       this.filterCondition.fromAirports = [];
@@ -679,7 +681,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
         FlightCabinType.F
       ].some(it => +it == +c.id));
     }
-    console.log("initFilterConditionInfo",this.filterCondition)
+    console.log("initFilterConditionInfo", this.filterCondition)
   }
   async onFilter() {
     this.activeTab = "filter";
@@ -692,8 +694,10 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     m.present();
     const res = await m.onDidDismiss();
     if (res && res.data) {
-      const { confirm, filterCondition } = res.data;
-      if(confirm){
+      const { confirm, filterCondition }: { confirm: boolean; filterCondition: FilterConditionModel } = res.data;
+      console.log("onFilter filtercondition",filterCondition);
+      if (confirm) {
+        filterCondition.isFiltered = Object.keys(filterCondition.userOps).some(k => filterCondition.userOps[k]);
         this.flightService.setFilterConditionSource(filterCondition);
         this.doRefresh(true, true);
       }
