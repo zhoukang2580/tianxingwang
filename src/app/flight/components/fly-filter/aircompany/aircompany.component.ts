@@ -1,3 +1,4 @@
+import { FlightService } from 'src/app/flight/flight.service';
 import {
   Component,
   OnInit,
@@ -24,55 +25,46 @@ import { FilterConditionModel } from "src/app/flight/models/flight/advanced-sear
   styleUrls: ["./aircompany.component.scss"]
 })
 export class AircompanyComponent
-  implements OnInit, AfterViewInit, OnDestroy, OnChanges {
-  @Input()  flights: FlightJourneyEntity[];
-  isUnlimitRadioChecked = true;
-  @Output() sCond: EventEmitter<any>;
-  aircompanies: SearchTypeModel[];
-  filterCondition: FilterConditionModel;
+  implements OnInit, AfterViewInit {
+  @Input() filterCondition: FilterConditionModel;
+  @Output() filterConditionChange: EventEmitter<FilterConditionModel>;
   constructor() {
-    this.sCond = new EventEmitter();
-  }
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.flights && changes.flights.currentValue) {
-      this.init();
-    }
+    this.filterConditionChange = new EventEmitter();
   }
   onionChange() {
-    this.isUnlimitRadioChecked = !this.aircompanies.some(
-      item => item.isChecked
-    );
-    this.sCond.emit(this.aircompanies.filter(c => c.isChecked));
+
+    this.search();
   }
-  reset() {
-    if (this.aircompanies) {
-      this.aircompanies=this.aircompanies.map(c => {
+  onReset() {
+    if (this.filterCondition && this.filterCondition.airCompanies) {
+      this.filterCondition.airCompanies = this.filterCondition.airCompanies.map(c => {
         c.isChecked = false;
         return c;
       });
-      this.sCond.emit(this.aircompanies.filter(c => c.isChecked));
+      this.filterCondition.userOps = {
+        ...this.filterCondition.userOps,
+        airCompanyOp: false
+      }
+      this.search();
     }
   }
-  ngOnDestroy(): void {}
-  ngAfterViewInit() {}
-  private init() {
-    this.aircompanies = [];
-    const st = Date.now();
-    this.flights.forEach(f => {
-      f.FlightRoutes.forEach(r => {
-        r.FlightSegments.forEach(s => {
-          if (!this.aircompanies.find(c => c.id === s.Airline)) {
-            this.aircompanies.push({
-              id: s.Airline,
-              label: s.AirlineName,
-              isChecked: false,
-              icon: s.AirlineSrc
-            });
-          }
-        });
-      });
-    });
-    console.log(`重置aircompany 条件 ${Date.now() - st} ms`, this.aircompanies);
+  private search() {
+    requestAnimationFrame(() => {
+      if (this.filterCondition) {
+        this.filterCondition.userOps = {
+          ...this.filterCondition.userOps,
+          airCompanyOp: this.filterCondition.airCompanies && this.filterCondition.airCompanies.some(it => it.isChecked)
+        }
+      }
+      this.filterConditionChange.emit(this.filterCondition);
+    })
   }
-  ngOnInit() {}
+  ngOnDestroy(): void {
+
+  }
+  ngAfterViewInit() { }
+
+  ngOnInit() {
+    console.log(this.filterCondition && this.filterCondition.airCompanies);
+  }
 }

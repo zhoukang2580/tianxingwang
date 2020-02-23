@@ -1,3 +1,5 @@
+import { environment } from 'src/environments/environment';
+import { Storage } from '@ionic/storage';
 import { SelectAndReplacebookinfoComponent } from "./components/select-and-replacebookinfo/select-and-replacebookinfo.component";
 import { CalendarService } from "./../tmc/calendar.service";
 import { CredentialsType } from "./../member/pipe/credential.pipe";
@@ -60,7 +62,6 @@ export class SearchFlightModel {
   providedIn: "root"
 })
 export class FlightService {
-  private worker = null;
   private fetchPassengerCredentials: { promise: Promise<any> };
   private selfCredentials: CredentialsEntity[];
   private searchFlightModelSource: Subject<SearchFlightModel>;
@@ -68,8 +69,7 @@ export class FlightService {
     PassengerBookInfo<IFlightSegmentInfo>[]
   >;
   private searchFlightModel: SearchFlightModel;
-  private filterPanelShowHideSource: Subject<boolean>;
-  private filterCondSources: Subject<FilterConditionModel>;
+  private filterConditionSources: Subject<FilterConditionModel>;
   private passengerBookInfos: PassengerBookInfo<IFlightSegmentInfo>[]; // 记录乘客及其研究选择的航班
   private isInitializingSelfBookInfos = false;
   private filterCondition: FilterConditionModel;
@@ -83,18 +83,18 @@ export class FlightService {
     private router: Router,
     identityService: IdentityService,
     private tmcService: TmcService,
-    private calendarService: CalendarService
+    private calendarService: CalendarService,
+    private storage: Storage
   ) {
     this.searchFlightModel = new SearchFlightModel();
     this.searchFlightModel.tripType = TripType.departureTrip;
     this.searchFlightModelSource = new BehaviorSubject(null);
     this.passengerBookInfos = [];
     this.passengerBookInfoSource = new BehaviorSubject(this.passengerBookInfos);
-    this.filterPanelShowHideSource = new BehaviorSubject(false);
-    this.filterCondSources = new BehaviorSubject(null);
-    this.worker = window["Worker"]
-      ? new Worker("../../assets/worker.js", { type: "module" })
-      : null;
+    this.filterConditionSources = new BehaviorSubject(FilterConditionModel.init());
+    // this.worker = window["Worker"]
+    //   ? new Worker("../../assets/worker.js", { type: "module" })
+    //   : null;
     identityService.getIdentitySource().subscribe(res => {
       this.disposal();
     });
@@ -618,7 +618,7 @@ export class FlightService {
               if (item.credential) {
                 name = `${item.credential.CheckFirstName}${
                   item.credential.CheckLastName
-                }(${(item.credential.Number || "").substr(0, 6)}...)`;
+                  }(${(item.credential.Number || "").substr(0, 6)}...)`;
               }
               cannotArr.push(name);
               item.bookInfo = null;
@@ -705,7 +705,7 @@ export class FlightService {
           if (item.credential) {
             name = `${item.credential.CheckFirstName}${
               item.credential.CheckLastName
-            }(${(item.credential.Number || "").substr(0, 6)}...)`;
+              }(${(item.credential.Number || "").substr(0, 6)}...)`;
           }
           cannotArr.push(name);
           item.bookInfo = null;
@@ -790,7 +790,7 @@ export class FlightService {
     let i = 10;
     while (top && --i > 0) {
       // console.log("onSelectReturnTrip", top);
-      await top.dismiss().catch(_ => {});
+      await top.dismiss().catch(_ => { });
       top = await this.modalCtrl.getTop();
     }
     console.timeEnd("dismissAllTopOverlays");
@@ -977,16 +977,10 @@ export class FlightService {
   }
   setFilterConditionSource(advSCond: FilterConditionModel) {
     this.filterCondition = advSCond;
-    this.filterCondSources.next(advSCond);
+    this.filterConditionSources.next(advSCond);
   }
   getFilterConditionSource() {
-    return this.filterCondSources.asObservable();
-  }
-  setFilterPanelShow(show: boolean) {
-    this.filterPanelShowHideSource.next(show);
-  }
-  getFilterPanelShow() {
-    return this.filterPanelShowHideSource.asObservable();
+    return this.filterConditionSources.asObservable();
   }
   async getDomesticAirports(forceFetch: boolean = false) {
     return this.tmcService.getDomesticAirports(forceFetch);
@@ -999,6 +993,12 @@ export class FlightService {
     Flights: FlightJourneyEntity[],
     Passengers: string[]
   ): Promise<PassengerPolicyFlights[]> {
+    if (!environment.production) {
+      const policyFlights = await this.storage.get("test_flight_policy");
+      if (policyFlights) {
+        return policyFlights;
+      }
+    }
     const req = new RequestEntity();
     req.Method = `TmcApiFlightUrl-Home-Policy`;
     req.Version = "2.0";
@@ -1070,25 +1070,24 @@ export class FlightService {
         AppHelper.alert(_);
         return [];
       });
+    if (!environment.production) {
+      await this.storage.set("test_flight_policy",res);
+    }
     return res;
   }
   sortByPrice(segments: FlightSegmentEntity[], l2h: boolean) {
-    if (true || !this.worker) {
-      return segments.sort((s1, s2) => {
-        let sub = +s1.LowestFare - +s2.LowestFare;
-        sub = sub === 0 ? 0 : sub > 0 ? 1 : -1;
-        return l2h ? sub : -sub;
-      });
-    }
+    return segments.sort((s1, s2) => {
+      let sub = +s1.LowestFare - +s2.LowestFare;
+      sub = sub === 0 ? 0 : sub > 0 ? 1 : -1;
+      return l2h ? sub : -sub;
+    });
   }
   sortByTime(segments: FlightSegmentEntity[], l2h: boolean) {
-    if (true || !this.worker) {
-      return segments.sort((s1, s2) => {
-        let sub = +s1.TakeoffTimeStamp - +s2.TakeoffTimeStamp;
-        sub = sub === 0 ? 0 : sub > 0 ? 1 : -1;
-        return l2h ? sub : -sub;
-      });
-    }
+    return segments.sort((s1, s2) => {
+      let sub = +s1.TakeoffTimeStamp - +s2.TakeoffTimeStamp;
+      sub = sub === 0 ? 0 : sub > 0 ? 1 : -1;
+      return l2h ? sub : -sub;
+    });
   }
   private addoneday(s: FlightSegmentEntity) {
     const addDay = moment(s.ArrivalTime).diff(moment(s.TakeoffTime), "days");
@@ -1226,12 +1225,22 @@ export class FlightService {
     return result;
   }
   async getFlightJourneyDetailListAsync(loadDataFromServer: boolean) {
+    if (!environment.production) {
+      const local = await this.storage.get("test_flightjourney");
+      if (local) {
+        this.flightJourneyList=local;
+        return local;
+      }
+    }
     if (!loadDataFromServer) {
       if (this.flightJourneyList && this.flightJourneyList.length) {
         return Promise.resolve(this.flightJourneyList);
       }
     }
     this.flightJourneyList = await this.getFlightJourneyDetails();
+    if (!environment.production) {
+      await this.storage.set("test_flightjourney", this.flightJourneyList);
+    }
     return this.flightJourneyList || [];
   }
   private async setDefaultFilterInfo() {
@@ -1510,7 +1519,7 @@ export class FlightService {
         // console.log(moment(s.TakeoffTime).hour());
         return (
           this.filterCondition.takeOffTimeSpan.lower <=
-            moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() &&
+          moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() &&
           (moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() <
             this.filterCondition.takeOffTimeSpan.upper ||
             (moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() ==

@@ -1,3 +1,6 @@
+import { FilterConditionModel } from 'src/app/flight/models/flight/advanced-search-cond/FilterConditionModel';
+import { Subscription } from 'rxjs';
+import { FlightService } from 'src/app/flight/flight.service';
 import {
   Component,
   OnInit,
@@ -5,7 +8,8 @@ import {
   AfterViewInit,
   EventEmitter,
   Output,
-  OnDestroy
+  OnDestroy,
+  Input
 } from "@angular/core";
 import { IonRange, DomController } from "@ionic/angular";
 @Component({
@@ -13,21 +17,26 @@ import { IonRange, DomController } from "@ionic/angular";
   templateUrl: './take-off-timespan.component.html',
   styleUrls: ['./take-off-timespan.component.scss'],
 })
-export class TakeOffTimeSpanComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TakeOffTimeSpanComponent implements OnInit, AfterViewInit {
   time: "forenoon" | "afternoon" | "none" | "night";
-  @Output() sCond: EventEmitter<any>;
+  @Input() filterCondition: FilterConditionModel;
+  @Output() filterConditionChange: EventEmitter<FilterConditionModel>;
   @ViewChild("range") range: IonRange;
-  timeSpan: { lower: number; upper: number } = {
-    lower: 0,
-    upper: 24
-  };
+  private subscription = Subscription.EMPTY;
   constructor(private domCtrl: DomController) {
-    this.sCond = new EventEmitter();
+    this.filterConditionChange = new EventEmitter();
   }
-  onSearch() {
-    this.sCond.emit(this.timeSpan);
+  private search() {
+    if (this.filterCondition && this.filterCondition.takeOffTimeSpan) {
+      this.filterCondition.userOps = {
+        ...this.filterCondition.userOps,
+        timespanOp: this.filterCondition.takeOffTimeSpan.lower > 0 || this.filterCondition.takeOffTimeSpan.upper < 24
+      }
+      this.filterConditionChange.emit(this.filterCondition);
+    }
   }
-  ngOnInit() {}
+  ngOnInit() {
+  }
   reset() {
     this.init();
   }
@@ -35,10 +44,12 @@ export class TakeOffTimeSpanComponent implements OnInit, AfterViewInit, OnDestro
     setTimeout(() => {
       this.onTimeSelect("none");
       this.changeView();
-      this.onSearch();
+      this.search();
     }, 100);
   }
-  ngOnDestroy() {}
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
   onTimeSelect(time: "forenoon" | "afternoon" | "none" | "night") {
     this.time = time;
     switch (this.time) {
@@ -63,16 +74,21 @@ export class TakeOffTimeSpanComponent implements OnInit, AfterViewInit, OnDestro
         break;
       }
     }
-    this.onSearch();
+    this.search();
   }
   ngAfterViewInit() {
     this.init();
     this.range.ionChange.subscribe((v: CustomEvent) => {
       // console.dir(v.detail.value);
-      this.timeSpan.lower = v.detail.value.lower;
-      this.timeSpan.upper = v.detail.value.upper;
+      if (this.filterCondition) {
+        this.filterCondition.takeOffTimeSpan = {
+          ... this.filterCondition.takeOffTimeSpan,
+          lower: v.detail.value.lower,
+          upper: v.detail.value.upper
+        }
+      }
       // this.changeView();
-      this.onSearch();
+      this.search();
     });
   }
   changeView() {

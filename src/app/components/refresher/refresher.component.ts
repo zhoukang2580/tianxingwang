@@ -63,9 +63,11 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
     this.ionStart = new EventEmitter();
   }
   ngAfterViewInit() {
-    this.connectedCallback();
   }
-  ngOnInit() {}
+  ngOnInit() {
+    
+    this.connectedCallback();
+   }
   ngOnDestroy() {
     this.disconnectedCallback();
   }
@@ -157,12 +159,13 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
       console.error('Make sure you use: <app-refresher slot="fixed">');
       return;
     }
-    const contentEl = this.el.nativeElement.closest("ion-content");
+    const contentEl =  this.content;
     if (!contentEl) {
       console.error("<ion-refresher> must be used inside an <ion-content>");
       return;
     }
     this.scrollEl = await contentEl.getScrollElement();
+    console.log("scroll element",this.scrollEl);
     if (!this.scrollEl) {
       console.error("scroll element 未找到");
       return;

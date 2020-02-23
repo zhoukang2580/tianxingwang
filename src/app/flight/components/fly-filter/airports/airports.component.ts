@@ -23,75 +23,50 @@ import { FilterConditionModel } from "src/app/flight/models/flight/advanced-sear
   styleUrls: ["./airports.component.scss"]
 })
 export class AirportsComponent
-  implements OnInit, AfterViewInit, OnDestroy, OnChanges {
-  @Input() cityName: string;
-  @Input() flights: FlightJourneyEntity[];
-  @Input() isFromAirports = true;
-  isUnlimitRadioChecked = true;
-  airports: SearchTypeModel[];
-  @Output() sCond: EventEmitter<any>;
-  filterCondition: FilterConditionModel;
+  implements OnInit, AfterViewInit, OnDestroy {
+  @Input() isFromAirports: boolean;
+  @Input() filterCondition: FilterConditionModel;
+  @Output() filterConditionChange: EventEmitter<FilterConditionModel>;
   constructor() {
-    this.sCond = new EventEmitter();
+    this.filterConditionChange = new EventEmitter();
   }
 
   onionChange() {
-    this.isUnlimitRadioChecked = !this.airports.some(item => item.isChecked);
-    this.sCond.emit({
-      isFromAirports: this.isFromAirports,
-      airports: this.airports.filter(a => a.isChecked)
-    });
+    this.search()
   }
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.flights && changes.flights.currentValue) {
-      this.init();
+  onReset() {
+    if (this.filterCondition) {
+      if (this.isFromAirports) {
+        if (this.filterCondition.fromAirports) {
+          this.filterCondition.fromAirports = this.filterCondition.fromAirports.map(it => {
+            it.isChecked = false
+            return it;
+          })
+        }
+        this.filterCondition.userOps = {
+          ...this.filterCondition.userOps,
+          fromAirportOp: false
+        }
+      } else {
+        this.filterCondition.userOps = {
+          ...this.filterCondition.userOps,
+          toAirportOp: false
+        }
+      }
+      this.search();
     }
   }
-  reset() {
-    if (this.airports) {
-      this.airports = this.airports.map(c => {
-        c.isChecked = false;
-        return c;
-      });
-      this.sCond.emit({
-        airports: this.airports.filter(a => a.isChecked)
-      });
+  private search() {
+    if (this.filterCondition) {
+      this.filterCondition.userOps = {
+        ...this.filterCondition.userOps,
+        fromAirportOp: this.filterCondition.fromAirports && this.filterCondition.fromAirports.some(it => it.isChecked),
+        toAirportOp: this.filterCondition.toAirports && this.filterCondition.toAirports.some(it => it.isChecked)
+      }
     }
+    this.filterConditionChange.emit(this.filterCondition);
   }
-  private init() {
-    this.airports = [];
-    const st = Date.now();
-    this.flights.forEach(f => {
-      f.FlightRoutes.forEach(r => {
-        r.FlightSegments.forEach(s => {
-          if (
-            !this.airports.find(
-              a => a.id === (this.isFromAirports ? s.FromAirport : s.ToAirport)
-            )
-          ) {
-            this.airports.push({
-              label: this.isFromAirports ? s.FromAirportName : s.ToAirportName,
-              id: this.isFromAirports ? s.FromAirport : s.ToAirport,
-              isChecked: false
-            });
-          }
-        });
-      });
-    });
-    console.log(`重置 airports 条件 ${Date.now() - st} ms`);
-    // console.log(this.flights,this.airports);
-    //  this.airports = [
-    //   {
-    //     label: "浦东机场",
-    //     isChecked: false
-    //   },
-    //   {
-    //     label: "虹桥机场",
-    //     isChecked: false
-    //   }
-    // ];
-  }
-  ngOnInit() {}
-  ngAfterViewInit() {}
-  ngOnDestroy() {}
+  ngOnInit() { }
+  ngAfterViewInit() { }
+  ngOnDestroy() { }
 }

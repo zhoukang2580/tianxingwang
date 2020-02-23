@@ -1,72 +1,70 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <app-back-button defaultHref="" (click)='onCancel($event)'></app-back-button>
+      <app-back-button defaultHref="" [backFn]="onCancel.bind(this)"></app-back-button>
     </ion-buttons>
     <ion-title>过滤航班</ion-title>
-  </ion-toolbar>
-  <ion-toolbar slot='fixed' #toolbar>
-    <ion-row  class='ion-margin-top ion-text-center'>
-      <ion-col>
-        <ion-button color='dark' fill='outline' size='small' (click)='onCancel()'>
-          取消
-        </ion-button>
-      </ion-col>
-      <ion-col>
-        <ion-button color='dark' fill='outline' size='small' (click)='onReset()'>
-          重置
-        </ion-button>
-      </ion-col>
-      <ion-col>
-        <ion-button color='secondary' size='small' fill='outline' type='submit' (click)='onSearch()'>
-          确定
-        </ion-button>
-      </ion-col>
-    </ion-row>
   </ion-toolbar>
 </ion-header>
 
 
 <ion-content class='ion-margin-top'>
-  <form (ngSubmit)="onSearch()" [formGroup]='sForm'>
-    <ion-list lines='none' class='ion-no-margin' #ionlist>
-      <ion-item>
-        <ion-label>仅直达</ion-label>
-        <ion-toggle formControlName='onlyDirect'></ion-toggle>
-      </ion-item>
-    </ion-list>
-    <section class="search-cond" #searchcondition>
-      <article class="left">
-        <div class='tab' [class.active]='tab===1' [class.user-op]='userOps.timespanOp' (click)='onTabClick(1)'>
-          <span>起飞时段</span>
-        </div>
-        <div class='tab' [class.active]='tab===2' [class.user-op]='userOps.airCompanyOp' (click)='onTabClick(2)'>
-          <span>航空公司</span>
-        </div>
-        <div class='tab' [class.active]='tab===3' [class.user-op]='userOps.fromAirportOp' (click)='onTabClick(3)'>
-          <span>起飞机场</span>
-        </div>
-        <div class='tab' [class.active]='tab===6' [class.user-op]='userOps.toAirportOp' (click)='onTabClick(6)'>
-          <span>到达机场</span>
-        </div>
-        <div class='tab' [class.active]='tab===4' [class.user-op]='userOps.airTypeOp' (click)='onTabClick(4)'>
-          <span>机型</span>
-        </div>
-        <div class='tab' [class.active]='tab===5' [class.user-op]='userOps.cabinOp' (click)='onTabClick(5)'>
-          <span>舱位</span>
-        </div>
-      </article>
-      <article class="right" #rightpanel>
-        <app-take-off-timespan [class.hidden]='tab!==1' (sCond)='onTimeSpanSCond($event)'></app-take-off-timespan>
-        <app-aircompany [flights]='flights' [class.hidden]='tab!==2' (sCond)='onAirCompanySCond($event)'>
-        </app-aircompany>
-        <app-airports [flights]='flights'  [class.hidden]='tab!==3' [cityName]='fromCityName' #fromAirports
-          (sCond)='onFromAirportSCond($event)'></app-airports>
-        <app-airports [flights]='flights'  [isFromAirports]='false' [cityName]='toCityName' #toAirports
-          [class.hidden]='tab!==6' (sCond)='onToAirportSCond($event)'></app-airports>
-        <app-airtype [flights]='flights' [class.hidden]='tab!==4' (sCond)='onAirTypeSCond($event)'></app-airtype>
-        <app-cabin [flights]='flights' [class.hidden]='tab!==5' (sCond)='onCabinSCond($event)'></app-cabin>
-      </article>
-    </section>
-  </form>
+  <ion-list lines='none' class='ion-no-margin'>
+    <ion-item>
+      <ion-label>仅直达</ion-label>
+      <ion-toggle [(ngModel)]="filterCondition.onlyDirect"></ion-toggle>
+    </ion-item>
+  </ion-list>
+  <section class="search-cond">
+    <article class="left">
+      <div class='tab' [class.active]='tab===1' [class.user-op]='userOps?.timespanOp' (click)='onTabClick(1)'>
+        <span>起飞时段</span>
+      </div>
+      <div class='tab' [class.active]='tab===2' [class.user-op]='userOps?.airCompanyOp' (click)='onTabClick(2)'>
+        <span>航空公司</span>
+      </div>
+      <div class='tab' [class.active]='tab===3' [class.user-op]='userOps?.fromAirportOp' (click)='onTabClick(3)'>
+        <span>起飞机场</span>
+      </div>
+      <div class='tab' [class.active]='tab===6' [class.user-op]='userOps?.toAirportOp' (click)='onTabClick(6)'>
+        <span>到达机场</span>
+      </div>
+      <div class='tab' [class.active]='tab===4' [class.user-op]='userOps?.airTypeOp' (click)='onTabClick(4)'>
+        <span>机型</span>
+      </div>
+      <div class='tab' [class.active]='tab===5' [class.user-op]='userOps?.cabinOp' (click)='onTabClick(5)'>
+        <span>舱位</span>
+      </div>
+    </article>
+    <article class="right">
+      <app-take-off-timespan [class.hidden]='tab!==1' [(filterCondition)]='filterCondition'></app-take-off-timespan>
+      <app-aircompany [class.hidden]='tab!==2' [(filterCondition)]='filterCondition'>
+      </app-aircompany>
+      <app-airports #fromAirports [class.hidden]='tab!==3' [isFromAirports]="true" [(filterCondition)]='filterCondition'>
+      </app-airports>
+      <app-airports #toAirports [isFromAirports]="false" [(filterCondition)]='filterCondition' [class.hidden]='tab!==6'>
+      </app-airports>
+      <app-airtype [class.hidden]='tab!==4' [(filterCondition)]='filterCondition'></app-airtype>
+      <app-cabin [class.hidden]='tab!==5' [(filterCondition)]='filterCondition'></app-cabin>
+    </article>
+  </section>
 </ion-content>
+<ion-footer>
+  <ion-row class='ion-margin-top ion-text-center'>
+    <ion-col>
+      <ion-button color='dark' fill='outline' size='small' (click)='onCancel()'>
+        取消
+      </ion-button>
+    </ion-col>
+    <ion-col>
+      <ion-button color='dark' fill='outline' size='small' (click)='onReset()'>
+        重置
+      </ion-button>
+    </ion-col>
+    <ion-col>
+      <ion-button color='secondary' size='small' fill='outline' type='submit' (click)='onSearch()'>
+        确定
+      </ion-button>
+    </ion-col>
+  </ion-row>
+</ion-footer>

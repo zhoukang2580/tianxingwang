@@ -1,7 +1,7 @@
+import { FilterConditionModel } from 'src/app/flight/models/flight/advanced-search-cond/FilterConditionModel';
 import { StaffService } from 'src/app/hr/staff.service';
 import { IonRadio } from "@ionic/angular";
 import { Subscription } from "rxjs";
-import { FilterConditionModel } from "./../../../models/flight/advanced-search-cond/FilterConditionModel";
 import { FlightService } from "src/app/flight/flight.service";
 import {
   Component,
@@ -26,77 +26,53 @@ import { SearchTypeModel } from "src/app/flight/models/flight/advanced-search-co
   styleUrls: ["./cabin.component.scss"]
 })
 export class CabinComponent
-  implements OnInit, OnDestroy, AfterViewInit, OnChanges {
-  @Input() flights: FlightJourneyEntity[];
-  @Output() sCond: EventEmitter<any>; // 搜索条件
-  cabins: SearchTypeModel[] = [];
-  isUnlimitRadioChecked = true;
+  implements OnInit, OnDestroy, AfterViewInit {
+  @Input() filterCondition: FilterConditionModel;
+  @Output() filterConditionChange: EventEmitter<FilterConditionModel>;
   isSelf = true;
+  selectItem: any;
   constructor(private staffService: StaffService) {
-    this.sCond = new EventEmitter();
+    this.filterConditionChange = new EventEmitter();
   }
   onUnlimit() {
-    this.reset();
-    this.isUnlimitRadioChecked = this.cabins.every(a => !a.isChecked);
+    this.onReset();
   }
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.flights && changes.flights.currentValue) {
-      this.init();
-    }
-  }
-  reset() {
-    if (this.cabins) {
-      this.cabins = this.cabins.map(c => {
+
+  onReset() {
+    this.selectItem = null;
+    if (this.filterCondition && this.filterCondition.cabins) {
+      this.filterCondition.cabins = this.filterCondition.cabins.map(c => {
         c.isChecked = false;
         return c;
       });
-      this.onSearch();
+      this.search();
     }
   }
-  onionChange(c: { id: string}) {
-    if(this.isSelf){
-      this.cabins = this.cabins.map(it => {
-        it.isChecked = it.id ==c.id;
+  onionChange(c: { id: string }) {
+    this.selectItem = c;
+    if (this.filterCondition.cabins) {
+      this.filterCondition.cabins = this.filterCondition.cabins.map(it => {
+        if (this.isSelf) {
+          it.isChecked = it.id == (c && c.id);
+        }
         return it;
-      });
+      })
     }
-    console.log(this.cabins.map(it=>it.isChecked));
-    this.isUnlimitRadioChecked=this.cabins.every(it=>!it.isChecked);
-    this.onSearch();
+    this.search();
   }
-  onSearch() {
-    this.sCond.emit(this.cabins.filter(t => t.isChecked));
+  private search() {
+    if (this.filterCondition && this.filterCondition.cabins) {
+      this.filterCondition.userOps = {
+        ...this.filterCondition.userOps,
+        cabinOp: this.filterCondition.cabins.some(it => it.isChecked)
+      }
+    }
+    this.filterConditionChange.emit(this.filterCondition);
   }
-  private init() {
-    this.cabins = [];
-    this.flights.forEach(f => {
-      f.FlightRoutes.forEach(r => {
-        r.FlightSegments.forEach(s => {
-          s.Cabins.forEach(c => {
-            if (
-              !this.cabins.find(
-                a => a.label == c.TypeName
-              )
-            ) {
-              this.cabins.push({
-                id: c.Type,
-                label: c.TypeName,
-                isChecked: false
-              });
-            }
-          });
-        });
-      });
-    });
-    this.cabins = this.cabins.filter(c => [
-      FlightCabinType.Y,
-      FlightCabinType.SeniorY,
-      FlightCabinType.C,
-      FlightCabinType.F
-    ].some(it => +it == +c.id));
-  }
+
   ngAfterViewInit() { }
-  ngOnDestroy() { }
+  ngOnDestroy() {
+  }
   async ngOnInit() {
     this.isSelf = await this.staffService.isSelfBookType();
   }

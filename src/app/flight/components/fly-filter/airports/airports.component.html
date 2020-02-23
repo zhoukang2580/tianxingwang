@@ -1,13 +1,24 @@
-<ion-list lines='none' *ngIf='airports?.length'>
+<ion-list lines='none' *ngIf='filterCondition'>
   <ion-list-header color='light' class='ion-no-margin'>
-    <ion-label>{{cityName}}{{isFromAirports?"起飞":"降落"}}</ion-label> 
+    <ion-label *ngIf='isFromAirports'>{{filterCondition.fromCity?.CityName}}起飞</ion-label>
+    <ion-label *ngIf='!isFromAirports'>{{filterCondition.toCity?.CityName}}降落</ion-label>
   </ion-list-header>
-  <ion-item>
-    <ion-label>不限</ion-label>
-    <ion-radio  (ionSelect)='reset()'></ion-radio>
-  </ion-item>
-  <ion-item *ngFor="let entry of airports">
-    <ion-label>{{entry?.label}}</ion-label>
-    <ion-checkbox #cbox slot="end" [(ngModel)]="entry.isChecked" (ionChange)='onionChange()'></ion-checkbox>
-  </ion-item>
+  <ion-radio-group  [value]="this.filterCondition?.userOps?.toAirportOp?'unlimit':''">
+    <ion-item  (click)='onReset()'>
+      <ion-label>不限</ion-label>
+      <ion-radio value='unlimit'></ion-radio>
+    </ion-item>
+  </ion-radio-group>
+  <ng-container *ngIf='isFromAirports else toTpl'>
+    <ion-item *ngFor="let entry of filterCondition?.fromAirports">
+      <ion-label>{{entry?.label}}</ion-label>
+      <ion-checkbox #cbox slot="end" [(ngModel)]="entry.isChecked" (ionChange)='onionChange()'></ion-checkbox>
+    </ion-item>
+  </ng-container>
+  <ng-template #toTpl>
+    <ion-item *ngFor="let entry of filterCondition?.toAirports">
+      <ion-label>{{entry?.label}}</ion-label>
+      <ion-checkbox #cbox slot="end" [(ngModel)]="entry.isChecked" (ionChange)='onionChange()'></ion-checkbox>
+    </ion-item>
+  </ng-template>
 </ion-list>

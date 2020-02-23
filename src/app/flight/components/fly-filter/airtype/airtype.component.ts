@@ -1,3 +1,4 @@
+import { FlightService } from 'src/app/flight/flight.service';
 import {
   Component,
   OnInit,
@@ -25,56 +26,45 @@ import { FilterConditionModel } from "src/app/flight/models/flight/advanced-sear
   styleUrls: ["./airtype.component.scss"]
 })
 export class AirtypeComponent
-  implements OnInit, OnDestroy, AfterViewInit, OnChanges {
-  @Input()
-  flights: FlightJourneyEntity[];
-  isUnlimitRadioChecked = true;
-  airtypes: SearchTypeModel[];
-  @Output() sCond: EventEmitter<any>; // 搜索条件
-  filterCondition: FilterConditionModel;
+  implements OnInit, OnDestroy, AfterViewInit {
+  @Input() filterCondition: FilterConditionModel;
+  @Output() filterConditionChange: EventEmitter<FilterConditionModel>;
   constructor() {
-    this.sCond = new EventEmitter();
+    this.filterConditionChange = new EventEmitter();
   }
-  reset() {
-    if (this.airtypes) {
-      this.airtypes=this.airtypes.map(c => {
+  onReset() {
+    if (this.filterCondition && this.filterCondition.airTypes) {
+      this.filterCondition.airTypes = this.filterCondition.airTypes.map(c => {
         c.isChecked = false;
         return c;
       });
-      this.sCond.emit(this.airtypes.filter(c => c.isChecked));
+      this.filterCondition.userOps = {
+        ...this.filterCondition.userOps,
+        airTypeOp: false
+      }
+      this.search();
     }
   }
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.flights && changes.flights.currentValue) {
-      this.init();
-    }
-  }
+
   onionChange() {
-    this.isUnlimitRadioChecked = !this.airtypes.some(item => item.isChecked);
-    this.sCond.emit(this.airtypes.filter(c => c.isChecked));
+    console.log("onionChange");
+    this.search();
   }
-  ngAfterViewInit() {}
-  ngOnDestroy() {}
-  private init() {
-    this.airtypes = [];
-    const st = Date.now();
-    this.flights.forEach(f => {
-      f.FlightRoutes.forEach(r => {
-        r.FlightSegments.forEach(s => {
-          if (!this.airtypes.find(a => a.id === s.PlaneType)) {
-            this.airtypes.push({
-              id: s.PlaneType,
-              label: s.PlaneTypeDescribe,
-              isChecked: false
-            });
-          }
-        });
-      });
-    });
-    console.log(`初始化 airtype ${Date.now() - st} ms`);
+  ngAfterViewInit() { }
+  ngOnDestroy() {
+
   }
-  onSearch() {
-    this.sCond.emit(this.airtypes.filter(t => t.isChecked));
+  private search() {
+    if (this.filterCondition) {
+      this.filterCondition.userOps = {
+        ...this.filterCondition.userOps,
+        airTypeOp: this.filterCondition.airTypes && this.filterCondition.airTypes.some(it => it.isChecked)
+      }
+    }
+    // console.log(this.filterCondition);
+    this.filterConditionChange.emit(this.filterCondition)
   }
-  ngOnInit() {}
+  ngOnInit() {
+
+  }
 }

@@ -1,9 +1,11 @@
 <ion-list lines='none'>
-    <ion-item>
-        <ion-label>不限</ion-label>
-        <ion-radio  (ionSelect)='reset()'></ion-radio>
-    </ion-item>
-    <ion-item *ngFor="let entry of aircompanies">
+    <ion-radio-group [value]='filterCondition?.userOps?.airCompanyOp?"unlimit":""'>
+        <ion-item  (click)='onReset()'>
+            <ion-label>不限</ion-label>
+            <ion-radio value='unlimit'></ion-radio>
+        </ion-item>
+    </ion-radio-group>
+    <ion-item *ngFor="let entry of filterCondition?.airCompanies">
         <ion-thumbnail>
             <img [src]="entry.icon" alt="logo">
         </ion-thumbnail>
