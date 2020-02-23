@@ -809,7 +809,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
       segs
     );
     let result = segs;
-    if (!this.filterCondition) {
+    if (!this.filterCondition||!this.filterConditionIsFiltered) {
       return result;
     }
     result = this.flightService.filterByFlightDirect(result);

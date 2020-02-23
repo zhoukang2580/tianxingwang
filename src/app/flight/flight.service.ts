@@ -1447,10 +1447,10 @@ export class FlightService {
     if (
       this.filterCondition &&
       this.filterCondition.fromAirports &&
-      this.filterCondition.fromAirports.length
+      this.filterCondition.fromAirports.filter(it=>it.isChecked).length
     ) {
       result = result.filter(s =>
-        this.filterCondition.fromAirports.some(a => a.id === s.FromAirport&&a.isChecked)
+        this.filterCondition.fromAirports.filter(it=>it.isChecked).some(a => a.id === s.FromAirport&&a.isChecked)
       );
     }
     return result;
