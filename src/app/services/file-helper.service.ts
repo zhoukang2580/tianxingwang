@@ -82,6 +82,22 @@ export class FileHelperService {
   ) {
     this.plt.ready().then(async () => {
       this.hcpPlugin = window["hcp"];
+      if(this.hcpPlugin){
+        if(this.plt.is("ios")){
+          const wv=window['Ionic.WebView'];
+          if(wv&&wv.setServerBasePath){
+           const startIndexPath= await this.hcpPlugin.getStartIndexPath();
+            this.logMessage("ios hcp start index path ",startIndexPath);
+           await wv.setServerBasePath(startIndexPath.replace('/index.html',""));
+          }
+          // this.splashScreen.show();
+          // setTimeout(() => {
+          //   this.splashScreen.hide();
+          // }, 3000);
+        }else{
+          this.hcpPlugin.loadHcpPage();
+        }
+      }
       this.app = navigator["app"];
       // if (AppHelper.isApp()) {
       //   if (this.plt.is('android')) {

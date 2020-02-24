@@ -126,7 +126,8 @@
       "cordova-hcp-plugin": {}
     },
     "platforms": [
-      "android"
+      "android",
+      "ios"
     ]
   }
 }
