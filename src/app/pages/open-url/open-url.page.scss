@@ -26,3 +26,13 @@
 ion-content {
   --background: white;
 }
+ion-fab {
+  top: 0;
+  ion-fab-button {
+    --background: rgba(var(--ion-color-dark-rgb), 0.25);
+  }
+}
+
+ion-header.ion-hide {
+  display: none;
+}

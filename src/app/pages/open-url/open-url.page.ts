@@ -1,3 +1,4 @@
+import { BackButtonComponent } from './../../components/back-button/back-button.component';
 import { LoadingController, NavController } from "@ionic/angular";
 import { Subject, BehaviorSubject } from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -7,7 +8,8 @@ import {
   QueryList,
   ElementRef,
   ViewChildren,
-  AfterViewInit
+  AfterViewInit,
+  ViewChild
 } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 
@@ -20,6 +22,8 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
   title: string;
   url$: Subject<any>;
   isHideTitle = false;
+  isShowFabButton = false;
+  @ViewChild(BackButtonComponent) backButton: BackButtonComponent;
   @ViewChildren("iframe") iframes: QueryList<ElementRef<HTMLIFrameElement>>;
   constructor(
     activatedRoute: ActivatedRoute,
@@ -39,6 +43,7 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
         this.title = p.get("title");
       }
       const h = p.get('isHideTitle');
+      this.isShowFabButton = p.get('isShowFabButton') == "true";
       this.isHideTitle = h == 'true';
     });
   }
@@ -55,6 +60,11 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
           };
         }
       });
+    }
+  }
+  onBack(evt:CustomEvent) {
+    if(this.backButton){
+      this.backButton.backToPrePage();
     }
   }
   ngOnInit() { }

@@ -1,4 +1,4 @@
-<ion-header *ngIf='!isHideTitle'>
+<ion-header [class.ion-hide]='isHideTitle'>
   <ion-toolbar>
     <ion-buttons slot='start'>
       <app-back-button>
@@ -9,7 +9,12 @@
 </ion-header>
 
 <ion-content>
-  <div class='wrapper' *ngIf='(url$|async) as url' [class.hidetop]='isHideTitle'> 
+  <div class='wrapper' *ngIf='(url$|async) as url' [class.hidetop]='isHideTitle'>
     <iframe [src]="url" #iframe></iframe>
   </div>
+  <ion-fab *ngIf='isShowFabButton' vertical="top" edge  horizontal="start" slot="fixed">
+    <ion-fab-button size="small" (click)='onBack($event)'>
+      <ion-icon name="chevron-back-circle-outline" color='light'></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

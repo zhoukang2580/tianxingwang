@@ -38,7 +38,7 @@ export class RentalCarPage implements OnInit, OnDestroy {
     private navCtrl: NavController,
     private router: Router,
     private route: ActivatedRoute
-  ) {}
+  ) { }
   back() {
     this.navCtrl.pop();
   }
@@ -172,7 +172,8 @@ export class RentalCarPage implements OnInit, OnDestroy {
         queryParams: {
           url,
           title: "用车",
-          isHideTitle: AppHelper.isDingtalkH5() || AppHelper.isWechatH5()
+          isShowFabButton: true,
+          isHideTitle: true 
         }
       });
     }
