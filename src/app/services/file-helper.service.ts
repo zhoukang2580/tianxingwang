@@ -84,16 +84,7 @@ export class FileHelperService {
       this.hcpPlugin = window["hcp"];
       if(this.hcpPlugin){
         if(this.plt.is("ios")){
-          const wv=window['Ionic.WebView'];
-          if(wv&&wv.setServerBasePath){
-           const startIndexPath= await this.hcpPlugin.getStartIndexPath();
-            this.logMessage("ios hcp start index path ",startIndexPath);
-           await wv.setServerBasePath(startIndexPath.replace('/index.html',""));
-          }
-          // this.splashScreen.show();
-          // setTimeout(() => {
-          //   this.splashScreen.hide();
-          // }, 3000);
+          this.loadiosHcpPage();
         }else{
           this.hcpPlugin.loadHcpPage();
         }
@@ -126,6 +117,17 @@ export class FileHelperService {
       // this.logMessage(JSON.stringify(this.fileInfo, null, 2));
       this.createUpdateWwwDirectory();
     });
+  }
+  private async loadiosHcpPage(){
+    await this.plt.ready();
+    if(this.hcpPlugin){
+      const wv=window['Ionic.WebView'];
+      if(wv&&wv.setServerBasePath){
+       const startIndexPath= await this.hcpPlugin.getStartIndexPath();
+        this.logMessage("ios hcp start index path ",startIndexPath);
+       await wv.setServerBasePath(startIndexPath.replace('/index.html',""));
+      }
+    }
   }
   async getStartIndexPath() {
     await this.plt.ready();
@@ -219,7 +221,11 @@ export class FileHelperService {
       });
   }
   async openNewVersion(newVersionPagePath: string) {
-    return this.hcpPlugin.openHcpPage(newVersionPagePath);
+    if(this.plt.is("android")){
+      return this.hcpPlugin.openHcpPage(newVersionPagePath);
+    }else{
+      return this.loadiosHcpPage();
+    }
   }
   private async getPackageName() {
     if (!AppHelper.isApp()) {
