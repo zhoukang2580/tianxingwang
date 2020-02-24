@@ -3,10 +3,6 @@
   width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
-  &.hidetop {
-    position: relative;
-    top: -27px;
-  }
   &::-webkit-scrollbar {
     display: none;
   }
