@@ -82,10 +82,10 @@ export class FileHelperService {
   ) {
     this.plt.ready().then(async () => {
       this.hcpPlugin = window["hcp"];
-      if(this.hcpPlugin){
-        if(this.plt.is("ios")){
+      if (this.hcpPlugin) {
+        if (this.plt.is("ios")) {
           this.loadiosHcpPage();
-        }else{
+        } else {
           this.hcpPlugin.loadHcpPage();
         }
       }
@@ -118,14 +118,14 @@ export class FileHelperService {
       this.createUpdateWwwDirectory();
     });
   }
-  private async loadiosHcpPage(){
+  private async loadiosHcpPage(newVersionPagePath = null) {
     await this.plt.ready();
-    if(this.hcpPlugin){
-      const wv=window['Ionic.WebView'];
-      if(wv&&wv.setServerBasePath){
-       const startIndexPath= await this.hcpPlugin.getStartIndexPath();
-        this.logMessage("ios hcp start index path ",startIndexPath);
-       await wv.setServerBasePath(startIndexPath.replace('/index.html',""));
+    if (this.hcpPlugin) {
+      const wv = window['Ionic.WebView'];
+      if (wv && wv.setServerBasePath) {
+        const startIndexPath = newVersionPagePath || await this.hcpPlugin.getStartIndexPath();
+        this.logMessage("ios hcp start index path ", startIndexPath);
+        await wv.setServerBasePath(startIndexPath.replace('/index.html', ""));
       }
     }
   }
@@ -221,10 +221,13 @@ export class FileHelperService {
       });
   }
   async openNewVersion(newVersionPagePath: string) {
-    if(this.plt.is("android")){
+    if (this.plt.is("android")) {
       return this.hcpPlugin.openHcpPage(newVersionPagePath);
-    }else{
-      return this.loadiosHcpPage();
+    } else {
+      this.loadiosHcpPage(newVersionPagePath);
+      setTimeout(() => {
+        this.hcpPlugin.openHcpPage(newVersionPagePath);
+      }, 0);
     }
   }
   private async getPackageName() {
