@@ -172,8 +172,8 @@ export class RentalCarPage implements OnInit, OnDestroy {
         queryParams: {
           url,
           title: "用车",
-          isShowFabButton: true,
-          isHideTitle: true 
+          // isShowFabButton: true,
+          isHideTitle: !AppHelper.isApp()
         }
       });
     }
