@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
-import {  PopoverController } from "@ionic/angular";
-import { FlightPolicy } from '../../models/PassengerFlightInfo';
+import { PopoverController } from "@ionic/angular";
+import { FlightPolicy } from "../../models/PassengerFlightInfo";
 
 @Component({
   selector: "app-ticketchanging-comp",
@@ -9,10 +9,15 @@ import { FlightPolicy } from '../../models/PassengerFlightInfo';
 })
 export class TicketchangingComponent implements OnInit {
   cabin: FlightPolicy;
+  explain: string;
   constructor(private popoverCtrl: PopoverController) {}
   async cancel() {
     const m = await this.popoverCtrl.getTop();
     m.dismiss();
   }
-  ngOnInit() {}
+  ngOnInit() {
+    if (this.cabin && this.cabin.Cabin) {
+      this.explain = this.cabin.Cabin.Explain.replace(/\\n/g, "<br/>");
+    }
+  }
 }

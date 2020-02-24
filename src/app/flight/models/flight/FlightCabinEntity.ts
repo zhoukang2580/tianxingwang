@@ -1,15 +1,15 @@
-import { FlightBookType } from './FlightBookType';
-import { FlightSupplierType } from './FlightSupplierType';
-import { FlightCabinFareType } from './FlightCabinFareType';
-import { FlightCabinType } from './FlightCabinType';
-import { FlightRefundChangeEntity } from './FlightRefundChangeEntity';
-import { FlightPolicyEntity } from './FlightPolicyEntity';
-import { FlightSegmentEntity } from './FlightSegmentEntity';
-import { InsuranceProductEntity } from 'src/app/insurance/models/InsuranceProductEntity';
-import { FlightSegmentModel } from '../PassengerFlightInfo';
+import { FlightBookType } from "./FlightBookType";
+import { FlightSupplierType } from "./FlightSupplierType";
+import { FlightCabinFareType } from "./FlightCabinFareType";
+import { FlightCabinType } from "./FlightCabinType";
+import { FlightRefundChangeEntity } from "./FlightRefundChangeEntity";
+import { FlightPolicyEntity } from "./FlightPolicyEntity";
+import { FlightSegmentEntity } from "./FlightSegmentEntity";
+import { InsuranceProductEntity } from "src/app/insurance/models/InsuranceProductEntity";
+import { FlightSegmentModel } from "../PassengerFlightInfo";
 
 export class FlightCabinEntity {
-/// <summary>
+  /// <summary>
   /// 航班号
   /// </summary>
   FlightNumber: string;
@@ -18,6 +18,8 @@ export class FlightCabinEntity {
   /// </summary>
   Id: string;
   Code: string;
+  Explain: string;
+  OfficeCode: string;
   /// <summary>
   /// 舱位类型
   /// </summary>
@@ -65,7 +67,6 @@ export class FlightCabinEntity {
   /// </summary>
   Name: string;
 
-
   /// <summary>
   /// 票面价格
   /// </summary>
@@ -74,7 +75,6 @@ export class FlightCabinEntity {
   /// 结算价格
   /// </summary>
   SettlePrice: string;
-
 
   /// <summary>
   /// 税收
@@ -100,12 +100,12 @@ export class FlightCabinEntity {
   /// <summary>
   /// 退改签规则
   /// </summary>
+  /** @deprecated */
   RefundChange: FlightRefundChangeEntity;
   /// <summary>
   /// 政策
   /// </summary>
   FlightPolicy: FlightPolicyEntity;
-
 
   InsuranceProducts: InsuranceProductEntity[];
   /// <summary>
@@ -116,11 +116,9 @@ export class FlightCabinEntity {
   /// <summary>
   /// 运价类型名称
   /// </summary>
-  FareTypeName : string;
+  FareTypeName: string;
   /// <summary>
   /// 来源名称
   /// </summary>
   SupplierTypeName: string;
-
-
 }

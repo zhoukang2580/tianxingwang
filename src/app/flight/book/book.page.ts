@@ -1,3 +1,4 @@
+import { flyInOut } from "./../../animations/flyInOut";
 import { PriceDetailComponent } from "./../components/price-detail/price-detail.component";
 import { PayService } from "./../../services/pay/pay.service";
 import { OrderBookDto } from "./../../order/models/OrderBookDto";
@@ -69,21 +70,16 @@ import { RequestEntity } from "src/app/services/api/Request.entity";
 import { map, tap } from "rxjs/operators";
 import { AddContact } from "src/app/tmc/models/AddContact";
 import { environment } from "src/environments/environment";
-import { ITmcOutNumberInfo } from 'src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component';
-import { AccountEntity } from 'src/app/account/models/AccountEntity';
-import { IHotelInfo } from 'src/app/hotel/hotel.service';
-import { RefresherComponent } from 'src/app/components/refresher';
+import { ITmcOutNumberInfo } from "src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component";
+import { AccountEntity } from "src/app/account/models/AccountEntity";
+import { IHotelInfo } from "src/app/hotel/hotel.service";
+import { RefresherComponent } from "src/app/components/refresher";
 
 @Component({
   selector: "app-book",
   templateUrl: "./book.page.html",
   styleUrls: ["./book.page.scss"],
-  animations: [
-    trigger("showHide", [
-      state("true", style({ display: "initial" })),
-      state("false", style({ display: "none" }))
-    ])
-  ]
+  animations: [flyInOut]
 })
 export class BookPage implements OnInit, AfterViewInit {
   vmCombindInfos: ICombindInfo[] = [];
@@ -136,12 +132,17 @@ export class BookPage implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
-    this.flightService.setPassengerBookInfosSource(this.flightService.getPassengerBookInfos().filter(it => !!it.bookInfo))
+    this.flightService.setPassengerBookInfosSource(
+      this.flightService.getPassengerBookInfos().filter(it => !!it.bookInfo)
+    );
     // 秘书和特殊角色可以跳过审批(如果有审批人)
     this.route.queryParamMap.subscribe(async () => {
-      this.isCanSave = await this.identityService.getIdentityAsync().catch(_ => null as IdentityEntity).then(id => {
-        return !!(id && id.Numbers && id.Numbers['AgentId']);
-      })
+      this.isCanSave = await this.identityService
+        .getIdentityAsync()
+        .catch(_ => null as IdentityEntity)
+        .then(id => {
+          return !!(id && id.Numbers && id.Numbers["AgentId"]);
+        });
       setTimeout(() => {
         this.refresh(false);
       }, 200);
@@ -168,15 +169,19 @@ export class BookPage implements OnInit, AfterViewInit {
     const bookInfos = this.flightService.getPassengerBookInfos();
     const cabinPaytypes: string[] = [];
     bookInfos.forEach(info => {
-      if (info.bookInfo && info.bookInfo.flightPolicy && info.bookInfo.flightPolicy.OrderTravelPays) {
+      if (
+        info.bookInfo &&
+        info.bookInfo.flightPolicy &&
+        info.bookInfo.flightPolicy.OrderTravelPays
+      ) {
         const arr = info.bookInfo.flightPolicy.OrderTravelPays.split(",");
         arr.forEach(t => {
           if (!cabinPaytypes.find(type => type == t)) {
             cabinPaytypes.push(t);
-          };
-        })
+          }
+        });
       }
-    })
+    });
     this.tmc = this.tmc || (await this.getTmc());
     this.identity = await this.identityService
       .getIdentityAsync()
@@ -196,9 +201,14 @@ export class BookPage implements OnInit, AfterViewInit {
       }
     });
     if (cabinPaytypes.length) {
-      this.orderTravelPayTypes = this.orderTravelPayTypes.filter(it => cabinPaytypes.some(cbt => cbt == it.label))
+      this.orderTravelPayTypes = this.orderTravelPayTypes.filter(it =>
+        cabinPaytypes.some(cbt => cbt == it.label)
+      );
     }
     console.log("initOrderTravelPayTypes", this.orderTravelPayTypes);
+  }
+  getExplain(explain: string) {
+    return explain && explain.replace(/\\n/g, "<br/>");
   }
   private async initializeBookDto() {
     const bookDto = new OrderBookDto();
@@ -290,7 +300,12 @@ export class BookPage implements OnInit, AfterViewInit {
         }, 300);
       }
       if (byUser) {
-        const ok = await AppHelper.alert("刷新将重新初始化页面，是否刷新？", true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+        const ok = await AppHelper.alert(
+          "刷新将重新初始化页面，是否刷新？",
+          true,
+          LanguageHelper.getConfirmTip(),
+          LanguageHelper.getCancelTip()
+        );
         if (!ok) {
           return;
         }
@@ -369,8 +384,10 @@ export class BookPage implements OnInit, AfterViewInit {
       this.vmCombindInfos.forEach(item => {
         if (item.tmcOutNumberInfos) {
           item.tmcOutNumberInfos.forEach(info => {
-            info.loadTravelUrlErrorMsg = result[info.staffNumber] && result[info.staffNumber].Message;
-            info.travelUrlInfos = result[info.staffNumber] && result[info.staffNumber].Data;
+            info.loadTravelUrlErrorMsg =
+              result[info.staffNumber] && result[info.staffNumber].Message;
+            info.travelUrlInfos =
+              result[info.staffNumber] && result[info.staffNumber].Data;
             if (
               !info.value &&
               info.travelUrlInfos &&
@@ -401,8 +418,8 @@ export class BookPage implements OnInit, AfterViewInit {
   async onSelectTravelNumber(
     arg: {
       tmcOutNumberInfos: ITmcOutNumberInfo[];
-      tmcOutNumberInfo: ITmcOutNumberInfo,
-      travelUrlInfo: TravelUrlInfo
+      tmcOutNumberInfo: ITmcOutNumberInfo;
+      travelUrlInfo: TravelUrlInfo;
     },
     item: IPassengerHotelBookInfo
   ) {
@@ -521,14 +538,18 @@ export class BookPage implements OnInit, AfterViewInit {
       info.tripType == TripType.departureTrip
         ? LanguageHelper.getDepartureTip()
         : LanguageHelper.getReturnTripTip()
-      }]`;
+    }]`;
   }
   back() {
     this.natCtrl.back();
   }
   private getGroupedCombindInfo(arr: ICombindInfo[], tmc: TmcEntity) {
     const group = arr.reduce((acc, item) => {
-      const id = (item.modal && item.modal.passenger && item.modal.passenger.AccountId) || tmc && tmc.Account && tmc.Account.Id;
+      const id =
+        (item.modal &&
+          item.modal.passenger &&
+          item.modal.passenger.AccountId) ||
+        (tmc && tmc.Account && tmc.Account.Id);
       if (id) {
         if (acc[id]) {
           acc[id].push(item);
@@ -543,9 +564,16 @@ export class BookPage implements OnInit, AfterViewInit {
   getGroupedTitle(item: ICombindInfo) {
     const group = this.getGroupedCombindInfo(this.vmCombindInfos, this.tmc);
     if (group) {
-      const accountId = item.modal.passenger.AccountId || this.tmc && this.tmc.Account && this.tmc.Account.Id;
+      const accountId =
+        item.modal.passenger.AccountId ||
+        (this.tmc && this.tmc.Account && this.tmc.Account.Id);
       if (group[accountId]) {
-        return group[accountId].map(it => `${it.modal.credential.CheckName}(${it.modal.credential.Number})`).join("、");
+        return group[accountId]
+          .map(
+            it =>
+              `${it.modal.credential.CheckName}(${it.modal.credential.Number})`
+          )
+          .join("、");
       }
     }
   }
@@ -556,12 +584,14 @@ export class BookPage implements OnInit, AfterViewInit {
     Object.keys(group).forEach(key => {
       if (group[key].length) {
         const last = group[key][group[key].length - 1];
-        result = result.concat(group[key].map(it => {
-          it.appovalStaff = last.appovalStaff;
-          it.notifyLanguage = last.notifyLanguage;
-          it.isSkipApprove = last.isSkipApprove;
-          return it;
-        }));
+        result = result.concat(
+          group[key].map(it => {
+            it.appovalStaff = last.appovalStaff;
+            it.notifyLanguage = last.notifyLanguage;
+            it.isSkipApprove = last.isSkipApprove;
+            return it;
+          })
+        );
       }
     });
     return result;
@@ -579,13 +609,15 @@ export class BookPage implements OnInit, AfterViewInit {
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto, arr);
     if (canBook && canBook2) {
-      const res: IBookOrderResult = await this.flightService.bookFlight(bookDto).catch(e => {
-        AppHelper.alert(e);
-        return null;
-      });
+      const res: IBookOrderResult = await this.flightService
+        .bookFlight(bookDto)
+        .catch(e => {
+          AppHelper.alert(e);
+          return null;
+        });
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast('下单成功!', 1400, "top");
+          AppHelper.toast("下单成功!", 1400, "top");
           this.isSubmitDisabled = true;
           this.flightService.removeAllBookInfos();
           if (
@@ -598,13 +630,17 @@ export class BookPage implements OnInit, AfterViewInit {
             this.isCheckingPay = false;
             if (canPay) {
               if (res.HasTasks) {
-                await AppHelper.alert(LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(), true);
+                await AppHelper.alert(
+                  LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
+                  true
+                );
               } else {
                 await this.tmcService.payOrder(res.TradeNo);
               }
             } else {
               await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingTip(), true
+                LanguageHelper.Order.getBookTicketWaitingTip(),
+                true
               );
             }
           } else {
@@ -652,9 +688,7 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     bookDto.Linkmans = [];
     const showErrorMsg = (msg: string, idx: number) => {
-      AppHelper.alert(
-        `第${idx + 1}个联系人信息${msg}不能为空`
-      );
+      AppHelper.alert(`第${idx + 1}个联系人信息${msg}不能为空`);
     };
     for (let j = 0; j < this.addContacts.length; j++) {
       const man = this.addContacts[j];
@@ -694,20 +728,25 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     return true;
   }
-  private fillBookPassengers(bookDto: OrderBookDto, combindInfos: ICombindInfo[]) {
+  private fillBookPassengers(
+    bookDto: OrderBookDto,
+    combindInfos: ICombindInfo[]
+  ) {
     const showErrorMsg = (msg: string, item: ICombindInfo) => {
       AppHelper.alert(
         `${(item.credentialStaff && item.credentialStaff.Name) ||
-        (item.modal.credential &&
-          item.modal.credential.CheckFirstName +
-          item.modal.credential.CheckLastName)} 【${item.modal.credential &&
+          (item.modal.credential &&
+            item.modal.credential.CheckFirstName +
+              item.modal.credential.CheckLastName)} 【${item.modal.credential &&
           item.modal.credential.Number}】 ${msg} 信息不能为空`
       );
     };
     bookDto.Passengers = [];
     for (let i = 0; i < combindInfos.length; i++) {
       const combindInfo = combindInfos[i];
-      const accountId = combindInfo.modal.passenger.AccountId || this.tmc && this.tmc.Account && this.tmc.Account.Id;
+      const accountId =
+        combindInfo.modal.passenger.AccountId ||
+        (this.tmc && this.tmc.Account && this.tmc.Account.Id);
       if (
         this.isAllowSelectApprove(combindInfo) &&
         !combindInfo.appovalStaff &&
@@ -722,10 +761,10 @@ export class BookPage implements OnInit, AfterViewInit {
       p.ApprovalId =
         (this.isAllowSelectApprove(combindInfo) &&
           !combindInfo.isSkipApprove &&
-          (combindInfo.appovalStaff &&
-            (combindInfo.appovalStaff.AccountId ||
-              (combindInfo.appovalStaff.Account &&
-                combindInfo.appovalStaff.Account.Id)))) ||
+          combindInfo.appovalStaff &&
+          (combindInfo.appovalStaff.AccountId ||
+            (combindInfo.appovalStaff.Account &&
+              combindInfo.appovalStaff.Account.Id))) ||
         "0";
       if (
         !(
@@ -781,7 +820,7 @@ export class BookPage implements OnInit, AfterViewInit {
           p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-          }`;
+        }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -795,7 +834,7 @@ export class BookPage implements OnInit, AfterViewInit {
           p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-          }`;
+        }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -983,10 +1022,11 @@ export class BookPage implements OnInit, AfterViewInit {
   }
   private getOneServiceFee(item: ICombindInfo) {
     return (
-      this.initialBookDtoModel &&
-      this.initialBookDtoModel.ServiceFees &&
-      + this.initialBookDtoModel.ServiceFees[item.modal.id]
-    ) || 0;
+      (this.initialBookDtoModel &&
+        this.initialBookDtoModel.ServiceFees &&
+        +this.initialBookDtoModel.ServiceFees[item.modal.id]) ||
+      0
+    );
   }
   private getTotalServiceFees() {
     let fees = 0;
@@ -1065,14 +1105,23 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     const bookInfos = this.flightService.getPassengerBookInfos();
     return bookInfos.reduce((acc, it) => {
-      acc = { ...acc, [it.id]: this.initialBookDtoModel && this.initialBookDtoModel.ServiceFees[it.id] };
+      acc = {
+        ...acc,
+        [it.id]:
+          this.initialBookDtoModel &&
+          this.initialBookDtoModel.ServiceFees[it.id]
+      };
       return acc;
-    }, {})
+    }, {});
   }
   private async initCombindInfos() {
     try {
-      const accountIdTmcOutNumberInfosMap: { [accountId: string]: ITmcOutNumberInfo[] } = {} as any;
-      const pfs = this.flightService.getPassengerBookInfos().filter(it => !!it.bookInfo);
+      const accountIdTmcOutNumberInfosMap: {
+        [accountId: string]: ITmcOutNumberInfo[];
+      } = {} as any;
+      const pfs = this.flightService
+        .getPassengerBookInfos()
+        .filter(it => !!it.bookInfo);
       for (let i = 0; i < pfs.length; i++) {
         const item = pfs[i];
         const cs = this.initialBookDtoModel.Staffs.find(
@@ -1088,17 +1137,14 @@ export class BookPage implements OnInit, AfterViewInit {
         }[];
         if (arr) {
           arr.sort((a, b) => a.Tag && b.Tag && +a.Tag - +b.Tag);
-          const tempObj = arr.reduce(
-            (obj, it) => {
-              if (obj[it.Tag]) {
-                obj[it.Tag].push(it);
-              } else {
-                obj[it.Tag] = [it];
-              }
-              return obj;
-            },
-            {} as { [Tag: string]: StaffApprover[] }
-          );
+          const tempObj = arr.reduce((obj, it) => {
+            if (obj[it.Tag]) {
+              obj[it.Tag].push(it);
+            } else {
+              obj[it.Tag] = [it];
+            }
+            return obj;
+          }, {} as { [Tag: string]: StaffApprover[] });
           credentialStaffApprovers = Object.keys(tempObj).map(key => {
             const it = tempObj[key][0];
             return {
@@ -1149,28 +1195,28 @@ export class BookPage implements OnInit, AfterViewInit {
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = this.isShowInsurances(
           item.bookInfo &&
-          item.bookInfo.flightSegment &&
-          item.bookInfo.flightSegment.TakeoffTime
+            item.bookInfo.flightSegment &&
+            item.bookInfo.flightSegment.TakeoffTime
         )
           ? insurances
           : [];
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-              return {
-                checked: idx == 0,
-                mobile
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  mobile
+                };
+              })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-              return {
-                checked: idx == 0,
-                email
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  email
+                };
+              })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
@@ -1184,29 +1230,43 @@ export class BookPage implements OnInit, AfterViewInit {
         combineInfo.modal = item;
         combineInfo.vmModal = { ...item };
         combineInfo.appovalStaff = cs && cs.DefaultApprover;
-        const accountId = item.passenger.AccountId || this.tmc && this.tmc.Account && this.tmc.Account.Id;
+        const accountId =
+          item.passenger.AccountId ||
+          (this.tmc && this.tmc.Account && this.tmc.Account.Id);
         const tmcOutNumberInfos = accountIdTmcOutNumberInfosMap[accountId];
-        combineInfo.tmcOutNumberInfos = tmcOutNumberInfos ||
-          (this.tmc &&
-            this.tmc.OutNumberNameArray &&
-            this.tmc.OutNumberNameArray || []).map(n => {
-              return {
-                label: n,
-                key: n,
-                isLoadNumber: !!(this.tmc && this.tmc.GetTravelNumberUrl),
-                required:
-                  this.tmc && this.tmc.OutNumberRequiryNameArray &&
-                  this.tmc.OutNumberRequiryNameArray.some(name => name == n),
-                value: this.getTravelFormNumber(n),
-                staffNumber: cstaff && cstaff.Number,
-                staffOutNumber: cstaff && cstaff.OutNumber,
-                isTravelNumber: n.toLowerCase() == "TravelNumber".toLowerCase(),
-                canSelect: true || n.toLowerCase() == "TravelNumber".toLowerCase(),
-                isDisabled: false && !!(this.travelForm && n.toLowerCase() == "TravelNumber".toLowerCase())
-              } as ITmcOutNumberInfo;
-            })
+        combineInfo.tmcOutNumberInfos =
+          tmcOutNumberInfos ||
+          (
+            (this.tmc &&
+              this.tmc.OutNumberNameArray &&
+              this.tmc.OutNumberNameArray) ||
+            []
+          ).map(n => {
+            return {
+              label: n,
+              key: n,
+              isLoadNumber: !!(this.tmc && this.tmc.GetTravelNumberUrl),
+              required:
+                this.tmc &&
+                this.tmc.OutNumberRequiryNameArray &&
+                this.tmc.OutNumberRequiryNameArray.some(name => name == n),
+              value: this.getTravelFormNumber(n),
+              staffNumber: cstaff && cstaff.Number,
+              staffOutNumber: cstaff && cstaff.OutNumber,
+              isTravelNumber: n.toLowerCase() == "TravelNumber".toLowerCase(),
+              canSelect:
+                true || n.toLowerCase() == "TravelNumber".toLowerCase(),
+              isDisabled:
+                false &&
+                !!(
+                  this.travelForm &&
+                  n.toLowerCase() == "TravelNumber".toLowerCase()
+                )
+            } as ITmcOutNumberInfo;
+          });
         if (!accountIdTmcOutNumberInfosMap[accountId]) {
-          accountIdTmcOutNumberInfosMap[accountId] = combineInfo.tmcOutNumberInfos;
+          accountIdTmcOutNumberInfosMap[accountId] =
+            combineInfo.tmcOutNumberInfos;
         }
         this.vmCombindInfos.push(combineInfo);
       }
@@ -1226,16 +1286,20 @@ export class BookPage implements OnInit, AfterViewInit {
         if (group[key].length) {
           const idx = group[key].length - 1;
           group[key][idx].isShowGroupedInfo = true;
-          if (this.initialBookDtoModel && this.initialBookDtoModel.ServiceFees) {
-            const showTotalFees = group[key]
-              .reduce(
-                (acc, it) => (acc = AppHelper.add(acc, this.getOneServiceFee(it)))
-                , 0);
+          if (
+            this.initialBookDtoModel &&
+            this.initialBookDtoModel.ServiceFees
+          ) {
+            const showTotalFees = group[key].reduce(
+              (acc, it) =>
+                (acc = AppHelper.add(acc, this.getOneServiceFee(it))),
+              0
+            );
             group[key][idx].serviceFee = showTotalFees;
           }
         }
         this.vmCombindInfos = this.vmCombindInfos.concat(group[key]);
-      })
+      });
     }
   }
   private isShowInsurances(takeoffTime: string) {

@@ -1124,7 +1124,7 @@ export class TrainService {
         if (p.FlightCabin) {
           p.FlightCabin = {
             ...p.FlightCabin,
-            RefundChange: null,
+            // RefundChange: null,
             Variables: null
           };
         }
@@ -1132,7 +1132,7 @@ export class TrainService {
           p.FlightSegment = {
             ...p.FlightSegment,
             Cabins: p.FlightSegment.Cabins.map(c => {
-              c.RefundChange = null;
+              // c.RefundChange = null;
               c.Variables = null;
               return c;
             })

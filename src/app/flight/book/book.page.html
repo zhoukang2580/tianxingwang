@@ -53,9 +53,8 @@
                   <ion-icon name='caret-down-outline' *ngIf='combindInfo?.showFriendlyReminder'></ion-icon>
                   <ion-icon name="arrow-dropright" *ngIf='!combindInfo?.showFriendlyReminder'></ion-icon>
                 </ion-button>
-                <div>
-                  <ion-label [@showHide]='combindInfo?.showFriendlyReminder' color='success'
-                    class='small-font ion-text-wrap'>
+                <div [@flyInOut] *ngIf='combindInfo?.showFriendlyReminder'>
+                  <ion-label color='success' class='small-font ion-text-wrap'>
                     温馨提醒: 国内廉价航司机票部分舱位不包含免费托运行李服务，免费托运行李相关事宜可以拨打我们客服电话咨询。（例如： 中联航:
                     每位旅客可携带1件免费随身行李，重量不能超过10千克且体积不超过20×30×40厘米。托运行李收费标准：X ≤ 5KG 柜台价格30元； 5KG &lt; X ≤ 10KG 柜台价格60元； 10KG
                     &lt;
@@ -75,23 +74,8 @@
                     <ion-icon name="arrow-dropright" *ngIf='!combindInfo?.openrules'></ion-icon>
                   </ion-button>
                 </div>
-                <div class='refund-change-info' [@showHide]='combindInfo?.openrules'>
-                  <ion-label class='ion-text-wrap'
-                    *ngIf='s?.flightPolicy?.Cabin?.RefundChange?.RefundDetail?.Befores?.length'>
-                    退票规则:<ion-text color='medium'>
-                      {{s?.flightPolicy?.Cabin?.RefundChange?.RefundDetail?.Befores?.join("")}}</ion-text>
-                  </ion-label>
-                  <ion-label class='ion-text-wrap'
-                    *ngIf='s?.flightPolicy?.Cabin?.RefundChange?.ChangeDetail?.Befores?.length'>
-                    改期规则:<ion-text color='medium'>
-                      {{s?.flightPolicy?.Cabin?.RefundChange?.ChangeDetail?.Befores?.join("")}}</ion-text>
-                  </ion-label>
-                  <ion-label class='ion-text-wrap'
-                    *ngIf='s?.flightPolicy?.Cabin?.RefundChange?.EndorsementDetail?.Endorsements?.length'>
-                    其它规则:<ion-text color='medium'>
-                      {{s?.flightPolicy?.Cabin?.RefundChange?.EndorsementDetail?.Endorsements?.join("")}}</ion-text>
-                  </ion-label>
-                </div>
+                <p [innerHTML]='getExplain(s?.flightPolicy?.Cabin?.Explain)' [@flyInOut] *ngIf='combindInfo?.openrules'>
+                </p>
               </div>
             </ion-item>
           </div>
@@ -176,7 +160,7 @@
                       </ion-button>
                     </ion-col>
                   </ion-row>
-                  <div [@showHide]='insuranceEle.checked' style='width: 100%;'
+                  <div [@flyInOut] *ngIf='insuranceEle.checked' style='width: 100%;'
                     (click)='insuranceEle.checked=!insuranceEle.checked'>
                     <ion-row>
                       <ion-col>
@@ -264,8 +248,10 @@
               </ion-label>
             </ion-item>
           </ion-item-group>
-          <app-book-tmc-outnumber [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos' [isShowGroupedInfo]="true"
-            (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'></app-book-tmc-outnumber>
+          <ion-item-group>
+            <app-book-tmc-outnumber [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos' [isShowGroupedInfo]="true"
+              (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'></app-book-tmc-outnumber>
+          </ion-item-group>
         </ng-container>
       </ion-list>
       <ion-item-group>

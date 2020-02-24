@@ -49,11 +49,10 @@
       <ion-label>联系我们</ion-label>
     </ion-item>
   </ion-list>
-  <ion-list>
+  <ion-list *ngIf=''>
     <ion-item (click)="goToWorkflow()" detail>
       <ion-icon name="cog" color="dark"></ion-icon>
       <ion-label>我的代办</ion-label>
-      <!-- <ion-badge color="danger" *ngIf='msgCount$|async as count'>{{count}}</ion-badge> -->
     </ion-item>
   </ion-list>
   <ion-list>
@@ -69,7 +68,7 @@
       <ion-label>设置</ion-label>
     </ion-item>
   </ion-list>
-  <ion-list>
+  <ion-list *ngIf=''>
     <ion-item (click)="onLanguageSettings()" detail>
       <ion-icon name="cog" color="dark"></ion-icon>
       <ion-label>语言设置</ion-label>
