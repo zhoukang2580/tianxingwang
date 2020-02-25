@@ -5,7 +5,8 @@ import {
   ViewContainerRef,
   TemplateRef,
   OnChanges,
-  SimpleChanges
+  SimpleChanges,
+  ElementRef
 } from "@angular/core";
 
 @Directive({
@@ -16,7 +17,8 @@ export class AuthorizeDirective implements OnChanges {
   constructor(
     private authorizeService: AuthorizeService,
     private viewContainerRef: ViewContainerRef,
-    private tempRef: TemplateRef<any>
+    private tempRef: TemplateRef<any>,
+    private el: ElementRef<HTMLElement>
   ) {}
   ngOnChanges(changes: SimpleChanges) {
     if (changes.appAuthority && changes.appAuthority.currentValue) {
@@ -27,12 +29,25 @@ export class AuthorizeDirective implements OnChanges {
     try {
       const authorizes = await this.authorizeService.getAuthorizes();
       if (authorizes && authorizes.length) {
-        if (authorizes.find(it => it == this.appAuthority)) {
-          this.viewContainerRef.createEmbeddedView(this.tempRef);
+        const isShow = !!authorizes.find(it => it == this.appAuthority);
+        if (isShow) {
+          this.showHide(false);
         } else {
-          this.viewContainerRef.clear();
+          this.el.nativeElement.style.display = "none";
+          this.showHide(false);
         }
+      } else {
+        this.showHide(false);
       }
     } catch (e) {}
+  }
+  private showHide(isShow = false) {
+    if (isShow) {
+      // this.viewContainerRef.createEmbeddedView(this.tempRef);
+      this.el.nativeElement.style.display = "initial";
+    } else {
+      // this.viewContainerRef.clear();
+      this.el.nativeElement.style.display = "none";
+    }
   }
 }
