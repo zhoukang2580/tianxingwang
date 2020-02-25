@@ -72,6 +72,7 @@ import { RoomEntity } from "../models/RoomEntity";
 import { ITmcOutNumberInfo } from "src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component";
 import { AccountEntity } from "src/app/account/models/AccountEntity";
 import { flyInOut } from "src/app/animations/flyInOut";
+import { OrderHotelType } from "src/app/order/models/OrderHotelEntity";
 @Component({
   selector: "app-book",
   templateUrl: "./book.page.html",
@@ -1014,6 +1015,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
         account.Id = bookInfo.passenger.AccountId;
         p.Credentials.Account = p.Credentials.Account || account;
         p.Policy = bookInfo.passenger.Policy;
+        p.OrderHotelType = OrderHotelType.Domestic;
         bookDto.Passengers.push(p);
       }
     });
