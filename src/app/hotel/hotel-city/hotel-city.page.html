@@ -65,13 +65,10 @@
       </ng-template>
     </ion-list>
     <ion-list lines='none'>
-      <ion-item *ngFor='let i of [1,2,3,4,5,6,7,8,9,10]'></ion-item>
+      <ion-item *ngFor='let i of [1,2,3,4,5,6,7,8,9,10];let odd=odd;'>
+        <ion-skeleton-text style="width: 80%;" [animated]='odd'></ion-skeleton-text>
+      </ion-item>
     </ion-list>
-    <!-- <ul style='list-style-type:none;margin:0;padding:0;' #list>
-      <li *ngFor='let s of vmCities' (click)='onSelect(s)'>
-        <ion-text [color]='s.Selected?"secondary":""'>{{s.Name}}</ion-text>
-      </li> 
-    </ul>-->
   </ng-container>
   <ng-template #loadingTemp>
     正在加载...
