@@ -73,6 +73,9 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
     const options:InAppBrowserOptions={
       usewkwebview:"yes",
       location:'no',
+      toolbar:"yes",
+      zoom:"no",
+      footer:"yes"
     }
     this.browser = this.iab.create(encodeURI(url), "_blank",options);
     const sub = this.browser.on("exit").subscribe(() => {
