@@ -1,12 +1,12 @@
 <ion-header>
   <ion-buttons>
     <app-back-button defaultHref=""></app-back-button>
-    <ion-searchbar mode='ios' debounce="300" animated placeholder="输入中文/拼音/首字母/城市代码" (ionChange)='doSearch()'
+    <ion-searchbar mode='ios' debounce="700" animated placeholder="输入中文/拼音/首字母/城市代码" (ionChange)='doSearch()'
       [(ngModel)]='vmKeyword' class="ion-margin-end">
     </ion-searchbar>
   </ion-buttons>
 </ion-header>
-<ion-content [scrollEvents]='true' (ionScroll)='onScroll($event)'>
+<ion-content>
   <app-refresher slot="fixed" (ionRefresh)="doRefresh(true)">
   </app-refresher>
   <ion-grid *ngIf='letters&&letters.length' class="letters-index" #lettersEle>
@@ -65,9 +65,7 @@
       </ng-template>
     </ion-list>
     <ion-list lines='none'>
-      <ion-item *ngFor='let i of [1,2,3,4,5,6,7,8,9,10];let odd=odd;'>
-        <ion-skeleton-text style="width: 80%;" [animated]='odd'></ion-skeleton-text>
-      </ion-item>
+      <ion-item *ngFor='let i of [1,2,3,4,5,6,7,8,9,10]'></ion-item>
     </ion-list>
   </ng-container>
   <ng-template #loadingTemp>
@@ -76,5 +74,24 @@
   <ion-fab>
     <app-pin-fab>
     </app-pin-fab>
+  </ion-fab>
+</ion-content>
+<ion-content>
+  <ion-list *ngIf='vmCities?.length else nodata'>
+    <ion-item *ngFor='let c of vmCities'>
+      <ion-label>
+        <ion-note *ngIf='c.IsHot' color='danger'>热门</ion-note>
+        {{c.Name}}
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <ng-template #nodata>
+    <app-or-comp>暂无数据</app-or-comp>
+  </ng-template>
+  <ion-fab>
+    <ion-fab-button color='secondary'>热门</ion-fab-button>
+  </ion-fab>
+  <ion-fab>
+    <ion-fab-button color='secondary'>历史</ion-fab-button>
   </ion-fab>
 </ion-content>

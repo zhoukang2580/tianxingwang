@@ -1,3 +1,4 @@
+import { BackButtonComponent } from "./../../components/back-button/back-button.component";
 import { RefresherComponent } from "src/app/components/refresher";
 import { ActivatedRoute } from "@angular/router";
 import { HotelService } from "./../hotel.service";
@@ -39,13 +40,11 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
   vmKeyword = "";
   letters: string[];
   activeLetter = "A";
-  scrollEle: HTMLElement;
-  isShowFabButton = false;
   isLoading = false;
   subscriptions: Subscription[] = [];
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
+  @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
   @ViewChild("hot") hotEle: IonGrid;
-  @ViewChild("lettersEle") lettersEle: IonGrid;
   @ViewChild("historyEl") historyEl: IonGrid;
   @ViewChild(IonContent) ionContent: IonContent;
   @ViewChild(IonHeader) ionHeader: IonHeader;
@@ -57,12 +56,14 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     private storage: Storage,
     private route: ActivatedRoute
   ) {
-    route.queryParamMap.subscribe(_ => {
-      this.doRefresh();
-    });
+    this.subscriptions.push(
+      route.queryParamMap.subscribe(_ => {
+        this.doRefresh();
+      })
+    );
   }
   back() {
-    this.navCtrl.pop();
+    this.backBtn.backToPrePage();
   }
   ngOnDestroy() {
     this.subscriptions.forEach(sub => {
@@ -177,9 +178,6 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   async ngAfterViewInit() {
-    if (!this.scrollEle) {
-      this.scrollEle = await this.ionContent.getScrollElement();
-    }
   }
   async doRefresh(forceFetch = false) {
     this.historyCities = [];
@@ -196,23 +194,6 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     this.allCities = await this.hotelService.getHotelCityAsync(forceFetch);
     this.isLoading = false;
     this.init();
-  }
-  onScroll(evt: any) {
-    if (!this.scrollEle) {
-      return;
-    }
-    // console.log(this.scrollEle.scrollTop);
-    this.domCtrl.read(_ => {
-      const stop = this.scrollEle.scrollTop;
-      if (this.lettersEle && this.lettersEle["el"]) {
-        const rect = this.lettersEle["el"].getBoundingClientRect();
-        if (rect) {
-          this.domCtrl.write(_ => {
-            this.isShowFabButton = rect.bottom < stop;
-          });
-        }
-      }
-    });
   }
   private init() {
     this.hotCities =
