@@ -22,7 +22,7 @@
                 【成人】
                 <span style="color:var(--ion-color-medium)">{{combindInfo?.credential?.Number}}</span>
               </div>
-              <div style="display: flex;align-items: center;font-size: 0.9rem;">
+              <div style="display: flex;align-items: center;font-size: 0.9rem;padding-bottom: 0.5em;">
                 <img src="assets/svgs/home-hotel.svg" style="width: 1.5em;height: 1.5em;margin-right: 0.5em;" alt="">
                 {{tmc?.Name}}
               </div>
@@ -80,7 +80,7 @@
                   color='secondary'>
                   预订规则:
                   <ion-icon name='caret-down-outline' *ngIf='combindInfo["isShowRoomPlanRulesDesc"]'></ion-icon>
-                  <ion-icon name="arrow-dropright" *ngIf='!combindInfo["isShowRoomPlanRulesDesc"]'></ion-icon>
+                  <ion-icon name="caret-up-outline" *ngIf='!combindInfo["isShowRoomPlanRulesDesc"]'></ion-icon>
                 </ion-button>
               </div>
               <ion-label *ngIf='combindInfo["isShowRoomPlanRulesDesc"]' @flyInOut class='ion-text-wrap' color='danger'>

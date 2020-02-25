@@ -57,9 +57,3 @@ ion-content {
 ion-item-group {
   margin: 0.5em;
 }
-.arrow-dropright{
-  transform: rotateZ(0);
-  &.dropdown{
-    transform: rotateZ(90deg);
-  }
-}

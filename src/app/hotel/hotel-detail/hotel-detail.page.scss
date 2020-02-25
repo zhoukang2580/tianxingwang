@@ -171,6 +171,8 @@ ion-card {
 }
 
 ion-list {
+  margin: 0;
+  padding: 0;
   &.hotel-info {
     // min-height   : 90vh;
     background-color: blanchedalmond;
