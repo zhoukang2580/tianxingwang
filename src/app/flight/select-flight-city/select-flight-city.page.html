@@ -1,11 +1,13 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot='start'>
-      <app-back-button defaultHref=''></app-back-button>
-    </ion-buttons>
-    <ion-searchbar type='search' [debounce]='240' [(ngModel)]='vmKeyowrds' [animated]='true' placeholder="城市名称/拼音/三字码"
-      (ionChange)='onSearchByKeywords()' mode='ios'>
-    </ion-searchbar>
+    <form (ngSubmit)='onSearchByKeywords()'>
+      <ion-buttons>
+        <app-back-button defaultHref=''></app-back-button>
+        <ion-searchbar name='searchbar' type='search' [debounce]='300' [(ngModel)]='vmKeyowrds' [animated]='true'
+          placeholder="城市名称/拼音/三字码" (ionChange)='onSearchByKeywords()' mode='ios'>
+        </ion-searchbar>
+      </ion-buttons>
+    </form>
   </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -44,4 +46,7 @@
       历史
     </ion-fab-button>
   </ion-fab>
+  <ion-infinite-scroll (ionInfinite)='loadMore()'>
+    <ion-infinite-scroll-content>加载更多...</ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

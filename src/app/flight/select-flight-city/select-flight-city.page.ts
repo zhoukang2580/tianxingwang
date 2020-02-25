@@ -8,7 +8,8 @@ import {
   Platform,
   IonRefresher,
   IonHeader,
-  ModalController
+  ModalController,
+  IonInfiniteScroll
 } from "@ionic/angular";
 import {
   Component,
@@ -44,6 +45,7 @@ export class SelectFlightCityPage implements OnInit, OnDestroy, AfterViewInit {
   private histories: TrafficlineEntity[] = [];
   private subscription = Subscription.EMPTY;
   private isFromCity = true;
+  private pageSize = 30;
   textSearchResults: TrafficlineEntity[] = [];
   vmKeyowrds = "";
   isSearching = false;
@@ -51,6 +53,7 @@ export class SelectFlightCityPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
+  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   segmentValue: "domestic";
   isIos = false;
   constructor(
@@ -76,34 +79,9 @@ export class SelectFlightCityPage implements OnInit, OnDestroy, AfterViewInit {
       this.textSearchResults = this.histories || [];
     }
   }
-  onSearchByKeywords(kw: string = "") {
-    let name = kw || (this.vmKeyowrds && this.vmKeyowrds.trim()) || "";
-    name = name.toLowerCase();
-    if (!name) {
-      this.textSearchResults = this.cities;
-      this.scrollToTop();
-      return;
-    }
-    this.textSearchResults = (this.cities || [])
-      .filter(c => {
-        const keys = `Code,Name,Nickname,CityName,Pinyin`.split(",");
-        return keys.some(k => {
-          // console.log(`key=${k}`, c[k]);
-          const n: string = ((c[k] && c[k]) || "").toLowerCase();
-          if (name == "北京南苑") {
-            return n != name && n.includes("北京");
-          }
-          const reg = new RegExp("^[a-zA-Z]*$");
-          if (reg.test(name) && name.length == 3) {
-            return name == n;
-          } else {
-            return name == n || n.includes(name);
-          }
-        });
-      })
-      .slice(0, 50)
-      .filter(it => !it.IsDeprecated);
-    this.scrollToTop();
+  onSearchByKeywords() {
+    this.isSearching = true;
+    this.doRefresh();
     this.isSearching = false;
   }
   async ngOnInit() {
@@ -124,6 +102,9 @@ export class SelectFlightCityPage implements OnInit, OnDestroy, AfterViewInit {
       return it;
     });
     this.histories = (await this.storage.get("historyDomesticAirports")) || [];
+    this.cities = this.cities
+      .filter(it => it.IsHot)
+      .concat(this.cities.filter(it => !it.IsHot));
     return true;
   }
   ngOnDestroy() {
@@ -135,7 +116,11 @@ export class SelectFlightCityPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.refresher) {
       this.refresher.complete();
     }
-    this.textSearchResults = this.cities.filter(it => it.IsHot).slice(0, 30);
+    if (this.scroller) {
+      this.scroller.disabled = true;
+    }
+    this.textSearchResults = [];
+    this.loadMore();
     this.scrollToTop();
   }
   scrollToTop() {
@@ -152,10 +137,47 @@ export class SelectFlightCityPage implements OnInit, OnDestroy, AfterViewInit {
       }
       await this.storage.set("historyDomesticAirports", this.histories);
     }
-    this.flightService.onCitySelected(city,this.isFromCity);
+    this.flightService.onCitySelected(city, this.isFromCity);
     if (this.backBtn) {
       this.backBtn.backToPrePage();
     }
     return false;
+  }
+  async loadMore() {
+    if (!this.cities || this.cities.length == 0) {
+      await this.initData();
+    }
+    let name = (this.vmKeyowrds && this.vmKeyowrds.trim()) || "";
+    name = name.toLowerCase();
+    const arr = this.cities
+      .filter(c => {
+        if (!name) {
+          return true;
+        }
+        const keys = `Code,Name,Nickname,CityName,Pinyin`.split(",");
+        return keys.some(k => {
+          // console.log(`key=${k}`, c[k]);
+          const n: string = ((c[k] && c[k]) || "").toLowerCase();
+          if (name == "北京南苑") {
+            return n != name && n.includes("北京");
+          }
+          const reg = new RegExp("^[a-zA-Z]*$");
+          if (reg.test(name) && name.length == 3) {
+            return name == n;
+          } else {
+            return name == n || n.includes(name);
+          }
+        });
+      })
+      .filter(it => !it.IsDeprecated);
+    this.scroller.complete();
+    const temp = arr.slice(
+      this.textSearchResults.length,
+      this.textSearchResults.length + this.pageSize
+    );
+    this.scroller.disabled = temp.length < this.pageSize;
+    if (temp.length) {
+      this.textSearchResults = this.textSearchResults.concat(temp);
+    }
   }
 }
