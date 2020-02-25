@@ -18,7 +18,8 @@ import {
   IonContent,
   DomController,
   IonList,
-  IonHeader
+  IonHeader,
+  IonInfiniteScroll
 } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { Subscription } from "rxjs";
@@ -30,31 +31,22 @@ const HISTORY_HOTEL_CITIES = "history_hotel_cities";
 })
 export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
   private allCities: TrafficlineEntity[] = [];
-  private letterAndCities: {
-    [letter: string]: TrafficlineEntity[];
-  } = {} as any;
   private selectedCity: TrafficlineEntity;
+  private subscriptions: Subscription[] = [];
+  private pageSize = 30;
   hotCities: TrafficlineEntity[];
   historyCities: TrafficlineEntity[];
   vmCities: TrafficlineEntity[] = [];
   vmKeyword = "";
-  letters: string[];
-  activeLetter = "A";
   isLoading = false;
-  subscriptions: Subscription[] = [];
+  filteredTotalCount = 0;
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
-  @ViewChild("hot") hotEle: IonGrid;
-  @ViewChild("historyEl") historyEl: IonGrid;
-  @ViewChild(IonContent) ionContent: IonContent;
-  @ViewChild(IonHeader) ionHeader: IonHeader;
-  @ViewChild("firstLetterEl") firstLetterEl: IonList;
+  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   constructor(
-    private navCtrl: NavController,
-    private domCtrl: DomController,
     private hotelService: HotelService,
     private storage: Storage,
-    private route: ActivatedRoute
+    route: ActivatedRoute
   ) {
     this.subscriptions.push(
       route.queryParamMap.subscribe(_ => {
@@ -71,35 +63,19 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     });
     this.subscriptions = null;
   }
-  private async initHistoryCity(selectedCity: TrafficlineEntity) {
-    if (!this.historyCities) {
+  private async initHistoryCity() {
+    if (!this.historyCities || !this.historyCities.length) {
       this.historyCities = await this.storage.get(HISTORY_HOTEL_CITIES);
     }
-    if (this.historyCities) {
-      this.historyCities.forEach(c => {
-        c.Selected = c.Code == (selectedCity && selectedCity.Code);
-      });
-      if (selectedCity) {
-        const one = this.historyCities.find(it => it.Code == selectedCity.Code);
-        if (!one) {
-          this.historyCities.unshift(selectedCity);
-        } else {
-          one.Selected = true;
-          this.historyCities = [
-            one,
-            ...this.historyCities.filter(it => it.Code != one.Code)
-          ];
-        }
-      }
-      this.historyCities = this.historyCities.slice(0, 9);
-    } else {
-      if (selectedCity) {
-        this.historyCities = [selectedCity];
-      }
-    }
-    await this.storage.set(HISTORY_HOTEL_CITIES, this.historyCities);
   }
-
+  onShowHistory() {
+    this.vmCities = this.historyCities;
+    this.scroller.disabled = true;
+  }
+  onShowHot() {
+    this.vmCities = this.hotCities;
+    this.scroller.disabled = true;
+  }
   async onSelect(city: TrafficlineEntity) {
     console.log(this.vmCities, this.historyCities, this.hotCities);
     if (city) {
@@ -123,7 +99,6 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
       const old = this.hotelService.getSearchHotelModel();
       const oldCode =
         old && old.destinationCity && old.destinationCity.CityCode;
-      await this.initHistoryCity(city);
       const query = this.hotelService.getHotelQueryModel();
       this.hotelService.setSearchHotelModel({
         ...old,
@@ -131,6 +106,9 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
       });
       query.locationAreas = null;
       this.hotelService.setHotelQuerySource(query);
+      this.historyCities = this.historyCities || [];
+      this.historyCities.unshift(city);
+      this.cacheHistories(this.historyCities);
       if (oldCode != city.CityCode) {
         await this.hotelService.getConditions(true);
       }
@@ -138,6 +116,30 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => {
       this.back();
     }, 200);
+  }
+  private filterCitities(kw: string = "") {
+    let result = this.allCities || [];
+    kw = (kw || "").toLowerCase();
+    if (!kw) {
+      return result;
+    } else {
+      result = this.allCities.filter(s => {
+        return (
+          kw == s.FirstLetter.toLowerCase() ||
+          (s.Name && s.Name.toLowerCase().includes(kw)) ||
+          (s.Nickname && s.Nickname.toLowerCase().includes(kw)) ||
+          (s.CityName && s.CityName.toLowerCase().includes(kw)) ||
+          (s.Pinyin && s.Pinyin.toLowerCase().includes(kw))
+        );
+      })
+    }
+    return result;
+  }
+  private async cacheHistories(historyCities: TrafficlineEntity[]) {
+    if (historyCities && historyCities.length) {
+      historyCities = historyCities.slice(0, 20);
+      await this.storage.set(HISTORY_HOTEL_CITIES, historyCities);
+    }
   }
   ngOnInit() {
     const sub = this.hotelService.getSearchHotelModelSource().subscribe(m => {
@@ -161,138 +163,73 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     this.subscriptions.push(sub);
+    this.initCitites();
   }
-  onSelectLetter(letter: string) {
-    if (letter == "热门") {
-      this.ionContent.scrollToTop(100);
-      return;
-    }
-    this.activeLetter = letter;
-    this.vmCities = this.letterAndCities[this.activeLetter];
-    if (this.vmCities) {
-      this.vmCities.sort((s1, s2) => s1.Sequence - s2.Sequence);
-      this.renderList();
-      setTimeout(() => {
-        this.scrollToTargetLink();
-      }, 200);
+  private async initCitites() {
+    try {
+      if (!this.allCities || !this.allCities.length) {
+        this.allCities = await this.hotelService.getHotelCityAsync()
+      }
+      this.allCities.sort((s1, s2) => s1.Sequence - s2.Sequence);
+      this.allCities = this.allCities.filter(it => it.IsHot).concat(this.allCities.filter(it => !it.IsHot));
+    } catch (e) {
+      this.allCities = null;
     }
   }
   async ngAfterViewInit() {
   }
-  async doRefresh(forceFetch = false) {
+  async loadMore(kw: string = "") {
+    if (!this.allCities || !this.allCities.length) {
+      await this.initCitites();
+    }
+    if (this.allCities) {
+      const arr = this.filterCitities(kw);
+      this.filteredTotalCount = arr.length;
+      const temp = arr.slice(this.vmCities.length, this.vmCities.length + this.pageSize);
+      this.scroller.disabled = temp.length < this.pageSize;
+      this.scroller.complete();
+      if (!this.vmCities.length) {
+        this.refresher.complete();
+      }
+      if (temp.length) {
+        this.vmCities = this.vmCities.concat(temp);
+      }
+    }
+  }
+  async doRefresh() {
+    this.isLoading = true;
     this.historyCities = [];
     this.hotCities = [];
-    this.initHistoryCity(null);
-    if (this.refresher) {
-      this.refresher.complete();
-      this.refresher.disabled = true;
-      setTimeout(() => {
-        this.refresher.disabled = false;
-      }, 200);
+    this.vmCities = [];
+    if (this.scroller) {
+      this.scroller.disabled = true;
     }
-    this.isLoading = true;
-    this.allCities = await this.hotelService.getHotelCityAsync(forceFetch);
+    if (!this.allCities || !this.allCities.length) {
+      await this.initCitites();
+    }
+    if (!this.historyCities || !this.historyCities.length) {
+      await this.initHotAndHistoryCities();
+    }
+    await this.loadMore((this.vmKeyword || "").trim());
     this.isLoading = false;
-    this.init();
+    this.vmKeyword = "";
   }
-  private init() {
-    this.hotCities =
-      (this.allCities && this.allCities.filter(it => it.IsHot)) || [];
+  private async initHotAndHistoryCities() {
     if (this.allCities) {
-      this.allCities.forEach(s => {
-        if (this.letterAndCities[s.FirstLetter]) {
-          this.letterAndCities[s.FirstLetter].push(s);
-        } else {
-          this.letterAndCities[s.FirstLetter] = [s];
-        }
-      });
-      this.letters = Object.keys(this.letterAndCities);
-      this.letters.sort((l1, l2) => l1.charCodeAt(0) - l2.charCodeAt(0));
-      this.activeLetter = this.letters[0];
-      this.vmCities = this.letterAndCities[this.activeLetter] || [];
-      this.vmCities.sort((s1, s2) => s1.Sequence - s2.Sequence);
-      this.letters.unshift("热门");
-      this.renderList();
+      this.hotCities = this.allCities.filter(it => it.IsHot);
+      await this.initHistoryCity();
     }
   }
-  private scrollToTargetLink() {
-    if (
-      this.firstLetterEl &&
-      this.firstLetterEl["el"] &&
-      this.ionHeader &&
-      this.ionHeader["el"]
-    ) {
-      this.domCtrl.read(_ => {
-        const rect = this.firstLetterEl["el"].getBoundingClientRect();
-        // console.log("hotEle Rect", rect);
-        const headerH = this.ionHeader["el"].clientHeight;
-        // console.log("headerH", headerH);
-        if (rect && this.ionContent) {
-          this.domCtrl.write(_ => {
-            this.ionContent.scrollByPoint(
-              0,
-              Math.floor(rect.top - headerH || 0),
-              100
-            );
-          });
-        }
-      });
-    }
-  }
-  private renderList() {
-    if (this.vmCities) {
-      const vm = this.vmCities.slice(0);
-      this.vmCities = [];
-      const count = 20;
-      const loop = () => {
-        if (vm.length) {
-          vm.splice(0, count).forEach(it => {
-            it.Selected =
-              it.Code == (this.selectedCity && this.selectedCity.Code);
-            this.vmCities.push(it);
-          });
-          window.requestAnimationFrame(loop);
-        }
-      };
-      loop();
-    }
-  }
+
   async doSearch() {
     let kw = this.vmKeyword.trim();
     if (!kw) {
-      this.activeLetter = this.letters[0];
-      this.vmCities = this.letterAndCities[this.activeLetter];
-      this.renderList();
-      this.activeLetter = "";
-      setTimeout(() => {
-        this.scrollToTargetLink();
-      }, 200);
+      this.vmCities = this.allCities.slice(0, this.pageSize);
     } else {
-      if (!this.allCities || !this.allCities.length) {
-        this.allCities = await this.hotelService.getHotelCityAsync(true);
-      }
-      if (this.allCities) {
-        kw = kw.toLowerCase();
-        this.vmCities = this.allCities
-          .filter(s => {
-            return (
-              kw == s.FirstLetter.toLowerCase() ||
-              (s.Name && s.Name.toLowerCase().includes(kw)) ||
-              (s.Code && s.Code.toLowerCase().includes(kw)) ||
-              (s.Nickname && s.Nickname.toLowerCase().includes(kw)) ||
-              (s.EnglishName && s.EnglishName.toLowerCase().includes(kw)) ||
-              (s.CityName && s.CityName.toLowerCase().includes(kw)) ||
-              (s.Pinyin && s.Pinyin.toLowerCase().includes(kw))
-            );
-          })
-          .slice(0, 20);
-        this.vmCities.sort((s1, s2) => s1.Sequence - s2.Sequence);
-        this.renderList();
-        this.activeLetter = "";
-        setTimeout(() => {
-          this.scrollToTargetLink();
-        }, 200);
-      }
+      this.isLoading = true;
+      this.vmCities = [];
+      this.loadMore(kw);
+      this.isLoading = false;
     }
   }
 }
