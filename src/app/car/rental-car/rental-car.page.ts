@@ -10,7 +10,7 @@ import { NavController, IonInput } from "@ionic/angular";
 import { CarService } from "./../car.service";
 import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
 import { RequestEntity } from "src/app/services/api/Request.entity";
-
+import { Geolocation } from "@ionic-native/geolocation/ngx";
 @Component({
   selector: "app-rental-car",
   templateUrl: "./rental-car.page.html",
@@ -39,7 +39,8 @@ export class RentalCarPage implements OnInit, OnDestroy {
     private navCtrl: NavController,
     private router: Router,
     private route: ActivatedRoute,
-    private fileService: FileHelperService
+    private fileService: FileHelperService,
+    private geolocation: Geolocation
   ) {}
   back() {
     this.navCtrl.pop();
@@ -108,6 +109,14 @@ export class RentalCarPage implements OnInit, OnDestroy {
         this.checkIfMobileVerified();
       });
   }
+  private async onGeo() {
+    try {
+      const geo = await this.geolocation.getCurrentPosition();
+      if (geo) {
+        AppHelper.alert(geo);
+      }
+    } catch (e) {}
+  }
   validateCode() {
     if (!this.verifySmsCode) {
       AppHelper.alert("请输入验证码");
@@ -173,6 +182,7 @@ export class RentalCarPage implements OnInit, OnDestroy {
     //   await this.router.navigate([AppHelper.getRoutePath("open-rental-car")]);
     //   this.carService.setOpenUrlSource(url);
     // }
+    await this.onGeo();
     if (url) {
       if (AppHelper.isApp()) {
         // this.router.navigate(["open-url"], {
@@ -182,9 +192,9 @@ export class RentalCarPage implements OnInit, OnDestroy {
         //     isHideTitle: AppHelper.isDingtalkH5() || AppHelper.isWechatH5()
         //   }
         // });
-        // this.fileService.app.loadUrl(url, { openexternal: true });
-        await this.router.navigate([AppHelper.getRoutePath("open-rental-car")]);
-        this.carService.setOpenUrlSource(url);
+        this.fileService.app.loadUrl(url, { openexternal: true });
+        // await this.router.navigate([AppHelper.getRoutePath("open-rental-car")]);
+        // this.carService.setOpenUrlSource(url);
       } else {
         window.location.href = url;
       }
