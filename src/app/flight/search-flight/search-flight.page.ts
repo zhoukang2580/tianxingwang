@@ -36,16 +36,12 @@ import { SelectedFlightsegmentInfoComponent } from "../components/selected-fligh
 export class SearchFlightPage
   implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate {
   isSelf = false;
-  toggleCities = false; // 没有切换城市顺序
-  rotateIcon = false;
   isSingle = true;
   goDate: DayModel;
   backDate: DayModel;
   searchConditionSubscription = Subscription.EMPTY;
   searchFlightModel: SearchFlightModel;
   isMoving: boolean;
-  // vmFromCity: TrafficlineEntity; // 界面上显示的城市
-  // vmToCity: TrafficlineEntity; // 界面上显示的城市
   showReturnTrip: boolean;
   disabled = false;
   totalFlyDays: number;
@@ -53,6 +49,7 @@ export class SearchFlightPage
   isShowBookInfos$ = of(0);
   isCanleave = true;
   isleave = true;
+  private subscriptions: Subscription[] = [];
   get selectedPassengers() {
     return this.flightService.getPassengerBookInfos().length;
   }
@@ -70,7 +67,7 @@ export class SearchFlightPage
     private modalCtrl: ModalController,
     private popoverCtrl: PopoverController
   ) {
-    route.queryParamMap.subscribe(async _ => {
+    const sub = route.queryParamMap.subscribe(async q => {
       this.isSelf = await this.staffService.isSelfBookType();
       this.isleave = false;
       this.isCanleave = false;
@@ -98,11 +95,12 @@ export class SearchFlightPage
       s.Date = lastSelectedGoDate;
       s.BackDate = lastSelectedBackDate;
       if (!s.isLocked) {
-        this.flightService.setSearchFlightModel(s);
+        this.flightService.setSearchFlightModelSource(s);
       }
       // this.calendarService.setSelectedDaysSource([this.goDate, this.backDate]);
       this.showReturnTrip = await this.isStaffTypeSelf();
     });
+    this.subscriptions.push(sub);
   }
   private checkBackDateIsAfterflyDate() {
     if (this.goDate && this.backDate) {
@@ -182,7 +180,7 @@ export class SearchFlightPage
   private onRoundTrip(single: boolean) {
     // console.log("onRoundTrip isSingle", single);
     this.isSingle = single;
-    this.flightService.setSearchFlightModel({
+    this.flightService.setSearchFlightModelSource({
       ...this.flightService.getSearchFlightModel(),
       isRoundTrip: !this.isSingle
     });
@@ -207,12 +205,9 @@ export class SearchFlightPage
     return this.staffService.isSelfBookType();
   }
   async ngOnInit() {
-    await this.initFlightCities();
     this.searchConditionSubscription = this.flightService
       .getSearchFlightModelSource()
       .subscribe(async s => {
-        console.log("search-flights", s);
-        this.showReturnTrip = await this.staffService.isSelfBookType();
         this.searchFlightModel = s;
         if (s) {
           this.disabled = s.isLocked;
@@ -225,15 +220,17 @@ export class SearchFlightPage
           );
           this.checkBackDateIsAfterflyDate();
         }
+        this.showReturnTrip = await this.staffService.isSelfBookType();
       });
     this.isShowBookInfos$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(map(infos => infos.filter(it => !!it.bookInfo).length));
     this.apiService.showLoadingView();
+    this.apiService.hideLoadingView();
+    await this.initFlightCities();
     this.showReturnTrip = await this.staffService
       .isSelfBookType()
       .catch(_ => false);
-    this.apiService.hideLoadingView();
   }
   onSelectPassenger() {
     this.isCanleave = true;
@@ -311,7 +308,7 @@ export class SearchFlightPage
           return c;
         })
         .catch(_ => null)) || vmToCity;
-    this.flightService.setSearchFlightModel({
+    this.flightService.setSearchFlightModelSource({
       ...this.flightService.getSearchFlightModel(),
       fromCity: lastFromCity,
       toCity: lastToCity
@@ -370,7 +367,7 @@ export class SearchFlightPage
     // s.tripType = s.isRoundTrip ? goFlight ? s.tripType : TripType.departureTrip : TripType.departureTrip;
     console.log("search-flight", s);
     // this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(s.Date)]);
-    this.flightService.setSearchFlightModel(s);
+    this.flightService.setSearchFlightModelSource(s);
     this.router.navigate([AppHelper.getRoutePath("flight-list")], {
       queryParams: { doRefresh: true }
     });
@@ -387,6 +384,15 @@ export class SearchFlightPage
   }
   getDayDesc(d: DayModel) {
     return this.calendarService.getDescOfDay(d);
+  }
+  onSwapCity() {
+    if (this.disabled) {
+      return;
+    }
+    this.flightService.onSwapCity();
+  }
+  onSelectCity(isFromCity = true) {
+    this.flightService.onSelectCity(isFromCity);
   }
   async onSelecFlyDate(flyTo: boolean, backDate: boolean) {
     if (this.disabled) {
@@ -407,6 +413,6 @@ export class SearchFlightPage
       }
     }
     this.cachLastSelectedFlightGoDate(this.searchFlightModel.Date);
-    this.flightService.setSearchFlightModel(this.searchFlightModel);
+    this.flightService.setSearchFlightModelSource(this.searchFlightModel);
   }
 }

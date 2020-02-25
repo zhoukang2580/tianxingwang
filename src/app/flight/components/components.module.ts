@@ -5,7 +5,6 @@ import { NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { CommonModule } from "@angular/common";
 import { FlightDynamicComponent } from "./flight-dynamic/flight-dynamic.component";
-import { SwitchCityComponent } from "./switch-city/switch-city.component";
 import { FlyListItemComponent } from "./fly-list-item/fly-list-item.component";
 import { FlightPipesModule } from "../pipes/Pipes.module";
 import { FlyFilterComponent } from "./fly-filter/fly-filter.component";
@@ -14,7 +13,6 @@ import { AircompanyComponent } from "./fly-filter/aircompany/aircompany.componen
 import { AirportsComponent } from "./fly-filter/airports/airports.component";
 import { AirtypeComponent } from "./fly-filter/airtype/airtype.component";
 import { CabinComponent } from "./fly-filter/cabin/cabin.component";
-import { SelectCityComponent } from "./select-city/select-city.component";
 import { TicketchangingComponent } from "./ticketchanging/ticketchanging.component";
 import { SelectedPassengersComponent } from "../../tmc/components/selected-passengers/selected-passengers.component";
 import { SelectedFlightsegmentInfoComponent } from "./selected-flightsegment-info/selected-flightsegment-info.component";
@@ -29,7 +27,6 @@ import { FlightSegmentItemComponent } from './flight-segment-item/flight-segment
 @NgModule({
   declarations: [
     FlightDynamicComponent,
-    SwitchCityComponent,
     FlyListItemComponent,
     FlyFilterComponent,
     TakeOffTimeSpanComponent,
@@ -37,7 +34,6 @@ import { FlightSegmentItemComponent } from './flight-segment-item/flight-segment
     AirportsComponent,
     AirtypeComponent,
     CabinComponent,
-    SelectCityComponent,
     TicketchangingComponent,
     SelectedPassengersComponent,
     SelectedFlightsegmentInfoComponent,
@@ -61,7 +57,6 @@ import { FlightSegmentItemComponent } from './flight-segment-item/flight-segment
   exports: [
     AppDirectivesModule,
     FlightDynamicComponent,
-    SwitchCityComponent,
     FlyListItemComponent,
     FlyFilterComponent,
     TakeOffTimeSpanComponent,
@@ -70,7 +65,6 @@ import { FlightSegmentItemComponent } from './flight-segment-item/flight-segment
     AirtypeComponent,
     CabinComponent,
     FlightPipesModule,
-    SelectCityComponent,
     TicketchangingComponent,
     SelectedPassengersComponent,
     SelectAndReplacebookinfoComponent,

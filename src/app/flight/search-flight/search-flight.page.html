@@ -35,9 +35,11 @@
           <ion-label><strong>往返</strong></ion-label>
         </ion-segment-button>
       </ion-segment>
-      <app-switch-city-comp [vmFromCity]="searchFlightModel?.fromCity" [vmToCity]="searchFlightModel?.toCity"
-        [disabled]='disabled'>
-      </app-switch-city-comp>
+      <ion-buttons class="city">
+        <ion-button [disabled]='disabled' (click)='onSelectCity(true)' color='{{disabled?"medium":"secondary"}}'>{{searchFlightModel?.fromCity?.CityName}}</ion-button>
+        <ion-icon name="swap-horizontal-outline" color='{{disabled?"medium":"secondary"}}' (click)='onSwapCity()'></ion-icon>
+        <ion-button [disabled]='disabled' (click)='onSelectCity(false)' color='{{disabled?"medium":"secondary"}}'>{{searchFlightModel?.toCity?.CityName}}</ion-button>
+      </ion-buttons>
       <section class="flight-date">
         <app-search-day-comp [day]='goDate' (click)="onSelecFlyDate(true,false)" [disabled]='disabled'>
         </app-search-day-comp>

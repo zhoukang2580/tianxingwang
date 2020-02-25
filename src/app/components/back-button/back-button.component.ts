@@ -53,11 +53,11 @@ export class BackButtonComponent implements OnInit, AfterViewInit {
       this.router.url.split("?")[0]
     );
     this.navCtrl.pop().then(() => {
-      console.log(
-        "app-back-button pop 后 curUrl:",
-        this.router.url.split("?")[0],
-        "customeback " + this.customeback
-      );
+      // console.log(
+      //   "app-back-button pop 后 curUrl:",
+      //   this.router.url.split("?")[0],
+      //   "customeback " + this.customeback
+      // );
       requestAnimationFrame(() => {
         if (this.router.url.split("?")[0] == this.curUrl) {
           this.navCtrl.navigateBack(this.defaultHref || "");

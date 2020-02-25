@@ -19,6 +19,13 @@ const routes: Routes = [
       )
   },
   {
+    path: "select-flight-city",
+    loadChildren: () =>
+      import("./select-flight-city/select-flight-city.module").then(
+        m => m.SelectFlightCityPageModule
+      )
+  },
+  {
     path: "flight-item-cabins",
     loadChildren: () =>
       import(
