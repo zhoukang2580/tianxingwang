@@ -12,7 +12,7 @@ import {
   ViewChild
 } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
-import { InAppBrowserObject, InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+import { InAppBrowserObject, InAppBrowser, InAppBrowserOptions } from '@ionic-native/in-app-browser/ngx';
 
 @Component({
   selector: "app-open-url",
@@ -70,7 +70,11 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
     if (this.browser) {
       this.browser.close();
     }
-    this.browser = this.iab.create(encodeURI(url), "_blank");
+    const options:InAppBrowserOptions={
+      usewkwebview:"yes",
+      location:'no',
+    }
+    this.browser = this.iab.create(encodeURI(url), "_blank",options);
     const sub = this.browser.on("exit").subscribe(() => {
       setTimeout(() => {
         if(sub){
