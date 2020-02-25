@@ -234,43 +234,36 @@
         <ion-list-header>
           <strong>支付方式</strong>
         </ion-list-header>
-        <ng-container
-          *ngIf='hotelPaymentType==HotelPaymentType.Prepay||hotelPaymentType==HotelPaymentType.Settle else zhifu2'>
-          <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType'>
+        <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType' (ionChange)='onOrderTravelPayTypeSelect($event)'>
+          <ng-container
+            *ngIf='hotelPaymentType==HotelPaymentType.Prepay||hotelPaymentType==HotelPaymentType.Settle else zhifu2'>
             <ng-container *ngFor='let pt of orderTravelPayTypes'>
               <ion-item
                 *ngIf='checkOrderTravelPayType(pt.value)||(pt.value == OrderTravelPayType.Credit&&identity?.Numbers?.AgentId)'>
                 <ion-label>{{pt.label}}</ion-label>
-                <ion-radio [value]="pt.value" (ionSelect)='onOrderTravelPayTypeSelect(pt)'
-                  [class.radio-checked]='orderTravelPayType==pt.value'>
+                <ion-radio [value]="pt.value" [class.radio-checked]='orderTravelPayType==pt.value'>
                 </ion-radio>
               </ion-item>
             </ng-container>
-          </ion-radio-group>
-        </ng-container>
-        <ng-template #zhifu2>
-          <ion-item *ngIf='hotelPaymentType==HotelPaymentType.SelfPay&&notShowServiceFee() else zhifu3'>
-            <ion-label>前台现付</ion-label>
-            <ion-radio value="Company">
-            </ion-radio>
-          </ion-item>
-        </ng-template>
-        <ng-template #zhifu3>
-          <ion-item>
-            <div style='width: 100%'>
-              <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType'>
-                <ng-container *ngFor='let pt of orderTravelPayTypes'>
-                  <ion-item
-                    *ngIf='checkOrderTravelPayType(pt.value)||(pt.value==OrderTravelPayType.Credit&&identity?.Numbers?.AgentId)'>
-                    <ion-label>前台现付(服务费:{{pt.label}})</ion-label>
-                    <ion-radio [value]="pt.value">
-                    </ion-radio>
-                  </ion-item>
-                </ng-container>
-              </ion-radio-group>
-            </div>
-          </ion-item>
-        </ng-template>
+          </ng-container>
+          <ng-template #zhifu2>
+            <ion-item *ngIf='hotelPaymentType==HotelPaymentType.SelfPay&&notShowServiceFee() else zhifu3'>
+              <ion-label>前台现付</ion-label>
+              <ion-radio value="Company">
+              </ion-radio>
+            </ion-item>
+          </ng-template>
+          <ng-template #zhifu3>
+            <ng-container *ngFor='let pt of orderTravelPayTypes'>
+              <ion-item
+                *ngIf='checkOrderTravelPayType(pt.value)||(pt.value==OrderTravelPayType.Credit&&identity?.Numbers?.AgentId)'>
+                <ion-label>前台现付(服务费:{{pt.label}})</ion-label>
+                <ion-radio [value]="pt.value">
+                </ion-radio>
+              </ion-item>
+            </ng-container>
+          </ng-template>
+        </ion-radio-group>
       </ion-list>
     </ng-container>
   </ng-container>

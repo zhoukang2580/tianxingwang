@@ -1,4 +1,4 @@
-import { RefresherComponent } from 'src/app/components/refresher';
+import { RefresherComponent } from "src/app/components/refresher";
 import { ActivatedRoute } from "@angular/router";
 import { HotelService } from "./../hotel.service";
 import { TrafficlineEntity } from "./../../tmc/models/TrafficlineEntity";
@@ -131,7 +131,7 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
       query.locationAreas = null;
       this.hotelService.setHotelQuerySource(query);
       if (oldCode != city.CityCode) {
-       await this.hotelService.getConditions(true);
+        await this.hotelService.getConditions(true);
       }
     }
     setTimeout(() => {
@@ -287,6 +287,9 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
         this.scrollToTargetLink();
       }, 200);
     } else {
+      if (!this.allCities || !this.allCities.length) {
+        this.allCities = await this.hotelService.getHotelCityAsync(true);
+      }
       if (this.allCities) {
         kw = kw.toLowerCase();
         this.vmCities = this.allCities

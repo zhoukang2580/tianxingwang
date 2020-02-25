@@ -1,4 +1,4 @@
-import { RefresherComponent } from 'src/app/components/refresher';
+import { RefresherComponent } from "src/app/components/refresher";
 import { BookTmcOutnumberComponent } from "./../../tmc/components/book-tmc-outnumber/book-tmc-outnumber.component";
 import { PayService } from "src/app/services/pay/pay.service";
 import { Router, ActivatedRoute } from "@angular/router";
@@ -71,7 +71,7 @@ import { HotelEntity } from "../models/HotelEntity";
 import { RoomEntity } from "../models/RoomEntity";
 import { ITmcOutNumberInfo } from "src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component";
 import { AccountEntity } from "src/app/account/models/AccountEntity";
-import { flyInOut } from 'src/app/animations/flyInOut';
+import { flyInOut } from "src/app/animations/flyInOut";
 @Component({
   selector: "app-book",
   templateUrl: "./book.page.html",
@@ -290,11 +290,11 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     }
     return totalPrice;
   }
-  onOrderTravelPayTypeSelect(pt: { value: number }) {
-    this.orderTravelPayTypes = this.orderTravelPayTypes.map(it => {
-      it.checked = +it.value == pt.value;
-      return it;
+  onOrderTravelPayTypeSelect() {
+    const orderTravelPayType = this.orderTravelPayTypes.find(it => {
+      return it.value == this.orderTravelPayType;
     });
+    console.log("选择的 orderTravelPayType ", orderTravelPayType);
   }
   private async initOrderTravelPayTypes() {
     // console.log("initOrderTravelPayTypes", this.initialBookDto);

@@ -1,7 +1,7 @@
 <ion-header>
   <ion-buttons>
     <app-back-button defaultHref=""></app-back-button>
-    <ion-searchbar mode='ios' debounce="700" animated placeholder="输入中文/拼音/首字母/城市代码" (ionChange)='doSearch()'
+    <ion-searchbar mode='ios' debounce="300" animated placeholder="输入中文/拼音/首字母/城市代码" (ionChange)='doSearch()'
       [(ngModel)]='vmKeyword' class="ion-margin-end">
     </ion-searchbar>
   </ion-buttons>
