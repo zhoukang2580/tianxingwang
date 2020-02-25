@@ -1,3 +1,4 @@
+import { AppDirectivesModule } from 'src/app/directives/directives.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -15,7 +16,8 @@ import { WorkflowComponentsModule } from '../components/workflow-components.modu
     FormsModule,
     IonicModule,
     WorkflowListPageRoutingModule,
-    WorkflowComponentsModule
+    WorkflowComponentsModule,
+    AppDirectivesModule
   ],
   declarations: [WorkflowListPage]
 })
