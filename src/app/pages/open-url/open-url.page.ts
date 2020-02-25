@@ -1,4 +1,4 @@
-import { BackButtonComponent } from './../../components/back-button/back-button.component';
+import { BackButtonComponent } from "./../../components/back-button/back-button.component";
 import { LoadingController, NavController } from "@ionic/angular";
 import { Subject, BehaviorSubject } from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -23,6 +23,7 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
   url$: Subject<any>;
   isHideTitle = false;
   isShowFabButton = false;
+  isIframeOpen = true;
   @ViewChild(BackButtonComponent) backButton: BackButtonComponent;
   @ViewChildren("iframe") iframes: QueryList<ElementRef<HTMLIFrameElement>>;
   constructor(
@@ -34,6 +35,10 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
     this.url$ = new BehaviorSubject(null);
     activatedRoute.queryParamMap.subscribe(p => {
       console.log("open url page ", p);
+      const isIframe = p.get("isIframeOpen");
+      if (isIframe) {
+        this.isIframeOpen = isIframe == "true";
+      }
       if (p.get("url")) {
         this.url$.next(
           this.domSanitizer.bypassSecurityTrustResourceUrl(p.get("url"))
@@ -42,9 +47,9 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
       if (p.get("title")) {
         this.title = p.get("title");
       }
-      const h = p.get('isHideTitle');
-      this.isShowFabButton = p.get('isShowFabButton') == "true";
-      this.isHideTitle = h == 'true';
+      const h = p.get("isHideTitle");
+      this.isShowFabButton = p.get("isShowFabButton") == "true";
+      this.isHideTitle = h == "true";
     });
   }
   ngAfterViewInit() {
@@ -62,10 +67,10 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
       });
     }
   }
-  onBack(evt:CustomEvent) {
-    if(this.backButton){
+  onBack(evt: CustomEvent) {
+    if (this.backButton) {
       this.backButton.backToPrePage();
     }
   }
-  ngOnInit() { }
+  ngOnInit() {}
 }

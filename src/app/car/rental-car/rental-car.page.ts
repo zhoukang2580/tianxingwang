@@ -1,3 +1,4 @@
+import { FileHelperService } from "./../../services/file-helper.service";
 import { flyInOut } from "./../../animations/flyInOut";
 import { finalize, debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { LoginService } from "./../../services/login/login.service";
@@ -37,8 +38,9 @@ export class RentalCarPage implements OnInit, OnDestroy {
     private carService: CarService,
     private navCtrl: NavController,
     private router: Router,
-    private route: ActivatedRoute
-  ) { }
+    private route: ActivatedRoute,
+    private fileService: FileHelperService
+  ) {}
   back() {
     this.navCtrl.pop();
   }
@@ -168,14 +170,18 @@ export class RentalCarPage implements OnInit, OnDestroy {
     }
     const url = await this.carService.verifyStaff({ Mobile: this.mobile });
     if (url) {
-      this.router.navigate(["open-url"], {
-        queryParams: {
-          url,
-          title: "用车",
-          // isShowFabButton: true,
-          isHideTitle: !AppHelper.isApp()
-        }
-      });
+      if (AppHelper.isApp()) {
+        this.router.navigate(["open-url"], {
+          queryParams: {
+            url,
+            title: "用车",
+            isHideTitle: AppHelper.isDingtalkH5() || AppHelper.isWechatH5()
+          }
+        });
+        // this.fileService.app.loadUrl(url, { openexternal: true });
+      } else {
+        window.location.href = url;
+      }
     }
   }
   ngOnDestroy() {

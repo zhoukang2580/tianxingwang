@@ -7,14 +7,16 @@
     <ion-title>{{title}}</ion-title>
   </ion-toolbar>
 </ion-header>
-
-<ion-content>
+<ng-container *ngIf='isIframeOpen else anchorOpen'>
   <div class='wrapper' *ngIf='(url$|async) as url' [class.hidetop]='isHideTitle'>
     <iframe [src]="url" #iframe></iframe>
   </div>
-  <ion-fab *ngIf='isShowFabButton' vertical="top" edge  horizontal="start" slot="fixed">
-    <ion-fab-button size="small" (click)='onBack($event)'>
-      <ion-icon name="chevron-back-circle-outline" color='light'></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-</ion-content>
+</ng-container>
+<ng-template #anchorOpen>
+  <a [href]='url' *ngIf='(url$|async) as url'></a>
+</ng-template>
+<ion-fab *ngIf='isShowFabButton' vertical="top" edge horizontal="start" slot="fixed">
+  <ion-fab-button size="small" (click)='onBack($event)'>
+    <ion-icon name="chevron-back-circle-outline" color='light'></ion-icon>
+  </ion-fab-button>
+</ion-fab>
