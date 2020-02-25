@@ -873,7 +873,7 @@ export interface IInterHotelSearchCondition {
 
 export interface ISearchTextValue {
   Text: string;
-  Value: string; // Code
+  Value?: string; // Code
 }
 export interface IInterHotelSearchResult {
   CityCode: string;

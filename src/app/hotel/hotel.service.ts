@@ -50,7 +50,7 @@ export class SearchHotelModel {
   destinationCity: TrafficlineEntity;
   tag: "Agreement" | "" | "SpecialPrice";
   hotelType: "agreement" | "normal" | "specialprice";
-  searchText: { Value: string; Text: string };
+  searchText: { Value?: string; Text: string };
 }
 export interface LocalHotelCityCache {
   LastUpdateTime: number;
@@ -511,6 +511,7 @@ export class HotelService {
   }
   getHotelList(query: HotelQueryEntity) {
     const hotelquery: HotelQueryEntity = {
+      ...this.getHotelQueryModel(),
       ...query,
       starAndPrices: null,
       locationAreas: null,
@@ -524,7 +525,7 @@ export class HotelService {
     if (query.searchGeoId) {
       req["searchGeoId"] = query.searchGeoId;
     }
-    if (!environment.production&&false) {
+    if (!environment.production && false) {
       if (!this.testData) {
         this.storage.get("test_big_hote_list").then(res => {
           this.testData = res;

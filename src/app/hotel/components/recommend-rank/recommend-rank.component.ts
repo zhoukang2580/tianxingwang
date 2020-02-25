@@ -10,6 +10,7 @@ import { HotelQueryEntity, IRankItem } from "../../models/HotelQueryEntity";
 export class RecommendRankComponent implements OnInit {
   @Output() rank: EventEmitter<any>;
   hotelQuery: HotelQueryEntity;
+  selectedItem: any;
   constructor(
     private hotelService: HotelService,
     private modalCtrl: ModalController
@@ -66,10 +67,12 @@ export class RecommendRankComponent implements OnInit {
     }
   }
   onSelect(r: IRankItem) {
+    this.selectedItem = r;
     this.hotelQuery.ranks = this.hotelQuery.ranks.map(it => {
       it.isSelected = it.id == r.id;
       return it;
     });
+    this.hotelQuery.Orderby = r.orderBy;
     this.hotelService.setHotelQuerySource(this.hotelQuery);
     this.rank.emit();
     this.modalCtrl.getTop().then(t => {

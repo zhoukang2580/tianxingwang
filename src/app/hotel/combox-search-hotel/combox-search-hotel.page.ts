@@ -1,4 +1,4 @@
-import { RefresherComponent } from 'src/app/components/refresher';
+import { RefresherComponent } from "src/app/components/refresher";
 import { ActivatedRoute } from "@angular/router";
 import { flyInOut } from "./../../animations/flyInOut";
 import { NavController, IonInfiniteScroll, IonRefresher } from "@ionic/angular";
@@ -14,10 +14,7 @@ import {
 import { Subscription, of, Observable } from "rxjs";
 import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
 import { HotelService } from "../hotel.service";
-interface ISearchTextValue {
-  Text: string;
-  Value: string;
-}
+import { ISearchTextValue } from 'src/app/hotel-international/international-hotel.service';
 @Component({
   selector: "app-search-hotel-byText",
   templateUrl: "./combox-search-hotel.page.html",
@@ -111,7 +108,7 @@ export class ComboxSearchHotelPage implements OnInit, OnDestroy {
   onSelect(it?: ISearchTextValue) {
     this.hotelService.setSearchHotelModel({
       ...this.hotelService.getSearchHotelModel(),
-      searchText: it
+      searchText: it || { Text: this.searchText }
     });
     setTimeout(() => {
       this.navCtrl.back();

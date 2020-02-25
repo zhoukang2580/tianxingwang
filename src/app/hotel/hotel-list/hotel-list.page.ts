@@ -106,7 +106,7 @@ export class HotelListPage
   isLeavePage = false;
   isLoadingHotels = false;
   searchHotelModel: SearchHotelModel;
-  hotelQueryModel: HotelQueryEntity = new HotelQueryEntity();
+  hotelQueryModel: HotelQueryEntity;
   hotelDayPrices: HotelDayPriceEntity[] = [];
   searchSubscription = Subscription.EMPTY;
   loadDataSub = Subscription.EMPTY;
@@ -349,6 +349,11 @@ export class HotelListPage
     }
   }
   async ngOnInit() {
+    this.subscriptions.push(
+      this.hotelService.getHotelQuerySource().subscribe(query => {
+        this.hotelQueryModel = query;
+      })
+    );
     const sub0 = this.route.queryParamMap.subscribe(_ => {
       this.hideQueryPannel();
       this.hotelService.curViewHotel = null;
@@ -627,12 +632,8 @@ export class HotelListPage
   }
   onRank() {
     const query = this.hotelService.getHotelQueryModel();
-    if (query && query.ranks) {
-      const tab = query.ranks.find(it => it.isSelected);
-      query.Orderby = tab.orderBy;
-      this.hotelService.setHotelQuerySource(query);
-      this.doRefresh(true);
-    }
+    console.log("onRank ", query);
+    this.doRefresh(true);
   }
   private async checkAndOpenModal(tab: {
     label: "位置区域" | "推荐排序" | "筛选" | "星级价格" | "none";
