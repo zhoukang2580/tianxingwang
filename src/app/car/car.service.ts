@@ -1,3 +1,5 @@
+import { BehaviorSubject } from "rxjs";
+import { Subject } from "rxjs";
 import { IdentityService } from "./../services/identity/identity.service";
 import { Storage } from "@ionic/storage";
 import { AppHelper } from "./../appHelper";
@@ -26,6 +28,7 @@ export class CarService {
   private accountInfo: Item;
   private fetchPromise: { promise: Promise<Item> };
   private verifiedMobiles: ILocalMobile;
+  private openUrlSource: Subject<string>;
   constructor(
     private apiService: ApiService,
     private storage: Storage,
@@ -34,6 +37,13 @@ export class CarService {
     this.identityService.getIdentitySource().subscribe(_ => {
       this.accountInfo = null;
     });
+    this.openUrlSource = new BehaviorSubject("");
+  }
+  getOpenUrlSource() {
+    return this.openUrlSource.asObservable();
+  }
+  setOpenUrlSource(url: string) {
+    this.openUrlSource.next(url);
   }
   getAccountInfo(forceFetch = false) {
     if (!forceFetch) {

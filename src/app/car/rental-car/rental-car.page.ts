@@ -169,16 +169,22 @@ export class RentalCarPage implements OnInit, OnDestroy {
       return;
     }
     const url = await this.carService.verifyStaff({ Mobile: this.mobile });
+    // if (url) {
+    //   await this.router.navigate([AppHelper.getRoutePath("open-rental-car")]);
+    //   this.carService.setOpenUrlSource(url);
+    // }
     if (url) {
       if (AppHelper.isApp()) {
-        this.router.navigate(["open-url"], {
-          queryParams: {
-            url,
-            title: "用车",
-            isHideTitle: AppHelper.isDingtalkH5() || AppHelper.isWechatH5()
-          }
-        });
+        // this.router.navigate(["open-url"], {
+        //   queryParams: {
+        //     url,
+        //     title: "用车",
+        //     isHideTitle: AppHelper.isDingtalkH5() || AppHelper.isWechatH5()
+        //   }
+        // });
         // this.fileService.app.loadUrl(url, { openexternal: true });
+        await this.router.navigate([AppHelper.getRoutePath("open-rental-car")]);
+        this.carService.setOpenUrlSource(url);
       } else {
         window.location.href = url;
       }
