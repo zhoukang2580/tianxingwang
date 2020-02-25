@@ -159,7 +159,11 @@ export class ViewDetailPage implements OnInit, AfterContentChecked, OnDestroy {
                 }
               } else {
                 if (this.plt.is("ios")) {
-                  window.open(url, "_blank");
+                  if(this.fileService.app&&this.fileService.app.loadUrl){
+                    this.fileService.app.loadUrl(url);
+                  }else{
+                    window.open(url, "_blank");
+                  }
                 } else {
                   this.fileService.app.loadUrl(url, { openexternal: true });
                 }

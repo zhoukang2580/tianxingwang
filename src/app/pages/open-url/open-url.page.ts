@@ -12,11 +12,13 @@ import {
   ViewChild
 } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
+import { InAppBrowserObject, InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 
 @Component({
   selector: "app-open-url",
   templateUrl: "./open-url.page.html",
-  styleUrls: ["./open-url.page.scss"]
+  styleUrls: ["./open-url.page.scss"],
+  providers: [InAppBrowser]
 })
 export class OpenUrlPage implements OnInit, AfterViewInit {
   title: string;
@@ -24,13 +26,17 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
   isHideTitle = false;
   isShowFabButton = false;
   isIframeOpen = true;
+  private isOpenInAppBrowser = false;
+  private browser: InAppBrowserObject;
+
   @ViewChild(BackButtonComponent) backButton: BackButtonComponent;
   @ViewChildren("iframe") iframes: QueryList<ElementRef<HTMLIFrameElement>>;
   constructor(
     activatedRoute: ActivatedRoute,
     private domSanitizer: DomSanitizer,
     private loadingCtrl: LoadingController,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private iab: InAppBrowser
   ) {
     this.url$ = new BehaviorSubject(null);
     activatedRoute.queryParamMap.subscribe(p => {
@@ -44,13 +50,35 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
           this.domSanitizer.bypassSecurityTrustResourceUrl(p.get("url"))
         );
       }
+      if (p.get("isOpenInAppBrowser")) {
+        this.isOpenInAppBrowser = p.get("isOpenInAppBrowser") == 'true';
+        if (this.isOpenInAppBrowser) {
+          this.isIframeOpen = false;
+          this.openInAppBrowser(p.get("url"));
+        }
+      }
       if (p.get("title")) {
         this.title = p.get("title");
       }
       const h = p.get("isHideTitle");
       this.isShowFabButton = p.get("isShowFabButton") == "true";
       this.isHideTitle = h == "true";
+
     });
+  }
+  private openInAppBrowser(url: string) {
+    if (this.browser) {
+      this.browser.close();
+    }
+    this.browser = this.iab.create(encodeURI(url), "_blank");
+    const sub = this.browser.on("exit").subscribe(() => {
+      setTimeout(() => {
+        if(sub){
+          sub.unsubscribe();
+        }
+      }, 100);
+      this.backButton.backToPrePage();
+    })
   }
   ngAfterViewInit() {
     if (this.iframes) {
@@ -72,5 +100,5 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
       this.backButton.backToPrePage();
     }
   }
-  ngOnInit() {}
+  ngOnInit() { }
 }

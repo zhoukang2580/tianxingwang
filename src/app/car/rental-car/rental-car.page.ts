@@ -15,7 +15,8 @@ import { Geolocation } from "@ionic-native/geolocation/ngx";
   selector: "app-rental-car",
   templateUrl: "./rental-car.page.html",
   styleUrls: ["./rental-car.page.scss"],
-  animations: [flyInOut]
+  animations: [flyInOut],
+  providers:[Geolocation]
 })
 export class RentalCarPage implements OnInit, OnDestroy {
   @ViewChild("mobileInput") mobileInput: IonInput;
@@ -41,7 +42,7 @@ export class RentalCarPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private fileService: FileHelperService,
     private geolocation: Geolocation
-  ) {}
+  ) { }
   back() {
     this.navCtrl.pop();
   }
@@ -112,10 +113,10 @@ export class RentalCarPage implements OnInit, OnDestroy {
   private async onGeo() {
     try {
       const geo = await this.geolocation.getCurrentPosition();
-      if (geo) {
-        AppHelper.alert(geo);
-      }
-    } catch (e) {}
+      AppHelper.alert(geo && geo.coords || "无定位信息");
+    } catch (e) {
+      AppHelper.alert(e);
+    }
   }
   validateCode() {
     if (!this.verifySmsCode) {
@@ -178,26 +179,21 @@ export class RentalCarPage implements OnInit, OnDestroy {
       return;
     }
     const url = await this.carService.verifyStaff({ Mobile: this.mobile });
+
     // if (url) {
     //   await this.router.navigate([AppHelper.getRoutePath("open-rental-car")]);
     //   this.carService.setOpenUrlSource(url);
     // }
-    await this.onGeo();
+    // await this.onGeo();
     if (url) {
-      if (AppHelper.isApp()) {
-        // this.router.navigate(["open-url"], {
-        //   queryParams: {
-        //     url,
-        //     title: "用车",
-        //     isHideTitle: AppHelper.isDingtalkH5() || AppHelper.isWechatH5()
-        //   }
-        // });
-        this.fileService.app.loadUrl(url, { openexternal: true });
-        // await this.router.navigate([AppHelper.getRoutePath("open-rental-car")]);
-        // this.carService.setOpenUrlSource(url);
-      } else {
-        window.location.href = url;
-      }
+      this.router.navigate(["open-url"], {
+        queryParams: {
+          url,
+          title: "用车",
+          isOpenInAppBrowser: AppHelper.isApp(),
+          isHideTitle: AppHelper.isDingtalkH5() || AppHelper.isWechatH5()
+        }
+      });
     }
   }
   ngOnDestroy() {
