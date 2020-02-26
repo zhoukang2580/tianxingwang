@@ -31,7 +31,8 @@ import {
   AfterViewInit,
   AfterContentInit,
   ElementRef,
-  EventEmitter
+  EventEmitter,
+  NgZone
 } from "@angular/core";
 import {
   IonContent,
@@ -129,7 +130,8 @@ export class HotelListPage
     private navCtrl: NavController,
     private configService: ConfigService,
     plt: Platform,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private ngZone: NgZone
   ) {
     this.classMode = plt.is("ios") ? "ios" : "md";
     this.filterTab = {
@@ -306,12 +308,9 @@ export class HotelListPage
     this.router.navigate([AppHelper.getRoutePath("hotel-detail")]);
   }
   onCityClick() {
-    this.isLoadingHotels = true;
+    this.hotelDayPrices = [];
     requestAnimationFrame(() => {
-      // this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
-    });
-    this.navCtrl.navigateForward(AppHelper.getRoutePath("hotel-city"), {
-      animated: false
+      this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
     });
   }
   onSearchByText() {

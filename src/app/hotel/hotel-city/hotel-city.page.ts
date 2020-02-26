@@ -9,7 +9,8 @@ import {
   ViewChild,
   AfterViewInit,
   OnDestroy,
-  ElementRef
+  ElementRef,
+  NgZone
 } from "@angular/core";
 import {
   NavController,
@@ -48,12 +49,14 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private hotelService: HotelService,
     private storage: Storage,
-    route: ActivatedRoute
+    route: ActivatedRoute,
+    private ngZone: NgZone,
+    private navCtrl: NavController
   ) {
     this.subscriptions.push(route.queryParamMap.subscribe(_ => {}));
   }
   back() {
-    this.backBtn.backToPrePage();
+    this.navCtrl.back();
   }
   ngOnDestroy() {
     this.subscriptions.forEach(sub => {
@@ -163,7 +166,9 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     this.subscriptions.push(sub);
     this.initCitites().finally(() => {
       this.isLoading = true;
-      this.doRefresh();
+      setTimeout(() => {
+        this.doRefresh();
+      }, 1000);
     });
   }
   private async initCitites() {
@@ -190,22 +195,24 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     if (!this.allCities || !this.allCities.length) {
       await this.initCitites();
     }
-    if (this.allCities) {
-      const arr = this.filterCitities(kw);
-      this.filteredTotalCount = arr.length;
-      const temp = arr.slice(
-        this.vmCities.length,
-        this.vmCities.length + this.pageSize
-      );
-      this.scroller.disabled = temp.length < this.pageSize;
-      this.scroller.complete();
-      if (!this.vmCities.length) {
-        this.refresher.complete();
+    this.ngZone.runOutsideAngular(() => {
+      if (this.allCities) {
+        const arr = this.filterCitities(kw);
+        this.filteredTotalCount = arr.length;
+        const temp = arr.slice(
+          this.vmCities.length,
+          this.vmCities.length + this.pageSize
+        );
+        this.scroller.disabled = temp.length < this.pageSize;
+        this.scroller.complete();
+        if (!this.vmCities.length) {
+          this.refresher.complete();
+        }
+        if (temp.length) {
+          this.vmCities = this.vmCities.concat(temp);
+        }
       }
-      if (temp.length) {
-        this.vmCities = this.vmCities.concat(temp);
-      }
-    }
+    });
   }
   async doRefresh() {
     this.isLoading = true;
