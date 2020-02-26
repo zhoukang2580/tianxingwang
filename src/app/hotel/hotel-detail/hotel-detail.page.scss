@@ -9,13 +9,14 @@
   background-position: center center;
   background-color: #eee;
   position: relative;
+  z-index: 99;
   .back-button {
     position: absolute;
     left: 1em;
     top: 2em;
     width: 3em;
     height: 3em;
-    z-index: 99;
+    z-index: 100;
     color: white;
     background-color: rgba(0, 0, 0, 0.5);
     border-radius: 4px;

@@ -1,5 +1,5 @@
 import { BackButtonComponent } from "./../../components/back-button/back-button.component";
-import { LoadingController, NavController } from "@ionic/angular";
+import { LoadingController, NavController, Platform } from "@ionic/angular";
 import { Subject, BehaviorSubject } from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
@@ -12,7 +12,11 @@ import {
   ViewChild
 } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
-import { InAppBrowserObject, InAppBrowser, InAppBrowserOptions } from '@ionic-native/in-app-browser/ngx';
+import {
+  InAppBrowserObject,
+  InAppBrowser,
+  InAppBrowserOptions
+} from "@ionic-native/in-app-browser/ngx";
 
 @Component({
   selector: "app-open-url",
@@ -36,7 +40,8 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
     private domSanitizer: DomSanitizer,
     private loadingCtrl: LoadingController,
     private navCtrl: NavController,
-    private iab: InAppBrowser
+    private iab: InAppBrowser,
+    private plt: Platform
   ) {
     this.url$ = new BehaviorSubject(null);
     activatedRoute.queryParamMap.subscribe(p => {
@@ -51,7 +56,7 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
         );
       }
       if (p.get("isOpenInAppBrowser")) {
-        this.isOpenInAppBrowser = p.get("isOpenInAppBrowser") == 'true';
+        this.isOpenInAppBrowser = p.get("isOpenInAppBrowser") == "true";
         if (this.isOpenInAppBrowser) {
           this.isIframeOpen = false;
           this.openInAppBrowser(p.get("url"));
@@ -63,29 +68,28 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
       const h = p.get("isHideTitle");
       this.isShowFabButton = p.get("isShowFabButton") == "true";
       this.isHideTitle = h == "true";
-
     });
   }
   private openInAppBrowser(url: string) {
     if (this.browser) {
       this.browser.close();
     }
-    const options:InAppBrowserOptions={
-      usewkwebview:"yes",
-      location:'no',
-      toolbar:"yes",
-      zoom:"no",
-      footer:"yes"
-    }
-    this.browser = this.iab.create(encodeURI(url), "_blank",options);
+    const options: InAppBrowserOptions = {
+      usewkwebview: "yes",
+      location: "no",
+      toolbar: this.plt.is("ios") ? "yes" : "no",
+      zoom: "no",
+      footer: "yes"
+    };
+    this.browser = this.iab.create(encodeURI(url), "_blank", options);
     const sub = this.browser.on("exit").subscribe(() => {
       setTimeout(() => {
-        if(sub){
+        if (sub) {
           sub.unsubscribe();
         }
       }, 100);
       this.backButton.backToPrePage();
-    })
+    });
   }
   ngAfterViewInit() {
     if (this.iframes) {
@@ -107,5 +111,5 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
       this.backButton.backToPrePage();
     }
   }
-  ngOnInit() { }
+  ngOnInit() {}
 }

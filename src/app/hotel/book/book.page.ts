@@ -274,7 +274,11 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     let totalPrice = infos.reduce((arr, item) => {
       if (item && item.bookInfo && item.bookInfo.roomPlan) {
         const info = item.bookInfo;
-        arr = AppHelper.add(arr, +info.roomPlan.TotalAmount);
+        const roomPrice =
+          this.hotelPaymentType == HotelPaymentType.SelfPay
+            ? 0
+            : +info.roomPlan.TotalAmount;
+        arr = AppHelper.add(arr, roomPrice);
       }
       return arr;
     }, 0);

@@ -170,7 +170,7 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
       if (!this.allCities || !this.allCities.length) {
         this.allCities = await this.hotelService.getHotelCityAsync()
       }
-      this.allCities.sort((s1, s2) => s1.Sequence - s2.Sequence);
+      this.allCities.sort((s1, s2) => s2.Sequence - s1.Sequence);
       this.allCities = this.allCities.filter(it => it.IsHot).concat(this.allCities.filter(it => !it.IsHot));
     } catch (e) {
       this.allCities = null;

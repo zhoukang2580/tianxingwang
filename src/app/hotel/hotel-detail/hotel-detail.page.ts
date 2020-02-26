@@ -133,12 +133,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   onSlideChange(idx: number) {
     this.curPos = idx;
   }
-  back(evt?: CustomEvent) {
-    if (evt) {
-      evt.stopPropagation();
-    }
-    this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
-  }
+
   onSelectPassenger() {
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
       queryParams: { forType: FlightHotelTrainType.Hotel }

@@ -16,7 +16,7 @@ import { Geolocation } from "@ionic-native/geolocation/ngx";
   templateUrl: "./rental-car.page.html",
   styleUrls: ["./rental-car.page.scss"],
   animations: [flyInOut],
-  providers:[Geolocation]
+  providers: [Geolocation]
 })
 export class RentalCarPage implements OnInit, OnDestroy {
   @ViewChild("mobileInput") mobileInput: IonInput;
@@ -42,7 +42,7 @@ export class RentalCarPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private fileService: FileHelperService,
     private geolocation: Geolocation
-  ) { }
+  ) {}
   back() {
     this.navCtrl.pop();
   }
@@ -113,7 +113,7 @@ export class RentalCarPage implements OnInit, OnDestroy {
   private async onGeo() {
     try {
       const geo = await this.geolocation.getCurrentPosition();
-      AppHelper.alert(geo && geo.coords || "无定位信息");
+      AppHelper.alert((geo && geo.coords) || "无定位信息");
     } catch (e) {
       AppHelper.alert(e);
     }
@@ -186,14 +186,18 @@ export class RentalCarPage implements OnInit, OnDestroy {
     // }
     // await this.onGeo();
     if (url) {
-      this.router.navigate(["open-url"], {
-        queryParams: {
-          url,
-          title: "用车",
-          isOpenInAppBrowser: AppHelper.isApp(),
-          isHideTitle: AppHelper.isDingtalkH5() || AppHelper.isWechatH5()
-        }
-      });
+      if (AppHelper.isApp()) {
+        this.router.navigate(["open-url"], {
+          queryParams: {
+            url,
+            title: "用车",
+            isOpenInAppBrowser: AppHelper.isApp(),
+            isHideTitle: AppHelper.isDingtalkH5() || AppHelper.isWechatH5()
+          }
+        });
+      } else {
+        window.location.href = url;
+      }
     }
   }
   ngOnDestroy() {
