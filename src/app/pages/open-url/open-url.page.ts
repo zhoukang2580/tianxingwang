@@ -79,7 +79,7 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
       location: "no",
       toolbar: this.plt.is("ios") ? "yes" : "no",
       zoom: "no",
-      footer: "yes"
+      footer: "no"
     };
     this.browser = this.iab.create(encodeURI(url), "_blank", options);
     const sub = this.browser.on("exit").subscribe(() => {

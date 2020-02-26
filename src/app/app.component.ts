@@ -304,11 +304,12 @@ export class AppComponent
           this.lastClickTime = Date.now();
         }
       } else {
-        if(this.app){
-          this.app.backHistory();
-        }else{
-          this.navCtrl.pop();
-        }
+        // if(this.app){
+        //   this.app.backHistory();
+        // }else{
+        //   this.navCtrl.pop();
+        // }
+        this.navCtrl.pop();
         count++;
         console.log(`backbutton back count=${count}`);
         // window.history.back();
