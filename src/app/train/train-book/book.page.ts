@@ -513,7 +513,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
           }
           this.trainService.removeAllBookInfos();
           this.viewModel.combindInfos = [];
-          this.trainService.setSearchTrainModel({
+          this.trainService.setSearchTrainModelSource({
             ...this.trainService.getSearchTrainModel(),
             isExchange: false,
             isLocked: false

@@ -85,6 +85,48 @@ export class TrainService {
     identityService.getIdentitySource().subscribe(res => {
       this.disposal();
     });
+    this.initSearchTrainModel();
+  }
+  private async initSearchTrainModel() {
+    const { fromStation, toStation } = await this.initTrainCities();
+    this.setSearchTrainModelSource({
+      ...this.getSearchTrainModel(),
+      fromCity: fromStation,
+      FromStation: fromStation.Code,
+      toCity: toStation,
+      ToStation: toStation.Code
+    });
+  }
+  private async initTrainCities() {
+    let fromCity = {
+      Name: "北京",
+      Nickname: "北京",
+      Code: "BJP"
+    } as TrafficlineEntity;
+    let toCity = {
+      Name: "上海",
+      Nickname: "上海",
+      Code: "SHH"
+    } as TrafficlineEntity;
+    const lastFromCity = await this.storage.get("fromTrainStation");
+    const lastToCity = await this.storage.get("toTrainStation");
+    if (!lastFromCity || !lastToCity) {
+      const stations = await this.getStationsAsync();
+      if (stations && stations.length) {
+        fromCity = stations.find(c => c.Code.toUpperCase() == fromCity.Code);
+        toCity = stations.find(c => c.Code.toUpperCase() == toCity.Code);
+      }
+    }
+    return { fromStation: fromCity, toStation: toCity };
+  }
+  cacheLastations(
+    fromStation: TrafficlineEntity,
+    toStation: TrafficlineEntity
+  ) {
+    return Promise.all([
+      this.storage.set("fromTrainStation", fromStation),
+      this.storage.set("toTrainStation", toStation)
+    ]);
   }
   async getPassengerCredentials(
     accountIds: string[],
@@ -195,7 +237,7 @@ export class TrainService {
       bookInfo.bookInfo.trainEntity.StartTime.substr(0, "2019-10-11".length);
     s.tripType = TripType.departureTrip;
     s.isLocked = false;
-    this.setSearchTrainModel({
+    this.setSearchTrainModelSource({
       ...s
     });
     if (await this.staffService.isSelfBookType()) {
@@ -228,7 +270,7 @@ export class TrainService {
     const s = this.getSearchTrainModel();
     const isSelfBookType = await this.staffService.isSelfBookType();
     if (!isSelfBookType || infos.length == 0 || !s.isRoundTrip) {
-      this.setSearchTrainModel({
+      this.setSearchTrainModelSource({
         ...s,
         isLocked: false
       });
@@ -257,7 +299,7 @@ export class TrainService {
       ]);
       await this.dismissAllTopOverlays();
       await this.router.navigate([AppHelper.getRoutePath("train-list")]);
-      this.setSearchTrainModel(backParams);
+      this.setSearchTrainModelSource(backParams);
     }
   }
   async addOrReselectBookInfo(currentViewtTainItem: ICurrentViewtTainItem) {
@@ -370,7 +412,7 @@ export class TrainService {
             it => !it.bookInfo || it.bookInfo.tripType == TripType.returnTrip
           )
         ) {
-          this.setSearchTrainModel({ ...s, isLocked: false });
+          this.setSearchTrainModelSource({ ...s, isLocked: false });
         }
       }
       this.setBookInfoSource(bookInfos);
@@ -512,7 +554,7 @@ export class TrainService {
     return bookInfos;
   }
   disposal() {
-    this.setSearchTrainModel(new SearchTrainModel());
+    this.initSearchTrainModel();
     this.setBookInfoSource([]);
     this.selfCredentials = null;
     this.isInitializingSelfBookInfos = false;
@@ -651,7 +693,7 @@ export class TrainService {
             new CredentialsEntity()
         };
         this.addBookInfo(i);
-        this.setSearchTrainModel({
+        this.setSearchTrainModelSource({
           ...this.getSearchTrainModel(),
           isLocked: false
         });
@@ -673,7 +715,7 @@ export class TrainService {
     s.Date = moment().format("YYYY-MM-DD");
     return this.searchModel || s;
   }
-  setSearchTrainModel(m: SearchTrainModel) {
+  setSearchTrainModelSource(m: SearchTrainModel) {
     console.log("setSearchTrainModel", m);
     this.searchModel = m || new SearchTrainModel();
     if (m.fromCity) {
@@ -827,7 +869,7 @@ export class TrainService {
         delInfo.bookInfo &&
         delInfo.bookInfo.tripType == TripType.returnTrip
       ) {
-        this.setSearchTrainModel({
+        this.setSearchTrainModelSource({
           ...s,
           isLocked: false
         });
@@ -841,7 +883,7 @@ export class TrainService {
           it.bookInfo = null;
           return it;
         });
-        this.setSearchTrainModel({
+        this.setSearchTrainModelSource({
           ...s,
           isLocked: false,
           tripType: TripType.departureTrip
@@ -1054,7 +1096,7 @@ export class TrainService {
         toCity
       );
       this.setBookInfoSource(books);
-      this.setSearchTrainModel({
+      this.setSearchTrainModelSource({
         ...this.getSearchTrainModel(),
         isLocked: true,
         isExchange: true,
@@ -1193,6 +1235,21 @@ export class TrainService {
     req.Version = "1.0";
     return this.apiService.getPromiseData<TrainEntity[]>(req).catch(_ => {
       return [];
+    });
+  }
+  onSelectCity(isFrom: boolean) {
+    this.router.navigate([AppHelper.getRoutePath("select-station")], {
+      queryParams: { requestCode: isFrom ? "from_station" : "to_station" }
+    });
+  }
+  onSwapCity() {
+    const s = this.getSearchTrainModel();
+    this.setSearchTrainModelSource({
+      ...s,
+      fromCity: s.toCity,
+      toCity: s.fromCity,
+      FromStation: s.ToStation,
+      ToStation: s.FromStation
     });
   }
   async exchangeBook(bookDto: OrderBookDto): Promise<IBookOrderResult> {

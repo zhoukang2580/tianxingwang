@@ -18,6 +18,13 @@ export const routes: Routes = [
       )
   },
   {
+    path: "select-station",
+    loadChildren: () =>
+      import("./select-station/select-station.module").then(
+        m => m.SelectStationPageModule
+      )
+  },
+  {
     path: "train-book",
     canActivate: [ConfirmCredentialInfoGuard],
     loadChildren: () =>

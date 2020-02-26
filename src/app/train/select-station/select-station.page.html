@@ -1,26 +1,31 @@
 <ion-header>
-  <ion-buttons>
-    <app-back-button defaultHref=""></app-back-button>
-    <ion-searchbar debounce="300" animated placeholder="中文/拼音/首字母/城市" (ionChange)='doSearch()' [(ngModel)]='vmKeyword'
-      class="ion-margin-end">
-    </ion-searchbar>
-  </ion-buttons>
+  <ion-toolbar>
+    <form>
+      <ion-buttons>
+        <app-back-button>
+        </app-back-button>
+        <ion-searchbar name='searchbar' debounce="300" animated placeholder="中文/拼音/首字母/城市" (ionChange)='doSearch()'
+          [(ngModel)]='vmKeyword'>
+        </ion-searchbar>
+      </ion-buttons>
+    </form>
+  </ion-toolbar>
 </ion-header>
 <ion-content>
   <app-refresher slot="fixed" (ionRefresh)="doRefresh()">
   </app-refresher>
   <ng-container *ngIf='!isLoading else loadingTemp'>
-    <ng-container *ngIf='vmCities?.length else nomatchdata'>
+    <ng-container *ngIf='vmStations?.length else nomatchdata'>
       <ion-list>
-        <ion-item *ngFor='let s of vmCities' (click)='onSelect(s)'>
+        <ion-item *ngFor='let s of vmStations' (click)='onSelectStation(s)'>
           <ion-label>
             <ion-text style="position: relative;padding-left: 1em;" [color]="s?.Selected?'secondary':'dark'">
               <ion-icon *ngIf='s.IsHot' color='danger' style="font-size: 0.8rem;position: absolute;left: 0;top: 0;"
                 name="flame-outline"></ion-icon>
               {{s?.Name}}
             </ion-text>
-            <ion-text *ngIf='s.Pinyin' color='medium'>({{s.Pinyin}})</ion-text>
-            <ion-text *ngIf='s.Code' color='medium'>({{s.Code}})</ion-text>
+            <ion-text *ngIf='s.CityName as n' color='medium'>({{n}})</ion-text>
+            <ion-text *ngIf='s.Pinyin as n' color='medium'>({{n}})</ion-text>
           </ion-label>
         </ion-item>
       </ion-list>

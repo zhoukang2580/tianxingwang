@@ -4,7 +4,6 @@ import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { IonicModule } from "@ionic/angular";
-import { SelectTrainStationModalComponent } from "./select-stations/select-station.component";
 import { SelectAirportsModalComponent } from "./select-airports/select-airports.component";
 import { SearchApprovalComponent } from "./search-approval/search-approval.component";
 import { SearchCostcenterComponent } from "./search-costcenter/search-costcenter.component";
@@ -32,7 +31,6 @@ import { ShowStandardDetailsComponent } from './show-standard-details/show-stand
 
 @NgModule({
   declarations: [
-    SelectTrainStationModalComponent,
     FilterPassengersPolicyComponent,
     SelectAirportsModalComponent,
     SearchApprovalComponent,
@@ -80,20 +78,5 @@ import { ShowStandardDetailsComponent } from './show-standard-details/show-stand
     DaysCalendarComponent,
     WaitingCheckPayComponent
   ],
-  entryComponents: [
-    AddcontactsModalComponent,
-    FilterPassengersPolicyComponent,
-    SelectTrainStationModalComponent,
-    SelectAirportsModalComponent,
-    SearchApprovalComponent,
-    SearchCostcenterComponent,
-    SelectTravelNumberComponent,
-    OrganizationComponent,
-    CalendarComponent,
-    SelectCountryModalComponent,
-    DateSelectWheelPopoverComponent,
-    SelectDateComponent,
-    ShowStandardDetailsComponent
-  ]
 })
 export class TmcComponentsModule {}

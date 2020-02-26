@@ -24,7 +24,7 @@
 <ion-content>
   <ion-card class='ion-padding'>
     <ion-card-content>
-      <ion-segment (ionChange)="segmentChanged($event)" [value]="isSingle?'single':'roundtrip'" color='secondary'
+      <ion-segment (ionChange)="onSegmentChanged($event)" [value]="isSingle?'single':'roundtrip'" color='secondary'
         *ngIf='showReturnTrip' [disabled]='isDisabled||searchTrainModel?.isExchange'>
         <ion-segment-button value="single">
           <ion-label><strong>单程</strong></ion-label>
@@ -35,16 +35,23 @@
       </ion-segment>
       <ion-text color='danger' style="opacity: 0.7;font-size: 0.7rem;" *ngIf='searchTrainModel?.isExchange'>正在改签
       </ion-text>
-      <app-switch-station-comp [isExchange]='searchTrainModel?.isExchange' [vmFromCity]="vmFromCity"
-        (eCities)='onCitiesSelected($event)' [vmToCity]="vmToCity" [disabled]='isDisabled'>
-      </app-switch-station-comp>
+      <ion-buttons class="ion-justify-content-between">
+        <ion-button [disabled]='isDisabled||searchTrainModel?.isLocked||searchTrainModel?.isExchange'
+          (click)='onSelectCity(true)' color='{{isDisabled?"medium":"secondary"}}'>
+          {{searchTrainModel?.fromCity?.Nickname}}</ion-button>
+        <ion-button color='{{isDisabled?"medium":"secondary"}}' [disabled]='isDisabled||searchTrainModel?.isLocked||searchTrainModel?.isExchange'
+          (click)='onSwapCity()'>
+          <ion-icon name="swap-horizontal-outline" color='{{isDisabled?"medium":"secondary"}}'>
+          </ion-icon>
+        </ion-button>
+        <ion-button [disabled]='isDisabled||searchTrainModel?.isLocked' (click)='onSelectCity(false)'
+          color='{{isDisabled?"medium":"secondary"}}'>
+          {{searchTrainModel?.toCity?.Nickname}}</ion-button>
+      </ion-buttons>
       <section class="flight-date">
         <app-search-day-comp [day]='goDate' (click)="onSelecDate(true,false)"
           [disabled]='isDisabled&&!(searchTrainModel?.isExchange)'>
         </app-search-day-comp>
-        <!-- <div *ngIf="">{{ calcTotalFlyDays() }}天</div>   -->
-        <!-- <app-search-day-comp *ngIf="!isSingle" [day]='backDate' (click)="onSelecDate(false,true)">
-        </app-search-day-comp> -->
       </section>
       <ion-button class='ion-margin-top' style='width: 100%' (click)="searchTrain()"
         *ngIf='!(canAddPassengers&& selectedPassengers==0)' color="secondary" expand="block">

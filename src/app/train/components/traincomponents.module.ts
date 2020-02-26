@@ -5,7 +5,6 @@ import { AppComponentsModule } from "src/app/components/appcomponents.module";
 import { AppDirectivesModule } from "src/app/directives/directives.module";
 import { IonicModule } from "@ionic/angular";
 import { ReactiveFormsModule, FormsModule } from "@angular/forms";
-import { SwitchStationComponent } from "./switch-station/switch-station.component";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 import { SelectedTrainSegmentInfoComponent } from "./selected-train-segment-info/selected-train-segment-info.component";
 import { TrainListItemComponent } from "./train-list-item/train-list-item.component";
@@ -18,7 +17,6 @@ import { TrainTicketComponent } from './train-ticket/train-ticket.component';
 
 @NgModule({
   declarations: [
-    SwitchStationComponent,
     TrainListItemComponent,
     SelectedTrainSegmentInfoComponent,
     TrainscheduleComponent,
@@ -39,7 +37,6 @@ import { TrainTicketComponent } from './train-ticket/train-ticket.component';
     TmcComponentsModule
   ],
   exports: [
-    SwitchStationComponent,
     TrainListItemComponent,
     TrainscheduleComponent,
     TimeSpanComponent,

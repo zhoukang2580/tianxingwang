@@ -1,4 +1,4 @@
-import { OrderTrainTicketEntity } from './../../order/models/OrderTrainTicketEntity';
+import { OrderTrainTicketEntity } from "./../../order/models/OrderTrainTicketEntity";
 import { LanguageHelper } from "src/app/languageHelper";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { FlightHotelTrainType } from "./../../tmc/tmc.service";
@@ -14,7 +14,11 @@ import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import * as moment from "moment";
 import { Subscription, Observable, of, from } from "rxjs";
 import { DayModel } from "../../tmc/models/DayModel";
-import { ModalController, NavController, PopoverController } from "@ionic/angular";
+import {
+  ModalController,
+  NavController,
+  PopoverController
+} from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import { TripType } from "src/app/tmc/models/TripType";
@@ -23,7 +27,7 @@ import { CalendarService } from "src/app/tmc/calendar.service";
 import { PassengerBookInfo, TmcService } from "src/app/tmc/tmc.service";
 import { map } from "rxjs/operators";
 import { SelectedTrainSegmentInfoComponent } from "../components/selected-train-segment-info/selected-train-segment-info.component";
-import { ShowStandardDetailsComponent } from 'src/app/tmc/components/show-standard-details/show-standard-details.component';
+import { ShowStandardDetailsComponent } from "src/app/tmc/components/show-standard-details/show-standard-details.component";
 @Component({
   selector: "app-search-train",
   templateUrl: "./search-train.page.html",
@@ -32,20 +36,13 @@ import { ShowStandardDetailsComponent } from 'src/app/tmc/components/show-standa
 export class SearchTrainPage
   implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate {
   private isCanLeave = true;
-  toggleCities = false; // 没有切换城市顺序
-  rotateIcon = false;
   isSingle = true;
   goDate: DayModel;
   isShowSelectedInfos$ = of(false);
   canAddPassengers = false;
-  // selectDaySubscription = Subscription.EMPTY;
-  searchConditionSubscription = Subscription.EMPTY;
+  subscriptions: Subscription[] = [];
   searchTrainModel: SearchTrainModel = new SearchTrainModel();
   isMoving: boolean;
-  vmFromCity: TrafficlineEntity; // 界面上显示的城市
-  vmToCity: TrafficlineEntity; // 界面上显示的城市
-  fromCity: TrafficlineEntity; // 城市切换后，真实的出发城市
-  toCity: TrafficlineEntity; // 切换后，真实的目的城市
   showReturnTrip = false;
   isDisabled = false;
   isSelf = false;
@@ -63,11 +60,7 @@ export class SearchTrainPage
     private calendarService: CalendarService,
     private modalCtrl: ModalController,
     private popoverCtrl: PopoverController
-  ) { }
-
-  back() {
-    this.router.navigate([""]);
-  }
+  ) {}
   async onShowSelectedBookInfos() {
     const m = await this.modalCtrl.create({
       component: SelectedTrainSegmentInfoComponent
@@ -77,7 +70,7 @@ export class SearchTrainPage
   private onRoundTrip(single: boolean) {
     // console.log("onRoundTrip isSingle", single);
     this.isSingle = single;
-    this.trainService.setSearchTrainModel({
+    this.trainService.setSearchTrainModelSource({
       ...this.trainService.getSearchTrainModel(),
       isRoundTrip: !this.isSingle
     });
@@ -88,7 +81,7 @@ export class SearchTrainPage
   ngAfterViewInit(): void {
     console.log("ngAfterViewInit");
   }
-  segmentChanged(evt: CustomEvent) {
+  onSegmentChanged(evt: CustomEvent) {
     // console.log("evt.detail.value", evt.detail.value);
     this.onRoundTrip(evt.detail.value == "single");
   }
@@ -100,7 +93,7 @@ export class SearchTrainPage
     if (!this.isSelf) {
       return;
     }
-    let s = await this.staffService.getStaff()
+    let s = await this.staffService.getStaff();
     if (!s) {
       s = await this.staffService.getStaff(true);
     }
@@ -124,7 +117,7 @@ export class SearchTrainPage
       );
     this.apiService.showLoadingView();
     this.apiService.hideLoadingView();
-    this.searchConditionSubscription = this.trainService
+    const subscription = this.trainService
       .getSearchTrainModelSource()
       .subscribe(async s => {
         console.log("search-train", s);
@@ -132,14 +125,11 @@ export class SearchTrainPage
         if (this.searchTrainModel) {
           this.searchTrainModel.isExchange = s.isExchange;
           this.isDisabled = s.isLocked;
-          this.fromCity = this.vmFromCity = s.fromCity || this.fromCity;
-          this.toCity = this.vmToCity = s.toCity || this.toCity;
           this.goDate = this.calendarService.generateDayModelByDate(s.Date);
           this.isSingle = !s.isRoundTrip;
         }
       });
-    await this.initTrainCities();
-    this.route.queryParamMap.subscribe(async _ => {
+    const sub = this.route.queryParamMap.subscribe(async _ => {
       this.canAddPassengers = !(await this.staffService.isSelfBookType());
       const searchTrainModel = this.trainService.getSearchTrainModel();
       this.searchTrainModel.isExchange =
@@ -161,23 +151,50 @@ export class SearchTrainPage
         .getBookInfos()
         .filter(it => it.bookInfo).length;
     });
+    this.subscriptions.push(sub);
+    this.subscriptions.push(subscription);
   }
-
 
   onSelectPassenger() {
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
       queryParams: { forType: FlightHotelTrainType.Train }
     });
   }
-
+  onSelectCity(isFrom = true) {
+    if (
+      this.isDisabled ||
+      (this.searchTrainModel && this.searchTrainModel.isLocked)
+    ) {
+      return;
+    }
+    if (isFrom) {
+      if (this.searchTrainModel && this.searchTrainModel.isExchange) {
+        return;
+      }
+    }
+    this.trainService.onSelectCity(isFrom);
+  }
+  onSwapCity() {
+    if (
+      this.isDisabled ||
+      (this.searchTrainModel &&
+        (this.searchTrainModel.isExchange || this.searchTrainModel.isLocked))
+    ) {
+      return;
+    }
+    this.trainService.onSwapCity();
+  }
   ngOnDestroy(): void {
     console.log("on destroyed");
-    this.searchConditionSubscription.unsubscribe();
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
   async initTrainDays() {
     const infos = this.trainService.getBookInfos();
     const exchangeInfo = infos.find(it => !!it.exchangeInfo);
-    const ticket = exchangeInfo && exchangeInfo.exchangeInfo && exchangeInfo.exchangeInfo.ticket as OrderTrainTicketEntity;
+    const ticket =
+      exchangeInfo &&
+      exchangeInfo.exchangeInfo &&
+      (exchangeInfo.exchangeInfo.ticket as OrderTrainTicketEntity);
     const trip = ticket && ticket.OrderTrainTrips && ticket.OrderTrainTrips[0];
     const identity = await this.identityService.getIdentityAsync();
     let lastSelectedGoDate =
@@ -190,80 +207,40 @@ export class SearchTrainPage
     const now = moment().format("YYYY-MM-DD");
     lastSelectedGoDate =
       lastSelectedGoDate &&
-        this.calendarService.generateDayModelByDate(lastSelectedGoDate)
-          .timeStamp >=
+      this.calendarService.generateDayModelByDate(lastSelectedGoDate)
+        .timeStamp >=
         this.calendarService.generateDayModelByDate(nextDate).timeStamp
         ? lastSelectedGoDate
         : nextDate;
     if (trip) {
-      lastSelectedGoDate = +moment(trip.StartTime) >= +moment() ? moment(trip.StartTime).format("YYYY-MM-DD") : now;
+      lastSelectedGoDate =
+        +moment(trip.StartTime) >= +moment()
+          ? moment(trip.StartTime).format("YYYY-MM-DD")
+          : now;
     }
-    this.trainService.setSearchTrainModel({
+    this.trainService.setSearchTrainModelSource({
       ...this.trainService.getSearchTrainModel(),
       Date: lastSelectedGoDate
     });
   }
-  async initTrainCities() {
-    if (
-      this.fromCity &&
-      this.fromCity.Code &&
-      this.toCity &&
-      this.toCity.Code
-    ) {
-      return;
-    }
-    this.fromCity = this.vmFromCity = {} as any;
-    this.toCity = this.vmToCity = {} as any;
-    this.fromCity.Nickname = this.fromCity.CityName = this.vmFromCity.CityName =
-      "北京";
-    this.toCity.Nickname = this.toCity.CityName = this.vmToCity.CityName =
-      "上海";
-    this.vmFromCity.Code = this.fromCity.Code = "BJP";
-    this.vmToCity.Code = this.toCity.Code = "SHH";
-    const lastFromCity = await this.storage.get("fromTrainStation");
-    const lastToCity = await this.storage.get("toTrainStation");
-    if (!lastFromCity || !lastToCity) {
-      const stations = await this.trainService.getStationsAsync();
-      if (stations && stations.length) {
-        const vmFromCity = stations.find(
-          c => c.Code.toUpperCase() == this.fromCity.Code
-        );
-        const vmToCity = stations.find(
-          c => c.Code.toUpperCase() == this.toCity.Code
-        );
-        if (vmFromCity && vmToCity) {
-          this.fromCity = this.vmFromCity = vmFromCity;
-          this.toCity = this.vmToCity = vmToCity;
-        }
-      }
-    } else {
-      this.fromCity = this.vmFromCity = lastFromCity;
-      this.toCity = this.vmToCity = lastToCity;
-    }
-  }
+
   async searchTrain() {
+    const s = this.trainService.getSearchTrainModel();
     console.log(
-      `出发城市" + 【${this.fromCity && this.fromCity.Nickname}】`,
-      `目的城市【${this.toCity && this.toCity.Nickname}】`
+      `出发城市" + 【${s.fromCity.Nickname}】`,
+      `目的城市【${s.toCity.Nickname}】`
     );
     console.log(`启程日期${this.goDate.date}`);
-    this.storage.set("fromTrainStation", this.fromCity);
-    this.storage.set("toTrainStation", this.toCity);
-    const s = this.searchTrainModel || new SearchTrainModel();
+    this.trainService.cacheLastations(s.fromCity, s.toCity);
     s.tripType = this.searchTrainModel.tripType || TripType.departureTrip;
     s.Date = this.goDate.date;
-    s.FromStation = this.fromCity.Code;
-    s.ToStation = this.toCity.Code;
-    s.isRoundTrip = !this.isSingle;
-    s.fromCity = this.fromCity;
-    s.toCity = this.toCity;
     if (!s.isRoundTrip) {
       s.tripType = TripType.departureTrip;
     }
     console.log("search-train", s);
     this.isCanLeave = true;
-    this.trainService.setSearchTrainModel(s);
-    this.router.navigate([AppHelper.getRoutePath("train-list")]).then(_ => { });
+    this.trainService.setSearchTrainModelSource(s);
+    this.router.navigate([AppHelper.getRoutePath("train-list")]).then(_ => {});
     const identity = await this.identityService.getIdentityAsync();
     if (identity) {
       await this.storage.set(
@@ -289,13 +266,13 @@ export class SearchTrainPage
         // if (isBack) {
         //   this.searchTrainModel.BackDate = days[0].date;
         // }
-        this.trainService.setSearchTrainModel(this.searchTrainModel);
+        this.trainService.setSearchTrainModelSource(this.searchTrainModel);
       }
     }
   }
   onCitiesSelected(c: { vmTo: TrafficlineEntity; vmFrom: TrafficlineEntity }) {
     if (c) {
-      this.trainService.setSearchTrainModel({
+      this.trainService.setSearchTrainModelSource({
         ...this.trainService.getSearchTrainModel(),
         fromCity: c.vmFrom,
         toCity: c.vmTo
@@ -317,7 +294,7 @@ export class SearchTrainPage
         LanguageHelper.getCancelTip()
       );
       if (ok) {
-        this.trainService.setSearchTrainModel({
+        this.trainService.setSearchTrainModelSource({
           ...this.trainService.getSearchTrainModel(),
           isExchange: false,
           isLocked: false

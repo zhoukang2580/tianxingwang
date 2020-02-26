@@ -5,7 +5,6 @@ import { ProductItemType, ProductItem } from "../../../tmc/models/ProductItems";
 import * as moment from "moment";
 import { SearchTicketConditionModel } from "src/app/tmc/models/SearchTicketConditionModel";
 import { SelectAirportsModalComponent } from "src/app/tmc/components/select-airports/select-airports.component";
-import { SelectTrainStationModalComponent } from "src/app/tmc/components/select-stations/select-station.component";
 @Component({
   selector: "app-search-ticket-modal",
   templateUrl: "./search-ticket-modal.component.html",
@@ -39,28 +38,6 @@ export class SearchTicketModalComponent implements OnInit {
     const m = await this.modalCtrl.getTop();
     if (m) {
       m.dismiss(this.condition).catch(_ => null);
-    }
-  }
-  async searchCities(isFromCity = true) {
-    if (this.type == ProductItemType.plane) {
-      this.searchAirports(isFromCity);
-    }
-    if (this.type == ProductItemType.train) {
-      this.searchTrainStations(isFromCity);
-    }
-  }
-  private async searchTrainStations(isFromCity = true) {
-    const m = await this.modalCtrl.create({
-      component: SelectTrainStationModalComponent
-    });
-    await m.present();
-    const result = await m.onDidDismiss();
-    if (result && result.data) {
-      if (isFromCity) {
-        this.condition.fromCityName = result.data;
-      } else {
-        this.condition.toCityName = result.data;
-      }
     }
   }
   search() {
