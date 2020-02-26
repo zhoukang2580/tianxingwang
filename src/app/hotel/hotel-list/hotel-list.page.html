@@ -17,8 +17,8 @@
   <app-refresher slot='fixed' (ionRefresh)='doRefresh(false)' [disabled]='filterTab&&filterTab.isActive'>
     <ion-refresher-content>正在加载...</ion-refresher-content>
   </app-refresher>
-  <ng-container *ngIf='hotelDayPrices?.length else fakeList'>
-    <ul>
+  <ng-container *ngIf='!isLoadingHotels else fakeList'>
+    <ul *ngIf='hotelDayPrices?.length  else noMoreData'>
       <li *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
         <app-hotel-list-item [item]='item' [config]='config'></app-hotel-list-item>
       </li>
