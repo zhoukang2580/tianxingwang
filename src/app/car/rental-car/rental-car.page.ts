@@ -10,13 +10,14 @@ import { NavController, IonInput } from "@ionic/angular";
 import { CarService } from "./../car.service";
 import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
 import { RequestEntity } from "src/app/services/api/Request.entity";
-import { Geolocation } from "@ionic-native/geolocation/ngx";
+// import { Geolocation } from "@ionic-native/geolocation/ngx";
+import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 @Component({
   selector: "app-rental-car",
   templateUrl: "./rental-car.page.html",
   styleUrls: ["./rental-car.page.scss"],
   animations: [flyInOut],
-  providers: [Geolocation]
+  providers: [AndroidPermissions]
 })
 export class RentalCarPage implements OnInit, OnDestroy {
   @ViewChild("mobileInput") mobileInput: IonInput;
@@ -41,8 +42,8 @@ export class RentalCarPage implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private fileService: FileHelperService,
-    private geolocation: Geolocation
-  ) {}
+    private androidPermissions: AndroidPermissions
+  ) { }
   back() {
     this.navCtrl.pop();
   }
@@ -110,13 +111,20 @@ export class RentalCarPage implements OnInit, OnDestroy {
         this.checkIfMobileVerified();
       });
   }
-  private async onGeo() {
+  private async checkPermission() {
+    let ok = true;
     try {
-      const geo = await this.geolocation.getCurrentPosition();
+      ok = await this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION).then(r => r.hasPermission).catch(() => false) ||
+        await this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.ACCESS_FINE_LOCATION).then(r => r.hasPermission).catch(() => false)
+      if (!ok) {
+        await this.androidPermissions.requestPermissions([this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION, this.androidPermissions.PERMISSION.ACCESS_FINE_LOCATION])
+      }
       // AppHelper.alert((geo && geo.coords) || "无定位信息");
     } catch (e) {
       // AppHelper.alert(e);
+      ok = false;
     }
+    return ok;
   }
   validateCode() {
     if (!this.verifySmsCode) {
@@ -186,7 +194,7 @@ export class RentalCarPage implements OnInit, OnDestroy {
     // }
     if (url) {
       if (AppHelper.isApp()) {
-        await this.onGeo();
+        await this.checkPermission();
         this.router.navigate(["open-url"], {
           queryParams: {
             url,

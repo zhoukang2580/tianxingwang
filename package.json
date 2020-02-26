@@ -24,6 +24,7 @@
     "@capacitor/android": "^1.5.0",
     "@capacitor/cli": "^1.5.0",
     "@capacitor/core": "^1.5.0",
+    "@ionic-native/android-permissions": "^5.21.6",
     "@ionic-native/app-version": "^5.21.4",
     "@ionic-native/barcode-scanner": "^5.21.5",
     "@ionic-native/core": "^5.21.5",
@@ -41,6 +42,7 @@
     "cordova-hcp-plugin": "file:cordova-hcp-plugin",
     "cordova-ios": "^5.1.1",
     "cordova-plugin-add-swift-support": "2.0.2",
+    "cordova-plugin-android-permissions": "^1.0.2",
     "cordova-plugin-app-version": "0.1.9",
     "cordova-plugin-console": "1.1.0",
     "cordova-plugin-device": "^2.0.2",
@@ -129,7 +131,8 @@
       },
       "cordova-hcp-plugin": {},
       "cordova-plugin-geolocation": {},
-      "cordova-plugin-inappbrowser": {}
+      "cordova-plugin-inappbrowser": {},
+      "cordova-plugin-android-permissions": {}
     },
     "platforms": [
       "ios",
