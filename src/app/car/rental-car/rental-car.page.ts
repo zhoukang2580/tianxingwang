@@ -188,10 +188,7 @@ export class RentalCarPage implements OnInit, OnDestroy {
     }
     const url = await this.carService.verifyStaff({ Mobile: this.mobile });
 
-    // if (url) {
-    //   await this.router.navigate([AppHelper.getRoutePath("open-rental-car")]);
-    //   this.carService.setOpenUrlSource(url);
-    // }
+
     if (url) {
       if (AppHelper.isApp()) {
         await this.checkPermission();
@@ -204,7 +201,28 @@ export class RentalCarPage implements OnInit, OnDestroy {
           }
         });
       } else {
-        window.location.href = url;
+        this.carService.setOpenUrlSource(url);
+        if (window.navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(() => {
+            this.router.navigate([AppHelper.getRoutePath("open-rental-car")]);
+          }, error => {
+            if (error.code) {
+              //          0  :  不包括其他错误编号中的错误
+              // ​		     1  :  用户拒绝浏览器获取位置信息
+              // ​		     2  :  尝试获取用户信息，但失败了
+              // ​		     3  :   设置了timeout值，获取位置超时了
+              AppHelper.alert("无法启用定位，请检查手机浏览器设置");
+            }
+            this.router.navigate([AppHelper.getRoutePath("open-rental-car")]);
+          }, {
+            enableHighAccuracy: false,
+            maximumAge: 1000 * 60,
+            timeout: 3 * 1000
+          }
+          );
+        } else {
+          window.location.href = url;
+        }
       }
     }
   }
