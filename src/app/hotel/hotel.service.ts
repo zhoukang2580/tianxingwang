@@ -5,7 +5,14 @@ import { DayModel } from "src/app/tmc/models/DayModel";
 import { TripType } from "src/app/tmc/models/TripType";
 import { HotelEntity } from "./models/HotelEntity";
 import { IdentityService } from "./../services/identity/identity.service";
-import { BehaviorSubject, throwError, from, of, Observable } from "rxjs";
+import {
+  BehaviorSubject,
+  throwError,
+  from,
+  of,
+  Observable,
+  Subscription
+} from "rxjs";
 import { Injectable, EventEmitter } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
 import {
@@ -28,7 +35,7 @@ import { RequestEntity } from "../services/api/Request.entity";
 import { Storage } from "@ionic/storage";
 import * as jsPy from "js-pinyin";
 import * as moment from "moment";
-import { filter, map, switchMap, delay } from "rxjs/operators";
+import { filter, map, switchMap, delay, finalize } from "rxjs/operators";
 import { HotelQueryEntity } from "./models/HotelQueryEntity";
 import { HotelResultEntity } from "./models/HotelResultEntity";
 import { HotelModel } from "./models/HotelModel";
@@ -61,6 +68,7 @@ export interface LocalHotelCityCache {
 })
 export class HotelService {
   private fetchPassengerCredentials: { promise: Promise<any> };
+  private hotelConditionSubscription = Subscription.EMPTY;
   private bookInfos: PassengerBookInfo<IHotelInfo>[];
   private bookInfoSource: Subject<PassengerBookInfo<IHotelInfo>[]>;
   private searchHotelModelSource: Subject<SearchHotelModel>;
@@ -478,22 +486,37 @@ export class HotelService {
     return this.localHotelCities;
   }
   private async getHotelConditions(cityCode: string) {
-    const req = new RequestEntity();
-    cityCode =
-      cityCode ||
-      (this.getSearchHotelModel().destinationCity &&
-        this.getSearchHotelModel().destinationCity.Code);
-    req.Method = `TmcApiHotelUrl-Condition-Gets`;
-    req.Data = {
-      cityCode
-    };
-    req.IsShowLoading = true;
-    const result = await this.apiService
-      .getPromiseData<HotelConditionModel>(req)
-      .catch(_ => {
-        return null;
-      });
-    return result;
+    this.hotelConditionSubscription.unsubscribe();
+    return new Promise<HotelConditionModel>(resolve => {
+      const req = new RequestEntity();
+      cityCode =
+        cityCode ||
+        (this.getSearchHotelModel().destinationCity &&
+          this.getSearchHotelModel().destinationCity.Code);
+      req.Method = `TmcApiHotelUrl-Condition-Gets`;
+      req.Data = {
+        cityCode
+      };
+      req.IsShowLoading = true;
+      this.hotelConditionSubscription = this.apiService
+        .getResponse<HotelConditionModel>(req)
+        .pipe(
+          finalize(() => {
+            setTimeout(() => {
+              this.hotelConditionSubscription.unsubscribe();
+            }, 200);
+          })
+        )
+        .subscribe(
+          res => {
+            const result = res && res.Data;
+            resolve(result);
+          },
+          () => {
+            resolve(null);
+          }
+        );
+    });
   }
   private getFirstLetter(name: string) {
     const pyFl = `${jsPy.getFullChars(name)}`.charAt(0);
