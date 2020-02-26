@@ -53,7 +53,7 @@ export class SelectTrainStationPage
   isSelectFromStation: "from_station" | "to_station";
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
-  @ViewChild(IonInfiniteScroll,{static:true}) scroller: IonInfiniteScroll;
+  @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
   @ViewChild(IonContent) ionContent: IonContent;
   @ViewChild(IonSearchbar) searchbar: IonSearchbar;
   private subscription = Subscription.EMPTY;
@@ -102,7 +102,7 @@ export class SelectTrainStationPage
   }
   private cacheCity(station: TrafficlineEntity) {
     this.histories = this.histories || [];
-    if(!this.histories.find(it=>it.Code==station.Code)){
+    if (!this.histories.find(it => it.Code == station.Code)) {
       this.histories.unshift(station);
     }
     this.histories = this.histories.slice(0, 20).map(s => {
@@ -121,6 +121,7 @@ export class SelectTrainStationPage
     this.isLoading = false;
   }
   async loadMore(kw: string = "") {
+    kw = kw || this.vmKeyword || "";
     if (!this.allStations || !this.allStations.length) {
       await this.initAllStations();
     }
@@ -168,18 +169,19 @@ export class SelectTrainStationPage
     this.isLoading = false;
   }
   onShowHot() {
-    this.scroller.disabled=true;
+    this.scroller.disabled = true;
     if (this.allStations) {
       this.vmStations = this.allStations.filter(it => it.IsHot);
     }
   }
   onShowHistory() {
-    this.scroller.disabled=true;
+    this.scroller.disabled = true;
     this.vmStations = this.histories || [];
   }
   private filterCities(kw: string = "") {
     let result = this.allStations || [];
     if (kw) {
+      kw = kw.trim().toLowerCase();
       const keys = ["Name", "Nickname", "CityName", "Pinyin"];
       result = result.filter(s => {
         return (
