@@ -113,9 +113,9 @@ export class RentalCarPage implements OnInit, OnDestroy {
   private async onGeo() {
     try {
       const geo = await this.geolocation.getCurrentPosition();
-      AppHelper.alert((geo && geo.coords) || "无定位信息");
+      // AppHelper.alert((geo && geo.coords) || "无定位信息");
     } catch (e) {
-      AppHelper.alert(e);
+      // AppHelper.alert(e);
     }
   }
   validateCode() {
@@ -184,7 +184,7 @@ export class RentalCarPage implements OnInit, OnDestroy {
     //   await this.router.navigate([AppHelper.getRoutePath("open-rental-car")]);
     //   this.carService.setOpenUrlSource(url);
     // }
-    // await this.onGeo();
+    await this.onGeo();
     if (url) {
       if (AppHelper.isApp()) {
         this.router.navigate(["open-url"], {
