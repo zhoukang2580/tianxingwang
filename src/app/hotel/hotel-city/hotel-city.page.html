@@ -32,7 +32,7 @@
   <ng-template #loadingTemp>
     正在加载...
   </ng-template>
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf='!isLoading'>
     <ion-fab-button color='danger' size='small' (click)='onShowHot()'>
       <ion-text color='light'>热门</ion-text>
     </ion-fab-button>

@@ -1,7 +1,12 @@
 import { RefresherComponent } from "src/app/components/refresher";
 import { ActivatedRoute } from "@angular/router";
 import { flyInOut } from "./../../animations/flyInOut";
-import { NavController, IonInfiniteScroll, IonRefresher } from "@ionic/angular";
+import {
+  NavController,
+  IonInfiniteScroll,
+  IonRefresher,
+  IonSearchbar
+} from "@ionic/angular";
 import {
   distinctUntilChanged,
   switchMap,
@@ -12,18 +17,25 @@ import {
   map
 } from "rxjs/operators";
 import { Subscription, of, Observable } from "rxjs";
-import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  OnDestroy,
+  AfterViewInit
+} from "@angular/core";
 import { HotelService } from "../hotel.service";
-import { ISearchTextValue } from 'src/app/hotel-international/international-hotel.service';
+import { ISearchTextValue } from "src/app/hotel-international/international-hotel.service";
 @Component({
   selector: "app-search-hotel-byText",
   templateUrl: "./combox-search-hotel.page.html",
   styleUrls: ["./combox-search-hotel.page.scss"],
   animations: [flyInOut]
 })
-export class ComboxSearchHotelPage implements OnInit, OnDestroy {
+export class ComboxSearchHotelPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(RefresherComponent) refresh: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
+  @ViewChild(IonSearchbar) searchbar: IonSearchbar;
   private pageIndex = 0;
   private subscription = Subscription.EMPTY;
   private subscription2 = Subscription.EMPTY;
@@ -38,6 +50,11 @@ export class ComboxSearchHotelPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.subscription2 = this.route.queryParamMap.subscribe(() => {
       this.doRefresh();
+    });
+  }
+  ngAfterViewInit() {
+    requestAnimationFrame(() => {
+      this.searchbar.setFocus();
     });
   }
   ngOnDestroy() {

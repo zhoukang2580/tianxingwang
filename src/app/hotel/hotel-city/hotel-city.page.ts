@@ -50,11 +50,7 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     private storage: Storage,
     route: ActivatedRoute
   ) {
-    this.subscriptions.push(
-      route.queryParamMap.subscribe(_ => {
-        this.doRefresh();
-      })
-    );
+    this.subscriptions.push(route.queryParamMap.subscribe(_ => {}));
   }
   back() {
     this.backBtn.backToPrePage();
@@ -165,7 +161,10 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     this.subscriptions.push(sub);
-    this.initCitites();
+    this.initCitites().finally(() => {
+      this.isLoading = true;
+      this.doRefresh();
+    });
   }
   private async initCitites() {
     try {
@@ -234,7 +233,7 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async doSearch() {
-    let kw = this.vmKeyword.trim();
+    const kw = (this.vmKeyword || "").trim();
     if (!kw) {
       this.vmCities = this.allCities.slice(0, this.pageSize);
     } else {

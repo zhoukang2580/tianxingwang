@@ -42,7 +42,8 @@ import {
   DomController,
   IonInfiniteScroll,
   ModalController,
-  IonRefresher
+  IonRefresher,
+  NavController
 } from "@ionic/angular";
 import { Subscription, Observable, fromEvent, merge } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
@@ -125,6 +126,7 @@ export class HotelListPage
     private router: Router,
     private route: ActivatedRoute,
     private tmcService: TmcService,
+    private navCtrl: NavController,
     private configService: ConfigService,
     plt: Platform,
     private modalCtrl: ModalController
@@ -226,7 +228,7 @@ export class HotelListPage
     if (this.loadDataSub) {
       this.loadDataSub.unsubscribe();
     }
-    this.isLoadingHotels = true;
+    this.isLoadingHotels = this.hotelQueryModel.PageIndex < 1;
     this.loadDataSub = this.hotelService
       .getHotelList(this.hotelQueryModel)
       .pipe(
@@ -304,7 +306,13 @@ export class HotelListPage
     this.router.navigate([AppHelper.getRoutePath("hotel-detail")]);
   }
   onCityClick() {
-    this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
+    this.isLoadingHotels = true;
+    requestAnimationFrame(() => {
+      // this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
+    });
+    this.navCtrl.navigateForward(AppHelper.getRoutePath("hotel-city"), {
+      animated: false
+    });
   }
   onSearchByText() {
     this.router.navigate([AppHelper.getRoutePath("combox-search-hotel")]);
