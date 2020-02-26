@@ -343,10 +343,24 @@ public class Hcp extends CordovaPlugin {
     }
 
     private void loadUrlIntoView(String path) {
-        cordova.getActivity().runOnUiThread(() -> {
-            webView.loadUrlIntoView(path, false);
-            webView.clearHistory();
+
+        webView.postMessage("splashscreen", "show");
+        webView.postMessage("splashscreen", "hide");
+        cordova.getThreadPool().execute(()->{
+            while (!canLoadIntoView){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            cordova.getActivity().runOnUiThread(() -> {
+                webView.getEngine().loadUrl(path,true);
+//                webView.loadUrlIntoView(path, false);
+//                webView.clearHistory();
+            });
         });
+
     }
 
     private void openHcpPage(String path, CallbackContext callbackContext) {
