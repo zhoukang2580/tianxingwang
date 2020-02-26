@@ -1,7 +1,7 @@
 import { FileHelperService } from 'src/app/services/file-helper.service';
 import { AppHelper } from "./../../appHelper";
 import { HttpClient } from "@angular/common/http";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { environment } from "src/environments/environment";
 import { CmsService, Notice } from "./../cms.service";
 import { DomSanitizer } from "@angular/platform-browser";
@@ -39,7 +39,7 @@ export class ViewDetailPage implements OnInit, AfterContentChecked, OnDestroy {
     private cdRef: ChangeDetectorRef,
     private http: HttpClient,
     private plt: Platform,
-    private fileService: FileHelperService
+    private router: Router
   ) { }
   back(evt?: CustomEvent) {
     if (evt) {
@@ -158,15 +158,14 @@ export class ViewDetailPage implements OnInit, AfterContentChecked, OnDestroy {
                   window.open(url, "_blank");
                 }
               } else {
-                if (this.plt.is("ios")) {
-                  if(this.fileService.app&&this.fileService.app.loadUrl){
-                    this.fileService.app.loadUrl(url);
-                  }else{
-                    window.open(url, "_blank");
+                this.router.navigate(["open-url"], {
+                  queryParams: {
+                    url,
+                    title: this.notice.Title,
+                    isOpenInAppBrowser: AppHelper.isApp(),
+                    isHideTitle:true// AppHelper.isDingtalkH5() || AppHelper.isWechatH5()
                   }
-                } else {
-                  this.fileService.app.loadUrl(url, { openexternal: true });
-                }
+                });
               }
             }
           });
