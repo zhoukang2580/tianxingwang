@@ -47,13 +47,14 @@ public class Hcp extends CordovaPlugin {
     CallbackContext mMallbackContext;
     private boolean destroyed;
     private static boolean canLoadIntoView = false;
+    private  String HcpStartPageUrl;
 
     @Override
     public void pluginInitialize() {
         preferences = cordova.getActivity().getPreferences(0);
         ionicWebViewEngine = (IonicWebViewEngine) webView.getEngine();
-        changeBasePath();
-        loadHcpPage();
+//        changeBasePath();
+//        loadHcpPage();
     }
 
     private void changeBasePath() {
@@ -69,6 +70,12 @@ public class Hcp extends CordovaPlugin {
             }
             Log.d(TAG, "initialize getServerBasePath=" + (ionicWebViewEngine != null ? ionicWebViewEngine.getServerBasePath() : null));
         });
+    }
+
+    @Override
+    public Boolean shouldAllowRequest(String url) {
+
+        return super.shouldAllowRequest(url);
     }
 
     @Override
@@ -283,15 +290,14 @@ public class Hcp extends CordovaPlugin {
                     Log.d(TAG, "curversion subVersion" + subVersion);
                 }
                 Log.d(TAG, "curVersion: " + subVersion);
-                Log.d(TAG, "热更插件加载页面 " + path + " webView url " + webView.getUrl());
                 String webviewUrl = webView.getUrl();
+                Log.d(TAG, "热更插件加载页面 " + path + " webView url " + webviewUrl);
                 if (path != null) {
                     if (checkInstallNewVersionApk()) {
                         return;
                     }
                     if (destroyed || null == webviewUrl || !webviewUrl.contains("_app_file_")) {
                         Log.d(TAG, "webview加载热更URL=" + path + " 加载前URL=" + webviewUrl);
-                        webView.clearHistory();
                         loadUrlIntoView(path);
                     }
                 }
@@ -343,23 +349,23 @@ public class Hcp extends CordovaPlugin {
     }
 
     private void loadUrlIntoView(String path) {
-
-        webView.postMessage("splashscreen", "show");
-        webView.postMessage("splashscreen", "hide");
-        cordova.getThreadPool().execute(()->{
-            while (!canLoadIntoView){
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            cordova.getActivity().runOnUiThread(() -> {
-                webView.getEngine().loadUrl(path,true);
-//                webView.loadUrlIntoView(path, false);
-//                webView.clearHistory();
-            });
+        Log.d(TAG,"开始加载热更页面，path = "+path);
+        if(TextUtils.isEmpty(path))return;
+        HcpStartPageUrl=path;
+        cordova.getActivity().runOnUiThread(() -> {
+            webView.getEngine().loadUrl(path,true);
         });
+//        canLoadIntoView=false;
+//        cordova.getThreadPool().execute(()->{
+//            while (!canLoadIntoView){
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//        });
 
     }
 

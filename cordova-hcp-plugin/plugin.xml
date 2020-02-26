@@ -11,7 +11,7 @@
     <config-file target="res/xml/config.xml" parent="/*">
       <feature name="Hcp">
         <param name="android-package" value="com.beeant.plugin.hcp.Hcp"/>
-        <!-- <param name="onload" value="true" /> 会和splashscreen插件冲突，解决方案是，在js启动时候，deviceready事件后立即加载新页面 -->
+        <param name="onload" value="true" />         
       </feature>
     </config-file>
     <config-file target="AndroidManifest.xml" parent="/manifest">
