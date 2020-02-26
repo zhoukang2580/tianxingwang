@@ -173,10 +173,12 @@ export class SelectTrainStationPage
     if (this.allStations) {
       this.vmStations = this.allStations.filter(it => it.IsHot);
     }
+    this.scrollTop();
   }
   onShowHistory() {
     this.scroller.disabled = true;
     this.vmStations = this.histories || [];
+    this.scrollTop();
   }
   private filterCities(kw: string = "") {
     let result = this.allStations || [];
