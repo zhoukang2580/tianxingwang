@@ -138,9 +138,20 @@ export class ViewDetailPage implements OnInit, AfterContentChecked, OnDestroy {
       this.http.get(url, { responseType: "arraybuffer" }).subscribe(
         res => {
           console.log(res);
-          this.notice.Url = this.sanitizer.bypassSecurityTrustResourceUrl(
-            url
-          ) as string;
+          if (AppHelper.isApp()) {
+            this.router.navigate(["open-url"], {
+              queryParams: {
+                url,
+                title: "用车",
+                isOpenInAppBrowser: AppHelper.isApp(),
+                isHideTitle: AppHelper.isDingtalkH5() || AppHelper.isWechatH5()
+              }
+            });
+          } else {
+            this.notice.Url = this.sanitizer.bypassSecurityTrustResourceUrl(
+              url
+            ) as string;
+          }
         },
         e => {
           console.error(e);
@@ -163,7 +174,7 @@ export class ViewDetailPage implements OnInit, AfterContentChecked, OnDestroy {
                     url,
                     title: this.notice.Title,
                     isOpenInAppBrowser: AppHelper.isApp(),
-                    isHideTitle:true// AppHelper.isDingtalkH5() || AppHelper.isWechatH5()
+                    isHideTitle: true// AppHelper.isDingtalkH5() || AppHelper.isWechatH5()
                   }
                 });
               }
