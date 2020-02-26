@@ -184,9 +184,9 @@ export class RentalCarPage implements OnInit, OnDestroy {
     //   await this.router.navigate([AppHelper.getRoutePath("open-rental-car")]);
     //   this.carService.setOpenUrlSource(url);
     // }
-    await this.onGeo();
     if (url) {
       if (AppHelper.isApp()) {
+        await this.onGeo();
         this.router.navigate(["open-url"], {
           queryParams: {
             url,

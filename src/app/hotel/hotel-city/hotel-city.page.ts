@@ -19,7 +19,8 @@ import {
   DomController,
   IonList,
   IonHeader,
-  IonInfiniteScroll
+  IonInfiniteScroll,
+  IonSearchbar
 } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { Subscription } from "rxjs";
@@ -40,6 +41,7 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
   vmKeyword = "";
   isLoading = false;
   filteredTotalCount = 0;
+  @ViewChild(IonSearchbar) searchbar: IonSearchbar;
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
@@ -131,7 +133,7 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
           (s.CityName && s.CityName.toLowerCase().includes(kw)) ||
           (s.Pinyin && s.Pinyin.toLowerCase().includes(kw))
         );
-      })
+      });
     }
     return result;
   }
@@ -168,15 +170,22 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
   private async initCitites() {
     try {
       if (!this.allCities || !this.allCities.length) {
-        this.allCities = await this.hotelService.getHotelCityAsync()
+        this.allCities = await this.hotelService.getHotelCityAsync();
       }
       this.allCities.sort((s1, s2) => s2.Sequence - s1.Sequence);
-      this.allCities = this.allCities.filter(it => it.IsHot).concat(this.allCities.filter(it => !it.IsHot));
+      this.allCities = this.allCities
+        .filter(it => it.IsHot)
+        .concat(this.allCities.filter(it => !it.IsHot));
     } catch (e) {
       this.allCities = null;
     }
   }
   async ngAfterViewInit() {
+    if (this.searchbar) {
+      requestAnimationFrame(() => {
+        this.searchbar.setFocus();
+      });
+    }
   }
   async loadMore(kw: string = "") {
     if (!this.allCities || !this.allCities.length) {
@@ -185,7 +194,10 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     if (this.allCities) {
       const arr = this.filterCitities(kw);
       this.filteredTotalCount = arr.length;
-      const temp = arr.slice(this.vmCities.length, this.vmCities.length + this.pageSize);
+      const temp = arr.slice(
+        this.vmCities.length,
+        this.vmCities.length + this.pageSize
+      );
       this.scroller.disabled = temp.length < this.pageSize;
       this.scroller.complete();
       if (!this.vmCities.length) {
