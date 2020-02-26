@@ -308,10 +308,7 @@ export class HotelListPage
     this.router.navigate([AppHelper.getRoutePath("hotel-detail")]);
   }
   onCityClick() {
-    this.hotelDayPrices = [];
-    requestAnimationFrame(() => {
-      this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
-    });
+    this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
   }
   onSearchByText() {
     this.router.navigate([AppHelper.getRoutePath("combox-search-hotel")]);
@@ -367,9 +364,11 @@ export class HotelListPage
       this.isLeavePage = false;
       const changed = this.checkSearchTextChanged();
       if (changed || this.checkDestinationChanged()) {
-        setTimeout(() => {
-          this.doRefresh(true);
-        }, 200);
+        this.ngZone.runOutsideAngular(() => {
+          requestAnimationFrame(() => {
+            this.doRefresh(true);
+          });
+        });
       }
     });
     this.subscriptions.push(sub0);

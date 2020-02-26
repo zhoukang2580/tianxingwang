@@ -166,9 +166,7 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     this.subscriptions.push(sub);
     this.initCitites().finally(() => {
       this.isLoading = true;
-      setTimeout(() => {
-        this.doRefresh();
-      }, 1000);
+      this.doRefresh();
     });
   }
   private async initCitites() {
