@@ -1,81 +1,83 @@
-<ion-header>
-  <ion-toolbar class='toolbar'>
-    <ion-buttons slot='start'>
-      <app-back-button defaultHref="" (click)='back()' customeBack='true'></app-back-button>
-    </ion-buttons>
-    <div class="query">
-      <app-date-city [checkInDate]='searchHotelModel?.checkInDate' [checkOutDate]='searchHotelModel?.checkOutDate'
-        [city]='searchHotelModel?.destinationCity' (cityClick)='onCityClick()' (dateChange)='onDateChange()'
-        (searchBarClick)='onSearchByText()' [keywords]='searchHotelModel?.searchText?.Text||"地名/酒店/关键字"'>
-      </app-date-city>
-    </div>
-  </ion-toolbar>
-  <app-hotel-query (activeFilter)='onActiveFilter($event)' (hotelQueryChange)='onHotelQueryChange($event)'>
-  </app-hotel-query>
-</ion-header>
-<ion-content #cnt [scrollY]='!filterTab.isActive'>
-  <app-refresher slot='fixed' (ionRefresh)='doRefresh(false)' [disabled]='filterTab&&filterTab.isActive'>
-    <ion-refresher-content>正在加载...</ion-refresher-content>
-  </app-refresher>
-  <ng-container *ngIf='!isLoadingHotels else fakeList'>
-    <ul *ngIf='hotelDayPrices?.length  else noMoreData'>
-      <li *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
-        <app-hotel-list-item [item]='item' [config]='config'></app-hotel-list-item>
-      </li>
-    </ul>
-  </ng-container>
-  <ng-template #noMoreData>
-    <ion-list></ion-list>
-    <div class='ion-margin-top'>
-      <app-or-comp>暂无数据</app-or-comp>
-    </div>
-  </ng-template>
-  <ng-template #fakeList>
-    <ion-list class='fakelist' *ngIf='isLoadingHotels else noMoreData'>
-      <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8,9,10,11]'>
-        <ion-thumbnail style="margin-bottom: 0.25em;">
-          <ion-skeleton-text animated style='height:100%;width:100%'></ion-skeleton-text>
-        </ion-thumbnail>
-        <ion-label class="ion-margin-start">
-          <h1>
-            <ion-skeleton-text animated style="width:90%"></ion-skeleton-text>
-          </h1>
-          <h1>
-            <ion-skeleton-text style="width:40%"></ion-skeleton-text>
-          </h1>
-          <h1 style="display:flex;justify-content:space-between;align-items: center;">
-            <ion-skeleton-text animated style="width:70%"></ion-skeleton-text>
-            <ion-skeleton-text style="width:10%"></ion-skeleton-text>
-          </h1>
-        </ion-label>
-      </ion-item>
-    </ion-list>
-  </ng-template>
-  <ion-infinite-scroll (ionInfinite)="loadMore()" threshold='100px'>
-    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="正在加载..."></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
-  <ion-fab>
-    <app-pin-fab horizontal="end" vertical="bottom">
-      <div *ngIf='hotelDayPrices?.length&&totalHotels'>
-        <ion-text color='light'>
-          <div style="border-bottom: 1px solid white;"> {{hotelDayPrices.length}}</div>
-          <div> {{totalHotels}}</div>
-        </ion-text>
+<div class="ion-page">
+  <ion-header>
+    <ion-toolbar class='toolbar'>
+      <ion-buttons slot='start'>
+        <app-back-button defaultHref="" (click)='back()' customeBack='true'></app-back-button>
+      </ion-buttons>
+      <div class="query">
+        <app-date-city [checkInDate]='searchHotelModel?.checkInDate' [checkOutDate]='searchHotelModel?.checkOutDate'
+          [city]='searchHotelModel?.destinationCity' (cityClick)='onCityClick()' (dateChange)='onDateChange()'
+          (searchBarClick)='onSearchByText()' [keywords]='searchHotelModel?.searchText?.Text||"地名/酒店/关键字"'>
+        </app-date-city>
       </div>
-    </app-pin-fab>
-  </ion-fab>
-</ion-content>
-<div class="backdrop {{classMode}}" (click)='onBackdropClick($event)' [class.show]='isShowBackdrop'></div>
-<app-recommend-rank class="filter-condition  {{classMode}}" (rank)='onRank()'
-  (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
-  [@queryPanelShowHide]='filterTab?.label=="推荐排序"&&filterTab.isActive'>
-</app-recommend-rank>
-<app-hotel-starprice class="filter-condition  {{classMode}}" (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
-  [@queryPanelShowHide]='filterTab?.label=="星级价格"&&filterTab.isActive' (starPriceChange)='onStarPriceChange()'>
-</app-hotel-starprice>
-<app-hotel-filter class="filter-condition  {{classMode}}" (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
-  [@queryPanelShowHide]='filterTab?.label=="筛选"&&filterTab.isActive' (filter)='onFilter()'>
-</app-hotel-filter>
-<app-hotel-geo class="filter-condition  {{classMode}}" (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
-  [@queryPanelShowHide]='filterTab?.label=="位置区域"&&filterTab.isActive' (geoFilterChange)='onFilterGeo()'>
-</app-hotel-geo>
+    </ion-toolbar>
+    <app-hotel-query (activeFilter)='onActiveFilter($event)' (hotelQueryChange)='onHotelQueryChange($event)'>
+    </app-hotel-query>
+  </ion-header>
+  <ion-content #cnt [scrollY]='!filterTab.isActive'>
+    <app-refresher slot='fixed' (ionRefresh)='doRefresh(false)' [disabled]='filterTab&&filterTab.isActive'>
+      <ion-refresher-content>正在加载...</ion-refresher-content>
+    </app-refresher>
+    <ng-container *ngIf='!isLoadingHotels else fakeList'>
+      <ul *ngIf='hotelDayPrices?.length  else noMoreData'>
+        <li *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
+          <app-hotel-list-item [item]='item' [config]='config'></app-hotel-list-item>
+        </li>
+      </ul>
+    </ng-container>
+    <ng-template #noMoreData>
+      <ion-list></ion-list>
+      <div class='ion-margin-top'>
+        <app-or-comp>暂无数据</app-or-comp>
+      </div>
+    </ng-template>
+    <ng-template #fakeList>
+      <ion-list class='fakelist' *ngIf='isLoadingHotels else noMoreData'>
+        <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8,9,10,11]'>
+          <ion-thumbnail style="margin-bottom: 0.25em;">
+            <ion-skeleton-text animated style='height:100%;width:100%'></ion-skeleton-text>
+          </ion-thumbnail>
+          <ion-label class="ion-margin-start">
+            <h1>
+              <ion-skeleton-text animated style="width:90%"></ion-skeleton-text>
+            </h1>
+            <h1>
+              <ion-skeleton-text style="width:40%"></ion-skeleton-text>
+            </h1>
+            <h1 style="display:flex;justify-content:space-between;align-items: center;">
+              <ion-skeleton-text animated style="width:70%"></ion-skeleton-text>
+              <ion-skeleton-text style="width:10%"></ion-skeleton-text>
+            </h1>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ng-template>
+    <ion-infinite-scroll (ionInfinite)="loadMore()" threshold='100px'>
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="正在加载..."></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+    <ion-fab>
+      <app-pin-fab horizontal="end" vertical="bottom">
+        <div *ngIf='hotelDayPrices?.length&&totalHotels'>
+          <ion-text color='light'>
+            <div style="border-bottom: 1px solid white;"> {{hotelDayPrices.length}}</div>
+            <div> {{totalHotels}}</div>
+          </ion-text>
+        </div>
+      </app-pin-fab>
+    </ion-fab>
+  </ion-content>
+  <div class="backdrop {{classMode}}" (click)='onBackdropClick($event)' [class.show]='isShowBackdrop'></div>
+  <app-recommend-rank class="filter-condition  {{classMode}}" (rank)='onRank()'
+    (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
+    [@queryPanelShowHide]='filterTab?.label=="推荐排序"&&filterTab.isActive'>
+  </app-recommend-rank>
+  <app-hotel-starprice class="filter-condition  {{classMode}}" (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
+    [@queryPanelShowHide]='filterTab?.label=="星级价格"&&filterTab.isActive' (starPriceChange)='onStarPriceChange()'>
+  </app-hotel-starprice>
+  <app-hotel-filter class="filter-condition  {{classMode}}" (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
+    [@queryPanelShowHide]='filterTab?.label=="筛选"&&filterTab.isActive' (filter)='onFilter()'>
+  </app-hotel-filter>
+  <app-hotel-geo class="filter-condition  {{classMode}}" (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
+    [@queryPanelShowHide]='filterTab?.label=="位置区域"&&filterTab.isActive' (geoFilterChange)='onFilterGeo()'>
+  </app-hotel-geo>
+</div>

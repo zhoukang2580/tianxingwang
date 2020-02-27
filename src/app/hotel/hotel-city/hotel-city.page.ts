@@ -9,17 +9,10 @@ import {
   ViewChild,
   AfterViewInit,
   OnDestroy,
-  ElementRef,
   NgZone
 } from "@angular/core";
 import {
   NavController,
-  IonGrid,
-  IonRefresher,
-  IonContent,
-  DomController,
-  IonList,
-  IonHeader,
   IonInfiniteScroll,
   IonSearchbar
 } from "@ionic/angular";
@@ -184,9 +177,9 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async ngAfterViewInit() {
     if (this.searchbar) {
-      requestAnimationFrame(() => {
+      setTimeout(() => {
         this.searchbar.setFocus();
-      });
+      }, 300);
     }
   }
   async loadMore(kw: string = "") {

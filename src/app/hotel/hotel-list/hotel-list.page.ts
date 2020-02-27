@@ -131,7 +131,6 @@ export class HotelListPage
     private configService: ConfigService,
     plt: Platform,
     private modalCtrl: ModalController,
-    private ngZone: NgZone
   ) {
     this.classMode = plt.is("ios") ? "ios" : "md";
     this.filterTab = {
@@ -364,10 +363,8 @@ export class HotelListPage
       this.isLeavePage = false;
       const changed = this.checkSearchTextChanged();
       if (changed || this.checkDestinationChanged()) {
-        this.ngZone.runOutsideAngular(() => {
-          requestAnimationFrame(() => {
-            this.doRefresh(true);
-          });
+        requestAnimationFrame(() => {
+          this.doRefresh(true);
         });
       }
     });
