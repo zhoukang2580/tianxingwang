@@ -562,14 +562,14 @@ export class MemberCredentialManagementPage
       return this.checkProperty(c, "Birthday", rules, container);
     }
     this.ngZone.runOutsideAngular(() => {
-      c.Birthday = moment(c.Birthday).format("YYYY-MM-DD");
+      c.Birthday = moment(c.Birthday).format("YYYY/MM/DD");
     });
     console.log(c.Birthday);
     if (!c.ExpirationDate) {
       return this.checkProperty(c, "ExpirationDate", rules, container);
     }
     this.ngZone.runOutsideAngular(() => {
-      c.ExpirationDate = moment(c.ExpirationDate).format("YYYY-MM-DD");
+      c.ExpirationDate = moment(c.ExpirationDate).format("YYYY/MM/DD");
     });
     console.log(c.ExpirationDate);
     if (!c.Country) {
