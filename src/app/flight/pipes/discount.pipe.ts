@@ -11,7 +11,10 @@ export class DiscountPipe implements PipeTransform {
       return value;
     }
     if (0 < v && v < 1) {
-      return `${((v * 100) / 10).toFixed(2)}${LanguageHelper.getDiscountTip()}`;
+      const d = `${((v * 100) / 10).toFixed(1)}`;
+      return `${
+        d?.includes(".0") ? d.replace(".0", "") : d
+      }${LanguageHelper.getDiscountTip()}`;
     }
     return LanguageHelper.getFullPriceTip();
   }
