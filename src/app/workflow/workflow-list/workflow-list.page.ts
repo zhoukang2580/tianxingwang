@@ -3,7 +3,7 @@ import { RefresherComponent } from "src/app/components/refresher";
 import { INotify, WorkflowApiService } from "./../workflow-api.service";
 import { TaskEntity } from "./../models/TaskEntity";
 import { Subscription } from "rxjs";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import {
   Component,
   OnInit,
@@ -15,9 +15,15 @@ import {
 import {
   IonSegment,
   IonSegmentButton,
-  IonInfiniteScroll
+  IonInfiniteScroll,
+  IonContent
 } from "@ionic/angular";
-
+import { AppHelper } from "src/app/appHelper";
+interface ITab {
+  label: string;
+  value: string;
+  img: string;
+}
 @Component({
   selector: "app-workflow-list",
   templateUrl: "./workflow-list.page.html",
@@ -26,23 +32,11 @@ import {
 export class WorkflowListPage implements OnInit, OnDestroy {
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
+  @ViewChild(IonContent) content: IonContent;
   private subscriptions: Subscription[] = [];
   private loadSubscription = Subscription.EMPTY;
   isLoading = false;
-  tabs = [
-    {
-      label: "待我审批",
-      value: "task"
-    },
-    {
-      label: "抄送我的",
-      value: "notify"
-    },
-    {
-      label: "我审批的",
-      value: "history"
-    }
-  ];
+  tabs: ITab[];
   title: string;
   tab: "task" | "history" | "notify";
   tasks: TaskEntity[];
@@ -55,18 +49,54 @@ export class WorkflowListPage implements OnInit, OnDestroy {
   } = { name: "", pageIndex: 0 };
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private workflowApiService: WorkflowApiService
   ) {}
   onSegmentChanged(evt: CustomEvent) {
     this.tab = evt.detail.value;
+    this.changeTitle();
     this.doRefresh();
+    this.scrollToTop();
+  }
+  onOpenUrl(url: string, title?: string) {
+    if (!url) {
+      return;
+    }
+    this.router.navigate([AppHelper.getRoutePath("open-url")], {
+      queryParams: { title, url }
+    });
+  }
+  private changeTitle() {
+    const t = this.tabs.find(it => it.value == this.tab);
+    this.title = t && t.label;
+  }
+  private scrollToTop() {
+    if (this.content) {
+      this.content.scrollToTop(100);
+    }
   }
   ngOnInit() {
+    this.tabs = [
+      {
+        label: "待我审批",
+        value: "task",
+        img: "assets/svgs/wf-raise.svg"
+      },
+      {
+        label: "抄送我的",
+        value: "notify",
+        img: "assets/svgs/wf-notify.svg"
+      },
+      {
+        label: "我审批的",
+        value: "history",
+        img: "assets/svgs/wf-history.svg"
+      }
+    ];
     this.tab = "task";
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(() => {
-        const t = this.tabs.find(it => it.value == this.tab);
-        this.title = t && t.label;
+        this.changeTitle();
         requestAnimationFrame(() => {
           this.doRefresh();
         });
@@ -78,8 +108,9 @@ export class WorkflowListPage implements OnInit, OnDestroy {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
   loadMore() {
-    this.isLoading = true;
+    this.isLoading = this.query.pageIndex < 1;
     const tab = this.tab;
+    console.log(tab);
     if (tab == "task") {
       this.loadSubscription = this.workflowApiService
         .getTaskList(this.query)
@@ -101,7 +132,12 @@ export class WorkflowListPage implements OnInit, OnDestroy {
           }
           if (arr.length) {
             this.query.pageIndex++;
-            this.tasks = this.tasks.concat(arr);
+            this.tasks = this.tasks.concat(
+              arr.map(it => {
+                it.ExpiredTime = this.tranformExpiredTime(it.ExpiredTime);
+                return it;
+              })
+            );
           }
         });
     }
@@ -151,10 +187,20 @@ export class WorkflowListPage implements OnInit, OnDestroy {
           }
           if (arr.length) {
             this.query.pageIndex++;
-            this.histories = this.histories.concat(arr);
+            this.histories = this.histories.concat(
+              arr.map(it => {
+                it.ExpiredTime = this.tranformExpiredTime(it.ExpiredTime);
+                return it;
+              })
+            );
           }
         });
     }
+  }
+  private tranformExpiredTime(expiredTime: string) {
+    return !expiredTime || expiredTime.startsWith("1800")
+      ? ""
+      : expiredTime.substring(0, 19);
   }
   doRefresh() {
     this.loadSubscription.unsubscribe();
@@ -179,8 +225,10 @@ export class WorkflowListPage implements OnInit, OnDestroy {
   }
   private refreshHistory() {
     this.histories = [];
+    this.loadMore();
   }
   private refreshNotify() {
     this.notifies = [];
+    this.loadMore();
   }
 }

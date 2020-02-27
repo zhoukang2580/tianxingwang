@@ -30,6 +30,7 @@ interface PageModel {
 export class MyPage implements OnDestroy, OnInit {
   Model: PageModel;
   isIos = false;
+  isShowWorkflow = environment.mockProBuild;
   defaultAvatar = AppHelper.getDefaultAvatar();
   subscriptions: Subscription[] = [];
   msgCount$: Observable<number>;

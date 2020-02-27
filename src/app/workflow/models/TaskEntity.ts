@@ -6,11 +6,13 @@ import { BaseEntity } from "src/app/models/BaseEntity";
 import { AccountEntity } from "src/app/account/models/AccountEntity";
 
 export class TaskEntity extends BaseVariablesEntity {
-  public Consumer: BaseEntity;
+
+  Consumer: BaseEntity;
   /// <summary>
   /// 用户
   /// </summary>
-  public Account: AccountEntity;
+  Account: AccountEntity;
+  Title: string;
   /// <summary>
   ///名称
   /// </summary>

@@ -3,3 +3,15 @@
     color: var(--ion-color-medium);
   }
 }
+ion-segment-button {
+  .tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    img {
+      width: 2em;
+      margin: 0.25em;
+      border-radius: 4px;
+    }
+  }
+}
