@@ -76,11 +76,13 @@ export class MemberCredentialManagementPage
       this.isCanDeactive = false;
       if (this.modifyCredential) {
         if (p.get("date")) {
+          let date: string = p.get("date");
+          date = date.replace(/-/g, "/");
           if (this.requestCode == "birthDate") {
-            this.modifyCredential.Birthday = p.get("date");
+            this.modifyCredential.Birthday = date;
           }
           if (this.requestCode == "expireDate") {
-            this.modifyCredential.ExpirationDate = p.get("date");
+            this.modifyCredential.ExpirationDate = date;
           }
           this.requestCode = null;
         }
@@ -404,10 +406,10 @@ export class MemberCredentialManagementPage
         ...c,
         isModified: false,
         Birthday: c.Birthday.indexOf("T")
-          ? moment(c.Birthday).format("YYYY-MM-DD")
+          ? moment(c.Birthday).format("YYYY/MM/DD")
           : c.Birthday,
         ExpirationDate: c.ExpirationDate.indexOf("T")
-          ? moment(c.ExpirationDate).format("YYYY-MM-DD")
+          ? moment(c.ExpirationDate).format("YYYY/MM/DD")
           : c.ExpirationDate
       };
     });
