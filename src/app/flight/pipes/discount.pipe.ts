@@ -11,8 +11,8 @@ export class DiscountPipe implements PipeTransform {
       return value;
     }
     if (0 < v && v < 1) {
-      return `${(v * 100) / 10}${LanguageHelper.getDiscountTip()}`;
+      return `${((v * 100) / 10).toFixed(2)}${LanguageHelper.getDiscountTip()}`;
     }
-    return  LanguageHelper.getFullPriceTip();
+    return LanguageHelper.getFullPriceTip();
   }
 }
