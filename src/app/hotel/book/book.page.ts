@@ -756,6 +756,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
       p.TravelType = combindInfo.travelType;
       p.TravelPayType = this.orderTravelPayType;
       p.IsSkipApprove = combindInfo.isSkipApprove;
+      p.OrderHotelType = OrderHotelType.Domestic;
       if (
         combindInfo.bookInfo.bookInfo &&
         combindInfo.bookInfo.bookInfo.roomPlan &&

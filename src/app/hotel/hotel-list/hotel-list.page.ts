@@ -130,7 +130,7 @@ export class HotelListPage
     private navCtrl: NavController,
     private configService: ConfigService,
     plt: Platform,
-    private modalCtrl: ModalController,
+    private modalCtrl: ModalController
   ) {
     this.classMode = plt.is("ios") ? "ios" : "md";
     this.filterTab = {
@@ -361,6 +361,7 @@ export class HotelListPage
       this.hideQueryPannel();
       this.hotelService.curViewHotel = null;
       this.isLeavePage = false;
+      this.isLoadingHotels = true;
       const changed = this.checkSearchTextChanged();
       if (changed || this.checkDestinationChanged()) {
         requestAnimationFrame(() => {

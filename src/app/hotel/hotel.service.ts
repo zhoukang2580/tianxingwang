@@ -586,6 +586,8 @@ export class HotelService {
       req.Data["SearchKey"] = cond.searchText.Text;
       if (cond.searchText.Value) {
         req.Data["HotelId"] = cond.searchText.Value;
+      } else {
+        delete req.Data["HotelId"];
       }
     }
     // req.IsShowLoading = true;
