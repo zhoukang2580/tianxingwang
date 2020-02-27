@@ -45,7 +45,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
     private flydayService: CalendarService,
     private staffService: StaffService,
     private router: Router,
-    private IdentityService: IdentityService
+    private identityService: IdentityService
   ) {}
   ngOnDestroy() {
     this.searchModelSubscrition.unsubscribe();
@@ -85,7 +85,7 @@ export class SelectedFlightsegmentInfoComponent implements OnInit, OnDestroy {
           }
         })
       );
-    this.subscrition = this.IdentityService.getIdentitySource().subscribe(
+    this.subscrition = this.identityService.getIdentitySource().subscribe(
       identity => {
         this.identity = identity;
       }
