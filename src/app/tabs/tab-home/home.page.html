@@ -7,7 +7,7 @@
       <ng-container *ngIf='canSelectCompany$|async'>
         <ion-text *ngIf='selectedCompany$|async as company'>{{company}}</ion-text>
       </ng-container>
-      {{identity?.Name}}
+      <ion-text class="ion-margin-start">欢迎你,{{identity?.Name}}</ion-text>
     </ion-title>
     <ion-buttons slot='end' >
       <ion-button fill='clear' size='small' (click)='onSwitchCustomer()' *ngIf='identity?.Numbers?.AgentId;else selectCompany'>
@@ -61,7 +61,7 @@
           <ion-text>国内酒店</ion-text>
         </div>
       </ion-col>
-      <ion-col (click)='goToPage("international-hotel")' size="4" *ngIf=''>
+      <ion-col (click)='goToPage("international-hotel")' size="4" *ngIf='isShowoverseaHotel'>
         <div class="item">
           <ion-label>
             <img src="assets/svgs/hotel.svg" alt="酒店" [style.height.em]='3'>

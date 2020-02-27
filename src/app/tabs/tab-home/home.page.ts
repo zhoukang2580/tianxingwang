@@ -33,6 +33,7 @@ import { ActivatedRoute, Router, NavigationEnd } from "@angular/router";
 import { PayService } from "src/app/services/pay/pay.service";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { tap, shareReplay, map } from "rxjs/operators";
+import { environment } from "src/environments/environment";
 @Component({
   selector: "app-home",
   templateUrl: "home.page.html",
@@ -54,6 +55,7 @@ export class HomePage implements OnInit, OnDestroy {
   staff: StaffEntity;
   canShow = AppHelper.isApp() || AppHelper.isWechatH5();
   options = {};
+  isShowoverseaHotel = environment.mockProBuild;
   constructor(
     private identityService: IdentityService,
     private router: Router,
