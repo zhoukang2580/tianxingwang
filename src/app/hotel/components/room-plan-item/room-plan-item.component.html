@@ -4,9 +4,15 @@
       <span *ngIf='getBreakfast(roomPlan) as it'>
         <ion-text color='success'>{{it}}</ion-text>
       </span>
-      <span *ngIf='getBedType(room) as it'>{{it.Description}}</span>
-      <span *ngIf='getCapacity(room) as it'>可住{{it.Description}}人</span>
-      <span *ngIf='getRoomArea(room) as it'>{{it.Description}}m²</span>
+      <ng-container *ngIf='getBedType(room) as it'>
+        <span *ngIf='it.Description as d'>{{it.Description}}</span>
+      </ng-container>
+      <ng-container *ngIf='getCapacity(room) as it'>
+        <span *ngIf='it.Description as d'>可住{{d}}人</span>
+      </ng-container>
+      <ng-container *ngIf='getRoomArea(room) as it'>
+        <span *ngIf='it.Description as d'>{{it.Description}}m²</span>
+      </ng-container>
     </div>
     <div class="room-detail-desc">
       <span>

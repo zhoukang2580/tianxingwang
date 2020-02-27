@@ -271,29 +271,38 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
   }
   get totalPrice() {
     const infos = this.hotelService.getBookInfos();
-    let totalPrice = infos.reduce((arr, item) => {
+    let roomPlanTotalAmount = infos.reduce((arr, item) => {
       if (item && item.bookInfo && item.bookInfo.roomPlan) {
         const info = item.bookInfo;
-        const roomPrice =
-          this.hotelPaymentType == HotelPaymentType.SelfPay
-            ? 0
-            : +info.roomPlan.TotalAmount;
+        const roomPrice = +info.roomPlan.TotalAmount;
         arr = AppHelper.add(arr, roomPrice);
       }
       return arr;
     }, 0);
+    let fees = 0;
     if (this.initialBookDto && this.initialBookDto.ServiceFees) {
-      const fees = Object.keys(this.initialBookDto.ServiceFees).reduce(
-        (acc, key) => {
-          const fee = +this.initialBookDto.ServiceFees[key];
-          acc = AppHelper.add(fee, acc);
-          return acc;
-        },
-        0
-      );
-      totalPrice = AppHelper.add(fees, totalPrice);
+      fees = Object.keys(this.initialBookDto.ServiceFees).reduce((acc, key) => {
+        const fee = +this.initialBookDto.ServiceFees[key];
+        acc = AppHelper.add(fee, acc);
+        return acc;
+      }, 0);
     }
-    return totalPrice;
+    if (this.notShowServiceFee()) {
+      fees = 0;
+    } else {
+      // 显示服务费
+      if (this.hotelPaymentType == HotelPaymentType.SelfPay) {
+        // 现付
+        const roomFee = roomPlanTotalAmount;
+        roomPlanTotalAmount = 0;
+        if (this.orderTravelPayType == OrderTravelPayType.Company) {
+          roomPlanTotalAmount = roomFee;
+        }
+      } else {
+        // 预付
+      }
+    }
+    return AppHelper.add(fees, roomPlanTotalAmount);
   }
   onOrderTravelPayTypeSelect() {
     const orderTravelPayType = this.orderTravelPayTypes.find(it => {

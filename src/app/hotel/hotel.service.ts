@@ -204,11 +204,11 @@ export class HotelService {
     );
   }
   getCapacity(room: RoomEntity) {
-    return (
+    const one =
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find(it => it.Tag == "Capacity")
-    );
+      room.RoomDetails.find(it => it.Tag == "Capacity");
+    return one && one.Description && one;
   }
   getBedType(room: RoomEntity) {
     return (

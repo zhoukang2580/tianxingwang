@@ -53,9 +53,9 @@ export class ComboxSearchHotelPage implements OnInit, OnDestroy, AfterViewInit {
     });
   }
   ngAfterViewInit() {
-    requestAnimationFrame(() => {
+    setTimeout(() => {
       this.searchbar.setFocus();
-    });
+    }, 300);
   }
   ngOnDestroy() {
     this.subscription2.unsubscribe();
