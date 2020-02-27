@@ -293,11 +293,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
       // 显示服务费
       if (this.hotelPaymentType == HotelPaymentType.SelfPay) {
         // 现付
-        const roomFee = roomPlanTotalAmount;
         roomPlanTotalAmount = 0;
-        if (this.orderTravelPayType == OrderTravelPayType.Company) {
-          roomPlanTotalAmount = roomFee;
-        }
       } else {
         // 预付
       }
