@@ -166,7 +166,7 @@ export class SearchInternationalHotelPage implements OnInit, OnDestroy {
       });
     }
   }
-  segmentChanged(ev: CustomEvent) {
+  onSegmentChanged(ev: CustomEvent) {
     this.hotelService.setSearchConditionSource({
       ...this.hotelService.getSearchCondition(),
       hotelType: ev.detail.value

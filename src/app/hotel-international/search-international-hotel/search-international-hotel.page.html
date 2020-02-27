@@ -33,7 +33,7 @@
   <ion-card>
     <ion-card-content>
       <div class='ion-padding-top'>
-        <ion-segment (ionChange)="segmentChanged($event)" color="secondary" value="{{searchCondition?.hotelType}}">
+        <ion-segment (ionChange)="onSegmentChanged($event)" *ngIf='' color="secondary" value="{{searchCondition?.hotelType}}">
           <ion-segment-button value="normal">
             <ion-label>非协议酒店</ion-label>
           </ion-segment-button>
