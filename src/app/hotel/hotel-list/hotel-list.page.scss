@@ -1,39 +1,7 @@
-:host.show-search-bar {
-  background-color: rgba(var(--ion-color-dark-rgb), 0.5);
-}
-ion-header ion-toolbar {
-  ion-buttons {
-    align-self: flex-start;
-    padding-top: 0.5em;
-  }
-  &.md {
-    ion-buttons {
-      align-self: flex-start;
-    }
-  }
-  .query {
-    padding: 0.5em;
-    app-hotel-query {
-      margin-right: 0.5em;
-      display: block;
-      margin: 1.5em -0.5em 0 -2em;
-    }
-  }
-  &.md .query {
-    app-hotel-query {
-      margin-right: 1.5em;
-    }
-  }
-}
-
 ion-content {
   ion-fab {
     bottom: 3em;
   }
-}
-
-ion-toolbar.ios {
-  --border-width: 0;
 }
 ul {
   list-style-type: none;

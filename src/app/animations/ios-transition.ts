@@ -17,7 +17,8 @@ export const iosTransitionAnimation = (
   const leavingEl = opts.leavingEl;
 
   const ionPageElement = getIonPageElement(enteringEl);
-  const enteringToolbarEle = ionPageElement.querySelector("ion-toolbar");
+  const enteringHeaderEle = ionPageElement.querySelector("ion-header");
+  const leavingHeaderEle = leavingEl && leavingEl.querySelector("ion-header");
   const rootTransition = createAnimation();
 
   rootTransition
@@ -40,12 +41,22 @@ export const iosTransitionAnimation = (
   }
 
   // Animate toolbar if it's there
-  if (enteringToolbarEle) {
+  console.log("enteringHeaderEle",enteringHeaderEle)
+  if (enteringHeaderEle) {
     const enteringToolBar = createAnimation();
-    enteringToolBar.addElement(enteringToolbarEle);
+    enteringToolBar.addElement(enteringHeaderEle);
     rootTransition.addAnimation(enteringToolBar);
   }
-
+  if (leavingHeaderEle) {
+    const backEl = leavingHeaderEle.querySelector("app-back-button");
+    const leavingToolbarAnimation = createAnimation();
+    leavingToolbarAnimation.addElement(leavingHeaderEle);
+    if (backEl) {
+      leavingToolbarAnimation.addElement(backEl);
+    }
+    leavingToolbarAnimation.fromTo("opacity", 1, 0);
+    rootTransition.addAnimation(leavingToolbarAnimation);
+  }
   // setup leaving view
   if (leavingEl && backDirection) {
     // leaving content
@@ -54,16 +65,34 @@ export const iosTransitionAnimation = (
       .easing("cubic-bezier(0.47,0,0.745,0.715)");
 
     const leavingPage = createAnimation();
+
     leavingPage
       .addElement(getIonPageElement(leavingEl))
-      .addElement([
-        leavingEl.querySelector("ion-header > *"),
-        leavingEl.querySelector("app-back-button")
-      ])
       .fromTo("transform", `translateX(${CENTER})`, `translateX(${OFF_BOTTOM})`)
       .fromTo("opacity", 1, 0);
 
     rootTransition.addAnimation(leavingPage);
+  }
+  if (enteringEl && backDirection) {
+    // const backEl = enteringEl.querySelector("app-back-button");
+    // const enteringToolbarAnimation = createAnimation();
+    // enteringToolbarAnimation.addElement(enteringEl);
+    // if (backEl) {
+    //   enteringToolbarAnimation.addElement(backEl);
+    // }
+    // enteringToolbarAnimation.fromTo("opacity", 1, 0);
+    // rootTransition.addAnimation(enteringToolbarAnimation);
+    rootTransition
+      .duration(opts.duration || DURATION)
+      .easing("cubic-bezier(0.47,0,0.745,0.715)");
+
+    const enteringPage = createAnimation();
+
+    enteringPage
+      .addElement(getIonPageElement(enteringEl))
+      .fromTo("opacity", 0, 1);
+
+    rootTransition.addAnimation(enteringPage);
   }
 
   return (rootTransition as any) as Animation;

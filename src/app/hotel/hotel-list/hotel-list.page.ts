@@ -65,6 +65,7 @@ import { ISearchTextValue } from "src/app/hotel-international/international-hote
   templateUrl: "./hotel-list.page.html",
   styleUrls: ["./hotel-list.page.scss"],
   animations: [
+    fadeInOut,
     trigger("queryPanelShowHide", [
       state(
         "true",
