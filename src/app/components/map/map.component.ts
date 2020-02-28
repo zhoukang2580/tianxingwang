@@ -69,10 +69,10 @@ export class MapComponent
       const point = new window["BMap"].Point(this.lng, this.lat);
       this.map.centerAndZoom(point, 14);
       // this.map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
-      // const marker = new window["BMap"].Marker(point); // 创建标注
-      // marker.setAnimation(window["BMAP_ANIMATION_BOUNCE"]); // 跳动的动画
-      // this.map.addOverlay(marker); // 将标注添加到地图中
-      this.initAndPanToMarker({ lat: this.lat, lng: this.lng });
+      const marker = new window["BMap"].Marker(point); // 创建标注
+      marker.setAnimation(window["BMAP_ANIMATION_BOUNCE"]); // 跳动的动画
+      this.map.addOverlay(marker); // 将标注添加到地图中
+      // this.initAndPanToMarker({ lat: this.lat, lng: this.lng });
     }
   }
   private initAndPanToMarker(p: MapPoint) {

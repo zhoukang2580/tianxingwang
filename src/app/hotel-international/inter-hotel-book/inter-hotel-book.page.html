@@ -142,10 +142,11 @@
             </ion-input>
           </ion-item>
         </ion-list>
-        <ion-list>
+        <ion-list [attr.checkinpersionid]='combindInfo.id' #checkInPersonInfoEle>
           <ion-list-header><strong>旅客信息</strong></ion-list-header>
-          <ion-item *ngFor='let c of combindInfo.checkInPersonInfos'>
-            <ion-button size='small' fill='clear' (click)='onRemoveCheckInPersion(c,combindInfo)' [style.visibility]='!c.isMain?"visibile":"collapse"'>
+          <ion-item *ngFor='let c of combindInfo.checkInPersonInfos' >
+            <ion-button size='small' fill='clear' (click)='onRemoveCheckInPersion(c,combindInfo)'
+              [style.visibility]='!c.isMain?"visibile":"collapse"'>
               <ion-icon name='trash' color='danger'></ion-icon>
             </ion-button>
             <ion-label>{{c.isMain?"主入住人":"其他入住人"}}:</ion-label>
