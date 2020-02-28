@@ -15,6 +15,14 @@ ul {
   right: 0;
   top: 5.5em;
   background-color: white;
+  will-change: transform opacity;
+  transition: all ease-in-out 100ms;
+  transform: translate3d(0, 200%, 0);
+  opacity: 0;
+  &.show {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 .backdrop {

@@ -421,7 +421,7 @@ export class HotelService {
       component: SelectDateComponent,
       componentProps: {
         goArrivalTime: checkInDate.date,
-        tripType: tripType,
+        tripType,
         isMulti: true,
         title,
         forType: FlightHotelTrainType.Hotel

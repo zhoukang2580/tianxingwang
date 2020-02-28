@@ -44,7 +44,8 @@ import {
   IonInfiniteScroll,
   ModalController,
   IonRefresher,
-  NavController
+  NavController,
+  IonHeader
 } from "@ionic/angular";
 import { Subscription, Observable, fromEvent, merge } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
@@ -64,43 +65,20 @@ import { ISearchTextValue } from "src/app/hotel-international/international-hote
   selector: "app-hotel-list",
   templateUrl: "./hotel-list.page.html",
   styleUrls: ["./hotel-list.page.scss"],
-  animations: [
-    fadeInOut,
-    trigger("queryPanelShowHide", [
-      state(
-        "true",
-        style({ transform: "translate3d(0,0,0)", opacity: 1, zIndex: 100 })
-      ),
-      state(
-        "false",
-        style({ transform: "translate3d(0,200%,0)", opacity: 0, zIndex: -100 })
-      ),
-      transition("false=>true", [
-        style({ zIndex: 1 }),
-        animate("200ms", style({ transform: "translate3d(0,0,0)", opacity: 1 }))
-      ]),
-      transition(
-        "true=>false",
-        animate(
-          "100ms",
-          style({
-            transform: "translate3d(0,200%,0)",
-            opacity: 0
-          })
-        )
-      )
-    ])
-  ]
+  animations: []
 })
 export class HotelListPage
   implements OnInit, OnDestroy, AfterViewInit, AfterContentInit {
   private subscriptions: Subscription[] = [];
   private oldSearchText: ISearchTextValue;
   private oldDestinationCode: string;
-  classMode: "ios" | "md";
+  @ViewChild(IonHeader) headerEl: IonHeader;
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChild("querytoolbar") querytoolbar: IonToolbar;
+  @ViewChild("queryconditoneleContainer") queryconditoneleContainer: ElementRef<
+    HTMLElement
+  >;
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(HotelQueryComponent) queryComp: HotelQueryComponent;
   @ViewChildren(IonSearchbar) searchbarEls: QueryList<IonSearchbar>;
@@ -133,7 +111,6 @@ export class HotelListPage
     plt: Platform,
     private modalCtrl: ModalController
   ) {
-    this.classMode = plt.is("ios") ? "ios" : "md";
     this.filterTab = {
       isActive: false,
       label: ""
@@ -149,9 +126,28 @@ export class HotelListPage
   async ngAfterContentInit() {}
   async ngAfterViewInit() {
     this.autofocusSearchBarInput();
+    this.setQueryConditionEleTop();
   }
-  onQueryPanelShowHideEnd() {
-    this.isShowBackdrop = !this.isShowBackdrop;
+  private setQueryConditionEleTop() {
+    setTimeout(() => {
+      requestAnimationFrame(() => {
+        const h = this.headerEl && this.headerEl["el"];
+        let hi = h.offsetHeight;
+        if (hi) {
+          hi = h.offsetHeight;
+          if (hi) {
+            const eles = this.queryconditoneleContainer.nativeElement.querySelectorAll(
+              ".filter-condition"
+            );
+            if (eles) {
+              eles.forEach((el: HTMLElement) => {
+                el.style.top = `${hi + 1}px`;
+              });
+            }
+          }
+        }
+      });
+    }, 1000);
   }
   private getStars(hotel: HotelEntity) {
     if (hotel && hotel.Category) {
@@ -405,17 +401,16 @@ export class HotelListPage
     }
   }
   onActiveFilter(tab: IHotelQueryCompTab) {
-    if (this.hotelDayPrices && this.hotelDayPrices.length > 2 * 20) {
-      this.hotelDayPrices = this.hotelDayPrices.slice(0, 20);
-      this.hotelQueryModel.PageIndex = 1;
-      if (this.scroller) {
-        this.scroller.disabled = false;
-      }
-    }
+    this.filterTab = tab;
+    // if (this.hotelDayPrices && this.hotelDayPrices.length > 2 * 20) {
+    //   this.hotelDayPrices = this.hotelDayPrices.slice(0, 20);
+    //   this.hotelQueryModel.PageIndex = 1;
+    //   if (this.scroller) {
+    //     this.scroller.disabled = false;
+    //   }
+    // }
     if (this.content) {
-      this.content.scrollToTop(100).then(() => {
-        this.filterTab = tab;
-      });
+      this.content.scrollToTop(100);
     }
   }
   onStarPriceChange() {

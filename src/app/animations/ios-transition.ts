@@ -41,7 +41,7 @@ export const iosTransitionAnimation = (
   }
 
   // Animate toolbar if it's there
-  console.log("enteringHeaderEle",enteringHeaderEle)
+  // console.log("enteringHeaderEle",enteringHeaderEle)
   if (enteringHeaderEle) {
     const enteringToolBar = createAnimation();
     enteringToolBar.addElement(enteringHeaderEle);

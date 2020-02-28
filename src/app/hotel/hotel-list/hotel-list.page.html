@@ -67,17 +67,18 @@
     </app-pin-fab>
   </ion-fab>
 </ion-content>
-<div class="backdrop {{classMode}}" (click)='onBackdropClick($event)' [class.show]='isShowBackdrop'></div>
-<app-recommend-rank class="filter-condition  {{classMode}}" (rank)='onRank()'
-  (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
-  [@queryPanelShowHide]='filterTab?.label=="推荐排序"&&filterTab.isActive'>
-</app-recommend-rank>
-<app-hotel-starprice class="filter-condition  {{classMode}}" (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
-  [@queryPanelShowHide]='filterTab?.label=="星级价格"&&filterTab.isActive' (starPriceChange)='onStarPriceChange()'>
-</app-hotel-starprice>
-<app-hotel-filter class="filter-condition  {{classMode}}" (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
-  [@queryPanelShowHide]='filterTab?.label=="筛选"&&filterTab.isActive' (filter)='onFilter()'>
-</app-hotel-filter>
-<app-hotel-geo class="filter-condition  {{classMode}}" (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
-  [@queryPanelShowHide]='filterTab?.label=="位置区域"&&filterTab.isActive' (geoFilterChange)='onFilterGeo()'>
-</app-hotel-geo>
+<div class="backdrop " (click)='onBackdropClick($event)' [class.show]='filterTab?.isActive'></div>
+<div #queryconditoneleContainer>
+  <app-recommend-rank class="filter-condition  " (rank)='onRank()'
+    [class.show]='filterTab?.label=="推荐排序"&&filterTab.isActive'>
+  </app-recommend-rank>
+  <app-hotel-starprice class="filter-condition  " [class.show]='filterTab?.label=="星级价格"&&filterTab.isActive'
+    (starPriceChange)='onStarPriceChange()'>
+  </app-hotel-starprice>
+  <app-hotel-filter class="filter-condition  " [class.show]='filterTab?.label=="筛选"&&filterTab.isActive'
+    (filter)='onFilter()'>
+  </app-hotel-filter>
+  <app-hotel-geo class="filter-condition  " [class.show]='filterTab?.label=="位置区域"&&filterTab.isActive'
+    (geoFilterChange)='onFilterGeo()'>
+  </app-hotel-geo>
+</div>
