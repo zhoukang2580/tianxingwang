@@ -53,16 +53,8 @@ import {
   TmcService
 } from "src/app/tmc/tmc.service";
 import { TripType } from "src/app/tmc/models/TripType";
-import { environment } from "src/environments/environment";
 // tslint:disable-next-line: max-line-length
 import { FilterPassengersPolicyComponent } from "src/app/tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
-import {
-  trigger,
-  transition,
-  style,
-  animate,
-  state
-} from "@angular/animations";
 type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
 
 @Component({
@@ -296,18 +288,14 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
     this.doRefresh();
   }
   async doRefresh() {
-    // this.hotel = null;
     if (!this.config) {
-      this.config = await this.configService.get().catch(_ => null);
+      this.configService
+        .get()
+        .then(config => {
+          this.config = config;
+        })
+        .catch(() => 0);
     }
-    // if (!environment.production) {
-    //   this.hotel = await this.storage.get("mock-hotel-detail");
-    //   console.log(this.hotel);
-    //   if (this.hotel) {
-    //     this.initBgPic(this.hotel.FileName);
-    //     return;
-    //   }
-    // }
     if (this.hotelDetailSub) {
       this.hotelDetailSub.unsubscribe();
     }
@@ -333,10 +321,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
             if (this.hotel) {
               this.hotelDayPrice.Hotel = this.hotel;
               this.hotelPolicy = await this.getPolicy();
-              // if (!environment.production) {
-              //   this.storage.set("mock-hotel-detail", this.hotel);
-              // }
-              await this.content.scrollToTop();
+              this.content.scrollToTop();
               this.initFilterPolicy();
               this.checkIfBookedRoomPlan();
               setTimeout(() => {
