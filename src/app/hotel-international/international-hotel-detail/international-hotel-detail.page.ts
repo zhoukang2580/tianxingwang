@@ -1,4 +1,4 @@
-import { RefresherComponent } from './../../components/refresher/refresher.component';
+import { RefresherComponent } from "./../../components/refresher/refresher.component";
 import { IHotelInfo } from "./../../hotel/hotel.service";
 import { SelectPassengerPage } from "src/app/tmc/select-passenger/select-passenger.page";
 import { fadeInOut } from "./../../animations/fadeInOut";
@@ -430,6 +430,7 @@ export class InternationalHotelDetailPage
       return ps.every(
         p =>
           this.hotelService.getRoomPlanUniqueId(p) &&
+          this.colors &&
           this.colors[this.hotelService.getRoomPlanUniqueId(p)] &&
           this.colors[this.hotelService.getRoomPlanUniqueId(p)].includes(
             "danger_full"

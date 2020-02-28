@@ -7,8 +7,10 @@ import {
   ElementRef,
   AfterViewInit,
   OnChanges,
-  SimpleChanges
+  SimpleChanges,
+  Optional
 } from "@angular/core";
+import { AppComponent } from "src/app/app.component";
 // const BMap = window["BMap"];
 const BMapLib = window["BMapLib"];
 @Component({
@@ -22,7 +24,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges {
   @ViewChild("container") private container: ElementRef<HTMLElement>;
   map: any;
   private curLatLng: MapPoint;
-  constructor(private mapService: MapService) { }
+  constructor(private mapService: MapService) {}
   private async getCurPosition() {
     this.curLatLng = await this.mapService.getCurMapPoint().catch(_ => {
       console.error("获取当前位置失败", _);
@@ -42,23 +44,24 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges {
       this.lat = (this.curLatLng && this.curLatLng.lat) || "40.057031";
       this.lng = (this.curLatLng && this.curLatLng.lng) || "116.307852";
     }
-    if (window["BMap"] && window["BMap"].Map) {
-      this.map = new window["BMap"].Map(container);
-      if (this.map) {
-        const point = new window["BMap"].Point(this.lng, this.lat);
-        this.map.centerAndZoom(point, 14);
-        // this.map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
-        const marker = new window["BMap"].Marker(point); // 创建标注
-        marker.setAnimation(window["BMAP_ANIMATION_BOUNCE"]); // 跳动的动画
-        this.map.addOverlay(marker); // 将标注添加到地图中
-        setTimeout(() => {
-          this.initAndPanToMarker({ lat: this.lat, lng: this.lng });
-        }, 200);
-      }
+    if (!this.map) {
+      this.map = this.mapService.getMap(container);
+    }
+    if (this.map) {
+      const point = new window["BMap"].Point(this.lng, this.lat);
+      this.map.centerAndZoom(point, 14);
+      // this.map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
+      // const marker = new window["BMap"].Marker(point); // 创建标注
+      // marker.setAnimation(window["BMAP_ANIMATION_BOUNCE"]); // 跳动的动画
+      // this.map.addOverlay(marker); // 将标注添加到地图中
+      this.initAndPanToMarker({ lat: this.lat, lng: this.lng });
     }
   }
   private initAndPanToMarker(p: MapPoint) {
-    const point = new window["BMap"].Point(p.lng || this.lng, p.lat || this.lat);
+    const point = new window["BMap"].Point(
+      p.lng || this.lng,
+      p.lat || this.lat
+    );
     const marker = new window["BMap"].Marker(point); // 创建标注
     // const content =
     //   '<div style="margin:0;line-height:20px;padding:2px;">' +

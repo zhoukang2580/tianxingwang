@@ -1,9 +1,9 @@
-import { AppHelper } from './../../appHelper';
+import { AppHelper } from "./../../appHelper";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { Injectable } from "@angular/core";
-import { WechatHelper } from 'src/app/wechatHelper';
+import { WechatHelper } from "src/app/wechatHelper";
 export const baiduMapAk = `BFddaa13ba2d76f4806d1abb98ef907c`;
 export interface MapPoint {
   lng: string;
@@ -27,19 +27,30 @@ export class MapService {
       if (!isMini) {
         this.initBMap();
       }
-    })
+    });
   }
   private initBMap() {
     setTimeout(() => {
       try {
-        const script = document.createElement('script');
-        script.type = 'text/javascript';
+        const script = document.createElement("script");
+        script.type = "text/javascript";
         script.src = `https://api.map.baidu.com/getscript?v=3.0&ak=${baiduMapAk}&services=&t=20191126111618"></script>`;
-        (function () { window['BMAP_PROTOCOL'] = "https"; window['BMap_loadScriptTime'] = (new Date).getTime(); document.head.appendChild(script); })();
+        (function() {
+          window["BMAP_PROTOCOL"] = "https";
+          window["BMap_loadScriptTime"] = new Date().getTime();
+          document.head.appendChild(script);
+        })();
       } catch (e) {
         console.error(e);
       }
     }, 1000);
+  }
+  getMap(container: HTMLElement) {
+    let bmap;
+    if (window["BMap"] && window["BMap"].Map) {
+      bmap = new window["BMap"].Map(container);
+    }
+    return bmap;
   }
   private convertPoint(curPoint: MapPoint): Promise<MapPoint> {
     return new Promise((s, reject) => {
@@ -165,11 +176,17 @@ export class MapService {
       city: TrafficlineEntity;
       position: any;
     };
-    console.log("getCurrentCityPositionInWechatMini queryParamMap", this.querys);
+    console.log(
+      "getCurrentCityPositionInWechatMini queryParamMap",
+      this.querys
+    );
     if (!this.querys) {
       return null;
     }
-    const latLng = { longitude: this.querys["lng"], latitude: this.querys['lat'] };
+    const latLng = {
+      longitude: this.querys["lng"],
+      latitude: this.querys["lat"]
+    };
     console.log("getCurrentCityPositionInWechatMini ", latLng);
     if (latLng.latitude && latLng.longitude) {
       const p: MapPoint = {
@@ -194,30 +211,34 @@ export class MapService {
     }
     return result;
   }
-  private async wxGetLocation(): Promise<{ longitude: string; latitude: string; }> {
+  private async wxGetLocation(): Promise<{
+    longitude: string;
+    latitude: string;
+  }> {
     await WechatHelper.ready();
-    return new Promise<{ longitude: string; latitude: string; }>(resolve => {
+    return new Promise<{ longitude: string; latitude: string }>(resolve => {
       WechatHelper.wx.getLocation({
-        type: 'wgs84', //默认为 wgs84 返回 gps 坐标，gcj02 返回可用于 wx.openLocation 的坐标 
-        success: function (res) {
+        type: "wgs84", //默认为 wgs84 返回 gps 坐标，gcj02 返回可用于 wx.openLocation 的坐标
+        success: function(res) {
           //  res中longitude和latitude就是所获的的用户位置
-          const longitude = res.longitude
-          const latitude = res.latitude
+          const longitude = res.longitude;
+          const latitude = res.latitude;
           //调用坐标解析方法
           console.log("wxGetLocation,success", res);
           resolve({ longitude, latitude });
-        }, fail: function (e) {
+        },
+        fail: function(e) {
           console.error(e);
           resolve(null);
         }
-      })
+      });
     });
   }
   /**
    *腾讯地图转百度地图经纬度
    */
   qqMapTransBMap(lng, lat) {
-    let x_pi = 3.14159265358979324 * 3000.0 / 180.0;
+    let x_pi = (3.14159265358979324 * 3000.0) / 180.0;
     let x = lng;
     let y = lat;
     let z = Math.sqrt(x * x + y * y) + 0.00002 * Math.sin(y * x_pi);
@@ -250,17 +271,19 @@ export class MapService {
     const st = Date.now();
     let result: {
       city: TrafficlineEntity;
-      position: { lat: string; lng: string; cityName: string; };
+      position: { lat: string; lng: string; cityName: string };
     } = {} as any;
-    const isMini = await AppHelper.isWechatMiniAsync() || AppHelper.isWechatMini();
+    const isMini =
+      (await AppHelper.isWechatMiniAsync()) || AppHelper.isWechatMini();
     if (isMini) {
       result = await this.getCurrentCityPositionInWechatMini();
       return result;
     }
-    const latLng: MapPoint = await this.getCurrentPosition().catch(_ => {
-      console.error("getLatLng error", _);
-      return void 0;
-    }) || (await this.getPosByIp());
+    const latLng: MapPoint =
+      (await this.getCurrentPosition().catch(_ => {
+        console.error("getLatLng error", _);
+        return void 0;
+      })) || (await this.getPosByIp());
     console.log("getLatLng 结束：", Date.now() - st);
     console.log("getLatLng", latLng);
     if (latLng) {
@@ -268,9 +291,11 @@ export class MapService {
         lat: latLng.lat,
         lng: latLng.lng,
         cityName: latLng.cityName
-      }
+      };
     }
-    return result.position && result.position.lat && result.position.lng ? result : null;
+    return result.position && result.position.lat && result.position.lng
+      ? result
+      : null;
   }
   async getCurrentCityPosition(): Promise<{
     city: TrafficlineEntity;
@@ -281,7 +306,8 @@ export class MapService {
       position: any;
     };
 
-    const isMini = await AppHelper.isWechatMiniAsync() || AppHelper.isWechatMini();
+    const isMini =
+      (await AppHelper.isWechatMiniAsync()) || AppHelper.isWechatMini();
     if (isMini) {
       result = await this.getCurrentCityPositionInWechatMini();
       return result;
@@ -351,24 +377,26 @@ export class MapService {
         timeout = true;
         s(null);
       }, 5 * 1000);
-      myCity.get((rs: {
-        center: {
-          lat: string;// 31.236304654494646
-          lng: string;// 121.48023738884737
-        };
-        code: number;
-        level: number;
-        name: string;
-      }) => {
-        if (timeout) {
-          return;
+      myCity.get(
+        (rs: {
+          center: {
+            lat: string; // 31.236304654494646
+            lng: string; // 121.48023738884737
+          };
+          code: number;
+          level: number;
+          name: string;
+        }) => {
+          if (timeout) {
+            return;
+          }
+          if (rs && rs.name && rs.center) {
+            s({ lat: rs.center.lat, lng: rs.center.lng, cityName: rs.name });
+          } else {
+            s(null);
+          }
         }
-        if (rs && rs.name && rs.center) {
-          s({ lat: rs.center.lat, lng: rs.center.lng, cityName: rs.name });
-        } else {
-          s(null);
-        }
-      });
+      );
     });
   }
   private async getCityByMap(p: MapPoint) {
@@ -412,8 +440,8 @@ export class MapService {
           },
           {
             enableHighAccuracy: false,
-            timeout: 3 * 1000,            //获取位置允许的最长时间
-            maximumAge: 1000          //多久更新获取一次位置       
+            timeout: 3 * 1000, //获取位置允许的最长时间
+            maximumAge: 1000 //多久更新获取一次位置
           }
         );
       });

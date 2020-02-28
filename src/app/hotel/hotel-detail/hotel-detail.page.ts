@@ -18,10 +18,18 @@ import {
   ElementRef,
   ViewChild,
   AfterViewInit,
-  EventEmitter
+  EventEmitter,
+  OnDestroy
 } from "@angular/core";
-import { Observable, Subscription, of, combineLatest, from } from "rxjs";
-import { map, tap, finalize } from "rxjs/operators";
+import {
+  Observable,
+  Subscription,
+  of,
+  combineLatest,
+  from,
+  fromEvent
+} from "rxjs";
+import { map, tap, finalize, debounceTime } from "rxjs/operators";
 import {
   DomController,
   IonContent,
@@ -30,7 +38,8 @@ import {
   IonList,
   IonToolbar,
   ModalController,
-  PopoverController
+  PopoverController,
+  IonHeader
 } from "@ionic/angular";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { Storage } from "@ionic/storage";
@@ -60,31 +69,26 @@ type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
   selector: "app-hotel-detail",
   templateUrl: "./hotel-detail.page.html",
   styleUrls: ["./hotel-detail.page.scss"],
-  animations: [
-    flyInOut,
-    trigger("hideShowAnimate", [
-      state("true", style({ visibility: "initial" })),
-      state("false", style({ visibility: "collapse" })),
-      transition("*<=>*", [animate("100ms")])
-    ])
-  ]
+  animations: [flyInOut]
 })
-export class HotelDetailPage implements OnInit, AfterViewInit {
+export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
   private hotelDayPrice: HotelDayPriceEntity;
-  private headerHeight = 0;
   private curPos = 0;
-  scrollEle: HTMLElement;
-  curHotelImagePos = 0;
-  isShowTrafficInfo = true;
-  @ViewChild("header") headerEle: ElementRef<HTMLElement>;
-  @ViewChild("bgPic") bgPicEle: ElementRef<HTMLElement>;
-  @ViewChild(IonContent) ionCnt: IonContent;
+  private subscriptions: Subscription[] = [];
+  private hotelDetailSub = Subscription.EMPTY;
+  private isAutoOpenHotelInfoDetails = true;
+  private toolbarsegmentEle: IonToolbar;
+  @ViewChild(IonHeader) ionHeader: IonHeader;
+  @ViewChild("bg") bgEle: ElementRef<HTMLElement>;
+  @ViewChild(IonContent) content: IonContent;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
   @ViewChild("toolbarsegment")
-  private toolbarsegmentEle: IonToolbar;
-  @ViewChild("houseInfo") private houseInfoEle: IonList;
+  @ViewChild("houseInfo")
+  private houseInfoEle: IonList;
   @ViewChild("hotelInfo") private hotelInfoEle: IonList;
   @ViewChild("trafficInfo") private trafficInfoEle: IonList;
+  curHotelImagePos = 0;
+  isShowTrafficInfo = true;
   isShowBackArrow = true;
   isHotelImages = false;
   backArrowColor = "light";
@@ -92,11 +96,8 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   isShowAddPassenger$ = of(false);
   selectedPassengersNumbers$ = of(0);
   isMd = false;
-  // roomImages: string[] = [];
-  // curSelectedRoom: RoomEntity = {} as any;
+  isHeaderHide = false;
   colors: { [key: string]: string } = {};
-  hotelDetailSub = Subscription.EMPTY;
-  queryModelSub = Subscription.EMPTY;
   hotel: HotelEntity;
   config: ConfigEntity;
   agent: AgentEntity;
@@ -124,7 +125,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     private tmcService: TmcService,
     private staffService: StaffService,
     private modalCtrl: ModalController,
-    plt: Platform,
+    private plt: Platform,
     private apiService: ApiService,
     private popoverController: PopoverController
   ) {
@@ -170,6 +171,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     }
     return data;
   }
+
   private async filterPassengerPolicy(passengerId: string = "") {
     const hotelPolicy = this.hotelPolicy || (await this.getPolicy());
     this.colors = {};
@@ -225,6 +227,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       return ps.every(
         p =>
           this.hotelService.getRoomPlanUniqueId(p) &&
+          this.colors &&
           this.colors[this.hotelService.getRoomPlanUniqueId(p)] &&
           this.colors[this.hotelService.getRoomPlanUniqueId(p)].includes(
             "danger_full"
@@ -232,7 +235,11 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       );
     }
   }
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
   async ngOnInit() {
+    this.subscriptions.push(this.hotelDetailSub);
     AppHelper.isWechatMiniAsync().then(isMini => {
       this.isShowTrafficInfo = !isMini;
     });
@@ -242,17 +249,19 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     this.selectedPassengersNumbers$ = this.hotelService
       .getBookInfoSource()
       .pipe(map(infos => infos.length));
-    this.queryModelSub = this.hotelService
-      .getSearchHotelModelSource()
-      .subscribe(m => {
+    this.subscriptions.push(
+      this.hotelService.getSearchHotelModelSource().subscribe(m => {
         this.queryModel = m;
-      });
-    this.route.queryParamMap.subscribe(q => {
-      this.hotelDayPrice = this.hotelService.curViewHotel;
-      if (!this.hotelPolicy) {
-        this.onSearch();
-      }
-    });
+      })
+    );
+    this.subscriptions.push(
+      this.route.queryParamMap.subscribe(q => {
+        this.hotelDayPrice = this.hotelService.curViewHotel;
+        if (!this.hotelPolicy) {
+          this.onSearch();
+        }
+      })
+    );
     this.config = await this.configService.get().catch(_ => null);
   }
   private getHotelImageUrls() {
@@ -322,12 +331,11 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
             this.hotel = hotel.Hotel;
             if (this.hotel) {
               this.hotelDayPrice.Hotel = this.hotel;
-              this.initBgPic(this.hotel.FileName);
               this.hotelPolicy = await this.getPolicy();
               // if (!environment.production) {
               //   this.storage.set("mock-hotel-detail", this.hotel);
               // }
-              await this.ionCnt.scrollToTop();
+              await this.content.scrollToTop();
               this.initFilterPolicy();
               this.checkIfBookedRoomPlan();
               setTimeout(() => {
@@ -365,22 +373,6 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       }
     }
   }
-  private initBgPic(src: string) {
-    src = src || (this.config && this.config.PrerenderImageUrl);
-    if (src) {
-      this.backArrowColor =
-        src == (this.config && this.config.PrerenderImageUrl)
-          ? "dark"
-          : "light";
-      if (this.bgPicEle) {
-        this.render.setStyle(
-          this.bgPicEle.nativeElement,
-          "background-image",
-          `url(${src})`
-        );
-      }
-    }
-  }
   getRoomImages(room: RoomEntity) {
     const images = this.hotel && this.hotel.HotelImages;
     if (room && images) {
@@ -408,15 +400,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
   getBedType(room: RoomEntity) {
     return this.hotelService.getBedType(room);
   }
-  segmentChanged(evt: CustomEvent) {
-    // if (this.isShowBackArrow) {
-    //   return;
-    // }
-    if (evt.stopPropagation) {
-      evt.stopPropagation();
-    }
-    if (evt.detail.value) {
-      this.scrollToTab(evt.detail.value);
+  onSegmentChanged() {
+    if (this.activeTab) {
+      this.scrollToTab(this.activeTab);
     }
   }
   private scrollToTab(tab: IHotelDetailTab) {
@@ -455,18 +441,18 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
       }
     }
   }
-  private scrollToPoint(tab: ClientRect | DOMRect) {
+  private async scrollToPoint(tab: ClientRect | DOMRect) {
     // console.log("scrollToPoint", rect);
     if (tab) {
+      const scrollEle = await this.content.getScrollElement();
       if (this.toolbarsegmentEle && this.toolbarsegmentEle["el"]) {
         const segmentbar = this.toolbarsegmentEle["el"].getBoundingClientRect();
-        if (segmentbar && this.scrollEle) {
+        if (segmentbar && scrollEle) {
           const delta = tab.top - segmentbar.bottom;
           // console.log("scrollToPoint", delta);
-          this.scrollEle.scrollBy({ behavior: "smooth", top: delta });
+          scrollEle.scrollBy({ behavior: "smooth", top: delta });
         }
       }
-      // console.log("header", hh);
     }
   }
   async onBookRoomPlan(evt: {
@@ -704,22 +690,15 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     });
   }
   onOpenMap() {
-    this.segmentChanged({
-      detail: { value: "trafficInfo" as IHotelDetailTab }
-    } as any);
+    this.activeTab = "trafficInfo";
+    this.onSegmentChanged();
   }
   async ngAfterViewInit() {
-    if (this.ionCnt) {
-      this.scrollEle = await this.ionCnt.getScrollElement();
-    }
-    const config = await this.configService.get().catch(_ => null);
-    this.initBgPic(
-      (config && config.PrerenderImageUrl) || AppHelper.getDefaultLoadingImage()
-    );
     setTimeout(() => {
       this.initRects();
-      this.initEle();
     }, 1000);
+    this.hideHeader(true);
+    this.checkScroll();
   }
   onOpenCalendar() {
     this.hotelService.openCalendar();
@@ -765,53 +744,84 @@ export class HotelDetailPage implements OnInit, AfterViewInit {
     }
     // console.log(this.rects);
   }
-  private initEle() {
-    if (this.headerEle && this.headerEle.nativeElement) {
-      this.headerHeight = this.headerEle.nativeElement.clientHeight;
-    }
-    if (this.scrollEle) {
-      this.scrollEle.onscroll = () => {
-        let bottom = 0;
-        this.domCtrl.read(_ => {
-          const top = this.scrollEle.scrollTop;
-          this.domCtrl.write(_ => {
-            this.isShowBackArrow = top < 10;
-          });
-          let opacity = 0;
-          const bottomRect =
-            this.bgPicEle &&
-            this.bgPicEle.nativeElement &&
-            this.bgPicEle.nativeElement.getBoundingClientRect();
-          if (bottomRect) {
-            bottom = bottomRect.bottom;
-          }
-          if (bottom <= this.headerHeight * 6) {
-            if (bottom >= this.headerHeight * 1.3) {
-              opacity = +(bottom / (this.headerHeight * 6)).toFixed(1);
-              opacity = Math.min(1 - opacity, 1);
-              // console.log(opacity);
-            } else {
-              opacity = 1;
+  private checkScroll() {
+    this.domCtrl.write(async _ => {
+      const scroll = await this.content.getScrollElement();
+      const h =
+        this.bgEle &&
+        this.bgEle.nativeElement &&
+        this.bgEle.nativeElement.offsetHeight;
+      const sub = fromEvent(scroll, "scroll")
+        .pipe(debounceTime(10))
+        .subscribe(evt => {
+          this.domCtrl.read(() => {
+            const top = scroll.scrollTop;
+            this.observeScrollIsShowHoteldetails();
+            if (scroll.scrollHeight < 1.31 * this.plt.height()) {
+              this.isHeaderHide = true;
             }
-          } else {
-            opacity = 0;
-          }
-          opacity =
-            opacity < 0.35 || top == 0 ? 0 : opacity;
-          this.render.setStyle(
-            this.headerEle.nativeElement,
-            "zIndex",
-            `${opacity}`
-          );
-          this.domCtrl.write(_ => {
-            this.render.setStyle(
-              this.headerEle.nativeElement,
-              "opacity",
-              opacity
-            );
+            const headerH =
+              (this.ionHeader && this.ionHeader["el"].offsetHeight) || 88;
+            const delta = top - (h - 2 * headerH);
+            const opacity = delta / headerH;
+            if (delta >= 0) {
+              this.changeHeaderOpacity(opacity);
+            } else {
+              this.hideHeader(true);
+            }
           });
         });
-      };
-    }
+      this.subscriptions.push(sub);
+    });
+  }
+  private changeHeaderOpacity(opacity: number) {
+    this.domCtrl.write(_ => {
+      if (this.ionHeader) {
+        if (opacity < 0.01) {
+          this.hideHeader(true);
+        } else {
+          this.hideHeader(false);
+          this.render.setStyle(this.ionHeader["el"], "opacity", opacity);
+        }
+      }
+    });
+  }
+  private hideHeader(hide: boolean) {
+    this.domCtrl.write(_ => {
+      if (this.ionHeader) {
+        this.render.setStyle(
+          this.ionHeader["el"],
+          "display",
+          `${hide ? "none" : "initial"}`
+        );
+      }
+    });
+  }
+  private observeScrollIsShowHoteldetails() {
+    this.domCtrl.read(_ => {
+      const el = this.hotelInfoEle && this.hotelInfoEle["el"];
+      const trafficEl = this.trafficInfoEle && this.trafficInfoEle["el"];
+      if (trafficEl) {
+        const rect = trafficEl.getBoundingClientRect();
+        const isShow = rect && rect.top <= this.plt.height() / 2;
+        if (this.hotel && !this.hotel["isShowMap"]) {
+          this.hotel["isShowMap"] = isShow;
+        }
+      }
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        const isShow = rect && rect.top <= this.plt.height() / 2;
+        if (
+          this.isAutoOpenHotelInfoDetails &&
+          this.hotel &&
+          !this.hotel["ishoteldetails"]
+        ) {
+          this.hotel["ishoteldetails"] = isShow;
+        } else {
+          this.isAutoOpenHotelInfoDetails =
+            rect && rect.top > 0.75 * this.plt.height();
+        }
+      }
+    });
   }
 }
