@@ -12,6 +12,7 @@ import {
   OnDestroy
 } from "@angular/core";
 import { AppComponent } from "src/app/app.component";
+import { Subscription, fromEvent, interval } from "rxjs";
 // const BMap = window["BMap"];
 const BMapLib = window["BMapLib"];
 @Component({
@@ -21,26 +22,22 @@ const BMapLib = window["BMapLib"];
 })
 export class MapComponent
   implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+  private subscription = Subscription.EMPTY;
   @Input() lat: string;
   @Input() lng: string;
   @ViewChild("container") private container: ElementRef<HTMLElement>;
   map: any;
-  private curLatLng: MapPoint;
+  private marker: any;
   constructor(private mapService: MapService) {}
-  private async getCurPosition() {
-    this.curLatLng = await this.mapService.getCurMapPoint().catch(_ => {
-      console.error("获取当前位置失败", _);
-      return {
-        lat: "116.404",
-        lng: "39.915"
-      };
-    });
-  }
   ngOnInit() {
     // this.getCurPosition();
+    this.autoPanTo();
   }
   ngOnDestroy() {
+    this.subscription.unsubscribe();
     if (this.map) {
+      this.map.removeEventListener("dragend", this.onMapDragEnd.bind(this));
+      this.map.removeEventListener("dragstart", this.onMapDragstart.bind(this));
       const iframs = document.querySelectorAll("iframe");
       if (iframs) {
         iframs.forEach((el: HTMLIFrameElement) => {
@@ -57,53 +54,75 @@ export class MapComponent
   }
   private async createMap(container: HTMLElement) {
     // console.log(container);
-    if (!this.lat || !this.lng) {
-      await this.getCurPosition();
-      this.lat = (this.curLatLng && this.curLatLng.lat) || "40.057031";
-      this.lng = (this.curLatLng && this.curLatLng.lng) || "116.307852";
-    }
+    // if (!this.lat || !this.lng) {
+    //   this.lat = "40.057031";
+    //   this.lng = "116.307852";
+    // }
     if (!this.map) {
       this.map = this.mapService.getMap(container);
     }
-    if (this.map) {
+    // 定义一个控件类，即function
+    const ZoomControl = {
+      // 设置默认停靠位置和偏移量
+      defaultAnchor: window["BMap"].BMAP_ANCHOR_TOP_LEFT,
+      defaultOffset: new window["BMap"].Size(10, 10),
+      initialize: map => {
+        // 创建一个DOM元素
+        const div = document.createElement("div");
+        // 添加文字说明
+        div.appendChild(document.createTextNode("放大2级"));
+        // 设置样式
+        div.style.cursor = "pointer";
+        div.style.border = "1px solid gray";
+        div.style.backgroundColor = "white";
+        // 绑定事件，点击一次放大两级
+        div.onclick = e => {
+          map.zoomTo(map.getZoom() + 2);
+        };
+        // 添加DOM元素到地图中
+        map.getContainer().appendChild(div);
+        // 将DOM元素返回
+        return div;
+      }
+    };
+    if (this.map && window["BMap"] && window["BMap"].Point) {
+      this.map.addControl(ZoomControl);
+      this.map.addEventListener("dragstart", this.onMapDragstart.bind(this));
+      this.map.addEventListener("dragend", this.onMapDragEnd.bind(this));
       const point = new window["BMap"].Point(this.lng, this.lat);
-      this.map.centerAndZoom(point, 14);
+      const opts = { offset: new window["BMap"].Size(10, 10) };
+      this.map.addControl(new window["BMap"].ScaleControl(opts));
+      if (this.marker) {
+        this.map.removeOverlay(this.marker);
+      }
       // this.map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
-      const marker = new window["BMap"].Marker(point); // 创建标注
-      marker.setAnimation(window["BMAP_ANIMATION_BOUNCE"]); // 跳动的动画
-      this.map.addOverlay(marker); // 将标注添加到地图中
-      // this.initAndPanToMarker({ lat: this.lat, lng: this.lng });
+      this.map.centerAndZoom(point, 18);
     }
   }
-  private initAndPanToMarker(p: MapPoint) {
+  private onMapDragstart() {
+    console.log("dragstart");
+    this.stopPanTo();
+  }
+  private onMapDragEnd() {
+    console.log("dragend");
+    this.autoPanTo();
+  }
+  private initAndPanToMarker(p?: MapPoint) {
+    if (!window["BMap"] || !window["BMap"].Point || !this.map) {
+      return;
+    }
     const point = new window["BMap"].Point(
-      p.lng || this.lng,
-      p.lat || this.lat
+      (p && p.lng) || this.lng,
+      (p && p.lat) || this.lat
     );
-    const marker = new window["BMap"].Marker(point); // 创建标注
-    // const content =
-    //   '<div style="margin:0;line-height:20px;padding:2px;">' +
-    //   '<img src="../img/baidu.jpg" alt="" style="float:right;zoom:1;overflow:hidden;width:100px;height:100px;margin-left:3px;"/>' +
-    //   "地址：北京市海淀区上地十街10号<br/>电话：(010)59928888<br/>简介：百度大厦位于北京市海淀区西二旗地铁站附近，为百度公司综合研发及办公总部。" +
-    //   "</div>";
-    // const searchInfoWindow = new BMapLib.SearchInfoWindow(this.map, content, {
-    //   title: "百度大厦", // 标题
-    //   width: 290, // 宽度
-    //   height: 105, // 高度
-    //   panel: "panel", // 检索结果面板
-    //   enableAutoPan: true, // 自动平移
-    //   searchTypes: [
-    //     window["BMAPLIB_TAB_SEARCH"], // 周边检索
-    //     window["BMAPLIB_TAB_TO_HERE"], // 到这里去
-    //     window["BMAPLIB_TAB_FROM_HERE"] // 从这里出发
-    //   ]
-    // });
-    // marker.addEventListener("click", e => {
-    //   searchInfoWindow.open(marker);
-    // });
-    this.map.addOverlay(marker); // 将标注添加到地图中
-    marker.setAnimation(window["BMAP_ANIMATION_BOUNCE"]); // 跳动的动画
-    this.map.panTo(point);
+    if (this.marker) {
+      this.map.removeOverlay(this.marker);
+    }
+    this.marker = new window["BMap"].Marker(point); // 创建标注
+    this.map.addOverlay(this.marker); // 将标注添加到地图中
+    this.marker.setAnimation(window["BMAP_ANIMATION_BOUNCE"]); // 跳动的动画
+    // this.map.panTo(point);
+    this.map.centerAndZoom(point, 18);
   }
   ngOnChanges(changes: SimpleChanges) {
     if (
@@ -114,9 +133,7 @@ export class MapComponent
       changes.lng.currentValue
     ) {
       if (this.map) {
-        setTimeout(() => {
-          this.initAndPanToMarker({ lat: this.lat, lng: this.lng });
-        }, 200);
+        this.initAndPanToMarker({ lat: this.lat, lng: this.lng });
       }
     }
   }
@@ -126,7 +143,16 @@ export class MapComponent
         this.createMap(this.container.nativeElement).catch(e => {
           console.error(e);
         });
-      }, 200);
+      }, 1000);
     }
+  }
+  private autoPanTo() {
+    this.stopPanTo();
+    this.subscription = interval(2 * 1000).subscribe(() => {
+      this.initAndPanToMarker();
+    });
+  }
+  private stopPanTo() {
+    this.subscription.unsubscribe();
   }
 }

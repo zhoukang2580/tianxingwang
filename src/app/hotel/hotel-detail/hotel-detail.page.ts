@@ -77,6 +77,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   private hotelDetailSub = Subscription.EMPTY;
   private isAutoOpenHotelInfoDetails = true;
+  private isAutoOpenMap = true;
   private headerHeight = 0;
   @ViewChild(IonHeader) ionHeader: IonHeader;
   @ViewChild("bg") bgEle: ElementRef<HTMLElement>;
@@ -802,8 +803,10 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
       if (trafficEl) {
         const rect = trafficEl.getBoundingClientRect();
         const isShow = rect && rect.top <= this.plt.height() / 2;
-        if (this.hotel && !this.hotel["isShowMap"]) {
+        if (this.isAutoOpenMap && this.hotel && !this.hotel["isShowMap"]) {
           this.hotel["isShowMap"] = isShow;
+        } else {
+          this.isAutoOpenMap = rect && rect.top > 0.75 * this.plt.height();
         }
       }
       if (el) {
