@@ -75,9 +75,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("bg") bgEle: ElementRef<HTMLElement>;
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
-  @ViewChild("toolbarsegment")
-  @ViewChild("houseInfo")
-  private houseInfoEle: IonList;
+  @ViewChild("houseInfo") private houseInfoEle: IonList;
   @ViewChild("hotelInfo") private hotelInfoEle: IonList;
   @ViewChild("trafficInfo") private trafficInfoEle: IonList;
   curHotelImagePos = 0;
@@ -434,6 +432,12 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
         behavior: "smooth",
         top: tab.top - this.headerHeight
       });
+    }
+  }
+  onToggleOpenMap() {
+    if (this.hotel) {
+      this.hotel["isShowMap"] = !this.hotel["isShowMap"];
+      this.isAutoOpenMap = false;
     }
   }
   async onBookRoomPlan(evt: {
