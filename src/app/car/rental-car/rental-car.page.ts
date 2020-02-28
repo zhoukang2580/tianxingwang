@@ -113,6 +113,9 @@ export class RentalCarPage implements OnInit, OnDestroy {
   }
   private async checkPermission() {
     let ok = true;
+    if (this.plt.is("ios")) {
+      return ok;
+    }
     try {
       ok =
         (await this.androidPermissions
