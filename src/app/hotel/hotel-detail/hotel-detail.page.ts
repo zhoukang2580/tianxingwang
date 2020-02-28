@@ -77,7 +77,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   private hotelDetailSub = Subscription.EMPTY;
   private isAutoOpenHotelInfoDetails = true;
-  private toolbarsegmentEle: IonToolbar;
+  private headerHeight = 0;
   @ViewChild(IonHeader) ionHeader: IonHeader;
   @ViewChild("bg") bgEle: ElementRef<HTMLElement>;
   @ViewChild(IonContent) content: IonContent;
@@ -400,10 +400,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
   getBedType(room: RoomEntity) {
     return this.hotelService.getBedType(room);
   }
-  onSegmentChanged() {
-    if (this.activeTab) {
-      this.scrollToTab(this.activeTab);
-    }
+  onSegmentChanged(evt: CustomEvent) {
+    this.activeTab = evt.detail.value;
+    this.scrollToTab(this.activeTab);
   }
   private scrollToTab(tab: IHotelDetailTab) {
     this.initRects();
@@ -445,14 +444,10 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
     // console.log("scrollToPoint", rect);
     if (tab) {
       const scrollEle = await this.content.getScrollElement();
-      if (this.toolbarsegmentEle && this.toolbarsegmentEle["el"]) {
-        const segmentbar = this.toolbarsegmentEle["el"].getBoundingClientRect();
-        if (segmentbar && scrollEle) {
-          const delta = tab.top - segmentbar.bottom;
-          // console.log("scrollToPoint", delta);
-          scrollEle.scrollBy({ behavior: "smooth", top: delta });
-        }
-      }
+      scrollEle.scrollBy({
+        behavior: "smooth",
+        top: tab.top - this.headerHeight
+      });
     }
   }
   async onBookRoomPlan(evt: {
@@ -691,7 +686,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
   }
   onOpenMap() {
     this.activeTab = "trafficInfo";
-    this.onSegmentChanged();
+    this.onSegmentChanged({ detail: { value: this.activeTab } } as any);
   }
   async ngAfterViewInit() {
     setTimeout(() => {
@@ -760,8 +755,11 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
             if (scroll.scrollHeight < 1.31 * this.plt.height()) {
               this.isHeaderHide = true;
             }
-            const headerH =
-              (this.ionHeader && this.ionHeader["el"].offsetHeight) || 88;
+            if (!this.headerHeight) {
+              this.headerHeight =
+                this.ionHeader && this.ionHeader["el"].offsetHeight;
+            }
+            const headerH = this.headerHeight || 88;
             const delta = top - (h - 2 * headerH);
             const opacity = delta / headerH;
             if (delta >= 0) {

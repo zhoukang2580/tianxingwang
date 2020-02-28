@@ -8,7 +8,8 @@ import {
   AfterViewInit,
   OnChanges,
   SimpleChanges,
-  Optional
+  Optional,
+  OnDestroy
 } from "@angular/core";
 import { AppComponent } from "src/app/app.component";
 // const BMap = window["BMap"];
@@ -18,7 +19,8 @@ const BMapLib = window["BMapLib"];
   templateUrl: "./map.component.html",
   styleUrls: ["./map.component.scss"]
 })
-export class MapComponent implements OnInit, AfterViewInit, OnChanges {
+export class MapComponent
+  implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   @Input() lat: string;
   @Input() lng: string;
   @ViewChild("container") private container: ElementRef<HTMLElement>;
@@ -35,9 +37,25 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges {
     });
   }
   ngOnInit() {
-    this.getCurPosition();
+    // this.getCurPosition();
   }
-  private async initMap(container: HTMLElement) {
+  ngOnDestroy() {
+    if (this.map) {
+      const iframs = document.querySelectorAll("iframe");
+      if (iframs) {
+        iframs.forEach((el: HTMLIFrameElement) => {
+          if (el.src.includes("baidu")) {
+            try {
+              document.body.removeChild(el);
+            } catch (e) {
+              console.error("删除iframe", e);
+            }
+          }
+        });
+      }
+    }
+  }
+  private async createMap(container: HTMLElement) {
     // console.log(container);
     if (!this.lat || !this.lng) {
       await this.getCurPosition();
@@ -105,7 +123,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges {
   ngAfterViewInit() {
     if (this.container && this.container.nativeElement) {
       setTimeout(() => {
-        this.initMap(this.container.nativeElement).catch(e => {
+        this.createMap(this.container.nativeElement).catch(e => {
           console.error(e);
         });
       }, 200);

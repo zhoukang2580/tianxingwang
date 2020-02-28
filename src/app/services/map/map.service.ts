@@ -96,7 +96,6 @@ export class MapService {
       return Promise.reject("地图加载失败");
     }
     return new Promise<MapPoint>((s, reject) => {
-      const map = new window["BMap"].Map("allmap");
       let point: MapPoint;
       const geolocation = new window["BMap"].Geolocation();
       setTimeout(() => {
