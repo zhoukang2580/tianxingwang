@@ -1,3 +1,4 @@
+import { BackButtonComponent } from './../../components/back-button/back-button.component';
 import { RefresherComponent } from './../../components/refresher/refresher.component';
 import { IdentityService } from "./../../services/identity/identity.service";
 import { OrderTripModel } from "./../models/OrderTripModel";
@@ -55,7 +56,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   loadMoreErrMsg: string;
   @ViewChild(IonContent) ionContent: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
-  // @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
+  @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
   constructor(
     private modalCtrl: ModalController,
     route: ActivatedRoute,
@@ -136,6 +137,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     this.isLoading = true;
     this.loadDataSub.unsubscribe();
     this.activeTab = tab;
+    this.dataCount = 0;
     this.title = tab.label + "订单";
     if (this.activeTab.value == ProductItemType.waitingApprovalTask) {
       this.title = tab.label;
@@ -197,7 +199,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       );
   }
   back() {
-    this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
+    this.backbtn.backToPrePage();
   }
   async openSearchModal() {
     const m = await this.modalCtrl.create({
@@ -296,8 +298,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         this.activeTab.value == ProductItemType.plane
           ? "Flight"
           : this.activeTab.value == ProductItemType.train
-            ? "Train"
-            : "Hotel";
+            ? "Train" :
+            this.activeTab.value == ProductItemType.car ? "Car"
+              : "Hotel";
       if (
         this.orderModel &&
         this.orderModel.Orders &&
@@ -318,7 +321,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         .subscribe(
           async res => {
             let result: OrderModel = res.Status ? res.Data : null;
-            this.dataCount = result && result.DataCount;
+            if (m.PageIndex < 1) {
+              this.dataCount = result && result.DataCount;
+            }
             result = this.combineInfo(result);
             if (this.infiniteScroll) {
               this.infiniteScroll.complete();

@@ -108,11 +108,11 @@
     </ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>
-<ion-footer *ngIf='activeTab?.value !== productItemType.waitingApprovalTask'>
+<ion-footer *ngIf='activeTab?.value !== productItemType.waitingApprovalTask&&activeTab?.value !== productItemType.car'>
   <ion-row>
     <ion-col class='ion-text-center'>
       <ion-button color='secondary' fill='clear' size='small' (click)='doRefresh()'>
-        全部<span slot='end' *ngIf='dataCount'>({{dataCount}})</span>
+        全部<span slot='end' *ngIf='dataCount'>(<span *ngIf='orderModel?.Orders?.length as n'>{{n}}/</span>{{dataCount}})</span>
       </ion-button>
     </ion-col>
     <ion-col class='ion-text-center'>

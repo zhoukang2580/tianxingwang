@@ -24,9 +24,9 @@ export const ORDER_TABS: ProductItem[] = [
   },
   {
     label: "租车",
-    value: ProductItemType.rentalCar,
+    value: ProductItemType.car,
     imageSrc: "assets/svgs/product-rentalCar.svg",
-    isDisplay: !true
+    isDisplay: true
   },
   {
     label: "保险",
@@ -73,7 +73,7 @@ export class ProductListPage implements OnInit {
   }
   goToProductTab(tab: ProductItem) {
     //todo：
-    if (tab.value == ProductItemType.rentalCar) {
+    if (tab.value == ProductItemType.car) {
       AppHelper.toast("尚在开发");
       return;
     }

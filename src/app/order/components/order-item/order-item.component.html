@@ -111,19 +111,19 @@
           </span>
         </ion-col>
       </ion-row>
-      <ng-container *ngFor='let orderFlightTicket of order.OrderFlightTickets' class='order-flight-trip'>
+      <ng-container *ngIf='order.OrderFlightTickets?.length' class='order-flight-trip'>
         <ion-row *ngIf='order?.OrderPassengers?.length'>
           <ion-col size='3'>旅客信息</ion-col>
           <ion-col>
-            <ion-text *ngIf='getPassenger(orderFlightTicket) as p'>
+            <ion-text *ngIf='getPassenger(order.OrderFlightTickets[0]) as p'>
               {{p.CheckName}} <span>{{p.CredentialsNumber}}</span>
             </ion-text>
           </ion-col>
         </ion-row>
-        <ion-row *ngIf='orderFlightTicket.OrderFlightTrips as trips;'>
+        <ion-row *ngFor='let orderFlightTrip of order.OrderFlightTickets[0].OrderFlightTrips'>
           <ion-col size='3'>行程信息</ion-col>
           <ion-col size='9'>
-            <ion-label class='ticket-trip' *ngFor='let orderFlightTrip of trips; let first=first;'>
+            <ion-label class='ticket-trip'>
               <ng-container *ngIf='orderFlightTrip.Status == OrderFlightTripStatusType.Normal'>
                 <div>
                   <span>{{orderFlightTrip.TakeoffTime?.substr(0,"yyyy-mm-dd".length)}}</span>
@@ -152,10 +152,10 @@
             机票状态
           </ion-col>
           <ion-col style="display: flex;align-items: center;">
-            <ion-text color='secondary'>{{orderFlightTicket.StatusName}}</ion-text>
+            <ion-text color='secondary'>{{order.OrderFlightTickets[0].StatusName}}</ion-text>
             <ion-text color='danger' style="margin-left:auto;padding-right: 1em;">
-              ￥{{getTotalAmount(order,orderFlightTicket.Key) + flightInsuranceAmount(orderFlightTicket)}}
-              <span *ngIf='flightInsuranceAmount(orderFlightTicket) as insuranceAmount'>(含保险{{insuranceAmount}})</span>
+              ￥{{getTotalAmount(order,order.OrderFlightTickets[0].Key) + flightInsuranceAmount(order.OrderFlightTickets[0])}}
+              <span *ngIf='flightInsuranceAmount(order.OrderFlightTickets[0]) as insuranceAmount'>(含保险{{insuranceAmount}})</span>
             </ion-text>
           </ion-col>
         </ion-row>
@@ -163,8 +163,8 @@
           <ion-col *ngIf='checkPay()'>
             <ion-button (click)='onPay($event)' color='secondary'>现在去支付
             </ion-button>
-            <ion-button *ngIf='showRefundBtn(orderFlightTicket)'
-              (click)='onRefundFlightTicket($event,orderFlightTicket)' color='danger'>
+            <ion-button *ngIf='showRefundBtn(order.OrderFlightTickets[0])'
+              (click)='onRefundFlightTicket($event,order.OrderFlightTickets[0])' color='danger'>
               <ion-text color='light'>退票</ion-text>
             </ion-button>
           </ion-col>

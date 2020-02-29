@@ -13,5 +13,5 @@ export enum ProductItemType {
   insurance = 4,
   more = 5,
   waitingApprovalTask = 6,
-  rentalCar = 7
+  car = 7
 }

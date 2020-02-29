@@ -30,25 +30,7 @@ export class OrderService {
     const type = searchCondition.Type;
     req.Data = searchCondition;
     req.Method = `TmcApiOrderUrl-Order-List`;
-    return this.apiService.getResponse<OrderModel>(req).pipe(map(res => {
-      if (type == 'Flight') {
-        if (res && res.Data && res.Data.Orders) {
-          res.Data.Orders = res.Data.Orders.map(o => {
-            if (o.OrderFlightTickets) {
-              o.OrderFlightTickets = o.OrderFlightTickets.map(t => {
-                if (t.OrderFlightTrips && t.OrderFlightTrips.length) {
-                  t.OrderFlightTrips.sort((t1, t2) => new Date(t1.TakeoffTime).getTime() - new Date(t2.TakeoffTime).getTime())
-                  t.OrderFlightTrips = t.OrderFlightTrips.slice(0, 1);
-                }
-                return t;
-              })
-            }
-            return o;
-          })
-        }
-      }
-      return res;
-    }));
+    return this.apiService.getResponse<OrderModel>(req);
   }
   // getOrderListAsync(searchCondition: OrderModel): Promise<OrderModel> {
   //   const req = new RequestEntity();

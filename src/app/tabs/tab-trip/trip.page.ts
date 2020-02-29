@@ -183,14 +183,13 @@ export class TripPage implements OnInit, OnDestroy {
     const plane = ORDER_TABS.find(it => it.value == ProductItemType.plane);
     const train = ORDER_TABS.find(it => it.value == ProductItemType.train);
     const hotel = ORDER_TABS.find(it => it.value == ProductItemType.hotel);
-    const rentalCar = ORDER_TABS.find(
-      it => it.value == ProductItemType.rentalCar
+    const car = ORDER_TABS.find(
+      it => it.value == ProductItemType.car
     );
-    //todo:rentalCar
     this.router.navigate([AppHelper.getRoutePath("order-detail")], {
       queryParams: {
         tab: JSON.stringify(
-          trip.Type == "Flight" ? plane : trip.Type == "Train" ? train : hotel
+          trip.Type == "Flight" ? plane : trip.Type == "Train" ? train : trip.Type == "Car" ? car : hotel
         ),
         orderId: trip.OrderId
       }
