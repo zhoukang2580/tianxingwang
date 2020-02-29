@@ -75,7 +75,7 @@ export interface App {
 })
 export class AppComponent
   implements AfterViewInit, AfterContentInit, OnChanges {
-  app: App=window.navigator['app'];
+  app: App = window.navigator['app'];
   message$: Observable<MessageModel>;
   openSelectCity$: Observable<boolean>;
   showFlyDayPage$: Observable<boolean>;
@@ -262,6 +262,7 @@ export class AppComponent
         // this.router.navigate(['international-hotel-list']);
         // this.router.navigate(['workflow-list']);
         // this.router.navigate(['function-test']);
+        this.router.navigate(['car-order-detail']);
         // this.router.navigate(['product-tabs'],{queryParams:{tabId:3}});
       }
     });

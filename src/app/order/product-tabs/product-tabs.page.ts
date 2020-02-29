@@ -219,7 +219,11 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     //   this.doRefresh();
     // }
   }
-  goToDetailPage(orderId: string) {
+  goToDetailPage(orderId: string, type: string) {
+    if (type && type.toLowerCase() == 'car') {
+      this.router.navigate([AppHelper.getRoutePath("car-order-detail")], { queryParams: { Id: orderId } });
+      return;
+    }
     this.router.navigate([AppHelper.getRoutePath("order-detail")], {
       queryParams: {
         tab: JSON.stringify(this.activeTab),
@@ -301,6 +305,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
             ? "Train" :
             this.activeTab.value == ProductItemType.car ? "Car"
               : "Hotel";
+      this.orderModel.Type = m.Type;
       if (
         this.orderModel &&
         this.orderModel.Orders &&

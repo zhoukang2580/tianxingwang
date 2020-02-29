@@ -94,6 +94,10 @@ const routes: Routes = [
   },  {
     path: 'member-credential-list',
     loadChildren: () => import('./member/member-credential-list/member-credential-list.module').then( m => m.MemberCredentialListPageModule)
+  },
+  {
+    path: 'car-order-detail',
+    loadChildren: () => import('./order/car-order-detail/car-order-detail.module').then( m => m.CarOrderDetailPageModule)
   }
 
 ];

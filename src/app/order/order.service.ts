@@ -56,6 +56,15 @@ export class OrderService {
     const result = this.apiService.getPromiseData<OrderDetailModel>(req);
     return result;
   }
+  getOrderDetail(id: string) {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = `TmcApiOrderUrl-Order-Detail`;
+    req.Data = {
+      Id: id
+    };
+    return this.apiService.getResponse<OrderDetailModel>(req);
+  }
   getOrderTasks(data: OrderModel, isShowLoading = false): Observable<TaskEntity[]> {
     const req = new RequestEntity();
     req.IsShowLoading = isShowLoading;

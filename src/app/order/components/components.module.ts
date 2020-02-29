@@ -1,3 +1,4 @@
+import { SwiperSlideContentComponent } from './swiper-slide-content/swiper-slide-content.component';
 import { AppDirectivesModule } from "src/app/directives/directives.module";
 import { FormsModule } from "@angular/forms";
 import { IonicModule } from "@ionic/angular";
@@ -40,7 +41,8 @@ import { CarItemComponent } from './car-item/car-item.component';
     FlightOrderDetailComponent,
     HotelOrderDetailComponent,
     InsuranceOrderDetailComponent,
-    MyTripComponent
+    MyTripComponent,
+    SwiperSlideContentComponent
   ],
   imports: [
     CommonModule,
@@ -56,7 +58,8 @@ import { CarItemComponent } from './car-item/car-item.component';
     FlightOrderDetailComponent,
     HotelOrderDetailComponent,
     InsuranceOrderDetailComponent,
-    MyTripComponent
+    MyTripComponent,
+    SwiperSlideContentComponent
   ]
 })
 export class OrderComponentsModule { }

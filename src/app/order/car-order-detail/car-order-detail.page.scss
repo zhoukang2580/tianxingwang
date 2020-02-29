@@ -1,0 +1,36 @@
+.tabs {
+  overflow: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  flex-flow: row nowrap;
+  display: flex;
+  align-items: center;
+  .tab {
+    padding: 1em 0.5em;
+    margin: 0 1em;
+    white-space: nowrap;
+    position: relative;
+    &.active {
+      color: var(--ion-color-secondary);
+      &::after {
+        background-color: var(--ion-color-secondary);
+        display: block;
+        position: absolute;
+        bottom: 0.5em;
+        content: "";
+        height: 0.2em;
+        left: 10%;
+        right: 10%;
+      }
+    }
+  }
+}
+
+.swiper-slide {
+  width: 100%;
+  :first-child {
+    width: 100%;
+    height: 100%;
+  }
+}

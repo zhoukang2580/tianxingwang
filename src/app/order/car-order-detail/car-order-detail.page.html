@@ -1,0 +1,164 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <app-back-button></app-back-button>
+    </ion-buttons>
+    <ion-title>用车订单详情</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <div class="tabs" #tabsContainer>
+      <div class="tab" [class.active]='t.active' (click)='onActiveTab(t)' #tabItem *ngFor='let t of tabs'
+        [attr.dataid]='t.value'>{{t.label}}</div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <app-swiper-slide-content (onSlideChange)="onSlideTouchEnd($event)">
+    <div class="swiper-slide">
+      <ion-list [attr.dataid]='tabs[0].value'>
+        <!-- 基础信息 -->
+        <ion-list-header>{{tabs[0].label}}</ion-list-header>
+        <ion-item>
+          <ion-label>
+            订单编号</ion-label>
+          <ion-label>{{orderDetail?.Order?.Id}}</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            集团名称</ion-label>
+          <ion-label>{{orderDetail?.Order?.Account?.Name}}</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            应收总计</ion-label>
+          <ion-label>{{orderDetail?.Order?.TotalAmount}}</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            实收总计</ion-label>
+          <ion-label>{{orderDetail?.Order?.PayAmount}}</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            订单状态</ion-label>
+          <ion-label>{{orderDetail?.Order?.StatusName}}</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            客户名称/代码</ion-label>
+          <ion-label>
+            <div *ngFor='let c of orderDetail?.Order?.OrderNumbers'>{{c.Name}}-{{c.Number}}</div>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            订单来源</ion-label>
+          <ion-label>
+            {{orderDetail?.Order?.Channel}}
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            订单所属人</ion-label>
+          <ion-label>
+            <div *ngFor='let p of orderDetail?.Order?.OrderPassengers'>{{p.Name}}</div>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            出差类型</ion-label>
+          <ion-label>
+            {{orderDetail?.Order?.TravelType==1?"因公":""}}
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            支付类型</ion-label>
+          <ion-label>
+            {{orderDetail?.Order?.TravelPayType==1?"公付":orderDetail?.Order?.TravelPayType==2?"个付":""}}
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            外部编号</ion-label>
+          <ion-label>
+            <div>
+              <div *ngFor='let n of orderDetail?.Order?.OrderNumbers'>{{n.Name}}-{{n.Number}}</div>
+            </div>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+    <div class="swiper-slide">
+      <ion-list [attr.dataid]='tabs[1].value'>
+        <!-- 租车信息 -->
+        <ion-list-header>{{tabs[1].label}}</ion-list-header>
+        <ion-item>
+          <ion-label>行程信息 </ion-label>
+          <ion-label>
+            <div>
+            
+            </div>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+    <div class="swiper-slide">
+      <ion-list [attr.dataid]='tabs[2].value'>
+        <!-- 乘客信息 -->
+        <ion-list-header>{{tabs[2].label}}</ion-list-header>
+        <ion-item>
+          <ion-label> </ion-label>
+          <ion-label>
+            <div>
+
+            </div>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+    <div class="swiper-slide">
+      <ion-list [attr.dataid]='tabs[3].value'>
+        <!-- 票价/成本信息 -->
+        <ion-list-header>{{tabs[3].label}}</ion-list-header>
+        <ion-item>
+          <ion-label> </ion-label>
+          <ion-label>
+            <div>
+
+            </div>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+    <div class="swiper-slide">
+      <ion-list [attr.dataid]='tabs[4].value'>
+        <!-- 审批记录 -->
+        <ion-list-header>{{tabs[4].label}}</ion-list-header>
+        <ion-item>
+          <ion-label> </ion-label>
+          <ion-label>
+            <div>
+
+            </div>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+    <div class="swiper-slide">
+      <ion-list>
+        <!-- 订单日志 -->
+        <ion-list-header>{{tabs[5].label}}</ion-list-header>
+        <ion-item>
+          <ion-label> </ion-label>
+          <ion-label>
+            <div>
+
+            </div>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+  </app-swiper-slide-content>
+</ion-content>
