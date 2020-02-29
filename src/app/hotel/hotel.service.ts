@@ -204,11 +204,11 @@ export class HotelService {
     );
   }
   getCapacity(room: RoomEntity) {
-    return (
+    const one =
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find(it => it.Tag == "Capacity")
-    );
+      room.RoomDetails.find(it => it.Tag == "Capacity");
+    return one && one.Description && one;
   }
   getBedType(room: RoomEntity) {
     return (
@@ -421,7 +421,7 @@ export class HotelService {
       component: SelectDateComponent,
       componentProps: {
         goArrivalTime: checkInDate.date,
-        tripType: tripType,
+        tripType,
         isMulti: true,
         title,
         forType: FlightHotelTrainType.Hotel
@@ -586,6 +586,8 @@ export class HotelService {
       req.Data["SearchKey"] = cond.searchText.Text;
       if (cond.searchText.Value) {
         req.Data["HotelId"] = cond.searchText.Value;
+      } else {
+        delete req.Data["HotelId"];
       }
     }
     // req.IsShowLoading = true;

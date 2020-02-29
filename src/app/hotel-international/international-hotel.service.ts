@@ -593,7 +593,7 @@ export class InternationalHotelService {
     req.Data = {
       RoomPlans: JSON.stringify(arr),
       Passengers: whitelistPs.join(","),
-      CityCode: city && city.Code
+      CityCode: (city && city.Code).substr(0, 6)
     };
     req.IsShowLoading = true;
     whitelistPolicies = await this.apiService

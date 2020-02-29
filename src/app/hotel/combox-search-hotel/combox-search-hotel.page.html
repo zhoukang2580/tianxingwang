@@ -3,7 +3,7 @@
     <ion-buttons>
       <app-back-button defaultHref=""></app-back-button>
       <form (ngSubmit)='onSelect()'>
-        <ion-searchbar animated='true' name='searchbar' (ionChange)='onSearch()' [(ngModel)]='searchText' type='search'>
+        <ion-searchbar  name='searchbar' (ionChange)='onSearch()' [(ngModel)]='searchText' type='search'>
         </ion-searchbar>
       </form>
       <ion-button color='secondary' fill='clear' type='submit' (click)='onSelect()'>确认</ion-button>

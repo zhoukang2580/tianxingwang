@@ -7,17 +7,13 @@
   </ion-toolbar>
   <ion-toolbar>
     <ion-segment (ionChange)="onSegmentChanged($event)" color="secondary" [value]='tab'>
-      <ion-segment-button value="task">
-        <ion-label>待我审批</ion-label>
-        <ion-icon name="camera"></ion-icon>
-      </ion-segment-button>
-      <ion-segment-button value="notify">
-        <ion-label>抄送我的</ion-label>
-        <ion-icon name="bookmark"></ion-icon>
-      </ion-segment-button>
-      <ion-segment-button value="history">
-        <ion-label>我审批的</ion-label>
-        <ion-icon name="bookmark"></ion-icon>
+      <ion-segment-button value="{{t.value}}" *ngFor='let t of tabs'>
+        <ion-label>
+          <div class="tab">
+            <img [src]="t.img" alt="">
+            {{t.label}}
+          </div>
+        </ion-label>
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
@@ -32,30 +28,64 @@
       <ng-container *ngSwitchCase='"task"'>
         <ng-container *ngIf='tasks?.length else nodata'>
           <ion-list>
-            <ion-item *ngFor='let t of tasks'>
+            <ion-item *ngFor="let t of tasks" detail (click)='onOpenUrl(t.Url,t.Name)'
+              [style.--detail-icon-opacity]='!!t.Url?0.4:0'>
               <ion-label>
-                <h2>
-                  {{t.Number}}
-                </h2>
                 <h2>
                   {{t.Name}}
                 </h2>
-                <p>
-                  过期时间：<span>{{t.ExpiredTime?.replace("T"," ")}}</span>
+                <p *ngIf='t.Remark'>
+                  备注：<span>{{t.Remark}}</span>
+                </p>
+                <p *ngIf='t.Level'>
+                  审批：<span>{{t.Level}}</span>
+                </p>
+                <p *ngIf='t.ExpiredTime'>
+                  过期时间：<span>{{t.ExpiredTime}}</span>
+                </p>
+                <p style="user-select: text;">
+                  {{t.Number}}
                 </p>
               </ion-label>
+              <ion-button slot='end' color='{{t.Url?"secondary":""}}'>
+                {{t.StatusName}}
+              </ion-button>
             </ion-item>
           </ion-list>
         </ng-container>
       </ng-container>
       <ng-container *ngSwitchCase='"history"'>
         <ng-container *ngIf='histories?.length else nodata'>
-          <ion-list></ion-list>
+          <ion-list>
+            <ion-item *ngFor='let h of histories' detail [style.--detail-icon-opacity]='!!h.Url?0.4:0'
+              (click)='onOpenUrl(h.Url,h.Name+(h.Level||""))'>
+              <ion-label>
+                <h2>{{h.Name}}</h2>
+                <p *ngIf='h.ExpiredTime'>
+                  {{h.ExpiredTime}}
+                </p>
+              </ion-label>
+              <ion-button slot='end' color='{{h.Url?"secondary":""}}'>
+                {{h.StatusName}}
+              </ion-button>
+            </ion-item>
+          </ion-list>
         </ng-container>
       </ng-container>
       <ng-container *ngSwitchCase='"notify"'>
         <ng-container *ngIf='notifies?.length else nodata'>
-          <ion-list></ion-list>
+          <ion-list>
+            <ion-item *ngFor='let n of notifies' [attr.detail]='!!n.Url' (click)='onOpenUrl(n.Url,n.Title)'>
+              <ion-label>
+                <h2>{{n.Title}}</h2>
+              </ion-label>
+              <ion-button slot='end'>
+                <ion-text color='{{n.IsRead?"success":"secondary"}}'>
+                  {{n.IsRead?"已读":"未读"}}
+                </ion-text>
+              </ion-button>
+            </ion-item>
+          </ion-list>
         </ng-container>
       </ng-container>
     </ng-container>

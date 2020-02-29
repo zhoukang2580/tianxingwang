@@ -1,7 +1,7 @@
 <ion-header>
   <ion-buttons>
     <app-back-button defaultHref="" [backFn]='back.bind(this)'></app-back-button>
-    <ion-searchbar debounce="300" animated placeholder="中文/拼音/首字母/城市" (ionChange)='doSearch()' [(ngModel)]='vmKeyword'
+    <ion-searchbar debounce="300"  placeholder="中文/拼音/首字母/城市" (ionChange)='doSearch()' [(ngModel)]='vmKeyword'
       class="ion-margin-end">
     </ion-searchbar>
   </ion-buttons>
@@ -20,7 +20,6 @@
               {{s?.Name}}
             </ion-text>
             <ion-text *ngIf='s.Pinyin' color='medium'>({{s.Pinyin}})</ion-text>
-            <ion-text *ngIf='s.Code' color='medium'>({{s.Code}})</ion-text>
           </ion-label>
         </ion-item>
       </ion-list>

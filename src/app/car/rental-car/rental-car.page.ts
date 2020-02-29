@@ -6,18 +6,18 @@ import { Subscription, interval, of } from "rxjs";
 import { AppHelper } from "./../../appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
 import { TmcService } from "./../../tmc/tmc.service";
-import { NavController, IonInput } from "@ionic/angular";
+import { NavController, IonInput, Platform } from "@ionic/angular";
 import { CarService } from "./../car.service";
 import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
 import { RequestEntity } from "src/app/services/api/Request.entity";
-// import { Geolocation } from "@ionic-native/geolocation/ngx";
-import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
+import { Geolocation } from "@ionic-native/geolocation/ngx";
+import { AndroidPermissions } from "@ionic-native/android-permissions/ngx";
 @Component({
   selector: "app-rental-car",
   templateUrl: "./rental-car.page.html",
   styleUrls: ["./rental-car.page.scss"],
   animations: [flyInOut],
-  providers: [AndroidPermissions]
+  providers: [AndroidPermissions,Geolocation]
 })
 export class RentalCarPage implements OnInit, OnDestroy {
   @ViewChild("mobileInput") mobileInput: IonInput;
@@ -41,9 +41,10 @@ export class RentalCarPage implements OnInit, OnDestroy {
     private navCtrl: NavController,
     private router: Router,
     private route: ActivatedRoute,
-    private fileService: FileHelperService,
-    private androidPermissions: AndroidPermissions
-  ) { }
+    private plt: Platform,
+    private androidPermissions: AndroidPermissions,
+    private geolocation:Geolocation
+  ) {}
   back() {
     this.navCtrl.pop();
   }
@@ -113,11 +114,29 @@ export class RentalCarPage implements OnInit, OnDestroy {
   }
   private async checkPermission() {
     let ok = true;
+    if (this.plt.is("ios")) {
+      this.geolocation.getCurrentPosition();
+      return ok;
+    }
     try {
-      ok = await this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION).then(r => r.hasPermission).catch(() => false) ||
-        await this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.ACCESS_FINE_LOCATION).then(r => r.hasPermission).catch(() => false)
+      ok =
+        (await this.androidPermissions
+          .checkPermission(
+            this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION
+          )
+          .then(r => r.hasPermission)
+          .catch(() => false)) ||
+        (await this.androidPermissions
+          .checkPermission(
+            this.androidPermissions.PERMISSION.ACCESS_FINE_LOCATION
+          )
+          .then(r => r.hasPermission)
+          .catch(() => false));
       if (!ok) {
-        await this.androidPermissions.requestPermissions([this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION, this.androidPermissions.PERMISSION.ACCESS_FINE_LOCATION])
+        await this.androidPermissions.requestPermissions([
+          this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION,
+          this.androidPermissions.PERMISSION.ACCESS_FINE_LOCATION
+        ]);
       }
       // AppHelper.alert((geo && geo.coords) || "无定位信息");
     } catch (e) {
@@ -188,7 +207,6 @@ export class RentalCarPage implements OnInit, OnDestroy {
     }
     const url = await this.carService.verifyStaff({ Mobile: this.mobile });
 
-
     if (url) {
       if (AppHelper.isApp()) {
         await this.checkPermission();
@@ -203,22 +221,31 @@ export class RentalCarPage implements OnInit, OnDestroy {
       } else {
         this.carService.setOpenUrlSource(url);
         if (window.navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(() => {
-            this.router.navigate([AppHelper.getRoutePath("open-rental-car")]);
-          }, error => {
-            if (error.code) {
-              //          0  :  不包括其他错误编号中的错误
-              // ​		     1  :  用户拒绝浏览器获取位置信息
-              // ​		     2  :  尝试获取用户信息，但失败了
-              // ​		     3  :   设置了timeout值，获取位置超时了
-              AppHelper.alert("无法启用定位，请检查手机浏览器设置");
+          navigator.geolocation.getCurrentPosition(
+            () => {
+              this.router.navigate([AppHelper.getRoutePath("open-rental-car")]);
+            },
+            error => {
+              if (error.code) {
+                //          0  :  不包括其他错误编号中的错误
+                // ​		     1  :  用户拒绝浏览器获取位置信息
+                // ​		     2  :  尝试获取用户信息，但失败了
+                // ​		     3  :  设置了timeout值，获取位置超时了
+                if (error.code == error.PERMISSION_DENIED) {
+                  const msg = `（设置）Settings -> （通用）General -> （重置） Reset-> （重置定位于隐私）Reset Location & Privacy.
+                  （设置）Settings -> （隐私）Privacy  开启 Location Services.（设置）->（隐私）->（定位服务）->（Safari 网站）`;
+                  AppHelper.alert(msg);
+                } else {
+                  // AppHelper.alert("无法启用定位，请检查手机浏览器设置");
+                }
+              }
+              this.router.navigate([AppHelper.getRoutePath("open-rental-car")]);
+            },
+            {
+              enableHighAccuracy: false,
+              maximumAge: 1000 * 60,
+              timeout: 3 * 1000
             }
-            this.router.navigate([AppHelper.getRoutePath("open-rental-car")]);
-          }, {
-            enableHighAccuracy: false,
-            maximumAge: 1000 * 60,
-            timeout: 3 * 1000
-          }
           );
         } else {
           window.location.href = url;

@@ -1,4 +1,4 @@
-import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
+import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { BookCredentialCompComponent } from "./../../tmc/components/book-credential-comp/book-credential-comp.component";
 import { flyInOut } from "./../../animations/flyInOut";
 import { environment } from "./../../../environments/environment";
@@ -76,7 +76,7 @@ import { SearchApprovalComponent } from "src/app/tmc/components/search-approval/
 import { AddContact } from "src/app/tmc/models/AddContact";
 import { BookCostcenterCompComponent } from "src/app/tmc/components/book-costcenter-comp/book-costcenter-comp.component";
 import { OrderHotelType } from "src/app/order/models/OrderHotelEntity";
-import { RefresherComponent } from 'src/app/components/refresher';
+import { RefresherComponent } from "src/app/components/refresher";
 
 @Component({
   selector: "app-inter-hotel-book",
@@ -105,6 +105,9 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     BookCostcenterCompComponent
   >;
   @ViewChildren("approvalEl") approvalEls: QueryList<{ el: HTMLElement }>;
+  @ViewChildren("checkInPersonInfoEle") checkInPersonInfoEles: QueryList<{
+    el: HTMLElement;
+  }>;
   @ViewChildren(BookTmcOutnumberComponent) outnumberEles: QueryList<
     BookTmcOutnumberComponent
   >;
@@ -372,7 +375,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     }
     if (
       Tmc.InternationalHotelApprovalType ==
-      TmcApprovalType.ExceedPolicyApprover &&
+        TmcApprovalType.ExceedPolicyApprover &&
       this.getRuleMessage(item.bookInfo.bookInfo.roomPlan)
     ) {
       return true;
@@ -464,7 +467,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     const showErrorMsg = (msg: string) => {
       AppHelper.alert(
         `${(item.credentialStaff && item.credentialStaff.Name) ||
-        (item.credential && item.credential.Number)}信用卡信息${msg}`
+          (item.credential && item.credential.Number)}信用卡信息${msg}`
       );
       let ele = document.querySelector(`[datacreditcardid='${item.id}']`);
       if (ele["el"]) {
@@ -507,7 +510,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     const showErrorMsg = (msg: string, item: IPassengerHotelBookInfo) => {
       AppHelper.alert(
         `联系人${(item.credentialStaff && item.credentialStaff.Name) ||
-        (item.credential && item.credential.Number)}信息${msg}不能为空`
+          (item.credential && item.credential.Number)}信息${msg}不能为空`
       );
     };
     for (let i = 0; i < this.combindInfos.length; i++) {
@@ -557,9 +560,9 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     const showErrorMsg = (msg: string, item: IPassengerHotelBookInfo) => {
       AppHelper.alert(
         `${(item.credentialStaff && item.credentialStaff.Name) ||
-        (item.credential &&
-          item.credential.CheckFirstName +
-          item.credential.CheckLastName)} 【${item.credential &&
+          (item.credential &&
+            item.credential.CheckFirstName +
+              item.credential.CheckLastName)} 【${item.credential &&
           item.credential.Number}】 ${msg} 信息不能为空`
       );
     };
@@ -602,17 +605,17 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         p.OrderCard.SetVariable(
           "CredentialsName",
           combindInfo.creditCardPersionInfo &&
-          combindInfo.creditCardPersionInfo.name
+            combindInfo.creditCardPersionInfo.name
         );
         p.OrderCard.SetVariable(
           "CredentialsNumber",
           combindInfo.creditCardPersionInfo &&
-          combindInfo.creditCardPersionInfo.credentialNumber
+            combindInfo.creditCardPersionInfo.credentialNumber
         );
         p.OrderCard.SetVariable(
           "CredentialsType",
           combindInfo.creditCardPersionInfo &&
-          combindInfo.creditCardPersionInfo.credentialType
+            combindInfo.creditCardPersionInfo.credentialType
         );
         p.OrderCard.SetVariable(
           "Year",
@@ -658,6 +661,24 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       p.Credentials = new CredentialsEntity();
       p.Credentials = { ...combindInfo.vmCredential };
       if (combindInfo.checkInPersonInfos) {
+        const cp = combindInfo.checkInPersonInfos.find(it =>
+          AppHelper.includeHanz(`${it.lastName}${it.firstName}`)
+        );
+        if (cp) {
+          if (this.checkInPersonInfoEles) {
+            const one = this.checkInPersonInfoEles.find(
+              it => it.el.getAttribute("checkinpersionid") == combindInfo.id
+            );
+            if (one) {
+              this.scrollEleToView(one.el);
+            }
+          }
+          showErrorMsg(
+            `请为入住人【${cp.lastName} ${cp.firstName}】输入拼音或者英文`,
+            combindInfo
+          );
+          return;
+        }
         p.CustomerName = combindInfo.checkInPersonInfos
           .filter(it => !it.isChild && it.firstName && it.lastName)
           .map(it => `${it.lastName},${it.firstName}`)
@@ -667,11 +688,15 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           .map(it => `${it.lastName},${it.firstName}`)
           .join("/");
       }
-      if (!combindInfo.vmCredential.Type || !this.checkCredentialValidate(combindInfo)) {
-        const tip = !combindInfo.vmCredential.Type ? LanguageHelper.getCredentialTypeTip() : "请选择合适的证件";
+      if (
+        !combindInfo.vmCredential.Type ||
+        !this.checkCredentialValidate(combindInfo)
+      ) {
+        const tip = !combindInfo.vmCredential.Type
+          ? LanguageHelper.getCredentialTypeTip()
+          : "请选择合适的证件";
         showErrorMsg(tip, combindInfo);
         if (!this.checkCredentialValidate(combindInfo)) {
-
         }
         const c = this.credentialEles.find(
           it => it.nativeElement.getAttribute("id") == combindInfo.id
@@ -717,7 +742,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-          }`;
+        }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -731,7 +756,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-          }`;
+        }`;
       }
       p.IllegalReason =
         (this.tmc &&
@@ -876,7 +901,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     item.credentialsRequested = false;
     // this.isManagentCredentails = true;
     this.router.navigate([
-      AppHelper.getRoutePath("member-credential-management")
+      AppHelper.getRoutePath("member-credential-list")
     ]);
   }
   private async initializeViewModel() {
@@ -997,20 +1022,20 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-              return {
-                checked: idx == 0,
-                mobile
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  mobile
+                };
+              })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-              return {
-                checked: idx == 0,
-                email
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  email
+                };
+              })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
@@ -1174,7 +1199,11 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   private checkCredentialValidate(combineInfo: IPassengerHotelBookInfo) {
-    return combineInfo.credential && (combineInfo.credential.Type == CredentialsType.HmPass || combineInfo.credential.Type == CredentialsType.Passport);
+    return (
+      combineInfo.credential &&
+      (combineInfo.credential.Type == CredentialsType.HmPass ||
+        combineInfo.credential.Type == CredentialsType.Passport)
+    );
   }
   async onBook(isSave: boolean) {
     if (this.isSubmitDisabled) {

@@ -243,7 +243,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
         searchGeoId: null,
         filters: null
       });
-      await this.hotelService.getConditions();
+      this.hotelService.getConditions();
       this.isLeavePage = true;
       this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
     } else {

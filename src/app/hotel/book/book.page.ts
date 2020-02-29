@@ -189,7 +189,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     item.credentialsRequested = false;
     this.isManagentCredentails = true;
     this.router.navigate([
-      AppHelper.getRoutePath("member-credential-management")
+      AppHelper.getRoutePath("member-credential-list")
     ]);
   }
   onShowPriceDetails(evt: {
@@ -271,29 +271,34 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
   }
   get totalPrice() {
     const infos = this.hotelService.getBookInfos();
-    let totalPrice = infos.reduce((arr, item) => {
+    let roomPlanTotalAmount = infos.reduce((arr, item) => {
       if (item && item.bookInfo && item.bookInfo.roomPlan) {
         const info = item.bookInfo;
-        const roomPrice =
-          this.hotelPaymentType == HotelPaymentType.SelfPay
-            ? 0
-            : +info.roomPlan.TotalAmount;
+        const roomPrice = +info.roomPlan.TotalAmount;
         arr = AppHelper.add(arr, roomPrice);
       }
       return arr;
     }, 0);
+    let fees = 0;
     if (this.initialBookDto && this.initialBookDto.ServiceFees) {
-      const fees = Object.keys(this.initialBookDto.ServiceFees).reduce(
-        (acc, key) => {
-          const fee = +this.initialBookDto.ServiceFees[key];
-          acc = AppHelper.add(fee, acc);
-          return acc;
-        },
-        0
-      );
-      totalPrice = AppHelper.add(fees, totalPrice);
+      fees = Object.keys(this.initialBookDto.ServiceFees).reduce((acc, key) => {
+        const fee = +this.initialBookDto.ServiceFees[key];
+        acc = AppHelper.add(fee, acc);
+        return acc;
+      }, 0);
     }
-    return totalPrice;
+    if (this.notShowServiceFee()) {
+      fees = 0;
+    } else {
+      // 显示服务费
+      if (this.hotelPaymentType == HotelPaymentType.SelfPay) {
+        // 现付
+        roomPlanTotalAmount = 0;
+      } else {
+        // 预付
+      }
+    }
+    return AppHelper.add(fees, roomPlanTotalAmount);
   }
   onOrderTravelPayTypeSelect() {
     const orderTravelPayType = this.orderTravelPayTypes.find(it => {
@@ -747,6 +752,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
       p.TravelType = combindInfo.travelType;
       p.TravelPayType = this.orderTravelPayType;
       p.IsSkipApprove = combindInfo.isSkipApprove;
+      p.OrderHotelType = OrderHotelType.Domestic;
       if (
         combindInfo.bookInfo.bookInfo &&
         combindInfo.bookInfo.bookInfo.roomPlan &&

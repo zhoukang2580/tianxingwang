@@ -26,22 +26,6 @@ export class WorkflowApiService {
       PageIndex: pageIndex
     };
     req.Method = "WorkflowApiUrl-Task-List";
-    if (!environment.production) {
-      const tasks = [];
-      const status = {
-        0: "待审批",
-        1: "已完成",
-        2: "已过期"
-      };
-      for (let i = 0; i < 20; i++) {
-        const t = new TaskEntity();
-        t.Number = `${i}`;
-        t.Name = `第${i}个任务`;
-        t.StatusName = status[Math.random() * 3];
-        tasks.push(t);
-      }
-      return of({ Data: tasks });
-    }
     return this.apiService.getResponse<TaskEntity[]>(req);
   }
   getNotifyList({

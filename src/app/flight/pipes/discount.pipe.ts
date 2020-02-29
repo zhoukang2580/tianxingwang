@@ -6,12 +6,15 @@ import { Pipe, PipeTransform } from "@angular/core";
 })
 export class DiscountPipe implements PipeTransform {
   transform(value: string, args?: any): any {
-    const v = +value
+    const v = +value;
     if (isNaN(v)) {
       return value;
     }
-    if (0 <v && v < 1) {
-      return `${v * 1000 / 10}${LanguageHelper.getDiscountTip()}`;
+    if (0 < v && v < 1) {
+      const d = `${((v * 100) / 10).toFixed(1)}`;
+      return `${
+        d?.includes(".0") ? d.replace(".0", "") : d
+      }${LanguageHelper.getDiscountTip()}`;
     }
     return LanguageHelper.getFullPriceTip();
   }

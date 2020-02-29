@@ -30,6 +30,7 @@ interface PageModel {
 export class MyPage implements OnDestroy, OnInit {
   Model: PageModel;
   isIos = false;
+  isShowWorkflow = environment.mockProBuild;
   defaultAvatar = AppHelper.getDefaultAvatar();
   subscriptions: Subscription[] = [];
   msgCount$: Observable<number>;
@@ -182,7 +183,7 @@ export class MyPage implements OnDestroy, OnInit {
   }
   credentialManagement() {
     this.router.navigate([
-      AppHelper.getRoutePath("member-credential-management")
+      AppHelper.getRoutePath("member-credential-list")
     ]);
   }
   ngOnDestroy() {

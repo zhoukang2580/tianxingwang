@@ -164,7 +164,11 @@ export class InternationalHotelBookinfosPage implements OnInit {
         );
         if (r) {
           const rp = r.RoomPlans.find(
-            it => it.Number == changeDateBookInfo.bookInfo.roomPlan.Number
+            it =>
+              this.hotelService.getRoomPlanUniqueId(it) ==
+              this.hotelService.getRoomPlanUniqueId(
+                changeDateBookInfo.bookInfo.roomPlan
+              )
           );
           if (rp) {
             const old = changeDateBookInfo.bookInfo.roomPlan.TotalAmount;

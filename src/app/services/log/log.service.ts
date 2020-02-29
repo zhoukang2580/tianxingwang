@@ -1,5 +1,5 @@
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
-import { throwError } from "rxjs";
+import { throwError, Subscription, interval } from "rxjs";
 import { Injectable } from "@angular/core";
 import { RequestEntity } from "../api/Request.entity";
 import { AppHelper } from "../../appHelper";
@@ -13,18 +13,20 @@ import { catchError, finalize } from "rxjs/operators";
 export class LogService {
   private exceptions: ExceptionEntity[] = [];
   private identityEntity: IdentityEntity;
+  private subscription = Subscription.EMPTY;
+  private started = false;
   constructor(private http: HttpClient, identityService: IdentityService) {
     identityService.getIdentitySource().subscribe(r => {
       this.identityEntity = r;
     });
-    setInterval(_ => {
-      this.sendException();
-    }, 3000);
   }
   private async sendException() {
+    this.started = true;
     try {
       const ex: ExceptionEntity = this.exceptions[0];
       if (!ex) {
+        this.subscription.unsubscribe();
+        this.started = false;
         return true;
       }
       const identity = this.identityEntity;
@@ -82,6 +84,14 @@ export class LogService {
     this.exceptions.unshift(ex);
     if (this.exceptions.length > 500) {
       this.exceptions = this.exceptions.slice(0, 500);
+    }
+    if (this.exceptions.length && !this.started) {
+      this.subscription.unsubscribe();
+      this.started = true;
+      this.subscription = interval(1000 * 20).subscribe(() => {
+        console.log("发送错误消息");
+        this.sendException();
+      });
     }
   }
 }

@@ -31,17 +31,16 @@
   top: 0.2em;
 }
 
-.header {
+ion-header {
   position: fixed;
+  top: 0;
   left: 0;
   right: 0;
-  height: 3em;
-  background: transparent;
-  opacity: 0;
-  z-index: 0;
-  transition: opacity 100ms ease-in-out;
+  z-index: 999;
 }
-
+.div-for-scroll {
+  min-height: 60vh;
+}
 ion-card {
   z-index: 100;
   position: relative;

@@ -58,6 +58,10 @@ export class OrderItemComponent implements OnInit {
     evt.preventDefault();
     evt.stopPropagation();
   }
+  check(orderTrainTicket: OrderTrainTicketEntity) {
+    return  orderTrainTicket && orderTrainTicket.OrderTrainTrips && orderTrainTicket.OrderTrainTrips.length == 1 &&
+      +this.calendarService.getMoment(0, orderTrainTicket.OrderTrainTrips[0].StartTime) - +this.calendarService.getMoment(0) > 0
+  }
   async onExchange(evt: CustomEvent, orderTrainTicket: OrderTrainTicketEntity) {
     if (evt) {
       evt.stopPropagation();

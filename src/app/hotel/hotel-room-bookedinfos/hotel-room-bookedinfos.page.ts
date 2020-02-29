@@ -164,7 +164,10 @@ export class HotelRoomBookedinfosPage implements OnInit {
         );
         if (r) {
           const rp = r.RoomPlans.find(
-            it => it.Number == changeDateBookInfo.bookInfo.roomPlan.Number
+            it =>
+              this.hotelService.getRoomPlanUniqueId(
+                changeDateBookInfo.bookInfo.roomPlan
+              ) == this.hotelService.getRoomPlanUniqueId(it)
           );
           if (rp) {
             const old = changeDateBookInfo.bookInfo.roomPlan.TotalAmount;

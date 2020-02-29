@@ -44,6 +44,9 @@ export class AppHelper {
   static setRouteData(data: any) {
     this._routeData = data;
   }
+  static includeHanz(txt: string) {
+    return /[\u4e00-\u9fa5]/gi.test(txt);
+  }
   static toast(
     msg: any,
     duration = 1400,

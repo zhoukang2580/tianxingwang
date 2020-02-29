@@ -115,7 +115,7 @@
         <ion-row *ngIf='order?.OrderPassengers?.length'>
           <ion-col size='3'>旅客信息</ion-col>
           <ion-col>
-            <ion-text  *ngIf='getPassenger(orderFlightTicket) as p'>
+            <ion-text *ngIf='getPassenger(orderFlightTicket) as p'>
               {{p.CheckName}} <span>{{p.CredentialsNumber}}</span>
             </ion-text>
           </ion-col>
@@ -213,7 +213,7 @@
             <div>
               <div *ngFor='let orderTrainTrip of orderTrainTicket.OrderTrainTrips'>
                 <span>{{orderTrainTrip.StartTime?.substr(0,"yyyy-mm-dd".length)}}</span>
-                <span>{{getHHmm(orderTrainTrip.StartTime)}}</span>
+                <span style='margin-left:0.5em'>{{getHHmm(orderTrainTrip.StartTime)}}</span>
                 <span>{{orderTrainTrip.TrainNo}}</span>
                 <div>{{orderTrainTrip.FromStationName}}---{{orderTrainTrip.ToStationName}}</div>
               </div>
@@ -234,7 +234,7 @@
             </ion-text>
           </ion-col>
         </ion-row>
-        <ion-row class='ion-text-end'>
+        <ion-row class='ion-text-end' *ngIf='check(orderTrainTicket)'>
           <ion-col style="justify-content: flex-end;">
             <ion-button (click)='onExchange($event,orderTrainTicket)' color='secondary'
               *ngIf='orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
@@ -303,6 +303,17 @@
           </ion-col>
           <ion-col>
             {{orderHotel.EndDate?.substr(0,"yyyy-MM-dd".length)}}
+          </ion-col>
+        </ion-row>
+        <ion-row *ngIf='order.TotalAmount as m'>
+          <ion-col size='3.5'>
+            房费
+          </ion-col>
+          <ion-col>
+            <ion-text color='danger'>
+              ￥{{m}}
+            </ion-text>
+            <ion-text color='medium'>{{order.TravelPayType==HotelPaymentType.SelfPay?"(现付)":order.TravelPayType==HotelPaymentType.Prepay?"(预付)":""}}</ion-text>
           </ion-col>
         </ion-row>
         <ion-row *ngIf='orderHotel.ConfirmNumber as cnumber'>

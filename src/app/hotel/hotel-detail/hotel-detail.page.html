@@ -1,45 +1,42 @@
 <ion-header>
-  <div class='header' #header>
-    <ion-toolbar>
-      <ion-buttons slot='start'>
-
-        <app-back-button defaultHref=""></app-back-button>
-      </ion-buttons>
-      <ion-title [class.has-add-passenger]='(isShowAddPassenger$|async)'>{{hotel?.Name}}</ion-title>
-      <ion-buttons slot='end' *ngIf='!isShowBackArrow'>
-        <ion-button *ngIf='' style="font-size: 0.8rem;" fill='clear' color='secondary' (click)='onFilteredPassenger()'
-          size='small'>
-          <ion-text>过滤差标</ion-text>
-        </ion-button>
-        <ion-button style="font-size: 0.8rem;" fill='clear' *ngIf='(isShowAddPassenger$|async)' color='secondary'
-          size='small' (click)='onSelectPassenger()'>
-          <ion-text>添加旅客</ion-text>
-          <ion-badge color='danger'>
-            <ion-text color='light' class='xs-font-size'>{{selectedPassengersNumbers$|async}}</ion-text>
-          </ion-badge>
-        </ion-button>
-      </ion-buttons>
-    </ion-toolbar>
-    <ion-toolbar #toolbarsegment [@hideShowAnimate]='!isShowBackArrow'>
-      <ion-segment (ionChange)="segmentChanged($event)" color="secondary" value="{{activeTab}}">
-        <ion-segment-button value="houseInfo">
-          <ion-label>房型</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="hotelInfo">
-          <ion-label>酒店信息</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="trafficInfo">
-          <ion-label>交通信息</ion-label>
-        </ion-segment-button>
-      </ion-segment>
-    </ion-toolbar>
-  </div>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <app-back-button defaultHref=""></app-back-button>
+    </ion-buttons>
+    <ion-title [class.has-add-passenger]='(isShowAddPassenger$|async)'>{{hotel?.Name}}</ion-title>
+    <ion-buttons slot='end'>
+      <ion-button style="font-size: 0.8rem;" fill='clear' color='secondary' (click)='onFilteredPassenger()'
+        size='small'>
+        <ion-text>过滤差标</ion-text>
+      </ion-button>
+      <ion-button style="font-size: 0.8rem;" fill='clear' *ngIf='(isShowAddPassenger$|async)' color='secondary'
+        size='small' (click)='onSelectPassenger()'>
+        <ion-text>添加旅客</ion-text>
+        <ion-badge color='danger'>
+          <ion-text color='light' class='xs-font-size'>{{selectedPassengersNumbers$|async}}</ion-text>
+        </ion-badge>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar #toolbarsegment>
+    <ion-segment (ionChange)="onSegmentChanged($event)" color="secondary" value="{{activeTab}}">
+      <ion-segment-button value="houseInfo">
+        <ion-label>房型</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="hotelInfo">
+        <ion-label>酒店信息</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="trafficInfo">
+        <ion-label>交通信息</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 </ion-header>
 <ion-content>
   <ion-refresher slot='fixed' (ionRefresh)='doRefresh()' pullMin='100'></ion-refresher>
   <div class="bg" #bg>
     <div class="back-button">
-      <app-back-button color='light' ></app-back-button>
+      <app-back-button color='light'></app-back-button>
     </div>
     <app-swiper-slides (click)='onShowHotelImages()' (slideChange)='onSlideChange($event)' [options]='{autoplay:true}'
       [items]='hotelImages' [defaultImage]='config?.DefaultImageUrl'>
@@ -176,7 +173,7 @@
         <ion-icon name='caret-up-outline' color='secondary' *ngIf='hotel["ishoteldetails"]'></ion-icon>
       </ng-container>
     </ion-item-divider>
-    <ng-container *ngIf='hotel?.HotelDetails'>
+    <ng-container *ngIf='hotel?.HotelDetails' @flyInOut>
       <ion-grid *ngIf='hotel["ishoteldetails"]'>
         <ng-container *ngFor='let detail of hotel?.HotelDetails'>
           <ion-row *ngIf='detail.Description'>
@@ -193,10 +190,8 @@
             </ng-container>
             <ng-template #otherTempl>
               <ion-col size='2'>
-                <ion-text fill='clear' (click)='detail["isShowMore"]=!detail["isShowMore"]' color='secondary'>
+                <ion-text fill='clear'>
                   {{detail.Name}}
-                  <ion-icon name='caret-down-outline' *ngIf='detail["isShowMore"]'></ion-icon>
-                  <ion-icon name="caret-up-outline" *ngIf='!detail["isShowMore"]'></ion-icon>
                 </ion-text>
               </ion-col>
               <ion-col size='10' (click)='detail["isShowMore"]=!detail["isShowMore"]'>
@@ -207,6 +202,8 @@
                 </div>
                 <ion-text *ngIf='detail["isShowMore"]' color='medium'>
                   {{detail.Description}}
+                  <ion-icon name='caret-down-outline' color='secondary' *ngIf='!detail["isShowMore"]'></ion-icon>
+                  <ion-icon name="caret-up-outline" color='secondary' *ngIf='detail["isShowMore"]'></ion-icon>
                 </ion-text>
               </ion-col>
             </ng-template>
@@ -216,19 +213,15 @@
     </ng-container>
   </ion-list>
   <ion-list #trafficInfo class='traffic-info'>
-    <ng-container *ngIf='isShowTrafficInfo'>
-      <ion-item-divider (click)='hotel["isShowMap"]=!hotel["isShowMap"]'>交通信息
-        <ng-container *ngIf='hotel'>
-          <ion-icon name='caret-down-outline' color='secondary' *ngIf='!hotel["isShowMap"]'></ion-icon>
-          <ion-icon name='caret-up-outline' color='secondary' *ngIf='hotel["isShowMap"]'></ion-icon>
-        </ng-container>
-      </ion-item-divider>
-      <ng-container *ngIf='hotel&&hotel["isShowMap"]'>
-        <div class="traffic-map">
-          <app-map [lat]='hotel?.Lat' [lng]='hotel?.Lng'></app-map>
-        </div>
+    <ion-item-divider (click)='onToggleOpenMap()'>交通信息
+      <ng-container *ngIf='hotel'>
+        <ion-icon name='caret-down-outline' color='secondary' *ngIf='!hotel["isShowMap"]'></ion-icon>
+        <ion-icon name='caret-up-outline' color='secondary' *ngIf='hotel["isShowMap"]'></ion-icon>
       </ng-container>
-    </ng-container>
+    </ion-item-divider>
+    <div class="traffic-map" [style.display]='!hotel||!hotel["isShowMap"]?"none":"block"'>
+      <app-map [lat]='hotel?.Lat' [lng]='hotel?.Lng'></app-map>
+    </div>
   </ion-list>
-  <ion-list class='empty' *ngIf='hotel&&(!hotel["ishoteldetails"]||!hotel["isShowMap"])'></ion-list>
+  <div #divforscroll [class.div-for-scroll]='!hotel||!hotel["isShowMap"]||!hotel["ishoteldetails"]'></div>
 </ion-content>
