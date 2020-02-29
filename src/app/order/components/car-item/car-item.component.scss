@@ -1,5 +1,5 @@
 ion-row {
-  ion-col:first-child {
+  ion-col:not(.dark) {
     color: var(--ion-color-medium);
   }
   ion-col {
