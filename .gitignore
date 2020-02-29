@@ -17,6 +17,8 @@ npm-debug.log*
 .tmp/
 .versions/
 coverage/
+www*
+dist*
 www/
 !hcp/www/
 !*-plugin*/www/

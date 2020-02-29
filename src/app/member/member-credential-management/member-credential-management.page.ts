@@ -391,7 +391,36 @@ export class MemberCredentialManagementPage
       this.formEle.nativeElement
     );
   }
+<<<<<<< HEAD
 
+=======
+  async getCredentials() {
+    this.loading = true;
+    const identity = await this.identityService
+      .getIdentityAsync()
+      .catch(_ => null);
+    if (!identity) {
+      return (this.credentials = []);
+    }
+    const credentials = await this.memberService.getCredentials(
+      identity && identity.Id
+    );
+    this.credentials = credentials.map(c => {
+      return {
+        ...c,
+        isModified: false,
+        Birthday: c.Birthday.indexOf("T")
+          ? moment(c.Birthday).format("YYYY/MM/DD")
+          : c.Birthday,
+        ExpirationDate: c.ExpirationDate.indexOf("T")
+          ? moment(c.ExpirationDate).format("YYYY/MM/DD")
+          : c.ExpirationDate
+      };
+    });
+    this.loading = false;
+    console.log("credentials", this.credentials);
+  }
+>>>>>>> 783c8ad73b22ada8d634fce7f54049bdf37e2715
   async onAddCredential() {
     const item: MemberCredential = {
       Gender: "M",

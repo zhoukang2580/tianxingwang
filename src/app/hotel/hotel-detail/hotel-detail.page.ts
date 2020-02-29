@@ -75,7 +75,13 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("bg") bgEle: ElementRef<HTMLElement>;
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
+<<<<<<< HEAD
   @ViewChild("houseInfo") private houseInfoEle: IonList;
+=======
+  @ViewChild("toolbarsegment")
+  @ViewChild("houseInfo")
+  private houseInfoEle: IonList;
+>>>>>>> 783c8ad73b22ada8d634fce7f54049bdf37e2715
   @ViewChild("hotelInfo") private hotelInfoEle: IonList;
   @ViewChild("trafficInfo") private trafficInfoEle: IonList;
   curHotelImagePos = 0;
@@ -319,7 +325,14 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
             if (this.hotel) {
               this.hotelDayPrice.Hotel = this.hotel;
               this.hotelPolicy = await this.getPolicy();
+<<<<<<< HEAD
               this.content.scrollToTop();
+=======
+              // if (!environment.production) {
+              //   this.storage.set("mock-hotel-detail", this.hotel);
+              // }
+              await this.content.scrollToTop();
+>>>>>>> 783c8ad73b22ada8d634fce7f54049bdf37e2715
               this.initFilterPolicy();
               this.checkIfBookedRoomPlan();
               setTimeout(() => {
@@ -432,12 +445,15 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
         behavior: "smooth",
         top: tab.top - this.headerHeight
       });
+<<<<<<< HEAD
     }
   }
   onToggleOpenMap() {
     if (this.hotel) {
       this.hotel["isShowMap"] = !this.hotel["isShowMap"];
       this.isAutoOpenMap = false;
+=======
+>>>>>>> 783c8ad73b22ada8d634fce7f54049bdf37e2715
     }
   }
   async onBookRoomPlan(evt: {

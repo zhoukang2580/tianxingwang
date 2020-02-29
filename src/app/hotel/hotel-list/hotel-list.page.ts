@@ -141,7 +141,11 @@ export class HotelListPage
             );
             if (eles) {
               eles.forEach((el: HTMLElement) => {
+<<<<<<< HEAD
                 el.style.top = `${hi}px`;
+=======
+                el.style.top = `${hi + 1}px`;
+>>>>>>> 783c8ad73b22ada8d634fce7f54049bdf37e2715
               });
             }
           }
