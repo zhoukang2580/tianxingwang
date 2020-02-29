@@ -14,7 +14,7 @@
     </div>
   </ion-toolbar>
 </ion-header>
-<ion-content #cnt [scrollEvents]='true' (ionScrollEnd)='onScrollEnd()'>
+<ion-content #cnt [scrollEvents]='true' (ionScroll)='onScrollEnd()'>
   <ng-container *ngIf='orderDetail&&orderDetail.Order else nomoredata'>
     <div>
       <!-- 订单信息 -->

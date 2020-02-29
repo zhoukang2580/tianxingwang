@@ -1,3 +1,4 @@
+import { IResponse } from './../services/api/IResponse';
 import { TaskModel } from "./models/TaskModel";
 import { TaskEntity } from "src/app/workflow/models/TaskEntity";
 import { HistoryEntity } from "./models/HistoryEntity";
@@ -7,11 +8,13 @@ import { ApiService } from "../services/api/api.service";
 import { OrderModel } from "./models/OrderModel";
 import { OrderEntity, OrderStatusType } from "./models/OrderEntity";
 import { map, switchMap } from "rxjs/operators";
-import { from, Observable } from "rxjs";
+import { from, Observable, of } from "rxjs";
 import * as moment from "moment";
 import { OrderTravelPayType } from './models/OrderTravelEntity';
 import { OrderFlightTicketStatusType } from './models/OrderFlightTicketStatusType';
 import { OrderTrainTicketStatusType } from './models/OrderTrainTicketStatusType';
+import { environment } from 'src/environments/environment';
+import { MOCK_CAR_DATA } from './mock-data';
 export class OrderDetailModel {
   Histories: HistoryEntity[];
   Tasks: TaskEntity[];
@@ -30,6 +33,9 @@ export class OrderService {
     const type = searchCondition.Type;
     req.Data = searchCondition;
     req.Method = `TmcApiOrderUrl-Order-List`;
+    if (type == 'Car' && !environment.production) {
+      return of({ Data: MOCK_CAR_DATA as any, Status: true } as IResponse<OrderModel>)
+    }
     return this.apiService.getResponse<OrderModel>(req);
   }
   // getOrderListAsync(searchCondition: OrderModel): Promise<OrderModel> {

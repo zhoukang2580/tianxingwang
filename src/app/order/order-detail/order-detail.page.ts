@@ -59,6 +59,7 @@ export interface TabItem {
   styleUrls: ["./order-detail.page.scss"]
 })
 export class OrderDetailPage implements OnInit, AfterViewInit {
+  private headerHeight = 0;
   tmc: TmcEntity;
   title: string;
   tab: ProductItem;
@@ -87,7 +88,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     private domCtrl: DomController,
     private orderService: OrderService,
     private identityService: IdentityService
-  ) {}
+  ) { }
   scrollTop: number;
 
   compareFn(t1: OrderFlightTicketEntity, t2: OrderFlightTicketEntity) {
@@ -635,9 +636,9 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     }
     const p = await this.popoverCtrl.create({
       component: OrderItemPricePopoverComponent,
-      cssClass:"ticket-changing",
+      cssClass: "ticket-changing",
       componentProps: {
-        order:this.orderDetail&&this.orderDetail.Order,
+        order: this.orderDetail && this.orderDetail.Order,
         insurance: this.getInsuranceAmount(),
         IsShowServiceFee: Tmc.IsShowServiceFee,
         orderItems,
@@ -665,32 +666,32 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     }
   }
   onScrollEnd() {
-    if (this.scrollElement) {
-      const headerHeight =
-        (this.headerEle &&
-          this.headerEle["el"] &&
-          this.headerEle["el"].clientHeight) ||
-        112;
-      const scrollTop =
-        (this.scrollTop = this.scrollElement.scrollTop) + headerHeight;
-      let activeTab: TabItem;
-      const linkEles = this.linkEles.toArray();
-      for (let i = 0; i < linkEles.length; i++) {
-        const el = linkEles[i]["el"];
-        const rect = el && el.getBoundingClientRect();
-        if (el && rect) {
-          if (rect.top - headerHeight >= 0 || rect.bottom - headerHeight >= 0) {
-            activeTab = this.tabs.find(
-              t => t.value == +el.getAttribute("tabid")
-            );
-            break;
+    this.domCtrl.read(() => {
+      if (this.scrollElement) {
+        this.headerHeight = this.headerHeight ||
+          (this.headerEle &&
+            this.headerEle["el"] &&
+            this.headerEle["el"].clientHeight);
+        const headerHeight = this.headerHeight;
+        let activeTab: TabItem;
+        const linkEles = this.linkEles.toArray();
+        for (let i = 0; i < linkEles.length; i++) {
+          const el = linkEles[i]["el"];
+          const rect = el && el.getBoundingClientRect();
+          if (el && rect) {
+            if (rect.top - headerHeight >= 0 || rect.bottom - headerHeight >= 0) {
+              activeTab = this.tabs.find(
+                t => t.value == +el.getAttribute("tabid")
+              );
+              break;
+            }
           }
         }
+        if (activeTab) {
+          this.moveTabToCenter(activeTab);
+        }
       }
-      if (activeTab) {
-        this.moveTabToCenter(activeTab);
-      }
-    }
+    })
   }
   private moveTargetLinkToView(tab: TabItem) {
     if (this.linkEles) {

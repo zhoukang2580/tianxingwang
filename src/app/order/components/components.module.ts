@@ -20,10 +20,12 @@ import { FlightOrderDetailComponent } from './flight-order-detail/flight-order-d
 import { HotelOrderDetailComponent } from './hotel-order-detail/hotel-order-detail.component';
 import { InsuranceOrderDetailComponent } from './insurance-order-detail/insurance-order-detail.component';
 import { MyTripComponent } from './my-trip/my-trip.component';
+import { CarItemComponent } from './car-item/car-item.component';
 
 @NgModule({
   declarations: [
     OrderItemComponent,
+    CarItemComponent,
     OrderItemPricePopoverComponent,
     SendMsgComponent,
     SendEmailComponent,
@@ -49,20 +51,12 @@ import { MyTripComponent } from './my-trip/my-trip.component';
   ],
   exports: [
     OrderItemComponent,
+    CarItemComponent,
     TrainOrderDetailComponent,
     FlightOrderDetailComponent,
     HotelOrderDetailComponent,
     InsuranceOrderDetailComponent,
     MyTripComponent
-  ],
-  entryComponents: [
-    SearchTicketModalComponent,
-    OrderItemPricePopoverComponent,
-    SendMsgComponent,
-    SendEmailComponent,
-    SearchTicketModalComponent,
-    TripRulePopoverComponent,
-    SelectTicketPopoverComponent
   ]
 })
 export class OrderComponentsModule { }

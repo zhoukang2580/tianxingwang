@@ -1,0 +1,101 @@
+<ng-container *ngFor='let car of order?.OrderCars'>
+  <ion-grid class="train">
+    <ion-row>
+      <ion-col size='4'>
+        订单编号
+      </ion-col>
+      <ion-col class='select-text' class='dark'>
+        <strong>{{order.Id}}</strong>
+      </ion-col>
+      <ion-col class='status ion-text-end'>
+        <ion-text color='secondary'>
+          {{ order.StatusName}}</ion-text>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size='4'>
+        客户
+      </ion-col>
+      <ion-col class='select-text' class='dark'>
+        <div>
+          <div *ngFor='let c of order.OrderNumbers'>
+            {{c.Name}}
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
+    <ng-container>
+      <ion-row>
+        <ion-col size='4'>
+          <ion-text color='ticketIsReject(orderTrainTicket)?"danger":""'>应收金额</ion-text>
+        </ion-col>
+        <ion-col class='select-text'>
+          <ion-text color='ticketIsReject(orderTrainTicket)?"danger":""'>
+            {{order.TotalAmount}}</ion-text>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size='4'>
+          <ion-text color='ticketIsReject(orderTrainTicket)?"danger":""'>实收金额</ion-text>
+        </ion-col>
+        <ion-col class='select-text'>
+          <ion-text color='ticketIsReject(orderTrainTicket)?"danger":""'>
+            {{order.PayAmount}}</ion-text>
+        </ion-col>
+      </ion-row>
+    </ng-container>
+    <ion-row *ngIf='order?.OrderPassengers?.length'>
+      <ion-col size='4'>乘客信息</ion-col>
+      <ion-col>
+        <div style="font-size: 0.8rem;">
+          <div *ngFor='let p of order.OrderPassengers'>
+            {{p.Name}}
+            <span style="margin-left: 0.5em;">{{p.CredentialsNumber}}</span>
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size='4'>
+        用车事务号
+      </ion-col>
+      <ion-col class='select-text' class='dark'>
+        <strong>{{car.Id}}</strong>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size='4'>
+        支付方式
+      </ion-col>
+      <ion-col>
+        {{car.PaymentType==1?"企业支付":"个人支付"}}
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size='4'>行程</ion-col>
+      <ion-col>
+        <div>
+          {{car.ActualFromAddress}}-{{car.ActualToAddress}}
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size='4'>订单类型</ion-col>
+      <ion-col>
+        {{car.CarType}}
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size='4'>供应商</ion-col>
+      <ion-col>
+        {{car.Supplier}}
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size='4'>用车状态</ion-col>
+      <ion-col>
+        {{car.StatusName}}
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ng-container>

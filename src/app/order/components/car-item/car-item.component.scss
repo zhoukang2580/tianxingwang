@@ -1,0 +1,9 @@
+ion-row {
+  ion-col:first-child {
+    color: var(--ion-color-medium);
+  }
+  ion-col {
+    font-size: 0.9rem;
+    align-self: flex-start;
+  }
+}
