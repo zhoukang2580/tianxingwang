@@ -13,7 +13,6 @@ export class CarItemComponent implements OnInit {
   constructor() { }
 
   ngOnInit() { 
-    console.log('order',this.order)
   }
 
 

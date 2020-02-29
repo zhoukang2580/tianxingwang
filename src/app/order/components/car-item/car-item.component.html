@@ -4,7 +4,7 @@
       <ion-col size='4'>
         订单编号
       </ion-col>
-      <ion-col class='select-text' class='dark'>
+      <ion-col class='select-text dark'>
         <strong>{{order.Id}}</strong>
       </ion-col>
       <ion-col class='status ion-text-end'>
@@ -16,7 +16,7 @@
       <ion-col size='4'>
         客户
       </ion-col>
-      <ion-col class='select-text' >
+      <ion-col >
         <div>
           <div *ngFor='let c of order.OrderNumbers'>
             {{c.Name}}
@@ -29,7 +29,7 @@
         <ion-col size='4'>
           应收金额
         </ion-col>
-        <ion-col class='select-text'>
+        <ion-col >
           <ion-text color='danger'>
             ￥{{order.TotalAmount}}</ion-text>
         </ion-col>
@@ -38,7 +38,7 @@
         <ion-col size='4'>
           实收金额
         </ion-col>
-        <ion-col class='select-text'>
+        <ion-col >
           <ion-text color='danger'>
             ￥{{order.PayAmount}}</ion-text>
         </ion-col>
@@ -59,7 +59,7 @@
       <ion-col size='4'>
         用车事务号
       </ion-col>
-      <ion-col class='select-text' class='dark'>
+      <ion-col class='select-text'>
         <strong>{{car.Id}}</strong>
       </ion-col>
     </ion-row>
