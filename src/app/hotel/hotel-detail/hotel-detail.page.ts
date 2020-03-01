@@ -732,15 +732,15 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
   private checkScroll() {
     this.domCtrl.write(async _ => {
       const scroll = await this.content.getScrollElement();
-      const h =
-        this.bgEle &&
-        this.bgEle.nativeElement &&
-        this.bgEle.nativeElement.offsetHeight;
       const sub = fromEvent(scroll, "scroll")
-        .pipe(debounceTime(10))
-        .subscribe(evt => {
-          this.domCtrl.read(() => {
-            const top = scroll.scrollTop;
+      .pipe(debounceTime(10))
+      .subscribe(() => {
+        this.domCtrl.read(() => {
+          const h =
+            this.bgEle &&
+            this.bgEle.nativeElement &&
+            this.bgEle.nativeElement.offsetHeight;
+          const top = scroll.scrollTop;
             this.observeScrollIsShowHoteldetails();
             if (scroll.scrollHeight < 1.31 * this.plt.height()) {
               this.isHeaderHide = true;
@@ -749,8 +749,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
               this.headerHeight =
                 this.ionHeader && this.ionHeader["el"].offsetHeight;
             }
-            const headerH = this.headerHeight || 88;
-            const delta = top - (h - 2 * headerH);
+            const headerH = this.headerHeight;
+            // console.log("header height",headerH,h)
+            const delta = top - (h - headerH);
             const opacity = delta / headerH;
             if (delta >= 0) {
               this.changeHeaderOpacity(opacity);
