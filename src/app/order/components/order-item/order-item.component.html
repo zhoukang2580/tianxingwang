@@ -1,6 +1,6 @@
 <div class='order-item' *ngIf='order'>
   <ng-container *ngIf='order.OrderFlightTickets?.length'>
-    <ng-container *ngIf='order.OrderFlightTickets?.length&&order.OrderFlightTickets[0].TicketType==2 else domestic'>
+    <ng-container *ngIf='order.OrderFlightTickets?.length&&order.OrderFlightTickets[0].TicketType==OrderFlightTicketType.International else domestic'>
       <ion-row class='order-id'>
         <ion-col size='3'>
           订单编号
@@ -315,7 +315,7 @@
               ￥{{m}}
             </ion-text>
             <ion-text color='medium'>
-              {{order.TravelPayType==HotelPaymentType.SelfPay?"(现付)":order.TravelPayType==HotelPaymentType.Prepay?"(预付)":""}}
+              {{order.TravelPayType==2?"(现付)":order.TravelPayType==1?"(预付)":""}}
             </ion-text>
           </ion-col>
         </ion-row>
