@@ -1,1 +1,53 @@
-
+.tabs-wraper {
+  position: fixed;
+  top: 0;
+  z-index: 100;
+  background-color: white;
+  width: 100%;
+  height: 3em;
+}
+.tabs {
+  overflow: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  flex-flow: row nowrap;
+  display: flex;
+  align-items: center;
+  .tab {
+    padding: 1em 0.5em;
+    margin: 0 1em;
+    white-space: nowrap;
+    position: relative;
+    &.active {
+      color: var(--ion-color-secondary);
+      &::after {
+        background-color: var(--ion-color-secondary);
+        display: block;
+        position: absolute;
+        bottom: 0.5em;
+        content: "";
+        height: 0.2em;
+        left: 10%;
+        right: 10%;
+      }
+    }
+  }
+}
+main {
+  position: relative;
+  top: 3em;
+  overflow: auto;
+}
+.swiper-pagination {
+  position: fixed;
+  bottom: 1em;
+  right: 1em;
+  background-color: rgba(0, 0, 0, 0.13);
+  padding: 0 0.5em;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.5em;
+}

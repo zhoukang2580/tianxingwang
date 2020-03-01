@@ -25,9 +25,9 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
   private subscription = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
   private orderId: string;
-  @ViewChild('tabsContainer') tabsContainer: ElementRef<HTMLElement>;
+  
   @ViewChild(IonContent) content: IonContent;
-  @ViewChild(SwiperSlideContentComponent) swiper: SwiperSlideContentComponent;
+
   orderDetail: OrderDetailModel;
   tabs: ITab[];
   tab: ITab;
@@ -61,38 +61,7 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
     this.tab = this.tabs[0];
     this.tab.active = true;
   }
-  onActiveTab(tab: ITab) {
-    this.tabs = this.tabs.map(it => {
-      it.active = tab.value == it.value;
-      return it;
-    });
-    this.tab = tab;
-    this.scrollTabToCenter(tab);
-    const idx = this.tabs.indexOf(tab);
-    this.swiper.onSlideTo(idx);
-  }
-  private scrollTabToCenter(tab: ITab) {
-    if (this.tabsContainer && this.tabsContainer.nativeElement) {
-      const one = this.tabsContainer.nativeElement.querySelector(`[dataid='${tab.value}'`);
-      requestAnimationFrame(() => {
-        const rect = one && one.getBoundingClientRect();
-        if (rect) {
-          const delta = rect.left + rect.width / 2 - this.plt.width() / 2
-          this.tabsContainer.nativeElement.scrollBy({ left: delta, behavior: "smooth" })
-        }
-      })
-    }
-  }
-  onSlideTouchEnd(idx: number) {
-    const tab = this.tabs[idx];
-    if (tab) {
-      this.tabs = this.tabs.map(t => {
-        t.active = tab.value == t.value;
-        return t;
-      })
-      this.scrollTabToCenter(tab);
-    }
-  }
+  
   private loadOrderDetail(id: string) {
     this.orderDetail = {
       Order: MOCK_CAR_ORDER_DETAIL_DATA,

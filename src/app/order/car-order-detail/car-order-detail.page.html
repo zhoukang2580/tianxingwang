@@ -5,16 +5,10 @@
     </ion-buttons>
     <ion-title>用车订单详情</ion-title>
   </ion-toolbar>
-  <ion-toolbar>
-    <div class="tabs" #tabsContainer>
-      <div class="tab" [class.active]='t.active' (click)='onActiveTab(t)' #tabItem *ngFor='let t of tabs'
-        [attr.dataid]='t.value'>{{t.label}}</div>
-    </div>
-  </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <app-swiper-slide-content (onSlideChange)="onSlideTouchEnd($event)">
+  <app-swiper-slide-content [tabs]="tabs" >
     <div class="swiper-slide">
       <ion-list [attr.dataid]='tabs[0].value'>
         <!-- 基础信息 -->
@@ -98,7 +92,7 @@
           <ion-label>行程信息 </ion-label>
           <ion-label>
             <div>
-            
+
             </div>
           </ion-label>
         </ion-item>
