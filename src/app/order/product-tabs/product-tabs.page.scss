@@ -13,9 +13,12 @@
 }
 ion-content {
   --background: #f2f2f2;
-  ion-toolbar{
-    position: sticky;
-    top: 0;
+  ion-toolbar {
+    height: 3em;
+  }
+  & > ion-list {
+    position: relative;
+    top: 3.5em;
   }
 }
 ion-list {

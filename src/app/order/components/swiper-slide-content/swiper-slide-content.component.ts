@@ -1,6 +1,6 @@
 import { IonContent } from '@ionic/angular';
 import { Platform } from '@ionic/angular';
-import { OnDestroy, TemplateRef, Input, HostBinding } from '@angular/core';
+import { OnDestroy, TemplateRef, Input, HostBinding, AfterContentInit, AfterContentChecked } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { ElementRef, Output } from '@angular/core';
 import { AfterViewInit, ViewChild } from '@angular/core';
@@ -11,7 +11,7 @@ import Swiper from 'swiper';
   templateUrl: './swiper-slide-content.component.html',
   styleUrls: ['./swiper-slide-content.component.scss'],
 })
-export class SwiperSlideContentComponent implements OnInit, AfterViewInit, OnDestroy {
+export class SwiperSlideContentComponent implements OnInit, AfterViewInit, OnDestroy, AfterContentInit {
   private swiper: any;
   private content: IonContent;
   tab: any;
@@ -20,9 +20,13 @@ export class SwiperSlideContentComponent implements OnInit, AfterViewInit, OnDes
   @ViewChild('container', { static: true }) container: ElementRef<HTMLElement>
   @ViewChild('tabsContainer') tabsContainer: ElementRef<HTMLElement>;
   @ViewChild('tabsWrapper') tabsWrapper: ElementRef<HTMLElement>;
-  @ViewChild('swiperPagination') swiperPagination: ElementRef<HTMLElement>;
+  @ViewChild('swiperPagination', { static: true }) swiperPagination: ElementRef<HTMLElement>;
   constructor(private plt: Platform, private el: ElementRef<HTMLElement>) {
     this.onSlideChange = new EventEmitter();
+  }
+  ngAfterContentInit() {
+    // console.log("content check", this.container);
+
   }
   onSlideTo(idx: number) {
     if (this.swiper) {
@@ -30,8 +34,31 @@ export class SwiperSlideContentComponent implements OnInit, AfterViewInit, OnDes
       this.scrollToTop();
     }
   }
-  ngOnInit() { }
+  update() {
+    if (this.swiper) {
+      this.swiper.update();
+      requestAnimationFrame(() => {
+        this.onSlideTouchEnd(0)
+      });
+    }
+  }
+  ngOnInit() {
+    console.log("on init");
+    this.swiper = new Swiper(this.container.nativeElement, {
+      pagination: {
+        el: this.swiperPagination.nativeElement,
+      }
+    })
+    if (this.swiper) {
+      this.swiper.on('slideChange', () => {
+        const idx = this.swiper.realIndex;
+        this.onSlideChange.emit(idx);
+        this.onSlideTouchEnd(idx)
+      })
+    }
+  }
   ngAfterViewInit() {
+    // console.log("after view init", this.container);
     requestAnimationFrame(() => {
       const content = this.el.nativeElement.closest("ion-content");
       this.content = content as any;
@@ -41,18 +68,7 @@ export class SwiperSlideContentComponent implements OnInit, AfterViewInit, OnDes
       }
     })
     setTimeout(() => {
-      this.swiper = new Swiper(this.container.nativeElement, {
-        pagination: {
-          el: this.swiperPagination.nativeElement,
-        }
-      })
-      if (this.swiper) {
-        this.swiper.on('slideChange', () => {
-          const idx = this.swiper.realIndex;
-          this.onSlideChange.emit(idx);
-          this.onSlideTouchEnd(idx)
-        })
-      }
+      this.update();
     }, 1000);
   }
   ngOnDestroy() {
