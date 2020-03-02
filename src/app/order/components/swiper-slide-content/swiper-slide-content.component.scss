@@ -38,6 +38,11 @@ main {
   position: relative;
   top: 3em;
   overflow: auto;
+  height: 100%;
+  .swiper-container,
+  .swiper-wrapper {
+    height: 100%;
+  }
 }
 .swiper-pagination {
   // display: none;
