@@ -67,7 +67,6 @@ import { LanguageHelper } from "src/app/languageHelper";
 import { FilterConditionModel } from "../models/flight/advanced-search-cond/FilterConditionModel";
 
 import { Storage } from "@ionic/storage";
-import { SelectedFlightsegmentInfoComponent } from "../components/selected-flightsegment-info/selected-flightsegment-info.component";
 import { TripType } from "src/app/tmc/models/TripType";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { FilterPassengersPolicyComponent } from "../../tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
@@ -184,17 +183,17 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
             goArrivalDateTime:
               goInfo && goInfo.bookInfo && goInfo.bookInfo.flightSegment
                 ? moment(goInfo.bookInfo.flightSegment.ArrivalTime).format(
-                    "YYYY-MM-DD HH:mm"
-                  )
+                  "YYYY-MM-DD HH:mm"
+                )
                 : "",
             backTakeOffDateTime:
               backInfo &&
-              backInfo.bookInfo &&
-              backInfo.bookInfo.flightSegment &&
-              backInfo.bookInfo.tripType == TripType.returnTrip
+                backInfo.bookInfo &&
+                backInfo.bookInfo.flightSegment &&
+                backInfo.bookInfo.tripType == TripType.returnTrip
                 ? moment(backInfo.bookInfo.flightSegment.TakeoffTime).format(
-                    "YYYY-MM-DD HH:mm"
-                  )
+                  "YYYY-MM-DD HH:mm"
+                )
                 : ""
           };
         })
@@ -238,15 +237,7 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
           );
         if (cabin) {
           await this.flightService.addOrReplaceSegmentInfo(cabin, s);
-          const r = await this.showSelectedInfos(true);
-          if (
-            this.router.url.includes("flight-list") &&
-            r &&
-            this.flightService.getSearchFlightModel().tripType ==
-              TripType.returnTrip
-          ) {
-            this.doRefresh(true, true);
-          }
+          this.onShowSelectedInfos();
         } else {
           AppHelper.alert("超标不可预订");
           s["disabled"] = true;
@@ -505,14 +496,8 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     this.flightService.currentViewtFlightSegment = fs;
     this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
   }
-  async showSelectedInfos(isRefresh = false) {
-    const modal = await this.modalCtrl.create({
-      component: SelectedFlightsegmentInfoComponent
-    });
-    await this.flightService.dismissAllTopOverlays();
-    await modal.present();
-    await modal.onDidDismiss();
-    return isRefresh;
+  onShowSelectedInfos() {
+    this.flightService.showSelectedBookInfosPage();
   }
 
   async selectFilterPolicyPasseger() {

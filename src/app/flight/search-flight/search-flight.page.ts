@@ -27,7 +27,6 @@ import {
 import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
 import { map } from "rxjs/operators";
-import { SelectedFlightsegmentInfoComponent } from "../components/selected-flightsegment-info/selected-flightsegment-info.component";
 @Component({
   selector: "app-search-flight",
   templateUrl: "./search-flight.page.html",
@@ -239,13 +238,8 @@ export class SearchFlightPage
       queryParams: { forType: FlightHotelTrainType.Flight }
     });
   }
-  async showSelectedInfos() {
-    const modal = await this.modalCtrl.create({
-      component: SelectedFlightsegmentInfoComponent
-    });
-    await this.flightService.dismissAllTopOverlays();
-    await modal.present();
-    await modal.onDidDismiss();
+   onShowSelectedInfosPage() {
+    this.flightService.showSelectedBookInfosPage();
   }
   ngOnDestroy(): void {
     console.log("on destroyed");

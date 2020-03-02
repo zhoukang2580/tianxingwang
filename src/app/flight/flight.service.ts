@@ -623,7 +623,7 @@ export class FlightService {
               if (item.credential) {
                 name = `${item.credential.CheckFirstName}${
                   item.credential.CheckLastName
-                }(${(item.credential.Number || "").substr(0, 6)}...)`;
+                  }(${(item.credential.Number || "").substr(0, 6)}...)`;
               }
               cannotArr.push(name);
               item.bookInfo = null;
@@ -710,7 +710,7 @@ export class FlightService {
           if (item.credential) {
             name = `${item.credential.CheckFirstName}${
               item.credential.CheckLastName
-            }(${(item.credential.Number || "").substr(0, 6)}...)`;
+              }(${(item.credential.Number || "").substr(0, 6)}...)`;
           }
           cannotArr.push(name);
           item.bookInfo = null;
@@ -789,13 +789,16 @@ export class FlightService {
       t.dismiss().catch(_ => 0);
     }
   }
+  showSelectedBookInfosPage() {
+    this.router.navigate([AppHelper.getRoutePath("selected-flight-bookinfos")])
+  }
   async dismissAllTopOverlays() {
     console.time("dismissAllTopOverlays");
     let top = await this.modalCtrl.getTop();
     let i = 10;
     while (top && --i > 0) {
       // console.log("onSelectReturnTrip", top);
-      await top.dismiss().catch(_ => {});
+      await top.dismiss().catch(_ => { });
       top = await this.modalCtrl.getTop();
     }
     console.timeEnd("dismissAllTopOverlays");
@@ -1564,7 +1567,7 @@ export class FlightService {
         // console.log(moment(s.TakeoffTime).hour());
         return (
           this.filterCondition.takeOffTimeSpan.lower <=
-            moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() &&
+          moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() &&
           (moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() <
             this.filterCondition.takeOffTimeSpan.upper ||
             (moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() ==

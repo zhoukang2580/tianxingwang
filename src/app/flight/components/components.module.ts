@@ -15,7 +15,6 @@ import { AirtypeComponent } from "./fly-filter/airtype/airtype.component";
 import { CabinComponent } from "./fly-filter/cabin/cabin.component";
 import { TicketchangingComponent } from "./ticketchanging/ticketchanging.component";
 import { SelectedPassengersComponent } from "../../tmc/components/selected-passengers/selected-passengers.component";
-import { SelectedFlightsegmentInfoComponent } from "./selected-flightsegment-info/selected-flightsegment-info.component";
 import { SelectFlightsegmentCabinComponent } from "./select-flightsegment-cabin/select-flightsegment-cabin.component";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 import { SelectFlightPassengerComponent } from "./select-flight-passenger/select-flight-passenger.component";
@@ -36,7 +35,6 @@ import { FlightSegmentItemComponent } from './flight-segment-item/flight-segment
     CabinComponent,
     TicketchangingComponent,
     SelectedPassengersComponent,
-    SelectedFlightsegmentInfoComponent,
     SelectFlightsegmentCabinComponent,
     PriceDetailComponent,
     SelectFlightPassengerComponent,

@@ -12,6 +12,13 @@ const routes: Routes = [
       )
   },
   {
+    path: "selected-flight-bookinfos",
+    loadChildren: () =>
+      import("./selected-flight-bookinfos/selected-flight-bookinfos.module").then(
+        m => m.SelectedFlightBookInfosPageModule
+      )
+  },
+  {
     path: "flight-list",
     loadChildren: () =>
       import("./flight-list/flight-list.module").then(
@@ -45,4 +52,4 @@ const routes: Routes = [
   imports: [FlightComponentsModule, RouterModule.forChild(routes)],
   exports: [RouterModule, FlightComponentsModule]
 })
-export class FlightRoutingModule {}
+export class FlightRoutingModule { }

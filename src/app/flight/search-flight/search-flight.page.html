@@ -8,7 +8,7 @@
     <ion-title *ngIf='!(isShowBookInfos$|async)'>机票查询</ion-title>
     <ion-buttons slot='end'>
       <ion-button fill='clear' *ngIf='(isShowBookInfos$|async) as num' color='secondary' size='small'
-        (click)='showSelectedInfos();isCanleave=true'>已选航班
+        (click)='onShowSelectedInfosPage();isCanleave=true'>已选航班
         <ion-badge slot='end' color='danger'>
           {{num}}</ion-badge>
       </ion-button>

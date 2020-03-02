@@ -21,7 +21,6 @@ import {
 } from "@ionic/angular";
 import { TicketchangingComponent } from "../components/ticketchanging/ticketchanging.component";
 import * as moment from "moment";
-import { SelectedFlightsegmentInfoComponent } from "../components/selected-flightsegment-info/selected-flightsegment-info.component";
 import { FilterPassengersPolicyComponent } from "../../tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
 import {
   FlightPolicy,
@@ -184,7 +183,7 @@ export class FlightItemCabinsPage implements OnInit {
       flightCabin,
       this.vmFlightSegment
     );
-    await this.showSelectedInfos();
+    await this.onShowSelectedInfosPage();
   }
   async filterPolicyFlights() {
     const popover = await this.popoverController.create({
@@ -260,14 +259,8 @@ export class FlightItemCabinsPage implements OnInit {
       this.vmCabins = this.moreCabins;
     }
   }
-  async showSelectedInfos() {
-    const modal = await this.modalCtrl.create({
-      component: SelectedFlightsegmentInfoComponent
-    });
-    await this.flightService.dismissAllTopOverlays();
-    await modal.present();
-    await modal.onDidDismiss();
-    return "goBack";
+  onShowSelectedInfosPage() {
+    this.flightService.showSelectedBookInfosPage();
   }
   async openrules(cabin: any) {
     // this.popoverController.dismiss().catch(_ => {});
