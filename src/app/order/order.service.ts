@@ -33,9 +33,9 @@ export class OrderService {
     const type = searchCondition.Type;
     req.Data = searchCondition;
     req.Method = `TmcApiOrderUrl-Order-List`;
-    if (type == 'Car' && !environment.production) {
-      return of({ Data: MOCK_CAR_DATA as any, Status: true } as IResponse<OrderModel>)
-    }
+    // if (type == 'Car' && !environment.production) {
+    //   return of({ Data: MOCK_CAR_DATA as any, Status: true } as IResponse<OrderModel>)
+    // }
     return this.apiService.getResponse<OrderModel>(req);
   }
   // getOrderListAsync(searchCondition: OrderModel): Promise<OrderModel> {

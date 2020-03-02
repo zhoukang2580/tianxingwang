@@ -14,45 +14,11 @@
     </ion-row>
     <ion-row>
       <ion-col size='4'>
-        客户
+        完成时间
       </ion-col>
-      <ion-col >
-        <div>
-          <div *ngFor='let c of order.OrderNumbers'>
-            {{c.Name}}
-          </div>
-        </div>
-      </ion-col>
-    </ion-row>
-    <ng-container>
-      <ion-row>
-        <ion-col size='4'>
-          应收金额
-        </ion-col>
-        <ion-col >
-          <ion-text color='danger'>
-            ￥{{order.TotalAmount}}</ion-text>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size='4'>
-          实收金额
-        </ion-col>
-        <ion-col >
-          <ion-text color='danger'>
-            ￥{{order.PayAmount}}</ion-text>
-        </ion-col>
-      </ion-row>
-    </ng-container>
-    <ion-row *ngIf='order?.OrderPassengers?.length'>
-      <ion-col size='4'>乘客信息</ion-col>
       <ion-col>
-        <div>
-          <div *ngFor='let p of order.OrderPassengers'>
-            {{p.Name}}
-            {{p.CredentialsNumber}}
-          </div>
-        </div>
+        <ion-text>
+          {{order.InsertDateTime?.substr(0,16)}}</ion-text>
       </ion-col>
     </ion-row>
     <ion-row>
@@ -64,42 +30,27 @@
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col size='4'>
-        支付方式
-      </ion-col>
-      <ion-col>
-        {{car.PaymentType==1?"企业支付":"个人支付"}}
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col size='4'>行程</ion-col>
+      <ion-col size='4'>用车信息</ion-col>
       <ion-col>
         <div>
           <div>
-            上车：{{car.ActualFromAddress}}
+            {{car.ActualFromAddress}}
           </div>
           <div>
-            下车：{{car.ActualToAddress}}
+            {{car.ActualToAddress}}
           </div>
         </div>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col size='4'>订单类型</ion-col>
-      <ion-col>
-        {{car.CarType}}
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col size='4'>供应商</ion-col>
-      <ion-col>
-        {{car.Supplier}}
       </ion-col>
     </ion-row>
     <ion-row>
       <ion-col size='4'>用车状态</ion-col>
       <ion-col>
         {{car.StatusName}}
+      </ion-col>
+      <ion-col class="ion-text-end">
+        <ion-text color='danger'>
+          ￥{{order.TotalAmount}}
+        </ion-text>
       </ion-col>
     </ion-row>
   </ion-grid>
