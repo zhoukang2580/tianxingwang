@@ -13,7 +13,7 @@ import {
   ElementRef
 } from "@angular/core";
 import { OrderItemEntity, OrderEntity } from "../../models/OrderEntity";
-import { IonGrid } from "@ionic/angular";
+import { IonGrid, IonSlides } from "@ionic/angular";
 @Component({
   selector: "app-order-item-price-popover",
   templateUrl: "./order-item-price-popover.component.html",
@@ -22,22 +22,25 @@ import { IonGrid } from "@ionic/angular";
 export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
   @ViewChild("container") container: ElementRef<HTMLElement>;
   @ViewChildren(IonGrid) iongrids: QueryList<IonGrid>;
+  @ViewChild(IonSlides) slides: IonSlides;
   order: OrderEntity;
   amount: number;
   orderItems: OrderItemEntity[];
   OrderItemHelper = OrderItemHelper;
   // IsShowServiceFee = false;
+  activeIdx = 0;
   constructor(private render: Renderer2) {}
   abs(item: number) {
     return Math.abs(item);
   }
   ngAfterViewInit() {
+    this.slides.getSwiper().then(swiper => {
+      swiper.on("slideChange", () => {
+        this.activeIdx = swiper.realIndex;
+        console.log("slidechange", this.activeIdx);
+      });
+    });
     this.calcTotalPrice();
-    if (this.order && this.order.OrderFlightTickets) {
-      if (this.order.OrderFlightTickets.length) {
-        AppHelper.toast("可以左右滑动查看",1000,'middle');
-      }
-    }
   }
   private calcTotalPrice() {
     if (this.iongrids) {
@@ -67,7 +70,8 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
       }, 200);
     }
   }
-  ngOnInit() {}
+  ngOnInit() {
+  }
   getPassenger(t: OrderFlightTicketEntity): OrderPassengerEntity {
     if (!t || !t.Passenger) {
       return null;
