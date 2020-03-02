@@ -64,9 +64,9 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions.push(this.subscription);
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(q => {
-        if (!environment.production) {
-          this.loadOrderDetail(this.orderId);
-        }
+        // if (!environment.production) {
+        //   this.loadOrderDetail(this.orderId);
+        // }
         this.orderId = q.get("Id");
         if (this.orderId) {
           this.loadOrderDetail(this.orderId);
@@ -196,14 +196,14 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   private loadOrderDetail(id: string) {
-    if (!environment.production) {
-      this.orderDetail = {
-        Order: MOCK_CAR_ORDER_DETAIL_DATA
-      } as any;
-      console.log("orderdetail", this.orderDetail);
-      this.initOrderCarTravel();
-      return;
-    }
+    // if (!environment.production) {
+    //   this.orderDetail = {
+    //     Order: MOCK_CAR_ORDER_DETAIL_DATA
+    //   } as any;
+    //   console.log("orderdetail", this.orderDetail);
+    //   this.initOrderCarTravel();
+    //   return;
+    // }
     this.subscription.unsubscribe();
     this.subscription = this.orderService.getOrderDetail(id).subscribe(res => {
       this.orderDetail = res && res.Data;
