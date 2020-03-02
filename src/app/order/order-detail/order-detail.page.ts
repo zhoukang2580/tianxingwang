@@ -1,3 +1,5 @@
+import { Subscription } from 'rxjs';
+import { SwiperSlideContentComponent } from './../components/swiper-slide-content/swiper-slide-content.component';
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { OrderInsuranceEntity } from "./../models/OrderInsuranceEntity";
@@ -25,7 +27,8 @@ import {
   Renderer2,
   QueryList,
   ViewChildren,
-  AfterViewInit
+  AfterViewInit,
+  OnDestroy
 } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { ProductItem, ProductItemType } from "../../tmc/models/ProductItems";
@@ -49,8 +52,6 @@ import { OrderTrainTicketEntity } from "../models/OrderTrainTicketEntity";
 export interface TabItem {
   label: string;
   value: number;
-  isActive?: boolean;
-  rect?: ClientRect;
 }
 
 @Component({
@@ -58,7 +59,9 @@ export interface TabItem {
   templateUrl: "./order-detail.page.html",
   styleUrls: ["./order-detail.page.scss"]
 })
-export class OrderDetailPage implements OnInit, AfterViewInit {
+export class OrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
+  private headerHeight = 0;
+  private subscriptions: Subscription[] = [];
   tmc: TmcEntity;
   title: string;
   tab: ProductItem;
@@ -67,11 +70,11 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
   tabs: TabItem[] = [];
   orderDetail: OrderDetailModel;
   isLoading = false;
-  @ViewChildren("info") tabEles: QueryList<IonButton>;
-  @ViewChildren("link") linkEles: QueryList<IonList>;
   @ViewChild("infos") infosContainer: ElementRef<HTMLElement>;
+  @ViewChildren("slide") slides: QueryList<any>;
   @ViewChild(IonHeader) headerEle: IonHeader;
-  @ViewChild("cnt") ionContent: IonContent;
+  @ViewChild(IonContent) ionContent: IonContent;
+  @ViewChild(SwiperSlideContentComponent) swiperComp: SwiperSlideContentComponent;
   scrollElement: HTMLElement;
   selectedFlightTicket: OrderFlightTicketEntity;
   selectedTrainTicket: OrderTrainTicketEntity;
@@ -87,7 +90,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     private domCtrl: DomController,
     private orderService: OrderService,
     private identityService: IdentityService
-  ) {}
+  ) { }
   scrollTop: number;
 
   compareFn(t1: OrderFlightTicketEntity, t2: OrderFlightTicketEntity) {
@@ -163,9 +166,6 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       );
     }
     return infos;
-  }
-  getIndex(idx: number) {
-    return idx + 1;
   }
   canSendEmailMsg() {
     const selectedTicket: OrderFlightTicketEntity = this.selectedFlightTicket;
@@ -370,47 +370,41 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       }
     }
   }
-
-  async ngOnInit() {
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe())
+  }
+  private initTabs() {
     this.tabs = [
       {
         label: "订单信息",
         value: 1,
-        isActive: false,
-        rect: null
       },
       {
         label: "出行信息",
         value: 2,
-        isActive: false,
-        rect: null
       },
       {
         label: "旅客信息",
         value: 3,
-        isActive: false,
-        rect: null
       },
       {
         label: "保险信息",
         value: 4,
-        isActive: false,
-        rect: null
       },
       {
         label: "审批记录",
         value: 5,
-        isActive: false,
-        rect: null
       },
       {
         label: "联系信息",
         value: 6,
-        isActive: false,
-        rect: null
       }
     ];
+  }
+  async ngOnInit() {
+
     this.route.queryParamMap.subscribe(q => {
+      this.initTabs();
       if (q.get("tab")) {
         this.tab = this.tab || JSON.parse(q.get("tab"));
         this.title = this.tab.label + "订单";
@@ -427,7 +421,6 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
         this.getOrderInfo(q.get("orderId"));
       }
     });
-    this.onTabActive(this.tabs[0]);
     this.tmc = await this.tmcService.getTmc();
     this.identity = await this.identityService.getIdentityAsync();
   }
@@ -590,11 +583,6 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
       );
     }
   }
-  getTabByLabel(label: string) {
-    return (
-      this.tabs && this.tabs.find(it => it.label && it.label.includes(label))
-    );
-  }
   getInsuranceAmount() {
     if (
       !this.orderDetail ||
@@ -635,9 +623,9 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     }
     const p = await this.popoverCtrl.create({
       component: OrderItemPricePopoverComponent,
-      cssClass:"ticket-changing",
+      cssClass: "ticket-changing",
       componentProps: {
-        order:this.orderDetail&&this.orderDetail.Order,
+        order: this.orderDetail && this.orderDetail.Order,
         insurance: this.getInsuranceAmount(),
         IsShowServiceFee: Tmc.IsShowServiceFee,
         orderItems,
@@ -653,94 +641,15 @@ export class OrderDetailPage implements OnInit, AfterViewInit {
     this.navCtrl.pop();
   }
 
-  onTabActive(tab: TabItem) {
-    this.tabs.forEach(t => (t.isActive = false));
-    tab.isActive = true;
-    this.moveTabToCenter(tab);
-    this.moveTargetLinkToView(tab);
-  }
+
   async ngAfterViewInit() {
+    this.subscriptions.push(this.slides.changes.subscribe(() => {
+      if (this.swiperComp) {
+        this.swiperComp.update();
+      }
+    }))
     if (this.ionContent) {
       this.scrollElement = await this.ionContent.getScrollElement();
-    }
-  }
-  onScrollEnd() {
-    if (this.scrollElement) {
-      const headerHeight =
-        (this.headerEle &&
-          this.headerEle["el"] &&
-          this.headerEle["el"].clientHeight) ||
-        112;
-      const scrollTop =
-        (this.scrollTop = this.scrollElement.scrollTop) + headerHeight;
-      let activeTab: TabItem;
-      const linkEles = this.linkEles.toArray();
-      for (let i = 0; i < linkEles.length; i++) {
-        const el = linkEles[i]["el"];
-        const rect = el && el.getBoundingClientRect();
-        if (el && rect) {
-          if (rect.top - headerHeight >= 0 || rect.bottom - headerHeight >= 0) {
-            activeTab = this.tabs.find(
-              t => t.value == +el.getAttribute("tabid")
-            );
-            break;
-          }
-        }
-      }
-      if (activeTab) {
-        this.moveTabToCenter(activeTab);
-      }
-    }
-  }
-  private moveTargetLinkToView(tab: TabItem) {
-    if (this.linkEles) {
-      const activeLink = this.linkEles.find(
-        l => l["el"] && l["el"].getAttribute("tabid") == `${tab.value}`
-      );
-      if (activeLink && activeLink["el"]) {
-        const rect = activeLink["el"].getBoundingClientRect();
-        const headerHeight =
-          (this.headerEle &&
-            this.headerEle["el"] &&
-            this.headerEle["el"].clientHeight) ||
-          112;
-        if (this.ionContent) {
-          this.ionContent
-            .scrollByPoint(0, rect.top - headerHeight, 100)
-            .then(_ => {
-              // this.onScroll();
-            });
-        }
-      }
-    }
-  }
-  private moveTabToCenter(tab: TabItem) {
-    // console.log("moveTabToCenter ", tab.label);
-    this.tabs.forEach(t => (t.isActive = false));
-    tab.isActive = true;
-    if (this.infosContainer && this.tabEles) {
-      this.domCtrl.read(_ => {
-        const el = this.tabEles.find(
-          item => item["el"].getAttribute("tabid") == `${tab.value}`
-        );
-        const activeTabEle = el && el["el"];
-        if (activeTabEle) {
-          const elRect = activeTabEle.getBoundingClientRect();
-          tab.rect = elRect;
-        }
-        this.domCtrl.write(_ => {
-          if (tab.rect) {
-            const dist =
-              tab.rect.width / 2 + tab.rect.left - this.plt.width() / 2;
-            // console.dir(dist);
-            this.infosContainer.nativeElement.scrollBy({
-              left: dist,
-              top: 0,
-              behavior: "smooth"
-            });
-          }
-        });
-      });
     }
   }
 }

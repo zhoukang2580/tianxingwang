@@ -12,7 +12,7 @@ ion-list ion-item {
   }
 }
 ion-list.link-has-items {
-  min-height: 80vh;
+  min-height: 90vh;
 }
 ion-list + ion-list {
   margin-top: 0.5em;
@@ -64,4 +64,10 @@ ion-list-header {
   &:last-child {
     color: var(--ion-color-medium);
   }
+}
+ion-list {
+  width: 100%;
+}
+app-insurance-order-detail {
+  text-align: left;
 }

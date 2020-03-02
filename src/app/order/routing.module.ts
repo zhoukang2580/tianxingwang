@@ -22,6 +22,13 @@ export const routes: Routes = [
       import("./order-detail/order-detail.module").then(
         m => m.OrderDetailPageModule
       )
+  },
+  {
+    path: "car-order-detail",
+    loadChildren: () =>
+      import("./car-order-detail/car-order-detail.module").then(
+        m => m.CarOrderDetailPageModule
+      )
   }
 ];
 @NgModule({
@@ -29,4 +36,4 @@ export const routes: Routes = [
   imports: [CommonModule, RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class RoutingModule {}
+export class RoutingModule { }

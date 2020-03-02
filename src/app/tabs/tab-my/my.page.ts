@@ -183,7 +183,7 @@ export class MyPage implements OnDestroy, OnInit {
   }
   credentialManagement() {
     this.router.navigate([
-      AppHelper.getRoutePath("member-credential-management")
+      AppHelper.getRoutePath("member-credential-list")
     ]);
   }
   ngOnDestroy() {

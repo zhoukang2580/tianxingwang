@@ -21,6 +21,7 @@ import { TripType } from "src/app/tmc/models/TripType";
 import * as moment from "moment";
 import { Router } from "@angular/router";
 import { OrderPassengerEntity } from "../../models/OrderPassengerEntity";
+import { OrderFlightTicketType } from '../../models/OrderFlightTicketType';
 @Component({
   selector: "app-order-item",
   templateUrl: "./order-item.component.html",
@@ -30,6 +31,8 @@ export class OrderItemComponent implements OnInit {
   private bookChannals = `Eterm  BlueSky  Android  客户H5  IOS  外购PC  客户PC  代理PC`;
   private selfBookChannals = `Android  客户H5  IOS 客户PC`;
   TrainSupplierType = TrainSupplierType;
+  OrderFlightTicketType=OrderFlightTicketType;
+  OrderTravelPayType=OrderTravelPayType;
   @Input() order: OrderEntity;
   @Input() isAgent = false;
   @Output() payaction: EventEmitter<OrderEntity>;
@@ -57,6 +60,10 @@ export class OrderItemComponent implements OnInit {
     }
     evt.preventDefault();
     evt.stopPropagation();
+  }
+  check(orderTrainTicket: OrderTrainTicketEntity) {
+    return  orderTrainTicket && orderTrainTicket.OrderTrainTrips && orderTrainTicket.OrderTrainTrips.length == 1 &&
+      +this.calendarService.getMoment(0, orderTrainTicket.OrderTrainTrips[0].StartTime) - +this.calendarService.getMoment(0) > 0
   }
   async onExchange(evt: CustomEvent, orderTrainTicket: OrderTrainTicketEntity) {
     if (evt) {
@@ -97,12 +104,12 @@ export class OrderItemComponent implements OnInit {
   }
   async onRefundFlightTicket(
     evt: CustomEvent,
-    orderTrainTicket: OrderTrainTicketEntity
+    ticket: OrderFlightTicketEntity
   ) {
     if (evt) {
       evt.stopPropagation();
     }
-    if (orderTrainTicket) {
+    if (ticket) {
       // const isRefund = await this.trainService.refund(orderTrainTicket.Id);
       // if (isRefund) {
       //   this.refundTicket.emit();

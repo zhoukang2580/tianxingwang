@@ -1,3 +1,4 @@
+import { IResponse } from './../services/api/IResponse';
 import { TaskModel } from "./models/TaskModel";
 import { TaskEntity } from "src/app/workflow/models/TaskEntity";
 import { HistoryEntity } from "./models/HistoryEntity";
@@ -7,11 +8,13 @@ import { ApiService } from "../services/api/api.service";
 import { OrderModel } from "./models/OrderModel";
 import { OrderEntity, OrderStatusType } from "./models/OrderEntity";
 import { map, switchMap } from "rxjs/operators";
-import { from, Observable } from "rxjs";
+import { from, Observable, of } from "rxjs";
 import * as moment from "moment";
 import { OrderTravelPayType } from './models/OrderTravelEntity';
 import { OrderFlightTicketStatusType } from './models/OrderFlightTicketStatusType';
 import { OrderTrainTicketStatusType } from './models/OrderTrainTicketStatusType';
+import { environment } from 'src/environments/environment';
+import { MOCK_CAR_DATA } from './mock-data';
 export class OrderDetailModel {
   Histories: HistoryEntity[];
   Tasks: TaskEntity[];
@@ -27,18 +30,22 @@ export class OrderService {
   getOrderList(searchCondition: OrderModel) {
     const req = new RequestEntity();
     // req.IsShowLoading = true;
+    const type = searchCondition.Type;
     req.Data = searchCondition;
     req.Method = `TmcApiOrderUrl-Order-List`;
+    if (type == 'Car' && !environment.production) {
+      return of({ Data: MOCK_CAR_DATA as any, Status: true } as IResponse<OrderModel>)
+    }
     return this.apiService.getResponse<OrderModel>(req);
   }
-  getOrderListAsync(searchCondition: OrderModel): Promise<OrderModel> {
-    const req = new RequestEntity();
-    req.IsShowLoading = true;
-    req.Data = searchCondition;
-    req.Method = `TmcApiOrderUrl-Order-List`;
-    const result = this.apiService.getPromiseData<OrderModel>(req);
-    return result;
-  }
+  // getOrderListAsync(searchCondition: OrderModel): Promise<OrderModel> {
+  //   const req = new RequestEntity();
+  //   req.IsShowLoading = true;
+  //   req.Data = searchCondition;
+  //   req.Method = `TmcApiOrderUrl-Order-List`;
+  //   const result = this.apiService.getPromiseData<OrderModel>(req);
+  //   return result;
+  // }
   getOrderDetailAsync(id: string): Promise<OrderDetailModel> {
     const req = new RequestEntity();
     req.IsShowLoading = true;
@@ -49,7 +56,16 @@ export class OrderService {
     const result = this.apiService.getPromiseData<OrderDetailModel>(req);
     return result;
   }
-  getOrderTasks(data: OrderModel,isShowLoading=false): Observable<TaskEntity[]> {
+  getOrderDetail(id: string) {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = `TmcApiOrderUrl-Order-Detail`;
+    req.Data = {
+      Id: id
+    };
+    return this.apiService.getResponse<OrderDetailModel>(req);
+  }
+  getOrderTasks(data: OrderModel, isShowLoading = false): Observable<TaskEntity[]> {
     const req = new RequestEntity();
     req.IsShowLoading = isShowLoading;
     req.Data = data;

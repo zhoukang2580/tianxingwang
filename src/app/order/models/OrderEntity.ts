@@ -25,6 +25,7 @@ import { OrderNumberEntity } from "./OrderNumberEntity";
 import { TaskEntity } from 'src/app/workflow/models/TaskEntity';
 import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
 import { AccountEntity } from 'src/app/account/models/AccountEntity';
+import { OrderCarEntity } from './OrderCarEntity';
 
 export class OrderEntity extends BaseVariablesEntity {
 
@@ -232,9 +233,11 @@ export class OrderEntity extends BaseVariablesEntity {
   /// 订单任务
   /// </summary>
   Tasks: TaskEntity[];
+  OrderCars: OrderCarEntity[];
+
 
   Queues: any[];
- 
+
 }
 export class OrderItemEntity extends BaseVariablesEntity {
   /// 订单

@@ -164,12 +164,12 @@ export class ConfirmInformationPage implements OnInit {
   }
   maintainCredentials() {
     this.router.navigate([
-      AppHelper.getRoutePath("member-credential-management")
+      AppHelper.getRoutePath("member-credential-list")
     ]);
     // if (this.credentials.length) {
     //   this.router.navigate([AppHelper.getRoutePath("")]);
     // } else {
-    //   this.router.navigate([AppHelper.getRoutePath("member-credential-management")]);
+    //   this.router.navigate([AppHelper.getRoutePath("member-credential-list")]);
     // }
   }
 }

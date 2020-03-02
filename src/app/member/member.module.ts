@@ -11,6 +11,13 @@ const routes: Routes = [
       )
   },
   {
+    path: "member-credential-list",
+    loadChildren: () =>
+      import(
+        "./member-credential-list/member-credential-list.module"
+      ).then(m => m.MemberCredentialListPageModule)
+  },
+  {
     path: "member-credential-management",
     loadChildren: () =>
       import(
@@ -23,4 +30,4 @@ const routes: Routes = [
   imports: [CommonModule, RouterModule.forChild(routes), AppDirectivesModule],
   exports: [RouterModule]
 })
-export class MemberModule {}
+export class MemberModule { }

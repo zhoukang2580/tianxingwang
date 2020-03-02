@@ -1,3 +1,4 @@
+import { BackButtonComponent } from './../../components/back-button/back-button.component';
 import { MyCalendarComponent } from "./../../components/my-calendar/my-calendar.component";
 import { Subscription, fromEvent } from "rxjs";
 import {
@@ -43,6 +44,7 @@ export class MemberCredentialManagementPage
   private timemoutid;
   private subscriptions: Subscription[] = [];
   private subscription = Subscription.EMPTY;
+  @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
   identityTypes: { key: string; value: string }[];
   credentials: MemberCredential[];
   modifyCredential: MemberCredential; // 新增的证件
@@ -58,8 +60,6 @@ export class MemberCredentialManagementPage
   @ViewChildren("credentialItem") credentialItem: QueryList<
     ElementRef<HTMLElement>
   >;
-  @ViewChild(RefresherComponent)
-  refresher: RefresherComponent;
   @ViewChildren("addForm") addFormEles: QueryList<ElementRef<HTMLElement>>;
   constructor(
     private router: Router,
@@ -68,11 +68,9 @@ export class MemberCredentialManagementPage
     route: ActivatedRoute,
     private plt: Platform,
     private ngZone: NgZone,
-    private identityService: IdentityService,
-    private navCtrl: NavController,
     private modalController: ModalController
   ) {
-    route.queryParamMap.subscribe(p => {
+    this.subscriptions.push(route.queryParamMap.subscribe(p => {
       this.isCanDeactive = false;
       if (this.modifyCredential) {
         if (p.get("date")) {
@@ -87,31 +85,30 @@ export class MemberCredentialManagementPage
           this.requestCode = null;
         }
       }
-    });
+      if (p.get("data")) {
+        this.credentials = [JSON.parse(p.get("data"))]
+      }
+      if (p.get('addNew')) {
+        const isAddNew = p.get("addNew") == 'true';
+        if (isAddNew) {
+          this.onAddCredential();
+        }
+      }
+    }));
   }
-  back() {
-    this.navCtrl.back();
+  private back() {
+    this.backBtn.backToPrePage();
   }
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
   ngOnInit() {
-    this.doRefresh();
     this.getIdentityTypes();
-  }
-  async doRefresh() {
-    await this.getCredentials();
-    if (this.refresher) {
-      this.refresher.complete();
-    }
-    setTimeout(() => {
-      this.initializeValidate();
-    }, 1000);
   }
   compareFn(t1, t2) {
     return t1 == t2;
   }
-  getIdentityTypes() {
+  private getIdentityTypes() {
     this.identityTypes = Object.keys(CredentialsType)
       .filter(k => +k)
       .map(k => {
@@ -140,15 +137,15 @@ export class MemberCredentialManagementPage
         this.saveAdd(
           c,
           this.addFormEles &&
-            this.addFormEles.last &&
-            this.addFormEles.last.nativeElement
+          this.addFormEles.last &&
+          this.addFormEles.last.nativeElement
         );
       } else {
         this.saveModify(
           c,
           this.addFormEles &&
-            this.addFormEles.last &&
-            this.addFormEles.last.nativeElement
+          this.addFormEles.last &&
+          this.addFormEles.last.nativeElement
         );
       }
     }
@@ -275,7 +272,7 @@ export class MemberCredentialManagementPage
     if (this.timemoutid) {
       clearTimeout(this.timemoutid);
     }
-    this.timemoutid = setTimeout(function() {
+    this.timemoutid = setTimeout(function () {
       window.scrollTo({
         top: 0,
         left: 0,
@@ -297,7 +294,9 @@ export class MemberCredentialManagementPage
   }
   ngAfterViewInit() {
     // console.log(this.formEle);
-    this.initializeValidate();
+    setTimeout(() => {
+      this.initializeValidate();
+    }, 1000);
     const sub = this.addFormEles.changes.subscribe(_ => {
       // console.log(el);
       if (this.addFormEles.last && this.addFormEles.last.nativeElement) {
@@ -341,9 +340,9 @@ export class MemberCredentialManagementPage
           AppHelper.alert(e);
           return false;
         });
-      // if (result) {
-      // }
-      await this.getCredentials();
+      if (result) {
+        this.back();
+      }
     }
   }
   private async tipMessage(c: MemberCredential) {
@@ -369,7 +368,7 @@ export class MemberCredentialManagementPage
     if (!ok) {
       return;
     }
-    await this.memberService
+    const res = await this.memberService
       .modifyCredentials(c)
       .then(_ => {
         if (_.Message) {
@@ -380,42 +379,19 @@ export class MemberCredentialManagementPage
       .catch(e => {
         AppHelper.alert(e);
       });
-    await this.getCredentials();
     this.modifyCredential = null;
+    if (res) {
+      this.back();
+    }
   }
-  initializeValidate() {
+  private initializeValidate() {
     this.validatorService.initialize(
       "Beeant.Domain.Entities.Member.CredentialsEntity",
       "Modify",
       this.formEle.nativeElement
     );
   }
-  async getCredentials() {
-    this.loading = true;
-    const identity = await this.identityService
-      .getIdentityAsync()
-      .catch(_ => null);
-    if (!identity) {
-      return (this.credentials = []);
-    }
-    const credentials = await this.memberService.getCredentials(
-      identity && identity.Id
-    );
-    this.credentials = credentials.map(c => {
-      return {
-        ...c,
-        isModified: false,
-        Birthday: c.Birthday.indexOf("T")
-          ? moment(c.Birthday).format("YYYY/MM/DD")
-          : c.Birthday,
-        ExpirationDate: c.ExpirationDate.indexOf("T")
-          ? moment(c.ExpirationDate).format("YYYY/MM/DD")
-          : c.ExpirationDate
-      };
-    });
-    this.loading = false;
-    console.log("credentials", this.credentials);
-  }
+
   async onAddCredential() {
     const item: MemberCredential = {
       Gender: "M",
@@ -517,8 +493,8 @@ export class MemberCredentialManagementPage
     if (!result) {
       return;
     }
-    await this.getCredentials();
     this.modifyCredential = null;
+    this.back();
   }
   async validateCredential(c: MemberCredential, container: HTMLElement) {
     if (!c) {

@@ -6,7 +6,7 @@ export class OrderTripModel {
   /// <summary>
   /// 行程类型 Flight Train Hotel
   /// </summary>
-  Type: string;
+  Type: "Flight"|"Train"|"Hotel"|"Car";
   /// <summary>
   /// 订单号
   /// </summary>

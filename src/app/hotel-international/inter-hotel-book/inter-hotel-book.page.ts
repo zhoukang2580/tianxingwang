@@ -901,7 +901,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     item.credentialsRequested = false;
     // this.isManagentCredentails = true;
     this.router.navigate([
-      AppHelper.getRoutePath("member-credential-management")
+      AppHelper.getRoutePath("member-credential-list")
     ]);
   }
   private async initializeViewModel() {

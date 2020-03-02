@@ -3,11 +3,11 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false,
+  production: !false,
   localhost: false,
   disableNetWork: !true,
   enableLocalData: true,
-  mockProBuild: true
+  mockProBuild: !true
 };
 
 /*

@@ -189,7 +189,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     item.credentialsRequested = false;
     this.isManagentCredentails = true;
     this.router.navigate([
-      AppHelper.getRoutePath("member-credential-management")
+      AppHelper.getRoutePath("member-credential-list")
     ]);
   }
   onShowPriceDetails(evt: {

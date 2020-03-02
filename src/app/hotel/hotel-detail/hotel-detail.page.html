@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar >
     <ion-buttons slot='start'>
       <app-back-button defaultHref=""></app-back-button>
     </ion-buttons>
@@ -18,7 +18,7 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-  <ion-toolbar #toolbarsegment>
+  <ion-toolbar #toolbarsegment style="margin-top: -1px;">
     <ion-segment (ionChange)="onSegmentChanged($event)" color="secondary" value="{{activeTab}}">
       <ion-segment-button value="houseInfo">
         <ion-label>房型</ion-label>
