@@ -255,7 +255,7 @@
     <ng-container *ngFor='let  orderHotel of order.OrderHotels'>
       <ion-grid class="hotel">
         <ion-row>
-          <ion-col size='3.5'>
+          <ion-col size='3'>
             订单编号
           </ion-col>
           <ion-col class='select-text' class='dark'>
@@ -267,7 +267,7 @@
           </ion-col>
         </ion-row>
         <ion-row>
-          <ion-col size='3.5'>
+          <ion-col size='3'>
             酒店事务号
           </ion-col>
           <ion-col class='select-text'>
@@ -275,7 +275,7 @@
           </ion-col>
         </ion-row>
         <ion-row>
-          <ion-col size='3.5'>
+          <ion-col size='3'>
             酒店名称
           </ion-col>
           <ion-col>
@@ -283,7 +283,7 @@
           </ion-col>
         </ion-row>
         <ion-row *ngIf='order?.OrderPassengers?.length'>
-          <ion-col size='3.5'>旅客信息</ion-col>
+          <ion-col size='3'>旅客信息</ion-col>
           <ion-col>
             <ng-container *ngIf='getPassenger(orderHotel) as p'>
               {{p.CheckName}} <span class='ion-margin-start'>{{p.CredentialsNumber}}</span>
@@ -291,7 +291,7 @@
           </ion-col>
         </ion-row>
         <ion-row>
-          <ion-col size='3.5'>
+          <ion-col size='3'>
             入住时间
           </ion-col>
           <ion-col>
@@ -299,7 +299,7 @@
           </ion-col>
         </ion-row>
         <ion-row>
-          <ion-col size='3.5'>
+          <ion-col size='3'>
             离店时间
           </ion-col>
           <ion-col>
@@ -307,7 +307,7 @@
           </ion-col>
         </ion-row>
         <ion-row *ngIf='order.TotalAmount as m'>
-          <ion-col size='3.5'>
+          <ion-col size='3'>
             房费
           </ion-col>
           <ion-col>
@@ -320,7 +320,7 @@
           </ion-col>
         </ion-row>
         <ion-row *ngIf='orderHotel.ConfirmNumber as cnumber'>
-          <ion-col size='3.5'>
+          <ion-col size='3'>
             酒店确认号
           </ion-col>
           <ion-col>

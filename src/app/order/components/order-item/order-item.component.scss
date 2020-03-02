@@ -16,8 +16,8 @@ ion-row {
       text-align: end;
     }
     align-self: flex-start;
-    font-size: 0.9rem;
-    &:not(.dark) {
+    font-size:1rem;
+    &:first-child {
       color: var(--ion-color-medium);
     }
   }

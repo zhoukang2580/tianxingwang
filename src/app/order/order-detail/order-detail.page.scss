@@ -1,73 +1,18 @@
-ion-item-divider {
-  border-left: 4px solid var(--ion-color-secondary);
-  position: sticky;
-  top: 0;
-}
-ion-list ion-item {
-  font-size: 0.8rem;
-}
-.passenger-info {
-  ion-row ion-col:first-child {
-    align-self: flex-start;
-  }
-}
-ion-list.link-has-items {
-  min-height: 90vh;
-}
-ion-list + ion-list {
-  margin-top: 0.5em;
-}
-ion-list ion-item ion-row + ion-row {
-  margin-top: 0.5em;
-}
-ion-col {
-  &.arrow-forward {
-    display: flex;
-    align-items: center;
-    ion-icon {
-      color: rgba(var(--ion-color-dark-rgb), 0.3);
-      margin-left: auto;
-    }
-  }
-  align-self: center;
-}
-.infos {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-  justify-content: space-between;
-  overflow: auto;
+.swiper-slide {
   width: 100%;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  .info {
-    margin: 0 1em;
-    color: var(--ion-color-dark);
-    &.active {
-      color: var(--ion-color-secondary);
-      border-bottom: 2px solid var(--ion-color-secondary);
-    }
+  text-align: left;
+  & > *:first-child {
+    width: 100%;
   }
 }
-.approval-info {
-  width: 100%;
-  display: flex;
-  flex-flow: column nowrap;
+ion-row {
+  padding-left: 1em;
+  // border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.13);
 }
-ion-list-header {
-  // justify-content: center;
-  color: var(--ion-color-secondary);
-  // border-bottom: 1px dashed var(--ion-color-secondary);
-}
-.customer ion-row ion-col {
-  &:last-child {
+ion-row ion-col {
+  align-self: flex-start;
+  font-size: 1rem;
+  &:first-child {
     color: var(--ion-color-medium);
   }
-}
-ion-list {
-  width: 100%;
-}
-app-insurance-order-detail {
-  text-align: left;
 }

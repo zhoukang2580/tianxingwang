@@ -1,31 +1,11 @@
+
+ion-row {
+  padding-left: 1em;
+}
 ion-row ion-col {
   align-self: flex-start;
-  font-size: 0.8rem;
-  &:first-child:not([size]) {
-    max-width: 20vw;
-  }
-  &:last-child {
+  font-size: 1rem;
+  &:first-child {
     color: var(--ion-color-medium);
   }
 }
-.insurance-customer {
-  ion-row ion-col {
-    &:first-child {
-      max-width: 50vw;
-    }
-  }
-}
-ion-list-header {
-  justify-content: center;
-  width: 100%;
-  display: flex;
-}
-// ion-grid {
-//   font-size: 0.8rem;
-//   ion-row {
-//     border-top: 1px solid var(--ion-color-dark);
-//   }
-//   ion-row ion-col:last-child {
-//     color: initial;
-//   }
-// }

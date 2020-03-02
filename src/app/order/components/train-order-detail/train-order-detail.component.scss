@@ -1,7 +1,10 @@
-span + span {
-  margin-left: 1em;
+ion-row {
+  padding-left: 1em;
 }
-:host {
-  display: block;
-  width: 100%;
+ion-row ion-col {
+  align-self: flex-start;
+  font-size: 1rem;
+  &:first-child {
+    color: var(--ion-color-medium);
+  }
 }

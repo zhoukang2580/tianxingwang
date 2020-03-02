@@ -1,7 +1,10 @@
-:host{
-    width: 100%;
-    display: block;
+ion-row {
+  padding-left: 1em;
 }
-.hotels{
-    line-height: 2;
+ion-row ion-col {
+  align-self: flex-start;
+  font-size: 1rem;
+  &:first-child {
+    color: var(--ion-color-medium);
+  }
 }

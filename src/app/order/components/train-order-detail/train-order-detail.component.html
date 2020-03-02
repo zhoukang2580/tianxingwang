@@ -1,41 +1,57 @@
 <ng-container *ngFor='let orderTrainTicket of getCurrentPassengerTicket()'>
   <ng-container *ngIf='true||orderTrainTicket.Status!=OrderTrainTicketStatusType.ChangeTicket'>
     <ion-row>
-      <ion-col>
-        {{orderTrainTicket.Id=="0"?"":"火车票事务号"}}
+      <ion-col size='4'>
+        {{orderTrainTicket.Id=="0"?"":"车票事务号"}}
       </ion-col>
-      <ion-col>
+      <ion-col style="user-select: text;">
         {{orderTrainTicket.Id}}
       </ion-col>
-      <ion-col>
+      <ion-col class="ion-text-center">
         {{orderTrainTicket.StatusName}}
       </ion-col>
     </ion-row>
     <ng-container *ngFor='let orderTrainTrip of orderTrainTicket.OrderTrainTrips'>
       <ion-row>
+        <ion-col size='4'>
+          出发
+        </ion-col>
         <ion-col>
-          <span>
-            {{orderTrainTrip.FromStationName}}
-          </span>
-          <span [attr.travelminutes]='orderTrainTrip.TravelMinutes'
-            [attr.traincode]='orderTrainTrip.TrainCode'>---</span>
-          <span>{{orderTrainTrip.ToStationName}}</span>
-          <span>席别:{{orderTrainTicket.SeatTypeName}}</span>
+          <div>
+            {{orderTrainTrip.StartTime?.replace("T"," ")?.substring(0,19)}}
+          </div>
+          <div>
+            {{orderTrainTrip.FromStationName}}({{orderTrainTrip.FromStationCode}})
+          </div>
         </ion-col>
       </ion-row>
       <ion-row>
+        <ion-col size='4'>
+          到达
+        </ion-col>
         <ion-col>
-          <span>出发:{{orderTrainTrip.StartTime?.substr(0,"yyyy-MM-dd".length)}}</span>
-          <span>{{orderTrainTrip.StartTime?.substr("yyyy-MM-ddT".length,'"HH:mm"'.length)}}</span>
-          <span>{{orderTrainTrip.FromStationName}}({{orderTrainTrip.FromStationCode}})</span>
+          <div>
+            {{orderTrainTrip.ArrivalTime?.replace("T"," ")?.substring(0,19)}}
+          </div>
+          <div>
+            {{orderTrainTrip.ToStationName}}({{orderTrainTrip.ToStationCode}})
+          </div>
         </ion-col>
       </ion-row>
       <ion-row>
-
+        <ion-col size='4'>
+          耗时(约)
+        </ion-col>
         <ion-col>
-          <span>到达:{{orderTrainTrip.ArrivalTime?.substr(0,"yyyy-MM-dd".length)}}</span>
-          <span>{{orderTrainTrip.ArrivalTime?.substr("yyyy-MM-ddT".length,'"HH:mm"'.length)}}</span>
-          <span>{{orderTrainTrip.ToStationName}}({{orderTrainTrip.ToStationCode}})</span>
+          {{orderTrainTrip.TravelMinutes}}(分钟)
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size='4'>
+          席别
+        </ion-col>
+        <ion-col>
+          {{orderTrainTicket.SeatTypeName}}
         </ion-col>
       </ion-row>
       <ion-label class='ion-text-wrap' *ngIf='orderTrainTicket.Detail'>

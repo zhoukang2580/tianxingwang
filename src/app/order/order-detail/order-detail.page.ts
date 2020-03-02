@@ -1,5 +1,5 @@
-import { Subscription } from 'rxjs';
-import { SwiperSlideContentComponent } from './../components/swiper-slide-content/swiper-slide-content.component';
+import { Subscription } from "rxjs";
+import { SwiperSlideContentComponent } from "./../components/swiper-slide-content/swiper-slide-content.component";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { OrderInsuranceEntity } from "./../models/OrderInsuranceEntity";
@@ -48,6 +48,7 @@ import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
 import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
 import { OrderPayEntity } from "../models/OrderPayEntity";
 import { OrderTrainTicketEntity } from "../models/OrderTrainTicketEntity";
+import { OrderHotelType } from "../models/OrderHotelEntity";
 
 export interface TabItem {
   label: string;
@@ -61,6 +62,7 @@ export interface TabItem {
 })
 export class OrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
   private headerHeight = 0;
+  OrderHotelType = OrderHotelType;
   private subscriptions: Subscription[] = [];
   tmc: TmcEntity;
   title: string;
@@ -74,7 +76,8 @@ export class OrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren("slide") slides: QueryList<any>;
   @ViewChild(IonHeader) headerEle: IonHeader;
   @ViewChild(IonContent) ionContent: IonContent;
-  @ViewChild(SwiperSlideContentComponent) swiperComp: SwiperSlideContentComponent;
+  @ViewChild(SwiperSlideContentComponent)
+  swiperComp: SwiperSlideContentComponent;
   scrollElement: HTMLElement;
   selectedFlightTicket: OrderFlightTicketEntity;
   selectedTrainTicket: OrderTrainTicketEntity;
@@ -90,7 +93,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     private domCtrl: DomController,
     private orderService: OrderService,
     private identityService: IdentityService
-  ) { }
+  ) {}
   scrollTop: number;
 
   compareFn(t1: OrderFlightTicketEntity, t2: OrderFlightTicketEntity) {
@@ -136,8 +139,9 @@ export class OrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       !this.orderDetail ||
       !this.orderDetail.Order ||
       !this.orderDetail.Order.OrderFlightTickets
-    )
+    ) {
       return infos;
+    }
     this.orderDetail.Order.OrderFlightTickets.forEach(ticket => {
       if (ticket.OrderFlightTrips) {
         ticket.OrderFlightTrips.forEach(flightTrip => {
@@ -222,6 +226,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
+
   getPassengerCostOrgInfo() {
     const passengerId =
       (this.selectedFlightTicket &&
@@ -306,7 +311,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
           .map(it => it.OrganizationName)
           .join(",");
       }
-      return {
+      const info = {
         Passenger: p,
         CostCenterCode,
         CostCenterName,
@@ -316,6 +321,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
         IllegalReason,
         OutNumbers
       };
+      return info;
     }
     return null;
   }
@@ -371,38 +377,36 @@ export class OrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe())
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
   private initTabs() {
     this.tabs = [
       {
-        label: "订单信息",
-        value: 1,
+        label: "订单信息"
       },
       {
-        label: "出行信息",
-        value: 2,
+        label: "出行信息"
       },
       {
-        label: "旅客信息",
-        value: 3,
+        label: "旅客信息"
       },
       {
-        label: "保险信息",
-        value: 4,
+        label: "审批记录"
       },
       {
-        label: "审批记录",
-        value: 5,
+        label: "联系信息"
       },
       {
-        label: "联系信息",
-        value: 6,
+        label: "保险信息"
       }
-    ];
+    ].map((it, idx) => {
+      return {
+        ...it,
+        value: idx
+      };
+    });
   }
   async ngOnInit() {
-
     this.route.queryParamMap.subscribe(q => {
       this.initTabs();
       if (q.get("tab")) {
@@ -531,6 +535,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
+
   getOrderTotalAmount() {
     let amount = 0;
     const order = this.orderDetail && this.orderDetail.Order;
@@ -641,13 +646,14 @@ export class OrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     this.navCtrl.pop();
   }
 
-
   async ngAfterViewInit() {
-    this.subscriptions.push(this.slides.changes.subscribe(() => {
-      if (this.swiperComp) {
-        this.swiperComp.update();
-      }
-    }))
+    this.subscriptions.push(
+      this.slides.changes.subscribe(() => {
+        if (this.swiperComp) {
+          this.swiperComp.update();
+        }
+      })
+    );
     if (this.ionContent) {
       this.scrollElement = await this.ionContent.getScrollElement();
     }

@@ -11,10 +11,6 @@ import { SendEmailComponent } from "./send-email/send-email.component";
 import { SearchTicketModalComponent } from "./search-ticket-modal/search-ticket-modal.component";
 import { TripRulePopoverComponent } from "./trip-rule-popover/trip-rule-popover.component";
 import { FlightModule } from "src/app/flight/flight.module";
-import { ProductHotelComponent } from "./product-hotel/product-hotel.component";
-import { ProductInsuranceComponent } from "./product-insurance/product-insurance.component";
-import { ProductTrainComponent } from "./product-train/product-train.component";
-import { ProductPlaneComponent } from "./product-plane/product-plane.component";
 import { SelectTicketPopoverComponent } from "./select-ticket-popover/select-ticket-popover.component";
 import { TrainOrderDetailComponent } from 'src/app/order/components/train-order-detail/train-order-detail.component';
 import { FlightOrderDetailComponent } from './flight-order-detail/flight-order-detail.component';
@@ -32,10 +28,6 @@ import { CarItemComponent } from './car-item/car-item.component';
     SendEmailComponent,
     TripRulePopoverComponent,
     SearchTicketModalComponent,
-    ProductHotelComponent,
-    ProductInsuranceComponent,
-    ProductTrainComponent,
-    ProductPlaneComponent,
     SelectTicketPopoverComponent,
     TrainOrderDetailComponent,
     FlightOrderDetailComponent,

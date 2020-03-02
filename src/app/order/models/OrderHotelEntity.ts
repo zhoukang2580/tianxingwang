@@ -7,7 +7,7 @@ import { HotelBookType } from "src/app/hotel/models/HotelBookType";
 import { HotelPaymentType } from "src/app/hotel/models/HotelPaymentType";
 import { OrderPassengerEntity } from "./OrderPassengerEntity";
 import { RoomPlanEntity } from "src/app/hotel/models/RoomPlanEntity";
-import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
+import { BaseVariablesEntity } from "src/app/models/BaseVariablesEntity";
 
 export class OrderHotelEntity extends BaseVariablesEntity {
   /// <summary>
@@ -91,6 +91,7 @@ export class OrderHotelEntity extends BaseVariablesEntity {
   /// 客户姓名
   /// </summary>
   CustomerName: string;
+  ChildrenName: string;
   /// <summary>
   /// 入住日期
   /// </summary>

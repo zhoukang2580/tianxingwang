@@ -1,56 +1,136 @@
-<div *ngFor='let orderHotel of hotels' class='hotels'>
-  <div>
-    {{ orderHotel.Id == "0" ? "" : "酒店事务号"}}
-    <span>
+<ng-container *ngFor='let orderHotel of hotels' class='hotels'>
+  <ion-row>
+    <ion-col size='3'>事务号</ion-col>
+    <ion-col>
       {{orderHotel.Id}}
-    </span>
-    <span>{{orderHotel.StatusName}}</span>
-  </div>
-  <div>
-    入住：{{orderHotel.BeginDate?.substr(0,"yyyy-MM-dd".length)}}
-    <span class='ion-margin-start'></span>
-    离店：{{orderHotel.EndDate?.substr(0,"yyyy-MM-dd".length)}}
-  </div>
-  <div>
-    酒店名称:{{orderHotel.HotelName}}
-  </div>
-  <div>
-    房型：{{orderHotel.RoomName}}
-  </div>
-  <div>
-    早餐数量：{{orderHotel.Breakfast}}
-  </div>
-  <div class='clip-text' (click)='orderHotel["isShowRoomFees"]=!orderHotel["isShowRoomFees"]'
-    [class.show]='orderHotel["isShowRoomFees"]'>
-    房费：{{getHotelRoomFee(orderHotel.Key)}}
-  </div>
-  <div>
-    酒店费用支付方式：{{orderHotel.PaymentType==2?"现付":orderHotel.PaymentType==1?"预付":"月结"}}
-  </div>
-  <div>酒店地址:{{orderHotel.HotelAddress}}</div>
-  <div>酒店电话:{{orderHotel.HotelContact}}</div>
-  <div class='clip-text' (click)='orderHotel["isShowDetail"]=!orderHotel["isShowDetail"]'
-    [class.show]='orderHotel["isShowDetail"]'>
-    {{orderHotel.RuleDescription}}
-  </div>
+    </ion-col>
+    <ion-col class="ion-text-end ion-padding-end">
+      {{orderHotel.StatusName}}
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size='3'>
+      入住
+    </ion-col>
+    <ion-col>
+      {{orderHotel.BeginDate?.substr(0,"yyyy-MM-dd".length)}}
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size='3'>
+      离店
+    </ion-col>
+    <ion-col>
+      {{orderHotel.EndDate?.substr(0,"yyyy-MM-dd".length)}}
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size='3'>
+      酒店名称
+    </ion-col>
+    <ion-col>
+      {{orderHotel.HotelName}}
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size='3'>
+      房型
+    </ion-col>
+    <ion-col>
+      {{orderHotel.RoomName}}
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size='3'>
+      早餐数量
+    </ion-col>
+    <ion-col>
+      {{orderHotel.Breakfast}}
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size='3'>
+      房费
+    </ion-col>
+    <ion-col>
+      {{getHotelRoomFee(orderHotel.Key)}}
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size='3'>
+      支付方式
+    </ion-col>
+    <ion-col>
+      {{orderHotel.PaymentType==2?"现付":orderHotel.PaymentType==1?"预付":"月结"}}
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size='3'>
+      酒店地址
+    </ion-col>
+    <ion-col>
+      {{orderHotel.HotelAddress}}
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size='3'>
+      酒店电话
+    </ion-col>
+    <ion-col>
+      {{orderHotel.HotelContact}}
+    </ion-col>
+  </ion-row>
   <ng-container *ngIf='orderHotel.OrderTravel as orderTravel'>
-    <div class='clip-text' [class.show]='orderHotel["isShowIllegalPolicy"]'
-      (click)='orderHotel["isShowIllegalPolicy"]=!orderHotel["isShowIllegalPolicy"]'>
-      违规：{{orderTravel.IllegalPolicy}}
-    </div>
-    <div class='clip-text' [class.show]='orderHotel["isShowIllegalReason"]'
-      (click)='orderHotel["isShowIllegalReason"]=!orderHotel["isShowIllegalReason"]'>
-      违规原因：{{orderTravel.IllegalReason}}
-    </div>
-    <div class='clip-text' [class.show]='orderHotel["isShowCostCenter"]'
-      (click)='orderHotel["isShowCostCenter"]=!orderHotel["isShowCostCenter"]'>
-      成本中心：{{orderTravel.CostCenterCode}}->{{orderTravel.CostCenterName}}
-      <div *ngIf='getOrderNumbers() as orderNumbers'>
-        <ng-container *ngFor='let number of orderNumbers'>
-          <span>{{number.Name}}</span>:<span>{{number.Number}}</span>
-        </ng-container>
-      </div>
-    </div>
+    <ion-row>
+      <ion-col size='3'>
+        违规
+      </ion-col>
+      <ion-col>
+        <div class='clip-text' [class.show]='orderHotel["isShowIllegalPolicy"]'
+          (click)='orderHotel["isShowIllegalPolicy"]=!orderHotel["isShowIllegalPolicy"]'>
+          {{orderTravel.IllegalPolicy}}
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size='3'>
+        违规原因
+      </ion-col>
+      <ion-col>
+        <div class='clip-text' [class.show]='orderHotel["isShowIllegalReason"]'
+          (click)='orderHotel["isShowIllegalReason"]=!orderHotel["isShowIllegalReason"]'>
+          {{orderTravel.IllegalReason}}
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size='3'>
+        成本中心
+      </ion-col>
+      <ion-col>
+        <div class='clip-text' [class.show]='orderHotel["isShowCostCenter"]'
+          (click)='orderHotel["isShowCostCenter"]=!orderHotel["isShowCostCenter"]'>
+          {{orderTravel.CostCenterCode}}->{{orderTravel.CostCenterName}}
+          <div *ngIf='getOrderNumbers() as orderNumbers'>
+            <ng-container *ngFor='let number of orderNumbers'>
+              <span>{{number.Name}}</span>:<span>{{number.Number}}</span>
+            </ng-container>
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
   </ng-container>
-  <div *ngIf='getVariable(orderHotel,"ExceptionMessage") as ExceptionMessage'>异常消息:{{ExceptionMessage}}</div>
-</div>
+  <ion-row *ngIf='getVariable(orderHotel,"ExceptionMessage") as ExceptionMessage'>
+    <ion-col size='3'>异常消息</ion-col>
+    <ion-col>
+      <div>{{ExceptionMessage}}</div>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <div class='clip-text' (click)='orderHotel["isShowDetail"]=!orderHotel["isShowDetail"]'
+        [class.show]='orderHotel["isShowDetail"]'>
+        {{orderHotel.RuleDescription}}
+      </div>
+    </ion-col>
+  </ion-row>
