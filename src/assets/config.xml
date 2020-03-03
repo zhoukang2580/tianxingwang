@@ -26,6 +26,7 @@
     <preference name="SplashScreenDelay" value="1000" />
     <preference name="LogLevel" value="VERBOSE" />
     <preference name="FullscreenNotImmersive" value="true" />
+    <preference name="Fullscreen" value="true" />
     <preference name="WECHATAPPID" value="wx0839a418ccafdf36" />
     <hook src="scripts/before_build.js" type="before_build" />
     <hook src="scripts/zipfile_before_build.js" type="before_build" />

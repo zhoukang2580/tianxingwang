@@ -1,6 +1,6 @@
+import { finalize } from 'rxjs/operators';
 import { IdentityEntity } from "./../../services/identity/identity.entity";
 import { AfterViewInit, OnDestroy } from "@angular/core";
-import { BarcodeScanner } from "@ionic-native/barcode-scanner/ngx";
 import { Router } from "@angular/router";
 import { IdentityService } from "./../../services/identity/identity.service";
 import { RequestEntity } from "src/app/services/api/Request.entity";
@@ -13,6 +13,7 @@ import { DomSanitizer } from "@angular/platform-browser";
 import * as md5 from "md5";
 import { WechatHelper } from "src/app/wechatHelper";
 import { Subscription } from "rxjs";
+import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner/ngx';
 
 @Component({
   selector: "app-scan-comp",
@@ -28,9 +29,9 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private plt: Platform,
-    private barcodeScanner: BarcodeScanner,
     private identityService: IdentityService,
-    private router: Router
+    private router: Router,
+    private qrScanner: QRScanner
   ) {
     this.identityEntitySub = this.identityService
       .getIdentitySource()
@@ -75,13 +76,34 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   private async appScan() {
     await this.plt.ready();
-    return this.barcodeScanner
-      .scan({
-        resultDisplayDuration: 0,
-        showTorchButton: true,
-        showFlipCameraButton: true
-      })
-      .then(r => r.text);
+    const permission: QRScannerStatus = await this.qrScanner.prepare();
+    return new Promise<string>((resolve, reject) => {
+      if (permission.authorized) {
+        // camera permission was granted
+        // start scanning
+        const sub = this.qrScanner.scan()
+          .pipe(finalize(() => {
+            setTimeout(() => {
+              sub.unsubscribe();
+            }, 0);
+          }))
+          .subscribe(text => {
+            this.qrScanner.hide(); // hide camera preview
+            resolve(text);
+          }, e => {
+            reject(e)
+          })
+      } else if (permission.denied) {
+        reject("您拒绝了使用相机");
+        // camera permission was permanently denied
+        // you must use QRScanner.openSettings() method to guide the user to the settings page
+        // then they can grant the permission from there
+      } else {
+        reject("您拒绝了使用相机");
+        // permission was denied, but not permanently. You can ask for permission again at a later time.
+      }
+
+    });
   }
   private async wechatH5Scan() {
     const ok = await WechatHelper.ready().catch(e => {

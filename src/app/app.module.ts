@@ -20,12 +20,12 @@ import { LogService } from "./services/log/log.service";
 import { environment } from "src/environments/environment";
 import { AppComponentsModule } from "./components/appcomponents.module";
 import { Zip } from "@ionic-native/zip/ngx";
-import { BarcodeScanner } from "@ionic-native/barcode-scanner/ngx";
 import { File } from "@ionic-native/file/ngx";
 import { AppVersion } from "@ionic-native/app-version/ngx";
 import { WebView } from "@ionic-native/ionic-webview/ngx";
 import { IonicStorageModule } from "@ionic/storage";
 import { Animation } from "./animations/animation-interface";
+import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner/ngx';
 let curPlt: "ios" | "md";
 export function navAnimations(baseEl, opts) {
   const animation =
@@ -64,8 +64,8 @@ export function navAnimations(baseEl, opts) {
       deps: [LogService, LoadingController]
     },
     Zip,
-    BarcodeScanner,
     File,
+    QRScanner,
     AppVersion,
     WebView
   ],
