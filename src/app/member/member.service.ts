@@ -2,9 +2,11 @@ import { ApiService } from "./../services/api/api.service";
 import { Injectable } from "@angular/core";
 import { RequestEntity } from "../services/api/Request.entity";
 import { CredentialsType } from "./pipe/credential.pipe";
-import { AccountEntity } from '../account/models/AccountEntity';
+import { AccountEntity } from "../account/models/AccountEntity";
 export class MemberCredential {
   isAdd?: boolean;
+  isLongPeriodOfTime?: boolean;
+  longPeriodOfTime?: string;
   isModified?: boolean;
   isNotWhiteList: boolean;
   variables: any;
@@ -62,7 +64,7 @@ export class MemberCredential {
   providedIn: "root"
 })
 export class MemberService {
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService) {}
   async getCredentials(accountId: string): Promise<MemberCredential[]> {
     const req = new RequestEntity();
     req.IsShowLoading = true;

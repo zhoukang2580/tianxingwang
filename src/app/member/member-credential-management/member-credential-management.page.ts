@@ -1,4 +1,4 @@
-import { BackButtonComponent } from './../../components/back-button/back-button.component';
+import { BackButtonComponent } from "./../../components/back-button/back-button.component";
 import { MyCalendarComponent } from "./../../components/my-calendar/my-calendar.component";
 import { Subscription, fromEvent } from "rxjs";
 import {
@@ -29,11 +29,11 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { AppHelper } from "src/app/appHelper";
 import { ValidatorService } from "src/app/services/validator/validator.service";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
-import * as moment from "moment";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { MemberCredential, MemberService } from "../member.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { RefresherComponent } from "src/app/components/refresher";
+import { CalendarService } from "src/app/tmc/calendar.service";
 @Component({
   selector: "app-member-credential-management",
   templateUrl: "./member-credential-management.page.html",
@@ -44,6 +44,7 @@ export class MemberCredentialManagementPage
   private timemoutid;
   private subscriptions: Subscription[] = [];
   private subscription = Subscription.EMPTY;
+  private idInputEleSubscription = Subscription.EMPTY;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
   identityTypes: { key: string; value: string }[];
   credentials: MemberCredential[];
@@ -65,36 +66,41 @@ export class MemberCredentialManagementPage
     private router: Router,
     private validatorService: ValidatorService,
     private memberService: MemberService,
+    private calendarService: CalendarService,
     route: ActivatedRoute,
     private plt: Platform,
     private ngZone: NgZone,
     private modalController: ModalController
   ) {
-    this.subscriptions.push(route.queryParamMap.subscribe(p => {
-      this.isCanDeactive = false;
-      if (this.modifyCredential) {
-        if (p.get("date")) {
-          let date: string = p.get("date");
-          date = date.replace(/-/g, "/");
-          if (this.requestCode == "birthDate") {
-            this.modifyCredential.Birthday = date;
+    this.subscriptions.push(
+      route.queryParamMap.subscribe(p => {
+        this.isCanDeactive = false;
+        if (this.modifyCredential) {
+          if (p.get("date")) {
+            let date: string = p.get("date");
+            date = date.replace(/-/g, "/");
+            if (this.requestCode == "birthDate") {
+              this.modifyCredential.Birthday = date;
+            }
+            if (this.requestCode == "expireDate") {
+              this.modifyCredential.ExpirationDate = date;
+              this.modifyCredential.isLongPeriodOfTime = false;
+              this.modifyCredential.longPeriodOfTime = "";
+            }
+            this.requestCode = null;
           }
-          if (this.requestCode == "expireDate") {
-            this.modifyCredential.ExpirationDate = date;
+        }
+        if (p.get("data")) {
+          this.credentials = [JSON.parse(p.get("data"))];
+        }
+        if (p.get("addNew")) {
+          const isAddNew = p.get("addNew") == "true";
+          if (isAddNew) {
+            this.onAddCredential();
           }
-          this.requestCode = null;
         }
-      }
-      if (p.get("data")) {
-        this.credentials = [JSON.parse(p.get("data"))]
-      }
-      if (p.get('addNew')) {
-        const isAddNew = p.get("addNew") == 'true';
-        if (isAddNew) {
-          this.onAddCredential();
-        }
-      }
-    }));
+      })
+    );
   }
   private back() {
     this.backBtn.backToPrePage();
@@ -137,15 +143,15 @@ export class MemberCredentialManagementPage
         this.saveAdd(
           c,
           this.addFormEles &&
-          this.addFormEles.last &&
-          this.addFormEles.last.nativeElement
+            this.addFormEles.last &&
+            this.addFormEles.last.nativeElement
         );
       } else {
         this.saveModify(
           c,
           this.addFormEles &&
-          this.addFormEles.last &&
-          this.addFormEles.last.nativeElement
+            this.addFormEles.last &&
+            this.addFormEles.last.nativeElement
         );
       }
     }
@@ -154,7 +160,7 @@ export class MemberCredentialManagementPage
     if (c && c.isAdd) {
       this.removeAdd(c);
     } else {
-      this.removeExistCredential(c);
+      this.onRemoveExistCredential(c);
     }
   }
   onSelectIdType(ele: IonSelect) {
@@ -230,10 +236,48 @@ export class MemberCredentialManagementPage
     if (!idInputEle) {
       return;
     }
-    const sub0 = fromEvent(idInputEle, "blur").subscribe(evt => {
-      this.changeBirthByIdNumber(idInputEle);
-    });
-    this.subscriptions.push(sub0);
+    this.idInputEleSubscription.unsubscribe();
+    idInputEle.onfocus = () => {
+      if (idInputEle.classList.contains("validctrlerror")) {
+        idInputEle.value = "";
+      }
+    };
+    this.idInputEleSubscription = fromEvent(idInputEle, "blur").subscribe(
+      evt => {
+        setTimeout(() => {
+          this.validateIdNumber(idInputEle);
+          this.changeBirthByIdNumber(idInputEle);
+        }, 0);
+      }
+    );
+    this.subscriptions.push(this.idInputEleSubscription);
+  }
+  private isIdNubmerValidate(value: string) {
+    return value && value.length == 18 && !AppHelper.includeHanz(value);
+  }
+  private validateIdNumber(inputEl: HTMLInputElement) {
+    if (
+      inputEl &&
+      this.modifyCredential &&
+      this.modifyCredential.Type == CredentialsType.IdCard
+    ) {
+      const value = inputEl.value;
+      const errorTipEl = inputEl.parentElement.querySelector(
+        ".idnumbervalidate"
+      );
+      if (errorTipEl) {
+        if (!this.isIdNubmerValidate(value)) {
+          inputEl.classList.remove("validctrlsucess");
+          inputEl.classList.add("validctrlerror");
+          errorTipEl.classList.remove("validsucessmess");
+          errorTipEl.classList.add("validerrormess");
+          errorTipEl.textContent = `请填写正确的18位身份证号码`;
+        } else {
+          inputEl.classList.remove("validctrlerror");
+          errorTipEl.classList.add("validsucessmess");
+        }
+      }
+    }
   }
   private initInputChanges(
     container: HTMLElement,
@@ -272,7 +316,7 @@ export class MemberCredentialManagementPage
     if (this.timemoutid) {
       clearTimeout(this.timemoutid);
     }
-    this.timemoutid = setTimeout(function () {
+    this.timemoutid = setTimeout(function() {
       window.scrollTo({
         top: 0,
         left: 0,
@@ -295,6 +339,10 @@ export class MemberCredentialManagementPage
   ngAfterViewInit() {
     // console.log(this.formEle);
     setTimeout(() => {
+      if (this.modifyCredential) {
+        const one = this.modifyCredential;
+        this.initInputChanges(this.addFormEles.last.nativeElement, one);
+      }
       this.initializeValidate();
     }, 1000);
     const sub = this.addFormEles.changes.subscribe(_ => {
@@ -325,7 +373,7 @@ export class MemberCredentialManagementPage
       }
     }, 200);
   }
-  async removeExistCredential(c: MemberCredential) {
+  async onRemoveExistCredential(c: MemberCredential) {
     const comfirmDel = await AppHelper.alert(
       LanguageHelper.getConfirmDeleteTip(),
       true,
@@ -345,14 +393,14 @@ export class MemberCredentialManagementPage
       }
     }
   }
-  private async tipMessage(c: MemberCredential) {
+  private async confirmTipMessage(c: MemberCredential) {
     c.FirstName = c.FirstName && c.FirstName.toUpperCase();
     c.LastName = c.LastName && c.LastName.toUpperCase();
     c.CheckFirstName = c.CheckFirstName && c.CheckFirstName.toUpperCase();
     c.CheckLastName = c.CheckLastName && c.CheckLastName.toUpperCase();
     c.Number = c.Number && c.Number.toUpperCase();
     const ok = await AppHelper.alert(
-      `请确认您的证件姓名：${c.FirstName}${c.LastName},您的登机名：${c.CheckFirstName}${c.CheckLastName},证件号码：${c.Number}`,
+      `请确认您的证件姓名：${c.FirstName}${c.LastName},证件号码：${c.Number}`,
       true,
       LanguageHelper.getConfirmTip(),
       LanguageHelper.getCancelTip()
@@ -361,7 +409,7 @@ export class MemberCredentialManagementPage
   }
   async saveModify(c: MemberCredential, el: HTMLElement) {
     const valid = await this.validateCredential(c, el);
-    const ok = await this.tipMessage(c);
+    const ok = await this.confirmTipMessage(c);
     if (!valid) {
       return;
     }
@@ -381,6 +429,7 @@ export class MemberCredentialManagementPage
       });
     this.modifyCredential = null;
     if (res) {
+      this.isCanDeactive = true;
       this.back();
     }
   }
@@ -407,7 +456,7 @@ export class MemberCredentialManagementPage
     }
     this.modifyCredential = item;
   }
-  initializeValidateAdd(el: HTMLElement) {
+  private initializeValidateAdd(el: HTMLElement) {
     this.validatorService.initialize(
       "Beeant.Domain.Entities.Member.CredentialsEntity",
       "Add",
@@ -472,12 +521,20 @@ export class MemberCredentialManagementPage
       this.modifyCredential = null;
     }
   }
+  onSetLongTime(c: MemberCredential, evt: CustomEvent) {
+    evt.stopPropagation();
+    c.isLongPeriodOfTime = true;
+    c.longPeriodOfTime = "长期有效";
+    c.ExpirationDate = this.calendarService
+      .getMoment(100 * 365, c.Birthday)
+      .format("YYYY/MM/DD");
+  }
   async saveAdd(c: MemberCredential, container: HTMLElement) {
     let ok = await this.validateCredential(c, container);
     if (!ok) {
       return;
     }
-    ok = await this.tipMessage(c);
+    ok = await this.confirmTipMessage(c);
     console.log("validateCredential", ok);
     if (!ok) {
       return;
@@ -494,6 +551,7 @@ export class MemberCredentialManagementPage
       return;
     }
     this.modifyCredential = null;
+    this.isCanDeactive = true;
     this.back();
   }
   async validateCredential(c: MemberCredential, container: HTMLElement) {
@@ -535,19 +593,25 @@ export class MemberCredentialManagementPage
     }
     if (!c.Number) {
       return this.checkProperty(c, "Number", rules, container);
+    } else if (!this.isIdNubmerValidate(c.Number)) {
+      return;
     }
     if (!c.Birthday) {
       return this.checkProperty(c, "Birthday", rules, container);
     }
     this.ngZone.runOutsideAngular(() => {
-      c.Birthday = moment(c.Birthday).format("YYYY/MM/DD");
+      c.Birthday = this.calendarService
+        .getMoment(0, c.Birthday)
+        .format("YYYY/MM/DD");
     });
     console.log(c.Birthday);
     if (!c.ExpirationDate) {
       return this.checkProperty(c, "ExpirationDate", rules, container);
     }
     this.ngZone.runOutsideAngular(() => {
-      c.ExpirationDate = moment(c.ExpirationDate).format("YYYY/MM/DD");
+      c.ExpirationDate = this.calendarService
+        .getMoment(0, c.ExpirationDate)
+        .format("YYYY/MM/DD");
     });
     console.log(c.ExpirationDate);
     if (!c.Country) {
@@ -595,7 +659,7 @@ export class MemberCredentialManagementPage
       return false;
     }
   }
-  togleModify(item: MemberCredential) {
+  onTogleModify(item: MemberCredential) {
     item.isModified = !item.isModified;
     this.modifyCredential = { ...item };
     if (this.credentials) {
