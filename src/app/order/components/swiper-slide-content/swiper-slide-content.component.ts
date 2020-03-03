@@ -1,5 +1,4 @@
-import { IonContent } from "@ionic/angular";
-import { Platform } from "@ionic/angular";
+import { IonContent, Platform, DomController } from "@ionic/angular";
 import {
   OnDestroy,
   TemplateRef,
@@ -31,7 +30,11 @@ export class SwiperSlideContentComponent
   @ViewChild("swiperPagination", { static: true }) swiperPagination: ElementRef<
     HTMLElement
   >;
-  constructor(private plt: Platform, private el: ElementRef<HTMLElement>) {
+  constructor(
+    private plt: Platform,
+    private el: ElementRef<HTMLElement>,
+    private domCtrl: DomController
+  ) {
     this.slideChange = new EventEmitter();
   }
   ngAfterContentInit() {
@@ -102,7 +105,7 @@ export class SwiperSlideContentComponent
       const one = this.tabsContainer.nativeElement.querySelector(
         `[dataid='${tab.value}'`
       );
-      requestAnimationFrame(() => {
+      this.domCtrl.read(() => {
         const rect = one && one.getBoundingClientRect();
         if (rect) {
           const delta = rect.left + rect.width / 2 - this.plt.width() / 2;
