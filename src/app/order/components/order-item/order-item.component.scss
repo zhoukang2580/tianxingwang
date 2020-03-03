@@ -1,26 +1,19 @@
 :host {
   width: 100%;
 }
-ion-row {
-  &.action-btns {
-    ion-col {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      padding-right:1em ;
-    }
+.item {
+  padding: 0.2em 0;
+  display: flex;
+  align-items: flex-start;
+  & > *:first-child {
+    margin-right: 1em;
+    color: var(--ion-color-medium);
   }
-  ion-col {
-    &.status {
-      text-align: end;
-    }
-    align-self: flex-start;
-    font-size:1rem;
-    &:first-child {
-      color: var(--ion-color-medium);
-    }
+  span {
+    margin-right: 0.5em;
   }
 }
+
 .select-text {
   user-select: text;
 }

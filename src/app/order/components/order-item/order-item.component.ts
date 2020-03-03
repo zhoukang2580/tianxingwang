@@ -5,7 +5,15 @@ import { CalendarService } from "./../../../tmc/calendar.service";
 import { AppHelper } from "src/app/appHelper";
 import { TmcEntity } from "src/app/tmc/tmc.service";
 import { TmcService } from "./../../../tmc/tmc.service";
-import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  OnChanges,
+  SimpleChanges
+} from "@angular/core";
 import { OrderEntity, OrderStatusType } from "src/app/order/models/OrderEntity";
 import { OrderFlightTripStatusType } from "src/app/order/models/OrderFlightTripStatusType";
 import { OrderTravelPayType } from "../../models/OrderTravelEntity";
@@ -21,18 +29,18 @@ import { TripType } from "src/app/tmc/models/TripType";
 import * as moment from "moment";
 import { Router } from "@angular/router";
 import { OrderPassengerEntity } from "../../models/OrderPassengerEntity";
-import { OrderFlightTicketType } from '../../models/OrderFlightTicketType';
+import { OrderFlightTicketType } from "../../models/OrderFlightTicketType";
 @Component({
   selector: "app-order-item",
   templateUrl: "./order-item.component.html",
   styleUrls: ["./order-item.component.scss"]
 })
-export class OrderItemComponent implements OnInit {
+export class OrderItemComponent implements OnInit, OnChanges {
   private bookChannals = `Eterm  BlueSky  Android  客户H5  IOS  外购PC  客户PC  代理PC`;
   private selfBookChannals = `Android  客户H5  IOS 客户PC`;
   TrainSupplierType = TrainSupplierType;
-  OrderFlightTicketType=OrderFlightTicketType;
-  OrderTravelPayType=OrderTravelPayType;
+  OrderFlightTicketType = OrderFlightTicketType;
+  OrderTravelPayType = OrderTravelPayType;
   @Input() order: OrderEntity;
   @Input() isAgent = false;
   @Output() payaction: EventEmitter<OrderEntity>;
@@ -61,9 +69,37 @@ export class OrderItemComponent implements OnInit {
     evt.preventDefault();
     evt.stopPropagation();
   }
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.order && changes.order.currentValue) {
+      if (this.order) {
+        this.order.VariablesJsonObj =
+          this.order.VariablesJsonObj || JSON.parse(this.order.Variables);
+        if (this.order.OrderFlightTickets) {
+          this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(
+            t => {
+              if (t.Variables && !t.VariablesJsonObj) {
+                t.VariablesJsonObj =
+                  t.VariablesJsonObj || JSON.parse(t.Variables);
+              }
+              return t;
+            }
+          );
+        }
+      }
+    }
+  }
   check(orderTrainTicket: OrderTrainTicketEntity) {
-    return  orderTrainTicket && orderTrainTicket.OrderTrainTrips && orderTrainTicket.OrderTrainTrips.length == 1 &&
-      +this.calendarService.getMoment(0, orderTrainTicket.OrderTrainTrips[0].StartTime) - +this.calendarService.getMoment(0) > 0
+    return (
+      orderTrainTicket &&
+      orderTrainTicket.OrderTrainTrips &&
+      orderTrainTicket.OrderTrainTrips.length == 1 &&
+      +this.calendarService.getMoment(
+        0,
+        orderTrainTicket.OrderTrainTrips[0].StartTime
+      ) -
+        +this.calendarService.getMoment(0) >
+        0
+    );
   }
   async onExchange(evt: CustomEvent, orderTrainTicket: OrderTrainTicketEntity) {
     if (evt) {
@@ -91,7 +127,7 @@ export class OrderItemComponent implements OnInit {
       false
     );
   }
-  getPassenger(ticket: OrderFlightTicketEntity) {
+  getTicketPassenger(ticket: OrderFlightTicketEntity) {
     const p = (this.order && this.order.OrderPassengers) || [];
     return p.find(it => it.Id == (ticket.Passenger && ticket.Passenger.Id));
   }
@@ -262,11 +298,23 @@ export class OrderItemComponent implements OnInit {
     );
   }
   getPassengerTicketStatus(p: OrderPassengerEntity) {
-    return (
+    const tickets =
       this.order &&
       this.order.OrderFlightTickets &&
-      this.order.OrderFlightTickets.find(
+      this.order.OrderFlightTickets.filter(
         t => t.Passenger && t.Passenger.Id == (p && p.Id)
+      );
+    console.log("getPassengerTicketStatus", tickets);
+    if (tickets && tickets.length) {
+      return tickets[tickets.length - 1];
+    }
+    return null;
+  }
+  getPassengerTrips(p: OrderPassengerEntity, ticket: OrderFlightTicketEntity) {
+    return (
+      ticket.OrderFlightTrips &&
+      ticket.OrderFlightTrips.filter(
+        it => it.OrderFlightTicket && it.OrderFlightTicket.Id
       )
     );
   }

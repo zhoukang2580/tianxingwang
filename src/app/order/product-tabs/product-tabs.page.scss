@@ -14,17 +14,17 @@
 ion-content {
   --background: #f2f2f2;
   ion-toolbar {
-    height: 3em;
+    height: 3.5em;
   }
   & > ion-list {
     position: relative;
-    top: 3.5em;
+    top: 4em;
   }
 }
 ion-list {
   background: transparent;
   ion-item {
-    margin-bottom: 0.35em;
+    margin-bottom: 0.5em;
   }
 }
 ion-footer {
@@ -50,4 +50,7 @@ ion-footer ion-row ion-col {
     margin: 0;
     padding: 0;
   }
+}
+app-order-item {
+  font-size: 0.9rem;
 }
