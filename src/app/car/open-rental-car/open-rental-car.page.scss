@@ -1,7 +1,19 @@
 iframe {
-  height: 100%;
   width: 100%;
-  &::-webkit-scrollbar{
-      display: none;
+  max-height: 85vh;
+  min-height: 80vh;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    display: none;
   }
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+ion-content {
+  --offset-bottom: 15vh;
+}
+.wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: scroll;
 }

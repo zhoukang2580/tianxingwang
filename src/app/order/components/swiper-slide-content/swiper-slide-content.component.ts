@@ -5,7 +5,9 @@ import {
   Input,
   HostBinding,
   AfterContentInit,
-  AfterContentChecked
+  AfterContentChecked,
+  ViewChildren,
+  QueryList
 } from "@angular/core";
 import { EventEmitter } from "@angular/core";
 import { ElementRef, Output } from "@angular/core";
@@ -25,7 +27,10 @@ export class SwiperSlideContentComponent
   @Input() tabs: any[];
   @Output() slideChange: EventEmitter<number>;
   @ViewChild("container", { static: true }) container: ElementRef<HTMLElement>;
-  @ViewChild("tabsContainer") tabsContainer: ElementRef<HTMLElement>;
+  @ViewChild("tabsContainer", { static: true }) tabsContainer: ElementRef<
+    HTMLElement
+  >;
+  @ViewChildren("tabItem") tabItems: QueryList<ElementRef<HTMLElement>>;
   @ViewChild("tabsWrapper") tabsWrapper: ElementRef<HTMLElement>;
   @ViewChild("swiperPagination", { static: true }) swiperPagination: ElementRef<
     HTMLElement
@@ -57,17 +62,17 @@ export class SwiperSlideContentComponent
   ngOnInit() {
     console.log("on init");
     this.swiper = new Swiper(this.container.nativeElement, {
+      on: {
+        slideChange: () => {
+          const idx = this.swiper.realIndex;
+          this.slideChange.emit(idx);
+          this.onSlideTouchEnd(idx);
+        }
+      },
       pagination: {
         el: this.swiperPagination.nativeElement
       }
     });
-    if (this.swiper) {
-      this.swiper.on("slideChange", () => {
-        const idx = this.swiper.realIndex;
-        this.slideChange.emit(idx);
-        this.onSlideTouchEnd(idx);
-      });
-    }
   }
   ngAfterViewInit() {
     // console.log("after view init", this.container);
@@ -83,7 +88,7 @@ export class SwiperSlideContentComponent
     });
     setTimeout(() => {
       this.update();
-    }, 1000);
+    }, 200);
   }
   ngOnDestroy() {
     if (this.swiper) {
@@ -102,24 +107,26 @@ export class SwiperSlideContentComponent
   }
   private scrollTabToCenter(tab: any) {
     if (this.tabsContainer && this.tabsContainer.nativeElement) {
-      const one = this.tabsContainer.nativeElement.querySelector(
-        `[dataid='${tab.value}'`
+      const one = this.tabItems.find(
+        it => it.nativeElement.getAttribute("dataid") == `${tab.value}`
       );
-      this.domCtrl.read(() => {
-        const rect = one && one.getBoundingClientRect();
-        if (rect) {
-          const delta = rect.left + rect.width / 2 - this.plt.width() / 2;
-          this.tabsContainer.nativeElement.scrollBy({
-            left: delta,
-            behavior: "smooth"
-          });
-        }
-      });
+      if (one && one.nativeElement) {
+        this.domCtrl.read(() => {
+          const rect = one.nativeElement.getBoundingClientRect();
+          if (rect) {
+            const delta = rect.left + rect.width / 2 - this.plt.width() / 2;
+            this.tabsContainer.nativeElement.scrollBy({
+              left: delta,
+              behavior: "smooth"
+            });
+          }
+        });
+      }
     }
   }
   onSlideTouchEnd(idx: number) {
-    const tab = this.tabs[idx];
     // console.log("idx", idx, tab,this.tabs);
+    const tab = this.tabs[idx];
     if (tab) {
       this.tabs = this.tabs.map(t => {
         t.active = tab.value == t.value;

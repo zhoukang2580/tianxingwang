@@ -59,7 +59,8 @@ export class BackButtonComponent implements OnInit, AfterViewInit {
       //   "customeback " + this.customeback
       // );
       requestAnimationFrame(() => {
-        const isBack=this.router.url.split("?")[0] == this.curUrl.substring(0,this.curUrl.indexOf("?"));
+        const isBack =
+          this.router.url.split("?")[0] == this.curUrl.split("?")[0];
         if (isBack) {
           this.navCtrl.navigateBack(this.defaultHref || "");
         }
