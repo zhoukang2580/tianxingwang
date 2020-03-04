@@ -28,11 +28,11 @@ module.exports = {
     resumePreview: function (callback) {
         exec(callback, null, 'QRScanner', 'resumePreview', []);
     },
-    enableLight: function (callback) {
-        exec(callback, errorCallback(callback), 'QRScanner', 'enableLight', []);
+    enableLight: function (callback,err) {
+        exec(callback, err, 'QRScanner', 'enableLight', []);
     },
-    disableLight: function (callback) {
-        exec(callback, errorCallback(callback), 'QRScanner', 'disableLight', []);
+    disableLight: function (callback,err) {
+        exec(callback, err, 'QRScanner', 'disableLight', []);
     },
     useCamera: function (index, callback,err) {
         exec(callback, err, 'QRScanner', 'useCamera', [index]);
