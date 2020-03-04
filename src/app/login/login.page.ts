@@ -339,9 +339,9 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           .login("ApiLoginUrl-Home-DeviceLogin", this.loginEntity)
           .pipe(
             finalize(() => {
+              this.hideLoadingStatus();
               setTimeout(() => {
                 this.loginType = "user";
-                this.hideLoadingStatus();
               }, 100);
             })
           )
