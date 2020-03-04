@@ -25,7 +25,6 @@ import { AppVersion } from "@ionic-native/app-version/ngx";
 import { WebView } from "@ionic-native/ionic-webview/ngx";
 import { IonicStorageModule } from "@ionic/storage";
 import { Animation } from "./animations/animation-interface";
-import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner/ngx';
 let curPlt: "ios" | "md";
 export function navAnimations(baseEl, opts) {
   const animation =
@@ -65,7 +64,6 @@ export function navAnimations(baseEl, opts) {
     },
     Zip,
     File,
-    QRScanner,
     AppVersion,
     WebView
   ],
