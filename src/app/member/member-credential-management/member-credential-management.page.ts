@@ -94,6 +94,19 @@ export class MemberCredentialManagementPage
         }
         if (p.get("data")) {
           this.credentials = [JSON.parse(p.get("data"))];
+          if (this.credentials.length) {
+            this.credentials = this.credentials.map(c => {
+              if (
+                this.calendarService.getMoment(0, c.ExpirationDate).year() -
+                  new Date().getFullYear() >=
+                70
+              ) {
+                c.isLongPeriodOfTime = true;
+                c.longPeriodOfTime = "长期有效";
+              }
+              return c;
+            });
+          }
         }
         if (p.get("addNew")) {
           const isAddNew = p.get("addNew") == "true";
@@ -150,14 +163,14 @@ export class MemberCredentialManagementPage
   async onSaveCredential(c: MemberCredential) {
     if (c) {
       if (c.isAdd) {
-        this.saveAdd(
+        await this.saveAdd(
           c,
           this.addFormEles &&
             this.addFormEles.last &&
             this.addFormEles.last.nativeElement
         );
       } else {
-        this.saveModify(
+        await this.saveModify(
           c,
           this.addFormEles &&
             this.addFormEles.last &&
@@ -263,7 +276,10 @@ export class MemberCredentialManagementPage
     this.subscriptions.push(this.idInputEleSubscription);
   }
   private isIdNubmerValidate(value: string) {
-    return value && value.length == 18 && !AppHelper.includeHanz(value);
+    if (!value) {
+      return false;
+    }
+    return value.length == 18 && !AppHelper.includeHanz(value);
   }
   private validateIdNumber(inputEl: HTMLInputElement) {
     if (
@@ -537,9 +553,9 @@ export class MemberCredentialManagementPage
     evt.stopPropagation();
     c.isLongPeriodOfTime = true;
     c.longPeriodOfTime = "长期有效";
-    c.ExpirationDate = this.calendarService
-      .getMoment(100 * 365, c.Birthday)
-      .format("YYYY/MM/DD");
+    c.ExpirationDate = this.calendarService.getFormatedDate(
+      this.calendarService.getMoment(100 * 365, c.Birthday).format("YYYY-MM-DD")
+    );
   }
   async saveAdd(c: MemberCredential, container: HTMLElement) {
     let ok = await this.validateCredential(c, container);
@@ -589,6 +605,13 @@ export class MemberCredentialManagementPage
     if (!c.LastName) {
       return this.checkProperty(c, "LastName", rules, container);
     }
+    if (
+      c.Type != CredentialsType.IdCard &&
+      AppHelper.includeHanz(c.FirstName + c.LastName)
+    ) {
+      AppHelper.alert("证件姓名，请输入英文或者拼音");
+      return false;
+    }
     c.CheckFirstName = c.CheckFirstName || c.FirstName;
     if (!c.CheckFirstName) {
       return this.checkProperty(c, "CheckFirstName", rules, container);
@@ -597,6 +620,7 @@ export class MemberCredentialManagementPage
     if (!c.CheckLastName) {
       return this.checkProperty(c, "CheckLastName", rules, container);
     }
+
     if (!c.Gender) {
       return this.checkProperty(c, "Gender", rules, container);
     }
@@ -605,25 +629,25 @@ export class MemberCredentialManagementPage
     }
     if (!c.Number) {
       return this.checkProperty(c, "Number", rules, container);
-    } else if (!this.isIdNubmerValidate(c.Number)) {
-      return;
+    } else if (
+      c.Type == CredentialsType.IdCard &&
+      !this.isIdNubmerValidate(c.Number)
+    ) {
+      AppHelper.alert("请输入正确的18位身份证号");
+      return false;
     }
     if (!c.Birthday) {
       return this.checkProperty(c, "Birthday", rules, container);
     }
     this.ngZone.runOutsideAngular(() => {
-      c.Birthday = this.calendarService
-        .getMoment(0, c.Birthday)
-        .format("YYYY/MM/DD");
+      c.Birthday = this.calendarService.getFormatedDate(c.Birthday);
     });
     console.log(c.Birthday);
     if (!c.ExpirationDate) {
       return this.checkProperty(c, "ExpirationDate", rules, container);
     }
     this.ngZone.runOutsideAngular(() => {
-      c.ExpirationDate = this.calendarService
-        .getMoment(0, c.ExpirationDate)
-        .format("YYYY/MM/DD");
+      c.ExpirationDate = this.calendarService.getFormatedDate(c.ExpirationDate);
     });
     console.log(c.ExpirationDate);
     if (!c.Country) {

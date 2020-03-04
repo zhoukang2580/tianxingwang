@@ -7,6 +7,7 @@ import { AvailableDate } from "./models/AvailableDate";
 import { LanguageHelper } from "../languageHelper";
 import { DayModel, ILunarInfo } from "./models/DayModel";
 import { Storage } from "@ionic/storage";
+import { Platform } from "@ionic/angular";
 const lunarCalendar = window["LunarCalendar"];
 const _KEY_HOLIDAYS = "_key_holidays";
 @Injectable({
@@ -25,14 +26,45 @@ export class CalendarService {
     5: LanguageHelper.getFridayTip(),
     6: LanguageHelper.getSaturdayTip()
   };
-  constructor(private apiService: ApiService, private storage: Storage) {
+  constructor(
+    private apiService: ApiService,
+    private storage: Storage,
+    private plt: Platform
+  ) {
     this.selectedDaysSource = new BehaviorSubject([]);
   }
   diff(d2: string, d1: string, unit: any): number {
     return moment(d2).diff(moment(d1), unit);
   }
+  getFormatedDate(date: string) {
+    const m = this.getMoment(0, date);
+    let format = date.length > 10 ? "YYYY/MM/DD HH:mm:ss" : "YYYY/MM/DD";
+    if (this.plt.is("ios")) {
+      return m.format(format);
+    }
+    format = format.replace(/\//g, "-");
+    return m.format(format);
+  }
   getMoment(addDays: number = 0, date: string | number = "") {
-    const m = date ? moment(date) : moment();
+    let m = moment();
+    if (date) {
+      if (typeof date == "string") {
+        const format = "YYYY-MM-DD HH:mm:ss";
+        if (date.includes("T")) {
+          date = date.replace("T", " ");
+        }
+        if (date.includes("/")) {
+          date = date.replace(/\//g, "-");
+        }
+        if (!date.includes(":")) {
+          m = moment(date);
+        } else {
+          m = moment(date, format);
+        }
+      } else {
+        m = moment(date);
+      }
+    }
     if (addDays) {
       return m.add(addDays, "days");
     }
