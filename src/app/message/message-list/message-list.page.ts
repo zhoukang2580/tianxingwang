@@ -113,6 +113,9 @@ export class MessageListPage implements OnInit, AfterViewInit {
     //     }
     //   }
     // }
+    if (item) {
+      item.IsRead = true;
+    }
     if (this.open) {
       item.IsSelected = !item.IsSelected;
       return;
