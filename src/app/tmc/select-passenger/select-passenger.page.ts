@@ -39,7 +39,6 @@ import { Observable, Subscription, of } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { LanguageHelper } from "src/app/languageHelper";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
-import { Country } from "src/app/tmc/components/select-country/select-countrymodal.component";
 import { AppHelper } from "src/app/appHelper";
 import { ValidatorService } from "src/app/services/validator/validator.service";
 import * as moment from "moment";
@@ -51,6 +50,7 @@ import {
   animate
 } from "@angular/animations";
 import { AccountEntity } from "src/app/account/models/AccountEntity";
+import { CountryEntity } from '../models/CountryEntity';
 export const NOT_WHITE_LIST = "notwhitelist";
 @Component({
   selector: "app-select-passenger",
@@ -817,7 +817,7 @@ export class SelectPassengerPage
     if (result && result.data) {
       const data = result.data as {
         requestCode: string;
-        selectedItem: Country;
+        selectedItem: CountryEntity;
       };
       if (data.selectedItem) {
         if (data.requestCode == "issueNationality") {

@@ -1,10 +1,7 @@
 import { BackButtonComponent } from "./../../components/back-button/back-button.component";
 import { MyCalendarComponent } from "./../../components/my-calendar/my-calendar.component";
 import { Subscription, fromEvent } from "rxjs";
-import {
-  Country,
-  SelectCountryModalComponent
-} from "../../tmc/components/select-country/select-countrymodal.component";
+import { SelectCountryModalComponent } from "../../tmc/components/select-country/select-countrymodal.component";
 import { LanguageHelper } from "./../../languageHelper";
 import {
   IonRefresher,
@@ -34,6 +31,8 @@ import { MemberCredential, MemberService } from "../member.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { RefresherComponent } from "src/app/components/refresher";
 import { CalendarService } from "src/app/tmc/calendar.service";
+import { TmcService } from "src/app/tmc/tmc.service";
+import { CountryEntity } from "src/app/tmc/models/CountryEntity";
 @Component({
   selector: "app-member-credential-management",
   templateUrl: "./member-credential-management.page.html",
@@ -43,6 +42,7 @@ export class MemberCredentialManagementPage
   implements OnInit, AfterViewInit, CanComponentDeactivate, OnDestroy {
   private timemoutid;
   private subscriptions: Subscription[] = [];
+  private countries: CountryEntity[];
   private subscription = Subscription.EMPTY;
   private idInputEleSubscription = Subscription.EMPTY;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
@@ -62,6 +62,7 @@ export class MemberCredentialManagementPage
     ElementRef<HTMLElement>
   >;
   @ViewChildren("addForm") addFormEles: QueryList<ElementRef<HTMLElement>>;
+
   constructor(
     private router: Router,
     private validatorService: ValidatorService,
@@ -70,7 +71,8 @@ export class MemberCredentialManagementPage
     route: ActivatedRoute,
     private plt: Platform,
     private ngZone: NgZone,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private tmcService: TmcService
   ) {
     this.subscriptions.push(
       route.queryParamMap.subscribe(p => {
@@ -109,6 +111,9 @@ export class MemberCredentialManagementPage
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
   ngOnInit() {
+    this.tmcService.getCountries().then(cs => {
+      this.countries = cs;
+    });
     this.getIdentityTypes();
   }
   compareFn(t1, t2) {
@@ -124,6 +129,11 @@ export class MemberCredentialManagementPage
         };
       });
     console.log(this.identityTypes);
+  }
+  getCountryName(code: string) {
+    const country =
+      this.countries && this.countries.find(it => it.Code == code);
+    return country && country.Name;
   }
   onIdTypeChange() {
     if (
@@ -446,8 +456,10 @@ export class MemberCredentialManagementPage
       Gender: "M",
       Type: CredentialsType.IdCard,
       Id: AppHelper.uuid(),
-      isAdd: true
-    } as any;
+      isAdd: true,
+      IssueCountry: "CN",
+      Country: "CN"
+    } as MemberCredential;
     if (this.modifyCredential) {
       const ok = await AppHelper.alert("放弃当前修改？", true, "确定", "取消");
       if (!ok) {
@@ -498,7 +510,7 @@ export class MemberCredentialManagementPage
     if (result && result.data) {
       const data = result.data as {
         requestCode: string;
-        selectedItem: Country;
+        selectedItem: CountryEntity;
       };
       if (data.selectedItem) {
         if (data.requestCode == "issueNationality") {
@@ -689,4 +701,5 @@ export class MemberCredentialManagementPage
     }
     return true;
   }
+  private loadCountries() {}
 }

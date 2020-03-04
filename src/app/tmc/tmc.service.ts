@@ -23,6 +23,7 @@ import { BaseEntity } from "../models/BaseEntity";
 import { TravelModel } from "../order/models/TravelModel";
 import { OrderEntity } from "../order/models/OrderEntity";
 import { OrderTrainTicketEntity } from "../order/models/OrderTrainTicketEntity";
+import { CountryEntity } from "./models/CountryEntity";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -77,6 +78,38 @@ export class TmcService {
       req.Data["Type"] = type;
     }
     return this.apiService.getPromiseData<TravelModel>(req);
+  }
+  async getCountries(forceUpdate = false) {
+    const req = new RequestEntity();
+    req.Method = "TmcApiHomeUrl-Agent-Country";
+    let local = await this.storage.get(req.Method);
+    if (
+      (local && !forceUpdate) ||
+      (local &&
+        Math.floor(Date.now() / 1000) - local.lastUpdateTime >= 12 * 3600)
+    ) {
+      return local.countries;
+    }
+    req.Data = {
+      lastUpdateTime: (local && local.lastUpdateTime) || 0
+    };
+    req.IsShowLoading = true;
+    const countries = await this.apiService
+      .getPromiseData<{ Countries: CountryEntity[] }>(req)
+      .then(r => r.Countries)
+      .catch(_ => [] as CountryEntity[]);
+    countries.sort((c1, c2) => +c1.Sequence - +c2.Sequence);
+    // console.log("countries", countries);
+    if (local) {
+      local.countries = [...countries, ...local.countries];
+    } else {
+      local = {
+        lastUpdateTime: Math.floor(Date.now() / 1000),
+        countries
+      };
+    }
+    await this.storage.set(req.Method, local);
+    return local.countries;
   }
   getChannel() {
     let channel = "H5";

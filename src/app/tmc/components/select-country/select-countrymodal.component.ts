@@ -6,12 +6,9 @@ import { Component, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { IonInfiniteScroll, ModalController } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
-export interface Country {
-  Id: string;
-  Name: string;
-  Code?: string;
-  Sequence?: string;
-}
+import { CountryEntity } from "../../models/CountryEntity";
+import { TmcService } from "../../tmc.service";
+
 @Component({
   selector: "app-select-country",
   templateUrl: "./select-countrymodal.component.html",
@@ -21,19 +18,19 @@ export class SelectCountryModalComponent implements OnInit {
   private isRefreshe = false;
   title: string;
   requestCode: string;
-  countries: Country[] = [];
-  viewModelItems: Country[];
+  countries: CountryEntity[] = [];
+  viewModelItems: CountryEntity[];
   currentPage = 1;
   pageSize = 15;
   loading = false;
   keyword = "";
-  selectedItem: Country;
+  selectedItem: CountryEntity;
   @ViewChild(RefresherComponent)
   refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   constructor(
     route: ActivatedRoute,
-    private apiService: ApiService,
+    private tmcService: TmcService,
     private storage: Storage,
     private modalCtrl: ModalController
   ) {
@@ -44,14 +41,18 @@ export class SelectCountryModalComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.countries = await this.getCountries();
+    this.loading = true;
+    this.countries = await this.tmcService.getCountries();
     // console.log(this.countries);
+    this.loading = false;
     this.doRefresh(true);
   }
   async loadMore() {
-    this.countries = this.countries.length
-      ? this.countries
-      : await this.getCountries();
+    if (!this.countries || !this.countries.length) {
+      this.loading = true;
+      await this.tmcService.getCountries();
+      this.loading = false;
+    }
     if (this.countries) {
       let items = [];
       if (this.keyword.trim()) {
@@ -91,6 +92,7 @@ export class SelectCountryModalComponent implements OnInit {
         this.scroller.complete();
       }, 500);
     }
+    this.loading = false;
   }
   doRefresh(clearSearch: boolean) {
     this.isRefreshe = true;
@@ -102,42 +104,8 @@ export class SelectCountryModalComponent implements OnInit {
     this.viewModelItems = [];
     this.loadMore();
   }
-  async getCountries(forceUpdate = false) {
-    this.loading = true;
-    const req = new RequestEntity();
-    req.Method = "TmcApiHomeUrl-Agent-Country";
-    let local = await this.storage.get(req.Method);
-    if (
-      (local && !forceUpdate) ||
-      (local &&
-        Math.floor(Date.now() / 1000) - local.lastUpdateTime >= 12 * 3600)
-    ) {
-      this.loading = false;
-      return local.countries;
-    }
-    req.Data = {
-      lastUpdateTime: (local && local.lastUpdateTime) || 0
-    };
-    req.IsShowLoading = true;
-    const countries = await this.apiService
-      .getPromiseData<{ Countries: Country[] }>(req)
-      .then(r => r.Countries)
-      .catch(_ => [] as Country[]);
-    countries.sort((c1, c2) => +c1.Sequence - +c2.Sequence);
-    // console.log("countries", countries);
-    if (local) {
-      local.countries = [...countries, ...local.countries];
-    } else {
-      local = {
-        lastUpdateTime: Math.floor(Date.now() / 1000),
-        countries
-      };
-    }
-    await this.storage.set(req.Method, local);
-    this.loading = false;
-    return local.countries;
-  }
-  onItemClick(item: Country) {
+
+  onItemClick(item: CountryEntity) {
     this.selectedItem = item;
     this.back();
   }
