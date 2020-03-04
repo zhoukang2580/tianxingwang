@@ -76,6 +76,25 @@ const routes: Routes = [
       )
   },
   {
+    path: "workflow-list",
+    loadChildren: () =>
+      import("./workflow/workflow-list/workflow-list.module").then(
+        m => m.WorkflowListPageModule
+      )
+  },
+  {
+    path: 'member-credential-list',
+    loadChildren: () => import('./member/member-credential-list/member-credential-list.module').then(m => m.MemberCredentialListPageModule)
+  },
+  {
+    path: 'car-order-detail',
+    loadChildren: () => import('./order/car-order-detail/car-order-detail.module').then(m => m.CarOrderDetailPageModule)
+  },
+  {
+    path: 'qrscan',
+    loadChildren: () => import('./qrscan/qrscan.module').then(m => m.QrscanPageModule)
+  },
+  {
     path: "",
     component: TabsPage,
     pathMatch: "full"
@@ -85,20 +104,7 @@ const routes: Routes = [
     loadChildren: () =>
       import("./page404/page404.module").then(m => m.Page404PageModule)
   },
-  {
-    path: "workflow-list",
-    loadChildren: () =>
-      import("./workflow/workflow-list/workflow-list.module").then(
-        m => m.WorkflowListPageModule
-      )
-  },  {
-    path: 'member-credential-list',
-    loadChildren: () => import('./member/member-credential-list/member-credential-list.module').then( m => m.MemberCredentialListPageModule)
-  },
-  {
-    path: 'car-order-detail',
-    loadChildren: () => import('./order/car-order-detail/car-order-detail.module').then( m => m.CarOrderDetailPageModule)
-  }
+ 
 
 ];
 @NgModule({
@@ -129,4 +135,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule, MessageModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

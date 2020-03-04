@@ -1,0 +1,15 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <app-back-button [backFn]="back.bind(this)"></app-back-button>
+    </ion-buttons>
+    <ion-title>扫一扫</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-fab vertical="center" horizontal="center">
+    <ion-fab-button (click)='onEnableLight(true)' size='small'>开灯</ion-fab-button>
+    <ion-fab-button (click)='onEnableLight(false)' size='small'>关灯</ion-fab-button>
+  </ion-fab>
+</ion-content>

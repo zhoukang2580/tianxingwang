@@ -1,3 +1,4 @@
+import { QrScanService } from './../../services/qrScan/qrscan.service';
 import { finalize } from 'rxjs/operators';
 import { IdentityEntity } from "./../../services/identity/identity.entity";
 import { AfterViewInit, OnDestroy, InjectionToken, Injector, Inject } from "@angular/core";
@@ -13,56 +14,12 @@ import { DomSanitizer } from "@angular/platform-browser";
 import * as md5 from "md5";
 import { WechatHelper } from "src/app/wechatHelper";
 import { Subscription } from "rxjs";
-export const QRSCANNER_TOKEN = new InjectionToken<IQRScanner>('QRScanner_Token');
-export function factory() {
-  return {
-    prepare: () => new Promise<IQrScannerStatus>((resolve, reject) => {
-      qrScanner.prepare(res => {
-        console.log("prepare res " + typeof res == "object" ? JSON.stringify(res) : typeof res == 'string' ? res : typeof res);
-        resolve(res);
-      }, reject);
-    }),
-    cancelScan: () => new Promise<void>((resolve, reject) => {
-      qrScanner.cancelScan(resolve, reject)
-    }),
-    destroy: () => new Promise<void>((resolve, reject) => {
-      qrScanner.destroy(resolve, reject)
-    }),
-    enableLight: () => new Promise<void>((resolve, reject) => {
-      qrScanner.enableLight(resolve, reject)
-    }),
-    disableLight: () => new Promise<void>((resolve, reject) => {
-      qrScanner.disableLight(resolve, reject)
-    }),
-    scan: () => new Promise<string>((resolve, reject) => {
-      qrScanner.scan(resolve, reject)
-    }),
-    hide: () => new Promise<IQrScannerStatus>((resolve, reject) => {
-      qrScanner.hide(resolve, reject)
-    }),
-    pausePreview: () => new Promise<IQrScannerStatus>((resolve, reject) => {
-      qrScanner.pausePreview(resolve, reject)
-    }),
-    show: () => new Promise<IQrScannerStatus>((resolve, reject) => {
-      qrScanner.show(resolve, reject)
-    }),
-    getStatus: () => new Promise<IQrScannerStatus>((resolve, reject) => {
-      qrScanner.getStatus(resolve, reject)
-    }),
-    openSettings: () => new Promise<IQrScannerStatus>((resolve, reject) => {
-      qrScanner.openSettings(resolve, reject)
-    }),
-  }
-}
-const qrScanner = window['qrScanner'];
 @Component({
   selector: "app-scan-comp",
   templateUrl: "./scan.component.html",
-  styleUrls: ["./scan.component.scss"],
-  providers: [{ provide: QRSCANNER_TOKEN, useValue: factory }]
+  styleUrls: ["./scan.component.scss"]
 })
 export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
-  private qrScanner: IQRScanner=factory();
   identityEntity: IdentityEntity;
   identityEntitySub = Subscription.EMPTY;
   canShow = true;
@@ -73,15 +30,13 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
     private plt: Platform,
     private identityService: IdentityService,
     private router: Router,
+    private qrScanService: QrScanService
   ) {
     this.identityEntitySub = this.identityService
       .getIdentitySource()
       .subscribe(id => {
         this.identityEntity = id;
       });
-    plt.ready().then(() => {
-      this.qrScanner = window['qrScanner'];
-    })
   }
   async ngAfterViewInit() {
     setTimeout(() => {
@@ -120,11 +75,9 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   private async appScan() {
     await this.plt.ready();
-    const status = await this.qrScanner.prepare();
+    const status = await this.qrScanService.prepare();
     if (status.authorized == '1') {
-      const text = await this.qrScanner.scan();
-      this.qrScanner.hide();
-      return text;
+      this.router.navigate(["qrscan"]);
     } else {
       throw new Error("您拒绝使用相机功能");
     }
@@ -160,31 +113,4 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigate([AppHelper.getRoutePath("scan"), { scanResult: r }]);
   }
 }
-export interface IQRScanner {
-  prepare: () => Promise<IQrScannerStatus>;
-  cancelScan: () => Promise<void>;
-  destroy: () => Promise<void>;
-  enableLight: () => Promise<void>;
-  disableLight: () => Promise<void>;
-  scan: () => Promise<string>;
-  hide: () => Promise<IQrScannerStatus>;
-  pausePreview: () => Promise<IQrScannerStatus>;
-  show: () => Promise<IQrScannerStatus>;
-  getStatus: () => Promise<IQrScannerStatus>;
-  openSettings: () => Promise<IQrScannerStatus>;
-}
-export type ZeroOne = "0" | "1";
-export interface IQrScannerStatus {
-  authorized: ZeroOne;
-  denied: ZeroOne;
-  restricted: ZeroOne;
-  prepared: ZeroOne;
-  scanning: ZeroOne;
-  previewing: ZeroOne;
-  showing: ZeroOne;
-  lightEnabled: ZeroOne;
-  canOpenSettings: ZeroOne;
-  canEnableLight: ZeroOne;
-  canChangeCamera: ZeroOne;
-  currentCamera: ZeroOne;
-}
+
