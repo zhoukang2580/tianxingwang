@@ -1,0 +1,25 @@
+{
+  "name": "cordova-qrscanner-plugin",
+  "version": "1.0.0",
+  "description": "",
+  "cordova": {
+    "id": "cordova-qrscanner-plugin",
+    "platforms": [
+      "android",
+      "ios",
+      "windows",
+      "browser",
+      "osx"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios",
+    "cordova-windows",
+    "cordova-browser",
+    "cordova-osx"
+  ],
+  "author": "",
+  "license": "ISC"
+}
