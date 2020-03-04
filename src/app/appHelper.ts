@@ -11,6 +11,7 @@ import {
 import { LanguageHelper } from "./languageHelper";
 import { TimeoutError } from "rxjs";
 import * as uuidJs from "uuid-js";
+import { FileHelperService } from "./services/file-helper.service";
 export class AppHelper {
   static httpClient: HttpClient;
   private static _deviceName: "ios" | "android";
@@ -18,6 +19,7 @@ export class AppHelper {
   private static toastController: ToastController;
   private static alertController: AlertController;
   private static modalController: ModalController;
+  private static fileService: FileHelperService;
   static _appDomain =
     environment.production && !environment.mockProBuild
       ? "sky-trip.com"
@@ -34,6 +36,15 @@ export class AppHelper {
   static _callbackHandle: (name: string, data: any) => void;
   static setModalController(modalController: ModalController) {
     this.modalController = modalController;
+  }
+  static getHcpVersion() {
+    return this.fileService && this.fileService.getLocalHcpVersion();
+  }
+  static setFileService(fileService: FileHelperService) {
+    AppHelper.fileService = fileService;
+  }
+  static getAppVersion() {
+    return this.fileService && this.fileService.getAppVersion();
   }
   static setToastController(toastController: ToastController) {
     this.toastController = toastController;
