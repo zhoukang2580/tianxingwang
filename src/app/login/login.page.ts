@@ -189,9 +189,9 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   private hideLoadingStatus() {
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       this.isLogining = false;
-    }, 200);
+    });
   }
   private checkRquired(){
     this.loginEntity.Data.Name = this.form.value.Name;
