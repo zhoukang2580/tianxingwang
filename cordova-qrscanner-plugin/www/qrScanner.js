@@ -1,3 +1,5 @@
+const cordova = require("cordova");
+
 module.exports = {
     prepare: function (ok,err) {
         cordova.exec(ok, err, 'QRScanner', 'prepare', []);
