@@ -1,48 +1,48 @@
-const cordova = require("cordova");
+const exec = require("cordova/exec");
 
 module.exports = {
-    prepare: function (ok,err) {
-        cordova.exec(ok, err, 'QRScanner', 'prepare', []);
+    prepare: function (callback,err) {
+        exec(callback, err, 'QRScanner', 'prepare', []);
     },
     destroy: function (callback) {
-        cordova.exec(callback, null, 'QRScanner', 'destroy', []);
+        exec(callback, null, 'QRScanner', 'destroy', []);
     },
     scan: function (callback,err) {
         if (!callback) {
             throw new Error('No callback provided to scan method.');
         }
-        cordova.exec(callback, err, 'QRScanner', 'scan', []);
+        exec(callback, err, 'QRScanner', 'scan', []);
     },
     cancelScan: function (callback) {
-        cordova.exec(callback, null, 'QRScanner', 'cancelScan', []);
+        exec(callback, null, 'QRScanner', 'cancelScan', []);
     },
     show: function (callback,err) {
-        cordova.exec(callback, err, 'QRScanner', 'show', []);
+        exec(callback, err, 'QRScanner', 'show', []);
     },
     hide: function (callback,err) {
-        cordova.exec(callback, err, 'QRScanner', 'hide', []);
+        exec(callback, err, 'QRScanner', 'hide', []);
     },
     pausePreview: function (callback) {
-        cordova.exec(callback, null, 'QRScanner', 'pausePreview', []);
+        exec(callback, null, 'QRScanner', 'pausePreview', []);
     },
     resumePreview: function (callback) {
-        cordova.exec(callback, null, 'QRScanner', 'resumePreview', []);
+        exec(callback, null, 'QRScanner', 'resumePreview', []);
     },
     enableLight: function (callback) {
-        cordova.exec(callback, errorCallback(callback), 'QRScanner', 'enableLight', []);
+        exec(callback, errorCallback(callback), 'QRScanner', 'enableLight', []);
     },
     disableLight: function (callback) {
-        cordova.exec(callback, errorCallback(callback), 'QRScanner', 'disableLight', []);
+        exec(callback, errorCallback(callback), 'QRScanner', 'disableLight', []);
     },
     useCamera: function (index, callback,err) {
-        cordova.exec(callback, err, 'QRScanner', 'useCamera', [index]);
+        exec(callback, err, 'QRScanner', 'useCamera', [index]);
     },
     useFrontCamera: function (callback,err) {
         var frontCamera = 1;
         if (callback) {
             this.useCamera(frontCamera, callback,err);
         } else {
-            cordova.exec(null, null, 'QRScanner', 'useCamera', [frontCamera]);
+            exec(null, null, 'QRScanner', 'useCamera', [frontCamera]);
         }
     },
     useBackCamera: function (callback,err) {
@@ -50,20 +50,20 @@ module.exports = {
         if (callback) {
             this.useCamera(backCamera, callback,err);
         } else {
-            cordova.exec(null, null, 'QRScanner', 'useCamera', [backCamera]);
+            exec(null, null, 'QRScanner', 'useCamera', [backCamera]);
         }
     },
     openSettings: function (callback,err) {
         if (callback) {
-            cordova.exec(callback,err, 'QRScanner', 'openSettings', []);
+            exec(callback,err, 'QRScanner', 'openSettings', []);
         } else {
-            cordova.exec(null, null, 'QRScanner', 'openSettings', []);
+            exec(null, null, 'QRScanner', 'openSettings', []);
         }
     },
     getStatus: function (callback) {
         if (!callback) {
             throw new Error('No callback provided to getStatus method.');
         }
-        cordova.exec(callback, null, 'QRScanner', 'getStatus', []);
+        exec(callback, null, 'QRScanner', 'getStatus', []);
     }
 };
