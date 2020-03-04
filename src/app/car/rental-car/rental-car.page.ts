@@ -17,7 +17,7 @@ import { AndroidPermissions } from "@ionic-native/android-permissions/ngx";
   templateUrl: "./rental-car.page.html",
   styleUrls: ["./rental-car.page.scss"],
   animations: [flyInOut],
-  providers: [AndroidPermissions,Geolocation]
+  providers: [AndroidPermissions, Geolocation]
 })
 export class RentalCarPage implements OnInit, OnDestroy {
   @ViewChild("mobileInput") mobileInput: IonInput;
@@ -43,11 +43,8 @@ export class RentalCarPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private plt: Platform,
     private androidPermissions: AndroidPermissions,
-    private geolocation:Geolocation
+    private geolocation: Geolocation
   ) {}
-  back() {
-    this.navCtrl.pop();
-  }
   onModify() {
     this.isModify = true;
     this.mobile = "";

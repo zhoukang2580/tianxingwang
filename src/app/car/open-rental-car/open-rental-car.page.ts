@@ -12,6 +12,8 @@ import {
 } from "@angular/core";
 import { map, tap } from "rxjs/operators";
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
+import { AppHelper } from "src/app/appHelper";
+import { LanguageHelper } from "src/app/languageHelper";
 
 @Component({
   selector: "app-open-rental-car",
@@ -21,7 +23,6 @@ import { BackButtonComponent } from "src/app/components/back-button/back-button.
 export class OpenRentalCarPage implements OnInit, OnDestroy {
   private subscription = Subscription.EMPTY;
   url$: Observable<string>;
-  private ifr: HTMLIFrameElement;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
   constructor(
     private carService: CarService,
@@ -31,17 +32,23 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
-  back() {
-    if (this.ifr) {
-      this.ifr.style.display = "none";
+  async back() {
+    const ok = await AppHelper.alert(
+      "是否退出当前租车页面？",
+      true,
+      LanguageHelper.getYesTip(),
+      LanguageHelper.getNegativeTip()
+    );
+    if (ok) {
+      this.backBtn.backToPrePage();
     }
-    this.backBtn.backToPrePage();
   }
   ngOnInit() {
     this.url$ = this.carService.getOpenUrlSource().pipe(
       tap(url => {
         if (url) {
-          if(document.body.classList.contains("")){}
+          if (document.body.classList.contains("")) {
+          }
         }
       }),
       map(it => this.domSanitizer.bypassSecurityTrustResourceUrl(it) as any)
