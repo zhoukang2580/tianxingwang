@@ -58,6 +58,7 @@ export class MemberCredentialManagementPage
     | "expireDate";
   isModify = false;
   @ViewChild("form") formEle: ElementRef<HTMLFormElement>;
+  @ViewChild("idInput") idInputEl: ElementRef<HTMLInputElement>;
   @ViewChildren("credentialItem") credentialItem: QueryList<
     ElementRef<HTMLElement>
   >;
@@ -435,10 +436,10 @@ export class MemberCredentialManagementPage
   }
   async saveModify(c: MemberCredential, el: HTMLElement) {
     const valid = await this.validateCredential(c, el);
-    const ok = await this.confirmTipMessage(c);
     if (!valid) {
       return;
     }
+    const ok = await this.confirmTipMessage(c);
     if (!ok) {
       return;
     }
@@ -634,6 +635,12 @@ export class MemberCredentialManagementPage
       !this.isIdNubmerValidate(c.Number)
     ) {
       AppHelper.alert("请输入正确的18位身份证号");
+      if (this.idInputEl && this.idInputEl.nativeElement) {
+        this.idInputEl.nativeElement.focus();
+        requestAnimationFrame(() => {
+          this.idInputEl.nativeElement.blur();
+        });
+      }
       return false;
     }
     if (!c.Birthday) {
