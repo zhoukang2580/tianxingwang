@@ -10,6 +10,7 @@ import { NavController } from "@ionic/angular";
   styleUrls: ["./account-setting.page.scss"]
 })
 export class AccountSettingPage implements OnInit {
+  appVersion: string = "3.0.1";
   constructor(
     private loginService: LoginService,
     private router: Router,
@@ -18,7 +19,14 @@ export class AccountSettingPage implements OnInit {
   back() {
     this.navCtrl.pop();
   }
-  ngOnInit() {}
+  ngOnInit() {
+    this.getVersion();
+  }
+  private async getVersion() {
+    this.appVersion = AppHelper.isApp()
+      ? AppHelper.getHcpVersion() || (await AppHelper.getAppVersion())
+      : "";
+  }
   logout() {
     this.loginService.logout();
   }

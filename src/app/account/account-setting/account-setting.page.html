@@ -1,21 +1,29 @@
 <ion-header>
   <ion-toolbar>
-      <ion-buttons slot="start">
-          <app-back-button defaultHref=""></app-back-button>
-        </ion-buttons>
+    <ion-buttons slot="start">
+      <app-back-button defaultHref=""></app-back-button>
+    </ion-buttons>
     <ion-title>设置</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <ion-list *ngIf='appVersion'>
+    <ion-item>
+      <ion-label>应用版本</ion-label>
+      <ion-label slot='end' class="ion-text-end">
+        {{appVersion}}
+      </ion-label>
+    </ion-item>
+  </ion-list>
   <ion-list>
     <ion-item detail (click)="accountSecurityPage()">
       <ion-label>账号与安全</ion-label>
     </ion-item>
   </ion-list>
- 
+
   <ion-list (click)="logout()">
-    <ion-item >
+    <ion-item>
       <ion-label class='ion-text-center' color='danger'>退出登陆</ion-label>
     </ion-item>
   </ion-list>

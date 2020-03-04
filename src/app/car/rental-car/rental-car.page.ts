@@ -1,14 +1,26 @@
 import { FileHelperService } from "./../../services/file-helper.service";
 import { flyInOut } from "./../../animations/flyInOut";
-import { finalize, debounceTime, distinctUntilChanged } from "rxjs/operators";
+import {
+  finalize,
+  debounceTime,
+  distinctUntilChanged,
+  tap
+} from "rxjs/operators";
 import { LoginService } from "./../../services/login/login.service";
 import { Subscription, interval, of } from "rxjs";
 import { AppHelper } from "./../../appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
 import { TmcService } from "./../../tmc/tmc.service";
-import { NavController, IonInput, Platform } from "@ionic/angular";
+import { NavController, IonInput, Platform, IonItem } from "@ionic/angular";
 import { CarService } from "./../car.service";
-import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+  AfterViewInit
+} from "@angular/core";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { AndroidPermissions } from "@ionic-native/android-permissions/ngx";
@@ -19,13 +31,16 @@ import { AndroidPermissions } from "@ionic-native/android-permissions/ngx";
   animations: [flyInOut],
   providers: [AndroidPermissions, Geolocation]
 })
-export class RentalCarPage implements OnInit, OnDestroy {
+export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("mobileInput") mobileInput: IonInput;
   private subscription = Subscription.EMPTY;
   private senSmsCodeSubscription = Subscription.EMPTY;
   private inputMobuleSubscription = Subscription.EMPTY;
   private defaultMobile = "";
   private verifiedMobiles: string[];
+  private isSetTop = false;
+  @ViewChild("mobilItem") mobilItemEl: IonItem;
+  @ViewChild("searchResultEl") searchResultEl: ElementRef<HTMLElement>;
   searchMobiles: string[];
   mobile: string;
   message: string;
@@ -52,6 +67,23 @@ export class RentalCarPage implements OnInit, OnDestroy {
       setTimeout(() => {
         this.mobileInput.setFocus();
       }, 200);
+    }
+  }
+  ngAfterViewInit() {}
+  private setTop() {
+    if (this.isSetTop) {
+      return;
+    }
+    if (this.mobilItemEl && this.mobilItemEl["el"]) {
+      requestAnimationFrame(() => {
+        if (this.searchResultEl && this.searchResultEl.nativeElement) {
+          const rect = this.mobilItemEl["el"].getBoundingClientRect();
+          if (rect) {
+            this.searchResultEl.nativeElement.style.top = rect.top + 1 + "px";
+            this.isSetTop = true;
+          }
+        }
+      });
     }
   }
   onBlur() {
@@ -93,6 +125,7 @@ export class RentalCarPage implements OnInit, OnDestroy {
     this.mobile = one;
   }
   onChange() {
+    this.setTop();
     this.inputMobuleSubscription.unsubscribe();
     this.searchMobiles = [];
     this.inputMobuleSubscription = of(this.mobile)
