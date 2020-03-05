@@ -8,8 +8,13 @@
 </ion-header>
 
 <ion-content>
-  <ion-fab vertical="center" horizontal="center">
-    <ion-fab-button (click)='onEnableLight(true)' size='small'>开灯</ion-fab-button>
-    <ion-fab-button (click)='onEnableLight(false)' size='small'>关灯</ion-fab-button>
-  </ion-fab>
+  <div class="scan-box">
+    <div class="scan-bar" [class.moving]='isMovingScanBar'></div>
+    <div class="top-left ext-border"></div>
+    <div class="top-right ext-border"></div>
+    <div class="bottom-left ext-border"></div>
+    <div class="bottom-right ext-border"></div>
+    <ion-icon name="flashlight-outline" color='light' *ngIf='!isLighting'></ion-icon>
+    <ion-icon name="flashlight-outline" color='medium' *ngIf='isLighting'></ion-icon>
+  </div>
 </ion-content>

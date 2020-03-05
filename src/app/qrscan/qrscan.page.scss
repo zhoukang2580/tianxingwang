@@ -1,3 +1,82 @@
 ion-content {
   --background: transparent;
 }
+.bg {
+  background: rgba(0, 0, 0, 0.2);
+}
+@keyframes movingbarAnimation {
+  from {
+    top: 0;
+  }
+  to {
+    top: 100%;
+  }
+}
+.scan-box {
+  --scan-border: 2px solid var(--ion-color-secondary);
+  position: fixed;
+  top: 50%;
+  height: 30vh;
+  left: 20vw;
+  right: 20vw;
+  transform: translate3d(-50%, -50, 0);
+  transform: translate3d(0, -45%, 0);
+  background: transparent;
+  border: 1px solid #eee;
+  .scan-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 3px;
+    border-top-left-radius: 100%;
+    border-bottom-left-radius: 100%;
+    border-top-right-radius: 100%;
+    border-bottom-right-radius: 100%;
+    background: rgba(var(--ion-color-secondary-rgb), 0.8);
+    opacity: 0;
+    animation: movingbarAnimation 2s cubic-bezier(0.24, 0.41, 0.54, 0.68)
+      infinite;
+    &.moving-bar {
+      opacity: 1;
+    }
+  }
+  ion-icon {
+    position: absolute;
+    bottom: 1em;
+    left: 50%;
+    transform: translate3d(-50%, 0, 0) rotateZ(-45deg);
+    font-size: 1rem;
+  }
+  .ext-border {
+    position: absolute;
+    height: 1em;
+    width: 1em;
+  }
+  .top-left {
+    border-left: var(--scan-border);
+    border-top: var(--scan-border);
+    left: 0;
+    top: 0;
+  }
+  .bottom-left {
+    border-left: var(--scan-border);
+    border-bottom: var(--scan-border);
+    left: 0;
+    bottom: 0;
+  }
+  .top-right {
+    position: absolute;
+    right: 0;
+    top: 0;
+    border-right: var(--scan-border);
+    border-top: var(--scan-border);
+  }
+  .bottom-right {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    border-right: var(--scan-border);
+    border-bottom: var(--scan-border);
+  }
+}

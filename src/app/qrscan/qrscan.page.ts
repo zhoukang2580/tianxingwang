@@ -1,8 +1,8 @@
 import { BackButtonComponent } from "./../components/back-button/back-button.component";
 import { Router } from "@angular/router";
-import { Subscription } from "rxjs";
+import { Subscription, interval } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
-import { OnDestroy, ViewChild } from "@angular/core";
+import { OnDestroy, ViewChild, ElementRef } from "@angular/core";
 import { QrScanService } from "./../services/qrScan/qrscan.service";
 import { Component, OnInit } from "@angular/core";
 import { AppHelper } from "../appHelper";
@@ -14,6 +14,8 @@ import { AppHelper } from "../appHelper";
 })
 export class QrScanPage implements OnInit, OnDestroy {
   private subscription = Subscription.EMPTY;
+  isLighting = false;
+  isMovingScanBar = false;
   @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
   constructor(
     private qrScanService: QrScanService,
@@ -30,6 +32,7 @@ export class QrScanPage implements OnInit, OnDestroy {
     this.backbtn.backToPrePage();
   }
   onEnableLight(isOn: boolean) {
+    this.isLighting = isOn;
     if (isOn) {
       this.qrScanService.enableLight();
     } else {
@@ -43,6 +46,7 @@ export class QrScanPage implements OnInit, OnDestroy {
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();
+    this.isMovingScanBar = false;
     this.clearBackground(false);
   }
   private clearBackground(isShow: boolean) {
@@ -54,11 +58,14 @@ export class QrScanPage implements OnInit, OnDestroy {
       document.body.classList.remove("qr-scanning");
     }
   }
+
   private async scan() {
+    this.isMovingScanBar = true;
     try {
       this.clearBackground(true);
       this.qrScanService.show();
       const text = await this.qrScanService.scan();
+      this.isMovingScanBar = false;
       this.qrScanService.hide();
       this.router.navigate([
         AppHelper.getRoutePath("scan"),
