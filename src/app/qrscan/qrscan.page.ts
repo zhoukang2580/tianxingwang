@@ -23,9 +23,8 @@ export class QrScanPage implements OnInit, OnDestroy {
       evt.preventDefault();
       evt.stopPropagation();
     }
-    this.qrScanService.cancelScan();
     this.qrScanService.hide();
-    this.setClass(false);
+    this.clearBackground(false);
     this.backbtn.backToPrePage();
   }
   onEnableLight(isOn: boolean) {
@@ -42,9 +41,9 @@ export class QrScanPage implements OnInit, OnDestroy {
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();
-    this.setClass(false)
+    this.clearBackground(false)
   }
-  private setClass(isShow: boolean) {
+  private clearBackground(isShow: boolean) {
     if (isShow) {
       if (!document.body.classList.contains("qr-scanning")) {
         document.body.classList.add("qr-scanning")
@@ -55,12 +54,12 @@ export class QrScanPage implements OnInit, OnDestroy {
   }
   private async scan() {
     try {
-      this.setClass(true);
+      this.clearBackground(true);
       this.qrScanService.show();
       const text = await this.qrScanService.scan()
       this.qrScanService.hide();
       this.router.navigate([AppHelper.getRoutePath("scan"), { scanResult: text }]);
-      this.setClass(false);
+      this.clearBackground(false);
 
     } catch (e) {
       AppHelper.alert(e)

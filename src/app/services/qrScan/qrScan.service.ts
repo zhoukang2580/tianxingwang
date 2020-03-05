@@ -20,14 +20,10 @@ export interface IQRScanner {
 })
 export class QrScanService implements IQRScanner {
   private qrScanner: { [key in keyof IQRScanner]: any };
-  private subscription = Subscription.EMPTY;
-  private scanResultSource: Subject<string>;
-  isScanSetup = false;
   constructor(private plt: Platform) {
     this.plt.ready().then(() => {
       this.qrScanner = window["qrScanner"];
     });
-    this.scanResultSource = new BehaviorSubject("");
   }
   prepare() {
     return new Promise<IQrScannerStatus>((resolve, reject) => {
@@ -35,14 +31,12 @@ export class QrScanService implements IQRScanner {
     });
   }
   cancelScan() {
-    this.isScanSetup = false;
     return new Promise<void>((resolve, reject) => {
       this.qrScanner.cancelScan(resolve, reject);
     });
   }
 
   destroy() {
-    this.isScanSetup = false;
     return new Promise<void>((resolve, reject) => {
       this.qrScanner.destroy(resolve, reject);
     });
@@ -54,51 +48,12 @@ export class QrScanService implements IQRScanner {
   }
   disableLight() {
     return new Promise<void>((resolve, reject) => {
-      this.qrScanner.enableLight(resolve, reject);
+      this.qrScanner.disableLight(resolve, reject);
     });
   }
-  async scan() {
-    if (!this.isScanSetup) {
-      this.isScanSetup = true;
-      this.qrScanner.scan(
-        text => {
-          this.scanResultSource.next(text);
-        },
-        err => {
-          this.scanResultSource.error(err);
-        }
-      );
-    } else {
-      let status = await this.getStatus();
-      if (status.authorized == "0") {
-        const s = await this.prepare();
-        if (s.denied == "1") {
-          this.subscription.unsubscribe();
-          return Promise.reject("您拒绝使用相机功能");
-        }
-        if (s.authorized == "0") {
-          await this.openSettings();
-        }
-      }
-      status = await this.getStatus();
-      if (status.authorized == "0") {
-        this.subscription.unsubscribe();
-        return Promise.reject("您尚未允许使用相机功能");
-      }
-      if (status.previewing == "0") {
-        await this.resumePreview();
-      }
-    }
-    this.subscription.unsubscribe();
+   scan() {
     return new Promise<string>((resolve, reject) => {
-      this.subscription = this.scanResultSource.subscribe(
-        text => {
-          resolve(text);
-        },
-        err => {
-          reject(err);
-        }
-      );
+      this.qrScanner.scan(resolve, reject);
     });
   }
   resumePreview() {
