@@ -57,10 +57,6 @@ export class QrScanPage implements OnInit, OnDestroy {
     try {
       this.setClass(true);
       this.qrScanService.show();
-      const status = await this.qrScanService.getStatus();
-      if (status.scanning == '1') {
-        await this.qrScanService.cancelScan();
-      }
       const text = await this.qrScanService.scan()
       this.qrScanService.hide();
       this.router.navigate([AppHelper.getRoutePath("scan"), { scanResult: text }]);
