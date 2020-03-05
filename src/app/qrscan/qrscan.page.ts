@@ -48,7 +48,6 @@ export class QrScanPage implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
     this.isMovingScanBar = false;
     this.clearBackground(false);
-    this.qrScanService.pausePreview();
   }
   private clearBackground(isShow: boolean) {
     if (isShow) {
@@ -69,6 +68,8 @@ export class QrScanPage implements OnInit, OnDestroy {
       const text = await this.qrScanService.scan();
       this.isMovingScanBar = false;
       this.qrScanService.hide();
+      this.qrScanService.pausePreview();
+      this.qrScanService.cancelScan().catch(()=>0);
       this.router.navigate([
         AppHelper.getRoutePath("scan"),
         { scanResult: text }
