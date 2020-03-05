@@ -9,9 +9,9 @@ export interface IQRScanner {
   disableLight: () => Promise<void>;
   scan: () => Promise<string>;
   hide: () => Promise<IQrScannerStatus>;
+  show: () => Promise<IQrScannerStatus>;
   pausePreview: () => Promise<IQrScannerStatus>;
   resumePreview: () => Promise<IQrScannerStatus>;
-  show: () => Promise<IQrScannerStatus>;
   getStatus: () => Promise<IQrScannerStatus>;
   openSettings: () => Promise<IQrScannerStatus>;
 }
