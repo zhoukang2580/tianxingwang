@@ -1,5 +1,8 @@
-body.qr-scanning {
-  background: transparent;
+body {
+  &.qr-scanning{
+    background: transparent;
+  }
+  background: white;
 }
 ion-content {
   --border-color: #d6d6d6;

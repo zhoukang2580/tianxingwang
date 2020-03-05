@@ -61,7 +61,7 @@ public class QRScanner extends CordovaPlugin implements BarcodeCallback {
     private boolean oneTime = true;
     private boolean keepDenied = false;
     private boolean appPausedWithActivePreview = false;
-    
+
     static class QRScannerError {
         private static final int UNEXPECTED_ERROR = 0,
                 CAMERA_ACCESS_DENIED = 1,
@@ -515,7 +515,7 @@ public class QRScanner extends CordovaPlugin implements BarcodeCallback {
 
     @Override
     public void possibleResultPoints(List<ResultPoint> list) {
-        Log.d("QRScanner",list.toString());
+//        Log.d("QRScanner",list.toString());
     }
 
     // ---- BEGIN EXTERNAL API ----
@@ -660,7 +660,7 @@ public class QRScanner extends CordovaPlugin implements BarcodeCallback {
                     if(lightOn)
                         lightOn = false;
                 }
-                
+
                 if (callbackContext != null)
                     getStatus(callbackContext);
             }
@@ -678,7 +678,7 @@ public class QRScanner extends CordovaPlugin implements BarcodeCallback {
                     if(switchFlashOn)
                         lightOn = true;
                 }
-                
+
                 if (callbackContext != null)
                     getStatus(callbackContext);
             }

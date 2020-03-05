@@ -21,7 +21,7 @@ export class QrScanPage implements OnInit, OnDestroy {
     private qrScanService: QrScanService,
     private router: Router,
     private route: ActivatedRoute
-  ) {}
+  ) { }
   back(evt?: CustomEvent) {
     if (evt) {
       evt.preventDefault();
@@ -48,6 +48,7 @@ export class QrScanPage implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
     this.isMovingScanBar = false;
     this.clearBackground(false);
+    this.qrScanService.pausePreview();
   }
   private clearBackground(isShow: boolean) {
     if (isShow) {
@@ -57,6 +58,7 @@ export class QrScanPage implements OnInit, OnDestroy {
     } else {
       document.body.classList.remove("qr-scanning");
     }
+    this.qrScanService.pausePreview();
   }
 
   private async scan() {
