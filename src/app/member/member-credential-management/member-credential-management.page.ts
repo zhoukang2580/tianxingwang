@@ -28,8 +28,6 @@ import { ValidatorService } from "src/app/services/validator/validator.service";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { MemberCredential, MemberService } from "../member.service";
-import { IdentityService } from "src/app/services/identity/identity.service";
-import { RefresherComponent } from "src/app/components/refresher";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { CountryEntity } from "src/app/tmc/models/CountryEntity";
@@ -45,6 +43,7 @@ export class MemberCredentialManagementPage
   private countries: CountryEntity[];
   private subscription = Subscription.EMPTY;
   private idInputEleSubscription = Subscription.EMPTY;
+  CredentialsType = CredentialsType;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
   identityTypes: { key: string; value: string }[];
   credentials: MemberCredential[];

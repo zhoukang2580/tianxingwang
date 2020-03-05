@@ -71,20 +71,24 @@ export class OrderItemComponent implements OnInit, OnChanges {
   }
   getShowTicket() {
     let tickets = (this.order && this.order.OrderFlightTickets) || [];
-    // const keys = `BookTime,IssueTime,RefundTime`.split(",");
-    tickets = tickets
-      .map(t => {
+    tickets = tickets.filter(it => !it.VariablesJsonObj["IsScrap"]);
+    return tickets[tickets.length - 1];
+  }
+  private sortOrderFlightTickets() {
+    if (this.order.OrderFlightTickets) {
+      this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(t => {
         t["maxTimeStamp"] = Math.max(
           new Date(t.RefundTime).getTime(),
           new Date(t.BookTime).getTime(),
-          new Date(t.BookTime).getTime()
+          new Date(t.IssueTime).getTime(),
+          new Date(t.ExchangeTime).getTime()
         );
         return t;
-      })
-      .sort((t1, t2) => {
-        return t1["maxTimeStamp"] - t2["maxTimeStamp"];
       });
-    return tickets[0];
+      this.order.OrderFlightTickets.sort(
+        (t1, t2) => t1["maxTimeStamp"] - t2["maxTimeStamp"]
+      );
+    }
   }
   ngOnChanges(changes: SimpleChanges) {
     if (changes.order && changes.order.currentValue) {
@@ -102,6 +106,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
             }
           );
         }
+        this.sortOrderFlightTickets();
       }
     }
   }
