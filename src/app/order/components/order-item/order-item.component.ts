@@ -69,15 +69,11 @@ export class OrderItemComponent implements OnInit, OnChanges {
     evt.preventDefault();
     evt.stopPropagation();
   }
-  getShowTicket() {
-    let tickets = (this.order && this.order.OrderFlightTickets) || [];
-    tickets = tickets.filter(it => !it.VariablesJsonObj["IsScrap"]);
-    return tickets[tickets.length - 1];
-  }
   private sortOrderFlightTickets() {
     if (this.order.OrderFlightTickets) {
       this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(t => {
-        t["maxTimeStamp"] = Math.max(
+        t.VariablesJsonObj = t.VariablesJsonObj || {};
+        t.VariablesJsonObj.maxTimeStamp = Math.max(
           new Date(t.RefundTime).getTime(),
           new Date(t.BookTime).getTime(),
           new Date(t.IssueTime).getTime(),
@@ -86,13 +82,15 @@ export class OrderItemComponent implements OnInit, OnChanges {
         return t;
       });
       this.order.OrderFlightTickets.sort(
-        (t1, t2) => t1["maxTimeStamp"] - t2["maxTimeStamp"]
+        (t1, t2) =>
+          t1.VariablesJsonObj.maxTimeStamp - t2.VariablesJsonObj.maxTimeStamp
       );
     }
   }
   ngOnChanges(changes: SimpleChanges) {
     if (changes.order && changes.order.currentValue) {
       if (this.order) {
+        this.order["checkPay"] = this.checkPay();
         this.order.VariablesJsonObj =
           this.order.VariablesJsonObj || JSON.parse(this.order.Variables);
         if (this.order.OrderFlightTickets) {
@@ -102,11 +100,61 @@ export class OrderItemComponent implements OnInit, OnChanges {
                 t.VariablesJsonObj =
                   t.VariablesJsonObj || JSON.parse(t.Variables);
               }
+              if (t.OrderFlightTrips) {
+                t.OrderFlightTrips = t.OrderFlightTrips.map(trip => {
+                  if (
+                    !trip.OrderFlightTicket ||
+                    !trip.OrderFlightTicket.Passenger
+                  ) {
+                    trip.OrderFlightTicket = {
+                      Id: t.Id,
+                      Passenger: t.Passenger
+                    } as any;
+                  }
+                  return trip;
+                });
+              }
               return t;
             }
           );
         }
-        this.sortOrderFlightTickets();
+        this.initPassengers();
+        this.checkIfOrderFlightTicketShow();
+      }
+    }
+  }
+  private checkIfOrderFlightTicketShow() {
+    this.sortOrderFlightTickets();
+    if (this.order && this.order.OrderFlightTickets) {
+      const hasOriginalTicketIdTickets = this.order.OrderFlightTickets.filter(
+        t =>
+          t.VariablesJsonObj &&
+          t.VariablesJsonObj.OriginalTicketId &&
+          !t.VariablesJsonObj.IsScrap
+      );
+      this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(t => {
+        if (t.VariablesJsonObj) {
+          const isShow = hasOriginalTicketIdTickets.length
+            ? t.VariablesJsonObj.maxTimeStamp ==
+              hasOriginalTicketIdTickets[hasOriginalTicketIdTickets.length - 1]
+                .VariablesJsonObj.maxTimeStamp
+            : true;
+          t.VariablesJsonObj.isShow = !t.VariablesJsonObj.IsScrap && isShow;
+        }
+        return t;
+      });
+      this.initOrderFlightTicketPassengerIndex();
+    }
+  }
+  private initOrderFlightTicketPassengerIndex() {
+    if (this.order && this.order.OrderFlightTickets) {
+      const arr = this.order.OrderFlightTickets.filter(
+        it => it.VariablesJsonObj.isShow
+      );
+      if (arr.length > 2) {
+        arr.forEach((t, idx) => {
+          t.VariablesJsonObj.idx = idx + 1;
+        });
       }
     }
   }
@@ -149,7 +197,29 @@ export class OrderItemComponent implements OnInit, OnChanges {
       false
     );
   }
-  getTicketPassenger(ticket: OrderFlightTicketEntity) {
+  private initPassengers() {
+    if (this.order) {
+      if (this.order.OrderFlightTickets) {
+        this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(t => {
+          t.Passenger = this.getTicketPassenger(t);
+          return t;
+        });
+      }
+      if (this.order.OrderTrainTickets) {
+        this.order.OrderTrainTickets = this.order.OrderTrainTickets.map(t => {
+          t.Passenger = this.getTicketPassenger(t);
+          return t;
+        });
+      }
+      if (this.order.OrderHotels) {
+        this.order.OrderHotels = this.order.OrderHotels.map(t => {
+          t.Passenger = this.getTicketPassenger(t);
+          return t;
+        });
+      }
+    }
+  }
+  private getTicketPassenger(ticket: { Passenger: OrderPassengerEntity }) {
     const p = (this.order && this.order.OrderPassengers) || [];
     return p.find(it => it.Id == (ticket.Passenger && ticket.Passenger.Id));
   }
@@ -199,7 +269,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
       return this.calendarService.getHHmm(time);
     }
   }
-  checkPay() {
+  private checkPay() {
     const order = this.order;
     if (!order) {
       return false;
