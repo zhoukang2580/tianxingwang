@@ -17,3 +17,6 @@
 .select-text {
   user-select: text;
 }
+.order-flight-ticket + .order-flight-ticket {
+  border-top: 1px dashed var(--ion-color-secondary);
+}
