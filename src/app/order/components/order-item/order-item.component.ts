@@ -69,6 +69,23 @@ export class OrderItemComponent implements OnInit, OnChanges {
     evt.preventDefault();
     evt.stopPropagation();
   }
+  getShowTicket() {
+    let tickets = (this.order && this.order.OrderFlightTickets) || [];
+    // const keys = `BookTime,IssueTime,RefundTime`.split(",");
+    tickets = tickets
+      .map(t => {
+        t["maxTimeStamp"] = Math.max(
+          new Date(t.RefundTime).getTime(),
+          new Date(t.BookTime).getTime(),
+          new Date(t.BookTime).getTime()
+        );
+        return t;
+      })
+      .sort((t1, t2) => {
+        return t1["maxTimeStamp"] - t2["maxTimeStamp"];
+      });
+    return tickets[0];
+  }
   ngOnChanges(changes: SimpleChanges) {
     if (changes.order && changes.order.currentValue) {
       if (this.order) {

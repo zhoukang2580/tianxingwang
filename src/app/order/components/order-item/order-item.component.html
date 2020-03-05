@@ -25,50 +25,48 @@
           </span>
         </div>
       </div>
-      <ng-container *ngFor='let t of order.OrderFlightTickets;let i=index;'>
-        <ng-container *ngIf='!t.VariablesJsonObj||!t.VariablesJsonObj["OriginalTicketId"]'>
-          <ng-container *ngIf='getTicketPassenger(t) as p'>
-            <ng-container *ngFor='let trip of t.OrderFlightTrips'>
-              <div class="item" style='align-items: center;'>
-                <div>旅客 <ion-note *ngIf='t.OrderFlightTrips?.length>1'>{{i+1}}</ion-note>
-                </div>
+      <ng-container *ngIf='getShowTicket() as t'>
+        <ng-container *ngIf='getTicketPassenger(t) as p'>
+          <ng-container *ngFor='let trip of t.OrderFlightTrips ;let i=index;'>
+            <div class="item" style='align-items: center;'>
+              <div>旅客 <ion-note *ngIf='t.OrderFlightTrips?.length>1'>{{i+1}}</ion-note>
+              </div>
+              <div>
+                <span>{{p.CheckName}}</span>
+                <span>
+                  <ion-text color='secondary'>({{t.StatusName}})</ion-text>
+                </span>
+              </div>
+              <ng-container *ngIf='checkPay()'>
+                <ion-button (click)='onPay($event)' size='small' color='secondary'>现在去支付
+                </ion-button>
+                <ion-button *ngIf='showRefundBtn(t)' (click)='onRefundFlightTicket($event,t)' color='danger'>
+                  <ion-text color='light'>退票</ion-text>
+                </ion-button>
+              </ng-container>
+            </div>
+            <div class="item">
+              <div>行程</div>
+              <div>
                 <div>
-                  <span>{{p.CheckName}}</span>
                   <span>
-                    <ion-text color='secondary'>({{t.StatusName}})</ion-text>
+                    {{trip.TakeoffTime?.substr(0,"yyyy-mm-dd".length)}}
+                  </span>
+                  <span *ngIf='getDateWeekName(trip.TakeoffTime?.substr(0,"yyyy-mm-dd".length)) as n'>
+                    ({{n}})
+                  </span>
+                  <span>
+                    {{getHHmm(trip.TakeoffTime)}}
+                  </span>
+                  <span>
+                    {{trip.FlightNumber}}
                   </span>
                 </div>
-                <ng-container *ngIf='checkPay()'>
-                  <ion-button (click)='onPay($event)' size='small' color='secondary'>现在去支付
-                  </ion-button>
-                  <ion-button *ngIf='showRefundBtn(t)' (click)='onRefundFlightTicket($event,t)' color='danger'>
-                    <ion-text color='light'>退票</ion-text>
-                  </ion-button>
-                </ng-container>
-              </div>
-              <div class="item">
-                <div>行程</div>
                 <div>
-                  <div>
-                    <span>
-                      {{trip.TakeoffTime?.substr(0,"yyyy-mm-dd".length)}}
-                    </span>
-                    <span *ngIf='getDateWeekName(trip.TakeoffTime?.substr(0,"yyyy-mm-dd".length)) as n'>
-                      ({{n}})
-                    </span>
-                    <span>
-                      {{getHHmm(trip.TakeoffTime)}}
-                    </span>
-                    <span>
-                      {{trip.FlightNumber}}
-                    </span>
-                  </div>
-                  <div>
-                    {{trip.FromCityName}}---{{trip.ToCityName}}
-                  </div>
+                  {{trip.FromCityName}}---{{trip.ToCityName}}
                 </div>
               </div>
-            </ng-container>
+            </div>
           </ng-container>
         </ng-container>
       </ng-container>
