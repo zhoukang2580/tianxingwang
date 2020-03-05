@@ -14,7 +14,7 @@
     <div class="top-right ext-border"></div>
     <div class="bottom-left ext-border"></div>
     <div class="bottom-right ext-border"></div>
-    <ion-icon name="flashlight-outline" color='light' *ngIf='!isLighting'></ion-icon>
-    <ion-icon name="flashlight-outline" color='medium' *ngIf='isLighting'></ion-icon>
+    <ion-icon name="flashlight-outline" color='light' (click)='onEnableLight(true)' *ngIf='!isLighting'></ion-icon>
+    <ion-icon name="flashlight-outline" color='medium' *ngIf='isLighting' (click)='onEnableLight(false)'></ion-icon>
   </div>
 </ion-content>
