@@ -288,21 +288,69 @@ export class MemberCredentialManagementPage
       this.modifyCredential.Type == CredentialsType.IdCard
     ) {
       const value = inputEl.value;
-      const errorTipEl = inputEl.parentElement.querySelector(
-        ".idnumbervalidate"
+      this.addMessageTipEl(
+        inputEl,
+        !this.isIdNubmerValidate(value),
+        "请填写正确的18位身份证号码"
       );
-      if (errorTipEl) {
-        if (!this.isIdNubmerValidate(value)) {
-          inputEl.classList.remove("validctrlsucess");
-          inputEl.classList.add("validctrlerror");
-          errorTipEl.classList.remove("validsucessmess");
-          errorTipEl.classList.add("validerrormess");
-          errorTipEl.textContent = `请填写正确的18位身份证号码`;
-        } else {
-          inputEl.classList.remove("validctrlerror");
-          errorTipEl.classList.add("validsucessmess");
-        }
+    }
+  }
+  private onFirstLastNameChange() {
+    let container: HTMLElement = this.formEle && this.formEle.nativeElement;
+    if (this.modifyCredential) {
+      container =
+        this.addFormEles &&
+        this.addFormEles.last &&
+        this.addFormEles.last.nativeElement;
+    }
+    const firstNameEl: HTMLInputElement = container.querySelector(
+      "input[name='FirstName']"
+    );
+    const larstNameEl: HTMLInputElement = container.querySelector(
+      "input[name='LastName']"
+    );
+    if (this.modifyCredential) {
+      if (this.modifyCredential.Type == CredentialsType.IdCard) {
+        this.addMessageTipEl(
+          firstNameEl,
+          !AppHelper.includeHanz(firstNameEl && firstNameEl.value),
+          firstNameEl.placeholder
+        );
+        this.addMessageTipEl(
+          firstNameEl,
+          !AppHelper.includeHanz(larstNameEl && larstNameEl.value),
+          larstNameEl.placeholder
+        );
+      } else {
+        this.addMessageTipEl(
+          firstNameEl,
+          AppHelper.includeHanz(firstNameEl && firstNameEl.value),
+          firstNameEl.placeholder
+        );
+        this.addMessageTipEl(
+          larstNameEl,
+          AppHelper.includeHanz(larstNameEl && larstNameEl.value),
+          larstNameEl.placeholder
+        );
       }
+    }
+  }
+  private addMessageTipEl(el: HTMLElement, isShow: boolean, msg = "") {
+    let errorTipEl = el.parentElement.querySelector(".idnumbervalidate");
+    if (!errorTipEl) {
+      errorTipEl = document.createElement("span");
+      errorTipEl.classList.add("idnumbervalidate");
+      el.insertAdjacentElement("afterend", errorTipEl);
+    }
+    if (!isShow) {
+      el.classList.remove("validctrlsucess");
+      el.classList.add("validctrlerror");
+      errorTipEl.classList.remove("validsucessmess");
+      errorTipEl.classList.add("validerrormess");
+      errorTipEl.textContent = msg;
+    } else {
+      el.classList.remove("validctrlerror");
+      errorTipEl.classList.add("validsucessmess");
     }
   }
   private initInputChanges(
@@ -328,11 +376,19 @@ export class MemberCredentialManagementPage
       if (inputFirstNameEle) {
         inputFirstNameEle.oninput = _ => {
           credential.CheckFirstName = inputFirstNameEle.value as string;
+          this.onFirstLastNameChange();
+        };
+        inputFirstNameEle.onblur = () => {
+          this.onFirstLastNameChange();
         };
       }
       if (inputLastNameEle) {
         inputLastNameEle.oninput = _ => {
           credential.CheckLastName = inputLastNameEle.value as string;
+          this.onFirstLastNameChange();
+        };
+        inputLastNameEle.onblur = () => {
+          this.onFirstLastNameChange();
         };
       }
     }

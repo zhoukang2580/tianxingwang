@@ -9,10 +9,10 @@ export interface ValidateInfo {
     Message: string; // "账户编号错误"
     Name: string; // "Account.Id"
     Rules: {
-      IsRange: boolean;
-      Message: string;
-      Options: string;
-      Pattern: string;
+      IsRange?: boolean;
+      Message?: string;
+      Options?: string;
+      Pattern?: string;
     }[];
   }[];
 }
