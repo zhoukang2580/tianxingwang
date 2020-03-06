@@ -10,10 +10,10 @@
       </div>
       <div class="item">
         <div [style.align-self]='order["checkPay"]?"center":""'>金额</div>
-        <div *ngIf='getFlightOrderTotalAmount() as d' style="display: flex;align-items: center;">
+        <div style="display: flex;align-items: center;">
           <ion-text color='danger'>
             <span>
-              ￥{{d}}
+              ￥{{getFlightOrderTotalAmount()}}
             </span>
             <span *ngIf='order.OrderInsurances?.length'>
               (含保险)</span>
