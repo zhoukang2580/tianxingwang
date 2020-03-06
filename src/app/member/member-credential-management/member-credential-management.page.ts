@@ -270,6 +270,7 @@ export class MemberCredentialManagementPage
       evt => {
         setTimeout(() => {
           this.validateIdNumber(idInputEle);
+          this.onFirstLastNameChange();
           this.changeBirthByIdNumber(idInputEle);
         }, 0);
       }
@@ -318,7 +319,7 @@ export class MemberCredentialManagementPage
           firstNameEl.placeholder
         );
         this.addMessageTipEl(
-          firstNameEl,
+          larstNameEl,
           !AppHelper.includeHanz(larstNameEl && larstNameEl.value),
           larstNameEl.placeholder
         );
@@ -351,6 +352,8 @@ export class MemberCredentialManagementPage
       errorTipEl.textContent = msg;
     } else {
       el.classList.remove("validctrlerror");
+      errorTipEl.textContent = "";
+      errorTipEl.classList.remove("validerrormess");
       errorTipEl.classList.add("validsucessmess");
     }
   }
