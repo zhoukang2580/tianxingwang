@@ -69,23 +69,24 @@ export class OrderItemComponent implements OnInit, OnChanges {
     evt.preventDefault();
     evt.stopPropagation();
   }
-  private sortOrderFlightTickets() {
-    if (this.order.OrderFlightTickets) {
-      this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(t => {
+  private sortFlightTickets(flightTickets: OrderFlightTicketEntity[]) {
+    if (flightTickets) {
+      flightTickets = flightTickets.map(t => {
         t.VariablesJsonObj = t.VariablesJsonObj || {};
         t.VariablesJsonObj.maxTimeStamp = Math.max(
-          new Date(t.RefundTime).getTime(),
-          new Date(t.BookTime).getTime(),
-          new Date(t.IssueTime).getTime(),
-          new Date(t.ExchangeTime).getTime()
+          AppHelper.getDate(t.RefundTime).getTime(),
+          AppHelper.getDate(t.BookTime).getTime(),
+          AppHelper.getDate(t.IssueTime).getTime(),
+          AppHelper.getDate(t.ExchangeTime).getTime()
         );
         return t;
       });
-      this.order.OrderFlightTickets.sort(
+      flightTickets.sort(
         (t1, t2) =>
           t1.VariablesJsonObj.maxTimeStamp - t2.VariablesJsonObj.maxTimeStamp
       );
     }
+    return flightTickets;
   }
   ngOnChanges(changes: SimpleChanges) {
     if (changes.order && changes.order.currentValue) {
@@ -124,20 +125,31 @@ export class OrderItemComponent implements OnInit, OnChanges {
     }
   }
   private checkIfOrderFlightTicketShow() {
-    this.sortOrderFlightTickets();
     if (this.order && this.order.OrderFlightTickets) {
-      const hasOriginalTicketIdTickets = this.order.OrderFlightTickets.filter(
-        t =>
-          t.VariablesJsonObj &&
+      const originalTicketIdToTickets: { [originalId: string]: OrderFlightTicketEntity[] } = {};
+      this.order.OrderFlightTickets.forEach(t => {
+        if (
           t.VariablesJsonObj.OriginalTicketId &&
           !t.VariablesJsonObj.IsScrap
-      );
+        ) {
+          if (originalTicketIdToTickets[t.VariablesJsonObj.OriginalTicketId]) {
+            originalTicketIdToTickets[t.VariablesJsonObj.OriginalTicketId].push(t);
+          } else {
+            originalTicketIdToTickets[t.VariablesJsonObj.OriginalTicketId] = [t];
+          }
+        }
+      });
+      Object.keys(originalTicketIdToTickets).forEach(k => {
+        originalTicketIdToTickets[k] = this.sortFlightTickets(originalTicketIdToTickets[k]);
+      });
+      this.sortFlightTickets(this.order.OrderFlightTickets);
       this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(t => {
         if (t.VariablesJsonObj) {
-          const isShow = hasOriginalTicketIdTickets.length
+          const ts = originalTicketIdToTickets[t.Id];
+          const last = ts && ts[ts.length - 1];
+          const isShow = last
             ? t.VariablesJsonObj.maxTimeStamp ==
-              hasOriginalTicketIdTickets[hasOriginalTicketIdTickets.length - 1]
-                .VariablesJsonObj.maxTimeStamp
+              last.VariablesJsonObj.maxTimeStamp
             : true;
           t.VariablesJsonObj.isShow = !t.VariablesJsonObj.IsScrap && isShow;
         }

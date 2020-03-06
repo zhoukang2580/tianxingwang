@@ -10,7 +10,9 @@ import {
   QueryList,
   Renderer2,
   ViewChild,
-  ElementRef
+  ElementRef,
+  ChangeDetectorRef,
+  NgZone
 } from "@angular/core";
 import { OrderItemEntity, OrderEntity } from "../../models/OrderEntity";
 import { IonGrid, IonSlides } from "@ionic/angular";
@@ -29,15 +31,17 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
   OrderItemHelper = OrderItemHelper;
   // IsShowServiceFee = false;
   activeIdx = 0;
-  constructor(private render: Renderer2) {}
+  constructor(private render: Renderer2, private ngZone: NgZone) {}
   abs(item: number) {
     return Math.abs(item);
   }
   ngAfterViewInit() {
     this.slides.getSwiper().then(swiper => {
       swiper.on("slideChange", () => {
-        this.activeIdx = swiper.realIndex;
-        console.log("slidechange", this.activeIdx);
+        this.ngZone.run(() => {
+          this.activeIdx = swiper.realIndex;
+          // console.log("slidechange", this.activeIdx);
+        });
       });
     });
     this.calcTotalPrice();
@@ -70,8 +74,7 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
       }, 200);
     }
   }
-  ngOnInit() {
-  }
+  ngOnInit() {}
   getPassenger(t: OrderFlightTicketEntity): OrderPassengerEntity {
     if (!t || !t.Passenger) {
       return null;

@@ -261,10 +261,10 @@ export class AppComponent
         // this.router.navigate(['international-hotel-detail']);
         // this.router.navigate(['international-hotel-list']);
         // this.router.navigate(['workflow-list']);
-        this.router.navigate(['qrscan']);
+        // this.router.navigate(['qrscan']);
         // this.router.navigate(['function-test']);
         // this.router.navigate(['car-order-detail']);
-        // this.router.navigate(['product-tabs'],{queryParams:{tabId:1}});
+        this.router.navigate(['product-tabs'],{queryParams:{tabId:1}});
       }
     });
   }
