@@ -10,13 +10,13 @@
       </div>
       <div class="item">
         <div [style.align-self]='order["checkPay"]?"center":""'>金额</div>
-        <div *ngIf='getInterTotalAmount() as d' style="display: flex;align-items: center;">
+        <div *ngIf='getFlightOrderTotalAmount() as d' style="display: flex;align-items: center;">
           <ion-text color='danger'>
             <span>
-              ￥{{d.amount}}
+              ￥{{d}}
             </span>
-            <span *ngIf='d.insurance as insuranceAmount'>
-              (含保险{{insuranceAmount}})</span>
+            <span *ngIf='order.OrderInsurances?.length'>
+              (含保险)</span>
           </ion-text>
           <span>
             <ion-text color='secondary'>

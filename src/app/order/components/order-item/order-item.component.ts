@@ -30,6 +30,7 @@ import * as moment from "moment";
 import { Router } from "@angular/router";
 import { OrderPassengerEntity } from "../../models/OrderPassengerEntity";
 import { OrderFlightTicketType } from "../../models/OrderFlightTicketType";
+import { OrderPayStatusType } from "../../models/OrderInsuranceEntity";
 @Component({
   selector: "app-order-item",
   templateUrl: "./order-item.component.html",
@@ -255,6 +256,44 @@ export class OrderItemComponent implements OnInit, OnChanges {
     const d = this.calendarService.generateDayModelByDate(date);
     return d.dayOfWeekName;
   }
+  getFlightOrderTotalAmount() {
+    let amount = 0;
+    const order = this.order;
+    if (!order || !order.OrderItems) {
+      return amount;
+    }
+    amount = order.OrderItems.filter(
+      it => !(it.Tag || "").endsWith("Fee")
+    ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+    return amount < 0 ? 0 : amount;
+  }
+  private getFlightInsuranceAmount() {
+    if (
+      !this.order ||
+      !this.order.OrderInsurances ||
+      !this.order.OrderItems ||
+      !this.order.OrderFlightTickets
+    ) {
+      return 0;
+    }
+    const flightTripkeys: string[] = [];
+    this.order.OrderFlightTickets.forEach(t => {
+      if (t.OrderFlightTrips) {
+        t.OrderFlightTrips.forEach(trip => {
+          if (!flightTripkeys.find(k => k == trip.Key)) {
+            flightTripkeys.push(trip.Key);
+          }
+        });
+      }
+    });
+    const keys = this.order.OrderInsurances.filter(
+      it => !!flightTripkeys.find(k => k == it.AdditionKey)
+    ).map(it => it.Key);
+    const insuranceAmount = this.order.OrderItems.filter(it =>
+      keys.find(k => k == it.Key && it.Tag == "Insurance")
+    ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+    return insuranceAmount;
+  }
   async onRefundFlightTicket(
     evt: CustomEvent,
     ticket: OrderFlightTicketEntity
@@ -404,16 +443,6 @@ export class OrderItemComponent implements OnInit, OnChanges {
     }
     return amount;
   }
-  private getInterOrderAmount() {
-    return (
-      this.order &&
-      this.order.OrderFlightTickets &&
-      this.order.OrderFlightTickets.reduce(
-        (acc, it) => (acc += this.getTotalAmount(this.order, it.Key)),
-        0
-      )
-    );
-  }
   getPassengerTicketStatus(p: OrderPassengerEntity) {
     const tickets =
       this.order &&
@@ -434,21 +463,5 @@ export class OrderItemComponent implements OnInit, OnChanges {
         it => it.OrderFlightTicket && it.OrderFlightTicket.Id
       )
     );
-  }
-  private getInterInsuranceAmount() {
-    return (
-      this.order &&
-      this.order.OrderFlightTickets &&
-      this.order.OrderFlightTickets.reduce(
-        (acc, it) => (acc += this.flightInsuranceAmount(it)),
-        0
-      )
-    );
-  }
-  getInterTotalAmount() {
-    return {
-      amount: this.getInterOrderAmount(),
-      insurance: this.getInterInsuranceAmount()
-    };
   }
 }

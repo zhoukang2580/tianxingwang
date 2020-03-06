@@ -535,7 +535,15 @@ export class OrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
-
+  private transformTime(datetime: string) {
+    if (datetime && datetime.includes("T")) {
+      const [date, time] = datetime.split("T");
+      if (date && time) {
+        return `${date} ${time.substring(0, time.lastIndexOf(":"))}`;
+      }
+    }
+    return datetime;
+  }
   getOrderTotalAmount() {
     let amount = 0;
     const order = this.orderDetail && this.orderDetail.Order;
@@ -554,15 +562,6 @@ export class OrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
     }
     return amount < 0 ? 0 : amount;
-  }
-  private transformTime(datetime: string) {
-    if (datetime && datetime.includes("T")) {
-      const [date, time] = datetime.split("T");
-      if (date && time) {
-        return `${date} ${time.substring(0, time.lastIndexOf(":"))}`;
-      }
-    }
-    return datetime;
   }
   getOrderPayAmount() {
     const Tmc = this.tmc;
