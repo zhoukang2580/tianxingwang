@@ -11,7 +11,6 @@ import {
   Renderer2,
   ViewChild,
   ElementRef,
-  ChangeDetectorRef,
   NgZone
 } from "@angular/core";
 import { OrderItemEntity, OrderEntity } from "../../models/OrderEntity";
