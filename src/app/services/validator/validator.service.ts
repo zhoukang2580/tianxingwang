@@ -8,7 +8,12 @@ export interface ValidateInfo {
   rule: {
     Message: string; // "账户编号错误"
     Name: string; // "Account.Id"
-    Rules: any[];
+    Rules: {
+      IsRange: boolean;
+      Message: string;
+      Options: string;
+      Pattern: string;
+    }[];
   }[];
 }
 @Injectable({
@@ -73,7 +78,7 @@ export class ValidatorService {
     const req = new RequestEntity();
     req.Method = "ApiHomeUrl-Home-GetValidateRule";
     req.Data = JSON.stringify({ Name: name, SaveType: saveType });
-    req.IsShowLoading=true;
+    req.IsShowLoading = true;
     return this.apiService.getResponse<any>(req);
   }
 }

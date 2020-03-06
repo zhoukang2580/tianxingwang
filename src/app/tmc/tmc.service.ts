@@ -47,6 +47,7 @@ export class TmcService {
   private localInternationAirports: LocalStorageAirport;
   private localDomesticAirports: LocalStorageAirport;
   private selectedCompanySource: BehaviorSubject<string>;
+  private fetchingTmc: { promise: Promise<TmcEntity> };
   private companies: GroupCompanyEntity[];
   // private fetchingCredentialReq: { [md5: string]: { isFectching: boolean; promise: Promise<any>; } } = {} as any;
   private tmc: TmcEntity;
@@ -641,14 +642,28 @@ export class TmcService {
     if (this.tmc && !forceFetch) {
       return Promise.resolve(this.tmc);
     }
+    if (this.fetchingTmc) {
+      return this.fetchingTmc.promise;
+    }
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Tmc-GetTmc";
-    this.tmc = await this.apiService.getPromiseData<TmcEntity>(req).catch(_ => {
-      AppHelper.alert(_);
-      return null;
-    });
-    return this.tmc;
+    this.fetchingTmc = {
+      promise: await this.apiService
+        .getPromiseData<TmcEntity>(req)
+        .then(tmc => {
+          this.tmc = tmc;
+          return tmc;
+        })
+        .catch(_ => {
+          AppHelper.alert(_);
+          return null;
+        })
+        .finally(() => {
+          this.fetchingTmc = null;
+        })
+    };
+    return this.fetchingTmc.promise;
   }
   async getTmcData(): Promise<TmcDataEntity> {
     const req = new RequestEntity();
