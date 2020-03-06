@@ -262,9 +262,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
     if (!order || !order.OrderItems) {
       return amount;
     }
-    amount = order.OrderItems.filter(
-      it => !(it.Tag || "").endsWith("Fee")
-    ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+    amount = order.OrderItems.reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
     return amount < 0 ? 0 : amount;
   }
   private getFlightInsuranceAmount() {
