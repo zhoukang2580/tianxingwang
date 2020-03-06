@@ -192,6 +192,7 @@ export class MemberCredentialManagementPage
     ele.open();
     this.subscription = ele.ionChange.subscribe(_ => {
       this.onIdTypeChange();
+      this.onFirstLastNameChange();
     });
     this.subscriptions.push(this.subscription);
   }
