@@ -35,10 +35,13 @@
             <ng-container *ngFor='let trip of t.OrderFlightTrips ;let first=first;'>
               <div class="item" style='align-items: center;'
                 *ngIf='t.TicketType==OrderFlightTicketType.International?first:true'>
-                <div>旅客
-                  <ng-container *ngIf='t.VariablesJsonObj.idx as idx'>
-                    <ion-note>{{idx}}</ion-note>
+                <div>
+                  <ng-container *ngIf='t.VariablesJsonObj.idx else aa'>
+                    旅客{{t.VariablesJsonObj.idx}}
                   </ng-container>
+                  <ng-template #aa>
+                    旅客
+                  </ng-template>
                 </div>
                 <div>
                   <span>{{trip.OrderFlightTicket.Passenger.CheckName}}</span>
@@ -51,17 +54,21 @@
                 </ion-button>
               </div>
               <div class="item">
-                <div>行程</div>
+                <div>
+                  <span *ngIf='t.TicketType==OrderFlightTicketType.International?first:true'>
+                    行程
+                  </span>
+                </div>
                 <div>
                   <div>
                     <span>
-                      {{trip.TakeoffTime?.substr(0,"yyyy-mm-dd".length)}}
+                      {{trip.TakeoffDate}}
                     </span>
-                    <span *ngIf='getDateWeekName(trip.TakeoffTime?.substr(0,"yyyy-mm-dd".length)) as n'>
+                    <span *ngIf='getDateWeekName(trip.TakeoffDate) as n'>
                       ({{n}})
                     </span>
                     <span>
-                      {{getHHmm(trip.TakeoffTime)}}
+                      {{trip.TakeoffShortTime}}
                     </span>
                     <span>
                       {{trip.FlightNumber}}

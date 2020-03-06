@@ -16,7 +16,9 @@ ion-content {
   ion-toolbar {
     height: 3.5em;
   }
-  & > ion-list {
+  & > ion-list,
+  & > ul,
+  app-or-comp {
     position: relative;
     top: 4em;
   }
@@ -54,4 +56,10 @@ ion-footer ion-row ion-col {
 app-order-item {
   font-size: 0.9rem;
   padding: 0.5em 0;
+}
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0.5em 0;
+  background-color: white;
 }

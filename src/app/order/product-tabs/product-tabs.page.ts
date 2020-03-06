@@ -1,5 +1,5 @@
-import { BackButtonComponent } from './../../components/back-button/back-button.component';
-import { RefresherComponent } from './../../components/refresher/refresher.component';
+import { BackButtonComponent } from "./../../components/back-button/back-button.component";
+import { RefresherComponent } from "./../../components/refresher/refresher.component";
 import { IdentityService } from "./../../services/identity/identity.service";
 import { OrderTripModel } from "./../models/OrderTripModel";
 import { OrderService } from "./../order.service";
@@ -29,7 +29,7 @@ import { finalize } from "rxjs/operators";
 import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
 import { TaskEntity } from "src/app/workflow/models/TaskEntity";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
-import { ORDER_TABS } from '../product-list/product-list.page';
+import { ORDER_TABS } from "../product-list/product-list.page";
 
 @Component({
   selector: "app-product-tabs",
@@ -54,6 +54,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   myTrips: OrderTripModel[];
   isOpenUrl = false;
   loadMoreErrMsg: string;
+  myTripsTotalCount = 0;
   @ViewChild(IonContent) ionContent: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
   @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
@@ -138,6 +139,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     this.loadDataSub.unsubscribe();
     this.activeTab = tab;
     this.dataCount = 0;
+    this.myTripsTotalCount = 0;
     this.title = tab.label + "订单";
     if (this.activeTab.value == ProductItemType.waitingApprovalTask) {
       this.title = tab.label;
@@ -169,8 +171,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       this.activeTab.value == ProductItemType.plane
         ? "Flight"
         : this.activeTab.value == ProductItemType.hotel
-          ? "Hotel"
-          : "Train";
+        ? "Hotel"
+        : "Train";
+    this.isLoading = this.condition.pageIndex < 1;
     this.loadDataSub = this.orderService
       .getMyTrips(m)
       .pipe(
@@ -181,10 +184,11 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       .subscribe(
         res => {
           if (res && res.Data && res.Data.Trips) {
+            if (this.condition.pageIndex < 1 && res.Data.Trips.length) {
+              this.myTripsTotalCount = res.Data.DataCount;
+            }
             if (this.infiniteScroll) {
-              this.infiniteScroll.disabled =
-                res.Data.Trips.length === 0 ||
-                res.Data.Trips.length < this.pageSize;
+              this.infiniteScroll.disabled = res.Data.Trips.length < 10;
               this.infiniteScroll.complete();
             }
             if (res.Data.Trips.length) {
@@ -220,8 +224,10 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     // }
   }
   goToDetailPage(orderId: string, type: string) {
-    if (type && type.toLowerCase() == 'car') {
-      this.router.navigate([AppHelper.getRoutePath("car-order-detail")], { queryParams: { Id: orderId } });
+    if (type && type.toLowerCase() == "car") {
+      this.router.navigate([AppHelper.getRoutePath("car-order-detail")], {
+        queryParams: { Id: orderId }
+      });
       return;
     }
     this.router.navigate([AppHelper.getRoutePath("order-detail")], {
@@ -253,12 +259,10 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     }
     const pageSize = 15;
     this.loadDataSub = this.orderService
-      .getOrderTasks(
-        {
-          PageSize: pageSize,
-          PageIndex: this.curTaskPageIndex
-        } as any
-      )
+      .getOrderTasks({
+        PageSize: pageSize,
+        PageIndex: this.curTaskPageIndex
+      } as any)
       .pipe(
         finalize(() => {
           this.isLoading = false;
@@ -302,9 +306,10 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         this.activeTab.value == ProductItemType.plane
           ? "Flight"
           : this.activeTab.value == ProductItemType.train
-            ? "Train" :
-            this.activeTab.value == ProductItemType.car ? "Car"
-              : "Hotel";
+          ? "Train"
+          : this.activeTab.value == ProductItemType.car
+          ? "Car"
+          : "Hotel";
       this.orderModel.Type = m.Type;
       if (
         this.orderModel &&
@@ -550,7 +555,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       ((order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
         OrderTravelPayType.Credit ||
         (order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
-        OrderTravelPayType.Person) &&
+          OrderTravelPayType.Person) &&
       order.Status != OrderStatusType.Cancel;
     if (!rev) {
       return false;

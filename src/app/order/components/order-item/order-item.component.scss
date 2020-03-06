@@ -6,7 +6,8 @@
   display: flex;
   align-items: flex-start;
   & > *:first-child {
-    margin-right: 1em;
+    min-width: 2.25rem;
+    margin-right: 0.5em;
     color: var(--ion-color-medium);
   }
   span {
@@ -18,5 +19,5 @@
   user-select: text;
 }
 .order-flight-ticket + .order-flight-ticket {
-  border-top: 1px dashed var(--ion-color-secondary);
+  border-top: 1px dashed rgba(var(--ion-color-medium-rgb), 0.2);
 }

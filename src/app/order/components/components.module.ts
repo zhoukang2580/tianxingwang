@@ -1,4 +1,4 @@
-import { SwiperSlideContentComponent } from './swiper-slide-content/swiper-slide-content.component';
+import { SwiperSlideContentComponent } from "./swiper-slide-content/swiper-slide-content.component";
 import { AppDirectivesModule } from "src/app/directives/directives.module";
 import { FormsModule } from "@angular/forms";
 import { IonicModule } from "@ionic/angular";
@@ -12,12 +12,15 @@ import { SearchTicketModalComponent } from "./search-ticket-modal/search-ticket-
 import { TripRulePopoverComponent } from "./trip-rule-popover/trip-rule-popover.component";
 import { FlightModule } from "src/app/flight/flight.module";
 import { SelectTicketPopoverComponent } from "./select-ticket-popover/select-ticket-popover.component";
-import { TrainOrderDetailComponent } from 'src/app/order/components/train-order-detail/train-order-detail.component';
-import { FlightOrderDetailComponent } from './flight-order-detail/flight-order-detail.component';
-import { HotelOrderDetailComponent } from './hotel-order-detail/hotel-order-detail.component';
-import { InsuranceOrderDetailComponent } from './insurance-order-detail/insurance-order-detail.component';
-import { MyTripComponent } from './my-trip/my-trip.component';
-import { CarItemComponent } from './car-item/car-item.component';
+import { TrainOrderDetailComponent } from "src/app/order/components/train-order-detail/train-order-detail.component";
+import { FlightOrderDetailComponent } from "./flight-order-detail/flight-order-detail.component";
+import { HotelOrderDetailComponent } from "./hotel-order-detail/hotel-order-detail.component";
+import { InsuranceOrderDetailComponent } from "./insurance-order-detail/insurance-order-detail.component";
+import { MyTripComponent } from "./my-trip/my-trip.component";
+import { CarItemComponent } from "./car-item/car-item.component";
+import { TrainTripComponent } from "./train-trip/train-trip.component";
+import { HotelTripComponent } from "./hotel-trip/hotel-trip.component";
+import { FlightTripComponent } from "./flight-trip/flight-trip.component";
 
 @NgModule({
   declarations: [
@@ -34,6 +37,9 @@ import { CarItemComponent } from './car-item/car-item.component';
     HotelOrderDetailComponent,
     InsuranceOrderDetailComponent,
     MyTripComponent,
+    TrainTripComponent,
+    HotelTripComponent,
+    FlightTripComponent,
     SwiperSlideContentComponent
   ],
   imports: [
@@ -51,7 +57,10 @@ import { CarItemComponent } from './car-item/car-item.component';
     HotelOrderDetailComponent,
     InsuranceOrderDetailComponent,
     MyTripComponent,
-    SwiperSlideContentComponent
+    SwiperSlideContentComponent,
+    TrainTripComponent,
+    HotelTripComponent,
+    FlightTripComponent
   ]
 })
-export class OrderComponentsModule { }
+export class OrderComponentsModule {}

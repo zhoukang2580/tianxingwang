@@ -114,6 +114,12 @@ export class OrderItemComponent implements OnInit, OnChanges {
                   }
                   return trip;
                 });
+                t.OrderFlightTrips.sort((t1, t2) => {
+                  return (
+                    AppHelper.getDate(t1.TakeoffTime).getTime() -
+                    AppHelper.getDate(t2.TakeoffTime).getTime()
+                  );
+                });
               }
               return t;
             }
@@ -126,23 +132,30 @@ export class OrderItemComponent implements OnInit, OnChanges {
   }
   private checkIfOrderFlightTicketShow() {
     if (this.order && this.order.OrderFlightTickets) {
-      const originalTicketIdToTickets: { [originalId: string]: OrderFlightTicketEntity[] } = {};
+      const originalTicketIdToTickets: {
+        [originalId: string]: OrderFlightTicketEntity[];
+      } = {};
       this.order.OrderFlightTickets.forEach(t => {
         if (
           t.VariablesJsonObj.OriginalTicketId &&
           !t.VariablesJsonObj.IsScrap
         ) {
           if (originalTicketIdToTickets[t.VariablesJsonObj.OriginalTicketId]) {
-            originalTicketIdToTickets[t.VariablesJsonObj.OriginalTicketId].push(t);
+            originalTicketIdToTickets[t.VariablesJsonObj.OriginalTicketId].push(
+              t
+            );
           } else {
-            originalTicketIdToTickets[t.VariablesJsonObj.OriginalTicketId] = [t];
+            originalTicketIdToTickets[t.VariablesJsonObj.OriginalTicketId] = [
+              t
+            ];
           }
         }
       });
       Object.keys(originalTicketIdToTickets).forEach(k => {
-        originalTicketIdToTickets[k] = this.sortFlightTickets(originalTicketIdToTickets[k]);
+        originalTicketIdToTickets[k] = this.sortFlightTickets(
+          originalTicketIdToTickets[k]
+        );
       });
-      this.sortFlightTickets(this.order.OrderFlightTickets);
       this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(t => {
         if (t.VariablesJsonObj) {
           const ts = originalTicketIdToTickets[t.Id];

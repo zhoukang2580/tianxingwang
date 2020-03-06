@@ -61,16 +61,21 @@
         </ion-list>
       </ng-container>
       <ng-container *ngIf='isShowMyTrips'>
-        <ion-list lines='none' *ngIf='myTrips?.length else nomoredate'>
-          <ion-item *ngFor='let trip of myTrips' (click)='goToDetailPage(trip.OrderId,orderModel.Type)'>
-            <app-my-trip [trip]='trip'></app-my-trip>
-          </ion-item>
-        </ion-list>
+        <ul *ngIf='myTrips?.length else nomoredate'>
+          <li *ngFor='let trip of myTrips' (click)='goToDetailPage(trip.OrderId,orderModel.Type)'>
+            <ng-container [ngSwitch]='trip.Type'>
+              <app-flight-trip *ngSwitchCase='"Flight"' [trip]="trip"></app-flight-trip>
+              <app-train-trip *ngSwitchCase='"Train"' [trip]="trip"></app-train-trip>
+              <app-hotel-trip *ngSwitchCase='"Hotel"' [trip]="trip"></app-hotel-trip>
+              <!-- <app-flight-trip *ngSwitchCase='"Car"' [trip]="trip"></app-flight-trip> -->
+            </ng-container>
+          </li>
+        </ul>
       </ng-container>
     </ng-container>
   </ng-container>
   <ng-template #nomoredate>
-    <app-or-comp *ngIf='!this.isLoading&&(orderModel?.Orders||myTrips||tasks)?.length==0'>
+    <app-or-comp *ngIf='!this.isLoading'>
       暂无数据
     </app-or-comp>
   </ng-template>
@@ -112,11 +117,14 @@
   <ion-row>
     <ion-col class='ion-text-center'>
       <ion-button color='secondary' fill='clear' size='small' (click)='doRefresh()'>
-        全部<span slot='end' *ngIf='dataCount'>(<span *ngIf='orderModel?.Orders?.length as n'>{{n}}/</span>{{dataCount}})</span>
+        全部<span slot='end' *ngIf='dataCount'>(<span
+            *ngIf='orderModel?.Orders?.length as n'>{{n}}/</span>{{dataCount}})</span>
       </ion-button>
     </ion-col>
     <ion-col class='ion-text-center'>
-      <ion-button color='secondary' fill='clear' size='small' (click)='onshowMyTrips()'>待出行订单</ion-button>
+      <ion-button color='secondary' fill='clear' size='small' (click)='onshowMyTrips()'>待出行
+        <span *ngIf='myTripsTotalCount'>({{myTrips?.length}}/{{myTripsTotalCount}})</span>
+      </ion-button>
     </ion-col>
     <ion-col class='ion-text-center' *ngIf='false'>
       <ion-button color='secondary' fill='clear' size='small' (click)='historyTrips()'>历史订单</ion-button>
