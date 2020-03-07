@@ -1,13 +1,13 @@
 const exec = require("cordova/exec");
 
 module.exports = {
-    prepare: function (callback,err) {
+    prepare: function (callback, err) {
         exec(callback, err, 'QRScanner', 'prepare', []);
     },
     destroy: function (callback) {
         exec(callback, null, 'QRScanner', 'destroy', []);
     },
-    scan: function (callback,err) {
+    scan: function (callback, err) {
         if (!callback) {
             throw new Error('No callback provided to scan method.');
         }
@@ -16,10 +16,10 @@ module.exports = {
     cancelScan: function (callback) {
         exec(callback, null, 'QRScanner', 'cancelScan', []);
     },
-    show: function (callback,err) {
+    show: function (callback, err) {
         exec(callback, err, 'QRScanner', 'show', []);
     },
-    hide: function (callback,err) {
+    hide: function (callback, err) {
         exec(callback, err, 'QRScanner', 'hide', []);
     },
     pausePreview: function (callback) {
@@ -28,34 +28,34 @@ module.exports = {
     resumePreview: function (callback) {
         exec(callback, null, 'QRScanner', 'resumePreview', []);
     },
-    enableLight: function (callback,err) {
+    enableLight: function (callback, err) {
         exec(callback, err, 'QRScanner', 'enableLight', []);
     },
-    disableLight: function (callback,err) {
+    disableLight: function (callback, err) {
         exec(callback, err, 'QRScanner', 'disableLight', []);
     },
-    useCamera: function (index, callback,err) {
+    useCamera: function (index, callback, err) {
         exec(callback, err, 'QRScanner', 'useCamera', [index]);
     },
-    useFrontCamera: function (callback,err) {
+    useFrontCamera: function (callback, err) {
         var frontCamera = 1;
         if (callback) {
-            this.useCamera(frontCamera, callback,err);
+            this.useCamera(frontCamera, callback, err);
         } else {
             exec(null, null, 'QRScanner', 'useCamera', [frontCamera]);
         }
     },
-    useBackCamera: function (callback,err) {
+    useBackCamera: function (callback, err) {
         var backCamera = 0;
         if (callback) {
-            this.useCamera(backCamera, callback,err);
+            this.useCamera(backCamera, callback, err);
         } else {
             exec(null, null, 'QRScanner', 'useCamera', [backCamera]);
         }
     },
-    openSettings: function (callback,err) {
+    openSettings: function (callback, err) {
         if (callback) {
-            exec(callback,err, 'QRScanner', 'openSettings', []);
+            exec(callback, err, 'QRScanner', 'openSettings', []);
         } else {
             exec(null, null, 'QRScanner', 'openSettings', []);
         }

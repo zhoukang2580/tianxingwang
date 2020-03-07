@@ -1,4 +1,4 @@
-<ion-content class='ion-padding'>
+<ion-content class='ion-padding' [scrollY]='false'>
   <ion-toolbar class='ion-text-center'>
     <img [lazyLoad]="config?.LogoImageUrl" alt="公司logo" class='logo' [defaultImage]='config?.PrerenderImageUrl||"assets/images/Logodm.png"' />
   </ion-toolbar>
@@ -78,5 +78,5 @@
   </form>
 </ion-content>
 <app-slidvalidate-com *ngIf="isShowImageCode" (slideEvent)='onSlideEvent($event)'></app-slidvalidate-com>
-<div class='shade' *ngIf='isLogining'></div>
-<div  *ngIf='isLogining' class='login-loading isloading'>正在登录,请稍后...</div>
+<!-- <div class='shade' *ngIf='isLogining'></div>
+<div  *ngIf='isLogining' class='login-loading isloading'>正在登录,请稍后...</div> -->

@@ -132,8 +132,8 @@
       "cordova-qrscanner-plugin": {}
     },
     "platforms": [
-      "ios",
-      "android"
+      "android",
+      "ios"
     ]
   }
 }

@@ -193,14 +193,14 @@ export class AppHelper {
       return Promise.resolve("");
     }
     let local = AppHelper.getStorage<string>("_UUId_DeviceId_");
-    console.log("local uuid ", local);
+    console.log("local uuid "+local);
     if (local) {
       return Promise.resolve(local);
     }
     local = AppHelper.uuid(64)
       .replace(/-/g, "")
       .substr(0, 32);
-    console.log("新生成的uuid", local);
+    console.log("新生成的uuid "+local);
     AppHelper.setStorage<string>("_UUId_DeviceId_", local);
     return Promise.resolve(local);
   }

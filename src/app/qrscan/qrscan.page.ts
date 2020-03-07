@@ -65,6 +65,7 @@ export class QrScanPage implements OnInit, OnDestroy {
     try {
       this.clearBackground(true);
       this.qrScanService.show();
+      this.qrScanService.resumePreview();
       const text = await this.qrScanService.scan();
       this.isMovingScanBar = false;
       this.qrScanService.hide();
