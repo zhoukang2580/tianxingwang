@@ -163,12 +163,14 @@ export class SwiperSlidesComponent
       if (false && this.items.length <= 100) {
         this.vmItems = this.items;
       } else {
-        items = this.items.slice(
-          this.vmItems.length,
-          this.vmItems.length + this.pageSize
-        );
-        if (items.length) {
-          this.vmItems = this.vmItems.concat(items);
+        if(this.vmItems){
+          items = this.items.slice(
+            this.vmItems.length,
+            this.vmItems.length + this.pageSize
+          );
+          if (items.length) {
+            this.vmItems = this.vmItems.concat(items);
+          }
         }
       }
     }

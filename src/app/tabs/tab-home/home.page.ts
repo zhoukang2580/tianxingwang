@@ -55,7 +55,7 @@ export class HomePage implements OnInit, OnDestroy {
   staff: StaffEntity;
   canShow = AppHelper.isApp() || AppHelper.isWechatH5();
   options = {};
-  isShowoverseaHotel = environment.mockProBuild;
+  isShowoverseaHotel = environment.mockProBuild||!environment.production;
   constructor(
     private identityService: IdentityService,
     private router: Router,
