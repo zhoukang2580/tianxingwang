@@ -6,11 +6,13 @@ import { LanguageHelper } from 'src/app/languageHelper';
 import { Platform } from '@ionic/angular';
 import { LogService } from 'src/app/services/log/log.service';
 import { ExceptionEntity } from 'src/app/services/log/exception.entity';
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 
 @Component({
   selector: 'app-update-comp',
   templateUrl: './appupdate.component.html',
   styleUrls: ['./appupdate.component.scss'],
+  providers: [InAppBrowser]
 })
 export class AppUpdateComponent implements OnInit {
   updateInfo: {
@@ -19,14 +21,14 @@ export class AppUpdateComponent implements OnInit {
     taskDesc?: string;
     progress?: string;
   };
-  @HostBinding('class.forceUpdate')
-  forceUpdate: boolean;
+  @HostBinding('class.forceUpdate') forceUpdate: boolean;
   isCanIgnore: boolean;
   constructor(private fileService: FileHelperService,
     private logService: LogService,
+    private iab: InAppBrowser,
     private ngZone: NgZone, private plt: Platform) { }
   async ngOnInit() {
-    if(AppHelper.isApp()){
+    if (AppHelper.isApp()) {
       this.appUpdate();
     }
     // this.appUpdate();
@@ -142,13 +144,15 @@ export class AppUpdateComponent implements OnInit {
   }
   async iosUpdate() {
     try {
-     const ok =  await AppHelper.alert(`ios 更新需要跳转到 App Store，现在跳转更新？`, true,LanguageHelper.getConfirmTip(),LanguageHelper.getCancelTip());
-     if(ok){
-       this.forceUpdate=true;
-       window.location.href=encodeURIComponent(`https://apps.apple.com/cn/app/id1347643172`);
-     }else{
-       this.forceUpdate=false;
-     }
+      const ok = await AppHelper.alert(`ios 更新需要跳转到 App Store，现在跳转更新？`, true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
+      if (ok) {
+        this.forceUpdate = true;
+        const url = encodeURI(`https://apps.apple.com/cn/app/id1347643172`);
+        this.iab.create(url, '_system');
+        this.forceUpdate=false;
+      } else {
+        this.forceUpdate = false;
+      }
       //TODO:ios 跳转页面更新 app
     } catch (e) {
       this.forceUpdate = false;

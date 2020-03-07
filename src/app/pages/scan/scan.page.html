@@ -14,7 +14,7 @@
       <ion-avatar size='large'>
         <img [lazyLoad]='Model?.HeadUrl' alt="logo" [defaultImage]='defaultImage'>
       </ion-avatar>
-      <div>{{Model?.RealName}}</div>
+      <div class="ion-text-center ion-padding-top">{{Model?.RealName}}</div>
     </div>
     <ion-button class='ion-margin-top' color='secondary' expand='block' (click)="onConfirm()">允许登录</ion-button>
     <ion-button color='danger'  expand='block' class='ion-margin-top' (click)='onCancel()'> <ion-text color='light'>取消</ion-text> </ion-button>

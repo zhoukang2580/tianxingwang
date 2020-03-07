@@ -41,7 +41,7 @@ export class LogService {
             : ex.Error.message
           : typeof ex.Error === "string" || typeof ex.Error === "number"
           ? ex.Error
-          : JSON.stringify(ex.Error);
+          : ex.Error
       req.Data = JSON.stringify({
         Address: ex.Method,
         Message: ex.Message,

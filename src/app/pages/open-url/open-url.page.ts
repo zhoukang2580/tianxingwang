@@ -74,12 +74,17 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
     if (this.browser) {
       this.browser.close();
     }
+    const color="#2596D9";
     const options: InAppBrowserOptions = {
       usewkwebview: "yes",
       location: "no",
       toolbar: this.plt.is("ios") ? "yes" : "no",
       zoom: "no",
-      footer: "no"
+      footer: "no",
+      closebuttoncaption:"关闭(CLOSE)",
+      closebuttoncolor:"#2596D9",
+      navigationbuttoncolor:"#2596D9",
+      // toolbarcolor:"#2596D90f"
     };
     this.browser = this.iab.create(encodeURI(url), "_blank", options);
     const sub = this.browser.on("exit").subscribe(() => {

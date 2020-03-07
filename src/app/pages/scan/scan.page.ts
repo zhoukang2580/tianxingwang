@@ -143,7 +143,7 @@ export class ScanPage implements OnInit, OnDestroy {
           )
           .pipe(finalize(() => {
             setTimeout(() => {
-              this.apiService.showLoadingView();
+              this.apiService.hideLoadingView();
             }, 200);
           }))
           .subscribe(
@@ -154,7 +154,7 @@ export class ScanPage implements OnInit, OnDestroy {
               this.close();
             },
             e => {
-              AppHelper.alert(e);
+              AppHelper.alert(e||"登陆失败");
             },
             () => {
               setTimeout(() => {
