@@ -35,13 +35,13 @@ export class LogService {
       req.Domain = AppHelper.getDomain();
       req.Method = "ApiLogUrl-Error-Add";
       const detail =
-        ex.Error instanceof Error
-          ? ex.Error.message.includes("<")
-            ? escape(ex.Error.message)
-            : ex.Error.message
-          : typeof ex.Error === "string" || typeof ex.Error === "number"
-          ? ex.Error
-          : ex.Error
+      ex.Error instanceof Error
+      ? ex.Error.message.includes("<")
+      ? escape(ex.Error.message)
+      : ex.Error.message
+      : typeof ex.Error === "string" || typeof ex.Error === "number"
+      ? ex.Error
+      : ex.Error
       req.Data = JSON.stringify({
         Address: ex.Method,
         Message: ex.Message,
@@ -49,6 +49,7 @@ export class LogService {
         AccountId: !identity ? identity.Id : "",
         Device: await AppHelper.getDeviceId()
       });
+      console.log("发送错误,detail "+detail);
       const formObj = Object.keys(req)
         .map(k => `${k}=${req[k]}`)
         .join("&");

@@ -91,7 +91,7 @@ export class SwiperSlidesComponent
       });
       this.stopAutoPlay();
       // console.log("swiper", this.swiper);
-      this.swiper.on("slideChange", function() {
+      this.swiper.on("slideChange", function () {
         // self.cdRef.markForCheck();
         // console.log(TAG + "slideChange ", this.realIndex);
         self.onChangeCurIndex(this.realIndex);
@@ -99,7 +99,7 @@ export class SwiperSlidesComponent
       this.swiper.on("touchEnd", () => {
         this.onTouchEnd();
       });
-      this.swiper.on("slidePrevTransitionEnd", function() {
+      this.swiper.on("slidePrevTransitionEnd", function () {
         self.onPreSlide(this.realIndex);
       });
       this.swiper.on("reachBeginning", () => {
@@ -114,7 +114,7 @@ export class SwiperSlidesComponent
     console.log("正在加载数据，", this.slides.length);
     this.loadMore();
   }
-  private onReachBeginning() {}
+  private onReachBeginning() { }
   private onReachEnd() {
     // this.loadMore();
   }
@@ -163,7 +163,7 @@ export class SwiperSlidesComponent
       if (false && this.items.length <= 100) {
         this.vmItems = this.items;
       } else {
-        if(this.vmItems){
+        if (this.vmItems) {
           items = this.items.slice(
             this.vmItems.length,
             this.vmItems.length + this.pageSize
@@ -216,44 +216,52 @@ export class SwiperSlidesComponent
     }
   }
   private onChangeCurIndex(realIndex: number) {
-    this.curIndex = realIndex + 1;
-    this.slideChange.emit(realIndex);
-    if (this.vmItems && this.vmItems.length) {
-      if (
-        this.curIndex == this.vmItems.length - 3 ||
-        this.curIndex == this.vmItems.length
-      ) {
-        this.loadMore();
+    try {
+      this.curIndex = realIndex + 1;
+      this.slideChange.emit(realIndex);
+      if (this.vmItems && this.vmItems.length) {
+        if (
+          this.curIndex == this.vmItems.length - 3 ||
+          this.curIndex == this.vmItems.length
+        ) {
+          this.loadMore();
+        }
       }
+    } catch (e) {
+      console.error("swiper error", e);
     }
   }
   ngOnChanges(changes: SimpleChanges) {
-    if (
-      changes.options &&
-      changes.options.currentValue &&
-      !changes.options.firstChange
-    ) {
-      if (this.swiper) {
-        if (this.options) {
-          Object.assign(this.swiper.params, this.options);
+    try {
+      if (
+        changes.options &&
+        changes.options.currentValue &&
+        !changes.options.firstChange
+      ) {
+        if (this.swiper) {
+          if (this.options) {
+            Object.assign(this.swiper.params, this.options);
+          }
         }
       }
-    }
-    if (changes.initialPos) {
-      this.curIndex = this.initialPos + 1 || 1;
-      // console.log("onchanges this.curIndex", this.curIndex);
-    }
-    if (changes.items && changes.items.currentValue) {
-      this.items = this.items.map((it, idx) => {
-        return {
-          idx,
-          imageUrl: it.imageUrl,
-          text: it.text
-        };
-      });
-      setTimeout(() => {
-        this.initVmItems();
-      }, 0);
+      if (changes.initialPos) {
+        this.curIndex = this.initialPos + 1 || 1;
+        // console.log("onchanges this.curIndex", this.curIndex);
+      }
+      if (changes.items && changes.items.currentValue) {
+        this.items = this.items.map((it, idx) => {
+          return {
+            idx,
+            imageUrl: it.imageUrl,
+            text: it.text
+          };
+        });
+        setTimeout(() => {
+          this.initVmItems();
+        }, 0);
+      }
+    } catch (e) {
+      console.error("swiper slides ngonchanges", e);
     }
   }
   private initVmItems() {
@@ -264,13 +272,17 @@ export class SwiperSlidesComponent
     // }
   }
   private update() {
-    // console.log("swiper update");
-    if (this.swiper) {
-      this.swiper.update();
-      setTimeout(() => {
-        this.startAutoPlay();
-      }, 3000);
+    try{
+      if (this.swiper) {
+        this.swiper.update();
+        setTimeout(() => {
+          this.startAutoPlay();
+        }, 3000);
+      }
+    }catch(e){
+      console.error("swiper slides update ",e)
     }
+    // console.log("swiper update");
   }
   private stopAutoPlay() {
     if (this.options && this.options.autoplay) {
@@ -314,11 +326,12 @@ export class SwiperSlidesComponent
       freeModeMinimumVelocity: 0.02,
       autoHeight: false,
       setWrapperSize: false,
-      zoom: {
-        maxRatio: 3,
-        minRatio: 1,
-        toggle: false
-      },
+      // zoom: { 开启，导致ios 13 滑动的时候包错误  undefined is not an object t.$imageWrapEl.transform undefined
+      //   maxRatio: 3,
+      //   minRatio: 1,
+      //   toggle: false
+      // },
+      zoom:false,
       touchRatio: 1,
       touchAngle: 45,
       simulateTouch: true,
