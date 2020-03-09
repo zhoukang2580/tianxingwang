@@ -12,6 +12,7 @@
  */
 interface Wechat {
     getCode: (appId: string) => Promise<string>;
+    isWXAppInstalled: (appId: string) => Promise<string>;
     pay: (payInfo: { appId: string; partnerId: string; prepayId: string; packageValue: string; nonceStr: string; timeStamp: string; sign: string; }) => Promise<any>;
 }
 

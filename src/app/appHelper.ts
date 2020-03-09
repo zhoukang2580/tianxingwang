@@ -25,7 +25,7 @@ export class AppHelper {
     environment.production && !environment.mockProBuild
       ? "sky-trip.com"
       : "testskytrip.com";
-  constructor() { }
+  constructor() {}
   static _domain;
   static _queryParamers = {};
   static platform: Platform;
@@ -71,10 +71,10 @@ export class AppHelper {
           typeof msg === "string"
             ? msg
             : msg instanceof Error
-              ? msg.message
-              : typeof msg === "object" && msg.message
-                ? msg.message
-                : JSON.stringify(msg),
+            ? msg.message
+            : typeof msg === "object" && msg.message
+            ? msg.message
+            : JSON.stringify(msg),
         position: position as any,
         duration: duration
       });
@@ -128,12 +128,12 @@ export class AppHelper {
           typeof msg === "string"
             ? msg
             : msg instanceof Error
-              ? msg.message
-              : typeof msg === "object" && msg.message
-                ? msg.message
-                : msg.Message
-                  ? msg.Message
-                  : JSON.stringify(msg),
+            ? msg.message
+            : typeof msg === "object" && msg.message
+            ? msg.message
+            : msg.Message
+            ? msg.Message
+            : JSON.stringify(msg),
         backdropDismiss: !userOp,
         buttons
       });
@@ -306,8 +306,12 @@ export class AppHelper {
   }
   static async isWXAppInstalled() {
     await AppHelper.platform.ready();
-    if (window['wechat']) {
-      return window['wechat'].isWXAppInstalled().then(() => true).catch(() => false)
+    if (window["wechat"]) {
+      const appId = await AppHelper.getWechatAppId();
+      return window["wechat"]
+        .isWXAppInstalled(appId)
+        .then(() => true)
+        .catch(() => false);
     }
     return false;
   }
@@ -509,12 +513,12 @@ export class AppHelper {
   static setQueryParamers(key: string, value: string) {
     try {
       this._queryParamers[key] = value;
-    } catch (ex) { }
+    } catch (ex) {}
   }
   static removeQueryParamers(key: string) {
     try {
       this._queryParamers[key] = null;
-    } catch (ex) { }
+    } catch (ex) {}
   }
   static getQueryParamers() {
     return this._queryParamers as any;
