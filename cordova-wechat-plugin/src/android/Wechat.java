@@ -20,6 +20,12 @@ public class Wechat extends CordovaPlugin {
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         sCallbackContext = callbackContext;
+        if(TextUtils.equals("isWXAppInstalled",action)){
+            cordova.getThreadPool().execute(()->{
+                isWXAppInstalled(callbackContext);
+            });
+            return true;
+        }
         if (TextUtils.equals("getCode", action)) {
             String appId = args.optString(0);
             if (TextUtils.isEmpty(appId)) {
@@ -102,6 +108,14 @@ public class Wechat extends CordovaPlugin {
         request.timeStamp = timeStamp;//"1398746574";
         request.sign = sign;// "7FFECB600D7157C5AA49810D2D8F28BC2811827B";
         cordova.getThreadPool().execute(() -> sWxApi.sendReq(request));
+    }
+    private  void isWXAppInstalled( CallbackContext callbackContext){
+        if(sWxApi.isWXAppInstalled()){
+            callbackContext.success("ok");
+        }else {
+         callbackContext.error("uninstalled");
+        }
+
     }
 
     private void regToWx(String appId) {

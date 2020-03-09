@@ -1,52 +1,74 @@
 ion-content {
   --background: #f2f2f2;
 }
+
 ion-thumbnail {
   --border-radius: 4px;
 }
 
+.has-left-icon {
+  img {
+    width       : 1.5em;
+    margin-right: .5em
+  }
+
+  display    : flex;
+  align-items: center;
+}
+
 .account-type {
-  font-size: 0.7rem;
+  font-size   : 0.7rem;
   padding-left: 0.5em;
 }
+
 ion-card-content {
   margin: 0 -0.5em;
 }
+
 ion-badge {
   color: white;
 }
+
 .top-panal {
   padding-bottom: 4em;
-  padding-top: 0.5em;
+  padding-top   : 0.5em;
 }
+
 .produc-item {
-  width: 100%;
-  display: flex;
-  flex-flow: column nowrap;
-  align-items: center;
+  width          : 100%;
+  display        : flex;
+  flex-flow      : column nowrap;
+  align-items    : center;
   justify-content: center;
-  padding-top: 0.5em;
+  padding-top    : 0.5em;
+
   ion-avatar {
-    width: 2em;
-    height: 2em;
+    width        : 2em;
+    height       : 2em;
     margin-bottom: 0.5em;
+
     img {
       object-fit: fill;
     }
   }
+
   ion-label {
     font-size: 0.8rem;
   }
 }
+
 ion-card {
-  position: relative;
+  position  : relative;
   margin-top: -4em;
 }
+
 ion-card-header {
   border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.12);
 }
+
 ion-list:not(.top-panal) {
   margin: 1em 0;
+
   &.md {
     padding: 0;
   }

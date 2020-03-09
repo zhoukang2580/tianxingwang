@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" 
     xmlns:rim="http://www.blackberry.com/ns/widgets" 
-    xmlns:android="http://schemas.android.com/apk/res/android" id="cordova-wechat-plugin" version="1.0.0">
+    xmlns:android="http://schemas.android.com/apk/res/android" id="cordova-wechat-plugin" version="2.0.0">
     <name>Wechat</name>
     <description>Cordova Wechat Plugin</description>
     <license>Apache 2.0</license>
@@ -71,7 +71,7 @@
         </config-file>
 
 
-        <config-file target="*-Info.plist" parent="CFBundleURLTypes">
+        <!-- <config-file target="*-Info.plist" parent="CFBundleURLTypes">
             <array>
                 <dict>
                     <key>CFBundleURLName</key>
@@ -82,14 +82,14 @@
                     </array>
                 </dict>
             </array>
-        </config-file>
+        </config-file> -->
         <!-- 微信sdk start-->
         <header-file src="src/ios/CDVWechat.h" />
         <source-file src="src/ios/CDVWechat.m" />
-        <source-file src='src/ios/WeChatSDK1.8.4/libWeChatSDK.a' framework='true'/>
-        <header-file src='src/ios/WeChatSDK1.8.4/WechatAuthSDK.h'/>
-        <header-file src='src/ios/WeChatSDK1.8.4/WXApi.h'/>
-        <header-file src='src/ios/WeChatSDK1.8.4/WXApiObject.h'/>
+        <source-file src='src/ios/WeChatSDK1.8.6/libWeChatSDK.a' framework='true'/>
+        <header-file src='src/ios/WeChatSDK1.8.6/WechatAuthSDK.h'/>
+        <header-file src='src/ios/WeChatSDK1.8.6/WXApi.h'/>
+        <header-file src='src/ios/WeChatSDK1.8.6/WXApiObject.h'/>
         <!-- 微信sdk end -->
         <!-- Other required frameworks -->
         <framework src="libz.tbd" />

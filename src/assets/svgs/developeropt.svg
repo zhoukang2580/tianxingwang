@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="42px" height="32px" viewBox="0 0 42 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 58 (84663) - https://sketch.com -->
+    <title>开发者选项</title>
+    <desc>Created with Sketch.</desc>
+    <g id="页面1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="画板" transform="translate(-48.000000, -59.000000)">
+            <g id="开发者选项" transform="translate(49.000000, 60.000000)">
+                <g id="证件管理备份">
+                    <path d="M4,0 L36,0 C38.209139,-4.05812251e-16 40,1.790861 40,4 L40,26 C40,28.209139 38.209139,30 36,30 L4,30 C1.790861,30 2.705415e-16,28.209139 0,26 L0,4 C-2.705415e-16,1.790861 1.790861,4.05812251e-16 4,0 Z" id="矩形" stroke="#179BD4" stroke-width="2"></path>
+                    <rect id="矩形" fill="#179BD4" x="0" y="9" width="40" height="2" rx="1"></rect>
+                </g>
+                <circle id="椭圆形" fill="#179BD4" cx="4.5" cy="5.5" r="1.5"></circle>
+                <circle id="椭圆形备份" fill="#179BD4" cx="9.5" cy="5.5" r="1.5"></circle>
+                <circle id="椭圆形备份-2" fill="#179BD4" cx="14.5" cy="5.5" r="1.5"></circle>
+                <polyline id="路径" stroke="#179BD4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" transform="translate(13.000000, 20.000000) rotate(-315.000000) translate(-13.000000, -20.000000) " points="16 23 10 23 10 17 10 17"></polyline>
+                <rect id="矩形" fill="#179BD4" transform="translate(20.000000, 20.000000) rotate(22.000000) translate(-20.000000, -20.000000) " x="19" y="13" width="2" height="14" rx="1"></rect>
+                <polyline id="路径备份" stroke="#179BD4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" transform="translate(27.000000, 20.000000) scale(-1, 1) rotate(-315.000000) translate(-27.000000, -20.000000) " points="30 23 24 23 24 17 24 17"></polyline>
+            </g>
+        </g>
+    </g>
+</svg>

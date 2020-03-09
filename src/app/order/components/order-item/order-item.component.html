@@ -149,6 +149,10 @@
         </ion-row>
         <ion-row class='ion-text-end' *ngIf='check(orderTrainTicket)'>
           <ion-col style="justify-content: flex-end;">
+            <ng-container *ngIf='order["checkPay"]'>
+              <ion-button (click)='onPay($event)' size='small' color='secondary'>去支付
+              </ion-button>
+            </ng-container>
             <ion-button (click)='onExchange($event,orderTrainTicket)' color='secondary'
               *ngIf='orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
               <span>改签</span>

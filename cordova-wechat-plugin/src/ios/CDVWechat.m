@@ -8,16 +8,24 @@
 #import "CDVWechat.h"
 #import "WXApi.h"
 #import "WXApiObject.h"
-
-
 @implementation CDVWechat
+ static CDVPlugin<WXApiDelegate> * wXApiDelegate;
  CDVInvokedUrlCommand* cdvInvokedUrlCommand;
  CDVInvokedUrlCommand* cdvPayInvokedUrlCommand;
 NSString* _appId;
+ NSString* const UNIVERSAL_LINK=@"https://app.sky-trip.com/eskytripapp/";
+- (void)pluginInitialize{
+    NSLog(@"插件初始化 cdv wechat");
+    wXApiDelegate=self;
+}
++ (CDVPlugin<WXApiDelegate> *)getWxApiDelegate{
+    return wXApiDelegate;
+}
 -(void)pay:(CDVInvokedUrlCommand *)command{
     @try {
         cdvPayInvokedUrlCommand=command;
         NSDictionary* info= [command argumentAtIndex:0];
+        
         NSLog(@"info,%@",info);
         if(info==nil){
             [self FailureResult:command :@"参数错误"];
@@ -25,8 +33,15 @@ NSString* _appId;
         }
         [self.commandDelegate runInBackground:^{
             _appId=[info objectForKey:@"appId"];
+            NSString * universalLink=[info objectForKey:@"universalLink"];
+            if(universalLink==nil){
+                universalLink=[command argumentAtIndex:1];
+            }
+            if(universalLink==nil){
+                universalLink=UNIVERSAL_LINK;
+            }
 //             NSLog(@"appid %@",_appId);
-            [WXApi registerApp:_appId];
+            [WXApi registerApp:_appId universalLink:universalLink];
             // 调起微信支付
             PayReq *request = [[PayReq alloc] init];
             /** 微信分配的公众账号ID -> APPID */
@@ -50,16 +65,24 @@ NSString* _appId;
 //                 NSLog(@"request. sign %@ ",request.sign);
             dispatch_async(dispatch_get_main_queue(), ^{
                 /* 调起支付 */
-                if ([WXApi sendReq:request])
-                {
+                [WXApi sendReq:request completion:^(BOOL success){
+                    if(success){
+                        NSLog(@"OK ,支付发起成功");
+                        self.currentCallbackId = command.callbackId;
+                    }else{
+                        [self FailureResult:command:@"发送请求失败"];
+                    }
+                }];
+//                if ([WXApi sendre:request])
+//                {
 //                    NSLog(@"OK ");
-                    // save the callback id
-                    self.currentCallbackId = command.callbackId;
-                }
-                else
-                {
-                    [self FailureResult:command:@"发送请求失败"];
-                }
+////                     save the callback id
+//                    self.currentCallbackId = command.callbackId;
+//                }
+//                else
+//                {
+//                    [self FailureResult:command:@"发送请求失败"];
+//                }
             });
             
         }];
@@ -101,34 +124,40 @@ NSString* _appId;
  
 }
 - (void)isWXAppInstalled:(CDVInvokedUrlCommand *)command{
-    [self.commandDelegate runInBackground:^{
-        if ([self booWeixin]){
-            //安装了微信的处理
-            [self sendSuccessResultWithString:command :@"ok"];
-        } else {
-            //没有安装微信的处理
-            [self FailureResult:command :@"wechat uninstalled"];
-        }
-    }];
+    if ([self booWeixin]){
+        //安装了微信的处理
+        [self sendSuccessResultWithString:command :@"ok"];
+    } else {
+        //没有安装微信的处理
+        [self FailureResult:command :@"wechat uninstalled"];
+    }
     
 }
 -(void)getCode:(CDVInvokedUrlCommand *)command{
     cdvInvokedUrlCommand=command;
     NSString* appId = [command argumentAtIndex:0];
+    NSString* universalLink=[command argumentAtIndex:1];
+    if(universalLink==nil){
+        universalLink=UNIVERSAL_LINK;
+    }
     if(nil==appId||[appId length]==0){
         [self FailureResult:command :@"appId 不能空"];
         return;
     }
     _appId=appId;
-    [WXApi registerApp:appId];
+    [WXApi registerApp:appId universalLink:universalLink];
     // Check command.arguments here.
     [self.commandDelegate runInBackground:^{
         
         SendAuthReq *req = [[SendAuthReq alloc] init];
         req.state = @"wx_oauth_authorization_state";//用于保持请求和回调的状态，授权请求或原样带回
         req.scope = @"snsapi_userinfo";//授权作用域：获取用户个人信息
+        //发起微信授权请求
+        
         dispatch_async(dispatch_get_main_queue(), ^{
-           [WXApi sendReq:req];//发起微信授权请求
+            [WXApi sendAuthReq:req viewController:self.viewController delegate:self completion:^(BOOL success){
+                NSLog(@"发起授权成功");
+            }];
         });
         
         // Some blocking logic...
@@ -138,10 +167,15 @@ NSString* _appId;
     }];
     
 }
+
 - (void)handleOpenURL:(NSNotification *)notification
 {
     NSURL* url = [notification object];
     
+//    if ([url isKindOfClass:[NSURL class]])
+//     {
+//         NSLog(@"notification,url scheme=%@,url query=%@",url.scheme,url.query);
+//     }
     if ([url isKindOfClass:[NSURL class]] && [url.scheme isEqualToString:_appId])
     {
         [WXApi handleOpenURL:url delegate:self];
@@ -172,7 +206,7 @@ NSString* _appId;
         SendAuthResp *res = (SendAuthResp *)resp;
         if(cdvInvokedUrlCommand!=nil){
             if([res.state isEqualToString:@"wx_oauth_authorization_state"]){//微信授权成功
-                
+//                NSLog(@"res.state=%@,code=%@",res.state,res.code);
                 [self sendSuccessResultWithString: cdvInvokedUrlCommand:res.code];
             }else{
                 [self FailureResult:cdvInvokedUrlCommand :[NSString stringWithFormat:@"%d",res.errCode]];
@@ -193,7 +227,7 @@ NSString* _appId;
             default:{
                 NSLog(@"支付失败:%d",resp.errCode);
                 // 发通知带出支付失败结果
-                [self FailureResult:cdvPayInvokedUrlCommand :[NSString stringWithFormat:@"支付失败,%@",resp.errStr]];
+                [self FailureResult:cdvPayInvokedUrlCommand :[NSString stringWithFormat:@"支付失败,%@,%d",resp.errStr,resp.errCode]];
               break;
             }
                 

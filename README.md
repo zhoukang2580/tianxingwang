@@ -59,6 +59,8 @@
 4. 最后修改updateList.xml修改对应的配置项。其中的Value=config.xml的版本号，其中的version节点对应Android的apk更新，其内部的hotfix对应热更的www目录。md5的值在编译生成的output目录的xxx.apk路径中很长的一段字符串就是对应的md5
 5. 非常重要的注意点，如果是ios热更，一定要用mac进行build ios 生成的 xxx.ios.zip文件，否则更新失败！！！
 6. 由于历史原因，生产的iOS热更新文件的json名字是 `com.eskytrip.zhaozuomingios.ios.json`,下载的文件名字根据json文件内部指定名字即可。
+7. mac上打包时候，到target里面的info找到plist文件，添加微信的白名单 weixinULAPI
+8. 在平果开发者中心，找到Identifiers，应用管理中，勾上Associated Domains
 ## 发布
 `ng build --prod --base-href /www/`
 ng serve --disableHostCheck
