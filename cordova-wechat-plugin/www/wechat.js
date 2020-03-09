@@ -9,6 +9,15 @@ exports.getCode = (appId) => {
         }, 'Wechat', 'getCode', [appId]);
     });
 };
+exports.isWXAppInstalled = () => {
+    return new Promise((resolve, reject) => {
+        exec((res) => {
+            resolve(res);
+        }, error => {
+            reject(error)
+        }, 'Wechat', 'isWXAppInstalled', []);
+    })
+}
 exports.pay = (payInfo) => {
     return new Promise((resolve, reject) => {
         exec(() => {

@@ -34,7 +34,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   isLoginOk = false;
   eyeOn = false;
   eyeType = "password";
-  isShowWechatLogin: boolean;
+  isShowWechatLogin: boolean = false;
   isShowImageCode: boolean;
   SlideEventType: string;
   private mockDeviceInfo = {
@@ -50,7 +50,9 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     route: ActivatedRoute,
     private modalCtrl: ModalController
   ) {
-    this.isShowWechatLogin = AppHelper.isApp();
+    AppHelper.isWXAppInstalled().then(installed => {
+      this.isShowWechatLogin = installed;
+    })
     route.queryParamMap.subscribe(_ => {
       setTimeout(() => {
         this.configService.getConfigAsync().then(c => {
@@ -80,7 +82,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     while (--i > 0 && t) {
       t = await this.modalCtrl.getTop();
       if (t) {
-        await t.dismiss().catch(_ => {});
+        await t.dismiss().catch(_ => { });
       }
     }
   }
@@ -164,11 +166,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   getWechatCode(appId: string) {
-    const wechat = window["wechat"];
-    if (wechat) {
-      return wechat.getCode(appId);
-    }
-    return Promise.reject("cordova wechat plugin is unavailable");
+    return AppHelper.getWechatCode(appId);
   }
   switchLoginType(type: string) {
     this.loginType = type;
@@ -180,7 +178,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   onLoginButton(type: string) {
     console.log("onLoginButton login type " + type);
     if (this.loginType == "user") {
-      if(!this.checkRquired()){
+      if (!this.checkRquired()) {
         return;
       }
       this.showImageCode(type);
@@ -193,7 +191,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       this.isLogining = false;
     });
   }
-  private checkRquired(){
+  private checkRquired() {
     this.loginEntity.Data.Name = this.form.value.Name;
     this.loginEntity.Data.Password = this.form.value.Password;
     if (!this.loginEntity.Data.Name) {
@@ -330,7 +328,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         break;
       }
       case "device":
-      this.loginEntity.Data.Token = AppHelper.getStorage("loginToken");
+        this.loginEntity.Data.Token = AppHelper.getStorage("loginToken");
         this.loginEntity.Data.Device = await AppHelper.getDeviceId();
         this.loginEntity.Data.DeviceName = await AppHelper.getDeviceName();
         // this.loginEntity.Data.Device = this.mockDeviceInfo.Device;
@@ -410,7 +408,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   ) {
     this.loginType = "user";
     const toPageRouter = this.loginService.getToPageRouter() || "";
-    this.isLogining=false;
+    this.isLogining = false;
     console.log("toPageRouter", toPageRouter);
     if (isCheckDevice && AppHelper.isApp()) {
       await this.checkIsDeviceBinded();

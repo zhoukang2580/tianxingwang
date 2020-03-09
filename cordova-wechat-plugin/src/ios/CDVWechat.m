@@ -69,6 +69,49 @@ NSString* _appId;
         
     }
 }
+-(BOOL)booWeixin{
+ 
+    // 判断是否安装微信
+ 
+    if ([WXApi isWXAppInstalled] ){
+ 
+        //判断当前微信的版本是否支持OpenApi
+ 
+        if ([WXApi isWXAppSupportApi]) {
+ 
+            NSLog(@"安装了");
+ 
+            return YES;
+ 
+        }else{
+ 
+            NSLog(@"请升级微信至最新版本！");
+ 
+            return NO;
+ 
+        }
+ 
+    }else{
+ 
+        NSLog(@"请安装微信客户端");
+ 
+        return NO;
+ 
+    }
+ 
+}
+- (void)isWXAppInstalled:(CDVInvokedUrlCommand *)command{
+    [self.commandDelegate runInBackground:^{
+        if ([self booWeixin]){
+            //安装了微信的处理
+            [self sendSuccessResultWithString:command :@"ok"];
+        } else {
+            //没有安装微信的处理
+            [self FailureResult:command :@"wechat uninstalled"];
+        }
+    }];
+    
+}
 -(void)getCode:(CDVInvokedUrlCommand *)command{
     cdvInvokedUrlCommand=command;
     NSString* appId = [command argumentAtIndex:0];
@@ -111,7 +154,7 @@ NSString* _appId;
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:data];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
-- (void)senSuccessResultWithString:(CDVInvokedUrlCommand*)command :(NSString*)result
+- (void)sendSuccessResultWithString:(CDVInvokedUrlCommand*)command :(NSString*)result
 {
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:result];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -130,7 +173,7 @@ NSString* _appId;
         if(cdvInvokedUrlCommand!=nil){
             if([res.state isEqualToString:@"wx_oauth_authorization_state"]){//微信授权成功
                 
-                [self senSuccessResultWithString: cdvInvokedUrlCommand:res.code];
+                [self sendSuccessResultWithString: cdvInvokedUrlCommand:res.code];
             }else{
                 [self FailureResult:cdvInvokedUrlCommand :[NSString stringWithFormat:@"%d",res.errCode]];
             }
@@ -143,7 +186,7 @@ NSString* _appId;
                 NSLog(@"支付成功,%@",resp);
                 // 发通知带出支付成功结果
                 if(nil!=cdvPayInvokedUrlCommand){
-                    [self senSuccessResultWithString:cdvPayInvokedUrlCommand :[NSString stringWithFormat:@"支付成功，code=%d",resp.errCode]];
+                    [self sendSuccessResultWithString:cdvPayInvokedUrlCommand :[NSString stringWithFormat:@"支付成功，code=%d",resp.errCode]];
                 }
                 break;
             }

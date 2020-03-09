@@ -5,5 +5,5 @@
 @interface CDVWechat : CDVPlugin<WXApiDelegate>
 @property (nonatomic, strong) NSString *currentCallbackId;
 - (void)getCode:(NSString*)appId;
-
+- (void) isWXAppInstalled:(NSString*) appId;
 @end

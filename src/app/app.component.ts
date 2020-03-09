@@ -108,6 +108,7 @@ export class AppComponent
     if (this.platform.is("android")) {
       AppHelper.setDeviceName("android");
     }
+    AppHelper.platform=platform;
     AppHelper.setHttpClient(this.http);
     AppHelper.setAlertController(this.alertController);
     AppHelper.setToastController(this.toastController);

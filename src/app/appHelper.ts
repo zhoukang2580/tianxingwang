@@ -6,7 +6,8 @@ import { HttpClient } from "@angular/common/http";
 import {
   AlertController,
   ToastController,
-  ModalController
+  ModalController,
+  Platform
 } from "@ionic/angular";
 import { LanguageHelper } from "./languageHelper";
 import { TimeoutError } from "rxjs";
@@ -24,10 +25,10 @@ export class AppHelper {
     environment.production && !environment.mockProBuild
       ? "sky-trip.com"
       : "testskytrip.com";
-  constructor() {}
+  constructor() { }
   static _domain;
   static _queryParamers = {};
-
+  static platform: Platform;
   static _events: {
     name: string;
     handle: (name: string, data: any) => void;
@@ -70,10 +71,10 @@ export class AppHelper {
           typeof msg === "string"
             ? msg
             : msg instanceof Error
-            ? msg.message
-            : typeof msg === "object" && msg.message
-            ? msg.message
-            : JSON.stringify(msg),
+              ? msg.message
+              : typeof msg === "object" && msg.message
+                ? msg.message
+                : JSON.stringify(msg),
         position: position as any,
         duration: duration
       });
@@ -127,12 +128,12 @@ export class AppHelper {
           typeof msg === "string"
             ? msg
             : msg instanceof Error
-            ? msg.message
-            : typeof msg === "object" && msg.message
-            ? msg.message
-            : msg.Message
-            ? msg.Message
-            : JSON.stringify(msg),
+              ? msg.message
+              : typeof msg === "object" && msg.message
+                ? msg.message
+                : msg.Message
+                  ? msg.Message
+                  : JSON.stringify(msg),
         backdropDismiss: !userOp,
         buttons
       });
@@ -193,14 +194,14 @@ export class AppHelper {
       return Promise.resolve("");
     }
     let local = AppHelper.getStorage<string>("_UUId_DeviceId_");
-    console.log("local uuid "+local);
+    console.log("local uuid " + local);
     if (local) {
       return Promise.resolve(local);
     }
     local = AppHelper.uuid(64)
       .replace(/-/g, "")
       .substr(0, 32);
-    console.log("新生成的uuid "+local);
+    console.log("新生成的uuid " + local);
     AppHelper.setStorage<string>("_UUId_DeviceId_", local);
     return Promise.resolve(local);
   }
@@ -294,6 +295,21 @@ export class AppHelper {
       // this.alert(JSON.stringify(ex));
       return "";
     });
+  }
+  static async getWechatCode(appId: string) {
+    await AppHelper.platform.ready();
+    const wechat = window["wechat"];
+    if (wechat) {
+      return wechat.getCode(appId);
+    }
+    return Promise.reject("cordova wechat plugin is unavailable");
+  }
+  static async isWXAppInstalled() {
+    await AppHelper.platform.ready();
+    if (window['wechat']) {
+      return window['wechat'].isWXAppInstalled().then(() => true).catch(() => false)
+    }
+    return false;
   }
   static isApp() {
     return !!window["cordova"];
@@ -493,12 +509,12 @@ export class AppHelper {
   static setQueryParamers(key: string, value: string) {
     try {
       this._queryParamers[key] = value;
-    } catch (ex) {}
+    } catch (ex) { }
   }
   static removeQueryParamers(key: string) {
     try {
       this._queryParamers[key] = null;
-    } catch (ex) {}
+    } catch (ex) { }
   }
   static getQueryParamers() {
     return this._queryParamers as any;
