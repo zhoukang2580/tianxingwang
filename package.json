@@ -124,12 +124,12 @@
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-zip": {},
       "cordova-sqlite-storage": {},
-      "cordova-hcp-plugin": {},
       "cordova-plugin-geolocation": {},
       "cordova-plugin-inappbrowser": {},
       "cordova-plugin-android-permissions": {},
       "cordova-qrscanner-plugin": {},
-      "cordova-wechat-plugin": {}
+      "cordova-wechat-plugin": {},
+      "cordova-hcp-plugin": {}
     },
     "platforms": [
       "android",
