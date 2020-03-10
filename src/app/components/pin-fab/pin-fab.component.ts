@@ -11,7 +11,8 @@ import {
   ViewContainerRef,
   TemplateRef,
   ViewChild,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
+  RendererStyleFlags2
 } from "@angular/core";
 import {
   trigger,
@@ -193,21 +194,25 @@ export class PinFabComponent implements OnInit, OnDestroy, AfterViewInit {
   private showFab(show = false) {
     if (this.fabBtn) {
       if (show) {
-        if (this.fabBtn["el"].classList.contains("hide")) {
-          this.domCtrl.write(() => {
+        this.domCtrl.write(() => {
+          if (this.fab) {
+            this.render.setStyle(this.fab['el'], 'z-index', '200', RendererStyleFlags2.DashCase);
+          }
+          if (this.fabBtn["el"].classList.contains("hide")) {
             this.render.removeClass(this.el.nativeElement, "hide");
             this.render.removeClass(this.fabBtn["el"], "hide");
-            // this.draw(true);
-          });
-        }
+          }
+        });
       } else {
-        if (!this.fabBtn["el"].classList.contains("hide")) {
-          this.domCtrl.write(() => {
-            // this.draw(false);
+        this.domCtrl.write(() => {
+          if (this.fab) {
+            this.render.setStyle(this.fab['el'], 'z-index', '-200', RendererStyleFlags2.DashCase);
+          }
+          if (!this.fabBtn["el"].classList.contains("hide")) {
             this.render.addClass(this.fabBtn["el"], "hide");
             this.render.addClass(this.el.nativeElement, "hide");
-          });
-        }
+          }
+        });
       }
     }
   }

@@ -9,6 +9,7 @@ ion-fab-button {
     margin-bottom: -0.5em;
   }
   &.hide {
+    z-index: -100;
     transform: translateX(100%) scale(0.1);
     --background: var(--ion-color-primary);
   }

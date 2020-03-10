@@ -148,7 +148,11 @@ export class AppUpdateComponent implements OnInit {
       if (ok) {
         this.forceUpdate = true;
         const url = encodeURI(`https://apps.apple.com/cn/app/id1347643172`);
-        this.iab.create(url, '_system');
+        if(window['cordova.InAppBrowser.open']){
+          this.iab.create(url, '_system');
+        }else{
+          window.open(url,'_blank');
+        }
         this.forceUpdate=false;
       } else {
         this.forceUpdate = false;

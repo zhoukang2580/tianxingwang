@@ -125,17 +125,19 @@ export class AppComponent
         },
         false
       );
-      this.statusBar.styleDefault();
+      // this.statusBar.styleDefault();
       if (AppHelper.isApp() && this.platform.is("android")) {
+        this.statusBar.show();
         this.statusBar.overlaysWebView(true);
+        this.statusBar.styleDefault();
         setTimeout(async () => {
           this.splashScreen.hide();
           // console.log(`uuid = ${await AppHelper.getUUID()}`);
-        }, 5000);
+        }, 3000);
       }
     });
   }
-  ngOnChanges() {}
+  ngOnChanges() { }
   ngAfterViewInit() {
     this.splashScreen.hide();
   }

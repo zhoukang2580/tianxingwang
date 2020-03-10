@@ -8,17 +8,17 @@
 </ion-header>
 
 <ion-content>
+  <ion-list>
+    <ion-item detail (click)="accountSecurityPage()">
+      <ion-label>账号与安全</ion-label>
+    </ion-item>
+  </ion-list>
   <ion-list *ngIf='appVersion'>
     <ion-item>
       <ion-label>应用版本</ion-label>
       <ion-label slot='end' class="ion-text-end">
         {{appVersion}}
       </ion-label>
-    </ion-item>
-  </ion-list>
-  <ion-list>
-    <ion-item detail (click)="accountSecurityPage()">
-      <ion-label>账号与安全</ion-label>
     </ion-item>
   </ion-list>
 

@@ -213,9 +213,9 @@ export class HotelStarPriceComponent
     this.subscription = this.hotelService
       .getHotelQuerySource()
       .subscribe(query => {
-        console.log("starAndPrices :", query.starAndPrices);
+        // console.log("starAndPrices :", query.starAndPrices);
         this.hotelQuery = query;
-        if (this.hotelQuery && !this.hotelQuery.starAndPrices) {
+        if (!this.hotelQuery || !this.hotelQuery.starAndPrices) {
           this.onReset();
         } else {
           const custome = this.hotelQuery.starAndPrices.find(
