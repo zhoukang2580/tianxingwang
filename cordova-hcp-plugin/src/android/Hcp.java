@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
@@ -47,7 +49,7 @@ public class Hcp extends CordovaPlugin {
     CallbackContext mMallbackContext;
     private boolean destroyed;
     private static boolean canLoadIntoView = false;
-    private  String HcpStartPageUrl;
+    private String HcpStartPageUrl;
 
     @Override
     public void pluginInitialize() {
@@ -58,7 +60,7 @@ public class Hcp extends CordovaPlugin {
     }
 
     private void changeBasePath() {
-        cordova.getActivity().runOnUiThread(()->{
+        cordova.getActivity().runOnUiThread(() -> {
             String hcpPage = getHcpStartIndex();
             if (!TextUtils.isEmpty(hcpPage)) {
                 String base = hcpPage.replace("/index.html", "");
@@ -136,12 +138,34 @@ public class Hcp extends CordovaPlugin {
         super.onDestroy();
     }
 
+    private void getStatusBarHeight(CallbackContext callbackContext) {
+//        cordova.getThreadPool().execute(() -> {
+            try {
+                Resources resources = cordova.getActivity().getResources();
+                int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
+                int statusBarHeight = resources.getDimensionPixelSize(resourceId);
+//                Rect frame = new Rect();
+//                cordova.getActivity().getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
+//                int statusBarHeight = frame.top;
+                Log.d(TAG, "statusbarheight " + statusBarHeight);
+                callbackContext.success(statusBarHeight);
+            } catch (Exception e) {
+                Log.e(TAG,e.getMessage());
+                callbackContext.success(0);
+            }
+//        });
+    }
+
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         Log.d(TAG, "execute action = " + action);
         if (TextUtils.equals("openHcpPage", action)) {
             mMallbackContext = callbackContext;
             this.openHcpPage(args.optString(0), callbackContext);
+            return true;
+        }
+        if (TextUtils.equals("getStatusBarHeight", action)) {
+            this.getStatusBarHeight(callbackContext);
             return true;
         }
         if (TextUtils.equals("loadHcpPage", action)) {
@@ -277,7 +301,7 @@ public class Hcp extends CordovaPlugin {
     }
 
     private void loadHcpPage() {
-        cordova.getActivity().runOnUiThread(()->{
+        cordova.getActivity().runOnUiThread(() -> {
 
             try {
                 String path = getHcpStartIndex();
@@ -349,11 +373,11 @@ public class Hcp extends CordovaPlugin {
     }
 
     private void loadUrlIntoView(String path) {
-        Log.d(TAG,"开始加载热更页面，path = "+path);
-        if(TextUtils.isEmpty(path))return;
-        HcpStartPageUrl=path;
+        Log.d(TAG, "开始加载热更页面，path = " + path);
+        if (TextUtils.isEmpty(path)) return;
+        HcpStartPageUrl = path;
         cordova.getActivity().runOnUiThread(() -> {
-            webView.getEngine().loadUrl(path,true);
+            webView.getEngine().loadUrl(path, true);
         });
 //        canLoadIntoView=false;
 //        cordova.getThreadPool().execute(()->{

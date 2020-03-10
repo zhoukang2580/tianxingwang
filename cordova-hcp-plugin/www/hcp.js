@@ -1,4 +1,15 @@
 var exec = require("cordova/exec");
+exports.getStatusBarHeight=function(){
+  return new Promise((resolve,reject)=>{
+    exec(height=>{
+      resolve(height);
+    },error=>{
+      reject(error)
+    },
+    "Hcp",
+    "getStatusBarHeight",[])
+  })
+}
 exports.getUUID = function(arg0) {
   return new Promise((resolve, reject) => {
     exec(

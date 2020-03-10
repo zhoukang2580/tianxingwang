@@ -1,17 +1,12 @@
 import { QrScanService } from './../../services/qrScan/qrscan.service';
-import { finalize } from 'rxjs/operators';
 import { IdentityEntity } from "./../../services/identity/identity.entity";
-import { AfterViewInit, OnDestroy, InjectionToken, Injector, Inject } from "@angular/core";
+import { AfterViewInit, OnDestroy } from "@angular/core";
 import { Router } from "@angular/router";
 import { IdentityService } from "./../../services/identity/identity.service";
-import { RequestEntity } from "src/app/services/api/Request.entity";
-import { ApiService } from "./../../services/api/api.service";
 import { LanguageHelper } from "src/app/languageHelper";
 import { AppHelper } from "./../../appHelper";
 import { Component, OnInit, Input } from "@angular/core";
 import { Platform } from "@ionic/angular";
-import { DomSanitizer } from "@angular/platform-browser";
-import * as md5 from "md5";
 import { WechatHelper } from "src/app/wechatHelper";
 import { Subscription } from "rxjs";
 @Component({
@@ -20,6 +15,7 @@ import { Subscription } from "rxjs";
   styleUrls: ["./scan.component.scss"]
 })
 export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
+  @Input() showText=false;
   identityEntity: IdentityEntity;
   identityEntitySub = Subscription.EMPTY;
   canShow = true;

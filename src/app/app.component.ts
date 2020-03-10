@@ -127,6 +127,17 @@ export class AppComponent
       );
       // this.statusBar.styleDefault();
       if (AppHelper.isApp() && this.platform.is("android")) {
+        if (window['hcp'] && window['hcp'].getStatusBarHeight) {
+          window['hcp'].getStatusBarHeight().then(height => {
+            if (height) {
+              document.body.style.marginTop = height + 3 + "px";
+            } else {
+              document.body.classList.add("cordova-android");
+            }
+          })
+        } else {
+          document.body.classList.add("cordova-android");
+        }
         this.statusBar.show();
         this.statusBar.overlaysWebView(true);
         this.statusBar.styleDefault();

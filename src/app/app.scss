@@ -3,6 +3,9 @@ body {
     background: transparent;
   }
   background: white;
+  &.cordova-android{
+    padding: 1em 0;
+  }
 }
 ion-content {
   --border-color: #d6d6d6;
