@@ -130,7 +130,7 @@ export class AppComponent
         if (window['hcp'] && window['hcp'].getStatusBarHeight) {
           window['hcp'].getStatusBarHeight().then(height => {
             if (height) {
-              document.body.style.marginTop = height + 3 + "px";
+              document.body.style.marginTop = height + "px";
             } else {
               document.body.classList.add("cordova-android");
             }
@@ -140,7 +140,11 @@ export class AppComponent
         }
         this.statusBar.show();
         this.statusBar.overlaysWebView(true);
-        this.statusBar.styleDefault();
+        requestAnimationFrame(() => {
+          // 主题色
+          this.statusBar.backgroundColorByHexString("#fff9f9f9");
+          this.statusBar.styleDefault();
+        });
         setTimeout(async () => {
           this.splashScreen.hide();
           // console.log(`uuid = ${await AppHelper.getUUID()}`);

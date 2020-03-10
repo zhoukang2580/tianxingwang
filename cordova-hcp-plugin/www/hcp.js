@@ -2,6 +2,9 @@ var exec = require("cordova/exec");
 exports.getStatusBarHeight=function(){
   return new Promise((resolve,reject)=>{
     exec(height=>{
+      if(height&&window.devicePixelRatio){
+        height=height/window.devicePixelRatio;
+      }
       resolve(height);
     },error=>{
       reject(error)
