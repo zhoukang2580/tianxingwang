@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.skytrip.dmonline" version="3.5.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.skytrip.dmonline" version="3.6.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>天行商旅</name>
     <description>An awesome Ionic/Cordova app.</description>
     <author email="hi@ionicframework" href="http://ionicframework.com/">Ionic Framework Team</author>
@@ -25,7 +25,7 @@
     <preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="1000" />
     <preference name="LogLevel" value="VERBOSE" />
-    <preference name="FullscreenNotImmersive" value="true" />
+    <preference name="FullscreenNotImmersive" value="false" />
     <preference name="Fullscreen" value="true" />
     <preference name="WECHATAPPID" value="wx0839a418ccafdf36" />
     <hook src="scripts/before_build.js" type="before_build" />
