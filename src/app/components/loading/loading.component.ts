@@ -7,7 +7,7 @@ import {
   HostBinding,
   ElementRef
 } from "@angular/core";
-import { Platform } from '@ionic/angular';
+import { Platform } from "@ionic/angular";
 
 @Component({
   selector: "app-loading-comp",
@@ -16,14 +16,15 @@ import { Platform } from '@ionic/angular';
 })
 export class LoadingComponent implements OnInit, OnChanges {
   @HostBinding("class.loading")
-  @Input() loading: boolean;
-  constructor(private el:ElementRef<HTMLElement>,private plt:Platform) {}
+  @Input()
+  loading: boolean;
+  constructor(private el: ElementRef<HTMLElement>, private plt: Platform) {}
 
   ngOnInit() {
-    if(window['hcp']&&this.plt.is("android")){
-      window['hcp'].getStatusBarHeight().then(sh=>{
-        this.el.nativeElement.style.marginTop=-sh+"px";
-      })
+    if (window["hcp"] && this.plt.is("android")) {
+      window["hcp"].getStatusBarHeight().then(sh => {
+        this.el.nativeElement.style.marginTop = -sh + "px";
+      });
     }
   }
   ngOnChanges(changes: SimpleChanges) {
