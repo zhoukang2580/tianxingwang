@@ -1,4 +1,4 @@
-import { FileHelperService } from 'src/app/services/file-helper.service';
+import { FileHelperService } from "src/app/services/file-helper.service";
 import { environment } from "src/environments/environment";
 import { MessageModel, MessageService } from "./message/message.service";
 
@@ -75,7 +75,7 @@ export interface App {
 })
 export class AppComponent
   implements AfterViewInit, AfterContentInit, OnChanges {
-  app: App = window.navigator['app'];
+  app: App = window.navigator["app"];
   message$: Observable<MessageModel>;
   openSelectCity$: Observable<boolean>;
   showFlyDayPage$: Observable<boolean>;
@@ -108,7 +108,7 @@ export class AppComponent
     if (this.platform.is("android")) {
       AppHelper.setDeviceName("android");
     }
-    AppHelper.platform=platform;
+    AppHelper.platform = platform;
     AppHelper.setHttpClient(this.http);
     AppHelper.setAlertController(this.alertController);
     AppHelper.setToastController(this.toastController);
@@ -127,6 +127,7 @@ export class AppComponent
       );
       this.statusBar.styleDefault();
       if (AppHelper.isApp() && this.platform.is("android")) {
+        this.statusBar.overlaysWebView(true);
         setTimeout(async () => {
           this.splashScreen.hide();
           // console.log(`uuid = ${await AppHelper.getUUID()}`);
@@ -134,7 +135,7 @@ export class AppComponent
       }
     });
   }
-  ngOnChanges() { }
+  ngOnChanges() {}
   ngAfterViewInit() {
     this.splashScreen.hide();
   }
@@ -265,7 +266,7 @@ export class AppComponent
         // this.router.navigate(['qrscan']);
         // this.router.navigate(['function-test']);
         // this.router.navigate(['car-order-detail']);
-        this.router.navigate(['product-tabs'],{queryParams:{tabId:1}});
+        this.router.navigate(["product-tabs"], { queryParams: { tabId: 1 } });
       }
     });
   }
