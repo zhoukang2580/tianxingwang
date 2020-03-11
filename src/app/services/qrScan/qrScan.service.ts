@@ -20,10 +20,18 @@ export interface IQRScanner {
 })
 export class QrScanService implements IQRScanner {
   private qrScanner: { [key in keyof IQRScanner]: any };
+  private scanResultSource: Subject<string>;
   constructor(private plt: Platform) {
     this.plt.ready().then(() => {
       this.qrScanner = window["qrScanner"];
     });
+    this.scanResultSource = new BehaviorSubject(null);
+  }
+  getScanResultSource() {
+    return this.scanResultSource.asObservable();
+  }
+  setScanResultSource(txt: string) {
+    this.scanResultSource.next(txt);
   }
   prepare() {
     return new Promise<IQrScannerStatus>((resolve, reject) => {
@@ -51,7 +59,7 @@ export class QrScanService implements IQRScanner {
       this.qrScanner.disableLight(resolve, reject);
     });
   }
-   scan() {
+  scan() {
     return new Promise<string>((resolve, reject) => {
       this.qrScanner.scan(resolve, reject);
     });
