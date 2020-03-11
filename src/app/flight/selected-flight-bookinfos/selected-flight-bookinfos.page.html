@@ -64,7 +64,7 @@
           </ion-label>
         </div>
       </ion-item>
-      <ion-item lines='none' *ngIf='showSelectReturnTripButton&&bookInfo.bookInfo?.tripType!=TripType.returnTrip'>
+      <ion-item lines='none' *ngIf='showSelectReturnTripButton'>
         <ion-button slot='end' expand='block' color='secondary' (click)='onSelectReturnTrip()'>
           选择回程
         </ion-button>

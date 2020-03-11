@@ -23,7 +23,7 @@ export const ORDER_TABS: ProductItem[] = [
     isDisplay: true
   },
   {
-    label: "租车",
+    label: "用车",
     value: ProductItemType.car,
     imageSrc: "assets/svgs/product-rentalCar.svg",
     isDisplay: true

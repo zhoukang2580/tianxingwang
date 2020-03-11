@@ -34,7 +34,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
   }
   async back() {
     const ok = await AppHelper.alert(
-      "是否退出当前租车页面？",
+      "是否退出当前页面？",
       true,
       LanguageHelper.getYesTip(),
       LanguageHelper.getNegativeTip()

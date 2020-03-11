@@ -12,10 +12,7 @@ import { finalize } from "rxjs/operators";
 export class ImageRecoverService {
   Failover: any;
   imageRecover: any;
-  private fetchingReq: {
-    isFetching: boolean;
-    promise: Promise<any>;
-  } = {} as any;
+  private fetchingReq: Promise<any>;
   constructor(
     private apiService: ApiService,
     private identityService: IdentityService
@@ -45,54 +42,47 @@ export class ImageRecoverService {
     if (this.imageRecover) {
       return Promise.resolve(this.imageRecover);
     }
-    if (this.fetchingReq.isFetching) {
-      return this.fetchingReq.promise;
+    if (this.fetchingReq) {
+      return this.fetchingReq;
     }
     if (!this.identityService.getStatus()) {
       return Promise.resolve(null);
     }
-    this.fetchingReq = {
-      isFetching: true,
-      promise: new Promise<any>((resolve, reject) => {
-        const subscribtion = this.load()
-          .pipe(
-            finalize(() => {
-              this.fetchingReq = null;
-            })
-          )
-          .subscribe(
-            r => {
-              if (r && r.Status && r.Data && window["Winner"]) {
-                this.Failover = r.Data;
-                this.imageRecover = new window["Winner"].ImageRecover(r.Data);
-                resolve(this.imageRecover);
-              }
-              reject("");
-            },
-            error => {
-              reject(error);
-            },
-            () => {
-              setTimeout(() => {
-                if (subscribtion) {
-                  subscribtion.unsubscribe();
-                }
-              }, 0);
+    this.fetchingReq = new Promise<any>((resolve, reject) => {
+      const subscribtion = this.load()
+        .pipe(
+          finalize(() => {
+            this.fetchingReq = null;
+          })
+        )
+        .subscribe(
+          r => {
+            if (r && r.Status && r.Data && window["Winner"]) {
+              this.Failover = r.Data;
+              this.imageRecover = new window["Winner"].ImageRecover(r.Data);
+              resolve(this.imageRecover);
             }
-          );
-      }).catch(() => null)
-    };
-    return this.fetchingReq.promise;
+            reject("");
+          },
+          error => {
+            reject(error);
+          },
+          () => {
+            setTimeout(() => {
+              if (subscribtion) {
+                subscribtion.unsubscribe();
+              }
+            }, 0);
+          }
+        );
+    }).finally(() => (this.fetchingReq = null));
+    return this.fetchingReq;
   }
 
   private load() {
     const req = new RequestEntity();
     req.Method = "ApiHomeUrl-Home-GetImageRecoverAddress";
     req.Data = JSON.stringify({});
-    return this.apiService.getResponse<any>(req).pipe(
-      finalize(() => {
-        this.fetchingReq = {} as any;
-      })
-    );
+    return this.apiService.getResponse<any>(req);
   }
 }

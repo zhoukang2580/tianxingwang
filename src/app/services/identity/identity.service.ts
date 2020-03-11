@@ -32,66 +32,62 @@ import { environment } from "src/environments/environment";
   providedIn: "root"
 })
 export class IdentityService {
-  private fetchingReq: {
-    isFetching: boolean;
-    promise: Promise<any>;
-  } = {} as any;
-  private _IdentityEntity: IdentityEntity;
+  private fetchingIdentityPromise: Promise<IdentityEntity>;
+  private identityEntity: IdentityEntity;
   private identitySource: Subject<IdentityEntity>;
   constructor(private http: HttpClient) {
-    this._IdentityEntity = new IdentityEntity();
-    this._IdentityEntity.Ticket = AppHelper.getTicket();
-    this._IdentityEntity.Name = AppHelper.getStorage("loginname");
-    this.identitySource = new BehaviorSubject(this._IdentityEntity);
+    this.identityEntity = new IdentityEntity();
+    this.identityEntity.Ticket = AppHelper.getTicket();
+    this.identityEntity.Name = AppHelper.getStorage("loginname");
+    this.identitySource = new BehaviorSubject(this.identityEntity);
   }
   setIdentity(info: IdentityEntity) {
-    this._IdentityEntity = info;
+    this.identityEntity = info;
     AppHelper.setStorage("ticket", info.Ticket);
-    this.identitySource.next(this._IdentityEntity);
+    this.identitySource.next(this.identityEntity);
   }
   getStatus(): boolean {
     return !!(
-      this._IdentityEntity &&
-      this._IdentityEntity.Ticket &&
-      this._IdentityEntity.Id
+      this.identityEntity &&
+      this.identityEntity.Ticket &&
+      this.identityEntity.Id
     );
   }
   removeIdentity() {
-    this._IdentityEntity.Ticket = null;
-    this._IdentityEntity.Id = null;
+    this.identityEntity.Ticket = null;
+    this.identityEntity.Id = null;
     AppHelper.setStorage("ticket", "");
-    this.setIdentity(this._IdentityEntity);
+    this.setIdentity(this.identityEntity);
   }
   getIdentityAsync(): Promise<IdentityEntity> {
     if (this.getStatus()) {
-      return Promise.resolve(this._IdentityEntity);
+      return Promise.resolve(this.identityEntity);
     }
-    if (!this.fetchingReq.isFetching) {
-      this.fetchingReq = {
-        isFetching: true,
-        promise: new Promise(s => {
-          const sub = this.loadIdentityEntity()
-            .pipe(
-              finalize(() => {
-                setTimeout(() => {
-                  this.fetchingReq = {} as any;
-                  sub.unsubscribe();
-                }, 300);
-              })
-            )
-            .subscribe(
-              r => {
-                s(r);
-              },
-              e => {
-                AppHelper.alert(e);
-                s(null);
-              }
-            );
-        })
-      };
+    if (!this.fetchingIdentityPromise) {
+      this.fetchingIdentityPromise = new Promise<IdentityEntity>(s => {
+        const sub = this.loadIdentityEntity()
+          .pipe(
+            finalize(() => {
+              setTimeout(() => {
+                this.fetchingIdentityPromise = {} as any;
+                sub.unsubscribe();
+              }, 300);
+            })
+          )
+          .subscribe(
+            r => {
+              s(r);
+            },
+            e => {
+              AppHelper.alert(e);
+              s(null);
+            }
+          );
+      }).finally(() => {
+        this.fetchingIdentityPromise = null;
+      });
     }
-    return this.fetchingReq.promise;
+    return this.fetchingIdentityPromise;
   }
   getIdentitySource(): Observable<IdentityEntity> {
     return this.identitySource.asObservable();
@@ -125,7 +121,7 @@ export class IdentityService {
   private checkTicket(ticket: string = ""): Observable<IdentityEntity> {
     ticket =
       ticket ||
-      (this._IdentityEntity && this._IdentityEntity.Ticket) ||
+      (this.identityEntity && this.identityEntity.Ticket) ||
       AppHelper.getTicket();
     const req = new RequestEntity();
     req.IsShowLoading = true;
@@ -151,14 +147,14 @@ export class IdentityService {
         map((r: IResponse<IdentityEntity>) => r),
         switchMap(r => {
           if (r.Status) {
-            this._IdentityEntity = {
-              ...this._IdentityEntity,
+            this.identityEntity = {
+              ...this.identityEntity,
               ...r.Data
             };
-            this.setIdentity(this._IdentityEntity);
-            return of(this._IdentityEntity);
+            this.setIdentity(this.identityEntity);
+            return of(this.identityEntity);
           }
-          return of(this._IdentityEntity);
+          return of(this.identityEntity);
         }),
         timeout(due),
         catchError((error: Error | any) => {
@@ -179,13 +175,13 @@ export class IdentityService {
   }
   private loadIdentityEntity() {
     const ticket =
-      (this._IdentityEntity && this._IdentityEntity.Ticket) ||
+      (this.identityEntity && this.identityEntity.Ticket) ||
       AppHelper.getTicket();
     if (ticket) {
       return this.checkTicket(ticket);
     }
-    this._IdentityEntity.Ticket = null;
-    this._IdentityEntity.Id = null;
-    return of(this._IdentityEntity);
+    this.identityEntity.Ticket = null;
+    this.identityEntity.Id = null;
+    return of(this.identityEntity);
   }
 }

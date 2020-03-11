@@ -177,16 +177,10 @@
           <ion-col class='select-text' class='dark'>
             <strong>{{order.Id}}</strong>
           </ion-col>
-          <ion-col class='status'>
+          <ion-col class='status ion-text-end'>
             <ion-text color='secondary'>
               {{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}}</ion-text>
           </ion-col>
-          <ng-container *ngIf='order["checkPay"]'>
-            <ion-col>
-              <ion-button (click)='onPay($event)' size='small' color='secondary'>去支付
-              </ion-button>
-            </ion-col>
-          </ng-container>
         </ion-row>
         <ion-row>
           <ion-col size='3'>
@@ -239,6 +233,10 @@
             <ion-text color='medium'>
               {{orderHotel.PaymentType==2?"(现付)":orderHotel.PaymentType==1?"(预付)":""}}
             </ion-text>
+          </ion-col>
+          <ion-col class="ion-text-end" *ngIf='order["checkPay"]'>
+            <ion-button (click)='onPay($event)' size='small' color='secondary'>去支付
+            </ion-button>
           </ion-col>
         </ion-row>
         <ion-row *ngIf='orderHotel.ConfirmNumber as cnumber'>

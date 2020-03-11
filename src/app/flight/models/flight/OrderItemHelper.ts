@@ -56,7 +56,7 @@ export class OrderItemHelper {
   static Insurance = "Insurance";
   static InsuranceRefundDeduction = "InsuranceRefundDeduction";
   // #endregion
-  // 租车-start
+  // 用车-start
   static Car = "Car";
   static CarItem = "CarItem";
   static CarRefundDeduction = "CarRefundDeduction";
@@ -64,7 +64,7 @@ export class OrderItemHelper {
   static CarOfflineFee = "CarOfflineFee";
   static CarOrtherFee = "CarOrtherFee";
   static CarSelfPay = "CarSelfPay";
-  // 租车-end
+  // 用车-end
   public static GetFlightAllAmount(orderItems: OrderItemEntity[]) {
     return orderItems == null
       ? 0

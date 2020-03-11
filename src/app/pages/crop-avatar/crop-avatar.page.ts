@@ -31,7 +31,7 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
     this.fileReader = new FileReader();
   }
 
-  ngOnInit() { }
+  ngOnInit() {}
   goBack() {
     this.navCtrl.pop();
   }
@@ -71,18 +71,24 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.showCropBox = false;
     }, 0);
-    this.avatar = this.resultImageUrl = this.cropper
-      .getCroppedCanvas({
-        maxWidth: 800,
-        maxHeight: 800,
-        minWidth: 800,
-        minHeight: 800,
-        // fillColor: '#fff',
-        imageSmoothingEnabled: false,
-        // imageSmoothingQuality: 'medium' as any,
-      })
-      .toDataURL("image/jpeg", .8);
-    this.uploadImage(this.avatar);
+    const avatar = this.cropper.getCroppedCanvas({
+      maxWidth: 800,
+      maxHeight: 800,
+      minWidth: 800,
+      minHeight: 800,
+      // fillColor: '#fff',
+      imageSmoothingEnabled: false
+      // imageSmoothingQuality: 'medium' as any,
+    });
+    this.avatar = this.resultImageUrl = avatar.toDataURL("image/jpeg", 0.8);
+    // this.uploadImage(this.avatar);
+    avatar.toBlob(
+      blob => {
+        this.uploadImageBytes(blob);
+      },
+      "image/jpeg",
+      0.8
+    );
   }
   reset() {
     if (this.cropper) {
@@ -93,7 +99,16 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
       this.showCropBox = true;
     }, 0);
   }
-  uploadImage(avatarBase64Str: string) {
+  uploadImageBytes(blob: Blob) {
+    const formData = new FormData();
+    formData.append("avatar", blob);
+    const req = new RequestEntity();
+    req.IsFormData = true;
+    req.Method = this.method;
+    req.Data = formData;
+    this.uploadAction(req);
+  }
+  private uploadImage(avatarBase64Str: string) {
     const req = new RequestEntity();
     const vals = avatarBase64Str.split(",");
     req.Method = this.method;
@@ -102,6 +117,9 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
       FileName: this.fileName
     };
     req.FileValue = vals[1];
+    this.uploadAction(req);
+  }
+  private uploadAction(req: RequestEntity) {
     const uploadSubscription = this.apiService.getResponse<any>(req).subscribe(
       uploadRes => {
         this.showCropBox = false;

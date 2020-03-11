@@ -1,8 +1,5 @@
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
-import {
-  HttpClient,
-  HttpErrorResponse
-} from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import * as md5 from "md5";
 import { RequestEntity } from "./Request.entity";
@@ -14,7 +11,8 @@ import {
   finalize,
   switchMap,
   timeout,
-  delay} from "rxjs/operators";
+  delay
+} from "rxjs/operators";
 import { IResponse } from "./IResponse";
 import {
   of,
@@ -279,7 +277,7 @@ export class ApiService {
     req.Language = AppHelper.getLanguage();
     req.Ticket = AppHelper.getTicket();
     req.Domain = AppHelper.getDomain();
-    if (req.Data && typeof req.Data != "string") {
+    if (req.Data && typeof req.Data != "string" && !req.IsFormData) {
       req.Data = JSON.stringify(req.Data);
     }
     this.setLoading(true, req.IsShowLoading);
@@ -299,13 +297,21 @@ export class ApiService {
           .map(k => `${k}=${encodeURIComponent(req[k])}`)
           .join("&");
         // console.log(`${formObj}&Sign=${this.getSign(req)}`);
+        const headers = {
+          "content-type": "application/x-www-form-urlencoded"
+        };
+        if (req.IsFormData) {
+          headers["content-type"] = "";
+        }
         return this.http.post(
           url,
-          `${formObj}&Sign=${this.getSign(
-            req
-          )}&x-requested-with=XMLHttpRequest`,
+          req.IsFormData
+            ? req.Data
+            : `${formObj}&Sign=${this.getSign(
+                req
+              )}&x-requested-with=XMLHttpRequest`,
           {
-            headers: { "content-type": "application/x-www-form-urlencoded" },
+            headers: headers,
             observe: "body"
           }
         );

@@ -40,7 +40,7 @@ export class OrderCarEntity extends BaseVariablesEntity {
     /// </summary>
     Number: string;
     /// <summary>
-    /// 租车类型
+    /// 用车类型
     /// </summary>
     CarType: string;
     /// <summary>
@@ -140,7 +140,7 @@ export class OrderCarEntity extends BaseVariablesEntity {
     Explain: string;
 
     /// <summary>
-    /// 租车
+    /// 用车
     /// </summary>
     DataEntity: OrderCarEntity;
 

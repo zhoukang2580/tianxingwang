@@ -16,4 +16,5 @@ export class RequestEntity {
   IsRedirctLogin?: boolean;
   IsForward?: boolean;
   Timeout?: number;
+  IsFormData?: boolean;
 }

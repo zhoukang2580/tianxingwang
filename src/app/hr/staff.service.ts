@@ -1,4 +1,4 @@
-import { finalize } from 'rxjs/operators';
+import { finalize } from "rxjs/operators";
 import { Subject, from, Subscription } from "rxjs";
 import { MemberCredential } from "src/app/member/member.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
@@ -6,16 +6,29 @@ import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
 import { Injectable } from "@angular/core";
 import { TaskType } from "../workflow/models/TaskType";
-import { BaseSettingEntity } from '../models/BaseSettingEntity';
-import { AccountEntity } from '../account/models/AccountEntity';
-
+import { BaseSettingEntity } from "../models/BaseSettingEntity";
+import { AccountEntity } from "../account/models/AccountEntity";
+export enum StaffBookType {
+  /// <summary>
+  /// 秘书
+  /// </summary>
+  Secretary = "Secretary",
+  /// <summary>
+  /// 自己
+  /// </summary>
+  Self = "Self",
+  /// <summary>
+  /// 全部
+  /// </summary>
+  All = "All"
+}
 @Injectable({
   providedIn: "root"
 })
 export class StaffService {
   private staff: StaffEntity;
-  private fetchingReqStaffCredentials: { isFetching: boolean; promise: Promise<any> } = {} as any;;
-  private fetchingReq: { isFetching: boolean; promise: Promise<any> } = {} as any;
+  private fetchingReqStaffCredentialsPromise: Promise<MemberCredential[]>;
+  private fetchingStaffPromise: Promise<StaffEntity>;
   staffCredentials: MemberCredential[];
   constructor(
     private apiService: ApiService,
@@ -47,7 +60,10 @@ export class StaffService {
     return s && s.BookType;
   }
 
-  async getStaff(forceRefresh: boolean = false, isShowLoading = false): Promise<StaffEntity> {
+  async getStaff(
+    forceRefresh: boolean = false,
+    isShowLoading = false
+  ): Promise<StaffEntity> {
     const id = await this.identityService.getIdentityAsync().catch(_ => null);
     if (!id || !id.Id || !id.Ticket) {
       return this.staff;
@@ -72,33 +88,27 @@ export class StaffService {
     //   }
     // }
     const req = new RequestEntity();
-    req['forceRefresh'] = forceRefresh;
+    req["forceRefresh"] = forceRefresh;
     req.Method = "HrApiUrl-Staff-Get";
     req.IsShowLoading = isShowLoading;
     // this.staffSubscription.unsubscribe();
-    const existing = this.fetchingReq.isFetching;
-    if (existing) {
-      return this.fetchingReq.promise;
+    if (this.fetchingStaffPromise) {
+      return this.fetchingStaffPromise;
     }
-    this.fetchingReq = {
-      isFetching: true,
-      promise: this.apiService
-        .getPromiseData<StaffEntity>(req)
-        .then(staff => {
-          this.fetchingReq = {} as any;
-          console.log("staff ", staff, `forceFetch=${forceRefresh}`, `isfetching=${this.fetchingReq.isFetching}`);
-          this.staff = staff;
-          if (this.staff.BookType == StaffBookType.Self) {
-            this.staff.AccountId = this.staff.AccountId || id.Id;
-            this.staff.Name = this.staff.Name || id.Name;
-          }
-          return staff
-        }).catch(_ => {
-          this.fetchingReq = {} as any;
-          return null as StaffEntity;
-        })
-    };
-    return this.fetchingReq.promise;
+    this.fetchingStaffPromise = this.apiService
+      .getPromiseData<StaffEntity>(req)
+      .then(staff => {
+        this.staff = staff;
+        if (this.staff.BookType == StaffBookType.Self) {
+          this.staff.AccountId = this.staff.AccountId || id.Id;
+          this.staff.Name = this.staff.Name || id.Name;
+        }
+        return staff;
+      })
+      .finally(() => {
+        this.fetchingStaffPromise = null;
+      });
+    return this.fetchingStaffPromise;
   }
   async comfirmInfo(data: {
     IsModifyPassword: boolean;
@@ -125,7 +135,10 @@ export class StaffService {
       IsModifyCredentials: true
     });
   }
-  async getStaffCredentials(AccountId: string, forceFetch = false): Promise<MemberCredential[]> {
+  async getStaffCredentials(
+    AccountId: string,
+    forceFetch = false
+  ): Promise<MemberCredential[]> {
     const req = new RequestEntity();
     req.Method = `TmcApiHomeUrl-Staff-Credentials`;
     req.IsShowLoading = true;
@@ -137,39 +150,23 @@ export class StaffService {
         return Promise.resolve(this.staffCredentials);
       }
     }
-    if (this.fetchingReqStaffCredentials&&this.fetchingReqStaffCredentials.promise) {
-      return this.fetchingReqStaffCredentials.promise;
+    if (this.fetchingReqStaffCredentialsPromise) {
+      return this.fetchingReqStaffCredentialsPromise;
     }
-    this.fetchingReqStaffCredentials = {
-      isFetching: true,
-      promise: this.apiService
-        .getPromiseData<MemberCredential[]>(req)
-        .then(res => {
-          this.staffCredentials = res;
-          return res;
-        })
-        .catch(_ => [] as MemberCredential[])
-        .finally(() => {
-          this.fetchingReqStaffCredentials = null;
-        })
-    }
-    return this.fetchingReqStaffCredentials.promise;
+    this.fetchingReqStaffCredentialsPromise = this.apiService
+      .getPromiseData<MemberCredential[]>(req)
+      .then(res => {
+        this.staffCredentials = res;
+        return res;
+      })
+      .catch(_ => [] as MemberCredential[])
+      .finally(() => {
+        this.fetchingReqStaffCredentialsPromise = null;
+      });
+    return this.fetchingReqStaffCredentialsPromise;
   }
 }
-export enum StaffBookType {
-  /// <summary>
-  /// 秘书
-  /// </summary>
-  Secretary = "Secretary",
-  /// <summary>
-  /// 自己
-  /// </summary>
-  Self = "Self",
-  /// <summary>
-  /// 全部
-  /// </summary>
-  All = "All"
-}
+
 export class OrganizationEntity {
   Id: string;
   ParentId: string;

@@ -1,37 +1,37 @@
-import { ActivatedRoute } from '@angular/router';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from "@angular/router";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 
-import { Subscription, Observable } from 'rxjs';
+import { Subscription, Observable } from "rxjs";
 
-import { PassengerBookInfo } from 'src/app/tmc/tmc.service';
+import { PassengerBookInfo } from "src/app/tmc/tmc.service";
 
-import { IFlightSegmentInfo } from '../models/PassengerFlightInfo';
+import { IFlightSegmentInfo } from "../models/PassengerFlightInfo";
 
-import { SearchFlightModel, FlightService } from '../flight.service';
+import { SearchFlightModel, FlightService } from "../flight.service";
 
-import { IdentityEntity } from 'src/app/services/identity/identity.entity';
+import { IdentityEntity } from "src/app/services/identity/identity.entity";
 
-import { TripType } from 'src/app/tmc/models/TripType';
+import { TripType } from "src/app/tmc/models/TripType";
 
-import { ModalController } from '@ionic/angular';
+import { ModalController } from "@ionic/angular";
 
-import { CalendarService } from 'src/app/tmc/calendar.service';
+import { CalendarService } from "src/app/tmc/calendar.service";
 
-import { StaffService } from 'src/app/hr/staff.service';
+import { StaffService } from "src/app/hr/staff.service";
 
-import { Router } from '@angular/router';
+import { Router } from "@angular/router";
 
-import { IdentityService } from 'src/app/services/identity/identity.service';
+import { IdentityService } from "src/app/services/identity/identity.service";
 
-import { tap } from 'rxjs/operators';
+import { tap } from "rxjs/operators";
 
-import { AppHelper } from 'src/app/appHelper';
+import { AppHelper } from "src/app/appHelper";
 
-import { LanguageHelper } from 'src/app/languageHelper';
+import { LanguageHelper } from "src/app/languageHelper";
 
-import { FlightSegmentEntity } from '../models/flight/FlightSegmentEntity';
+import { FlightSegmentEntity } from "../models/flight/FlightSegmentEntity";
 
-import { SelectFlightsegmentCabinComponent } from '../components/select-flightsegment-cabin/select-flightsegment-cabin.component';
+import { SelectFlightsegmentCabinComponent } from "../components/select-flightsegment-cabin/select-flightsegment-cabin.component";
 
 @Component({
   selector: "app-selected-flight-bookinfos",
@@ -56,19 +56,21 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private calendarService: CalendarService,
     private identityService: IdentityService
-  ) { }
+  ) {}
   ngOnDestroy() {
     this.subscritions.forEach(sub => sub.unsubscribe());
   }
   async ngOnInit() {
-    this.subscritions.push(this.route.queryParamMap.subscribe(async ()=>{
-      this.isSelf = await this.staffService.isSelfBookType();
-    }))
-    this.subscritions.push(this.flightService
-      .getSearchFlightModelSource()
-      .subscribe(m => {
+    this.subscritions.push(
+      this.route.queryParamMap.subscribe(async () => {
+        this.isSelf = await this.staffService.isSelfBookType();
+      })
+    );
+    this.subscritions.push(
+      this.flightService.getSearchFlightModelSource().subscribe(m => {
         this.searchModel = m;
-      }))
+      })
+    );
     this.passengerAndBookInfos$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(
@@ -84,9 +86,9 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
               item =>
                 item.bookInfo && item.bookInfo.tripType == TripType.returnTrip
             );
-            if (goinfo && backInfo) {
-              this.showSelectReturnTripButton = false;
-            }
+            // if (goinfo && backInfo) {
+            //   this.showSelectReturnTripButton = false;
+            // }
             this.showSelectReturnTripButton =
               this.flightService.getSearchFlightModel().isRoundTrip &&
               goinfo &&
@@ -94,13 +96,14 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
           } else {
             this.showSelectReturnTripButton = false;
           }
+          console.log("showSelectReturnTripButton");
         })
       );
-    this.subscritions.push(this.identityService.getIdentitySource().subscribe(
-      identity => {
+    this.subscritions.push(
+      this.identityService.getIdentitySource().subscribe(identity => {
         this.identity = identity;
-      }
-    ));
+      })
+    );
   }
   getTime(takofftime: string) {
     return this.calendarService.getHHmm(takofftime);
@@ -112,14 +115,19 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
     const isSelf = await this.staffService.isSelfBookType();
     const s = this.flightService.getSearchFlightModel();
     if (isSelf && s.isRoundTrip && bookInfos.length == 1) {
-      const ok = await AppHelper.alert(
-        "您尚未选择回程",
-        true,
-        LanguageHelper.getConfirmTip(),
-        LanguageHelper.getCancelTip()
+      const back = bookInfos.find(
+        it => it.bookInfo.tripType == TripType.returnTrip
       );
-      if (!ok) {
-        return;
+      if (!back) {
+        const ok = await AppHelper.alert(
+          "您尚未选择回程",
+          true,
+          LanguageHelper.getConfirmTip(),
+          LanguageHelper.getCancelTip()
+        );
+        if (!ok) {
+          return;
+        }
       }
     }
     this.flightService.dismissAllTopOverlays();
@@ -154,8 +162,11 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
         goFlight.FromAirport == info.bookInfo.flightSegment.ToAirport &&
         goFlight.ToAirport == info.bookInfo.flightSegment.FromAirport
       ) {
-        const arrivalTime = this.calendarService.getMoment(0, goFlight.ArrivalTime).add(1, "hours");
-        const loweerTime = this.calendarService.getMoment(0,
+        const arrivalTime = this.calendarService
+          .getMoment(0, goFlight.ArrivalTime)
+          .add(1, "hours");
+        const loweerTime = this.calendarService.getMoment(
+          0,
           pfs.lowerSegmentInfo.lowestFlightSegment.TakeoffTime
         );
         show = +loweerTime >= +arrivalTime;
@@ -181,7 +192,7 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
       if (
         info.bookInfo.tripType == TripType.returnTrip &&
         info.bookInfo.flightSegment.FromAirport !=
-        lowestFlightSegment.FromAirport
+          lowestFlightSegment.FromAirport
       ) {
         return true;
       }
@@ -291,7 +302,9 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
     if (!s) {
       return "";
     }
-    const day = this.flydayService.generateDayModel(this.calendarService.getMoment(0, s.TakeoffTime));
+    const day = this.flydayService.generateDayModel(
+      this.calendarService.getMoment(0, s.TakeoffTime)
+    );
     return `${day.date} ${day.dayOfWeekName}`;
   }
   getFlightIllegalTip(info: PassengerBookInfo<IFlightSegmentInfo>) {
@@ -318,7 +331,7 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
       info.tripType == TripType.departureTrip
         ? LanguageHelper.getDepartureTip()
         : LanguageHelper.getReturnTripTip()
-      }]`;
+    }]`;
   }
 
   async onSelectReturnTrip() {
