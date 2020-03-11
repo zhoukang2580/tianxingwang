@@ -1,11 +1,11 @@
-import { BackButtonComponent } from "./../components/back-button/back-button.component";
+import { BackButtonComponent } from "../../components/back-button/back-button.component";
 import { Router } from "@angular/router";
 import { Subscription, interval } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
 import { OnDestroy, ViewChild, ElementRef } from "@angular/core";
-import { QrScanService } from "./../services/qrScan/qrscan.service";
+import { QrScanService } from "../../services/qrScan/qrscan.service";
 import { Component, OnInit } from "@angular/core";
-import { AppHelper } from "../appHelper";
+import { AppHelper } from "../../appHelper";
 
 @Component({
   selector: "app-qrscan",
