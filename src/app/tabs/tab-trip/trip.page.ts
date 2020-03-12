@@ -112,6 +112,7 @@ export class TripPage implements OnInit, OnDestroy {
   doRefresh() {
     this.loadMoreSubscription.unsubscribe();
     this.searchCondition.PageIndex = 0;
+    this.searchCondition.PageSize = 10;
     this.trips = [];
     if (this.ionRefresher) {
       if (this.ionRefresher) {
@@ -145,7 +146,7 @@ export class TripPage implements OnInit, OnDestroy {
         }
         if (this.infiniteScroll) {
           this.infiniteScroll.disabled =
-            trips.length == 0 || this.searchCondition.PageSize > trips.length;
+            trips.length < this.searchCondition.PageSize;
         }
       });
   }
@@ -183,13 +184,17 @@ export class TripPage implements OnInit, OnDestroy {
     const plane = ORDER_TABS.find(it => it.value == ProductItemType.plane);
     const train = ORDER_TABS.find(it => it.value == ProductItemType.train);
     const hotel = ORDER_TABS.find(it => it.value == ProductItemType.hotel);
-    const car = ORDER_TABS.find(
-      it => it.value == ProductItemType.car
-    );
+    const car = ORDER_TABS.find(it => it.value == ProductItemType.car);
     this.router.navigate([AppHelper.getRoutePath("order-detail")], {
       queryParams: {
         tab: JSON.stringify(
-          trip.Type == "Flight" ? plane : trip.Type == "Train" ? train : trip.Type == "Car" ? car : hotel
+          trip.Type == "Flight"
+            ? plane
+            : trip.Type == "Train"
+            ? train
+            : trip.Type == "Car"
+            ? car
+            : hotel
         ),
         orderId: trip.OrderId
       }
