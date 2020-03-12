@@ -23,13 +23,21 @@
           <ion-col size='4'>集团名称</ion-col>
           <ion-col> {{tmc?.Name}}</ion-col>
         </ion-row>
-        <ion-row>
+        <ion-row *ngIf="tmc?.IsShowServiceFee">
           <ion-col size='4'> 应收金额</ion-col>
-          <ion-col> {{getTotalAmount(orderDetail?.Order)}}</ion-col>
+          <ion-col> {{(orderDetail?.Order?.TotalAmount)}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size='4'> 车费金额</ion-col>
+        <ion-col> {{(orderDetail?.Order?.TotalCostAmount)}}</ion-col>
+        </ion-row>
+        <ion-row *ngIf="tmc?.IsShowServiceFee"> 
+          <ion-col size='4'> 服务费</ion-col>
+          <ion-col>{{getServicetip(orderDetail?.Order)}}</ion-col>
         </ion-row>
         <ion-row>
           <ion-col size='4'> 已付金额</ion-col>
-          <ion-col> {{getPayAmount(orderDetail?.Order)}}</ion-col>
+          <ion-col> {{(orderDetail?.Order?.PayAmount)}}</ion-col>
         </ion-row>
         <ion-row>
           <ion-col size='4'> 订单状态</ion-col>

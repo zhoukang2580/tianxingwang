@@ -195,6 +195,23 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
       );
     }
   }
+  getServicetip(order: OrderEntity){
+    const Tmc = this.tmc;
+    if (!Tmc || !order || !order.OrderPays) {
+      return 0;
+    }
+
+    if (Tmc.IsShowServiceFee){
+     
+      let tip=order.OrderItems.find(item=>item.Tag=="CarOnlineFee")
+      return tip&&tip.Amount
+    //  order.OrderItems.forEach(item=>{
+    //    if(item.Tag="CarOnlineFee"){
+
+    //    }
+    //  })
+    }
+  }
   private loadOrderDetail(id: string) {
     // if (!environment.production) {
     //   this.orderDetail = {
