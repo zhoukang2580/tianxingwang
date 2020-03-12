@@ -56,7 +56,7 @@ export class MemberCredentialManagementPage
     | "birthDate"
     | "expireDate";
   isModify = false;
-  @ViewChild("form") formEle: ElementRef<HTMLFormElement>;
+  @ViewChild("form", { static: true }) formEle: ElementRef<HTMLFormElement>;
   @ViewChild("idInput") idInputEl: ElementRef<HTMLInputElement>;
   @ViewChildren("credentialItem") credentialItem: QueryList<
     ElementRef<HTMLElement>
@@ -98,7 +98,7 @@ export class MemberCredentialManagementPage
             this.credentials = this.credentials.map(c => {
               if (
                 this.calendarService.getMoment(0, c.ExpirationDate).year() -
-                  new Date().getFullYear() >=
+                new Date().getFullYear() >=
                 70
               ) {
                 c.isLongPeriodOfTime = true;
@@ -158,6 +158,10 @@ export class MemberCredentialManagementPage
         "input[name='Number']"
       ) as HTMLInputElement;
       this.changeBirthByIdNumber(idInputEle);
+      setTimeout(()=>{
+        this.onFirstLastNameChange();
+      },100)
+      
     }
   }
   async onSaveCredential(c: MemberCredential) {
@@ -166,15 +170,15 @@ export class MemberCredentialManagementPage
         await this.saveAdd(
           c,
           this.addFormEles &&
-            this.addFormEles.last &&
-            this.addFormEles.last.nativeElement
+          this.addFormEles.last &&
+          this.addFormEles.last.nativeElement
         );
       } else {
         await this.saveModify(
           c,
           this.addFormEles &&
-            this.addFormEles.last &&
-            this.addFormEles.last.nativeElement
+          this.addFormEles.last &&
+          this.addFormEles.last.nativeElement
         );
       }
     }
@@ -312,6 +316,7 @@ export class MemberCredentialManagementPage
       "input[name='LastName']"
     );
     if (this.modifyCredential) {
+      console.log(!AppHelper.includeHanz(firstNameEl && firstNameEl.value), firstNameEl.value, firstNameEl.placeholder, "222222222")
       if (this.modifyCredential.Type == CredentialsType.IdCard) {
         this.addMessageTipEl(
           firstNameEl,
@@ -338,24 +343,26 @@ export class MemberCredentialManagementPage
     }
   }
   private addMessageTipEl(el: HTMLElement, isShow: boolean, msg = "") {
-    let errorTipEl = el.parentElement.querySelector(".idnumbervalidate");
-    if (!errorTipEl) {
-      errorTipEl = document.createElement("span");
-      errorTipEl.classList.add("idnumbervalidate");
-      el.insertAdjacentElement("afterend", errorTipEl);
-    }
-    if (!isShow) {
-      el.classList.remove("validctrlsucess");
-      el.classList.add("validctrlerror");
-      errorTipEl.classList.remove("validsucessmess");
-      errorTipEl.classList.add("validerrormess");
-      errorTipEl.textContent = msg;
-    } else {
-      el.classList.remove("validctrlerror");
-      errorTipEl.textContent = "";
-      errorTipEl.classList.remove("validerrormess");
-      errorTipEl.classList.add("validsucessmess");
-    }
+    requestAnimationFrame(() => {
+      let errorTipEl = el.parentElement.querySelector(".idnumbervalidate");
+      if (!errorTipEl) {
+        errorTipEl = document.createElement("span");
+        errorTipEl.classList.add("idnumbervalidate");
+        el.insertAdjacentElement("afterend", errorTipEl);
+      }
+      if (isShow) {
+        el.classList.remove("validctrlsucess");
+        el.classList.add("validctrlerror");
+        errorTipEl.classList.remove("validsucessmess");
+        errorTipEl.classList.add("validerrormess");
+        errorTipEl.textContent = msg;
+      } else {
+        el.classList.remove("validctrlerror");
+        errorTipEl.textContent = "";
+        errorTipEl.classList.remove("validerrormess");
+        errorTipEl.classList.add("validsucessmess");
+      }
+    })
   }
   private initInputChanges(
     container: HTMLElement,
@@ -402,7 +409,7 @@ export class MemberCredentialManagementPage
     if (this.timemoutid) {
       clearTimeout(this.timemoutid);
     }
-    this.timemoutid = setTimeout(function() {
+    this.timemoutid = setTimeout(function () {
       window.scrollTo({
         top: 0,
         left: 0,
@@ -791,5 +798,5 @@ export class MemberCredentialManagementPage
     }
     return true;
   }
-  private loadCountries() {}
+  private loadCountries() { }
 }
