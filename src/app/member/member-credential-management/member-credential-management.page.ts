@@ -9,7 +9,8 @@ import {
   NavController,
   ModalController,
   Platform,
-  IonSelect
+  IonSelect,
+  IonDatetime
 } from "@ionic/angular";
 import {
   Component,
@@ -43,8 +44,10 @@ export class MemberCredentialManagementPage
   private countries: CountryEntity[];
   private subscription = Subscription.EMPTY;
   private idInputEleSubscription = Subscription.EMPTY;
+  maxYear = new Date().getFullYear() + 80;
   CredentialsType = CredentialsType;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
+  @ViewChild(IonDatetime) datetimeComp: IonDatetime;
   identityTypes: { key: string; value: string }[];
   credentials: MemberCredential[];
   modifyCredential: MemberCredential; // 新增的证件
@@ -98,7 +101,7 @@ export class MemberCredentialManagementPage
             this.credentials = this.credentials.map(c => {
               if (
                 this.calendarService.getMoment(0, c.ExpirationDate).year() -
-                new Date().getFullYear() >=
+                  new Date().getFullYear() >=
                 70
               ) {
                 c.isLongPeriodOfTime = true;
@@ -158,10 +161,9 @@ export class MemberCredentialManagementPage
         "input[name='Number']"
       ) as HTMLInputElement;
       this.changeBirthByIdNumber(idInputEle);
-      setTimeout(()=>{
+      setTimeout(() => {
         this.onFirstLastNameChange();
-      },100)
-      
+      }, 100);
     }
   }
   async onSaveCredential(c: MemberCredential) {
@@ -170,15 +172,15 @@ export class MemberCredentialManagementPage
         await this.saveAdd(
           c,
           this.addFormEles &&
-          this.addFormEles.last &&
-          this.addFormEles.last.nativeElement
+            this.addFormEles.last &&
+            this.addFormEles.last.nativeElement
         );
       } else {
         await this.saveModify(
           c,
           this.addFormEles &&
-          this.addFormEles.last &&
-          this.addFormEles.last.nativeElement
+            this.addFormEles.last &&
+            this.addFormEles.last.nativeElement
         );
       }
     }
@@ -217,24 +219,54 @@ export class MemberCredentialManagementPage
     // if (d) {
     //   this.modifyCredential.Birthday = d.date;
     // }
-    this.isCanDeactive = true;
-    const path = this.getCurUrl();
-    this.requestCode = "birthDate";
-    this.router.navigate(["open-my-calendar"], {
-      queryParams: { backRouteUrl: path }
-    });
+    // this.isCanDeactive = true;
+    // const path = this.getCurUrl();
+    // this.requestCode = "birthDate";
+    // this.router.navigate(["open-my-calendar"], {
+    //   queryParams: { backRouteUrl: path }
+    // });
+    if (this.datetimeComp) {
+      this.datetimeComp.open();
+      const sub = this.datetimeComp.ionChange.subscribe((d: CustomEvent) => {
+        const value = d.detail.value;
+        if (value) {
+          this.modifyCredential.Birthday = this.calendarService.getFormatedDate(
+            value.substr(0, 10)
+          );
+          console.log(" Birthday ", this.modifyCredential.Birthday);
+        }
+        setTimeout(() => {
+          sub.unsubscribe();
+        }, 100);
+      });
+    }
   }
   async onSelectExpireDate() {
     // const d = await this.onSelectDate();
     // if (d) {
     //   this.modifyCredential.ExpirationDate = d.date;
     // }
-    this.isCanDeactive = true;
-    const path = this.getCurUrl();
-    this.requestCode = "expireDate";
-    this.router.navigate(["open-my-calendar"], {
-      queryParams: { backRouteUrl: path }
-    });
+    // this.isCanDeactive = true;
+    // const path = this.getCurUrl();
+    // this.requestCode = "expireDate";
+    // this.router.navigate(["open-my-calendar"], {
+    //   queryParams: { backRouteUrl: path }
+    // });
+    if (this.datetimeComp) {
+      this.datetimeComp.open();
+      const sub = this.datetimeComp.ionChange.subscribe((d: CustomEvent) => {
+        const value: string = d.detail.value;
+        if (value) {
+          this.modifyCredential.ExpirationDate = this.calendarService.getFormatedDate(
+            value.substr(0, 10)
+          );
+          console.log(" ExpirationDate ", this.modifyCredential.ExpirationDate);
+        }
+        setTimeout(() => {
+          sub.unsubscribe();
+        }, 100);
+      });
+    }
   }
   private getCurUrl() {
     const path = this.router.url.includes("#")
@@ -316,7 +348,12 @@ export class MemberCredentialManagementPage
       "input[name='LastName']"
     );
     if (this.modifyCredential) {
-      console.log(!AppHelper.includeHanz(firstNameEl && firstNameEl.value), firstNameEl.value, firstNameEl.placeholder, "222222222")
+      console.log(
+        !AppHelper.includeHanz(firstNameEl && firstNameEl.value),
+        firstNameEl.value,
+        firstNameEl.placeholder,
+        "222222222"
+      );
       if (this.modifyCredential.Type == CredentialsType.IdCard) {
         this.addMessageTipEl(
           firstNameEl,
@@ -362,7 +399,7 @@ export class MemberCredentialManagementPage
         errorTipEl.classList.remove("validerrormess");
         errorTipEl.classList.add("validsucessmess");
       }
-    })
+    });
   }
   private initInputChanges(
     container: HTMLElement,
@@ -409,7 +446,7 @@ export class MemberCredentialManagementPage
     if (this.timemoutid) {
       clearTimeout(this.timemoutid);
     }
-    this.timemoutid = setTimeout(function () {
+    this.timemoutid = setTimeout(function() {
       window.scrollTo({
         top: 0,
         left: 0,
@@ -798,5 +835,5 @@ export class MemberCredentialManagementPage
     }
     return true;
   }
-  private loadCountries() { }
+  private loadCountries() {}
 }

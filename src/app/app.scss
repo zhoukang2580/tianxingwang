@@ -156,7 +156,9 @@ ion-checkbox {
     margin-left: 0.3em;
   }
 }
-
+ion-picker{
+  --ion-color-primary: var(--ion-color-secondary);
+}
 .alert-wrapper .alert-button-group button {
   color: var(--ion-color-dark);
 }
