@@ -229,6 +229,9 @@ export class FlightItemCabinsPage implements OnInit {
         lowestPrice = Math.min(+it.SalesPrice, lowestPrice);
       });
     }
+    const isfirstAgreementCabin = cabins.find(
+      it => it.Cabin && +it.Cabin.FareType == FlightFareType.Agreement
+    );
     cabins.forEach(it => {
       if (
         it.Cabin &&
@@ -240,7 +243,15 @@ export class FlightItemCabinsPage implements OnInit {
           // 协议价
           +it.Cabin.FareType == FlightFareType.Agreement)
       ) {
-        this.economyClassCabins.push(it);
+        if (+it.Cabin.FareType == FlightFareType.Agreement) {
+          if (it == isfirstAgreementCabin) {
+            this.economyClassCabins.push(it);
+          } else {
+            this.moreCabins.push(it);
+          }
+        } else if (+it.Cabin.FareType != FlightFareType.Agreement) {
+          this.economyClassCabins.push(it);
+        }
       } else if (it.Cabin) {
         this.moreCabins.push(it);
       }

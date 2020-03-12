@@ -81,14 +81,14 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
       // imageSmoothingQuality: 'medium' as any,
     });
     this.avatar = this.resultImageUrl = avatar.toDataURL("image/jpeg", 0.8);
-    // this.uploadImage(this.avatar);
-    avatar.toBlob(
-      blob => {
-        this.uploadImageBytes(blob);
-      },
-      "image/jpeg",
-      0.8
-    );
+    this.uploadImage(this.avatar);
+    // avatar.toBlob(
+    //   blob => {
+    //     this.uploadImageBytes(blob);
+    //   },
+    //   "image/jpeg",
+    //   0.8
+    // );
   }
   reset() {
     if (this.cropper) {
@@ -103,9 +103,8 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
     const formData = new FormData();
     formData.append("avatar", blob);
     const req = new RequestEntity();
-    req.IsFormData = true;
     req.Method = this.method;
-    req.Data = formData;
+    req.Data = blob;
     this.uploadAction(req);
   }
   private uploadImage(avatarBase64Str: string) {
@@ -120,28 +119,31 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
     this.uploadAction(req);
   }
   private uploadAction(req: RequestEntity) {
-    const uploadSubscription = this.apiService.getResponse<any>(req).subscribe(
-      uploadRes => {
-        this.showCropBox = false;
-        this.uploaded = uploadRes.Status;
-        if (uploadRes.Status) {
-          AppHelper.setRouteData(true);
-          this.goBack();
+    const uploadSubscription = this.apiService
+      // .getResponse(req, true, "image/jpeg", this.fileName)
+      .getResponse(req)
+      .subscribe(
+        uploadRes => {
+          this.showCropBox = false;
+          this.uploaded = uploadRes.Status;
+          if (uploadRes.Status) {
+            AppHelper.setRouteData(true);
+            this.goBack();
+          }
+        },
+        e => {
+          this.uploaded = false;
+          this.showCropBox = true;
+          AppHelper.alert(e);
+        },
+        () => {
+          if (uploadSubscription) {
+            setTimeout(() => {
+              uploadSubscription.unsubscribe();
+            }, 10);
+          }
         }
-      },
-      e => {
-        this.uploaded = false;
-        this.showCropBox = true;
-        AppHelper.alert(e);
-      },
-      () => {
-        if (uploadSubscription) {
-          setTimeout(() => {
-            uploadSubscription.unsubscribe();
-          }, 10);
-        }
-      }
-    );
+      );
   }
   initCropper() {
     // ios设备的内存限制，最好在裁切前将图片缩小到1024px以内

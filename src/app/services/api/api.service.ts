@@ -267,55 +267,32 @@ export class ApiService {
         );
     });
   }
-
-  private sendRequest(
-    request: RequestEntity,
-    isCheckLogin: boolean
-  ): Observable<IResponse<any>> {
-    const req = { ...request };
-    req.Timestamp = Math.floor(Date.now() / 1000);
-    req.Language = AppHelper.getLanguage();
-    req.Ticket = AppHelper.getTicket();
-    req.Domain = AppHelper.getDomain();
-    if (req.Data && typeof req.Data != "string" && !req.IsFormData) {
-      req.Data = JSON.stringify(req.Data);
-    }
-    this.setLoading(true, req.IsShowLoading);
+  private post(url: string, req: RequestEntity) {
+    req.Token = this.apiConfig.Token;
+    const formObj = Object.keys(req)
+      .filter(it => it != "Url" && it != "IsShowLoading")
+      .map(k => `${k}=${encodeURIComponent(req[k])}`)
+      .join("&");
+    // console.log(`${formObj}&Sign=${this.getSign(req)}`);
+    return this.http.post(
+      url,
+      `${formObj}&Sign=${this.getSign(req)}&x-requested-with=XMLHttpRequest`,
+      {
+        headers: {
+          "content-type": "application/x-www-form-urlencoded"
+        },
+        observe: "body"
+      }
+    );
+  }
+  private processResponse(
+    response: any,
+    isCheckLogin: boolean,
+    req: RequestEntity
+  ) {
     let due = req.Timeout || 30 * 1000;
     due = due < 1000 ? due * 1000 : due;
-    return from(this.loadApiConfig()).pipe(
-      switchMap(config => {
-        if (!config) {
-          return throwError(LanguageHelper.getNetworkErrorTip());
-        }
-        return from(this.getUrl(req));
-      }),
-      switchMap(url => {
-        req.Token = this.apiConfig.Token;
-        const formObj = Object.keys(req)
-          .filter(it => it != "Url" && it != "IsShowLoading")
-          .map(k => `${k}=${encodeURIComponent(req[k])}`)
-          .join("&");
-        // console.log(`${formObj}&Sign=${this.getSign(req)}`);
-        const headers = {
-          "content-type": "application/x-www-form-urlencoded"
-        };
-        if (req.IsFormData) {
-          headers["content-type"] = "";
-        }
-        return this.http.post(
-          url,
-          req.IsFormData
-            ? req.Data
-            : `${formObj}&Sign=${this.getSign(
-                req
-              )}&x-requested-with=XMLHttpRequest`,
-          {
-            headers: headers,
-            observe: "body"
-          }
-        );
-      }),
+    return of(response).pipe(
       timeout(due),
       tap(r => console.log(r)),
       map(r => r as any),
@@ -354,6 +331,72 @@ export class ApiService {
         this.setLoading(false, false);
       }),
       map(r => r as any)
+    );
+  }
+  private sendRequest(
+    request: RequestEntity,
+    isCheckLogin: boolean
+  ): Observable<IResponse<any>> {
+    const req = { ...request };
+    req.Timestamp = Math.floor(Date.now() / 1000);
+    req.Language = AppHelper.getLanguage();
+    req.Ticket = AppHelper.getTicket();
+    req.Domain = AppHelper.getDomain();
+    if (req.Data && typeof req.Data != "string") {
+      req.Data = JSON.stringify(req.Data);
+    }
+    this.setLoading(true, req.IsShowLoading);
+    return from(this.loadApiConfig()).pipe(
+      switchMap(config => {
+        if (!config) {
+          return throwError(LanguageHelper.getNetworkErrorTip());
+        }
+        return from(this.getUrl(req));
+      }),
+      switchMap(url => this.post(url, req)),
+      switchMap(r => this.processResponse(r, isCheckLogin, req))
+    );
+  }
+  private postBodyData(
+    url: string,
+    req: RequestEntity,
+    contentType: string,
+    filename: string
+  ) {
+    req.Token = this.apiConfig.Token;
+    return this.http.post(`${url}`, req.Data, {
+      params: {
+        Data: JSON.stringify({ FileName: filename }).trim(),
+        Sign: this.getSign(req),
+        Ticket: req.Ticket
+      },
+      headers: {
+        "Content-Type": contentType || "image/jpeg"
+      },
+      observe: "body"
+    });
+  }
+  sendBodyData(
+    request: RequestEntity,
+    isCheckLogin = true,
+    contentType = "image/jpeg",
+    fileName: string
+  ): Observable<IResponse<any>> {
+    const req = { ...request };
+    req.Timestamp = Math.floor(Date.now() / 1000);
+    req.Language = AppHelper.getLanguage();
+    req.Ticket = AppHelper.getTicket();
+    req.Domain = AppHelper.getDomain();
+    this.setLoading(true, req.IsShowLoading);
+    return from(this.loadApiConfig()).pipe(
+      switchMap(config => {
+        if (!config) {
+          return throwError(LanguageHelper.getNetworkErrorTip());
+        }
+        return from(this.getUrl(req));
+      }),
+      switchMap(url => this.postBodyData(url, req, contentType, fileName)),
+      switchMap(r => this.processResponse(r, isCheckLogin, req))
     );
   }
   private async loadApiConfig(forceRefresh = false): Promise<ApiConfig> {

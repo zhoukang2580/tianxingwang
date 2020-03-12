@@ -76,6 +76,7 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
       .pipe(
         tap(async infos => {
           this.bookInfos = infos.filter(it => !!it.bookInfo);
+          this.isSelf = await this.staffService.isSelfBookType();
           if (this.isSelf) {
             const goinfo = infos.find(
               item =>
@@ -86,9 +87,6 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
               item =>
                 item.bookInfo && item.bookInfo.tripType == TripType.returnTrip
             );
-            // if (goinfo && backInfo) {
-            //   this.showSelectReturnTripButton = false;
-            // }
             this.showSelectReturnTripButton =
               this.flightService.getSearchFlightModel().isRoundTrip &&
               goinfo &&
@@ -96,7 +94,7 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
           } else {
             this.showSelectReturnTripButton = false;
           }
-          console.log("showSelectReturnTripButton");
+          // console.log("showSelectReturnTripButton",this.showSelectReturnTripButton);
         })
       );
     this.subscritions.push(
