@@ -19,6 +19,10 @@
           <ion-col size='4'>订单编号</ion-col>
           <ion-col> {{orderDetail?.Order?.Id}}</ion-col>
         </ion-row>
+        <ion-row *ngIf='orderDetail?.Order?.OrderCars?.length'>
+          <ion-col size='4'>事务号</ion-col>
+          <ion-col> {{orderDetail?.Order?.OrderCars[0].Id}}</ion-col>
+        </ion-row>
         <ion-row>
           <ion-col size='4'>集团名称</ion-col>
           <ion-col> {{tmc?.Name}}</ion-col>
@@ -29,11 +33,15 @@
         </ion-row>
         <ion-row>
           <ion-col size='4'> 车费金额</ion-col>
-        <ion-col> {{(orderDetail?.Order?.TotalCostAmount)}}</ion-col>
+          <ion-col> {{(orderDetail?.Order?.TotalCostAmount)}}</ion-col>
         </ion-row>
-        <ion-row *ngIf="tmc?.IsShowServiceFee"> 
+        <ion-row *ngIf="tmc?.IsShowServiceFee">
           <ion-col size='4'> 服务费</ion-col>
           <ion-col>{{getServicetip(orderDetail?.Order)}}</ion-col>
+        </ion-row>
+        <ion-row *ngIf='orderDetail?.Order.OrderCars?.length'>
+          <ion-col size='4'>其它费用</ion-col>
+          <ion-col> {{getOtherAmount(orderDetail?.Order,orderDetail?.Order.OrderCars[0].Key)}}</ion-col>
         </ion-row>
         <ion-row>
           <ion-col size='4'> 已付金额</ion-col>
@@ -134,6 +142,32 @@
               {{p.ExpirationDate?.substr(0,10)}}
             </ion-col>
           </ion-row>
+          <ng-container *ngIf='orderDetail?.Order?.OrderCars?.length'>
+            <ng-container *ngIf='orderDetail?.Order?.OrderCars[0] as orderCar'>
+              <ion-row>
+                <ion-col size='4'>违规</ion-col>
+                <ion-col> {{orderCar.OrderTravel?.IllegalPolicy}}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size='4'>违规原因</ion-col>
+                <ion-col> {{orderCar.OrderTravel?.IllegalReason}}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size='4'>成本中心</ion-col>
+                <ion-col> {{orderCar.OrderTravel?.CostCenterCode}}-{{orderCar.OrderTravel?.CostCenterName}}
+                  <ng-container *ngFor='let number of getOrderNumbers()'>
+                    <span>{{number.Name}}</span>
+                    <span class="ion-margin-start">{{number.Number}}</span>
+                  </ng-container>
+                </ion-col>
+              </ion-row>
+              <ion-row *ngIf="getVariableObj(orderCar,'ExceptionMessage') as exmsg">
+                <ion-col size='4'>异常消息</ion-col>
+                <ion-col> {{exmsg}}
+                </ion-col>
+              </ion-row>
+            </ng-container>
+          </ng-container>
         </div>
       </div>
     </div>
@@ -184,65 +218,10 @@
       </div>
     </div>
     <div class="swiper-slide">
-      <div>
-        <!-- 用车价格信息 -->
-        <ion-item-divider>
-          {{tabs[4].label}}
-        </ion-item-divider>
-        <div *ngFor='let orderCar of orderDetail?.Order.OrderCars'>
-          <ion-row>
-            <ion-col size='4'>用车事务号</ion-col>
-            <ion-col>{{orderCar.Id}}</ion-col>
-            <ion-col>{{orderCar.StatusName}}</ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size='4'>应收金额</ion-col>
-            <ion-col> {{getTotalAmountByKey(orderDetail?.Order,orderCar.Key)}}</ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size='4'>用车金额</ion-col>
-            <ion-col> {{getUseCarAmount(orderDetail?.Order,orderCar.Key)}}</ion-col>
-          </ion-row>
-          <ion-row *ngIf='tmc?.IsShowServiceFee'>
-            <ion-col size='4'>服务费</ion-col>
-            <ion-col> {{getFeeAmount(orderDetail?.Order,orderCar.Key)}}</ion-col>
-          </ion-row>
-
-          <ion-row>
-            <ion-col size='4'>其它费用</ion-col>
-            <ion-col> {{getOtherAmount(orderDetail?.Order,orderCar.Key)}}</ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size='4'>违规</ion-col>
-            <ion-col> {{orderCar.OrderTravel?.IllegalPolicy}}</ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size='4'>违规原因</ion-col>
-            <ion-col> {{orderCar.OrderTravel?.IllegalReason}}</ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size='4'>成本中心</ion-col>
-            <ion-col> {{orderCar.OrderTravel?.CostCenterCode}}-{{orderCar.OrderTravel?.CostCenterName}}
-              <ng-container *ngFor='let number of getOrderNumbers()'>
-                <span>{{number.Name}}</span>
-                <span class="ion-margin-start">{{number.Number}}</span>
-              </ng-container>
-            </ion-col>
-          </ion-row>
-          <ion-row *ngIf="getVariableObj(orderCar,'ExceptionMessage') as exmsg">
-            <ion-col size='4'>异常消息</ion-col>
-            <ion-col> {{exmsg}}
-            </ion-col>
-          </ion-row>
-
-        </div>
-      </div>
-    </div>
-    <div class="swiper-slide">
       <!-- 审批记录 -->
       <div>
         <ion-item-divider>
-          {{tabs[5].label}}
+          {{tabs[4].label}}
         </ion-item-divider>
         <div>
           <app-timeline [hideLastTimeLineTail]='false' *ngIf='orderDetail?.Histories'>

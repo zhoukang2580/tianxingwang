@@ -72,11 +72,6 @@ export class ProductListPage implements OnInit {
     this.navCtrl.pop();
   }
   goToProductTab(tab: ProductItem) {
-    //todo：
-    if (tab.value == ProductItemType.car) {
-      AppHelper.toast("尚在开发");
-      return;
-    }
     this.router.navigate([AppHelper.getRoutePath(`product-tabs`)], {
       queryParams: { tabId: tab.value }
     });

@@ -97,7 +97,7 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
     this.tabs.push({ label: "用车信息", value: "rentalInfo" });
     this.tabs.push({ label: "乘客信息", value: "passengerInfo" });
     this.tabs.push({ label: "联系信息", value: "contactInfo" });
-    this.tabs.push({ label: "用车价格信息", value: "priceInfo" });
+    // this.tabs.push({ label: "用车价格信息", value: "priceInfo" });
     this.tabs.push({ label: "审批记录", value: "approveInfo" });
     this.tab = this.tabs[0];
     this.tab.active = true;
