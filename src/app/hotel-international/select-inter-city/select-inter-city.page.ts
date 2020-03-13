@@ -165,9 +165,9 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
   }
   ngOnInit() {
     this.initTabs();
-    if (this.hotelService.getSearchCondition().destinationCity) {
-      this.searchCityKeyWords = this.hotelService.getSearchCondition().destinationCity.Name;
-    }
+    // if (this.hotelService.getSearchCondition().destinationCity) {
+    //   this.searchCityKeyWords = this.hotelService.getSearchCondition().destinationCity.Name;
+    // }
     this.pageIndex = 0;
     this.searchResults = [];
     this.loadMoreData();
@@ -196,7 +196,15 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
     this.searchResults = [];
     this.pageIndex = 0;
     this.searchCityKeyWords = "";
+    this.resetTabActive();
     this.loadMoreData();
+  }
+  private resetTabActive() {
+    this.tabs = this.tabs.map(it => {
+      it.active = false;
+      return it;
+    });
+    this.tab = this.tabs.find(it => it.active);
   }
   onSearchCities() {
     this.searchCitySubscription.unsubscribe();
