@@ -201,6 +201,8 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
   }
   onSearchCities() {
     this.searchCitySubscription.unsubscribe();
+    this.pageIndex = 0;
+    this.searchResults = [];
     this.searchCitySubscription = of(this.searchCityKeyWords)
       .pipe(distinctUntilChanged(), debounceTime(300))
       .subscribe(_ => {
