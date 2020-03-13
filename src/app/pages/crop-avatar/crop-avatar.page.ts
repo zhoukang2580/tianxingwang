@@ -37,7 +37,7 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
     this.fileReader = new FileReader();
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
   goBack() {
     this.backbtn.backToPrePage();
   }
@@ -162,12 +162,15 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
       background: false,
       dragMode: "move" as any,
       minCanvasWidth: this.plt.width(),
-      minCropBoxWidth: this.plt.width(),
       minCanvasHeight: this.plt.height(),
       minContainerHeight: this.plt.height(),
       minContainerWidth: this.plt.width(),
+      minCropBoxWidth: this.plt.width() * 0.7,
+      minCropBoxHeight: this.plt.width() * 0.7,
       responsive: true,
+      // modal: true,
       aspectRatio: 1 / 1,
+      // initialAspectRatio: Math.min(this.croppedImage.naturalHeight / this.plt.width(), this.croppedImage.naturalWidth / this.plt.width()),
       viewMode: 0,
       crop(event) {
         // console.log(event.detail.x);

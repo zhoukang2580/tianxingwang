@@ -124,7 +124,7 @@ export class LazyloadDirective
         // of the element we are observing
         // we can just use data[0]
         // console.log("IntersectionObserver 耗时：", Date.now() - this.time);
-        console.log(data);
+        // console.log(data);
         if (data.find(it => it.isIntersecting)) {
           // console.log(
           //   "IntersectionObserver  isIntersecting 耗时：",
