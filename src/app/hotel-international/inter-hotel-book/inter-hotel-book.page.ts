@@ -900,9 +900,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   onManagementCredentials(item: IPassengerHotelBookInfo) {
     item.credentialsRequested = false;
     // this.isManagentCredentails = true;
-    this.router.navigate([
-      AppHelper.getRoutePath("member-credential-list")
-    ]);
+    this.router.navigate([AppHelper.getRoutePath("member-credential-list")]);
   }
   private async initializeViewModel() {
     this.isCanSkipApproval$ = combineLatest([
@@ -1011,7 +1009,9 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         combineInfo.bookInfo = bookInfo;
         combineInfo.vmCredential = bookInfo.credential;
         combineInfo.isSkipApprove = false;
-        combineInfo.credentials = credentials || [];
+        combineInfo.credentials = (credentials || []).filter(
+          c => c.Type != CredentialsType.IdCard
+        );
         combineInfo.isOpenrules = false;
         combineInfo.credentialStaff = cstaff;
         combineInfo.isOtherIllegalReason = false;

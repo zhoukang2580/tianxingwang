@@ -50,10 +50,11 @@
             <ion-item class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)'
               (click)='openApproverModal(combindInfo)' #approvalEl [attr.id]='combindInfo.id'>
               <ion-label>
-                审批人:<ion-text *ngIf='combindInfo?.appovalStaff'>
-                  {{combindInfo?.appovalStaff?.Name}}|{{combindInfo?.appovalStaff?.Email||combindInfo?.appovalStaff?.Account?.Email}}|{{combindInfo?.appovalStaff?.Number||combindInfo?.appovalStaff?.Mobile}}
-                </ion-text>
+                审批人:
               </ion-label>
+              <ion-text *ngIf='combindInfo?.appovalStaff'>
+                {{combindInfo?.appovalStaff?.Name}}|{{combindInfo?.appovalStaff?.Email||combindInfo?.appovalStaff?.Account?.Email}}|{{combindInfo?.appovalStaff?.Number||combindInfo?.appovalStaff?.Mobile}}
+              </ion-text>
             </ion-item>
           </ng-container>
         </ion-list>
@@ -144,7 +145,7 @@
         </ion-list>
         <ion-list [attr.checkinpersionid]='combindInfo.id' #checkInPersonInfoEle>
           <ion-list-header><strong>旅客信息</strong></ion-list-header>
-          <ion-item *ngFor='let c of combindInfo.checkInPersonInfos' >
+          <ion-item *ngFor='let c of combindInfo.checkInPersonInfos'>
             <ion-button size='small' fill='clear' (click)='onRemoveCheckInPersion(c,combindInfo)'
               [style.visibility]='!c.isMain?"visibile":"collapse"'>
               <ion-icon name='trash' color='danger'></ion-icon>
