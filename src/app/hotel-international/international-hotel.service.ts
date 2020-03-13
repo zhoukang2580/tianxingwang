@@ -651,16 +651,16 @@ export class InternationalHotelService {
     return obj;
   }
   searchHotelCity(param: {
-    name: string;
     areaTypes: DestinationAreaType[];
     pageIndex: number;
     pageSize?: number;
+    name?: string;
   }) {
     const req = new RequestEntity();
     // req.IsShowLoading = true;
     req.Method = "TmcApiInternationalHotelUrl-Trafficline-Search";
     req.Data = {
-      Name: name,
+      Name: param.name,
       PageIndex: param.pageIndex,
       lang: AppHelper.getLanguage() || "cn",
       PageSize: param.pageSize,

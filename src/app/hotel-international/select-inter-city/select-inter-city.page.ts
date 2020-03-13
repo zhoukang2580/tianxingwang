@@ -84,7 +84,6 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChildren("continentTab") continentTabs: QueryList<
     ElementRef<HTMLElement>
   >;
-  @ViewChild("searchcity") searchcityEle: IonSearchbar;
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
   @ViewChild(RefresherComponent, { static: true })
@@ -203,13 +202,8 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
     this.searchCitySubscription.unsubscribe();
     this.pageIndex = 0;
     this.searchResults = [];
-    this.searchCitySubscription = of(this.searchCityKeyWords)
-      .pipe(distinctUntilChanged(), debounceTime(300))
-      .subscribe(_ => {
-        console.log("searchcity", _);
-        this.loadMoreData();
-        this.goToTop();
-      });
+    this.loadMoreData();
+    this.goToTop();
   }
   ngAfterViewInit() {}
 

@@ -2,7 +2,7 @@
   <ion-buttons>
     <app-back-button></app-back-button>
     <form (ngSubmit)='onSearchCities()'>
-      <ion-searchbar animated='true' #searchcity name='searchbar' [(ngModel)]='searchCityKeyWords' type='search'
+      <ion-searchbar animated='true' [debounce]='300' name='searchbar' [(ngModel)]='searchCityKeyWords' type='search'
         (ionChange)='onSearchCities()'>
       </ion-searchbar>
     </form>
