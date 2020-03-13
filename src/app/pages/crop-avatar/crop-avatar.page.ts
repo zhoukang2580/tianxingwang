@@ -1,10 +1,17 @@
-import { Component, OnInit, HostBinding, AfterViewInit } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  HostBinding,
+  AfterViewInit,
+  ViewChild
+} from "@angular/core";
 import { NavController, Platform, Config } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import Cropper from "cropperjs";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ApiService } from "src/app/services/api/api.service";
 import { RequestEntity } from "src/app/services/api/Request.entity";
+import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 @Component({
   selector: "app-crop-avatar",
   templateUrl: "./crop-avatar.page.html",
@@ -13,8 +20,8 @@ import { RequestEntity } from "src/app/services/api/Request.entity";
 export class CropAvatarPage implements OnInit, AfterViewInit {
   cropper: Cropper;
   showCropBox = false;
-  @HostBinding("class.backdrop")
-  uploaded = false;
+  @HostBinding("class.backdrop") uploaded = false;
+  @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
   resultImageUrl: string;
   isH5 = true || AppHelper.isH5();
   fileReader: FileReader;
@@ -23,7 +30,6 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
   method: string;
   fileName: string;
   constructor(
-    private navCtrl: NavController,
     private apiService: ApiService,
     private plt: Platform,
     private activatedRoute: ActivatedRoute
@@ -33,7 +39,7 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
 
   ngOnInit() {}
   goBack() {
-    this.navCtrl.pop();
+    this.backbtn.backToPrePage();
   }
   ngAfterViewInit() {
     this.croppedImage = document.getElementById("image") as HTMLImageElement;
@@ -52,7 +58,7 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
           AppHelper.setRouteData(null);
           this.reset();
         } else {
-          this.navCtrl.pop();
+          this.backbtn.backToPrePage();
         }
       }
     });
@@ -64,7 +70,7 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
   }
   cancel() {
     // this.showCropBox = false;
-    this.navCtrl.pop();
+    this.backbtn.backToPrePage();
   }
 
   ok() {
