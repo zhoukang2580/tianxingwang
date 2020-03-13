@@ -1009,7 +1009,8 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         combineInfo.bookInfo = bookInfo;
         combineInfo.vmCredential = bookInfo.credential;
         combineInfo.isSkipApprove = false;
-        combineInfo.credentials = (credentials || []).filter(
+        combineInfo.credentials = credentials || [];
+        combineInfo.credentials = combineInfo.credentials.filter(
           c => c.Type != CredentialsType.IdCard
         );
         combineInfo.isOpenrules = false;
@@ -1476,7 +1477,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     }
     if (item.credentials) {
       const isSelf = await this.staffService.isSelfBookType();
-      item.credentials = item.credentials.filter(it => !!it.Number);
+      item.credentials = item.credentials.filter(it => !!it.Number&&it.Type!=CredentialsType.IdCard);
       item.isCanEditCrendentails =
         isSelf &&
         !item.credentials.find(
@@ -1544,11 +1545,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     );
   }
   getRoomPlanRulesDesc(roomPlan: RoomPlanEntity) {
-    return (
-      roomPlan &&
-      roomPlan.RoomPlanRules &&
-      roomPlan.RoomPlanRules.map(it => it.Description).join(",")
-    );
+    return this.hotelService.getRoomRateRuleMessage(roomPlan);
   }
   async onSelectTravelNumber(
     arg: {
