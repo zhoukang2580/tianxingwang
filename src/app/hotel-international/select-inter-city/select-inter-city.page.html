@@ -7,32 +7,25 @@
       </ion-searchbar>
     </form>
   </ion-buttons>
-</ion-header>
-<ion-content>
   <ion-toolbar *ngIf='tabs'>
     <div class='continents'>
       <div class='c' #continentTab [attr.dataid]='t.id' *ngFor='let t of tabs' (click)='onActiveTab(t)'
         [class.active]='t.active'>{{t.name}}</div>
     </div>
   </ion-toolbar>
-  <ng-container *ngIf='isLoadingContinents else listtemp'>
+</ion-header>
+<ion-content>
+  <app-refresher slot='fixed' (ionRefresh)='doRefresh()'>
+    <ion-refresher-content>正在刷新...</ion-refresher-content>
+  </app-refresher>
+  <ng-container *ngIf='isLoading else listtemp'>
     正在加载...
   </ng-container>
   <ng-template #listtemp>
-    <ion-note class="ion-margin-start sticky">请选择城市：</ion-note>
     <ion-list>
-      <ion-item *ngFor='let it of searchCities;let i=index;' @flyInOut (click)='onCitySelected(it)'>
-        <ion-label [class.active]='it.Selected' class='ion-text-wrap'>
-          <h2>{{it.Name}}
-            <ion-text color='medium' *ngIf='it.Country as c'>
-              <span *ngIf='c.Name as n'>,{{n}}</span>
-              <span *ngIf='c.EnglishName as n'>,{{n}}</span>
-            </ion-text>
-          </h2>
-          <p *ngIf='it.EnglishName' class='ion-text-wrap'>
-            <ng-container *ngIf='it.CityName as n'>{{n}},</ng-container>
-            {{it.EnglishName}}
-          </p>
+      <ion-item *ngFor='let it of searchResults;let i=index;' @flyInOut (click)='onCitySelected(it)'>
+        <ion-label class='ion-text-wrap'>
+          {{it.Text}}
         </ion-label>
       </ion-item>
     </ion-list>
@@ -41,14 +34,4 @@
     <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="加载更多...">
     </ion-infinite-scroll-content>
   </ion-infinite-scroll>
-  <ion-fab>
-    <app-pin-fab vertical="bottom" horizontal="end">
-      <div *ngIf='searchCities?.length&&totalMatchCities?.length'>
-        <ion-text color='light'>
-          <div style="border-bottom: 1px solid white;"> {{searchCities.length}}</div>
-          <div> {{totalMatchCities.length}}</div>
-        </ion-text>
-      </div>
-    </app-pin-fab>
-  </ion-fab>
 </ion-content>
