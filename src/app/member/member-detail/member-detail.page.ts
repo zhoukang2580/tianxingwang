@@ -43,14 +43,14 @@ export class MemberDetailPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(async _ => {
+        console.log(
+          "member detail ngOnInit",
+          this.memberDetails && this.memberDetails.HeadUrl
+        );
         this.config = await this.configService.getConfigAsync();
         this.load();
         AppHelper.setRouteData(AppHelper.getRouteData());
       })
-    );
-    console.log(
-      "member detail ngOnInit",
-      this.memberDetails && this.memberDetails.HeadUrl
     );
     this.subscriptions.push(
       this.identityService.getIdentitySource().subscribe(identity => {

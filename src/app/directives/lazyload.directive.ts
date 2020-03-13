@@ -28,7 +28,7 @@ export class LazyloadDirective
     private imageRecoverService: ImageRecoverService,
     private el: ElementRef<HTMLDivElement | HTMLImageElement>,
     private ngZone: NgZone
-  ) {}
+  ) { }
   ngOnChanges() {
     // console.log("lazyload changes",this.el.nativeElement,this.lazyLoad);
     this.time = Date.now();
@@ -78,7 +78,8 @@ export class LazyloadDirective
   private load(src: string = null) {
     // console.log("进入load ", Date.now() - this.time);
     let url = decodeURIComponent(src || this.lazyLoad || this.defaultImage);
-    url = `${url}`.replace(/\?v=\d+/g, "");
+    // url = `${url}`.replace(/\?v=\d+/g, "");
+    url = this.addVersion(url);
     // console.log('load url:', url);
     this.time = Date.now();
     this.ngZone.runOutsideAngular(() => {
@@ -87,9 +88,15 @@ export class LazyloadDirective
         // this.render.setProperty(this.el.nativeElement,'backgroundImage',`${src || this.lazyLoad}`);
         this.el.nativeElement.style.backgroundImage = `url('${url}')`;
       } else {
-        this.el.nativeElement.src = url || this.lazyLoad;
+        this.el.nativeElement.src = url || this.addVersion(this.lazyLoad);
       }
     });
+  }
+  private addVersion(url: string) {
+    if (url) {
+      url = url.includes("?v") ? `${url.split("?v")[0]}?v=${Date.now()}` : `${url}?v=${Date.now()}`
+    }
+    return url
   }
   private removeIO() {
     if (this.io) {
@@ -117,7 +124,7 @@ export class LazyloadDirective
         // of the element we are observing
         // we can just use data[0]
         // console.log("IntersectionObserver 耗时：", Date.now() - this.time);
-
+        console.log(data);
         if (data.find(it => it.isIntersecting)) {
           // console.log(
           //   "IntersectionObserver  isIntersecting 耗时：",
