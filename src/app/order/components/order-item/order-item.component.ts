@@ -137,7 +137,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
         [originalId: string]: OrderFlightTicketEntity[];
       } = {};
       this.order.OrderFlightTickets.forEach(t => {
-        if (
+        if (t.VariablesJsonObj &&
           t.VariablesJsonObj.OriginalTicketId &&
           !t.VariablesJsonObj.IsScrap
         ) {
@@ -163,7 +163,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
           const last = ts && ts[ts.length - 1];
           const isShow = last
             ? t.VariablesJsonObj.maxTimeStamp ==
-              last.VariablesJsonObj.maxTimeStamp
+            last.VariablesJsonObj.maxTimeStamp
             : true;
           t.VariablesJsonObj.isShow = !t.VariablesJsonObj.IsScrap && isShow;
         }
@@ -193,8 +193,8 @@ export class OrderItemComponent implements OnInit, OnChanges {
         0,
         orderTrainTicket.OrderTrainTrips[0].StartTime
       ) -
-        +this.calendarService.getMoment(0) >
-        0
+      +this.calendarService.getMoment(0) >
+      0
     );
   }
   async onExchange(evt: CustomEvent, orderTrainTicket: OrderTrainTicketEntity) {

@@ -17,7 +17,7 @@
 <ion-content>
   <ion-toolbar class='ion-text-center' slot='fixed'>
     <div class='tabs'>
-      <ion-button [color]='activeTab?.value==tab.value?"secondary":"dark"' (click)='onTabClick(tab)'
+      <ion-button [color]='activeTab?.value==tab.value?"secondary":"medium"' (click)='onTabClick(tab)'
         *ngFor='let tab of tabs' fill='clear' [class.active]='activeTab?.value==tab.value'>{{tab.label}}
       </ion-button>
     </div>

@@ -101,7 +101,7 @@ export class MemberCredentialManagementPage
             this.credentials = this.credentials.map(c => {
               if (
                 this.calendarService.getMoment(0, c.ExpirationDate).year() -
-                  new Date().getFullYear() >=
+                new Date().getFullYear() >=
                 70
               ) {
                 c.isLongPeriodOfTime = true;
@@ -172,15 +172,15 @@ export class MemberCredentialManagementPage
         await this.saveAdd(
           c,
           this.addFormEles &&
-            this.addFormEles.last &&
-            this.addFormEles.last.nativeElement
+          this.addFormEles.last &&
+          this.addFormEles.last.nativeElement
         );
       } else {
         await this.saveModify(
           c,
           this.addFormEles &&
-            this.addFormEles.last &&
-            this.addFormEles.last.nativeElement
+          this.addFormEles.last &&
+          this.addFormEles.last.nativeElement
         );
       }
     }
@@ -199,6 +199,12 @@ export class MemberCredentialManagementPage
     this.subscription = ele.ionChange.subscribe(_ => {
       this.onIdTypeChange();
       this.onFirstLastNameChange();
+      if (this.modifyCredential) {
+        if (this.modifyCredential.Type != CredentialsType.IdCard) {
+          this.modifyCredential.isLongPeriodOfTime = false;
+          this.modifyCredential.longPeriodOfTime = "";
+        }
+      }
     });
     this.subscriptions.push(this.subscription);
   }
@@ -446,7 +452,7 @@ export class MemberCredentialManagementPage
     if (this.timemoutid) {
       clearTimeout(this.timemoutid);
     }
-    this.timemoutid = setTimeout(function() {
+    this.timemoutid = setTimeout(function () {
       window.scrollTo({
         top: 0,
         left: 0,
@@ -835,5 +841,5 @@ export class MemberCredentialManagementPage
     }
     return true;
   }
-  private loadCountries() {}
+  private loadCountries() { }
 }

@@ -7,7 +7,7 @@
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center;
-  background-color: #eee;
+  background-color: var(--ion-color-light);
   position: relative;
   z-index: 99;
   .back-button {
@@ -17,8 +17,8 @@
     width: 3em;
     height: 3em;
     z-index: 100;
-    color: white;
-    background-color: rgba(0, 0, 0, 0.5);
+    color: var(--ion-color-light);
+    background-color: rgba(0,0,0,0.5);
     border-radius: 4px;
     display: flex;
     align-items: center;
@@ -52,7 +52,7 @@ ion-card {
     top: -2.5em;
     margin-bottom: 2em;
   }
-  background: white;
+  // background: white;
 
   .grade-stars,
   .position {
@@ -130,7 +130,7 @@ ion-card {
     top: 0;
     display: flex;
     align-items: flex-start;
-    background-color: white;
+    // background-color: white;
     z-index: 10;
   }
 
@@ -146,7 +146,7 @@ ion-card {
       right: 0.2em;
       bottom: 0.2em;
       padding: 0.3em;
-      color: white;
+      color: var(--ion-color-light);;
       background-color: rgba(0, 0, 0, 0.5);
       border-radius: 0.2em;
       font-size: 0.5rem;
@@ -175,7 +175,7 @@ ion-list {
   padding: 0;
   &.hotel-info {
     // min-height   : 90vh;
-    background-color: blanchedalmond;
+    // background-color: blanchedalmond;
 
     ion-grid ion-row ion-col {
       align-self: flex-start;
@@ -191,7 +191,7 @@ ion-list {
 
   &.traffic-info {
     // min-height   : 90vh;
-    background-color: antiquewhite;
+    // background-color: antiquewhite;
 
     .traffic-map {
       width: 100vw;
@@ -209,21 +209,7 @@ ion-title.has-add-passenger {
   min-height: 65vh;
 }
 
-.hotel-images {
-  background-color: black;
-  z-index: 100;
-  position: fixed;
-  width: 100vw;
-  height: 100vh;
-  bottom: 0;
-  transform: translateY(100%);
-  transition: transform ease-in-out 200ms;
 
-  &.show {
-    top: 0;
-    transform: translateY(0);
-  }
-}
 .show-desc {
   position: relative;
   ion-button {

@@ -9,7 +9,7 @@
 
 <ion-content class='ion-padding'>
   <ion-list>
-    <ion-note color='dark'>乘车人手机号</ion-note>
+    <ion-note>乘车人手机号</ion-note>
     <ion-item #mobilItem>
       <ion-label color='secondary'>
         <i class='icon icon-mobile'></i>
@@ -39,12 +39,14 @@
     </ng-container>
   </ion-list>
   <div class="search-result" *ngIf='searchMobiles?.length' #searchResultEl>
-    <ul>
-      <li>
-        <ion-note>历史记录</ion-note>
-      </li>
-      <li *ngFor='let a of searchMobiles' (click)='onSelect(a)' @flyInOut>{{a}}</li>
-    </ul>
+    <ion-list>
+      <ul>
+        <li>
+          <ion-note>历史记录</ion-note>
+        </li>
+        <li *ngFor='let a of searchMobiles' (click)='onSelect(a)' @flyInOut>{{a}}</li>
+      </ul>
+    </ion-list>
   </div>
   <ng-container *ngIf='searchMobiles?.length==0'>
     <ion-button expand='block' color='danger' fill='clear' *ngIf='message as emsg'>{{emsg}}</ion-button>

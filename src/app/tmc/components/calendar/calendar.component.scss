@@ -53,17 +53,14 @@ ul {
     align-items: center;
     z-index: 0;
     content: attr(month);
-    color: rgba(0, 0, 0, 0.16);
+    color: rgba(var(--ion-color-dark-rgb), 0.16);
     font-family: serif;
     font-size: 15rem;
   }
   padding-bottom: 2em;
 }
 .weeks {
-  position: sticky;
-  top: 0;
-  background: white;
-  z-index: 1000;
+  margin: 0 0.5em;
 }
 .ym {
   display: flex;
@@ -73,10 +70,10 @@ ul {
 .day {
   &.active {
     background-color: var(--ion-color-secondary);
-    color: white;
+    color: var(--ion-color-light);
   }
   &.today {
-    color: white;
+    color: var(--ion-color-light);
     background-color: rgba(var(--ion-color-danger-rgb), 0.7);
     &.active {
       background-color: rgba(var(--ion-color-danger-rgb), 0.9);

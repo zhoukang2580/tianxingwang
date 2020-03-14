@@ -5,19 +5,21 @@
     </ion-buttons>
     <ion-title class='ion-text-center'>{{title||"日历"}}</ion-title>
   </ion-toolbar>
+  <ion-toolbar>
+    <ul class='weeks'>
+      <li *ngFor='let w of weeks;let first=first;let last=last'>
+        <ion-text color='{{first||last?"danger":"secondary"}}'>
+          {{w}}
+        </ion-text>
+      </li>
+    </ul>
+  </ion-toolbar>
 </ion-header>
 <ion-content>
   <ion-refresher (ionRefresh)='onPreviousMonth()' slot='fixed'>
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  <ul class='weeks'>
-    <li *ngFor='let w of weeks;let first=first;let last=last'>
-      <ion-text color='{{first||last?"danger":"secondary"}}'>
-        {{w}}
-      </ion-text>
-    </li>
-  </ul>
-  <ul *ngFor='let ym of calendars;let last=last;' class='calendar' >
+  <ul *ngFor='let ym of calendars;let last=last;' class='calendar'>
     <li style="width: 100%;display: block;height: 1em;">
       <strong>{{ym.yearMonth?.substr(0,4)}}年</strong>
     </li>

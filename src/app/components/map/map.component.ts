@@ -28,7 +28,7 @@ export class MapComponent
   @ViewChild("container") private container: ElementRef<HTMLElement>;
   map: any;
   private marker: any;
-  constructor(private mapService: MapService) {}
+  constructor(private mapService: MapService) { }
   ngOnInit() {
     // this.getCurPosition();
     this.autoPanTo();
@@ -58,6 +58,9 @@ export class MapComponent
     //   this.lat = "40.057031";
     //   this.lng = "116.307852";
     // }
+    if(!window["BMap"]){
+      return;
+    }
     if (!this.map) {
       this.map = this.mapService.getMap(container);
     }

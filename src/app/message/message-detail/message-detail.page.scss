@@ -8,6 +8,7 @@
   iframe {
     border: none;
     width: 100%;
+    background-color: white;
     height: 100%;
     &::-webkit-scrollbar {
       display: none;
@@ -16,11 +17,7 @@
 }
 .detail {
   text-indent: 2em;
-  background-color: white;
 }
 pre {
   white-space: normal;
-}
-ion-content {
-  --background: white;
 }

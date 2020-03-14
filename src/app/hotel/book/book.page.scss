@@ -8,7 +8,8 @@ ion-input.TravelNumber {
   font-size: 0.8rem;
 }
 .price-list {
-  background: white;
+  background: var(--ion-color-primary);
+  color: var(--ion-color-medium);
   position: fixed;
   left: 0;
   right: 0;
@@ -58,7 +59,7 @@ ion-input.TravelNumber {
   }
 }
 ion-content {
-  --background: #f2f2f2;
+  // --background: #f2f2f2;
   ion-list {
     margin: 0.5em;
   }

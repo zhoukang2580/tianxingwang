@@ -14,8 +14,9 @@
     min-width: 0.5em;
     min-height: 0.5em;
   }
+  color: var(--ion-color-medium);
   &.active {
-    background-color: white;
+    color: var(--ion-color-secondary);
     &::before {
       position: absolute;
       left: 0;
@@ -34,7 +35,7 @@
   padding-top: 0.5em;
   .tabs {
     width: 25%;
-    background: #eee;
+    // background: var(--ion-color-primary);
     overflow: scroll;
   }
   .items {

@@ -7,6 +7,7 @@
     display: none;
   }
   iframe {
+    background-color: var(--ion-color-light);
     border: none;
     width: 100%;
     height: 100%;
@@ -18,11 +19,11 @@
 }
 .detail {
   text-indent: 2em;
-  background-color: white;
+  background-color:  var(--ion-color-light);;
 }
-ion-content {
-  --background: white;
-}
+// ion-content {
+//   --background:  var(--ion-color-light);;
+// }
 ion-fab {
   top: 0;
   ion-fab-button {
@@ -33,7 +34,7 @@ ion-fab {
 ion-header.ion-hide {
   display: none;
 }
-a{
+a {
   display: block;
   height: 100%;
   width: 100%;

@@ -9,13 +9,13 @@
     position: fixed;
     height: 100vh;
     width: 100vw;
-    background-color: rgba(0, 0, 0, 0.12);
+    background-color: rgba(var(--ion-color-dark-rgb), 0.12);
   }
 }
 ion-card {
   width: 5rem;
   height: 5rem;
-  --background: white;
+  // --background: white;
   opacity: 0.9;
   .loading {
     display: flex;

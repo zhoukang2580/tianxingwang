@@ -20,7 +20,7 @@
       </ion-label>
     </ion-item>
   </ion-list>
-  <ion-card color='primary' mode='ios' *ngIf='isShowMyOrderTabs'>
+  <ion-card  mode='ios' color='primary' *ngIf='isShowMyOrderTabs'>
     <ion-card-header>
       <strong>我的订单</strong>
     </ion-card-header>
@@ -67,7 +67,9 @@
       <ion-label class="has-left-icon">
         <img src="assets/svgs/message.svg" alt="" >
         消息</ion-label>
-      <ion-badge color="danger" *ngIf='msgCount$|async as count'>{{count}}</ion-badge>
+      <ion-badge color="danger" *ngIf='msgCount$|async as count'>
+        <ion-text color='light'>{{count}}</ion-text>
+      </ion-badge>
     </ion-item>
   </ion-list>
   <ion-list>

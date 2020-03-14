@@ -1,5 +1,5 @@
 :host {
-  background-color: rgba(var(--ion-color-dark-rgb), 0.5);
+  background-color: rgba(var(--ion-color-dark-rgb), 0.25);
   position: fixed;
   left: 0;
   right: 0;
@@ -18,14 +18,16 @@
   transform: translateY(100%);
   &.show {
     transform: translateY(0);
+    background-color: var(--ion-color-primary);
   }
-  background-color: white;
+  // background-color: white;
 }
 .check-in-out,
 .date,
 .btns {
   display: flex;
   align-items: center;
+  color: var(--ion-color-medium);
 }
 .check-in-out {
   padding: 0.5em 0;
