@@ -5,6 +5,7 @@ import { AppModule } from "./app/app.module";
 import { environment } from "./environments/environment";
 import { hmrBootstrap } from "./hmr";
 import { enableDebugTools } from "@angular/platform-browser";
+import { ThemeService } from './app/services/theme/theme.service';
 // const module = window["module"];
 const meta = document.createElement("meta");
 const head = document.querySelector("head");
@@ -13,7 +14,11 @@ meta.httpEquiv = `Content-Security-Policy`;
 const bootstrap = () =>
   platformBrowserDynamic()
     .bootstrapModule(AppModule)
-
+    .then(moduleRef => {
+      // 为了设置模式)
+      moduleRef.injector.get(ThemeService);
+      return moduleRef;
+    })
     .catch(err => {
       console.log(err);
       return null;

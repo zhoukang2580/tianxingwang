@@ -41,6 +41,7 @@ import {
   animate
 } from "@angular/animations";
 import { ImageRecoverService } from "./services/imageRecover/imageRecover.service";
+import { ThemeService } from './services/theme/theme.service';
 export interface App {
   loadUrl: (
     url: string,

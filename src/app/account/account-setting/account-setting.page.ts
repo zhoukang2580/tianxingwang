@@ -34,6 +34,8 @@ export class AccountSettingPage implements OnInit, OnDestroy {
     })
   }
   onToggleDarkMode(evt: CustomEvent) {
+    this.isDarkMode=evt.detail.checked;
+    this.themeService.cachePreferanceMode(this.isDarkMode ? "dark" : "light");
     this.themeService.setModeSource(this.isDarkMode ? "dark" : "light")
   }
   private async getVersion() {
