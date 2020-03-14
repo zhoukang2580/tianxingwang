@@ -139,7 +139,7 @@ export class AppComponent
           document.body.classList.add("cordova-android");
         }
         this.statusBar.show();
-        this.statusBar.overlaysWebView(true);
+        this.statusBar.overlaysWebView(false);
         requestAnimationFrame(() => {
           // 主题色
           this.statusBar.backgroundColorByHexString("#fff9f9f9");
