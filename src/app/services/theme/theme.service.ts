@@ -20,10 +20,8 @@ export class ThemeService {
   private async initMode() {
     const prefersDark = window.matchMedia(`(prefers-color-scheme: dark)`);
     this.mode = await this.storage.get("preferance_mode");
-    // console.log("mode", this.mode);
     this.mode = prefersDark.matches ? "dark" : this.mode || (document.body.classList.contains("dark") ? 'dark' : "light");
     prefersDark.addListener(e => this.setModeSource(e.matches ? "dark" : "light"));
-    // console.log("mode", this.mode);
     this.setModeSource(this.mode)
   }
   cachePreferanceMode(mode: Mode) {
