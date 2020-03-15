@@ -1,7 +1,6 @@
 import { AppHelper } from "../../../appHelper";
 import { Router } from "@angular/router";
 import { MessageModel } from "../../message.service";
-import * as moment from "moment";
 import {
   Component,
   OnInit,
@@ -64,7 +63,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
     //   Detail:
     //     "单身快乐军付付付付付付付付付付付付付付付付付付付付付付付付付付付付付付付付付付付寻错木吧吧吧吧吧吧吧吧吧吧吧吧吧吧吧吧吧吧吧不是圣诞节里看风景的三轮车下拉框句",
     //   Url: "https://www.baidu.com",
-    //   InsertTime: moment().format("YYYY-MM-DD HH:mm"),
+    //   InsertTime: ("YYYY-MM-DD HH:mm"),
     //   Id: "aaaa",
     //   IsRead: false
     // };

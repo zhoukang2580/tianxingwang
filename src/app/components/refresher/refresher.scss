@@ -16,6 +16,7 @@
       display: block;
       z-index: 1;
       ion-refresher-content{
+        color:var(--ion-color-dark);
         opacity: 1;
       }
     }

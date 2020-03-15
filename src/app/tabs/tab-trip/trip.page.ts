@@ -90,6 +90,7 @@ export class TripPage implements OnInit, OnDestroy {
   ngOnInit() {
     if (this.tabs) {
       this.tabs.tabChangeHooks = () => {
+        this.isLoading=false;
         this.loadMoreSubscription.unsubscribe();
       };
     }

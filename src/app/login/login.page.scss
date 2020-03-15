@@ -1,4 +1,10 @@
 ion-content {
+  ion-list {
+    height: 100%;
+  }
+  ion-input{
+    --background:transparent;
+  }
   ion-toolbar:first-child {
     margin: 4vh auto 3vh;
   }
@@ -78,7 +84,7 @@ ion-content {
   color: var(--ion-color-medium);
   align-items: center;
   justify-content: center;
-  &.isloading{
+  &.isloading {
     display: flex;
   }
 }

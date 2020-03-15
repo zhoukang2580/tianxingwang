@@ -111,7 +111,7 @@ export class RegisterPage implements OnInit {
   }
   register() {
     if (this.form.value.Password !== this.form.value.SurePassword) {
-      AppHelper.alert(LanguageHelper.TwicePasswordNotEqualTip);
+      AppHelper.alert(LanguageHelper.TwicePasswordNotEqualTip());
       return;
     }
     const req = new RequestEntity();
