@@ -6,15 +6,15 @@ import { RequestEntity } from "../api/Request.entity";
   providedIn: "root"
 })
 export class AuthorizeService {
-  private fetchAuthority: { promise: Promise<string[]> };
-  private authorizes: string[];
-  constructor(private apiService: ApiService) {}
+  private fetchAuthority: { promise: Promise< { [key: string]: any }> };
+  private authorizes: { [key: string]: any };
+  constructor(private apiService: ApiService) { }
   clearAuthorizes() {
     this.authorizes = null;
   }
   async getAuthorizes() {
-    if (this.authorizes && this.authorizes.length) {
-      return Promise.resolve(this.authorizes);
+    if (this.authorizes) {
+      return this.authorizes;
     }
     return this.load();
   }
@@ -29,8 +29,8 @@ export class AuthorizeService {
       promise: this.apiService
         .getPromiseData<string[]>(req)
         .then(res => {
-          this.authorizes = res;
-          return res;
+          this.authorizes = res.reduce((acc, it) => (acc = { ...acc, [it]: "true" }), {});
+          return this.authorizes;
         })
         .finally(() => {
           this.fetchAuthority = null;
