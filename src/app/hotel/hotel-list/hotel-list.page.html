@@ -20,11 +20,13 @@
     <ion-refresher-content>正在加载...</ion-refresher-content>
   </app-refresher>
   <ng-container *ngIf='!isLoadingHotels else fakeList'>
-    <ul *ngIf='hotelDayPrices?.length  else noMoreData'>
-      <li *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
-        <app-hotel-list-item [item]='item' [config]='config'></app-hotel-list-item>
-      </li>
-    </ul>
+    <ion-list>
+      <ul *ngIf='hotelDayPrices?.length  else noMoreData'>
+        <li *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
+          <app-hotel-list-item [item]='item' [config]='config'></app-hotel-list-item>
+        </li>
+      </ul>
+    </ion-list>
   </ng-container>
   <ng-template #noMoreData>
     <ion-list></ion-list>
