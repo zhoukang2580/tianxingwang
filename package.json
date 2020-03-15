@@ -128,8 +128,8 @@
       "cordova-plugin-inappbrowser": {},
       "cordova-plugin-android-permissions": {},
       "cordova-qrscanner-plugin": {},
-      "cordova-wechat-plugin": {},
-      "cordova-hcp-plugin": {}
+      "cordova-hcp-plugin": {},
+      "cordova-wechat-plugin": {}
     },
     "platforms": [
       "android",

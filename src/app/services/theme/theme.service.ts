@@ -36,12 +36,38 @@ export class ThemeService {
   }
   private toggleDarkTheme(shouldToogle: boolean) {
     document.body.classList.toggle("dark", shouldToogle);
+    this.setAppStatusBar(shouldToogle);
+  }
+  private async setAppStatusBar(dark: boolean) {
+    await this.plt.ready();
+    if (AppHelper.isApp() && this.plt.is("ios")) {
+      this.statusBar.styleDefault();
+    }
     if (AppHelper.isApp() && this.plt.is("android")) {
-      if (!shouldToogle) {
-        this.statusBar.styleDefault()
-      } else {
-        this.statusBar.styleLightContent();
-      }
+      // if (window['hcp'] && window['hcp'].getStatusBarHeight) {
+      //   window['hcp'].getStatusBarHeight().then(height => {
+      //     if (height) {
+      //       document.body.style.marginTop = height + "px";
+      //     } else {
+      //       document.body.classList.add("cordova-android");
+      //     }
+      //   })
+      // } else {
+      //   document.body.classList.add("cordova-android");
+      // }
+      this.statusBar.show();
+      this.statusBar.overlaysWebView(false);
+      requestAnimationFrame(() => {
+        if (dark) {
+          // this.statusBar.hide();
+          this.statusBar.backgroundColorByHexString("#ff000000");
+          this.statusBar.styleBlackOpaque();
+          this.statusBar.styleLightContent();
+        } else {
+          this.statusBar.backgroundColorByHexString("#fff9f9f9");
+          this.statusBar.styleDefault();
+        }
+      });
     }
   }
 }
