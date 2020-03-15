@@ -165,7 +165,7 @@ ion-picker{
 
 input {
   border: 1px solid var(--ion-color-medium);
-
+  background-color: transparent;
   &:focus {
     border: 1.5px solid var(--ion-color-secondary);
   }
