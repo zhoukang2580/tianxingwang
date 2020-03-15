@@ -35,7 +35,7 @@ export class LogService {
       req.Timestamp = Math.floor(Date.now() / 1000);
       req.Domain = AppHelper.getDomain();
       req.Method = "ApiLogUrl-Error-Add";
-      const detail =serializeError(ex);
+      const detail = JSON.stringify(serializeError(ex));
       req.Data = JSON.stringify({
         Address: ex.Method,
         Message: ex.Message,
