@@ -7,6 +7,7 @@ import { HttpClient } from "@angular/common/http";
 import { ExceptionEntity } from "./exception.entity";
 import { IdentityService } from "../../services/identity/identity.service";
 import { catchError, finalize } from "rxjs/operators";
+import {serializeError} from 'serialize-error';
 @Injectable({
   providedIn: "root"
 })
@@ -34,14 +35,7 @@ export class LogService {
       req.Timestamp = Math.floor(Date.now() / 1000);
       req.Domain = AppHelper.getDomain();
       req.Method = "ApiLogUrl-Error-Add";
-      const detail =
-      ex.Error instanceof Error
-      ? ex.Error.message.includes("<")
-      ? escape(ex.Error.message)
-      : ex.Error.message
-      : typeof ex.Error === "string" || typeof ex.Error === "number"
-      ? ex.Error
-      : ex.Error
+      const detail =serializeError(ex);
       req.Data = JSON.stringify({
         Address: ex.Method,
         Message: ex.Message,
