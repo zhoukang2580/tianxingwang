@@ -15,7 +15,7 @@ const bootstrap = () =>
   platformBrowserDynamic()
     .bootstrapModule(AppModule)
     .then(moduleRef => {
-      // 为了设置模式)
+      // 为了设置模式
       moduleRef.injector.get(ThemeService);
       return moduleRef;
     })

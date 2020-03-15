@@ -321,6 +321,9 @@ export class AppHelper {
   static isH5() {
     return !window["cordova"];
   }
+  static isPDA() {
+    return window.navigator.userAgent.toLowerCase().includes("5501");
+  }
   static isWechatH5() {
     const ua = window.navigator.userAgent.toLowerCase();
     if (
