@@ -69,7 +69,6 @@ export class IdentityService {
           .pipe(
             finalize(() => {
               setTimeout(() => {
-                this.fetchingIdentityPromise = {} as any;
                 sub.unsubscribe();
               }, 300);
             })
