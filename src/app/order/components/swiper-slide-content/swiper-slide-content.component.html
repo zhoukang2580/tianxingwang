@@ -1,8 +1,10 @@
 <div class="tabs-wraper" #tabsWrapper>
-  <div class="tabs" #tabsContainer>
-    <div class="tab" [class.active]='t.active' (click)='onActiveTab(t)' #tabItem *ngFor='let t of tabs'
-      [attr.dataid]='t.value'>{{t.label}}</div>
-  </div>
+  <ion-list>
+    <div class="tabs" #tabsContainer>
+      <div class="tab" [class.active]='t.active' (click)='onActiveTab(t)' #tabItem *ngFor='let t of tabs'
+        [attr.dataid]='t.value'>{{t.label}}</div>
+    </div>
+  </ion-list>
 </div>
 <main>
   <div class="swiper-container" #container>
