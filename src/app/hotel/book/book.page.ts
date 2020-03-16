@@ -73,6 +73,7 @@ import { ITmcOutNumberInfo } from "src/app/tmc/components/book-tmc-outnumber/boo
 import { AccountEntity } from "src/app/account/models/AccountEntity";
 import { flyInOut } from "src/app/animations/flyInOut";
 import { OrderHotelType } from "src/app/order/models/OrderHotelEntity";
+import { WarrantyComponent } from '../components/warranty/warranty.component';
 @Component({
   selector: "app-book",
   templateUrl: "./book.page.html",
@@ -417,7 +418,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     const showErrorMsg = (msg: string) => {
       AppHelper.alert(
         `${(item.credentialStaff && item.credentialStaff.Name) ||
-          (item.credential && item.credential.Number)}信用卡信息${msg}`
+        (item.credential && item.credential.Number)}信用卡信息${msg}`
       );
       const ele = document.querySelector(`[datacreditcardid='${item.id}']`);
       this.scrollEleToView(ele);
@@ -457,7 +458,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     const showErrorMsg = (msg: string, item: IPassengerHotelBookInfo) => {
       AppHelper.alert(
         `联系人${(item.credentialStaff && item.credentialStaff.Name) ||
-          (item.credential && item.credential.Number)}信息${msg}不能为空`
+        (item.credential && item.credential.Number)}信息${msg}不能为空`
       );
     };
     for (let i = 0; i < this.combindInfos.length; i++) {
@@ -507,9 +508,9 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     const showErrorMsg = (msg: string, item: IPassengerHotelBookInfo) => {
       AppHelper.alert(
         `${(item.credentialStaff && item.credentialStaff.Name) ||
-          (item.credential &&
-            item.credential.CheckFirstName +
-              item.credential.CheckLastName)} 【${item.credential &&
+        (item.credential &&
+          item.credential.CheckFirstName +
+          item.credential.CheckLastName)} 【${item.credential &&
           item.credential.Number}】 ${msg} 信息不能为空`
       );
     };
@@ -544,17 +545,17 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
         p.OrderCard.SetVariable(
           "CredentialsName",
           combindInfo.creditCardPersionInfo &&
-            combindInfo.creditCardPersionInfo.name
+          combindInfo.creditCardPersionInfo.name
         );
         p.OrderCard.SetVariable(
           "CredentialsNumber",
           combindInfo.creditCardPersionInfo &&
-            combindInfo.creditCardPersionInfo.credentialNumber
+          combindInfo.creditCardPersionInfo.credentialNumber
         );
         p.OrderCard.SetVariable(
           "CredentialsType",
           combindInfo.creditCardPersionInfo &&
-            combindInfo.creditCardPersionInfo.credentialType
+          combindInfo.creditCardPersionInfo.credentialType
         );
         p.OrderCard.SetVariable(
           "Year",
@@ -638,7 +639,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
           p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-        }`;
+          }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -652,7 +653,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
           p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-        }`;
+          }`;
       }
       p.IllegalReason =
         (this.tmc &&
@@ -916,20 +917,20 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile
-                };
-              })
+              return {
+                checked: idx == 0,
+                mobile
+              };
+            })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email
-                };
-              })
+              return {
+                checked: idx == 0,
+                email
+              };
+            })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
@@ -1116,7 +1117,23 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto);
     if (canBook && canBook2) {
+      const popover = await this.popoverCtrl.create({
+        component: WarrantyComponent,
+        // event: ev,
+        translucent: true,
+        cssClass: "warranty",
+        componentProps:{
+          title:this.getRoomPlanRulesDesc(this.combindInfos[0].bookInfo.bookInfo.roomPlan)
+        }
+      });
+      await popover.present();
+      const warranty = await popover.onDidDismiss();
+      const checked = warranty && warranty.data as "checked" | "unchecked";
+      if (checked == 'unchecked') {
+        return
+      }
       this.isSubmitDisabled = true;
+
       const res = await this.hotelService.onBook(bookDto).catch(e => {
         AppHelper.alert(e);
         return { TradeNo: "", HasTasks: true };

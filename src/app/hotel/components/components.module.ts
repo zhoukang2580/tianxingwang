@@ -17,6 +17,7 @@ import { QueryTabComponent } from './query-tab/query-tab.component';
 import { RecommendRankComponent } from './recommend-rank/recommend-rank.component';
 import { HotelFilterComponent } from './hotel-filter/hotel-filter.component';
 import { HotelStarPriceComponent } from './hotel-starprice/hotel-starprice.component';
+import { WarrantyComponent } from './warranty/warranty.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { HotelStarPriceComponent } from './hotel-starprice/hotel-starprice.compo
     RoomShowItemComponent,
     ChangeRoomplanDateComponent,
     ShowMsgComponent,
+    WarrantyComponent
   ],
   imports: [
     CommonModule,
@@ -43,6 +45,7 @@ import { HotelStarPriceComponent } from './hotel-starprice/hotel-starprice.compo
     TmcComponentsModule
   ],
   exports: [
+    WarrantyComponent,
     HotelListItemComponent,
     DateCityComponent,
     HotelGeoComponent,

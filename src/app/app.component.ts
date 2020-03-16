@@ -284,6 +284,7 @@ export class AppComponent
         // this.router.navigate(['function-test']);
         // this.router.navigate(['car-order-detail']);
         this.router.navigate(["product-tabs"], { queryParams: { tabId: 1 } });
+
       }
     });
   }

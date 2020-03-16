@@ -31,12 +31,12 @@
           <ion-label (click)='onItemClick(item)'>
             <h2>{{item.Title}}</h2>
             <h3>
-              <ion-note>
-                {{item.InsertTime}}
-              </ion-note>
               <ion-note class='ion-margin-start' *ngIf='!item.IsRead' color='success'>未读</ion-note>
             </h3>
             <p #msgDetial [attr.msgdetail]='item.Detail' [attr.msgid]='item.Id'></p>
+            <ion-note>
+              {{item.InsertTime}}
+            </ion-note>
           </ion-label>
         </ion-item>
 
