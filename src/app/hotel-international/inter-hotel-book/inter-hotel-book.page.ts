@@ -77,6 +77,7 @@ import { AddContact } from "src/app/tmc/models/AddContact";
 import { BookCostcenterCompComponent } from "src/app/tmc/components/book-costcenter-comp/book-costcenter-comp.component";
 import { OrderHotelType } from "src/app/order/models/OrderHotelEntity";
 import { RefresherComponent } from "src/app/components/refresher";
+import { WarrantyComponent } from 'src/app/hotel/components/warranty/warranty.component';
 
 @Component({
   selector: "app-inter-hotel-book",
@@ -1232,6 +1233,22 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto);
     if (canBook && canBook2) {
+      //弹框
+      const popover = await this.popoverCtrl.create({
+        component: WarrantyComponent,
+        // event: ev,
+        translucent: true,
+        cssClass: "warranty",
+        componentProps:{
+          title:this.getRoomPlanRulesDesc(this.combindInfos[0].bookInfo.bookInfo.roomPlan)
+        }
+      });
+      await popover.present();
+      const warranty = await popover.onDidDismiss();
+      const checked = warranty && warranty.data as "checked" | "unchecked";
+      if (!checked || checked == 'unchecked') {
+        return
+      }
       this.isSubmitDisabled = true;
       const res = await this.hotelService.onBook(bookDto).catch(e => {
         AppHelper.alert(e);

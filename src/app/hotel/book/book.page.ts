@@ -1129,7 +1129,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
       await popover.present();
       const warranty = await popover.onDidDismiss();
       const checked = warranty && warranty.data as "checked" | "unchecked";
-      if (checked == 'unchecked') {
+      if (!checked || checked == 'unchecked') {
         return
       }
       this.isSubmitDisabled = true;

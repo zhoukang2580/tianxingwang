@@ -17,6 +17,13 @@ title;
   onHide(){
     this.isshow=false;
   }
+  checkbox_click(){
+    if(this.checked){
+      this.checked=false;
+    }else{
+      this.checked=true;
+    }
+  }
   onanimation(){
     this.isshow=!this.checked;
     if(this.checked){
