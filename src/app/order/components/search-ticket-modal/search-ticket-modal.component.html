@@ -1,7 +1,6 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-
       <app-back-button defaultHref='' [backFn]='back.bind(this)'></app-back-button>
     </ion-buttons>
     <ion-title>{{title||"订单查询条件"}}</ion-title>
@@ -33,6 +32,13 @@
         <ion-select-option [value]="item.value" *ngFor='let item of orderStatus'>{{item.label}}</ion-select-option>
       </ion-select>
     </ion-item>
+    <ion-item *ngIf='condition?.orderFlightTicketStatusTypes?.length'>
+      <ion-label>机票状态</ion-label>
+      <ion-select value="" okText="确定" cancelText="取消" [(ngModel)]='condition.orderFlightTicketStatusType'>
+        <ion-select-option [value]="item.Value" *ngFor='let item of condition.orderFlightTicketStatusTypes'>
+          {{item.Text}}</ion-select-option>
+      </ion-select>
+    </ion-item>
     <ion-item>
       <ion-label>出发城市</ion-label>
       <ion-input type='text' placeholder='出发城市' [(ngModel)]='condition.fromCityName'></ion-input>
@@ -42,5 +48,6 @@
       <ion-input type='text' placeholder='到达城市' [(ngModel)]='condition.toCityName'></ion-input>
     </ion-item>
   </ion-list>
-  <ion-button class='ion-margin-start ion-margin-end' (click)='search()' color='secondary' expand='block'>搜索</ion-button>
+  <ion-button class='ion-margin-start ion-margin-end' (click)='search()' color='secondary' expand='block'>搜索
+  </ion-button>
 </ion-content>

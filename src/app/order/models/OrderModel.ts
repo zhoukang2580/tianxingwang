@@ -23,7 +23,7 @@ export class OrderModel {
   /// 数据
   /// </summary>
   DataCount: number;
-  Type: "Flight" | "Train" | "Hotel"|"Car";
+  Type: "Flight" | "Train" | "Hotel" | "Car";
   /// <summary>
   /// 开始日期
   /// </summary>
@@ -36,7 +36,8 @@ export class OrderModel {
   /// 状态
   /// </summary>
   Status: OrderStatusType;
-
+  OrderFlightTicketStatusTypes: { Text: string; Value: string }[];
+  OrderFlightTicketStatusType: string;
   /// <summary>
   /// 订单编号
   /// </summary>

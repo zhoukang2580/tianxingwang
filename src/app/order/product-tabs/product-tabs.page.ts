@@ -30,7 +30,7 @@ import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
 import { TaskEntity } from "src/app/workflow/models/TaskEntity";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { ORDER_TABS } from "../product-list/product-list.page";
-import { PayService } from 'src/app/services/pay/pay.service';
+import { PayService } from "src/app/services/pay/pay.service";
 
 @Component({
   selector: "app-product-tabs",
@@ -56,6 +56,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   isOpenUrl = false;
   loadMoreErrMsg: string;
   myTripsTotalCount = 0;
+  orderFlightTicketStatusTypes: any[];
   @ViewChild(IonContent) ionContent: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
   @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
@@ -66,7 +67,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     private router: Router,
     private apiService: ApiService,
     private orderService: OrderService,
-    private identityService: IdentityService,
+    private identityService: IdentityService
   ) {
     route.queryParamMap.subscribe(d => {
       if (d && d.get("tabId")) {
@@ -88,14 +89,14 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     this.loadDataSub.unsubscribe();
   }
   async onPay(order: OrderEntity) {
-    try{
+    try {
       // const isSelfBookType = await this.staffService.isSelfBookType();
       if (order) {
         // if (order.Status == OrderStatusType.WaitPay) {
         // }
         await this.tmcService.payOrder(order.Id);
       }
-    }catch(e){
+    } catch (e) {
       AppHelper.alert(e);
     }
   }
@@ -212,10 +213,15 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     this.backbtn.backToPrePage();
   }
   async openSearchModal() {
+    const condition = new SearchTicketConditionModel();
     const m = await this.modalCtrl.create({
       component: SearchTicketModalComponent,
       componentProps: {
-        type: this.activeTab
+        type: this.activeTab,
+        condition: {
+          ...condition,
+          orderFlightTicketStatusTypes: this.orderFlightTicketStatusTypes || []
+        }
       }
     });
     await m.present();
@@ -337,6 +343,8 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         .subscribe(
           async res => {
             let result: OrderModel = res.Status ? res.Data : null;
+            this.orderFlightTicketStatusTypes =
+              (res.Data && res.Data.OrderFlightTicketStatusTypes) || [];
             if (m.PageIndex < 1) {
               this.dataCount = result && result.DataCount;
             }

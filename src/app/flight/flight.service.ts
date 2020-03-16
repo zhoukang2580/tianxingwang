@@ -25,7 +25,6 @@ import { StaffService, StaffEntity } from "../hr/staff.service";
 import { Injectable } from "@angular/core";
 import { Subject, BehaviorSubject, combineLatest } from "rxjs";
 
-import * as moment from "moment";
 import { ApiService } from "../services/api/api.service";
 import { FlightJourneyEntity } from "./models/flight/FlightJourneyEntity";
 import { FlightSegmentEntity } from "./models/flight/FlightSegmentEntity";
@@ -379,10 +378,14 @@ export class FlightService {
       }
     }
     s = this.getSearchFlightModel();
-    let goArrivalTime: string | number = +moment();
+    let goArrivalTime: string | number = this.calendarService
+      .getMoment(0)
+      .format("YYYY-MM-DD");
     if (tripType == TripType.returnTrip || goFlight) {
       if (!goFlight) {
-        goArrivalTime = +moment(s && s.Date);
+        goArrivalTime = this.calendarService
+          .getMoment(0, s && s.Date)
+          .format("YYYY-MM-DD");
       } else {
         if (
           goFlight &&
@@ -623,7 +626,7 @@ export class FlightService {
               if (item.credential) {
                 name = `${item.credential.CheckFirstName}${
                   item.credential.CheckLastName
-                  }(${(item.credential.Number || "").substr(0, 6)}...)`;
+                }(${(item.credential.Number || "").substr(0, 6)}...)`;
               }
               cannotArr.push(name);
               item.bookInfo = null;
@@ -710,7 +713,7 @@ export class FlightService {
           if (item.credential) {
             name = `${item.credential.CheckFirstName}${
               item.credential.CheckLastName
-              }(${(item.credential.Number || "").substr(0, 6)}...)`;
+            }(${(item.credential.Number || "").substr(0, 6)}...)`;
           }
           cannotArr.push(name);
           item.bookInfo = null;
@@ -790,7 +793,7 @@ export class FlightService {
     }
   }
   showSelectedBookInfosPage() {
-    this.router.navigate([AppHelper.getRoutePath("selected-flight-bookinfos")])
+    this.router.navigate([AppHelper.getRoutePath("selected-flight-bookinfos")]);
   }
   async dismissAllTopOverlays() {
     console.time("dismissAllTopOverlays");
@@ -798,7 +801,7 @@ export class FlightService {
     let i = 10;
     while (top && --i > 0) {
       // console.log("onSelectReturnTrip", top);
-      await top.dismiss().catch(_ => { });
+      await top.dismiss().catch(_ => {});
       top = await this.modalCtrl.getTop();
     }
     console.timeEnd("dismissAllTopOverlays");
@@ -1001,12 +1004,12 @@ export class FlightService {
     Flights: FlightJourneyEntity[],
     Passengers: string[]
   ): Promise<PassengerPolicyFlights[]> {
-    if (!environment.production) {
-      const policyFlights = await this.storage.get("test_flight_policy");
-      if (policyFlights) {
-        return policyFlights;
-      }
-    }
+    // if (!environment.production) {
+    //   const policyFlights = await this.storage.get("test_flight_policy");
+    //   if (policyFlights) {
+    //     return policyFlights;
+    //   }
+    // }
     const req = new RequestEntity();
     req.Method = `TmcApiFlightUrl-Home-Policy`;
     req.Version = "2.0";
@@ -1078,9 +1081,9 @@ export class FlightService {
         AppHelper.alert(_);
         return [];
       });
-    if (!environment.production) {
-      await this.storage.set("test_flight_policy", res);
-    }
+    // if (!environment.production) {
+    //   await this.storage.set("test_flight_policy", res);
+    // }
     return res;
   }
   sortByPrice(segments: FlightSegmentEntity[], l2h: boolean) {
@@ -1097,17 +1100,26 @@ export class FlightService {
       return l2h ? sub : -sub;
     });
   }
+  private getDate(date: string) {
+    return +date.substr(8, 2);
+  }
   private addoneday(s: FlightSegmentEntity) {
-    const addDay = moment(s.ArrivalTime).diff(moment(s.TakeoffTime), "days");
-    return addDay > 0 ? "+" + addDay + LanguageHelper.getDayTip() : "";
+    let addDay = Math.floor(
+      (s.ArrivalTimeStamp - s.TakeoffTimeStamp) / 86400000
+    );
+    const arrivalDay = this.getDate(s.ArrivalTime);
+    const takeOffDay = this.getDate(s.TakeoffTime);
+    if (arrivalDay - takeOffDay) {
+      addDay += 1;
+    }
+    return  addDay >= 1 ? `+${addDay}${LanguageHelper.getDayTip()}` : "";
   }
   getTotalFlySegments() {
     return this.getFlightSegments(this.flightJourneyList);
   }
   private getFlightSegments(flyJourneys: FlightJourneyEntity[]) {
-    console.time("getTotalFlySegments");
     console.log("getTotalFlySegments flyJourneys", flyJourneys);
-    let result: FlightSegmentEntity[] = [];
+    const result: FlightSegmentEntity[] = [];
     flyJourneys.forEach(fj => {
       if (fj.FlightRoutes) {
         fj.FlightRoutes.forEach(r => {
@@ -1144,7 +1156,6 @@ export class FlightService {
         });
       }
     });
-    console.timeEnd("getTotalFlySegments");
     console.log("getTotalFlySegments", result);
     return result;
   }
@@ -1166,9 +1177,6 @@ export class FlightService {
       tripType: null,
       originalLowerSegment: null
     };
-    // if (info && !info.isReplace && info.bookInfo && info.bookInfo.lowerSegmentInfo && info.bookInfo.lowerSegmentInfo.lowestCabin && info.bookInfo.lowerSegmentInfo.lowestFlightSegment && info.bookInfo.lowerSegmentInfo.tripType == info.bookInfo.tripType) {
-    //   return info.bookInfo.lowerSegmentInfo;
-    // }
     if (
       !info ||
       !info.bookInfo ||
@@ -1567,12 +1575,12 @@ export class FlightService {
         // console.log(moment(s.TakeoffTime).hour());
         return (
           this.filterCondition.takeOffTimeSpan.lower <=
-          moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() &&
-          (moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() <
+            this.calendarService.getMoment(0, s.TakeoffTime).hour() &&
+          (this.calendarService.getMoment(0, s.TakeoffTime).hour() <
             this.filterCondition.takeOffTimeSpan.upper ||
-            (moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").hour() ==
+            (this.calendarService.getMoment(0, s.TakeoffTime).hour() ==
               this.filterCondition.takeOffTimeSpan.upper &&
-              moment(s.TakeoffTime, "YYYY-MM-DDTHH:mm:ss").minutes() == 0))
+              this.calendarService.getMoment(0, s.TakeoffTime).minutes() == 0))
         );
       });
     }

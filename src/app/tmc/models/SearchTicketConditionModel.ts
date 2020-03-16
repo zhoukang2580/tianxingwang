@@ -9,6 +9,8 @@ export class SearchTicketConditionModel {
   vmToDate: string;
   orderNumber: string;
   orderStatus: OrderStatusType;
+  orderFlightTicketStatusTypes: { Text: string; Value: string }[];
+  orderFlightTicketStatusType: string;
   fromCity: TrafficlineEntity;
   toCity: TrafficlineEntity;
   fromCityName: string;

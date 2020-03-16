@@ -11,7 +11,7 @@ import { SelectAirportsModalComponent } from "src/app/tmc/components/select-airp
   styleUrls: ["./search-ticket-modal.component.scss"]
 })
 export class SearchTicketModalComponent implements OnInit {
-  condition: SearchTicketConditionModel = new SearchTicketConditionModel();
+  condition: SearchTicketConditionModel;
   type: number;
   title: string;
   orderStatus: { label: string; value: OrderStatusType }[] = [];
@@ -60,6 +60,9 @@ export class SearchTicketModalComponent implements OnInit {
     });
   }
   ngOnInit() {
+    if (!this.condition) {
+      this.condition = new SearchTicketConditionModel();
+    }
     this.orderStatus = [
       { label: "所有", value: "" as any },
       { label: "等待审核", value: OrderStatusType.WaitHandle },
@@ -70,6 +73,6 @@ export class SearchTicketModalComponent implements OnInit {
     // this.condition.vmFromDate = moment()
     //   .startOf("year")
     //   .format("YYYY-MM-DD");
-    // console.log(this.condition);
+    console.log(this.condition);
   }
 }
