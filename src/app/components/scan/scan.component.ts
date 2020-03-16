@@ -1,4 +1,3 @@
-import { QrScanService } from './../../services/qrScan/qrscan.service';
 import { IdentityEntity } from "./../../services/identity/identity.entity";
 import { AfterViewInit, OnDestroy } from "@angular/core";
 import { Router } from "@angular/router";
@@ -9,6 +8,7 @@ import { Component, OnInit, Input } from "@angular/core";
 import { Platform } from "@ionic/angular";
 import { WechatHelper } from "src/app/wechatHelper";
 import { Subscription } from "rxjs";
+import { QrScanService } from 'src/app/services/qrScan/qrscan.service';
 @Component({
   selector: "app-scan-comp",
   templateUrl: "./scan.component.html",

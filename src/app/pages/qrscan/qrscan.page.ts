@@ -4,8 +4,8 @@ import { ActivatedRoute } from "@angular/router";
 import { OnDestroy, ViewChild, ElementRef } from "@angular/core";
 import { Component, OnInit } from "@angular/core";
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
-import { QrScanService } from "src/app/services/qrScan/qrScan.service";
 import { AppHelper } from "src/app/appHelper";
+import { QrScanService } from 'src/app/services/qrScan/qrscan.service';
 
 @Component({
   selector: "app-qrscan",
