@@ -2,9 +2,12 @@
   position: fixed;
   top: 0;
   z-index: 100;
-  background-color: white;
+  // background-color: white;
   width: 100%;
   height: 3em;
+  ion-list{
+    height: 100%;
+  }
 }
 .tabs {
   overflow: auto;
@@ -15,7 +18,7 @@
   display: flex;
   align-items: center;
   .tab {
-    padding: 1em 0.5em;
+    padding: 0.5em;
     margin: 0 1em;
     white-space: nowrap;
     position: relative;
@@ -25,7 +28,7 @@
         background-color: var(--ion-color-secondary);
         display: block;
         position: absolute;
-        bottom: 0.5em;
+        bottom: 0em;
         content: "";
         height: 0.2em;
         left: 10%;

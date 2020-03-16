@@ -15,7 +15,7 @@ ion-item.item-interactive-disabled {
   left: 1em;
   top: 5.5em;
   width: 15em;
-  background: white;
+  // background: white;
   z-index: 99;
   ul {
     list-style-type: none;
@@ -28,7 +28,7 @@ ion-item.item-interactive-disabled {
       padding: 1em;
     }
     li + li {
-      border-top: 1px solid rgba(0, 0, 0, 0.12);
+      border-top: 1px solid rgba(var(--ion-color-dark-rgb), 0.16);
     }
   }
 }

@@ -2,52 +2,16 @@ ion-content {
   background-position: center;
   background-attachment: scroll;
   ion-segment {
-    --indicator-color: rgba(0, 0, 0, 0.13);
+    --indicator-color: rgba(var(--ion-color-dark-rgb), 0.16);
   }
   ion-toolbar {
     --background: transparent;
   }
-  ion-card {
-    --background: white;
-  }
+
   ion-buttons.small-font {
     font-size: 0.6rem;
   }
-  .round-trip {
-    position: relative;
-    display: flex;
-    align-items: center;
-    width: 100%;
-    justify-content: space-around;
-    &::after {
-      --border-color: #d6d6d6;
-      content: "";
-      position: absolute;
-      left: -1rem;
-      right: -1rem;
-      display: block;
-      border: 0.6px solid var(--border-color);
-      bottom: 0;
-    }
-    ion-button {
-      position: relative;
-      margin-bottom: -1.1px;
-      --opacity: 0.8;
-      z-index: 1;
-      &.active {
-        --opacity: 1;
-      }
-      &.active::after {
-        content: "";
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border: 2px solid var(--ion-color-secondary);
-        border-radius: 10px;
-      }
-    }
-  }
+
   .flight-date {
     display: flex;
     align-items: center;

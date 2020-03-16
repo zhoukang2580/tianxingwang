@@ -1,6 +1,4 @@
-ion-content {
-  --background: #f2f2f2;
-}
+
 .id-type {
   padding: 0 0 0 0.3em;
 }
@@ -19,6 +17,9 @@ ion-row ion-col {
   }
   &:not(.arrow-forward) {
     align-self: flex-start;
+  }
+  input{
+    background: transparent;
   }
   input.disabled {
     border: none;

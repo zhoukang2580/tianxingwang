@@ -11,7 +11,7 @@
       bottom: 0;
       left: 0;
       z-index: 1000;
-      background-color: rgba(0, 0, 0, 0.5);
+      background-color: rgba(var(--ion-color-medium-rgb), 0.5);
     }
     app-room-show-item {
       display: block;
@@ -20,13 +20,14 @@
   }
 }
 .price-list {
-  background: white;
+  background: var(--ion-color-primary);
   min-height: 20vh;
   max-height: 60vh;
   overflow: auto;
   height: 50vh;
   z-index: 1000;
   position: fixed;
+  color: var(--ion-color-medium);
   left: 0;
   right: 0;
   bottom: 0;

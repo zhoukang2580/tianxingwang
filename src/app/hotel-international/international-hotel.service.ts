@@ -35,9 +35,7 @@ import { SelectDateComponent } from "../tmc/components/select-date/select-date.c
 import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 import { CountryEntity } from "../tmc/models/CountryEntity";
 import { OrderBookDto } from "../order/models/OrderBookDto";
-
-export const KEY_INTERNATIONAL_HOTEL_TRAFFICLINES =
-  "key_international_hotel_trafficlines";
+import { DestinationAreaType } from "../tmc/models/DestinationAreaType";
 export const KEY_INTERNATIONAL_HOTEL_COUNTRIES =
   "key_international_hotel_countries";
 interface ILocalCache<T> {
@@ -652,86 +650,23 @@ export class InternationalHotelService {
     }
     return obj;
   }
-  async getTrafficlinesAsync(forceFetch = false) {
-    if (!forceFetch) {
-      if (
-        !this.trafficlines ||
-        !this.trafficlines.data ||
-        this.trafficlines.data.length == 0
-      ) {
-        this.trafficlines = await this.getLocalTrafficlines();
-      }
-      if (
-        this.trafficlines &&
-        this.trafficlines.data &&
-        this.trafficlines.data.length
-      ) {
-        return Promise.resolve(this.trafficlines.data);
-      }
-    }
-    if (!this.trafficlines) {
-      this.trafficlines = await this.getLocalTrafficlines();
-    }
+  searchHotelCity(param: {
+    areaTypes: DestinationAreaType[];
+    pageIndex: number;
+    pageSize?: number;
+    name?: string;
+  }) {
     const req = new RequestEntity();
-    req.IsShowLoading = true;
-    req.Method = "TmcApiInternationalHotelUrl-Trafficline-GetTrafficlines";
-    req.Data = {};
-    if (this.fetchTrafficlines && this.fetchTrafficlines.promise) {
-      return this.fetchTrafficlines.promise;
-    }
-    const countries = await this.getCountries();
-    this.fetchTrafficlines = {
-      promise: this.apiService
-        .getPromiseData<TrafficlineEntity[]>(req)
-        .then(res => {
-          if (countries && countries.length) {
-            res = res.map(it => {
-              it.Country = countries.find(c => c.Code == it.CountryCode);
-              return it;
-            });
-          }
-          this.trafficlines.data = res;
-          this.cacheTrafficlines(this.trafficlines.data);
-          return res;
-        })
-        .finally(() => {
-          this.fetchTrafficlines = null;
-        })
-    };
-    return this.fetchTrafficlines.promise;
-  }
-  private searchHotelCities(name: string, pageIndex: number, pageSize = 20) {
-    const req = new RequestEntity();
-    req.IsShowLoading = true;
+    // req.IsShowLoading = true;
     req.Method = "TmcApiInternationalHotelUrl-Trafficline-Search";
     req.Data = {
-      Name: name,
-      PageIndex: pageIndex,
+      Name: param.name,
+      PageIndex: param.pageIndex,
       lang: AppHelper.getLanguage() || "cn",
-      PageSize: pageSize
+      PageSize: param.pageSize,
+      DestinationAreaTypes: param.areaTypes.join(",")
     };
     return this.apiService.getResponse<ISearchTextValue[]>(req);
-  }
-  private async cacheTrafficlines(list: TrafficlineEntity[]) {
-    if (AppHelper.isApp()) {
-      if (list && list.length) {
-        await this.storage.set(KEY_INTERNATIONAL_HOTEL_TRAFFICLINES, {
-          lastUpdateTime: Date.now(),
-          data: list
-        } as ILocalCache<TrafficlineEntity[]>);
-      }
-    }
-  }
-  private async getLocalTrafficlines(): Promise<
-    ILocalCache<TrafficlineEntity[]>
-  > {
-    let result: ILocalCache<TrafficlineEntity[]> = {
-      lastUpdateTime: 0,
-      data: []
-    };
-    result =
-      (await this.storage.get(KEY_INTERNATIONAL_HOTEL_TRAFFICLINES)) || result;
-    return result;
   }
   private async cacheCountries(countries: CountryEntity[]) {
     if (countries && countries.length) {

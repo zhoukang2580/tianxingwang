@@ -1,11 +1,11 @@
-import { BackButtonComponent } from "../../components/back-button/back-button.component";
 import { Router } from "@angular/router";
 import { Subscription, interval } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
 import { OnDestroy, ViewChild, ElementRef } from "@angular/core";
-import { QrScanService } from "../../services/qrScan/qrscan.service";
 import { Component, OnInit } from "@angular/core";
-import { AppHelper } from "../../appHelper";
+import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
+import { QrScanService } from "src/app/services/qrScan/qrScan.service";
+import { AppHelper } from "src/app/appHelper";
 
 @Component({
   selector: "app-qrscan",
@@ -13,6 +13,7 @@ import { AppHelper } from "../../appHelper";
   styleUrls: ["./qrscan.page.scss"]
 })
 export class QrScanPage implements OnInit, OnDestroy {
+  private isAutoClose = false;
   private subscription = Subscription.EMPTY;
   isLighting = false;
   isMovingScanBar = false;
@@ -21,7 +22,7 @@ export class QrScanPage implements OnInit, OnDestroy {
     private qrScanService: QrScanService,
     private router: Router,
     private route: ActivatedRoute
-  ) { }
+  ) {}
   back(evt?: CustomEvent) {
     if (evt) {
       evt.preventDefault();
@@ -40,7 +41,8 @@ export class QrScanPage implements OnInit, OnDestroy {
     }
   }
   ngOnInit() {
-    this.subscription = this.route.queryParamMap.subscribe(() => {
+    this.subscription = this.route.queryParamMap.subscribe(q => {
+      this.isAutoClose = q.get("autoClose") == "true";
       this.scan();
     });
   }
@@ -67,10 +69,16 @@ export class QrScanPage implements OnInit, OnDestroy {
       this.qrScanService.show();
       this.qrScanService.resumePreview();
       const text = await this.qrScanService.scan();
+      this.qrScanService.setScanResultSource(text);
       this.isMovingScanBar = false;
       this.qrScanService.hide();
       this.qrScanService.pausePreview();
-      this.qrScanService.cancelScan().catch(()=>0);
+      this.qrScanService.cancelScan().catch(() => 0);
+      if (this.isAutoClose) {
+        this.backbtn.backToPrePage();
+        this.clearBackground(false);
+        return;
+      }
       this.router.navigate([
         AppHelper.getRoutePath("scan"),
         { scanResult: text }

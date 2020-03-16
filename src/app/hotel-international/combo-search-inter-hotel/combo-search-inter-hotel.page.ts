@@ -16,6 +16,7 @@ import {
   ISearchTextValue
 } from "./../international-hotel.service";
 import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
+import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 
 @Component({
   selector: "app-search-by-text",
@@ -26,6 +27,7 @@ import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
 export class ComboSearchInterHotelPage implements OnInit, OnDestroy {
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
+  @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
   private pageIndex = 0;
   private subscription = Subscription.EMPTY;
   private subscription2 = Subscription.EMPTY;
@@ -34,7 +36,6 @@ export class ComboSearchInterHotelPage implements OnInit, OnDestroy {
   isLoading = false;
   constructor(
     private hotelService: InternationalHotelService,
-    private navCtrl: NavController,
     private route: ActivatedRoute
   ) {}
   ngOnDestroy() {
@@ -125,10 +126,10 @@ export class ComboSearchInterHotelPage implements OnInit, OnDestroy {
       }
     });
     setTimeout(() => {
-      this.navCtrl.back();
+      this.back();
     }, 200);
   }
   back() {
-    this.navCtrl.back();
+    this.backbtn.backToPrePage();
   }
 }

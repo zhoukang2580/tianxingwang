@@ -14,7 +14,8 @@ ion-input.TravelNumber {
   font-size: 0.8rem;
 }
 .price-list {
-  background: white;
+  background: var(--ion-color-primary);
+  color: var(--ion-color-medium);
   position: fixed;
   left: 0;
   right: 0;

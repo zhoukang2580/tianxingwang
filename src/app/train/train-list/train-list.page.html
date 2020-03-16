@@ -35,39 +35,41 @@
   </ion-toolbar>
 </ion-header>
 <ion-content #cnt>
-  <div class="content-header">
-    <ion-grid class='xs-font-size' [style.visibility]="!isLoading?'initial':'collapse'"
-      (click)='showSelectedBookInfos()'>
-      <ion-row *ngIf='curFilteredBookInfo$|async as bookInfo' class='xs-font-size'>
-        <ion-col *ngIf='bookInfo.credential as credential'>
-          <ion-text color='secondary'>
-            当前已过滤【{{credential.CheckFirstName}}{{credential.CheckLastName}}】({{credential.Number}})差标
-          </ion-text>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col>
-          <ion-text color='secondary'>{{searchTrainModel?.Date}}共{{trainsCount}}趟火车</ion-text>
-          <ion-text color='danger' *ngIf='isFiltered'>(筛选后)</ion-text>
-        </ion-col>
-      </ion-row>
-      <ng-container *ngIf='isShowRoundtripTip'>
-        <ion-row *ngIf='goRoundTripDateTime$|async as datetime'>
-          <ion-col *ngIf='datetime?.goArrivalDateTime'>
-            <ion-text color='secondary'>去程<ion-text color='danger'>(到达)</ion-text>:{{datetime?.goArrivalDateTime}}
+  <ion-list>
+    <div class="content-header">
+      <ion-grid class='xs-font-size' [style.visibility]="!isLoading?'initial':'collapse'"
+        (click)='showSelectedBookInfos()'>
+        <ion-row *ngIf='curFilteredBookInfo$|async as bookInfo' class='xs-font-size'>
+          <ion-col *ngIf='bookInfo.credential as credential'>
+            <ion-text color='secondary'>
+              当前已过滤【{{credential.CheckFirstName}}{{credential.CheckLastName}}】({{credential.Number}})差标
             </ion-text>
           </ion-col>
-          <ion-col *ngIf='datetime?.backDateTime'>
-            <ion-text color='secondary'>返程:{{datetime?.backDateTime}}</ion-text>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-text color='secondary'>{{searchTrainModel?.Date}}共{{trainsCount}}趟火车</ion-text>
+            <ion-text color='danger' *ngIf='isFiltered'>(筛选后)</ion-text>
           </ion-col>
         </ion-row>
-      </ng-container>
-    </ion-grid>
-    <ion-toolbar class="fly-days">
-      <app-days-calendar (itemSelected)="onChangedDay($event,true)" (calenderClick)="onCalenderClick()">
-      </app-days-calendar>
-    </ion-toolbar>
-  </div>
+        <ng-container *ngIf='isShowRoundtripTip'>
+          <ion-row *ngIf='goRoundTripDateTime$|async as datetime'>
+            <ion-col *ngIf='datetime?.goArrivalDateTime'>
+              <ion-text color='secondary'>去程<ion-text color='danger'>(到达)</ion-text>:{{datetime?.goArrivalDateTime}}
+              </ion-text>
+            </ion-col>
+            <ion-col *ngIf='datetime?.backDateTime'>
+              <ion-text color='secondary'>返程:{{datetime?.backDateTime}}</ion-text>
+            </ion-col>
+          </ion-row>
+        </ng-container>
+      </ion-grid>
+      <ion-toolbar class="fly-days">
+        <app-days-calendar (itemSelected)="onChangedDay($event,true)" (calenderClick)="onCalenderClick()">
+        </app-days-calendar>
+      </ion-toolbar>
+    </div>
+  </ion-list>
   <app-refresher slot="fixed" (ionRefresh)="doRefresh(true,false)">
     <ion-refresher-content>正在刷新...</ion-refresher-content>
   </app-refresher>
@@ -77,15 +79,15 @@
   <app-or-comp *ngIf='!isLoading&&vmTrains?.length==0'>
     暂无数据
   </app-or-comp>
-
-  <ul class='train' >
-    <li *ngFor='let item of vmTrains;trackBy:trackBy;let idx=index;' #li>
-      <!-- <ion-text color='danger'>{{idx}}</ion-text> -->
-      <app-train-list-item [train]='item' (bookTicket)='onBookTicket(item,$event)' (scheduleEmit)='schedules(item)'>
-      </app-train-list-item>
-    </li>
-  </ul>
-
+  <ion-list>
+    <ul class='train'>
+      <li *ngFor='let item of vmTrains;trackBy:trackBy;let idx=index;' #li>
+        <!-- <ion-text color='danger'>{{idx}}</ion-text> -->
+        <app-train-list-item [train]='item' (bookTicket)='onBookTicket(item,$event)' (scheduleEmit)='schedules(item)'>
+        </app-train-list-item>
+      </li>
+    </ul>
+  </ion-list>
   <ng-container #fakeList *ngIf='isLoading'>
     <ion-list class='fakelist'>
       <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8]'>

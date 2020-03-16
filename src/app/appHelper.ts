@@ -25,7 +25,7 @@ export class AppHelper {
     environment.production && !environment.mockProBuild
       ? "sky-trip.com"
       : "testskytrip.com";
-  constructor() {}
+  constructor() { }
   static _domain;
   static _queryParamers = {};
   static platform: Platform;
@@ -67,14 +67,7 @@ export class AppHelper {
     return new Promise<any>(async (resolve, reject) => {
       await this.dismissAlertLayer();
       const t = await this.toastController.create({
-        message:
-          typeof msg === "string"
-            ? msg
-            : msg instanceof Error
-            ? msg.message
-            : typeof msg === "object" && msg.message
-            ? msg.message
-            : JSON.stringify(msg),
+        message:this.getMsg(msg),
         position: position as any,
         duration: duration
       });
@@ -92,6 +85,15 @@ export class AppHelper {
   }
   static isFunction(fun: any) {
     return typeof fun === "function";
+  }
+  private static getMsg(msg: any) {
+    return typeof msg === "string"
+      ? msg
+      : msg instanceof Error
+        ? msg.message
+        : msg && (msg.message || msg.Message)
+          ? (msg.message || msg.Message)
+          : JSON.stringify(msg)
   }
   static alert(
     msg: any,
@@ -124,16 +126,7 @@ export class AppHelper {
       }
       const a = await this.alertController.create({
         header: LanguageHelper.getMsgTip(),
-        message:
-          typeof msg === "string"
-            ? msg
-            : msg instanceof Error
-            ? msg.message
-            : typeof msg === "object" && msg.message
-            ? msg.message
-            : msg.Message
-            ? msg.Message
-            : JSON.stringify(msg),
+        message: this.getMsg(msg),
         backdropDismiss: !userOp,
         buttons
       });
@@ -320,6 +313,9 @@ export class AppHelper {
   }
   static isH5() {
     return !window["cordova"];
+  }
+  static isPDA() {
+    return window.navigator.userAgent.toLowerCase().includes("5501");
   }
   static isWechatH5() {
     const ua = window.navigator.userAgent.toLowerCase();
@@ -513,12 +509,12 @@ export class AppHelper {
   static setQueryParamers(key: string, value: string) {
     try {
       this._queryParamers[key] = value;
-    } catch (ex) {}
+    } catch (ex) { }
   }
   static removeQueryParamers(key: string) {
     try {
       this._queryParamers[key] = null;
-    } catch (ex) {}
+    } catch (ex) { }
   }
   static getQueryParamers() {
     return this._queryParamers as any;

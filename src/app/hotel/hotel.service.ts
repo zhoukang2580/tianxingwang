@@ -492,7 +492,7 @@ export class HotelService {
       cityCode =
         cityCode ||
         (this.getSearchHotelModel().destinationCity &&
-          this.getSearchHotelModel().destinationCity.Code);
+        this.getSearchHotelModel().destinationCity.Code);
       req.Method = `TmcApiHotelUrl-Condition-Gets`;
       req.Data = {
         cityCode
@@ -502,6 +502,7 @@ export class HotelService {
         .getResponse<HotelConditionModel>(req)
         .pipe(
           finalize(() => {
+            this.apiService.hideLoadingView();
             setTimeout(() => {
               this.hotelConditionSubscription.unsubscribe();
             }, 200);

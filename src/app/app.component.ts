@@ -41,6 +41,7 @@ import {
   animate
 } from "@angular/animations";
 import { ImageRecoverService } from "./services/imageRecover/imageRecover.service";
+import { ThemeService } from './services/theme/theme.service';
 export interface App {
   loadUrl: (
     url: string,
@@ -125,26 +126,7 @@ export class AppComponent
         },
         false
       );
-      // this.statusBar.styleDefault();
       if (AppHelper.isApp() && this.platform.is("android")) {
-        if (window['hcp'] && window['hcp'].getStatusBarHeight) {
-          window['hcp'].getStatusBarHeight().then(height => {
-            if (height) {
-              document.body.style.marginTop = height + "px";
-            } else {
-              document.body.classList.add("cordova-android");
-            }
-          })
-        } else {
-          document.body.classList.add("cordova-android");
-        }
-        this.statusBar.show();
-        this.statusBar.overlaysWebView(true);
-        requestAnimationFrame(() => {
-          // 主题色
-          this.statusBar.backgroundColorByHexString("#fff9f9f9");
-          this.statusBar.styleDefault();
-        });
         setTimeout(async () => {
           this.splashScreen.hide();
           // console.log(`uuid = ${await AppHelper.getUUID()}`);

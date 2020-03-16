@@ -90,7 +90,6 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
   }
   async onReset() {
     this.hotelQueryModel = new HotelQueryEntity();
-    this.hotelService.setHotelQuerySource(this.hotelQueryModel);
     if (this.queryTabComps) {
       this.queryTabComps.forEach(it => {
         if (it) {

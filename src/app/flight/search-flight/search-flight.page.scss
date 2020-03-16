@@ -2,22 +2,19 @@ ion-content {
   background-position: center;
   background-attachment: scroll;
   ion-segment {
-    --indicator-color: rgba(0, 0, 0, 0.13);
+    --indicator-color: rgba(var(--ion-color-dark-rgb), 0.16);
   }
   ion-toolbar {
     --background: transparent;
   }
-  ion-card {
-    --background: white;
-  }
-  .round-trip{
+  .round-trip {
     position: relative;
     display: flex;
     align-items: center;
     width: 100%;
     justify-content: space-around;
     &::after {
-      --border-color    : #d6d6d6;
+      --border-color: var(--ion-color-medium);
       content: "";
       position: absolute;
       left: -1rem;
@@ -92,7 +89,7 @@ ion-content {
     }
   }
 }
-.city{
+.city {
   justify-content: space-between;
   padding: 0.5em 0;
 }

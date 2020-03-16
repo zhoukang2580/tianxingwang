@@ -36,17 +36,21 @@
         <span>舱位</span>
       </div>
     </article>
-    <article class="right">
-      <app-take-off-timespan [class.hidden]='tab!==1' [(filterCondition)]='filterCondition'></app-take-off-timespan>
-      <app-aircompany [class.hidden]='tab!==2' [(filterCondition)]='filterCondition'>
-      </app-aircompany>
-      <app-airports #fromAirports [class.hidden]='tab!==3' [isFromAirports]="true" [(filterCondition)]='filterCondition'>
-      </app-airports>
-      <app-airports #toAirports [isFromAirports]="false" [(filterCondition)]='filterCondition' [class.hidden]='tab!==6'>
-      </app-airports>
-      <app-airtype [class.hidden]='tab!==4' [(filterCondition)]='filterCondition'></app-airtype>
-      <app-cabin [class.hidden]='tab!==5' [(filterCondition)]='filterCondition'></app-cabin>
-    </article>
+    <ion-list style='flex:1'>
+      <article class="right">
+        <app-take-off-timespan [class.hidden]='tab!==1' [(filterCondition)]='filterCondition'></app-take-off-timespan>
+        <app-aircompany [class.hidden]='tab!==2' [(filterCondition)]='filterCondition'>
+        </app-aircompany>
+        <app-airports #fromAirports [class.hidden]='tab!==3' [isFromAirports]="true"
+          [(filterCondition)]='filterCondition'>
+        </app-airports>
+        <app-airports #toAirports [isFromAirports]="false" [(filterCondition)]='filterCondition'
+          [class.hidden]='tab!==6'>
+        </app-airports>
+        <app-airtype [class.hidden]='tab!==4' [(filterCondition)]='filterCondition'></app-airtype>
+        <app-cabin [class.hidden]='tab!==5' [(filterCondition)]='filterCondition'></app-cabin>
+      </article>
+    </ion-list>
   </section>
 </ion-content>
 <ion-footer>

@@ -1,6 +1,4 @@
-ion-content {
-  --background: #f2f2f2;
-}
+
 ion-text {
   &.from-city,
   &.to-city {
@@ -172,6 +170,7 @@ app-fly-filter {
     width: 100%;
   }
   li {
+    // background-color: var(--ion-color-primary);
     position: relative;
     margin: 0.5em;
     border-radius: 0.3em;

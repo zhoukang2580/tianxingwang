@@ -1,4 +1,4 @@
-import { ConfigEntity } from './../../services/config/config.entity';
+import { ConfigEntity } from "./../../services/config/config.entity";
 import { MemberService } from "./../member.service";
 import { StaffEntity, StaffService } from "./../../hr/staff.service";
 import { NavController } from "@ionic/angular";
@@ -21,12 +21,12 @@ import { PageModel } from "../member.service";
   styleUrls: ["./member-detail.page.scss"]
 })
 export class MemberDetailPage implements OnInit, OnDestroy {
+  private subscriptions: Subscription[] = [];
   memberDetails: PageModel;
   identity: IdentityEntity;
   config: ConfigEntity;
   staff: StaffEntity;
   defaultAvatar = AppHelper.getDefaultAvatar();
-  identitySubscription = Subscription.EMPTY;
   constructor(
     private identityService: IdentityService,
     private router: Router,
@@ -36,41 +36,44 @@ export class MemberDetailPage implements OnInit, OnDestroy {
     private navCtrl: NavController,
     private staffService: StaffService,
     private memberService: MemberService
-  ) { }
+  ) {}
   back() {
     this.navCtrl.pop();
   }
   ngOnInit() {
-    this.route.queryParamMap.subscribe(async _ => {
-      this.config = await this.configService.getConfigAsync();
-      this.load(AppHelper.getRouteData());
-      AppHelper.setRouteData(AppHelper.getRouteData());
-    });
-    console.log("member detail ngOnInit");
-    this.identitySubscription = this.identityService
-      .getIdentitySource()
-      .subscribe(identity => {
+    this.subscriptions.push(
+      this.route.queryParamMap.subscribe(async _ => {
+        console.log(
+          "member detail ngOnInit",
+          this.memberDetails && this.memberDetails.HeadUrl
+        );
+        this.config = await this.configService.getConfigAsync();
+        this.load();
+        AppHelper.setRouteData(AppHelper.getRouteData());
+      })
+    );
+    this.subscriptions.push(
+      this.identityService.getIdentitySource().subscribe(identity => {
         this.identity = identity;
         this.memberDetails = null;
         this.staff = null;
-      });
-    // AppHelper.setCallback((name: string, data: any) => {
-    //   console.log("helper callback");
-    //   if (name == CropAvatarPage.UploadSuccessEvent && data && data.HeadUrl) {
-    //     this.memberDetails.HeadUrl = data.HeadUrl + "?v=" + Date.now();
-    //   }
-    // });
+      })
+    );
   }
   private addVersionToUrl(url: string) {
     if (url) {
-      url = url.includes("?v") ? url.substr(0, url.indexOf("?")) + `?v=${Date.now()}` : `${url}?v=${Date.now()}`
+      url = url.includes("?")
+        ? url.substr(0, url.indexOf("?")) + `?v=${Date.now()}`
+        : `${url}?v=${Date.now()}`;
     }
     return url;
   }
   async load(forceLoad = false) {
     if (this.memberDetails && !forceLoad) {
       if (this.memberDetails.HeadUrl) {
-        this.memberDetails.HeadUrl = this.addVersionToUrl(this.memberDetails.HeadUrl);
+        this.memberDetails.HeadUrl = this.addVersionToUrl(
+          this.memberDetails.HeadUrl
+        );
       }
       return this.memberDetails;
     }
@@ -96,6 +99,6 @@ export class MemberDetailPage implements OnInit, OnDestroy {
     }
   }
   ngOnDestroy() {
-    this.identitySubscription.unsubscribe();
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }

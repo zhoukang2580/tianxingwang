@@ -1,7 +1,4 @@
-ion-grid {
-  padding-right: 1em;
-  background: white;
-}
+
 .query-tabs {
   width: 100%;
   display: flex;
@@ -12,7 +9,8 @@ ion-grid {
   position: relative;
   &::after {
     position: absolute;
-    right: 0.8em;
+    right: 0;
+    transform: translate(-0.9em, 0);
     top: 0.1em;
     display: block;
     content: "";

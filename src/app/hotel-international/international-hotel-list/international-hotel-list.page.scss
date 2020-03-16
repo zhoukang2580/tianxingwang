@@ -84,14 +84,14 @@ ion-header {
     opacity: 1;
   }
 }
-ion-infinite-scroll {
-  bottom: 0;
-  background-color: white;
-  visibility: hidden;
-  &.infinite-scroll-loading {
-    visibility: visible;
-  }
-}
+// ion-infinite-scroll {
+//   bottom: 0;
+//   background-color: white;
+//   visibility: hidden;
+//   &.infinite-scroll-loading {
+//     visibility: visible;
+//   }
+// }
 .empty-padding {
   padding-top: 3em;
 }

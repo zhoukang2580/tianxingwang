@@ -16,7 +16,6 @@ import { TrainOrderDetailComponent } from "src/app/order/components/train-order-
 import { FlightOrderDetailComponent } from "./flight-order-detail/flight-order-detail.component";
 import { HotelOrderDetailComponent } from "./hotel-order-detail/hotel-order-detail.component";
 import { InsuranceOrderDetailComponent } from "./insurance-order-detail/insurance-order-detail.component";
-import { MyTripComponent } from "./my-trip/my-trip.component";
 import { CarItemComponent } from "./car-item/car-item.component";
 import { TrainTripComponent } from "./train-trip/train-trip.component";
 import { HotelTripComponent } from "./hotel-trip/hotel-trip.component";
@@ -36,7 +35,6 @@ import { FlightTripComponent } from "./flight-trip/flight-trip.component";
     FlightOrderDetailComponent,
     HotelOrderDetailComponent,
     InsuranceOrderDetailComponent,
-    MyTripComponent,
     TrainTripComponent,
     HotelTripComponent,
     FlightTripComponent,
@@ -56,7 +54,6 @@ import { FlightTripComponent } from "./flight-trip/flight-trip.component";
     FlightOrderDetailComponent,
     HotelOrderDetailComponent,
     InsuranceOrderDetailComponent,
-    MyTripComponent,
     SwiperSlideContentComponent,
     TrainTripComponent,
     HotelTripComponent,

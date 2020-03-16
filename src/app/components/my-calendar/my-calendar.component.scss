@@ -76,6 +76,6 @@ ul {
   }
   li:not(.is-last-month-date).active {
     background-color: var(--ion-color-secondary);
-    color: white;
+    color: var(--ion-color-light);
   }
 }

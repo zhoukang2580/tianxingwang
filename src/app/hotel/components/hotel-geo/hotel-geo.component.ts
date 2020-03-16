@@ -50,15 +50,13 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
         this.hotelQuery = query;
         console.log("geo filter ", this.hotelQuery);
         // this.conditionModel = await this.hotelService.getConditions();
-        if (this.hotelQuery) {
-          if (!this.hotelQuery.locationAreas) {
-            this.resetTabs();
-          } else {
-            this.onTabClick(
-              this.hotelQuery.locationAreas.find(it => it.active) ||
-                this.hotelQuery.locationAreas[0]
-            );
-          }
+        if (!this.hotelQuery || !this.hotelQuery.locationAreas) {
+          this.resetTabs();
+        } else {
+          this.onTabClick(
+            this.hotelQuery.locationAreas.find(it => it.active) ||
+            this.hotelQuery.locationAreas[0]
+          );
         }
       });
   }
@@ -198,15 +196,16 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
   }
   private async resetTabs() {
     this.conditionModel = await this.hotelService.getConditions();
+    if (!this.hotelQuery) {
+      return;
+    }
     this.hotelQuery.locationAreas = [];
     this.initMetros();
     this.initOtherTabs();
-    if (this.hotelQuery.locationAreas) {
-      const tab: IGeoTab<IGeoItem<GeoEntity>> =
-        this.hotelQuery.locationAreas.find(it => it.active) ||
-        this.hotelQuery.locationAreas[0];
-      this.onTabClick(tab);
-    }
+    const tab: IGeoTab<IGeoItem<GeoEntity>> =
+      this.hotelQuery.locationAreas.find(it => it.active) ||
+      this.hotelQuery.locationAreas[0];
+    this.onTabClick(tab);
     this.hotelService.setHotelQuerySource(this.hotelQuery);
   }
   async onReset() {
@@ -214,8 +213,8 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
       this.hotelQuery.locationAreas = null;
       this.hotelQuery.Geos = [];
       this.hotelQuery.searchGeoId = "";
-      await this.resetTabs();
     }
+    await this.resetTabs();
   }
   onFilter() {
     this.modalCtrl.getTop().then(t => {
@@ -226,7 +225,7 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
     this.geoFilterChange.emit();
   }
   private initMetros() {
-    if (!this.conditionModel || !this.conditionModel.Geos) {
+    if (!this.conditionModel || !this.conditionModel.Geos || !this.hotelQuery || !this.hotelQuery.locationAreas) {
       return;
     }
     const metros = this.conditionModel.Geos.filter(
@@ -348,6 +347,7 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
     }
   }
   private processCase(label: string, geo: GeoEntity, tags?: string[]) {
+    if(!this.hotelQuery){return};
     const geos = (this.hotelQuery && this.hotelQuery.Geos) || [];
     let tab = this.hotelQuery.locationAreas.find(
       t => t.tag == geo.Tag || (tags && tags.some(tg => tg == t.tag))

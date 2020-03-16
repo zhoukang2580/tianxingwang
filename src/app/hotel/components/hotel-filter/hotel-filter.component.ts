@@ -58,25 +58,28 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
     }
   }
   async ngOnInit() {
-    this.conditionModel = await this.hotelService.getConditions();
     const query = this.hotelService.getHotelQueryModel();
     this.subscription = this.hotelService
       .getHotelQuerySource()
       .subscribe(q => {
         this.hotelQuery = q;
-        if (this.hotelQuery && !this.hotelQuery.filters) {
+        if (!this.hotelQuery || !this.hotelQuery.filters) {
           this.onReset();
         }
       });
-    if (query && !query.filters) {
+    this.conditionModel = await this.hotelService.getConditions();
+    if (!query || !query.filters) {
       this.onReset();
     } else {
       this.onActive(query.filters[0]);
     }
   }
-  private resetTabs() {
+  private async resetTabs() {
     if (this.hotelQuery) {
       this.hotelQuery.filters = [];
+      if (!this.conditionModel) {
+        this.conditionModel = await this.hotelService.getConditions();
+      }
       this.resetTabBrand();
       this.resetTabTheme();
       this.resetTabService();
@@ -90,11 +93,11 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
         this.hotelQuery.filters[0].active = true;
         this.items = this.hotelQuery.filters[0].items;
       }
+      this.hotelService.setHotelQuerySource(this.hotelQuery);
     }
-    this.hotelService.setHotelQuerySource(this.hotelQuery);
   }
-  private resetTabBrand() {
-    if (!this.conditionModel.Brands) {
+  private async resetTabBrand() {
+    if (!this.conditionModel || !this.conditionModel.Brands) {
       return;
     }
     const brands = this.conditionModel.Brands.slice(0, 8);

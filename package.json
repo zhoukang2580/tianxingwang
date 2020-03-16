@@ -67,6 +67,7 @@
     "moment": "^2.24.0",
     "node-sass": "^4.13.0",
     "rxjs": "~6.5.1",
+    "serialize-error": "^6.0.0",
     "swiper": "^5.3.1",
     "tslib": "^1.9.0",
     "uuid-js": "^0.7.5",
@@ -129,8 +130,8 @@
       "cordova-plugin-inappbrowser": {},
       "cordova-plugin-android-permissions": {},
       "cordova-qrscanner-plugin": {},
-      "cordova-wechat-plugin": {},
-      "cordova-hcp-plugin": {}
+      "cordova-hcp-plugin": {},
+      "cordova-wechat-plugin": {}
     },
     "platforms": [
       "android",

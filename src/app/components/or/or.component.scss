@@ -1,6 +1,6 @@
 .or {
   padding: 0.5em;
-  --border-color: #d6d6d6;
+  --border-color: rgba(var(--ion-color-medium-rgb), 0.5);
   position: relative;
   display: flex;
   align-items: center;

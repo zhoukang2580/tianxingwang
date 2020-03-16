@@ -9,7 +9,7 @@
   position: fixed;
   z-index: 100;
   user-select: none;
-  background-color: var(--ion-color-light);
+  background-color: var(--ion-color-primary);
   // pointer-events            : none;
   margin: 0;
 }
@@ -38,9 +38,9 @@
   height: 40px;
   line-height: 40px;
   margin-top: 15px;
-  background: #f7f9fa;
-  color: #45494c;
-  border: 1px solid #e4e7eb;
+  background: var(--ion-color-primary);
+  color:  var(--ion-color-dark);
+  border: 1px solid var(--ion-color-medium);
 }
 
 .sliderContainer_active .slider {
@@ -110,8 +110,8 @@
   left: 0;
   width: 40px;
   height: 40px;
-  background: #fff;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+  background:  var(--ion-color-secondary);
+  box-shadow: 0 0 3px rgba(var(--ion-color-dark-rgb), 0.3);
   cursor: pointer;
   transition: background 0.2s linear;
   pointer-events: initial;
@@ -132,6 +132,7 @@
   justify-content: center;
   font-size: 1.6em;
   height: 100%;
+  color: var(--ion-color-light);
 }
 
 .sliderContainer_active .sliderIcon {

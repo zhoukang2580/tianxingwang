@@ -41,7 +41,7 @@
     content: "";
     display: inline-block;
     display: inline-block;
-    border-top: 2px dotted rgba(0, 0, 0, 0.5);
+    border-top: 2px dotted rgba(var(--ion-color-dark-rgb), 0.5);
     top: 50%;
     transform: translateY(-50%);
   }
@@ -93,7 +93,7 @@ ion-thumbnail {
   // transition: opacity ease-in-out 500ms;
   contain: layout;
   .cabin-item {
-    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    border-top: 1px solid rgba(var(--ion-color-dark-rgb), 0.12);
     padding: 0.5em;
     ion-label {
       flex: 1;

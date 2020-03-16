@@ -21,7 +21,7 @@ ion-content {
   right: 15vw;
   transform: translate3d(0, -45%, 0);
   background: transparent;
-  border: 1px solid #eee;
+  border: 1px solid  var(--ion-color-light);;
   .scan-bar {
     position: absolute;
     left: 0;
