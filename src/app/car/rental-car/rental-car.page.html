@@ -7,9 +7,9 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class='ion-padding'>
+<ion-content >
   <ion-list>
-    <ion-note>乘车人手机号</ion-note>
+    <ion-note class="ion-margin-start">乘车人手机号</ion-note>
     <ion-item #mobilItem>
       <ion-label color='secondary'>
         <i class='icon icon-mobile'></i>
@@ -37,6 +37,11 @@
         </ion-button>
       </ion-item>
     </ng-container>
+    <ng-container *ngIf='searchMobiles?.length==0' >
+      <ion-button  expand='block' color='danger' fill='clear' *ngIf='message as emsg'>{{emsg}}</ion-button>
+      <ion-button expand='block' color='secondary' (click)='validateCode()' *ngIf='!isMobileVerified'>请先验证手机号</ion-button>
+      <ion-button  expand='block' color='secondary' (click)='onRentalCar()' *ngIf='isMobileVerified'>前往用车</ion-button>
+    </ng-container>
   </ion-list>
   <div class="search-result" *ngIf='searchMobiles?.length' #searchResultEl>
     <ion-list>
@@ -48,9 +53,4 @@
       </ul>
     </ion-list>
   </div>
-  <ng-container *ngIf='searchMobiles?.length==0'>
-    <ion-button expand='block' color='danger' fill='clear' *ngIf='message as emsg'>{{emsg}}</ion-button>
-    <ion-button expand='block' color='secondary' (click)='validateCode()' *ngIf='!isMobileVerified'>请先验证手机号</ion-button>
-    <ion-button expand='block' color='secondary' (click)='onRentalCar()' *ngIf='isMobileVerified'>前往用车</ion-button>
-  </ng-container>
 </ion-content>

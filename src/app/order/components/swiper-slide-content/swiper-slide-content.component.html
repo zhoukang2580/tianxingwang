@@ -6,13 +6,15 @@
     </div>
   </ion-list>
 </div>
-<main>
-  <div class="swiper-container" #container>
-    <!-- Additional required wrapper -->
-    <div class="swiper-wrapper">
-      <!-- Slides -->
-      <ng-content></ng-content>
+<ion-list class="main">
+  <main>
+    <div class="swiper-container" #container>
+      <!-- Additional required wrapper -->
+      <div class="swiper-wrapper">
+        <!-- Slides -->
+        <ng-content></ng-content>
+      </div>
     </div>
-  </div>
-  <div class="swiper-pagination" #swiperPagination></div>
-</main>
+    <div class="swiper-pagination" #swiperPagination></div>
+  </main>
+</ion-list>

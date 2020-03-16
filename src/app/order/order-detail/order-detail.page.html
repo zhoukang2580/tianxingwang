@@ -34,7 +34,7 @@
               <ion-col>{{orderDetail.Order.InsertDateTime}}</ion-col>
             </ion-row>
             <ion-row (click)='showPricePopover()' *ngIf='orderDetail.Order?.Type=="Flight"'>
-              <ion-col size='3'>应收金额:</ion-col>
+              <ion-col size='3'>应付金额:</ion-col>
               <ion-col>
                 <div>
                   {{getOrderTotalAmount()}}

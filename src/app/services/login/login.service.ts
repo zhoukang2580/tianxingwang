@@ -9,6 +9,7 @@ import { tap, switchMap, map, finalize } from "rxjs/operators";
 import { of, throwError } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
 import { IResponse } from "../api/IResponse";
+import { LanguageHelper } from "src/app/languageHelper";
 
 @Injectable({
   providedIn: "root"
@@ -42,17 +43,117 @@ export class LoginService {
 
   checkIsDeviceBinded(deviceNumber: string) {
     const req = new RequestEntity();
-    req.IsShowLoading = true;
+    console.log("uuid " + deviceNumber);
+    // req.IsShowLoading = true;
     req.Method = "ApiPasswordUrl-Device-Check";
     req.Data = {
       DeviceNumber: deviceNumber
     };
-    return this.apiService.getResponse<{
-      IsActiveMobile: boolean;
-      Mobile: string;
-    }>(req);
+    const sub = this.apiService
+      .getResponse<{
+        IsActiveMobile: boolean;
+        Mobile: string;
+      }>(req)
+      .pipe(
+        finalize(() => {
+          setTimeout(() => {
+            sub.unsubscribe();
+          }, 1000);
+        })
+      )
+      .subscribe(res => {
+        console.log("checkIsDeviceBinded " + JSON.stringify(res, null, 2));
+        if (res.Status && res.Data) {
+          // 需要绑定
+          this.router.navigate([
+            AppHelper.getRoutePath("account-bind"),
+            {
+              IsActiveMobile: res.Data.IsActiveMobile,
+              Mobile: res.Data.Mobile,
+              Path: this.getToPageRouter()
+            }
+          ]);
+        } else if (res.Message) {
+          AppHelper.alert(res.Message);
+        }
+      });
   }
 
+  checkIsWechatBind(mock = false) {
+    if (
+      mock ||
+      AppHelper.isWechatH5() ||
+      AppHelper.isWechatMini() ||
+      AppHelper.isApp()
+    ) {
+      const sdkType = AppHelper.isWechatH5()
+        ? ""
+        : AppHelper.isWechatMini()
+        ? "Mini"
+        : AppHelper.isApp()
+        ? "App"
+        : "";
+      const req = new RequestEntity();
+      req.Method = `ApiPasswordUrl-DingTalk-Check`;
+      req.Data = {
+        SdkType: sdkType
+      };
+      const toRoute = "account-wechat";
+      this.apiService.getResponse<any>(req).subscribe(res => {
+        if (res.Status) {
+          this.processCheckResult(res, toRoute);
+        } else if (res.Message) {
+          AppHelper.alert(res.Message);
+        }
+      });
+    }
+  }
+  checkIsDingtalkBind(mock = false) {
+    const req = new RequestEntity();
+    req.Method = `ApiPasswordUrl-DingTalk-Check`;
+    req.Data = {
+      SdkType: "DingTalk"
+    };
+    if (mock || AppHelper.isDingtalkH5()) {
+      const sub = this.apiService
+        .getResponse<any>(req)
+        .pipe(
+          finalize(() => {
+            setTimeout(() => {
+              sub.unsubscribe();
+            }, 1000);
+          })
+        )
+        .subscribe(res => {
+          if (res.Status) {
+            this.processCheckResult(res, "account-dingtalk");
+          }
+        });
+    }
+  }
+  private async processCheckResult(
+    res: {
+      Status: boolean;
+      Message: string;
+    },
+    toRoute: string
+  ) {
+    if (res.Status) {
+      if (res.Message) {
+        const ok = await AppHelper.alert(
+          res.Message,
+          true,
+          LanguageHelper.getYesTip(),
+          LanguageHelper.getNegativeTip()
+        );
+        if (ok) {
+          this.router.navigate([AppHelper.getRoutePath(toRoute)]);
+        }
+      }
+    } else if (res.Message) {
+      AppHelper.alert(res.Message);
+    }
+  }
   sendMobileCode(mobile: string, imageCode: string = null) {
     const req = new RequestEntity();
     req.Url = AppHelper.getApiUrl() + "/Home/SendLoginMobileCode";

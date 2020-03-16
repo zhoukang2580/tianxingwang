@@ -28,7 +28,7 @@
           <ion-col> {{tmc?.Name}}</ion-col>
         </ion-row>
         <ion-row *ngIf="tmc?.IsShowServiceFee">
-          <ion-col size='4'> 应收金额</ion-col>
+          <ion-col size='4'> 应付金额</ion-col>
           <ion-col> {{(orderDetail?.Order?.TotalAmount)}}</ion-col>
         </ion-row>
         <ion-row>
@@ -42,6 +42,10 @@
         <ion-row *ngIf='orderDetail?.Order.OrderCars?.length'>
           <ion-col size='4'>其它费用</ion-col>
           <ion-col> {{getOtherAmount(orderDetail?.Order,orderDetail?.Order.OrderCars[0].Key)}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size='4'>个人支付金额</ion-col>
+          <ion-col> {{orderDetail?.Order?.OrderCars[0]?.PersonPayAmount}}</ion-col>
         </ion-row>
         <ion-row>
           <ion-col size='4'> 已付金额</ion-col>

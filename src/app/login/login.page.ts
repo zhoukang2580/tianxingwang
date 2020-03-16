@@ -12,6 +12,7 @@ import { Config, ModalController } from "@ionic/angular";
 import { finalize } from "rxjs/operators";
 import { RequestEntity } from "../services/api/Request.entity";
 import { IdentityService } from "../services/identity/identity.service";
+import { environment } from "src/environments/environment";
 
 @Component({
   selector: "app-login",
@@ -37,6 +38,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   isShowWechatLogin: boolean = false;
   isShowImageCode: boolean;
   SlideEventType: string;
+  environment = environment;
   private mockDeviceInfo = {
     Device: `accw125487df1254accw125487df1254`,
     DeviceName: `pc模拟测试`
@@ -52,7 +54,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   ) {
     AppHelper.isWXAppInstalled().then(installed => {
       this.isShowWechatLogin = installed;
-    })
+    });
     route.queryParamMap.subscribe(_ => {
       setTimeout(() => {
         this.configService.getConfigAsync().then(c => {
@@ -82,7 +84,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     while (--i > 0 && t) {
       t = await this.modalCtrl.getTop();
       if (t) {
-        await t.dismiss().catch(_ => { });
+        await t.dismiss().catch(_ => {});
       }
     }
   }
@@ -411,38 +413,15 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.isLogining = false;
     console.log("toPageRouter", toPageRouter);
     if (isCheckDevice && AppHelper.isApp()) {
-      await this.checkIsDeviceBinded();
-    } else {
-      this.router.navigate([AppHelper.getRoutePath(toPageRouter)]).then(() => {
-        this.loginService.setToPageRouter("");
-      });
+      const uuid = await AppHelper.getDeviceId();
+      this.loginService.checkIsDeviceBinded(uuid);
     }
-  }
-  async checkIsDeviceBinded() {
-    const toPageRouter = this.loginService.getToPageRouter() || "";
-    const uuid = await AppHelper.getDeviceId();
-    console.log("uuid " + uuid);
-    this.loginService.checkIsDeviceBinded(uuid).subscribe(
-      res => {
-        console.log("checkIsDeviceBinded " + JSON.stringify(res, null, 2));
-        // 需要绑定
-        if (res.Status) {
-          this.router.navigate([
-            AppHelper.getRoutePath("account-bind"),
-            {
-              IsActiveMobile: res.Data.IsActiveMobile,
-              Mobile: res.Data.Mobile,
-              Path: toPageRouter
-            }
-          ]);
-        } else {
-          this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
-        }
-      },
-      e => {
-        this.router.navigate([AppHelper.getRoutePath(toPageRouter)]);
-      }
-    );
+    // this.loginService.checkIsDeviceBinded(this.mockDeviceInfo.Device);
+    this.loginService.checkIsDingtalkBind();
+    this.loginService.checkIsWechatBind();
+    this.router.navigate([AppHelper.getRoutePath(toPageRouter)]).then(() => {
+      this.loginService.setToPageRouter("");
+    });
   }
   forgetPassword() {
     this.router.navigate([AppHelper.getRoutePath("password-check")]);

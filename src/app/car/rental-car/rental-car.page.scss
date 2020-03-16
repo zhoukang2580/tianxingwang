@@ -10,6 +10,9 @@ ion-item.item-interactive-disabled {
     font-weight: bold;
   }
 }
+ion-list > ion-button {
+  margin: 1em;
+}
 .search-result {
   position: absolute;
   left: 1em;
