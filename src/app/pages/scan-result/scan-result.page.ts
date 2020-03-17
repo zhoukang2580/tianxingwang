@@ -1,3 +1,4 @@
+import { QrScanService } from './../../services/qrScan/qrScan.service';
 import { ApiService } from "../../services/api/api.service";
 import { NavController } from "@ionic/angular";
 import { IdentityEntity } from "../../services/identity/identity.entity";
@@ -19,6 +20,10 @@ import { RequestEntity } from "src/app/services/api/Request.entity";
   styleUrls: ["./scan-result.page.scss"]
 })
 export class ScanResultPage implements OnInit, OnDestroy {
+  private _iframeSrc: any;
+  private subscription = Subscription.EMPTY;
+  private scanResultSubscription = Subscription.EMPTY;
+  private identitySubscription = Subscription.EMPTY;
   confirmText: string = LanguageHelper.getConfirmTip();
   cancelText: string = LanguageHelper.getCancelTip();
   description: string;
@@ -27,9 +32,6 @@ export class ScanResultPage implements OnInit, OnDestroy {
   isShowIframe = false; // 是否用iframe打开
   isShowText = false; // 是否显示扫码文本
   identity: IdentityEntity;
-  private _iframeSrc: any;
-  subscription = Subscription.EMPTY;
-  identitySubscription = Subscription.EMPTY;
   defaultImage = AppHelper.getDefaultAvatar();
   Model: {
     Name: string;
@@ -47,15 +49,22 @@ export class ScanResultPage implements OnInit, OnDestroy {
     private http: HttpClient,
     activatedRoute: ActivatedRoute,
     private navCtrl: NavController,
-    private apiService: ApiService
+    private apiService: ApiService,
+    qrScanService: QrScanService
   ) {
-    this.subscription = activatedRoute.paramMap.subscribe(p => {
+    this.subscription = activatedRoute.queryParamMap.subscribe(p => {
       this.scan(p.get("scanResult"));
     });
+    if (AppHelper.isApp()) {
+      this.scanResultSubscription = qrScanService.getScanResultSource().subscribe(txt => {
+        this.result = txt;
+      })
+    }
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();
     this.identitySubscription.unsubscribe();
+    this.scanResultSubscription.unsubscribe();
   }
   back() {
     this.navCtrl.pop();
@@ -142,9 +151,9 @@ export class ScanResultPage implements OnInit, OnDestroy {
         const subscribtion = this.http
           .get(
             this.result +
-              "&ticket=" +
-              this.identity.Ticket +
-              "&datatype=json&x-requested-with=XMLHttpRequest"
+            "&ticket=" +
+            this.identity.Ticket +
+            "&datatype=json&x-requested-with=XMLHttpRequest"
           )
           .pipe(
             finalize(() => {
