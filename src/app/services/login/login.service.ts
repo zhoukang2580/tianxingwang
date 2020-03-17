@@ -95,13 +95,17 @@ export class LoginService {
         ? "App"
         : "";
       const req = new RequestEntity();
-      req.Method = `ApiPasswordUrl-DingTalk-Check`;
+      req.Method = `ApiPasswordUrl-Wechat-Check`;
       req.Data = {
         SdkType: sdkType
       };
       const toRoute = "account-wechat";
       this.apiService.getResponse<any>(req).subscribe(res => {
-        this.processCheckResult(res, toRoute);
+        if (res.Status) {
+          this.processCheckResult(res, toRoute);
+        } else if (res.Message) {
+          AppHelper.alert(res.Message);
+        }
       });
     }
   }
@@ -122,7 +126,9 @@ export class LoginService {
           })
         )
         .subscribe(res => {
-          this.processCheckResult(res, "account-dingtalk");
+          if (res.Status) {
+            this.processCheckResult(res, "account-dingtalk");
+          }
         });
     }
   }
@@ -145,7 +151,7 @@ export class LoginService {
           this.router.navigate([AppHelper.getRoutePath(toRoute)]);
         }
       }
-    }
+    } 
     // else if (res.Message) {
     //   AppHelper.alert(res.Message);
     // }
