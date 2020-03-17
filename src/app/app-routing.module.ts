@@ -45,7 +45,7 @@ const routes: Routes = [
     path: "scan-result",
     loadChildren: () =>
       import("./pages/scan-result/scan-result.module").then(
-        m => m.ScanPageModule
+        m => m.ScanResultPageModule
       )
   },
   {

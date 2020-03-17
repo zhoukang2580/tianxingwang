@@ -27,4 +27,4 @@ const routes: Routes = [
   ],
   declarations: [ScanResultPage]
 })
-export class ScanPageModule { }
+export class ScanResultPageModule { }
