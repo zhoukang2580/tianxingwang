@@ -46,19 +46,19 @@ export class TmcGuard implements CanActivate, CanActivateChild {
         console.log("tmc guard", identity);
         if (
           identity &&
+          identity.Id &&
+          (!identity.Numbers || !identity.Numbers.HrId)
+        ) {
+          this.router.navigate([AppHelper.getRoutePath("home")]);
+          return false;
+        }
+        if (
+          identity &&
           identity.Numbers &&
           (identity.Numbers.AgentId || identity.Numbers.TmcId)
         ) {
           if (identity.Numbers.AgentId && !identity.Numbers.TmcId) {
             this.router.navigate([AppHelper.getRoutePath("select-customer")]);
-            return false;
-          }
-          if (
-            identity &&
-            identity.Id &&
-            (!identity.Numbers || !identity.Numbers.HrId)
-          ) {
-            this.router.navigate([AppHelper.getRoutePath("home")]);
             return false;
           }
           return true;

@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <app-back-button >
+      <app-back-button>
       </app-back-button>
     </ion-buttons>
     <ion-title>扫码结果</ion-title>
@@ -17,12 +17,16 @@
       <div class="ion-text-center ion-padding-top">{{Model?.RealName}}</div>
     </div>
     <ion-button class='ion-margin-top' color='secondary' expand='block' (click)="onConfirm()">允许登录</ion-button>
-    <ion-button color='danger'  expand='block' class='ion-margin-top' (click)='onCancel()'> <ion-text color='light'>取消</ion-text> </ion-button>
+    <ion-button color='danger' expand='block' class='ion-margin-top' (click)='onCancel()'>
+      <ion-text color='light'>取消</ion-text>
+    </ion-button>
   </div>
   <div *ngIf='isShowIframe' class='iframe-wrapper'>
     <iframe [src]="iframeSrc" frameborder="0"></iframe>
   </div>
-  <ion-item lines='none' class='ion-padding' *ngIf='isShowText'>
-    <ion-textarea color='dark'  readonly value="{{result}}"></ion-textarea>
-  </ion-item>
+  <ion-list>
+    <ion-item lines='none' class='ion-padding' *ngIf='isShowText'>
+      <ion-textarea color='dark' readonly value="{{result}}"></ion-textarea>
+    </ion-item>
+  </ion-list>
 </ion-content>

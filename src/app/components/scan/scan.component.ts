@@ -72,7 +72,7 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
     if (AppHelper.isApp()) {
       this.appScan()
         .then(r => {
-          this.scan(r);
+          this.showScanResult(r);
         })
         .catch(e => {
           AppHelper.alert(e || LanguageHelper.getJSSDKScanErrorTip());
@@ -103,7 +103,7 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
       scanType: ["qrCode", "barCode"], // 可以指定扫二维码还是一维码，默认二者都有
       success: res => {
         this.qrScanService.setScanResultSource(res.resultStr);
-        this.scan(res.resultStr);
+        this.showScanResult(res.resultStr);
         return false;
       },
       fail: err => {
@@ -113,12 +113,12 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
   }
-  private scan(r: any) {
+  private showScanResult(r: any) {
     if (!r || this.isAutoCloseScanPage) {
       if (AppHelper.isApp()) {
         return;
       }
     }
-    this.router.navigate([AppHelper.getRoutePath("scan-result"), { scanResult: r }]);
+    this.router.navigate([AppHelper.getRoutePath("scan-result")],{queryParams:{ scanResult: r }});
   }
 }

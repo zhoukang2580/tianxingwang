@@ -101,11 +101,7 @@ export class LoginService {
       };
       const toRoute = "account-wechat";
       this.apiService.getResponse<any>(req).subscribe(res => {
-        if (res.Status) {
-          this.processCheckResult(res, toRoute);
-        } else if (res.Message) {
-          AppHelper.alert(res.Message);
-        }
+        this.processCheckResult(res, toRoute);
       });
     }
   }
@@ -126,9 +122,7 @@ export class LoginService {
           })
         )
         .subscribe(res => {
-          if (res.Status) {
-            this.processCheckResult(res, "account-dingtalk");
-          }
+          this.processCheckResult(res, "account-dingtalk");
         });
     }
   }

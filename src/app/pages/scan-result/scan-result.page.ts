@@ -103,7 +103,6 @@ export class ScanResultPage implements OnInit, OnDestroy {
   }
   private scan(r: any) {
     this.result = r;
-
     if (this.checkLogin()) {
       this.load();
       this.showConfirmPage();
