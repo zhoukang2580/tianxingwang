@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
- 
+
       <app-back-button defaultHref=""></app-back-button>
     </ion-buttons>
     <ion-title>消息中心</ion-title>
@@ -14,14 +14,13 @@
 
 <ion-content>
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh()">
-    <ion-refresher-content 
-      refreshingText="正在加载...">
+    <ion-refresher-content refreshingText="正在加载...">
     </ion-refresher-content>
   </ion-refresher>
   <ion-list *ngIf='!loading else loadingTemp'>
     <ng-container *ngIf='messages.length else nodata'>
       <ion-item-sliding *ngFor='let item of messages'>
-        <ion-item detail>
+        <ion-item detail  style="padding-bottom: 1em">
           <ng-container *ngIf='open' slot='start'>
             <ion-icon name="radio-button-off" mode='ios' *ngIf='!item?.IsSelected' (click)='onSelect(item)'></ion-icon>
             <ion-icon name="checkmark-circle" mode='ios' color='success' *ngIf='item?.IsSelected'
@@ -30,15 +29,21 @@
           </ng-container>
           <ion-label (click)='onItemClick(item)'>
             <h2>{{item.Title}}</h2>
-            <h3>
-              <ion-note class='ion-margin-start' *ngIf='!item.IsRead' color='success'>未读</ion-note>
-            </h3>
-            <p #msgDetial [attr.msgdetail]='item.Detail' [attr.msgid]='item.Id'></p>
+
+            <p #msgDetial [attr.msgdetail]='item.Detail' [attr.msgid]='item.Id' class="margin_top2"></p>
             <ion-note>
               {{item.InsertTime}}
             </ion-note>
+            <p>&nbsp;</p>
+           
           </ion-label>
+          <ion-button class='ion-margin-start' *ngIf='!item.IsRead' color='success' fill="clear">未读</ion-button>
+          <!-- <div style="position: absolute;right: 1em;bottom: 0.2em;" *ngIf="item.Isshowbtn" >
+              <ion-button color="secondary">接受</ion-button>
+              <ion-button color="danger" ><span style="color:white">拒绝</span></ion-button>
+          </div> -->
         </ion-item>
+     
 
         <ion-item-options side="end">
           <ion-item-option *ngIf='!item.IsRead' (click)="markRead(item)" color='success'>

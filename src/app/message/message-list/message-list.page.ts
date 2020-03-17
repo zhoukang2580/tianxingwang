@@ -120,9 +120,15 @@ export class MessageListPage implements OnInit, AfterViewInit {
       item.IsSelected = !item.IsSelected;
       return;
     }
+    let isUrl=item.Url;
+   const path= AppHelper.getValueFromQueryString("app_path",isUrl)
+   if(isUrl&&isUrl.toLocaleLowerCase().includes("app_path")){
+     this.router.navigate([path]);
+   }else{
     this.router.navigate([AppHelper.getRoutePath("message-detail")], {
       queryParams: { message: JSON.stringify(item) }
     });
+   }
   }
   async doRefresh() {
     if (this.scroller) {

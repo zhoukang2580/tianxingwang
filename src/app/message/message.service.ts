@@ -23,6 +23,7 @@ export interface MessageModel {
   IsSelected?: boolean;
   Url: string; //
   InsertTime: string; //
+  Isshowbtn: boolean;
 }
 @Injectable({
   providedIn: "root"
@@ -111,7 +112,13 @@ export class MessageService {
     };
     return this.apiService
       .getPromiseData<MessageModel[]>(req)
-      .catch(_ => []);
+      .catch(_ => [] as MessageModel[]).then(res => res.map(it => {
+        if (it.Url) {
+          it.Isshowbtn=it.Url.toLowerCase().includes("app_path")
+        }
+        return it;
+      })
+      );
   }
   private popMessage(): Promise<MessageModel> {
     const req = new RequestEntity();
