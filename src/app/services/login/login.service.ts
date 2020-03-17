@@ -73,9 +73,10 @@ export class LoginService {
               Path: this.getToPageRouter()
             }
           ]);
-        } else if (res.Message) {
-          AppHelper.alert(res.Message);
         }
+        // else if (res.Message) {
+        //   AppHelper.alert(res.Message);
+        // }
       });
   }
 
@@ -150,9 +151,10 @@ export class LoginService {
           this.router.navigate([AppHelper.getRoutePath(toRoute)]);
         }
       }
-    } else if (res.Message) {
-      AppHelper.alert(res.Message);
     }
+    // else if (res.Message) {
+    //   AppHelper.alert(res.Message);
+    // }
   }
   sendMobileCode(mobile: string, imageCode: string = null) {
     const req = new RequestEntity();

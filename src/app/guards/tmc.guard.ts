@@ -53,7 +53,11 @@ export class TmcGuard implements CanActivate, CanActivateChild {
             this.router.navigate([AppHelper.getRoutePath("select-customer")]);
             return false;
           }
-          if (identity && identity.Numbers && !identity.Numbers.HrId) {
+          if (
+            identity &&
+            identity.Id &&
+            (!identity.Numbers || !identity.Numbers.HrId)
+          ) {
             this.router.navigate([AppHelper.getRoutePath("home")]);
             return false;
           }
