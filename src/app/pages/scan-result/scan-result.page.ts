@@ -1,9 +1,10 @@
+import { BackButtonComponent } from './../../components/back-button/back-button.component';
 import { QrScanService } from './../../services/qrScan/qrScan.service';
 import { ApiService } from "../../services/api/api.service";
-import { NavController } from "@ionic/angular";
+import { NavController, Platform } from "@ionic/angular";
 import { IdentityEntity } from "../../services/identity/identity.entity";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { LanguageHelper } from "src/app/languageHelper";
@@ -13,17 +14,21 @@ import { AppHelper } from "src/app/appHelper";
 import { HttpClient } from "@angular/common/http";
 import { map, switchMap, finalize } from "rxjs/operators";
 import { RequestEntity } from "src/app/services/api/Request.entity";
+import { InAppBrowser, InAppBrowserObject, InAppBrowserOptions } from '@ionic-native/in-app-browser/ngx';
 
 @Component({
   selector: "app-scan-result",
   templateUrl: "./scan-result.page.html",
-  styleUrls: ["./scan-result.page.scss"]
+  styleUrls: ["./scan-result.page.scss"],
+  providers: [InAppBrowser]
 })
 export class ScanResultPage implements OnInit, OnDestroy {
   private _iframeSrc: any;
   private subscription = Subscription.EMPTY;
   private scanResultSubscription = Subscription.EMPTY;
   private identitySubscription = Subscription.EMPTY;
+  private browser: InAppBrowserObject;
+  @ViewChild(BackButtonComponent) backButton: BackButtonComponent;
   confirmText: string = LanguageHelper.getConfirmTip();
   cancelText: string = LanguageHelper.getCancelTip();
   description: string;
@@ -48,9 +53,10 @@ export class ScanResultPage implements OnInit, OnDestroy {
     private identityService: IdentityService,
     private http: HttpClient,
     activatedRoute: ActivatedRoute,
-    private navCtrl: NavController,
     private apiService: ApiService,
-    qrScanService: QrScanService
+    qrScanService: QrScanService,
+    private iab: InAppBrowser,
+    private plt: Platform
   ) {
     this.subscription = activatedRoute.queryParamMap.subscribe(p => {
       this.scan(p.get("scanResult"));
@@ -67,7 +73,7 @@ export class ScanResultPage implements OnInit, OnDestroy {
     this.scanResultSubscription.unsubscribe();
   }
   back() {
-    this.navCtrl.pop();
+    this.backButton.backToPrePage();
   }
   ngOnInit() {
     this.identitySubscription = this.identityService
@@ -77,15 +83,34 @@ export class ScanResultPage implements OnInit, OnDestroy {
       });
   }
   private showIframePage(src: string) {
-    this.http.get(src).subscribe(
-      () => {
-        this._iframeSrc = src;
-        this.isShowIframe = true;
-      },
-      () => {
-        this.showTextPage();
-      }
-    );
+    this._iframeSrc = src;
+    this.isShowIframe = true;
+  }
+  private openInAppBrowser(url: string) {
+    if (this.browser) {
+      this.browser.close();
+    }
+    const color = "#2596D9";
+    const options: InAppBrowserOptions = {
+      usewkwebview: "yes",
+      location: "no",
+      toolbar: this.plt.is("ios") ? "yes" : "no",
+      zoom: "no",
+      footer: "no",
+      closebuttoncaption: "关闭(CLOSE)",
+      closebuttoncolor: "#2596D9",
+      navigationbuttoncolor: "#2596D9",
+      // toolbarcolor:"#2596D90f"
+    };
+    this.browser = this.iab.create(encodeURI(url), "_blank", options);
+    const sub = this.browser.on("exit").subscribe(() => {
+      setTimeout(() => {
+        if (sub) {
+          sub.unsubscribe();
+        }
+      }, 100);
+      this.backButton.backToPrePage();
+    });
   }
   private hideIframePage() {
     this.isShowIframe = false;
@@ -182,6 +207,15 @@ export class ScanResultPage implements OnInit, OnDestroy {
           );
       }
     } else if (this.checkUrl()) {
+      if (this.result && this.result.toLowerCase().includes('app_path')) {
+        const path = AppHelper.getValueFromQueryString("app_path", this.result);
+        // this.backButton.backToPrePage();
+        this.router.navigate([AppHelper.getRoutePath(path)]);
+        return;
+      }
+      if (AppHelper.isApp()) {
+        return this.openInAppBrowser(this.result)
+      }
       this.showIframePage(this.result);
     } else {
       this.showTextPage();

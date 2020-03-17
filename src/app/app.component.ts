@@ -1,3 +1,4 @@
+import { BackButtonComponent } from 'src/app/components/back-button/back-button.component';
 import { FileHelperService } from "src/app/services/file-helper.service";
 import { environment } from "src/environments/environment";
 import { MessageModel, MessageService } from "./message/message.service";
@@ -9,7 +10,8 @@ import {
   QueryList,
   AfterContentInit,
   OnChanges,
-  ContentChild
+  ContentChild,
+  ViewChild
 } from "@angular/core";
 
 import {
@@ -76,6 +78,7 @@ export interface App {
 })
 export class AppComponent
   implements AfterViewInit, AfterContentInit, OnChanges {
+  @ViewChild(BackButtonComponent) backBtn: BackButtonComponent
   app: App = window.navigator["app"];
   message$: Observable<MessageModel>;
   openSelectCity$: Observable<boolean>;
@@ -84,7 +87,6 @@ export class AppComponent
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
-    private navCtrl: NavController,
     private modalController: ModalController,
     private popCtrl: PopoverController,
     private statusBar: StatusBar,
@@ -314,7 +316,7 @@ export class AppComponent
         // }else{
         //   this.navCtrl.pop();
         // }
-        this.navCtrl.pop();
+        this.backBtn.backToPrePage();
         count++;
         console.log(`backbutton back count=${count}`);
         // window.history.back();
