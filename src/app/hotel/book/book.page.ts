@@ -1081,6 +1081,13 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
   }
   private async scrollEleToView(ele: Element) {
     if (this.ionContent) {
+      setTimeout(() => {
+        ele.classList.add("animated");
+        ele.classList.toggle("shake",true);
+        ele.addEventListener("transitionend",()=>{
+          ele.classList.toggle("shake",false);
+        })
+      }, 200);
       const scrollEle = await this.ionContent.getScrollElement();
       const rect = ele && ele.getBoundingClientRect();
       if (rect && scrollEle) {

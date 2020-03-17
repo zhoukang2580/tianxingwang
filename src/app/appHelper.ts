@@ -358,7 +358,7 @@ export class AppHelper {
       ua.includes("micromessenger") &&
       window["__wxjs_environment"] === "miniprogram"
     ) {
-      //判断是否是微信环境
+      // 判断是否是微信环境
       return true;
     }
     return false;

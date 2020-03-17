@@ -19,7 +19,7 @@ import { CandeactivateGuard } from "src/app/guards/candeactivate.guard";
 export class BackButtonComponent implements OnInit, AfterViewInit {
   private curUrl: string;
   isIos = false;
-  @Input()isBackHome;
+  @Input() isBackHome;
   @Input() customeBack: boolean;
   @Input() backFn: (...args) => any;
   constructor(
@@ -42,7 +42,8 @@ export class BackButtonComponent implements OnInit, AfterViewInit {
       this.backToPrePage(evt);
     }
   }
-  onDelete(){
+  onBackHome() {
+    this.navCtrl.setDirection("root",true);
     this.router.navigate([""]);
   }
   backToPrePage(evt?: CustomEvent) {
@@ -71,8 +72,7 @@ export class BackButtonComponent implements OnInit, AfterViewInit {
       });
     });
   }
-  ngOnInit() {
-  }
+  ngOnInit() {}
   ngAfterViewInit() {
     this.curUrl = this.router.url;
   }

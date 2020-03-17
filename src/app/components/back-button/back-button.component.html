@@ -1,8 +1,9 @@
-
-<ion-button (click)='back($event)' fill='clear' class="margin_r">
-  <ion-icon name='arrow-back-outline' *ngIf='!isIos' color='{{color}}'></ion-icon>
-  <ion-icon name="chevron-back-outline" *ngIf='isIos' color='{{color}}'></ion-icon>
-</ion-button>
-<ion-button *ngIf="isBackHome" fill='clear' (click)="onDelete()">
-  <ion-icon name="close-outline" color='{{color}}'></ion-icon>
-</ion-button>
+<ion-buttons>
+  <ion-button size='small' (click)='back($event)'>
+    <ion-icon icon-only name='arrow-back-outline' *ngIf='!isIos' color='{{color}}'></ion-icon>
+    <ion-icon icon-only name="chevron-back-outline" *ngIf='isIos' color='{{color}}'></ion-icon>
+  </ion-button>
+  <ion-button size='small' (click)="onBackHome()" style="margin-left:-1em;">
+    <ion-icon *ngIf="isBackHome" icon-only fill='clear' name="close-outline" color='{{color}}'></ion-icon>
+  </ion-button>
+</ion-buttons>
