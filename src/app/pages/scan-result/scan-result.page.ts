@@ -120,7 +120,7 @@ export class ScanResultPage implements OnInit, OnDestroy {
     if(this.result){
       this.isShowText = true;
     }else{
-      this.back();
+      this.onCancel();
     }
   }
   private hideResultTextPage() {
