@@ -174,8 +174,8 @@ export class BookPage implements OnInit, AfterViewInit {
         info.bookInfo.flightPolicy &&
         info.bookInfo.flightPolicy.OrderTravelPays
       ) {
-        const arr = info.bookInfo.flightPolicy.OrderTravelPays.split(",");
-        arr.forEach(t => {
+        const arr0 = info.bookInfo.flightPolicy.OrderTravelPays.split(",");
+        arr0.forEach(t => {
           if (!cabinPaytypes.find(type => type == t)) {
             cabinPaytypes.push(t);
           }
@@ -190,9 +190,9 @@ export class BookPage implements OnInit, AfterViewInit {
       return;
     }
     this.orderTravelPayType = this.tmc && this.tmc.FlightPayType;
-    const arr = Object.keys(this.initialBookDtoModel.PayTypes);
+    const arr1 = Object.keys(this.initialBookDtoModel.PayTypes);
     this.orderTravelPayTypes = [];
-    arr.forEach(it => {
+    arr1.forEach(it => {
       if (!this.orderTravelPayTypes.find(item => item.value == +it)) {
         this.orderTravelPayTypes.push({
           label: this.initialBookDtoModel.PayTypes[it],
@@ -609,6 +609,17 @@ export class BookPage implements OnInit, AfterViewInit {
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto, arr);
     if (canBook && canBook2) {
+      if (isSelf && this.flightService.getSearchFlightModel().isRoundTrip) {
+        const p1 = bookDto.Passengers.find(it => it.OutNumbers);
+        const p2 = bookDto.Passengers.find(it => !it.OutNumbers);
+        const p = p2 && p2.OutNumbers ? p2 : p1 && p1.OutNumbers ? p1 : null;
+        if (p && p.OutNumbers) {
+          bookDto.Passengers = bookDto.Passengers.map(it => {
+            it.OutNumbers = p.OutNumbers;
+            return it;
+          });
+        }
+      }
       const res: IBookOrderResult = await this.flightService
         .bookFlight(bookDto)
         .catch(e => {
@@ -742,8 +753,7 @@ export class BookPage implements OnInit, AfterViewInit {
       );
     };
     bookDto.Passengers = [];
-    for (let i = 0; i < combindInfos.length; i++) {
-      const combindInfo = combindInfos[i];
+    for (const combindInfo of combindInfos) {
       const accountId =
         combindInfo.modal.passenger.AccountId ||
         (this.tmc && this.tmc.Account && this.tmc.Account.Id);
@@ -838,8 +848,7 @@ export class BookPage implements OnInit, AfterViewInit {
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
-        for (let j = 0; j < combindInfo.insuranceProducts.length; j++) {
-          const it = combindInfo.insuranceProducts[j];
+        for (const it of combindInfo.insuranceProducts) {
           if (it.checked) {
             if (it.insuranceResult) {
               p.InsuranceProducts.push(it.insuranceResult);
@@ -1313,12 +1322,6 @@ export class BookPage implements OnInit, AfterViewInit {
       info.vmCredential = credential;
     }
   }
-  onContactsChange(contacts: AddContact[]) {
-    if (contacts) {
-      this.addContacts = contacts;
-    }
-  }
-
   isShowApprove() {
     const Tmc = this.initialBookDtoModel && this.initialBookDtoModel.Tmc;
     if (

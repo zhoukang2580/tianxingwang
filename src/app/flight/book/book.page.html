@@ -252,7 +252,7 @@
           添加联系人:
         </ion-item-divider>
         <ion-item>
-          <app-book-addcontacts-comp [addContacts]='addContacts' (contactChange)='onContactsChange($event)'>
+          <app-book-addcontacts-comp [(contacts)]='addContacts'>
           </app-book-addcontacts-comp>
         </ion-item>
       </ion-item-group>

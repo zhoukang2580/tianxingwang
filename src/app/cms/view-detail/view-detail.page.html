@@ -8,20 +8,22 @@
 </ion-header>
 
 <ion-content>
-  <ng-container *ngIf='notice else nodata'>
-    <div class='wrapper' *ngIf='notice.Url as url else details'>
-      <iframe [src]="url"></iframe>
-    </div>
-    <ng-template #details>
-      <ng-container *ngIf='notice?.Detail as detail else nodata'>
-        <ion-label class='ion-text-wrap'>
-          <div class='detail' [innerHTML]='notice.Detail' #detailInfo>
-          </div>
-        </ion-label>
-      </ng-container>
+  <ion-list>
+    <ng-container *ngIf='notice else nodata'>
+      <div class='wrapper' *ngIf='notice.Url as url else details'>
+        <iframe [src]="url"></iframe>
+      </div>
+      <ng-template #details>
+        <ng-container *ngIf='notice?.Detail as detail else nodata'>
+          <ion-label class='ion-text-wrap'>
+            <div class='detail' [innerHTML]='notice.Detail' #detailInfo>
+            </div>
+          </ion-label>
+        </ng-container>
+      </ng-template>
+    </ng-container>
+    <ng-template #nodata>
+      <app-or-comp>暂无数据</app-or-comp>
     </ng-template>
-  </ng-container>
-  <ng-template #nodata>
-    <app-or-comp>暂无数据</app-or-comp>
-  </ng-template>
+  </ion-list>
 </ion-content>

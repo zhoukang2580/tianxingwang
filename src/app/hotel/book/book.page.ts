@@ -1415,11 +1415,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
       item.otherOrganizationName = data.otherOrganizationName;
     }
   }
-  onContactsChange(contacts: AddContact[], info: IPassengerHotelBookInfo) {
-    if (info && contacts) {
-      info.addContacts = contacts;
-    }
-  }
+ 
   onSavecredential(
     credential: CredentialsEntity,
     info: IPassengerHotelBookInfo

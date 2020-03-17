@@ -225,8 +225,7 @@
             <strong>添加联系人:</strong>
           </ion-list-header>
           <ion-item>
-            <app-book-addcontacts-comp [addContacts]='combindInfo?.addContacts'
-              (contactChange)='onContactsChange($event,combindInfo)'></app-book-addcontacts-comp>
+            <app-book-addcontacts-comp [(contacts)]='combindInfo.addContacts'></app-book-addcontacts-comp>
           </ion-item>
         </ion-list>
       </ng-container>

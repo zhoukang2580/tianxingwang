@@ -25,7 +25,7 @@ export class AppHelper {
     environment.production && !environment.mockProBuild
       ? "sky-trip.com"
       : "testskytrip.com";
-  constructor() { }
+  constructor() {}
   static _domain;
   static _queryParamers = {};
   static platform: Platform;
@@ -67,7 +67,7 @@ export class AppHelper {
     return new Promise<any>(async (resolve, reject) => {
       await this.dismissAlertLayer();
       const t = await this.toastController.create({
-        message:this.getMsg(msg),
+        message: this.getMsg(msg),
         position: position as any,
         duration: duration
       });
@@ -90,10 +90,10 @@ export class AppHelper {
     return typeof msg === "string"
       ? msg
       : msg instanceof Error
-        ? msg.message
-        : msg && (msg.message || msg.Message)
-          ? (msg.message || msg.Message)
-          : JSON.stringify(msg)
+      ? msg.message
+      : msg && (msg.message || msg.Message)
+      ? msg.message || msg.Message
+      : JSON.stringify(msg);
   }
   static alert(
     msg: any,
@@ -380,6 +380,19 @@ export class AppHelper {
     }
     return false;
   }
+  /**
+   *
+   * @param name 要查询的 name
+   * @param queryString 用于查询的查询字符串，如果是url地址，请截取?后面的字符串
+   */
+  static getValueFromQueryString(name: string, queryString: string) {
+    const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+    const r = queryString.match(reg);
+    if (r) {
+      return unescape(r[2]);
+    }
+    return "";
+  }
   static getQueryString(name) {
     const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
     const r =
@@ -509,12 +522,12 @@ export class AppHelper {
   static setQueryParamers(key: string, value: string) {
     try {
       this._queryParamers[key] = value;
-    } catch (ex) { }
+    } catch (ex) {}
   }
   static removeQueryParamers(key: string) {
     try {
       this._queryParamers[key] = null;
-    } catch (ex) { }
+    } catch (ex) {}
   }
   static getQueryParamers() {
     return this._queryParamers as any;

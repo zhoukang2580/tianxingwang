@@ -1,9 +1,9 @@
-import { LanguageHelper } from './../../../languageHelper';
-import { AppHelper } from './../../../appHelper';
+import { LanguageHelper } from "./../../../languageHelper";
+import { AppHelper } from "./../../../appHelper";
 import { ModalController } from "@ionic/angular";
-import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
+import { Component, OnInit, Input, Output, EventEmitter, HostBinding } from "@angular/core";
 import { AddcontactsModalComponent } from "../addcontacts-modal/addcontacts-modal.component";
-import { AddContact } from '../../models/AddContact';
+import { AddContact } from "../../models/AddContact";
 
 @Component({
   selector: "app-book-addcontacts-comp",
@@ -11,22 +11,27 @@ import { AddContact } from '../../models/AddContact';
   styleUrls: ["./book-addcontacts-comp.component.scss"]
 })
 export class BookAddcontactsCompComponent implements OnInit {
-  @Input() addContacts: AddContact[];
-  @Output() contactChange: EventEmitter<any>;
+  @Input() contacts: AddContact[];
+  @Output() contactsChange: EventEmitter<any>;
   constructor(private modalCtrl: ModalController) {
-    this.contactChange = new EventEmitter();
+    this.contactsChange = new EventEmitter();
   }
 
-  ngOnInit() { }
+  ngOnInit() {}
   async remove(man: AddContact) {
-    const ok = await AppHelper.alert(LanguageHelper.getConfirmDeleteTip(), true, LanguageHelper.getConfirmTip(), LanguageHelper.getCancelTip());
-    if (ok && man && this.addContacts) {
-      this.addContacts = this.addContacts.filter(it => it.accountId != man.accountId);
+    const ok = await AppHelper.alert(
+      LanguageHelper.getConfirmDeleteTip(),
+      true,
+      LanguageHelper.getConfirmTip(),
+      LanguageHelper.getCancelTip()
+    );
+    if (ok && man && this.contacts) {
+      this.contacts = this.contacts.filter(it => it.accountId != man.accountId);
     }
   }
   async onAddContacts() {
-    if (!this.addContacts) {
-      this.addContacts = [];
+    if (!this.contacts) {
+      this.contacts = [];
     }
     const m = await this.modalCtrl.create({
       component: AddcontactsModalComponent
@@ -46,7 +51,7 @@ export class BookAddcontactsCompComponent implements OnInit {
             man.email = email;
             man.mobile = mobile;
             man.accountId = accountId;
-            this.addContacts.push(man);
+            this.contacts.push(man);
             this.onChange();
           }
         }
@@ -54,6 +59,6 @@ export class BookAddcontactsCompComponent implements OnInit {
     }
   }
   onChange() {
-    this.contactChange.emit(this.addContacts);
+    this.contactsChange.emit(this.contacts);
   }
 }
