@@ -1,5 +1,4 @@
 import { BackButtonComponent } from './../../components/back-button/back-button.component';
-import { QrScanService } from './../../services/qrScan/qrScan.service';
 import { ApiService } from "../../services/api/api.service";
 import { NavController, Platform } from "@ionic/angular";
 import { IdentityEntity } from "../../services/identity/identity.entity";
@@ -15,6 +14,7 @@ import { HttpClient } from "@angular/common/http";
 import { map, switchMap, finalize } from "rxjs/operators";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { InAppBrowser, InAppBrowserObject, InAppBrowserOptions } from '@ionic-native/in-app-browser/ngx';
+import { QrScanService } from 'src/app/services/qrScan/qrscan.service';
 
 @Component({
   selector: "app-scan-result",
