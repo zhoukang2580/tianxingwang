@@ -39,8 +39,14 @@ const routes: Routes = [
   },
   {
     path: "scan",
+    redirectTo: "/scan-result"
+  },
+  {
+    path: "scan-result",
     loadChildren: () =>
-      import("./pages/scan/scan.module").then(m => m.ScanPageModule)
+      import("./pages/scan-result/scan-result.module").then(
+        m => m.ScanPageModule
+      )
   },
   {
     path: "open-url",
@@ -83,16 +89,28 @@ const routes: Routes = [
       )
   },
   {
-    path: 'member-credential-list',
-    loadChildren: () => import('./member/member-credential-list/member-credential-list.module').then(m => m.MemberCredentialListPageModule)
+    path: "member-credential-list",
+    loadChildren: () =>
+      import(
+        "./member/member-credential-list/member-credential-list.module"
+      ).then(m => m.MemberCredentialListPageModule)
   },
   {
-    path: 'car-order-detail',
-    loadChildren: () => import('./order/car-order-detail/car-order-detail.module').then(m => m.CarOrderDetailPageModule)
+    path: "car-order-detail",
+    loadChildren: () =>
+      import("./order/car-order-detail/car-order-detail.module").then(
+        m => m.CarOrderDetailPageModule
+      )
   },
   {
-    path: 'qrscan',
-    loadChildren: () => import('./pages/qrscan/qrscan.module').then(m => m.QrscanPageModule)
+    path: "qrscan",
+    loadChildren: () =>
+      import("./pages/qrscan/qrscan.module").then(m => m.QrscanPageModule)
+  },
+  {
+    path: "home",
+    loadChildren: () =>
+      import("./pages/home/home.module").then(m => m.HomePageModule)
   },
   {
     path: "",
@@ -103,9 +121,7 @@ const routes: Routes = [
     path: "**",
     loadChildren: () =>
       import("./page404/page404.module").then(m => m.Page404PageModule)
-  },
- 
-
+  }
 ];
 @NgModule({
   imports: [
@@ -135,4 +151,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule, MessageModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

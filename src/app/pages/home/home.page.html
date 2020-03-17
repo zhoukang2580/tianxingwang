@@ -1,0 +1,10 @@
+<ion-header>
+  <ion-toolbar>
+    <app-scan-comp [isAutoCloseScanPage]='true' (scanResult)='onScanResult($event)'></app-scan-comp>
+    <ion-title *ngIf='identity'>欢迎您，{{identity?.Name}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+</ion-content>

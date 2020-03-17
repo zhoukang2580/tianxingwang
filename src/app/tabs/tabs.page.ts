@@ -60,7 +60,7 @@ export class TabsPage implements OnInit {
     //     const url = evt.url;
     //     this.isHidden = !(
     //       "/" == url ||
-    //       ["tabs/my", "tabs/home", "tabs/trip"].some(it => url.includes(it))
+    //       ["tabs/my", "tabs/tmc-home", "tabs/trip"].some(it => url.includes(it))
     //     );
     //     console.log("导航开始", url, "isHidden", this.isHidden);
     //   });

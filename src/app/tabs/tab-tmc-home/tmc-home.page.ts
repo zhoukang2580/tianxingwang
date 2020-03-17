@@ -1,14 +1,14 @@
-import { MemberService, MemberCredential } from "./../../member/member.service";
+import { MemberService, MemberCredential } from "../../member/member.service";
 import { NavController, DomController, IonSlides } from "@ionic/angular";
 import { FlightService } from "src/app/flight/flight.service";
-import { HotelService } from "./../../hotel/hotel.service";
+import { HotelService } from "../../hotel/hotel.service";
 import { TrainService } from "src/app/train/train.service";
 import { StaffEntity } from "src/app/hr/staff.service";
 import { StaffService } from "../../hr/staff.service";
-import { Notice, CmsService } from "./../../cms/cms.service";
+import { Notice, CmsService } from "../../cms/cms.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { IdentityService } from "src/app/services/identity/identity.service";
-import { ApiService } from "./../../services/api/api.service";
+import { ApiService } from "../../services/api/api.service";
 import { AppHelper } from "src/app/appHelper";
 import {
   Component,
@@ -35,11 +35,11 @@ import { TmcService } from "src/app/tmc/tmc.service";
 import { tap, shareReplay, map } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 @Component({
-  selector: "app-home",
-  templateUrl: "home.page.html",
-  styleUrls: ["home.page.scss"]
+  selector: "app-tmc-home",
+  templateUrl: "tmc-home.page.html",
+  styleUrls: ["tmc-home.page.scss"]
 })
-export class HomePage implements OnInit, OnDestroy {
+export class TmcHomePage implements OnInit, OnDestroy {
   private intervalIds: any[] = [];
   private staffCredentials: MemberCredential[];
   private subscription = Subscription.EMPTY;
@@ -55,7 +55,7 @@ export class HomePage implements OnInit, OnDestroy {
   staff: StaffEntity;
   canShow = AppHelper.isApp() || AppHelper.isWechatH5();
   options = {};
-  isShowoverseaHotel = environment.mockProBuild||!environment.production;
+  isShowoverseaHotel = environment.mockProBuild || !environment.production;
   constructor(
     private identityService: IdentityService,
     private router: Router,

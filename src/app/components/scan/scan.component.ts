@@ -1,5 +1,5 @@
 import { IdentityEntity } from "./../../services/identity/identity.entity";
-import { AfterViewInit, OnDestroy } from "@angular/core";
+import { AfterViewInit, OnDestroy, Output, EventEmitter } from "@angular/core";
 import { Router } from "@angular/router";
 import { IdentityService } from "./../../services/identity/identity.service";
 import { LanguageHelper } from "src/app/languageHelper";
@@ -8,16 +8,19 @@ import { Component, OnInit, Input } from "@angular/core";
 import { Platform } from "@ionic/angular";
 import { WechatHelper } from "src/app/wechatHelper";
 import { Subscription } from "rxjs";
-import { QrScanService } from 'src/app/services/qrScan/qrscan.service';
+import { QrScanService } from "src/app/services/qrScan/qrscan.service";
 @Component({
   selector: "app-scan-comp",
   templateUrl: "./scan.component.html",
   styleUrls: ["./scan.component.scss"]
 })
 export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input() showText=false;
-  identityEntity: IdentityEntity;
-  identityEntitySub = Subscription.EMPTY;
+  private identityEntity: IdentityEntity;
+  private identityEntitySub = Subscription.EMPTY;
+  private scanResultSub = Subscription.EMPTY;
+  @Input() showText = false;
+  @Input() isAutoCloseScanPage = false;
+  @Output() scanResult: EventEmitter<any>;
   canShow = true;
   scanText = LanguageHelper.getJSSDKScanTextTip();
   // @HostBinding('class.showConfirm')
@@ -28,6 +31,7 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private qrScanService: QrScanService
   ) {
+    this.scanResult = new EventEmitter();
     this.identityEntitySub = this.identityService
       .getIdentitySource()
       .subscribe(id => {
@@ -41,9 +45,15 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   ngOnDestroy() {
     this.identityEntitySub.unsubscribe();
+    this.scanResultSub.unsubscribe();
   }
   ngOnInit() {
     this.canShow = AppHelper.isApp() || AppHelper.isWechatH5();
+    this.scanResultSub = this.qrScanService
+      .getScanResultSource()
+      .subscribe(txt => {
+        this.scanResult.emit(txt);
+      });
   }
   async onScan() {
     // console.log("onScan", JSON.stringify(this.jssdkUrlConfig, null, 2));
@@ -72,8 +82,10 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
   private async appScan() {
     await this.plt.ready();
     const status = await this.qrScanService.prepare();
-    if (status.authorized == '1') {
-      this.router.navigate(["qrscan"]);
+    if (status.authorized == "1") {
+      this.router.navigate(["qrscan"], {
+        queryParams: { autoClose: this.isAutoCloseScanPage }
+      });
     } else {
       throw new Error("您拒绝使用相机功能");
     }
@@ -84,12 +96,13 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
       return false;
     });
     if (!ok) {
-      return;
+      return "";
     }
     WechatHelper.wx.scanQRCode({
       needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
       scanType: ["qrCode", "barCode"], // 可以指定扫二维码还是一维码，默认二者都有
       success: res => {
+        this.qrScanService.setScanResultSource(res.resultStr);
         this.scan(res.resultStr);
         return false;
       },
@@ -101,12 +114,11 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
   private scan(r: any) {
-    if (!r) {
+    if (!r || this.isAutoCloseScanPage) {
       if (AppHelper.isApp()) {
         return;
       }
     }
-    this.router.navigate([AppHelper.getRoutePath("scan"), { scanResult: r }]);
+    this.router.navigate([AppHelper.getRoutePath("scan-result"), { scanResult: r }]);
   }
 }
-

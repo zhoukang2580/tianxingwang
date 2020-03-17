@@ -37,7 +37,7 @@ export class TmcGuard implements CanActivate, CanActivateChild {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
-    if(!this.identityService.getStatus()){
+    if (!this.identityService.getStatus()) {
       return true;
     }
     return this.identityService
@@ -51,6 +51,10 @@ export class TmcGuard implements CanActivate, CanActivateChild {
         ) {
           if (identity.Numbers.AgentId && !identity.Numbers.TmcId) {
             this.router.navigate([AppHelper.getRoutePath("select-customer")]);
+            return false;
+          }
+          if (identity && identity.Numbers && !identity.Numbers.HrId) {
+            this.router.navigate([AppHelper.getRoutePath("home")]);
             return false;
           }
           return true;

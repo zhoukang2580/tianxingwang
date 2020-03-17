@@ -204,7 +204,7 @@ export class AppComponent
       path = hash.replace("#", "");
     }
     if (!path) {
-      path = "/tabs/home";
+      path = "/tabs/tmc-home";
     }
     return path;
   }
@@ -296,7 +296,8 @@ export class AppComponent
       this.apiService.hideLoadingView();
       if (
         curUrl == "/login" ||
-        curUrl == "/tabs/home" ||
+        curUrl == "/tabs/tmc-home" ||
+        curUrl == "/home" ||
         curUrl == "/tabs/my" ||
         curUrl == "/tabs/trip"
       ) {

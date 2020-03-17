@@ -16,13 +16,13 @@ const routes: Routes = [
     children: [
       {
         path: "",
-        redirectTo: "/tabs/home",
+        redirectTo: "/tabs/tmc-home",
         pathMatch: "full"
       },
       {
-        path: "home",
+        path: "tmc-home",
         loadChildren: () =>
-          import("./tab-home/home.module").then(m => m.HomePageModule)
+          import("./tab-tmc-home/tmc-home.module").then(m => m.TmcHomePageModule)
       },
       {
         path: "home_en",
@@ -49,7 +49,7 @@ const routes: Routes = [
   },
   {
     path: "",
-    redirectTo: "/tabs/home",
+    redirectTo: "/tabs/tmc-home",
     pathMatch: "full"
   }
 ];

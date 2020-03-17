@@ -1,11 +1,11 @@
-import { AgentGuard } from "./../../guards/agent.guard";
+import { AgentGuard } from "../../guards/agent.guard";
 import { AppDirectivesModule } from "../../directives/directives.module";
 import { IonicModule } from "@ionic/angular";
 import { RouterModule } from "@angular/router";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
-import { HomePage } from "./home.page";
+import { TmcHomePage } from "./tmc-home.page";
 import { TmcGuard } from "src/app/guards/tmc.guard";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
 
@@ -19,11 +19,11 @@ import { AppComponentsModule } from "src/app/components/appcomponents.module";
     RouterModule.forChild([
       {
         path: "",
-        component: HomePage,
+        component: TmcHomePage,
         canActivate: [TmcGuard]
       }
     ])
   ],
-  declarations: [HomePage]
+  declarations: [TmcHomePage]
 })
-export class HomePageModule {}
+export class TmcHomePageModule {}

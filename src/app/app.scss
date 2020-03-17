@@ -1,28 +1,22 @@
-body {
-  &.qr-scanning{
-    background: transparent;
-  }
-  // background: white;
-  &.cordova-android{
-    padding: 1em 0;
-  }
-}
-ion-row{
+ion-row {
   align-items: center;
 }
-body:not(.dark){
+body:not(.dark) {
+  &.qr-scanning {
+    --background: transparent;
+  }
   ion-content {
     // --border-color: #d6d6d6;
-    --background  : #f2f2f2;
+    --background: #f2f2f2;
     // ion-list.list-ios,
     // ion-list.list-md {
     //   margin: 1em 0;
     //   padding: 0;
-  
+
     //   &:first-child {
     //     margin-top: 0;
     //   }
-  
+
     //   ion-item {
     //     margin: 0;
     //     padding: 0;
@@ -31,7 +25,7 @@ body:not(.dark){
       --inner-border-width: 0;
     }
     // }
-  
+
     .image-code {
       img {
         max-height: 2em;
@@ -40,6 +34,15 @@ body:not(.dark){
         height: 100%;
       }
     }
+  }
+}
+body,body.dark {
+  &.qr-scanning {
+    background: transparent;
+  }
+  // background: white;
+  &.cordova-android {
+    padding: 1em 0;
   }
 }
 @import "../app/components/refresher/refresher.scss";
@@ -151,7 +154,7 @@ ion-checkbox {
     margin-left: 0.3em;
   }
 }
-ion-picker{
+ion-picker {
   --ion-color-primary: var(--ion-color-secondary);
 }
 .alert-wrapper .alert-button-group button {
@@ -216,7 +219,8 @@ input {
   text-align: justify;
   display: inline-block;
 }
-.ticket-changing,.warranty {
+.ticket-changing,
+.warranty {
   .popover-content {
     width: 80vw;
     // --max-height: 65%;
