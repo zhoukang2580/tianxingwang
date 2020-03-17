@@ -209,7 +209,7 @@ export class ScanResultPage implements OnInit, OnDestroy {
     } else if (this.checkUrl()) {
       if (this.result && this.result.toLowerCase().includes('app_path')) {
         const path = AppHelper.getValueFromQueryString("app_path", this.result);
-        // this.backButton.backToPrePage();
+        this.backButton.backToPrePage();
         this.router.navigate([AppHelper.getRoutePath(path)]);
         return;
       }
