@@ -117,7 +117,11 @@ export class ScanResultPage implements OnInit, OnDestroy {
     this._iframeSrc = null;
   }
   private showTextPage() {
-    this.isShowText = true;
+    if(this.result){
+      this.isShowText = true;
+    }else{
+      this.back();
+    }
   }
   private hideResultTextPage() {
     this.isShowText = false;
