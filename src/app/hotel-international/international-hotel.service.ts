@@ -809,6 +809,16 @@ export interface IInterHotelSearchCondition {
 export interface ISearchTextValue {
   Text: string;
   Value?: string; // Code
+  Id?: string; // Code
+  CityName?: string; // Code
+  CountryEnName?: string;
+  CountryId?: string; // Code
+  CountryName?: string; // Code
+  CountryCode?: string; // Code
+}
+export interface ISearchInterHotelResult {
+  Text: string;
+  Value?: string; // Code
 }
 export interface IInterHotelSearchResult {
   CityCode: string;
