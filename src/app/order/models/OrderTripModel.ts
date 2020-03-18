@@ -1,12 +1,14 @@
 import { OrderPassengerEntity } from "./OrderPassengerEntity";
 import { OrderInsuranceEntity } from "./OrderInsuranceEntity";
-import { InsuranceResultEntity } from 'src/app/tmc/models/Insurance/InsuranceResultEntity';
+import { InsuranceResultEntity } from "src/app/tmc/models/Insurance/InsuranceResultEntity";
+import { OrderFlightTicketType } from "./OrderFlightTicketType";
 
 export class OrderTripModel {
   /// <summary>
   /// 行程类型 Flight Train Hotel
   /// </summary>
-  Type: "Flight"|"Train"|"Hotel"|"Car";
+  Type: "Flight" | "Train" | "Hotel" | "Car";
+  TicketType: OrderFlightTicketType;
   /// <summary>
   /// 订单号
   /// </summary>
@@ -46,5 +48,5 @@ export class OrderTripModel {
   AdditionKey: string;
   Name: string;
   PassengerId: string;
-  InsuranceResult:InsuranceResultEntity;
+  InsuranceResult: InsuranceResultEntity;
 }
