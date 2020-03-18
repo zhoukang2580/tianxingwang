@@ -76,7 +76,6 @@ Page({
                     let nickname = userRes && userRes.nickName ? userRes.nickName : "";
                     wx.setStorageSync("args", {
                       wechatminicode: res.code,
-                      openid: args.openid,
                       ticket: args.ticket,
                       path: args.path,
                       IsForbidOpenId: args.IsForbidOpenId,
@@ -91,7 +90,6 @@ Page({
                 that.setData({
                   isShowAuthorizeButton: true,
                   code:res.code,
-                  openid: args.openid,
                   ticket: args.ticket,
                   path: args.path,
                   IsForbidOpenId: args.IsForbidOpenId,
