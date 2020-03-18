@@ -1,4 +1,4 @@
-import { BackButtonComponent } from './../../components/back-button/back-button.component';
+import { BackButtonComponent } from "./../../components/back-button/back-button.component";
 import { ApiService } from "../../services/api/api.service";
 import { NavController, Platform } from "@ionic/angular";
 import { IdentityEntity } from "../../services/identity/identity.entity";
@@ -13,8 +13,12 @@ import { AppHelper } from "src/app/appHelper";
 import { HttpClient } from "@angular/common/http";
 import { map, switchMap, finalize } from "rxjs/operators";
 import { RequestEntity } from "src/app/services/api/Request.entity";
-import { InAppBrowser, InAppBrowserObject, InAppBrowserOptions } from '@ionic-native/in-app-browser/ngx';
-import { QrScanService } from 'src/app/services/qrScan/qrscan.service';
+import {
+  InAppBrowser,
+  InAppBrowserObject,
+  InAppBrowserOptions
+} from "@ionic-native/in-app-browser/ngx";
+import { QrScanService } from "src/app/services/qrScan/qrscan.service";
 
 @Component({
   selector: "app-scan-result",
@@ -62,9 +66,11 @@ export class ScanResultPage implements OnInit, OnDestroy {
       this.scan(p.get("scanResult"));
     });
     if (AppHelper.isApp()) {
-      this.scanResultSubscription = qrScanService.getScanResultSource().subscribe(txt => {
-        this.result = txt;
-      })
+      this.scanResultSubscription = qrScanService
+        .getScanResultSource()
+        .subscribe(txt => {
+          this.result = txt;
+        });
     }
   }
   ngOnDestroy() {
@@ -99,7 +105,7 @@ export class ScanResultPage implements OnInit, OnDestroy {
       footer: "no",
       closebuttoncaption: "关闭(CLOSE)",
       closebuttoncolor: "#2596D9",
-      navigationbuttoncolor: "#2596D9",
+      navigationbuttoncolor: "#2596D9"
       // toolbarcolor:"#2596D90f"
     };
     this.browser = this.iab.create(encodeURI(url), "_blank", options);
@@ -117,9 +123,9 @@ export class ScanResultPage implements OnInit, OnDestroy {
     this._iframeSrc = null;
   }
   private showTextPage() {
-    if(this.result){
+    if (this.result) {
       this.isShowText = true;
-    }else{
+    } else {
       this.onCancel();
     }
   }
@@ -180,9 +186,9 @@ export class ScanResultPage implements OnInit, OnDestroy {
         const subscribtion = this.http
           .get(
             this.result +
-            "&ticket=" +
-            this.identity.Ticket +
-            "&datatype=json&x-requested-with=XMLHttpRequest"
+              "&ticket=" +
+              this.identity.Ticket +
+              "&datatype=json&x-requested-with=XMLHttpRequest"
           )
           .pipe(
             finalize(() => {
@@ -211,14 +217,12 @@ export class ScanResultPage implements OnInit, OnDestroy {
           );
       }
     } else if (this.checkUrl()) {
-      if (this.result && this.result.toLowerCase().includes('app_path')) {
-        const path = AppHelper.getValueFromQueryString("app_path", this.result);
-        this.result = "";
-        this.router.navigate([AppHelper.getRoutePath(path)]);
+      if (this.result && this.result.toLowerCase().includes("app_path")) {
+        this.openAppPath(this.result);
         return;
       }
       if (AppHelper.isApp()) {
-        return this.openInAppBrowser(this.result)
+        return this.openInAppBrowser(this.result);
       }
       this.showIframePage(this.result);
     } else {
@@ -230,5 +234,28 @@ export class ScanResultPage implements OnInit, OnDestroy {
     this.hideIframePage();
     this.hideResultTextPage();
     this.back();
+  }
+  private openAppPath(url: string) {
+    try {
+      url = url.includes("?") ? url.substring(url.indexOf("?") + 1) : url;
+      if (/[&|=]/.test(url)) {
+        const arr = url.split("&");
+        if (arr.length) {
+          for (const item of arr) {
+            if (item.includes("=")) {
+              const [key, value] = item.split("=");
+              if (key) {
+                AppHelper.setQueryParamers(key.toLowerCase(), value);
+              }
+            }
+          }
+        }
+      }
+      const path = AppHelper.getValueFromQueryString("app_path", this.result);
+      this.result = "";
+      this.router.navigate([AppHelper.getRoutePath(path)]);
+    } catch (e) {
+      AppHelper.alert(e);
+    }
   }
 }

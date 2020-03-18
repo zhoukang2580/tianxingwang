@@ -76,7 +76,7 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
   private searchCitySubscription = Subscription.EMPTY;
   private pageIndex = 0;
   private pageSize = 20;
-  selectedCity: TrafficlineEntity;
+  selectedCity: ISearchTextValue;
   tabs: ITab[];
   tab: ITab;
   searchCityKeyWords = "";
@@ -121,7 +121,18 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.selectedCity) {
       this.hotelService.setSearchConditionSource({
         ...this.hotelService.getSearchCondition(),
-        destinationCity: this.selectedCity
+        destinationCity: {
+          Code: this.selectedCity.Value,
+          Name: this.selectedCity.Text,
+          CityName: this.selectedCity.Text,
+          Id: this.selectedCity.Id,
+          Country: {
+            Id: this.selectedCity.CountryId,
+            CountryName: this.selectedCity.CountryName,
+            EnglishName: this.selectedCity.CountryEnName,
+            Code: this.selectedCity.CountryCode
+          }
+        } as TrafficlineEntity
       });
     }
     setTimeout(() => {

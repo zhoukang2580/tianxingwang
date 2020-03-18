@@ -18,8 +18,9 @@
           <app-hotel-trip [trip]="trip"></app-hotel-trip>
         </ng-container>
         <ng-container *ngIf='trip.Type == "Flight"'>
-          <app-flight-trip [trip]="trip" [isShowInsurance]='true' (showInsuranceEvt)='onShowSelectedInsurance($event)'
-            (payInsuranceEvt)="payInsurance($event)"></app-flight-trip>
+          <app-flight-trip [trip]="trip" [isShowInsurance]='trip.TicketType==OrderFlightTicketType.Domestic'
+            (showInsuranceEvt)='onShowSelectedInsurance($event)' (payInsuranceEvt)="payInsurance($event)">
+          </app-flight-trip>
         </ng-container>
       </div>
     </ng-container>

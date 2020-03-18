@@ -28,6 +28,7 @@ import { OrderTravelPayType } from "src/app/order/models/OrderTravelEntity";
 import { TravelModel } from "src/app/order/models/TravelModel";
 import { ProductItemType } from "src/app/tmc/models/ProductItems";
 import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
+import { OrderFlightTicketType } from "src/app/order/models/OrderFlightTicketType";
 @Component({
   selector: "app-trip",
   templateUrl: "trip.page.html",
@@ -40,6 +41,7 @@ export class TripPage implements OnInit, OnDestroy {
     PageSize: 15
   } as TravelModel;
   private subscriptions: Subscription[] = [];
+  OrderFlightTicketType = OrderFlightTicketType;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
   @ViewChild(IonInfiniteScroll)
   infiniteScroll: IonInfiniteScroll;
@@ -90,7 +92,7 @@ export class TripPage implements OnInit, OnDestroy {
   ngOnInit() {
     if (this.tabs) {
       this.tabs.tabChangeHooks = () => {
-        this.isLoading=false;
+        this.isLoading = false;
         this.loadMoreSubscription.unsubscribe();
       };
     }
