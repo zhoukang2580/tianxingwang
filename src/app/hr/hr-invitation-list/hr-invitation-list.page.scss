@@ -1,0 +1,32 @@
+:host{
+    background-color: #fff;
+}
+.invitation_list{
+    width: 20em;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    margin: auto;
+    margin-bottom: 1em;
+    padding:8px 8px 5px 8px;
+}
+.invitation_desc{
+    font-size: 0.9em;
+    font-family: Hiragino Sans GB;
+    font-weight: 400;
+    color: #5f6367;
+}
+ion-content {
+    // --background: #f2f2f2;
+    ion-list {
+      background: transparent;
+    }
+    ion-list + ion-list {
+      padding: 0.3em 0;
+      margin: 1em 0;
+    }
+    ion-label {
+      opacity: 0.9;
+    }
+ 
+  }

@@ -1,5 +1,5 @@
 import { finalize } from "rxjs/operators";
-import { Subject, from, Subscription } from "rxjs";
+import { Subject, from, Subscription, BehaviorSubject } from "rxjs";
 import { MemberCredential } from "src/app/member/member.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { RequestEntity } from "src/app/services/api/Request.entity";
@@ -8,6 +8,7 @@ import { Injectable } from "@angular/core";
 import { TaskType } from "../workflow/models/TaskType";
 import { BaseSettingEntity } from "../models/BaseSettingEntity";
 import { AccountEntity } from "../account/models/AccountEntity";
+import { AppHelper } from '../appHelper';
 export enum StaffBookType {
   /// <summary>
   /// 秘书
@@ -29,14 +30,27 @@ export class StaffService {
   private staff: StaffEntity;
   private fetchingReqStaffCredentialsPromise: Promise<MemberCredential[]>;
   private fetchingStaffPromise: Promise<StaffEntity>;
+  private hrInvitation: IHrInvitation;
+  private hrInvitationSource: Subject<IHrInvitation>;
   staffCredentials: MemberCredential[];
   constructor(
     private apiService: ApiService,
     private identityService: IdentityService
   ) {
+    this.hrInvitationSource = new BehaviorSubject(null);
     this.identityService.getIdentitySource().subscribe(id => {
       this.disposal();
     });
+  }
+  getHrInvitation() {
+    return this.hrInvitation || {} as IHrInvitation;
+  }
+  getHrInvitationSource() {
+    return this.hrInvitationSource.asObservable();
+  }
+  setHrInvitationSource(hrInvitation: IHrInvitation) {
+    this.hrInvitation = hrInvitation;
+    this.hrInvitationSource.next(hrInvitation);
   }
   private disposal() {
     this.staff = null;
@@ -134,6 +148,63 @@ export class StaffService {
       IsModifyPassword: false,
       IsModifyCredentials: true
     });
+  }
+  getPolicy(data: { name: string; }) {
+    const req = new RequestEntity();
+    req.Method = `HrApiUrl-Invitation-Policy`;
+    // req.IsShowLoading=true;
+    req.Data = {
+      Name: data.name,
+      HrId:  AppHelper.getQueryParamers()['hrid']
+    }
+    return this.apiService.getResponse<IPolicy[]>(req);
+  }
+  // getRoles(data:{name:string;}){
+  //   const req=new  RequestEntity();
+  //   req.Method =`HrApiUrl-Invitation-GetRoles`;
+  //   // req.IsShowLoading=true;
+  //   req.Data={
+  //     Name:data.name,
+  //     HrId:163||AppHelper.getQueryParamers()['hrid']
+  //   }
+  //   return this.apiService.getResponse<IPolicy[]>(req);
+  // }
+  getCostCenter(data: { name: string; }) {
+    const req = new RequestEntity();
+    req.Method = 'HrApiUrl-Invitation-CostCenter';
+    req.Data = {
+      Name: data.name,
+      HrId:  AppHelper.getQueryParamers()['hrid']
+    }
+    return this.apiService.getResponse<ICostCenter[]>(req);
+  }
+  getOrganization(data: { parentId: string; }) {
+    const req = new RequestEntity;
+    req.Method = 'HrApiUrl-Invitation-Organization'
+    req.Data = {
+      ParentId: data.parentId,
+      HrId:  AppHelper.getQueryParamers()['hrid']
+    }
+    return this.apiService.getResponse<IOrganization[]>(req);
+  }
+  invitationAdd() {
+    
+    const req = new RequestEntity;
+    req.Method = 'HrApiUrl-Invitation-Add';
+    const data=this.getHrInvitation();
+    req.Data = {
+      RoleId:data.roleIds,
+      RoleName:data.roleNames,
+      PolicyId:data.policy.Id,
+      PolicyName:data.policy.Name,
+      OrganizationId:data.organization.Id,
+      OrganizationName:data.organization.Name,
+      CostCenterName:data.constCenter.Name,
+      CostCenterId:data.constCenter.Id,
+      Name:data.name,
+      HrId:  AppHelper.getQueryParamers()['hrid']
+    }
+    return this.apiService.getPromiseData<IOrganization[]>(req);
   }
   async getStaffCredentials(
     AccountId: string,
@@ -377,4 +448,24 @@ export interface HrEntity {
     IsReality: boolean; //
   }; //
   Name: string; //
+}
+export interface ICostCenter extends IOrganization {
+}
+export interface IPolicy extends IOrganization {
+}
+export interface IOrganization {
+  Id: string;
+  Name: string;
+  ParentId?: string;
+  Children?: IOrganization[]
+}
+export interface IHrInvitation {
+  hrId?:string;
+  constCenter: ICostCenter;
+  policy: IPolicy;
+  organization: IOrganization;
+  hrName: string;
+  name: string;
+  roleIds: string;
+  roleNames: string;
 }

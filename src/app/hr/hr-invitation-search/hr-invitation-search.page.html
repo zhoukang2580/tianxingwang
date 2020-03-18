@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <app-back-button defaultHref=""></app-back-button>
+    </ion-buttons>
+    <ion-title></ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ng-container *ngIf="isShowSearch">
+    <ion-searchbar [debounce]='0' (ionChange)="onSearch()" [(ngModel)]="keywords"></ion-searchbar>
+    <ion-list>
+      <ion-item *ngFor="let item of items" (click)="onItemsChange(item)">
+        <ion-label>{{item.Name}}</ion-label>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+  <ng-container *ngIf="!isShowSearch">
+      　<ion-label class="ion-padding ion-text-wrap" >
+        <span *ngFor="let item of deptPaths;let last=last;" (click)="onbackdepartment(item)">
+            {{item.Name}}
+            <ion-icon name="chevron-forward-outline" *ngIf='!last'></ion-icon>
+        </span>
+      </ion-label>
+    <ion-list *ngFor="let item of items">
+      <ion-item [detail]="item?.Children?.length">
+        <ion-label>{{item.Name}}</ion-label>
+        <ion-label class="ion-text-end" color="secondary" *ngIf="item?.Children?.length" (click)="onSelectNext(item)">
+          下级
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+</ion-content>

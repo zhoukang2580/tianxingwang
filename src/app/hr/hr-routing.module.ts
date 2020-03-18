@@ -20,6 +20,10 @@ let routes: Route[] = [
   {
     path: "hr",
     loadChildren: () => import("./hr/hr.module").then(m => m.HrPageModule)
+  },
+  {
+    path: 'hr-invitation-search',
+    loadChildren: () => import('./hr-invitation-search/hr-invitation-search.module').then( m => m.HrInvitationSearchPageModule)
   }
 ];
 

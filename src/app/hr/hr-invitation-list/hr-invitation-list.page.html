@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <app-back-button defaultHref=""></app-back-button>
+    </ion-buttons>
+    <ion-title>我的邀请</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list lines="none">
+    <div *ngFor="let item of invitationlist;let i=index" class="invitation_list">
+        <ion-label class="invitation_desc ion-text-wrap">{{item.Desc}}</ion-label>
+      <ion-item>
+        <ion-button color="secondary" slot="end" (click)="acceptclick(i)">接受</ion-button>
+        <ion-button color="danger" slot="end">拒绝</ion-button>
+      </ion-item>
+    </div>
+  </ion-list>
+</ion-content>
