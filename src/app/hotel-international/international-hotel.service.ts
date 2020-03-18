@@ -96,7 +96,7 @@ export class InternationalHotelService {
   async onBook(bookDto: OrderBookDto): Promise<IBookOrderResult> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-InternationalHotel-Book";
-    bookDto.Channel = this.tmcService.getChannel();
+    bookDto.Channel = await this.tmcService.getChannel();
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;
@@ -807,6 +807,16 @@ export interface IInterHotelSearchCondition {
 }
 
 export interface ISearchTextValue {
+  Text: string;
+  Value?: string; // Code
+  Id?: string; // Code
+  CityName?: string; // Code
+  CountryEnName?: string;
+  CountryId?: string; // Code
+  CountryName?: string; // Code
+  CountryCode?: string; // Code
+}
+export interface ISearchInterHotelResult {
   Text: string;
   Value?: string; // Code
 }

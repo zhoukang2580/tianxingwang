@@ -143,60 +143,6 @@ export class AppComponent
   ngAfterContentInit() {
     console.log("ngAfterContentInit");
   }
-  checkWechatOpenId() {
-    const paramters = AppHelper.getQueryParamers();
-    console.log("checkWechatOpenId", paramters);
-    if (paramters.openid) {
-      WechatHelper.openId = paramters.openid || "";
-    } else if (paramters.IsForbidOpenId) {
-      return true;
-    } else if (
-      AppHelper.isWechatMini() &&
-      !WechatHelper.openId &&
-      !AppHelper.checkQueryString("wechatminicode")
-    ) {
-      WechatHelper.wx.miniProgram.navigateTo({
-        url:
-          "/pages/login/index?IsLogin=true&IsForbidOpenId=true&domain=" +
-          AppHelper.getDomain() +
-          "&ticket=" +
-          AppHelper.getTicket() +
-          "&getUrl=" +
-          encodeURIComponent(AppHelper.getApiUrl() + "/home/GetWechatUser")
-      });
-      return false;
-    } else if (AppHelper.isWechatH5() && !WechatHelper.openId) {
-      let url =
-        AppHelper.getApiUrl() +
-        "/home/GetWechatCode?IsLogin=true&IsForbidOpenId=true&path=" +
-        this.getPath() +
-        "&domain=" +
-        AppHelper.getDomain() +
-        "&ticket=" +
-        AppHelper.getTicket();
-      AppHelper.redirect(url);
-      return false;
-    }
-    return true;
-  }
-  checkDingtalkUnionid() {
-    const paramters = AppHelper.getQueryParamers();
-    if (paramters.IsForbidOpenId) {
-      return true;
-    } else if (AppHelper.isDingtalkH5()) {
-      if (!AppHelper.checkQueryString("dingtalkcode")) {
-        const url =
-          AppHelper.getApiUrl() +
-          "/home/GetDingtalkCode?IsLogin=true&IsForbidOpenId=true&path=" +
-          this.getPath() +
-          "&domain=" +
-          AppHelper.getDomain();
-        AppHelper.redirect(url);
-        return false;
-      }
-    }
-    return true;
-  }
 
   getPath() {
     let path = AppHelper.getQueryString("path");
@@ -224,9 +170,6 @@ export class AppComponent
     AppHelper.getDomain(); //
     AppHelper.initlizeQueryParamers();
     this.showErrorMsg();
-    if (!this.checkWechatOpenId() || !this.checkDingtalkUnionid()) {
-      return;
-    }
     const unloginPath = AppHelper.getQueryString("unloginpath");
     let path = this.getPath();
     if (!AppHelper.getTicket() && unloginPath) {

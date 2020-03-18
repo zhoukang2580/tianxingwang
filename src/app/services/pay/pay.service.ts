@@ -95,7 +95,7 @@ export class PayService {
       AppHelper.isWechatMini() ||
       AppHelper.isWechatH5()
     ) {
-      req.Data.OpenId = WechatHelper.openId;
+      req.Data.OpenId = WechatHelper.getOpenId();
       req.IsShowLoading = true;
       if (AppHelper.isApp()) {
         req.Data.CreateType = "App";
@@ -125,7 +125,7 @@ export class PayService {
                   "&paySign=" +
                   r.Data.paySign +
                   "&openid=" +
-                  WechatHelper.openId +
+                  WechatHelper.getMiniOpenId() +
                   "&ticket=" +
                   AppHelper.getTicket() +
                   "&path=" +
@@ -212,7 +212,7 @@ export class PayService {
           "&ticket=" +
           AppHelper.getTicket() +
           "&openid" +
-          (WechatHelper.openId || "")
+          (WechatHelper.getOpenId() || "")
       );
     for (let r in req) {
       url +=

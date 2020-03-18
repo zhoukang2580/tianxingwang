@@ -24,6 +24,7 @@ import { TravelModel } from "../order/models/TravelModel";
 import { OrderEntity } from "../order/models/OrderEntity";
 import { OrderTrainTicketEntity } from "../order/models/OrderTrainTicketEntity";
 import { CountryEntity } from "./models/CountryEntity";
+import { IdentityEntity } from "../services/identity/identity.entity";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -112,8 +113,17 @@ export class TmcService {
     await this.storage.set(req.Method, local);
     return local.countries;
   }
-  getChannel() {
-    let channel = "H5";
+  async getChannel() {
+    const identity: IdentityEntity = await this.identityService.getIdentityAsync();
+    let tag: "代理" | "客户" | "手机端" = "手机端";
+    if (identity) {
+      if (identity.Numbers.AgentId) {
+        tag = "代理";
+      } else {
+        tag = "客户";
+      }
+    }
+    let channel = `${tag}H5`;
     if (AppHelper.isApp()) {
       if (this.platform.is("android")) {
         channel = "android";
@@ -132,7 +142,7 @@ export class TmcService {
         channel = "WechatMini";
       }
     }
-    return channel;
+    return `${tag}${channel}`;
   }
   async payOrder(tradeNo: string, key = "", giveup = false): Promise<boolean> {
     if (giveup) {

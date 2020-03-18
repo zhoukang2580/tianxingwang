@@ -876,7 +876,7 @@ export class HotelService {
   async onBook(bookDto: OrderBookDto): Promise<IBookOrderResult> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Hotel-Book";
-    bookDto.Channel = this.tmcService.getChannel();
+    bookDto.Channel = await this.tmcService.getChannel();
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;

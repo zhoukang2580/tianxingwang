@@ -131,13 +131,26 @@ export class OrderItemComponent implements OnInit, OnChanges {
       }
     }
   }
+  private sortOrderFlightTicketsByTime(arr: OrderFlightTicketEntity[]) {
+    const result = ((arr && arr.slice(0)) || []).filter(
+      t => t.OrderFlightTrips && t.OrderFlightTrips.length > 0
+    );
+    result.sort((t1, t2) => {
+      return (
+        AppHelper.getDate(t1.OrderFlightTrips[0].TakeoffDate).getTime() -
+        AppHelper.getDate(t2.OrderFlightTrips[0].TakeoffDate).getTime()
+      );
+    });
+    return result;
+  }
   private checkIfOrderFlightTicketShow() {
     if (this.order && this.order.OrderFlightTickets) {
       const originalTicketIdToTickets: {
         [originalId: string]: OrderFlightTicketEntity[];
       } = {};
       this.order.OrderFlightTickets.forEach(t => {
-        if (t.VariablesJsonObj &&
+        if (
+          t.VariablesJsonObj &&
           t.VariablesJsonObj.OriginalTicketId &&
           !t.VariablesJsonObj.IsScrap
         ) {
@@ -163,7 +176,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
           const last = ts && ts[ts.length - 1];
           const isShow = last
             ? t.VariablesJsonObj.maxTimeStamp ==
-            last.VariablesJsonObj.maxTimeStamp
+              last.VariablesJsonObj.maxTimeStamp
             : true;
           t.VariablesJsonObj.isShow = !t.VariablesJsonObj.IsScrap && isShow;
         }
@@ -174,14 +187,19 @@ export class OrderItemComponent implements OnInit, OnChanges {
   }
   private initOrderFlightTicketPassengerIndex() {
     if (this.order && this.order.OrderFlightTickets) {
-      const arr = this.order.OrderFlightTickets.filter(
+      let showArr = this.order.OrderFlightTickets.filter(
         it => it.VariablesJsonObj.isShow
       );
-      if (arr.length > 2) {
-        arr.forEach((t, idx) => {
+      const unShowArr = this.order.OrderFlightTickets.filter(
+        it => !it.VariablesJsonObj.isShow
+      );
+      showArr = this.sortOrderFlightTicketsByTime(showArr);
+      if (showArr.length > 2) {
+        showArr.forEach((t, idx) => {
           t.VariablesJsonObj.idx = idx + 1;
         });
       }
+      this.order.OrderFlightTickets = [...showArr, ...unShowArr];
     }
   }
   check(orderTrainTicket: OrderTrainTicketEntity) {
@@ -193,8 +211,8 @@ export class OrderItemComponent implements OnInit, OnChanges {
         0,
         orderTrainTicket.OrderTrainTrips[0].StartTime
       ) -
-      +this.calendarService.getMoment(0) >
-      0
+        +this.calendarService.getMoment(0) >
+        0
     );
   }
   async onExchange(evt: CustomEvent, orderTrainTicket: OrderTrainTicketEntity) {
@@ -262,7 +280,10 @@ export class OrderItemComponent implements OnInit, OnChanges {
     if (!order || !order.OrderItems) {
       return amount;
     }
-    amount = order.OrderItems.reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+    amount = order.OrderItems.reduce(
+      (acc, it) => (acc = AppHelper.add(acc, +it.Amount)),
+      0
+    );
     return amount < 0 ? 0 : amount;
   }
   private getFlightInsuranceAmount() {

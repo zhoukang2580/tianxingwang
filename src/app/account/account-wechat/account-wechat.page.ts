@@ -65,8 +65,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
           url:
             "/pages/login/index?ticket=" +
             AppHelper.getTicket() +
-            "&path=account-wechat&IsForbidOpenId=true&openid=" +
-            (WechatHelper.openId || "")
+            "&path=account-wechat&IsForbidOpenId=true"
         });
       } else if (AppHelper.isWechatH5()) {
         const url =
@@ -75,8 +74,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
           AppHelper.getDomain() +
           "&ticket=" +
           AppHelper.getTicket() +
-          "&path=account-wechat&openid=" +
-          (WechatHelper.openId || "");
+          "&path=account-wechat";
         AppHelper.redirect(url);
       }
     } catch (e) {
@@ -94,9 +92,6 @@ export class AccountWechatPage implements OnInit, OnDestroy {
         s => {
           if (s.Status) {
             this.load();
-            if (s.Data && s.Data.OpenId) {
-              WechatHelper.openId = s.Data.OpenId;
-            }
           }
           if (s.Message) {
             AppHelper.alert(s.Message);

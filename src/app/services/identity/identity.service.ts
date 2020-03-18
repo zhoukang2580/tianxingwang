@@ -39,6 +39,7 @@ export class IdentityService {
     this.identityEntity = new IdentityEntity();
     this.identityEntity.Ticket = AppHelper.getTicket();
     this.identityEntity.Name = AppHelper.getStorage("loginname");
+    this.identityEntity.Id = AppHelper.getQueryParamers().IdentityId;
     this.identitySource = new BehaviorSubject(this.identityEntity);
   }
   setIdentity(info: IdentityEntity) {

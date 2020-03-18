@@ -25,7 +25,7 @@ export class AppHelper {
     environment.production && !environment.mockProBuild
       ? "sky-trip.com"
       : "testskytrip.com";
-  constructor() { }
+  constructor() {}
   static _domain;
   static _queryParamers = {};
   static platform: Platform;
@@ -90,10 +90,10 @@ export class AppHelper {
     return typeof msg === "string"
       ? msg
       : msg instanceof Error
-        ? msg.message
-        : msg && (msg.message || msg.Message)
-          ? msg.message || msg.Message
-          : JSON.stringify(msg);
+      ? msg.message
+      : msg && (msg.message || msg.Message)
+      ? msg.message || msg.Message
+      : JSON.stringify(msg);
   }
   static alert(
     msg: any,
@@ -387,7 +387,9 @@ export class AppHelper {
    */
   static getValueFromQueryString(name: string, queryString: string) {
     queryString = queryString || "";
-    queryString = queryString.includes("?") ? queryString.substring(queryString.indexOf("?") + 1) : queryString;
+    queryString = queryString.includes("?")
+      ? queryString.substring(queryString.indexOf("?") + 1)
+      : queryString;
     const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
     const r = queryString.match(reg);
     if (r) {
@@ -475,6 +477,15 @@ export class AppHelper {
     }
     return this._appDomain;
   }
+  static getCookieValue(name: string) {
+    const reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+    const arr = document.cookie.match(reg);
+    if (arr && arr.length > 1) {
+      return unescape(arr[2]);
+    } else {
+      return null;
+    }
+  }
   static getRedirectUrl() {
     const url = this.getApiUrl();
     const domain = this.getDomain();
@@ -524,12 +535,12 @@ export class AppHelper {
   static setQueryParamers(key: string, value: string) {
     try {
       this._queryParamers[key] = value;
-    } catch (ex) { }
+    } catch (ex) {}
   }
   static removeQueryParamers(key: string) {
     try {
       this._queryParamers[key] = null;
-    } catch (ex) { }
+    } catch (ex) {}
   }
   static getQueryParamers() {
     return this._queryParamers as any;

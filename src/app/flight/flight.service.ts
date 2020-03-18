@@ -1112,7 +1112,7 @@ export class FlightService {
     if (arrivalDay - takeOffDay) {
       addDay += 1;
     }
-    return  addDay >= 1 ? `+${addDay}${LanguageHelper.getDayTip()}` : "";
+    return addDay >= 1 ? `+${addDay}${LanguageHelper.getDayTip()}` : "";
   }
   getTotalFlySegments() {
     return this.getFlightSegments(this.flightJourneyList);
@@ -1344,7 +1344,7 @@ export class FlightService {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Flight-Book";
 
-    bookDto.Channel = this.tmcService.getChannel();
+    bookDto.Channel = await this.tmcService.getChannel();
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;

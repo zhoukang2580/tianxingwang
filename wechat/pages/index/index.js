@@ -1,7 +1,7 @@
 //index.js
 //获取应用实例
 const app = getApp()
-
+var homeUrl = "http://test.app.beeant.com";
 Page({
   data: {
     motto: 'Hello World',
@@ -17,55 +17,37 @@ Page({
     })
   },
   onShow: function() {
+    debugger;
     var args = wx.getStorageSync("args");
-    var url = "https://app.sky-trip.com";
-    if (args) {
-      if (args.wechatminicode) {
-        url += (url.includes("?") ? "&" : "?") + "wechatminicode=" + args.wechatminicode;
-      }
-      if (args.IsForbidOpenId) {
-        url += (url.includes("?") ? "&" : "?") + "IsForbidOpenId=" + args.IsForbidOpenId;
-      }
-      if (args.openid) {
-        url += (url.includes("?") ? "&" : "?") + "openid=" + args.openid;
-      }
-      if (args.ticket) {
-        url += (url.includes("?") ? "&" : "?") + "ticket=" + args.ticket;
-      }
-      if (args.path) {
-        url += (url.includes("?") ? "&" : "?") + "path=" + args.path;
-      }
-      if (args.nickName) {
-        url += (url.includes("?") ? "&" : "?") + "wechatmininickname=" + args.nickName;
-      }
-      if (args.wechatPayResult) {
-        url += (url.includes("?") ? "&" : "?") + "wechatPayResult=" + args.wechatPayResult;
-      }
-    }
-    var orgUrl=this.data.url;
-    if (orgUrl && orgUrl.indexOf(url)>-1)
-    {
-        return;
-    }
-    var lat;
-    var lng;
-    const st = Date.now();
-    var that = this;
-    wx.getLocation({
-      complete: (res) => {
-        lat = res && res.latitude;
-        lng = res && res.longitude;
-        if (lat && lng) {
-          url += (url.includes("?") ? "&" : "?") + "lat=" + lat;
-          url += (url.includes("?") ? "&" : "?") + "lng=" + lng;
-        }
-        that.setData({
-          url: url
-        });
-        console.log(url);
+    var ticket=args && args.ticket;
+    wx.login({
+      success: (res) => {
+        var geturl = homeUrl + "/Home/GetWechatUser";
+        var code = res.code
+        wx.request({
+          url: geturl,
+          data: {
+            code: res.code,
+            ticket: ticket,
+            IsLogin: true,
+            SdkType: "Mini"
+          },
+          header: {},
+          method: 'GET',
+          dataType: 'json',
+          complete: (r) => {
+            if (r && r.data && r.data.Data) {
+              args = { openid: r.data.Data.OpenId, ticket: r.data.Data.Ticket };
+              wx.setStorageSync("args", args);
+
+              this.setUrl(args);
+            }
+            wx.navigateBack();
+          }
+        })
       }
     })
-    wx.clearStorageSync();
+   
   },
   onLoad: function(args) {
     if (app.globalData.userInfo) {
@@ -102,5 +84,55 @@ Page({
       userInfo: e.detail.userInfo,
       hasUserInfo: true
     })
+  },
+  setUrl:function(args)
+  {
+    var url = homeUrl+"/home/index";
+    if (args) {
+      if (args.wechatminicode) {
+        url += (url.includes("?") ? "&" : "?") + "wechatminicode=" + args.wechatminicode;
+      }
+      if (args.IsForbidOpenId) {
+        url += (url.includes("?") ? "&" : "?") + "IsForbidOpenId=" + args.IsForbidOpenId;
+      }
+      if (args.ticket) {
+        url += (url.includes("?") ? "&" : "?") + "ticket=" + args.ticket;
+      }
+      if (args.openid) {
+        url += (url.includes("?") ? "&" : "?") + "wechatminiopenid=" + args.openid;
+      }
+      if (args.path) {
+        url += (url.includes("?") ? "&" : "?") + "path=" + args.path;
+      }
+      if (args.nickName) {
+        url += (url.includes("?") ? "&" : "?") + "wechatmininickname=" + args.nickName;
+      }
+      if (args.wechatPayResult) {
+        url += (url.includes("?") ? "&" : "?") + "wechatPayResult=" + args.wechatPayResult;
+      }
+    }
+    var orgUrl = this.data.url;
+    if (orgUrl && orgUrl.indexOf(url) > -1) {
+      return;
+    }
+    var lat;
+    var lng;
+    const st = Date.now();
+    var that = this;
+    wx.getLocation({
+      complete: (res) => {
+        lat = res && res.latitude;
+        lng = res && res.longitude;
+        if (lat && lng) {
+          url += (url.includes("?") ? "&" : "?") + "lat=" + lat;
+          url += (url.includes("?") ? "&" : "?") + "lng=" + lng;
+        }
+        that.setData({
+          url: url
+        });
+        console.log(url);
+      }
+    })
+    wx.clearStorageSync();
   }
 })

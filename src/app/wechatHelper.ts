@@ -56,7 +56,15 @@ export class WechatHelper {
 
   static wx = window["wx"];
 
-  static openId: string;
+
+  static getOpenId()
+  {
+    return AppHelper.getCookieValue("wechatopenid");
+  }
+  static getMiniOpenId()
+  {
+    return AppHelper.getCookieValue("wechatminiopenid");
+  }
   static getHashedCurPageUrl() {
     const href = window.location.href;
     const url = href.substring(0, href.indexOf("#")).trim();

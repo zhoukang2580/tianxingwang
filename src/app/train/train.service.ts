@@ -1255,7 +1255,7 @@ export class TrainService {
   async exchangeBook(bookDto: OrderBookDto): Promise<IBookOrderResult> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Train-ExchangeBook";
-    bookDto.Channel = this.tmcService.getChannel();
+    bookDto.Channel = await this.tmcService.getChannel( );
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;
@@ -1264,7 +1264,7 @@ export class TrainService {
   async bookTrain(bookDto: OrderBookDto): Promise<IBookOrderResult> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Train-Book";
-    bookDto.Channel = this.tmcService.getChannel();
+    bookDto.Channel = await this.tmcService.getChannel();
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;
