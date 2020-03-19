@@ -39,7 +39,7 @@ export class IdentityService {
     this.identityEntity = new IdentityEntity();
     this.identityEntity.Ticket = AppHelper.getTicket();
     this.identityEntity.Name = AppHelper.getStorage("loginname");
-    this.identityEntity.Id = AppHelper.getQueryParamers().IdentityId;
+    // this.identityEntity.Id = AppHelper.getQueryParamers().IdentityId;
     this.identitySource = new BehaviorSubject(this.identityEntity);
     console.log("IdentityService identityEntity ", this.identityEntity);
   }
@@ -49,11 +49,7 @@ export class IdentityService {
     this.identitySource.next(this.identityEntity);
   }
   getStatus(): boolean {
-    return !!(
-      this.identityEntity &&
-      this.identityEntity.Ticket &&
-      this.identityEntity.Id
-    );
+    return !!(this.identityEntity && this.identityEntity.Ticket);
   }
   removeIdentity() {
     this.identityEntity.Ticket = null;
