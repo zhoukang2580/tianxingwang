@@ -18,7 +18,16 @@ Page({
   },
   onShow: function() {
     debugger;
+    var that=this;
     var args = wx.getStorageSync("args");
+    if(args)
+    {
+      args=JSON.parse(args);
+    }
+    else
+    {
+      args={};
+    }
     var ticket=args && args.ticket;
     wx.login({
       success: (res) => {
@@ -39,9 +48,15 @@ Page({
             if (r && r.data && r.data.Data) {
               args = { openid: r.data.Data.OpenId, ticket: r.data.Data.Ticket };
               wx.setStorageSync("args", args);
-
-              this.setUrl(args);
             }
+            if(!args.openid)
+            {
+              args.IsForbidOpenId=true;
+            }
+            if (!args.ticket) {
+              args.IsForbidAutoLogin = true;
+            }
+            that.setUrl(args);
             wx.navigateBack();
           }
         })
@@ -94,6 +109,9 @@ Page({
       }
       if (args.IsForbidOpenId) {
         url += (url.includes("?") ? "&" : "?") + "IsForbidOpenId=" + args.IsForbidOpenId;
+      }
+      if (args.IsForbidAutoLogin) {
+        url += (url.includes("?") ? "&" : "?") + "IsForbidAutoLogin=" + args.IsForbidAutoLogin;
       }
       if (args.ticket) {
         url += (url.includes("?") ? "&" : "?") + "ticket=" + args.ticket;
