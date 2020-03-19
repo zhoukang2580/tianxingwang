@@ -100,7 +100,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
             t => {
               if (t.Variables && !t.VariablesJsonObj) {
                 t.VariablesJsonObj =
-                  t.VariablesJsonObj || JSON.parse(t.Variables);
+                  t.VariablesJsonObj || JSON.parse(t.Variables) || {};
               }
               if (t.OrderFlightTrips) {
                 t.OrderFlightTrips = t.OrderFlightTrips.map(trip => {
@@ -122,6 +122,9 @@ export class OrderItemComponent implements OnInit, OnChanges {
                   );
                 });
               }
+              t.VariablesJsonObj.isTicketCanRefund = this.isTicketCanRefund(t);
+              t.VariablesJsonObj.isShowExchangeBtn = this.isShowExchangeBtn(t);
+              t.VariablesJsonObj.isShowCancelBtn = this.isShowCancelBtn(t);
               return t;
             }
           );
@@ -215,30 +218,68 @@ export class OrderItemComponent implements OnInit, OnChanges {
         0
     );
   }
-  async onExchange(evt: CustomEvent, orderTrainTicket: OrderTrainTicketEntity) {
+  async onExchangeTrainTicket(evt: CustomEvent, orderTrainTicket: OrderTrainTicketEntity) {
     if (evt) {
       evt.stopPropagation();
     }
     return this.trainService.onExchange(orderTrainTicket);
   }
-  showRefundBtn(orderFlightTicket: OrderFlightTicketEntity) {
-    if (this.isAgent) {
+  private isTicketCanRefund(orderFlightTicket: OrderFlightTicketEntity) {
+    if (
+      !orderFlightTicket ||
+      !this.showBtnByTimeAndTicketType(orderFlightTicket)
+    ) {
       return false;
     }
-    // todo:
-    const channel = this.order && this.order.Channel.toUpperCase();
-    if (!channel) {
+    return [
+      OrderFlightTicketStatusType.Issued,
+      OrderFlightTicketStatusType.Exchanged
+    ].includes(orderFlightTicket && orderFlightTicket.Status);
+  }
+  private showBtnByTimeAndTicketType(
+    orderFlightTicket: OrderFlightTicketEntity
+  ) {
+    return (
+      orderFlightTicket &&
+      orderFlightTicket.TicketType == OrderFlightTicketType.Domestic &&
+      this.isAfterTomorrow(orderFlightTicket.OrderFlightTrips[0].TakeoffTime)
+    );
+  }
+  private isAfterTomorrow(date: string) {
+    const m = this.calendarService.getMoment(0);
+    const tomorrow = this.calendarService.getMoment(1, m.format("YYYY-MM-DD"));
+    const dm = this.calendarService.getMoment(0, date.substr(0, 10));
+    // console.log(tomorrow.format("YYYY-MM-DD"), dm.format("YYYY-MM-DD"));
+    return +dm - +tomorrow >= 0;
+  }
+  private isShowCancelBtn(orderFlightTicket: OrderFlightTicketEntity) {
+    if (
+      !orderFlightTicket ||
+      !this.showBtnByTimeAndTicketType(orderFlightTicket)
+    ) {
       return false;
     }
     return (
-      "客户PC 代理PC 客户H5 代理H5 ANDROID IOS 代理ANDROID 代理IOS 代理接口".includes(
-        channel
-      ) &&
-      orderFlightTicket.Status == OrderFlightTicketStatusType.Issued &&
-      this.tmc &&
-      this.tmc.FlightIsAllowRefund &&
-      orderFlightTicket.Supplier != "0" &&
-      false
+      orderFlightTicket &&
+      [
+        OrderFlightTicketStatusType.Booked,
+        OrderFlightTicketStatusType.BookExchanged
+      ].includes(orderFlightTicket.Status)
+    );
+  }
+  private isShowExchangeBtn(orderFlightTicket: OrderFlightTicketEntity) {
+    if (
+      !orderFlightTicket ||
+      !this.showBtnByTimeAndTicketType(orderFlightTicket)
+    ) {
+      return false;
+    }
+    return (
+      orderFlightTicket &&
+      [
+        OrderFlightTicketStatusType.Issued,
+        OrderFlightTicketStatusType.Exchanged
+      ].includes(orderFlightTicket.Status)
     );
   }
   private initPassengers() {

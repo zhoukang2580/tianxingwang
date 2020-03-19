@@ -49,8 +49,14 @@
                     <ion-text color='secondary'>({{t.StatusName}})</ion-text>
                   </span>
                 </div>
-                <ion-button *ngIf='showRefundBtn(t)' (click)='onRefundFlightTicket($event,t)' color='danger'>
+                <ion-button *ngIf='t.VariablesJsonObj["isTicketCanRefund"]' size='small' (click)='onRefundFlightTicket($event,t)' color='danger'>
                   <ion-text color='light'>退票</ion-text>
+                </ion-button>
+                <ion-button *ngIf='t.VariablesJsonObj["isShowExchangeBtn"]' size='small' (click)='onRefundFlightTicket($event,t)' color='secondary'>
+                  <ion-text color='light'>改签</ion-text>
+                </ion-button>
+                <ion-button *ngIf='t.VariablesJsonObj["isShowCancelBtn"]' size='small' (click)='onRefundFlightTicket($event,t)' color='secondary'>
+                  <ion-text color='light'>取消订单</ion-text>
                 </ion-button>
               </div>
               <div class="item">
@@ -153,7 +159,7 @@
               <ion-button (click)='onPay($event)' size='small' color='secondary'>去支付
               </ion-button>
             </ng-container>
-            <ion-button (click)='onExchange($event,orderTrainTicket)' color='secondary'
+            <ion-button (click)='onExchangeTrainTicket($event,orderTrainTicket)' color='secondary'
               *ngIf='orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
               <span>改签</span>
             </ion-button>

@@ -1,4 +1,4 @@
-import { finalize } from "rxjs/operators";
+import { finalize, filter } from "rxjs/operators";
 import { Subject, from, Subscription, BehaviorSubject } from "rxjs";
 import { MemberCredential } from "src/app/member/member.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
@@ -8,7 +8,7 @@ import { Injectable } from "@angular/core";
 import { TaskType } from "../workflow/models/TaskType";
 import { BaseSettingEntity } from "../models/BaseSettingEntity";
 import { AccountEntity } from "../account/models/AccountEntity";
-import { AppHelper } from '../appHelper';
+import { AppHelper } from "../appHelper";
 export enum StaffBookType {
   /// <summary>
   /// 秘书
@@ -43,10 +43,10 @@ export class StaffService {
     });
   }
   getHrInvitation() {
-    return this.hrInvitation || {} as IHrInvitation;
+    return this.hrInvitation || ({} as IHrInvitation);
   }
   getHrInvitationSource() {
-    return this.hrInvitationSource.asObservable();
+    return this.hrInvitationSource.asObservable().pipe(filter(it => !!it));
   }
   setHrInvitationSource(hrInvitation: IHrInvitation) {
     this.hrInvitation = hrInvitation;
@@ -149,14 +149,14 @@ export class StaffService {
       IsModifyCredentials: true
     });
   }
-  getPolicy(data: { name: string; }) {
+  getPolicy(data: { name: string }) {
     const req = new RequestEntity();
     req.Method = `HrApiUrl-Invitation-Policy`;
     // req.IsShowLoading=true;
     req.Data = {
       Name: data.name,
-      HrId:  AppHelper.getQueryParamers()['hrid']
-    }
+      HrId: AppHelper.getQueryParamers()["hrid"]
+    };
     return this.apiService.getResponse<IPolicy[]>(req);
   }
   // getRoles(data:{name:string;}){
@@ -169,41 +169,40 @@ export class StaffService {
   //   }
   //   return this.apiService.getResponse<IPolicy[]>(req);
   // }
-  getCostCenter(data: { name: string; }) {
+  getCostCenter(data: { name: string }) {
     const req = new RequestEntity();
-    req.Method = 'HrApiUrl-Invitation-CostCenter';
+    req.Method = "HrApiUrl-Invitation-CostCenter";
     req.Data = {
       Name: data.name,
-      HrId:  AppHelper.getQueryParamers()['hrid']
-    }
+      HrId: AppHelper.getQueryParamers()["hrid"]
+    };
     return this.apiService.getResponse<ICostCenter[]>(req);
   }
-  getOrganization(data: { parentId: string; }) {
-    const req = new RequestEntity;
-    req.Method = 'HrApiUrl-Invitation-Organization'
+  getOrganization(data: { parentId: string }) {
+    const req = new RequestEntity();
+    req.Method = "HrApiUrl-Invitation-Organization";
     req.Data = {
       ParentId: data.parentId,
-      HrId:  AppHelper.getQueryParamers()['hrid']
-    }
+      HrId: AppHelper.getQueryParamers()["hrid"]
+    };
     return this.apiService.getResponse<IOrganization[]>(req);
   }
   invitationAdd() {
-    
-    const req = new RequestEntity;
-    req.Method = 'HrApiUrl-Invitation-Add';
-    const data=this.getHrInvitation();
+    const req = new RequestEntity();
+    req.Method = "HrApiUrl-Invitation-Add";
+    const data = this.getHrInvitation();
     req.Data = {
-      RoleId:data.roleIds,
-      RoleName:data.roleNames,
-      PolicyId:data.policy.Id,
-      PolicyName:data.policy.Name,
-      OrganizationId:data.organization.Id,
-      OrganizationName:data.organization.Name,
-      CostCenterName:data.constCenter.Name,
-      CostCenterId:data.constCenter.Id,
-      Name:data.name,
-      HrId:  AppHelper.getQueryParamers()['hrid']
-    }
+      RoleId: data.roleIds,
+      RoleName: data.roleNames,
+      PolicyId: data.policy.Id,
+      PolicyName: data.policy.Name,
+      OrganizationId: data.organization.Id,
+      OrganizationName: data.organization.Name,
+      CostCenterName: data.constCenter.Name,
+      CostCenterId: data.constCenter.Id,
+      Name: data.name,
+      HrId: AppHelper.getQueryParamers()["hrid"]
+    };
     return this.apiService.getPromiseData<IOrganization[]>(req);
   }
   async getStaffCredentials(
@@ -449,18 +448,16 @@ export interface HrEntity {
   }; //
   Name: string; //
 }
-export interface ICostCenter extends IOrganization {
-}
-export interface IPolicy extends IOrganization {
-}
+export interface ICostCenter extends IOrganization {}
+export interface IPolicy extends IOrganization {}
 export interface IOrganization {
   Id: string;
   Name: string;
   ParentId?: string;
-  Children?: IOrganization[]
+  Children?: IOrganization[];
 }
 export interface IHrInvitation {
-  hrId?:string;
+  hrId?: string;
   constCenter: ICostCenter;
   policy: IPolicy;
   organization: IOrganization;

@@ -236,6 +236,7 @@ export class ScanResultPage implements OnInit, OnDestroy {
     this.back();
   }
   private openAppPath(url: string) {
+    const query = {};
     try {
       url = url.includes("?") ? url.substring(url.indexOf("?") + 1) : url;
       if (/[&|=]/.test(url)) {
@@ -245,7 +246,7 @@ export class ScanResultPage implements OnInit, OnDestroy {
             if (item.includes("=")) {
               const [key, value] = item.split("=");
               if (key) {
-                AppHelper.setQueryParamers(key.toLowerCase(), value);
+                query[key.toLowerCase()] = decodeURIComponent(value);
               }
             }
           }
@@ -253,7 +254,12 @@ export class ScanResultPage implements OnInit, OnDestroy {
       }
       const path = AppHelper.getValueFromQueryString("app_path", this.result);
       this.result = "";
-      this.router.navigate([AppHelper.getRoutePath(path)]);
+      this.router.navigate([AppHelper.getRoutePath(path)], {
+        queryParams: {
+          data: JSON.stringify(query),
+          query: JSON.stringify(query)
+        }
+      });
     } catch (e) {
       AppHelper.alert(e);
     }

@@ -20,6 +20,7 @@ import { CarItemComponent } from "./car-item/car-item.component";
 import { TrainTripComponent } from "./train-trip/train-trip.component";
 import { HotelTripComponent } from "./hotel-trip/hotel-trip.component";
 import { FlightTripComponent } from "./flight-trip/flight-trip.component";
+import { RefundFlightTicketTipComponent } from "./refund-flight-ticket-tip/refund-flight-ticket-tip.component";
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { FlightTripComponent } from "./flight-trip/flight-trip.component";
     TrainTripComponent,
     HotelTripComponent,
     FlightTripComponent,
-    SwiperSlideContentComponent
+    SwiperSlideContentComponent,
+    RefundFlightTicketTipComponent
   ],
   imports: [
     CommonModule,
@@ -57,6 +59,7 @@ import { FlightTripComponent } from "./flight-trip/flight-trip.component";
     SwiperSlideContentComponent,
     TrainTripComponent,
     HotelTripComponent,
+    RefundFlightTicketTipComponent,
     FlightTripComponent
   ]
 })
