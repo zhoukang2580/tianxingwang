@@ -16,7 +16,7 @@ Page({
       url: '../logs/logs'
     })
   },
-  onGotUserInfo: function(e) {
+  onLogin: function(e) {
     const that = this;
     console.log(e.detail.errMsg)
     console.log(e.detail.userInfo)
@@ -33,6 +33,9 @@ Page({
       nickName: nickname
     });
     wx.navigateBack();
+  },
+  onCancel: function (e) {
+    
   },
   onLoad: function(args) {
     const that = this;

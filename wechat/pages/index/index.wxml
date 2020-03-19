@@ -1,8 +1,10 @@
 <!--index.wxml-->
 <view wx:if="{{showAuthorization}}">
-  <open-data type="userAvatarUrl"></open-data>
-  <open-data type="userGender" lang="zh_CN"></open-data>
+<button  open-type="getUserInfo" lang="zh_CN" type="primary"  class="login"  bindgetuserinfo="onLogin">授权应用</button>
+<navigator open-type="exit" target="miniProgram" class="cancel">取消授权</navigator>
 </view>
+
+
 <view wx:if="{{!showAuthorization}}">
   <web-view src="{{url}}"></web-view>
 </view>
