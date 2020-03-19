@@ -48,8 +48,14 @@ export class IdentityService {
     AppHelper.setStorage("ticket", info.Ticket);
     this.identitySource.next(this.identityEntity);
   }
-  getStatus(): boolean {
-    return !!(this.identityEntity && this.identityEntity.Ticket);
+  getStatus(): Observable<boolean> {
+    const rev = !!(this.identityEntity && this.identityEntity.Ticket);
+    if (rev && !this.identityEntity.Id) {
+      return this.checkTicket(this.identityEntity.Ticket).pipe(
+        map(it => it && it.Ticket && !!it.Id)
+      );
+    }
+    return of(rev);
   }
   removeIdentity() {
     this.identityEntity.Ticket = null;

@@ -37,9 +37,9 @@ export class TmcGuard implements CanActivate, CanActivateChild {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
-    if (!this.identityService.getStatus()) {
-      return true;
-    }
+    // if (!this.identityService.getStatus()) {
+    //   return true;
+    // }
     return this.identityService
       .getIdentityAsync()
       .then(identity => {
