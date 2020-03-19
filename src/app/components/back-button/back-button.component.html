@@ -3,7 +3,7 @@
     <ion-icon icon-only name='arrow-back-outline' *ngIf='!isIos' color='{{color}}'></ion-icon>
     <ion-icon icon-only name="chevron-back-outline" *ngIf='isIos' color='{{color}}'></ion-icon>
   </ion-button>
-  <ion-button size='small' (click)="onBackHome()" style="margin-left:-1em;">
-    <ion-icon *ngIf="isBackHome" icon-only fill='clear' name="close-outline" color='{{color}}'></ion-icon>
+  <ion-button *ngIf="isBackHome" size='small' (click)="onBackHome()" style="margin-left:-1em;">
+    <ion-icon  icon-only fill='clear' name="close-outline" color='{{color}}'></ion-icon>
   </ion-button>
 </ion-buttons>
