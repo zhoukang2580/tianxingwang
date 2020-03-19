@@ -246,6 +246,7 @@ export class ScanResultPage implements OnInit, OnDestroy {
             if (item.includes("=")) {
               const [key, value] = item.split("=");
               if (key) {
+                query[key] = decodeURIComponent(value);
                 query[key.toLowerCase()] = decodeURIComponent(value);
               }
             }
@@ -255,9 +256,9 @@ export class ScanResultPage implements OnInit, OnDestroy {
       const path = AppHelper.getValueFromQueryString("app_path", this.result);
       this.result = "";
       this.router.navigate([AppHelper.getRoutePath(path)], {
+        queryParamsHandling: "merge",
         queryParams: {
-          data: JSON.stringify(query),
-          query: JSON.stringify(query)
+          ...query
         }
       });
     } catch (e) {
