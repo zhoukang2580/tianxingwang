@@ -20,14 +20,15 @@ Page({
     debugger;
     var that=this;
     var args = wx.getStorageSync("args");
-    if(args)
+    if (!args)
+    {
+      args = {};
+    }
+    else if(typeof args==="string")
     {
       args=JSON.parse(args);
     }
-    else
-    {
-      args={};
-    }
+  
     var ticket=args && args.ticket;
     wx.login({
       success: (res) => {
