@@ -49,6 +49,16 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
+    console.log(
+      "authority guard this.identityService.getStatus ",
+      this.identityService.getStatus()
+    );
+    this.identityService.getIdentityAsync().then(id => {
+      console.log(
+        "authority guard identityService.getIdentityAsync() identity",
+        id
+      );
+    });
     // if (!this.isShowModel) {
     //   return this.modalCtrl
     //     .create({ component: LoginSkeletonPageComponent })
@@ -96,7 +106,7 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
     //     });
     // }
     if (!this.identityService.getStatus()) {
-      console.log("authority state.url",state.url);
+      console.log("authority state.url", state.url);
       this.loginService.setToPageRouter(state.url);
       this.router.navigate([AppHelper.getRoutePath("login")]);
       return false;

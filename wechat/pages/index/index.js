@@ -1,7 +1,7 @@
 //index.js
 //获取应用实例
 const app = getApp()
-var homeUrl = "http://test.app.beeant.com";
+var homeUrl = "https://app.sky-trip.com";
 Page({
   data: {
     motto: 'Hello World',

@@ -41,6 +41,7 @@ export class IdentityService {
     this.identityEntity.Name = AppHelper.getStorage("loginname");
     this.identityEntity.Id = AppHelper.getQueryParamers().IdentityId;
     this.identitySource = new BehaviorSubject(this.identityEntity);
+    console.log("IdentityService identityEntity ", this.identityEntity);
   }
   setIdentity(info: IdentityEntity) {
     this.identityEntity = info;

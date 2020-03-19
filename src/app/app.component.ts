@@ -1,4 +1,4 @@
-import { BackButtonComponent } from 'src/app/components/back-button/back-button.component';
+import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 import { FileHelperService } from "src/app/services/file-helper.service";
 import { environment } from "src/environments/environment";
 import { MessageModel, MessageService } from "./message/message.service";
@@ -43,7 +43,7 @@ import {
   animate
 } from "@angular/animations";
 import { ImageRecoverService } from "./services/imageRecover/imageRecover.service";
-import { ThemeService } from './services/theme/theme.service';
+import { ThemeService } from "./services/theme/theme.service";
 export interface App {
   loadUrl: (
     url: string,
@@ -78,7 +78,6 @@ export interface App {
 })
 export class AppComponent
   implements AfterViewInit, AfterContentInit, OnChanges {
-  @ViewChild(BackButtonComponent) backBtn: BackButtonComponent
   app: App = window.navigator["app"];
   message$: Observable<MessageModel>;
   openSelectCity$: Observable<boolean>;
@@ -89,6 +88,7 @@ export class AppComponent
     private splashScreen: SplashScreen,
     private modalController: ModalController,
     private popCtrl: PopoverController,
+    private navCtrl: NavController,
     private statusBar: StatusBar,
     private router: Router,
     private configService: ConfigService,
@@ -136,7 +136,7 @@ export class AppComponent
       }
     });
   }
-  ngOnChanges() { }
+  ngOnChanges() {}
   ngAfterViewInit() {
     this.splashScreen.hide();
   }
@@ -168,10 +168,9 @@ export class AppComponent
     //   }
     // }
     AppHelper.getDomain(); //
-    AppHelper.initlizeQueryParamers();
     this.showErrorMsg();
     const unloginPath = AppHelper.getQueryString("unloginpath");
-    let path = this.getPath();
+    const path = this.getPath();
     if (!AppHelper.getTicket() && unloginPath) {
       this.router.navigate([AppHelper.getRoutePath(unloginPath)]);
     } else if (AppHelper.getTicket() || path) {
@@ -211,7 +210,6 @@ export class AppComponent
         // this.router.navigate(['function-test']);
         // this.router.navigate(['car-order-detail']);
         this.router.navigate(["hr-invitation"]);
-
       }
     });
   }
@@ -259,7 +257,7 @@ export class AppComponent
         // }else{
         //   this.navCtrl.pop();
         // }
-        this.backBtn.backToPrePage();
+        this.navCtrl.pop();
         count++;
         console.log(`backbutton back count=${count}`);
         // window.history.back();
