@@ -1,4 +1,5 @@
 /**index.wxss**/
+
 .userinfo {
   display: flex;
   flex-direction: column;
@@ -16,11 +17,26 @@
   color: #aaa;
 }
 
-.usermotto {
-  margin-top: 200px;
-}
-.login{
-  margin-top: 40%;
+.login {
+  width: 90%;
+  background-color: #2596d9;
+  color: white;
 }
 
-.cancel{ margin-top:20%;background: #ff0000;text-align: center;padding: 12px;color: #ffffff;border-radius: 5px; }
+image {
+  width: 120px;
+  height: 80px;
+  margin-bottom: 2em;
+}
+
+navigator {
+  width: 90%;
+}
+
+.cancel {
+  background-color: #9f9f9f;
+  color: white;
+  text-align: center;
+  border-radius: 5px;
+  margin-top: 1em;
+}

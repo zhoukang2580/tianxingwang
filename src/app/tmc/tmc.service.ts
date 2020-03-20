@@ -25,6 +25,7 @@ import { OrderEntity } from "../order/models/OrderEntity";
 import { OrderTrainTicketEntity } from "../order/models/OrderTrainTicketEntity";
 import { CountryEntity } from "./models/CountryEntity";
 import { IdentityEntity } from "../services/identity/identity.entity";
+import { Router } from "@angular/router";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -61,7 +62,8 @@ export class TmcService {
     private storage: Storage,
     private identityService: IdentityService,
     private payService: PayService,
-    private platform: Platform
+    private platform: Platform,
+    private router: Router
   ) {
     this.identityService.getIdentitySource().subscribe(() => {
       this.disposal();
@@ -166,8 +168,12 @@ export class TmcService {
   private async wechatPay(
     tradeNo: string,
     key: string = "",
-    method: string = "TmcApiOrderUrl-Pay-Create"
+    method: string = "TmcApiOrderUrl-Pay-Create",
+    path = ""
   ) {
+    if (AppHelper.isH5()) {
+      path = this.getCurRoutePath();
+    }
     let res = false;
     const req = new RequestEntity();
     req.Method = method;
@@ -211,8 +217,12 @@ export class TmcService {
   private async aliPay(
     tradeNo: string,
     key: string = "",
-    method: string = "TmcApiOrderUrl-Pay-Create"
+    method: string = "TmcApiOrderUrl-Pay-Create",
+    path = ""
   ) {
+    if (AppHelper.isH5()) {
+      path = this.getCurRoutePath();
+    }
     let res = false;
     const req = new RequestEntity();
     req.Method = method;
@@ -226,7 +236,7 @@ export class TmcService {
     if (key) {
       req.Data["Key"] = key;
     }
-    const r = await this.payService.alipay(req, "").catch(e => {
+    const r = await this.payService.alipay(req, path).catch(e => {
       AppHelper.alert(e);
     });
     if (r) {
@@ -252,6 +262,11 @@ export class TmcService {
       res = false;
     }
     return res;
+  }
+  private getCurRoutePath() {
+    let path = this.router.url;
+    path = path.startsWith("/") ? path.substr(1) : path;
+    return path;
   }
   getSelectedCompanySource() {
     return this.selectedCompanySource.asObservable();

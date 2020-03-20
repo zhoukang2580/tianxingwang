@@ -43,8 +43,7 @@ export class TripPage implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   OrderFlightTicketType = OrderFlightTicketType;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
-  @ViewChild(IonInfiniteScroll)
-  infiniteScroll: IonInfiniteScroll;
+  @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
   trips: OrderTripModel[];
   isLoading = false;
   constructor(
@@ -77,8 +76,8 @@ export class TripPage implements OnInit, OnDestroy {
         return r;
       }),
       finalize(() => {
-        if (this.infiniteScroll) {
-          this.infiniteScroll.complete();
+        if (this.scroller) {
+          this.scroller.complete();
         }
         this.isLoading = false;
       })
@@ -93,6 +92,7 @@ export class TripPage implements OnInit, OnDestroy {
     if (this.tabs) {
       this.tabs.tabChangeHooks = () => {
         this.isLoading = false;
+        this.scroller.disabled = true;
         this.loadMoreSubscription.unsubscribe();
       };
     }
@@ -100,8 +100,8 @@ export class TripPage implements OnInit, OnDestroy {
       .pipe(filter(it => it instanceof NavigationStart))
       .subscribe(_ => {
         this.loadMoreSubscription.unsubscribe();
-        if (this.infiniteScroll) {
-          this.infiniteScroll.disabled = true;
+        if (this.scroller) {
+          this.scroller.disabled = true;
         }
       });
     const sub = this.route.queryParamMap.subscribe(_ => {
@@ -126,8 +126,8 @@ export class TripPage implements OnInit, OnDestroy {
         this.ionRefresher.disabled = false;
       }, 100);
     }
-    if (this.infiniteScroll) {
-      this.infiniteScroll.disabled = false;
+    if (this.scroller) {
+      this.scroller.disabled = false;
     }
     this.loadMoreTrips();
   }
@@ -136,20 +136,25 @@ export class TripPage implements OnInit, OnDestroy {
       .pipe(
         finalize(() => {
           this.isLoading = false;
-          if (this.infiniteScroll) {
-            this.infiniteScroll.complete();
+          if (this.scroller) {
+            this.scroller.complete();
           }
         })
       )
       .subscribe(res => {
         const trips = (res && res.Data && res.Data.Trips) || [];
         if (trips.length) {
-          this.trips = this.trips.concat(trips);
+          const arr = this.trips.concat(trips);
+          arr.sort(
+            (t1, t2) =>
+              AppHelper.getDate(t1.StartTime).getTime() -
+              AppHelper.getDate(t2.StartTime).getTime()
+          );
+          this.trips = arr;
           this.searchCondition.PageIndex++;
         }
-        if (this.infiniteScroll) {
-          this.infiniteScroll.disabled =
-            trips.length < this.searchCondition.PageSize;
+        if (this.scroller) {
+          this.scroller.disabled = trips.length < this.searchCondition.PageSize;
         }
       });
   }

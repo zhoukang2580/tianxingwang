@@ -31,8 +31,8 @@ import { Router } from "@angular/router";
 import { OrderPassengerEntity } from "../../models/OrderPassengerEntity";
 import { OrderFlightTicketType } from "../../models/OrderFlightTicketType";
 import { OrderPayStatusType } from "../../models/OrderInsuranceEntity";
-import { PopoverController } from '@ionic/angular';
-import { RefundFlightTicketTipComponent } from '../refund-flight-ticket-tip/refund-flight-ticket-tip.component';
+import { PopoverController } from "@ionic/angular";
+import { RefundFlightTicketTipComponent } from "../refund-flight-ticket-tip/refund-flight-ticket-tip.component";
 @Component({
   selector: "app-order-item",
   templateUrl: "./order-item.component.html",
@@ -151,39 +151,13 @@ export class OrderItemComponent implements OnInit, OnChanges {
   }
   private checkIfOrderFlightTicketShow() {
     if (this.order && this.order.OrderFlightTickets) {
-      const originalTicketIdToTickets: {
-        [originalId: string]: OrderFlightTicketEntity[];
-      } = {};
-      this.order.OrderFlightTickets.forEach(t => {
-        if (
-          t.VariablesJsonObj &&
-          t.VariablesJsonObj.OriginalTicketId &&
-          !t.VariablesJsonObj.IsScrap
-        ) {
-          if (originalTicketIdToTickets[t.VariablesJsonObj.OriginalTicketId]) {
-            originalTicketIdToTickets[t.VariablesJsonObj.OriginalTicketId].push(
-              t
-            );
-          } else {
-            originalTicketIdToTickets[t.VariablesJsonObj.OriginalTicketId] = [
-              t
-            ];
-          }
-        }
-      });
-      Object.keys(originalTicketIdToTickets).forEach(k => {
-        originalTicketIdToTickets[k] = this.sortFlightTickets(
-          originalTicketIdToTickets[k]
-        );
-      });
+      const orderflightticketstatus: OrderFlightTicketStatusType[] = [
+        OrderFlightTicketStatusType.ChangeTicket,
+        OrderFlightTicketStatusType.Refunded
+      ];
       this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(t => {
         if (t.VariablesJsonObj) {
-          const ts = originalTicketIdToTickets[t.Id];
-          const last = ts && ts[ts.length - 1];
-          const isShow = last
-            ? t.VariablesJsonObj.maxTimeStamp ==
-              last.VariablesJsonObj.maxTimeStamp
-            : true;
+          const isShow = !orderflightticketstatus.some(s => t.Status == s);
           t.VariablesJsonObj.isShow = !t.VariablesJsonObj.IsScrap && isShow;
         }
         return t;
@@ -200,7 +174,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
         it => !it.VariablesJsonObj.isShow
       );
       showArr = this.sortOrderFlightTicketsByTime(showArr);
-      if (showArr.length > 2) {
+      if (showArr.length >= 2) {
         showArr.forEach((t, idx) => {
           t.VariablesJsonObj.idx = idx + 1;
         });
@@ -221,7 +195,10 @@ export class OrderItemComponent implements OnInit, OnChanges {
         0
     );
   }
-  async onExchangeTrainTicket(evt: CustomEvent, orderTrainTicket: OrderTrainTicketEntity) {
+  async onExchangeTrainTicket(
+    evt: CustomEvent,
+    orderTrainTicket: OrderTrainTicketEntity
+  ) {
     if (evt) {
       evt.stopPropagation();
     }
@@ -427,11 +404,17 @@ export class OrderItemComponent implements OnInit, OnChanges {
         it =>
           it.Status == OrderFlightTicketStatusType.Booking ||
           it.Status == OrderFlightTicketStatusType.BookExchanging
-      )
-      .filter(ticket=>{
-        return ticket.OrderFlightTrips.some(trip=>AppHelper.getDate(trip.TakeoffTime).getTime()-new Date().getTime()>=0)
-      })
-      .length == 0;
+      ).filter(ticket => {
+        return (
+          !ticket.OrderFlightTrips ||
+          ticket.OrderFlightTrips.some(
+            trip =>
+              AppHelper.getDate(trip.TakeoffTime).getTime() -
+                new Date().getTime() >=
+              0
+          )
+        );
+      }).length == 0;
     if (!rev) {
       return false;
     }
