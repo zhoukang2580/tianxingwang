@@ -618,7 +618,7 @@ export class BookPage implements OnInit, AfterViewInit {
     canBook2 = this.fillBookPassengers(bookDto, arr);
     if (canBook && canBook2) {
       if (isSelf && this.flightService.getSearchFlightModel().isRoundTrip) {
-        const p1 = bookDto.Passengers.find(it => it.OutNumbers);
+        const p1 = bookDto.Passengers.find(it => !!it.OutNumbers);
         const p2 = bookDto.Passengers.find(it => !it.OutNumbers);
         const p = p2 && p2.OutNumbers ? p2 : p1 && p1.OutNumbers ? p1 : null;
         if (p && p.OutNumbers) {
