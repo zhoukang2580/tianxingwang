@@ -50,7 +50,7 @@ export class IdentityService {
   }
   getStatus(): Observable<boolean> {
     const rev = !!(this.identityEntity && this.identityEntity.Ticket);
-    if (rev && !this.identityEntity.Id) {
+    if (rev&&!this.identityEntity.Id) {
       return this.checkTicket(this.identityEntity.Ticket).pipe(
         map(it => it && it.Ticket && !!it.Id)
       );
@@ -64,7 +64,7 @@ export class IdentityService {
     this.setIdentity(this.identityEntity);
   }
   getIdentityAsync(): Promise<IdentityEntity> {
-    if (this.getStatus()) {
+    if (this.identityEntity && this.identityEntity.Ticket&&this.identityEntity.Id) {
       return Promise.resolve(this.identityEntity);
     }
     if (!this.fetchingIdentityPromise) {
@@ -155,7 +155,6 @@ export class IdentityService {
               ...r.Data
             };
             this.setIdentity(this.identityEntity);
-            return of(this.identityEntity);
           }
           return of(this.identityEntity);
         }),
@@ -183,6 +182,7 @@ export class IdentityService {
     if (ticket) {
       return this.checkTicket(ticket);
     }
+    this.identityEntity = this.identityEntity||new IdentityEntity();
     this.identityEntity.Ticket = null;
     this.identityEntity.Id = null;
     return of(this.identityEntity);

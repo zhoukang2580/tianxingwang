@@ -72,11 +72,13 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   ngAfterViewInit() {
-    console.log("login page ngAfterViewInit");
+    this.identityService.getIdentityAsync().then(identity => {
+      console.log("login page ngAfterViewInit identity", identity);
+    })
     this.dismissAllOverlayer();
     setTimeout(() => {
       this.autoLogin();
-    }, 1500);
+    }, 0);
   }
   private async dismissAllOverlayer() {
     let i = 10;
@@ -84,7 +86,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     while (--i > 0 && t) {
       t = await this.modalCtrl.getTop();
       if (t) {
-        await t.dismiss().catch(_ => {});
+        await t.dismiss().catch(_ => { });
       }
     }
   }
@@ -133,6 +135,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   }
   private autoLogin() {
     this.identityService.getStatus().subscribe(ok => {
+      console.log("this.identityService.getStatus() ok = " + ok);
       if (!ok) {
         if (AppHelper.isApp()) {
           this.loginType = "device";
@@ -410,20 +413,25 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   async jump(
     isCheckDevice: boolean // 跳转
   ) {
-    this.loginType = "user";
     const toPageRouter = this.loginService.getToPageRouter() || "";
-    this.isLogining = false;
-    console.log("toPageRouter", toPageRouter);
-    if (isCheckDevice && AppHelper.isApp()) {
-      const uuid = await AppHelper.getDeviceId();
-      this.loginService.checkIsDeviceBinded(uuid);
+    try {
+      this.loginType = "user";
+      this.isLogining = false;
+      console.log("toPageRouter", toPageRouter);
+      if (isCheckDevice && AppHelper.isApp()) {
+        const uuid = await AppHelper.getDeviceId();
+        this.loginService.checkIsDeviceBinded(uuid);
+      }
+      // this.loginService.checkIsDeviceBinded(this.mockDeviceInfo.Device);
+      this.loginService.checkIsDingtalkBind();
+      this.loginService.checkIsWechatBind();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      this.router.navigate([AppHelper.getRoutePath(toPageRouter)]).then(() => {
+        this.loginService.setToPageRouter("");
+      });
     }
-    // this.loginService.checkIsDeviceBinded(this.mockDeviceInfo.Device);
-    this.loginService.checkIsDingtalkBind();
-    this.loginService.checkIsWechatBind();
-    this.router.navigate([AppHelper.getRoutePath(toPageRouter)]).then(() => {
-      this.loginService.setToPageRouter("");
-    });
   }
   forgetPassword() {
     this.router.navigate([AppHelper.getRoutePath("password-check")]);

@@ -12,7 +12,8 @@
       </ion-label>
       <ion-row class='ion-text-center'>
         <ion-col>
-          <ion-button (click)='login()' color='secondary'>返回登录页面</ion-button>
+          <ion-button (click)='onBackToLoginPage()' *ngIf='isBackToLoginPage' color='secondary'>返回登录页面</ion-button>
+          <ion-button (click)='onBack()' *ngIf='!isBackToLoginPage' color='secondary'>返回</ion-button>
         </ion-col>
         <ion-col *ngIf='isApp'>
           <ion-button  color='secondary'>退出应用</ion-button>

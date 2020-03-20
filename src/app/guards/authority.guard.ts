@@ -49,16 +49,12 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
-    console.log(
-      "authority guard this.identityService.getStatus ",
-      this.identityService.getStatus()
-    );
-    this.identityService.getIdentityAsync().then(id => {
-      console.log(
-        "authority guard identityService.getIdentityAsync() identity",
-        id
-      );
-    });
+    // this.identityService.getIdentityAsync().then(id => {
+    //   console.log(
+    //     "authority guard identityService.getIdentityAsync() identity",
+    //     id
+    //   );
+    // });
     return this.identityService.getStatus().pipe(
       map(status => {
         if (status) {
