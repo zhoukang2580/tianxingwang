@@ -132,14 +132,16 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.setLoginButton();
   }
   private autoLogin() {
-    if (!this.identityService.getStatus()) {
-      if (AppHelper.isApp()) {
-        this.loginType = "device";
-        this.login();
+    this.identityService.getStatus().subscribe(ok => {
+      if (!ok) {
+        if (AppHelper.isApp()) {
+          this.loginType = "device";
+          this.login();
+        }
+      } else {
+        this.jump(true);
       }
-    } else {
-      this.jump(true);
-    }
+    });
   }
   setLoginButton() {
     if (this.loginType == "user") {
@@ -418,7 +420,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     }
     // this.loginService.checkIsDeviceBinded(this.mockDeviceInfo.Device);
     this.loginService.checkIsDingtalkBind();
-    this.loginService.checkIsWechatBind();
+    // this.loginService.checkIsWechatBind();
     this.router.navigate([AppHelper.getRoutePath(toPageRouter)]).then(() => {
       this.loginService.setToPageRouter("");
     });
