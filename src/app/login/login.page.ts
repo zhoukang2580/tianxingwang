@@ -420,7 +420,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     }
     // this.loginService.checkIsDeviceBinded(this.mockDeviceInfo.Device);
     this.loginService.checkIsDingtalkBind();
-    // this.loginService.checkIsWechatBind();
+    this.loginService.checkIsWechatBind();
     this.router.navigate([AppHelper.getRoutePath(toPageRouter)]).then(() => {
       this.loginService.setToPageRouter("");
     });
