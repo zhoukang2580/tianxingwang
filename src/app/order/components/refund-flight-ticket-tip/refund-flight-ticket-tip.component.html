@@ -1,8 +1,10 @@
 <ion-content>
-
+  <div  class="ion-padding">
+    是否确认退票(“自愿退票”，指由于旅客的原因未按运输合同完成旅行而产生的退票。“非自愿退票”，指由于航司航班提前、延误、取消、航程改变、或不能提供原定座位致使旅客未能按运输合同完成旅行而产生的退票。)？
+  </div>
 </ion-content>
 <ion-footer>
-  <ion-buttons>
+  <ion-buttons class="ion-padding-top ion-padding-bottom">
     <ion-button fill='solid' style="flex: 1;" color='primary' (click)='onCancel()'>取消</ion-button>
     <ion-button fill='solid' style="flex: 2;" color='secondary' (click)='onVolunteer(true)'>自愿退票</ion-button>
     <ion-button fill='solid' style="flex: 2;" color='secondary' (click)='onVolunteer(false)'>非自愿退票</ion-button>

@@ -99,14 +99,14 @@
             订单编号
           </ion-col>
           <ion-col class='select-text' class='dark'>
-            <strong>{{order.Id}}</strong>
+            <strong style="user-select:text">{{order.Id}}</strong>
           </ion-col>
           <ion-col class='status'>
             <ion-text color='secondary'>
               {{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}}</ion-text>
           </ion-col>
         </ion-row>
-        <ng-container *ngIf='orderTrainTicket.OrderTrainTrips'>
+        <!-- <ng-container *ngIf='orderTrainTicket.OrderTrainTrips'>
           <ion-row>
             <ion-col size='4'>
               <ion-text color='ticketIsReject(orderTrainTicket)?"danger":""'>火车票事务号</ion-text>
@@ -116,7 +116,7 @@
                 {{orderTrainTicket.Id}}</ion-text>
             </ion-col>
           </ion-row>
-        </ng-container>
+        </ng-container> -->
         <ion-row *ngIf='order?.OrderPassengers?.length'>
           <ion-col size='4'>旅客信息</ion-col>
           <ion-col>

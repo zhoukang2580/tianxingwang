@@ -31,6 +31,8 @@ import { Router } from "@angular/router";
 import { OrderPassengerEntity } from "../../models/OrderPassengerEntity";
 import { OrderFlightTicketType } from "../../models/OrderFlightTicketType";
 import { OrderPayStatusType } from "../../models/OrderInsuranceEntity";
+import { PopoverController } from '@ionic/angular';
+import { RefundFlightTicketTipComponent } from '../refund-flight-ticket-tip/refund-flight-ticket-tip.component';
 @Component({
   selector: "app-order-item",
   templateUrl: "./order-item.component.html",
@@ -58,6 +60,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
     private tmcService: TmcService,
     private calendarService: CalendarService,
     private router: Router,
+    private popoverCtrl: PopoverController,
     private trainService: TrainService
   ) {
     this.payaction = new EventEmitter();
@@ -355,6 +358,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
     return insuranceAmount;
   }
   async onRefundFlightTicket(
+    //退票弹框
     evt: CustomEvent,
     ticket: OrderFlightTicketEntity
   ) {
@@ -362,6 +366,12 @@ export class OrderItemComponent implements OnInit, OnChanges {
       evt.stopPropagation();
     }
     if (ticket) {
+      const popover = await this.popoverCtrl.create({
+        component: RefundFlightTicketTipComponent,
+        translucent: true
+      });
+      return await popover.present();
+      // AppHelper.toast()
       // const isRefund = await this.trainService.refund(orderTrainTicket.Id);
       // if (isRefund) {
       //   this.refundTicket.emit();

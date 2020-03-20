@@ -1,5 +1,8 @@
 :host {
   width: 100%;
+  ion-row{
+    align-items: start;
+  }
 }
 .item {
   padding: 0.2em 0;
