@@ -49,13 +49,23 @@
                     <ion-text color='secondary'>({{t.StatusName}})</ion-text>
                   </span>
                 </div>
-                <ion-button *ngIf='t.VariablesJsonObj["isTicketCanRefund"]' size='small' (click)='onRefundFlightTicket($event,t)' color='danger'>
-                  <ion-text color='light'>退票</ion-text>
+                <ion-button *ngIf='t.VariablesJsonObj["isTicketCanRefund"] else showrefunding' size='small'
+                  (click)='onRefundFlightTicket($event,t)' color='danger'>
+                  <ion-text color='light'
+                    *ngIf='!t.VariablesJsonObj.IsCustomApplyRefund&&!t.VariablesJsonObj.IsCustomApplyExchange'>退票
+                  </ion-text>
                 </ion-button>
-                <ion-button *ngIf='t.VariablesJsonObj["isShowExchangeBtn"]' size='small' (click)='onRefundFlightTicket($event,t)' color='secondary'>
+                <ng-template #showrefunding>
+                  <ion-text color='light'
+                    *ngIf='t.VariablesJsonObj.IsCustomApplyRefund&&!t.VariablesJsonObj.IsCustomApplyExchange'>退票申请中
+                  </ion-text>
+                </ng-template>
+                <ion-button *ngIf='t.VariablesJsonObj["isShowExchangeBtn"]' size='small'
+                  (click)='onRefundFlightTicket($event,t)' color='secondary'>
                   <ion-text color='light'>改签</ion-text>
                 </ion-button>
-                <ion-button *ngIf='t.VariablesJsonObj["isShowCancelBtn"]' size='small' (click)='onRefundFlightTicket($event,t)' color='secondary'>
+                <ion-button *ngIf='t.VariablesJsonObj["isShowCancelBtn"]' size='small'
+                  (click)='onRefundFlightTicket($event,t)' color='secondary'>
                   <ion-text color='light'>取消订单</ion-text>
                 </ion-button>
               </div>
