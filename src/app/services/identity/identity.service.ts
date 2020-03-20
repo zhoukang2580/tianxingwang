@@ -39,20 +39,23 @@ export class IdentityService {
     this.identityEntity = new IdentityEntity();
     this.identityEntity.Ticket = AppHelper.getTicket();
     this.identityEntity.Name = AppHelper.getStorage("loginname");
-    this.identityEntity.Id = AppHelper.getQueryParamers().IdentityId;
+    // this.identityEntity.Id = AppHelper.getQueryParamers().IdentityId;
     this.identitySource = new BehaviorSubject(this.identityEntity);
+    console.log("IdentityService identityEntity ", this.identityEntity);
   }
   setIdentity(info: IdentityEntity) {
     this.identityEntity = info;
     AppHelper.setStorage("ticket", info.Ticket);
     this.identitySource.next(this.identityEntity);
   }
-  getStatus(): boolean {
-    return !!(
-      this.identityEntity &&
-      this.identityEntity.Ticket &&
-      this.identityEntity.Id
-    );
+  getStatus(): Observable<boolean> {
+    const rev = !!(this.identityEntity && this.identityEntity.Ticket);
+    if (rev && !this.identityEntity.Id) {
+      return this.checkTicket(this.identityEntity.Ticket).pipe(
+        map(it => it && it.Ticket && !!it.Id)
+      );
+    }
+    return of(rev);
   }
   removeIdentity() {
     this.identityEntity.Ticket = null;

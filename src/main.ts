@@ -5,8 +5,25 @@ import { AppModule } from "./app/app.module";
 import { environment } from "./environments/environment";
 import { hmrBootstrap } from "./hmr";
 import { enableDebugTools } from "@angular/platform-browser";
-import { ThemeService } from './app/services/theme/theme.service';
+import { ThemeService } from "./app/services/theme/theme.service";
+import { AppHelper } from "./app/appHelper";
 // const module = window["module"];
+try {
+  console.log("url,locationurl", window.location.href);
+  if (window["VConsole"] && location.href.toLowerCase().includes("test")) {
+    if (window["vConsole"]) {
+      window["vConsole"].destroy();
+    }
+    window["vConsole"] = new window["VConsole"]();
+  }
+  AppHelper.initlizeQueryParamers();
+  console.log(
+    "initlizeQueryParamers getQueryParamers ",
+    AppHelper.getQueryParamers()
+  );
+} catch (e) {
+  console.error(e);
+}
 const meta = document.createElement("meta");
 const head = document.querySelector("head");
 meta.content = `upgrade-insecure-requests`;

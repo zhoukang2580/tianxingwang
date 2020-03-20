@@ -19,3 +19,8 @@
 .usermotto {
   margin-top: 200px;
 }
+.login{
+  margin-top: 40%;
+}
+
+.cancel{ margin-top:20%;background: #ff0000;text-align: center;padding: 12px;color: #ffffff;border-radius: 5px; }

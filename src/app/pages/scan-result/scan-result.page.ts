@@ -93,6 +93,9 @@ export class ScanResultPage implements OnInit, OnDestroy {
     this.isShowIframe = true;
   }
   private openInAppBrowser(url: string) {
+    if (!AppHelper.isApp()) {
+      return;
+    }
     if (this.browser) {
       this.browser.close();
     }
@@ -115,7 +118,7 @@ export class ScanResultPage implements OnInit, OnDestroy {
           sub.unsubscribe();
         }
       }, 100);
-      this.backButton.backToPrePage();
+      this.back();
     });
   }
   private hideIframePage() {

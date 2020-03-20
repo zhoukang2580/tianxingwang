@@ -38,10 +38,6 @@ const routes: Routes = [
       )
   },
   {
-    path: "scan",
-    redirectTo: "/scan-result"
-  },
-  {
     path: "scan-result",
     loadChildren: () =>
       import("./pages/scan-result/scan-result.module").then(

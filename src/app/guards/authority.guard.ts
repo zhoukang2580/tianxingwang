@@ -49,59 +49,26 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
-    // if (!this.isShowModel) {
-    //   return this.modalCtrl
-    //     .create({ component: LoginSkeletonPageComponent })
-    //     .then(async m => {
-    //       m.backdropDismiss = false;
-    //       this.isShowModel = await m
-    //         .present()
-    //         .then(_ => true)
-    //         .catch(_ => true);
-    //       let dismissed = false;
-    //       const timeoutid = setTimeout(() => {
-    //         if (!dismissed) {
-    //           m.dismiss()
-    //             .then(_ => {
-    //               dismissed = true;
-    //             })
-    //             .catch(_ => {});
-    //         }
-    //       }, 5000);
-    //       // const identity = await this.identityService.getIdentityAsync();
-    //       if (timeoutid) {
-    //         clearTimeout(timeoutid);
-    //       }
-    //       if (!dismissed) {
-    //         m.dismiss()
-    //           .then(_ => {
-    //             dismissed = true;
-    //           })
-    //           .catch(_ => {});
-    //       }
-    //       // if (!identity || !identity.Ticket || !identity.Id) {
-    //       //   this.loginService.setToPageRouter(state.url);
-    //       //   this.router.navigate([AppHelper.getRoutePath("login")]);
-    //       //   return false;
-    //       // }
-    //       if (!this.identityService.getStatus()) {
-    //         this.loginService.setToPageRouter(state.url);
-    //         this.router.navigate([AppHelper.getRoutePath("login")]);
-    //         return false;
-    //       }
-    //       return true;
-    //     })
-    //     .catch(_ => {
-    //       return false;
-    //     });
-    // }
-    if (!this.identityService.getStatus()) {
-      console.log("authority state.url",state.url);
-      this.loginService.setToPageRouter(state.url);
-      this.router.navigate([AppHelper.getRoutePath("login")]);
-      return false;
-    }
-    return true;
+    console.log(
+      "authority guard this.identityService.getStatus ",
+      this.identityService.getStatus()
+    );
+    this.identityService.getIdentityAsync().then(id => {
+      console.log(
+        "authority guard identityService.getIdentityAsync() identity",
+        id
+      );
+    });
+    return this.identityService.getStatus().pipe(
+      map(status => {
+        if (status) {
+          return true;
+        }
+        this.loginService.setToPageRouter(state.url);
+        this.router.navigate([AppHelper.getRoutePath("login")]);
+        return false;
+      })
+    );
   }
   canLoad(route: Route) {
     // console.log("canload route ,", route);

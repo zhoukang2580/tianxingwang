@@ -1,15 +1,25 @@
 //index.js
 //获取应用实例
 const app = getApp()
-var homeUrl = "http://test.app.beeant.com";
+var homeUrl = "https://app.sky-trip.com";
+var isFirstShow=true;
 Page({
   data: {
     motto: 'Hello World',
     userInfo: {},
     hasUserInfo: false,
-    showAuthorization: !!(app.globalData&&app.globalData.userInfo),
+    showAuthorization:false, //!!(app.globalData&&app.globalData.userInfo),
     canIUse: wx.canIUse('button.open-type.getUserInfo')
   },
+  onLogin: function (e) {
+    var that = this;
+    this.setData({ showAuthorization: false });
+    var func = function (args) {
+      that.setUrl(args);
+    }
+    this.login(func,{});
+  },
+
   //事件处理函数
   bindViewTap: function() {
     wx.navigateTo({
@@ -17,37 +27,32 @@ Page({
     })
   },
   onShow: function() {
-    debugger;
+    var that=this;
     var args = wx.getStorageSync("args");
-    var ticket=args && args.ticket;
-    wx.login({
-      success: (res) => {
-        var geturl = homeUrl + "/Home/GetWechatUser";
-        var code = res.code
-        wx.request({
-          url: geturl,
-          data: {
-            code: res.code,
-            ticket: ticket,
-            IsLogin: true,
-            SdkType: "Mini"
-          },
-          header: {},
-          method: 'GET',
-          dataType: 'json',
-          complete: (r) => {
-            if (r && r.data && r.data.Data) {
-              args = { openid: r.data.Data.OpenId, ticket: r.data.Data.Ticket };
-              wx.setStorageSync("args", args);
-
-              this.setUrl(args);
-            }
-            wx.navigateBack();
+    if (args)
+    {
+      that.setUrl(wx.getStorageSync("args"));
+      that.setUrl(args);
+      wx.navigateBack();
+    }
+    else{
+      var func = function (args) {
+        if (isFirstShow) {
+          isFirstShow = false;
+          if(!args.ticket)
+          {
+            that.setData({ showAuthorization: true });
+            return;
           }
-        })
+        }
+        that.setUrl(args);
+        wx.navigateBack();
       }
-    })
+      this.login(func, {});
    
+    }
+  
+    
   },
   onLoad: function(args) {
     if (app.globalData.userInfo) {
@@ -85,6 +90,43 @@ Page({
       hasUserInfo: true
     })
   },
+  login:function(func,args)
+  {
+    var that = this;
+    var ticket = args && args.ticket;
+    wx.login({
+      success: (res) => {
+        var geturl = homeUrl + "/Home/GetWechatUser";
+        var code = res.code
+        wx.request({
+          url: geturl,
+          data: {
+            code: res.code,
+            ticket: ticket,
+            IsLogin: true,
+            SdkType: "Mini"
+          },
+          header: {},
+          method: 'GET',
+          dataType: 'json',
+          complete: (r) => {
+            if (r && r.data && r.data.Data) {
+              args = { openid: r.data.Data.OpenId, ticket: r.data.Data.Ticket };
+              wx.setStorageSync("args", args);
+            }
+            if (!args.openid) {
+              args.IsForbidOpenId = true;
+            }
+            if (!args.ticket) {
+              args.IsForbidAutoLogin = true;
+            }
+            func(args);
+        
+          }
+        })
+      }
+    })
+  },
   setUrl:function(args)
   {
     var url = homeUrl+"/home/index";
@@ -94,6 +136,9 @@ Page({
       }
       if (args.IsForbidOpenId) {
         url += (url.includes("?") ? "&" : "?") + "IsForbidOpenId=" + args.IsForbidOpenId;
+      }
+      if (args.IsForbidAutoLogin) {
+        url += (url.includes("?") ? "&" : "?") + "IsForbidAutoLogin=" + args.IsForbidAutoLogin;
       }
       if (args.ticket) {
         url += (url.includes("?") ? "&" : "?") + "ticket=" + args.ticket;
