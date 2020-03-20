@@ -427,7 +427,11 @@ export class OrderItemComponent implements OnInit, OnChanges {
         it =>
           it.Status == OrderFlightTicketStatusType.Booking ||
           it.Status == OrderFlightTicketStatusType.BookExchanging
-      ).length == 0;
+      )
+      .filter(ticket=>{
+        return ticket.OrderFlightTrips.some(trip=>AppHelper.getDate(trip.TakeoffTime).getTime()-new Date().getTime()>=0)
+      })
+      .length == 0;
     if (!rev) {
       return false;
     }

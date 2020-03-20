@@ -412,6 +412,35 @@ export class OrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       if (q.get("tab")) {
         this.tab = this.tab || JSON.parse(q.get("tab"));
         this.title = this.tab.label + "订单";
+        // console.log(this.title,"titletitletitletitletitle");
+        if(this.title=="火车票订单"){
+          this.tabs = [
+            {
+              label: "订单信息"
+            },
+            {
+              label: "出行信息"
+            },
+            {
+              label: "旅客信息"
+            },
+            {
+              label: "审批记录"
+            },
+            {
+              label: "联系信息"
+            },
+            // {
+            //   label: "保险信息"
+            // }
+          ]
+          .map((it, idx) => {
+            return {
+              ...it,
+              value: idx
+            };
+          });
+        }
         if (
           !(
             this.tab.value == ProductItemType.train ||

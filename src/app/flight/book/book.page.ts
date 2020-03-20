@@ -299,6 +299,7 @@ export class BookPage implements OnInit, AfterViewInit {
     return "";
   }
   async refresh(byUser: boolean) {
+    const MOCK_FLIGHT_VMCOMBINDINFO="mock_flight_vmcombindinfo";
     try {
       if (this.ionRefresher) {
         this.ionRefresher.complete();
@@ -320,6 +321,13 @@ export class BookPage implements OnInit, AfterViewInit {
       }
       this.errors = "";
       this.vmCombindInfos = [];
+      if (!environment.production) {
+        const local = await this.storage.get(MOCK_FLIGHT_VMCOMBINDINFO);
+        if (local) {
+          this.vmCombindInfos = local;
+          return local;
+        }
+      }
       this.initialBookDtoModel = await this.initializeBookDto();
       if (!this.initialBookDtoModel) {
         this.errors = "网络错误";
@@ -345,6 +353,9 @@ export class BookPage implements OnInit, AfterViewInit {
       this.initTmcOutNumberInfos();
       await this.initOrderTravelPayTypes();
       console.log("vmCombindInfos", this.vmCombindInfos);
+      if (!environment.production) {
+        this.storage.set(MOCK_FLIGHT_VMCOMBINDINFO, this.vmCombindInfos);
+      }
     } catch (err) {
       this.errors = err || "please retry";
       console.error(err);
@@ -618,7 +629,7 @@ export class BookPage implements OnInit, AfterViewInit {
     canBook2 = this.fillBookPassengers(bookDto, arr);
     if (canBook && canBook2) {
       if (isSelf && this.flightService.getSearchFlightModel().isRoundTrip) {
-        const p1 = bookDto.Passengers.find(it => it.OutNumbers);
+        const p1 = bookDto.Passengers.find(it => !!it.OutNumbers);
         const p2 = bookDto.Passengers.find(it => !it.OutNumbers);
         const p = p2 && p2.OutNumbers ? p2 : p1 && p1.OutNumbers ? p1 : null;
         if (p && p.OutNumbers) {
