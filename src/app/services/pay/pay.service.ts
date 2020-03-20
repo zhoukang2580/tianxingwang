@@ -95,7 +95,7 @@ export class PayService {
       AppHelper.isWechatMini() ||
       AppHelper.isWechatH5()
     ) {
-      req.Data.OpenId = WechatHelper.getOpenId();
+      req.Data.OpenId =AppHelper.isWechatMini()?WechatHelper.getMiniOpenId(): WechatHelper.getOpenId();
       req.IsShowLoading = true;
       if (AppHelper.isApp()) {
         req.Data.CreateType = "App";
@@ -137,10 +137,6 @@ export class PayService {
                 const ok = await WechatHelper.ready().catch(e => {
                   return false;
                 });
-                if (!ok) {
-                  reject("唤起微信支付失败");
-                  return;
-                }
                 WechatHelper.wx.chooseWXPay({
                   timestamp: r.Data.timeStamp,
                   nonceStr: r.Data.nonceStr, // 支付签名随机串，不长于 32 位
@@ -204,7 +200,7 @@ export class PayService {
   payMobile(req: RequestEntity, path: string) {
     let url =
       AppHelper.getApiUrl() +
-      "/home/Pay?path=" +
+      "/home/Pay?ticket="+AppHelper.getTicket()+"&path=" +
       encodeURIComponent(
         AppHelper.getRedirectUrl() +
           "?path=" +

@@ -2,7 +2,7 @@ import * as md5 from "md5";
 import { LanguageHelper } from "./languageHelper";
 import { AppHelper } from "./appHelper";
 import { RequestEntity } from "./services/api/Request.entity";
-import { environment } from 'src/environments/environment';
+import { environment } from "src/environments/environment";
 interface JssdkResult {
   appid: string; // ""
   noncestr: string; // "40354f68401a44b697f1e746bfc90390"
@@ -49,59 +49,44 @@ const jsApiList = [
   "openCard"
 ];
 export class WechatHelper {
-  static jssdkUrlConfig: {
-    pageUrlHash: string;
-    config: JssdkResult;
-  }[] = [];
+  static jssdkUrlConfig:JssdkResult;
 
   static wx = window["wx"];
 
-
-  static getOpenId()
-  {
+  static getOpenId() {
     return AppHelper.getCookieValue("wechatopenid");
   }
-  static getMiniOpenId()
-  {
+  static getMiniOpenId() {
     return AppHelper.getCookieValue("wechatminiopenid");
   }
   static getHashedCurPageUrl() {
     const href = window.location.href;
     const url = href.substring(0, href.indexOf("#")).trim();
-    console.log('getHashedCurPageUrl window.location.href', window.location.href, `url=${url}`);
+    console.log(
+      "getHashedCurPageUrl window.location.href",
+      window.location.href,
+      `url=${url}`
+    );
     return md5(url);
   }
   static async getJssdk() {
-    if (!this.jssdkUrlConfig.length || !this.jssdkUrlConfig.find(
-      item => item.pageUrlHash == this.getHashedCurPageUrl()
-    )
-    ) {
-      console.log("接口获取 jssdkInfo");
+    if (!this.jssdkUrlConfig) {
       const jssdkInfo = await this.requestJssdk().catch(_ => null);
+      console.log("接口获取 jssdkInfo", jssdkInfo);
       if (jssdkInfo) {
-        this.jssdkUrlConfig = this.jssdkUrlConfig.filter(
-          item => item.pageUrlHash !== this.getHashedCurPageUrl()
-        );
-        this.jssdkUrlConfig.push({
-          pageUrlHash: this.getHashedCurPageUrl(),
-          config: jssdkInfo
-        });
-        return jssdkInfo;
+        this.jssdkUrlConfig = jssdkInfo;
+        return Promise.resolve(this.jssdkUrlConfig);
       }
       return Promise.reject("接口获取 jssdkInfo 失败");
     } else {
       console.log("从 jssdkUrlConfig 直接返回");
-      console.log(`this.jssdkUrlConfig`, this.jssdkUrlConfig,
+      console.log(
+        `this.jssdkUrlConfig`,
+        this.jssdkUrlConfig,
         `this.getHashedCurPageUrl()=${this.getHashedCurPageUrl()}`,
-        this.jssdkUrlConfig.find(
-          item => item.pageUrlHash == this.getHashedCurPageUrl()
-        )
+        this.jssdkUrlConfig
       );
-      return Promise.resolve(
-        this.jssdkUrlConfig.find(
-          item => item.pageUrlHash == this.getHashedCurPageUrl()
-        ).config
-      );
+      return Promise.resolve(this.jssdkUrlConfig);
     }
   }
   static requestJssdk() {
@@ -141,21 +126,24 @@ export class WechatHelper {
     });
   }
   static async ready() {
-    console.log("window.location.href ",window.location.href);
+    console.log("window.location.href ", window.location.href);
     if (!this.wx) {
       console.log("jssdk加载失败，wx对象不存在");
       return Promise.reject(LanguageHelper.getJSSDKNotExistsTip());
     }
     let err;
-    const info = await this.getJssdk().catch(_ => { err = _; return null; });
+    const info = await this.getJssdk().catch(_ => {
+      err = _;
+      return null;
+    });
 
     if (!info) {
       console.log("接口请求错误");
-      return Promise.reject(err||"获取jssdk 失败");
+      return Promise.reject(err || "获取jssdk 失败");
     }
     return new Promise<boolean>(resove => {
       this.wx.config({
-        debug: !environment.production, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        debug:false&& !environment.production, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
         appId: info.appid, // 必填，公众号的唯一标识
         timestamp: info.timestamp, // 必填，生成签名的时间戳
         nonceStr: info.noncestr, // 必填，生成签名的随机串
@@ -173,7 +161,6 @@ export class WechatHelper {
         // config信息验证失败会执行error函数，如签名过期导致验证失败，
         // 具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
         resove(false);
-        AppHelper.alert(err);
       });
     });
   }

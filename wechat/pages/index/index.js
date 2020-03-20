@@ -1,7 +1,7 @@
 //index.js
 //获取应用实例
 const app = getApp()
-var homeUrl = "https://app.sky-trip.com";
+var homeUrl = "http://test.app.sky-trip.com";
 var isFirstShow=true;
 Page({
   data: {
