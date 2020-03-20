@@ -1,5 +1,5 @@
 <!--index.wxml-->
-<view wx:if="{{true||showAuthorization}}" class="container">
+<view wx:if="{{showAuthorization}}" class="container">
 <image src='Logodm.png'></image>
 <button  open-type="getUserInfo" lang="zh_CN"   class="login"  bindgetuserinfo="onLogin">授权应用</button>
 <navigator open-type="exit" target="miniProgram" >
@@ -8,6 +8,6 @@
 </view>
 
 
-<view wx:if="{{false&&!showAuthorization}}">
+<view wx:if="{{!showAuthorization}}">
   <web-view src="{{url}}"></web-view>
 </view>

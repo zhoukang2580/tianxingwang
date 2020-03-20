@@ -1,1 +1,1 @@
-<button wx:if='{{true||isShowAuthorizeButton}}' open-type="getUserInfo" lang="zh_CN" class="login"  bindgetuserinfo="onGotUserInfo">获取用户昵称</button>
+<button wx:if='{{isShowAuthorizeButton}}' open-type="getUserInfo" lang="zh_CN" class="login"  bindgetuserinfo="onGotUserInfo">获取用户昵称</button>
