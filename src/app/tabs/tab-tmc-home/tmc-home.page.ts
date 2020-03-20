@@ -55,6 +55,7 @@ export class TmcHomePage implements OnInit, OnDestroy {
   staff: StaffEntity;
   canShow = AppHelper.isApp() || AppHelper.isWechatH5();
   options = {};
+  isShowRentalCar = !AppHelper.isWechatMini();
   isShowoverseaHotel = environment.mockProBuild || !environment.production;
   constructor(
     private identityService: IdentityService,
