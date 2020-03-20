@@ -10,10 +10,10 @@
 <ion-content>
   <ion-list lines="none">
     <div *ngFor="let item of invitationlist;let i=index" class="invitation_list">
-        <ion-label class="invitation_desc ion-text-wrap">{{item.Desc}}</ion-label>
+    <ion-label class="invitation_desc ion-text-wrap">{{item.Name}}</ion-label>
       <ion-item>
-        <ion-button color="secondary" slot="end" (click)="acceptclick(i)">接受</ion-button>
-        <ion-button color="danger" slot="end">拒绝</ion-button>
+        <ion-button color="secondary" slot="end" (click)="acceptclick(i)" class="btn_width">接受</ion-button>
+        <ion-button color="danger" slot="end" (click)="failclick(i)" class="btn_width"><ion-label color="light">拒绝</ion-label></ion-button>
       </ion-item>
     </div>
   </ion-list>

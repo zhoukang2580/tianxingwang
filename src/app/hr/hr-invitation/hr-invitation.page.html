@@ -8,27 +8,51 @@
 </ion-header>
 
 <ion-content>
-<ion-item detail (click)='onSelectPolicy()'>
-  <ion-label>政策:</ion-label>
-<ion-label class="ion-text-end" >{{hrInvitationItem?.policy?.Name}}</ion-label>
-</ion-item>
-<ion-item detail (click)="onSelectCostCenter()">
-  <ion-label>成本中心:</ion-label>
-  <ion-label class="ion-text-end">{{hrInvitationItem?.constCenter?.Name}}</ion-label>
-</ion-item>
-<ion-item detail (click)="onSelectOrganization()">
+  <ion-item detail (click)='onSelectPolicy()'>
+    <ion-label>政策:</ion-label>
+    <ion-label class="ion-text-end">{{hrInvitationItem?.policy?.Name}}</ion-label>
+  </ion-item>
+  <ion-item detail (click)="onSelectCostCenter()">
+    <ion-label>成本中心:</ion-label>
+    <ion-label class="ion-text-end">{{hrInvitationItem?.constCenter?.Name}}</ion-label>
+  </ion-item>
+  <ion-item detail (click)="onSelectOrganization()">
     <ion-label>组织架构:</ion-label>
-    <ion-label class="ion-text-end"></ion-label>
+    <ion-label class="ion-text-end">{{hrInvitationItem?.organization?.Name}}</ion-label>
   </ion-item>
-<ion-item *ngIf='hrInvitationItem'>
-  <ion-label>姓名:</ion-label>
-  <ion-input class="ion-text-start" [(ngModel)]="hrInvitationItem.name"></ion-input>
-</ion-item>
-<ion-item>
-  <ion-label>角色:</ion-label>
-  <ion-label>{{hrInvitationItem?.roleNames}}</ion-label>
-</ion-item>
-<ion-item lines="none">
-   <ion-button color="secondary" slot="end" (click)="onAddInvitation()">立即申请</ion-button>
+  <ion-item detail (click)="onSelectCountry()">
+    <ion-label>国家:</ion-label>
+    <ion-label class="ion-text-end">{{hrInvitationItem?.country.Name}}</ion-label>
   </ion-item>
+  <ion-item *ngIf='hrInvitationItem'>
+      <ion-label>姓名:</ion-label>
+      <ion-input class="ion-text-end" [(ngModel)]="hrInvitationItem.name"></ion-input>
+    </ion-item>
+  <ion-item>
+    <ion-label>性别:</ion-label>
+    <ion-radio-group value="sex" style="display: flex;" [(ngModel)]="hrInvitationItem.gender">
+      <ion-item lines="none">
+        <ion-label>女</ion-label>
+        <ion-radio slot="start" value="woman">女</ion-radio>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-label>男</ion-label>
+        <ion-radio slot="start" value="man">男</ion-radio>
+      </ion-item>
+    </ion-radio-group>
+  </ion-item>
+  <ion-item>
+    <ion-label>工号:</ion-label>
+    <ion-input class="ion-text-end" slot="end" [(ngModel)]="hrInvitationItem.number"></ion-input>
+  </ion-item>
+  <ion-item lines="none">
+    <ion-label>角色:</ion-label>
+    <ion-label>{{hrInvitationItem?.roleNames}}</ion-label>
+  </ion-item>
+  <!-- <ion-item lines="none">
+    <ion-button color="secondary" slot="end" (click)="onAddInvitation()">立即申请</ion-button>
+  </ion-item> -->
+  <div class="flex_btn">
+    <ion-button color="secondary" slot="end" (click)="onAddInvitation()" class="btn_height">立即申请</ion-button>
+  </div>
 </ion-content>

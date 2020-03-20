@@ -18,6 +18,13 @@ let routes: Route[] = [
       )
   },
   {
+    path: "hr-invitation-list",
+    loadChildren: () =>
+      import("./hr-invitation-list/hr-invitation-list.module").then(
+        m => m.HrInvitationListPageModule
+      )
+  },
+  {
     path: "hr",
     loadChildren: () => import("./hr/hr.module").then(m => m.HrPageModule)
   },

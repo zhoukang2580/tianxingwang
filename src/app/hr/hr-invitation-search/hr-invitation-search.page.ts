@@ -3,6 +3,7 @@ import { StaffService, IOrganization } from '../staff.service';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { BackButtonComponent } from 'src/app/components/back-button/back-button.component';
+import { CountryEntity } from 'src/app/tmc/models/CountryEntity';
 interface IItem extends IOrganization { }
 @Component({
   selector: 'app-hr-invitation-search',
@@ -15,9 +16,11 @@ export class HrInvitationSearchPage implements OnInit {
   @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
   keywords = '';
   items: IItem[];
+  contries: CountryEntity[];
   title = '';
-  isShowSearch: boolean;
+  isShowSearch: number;
   deptPaths: IOrganization[] = [{ Name: "部门", Id: "0" }];
+  top_title: string;
   constructor(private staffservice: StaffService, private route: ActivatedRoute) { }
 
   ngOnInit() {
@@ -27,16 +30,17 @@ export class HrInvitationSearchPage implements OnInit {
     })
   }
   onbackdepartment(item: IOrganization) {
-    if(item!=this.deptPaths[this.deptPaths.length-1]){
+    if (item != this.deptPaths[this.deptPaths.length - 1]) {
       this.getOrganization(item.Id)
     }
     const idx = this.deptPaths.findIndex(it => it.Id == item.Id);
-    this.deptPaths = this.deptPaths.slice(0, idx+1);
+    this.deptPaths = this.deptPaths.slice(0, idx + 1);
   }
+
   onSelectNext(item: IOrganization) {
     this.getOrganization(item.Id)
-    if (!this.deptPaths.find(it=>{
-     return it.Id==item.Id
+    if (!this.deptPaths.find(it => {
+      return it.Id == item.Id
     })) {
 
       this.deptPaths.push(item)
@@ -46,14 +50,21 @@ export class HrInvitationSearchPage implements OnInit {
   onSearch() {
     this.subscription.unsubscribe();
     if (this.type == "policy") {
-      this.isShowSearch = true;
-      this.getPolicy()
+      this.isShowSearch = 1;
+      this.getPolicy();
+      this.top_title = '政策';
     } else if (this.type == "costcenter") {
-      this.isShowSearch = true;
+      this.isShowSearch = 1;
       this.getCostCenter();
+      this.top_title = '成本中心';
     } else if (this.type == "organization") {
-      this.isShowSearch = false;
+      this.isShowSearch = 2;
       this.getOrganization();
+      this.top_title = '组织架构';
+    } else if (this.type == "countries") {
+      this.isShowSearch = 3;
+      this.getCountries();
+      this.top_title = "国家"
     }
 
   }
@@ -74,6 +85,14 @@ export class HrInvitationSearchPage implements OnInit {
         ...this.staffservice.getHrInvitation(),
         organization: item,
       })
+    } else if (this.type == "countries") {
+      this.staffservice.setHrInvitationSource({
+        ...this.staffservice.getHrInvitation(),
+        country: {
+          Id: item.Id,
+          Name: item.Name
+        } as CountryEntity,
+      })
     }
     this.back();
   }
@@ -83,6 +102,14 @@ export class HrInvitationSearchPage implements OnInit {
         this.items = res.Data;
       }
     })
+  }
+  private async getCountries() {
+    // console.log(await this.staffservice.getCountriesAsync(),"11111111111");
+    const arr=await this.staffservice.getCountriesAsync();
+    this.contries= arr.filter(it=>{
+      return !this.keywords?true:it.Name.includes(this.keywords)||
+      !this.keywords?true:it.Code.toLocaleLowerCase().includes(this.keywords)
+    });
   }
   private getCostCenter() {
     this.subscription = this.staffservice.getCostCenter({ name: this.keywords }).subscribe(res => {

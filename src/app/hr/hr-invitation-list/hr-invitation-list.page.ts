@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { StaffService, InvitationItem } from '../staff.service'
+import { StaffService } from '../staff.service'
 import { Router } from '@angular/router';
 
 @Component({
@@ -9,7 +9,9 @@ import { Router } from '@angular/router';
 })
 export class HrInvitationListPage implements OnInit {
 
-  invitationlist:InvitationItem[] = []
+  invitationlist:any[] = []
+
+  ifsuccess:''
 
   constructor(private staffService: StaffService
     , private router: Router,) {
@@ -20,14 +22,21 @@ export class HrInvitationListPage implements OnInit {
     this.loadList();
   }
   private async loadList() {
-    this.invitationlist = await this.staffService.getInvitationListAsync().catch((e)=>{
+    this.invitationlist = await this.staffService.getListAsync().catch((e)=>{
       console.error(e);
       return [];
     });
   }
-  acceptclick(i:InvitationItem){
-    console.log(i);
-    this.staffService.invitation=i;
-    this.router.navigate(["invitation"],{queryParams:{mmsid:i}});
+  acceptclick(i:any){
+
+    this.staffService.handle(i.Id,true).catch((e)=>{
+      console.error(e);
+    })
+    // this.router.navigate(["invitation"],{queryParams:{mmsid:i}});
+  }
+  failclick(i:any){
+    this.staffService.handle(i.Id,false).catch((e)=>{
+      console.error(e);
+    })
   }
 }

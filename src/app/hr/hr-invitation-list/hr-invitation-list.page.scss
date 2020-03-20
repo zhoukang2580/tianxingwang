@@ -1,20 +1,26 @@
 :host{
-    background-color: #fff;
+    background-color: --ion-color-light;
 }
 .invitation_list{
-    width: 20em;
-    background: #fff;
-    border: 1px solid #eee;
+    width: 21em;
+    background: --ion-color-light;
+    border: 1px solid --ion-color-medium;
     border-radius: 5px;
     margin: auto;
-    margin-bottom: 1em;
-    padding:8px 8px 5px 8px;
+    margin-top: 1em;
+    padding:5px 5px 5px 5px;
+}
+.invitation_list:last-child{
+  margin-bottom: 1em;
+}
+.btn_width{
+  width: 4em;
 }
 .invitation_desc{
     font-size: 0.9em;
     font-family: Hiragino Sans GB;
     font-weight: 400;
-    color: #5f6367;
+    color: --ion-color-medium;
 }
 ion-content {
     // --background: #f2f2f2;

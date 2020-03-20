@@ -132,6 +132,9 @@ export class MyPage implements OnDestroy, OnInit {
   goTomessageList() {
     this.router.navigate([AppHelper.getRoutePath("message-list")]);
   }
+  goInvitation(){
+    this.router.navigate(["hr-invitation-list"]);
+  }
 
   ngOnInit() {
     this.items = ORDER_TABS.filter(it => it.isDisplay);
