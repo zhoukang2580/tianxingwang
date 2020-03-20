@@ -49,6 +49,7 @@ const jsApiList = [
   "openCard"
 ];
 export class WechatHelper {
+  static LaunchUrl:string;
   static jssdkUrlConfig:JssdkResult;
 
   static wx = window["wx"];
@@ -91,9 +92,8 @@ export class WechatHelper {
   }
   static requestJssdk() {
     const req = new RequestEntity();
-    const pageUrl = encodeURIComponent(
-      window.location.href.substring(0, window.location.href.indexOf("#"))
-    );
+    let pageUrl=this.LaunchUrl.indexOf("#")>-1? this.LaunchUrl.substring(0, this.LaunchUrl.indexOf("#")):this.LaunchUrl;
+    pageUrl =window.btoa(pageUrl);
     req.Method = "ApiPasswordUrl-wechat-jssdk";
     req.Data = {
       Url: pageUrl

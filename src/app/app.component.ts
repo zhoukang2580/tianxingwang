@@ -167,6 +167,7 @@ export class AppComponent
     //     console.error(e);
     //   }
     // }
+    WechatHelper.LaunchUrl=window.location.href;
     AppHelper.getDomain(); //
     this.showErrorMsg();
     const unloginPath = AppHelper.getQueryString("unloginpath");
@@ -209,7 +210,7 @@ export class AppComponent
         // this.router.navigate(['qrscan']);
         // this.router.navigate(['function-test']);
         // this.router.navigate(['car-order-detail']);
-        this.router.navigate(["hr-invitation"]);
+        //this.router.navigate(["hr-invitation"]);
       }
     });
   }
