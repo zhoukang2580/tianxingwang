@@ -45,7 +45,7 @@ export class PayComponent implements OnInit {
     }
   }
   ngOnInit() {
-    if (AppHelper.isApp()) {
+    if (AppHelper.isApp() || AppHelper.isH5()) {
       this.payWays = [];
       this.payWays.push({
         label: LanguageHelper.PayWays.getAliPayTip(),
