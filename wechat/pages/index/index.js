@@ -1,7 +1,7 @@
 //index.js
 //获取应用实例
 const app = getApp()
-var homeUrl = "http://test.app.sky-trip.com";
+var homeUrl = "https://app.sky-trip.com";
 var isFirstShow=true;
 Page({
   data: {
@@ -31,7 +31,6 @@ Page({
     var args = wx.getStorageSync("args");
     if (args)
     {
-      that.setUrl(wx.getStorageSync("args"));
       that.setUrl(args);
       wx.navigateBack();
     }
@@ -156,6 +155,7 @@ Page({
         url += (url.includes("?") ? "&" : "?") + "wechatPayResult=" + args.wechatPayResult;
       }
     }
+    debugger;
     var orgUrl = this.data.url;
     if (orgUrl && orgUrl.indexOf(url) > -1) {
       return;
