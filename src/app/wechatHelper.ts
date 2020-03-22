@@ -1,3 +1,5 @@
+import { delay } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
 import * as md5 from "md5";
 import { LanguageHelper } from "./languageHelper";
 import { AppHelper } from "./appHelper";
@@ -49,9 +51,11 @@ const jsApiList = [
   "openCard"
 ];
 export class WechatHelper {
-  static LaunchUrl:string;
-  static jssdkUrlConfig:JssdkResult;
-
+  private static isFirstTime = true;
+  private static isReadyFinishSource = new BehaviorSubject(false);
+  static isReadyFinishObservable = WechatHelper.isReadyFinishSource.asObservable();
+  static LaunchUrl: string;
+  static jssdkUrlConfig: JssdkResult;
   static wx = window["wx"];
 
   static getOpenId() {
@@ -92,8 +96,11 @@ export class WechatHelper {
   }
   static requestJssdk() {
     const req = new RequestEntity();
-    let pageUrl=this.LaunchUrl.indexOf("#")>-1? this.LaunchUrl.substring(0, this.LaunchUrl.indexOf("#")):this.LaunchUrl;
-    pageUrl =window.btoa(pageUrl);
+    if (window.navigator.userAgent.indexOf('iPhone') == -1 && window.navigator.userAgent.indexOf('miniProgram') == -1) {
+      this.LaunchUrl = window.location.href;
+    }
+    let pageUrl = this.LaunchUrl.indexOf("#") > -1 ? this.LaunchUrl.substring(0, this.LaunchUrl.indexOf("#")) : this.LaunchUrl;
+    pageUrl = window.btoa(pageUrl);
     req.Method = "ApiPasswordUrl-wechat-jssdk";
     req.Data = {
       Url: pageUrl
@@ -125,6 +132,48 @@ export class WechatHelper {
         });
     });
   }
+  // static async ready(success?: (res?: any) => any, faild?: (err: any) => void) {
+  //   console.log("window.location.href ", window.location.href);
+  //   if (!this.wx) {
+  //     console.log("jssdk加载失败，wx对象不存在");
+  //     return Promise.reject(LanguageHelper.getJSSDKNotExistsTip());
+  //   }
+  //   let err;
+  //   const info = await this.getJssdk().catch(_ => {
+  //     err = _;
+  //     this.jssdkUrlConfig = null;
+  //     return null;
+  //   });
+
+  //   if (!info) {
+  //     faild("获取jssdk 失败");
+  //     console.log("接口请求错误");
+  //     return Promise.reject(err || "获取jssdk 失败");
+  //   }
+  //   this.wx.config({
+  //     debug: false && !environment.production, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+  //     appId: info.appid, // 必填，公众号的唯一标识
+  //     timestamp: info.timestamp, // 必填，生成签名的时间戳
+  //     nonceStr: info.noncestr, // 必填，生成签名的随机串
+  //     signature: info.signature, // 必填，签名
+  //     jsApiList: jsApiList // 必填，需要使用的JS接口列表
+  //   });
+  //   // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，
+  //   // config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，
+  //   // 则须把相关接口放在ready函数中调用来确保正确执行。
+  //   // 对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
+  //   this.wx.ready(function () {
+  //     WechatHelper.isReadyFinishSource.next(true);
+  //     success()
+  //   });
+  //   this.wx.error(function (err) {
+  //     faild(err);
+  //     // config信息验证失败会执行error函数，如签名过期导致验证失败，
+  //     // 具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+  //     this.jssdkUrlConfig = null;
+  //     //alert(JSON.stringify(err));
+  //   });
+  // }
   static async ready() {
     console.log("window.location.href ", window.location.href);
     if (!this.wx) {
@@ -134,6 +183,7 @@ export class WechatHelper {
     let err;
     const info = await this.getJssdk().catch(_ => {
       err = _;
+      this.jssdkUrlConfig = null;
       return null;
     });
 
@@ -143,7 +193,7 @@ export class WechatHelper {
     }
     return new Promise<boolean>(resove => {
       this.wx.config({
-        debug:false&& !environment.production, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        debug: false && !environment.production, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
         appId: info.appid, // 必填，公众号的唯一标识
         timestamp: info.timestamp, // 必填，生成签名的时间戳
         nonceStr: info.noncestr, // 必填，生成签名的随机串
@@ -156,24 +206,30 @@ export class WechatHelper {
       // 对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
       this.wx.ready(() => {
         resove(true);
+        // if (AppHelper.platform.is("ios")) {
+        //   if (WechatHelper.isFirstTime) {
+        //     WechatHelper.isFirstTime = false;
+        //     setTimeout(() => {
+        //       WechatHelper.isReadyFinishSource.next(true)
+        //     }, 3000);
+        //   } else {
+        //     WechatHelper.isReadyFinishSource.next(true)
+        //   }
+        // } else {
+        // }
+        WechatHelper.isReadyFinishSource.next(true)
       });
       this.wx.error(err => {
         // config信息验证失败会执行error函数，如签名过期导致验证失败，
         // 具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
         resove(false);
+        this.jssdkUrlConfig = null;
+        //alert(JSON.stringify(err));
       });
     });
   }
   static async scan() {
-    let emsg: any;
-    const ok = await WechatHelper.ready().catch(e => {
-      console.log(e);
-      emsg = e;
-      return false;
-    });
-    if (!ok) {
-      return Promise.reject(emsg || "微信扫码唤起失败");
-    }
+    const ok = await WechatHelper.ready();
     return new Promise<string>((resolve, reject) => {
       WechatHelper.wx.scanQRCode({
         needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
@@ -190,5 +246,28 @@ export class WechatHelper {
         }
       });
     });
+
+    // return new Promise<string>((resolve, reject) => {
+    //   let emsg: any;
+    //   WechatHelper.ready(function () {
+    //     WechatHelper.wx.scanQRCode({
+    //       needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+    //       scanType: ["qrCode", "barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+    //       success: res => {
+    //         resolve(res.resultStr);
+    //         return false;
+    //       },
+    //       fail: err => {
+    //         // AppHelper.alert(err);
+    //         console.error(err);
+    //         reject(err);
+    //         return false;
+    //       }
+    //     });
+    //   }, function faild(err) {
+    //     // AppHelper.alert(err);
+    //     reject(err);
+    //   });
+    // });
   }
 }
