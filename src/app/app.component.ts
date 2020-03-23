@@ -210,7 +210,7 @@ export class AppComponent
         // this.router.navigate(['qrscan']);
         // this.router.navigate(['function-test']);
         // this.router.navigate(['car-order-detail']);
-        //this.router.navigate(["hr-invitation"]);
+        this.router.navigate(["product-tabs"],{queryParams:{tabId:2}});
       }
     });
   }

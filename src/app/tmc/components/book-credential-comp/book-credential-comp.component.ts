@@ -61,6 +61,7 @@ export class BookCredentialCompComponent
   }
   onSave() {
     this.savecredential.emit(this.credential);
+    console.log(this.credential,"qdjleijdeldelidjiw");
   }
   async ngOnInit() {
     // this.isFlightTrainHotel = "train";
