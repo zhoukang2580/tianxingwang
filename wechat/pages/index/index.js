@@ -2,7 +2,9 @@
 //获取应用实例
 const app = getApp()
 var homeUrl = "https://app.sky-trip.com";
+var defaultUrl = "https://m.sky-trip.com";
 var isFirstShow=true;
+var isOpenApp=false;
 Page({
   data: {
     motto: 'Hello World',
@@ -12,6 +14,7 @@ Page({
     canIUse: wx.canIUse('button.open-type.getUserInfo')
   },
   onLogin: function (e) {
+ 
     var that = this;
     this.setData({ showAuthorization: false });
     var func = function (args) {
@@ -27,58 +30,66 @@ Page({
     })
   },
   onShow: function() {
-    var that=this;
+    if(!isOpenApp)
+      return;
+    var that = this;
     var args = wx.getStorageSync("args");
-    if (args)
-    {
+    if (args) {
       that.setUrl(args);
       wx.navigateBack();
     }
-    else{
+    else {
       var func = function (args) {
         if (isFirstShow) {
           isFirstShow = false;
-          if(!args.ticket)
-          {
+          if (!args.ticket) {
             that.setData({ showAuthorization: true });
             return;
           }
         }
         that.setUrl(args);
-        wx.navigateBack();
       }
       this.login(func, {});
-   
+
     }
   
     
   },
   onLoad: function(args) {
-    if (app.globalData.userInfo) {
-      this.setData({
-        userInfo: app.globalData.userInfo,
-        hasUserInfo: true
-      })
-    } else if (this.data.canIUse) {
-      // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
-      // 所以此处加入 callback 以防止这种情况
-      app.userInfoReadyCallback = res => {
+    debugger;
+    if (args && args.isOpenApp)
+    {
+      isOpenApp=true;
+      if (app.globalData.userInfo) {
         this.setData({
-          userInfo: res.userInfo,
+          userInfo: app.globalData.userInfo,
           hasUserInfo: true
         })
-      }
-    } else {
-      // 在没有 open-type=getUserInfo 版本的兼容处理
-      wx.getUserInfo({
-        success: res => {
-          app.globalData.userInfo = res.userInfo
+      } else if (this.data.canIUse) {
+        // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
+        // 所以此处加入 callback 以防止这种情况
+        app.userInfoReadyCallback = res => {
           this.setData({
             userInfo: res.userInfo,
             hasUserInfo: true
           })
         }
-      })
+      } else {
+        // 在没有 open-type=getUserInfo 版本的兼容处理
+        wx.getUserInfo({
+          success: res => {
+            app.globalData.userInfo = res.userInfo
+            this.setData({
+              userInfo: res.userInfo,
+              hasUserInfo: true
+            })
+          }
+        })
+      }
+    }
+    else
+    {
+      this.setData({ url: defaultUrl });
     }
   },
   getUserInfo: function(e) {
