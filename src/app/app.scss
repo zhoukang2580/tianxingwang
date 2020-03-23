@@ -39,7 +39,8 @@ body:not(.dark) {
 body,
 body.dark {
   background-color: var(--ion-color-primary);
-  &.qr-scanning,ion-content {
+  &.qr-scanning,
+  ion-content {
     background: transparent;
   }
   // background: white;
@@ -239,9 +240,12 @@ input {
     -webkit-line-clamp: 10000;
   }
 }
-.train-refund-comp .popover-content {
-  width: 80vw;
-  left: 10vw;
+.train-refund-comp,
+.flight-refund-comp {
+  .popover-content {
+    width: 80vw;
+    left: 10vw;
+  }
 }
 a {
   color: var(--ion-color-secondary);

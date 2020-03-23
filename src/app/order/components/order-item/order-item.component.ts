@@ -4,7 +4,6 @@ import { TrainService, ITrainInfo } from "./../../../train/train.service";
 import { CalendarService } from "./../../../tmc/calendar.service";
 import { AppHelper } from "src/app/appHelper";
 import { TmcEntity } from "src/app/tmc/tmc.service";
-import { TmcService } from "./../../../tmc/tmc.service";
 import {
   Component,
   OnInit,
@@ -12,7 +11,8 @@ import {
   Output,
   EventEmitter,
   OnChanges,
-  SimpleChanges
+  SimpleChanges,
+  ViewChild
 } from "@angular/core";
 import { OrderEntity, OrderStatusType } from "src/app/order/models/OrderEntity";
 import { OrderFlightTripStatusType } from "src/app/order/models/OrderFlightTripStatusType";
@@ -31,8 +31,11 @@ import { Router } from "@angular/router";
 import { OrderPassengerEntity } from "../../models/OrderPassengerEntity";
 import { OrderFlightTicketType } from "../../models/OrderFlightTicketType";
 import { OrderPayStatusType } from "../../models/OrderInsuranceEntity";
-import { PopoverController } from "@ionic/angular";
+import { PopoverController, PickerController } from "@ionic/angular";
 import { RefundFlightTicketTipComponent } from "../refund-flight-ticket-tip/refund-flight-ticket-tip.component";
+import { OrderService } from "../../order.service";
+import { LanguageHelper } from "src/app/languageHelper";
+import { DayModel } from "src/app/tmc/models/DayModel";
 @Component({
   selector: "app-order-item",
   templateUrl: "./order-item.component.html",
@@ -47,7 +50,23 @@ export class OrderItemComponent implements OnInit, OnChanges {
   @Input() order: OrderEntity;
   @Input() isAgent = false;
   @Output() payaction: EventEmitter<OrderEntity>;
-  @Output() refundTicket: EventEmitter<OrderEntity>;
+  @Output() refundTrainTicket: EventEmitter<OrderEntity>;
+  @Output() exchangeFlightTicket: EventEmitter<{
+    orderId: string;
+    ticketId: string;
+  }>;
+  @Output() abolishFlightOrder: EventEmitter<{
+    orderId: string;
+    ticketId: string;
+  }>;
+  @Output() refundFlightTicket: EventEmitter<{
+    orderId: string;
+    ticketId: string;
+    IsVoluntary: boolean;
+    FileName: string;
+    FileValue: string;
+  }>;
+  @Input() tmc: TmcEntity;
   OrderStatusType = OrderStatusType;
   OrderFlightTripStatusType = OrderFlightTripStatusType;
   OrderFlightTicketStatusType = OrderFlightTicketStatusType;
@@ -55,16 +74,19 @@ export class OrderItemComponent implements OnInit, OnChanges {
   OrderHotelStatusType = OrderHotelStatusType;
   HotelPaymentType = HotelPaymentType;
   TrainBookType = TrainBookType;
-  tmc: TmcEntity;
   constructor(
-    private tmcService: TmcService,
     private calendarService: CalendarService,
     private router: Router,
     private popoverCtrl: PopoverController,
-    private trainService: TrainService
+    private trainService: TrainService,
+    private pickerCtrl: PickerController,
+    private orderService: OrderService
   ) {
     this.payaction = new EventEmitter();
-    this.refundTicket = new EventEmitter();
+    this.refundTrainTicket = new EventEmitter();
+    this.refundFlightTicket = new EventEmitter();
+    this.abolishFlightOrder = new EventEmitter();
+    this.exchangeFlightTicket = new EventEmitter();
   }
   onPay(evt: CustomEvent) {
     if (this.order) {
@@ -125,6 +147,9 @@ export class OrderItemComponent implements OnInit, OnChanges {
                   );
                 });
               }
+              t.VariablesJsonObj.isShowBtnByTimeAndTicketType = this.showBtnByTimeAndTicketType(
+                t
+              );
               t.VariablesJsonObj.isTicketCanRefund = this.isTicketCanRefund(t);
               t.VariablesJsonObj.isShowExchangeBtn = this.isShowExchangeBtn(t);
               t.VariablesJsonObj.isShowCancelBtn = this.isShowCancelBtn(t);
@@ -202,7 +227,83 @@ export class OrderItemComponent implements OnInit, OnChanges {
     if (evt) {
       evt.stopPropagation();
     }
+
     return this.trainService.onExchange(orderTrainTicket);
+  }
+  private async getExchangeDate(trip: OrderFlightTripEntity) {
+    const m = this.calendarService.getMoment(0, trip.TakeoffTime);
+    const preMonth = m.add(-1, "months");
+    const nextMonth = m.add(1, "months");
+    const preDays = this.calendarService.generateYearNthMonthCalendar(
+      preMonth.year(),
+      +preMonth.month()
+    );
+    const curDays = this.calendarService.generateYearNthMonthCalendar(
+      m.year(),
+      m.month()
+    );
+    const nextDays = this.calendarService.generateYearNthMonthCalendar(
+      nextMonth.year(),
+      nextMonth.month()
+    );
+    const y = new Date().getFullYear();
+    return new Promise<DayModel>(async resolve => {
+      const p = await this.pickerCtrl.create({
+        columns: [
+          {
+            name: "yearMonth",
+            refresh: () => {
+              console.log("refresh");
+            },
+            options: [
+              `${preMonth.year()}-${preMonth.month() + 1}`,
+              `${m.year()}-${m.month() + 1}`,
+              `${nextMonth.year()}-${nextMonth.month() + 1}`
+            ].map(ym => {
+              return {
+                text: ym,
+                value: ym
+              } as any;
+            })
+          },
+          {
+            name: "day",
+            options: new Array(365).fill(0).map((d, idx) => {
+              return {
+                text: idx,
+                value: idx
+              } as any;
+            })
+          }
+        ],
+        buttons: [
+          {
+            text: "取消",
+            role: "cancel"
+          },
+          {
+            text: "打开日历",
+            handler: () => {
+              p.dismiss();
+              this.orderService.getExchangeDate(trip.TakeoffTime).then(d => {
+                if (d && d.length) {
+                  resolve(d[0]);
+                }
+              });
+            }
+          },
+          {
+            text: "确定"
+          }
+        ]
+      });
+      p.present();
+      const res = await p.onDidDismiss();
+      if (res && res.data) {
+        const { yearMonth, day } = res.data;
+      }
+      console.log("onDidDismiss", res);
+    });
   }
   private isTicketCanRefund(orderFlightTicket: OrderFlightTicketEntity) {
     if (
@@ -224,7 +325,9 @@ export class OrderItemComponent implements OnInit, OnChanges {
     return (
       orderFlightTicket &&
       orderFlightTicket.TicketType == OrderFlightTicketType.Domestic &&
-      this.isAfterTomorrow(orderFlightTicket.OrderFlightTrips[0].TakeoffTime)
+      orderFlightTicket.OrderFlightTrips.some(trip =>
+        this.isAfterTomorrow(trip.TakeoffTime)
+      )
     );
   }
   private isAfterTomorrow(date: string) {
@@ -241,13 +344,10 @@ export class OrderItemComponent implements OnInit, OnChanges {
     ) {
       return false;
     }
-    return (
-      orderFlightTicket &&
-      [
-        OrderFlightTicketStatusType.Booked,
-        OrderFlightTicketStatusType.BookExchanged
-      ].includes(orderFlightTicket.Status)
-    );
+    return [
+      OrderFlightTicketStatusType.Booked,
+      OrderFlightTicketStatusType.BookExchanged
+    ].includes(orderFlightTicket.Status);
   }
   private isShowExchangeBtn(orderFlightTicket: OrderFlightTicketEntity) {
     if (
@@ -283,17 +383,43 @@ export class OrderItemComponent implements OnInit, OnChanges {
       if (this.order.OrderHotels) {
         this.order.OrderHotels = this.order.OrderHotels.map(t => {
           t.Passenger = this.getTicketPassenger(t);
-          t.countDay=(AppHelper.getDate(t.EndDate).getTime()-AppHelper.getDate(t.BeginDate).getTime())/24/3600/1000
-          
+          t.countDay =
+            (AppHelper.getDate(t.EndDate).getTime() -
+              AppHelper.getDate(t.BeginDate).getTime()) /
+            86400000;
+
           return t;
         });
       }
     }
   }
-  private countDate(){
-    // console.log(this.order.OrderHotels,"1111111");
-    
-    
+  async onExchangeFlightTicket(
+    evt: CustomEvent,
+    ticket: OrderFlightTicketEntity,
+    trip: OrderFlightTripEntity
+  ) {
+    evt.stopPropagation();
+    this.getExchangeDate(trip);
+    // this.exchangeFlightTicket.emit({
+    //   orderId: this.order.Id,
+    //   ticketId: ticket.Id
+    // });
+  }
+  onAbolishFlightOrder(evt: CustomEvent, ticket: OrderFlightTicketEntity) {
+    evt.stopPropagation();
+    AppHelper.alert(
+      "确定取消订单？",
+      true,
+      LanguageHelper.getConfirmTip(),
+      LanguageHelper.getCancelTip()
+    ).then(ok => {
+      if (ok) {
+        this.abolishFlightOrder.emit({
+          orderId: this.order.Id,
+          ticketId: ticket.Id
+        });
+      }
+    });
   }
   private getTicketPassenger(ticket: { Passenger: OrderPassengerEntity }) {
     const p = (this.order && this.order.OrderPassengers) || [];
@@ -346,7 +472,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
     return insuranceAmount;
   }
   async onRefundFlightTicket(
-    //退票弹框
+    // 退票弹框
     evt: CustomEvent,
     ticket: OrderFlightTicketEntity
   ) {
@@ -356,14 +482,24 @@ export class OrderItemComponent implements OnInit, OnChanges {
     if (ticket) {
       const popover = await this.popoverCtrl.create({
         component: RefundFlightTicketTipComponent,
+        cssClass: "flight-refund-comp",
         translucent: true
       });
-      return await popover.present();
-      // AppHelper.toast()
-      // const isRefund = await this.trainService.refund(orderTrainTicket.Id);
-      // if (isRefund) {
-      //   this.refundTicket.emit();
-      // }
+      await popover.present();
+      const res = await popover.onDidDismiss();
+      if (res && res.data) {
+        const result = res.data as {
+          IsVoluntary: boolean;
+          FileName: string;
+          FileValue: string;
+        };
+        this.refundFlightTicket.emit({
+          ...result,
+          orderId: this.order.Id,
+          ticketId: ticket.Id
+        });
+      }
+      // AppHelper.toast();
     }
   }
   async onRefundTrainTicket(
@@ -376,16 +512,14 @@ export class OrderItemComponent implements OnInit, OnChanges {
     if (orderTrainTicket) {
       const isRefund = await this.trainService.refund(orderTrainTicket.Id);
       if (isRefund) {
-        this.refundTicket.emit();
+        this.refundTrainTicket.emit();
       }
     }
   }
   isSelfBook(channal: string) {
     return this.selfBookChannals.includes(channal);
   }
-  async ngOnInit() {
-    this.tmc = await this.tmcService.getTmc().catch(_ => null);
-  }
+  async ngOnInit() {}
   getHHmm(time: string) {
     if (time) {
       return this.calendarService.getHHmm(time);

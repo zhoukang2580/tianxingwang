@@ -1,0 +1,6 @@
+<div class='cropcontainer' [class.hidden]='!showCropBox'>
+  <ion-button color='secondary' class="cancel-btn" size='small' (click)='onCancel()'>取消</ion-button>
+  <ion-button color='secondary' class="rotate-btn" size='small' (click)='onRotate()'>旋转</ion-button>
+  <ion-button color='secondary' class="ok-btn" size='small' (click)='onConfirm()'>完成</ion-button>
+  <img src="" #image id='image' alt="初始化的图片">
+</div>

@@ -1241,22 +1241,22 @@ export class FlightService {
     return result;
   }
   async getFlightJourneyDetailListAsync(loadDataFromServer: boolean) {
-    if (!environment.production) {
-      const local = await this.storage.get("test_flightjourney");
-      if (local) {
-        this.flightJourneyList = local;
-        return local;
-      }
-    }
+    // if (!environment.production) {
+    //   const local = await this.storage.get("test_flightjourney");
+    //   if (local) {
+    //     this.flightJourneyList = local;
+    //     return local;
+    //   }
+    // }
     if (!loadDataFromServer) {
       if (this.flightJourneyList && this.flightJourneyList.length) {
         return Promise.resolve(this.flightJourneyList);
       }
     }
     this.flightJourneyList = await this.getFlightJourneyDetails();
-    if (!environment.production) {
-      await this.storage.set("test_flightjourney", this.flightJourneyList);
-    }
+    // if (!environment.production) {
+    //   await this.storage.set("test_flightjourney", this.flightJourneyList);
+    // }
     return this.flightJourneyList || [];
   }
   private async setDefaultFilterInfo() {

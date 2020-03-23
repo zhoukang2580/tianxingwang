@@ -50,25 +50,35 @@
                     <ion-text color='secondary'>({{t.StatusName}})</ion-text>
                   </span>
                 </div>
-                <ion-button *ngIf='t.VariablesJsonObj["isTicketCanRefund"] else showrefunding' size='small'
-                  (click)='onRefundFlightTicket($event,t)' color='danger'>
-                  <ion-text color='light'
-                    *ngIf='!t.VariablesJsonObj.IsCustomApplyRefund&&!t.VariablesJsonObj.IsCustomApplyExchange'>退票
-                  </ion-text>
-                </ion-button>
-                <ng-template #showrefunding>
-                  <ion-text color='light'
-                    *ngIf='t.VariablesJsonObj.IsCustomApplyRefund&&!t.VariablesJsonObj.IsCustomApplyExchange'>退票申请中
-                  </ion-text>
-                </ng-template>
-                <ion-button *ngIf='t.VariablesJsonObj["isShowExchangeBtn"]' size='small'
-                  (click)='onRefundFlightTicket($event,t)' color='secondary'>
-                  <ion-text color='light'>改签</ion-text>
-                </ion-button>
-                <ion-button *ngIf='t.VariablesJsonObj["isShowCancelBtn"]' size='small'
-                  (click)='onRefundFlightTicket($event,t)' color='secondary'>
-                  <ion-text color='light'>取消订单</ion-text>
-                </ion-button>
+                <ng-container *ngIf='t.VariablesJsonObj.isShowBtnByTimeAndTicketType'>
+                  <ion-button *ngIf='t.VariablesJsonObj.isTicketCanRefund 
+                    && !t.VariablesJsonObj.IsCustomApplyRefund 
+                    &&!t.VariablesJsonObj.IsCustomApplyExchange else showrefunding' size='small'
+                    (click)='onRefundFlightTicket($event,t)' color='danger'>
+                    <ion-text color='light'>退票 </ion-text>
+                  </ion-button>
+                  <ng-template #showrefunding>
+                    <ion-text color='medium'
+                      *ngIf='t.VariablesJsonObj.IsCustomApplyRefund&&!t.VariablesJsonObj.IsCustomApplyExchange&&t.Status != OrderFlightTicketStatusType.Refunded'>
+                      退票申请中
+                    </ion-text>
+                  </ng-template>
+                  <ion-button *ngIf='t.VariablesJsonObj.isShowExchangeBtn
+                    &&!t.VariablesJsonObj.IsCustomApplyRefund
+                    &&!t.VariablesJsonObj.IsCustomApplyExchange else showExchanging' size='small'
+                    (click)='onExchangeFlightTicket($event,t,trip)' color='secondary'>
+                    <ion-text color='light'>改签</ion-text>
+                  </ion-button>
+                  <ng-template #showExchanging>
+                    <ion-text *ngIf='!t.VariablesJsonObj.IsCustomApplyRefund
+                    &&t.VariablesJsonObj.IsCustomApplyExchange
+                      &&t.Status != OrderFlightTicketStatusType.ChangeTicket' color='medium'>改签申请中</ion-text>
+                  </ng-template>
+                  <ion-button *ngIf='t.VariablesJsonObj.isShowCancelBtn' size='small'
+                    (click)='onAbolishFlightOrder($event,t)' color='secondary'>
+                    <ion-text color='light'>取消订单</ion-text>
+                  </ion-button>
+                </ng-container>
               </div>
               <div class="item">
                 <div>
@@ -211,6 +221,8 @@
             <ion-text color='medium'>
               {{orderHotel.PaymentType==2?"(现付)":orderHotel.PaymentType==1?"(预付)":""}}
             </ion-text>
+          </ion-col>
+          <ion-col class='status'>
             <ion-text color='secondary'>
               （{{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}}）
             </ion-text>
@@ -272,3 +284,4 @@
     <app-car-item [order]="order"></app-car-item>
   </ng-container>
 </div>
+
