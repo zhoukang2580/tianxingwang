@@ -136,27 +136,32 @@
                 <ion-button (click)='onPay($event)' size='small' color='secondary'>去支付
                 </ion-button>
               </ng-container>
-              <ion-button (click)='onExchangeTrainTicket($event,orderTrainTicket)' color='secondary'
-                *ngIf='orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
-                <span>改签</span>
-              </ion-button>
-              <ion-button (click)='onRefundTrainTicket($event,orderTrainTicket)' color='secondary'
-                *ngIf='(orderTrainTicket.Status == OrderTrainTicketStatusType.Issued || orderTrainTicket.Status == OrderTrainTicketStatusType.Exchanged) 
-                    &&  tmc?.TrainIsAllowRefund && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
-                <span>退票</span>
-              </ion-button>
             </ion-col>
           </ion-col>
         </ion-row>
-        <ion-row *ngIf='order?.OrderPassengers?.length'>
+        <ion-row *ngIf='order?.OrderPassengers?.length' style="align-items: center;"
+        [class.btn-show-margin]="orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !='0' && orderTrainTicket.BookType != TrainBookType.Offline||
+        (orderTrainTicket.Status == OrderTrainTicketStatusType.Issued || orderTrainTicket.Status == OrderTrainTicketStatusType.Exchanged) 
+                  &&  tmc?.TrainIsAllowRefund && TrainSupplierType[orderTrainTicket.Supplier] !='0' && orderTrainTicket.BookType != TrainBookType.Offline">
           <ion-col size='2'>
             <ion-text color="medium"> 旅客</ion-text>
           </ion-col>
-          <ion-col>
+          <ion-col style="align-items: center;display: flex;" >
             <ng-container *ngIf='orderTrainTicket.Passenger as p'>
-              {{p.CheckName}}
+              <ion-text>
+                  {{p.CheckName}}
+              </ion-text>
               <ion-text color='secondary' class="ion-padding-end">({{orderTrainTicket.StatusName}})</ion-text>
               <!-- <span class='ion-margin-start'>{{p.CredentialsNumber}}</span> -->
+              <ion-button (click)='onExchangeTrainTicket($event,orderTrainTicket)' color='secondary'
+              *ngIf='orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
+              <span>改签</span>
+            </ion-button>
+            <ion-button (click)='onRefundTrainTicket($event,orderTrainTicket)' color='secondary'
+              *ngIf='(orderTrainTicket.Status == OrderTrainTicketStatusType.Issued || orderTrainTicket.Status == OrderTrainTicketStatusType.Exchanged) 
+                  &&  tmc?.TrainIsAllowRefund && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
+              <span>退票</span>
+            </ion-button>
             </ng-container>
           </ion-col>
         </ion-row>
@@ -170,6 +175,7 @@
                 <span>{{orderTrainTrip.StartTime?.substr(0,"yyyy-mm-dd".length)}}</span>
                 <span style='margin-left:0.5em'>{{getHHmm(orderTrainTrip.StartTime)}}</span>
                 <span>{{orderTrainTrip.TrainNo}}</span>
+                <span class="ion-padding-start">{{orderTrainTrip.TrainCode}}</span>
                 <div>{{orderTrainTrip.FromStationName}}---{{orderTrainTrip.ToStationName}}</div>
               </div>
             </div>
@@ -196,7 +202,7 @@
         </ion-row>
         <ion-row *ngIf='order.TotalAmount as m' [class.btn-show-margin]="order['checkPay']" style="align-items: center">
           <ion-col size='2'>
-            <ion-text color="medium"> 房费</ion-text>
+            <ion-text color="medium"> 金额</ion-text>
           </ion-col>
           <ion-col>
             <ion-text color='danger'>
