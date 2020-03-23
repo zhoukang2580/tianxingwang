@@ -50,7 +50,7 @@
                     <ion-text color='secondary'>({{t.StatusName}})</ion-text>
                   </span>
                 </div>
-                <ng-container *ngIf='t.VariablesJsonObj.isShowBtnByTimeAndTicketType'>
+                <ng-container *ngIf='environment.mockProBuild&& t.VariablesJsonObj.isShowBtnByTimeAndTicketType'>
                   <ion-button *ngIf='t.VariablesJsonObj.isTicketCanRefund 
                     && !t.VariablesJsonObj.IsCustomApplyRefund 
                     &&!t.VariablesJsonObj.IsCustomApplyExchange else showrefunding' size='small'

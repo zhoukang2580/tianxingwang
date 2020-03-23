@@ -21,12 +21,14 @@ import { TrainTripComponent } from "./train-trip/train-trip.component";
 import { HotelTripComponent } from "./hotel-trip/hotel-trip.component";
 import { FlightTripComponent } from "./flight-trip/flight-trip.component";
 import { RefundFlightTicketTipComponent } from "./refund-flight-ticket-tip/refund-flight-ticket-tip.component";
+import { UploadFileComponent } from './upload-file/upload-file.component';
 
 @NgModule({
   declarations: [
     OrderItemComponent,
     CarItemComponent,
     OrderItemPricePopoverComponent,
+    UploadFileComponent,
     SendMsgComponent,
     SendEmailComponent,
     TripRulePopoverComponent,
@@ -51,6 +53,7 @@ import { RefundFlightTicketTipComponent } from "./refund-flight-ticket-tip/refun
   ],
   exports: [
     OrderItemComponent,
+    UploadFileComponent,
     CarItemComponent,
     TrainOrderDetailComponent,
     FlightOrderDetailComponent,

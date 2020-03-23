@@ -1,6 +1,6 @@
+import { environment } from './../../../../environments/environment';
 import { OrderFlightTripEntity } from "./../../models/OrderFlightTripEntity";
-import { PassengerBookInfo } from "src/app/tmc/tmc.service";
-import { TrainService, ITrainInfo } from "./../../../train/train.service";
+import { TrainService } from "./../../../train/train.service";
 import { CalendarService } from "./../../../tmc/calendar.service";
 import { AppHelper } from "src/app/appHelper";
 import { TmcEntity } from "src/app/tmc/tmc.service";
@@ -11,8 +11,7 @@ import {
   Output,
   EventEmitter,
   OnChanges,
-  SimpleChanges,
-  ViewChild
+  SimpleChanges
 } from "@angular/core";
 import { OrderEntity, OrderStatusType } from "src/app/order/models/OrderEntity";
 import { OrderFlightTripStatusType } from "src/app/order/models/OrderFlightTripStatusType";
@@ -25,12 +24,9 @@ import { TrainBookType } from "src/app/train/models/TrainBookType";
 import { OrderHotelStatusType } from "../../models/OrderHotelEntity";
 import { HotelPaymentType } from "src/app/hotel/models/HotelPaymentType";
 import { TrainSupplierType } from "src/app/train/models/TrainSupplierType";
-import { TripType } from "src/app/tmc/models/TripType";
-import * as moment from "moment";
 import { Router } from "@angular/router";
 import { OrderPassengerEntity } from "../../models/OrderPassengerEntity";
 import { OrderFlightTicketType } from "../../models/OrderFlightTicketType";
-import { OrderPayStatusType } from "../../models/OrderInsuranceEntity";
 import { PopoverController, PickerController } from "@ionic/angular";
 import { RefundFlightTicketTipComponent } from "../refund-flight-ticket-tip/refund-flight-ticket-tip.component";
 import { OrderService } from "../../order.service";
@@ -42,7 +38,6 @@ import { DayModel } from "src/app/tmc/models/DayModel";
   styleUrls: ["./order-item.component.scss"]
 })
 export class OrderItemComponent implements OnInit, OnChanges {
-  private bookChannals = `Eterm  BlueSky  Android  客户H5  IOS  外购PC  客户PC  代理PC`;
   private selfBookChannals = `Android  客户H5  IOS 客户PC`;
   TrainSupplierType = TrainSupplierType;
   OrderFlightTicketType = OrderFlightTicketType;
@@ -74,9 +69,9 @@ export class OrderItemComponent implements OnInit, OnChanges {
   OrderHotelStatusType = OrderHotelStatusType;
   HotelPaymentType = HotelPaymentType;
   TrainBookType = TrainBookType;
+  environment = environment;
   constructor(
     private calendarService: CalendarService,
-    private router: Router,
     private popoverCtrl: PopoverController,
     private trainService: TrainService,
     private pickerCtrl: PickerController,
@@ -94,25 +89,6 @@ export class OrderItemComponent implements OnInit, OnChanges {
     }
     evt.preventDefault();
     evt.stopPropagation();
-  }
-  private sortFlightTickets(flightTickets: OrderFlightTicketEntity[]) {
-    if (flightTickets) {
-      flightTickets = flightTickets.map(t => {
-        t.VariablesJsonObj = t.VariablesJsonObj || {};
-        t.VariablesJsonObj.maxTimeStamp = Math.max(
-          AppHelper.getDate(t.RefundTime).getTime(),
-          AppHelper.getDate(t.BookTime).getTime(),
-          AppHelper.getDate(t.IssueTime).getTime(),
-          AppHelper.getDate(t.ExchangeTime).getTime()
-        );
-        return t;
-      });
-      flightTickets.sort(
-        (t1, t2) =>
-          t1.VariablesJsonObj.maxTimeStamp - t2.VariablesJsonObj.maxTimeStamp
-      );
-    }
-    return flightTickets;
   }
   ngOnChanges(changes: SimpleChanges) {
     if (changes.order && changes.order.currentValue) {
@@ -216,8 +192,8 @@ export class OrderItemComponent implements OnInit, OnChanges {
         0,
         orderTrainTicket.OrderTrainTrips[0].StartTime
       ) -
-        +this.calendarService.getMoment(0) >
-        0
+      +this.calendarService.getMoment(0) >
+      0
     );
   }
   async onExchangeTrainTicket(
@@ -234,19 +210,6 @@ export class OrderItemComponent implements OnInit, OnChanges {
     const m = this.calendarService.getMoment(0, trip.TakeoffTime);
     const preMonth = m.add(-1, "months");
     const nextMonth = m.add(1, "months");
-    const preDays = this.calendarService.generateYearNthMonthCalendar(
-      preMonth.year(),
-      +preMonth.month()
-    );
-    const curDays = this.calendarService.generateYearNthMonthCalendar(
-      m.year(),
-      m.month()
-    );
-    const nextDays = this.calendarService.generateYearNthMonthCalendar(
-      nextMonth.year(),
-      nextMonth.month()
-    );
-    const y = new Date().getFullYear();
     return new Promise<DayModel>(async resolve => {
       const p = await this.pickerCtrl.create({
         columns: [
@@ -300,7 +263,6 @@ export class OrderItemComponent implements OnInit, OnChanges {
       p.present();
       const res = await p.onDidDismiss();
       if (res && res.data) {
-        const { yearMonth, day } = res.data;
       }
       console.log("onDidDismiss", res);
     });
@@ -444,33 +406,6 @@ export class OrderItemComponent implements OnInit, OnChanges {
     );
     return amount < 0 ? 0 : amount;
   }
-  private getFlightInsuranceAmount() {
-    if (
-      !this.order ||
-      !this.order.OrderInsurances ||
-      !this.order.OrderItems ||
-      !this.order.OrderFlightTickets
-    ) {
-      return 0;
-    }
-    const flightTripkeys: string[] = [];
-    this.order.OrderFlightTickets.forEach(t => {
-      if (t.OrderFlightTrips) {
-        t.OrderFlightTrips.forEach(trip => {
-          if (!flightTripkeys.find(k => k == trip.Key)) {
-            flightTripkeys.push(trip.Key);
-          }
-        });
-      }
-    });
-    const keys = this.order.OrderInsurances.filter(
-      it => !!flightTripkeys.find(k => k == it.AdditionKey)
-    ).map(it => it.Key);
-    const insuranceAmount = this.order.OrderItems.filter(it =>
-      keys.find(k => k == it.Key && it.Tag == "Insurance")
-    ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
-    return insuranceAmount;
-  }
   async onRefundFlightTicket(
     // 退票弹框
     evt: CustomEvent,
@@ -519,7 +454,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
   isSelfBook(channal: string) {
     return this.selfBookChannals.includes(channal);
   }
-  async ngOnInit() {}
+  async ngOnInit() { }
   getHHmm(time: string) {
     if (time) {
       return this.calendarService.getHHmm(time);
@@ -655,7 +590,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
     }
     return null;
   }
-  getPassengerTrips(p: OrderPassengerEntity, ticket: OrderFlightTicketEntity) {
+  getPassengerTrips(ticket: OrderFlightTicketEntity) {
     return (
       ticket.OrderFlightTrips &&
       ticket.OrderFlightTrips.filter(
