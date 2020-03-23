@@ -187,62 +187,22 @@
     <ng-container *ngFor='let  orderHotel of order.OrderHotels'>
       <ion-grid class="hotel">
         <ion-row>
-          <ion-col size='3'>
-            订单编号
+          <ion-col size='2'>
+            编号
           </ion-col>
           <ion-col class='select-text' class='dark'>
             <strong>{{order.Id}}</strong>
           </ion-col>
-          <ion-col class='status ion-text-end'>
-            <ion-text color='secondary'>
-              {{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}}</ion-text>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size='3'>
-            事务号
-          </ion-col>
-          <ion-col class='select-text'>
-            {{orderHotel.Id}}
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size='3'>
-            酒店名称
-          </ion-col>
           <ion-col>
-            {{orderHotel.HotelName}}
+              <span *ngIf='order.InsertDateTime'>{{order.InsertDateTime?.replace("T"," ")?.substr(0,19)}}</span>
           </ion-col>
+
         </ion-row>
-        <ion-row *ngIf='order?.OrderPassengers?.length'>
-          <ion-col size='3'>旅客信息</ion-col>
-          <ion-col>
-            <ng-container *ngIf='orderHotel.Passenger as p'>
-              {{p.CheckName}} <span class='ion-margin-start'>{{p.CredentialsNumber}}</span>
-            </ng-container>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size='3'>
-            入住时间
-          </ion-col>
-          <ion-col>
-            {{orderHotel.BeginDate?.substr(0,"yyyy-MM-dd".length)}}
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size='3'>
-            离店时间
-          </ion-col>
-          <ion-col>
-            {{orderHotel.EndDate?.substr(0,"yyyy-MM-dd".length)}}
-          </ion-col>
-        </ion-row>
-        <ion-row *ngIf='order.TotalAmount as m'>
-          <ion-col size='3'>
+        <ion-row *ngIf='order.TotalAmount as m' style="align-items: center;">
+          <ion-col size='2'>
             房费
           </ion-col>
-          <ion-col>
+          <ion-col size='4'>
             <ion-text color='danger'>
               ￥{{m}}
             </ion-text>
@@ -250,11 +210,58 @@
               {{orderHotel.PaymentType==2?"(现付)":orderHotel.PaymentType==1?"(预付)":""}}
             </ion-text>
           </ion-col>
-          <ion-col class="ion-text-end" *ngIf='order["checkPay"]'>
+          <ion-col class='status' >
+            <ion-text color='secondary'>
+              {{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}}</ion-text>
+          </ion-col>
+          <ion-col *ngIf='order["checkPay"]'>
             <ion-button (click)='onPay($event)' size='small' color='secondary'>去支付
             </ion-button>
           </ion-col>
         </ion-row>
+        <!-- <ion-row>
+          <ion-col size='3'>
+            事务号
+          </ion-col>
+          <ion-col class='select-text'>
+            {{orderHotel.Id}}
+          </ion-col>
+        </ion-row> -->
+        <ion-row *ngIf='order?.OrderPassengers?.length'>
+            <ion-col size='2'>旅客</ion-col>
+            <ion-col size='2'>
+              <ng-container *ngIf='orderHotel.Passenger as p'>
+                {{p.CheckName}} 
+                <!-- <span class='ion-margin-start'>{{p.CredentialsNumber}}</span> -->
+              </ng-container>
+            </ion-col>
+            <ion-col size='3'>
+              <ion-text color="secondary">
+                {{orderHotel.StatusName}}
+              </ion-text>
+            </ion-col>
+          </ion-row>
+        <ion-row>
+          <ion-col size='2'>
+            行程
+          </ion-col>
+          <ion-col>
+            <div>
+                {{orderHotel.HotelName}}
+              <br/>
+              {{orderHotel.BeginDate?.substr(0,"yyyy-MM-dd".length)}}&nbsp;{{orderHotel.countDay}}晚
+            </div>
+          </ion-col>
+        </ion-row>
+        <!-- <ion-row>
+          <ion-col size='3'>
+            离店时间
+          </ion-col>
+          <ion-col>
+            {{orderHotel.EndDate?.substr(0,"yyyy-MM-dd".length)}}
+          </ion-col> 
+        </ion-row>-->
+
         <ion-row *ngIf='orderHotel.ConfirmNumber as cnumber'>
           <ion-col size='3'>
             酒店确认号

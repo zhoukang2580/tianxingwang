@@ -116,11 +116,12 @@ export class BookPage implements OnInit, AfterViewInit {
     Value: string;
     Text: string;
   };
+  isShowTop:boolean;
   addContacts: AddContact[] = [];
   @ViewChildren("illegalReasonsEle", { read: ElementRef })
   illegalReasonsEles: QueryList<ElementRef<HTMLElement>>;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
-  @ViewChild(IonContent) cnt: IonContent;
+  @ViewChild(IonContent,{static:true}) cnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
   constructor(
     private flightService: FlightService,
@@ -140,6 +141,16 @@ export class BookPage implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
+    this.cnt.getScrollElement().then(el=>{
+      el.onscroll=()=>{
+        // console.log(el.scrollTop,"2222");
+      if(el.scrollTop>=10){
+          this.isShowTop=true;
+      }else{
+        this.isShowTop=false;
+      }
+    }
+    })
     this.flightService.setPassengerBookInfosSource(
       this.flightService.getPassengerBookInfos().filter(it => !!it.bookInfo)
     );
@@ -323,7 +334,7 @@ export class BookPage implements OnInit, AfterViewInit {
       this.vmCombindInfos = [];
       if (!environment.production) {
         const local = await this.storage.get(MOCK_FLIGHT_VMCOMBINDINFO);
-        if (local) {
+        if (local&&Array.isArray(local)&&local.length) {
           this.vmCombindInfos = local;
           return local;
         }
@@ -1398,6 +1409,7 @@ export class BookPage implements OnInit, AfterViewInit {
   onSavecredential(credential: CredentialsEntity, info: ICombindInfo) {
     if (info && credential) {
       info.vmCredential = credential;
+      info.modal.credential=credential;
     }
   }
   isShowApprove() {
@@ -1473,6 +1485,9 @@ export class BookPage implements OnInit, AfterViewInit {
     return false;
   }
 }
+// updateCredential(credential){
+
+// }
 
 interface IPassengerHotelBookInfo {
   arrivalHotelTime: string;

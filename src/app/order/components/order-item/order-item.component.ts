@@ -283,10 +283,17 @@ export class OrderItemComponent implements OnInit, OnChanges {
       if (this.order.OrderHotels) {
         this.order.OrderHotels = this.order.OrderHotels.map(t => {
           t.Passenger = this.getTicketPassenger(t);
+          t.countDay=(AppHelper.getDate(t.EndDate).getTime()-AppHelper.getDate(t.BeginDate).getTime())/24/3600/1000
+          
           return t;
         });
       }
     }
+  }
+  private countDate(){
+    // console.log(this.order.OrderHotels,"1111111");
+    
+    
   }
   private getTicketPassenger(ticket: { Passenger: OrderPassengerEntity }) {
     const p = (this.order && this.order.OrderPassengers) || [];

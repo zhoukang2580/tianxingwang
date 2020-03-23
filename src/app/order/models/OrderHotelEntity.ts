@@ -103,6 +103,10 @@ export class OrderHotelEntity extends BaseVariablesEntity {
   /// <summary>
   /// 离店时间
   /// </summary>
+  countDay: number;
+  /// <summary>
+  /// 入住天数
+  /// </summary>
   CheckoutTime: string;
   /// <summary>
   /// 到店时间
