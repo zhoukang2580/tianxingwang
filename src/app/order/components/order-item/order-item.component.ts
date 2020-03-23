@@ -409,30 +409,30 @@ export class OrderItemComponent implements OnInit, OnChanges {
     if (!rev) {
       return false;
     }
-    rev =
-      !order.OrderFlightTickets ||
-      order.OrderFlightTickets.filter(
-        it =>
-          it.Status == OrderFlightTicketStatusType.Booking ||
-          it.Status == OrderFlightTicketStatusType.BookExchanging
-      ).filter(ticket => {
-        return ticket.OrderFlightTrips.some(
-          trip =>
-            AppHelper.getDate(trip.TakeoffTime).getTime() -
-              new Date().getTime() >=
-            0
-        );
-      }).length == 0;
-    if (!rev) {
-      return false;
-    }
+    // rev =
+    //   !order.OrderFlightTickets ||
+    //   order.OrderFlightTickets.filter(
+    //     it =>
+    //       it.Status == OrderFlightTicketStatusType.Booking ||
+    //       it.Status == OrderFlightTicketStatusType.BookExchanging
+    //   ).filter(ticket => {
+    //     return ticket.OrderFlightTrips.some(
+    //       trip =>
+    //         AppHelper.getDate(trip.TakeoffTime).getTime() -
+    //           new Date().getTime() >=
+    //         0
+    //     );
+    //   }).length == 0;
+    // if (!rev) {
+    //   return false;
+    // }
     rev =
       !order.OrderTrainTickets ||
       order.OrderTrainTickets.filter(
         it =>
           it.Status == OrderTrainTicketStatusType.Booking ||
           it.Status == OrderTrainTicketStatusType.BookExchanging
-      ).length == 0;
+      ).length > 0;
     return rev;
   }
   getTotalAmount(order: OrderEntity, key: string) {
