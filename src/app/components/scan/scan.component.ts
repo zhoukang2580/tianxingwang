@@ -77,7 +77,7 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
       return Promise.reject("");
     }
     if (AppHelper.isWechatH5()) {
-      await this.wechatH5Scan();
+      this.showScanResult(await this.wechatH5Scan());
     }
     if (AppHelper.isApp()) {
       this.appScan()
