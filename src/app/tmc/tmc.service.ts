@@ -25,6 +25,8 @@ import { OrderEntity } from "../order/models/OrderEntity";
 import { OrderTrainTicketEntity } from "../order/models/OrderTrainTicketEntity";
 import { CountryEntity } from "./models/CountryEntity";
 import { IdentityEntity } from "../services/identity/identity.entity";
+import { OrderTrainTripEntity } from "../order/models/OrderTrainTripEntity";
+import { OrderFlightTripEntity } from "../order/models/OrderFlightTripEntity";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -1268,6 +1270,7 @@ export interface PassengerBookInfo<T> {
   exchangeInfo?: {
     order: OrderEntity;
     ticket: OrderTrainTicketEntity | OrderFlightTicketEntity;
+    trip: OrderFlightTripEntity | OrderTrainTripEntity;
     insurnanceAmount?: number;
   };
 }

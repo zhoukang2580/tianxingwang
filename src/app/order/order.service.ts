@@ -19,9 +19,11 @@ import { OrderFlightTripEntity } from "./models/OrderFlightTripEntity";
 import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
 import { ModalController } from "@ionic/angular";
 import { TripType } from "../tmc/models/TripType";
-import { FlightHotelTrainType } from "../tmc/tmc.service";
+import { FlightHotelTrainType, PassengerBookInfo } from "../tmc/tmc.service";
 import { DayModel } from "../tmc/models/DayModel";
 import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
+import { IFlightSegmentInfo } from "../flight/models/PassengerFlightInfo";
+import { AppHelper } from "../appHelper";
 export class OrderDetailModel {
   Histories: HistoryEntity[];
   Tasks: TaskEntity[];
@@ -169,6 +171,24 @@ export class OrderService {
   }
   abolishTrainOrder(data: { OrderId: string; TicketId: string }) {
     return this.abolishOrder({ ...data, Tag: "train" });
+  }
+  exchangeInfoFlightTrip(bookInfo: PassengerBookInfo<IFlightSegmentInfo>) {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Data = {
+      OrderId: bookInfo.exchangeInfo.order.Id,
+      OrderFlightTicketId: bookInfo.exchangeInfo.ticket.Id,
+      ExchangeDate: bookInfo.bookInfo.flightSegment.TakeoffTime.substr(0, 10),
+      FlightNumber: bookInfo.bookInfo.flightSegment.Number,
+      CabinName: bookInfo.bookInfo.flightPolicy.Cabin.TypeName,
+      SalesPrice: bookInfo.bookInfo.flightPolicy.Cabin.SalesPrice
+    };
+    req.Method = `TmcApiOrderUrl-Order-ExchangeInfo`;
+    return this.apiService.getPromiseData<{
+      trip: OrderFlightTripEntity;
+      fromCity: TrafficlineEntity;
+      toCity: TrafficlineEntity;
+    }>(req);
   }
   getExchangeFlightTrip(data: {
     OrderId: string;

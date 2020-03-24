@@ -1,4 +1,4 @@
-import { environment } from './../../../../environments/environment';
+import { environment } from "./../../../../environments/environment";
 import { OrderFlightTripEntity } from "./../../models/OrderFlightTripEntity";
 import { TrainService } from "./../../../train/train.service";
 import { CalendarService } from "./../../../tmc/calendar.service";
@@ -11,7 +11,9 @@ import {
   Output,
   EventEmitter,
   OnChanges,
-  SimpleChanges
+  SimpleChanges,
+  ViewChild,
+  OnDestroy
 } from "@angular/core";
 import { OrderEntity, OrderStatusType } from "src/app/order/models/OrderEntity";
 import { OrderFlightTripStatusType } from "src/app/order/models/OrderFlightTripStatusType";
@@ -27,7 +29,11 @@ import { TrainSupplierType } from "src/app/train/models/TrainSupplierType";
 import { Router } from "@angular/router";
 import { OrderPassengerEntity } from "../../models/OrderPassengerEntity";
 import { OrderFlightTicketType } from "../../models/OrderFlightTicketType";
-import { PopoverController, PickerController } from "@ionic/angular";
+import {
+  PopoverController,
+  PickerController,
+  IonDatetime
+} from "@ionic/angular";
 import { RefundFlightTicketTipComponent } from "../refund-flight-ticket-tip/refund-flight-ticket-tip.component";
 import { OrderService } from "../../order.service";
 import { LanguageHelper } from "src/app/languageHelper";
@@ -49,6 +55,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
   @Output() exchangeFlightTicket: EventEmitter<{
     orderId: string;
     ticketId: string;
+    trip: OrderFlightTripEntity;
   }>;
   @Output() abolishFlightOrder: EventEmitter<{
     orderId: string;
@@ -62,6 +69,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
     FileValue: string;
   }>;
   @Input() tmc: TmcEntity;
+  @ViewChild(IonDatetime) dateTime: IonDatetime;
   OrderStatusType = OrderStatusType;
   OrderFlightTripStatusType = OrderFlightTripStatusType;
   OrderFlightTicketStatusType = OrderFlightTicketStatusType;
@@ -74,7 +82,6 @@ export class OrderItemComponent implements OnInit, OnChanges {
     private calendarService: CalendarService,
     private popoverCtrl: PopoverController,
     private trainService: TrainService,
-    private pickerCtrl: PickerController,
     private orderService: OrderService
   ) {
     this.payaction = new EventEmitter();
@@ -192,8 +199,8 @@ export class OrderItemComponent implements OnInit, OnChanges {
         0,
         orderTrainTicket.OrderTrainTrips[0].StartTime
       ) -
-      +this.calendarService.getMoment(0) >
-      0
+        +this.calendarService.getMoment(0) >
+        0
     );
   }
   async onExchangeTrainTicket(
@@ -205,67 +212,6 @@ export class OrderItemComponent implements OnInit, OnChanges {
     }
 
     return this.trainService.onExchange(orderTrainTicket);
-  }
-  private async getExchangeDate(trip: OrderFlightTripEntity) {
-    const m = this.calendarService.getMoment(0, trip.TakeoffTime);
-    const preMonth = m.add(-1, "months");
-    const nextMonth = m.add(1, "months");
-    return new Promise<DayModel>(async resolve => {
-      const p = await this.pickerCtrl.create({
-        columns: [
-          {
-            name: "yearMonth",
-            refresh: () => {
-              console.log("refresh");
-            },
-            options: [
-              `${preMonth.year()}-${preMonth.month() + 1}`,
-              `${m.year()}-${m.month() + 1}`,
-              `${nextMonth.year()}-${nextMonth.month() + 1}`
-            ].map(ym => {
-              return {
-                text: ym,
-                value: ym
-              } as any;
-            })
-          },
-          {
-            name: "day",
-            options: new Array(365).fill(0).map((d, idx) => {
-              return {
-                text: idx,
-                value: idx
-              } as any;
-            })
-          }
-        ],
-        buttons: [
-          {
-            text: "取消",
-            role: "cancel"
-          },
-          {
-            text: "打开日历",
-            handler: () => {
-              p.dismiss();
-              this.orderService.getExchangeDate(trip.TakeoffTime).then(d => {
-                if (d && d.length) {
-                  resolve(d[0]);
-                }
-              });
-            }
-          },
-          {
-            text: "确定"
-          }
-        ]
-      });
-      p.present();
-      const res = await p.onDidDismiss();
-      if (res && res.data) {
-      }
-      console.log("onDidDismiss", res);
-    });
   }
   private isTicketCanRefund(orderFlightTicket: OrderFlightTicketEntity) {
     if (
@@ -361,11 +307,11 @@ export class OrderItemComponent implements OnInit, OnChanges {
     trip: OrderFlightTripEntity
   ) {
     evt.stopPropagation();
-    this.getExchangeDate(trip);
-    // this.exchangeFlightTicket.emit({
-    //   orderId: this.order.Id,
-    //   ticketId: ticket.Id
-    // });
+    this.exchangeFlightTicket.emit({
+      orderId: this.order.Id,
+      ticketId: ticket.Id,
+      trip
+    });
   }
   onAbolishFlightOrder(evt: CustomEvent, ticket: OrderFlightTicketEntity) {
     evt.stopPropagation();
@@ -454,7 +400,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
   isSelfBook(channal: string) {
     return this.selfBookChannals.includes(channal);
   }
-  async ngOnInit() { }
+  async ngOnInit() {}
   getHHmm(time: string) {
     if (time) {
       return this.calendarService.getHHmm(time);
