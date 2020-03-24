@@ -1,11 +1,12 @@
 <div class='order-item' *ngIf='order'>
+  <!-- 飞机 -->
   <ng-container *ngIf='order.OrderFlightTickets?.length'>
     <ng-container *ngIf='order.OrderFlightTickets?.length'>
       <div class="item">
         <div>编号</div>
         <div class="select-text">
           <span style="font-weight: bold;">{{order.Id}}</span>
-          <span *ngIf='order.InsertDateTime'>({{order.InsertDateTime?.replace("T"," ")?.substr(0,19)}})</span>
+          <span *ngIf='order.InsertDateTime'>{{order.InsertDateTime?.replace("T"," ")?.substr(0,19)}}</span>
         </div>
       </div>
       <div class="item">
@@ -49,25 +50,35 @@
                     <ion-text color='secondary'>({{t.StatusName}})</ion-text>
                   </span>
                 </div>
-                <ion-button *ngIf='t.VariablesJsonObj["isTicketCanRefund"] else showrefunding' size='small'
-                  (click)='onRefundFlightTicket($event,t)' color='danger'>
-                  <ion-text color='light'
-                    *ngIf='!t.VariablesJsonObj.IsCustomApplyRefund&&!t.VariablesJsonObj.IsCustomApplyExchange'>退票
-                  </ion-text>
-                </ion-button>
-                <ng-template #showrefunding>
-                  <ion-text color='light'
-                    *ngIf='t.VariablesJsonObj.IsCustomApplyRefund&&!t.VariablesJsonObj.IsCustomApplyExchange'>退票申请中
-                  </ion-text>
-                </ng-template>
-                <ion-button *ngIf='t.VariablesJsonObj["isShowExchangeBtn"]' size='small'
-                  (click)='onRefundFlightTicket($event,t)' color='secondary'>
-                  <ion-text color='light'>改签</ion-text>
-                </ion-button>
-                <ion-button *ngIf='t.VariablesJsonObj["isShowCancelBtn"]' size='small'
-                  (click)='onRefundFlightTicket($event,t)' color='secondary'>
-                  <ion-text color='light'>取消订单</ion-text>
-                </ion-button>
+                <ng-container *ngIf='environment.mockProBuild&& t.VariablesJsonObj.isShowBtnByTimeAndTicketType'>
+                  <ion-button *ngIf='t.VariablesJsonObj.isTicketCanRefund 
+                    && !t.VariablesJsonObj.IsCustomApplyRefund 
+                    &&!t.VariablesJsonObj.IsCustomApplyExchange else showrefunding' size='small'
+                    (click)='onRefundFlightTicket($event,t)' color='danger'>
+                    <ion-text color='light'>退票 </ion-text>
+                  </ion-button>
+                  <ng-template #showrefunding>
+                    <ion-text color='medium'
+                      *ngIf='t.VariablesJsonObj.IsCustomApplyRefund&&!t.VariablesJsonObj.IsCustomApplyExchange&&t.Status != OrderFlightTicketStatusType.Refunded'>
+                      退票申请中
+                    </ion-text>
+                  </ng-template>
+                  <ion-button *ngIf='t.VariablesJsonObj.isShowExchangeBtn
+                    &&!t.VariablesJsonObj.IsCustomApplyRefund
+                    &&!t.VariablesJsonObj.IsCustomApplyExchange else showExchanging' size='small'
+                    (click)='onExchangeFlightTicket($event,t,trip)' color='secondary'>
+                    <ion-text color='light'>改签</ion-text>
+                  </ion-button>
+                  <ng-template #showExchanging>
+                    <ion-text *ngIf='!t.VariablesJsonObj.IsCustomApplyRefund
+                    &&t.VariablesJsonObj.IsCustomApplyExchange
+                      &&t.Status != OrderFlightTicketStatusType.ChangeTicket' color='medium'>改签申请中</ion-text>
+                  </ng-template>
+                  <ion-button *ngIf='t.VariablesJsonObj.isShowCancelBtn' size='small'
+                    (click)='onAbolishFlightOrder($event,t)' color='secondary'>
+                    <ion-text color='light'>取消订单</ion-text>
+                  </ion-button>
+                </ng-container>
               </div>
               <div class="item">
                 <div>
@@ -101,167 +112,153 @@
       </ng-container>
     </ng-container>
   </ng-container>
+  <!-- 火车 -->
   <ng-container *ngIf='order.OrderTrainTickets?.length'>
     <ng-container *ngFor='let orderTrainTicket of order.OrderTrainTickets'>
       <ion-grid class="train">
         <ion-row>
-          <ion-col size='4'>
-            订单编号
+          <ion-col size='2'>
+            <ion-text color="medium"> 编号</ion-text>
           </ion-col>
           <ion-col class='select-text' class='dark'>
             <strong style="user-select:text">{{order.Id}}</strong>
           </ion-col>
-          <ion-col class='status'>
-            <ion-text color='secondary'>
-              {{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}}</ion-text>
+          <ion-col>
+            <span *ngIf='order.InsertDateTime'>{{order.InsertDateTime?.replace("T"," ")?.substr(0,19)}}</span>
           </ion-col>
         </ion-row>
-        <!-- <ng-container *ngIf='orderTrainTicket.OrderTrainTrips'>
-          <ion-row>
-            <ion-col size='4'>
-              <ion-text color='ticketIsReject(orderTrainTicket)?"danger":""'>火车票事务号</ion-text>
-            </ion-col>
-            <ion-col class='select-text'>
-              <ion-text color='ticketIsReject(orderTrainTicket)?"danger":""'>
-                {{orderTrainTicket.Id}}</ion-text>
-            </ion-col>
-          </ion-row>
-        </ng-container> -->
-        <ion-row *ngIf='order?.OrderPassengers?.length'>
-          <ion-col size='4'>旅客信息</ion-col>
+        <ion-row [class.btn-show-margin]="order['checkPay']" style="align-items: center;">
+          <ion-col size='2'>
+            <ion-text color="medium"> 金额</ion-text>
+          </ion-col>
           <ion-col>
+            <ion-text color='danger'>
+              ￥{{getTotalAmount(order,orderTrainTicket.Key) + trainInsuranceAmount(orderTrainTicket)}}
+              <span *ngIf="trainInsuranceAmount(orderTrainTicket) as amount">(含保险{{amount}})</span>
+            </ion-text>
+            <ion-text color='secondary'>
+              （{{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}}）
+            </ion-text>
+          </ion-col>
+          <ion-col class='ion-text-end' *ngIf='check(orderTrainTicket)' size='3'>
+            <ion-col style="justify-content: flex-end;">
+              <ng-container *ngIf='order["checkPay"]'>
+                <ion-button (click)='onPay($event)' size='small' color='secondary'>去支付
+                </ion-button>
+              </ng-container>
+            </ion-col>
+          </ion-col>
+        </ion-row>
+        <ion-row *ngIf='order?.OrderPassengers?.length' style="align-items: center;"
+          [class.btn-show-margin]="orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !='0' && orderTrainTicket.BookType != TrainBookType.Offline||
+        (orderTrainTicket.Status == OrderTrainTicketStatusType.Issued || orderTrainTicket.Status == OrderTrainTicketStatusType.Exchanged) 
+                  &&  tmc?.TrainIsAllowRefund && TrainSupplierType[orderTrainTicket.Supplier] !='0' && orderTrainTicket.BookType != TrainBookType.Offline">
+          <ion-col size='2'>
+            <ion-text color="medium"> 旅客</ion-text>
+          </ion-col>
+          <ion-col style="align-items: center;display: flex;">
             <ng-container *ngIf='orderTrainTicket.Passenger as p'>
-              {{p.CheckName}}
-              <span class='ion-margin-start'>{{p.CredentialsNumber}}</span>
+              <ion-text>
+                {{p.CheckName}}
+              </ion-text>
+              <ion-text color='secondary' class="ion-padding-end">({{orderTrainTicket.StatusName}})</ion-text>
+              <!-- <span class='ion-margin-start'>{{p.CredentialsNumber}}</span> -->
+              <ion-button (click)='onExchangeTrainTicket($event,orderTrainTicket)' color='secondary'
+                *ngIf='orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
+                <span>改签</span>
+              </ion-button>
+              <ion-button (click)='onRefundTrainTicket($event,orderTrainTicket)' color='secondary'
+                *ngIf='(orderTrainTicket.Status == OrderTrainTicketStatusType.Issued || orderTrainTicket.Status == OrderTrainTicketStatusType.Exchanged) 
+                  &&  tmc?.TrainIsAllowRefund && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
+                <span>退票</span>
+              </ion-button>
             </ng-container>
           </ion-col>
         </ion-row>
         <ion-row>
-          <ion-col size='4'>行程信息</ion-col>
+          <ion-col size='2'>
+            <ion-text color="medium"> 行程</ion-text>
+          </ion-col>
           <ion-col>
             <div>
               <div *ngFor='let orderTrainTrip of orderTrainTicket.OrderTrainTrips'>
                 <span>{{orderTrainTrip.StartTime?.substr(0,"yyyy-mm-dd".length)}}</span>
                 <span style='margin-left:0.5em'>{{getHHmm(orderTrainTrip.StartTime)}}</span>
                 <span>{{orderTrainTrip.TrainNo}}</span>
+                <span class="ion-padding-start">{{orderTrainTrip.TrainCode}}</span>
                 <div>{{orderTrainTrip.FromStationName}}---{{orderTrainTrip.ToStationName}}</div>
               </div>
             </div>
           </ion-col>
         </ion-row>
-        <ion-row>
-          <ion-col size='4'>
-            车票状态
-          </ion-col>
-          <ion-col>
-            {{orderTrainTicket.StatusName}}
-          </ion-col>
-          <ion-col class="ion-padding-end ion-text-end">
-            <ion-text color='danger'>
-              ￥{{getTotalAmount(order,orderTrainTicket.Key) + trainInsuranceAmount(orderTrainTicket)}}
-              <span *ngIf="trainInsuranceAmount(orderTrainTicket) as amount">(含保险{{amount}})</span>
-            </ion-text>
-          </ion-col>
-        </ion-row>
-        <ion-row class='ion-text-end' *ngIf='check(orderTrainTicket)'>
-          <ion-col style="justify-content: flex-end;">
-            <ng-container *ngIf='order["checkPay"]'>
-              <ion-button (click)='onPay($event)' size='small' color='secondary'>去支付
-              </ion-button>
-            </ng-container>
-            <ion-button (click)='onExchangeTrainTicket($event,orderTrainTicket)' color='secondary'
-              *ngIf='orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
-              <span>改签</span>
-            </ion-button>
-            <ion-button (click)='onRefundTrainTicket($event,orderTrainTicket)' color='secondary'
-              *ngIf='(orderTrainTicket.Status == OrderTrainTicketStatusType.Issued || orderTrainTicket.Status == OrderTrainTicketStatusType.Exchanged) 
-          &&  tmc?.TrainIsAllowRefund && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
-              <span>退票</span>
-            </ion-button>
-          </ion-col>
-        </ion-row>
       </ion-grid>
     </ng-container>
   </ng-container>
+  <!-- 酒店 -->
   <ng-container *ngIf='order.OrderHotels?.length'>
     <ng-container *ngFor='let  orderHotel of order.OrderHotels'>
       <ion-grid class="hotel">
         <ion-row>
           <ion-col size='2'>
-            编号
+            <ion-text color="medium"> 编号</ion-text>
           </ion-col>
           <ion-col class='select-text' class='dark'>
             <strong>{{order.Id}}</strong>
           </ion-col>
           <ion-col>
-              <span *ngIf='order.InsertDateTime'>{{order.InsertDateTime?.replace("T"," ")?.substr(0,19)}}</span>
+            <span *ngIf='order.InsertDateTime'>{{order.InsertDateTime?.replace("T"," ")?.substr(0,19)}}</span>
           </ion-col>
 
         </ion-row>
-        <ion-row *ngIf='order.TotalAmount as m' style="align-items: center;">
+        <ion-row [class.btn-show-margin]="order['checkPay']" style="align-items: center">
           <ion-col size='2'>
-            房费
+            <ion-text color="medium"> 金额</ion-text>
           </ion-col>
-          <ion-col size='4'>
-            <ion-text color='danger'>
-              ￥{{m}}
-            </ion-text>
-            <ion-text color='medium'>
-              {{orderHotel.PaymentType==2?"(现付)":orderHotel.PaymentType==1?"(预付)":""}}
-            </ion-text>
-          </ion-col>
-          <ion-col class='status' >
-            <ion-text color='secondary'>
-              {{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}}</ion-text>
-          </ion-col>
-          <ion-col *ngIf='order["checkPay"]'>
-            <ion-button (click)='onPay($event)' size='small' color='secondary'>去支付
-            </ion-button>
+          <ion-col>
+            <div style="align-items: center;display: flex;">
+              <ion-text color='danger'>
+                ￥{{order.TotalAmount}}
+              </ion-text>
+              <ion-text color='medium'>
+                {{orderHotel.PaymentType==2?"(现付)":orderHotel.PaymentType==1?"(预付)":""}}
+              </ion-text>
+              <ion-text color='secondary'>
+                （{{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}}）
+              </ion-text>
+              <ion-button *ngIf='order["checkPay"]' (click)='onPay($event)' size='small' color='secondary'>去支付
+              </ion-button>
+            </div>
           </ion-col>
         </ion-row>
-        <!-- <ion-row>
-          <ion-col size='3'>
-            事务号
-          </ion-col>
-          <ion-col class='select-text'>
-            {{orderHotel.Id}}
-          </ion-col>
-        </ion-row> -->
         <ion-row *ngIf='order?.OrderPassengers?.length'>
-            <ion-col size='2'>旅客</ion-col>
-            <ion-col size='2'>
-              <ng-container *ngIf='orderHotel.Passenger as p'>
-                {{p.CheckName}} 
-                <!-- <span class='ion-margin-start'>{{p.CredentialsNumber}}</span> -->
-              </ng-container>
-            </ion-col>
-            <ion-col size='3'>
-              <ion-text color="secondary">
-                {{orderHotel.StatusName}}
-              </ion-text>
-            </ion-col>
-          </ion-row>
+          <ion-col size='2'>
+            <ion-text color="medium"> 旅客</ion-text>
+          </ion-col>
+          <ion-col>
+            <ng-container *ngIf='orderHotel.Passenger as p'>
+              <div>
+                <span>
+                  {{p.CheckName}}
+                </span>
+                <ion-text color="secondary">
+                  （{{orderHotel.StatusName}}）
+                </ion-text>
+              </div>
+            </ng-container>
+          </ion-col>
+        </ion-row>
         <ion-row>
           <ion-col size='2'>
-            行程
+            <ion-text color="medium"> 行程</ion-text>
           </ion-col>
           <ion-col>
             <div>
-                {{orderHotel.HotelName}}
-              <br/>
+              {{orderHotel.HotelName}}
+              <br />
               {{orderHotel.BeginDate?.substr(0,"yyyy-MM-dd".length)}}&nbsp;{{orderHotel.countDay}}晚
             </div>
           </ion-col>
         </ion-row>
-        <!-- <ion-row>
-          <ion-col size='3'>
-            离店时间
-          </ion-col>
-          <ion-col>
-            {{orderHotel.EndDate?.substr(0,"yyyy-MM-dd".length)}}
-          </ion-col> 
-        </ion-row>-->
-
         <ion-row *ngIf='orderHotel.ConfirmNumber as cnumber'>
           <ion-col size='3'>
             酒店确认号

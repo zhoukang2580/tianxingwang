@@ -71,6 +71,10 @@ import { TripType } from "src/app/tmc/models/TripType";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { FilterPassengersPolicyComponent } from "../../tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
 import { DaysCalendarComponent } from "src/app/tmc/components/days-calendar/days-calendar.component";
+import {
+  CandeactivateGuard,
+  CanComponentDeactivate
+} from "src/app/guards/candeactivate.guard";
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -108,7 +112,8 @@ import { DaysCalendarComponent } from "src/app/tmc/components/days-calendar/days
     ])
   ]
 })
-export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
+export class FlightListPage
+  implements OnInit, AfterViewInit, OnDestroy, CanComponentDeactivate {
   private subscriptions: Subscription[] = [];
   private isRotatingIcon = false;
   lowestPriceSegments: FlightSegmentEntity[];
@@ -183,17 +188,17 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
             goArrivalDateTime:
               goInfo && goInfo.bookInfo && goInfo.bookInfo.flightSegment
                 ? moment(goInfo.bookInfo.flightSegment.ArrivalTime).format(
-                  "YYYY-MM-DD HH:mm"
-                )
+                    "YYYY-MM-DD HH:mm"
+                  )
                 : "",
             backTakeOffDateTime:
               backInfo &&
-                backInfo.bookInfo &&
-                backInfo.bookInfo.flightSegment &&
-                backInfo.bookInfo.tripType == TripType.returnTrip
+              backInfo.bookInfo &&
+              backInfo.bookInfo.flightSegment &&
+              backInfo.bookInfo.tripType == TripType.returnTrip
                 ? moment(backInfo.bookInfo.flightSegment.TakeoffTime).format(
-                  "YYYY-MM-DD HH:mm"
-                )
+                    "YYYY-MM-DD HH:mm"
+                  )
                 : ""
           };
         })
@@ -787,5 +792,12 @@ export class FlightListPage implements OnInit, AfterViewInit, OnDestroy {
     result = this.flightService.filterByCabins(result);
     result = this.flightService.filterByTakeOffTimeSpan(result);
     return result;
+  }
+  canDeactivate() {
+    const s = this.flightService.getSearchFlightModel();
+    if (s.isLocked) {
+      return AppHelper.alert("是否放弃改签？", true, "是", "否");
+    }
+    return true;
   }
 }

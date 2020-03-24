@@ -1,56 +1,63 @@
 <ng-container *ngFor='let car of order?.OrderCars'>
   <ion-grid class="train">
     <ion-row>
-      <ion-col size='4'>
-        订单编号
+      <ion-col size='2'>
+        编号
       </ion-col>
       <ion-col class='select-text dark'>
         <strong>{{order.Id}}</strong>
       </ion-col>
-      <ion-col class='status ion-text-end'>
+      <!-- <ion-col class='status ion-text-end'>
         <ion-text color='secondary'>
           {{ order.StatusName}}</ion-text>
+      </ion-col> -->
+      <ion-col>
+          <ion-text>
+              {{order.InsertDateTime?.substr(0,16)}}
+            </ion-text>
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col size='4'>
-        完成时间
+      <ion-col size='2'>
+        金额
       </ion-col>
       <ion-col>
-        <ion-text>
-          {{order.InsertDateTime?.substr(0,16)}}</ion-text>
+          <ion-text color='danger'>
+              ￥{{order.TotalAmount}}
+            </ion-text>
+            <ion-text color="secondary"class="ion-padding-end">
+                ({{order.StatusName}})
+            </ion-text>
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col size='4'>
-        用车事务号
-      </ion-col>
-      <ion-col class='select-text'>
-        <strong>{{car.Id}}</strong>
-      </ion-col>
-    </ion-row>
+        <ion-col size='2'>
+          旅客
+        </ion-col>
+        <ion-col>
+            <ion-text color="dark">
+            {{car.Passenger.Name}}
+            </ion-text>
+            <ion-text color="secondary" class="ion-padding-end">
+            ({{car.StatusName}}）
+            </ion-text>
+        </ion-col>
+      </ion-row>
     <ion-row>
-      <ion-col size='4'>用车信息</ion-col>
+      <ion-col size='2'>行程</ion-col>
       <ion-col>
         <div>
           <div>
-            {{car.ActualFromAddress}}
+              <ion-text color="dark">
+                  {{car.ActualFromAddress}}
+              </ion-text>
           </div>
           <div>
-            {{car.ActualToAddress}}
+              <ion-text color="dark">
+                  {{car.ActualToAddress}}
+              </ion-text>
           </div>
         </div>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col size='4'>用车状态</ion-col>
-      <ion-col>
-        {{car.StatusName}}
-      </ion-col>
-      <ion-col class="ion-text-end">
-        <ion-text color='danger'>
-          ￥{{order.TotalAmount}}
-        </ion-text>
       </ion-col>
     </ion-row>
   </ion-grid>

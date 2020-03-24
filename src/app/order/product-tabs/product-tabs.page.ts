@@ -31,6 +31,9 @@ import { TaskEntity } from "src/app/workflow/models/TaskEntity";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { ORDER_TABS } from "../product-list/product-list.page";
 import { PayService } from "src/app/services/pay/pay.service";
+import { StaffService } from "src/app/hr/staff.service";
+import { FlightService } from "src/app/flight/flight.service";
+import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 
 @Component({
   selector: "app-product-tabs",
@@ -67,7 +70,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     private router: Router,
     private apiService: ApiService,
     private orderService: OrderService,
-    private identityService: IdentityService
+    private identityService: IdentityService,
+    private staffService: StaffService,
+    private flightService: FlightService
   ) {
     route.queryParamMap.subscribe(d => {
       if (d && d.get("tabId")) {
@@ -153,6 +158,24 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     }
     this.doRefresh();
   }
+  async onRefundFlightTicket(data: {
+    orderId: string;
+    ticketId: string;
+    IsVoluntary: boolean;
+    FileName: string;
+    FileValue: string;
+  }) {
+    await this.orderService
+      .refundFlightTicket(data)
+      .then(() => {
+        AppHelper.toast("退票申请中", 2000, "middle");
+        this.doRefresh();
+        this.doRefreshTasks();
+      })
+      .catch(e => {
+        AppHelper.alert(e);
+      });
+  }
   historyTrips() {
     const condition = new SearchTicketConditionModel();
     condition.toDate = moment().format("YYYY-MM-DD");
@@ -235,6 +258,64 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     //   this.doRefresh();
     // }
   }
+  onAbolishTrainOrder(data: { orderId: string; ticketId: string }) {
+    this.orderService
+      .abolishTrainOrder({
+        OrderId: data.orderId,
+        TicketId: data.ticketId
+      })
+      .then(() => {
+        this.doRefresh();
+      })
+      .catch(e => {
+        AppHelper.alert(e);
+      });
+  }
+  async onExchangeFlightTicket(data: {
+    orderId: string;
+    ticketId: string;
+    date: string;
+  }) {
+    try {
+      const res = await this.orderService.getExchangeFlightTrip({
+        OrderId: data.orderId,
+        TicketId: data.ticketId,
+        ExchangeDate: data.date
+      });
+      await this.flightService.initSelfBookTypeBookInfos();
+      const bookInfos = this.flightService.getPassengerBookInfos();
+      if (!bookInfos.length) {
+        AppHelper.alert("改签失败，请重试");
+        return;
+      }
+      this.flightService.setSearchFlightModelSource({
+        ...this.flightService.getSearchFlightModel(),
+        FromCode: res.trip.FromAirport,
+        ToCode: res.trip.ToAirport,
+        FromAsAirport: false,
+        ToAsAirport: false,
+        fromCity: res.fromCity,
+        toCity: res.toCity,
+        isLocked: true
+      });
+      this.router.navigate(["flight-list"], {
+        queryParams: { doRefresh: true }
+      });
+    } catch (e) {
+      AppHelper.alert(e);
+    }
+  }
+  onAbolishFlightOrder(data: { orderId: string; ticketId: string }) {
+    this.orderService
+      .abolishFlightOrder({ OrderId: data.orderId, TicketId: data.ticketId })
+      .then(() => {
+        AppHelper.toast("订单取消申请中", 2000, "middle");
+        this.doRefresh();
+      })
+      .catch(e => {
+        AppHelper.alert(e);
+      });
+  }
   goToDetailPage(orderId: string, type: string) {
     if (type && type.toLowerCase() == "car") {
       this.router.navigate([AppHelper.getRoutePath("car-order-detail")], {
@@ -249,7 +330,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       }
     });
   }
-  doRefreshTasks() {
+  private doRefreshTasks() {
     this.isLoading = true;
     if (this.infiniteScroll) {
       this.infiniteScroll.disabled = false;

@@ -1,10 +1,9 @@
+import { environment } from './../../../../environments/environment';
 import { OrderFlightTripEntity } from "./../../models/OrderFlightTripEntity";
-import { PassengerBookInfo } from "src/app/tmc/tmc.service";
-import { TrainService, ITrainInfo } from "./../../../train/train.service";
+import { TrainService } from "./../../../train/train.service";
 import { CalendarService } from "./../../../tmc/calendar.service";
 import { AppHelper } from "src/app/appHelper";
 import { TmcEntity } from "src/app/tmc/tmc.service";
-import { TmcService } from "./../../../tmc/tmc.service";
 import {
   Component,
   OnInit,
@@ -25,21 +24,20 @@ import { TrainBookType } from "src/app/train/models/TrainBookType";
 import { OrderHotelStatusType } from "../../models/OrderHotelEntity";
 import { HotelPaymentType } from "src/app/hotel/models/HotelPaymentType";
 import { TrainSupplierType } from "src/app/train/models/TrainSupplierType";
-import { TripType } from "src/app/tmc/models/TripType";
-import * as moment from "moment";
 import { Router } from "@angular/router";
 import { OrderPassengerEntity } from "../../models/OrderPassengerEntity";
 import { OrderFlightTicketType } from "../../models/OrderFlightTicketType";
-import { OrderPayStatusType } from "../../models/OrderInsuranceEntity";
-import { PopoverController } from "@ionic/angular";
+import { PopoverController, PickerController } from "@ionic/angular";
 import { RefundFlightTicketTipComponent } from "../refund-flight-ticket-tip/refund-flight-ticket-tip.component";
+import { OrderService } from "../../order.service";
+import { LanguageHelper } from "src/app/languageHelper";
+import { DayModel } from "src/app/tmc/models/DayModel";
 @Component({
   selector: "app-order-item",
   templateUrl: "./order-item.component.html",
   styleUrls: ["./order-item.component.scss"]
 })
 export class OrderItemComponent implements OnInit, OnChanges {
-  private bookChannals = `Eterm  BlueSky  Android  客户H5  IOS  外购PC  客户PC  代理PC`;
   private selfBookChannals = `Android  客户H5  IOS 客户PC`;
   TrainSupplierType = TrainSupplierType;
   OrderFlightTicketType = OrderFlightTicketType;
@@ -47,7 +45,23 @@ export class OrderItemComponent implements OnInit, OnChanges {
   @Input() order: OrderEntity;
   @Input() isAgent = false;
   @Output() payaction: EventEmitter<OrderEntity>;
-  @Output() refundTicket: EventEmitter<OrderEntity>;
+  @Output() refundTrainTicket: EventEmitter<OrderEntity>;
+  @Output() exchangeFlightTicket: EventEmitter<{
+    orderId: string;
+    ticketId: string;
+  }>;
+  @Output() abolishFlightOrder: EventEmitter<{
+    orderId: string;
+    ticketId: string;
+  }>;
+  @Output() refundFlightTicket: EventEmitter<{
+    orderId: string;
+    ticketId: string;
+    IsVoluntary: boolean;
+    FileName: string;
+    FileValue: string;
+  }>;
+  @Input() tmc: TmcEntity;
   OrderStatusType = OrderStatusType;
   OrderFlightTripStatusType = OrderFlightTripStatusType;
   OrderFlightTicketStatusType = OrderFlightTicketStatusType;
@@ -55,16 +69,19 @@ export class OrderItemComponent implements OnInit, OnChanges {
   OrderHotelStatusType = OrderHotelStatusType;
   HotelPaymentType = HotelPaymentType;
   TrainBookType = TrainBookType;
-  tmc: TmcEntity;
+  environment = environment;
   constructor(
-    private tmcService: TmcService,
     private calendarService: CalendarService,
-    private router: Router,
     private popoverCtrl: PopoverController,
-    private trainService: TrainService
+    private trainService: TrainService,
+    private pickerCtrl: PickerController,
+    private orderService: OrderService
   ) {
     this.payaction = new EventEmitter();
-    this.refundTicket = new EventEmitter();
+    this.refundTrainTicket = new EventEmitter();
+    this.refundFlightTicket = new EventEmitter();
+    this.abolishFlightOrder = new EventEmitter();
+    this.exchangeFlightTicket = new EventEmitter();
   }
   onPay(evt: CustomEvent) {
     if (this.order) {
@@ -72,25 +89,6 @@ export class OrderItemComponent implements OnInit, OnChanges {
     }
     evt.preventDefault();
     evt.stopPropagation();
-  }
-  private sortFlightTickets(flightTickets: OrderFlightTicketEntity[]) {
-    if (flightTickets) {
-      flightTickets = flightTickets.map(t => {
-        t.VariablesJsonObj = t.VariablesJsonObj || {};
-        t.VariablesJsonObj.maxTimeStamp = Math.max(
-          AppHelper.getDate(t.RefundTime).getTime(),
-          AppHelper.getDate(t.BookTime).getTime(),
-          AppHelper.getDate(t.IssueTime).getTime(),
-          AppHelper.getDate(t.ExchangeTime).getTime()
-        );
-        return t;
-      });
-      flightTickets.sort(
-        (t1, t2) =>
-          t1.VariablesJsonObj.maxTimeStamp - t2.VariablesJsonObj.maxTimeStamp
-      );
-    }
-    return flightTickets;
   }
   ngOnChanges(changes: SimpleChanges) {
     if (changes.order && changes.order.currentValue) {
@@ -125,6 +123,9 @@ export class OrderItemComponent implements OnInit, OnChanges {
                   );
                 });
               }
+              t.VariablesJsonObj.isShowBtnByTimeAndTicketType = this.showBtnByTimeAndTicketType(
+                t
+              );
               t.VariablesJsonObj.isTicketCanRefund = this.isTicketCanRefund(t);
               t.VariablesJsonObj.isShowExchangeBtn = this.isShowExchangeBtn(t);
               t.VariablesJsonObj.isShowCancelBtn = this.isShowCancelBtn(t);
@@ -191,8 +192,8 @@ export class OrderItemComponent implements OnInit, OnChanges {
         0,
         orderTrainTicket.OrderTrainTrips[0].StartTime
       ) -
-        +this.calendarService.getMoment(0) >
-        0
+      +this.calendarService.getMoment(0) >
+      0
     );
   }
   async onExchangeTrainTicket(
@@ -202,7 +203,69 @@ export class OrderItemComponent implements OnInit, OnChanges {
     if (evt) {
       evt.stopPropagation();
     }
+
     return this.trainService.onExchange(orderTrainTicket);
+  }
+  private async getExchangeDate(trip: OrderFlightTripEntity) {
+    const m = this.calendarService.getMoment(0, trip.TakeoffTime);
+    const preMonth = m.add(-1, "months");
+    const nextMonth = m.add(1, "months");
+    return new Promise<DayModel>(async resolve => {
+      const p = await this.pickerCtrl.create({
+        columns: [
+          {
+            name: "yearMonth",
+            refresh: () => {
+              console.log("refresh");
+            },
+            options: [
+              `${preMonth.year()}-${preMonth.month() + 1}`,
+              `${m.year()}-${m.month() + 1}`,
+              `${nextMonth.year()}-${nextMonth.month() + 1}`
+            ].map(ym => {
+              return {
+                text: ym,
+                value: ym
+              } as any;
+            })
+          },
+          {
+            name: "day",
+            options: new Array(365).fill(0).map((d, idx) => {
+              return {
+                text: idx,
+                value: idx
+              } as any;
+            })
+          }
+        ],
+        buttons: [
+          {
+            text: "取消",
+            role: "cancel"
+          },
+          {
+            text: "打开日历",
+            handler: () => {
+              p.dismiss();
+              this.orderService.getExchangeDate(trip.TakeoffTime).then(d => {
+                if (d && d.length) {
+                  resolve(d[0]);
+                }
+              });
+            }
+          },
+          {
+            text: "确定"
+          }
+        ]
+      });
+      p.present();
+      const res = await p.onDidDismiss();
+      if (res && res.data) {
+      }
+      console.log("onDidDismiss", res);
+    });
   }
   private isTicketCanRefund(orderFlightTicket: OrderFlightTicketEntity) {
     if (
@@ -224,7 +287,9 @@ export class OrderItemComponent implements OnInit, OnChanges {
     return (
       orderFlightTicket &&
       orderFlightTicket.TicketType == OrderFlightTicketType.Domestic &&
-      this.isAfterTomorrow(orderFlightTicket.OrderFlightTrips[0].TakeoffTime)
+      orderFlightTicket.OrderFlightTrips.some(trip =>
+        this.isAfterTomorrow(trip.TakeoffTime)
+      )
     );
   }
   private isAfterTomorrow(date: string) {
@@ -241,13 +306,10 @@ export class OrderItemComponent implements OnInit, OnChanges {
     ) {
       return false;
     }
-    return (
-      orderFlightTicket &&
-      [
-        OrderFlightTicketStatusType.Booked,
-        OrderFlightTicketStatusType.BookExchanged
-      ].includes(orderFlightTicket.Status)
-    );
+    return [
+      OrderFlightTicketStatusType.Booked,
+      OrderFlightTicketStatusType.BookExchanged
+    ].includes(orderFlightTicket.Status);
   }
   private isShowExchangeBtn(orderFlightTicket: OrderFlightTicketEntity) {
     if (
@@ -283,17 +345,43 @@ export class OrderItemComponent implements OnInit, OnChanges {
       if (this.order.OrderHotels) {
         this.order.OrderHotels = this.order.OrderHotels.map(t => {
           t.Passenger = this.getTicketPassenger(t);
-          t.countDay=(AppHelper.getDate(t.EndDate).getTime()-AppHelper.getDate(t.BeginDate).getTime())/24/3600/1000
-          
+          t.countDay =
+            (AppHelper.getDate(t.EndDate).getTime() -
+              AppHelper.getDate(t.BeginDate).getTime()) /
+            86400000;
+
           return t;
         });
       }
     }
   }
-  private countDate(){
-    // console.log(this.order.OrderHotels,"1111111");
-    
-    
+  async onExchangeFlightTicket(
+    evt: CustomEvent,
+    ticket: OrderFlightTicketEntity,
+    trip: OrderFlightTripEntity
+  ) {
+    evt.stopPropagation();
+    this.getExchangeDate(trip);
+    // this.exchangeFlightTicket.emit({
+    //   orderId: this.order.Id,
+    //   ticketId: ticket.Id
+    // });
+  }
+  onAbolishFlightOrder(evt: CustomEvent, ticket: OrderFlightTicketEntity) {
+    evt.stopPropagation();
+    AppHelper.alert(
+      "确定取消订单？",
+      true,
+      LanguageHelper.getConfirmTip(),
+      LanguageHelper.getCancelTip()
+    ).then(ok => {
+      if (ok) {
+        this.abolishFlightOrder.emit({
+          orderId: this.order.Id,
+          ticketId: ticket.Id
+        });
+      }
+    });
   }
   private getTicketPassenger(ticket: { Passenger: OrderPassengerEntity }) {
     const p = (this.order && this.order.OrderPassengers) || [];
@@ -318,35 +406,8 @@ export class OrderItemComponent implements OnInit, OnChanges {
     );
     return amount < 0 ? 0 : amount;
   }
-  private getFlightInsuranceAmount() {
-    if (
-      !this.order ||
-      !this.order.OrderInsurances ||
-      !this.order.OrderItems ||
-      !this.order.OrderFlightTickets
-    ) {
-      return 0;
-    }
-    const flightTripkeys: string[] = [];
-    this.order.OrderFlightTickets.forEach(t => {
-      if (t.OrderFlightTrips) {
-        t.OrderFlightTrips.forEach(trip => {
-          if (!flightTripkeys.find(k => k == trip.Key)) {
-            flightTripkeys.push(trip.Key);
-          }
-        });
-      }
-    });
-    const keys = this.order.OrderInsurances.filter(
-      it => !!flightTripkeys.find(k => k == it.AdditionKey)
-    ).map(it => it.Key);
-    const insuranceAmount = this.order.OrderItems.filter(it =>
-      keys.find(k => k == it.Key && it.Tag == "Insurance")
-    ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
-    return insuranceAmount;
-  }
   async onRefundFlightTicket(
-    //退票弹框
+    // 退票弹框
     evt: CustomEvent,
     ticket: OrderFlightTicketEntity
   ) {
@@ -356,14 +417,24 @@ export class OrderItemComponent implements OnInit, OnChanges {
     if (ticket) {
       const popover = await this.popoverCtrl.create({
         component: RefundFlightTicketTipComponent,
+        cssClass: "flight-refund-comp",
         translucent: true
       });
-      return await popover.present();
-      // AppHelper.toast()
-      // const isRefund = await this.trainService.refund(orderTrainTicket.Id);
-      // if (isRefund) {
-      //   this.refundTicket.emit();
-      // }
+      await popover.present();
+      const res = await popover.onDidDismiss();
+      if (res && res.data) {
+        const result = res.data as {
+          IsVoluntary: boolean;
+          FileName: string;
+          FileValue: string;
+        };
+        this.refundFlightTicket.emit({
+          ...result,
+          orderId: this.order.Id,
+          ticketId: ticket.Id
+        });
+      }
+      // AppHelper.toast();
     }
   }
   async onRefundTrainTicket(
@@ -376,16 +447,14 @@ export class OrderItemComponent implements OnInit, OnChanges {
     if (orderTrainTicket) {
       const isRefund = await this.trainService.refund(orderTrainTicket.Id);
       if (isRefund) {
-        this.refundTicket.emit();
+        this.refundTrainTicket.emit();
       }
     }
   }
   isSelfBook(channal: string) {
     return this.selfBookChannals.includes(channal);
   }
-  async ngOnInit() {
-    this.tmc = await this.tmcService.getTmc().catch(_ => null);
-  }
+  async ngOnInit() { }
   getHHmm(time: string) {
     if (time) {
       return this.calendarService.getHHmm(time);
@@ -409,30 +478,30 @@ export class OrderItemComponent implements OnInit, OnChanges {
     if (!rev) {
       return false;
     }
-    rev =
-      !order.OrderFlightTickets ||
-      order.OrderFlightTickets.filter(
-        it =>
-          it.Status == OrderFlightTicketStatusType.Booking ||
-          it.Status == OrderFlightTicketStatusType.BookExchanging
-      ).filter(ticket => {
-        return ticket.OrderFlightTrips.some(
-          trip =>
-            AppHelper.getDate(trip.TakeoffTime).getTime() -
-              new Date().getTime() >=
-            0
-        );
-      }).length == 0;
-    if (!rev) {
-      return false;
-    }
+    // rev =
+    //   !order.OrderFlightTickets ||
+    //   order.OrderFlightTickets.filter(
+    //     it =>
+    //       it.Status == OrderFlightTicketStatusType.Booking ||
+    //       it.Status == OrderFlightTicketStatusType.BookExchanging
+    //   ).filter(ticket => {
+    //     return ticket.OrderFlightTrips.some(
+    //       trip =>
+    //         AppHelper.getDate(trip.TakeoffTime).getTime() -
+    //           new Date().getTime() >=
+    //         0
+    //     );
+    //   }).length == 0;
+    // if (!rev) {
+    //   return false;
+    // }
     rev =
       !order.OrderTrainTickets ||
       order.OrderTrainTickets.filter(
         it =>
           it.Status == OrderTrainTicketStatusType.Booking ||
           it.Status == OrderTrainTicketStatusType.BookExchanging
-      ).length == 0;
+      ).length > 0;
     return rev;
   }
   getTotalAmount(order: OrderEntity, key: string) {
@@ -521,7 +590,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
     }
     return null;
   }
-  getPassengerTrips(p: OrderPassengerEntity, ticket: OrderFlightTicketEntity) {
+  getPassengerTrips(ticket: OrderFlightTicketEntity) {
     return (
       ticket.OrderFlightTrips &&
       ticket.OrderFlightTrips.filter(

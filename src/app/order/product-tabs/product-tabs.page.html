@@ -12,7 +12,7 @@
   </ion-toolbar>
   <ion-toolbar class='ion-text-center'>
     <div class='tabs'>
-      <ion-button [color]='activeTab?.value==tab.value?"secondary":"medium"' (click)='onTabClick(tab)'
+      <ion-button size='small' [color]='activeTab?.value==tab.value?"secondary":"medium"' (click)='onTabClick(tab)'
         *ngFor='let tab of tabs' fill='clear' [class.active]='activeTab?.value==tab.value'>{{tab.label}}
       </ion-button>
     </div>
@@ -53,7 +53,8 @@
       <ng-container *ngIf='!isShowMyTrips'>
         <ion-list lines='none' *ngIf='orderModel?.Orders?.length else nomoredate'>
           <ion-item *ngFor='let order of orderModel.Orders' (click)='goToDetailPage(order.Id,orderModel.Type)'>
-            <app-order-item [order]='order' (payaction)='onPay(order)' (refundTicket)='doRefresh();doRefreshTasks();'>
+            <app-order-item [order]='order' [tmc]='tmc' (payaction)='onPay(order)' (refundTrainTicket)='doRefresh();'
+              (abolishFlightOrder)='onAbolishFlightOrder($event)' (exchangeFlightTicket)='onExchangeFlightTicket($event)' (refundFlightTicket)='onRefundFlightTicket($event)'>
             </app-order-item>
           </ion-item>
         </ion-list>

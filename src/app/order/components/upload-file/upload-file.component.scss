@@ -1,0 +1,33 @@
+.cropcontainer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  /* Limit image width to avoid overflow the container */
+  img {
+    max-width: 200%;
+    width: 150%;
+    /* This rule is very important, please do not ignore this! */
+  }
+
+  ion-button {
+    position: fixed;
+    bottom: 3em;
+    z-index: 1;
+
+    &.cancel-btn {
+      left: 1em;
+    }
+
+    &.rotate-btn {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    &.ok-btn {
+      right: 1em;
+    }
+  }
+}
