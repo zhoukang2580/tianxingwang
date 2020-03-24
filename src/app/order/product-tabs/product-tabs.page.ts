@@ -317,9 +317,19 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       });
   }
   goToDetailPage(orderId: string, type: string) {
+    // Flight
     if (type && type.toLowerCase() == "car") {
       this.router.navigate([AppHelper.getRoutePath("car-order-detail")], {
         queryParams: { Id: orderId }
+      });
+      return;
+    }
+    else if (type && type.toLowerCase() == "flight") {
+      this.router.navigate([AppHelper.getRoutePath("flight-order-detail")], {
+        queryParams: {
+          tab: JSON.stringify(this.activeTab),
+          orderId: orderId
+        }
       });
       return;
     }

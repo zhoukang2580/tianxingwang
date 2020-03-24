@@ -14,7 +14,7 @@ import { OrderTravelPayType } from "./models/OrderTravelEntity";
 import { OrderFlightTicketStatusType } from "./models/OrderFlightTicketStatusType";
 import { OrderTrainTicketStatusType } from "./models/OrderTrainTicketStatusType";
 import { environment } from "src/environments/environment";
-import { MOCK_CAR_DATA } from "./mock-data";
+import { MOCK_CAR_DATA, MOCK_FLIGHT_ORDER_DETAIL } from "./mock-data";
 import { OrderFlightTripEntity } from "./models/OrderFlightTripEntity";
 import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
 import { ModalController } from "@ionic/angular";
@@ -63,6 +63,9 @@ export class OrderService {
     req.Data = {
       Id: id
     };
+    if(!environment.production){
+      return Promise.resolve(this.getmockOrderDetail())
+    }
     const result = this.apiService.getPromiseData<OrderDetailModel>(req);
     return result;
   }
@@ -216,5 +219,8 @@ export class OrderService {
     await m.present();
     const d = await m.onDidDismiss();
     return d && (d.data as DayModel[]);
+  }
+ private getmockOrderDetail():OrderDetailModel{
+  return MOCK_FLIGHT_ORDER_DETAIL as any;
   }
 }

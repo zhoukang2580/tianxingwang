@@ -117,6 +117,10 @@ const routes: Routes = [
     path: "**",
     loadChildren: () =>
       import("./page404/page404.module").then(m => m.Page404PageModule)
+  },
+  {
+    path: 'flight-order-detail',
+    loadChildren: () => import('./order/flight-order-detail/flight-order-detail.module').then( m => m.FlightOrderDetailPageModule)
   }
 ];
 @NgModule({
