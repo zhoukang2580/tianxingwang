@@ -161,7 +161,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
     if (this.order && this.order.OrderFlightTickets) {
       const statusArr = [
         OrderFlightTicketStatusType.ChangeTicket,
-        OrderFlightTicketStatusType.Refunded
+        // OrderFlightTicketStatusType.Refunded
       ];
       this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(t => {
         if (t.VariablesJsonObj) {
@@ -170,24 +170,6 @@ export class OrderItemComponent implements OnInit, OnChanges {
         }
         return t;
       });
-      this.initOrderFlightTicketPassengerIndex();
-    }
-  }
-  private initOrderFlightTicketPassengerIndex() {
-    if (this.order && this.order.OrderFlightTickets) {
-      let showArr = this.order.OrderFlightTickets.filter(
-        it => it.VariablesJsonObj.isShow
-      );
-      const unShowArr = this.order.OrderFlightTickets.filter(
-        it => !it.VariablesJsonObj.isShow
-      );
-      showArr = this.sortOrderFlightTicketsByTime(showArr);
-      if (showArr.length > 2) {
-        showArr.forEach((t, idx) => {
-          t.VariablesJsonObj.idx = idx + 1;
-        });
-      }
-      this.order.OrderFlightTickets = [...showArr, ...unShowArr];
     }
   }
   check(orderTrainTicket: OrderTrainTicketEntity) {

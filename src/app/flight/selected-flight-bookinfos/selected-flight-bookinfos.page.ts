@@ -128,8 +128,7 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
       tips.push(
         `所选航班承运人与旅客所持机票承运人不同，无法直接更改。需将所持机票退票（或将产生退票费），重新购买机票。`
       );
-    }
-    if (trip.TicketPrice > info.bookInfo.flightPolicy.Cabin.SalesPrice) {
+    } else if (trip.TicketPrice > info.bookInfo.flightPolicy.Cabin.SalesPrice) {
       tips.push(
         `所选航班票价低于旅客所持机票票价，无法直接更改。需将所持机票退票（或将产生退票费），重新购买机票。`
       );
