@@ -1082,7 +1082,7 @@ export class TrainService {
         credential: info.DefaultCredentials,
         id: AppHelper.uuid(),
         isFilterPolicy: true,
-        exchangeInfo: exchangedInfo
+        exchangeInfo: exchangedInfo as any
       };
       books = [b];
       const fromCity = trainStations.find(it => it.Code == info.FromStation);
@@ -1109,6 +1109,7 @@ export class TrainService {
     } catch (e) {
       console.error(e);
     }
+    
   }
   async policyAsync(
     trains: TrainEntity[],

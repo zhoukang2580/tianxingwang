@@ -12,7 +12,8 @@ import {
   ModalController,
   IonInfiniteScroll,
   IonRefresher,
-  IonContent
+  IonContent,
+  IonDatetime
 } from "@ionic/angular";
 import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
 import { SearchTicketModalComponent } from "../components/search-ticket-modal/search-ticket-modal.component";
@@ -34,6 +35,7 @@ import { PayService } from "src/app/services/pay/pay.service";
 import { StaffService } from "src/app/hr/staff.service";
 import { FlightService } from "src/app/flight/flight.service";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
+import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
 
 @Component({
   selector: "app-product-tabs",
@@ -43,7 +45,8 @@ import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 export class ProductTabsPage implements OnInit, OnDestroy {
   private condition: SearchTicketConditionModel = new SearchTicketConditionModel();
   private readonly pageSize = 20;
-  loadDataSub = Subscription.EMPTY;
+  private loadDataSub = Subscription.EMPTY;
+  private exchangeDateSub = Subscription.EMPTY;
   productItemType = ProductItemType;
   activeTab: ProductItem;
   tabs: ProductItem[] = [];
@@ -61,6 +64,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   myTripsTotalCount = 0;
   orderFlightTicketStatusTypes: any[];
   @ViewChild(IonContent) ionContent: IonContent;
+  @ViewChild(IonDatetime) datetime: IonDatetime;
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
   @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
   constructor(
@@ -92,6 +96,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   }
   ngOnDestroy() {
     this.loadDataSub.unsubscribe();
+    this.exchangeDateSub.unsubscribe();
   }
   async onPay(order: OrderEntity) {
     try {
@@ -271,16 +276,35 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         AppHelper.alert(e);
       });
   }
+  private getExchangeDate() {
+    this.datetime.value = "";
+    this.datetime.open();
+    return new Promise<string>(resolve => {
+      this.exchangeDateSub = this.datetime.ionChange.subscribe(() => {
+        resolve(this.datetime.value);
+      });
+    });
+  }
   async onExchangeFlightTicket(data: {
     orderId: string;
     ticketId: string;
-    date: string;
+    trip: OrderFlightTripEntity;
   }) {
     try {
+      this.datetime.yearValues = [
+        new Date().getFullYear(),
+        new Date().getFullYear() + 1
+      ];
+      const date = await this.getExchangeDate();
+      console.log("改签日期", date);
+      if (!data) {
+        AppHelper.alert("请选择改签日期");
+        return;
+      }
       const res = await this.orderService.getExchangeFlightTrip({
         OrderId: data.orderId,
         TicketId: data.ticketId,
-        ExchangeDate: data.date
+        ExchangeDate: date
       });
       await this.flightService.initSelfBookTypeBookInfos();
       const bookInfos = this.flightService.getPassengerBookInfos();
@@ -288,6 +312,11 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         AppHelper.alert("改签失败，请重试");
         return;
       }
+      bookInfos[0].exchangeInfo = {
+        order: { Id: data.orderId } as any,
+        ticket: { Id: data.ticketId } as any,
+        trip: res.trip
+      };
       this.flightService.setSearchFlightModelSource({
         ...this.flightService.getSearchFlightModel(),
         FromCode: res.trip.FromAirport,
@@ -296,7 +325,8 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         ToAsAirport: false,
         fromCity: res.fromCity,
         toCity: res.toCity,
-        isLocked: true
+        isExchange: true,
+        Date: date.substr(0, 10)
       });
       this.router.navigate(["flight-list"], {
         queryParams: { doRefresh: true }

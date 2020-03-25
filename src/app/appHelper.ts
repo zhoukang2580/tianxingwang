@@ -346,7 +346,7 @@ export class AppHelper {
         document.addEventListener("WeixinJSBridgeReady", ready, false);
         setTimeout(() => {
           resolve(false);
-        }, 3000);
+        }, 30000);
       } else {
         ready();
       }

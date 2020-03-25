@@ -34,6 +34,8 @@ import { FlightFareType } from "../models/flight/FlightFareType";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { SearchTypeModel } from "../models/flight/advanced-search-cond/SearchTypeModel";
 import { FlightCabinType } from "../models/flight/FlightCabinType";
+import { OrderFlightTripEntity } from "src/app/order/models/OrderFlightTripEntity";
+import { OrderService } from "src/app/order/order.service";
 
 @Component({
   selector: "app-flight-item-cabins",
@@ -65,7 +67,9 @@ export class FlightItemCabinsPage implements OnInit {
     private staffService: StaffService,
     private identityService: IdentityService,
     private router: Router,
-    private popoverController: PopoverController
+    private popoverController: PopoverController,
+    private orderService: OrderService,
+    private navCtrl: NavController
   ) {
     activatedRoute.queryParamMap.subscribe(async p => {
       this.vmFlightSegment = this.flightService.currentViewtFlightSegment;
@@ -156,8 +160,8 @@ export class FlightItemCabinsPage implements OnInit {
       }
     }
     const isSelf = await this.staffService.isSelfBookType();
+    const bookInfos = this.flightService.getPassengerBookInfos();
     if (isSelf) {
-      const bookInfos = this.flightService.getPassengerBookInfos();
       const bookInfo = bookInfos[0];
       const info = this.flightService.getPolicyCabinBookInfo(
         bookInfo,

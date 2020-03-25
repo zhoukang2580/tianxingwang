@@ -55,6 +55,7 @@ export class SearchFlightModel {
   toCity: TrafficlineEntity;
   tripType: TripType;
   isLocked?: boolean;
+  isExchange?: boolean;
   // isRefreshData?: boolean;
 }
 @Injectable({
@@ -133,6 +134,9 @@ export class FlightService {
       this.searchFlightModel.FromCode = m.FromAsAirport
         ? m.fromCity.Code
         : m.fromCity.AirportCityCode;
+    }
+    if (m.isExchange) {
+      m.isLocked = true;
     }
     this.searchFlightModelSource.next(this.searchFlightModel);
   }
@@ -234,6 +238,7 @@ export class FlightService {
     console.log("filterPassengerPolicyCabins", policyCabins);
     return policyCabins;
   }
+  
   private getUnSelectFlightSegmentPassengers() {
     return this.getPassengerBookInfos()
       .filter(

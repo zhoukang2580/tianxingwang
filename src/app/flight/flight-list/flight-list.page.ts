@@ -145,6 +145,7 @@ export class FlightListPage
   hasDataSource: Subject<boolean>;
   showSelectFlyDayPage$: Observable<boolean>;
   filteredPolicyPassenger$: Observable<PassengerBookInfo<IFlightSegmentInfo>>;
+  isCanLeave = false;
   get filterConditionIsFiltered() {
     return (
       this.filterCondition &&
@@ -204,6 +205,7 @@ export class FlightListPage
         })
       );
     this.route.queryParamMap.subscribe(async d => {
+      this.isCanLeave = !this.flightService.getSearchFlightModel().isExchange;
       this.isSelfBookType = await this.staffService.isSelfBookType();
       this.showAddPassenger = await this.canShowAddPassenger();
       console.log("this.route.queryParamMap", this.searchFlightModel, d);
@@ -285,10 +287,6 @@ export class FlightListPage
       // this.flyDayService.setSelectedDaysSource([this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date)]);
       this.onChangedDay(go, true);
     }
-  }
-
-  back() {
-    this.router.navigate([AppHelper.getRoutePath("search-flight")]);
   }
   async onChangedDay(day: DayModel, byUser: boolean) {
     if (
@@ -497,11 +495,13 @@ export class FlightListPage
   }
 
   async goToFlightCabinsDetails(fs: FlightSegmentEntity) {
+    this.isCanLeave = true;
     await this.flightService.addOneBookInfoToSelfBookType();
     this.flightService.currentViewtFlightSegment = fs;
     this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
   }
   onShowSelectedInfos() {
+    this.isCanLeave = true;
     this.flightService.showSelectedBookInfosPage();
   }
 
@@ -533,6 +533,7 @@ export class FlightListPage
     this.doRefresh(false, true);
   }
   onSelectCity(isFrom: boolean) {
+    this.isCanLeave = true;
     this.flightService.onSelectCity(isFrom);
   }
   private async initSearchModelParams() {
@@ -574,7 +575,7 @@ export class FlightListPage
       ]);
     }, 10);
     this.liEles.changes.subscribe(_ => {
-      console.timeEnd("renderFlightList");
+      // console.timeEnd("renderFlightList");
     });
   }
   private initFilterConditionInfo() {
@@ -679,22 +680,22 @@ export class FlightListPage
     }
   }
   async onTimeOrder() {
-    console.time("time");
+    // console.time("time");
     this.isLoading = true;
     this.activeTab = "time";
     this.timeOrdM2N = !this.timeOrdM2N;
     this.sortFlights("time");
     this.isLoading = false;
-    console.timeEnd("time");
+    // console.timeEnd("time");
   }
   async onPriceOrder() {
-    console.time("price");
+    // console.time("price");
     this.isLoading = true;
     this.activeTab = "price";
     this.priceOrderL2H = !this.priceOrderL2H;
     this.sortFlights("price");
     this.isLoading = false;
-    console.timeEnd("price");
+    // console.timeEnd("price");
   }
   private sortFlights(key: "price" | "time") {
     if (!this.filterCondition) {
@@ -795,7 +796,10 @@ export class FlightListPage
   }
   canDeactivate() {
     const s = this.flightService.getSearchFlightModel();
-    if (s.isLocked) {
+    if (s.isExchange) {
+      if (this.isCanLeave) {
+        return true;
+      }
       return AppHelper.alert("是否放弃改签？", true, "是", "否");
     }
     return true;
