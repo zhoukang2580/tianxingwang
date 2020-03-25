@@ -248,7 +248,10 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         type: this.activeTab,
         condition: {
           ...condition,
-          orderFlightTicketStatusTypes: this.orderFlightTicketStatusTypes || []
+          orderFlightTicketStatusTypes:
+            this.activeTab.value == ProductItemType.plane
+              ? this.orderFlightTicketStatusTypes || []
+              : []
         }
       }
     });
@@ -256,8 +259,8 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     const result = await m.onDidDismiss();
     console.log("条件查询", result.data);
     if (result && result.data) {
-      const condition = { ...this.condition, ...result.data };
-      this.doRefresh(condition);
+      const cond = { ...this.condition, ...result.data };
+      this.doRefresh(cond);
     }
     // else {
     //   this.doRefresh();
