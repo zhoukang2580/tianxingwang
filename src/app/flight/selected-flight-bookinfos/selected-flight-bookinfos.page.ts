@@ -205,6 +205,9 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
     await this.flightService.reselectPassengerFlightSegments(info);
   }
   canShowLowerSegment(info: PassengerBookInfo<IFlightSegmentInfo>) {
+    if (this.flightService.getSearchFlightModel().isExchange) {
+      return false;
+    }
     const pfs = info.bookInfo;
     let show = !!(
       pfs &&
