@@ -110,6 +110,12 @@ export class UploadFileComponent implements OnInit, OnDestroy {
     }, 0);
   }
   private back() {
+    if (this.result && this.result.FileName) {
+      this.result.FileName =
+        this.result.FileName.substr(0, this.result.FileName.lastIndexOf(".")) +
+        "." +
+        "jpg";
+    }
     this.modalCtrl.dismiss(this.result);
   }
   private initCropper() {
