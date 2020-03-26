@@ -41,6 +41,7 @@ export class UploadFileComponent implements OnInit, OnDestroy {
     );
     const fInput: HTMLInputElement = document.getElementById("file") as any;
     if (fInput) {
+      fInput.click();
       const subscription = fromEvent(fInput, "change", {
         passive: true
       }).subscribe(() => {
@@ -69,7 +70,6 @@ export class UploadFileComponent implements OnInit, OnDestroy {
           }
         }
       });
-      fInput.click();
       this.subscriptions.push(subscription);
     }
   }

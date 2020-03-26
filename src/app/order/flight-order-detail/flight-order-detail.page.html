@@ -7,8 +7,8 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <app-swiper-slide-content [tabs]="tabs">
-    <ng-container *ngIf='orderDetail&&orderDetail.Order else nomoredata'>
+  <ng-container *ngIf='orderDetail&&orderDetail.Order else nomoredata'>
+    <app-swiper-slide-content [tabs]="tabs">
       <div class="swiper-slide" #slide>
         <!-- 订单信息 -->
         <div>
@@ -296,8 +296,7 @@
                   </ion-row>
                   <ion-row *ngIf='orderInsurance.Detail as detail'>
                     <ion-col>
-                      <p class='clip-text ion-no-margin'
-                        (click)='onShowOrderInsurance(ticket)'
+                      <p class='clip-text ion-no-margin' (click)='onShowOrderInsurance(ticket)'
                         [class.show]='orderInsurance["isShowDetail"]'>
                         {{detail}}
                       </p>
@@ -320,8 +319,8 @@
           </ng-container>
         </div>
       </div>
-    </ng-container>
-  </app-swiper-slide-content>
+    </app-swiper-slide-content>
+  </ng-container>
   <ng-template #nomoredata>
     <span *ngIf='isLoading'>
       正在获取订单详情...
