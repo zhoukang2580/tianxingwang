@@ -174,6 +174,13 @@ export class TmcHomePage implements OnInit, OnDestroy {
     let route = "";
 
     const tmcRegionTypeValue = tmc.RegionTypeValue.toLowerCase();
+    if (name == "international-flight") {
+      route = "search-international-flight";
+      if (tmcRegionTypeValue.search("internationalflight") < 0) {
+        AppHelper.alert(msg);
+        return;
+      }
+    }
     if (name == "international-hotel") {
       route = "search-international-hotel";
       if (tmcRegionTypeValue.search("internationalhot") < 0) {

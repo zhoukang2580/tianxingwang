@@ -21,6 +21,7 @@ import { HotelModule } from "./hotel/hotel.module";
 import { CarModule } from "./car/car.module";
 import { HotelInternationalModule } from "./hotel-international/hotel-international.module";
 import { WorkflowModule } from "./workflow/workflow.module";
+import { FlightInternationalModule } from "./flight-international/international-flight.module";
 
 const routes: Routes = [
   {
@@ -119,8 +120,11 @@ const routes: Routes = [
       import("./page404/page404.module").then(m => m.Page404PageModule)
   },
   {
-    path: 'flight-order-detail',
-    loadChildren: () => import('./order/flight-order-detail/flight-order-detail.module').then( m => m.FlightOrderDetailPageModule)
+    path: "flight-order-detail",
+    loadChildren: () =>
+      import("./order/flight-order-detail/flight-order-detail.module").then(
+        m => m.FlightOrderDetailPageModule
+      )
   }
 ];
 @NgModule({
@@ -129,6 +133,7 @@ const routes: Routes = [
     RegisterModule,
     LoginModule,
     FlightModule,
+    FlightInternationalModule,
     AccountModule,
     HrModule,
     PasswordModule,
