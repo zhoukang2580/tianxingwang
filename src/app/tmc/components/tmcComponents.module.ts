@@ -25,9 +25,10 @@ import { SelectWheelComponent } from "./select-wheel/select-wheel.component";
 import { SearchDayComponent } from "./search-day/search-day.component";
 import { SelectDateComponent } from "./select-date/select-date.component";
 import { DaysCalendarComponent } from "./days-calendar/days-calendar.component";
-import { BookTmcOutnumberComponent } from './book-tmc-outnumber/book-tmc-outnumber.component';
-import { WaitingCheckPayComponent } from './waiting-check-pay/waiting-check-pay.component';
-import { ShowStandardDetailsComponent } from './show-standard-details/show-standard-details.component';
+import { BookTmcOutnumberComponent } from "./book-tmc-outnumber/book-tmc-outnumber.component";
+import { WaitingCheckPayComponent } from "./waiting-check-pay/waiting-check-pay.component";
+import { ShowStandardDetailsComponent } from "./show-standard-details/show-standard-details.component";
+import { BookExpenseTypesCompComponent } from "./book-expense-types-comp/book-expense-types-comp.component";
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import { ShowStandardDetailsComponent } from './show-standard-details/show-stand
     DaysCalendarComponent,
     BookTmcOutnumberComponent,
     WaitingCheckPayComponent,
-    ShowStandardDetailsComponent
+    ShowStandardDetailsComponent,
+    BookExpenseTypesCompComponent
   ],
   imports: [
     CommonModule,
@@ -76,7 +78,8 @@ import { ShowStandardDetailsComponent } from './show-standard-details/show-stand
     SearchDayComponent,
     SelectDateComponent,
     DaysCalendarComponent,
-    WaitingCheckPayComponent
-  ],
+    WaitingCheckPayComponent,
+    BookExpenseTypesCompComponent
+  ]
 })
 export class TmcComponentsModule {}

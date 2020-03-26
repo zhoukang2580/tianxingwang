@@ -1,10 +1,8 @@
 import { OrderStatusType } from "../../models/OrderEntity";
 import { ModalController } from "@ionic/angular";
 import { Component, OnInit } from "@angular/core";
-import { ProductItemType, ProductItem } from "../../../tmc/models/ProductItems";
-import * as moment from "moment";
 import { SearchTicketConditionModel } from "src/app/tmc/models/SearchTicketConditionModel";
-import { SelectAirportsModalComponent } from "src/app/tmc/components/select-airports/select-airports.component";
+import { CalendarService } from "src/app/tmc/calendar.service";
 @Component({
   selector: "app-search-ticket-modal",
   templateUrl: "./search-ticket-modal.component.html",
@@ -15,21 +13,10 @@ export class SearchTicketModalComponent implements OnInit {
   type: number;
   title: string;
   orderStatus: { label: string; value: OrderStatusType }[] = [];
-  constructor(private modalCtrl: ModalController) {}
-  private async searchAirports(isFromCity = true) {
-    const m = await this.modalCtrl.create({
-      component: SelectAirportsModalComponent
-    });
-    await m.present();
-    const result = await m.onDidDismiss();
-    if (result && result.data) {
-      if (isFromCity) {
-        this.condition.fromCityName = result.data;
-      } else {
-        this.condition.toCityName = result.data;
-      }
-    }
-  }
+  constructor(
+    private modalCtrl: ModalController,
+    private calendarService: CalendarService
+  ) {}
   async back(evt?: CustomEvent) {
     if (evt) {
       evt.preventDefault();
@@ -45,16 +32,17 @@ export class SearchTicketModalComponent implements OnInit {
       if (t) {
         this.condition.fromDate =
           (this.condition.vmFromDate &&
-            moment(this.condition.vmFromDate, "YYYY-MM-DD").format(
-              "YYYY-MM-DD"
-            )) ||
+            this.calendarService
+              .getMoment(0, this.condition.vmFromDate)
+              .format("YYYY-MM-DD")) ||
           "";
         this.condition.toDate =
           (this.condition.vmToDate &&
-            moment(this.condition.vmToDate, "YYYY-MM-DD").format(
-              "YYYY-MM-DD"
-            )) ||
+            this.calendarService
+              .getMoment(0, this.condition.vmToDate)
+              .format("YYYY-MM-DD")) ||
           "";
+        console.log(this.condition);
         t.dismiss(this.condition).catch(_ => {});
       }
     });

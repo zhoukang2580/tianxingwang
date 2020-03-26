@@ -58,7 +58,7 @@ import {
   ITmcOutNumberInfo
 } from "src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
-import { of, combineLatest, from, Subscription } from "rxjs";
+import { of, combineLatest, from, Subscription, fromEvent } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
 import { LanguageHelper } from "src/app/languageHelper";
 import { RoomPlanEntity } from "src/app/hotel/models/RoomPlanEntity";
@@ -77,7 +77,8 @@ import { AddContact } from "src/app/tmc/models/AddContact";
 import { BookCostcenterCompComponent } from "src/app/tmc/components/book-costcenter-comp/book-costcenter-comp.component";
 import { OrderHotelType } from "src/app/order/models/OrderHotelEntity";
 import { RefresherComponent } from "src/app/components/refresher";
-import { WarrantyComponent } from 'src/app/hotel/components/warranty/warranty.component';
+import { WarrantyComponent } from "src/app/hotel/components/warranty/warranty.component";
+import { InterHotelWarrantyComponent } from "../components/inter-hotel-warranty/inter-hotel-warranty.component";
 
 @Component({
   selector: "app-inter-hotel-book",
@@ -102,17 +103,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   }[];
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
   @ViewChild(IonContent) ionContent: IonContent;
-  @ViewChildren(BookCostcenterCompComponent) illegalReasonComps: QueryList<
-    BookCostcenterCompComponent
-  >;
-  @ViewChildren("approvalEl") approvalEls: QueryList<{ el: HTMLElement }>;
-  @ViewChildren("checkInPersonInfoEle") checkInPersonInfoEles: QueryList<{
-    el: HTMLElement;
-  }>;
   @ViewChildren(BookTmcOutnumberComponent) outnumberEles: QueryList<
-    BookTmcOutnumberComponent
-  >;
-  @ViewChildren(BookCredentialCompComponent) credentialEles: QueryList<
     BookTmcOutnumberComponent
   >;
   error: any;
@@ -461,71 +452,104 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     const day = this.calendarService.generateDayModelByDate(roomPlan.BeginDate);
     return `${day.date} ${day.dayOfWeekName}`;
   }
+  private showErrorMsg(
+    msg: string,
+    item: IPassengerHotelBookInfo,
+    ele: HTMLElement
+  ) {
+    AppHelper.toast(
+      `${(item.credentialStaff && item.credentialStaff.Name) ||
+        (item.credential &&
+          item.credential.CheckFirstName +
+            item.credential.CheckLastName)} 【${item.credential &&
+        item.credential.Number}】 ${msg} 信息不能为空`,
+      2000,
+      "bottom"
+    );
+    this.moveRequiredEleToViewPort(ele);
+  }
+  private getEleByAttr(attrName: string, value: string) {
+    return (
+      this.ionContent["el"] &&
+      (this.ionContent["el"].querySelector(
+        `[${attrName}='${value}']`
+      ) as HTMLElement)
+    );
+  }
   private fillCredicardInfo(item: IPassengerHotelBookInfo) {
     if (!item.creditCardInfo || !item.creditCardInfo.isShowCreditCard) {
       return true;
     }
-    const showErrorMsg = (msg: string) => {
-      AppHelper.alert(
-        `${(item.credentialStaff && item.credentialStaff.Name) ||
-          (item.credential && item.credential.Number)}信用卡信息${msg}`
-      );
-      let ele = document.querySelector(`[datacreditcardid='${item.id}']`);
-      if (ele["el"]) {
-        ele = ele["el"];
-      }
-      this.scrollEleToView(ele);
-    };
     if (!item.creditCardInfo.creditCardType) {
-      showErrorMsg("未选择信用卡的类型必填");
+      this.showErrorMsg(
+        "未选择信用卡的类型必填",
+        item,
+        this.getEleByAttr("creditCardInfocreditCardType", item.id)
+      );
       return false;
     }
     if (!item.creditCardInfo.creditCardNumber) {
-      showErrorMsg("信用卡号未必填");
+      this.showErrorMsg(
+        "信用卡号未必填",
+        item,
+        this.getEleByAttr("creditCardInfocreditCardNumber", item.id)
+      );
       return false;
     }
     if (!item.creditCardInfo.creditCardCvv) {
-      showErrorMsg("信用卡CVV必填");
+      this.showErrorMsg(
+        "信用卡CVV必填",
+        item,
+        this.getEleByAttr("creditCardInfocreditCardCvv", item.id)
+      );
       return false;
     }
     if (!item.creditCardPersionInfo) {
-      showErrorMsg("信用卡持卡人信息必填");
+      this.showErrorMsg(
+        "信用卡持卡人信息必填",
+        item,
+        this.getEleByAttr("creditCardPersionInfo", item.id)
+      );
       return false;
     }
     if (!item.creditCardPersionInfo.credentialType) {
-      showErrorMsg("持卡人证件类型必填");
+      this.showErrorMsg(
+        "持卡人证件类型必填",
+        item,
+        this.getEleByAttr("creditCardPersionInfocredentialType", item.id)
+      );
       return false;
     }
     if (!item.creditCardPersionInfo.credentialNumber) {
-      showErrorMsg("持卡人证件号码必填");
+      this.showErrorMsg(
+        "持卡人证件号码必填",
+        item,
+        this.getEleByAttr("creditCardPersionInfocredentialNumber", item.id)
+      );
       return false;
     }
-    // if (!item.creditCardPersionInfo.name) {
-    //   showErrorMsg("持卡人名必填");
-    //   return false;
-    // }
     return true;
   }
   private fillBookLinkmans(bookDto: OrderBookDto) {
     bookDto.Linkmans = [];
-    const showErrorMsg = (msg: string, item: IPassengerHotelBookInfo) => {
-      AppHelper.alert(
-        `联系人${(item.credentialStaff && item.credentialStaff.Name) ||
-          (item.credential && item.credential.Number)}信息${msg}不能为空`
-      );
-    };
-    for (let i = 0; i < this.combindInfos.length; i++) {
-      const item = this.combindInfos[i];
-      if (item.addContacts) {
-        for (let j = 0; j < item.addContacts.length; j++) {
-          const man = item.addContacts[j];
+    for (const item of this.combindInfos) {
+      if (item.addContacts && item.addContacts.length) {
+        for (const man of item.addContacts) {
           const linkMan: OrderLinkmanDto = new OrderLinkmanDto();
           if (!man.accountId) {
-            showErrorMsg("", item);
+            this.showErrorMsg(
+              "联系人账号不能为空",
+              item,
+              this.getEleByAttr("linkman", item.id)
+            );
             return false;
           }
           if (!man.email) {
-            showErrorMsg("Email", item);
+            this.showErrorMsg(
+              "Email",
+              item,
+              this.getEleByAttr("linkman", item.id)
+            );
             return false;
           }
           if (
@@ -535,15 +559,27 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
               man.notifyLanguage == "en"
             )
           ) {
-            showErrorMsg(LanguageHelper.getNotifyLanguageTip(), item);
+            this.showErrorMsg(
+              LanguageHelper.getNotifyLanguageTip(),
+              item,
+              this.getEleByAttr("linkman", item.id)
+            );
             return false;
           }
           if (!man.mobile) {
-            showErrorMsg("Mobile", item);
+            this.showErrorMsg(
+              "Mobile",
+              item,
+              this.getEleByAttr("linkman", item.id)
+            );
             return false;
           }
           if (!man.name) {
-            showErrorMsg("Name", item);
+            this.showErrorMsg(
+              "Name",
+              item,
+              this.getEleByAttr("linkman", item.id)
+            );
             return false;
           }
           linkMan.Id = man.accountId;
@@ -558,15 +594,6 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     return true;
   }
   private fillBookPassengers(bookDto: OrderBookDto) {
-    const showErrorMsg = (msg: string, item: IPassengerHotelBookInfo) => {
-      AppHelper.alert(
-        `${(item.credentialStaff && item.credentialStaff.Name) ||
-          (item.credential &&
-            item.credential.CheckFirstName +
-              item.credential.CheckLastName)} 【${item.credential &&
-          item.credential.Number}】 ${msg} 信息不能为空`
-      );
-    };
     bookDto.Passengers = [];
     for (let i = 0; i < this.combindInfos.length; i++) {
       const combindInfo = this.combindInfos[i];
@@ -575,15 +602,11 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         !combindInfo.appovalStaff &&
         !combindInfo.isSkipApprove
       ) {
-        if (this.approvalEls) {
-          const el = this.approvalEls.find(
-            it => it.el && it.el.getAttribute("id") == combindInfo.id
-          );
-          if (el) {
-            this.scrollEleToView(el.el);
-          }
-        }
-        showErrorMsg(LanguageHelper.Flight.getApproverTip(), combindInfo);
+        this.showErrorMsg(
+          LanguageHelper.Flight.getApproverTip(),
+          combindInfo,
+          this.getEleByAttr("approverid", combindInfo.id)
+        );
         return;
       }
       const info = combindInfo.bookInfo && combindInfo.bookInfo.bookInfo;
@@ -651,7 +674,11 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           combindInfo.notifyLanguage == "en"
         )
       ) {
-        showErrorMsg(LanguageHelper.getNotifyLanguageTip(), combindInfo);
+        this.showErrorMsg(
+          LanguageHelper.getNotifyLanguageTip(),
+          combindInfo,
+          this.getEleByAttr("notifyLanguageid", combindInfo.id)
+        );
         return false;
       }
       p.MessageLang = combindInfo.notifyLanguage;
@@ -666,17 +693,10 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           AppHelper.includeHanz(`${it.lastName}${it.firstName}`)
         );
         if (cp) {
-          if (this.checkInPersonInfoEles) {
-            const one = this.checkInPersonInfoEles.find(
-              it => it.el.getAttribute("checkinpersionid") == combindInfo.id
-            );
-            if (one) {
-              this.scrollEleToView(one.el);
-            }
-          }
-          showErrorMsg(
+          this.showErrorMsg(
             `请为入住人【${cp.lastName} ${cp.firstName}】输入拼音或者英文`,
-            combindInfo
+            combindInfo,
+            this.getEleByAttr("checkinpersionid", combindInfo.id)
           );
           return;
         }
@@ -696,31 +716,39 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         const tip = !combindInfo.vmCredential.Type
           ? LanguageHelper.getCredentialTypeTip()
           : "请选择合适的证件";
-        showErrorMsg(tip, combindInfo);
-        if (!this.checkCredentialValidate(combindInfo)) {
-        }
-        const c = this.credentialEles.find(
-          it => it.nativeElement.getAttribute("id") == combindInfo.id
+        this.showErrorMsg(
+          tip,
+          combindInfo,
+          this.getEleByAttr("credentialsid", combindInfo.id)
         );
-        if (c) {
-          this.scrollEleToView(c.nativeElement);
-        }
         return false;
       }
       p.Credentials.Type = combindInfo.vmCredential.Type;
       p.Credentials.Gender = combindInfo.vmCredential.Gender;
       if (!combindInfo.vmCredential.Number) {
-        showErrorMsg(LanguageHelper.getCredentialNumberTip(), combindInfo);
+        this.showErrorMsg(
+          LanguageHelper.getCredentialNumberTip(),
+          combindInfo,
+          this.getEleByAttr("credentialsid", combindInfo.id)
+        );
         return false;
       }
       p.Credentials.Number = combindInfo.vmCredential.Number;
       if (!combindInfo.vmCredential.CheckLastName) {
-        showErrorMsg(LanguageHelper.Flight.getCheckLastNameTip(), combindInfo);
+        this.showErrorMsg(
+          LanguageHelper.Flight.getCheckLastNameTip(),
+          combindInfo,
+          this.getEleByAttr("credentialsid", combindInfo.id)
+        );
         return false;
       }
       p.Credentials.CheckFirstName = combindInfo.vmCredential.CheckLastName;
       if (!combindInfo.vmCredential.CheckFirstName) {
-        showErrorMsg(LanguageHelper.Flight.getCheckFirstNameTip(), combindInfo);
+        this.showErrorMsg(
+          LanguageHelper.Flight.getCheckFirstNameTip(),
+          combindInfo,
+          this.getEleByAttr("credentialsid", combindInfo.id)
+        );
         return false;
       }
       p.Credentials.CheckFirstName = combindInfo.vmCredential.CheckFirstName;
@@ -774,22 +802,20 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       ) {
         // 只有白名单的才需要考虑差标
         if (!p.IllegalReason) {
-          showErrorMsg(
+          this.showErrorMsg(
             LanguageHelper.Flight.getIllegalReasonTip(),
-            combindInfo
+            combindInfo,
+            this.getEleByAttr("illegalReasonid", combindInfo.id)
           );
-          if (
-            this.illegalReasonComps &&
-            this.illegalReasonComps.first &&
-            this.illegalReasonComps.first.nativeElement
-          ) {
-            this.scrollEleToView(this.illegalReasonComps.first.nativeElement);
-          }
           return false;
         }
       }
       if (!p.Mobile) {
-        showErrorMsg(LanguageHelper.Flight.getMobileTip(), combindInfo);
+        this.showErrorMsg(
+          LanguageHelper.Flight.getMobileTip(),
+          combindInfo,
+          this.getEleByAttr("mobilesid", combindInfo.id)
+        );
         return false;
       }
       p.CostCenterCode =
@@ -819,15 +845,12 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
             )
           )
         ) {
-          showErrorMsg("外部编号", combindInfo);
+          this.showErrorMsg(
+            "外部编号",
+            combindInfo,
+            this.getEleByAttr("tmcOutNumber", combindInfo.id)
+          );
           console.log(this.outnumberEles.first);
-          if (
-            this.outnumberEles &&
-            this.outnumberEles.first &&
-            this.outnumberEles.first.nativeElement
-          ) {
-            this.scrollEleToView(this.outnumberEles.first.nativeElement);
-          }
           return false;
         }
       }
@@ -840,13 +863,18 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         });
       }
       if (!combindInfo.travelType) {
-        showErrorMsg(LanguageHelper.Flight.getTravelTypeTip(), combindInfo);
+        this.showErrorMsg(
+          LanguageHelper.Flight.getTravelTypeTip(),
+          combindInfo,
+          this.getEleByAttr("travelTypeid", combindInfo.id)
+        );
         return false;
       }
       if (!this.orderTravelPayType) {
-        showErrorMsg(
+        this.showErrorMsg(
           LanguageHelper.Flight.getrOderTravelPayTypeTip(),
-          combindInfo
+          combindInfo,
+          this.getEleByAttr("orderTravelPayTypeid", "orderTravelPayTypeid")
         );
         return false;
       }
@@ -938,8 +966,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     try {
       this.combindInfos = [];
       const bookInfos = this.hotelService.getBookInfos();
-      for (let i = 0; i < bookInfos.length; i++) {
-        const bookInfo = bookInfos[i];
+      for (const bookInfo of bookInfos) {
         const cs = (
           (this.initialBookDto && this.initialBookDto.Staffs) ||
           []
@@ -1188,17 +1215,34 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     }
     return this.tmc.HotelOrderPayType.includes(payType);
   }
-  private async scrollEleToView(ele: Element) {
-    if (this.ionContent) {
-      const scrollEle = await this.ionContent.getScrollElement();
-      const rect = ele && ele.getBoundingClientRect();
-      if (rect && scrollEle) {
-        scrollEle.scrollBy({
-          behavior: "smooth",
-          top: rect.top - this.plt.height() / 2
-        });
+  private moveRequiredEleToViewPort(ele: any) {
+    const el: HTMLElement = (ele && ele.nativeElement) || ele;
+    if (!el) {
+      return;
+    }
+    const rect = el.getBoundingClientRect();
+    if (rect) {
+      if (this.ionContent) {
+        this.ionContent.scrollByPoint(0, rect.top - this.plt.height() / 2, 100);
       }
     }
+    this.generateAnimation(el);
+  }
+  private generateAnimation(el: HTMLElement) {
+    el.style.display = "block";
+    setTimeout(() => {
+      requestAnimationFrame(() => {
+        el.style.color = "var(--ion-color-danger)";
+        el.classList.add("animated");
+        el.classList.toggle("shake", true);
+      });
+    }, 200);
+    const sub = fromEvent(el, "animationend").subscribe(() => {
+      el.style.display = "";
+      el.style.color = "";
+      el.classList.toggle("shake", false);
+      sub.unsubscribe();
+    });
   }
   private checkCredentialValidate(combineInfo: IPassengerHotelBookInfo) {
     return (
@@ -1233,21 +1277,23 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto);
     if (canBook && canBook2) {
-      //弹框
+      // 弹框
       const popover = await this.popoverCtrl.create({
-        component: WarrantyComponent,
+        component: InterHotelWarrantyComponent,
         // event: ev,
         translucent: true,
         cssClass: "warranty",
-        componentProps:{
-          title:this.getRoomPlanRulesDesc(this.combindInfos[0].bookInfo.bookInfo.roomPlan)
+        componentProps: {
+          title: this.getRoomPlanRulesDesc(
+            this.combindInfos[0].bookInfo.bookInfo.roomPlan
+          )
         }
       });
       await popover.present();
       const warranty = await popover.onDidDismiss();
-      const checked = warranty && warranty.data as "checked" | "unchecked";
-      if (!checked || checked == 'unchecked') {
-        return
+      const checked = warranty && (warranty.data as "checked" | "unchecked");
+      if (!checked || checked == "unchecked") {
+        return;
       }
       this.isSubmitDisabled = true;
       const res = await this.hotelService.onBook(bookDto).catch(e => {
@@ -1494,7 +1540,9 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     }
     if (item.credentials) {
       const isSelf = await this.staffService.isSelfBookType();
-      item.credentials = item.credentials.filter(it => !!it.Number&&it.Type!=CredentialsType.IdCard);
+      item.credentials = item.credentials.filter(
+        it => !!it.Number && it.Type != CredentialsType.IdCard
+      );
       item.isCanEditCrendentails =
         isSelf &&
         !item.credentials.find(
@@ -1661,4 +1709,5 @@ interface IPassengerHotelBookInfo {
   isShowFriendlyReminder?: boolean;
   illegalReason?: string;
   otherIllegalReason?: string;
+  expenseTypes?: any[];
 }

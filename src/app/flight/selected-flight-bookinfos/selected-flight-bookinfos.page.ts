@@ -205,6 +205,9 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
     await this.flightService.reselectPassengerFlightSegments(info);
   }
   canShowLowerSegment(info: PassengerBookInfo<IFlightSegmentInfo>) {
+    if (this.flightService.getSearchFlightModel().isExchange) {
+      return false;
+    }
     const pfs = info.bookInfo;
     let show = !!(
       pfs &&
@@ -276,7 +279,7 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
       );
       return "";
     }
-    let tip = [];
+    const tip = [];
     if (info && info.bookInfo && info.bookInfo.flightSegment) {
       if (
         info.bookInfo.flightSegment.ToAirport != lowestFlightSegment.ToAirport
@@ -348,7 +351,8 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
           passenger: info.passenger,
           credential: info.credential,
           isNotWhitelist: info.isNotWhitelist,
-          bookInfo
+          bookInfo,
+          exchangeInfo: info.exchangeInfo
         };
         this.flightService.replacePassengerBookInfo(info, newInfo);
       }
