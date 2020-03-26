@@ -118,8 +118,6 @@ export class BookPage implements OnInit, AfterViewInit {
   };
   isShowTop: boolean;
   addContacts: AddContact[] = [];
-  @ViewChildren("illegalReasonsEle", { read: ElementRef })
-  illegalReasonsEles: QueryList<ElementRef<HTMLElement>>;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent, { static: true }) cnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
@@ -937,9 +935,6 @@ export class BookPage implements OnInit, AfterViewInit {
             combindInfo,
             ele
           );
-          if (this.illegalReasonsEles) {
-            this.moveRequiredEleToViewPort(this.illegalReasonsEles.first);
-          }
           return false;
         }
       }
