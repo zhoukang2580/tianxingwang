@@ -145,6 +145,12 @@ export class TripPage implements OnInit, OnDestroy {
         const trips = (res && res.Data && res.Data.Trips) || [];
         if (trips.length) {
           this.trips = this.trips.concat(trips);
+          this.trips.sort((t1, t2) => {
+            return (
+              AppHelper.getDate(t1.StartTime).getTime() -
+              AppHelper.getDate(t2.StartTime).getTime()
+            );
+          });
           this.searchCondition.PageIndex++;
         }
         if (this.infiniteScroll) {
