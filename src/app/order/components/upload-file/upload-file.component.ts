@@ -41,7 +41,6 @@ export class UploadFileComponent implements OnInit, OnDestroy {
     );
     const fInput: HTMLInputElement = document.getElementById("file") as any;
     if (fInput) {
-      fInput.click();
       const subscription = fromEvent(fInput, "change", {
         passive: true
       }).subscribe(() => {
@@ -72,6 +71,10 @@ export class UploadFileComponent implements OnInit, OnDestroy {
       });
       this.subscriptions.push(subscription);
     }
+  }
+  onSelect() {
+    const fInput: HTMLInputElement = document.getElementById("file") as any;
+    fInput.click();
   }
   onConfirm() {
     setTimeout(() => {
@@ -107,6 +110,11 @@ export class UploadFileComponent implements OnInit, OnDestroy {
     }, 0);
   }
   private back() {
+    if (this.result && this.result.FileName) {
+      this.result.FileName =
+        this.result.FileName.substr(0, this.result.FileName.lastIndexOf(".")) +
+        ".jpg";
+    }
     this.modalCtrl.dismiss(this.result);
   }
   private initCropper() {

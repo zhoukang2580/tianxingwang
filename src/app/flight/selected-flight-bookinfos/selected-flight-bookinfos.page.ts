@@ -92,10 +92,9 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
               item =>
                 item.bookInfo && item.bookInfo.tripType == TripType.returnTrip
             );
+            const m = this.flightService.getSearchFlightModel();
             this.showSelectReturnTripButton =
-              this.flightService.getSearchFlightModel().isRoundTrip &&
-              goinfo &&
-              !backInfo;
+              !m.isExchange && m.isRoundTrip && goinfo && !backInfo;
           } else {
             this.showSelectReturnTripButton = false;
           }
@@ -108,8 +107,26 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
       })
     );
   }
-  onExchange() {
-    this.processExchange();
+  async onExchange() {
+    const result = await this.processExchange().catch(() => false);
+    this.flightService.setSearchFlightModelSource({
+      ...this.flightService.getSearchFlightModel(),
+      isExchange: false,
+      isLocked: false
+    });
+    this.flightService.setPassengerBookInfosSource(
+      this.flightService.getPassengerBookInfos().map(it => {
+        it.exchangeInfo = null;
+        it.bookInfo = null;
+        return it;
+      })
+    );
+    this.navCtrl.navigateRoot(
+      `product-tabs?tabId=${ProductItemType.plane}&doRefresh=${result}`,
+      {
+        animated: true
+      }
+    );
   }
   getTime(takofftime: string) {
     return this.calendarService.getHHmm(takofftime);
@@ -117,14 +134,20 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
   private async processExchange() {
     const infos = this.flightService.getPassengerBookInfos();
     const info: PassengerBookInfo<IFlightSegmentInfo> = infos && infos[0];
-    if (!info || !info.exchangeInfo || !info.exchangeInfo.trip) {
+    if (
+      !info ||
+      !info.exchangeInfo ||
+      !info.exchangeInfo.trip ||
+      !info.bookInfo.flightSegment
+    ) {
       AppHelper.alert("改签失败，请重试");
       return false;
     }
     const trip: OrderFlightTripEntity = info.exchangeInfo
       .trip as OrderFlightTripEntity;
     const tips = [];
-    if (trip.Carrier != info.bookInfo.flightSegment.Carrier) {
+    const carrier = info.bookInfo.flightSegment.Number.substr(0, 2);
+    if (trip.Carrier.toLowerCase() != carrier.toLowerCase()) {
       tips.push(
         `所选航班承运人与旅客所持机票承运人不同，无法直接更改。需将所持机票退票（或将产生退票费），重新购买机票。`
       );
@@ -153,28 +176,11 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
           AppHelper.alert(e);
           return false;
         });
-      this.flightService.setSearchFlightModelSource({
-        ...this.flightService.getSearchFlightModel(),
-        isExchange: false,
-        isLocked: false
-      });
-      this.flightService.setPassengerBookInfosSource(
-        this.flightService.getPassengerBookInfos().map(it => {
-          it.exchangeInfo = null;
-          it.bookInfo = null;
-          return it;
-        })
-      );
       if (result) {
         AppHelper.toast("改签申请中", 2000, "middle");
       }
     }
-    this.navCtrl.navigateRoot(
-      `product-tabs?tabId=${ProductItemType.plane}&doRefresh=${result}`,
-      {
-        animated: true
-      }
-    );
+    return result;
   }
   async nextStep() {
     const bookInfos = this.flightService

@@ -117,7 +117,7 @@ export class TmcService {
   }
   async getChannel() {
     const identity: IdentityEntity = await this.identityService.getIdentityAsync();
-    let tag: "代理" | "客户" | "手机端" = "手机端";
+    let tag: "代理" | "客户" = "客户";
     if (identity) {
       if (identity.Numbers.AgentId) {
         tag = "代理";
@@ -125,7 +125,7 @@ export class TmcService {
         tag = "客户";
       }
     }
-    let channel = `${tag}H5`;
+    let channel = `H5`;
     if (AppHelper.isApp()) {
       if (this.platform.is("android")) {
         channel = "android";

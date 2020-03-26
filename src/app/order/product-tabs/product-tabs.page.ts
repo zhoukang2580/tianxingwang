@@ -309,6 +309,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         TicketId: data.ticketId,
         ExchangeDate: date
       });
+      this.flightService.removeAllBookInfos();
       await this.flightService.initSelfBookTypeBookInfos();
       const bookInfos = this.flightService.getPassengerBookInfos();
       if (!bookInfos.length) {
@@ -329,6 +330,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         fromCity: res.fromCity,
         toCity: res.toCity,
         isExchange: true,
+        isRoundTrip: false,
         Date: date.substr(0, 10)
       });
       this.router.navigate(["flight-list"], {
@@ -356,8 +358,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         queryParams: { Id: orderId }
       });
       return;
-    }
-    else if (type && type.toLowerCase() == "flight") {
+    } else if (type && type.toLowerCase() == "flight") {
       this.router.navigate([AppHelper.getRoutePath("flight-order-detail")], {
         queryParams: {
           tab: JSON.stringify(this.activeTab),
