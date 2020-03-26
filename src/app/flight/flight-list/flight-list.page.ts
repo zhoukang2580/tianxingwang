@@ -533,6 +533,9 @@ export class FlightListPage
     this.doRefresh(false, true);
   }
   onSelectCity(isFrom: boolean) {
+    if (this.flightService.getSearchFlightModel().isLocked) {
+      return;
+    }
     this.isCanLeave = true;
     this.flightService.onSelectCity(isFrom);
   }
