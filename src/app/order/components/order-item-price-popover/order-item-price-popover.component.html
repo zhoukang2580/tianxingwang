@@ -8,6 +8,14 @@
             <span>{{p.CredentialsNumber}}</span>
           </ion-col>
         </ion-row>
+        <ion-row *ngIf="t.Id">
+          <ion-col size='5'>
+            事务号
+          </ion-col>
+          <ion-col>
+          <span>{{t.Id}}</span>
+          </ion-col>
+        </ion-row>
         <ion-row *ngIf='getAmount(t,OrderItemHelper.FlightTicket) as amount'>
           <ion-col size='7'>票面价</ion-col>
           <ion-col class='price'>{{abs(amount)}}</ion-col>

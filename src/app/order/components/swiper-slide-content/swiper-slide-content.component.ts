@@ -79,7 +79,7 @@ export class SwiperSlideContentComponent
   ngOnInit() {
     console.log("on init");
     this.swiper = new Swiper(this.container.nativeElement, {
-      autoHeight: true, // 高度随内容变化
+      // autoHeight: true, // 高度随内容变化
       on: {
         slideChange: () => {
           const idx = this.swiper.realIndex;

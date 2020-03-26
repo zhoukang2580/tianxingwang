@@ -8,6 +8,7 @@ import { SendEmailComponent } from "../components/send-email/send-email.componen
 import { OrderFlightTicketEntity } from "../models/OrderFlightTicketEntity";
 import { CalendarService } from "../../tmc/calendar.service";
 import { TmcEntity } from "../../tmc/tmc.service";
+import { flyInOut } from "src/app/animations/flyInOut";
 import {
   NavController,
   Platform,
@@ -59,7 +60,10 @@ export interface TabItem {
 @Component({
   selector: "app-flight-order-detail",
   templateUrl: "./flight-order-detail.page.html",
-  styleUrls: ["./flight-order-detail.page.scss"]
+  styleUrls: ["./flight-order-detail.page.scss"],
+  animations: [
+    flyInOut
+  ]
 })
 export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
   private headerHeight = 0;
@@ -77,7 +81,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("infos") infosContainer: ElementRef<HTMLElement>;
   @ViewChildren("slide") slides: QueryList<any>;
   @ViewChild(IonHeader) headerEle: IonHeader;
-  @ViewChild(IonContent) ionContent: IonContent;
+  @ViewChild(IonContent, { static: true }) ionContent: IonContent;
   @ViewChild(SwiperSlideContentComponent)
   swiperComp: SwiperSlideContentComponent;
   scrollElement: HTMLElement;
@@ -86,6 +90,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
   // selectedInsuranceId: string;
   identity: IdentityEntity;
   passengerTikects: { [passengerId: string]: OrderFlightTicketEntity[] };
+  tikect2Insurance: { [tikectKey: string]: OrderInsuranceEntity[] }={};
   constructor(
     private plt: Platform,
     private route: ActivatedRoute,
@@ -96,7 +101,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     private domCtrl: DomController,
     private orderService: OrderService,
     private identityService: IdentityService
-  ) {}
+  ) { }
   scrollTop: number;
 
   compareFn(t1: OrderFlightTicketEntity, t2: OrderFlightTicketEntity) {
@@ -537,8 +542,8 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     this.passengerTikects = {};
     if (
       !this.orderDetail ||
-      !this.orderDetail.Order.OrderPassengers ||
       !this.orderDetail.Order ||
+      !this.orderDetail.Order.OrderPassengers ||
       !this.orderDetail.Order.OrderFlightTickets
     ) {
       return;
@@ -546,6 +551,22 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     this.orderDetail.Order.OrderPassengers.forEach(p => {
       if (!this.passengerTikects[p.Id]) {
         this.passengerTikects[p.Id] = this.getPassengerTickets(p);
+      }
+    });
+  }
+  private initTikectsInsurances() {
+    this.tikect2Insurance = {};
+    if (
+      !this.orderDetail ||
+      !this.orderDetail.Order ||
+      !this.orderDetail.Order.OrderInsurances ||
+      !this.orderDetail.Order.OrderFlightTickets
+    ) {
+      return;
+    }
+    this.orderDetail.Order.OrderFlightTickets.forEach(t => {
+      if (!this.tikect2Insurance[t.Key]) {
+        this.tikect2Insurance[t.Key] = this.getTicketOrderInsurances(t);
       }
     });
   }
@@ -558,9 +579,10 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     this.orderDetail = await this.orderService
       .getOrderDetailAsync(orderId)
       .catch(_ => null);
-    // console.log(this.orderDetail, "33333");
+    console.log(this.orderDetail, "33333");
     this.sortFlightTicket();
     this.initPassengerTikects();
+    this.initTikectsInsurances();
     this.isLoading = false;
     this.initTabs();
     if (!this.tmc) {
@@ -712,7 +734,8 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     this.subscriptions.push(
       this.slides.changes.subscribe(() => {
         if (this.swiperComp) {
-          this.swiperComp.update(false);
+          // this.swiperComp.update(false);
+          // this.swiperComp.updateSlides();
         }
       })
     );
@@ -745,7 +768,8 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
   onShowFlightTicket(
     idx: number,
     p: OrderPassengerEntity,
-    t: OrderFlightTicketEntity
+    t: OrderFlightTicketEntity,
+    event: CustomEvent
   ) {
     const tickets =
       (this.passengerTikects && this.passengerTikects[p.Id]) || [];
@@ -756,12 +780,29 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     if (t) {
       t["isToggle"] = !t["isToggle"];
     }
+    const height = this.plt.height();
+    setTimeout(() => {
+      const rect = (event.target as HTMLElement).getBoundingClientRect();
+      this.ionContent.scrollByPoint(0, (rect.top - (height / 2)), 100)
+    }, 200);
   }
-  onShowOrderInsurance(t: OrderFlightTicketEntity) {
-    if (t) {
-      t["isShowDetail"] = !t["isShowDetail"];
-    }
+  private getTicketOrderInsurances(t: OrderFlightTicketEntity) {
+    return (
+      (this.orderDetail &&
+        this.orderDetail.Order &&
+        this.orderDetail.Order.OrderInsurances &&
+        this.orderDetail.Order.OrderInsurances.filter(
+          it => it.TravelKey == t.Key
+        )) || []
+    );
   }
+  // const insurance =
+  // (this.tikect2Insurance && this.tikect2Insurance[t.Key]) || [];
+  // if (insurance) {
+  //   console.log(insurance["isShowDetail"],"isShowDetail");
+
+  //   insurance["isShowDetail"] = !insurance["isShowDetail"];
+  // }
   private getPassengerTickets(p: OrderPassengerEntity) {
     return (
       (this.orderDetail &&
