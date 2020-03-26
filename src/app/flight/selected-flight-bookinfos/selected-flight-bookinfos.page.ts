@@ -92,10 +92,9 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
               item =>
                 item.bookInfo && item.bookInfo.tripType == TripType.returnTrip
             );
+            const m = this.flightService.getSearchFlightModel();
             this.showSelectReturnTripButton =
-              this.flightService.getSearchFlightModel().isRoundTrip &&
-              goinfo &&
-              !backInfo;
+              !m.isExchange && m.isRoundTrip && goinfo && !backInfo;
           } else {
             this.showSelectReturnTripButton = false;
           }
@@ -108,8 +107,26 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
       })
     );
   }
-  onExchange() {
-    this.processExchange();
+  async onExchange() {
+    const result = await this.processExchange().catch(() => false);
+    this.flightService.setSearchFlightModelSource({
+      ...this.flightService.getSearchFlightModel(),
+      isExchange: false,
+      isLocked: false
+    });
+    this.flightService.setPassengerBookInfosSource(
+      this.flightService.getPassengerBookInfos().map(it => {
+        it.exchangeInfo = null;
+        it.bookInfo = null;
+        return it;
+      })
+    );
+    this.navCtrl.navigateRoot(
+      `product-tabs?tabId=${ProductItemType.plane}&doRefresh=${result}`,
+      {
+        animated: true
+      }
+    );
   }
   getTime(takofftime: string) {
     return this.calendarService.getHHmm(takofftime);
@@ -117,7 +134,12 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
   private async processExchange() {
     const infos = this.flightService.getPassengerBookInfos();
     const info: PassengerBookInfo<IFlightSegmentInfo> = infos && infos[0];
-    if (!info || !info.exchangeInfo || !info.exchangeInfo.trip) {
+    if (
+      !info ||
+      !info.exchangeInfo ||
+      !info.exchangeInfo.trip ||
+      !info.bookInfo.flightSegment
+    ) {
       AppHelper.alert("改签失败，请重试");
       return false;
     }
@@ -153,28 +175,11 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
           AppHelper.alert(e);
           return false;
         });
-      this.flightService.setSearchFlightModelSource({
-        ...this.flightService.getSearchFlightModel(),
-        isExchange: false,
-        isLocked: false
-      });
-      this.flightService.setPassengerBookInfosSource(
-        this.flightService.getPassengerBookInfos().map(it => {
-          it.exchangeInfo = null;
-          it.bookInfo = null;
-          return it;
-        })
-      );
       if (result) {
         AppHelper.toast("改签申请中", 2000, "middle");
       }
     }
-    this.navCtrl.navigateRoot(
-      `product-tabs?tabId=${ProductItemType.plane}&doRefresh=${result}`,
-      {
-        animated: true
-      }
-    );
+    return result;
   }
   async nextStep() {
     const bookInfos = this.flightService
