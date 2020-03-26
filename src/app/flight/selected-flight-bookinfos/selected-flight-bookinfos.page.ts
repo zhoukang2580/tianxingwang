@@ -146,7 +146,8 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
     const trip: OrderFlightTripEntity = info.exchangeInfo
       .trip as OrderFlightTripEntity;
     const tips = [];
-    if (trip.Carrier != info.bookInfo.flightSegment.Carrier) {
+    const carrier = info.bookInfo.flightSegment.Number.substr(0, 2);
+    if (trip.Carrier.toLowerCase() != carrier.toLowerCase()) {
       tips.push(
         `所选航班承运人与旅客所持机票承运人不同，无法直接更改。需将所持机票退票（或将产生退票费），重新购买机票。`
       );
