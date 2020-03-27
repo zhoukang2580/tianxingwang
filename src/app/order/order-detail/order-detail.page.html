@@ -136,7 +136,8 @@
                   <div style='width: 100%' class='passenger-info'>
                     <ion-row>
                       <ion-col size='3'>姓名</ion-col>
-                      <ion-col>{{p.CheckName}} <span *ngIf='p.PassengerTypeName'>({{p.PassengerTypeName}})</span>
+                      <ion-col>{{p.CheckName}} <span
+                          *ngIf='orderDetail.Order.Type?.toLowerCase()!="hotel"&& p.PassengerTypeName'>({{p.PassengerTypeName}})</span>
                       </ion-col>
                     </ion-row>
                     <ion-row>
@@ -184,13 +185,11 @@
                               <div *ngIf='it.Type==OrderHotelType.International'>
                                 <div
                                   *ngIf='it.CustomerName?.substring(it.CustomerName?.indexOf("/")+1)?.replace(","," ") as n'>
-                                  成人
                                   <ion-text class="ion-margin-end">
                                     {{n}}
                                   </ion-text>
                                 </div>
                                 <div *ngIf='it.ChildrenName.replace(","," ") as n '>
-                                  儿童
                                   <ion-text class="ion-margin-end">
                                     {{n}}
                                   </ion-text>

@@ -65,9 +65,9 @@ export class OrderService {
     req.Data = {
       Id: id
     };
-    if(!environment.production){
-      return Promise.resolve(this.getmockOrderDetail())
-    }
+    // if(!environment.production){
+    //   return Promise.resolve(this.getmockOrderDetail())
+    // }
     const result = this.apiService.getPromiseData<OrderDetailModel>(req);
     return result;
   }
