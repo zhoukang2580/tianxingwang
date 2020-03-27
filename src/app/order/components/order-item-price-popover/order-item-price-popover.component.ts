@@ -15,6 +15,8 @@ import {
 } from "@angular/core";
 import { OrderItemEntity, OrderEntity } from "../../models/OrderEntity";
 import { IonGrid, IonSlides } from "@ionic/angular";
+import { OrderInsuranceEntity } from '../../models/OrderInsuranceEntity';
+import { TmcEntity } from 'src/app/tmc/tmc.service';
 @Component({
   selector: "app-order-item-price-popover",
   templateUrl: "./order-item-price-popover.component.html",
@@ -27,8 +29,10 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
   order: OrderEntity;
   amount: number;
   orderItems: OrderItemEntity[];
+  // OrderInsurance:OrderInsuranceEntity[];
   OrderItemHelper = OrderItemHelper;
-  // IsShowServiceFee = false;
+  tmc:TmcEntity
+  IsShowServiceFee = false;
   activeIdx = 0;
   constructor(private render: Renderer2, private ngZone: NgZone) {}
   abs(item: number) {
@@ -83,6 +87,10 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
       this.order.OrderPassengers &&
       this.order.OrderPassengers.find(it => it.Id == t.Passenger.Id)
     );
+  }
+  getInsurances(t: OrderFlightTicketEntity) {
+    return this.order&&this.order.OrderInsurances&&this.order.OrderInsurances.filter(it=>
+      it.TravelKey==(t&&t.Key))
   }
   getAmount(
     ticket: OrderFlightTicketEntity,

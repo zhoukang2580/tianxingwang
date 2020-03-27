@@ -51,6 +51,7 @@ import { OrderPayEntity } from "../models/OrderPayEntity";
 import { OrderTrainTicketEntity } from "../models/OrderTrainTicketEntity";
 import { OrderHotelType } from "../models/OrderHotelEntity";
 import { MOCK_TMC_DATA } from "../mock-data";
+import { OrderTravelPayType } from '../models/OrderTravelEntity';
 
 export interface TabItem {
   label: string;
@@ -484,8 +485,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
         this.getOrderInfo(q.get("orderId"));
       }
     });
-    // todo
-    this.tmc = (MOCK_TMC_DATA as any) || (await this.tmcService.getTmc());
+    this.tmc = (await this.tmcService.getTmc());
     this.identity = await this.identityService.getIdentityAsync();
   }
   getVariableObj(
@@ -702,8 +702,13 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async showPricePopover() {
     const Tmc = this.tmc;
+    console.log(Tmc,"TmcTmcTmcTmc");
+    
     if (!Tmc) {
       return `0`;
+    }
+    if(OrderTravelPayType.Person){
+      Tmc.IsShowServiceFee=true;
     }
     let orderItems =
       this.orderDetail.Order && this.orderDetail.Order.OrderItems;
