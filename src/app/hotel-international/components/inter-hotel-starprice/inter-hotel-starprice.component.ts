@@ -11,8 +11,12 @@ import {
   OnDestroy
 } from "@angular/core";
 import { IonRange } from "@ionic/angular";
-import { IStarPriceTab, IStarPriceTabItem, HotelQueryEntity } from 'src/app/hotel/models/HotelQueryEntity';
-import { InternationalHotelService } from '../../international-hotel.service';
+import {
+  IStarPriceTab,
+  IStarPriceTabItem,
+  HotelQueryEntity
+} from "src/app/hotel/models/HotelQueryEntity";
+import { InternationalHotelService } from "../../international-hotel.service";
 interface ILowerUper {
   lower: number;
   upper: number;
@@ -146,11 +150,12 @@ export class InterHotelStarPriceComponent
       this.customepriceTab.hasItemSelected = false;
       this.rangeEle.value = this.value;
       setTimeout(() => {
-        if(this.customepriceTab){
-          this.customepriceTab.hasItemSelected=false;
+        if (this.customepriceTab) {
+          this.customepriceTab.hasItemSelected = false;
         }
       }, 0);
       if (this.hotelQuery.starAndPrices) {
+        this.hotelQuery.EndPrice = "1000000";
         this.hotelQuery.starAndPrices = this.hotelQuery.starAndPrices.filter(
           it => it.tag != "customeprice"
         );
