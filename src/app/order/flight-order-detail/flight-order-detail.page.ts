@@ -480,6 +480,10 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async ngOnInit() {
     this.route.queryParamMap.subscribe(q => {
+      this.tab = this.tab || JSON.parse(q.get("tab"));
+      this.title = this.tab.label + "订单";
+    })
+    this.route.queryParamMap.subscribe(q => {
       this.initTabs();
       if (q.get("orderId")) {
         this.getOrderInfo(q.get("orderId"));
