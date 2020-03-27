@@ -8,6 +8,13 @@ const routes: Routes = [
       import(
         "./search-international-flight/search-international-flight.module"
       ).then(m => m.SearchInternationalFlightPageModule)
+  },
+  {
+    path: "select-international-flight-city",
+    loadChildren: () =>
+      import("./select-city/select-city.module").then(
+        m => m.SelectFlightCityPageModule
+      )
   }
 ];
 

@@ -40,8 +40,9 @@ interface LocalStorageAirport {
 export enum FlightHotelTrainType {
   Flight = 1,
   Hotel = 2,
+  Train = 3,
   HotelInternational = 4,
-  Train = 3
+  InternationalFlight = 5
 }
 @Injectable({
   providedIn: "root"
@@ -593,7 +594,7 @@ export class TmcService {
         .set(KEY_INTERNATIONAL_AIRPORTS, this.localInternationAirports)
         .then(_ => {
           console.log(
-            `本地化国际机票耗时：${window.performance.now() - st} ms`
+            `本地化国际机场耗时：${window.performance.now() - st} ms`
           );
         });
     }

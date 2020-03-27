@@ -57,7 +57,11 @@ export class SelectDateComponent implements OnInit, OnDestroy {
     this.checkYms();
   }
   initCurYearMonthCalendar() {
-    console.log("goArrivalTime", this.goArrivalTime);
+    console.log(
+      "goArrivalTime",
+      this.goArrivalTime,
+      this.calendarService.getMoment(0, this.goArrivalTime).format("YYYY-MM-DD")
+    );
     if (!this.goArrivalTime) {
       this.curSelectedYear = new Date().getFullYear() + "";
       this.curSelectedMonth = new Date().getMonth() + 1;
@@ -75,7 +79,8 @@ export class SelectDateComponent implements OnInit, OnDestroy {
       const type = this.forType;
       if (
         this.tripType == TripType.returnTrip ||
-        this.tripType == TripType.checkOut
+        this.tripType == TripType.checkOut ||
+        this.forType == FlightHotelTrainType.InternationalFlight
       ) {
         if (this.goArrivalTime) {
           const goDate = moment(this.goArrivalTime);
@@ -86,9 +91,10 @@ export class SelectDateComponent implements OnInit, OnDestroy {
             this.yms.forEach(day => {
               if (day.dayList) {
                 day.dayList.forEach(d => {
-                  d.enabled =
-                    goDate.format("YYYY-MM-DD") == d.date ||
-                    +moment(d.date) >= +goDate;
+                  d.enabled = !FlightHotelTrainType.InternationalFlight
+                    ? goDate.format("YYYY-MM-DD") == d.date ||
+                      +moment(d.date) >= +goDate
+                    : +moment(d.date) > +goDate;
                   if (type == FlightHotelTrainType.Train) {
                     d.enabled =
                       d.timeStamp <= endDay.timeStamp ? d.enabled : false;

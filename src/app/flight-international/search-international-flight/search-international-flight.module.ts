@@ -19,6 +19,6 @@ import { InternationalFlightComponentsModule } from "../components/international
     AppComponentsModule,
     InternationalFlightComponentsModule
   ],
-  declarations: [SearchInternationalFlightPage]
+  declarations: [SearchInternationalFlightPage],
 })
 export class SearchInternationalFlightPageModule {}

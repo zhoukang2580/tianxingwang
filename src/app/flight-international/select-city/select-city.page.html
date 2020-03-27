@@ -1,0 +1,53 @@
+<ion-header>
+  <ion-toolbar>
+    <form (ngSubmit)='onSearchByKeywords()'>
+      <ion-buttons>
+        <app-back-button defaultHref=''></app-back-button>
+        <ion-searchbar name='searchbar' type='search' [debounce]='300' [(ngModel)]='vmKeyowrds' [animated]='true'
+          placeholder="城市名称/拼音/三字码" (ionChange)='onSearchByKeywords()' mode='ios'>
+        </ion-searchbar>
+      </ion-buttons>
+    </form>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <app-refresher (ionRefresh)='doRefresh(true)' slot='fixed'>
+    <ion-refresher-content>正在刷新数据</ion-refresher-content>
+  </app-refresher>
+  <ng-container *ngIf='isSearching else n'>
+    <ion-label>正在搜索...</ion-label>
+  </ng-container>
+  <ng-template #n>
+    <ion-list class='holder'>
+    </ion-list>
+    <ion-list *ngIf='textSearchResults?.length else nodatatempl'>
+      <ion-note *ngIf='vmKeyowrds=="北京南苑"' class='ion-margin-start'>您要找的是不是<ion-text color='secondary'
+          (click)='vmKeyowrds="BJS";onSearchByKeywords()' class='ion-margin-start'>北京</ion-text>
+      </ion-note>
+      <ion-item *ngFor='let item of textSearchResults' (click)='onCitySelected(item)'>
+        <ion-label>
+          <ion-text style="position: relative;padding-left: 1em;" [color]="item?.Selected?'secondary':'dark'">
+            <ion-icon *ngIf='item.IsHot' color='danger' style="font-size: 0.8rem;position: absolute;left: 0;top: 0;" name="flame-outline"></ion-icon>
+            {{item?.Nickname}}
+          </ion-text>
+          <ion-text *ngIf='item.Pinyin' color='medium'>({{item.Pinyin}})</ion-text>
+          <ion-text *ngIf='item.Code' color='medium'>({{item.Code}})</ion-text>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ng-template>
+  <ng-template #nodatatempl>
+    <app-or-comp>暂无数据</app-or-comp>
+  </ng-template>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)='onActiveTab("hot")' size='small' color='{{activeTab=="hot"?"danger":""}}'>
+      <ion-text color='{{activeTab=="hot"?"light":"danger"}}'>热门</ion-text>
+    </ion-fab-button>
+    <ion-fab-button (click)='onActiveTab("history")' size='small' color='{{activeTab=="history"?"secondary":""}}'>
+      历史
+    </ion-fab-button>
+  </ion-fab>
+  <ion-infinite-scroll (ionInfinite)='loadMore()'>
+    <ion-infinite-scroll-content>加载更多...</ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>
