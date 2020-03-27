@@ -659,6 +659,7 @@ export class OrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       cssClass: "ticket-changing",
       componentProps: {
         order: this.orderDetail && this.orderDetail.Order,
+        tmc: this.tmc ,
         insurance: this.getInsuranceAmount(),
         IsShowServiceFee: Tmc.IsShowServiceFee,
         orderItems,
