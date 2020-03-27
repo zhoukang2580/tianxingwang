@@ -185,13 +185,11 @@
                               <div *ngIf='it.Type==OrderHotelType.International'>
                                 <div
                                   *ngIf='it.CustomerName?.substring(it.CustomerName?.indexOf("/")+1)?.replace(","," ") as n'>
-                                  成人
                                   <ion-text class="ion-margin-end">
                                     {{n}}
                                   </ion-text>
                                 </div>
                                 <div *ngIf='it.ChildrenName.replace(","," ") as n '>
-                                  儿童
                                   <ion-text class="ion-margin-end">
                                     {{n}}
                                   </ion-text>
