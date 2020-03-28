@@ -1,9 +1,8 @@
-import { FlightCabinEntity } from './flight/FlightCabinEntity';
-import { FlightSegmentEntity } from './flight/FlightSegmentEntity';
-import { TripType } from 'src/app/tmc/models/TripType';
-import { PassengerBookInfo } from 'src/app/tmc/tmc.service';
-
-
+import { FlightCabinEntity } from "./flight/FlightCabinEntity";
+import { FlightSegmentEntity } from "./flight/FlightSegmentEntity";
+import { TripType } from "src/app/tmc/models/TripType";
+import { PassengerBookInfo } from "src/app/tmc/tmc.service";
+import { OrderFlightTripEntity } from "src/app/order/models/OrderFlightTripEntity";
 
 export interface IFlightSegmentInfo {
   flightSegment: FlightSegmentEntity;
@@ -11,7 +10,11 @@ export interface IFlightSegmentInfo {
   isDontAllowBook?: boolean;
   tripType?: TripType;
   id?: string;
-  lowerSegmentInfo?: { lowestCabin: FlightPolicy; lowestFlightSegment: FlightSegmentEntity, tripType: TripType };
+  lowerSegmentInfo?: {
+    lowestCabin: FlightPolicy;
+    lowestFlightSegment: FlightSegmentEntity;
+    tripType: TripType;
+  };
   originalBookInfo?: PassengerBookInfo<IFlightSegmentInfo>;
 }
 

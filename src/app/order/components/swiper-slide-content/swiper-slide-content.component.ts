@@ -51,17 +51,35 @@ export class SwiperSlideContentComponent
       this.scrollToTop();
     }
   }
-  update() {
+  update(slideToStart = true) {
     if (this.swiper) {
-      this.swiper.update();
       requestAnimationFrame(() => {
-        this.onSlideTouchEnd(0);
+        this.swiper.update();
+        if (slideToStart) {
+          this.onSlideTouchEnd(0);
+        }
+      });
+    }
+  }
+  updateSlides() {
+    if (this.swiper) {
+      requestAnimationFrame(() => {
+        this.swiper.updateSlides();
+      });
+    }
+  }
+  updateSize() {
+    if (this.swiper) {
+      requestAnimationFrame(() => {
+        this.swiper.updateSize();
+        // this.onSlideTouchEnd(0);
       });
     }
   }
   ngOnInit() {
     console.log("on init");
     this.swiper = new Swiper(this.container.nativeElement, {
+      // autoHeight: true, // 高度随内容变化
       on: {
         slideChange: () => {
           const idx = this.swiper.realIndex;

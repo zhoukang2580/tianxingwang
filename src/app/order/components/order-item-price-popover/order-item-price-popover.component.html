@@ -8,6 +8,14 @@
             <span>{{p.CredentialsNumber}}</span>
           </ion-col>
         </ion-row>
+        <ion-row *ngIf="t.Id">
+          <ion-col size='5'>
+            事务号
+          </ion-col>
+          <ion-col>
+          <span>{{t.Id}}</span>
+          </ion-col>
+        </ion-row>
         <ion-row *ngIf='getAmount(t,OrderItemHelper.FlightTicket) as amount'>
           <ion-col size='7'>票面价</ion-col>
           <ion-col class='price'>{{abs(amount)}}</ion-col>
@@ -18,12 +26,14 @@
           <ion-col class='price'>{{abs(amount)}}</ion-col>
           <ion-col size='1'>元</ion-col>
         </ion-row>
-        <ion-row
-          *ngIf='getAmount(t,[OrderItemHelper.FlightTicketOfflineFee,OrderItemHelper.FlightTicketOnlineFee]) as amount'>
-          <ion-col size='7'>服务费</ion-col>
-          <ion-col class='price'>{{abs(amount)}}</ion-col>
-          <ion-col size='1'>元</ion-col>
-        </ion-row>
+        <ng-container *ngIf="IsShowServiceFee">
+          <ion-row
+            *ngIf='getAmount(t,[OrderItemHelper.FlightTicketOfflineFee,OrderItemHelper.FlightTicketOnlineFee]) as amount'>
+            <ion-col size='7'>服务费</ion-col>
+            <ion-col class='price'>{{abs(amount)}}</ion-col>
+            <ion-col size='1'>元</ion-col>
+          </ion-row>
+        </ng-container>
         <ion-row
           *ngIf='getAmount(t,[OrderItemHelper.FlightTicketReward,OrderItemHelper.FlightTicketRate],"TmcRate") as amount'>
           <ion-col size='7'>代理费率</ion-col>
@@ -111,9 +121,9 @@
           <ion-col class='price'>{{abs(amount)}}</ion-col>
           <ion-col size='1'>元</ion-col>
         </ion-row>
-        <ion-row *ngIf='getAmount(t,[OrderItemHelper.Insurance]) as amount'>
-          <ion-col size='7'>航班意外险</ion-col>
-          <ion-col class='price'>{{abs(amount)}}</ion-col>
+        <ion-row *ngFor="let insurance of getInsurances(t)">
+        <ion-col size='7'>{{insurance.Name}}</ion-col>
+          <ion-col class='price'>{{insurance.Premium}}</ion-col>
           <ion-col size='1'>元</ion-col>
         </ion-row>
         <ion-row>

@@ -25,6 +25,8 @@ import { OrderEntity } from "../order/models/OrderEntity";
 import { OrderTrainTicketEntity } from "../order/models/OrderTrainTicketEntity";
 import { CountryEntity } from "./models/CountryEntity";
 import { IdentityEntity } from "../services/identity/identity.entity";
+import { OrderTrainTripEntity } from "../order/models/OrderTrainTripEntity";
+import { OrderFlightTripEntity } from "../order/models/OrderFlightTripEntity";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -38,8 +40,9 @@ interface LocalStorageAirport {
 export enum FlightHotelTrainType {
   Flight = 1,
   Hotel = 2,
+  Train = 3,
   HotelInternational = 4,
-  Train = 3
+  InternationalFlight = 5
 }
 @Injectable({
   providedIn: "root"
@@ -115,7 +118,7 @@ export class TmcService {
   }
   async getChannel() {
     const identity: IdentityEntity = await this.identityService.getIdentityAsync();
-    let tag: "代理" | "客户" | "手机端" = "手机端";
+    let tag: "代理" | "客户" = "客户";
     if (identity) {
       if (identity.Numbers.AgentId) {
         tag = "代理";
@@ -123,7 +126,7 @@ export class TmcService {
         tag = "客户";
       }
     }
-    let channel = `${tag}H5`;
+    let channel = `H5`;
     if (AppHelper.isApp()) {
       if (this.platform.is("android")) {
         channel = "android";
@@ -593,7 +596,7 @@ export class TmcService {
         .set(KEY_INTERNATIONAL_AIRPORTS, this.localInternationAirports)
         .then(_ => {
           console.log(
-            `本地化国际机票耗时：${window.performance.now() - st} ms`
+            `本地化国际机场耗时：${window.performance.now() - st} ms`
           );
         });
     }
@@ -1270,6 +1273,7 @@ export interface PassengerBookInfo<T> {
   exchangeInfo?: {
     order: OrderEntity;
     ticket: OrderTrainTicketEntity | OrderFlightTicketEntity;
+    trip: OrderFlightTripEntity | OrderTrainTripEntity;
     insurnanceAmount?: number;
   };
 }

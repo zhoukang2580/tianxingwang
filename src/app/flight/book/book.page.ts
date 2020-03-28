@@ -116,12 +116,10 @@ export class BookPage implements OnInit, AfterViewInit {
     Value: string;
     Text: string;
   };
-  isShowTop:boolean;
+  isShowTop: boolean;
   addContacts: AddContact[] = [];
-  @ViewChildren("illegalReasonsEle", { read: ElementRef })
-  illegalReasonsEles: QueryList<ElementRef<HTMLElement>>;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
-  @ViewChild(IonContent,{static:true}) cnt: IonContent;
+  @ViewChild(IonContent, { static: true }) cnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
   constructor(
     private flightService: FlightService,
@@ -141,16 +139,16 @@ export class BookPage implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
-    this.cnt.getScrollElement().then(el=>{
-      el.onscroll=()=>{
+    this.cnt.getScrollElement().then(el => {
+      el.onscroll = () => {
         // console.log(el.scrollTop,"2222");
-      if(el.scrollTop>=10){
-          this.isShowTop=true;
-      }else{
-        this.isShowTop=false;
-      }
-    }
-    })
+        if (el.scrollTop >= 10) {
+          this.isShowTop = true;
+        } else {
+          this.isShowTop = false;
+        }
+      };
+    });
     this.flightService.setPassengerBookInfosSource(
       this.flightService.getPassengerBookInfos().filter(it => !!it.bookInfo)
     );
@@ -310,7 +308,7 @@ export class BookPage implements OnInit, AfterViewInit {
     return "";
   }
   async refresh(byUser: boolean) {
-    const MOCK_FLIGHT_VMCOMBINDINFO="mock_flight_vmcombindinfo";
+    const MOCK_FLIGHT_VMCOMBINDINFO = "mock_flight_vmcombindinfo";
     try {
       if (this.ionRefresher) {
         this.ionRefresher.complete();
@@ -332,9 +330,9 @@ export class BookPage implements OnInit, AfterViewInit {
       }
       this.errors = "";
       this.vmCombindInfos = [];
-      if (!environment.production) {
+      if (false && !environment.production) {
         const local = await this.storage.get(MOCK_FLIGHT_VMCOMBINDINFO);
-        if (local&&Array.isArray(local)&&local.length) {
+        if (local && Array.isArray(local) && local.length) {
           this.vmCombindInfos = local;
           return local;
         }
@@ -364,7 +362,7 @@ export class BookPage implements OnInit, AfterViewInit {
       this.initTmcOutNumberInfos();
       await this.initOrderTravelPayTypes();
       console.log("vmCombindInfos", this.vmCombindInfos);
-      if (!environment.production) {
+      if (false && !environment.production) {
         this.storage.set(MOCK_FLIGHT_VMCOMBINDINFO, this.vmCombindInfos);
       }
     } catch (err) {
@@ -937,9 +935,6 @@ export class BookPage implements OnInit, AfterViewInit {
             combindInfo,
             ele
           );
-          if (this.illegalReasonsEles) {
-            this.moveRequiredEleToViewPort(this.illegalReasonsEles.first);
-          }
           return false;
         }
       }
@@ -1062,16 +1057,18 @@ export class BookPage implements OnInit, AfterViewInit {
     this.generateAnimation(el);
   }
   private generateAnimation(el: HTMLElement) {
+    el.style.display = "block";
     setTimeout(() => {
       requestAnimationFrame(() => {
         el.style.color = "var(--ion-color-danger)";
         el.classList.add("animated");
-        el.classList.toggle("shake");
+        el.classList.toggle("shake", true);
       });
     }, 200);
     const sub = fromEvent(el, "animationend").subscribe(() => {
+      el.style.display = "";
       el.style.color = "";
-      el.classList.toggle("shake");
+      el.classList.toggle("shake", false);
       sub.unsubscribe();
     });
   }
@@ -1409,7 +1406,7 @@ export class BookPage implements OnInit, AfterViewInit {
   onSavecredential(credential: CredentialsEntity, info: ICombindInfo) {
     if (info && credential) {
       info.vmCredential = credential;
-      info.modal.credential=credential;
+      info.modal.credential = credential;
     }
   }
   isShowApprove() {

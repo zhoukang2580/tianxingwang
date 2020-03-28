@@ -42,6 +42,7 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
   private scrollEl?: HTMLElement;
   private startY = 0;
   private _disabled;
+  private closetimeoutid: any;
   private isMoveBeginRefresh = false;
   private subscriptions: Subscription[] = [];
   @HostBinding("style.width") width = "100%";
@@ -62,12 +63,10 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
     this.ionPull = new EventEmitter();
     this.ionStart = new EventEmitter();
   }
-  ngAfterViewInit() {
-  }
+  ngAfterViewInit() {}
   ngOnInit() {
-    
     this.connectedCallback();
-   }
+  }
   ngOnDestroy() {
     this.disconnectedCallback();
   }
@@ -159,33 +158,33 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
       console.error('Make sure you use: <app-refresher slot="fixed">');
       return;
     }
-    const contentEl =  this.content;
+    const contentEl = this.content;
     if (!contentEl) {
-      console.error("<ion-refresher> must be used inside an <ion-content>");
+      console.error("<app-refresher> must be used inside an <ion-content>");
       return;
     }
     this.scrollEl = await contentEl.getScrollElement();
-    console.log("scroll element",this.scrollEl);
+    // console.log("scroll element",this.scrollEl);
     if (!this.scrollEl) {
       console.error("scroll element 未找到");
       return;
     }
     if (this.scrollEl) {
-      const startSub = fromEvent(this.scrollEl, "touchstart").subscribe(
-        (evt: TouchEvent) => {
-          this.onStart(evt);
-        }
-      );
+      const startSub = fromEvent(this.scrollEl, "touchstart", {
+        passive: true
+      }).subscribe((evt: TouchEvent) => {
+        this.onStart(evt);
+      });
       const mouveSub = fromEvent(this.scrollEl, "touchmove").subscribe(
         (evt: TouchEvent) => {
           this.onMove(evt);
         }
       );
-      const endSub = fromEvent(this.scrollEl, "touchend").subscribe(
-        (evt: TouchEvent) => {
-          this.onEnd();
-        }
-      );
+      const endSub = fromEvent(this.scrollEl, "touchend", {
+        passive: true
+      }).subscribe((evt: TouchEvent) => {
+        this.onEnd();
+      });
       this.subscriptions.push(startSub);
       this.subscriptions.push(mouveSub);
       this.subscriptions.push(endSub);
@@ -401,12 +400,15 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private close(state: RefresherState, delay: string) {
     // create fallback timer incase something goes wrong with transitionEnd event
-    setTimeout(() => {
+    if (this.closetimeoutid) {
+      clearTimeout(this.closetimeoutid);
+    }
+    this.closetimeoutid = setTimeout(() => {
       this.state = RefresherState.Inactive;
       this.progress = 0;
       this.didStart = false;
       this.setCss(0, "0ms", false, "");
-    }, 120);
+    }, 60);
 
     // reset set the styles on the scroll element
     // set that the refresh is actively cancelling/completing

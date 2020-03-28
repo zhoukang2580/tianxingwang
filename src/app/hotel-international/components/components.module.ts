@@ -10,12 +10,14 @@ import { AppComponentsModule } from "src/app/components/appcomponents.module";
 import { InterRoomPlanItemComponent } from "./inter-room-plan-item/inter-room-plan-item.component";
 import { InterRoomShowItemComponent } from "./inter-room-show-item/inter-room-show-item.component";
 import { ChangeInterRoomPlanDateComponent } from "./change-inter-roomplan-date/change-inter-roomplan-date.component";
-import { InterHotelStarPriceComponent } from './inter-hotel-starprice/inter-hotel-starprice.component';
-import { InterRecommendRankComponent } from './inter-recommend-rank/inter-recommend-rank.component';
+import { InterHotelStarPriceComponent } from "./inter-hotel-starprice/inter-hotel-starprice.component";
+import { InterRecommendRankComponent } from "./inter-recommend-rank/inter-recommend-rank.component";
+import { InterHotelWarrantyComponent } from './inter-hotel-warranty/inter-hotel-warranty.component';
 
 @NgModule({
   declarations: [
     HotelListItemComponent,
+    InterHotelWarrantyComponent,
     InterRoomPlanItemComponent,
     InterShowMsgComponent,
     InterRoomShowItemComponent,
@@ -32,6 +34,7 @@ import { InterRecommendRankComponent } from './inter-recommend-rank/inter-recomm
     AppDirectivesModule
   ],
   exports: [
+    InterHotelWarrantyComponent,
     InterHotelQueryComponent,
     HotelListItemComponent,
     AppComponentsModule,

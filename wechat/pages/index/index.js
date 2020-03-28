@@ -9,6 +9,7 @@ Page({
   data: {
     motto: 'Hello World',
     userInfo: {},
+    ticket:"",
     hasUserInfo: false,
     showAuthorization:false, //!!(app.globalData&&app.globalData.userInfo),
     canIUse: wx.canIUse('button.open-type.getUserInfo')
@@ -36,7 +37,6 @@ Page({
     var args = wx.getStorageSync("args");
     if (args) {
       that.setUrl(args);
-      wx.navigateBack();
     }
     else {
       var func = function (args) {
@@ -103,7 +103,7 @@ Page({
   login:function(func,args)
   {
     var that = this;
-    var ticket = args && args.ticket;
+    var ticket = this.data.ticket;
     wx.login({
       success: (res) => {
         var geturl = homeUrl + "/Home/GetWechatUser";
@@ -129,6 +129,11 @@ Page({
             }
             if (!args.ticket) {
               args.IsForbidAutoLogin = true;
+            }
+            else{
+              that.setData({
+                ticket: args.ticket
+              });
             }
             func(args);
         

@@ -29,7 +29,14 @@ export const routes: Routes = [
       import("./car-order-detail/car-order-detail.module").then(
         m => m.CarOrderDetailPageModule
       )
-  }
+  },
+  {
+    path: "flight-order-detail",
+    loadChildren: () =>
+      import("./flight-order-detail/flight-order-detail.module").then(
+        m => m.FlightOrderDetailPageModule
+      )
+  },
 ];
 @NgModule({
   declarations: [],
