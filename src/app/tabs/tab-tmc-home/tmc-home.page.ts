@@ -117,7 +117,7 @@ export class TmcHomePage implements OnInit, OnDestroy {
       //   await this.flightService.initSelfBookTypeBookInfos(false);
       //   await this.trainServive.initSelfBookTypeBookInfos(false);
       // }
-    } catch (e) {}
+    } catch (e) { }
   }
   onSlideTouchEnd() {
     if (this.slidesEle) {
@@ -257,7 +257,7 @@ export class TmcHomePage implements OnInit, OnDestroy {
         const intervalId = setInterval(async () => {
           this.staff = await this.staffService.getStaff();
           if (!this.staff) {
-            this.apiService.showLoadingView();
+            this.apiService.showLoadingView({ msg: "正在初始化，请稍后..." });
           } else {
             this.apiService.hideLoadingView();
             this.clearIntervalIds();
@@ -271,7 +271,7 @@ export class TmcHomePage implements OnInit, OnDestroy {
       if (isSelf) {
         return;
       }
-      this.apiService.showLoadingView();
+      this.apiService.showLoadingView({ msg: "正在初始化..." });
       this.identity = await this.identityService
         .getIdentityAsync()
         .catch(_ => null);

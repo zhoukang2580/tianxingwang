@@ -371,7 +371,6 @@ export class FlightListPage
           this.refresher.disabled = false;
         }, 100);
       }
-      this.apiService.showLoadingView();
       if (!keepSearchCondition) {
         this.filterCondition = FilterConditionModel.init();
         this.flightService.setFilterConditionSource(this.filterCondition);
@@ -382,6 +381,7 @@ export class FlightListPage
       this.vmFlights = [];
       this.isLoading = true;
       this.currentProcessStatus = "正在获取航班列表";
+      this.apiService.showLoadingView({msg:this.currentProcessStatus});
       const flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync(
         loadDataFromServer
       );

@@ -42,8 +42,9 @@ export class AppUpdateComponent implements OnInit {
       const res = await this.fileService.checkHcpUpdate();
       if (res.isHcpCanUpdate) {
         this.isCanIgnore = res.ignore;
+        const tip = res.updateDescriptions && res.updateDescriptions.some(it => it && it.length) ? res.updateDescriptions.join(";") : LanguageHelper.gethcpUpdateBaseDataTip();
         if (res.ignore && !silence) {// 如果静默安装，就不提示用户
-          const ok = await AppHelper.alert(LanguageHelper.gethcpUpdateBaseDataTip(),
+          const ok = await AppHelper.alert(tip,
             true,
             LanguageHelper.getUpdateTip(),
             LanguageHelper.getIgnoreTip());

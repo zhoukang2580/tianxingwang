@@ -477,7 +477,9 @@ export class TmcService {
     if (!forceFetch && this.allLocalAirports && this.allLocalAirports.length) {
       return Promise.resolve(this.allLocalAirports);
     }
-    this.apiService.showLoadingView();
+    if (forceFetch) {
+      this.apiService.showLoadingView({ msg: "正在获取机场数据..." });
+    }
     const h = await this.getDomesticAirports(forceFetch);
     const i = await this.getInternationalAirports(forceFetch);
     this.apiService.hideLoadingView();

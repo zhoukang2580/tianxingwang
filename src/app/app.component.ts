@@ -82,7 +82,7 @@ export class AppComponent
   message$: Observable<MessageModel>;
   openSelectCity$: Observable<boolean>;
   showFlyDayPage$: Observable<boolean>;
-  loading$: Observable<boolean>;
+  loading$: Observable<{ isLoading: boolean; msg: string; }>;
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
@@ -136,7 +136,7 @@ export class AppComponent
       }
     });
   }
-  ngOnChanges() {}
+  ngOnChanges() { }
   ngAfterViewInit() {
     this.splashScreen.hide();
   }

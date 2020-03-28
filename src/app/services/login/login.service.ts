@@ -81,6 +81,9 @@ export class LoginService {
   }
 
   checkIsWechatBind(mock = false) {
+    if (this.checkPathIsWechatOrDingtalk()) {
+      return;
+    }
     if (
       mock ||
       AppHelper.isWechatH5() ||
@@ -105,12 +108,19 @@ export class LoginService {
       });
     }
   }
+  private checkPathIsWechatOrDingtalk() {
+    const path: string = AppHelper.getQueryParamers()['path'] || "";
+    return path.toLowerCase() == 'account-wechat' || path.toLowerCase() == 'account-dingtalk';
+  }
   checkIsDingtalkBind(mock = false) {
     const req = new RequestEntity();
     req.Method = `ApiPasswordUrl-DingTalk-Check`;
     req.Data = {
       SdkType: "DingTalk"
     };
+    if (this.checkPathIsWechatOrDingtalk()) {
+      return;
+    }
     if (mock || AppHelper.isDingtalkH5()) {
       const sub = this.apiService
         .getResponse<any>(req)
@@ -204,7 +214,7 @@ export class LoginService {
       req.Language = AppHelper.getLanguage();
       req.Ticket = AppHelper.getTicket();
       req.Domain = AppHelper.getDomain();
-      this.apiService.showLoadingView();
+      this.apiService.showLoadingView({msg:"正在退出账号..."});
       const formObj = Object.keys(req)
         .map(k => `${k}=${req[k]}`)
         .join("&");

@@ -7,7 +7,8 @@ import {
   AlertController,
   ToastController,
   ModalController,
-  Platform
+  Platform,
+  LoadingController
 } from "@ionic/angular";
 import { LanguageHelper } from "./languageHelper";
 import { TimeoutError } from "rxjs";
@@ -29,6 +30,7 @@ export class AppHelper {
   static _domain;
   static _queryParamers = {};
   static platform: Platform;
+  static loadingController: LoadingController;
   static _events: {
     name: string;
     handle: (name: string, data: any) => void;
@@ -37,6 +39,17 @@ export class AppHelper {
   static _callbackHandle: (name: string, data: any) => void;
   static setModalController(modalController: ModalController) {
     this.modalController = modalController;
+  }
+  static showLoading(message: string, duration = 0) {
+    return this.loadingController.create({ message, duration }).then(l => { l.present(); return l; })
+  }
+  static hideLoading() {
+    this.loadingController.getTop().then(t => {
+      // console.log(t)
+      if (t) { t.dismiss() }
+    }).catch(e => {
+      console.error(e)
+    });
   }
   static getHcpVersion() {
     return this.fileService && this.fileService.getLocalHcpVersion();
@@ -62,14 +75,18 @@ export class AppHelper {
   static toast(
     msg: any,
     duration = 1400,
-    position?: "top" | "bottom" | "middle"
+    position?: "top" | "bottom" | "middle",
+    userOp = false
   ) {
     return new Promise<any>(async (resolve, reject) => {
       await this.dismissAlertLayer();
       const t = await this.toastController.create({
         message: this.getMsg(msg),
         position: position as any,
-        duration: duration
+        duration: userOp ? 0 : duration,
+        buttons: userOp ? [
+          { icon: "close-circle-outline", side: "end", role: 'cancel' }
+        ] : []
       });
       if (t) {
         t.present();
@@ -211,6 +228,18 @@ export class AppHelper {
       console.log(e);
     }
   }
+  static async dismissToasttLayer() {
+    try {
+      let i = 5;
+      let a = await this.toastController.getTop();
+      while (a && --i > 0) {
+        await a.dismiss();
+        a = await this.toastController.getTop();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
   static getWechatAppId() {
     if (this.httpClient) {
       return new Promise<string>((resolve, reject) => {
@@ -314,8 +343,33 @@ export class AppHelper {
   static isH5() {
     return !window["cordova"];
   }
-  static isPDA() {
-    return window.navigator.userAgent.toLowerCase().includes("5501");
+  /**
+   *  请注意，这个是异步方法，返回promise,是pda ，返回true，否则返回false，使用判断条件是，判断是否存在sim卡；
+   */
+  static async isPDA() {
+    return Promise.all([this.hasFrontCamera(), this.hasSimCard()])
+      .then(() => true)
+      .catch(() => false);
+  }
+  static async hasSimCard() {
+    if (AppHelper.isApp()) {
+      await this.platform.ready();
+      const hcp = window["hcp"];
+      if (hcp) {
+        return hcp.hasSimCard();
+      }
+    }
+    return Promise.reject(false);
+  }
+  static async hasFrontCamera() {
+    if (AppHelper.isApp()) {
+      await this.platform.ready();
+      const hcp = window["hcp"];
+      if (hcp) {
+        return hcp.hasFrontCamera();
+      }
+    }
+    return Promise.reject(false);
   }
   static isWechatH5() {
     const ua = window.navigator.userAgent.toLowerCase();

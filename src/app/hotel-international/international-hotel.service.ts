@@ -100,7 +100,7 @@ export class InternationalHotelService {
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;
-    this.apiService.showLoadingView();
+    this.apiService.showLoadingView({msg:'正在预定，请稍后...'});
     return this.apiService.getPromiseData<IBookOrderResult>(req);
   }
   async getInitializeBookDto(

@@ -224,8 +224,6 @@ export class SearchFlightPage
     this.isShowBookInfos$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(map(infos => infos.filter(it => !!it.bookInfo).length));
-    this.apiService.showLoadingView();
-    this.apiService.hideLoadingView();
     await this.initFlightCities();
     this.showReturnTrip = await this.staffService
       .isSelfBookType()

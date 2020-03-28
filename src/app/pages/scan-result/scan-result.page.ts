@@ -185,13 +185,13 @@ export class ScanResultPage implements OnInit, OnDestroy {
   private handle() {
     if (this.checkLogin()) {
       if (this.identity) {
-        this.apiService.showLoadingView();
+        this.apiService.showLoadingView({ msg: "正在授权登陆" });
         const subscribtion = this.http
           .get(
             this.result +
-              "&ticket=" +
-              this.identity.Ticket +
-              "&datatype=json&x-requested-with=XMLHttpRequest"
+            "&ticket=" +
+            this.identity.Ticket +
+            "&datatype=json&x-requested-with=XMLHttpRequest"
           )
           .pipe(
             finalize(() => {

@@ -37,7 +37,8 @@ interface ApiConfig {
   providedIn: "root"
 })
 export class ApiService {
-  private loadingSubject: Subject<boolean>;
+  private reqLoadingStatus: { reqMethod: string; isShow: boolean; msg: string }[] = [];
+  private loadingSubject: Subject<{ isLoading: boolean; msg: string; }>;
   public apiConfig: ApiConfig;
   private fetchingReq: {
     isFetching: boolean;
@@ -49,32 +50,39 @@ export class ApiService {
     private identityService: IdentityService,
     private storage: Storage
   ) {
-    this.loadingSubject = new BehaviorSubject(false);
+    this.loadingSubject = new BehaviorSubject({ isLoading: false, msg: "" });
     this.storage.get(`KEY_API_CONFIG`).then(config => {
       if (config) {
         this.apiConfig = config;
       }
     });
     this.loadApiConfig(true)
-      .then(_ => {})
-      .catch(() => {});
+      .then(_ => { })
+      .catch(() => { });
   }
   getLoading() {
     return this.loadingSubject.asObservable().pipe(delay(0));
   }
-  setLoading(loading: boolean, isShowLoading: boolean) {
-    this.loadingSubject.next(loading);
-    if (loading && isShowLoading) {
-      this.showLoadingView();
+  private setLoading(data: { msg: string; reqMethod: string; isShowLoading?: boolean }) {
+    const one = this.reqLoadingStatus.find(it => it.reqMethod == data.reqMethod);
+    if (!one) {
+      this.reqLoadingStatus.push({ isShow: data.isShowLoading, reqMethod: data.reqMethod, msg: data.msg });
     } else {
-      this.hideLoadingView();
+      one.isShow = data.isShowLoading;
+      one.msg = data.msg;
+    }
+    const show = this.reqLoadingStatus.find(it => it.isShow);
+    if (show) {
+      this.loadingSubject.next({ msg: show.msg, isLoading: true })
+    } else {
+      this.loadingSubject.next({ msg: "", isLoading: false })
     }
   }
-  showLoadingView() {
-    this.loadingSubject.next(true);
+  showLoadingView(d: { msg: string; }) {
+    this.setLoading({ msg: d.msg, reqMethod: "showLoadingView", isShowLoading: true });
   }
   hideLoadingView() {
-    this.loadingSubject.next(false);
+    this.setLoading({ msg: "", reqMethod: "showLoadingView", isShowLoading: false });
   }
   send<T>(
     method: string,
@@ -310,6 +318,8 @@ export class ApiService {
           }
         } else if (r.Code && r.Code.toUpperCase() === "NOAUTHORIZE") {
           this.router.navigate([AppHelper.getRoutePath("no-authorize")]);
+        } else if (r.Code && r.Code.toLowerCase() == "Systemerror") {
+          AppHelper.alert("接口请求异常，系统错误");
         }
         return of(r);
       }),
@@ -328,7 +338,9 @@ export class ApiService {
         return throwError(error);
       }),
       finalize(() => {
-        this.setLoading(false, false);
+        if (req.IsShowLoading) {
+          this.setLoading({ isShowLoading: false, reqMethod: req.Method, msg: "" });
+        }
       }),
       map(r => r as any)
     );
@@ -345,7 +357,7 @@ export class ApiService {
     if (req.Data && typeof req.Data != "string") {
       req.Data = JSON.stringify(req.Data);
     }
-    this.setLoading(true, req.IsShowLoading);
+    this.setLoading({ msg: req.LoadingMsg, isShowLoading: req.IsShowLoading, reqMethod: req.Method });
     return from(this.loadApiConfig()).pipe(
       switchMap(config => {
         if (!config) {
@@ -387,7 +399,7 @@ export class ApiService {
     req.Language = AppHelper.getLanguage();
     req.Ticket = AppHelper.getTicket();
     req.Domain = AppHelper.getDomain();
-    this.setLoading(true, req.IsShowLoading);
+    this.setLoading({ msg: req.LoadingMsg, isShowLoading: req.IsShowLoading, reqMethod: req.Method });
     return from(this.loadApiConfig()).pipe(
       switchMap(config => {
         if (!config) {

@@ -13,6 +13,7 @@ export class RequestEntity {
   Token?: string;
   FileValue?: string;
   IsShowLoading?: boolean;
+  LoadingMsg?: string;
   IsRedirctLogin?: boolean;
   IsForward?: boolean;
   Timeout?: number;

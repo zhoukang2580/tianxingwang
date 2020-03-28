@@ -29,8 +29,7 @@ export class PasswordValidPage implements OnInit {
     private apiService: ApiService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private navCtrl: NavController
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe(p => {
@@ -38,9 +37,6 @@ export class PasswordValidPage implements OnInit {
       this.items = p.get("ValidTypes") && JSON.parse(p.get("ValidTypes"));
       this.name = p.get("Name");
     });
-  }
-  back() {
-    this.navCtrl.pop();
   }
   check() {
     const req = new RequestEntity();
@@ -55,6 +51,7 @@ export class PasswordValidPage implements OnInit {
       .getResponse<{
         ValidTypes: []; // "";
         AccountId: string; // ;
+
       }>(req)
       .pipe(
         switchMap(r => {
@@ -73,8 +70,8 @@ export class PasswordValidPage implements OnInit {
         })
       )
       .subscribe(
-        r => {},
-        e => {},
+        r => { },
+        e => { },
         () => {
           des.unsubscribe();
         }

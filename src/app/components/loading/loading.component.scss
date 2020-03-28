@@ -9,13 +9,13 @@
     position: fixed;
     height: 100vh;
     width: 100vw;
-    background-color: rgba(var(--ion-color-dark-rgb), 0.12);
+    background-color: rgba(0, 0, 0, 0.12);
   }
 }
 ion-card {
-  width: 5rem;
+  min-width: 5rem;
   height: 5rem;
-  // --background: white;
+  --background: var(--ion-color-primary);
   opacity: 0.9;
   .loading {
     display: flex;
@@ -23,6 +23,9 @@ ion-card {
     justify-content: center;
     height: 100%;
     ion-spinner {
+      &.has-msg {
+        margin-left: 1em;
+      }
       --color: var(--ion-color-secondary);
       height: 50%;
     }

@@ -21,16 +21,12 @@ export class PasswordResetPage implements OnInit {
     private apiService: ApiService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private navController: NavController
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe(p => {
       this.name = p.get("Name");
     });
-  }
-  back() {
-    this.navController.back();
   }
   finish() {
     const req = new RequestEntity();
@@ -50,13 +46,13 @@ export class PasswordResetPage implements OnInit {
             this.message = r.Message;
             return of(r.Data);
           }
-          window.history.go(-3);
+          this.router.navigate(['login'])
           return of(r.Data);
         })
       )
       .subscribe(
-        r => {},
-        e => {},
+        r => { },
+        e => { },
         () => {
           des.unsubscribe();
         }
