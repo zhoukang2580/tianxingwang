@@ -224,7 +224,6 @@ export class AppComponent
       console.log("backbutton url = " + curUrl);
       let count = 1;
       this.apiService.hideLoadingView();
-      this.apiService.cacelPendingRequests();
       const t = await this.modalController.getTop();
       if (t) {
         await t.dismiss();

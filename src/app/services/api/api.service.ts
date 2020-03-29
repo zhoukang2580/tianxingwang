@@ -21,8 +21,7 @@ import {
   throwError,
   from,
   Observable,
-  TimeoutError,
-  Subscription
+  TimeoutError
 } from "rxjs";
 import { ExceptionEntity } from "../log/exception.entity";
 import { Router } from "@angular/router";
@@ -38,12 +37,7 @@ interface ApiConfig {
   providedIn: "root"
 })
 export class ApiService {
-  private reqLoadingStatus: {
-    reqMethod: string;
-    isShow: boolean;
-    msg: string;
-    subscription?: Subscription;
-  }[] = [];
+  private reqLoadingStatus: { reqMethod: string; isShow: boolean; msg: string }[] = [];
   private loadingSubject: Subject<{ isLoading: boolean; msg: string; }>;
   public apiConfig: ApiConfig;
   private fetchingReq: {
@@ -69,10 +63,10 @@ export class ApiService {
   getLoading() {
     return this.loadingSubject.asObservable().pipe(delay(0));
   }
-  private setLoading(data: { msg: string; reqMethod: string; isShowLoading?: boolean; subscription?: Subscription; }) {
+  private setLoading(data: { msg: string; reqMethod: string; isShowLoading?: boolean }) {
     const one = this.reqLoadingStatus.find(it => it.reqMethod == data.reqMethod);
     if (!one) {
-      this.reqLoadingStatus.push({ isShow: data.isShowLoading, reqMethod: data.reqMethod, msg: data.msg, subscription: data.subscription || Subscription.EMPTY });
+      this.reqLoadingStatus.push({ isShow: data.isShowLoading, reqMethod: data.reqMethod, msg: data.msg });
     } else {
       one.isShow = data.isShowLoading;
       one.msg = data.msg;
@@ -85,21 +79,10 @@ export class ApiService {
     }
   }
   showLoadingView(d: { msg: string; }) {
-    this.setLoading({ msg: d.msg, reqMethod: "showLoadingView", isShowLoading: true, subscription: Subscription.EMPTY });
+    this.setLoading({ msg: d.msg, reqMethod: "showLoadingView", isShowLoading: true });
   }
   hideLoadingView() {
-    this.setLoading({ msg: "", reqMethod: "showLoadingView", isShowLoading: false, subscription: Subscription.EMPTY });
-  }
-  cacelPendingRequests() {
-    this.reqLoadingStatus.filter(it => it.isShow).map(it => {
-      it.isShow = false;
-      if (it => it.subscription && it.isShow) {
-        it.subscription.unsubscribe();
-      }
-      return it;
-    }).forEach(it => {
-      this.setLoading(it);
-    })
+    this.setLoading({ msg: "", reqMethod: "showLoadingView", isShowLoading: false });
   }
   send<T>(
     method: string,
@@ -138,14 +121,8 @@ export class ApiService {
             }
           }, 500);
         }
-      ).add(() => {
-        reject("request canceled")
-      });
-      const one = this.reqLoadingStatus.find(it => it.reqMethod == req.Method);
-      if (one) {
-        one.subscription = sub;
-      }
-    })
+      );
+    });
   }
   getPromiseData<T>(req: RequestEntity): Promise<T> {
     return new Promise((resolve, reject) => {
@@ -170,13 +147,7 @@ export class ApiService {
             }
           }, 500);
         }
-      ).add(() => {
-        reject("request canceled")
-      });
-      const one = this.reqLoadingStatus.find(it => it.reqMethod == req.Method);
-      if (one) {
-        one.subscription = sub;
-      }
+      );
     });
   }
   createRequest() {
@@ -368,7 +339,7 @@ export class ApiService {
       }),
       finalize(() => {
         if (req.IsShowLoading) {
-          this.setLoading({ isShowLoading: false, reqMethod: req.Method, msg: "", subscription: Subscription.EMPTY });
+          this.setLoading({ isShowLoading: false, reqMethod: req.Method, msg: "" });
         }
       }),
       map(r => r as any)
@@ -386,7 +357,7 @@ export class ApiService {
     if (req.Data && typeof req.Data != "string") {
       req.Data = JSON.stringify(req.Data);
     }
-    this.setLoading({ msg: req.LoadingMsg, isShowLoading: req.IsShowLoading, reqMethod: req.Method, subscription: Subscription.EMPTY });
+    this.setLoading({ msg: req.LoadingMsg, isShowLoading: req.IsShowLoading, reqMethod: req.Method });
     return from(this.loadApiConfig()).pipe(
       switchMap(config => {
         if (!config) {
@@ -428,7 +399,7 @@ export class ApiService {
     req.Language = AppHelper.getLanguage();
     req.Ticket = AppHelper.getTicket();
     req.Domain = AppHelper.getDomain();
-    this.setLoading({ msg: req.LoadingMsg, isShowLoading: req.IsShowLoading, reqMethod: req.Method, subscription: Subscription.EMPTY });
+    this.setLoading({ msg: req.LoadingMsg, isShowLoading: req.IsShowLoading, reqMethod: req.Method });
     return from(this.loadApiConfig()).pipe(
       switchMap(config => {
         if (!config) {
