@@ -167,7 +167,7 @@ export class AppComponent
     //     console.error(e);
     //   }
     // }
-    WechatHelper.LaunchUrl=window.location.href;
+    WechatHelper.LaunchUrl = window.location.href;
     AppHelper.getDomain(); //
     this.showErrorMsg();
     const unloginPath = AppHelper.getQueryString("unloginpath");
@@ -212,7 +212,7 @@ export class AppComponent
         // this.router.navigate(['car-order-detail']);
         // this.router.navigate(["product-tabs"],{queryParams:{tabId:2}});
         // flight-order-detail
-       this.router.navigate(["search-international-flight"],{queryParams:{orderId:"qqqq"}});
+        this.router.navigate(["search-international-flight"], { queryParams: { orderId: "qqqq" } });
       }
     });
   }
@@ -224,6 +224,7 @@ export class AppComponent
       console.log("backbutton url = " + curUrl);
       let count = 1;
       this.apiService.hideLoadingView();
+      this.apiService.cacelPendingRequests();
       const t = await this.modalController.getTop();
       if (t) {
         await t.dismiss();
