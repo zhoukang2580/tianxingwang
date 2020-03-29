@@ -572,6 +572,8 @@ export class TmcService {
     };
     req.IsShowLoading = true;
     let st = window.performance.now();
+    req.IsShowLoading=true;
+    req.LoadingMsg='正在获取机场数据';
     const r = await this.apiService
       .getPromiseData<{
         HotelCities: any[];

@@ -8,7 +8,8 @@
     <ion-buttons slot='end'>
       <ion-button fill='clear' color='secondary' size='small' isCanleave='true'>已选航班
         <ion-badge slot='end' color='danger'>
-          {{0}}</ion-badge>
+        <ion-text color='light'>{{0}}</ion-text>  
+        </ion-badge>
       </ion-button>
       <ion-button fill='clear' *ngIf='isSelf' color='secondary' size='small' (click)='onShowStandardDesc();'>差旅标准
       </ion-button>
