@@ -33,6 +33,9 @@ export class LoginService {
   ) {
     this.identityService.getIdentitySource().subscribe(id => {
       this.identity = id;
+      setTimeout(() => {
+        this.check();
+      }, 30000);
     });
   }
   setToPageRouter(pageRouter: string) {
@@ -110,8 +113,11 @@ export class LoginService {
     }
   }
   private checkPathIsWechatOrDingtalk() {
-    const path: string = AppHelper.getQueryParamers()['path'] || "";
-    return path.toLowerCase() == 'account-wechat' || path.toLowerCase() == 'account-dingtalk';
+    const path: string = AppHelper.getQueryParamers()["path"] || "";
+    return (
+      path.toLowerCase() == "account-wechat" ||
+      path.toLowerCase() == "account-dingtalk"
+    );
   }
   checkIsDingtalkBind(mock = false) {
     const req = new RequestEntity();
@@ -204,11 +210,7 @@ export class LoginService {
           }
           return of(r.Data);
         }),
-        tap(rid => {
-          setTimeout(() => {
-            this.check();
-          }, 30000);
-        })
+        tap(rid => {})
       );
   }
   logout() {
@@ -223,7 +225,7 @@ export class LoginService {
       req.Language = AppHelper.getLanguage();
       req.Ticket = AppHelper.getTicket();
       req.Domain = AppHelper.getDomain();
-      this.apiService.showLoadingView({msg:"正在退出账号..."});
+      this.apiService.showLoadingView({ msg: "正在退出账号..." });
       const formObj = Object.keys(req)
         .map(k => `${k}=${req[k]}`)
         .join("&");
@@ -256,7 +258,9 @@ export class LoginService {
   }
   async check() {
     const ticket = AppHelper.getTicket();
-    if (!this.identity || !ticket) return;
+    if (!this.identity || !ticket) {
+      return;
+    }
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "ApiHomeUrl-Identity-Check";
@@ -268,7 +272,7 @@ export class LoginService {
     req.Language = AppHelper.getLanguage();
     req.Ticket = AppHelper.getTicket();
     req.Domain = AppHelper.getDomain();
-    const url  = await this.getUrl(req);
+    const url = await this.getUrl(req);
     const formObj = Object.keys(req)
       .map(k => `${k}=${req[k]}`)
       .join("&");
@@ -279,27 +283,20 @@ export class LoginService {
       })
       .pipe(
         map((r: IResponse<IdentityEntity>) => r),
-        finalize(() => {
-        })
+        finalize(() => {})
       )
-      .subscribe(
-        r => {
-         if(r.Status)
-         {
-           AppHelper.alert(r.Message,true).then(s=>{
+      .subscribe(r => {
+        if (r.Status) {
+          AppHelper.alert(r.Message, true, "确定").then(s => {
             this.identityService.removeIdentity();
             this.router.navigate([AppHelper.getRoutePath("login")]);
-           });
-
-         }
-         else
-         {
-           setTimeout(() => {
-             this.check();
-           }, 30000);
-         }
+          });
+        } else {
+          setTimeout(() => {
+            this.check();
+          }, 30000);
         }
-      );
+      });
   }
   async getUrl(req: RequestEntity): Promise<string> {
     const apiConfig = await this.storage.get(`KEY_API_CONFIG`);
@@ -308,9 +305,9 @@ export class LoginService {
       url = req.Url;
       return url;
     }
-    if (apiConfig && !req.IsForward && req.Method) {
+    if (apiConfig && req.Method) {
       const urls = req.Method.split("-");
-      const url = apiConfig.Urls[urls[0]];
+      url = apiConfig.Urls[urls[0]];
       if (url) {
         req.Url = url + "/" + urls[1] + "/" + urls[2];
       }
