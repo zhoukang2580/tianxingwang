@@ -115,8 +115,9 @@ export class CarService {
       await this.loadLocalVerifiedMobiles();
     }
     return (
+      this.verifiedMobiles &&
       this.verifiedMobiles[mobile] &&
-      Date.now() - this.verifiedMobiles[mobile] < 2 * 24 * 3600 * 1000
+        Date.now() - this.verifiedMobiles[mobile] < 2 * 24 * 3600 * 1000
     );
   }
   async verifyStaff(data: { Mobile: string }) {

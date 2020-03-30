@@ -95,12 +95,13 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
   }
   private checkIfMobileVerified(mobile: string) {
     this.validateMobile(mobile);
+    if(mobile==this.defaultMobile){
+      this.isMobileVerified = mobile == this.defaultMobile;
+      return;
+    }
     if (mobile) {
       this.carService.checkIfMobileIsVerified(mobile).then(res => {
         this.isMobileVerified = res;
-        if (!this.isMobileValid) {
-          this.isMobileVerified = mobile == this.defaultMobile;
-        }
       });
     }
   }
