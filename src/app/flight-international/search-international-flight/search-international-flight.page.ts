@@ -4,7 +4,8 @@ import {
   InternationalFlightService,
   IInternationalFlightSegmentInfo,
   IInternationalFlightSearchModel,
-  FlightVoyageType
+  FlightVoyageType,
+  ITripInfo
 } from "../international-flight.service";
 import { Subscription } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
@@ -42,11 +43,11 @@ export class SearchInternationalFlightPage
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
-  onSelectCity(isFrom: boolean, trip?: { isSelectCity: boolean }) {
+  onSelectCity(isFrom: boolean, trip: ITripInfo) {
     if (this.disabled) {
       return;
     }
-    this.flightService.selectCity(isFrom, trip);
+    this.flightService.beforeSelectCity(isFrom, trip);
   }
   async onShowStandardDesc() {
     this.isSelf = await this.staffService.isSelfBookType();
@@ -94,7 +95,7 @@ export class SearchInternationalFlightPage
       queryParams: { forType: FlightHotelTrainType.InternationalFlight }
     });
   }
-  async onSelecFlyDate(isFrom: boolean, trip: { isSelectDate: boolean }) {
+  async onSelecFlyDate(isFrom: boolean, trip: ITripInfo) {
     if (this.disabled) {
       return;
     }

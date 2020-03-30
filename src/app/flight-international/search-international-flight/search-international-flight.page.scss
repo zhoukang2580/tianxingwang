@@ -27,10 +27,7 @@ ul {
   }
 }
 .city-name {
-  max-width: 5em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 5em;
-  min-width: 5em;
+  white-space: normal;
+  max-width: 7em;
+  min-width: 7em;
 }

@@ -91,10 +91,10 @@ export class SelectDateComponent implements OnInit, OnDestroy {
             this.yms.forEach(day => {
               if (day.dayList) {
                 day.dayList.forEach(d => {
-                  d.enabled = !FlightHotelTrainType.InternationalFlight
-                    ? goDate.format("YYYY-MM-DD") == d.date ||
-                      +moment(d.date) >= +goDate
-                    : +moment(d.date) > +goDate;
+                  d.enabled =
+                    goDate.format("YYYY-MM-DD") == d.date ||
+                    +moment(d.date) >= +goDate ||
+                    d.date == moment().format("YYYY-MM-DD");
                   if (type == FlightHotelTrainType.Train) {
                     d.enabled =
                       d.timeStamp <= endDay.timeStamp ? d.enabled : false;

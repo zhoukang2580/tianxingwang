@@ -17,6 +17,38 @@ import { ModalController } from "@ionic/angular";
 import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
 import { TripType } from "../tmc/models/TripType";
 import { DayModel } from "../tmc/models/DayModel";
+export enum FlightCabinInternationalType {
+  /// <summary>
+  /// 经济舱
+  /// </summary>
+  // [Description("经济舱")]
+  ECONOMY = 11,
+  /// <summary>
+  /// 超级经济舱
+  /// </summary>
+  // [Description("超级经济舱")]
+  PREMIUM_ECONOMY = 12,
+  /// <summary>
+  /// 头等舱
+  /// </summary>
+  // [Description("头等舱")]
+  FIRST = 13,
+  /// <summary>
+  /// 商务舱
+  /// </summary>
+  // [Description("商务舱")]
+  BUSINESS = 14,
+  /// <summary>
+  /// 超级商务舱
+  /// </summary>
+  // [Description("超级商务舱")]
+  PREMIUM_BUSINESS = 15,
+  /// <summary>
+  /// 超级头等舱
+  /// </summary>
+  // [Description("超级头等舱")]
+  PREMIUM_FIRST = 16
+}
 export enum FlightVoyageType {
   OneWay = 1,
   GoBack = 2,
@@ -78,31 +110,49 @@ export class InternationalFlightService {
     this.initSearchModel();
     this.bookInfoSource = new BehaviorSubject([]);
   }
-  async onSelecFlyDate(isFrom: boolean, t: { isSelectDate: boolean }) {
+  async onSelecFlyDate(isFrom: boolean, t: ITripInfo) {
     const dates = await this.openCalendar(false, isFrom, t);
+    this.searchModel.roundTrip.isSelectInfo =
+      t.id == this.searchModel.roundTrip.id;
     if (dates && dates.length) {
-      if (dates.length && this.searchModel) {
-        this.searchModel.trips = this.searchModel.trips.map(it => {
-          it.isSelectDate = it == t;
-          return it;
-        });
-        const trip = this.searchModel.trips.find(it => it.isSelectDate);
-        if (trip) {
-          if (isFrom) {
+      if (this.searchModel) {
+        if (this.searchModel.voyageType == FlightVoyageType.MultiCity) {
+          const trip = this.searchModel.trips.find(it => it.id==t.id);
+          if (trip) {
             trip.date = dates[0].date;
-          } else {
-            trip.backDate = dates[0].date;
+            this.searchModel.trips = this.searchModel.trips.map(it => {
+              it.isSelectInfo = false;
+              return it;
+            });
           }
+          this.checkTripsDate();
+        }
+        if (this.searchModel.roundTrip.isSelectInfo) {
+          if (isFrom) {
+            this.searchModel.roundTrip.date = dates[0].date;
+          } else {
+            this.searchModel.roundTrip.backDate = dates[0].date;
+          }
+          this.searchModel.roundTrip.isSelectInfo = false;
         }
       }
     }
     this.setSearchModelSource(this.searchModel);
   }
-  async openCalendar(
-    isMulti: boolean,
-    isFrom: boolean,
-    trip: { isSelectDate: boolean }
-  ) {
+  private checkTripsDate() {
+    const trips = (this.searchModel && this.searchModel.trips) || [];
+    trips.forEach((trip, idx) => {
+      const next = trips[idx + 1];
+      if (next) {
+        const m = this.calendarService.getMoment(0, trip.date);
+        const nextM = this.calendarService.getMoment(0, next.date);
+        if (+nextM < +m) {
+          next.date = m.add(3, "days").format("YYYY-MM-DD");
+        }
+      }
+    });
+  }
+  async openCalendar(isMulti: boolean, isFrom: boolean, trip: ITripInfo) {
     const s = this.getSearchModel();
     const trips = s.trips || [];
     const idx = s.trips && s.trips.findIndex(it => it == trip);
@@ -123,17 +173,23 @@ export class InternationalFlightService {
   }
   private initSearchModel() {
     this.searchModel = {
-      fromCity,
-      toCity,
+      roundTrip: {
+        fromCity,
+        toCity,
+        date: this.calendarService.getMoment(1).format("YYYY-MM-DD"),
+        id: AppHelper.uuid(),
+        backDate: this.calendarService.getMoment(3).format("YYYY-MM-DD")
+      },
       voyageType: FlightVoyageType.OneWay,
       trips: [
         {
           fromCity,
           toCity,
           date: this.calendarService.getMoment(1).format("YYYY-MM-DD"),
-          backDate: this.calendarService.getMoment(3).format("YYYY-MM-DD")
+          id: AppHelper.uuid()
         },
         {
+          id: AppHelper.uuid(),
           fromCity: toCity,
           date: this.calendarService.getMoment(3).format("YYYY-MM-DD")
         }
@@ -160,6 +216,7 @@ export class InternationalFlightService {
       }
       const last = trips[trips.length - 1];
       this.searchModel.trips.push({
+        id: AppHelper.uuid(),
         fromCity: last.toCity,
         date: this.calendarService.getMoment(3, last.date).format("YYYY-MM-DD")
       });
@@ -169,14 +226,20 @@ export class InternationalFlightService {
   getInternationalAirports(forceFetch = false) {
     return this.tmcService.getInternationalAirports(forceFetch);
   }
-  selectCity(isFrom: boolean, trip?: { isSelectCity: boolean }) {
-    if (this.searchModel && this.searchModel.trips) {
-      this.searchModel.trips = this.searchModel.trips.map(t => {
-        t.isSelectCity = t == trip;
-        return t;
-      });
-      this.setSearchModelSource(this.searchModel);
+  beforeSelectCity(isFrom: boolean, trip: ITripInfo) {
+    if (this.searchModel) {
+      this.searchModel.roundTrip.isSelectInfo =
+        trip.id == this.searchModel.roundTrip.id;
+      if (this.searchModel.voyageType == FlightVoyageType.MultiCity) {
+        if (this.searchModel.trips) {
+          this.searchModel.trips = this.searchModel.trips.map(t => {
+            t.isSelectInfo = t.id == trip.id;
+            return t;
+          });
+        }
+      }
     }
+    this.setSearchModelSource(this.searchModel);
     this.router.navigate(
       [AppHelper.getRoutePath("select-international-flight-city")],
       {
@@ -184,27 +247,36 @@ export class InternationalFlightService {
       }
     );
   }
-  onCitySelected(city: TrafficlineEntity, isFrom: boolean) {
+  afterCitySelected(city: TrafficlineEntity, isFrom: boolean) {
     if (this.searchModel) {
-      if (this.searchModel.voyageType != FlightVoyageType.MultiCity) {
-        this.setSearchModelSource({
-          ...this.searchModel,
-          fromCity: isFrom ? city : this.searchModel.fromCity,
-          toCity: isFrom ? this.searchModel.toCity : city
-        });
-      } else {
+      if (this.searchModel.voyageType == FlightVoyageType.MultiCity) {
         if (this.searchModel.trips) {
-          const trip = this.searchModel.trips.find(t => t.isSelectCity);
+          const trip = this.searchModel.trips.find(t => t.isSelectInfo);
           if (trip) {
             if (isFrom) {
               trip.fromCity = city;
             } else {
               trip.toCity = city;
             }
+            this.searchModel.trips = this.searchModel.trips.map(it => {
+              it.isSelectInfo = false;
+              return it;
+            });
           }
         }
-        this.setSearchModelSource(this.searchModel);
       }
+      if (
+        this.searchModel.roundTrip.isSelectInfo &&
+        !this.searchModel.roundTrip.isLocked
+      ) {
+        if (isFrom) {
+          this.searchModel.roundTrip.fromCity = city;
+        } else {
+          this.searchModel.roundTrip.toCity = city;
+        }
+        this.searchModel.roundTrip.isSelectInfo = false;
+      }
+      this.setSearchModelSource(this.searchModel);
     }
   }
   getSearchModel() {
@@ -236,18 +308,20 @@ export interface IInternationalFlightQuery {
   Date: string;
   VoyageType: FlightVoyageType;
 }
-export interface IInternationalFlightSearchModel {
-  trips: {
-    fromCity: TrafficlineEntity;
-    date: string;
-    backDate?: string;
-    toCity?: TrafficlineEntity;
-    bookInfo?: IInternationalFlightSegmentInfo;
-    isSelectCity?: boolean;
-    isSelectDate?: boolean;
-  }[];
+export interface ITripInfo {
+  id: string;
   fromCity: TrafficlineEntity;
-  toCity: TrafficlineEntity;
+  date: string;
+  toCity?: TrafficlineEntity;
+  bookInfo?: IInternationalFlightSegmentInfo;
+  isSelectInfo?: boolean;
+}
+export interface IInternationalFlightSearchModel {
+  roundTrip: ITripInfo & {
+    backDate: string;
+    isLocked: boolean;
+  };
+  trips: ITripInfo[];
   voyageType: FlightVoyageType;
 }
 
