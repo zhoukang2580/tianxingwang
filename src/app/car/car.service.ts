@@ -9,8 +9,7 @@ import { RequestEntity } from "../services/api/Request.entity";
 import { tap } from "rxjs/operators";
 export const KEY_RENTAL_CAR_VERIFY_MOBILE = "_key_rental_car_verify_mobile";
 interface ILocalMobile {
-  lastUpdateTime: number;
-  mobiles: string[];
+  [mobile: number]: number;
 }
 interface Item {
   Name: string;
@@ -77,26 +76,22 @@ export class CarService {
       await this.loadLocalVerifiedMobiles();
     }
     if (mobile) {
-      if (!this.verifiedMobiles.mobiles.find(it => it == mobile)) {
-        this.verifiedMobiles.mobiles.push(mobile);
-        const identity = await this.identityService
-          .getIdentityAsync()
-          .catch(_ => null);
-        if (identity && identity.Id) {
-          this.verifiedMobiles.lastUpdateTime = Date.now();
-          await this.storage.set(
-            `${identity.Id}_${KEY_RENTAL_CAR_VERIFY_MOBILE}`,
-            this.verifiedMobiles
-          );
-        }
+      if (!this.verifiedMobiles[mobile]) {
+        this.verifiedMobiles[mobile] = Date.now();
+      }
+      const identity = await this.identityService
+        .getIdentityAsync()
+        .catch(_ => null);
+      if (identity && identity.Id) {
+        await this.storage.set(
+          `${identity.Id}_${KEY_RENTAL_CAR_VERIFY_MOBILE}`,
+          this.verifiedMobiles
+        );
       }
     }
   }
   private async loadLocalVerifiedMobiles() {
-    const result = {
-      lastUpdateTime: 0,
-      mobiles: []
-    };
+    const result = {};
     if (!this.verifiedMobiles) {
       const identity = await this.identityService
         .getIdentityAsync()
@@ -107,12 +102,9 @@ export class CarService {
         );
       }
     }
-    if (!this.verifiedMobiles) {
-      this.verifiedMobiles = result;
-    }
     if (
-      Date.now() - this.verifiedMobiles.lastUpdateTime >
-      30 * 24 * 3600 * 1000
+      !this.verifiedMobiles ||
+      !Object.keys(this.verifiedMobiles).every(it => /\d{11}/.test(it))
     ) {
       this.verifiedMobiles = result;
     }
@@ -122,7 +114,10 @@ export class CarService {
     if (!this.verifiedMobiles) {
       await this.loadLocalVerifiedMobiles();
     }
-    return this.verifiedMobiles.mobiles.some(it => it == mobile);
+    return (
+      this.verifiedMobiles[mobile] &&
+      Date.now() - this.verifiedMobiles[mobile] < 2 * 24 * 3600 * 1000
+    );
   }
   async verifyStaff(data: { Mobile: string }) {
     const req = new RequestEntity();
