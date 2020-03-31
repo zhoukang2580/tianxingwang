@@ -14,10 +14,10 @@
       <ion-list *ngFor='let combindInfo of vmCombindInfos' lines='none'>
         <ion-item-divider color='primary' class="backg_w" *ngIf="isShowTop" sticky>
           <div style="width: 100%">
-          <!-- <span [(ngModel)]="combindInfo?.modal?.credential.CheckName"></span> -->
-          {{combindInfo?.modal?.credential?.CheckName}}
-          【{{tmc?.Name}}】
-          {{combindInfo?.modal?.credential?.Number}}
+            <!-- <span [(ngModel)]="combindInfo?.modal?.credential.CheckName"></span> -->
+            {{combindInfo?.modal?.credential?.CheckName}}
+            【{{tmc?.Name}}】
+            {{combindInfo?.modal?.credential?.Number}}
             <ion-label style="text-align:center;font-weight: bold">预订航班信息</ion-label>
           </div>
         </ion-item-divider>
@@ -268,7 +268,11 @@
           <div style='width: 100%'>
             <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType' (ionChange)='calcTotalPrice()'>
               <ion-item *ngFor='let pt of orderTravelPayTypes'>
-                <ion-label>{{pt.label}}</ion-label>
+                <ion-label>{{pt.label}}
+                  <ng-container *ngIf='pt.value==OrderTravelPayType.Person'>
+                    (请在20分钟内完成支付)
+                  </ng-container>
+                </ion-label>
                 <ion-radio [value]="pt.value">
                 </ion-radio>
               </ion-item>
