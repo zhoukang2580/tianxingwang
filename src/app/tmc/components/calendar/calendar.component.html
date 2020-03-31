@@ -19,7 +19,7 @@
   <ion-refresher (ionRefresh)='onPreviousMonth()' slot='fixed'>
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  <ul *ngFor='let ym of calendars;let last=last;' class='calendar'>
+  <ul *ngFor='let ym of calendars;let last=last;' [attr.ym]='ym.yearMonth' class='calendar' #calendar>
     <li style="width: 100%;display: block;height: 1em;">
       <strong>{{ym.yearMonth?.substr(0,4)}}年</strong>
     </li>

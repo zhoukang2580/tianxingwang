@@ -160,7 +160,14 @@ export class InternationalFlightService {
     const m = await this.modalCtrl.create({
       component: SelectDateComponent,
       componentProps: {
-        goArrivalTime: (lastTrip && lastTrip.date) || "",
+        goArrivalTime:
+          s.voyageType == FlightVoyageType.MultiCity
+            ? lastTrip && lastTrip.date
+            : s.roundTrip.id == trip.id
+            ? !isFrom
+              ? s.roundTrip.date
+              : ""
+            : "",
         tripType: isFrom ? TripType.departureTrip : TripType.returnTrip,
         forType: FlightHotelTrainType.InternationalFlight,
         isMulti: isMulti
