@@ -307,7 +307,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       let BookTime: string;
       let Count: string;
       let Premium: string;
-      let InsuredAmount: String;
+      let InsuredAmount: string;
       let Detail: string;
       let EffectiveDate: string;
       let ExpireDate: string;
@@ -629,7 +629,6 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     if (
       !this.orderDetail ||
       !this.orderDetail.Order ||
-      !this.orderDetail.Order.OrderInsurances ||
       !this.orderDetail.Order.OrderFlightTickets
     ) {
       return;
