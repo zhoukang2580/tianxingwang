@@ -32,6 +32,7 @@ export class OrderTravelEntity {
   Status: OrderStatusType;
   TravelType: OrderStatusType;
   TravelPayType: OrderTravelPayType;
+  ExpenseType: string;
   StatusName: string;
   IsVip: boolean;
   OrderProducts: any[];

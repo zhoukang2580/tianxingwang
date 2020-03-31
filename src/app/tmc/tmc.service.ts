@@ -572,8 +572,8 @@ export class TmcService {
     };
     req.IsShowLoading = true;
     let st = window.performance.now();
-    req.IsShowLoading=true;
-    req.LoadingMsg='正在获取机场数据';
+    req.IsShowLoading = true;
+    req.LoadingMsg = "正在获取机场数据";
     const r = await this.apiService
       .getPromiseData<{
         HotelCities: any[];
@@ -1286,6 +1286,7 @@ export class InitialBookDtoModel {
   Tmc: TmcEntity;
   PayTypes: any;
   IllegalReasons: string[];
+  ExpenseTypes: string[];
   RoomPlans: {
     ClientId: string;
     PassengerClientId: string;

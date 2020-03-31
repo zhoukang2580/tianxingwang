@@ -492,7 +492,7 @@ export class HotelService {
       cityCode =
         cityCode ||
         (this.getSearchHotelModel().destinationCity &&
-        this.getSearchHotelModel().destinationCity.Code);
+          this.getSearchHotelModel().destinationCity.Code);
       req.Method = `TmcApiHotelUrl-Condition-Gets`;
       req.Data = {
         cityCode
@@ -873,15 +873,17 @@ export class HotelService {
       top = await this.modalCtrl.getTop();
     }
   }
-  async onBook(bookDto: OrderBookDto): Promise<IBookOrderResult> {
+  async onBook(bookDto: OrderBookDto) {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Hotel-Book";
     bookDto.Channel = await this.tmcService.getChannel();
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;
-    this.apiService.showLoadingView({msg:"正在预定，请稍后..."});
-    return this.apiService.getPromiseData<IBookOrderResult>(req);
+    this.apiService.showLoadingView({ msg: "正在预定，请稍后..." });
+    return this.apiService.getPromiseData<IBookOrderResult>(req).finally(() => {
+      this.apiService.hideLoadingView();
+    });
   }
 }
 export interface IHotelInfo {

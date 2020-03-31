@@ -172,8 +172,9 @@
               [isAllowCustomReason]='tmc?.IsAllowCustomReason' (ionchange)='onIllegalReason($event,combindInfo)'>
             </app-book-illegal-reason-comp>
           </ng-container>
-          <ng-container *ngIf='combindInfo?.expenseTypes?.length'>
-             费用类别
+          <ng-container *ngIf='expenseTypes?.length'>
+            <app-book-expense-types-comp [expenseTypes]='expenseTypes' [(expenseType)]='combindInfo.expenseType'>
+            </app-book-expense-types-comp>
           </ng-container>
           <app-book-costcenter-comp [isOtherCostCenter]='combindInfo.isOtherCostCenter'
             [costCenter]='combindInfo.costCenter' [otherCostCenterCode]='combindInfo.otherCostCenterCode'

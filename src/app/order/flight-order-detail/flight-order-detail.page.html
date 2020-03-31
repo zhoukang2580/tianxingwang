@@ -123,6 +123,10 @@
                 <ion-col>{{p.CredentialsNumber}}</ion-col>
               </ion-row>
               <ion-row>
+                <ion-col size='3'>费用类型</ion-col>
+                <ion-col>{{getExpenseType(flightTickect)}}</ion-col>
+              </ion-row>
+              <ion-row>
                 <ion-col size='3'>联系电话</ion-col>
                 <ion-col>{{p.Mobile}}</ion-col>
               </ion-row>
@@ -366,14 +370,14 @@
                     </ion-col>
                   </ion-row>
                   <ng-container *ngFor="let trip of ticket.OrderFlightTrips;">
-                      <ion-row>
-                          <ion-col size='3'>
-                            航班号
-                          </ion-col>
-                          <ion-col>
-                            {{trip.FlightNumber}}
-                          </ion-col>
-                        </ion-row>
+                    <ion-row>
+                      <ion-col size='3'>
+                        航班号
+                      </ion-col>
+                      <ion-col>
+                        {{trip.FlightNumber}}
+                      </ion-col>
+                    </ion-row>
                     <ion-row>
                       <ion-col size='3'>出发城市</ion-col>
                       <ion-col>

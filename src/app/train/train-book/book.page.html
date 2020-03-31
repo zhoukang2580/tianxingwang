@@ -60,6 +60,11 @@
               </app-book-illegal-reason-comp>
             </div>
           </ion-item>
+          <ng-container *ngIf='viewModel?.expenseTypes?.length'>
+            <app-book-expense-types-comp [expenseTypes]='viewModel.expenseTypes'
+              [(expenseType)]='combindInfo.expenseType'>
+            </app-book-expense-types-comp>
+          </ng-container>
           <ion-item>
             <app-book-costcenter-comp [isOtherCostCenter]='combindInfo.isOtherCostCenter'
               [costCenter]='combindInfo.costCenter' [otherCostCenterCode]='combindInfo.otherCostCenterCode'

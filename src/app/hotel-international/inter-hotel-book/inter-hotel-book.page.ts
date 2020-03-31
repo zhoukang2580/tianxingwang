@@ -112,6 +112,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   tmc: TmcEntity;
   isCanSkipApproval$ = of(false);
   illegalReasons: any[];
+  expenseTypes: string[];
   travelForm: TravelFormEntity;
   isCheckingPay = false;
   isSubmitDisabled = false;
@@ -787,6 +788,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
             : combindInfo.credentialStaffOtherEmail
         }`;
       }
+      p.ExpenseType = combindInfo.expenseType;
       p.IllegalReason =
         (this.tmc &&
           this.tmc.IsAllowCustomReason &&
@@ -950,6 +952,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       })
     );
     this.travelForm = this.initialBookDto.TravelFrom;
+    this.expenseTypes = this.initialBookDto.ExpenseTypes;
     this.illegalReasons = (this.initialBookDto.IllegalReasons || []).map(it => {
       return {
         Name: it
@@ -1030,6 +1033,9 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
             .startOf("year")
             .format("YYYY-MM-DD")}`
         } as any;
+        if (this.expenseTypes && this.expenseTypes.length) {
+          combineInfo.expenseType = this.expenseTypes[0];
+        }
         combineInfo.credentialsRequested = false;
         combineInfo.creditCardPersionInfo = {} as any;
         combineInfo.credential = bookInfo.credential;
@@ -1709,5 +1715,5 @@ interface IPassengerHotelBookInfo {
   isShowFriendlyReminder?: boolean;
   illegalReason?: string;
   otherIllegalReason?: string;
-  expenseTypes?: any[];
+  expenseType: string;
 }

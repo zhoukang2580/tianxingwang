@@ -123,6 +123,7 @@ export class PassengerDto {
   /// 违反差旅政策原因
   /// </summary>
   IllegalReason: string;
+  ExpenseType: string;
   /// <summary>
   /// 提醒
   /// </summary>

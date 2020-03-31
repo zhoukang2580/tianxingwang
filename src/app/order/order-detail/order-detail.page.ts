@@ -325,6 +325,16 @@ export class OrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     }
     return null;
   }
+  getExpenseType(tKey: string) {
+    return (
+      this.orderDetail &&
+      this.orderDetail.Order &&
+      this.orderDetail.Order.OrderTravels &&
+      this.orderDetail.Order.OrderTravels.filter(it => it.Key == tKey)
+        .map(it => it.ExpenseType)
+        .join(",")
+    );
+  }
   private getOrderNumbers(tag = "TmcOutNumber"): OrderNumberEntity[] {
     if (
       !this.orderDetail ||

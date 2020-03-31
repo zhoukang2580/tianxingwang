@@ -100,7 +100,7 @@ export class BookPage implements OnInit, AfterViewInit {
     value: OrderTravelPayType;
   }[];
   orderTravelPayType: OrderTravelPayType;
-  OrderTravelPayType: OrderTravelPayType;
+  OrderTravelPayType = OrderTravelPayType;
   checkPayCount = 5;
   checkPayCountIntervalTime = 3 * 1000;
   checkPayCountIntervalId: any;
@@ -108,6 +108,7 @@ export class BookPage implements OnInit, AfterViewInit {
   tmc: TmcEntity;
   travelForm: TravelFormEntity;
   illegalReasons: IllegalReasonEntity[] = [];
+  expenseTypes: string[];
   selfStaff: StaffEntity;
   identity: IdentityEntity;
   isCheckingPay: boolean;
@@ -351,6 +352,7 @@ export class BookPage implements OnInit, AfterViewInit {
           return item;
         }
       );
+      this.expenseTypes = this.initialBookDtoModel.ExpenseTypes || [];
       await this.initSelfBookTypeCredentials(); // 如果是个人，获取个人是证件信息
       const notWhitelistCredentials = this.flightService
         .getPassengerBookInfos()
@@ -912,6 +914,7 @@ export class BookPage implements OnInit, AfterViewInit {
           }
         }
       }
+      p.ExpenseType = combindInfo.expenseType;
       p.IllegalReason =
         (this.tmc &&
           this.tmc.IsAllowCustomReason &&
@@ -1288,6 +1291,9 @@ export class BookPage implements OnInit, AfterViewInit {
         combineInfo.showFriendlyReminder = false;
         combineInfo.isOtherOrganization = false;
         combineInfo.notifyLanguage = "cn";
+        if (this.expenseTypes && this.expenseTypes.length) {
+          combineInfo.expenseType = this.expenseTypes[0];
+        }
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = this.isShowInsurances(
           item.bookInfo &&
@@ -1558,6 +1564,7 @@ interface ICombindInfo {
   openrules: boolean; // 打开退改签规则
   vmCredential: CredentialsEntity;
   credentials: CredentialsEntity[];
+  expenseType: string;
   credentialsRequested: boolean;
   appovalStaff: StaffEntity;
   credentialStaff: StaffEntity;

@@ -95,6 +95,10 @@
               (ionchange)='onIllegalReason($event,combindInfo)'>
             </app-book-illegal-reason-comp>
           </ng-container>
+          <ng-container *ngIf='expenseTypes?.length'>
+            <app-book-expense-types-comp [expenseTypes]='expenseTypes' [(expenseType)]='combindInfo.expenseType'>
+            </app-book-expense-types-comp>
+          </ng-container>
           <app-book-costcenter-comp [isOtherCostCenter]='combindInfo.isOtherCostCenter'
             [costCenter]='combindInfo.costCenter' [otherCostCenterCode]='combindInfo.otherCostCenterCode'
             [otherCostCenterName]='combindInfo.otherCostCenterName'
@@ -212,12 +216,6 @@
         </ion-item-group>
         <ng-container *ngIf='combindInfo.isShowGroupedInfo'>
           <ion-item-group>
-            <!-- <ion-list-header color='primary' sticky>
-              <ion-label class='ion-text-wrap' *ngIf='getGroupedTitle(combindInfo) as title'>
-                {{title}}
-                【{{tmc?.Name}}】
-              </ion-label>
-            </ion-list-header> -->
             <ion-item class="ion-no-margin" [attr.notifyLanguageid]='combindInfo.id'>
               <ion-label>通知语言:</ion-label>
               <ion-select value='cn' okText="确定" cancelText="取消" [(ngModel)]='combindInfo.notifyLanguage'>

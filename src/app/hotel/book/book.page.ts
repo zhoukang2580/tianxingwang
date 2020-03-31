@@ -108,6 +108,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
   tmc: TmcEntity;
   isCanSkipApproval$ = of(false);
   illegalReasons: any[];
+  expenseTypes: string[];
   travelForm: TravelFormEntity;
   isCheckingPay = false;
   isSubmitDisabled = false;
@@ -714,6 +715,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
         return false;
       }
       p.Credentials.CheckFirstName = combindInfo.vmCredential.CheckFirstName;
+      p.ExpenseType=combindInfo.expenseType;
       p.IllegalPolicy =
         (info.roomPlan &&
           info.roomPlan.Rules &&
@@ -914,6 +916,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
       })
     );
     this.travelForm = this.initialBookDto.TravelFrom;
+    this.expenseTypes = this.initialBookDto.ExpenseTypes;
     this.illegalReasons = (this.initialBookDto.IllegalReasons || []).map(it => {
       return {
         Name: it
@@ -1006,6 +1009,9 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.isShowFriendlyReminder = false;
         combineInfo.isOtherOrganization = false;
         combineInfo.notifyLanguage = "cn";
+        if (this.expenseTypes && this.expenseTypes.length) {
+          combineInfo.expenseType = this.expenseTypes[0];
+        }
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
@@ -1589,6 +1595,7 @@ interface IPassengerHotelBookInfo {
     name: string;
   };
   isShowApprovalInfo: boolean;
+  expenseType: string;
   isCanEditCrendentails: boolean;
   isNotWhitelist?: boolean;
   vmCredential: CredentialsEntity;
