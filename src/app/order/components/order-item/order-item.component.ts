@@ -141,7 +141,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
           );
         }
         this.initPassengers();
-        this.checkIfOrderFlightTicketShow();
+        this.order.OrderFlightTickets=this.orderService.checkIfOrderFlightTicketShow(this.order.OrderFlightTickets);
       }
     }
   }
@@ -157,21 +157,21 @@ export class OrderItemComponent implements OnInit, OnChanges {
     });
     return result;
   }
-  private checkIfOrderFlightTicketShow() {
-    if (this.order && this.order.OrderFlightTickets) {
-      const statusArr = [
-        OrderFlightTicketStatusType.ChangeTicket,
-        // OrderFlightTicketStatusType.Refunded
-      ];
-      this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(t => {
-        if (t.VariablesJsonObj) {
-          const isShow = !statusArr.some(s => s == t.Status);
-          t.VariablesJsonObj.isShow = !t.VariablesJsonObj.IsScrap && isShow;
-        }
-        return t;
-      });
-    }
-  }
+  // private checkIfOrderFlightTicketShow() {
+  //   if (this.order && this.order.OrderFlightTickets) {
+  //     const statusArr = [
+  //       OrderFlightTicketStatusType.ChangeTicket,
+  //       // OrderFlightTicketStatusType.Refunded
+  //     ];
+  //     this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(t => {
+  //       if (t.VariablesJsonObj) {
+  //         const isShow = !statusArr.some(s => s == t.Status);
+  //         t.VariablesJsonObj.isShow = !t.VariablesJsonObj.IsScrap && isShow;
+  //       }
+  //       return t;
+  //     });
+  //   }
+  // }
   check(orderTrainTicket: OrderTrainTicketEntity) {
     return (
       orderTrainTicket &&

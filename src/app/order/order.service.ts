@@ -24,6 +24,7 @@ import { DayModel } from "../tmc/models/DayModel";
 import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 import { IFlightSegmentInfo } from "../flight/models/PassengerFlightInfo";
 import { AppHelper } from "../appHelper";
+import { OrderFlightTicketEntity } from './models/OrderFlightTicketEntity';
 export class OrderDetailModel {
   Histories: HistoryEntity[];
   Tasks: TaskEntity[];
@@ -242,5 +243,22 @@ export class OrderService {
   }
  private getmockOrderDetail():OrderDetailModel{
   return MOCK_FLIGHT_ORDER_DETAIL as any;
+  }
+ checkIfOrderFlightTicketShow(ticket:OrderFlightTicketEntity[]) {
+    if (ticket) {
+      const statusArr = [
+        OrderFlightTicketStatusType.ChangeTicket,
+        // OrderFlightTicketStatusType.Refunded
+      ];
+      ticket= ticket.map(t => {
+        t.VariablesJsonObj=t.VariablesJsonObj||JSON.parse(t.Variables)||{}
+        if (t.VariablesJsonObj) {
+          const isShow = !statusArr.some(s => s == t.Status);
+          t.VariablesJsonObj.isShow = !t.VariablesJsonObj.IsScrap && isShow;
+        }
+        return t;
+      });
+    }
+    return ticket;
   }
 }

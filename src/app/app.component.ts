@@ -212,7 +212,7 @@ export class AppComponent
         // this.router.navigate(['car-order-detail']);
         // this.router.navigate(["product-tabs"],{queryParams:{tabId:2}});
         // flight-order-detail
-       this.router.navigate(["flight-order-detail"],{queryParams:{orderId:"qqqq"}});
+       this.router.navigate(["/product-tabs"],{queryParams:{tabId:"1"}});
       }
     });
   }
