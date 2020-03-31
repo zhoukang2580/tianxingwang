@@ -142,7 +142,7 @@ ion-action-sheet.child-age .action-sheet-wrapper {
 
 ion-alert,
 ion-loading,
-ion-radio {
+ion-radio,ion-action-sheet {
   --ion-color-primary: var(--ion-color-secondary);
   .loading-spinner {
     --spinner-color: var(--ion-color-secondary);

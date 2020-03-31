@@ -40,6 +40,9 @@ export class SearchInternationalFlightPage
     private popoverCtrl: PopoverController,
     private router: Router
   ) {}
+  compareWithFn = (o1, o2) => {
+    return o1 && o2 ?  o1 === o2:false;
+  };
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }

@@ -17,6 +17,10 @@ import { ModalController } from "@ionic/angular";
 import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
 import { TripType } from "../tmc/models/TripType";
 import { DayModel } from "../tmc/models/DayModel";
+export interface IFlightCabinType {
+  label: "经济舱" | "超级经济舱" | "头等舱" | "商务舱" | "超级商务舱" | "超级头等舱",
+  value: FlightCabinInternationalType
+}
 export enum FlightCabinInternationalType {
   /// <summary>
   /// 经济舱
@@ -188,10 +192,10 @@ export class InternationalFlightService {
           s.voyageType == FlightVoyageType.MultiCity
             ? (lastTrip && lastTrip.date) || ""
             : s.roundTrip.id == trip.id
-            ? !isFrom
-              ? s.roundTrip.date
-              : ""
-            : "",
+              ? !isFrom
+                ? s.roundTrip.date
+                : ""
+              : "",
         tripType: isFrom ? TripType.departureTrip : TripType.returnTrip,
         forType: FlightHotelTrainType.InternationalFlight,
         isMulti: isMulti
@@ -224,7 +228,38 @@ export class InternationalFlightService {
           fromCity: toCity,
           date: this.calendarService.getMoment(3).format("YYYY-MM-DD")
         }
+      ],
+      cabin: {
+        label: "头等舱",
+        value: FlightCabinInternationalType.FIRST
+      },
+      cabins: [
+        {
+          label: "经济舱",
+          value: FlightCabinInternationalType.ECONOMY
+        },
+        {
+          label: "超级经济舱",
+          value: FlightCabinInternationalType.PREMIUM_ECONOMY
+        },
+        {
+          label: "头等舱",
+          value: FlightCabinInternationalType.FIRST
+        },
+        {
+          label: "商务舱",
+          value: FlightCabinInternationalType.BUSINESS
+        },
+        {
+          label: "超级商务舱",
+          value: FlightCabinInternationalType.PREMIUM_BUSINESS
+        },
+        {
+          label: "超级头等舱",
+          value: FlightCabinInternationalType.PREMIUM_FIRST
+        },
       ]
+
     } as IInternationalFlightSearchModel;
     this.searchModelSource = new BehaviorSubject(this.searchModel);
   }
@@ -240,7 +275,7 @@ export class InternationalFlightService {
         const one = trips[idx];
         AppHelper.alert(
           `请完善第${idx + 1}程的${!one.fromCity ? "出发城市" : ""}${
-            !one.toCity ? "到达城市" : ""
+          !one.toCity ? "到达城市" : ""
           }`
         );
         return;
@@ -356,6 +391,8 @@ export interface IInternationalFlightSearchModel {
   };
   trips: ITripInfo[];
   voyageType: FlightVoyageType;
+  cabin: IFlightCabinType;
+  cabins: IFlightCabinType[];
 }
 
 export interface IInternationalFlightSegmentInfo {
