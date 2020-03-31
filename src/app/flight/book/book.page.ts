@@ -100,6 +100,7 @@ export class BookPage implements OnInit, AfterViewInit {
     value: OrderTravelPayType;
   }[];
   orderTravelPayType: OrderTravelPayType;
+  OrderTravelPayType: OrderTravelPayType;
   checkPayCount = 5;
   checkPayCountIntervalTime = 3 * 1000;
   checkPayCountIntervalId: any;
