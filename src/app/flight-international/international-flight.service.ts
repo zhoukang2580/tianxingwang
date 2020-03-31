@@ -117,7 +117,7 @@ export class InternationalFlightService {
     if (dates && dates.length) {
       if (this.searchModel) {
         if (this.searchModel.voyageType == FlightVoyageType.MultiCity) {
-          const trip = this.searchModel.trips.find(it => it.id==t.id);
+          const trip = this.searchModel.trips.find(it => it.id == t.id);
           if (trip) {
             trip.date = dates[0].date;
             this.searchModel.trips = this.searchModel.trips.map(it => {
@@ -320,6 +320,8 @@ export interface IInternationalFlightSearchModel {
   roundTrip: ITripInfo & {
     backDate: string;
     isLocked: boolean;
+    goTrip: IInternationalFlightSegmentInfo;
+    backTrip: IInternationalFlightSegmentInfo;
   };
   trips: ITripInfo[];
   voyageType: FlightVoyageType;

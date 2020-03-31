@@ -88,8 +88,8 @@
                 <div>
                   <ion-buttons class="ion-justify-content-between">
                     <ion-text color='secondary' (click)="onSelecFlyDate(true,trip)">{{trip.date}}</ion-text>
-                    <ion-button color='danger' *ngIf='searchFlightModel?.voyageType==FlightVoyageType.MultiCity&&i>=2'>
-                      <ion-icon name="close-circle-outline"></ion-icon>
+                    <ion-button (click)='onRemoveTrip(trip)' color='danger' *ngIf='searchFlightModel?.voyageType==FlightVoyageType.MultiCity&&i>=2'>
+                      <ion-icon name="close-circle-outline" ></ion-icon>
                     </ion-button>
                   </ion-buttons>
                 </div>
@@ -99,7 +99,7 @@
           <li
             *ngIf='searchFlightModel?.voyageType==FlightVoyageType.MultiCity&&searchFlightModel?.trips?.length&&searchFlightModel?.trips?.length<6'>
             <ion-button style="flex: 1;" size="small" expand='block' (click)='onAddMoreTrip()'>
-              <ion-icon color='secondary' name="add-circle-outline"></ion-icon>
+              <ion-icon color='secondary' name="add-circle-outline" ></ion-icon>
               <ion-text color='secondary'>
                 再加一程
               </ion-text>

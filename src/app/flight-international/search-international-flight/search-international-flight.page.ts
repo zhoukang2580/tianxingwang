@@ -101,6 +101,14 @@ export class SearchInternationalFlightPage
     }
     this.flightService.onSelecFlyDate(isFrom, trip);
   }
+  onRemoveTrip(trip: ITripInfo) {
+    if (this.searchFlightModel && trip) {
+      this.searchFlightModel.trips = this.searchFlightModel.trips.filter(
+        it => it.id != trip.id
+      );
+      this.flightService.setSearchModelSource(this.searchFlightModel);
+    }
+  }
   ngOnInit() {
     try {
       this.staffService.isSelfBookType().then(s => {
