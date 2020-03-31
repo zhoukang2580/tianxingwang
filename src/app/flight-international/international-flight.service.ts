@@ -130,6 +130,30 @@ export class InternationalFlightService {
         if (this.searchModel.roundTrip.isSelectInfo) {
           if (isFrom) {
             this.searchModel.roundTrip.date = dates[0].date;
+            if (this.searchModel.roundTrip.backDate) {
+              const m1 = this.calendarService.getMoment(
+                0,
+                this.searchModel.roundTrip.date
+              );
+              const m2 = this.calendarService.getMoment(
+                0,
+                this.searchModel.roundTrip.backDate
+              );
+              if (+m1 > +m2) {
+                AppHelper.alert(
+                  "返程日期应晚于去程日期,自动调整日期？",
+                  true,
+                  "确定",
+                  "取消"
+                ).then(ok => {
+                  if (ok) {
+                    this.searchModel.roundTrip.backDate = m1
+                      .add(1, "days")
+                      .format("YYYY-MM-DD");
+                  }
+                });
+              }
+            }
           } else {
             this.searchModel.roundTrip.backDate = dates[0].date;
           }
@@ -156,13 +180,13 @@ export class InternationalFlightService {
     const s = this.getSearchModel();
     const trips = s.trips || [];
     const idx = s.trips && s.trips.findIndex(it => it == trip);
-    const lastTrip = trips[idx - 1 < 0 ? 0 : idx - 1];
+    const lastTrip = idx - 1 >= 0 ? trips[idx - 1] : null;
     const m = await this.modalCtrl.create({
       component: SelectDateComponent,
       componentProps: {
         goArrivalTime:
           s.voyageType == FlightVoyageType.MultiCity
-            ? lastTrip && lastTrip.date
+            ? (lastTrip && lastTrip.date) || ""
             : s.roundTrip.id == trip.id
             ? !isFrom
               ? s.roundTrip.date
