@@ -358,8 +358,18 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         queryParams: { Id: orderId }
       });
       return;
-    } else if (type && type.toLowerCase() == "flight") {
+    }
+    if (type && type.toLowerCase() == "flight") {
       this.router.navigate([AppHelper.getRoutePath("flight-order-detail")], {
+        queryParams: {
+          tab: JSON.stringify(this.activeTab),
+          orderId: orderId
+        }
+      });
+      return;
+    }
+    if (type && type.toLowerCase() == "train") {
+      this.router.navigate([AppHelper.getRoutePath("train-order-detail")], {
         queryParams: {
           tab: JSON.stringify(this.activeTab),
           orderId: orderId

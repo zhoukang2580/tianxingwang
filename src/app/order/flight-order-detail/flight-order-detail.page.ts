@@ -878,14 +878,15 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     const originalTicket =
       this.tikectId2OriginalTickets[t.Id] &&
       this.tikectId2OriginalTickets[t.Id].find(f => f.Id == originalid);
-    console.log(originalTicket, "00000");
+    // console.log(originalTicket, "00000");
+    t.VariablesJsonObj.isShowOriginalTicket = !t.VariablesJsonObj
+      .isShowOriginalTicket;
     if (originalTicket) {
       originalTicket.isShowOriginalTicket = !originalTicket.isShowOriginalTicket;
       const height = this.plt.height();
       setTimeout(() => {
         const rect = (event.target as HTMLElement).getBoundingClientRect();
-        this.ionContent.scrollByPoint(0, rect.top - height / 2, 100);
-        console.log(rect.top - height / 2, "height");
+        this.ionContent.scrollByPoint(0, rect.top - height / 5, 100);
       }, 100);
     }
   }

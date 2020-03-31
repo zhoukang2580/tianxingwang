@@ -37,19 +37,19 @@ import { ProductItem, ProductItemType } from "src/app/tmc/models/ProductItems";
 import { ActivatedRoute } from "@angular/router";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { OrderNumberEntity } from "../models/OrderNumberEntity";
+import { flyInOut } from "src/app/animations/flyInOut";
 
 @Component({
   selector: "app-train-order-detail",
   templateUrl: "./train-order-detail.page.html",
-  styleUrls: ["./train-order-detail.page.scss"]
+  styleUrls: ["./train-order-detail.page.scss"],
+  animations: [flyInOut]
 })
 export class TrainOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
   private headerHeight = 0;
   OrderHotelType = OrderHotelType;
   private subscriptions: Subscription[] = [];
   tmc: TmcEntity;
-  title: string;
-  tab: ProductItem;
   ProductItemType = ProductItemType;
   items: { label: string; value: string }[] = [];
   tabs: TabItem[] = [];
@@ -63,15 +63,13 @@ export class TrainOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(SwiperSlideContentComponent)
   swiperComp: SwiperSlideContentComponent;
   scrollElement: HTMLElement;
-  // selectedFlightTicket: OrderTrainTicketEntity;
-  // selectedTrainTicket: OrderTrainTicketEntity;
-  // selectedInsuranceId: string;
   identity: IdentityEntity;
   flightTickect: { [tickectId: string]: OrderTrainTicketEntity[] };
   tikect2Insurance: { [tikectKey: string]: OrderInsuranceEntity[] } = {};
   tikectId2OriginalTickets: {
     [ticketId: string]: OrderTrainTicketEntity[];
   } = {};
+  scrollTop: number;
   constructor(
     private plt: Platform,
     private route: ActivatedRoute,
@@ -83,67 +81,6 @@ export class TrainOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     private orderService: OrderService,
     private identityService: IdentityService
   ) {}
-  scrollTop: number;
-
-  compareFn(t1: OrderTrainTicketEntity, t2: OrderTrainTicketEntity) {
-    return t1 && t2 && t1.Id == t2.Id;
-  }
-
-  // canSendEmailMsg() {
-  //   const selectedTicket: OrderTrainTicketEntity = this.selectedFlightTicket;
-  //   if (
-  //     this.identity &&
-  //     !(this.identity.Numbers && !!this.identity.Numbers["AgentId"])
-  //   ) {
-  //     return false;
-  //   }
-  //   if (selectedTicket) {
-  //     return (
-  //       selectedTicket.Status != OrderFlightTicketStatusType.Abolish &&
-  //       selectedTicket.Status != OrderFlightTicketStatusType.Abolishing
-  //     );
-  //   }
-  //   return false;
-  // }
-  // async sendMsg(passenger: OrderPassengerEntity) {
-  //   if (
-  //     this.identity &&
-  //     !(this.identity.Numbers && !!this.identity.Numbers["AgentId"])
-  //   ) {
-  //     return false;
-  //   }
-  //   const selectedTicket = this.selectedFlightTicket;
-  //   if (selectedTicket) {
-  //     const p = await this.modalCtrl.create({
-  //       component: SendMsgComponent,
-  //       componentProps: {
-  //         defaultMobile: passenger.Mobile,
-  //         orderTicketId: selectedTicket.Id
-  //       }
-  //     });
-  //     await p.present();
-  //     const result = await p.onDidDismiss();
-  //     if (result && result.data) {
-  //       const data = result.data as {
-  //         mobiles: string[];
-  //         content: string;
-  //       };
-  //       const res = await this.tmcService
-  //         .sendSms(
-  //           data.mobiles,
-  //           data.content,
-  //           this.orderDetail.Order && this.orderDetail.Order.Id
-  //         )
-  //         .catch(_ => {
-  //           AppHelper.alert(_ || "短信发送失败");
-  //           return null;
-  //         });
-  //       if (res) {
-  //         AppHelper.alert("短信已发送");
-  //       }
-  //     }
-  //   }
-  // }
 
   getPassengerCostOrgInfo(ticket: OrderTrainTicketEntity) {
     const passengerId = ticket && ticket.Passenger && ticket.Passenger.Id;
@@ -285,7 +222,7 @@ export class TrainOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       let BookTime: string;
       let Count: string;
       let Premium: string;
-      let InsuredAmount: String;
+      let InsuredAmount: string;
       let Detail: string;
       let EffectiveDate: string;
       let ExpireDate: string;
@@ -378,7 +315,7 @@ export class TrainOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
           .join(",");
       }
       const info = {
-        StatusName, //保单状态
+        StatusName, // 保单状态
         Passenger: p,
         BookTime,
         Count,
@@ -386,12 +323,12 @@ export class TrainOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
         InsuredAmount,
         EffectiveDate,
         ExpireDate,
-        Name, //类型
-        PolicyNo, //保单号
-        Onumber, //供应商订单号
-        Supplier, //供应商
-        BookCode, //预订代码
-        Detail, //投保须知
+        Name, // 类型
+        PolicyNo, // 保单号
+        Onumber, // 供应商订单号
+        Supplier, // 供应商
+        BookCode, // 预订代码
+        Detail, // 投保须知
         IllegalPolicy,
         IllegalReason,
         OutNumbers,
@@ -411,47 +348,6 @@ export class TrainOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     }
     return this.orderDetail.Order.OrderNumbers.filter(it => it.Tag == tag);
   }
-  // async sendEmail(passenger: OrderPassengerEntity) {
-  //   if (
-  //     this.identity &&
-  //     !(this.identity.Numbers && !!this.identity.Numbers["AgentId"])
-  //   ) {
-  //     return false;
-  //   }
-  //   const selectedTicket = this.selectedFlightTicket;
-  //   if (selectedTicket) {
-  //     const p = await this.modalCtrl.create({
-  //       component: SendEmailComponent,
-  //       componentProps: {
-  //         defaultEmail: passenger.Email,
-  //         orderTicketId: selectedTicket.Id
-  //       }
-  //     });
-  //     await p.present();
-  //     const result = await p.onDidDismiss();
-  //     if (result && result.data) {
-  //       const data = result.data as {
-  //         emails: string[];
-  //         subject: string;
-  //         content: string;
-  //       };
-  //       const res = await this.tmcService
-  //         .sendEmail(
-  //           data.emails,
-  //           data.subject,
-  //           data.content,
-  //           this.orderDetail.Order && this.orderDetail.Order.Id
-  //         )
-  //         .catch(_ => {
-  //           AppHelper.alert(_ || "邮件发送失败");
-  //           return null;
-  //         });
-  //       if (res) {
-  //         AppHelper.alert("邮件已发送");
-  //       }
-  //     }
-  //   }
-  // }
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
@@ -471,10 +367,6 @@ export class TrainOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   async ngOnInit() {
-    this.route.queryParamMap.subscribe(q => {
-      this.tab = this.tab || JSON.parse(q.get("tab"));
-      this.title = this.tab.label + "订单";
-    });
     this.route.queryParamMap.subscribe(q => {
       this.initTabs();
       if (q.get("orderId")) {
@@ -763,7 +655,7 @@ export class TrainOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
   back() {
     this.navCtrl.pop();
   }
-  
+
   async ngAfterViewInit() {
     this.subscriptions.push(
       this.slides.changes.subscribe(() => {
@@ -785,13 +677,14 @@ export class TrainOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     const originalTicket =
       this.tikectId2OriginalTickets[t.Id] &&
       this.tikectId2OriginalTickets[t.Id].find(f => f.Id == originalid);
+    t.VariablesJsonObj.isToggleIcon = !t.VariablesJsonObj.isToggleIcon;
     if (originalTicket) {
       originalTicket.isShowOriginalTicket = !originalTicket.isShowOriginalTicket;
       const height = this.plt.height();
       setTimeout(() => {
         const rect = (event.target as HTMLElement).getBoundingClientRect();
-        this.ionContent.scrollByPoint(0, rect.top - height / 2, 100);
-        console.log(rect.top - height / 2, "height");
+        this.ionContent.scrollByPoint(0, rect.top - height / 5, 100);
+        // console.log(rect.top - height / 5, "height");
       }, 100);
     }
   }
