@@ -11,7 +11,7 @@ import { LoadingController } from '@ionic/angular';
 // const module = window["module"];
 try {
   console.log("url,locationurl", window.location.href);
-  if (window["VConsole"] && location.href.toLowerCase().includes("test")) {
+  if (window["VConsole"]&&AppHelper.isApp() && location.href.toLowerCase().includes("test")) {
     if (window["vConsole"]) {
       window["vConsole"].destroy();
     }

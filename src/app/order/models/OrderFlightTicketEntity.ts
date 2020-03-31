@@ -16,6 +16,11 @@ export class OrderFlightTicketEntity extends BaseVariablesEntity {
   BookType: FlightBookType;
 
   BookCode: string;
+
+  Explain: string;
+  /// <summary>
+  /// 退改签政策
+  /// </summary>
   Order: OrderEntity;
   /// <summary>
   /// 外部单号
@@ -180,7 +185,8 @@ export class OrderFlightTicketEntity extends BaseVariablesEntity {
   //  #endregion
 
   //  配置属性
-
+  originalTicket: OrderFlightTicketEntity;
+  isShowOriginalTicket:boolean;
   PrintNumber: string;
   UatpNumber: string;
   ActualIssueTime: string;
