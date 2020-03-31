@@ -3,5 +3,7 @@
   <ion-router-outlet></ion-router-outlet>
   <input type="file" id='file' hidden>
   <app-update-comp></app-update-comp>
-  <app-loading-comp [loading]='loading$|async'></app-loading-comp>
+  <ng-container *ngIf='loading$|async as loading'>
+    <app-loading-comp [loading]='loading' [class.hidden]='!loading.isLoading'></app-loading-comp>
+  </ng-container>
 </ion-app>

@@ -1,4 +1,3 @@
-import { AppComponentsModule } from './../../components/appcomponents.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -7,6 +6,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { PasswordValidPage } from './password-valid.page';
+import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 
 const routes: Routes = [
   {
@@ -25,4 +25,4 @@ const routes: Routes = [
   ],
   declarations: [PasswordValidPage]
 })
-export class PasswordValidPageModule {}
+export class PasswordValidPageModule { }

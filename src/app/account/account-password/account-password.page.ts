@@ -38,12 +38,12 @@ export class AccountPasswordPage implements OnInit, OnDestroy {
   confirmNewPassword: string;
   modifyPasswordSubscription = Subscription.EMPTY;
   identitySubscription = Subscription.EMPTY;
-  loading$: Observable<boolean>;
+  loading$: Observable<{ isLoading: boolean }>;
   constructor(
     identityService: IdentityService,
     private router: Router,
     private apiService: ApiService,
-    private navCtrl:NavController
+    private navCtrl: NavController
   ) {
     this.identitySubscription = identityService.getIdentitySource().subscribe(id => {
       this.identityEntity = id;
@@ -52,7 +52,7 @@ export class AccountPasswordPage implements OnInit, OnDestroy {
     console.log("account-password constructor");
     this.passwordModel = new PasswordModel();
   }
-  back(){
+  back() {
     this.navCtrl.pop();
   }
   forgetPassword() {
@@ -84,7 +84,7 @@ export class AccountPasswordPage implements OnInit, OnDestroy {
         e => AppHelper.alert(e)
       );
   }
-  ngOnInit() {}
+  ngOnInit() { }
   ngOnDestroy(): void {
     this.identitySubscription.unsubscribe();
     this.modifyPasswordSubscription.unsubscribe();

@@ -371,7 +371,6 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
           )
         ]);
       }
-      this.apiService.showLoadingView();
       if (!keepSearchCondition) {
         this.filterCondition = FilterTrainCondition.init();
         setTimeout(() => {
@@ -385,6 +384,7 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
         // 强制从服务器端返回新数据
         data = await this.loadPolicyedTrainsAsync();
       }
+      this.apiService.showLoadingView({msg:this.progressName});
       data = this.filterTrains(data);
       {
         const b = this.trainService

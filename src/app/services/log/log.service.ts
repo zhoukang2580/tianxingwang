@@ -43,7 +43,7 @@ export class LogService {
         AccountId: !identity ? identity.Id : "",
         Device: await AppHelper.getDeviceId()
       });
-      console.log("发送错误,detail "+detail);
+      console.log("发送错误,detail " + detail);
       const formObj = Object.keys(req)
         .map(k => `${k}=${req[k]}`)
         .join("&");

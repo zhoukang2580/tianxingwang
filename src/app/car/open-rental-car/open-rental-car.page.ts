@@ -44,14 +44,10 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     }
   }
   ngOnInit() {
-    this.url$ = this.carService.getOpenUrlSource().pipe(
-      tap(url => {
-        if (url) {
-          if (document.body.classList.contains("")) {
-          }
-        }
-      }),
-      map(it => this.domSanitizer.bypassSecurityTrustResourceUrl(it) as any)
-    );
+    this.url$ = this.carService
+      .getOpenUrlSource()
+      .pipe(
+        map(it => this.domSanitizer.bypassSecurityTrustResourceUrl(it) as any)
+      );
   }
 }

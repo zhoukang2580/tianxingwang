@@ -115,8 +115,6 @@ export class SearchTrainPage
       .pipe(
         map(infos => infos && infos.filter(it => !!it.bookInfo).length > 0)
       );
-    this.apiService.showLoadingView();
-    this.apiService.hideLoadingView();
     const subscription = this.trainService
       .getSearchTrainModelSource()
       .subscribe(async s => {

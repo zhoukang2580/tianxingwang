@@ -40,8 +40,9 @@ interface LocalStorageAirport {
 export enum FlightHotelTrainType {
   Flight = 1,
   Hotel = 2,
+  Train = 3,
   HotelInternational = 4,
-  Train = 3
+  InternationalFlight = 5
 }
 @Injectable({
   providedIn: "root"
@@ -479,7 +480,9 @@ export class TmcService {
     if (!forceFetch && this.allLocalAirports && this.allLocalAirports.length) {
       return Promise.resolve(this.allLocalAirports);
     }
-    this.apiService.showLoadingView();
+    if (forceFetch) {
+      this.apiService.showLoadingView({ msg: "正在获取机场数据..." });
+    }
     const h = await this.getDomesticAirports(forceFetch);
     const i = await this.getInternationalAirports(forceFetch);
     this.apiService.hideLoadingView();
@@ -569,6 +572,8 @@ export class TmcService {
     };
     req.IsShowLoading = true;
     let st = window.performance.now();
+    req.IsShowLoading=true;
+    req.LoadingMsg='正在获取机场数据';
     const r = await this.apiService
       .getPromiseData<{
         HotelCities: any[];
@@ -593,7 +598,7 @@ export class TmcService {
         .set(KEY_INTERNATIONAL_AIRPORTS, this.localInternationAirports)
         .then(_ => {
           console.log(
-            `本地化国际机票耗时：${window.performance.now() - st} ms`
+            `本地化国际机场耗时：${window.performance.now() - st} ms`
           );
         });
     }

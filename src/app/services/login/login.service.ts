@@ -10,7 +10,7 @@ import { of, throwError } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
 import { IResponse } from "../api/IResponse";
 import { LanguageHelper } from "src/app/languageHelper";
-
+import { Storage } from "@ionic/storage";
 @Injectable({
   providedIn: "root"
 })
@@ -28,10 +28,14 @@ export class LoginService {
     private identityService: IdentityService,
     private router: Router,
     private apiService: ApiService,
-    private http: HttpClient
+    private http: HttpClient,
+    private storage: Storage
   ) {
     this.identityService.getIdentitySource().subscribe(id => {
       this.identity = id;
+      setTimeout(() => {
+        this.check();
+      }, 30000);
     });
   }
   setToPageRouter(pageRouter: string) {
@@ -81,6 +85,9 @@ export class LoginService {
   }
 
   checkIsWechatBind(mock = false) {
+    if (this.checkPathIsWechatOrDingtalk()) {
+      return;
+    }
     if (
       mock ||
       AppHelper.isWechatH5() ||
@@ -105,12 +112,22 @@ export class LoginService {
       });
     }
   }
+  private checkPathIsWechatOrDingtalk() {
+    const path: string = AppHelper.getQueryParamers()["path"] || "";
+    return (
+      path.toLowerCase() == "account-wechat" ||
+      path.toLowerCase() == "account-dingtalk"
+    );
+  }
   checkIsDingtalkBind(mock = false) {
     const req = new RequestEntity();
     req.Method = `ApiPasswordUrl-DingTalk-Check`;
     req.Data = {
       SdkType: "DingTalk"
     };
+    if (this.checkPathIsWechatOrDingtalk()) {
+      return;
+    }
     if (mock || AppHelper.isDingtalkH5()) {
       const sub = this.apiService
         .getResponse<any>(req)
@@ -168,6 +185,10 @@ export class LoginService {
   }
   login(method: string, req: RequestEntity) {
     req.Method = method;
+    if (!req.Data) {
+      req.Data = {};
+    }
+    req.Data.LoginType = this.getLoginType();
     return this.apiService
       .getResponse<{
         Ticket: string; // "";
@@ -204,7 +225,7 @@ export class LoginService {
       req.Language = AppHelper.getLanguage();
       req.Ticket = AppHelper.getTicket();
       req.Domain = AppHelper.getDomain();
-      this.apiService.showLoadingView();
+      this.apiService.showLoadingView({ msg: "正在退出账号..." });
       const formObj = Object.keys(req)
         .map(k => `${k}=${req[k]}`)
         .join("&");
@@ -234,6 +255,64 @@ export class LoginService {
       this.identityService.removeIdentity();
       this.router.navigate([AppHelper.getRoutePath("login")]);
     }
+  }
+  async check() {
+    const ticket = AppHelper.getTicket();
+    if (!this.identity || !ticket) {
+      return;
+    }
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = "ApiHomeUrl-Identity-Check";
+    req.Data = JSON.stringify({
+      Ticket: ticket,
+      LoginType: this.getLoginType()
+    });
+    req.Timestamp = Math.floor(Date.now() / 1000);
+    req.Language = AppHelper.getLanguage();
+    req.Ticket = AppHelper.getTicket();
+    req.Domain = AppHelper.getDomain();
+    const url = await this.getUrl(req);
+    const formObj = Object.keys(req)
+      .map(k => `${k}=${req[k]}`)
+      .join("&");
+    return this.http
+      .post(url, formObj, {
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        observe: "body"
+      })
+      .pipe(
+        map((r: IResponse<IdentityEntity>) => r),
+        finalize(() => {})
+      )
+      .subscribe(r => {
+        if (r.Status) {
+          AppHelper.alert(r.Message, true, "确定").then(s => {
+            this.identityService.removeIdentity();
+            this.router.navigate([AppHelper.getRoutePath("login")]);
+          });
+        } else {
+          setTimeout(() => {
+            this.check();
+          }, 30000);
+        }
+      });
+  }
+  async getUrl(req: RequestEntity): Promise<string> {
+    const apiConfig = await this.storage.get(`KEY_API_CONFIG`);
+    let url: string;
+    if (req.Url) {
+      url = req.Url;
+      return url;
+    }
+    if (apiConfig && req.Method) {
+      const urls = req.Method.split("-");
+      url = apiConfig.Urls[urls[0]];
+      if (url) {
+        req.Url = url + "/" + urls[1] + "/" + urls[2];
+      }
+    }
+    return req.Url;
   }
   async checkIdentity() {
     if (!this.identity) {
@@ -290,5 +369,23 @@ export class LoginService {
       });
     }
     return false;
+  }
+  getLoginType() {
+    if (AppHelper.isApp()) {
+      return "App";
+    }
+    if (AppHelper.isDingtalkH5()) {
+      return "DingtalkH5";
+    }
+    if (AppHelper.isWechatH5()) {
+      return "WechatH5";
+    }
+    if (AppHelper.isWechatMini()) {
+      return "WechatMini";
+    }
+    if (AppHelper.isH5()) {
+      return "H5";
+    }
+    return "";
   }
 }

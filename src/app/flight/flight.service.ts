@@ -434,6 +434,7 @@ export class FlightService {
       );
       await this.onSelectReturnTrip();
     } else {
+      this.apiService.showLoadingView({ msg: "" });
       // 重选去程
       const airports = await this.getAllLocalAirports();
       s.Date = arg.bookInfo.flightSegment.TakeoffTime.substr(
@@ -466,7 +467,6 @@ export class FlightService {
       this.passengerBookInfos = arr;
     }
     this.setPassengerBookInfosSource(this.getPassengerBookInfos());
-    this.apiService.showLoadingView();
     await this.dismissAllTopOverlays();
     this.apiService.hideLoadingView();
     this.setSearchFlightModelSource(s);
@@ -483,6 +483,7 @@ export class FlightService {
       return;
     }
     const s = this.getSearchFlightModel();
+    this.apiService.showLoadingView({ msg: "" });
     const cities = await this.getAllLocalAirports();
     s.tripType = TripType.departureTrip;
     s.Date = arg.bookInfo.flightSegment.TakeoffTime.substr(
@@ -497,7 +498,6 @@ export class FlightService {
     );
     s.FromAsAirport = false;
     s.ToAsAirport = false;
-    this.apiService.showLoadingView();
     await this.dismissAllTopOverlays();
     this.setSearchFlightModelSource(s);
     this.apiService.hideLoadingView();
@@ -631,7 +631,7 @@ export class FlightService {
               if (item.credential) {
                 name = `${item.credential.CheckFirstName}${
                   item.credential.CheckLastName
-                }(${(item.credential.Number || "").substr(0, 6)}...)`;
+                  }(${(item.credential.Number || "").substr(0, 6)}...)`;
               }
               cannotArr.push(name);
               item.bookInfo = null;
@@ -718,7 +718,7 @@ export class FlightService {
           if (item.credential) {
             name = `${item.credential.CheckFirstName}${
               item.credential.CheckLastName
-            }(${(item.credential.Number || "").substr(0, 6)}...)`;
+              }(${(item.credential.Number || "").substr(0, 6)}...)`;
           }
           cannotArr.push(name);
           item.bookInfo = null;
@@ -806,7 +806,7 @@ export class FlightService {
     let i = 10;
     while (top && --i > 0) {
       // console.log("onSelectReturnTrip", top);
-      await top.dismiss().catch(_ => {});
+      await top.dismiss().catch(_ => { });
       top = await this.modalCtrl.getTop();
     }
     console.timeEnd("dismissAllTopOverlays");
@@ -1580,7 +1580,7 @@ export class FlightService {
         // console.log(moment(s.TakeoffTime).hour());
         return (
           this.filterCondition.takeOffTimeSpan.lower <=
-            this.calendarService.getMoment(0, s.TakeoffTime).hour() &&
+          this.calendarService.getMoment(0, s.TakeoffTime).hour() &&
           (this.calendarService.getMoment(0, s.TakeoffTime).hour() <
             this.filterCondition.takeOffTimeSpan.upper ||
             (this.calendarService.getMoment(0, s.TakeoffTime).hour() ==

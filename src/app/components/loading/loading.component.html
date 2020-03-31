@@ -1,5 +1,5 @@
 <!-- Backdrop that sets dynamic properties -->
-<ion-backdrop [tappable]="false" [visible]="true" *ngIf='loading' [stopPropagation]="true">
+<ion-backdrop [tappable]="false" [visible]="true" *ngIf='loading?.isLoading' [stopPropagation]="true">
 </ion-backdrop>
 <ion-card>
   <div class='loading'>
@@ -16,8 +16,8 @@
     <!-- <ion-spinner name="dots"></ion-spinner> -->
 
     <!-- Bubbles -->
-    <ion-spinner name="bubbles"></ion-spinner>
-
+    <ion-spinner name="bubbles" [class.has-msg]='loading?.msg'></ion-spinner>
+    <ion-text color='dark' class="msg ion-margin-horizontal" *ngIf='loading?.msg'>{{loading.msg}}</ion-text>
     <!-- Circles -->
     <!-- <ion-spinner name="circles"></ion-spinner> -->
 

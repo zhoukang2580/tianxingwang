@@ -7,6 +7,7 @@ import { hmrBootstrap } from "./hmr";
 import { enableDebugTools } from "@angular/platform-browser";
 import { ThemeService } from "./app/services/theme/theme.service";
 import { AppHelper } from "./app/appHelper";
+import { LoadingController } from '@ionic/angular';
 // const module = window["module"];
 try {
   console.log("url,locationurl", window.location.href);
@@ -34,6 +35,7 @@ const bootstrap = () =>
     .then(moduleRef => {
       // 为了设置模式
       moduleRef.injector.get(ThemeService);
+      AppHelper.loadingController = moduleRef.injector.get(LoadingController);
       return moduleRef;
     })
     .catch(err => {

@@ -91,19 +91,16 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
     if (!this.mobile) {
       this.mobile = this.defaultMobile;
     }
-    this.checkIfMobileVerified();
+    this.checkIfMobileVerified(this.mobile);
   }
-  private checkIfMobileVerified() {
-    this.validateMobile();
-    if (this.mobile && this.defaultMobile) {
-      this.isMobileVerified = this.mobile == this.defaultMobile;
-      if (this.isMobileVerified) {
-        this.carService.addVerifiedMobile(this.mobile);
-      }
+  private checkIfMobileVerified(mobile: string) {
+    this.validateMobile(mobile);
+    if(mobile==this.defaultMobile){
+      this.isMobileVerified = mobile == this.defaultMobile;
       return;
     }
-    if (this.mobile) {
-      this.carService.checkIfMobileIsVerified(this.mobile).then(res => {
+    if (mobile) {
+      this.carService.checkIfMobileIsVerified(mobile).then(res => {
         this.isMobileVerified = res;
       });
     }
@@ -123,6 +120,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
   onSelect(one: string) {
     this.searchMobiles = [];
     this.mobile = one;
+    this.checkIfMobileVerified(one);
   }
   onChange() {
     this.setTop();
@@ -137,9 +135,10 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
             this.searchMobiles = this.verifiedMobiles.filter(it =>
               it.includes(this.mobile)
             );
+          } else {
+            this.checkIfMobileVerified(one);
           }
         }
-        this.checkIfMobileVerified();
       });
   }
   private async checkPermission() {
@@ -274,7 +273,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
             {
               enableHighAccuracy: false,
               maximumAge: 1000 * 60,
-              timeout: 3 * 1000
+              timeout: 5 * 1000
             }
           );
         } else {
@@ -288,25 +287,17 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
   }
   private initLocalMobiles() {
     this.carService.getLocalMobiles().then(res => {
-      this.verifiedMobiles =
-        (res && res.mobiles && res.mobiles.length && res.mobiles) ||
-        [
-          // "18817263748",
-          // "18817263788",
-          // "18817268765",
-          // "18817368765",
-          // "18817268765"
-        ];
+      this.verifiedMobiles = Object.keys(res) || [];
     });
   }
   ngOnInit() {
-    this.initLocalMobiles();
     this.subscription = this.route.queryParamMap.subscribe(p => {
+      this.initLocalMobiles();
       this.getAccountInfo();
     });
   }
-  private validateMobile() {
-    this.isMobileValid = this.mobile && this.mobile.length == 11;
+  private validateMobile(mobile) {
+    this.isMobileValid = mobile && mobile.length == 11;
   }
   private async getAccountInfo() {
     const info = await this.carService
@@ -321,7 +312,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
       } else {
         this.searchMobiles = [];
       }
+      this.checkIfMobileVerified(this.mobile);
     }
-    this.checkIfMobileVerified();
   }
 }
