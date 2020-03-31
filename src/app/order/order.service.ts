@@ -24,7 +24,8 @@ import { DayModel } from "../tmc/models/DayModel";
 import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 import { IFlightSegmentInfo } from "../flight/models/PassengerFlightInfo";
 import { AppHelper } from "../appHelper";
-import { OrderFlightTicketEntity } from './models/OrderFlightTicketEntity';
+import { OrderFlightTicketEntity } from "./models/OrderFlightTicketEntity";
+import { OrderTrainTicketEntity } from "./models/OrderTrainTicketEntity";
 export class OrderDetailModel {
   Histories: HistoryEntity[];
   Tasks: TaskEntity[];
@@ -241,17 +242,36 @@ export class OrderService {
     const d = await m.onDidDismiss();
     return d && (d.data as DayModel[]);
   }
- private getmockOrderDetail():OrderDetailModel{
-  return MOCK_FLIGHT_ORDER_DETAIL as any;
+  private getmockOrderDetail(): OrderDetailModel {
+    return MOCK_FLIGHT_ORDER_DETAIL as any;
   }
- checkIfOrderFlightTicketShow(ticket:OrderFlightTicketEntity[]) {
+  checkIfOrderTrainTicketShow(ticket: OrderTrainTicketEntity[]) {
     if (ticket) {
       const statusArr = [
-        OrderFlightTicketStatusType.ChangeTicket,
+        OrderTrainTicketStatusType.ChangeTicket
         // OrderFlightTicketStatusType.Refunded
       ];
-      ticket= ticket.map(t => {
-        t.VariablesJsonObj=t.VariablesJsonObj||JSON.parse(t.Variables)||{}
+      ticket = ticket.map(t => {
+        t.VariablesJsonObj =
+          t.VariablesJsonObj || JSON.parse(t.Variables) || {};
+        if (t.VariablesJsonObj) {
+          const isShow = !statusArr.some(s => s == t.Status);
+          t.VariablesJsonObj.isShow = !t.VariablesJsonObj.IsScrap && isShow;
+        }
+        return t;
+      });
+    }
+    return ticket;
+  }
+  checkIfOrderFlightTicketShow(ticket: OrderFlightTicketEntity[]) {
+    if (ticket) {
+      const statusArr = [
+        OrderFlightTicketStatusType.ChangeTicket
+        // OrderFlightTicketStatusType.Refunded
+      ];
+      ticket = ticket.map(t => {
+        t.VariablesJsonObj =
+          t.VariablesJsonObj || JSON.parse(t.Variables) || {};
         if (t.VariablesJsonObj) {
           const isShow = !statusArr.some(s => s == t.Status);
           t.VariablesJsonObj.isShow = !t.VariablesJsonObj.IsScrap && isShow;

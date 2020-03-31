@@ -125,7 +125,11 @@ const routes: Routes = [
       import("./order/flight-order-detail/flight-order-detail.module").then(
         m => m.FlightOrderDetailPageModule
       )
+  },  {
+    path: 'train-order-detail',
+    loadChildren: () => import('./order/train-order-detail/train-order-detail.module').then( m => m.TrainOrderDetailPageModule)
   }
+
 ];
 @NgModule({
   imports: [

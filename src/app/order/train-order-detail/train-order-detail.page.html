@@ -3,7 +3,7 @@
     <ion-buttons slot='start'>
       <app-back-button defaultHref=""></app-back-button>
     </ion-buttons>
-    <ion-title>{{title}}</ion-title>
+    <ion-title>酒店订单详情</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -33,7 +33,7 @@
               <ion-col size='3'>完成时间:</ion-col>
               <ion-col>{{orderDetail.Order.InsertDateTime}}</ion-col>
             </ion-row>
-            <ion-row (click)='showPricePopover()' *ngIf='orderDetail.Order?.Type=="Flight"'>
+            <ion-row >
               <ion-col size='3'>应付金额:</ion-col>
               <ion-col>
                 <div>
@@ -124,7 +124,7 @@
               </ion-row>
               <ion-row>
                 <ion-col size='3'>费用类型</ion-col>
-                <ion-col>{{flightTicket.VariablesJsonObj?.ExpenseType}}</ion-col>
+                <ion-col>{{getExpenseType(flightTickect)}}</ion-col>
               </ion-row>
               <ion-row>
                 <ion-col size='3'>联系电话</ion-col>
@@ -346,7 +346,7 @@
                 *ngIf="tikectId2OriginalTickets&&tikectId2OriginalTickets[flightTicket.Id]?.length>0">
                 <ion-col class="ion-text-justify" color="secondary">
                   <div color="secondary" class="ion-text-center display-flex" style="height: 2em;"
-                    (click)="onShowFlightTicket(flightTicket,flightTicket?.VariablesJsonObj?.OriginalTicketId,$event)">
+                    (click)="onShowTicket(flightTicket,flightTicket?.VariablesJsonObj?.OriginalTicketId,$event)">
                     原始航班信息{{flightTicket?.VariablesJsonObj?.OriginalTicketId}}
                     <ion-icon name="chevron-down-outline" *ngIf="flightTicket.isShowOriginalTicket"></ion-icon>
                     <ion-icon name="chevron-up-outline" *ngIf="!flightTicket.isShowOriginalTicket"></ion-icon>
@@ -354,7 +354,7 @@
                 </ion-col>
               </ion-row>
             </div>
-            <ng-container *ngIf="tikectId2OriginalTickets&&tikectId2OriginalTickets[flightTicket?.Id]?.length">
+            <!-- <ng-container *ngIf="tikectId2OriginalTickets&&tikectId2OriginalTickets[flightTicket?.Id]?.length">
               <div class="getHeight" *ngFor="let ticket of tikectId2OriginalTickets[flightTicket.Id]">
                 <ng-container *ngIf="ticket.isShowOriginalTicket">
                   <ion-item-divider>
@@ -369,7 +369,7 @@
                       <ion-text color="danger" *ngIf="tikect2Insurance[ticket.Key]?.length>0">(含保险)</ion-text>
                     </ion-col>
                   </ion-row>
-                  <ng-container *ngFor="let trip of ticket.OrderFlightTrips;">
+                  <ng-container *ngFor="let trip of ticket.OrderTrainTrips;">
                     <ion-row>
                       <ion-col size='3'>
                         航班号
@@ -433,7 +433,6 @@
                           行程
                         </ion-col>
                         <ion-col *ngIf="getInsuranceTravel(ticket.OrderFlightTrips) as insurance">
-                          <!-- {{insurance}} -->
                         </ion-col>
                       </ion-row>
                       <ion-row>
@@ -524,7 +523,7 @@
                     *ngIf="tikectId2OriginalTickets[ticket?.VariablesJsonObj?.OriginalTicketId]?.length">
                     <ion-col class="ion-text-justify" color="secondary">
                       <div color="secondary" class="ion-text-center display-flex" style="height: 2em;"
-                        (click)="onShowFlightTicket(ticket,ticket?.VariablesJsonObj?.OriginalTicketId,$event)">原始航班信息
+                        (click)="onShowTicket(ticket,ticket?.VariablesJsonObj?.OriginalTicketId,$event)">原始航班信息
                         {{ticket?.VariablesJsonObj?.OriginalTicketId}}
                         <ion-icon name="chevron-down-outline" *ngIf="ticket.isShowOriginalTicket"></ion-icon>
                         <ion-icon name="chevron-up-outline" *ngIf="!ticket.isShowOriginalTicket"></ion-icon>
@@ -533,7 +532,7 @@
                   </ion-row>
                 </ng-container>
               </div>
-            </ng-container>
+            </ng-container> -->
           </div>
         </div>
       </ng-container>

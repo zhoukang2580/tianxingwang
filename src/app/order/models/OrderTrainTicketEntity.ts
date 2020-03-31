@@ -7,7 +7,7 @@ import { TrainSeatType } from "src/app/train/models/TrainEntity";
 import { OrderTrainTicketStatusType } from "./OrderTrainTicketStatusType";
 import { OrderTrainTripEntity } from "./OrderTrainTripEntity";
 import { OrderInvoiceEntity } from "./OrderInvoiceEntity";
-import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
+import { BaseVariablesEntity } from "src/app/models/BaseVariablesEntity";
 export class OrderTrainTicketEntity extends BaseVariablesEntity {
   /// <summary>
   /// 乘客
@@ -58,6 +58,7 @@ export class OrderTrainTicketEntity extends BaseVariablesEntity {
   /// 坐位名称
   /// </summary>
   SeatTypeName: string;
+  isShowOriginalTicket: boolean;
   /// <summary>
   /// 出发站名
   /// </summary>
