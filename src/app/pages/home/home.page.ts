@@ -24,7 +24,23 @@ export class HomePage implements OnInit {
   onScanResult(txt: string) {
     if (txt && txt.toLowerCase().includes("app_path")) {
       const path = AppHelper.getValueFromQueryString("app_path", txt);
-      this.router.navigate([AppHelper.getRoutePath(path)]);
+      console.log("path", path);
+      const params = {
+        hrid: "",
+        hrName: "",
+        App_Path: "",
+        costCenterId: "",
+        costCenterName: "",
+        organizationId: "",
+        policyId: ""
+      };
+      const query = {};
+      Object.keys(params).forEach(k => {
+        query[k] = AppHelper.getValueFromQueryString(k, txt);
+      });
+      this.router.navigate([AppHelper.getRoutePath(path)], {
+        queryParams: query
+      });
     } else {
       if (txt) {
         this.router.navigate([
