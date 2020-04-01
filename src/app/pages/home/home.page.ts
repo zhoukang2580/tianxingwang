@@ -26,10 +26,12 @@ export class HomePage implements OnInit {
       const path = AppHelper.getValueFromQueryString("app_path", txt);
       this.router.navigate([AppHelper.getRoutePath(path)]);
     } else {
-      this.router.navigate([
-        AppHelper.getRoutePath("scan-result"),
-        { scanResult: txt}
-      ]);
+      if (txt) {
+        this.router.navigate([
+          AppHelper.getRoutePath("scan-result"),
+          { scanResult: txt }
+        ]);
+      }
     }
   }
 }

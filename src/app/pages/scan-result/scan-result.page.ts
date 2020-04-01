@@ -32,7 +32,7 @@ export class ScanResultPage implements OnInit, OnDestroy {
   private scanResultSubscription = Subscription.EMPTY;
   private identitySubscription = Subscription.EMPTY;
   private browser: InAppBrowserObject;
-  @ViewChild(BackButtonComponent) backButton: BackButtonComponent;
+  @ViewChild(BackButtonComponent,{static:true}) backButton: BackButtonComponent;
   confirmText: string = LanguageHelper.getConfirmTip();
   cancelText: string = LanguageHelper.getCancelTip();
   description: string;
