@@ -5,6 +5,7 @@ import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { Injectable } from "@angular/core";
 import { WechatHelper } from "src/app/wechatHelper";
 export const baiduMapAk = `BFddaa13ba2d76f4806d1abb98ef907c`;
+export const GaodeMapKey = `42acb0dcc0c0541c738f8842ffb360ce`;
 export interface MapPoint {
   lng: string;
   lat: string;
@@ -18,6 +19,8 @@ export class MapService {
   private static TAG = "map 定位";
   private st = Date.now();
   private querys: any;
+  private amap: any;
+  private amapContainer: HTMLElement;
   constructor(private apiService: ApiService) {
     this.querys = AppHelper.getQueryParamers();
     console.log("MapService,tree", this.querys);
@@ -28,14 +31,17 @@ export class MapService {
         this.initBMap();
       }
     });
+    if (!AppHelper.isWechatMini()) {
+      this.initGaoDeMap();
+    }
   }
   private initBMap() {
     setTimeout(() => {
       try {
         const script = document.createElement("script");
         script.type = "text/javascript";
-        script.src = `https://api.map.baidu.com/getscript?v=3.0&ak=${baiduMapAk}&services=&t=20191126111618"></script>`;
-        (function() {
+        script.src = `https://api.map.baidu.com/getscript?v=3.0&ak=${baiduMapAk}&services=&t=20191126111618`;
+        (() => {
           window["BMAP_PROTOCOL"] = "https";
           window["BMap_loadScriptTime"] = new Date().getTime();
           document.head.appendChild(script);
@@ -45,14 +51,130 @@ export class MapService {
       }
     }, 1000);
   }
-  getMap(container: HTMLElement) {
+  convertToAmap(p: { lat: string; lng: string }) {
+    return new Promise<{ lat: string; lng: string }>((resolve, reject) => {
+      const gps = [p.lng, p.lat];
+      if (window["AMap"]) {
+        window["AMap"].convertFrom(gps, "gps", (status, result) => {
+          console.log("convertToAmap ", status, result);
+          if (result.info === "ok") {
+            const lnglats: {
+              Q: string; // 28.372125;
+              R: string; // -81.502408;
+              lat: string; // 28.372125;
+              lng: string; // -81.502408;
+            }[] = result.locations; // Array.<LngLat>
+            console.log(
+              `convertToAmap olat=${p.lat},olng=${p.lng}`,
+              lnglats[0]
+            );
+            resolve({ lat: lnglats[0].lat, lng: lnglats[0].lng });
+          } else {
+            reject(result);
+          }
+        });
+      } else {
+        reject("");
+      }
+    });
+  }
+  private initGaoDeMap() {
+    setTimeout(() => {
+      try {
+        // const script = document.createElement("script");
+        // script.type = "text/javascript";
+        // const st = Date.now();
+        // script.src = `https://webapi.amap.com/maps?v=1.4.15&key=${GaodeMapKey}`;
+        // script.onload = () => {
+        //   console.log("加载脚本完成", Date.now() - st);
+        // };
+        // document.body.appendChild(script);
+        window["onLoad"] = () => {
+          this.getAMap({ lat: "36.675807", lng: "117.000923" });
+        };
+        const url = `https://webapi.amap.com/maps?v=1.4.15&key=${GaodeMapKey}&callback=onLoad`;
+        const jsapi = document.createElement("script");
+        jsapi.charset = "utf-8";
+        jsapi.src = url;
+        document.head.appendChild(jsapi);
+      } catch (e) {
+        console.error(e);
+      }
+    }, 100);
+  }
+  getBMap(container: HTMLElement) {
     let bmap;
     if (window["BMap"] && window["BMap"].Map) {
       bmap = new window["BMap"].Map(container);
     }
     return bmap;
   }
-  private convertPoint(curPoint: MapPoint): Promise<MapPoint> {
+
+  getAMap(lnglat: { lng: string; lat: string }) {
+    if (this.amap) {
+      if (lnglat) {
+        if (window["AMap"] && window["AMap"].LngLat) {
+          const AMap = window["AMap"];
+          // 传入经纬度，设置地图中心点
+          const position = new AMap.LngLat(lnglat.lng, lnglat.lat); // 标准写法
+          // 简写 var position = [116, 39];
+          this.amap.setCenter(position);
+          // 获取地图中心点
+          // const currentCenter = this.amap.getCenter();
+        }
+      }
+      return { map: this.amap, amapContainer: this.amapContainer };
+    }
+    this.amapContainer = document.getElementById("amap");
+    if (!this.amapContainer) {
+      this.amapContainer = document.createElement("div");
+      this.amapContainer.id = "amap";
+      this.amapContainer.classList.add("hidden");
+      this.amapContainer.style.width = "100%";
+      this.amapContainer.style.height = "100%";
+      document.body.append(this.amapContainer);
+    }
+    if (window["AMap"] && window["AMap"].Map) {
+      this.amap = new window["AMap"].Map(this.amapContainer, {
+        zoom: 13, // 级别
+        resizeEnable: true,
+        vectorMapForeign: "English",
+        center: [lnglat.lng, lnglat.lat] // 中心点坐标
+        // viewMode: "3D" // 使用3D视图
+      });
+    }
+    return { map: this.amap, amapContainer: this.amapContainer };
+  }
+  initAMap(lnglat: { lng: string; lat: string }, el?: HTMLElement) {
+    let map;
+    if (window["AMap"] && window["AMap"].Map) {
+      map = new window["AMap"].Map(el || this.amapContainer, {
+        zoom: 13, // 级别
+        resizeEnable: true,
+        vectorMapForeign: "English",
+        center: [lnglat.lng, lnglat.lat] // 中心点坐标
+        // viewMode: "3D" // 使用3D视图
+      });
+    }
+    return map;
+  }
+  addMarkerToAMap(latlng: { lat: string; lng: string }) {
+    let marker;
+    if (window["AMap"] && window["AMap"].Marker && this.amap) {
+      const AMap = window["AMap"];
+      marker = new AMap.Marker({
+        position: [latlng.lng, latlng.lat] // 位置
+      });
+      this.amap.add(marker); // 添加到地图
+    }
+    return marker;
+  }
+  removeMarkerFromAmap(marker) {
+    if (this.amap) {
+      this.amap.remove(marker);
+    }
+  }
+  convertPoint(curPoint: MapPoint): Promise<MapPoint> {
     return new Promise((s, reject) => {
       if (!curPoint) {
         reject("要转换的point不存在");
