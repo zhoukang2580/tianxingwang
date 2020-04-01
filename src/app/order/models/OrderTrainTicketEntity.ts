@@ -72,6 +72,7 @@ export class OrderTrainTicketEntity extends BaseVariablesEntity {
   /// 出票时间
   /// </summary>
   BookTime: string;
+  Explain: string;
   /// <summary>
   /// 出票时间
   /// </summary>

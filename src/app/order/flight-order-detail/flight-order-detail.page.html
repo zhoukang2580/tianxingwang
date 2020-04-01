@@ -104,7 +104,7 @@
         </div>
       </div>
       <ng-container *ngFor="let flightTicket of orderDetail?.Order?.OrderFlightTickets;let i=index">
-        <div class="swiper-slide" @flyInOut #slide *ngIf="flightTicket.VariablesJsonObj.isShow">
+        <div class="swiper-slide" #slide *ngIf="flightTicket.VariablesJsonObj.isShow">
           <div>
             <!-- 旅客信息 -->
             <ng-container *ngIf='getTicketPassenger(flightTicket) as p'>
@@ -342,19 +342,22 @@
                   </ion-row>
                 </ion-grid>
               </ng-container>
-              <ion-row style="padding-left:0em;background-color: var(--ion-color-secondary);"
+              <ion-row style="padding-left:0em;"
                 *ngIf="tikectId2OriginalTickets&&tikectId2OriginalTickets[flightTicket.Id]?.length>0">
                 <ion-col class="ion-text-justify" color="secondary">
-                  <div color="secondary" class="ion-text-center display-flex" style="height: 2em;"
+                  <ion-button expand='full' color="secondary"
                     (click)="onShowFlightTicket(flightTicket,flightTicket?.VariablesJsonObj?.OriginalTicketId,$event)">
                     原始航班信息{{flightTicket?.VariablesJsonObj?.OriginalTicketId}}
-                    <ion-icon name="chevron-down-outline" *ngIf="flightTicket.isShowOriginalTicket"></ion-icon>
-                    <ion-icon name="chevron-up-outline" *ngIf="!flightTicket.isShowOriginalTicket"></ion-icon>
-                  </div>
+                    <ion-icon name="chevron-down-outline" *ngIf="flightTicket.VariablesJsonObj.isShowOriginalTicket">
+                    </ion-icon>
+                    <ion-icon name="chevron-up-outline" *ngIf="!flightTicket.VariablesJsonObj.isShowOriginalTicket">
+                    </ion-icon>
+                  </ion-button>
                 </ion-col>
               </ion-row>
             </div>
-            <ng-container *ngIf="tikectId2OriginalTickets&&tikectId2OriginalTickets[flightTicket?.Id]?.length">
+            <ng-container @flyInOut
+              *ngIf="tikectId2OriginalTickets&&tikectId2OriginalTickets[flightTicket?.Id]?.length">
               <div class="getHeight" *ngFor="let ticket of tikectId2OriginalTickets[flightTicket.Id]">
                 <ng-container *ngIf="ticket.isShowOriginalTicket">
                   <ion-item-divider>
@@ -523,12 +526,14 @@
                   <ion-row style="padding-left:0em;background-color: var(--ion-color-secondary);"
                     *ngIf="tikectId2OriginalTickets[ticket?.VariablesJsonObj?.OriginalTicketId]?.length">
                     <ion-col class="ion-text-justify" color="secondary">
-                      <div color="secondary" class="ion-text-center display-flex" style="height: 2em;"
+                      <ion-button color="secondary" expand='full'
                         (click)="onShowFlightTicket(ticket,ticket?.VariablesJsonObj?.OriginalTicketId,$event)">原始航班信息
                         {{ticket?.VariablesJsonObj?.OriginalTicketId}}
-                        <ion-icon name="chevron-down-outline" *ngIf="ticket.isShowOriginalTicket"></ion-icon>
-                        <ion-icon name="chevron-up-outline" *ngIf="!ticket.isShowOriginalTicket"></ion-icon>
-                      </div>
+                        <ion-icon name="chevron-down-outline" *ngIf="ticket.VariablesJsonObj.isShowOriginalTicket">
+                        </ion-icon>
+                        <ion-icon name="chevron-up-outline" *ngIf="!ticket.VariablesJsonObj.isShowOriginalTicket">
+                        </ion-icon>
+                      </ion-button>
                     </ion-col>
                   </ion-row>
                 </ng-container>
