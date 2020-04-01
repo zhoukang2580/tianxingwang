@@ -75,6 +75,7 @@ export class TmcService {
     this.companies = null;
     this.tmc = null;
     this.agent = null;
+    this.fetchingTmcPromise = null;
   }
   getTrips(type: "Flight" | "Train" | "Hotel" = null) {
     const req = new RequestEntity();
