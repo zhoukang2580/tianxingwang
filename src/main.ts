@@ -7,11 +7,15 @@ import { hmrBootstrap } from "./hmr";
 import { enableDebugTools } from "@angular/platform-browser";
 import { ThemeService } from "./app/services/theme/theme.service";
 import { AppHelper } from "./app/appHelper";
-import { LoadingController } from '@ionic/angular';
+import { LoadingController } from "@ionic/angular";
 // const module = window["module"];
 try {
   console.log("url,locationurl", window.location.href);
-  if (window["VConsole"]&&AppHelper.isApp() && location.href.toLowerCase().includes("test")) {
+  if (
+    window["VConsole"] &&
+    (AppHelper.isApp() || AppHelper.isWechatH5()) &&
+    location.href.toLowerCase().includes("test")
+  ) {
     if (window["vConsole"]) {
       window["vConsole"].destroy();
     }

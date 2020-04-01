@@ -107,7 +107,7 @@
         <div class="swiper-slide" #slide  *ngFor="let orderHotel of orderDetail?.Order?.OrderHotels">
           <div>
             <!-- 旅客信息 -->
-            <ng-container *ngIf='getPassengerCostOrgInfo() as info'>
+            <ng-container *ngIf='getPassengerCostOrgInfo(orderHotel) as info'>
               <ion-item-divider>
                 旅客信息
               </ion-item-divider>
