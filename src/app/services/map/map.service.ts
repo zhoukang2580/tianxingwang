@@ -163,6 +163,8 @@ export class MapService {
     if (window["AMap"] && window["AMap"].Marker && this.amap) {
       const AMap = window["AMap"];
       marker = new AMap.Marker({
+        icon: "//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
+        offset: new AMap.Pixel(-13, -30),
         position: [latlng.lng, latlng.lat] // 位置
       });
       this.amap.add(marker); // 添加到地图
