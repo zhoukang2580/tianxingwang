@@ -17,6 +17,7 @@ import { OrderPayStatusType } from "../models/OrderInsuranceEntity";
 import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
 import { OrderCarEntity } from "../models/OrderCarEntity";
 import { environment } from "src/environments/environment";
+import { TabItem } from '../order-detail/order-detail.page';
 type LabelValue =
   | "baseInfo"
   | "rentalInfo"
@@ -45,8 +46,8 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonContent) content: IonContent;
   tmc: TmcEntity;
   orderDetail: OrderDetailModel;
-  tabs: ITab[];
-  tab: ITab;
+  tabs: TabItem[]=[];
+  tab: TabItem;
   constructor(
     private orderService: OrderService,
     private route: ActivatedRoute,
@@ -93,14 +94,18 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
   async ngAfterViewInit() {}
   private initTabs() {
     this.tabs = [];
-    this.tabs.push({ label: "基础信息", value: "baseInfo" });
-    this.tabs.push({ label: "用车信息", value: "rentalInfo" });
-    this.tabs.push({ label: "乘客信息", value: "passengerInfo" });
-    this.tabs.push({ label: "联系信息", value: "contactInfo" });
-    // this.tabs.push({ label: "用车价格信息", value: "priceInfo" });
-    this.tabs.push({ label: "审批记录", value: "approveInfo" });
-    this.tab = this.tabs[0];
-    this.tab.active = true;
+    this.tabs.push({ label: "订单信息", value: 0 });
+    if (
+      this.orderDetail &&
+      this.orderDetail.Order &&
+      this.orderDetail.Order.OrderCars
+    ) {
+      this.orderDetail.Order.OrderCars.forEach((it, idx) => {
+        // if (it.VariablesJsonObj.isShow) {
+          this.tabs.push({ label: it.Id, value: idx + 1 });
+        // }
+      });
+    }
   }
   getTotalAmount(order: OrderEntity) {
     const Tmc = this.tmc;
@@ -228,6 +233,7 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
     });
   }
   private initOrderCarTravel() {
+    this.initTabs();
     if (this.orderDetail && this.orderDetail.Order) {
       if (
         this.orderDetail.Order.OrderCars &&

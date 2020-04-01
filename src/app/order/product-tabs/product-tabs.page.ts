@@ -353,6 +353,8 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   }
   goToDetailPage(orderId: string, type: string) {
     // Flight
+    console.log(type,"dddd");
+    
     if (type && type.toLowerCase() == "car") {
       this.router.navigate([AppHelper.getRoutePath("car-order-detail")], {
         queryParams: { Id: orderId }
@@ -360,6 +362,14 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       return;
     } else if (type && type.toLowerCase() == "flight") {
       this.router.navigate([AppHelper.getRoutePath("flight-order-detail")], {
+        queryParams: {
+          tab: JSON.stringify(this.activeTab),
+          orderId: orderId
+        }
+      });
+      return;
+    }else if (type && type.toLowerCase() == "hotel") {
+      this.router.navigate([AppHelper.getRoutePath("hotel-order-detail")], {
         queryParams: {
           tab: JSON.stringify(this.activeTab),
           orderId: orderId

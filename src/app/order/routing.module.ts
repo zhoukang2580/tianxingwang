@@ -37,6 +37,13 @@ export const routes: Routes = [
         m => m.FlightOrderDetailPageModule
       )
   },
+  {
+    path: "hotel-order-detail",
+    loadChildren: () =>
+      import("./hotel-order-detail/hotel-order-detail.module").then(
+        m => m.HotelOrderDetailPageModule
+      )
+  },
 ];
 @NgModule({
   declarations: [],

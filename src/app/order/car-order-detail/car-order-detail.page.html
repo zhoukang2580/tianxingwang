@@ -10,10 +10,10 @@
 <ion-content>
   <app-swiper-slide-content [tabs]="tabs">
     <div class="swiper-slide">
-      <!-- 基础信息 -->
       <div>
+        <!-- 订单信息 -->
         <ion-item-divider>
-          {{tabs[0].label}}
+          订单信息
         </ion-item-divider>
         <ion-row>
           <ion-col size='4'>订单编号</ion-col>
@@ -67,41 +67,31 @@
           <ion-col size='4'> 付款方式</ion-col>
           <ion-col> {{orderDetail?.TravelType}}-{{orderDetail?.TravelPayType}}</ion-col>
         </ion-row>
-      </div>
-    </div>
-    <div class="swiper-slide">
-      <!-- 用车信息 -->
-      <div>
-        <ion-item-divider>
-          {{tabs[1].label}}
+        <!-- 审批记录 -->
+        <ion-item-divider  *ngIf='orderDetail?.Histories.length>0'>
+          审批记录
         </ion-item-divider>
-        <div *ngFor='let orderCar of orderDetail?.Order.OrderCars'>
-          <ion-row>
-            <ion-col size='4'>实际出发地址</ion-col>
-            <ion-col>
-              <div>
-                {{orderCar.ActualFromAddress}}
-                <div>{{orderCar.FromTime?.substr(0,19)?.replace("T"," ")}}</div>
+        <div>
+          <app-timeline [hideLastTimeLineTail]='false' *ngIf='orderDetail?.Histories'>
+            <app-timeline-item *ngFor='let history of orderDetail.Histories'>
+              <div class='approval-info'>
+                <ion-label>审批类型：{{getVariableObj(history,"TypeName")}}</ion-label>
+                <ion-label>审批人：{{history.Account?.RealName}} <span
+                    *ngIf='history.StatusName'>({{history.StatusName}})</span>
+                </ion-label>
+                <ion-label>发起审批时间：{{history?.InsertDateTime}}</ion-label>
+                <ion-label>审批截止时间：{{history?.ExpiredTime?.startsWith("1800")?"":history?.ExpiredTime}}</ion-label>
               </div>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size='4'>实际目的地址</ion-col>
-            <ion-col>
-              <div>
-                {{orderCar.ActualToAddress}}
-                <div>{{orderCar.ArriveTime?.substr(0,19)?.replace("T"," ")}}</div>
-              </div>
-            </ion-col>
-          </ion-row>
+            </app-timeline-item>
+          </app-timeline>
         </div>
       </div>
     </div>
-    <div class="swiper-slide">
+    <div class="swiper-slide" *ngFor="let orderHotel of orderDetail?.Order?.OrderCars">
       <!-- 乘客信息 -->
       <div>
         <ion-item-divider>
-          {{tabs[2].label}}
+          乘客信息
         </ion-item-divider>
         <div *ngFor='let p of orderDetail?.Order?.OrderPassengers'>
           <ion-row>
@@ -173,73 +163,57 @@
             </ng-container>
           </ng-container>
         </div>
-      </div>
-    </div>
-    <div class="swiper-slide">
-      <!-- 联系信息 -->
-      <div>
+        <!-- 联系信息 -->
+        <ng-container *ngIf="orderDetail?.Order?.OrderLinkmans">
+          <ion-item-divider>
+            联系信息
+          </ion-item-divider>
+          <div *ngFor='let p of orderDetail?.Order?.OrderLinkmans'>
+              <ion-row>
+                <ion-col size='4'>类型</ion-col>
+                <ion-col>
+                  联系人
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size='4'>姓名</ion-col>
+                <ion-col>{{p.Name}}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size='4'>邮箱</ion-col>
+                <ion-col>{{p.Email}}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size='4'>电话</ion-col>
+                <ion-col>{{p.Mobile}}</ion-col>
+              </ion-row>
+            </div>
+        </ng-container>
+
+      
+        <!-- 用车信息 -->
         <ion-item-divider>
-          {{tabs[3].label}}
+          用车信息
         </ion-item-divider>
-        <div *ngFor='let p of orderDetail?.Order?.OrderPassengers'>
+        <div *ngFor='let orderCar of orderDetail?.Order.OrderCars'>
           <ion-row>
-            <ion-col size='4'>类型</ion-col>
-            <ion-col>乘客</ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size='4'>姓名</ion-col>
-            <ion-col>{{p.Name}}</ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size='4'>邮箱</ion-col>
-            <ion-col>{{p.Email}}</ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size='4'>电话</ion-col>
-            <ion-col>{{p.Mobile}}</ion-col>
-          </ion-row>
-        </div>
-        <div *ngFor='let p of orderDetail?.Order?.OrderLinkmans'>
-          <ion-row>
-            <ion-col size='4'>类型</ion-col>
+            <ion-col size='4'>实际出发地址</ion-col>
             <ion-col>
-              联系人
+              <div>
+                {{orderCar.ActualFromAddress}}
+                <div>{{orderCar.FromTime?.substr(0,19)?.replace("T"," ")}}</div>
+              </div>
             </ion-col>
           </ion-row>
           <ion-row>
-            <ion-col size='4'>姓名</ion-col>
-            <ion-col>{{p.Name}}</ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size='4'>邮箱</ion-col>
-            <ion-col>{{p.Email}}</ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size='4'>电话</ion-col>
-            <ion-col>{{p.Mobile}}</ion-col>
-          </ion-row>
-        </div>
-      </div>
-    </div>
-    <div class="swiper-slide">
-      <!-- 审批记录 -->
-      <div>
-        <ion-item-divider>
-          {{tabs[4].label}}
-        </ion-item-divider>
-        <div>
-          <app-timeline [hideLastTimeLineTail]='false' *ngIf='orderDetail?.Histories'>
-            <app-timeline-item *ngFor='let history of orderDetail.Histories'>
-              <div class='approval-info'>
-                <ion-label>审批类型：{{getVariableObj(history,"TypeName")}}</ion-label>
-                <ion-label>审批人：{{history.Account?.RealName}} <span
-                    *ngIf='history.StatusName'>({{history.StatusName}})</span>
-                </ion-label>
-                <ion-label>发起审批时间：{{history?.InsertDateTime}}</ion-label>
-                <ion-label>审批截止时间：{{history?.ExpiredTime?.startsWith("1800")?"":history?.ExpiredTime}}</ion-label>
+            <ion-col size='4'>实际目的地址</ion-col>
+            <ion-col>
+              <div>
+                {{orderCar.ActualToAddress}}
+                <div>{{orderCar.ArriveTime?.substr(0,19)?.replace("T"," ")}}</div>
               </div>
-            </app-timeline-item>
-          </app-timeline>
+            </ion-col>
+          </ion-row>
         </div>
       </div>
     </div>
