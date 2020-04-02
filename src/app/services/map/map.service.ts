@@ -52,6 +52,7 @@ export class MapService {
     }, 1000);
   }
   convertToAmap(p: { lat: string; lng: string }) {
+    console.log("原始坐标", p);
     return new Promise<{ lat: string; lng: string }>((resolve, reject) => {
       const gps = [p.lng, p.lat];
       if (window["AMap"]) {
@@ -90,7 +91,7 @@ export class MapService {
         // };
         // document.body.appendChild(script);
         window["onLoad"] = () => {
-          this.getAMap({ lat: "36.675807", lng: "117.000923" });
+          // this.getAMap({ lat: "36.675807", lng: "117.000923" });
         };
         const url = `https://webapi.amap.com/maps?v=1.4.15&key=${GaodeMapKey}&callback=onLoad`;
         const jsapi = document.createElement("script");
@@ -145,31 +146,50 @@ export class MapService {
     }
     return { map: this.amap, amapContainer: this.amapContainer };
   }
-  initAMap(lnglat: { lng: string; lat: string }, el?: HTMLElement) {
+  initAMap(lnglat: { lng: string; lat: string }, el: HTMLElement, zoom = 13) {
     let map;
     if (window["AMap"] && window["AMap"].Map) {
-      map = new window["AMap"].Map(el || this.amapContainer, {
-        zoom: 13, // 级别
+      const AMap = window["AMap"];
+
+      map = new window["AMap"].Map(el, {
+        zoom, // 级别
         resizeEnable: true,
         vectorMapForeign: "English",
+        lang: "zh_en",
         center: [lnglat.lng, lnglat.lat] // 中心点坐标
         // viewMode: "3D" // 使用3D视图
+      });
+      AMap.plugin(["AMap.ToolBar"], () => {
+        const toolbar = new AMap.ToolBar();
+        map.addControl(toolbar);
       });
     }
     return map;
   }
-  addMarkerToAMap(latlng: { lat: string; lng: string }) {
+  addMarkerToAMap(latlng: { lat: string; lng: string }, amap: any) {
     let marker;
-    if (window["AMap"] && window["AMap"].Marker && this.amap) {
-      const AMap = window["AMap"];
+    amap = amap || this.amap;
+    const AMap = window["AMap"];
+    if (AMap && AMap.Marker && amap) {
+      const position = new AMap.LngLat(latlng.lng, latlng.lat); // 标准写法
+      console.log("position", position);
       marker = new AMap.Marker({
-        icon: "//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
-        offset: new AMap.Pixel(-13, -30),
-        position: [latlng.lng, latlng.lat] // 位置
+        animation: "AMAP_ANIMATION_BOUNCE",
+        icon:
+          "https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
+        // offset: new AMap.Pixel(-13, -30),
+        position // 位置
       });
-      this.amap.add(marker); // 添加到地图
+      amap.add(marker); // 添加到地图
     }
     return marker;
+  }
+  moveAMapMarker(latLng: { lat: string; lng: string }, marker: any) {
+    if (marker && window["AMap"] && window["AMap"].LngLat) {
+      const pos = new window["AMap"].LngLat(latLng.lng, latLng.lat, true);
+      marker.setPosition(pos);
+      marker.setAnimation(`AMAP_ANIMATION_BOUNCE`);
+    }
   }
   removeMarkerFromAmap(marker) {
     if (this.amap) {

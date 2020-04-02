@@ -338,9 +338,7 @@ export class ApiService {
         return throwError(error);
       }),
       finalize(() => {
-        if (req.IsShowLoading) {
-          this.setLoading({ isShowLoading: false, reqMethod: req.Method, msg: "" });
-        }
+        this.setLoading({ isShowLoading: false, reqMethod: req.Method, msg: "" });
       }),
       map(r => r as any)
     );

@@ -17,6 +17,7 @@ import { MapService } from "src/app/services/map/map.service";
 })
 export class AmapComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() latLng: { lat: string; lng: string };
+  @Input() zoom = 13;
   get AMap() {
     return window["AMap"] && window["AMap"].Map ? window["AMap"] : null;
   }
@@ -37,6 +38,9 @@ export class AmapComponent implements OnInit, OnChanges, AfterViewInit {
   }
   ngAfterViewInit() {
     this.initMap();
+    setTimeout(() => {
+      this.moveToCenter();
+    }, 200);
   }
   private async moveToCenter() {
     try {
@@ -44,24 +48,47 @@ export class AmapComponent implements OnInit, OnChanges, AfterViewInit {
       // 传入经纬度，设置地图中心点
       const position = new this.AMap.LngLat(lnglat.lng, lnglat.lat); // 标准写法
       // 简写 var position = [116, 39];
-      this.map.setCenter(position);
-      this.addMarker(lnglat);
+      if (this.map) {
+        this.map.setCenter(position);
+      }
+      setTimeout(() => {
+        this.addMarker(lnglat);
+      }, 600);
     } catch (e) {
       console.log(e);
     }
   }
   private addMarker(lnglat: any) {
     if (this.marker) {
-      this.map.remove(this.marker);
-      this.mapService.removeMarkerFromAmap(this.marker);
+      this.mapService.moveAMapMarker(lnglat, this.marker);
+      this.marker.show();
+    } else {
+      this.marker = this.mapService.addMarkerToAMap(lnglat, this.map);
+      if (this.marker) {
+        this.marker.show();
+      }
     }
-    this.marker = this.mapService.addMarkerToAMap(lnglat);
+    setTimeout(() => {
+      const img: HTMLImageElement = this.container.nativeElement.querySelector(
+        ".amap-icon img"
+      );
+      if (img) {
+        img.style.width = "2em";
+        img.style.height = "2.5em";
+      }
+    }, 200);
   }
   private async initMap() {
     try {
       const gps = await this.mapService.convertToAmap(this.latLng);
-      this.map = this.mapService.initAMap(gps, this.container.nativeElement);
-      this.addMarker(gps);
+      this.map = this.mapService.initAMap(
+        gps,
+        this.container.nativeElement,
+        this.zoom
+      );
+      setTimeout(() => {
+        this.addMarker(gps);
+      }, 1000);
       // const m = this.mapService.getAMap(gps);
       // if (m.amapContainer) {
       //   const div: HTMLElement = m.amapContainer.cloneNode(true) as any;
