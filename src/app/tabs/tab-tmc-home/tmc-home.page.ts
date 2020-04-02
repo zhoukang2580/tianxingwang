@@ -127,7 +127,9 @@ export class TmcHomePage implements OnInit, OnDestroy {
   async ngOnInit() {
     this.options = {
       loop: true,
-      autoplay: true,
+      autoplay:{
+        delay: 3000,
+      },
       speed: 1000,
       direction: "vertical",
       freeMode: true,
@@ -149,6 +151,7 @@ export class TmcHomePage implements OnInit, OnDestroy {
       };
       this.payService.process(req1);
     }
+    
     this.initializeSelfBookInfos();
   }
   private async getAgentNotices() {
@@ -157,7 +160,7 @@ export class TmcHomePage implements OnInit, OnDestroy {
       .catch(_ => [] as Notice[]);
     this.agentNotices = agentNotices.map((notice, index) => {
       return {
-        text: `${index + 1}.${notice.Title}`,
+        text: `${notice.Title}`,
         id: index,
         active: index == 0
       };
@@ -231,7 +234,10 @@ export class TmcHomePage implements OnInit, OnDestroy {
   async check() {
     let retryCount = 0;
     try {
-      this.getAgentNotices();
+      this.agentNotices=[];
+      setTimeout(() => {
+        this.getAgentNotices();
+      }, 1000);
       this.staff = await this.staffService.getStaff();
       console.log("home check", this.staffCredentials);
       if (this.staff && this.staff.AccountId) {

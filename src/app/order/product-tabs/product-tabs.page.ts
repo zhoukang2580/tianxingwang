@@ -340,16 +340,28 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       AppHelper.alert(e);
     }
   }
-  onAbolishFlightOrder(data: { orderId: string; ticketId: string }) {
-    this.orderService
-      .abolishFlightOrder({ OrderId: data.orderId, TicketId: data.ticketId })
-      .then(() => {
-        AppHelper.toast("订单取消申请中", 2000, "middle");
-        this.doRefresh();
-      })
-      .catch(e => {
-        AppHelper.alert(e);
-      });
+  onAbolishOrder(data: { orderId: string; ticketId: string ,tag:"flight"|"train"}) {
+    if(data.tag=="flight"){
+      this.orderService
+        .abolishFlightOrder({ OrderId: data.orderId, TicketId: data.ticketId })
+        .then(() => {
+          AppHelper.toast("订单取消申请中", 2000, "middle");
+          this.doRefresh();
+        })
+        .catch(e => {
+          AppHelper.alert(e);
+        });
+    }else if(data.tag=="train"){
+      this.orderService
+        .abolishTrainOrder({ OrderId: data.orderId, TicketId: data.ticketId })
+        .then(() => {
+          AppHelper.toast("订单取消申请中", 2000, "middle");
+          this.doRefresh();
+        })
+        .catch(e => {
+          AppHelper.alert(e);
+        });
+    }
   }
   goToDetailPage(orderId: string, type: string) {
     // Flight

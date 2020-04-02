@@ -217,6 +217,9 @@ export class OrderService {
   abolishFlightOrder(data: { OrderId: string; TicketId: string }) {
     return this.abolishOrder({ ...data, Tag: "flight" });
   }
+  abolishTraninOrder(data: { OrderId: string; TicketId: string }) {
+    return this.abolishOrder({ ...data, Tag: "train" });
+  }
   private abolishOrder(data: {
     OrderId: string;
     TicketId: string;

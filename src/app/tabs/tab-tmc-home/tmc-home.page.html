@@ -30,87 +30,88 @@
   <div class="img">
     <img src='assets/images/home_top_bg.jpg' />
   </div>
-  <ion-toolbar class="text-swiper" (click)='goToBulletinList("agentNotice")'>
-    <ion-slides  class="announcement-container" [options]='options' (ionSlideTouchEnd)='onSlideTouchEnd()'>
-      <ion-slide *ngFor='let n of agentNotices'>
-        <div class='announcement'>
-          <img src="assets/svgs/announcement.svg" alt="通知图片">
-          <div class="text ion-text-start">{{n.text}}</div>
-        </div>
-      </ion-slide>
-    </ion-slides>
+  <ion-toolbar *ngIf="agentNotices.length" class="text-swiper" (click)='goToBulletinList("agentNotice")'>
+    <div class="blueBack">
+      <ion-slides  class="announcement-container" [options]='options' (ionSlideTouchEnd)='onSlideTouchEnd()'>
+        <ion-slide *ngFor='let n of agentNotices'>
+          <div class='announcement'>
+            <div class="infoIcon">
+            <ion-icon name="notifications-outline" color="secondary"></ion-icon>
+           </div>
+            <div class="text ion-text-start">{{n.text}}</div>
+            <div class="infoIcon" slot="end"> 
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+            </div>
+          </div>
+        </ion-slide>
+      </ion-slides>
+    </div>
     <!-- <app-swiper-slides [options]='options' [items]='agentNotices'></app-swiper-slides> -->
   </ion-toolbar>
-  <ion-list>
-    <ion-grid>
-      <ion-row wrap>
-        <ion-col size="4">
-          <div class="item" (click)='goToPage("flight")'>
-            <ion-label>
-              <!-- <i class="icon icon-home-plane"></i> -->
-              <img src="assets/svgs/home-plane.svg" alt="国内机票">
-            </ion-label>
-            <ion-text>国内机票</ion-text>
-          </div>
-        </ion-col>
-        <ion-col size="4" *ngIf='isShowoverseaHotel'>
-          <div class="item" (click)='goToPage("international-flight")'>
-            <ion-label>
-              <!-- <i class="icon icon-home-plane"></i> -->
-              <img src="assets/svgs/home-plane.svg" alt="国际机票">
-            </ion-label>
-            <ion-text  class="ion-text-nowrap">港澳台*国际机票</ion-text>
-          </div>
-        </ion-col>
-        <ion-col (click)='goToPage("hotel")' size="4">
-          <div class="item">
-            <ion-label>
-              <img src="assets/svgs/hotel.svg" alt="酒店" [style.height.em]='3'>
-              <!-- <i class="icon icon-hotel"></i> -->
-            </ion-label>
-            <ion-text>国内酒店</ion-text>
-          </div>
-        </ion-col>
-        <ion-col (click)='goToPage("international-hotel")' size="4" *ngIf='isShowoverseaHotel'>
-          <div class="item">
-            <ion-label>
-              <img src="assets/svgs/hotel.svg" alt="酒店" [style.height.em]='3'>
-              <!-- <i class="icon icon-hotel"></i> -->
-            </ion-label>
-            <ion-text class="ion-text-nowrap">港澳台*海外酒店</ion-text>
-          </div>
-        </ion-col>
-        <ion-col (click)='goToPage("train")' size="4">
-          <div class="item">
-            <ion-label>
-              <img src="assets/svgs/home-train.svg" alt="火车票">
-              <!-- <i class="icon icon-home-train"></i> -->
-            </ion-label>
-            <ion-text>火车票</ion-text>
-          </div>
-        </ion-col>
-        <ion-col (click)='goToPage("rentalCar")' size="4" *ngIf='isShowRentalCar'>
-          <div class="item">
-            <ion-label>
-              <img src="assets/svgs/home-rentalCar.svg" alt="用车" [style.height.em]='3'>
-              <!-- <i class="icon icon-hotel"></i> -->
-            </ion-label>
-            <ion-text>用车</ion-text>
-          </div>
-        </ion-col>
-        <ion-col (click)='goToPage("bulletin","notice")' size="4">
-          <div class="item">
-            <ion-label>
-              <img src="assets/svgs/announcement.svg" alt="通知">
-              <!-- <i class="icon icon-announcement"></i> -->
-            </ion-label>
-            <ion-text>通知</ion-text>
-          </div>
-        </ion-col>
-        
-      </ion-row>
-    </ion-grid>
-  </ion-list>
+  <div class="home-padding">
+    <ion-list>
+      <ion-grid>
+        <ion-row wrap>
+          <ion-col size="4">
+            <div class="item" (click)='goToPage("flight")'>
+              <ion-label>
+                <!-- <i class="icon icon-home-plane"></i> -->
+                <img src="assets/svgs/home-plane.svg" alt="国内机票">
+              </ion-label>
+              <ion-text>国内机票</ion-text>
+            </div>
+          </ion-col>
+          <ion-col size="4" *ngIf='isShowoverseaHotel'>
+            <div class="item" (click)='goToPage("international-flight")'>
+              <ion-label>
+                <!-- <i class="icon icon-home-plane"></i> -->
+                <img src="assets/svgs/home-plane.svg" alt="国际机票">
+              </ion-label>
+              <ion-text  class="ion-text-nowrap">港澳台*国际机票</ion-text>
+            </div>
+          </ion-col>
+          <ion-col (click)='goToPage("train")' size="4">
+              <div class="item">
+                <ion-label>
+                  <img src="assets/svgs/home-train.svg" alt="火车票">
+                  <!-- <i class="icon icon-home-train"></i> -->
+                </ion-label>
+                <ion-text>火车票</ion-text>
+              </div>
+            </ion-col>
+        </ion-row>
+        <ion-row wrap class="ion-padding-top">
+          <ion-col (click)='goToPage("hotel")' size="4">
+            <div class="item">
+              <ion-label>
+                <img src="assets/svgs/hotel.svg" alt="酒店" [style.height.em]='3'>
+                <!-- <i class="icon icon-hotel"></i> -->
+              </ion-label>
+              <ion-text>国内酒店</ion-text>
+            </div>
+          </ion-col>
+          <ion-col (click)='goToPage("international-hotel")' size="4" *ngIf='isShowoverseaHotel'>
+            <div class="item">
+              <ion-label>
+                <img src="assets/svgs/hotel.svg" alt="酒店" [style.height.em]='3'>
+                <!-- <i class="icon icon-hotel"></i> -->
+              </ion-label>
+              <ion-text class="ion-text-nowrap">港澳台*海外酒店</ion-text>
+            </div>
+          </ion-col>
+          <ion-col (click)='goToPage("rentalCar")' size="4" *ngIf='isShowRentalCar'>
+            <div class="item">
+              <ion-label>
+                <img src="assets/svgs/home-rentalCar.svg" alt="用车" [style.height.em]='3'>
+                <!-- <i class="icon icon-hotel"></i> -->
+              </ion-label>
+              <ion-text>用车</ion-text>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-list>
+  </div>
   <!-- <app-crop-image-comp></app-crop-image-comp> -->
 
   <!-- <div margin>

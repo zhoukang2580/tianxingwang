@@ -57,9 +57,10 @@ export class OrderItemComponent implements OnInit, OnChanges {
     ticketId: string;
     trip: OrderFlightTripEntity;
   }>;
-  @Output() abolishFlightOrder: EventEmitter<{
+  @Output() abolishOrder: EventEmitter<{
     orderId: string;
     ticketId: string;
+    tag:"flight"|"train"
   }>;
   @Output() refundFlightTicket: EventEmitter<{
     orderId: string;
@@ -87,7 +88,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
     this.payaction = new EventEmitter();
     this.refundTrainTicket = new EventEmitter();
     this.refundFlightTicket = new EventEmitter();
-    this.abolishFlightOrder = new EventEmitter();
+    this.abolishOrder = new EventEmitter();
     this.exchangeFlightTicket = new EventEmitter();
   }
   onPay(evt: CustomEvent) {
@@ -141,6 +142,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
           );
         }
         this.initPassengers();
+        // this.initInsuranceAmount();
         this.order.OrderFlightTickets=this.orderService.checkIfOrderFlightTicketShow(this.order.OrderFlightTickets);
       }
     }
@@ -304,9 +306,27 @@ export class OrderItemComponent implements OnInit, OnChanges {
       LanguageHelper.getCancelTip()
     ).then(ok => {
       if (ok) {
-        this.abolishFlightOrder.emit({
+        this.abolishOrder.emit({
           orderId: this.order.Id,
-          ticketId: ticket.Id
+          ticketId: ticket.Id,
+          tag:"flight"
+        });
+      }
+    });
+  }
+  onAbolishTraninOrder(evt: CustomEvent, train: OrderTrainTicketEntity) {
+    evt.stopPropagation();
+    AppHelper.alert(
+      "确定取消订单？",
+      true,
+      LanguageHelper.getConfirmTip(),
+      LanguageHelper.getCancelTip()
+    ).then(ok => {
+      if (ok) {
+        this.abolishOrder.emit({
+          orderId: this.order.Id,
+          ticketId: train.Id,
+          tag:"train"
         });
       }
     });
@@ -526,4 +546,20 @@ export class OrderItemComponent implements OnInit, OnChanges {
       )
     );
   }
+  // initInsuranceAmount(){
+  //   this.order.OrderTrainTickets.forEach((it, idx) => {
+  //     // it.VariablesJsonObj.isShow
+  //     this.getTicketOrderInsurances(it.Key);
+  //   });
+  // }
+  // private getTicketOrderInsurances(tkey: string) {
+  //   return (
+  //     (this.order &&
+  //       this.order.OrderInsurances &&
+  //       this.order.OrderInsurances.filter(
+  //         it => it.TravelKey == tkey
+  //       )) ||
+  //     []
+  //   ).length>0;
+  // }
 }
