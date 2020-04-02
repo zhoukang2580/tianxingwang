@@ -11,6 +11,7 @@ import { Router } from "@angular/router";
 })
 export class HomePage implements OnInit {
   identity: IdentityEntity;
+  scanresult: string;
   constructor(
     private identityService: IdentityService,
     private router: Router
@@ -22,6 +23,7 @@ export class HomePage implements OnInit {
     });
   }
   onScanResult(txt: string) {
+    this.scanresult = txt;
     if (txt && txt.toLowerCase().includes("app_path")) {
       const path = AppHelper.getValueFromQueryString("app_path", txt);
       console.log("path", path);
@@ -38,9 +40,11 @@ export class HomePage implements OnInit {
       Object.keys(params).forEach(k => {
         query[k] = AppHelper.getValueFromQueryString(k, txt);
       });
-      this.router.navigate([AppHelper.getRoutePath(path)], {
-        queryParams: query
-      });
+      setTimeout(() => {
+        this.router.navigate([AppHelper.getRoutePath(path)], {
+          queryParams: query
+        });
+      }, 100);
     } else {
       if (txt) {
         this.router.navigate([

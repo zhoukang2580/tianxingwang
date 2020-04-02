@@ -18,8 +18,14 @@ import { SelectDateComponent } from "../tmc/components/select-date/select-date.c
 import { TripType } from "../tmc/models/TripType";
 import { DayModel } from "../tmc/models/DayModel";
 export interface IFlightCabinType {
-  label: "经济舱" | "超级经济舱" | "头等舱" | "商务舱" | "超级商务舱" | "超级头等舱",
-  value: FlightCabinInternationalType
+  label:
+    | "经济舱"
+    | "超级经济舱"
+    | "头等舱"
+    | "商务舱"
+    | "超级商务舱"
+    | "超级头等舱";
+  value: FlightCabinInternationalType;
 }
 export enum FlightCabinInternationalType {
   /// <summary>
@@ -192,13 +198,13 @@ export class InternationalFlightService {
           s.voyageType == FlightVoyageType.MultiCity
             ? (lastTrip && lastTrip.date) || ""
             : s.roundTrip.id == trip.id
-              ? !isFrom
-                ? s.roundTrip.date
-                : ""
-              : "",
+            ? !isFrom
+              ? s.roundTrip.date
+              : ""
+            : "",
         tripType: isFrom ? TripType.departureTrip : TripType.returnTrip,
         forType: FlightHotelTrainType.InternationalFlight,
-        isMulti: isMulti
+        isMulti
       }
       // animated:false
     });
@@ -257,9 +263,8 @@ export class InternationalFlightService {
         {
           label: "超级头等舱",
           value: FlightCabinInternationalType.PREMIUM_FIRST
-        },
+        }
       ]
-
     } as IInternationalFlightSearchModel;
     this.searchModelSource = new BehaviorSubject(this.searchModel);
   }
@@ -275,7 +280,7 @@ export class InternationalFlightService {
         const one = trips[idx];
         AppHelper.alert(
           `请完善第${idx + 1}程的${!one.fromCity ? "出发城市" : ""}${
-          !one.toCity ? "到达城市" : ""
+            !one.toCity ? "到达城市" : ""
           }`
         );
         return;
@@ -287,6 +292,12 @@ export class InternationalFlightService {
         date: this.calendarService.getMoment(3, last.date).format("YYYY-MM-DD")
       });
       this.setSearchModelSource(this.searchModel);
+    }
+  }
+  getFlightList() {
+    const m = this.searchModel;
+    if(m){
+      
     }
   }
   getInternationalAirports(forceFetch = false) {
