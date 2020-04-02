@@ -35,13 +35,9 @@
       <ion-slides  class="announcement-container" [options]='options' (ionSlideTouchEnd)='onSlideTouchEnd()'>
         <ion-slide *ngFor='let n of agentNotices'>
           <div class='announcement'>
-            <div class="infoIcon">
-            <ion-icon name="notifications-outline" color="secondary"></ion-icon>
-           </div>
+            <ion-icon name="notifications-outline" color="secondary" style="font-size:18px;padding-right: 5px"></ion-icon>
             <div class="text ion-text-start">{{n.text}}</div>
-            <div class="infoIcon" slot="end"> 
-                <ion-icon name="chevron-forward-outline"></ion-icon>
-            </div>
+            <ion-icon name="chevron-forward-outline" style="font-size:18px"></ion-icon>
           </div>
         </ion-slide>
       </ion-slides>
