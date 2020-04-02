@@ -29,6 +29,7 @@ export class HrInvitationPage implements OnInit {
       .invitationAdd()
       .then(s => {
         AppHelper.alert("申请成功！");
+        this.router.navigate(["home"]);
       })
       .catch(e => {
         AppHelper.alert(e);
