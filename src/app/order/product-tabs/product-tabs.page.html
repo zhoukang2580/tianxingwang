@@ -54,7 +54,7 @@
         <ion-list lines='none' *ngIf='orderModel?.Orders?.length else nomoredate'>
           <ion-item *ngFor='let order of orderModel.Orders' (click)='goToDetailPage(order.Id,orderModel.Type)'>
             <app-order-item [order]='order' [tmc]='tmc' (payaction)='onPay(order)' (refundTrainTicket)='doRefresh();'
-              (abolishFlightOrder)='onAbolishFlightOrder($event)'
+              (abolishOrder)='onAbolishOrder($event)'
               (exchangeFlightTicket)='onExchangeFlightTicket($event)'
               (refundFlightTicket)='onRefundFlightTicket($event)'>
             </app-order-item>

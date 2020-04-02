@@ -15,6 +15,7 @@ import { Platform, ActionSheetController } from "@ionic/angular";
 import { ProductItem, ProductItemType } from "src/app/tmc/models/ProductItems";
 import { StaffService } from "src/app/hr/staff.service";
 import { tap, map } from "rxjs/operators";
+import { TmcService } from "src/app/tmc/tmc.service";
 import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
 interface PageModel {
   Name: string;
@@ -56,6 +57,7 @@ export class MyPage implements OnDestroy, OnInit {
   constructor(
     private router: Router,
     plt: Platform,
+    private tmcService: TmcService,
     private identityService: IdentityService,
     private configService: ConfigService,
     private apiService: ApiService,
@@ -114,6 +116,65 @@ export class MyPage implements OnDestroy, OnInit {
       ]
     });
     ash.present();
+  }
+  async goToPage(name: string, params?: any) {
+    const tmc = await this.tmcService.getTmc();
+    const msg = "您没有预订权限";
+    if (!tmc || !tmc.RegionTypeValue) {
+      AppHelper.alert(msg);
+      return;
+    }
+    let route = "";
+
+    const tmcRegionTypeValue = tmc.RegionTypeValue.toLowerCase();
+    if (name == "international-flight") {
+      route = "search-international-flight";
+      if (tmcRegionTypeValue.search("internationalflight") < 0) {
+        AppHelper.alert(msg);
+        return;
+      }
+    }
+    if (name == "international-hotel") {
+      route = "search-international-hotel";
+      if (tmcRegionTypeValue.search("internationalhot") < 0) {
+        AppHelper.alert(msg);
+        return;
+      }
+    }
+    if (name == "hotel") {
+      route = "search-hotel";
+      if (tmcRegionTypeValue.search("hotel") < 0) {
+        AppHelper.alert(msg);
+        return;
+      }
+    }
+    if (name == "train") {
+      route = "search-train";
+      if (tmcRegionTypeValue.search("train") < 0) {
+        AppHelper.alert(msg);
+        return;
+      }
+    }
+    if (name == "flight") {
+      route = "search-flight";
+      if (tmcRegionTypeValue.search("flight") < 0) {
+        AppHelper.alert(msg);
+        return;
+      }
+    }
+    if (name == "rentalCar") {
+      route = "rental-car";
+      if (tmcRegionTypeValue.search("car") < 0) {
+        AppHelper.alert(msg);
+        return;
+      }
+    }
+    if (name == "bulletin") {
+      route = "bulletin-list";
+    }
+    this.router.navigate([AppHelper.getRoutePath(route)], {
+      queryParams: { bulletinType: params }
+    });
   }
   private reloadPage() {
     this.router.navigate([AppHelper.getRoutePath(this.router.url)]);

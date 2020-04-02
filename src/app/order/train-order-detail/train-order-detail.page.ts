@@ -46,6 +46,8 @@ import { flyInOut } from "src/app/animations/flyInOut";
   animations: [flyInOut]
 })
 export class TrainOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
+  tab:ProductItem;
+  title:string;
   private headerHeight = 0;
   OrderHotelType = OrderHotelType;
   private subscriptions: Subscription[] = [];
@@ -353,6 +355,10 @@ export class TrainOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
   }
   private initTabs() {
     this.tabs = [];
+    this.route.queryParamMap.subscribe(q => {
+      this.tab = this.tab || JSON.parse(q.get("tab"));
+      this.title = this.tab.label + "订单";
+    });
     this.tabs.push({ label: "订单信息", value: 0 });
     if (
       this.orderDetail &&
