@@ -101,7 +101,7 @@ export class MapService {
       } catch (e) {
         console.error(e);
       }
-    }, 100);
+    }, 0);
   }
   getBMap(container: HTMLElement) {
     let bmap;
