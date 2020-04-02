@@ -8,6 +8,7 @@ import { enableDebugTools } from "@angular/platform-browser";
 import { ThemeService } from "./app/services/theme/theme.service";
 import { AppHelper } from "./app/appHelper";
 import { LoadingController } from "@ionic/angular";
+import { MapService } from './app/services/map/map.service';
 // const module = window["module"];
 try {
   console.log("url,locationurl", window.location.href);
@@ -39,6 +40,7 @@ const bootstrap = () =>
     .then(moduleRef => {
       // 为了设置模式
       moduleRef.injector.get(ThemeService);
+      moduleRef.injector.get(MapService);
       AppHelper.loadingController = moduleRef.injector.get(LoadingController);
       return moduleRef;
     })

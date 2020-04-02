@@ -62,7 +62,7 @@ export class MapComponent
       return;
     }
     if (!this.map) {
-      this.map = this.mapService.getMap(container);
+      this.map = this.mapService.getBMap(container);
     }
     // 定义一个控件类，即function
     const ZoomControl = {

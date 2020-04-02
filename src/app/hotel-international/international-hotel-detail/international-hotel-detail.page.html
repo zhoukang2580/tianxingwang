@@ -3,10 +3,7 @@
     <ion-buttons slot='start'>
       <app-back-button defaultHref=''></app-back-button>
     </ion-buttons>
-    <ion-text *ngIf='!isSelf else titletpl'>{{hotel?.Name}}</ion-text>
-    <ng-template #titletpl>
-      <ion-title>{{hotel?.Name}}</ion-title>
-    </ng-template>
+    <ion-text>{{hotelName}}</ion-text>
     <ion-buttons slot='end' [class.can-add-passengers]='!isSelf'>
       <ion-button fill='clear' color='secondary' *ngIf='canAddPassengers' (click)='onFilteredPassenger()' size='small'>
         <ion-text>过滤差标</ion-text>
@@ -200,9 +197,9 @@
         </ion-grid>
       </ng-container>
     </ion-list>
-    <!-- <ion-list #trafficInfo class='traffic-info'>
-      <ng-container *ngIf='isShowTrafficInfo'>
-        <ion-item-divider (click)='hotel["isShowMap"]=!hotel["isShowMap"]'>交通信息
+    <ion-list #trafficInfo class='traffic-info'>
+      <ng-container>
+        <ion-item-divider  (click)='onToggleOpenStatus(hotel,"isShowMap")'>交通信息
           <ng-container *ngIf='hotel'>
             <ion-icon name='caret-down-outline' color='secondary' *ngIf='!hotel["isShowMap"]'></ion-icon>
             <ion-icon name='caret-up-outline' color='secondary' *ngIf='hotel["isShowMap"]'></ion-icon>
@@ -210,14 +207,14 @@
         </ion-item-divider>
         <ng-container *ngIf='hotel&&hotel["isShowMap"]'>
           <div class="traffic-map">
-            <app-map [lat]='hotel?.Lat' [lng]='hotel?.Lng'></app-map>
+            <app-amap [latLng]='{lat:hotel.Lat,lng:hotel.Lng}' [zoom]='17'></app-amap>
           </div>
         </ng-container>
       </ng-container>
-    </ion-list> -->
+    </ion-list>
   </ng-container>
   <ng-template #retry>
     <ion-label>请重新刷新</ion-label>
   </ng-template>
-  <div #divforscroll [class.div-for-scroll]='isHeaderHide'></div>
+  <div #divforscroll [class.div-for-scroll]='!isHeaderHide||!hotel["isShowMap"]'></div>
 </ion-content>

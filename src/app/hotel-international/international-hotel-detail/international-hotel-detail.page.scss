@@ -1,10 +1,13 @@
 :host {
   --h: 2em;
 }
-.can-add-passengers{
-  ion-button{
+.can-add-passengers {
+  ion-button {
     font-size: 0.7rem;
   }
+}
+.traffic-map {
+  min-height: 50vh;
 }
 .bg {
   height: 30vh;
