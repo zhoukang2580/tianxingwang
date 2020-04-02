@@ -41,15 +41,23 @@ export class AppHelper {
     this.modalController = modalController;
   }
   static showLoading(message: string, duration = 0) {
-    return this.loadingController.create({ message, duration }).then(l => { l.present(); return l; })
+    return this.loadingController.create({ message, duration }).then(l => {
+      l.present();
+      return l;
+    });
   }
   static hideLoading() {
-    this.loadingController.getTop().then(t => {
-      // console.log(t)
-      if (t) { t.dismiss() }
-    }).catch(e => {
-      console.error(e)
-    });
+    this.loadingController
+      .getTop()
+      .then(t => {
+        // console.log(t)
+        if (t) {
+          t.dismiss();
+        }
+      })
+      .catch(e => {
+        console.error(e);
+      });
   }
   static getHcpVersion() {
     return this.fileService && this.fileService.getLocalHcpVersion();
@@ -84,9 +92,9 @@ export class AppHelper {
         message: this.getMsg(msg),
         position: position as any,
         duration: userOp ? 0 : duration,
-        buttons: userOp ? [
-          { icon: "close-circle-outline", side: "end", role: 'cancel' }
-        ] : []
+        buttons: userOp
+          ? [{ icon: "close-circle-outline", side: "end", role: "cancel" }]
+          : []
       });
       if (t) {
         t.present();
@@ -447,7 +455,7 @@ export class AppHelper {
     const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
     const r = queryString.match(reg);
     if (r) {
-      return unescape(r[2]);
+      return decodeURIComponent(unescape(r[2]));
     }
     return "";
   }

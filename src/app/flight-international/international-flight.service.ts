@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
 import { FlightSegmentEntity } from "../flight/models/flight/FlightSegmentEntity";
 import { FlightPolicy } from "../flight/models/PassengerFlightInfo";
-import { Subject, BehaviorSubject } from "rxjs";
+import { Subject, BehaviorSubject, throwError, of, Observable } from "rxjs";
 import { IdentityService } from "../services/identity/identity.service";
 import {
   PassengerBookInfo,
@@ -17,6 +17,11 @@ import { ModalController } from "@ionic/angular";
 import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
 import { TripType } from "../tmc/models/TripType";
 import { DayModel } from "../tmc/models/DayModel";
+import { RequestEntity } from "../services/api/Request.entity";
+import { FlightResultEntity } from "../flight/models/FlightResultEntity";
+import { IResponse } from "../services/api/IResponse";
+import { tap } from "rxjs/operators";
+import { MockInternationalFlightListData } from './mock-data';
 export interface IFlightCabinType {
   label:
     | "经济舱"
@@ -109,6 +114,7 @@ export class InternationalFlightService {
   private bookInfoSource: Subject<
     PassengerBookInfo<IInternationalFlightSegmentInfo>[]
   >;
+  private flightListResult: FlightResultEntity=MockInternationalFlightListData as any;
   constructor(
     private apiService: ApiService,
     private identityService: IdentityService,
@@ -236,8 +242,8 @@ export class InternationalFlightService {
         }
       ],
       cabin: {
-        label: "头等舱",
-        value: FlightCabinInternationalType.FIRST
+        label: "经济舱",
+        value: FlightCabinInternationalType.ECONOMY
       },
       cabins: [
         {
@@ -294,11 +300,58 @@ export class InternationalFlightService {
       this.setSearchModelSource(this.searchModel);
     }
   }
-  getFlightList() {
+  getFlightList(forceFetch = false): Observable<IResponse<FlightResultEntity>> {
     const m = this.searchModel;
-    if(m){
-      
+    const result: IResponse<FlightResultEntity> = {} as any;
+    result.Data = this.flightListResult;
+    if (!m || !forceFetch) {
+      if (
+        this.flightListResult &&
+        this.flightListResult.FlightSegments &&
+        this.flightListResult.FlightSegments.length
+      ) {
+        return of(result);
+      }
     }
+    const req = new RequestEntity();
+    let date = this.calendarService.getMoment(0).format("YYYY-MM-DD");
+    let fromAirports: string[];
+    let toAirports: string[];
+    req.Method = `TmcApiInternationalFlightUrl-Home-Index`;
+    const days = [m.roundTrip.date, m.roundTrip.backDate];
+    if (m.voyageType == FlightVoyageType.OneWay) {
+      date = m.roundTrip.date;
+      fromAirports = [m.roundTrip.fromCity.Code];
+      toAirports = [m.roundTrip.toCity.Code];
+    }
+    if (m.voyageType == FlightVoyageType.GoBack) {
+      date = days.join(",");
+      fromAirports = [m.roundTrip.fromCity.Code];
+      toAirports = [m.roundTrip.toCity.Code];
+    }
+    if (m.voyageType == FlightVoyageType.MultiCity) {
+      date = m.trips.map(it => it.date).join(",");
+      fromAirports = m.trips
+        .map(it => it.fromCity && it.fromCity.AirportCityCode)
+        .filter(it => !!it);
+      toAirports = m.trips
+        .map(it => it.toCity && it.toCity.AirportCityCode)
+        .filter(it => !!it);
+    }
+    req.Data = {
+      Date: date,
+      FromAirport: fromAirports.join(","),
+      ToAirport: toAirports.join(","),
+      VoyageType: m.voyageType,
+      Cabin: FlightCabinInternationalType[m.cabin && m.cabin.value]
+    };
+    req.IsShowLoading = true;
+    req.LoadingMsg = "正在获取航班列表...";
+    return this.apiService.getResponse<FlightResultEntity>(req).pipe(
+      tap(r => {
+        this.flightListResult = r.Data;
+      })
+    );
   }
   getInternationalAirports(forceFetch = false) {
     return this.tmcService.getInternationalAirports(forceFetch);

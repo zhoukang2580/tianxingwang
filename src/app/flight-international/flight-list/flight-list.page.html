@@ -1,0 +1,14 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>航班列表</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+<app-refresher slot="fixed" (ionRefresh)='doRefresh()'>
+  <ion-refresher-content>正在刷新...</ion-refresher-content>
+</app-refresher>
+</ion-content>

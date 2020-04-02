@@ -41,7 +41,7 @@ export class SearchInternationalFlightPage
     private router: Router
   ) {}
   compareWithFn = (o1, o2) => {
-    return o1 && o2 ?  o1 === o2:false;
+    return o1 && o2 ? o1 === o2 : false;
   };
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
@@ -73,7 +73,9 @@ export class SearchInternationalFlightPage
     });
     p.present();
   }
-  searchFlight() {}
+  searchFlight() {
+    this.router.navigate([AppHelper.getRoutePath("international-flight-list")]);
+  }
   onSegmentChanged(evt: CustomEvent) {
     // console.log(evt.detail.value);
     this.flightService.setSearchModelSource({

@@ -1,3 +1,5 @@
+import { FlightVoyageType } from "src/app/flight-international/international-flight.service";
+
 export class FlightQueryEntity {
   /// <summary>
   /// 开始日期
@@ -57,4 +59,46 @@ export class FlightQueryEntity {
   /// 需要退改签
   /// </summary>
   NeedIbeRule: boolean;
+
+  //  #region 国际*港澳台机票
+
+  Airline: string;
+  AccountCode: string;
+
+  /// <summary>
+  /// 查询类型
+  /// </summary>
+  VoyageType: FlightVoyageType;
+  /// <summary>
+  /// 航班(获取详情时有效)
+  /// </summary>
+  InternationalFlightNumbers: string;
+
+  /// <summary>
+  /// 成人
+  /// </summary>
+  ADTPtcs: number;
+  /// <summary>
+  /// 婴儿
+  /// </summary>
+  INFPtcs: number;
+  /// <summary>
+  /// 儿童
+  /// </summary>
+  CNNPtcs: number;
+  /// <summary>
+  /// 最长等待时间
+  /// </summary>
+  MaxWaitingTime: number;
+  IsAllCabin: boolean;
+  FromAirports: string[];
+  ToAirports: string[];
+  Dates: string[];
+
+  FlightCabins: string[];
+  /// <summary>
+  /// 唯一标识当前对象实例的key
+  /// </summary>
+  InternationalUniqueKey: string;
+  // 国际机票 end ===============
 }

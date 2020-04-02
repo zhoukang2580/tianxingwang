@@ -22,6 +22,9 @@ export class HomePage implements OnInit {
       this.identity = identity;
     });
   }
+  onSetting() {
+    this.router.navigate(["account-setting"]);
+  }
   onScanResult(txt: string) {
     this.scanresult = txt;
     if (txt && txt.toLowerCase().includes("app_path")) {

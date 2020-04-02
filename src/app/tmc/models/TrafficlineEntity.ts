@@ -7,6 +7,7 @@ export class TrafficlineEntity extends BaseEntity {
   /// 标签，Train Airport AirportCity
   /// </summary>
   Tag: string;
+  matchStr: string;
   /// <summary>
   ///  代码
   /// </summary>

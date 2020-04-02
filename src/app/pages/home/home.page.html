@@ -6,7 +6,7 @@
     <ion-title>欢迎您 <ng-container *ngIf='identity?.Name'>，{{identity.Name}}</ng-container>
     </ion-title>
     <ion-buttons slot='end'>
-      <ion-button [routerLink]='"account-setting"' color='secondary'>设置</ion-button>
+      <ion-button (click)='onSetting()'  color='secondary'>设置</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>

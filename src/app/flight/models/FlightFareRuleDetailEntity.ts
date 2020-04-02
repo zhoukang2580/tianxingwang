@@ -1,4 +1,4 @@
-class FlightFareRuleDetailEntity {
+export class FlightFareRuleDetailEntity {
   // #region 起飞前描述
   Befores: string[];
 

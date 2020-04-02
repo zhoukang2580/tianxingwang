@@ -15,7 +15,12 @@ const routes: Routes = [
       import("./select-city/select-city.module").then(
         m => m.SelectFlightCityPageModule
       )
+  },
+  {
+    path: 'international-flight-list',
+    loadChildren: () => import('./flight-list/flight-list.module').then( m => m.FlightListPageModule)
   }
+
 ];
 
 @NgModule({
