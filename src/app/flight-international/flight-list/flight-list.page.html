@@ -8,7 +8,31 @@
 </ion-header>
 
 <ion-content>
-<app-refresher slot="fixed" (ionRefresh)='doRefresh()'>
-  <ion-refresher-content>正在刷新...</ion-refresher-content>
-</app-refresher>
+  <app-refresher slot="fixed" (ionRefresh)='doRefresh()'>
+    <ion-refresher-content>正在刷新...</ion-refresher-content>
+  </app-refresher>
+  <ng-container>
+    <!-- <div class="content-top">
+      <ion-row style="font-size: 12px;">
+        <ion-col size="5">
+          北京时间
+        </ion-col>
+        <ion-col>
+          当地时间
+        </ion-col>
+        <ion-col>
+          多程总价（含税）
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <div class="logo"></div>
+          <div>
+            <ion-text>11:00</ion-text>
+            <ion-text>pu do bpudob</ion-text>
+          </div>
+        </ion-col>
+      </ion-row>
+    </div> -->
+  </ng-container>
 </ion-content>

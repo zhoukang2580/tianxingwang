@@ -170,10 +170,10 @@
                     &&  tmc?.TrainIsAllowRefund && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
                   <span>退票</span>
                 </ion-button>
-                <ion-button *ngIf='orderTrainTicket.VariablesJsonObj.isShowCancelBtn' size='small'
+                <!-- <ion-button size='small'
                   (click)='onAbolishTraninOrder($event,orderTrainTicket)' color='secondary'>
                   <ion-text color='light'>取消订单</ion-text>
-                </ion-button>
+                </ion-button> -->
               </ng-container>
             </ion-col>
           </ion-row>
