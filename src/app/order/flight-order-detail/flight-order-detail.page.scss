@@ -29,3 +29,8 @@ ion-row ion-col {
 ion-content {
   --background: var(--ion-color-primary);
 }
+.title-divider{
+  height: 40px;
+  font-size: 17px;
+  color: var(--ion-color-dark);
+}

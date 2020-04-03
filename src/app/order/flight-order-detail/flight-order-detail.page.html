@@ -12,7 +12,7 @@
       <div class="swiper-slide" #slide>
         <!-- 订单信息 -->
         <div>
-          <ion-item-divider>
+          <ion-item-divider class="title-divider">
             订单信息
           </ion-item-divider>
           <div>
@@ -76,7 +76,7 @@
             </ion-row>
           </div>
           <div>
-            <ion-item-divider *ngIf="orderDetail.Histories.length>0">审批记录</ion-item-divider>
+            <ion-item-divider *ngIf="orderDetail.Histories.length>0" class="title-divider">审批记录</ion-item-divider>
           </div>
           <div>
             <div *ngFor='let history of orderDetail.Histories'>
@@ -108,11 +108,11 @@
           <div>
             <!-- 旅客信息 -->
             <ng-container *ngIf='getTicketPassenger(flightTicket) as p'>
-              <ion-item-divider>
+              <ion-item-divider class="title-divider">
                 旅客信息
               </ion-item-divider>
               <ion-row>
-                <ion-col size='3'>姓名</ion-col>
+                <ion-col size='3'>旅客姓名</ion-col>
                 <ion-col>
                   {{p.Name}}
                   <span *ngIf='p.PassengerTypeName'>({{p.PassengerTypeName}})</span>
@@ -123,15 +123,11 @@
                 <ion-col>{{p.CredentialsNumber}}</ion-col>
               </ion-row>
               <ion-row>
-                <ion-col size='3'>费用类型</ion-col>
-                <ion-col>{{flightTicket.VariablesJsonObj?.ExpenseType}}</ion-col>
-              </ion-row>
-              <ion-row>
                 <ion-col size='3'>联系电话</ion-col>
                 <ion-col>{{p.Mobile}}</ion-col>
               </ion-row>
               <ion-row>
-                <ion-col size='3'>邮箱</ion-col>
+                <ion-col size='3'>联系邮箱</ion-col>
                 <ion-col>{{p.Email}}</ion-col>
               </ion-row>
               <ng-container *ngIf='getPassengerCostOrgInfo(flightTicket) as info'>
@@ -146,7 +142,11 @@
                   <ion-col>{{info.OrganizationCode}}-{{info.OrganizationName}}</ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col size='3'>违规</ion-col>
+                    <ion-col size='3'>费用类别</ion-col>
+                    <ion-col>{{flightTicket.VariablesJsonObj?.ExpenseType}}</ion-col>
+                  </ion-row>
+                <ion-row>
+                  <ion-col size='3'>违规内容</ion-col>
                   <ion-col *ngIf="info.IllegalPolicy">{{info.IllegalPolicy}}</ion-col>
                 </ion-row>
                 <ion-row>
@@ -156,7 +156,7 @@
               </ng-container>
             </ng-container>
             <!-- 联系信息 -->
-            <ion-item-divider *ngIf="orderDetail?.Order?.OrderLinkmans">
+            <ion-item-divider *ngIf="orderDetail?.Order?.OrderLinkmans" class="title-divider">
               联系人信息
             </ion-item-divider>
             <ng-container *ngFor="let man of orderDetail?.Order?.OrderLinkmans">
@@ -176,7 +176,7 @@
             <!-- <ng-container> -->
             <div class="getHeight">
               <ng-container>
-                <ion-item-divider>
+                <ion-item-divider class="title-divider">
                   航班信息
                 </ion-item-divider>
                 <ion-row>
@@ -198,26 +198,14 @@
                     </ion-col>
                   </ion-row>
                   <ion-row>
-                    <ion-col size='3'>出发城市</ion-col>
-                    <ion-col>
-                      {{trip.FromCityName}}
-                    </ion-col>
-                  </ion-row>
-                  <ion-row>
-                    <ion-col size='3'>目的城市</ion-col>
-                    <ion-col>
-                      {{trip?.ToCityName}}
-                    </ion-col>
-                  </ion-row>
-                  <ion-row>
                     <ion-col size='3'>起飞</ion-col>
                     <ion-col>
                       <div>
                         <div>
-                          {{trip?.TakeoffTime?.replace("T"," ")?.substring(0,19)}}
+                            {{trip?.TakeoffTime?.replace("T"," ")?.substring(0,19)}}
                         </div>
                         <div>
-                          {{trip?.FromAirportName}}({{trip?.FromAirport}}){{trip?.FromTerminal}}
+                            {{trip.FromCityName}}-{{trip?.FromAirportName}}({{trip?.FromAirport}}){{trip?.FromTerminal}}
                         </div>
                       </div>
                     </ion-col>
@@ -227,7 +215,7 @@
                     <ion-col>
                       <div>{{trip?.ArrivalTime?.replace("T"," ")?.substring(0,19)}}</div>
                       <div>
-                        {{trip?.ToAirportName}}({{trip?.ToAirport}}){{trip?.ToTerminal}}
+                          {{trip?.ToCityName}}-{{trip?.ToAirportName}}({{trip?.ToAirport}}){{trip?.ToTerminal}}
                       </div>
                     </ion-col>
                   </ion-row>
@@ -244,8 +232,8 @@
                 </ion-row>
               </ng-container>
               <ng-container *ngIf='tikect2Insurance[flightTicket.Key] as orderInsurances'>
-                <ion-grid *ngFor='let orderInsurance of orderInsurances'>
-                  <ion-item-divider *ngIf="orderInsurance.StatusName">
+                <div *ngFor='let orderInsurance of orderInsurances'>
+                  <ion-item-divider *ngIf="orderInsurance.StatusName" class="title-divider">
                     保险信息
                   </ion-item-divider>
                   <ion-row>
@@ -340,7 +328,7 @@
                       </p>
                     </ion-col>
                   </ion-row>
-                </ion-grid>
+                </div>
               </ng-container>
               <ion-row style="padding-left:0em;"
                 *ngIf="tikectId2OriginalTickets&&tikectId2OriginalTickets[flightTicket.Id]?.length>0">
@@ -360,7 +348,7 @@
               *ngIf="tikectId2OriginalTickets&&tikectId2OriginalTickets[flightTicket?.Id]?.length">
               <div class="getHeight" *ngFor="let ticket of tikectId2OriginalTickets[flightTicket.Id]">
                 <ng-container *ngIf="ticket.isShowOriginalTicket">
-                  <ion-item-divider>
+                  <ion-item-divider class="title-divider">
                     航班信息
                   </ion-item-divider>
                   <ion-row>
@@ -382,18 +370,6 @@
                       </ion-col>
                     </ion-row>
                     <ion-row>
-                      <ion-col size='3'>出发城市</ion-col>
-                      <ion-col>
-                        {{trip.FromCityName}}
-                      </ion-col>
-                    </ion-row>
-                    <ion-row>
-                      <ion-col size='3'>目的城市</ion-col>
-                      <ion-col>
-                        {{trip?.ToCityName}}
-                      </ion-col>
-                    </ion-row>
-                    <ion-row>
                       <ion-col size='3'>起飞</ion-col>
                       <ion-col>
                         <div>
@@ -401,7 +377,7 @@
                             {{trip?.TakeoffTime?.replace("T"," ")?.substring(0,19)}}
                           </div>
                           <div>
-                            {{trip?.FromAirportName}}({{trip?.FromAirport}}){{trip?.FromTerminal}}
+                              {{trip.FromCityName}}-{{trip?.FromAirportName}}({{trip?.FromAirport}}){{trip?.FromTerminal}}
                           </div>
                         </div>
                       </ion-col>
@@ -411,7 +387,7 @@
                       <ion-col>
                         <div>{{trip?.ArrivalTime?.replace("T"," ")?.substring(0,19)}}</div>
                         <div>
-                          {{trip?.ToAirportName}}({{trip?.ToAirport}}){{trip?.ToTerminal}}
+                            {{trip?.ToCityName}}-{{trip?.ToAirportName}}({{trip?.ToAirport}}){{trip?.ToTerminal}}
                         </div>
                       </ion-col>
                     </ion-row>
@@ -427,8 +403,8 @@
                     </ion-col>
                   </ion-row>
                   <ng-container *ngIf='tikect2Insurance[ticket.Key] as orderInsurances'>
-                    <ion-grid *ngFor='let orderInsurance of orderInsurances'>
-                      <ion-item-divider *ngIf="orderInsurance.StatusName">
+                    <div *ngFor='let orderInsurance of orderInsurances'>
+                      <ion-item-divider *ngIf="orderInsurance.StatusName" class="title-divider">
                         保险信息
                       </ion-item-divider>
                       <ion-row>
@@ -521,9 +497,9 @@
                           </p>
                         </ion-col>
                       </ion-row>
-                    </ion-grid>
+                    </div>
                   </ng-container>
-                  <ion-row style="padding-left:0em;background-color: var(--ion-color-secondary);"
+                  <ion-row style="padding-left:0em;"
                     *ngIf="tikectId2OriginalTickets[ticket?.VariablesJsonObj?.OriginalTicketId]?.length">
                     <ion-col class="ion-text-justify" color="secondary">
                       <ion-button color="secondary" expand='full'
