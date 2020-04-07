@@ -12,27 +12,86 @@
     <ion-refresher-content>正在刷新...</ion-refresher-content>
   </app-refresher>
   <ng-container>
-    <!-- <div class="content-top">
-      <ion-row style="font-size: 12px;">
-        <ion-col size="5">
+    <div class="content-top">
+      <ion-row class="row-top">
+        <ion-col size="1">
+          <!-- logo -->
+        </ion-col>
+        <ion-col>
           北京时间
+        </ion-col>
+        <ion-col size="2">
+          <!-- 转 -->
         </ion-col>
         <ion-col>
           当地时间
         </ion-col>
-        <ion-col>
-          多程总价（含税）
+        <ion-col size="3.1">
+          多程总价(含税)
         </ion-col>
       </ion-row>
-      <ion-row>
-        <ion-col>
-          <div class="logo"></div>
-          <div>
-            <ion-text>11:00</ion-text>
-            <ion-text>pu do bpudob</ion-text>
+      <ion-row class="paddingtop" *ngFor="let flight of FlightQuery.FlightRoutes">
+        <ion-col size="1">
+          <div class="logo">
           </div>
         </ion-col>
+        <ion-col>
+          <div style="display:flex;justify-content: center;align-items: center">
+            <div>
+              <ion-text class="time">{{flight.FirstTime.replace("T"," ")?.substring(10,16)}}</ion-text>
+              <div class="country">{{flight.FromCountry}}</div>
+            </div>
+          </div>
+        </ion-col>
+        <ion-col size="2">
+          <div class="fontSizeLogo">-- 转 --></div>
+          <ion-text class="fontSize countrySpace">伦敦</ion-text>
+        </ion-col>
+        <ion-col>
+          <div style="display:flex;justify-content: center;align-items: center">
+            <div>
+              <ion-text class="time">{{flight.ArrivalTime.replace("T"," ")?.substring(10,16)}}</ion-text>
+              <div class="country">{{flight.ToCountry}}</div>
+            </div>
+          </div>
+        </ion-col>
+        <ion-col size="3.1">
+          <ion-text color="secondary" class="flightMoney">
+            <span style="font-weight:bold">¥</span>10752
+          </ion-text>
+          <div class="fontSize" style="color:var(--ion-color-medium)">{{flight.TypeName}}</div>
+        </ion-col>
+        <div class="flihtCompany">
+          <ion-text class="whiteSpece">荷兰皇家航空</ion-text>
+          <div class="height"></div>
+          <ion-text>16h5m</ion-text>
+        </div>
       </ion-row>
-    </div> -->
+    </div>
   </ng-container>
 </ion-content>
+<ion-footer class="ion-no-border boxShadow">
+  <ion-toolbar>
+    <ion-row>
+      <ion-col>
+        <div>
+          <ion-icon name="funnel-outline"style="font-size:1.3em"></ion-icon>
+        </div>
+        <ion-text>筛选</ion-text>
+
+      </ion-col>
+      <ion-col>
+        <div>
+          <ion-icon name="swap-vertical-outline"style="font-size:1.3em"></ion-icon>
+        </div>
+        <ion-text>推荐排序</ion-text>
+      </ion-col>
+      <ion-col>
+        <div>
+          <ion-icon name="airplane-outline" style="font-size:1.3em"></ion-icon>
+        </div>
+        <ion-text>直飞</ion-text>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>
