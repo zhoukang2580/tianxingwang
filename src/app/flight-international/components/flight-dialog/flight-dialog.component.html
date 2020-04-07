@@ -1,34 +1,37 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-row>
-      <ion-col (click)="dismiss()" class="ion-padding-start">取消</ion-col>
-      <ion-col class="ion-text-center">重置</ion-col>
-      <ion-col class="ion-text-end ion-padding-end">确定</ion-col>
-    </ion-row>
-  </ion-toolbar>
-</ion-header>
-<ion-content>
-  <ng-container>
-
-    <div>
+    <ion-toolbar>
       <ion-row>
-        <ion-col>
-          <!-- <ul>
-            <li (click)="onShowDialog()">1</li>
-            <li>2</li>
-          </ul> -
-        </ion-col>
-        <ion-col>
-      <div>
-            1
-          </div>
-          <div>
-            2
-          </div> -->
-
-        </ion-col>
+        <ion-col (click)="dismiss()" class="ion-padding-start">取消</ion-col>
+        <ion-col class="ion-text-center">重置</ion-col>
+        <ion-col class="ion-text-end ion-padding-end">确定</ion-col>
       </ion-row>
-    </div>
-  </ng-container>
-
-</ion-content>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <section class="search-cond">
+  
+      <article class="left" style="margin-top: 1em">
+        <div class='tab' [class.active]='tab===1' (click)='onTabClick(1)'>
+          <span>直飞/中转</span>
+        </div>
+        <div class='tab' [class.active]='tab===2' (click)='onTabClick(2)'>
+          <span>航空公司</span>
+        </div>
+        <div class='tab' [class.active]='tab===3' (click)='onTabClick(3)'>
+          <span>起飞时段</span>
+        </div>
+        <div class='tab' [class.active]='tab===4' (click)='onTabClick(4)'>
+          <span>起降机场</span>
+        </div>
+      </article>
+      <ion-list style='flex:1;padding: 1em;width: 75%;'>
+        <article class="right">
+          <app-direct-fly [class.hidden]='tab!==1'></app-direct-fly>
+          <app-air-company [class.hidden]='tab!==2'></app-air-company>
+          <app-takeoff-time [class.hidden]='tab!==3'></app-takeoff-time>
+          <app-takeoff-landing-airport [class.hidden]='tab!==4'></app-takeoff-landing-airport>
+        </article>
+      </ion-list>
+    </section>
+  
+  </ion-content>
