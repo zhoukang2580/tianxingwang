@@ -205,7 +205,6 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
     }
     if (this.isActiveHot) {
       arr = arr.filter((it) => it.IsHot);
-      console.log(arr);
     }
     this.scroller.complete();
     const temp = arr.slice(
