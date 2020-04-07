@@ -60,6 +60,7 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
   refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
   isIos = false;
+  isActiveHot = false;
   constructor(
     plt: Platform,
     route: ActivatedRoute,
@@ -74,14 +75,20 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
   }
   async onActiveTab(tab: string) {
     this.activeTab = tab;
+    this.vmKeyowrds = "";
+    this.isActiveHot = false;
     if (tab == "hot") {
-      this.cities = this.cities || [];
-      this.textSearchResults = this.cities.filter(
-        (it) => it.IsHot && !it.IsDeprecated
-      );
+      this.isActiveHot = true;
+      this.textSearchResults = [];
+      this.vmKeyowrds = "";
+      this.scrollToTop();
+      this.loadMore();
     }
     if (tab == "history") {
       this.textSearchResults = this.histories || [];
+      if (this.scroller) {
+        this.scroller.disabled = this.textSearchResults.length < this.pageSize;
+      }
     }
   }
   onSearchByKeywords() {
@@ -133,6 +140,8 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
     this.subscription.unsubscribe();
   }
   async doRefresh(forceFetch = false) {
+    this.isActiveHot = false;
+    this.activeTab = "";
     await this.initData(forceFetch).catch((_) => 0);
     if (this.refresher) {
       this.refresher.complete();
@@ -178,7 +187,7 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
     let arr = this.cities;
     const reg = new RegExp("^[a-zA-Z]*$");
     if (name) {
-      arr = this.cities.filter((it) => {
+      arr = arr.filter((it) => {
         if (reg.test(name) && name.length == 3) {
           return (
             name == (it.AirportCityCode || "").toLowerCase() ||
@@ -193,6 +202,10 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
           );
         }
       });
+    }
+    if (this.isActiveHot) {
+      arr = arr.filter((it) => it.IsHot);
+      console.log(arr);
     }
     this.scroller.complete();
     const temp = arr.slice(
