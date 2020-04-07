@@ -110,62 +110,6 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     return t1 && t2 && t1.Id == t2.Id;
   }
 
-  // canSendEmailMsg() {
-  //   const selectedTicket: OrderFlightTicketEntity = this.selectedFlightTicket;
-  //   if (
-  //     this.identity &&
-  //     !(this.identity.Numbers && !!this.identity.Numbers["AgentId"])
-  //   ) {
-  //     return false;
-  //   }
-  //   if (selectedTicket) {
-  //     return (
-  //       selectedTicket.Status != OrderFlightTicketStatusType.Abolish &&
-  //       selectedTicket.Status != OrderFlightTicketStatusType.Abolishing
-  //     );
-  //   }
-  //   return false;
-  // }
-  // async sendMsg(passenger: OrderPassengerEntity) {
-  //   if (
-  //     this.identity &&
-  //     !(this.identity.Numbers && !!this.identity.Numbers["AgentId"])
-  //   ) {
-  //     return false;
-  //   }
-  //   const selectedTicket = this.selectedFlightTicket;
-  //   if (selectedTicket) {
-  //     const p = await this.modalCtrl.create({
-  //       component: SendMsgComponent,
-  //       componentProps: {
-  //         defaultMobile: passenger.Mobile,
-  //         orderTicketId: selectedTicket.Id
-  //       }
-  //     });
-  //     await p.present();
-  //     const result = await p.onDidDismiss();
-  //     if (result && result.data) {
-  //       const data = result.data as {
-  //         mobiles: string[];
-  //         content: string;
-  //       };
-  //       const res = await this.tmcService
-  //         .sendSms(
-  //           data.mobiles,
-  //           data.content,
-  //           this.orderDetail.Order && this.orderDetail.Order.Id
-  //         )
-  //         .catch(_ => {
-  //           AppHelper.alert(_ || "短信发送失败");
-  //           return null;
-  //         });
-  //       if (res) {
-  //         AppHelper.alert("短信已发送");
-  //       }
-  //     }
-  //   }
-  // }
-
   getPassengerCostOrgInfo(ticket: OrderFlightTicketEntity) {
     const passengerId = ticket && ticket.Passenger && ticket.Passenger.Id;
     let p: OrderPassengerEntity =
@@ -268,7 +212,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
         .join(",")
     );
   }
-  getOrderInsurances(ticket: OrderFlightTicketEntity) {
+  private getOrderInsurances(ticket: OrderFlightTicketEntity) {
     const passengerId = ticket && ticket.Passenger && ticket.Passenger.Id;
     let p: OrderPassengerEntity =
       this.orderDetail &&
@@ -433,47 +377,6 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     }
     return this.orderDetail.Order.OrderNumbers.filter((it) => it.Tag == tag);
   }
-  // async sendEmail(passenger: OrderPassengerEntity) {
-  //   if (
-  //     this.identity &&
-  //     !(this.identity.Numbers && !!this.identity.Numbers["AgentId"])
-  //   ) {
-  //     return false;
-  //   }
-  //   const selectedTicket = this.selectedFlightTicket;
-  //   if (selectedTicket) {
-  //     const p = await this.modalCtrl.create({
-  //       component: SendEmailComponent,
-  //       componentProps: {
-  //         defaultEmail: passenger.Email,
-  //         orderTicketId: selectedTicket.Id
-  //       }
-  //     });
-  //     await p.present();
-  //     const result = await p.onDidDismiss();
-  //     if (result && result.data) {
-  //       const data = result.data as {
-  //         emails: string[];
-  //         subject: string;
-  //         content: string;
-  //       };
-  //       const res = await this.tmcService
-  //         .sendEmail(
-  //           data.emails,
-  //           data.subject,
-  //           data.content,
-  //           this.orderDetail.Order && this.orderDetail.Order.Id
-  //         )
-  //         .catch(_ => {
-  //           AppHelper.alert(_ || "邮件发送失败");
-  //           return null;
-  //         });
-  //       if (res) {
-  //         AppHelper.alert("邮件已发送");
-  //       }
-  //     }
-  //   }
-  // }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
@@ -552,10 +455,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     }
     return amount;
   }
-  // private getTicketPassenger(p: OrderPassengerEntity ) {
-  //   const p = (this.orderDetail.Order && this.orderDetail.Order.OrderPassengers) || [];
-  //   return p.find(it => it.Id == (ticket.Passenger && ticket.Passenger.Id));
-  // }
+
   private initOriginalTickets() {
     this.tikectId2OriginalTickets = {};
     if (
@@ -598,7 +498,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
             // console.log("wwww");
             insurance.AdditionKey == trip.Key
         );
-        console.log("onetrip", oneTrip);
+        // console.log("onetrip", oneTrip);
         if (oneTrip) {
           insurance.VariablesJsonObj =
             insurance.VariablesJsonObj || JSON.parse(insurance.Variables) || {};
@@ -651,7 +551,6 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     this.orderDetail = await this.orderService
       .getOrderDetailAsync(orderId)
       .catch((_) => null);
-    console.log(this.orderDetail, "33333");
     this.sortFlightTicket();
     this.initOriginalTickets();
     this.initTicketExpenseType();
@@ -662,6 +561,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     if (!this.tmc) {
       this.tmc = await this.tmcService.getTmc(true);
     }
+    console.log(this.tmc);
     if (this.orderDetail) {
       this.orderDetail.orderTotalAmount = this.getOrderTotalAmount();
       this.orderDetail.insuranceAmount = this.getInsuranceAmount();
@@ -694,6 +594,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
           return h;
         });
       }
+      console.log("orderDetail ", this.orderDetail);
     }
   }
   private transformTime(datetime: string) {
@@ -803,12 +704,13 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     return insuranceName;
   }
   async showPricePopover() {
-    const Tmc = this.tmc;
+    let Tmc = this.tmc;
     console.log(Tmc, "TmcTmcTmcTmc");
 
     if (!Tmc) {
       return `0`;
     }
+    Tmc = { ...this.tmc };
     if (OrderTravelPayType.Person) {
       Tmc.IsShowServiceFee = true;
     }
@@ -880,7 +782,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     const originalTicket =
       this.tikectId2OriginalTickets[t.Id] &&
       this.tikectId2OriginalTickets[t.Id].find((f) => f.Id == originalid);
-    console.log(this.tikectId2OriginalTickets, "onShowFlightTicket");
+    // console.log(this.tikectId2OriginalTickets, "onShowFlightTicket");
     t.VariablesJsonObj.isShowOriginalTicket = !t.VariablesJsonObj
       .isShowOriginalTicket;
     if (originalTicket) {
