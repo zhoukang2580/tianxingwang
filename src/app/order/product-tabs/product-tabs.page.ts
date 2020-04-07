@@ -268,11 +268,12 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     //   this.doRefresh();
     // }
   }
-  onAbolishTrainOrder(data: { orderId: string; ticketId: string }) {
+  async onAbolishTrainOrder(data: { orderId: string; ticketId: string }) {
     this.orderService
       .abolishTrainOrder({
         OrderId: data.orderId,
         TicketId: data.ticketId,
+        Channel: await this.tmcService.getChannel(),
       })
       .then(() => {
         this.doRefresh();
@@ -365,14 +366,18 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       AppHelper.alert(e);
     }
   }
-  onAbolishOrder(data: {
+  async onAbolishOrder(data: {
     orderId: string;
     ticketId: string;
     tag: "flight" | "train";
   }) {
     if (data.tag == "flight") {
       this.orderService
-        .abolishFlightOrder({ OrderId: data.orderId, TicketId: data.ticketId })
+        .abolishFlightOrder({
+          OrderId: data.orderId,
+          Channel: await this.tmcService.getChannel(),
+          TicketId: data.ticketId,
+        })
         .then(() => {
           AppHelper.toast("订单取消申请中", 2000, "middle");
           this.doRefresh();
@@ -382,7 +387,11 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         });
     } else if (data.tag == "train") {
       this.orderService
-        .abolishTrainOrder({ OrderId: data.orderId, TicketId: data.ticketId })
+        .abolishTrainOrder({
+          OrderId: data.orderId,
+          Channel: await this.tmcService.getChannel(),
+          TicketId: data.ticketId,
+        })
         .then(() => {
           AppHelper.toast("订单取消申请中", 2000, "middle");
           this.doRefresh();
