@@ -22,6 +22,7 @@ import { FlightResultEntity } from "../flight/models/FlightResultEntity";
 import { IResponse } from "../services/api/IResponse";
 import { tap } from "rxjs/operators";
 import { MockInternationalFlightListData } from './mock-data';
+import { environment } from 'src/environments/environment';
 export interface IFlightCabinType {
   label:
     | "经济舱"
@@ -114,7 +115,7 @@ export class InternationalFlightService {
   private bookInfoSource: Subject<
     PassengerBookInfo<IInternationalFlightSegmentInfo>[]
   >;
-  private flightListResult: FlightResultEntity=MockInternationalFlightListData as any;
+  private flightListResult: FlightResultEntity;
   constructor(
     private apiService: ApiService,
     private identityService: IdentityService,
@@ -304,12 +305,16 @@ export class InternationalFlightService {
     const m = this.searchModel;
     const result: IResponse<FlightResultEntity> = {} as any;
     result.Data = this.flightListResult;
+  
     if (!m || !forceFetch) {
       if (
         this.flightListResult &&
         this.flightListResult.FlightSegments &&
         this.flightListResult.FlightSegments.length
       ) {
+        if(!environment.production){
+          result.Data=MockInternationalFlightListData as any;
+        }
         return of(result);
       }
     }
