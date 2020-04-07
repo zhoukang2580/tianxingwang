@@ -4,7 +4,7 @@ import { RefresherComponent } from "src/app/components/refresher";
 import { finalize } from "rxjs/operators";
 import { Subscription } from "rxjs";
 import { ModalController } from '@ionic/angular';
-import { FlightDialogComponent } from 'src/app/components/flight-dialog/flight-dialog.component';
+import { FlightDialogComponent } from '../components/flight-dialog/flight-dialog.component';
 
 @Component({
   selector: "app-flight-list",
