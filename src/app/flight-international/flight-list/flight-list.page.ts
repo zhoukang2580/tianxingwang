@@ -4,6 +4,7 @@ import { RefresherComponent } from "src/app/components/refresher";
 import { finalize } from "rxjs/operators";
 import { Subscription } from "rxjs";
 import { ModalController } from '@ionic/angular';
+import { FlightDialogComponent } from 'src/app/components/flight-dialog/flight-dialog.component';
 
 @Component({
   selector: "app-flight-list",
@@ -13,7 +14,8 @@ import { ModalController } from '@ionic/angular';
 export class FlightListPage implements OnInit, OnDestroy {
   @ViewChild(RefresherComponent, { static: true })
   refresher: RefresherComponent;
-  FlightQuery;
+  flightQuery;
+  dialogShow;
   private subscription = Subscription.EMPTY;
   constructor(
     private flightService: InternationalFlightService,
@@ -36,7 +38,14 @@ export class FlightListPage implements OnInit, OnDestroy {
       )
       .subscribe(res => {
         console.log("list data", res.Data);
-        this.FlightQuery=res.Data;
+          this.flightQuery=res.Data;
       });
+  }
+  async presentModal() {
+    this.dialogShow=!this.dialogShow;
+    const modal = await this.modalController.create({
+      component: FlightDialogComponent
+    });
+    return await modal.present();
   }
 }

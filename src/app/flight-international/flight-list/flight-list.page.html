@@ -30,7 +30,7 @@
           多程总价(含税)
         </ion-col>
       </ion-row>
-      <ion-row class="paddingtop" *ngFor="let flight of FlightQuery.FlightRoutes">
+      <ion-row class="paddingtop" *ngFor="let flight of flightQuery?.FlightRoutes">
         <ion-col size="1">
           <div class="logo">
           </div>
@@ -38,8 +38,8 @@
         <ion-col>
           <div style="display:flex;justify-content: center;align-items: center">
             <div>
-              <ion-text class="time">{{flight.FirstTime.replace("T"," ")?.substring(10,16)}}</ion-text>
-              <div class="country">{{flight.FromCountry}}</div>
+              <ion-text class="time">{{flight?.FirstTime.replace("T"," ")?.substring(10,16)}}</ion-text>
+              <div class="country">{{flight?.FromCountry}}</div>
             </div>
           </div>
         </ion-col>
@@ -50,7 +50,7 @@
         <ion-col>
           <div style="display:flex;justify-content: center;align-items: center">
             <div>
-              <ion-text class="time">{{flight.ArrivalTime.replace("T"," ")?.substring(10,16)}}</ion-text>
+              <ion-text class="time">{{flight.ArrivalTime?.replace("T"," ")?.substring(10,16)}}</ion-text>
               <div class="country">{{flight.ToCountry}}</div>
             </div>
           </div>
@@ -74,8 +74,8 @@
   <ion-toolbar>
     <ion-row>
       <ion-col>
-        <div>
-          <ion-icon name="funnel-outline"style="font-size:1.3em"></ion-icon>
+        <div (click)="presentModal()">
+          <ion-icon name="funnel-outline"style="font-size:1.3em" ></ion-icon>
         </div>
         <ion-text>筛选</ion-text>
 
