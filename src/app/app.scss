@@ -142,7 +142,8 @@ ion-action-sheet.child-age .action-sheet-wrapper {
 
 ion-alert,
 ion-loading,
-ion-radio,ion-action-sheet {
+ion-radio,
+ion-action-sheet {
   --ion-color-primary: var(--ion-color-secondary);
   .loading-spinner {
     --spinner-color: var(--ion-color-secondary);
@@ -159,6 +160,17 @@ ion-checkbox {
 }
 ion-picker {
   --ion-color-primary: var(--ion-color-secondary);
+  .picker-toolbar {
+    align-items: center;
+  }
+  &.exchange-date-time .picker-toolbar {
+    .picker-toolbar-button:first-of-type {
+      flex-basis: 40%;
+    }
+    .label-text {
+      color: var(--ion-color-danger);
+    }
+  }
 }
 .alert-wrapper .alert-button-group button {
   color: var(--ion-color-dark);
