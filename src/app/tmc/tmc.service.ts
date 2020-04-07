@@ -42,10 +42,10 @@ export enum FlightHotelTrainType {
   Hotel = 2,
   Train = 3,
   HotelInternational = 4,
-  InternationalFlight = 5
+  InternationalFlight = 5,
 }
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class TmcService {
   private localInternationAirports: LocalStorageAirport;
@@ -94,16 +94,16 @@ export class TmcService {
       (local &&
         Math.floor(Date.now() / 1000) - local.lastUpdateTime >= 12 * 3600)
     ) {
-      return local.countries;
+      return local.countries as CountryEntity[];
     }
     req.Data = {
-      lastUpdateTime: (local && local.lastUpdateTime) || 0
+      lastUpdateTime: (local && local.lastUpdateTime) || 0,
     };
     req.IsShowLoading = true;
     const countries = await this.apiService
       .getPromiseData<{ Countries: CountryEntity[] }>(req)
-      .then(r => r.Countries)
-      .catch(_ => [] as CountryEntity[]);
+      .then((r) => r.Countries)
+      .catch((_) => [] as CountryEntity[]);
     countries.sort((c1, c2) => +c1.Sequence - +c2.Sequence);
     // console.log("countries", countries);
     if (local) {
@@ -111,11 +111,11 @@ export class TmcService {
     } else {
       local = {
         lastUpdateTime: Math.floor(Date.now() / 1000),
-        countries
+        countries,
       };
     }
     await this.storage.set(req.Method, local);
-    return local.countries;
+    return local.countries as CountryEntity[];
   }
   async getChannel() {
     const identity: IdentityEntity = await this.identityService.getIdentityAsync();
@@ -180,12 +180,12 @@ export class TmcService {
       Channel: "App",
       Type: "3",
       OrderId: tradeNo,
-      IsApp: AppHelper.isApp()
+      IsApp: AppHelper.isApp(),
     };
     if (key) {
       req.Data["Key"] = key;
     }
-    const r = await this.payService.wechatpay(req, "").catch(_ => {
+    const r = await this.payService.wechatpay(req, "").catch((_) => {
       AppHelper.alert(_);
     });
     if (r) {
@@ -194,9 +194,9 @@ export class TmcService {
       req1.Version = "2.0";
       req1.Data = {
         OutTradeNo: r,
-        Type: "3"
+        Type: "3",
       };
-      const result = await this.payService.process(req1).catch(_ => {
+      const result = await this.payService.process(req1).catch((_) => {
         AppHelper.alert(_);
       });
       if (result) {
@@ -225,12 +225,12 @@ export class TmcService {
       Channel: "App",
       Type: "2",
       IsApp: AppHelper.isApp(),
-      OrderId: tradeNo
+      OrderId: tradeNo,
     };
     if (key) {
       req.Data["Key"] = key;
     }
-    const r = await this.payService.alipay(req, "").catch(e => {
+    const r = await this.payService.alipay(req, "").catch((e) => {
       AppHelper.alert(e);
     });
     if (r) {
@@ -239,9 +239,9 @@ export class TmcService {
       req1.Version = "2.0";
       req1.Data = {
         OutTradeNo: r,
-        Type: "2"
+        Type: "2",
       };
-      const result = await this.payService.process(req1).catch(_ => {
+      const result = await this.payService.process(req1).catch((_) => {
         AppHelper.alert(_);
       });
       if (result) {
@@ -278,7 +278,7 @@ export class TmcService {
       toEmails: toEmails.join(","),
       Subject: subject,
       Id: orderId,
-      body: content
+      body: content,
     };
     req.Method = "TmcApiOrderUrl-Order-SendEmail";
     return this.apiService.getPromiseData<{
@@ -300,7 +300,7 @@ export class TmcService {
     req.Data = {
       toMobiles: toMobiles.join(","),
       Id: orderId,
-      body: content
+      body: content,
     };
     req.Method = "TmcApiOrderUrl-Order-SendSms";
     return this.apiService.getPromiseData<{
@@ -320,7 +320,7 @@ export class TmcService {
     req.Method = "TmcApiOrderUrl-Order-getEmailTemplateSelectItemList";
     this.emailTemplateSelectItemList = await this.apiService
       .getPromiseData<SelectItem[]>(req)
-      .catch(_ => [] as SelectItem[]);
+      .catch((_) => [] as SelectItem[]);
     return this.emailTemplateSelectItemList;
   }
   async getMobileTemplateSelecItemtList() {
@@ -334,7 +334,7 @@ export class TmcService {
     req.Method = "TmcApiOrderUrl-Order-getMobileTemplateSelectItemList";
     this.mobileTemplateSelectItemList = await this.apiService
       .getPromiseData<SelectItem[]>(req)
-      .catch(_ => [] as SelectItem[]);
+      .catch((_) => [] as SelectItem[]);
     return this.mobileTemplateSelectItemList;
   }
   async GetFlightEmail(
@@ -346,14 +346,14 @@ export class TmcService {
     req.Data = {
       type,
       orderTicketId,
-      lang
+      lang,
     };
     req.Method = "TmcApiOrderUrl-Flight-GetFlightEmail";
     const result = await this.apiService
       .getPromiseData<{ ToEmails: string[]; Body: string; Subject: string }>(
         req
       )
-      .catch(_ => ({ ToEmails: [], Body: "", Subject: "" }));
+      .catch((_) => ({ ToEmails: [], Body: "", Subject: "" }));
     return result;
   }
   async getFlightMessage(
@@ -366,11 +366,11 @@ export class TmcService {
     req.Data = {
       type,
       orderTicketId,
-      lang
+      lang,
     };
     return this.apiService
       .getPromiseData<{ ToMobiles: string[]; Body: string }>(req)
-      .catch(_ => ({ ToMobiles: [], Body: "" }));
+      .catch((_) => ({ ToMobiles: [], Body: "" }));
   }
   async getCompanies(): Promise<GroupCompanyEntity[]> {
     if (this.companies && this.companies.length) {
@@ -381,7 +381,7 @@ export class TmcService {
     req.Data = {};
     this.companies = await this.apiService
       .getPromiseData<GroupCompanyEntity[]>(req)
-      .catch(_ => []);
+      .catch((_) => []);
     return this.companies;
   }
   async searchPassengerCredentials(accountId: string) {
@@ -389,12 +389,12 @@ export class TmcService {
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Credentials-List";
     req.Data = {
-      accountId
+      accountId,
     };
     return this.apiService
       .getPromiseData<{ Credentials: MemberCredential[] }>(req)
-      .then(r => r.Credentials)
-      .catch(_ => []);
+      .then((r) => r.Credentials)
+      .catch((_) => []);
   }
   async getTravelUrls(
     data: {
@@ -413,20 +413,20 @@ export class TmcService {
     if (data && data.length) {
       for (let i = 0; i < data.length; i++) {
         const arg = data[i];
-        const res = this.getTravelUrl(arg, isShowLoading).catch(_ => {
+        const res = this.getTravelUrl(arg, isShowLoading).catch((_) => {
           return {
             key: arg.staffNumber,
             value: {
               Data: null,
-              Message: _.Message || _.message || _
-            } as ITravelUrlResult
+              Message: _.Message || _.message || _,
+            } as ITravelUrlResult,
           };
         });
         all.push(res);
       }
     }
     const arr = await Promise.all(all);
-    arr.forEach(res => {
+    arr.forEach((res) => {
       if (!result[res.key]) {
         result[res.key] = res.value;
       }
@@ -459,7 +459,7 @@ export class TmcService {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Home-SearchLinkman";
     req.Data = {
-      name
+      name,
     };
     return this.apiService.getPromiseData<[]>(req);
   }
@@ -469,13 +469,13 @@ export class TmcService {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Home-SearchApprovals";
     req.Data = {
-      name
+      name,
     };
     req.IsShowLoading = true;
     req.Timeout = 60;
     return this.apiService
       .getPromiseData<{ Text: string; Value: string }[]>(req)
-      .catch(_ => []);
+      .catch((_) => []);
   }
   async getAllLocalAirports(forceFetch = false) {
     if (!forceFetch && this.allLocalAirports && this.allLocalAirports.length) {
@@ -488,7 +488,7 @@ export class TmcService {
     const i = await this.getInternationalAirports(forceFetch);
     this.apiService.hideLoadingView();
     this.allLocalAirports = [...h, ...i];
-    this.allLocalAirports = this.allLocalAirports.map(a => {
+    this.allLocalAirports = this.allLocalAirports.map((a) => {
       a.FirstLetter = this.getFirstLetter(a.CityName);
       // if (!a.Pinyin) {
       //   a.FirstLetter = this.getFirstLetter(a.CityName);
@@ -511,7 +511,7 @@ export class TmcService {
         (await this.storage.get(KEY_HOME_AIRPORTS)) ||
         ({
           LastUpdateTime: 0,
-          Trafficlines: []
+          Trafficlines: [],
         } as LocalStorageAirport);
     }
     if (
@@ -523,7 +523,7 @@ export class TmcService {
       return Promise.resolve(this.localDomesticAirports.Trafficlines);
     }
     req.Data = {
-      LastUpdateTime: this.localDomesticAirports.LastUpdateTime
+      LastUpdateTime: this.localDomesticAirports.LastUpdateTime,
     };
     const r = await this.apiService
       .getPromiseData<{
@@ -531,9 +531,9 @@ export class TmcService {
         Trafficlines: TrafficlineEntity[];
       }>(req)
       .catch(
-        _ =>
+        (_) =>
           ({
-            Trafficlines: []
+            Trafficlines: [],
           } as {
             HotelCities: any[];
             Trafficlines: TrafficlineEntity[];
@@ -543,9 +543,9 @@ export class TmcService {
     if (r.Trafficlines && r.Trafficlines.length) {
       const airports = [
         ...this.localDomesticAirports.Trafficlines.filter(
-          item => !r.Trafficlines.some(i => i.Id == item.Id)
+          (item) => !r.Trafficlines.some((i) => i.Id == item.Id)
         ),
-        ...r.Trafficlines
+        ...r.Trafficlines,
       ];
       this.localDomesticAirports.LastUpdateTime = Math.floor(Date.now() / 1000);
       local.Trafficlines = this.localDomesticAirports.Trafficlines = airports;
@@ -562,14 +562,14 @@ export class TmcService {
         (await this.storage.get(KEY_INTERNATIONAL_AIRPORTS)) ||
         ({
           LastUpdateTime: 0,
-          Trafficlines: []
+          Trafficlines: [],
         } as LocalStorageAirport);
     }
     if (!forceFetch && this.localInternationAirports.Trafficlines.length) {
       return Promise.resolve(this.localInternationAirports.Trafficlines);
     }
     req.Data = {
-      LastUpdateTime: this.localInternationAirports.LastUpdateTime
+      LastUpdateTime: this.localInternationAirports.LastUpdateTime,
     };
     req.IsShowLoading = true;
     let st = window.performance.now();
@@ -580,14 +580,14 @@ export class TmcService {
         HotelCities: any[];
         Trafficlines: TrafficlineEntity[];
       }>(req)
-      .catch(_ => ({ Trafficlines: [] as TrafficlineEntity[] }));
+      .catch((_) => ({ Trafficlines: [] as TrafficlineEntity[] }));
     const local = this.localInternationAirports;
     if (r.Trafficlines && r.Trafficlines.length) {
       const airports = [
         ...this.localInternationAirports.Trafficlines.filter(
-          item => !r.Trafficlines.some(i => i.Id == item.Id)
+          (item) => !r.Trafficlines.some((i) => i.Id == item.Id)
         ),
-        ...r.Trafficlines
+        ...r.Trafficlines,
       ];
       local.Trafficlines = airports;
       this.localInternationAirports.LastUpdateTime = Math.floor(
@@ -597,7 +597,7 @@ export class TmcService {
       st = window.performance.now();
       this.storage
         .set(KEY_INTERNATIONAL_AIRPORTS, this.localInternationAirports)
-        .then(_ => {
+        .then((_) => {
           console.log(
             `本地化国际机场耗时：${window.performance.now() - st} ms`
           );
@@ -609,14 +609,14 @@ export class TmcService {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Home-CheckPay";
     req.Data = {
-      OrderId: orderId
+      OrderId: orderId,
     };
     req.IsShowLoading = isshowLoading;
     req.Timeout = 60;
     return this.apiService
       .getPromiseData<boolean>(req)
-      .then(_ => true)
-      .catch(_ => false);
+      .then((_) => true)
+      .catch((_) => false);
   }
 
   async getPassengerCredentials(
@@ -626,7 +626,7 @@ export class TmcService {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Home-Credentials";
     req.Data = {
-      AccountIds: accountIds.join(";")
+      AccountIds: accountIds.join(";"),
     };
     req.IsShowLoading = isShowLoading;
     req.Timeout = 60;
@@ -643,17 +643,17 @@ export class TmcService {
     req.Method = "TmcApiHomeUrl-Agent-Agent";
     this.agent = await this.apiService
       .getPromiseData<{ Agent: AgentEntity }>(req)
-      .then(r => {
+      .then((r) => {
         if (r && r.Agent) {
           return {
             ...r.Agent,
             LogoFileName: r.Agent.LogoUrl || `assets/images/Logodm.png`,
-            LogoFullFileName: r.Agent.LogoUrl || `assets/images/Logodm.png`
+            LogoFullFileName: r.Agent.LogoUrl || `assets/images/Logodm.png`,
           };
         }
         return r;
       })
-      .catch(_ => null);
+      .catch((_) => null);
     return this.agent;
   }
   async getTmc(forceFetch = false): Promise<TmcEntity> {
@@ -668,11 +668,11 @@ export class TmcService {
     req.Method = "TmcApiHomeUrl-Tmc-GetTmc";
     this.fetchingTmcPromise = await this.apiService
       .getPromiseData<TmcEntity>(req)
-      .then(tmc => {
+      .then((tmc) => {
         this.tmc = tmc;
         return tmc;
       })
-      .catch(_ => {
+      .catch((_) => {
         AppHelper.alert(_);
         return null;
       })
@@ -685,7 +685,7 @@ export class TmcService {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Tmc-GetTmcData";
-    return this.apiService.getPromiseData<TmcDataEntity>(req).catch(_ => {
+    return this.apiService.getPromiseData<TmcDataEntity>(req).catch((_) => {
       AppHelper.alert(_);
       return null;
     });
@@ -696,7 +696,7 @@ export class TmcService {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Home-GetCostCenter";
     req.Data = {
-      name
+      name,
     };
     req.IsShowLoading = true;
     req.Timeout = 60;
@@ -711,7 +711,7 @@ export class TmcService {
     req.Timeout = 60;
     return this.apiService
       .getPromiseData<OrganizationEntity[]>(req)
-      .catch(_ => []);
+      .catch((_) => []);
   }
 }
 export interface ITravelUrlResult {
@@ -978,7 +978,7 @@ export enum TmcFlightFeeType {
   /// <summary>
   /// 按航段固定值
   /// </summary>
-  SegmentFix = 4
+  SegmentFix = 4,
 }
 export enum TmcTrainFeeType {
   /// <summary>
@@ -988,7 +988,7 @@ export enum TmcTrainFeeType {
   /// <summary>
   /// 按票固定值
   /// </summary>
-  TicketFix = 2
+  TicketFix = 2,
 }
 export class IllegalReasonEntity {
   /// <summary>
@@ -1032,7 +1032,7 @@ export enum TmcApprovalType {
   /// <summary>
   /// 超标固定审批
   /// </summary>
-  ExceedPolicyApprover = 5
+  ExceedPolicyApprover = 5,
 }
 export enum TmcApprovalExpiredType {
   /// 不处理
@@ -1049,7 +1049,7 @@ export enum TmcApprovalExpiredType {
   /// <summary>
   /// 关闭
   /// </summary>
-  Closed = 4
+  Closed = 4,
 }
 export interface GroupCompanyEntity extends BaseEntity {
   Code: string;
@@ -1064,7 +1064,7 @@ export enum TmcHotelFeeType {
   /// <summary>
   /// 订单
   /// </summary>
-  Order = 2
+  Order = 2,
 }
 export class TmcEntity extends BaseEntity {
   GroupCompanyName: string; // "爱普科斯";

@@ -7,7 +7,7 @@ import { IdentityService } from "../services/identity/identity.service";
 import {
   PassengerBookInfo,
   TmcService,
-  FlightHotelTrainType
+  FlightHotelTrainType,
 } from "../tmc/tmc.service";
 import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 import { CalendarService } from "../tmc/calendar.service";
@@ -21,8 +21,8 @@ import { RequestEntity } from "../services/api/Request.entity";
 import { FlightResultEntity } from "../flight/models/FlightResultEntity";
 import { IResponse } from "../services/api/IResponse";
 import { tap } from "rxjs/operators";
-import { MockInternationalFlightListData } from './mock-data';
-import { environment } from 'src/environments/environment';
+import { MockInternationalFlightListData } from "./mock-data";
+import { environment } from "src/environments/environment";
 export interface IFlightCabinType {
   label:
     | "经济舱"
@@ -63,12 +63,12 @@ export enum FlightCabinInternationalType {
   /// 超级头等舱
   /// </summary>
   // [Description("超级头等舱")]
-  PREMIUM_FIRST = 16
+  PREMIUM_FIRST = 16,
 }
 export enum FlightVoyageType {
   OneWay = 1,
   GoBack = 2,
-  MultiCity = 3
+  MultiCity = 3,
 }
 const toCity: TrafficlineEntity = {
   AirportCityCode: "BJS",
@@ -85,7 +85,7 @@ const toCity: TrafficlineEntity = {
   Nickname: "北京",
   Pinyin: "Beijing",
   Sequence: 2,
-  Tag: "AirportCity"
+  Tag: "AirportCity",
 } as TrafficlineEntity;
 const fromCity = {
   AirportCityCode: "SHA",
@@ -103,10 +103,10 @@ const fromCity = {
   Pinyin: "Shanghai",
   Sequence: 1,
   // 出发城市，不是出发城市的那个机场
-  Tag: "AirportCity"
+  Tag: "AirportCity",
 } as TrafficlineEntity;
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class InternationalFlightService {
   private searchModel: IInternationalFlightSearchModel;
@@ -134,10 +134,10 @@ export class InternationalFlightService {
     if (dates && dates.length) {
       if (this.searchModel) {
         if (this.searchModel.voyageType == FlightVoyageType.MultiCity) {
-          const trip = this.searchModel.trips.find(it => it.id == t.id);
+          const trip = this.searchModel.trips.find((it) => it.id == t.id);
           if (trip) {
             trip.date = dates[0].date;
-            this.searchModel.trips = this.searchModel.trips.map(it => {
+            this.searchModel.trips = this.searchModel.trips.map((it) => {
               it.isSelectInfo = false;
               return it;
             });
@@ -162,7 +162,7 @@ export class InternationalFlightService {
                   true,
                   "确定",
                   "取消"
-                ).then(ok => {
+                ).then((ok) => {
                   if (ok) {
                     this.searchModel.roundTrip.backDate = m1
                       .add(1, "days")
@@ -196,7 +196,7 @@ export class InternationalFlightService {
   async openCalendar(isMulti: boolean, isFrom: boolean, trip: ITripInfo) {
     const s = this.getSearchModel();
     const trips = s.trips || [];
-    const idx = s.trips && s.trips.findIndex(it => it == trip);
+    const idx = s.trips && s.trips.findIndex((it) => it == trip);
     const lastTrip = idx - 1 >= 0 ? trips[idx - 1] : null;
     const m = await this.modalCtrl.create({
       component: SelectDateComponent,
@@ -211,8 +211,8 @@ export class InternationalFlightService {
             : "",
         tripType: isFrom ? TripType.departureTrip : TripType.returnTrip,
         forType: FlightHotelTrainType.InternationalFlight,
-        isMulti
-      }
+        isMulti,
+      },
       // animated:false
     });
     await m.present();
@@ -226,7 +226,7 @@ export class InternationalFlightService {
         toCity,
         date: this.calendarService.getMoment(1).format("YYYY-MM-DD"),
         id: AppHelper.uuid(),
-        backDate: this.calendarService.getMoment(3).format("YYYY-MM-DD")
+        backDate: this.calendarService.getMoment(3).format("YYYY-MM-DD"),
       },
       voyageType: FlightVoyageType.OneWay,
       trips: [
@@ -234,44 +234,44 @@ export class InternationalFlightService {
           fromCity,
           toCity,
           date: this.calendarService.getMoment(1).format("YYYY-MM-DD"),
-          id: AppHelper.uuid()
+          id: AppHelper.uuid(),
         },
         {
           id: AppHelper.uuid(),
           fromCity: toCity,
-          date: this.calendarService.getMoment(3).format("YYYY-MM-DD")
-        }
+          date: this.calendarService.getMoment(3).format("YYYY-MM-DD"),
+        },
       ],
       cabin: {
         label: "经济舱",
-        value: FlightCabinInternationalType.ECONOMY
+        value: FlightCabinInternationalType.ECONOMY,
       },
       cabins: [
         {
           label: "经济舱",
-          value: FlightCabinInternationalType.ECONOMY
+          value: FlightCabinInternationalType.ECONOMY,
         },
         {
           label: "超级经济舱",
-          value: FlightCabinInternationalType.PREMIUM_ECONOMY
+          value: FlightCabinInternationalType.PREMIUM_ECONOMY,
         },
         {
           label: "头等舱",
-          value: FlightCabinInternationalType.FIRST
+          value: FlightCabinInternationalType.FIRST,
         },
         {
           label: "商务舱",
-          value: FlightCabinInternationalType.BUSINESS
+          value: FlightCabinInternationalType.BUSINESS,
         },
         {
           label: "超级商务舱",
-          value: FlightCabinInternationalType.PREMIUM_BUSINESS
+          value: FlightCabinInternationalType.PREMIUM_BUSINESS,
         },
         {
           label: "超级头等舱",
-          value: FlightCabinInternationalType.PREMIUM_FIRST
-        }
-      ]
+          value: FlightCabinInternationalType.PREMIUM_FIRST,
+        },
+      ],
     } as IInternationalFlightSearchModel;
     this.searchModelSource = new BehaviorSubject(this.searchModel);
   }
@@ -282,7 +282,7 @@ export class InternationalFlightService {
   addMoreTrip() {
     if (this.searchModel && this.searchModel.trips) {
       const trips = this.searchModel.trips;
-      const idx = trips.findIndex(it => !it.fromCity || !it.toCity);
+      const idx = trips.findIndex((it) => !it.fromCity || !it.toCity);
       if (idx > -1) {
         const one = trips[idx];
         AppHelper.alert(
@@ -296,7 +296,7 @@ export class InternationalFlightService {
       this.searchModel.trips.push({
         id: AppHelper.uuid(),
         fromCity: last.toCity,
-        date: this.calendarService.getMoment(3, last.date).format("YYYY-MM-DD")
+        date: this.calendarService.getMoment(3, last.date).format("YYYY-MM-DD"),
       });
       this.setSearchModelSource(this.searchModel);
     }
@@ -305,8 +305,10 @@ export class InternationalFlightService {
     const m = this.searchModel;
     const result: IResponse<FlightResultEntity> = {} as any;
     result.Data = this.flightListResult;
-    if(!environment.production){
-      result.Data=MockInternationalFlightListData as any;
+    if (!environment.production) {
+      result.Data = this.initFlightRouteSegments(
+        MockInternationalFlightListData as any
+      );
       return of(result);
     }
     if (!m || !forceFetch) {
@@ -335,31 +337,71 @@ export class InternationalFlightService {
       toAirports = [m.roundTrip.toCity.Code];
     }
     if (m.voyageType == FlightVoyageType.MultiCity) {
-      date = m.trips.map(it => it.date).join(",");
+      date = m.trips.map((it) => it.date).join(",");
       fromAirports = m.trips
-        .map(it => it.fromCity && it.fromCity.AirportCityCode)
-        .filter(it => !!it);
+        .map((it) => it.fromCity && it.fromCity.AirportCityCode)
+        .filter((it) => !!it);
       toAirports = m.trips
-        .map(it => it.toCity && it.toCity.AirportCityCode)
-        .filter(it => !!it);
+        .map((it) => it.toCity && it.toCity.AirportCityCode)
+        .filter((it) => !!it);
     }
     req.Data = {
       Date: date,
       FromAirport: fromAirports.join(","),
       ToAirport: toAirports.join(","),
       VoyageType: m.voyageType,
-      Cabin: FlightCabinInternationalType[m.cabin && m.cabin.value]
+      Cabin: FlightCabinInternationalType[m.cabin && m.cabin.value],
     };
     req.IsShowLoading = true;
     req.LoadingMsg = "正在获取航班列表...";
     return this.apiService.getResponse<FlightResultEntity>(req).pipe(
-      tap(r => {
-        this.flightListResult = r.Data;
+      tap((r) => {
+        this.flightListResult = this.initFlightRouteSegments(r.Data);
       })
     );
   }
-  getInternationalAirports(forceFetch = false) {
-    return this.tmcService.getInternationalAirports(forceFetch);
+  private initFlightRouteSegments(data: FlightResultEntity) {
+    if (data && data.FlightSegments && data.FlightFares) {
+      if (data.FlightRoutes) {
+        data.FlightRoutes = data.FlightRoutes.map((flightRoute) => {
+          flightRoute.transferSegments = data.FlightSegments.filter((s) =>
+            flightRoute.FlightSegmentIds.some((id) => id == s.Id)
+          );
+          flightRoute.fromSegment = flightRoute.transferSegments[0];
+          flightRoute.toSegment =
+            flightRoute.transferSegments[
+              flightRoute.transferSegments.length - 1
+            ];
+          flightRoute.isTransfer = flightRoute.transferSegments.length > 1;
+          const ffs = data.FlightFares.filter(
+            (f) =>
+              f.FlightRouteIds &&
+              f.FlightRouteIds.some((a) => a == flightRoute.Id)
+          );
+          let minPrice = Infinity;
+          ffs.forEach((it) => {
+            minPrice = Math.min(minPrice, +it.SalesPrice);
+          });
+          flightRoute.flightFare = ffs.find((ff) => +ff.SalesPrice == minPrice);
+          return flightRoute;
+        });
+      }
+    }
+    return data;
+  }
+  async getInternationalAirports(forceFetch = false) {
+    let airports = await this.tmcService.getInternationalAirports(forceFetch);
+    const countries = await this.getCountries(forceFetch);
+    if (countries && countries.length) {
+      airports = airports.map((a) => {
+        a.Country = countries.find((c) => c.Code == a.CountryCode);
+        return a;
+      });
+    }
+    return airports;
+  }
+  getCountries(forceFetch = false) {
+    return this.tmcService.getCountries(forceFetch);
   }
   beforeSelectCity(isFrom: boolean, trip: ITripInfo) {
     if (this.searchModel) {
@@ -367,7 +409,7 @@ export class InternationalFlightService {
         trip.id == this.searchModel.roundTrip.id;
       if (this.searchModel.voyageType == FlightVoyageType.MultiCity) {
         if (this.searchModel.trips) {
-          this.searchModel.trips = this.searchModel.trips.map(t => {
+          this.searchModel.trips = this.searchModel.trips.map((t) => {
             t.isSelectInfo = t.id == trip.id;
             return t;
           });
@@ -378,7 +420,7 @@ export class InternationalFlightService {
     this.router.navigate(
       [AppHelper.getRoutePath("select-international-flight-city")],
       {
-        queryParams: { requestCode: isFrom ? "select_from_city" : "to_city" }
+        queryParams: { requestCode: isFrom ? "select_from_city" : "to_city" },
       }
     );
   }
@@ -386,14 +428,14 @@ export class InternationalFlightService {
     if (this.searchModel) {
       if (this.searchModel.voyageType == FlightVoyageType.MultiCity) {
         if (this.searchModel.trips) {
-          const trip = this.searchModel.trips.find(t => t.isSelectInfo);
+          const trip = this.searchModel.trips.find((t) => t.isSelectInfo);
           if (trip) {
             if (isFrom) {
               trip.fromCity = city;
             } else {
               trip.toCity = city;
             }
-            this.searchModel.trips = this.searchModel.trips.map(it => {
+            this.searchModel.trips = this.searchModel.trips.map((it) => {
               it.isSelectInfo = false;
               return it;
             });

@@ -9,14 +9,14 @@ import {
   IonRefresher,
   IonHeader,
   ModalController,
-  IonInfiniteScroll
+  IonInfiniteScroll,
 } from "@ionic/angular";
 import {
   Component,
   OnInit,
   ViewChild,
   AfterViewInit,
-  OnDestroy
+  OnDestroy,
 } from "@angular/core";
 import * as jsPy from "js-pinyin";
 import {
@@ -24,7 +24,7 @@ import {
   state,
   style,
   animate,
-  transition
+  transition,
 } from "@angular/animations";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { InternationalFlightService } from "../international-flight.service";
@@ -37,9 +37,9 @@ import { TmcService } from "src/app/tmc/tmc.service";
     trigger("openclose", [
       state("true", style({ transform: "scale(1)" })),
       state("false", style({ transform: "scale(0)" })),
-      transition("true<=>false", animate("300ms ease-in-out"))
-    ])
-  ]
+      transition("true<=>false", animate("300ms ease-in-out")),
+    ]),
+  ],
 })
 export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
   private cities: TrafficlineEntity[] = [];
@@ -60,6 +60,7 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
   refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
   isIos = false;
+  isActiveHot = false;
   constructor(
     plt: Platform,
     route: ActivatedRoute,
@@ -68,20 +69,26 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
     private tmcService: TmcService
   ) {
     this.isIos = plt.is("ios");
-    this.subscription = route.queryParamMap.subscribe(q => {
+    this.subscription = route.queryParamMap.subscribe((q) => {
       this.isFromCity = q.get("requestCode") == "select_from_city";
     });
   }
   async onActiveTab(tab: string) {
     this.activeTab = tab;
+    this.vmKeyowrds = "";
+    this.isActiveHot = false;
     if (tab == "hot") {
-      this.cities = this.cities || [];
-      this.textSearchResults = this.cities.filter(
-        it => it.IsHot && !it.IsDeprecated
-      );
+      this.isActiveHot = true;
+      this.textSearchResults = [];
+      this.vmKeyowrds = "";
+      this.scrollToTop();
+      this.loadMore();
     }
     if (tab == "history") {
       this.textSearchResults = this.histories || [];
+      if (this.scroller) {
+        this.scroller.disabled = this.textSearchResults.length < this.pageSize;
+      }
     }
   }
   onSearchByKeywords() {
@@ -94,7 +101,9 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
   }
   private async initData(forceRefresh: boolean = false) {
     try {
-      const keys = `Code,Name,Nickname,CityName,Pinyin,AirportCityCode`.split(",");
+      const keys = `Code,Name,Nickname,CityName,Pinyin,AirportCityCode`.split(
+        ","
+      );
       if (this.isInitData) {
         return;
       }
@@ -109,12 +118,12 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
       this.histories =
         (await this.storage.get("historyInternationalAirports")) || [];
       this.cities = this.cities
-        .filter(it => it.IsHot)
-        .concat(this.cities.filter(it => !it.IsHot))
-        .map(it => {
+        .filter((it) => it.IsHot)
+        .concat(this.cities.filter((it) => !it.IsHot))
+        .map((it) => {
           it.matchStr = keys
-            .map(k => it[k])
-            .filter(i => i && i.length > 0)
+            .map((k) => it[k])
+            .filter((i) => i && i.length > 0)
             .join(",")
             .toLowerCase();
           return it;
@@ -131,7 +140,9 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
     this.subscription.unsubscribe();
   }
   async doRefresh(forceFetch = false) {
-    await this.initData(forceFetch).catch(_ => 0);
+    this.isActiveHot = false;
+    this.activeTab = "";
+    await this.initData(forceFetch).catch((_) => 0);
     if (this.refresher) {
       this.refresher.complete();
     }
@@ -149,7 +160,7 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
   }
   ngAfterViewInit() {}
   async onCitySelected(city: TrafficlineEntity) {
-    if (this.histories && !this.histories.find(it => it.Id == city.Id)) {
+    if (this.histories && !this.histories.find((it) => it.Id == city.Id)) {
       this.histories.unshift(city);
       if (this.histories.length > 20) {
         this.histories = this.histories.slice(0, 20);
@@ -176,9 +187,12 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
     let arr = this.cities;
     const reg = new RegExp("^[a-zA-Z]*$");
     if (name) {
-      arr = this.cities.filter(it => {
+      arr = arr.filter((it) => {
         if (reg.test(name) && name.length == 3) {
-          return name == it.AirportCityCode || it.Code == name;
+          return (
+            name == (it.AirportCityCode || "").toLowerCase() ||
+            (it.Code || "").toLowerCase() == name
+          );
         } else {
           return (
             it.Name == name ||
@@ -188,6 +202,9 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
           );
         }
       });
+    }
+    if (this.isActiveHot) {
+      arr = arr.filter((it) => it.IsHot);
     }
     this.scroller.complete();
     const temp = arr.slice(

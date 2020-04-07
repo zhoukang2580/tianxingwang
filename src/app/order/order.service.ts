@@ -32,9 +32,11 @@ export class OrderDetailModel {
   Order: OrderEntity;
   TravelPayType: string;
   TravelType: string;
+  orderTotalAmount: number;
+  insuranceAmount: number;
 }
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class OrderService {
   constructor(
@@ -65,7 +67,7 @@ export class OrderService {
     req.IsShowLoading = true;
     req.Method = `TmcApiOrderUrl-Order-Detail`;
     req.Data = {
-      Id: id
+      Id: id,
     };
     // if(!environment.production){
     //   return Promise.resolve(this.getmockOrderDetail())
@@ -78,7 +80,7 @@ export class OrderService {
     req.IsShowLoading = true;
     req.Method = `TmcApiOrderUrl-Order-Detail`;
     req.Data = {
-      Id: id
+      Id: id,
     };
     return this.apiService.getResponse<OrderDetailModel>(req);
   }
@@ -91,9 +93,9 @@ export class OrderService {
     req.Data = data;
     req.Method = `TmcApiOrderUrl-Task-List`;
     const result = this.apiService.getResponse<TaskModel>(req).pipe(
-      map(res => {
+      map((res) => {
         if (res.Data && res.Data.Tasks) {
-          return res.Data.Tasks.map(it => {
+          return res.Data.Tasks.map((it) => {
             it.VariablesJsonObj =
               (it.Variables && JSON.parse(it.Variables)) || {};
             it.VariablesJsonObj["TaskUrl"] = it.HandleUrl;
@@ -124,7 +126,7 @@ export class OrderService {
     rev =
       !order.OrderFlightTickets ||
       order.OrderFlightTickets.filter(
-        it =>
+        (it) =>
           it.Status == OrderFlightTicketStatusType.Booking ||
           it.Status == OrderFlightTicketStatusType.BookExchanging
       ).length == 0;
@@ -134,7 +136,7 @@ export class OrderService {
     rev =
       !order.OrderTrainTickets ||
       order.OrderTrainTickets.filter(
-        it =>
+        (it) =>
           it.Status == OrderTrainTicketStatusType.Booking ||
           it.Status == OrderTrainTicketStatusType.BookExchanging
       ).length == 0;
@@ -164,7 +166,7 @@ export class OrderService {
       OrderFlightTicketId: data.ticketId,
       OrderId: data.orderId,
       IsVoluntary: data.IsVoluntary,
-      FileName: data.FileName
+      FileName: data.FileName,
     };
     if (data.FileValue) {
       req["FileValue"] = data.FileValue.includes(",")
@@ -174,7 +176,11 @@ export class OrderService {
     req.Method = `TmcApiOrderUrl-Order-RefundFlight`;
     return this.apiService.getPromiseData<any>(req);
   }
-  abolishTrainOrder(data: { OrderId: string; TicketId: string }) {
+  abolishTrainOrder(data: {
+    OrderId: string;
+    TicketId: string;
+    Channel: string;
+  }) {
     return this.abolishOrder({ ...data, Tag: "train" });
   }
   exchangeInfoFlightTrip(bookInfo: PassengerBookInfo<IFlightSegmentInfo>) {
@@ -186,7 +192,7 @@ export class OrderService {
       ExchangeDate: bookInfo.bookInfo.flightSegment.TakeoffTime.substr(0, 10),
       FlightNumber: bookInfo.bookInfo.flightSegment.Number,
       CabinName: bookInfo.bookInfo.flightPolicy.Cabin.TypeName,
-      SalesPrice: bookInfo.bookInfo.flightPolicy.Cabin.SalesPrice
+      SalesPrice: bookInfo.bookInfo.flightPolicy.Cabin.SalesPrice,
     };
     req.Method = `TmcApiOrderUrl-Order-ExchangeInfo`;
     return this.apiService.getPromiseData<{
@@ -205,7 +211,7 @@ export class OrderService {
     req.Data = {
       OrderId: data.OrderId,
       OrderFlightTicketId: data.TicketId,
-      ExchangeDate: data.ExchangeDate
+      ExchangeDate: data.ExchangeDate,
     };
     req.Method = `TmcApiOrderUrl-Order-ExchangeFlight`;
     return this.apiService.getPromiseData<{
@@ -214,16 +220,26 @@ export class OrderService {
       toCity: TrafficlineEntity;
     }>(req);
   }
-  abolishFlightOrder(data: { OrderId: string; TicketId: string }) {
+
+  abolishFlightOrder(data: {
+    OrderId: string;
+    TicketId: string;
+    Channel: string;
+  }) {
     return this.abolishOrder({ ...data, Tag: "flight" });
   }
-  abolishTraninOrder(data: { OrderId: string; TicketId: string }) {
+  abolishTraninOrder(data: {
+    OrderId: string;
+    TicketId: string;
+    Channel: string;
+  }) {
     return this.abolishOrder({ ...data, Tag: "train" });
   }
   private abolishOrder(data: {
     OrderId: string;
     TicketId: string;
     Tag: string;
+    Channel: string;
   }) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
@@ -238,8 +254,8 @@ export class OrderService {
         goArrivalTime: startTime,
         tripType: TripType.departureTrip,
         forType: FlightHotelTrainType.Flight,
-        isMulti: false
-      }
+        isMulti: false,
+      },
     });
     await m.present();
     const d = await m.onDidDismiss();
@@ -251,14 +267,14 @@ export class OrderService {
   checkIfOrderTrainTicketShow(ticket: OrderTrainTicketEntity[]) {
     if (ticket) {
       const statusArr = [
-        OrderTrainTicketStatusType.ChangeTicket
+        OrderTrainTicketStatusType.ChangeTicket,
         // OrderFlightTicketStatusType.Refunded
       ];
-      ticket = ticket.map(t => {
+      ticket = ticket.map((t) => {
         t.VariablesJsonObj =
           t.VariablesJsonObj || JSON.parse(t.Variables) || {};
         if (t.VariablesJsonObj) {
-          const isShow = !statusArr.some(s => s == t.Status);
+          const isShow = !statusArr.some((s) => s == t.Status);
           t.VariablesJsonObj.isShow = !t.VariablesJsonObj.IsScrap && isShow;
         }
         return t;
@@ -269,14 +285,14 @@ export class OrderService {
   checkIfOrderFlightTicketShow(ticket: OrderFlightTicketEntity[]) {
     if (ticket) {
       const statusArr = [
-        OrderFlightTicketStatusType.ChangeTicket
+        OrderFlightTicketStatusType.ChangeTicket,
         // OrderFlightTicketStatusType.Refunded
       ];
-      ticket = ticket.map(t => {
+      ticket = ticket.map((t) => {
         t.VariablesJsonObj =
           t.VariablesJsonObj || JSON.parse(t.Variables) || {};
         if (t.VariablesJsonObj) {
-          const isShow = !statusArr.some(s => s == t.Status);
+          const isShow = !statusArr.some((s) => s == t.Status);
           t.VariablesJsonObj.isShow = !t.VariablesJsonObj.IsScrap && isShow;
         }
         return t;

@@ -25,12 +25,17 @@
           (click)='vmKeyowrds="BJS";onSearchByKeywords()' class='ion-margin-start'>北京</ion-text>
       </ion-note>
       <ion-item *ngFor='let item of textSearchResults' (click)='onCitySelected(item)'>
-        <ion-label>
+        <ion-label style="font-size: 0.8rem;">
           <ion-text style="position: relative;padding-left: 1em;" [color]="item?.Selected?'secondary':'dark'">
-            <ion-icon *ngIf='item.IsHot' color='danger' style="font-size: 0.8rem;position: absolute;left: 0;top: 0;" name="flame-outline"></ion-icon>
+            <ion-icon *ngIf='item.IsHot' color='danger' style="font-size: 0.8rem;position: absolute;left: 0;top: 0;"
+              name="flame-outline"></ion-icon>
             {{item?.Nickname}}
           </ion-text>
-          <ion-text *ngIf='item.Pinyin' color='medium'>({{item.Pinyin}})</ion-text>
+          <ion-text *ngIf='item.Country' color='medium'>({{item.Country.Name}})
+            <ng-container *ngIf='item.Country.EnglishName'>
+              ({{item.Country.EnglishName}})
+            </ng-container>
+          </ion-text>
           <ion-text *ngIf='item.Code' color='medium'>({{item.Code}})</ion-text>
         </ion-label>
       </ion-item>
