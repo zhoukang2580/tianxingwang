@@ -3,7 +3,7 @@
     <ion-row>
       <ion-col (click)="dismiss()" class="ion-padding-start">取消</ion-col>
       <ion-col class="ion-text-center">重置</ion-col>
-      <ion-col  class="ion-text-end ion-padding-end">确定</ion-col>
+      <ion-col class="ion-text-end ion-padding-end">确定</ion-col>
     </ion-row>
   </ion-toolbar>
 </ion-header>
@@ -11,10 +11,23 @@
   <ng-container>
 
     <div>
-      <ul>
-        <li>1</li>
-      </ul>
+      <ion-row>
+        <ion-col>
+          <ul>
+            <li>1</li>
+            <li>2</li>
+          </ul>
+        </ion-col>
+        <ion-col>
+          <div>
+            1
+          </div>
+          <div>
+            2
+          </div>
+        </ion-col>
+      </ion-row>
     </div>
   </ng-container>
-  
+
 </ion-content>
