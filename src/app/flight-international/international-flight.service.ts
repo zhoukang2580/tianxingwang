@@ -305,16 +305,16 @@ export class InternationalFlightService {
     const m = this.searchModel;
     const result: IResponse<FlightResultEntity> = {} as any;
     result.Data = this.flightListResult;
-  
+    if(!environment.production){
+      result.Data=MockInternationalFlightListData as any;
+      return of(result);
+    }
     if (!m || !forceFetch) {
       if (
         this.flightListResult &&
         this.flightListResult.FlightSegments &&
         this.flightListResult.FlightSegments.length
       ) {
-        if(!environment.production){
-          result.Data=MockInternationalFlightListData as any;
-        }
         return of(result);
       }
     }

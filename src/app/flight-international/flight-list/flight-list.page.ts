@@ -3,6 +3,7 @@ import { InternationalFlightService } from "../international-flight.service";
 import { RefresherComponent } from "src/app/components/refresher";
 import { finalize } from "rxjs/operators";
 import { Subscription } from "rxjs";
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: "app-flight-list",
@@ -12,8 +13,12 @@ import { Subscription } from "rxjs";
 export class FlightListPage implements OnInit, OnDestroy {
   @ViewChild(RefresherComponent, { static: true })
   refresher: RefresherComponent;
+  FlightQuery;
   private subscription = Subscription.EMPTY;
-  constructor(private flightService: InternationalFlightService) {}
+  constructor(
+    private flightService: InternationalFlightService,
+    public modalController: ModalController
+    ) {}
 
   ngOnInit() {
     this.doRefresh();
@@ -31,6 +36,7 @@ export class FlightListPage implements OnInit, OnDestroy {
       )
       .subscribe(res => {
         console.log("list data", res.Data);
+        this.FlightQuery=res.Data;
       });
   }
 }
