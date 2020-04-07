@@ -11,7 +11,7 @@ import { TripType } from "src/app/tmc/models/TripType";
 @Component({
   selector: "app-select-date-comp",
   templateUrl: "./select-date.component.html",
-  styleUrls: ["./select-date.component.scss"]
+  styleUrls: ["./select-date.component.scss"],
 })
 export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
   private days: DayModel[] = [];
@@ -38,7 +38,7 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
       clearTimeout(this.timeoutId);
     }
     this.timeoutId = setTimeout(() => {
-      this.days.forEach(dt => {
+      this.days.forEach((dt) => {
         dt.hasToolTip = false;
         dt.toolTipMsg = null;
       });
@@ -73,10 +73,8 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
     this.generateOneYearCalendar();
   }
   private checkYms() {
-    const goDate = this.calendarService.getMoment(
-      0,
-      this.calendarService.getMoment(0, this.goArrivalTime).format("YYYY-MM-DD")
-    );
+    const m = this.calendarService.getMoment(0, this.goArrivalTime || "");
+    const goDate = this.calendarService.getMoment(0, m.format("YYYY-MM-DD"));
     if (this.yms && this.yms.length) {
       const type = this.forType;
       if (
@@ -89,9 +87,9 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
             const endDay = this.calendarService.generateDayModel(
               this.calendarService.getMoment(30)
             );
-            this.yms.forEach(day => {
+            this.yms.forEach((day) => {
               if (day.dayList) {
-                day.dayList.forEach(d => {
+                day.dayList.forEach((d) => {
                   d.enabled =
                     +this.calendarService.getMoment(0, d.date.substr(0, 10)) >=
                     +goDate;
@@ -109,11 +107,11 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
           this.calendarService.getMoment(0)
         );
         const endDay = this.calendarService.generateDayModel(
-          this.calendarService.getMoment(30, "days")
+          this.calendarService.getMoment(30)
         );
-        this.yms.forEach(day => {
+        this.yms.forEach((day) => {
           if (day.dayList) {
-            day.dayList.forEach(d => {
+            day.dayList.forEach((d) => {
               d.enabled = d.timeStamp > today.timeStamp || d.date == today.date;
               if (type == FlightHotelTrainType.Train) {
                 d.enabled = d.timeStamp <= endDay.timeStamp ? d.enabled : false;
@@ -128,7 +126,8 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
   private async generateOneYearCalendar() {
     const m = this.calendarService.getMoment(0);
     this.yms = [];
-    for (let i = 0; i < 12; i++) {
+    const len = this.forType == FlightHotelTrainType.Train ? 2 : 12;
+    for (let i = 0; i < len; i++) {
       const im = m.clone().add(i, "months");
       this.yms.push(
         await this.calendarService.generateYearNthMonthCalendar(
@@ -146,7 +145,7 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     const m = await this.modalCtrl.getTop();
     if (m) {
-      await m.dismiss(this.selectedDays).catch(_ => {});
+      await m.dismiss(this.selectedDays).catch((_) => {});
     }
     this.isCurrentSelectedOk = false;
   }
@@ -266,11 +265,11 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
       }
       this.selectedDays = [d];
     }
-    this.yms.map(item => {
+    this.yms.map((item) => {
       if (item.dayList) {
-        item.dayList.forEach(dt => {
+        item.dayList.forEach((dt) => {
           dt.selected = this.isMulti
-            ? this.selectedDays.some(it => it.date === dt.date)
+            ? this.selectedDays.some((it) => it.date === dt.date)
             : dt.date === d.date;
           dt.lastSelected = false;
           dt.firstSelected = false;
@@ -305,9 +304,9 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
         if (first.date != last.date) {
           last.firstSelected = false;
           first.lastSelected = false;
-          this.yms.forEach(ym => {
+          this.yms.forEach((ym) => {
             if (ym.dayList) {
-              ym.dayList.forEach(it => {
+              ym.dayList.forEach((it) => {
                 it.isBetweenDays =
                   it.timeStamp > first.timeStamp &&
                   it.timeStamp < last.timeStamp;
@@ -334,9 +333,9 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   private checkHotelSelectedDate(selectedBeginDay: DayModel) {
     if (this.forType == FlightHotelTrainType.Hotel) {
-      this.yms = this.yms.map(it => {
+      this.yms = this.yms.map((it) => {
         if (it.dayList) {
-          it.dayList = it.dayList.map(itm => {
+          it.dayList = it.dayList.map((itm) => {
             itm.enabled =
               itm.enabled && itm.timeStamp > selectedBeginDay.timeStamp;
             return itm;

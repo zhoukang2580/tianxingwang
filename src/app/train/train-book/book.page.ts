@@ -253,6 +253,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
       })
     );
     this.viewModel.travelForm = this.initialBookDto.TravelFrom;
+    this.viewModel.expenseTypes=this.initialBookDto.ExpenseTypes;
     this.viewModel.illegalReasons = (
       this.initialBookDto.IllegalReasons || []
     ).map(it => {
