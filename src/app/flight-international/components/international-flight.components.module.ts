@@ -6,7 +6,7 @@ import { IonicModule } from '@ionic/angular';
 
 @NgModule({
   declarations: [FlightDialogComponent],
-  imports: [CommonModule, TmcComponentsModule,FlightDialogComponent, IonicModule,],
+  imports: [CommonModule, TmcComponentsModule,FlightDialogComponent, IonicModule],
   exports: [TmcComponentsModule,FlightDialogComponent]
 })
 export class InternationalFlightComponentsModule {}
