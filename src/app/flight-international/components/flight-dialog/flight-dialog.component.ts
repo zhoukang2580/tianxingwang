@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, MenuController } from '@ionic/angular';
 
 @Component({
   selector: 'app-flight-dialog',
@@ -8,7 +8,9 @@ import { ModalController } from '@ionic/angular';
 })
 export class FlightDialogComponent implements OnInit {
 
-  constructor(public modalController: ModalController) { }
+  constructor(public modalController: ModalController,
+    private menu: MenuController
+    ) { }
 
   ngOnInit() {}
 
@@ -18,5 +20,12 @@ export class FlightDialogComponent implements OnInit {
     this.modalController.dismiss({
       'dismissed': true
     });
+  }
+  onShowDialog(){
+
+  }
+  openFirst() {
+    this.menu.enable(true, 'first');
+    this.menu.open('first');
   }
 }
