@@ -70,6 +70,19 @@ export enum FlightVoyageType {
   GoBack = 2,
   MultiCity = 3,
 }
+export interface IConditionItem {
+  label: string;
+  isChecked?: boolean;
+  logoPic?: string;
+}
+export interface IFilterCondition {
+  airComponies?: IConditionItem[];
+  price?: "asc" | "desc";
+  time?: "asc" | "desc";
+  fromAirports?: IConditionItem[];
+  toAirports?: IConditionItem[];
+  timeSpan?: { lower: number; upper: number };
+}
 const toCity: TrafficlineEntity = {
   AirportCityCode: "BJS",
   CityCode: "1101",
@@ -109,6 +122,8 @@ const fromCity = {
   providedIn: "root",
 })
 export class InternationalFlightService {
+  private filterCondition: IFilterCondition;
+  private filterConditionSource: Subject<IFilterCondition>;
   private searchModel: IInternationalFlightSearchModel;
   private searchModelSource: Subject<IInternationalFlightSearchModel>;
   private bookInfos: PassengerBookInfo<IInternationalFlightSegmentInfo>[];
@@ -126,6 +141,24 @@ export class InternationalFlightService {
   ) {
     this.initSearchModel();
     this.bookInfoSource = new BehaviorSubject([]);
+    this.initFilterCondition();
+  }
+  private initFilterCondition() {
+    this.filterCondition = {
+      price: "asc",
+      time: "asc",
+    };
+    this.filterConditionSource = new BehaviorSubject(this.filterCondition);
+  }
+  setFilterConditionSource(condition: IFilterCondition) {
+    this.filterCondition = condition;
+    return this.filterConditionSource.next(condition);
+  }
+  getFilterConditionSource() {
+    return this.filterConditionSource.asObservable();
+  }
+  getFilterCondition() {
+    return this.filterCondition || ({} as IFilterCondition);
   }
   async onSelecFlyDate(isFrom: boolean, t: ITripInfo) {
     const dates = await this.openCalendar(false, isFrom, t);
@@ -309,6 +342,7 @@ export class InternationalFlightService {
       result.Data = this.initFlightRouteSegments(
         MockInternationalFlightListData as any
       );
+      this.onSelectParagraph(1);
       return of(result);
     }
     if (!m || !forceFetch) {
@@ -357,8 +391,45 @@ export class InternationalFlightService {
     return this.apiService.getResponse<FlightResultEntity>(req).pipe(
       tap((r) => {
         this.flightListResult = this.initFlightRouteSegments(r.Data);
+        this.onSelectParagraph(1);
       })
     );
+  }
+  onSelectParagraph(paragraph: number) {
+    const condition = this.getFilterCondition();
+    condition.airComponies = condition.airComponies || [];
+    if (this.flightListResult && paragraph) {
+      this.flightListResult.FlightRoutes.filter(
+        (r) => r.Paragraphs == paragraph
+      ).forEach((r) => {
+        if (r.FlightSegments) {
+          r.FlightSegments.forEach((s) => {
+            if (!condition.airComponies.find((c) => c.label == s.Airline)) {
+              condition.airComponies.push({
+                label: s.Airline,
+                isChecked: false,
+                logoPic: s.AirlineSrc,
+              });
+            }
+          });
+          condition.fromAirports = r.FlightSegments.filter(
+            (it) => r.FromCountry == (it.FromCity && it.FromCity.Code)
+          ).map((a) => {
+            return {
+              label: a.FromTerminal,
+            };
+          });
+          condition.toAirports = r.FlightSegments.filter(
+            (it) => r.ToCountry == (it.ToCity && it.ToCity.Code)
+          ).map((a) => {
+            return {
+              label: a.ToTerminal,
+            };
+          });
+        }
+      });
+      this.setFilterConditionSource(condition);
+    }
   }
   private initFlightRouteSegments(data: FlightResultEntity) {
     if (data && data.FlightSegments && data.FlightFares) {

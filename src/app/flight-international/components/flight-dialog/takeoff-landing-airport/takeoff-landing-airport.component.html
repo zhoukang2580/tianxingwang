@@ -1,3 +1,12 @@
-<p>
-  takeoff-landing-airport works!
-</p>
+<ion-list>
+  <ion-item (click)="onReset()">
+    <ion-label>不限</ion-label>
+    <ion-checkbox slot="end" [(ngModel)]="unlimited"></ion-checkbox>
+  </ion-item>
+  <ion-item *ngFor="let item of condition?.airComponies">
+    <div class="disflex-end" (click)="onChangeChecked()">
+      <ion-label>{{item.label}}</ion-label>
+      <ion-checkbox slot="end" [(ngModel)]="item.isChecked"></ion-checkbox>
+    </div>
+  </ion-item>
+</ion-list>
