@@ -65,12 +65,9 @@ export interface TabItem {
   animations: [flyInOut],
 })
 export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
-  private headerHeight = 0;
   OrderHotelType = OrderHotelType;
   private subscriptions: Subscription[] = [];
   tmc: TmcEntity;
-  title: string;
-  tab: ProductItem;
   ProductItemType = ProductItemType;
   items: { label: string; value: string }[] = [];
   tabs: TabItem[] = [];
@@ -396,10 +393,9 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   async ngOnInit() {
-    this.route.queryParamMap.subscribe((q) => {
-      this.tab = this.tab || JSON.parse(q.get("tab"));
-      this.title = this.tab.label + "订单";
-    });
+    // this.route.queryParamMap.subscribe((q) => {
+    //   this.title =  "机票订单";
+    // });
     this.route.queryParamMap.subscribe((q) => {
       this.initTabs();
       if (q.get("orderId")) {

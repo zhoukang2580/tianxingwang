@@ -7,7 +7,7 @@ import { Router } from "@angular/router";
 @Component({
   selector: "app-home",
   templateUrl: "./home.page.html",
-  styleUrls: ["./home.page.scss"]
+  styleUrls: ["./home.page.scss"],
 })
 export class HomePage implements OnInit {
   identity: IdentityEntity;
@@ -18,7 +18,7 @@ export class HomePage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.identityService.getIdentityAsync().then(identity => {
+    this.identityService.getIdentityAsync().then((identity) => {
       this.identity = identity;
     });
   }
@@ -29,7 +29,9 @@ export class HomePage implements OnInit {
     this.scanresult = txt;
     if (txt && txt.toLowerCase().includes("app_path")) {
       const path = AppHelper.getValueFromQueryString("app_path", txt);
-      console.log("path", path);
+      console.log("txt " + txt);
+      // tslint:disable-next-line: max-line-length
+      // http://test.app.testskytrip.com/Home/www/index.html?hrid=1&hrName=东美在线&App_Path=hr-invitation&organizationId=100000013&costCenterName=(A008)产品技术部&policyId=100000005&costCenterName=测试政策&roleIds=2&roleNames=行政人事
       const params = {
         hrid: "",
         hrName: "",
@@ -37,22 +39,24 @@ export class HomePage implements OnInit {
         costCenterId: "",
         costCenterName: "",
         organizationId: "",
-        policyId: ""
+        policyId: "",
+        roleIds: "",
+        roleNames: "",
       };
       const query = {};
-      Object.keys(params).forEach(k => {
+      Object.keys(params).forEach((k) => {
         query[k] = AppHelper.getValueFromQueryString(k, txt);
       });
       setTimeout(() => {
         this.router.navigate([AppHelper.getRoutePath(path)], {
-          queryParams: query
+          queryParams: query,
         });
       }, 100);
     } else {
       if (txt) {
         this.router.navigate([
           AppHelper.getRoutePath("scan-result"),
-          { scanResult: txt }
+          { scanResult: txt },
         ]);
       }
     }

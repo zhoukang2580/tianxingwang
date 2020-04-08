@@ -38,7 +38,6 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
   tmc: TmcEntity;
   orderDetail: OrderDetailModel;
   tabs: ITab[] = [];
-  tab: ITab;
   constructor(
     private orderService: OrderService,
     private route: ActivatedRoute,

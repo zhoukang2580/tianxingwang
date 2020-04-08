@@ -201,7 +201,9 @@ export class TripPage implements OnInit, OnDestroy {
         ? "car"
         : "";
     if (tag) {
-      this.router.navigate([AppHelper.getRoutePath(`${tag}-order-detail`)]);
+      this.router.navigate([AppHelper.getRoutePath(`${tag}-order-detail`)], {
+        queryParams: { orderId: trip.OrderId },
+      });
     }
   }
 }
