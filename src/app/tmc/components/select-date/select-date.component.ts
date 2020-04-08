@@ -130,7 +130,7 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
     for (let i = 0; i < len; i++) {
       const im = m.clone().add(i, "months");
       this.yms.push(
-        await this.calendarService.generateYearNthMonthCalendar(
+         this.calendarService.generateYearNthMonthCalendar(
           im.year(),
           im.month() + 1
         )

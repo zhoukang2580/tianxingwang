@@ -17,6 +17,7 @@ export class CalendarService {
   private selectedDaysSource: Subject<DayModel[]>;
   private selectedDays: DayModel[];
   private holidays: ICalendarEntity[] = [];
+  private fetchingHolidaysPromise: { promise: Promise<ICalendarEntity[]> };
   private dayOfWeekNames = {
     0: LanguageHelper.getSundayTip(),
     1: LanguageHelper.getMondayTip(),
@@ -81,6 +82,10 @@ export class CalendarService {
         return Promise.resolve(this.holidays);
       }
     }
+    if (this.fetchingHolidaysPromise) {
+      return this.fetchingHolidaysPromise.promise;
+    }
+
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = `ApiHomeUrl-Home-GetCalendar`;
@@ -91,17 +96,22 @@ export class CalendarService {
         .add(-3, "months")
         .format("YYYY-MM-DD"),
     };
-    this.holidays = await this.apiService
-      .getPromiseData<ICalendarEntity[]>(req)
-      .catch((_) => {
-        // console.error(_);
-        return [];
-      });
-    this.holidays = Array.isArray(this.holidays) ? this.holidays : [];
-    if (this.holidays.length) {
-      this.cacheHolidays(this.holidays);
-    }
-    return this.holidays;
+    this.fetchingHolidaysPromise = {
+      promise: this.apiService
+        .getPromiseData<ICalendarEntity[]>(req)
+        .then((data) => {
+          this.holidays = data;
+          this.holidays = Array.isArray(this.holidays) ? this.holidays : [];
+          if (this.holidays.length) {
+            this.cacheHolidays(this.holidays);
+          }
+          return data;
+        })
+        .finally(() => {
+          this.fetchingHolidaysPromise = null;
+        }),
+    };
+    return this.fetchingHolidaysPromise.promise;
   }
   private async cacheHolidays(holidays: ICalendarEntity[]) {
     if (holidays && holidays.length) {
@@ -256,12 +266,8 @@ export class CalendarService {
     d.dayOfWeekName = wn;
     return wn;
   }
-  async generateYearNthMonthCalendar(
-    year: number,
-    month: number
-  ): Promise<AvailableDate> {
+  generateYearNthMonthCalendar(year: number, month: number) {
     const iM = moment(`${year}-${month}-01`, "YYYY-MM-DD"); // 第i个月
-    // console.log("generateYearNthMonthCalendar", iM.format('YYYY-MM-DD'), year, month);
     const calender: AvailableDate = {
       dayList: [],
       disabled: false,
@@ -299,10 +305,11 @@ export class CalendarService {
       const dayOfiM = iM.startOf("month").date(j); // 每月的j号
       calender.dayList.push(this.generateDayModel(dayOfiM));
     }
-    const holidays = await this.getHolidays();
-    const clnder = this.initDaysDayOff(calender, holidays);
+    this.getHolidays().then((holidays) => {
+      this.initDaysDayOff(calender, holidays);
+    });
     // console.log("generateYearNthMonthCalendar", clnder);
-    return Promise.resolve(clnder);
+    return calender;
   }
   private initDaysDayOff(c: AvailableDate, holidays: ICalendarEntity[]) {
     if (holidays && holidays.length) {
