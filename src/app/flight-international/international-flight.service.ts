@@ -89,6 +89,7 @@ export interface IFilterCondition {
   airComponies?: IConditionItem[];
   price?: "asc" | "desc" | "none";
   time?: "asc" | "desc" | "none";
+  isFilter?: boolean;
   fromAirports?: IFromToAir[];
   toAirports?: IFromToAir[];
   timeSpan?: { lower: number; upper: number };
