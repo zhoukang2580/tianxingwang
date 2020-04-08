@@ -503,6 +503,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     return task && task.VariablesJsonObj["TaskUrl"];
   }
   private async doSearchOrderList() {
+    if (!this.tmc) {
+      this.tmc = await this.tmcService.getTmc();
+    }
     try {
       if (this.loadDataSub) {
         this.loadDataSub.unsubscribe();
@@ -658,6 +661,10 @@ export class ProductTabsPage implements OnInit, OnDestroy {
             });
           }
           order.vmIsCheckPay = this.checkPay(order);
+          order.TotalAmount = this.orderService.getOrderTotalAmount(
+            order,
+            this.tmc
+          );
           return order;
         });
       }

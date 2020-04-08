@@ -19,7 +19,11 @@ import { OrderFlightTripEntity } from "./models/OrderFlightTripEntity";
 import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
 import { ModalController } from "@ionic/angular";
 import { TripType } from "../tmc/models/TripType";
-import { FlightHotelTrainType, PassengerBookInfo } from "../tmc/tmc.service";
+import {
+  FlightHotelTrainType,
+  PassengerBookInfo,
+  TmcEntity,
+} from "../tmc/tmc.service";
 import { DayModel } from "../tmc/models/DayModel";
 import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 import { IFlightSegmentInfo } from "../flight/models/PassengerFlightInfo";
@@ -74,6 +78,29 @@ export class OrderService {
     // }
     const result = this.apiService.getPromiseData<OrderDetailModel>(req);
     return result;
+  }
+  getOrderTotalAmount(order: OrderEntity, tmc: TmcEntity) {
+    let amount = 0;
+    if (order && tmc && order.OrderItems) {
+      let fee = 0;
+      const sFee = order.OrderItems.filter((it) =>
+        (it.Tag || "").toLowerCase().endsWith("fee")
+      ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+      amount = order.OrderItems.filter(
+        (it) => !(it.Tag || "").toLowerCase().endsWith("fee")
+      ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+      fee = sFee;
+      if (
+        order.TravelPayType == OrderTravelPayType.Balance ||
+        order.TravelPayType == OrderTravelPayType.Company
+      ) {
+        if (tmc && !tmc.IsShowServiceFee) {
+          fee = 0;
+        }
+      }
+      amount += fee;
+    }
+    return `${amount}`;
   }
   getOrderDetail(id: string) {
     const req = new RequestEntity();

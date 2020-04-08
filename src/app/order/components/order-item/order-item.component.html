@@ -14,7 +14,7 @@
         <div style="display: flex;align-items: center;">
           <ion-text color='danger'>
             <span>
-              ￥{{getFlightOrderTotalAmount()}}
+              ￥{{order.TotalAmount}}
             </span>
             <span *ngIf='order.OrderInsurances?.length'>
               (含保险)</span>

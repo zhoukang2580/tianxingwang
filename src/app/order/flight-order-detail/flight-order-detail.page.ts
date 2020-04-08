@@ -521,7 +521,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     this.orderDetail.Order.OrderFlightTickets.forEach((t) => {
       if (!this.tikect2Insurance[t.Key]) {
         this.tikect2Insurance[t.Key] = this.getTicketOrderInsurances(t);
-        console.log(this.tikect2Insurance[t.Key], "sss");
+        // console.log(this.tikect2Insurance[t.Key], "sss");
       }
     });
   }
@@ -563,7 +563,10 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     }
     console.log(this.tmc);
     if (this.orderDetail) {
-      this.orderDetail.orderTotalAmount = this.getOrderTotalAmount();
+      this.orderDetail.orderTotalAmount = +this.orderService.getOrderTotalAmount(
+        this.orderDetail && this.orderDetail.Order,
+        this.tmc
+      );
       this.orderDetail.insuranceAmount = this.getInsuranceAmount();
       if (
         this.orderDetail.Order &&
@@ -606,25 +609,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     }
     return datetime;
   }
-  private getOrderTotalAmount() {
-    let amount = 0;
-    const order = this.orderDetail && this.orderDetail.Order;
-    const Tmc = this.tmc;
-    if (!Tmc || !order || !order.OrderItems) {
-      return amount;
-    }
-    if (Tmc.IsShowServiceFee) {
-      amount = order.OrderItems.reduce(
-        (acc, it) => (acc = AppHelper.add(acc, +it.Amount)),
-        0
-      );
-    } else {
-      amount = order.OrderItems.filter(
-        (it) => !(it.Tag || "").endsWith("Fee")
-      ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
-    }
-    return amount < 0 ? 0 : amount;
-  }
+
   getOrderPayAmount() {
     const Tmc = this.tmc;
     let amount = 0;
@@ -711,8 +696,17 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       return `0`;
     }
     Tmc = { ...this.tmc };
-    if (OrderTravelPayType.Person) {
-      Tmc.IsShowServiceFee = true;
+    if (this.orderDetail && this.orderDetail.Order) {
+      if (
+        [OrderTravelPayType.Company, OrderTravelPayType.Balance].some(
+          (t) => t == this.orderDetail.Order.TravelPayType
+        )
+      ) {
+        Tmc.IsShowServiceFee = this.tmc && this.tmc.IsShowServiceFee;
+      }
+      if (OrderTravelPayType.Person == this.orderDetail.Order.TravelPayType) {
+        Tmc.IsShowServiceFee = true;
+      }
     }
     let orderItems =
       this.orderDetail.Order && this.orderDetail.Order.OrderItems;
