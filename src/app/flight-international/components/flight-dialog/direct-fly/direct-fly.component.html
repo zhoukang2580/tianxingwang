@@ -1,11 +1,11 @@
 
 <ion-radio-group>
-    <ion-item>
+    <ion-item (click)='onReset()'>
         <ion-label>不限</ion-label>
       <ion-radio [(ngModel)]="unlimited"></ion-radio>
       </ion-item>
-    <ion-item>
+    <ion-item (click)="onChangeChecked()">
       <ion-label>仅直达</ion-label>
-      <ion-radio></ion-radio>
+      <ion-radio [(ngModel)]='condition.isDirectFly'></ion-radio>
     </ion-item>
   </ion-radio-group>

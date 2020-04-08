@@ -75,13 +75,24 @@ export interface IConditionItem {
   isChecked?: boolean;
   logoPic?: string;
 }
+export interface IFromToAir extends IConditionItem {
+  ToAirport?: string; // "KIX";
+  ToAirportName?: string; // "大阪关西国际机场";
+  ToCityName?: string; // "大阪";
+  ToTerminal?: string; // "1";
+  FromAirport?: string;
+  FromAirportName?: string;
+  FromCityName?: string;
+  FromTerminal?: string;
+}
 export interface IFilterCondition {
   airComponies?: IConditionItem[];
-  price?: "asc" | "desc";
-  time?: "asc" | "desc";
-  fromAirports?: IConditionItem[];
-  toAirports?: IConditionItem[];
+  price?: "asc" | "desc" | "none";
+  time?: "asc" | "desc" | "none";
+  fromAirports?: IFromToAir[];
+  toAirports?: IFromToAir[];
   timeSpan?: { lower: number; upper: number };
+  isDirectFly?: boolean;
 }
 const toCity: TrafficlineEntity = {
   AirportCityCode: "BJS",
@@ -145,8 +156,9 @@ export class InternationalFlightService {
   }
   private initFilterCondition() {
     this.filterCondition = {
-      price: "asc",
-      time: "asc",
+      price: "none",
+      time: "none",
+      timeSpan: { lower: 0, upper: 24 },
     };
     this.filterConditionSource = new BehaviorSubject(this.filterCondition);
   }
@@ -342,7 +354,7 @@ export class InternationalFlightService {
       result.Data = this.initFlightRouteSegments(
         MockInternationalFlightListData as any
       );
-      this.onSelectParagraph(1);
+      this.onSelectParagraph(1, result.Data);
       return of(result);
     }
     if (!m || !forceFetch) {
@@ -391,43 +403,54 @@ export class InternationalFlightService {
     return this.apiService.getResponse<FlightResultEntity>(req).pipe(
       tap((r) => {
         this.flightListResult = this.initFlightRouteSegments(r.Data);
-        this.onSelectParagraph(1);
+        this.onSelectParagraph(1, this.flightListResult);
       })
     );
   }
-  onSelectParagraph(paragraph: number) {
+  onSelectParagraph(paragraph: number, data: FlightResultEntity) {
     const condition = this.getFilterCondition();
     condition.airComponies = condition.airComponies || [];
-    if (this.flightListResult && paragraph) {
-      this.flightListResult.FlightRoutes.filter(
-        (r) => r.Paragraphs == paragraph
-      ).forEach((r) => {
-        if (r.FlightSegments) {
-          r.FlightSegments.forEach((s) => {
-            if (!condition.airComponies.find((c) => c.label == s.Airline)) {
-              condition.airComponies.push({
-                label: s.Airline,
-                isChecked: false,
-                logoPic: s.AirlineSrc,
-              });
-            }
-          });
-          condition.fromAirports = r.FlightSegments.filter(
-            (it) => r.FromCountry == (it.FromCity && it.FromCity.Code)
-          ).map((a) => {
-            return {
-              label: a.FromTerminal,
-            };
-          });
-          condition.toAirports = r.FlightSegments.filter(
-            (it) => r.ToCountry == (it.ToCity && it.ToCity.Code)
-          ).map((a) => {
-            return {
-              label: a.ToTerminal,
-            };
-          });
+    if (data && paragraph) {
+      data.FlightRoutes.filter((r) => r.Paragraphs == paragraph).forEach(
+        (r) => {
+          if (r.FlightSegments) {
+            r.FlightSegments.forEach((s) => {
+              if (
+                !condition.airComponies.find((c) => c.label == s.AirlineName)
+              ) {
+                condition.airComponies.push({
+                  label: s.AirlineName,
+                  isChecked: false,
+                  logoPic: s.AirlineSrc,
+                });
+              }
+            });
+            condition.fromAirports = r.FlightSegments.filter(
+              (it) =>
+                r.fromSegment && r.fromSegment.FromCityName == it.FromCityName
+            ).map((a) => {
+              return {
+                label: `${a.FromAirportName}${a.FromAirport}`,
+                FromAirport: a.FromAirport,
+                FromAirportName: a.FromAirportName,
+                FromCityName: a.FromCityName,
+                FromTerminal: a.FromTerminal,
+              };
+            });
+            condition.toAirports = r.FlightSegments.filter(
+              (it) => r.toSegment && r.toSegment.ToCityName == it.ToCityName
+            ).map((a) => {
+              return {
+                ToAirport: a.ToAirport,
+                ToAirportName: a.ToAirportName,
+                ToCityName: a.ToCityName,
+                ToTerminal: a.ToTerminal,
+                label: `${a.ToAirportName}(${a.ToTerminal})`,
+              };
+            });
+          }
         }
-      });
+      );
       this.setFilterConditionSource(condition);
     }
   }
@@ -435,6 +458,9 @@ export class InternationalFlightService {
     if (data && data.FlightSegments && data.FlightFares) {
       if (data.FlightRoutes) {
         data.FlightRoutes = data.FlightRoutes.map((flightRoute) => {
+          flightRoute.FlightSegments = data.FlightSegments.filter((s) =>
+            flightRoute.FlightSegmentIds.some((id) => id == s.Id)
+          );
           flightRoute.transferSegments = data.FlightSegments.filter((s) =>
             flightRoute.FlightSegmentIds.some((id) => id == s.Id)
           );

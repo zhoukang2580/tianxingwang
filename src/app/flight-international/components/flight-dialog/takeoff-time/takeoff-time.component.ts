@@ -1,19 +1,35 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { IonRange, DomController } from '@ionic/angular';
+import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
+import { IonRange, DomController } from "@ionic/angular";
+import {
+  InternationalFlightService,
+  IFilterCondition,
+} from "src/app/flight-international/international-flight.service";
+import { Subscription } from "rxjs";
 
 @Component({
-  selector: 'app-takeoff-time',
-  templateUrl: './takeoff-time.component.html',
-  styleUrls: ['./takeoff-time.component.scss'],
+  selector: "app-takeoff-time",
+  templateUrl: "./takeoff-time.component.html",
+  styleUrls: ["./takeoff-time.component.scss"],
 })
-export class TakeoffTimeComponent implements OnInit {
+export class TakeoffTimeComponent implements OnInit, OnDestroy {
+  private subscription = Subscription.EMPTY;
   time: "forenoon" | "afternoon" | "none" | "night";
   @ViewChild("range") range: IonRange;
-
-
-  constructor(private domCtrl: DomController) { }
-
-  ngOnInit() {}
+  condition: IFilterCondition;
+  constructor(
+    private domCtrl: DomController,
+    private flightService: InternationalFlightService
+  ) {}
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
+  ngOnInit() {
+    this.subscription = this.flightService
+      .getFilterConditionSource()
+      .subscribe((c) => {
+        this.condition = c;
+      });
+  }
   onTimeSelect(time: "forenoon" | "afternoon" | "none" | "night") {
     this.time = time;
     switch (this.time) {

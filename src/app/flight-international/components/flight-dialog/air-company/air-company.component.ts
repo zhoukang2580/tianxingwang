@@ -1,50 +1,44 @@
-import { Component, OnInit } from '@angular/core';
-interface IConditionItem {
-  label: string;
-  isChecked?: boolean;
-}
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import {
+  IFilterCondition,
+  InternationalFlightService,
+} from "src/app/flight-international/international-flight.service";
+import { Subscription } from "rxjs";
 
 @Component({
-  selector: 'app-air-company',
-  templateUrl: './air-company.component.html',
-  styleUrls: ['./air-company.component.scss'],
+  selector: "app-air-company",
+  templateUrl: "./air-company.component.html",
+  styleUrls: ["./air-company.component.scss"],
 })
-export class AirCompanyComponent implements OnInit {
-  items: IConditionItem[];
-  unlimited:boolean;
-  constructor() { }
-
+export class AirCompanyComponent implements OnInit, OnDestroy {
+  private subscription = Subscription.EMPTY;
+  condition: IFilterCondition;
+  unlimited: boolean;
+  constructor(private flightService: InternationalFlightService) {}
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
   ngOnInit() {
-  
-    this.items = [
-      {
-        label: "东方航空"
-      },
-      {
-        label: "四川航空"
-      },
-      {
-        label: "吉祥航空"
-      },
-      {
-        label: "春秋航空"
-      },
-    ]
-      this.onReset();
+    this.subscription = this.flightService
+      .getFilterConditionSource()
+      .subscribe((c) => {
+        this.condition = c;
+        console.log("航空公司：", this.condition);
+      });
   }
-  onReset(){
-    if(this.items){
-      this.items=this.items.map(it=>{
-        it.isChecked=false
+  onReset() {
+    if (this.condition && this.condition.airComponies) {
+      this.condition.airComponies = this.condition.airComponies.map((it) => {
+        it.isChecked = false;
         return it;
-      })
-      this.unlimited=true;
+      });
+      this.unlimited = true;
+      this.flightService.setFilterConditionSource(this.condition);
     }
   }
-  onChangeChecked(){
-    if(this.items){
-      this.unlimited= this.items.every(e=>!e.isChecked);
+  onChangeChecked() {
+    if (this.condition && this.condition.airComponies) {
+      this.unlimited = this.condition.airComponies.every((e) => !e.isChecked);
     }
   }
-
 }
