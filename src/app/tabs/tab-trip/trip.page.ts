@@ -19,7 +19,7 @@ import {
   ViewChild,
   OnInit,
   OnDestroy,
-  Optional
+  Optional,
 } from "@angular/core";
 import { OrderTripModel } from "src/app/order/models/OrderTripModel";
 import { OrderInsuranceType } from "src/app/insurance/models/OrderInsuranceType";
@@ -32,13 +32,13 @@ import { OrderFlightTicketType } from "src/app/order/models/OrderFlightTicketTyp
 @Component({
   selector: "app-trip",
   templateUrl: "trip.page.html",
-  styleUrls: ["trip.page.scss"]
+  styleUrls: ["trip.page.scss"],
 })
 export class TripPage implements OnInit, OnDestroy {
   private loadMoreSubscription = Subscription.EMPTY;
   private searchCondition: TravelModel = {
     PageIndex: 0,
-    PageSize: 15
+    PageSize: 15,
   } as TravelModel;
   private subscriptions: Subscription[] = [];
   OrderFlightTicketType = OrderFlightTicketType;
@@ -65,9 +65,9 @@ export class TripPage implements OnInit, OnDestroy {
     req.Data = this.searchCondition;
     // return of({ Status: true, Data: MockTripData } as any);
     return this.apiservice.getResponse<TravelModel>(req).pipe(
-      map(r => {
+      map((r) => {
         if (r.Data && r.Data.Trips) {
-          r.Data.Trips = r.Data.Trips.map(trip => {
+          r.Data.Trips = r.Data.Trips.map((trip) => {
             if (!trip.InsuranceResult) {
               trip.InsuranceResult = r.Data.InsuranceResult;
             }
@@ -86,7 +86,7 @@ export class TripPage implements OnInit, OnDestroy {
   }
   ngOnDestroy() {
     console.log("ondestroy trip page");
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
   ngOnInit() {
@@ -97,14 +97,14 @@ export class TripPage implements OnInit, OnDestroy {
       };
     }
     const sub0 = this.router.events
-      .pipe(filter(it => it instanceof NavigationStart))
-      .subscribe(_ => {
+      .pipe(filter((it) => it instanceof NavigationStart))
+      .subscribe((_) => {
         this.loadMoreSubscription.unsubscribe();
         if (this.infiniteScroll) {
           this.infiniteScroll.disabled = true;
         }
       });
-    const sub = this.route.queryParamMap.subscribe(_ => {
+    const sub = this.route.queryParamMap.subscribe((_) => {
       setTimeout(() => {
         this.doRefresh();
       }, 200);
@@ -141,7 +141,7 @@ export class TripPage implements OnInit, OnDestroy {
           }
         })
       )
-      .subscribe(res => {
+      .subscribe((res) => {
         const trips = (res && res.Data && res.Data.Trips) || [];
         if (trips.length) {
           this.trips = this.trips.concat(trips);
@@ -174,8 +174,8 @@ export class TripPage implements OnInit, OnDestroy {
       component: TripBuyInsuranceComponent,
       componentProps: {
         trip: d.trip,
-        insurance: d.p
-      }
+        insurance: d.p,
+      },
     });
     m.present();
     await m.onDidDismiss();
@@ -190,23 +190,18 @@ export class TripPage implements OnInit, OnDestroy {
     if (!trip) {
       return;
     }
-    const plane = ORDER_TABS.find(it => it.value == ProductItemType.plane);
-    const train = ORDER_TABS.find(it => it.value == ProductItemType.train);
-    const hotel = ORDER_TABS.find(it => it.value == ProductItemType.hotel);
-    const car = ORDER_TABS.find(it => it.value == ProductItemType.car);
-    this.router.navigate([AppHelper.getRoutePath("order-detail")], {
-      queryParams: {
-        tab: JSON.stringify(
-          trip.Type == "Flight"
-            ? plane
-            : trip.Type == "Train"
-            ? train
-            : trip.Type == "Car"
-            ? car
-            : hotel
-        ),
-        orderId: trip.OrderId
-      }
-    });
+    const tag =
+      trip.Type == "Flight"
+        ? "flight"
+        : trip.Type == "Train"
+        ? "train"
+        : trip.Type == "Hotel"
+        ? "hotel"
+        : trip.Type == "Car"
+        ? "car"
+        : "";
+    if (tag) {
+      this.router.navigate([AppHelper.getRoutePath(`${tag}-order-detail`)]);
+    }
   }
 }

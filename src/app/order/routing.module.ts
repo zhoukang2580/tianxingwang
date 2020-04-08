@@ -17,13 +17,6 @@ export const routes: Routes = [
       )
   },
   {
-    path: "order-detail",
-    loadChildren: () =>
-      import("./order-detail/order-detail.module").then(
-        m => m.OrderDetailPageModule
-      )
-  },
-  {
     path: "car-order-detail",
     loadChildren: () =>
       import("./car-order-detail/car-order-detail.module").then(

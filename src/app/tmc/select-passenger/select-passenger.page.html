@@ -18,8 +18,7 @@
 
 <ion-content>
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh(null)">
-    <ion-refresher-content 
-      refreshingText="正在加载...">
+    <ion-refresher-content refreshingText="正在加载...">
     </ion-refresher-content>
   </ion-refresher>
   <ion-toolbar #toolbar class="search">
@@ -46,83 +45,83 @@
     </ng-template>
   </ng-container>
   <ng-template #addTempl>
-    <ion-radio-group value="{{selectedCredentialId}}">
-      <ion-item-group *ngFor='let item of staffCredentails' class='ion-margin-bottom'>
-        <ng-container *ngIf='item!=vmNewCredential'>
-          <ion-item-divider color='primary'>
-            <ion-item slot='start' style='width: 100%' lines='none'>
-              <ion-label>
-                {{item.Type|credential}}
-              </ion-label>
-              <ion-radio slot='end' name='credentialType' (ionSelect)='onSelectCredential(item.Id)' value="{{item.Id}}">
-              </ion-radio>
+    <ion-list>
+      <ion-radio-group value="{{selectedCredentialId}}">
+        <ng-container *ngFor='let item of staffCredentails' class='ion-margin-bottom'>
+          <ng-container *ngIf='item!=vmNewCredential'>
+            <ion-item-divider color='primary'>
+              <ion-item slot='start' style='width: 100%' lines='none'>
+                <ion-label>
+                  {{item.Type|credential}}
+                </ion-label>
+                <ion-radio slot='end' name='credentialType' (ionSelect)='onSelectCredential(item.Id)'
+                  value="{{item.Id}}">
+                </ion-radio>
+              </ion-item>
+            </ion-item-divider>
+            <ion-item lines='none' (click)='onSelectCredential(item.Id)'>
+              <div class='credential-item'>
+                <ion-row>
+                  <ion-col>
+                    证件号:
+                  </ion-col>
+                  <ion-col>
+                    {{item?.Number}}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    证件姓名:
+                  </ion-col>
+                  <ion-col>
+                    {{item?.FirstName}}{{item?.LastName}}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    登机名:
+                  </ion-col>
+                  <ion-col>
+                    {{item?.CheckName}}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    国籍:
+                  </ion-col>
+                  <ion-col>
+                    {{item?.Country}}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    出生年月:
+                  </ion-col>
+                  <ion-col>
+                    {{item?.Birthday}}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    到期日期:
+                  </ion-col>
+                  <ion-col>
+                    {{item?.ExpirationDate}}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    性别:
+                  </ion-col>
+                  <ion-col>
+                    {{item?.Gender=="F"?"女":item?.Gender=="M"?"男":"未知"}}
+                  </ion-col>
+                </ion-row>
+              </div>
             </ion-item>
-          </ion-item-divider>
-          <ion-item lines='none' (click)='onSelectCredential(item.Id)'>
-            <div class='credential-item'>
-              <ion-row>
-                <ion-col>
-                  证件号:
-                </ion-col>
-                <ion-col>
-                  {{item?.Number}}
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>
-                  证件姓名:
-                </ion-col>
-                <ion-col>
-                  {{item?.FirstName}}{{item?.LastName}}
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>
-                  登机名:
-                </ion-col>
-                <ion-col>
-                  {{item?.CheckName}}
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>
-                  国籍:
-                </ion-col>
-                <ion-col>
-                  {{item?.Country}}
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>
-                  出生年月:
-                </ion-col>
-                <ion-col>
-                  {{item?.Birthday}}
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>
-                  到期日期:
-                </ion-col>
-                <ion-col>
-                  {{item?.ExpirationDate}}
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>
-                  性别:
-                </ion-col>
-                <ion-col>
-                  {{item?.Gender=="F"?"女":item?.Gender=="M"?"男":"未知"}}
-                </ion-col>
-              </ion-row>
-            </div>
-          </ion-item>
+          </ng-container>
         </ng-container>
-
-      </ion-item-group>
-      <ng-container *ngIf='isShowNewCredential'>
-        <ion-item-group>
+        <ng-container *ngIf='isShowNewCredential'>
           <ion-item-divider color='primary'>
             <ion-item slot='start' style='width: 100%;' lines='none'>
               <ion-label>
@@ -268,85 +267,86 @@
               </ion-col>
             </ion-row>
           </ion-grid>
-        </ion-item-group>
-      </ng-container>
-      <ng-container *ngIf='frqPassengerCredentials&&frqPassengerCredentials.length'>
-        <ion-item-divider color='primary' class='ion-margin-top'>
-          <ion-text color='secondary'>常旅客</ion-text>
-        </ion-item-divider>
-        <ion-item-group *ngFor='let item of frqPassengerCredentials' (click)='onSelectCredential(item.Id)'>
-          <ion-item-divider color='primary'>
-            <ion-item slot='start' style='width: 100%' lines='none'>
-              <ion-label>
-                {{item.Type|credential}}
-              </ion-label>
-              <ion-radio slot='end' name='credentialType' value="{{item.Id}}" (ionSelect)='onSelectCredential(item.Id)'>
-              </ion-radio>
-            </ion-item>
+        </ng-container>
+        <ng-container *ngIf='frqPassengerCredentials&&frqPassengerCredentials.length'>
+          <ion-item-divider color='primary' class='ion-margin-top'>
+            <ion-text color='secondary'>常旅客</ion-text>
           </ion-item-divider>
-          <ion-item lines='none'>
-            <div class='credential-item'>
-              <ion-row>
-                <ion-col>
-                  证件号:
-                </ion-col>
-                <ion-col>
-                  {{item?.Number}}
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>
-                  证件姓名:
-                </ion-col>
-                <ion-col>
-                  {{item?.FirstName}}{{item?.LastName}}
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>
-                  登机名:
-                </ion-col>
-                <ion-col>
-                  {{item?.CheckName}}
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>
-                  国籍:
-                </ion-col>
-                <ion-col>
-                  {{item?.Country}}
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>
-                  出生年月:
-                </ion-col>
-                <ion-col>
-                  {{item?.Birthday}}
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>
-                  到期日期:
-                </ion-col>
-                <ion-col>
-                  {{item?.ExpirationDate}}
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>
-                  性别:
-                </ion-col>
-                <ion-col>
-                  {{item?.Gender=="F"?"女":item?.Gender=="M"?"男":"未知"}}
-                </ion-col>
-              </ion-row>
-            </div>
-          </ion-item>
-        </ion-item-group>
-      </ng-container>
-    </ion-radio-group>
+          <ng-container *ngFor='let item of frqPassengerCredentials' (click)='onSelectCredential(item.Id)'>
+            <ion-item-divider color='primary'>
+              <ion-item slot='start' style='width: 100%' lines='none'>
+                <ion-label>
+                  {{item.Type|credential}}
+                </ion-label>
+                <ion-radio slot='end' name='credentialType' value="{{item.Id}}"
+                  (ionSelect)='onSelectCredential(item.Id)'>
+                </ion-radio>
+              </ion-item>
+            </ion-item-divider>
+            <ion-item lines='none'>
+              <div class='credential-item'>
+                <ion-row>
+                  <ion-col>
+                    证件号:
+                  </ion-col>
+                  <ion-col>
+                    {{item?.Number}}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    证件姓名:
+                  </ion-col>
+                  <ion-col>
+                    {{item?.FirstName}}{{item?.LastName}}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    登机名:
+                  </ion-col>
+                  <ion-col>
+                    {{item?.CheckName}}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    国籍:
+                  </ion-col>
+                  <ion-col>
+                    {{item?.Country}}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    出生年月:
+                  </ion-col>
+                  <ion-col>
+                    {{item?.Birthday}}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    到期日期:
+                  </ion-col>
+                  <ion-col>
+                    {{item?.ExpirationDate}}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    性别:
+                  </ion-col>
+                  <ion-col>
+                    {{item?.Gender=="F"?"女":item?.Gender=="M"?"男":"未知"}}
+                  </ion-col>
+                </ion-row>
+              </div>
+            </ion-item>
+          </ng-container>
+        </ng-container>
+      </ion-radio-group>
+    </ion-list>
   </ng-template>
 </ion-content>
 <ion-footer>

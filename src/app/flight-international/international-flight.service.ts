@@ -572,6 +572,23 @@ export class InternationalFlightService {
   getBookInfoSource() {
     return this.bookInfoSource.asObservable();
   }
+  removeBookInfo(
+    bookInfo: PassengerBookInfo<IInternationalFlightSegmentInfo>,
+    isRemovePassenger: boolean
+  ) {
+    const arg = { ...bookInfo };
+    if (isRemovePassenger) {
+      this.bookInfos = this.bookInfos.filter((it) => it.id !== arg.id);
+    } else {
+      this.bookInfos = this.bookInfos.map((it) => {
+        if (it.id == arg.id) {
+          it.bookInfo = null;
+        }
+        return it;
+      });
+    }
+    this.setBookInfoSource(this.bookInfos);
+  }
   getBookInfos() {
     return this.bookInfos || [];
   }
