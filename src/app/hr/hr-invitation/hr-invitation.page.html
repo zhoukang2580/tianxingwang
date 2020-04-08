@@ -25,20 +25,16 @@
     <ion-label class="ion-text-end">{{hrInvitationItem?.country.Name}}</ion-label>
   </ion-item>
   <ion-item *ngIf='hrInvitationItem'>
-      <ion-label>姓名:</ion-label>
-      <ion-input class="ion-text-end" [(ngModel)]="hrInvitationItem.name"></ion-input>
-    </ion-item>
+    <ion-label>姓名:</ion-label>
+    <ion-input class="ion-text-end" [(ngModel)]="hrInvitationItem.name"></ion-input>
+  </ion-item>
   <ion-item>
     <ion-label>性别:</ion-label>
     <ion-radio-group value="sex" style="display: flex;align-items: center" [(ngModel)]="hrInvitationItem.gender">
-      <ion-item lines="none" style="margin: 1px 0;">
-        <ion-label>女</ion-label>
-        <ion-radio slot="start" value="woman">女</ion-radio>
-      </ion-item>
-      <ion-item lines="none" style="    margin: 1px 0;">
-        <ion-label>男</ion-label>
-        <ion-radio slot="start" value="man">男</ion-radio>
-      </ion-item>
+      <ion-radio value="woman"></ion-radio>
+      <ion-label>女</ion-label>
+      <ion-radio value="man" class="ion-margin-start"></ion-radio>
+      <ion-label>男</ion-label>
     </ion-radio-group>
   </ion-item>
   <ion-item>

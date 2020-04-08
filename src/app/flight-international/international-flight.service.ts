@@ -23,6 +23,7 @@ import { IResponse } from "../services/api/IResponse";
 import { tap } from "rxjs/operators";
 import { MockInternationalFlightListData } from "./mock-data";
 import { environment } from "src/environments/environment";
+import { IdentityEntity } from "../services/identity/identity.entity";
 export interface IFlightCabinType {
   label:
     | "经济舱"
@@ -134,6 +135,7 @@ const fromCity = {
   providedIn: "root",
 })
 export class InternationalFlightService {
+  private identity: IdentityEntity;
   private filterCondition: IFilterCondition;
   private filterConditionSource: Subject<IFilterCondition>;
   private searchModel: IInternationalFlightSearchModel;
@@ -154,6 +156,10 @@ export class InternationalFlightService {
     this.initSearchModel();
     this.bookInfoSource = new BehaviorSubject([]);
     this.initFilterCondition();
+    this.identityService.getIdentitySource().subscribe((it) => {
+      this.identity = it;
+      this.disposal();
+    });
   }
   private initFilterCondition() {
     this.filterCondition = {
@@ -322,8 +328,9 @@ export class InternationalFlightService {
     this.searchModelSource = new BehaviorSubject(this.searchModel);
   }
   disposal() {
-    this.setBookInfoSource([]);
     this.initSearchModel();
+    this.initFilterCondition();
+    this.setBookInfoSource([]);
   }
   addMoreTrip() {
     if (this.searchModel && this.searchModel.trips) {
