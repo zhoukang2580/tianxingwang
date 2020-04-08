@@ -350,13 +350,13 @@ export class InternationalFlightService {
     const m = this.searchModel;
     const result: IResponse<FlightResultEntity> = {} as any;
     result.Data = this.flightListResult;
-    if (!environment.production) {
-      result.Data = this.initFlightRouteSegments(
-        MockInternationalFlightListData as any
-      );
-      this.onSelectParagraph(1, result.Data);
-      return of(result);
-    }
+    // if (!environment.production) {
+    //   result.Data = this.initFlightRouteSegments(
+    //     MockInternationalFlightListData as any
+    //   );
+    //   this.onSelectParagraph(1, result.Data);
+    //   return of(result);
+    // }
     if (!m || !forceFetch) {
       if (
         this.flightListResult &&
