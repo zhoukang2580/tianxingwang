@@ -11,7 +11,7 @@ import {
   AfterContentInit,
   OnChanges,
   ContentChild,
-  ViewChild
+  ViewChild,
 } from "@angular/core";
 
 import {
@@ -23,7 +23,7 @@ import {
   NavController,
   ModalController,
   IonImg,
-  PopoverController
+  PopoverController,
 } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
@@ -40,7 +40,7 @@ import {
   style,
   state,
   transition,
-  animate
+  animate,
 } from "@angular/animations";
 import { ImageRecoverService } from "./services/imageRecover/imageRecover.service";
 import { ThemeService } from "./services/theme/theme.service";
@@ -72,9 +72,9 @@ export interface App {
     trigger("openclose", [
       state("true", style({ transform: "scale(1)" })),
       state("false", style({ transform: "scale(0)" })),
-      transition("true<=>false", animate("300ms ease-in-out"))
-    ])
-  ]
+      transition("true<=>false", animate("300ms ease-in-out")),
+    ]),
+  ],
 })
 export class AppComponent
   implements AfterViewInit, AfterContentInit, OnChanges {
@@ -82,7 +82,7 @@ export class AppComponent
   message$: Observable<MessageModel>;
   openSelectCity$: Observable<boolean>;
   showFlyDayPage$: Observable<boolean>;
-  loading$: Observable<{ isLoading: boolean; msg: string; }>;
+  loading$: Observable<{ isLoading: boolean; msg: string }>;
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
@@ -136,7 +136,7 @@ export class AppComponent
       }
     });
   }
-  ngOnChanges() { }
+  ngOnChanges() {}
   ngAfterViewInit() {
     this.splashScreen.hide();
   }
@@ -212,7 +212,19 @@ export class AppComponent
         // this.router.navigate(['car-order-detail']);
         // this.router.navigate(["product-tabs"],{queryParams:{tabId:2}});
         // flight-order-detail
-       this.router.navigate(["international-flight-list"],{queryParams:{tabId:"1"}});
+        //  this.router.navigate(["international-flight-list"],{queryParams:{tabId:"1"}});
+        this.router.navigate(["hr-invitation"], {
+          queryParams: {
+            hrid: "163",
+            hrName: "上海东美在线旅行社有限公司",
+            costCenterId: "6300000001",
+            costCenterName: "一般政策",
+            organizationId: "6300000005",
+            policyId: "6300000001",
+            roleIds: "24,25",
+            roleNames: "超级秘书,新秘书",
+          },
+        });
       }
     });
   }

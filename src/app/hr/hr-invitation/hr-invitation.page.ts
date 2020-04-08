@@ -20,7 +20,6 @@ export class HrInvitationPage implements OnInit, OnDestroy {
   ) {
     this.subscription = route.queryParamMap.subscribe((query) => {
       console.log("query", query);
-      this.init();
     });
   }
   ngOnDestroy() {
@@ -30,6 +29,7 @@ export class HrInvitationPage implements OnInit, OnDestroy {
     this.staffService.getHrInvitationSource().subscribe((q) => {
       this.hrInvitationItem = q;
     });
+    this.init();
     // this.router.navigate(["hr-invitation"], {
     //   queryParams: {
     //     hrid: "163",
