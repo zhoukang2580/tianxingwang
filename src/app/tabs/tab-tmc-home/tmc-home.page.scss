@@ -17,7 +17,7 @@ ion-header ion-title {
 }
 
 .text-swiper {
-  --min-height: 2.2em;
+  --min-height: 2em;
 }
 
 .announcement-container {
@@ -152,8 +152,3 @@ ion-grid ion-row ion-col {
   align-items     : center;
 }
 
-.home-padding {
-  padding-bottom  : 40px;
-  background-color: var(--ion-color-light);
-  padding-top     : 10px;
-}

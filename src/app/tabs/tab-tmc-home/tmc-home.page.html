@@ -9,19 +9,21 @@
       </ng-container>
       <ion-text class="ion-margin-start">欢迎你,{{identity?.Name}}</ion-text>
     </ion-title>
-    <ion-buttons slot='end' >
-      <ion-button fill='clear' size='small' (click)='onSwitchCustomer()' *ngIf='identity?.Numbers?.AgentId;else selectCompany'>
+    <ion-buttons slot='end'>
+      <ion-button fill='clear' size='small' (click)='onSwitchCustomer()'
+        *ngIf='identity?.Numbers?.AgentId;else selectCompany'>
         <ion-chip color='success'>
           <ion-label>切换客户</ion-label>
         </ion-chip>
       </ion-button>
     </ion-buttons>
     <ng-template #selectCompany>
-        <ion-button fill='clear' size='small' (click)='onSwitchCompany()' *ngIf="(canSelectCompany$|async)&&companies?.length>1">
-          <ion-chip color='success'>
-            <ion-label>切换公司</ion-label>
-          </ion-chip>
-        </ion-button>
+      <ion-button fill='clear' size='small' (click)='onSwitchCompany()'
+        *ngIf="(canSelectCompany$|async)&&companies?.length>1">
+        <ion-chip color='success'>
+          <ion-label>切换公司</ion-label>
+        </ion-chip>
+      </ion-button>
     </ng-template>
   </ion-toolbar>
 </ion-header>
@@ -30,12 +32,13 @@
   <div class="img">
     <img src='assets/images/home_top_bg.jpg' />
   </div>
-  <ion-toolbar  class="text-swiper">
-    <div class="blueBack" *ngIf="agentNotices.length"  (click)='goToBulletinList("agentNotice")'>
-      <ion-slides  class="announcement-container" [options]='options' (ionSlideTouchEnd)='onSlideTouchEnd()'>
+  <ion-toolbar class="text-swiper">
+    <div class="blueBack" *ngIf="agentNotices.length" (click)='goToBulletinList("agentNotice")'>
+      <ion-slides class="announcement-container" [options]='options' (ionSlideTouchEnd)='onSlideTouchEnd()'>
         <ion-slide *ngFor='let n of agentNotices'>
           <div class='announcement'>
-            <ion-icon name="notifications-outline" color="secondary" style="font-size:18px;padding-right: 5px"></ion-icon>
+            <ion-icon name="notifications-outline" color="secondary" style="font-size:18px;padding-right: 5px">
+            </ion-icon>
             <div class="text ion-text-start">{{n.text}}</div>
             <ion-icon name="chevron-forward-outline" style="font-size:18px"></ion-icon>
           </div>
@@ -43,7 +46,7 @@
       </ion-slides>
     </div>
   </ion-toolbar>
-  <div class="home-padding">
+  <div style='margin-top: -0.5em;'>
     <ion-list>
       <ion-grid>
         <ion-row wrap>
@@ -62,18 +65,18 @@
                 <!-- <i class="icon icon-home-plane"></i> -->
                 <img src="assets/svgs/home-plane.svg" alt="国际机票">
               </ion-label>
-              <ion-text  class="ion-text-nowrap">港澳台*国际机票</ion-text>
+              <ion-text class="ion-text-nowrap">港澳台*国际机票</ion-text>
             </div>
           </ion-col>
           <ion-col (click)='goToPage("train")' size="4">
-              <div class="item">
-                <ion-label>
-                  <img src="assets/svgs/home-train.svg" alt="火车票">
-                  <!-- <i class="icon icon-home-train"></i> -->
-                </ion-label>
-                <ion-text>火车票</ion-text>
-              </div>
-            </ion-col>
+            <div class="item">
+              <ion-label>
+                <img src="assets/svgs/home-train.svg" alt="火车票">
+                <!-- <i class="icon icon-home-train"></i> -->
+              </ion-label>
+              <ion-text>火车票</ion-text>
+            </div>
+          </ion-col>
         </ion-row>
         <ion-row wrap class="ion-padding-top">
           <ion-col (click)='goToPage("hotel")' size="4">
