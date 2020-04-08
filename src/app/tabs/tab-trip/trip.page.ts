@@ -29,6 +29,7 @@ import { TravelModel } from "src/app/order/models/TravelModel";
 import { ProductItemType } from "src/app/tmc/models/ProductItems";
 import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
 import { OrderFlightTicketType } from "src/app/order/models/OrderFlightTicketType";
+import { environment } from "src/environments/environment";
 @Component({
   selector: "app-trip",
   templateUrl: "trip.page.html",
@@ -47,6 +48,7 @@ export class TripPage implements OnInit, OnDestroy {
   infiniteScroll: IonInfiniteScroll;
   trips: OrderTripModel[];
   isLoading = false;
+  isShowInsurance = environment.mockProBuild;
   constructor(
     private tmcService: TmcService,
     private apiservice: ApiService,

@@ -1372,7 +1372,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           loading = false;
           this.checkPayCount--;
           if (!result) {
-            if (this.checkPayCount < 0) {
+            if (this.checkPayCount <= 0) {
               clearInterval(this.checkPayCountIntervalId);
               s(false);
             }

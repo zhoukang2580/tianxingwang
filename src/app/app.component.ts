@@ -213,18 +213,18 @@ export class AppComponent
         // this.router.navigate(["product-tabs"],{queryParams:{tabId:2}});
         // flight-order-detail
         //  this.router.navigate(["international-flight-list"],{queryParams:{tabId:"1"}});
-        this.router.navigate(["hr-invitation"], {
-          queryParams: {
-            hrid: "163",
-            hrName: "上海东美在线旅行社有限公司",
-            costCenterId: "6300000001",
-            costCenterName: "一般政策",
-            organizationId: "6300000005",
-            policyId: "6300000001",
-            roleIds: "24,25",
-            roleNames: "超级秘书,新秘书",
-          },
-        });
+        // this.router.navigate(["hr-invitation"], {
+        //   queryParams: {
+        //     hrid: "163",
+        //     hrName: "上海东美在线旅行社有限公司",
+        //     costCenterId: "6300000001",
+        //     costCenterName: "一般政策",
+        //     organizationId: "6300000005",
+        //     policyId: "6300000001",
+        //     roleIds: "24,25",
+        //     roleNames: "超级秘书,新秘书",
+        //   },
+        // });
       }
     });
   }

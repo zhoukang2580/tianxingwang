@@ -494,6 +494,23 @@ export class InternationalFlightService {
     }
     return data;
   }
+  private filterRoutes(data: FlightResultEntity) {
+    let result = { ...data };
+    const condition = this.getFilterCondition();
+    if (condition) {
+      const airComponies =
+        condition.airComponies &&
+        condition.airComponies.filter((it) => it.isChecked);
+      if (airComponies && airComponies.length) {
+        result.FlightRoutes = result.FlightRoutes.filter((it) =>
+          airComponies.some(
+            (a) => a.label == (it.fromSegment && it.fromSegment.AirlineName)
+          )
+        );
+      }
+    }
+    return data;
+  }
   async getInternationalAirports(forceFetch = false) {
     let airports = await this.tmcService.getInternationalAirports(forceFetch);
     const countries = await this.getCountries(forceFetch);

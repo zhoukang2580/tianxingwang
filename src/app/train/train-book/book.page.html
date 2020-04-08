@@ -15,7 +15,7 @@
     </app-refresher>
     <ng-container *ngIf='viewModel?.combindInfos?.length'>
       <ion-list *ngFor="let combindInfo of viewModel?.combindInfos" lines='none'>
-        <ion-item-divider color='primary' sticky>
+        <ion-item-divider color='primary' class="sticky">
           {{combindInfo?.credential?.CheckName}}
           【{{tmc?.Name}}】
           [成人]
@@ -61,7 +61,7 @@
             </div>
           </ion-item>
           <ng-container *ngIf='viewModel?.expenseTypes?.length'>
-            <ion-item lines='none' >
+            <ion-item lines='none'>
               <app-book-expense-types-comp style="width: 100%;" [expenseTypes]='viewModel.expenseTypes'
                 [(expenseType)]='combindInfo.expenseType'>
               </app-book-expense-types-comp>
@@ -165,7 +165,7 @@
         </ion-item-group>
         <ng-container *ngIf='combindInfo.isShowGroupedInfo'>
           <ion-item-group>
-            <ion-list-header color='primary' sticky>
+            <ion-list-header color='primary' class='sticky'>
               <ion-label class='ion-text-wrap' *ngIf='getGroupedTitle(combindInfo) as title'>
                 {{title}}
                 【{{tmc?.Name}}】
