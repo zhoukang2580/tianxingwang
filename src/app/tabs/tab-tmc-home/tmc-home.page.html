@@ -30,8 +30,8 @@
   <div class="img">
     <img src='assets/images/home_top_bg.jpg' />
   </div>
-  <ion-toolbar *ngIf="agentNotices.length" class="text-swiper" (click)='goToBulletinList("agentNotice")'>
-    <div class="blueBack">
+  <ion-toolbar  class="text-swiper">
+    <div class="blueBack" *ngIf="agentNotices.length"  (click)='goToBulletinList("agentNotice")'>
       <ion-slides  class="announcement-container" [options]='options' (ionSlideTouchEnd)='onSlideTouchEnd()'>
         <ion-slide *ngFor='let n of agentNotices'>
           <div class='announcement'>
@@ -42,7 +42,6 @@
         </ion-slide>
       </ion-slides>
     </div>
-    <!-- <app-swiper-slides [options]='options' [items]='agentNotices'></app-swiper-slides> -->
   </ion-toolbar>
   <div class="home-padding">
     <ion-list>
