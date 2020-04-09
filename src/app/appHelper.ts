@@ -593,6 +593,19 @@ export class AppHelper {
         this._queryParamers[name] = decodeURIComponent(value);
       }
     }
+    const query = AppHelper.getQueryParamers();
+    if (query) {
+      if (
+        query.unroutehome &&
+        (query.unroutehome as string).toLowerCase().includes("true")
+      ) {
+        if ((query.unroutehome as string).includes("#")) {
+          const [unroutehome, path] = (query.unroutehome as string).split("#");
+          query.unroutehome = unroutehome;
+          query.path = path;
+        }
+      }
+    }
   }
   static setQueryParamers(key: string, value: string) {
     try {
