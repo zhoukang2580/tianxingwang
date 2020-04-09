@@ -25,8 +25,6 @@ export class FlightDialogComponent implements OnInit {
     }
     onTabClick(tab: number) {
       this.tab = tab;
-      console.log(this.tab);
-      
     }
     dismiss() {
       // using the injected ModalController this page
@@ -49,5 +47,10 @@ export class FlightDialogComponent implements OnInit {
     }
     onSearch() {
       this.onCancel(null, true);
+    }
+    async getIsTab(){
+      return{
+
+      }
     }
 }
