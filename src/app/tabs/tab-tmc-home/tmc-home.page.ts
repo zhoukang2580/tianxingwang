@@ -18,7 +18,7 @@ import {
   QueryList,
   ElementRef,
   ViewChild,
-  Renderer2
+  Renderer2,
 } from "@angular/core";
 import {
   Observable,
@@ -27,7 +27,7 @@ import {
   from,
   of,
   Subscription,
-  interval
+  interval,
 } from "rxjs";
 import { ActivatedRoute, Router, NavigationEnd } from "@angular/router";
 import { PayService } from "src/app/services/pay/pay.service";
@@ -37,7 +37,7 @@ import { environment } from "src/environments/environment";
 @Component({
   selector: "app-tmc-home",
   templateUrl: "tmc-home.page.html",
-  styleUrls: ["tmc-home.page.scss"]
+  styleUrls: ["tmc-home.page.scss"],
 })
 export class TmcHomePage implements OnInit, OnDestroy {
   private intervalIds: any[] = [];
@@ -46,6 +46,7 @@ export class TmcHomePage implements OnInit, OnDestroy {
   @ViewChild(IonSlides) slidesEle: IonSlides;
   private exitAppSub: Subject<number> = new BehaviorSubject(null);
   identity: IdentityEntity;
+  isLoadingNotice = false;
   aliPayResult$: Observable<any>;
   wxPayResult$: Observable<any>;
   selectedCompany$: Observable<string>;
@@ -74,12 +75,12 @@ export class TmcHomePage implements OnInit, OnDestroy {
   ) {
     this.staff = null;
     this.selectedCompany$ = tmcService.getSelectedCompanySource();
-    route.paramMap.subscribe(async p => {
+    route.paramMap.subscribe(async (p) => {
       this.navCtrl.navigateRoot(this.router.url, { replaceUrl: true });
       this.clearBookInfos();
       this.identity = await this.identityService
         .getIdentityAsync()
-        .catch(_ => null);
+        .catch((_) => null);
       this.check();
       // console.log("返回到首页 ",p.keys);
       if (p.get("selectedCompany")) {
@@ -87,7 +88,7 @@ export class TmcHomePage implements OnInit, OnDestroy {
       }
     });
     this.canSelectCompany$ = from(this.staffService.isSelfBookType()).pipe(
-      map(isSelf => {
+      map((isSelf) => {
         return !isSelf;
       })
     );
@@ -96,7 +97,7 @@ export class TmcHomePage implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
   private clearIntervalIds() {
-    this.intervalIds.forEach(i => {
+    this.intervalIds.forEach((i) => {
       clearInterval(i);
     });
     this.intervalIds = [];
@@ -106,7 +107,7 @@ export class TmcHomePage implements OnInit, OnDestroy {
   }
   goToBulletinList(noticeType?: string) {
     this.router.navigate([AppHelper.getRoutePath("bulletin-list")], {
-      queryParams: { bulletinType: noticeType }
+      queryParams: { bulletinType: noticeType },
     });
   }
   private async initializeSelfBookInfos() {
@@ -117,7 +118,7 @@ export class TmcHomePage implements OnInit, OnDestroy {
       //   await this.flightService.initSelfBookTypeBookInfos(false);
       //   await this.trainServive.initSelfBookTypeBookInfos(false);
       // }
-    } catch (e) { }
+    } catch (e) {}
   }
   onSlideTouchEnd() {
     if (this.slidesEle) {
@@ -127,17 +128,17 @@ export class TmcHomePage implements OnInit, OnDestroy {
   async ngOnInit() {
     this.options = {
       loop: true,
-      autoplay:{
+      autoplay: {
         delay: 3000,
       },
       speed: 1000,
       direction: "vertical",
       freeMode: true,
-      isShowText: true
+      isShowText: true,
     };
     this.subscription = this.identityService
       .getIdentitySource()
-      .subscribe(_ => {
+      .subscribe((_) => {
         this.staffCredentials = null;
       });
     const paramters = AppHelper.getQueryParamers();
@@ -147,22 +148,22 @@ export class TmcHomePage implements OnInit, OnDestroy {
       req1.Version = "2.0";
       req1.Data = {
         OutTradeNo: paramters.wechatPayResultNumber,
-        Type: "3"
+        Type: "3",
       };
       this.payService.process(req1);
     }
-    
+
     this.initializeSelfBookInfos();
   }
   private async getAgentNotices() {
     const agentNotices = await this.cmsService
       .getAgentNotices(0)
-      .catch(_ => [] as Notice[]);
+      .catch((_) => [] as Notice[]);
     this.agentNotices = agentNotices.map((notice, index) => {
       return {
         text: `${notice.Title}`,
         id: index,
-        active: index == 0
+        active: index == 0,
       };
     });
   }
@@ -223,7 +224,7 @@ export class TmcHomePage implements OnInit, OnDestroy {
       route = "bulletin-list";
     }
     this.router.navigate([AppHelper.getRoutePath(route)], {
-      queryParams: { bulletinType: params }
+      queryParams: { bulletinType: params },
     });
   }
   private clearBookInfos() {
@@ -234,9 +235,12 @@ export class TmcHomePage implements OnInit, OnDestroy {
   async check() {
     let retryCount = 0;
     try {
-      this.agentNotices=[];
+      this.agentNotices = [];
+      this.isLoadingNotice = true;
       setTimeout(() => {
-        this.getAgentNotices();
+        this.getAgentNotices().finally(() => {
+          this.isLoadingNotice = false;
+        });
       }, 1000);
       this.staff = await this.staffService.getStaff();
       console.log("home check", this.staffCredentials);
@@ -287,8 +291,8 @@ export class TmcHomePage implements OnInit, OnDestroy {
       this.apiService.showLoadingView({ msg: "正在初始化..." });
       this.identity = await this.identityService
         .getIdentityAsync()
-        .catch(_ => null);
-      this.companies = await this.tmcService.getCompanies().catch(_ => []);
+        .catch((_) => null);
+      this.companies = await this.tmcService.getCompanies().catch((_) => []);
       if (
         this.identity &&
         this.identity.Numbers &&

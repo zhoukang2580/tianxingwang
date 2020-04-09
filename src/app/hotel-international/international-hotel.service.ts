@@ -6,7 +6,7 @@ import {
   PassengerBookInfo,
   FlightHotelTrainType,
   InitialBookDtoModel,
-  IBookOrderResult
+  IBookOrderResult,
 } from "src/app/tmc/tmc.service";
 import { TripType } from "src/app/tmc/models/TripType";
 import { ModalController } from "@ionic/angular";
@@ -52,7 +52,7 @@ export interface IshowRoomDetailInfo {
   hotel: HotelEntity;
 }
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class InternationalHotelService {
   private fetchPassengerCredentials: {
@@ -100,8 +100,10 @@ export class InternationalHotelService {
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;
-    this.apiService.showLoadingView({msg:'正在预定，请稍后...'});
-    return this.apiService.getPromiseData<IBookOrderResult>(req);
+    this.apiService.showLoadingView({ msg: "正在预定，请稍后..." });
+    return this.apiService.getPromiseData<IBookOrderResult>(req).finally(() => {
+      this.apiService.hideLoadingView();
+    });
   }
   async getInitializeBookDto(
     bookDto: OrderBookDto
@@ -115,21 +117,21 @@ export class InternationalHotelService {
     const bookInfos = this.getBookInfos();
     return this.apiService
       .getPromiseData<InitialBookDtoModel>(req)
-      .then(res => {
+      .then((res) => {
         res.IllegalReasons = res.IllegalReasons || [];
         res.Insurances = res.Insurances || {};
         res.ServiceFees = res.ServiceFees || ({} as any);
         if (bookInfos.length == 2 && isSelf) {
           const fees = {};
-          Object.keys(res.ServiceFees).forEach(k => {
+          Object.keys(res.ServiceFees).forEach((k) => {
             fees[k] = +res.ServiceFees[k] / 2;
           });
         }
         res.Staffs = res.Staffs || [];
-        res.Staffs = res.Staffs.map(it => {
+        res.Staffs = res.Staffs.map((it) => {
           return {
             ...it,
-            CredentialStaff: { ...it } as any
+            CredentialStaff: { ...it } as any,
           };
         });
         res.Tmc = res.Tmc || ({} as any);
@@ -156,7 +158,7 @@ export class InternationalHotelService {
       country: {
         Name: "中国",
         EnglishName: "China",
-        Code: "CN"
+        Code: "CN",
       } as CountryEntity,
       destinationCity: ({
         CityCode: "US1576",
@@ -177,9 +179,9 @@ export class InternationalHotelService {
         Country: {
           Name: "美国",
           EnglishName: "Usa",
-          Code: "US"
-        }
-      } as any) as TrafficlineEntity
+          Code: "US",
+        },
+      } as any) as TrafficlineEntity,
     } as IInterHotelSearchCondition;
     this.searchConditionSource = new BehaviorSubject(this.searchConditon);
   }
@@ -200,12 +202,12 @@ export class InternationalHotelService {
     ) {
       this.conditionModel = await this.getHotelConditions(
         city && city.Code
-      ).catch(_ => null);
+      ).catch((_) => null);
       // console.log(JSON.stringify(this.conditionModel));
       if (this.conditionModel) {
         this.conditionModel.city = this.getSearchCondition().destinationCity;
         if (this.conditionModel.Geos) {
-          this.conditionModel.Geos = this.conditionModel.Geos.map(geo => {
+          this.conditionModel.Geos = this.conditionModel.Geos.map((geo) => {
             if (geo.Variables) {
               geo.VariablesJsonObj = JSON.parse(geo.Variables);
             }
@@ -215,7 +217,7 @@ export class InternationalHotelService {
         if (!this.conditionModel.Tmc) {
           this.conditionModel.Tmc = await this.tmcService
             .getTmc()
-            .catch(_ => null);
+            .catch((_) => null);
         }
       }
     }
@@ -227,12 +229,12 @@ export class InternationalHotelService {
     cityCode = cityCode || (cond.destinationCity && cond.destinationCity.Code);
     req.Method = `TmcApiInternationalHotelUrl-Condition-Gets`;
     req.Data = {
-      cityCode
+      cityCode,
     };
     req.IsShowLoading = true;
     const result = await this.apiService
       .getPromiseData<HotelConditionModel>(req)
-      .catch(_ => {
+      .catch((_) => {
         return null;
       });
     return result;
@@ -264,14 +266,14 @@ export class InternationalHotelService {
     this.fetchCountries = {
       promise: this.apiService
         .getPromiseData<CountryEntity[]>(req)
-        .then(res => {
+        .then((res) => {
           this.countries.data = res;
           this.cacheCountries(res);
           return res;
         })
         .finally(() => {
           this.fetchCountries = null;
-        })
+        }),
     };
     return this.fetchCountries.promise;
   }
@@ -281,7 +283,7 @@ export class InternationalHotelService {
     req.Data = {
       Keyword: name || "",
       CityCode: cond && cond.destinationCity && cond.destinationCity.Code,
-      PageIndex: pageIndex
+      PageIndex: pageIndex,
     };
     req.Method = "TmcApiInternationalHotelUrl-Home-SearchHotel";
     return this.apiService.getResponse<ISearchTextValue[]>(req);
@@ -304,14 +306,14 @@ export class InternationalHotelService {
       ChildCount: (cond.children && cond.children.length) || 0,
       ChildAges:
         cond.children && cond.children.length
-          ? cond.children.map(it => it.age).join(",")
+          ? cond.children.map((it) => it.age).join(",")
           : "",
       Langs: ["cn"],
-      IsLoadDetail: true
+      IsLoadDetail: true,
     };
     return this.apiService
       .getResponse<{ Hotel: HotelEntity }>(req)
-      .pipe(map(r => r.Data && r.Data.Hotel));
+      .pipe(map((r) => r.Data && r.Data.Hotel));
   }
   getHotelList(pageIndex: number) {
     const req = new RequestEntity();
@@ -330,7 +332,7 @@ export class InternationalHotelService {
       CityCode: cond && cond.destinationCity && cond.destinationCity.Code,
       NationalityCode: cond && cond.country && cond.country.Code,
       AdultCount: cond.adultCount || 1,
-      PageIndex: pageIndex
+      PageIndex: pageIndex,
     };
     if (cond && cond.searchText) {
       req.Data["SearchKey"] = cond.searchText.Text;
@@ -339,9 +341,9 @@ export class InternationalHotelService {
       }
     }
     return this.apiService.getResponse<IInterHotelSearchResult>(req).pipe(
-      map(res => {
+      map((res) => {
         if (res && res.Data && res.Data.HotelDayPrices) {
-          res.Data.HotelDayPrices = res.Data.HotelDayPrices.map(it => {
+          res.Data.HotelDayPrices = res.Data.HotelDayPrices.map((it) => {
             if (it.Hotel) {
               it.Hotel.VariablesJsonObj = this.parseVariables(
                 it.Hotel.Variables
@@ -358,7 +360,7 @@ export class InternationalHotelService {
   private async setDefaultFilterPolicy() {
     const isSelf = await this.staffService.isSelfBookType();
     const bookInfos = this.getBookInfos();
-    const unSelected = bookInfos.find(it => !it.bookInfo);
+    const unSelected = bookInfos.find((it) => !it.bookInfo);
     if (isSelf || bookInfos.length == 1) {
       this.setBookInfos(
         bookInfos.map((it, idx) => {
@@ -369,7 +371,7 @@ export class InternationalHotelService {
     } else {
       if (unSelected) {
         this.setBookInfos(
-          bookInfos.map(it => {
+          bookInfos.map((it) => {
             it.isFilterPolicy = it.id == unSelected.id;
             return it;
           })
@@ -398,7 +400,7 @@ export class InternationalHotelService {
         .getPassengerCredentials(accountIds, isShowLoading)
         .finally(() => {
           this.fetchPassengerCredentials = null;
-        })
+        }),
     };
     return this.fetchPassengerCredentials.promise;
   }
@@ -412,21 +414,21 @@ export class InternationalHotelService {
   async checkCredentialValidate(infos: PassengerBookInfo<IInterHotelInfo>[]) {
     const isSelf = await this.staffService.isSelfBookType();
     if (isSelf) {
-      const one = infos.find(it => !it.credential || !it.credential.Number);
+      const one = infos.find((it) => !it.credential || !it.credential.Number);
       if (one) {
         await this.initSelfBookTypeBookInfos(true);
       }
     } else {
       const res = await this.getPassengerCredentials(
-        infos.map(it => it.passenger && it.passenger.AccountId),
+        infos.map((it) => it.passenger && it.passenger.AccountId),
         true
-      ).catch(_ => ({} as { [accountId: string]: [] }));
+      ).catch((_) => ({} as { [accountId: string]: [] }));
       this.setBookInfos(
-        this.getBookInfos().map(it => {
-          const o = infos.find(itm => itm.id == it.id);
+        this.getBookInfos().map((it) => {
+          const o = infos.find((itm) => itm.id == it.id);
           if (o) {
             if (res[it.passenger.AccountId]) {
-              it.credential = res[it.passenger.AccountId].find(c =>
+              it.credential = res[it.passenger.AccountId].find((c) =>
                 this.isPassportHmTwPass(c.Type)
               );
               o.credential = it.credential;
@@ -442,7 +444,7 @@ export class InternationalHotelService {
       return this.isInitializingSelfBookInfos.promise;
     } else {
       this.isInitializingSelfBookInfos = {
-        promise: new Promise(async resolve => {
+        promise: new Promise(async (resolve) => {
           const isSelf = await this.staffService.isSelfBookType(isShowLoading);
           const infos = this.getBookInfos();
           if (infos.length === 0 && isSelf) {
@@ -454,15 +456,15 @@ export class InternationalHotelService {
             const res = await this.getPassengerCredentials(
               [staff.AccountId],
               isShowLoading
-            ).catch(_ => ({ [staff.AccountId]: [] }));
+            ).catch((_) => ({ [staff.AccountId]: [] }));
             this.selfCredentials = res[staff.AccountId];
             passportOrHmTwPass =
               this.selfCredentials &&
-              this.selfCredentials.find(c => this.isPassportHmTwPass(c.Type));
+              this.selfCredentials.find((c) => this.isPassportHmTwPass(c.Type));
             const i: PassengerBookInfo<IInterHotelInfo> = {
               id: AppHelper.uuid(),
               passenger: staff,
-              credential: passportOrHmTwPass
+              credential: passportOrHmTwPass,
             };
             this.addBookInfo(i);
             resolve();
@@ -471,7 +473,7 @@ export class InternationalHotelService {
           }
         }).finally(() => {
           this.isInitializingSelfBookInfos = null;
-        })
+        }),
       };
     }
     return this.isInitializingSelfBookInfos.promise;
@@ -491,9 +493,9 @@ export class InternationalHotelService {
   ) {
     const arg = { ...bookInfo };
     if (isRemovePassenger) {
-      this.bookInfos = this.bookInfos.filter(it => it.id !== arg.id);
+      this.bookInfos = this.bookInfos.filter((it) => it.id !== arg.id);
     } else {
-      this.bookInfos = this.bookInfos.map(it => {
+      this.bookInfos = this.bookInfos.map((it) => {
         if (it.id == arg.id) {
           it.bookInfo = null;
         }
@@ -522,9 +524,9 @@ export class InternationalHotelService {
   ): Promise<HotelPassengerModel[]> {
     const roomPlans: RoomPlanEntity[] = [];
     if (rpls) {
-      rpls.forEach(it => {
+      rpls.forEach((it) => {
         const id = this.getRoomPlanUniqueId(it);
-        if (!roomPlans.find(i => id == this.getRoomPlanUniqueId(i))) {
+        if (!roomPlans.find((i) => id == this.getRoomPlanUniqueId(i))) {
           roomPlans.push(it);
         }
       });
@@ -536,17 +538,17 @@ export class InternationalHotelService {
       return [];
     }
     const whitelistPs = bookInfos
-      .filter(it => !it.isNotWhitelist)
-      .map(it => it.passenger && it.passenger.AccountId)
-      .filter(it => !!it);
+      .filter((it) => !it.isNotWhitelist)
+      .map((it) => it.passenger && it.passenger.AccountId)
+      .filter((it) => !!it);
     const notWhitelistPs = bookInfos
-      .filter(it => it.isNotWhitelist)
-      .map(it => it.passenger && it.passenger.AccountId)
-      .filter(it => !!it);
+      .filter((it) => it.isNotWhitelist)
+      .map((it) => it.passenger && it.passenger.AccountId)
+      .filter((it) => !!it);
     if (notWhitelistPs.length && roomPlans) {
-      notWhitelistPs.forEach(it => {
+      notWhitelistPs.forEach((it) => {
         const policies: HotelPolicyModel[] = [];
-        roomPlans.forEach(plan => {
+        roomPlans.forEach((plan) => {
           const p = new HotelPolicyModel();
           p.HotelId = hotel && hotel.Id;
           p.IsAllowBook = true;
@@ -557,7 +559,7 @@ export class InternationalHotelService {
         });
         notWhitelistPolicies.push({
           PassengerKey: it,
-          HotelPolicies: policies
+          HotelPolicies: policies,
         });
       });
     }
@@ -570,7 +572,7 @@ export class InternationalHotelService {
     req.Version = "1.0";
     req.IsShowLoading = true;
     const arr: RoomPlanEntity[] = [];
-    roomPlans.forEach(it => {
+    roomPlans.forEach((it) => {
       const a = new RoomPlanEntity();
       a.TotalAmount = it.TotalAmount;
       a.Number = it.Number;
@@ -591,20 +593,20 @@ export class InternationalHotelService {
     req.Data = {
       RoomPlans: JSON.stringify(arr),
       Passengers: whitelistPs.join(","),
-      CityCode: (city && city.Code).substr(0, 6)
+      CityCode: (city && city.Code).substr(0, 6),
     };
     req.IsShowLoading = true;
     whitelistPolicies = await this.apiService
       .getPromiseData<HotelPassengerModel[]>(req)
-      .catch(_ => []);
+      .catch((_) => []);
     return whitelistPolicies.concat(notWhitelistPolicies);
   }
   getRoomRateRuleMessage(roomPlan: RoomPlanEntity) {
     if (!roomPlan || !roomPlan.RoomPlanRules) {
       return "";
     }
-    return roomPlan.RoomPlanRules.filter(it => it.Name == "DidIncrease")
-      .map(it => it.Description)
+    return roomPlan.RoomPlanRules.filter((it) => it.Name == "DidIncrease")
+      .map((it) => it.Description)
       .join(",");
   }
   async openCalendar(
@@ -625,8 +627,8 @@ export class InternationalHotelService {
         tripType,
         isMulti: true,
         title,
-        forType: FlightHotelTrainType.Hotel
-      }
+        forType: FlightHotelTrainType.Hotel,
+      },
     });
     await m.present();
     // this.calendarService.setSelectedDaysSource(this.calendarService.getSelectedDays());
@@ -637,7 +639,7 @@ export class InternationalHotelService {
         this.setSearchConditionSource({
           ...this.getSearchCondition(),
           checkinDate: data[0].date,
-          checkoutDate: data[1].date
+          checkoutDate: data[1].date,
         });
       }
     }
@@ -664,7 +666,7 @@ export class InternationalHotelService {
       PageIndex: param.pageIndex,
       lang: AppHelper.getLanguage() || "cn",
       PageSize: param.pageSize,
-      DestinationAreaTypes: param.areaTypes.join(",")
+      DestinationAreaTypes: param.areaTypes.join(","),
     };
     return this.apiService.getResponse<ISearchTextValue[]>(req);
   }
@@ -672,14 +674,14 @@ export class InternationalHotelService {
     if (countries && countries.length) {
       await this.storage.set(KEY_INTERNATIONAL_HOTEL_COUNTRIES, {
         lastUpdateTime: Date.now(),
-        data: countries
+        data: countries,
       } as ILocalCache<CountryEntity[]>);
     }
   }
   private async getLocalCountries(): Promise<ILocalCache<CountryEntity[]>> {
     let result: ILocalCache<CountryEntity[]> = {
       lastUpdateTime: 0,
-      data: []
+      data: [],
     };
     result =
       (await this.storage.get(KEY_INTERNATIONAL_HOTEL_COUNTRIES)) || result;
@@ -702,7 +704,7 @@ export class InternationalHotelService {
     let i = 10;
     let top = await this.modalCtrl.getTop();
     while (top && --i > 0) {
-      await top.dismiss().catch(_ => {});
+      await top.dismiss().catch((_) => {});
       top = await this.modalCtrl.getTop();
     }
   }
@@ -749,40 +751,44 @@ export class InternationalHotelService {
   }
   getRoomArea(room: RoomEntity) {
     return (
-      room && room.RoomDetails && room.RoomDetails.find(it => it.Tag == "Area")
+      room &&
+      room.RoomDetails &&
+      room.RoomDetails.find((it) => it.Tag == "Area")
     );
   }
   getFloor(room: RoomEntity) {
     return (
-      room && room.RoomDetails && room.RoomDetails.find(it => it.Tag == "Floor")
+      room &&
+      room.RoomDetails &&
+      room.RoomDetails.find((it) => it.Tag == "Floor")
     );
   }
   getRenovationDate(room: RoomEntity) {
     return (
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find(it => it.Tag == "RenovationDate")
+      room.RoomDetails.find((it) => it.Tag == "RenovationDate")
     );
   }
   getComments(room: RoomEntity) {
     return (
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find(it => it.Tag == "Comments")
+      room.RoomDetails.find((it) => it.Tag == "Comments")
     );
   }
   getCapacity(room: RoomEntity) {
     return (
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find(it => it.Tag == "Capacity")
+      room.RoomDetails.find((it) => it.Tag == "Capacity")
     );
   }
   getBedType(room: RoomEntity) {
     return (
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find(it => it.Tag == "BedType")
+      room.RoomDetails.find((it) => it.Tag == "BedType")
     );
   }
   getRoomPlanUniqueId(p: RoomPlanEntity) {

@@ -21,7 +21,7 @@
   </ion-refresher>
   <ul *ngFor='let ym of calendars;let last=last;' [attr.ym]='ym.yearMonth' class='calendar' #calendar>
     <li style="width: 100%;display: block;height: 1em;">
-      <strong>{{ym.yearMonth?.substr(0,4)}}年</strong>
+      <strong>{{ym.yearMonth?.substr(0,4)}}年{{ym.yearMonth?.substr(5,2)}}月</strong>
     </li>
     <li *ngFor='let day of ym.dayList' class='day' [ngClass]='clazz(day)'>
       <app-day [dayModel]='day' (daySelected)='onDaySelected(day)'></app-day>

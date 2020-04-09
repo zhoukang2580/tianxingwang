@@ -12,7 +12,7 @@
     <app-refresher slot='fixed' (ionRefresh)='refresh(true)'></app-refresher>
     <ng-container *ngIf='vmCombindInfos?.length'>
       <ion-list *ngFor='let combindInfo of vmCombindInfos' lines='none'>
-        <ion-item-divider color='primary' class="backg_w" *ngIf="isShowTop" sticky>
+        <ion-item-divider color='primary' class="backg_w sticky" *ngIf="isShowTop"  >
           <div style="width: 100%">
             <!-- <span [(ngModel)]="combindInfo?.modal?.credential.CheckName"></span> -->
             {{combindInfo?.modal?.credential?.CheckName}}

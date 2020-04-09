@@ -105,7 +105,7 @@ export class CalendarComponent
         nextM = 1;
       }
       result.push(
-        await this.calendarService.generateYearNthMonthCalendar(y, nextM)
+         this.calendarService.generateYearNthMonthCalendar(y, nextM)
       );
     }
     this.calendars = this.calendars.concat(result);
@@ -133,7 +133,7 @@ export class CalendarComponent
       if (months > 1) {
         for (let i = 1; i <= months; i++) {
           this.calendars.unshift(
-            await this.calendarService.generateYearNthMonthCalendar(
+             this.calendarService.generateYearNthMonthCalendar(
               year,
               month - i
             )
@@ -142,12 +142,12 @@ export class CalendarComponent
       } else {
         if (this.refresher) {
           this.refresher.disabled = true;
-          let calendar = await this.calendarService.generateYearNthMonthCalendar(
+          let calendar =  this.calendarService.generateYearNthMonthCalendar(
             year,
             month - 1
           );
           if (month - 1 <= 0) {
-            calendar = await this.calendarService.generateYearNthMonthCalendar(
+            calendar =  this.calendarService.generateYearNthMonthCalendar(
               year - 1,
               12
             );
@@ -212,6 +212,7 @@ export class CalendarComponent
         if (this.isSrollToCurYm) {
           return;
         }
+        this.isSrollToCurYm = true;
         setTimeout(() => {
           this.moveToCurMonth(this.scrollToMonth);
         }, 200);
