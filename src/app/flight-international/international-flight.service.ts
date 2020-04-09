@@ -172,6 +172,7 @@ export class InternationalFlightService {
   }
   setFilterConditionSource(condition: IFilterCondition) {
     this.filterCondition = condition;
+    console.log("IFilterCondition ", condition);
     return this.filterConditionSource.next(condition);
   }
   getFilterConditionSource() {
@@ -430,6 +431,8 @@ export class InternationalFlightService {
     const trip = m.trips[paragraph - 1];
     const condition = this.getFilterCondition();
     condition.airComponies = condition.airComponies || [];
+    condition.fromAirports = [];
+    condition.toAirports = [];
     if (data && data.FlightRoutesData && paragraph) {
       data.FlightRoutes = data.FlightRoutesData.filter(
         (r) =>
@@ -437,40 +440,46 @@ export class InternationalFlightService {
           trip &&
           r.FromCountry == trip.fromCity.CountryCode &&
           r.ToCountry == trip.toCity.CountryCode
-      ).map((r) => {
-        if (r.FlightSegments) {
-          r.FlightSegments.forEach((s) => {
-            if (!condition.airComponies.find((c) => c.label == s.AirlineName)) {
-              condition.airComponies.push({
-                label: s.AirlineName,
-                isChecked: false,
-                logoPic: s.AirlineSrc,
-              });
-            }
-          });
-          condition.fromAirports = r.FlightSegments.filter(
-            (it) =>
-              r.fromSegment && r.fromSegment.FromCityName == it.FromCityName
-          ).map((a) => {
-            return {
-              label: `${a.FromAirportName}${a.FromAirport}`,
-              FromAirport: a.FromAirport,
-              FromAirportName: a.FromAirportName,
-              FromCityName: a.FromCityName,
-              FromTerminal: a.FromTerminal,
-            };
-          });
-          condition.toAirports = r.FlightSegments.filter(
-            (it) => r.toSegment && r.toSegment.ToCityName == it.ToCityName
-          ).map((a) => {
-            return {
-              ToAirport: a.ToAirport,
-              ToAirportName: a.ToAirportName,
-              ToCityName: a.ToCityName,
-              ToTerminal: a.ToTerminal,
-              label: `${a.ToAirportName}(${a.ToTerminal})`,
-            };
-          });
+      );
+      data.FlightRoutes.forEach((r) => {
+        if (r.fromSegment) {
+          const s = r.fromSegment;
+          if (!condition.airComponies.find((c) => c.label == s.AirlineName)) {
+            condition.airComponies.push({
+              label: s.AirlineName,
+              isChecked: false,
+              logoPic: s.AirlineSrc,
+            });
+          }
+          if (
+            !condition.fromAirports.find(
+              (it) => it.FromAirportName == s.FromAirportName
+            )
+          ) {
+            condition.fromAirports.push({
+              FromAirport: s.FromAirport,
+              FromAirportName: s.FromAirportName,
+              FromCityName: s.FromCityName,
+              FromTerminal: s.FromTerminal,
+              label: s.FromAirportName,
+            });
+          }
+        }
+        if (r.toSegment) {
+          const s = r.toSegment;
+          if (
+            !condition.toAirports.find(
+              (it) => it.ToAirportName == s.ToAirportName
+            )
+          ) {
+            condition.toAirports.push({
+              ToAirport: s.ToAirport,
+              ToAirportName: s.ToAirportName,
+              ToCityName: s.ToCityName,
+              ToTerminal: s.ToTerminal,
+              label: s.ToAirportName,
+            });
+          }
         }
         return r;
       });
