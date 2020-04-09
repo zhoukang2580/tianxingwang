@@ -532,11 +532,13 @@ export class InternationalFlightService {
         }
       }
     }
-    const trip = m.trips[paragraph - 1];
     const condition = this.getFilterCondition();
-    condition.airComponies = condition.airComponies || [];
+    condition.airComponies = [];
     condition.fromAirports = [];
     condition.toAirports = [];
+    condition.isFilter = false;
+    condition.timeSpan = { lower: 0, upper: 24 };
+    condition.isDirectFly = false;
     if (data && data.FlightRoutesData && paragraph) {
       data.FlightRoutes = data.FlightRoutesData.filter(
         (r) => r.Paragraphs == paragraph
