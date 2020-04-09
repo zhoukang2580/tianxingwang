@@ -362,7 +362,7 @@ export class InternationalFlightService {
       result.Data = this.initFlightRouteSegments(
         MockInternationalFlightListData as any
       );
-      this.onSelectParagraph(1, result.Data);
+      this.initParagraphRoutes(result.Data);
       return of(result);
     }
     if (!m || !forceFetch) {
@@ -411,11 +411,22 @@ export class InternationalFlightService {
     return this.apiService.getResponse<FlightResultEntity>(req).pipe(
       tap((r) => {
         this.flightListResult = this.initFlightRouteSegments(r.Data);
-        this.onSelectParagraph(1, this.flightListResult);
+        this.initParagraphRoutes(this.flightListResult);
       })
     );
   }
-  onSelectParagraph(paragraph: number, data: FlightResultEntity) {
+  private initParagraphRoutes(data: FlightResultEntity) {
+    let paragraph = 1;
+    const m = this.getSearchModel();
+    if (m) {
+      if (m.voyageType == FlightVoyageType.MultiCity) {
+        const trip = m.trips && m.trips.findIndex((it) => !it.bookInfo);
+        // console.log("第 trip = " + trip + " 尚未选择");
+        if (trip > -1) {
+          paragraph = trip + 1;
+        }
+      }
+    }
     const condition = this.getFilterCondition();
     condition.airComponies = condition.airComponies || [];
     if (data && data.FlightRoutesData && paragraph) {
@@ -463,8 +474,10 @@ export class InternationalFlightService {
   }
   private initFlightRouteSegments(data: FlightResultEntity) {
     if (data && data.FlightSegments && data.FlightFares) {
-      data.FlightRoutesData = [...data.FlightRoutes];
-      if (data.FlightRoutesData) {
+      if (!data.FlightRoutesData || !data.FlightRoutesData.length) {
+        data.FlightRoutesData = [...data.FlightRoutes];
+      }
+      if (data.FlightRoutesData && data.FlightRoutesData.length) {
         data.FlightRoutesData = data.FlightRoutesData.map((flightRoute) => {
           flightRoute.FlightSegments = data.FlightSegments.filter((s) =>
             flightRoute.FlightSegmentIds.some((id) => id == s.Id)
