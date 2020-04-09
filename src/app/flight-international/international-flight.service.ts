@@ -166,6 +166,7 @@ export class InternationalFlightService {
       price: "none",
       time: "none",
       timeSpan: { lower: 0, upper: 24 },
+      isDirectFly: false,
     };
     this.filterConditionSource = new BehaviorSubject(this.filterCondition);
   }
@@ -420,18 +421,22 @@ export class InternationalFlightService {
     const m = this.getSearchModel();
     if (m) {
       if (m.voyageType == FlightVoyageType.MultiCity) {
-        const trip = m.trips && m.trips.findIndex((it) => !it.bookInfo);
-        // console.log("第 trip = " + trip + " 尚未选择");
-        if (trip > -1) {
-          paragraph = trip + 1;
+        const pra = m.trips && m.trips.findIndex((it) => !it.bookInfo);
+        if (pra > -1) {
+          paragraph = pra + 1;
         }
       }
     }
+    const trip = m.trips[paragraph - 1];
     const condition = this.getFilterCondition();
     condition.airComponies = condition.airComponies || [];
     if (data && data.FlightRoutesData && paragraph) {
       data.FlightRoutes = data.FlightRoutesData.filter(
-        (r) => r.Paragraphs == paragraph
+        (r) =>
+          r.Paragraphs == paragraph &&
+          trip &&
+          r.FromCountry == trip.fromCity.CountryCode &&
+          r.ToCountry == trip.toCity.CountryCode
       ).map((r) => {
         if (r.FlightSegments) {
           r.FlightSegments.forEach((s) => {
@@ -478,18 +483,23 @@ export class InternationalFlightService {
         data.FlightRoutesData = [...data.FlightRoutes];
       }
       if (data.FlightRoutesData && data.FlightRoutesData.length) {
+        data.FlightRoutesData.sort((a, b) => {
+          return a.FlightSegmentIds &&
+            b.FlightSegmentIds &&
+            a.FlightSegmentIds.length == b.FlightSegmentIds.length
+            ? new Date(a.FirstTime).getTime() - new Date(b.FirstTime).getTime()
+            : a.FlightSegmentIds.length - b.FlightSegmentIds.length;
+        });
         data.FlightRoutesData = data.FlightRoutesData.map((flightRoute) => {
-          flightRoute.FlightSegments = data.FlightSegments.filter((s) =>
-            flightRoute.FlightSegmentIds.some((id) => id == s.Id)
+          flightRoute.FlightSegments = flightRoute.FlightSegmentIds.map((it) =>
+            data.FlightSegments.find((s) => s.Id == it)
           );
           flightRoute.transferSegments = data.FlightSegments.filter((s) =>
             flightRoute.FlightSegmentIds.some((id) => id == s.Id)
           );
-          flightRoute.fromSegment = flightRoute.transferSegments[0];
+          flightRoute.fromSegment = flightRoute.FlightSegments[0];
           flightRoute.toSegment =
-            flightRoute.transferSegments[
-              flightRoute.transferSegments.length - 1
-            ];
+            flightRoute.FlightSegments[flightRoute.FlightSegments.length - 1];
           flightRoute.isTransfer = flightRoute.transferSegments.length > 1;
           const ffs = data.FlightFares.filter(
             (f) =>

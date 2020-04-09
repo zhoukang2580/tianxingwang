@@ -3,31 +3,31 @@ import { InternationalFlightService } from "../international-flight.service";
 import { RefresherComponent } from "src/app/components/refresher";
 import { finalize } from "rxjs/operators";
 import { Subscription } from "rxjs";
-import { ModalController, PopoverController } from '@ionic/angular';
-import { FlightDialogComponent } from '../components/flight-dialog/flight-dialog.component';
-import { FlightListItemComponent } from '../components/flight-list-item/flight-list-item.component';
-import { FlightResultEntity } from 'src/app/flight/models/FlightResultEntity';
-import { FlightRouteEntity } from 'src/app/flight/models/flight/FlightRouteEntity';
-import { FlightTransferComponent } from '../components/flight-transfer/flight-transfer.component';
-interface Iisblue{
-  isshow:false;
+import { ModalController, PopoverController } from "@ionic/angular";
+import { FlightDialogComponent } from "../components/flight-dialog/flight-dialog.component";
+import { FlightListItemComponent } from "../components/flight-list-item/flight-list-item.component";
+import { FlightResultEntity } from "src/app/flight/models/FlightResultEntity";
+import { FlightRouteEntity } from "src/app/flight/models/flight/FlightRouteEntity";
+import { FlightTransferComponent } from "../components/flight-transfer/flight-transfer.component";
+interface Iisblue {
+  isshow: false;
 }
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
-  styleUrls: ["./flight-list.page.scss"]
+  styleUrls: ["./flight-list.page.scss"],
 })
 export class FlightListPage implements OnInit, OnDestroy {
   @ViewChild(RefresherComponent, { static: true })
   refresher: RefresherComponent;
-  flightQuery:FlightResultEntity;
-  dialogShow:Iisblue[];
+  flightQuery: FlightResultEntity;
+  dialogShow: Iisblue[];
   private subscription = Subscription.EMPTY;
   constructor(
     private flightService: InternationalFlightService,
     public modalController: ModalController,
     public popoverController: PopoverController
-    ) {}
+  ) {}
 
   ngOnInit() {
     this.doRefresh();
@@ -35,33 +35,33 @@ export class FlightListPage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
-  doRefresh() {
-   this.subscription= this.flightService
-      .getFlightList()
+  doRefresh(loadFromServer = false) {
+    this.subscription = this.flightService
+      .getFlightList(loadFromServer)
       .pipe(
         finalize(() => {
           this.refresher.complete();
         })
       )
-      .subscribe(res => {
+      .subscribe((res) => {
         console.log("list data", res.Data);
-          this.flightQuery=res.Data;
+        this.flightQuery = res.Data;
       });
   }
   async presentModal() {
     const modal = await this.modalController.create({
-      component: FlightDialogComponent
+      component: FlightDialogComponent,
     });
     return await modal.present();
   }
-  async onTransfer(flight:FlightRouteEntity){
+  async onTransfer(flight: FlightRouteEntity) {
     const popover = await this.popoverController.create({
       component: FlightTransferComponent,
       translucent: true,
-      cssClass:"warranty",
-      componentProps:{
-        flight
-      }
+      cssClass: "warranty",
+      componentProps: {
+        flight,
+      },
     });
     return await popover.present();
   }
