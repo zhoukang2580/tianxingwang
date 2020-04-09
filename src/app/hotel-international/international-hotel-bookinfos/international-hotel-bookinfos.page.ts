@@ -4,7 +4,7 @@ import {
   OnInit,
   HostBinding,
   ViewChild,
-  HostListener
+  HostListener,
 } from "@angular/core";
 import { PassengerBookInfo } from "src/app/tmc/tmc.service";
 import { Subscription, Observable } from "rxjs";
@@ -26,7 +26,7 @@ import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 @Component({
   selector: "app-international-hotel-bookinfos",
   templateUrl: "./international-hotel-bookinfos.page.html",
-  styleUrls: ["./international-hotel-bookinfos.page.scss"]
+  styleUrls: ["./international-hotel-bookinfos.page.scss"],
 })
 export class InternationalHotelBookinfosPage implements OnInit {
   private changeDateBookInfo: PassengerBookInfo<IInterHotelInfo>;
@@ -64,8 +64,8 @@ export class InternationalHotelBookinfosPage implements OnInit {
       bookInfo.bookInfo.hotelEntity.HotelImages;
     if (images && bookInfo.bookInfo.hotelRoom) {
       const roomImages = images
-        .filter(it => it.Room && it.Room.Id == bookInfo.bookInfo.hotelRoom.Id)
-        .map(it => it.FileName && it.FileName);
+        .filter((it) => it.Room && it.Room.Id == bookInfo.bookInfo.hotelRoom.Id)
+        .map((it) => it.FileName && it.FileName);
       return roomImages;
     }
   }
@@ -118,7 +118,7 @@ export class InternationalHotelBookinfosPage implements OnInit {
               .format("YYYY-MM-DD"),
             price: this.hotelService.getAvgPrice(
               this.curSelectedBookInfo.bookInfo.roomPlan
-            )
+            ),
           });
         }
       }
@@ -130,7 +130,7 @@ export class InternationalHotelBookinfosPage implements OnInit {
       this.ionRefresher.complete();
     }
     if (!this.config) {
-      this.config = await this.configService.get().catch(_ => null);
+      this.config = await this.configService.get().catch((_) => null);
     }
     if (this.hotelDetailSub) {
       this.hotelDetailSub.unsubscribe();
@@ -141,11 +141,11 @@ export class InternationalHotelBookinfosPage implements OnInit {
     this.hotelDetailSub = this.hotelService
       .getHotelDetail(this.changeDateBookInfo.bookInfo.hotelEntity.Id)
       .pipe(
-        tap(r => {
+        tap((r) => {
           console.log(r);
         })
       )
-      .subscribe(async hotel => {
+      .subscribe(async (hotel) => {
         if (hotel) {
           this.checkIfBookedRoomPlan(hotel);
         }
@@ -160,11 +160,11 @@ export class InternationalHotelBookinfosPage implements OnInit {
     if (changeDateBookInfo && changeDateBookInfo.bookInfo) {
       if (changeDateBookInfo.bookInfo.roomPlan && hotel && hotel.Rooms) {
         const r = hotel.Rooms.find(
-          it => it.Id == changeDateBookInfo.bookInfo.hotelRoom.Id
+          (it) => it.Id == changeDateBookInfo.bookInfo.hotelRoom.Id
         );
         if (r) {
           const rp = r.RoomPlans.find(
-            it =>
+            (it) =>
               this.hotelService.getRoomPlanUniqueId(it) ==
               this.hotelService.getRoomPlanUniqueId(
                 changeDateBookInfo.bookInfo.roomPlan
@@ -178,7 +178,7 @@ export class InternationalHotelBookinfosPage implements OnInit {
             }
             changeDateBookInfo.bookInfo.hotelRoom = r;
             changeDateBookInfo.bookInfo.roomPlan = rp;
-            const bookinfos = this.hotelService.getBookInfos().map(it => {
+            const bookinfos = this.hotelService.getBookInfos().map((it) => {
               if (it.id == changeDateBookInfo.id) {
                 it = changeDateBookInfo;
               }
@@ -205,11 +205,16 @@ export class InternationalHotelBookinfosPage implements OnInit {
             `${one.credential.FirstName} ${one.credential.LastName} `)) ||
         "";
       const cnumber = (one.credential && one.credential.Number) || "";
-      AppHelper.alert(`请检查${name}  ${cnumber} 证件类型`);
+      const ok = await AppHelper.alert(`请您先维护护照或者港澳台通行证`,true);
+      if (ok) {
+        this.router.navigate(["member-credential-management"], {
+          queryParams: { addNew: true },
+        });
+      }
       return;
     }
     await this.router.navigate([
-      AppHelper.getRoutePath("international-hotel-book")
+      AppHelper.getRoutePath("international-hotel-book"),
     ]);
     await this.hotelService.dismissAllTopOverlays();
   }
@@ -247,7 +252,7 @@ export class InternationalHotelBookinfosPage implements OnInit {
         console.log("选择的日期", days, "onConfirm");
         this.onConfirm({
           checkInDate: days[0].date,
-          checkOutDate: days[1].date
+          checkOutDate: days[1].date,
         });
       }, 100);
     }
@@ -268,7 +273,7 @@ export class InternationalHotelBookinfosPage implements OnInit {
       hotel: bookInfo.bookInfo.hotelEntity,
       room: bookInfo.bookInfo.hotelRoom,
       roomImages: this.roomImages,
-      config: this.config
+      config: this.config,
       // agent: this.agent
     };
     this.router.navigate(["international-room-detail"]);
@@ -276,25 +281,25 @@ export class InternationalHotelBookinfosPage implements OnInit {
   canGoToNext() {
     return this.hotelService
       .getBookInfos()
-      .some(it => it.bookInfo && !!it.bookInfo.hotelEntity);
+      .some((it) => it.bookInfo && !!it.bookInfo.hotelEntity);
   }
   private async checkCredentialValidate() {
     const infos = this.hotelService.getBookInfos();
     await this.hotelService.checkCredentialValidate(
       infos.filter(
-        it =>
+        (it) =>
           !it.credential ||
           !this.hotelService.isPassportHmTwPass(it.credential.Type)
       )
     );
     return infos.find(
-      it =>
+      (it) =>
         !it.credential ||
         !this.hotelService.isPassportHmTwPass(it.credential.Type)
     );
   }
   async ngOnInit() {
-    this.config = await this.configService.get().catch(_ => null);
+    this.config = await this.configService.get().catch((_) => null);
   }
   @HostListener("click")
   closePriceDetail() {

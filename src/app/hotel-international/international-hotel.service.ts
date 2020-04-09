@@ -36,6 +36,7 @@ import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 import { CountryEntity } from "../tmc/models/CountryEntity";
 import { OrderBookDto } from "../order/models/OrderBookDto";
 import { DestinationAreaType } from "../tmc/models/DestinationAreaType";
+import { MemberService } from "../member/member.service";
 export const KEY_INTERNATIONAL_HOTEL_COUNTRIES =
   "key_international_hotel_countries";
 interface ILocalCache<T> {
@@ -84,13 +85,60 @@ export class InternationalHotelService {
     private modalCtrl: ModalController,
     private staffService: StaffService,
     private tmcService: TmcService,
-    identityService: IdentityService
+    identityService: IdentityService,
+    memerService: MemberService
   ) {
     this.initSearchCondition();
     this.bookInfoSource = new BehaviorSubject([]);
     this.hotelQuerySource = new BehaviorSubject(new HotelQueryEntity());
     identityService.getIdentitySource().subscribe(() => {
       this.disposal();
+    });
+    memerService.getCredentialsChangeSource().subscribe(async () => {
+      this.selfCredentials = [];
+      const staff = await this.staffService.getStaff(false, true);
+      const isSelf = await this.staffService.isSelfBookType();
+      if (!isSelf) {
+        return;
+      }
+      const res = await this.getPassengerCredentials(
+        [staff.AccountId],
+        true
+      ).catch((_) => ({ [staff.AccountId]: [] }));
+      this.selfCredentials = res[staff.AccountId];
+      const passportOrHmTwPass =
+        this.selfCredentials &&
+        this.selfCredentials.find((c) => this.isPassportHmTwPass(c.Type));
+      const bookInfos = this.getBookInfos();
+      const exists = bookInfos
+        .filter((it) =>
+          this.isPassportHmTwPass(it.credential && it.credential.Type)
+        )
+        .map((it) => it.credential);
+
+      if (passportOrHmTwPass) {
+        if (!exists || !exists.length) {
+          this.setBookInfos(
+            bookInfos.map((it) => {
+              it.credential = passportOrHmTwPass;
+              return it;
+            })
+          );
+        } else {
+          this.setBookInfos(
+            bookInfos.map((it) => {
+              if (
+                this.isPassportHmTwPass(
+                  it && it.credential && it.credential.Type
+                )
+              ) {
+                it.credential = passportOrHmTwPass;
+              }
+              return it;
+            })
+          );
+        }
+      }
     });
   }
   async onBook(bookDto: OrderBookDto): Promise<IBookOrderResult> {
@@ -291,6 +339,7 @@ export class InternationalHotelService {
   getHotelDetail(id: string) {
     const req = new RequestEntity();
     req.Method = `TmcApiInternationalHotelUrl-Home-Detail`;
+    req.LoadingMsg = "正在获取酒店详情信息";
     const cond = this.getSearchCondition();
     // if (!environment.production) {
     //   return of((MOCK_HOTEL_DETIAL_INFO as any) as HotelEntity);
@@ -439,6 +488,9 @@ export class InternationalHotelService {
       );
     }
   }
+  private replaceSelfCredentails() {
+    const infos = this.getBookInfos();
+  }
   private async initSelfBookTypeBookInfos(isShowLoading = false) {
     if (this.isInitializingSelfBookInfos) {
       return this.isInitializingSelfBookInfos.promise;
@@ -571,6 +623,7 @@ export class InternationalHotelService {
     req.Method = `TmcApiInternationalHotelUrl-Home-Policy`;
     req.Version = "1.0";
     req.IsShowLoading = true;
+    req.LoadingMsg = "正在获取差标信息";
     const arr: RoomPlanEntity[] = [];
     roomPlans.forEach((it) => {
       const a = new RoomPlanEntity();

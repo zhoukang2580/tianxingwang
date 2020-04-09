@@ -34,6 +34,8 @@ import { PayService } from "src/app/services/pay/pay.service";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { tap, shareReplay, map } from "rxjs/operators";
 import { environment } from "src/environments/environment";
+import { InternationalHotelService } from "src/app/hotel-international/international-hotel.service";
+import { InternationalFlightService } from "src/app/flight-international/international-flight.service";
 @Component({
   selector: "app-tmc-home",
   templateUrl: "tmc-home.page.html",
@@ -70,6 +72,8 @@ export class TmcHomePage implements OnInit, OnDestroy {
     private navCtrl: NavController,
     private memberService: MemberService,
     private hotelService: HotelService,
+    private interHotelService: InternationalHotelService,
+    private interFlightService: InternationalFlightService,
     private flightService: FlightService,
     route: ActivatedRoute
   ) {
@@ -231,6 +235,8 @@ export class TmcHomePage implements OnInit, OnDestroy {
     this.flightService.removeAllBookInfos();
     this.trainService.removeAllBookInfos();
     this.hotelService.removeAllBookInfos();
+    this.interFlightService.removeAllBookInfos();
+    this.interHotelService.removeAllBookInfos();
   }
   async check() {
     let retryCount = 0;

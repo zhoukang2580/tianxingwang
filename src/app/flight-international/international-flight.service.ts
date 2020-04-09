@@ -617,6 +617,10 @@ export class InternationalFlightService {
   getBookInfos() {
     return this.bookInfos || [];
   }
+  removeAllBookInfos() {
+    this.bookInfos = [];
+    this.setBookInfoSource(this.getBookInfos());
+  }
 }
 export interface IInternationalFlightQuery {
   FromAirport: string;

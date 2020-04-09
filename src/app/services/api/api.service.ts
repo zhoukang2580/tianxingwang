@@ -61,8 +61,8 @@ export class ApiService {
       }
     });
     this.loadApiConfig(true)
-      .then((_) => {})
-      .catch(() => {});
+      .then((_) => { })
+      .catch(() => { });
   }
   getLoading() {
     return this.loadingSubject.asObservable().pipe(delay(0));
@@ -272,7 +272,9 @@ export class ApiService {
             this.identityService.removeIdentity();
             if (orgReq.IsRedirctLogin == false) {
               if (r.Message) {
-                AppHelper.alert(r.Message);
+                if (!req.IsForbidShowMessage) {
+                  AppHelper.alert(r.Message);
+                }
               }
             } else {
               this.router.navigate([AppHelper.getRoutePath("login")]);
@@ -344,15 +346,19 @@ export class ApiService {
           this.identityService.removeIdentity();
           if (req.IsRedirctLogin == false) {
             if (r.Message) {
-              AppHelper.alert(r.Message);
+              if (!req.IsForbidShowMessage) {
+                AppHelper.alert(r.Message);
+              }
             }
           } else {
             this.router.navigate([AppHelper.getRoutePath("login")]);
           }
         } else if (r.Code && r.Code.toUpperCase() === "NOAUTHORIZE") {
           this.router.navigate([AppHelper.getRoutePath("no-authorize")]);
-        } else if (r.Code && r.Code.toLowerCase() == "Systemerror") {
-          AppHelper.alert("接口请求异常，系统错误");
+        } else if (r.Code && r.Code.toLowerCase() == "systemerror") {
+          if (!req.IsForbidShowMessage) {
+            AppHelper.alert("接口请求异常，系统错误");
+          }
         }
         return of(r);
       }),
@@ -514,7 +520,7 @@ export class ApiService {
   getSign(req: RequestEntity) {
     return md5(
       `${typeof req.Data === "string" ? req.Data : JSON.stringify(req.Data)}${
-        req.Timestamp
+      req.Timestamp
       }${req.Token}`
     ) as string;
   }
