@@ -42,6 +42,7 @@ export class AirCompanyComponent implements OnInit, OnDestroy {
   onChangeChecked() {
     if (this.condition && this.condition.airComponies) {
       this.unlimited = this.condition.airComponies.every((e) => !e.isChecked);
+      this.flightService.setFilterConditionSource(this.condition);
     }
   }
 }

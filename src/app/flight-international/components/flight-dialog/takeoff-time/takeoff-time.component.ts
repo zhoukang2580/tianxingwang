@@ -58,6 +58,10 @@ export class TakeoffTimeComponent implements OnInit, OnDestroy {
   }
   onReset(){
     this.range.value = { lower: 0, upper: 24 };
+    if(this.condition){
+      this.condition.timeSpan=this.range.value;
+      this.flightService.setFilterConditionSource(this.condition);
+    }
   }
   changeView() {
     this.domCtrl.write(() => {
@@ -84,6 +88,10 @@ export class TakeoffTimeComponent implements OnInit, OnDestroy {
               }
             }
           }
+        }
+        if(this.condition){
+          this.condition.timeSpan=this.range.value as any;
+            this.flightService.setFilterConditionSource(this.condition);
         }
       }
     });

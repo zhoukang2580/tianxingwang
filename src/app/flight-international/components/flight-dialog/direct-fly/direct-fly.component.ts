@@ -31,12 +31,14 @@ export class DirectFlyComponent implements OnInit, OnDestroy {
   onReset() {
     if (this.condition) {
       this.condition.isDirectFly = false;
+      this.flightService.setFilterConditionSource(this.condition);
     }
     this.unlimited=true;
   }
   onChangeChecked() {
     if (this.condition) {
       this.unlimited = !this.condition.isDirectFly;
+      this.flightService.setFilterConditionSource(this.condition);
     }
   }
 }

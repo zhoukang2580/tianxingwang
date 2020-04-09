@@ -33,6 +33,7 @@ export class TakeoffLandingAirportComponent implements OnInit, OnDestroy {
           (it) => !it.isChecked
         );
       }
+      this.flightService.setFilterConditionSource(this.condition);
     }
   }
   onToChangeChecked(){
@@ -40,6 +41,7 @@ export class TakeoffLandingAirportComponent implements OnInit, OnDestroy {
       if (this.condition.toAirports) {
         this.tounlimited = this.condition.toAirports.every((it) => !it.isChecked);
       }
+      this.flightService.setFilterConditionSource(this.condition);
     }
   }
   onReset() {
@@ -51,6 +53,7 @@ export class TakeoffLandingAirportComponent implements OnInit, OnDestroy {
         });
         this.unlimited=true;
       }
+      this.flightService.setFilterConditionSource(this.condition);
     }
   }
   toReset(){
@@ -62,6 +65,7 @@ export class TakeoffLandingAirportComponent implements OnInit, OnDestroy {
         });
         this.tounlimited=true;
       }
+      this.flightService.setFilterConditionSource(this.condition);
     }
   }
 }
