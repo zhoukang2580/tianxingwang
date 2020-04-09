@@ -386,6 +386,8 @@ export class InternationalFlightService {
         this.flightListResult.FlightSegments &&
         this.flightListResult.FlightSegments.length
       ) {
+        result.Data = this.initFlightRouteSegments(this.flightListResult);
+        this.initParagraphRoutes(result.Data);
         return of(result);
       }
     }
@@ -537,11 +539,7 @@ export class InternationalFlightService {
     condition.toAirports = [];
     if (data && data.FlightRoutesData && paragraph) {
       data.FlightRoutes = data.FlightRoutesData.filter(
-        (r) =>
-          r.Paragraphs == paragraph &&
-          trip &&
-          r.FromCountry == trip.fromCity.CountryCode &&
-          r.ToCountry == trip.toCity.CountryCode
+        (r) => r.Paragraphs == paragraph
       );
       data.FlightRoutes.forEach((r) => {
         if (r.fromSegment) {
@@ -591,6 +589,7 @@ export class InternationalFlightService {
   }
   private initFlightRouteSegments(data: FlightResultEntity) {
     if (data && data.FlightSegments && data.FlightFares) {
+      data = { ...data };
       if (!data.FlightRoutesData || !data.FlightRoutesData.length) {
         data.FlightRoutesData = [...data.FlightRoutes];
       }

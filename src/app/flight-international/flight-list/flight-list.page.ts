@@ -60,6 +60,11 @@ export class FlightListPage implements OnInit, OnDestroy {
   doRefresh(loadFromServer = false) {
     this.flightRoutes = [];
     this.scroller.disabled = true;
+    this.flightService.setFilterConditionSource({
+      ...this.flightService.getFilterCondition(),
+      time: "none",
+      price: "none",
+    });
     this.subscription.unsubscribe();
     this.subscription = this.flightService
       .getFlightList(loadFromServer)
