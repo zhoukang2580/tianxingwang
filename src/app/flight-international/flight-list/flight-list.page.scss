@@ -1,20 +1,34 @@
 .content-top {
-    // border-top   : 1px solid var(--ion-color-light-shade);
-    text-align      : center;
-    background-color: var(--ion-color-light);
-
+  // border-top   : 1px solid var(--ion-color-light-shade);
+  text-align: center;
+  background-color: var(--ion-color-light);
 }
 .row-top {
-    font-size       : 12px;
-    box-shadow      : 1px 2px 6px rgba(0, 0, 0, 0.1);
-    padding-left    : 0.5em;
-    padding-right   : 0.5em;
-    background-color: var(--ion-color-light);
-    width           : 100%;
-    text-align      : center;
+  font-size: 12px;
+  box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.1);
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  background-color: var(--ion-color-light);
+  width: 100%;
+  text-align: center;
 }
 .boxShadow {
-    font-size : 0.9em;
-    text-align: center;
-    box-shadow: 1px -1px 6px rgba(0, 0, 0, 0.1);
+  font-size: 0.9em;
+  text-align: center;
+  box-shadow: 1px -1px 6px rgba(0, 0, 0, 0.1);
+}
+.has-filter {
+  position: relative;
+  &::after {
+    content: "";
+    display: block;
+    border-radius: 50%;
+    height: 0.5em;
+    width: 0.5em;
+    background-color: var(--ion-color-danger);
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 1;
+  }
 }

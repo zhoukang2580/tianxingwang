@@ -172,6 +172,19 @@ export class InternationalFlightService {
   }
   setFilterConditionSource(condition: IFilterCondition) {
     this.filterCondition = condition;
+    if (this.filterCondition) {
+      this.filterCondition.isFilter =
+        this.filterCondition.isDirectFly ||
+        (this.filterCondition.airComponies &&
+          this.filterCondition.airComponies.some((c) => c.isChecked)) ||
+        (this.filterCondition.fromAirports &&
+          this.filterCondition.fromAirports.some((it) => it.isChecked)) ||
+        (this.filterCondition.toAirports &&
+          this.filterCondition.toAirports.some((it) => it.isChecked)) ||
+        (this.filterCondition.timeSpan &&
+          (this.filterCondition.timeSpan.lower > 0 ||
+            this.filterCondition.timeSpan.upper < 24));
+    }
     console.log("IFilterCondition ", condition);
     return this.filterConditionSource.next(condition);
   }
@@ -417,6 +430,95 @@ export class InternationalFlightService {
       })
     );
   }
+  private filterByCondition(data: FlightResultEntity) {
+    const condition = this.getFilterCondition();
+    data = this.filterByAirports(data);
+    data = this.filterByAirComponies(data);
+    if (condition && data && data.FlightRoutes) {
+      if (condition.isDirectFly) {
+        data.FlightRoutes = data.FlightRoutes.filter((it) => !it.isTransfer);
+      }
+    }
+    data = this.filterByTimeSpan(data);
+    return data;
+  }
+  private filterByTimeSpan(data: FlightResultEntity) {
+    const condition = this.getFilterCondition();
+    if (data && data.FlightRoutes) {
+      if (condition && condition.timeSpan) {
+        if (condition.timeSpan.lower > 0 || condition.timeSpan.upper < 24) {
+          data.FlightRoutes = data.FlightRoutes.filter((r) => {
+            const time =
+              (r.fromSegment && r.fromSegment.TakeoffTime) || r.FirstTime;
+            if (time) {
+              const [h, m, s] = time
+                .substr(11)
+                .split(":")
+                .map((it) => +it);
+              return (
+                condition.timeSpan.lower <= h && h <= condition.timeSpan.upper
+              );
+            }
+            return !!time;
+          });
+        }
+      }
+    }
+    return data;
+  }
+  private filterByAirComponies(data: FlightResultEntity) {
+    const condition = this.getFilterCondition();
+    if (data && data.FlightRoutes) {
+      if (condition) {
+        const airs =
+          condition.airComponies &&
+          condition.airComponies.filter((it) => it.isChecked);
+        if (airs && airs.length) {
+          data.FlightRoutes = data.FlightRoutes.filter((r) => {
+            return (
+              r.fromSegment &&
+              airs.some((a) => a.label == r.fromSegment.AirlineName)
+            );
+          });
+        }
+      }
+    }
+    return data;
+  }
+  private filterByAirports(data: FlightResultEntity) {
+    const condition = this.getFilterCondition();
+    if (condition) {
+      if (data && data.FlightRoutes) {
+        const fromAirports =
+          condition.fromAirports &&
+          condition.fromAirports.filter((it) => it.isChecked);
+        if (fromAirports && fromAirports.length) {
+          data.FlightRoutes = data.FlightRoutes.filter((r) => {
+            return (
+              r.fromSegment &&
+              fromAirports.some(
+                (fa) => fa.FromAirportName == r.fromSegment.FromAirportName
+              )
+            );
+          });
+        }
+        const toAirports =
+          condition.toAirports &&
+          condition.toAirports.filter((it) => it.isChecked);
+        if (toAirports && toAirports.length) {
+          data.FlightRoutes = data.FlightRoutes.filter((r) => {
+            return (
+              r.toSegment &&
+              toAirports.some(
+                (fa) => fa.ToAirportName == r.fromSegment.ToAirportName
+              )
+            );
+          });
+        }
+      }
+    }
+    return data;
+  }
   private initParagraphRoutes(data: FlightResultEntity) {
     let paragraph = 1;
     const m = this.getSearchModel();
@@ -485,6 +587,7 @@ export class InternationalFlightService {
       });
       this.setFilterConditionSource(condition);
     }
+    data = this.filterByCondition(data);
   }
   private initFlightRouteSegments(data: FlightResultEntity) {
     if (data && data.FlightSegments && data.FlightFares) {
@@ -507,6 +610,11 @@ export class InternationalFlightService {
             flightRoute.FlightSegmentIds.some((id) => id == s.Id)
           );
           flightRoute.fromSegment = flightRoute.FlightSegments[0];
+          if (flightRoute.fromSegment) {
+            flightRoute.fromSegment.TakeoffTimeStamp = new Date(
+              flightRoute.fromSegment.TakeoffTime
+            ).getTime();
+          }
           flightRoute.toSegment =
             flightRoute.FlightSegments[flightRoute.FlightSegments.length - 1];
           flightRoute.isTransfer = flightRoute.transferSegments.length > 1;
@@ -526,23 +634,7 @@ export class InternationalFlightService {
     }
     return data;
   }
-  private filterRoutes(data: FlightResultEntity) {
-    let result = { ...data };
-    const condition = this.getFilterCondition();
-    if (condition) {
-      const airComponies =
-        condition.airComponies &&
-        condition.airComponies.filter((it) => it.isChecked);
-      if (airComponies && airComponies.length) {
-        result.FlightRoutes = result.FlightRoutes.filter((it) =>
-          airComponies.some(
-            (a) => a.label == (it.fromSegment && it.fromSegment.AirlineName)
-          )
-        );
-      }
-    }
-    return data;
-  }
+
   async getInternationalAirports(forceFetch = false) {
     let airports = await this.tmcService.getInternationalAirports(forceFetch);
     const countries = await this.getCountries(forceFetch);

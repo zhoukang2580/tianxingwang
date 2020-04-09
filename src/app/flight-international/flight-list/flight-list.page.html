@@ -30,31 +30,46 @@
   </app-refresher>
   <ng-container>
     <div class="content-top">
-      <app-flight-list-item [flight]='flight'  (transfer)='onTransfer(flight)' *ngFor='let flight of flightQuery?.FlightRoutes'></app-flight-list-item>
+      <app-flight-list-item [flight]='flight' (transfer)='onTransfer(flight)' *ngFor='let flight of flightRoutes'>
+      </app-flight-list-item>
     </div>
   </ng-container>
+  <ion-infinite-scroll (ionInfinite)='loadMore()'>
+    <ion-infinite-scroll-content>正在加载...</ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>
 <ion-footer class="ion-no-border boxShadow">
   <ion-toolbar>
     <ion-row>
       <ion-col (click)="presentModal()">
         <div>
-          <ion-icon name="funnel-outline" style="font-size:1.3em"></ion-icon>
+          <ion-icon color='{{condition?.time=="none"&&condition?.price=="none"?"secondary":""}}' name="funnel-outline"
+            style="font-size:1.3rem" [class.has-filter]='condition?.isFilter'>
+          </ion-icon>
         </div>
-        <ion-text>筛选</ion-text>
-
+        <ion-text color='{{condition?.time=="none"&&condition?.price=="none"?"secondary":""}}'>筛选</ion-text>
       </ion-col>
-      <ion-col>
+      <ion-col (click)='onSortByTime()'>
         <div>
-          <ion-icon name="swap-vertical-outline" style="font-size:1.3em"></ion-icon>
+          <ion-icon color='{{condition?.time!="none"?"secondary":""}}' name="swap-vertical-outline"
+            style="font-size:1.3rem">
+          </ion-icon>
         </div>
-        <ion-text>推荐排序</ion-text>
+        <ion-text color='{{condition?.time!="none"?"secondary":""}}'>时间
+          <ng-container *ngIf='condition?.time=="asc"'><strong>早</strong>-晚</ng-container>
+          <ng-container *ngIf='condition?.time=="desc"'><strong>晚</strong>-早</ng-container>
+        </ion-text>
       </ion-col>
-      <ion-col>
+      <ion-col (click)='onSortByPrice()'>
         <div>
-          <ion-icon name="airplane-outline" style="font-size:1.3em"></ion-icon>
+          <ion-icon color='{{condition?.price!="none"?"secondary":""}}' name="airplane-outline"
+            style="font-size:1.3rem">
+          </ion-icon>
         </div>
-        <ion-text>直飞</ion-text>
+        <ion-text color='{{condition?.price!="none"?"secondary":""}}'>价格
+          <ng-container *ngIf='condition?.price=="asc"'><strong>低</strong>-高</ng-container>
+          <ng-container *ngIf='condition?.price=="desc"'><strong>高</strong>-低</ng-container>
+        </ion-text>
       </ion-col>
     </ion-row>
   </ion-toolbar>
