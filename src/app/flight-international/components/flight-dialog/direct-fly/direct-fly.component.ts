@@ -24,12 +24,15 @@ export class DirectFlyComponent implements OnInit, OnDestroy {
       .getFilterConditionSource()
       .subscribe((c) => {
         this.condition = c;
+        console.log(this.condition,"333");
+        
       });
   }
   onReset() {
     if (this.condition) {
       this.condition.isDirectFly = false;
     }
+    this.unlimited=true;
   }
   onChangeChecked() {
     if (this.condition) {

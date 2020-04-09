@@ -1,0 +1,23 @@
+.row-width{
+    width: 13em;
+}
+.nowrap{
+    white-space     : nowrap;
+    overflow        : hidden;
+    text-overflow   : ellipsis;
+}
+.padding1em{
+    padding-top: 1em;
+    padding-bottom: 1em;
+    border-bottom: 1px solid var(--ion-color-primary-shade);
+}
+.padding1em:last-child{
+    border-bottom:none;
+    // padding-bottom: 0em;
+}
+.font-size{
+    font-size: 0.9em;
+    border-left: 0.1em solid var(--ion-color-secondary);
+    padding-left: 1em;
+    
+}

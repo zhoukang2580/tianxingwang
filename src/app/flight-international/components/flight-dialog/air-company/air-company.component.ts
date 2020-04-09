@@ -13,12 +13,15 @@ import { Subscription } from "rxjs";
 export class AirCompanyComponent implements OnInit, OnDestroy {
   private subscription = Subscription.EMPTY;
   condition: IFilterCondition;
-  unlimited: boolean;
+  unlimited=true;
   constructor(private flightService: InternationalFlightService) {}
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
   ngOnInit() {
+    
+    console.log(this.unlimited,"this.unlimited");
+    
     this.subscription = this.flightService
       .getFilterConditionSource()
       .subscribe((c) => {

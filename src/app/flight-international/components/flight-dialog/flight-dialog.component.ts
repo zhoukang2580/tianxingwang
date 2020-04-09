@@ -34,4 +34,11 @@ export class FlightDialogComponent implements OnInit {
         'dismissed': true
       });
     }
+    onReset(){
+      this.directfly.onReset();
+      this.aircompany.onReset();
+      this.TakeoffLandingAirport.onReset();
+      this.TakeoffLandingAirport.toReset();
+      this.TakeoffTime.onReset();
+    }
 }

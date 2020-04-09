@@ -51,6 +51,10 @@ export class TakeoffLandingAirportComponent implements OnInit, OnDestroy {
         });
         this.unlimited=true;
       }
+    }
+  }
+  toReset(){
+    if (this.condition) {
       if (this.condition.toAirports) {
         this.condition.toAirports = this.condition.toAirports.map((it) => {
           it.isChecked = false;

@@ -56,6 +56,9 @@ export class TakeoffTimeComponent implements OnInit, OnDestroy {
     }
     // this.search();
   }
+  onReset(){
+    this.range.value = { lower: 0, upper: 24 };
+  }
   changeView() {
     this.domCtrl.write(() => {
       const r = document.querySelector("ion-range");

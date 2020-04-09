@@ -1,5 +1,3 @@
-
-
 .logo {
     width    : 24px;
     height   : 24px;
@@ -42,12 +40,11 @@
 
 
 .flihtCompany {
-    padding    : 5px 0px 10px 34px;
+    padding    : 0.1em 0em 0.5em 2.8em;
     font-size  : 0.8em;
     display    : flex;
     align-items: center;
     color      : var(--ion-color-medium);
-    width      : 13em;
 }
 
 .height {
@@ -84,20 +81,22 @@
 .cityAndTime {
     display        : flex;
     justify-content: center;
-    align-items: center;
+    align-items    : center;
     text-align     : left;
     padding-left   : 0.5em;
 }
-.airLine{
+
+.airLine {
     display        : flex;
     justify-content: center;
-    align-items: center;
+    align-items    : center;
 }
 
-.positon-air{
-    width: 5em;
+.positon-air {
+    width      : 5em;
     margin-left: -1em;
 }
-.margin-t11{
+
+.margin-t11 {
     margin-top: 1.1em;
 }
