@@ -345,10 +345,7 @@
               </ion-row>
             </div>
             <div class="getHeight" *ngFor="let ticket of tikectId2OriginalTickets[flightTicket.Id]">
-              <ng-container *ngIf="ticket.isShowOriginalTicket"  @flyInOut>
-                <!-- <ion-item-divider class="title-divider">
-                  航班信息
-                </ion-item-divider> -->
+              <ng-container *ngIf="ticket.isShowOriginalTicket" @flyInOut>
                 <ion-row>
                   <ion-col size='3'>
                     机票状态
@@ -388,6 +385,30 @@
                         {{trip?.ToCityName}}-{{trip?.ToAirportName}}({{trip?.ToAirport}}){{trip?.ToTerminal}}
                       </div>
                     </ion-col>
+                  </ion-row>
+                </ng-container>
+                <ng-container *ngIf='getPassengerCostOrgInfo(ticket) as info'>
+                  <ion-row>
+                    <ion-col size='3'>成本中心</ion-col>
+                    <ion-col>
+                      {{info.CostCenterCode}}-{{info.CostCenterName}}
+                    </ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size='3'>组织架构</ion-col>
+                    <ion-col>{{info.OrganizationCode}}-{{info.OrganizationName}}</ion-col>
+                  </ion-row>
+                  <ion-row *ngIf='ticket.VariablesJsonObj?.ExpenseType'>
+                    <ion-col size='3'>费用类别</ion-col>
+                    <ion-col>{{ticket.VariablesJsonObj.ExpenseType}}</ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size='3'>违规内容</ion-col>
+                    <ion-col *ngIf="info.IllegalPolicy">{{info.IllegalPolicy}}</ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size='3'>违规原因</ion-col>
+                    <ion-col *ngIf="info.IllegalReason">{{info.IllegalReason}}</ion-col>
                   </ion-row>
                 </ng-container>
                 <ion-row>
@@ -497,8 +518,7 @@
                     </ion-row>
                   </div>
                 </ng-container>
-                <ion-row style="padding-left:0em;"
-                  *ngIf="ticket?.VariablesJsonObj?.OriginalTicketId">
+                <ion-row style="padding-left:0em;" *ngIf="ticket?.VariablesJsonObj?.OriginalTicketId">
                   <ion-col class="ion-text-justify" color="secondary">
                     <ion-button color="secondary" expand='full'
                       (click)="onShowFlightTicket(ticket,ticket.VariablesJsonObj.OriginalTicketId,$event)">原始航班信息
