@@ -276,7 +276,7 @@ export class InternationalHotelBookinfosPage implements OnInit {
   canGoToNext() {
     return this.hotelService
       .getBookInfos()
-      .some(it => it.bookInfo && it.bookInfo.hotelEntity);
+      .some(it => it.bookInfo && !!it.bookInfo.hotelEntity);
   }
   private async checkCredentialValidate() {
     const infos = this.hotelService.getBookInfos();

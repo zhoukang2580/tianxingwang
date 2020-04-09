@@ -3,9 +3,15 @@ import { InternationalFlightService } from "../international-flight.service";
 import { RefresherComponent } from "src/app/components/refresher";
 import { finalize } from "rxjs/operators";
 import { Subscription } from "rxjs";
-import { ModalController } from '@ionic/angular';
+import { ModalController, PopoverController } from '@ionic/angular';
 import { FlightDialogComponent } from '../components/flight-dialog/flight-dialog.component';
-
+import { FlightListItemComponent } from '../components/flight-list-item/flight-list-item.component';
+import { FlightResultEntity } from 'src/app/flight/models/FlightResultEntity';
+import { FlightRouteEntity } from 'src/app/flight/models/flight/FlightRouteEntity';
+import { FlightTransferComponent } from '../components/flight-transfer/flight-transfer.component';
+interface Iisblue{
+  isshow:false;
+}
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -14,12 +20,13 @@ import { FlightDialogComponent } from '../components/flight-dialog/flight-dialog
 export class FlightListPage implements OnInit, OnDestroy {
   @ViewChild(RefresherComponent, { static: true })
   refresher: RefresherComponent;
-  flightQuery;
-  dialogShow;
+  flightQuery:FlightResultEntity;
+  dialogShow:Iisblue[];
   private subscription = Subscription.EMPTY;
   constructor(
     private flightService: InternationalFlightService,
-    public modalController: ModalController
+    public modalController: ModalController,
+    public popoverController: PopoverController
     ) {}
 
   ngOnInit() {
@@ -42,10 +49,20 @@ export class FlightListPage implements OnInit, OnDestroy {
       });
   }
   async presentModal() {
-    this.dialogShow=!this.dialogShow;
     const modal = await this.modalController.create({
       component: FlightDialogComponent
     });
     return await modal.present();
+  }
+  async onTransfer(flight:FlightRouteEntity){
+    const popover = await this.popoverController.create({
+      component: FlightTransferComponent,
+      translucent: true,
+      cssClass:"warranty",
+      componentProps:{
+        flight
+      }
+    });
+    return await popover.present();
   }
 }

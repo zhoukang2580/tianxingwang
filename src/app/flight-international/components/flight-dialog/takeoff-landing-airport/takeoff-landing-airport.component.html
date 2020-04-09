@@ -1,10 +1,26 @@
 <ion-list>
+  <ion-item class="airTitle">
+    起飞机场
+  </ion-item >
   <ion-item (click)="onReset()">
     <ion-label>不限</ion-label>
     <ion-checkbox slot="end" [(ngModel)]="unlimited"></ion-checkbox>
   </ion-item>
-  <ion-item *ngFor="let item of condition?.airComponies">
+  <ion-item *ngFor="let item of condition?.fromAirports">
     <div class="disflex-end" (click)="onChangeChecked()">
+      <ion-label>{{item.label}}</ion-label>
+      <ion-checkbox slot="end" [(ngModel)]="item.isChecked"></ion-checkbox>
+    </div>
+  </ion-item>
+  <ion-item  class="airTitle">
+    降落机场
+  </ion-item>
+  <ion-item (click)="onReset()">
+    <ion-label>不限</ion-label>
+    <ion-checkbox slot="end" [(ngModel)]="tounlimited"></ion-checkbox>
+  </ion-item>
+  <ion-item *ngFor="let item of condition?.toAirports">
+    <div class="disflex-end" (click)="onToChangeChecked()">
       <ion-label>{{item.label}}</ion-label>
       <ion-checkbox slot="end" [(ngModel)]="item.isChecked"></ion-checkbox>
     </div>

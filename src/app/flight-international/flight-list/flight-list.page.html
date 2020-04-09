@@ -1,10 +1,27 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar style="border-bottom: 1px solid var(--ion-color-primary-shade);">
     <ion-buttons slot='start'>
       <ion-back-button></ion-back-button>
     </ion-buttons>
     <ion-title>航班列表</ion-title>
   </ion-toolbar>
+  <ion-row class="row-top">
+    <ion-col size="0.8">
+      <!-- logo -->
+    </ion-col>
+    <ion-col>
+      北京时间
+    </ion-col>
+    <ion-col size="2">
+      <!-- 转 -->
+    </ion-col>
+    <ion-col>
+      当地时间
+    </ion-col>
+    <ion-col size="3.1">
+      多程总价(含税)
+    </ion-col>
+  </ion-row>
 </ion-header>
 
 <ion-content>
@@ -13,76 +30,23 @@
   </app-refresher>
   <ng-container>
     <div class="content-top">
-      <ion-row class="row-top">
-        <ion-col size="1">
-          <!-- logo -->
-        </ion-col>
-        <ion-col>
-          北京时间
-        </ion-col>
-        <ion-col size="2">
-          <!-- 转 -->
-        </ion-col>
-        <ion-col>
-          当地时间
-        </ion-col>
-        <ion-col size="3.1">
-          多程总价(含税)
-        </ion-col>
-      </ion-row>
-      <ion-row class="paddingtop" *ngFor="let flight of flightQuery?.FlightRoutes">
-        <ion-col size="1">
-          <div class="logo">
-          </div>
-        </ion-col>
-        <ion-col>
-          <div style="display:flex;justify-content: center;align-items: center">
-            <div>
-              <ion-text class="time">{{flight?.FirstTime.replace("T"," ")?.substring(10,16)}}</ion-text>
-              <div class="country">{{flight?.FromCountry}}</div>
-            </div>
-          </div>
-        </ion-col>
-        <ion-col size="2">
-          <div class="fontSizeLogo">-- 转 --></div>
-          <ion-text class="fontSize countrySpace">伦敦</ion-text>
-        </ion-col>
-        <ion-col>
-          <div style="display:flex;justify-content: center;align-items: center">
-            <div>
-              <ion-text class="time">{{flight.ArrivalTime?.replace("T"," ")?.substring(10,16)}}</ion-text>
-              <div class="country">{{flight.ToCountry}}</div>
-            </div>
-          </div>
-        </ion-col>
-        <ion-col size="3.1">
-          <ion-text color="secondary" class="flightMoney">
-            <span style="font-weight:bold">¥</span>10752
-          </ion-text>
-          <div class="fontSize" style="color:var(--ion-color-medium)">{{flight.TypeName}}</div>
-        </ion-col>
-        <div class="flihtCompany">
-          <ion-text class="whiteSpece">荷兰皇家航空</ion-text>
-          <div class="height"></div>
-          <ion-text>16h5m</ion-text>
-        </div>
-      </ion-row>
+      <app-flight-list-item [flight]='flight'  (transfer)='onTransfer(flight)' *ngFor='let flight of flightQuery?.FlightRoutes'></app-flight-list-item>
     </div>
   </ng-container>
 </ion-content>
 <ion-footer class="ion-no-border boxShadow">
   <ion-toolbar>
     <ion-row>
-      <ion-col>
-        <div (click)="presentModal()">
-          <ion-icon name="funnel-outline"style="font-size:1.3em"></ion-icon>
+      <ion-col (click)="presentModal()">
+        <div>
+          <ion-icon name="funnel-outline" style="font-size:1.3em"></ion-icon>
         </div>
         <ion-text>筛选</ion-text>
 
       </ion-col>
       <ion-col>
         <div>
-          <ion-icon name="swap-vertical-outline"style="font-size:1.3em"></ion-icon>
+          <ion-icon name="swap-vertical-outline" style="font-size:1.3em"></ion-icon>
         </div>
         <ion-text>推荐排序</ion-text>
       </ion-col>

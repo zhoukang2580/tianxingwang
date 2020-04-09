@@ -14,6 +14,7 @@ export class TakeoffLandingAirportComponent implements OnInit, OnDestroy {
   private subscription = Subscription.EMPTY;
   condition: IFilterCondition;
   unlimited = true;
+  tounlimited=true;
   constructor(private flightService: InternationalFlightService) {}
   ngOnDestroy() {
     this.subscription.unsubscribe();
@@ -27,18 +28,17 @@ export class TakeoffLandingAirportComponent implements OnInit, OnDestroy {
   }
   onChangeChecked() {
     if (this.condition) {
-      if (this.condition.toAirports) {
-        this.unlimited = this.condition.toAirports.every((it) => !it.isChecked);
-      }
       if (this.condition.fromAirports) {
         this.unlimited = this.condition.fromAirports.every(
           (it) => !it.isChecked
         );
       }
-      if (this.condition.fromAirports && this.condition.toAirports) {
-        this.unlimited =
-          this.condition.fromAirports.every((it) => !it.isChecked) &&
-          this.condition.toAirports.every((it) => !it.isChecked);
+    }
+  }
+  onToChangeChecked(){
+    if (this.condition) {
+      if (this.condition.toAirports) {
+        this.tounlimited = this.condition.toAirports.every((it) => !it.isChecked);
       }
     }
   }
@@ -49,12 +49,14 @@ export class TakeoffLandingAirportComponent implements OnInit, OnDestroy {
           it.isChecked = false;
           return it;
         });
+        this.unlimited=true;
       }
       if (this.condition.toAirports) {
         this.condition.toAirports = this.condition.toAirports.map((it) => {
           it.isChecked = false;
           return it;
         });
+        this.tounlimited=true;
       }
     }
   }
