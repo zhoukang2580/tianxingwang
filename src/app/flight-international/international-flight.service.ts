@@ -373,11 +373,20 @@ export class InternationalFlightService {
     const m = this.searchModel;
     const result: IResponse<FlightResultEntity> = {} as any;
     result.Data = this.flightListResult;
-    if (!environment.production) {
+    if (!environment.production || !forceFetch) {
       result.Data = this.initFlightRouteSegments(
         MockInternationalFlightListData as any
       );
-      this.initParagraphRoutes(result.Data);
+      if (
+        forceFetch ||
+        !this.flightListResult ||
+        !this.flightListResult.FlightRoutes ||
+        !this.flightListResult.FlightRoutes.length
+      ) {
+        this.flightListResult = result.Data;
+        this.initParagraphCondition(result.Data);
+      }
+      result.Data = this.filterByCondition(result.Data);
       return of(result);
     }
     if (!m || !forceFetch) {
@@ -386,8 +395,8 @@ export class InternationalFlightService {
         this.flightListResult.FlightSegments &&
         this.flightListResult.FlightSegments.length
       ) {
-        result.Data = this.initFlightRouteSegments(this.flightListResult);
-        this.initParagraphRoutes(result.Data);
+        const data = this.initFlightRouteSegments(this.flightListResult);
+        result.Data = this.filterByCondition(data);
         return of(result);
       }
     }
@@ -428,7 +437,7 @@ export class InternationalFlightService {
     return this.apiService.getResponse<FlightResultEntity>(req).pipe(
       tap((r) => {
         this.flightListResult = this.initFlightRouteSegments(r.Data);
-        this.initParagraphRoutes(this.flightListResult);
+        this.initParagraphCondition(this.flightListResult);
       })
     );
   }
@@ -521,7 +530,7 @@ export class InternationalFlightService {
     }
     return data;
   }
-  private initParagraphRoutes(data: FlightResultEntity) {
+  private initParagraphCondition(data: FlightResultEntity) {
     let paragraph = 1;
     const m = this.getSearchModel();
     if (m) {
@@ -587,7 +596,6 @@ export class InternationalFlightService {
       });
       this.setFilterConditionSource(condition);
     }
-    data = this.filterByCondition(data);
   }
   private initFlightRouteSegments(data: FlightResultEntity) {
     if (data && data.FlightSegments && data.FlightFares) {
