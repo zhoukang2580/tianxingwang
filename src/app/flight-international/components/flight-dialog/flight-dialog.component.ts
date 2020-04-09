@@ -4,6 +4,7 @@ import { DirectFlyComponent } from './direct-fly/direct-fly.component';
 import { AirCompanyComponent } from './air-company/air-company.component';
 import { TakeoffLandingAirportComponent } from './takeoff-landing-airport/takeoff-landing-airport.component';
 import { TakeoffTimeComponent } from './takeoff-time/takeoff-time.component';
+import { FilterConditionModel } from 'src/app/flight/models/flight/advanced-search-cond/FilterConditionModel';
 
 @Component({
   selector: 'app-flight-dialog',
@@ -40,5 +41,13 @@ export class FlightDialogComponent implements OnInit {
       this.TakeoffLandingAirport.onReset();
       this.TakeoffLandingAirport.toReset();
       this.TakeoffTime.onReset();
+    }
+    onCancel(evt?: CustomEvent, confirm = false) {
+      this.modalController.getTop().then(t => {
+        t.dismiss(confirm);
+      })
+    }
+    onSearch() {
+      this.onCancel(null, true);
     }
 }

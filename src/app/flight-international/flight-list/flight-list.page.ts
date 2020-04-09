@@ -9,6 +9,7 @@ import { FlightListItemComponent } from "../components/flight-list-item/flight-l
 import { FlightResultEntity } from "src/app/flight/models/FlightResultEntity";
 import { FlightRouteEntity } from "src/app/flight/models/flight/FlightRouteEntity";
 import { FlightTransferComponent } from "../components/flight-transfer/flight-transfer.component";
+import { FilterConditionModel } from 'src/app/flight/models/flight/advanced-search-cond/FilterConditionModel';
 interface Iisblue {
   isshow: false;
 }
@@ -26,7 +27,7 @@ export class FlightListPage implements OnInit, OnDestroy {
   constructor(
     private flightService: InternationalFlightService,
     public modalController: ModalController,
-    public popoverController: PopoverController
+    public popoverController: PopoverController,
   ) {}
 
   ngOnInit() {
