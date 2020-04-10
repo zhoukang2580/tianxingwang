@@ -370,10 +370,14 @@ export class InternationalFlightService {
       this.setSearchModelSource(this.searchModel);
     }
   }
-  getFlightList(forceFetch = false): Observable<IResponse<FlightResultEntity>> {
+  getFlightList(query: {
+    forceFetch: boolean;
+    keepFilterCondition: boolean;
+  }): Observable<IResponse<FlightResultEntity>> {
     const m = this.searchModel;
     const result: IResponse<FlightResultEntity> = {} as any;
     result.Data = this.flightListResult;
+    const { forceFetch, keepFilterCondition } = query;
     if (!environment.production || !forceFetch) {
       result.Data = this.initFlightRouteSegments(
         MockInternationalFlightListData as any
@@ -387,6 +391,9 @@ export class InternationalFlightService {
         this.flightListResult = result.Data;
         this.initParagraphCondition(result.Data);
       }
+      if (!keepFilterCondition) {
+        this.initParagraphCondition(result.Data);
+      }
       result.Data = this.filterByCondition(result.Data);
       return of(result);
     }
@@ -397,6 +404,9 @@ export class InternationalFlightService {
         this.flightListResult.FlightSegments.length
       ) {
         const data = this.initFlightRouteSegments(this.flightListResult);
+        if (!keepFilterCondition) {
+          this.initParagraphCondition(data);
+        }
         result.Data = this.filterByCondition(data);
         return of(result);
       }
@@ -539,6 +549,8 @@ export class InternationalFlightService {
         const pra = m.trips && m.trips.findIndex((it) => !it.bookInfo);
         if (pra > -1) {
           paragraph = pra + 1;
+        } else {
+          paragraph = m.trips.length; // 默认最后一个
         }
       }
     }
@@ -802,7 +814,8 @@ export interface IInternationalFlightSearchModel {
 }
 
 export interface IInternationalFlightSegmentInfo {
-  flightSegment: FlightSegmentEntity;
+  fromSegment: FlightSegmentEntity;
+  toSegment: FlightSegmentEntity;
   flightPolicy: FlightPolicy;
   isDontAllowBook?: boolean;
   id?: string;

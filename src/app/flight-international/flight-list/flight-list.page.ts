@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
 import {
   InternationalFlightService,
   IFilterCondition,
+  ITripInfo,
+  IInternationalFlightSearchModel,
 } from "../international-flight.service";
 import { RefresherComponent } from "src/app/components/refresher";
 import { finalize } from "rxjs/operators";
@@ -17,6 +19,7 @@ import { FlightResultEntity } from "src/app/flight/models/FlightResultEntity";
 import { FlightRouteEntity } from "src/app/flight/models/flight/FlightRouteEntity";
 import { FlightTransferComponent } from "../components/flight-transfer/flight-transfer.component";
 import { environment } from "src/environments/environment";
+import { AppHelper } from "src/app/appHelper";
 interface Iisblue {
   isshow: false;
 }
@@ -30,6 +33,7 @@ export class FlightListPage implements OnInit, OnDestroy {
   private subscription = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
   private pageSize = 12;
+  searchModel: IInternationalFlightSearchModel;
   condition: IFilterCondition;
   @ViewChild(RefresherComponent, { static: true })
   refresher: RefresherComponent;
@@ -37,6 +41,7 @@ export class FlightListPage implements OnInit, OnDestroy {
   @ViewChild(IonContent, { static: true }) content: IonContent;
   dialogShow: Iisblue[];
   flightRoutes: FlightRouteEntity[];
+  curTrip: ITripInfo;
   constructor(
     private flightService: InternationalFlightService,
     public modalController: ModalController,
@@ -45,9 +50,49 @@ export class FlightListPage implements OnInit, OnDestroy {
   private scrollToTop() {
     this.content.scrollToTop();
   }
+  onSelectTrip(flightRoute: FlightRouteEntity) {
+    if (this.searchModel && this.searchModel.trips) {
+      let trip = this.searchModel.trips.find((it) => !it.bookInfo);
+      if (!trip) {
+        trip = this.searchModel.trips[this.searchModel.trips.length - 1];
+      }
+      trip.bookInfo = {
+        flightPolicy: null,
+        fromSegment: flightRoute.fromSegment,
+        toSegment: flightRoute.toSegment,
+        id: AppHelper.uuid(),
+      };
+      this.flightService.setSearchModelSource(this.searchModel);
+      this.doRefresh();
+    }
+  }
+  onReselectTrip(trip: ITripInfo) {
+    if (this.searchModel && this.searchModel.trips && trip) {
+      const index = this.searchModel.trips.findIndex((it) => it.id == trip.id);
+      this.searchModel.trips = this.searchModel.trips.map((it, idx) => {
+        if (idx >= index) {
+          it.bookInfo = null;
+        }
+        return it;
+      });
+      this.flightService.setSearchModelSource(this.searchModel);
+      this.doRefresh();
+    }
+  }
   ngOnInit() {
     this.doRefresh(environment.production);
     this.subscriptions.push(this.subscription);
+    this.subscriptions.push(
+      this.flightService.getSearchModelSource().subscribe((s) => {
+        this.searchModel = s;
+        if (s && s.trips) {
+          this.curTrip = s.trips.find((it) => !it.bookInfo);
+          if (!this.curTrip) {
+            this.curTrip = s.trips[s.trips.length - 1];
+          }
+        }
+      })
+    );
     this.subscriptions.push(
       this.flightService.getFilterConditionSource().subscribe((c) => {
         this.condition = c;
@@ -57,7 +102,7 @@ export class FlightListPage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
-  doRefresh(loadFromServer = false) {
+  doRefresh(loadFromServer = false, keepFilterCondition = false) {
     this.flightRoutes = [];
     this.scroller.disabled = true;
     this.flightService.setFilterConditionSource({
@@ -67,7 +112,7 @@ export class FlightListPage implements OnInit, OnDestroy {
     });
     this.subscription.unsubscribe();
     this.subscription = this.flightService
-      .getFlightList(loadFromServer)
+      .getFlightList({ forceFetch: loadFromServer, keepFilterCondition })
       .pipe(
         finalize(() => {
           this.refresher.complete();
@@ -167,7 +212,7 @@ export class FlightListPage implements OnInit, OnDestroy {
     await modal.present();
     const r = await modal.onDidDismiss();
     if (r && r.data) {
-      this.doRefresh();
+      this.doRefresh(false, true);
     }
   }
   async onTransfer(flight: FlightRouteEntity) {

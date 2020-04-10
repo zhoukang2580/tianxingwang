@@ -3,8 +3,21 @@
     <ion-buttons slot='start'>
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-title>航班列表</ion-title>
+    <ion-title>
+      {{curTrip?.fromCity?.CityName}}--{{curTrip?.toCity?.CityName}}
+      <div>{{curTrip?.date}}</div>
+    </ion-title>
   </ion-toolbar>
+  <ng-container *ngFor='let trip of searchModel?.trips'>
+    <ion-row *ngIf='trip?.bookInfo' (click)='onReselectTrip(trip)'>
+      <ion-col>
+        <div>
+          {{trip?.fromCity?.CityName}}--{{trip?.toCity?.CityName}}
+          <ion-text color='medium'>({{trip.date}} {{trip?.bookInfo?.fromSegment?.TakeoffTime?.replace("T"," ")}})</ion-text>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ng-container>
   <ion-row class="row-top">
     <ion-col size="0.8">
       <!-- logo -->
@@ -18,7 +31,7 @@
     <ion-col>
       当地时间
     </ion-col>
-    <ion-col size="3.1">
+    <ion-col size="3.1" class="ion-text-nowrap">
       多程总价(含税)
     </ion-col>
   </ion-row>
@@ -30,7 +43,8 @@
   </app-refresher>
   <ng-container>
     <div class="content-top">
-      <app-flight-list-item [flight]='flight' (transfer)='onTransfer(flight)' *ngFor='let flight of flightRoutes'>
+      <app-flight-list-item [flight]='flight' (transfer)='onTransfer(flight)' *ngFor='let flight of flightRoutes'
+        (click)='onSelectTrip(flight)'>
       </app-flight-list-item>
     </div>
   </ng-container>
