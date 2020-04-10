@@ -8,7 +8,7 @@ import {
   ToastController,
   ModalController,
   Platform,
-  LoadingController
+  LoadingController,
 } from "@ionic/angular";
 import { LanguageHelper } from "./languageHelper";
 import { TimeoutError } from "rxjs";
@@ -41,7 +41,7 @@ export class AppHelper {
     this.modalController = modalController;
   }
   static showLoading(message: string, duration = 0) {
-    return this.loadingController.create({ message, duration }).then(l => {
+    return this.loadingController.create({ message, duration }).then((l) => {
       l.present();
       return l;
     });
@@ -49,13 +49,13 @@ export class AppHelper {
   static hideLoading() {
     this.loadingController
       .getTop()
-      .then(t => {
+      .then((t) => {
         // console.log(t)
         if (t) {
           t.dismiss();
         }
       })
-      .catch(e => {
+      .catch((e) => {
         console.error(e);
       });
   }
@@ -94,15 +94,15 @@ export class AppHelper {
         duration: userOp ? 0 : duration,
         buttons: userOp
           ? [{ icon: "close-circle-outline", side: "end", role: "cancel" }]
-          : []
+          : [],
       });
       if (t) {
         t.present();
         t.onDidDismiss()
-          .then(_ => {
+          .then((_) => {
             resolve();
           })
-          .catch(_ => {
+          .catch((_) => {
             reject();
           });
       }
@@ -137,7 +137,7 @@ export class AppHelper {
           handler: () => {
             // resolve(false);
             ok = false;
-          }
+          },
         });
       }
       if (confirmText) {
@@ -146,14 +146,14 @@ export class AppHelper {
           handler: () => {
             // resolve(true);
             ok = true;
-          }
+          },
         });
       }
       const a = await this.alertController.create({
         header: LanguageHelper.getMsgTip(),
         message: this.getMsg(msg),
         backdropDismiss: !userOp,
-        buttons
+        buttons,
       });
       await a.present();
       await a.onDidDismiss();
@@ -216,9 +216,7 @@ export class AppHelper {
     if (local) {
       return Promise.resolve(local);
     }
-    local = AppHelper.uuid(64)
-      .replace(/-/g, "")
-      .substr(0, 32);
+    local = AppHelper.uuid(64).replace(/-/g, "").substr(0, 32);
     console.log("新生成的uuid " + local);
     AppHelper.setStorage<string>("_UUId_DeviceId_", local);
     return Promise.resolve(local);
@@ -254,11 +252,11 @@ export class AppHelper {
         const subscription = this.httpClient
           .get("assets/config.xml", { responseType: "arraybuffer" })
           .subscribe(
-            r => {
+            (r) => {
               // console.log(r);
               const fr = new FileReader();
               fr.readAsText(new Blob([r]));
-              fr.onerror = e => {
+              fr.onerror = (e) => {
                 // console.error("读取出错");
                 reject(e);
               };
@@ -268,7 +266,7 @@ export class AppHelper {
                   const configXmlStr = (fr.result || "") as string;
                   const p = configXmlStr
                     .split("/>")
-                    .find(it => it.includes("WECHATAPPID"));
+                    .find((it) => it.includes("WECHATAPPID"));
                   const appId =
                     p &&
                     p
@@ -286,7 +284,7 @@ export class AppHelper {
                 }
               };
             },
-            e => {
+            (e) => {
               // console.error(e);
               reject(e);
             },
@@ -321,7 +319,7 @@ export class AppHelper {
         },
         false
       );
-    }).catch(ex => {
+    }).catch((ex) => {
       // this.alert(JSON.stringify(ex));
       return "";
     });
@@ -399,7 +397,7 @@ export class AppHelper {
     }
   }
   static isWechatMiniAsync() {
-    return new Promise<boolean>(resolve => {
+    return new Promise<boolean>((resolve) => {
       function ready() {
         console.log(window["__wxjs_environment"] === "miniprogram"); // true
         resolve(window["__wxjs_environment"] === "miniprogram");
@@ -593,22 +591,8 @@ export class AppHelper {
         this._queryParamers[name] = decodeURIComponent(value);
       }
     }
-    const query = AppHelper.getQueryParamers();
-    if (query) {
-      if (
-        query.unroutehome &&
-        (query.unroutehome as string).toLowerCase().includes("true")
-      ) {
-        if ((query.unroutehome as string).includes("#")) {
-          const [unroutehome, path] = (query.unroutehome as string).split("#");
-          query.unroutehome = unroutehome;
-          query.path = path;
-        }
-      }
-      const path = query.path;
-      query.path = (path || "").includes("?") ? path.split("?")[0] : path;
-    }
   }
+  
   static setQueryParamers(key: string, value: string) {
     try {
       this._queryParamers[key] = value;
@@ -701,7 +685,7 @@ export class AppHelper {
     // console.log(args);
     if (args && args.length) {
       const maxdigits = args
-        .filter(it => `${it}`.includes("."))
+        .filter((it) => `${it}`.includes("."))
         .sort((a, b) => `${b}`.length - `${a}`.length)[0];
       if (maxdigits) {
         const len = `${maxdigits}`.split(".")[1].length;
