@@ -56,9 +56,7 @@ export class FlightDialogComponent implements OnInit, OnDestroy {
     // using the injected ModalController this page
     // can "dismiss" itself and optionally pass back data
     this.onReset();
-    this.modalController.dismiss({
-      'dismissed': true
-    });
+    this.modalController.dismiss();
   }
   onReset() {
     this.directfly.onReset();
