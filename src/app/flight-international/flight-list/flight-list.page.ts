@@ -60,6 +60,7 @@ export class FlightListPage implements OnInit, OnDestroy {
         flightPolicy: null,
         fromSegment: flightRoute.fromSegment,
         toSegment: flightRoute.toSegment,
+        flightRoute: flightRoute,
         id: AppHelper.uuid(),
       };
       this.flightService.setSearchModelSource(this.searchModel);

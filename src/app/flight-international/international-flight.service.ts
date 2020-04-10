@@ -25,6 +25,7 @@ import { MockInternationalFlightListData } from "./mock-data";
 import { environment } from "src/environments/environment";
 import { IdentityEntity } from "../services/identity/identity.entity";
 import { LanguageHelper } from "../languageHelper";
+import { FlightRouteEntity } from "../flight/models/flight/FlightRouteEntity";
 export interface IFlightCabinType {
   label:
     | "经济舱"
@@ -542,16 +543,13 @@ export class InternationalFlightService {
     return data;
   }
   private initParagraphCondition(data: FlightResultEntity) {
-    let paragraph = 1;
+    let flightRoute: FlightRouteEntity;
     const m = this.getSearchModel();
     if (m) {
       if (m.voyageType == FlightVoyageType.MultiCity) {
-        const pra = m.trips && m.trips.findIndex((it) => !it.bookInfo);
-        if (pra > -1) {
-          paragraph = pra + 1;
-        } else {
-          paragraph = m.trips.length; // 默认最后一个
-        }
+        const one = m.trips && m.trips.find((it) => it.bookInfo);
+        flightRoute =
+          one && one.bookInfo && one.bookInfo && one.bookInfo.flightRoute;
       }
     }
     const condition = this.getFilterCondition();
@@ -561,10 +559,21 @@ export class InternationalFlightService {
     condition.isFilter = false;
     condition.timeSpan = { lower: 0, upper: 24 };
     condition.isDirectFly = false;
-    if (data && data.FlightRoutesData && paragraph) {
-      data.FlightRoutes = data.FlightRoutesData.filter(
-        (r) => r.Paragraphs == paragraph
-      );
+    if (data && data.FlightRoutesData) {
+      if (!flightRoute) {
+        data.FlightRoutes = data.FlightRoutesData.filter(
+          (r) => r.Paragraphs == 1
+        );
+      } else {
+        const fares = data.FlightFares.filter((it) =>
+          it.FlightRouteIds.some((f) => f == flightRoute.Id)
+        )
+          .map((it) => it.FlightRouteIds)
+          .reduce((acc, it) => [...acc, it], [] as string[]);
+        data.FlightRoutes = data.FlightRoutesData.filter((it) =>
+          fares.some((f) => f == it.Id)
+        );
+      }
       data.FlightRoutes.forEach((r) => {
         if (r.fromSegment) {
           const s = r.fromSegment;
@@ -816,6 +825,7 @@ export interface IInternationalFlightSearchModel {
 export interface IInternationalFlightSegmentInfo {
   fromSegment: FlightSegmentEntity;
   toSegment: FlightSegmentEntity;
+  flightRoute: FlightRouteEntity;
   flightPolicy: FlightPolicy;
   isDontAllowBook?: boolean;
   id?: string;
