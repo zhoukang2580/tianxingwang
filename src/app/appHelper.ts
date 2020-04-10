@@ -602,7 +602,7 @@ export class AppHelper {
         if ((query.unroutehome as string).includes("#")) {
           const [unroutehome, path] = (query.unroutehome as string).split("#");
           query.unroutehome = unroutehome;
-          query.path = path;
+          query.path = (path || "").includes("?") ? path.split("?")[0] : path;
         }
       }
     }
