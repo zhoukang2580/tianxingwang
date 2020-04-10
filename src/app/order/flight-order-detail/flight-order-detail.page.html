@@ -195,6 +195,7 @@
                     </ion-col>
                     <ion-col>
                       {{trip.FlightNumber}}
+                      <span *ngIf="trip.CodeShareNumber">(共享{{trip?.CodeShareNumber}})</span>
                     </ion-col>
                   </ion-row>
                   <ion-row>
@@ -217,6 +218,14 @@
                       <div>
                         {{trip?.ToCityName}}-{{trip?.ToAirportName}}({{trip?.ToAirport}}){{trip?.ToTerminal}}
                       </div>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row *ngIf="flightTicket.FullTicketNo">
+                    <ion-col size="3">
+                      票号
+                    </ion-col>
+                    <ion-col>
+                      {{flightTicket?.FullTicketNo}}
                     </ion-col>
                   </ion-row>
                 </ng-container>
@@ -361,7 +370,8 @@
                       航班号
                     </ion-col>
                     <ion-col>
-                      {{trip.FlightNumber}}
+                    {{trip.FlightNumber}}
+                    <span *ngIf="trip.CodeShareNumber">(共享:{{trip?.CodeShareNumber}})</span>
                     </ion-col>
                   </ion-row>
                   <ion-row>
@@ -387,6 +397,14 @@
                     </ion-col>
                   </ion-row>
                 </ng-container>
+                <ion-row>
+                  <ion-col size='3'>
+                    票号
+                  </ion-col>
+                  <ion-col>
+                    {{ticket.FullTicketNo}}
+                  </ion-col>
+                </ion-row>
                 <ng-container *ngIf='getPassengerCostOrgInfo(ticket) as info'>
                   <ion-row>
                     <ion-col size='3'>成本中心</ion-col>
