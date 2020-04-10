@@ -430,8 +430,10 @@
                       <ion-col size='3'>
                         行程
                       </ion-col>
-                      <ion-col *ngIf="getInsuranceTravel(ticket.OrderFlightTrips) as insurance">
-                        <!-- {{insurance}} -->
+                      <ion-col >
+                          {{orderInsurance?.VariablesJsonObj?.trip?.TakeoffTime?.substr(0,10)}}
+                          {{orderInsurance?.VariablesJsonObj?.trip?.FromCityName}} ---
+                          {{orderInsurance?.VariablesJsonObj?.trip?.ToCityName}}
                       </ion-col>
                     </ion-row>
                     <ion-row>
