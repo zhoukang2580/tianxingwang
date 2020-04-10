@@ -45,19 +45,16 @@
     </ng-template>
   </ng-container>
   <ng-template #addTempl>
-    <ion-list>
-      <ion-radio-group value="{{selectedCredentialId}}">
+    <ion-radio-group value="{{selectedCredentialId}}">
+      <ion-list>
         <ng-container *ngFor='let item of staffCredentails' class='ion-margin-bottom'>
           <ng-container *ngIf='item!=vmNewCredential'>
-            <ion-item-divider color='primary'>
-              <ion-item slot='start' style='width: 100%' lines='none'>
-                <ion-label>
-                  {{item.Type|credential}}
-                </ion-label>
-                <ion-radio slot='end' name='credentialType' (ionSelect)='onSelectCredential(item.Id)'
-                  value="{{item.Id}}">
-                </ion-radio>
-              </ion-item>
+            <ion-item-divider color='primary' (click)='onSelectCredential(item.Id)'>
+              <ion-label>
+                {{item.Type|credential}}
+              </ion-label>
+              <ion-radio slot='end' name='credentialType' class="ion-margin-end" value="{{item.Id}}">
+              </ion-radio>
             </ion-item-divider>
             <ion-item lines='none' (click)='onSelectCredential(item.Id)'>
               <div class='credential-item'>
@@ -122,18 +119,15 @@
           </ng-container>
         </ng-container>
         <ng-container *ngIf='isShowNewCredential'>
-          <ion-item-divider color='primary'>
-            <ion-item slot='start' style='width: 100%;' lines='none'>
-              <ion-label>
-                <ion-text *ngIf='!vmNewCredential?.isNotWhiteList'>此人其他证件：</ion-text>
-                <ion-text *ngIf='vmNewCredential?.isNotWhiteList'>证件：</ion-text>
-              </ion-label>
-              <ion-radio slot='end' name='credentialType' value="{{vmNewCredential?.Id}}"
-                (ionSelect)='onSelectCredential(vmNewCredential?.Id)'>
-              </ion-radio>
-            </ion-item>
+          <ion-item-divider color='primary'  (click)='onSelectCredential(vmNewCredential?.Id)'>
+            <ion-label>
+              <ion-text *ngIf='!vmNewCredential?.isNotWhiteList'>此人其他证件：</ion-text>
+              <ion-text *ngIf='vmNewCredential?.isNotWhiteList'>证件：</ion-text>
+            </ion-label>
+            <ion-radio slot='end' class="ion-margin-end" name='credentialType' value="{{vmNewCredential?.Id}}">
+            </ion-radio>
           </ion-item-divider>
-          <ion-grid #addForm>
+          <ion-grid #addForm (click)='onSelectCredential(vmNewCredential?.Id)'>
             <ion-row>
               <ion-col class="id-type ion-no-margin ion-no-padding">
                 <ion-item lines='none' class='ion-no-margin ion-no-padding'>
@@ -268,22 +262,19 @@
             </ion-row>
           </ion-grid>
         </ng-container>
-        <ng-container *ngIf='frqPassengerCredentials&&frqPassengerCredentials.length'>
+        <ng-container *ngIf='frqPassengerCredentials?.length'>
           <ion-item-divider color='primary' class='ion-margin-top'>
             <ion-text color='secondary'>常旅客</ion-text>
           </ion-item-divider>
-          <ng-container *ngFor='let item of frqPassengerCredentials' (click)='onSelectCredential(item.Id)'>
-            <ion-item-divider color='primary'>
-              <ion-item slot='start' style='width: 100%' lines='none'>
-                <ion-label>
-                  {{item.Type|credential}}
-                </ion-label>
-                <ion-radio slot='end' name='credentialType' value="{{item.Id}}"
-                  (ionSelect)='onSelectCredential(item.Id)'>
-                </ion-radio>
-              </ion-item>
+          <ng-container *ngFor='let item of frqPassengerCredentials' >
+            <ion-item-divider color='primary' (click)='onSelectCredential(item.Id)'>
+              <ion-label>
+                {{item.Type|credential}}
+              </ion-label>
+              <ion-radio slot='end' name='credentialType' class="ion-margin-end" value="{{item.Id}}">
+              </ion-radio>
             </ion-item-divider>
-            <ion-item lines='none'>
+            <ion-item lines='none' (click)='onSelectCredential(item.Id)'>
               <div class='credential-item'>
                 <ion-row>
                   <ion-col>
@@ -345,8 +336,8 @@
             </ion-item>
           </ng-container>
         </ng-container>
-      </ion-radio-group>
-    </ion-list>
+      </ion-list>
+    </ion-radio-group>
   </ng-template>
 </ion-content>
 <ion-footer>

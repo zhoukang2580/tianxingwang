@@ -450,6 +450,7 @@ export class SelectPassengerPage
     const id2 = uuid.match(/\d+/g) ? uuid.match(/\d+/g).join("") : "";
     return id2 || id;
   }
+
   onSelectCredential(credentialId: string) {
     console.log("onSelectCredential", credentialId);
     this.selectedCredentialId = credentialId;
