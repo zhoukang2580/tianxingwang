@@ -600,12 +600,13 @@ export class AppHelper {
         (query.unroutehome as string).toLowerCase().includes("true")
       ) {
         if ((query.unroutehome as string).includes("#")) {
-          const [unroutehome, pa] = (query.unroutehome as string).split("#");
-          const path = decodeURIComponent(pa || "");
+          const [unroutehome, path] = (query.unroutehome as string).split("#");
           query.unroutehome = unroutehome;
-          query.path = (path || "").includes("?") ? path.split("?")[0] : path;
+          query.path = path;
         }
       }
+      const path = query.path;
+      query.path = (path || "").includes("?") ? path.split("?")[0] : path;
     }
   }
   static setQueryParamers(key: string, value: string) {
