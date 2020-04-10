@@ -23,12 +23,30 @@ try {
     window["vConsole"] = new window["VConsole"]();
   }
   AppHelper.initlizeQueryParamers();
+  processPath();
   console.log(
     "initlizeQueryParamers getQueryParamers ",
     AppHelper.getQueryParamers()
   );
 } catch (e) {
   console.error(e);
+}
+function processPath() {
+  const query = AppHelper.getQueryParamers();
+  if (query) {
+    if (
+      query.unroutehome &&
+      (query.unroutehome as string).toLowerCase().includes("true")
+    ) {
+      if ((query.unroutehome as string).includes("#")) {
+        const [unroutehome, path] = (query.unroutehome as string).split("#");
+        query.unroutehome = unroutehome;
+        query.path = path;
+      }
+    }
+    const path2 = query.path;
+    query.path = (path2 || "").includes("?") ? path2.split("?")[0] : path2;
+  }
 }
 const meta = document.createElement("meta");
 const head = document.querySelector("head");
@@ -37,14 +55,14 @@ meta.httpEquiv = `Content-Security-Policy`;
 const bootstrap = () =>
   platformBrowserDynamic()
     .bootstrapModule(AppModule)
-    .then(moduleRef => {
+    .then((moduleRef) => {
       // 为了设置模式
       moduleRef.injector.get(ThemeService);
       moduleRef.injector.get(MapService);
       AppHelper.loadingController = moduleRef.injector.get(LoadingController);
       return moduleRef;
     })
-    .catch(err => {
+    .catch((err) => {
       console.log(err);
       return null;
     });
@@ -80,7 +98,7 @@ if (environment.production) {
     hmrBootstrap(module, bootstrap);
   } else {
     console.log("Amm..HMR is not enabled for webpack");
-    bootstrap().then(moduleRef => {
+    bootstrap().then((moduleRef) => {
       const applicationRef = moduleRef.injector.get(ApplicationRef);
       const appComponent = applicationRef.components[0];
       enableDebugTools(appComponent);

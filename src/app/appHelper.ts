@@ -591,25 +591,8 @@ export class AppHelper {
         this._queryParamers[name] = decodeURIComponent(value);
       }
     }
-    this.processPath();
   }
-  private static processPath() {
-    const query = AppHelper.getQueryParamers();
-    if (query) {
-      if (
-        query.unroutehome &&
-        (query.unroutehome as string).toLowerCase().includes("true")
-      ) {
-        if ((query.unroutehome as string).includes("#")) {
-          const [unroutehome, path] = (query.unroutehome as string).split("#");
-          query.unroutehome = unroutehome;
-          query.path = path;
-        }
-      }
-      const path2 = query.path;
-      query.path = (path2 || "").includes("?") ? path2.split("?")[0] : path2;
-    }
-  }
+  
   static setQueryParamers(key: string, value: string) {
     try {
       this._queryParamers[key] = value;
