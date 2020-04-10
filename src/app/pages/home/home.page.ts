@@ -31,7 +31,7 @@ export class HomePage implements OnInit {
       const path = AppHelper.getValueFromQueryString("app_path", txt);
       console.log("txt " + txt);
       // tslint:disable-next-line: max-line-length
-      // http://test.app.testskytrip.com/Home/www/index.html?hrid=1&hrName=东美在线&App_Path=hr-invitation&organizationId=100000013&costCenterName=(A008)产品技术部&policyId=100000005&costCenterName=测试政策&roleIds=2&roleNames=行政人事
+      // http://test.app.testskytrip.com/Home/www/index.html?hrid=163&hrName=上海东美在线旅行社有限公司&App_Path=hr-invitation&costCenterId=6300000001&costCenterName=财务部&organizationId=6300000007&organizationName=(A007)综合业务部&policyId=6300000001&policyName=一般政策&roleIds=25&roleNames=新秘书
       const params = {
         hrid: "",
         hrName: "",
@@ -39,7 +39,9 @@ export class HomePage implements OnInit {
         costCenterId: "",
         costCenterName: "",
         organizationId: "",
+        organizationName: "",
         policyId: "",
+        policyName: "",
         roleIds: "",
         roleNames: "",
       };
