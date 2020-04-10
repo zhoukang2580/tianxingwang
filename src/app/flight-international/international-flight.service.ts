@@ -382,12 +382,11 @@ export class InternationalFlightService {
     const result: IResponse<FlightResultEntity> = {} as any;
     result.Data = this.flightListResult;
     const { forceFetch, keepFilterCondition } = query;
-    if (!environment.production || !forceFetch) {
+    if (!environment.production) {
       result.Data = this.initFlightRouteSegments(
         MockInternationalFlightListData as any
       );
       if (
-        forceFetch ||
         !this.flightListResult ||
         !this.flightListResult.FlightRoutes ||
         !this.flightListResult.FlightRoutes.length
