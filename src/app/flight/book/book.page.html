@@ -11,14 +11,15 @@
   <ng-container *ngIf='!errors else errorTemp'>
     <app-refresher slot='fixed' (ionRefresh)='refresh(true)'></app-refresher>
     <ng-container *ngIf='vmCombindInfos?.length'>
-      <ion-list *ngFor='let combindInfo of vmCombindInfos' lines='none'>
-        <ion-item-divider color='primary' class="backg_w sticky" *ngIf="isShowTop"  >
+      <ion-list *ngFor='let combindInfo of vmCombindInfos;let idx=index;' lines='none'>
+        <ion-item-divider color='primary' class="backg_w sticky" [class.not-sticky]='isDingTalk'  >
           <div style="width: 100%">
-            <!-- <span [(ngModel)]="combindInfo?.modal?.credential.CheckName"></span> -->
             {{combindInfo?.modal?.credential?.CheckName}}
             【{{tmc?.Name}}】
             {{combindInfo?.modal?.credential?.Number}}
-            <ion-label style="text-align:center;font-weight: bold">预订航班信息</ion-label>
+            <ion-label style="text-align:center;font-weight: bold">
+              <ng-container *ngIf='isRoundTrip'>第{{idx+1}}程</ng-container>
+              航班预订信息</ion-label>
           </div>
         </ion-item-divider>
         <ion-item-group *ngIf='combindInfo?.modal?.bookInfo as s'>
@@ -30,7 +31,6 @@
                     {{s?.flightSegment?.FromCityName}}
                     <ion-text color='dark' style="font-size: 0.7rem;">到</ion-text>
                     {{s?.flightSegment?.ToCityName}}
-                    <!-- {{getTripTip(s)}} -->
                     <span>【{{combindInfo?.modal?.bookInfo?.flightPolicy?.Cabin?.TypeName}}{{s?.flightPolicy?.Cabin?.Discount|discount}}】</span>
                   </ion-text>
                 </strong>

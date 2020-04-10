@@ -10,7 +10,7 @@
       <ion-button fill='clear' *ngIf='(isShowBookInfos$|async) as num' color='secondary' size='small'
         (click)='onShowSelectedInfosPage();isCanleave=true'>已选航班
         <ion-badge slot='end' color='danger'>
-          {{num}}</ion-badge>
+          <ion-text color='light'>{{num}}</ion-text></ion-badge>
       </ion-button>
       <ion-button fill='clear' *ngIf='isSelf' color='secondary' size='small' (click)='onShowStandardDesc();'>差旅标准
       </ion-button>

@@ -1,5 +1,9 @@
 .sticky {
   border-left: 4px solid var(--ion-color-secondary);
+  &:not(.not-sticky) {
+    position: sticky;
+    top: 0;
+  }
 }
 ion-input.TravelNumber {
   opacity: 0.8;

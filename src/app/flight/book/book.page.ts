@@ -114,11 +114,12 @@ export class BookPage implements OnInit, AfterViewInit {
   isCheckingPay: boolean;
   isCanSkipApproval$ = of(false);
   isCanSave = false;
+  isRoundTrip = false;
   appoval: {
     Value: string;
     Text: string;
   };
-  isShowTop: boolean;
+  isDingTalk = AppHelper.isDingtalkH5();
   addContacts: AddContact[] = [];
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent, { static: true }) cnt: IonContent;
@@ -141,16 +142,7 @@ export class BookPage implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
-    this.cnt.getScrollElement().then((el) => {
-      el.onscroll = () => {
-        // console.log(el.scrollTop,"2222");
-        if (el.scrollTop >= 10) {
-          this.isShowTop = true;
-        } else {
-          this.isShowTop = false;
-        }
-      };
-    });
+    this.isRoundTrip = this.flightService.getSearchFlightModel().isRoundTrip;
     this.flightService.setPassengerBookInfosSource(
       this.flightService.getPassengerBookInfos().filter((it) => !!it.bookInfo)
     );
