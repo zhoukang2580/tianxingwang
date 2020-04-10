@@ -600,7 +600,8 @@ export class AppHelper {
         (query.unroutehome as string).toLowerCase().includes("true")
       ) {
         if ((query.unroutehome as string).includes("#")) {
-          const [unroutehome, path] = (query.unroutehome as string).split("#");
+          const [unroutehome, pa] = (query.unroutehome as string).split("#");
+          const path = decodeURIComponent(pa || "");
           query.unroutehome = unroutehome;
           query.path = (path || "").includes("?") ? path.split("?")[0] : path;
         }
