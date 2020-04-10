@@ -24,6 +24,7 @@ import { tap } from "rxjs/operators";
 import { MockInternationalFlightListData } from "./mock-data";
 import { environment } from "src/environments/environment";
 import { IdentityEntity } from "../services/identity/identity.entity";
+import { LanguageHelper } from "../languageHelper";
 export interface IFlightCabinType {
   label:
     | "经济舱"
@@ -729,6 +730,24 @@ export class InternationalFlightService {
   }
   getBookInfoSource() {
     return this.bookInfoSource.asObservable();
+  }
+  addPassengerBookInfo(
+    arg: PassengerBookInfo<IInternationalFlightSegmentInfo>
+  ): Promise<string> {
+    console.log("addPassengerFlightSegments", arg);
+    const infos = this.getBookInfos();
+    if (!arg || !arg.passenger || !arg.credential) {
+      AppHelper.alert(LanguageHelper.Flight.getSelectedFlightInvalideTip());
+      return;
+    }
+    arg.id = AppHelper.uuid();
+    if (!arg.credential.Account || arg.isNotWhitelist) {
+      arg.credential.Account = arg.passenger.Account;
+    }
+    arg.isNotWhitelist = arg.passenger.isNotWhiteList;
+    infos.push(arg);
+    console.log("addPassengerFlightSegments added", arg);
+    this.setBookInfoSource(infos);
   }
   removeBookInfo(
     bookInfo: PassengerBookInfo<IInternationalFlightSegmentInfo>,

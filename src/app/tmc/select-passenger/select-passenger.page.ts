@@ -8,7 +8,11 @@ import { CredentialsEntity } from "../models/CredentialsEntity";
 import { TmcService } from "../tmc.service";
 import { MemberService, MemberCredential } from "../../member/member.service";
 import { CanComponentDeactivate } from "../../guards/candeactivate.guard";
-import { StaffService, StaffBookType } from "../../hr/staff.service";
+import {
+  StaffService,
+  StaffBookType,
+  PolicyEntity,
+} from "../../hr/staff.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { ApiService } from "../../services/api/api.service";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -69,8 +73,9 @@ export class SelectPassengerPage
   implements OnInit, CanComponentDeactivate, AfterViewInit, OnDestroy {
   private keyword: string;
   private isOpenPageAsModal = false; // 设置是否通过modalcontroller打开
-  private forType: FlightHotelTrainType; // isOpenPageAsModal 传入参数
   private bookInfos: PassengerBookInfo<any>[];
+  forType: FlightHotelTrainType; // isOpenPageAsModal 传入参数
+  FlightHotelTrainType = FlightHotelTrainType;
   removeitem: EventEmitter<PassengerBookInfo<any>>; // isOpenPageAsModal 传入参数
   isShow = true;
   vmKeyword: string;
@@ -101,6 +106,7 @@ export class SelectPassengerPage
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChildren("addForm") addForm: QueryList<IonGrid>;
   title = "选择旅客";
+  selectedPassengerPolicy: PolicyEntity;
   constructor(
     public modalController: ModalController,
     private navCtrl: NavController,
@@ -230,7 +236,22 @@ export class SelectPassengerPage
       this.bookInfos$ = this.interHotelService.getBookInfoSource();
     }
     if (this.forType == FlightHotelTrainType.InternationalFlight) {
-      this.bookInfos$ = this.interFlightService.getBookInfoSource();
+      this.bookInfos$ = this.interFlightService.getBookInfoSource().pipe(
+        tap((it) => {
+          if (it && it.length) {
+            const one = it[0];
+            if (
+              one.passenger &&
+              !one.passenger.isNotWhiteList &&
+              one.passenger.Policy
+            ) {
+              this.selectedPassengerPolicy = one.passenger.Policy;
+            }
+          } else {
+            this.selectedPassengerPolicy = null;
+          }
+        })
+      );
     }
     if (this.bookInfos$) {
       this.bookInfos$ = this.bookInfos$.pipe(
@@ -332,7 +353,7 @@ export class SelectPassengerPage
     this.loadMore();
   }
   onSearch(event: any) {
-    console.log("onSearch", event);
+    // console.log("onSearch", event);
     this.loading = true;
     this.staffCredentails = [];
     this.doRefresh((this.vmKeyword || "").trim());
@@ -366,6 +387,20 @@ export class SelectPassengerPage
     this.loading = false;
   }
   async onSelect(s: StaffEntity) {
+    if (this.forType == FlightHotelTrainType.InternationalFlight) {
+      if (s.Policy && s.Policy.Id) {
+        const one = this.interFlightService.getBookInfos()[0];
+        if (
+          one &&
+          !one.isNotWhitelist &&
+          one.passenger.Policy &&
+          one.passenger.Policy.Id != s.Policy.Id
+        ) {
+          AppHelper.toast("不能选择此旅客，其差标与已选旅客差标不一致");
+          return;
+        }
+      }
+    }
     console.log("onSelect", s);
     this.selectedPassenger = s;
     this.vmStaffs = null; // 是否显示搜索列表
@@ -609,6 +644,16 @@ export class SelectPassengerPage
       const bookInfos = this.flightService.getPassengerBookInfos();
       this.checkNewCredentialId(passengerBookInfo, bookInfos);
       this.flightService.addPassengerBookInfo(passengerBookInfo);
+    }
+    if (this.forType == FlightHotelTrainType.InternationalFlight) {
+      const can = this.interFlightService.getBookInfos().length < 9;
+      if (!can) {
+        AppHelper.alert(LanguageHelper.Flight.getCannotBookMorePassengerTip());
+        return false;
+      }
+      const bookInfos = this.interFlightService.getBookInfos();
+      this.checkNewCredentialId(passengerBookInfo, bookInfos);
+      this.interFlightService.addPassengerBookInfo(passengerBookInfo);
     }
     if (this.forType == FlightHotelTrainType.Train) {
       if (this.trainService.getBookInfos().length > 4) {
