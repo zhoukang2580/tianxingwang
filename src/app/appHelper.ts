@@ -605,6 +605,8 @@ export class AppHelper {
           query.path = path;
         }
       }
+      const path = query.path;
+      query.path = (path || "").includes("?") ? path.split("?")[0] : path;
     }
   }
   static setQueryParamers(key: string, value: string) {

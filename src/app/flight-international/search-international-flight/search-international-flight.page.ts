@@ -5,13 +5,13 @@ import {
   IInternationalFlightSegmentInfo,
   IInternationalFlightSearchModel,
   FlightVoyageType,
-  ITripInfo
+  ITripInfo,
 } from "../international-flight.service";
 import { Subscription } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
 import {
   PassengerBookInfo,
-  FlightHotelTrainType
+  FlightHotelTrainType,
 } from "src/app/tmc/tmc.service";
 import { PopoverController } from "@ionic/angular";
 import { ShowStandardDetailsComponent } from "src/app/tmc/components/show-standard-details/show-standard-details.component";
@@ -23,7 +23,7 @@ import { TripType } from "src/app/tmc/models/TripType";
 @Component({
   selector: "app-search-international-flight",
   templateUrl: "./search-international-flight.page.html",
-  styleUrls: ["./search-international-flight.page.scss"]
+  styleUrls: ["./search-international-flight.page.scss"],
 })
 export class SearchInternationalFlightPage
   implements OnInit, OnDestroy, CanComponentDeactivate {
@@ -44,7 +44,7 @@ export class SearchInternationalFlightPage
     return o1 && o2 ? o1 === o2 : false;
   };
   ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   onSelectCity(isFrom: boolean, trip: ITripInfo) {
     if (this.disabled) {
@@ -67,9 +67,9 @@ export class SearchInternationalFlightPage
     const p = await this.popoverCtrl.create({
       component: ShowStandardDetailsComponent,
       componentProps: {
-        details: s.Policy.FlightDescription.split(",")
+        details: s.Policy.FlightDescription.split(","),
       },
-      cssClass: "ticket-changing"
+      cssClass: "ticket-changing",
     });
     p.present();
   }
@@ -80,7 +80,7 @@ export class SearchInternationalFlightPage
     // console.log(evt.detail.value);
     this.flightService.setSearchModelSource({
       ...this.flightService.getSearchModel(),
-      voyageType: evt.detail.value
+      voyageType: evt.detail.value,
     });
   }
   onSwapCity(trip: { fromCity: TrafficlineEntity; toCity: TrafficlineEntity }) {
@@ -97,7 +97,7 @@ export class SearchInternationalFlightPage
   onSelectPassenger() {
     this.isCanleave = true;
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
-      queryParams: { forType: FlightHotelTrainType.InternationalFlight }
+      queryParams: { forType: FlightHotelTrainType.InternationalFlight },
     });
   }
   async onSelecFlyDate(isFrom: boolean, trip: ITripInfo) {
@@ -109,20 +109,25 @@ export class SearchInternationalFlightPage
   onRemoveTrip(trip: ITripInfo) {
     if (this.searchFlightModel && trip) {
       this.searchFlightModel.trips = this.searchFlightModel.trips.filter(
-        it => it.id != trip.id
+        (it) => it.id != trip.id
       );
       this.flightService.setSearchModelSource(this.searchFlightModel);
     }
   }
   ngOnInit() {
     try {
-      this.staffService.isSelfBookType().then(s => {
+      this.staffService.isSelfBookType().then((s) => {
         this.isSelf = s;
       });
       this.subscriptions.push(
-        this.flightService.getSearchModelSource().subscribe(s => {
+        this.flightService.getSearchModelSource().subscribe((s) => {
           console.log(s);
           this.searchFlightModel = s;
+        })
+      );
+      this.subscriptions.push(
+        this.flightService.getBookInfoSource().subscribe((infos) => {
+          this.selectedPassengers = infos;
         })
       );
     } catch (e) {
