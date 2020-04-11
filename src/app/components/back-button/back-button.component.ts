@@ -7,18 +7,19 @@ import {
   ElementRef,
   Optional,
   Attribute,
-  Input
+  Input,
 } from "@angular/core";
-import { CandeactivateGuard } from "src/app/guards/candeactivate.guard";
+import { AppHelper } from "src/app/appHelper";
 
 @Component({
   selector: "app-back-button",
   templateUrl: "./back-button.component.html",
-  styleUrls: ["./back-button.component.scss"]
+  styleUrls: ["./back-button.component.scss"],
 })
 export class BackButtonComponent implements OnInit, AfterViewInit {
   private curUrl: string;
   isIos = false;
+  isShow = true || AppHelper.isApp();
   @Input() isBackHome;
   @Input() customeBack: boolean;
   @Input() backFn: (...args) => any;
@@ -43,7 +44,7 @@ export class BackButtonComponent implements OnInit, AfterViewInit {
     }
   }
   onBackHome() {
-    this.navCtrl.setDirection("root",true);
+    this.navCtrl.setDirection("root", true);
     this.router.navigate([""]);
   }
   backToPrePage(evt?: CustomEvent) {
@@ -64,16 +65,37 @@ export class BackButtonComponent implements OnInit, AfterViewInit {
       //   "customeback " + this.customeback
       // );
       requestAnimationFrame(() => {
-        const isBack =
-          this.router.url.split("?")[0] == this.curUrl.split("?")[0];
-        if (isBack) {
-          this.navCtrl.navigateBack(this.defaultHref || "");
+        try {
+          const path = AppHelper.getNormalizedPath(this.router.url)
+          const curPath = AppHelper.getNormalizedPath(this.curUrl);
+          const isBack = path == curPath;
+          if (isBack) {
+            const query = AppHelper.getQueryParamers();
+            this.navCtrl.navigateBack(
+              this.defaultHref ||
+              query.routehome ||
+              (query.unroutehome == "true" && query.path) ||
+              ""
+            );
+          }
+        } catch{
+
         }
       });
     });
   }
-  ngOnInit() {}
+  ngOnInit() { }
   ngAfterViewInit() {
-    this.curUrl = this.router.url;
+    this.curUrl = this.router.url;// /mms-goods-detail?id=54340000001351
+    const query = AppHelper.getQueryParamers();
+    if (query && query.unroutehome == "true" && query.path) {
+      const curPath = AppHelper.getNormalizedPath(this.curUrl);
+      const queryPath: string = AppHelper.getNormalizedPath(query.path);
+      console.log("unroutehome curPath =" + curPath, `query.path=${queryPath}`)
+      this.isShow =
+        !this.curUrl.toLowerCase().includes(queryPath.toLowerCase()) ||
+        (queryPath as string).toLowerCase() != curPath;
+    }
   }
+
 }

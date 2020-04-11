@@ -11,6 +11,8 @@ import { LoadingController } from "@ionic/angular";
 import { MapService } from "./app/services/map/map.service";
 // const module = window["module"];
 try {
+  AppHelper.initlizeQueryParamers();
+  processPath();
   console.log("url,locationurl", window.location.href);
   if (
     window["VConsole"] &&
@@ -22,8 +24,6 @@ try {
     }
     window["vConsole"] = new window["VConsole"]();
   }
-  AppHelper.initlizeQueryParamers();
-  processPath();
   console.log(
     "initlizeQueryParamers getQueryParamers ",
     AppHelper.getQueryParamers()
@@ -33,7 +33,13 @@ try {
 }
 function processPath() {
   const query = AppHelper.getQueryParamers();
+  let hrefPath = AppHelper.getNormalizedPath(window.location.href);
   if (query) {
+    if (hrefPath) {
+      if (!query.path) {
+        query.path = hrefPath;
+      }
+    }
     if (
       query.unroutehome &&
       (query.unroutehome as string).toLowerCase().includes("true")
@@ -45,7 +51,7 @@ function processPath() {
       }
     }
     const path2 = query.path;
-    query.path = (path2 || "").includes("?") ? path2.split("?")[0] : path2;
+    query.path = AppHelper.getNormalizedPath(path2);
   }
 }
 const meta = document.createElement("meta");

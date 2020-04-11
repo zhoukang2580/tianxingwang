@@ -570,6 +570,16 @@ export class AppHelper {
     }
     return path;
   }
+  static getNormalizedPath(path: string) {
+    if (!path) {
+      return path;
+    }
+    path = decodeURIComponent(path);
+    path = path.includes("?") ? path.split("?")[0] : path;
+    path = path.includes("#") ? path.split("#")[1] : path;
+    path = path.startsWith("/") ? path.substr(1) : path;
+    return path;
+  }
   static md5Digest(content: string, toLowerCase: boolean = true) {
     if (toLowerCase) {
       return `${md5(content)}`.toLowerCase();
