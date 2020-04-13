@@ -44,6 +44,7 @@ export const routes: Routes = [
         m => m.TrainOrderDetailPageModule
       )
   }
+
 ];
 @NgModule({
   declarations: [],
