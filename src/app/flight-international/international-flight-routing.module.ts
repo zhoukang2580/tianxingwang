@@ -21,10 +21,9 @@ const routes: Routes = [
     loadChildren: () => import('./flight-list/flight-list.module').then( m => m.FlightListPageModule)
   },
   {
-    path: 'flight-list-detail',
-    loadChildren: () => import('./flight-list-detail/flight-list-detail.module').then( m => m.FlightListDetailPageModule)
-  }
-
+    path: 'selected-trip-info',
+    loadChildren: () => import('./selected-trip-info/selected-trip-info.module').then( m => m.SelectedTripInfoPageModule)
+  },
 ];
 
 @NgModule({

@@ -1,0 +1,15 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>已选行程</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ng-container>
+    <ion-row *ngFor="let trip of this.searchModel?.trips;let i=index;">
+      <ion-col>
+       第{{i+1}}程
+      </ion-col>
+    </ion-row>
+  </ng-container>
+</ion-content>

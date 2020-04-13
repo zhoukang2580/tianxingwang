@@ -20,6 +20,7 @@ import { FlightRouteEntity } from "src/app/flight/models/flight/FlightRouteEntit
 import { FlightTransferComponent } from "../components/flight-transfer/flight-transfer.component";
 import { environment } from "src/environments/environment";
 import { AppHelper } from "src/app/appHelper";
+import { Router } from '@angular/router';
 interface Iisblue {
   isshow: false;
 }
@@ -44,6 +45,7 @@ export class FlightListPage implements OnInit, OnDestroy {
   flightRoutes: FlightRouteEntity[];
   curTrip: ITripInfo;
   constructor(
+    private router: Router,
     private flightService: InternationalFlightService,
     public modalController: ModalController,
     public popoverController: PopoverController
@@ -58,6 +60,7 @@ export class FlightListPage implements OnInit, OnDestroy {
       let trip = this.searchModel.trips.find((it) => !it.bookInfo);
       if (!trip) {
         trip = this.searchModel.trips[this.searchModel.trips.length - 1];
+
       }
       trip.bookInfo = {
         flightPolicy: null,
@@ -67,9 +70,10 @@ export class FlightListPage implements OnInit, OnDestroy {
         id: AppHelper.uuid(),
       };
       this.flightService.setSearchModelSource(this.searchModel);
-      if(trip){
-        console.log(1111);
-        
+      trip = this.searchModel.trips.find((it) => !it.bookInfo);
+      if(!trip){
+        this.router.navigate(["selected-trip-info"]);
+        return
       }
       this.doRefresh();
     }
@@ -107,11 +111,7 @@ export class FlightListPage implements OnInit, OnDestroy {
         this.condition = c;
       })
     );
-    
- 
-    
     console.log(this.searchModel.trips.map(it=>it.bookInfo),"this.searchModel.trips.length");
-    
   }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
