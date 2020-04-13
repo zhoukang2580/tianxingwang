@@ -19,6 +19,10 @@ const routes: Routes = [
   {
     path: 'international-flight-list',
     loadChildren: () => import('./flight-list/flight-list.module').then( m => m.FlightListPageModule)
+  },
+  {
+    path: 'flight-list-detail',
+    loadChildren: () => import('./flight-list-detail/flight-list-detail.module').then( m => m.FlightListDetailPageModule)
   }
 
 ];

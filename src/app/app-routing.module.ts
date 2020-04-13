@@ -111,6 +111,17 @@ const routes: Routes = [
     path: "**",
     loadChildren: () =>
       import("./page404/page404.module").then(m => m.Page404PageModule)
+  },
+  {
+    path: "flight-order-detail",
+    loadChildren: () =>
+      import("./order/flight-order-detail/flight-order-detail.module").then(
+        m => m.FlightOrderDetailPageModule
+      )
+  },
+  {
+    path: 'hotel-order-detail',
+    loadChildren: () => import('./order/hotel-order-detail/hotel-order-detail.module').then( m => m.HotelOrderDetailPageModule)
   }
 
 ];

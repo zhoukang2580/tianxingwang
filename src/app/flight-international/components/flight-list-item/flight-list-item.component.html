@@ -1,6 +1,6 @@
 <ion-row class="paddingtop" *ngIf='flight'>
     <ion-col size="0.8">
-      <div class="logo">
+      <div class="logo" [class.margin-t11]="flight.toSegment?.Variables?.AddDaysTip&&flight.toSegment?.Variables?.AddDaysTip>'0'" >
         <img [src]="flight.fromSegment.AirlineSrc">
       </div>
     </ion-col>
