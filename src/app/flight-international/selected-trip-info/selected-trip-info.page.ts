@@ -62,6 +62,9 @@ export class SelectedTripInfoPage implements OnInit {
         this.condition = c;
       })
     );
+    console.log(this.searchModel,"this.searchModel");
+
   }
+  
 
 }
