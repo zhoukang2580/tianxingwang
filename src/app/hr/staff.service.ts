@@ -9,7 +9,7 @@ import { TaskType } from "../workflow/models/TaskType";
 import { BaseSettingEntity } from "../models/BaseSettingEntity";
 import { AccountEntity } from "../account/models/AccountEntity";
 import { AppHelper } from "../appHelper";
-import { CountryEntity } from '../tmc/models/CountryEntity';
+import { CountryEntity } from "../tmc/models/CountryEntity";
 export enum StaffBookType {
   /// <summary>
   /// 秘书
@@ -22,10 +22,10 @@ export enum StaffBookType {
   /// <summary>
   /// 全部
   /// </summary>
-  All = "All"
+  All = "All",
 }
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class StaffService {
   private countries: CountryEntity[];
@@ -40,7 +40,7 @@ export class StaffService {
     private identityService: IdentityService
   ) {
     this.hrInvitationSource = new BehaviorSubject(null);
-    this.identityService.getIdentitySource().subscribe(id => {
+    this.identityService.getIdentitySource().subscribe((id) => {
       this.disposal();
     });
   }
@@ -49,7 +49,7 @@ export class StaffService {
     return this.hrInvitation || ({} as IHrInvitation);
   }
   getHrInvitationSource() {
-    return this.hrInvitationSource.asObservable().pipe(filter(it => !!it));
+    return this.hrInvitationSource.asObservable().pipe(filter((it) => !!it));
   }
   setHrInvitationSource(hrInvitation: IHrInvitation) {
     this.hrInvitation = hrInvitation;
@@ -73,7 +73,7 @@ export class StaffService {
     return t == StaffBookType.Secretary;
   }
   private async getBookType(isShowLoading = true): Promise<StaffBookType> {
-    const s = await this.getStaff(false, isShowLoading).catch(_ => null);
+    const s = await this.getStaff(false, isShowLoading).catch((_) => null);
     return s && s.BookType;
   }
 
@@ -81,7 +81,7 @@ export class StaffService {
     forceRefresh: boolean = false,
     isShowLoading = false
   ): Promise<StaffEntity> {
-    const id = await this.identityService.getIdentityAsync().catch(_ => null);
+    const id = await this.identityService.getIdentityAsync().catch((_) => null);
     if (!id || !id.Id || !id.Ticket) {
       return this.staff;
     }
@@ -114,7 +114,7 @@ export class StaffService {
     }
     this.fetchingStaffPromise = this.apiService
       .getPromiseData<StaffEntity>(req)
-      .then(staff => {
+      .then((staff) => {
         this.staff = staff;
         if (this.staff.BookType == StaffBookType.Self) {
           this.staff.AccountId = this.staff.AccountId || id.Id;
@@ -137,19 +137,19 @@ export class StaffService {
     req.IsShowLoading = true;
     return this.apiService
       .getPromiseData<any>(req)
-      .then(_ => true)
-      .catch(_ => false);
+      .then((_) => true)
+      .catch((_) => false);
   }
   async comfirmInfoModifyPassword() {
     return this.comfirmInfo({
       IsModifyPassword: true,
-      IsModifyCredentials: false
+      IsModifyCredentials: false,
     });
   }
   async comfirmInfoModifyCredentials() {
     return this.comfirmInfo({
       IsModifyPassword: false,
-      IsModifyCredentials: true
+      IsModifyCredentials: true,
     });
   }
   getPolicy(data: { name: string }) {
@@ -158,7 +158,7 @@ export class StaffService {
     // req.IsShowLoading=true;
     req.Data = {
       Name: data.name,
-      HrId: this.getHrInvitation().hrId
+      HrId: this.getHrInvitation().hrId,
     };
     return this.apiService.getResponse<IPolicy[]>(req);
   }
@@ -173,25 +173,22 @@ export class StaffService {
   //   return this.apiService.getResponse<IPolicy[]>(req);
   // }
 
-
-
-
   getCountries() {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Agent-Country";
     req.Data = {
-      lastUpdateTime: 0
+      lastUpdateTime: 0,
     };
     req.IsShowLoading = true;
-    if(this.countries&&this.countries.length){
-     return of(this.countries); 
+    if (this.countries && this.countries.length) {
+      return of(this.countries);
     }
     return this.apiService
       .getResponse<{ Countries: CountryEntity[] }>(req)
       .pipe(
-        map(res => {
+        map((res) => {
           if (res.Status) {
-            return res.Data
+            return res.Data;
           }
           return [];
         }),
@@ -200,20 +197,22 @@ export class StaffService {
           this.countries.sort((c1, c2) => +c1.Sequence - +c2.Sequence);
           return this.countries;
         })
-      )
-
+      );
   }
   async getCountriesAsync() {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Agent-Country";
     req.Data = {
-      lastUpdateTime: 0
+      lastUpdateTime: 0,
     };
     req.IsShowLoading = true;
-    if(this.countries&&this.countries.length){
-      return this.countries
+    if (this.countries && this.countries.length) {
+      return this.countries;
     }
-    this.countries=await this.apiService.getPromiseData<{Countries:CountryEntity[]}>(req).then(r=>r.Countries).catch(()=>[]);
+    this.countries = await this.apiService
+      .getPromiseData<{ Countries: CountryEntity[] }>(req)
+      .then((r) => r.Countries)
+      .catch(() => []);
     return this.countries;
   }
   getCostCenter(data: { name: string }) {
@@ -221,7 +220,7 @@ export class StaffService {
     req.Method = "HrApiUrl-Invitation-CostCenter";
     req.Data = {
       Name: data.name,
-      HrId: this.getHrInvitation().hrId
+      HrId: this.getHrInvitation().hrId,
     };
     return this.apiService.getResponse<ICostCenter[]>(req);
   }
@@ -230,29 +229,29 @@ export class StaffService {
     req.Method = "HrApiUrl-Invitation-Organization";
     req.Data = {
       ParentId: data.parentId,
-      HrId: this.getHrInvitation().hrId
+      HrId: this.getHrInvitation().hrId,
     };
     return this.apiService.getResponse<IOrganization[]>(req);
   }
   async getListAsync() {
     const req = new RequestEntity();
     req.Method = "HrApiUrl-Invitation-List";
-    req.Data = {}
+    req.Data = {};
     // const arr=[];
     // for(let i=0;i<20;i++){
     //   arr.push({Id:i,Name:i})
     // }
     // return arr;
-    return this.apiService.getPromiseData<{ Id: string; Name: string; }[]>(req);
+    return this.apiService.getPromiseData<{ Id: string; Name: string }[]>(req);
   }
   handle(id: string, status: boolean) {
     const req = new RequestEntity();
     req.Method = "HrApiUrl-Invitation-Handle";
     req.Data = {
       Id: id,
-      Status: status
-    }
-    // const 
+      Status: status,
+    };
+    // const
     // return Promise.reject("error");
     // return Promise.resolve("success")
     return this.apiService.getPromiseData<any>(req);
@@ -271,7 +270,8 @@ export class StaffService {
       CostCenterName: data.constCenter.Name,
       CostCenterId: data.constCenter.Id,
       Name: data.name,
-      HrId: this.getHrInvitation().hrId
+      Number: data.number,
+      HrId: this.getHrInvitation().hrId,
     };
     return this.apiService.getPromiseData<IOrganization[]>(req);
   }
@@ -283,7 +283,7 @@ export class StaffService {
     req.Method = `TmcApiHomeUrl-Staff-Credentials`;
     req.IsShowLoading = true;
     req.Data = {
-      AccountId
+      AccountId,
     };
     if (!forceFetch) {
       if (this.staffCredentials && this.staffCredentials.length) {
@@ -295,11 +295,11 @@ export class StaffService {
     }
     this.fetchingReqStaffCredentialsPromise = this.apiService
       .getPromiseData<MemberCredential[]>(req)
-      .then(res => {
+      .then((res) => {
         this.staffCredentials = res;
         return res;
       })
-      .catch(_ => [] as MemberCredential[])
+      .catch((_) => [] as MemberCredential[])
       .finally(() => {
         this.fetchingReqStaffCredentialsPromise = null;
       });
@@ -356,7 +356,7 @@ export enum PolicyType {
   /// <summary>
   /// 不可预订
   /// </summary>
-  UnOrder = 4
+  UnOrder = 4,
 }
 export class PolicyEntity extends BaseSettingEntity {
   Setting: string;
@@ -384,6 +384,7 @@ export class PolicyEntity extends BaseSettingEntity {
   //  机票保险金额
   FlightInsuranceAmount: number;
   FlightForceInsuranceId: number;
+  TrainForceInsuranceId: number;
   FlightIsCabinIllegalBook: boolean;
   FlightIsMustBookLowestPrice: boolean;
   FlightDescription: string;
@@ -518,8 +519,8 @@ export interface HrEntity {
   }; //
   Name: string; //
 }
-export interface ICostCenter extends IOrganization { }
-export interface IPolicy extends IOrganization { }
+export interface ICostCenter extends IOrganization {}
+export interface IPolicy extends IOrganization {}
 export interface IOrganization {
   Id: string;
   Name: string;
@@ -531,11 +532,11 @@ export interface IHrInvitation {
   constCenter: ICostCenter;
   policy: IPolicy;
   organization: IOrganization;
-  country:CountryEntity;
+  country: CountryEntity;
   hrName: string;
   name: string;
   roleIds: string;
   roleNames: string;
-  number:string;
-  gender:string;
+  number: string;
+  gender: string;
 }
