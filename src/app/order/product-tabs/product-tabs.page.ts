@@ -16,7 +16,13 @@ import {
   IonDatetime,
   PickerController,
 } from "@ionic/angular";
-import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  OnDestroy,
+  EventEmitter,
+} from "@angular/core";
 import { SearchTicketModalComponent } from "../components/search-ticket-modal/search-ticket-modal.component";
 import { SearchTicketConditionModel } from "../../tmc/models/SearchTicketConditionModel";
 import { ProductItemType, ProductItem } from "../../tmc/models/ProductItems";
@@ -47,6 +53,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   private condition: SearchTicketConditionModel = new SearchTicketConditionModel();
   private readonly pageSize = 20;
   private loadDataSub = Subscription.EMPTY;
+  private subscriptions: Subscription[] = [];
+  private selectDateChange = new EventEmitter();
+  private selectDateSubscription = Subscription.EMPTY;
   productItemType = ProductItemType;
   activeTab: ProductItem;
   tabs: ProductItem[] = [];
@@ -79,7 +88,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     private flightService: FlightService,
     private pickerCtrl: PickerController
   ) {
-    route.queryParamMap.subscribe((d) => {
+    const sub = route.queryParamMap.subscribe((d) => {
       if (d && d.get("tabId")) {
         const tab = ORDER_TABS.find((it) => it.value == +d.get("tabId"));
         console.log("product-tabs", tab);
@@ -96,9 +105,12 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         this.doRefresh();
       }
     });
+    this.subscriptions.push(sub);
+    this.subscriptions.push(this.selectDateSubscription);
+    this.subscriptions.push(this.loadDataSub);
   }
   ngOnDestroy() {
-    this.loadDataSub.unsubscribe();
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   async onPay(order: OrderEntity) {
     try {
@@ -283,35 +295,43 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       });
   }
   private getExchangeDate(date = "") {
-    return new Promise<string>(async (resolve) => {
-      interface TV {
-        text: string;
-        value: string;
-      }
-      this.datetime.value = date;
-      if (!this.datetime.pickerOptions) {
-        this.datetime.pickerOptions = {
-          buttons: [],
-          cssClass: "exchange-date-time",
-        };
-        this.datetime.pickerOptions.buttons.push(
-          {
-            text: "请选择航班日期：",
-            handler: () => false,
-            cssClass: "label-text",
+    interface TV {
+      text: string;
+      value: string;
+    }
+    this.datetime.value = date;
+    if (!this.datetime.pickerOptions) {
+      this.datetime.pickerOptions = {
+        buttons: [],
+        cssClass: "exchange-date-time",
+      };
+      this.datetime.pickerOptions.buttons.push(
+        {
+          text: "请选择航班日期：",
+          handler: () => false,
+          cssClass: "label-text",
+        },
+        { text: "取消", handler: () => false, role: "cancel" },
+        {
+          text: "确定",
+          handler: (data: { year: TV; month: TV; day: TV }) => {
+            this.selectDateChange.emit(
+              `${data.year.value}-${
+                +data.month.value < 10
+                  ? "0" + data.month.value
+                  : data.month.value
+              }-${+data.day.value < 10 ? "0" + data.day.value : data.day.value}`
+            );
           },
-          { text: "取消", handler: () => false, role: "cancel" },
-          {
-            text: "确定",
-            handler: (data: { year: TV; month: TV; day: TV }) => {
-              resolve(
-                `${data.year.value}-${data.month.value}-${data.day.value}`
-              );
-            },
-          }
-        );
-      }
-      await this.datetime.open();
+        }
+      );
+    }
+    return new Promise<string>((resolve) => {
+      this.selectDateSubscription.unsubscribe();
+      this.selectDateSubscription = this.selectDateChange.subscribe((d) => {
+        resolve(d);
+      });
+      this.datetime.open();
     });
   }
   async onExchangeFlightTicket(data: {
