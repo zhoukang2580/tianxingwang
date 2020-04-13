@@ -30,7 +30,8 @@
   </ion-item>
   <ion-item>
     <ion-label>性别:</ion-label>
-    <ion-radio-group value="woman" style="display: flex;align-items: center" [(ngModel)]="hrInvitationItem.gender">
+    <ion-radio-group [value]="hrInvitationItem.gender" style="display: flex;align-items: center"
+      [(ngModel)]="hrInvitationItem.gender">
       <ion-buttons>
         <ion-radio value="woman"></ion-radio>
         <ion-label>女</ion-label>

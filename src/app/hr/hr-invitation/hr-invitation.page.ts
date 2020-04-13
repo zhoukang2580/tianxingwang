@@ -44,6 +44,17 @@ export class HrInvitationPage implements OnInit, OnDestroy {
     // });
   }
   onAddInvitation() {
+    if (!this.hrInvitationItem) {
+      return;
+    }
+    if (!this.hrInvitationItem.gender) {
+      AppHelper.toast("性别必填", 2000, "middle");
+      return;
+    }
+    if (!this.hrInvitationItem.number) {
+      AppHelper.toast("员工号必填", 2000, "middle");
+      return;
+    }
     this.staffService
       .invitationAdd()
       .then((s) => {
