@@ -52,6 +52,8 @@ export class FlightListPage implements OnInit, OnDestroy {
     this.content.scrollToTop();
   }
   onSelectTrip(flightRoute: FlightRouteEntity) {
+    console.log(this.searchModel,"this.searchModel");
+    
     if (this.searchModel && this.searchModel.trips) {
       let trip = this.searchModel.trips.find((it) => !it.bookInfo);
       if (!trip) {
