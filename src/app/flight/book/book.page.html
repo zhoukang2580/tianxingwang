@@ -137,21 +137,25 @@
             <ion-item-divider color="primary">
               保险:
             </ion-item-divider>
-            <ion-radio-group allow-empty-selection='true' [value]='combindInfo.selectedInsuranceProduct'
-              [(ngModel)]='combindInfo.selectedInsuranceProduct' (ionChange)='calcTotalPrice()'>
-              <div *ngFor='let insurance of combindInfo?.insuranceProducts' style="margin-top: 1em;">
-                <ion-item>
-                  <ion-label>{{insurance.insuranceResult?.Name}}({{insurance.insuranceResult?.Price}}元)</ion-label>
-                  <ion-radio [value]="insurance.insuranceResult" [disabled]='insurance.disabled'></ion-radio>
-                </ion-item>
-                <ion-button fill='clear' (click)='insurance.showDetail=!insurance.showDetail' expand='full'
-                  color='secondary'>
-                  保险详情
-                  <ion-icon name="caret-up-outline" *ngIf='insurance.showDetail'>
-                  </ion-icon>
-                  <ion-icon name="caret-down-outline" *ngIf='!insurance.showDetail'>
-                  </ion-icon>
-                </ion-button>
+            <ion-radio-group allow-empty-selection='true' [value]='combindInfo.selectedInsuranceProductId'
+              [(ngModel)]='combindInfo.selectedInsuranceProductId' (ionChange)='calcTotalPrice()'>
+              <div *ngFor='let insurance of combindInfo?.insuranceProducts'
+                style="margin-top: 1em;background-color: var(--ion-color-primary);padding-right: 1em;">
+                <ion-buttons>
+                  <ion-item style="--background:transparent">
+                    <ion-radio [value]="insurance.insuranceResult.Id" [disabled]='insurance.disabled'></ion-radio>
+                    <ion-label class="ion-margin-horizontal">
+                      {{insurance.insuranceResult?.Name}}({{insurance.insuranceResult?.Price}}元)</ion-label>
+                  </ion-item>
+                  <ion-label style="margin-left: auto;" color='secondary'
+                    (click)='onShowInsuranceDetail(insurance,$event)'>
+                    详情
+                    <ion-icon name="caret-up-outline" *ngIf='insurance.showDetail'>
+                    </ion-icon>
+                    <ion-icon name="caret-down-outline" *ngIf='!insurance.showDetail'>
+                    </ion-icon>
+                  </ion-label>
+                </ion-buttons>
                 <div [@flyInOut] *ngIf='insurance.showDetail' style='width: 100%;'
                   (click)='insurance.showDetail=!insurance.showDetail'>
                   <ion-row>

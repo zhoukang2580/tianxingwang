@@ -528,7 +528,11 @@ export class BookPage implements OnInit, AfterViewInit {
         }
         if (item.insuranceProducts) {
           arr += item.insuranceProducts
-            .filter((it) => it.insuranceResult == item.selectedInsuranceProduct)
+            .filter(
+              (it) =>
+                it.insuranceResult &&
+                it.insuranceResult.Id == item.selectedInsuranceProductId
+            )
             .reduce((sum, it) => {
               sum = AppHelper.add(+it.insuranceResult.Price, sum);
               return sum;
@@ -914,7 +918,10 @@ export class BookPage implements OnInit, AfterViewInit {
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
         for (const it of combindInfo.insuranceProducts) {
-          if (it.insuranceResult == combindInfo.selectedInsuranceProduct) {
+          if (
+            it.insuranceResult &&
+            it.insuranceResult.Id == combindInfo.selectedInsuranceProductId
+          ) {
             p.InsuranceProducts.push(it.insuranceResult);
           }
         }
@@ -1158,6 +1165,15 @@ export class BookPage implements OnInit, AfterViewInit {
   getInsuranceDetails(detail: string) {
     return detail && detail.split("\n").join("<br/>");
   }
+  onShowInsuranceDetail(insurance: { showDetail: boolean }, evt: CustomEvent) {
+    if (evt) {
+      evt.stopImmediatePropagation();
+      evt.preventDefault();
+    }
+    if (insurance) {
+      insurance.showDetail = !insurance.showDetail;
+    }
+  }
   async onShowPriceDetail() {
     const isSelf = await this.staffService.isSelfBookType();
     const p = await this.popoverCtrl.create({
@@ -1191,7 +1207,9 @@ export class BookPage implements OnInit, AfterViewInit {
                   bookInfo.flightSegment.Tax,
                 insurances: item.insuranceProducts
                   .filter(
-                    (it) => it.insuranceResult == item.selectedInsuranceProduct
+                    (it) =>
+                      it.insuranceResult &&
+                      it.insuranceResult.Id == item.selectedInsuranceProductId
                   )
                   .map((it) => {
                     return {
@@ -1310,7 +1328,10 @@ export class BookPage implements OnInit, AfterViewInit {
             +it.insuranceResult.Id
         );
         const combineInfo: ICombindInfo = {} as ICombindInfo;
-        combineInfo.selectedInsuranceProduct = forceInsurance as any;
+        combineInfo.selectedInsuranceProductId =
+          forceInsurance &&
+          forceInsurance.insuranceResult &&
+          forceInsurance.insuranceResult.Id;
         combineInfo.id = AppHelper.uuid();
         combineInfo.vmCredential = item.credential;
         combineInfo.isSkipApprove = false;
@@ -1633,7 +1654,7 @@ interface ICombindInfo {
   isOtherOrganization: boolean;
   organization: OrganizationEntity;
   otherOrganizationName: string;
-  selectedInsuranceProduct: InsuranceProductEntity;
+  selectedInsuranceProductId: string;
   insuranceProducts: {
     insuranceResult: InsuranceProductEntity;
     disabled: boolean;
