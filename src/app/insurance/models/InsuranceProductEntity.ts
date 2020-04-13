@@ -1,7 +1,7 @@
 import { InsuranceSupplierType } from "./InsuranceSupplierType";
 import { InsuranceBookType } from "./InsuranceBookType";
 import { OrderInsuranceType } from "./OrderInsuranceType";
-import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
+import { BaseVariablesEntity } from "src/app/models/BaseVariablesEntity";
 
 export class InsuranceProductEntity extends BaseVariablesEntity {
   /// <summary>
@@ -56,4 +56,7 @@ export class InsuranceProductEntity extends BaseVariablesEntity {
   /// 成本
   /// </summary>
   Cost: string;
+  AdvanceMinute: number; // 120;
+  DetailUrl: string; // "https://home.sky-trip.com/insurance/1000000.html";
+  UnsuitedCodes: string; // null;
 }

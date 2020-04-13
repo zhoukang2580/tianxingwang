@@ -383,7 +383,7 @@ export class PolicyEntity extends BaseSettingEntity {
   // ============== 国内机票配置 start============
   //  机票保险金额
   FlightInsuranceAmount: number;
-  FlightIsForceInsurance: boolean;
+  FlightForceInsuranceId: number;
   FlightIsCabinIllegalBook: boolean;
   FlightIsMustBookLowestPrice: boolean;
   FlightDescription: string;
