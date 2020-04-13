@@ -212,15 +212,17 @@ export class AppComponent
         // this.router.navigate(['car-order-detail']);
         // this.router.navigate(["product-tabs"],{queryParams:{tabId:2}});
         // flight-order-detail
-         this.router.navigate(["international-flight-list"],{queryParams:{tabId:"1"}});
+        //  this.router.navigate(["international-flight-list"],{queryParams:{tabId:"1"}});
         // this.router.navigate(["hr-invitation"], {
         //   queryParams: {
         //     hrid: "163",
         //     hrName: "上海东美在线旅行社有限公司",
         //     costCenterId: "6300000001",
-        //     costCenterName: "一般政策",
+        //     costCenterName: "成本中心财政部",
         //     organizationId: "6300000005",
+        //     organizationName: "产品中心",
         //     policyId: "6300000001",
+        //     policyName: "一般政策",
         //     roleIds: "24,25",
         //     roleNames: "超级秘书,新秘书",
         //   },
