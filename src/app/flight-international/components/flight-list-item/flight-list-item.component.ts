@@ -12,7 +12,8 @@ export class FlightListItemComponent implements OnInit {
   constructor() {
     this.transfer = new EventEmitter();
   }
-  onTransfer() {
+  onTransfer(event:CustomEvent) {
+    event.stopPropagation();
     this.transfer.emit()
   }
   ngOnInit() { }
