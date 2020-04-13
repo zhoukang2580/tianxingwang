@@ -142,12 +142,12 @@
               <div *ngFor='let insurance of combindInfo?.insuranceProducts'
                 style="margin-top: 1em;background-color: var(--ion-color-primary);padding-right: 1em;">
                 <ion-buttons>
-                  <ion-item style="--background:transparent">
+                  <ion-item style="--background:transparent;flex: 1;">
                     <ion-radio [value]="insurance.insuranceResult.Id" [disabled]='insurance.disabled'></ion-radio>
                     <ion-label class="ion-margin-horizontal">
                       {{insurance.insuranceResult?.Name}}({{insurance.insuranceResult?.Price}}元)</ion-label>
                   </ion-item>
-                  <ion-label style="margin-left: auto;" color='secondary'
+                  <ion-label  color='secondary'
                     (click)='onShowInsuranceDetail(insurance,$event)'>
                     详情
                     <ion-icon name="caret-up-outline" *ngIf='insurance.showDetail'>

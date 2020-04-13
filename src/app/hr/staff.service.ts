@@ -271,6 +271,7 @@ export class StaffService {
       CostCenterId: data.constCenter.Id,
       Name: data.name,
       Number: data.number,
+      Gender: data.gender,
       HrId: this.getHrInvitation().hrId,
     };
     return this.apiService.getPromiseData<IOrganization[]>(req);
