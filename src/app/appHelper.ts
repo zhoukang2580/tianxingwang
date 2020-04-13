@@ -558,6 +558,7 @@ export class AppHelper {
     return "http://test.app." + this._appDomain;
   }
   static getRoutePath(path: string) {
+    path = this.getNormalizedPath(path);
     const style = AppHelper.getStyle() || "";
     if (path.lastIndexOf("_") != -1) {
       path = path.substring(0, path.lastIndexOf("_"));
@@ -602,7 +603,7 @@ export class AppHelper {
       }
     }
   }
-  
+
   static setQueryParamers(key: string, value: string) {
     try {
       this._queryParamers[key] = value;
