@@ -25,14 +25,15 @@ import { MockInternationalFlightListData } from "./mock-data";
 import { environment } from "src/environments/environment";
 import { IdentityEntity } from "../services/identity/identity.entity";
 import { LanguageHelper } from "../languageHelper";
+import { FlightRouteEntity } from "../flight/models/flight/FlightRouteEntity";
 export interface IFlightCabinType {
   label:
-    | "经济舱"
-    | "超级经济舱"
-    | "头等舱"
-    | "商务舱"
-    | "超级商务舱"
-    | "超级头等舱";
+  | "经济舱"
+  | "超级经济舱"
+  | "头等舱"
+  | "商务舱"
+  | "超级商务舱"
+  | "超级头等舱";
   value: FlightCabinInternationalType;
 }
 export enum FlightCabinInternationalType {
@@ -273,10 +274,10 @@ export class InternationalFlightService {
           s.voyageType == FlightVoyageType.MultiCity
             ? (lastTrip && lastTrip.date) || ""
             : s.roundTrip.id == trip.id
-            ? !isFrom
-              ? s.roundTrip.date
-              : ""
-            : "",
+              ? !isFrom
+                ? s.roundTrip.date
+                : ""
+              : "",
         tripType: isFrom ? TripType.departureTrip : TripType.returnTrip,
         forType: FlightHotelTrainType.InternationalFlight,
         isMulti,
@@ -341,8 +342,8 @@ export class InternationalFlightService {
         },
       ],
     } as IInternationalFlightSearchModel;
-    if(!environment.production){
-      this.searchModel={"roundTrip":{"fromCity":{"AirportCityCode":"SHA","CityCode":"3101","CityName":"上海","Code":"SHA","CountryCode":"CN","Description":"","EnglishName":"Shanghai","Id":"9260","Initial":"","IsHot":true,"Name":"上海","Nickname":"上海","Pinyin":"Shanghai","Sequence":1,"Tag":"AirportCity"},"toCity":{"AirportCityCode":"BJS","CityCode":"1101","CityName":"北京","Code":"BJS","CountryCode":"CN","Description":"","EnglishName":"Beijing","Id":"9278","Initial":"bj","IsHot":true,"Name":"北京","Nickname":"北京","Pinyin":"Beijing","Sequence":2,"Tag":"AirportCity"},"date":"2020-04-11","id":"9ff930fb-4599-40","backDate":"2020-04-13","isSelectInfo":false},"voyageType":"3","trips":[{"fromCity":{"AirportCityCode":"SHA","CityCode":"3101","CityName":"上海","Code":"SHA","CountryCode":"CN","Description":"","EnglishName":"Shanghai","Id":"9260","Initial":"","IsHot":true,"Name":"上海","Nickname":"上海","Pinyin":"Shanghai","Sequence":1,"Tag":"AirportCity"},"toCity":{"AirportCityCode":"BJS","CityCode":"1101","CityName":"北京","Code":"BJS","CountryCode":"CN","Description":"","EnglishName":"Beijing","Id":"9278","Initial":"bj","IsHot":true,"Name":"北京","Nickname":"北京","Pinyin":"Beijing","Sequence":2,"Tag":"AirportCity"},"date":"2020-04-11","id":"b7a753b5-65fb-4e","isSelectInfo":false},{"id":"2fa08a8b-9a27-40","fromCity":{"AirportCityCode":"BJS","CityCode":"1101","CityName":"北京","Code":"BJS","CountryCode":"CN","Description":"","EnglishName":"Beijing","Id":"9278","Initial":"bj","IsHot":true,"Name":"北京","Nickname":"北京","Pinyin":"Beijing","Sequence":2,"Tag":"AirportCity"},"date":"2020-04-13","isSelectInfo":false,"toCity":{"Id":6711,"Tag":"AirportInternational","Code":"SEA","Name":"塔克马国际机场","Nickname":"塔克马国际机场","Pinyin":"TAKEMA","Initial":"TKM","AirportCityCode":"SEA","CityCode":"SEA","CityName":"西雅图","Description":"","IsHot":true,"CountryCode":"US","Sequence":0,"EnglishName":"SEATTLE/TACOMA INTERNATIONAL APT","Country":{"Id":207,"Name":"美国","Code":"US","Sequence":2},"matchStr":"sea,塔克马国际机场,塔克马国际机场,西雅图,takema,sea"}},{"id":"dc5bf1c8-d46d-4a","fromCity":{"Id":6711,"Tag":"AirportInternational","Code":"SEA","Name":"塔克马国际机场","Nickname":"塔克马国际机场","Pinyin":"TAKEMA","Initial":"TKM","AirportCityCode":"SEA","CityCode":"SEA","CityName":"西雅图","Description":"","IsHot":true,"CountryCode":"US","Sequence":0,"EnglishName":"SEATTLE/TACOMA INTERNATIONAL APT","Country":{"Id":207,"Name":"美国","Code":"US","Sequence":2},"matchStr":"sea,塔克马国际机场,塔克马国际机场,西雅图,takema,sea"},"date":"2020-04-16","isSelectInfo":false,"toCity":{"Id":778,"Tag":"AirportInternational","Code":"BKK","Name":"曼谷国际机场","Nickname":"曼谷国际机场","Pinyin":"manguguojijichang","Initial":"MGGJJC","AirportCityCode":"BKK","CityCode":"BKK","CityName":"曼谷","Description":"","IsHot":true,"CountryCode":"TH","Sequence":0,"EnglishName":"BANGKOK SUVARNABHUMI INTERNATIONAL APT","Country":{"Id":194,"Name":"泰国","Code":"TH","Sequence":999},"matchStr":"bkk,曼谷国际机场,曼谷国际机场,曼谷,manguguojijichang,bkk"}}],"cabin":{"label":"经济舱","value":11},"cabins":[{"label":"经济舱","value":11},{"label":"超级经济舱","value":12},{"label":"头等舱","value":13},{"label":"商务舱","value":14},{"label":"超级商务舱","value":15},{"label":"超级头等舱","value":16}]} as any;
+    if (!environment.production) {
+      this.searchModel = { "roundTrip": { "fromCity": { "AirportCityCode": "SHA", "CityCode": "3101", "CityName": "上海", "Code": "SHA", "CountryCode": "CN", "Description": "", "EnglishName": "Shanghai", "Id": "9260", "Initial": "", "IsHot": true, "Name": "上海", "Nickname": "上海", "Pinyin": "Shanghai", "Sequence": 1, "Tag": "AirportCity" }, "toCity": { "AirportCityCode": "BJS", "CityCode": "1101", "CityName": "北京", "Code": "BJS", "CountryCode": "CN", "Description": "", "EnglishName": "Beijing", "Id": "9278", "Initial": "bj", "IsHot": true, "Name": "北京", "Nickname": "北京", "Pinyin": "Beijing", "Sequence": 2, "Tag": "AirportCity" }, "date": "2020-04-11", "id": "9ff930fb-4599-40", "backDate": "2020-04-13", "isSelectInfo": false }, "voyageType": "3", "trips": [{ "fromCity": { "AirportCityCode": "SHA", "CityCode": "3101", "CityName": "上海", "Code": "SHA", "CountryCode": "CN", "Description": "", "EnglishName": "Shanghai", "Id": "9260", "Initial": "", "IsHot": true, "Name": "上海", "Nickname": "上海", "Pinyin": "Shanghai", "Sequence": 1, "Tag": "AirportCity" }, "toCity": { "AirportCityCode": "BJS", "CityCode": "1101", "CityName": "北京", "Code": "BJS", "CountryCode": "CN", "Description": "", "EnglishName": "Beijing", "Id": "9278", "Initial": "bj", "IsHot": true, "Name": "北京", "Nickname": "北京", "Pinyin": "Beijing", "Sequence": 2, "Tag": "AirportCity" }, "date": "2020-04-11", "id": "b7a753b5-65fb-4e", "isSelectInfo": false }, { "id": "2fa08a8b-9a27-40", "fromCity": { "AirportCityCode": "BJS", "CityCode": "1101", "CityName": "北京", "Code": "BJS", "CountryCode": "CN", "Description": "", "EnglishName": "Beijing", "Id": "9278", "Initial": "bj", "IsHot": true, "Name": "北京", "Nickname": "北京", "Pinyin": "Beijing", "Sequence": 2, "Tag": "AirportCity" }, "date": "2020-04-13", "isSelectInfo": false, "toCity": { "Id": 6711, "Tag": "AirportInternational", "Code": "SEA", "Name": "塔克马国际机场", "Nickname": "塔克马国际机场", "Pinyin": "TAKEMA", "Initial": "TKM", "AirportCityCode": "SEA", "CityCode": "SEA", "CityName": "西雅图", "Description": "", "IsHot": true, "CountryCode": "US", "Sequence": 0, "EnglishName": "SEATTLE/TACOMA INTERNATIONAL APT", "Country": { "Id": 207, "Name": "美国", "Code": "US", "Sequence": 2 }, "matchStr": "sea,塔克马国际机场,塔克马国际机场,西雅图,takema,sea" } }, { "id": "dc5bf1c8-d46d-4a", "fromCity": { "Id": 6711, "Tag": "AirportInternational", "Code": "SEA", "Name": "塔克马国际机场", "Nickname": "塔克马国际机场", "Pinyin": "TAKEMA", "Initial": "TKM", "AirportCityCode": "SEA", "CityCode": "SEA", "CityName": "西雅图", "Description": "", "IsHot": true, "CountryCode": "US", "Sequence": 0, "EnglishName": "SEATTLE/TACOMA INTERNATIONAL APT", "Country": { "Id": 207, "Name": "美国", "Code": "US", "Sequence": 2 }, "matchStr": "sea,塔克马国际机场,塔克马国际机场,西雅图,takema,sea" }, "date": "2020-04-16", "isSelectInfo": false, "toCity": { "Id": 778, "Tag": "AirportInternational", "Code": "BKK", "Name": "曼谷国际机场", "Nickname": "曼谷国际机场", "Pinyin": "manguguojijichang", "Initial": "MGGJJC", "AirportCityCode": "BKK", "CityCode": "BKK", "CityName": "曼谷", "Description": "", "IsHot": true, "CountryCode": "TH", "Sequence": 0, "EnglishName": "BANGKOK SUVARNABHUMI INTERNATIONAL APT", "Country": { "Id": 194, "Name": "泰国", "Code": "TH", "Sequence": 999 }, "matchStr": "bkk,曼谷国际机场,曼谷国际机场,曼谷,manguguojijichang,bkk" } }], "cabin": { "label": "经济舱", "value": 11 }, "cabins": [{ "label": "经济舱", "value": 11 }, { "label": "超级经济舱", "value": 12 }, { "label": "头等舱", "value": 13 }, { "label": "商务舱", "value": 14 }, { "label": "超级商务舱", "value": 15 }, { "label": "超级头等舱", "value": 16 }] } as any;
     }
     this.searchModelSource = new BehaviorSubject(this.searchModel);
   }
@@ -359,7 +360,7 @@ export class InternationalFlightService {
         const one = trips[idx];
         AppHelper.alert(
           `请完善第${idx + 1}程的${!one.fromCity ? "出发城市" : ""}${
-            !one.toCity ? "到达城市" : ""
+          !one.toCity ? "到达城市" : ""
           }`
         );
         return;
@@ -381,12 +382,11 @@ export class InternationalFlightService {
     const result: IResponse<FlightResultEntity> = {} as any;
     result.Data = this.flightListResult;
     const { forceFetch, keepFilterCondition } = query;
-    if (!environment.production || !forceFetch) {
+    if (!environment.production) {
       result.Data = this.initFlightRouteSegments(
         MockInternationalFlightListData as any
       );
       if (
-        forceFetch ||
         !this.flightListResult ||
         !this.flightListResult.FlightRoutes ||
         !this.flightListResult.FlightRoutes.length
@@ -545,15 +545,16 @@ export class InternationalFlightService {
     return data;
   }
   private initParagraphCondition(data: FlightResultEntity) {
-    let paragraph = 1;
+    let flightRoute: FlightRouteEntity;
+    let index = -1;
     const m = this.getSearchModel();
     if (m) {
       if (m.voyageType == FlightVoyageType.MultiCity) {
-        const pra = m.trips && m.trips.findIndex((it) => !it.bookInfo);
-        if (pra > -1) {
-          paragraph = pra + 1;
-        } else {
-          paragraph = m.trips.length; // 默认最后一个
+        const one = m.trips && m.trips.slice(0).reverse().find((it) => it.bookInfo);
+        flightRoute =
+          one && one.bookInfo && one.bookInfo && one.bookInfo.flightRoute;
+        if (one && m.trips) {
+          index = m.trips.findIndex(it => it.id == one.id);
         }
       }
     }
@@ -564,10 +565,21 @@ export class InternationalFlightService {
     condition.isFilter = false;
     condition.timeSpan = { lower: 0, upper: 24 };
     condition.isDirectFly = false;
-    if (data && data.FlightRoutesData && paragraph) {
-      data.FlightRoutes = data.FlightRoutesData.filter(
-        (r) => r.Paragraphs == paragraph
-      );
+    if (data && data.FlightRoutesData) {
+      if (!flightRoute) {
+        data.FlightRoutes = data.FlightRoutesData.filter(
+          (r) => r.Paragraphs == 1
+        );
+      } else {
+
+        const fares = data.FlightFares.filter((it) =>
+          it.FlightRouteIds && it.FlightRouteIds[index] == flightRoute.Id
+        )
+          .map((it) => it.FlightRouteIds[index + 1]).filter(it => !!it);
+        data.FlightRoutes = data.FlightRoutesData.filter((it) =>
+          fares.some((f) => f == it.Id)
+        );
+      }
       data.FlightRoutes.forEach((r) => {
         if (r.fromSegment) {
           const s = r.fromSegment;
@@ -819,6 +831,7 @@ export interface IInternationalFlightSearchModel {
 export interface IInternationalFlightSegmentInfo {
   fromSegment: FlightSegmentEntity;
   toSegment: FlightSegmentEntity;
+  flightRoute: FlightRouteEntity;
   flightPolicy: FlightPolicy;
   isDontAllowBook?: boolean;
   id?: string;
