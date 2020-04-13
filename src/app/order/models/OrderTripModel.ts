@@ -2,6 +2,7 @@ import { OrderPassengerEntity } from "./OrderPassengerEntity";
 import { OrderInsuranceEntity } from "./OrderInsuranceEntity";
 import { InsuranceResultEntity } from "src/app/tmc/models/Insurance/InsuranceResultEntity";
 import { OrderFlightTicketType } from "./OrderFlightTicketType";
+import { InsuranceProductEntity } from "src/app/insurance/models/InsuranceProductEntity";
 
 export class OrderTripModel {
   /// <summary>
@@ -42,6 +43,7 @@ export class OrderTripModel {
   /// 到达
   /// </summary>
   ToName: string;
+  IsInternational: boolean;
   Passenger: OrderPassengerEntity;
   OrderInsurances: OrderInsuranceEntity[];
   Key: string;
@@ -49,4 +51,5 @@ export class OrderTripModel {
   Name: string;
   PassengerId: string;
   InsuranceResult: InsuranceResultEntity;
+  InsuranceProducts: InsuranceProductEntity[];
 }
