@@ -14,6 +14,7 @@ import {
   IonContent,
   Platform,
   IonRefresher,
+  IonRadio,
 } from "@ionic/angular";
 import {
   TmcService,
@@ -90,6 +91,7 @@ import { BookCredentialCompComponent } from "src/app/tmc/components/book-credent
   animations: [flyInOut],
 })
 export class BookPage implements OnInit, AfterViewInit {
+  private isShowInsuranceBack = false;
   vmCombindInfos: ICombindInfo[] = [];
   isSubmitDisabled = false;
   initialBookDtoModel: InitialBookDtoModel;
@@ -155,7 +157,10 @@ export class BookPage implements OnInit, AfterViewInit {
           return !!(id && id.Numbers && id.Numbers["AgentId"]);
         });
       setTimeout(() => {
-        this.refresh(false);
+        if (!this.isShowInsuranceBack) {
+          this.refresh(false);
+        }
+        this.isShowInsuranceBack = false;
       }, 200);
     });
     this.isCanSkipApproval$ = combineLatest([
@@ -523,7 +528,7 @@ export class BookPage implements OnInit, AfterViewInit {
         }
         if (item.insuranceProducts) {
           arr += item.insuranceProducts
-            .filter((it) => it.checked)
+            .filter((it) => it.insuranceResult == item.selectedInsuranceProduct)
             .reduce((sum, it) => {
               sum = AppHelper.add(+it.insuranceResult.Price, sum);
               return sum;
@@ -909,10 +914,8 @@ export class BookPage implements OnInit, AfterViewInit {
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
         for (const it of combindInfo.insuranceProducts) {
-          if (it.checked) {
-            if (it.insuranceResult) {
-              p.InsuranceProducts.push(it.insuranceResult);
-            }
+          if (it.insuranceResult == combindInfo.selectedInsuranceProduct) {
+            p.InsuranceProducts.push(it.insuranceResult);
           }
         }
       }
@@ -1187,7 +1190,9 @@ export class BookPage implements OnInit, AfterViewInit {
                   bookInfo.flightSegment &&
                   bookInfo.flightSegment.Tax,
                 insurances: item.insuranceProducts
-                  .filter((it) => it.checked)
+                  .filter(
+                    (it) => it.insuranceResult == item.selectedInsuranceProduct
+                  )
                   .map((it) => {
                     return {
                       name: it.insuranceResult && it.insuranceResult.Name,
@@ -1202,6 +1207,18 @@ export class BookPage implements OnInit, AfterViewInit {
       },
     });
     p.present();
+  }
+  onShowProductDetail(insurance: InsuranceProductEntity, evt: CustomEvent) {
+    if (evt) {
+      evt.stopPropagation();
+    }
+    if (!insurance || !insurance.DetailUrl) {
+      return;
+    }
+    this.isShowInsuranceBack = true;
+    this.router.navigate([AppHelper.getRoutePath("open-url")], {
+      queryParams: { url: insurance.DetailUrl, title: insurance.Name },
+    });
   }
   private getTicketsFees() {
     const totalFees = this.getTotalServiceFees();
@@ -1278,14 +1295,22 @@ export class BookPage implements OnInit, AfterViewInit {
         const insurances = insuranceProducts.map((insurance) => {
           return {
             insuranceResult: insurance,
-            checked:
-              (item.passenger &&
-                item.passenger.Policy &&
-                item.passenger.Policy.FlightIsForceInsurance) ||
-              insuranceProducts.length == 1,
+            disabled:
+              item.passenger &&
+              item.passenger.Policy &&
+              !!item.passenger.Policy.FlightForceInsuranceId,
+            showDetail: false,
           };
         });
+        const forceInsurance = insurances.find(
+          (it) =>
+            (item.passenger &&
+              item.passenger.Policy &&
+              item.passenger.Policy.FlightForceInsuranceId) ==
+            +it.insuranceResult.Id
+        );
         const combineInfo: ICombindInfo = {} as ICombindInfo;
+        combineInfo.selectedInsuranceProduct = forceInsurance as any;
         combineInfo.id = AppHelper.uuid();
         combineInfo.vmCredential = item.credential;
         combineInfo.isSkipApprove = false;
@@ -1608,9 +1633,11 @@ interface ICombindInfo {
   isOtherOrganization: boolean;
   organization: OrganizationEntity;
   otherOrganizationName: string;
+  selectedInsuranceProduct: InsuranceProductEntity;
   insuranceProducts: {
     insuranceResult: InsuranceProductEntity;
-    checked: boolean;
+    disabled: boolean;
+    showDetail?: boolean;
   }[];
   tmcOutNumberInfos: ITmcOutNumberInfo[];
   travelType: OrderTravelType; // 因公、因私
