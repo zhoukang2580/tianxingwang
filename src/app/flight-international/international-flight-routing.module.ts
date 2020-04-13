@@ -24,6 +24,10 @@ const routes: Routes = [
     path: 'selected-trip-info',
     loadChildren: () => import('./selected-trip-info/selected-trip-info.module').then( m => m.SelectedTripInfoPageModule)
   },
+  {
+    path: 'flight-ticket-reserve',
+    loadChildren: () => import('./flight-ticket-reserve/flight-ticket-reserve.module').then( m => m.FlightTicketReservePageModule)
+  },
 ];
 
 @NgModule({

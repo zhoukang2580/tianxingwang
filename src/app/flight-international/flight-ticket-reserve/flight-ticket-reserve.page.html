@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-toolbar>
+      <ion-buttons slot='start'>
+          <app-back-button></app-back-button>
+        </ion-buttons>
+    <ion-title>订单填写</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ng-container>
+    <div>
+      <ion-row *ngFor="let trip of this.searchModel?.trips;let i=index;"
+        style="background-color: var(--ion-color-light);padding: 0.3em;">
+        <ion-col size="2.5" style="display: flex;justify-content: center;">
+          <div class="travelled">第{{i+1}}程</div>
+        </ion-col>
+        <ion-col style="font-size: 0.9em;display: flex">
+          {{trip?.bookInfo?.fromSegment?.TakeoffTime?.replace("T"," ").substring(5,16)}}
+          {{trip.fromCity?.CityName}} <img src="assets/svgs/right.svg"
+            style="width: 7%;margin: 0em 0.3em 0.2em;">
+          {{trip.toCity?.CityName}}
+        </ion-col>
+      </ion-row>
+      <div style="width: 92%;
+      background-color: white;
+      height: 7em;
+      margin: auto;
+      border-radius: 0.3em;
+      padding: 0.8em;
+      margin: 0.8em;">
+        选择乘机人
+      </div>
+    </div>
+  </ng-container>
+</ion-content>

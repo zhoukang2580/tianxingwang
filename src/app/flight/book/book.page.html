@@ -12,7 +12,9 @@
     <app-refresher slot='fixed' (ionRefresh)='refresh(true)'></app-refresher>
     <ng-container *ngIf='vmCombindInfos?.length'>
       <ion-list *ngFor='let combindInfo of vmCombindInfos;let idx=index;' lines='none'>
-        <ion-item-divider color='primary' class="backg_w sticky" [class.not-sticky]='isDingTalk'>
+        <ion-item-divider color='primary' class="backg_w sticky" [class.not-sticky]='isDingTalk' style="    z-index: 200;
+        box-shadow: 0.1em 0.2em 0.6em rgba(0,0,0,.1);
+        padding-bottom: 0.5em;">
           <div style="width: 100%">
             {{combindInfo?.modal?.credential?.CheckName}}
             【{{tmc?.Name}}】
@@ -147,8 +149,7 @@
                     <ion-label class="ion-margin-horizontal">
                       {{insurance.insuranceResult?.Name}}({{insurance.insuranceResult?.Price}}元)</ion-label>
                   </ion-item>
-                  <ion-label  color='secondary'
-                    (click)='onShowInsuranceDetail(insurance,$event)'>
+                  <ion-label color='secondary' (click)='onShowInsuranceDetail(insurance,$event)'>
                     详情
                     <ion-icon name="caret-up-outline" *ngIf='insurance.showDetail'>
                     </ion-icon>

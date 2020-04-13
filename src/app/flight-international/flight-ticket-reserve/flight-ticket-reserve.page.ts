@@ -1,25 +1,23 @@
 import { Component, OnInit } from '@angular/core';
-import { FlightRouteEntity } from 'src/app/flight/models/flight/FlightRouteEntity';
-import { IInternationalFlightSearchModel, InternationalFlightService, ITripInfo, IFilterCondition } from '../international-flight.service';
-import { AppHelper } from 'src/app/appHelper';
-import { Router } from '@angular/router';
+import { IInternationalFlightSearchModel, ITripInfo, IFilterCondition, InternationalFlightService } from '../international-flight.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-selected-trip-info',
-  templateUrl: './selected-trip-info.page.html',
-  styleUrls: ['./selected-trip-info.page.scss'],
+  selector: 'app-flight-ticket-reserve',
+  templateUrl: './flight-ticket-reserve.page.html',
+  styleUrls: ['./flight-ticket-reserve.page.scss'],
 })
-export class SelectedTripInfoPage implements OnInit {
+export class FlightTicketReservePage implements OnInit {
   searchModel: IInternationalFlightSearchModel;
   private subscriptions: Subscription[] = [];
   private subscription = Subscription.EMPTY;
   curTrip: ITripInfo;
   condition: IFilterCondition;
+
   constructor(
-    private router: Router,
     private flightService: InternationalFlightService,
   ) { }
+
   ngOnInit() {
     this.subscriptions.push(this.subscription);
     this.subscriptions.push(
@@ -39,10 +37,6 @@ export class SelectedTripInfoPage implements OnInit {
       })
     );
     console.log(this.searchModel,"this.searchModel");
-
-  }
-  onReserve(){
-    this.router.navigate(["flight-ticket-reserve"]);
   }
 
 }
