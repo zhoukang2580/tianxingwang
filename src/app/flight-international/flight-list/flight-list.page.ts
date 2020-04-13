@@ -67,6 +67,10 @@ export class FlightListPage implements OnInit, OnDestroy {
         id: AppHelper.uuid(),
       };
       this.flightService.setSearchModelSource(this.searchModel);
+      if(trip){
+        console.log(1111);
+        
+      }
       this.doRefresh();
     }
   }

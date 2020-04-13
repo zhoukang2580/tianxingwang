@@ -9,37 +9,42 @@
     </ion-title>
   </ion-toolbar>
   <ng-container *ngFor='let trip of searchModel?.trips;let i=index;'>
-    <ion-row *ngIf='trip?.bookInfo' (click)='onReselectTrip(trip)' class="back_white " >
+    <ion-row *ngIf='trip?.bookInfo' (click)='onReselectTrip(trip)' class="back_white ">
       <ion-col style="display: flex;">
         <div class="padding-s">
           <img [src]="trip.bookInfo.fromSegment?.AirlineSrc">
         </div>
         <div style="font-size:0.9em">
-          第{{i+1}}程: 
+          第{{i+1}}程:
           {{trip?.fromCity?.CityName}} -- {{trip?.toCity?.CityName}}
           ({{trip.bookInfo.fromSegment?.AirlineName}})
           <div class="font-size">
             <!-- {{trip.date}}  -->
             {{trip?.bookInfo?.fromSegment?.TakeoffTime?.replace("T"," ").substring(5,16)}} --
             {{trip?.bookInfo?.toSegment?.ArrivalTime?.replace("T"," ").substring(10,16)}}
-            <span *ngIf="trip?.bookInfo?.toSegment?.Variables?.AddDaysTip>'0'"> (+{{trip?.bookInfo?.toSegment?.Variables?.AddDaysTip}}天)</span>
+            <span *ngIf="trip?.bookInfo?.toSegment?.Variables?.AddDaysTip>'0'">
+              (+{{trip?.bookInfo?.toSegment?.Variables?.AddDaysTip}}天)</span>
           </div>
         </div>
       </ion-col>
     </ion-row>
   </ng-container>
-  <ion-row class="row-top" [class.border-b]='borderBottom' >
+  <ion-row class="row-top" [class.border-b]='borderBottom'>
     <ion-col size="0.8">
       <!-- logo -->
     </ion-col>
-    <ion-col>
+    <ion-col *ngIf="curTrip?.fromCity?.CountryCode?.toLowerCase()=='cn' else localTimeTpl">
       北京时间
     </ion-col>
+    <ng-template #localTimeTpl>
+      <ion-col>
+        当地时间
+      </ion-col>
+    </ng-template>
     <ion-col size="2">
-      <!-- 转 -->
     </ion-col>
-    <ion-col>
-      当地时间
+    <ion-col *ngIf="curTrip?.toCity?.CountryCode?.toLowerCase()=='cn' else localTimeTpl">
+      北京时间
     </ion-col>
     <ion-col size="3.1" class="ion-text-nowrap">
       多程总价(含税)

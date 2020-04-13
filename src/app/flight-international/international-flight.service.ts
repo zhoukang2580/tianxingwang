@@ -550,7 +550,7 @@ export class InternationalFlightService {
     const m = this.getSearchModel();
     if (m) {
       if (m.voyageType == FlightVoyageType.MultiCity) {
-        const one = m.trips && m.trips.slice(0).reverse().find((it) => it.bookInfo);
+        const one = m.trips && m.trips.slice(0).reverse().find((it) => !!it.bookInfo);
         flightRoute =
           one && one.bookInfo && one.bookInfo && one.bookInfo.flightRoute;
         if (one && m.trips) {
