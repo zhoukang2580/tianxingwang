@@ -111,6 +111,7 @@ export class HrInvitationPage implements OnInit, OnDestroy {
         },
         gender: this.route.snapshot.queryParams.gender,
         number: this.route.snapshot.queryParams.number,
+        birthday: "",
       };
       this.staffService.setHrInvitationSource(hrInvitationItem);
     } catch (e) {
