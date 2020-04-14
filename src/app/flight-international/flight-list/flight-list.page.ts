@@ -34,7 +34,7 @@ export class FlightListPage implements OnInit, OnDestroy {
   private subscription = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
   private pageSize = 12;
-  borderBottom=false;
+  multipassShow=false;
   searchModel: IInternationalFlightSearchModel;
   condition: IFilterCondition;
   @ViewChild(RefresherComponent, { static: true })
@@ -60,7 +60,6 @@ export class FlightListPage implements OnInit, OnDestroy {
       let trip = this.searchModel.trips.find((it) => !it.bookInfo);
       if (!trip) {
         trip = this.searchModel.trips[this.searchModel.trips.length - 1];
-
       }
       trip.bookInfo = {
         flightPolicy: null,
@@ -98,11 +97,13 @@ export class FlightListPage implements OnInit, OnDestroy {
       this.flightService.getSearchModelSource().subscribe((s) => {
         this.searchModel = s;
         if (s && s.trips) {
-          this.borderBottom=s.trips.some(it=>!!it.bookInfo);
           this.curTrip = s.trips.find((it) => !it.bookInfo);
           if (!this.curTrip) {
             this.curTrip = s.trips[s.trips.length - 1];
           }
+        }
+        if(s&&s.voyageType==3){
+        this.multipassShow=true;
         }
       })
     );
@@ -111,7 +112,7 @@ export class FlightListPage implements OnInit, OnDestroy {
         this.condition = c;
       })
     );
-    console.log(this.searchModel.trips.map(it=>it.bookInfo),"this.searchModel.trips.length");
+
   }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
