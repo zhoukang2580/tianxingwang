@@ -605,31 +605,6 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     }
     return datetime;
   }
-
-  getOrderPayAmount() {
-    const Tmc = this.tmc;
-    let amount = 0;
-    const order = this.orderDetail && this.orderDetail.Order;
-    if (!Tmc || !order) {
-      return amount;
-    }
-    amount = (order.OrderPays || [])
-      .filter((it) => it.Status == OrderPayStatusType.Effective)
-      .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
-    if (amount == 0) {
-      return amount;
-    }
-    if (Tmc.IsShowServiceFee || !order.OrderItems) {
-      return amount;
-    } else {
-      return (
-        amount -
-        (order.OrderItems || [])
-          .filter((it) => !(it.Tag || "").endsWith("Fee"))
-          .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0)
-      );
-    }
-  }
   private getInsuranceAmount() {
     if (
       !this.orderDetail ||
