@@ -42,7 +42,7 @@
 }
 
 .font-size {
-  font-size     : 0.7em;
+  // font-size     : 0.7em;
   color         : var(--ion-color-medium);
   padding-top   : 0.3em;
   padding-bottom: 0.3em;
@@ -62,4 +62,12 @@
   font-size     : 0.6em;
   color         : var(--ion-color-medium);
   padding-bottom: 0.2em;
+}
+
+.back-border {
+  border-radius   : 0.5em;
+  display         : inline-block;
+  background-color: var(--ion-color-secondary);
+  color           : var(--ion-color-light);
+  padding         : 0.1em 0.3em;
 }
