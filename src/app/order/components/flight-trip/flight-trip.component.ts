@@ -25,7 +25,7 @@ export class FlightTripComponent implements OnInit, OnChanges {
   @Input() isShowInsurance = false;
   @Output() payInsuranceEvt: EventEmitter<any>;
   @Output() showInsuranceEvt: EventEmitter<any>;
-  products: InsuranceProductEntity[];
+  // products: InsuranceProductEntity[];
   constructor(
     private calendarService: CalendarService,
     private modalCtrl: ModalController
@@ -37,7 +37,7 @@ export class FlightTripComponent implements OnInit, OnChanges {
   ngOnInit() {}
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.trip && changes && changes.trip.currentValue) {
-      this.getProducts();
+      // this.getProducts();
     }
   }
   private check(type: OrderInsuranceType) {
@@ -56,29 +56,29 @@ export class FlightTripComponent implements OnInit, OnChanges {
     }
     return true;
   }
-  private getProducts() {
-    let products: InsuranceProductEntity[] = [];
-    if (!this.trip) {
-      return products;
-    }
-    const types = [
-      OrderInsuranceType.FlightAccident,
-      OrderInsuranceType.FlightDelay
-    ];
-    products =
-      (this.trip.InsuranceResult &&
-        this.trip.InsuranceResult.Products &&
-        this.trip.InsuranceResult.Products.filter(it =>
-          types.some(t => t == it.InsuranceType)
-        )) ||
-      [];
-    this.products =
-      this.trip && this.diffHours(this.trip.StartTime, null) >= 2
-        ? products
-        : [];
-    this.products = this.products.filter(it => this.check(it.InsuranceType));
-    return products;
-  }
+  // private getProducts() {
+  //   let products: InsuranceProductEntity[] = [];
+  //   if (!this.trip) {
+  //     return products;
+  //   }
+  //   const types = [
+  //     OrderInsuranceType.FlightAccident,
+  //     OrderInsuranceType.FlightDelay
+  //   ];
+  //   products =
+  //     (this.trip.InsuranceResult &&
+  //       this.trip.InsuranceResult.Products &&
+  //       this.trip.InsuranceResult.Products.filter(it =>
+  //         types.some(t => t == it.InsuranceType)
+  //       )) ||
+  //     [];
+  //   this.products =
+  //     this.trip && this.diffHours(this.trip.StartTime, null) >= 2
+  //       ? products
+  //       : [];
+  //   this.products = this.products.filter(it => this.check(it.InsuranceType));
+  //   return products;
+  // }
   getOrderInsurad() {
     if (!this.trip || !this.trip.OrderInsurances) {
       return;

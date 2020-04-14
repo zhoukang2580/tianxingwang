@@ -48,7 +48,7 @@ export class TripBuyInsuranceComponent implements OnInit {
       travelkey: trip.Key,
       OrderId: trip.OrderId,
       Product: JSON.stringify(this.insurance),
-      PassagerId: trip.PassengerId,
+      PassagerId: trip.Passenger&&trip.Passenger.Id,
       Channel: channel
     };
     req.IsShowLoading = true;

@@ -30,6 +30,7 @@ import { ProductItemType } from "src/app/tmc/models/ProductItems";
 import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
 import { OrderFlightTicketType } from "src/app/order/models/OrderFlightTicketType";
 import { environment } from "src/environments/environment";
+import { RefresherComponent } from "src/app/components/refresher";
 @Component({
   selector: "app-trip",
   templateUrl: "trip.page.html",
@@ -40,15 +41,16 @@ export class TripPage implements OnInit, OnDestroy {
   private searchCondition: TravelModel = {
     PageIndex: 0,
     PageSize: 15,
+    LastTime: null,
   } as TravelModel;
   private subscriptions: Subscription[] = [];
   OrderFlightTicketType = OrderFlightTicketType;
-  @ViewChild(IonRefresher) ionRefresher: IonRefresher;
+  @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll)
   infiniteScroll: IonInfiniteScroll;
   trips: OrderTripModel[];
   isLoading = false;
-  isShowInsurance = environment.mockProBuild;
+  isShowInsurance = true || environment.mockProBuild;
   constructor(
     private tmcService: TmcService,
     private apiservice: ApiService,
@@ -61,20 +63,26 @@ export class TripPage implements OnInit, OnDestroy {
   }
   private getTrips() {
     this.loadMoreSubscription.unsubscribe();
-    this.isLoading = this.searchCondition.PageIndex == 0;
+    this.isLoading = !this.searchCondition.LastTime;
     const req = new RequestEntity();
     req.Method = `TmcApiOrderUrl-Travel-List`;
     req.Data = this.searchCondition;
     // return of({ Status: true, Data: MockTripData } as any);
     return this.apiservice.getResponse<TravelModel>(req).pipe(
       map((r) => {
-        if (r.Data && r.Data.Trips) {
-          r.Data.Trips = r.Data.Trips.map((trip) => {
-            if (!trip.InsuranceResult) {
-              trip.InsuranceResult = r.Data.InsuranceResult;
-            }
-            return trip;
-          });
+        if (r.Data) {
+          this.searchCondition.LastFlightId = r.Data.LastFlightId;
+          this.searchCondition.LastHotelId = r.Data.LastHotelId;
+          this.searchCondition.LastTrainId = r.Data.LastTrainId;
+          this.searchCondition.LastTime = r.Data.LastTime;
+          if (r.Data.Trips) {
+            r.Data.Trips = r.Data.Trips.map((trip) => {
+              if (!trip.InsuranceResult) {
+                trip.InsuranceResult = r.Data.InsuranceResult;
+              }
+              return trip;
+            });
+          }
         }
         return r;
       }),
@@ -115,21 +123,25 @@ export class TripPage implements OnInit, OnDestroy {
     this.subscriptions.push(sub);
   }
   doRefresh() {
-    this.loadMoreSubscription.unsubscribe();
-    this.searchCondition.PageIndex = 0;
+    this.loadMoreSubscription
+      .add(() => {
+        if (this.infiniteScroll) {
+          this.infiniteScroll.disabled = true;
+        }
+      })
+      .unsubscribe();
+    this.searchCondition.PageIndex = 1;
     this.searchCondition.PageSize = 10;
+    this.searchCondition.LastTime = null;
     this.trips = [];
-    if (this.ionRefresher) {
-      if (this.ionRefresher) {
-        this.ionRefresher.complete();
+    if (this.refresher) {
+      if (this.refresher) {
+        this.refresher.complete();
       }
-      this.ionRefresher.disabled = true;
+      this.refresher.disabled = true;
       setTimeout(() => {
-        this.ionRefresher.disabled = false;
+        this.refresher.disabled = false;
       }, 100);
-    }
-    if (this.infiniteScroll) {
-      this.infiniteScroll.disabled = false;
     }
     this.loadMoreTrips();
   }
@@ -147,12 +159,6 @@ export class TripPage implements OnInit, OnDestroy {
         const trips = (res && res.Data && res.Data.Trips) || [];
         if (trips.length) {
           this.trips = this.trips.concat(trips);
-          this.trips.sort((t1, t2) => {
-            return (
-              AppHelper.getDate(t1.StartTime).getTime() -
-              AppHelper.getDate(t2.StartTime).getTime()
-            );
-          });
           this.searchCondition.PageIndex++;
         }
         if (this.infiniteScroll) {
