@@ -275,6 +275,7 @@ export class StaffService {
       Name: data.name,
       Number: data.number,
       Gender: data.gender,
+      Birthday: data.birthday && data.birthday.substr(0, 10),
       HrId: this.getHrInvitation().hrId,
     };
     return this.apiService.getPromiseData<IOrganization[]>(req);
@@ -543,4 +544,5 @@ export interface IHrInvitation {
   roleNames: string;
   number: string;
   gender: string;
+  birthday: string;
 }

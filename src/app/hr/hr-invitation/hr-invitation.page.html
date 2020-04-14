@@ -43,6 +43,10 @@
     </ion-radio-group>
   </ion-item>
   <ion-item>
+    <ion-label>出生日期</ion-label>
+    <ion-datetime displayFormat="YYYY-MM-DD" cancelText='取消' doneText='确定' [(ngModel)]='hrInvitationItem.birthday' placeholder="请选择日期"></ion-datetime>
+  </ion-item>
+  <ion-item>
     <ion-label>工号:</ion-label>
     <ion-input class="ion-text-end" slot="end" [(ngModel)]="hrInvitationItem.number"></ion-input>
   </ion-item>
