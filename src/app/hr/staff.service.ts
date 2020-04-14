@@ -274,7 +274,7 @@ export class StaffService {
       CountryCode: data.country.Code,
       Name: data.name,
       Number: data.number,
-      Gender: data.gender,
+      Gender: data.gender == "女" ? "F" : "M",
       Birthday: data.birthday && data.birthday.substr(0, 10),
       HrId: this.getHrInvitation().hrId,
     };
