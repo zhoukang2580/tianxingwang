@@ -195,7 +195,11 @@
                     </ion-col>
                     <ion-col>
                       {{trip.FlightNumber}}
-                    <span *ngIf="trip.CodeShareNumber">(共享{{trip?.CodeShareNumber}})<ion-text style="color: gainsboro;"> | </ion-text>{{trip.PlaneType}}</span>
+                      <span *ngIf="trip.CodeShareNumber">(共享{{trip?.CodeShareNumber}})
+                      </span>
+                      <span  *ngIf="trip.PlaneType">
+                        <ion-text style="color: gainsboro;"> | </ion-text>{{trip.PlaneType}}
+                      </span>
                     </ion-col>
                   </ion-row>
                   <ion-row>
@@ -225,7 +229,7 @@
                       票号
                     </ion-col>
                     <ion-col>
-                      {{flightTicket?.FullTicketNo}} 
+                      {{flightTicket?.FullTicketNo}}
                       {{trip.CabinType}}
                     </ion-col>
                   </ion-row>
@@ -371,8 +375,8 @@
                       航班号
                     </ion-col>
                     <ion-col>
-                    {{trip.FlightNumber}}
-                    <span *ngIf="trip.CodeShareNumber">(共享:{{trip?.CodeShareNumber}})</span>
+                      {{trip.FlightNumber}}
+                      <span *ngIf="trip.CodeShareNumber">(共享:{{trip?.CodeShareNumber}})</span>
                     </ion-col>
                   </ion-row>
                   <ion-row>
@@ -449,10 +453,10 @@
                       <ion-col size='3'>
                         行程
                       </ion-col>
-                      <ion-col >
-                          {{orderInsurance?.VariablesJsonObj?.trip?.TakeoffTime?.substr(0,10)}}
-                          {{orderInsurance?.VariablesJsonObj?.trip?.FromCityName}} ---
-                          {{orderInsurance?.VariablesJsonObj?.trip?.ToCityName}}
+                      <ion-col>
+                        {{orderInsurance?.VariablesJsonObj?.trip?.TakeoffTime?.substr(0,10)}}
+                        {{orderInsurance?.VariablesJsonObj?.trip?.FromCityName}} ---
+                        {{orderInsurance?.VariablesJsonObj?.trip?.ToCityName}}
                       </ion-col>
                     </ion-row>
                     <ion-row>
