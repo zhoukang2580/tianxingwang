@@ -77,11 +77,16 @@ export class SearchInternationalFlightPage
     this.router.navigate([AppHelper.getRoutePath("international-flight-list")]);
   }
   onSegmentChanged(evt: CustomEvent) {
-    // console.log(evt.detail.value);
-    this.flightService.setSearchModelSource({
-      ...this.flightService.getSearchModel(),
-      voyageType: evt.detail.value,
-    });
+    const voyageType: FlightVoyageType = evt.detail.value;
+    if (voyageType == FlightVoyageType.OneWay) {
+      this.flightService.initOneWaySearModel();
+    }
+    if (voyageType == FlightVoyageType.GoBack) {
+      this.flightService.initGoBackSearchModel();
+    }
+    if (voyageType == FlightVoyageType.MultiCity) {
+      this.flightService.initMultiTripSearchModel();
+    }
   }
   onSwapCity(trip: { fromCity: TrafficlineEntity; toCity: TrafficlineEntity }) {
     if (!trip || !trip.fromCity || !trip.toCity) {
@@ -90,9 +95,15 @@ export class SearchInternationalFlightPage
     const t = trip.fromCity;
     trip.fromCity = trip.toCity;
     trip.toCity = t;
+    if (this.searchFlightModel) {
+      this.flightService.setSearchModelSource(this.searchFlightModel);
+    }
   }
   onAddMoreTrip() {
     this.flightService.addMoreTrip();
+  }
+  onSelectCabin(){
+
   }
   onSelectPassenger() {
     this.isCanleave = true;
