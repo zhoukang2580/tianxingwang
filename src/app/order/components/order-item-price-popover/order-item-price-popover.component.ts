@@ -109,7 +109,7 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
       )
       .filter(it => tags.some(t => t == it.Tag))
       .reduce((acc, item) => {
-        if (amountFromVariable) {
+        if (amountFromVariable&&item.Variables) {
           item.VariablesJsonObj =
             item.VariablesJsonObj || JSON.parse(item.Variables) || {};
           acc = AppHelper.add(

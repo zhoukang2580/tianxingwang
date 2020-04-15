@@ -100,7 +100,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     private domCtrl: DomController,
     private orderService: OrderService,
     private identityService: IdentityService
-  ) {}
+  ) { }
   scrollTop: number;
 
   compareFn(t1: OrderFlightTicketEntity, t2: OrderFlightTicketEntity) {
@@ -744,7 +744,8 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     originalid: string,
     event: CustomEvent
   ) {
-    const originalTicket =
+    if(!t.VariablesJsonObj.IsCustomApplyRefund&&!t.VariablesJsonObj.IsCustomApplyExchange){
+      const originalTicket =
       this.tikectId2OriginalTickets[t.Id] &&
       this.tikectId2OriginalTickets[t.Id].find((f) => f.Id == originalid);
     // console.log(this.tikectId2OriginalTickets, "onShowFlightTicket");
@@ -758,6 +759,25 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
         this.ionContent.scrollByPoint(0, rect.top - height / 5, 100);
       }, 100);
     }
+    }else if(t.VariablesJsonObj.IsCustomApplyRefund){
+      t.VariablesJsonObj.showReturnTicket=! t.VariablesJsonObj.showReturnTicket
+      t.VariablesJsonObj.isShowOriginalTicket = !t.VariablesJsonObj.isShowOriginalTicket;
+      const height = this.plt.height();
+      setTimeout(() => {
+        const rect = (event.target as HTMLElement).getBoundingClientRect();
+        this.ionContent.scrollByPoint(0, rect.top - height / 5, 100);
+      }, 100);
+    }else if(t.VariablesJsonObj.IsCustomApplyExchange){
+      t.VariablesJsonObj.showReturnTicket2=! t.VariablesJsonObj.showReturnTicket2
+      t.VariablesJsonObj.isShowOriginalTicket = !t.VariablesJsonObj
+        .isShowOriginalTicket;
+      const height = this.plt.height();
+      setTimeout(() => {
+        const rect = (event.target as HTMLElement).getBoundingClientRect();
+        this.ionContent.scrollByPoint(0, rect.top - height / 5, 100);
+      }, 100);
+    }
+  
   }
   private getTicketOrderInsurances(t: OrderFlightTicketEntity) {
     return (
