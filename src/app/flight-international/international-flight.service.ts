@@ -20,12 +20,19 @@ import { DayModel } from "../tmc/models/DayModel";
 import { RequestEntity } from "../services/api/Request.entity";
 import { FlightResultEntity } from "../flight/models/FlightResultEntity";
 import { IResponse } from "../services/api/IResponse";
-import { tap } from "rxjs/operators";
-import { MockInternationalFlightListData } from "./mock-data";
+import { tap, switchMap } from "rxjs/operators";
+import {
+  MockInternationalFlightListData,
+  MOCK_MultiCity_SEARCHMODEL,
+} from "./mock-data";
 import { environment } from "src/environments/environment";
 import { IdentityEntity } from "../services/identity/identity.entity";
 import { LanguageHelper } from "../languageHelper";
 import { FlightRouteEntity } from "../flight/models/flight/FlightRouteEntity";
+import { StaffService } from "../hr/staff.service";
+import { MemberService } from "../member/member.service";
+import { CredentialsEntity } from "../tmc/models/CredentialsEntity";
+import { CredentialsType } from "../member/pipe/credential.pipe";
 export interface IFlightCabinType {
   label:
     | "经济舱"
@@ -137,6 +144,11 @@ const fromCity = {
   providedIn: "root",
 })
 export class InternationalFlightService {
+  private fetchPassengerCredentials: {
+    promise: Promise<{ [accountId: string]: CredentialsEntity[] }>;
+  };
+  private isInitializingSelfBookInfos: { promise: Promise<any> };
+  private selfCredentials: CredentialsEntity[];
   private identity: IdentityEntity;
   private lastOneWaySearchModel: IInternationalFlightSearchModel; // 上一次选择的单程trip信息
   private lastGobackSearchModel: IInternationalFlightSearchModel; // 上一次选择的往返trip信息
@@ -150,13 +162,16 @@ export class InternationalFlightService {
     PassengerBookInfo<IInternationalFlightSegmentInfo>[]
   >;
   private flightListResult: FlightResultEntity;
+  private flightPolicyResult: FlightResultEntity;
   constructor(
     private apiService: ApiService,
     private identityService: IdentityService,
     private calendarService: CalendarService,
     private tmcService: TmcService,
     private router: Router,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private staffService: StaffService,
+    private memerService: MemberService
   ) {
     this.initOneWaySearModel();
     this.bookInfoSource = new BehaviorSubject([]);
@@ -165,6 +180,124 @@ export class InternationalFlightService {
       this.identity = it;
       this.disposal();
     });
+    memerService.getCredentialsChangeSource().subscribe(async () => {
+      this.selfCredentials = [];
+      const staff = await this.staffService.getStaff(false, true);
+      const isSelf = await this.staffService.isSelfBookType();
+      if (!isSelf) {
+        return;
+      }
+      const res = await this.getPassengerCredentials(
+        [staff.AccountId],
+        true
+      ).catch((_) => ({ [staff.AccountId]: [] }));
+      this.selfCredentials = res[staff.AccountId];
+      const passportOrHmTwPass =
+        this.selfCredentials &&
+        this.selfCredentials.find((c) => this.isPassportHmTwPass(c.Type));
+      const bookInfos = this.getBookInfos();
+      const exists = bookInfos
+        .filter((it) =>
+          this.isPassportHmTwPass(it.credential && it.credential.Type)
+        )
+        .map((it) => it.credential);
+
+      if (passportOrHmTwPass) {
+        if (!exists || !exists.length) {
+          this.setBookInfoSource(
+            bookInfos.map((it) => {
+              it.credential = passportOrHmTwPass;
+              return it;
+            })
+          );
+        } else {
+          this.setBookInfoSource(
+            bookInfos.map((it) => {
+              if (
+                this.isPassportHmTwPass(
+                  it && it.credential && it.credential.Type
+                )
+              ) {
+                it.credential = passportOrHmTwPass;
+              }
+              return it;
+            })
+          );
+        }
+      }
+    });
+  }
+  isPassportHmTwPass(type: CredentialsType) {
+    return (
+      type == CredentialsType.Passport ||
+      type == CredentialsType.HmPass ||
+      type == CredentialsType.TwPass
+    );
+  }
+  private async initSelfBookTypeBookInfos(isShowLoading = false) {
+    if (this.isInitializingSelfBookInfos) {
+      return this.isInitializingSelfBookInfos.promise;
+    } else {
+      this.isInitializingSelfBookInfos = {
+        promise: new Promise(async (resolve) => {
+          const isSelf = await this.staffService.isSelfBookType(isShowLoading);
+          const infos = this.getBookInfos();
+          if (
+            (infos.length === 0 ||
+              infos.some(
+                (it) =>
+                  !it.credential || !this.isPassportHmTwPass(it.credential.Type)
+              )) &&
+            isSelf
+          ) {
+            let passportOrHmTwPass: any;
+            const staff = await this.staffService.getStaff(
+              false,
+              isShowLoading
+            );
+            const res = await this.getPassengerCredentials(
+              [staff.AccountId],
+              isShowLoading
+            ).catch((_) => ({ [staff.AccountId]: [] }));
+            this.selfCredentials = res[staff.AccountId];
+            passportOrHmTwPass =
+              this.selfCredentials &&
+              this.selfCredentials.find((c) => this.isPassportHmTwPass(c.Type));
+            const i: PassengerBookInfo<IInternationalFlightSegmentInfo> = {
+              id: AppHelper.uuid(),
+              passenger: staff,
+              credential: passportOrHmTwPass,
+            };
+            this.addPassengerBookInfo(i);
+            resolve();
+          } else {
+            resolve();
+          }
+        }).finally(() => {
+          this.isInitializingSelfBookInfos = null;
+        }),
+      };
+    }
+    return this.isInitializingSelfBookInfos.promise;
+  }
+  private getPassengerCredentials(
+    accountIds: string[],
+    isShowLoading: boolean
+  ) {
+    if (
+      this.fetchPassengerCredentials &&
+      this.fetchPassengerCredentials.promise
+    ) {
+      return this.fetchPassengerCredentials.promise;
+    }
+    this.fetchPassengerCredentials = {
+      promise: this.tmcService
+        .getPassengerCredentials(accountIds, isShowLoading)
+        .finally(() => {
+          this.fetchPassengerCredentials = null;
+        }),
+    };
+    return this.fetchPassengerCredentials.promise;
   }
   private initFilterCondition() {
     this.filterCondition = {
@@ -425,1829 +558,7 @@ export class InternationalFlightService {
       ],
     };
     if (!environment.production) {
-      this.searchModel = {
-        voyageType: FlightVoyageType.MultiCity,
-        trips: [
-          {
-            fromCity: {
-              AirportCityCode: "SHA",
-              CityCode: "3101",
-              CityName: "上海",
-              Code: "SHA",
-              CountryCode: "CN",
-              Description: "",
-              EnglishName: "Shanghai",
-              Id: "9260",
-              Initial: "",
-              IsHot: true,
-              Name: "上海",
-              Nickname: "上海",
-              Pinyin: "Shanghai",
-              Sequence: 1,
-              Tag: "AirportCity",
-            },
-            toCity: {
-              AirportCityCode: "BJS",
-              CityCode: "1101",
-              CityName: "北京",
-              Code: "BJS",
-              CountryCode: "CN",
-              Description: "",
-              EnglishName: "Beijing",
-              Id: "9278",
-              Initial: "bj",
-              IsHot: true,
-              Name: "北京",
-              Nickname: "北京",
-              Pinyin: "Beijing",
-              Sequence: 2,
-              Tag: "AirportCity",
-            },
-            date: "2020-04-11",
-            id: "b7a753b5-65fb-4e",
-            isSelectInfo: false,
-            bookInfo: {
-              flightPolicy: null,
-              fromSegment: {
-                Id: 16,
-                LowestFare: 0,
-                LowestCabinCode: null,
-                LowestCabinId: null,
-                LowestDiscount: 0,
-                LowestCabinType: 0,
-                LowestCabinFareType: 0,
-                Tax: 0,
-                FuelFee: 0,
-                AirportFee: 0,
-                YFare: 0,
-                CFare: 0,
-                FFare: 0,
-                Number: "DL6541",
-                Airline: "DL",
-                AirlineSrc:
-                  "http://test.shared.testskytrip.com/img/airlinelogo/dl.gif",
-                AirlineName: "达美航空",
-                PlaneType: "330",
-                MealType: 0,
-                Meal: "",
-                Link: null,
-                IsChooseSeat: false,
-                PlaneTypeDescribe: "33L",
-                CodeShareNumber: "MU5137",
-                Carrier: "MU",
-                CarrierName: "东方航空",
-                FromAirport: "SHA",
-                ToAirport: "PEK",
-                FromAirportName: "虹桥国际机场",
-                FromCityName: "上海",
-                ToAirportName: "首都国际机场",
-                ToCityName: "北京",
-                TakeoffTime: "2020-07-08T07:00:00",
-                ArrivalTime: "2020-07-08T09:20:00",
-                FromTerminal: "T2",
-                ToTerminal: "T2",
-                IsStop: false,
-                BasicPrice: 0,
-                LowerPrice: 0,
-                LowerFlightNumber: null,
-                CurrentLowestFare: 0,
-                StopCities: null,
-                Variables: null,
-                Distance: 676,
-                CabinCode: null,
-                Cabins: null,
-                StopCitiesCount: 0,
-                Avl:
-                  "J:4,C:4,D:4,I:4,Z:0,Y:9,B:9,M:9,H:9,Q:9,K:9,L:9,U:9,T:9,X:9,V:0",
-                AircraftChange: false,
-                ET: true,
-                Duration: 140,
-                FlyTime: 140,
-                FlyTimeName: "2h20m",
-                MealTypeName: null,
-                TakeoffTimeStamp: 1594162800000,
-              },
-              toSegment: {
-                Id: 16,
-                LowestFare: 0,
-                LowestCabinCode: null,
-                LowestCabinId: null,
-                LowestDiscount: 0,
-                LowestCabinType: 0,
-                LowestCabinFareType: 0,
-                Tax: 0,
-                FuelFee: 0,
-                AirportFee: 0,
-                YFare: 0,
-                CFare: 0,
-                FFare: 0,
-                Number: "DL6541",
-                Airline: "DL",
-                AirlineSrc:
-                  "http://test.shared.testskytrip.com/img/airlinelogo/dl.gif",
-                AirlineName: "达美航空",
-                PlaneType: "330",
-                MealType: 0,
-                Meal: "",
-                Link: null,
-                IsChooseSeat: false,
-                PlaneTypeDescribe: "33L",
-                CodeShareNumber: "MU5137",
-                Carrier: "MU",
-                CarrierName: "东方航空",
-                FromAirport: "SHA",
-                ToAirport: "PEK",
-                FromAirportName: "虹桥国际机场",
-                FromCityName: "上海",
-                ToAirportName: "首都国际机场",
-                ToCityName: "北京",
-                TakeoffTime: "2020-07-08T07:00:00",
-                ArrivalTime: "2020-07-08T09:20:00",
-                FromTerminal: "T2",
-                ToTerminal: "T2",
-                IsStop: false,
-                BasicPrice: 0,
-                LowerPrice: 0,
-                LowerFlightNumber: null,
-                CurrentLowestFare: 0,
-                StopCities: null,
-                Variables: null,
-                Distance: 676,
-                CabinCode: null,
-                Cabins: null,
-                StopCitiesCount: 0,
-                Avl:
-                  "J:4,C:4,D:4,I:4,Z:0,Y:9,B:9,M:9,H:9,Q:9,K:9,L:9,U:9,T:9,X:9,V:0",
-                AircraftChange: false,
-                ET: true,
-                Duration: 140,
-                FlyTime: 140,
-                FlyTimeName: "2h20m",
-                MealTypeName: null,
-                TakeoffTimeStamp: 1594162800000,
-              },
-              flightRoute: {
-                Id: 11,
-                FlightSegmentIds: [16],
-                Paragraphs: 1,
-                FirstTime: "2020-07-08T07:00:00",
-                Week: "周三",
-                ArrivalTime: "2020-07-08T09:20:00",
-                Airline: "DL",
-                FlightRouteIds: [8, 8, 8, 8, 8],
-                Origin: "SHA",
-                FromCountry: "CN",
-                Destination: "BJS",
-                ToCountry: "CN",
-                Duration: 140,
-                MaxDuration: 140,
-                Type: 1,
-                TypeName: "经济舱",
-                Cabin: "Y",
-                YFare: 0,
-                CFare: 0,
-                FFare: 0,
-                IsAllowOrder: false,
-                Rules: null,
-                Key: "3993CB0445DB6375900B5518E12752AE",
-                FlightSegments: [
-                  {
-                    Id: 16,
-                    LowestFare: 0,
-                    LowestCabinCode: null,
-                    LowestCabinId: null,
-                    LowestDiscount: 0,
-                    LowestCabinType: 0,
-                    LowestCabinFareType: 0,
-                    Tax: 0,
-                    FuelFee: 0,
-                    AirportFee: 0,
-                    YFare: 0,
-                    CFare: 0,
-                    FFare: 0,
-                    Number: "DL6541",
-                    Airline: "DL",
-                    AirlineSrc:
-                      "http://test.shared.testskytrip.com/img/airlinelogo/dl.gif",
-                    AirlineName: "达美航空",
-                    PlaneType: "330",
-                    MealType: 0,
-                    Meal: "",
-                    Link: null,
-                    IsChooseSeat: false,
-                    PlaneTypeDescribe: "33L",
-                    CodeShareNumber: "MU5137",
-                    Carrier: "MU",
-                    CarrierName: "东方航空",
-                    FromAirport: "SHA",
-                    ToAirport: "PEK",
-                    FromAirportName: "虹桥国际机场",
-                    FromCityName: "上海",
-                    ToAirportName: "首都国际机场",
-                    ToCityName: "北京",
-                    TakeoffTime: "2020-07-08T07:00:00",
-                    ArrivalTime: "2020-07-08T09:20:00",
-                    FromTerminal: "T2",
-                    ToTerminal: "T2",
-                    IsStop: false,
-                    BasicPrice: 0,
-                    LowerPrice: 0,
-                    LowerFlightNumber: null,
-                    CurrentLowestFare: 0,
-                    StopCities: null,
-                    Variables: null,
-                    Distance: 676,
-                    CabinCode: null,
-                    Cabins: null,
-                    StopCitiesCount: 0,
-                    Avl:
-                      "J:4,C:4,D:4,I:4,Z:0,Y:9,B:9,M:9,H:9,Q:9,K:9,L:9,U:9,T:9,X:9,V:0",
-                    AircraftChange: false,
-                    ET: true,
-                    Duration: 140,
-                    FlyTime: 140,
-                    FlyTimeName: "2h20m",
-                    MealTypeName: null,
-                    TakeoffTimeStamp: 1594162800000,
-                  },
-                ],
-                transferSegments: [
-                  {
-                    Id: 16,
-                    LowestFare: 0,
-                    LowestCabinCode: null,
-                    LowestCabinId: null,
-                    LowestDiscount: 0,
-                    LowestCabinType: 0,
-                    LowestCabinFareType: 0,
-                    Tax: 0,
-                    FuelFee: 0,
-                    AirportFee: 0,
-                    YFare: 0,
-                    CFare: 0,
-                    FFare: 0,
-                    Number: "DL6541",
-                    Airline: "DL",
-                    AirlineSrc:
-                      "http://test.shared.testskytrip.com/img/airlinelogo/dl.gif",
-                    AirlineName: "达美航空",
-                    PlaneType: "330",
-                    MealType: 0,
-                    Meal: "",
-                    Link: null,
-                    IsChooseSeat: false,
-                    PlaneTypeDescribe: "33L",
-                    CodeShareNumber: "MU5137",
-                    Carrier: "MU",
-                    CarrierName: "东方航空",
-                    FromAirport: "SHA",
-                    ToAirport: "PEK",
-                    FromAirportName: "虹桥国际机场",
-                    FromCityName: "上海",
-                    ToAirportName: "首都国际机场",
-                    ToCityName: "北京",
-                    TakeoffTime: "2020-07-08T07:00:00",
-                    ArrivalTime: "2020-07-08T09:20:00",
-                    FromTerminal: "T2",
-                    ToTerminal: "T2",
-                    IsStop: false,
-                    BasicPrice: 0,
-                    LowerPrice: 0,
-                    LowerFlightNumber: null,
-                    CurrentLowestFare: 0,
-                    StopCities: null,
-                    Variables: null,
-                    Distance: 676,
-                    CabinCode: null,
-                    Cabins: null,
-                    StopCitiesCount: 0,
-                    Avl:
-                      "J:4,C:4,D:4,I:4,Z:0,Y:9,B:9,M:9,H:9,Q:9,K:9,L:9,U:9,T:9,X:9,V:0",
-                    AircraftChange: false,
-                    ET: true,
-                    Duration: 140,
-                    FlyTime: 140,
-                    FlyTimeName: "2h20m",
-                    MealTypeName: null,
-                    TakeoffTimeStamp: 1594162800000,
-                  },
-                ],
-                fromSegment: {
-                  Id: 16,
-                  LowestFare: 0,
-                  LowestCabinCode: null,
-                  LowestCabinId: null,
-                  LowestDiscount: 0,
-                  LowestCabinType: 0,
-                  LowestCabinFareType: 0,
-                  Tax: 0,
-                  FuelFee: 0,
-                  AirportFee: 0,
-                  YFare: 0,
-                  CFare: 0,
-                  FFare: 0,
-                  Number: "DL6541",
-                  Airline: "DL",
-                  AirlineSrc:
-                    "http://test.shared.testskytrip.com/img/airlinelogo/dl.gif",
-                  AirlineName: "达美航空",
-                  PlaneType: "330",
-                  MealType: 0,
-                  Meal: "",
-                  Link: null,
-                  IsChooseSeat: false,
-                  PlaneTypeDescribe: "33L",
-                  CodeShareNumber: "MU5137",
-                  Carrier: "MU",
-                  CarrierName: "东方航空",
-                  FromAirport: "SHA",
-                  ToAirport: "PEK",
-                  FromAirportName: "虹桥国际机场",
-                  FromCityName: "上海",
-                  ToAirportName: "首都国际机场",
-                  ToCityName: "北京",
-                  TakeoffTime: "2020-07-08T07:00:00",
-                  ArrivalTime: "2020-07-08T09:20:00",
-                  FromTerminal: "T2",
-                  ToTerminal: "T2",
-                  IsStop: false,
-                  BasicPrice: 0,
-                  LowerPrice: 0,
-                  LowerFlightNumber: null,
-                  CurrentLowestFare: 0,
-                  StopCities: null,
-                  Variables: null,
-                  Distance: 676,
-                  CabinCode: null,
-                  Cabins: null,
-                  StopCitiesCount: 0,
-                  Avl:
-                    "J:4,C:4,D:4,I:4,Z:0,Y:9,B:9,M:9,H:9,Q:9,K:9,L:9,U:9,T:9,X:9,V:0",
-                  AircraftChange: false,
-                  ET: true,
-                  Duration: 140,
-                  FlyTime: 140,
-                  FlyTimeName: "2h20m",
-                  MealTypeName: null,
-                  TakeoffTimeStamp: 1594162800000,
-                },
-                toSegment: {
-                  Id: 16,
-                  LowestFare: 0,
-                  LowestCabinCode: null,
-                  LowestCabinId: null,
-                  LowestDiscount: 0,
-                  LowestCabinType: 0,
-                  LowestCabinFareType: 0,
-                  Tax: 0,
-                  FuelFee: 0,
-                  AirportFee: 0,
-                  YFare: 0,
-                  CFare: 0,
-                  FFare: 0,
-                  Number: "DL6541",
-                  Airline: "DL",
-                  AirlineSrc:
-                    "http://test.shared.testskytrip.com/img/airlinelogo/dl.gif",
-                  AirlineName: "达美航空",
-                  PlaneType: "330",
-                  MealType: 0,
-                  Meal: "",
-                  Link: null,
-                  IsChooseSeat: false,
-                  PlaneTypeDescribe: "33L",
-                  CodeShareNumber: "MU5137",
-                  Carrier: "MU",
-                  CarrierName: "东方航空",
-                  FromAirport: "SHA",
-                  ToAirport: "PEK",
-                  FromAirportName: "虹桥国际机场",
-                  FromCityName: "上海",
-                  ToAirportName: "首都国际机场",
-                  ToCityName: "北京",
-                  TakeoffTime: "2020-07-08T07:00:00",
-                  ArrivalTime: "2020-07-08T09:20:00",
-                  FromTerminal: "T2",
-                  ToTerminal: "T2",
-                  IsStop: false,
-                  BasicPrice: 0,
-                  LowerPrice: 0,
-                  LowerFlightNumber: null,
-                  CurrentLowestFare: 0,
-                  StopCities: null,
-                  Variables: null,
-                  Distance: 676,
-                  CabinCode: null,
-                  Cabins: null,
-                  StopCitiesCount: 0,
-                  Avl:
-                    "J:4,C:4,D:4,I:4,Z:0,Y:9,B:9,M:9,H:9,Q:9,K:9,L:9,U:9,T:9,X:9,V:0",
-                  AircraftChange: false,
-                  ET: true,
-                  Duration: 140,
-                  FlyTime: 140,
-                  FlyTimeName: "2h20m",
-                  MealTypeName: null,
-                  TakeoffTimeStamp: 1594162800000,
-                },
-                isTransfer: false,
-                flightFare: {
-                  Id: 7,
-                  FlightRouteIds: [11, 8, 9],
-                  FlightFareBasics: [
-                    {
-                      FlightRouteId: 11,
-                      FareBasic: "KHW0ZLMD",
-                      IsOnlyFareIdBasic: false,
-                    },
-                    {
-                      FlightRouteId: 8,
-                      FareBasic: "KHW0ZLMD",
-                      IsOnlyFareIdBasic: false,
-                    },
-                    {
-                      FlightRouteId: 9,
-                      FareBasic: "TKX0ZRME",
-                      IsOnlyFareIdBasic: true,
-                    },
-                  ],
-                  BookType: 4,
-                  BookCode: null,
-                  FlightNumber: null,
-                  SupplierType: 1,
-                  FareType: 1,
-                  Name: null,
-                  Type: 1,
-                  Code: null,
-                  CabinCodes: { "12": "K", "13": "T", "14": "T", "16": "K" },
-                  OfficeCode: "SHA396",
-                  TicketPrice: 9010,
-                  SettlePrice: 9010,
-                  SalesPrice: 9010,
-                  Tax: 2169,
-                  SettleTax: 0,
-                  Reward: 0,
-                  Discount: 0,
-                  Count: 1,
-                  Variables: { FareBasis: "KHW0ZLMD,TKX0ZRME" },
-                  Explain: null,
-                  FlightFareRules: [
-                    {
-                      RouteId: 11,
-                      Bags: [
-                        {
-                          FlightNumber: "DL6541",
-                          AllowedPieces: 2,
-                          AllowedWeight: 0,
-                          AllowedWeightUnit: "",
-                          FreeAllowedPieces: 1,
-                          FreeAllowedWeight: 0,
-                          FreeAllowedWeightUnit: "",
-                        },
-                      ],
-                      Variables: {
-                        RuleRef1:
-                          "key(RuleTariff::Rule::OWRT::Routing::Footnote1::Footnote2::PassengerType::FareType::OriginAddonTariff::OriginAddonFootnote1::OriginAddonFootnote2::DestinationAddonTariff::DestinationAddonFootnote1::DestinationAddonFootnote2::TravelAgencyCode::IataNumber::DepartmentCode::Origin::Destination::FareSource::FbrBaseTariff::FbrBaseRule::AccountCode::FbrBaseFareBasis::OriginAddonRouting::DestinationAddonRouting)",
-                        RuleRef2:
-                          "003::4MTR::2::1300::::::ADT::XAP::::::::::::::SHA396::08300843::::SHA::SEA::ATPCO::::::::::::",
-                      },
-                    },
-                    {
-                      RouteId: 8,
-                      Bags: [
-                        {
-                          FlightNumber: "DL128",
-                          AllowedPieces: 2,
-                          AllowedWeight: 0,
-                          AllowedWeightUnit: "",
-                          FreeAllowedPieces: 1,
-                          FreeAllowedWeight: 0,
-                          FreeAllowedWeightUnit: "",
-                        },
-                      ],
-                      Variables: {
-                        RuleRef1:
-                          "key(RuleTariff::Rule::OWRT::Routing::Footnote1::Footnote2::PassengerType::FareType::OriginAddonTariff::OriginAddonFootnote1::OriginAddonFootnote2::DestinationAddonTariff::DestinationAddonFootnote1::DestinationAddonFootnote2::TravelAgencyCode::IataNumber::DepartmentCode::Origin::Destination::FareSource::FbrBaseTariff::FbrBaseRule::AccountCode::FbrBaseFareBasis::OriginAddonRouting::DestinationAddonRouting)",
-                        RuleRef2:
-                          "003::4MTR::2::1300::::::ADT::XAP::::::::::::::SHA396::08300843::::SHA::SEA::ATPCO::::::::::::",
-                      },
-                    },
-                    {
-                      RouteId: 9,
-                      Bags: [
-                        {
-                          FlightNumber: "DL9011",
-                          AllowedPieces: 2,
-                          AllowedWeight: 0,
-                          AllowedWeightUnit: "",
-                          FreeAllowedPieces: 1,
-                          FreeAllowedWeight: 0,
-                          FreeAllowedWeightUnit: "",
-                        },
-                        {
-                          FlightNumber: "DL7852",
-                          AllowedPieces: 2,
-                          AllowedWeight: 0,
-                          AllowedWeightUnit: "",
-                          FreeAllowedPieces: 1,
-                          FreeAllowedWeight: 0,
-                          FreeAllowedWeightUnit: "",
-                        },
-                      ],
-                      Variables: {
-                        RuleRef1:
-                          "key(RuleTariff::Rule::OWRT::Routing::Footnote1::Footnote2::PassengerType::FareType::OriginAddonTariff::OriginAddonFootnote1::OriginAddonFootnote2::DestinationAddonTariff::DestinationAddonFootnote1::DestinationAddonFootnote2::TravelAgencyCode::IataNumber::DepartmentCode::Origin::Destination::FareSource::FbrBaseTariff::FbrBaseRule::AccountCode::FbrBaseFareBasis::OriginAddonRouting::DestinationAddonRouting)",
-                        RuleRef2:
-                          "003::2MTR::2::7000::::::ADT::XAP::::::::::::::SHA396::08300843::::SEA::BKK::ATPCO::::::::::::",
-                      },
-                    },
-                  ],
-                  LowerSegment: null,
-                  InsuranceProducts: null,
-                  TicketTimeLimit: "2020-04-12T14:02:00",
-                  Percent: 0,
-                  IataTax: 403,
-                  YQYRTax: 1766,
-                  PlatingCarrier: "DL",
-                  Forms: null,
-                  TmcId: 0,
-                  TypeName: "经济舱",
-                  FareTypeName: "公布运价",
-                  SupplierTypeName: "Ibe",
-                  IsAllowOrder: false,
-                  Rules: null,
-                  FlightPolicy: null,
-                },
-              },
-              id: "e153d92c-8ed5-45",
-            },
-          },
-          {
-            id: "2fa08a8b-9a27-40",
-            fromCity: {
-              AirportCityCode: "BJS",
-              CityCode: "1101",
-              CityName: "北京",
-              Code: "BJS",
-              CountryCode: "CN",
-              Description: "",
-              EnglishName: "Beijing",
-              Id: "9278",
-              Initial: "bj",
-              IsHot: true,
-              Name: "北京",
-              Nickname: "北京",
-              Pinyin: "Beijing",
-              Sequence: 2,
-              Tag: "AirportCity",
-            },
-            date: "2020-04-13",
-            isSelectInfo: false,
-            toCity: {
-              Id: 6711,
-              Tag: "AirportInternational",
-              Code: "SEA",
-              Name: "塔克马国际机场",
-              Nickname: "塔克马国际机场",
-              Pinyin: "TAKEMA",
-              Initial: "TKM",
-              AirportCityCode: "SEA",
-              CityCode: "SEA",
-              CityName: "西雅图",
-              Description: "",
-              IsHot: true,
-              CountryCode: "US",
-              Sequence: 0,
-              EnglishName: "SEATTLE/TACOMA INTERNATIONAL APT",
-              Country: { Id: 207, Name: "美国", Code: "US", Sequence: 2 },
-              matchStr: "sea,塔克马国际机场,塔克马国际机场,西雅图,takema,sea",
-            },
-            bookInfo: {
-              flightPolicy: null,
-              fromSegment: {
-                Id: 12,
-                LowestFare: 0,
-                LowestCabinCode: null,
-                LowestCabinId: null,
-                LowestDiscount: 0,
-                LowestCabinType: 0,
-                LowestCabinFareType: 0,
-                Tax: 0,
-                FuelFee: 0,
-                AirportFee: 0,
-                YFare: 0,
-                CFare: 0,
-                FFare: 0,
-                Number: "DL128",
-                Airline: "DL",
-                AirlineSrc:
-                  "http://test.shared.testskytrip.com/img/airlinelogo/dl.gif",
-                AirlineName: "达美航空",
-                PlaneType: "330",
-                MealType: 0,
-                Meal: "D",
-                Link: null,
-                IsChooseSeat: false,
-                PlaneTypeDescribe: "339",
-                CodeShareNumber: null,
-                Carrier: "DL",
-                CarrierName: "达美航空",
-                FromAirport: "PKX",
-                ToAirport: "SEA",
-                FromAirportName: "大兴国际机场",
-                FromCityName: "北京",
-                ToAirportName: "塔克马国际机场",
-                ToCityName: "西雅图",
-                TakeoffTime: "2020-07-11T11:45:00",
-                ArrivalTime: "2020-07-11T07:44:00",
-                FromTerminal: "",
-                ToTerminal: "",
-                IsStop: false,
-                BasicPrice: 0,
-                LowerPrice: 0,
-                LowerFlightNumber: null,
-                CurrentLowestFare: 0,
-                StopCities: null,
-                Variables: null,
-                Distance: 5393,
-                CabinCode: null,
-                Cabins: null,
-                StopCitiesCount: 0,
-                Avl:
-                  "J:9,C:9,D:9,I:9,Z:9,P:9,A:9,G:9,W:9,S:9,Y:9,B:9,M:9,H:9,Q:9,K:9,L:9,U:9,T:9,X:9,V:9,E:9",
-                AircraftChange: false,
-                ET: true,
-                Duration: 659,
-                FlyTime: -241,
-                FlyTimeName: "-5h-1m",
-                MealTypeName: null,
-                TakeoffTimeStamp: 1594439100000,
-              },
-              toSegment: {
-                Id: 12,
-                LowestFare: 0,
-                LowestCabinCode: null,
-                LowestCabinId: null,
-                LowestDiscount: 0,
-                LowestCabinType: 0,
-                LowestCabinFareType: 0,
-                Tax: 0,
-                FuelFee: 0,
-                AirportFee: 0,
-                YFare: 0,
-                CFare: 0,
-                FFare: 0,
-                Number: "DL128",
-                Airline: "DL",
-                AirlineSrc:
-                  "http://test.shared.testskytrip.com/img/airlinelogo/dl.gif",
-                AirlineName: "达美航空",
-                PlaneType: "330",
-                MealType: 0,
-                Meal: "D",
-                Link: null,
-                IsChooseSeat: false,
-                PlaneTypeDescribe: "339",
-                CodeShareNumber: null,
-                Carrier: "DL",
-                CarrierName: "达美航空",
-                FromAirport: "PKX",
-                ToAirport: "SEA",
-                FromAirportName: "大兴国际机场",
-                FromCityName: "北京",
-                ToAirportName: "塔克马国际机场",
-                ToCityName: "西雅图",
-                TakeoffTime: "2020-07-11T11:45:00",
-                ArrivalTime: "2020-07-11T07:44:00",
-                FromTerminal: "",
-                ToTerminal: "",
-                IsStop: false,
-                BasicPrice: 0,
-                LowerPrice: 0,
-                LowerFlightNumber: null,
-                CurrentLowestFare: 0,
-                StopCities: null,
-                Variables: null,
-                Distance: 5393,
-                CabinCode: null,
-                Cabins: null,
-                StopCitiesCount: 0,
-                Avl:
-                  "J:9,C:9,D:9,I:9,Z:9,P:9,A:9,G:9,W:9,S:9,Y:9,B:9,M:9,H:9,Q:9,K:9,L:9,U:9,T:9,X:9,V:9,E:9",
-                AircraftChange: false,
-                ET: true,
-                Duration: 659,
-                FlyTime: -241,
-                FlyTimeName: "-5h-1m",
-                MealTypeName: null,
-                TakeoffTimeStamp: 1594439100000,
-              },
-              flightRoute: {
-                Id: 8,
-                FlightSegmentIds: [12],
-                Paragraphs: 2,
-                FirstTime: "2020-07-11T11:45:00",
-                Week: "周六",
-                ArrivalTime: "2020-07-11T07:44:00",
-                Airline: "DL",
-                FlightRouteIds: [
-                  9,
-                  9,
-                  9,
-                  9,
-                  9,
-                  14,
-                  14,
-                  14,
-                  14,
-                  14,
-                  15,
-                  15,
-                  15,
-                  15,
-                  15,
-                  16,
-                  17,
-                  17,
-                  17,
-                  17,
-                  17,
-                  16,
-                  16,
-                  16,
-                  16,
-                ],
-                Origin: "BJS",
-                FromCountry: "CN",
-                Destination: "SEA",
-                ToCountry: "US",
-                Duration: 659,
-                MaxDuration: 659,
-                Type: 1,
-                TypeName: "经济舱",
-                Cabin: "Y",
-                YFare: 0,
-                CFare: 0,
-                FFare: 0,
-                IsAllowOrder: false,
-                Rules: null,
-                Key: "2B91FE95D3D0E87E6FD407946555085F",
-                FlightSegments: [
-                  {
-                    Id: 12,
-                    LowestFare: 0,
-                    LowestCabinCode: null,
-                    LowestCabinId: null,
-                    LowestDiscount: 0,
-                    LowestCabinType: 0,
-                    LowestCabinFareType: 0,
-                    Tax: 0,
-                    FuelFee: 0,
-                    AirportFee: 0,
-                    YFare: 0,
-                    CFare: 0,
-                    FFare: 0,
-                    Number: "DL128",
-                    Airline: "DL",
-                    AirlineSrc:
-                      "http://test.shared.testskytrip.com/img/airlinelogo/dl.gif",
-                    AirlineName: "达美航空",
-                    PlaneType: "330",
-                    MealType: 0,
-                    Meal: "D",
-                    Link: null,
-                    IsChooseSeat: false,
-                    PlaneTypeDescribe: "339",
-                    CodeShareNumber: null,
-                    Carrier: "DL",
-                    CarrierName: "达美航空",
-                    FromAirport: "PKX",
-                    ToAirport: "SEA",
-                    FromAirportName: "大兴国际机场",
-                    FromCityName: "北京",
-                    ToAirportName: "塔克马国际机场",
-                    ToCityName: "西雅图",
-                    TakeoffTime: "2020-07-11T11:45:00",
-                    ArrivalTime: "2020-07-11T07:44:00",
-                    FromTerminal: "",
-                    ToTerminal: "",
-                    IsStop: false,
-                    BasicPrice: 0,
-                    LowerPrice: 0,
-                    LowerFlightNumber: null,
-                    CurrentLowestFare: 0,
-                    StopCities: null,
-                    Variables: null,
-                    Distance: 5393,
-                    CabinCode: null,
-                    Cabins: null,
-                    StopCitiesCount: 0,
-                    Avl:
-                      "J:9,C:9,D:9,I:9,Z:9,P:9,A:9,G:9,W:9,S:9,Y:9,B:9,M:9,H:9,Q:9,K:9,L:9,U:9,T:9,X:9,V:9,E:9",
-                    AircraftChange: false,
-                    ET: true,
-                    Duration: 659,
-                    FlyTime: -241,
-                    FlyTimeName: "-5h-1m",
-                    MealTypeName: null,
-                    TakeoffTimeStamp: 1594439100000,
-                  },
-                ],
-                transferSegments: [
-                  {
-                    Id: 12,
-                    LowestFare: 0,
-                    LowestCabinCode: null,
-                    LowestCabinId: null,
-                    LowestDiscount: 0,
-                    LowestCabinType: 0,
-                    LowestCabinFareType: 0,
-                    Tax: 0,
-                    FuelFee: 0,
-                    AirportFee: 0,
-                    YFare: 0,
-                    CFare: 0,
-                    FFare: 0,
-                    Number: "DL128",
-                    Airline: "DL",
-                    AirlineSrc:
-                      "http://test.shared.testskytrip.com/img/airlinelogo/dl.gif",
-                    AirlineName: "达美航空",
-                    PlaneType: "330",
-                    MealType: 0,
-                    Meal: "D",
-                    Link: null,
-                    IsChooseSeat: false,
-                    PlaneTypeDescribe: "339",
-                    CodeShareNumber: null,
-                    Carrier: "DL",
-                    CarrierName: "达美航空",
-                    FromAirport: "PKX",
-                    ToAirport: "SEA",
-                    FromAirportName: "大兴国际机场",
-                    FromCityName: "北京",
-                    ToAirportName: "塔克马国际机场",
-                    ToCityName: "西雅图",
-                    TakeoffTime: "2020-07-11T11:45:00",
-                    ArrivalTime: "2020-07-11T07:44:00",
-                    FromTerminal: "",
-                    ToTerminal: "",
-                    IsStop: false,
-                    BasicPrice: 0,
-                    LowerPrice: 0,
-                    LowerFlightNumber: null,
-                    CurrentLowestFare: 0,
-                    StopCities: null,
-                    Variables: null,
-                    Distance: 5393,
-                    CabinCode: null,
-                    Cabins: null,
-                    StopCitiesCount: 0,
-                    Avl:
-                      "J:9,C:9,D:9,I:9,Z:9,P:9,A:9,G:9,W:9,S:9,Y:9,B:9,M:9,H:9,Q:9,K:9,L:9,U:9,T:9,X:9,V:9,E:9",
-                    AircraftChange: false,
-                    ET: true,
-                    Duration: 659,
-                    FlyTime: -241,
-                    FlyTimeName: "-5h-1m",
-                    MealTypeName: null,
-                    TakeoffTimeStamp: 1594439100000,
-                  },
-                ],
-                fromSegment: {
-                  Id: 12,
-                  LowestFare: 0,
-                  LowestCabinCode: null,
-                  LowestCabinId: null,
-                  LowestDiscount: 0,
-                  LowestCabinType: 0,
-                  LowestCabinFareType: 0,
-                  Tax: 0,
-                  FuelFee: 0,
-                  AirportFee: 0,
-                  YFare: 0,
-                  CFare: 0,
-                  FFare: 0,
-                  Number: "DL128",
-                  Airline: "DL",
-                  AirlineSrc:
-                    "http://test.shared.testskytrip.com/img/airlinelogo/dl.gif",
-                  AirlineName: "达美航空",
-                  PlaneType: "330",
-                  MealType: 0,
-                  Meal: "D",
-                  Link: null,
-                  IsChooseSeat: false,
-                  PlaneTypeDescribe: "339",
-                  CodeShareNumber: null,
-                  Carrier: "DL",
-                  CarrierName: "达美航空",
-                  FromAirport: "PKX",
-                  ToAirport: "SEA",
-                  FromAirportName: "大兴国际机场",
-                  FromCityName: "北京",
-                  ToAirportName: "塔克马国际机场",
-                  ToCityName: "西雅图",
-                  TakeoffTime: "2020-07-11T11:45:00",
-                  ArrivalTime: "2020-07-11T07:44:00",
-                  FromTerminal: "",
-                  ToTerminal: "",
-                  IsStop: false,
-                  BasicPrice: 0,
-                  LowerPrice: 0,
-                  LowerFlightNumber: null,
-                  CurrentLowestFare: 0,
-                  StopCities: null,
-                  Variables: null,
-                  Distance: 5393,
-                  CabinCode: null,
-                  Cabins: null,
-                  StopCitiesCount: 0,
-                  Avl:
-                    "J:9,C:9,D:9,I:9,Z:9,P:9,A:9,G:9,W:9,S:9,Y:9,B:9,M:9,H:9,Q:9,K:9,L:9,U:9,T:9,X:9,V:9,E:9",
-                  AircraftChange: false,
-                  ET: true,
-                  Duration: 659,
-                  FlyTime: -241,
-                  FlyTimeName: "-5h-1m",
-                  MealTypeName: null,
-                  TakeoffTimeStamp: 1594439100000,
-                },
-                toSegment: {
-                  Id: 12,
-                  LowestFare: 0,
-                  LowestCabinCode: null,
-                  LowestCabinId: null,
-                  LowestDiscount: 0,
-                  LowestCabinType: 0,
-                  LowestCabinFareType: 0,
-                  Tax: 0,
-                  FuelFee: 0,
-                  AirportFee: 0,
-                  YFare: 0,
-                  CFare: 0,
-                  FFare: 0,
-                  Number: "DL128",
-                  Airline: "DL",
-                  AirlineSrc:
-                    "http://test.shared.testskytrip.com/img/airlinelogo/dl.gif",
-                  AirlineName: "达美航空",
-                  PlaneType: "330",
-                  MealType: 0,
-                  Meal: "D",
-                  Link: null,
-                  IsChooseSeat: false,
-                  PlaneTypeDescribe: "339",
-                  CodeShareNumber: null,
-                  Carrier: "DL",
-                  CarrierName: "达美航空",
-                  FromAirport: "PKX",
-                  ToAirport: "SEA",
-                  FromAirportName: "大兴国际机场",
-                  FromCityName: "北京",
-                  ToAirportName: "塔克马国际机场",
-                  ToCityName: "西雅图",
-                  TakeoffTime: "2020-07-11T11:45:00",
-                  ArrivalTime: "2020-07-11T07:44:00",
-                  FromTerminal: "",
-                  ToTerminal: "",
-                  IsStop: false,
-                  BasicPrice: 0,
-                  LowerPrice: 0,
-                  LowerFlightNumber: null,
-                  CurrentLowestFare: 0,
-                  StopCities: null,
-                  Variables: null,
-                  Distance: 5393,
-                  CabinCode: null,
-                  Cabins: null,
-                  StopCitiesCount: 0,
-                  Avl:
-                    "J:9,C:9,D:9,I:9,Z:9,P:9,A:9,G:9,W:9,S:9,Y:9,B:9,M:9,H:9,Q:9,K:9,L:9,U:9,T:9,X:9,V:9,E:9",
-                  AircraftChange: false,
-                  ET: true,
-                  Duration: 659,
-                  FlyTime: -241,
-                  FlyTimeName: "-5h-1m",
-                  MealTypeName: null,
-                  TakeoffTimeStamp: 1594439100000,
-                },
-                isTransfer: false,
-                flightFare: {
-                  Id: 5,
-                  FlightRouteIds: [7, 8, 9],
-                  FlightFareBasics: [
-                    {
-                      FlightRouteId: 7,
-                      FareBasic: "KHW0ZLMD",
-                      IsOnlyFareIdBasic: false,
-                    },
-                    {
-                      FlightRouteId: 8,
-                      FareBasic: "KHW0ZLMD",
-                      IsOnlyFareIdBasic: false,
-                    },
-                    {
-                      FlightRouteId: 9,
-                      FareBasic: "TKX0ZRME",
-                      IsOnlyFareIdBasic: true,
-                    },
-                  ],
-                  BookType: 4,
-                  BookCode: null,
-                  FlightNumber: null,
-                  SupplierType: 1,
-                  FareType: 1,
-                  Name: null,
-                  Type: 1,
-                  Code: null,
-                  CabinCodes: { "11": "K", "12": "K", "13": "T", "14": "T" },
-                  OfficeCode: "SHA396",
-                  TicketPrice: 9010,
-                  SettlePrice: 9010,
-                  SalesPrice: 9010,
-                  Tax: 2169,
-                  SettleTax: 0,
-                  Reward: 0,
-                  Discount: 0,
-                  Count: 1,
-                  Variables: { FareBasis: "KHW0ZLMD,TKX0ZRME" },
-                  Explain: null,
-                  FlightFareRules: [
-                    {
-                      RouteId: 7,
-                      Bags: [
-                        {
-                          FlightNumber: "DL6410",
-                          AllowedPieces: 2,
-                          AllowedWeight: 0,
-                          AllowedWeightUnit: "",
-                          FreeAllowedPieces: 1,
-                          FreeAllowedWeight: 0,
-                          FreeAllowedWeightUnit: "",
-                        },
-                      ],
-                      Variables: {
-                        RuleRef1:
-                          "key(RuleTariff::Rule::OWRT::Routing::Footnote1::Footnote2::PassengerType::FareType::OriginAddonTariff::OriginAddonFootnote1::OriginAddonFootnote2::DestinationAddonTariff::DestinationAddonFootnote1::DestinationAddonFootnote2::TravelAgencyCode::IataNumber::DepartmentCode::Origin::Destination::FareSource::FbrBaseTariff::FbrBaseRule::AccountCode::FbrBaseFareBasis::OriginAddonRouting::DestinationAddonRouting)",
-                        RuleRef2:
-                          "003::4MTR::2::1300::::::ADT::XAP::::::::::::::SHA396::08300843::::SHA::SEA::ATPCO::::::::::::",
-                      },
-                    },
-                    {
-                      RouteId: 8,
-                      Bags: [
-                        {
-                          FlightNumber: "DL128",
-                          AllowedPieces: 2,
-                          AllowedWeight: 0,
-                          AllowedWeightUnit: "",
-                          FreeAllowedPieces: 1,
-                          FreeAllowedWeight: 0,
-                          FreeAllowedWeightUnit: "",
-                        },
-                      ],
-                      Variables: {
-                        RuleRef1:
-                          "key(RuleTariff::Rule::OWRT::Routing::Footnote1::Footnote2::PassengerType::FareType::OriginAddonTariff::OriginAddonFootnote1::OriginAddonFootnote2::DestinationAddonTariff::DestinationAddonFootnote1::DestinationAddonFootnote2::TravelAgencyCode::IataNumber::DepartmentCode::Origin::Destination::FareSource::FbrBaseTariff::FbrBaseRule::AccountCode::FbrBaseFareBasis::OriginAddonRouting::DestinationAddonRouting)",
-                        RuleRef2:
-                          "003::4MTR::2::1300::::::ADT::XAP::::::::::::::SHA396::08300843::::SHA::SEA::ATPCO::::::::::::",
-                      },
-                    },
-                    {
-                      RouteId: 9,
-                      Bags: [
-                        {
-                          FlightNumber: "DL9011",
-                          AllowedPieces: 2,
-                          AllowedWeight: 0,
-                          AllowedWeightUnit: "",
-                          FreeAllowedPieces: 1,
-                          FreeAllowedWeight: 0,
-                          FreeAllowedWeightUnit: "",
-                        },
-                        {
-                          FlightNumber: "DL7852",
-                          AllowedPieces: 2,
-                          AllowedWeight: 0,
-                          AllowedWeightUnit: "",
-                          FreeAllowedPieces: 1,
-                          FreeAllowedWeight: 0,
-                          FreeAllowedWeightUnit: "",
-                        },
-                      ],
-                      Variables: {
-                        RuleRef1:
-                          "key(RuleTariff::Rule::OWRT::Routing::Footnote1::Footnote2::PassengerType::FareType::OriginAddonTariff::OriginAddonFootnote1::OriginAddonFootnote2::DestinationAddonTariff::DestinationAddonFootnote1::DestinationAddonFootnote2::TravelAgencyCode::IataNumber::DepartmentCode::Origin::Destination::FareSource::FbrBaseTariff::FbrBaseRule::AccountCode::FbrBaseFareBasis::OriginAddonRouting::DestinationAddonRouting)",
-                        RuleRef2:
-                          "003::2MTR::2::7000::::::ADT::XAP::::::::::::::SHA396::08300843::::SEA::BKK::ATPCO::::::::::::",
-                      },
-                    },
-                  ],
-                  LowerSegment: null,
-                  InsuranceProducts: null,
-                  TicketTimeLimit: "2020-04-12T14:02:00",
-                  Percent: 0,
-                  IataTax: 403,
-                  YQYRTax: 1766,
-                  PlatingCarrier: "DL",
-                  Forms: null,
-                  TmcId: 0,
-                  TypeName: "经济舱",
-                  FareTypeName: "公布运价",
-                  SupplierTypeName: "Ibe",
-                  IsAllowOrder: false,
-                  Rules: null,
-                  FlightPolicy: null,
-                },
-              },
-              id: "c5cfb668-79cf-4a",
-            },
-          },
-          {
-            id: "dc5bf1c8-d46d-4a",
-            fromCity: {
-              Id: 6711,
-              Tag: "AirportInternational",
-              Code: "SEA",
-              Name: "塔克马国际机场",
-              Nickname: "塔克马国际机场",
-              Pinyin: "TAKEMA",
-              Initial: "TKM",
-              AirportCityCode: "SEA",
-              CityCode: "SEA",
-              CityName: "西雅图",
-              Description: "",
-              IsHot: true,
-              CountryCode: "US",
-              Sequence: 0,
-              EnglishName: "SEATTLE/TACOMA INTERNATIONAL APT",
-              Country: { Id: 207, Name: "美国", Code: "US", Sequence: 2 },
-              matchStr: "sea,塔克马国际机场,塔克马国际机场,西雅图,takema,sea",
-            },
-            date: "2020-04-16",
-            isSelectInfo: false,
-            toCity: {
-              Id: 778,
-              Tag: "AirportInternational",
-              Code: "BKK",
-              Name: "曼谷国际机场",
-              Nickname: "曼谷国际机场",
-              Pinyin: "manguguojijichang",
-              Initial: "MGGJJC",
-              AirportCityCode: "BKK",
-              CityCode: "BKK",
-              CityName: "曼谷",
-              Description: "",
-              IsHot: true,
-              CountryCode: "TH",
-              Sequence: 0,
-              EnglishName: "BANGKOK SUVARNABHUMI INTERNATIONAL APT",
-              Country: { Id: 194, Name: "泰国", Code: "TH", Sequence: 999 },
-              matchStr:
-                "bkk,曼谷国际机场,曼谷国际机场,曼谷,manguguojijichang,bkk",
-            },
-            bookInfo: {
-              flightPolicy: null,
-              fromSegment: {
-                Id: 21,
-                LowestFare: 0,
-                LowestCabinCode: null,
-                LowestCabinId: null,
-                LowestDiscount: 0,
-                LowestCabinType: 0,
-                LowestCabinFareType: 0,
-                Tax: 0,
-                FuelFee: 0,
-                AirportFee: 0,
-                YFare: 0,
-                CFare: 0,
-                FFare: 0,
-                Number: "DL281",
-                Airline: "DL",
-                AirlineSrc:
-                  "http://test.shared.testskytrip.com/img/airlinelogo/dl.gif",
-                AirlineName: "达美航空",
-                PlaneType: "330",
-                MealType: 0,
-                Meal: "D",
-                Link: null,
-                IsChooseSeat: false,
-                PlaneTypeDescribe: "339",
-                CodeShareNumber: null,
-                Carrier: "DL",
-                CarrierName: "达美航空",
-                FromAirport: "SEA",
-                ToAirport: "PVG",
-                FromAirportName: "塔克马国际机场",
-                FromCityName: "西雅图",
-                ToAirportName: "浦东国际机场",
-                ToCityName: "上海",
-                TakeoffTime: "2020-07-20T11:47:00",
-                ArrivalTime: "2020-07-21T15:10:00",
-                FromTerminal: "",
-                ToTerminal: "1",
-                IsStop: false,
-                BasicPrice: 0,
-                LowerPrice: 0,
-                LowerFlightNumber: null,
-                CurrentLowestFare: 0,
-                StopCities: null,
-                Variables: { AddDaysTip: "0" },
-                Distance: 5717,
-                CabinCode: null,
-                Cabins: null,
-                StopCitiesCount: 0,
-                Avl:
-                  "J:9,C:9,D:9,I:4,Z:4,P:9,A:9,G:9,W:9,S:9,Y:9,B:9,M:9,H:9,Q:9,K:9,L:9,U:9,T:9,X:9,V:9,E:9",
-                AircraftChange: false,
-                ET: true,
-                Duration: 743,
-                FlyTime: 1643,
-                FlyTimeName: "27h23m",
-                MealTypeName: null,
-                TakeoffTimeStamp: 1595216820000,
-              },
-              toSegment: {
-                Id: 22,
-                LowestFare: 0,
-                LowestCabinCode: null,
-                LowestCabinId: null,
-                LowestDiscount: 0,
-                LowestCabinType: 0,
-                LowestCabinFareType: 0,
-                Tax: 0,
-                FuelFee: 0,
-                AirportFee: 0,
-                YFare: 0,
-                CFare: 0,
-                FFare: 0,
-                Number: "DL6341",
-                Airline: "DL",
-                AirlineSrc:
-                  "http://test.shared.testskytrip.com/img/airlinelogo/dl.gif",
-                AirlineName: "达美航空",
-                PlaneType: "737",
-                MealType: 0,
-                Meal: "",
-                Link: null,
-                IsChooseSeat: false,
-                PlaneTypeDescribe: "73E",
-                CodeShareNumber: "FM853",
-                Carrier: "FM",
-                CarrierName: "上海航空",
-                FromAirport: "PVG",
-                ToAirport: "BKK",
-                FromAirportName: "浦东国际机场",
-                FromCityName: "上海",
-                ToAirportName: "曼谷国际机场",
-                ToCityName: "曼谷",
-                TakeoffTime: "2020-07-21T18:25:00",
-                ArrivalTime: "2020-07-21T21:55:00",
-                FromTerminal: "T1",
-                ToTerminal: "",
-                IsStop: false,
-                BasicPrice: 0,
-                LowerPrice: 0,
-                LowerFlightNumber: null,
-                CurrentLowestFare: 0,
-                StopCities: null,
-                Variables: { AddDaysTip: "1" },
-                Distance: 1787,
-                CabinCode: null,
-                Cabins: null,
-                StopCitiesCount: 0,
-                Avl:
-                  "J:4,C:4,D:4,I:4,Z:4,Y:9,B:9,M:9,H:9,Q:9,K:9,L:9,U:9,T:0,X:0,V:0",
-                AircraftChange: false,
-                ET: true,
-                Duration: 270,
-                FlyTime: 210,
-                FlyTimeName: "3h30m",
-                MealTypeName: null,
-              },
-              flightRoute: {
-                Id: 17,
-                FlightSegmentIds: [21, 22],
-                Paragraphs: 3,
-                FirstTime: "2020-07-20T11:47:00",
-                Week: "周一",
-                ArrivalTime: "2020-07-21T21:55:00",
-                Airline: "DL",
-                FlightRouteIds: null,
-                Origin: "SEA",
-                FromCountry: "US",
-                Destination: "BKK",
-                ToCountry: "TH",
-                Duration: 1208,
-                MaxDuration: 743,
-                Type: 1,
-                TypeName: "经济舱",
-                Cabin: "Y",
-                YFare: 0,
-                CFare: 0,
-                FFare: 0,
-                IsAllowOrder: false,
-                Rules: null,
-                Key: "1F9E406A6EFD1CDA5C2FF7E49B215719",
-                FlightSegments: [
-                  {
-                    Id: 21,
-                    LowestFare: 0,
-                    LowestCabinCode: null,
-                    LowestCabinId: null,
-                    LowestDiscount: 0,
-                    LowestCabinType: 0,
-                    LowestCabinFareType: 0,
-                    Tax: 0,
-                    FuelFee: 0,
-                    AirportFee: 0,
-                    YFare: 0,
-                    CFare: 0,
-                    FFare: 0,
-                    Number: "DL281",
-                    Airline: "DL",
-                    AirlineSrc:
-                      "http://test.shared.testskytrip.com/img/airlinelogo/dl.gif",
-                    AirlineName: "达美航空",
-                    PlaneType: "330",
-                    MealType: 0,
-                    Meal: "D",
-                    Link: null,
-                    IsChooseSeat: false,
-                    PlaneTypeDescribe: "339",
-                    CodeShareNumber: null,
-                    Carrier: "DL",
-                    CarrierName: "达美航空",
-                    FromAirport: "SEA",
-                    ToAirport: "PVG",
-                    FromAirportName: "塔克马国际机场",
-                    FromCityName: "西雅图",
-                    ToAirportName: "浦东国际机场",
-                    ToCityName: "上海",
-                    TakeoffTime: "2020-07-20T11:47:00",
-                    ArrivalTime: "2020-07-21T15:10:00",
-                    FromTerminal: "",
-                    ToTerminal: "1",
-                    IsStop: false,
-                    BasicPrice: 0,
-                    LowerPrice: 0,
-                    LowerFlightNumber: null,
-                    CurrentLowestFare: 0,
-                    StopCities: null,
-                    Variables: { AddDaysTip: "0" },
-                    Distance: 5717,
-                    CabinCode: null,
-                    Cabins: null,
-                    StopCitiesCount: 0,
-                    Avl:
-                      "J:9,C:9,D:9,I:4,Z:4,P:9,A:9,G:9,W:9,S:9,Y:9,B:9,M:9,H:9,Q:9,K:9,L:9,U:9,T:9,X:9,V:9,E:9",
-                    AircraftChange: false,
-                    ET: true,
-                    Duration: 743,
-                    FlyTime: 1643,
-                    FlyTimeName: "27h23m",
-                    MealTypeName: null,
-                    TakeoffTimeStamp: 1595216820000,
-                  },
-                  {
-                    Id: 22,
-                    LowestFare: 0,
-                    LowestCabinCode: null,
-                    LowestCabinId: null,
-                    LowestDiscount: 0,
-                    LowestCabinType: 0,
-                    LowestCabinFareType: 0,
-                    Tax: 0,
-                    FuelFee: 0,
-                    AirportFee: 0,
-                    YFare: 0,
-                    CFare: 0,
-                    FFare: 0,
-                    Number: "DL6341",
-                    Airline: "DL",
-                    AirlineSrc:
-                      "http://test.shared.testskytrip.com/img/airlinelogo/dl.gif",
-                    AirlineName: "达美航空",
-                    PlaneType: "737",
-                    MealType: 0,
-                    Meal: "",
-                    Link: null,
-                    IsChooseSeat: false,
-                    PlaneTypeDescribe: "73E",
-                    CodeShareNumber: "FM853",
-                    Carrier: "FM",
-                    CarrierName: "上海航空",
-                    FromAirport: "PVG",
-                    ToAirport: "BKK",
-                    FromAirportName: "浦东国际机场",
-                    FromCityName: "上海",
-                    ToAirportName: "曼谷国际机场",
-                    ToCityName: "曼谷",
-                    TakeoffTime: "2020-07-21T18:25:00",
-                    ArrivalTime: "2020-07-21T21:55:00",
-                    FromTerminal: "T1",
-                    ToTerminal: "",
-                    IsStop: false,
-                    BasicPrice: 0,
-                    LowerPrice: 0,
-                    LowerFlightNumber: null,
-                    CurrentLowestFare: 0,
-                    StopCities: null,
-                    Variables: { AddDaysTip: "1" },
-                    Distance: 1787,
-                    CabinCode: null,
-                    Cabins: null,
-                    StopCitiesCount: 0,
-                    Avl:
-                      "J:4,C:4,D:4,I:4,Z:4,Y:9,B:9,M:9,H:9,Q:9,K:9,L:9,U:9,T:0,X:0,V:0",
-                    AircraftChange: false,
-                    ET: true,
-                    Duration: 270,
-                    FlyTime: 210,
-                    FlyTimeName: "3h30m",
-                    MealTypeName: null,
-                  },
-                ],
-                transferSegments: [
-                  {
-                    Id: 21,
-                    LowestFare: 0,
-                    LowestCabinCode: null,
-                    LowestCabinId: null,
-                    LowestDiscount: 0,
-                    LowestCabinType: 0,
-                    LowestCabinFareType: 0,
-                    Tax: 0,
-                    FuelFee: 0,
-                    AirportFee: 0,
-                    YFare: 0,
-                    CFare: 0,
-                    FFare: 0,
-                    Number: "DL281",
-                    Airline: "DL",
-                    AirlineSrc:
-                      "http://test.shared.testskytrip.com/img/airlinelogo/dl.gif",
-                    AirlineName: "达美航空",
-                    PlaneType: "330",
-                    MealType: 0,
-                    Meal: "D",
-                    Link: null,
-                    IsChooseSeat: false,
-                    PlaneTypeDescribe: "339",
-                    CodeShareNumber: null,
-                    Carrier: "DL",
-                    CarrierName: "达美航空",
-                    FromAirport: "SEA",
-                    ToAirport: "PVG",
-                    FromAirportName: "塔克马国际机场",
-                    FromCityName: "西雅图",
-                    ToAirportName: "浦东国际机场",
-                    ToCityName: "上海",
-                    TakeoffTime: "2020-07-20T11:47:00",
-                    ArrivalTime: "2020-07-21T15:10:00",
-                    FromTerminal: "",
-                    ToTerminal: "1",
-                    IsStop: false,
-                    BasicPrice: 0,
-                    LowerPrice: 0,
-                    LowerFlightNumber: null,
-                    CurrentLowestFare: 0,
-                    StopCities: null,
-                    Variables: { AddDaysTip: "0" },
-                    Distance: 5717,
-                    CabinCode: null,
-                    Cabins: null,
-                    StopCitiesCount: 0,
-                    Avl:
-                      "J:9,C:9,D:9,I:4,Z:4,P:9,A:9,G:9,W:9,S:9,Y:9,B:9,M:9,H:9,Q:9,K:9,L:9,U:9,T:9,X:9,V:9,E:9",
-                    AircraftChange: false,
-                    ET: true,
-                    Duration: 743,
-                    FlyTime: 1643,
-                    FlyTimeName: "27h23m",
-                    MealTypeName: null,
-                    TakeoffTimeStamp: 1595216820000,
-                  },
-                  {
-                    Id: 22,
-                    LowestFare: 0,
-                    LowestCabinCode: null,
-                    LowestCabinId: null,
-                    LowestDiscount: 0,
-                    LowestCabinType: 0,
-                    LowestCabinFareType: 0,
-                    Tax: 0,
-                    FuelFee: 0,
-                    AirportFee: 0,
-                    YFare: 0,
-                    CFare: 0,
-                    FFare: 0,
-                    Number: "DL6341",
-                    Airline: "DL",
-                    AirlineSrc:
-                      "http://test.shared.testskytrip.com/img/airlinelogo/dl.gif",
-                    AirlineName: "达美航空",
-                    PlaneType: "737",
-                    MealType: 0,
-                    Meal: "",
-                    Link: null,
-                    IsChooseSeat: false,
-                    PlaneTypeDescribe: "73E",
-                    CodeShareNumber: "FM853",
-                    Carrier: "FM",
-                    CarrierName: "上海航空",
-                    FromAirport: "PVG",
-                    ToAirport: "BKK",
-                    FromAirportName: "浦东国际机场",
-                    FromCityName: "上海",
-                    ToAirportName: "曼谷国际机场",
-                    ToCityName: "曼谷",
-                    TakeoffTime: "2020-07-21T18:25:00",
-                    ArrivalTime: "2020-07-21T21:55:00",
-                    FromTerminal: "T1",
-                    ToTerminal: "",
-                    IsStop: false,
-                    BasicPrice: 0,
-                    LowerPrice: 0,
-                    LowerFlightNumber: null,
-                    CurrentLowestFare: 0,
-                    StopCities: null,
-                    Variables: { AddDaysTip: "1" },
-                    Distance: 1787,
-                    CabinCode: null,
-                    Cabins: null,
-                    StopCitiesCount: 0,
-                    Avl:
-                      "J:4,C:4,D:4,I:4,Z:4,Y:9,B:9,M:9,H:9,Q:9,K:9,L:9,U:9,T:0,X:0,V:0",
-                    AircraftChange: false,
-                    ET: true,
-                    Duration: 270,
-                    FlyTime: 210,
-                    FlyTimeName: "3h30m",
-                    MealTypeName: null,
-                  },
-                ],
-                fromSegment: {
-                  Id: 21,
-                  LowestFare: 0,
-                  LowestCabinCode: null,
-                  LowestCabinId: null,
-                  LowestDiscount: 0,
-                  LowestCabinType: 0,
-                  LowestCabinFareType: 0,
-                  Tax: 0,
-                  FuelFee: 0,
-                  AirportFee: 0,
-                  YFare: 0,
-                  CFare: 0,
-                  FFare: 0,
-                  Number: "DL281",
-                  Airline: "DL",
-                  AirlineSrc:
-                    "http://test.shared.testskytrip.com/img/airlinelogo/dl.gif",
-                  AirlineName: "达美航空",
-                  PlaneType: "330",
-                  MealType: 0,
-                  Meal: "D",
-                  Link: null,
-                  IsChooseSeat: false,
-                  PlaneTypeDescribe: "339",
-                  CodeShareNumber: null,
-                  Carrier: "DL",
-                  CarrierName: "达美航空",
-                  FromAirport: "SEA",
-                  ToAirport: "PVG",
-                  FromAirportName: "塔克马国际机场",
-                  FromCityName: "西雅图",
-                  ToAirportName: "浦东国际机场",
-                  ToCityName: "上海",
-                  TakeoffTime: "2020-07-20T11:47:00",
-                  ArrivalTime: "2020-07-21T15:10:00",
-                  FromTerminal: "",
-                  ToTerminal: "1",
-                  IsStop: false,
-                  BasicPrice: 0,
-                  LowerPrice: 0,
-                  LowerFlightNumber: null,
-                  CurrentLowestFare: 0,
-                  StopCities: null,
-                  Variables: { AddDaysTip: "0" },
-                  Distance: 5717,
-                  CabinCode: null,
-                  Cabins: null,
-                  StopCitiesCount: 0,
-                  Avl:
-                    "J:9,C:9,D:9,I:4,Z:4,P:9,A:9,G:9,W:9,S:9,Y:9,B:9,M:9,H:9,Q:9,K:9,L:9,U:9,T:9,X:9,V:9,E:9",
-                  AircraftChange: false,
-                  ET: true,
-                  Duration: 743,
-                  FlyTime: 1643,
-                  FlyTimeName: "27h23m",
-                  MealTypeName: null,
-                  TakeoffTimeStamp: 1595216820000,
-                },
-                toSegment: {
-                  Id: 22,
-                  LowestFare: 0,
-                  LowestCabinCode: null,
-                  LowestCabinId: null,
-                  LowestDiscount: 0,
-                  LowestCabinType: 0,
-                  LowestCabinFareType: 0,
-                  Tax: 0,
-                  FuelFee: 0,
-                  AirportFee: 0,
-                  YFare: 0,
-                  CFare: 0,
-                  FFare: 0,
-                  Number: "DL6341",
-                  Airline: "DL",
-                  AirlineSrc:
-                    "http://test.shared.testskytrip.com/img/airlinelogo/dl.gif",
-                  AirlineName: "达美航空",
-                  PlaneType: "737",
-                  MealType: 0,
-                  Meal: "",
-                  Link: null,
-                  IsChooseSeat: false,
-                  PlaneTypeDescribe: "73E",
-                  CodeShareNumber: "FM853",
-                  Carrier: "FM",
-                  CarrierName: "上海航空",
-                  FromAirport: "PVG",
-                  ToAirport: "BKK",
-                  FromAirportName: "浦东国际机场",
-                  FromCityName: "上海",
-                  ToAirportName: "曼谷国际机场",
-                  ToCityName: "曼谷",
-                  TakeoffTime: "2020-07-21T18:25:00",
-                  ArrivalTime: "2020-07-21T21:55:00",
-                  FromTerminal: "T1",
-                  ToTerminal: "",
-                  IsStop: false,
-                  BasicPrice: 0,
-                  LowerPrice: 0,
-                  LowerFlightNumber: null,
-                  CurrentLowestFare: 0,
-                  StopCities: null,
-                  Variables: { AddDaysTip: "1" },
-                  Distance: 1787,
-                  CabinCode: null,
-                  Cabins: null,
-                  StopCitiesCount: 0,
-                  Avl:
-                    "J:4,C:4,D:4,I:4,Z:4,Y:9,B:9,M:9,H:9,Q:9,K:9,L:9,U:9,T:0,X:0,V:0",
-                  AircraftChange: false,
-                  ET: true,
-                  Duration: 270,
-                  FlyTime: 210,
-                  FlyTimeName: "3h30m",
-                  MealTypeName: null,
-                },
-                isTransfer: true,
-                flightFare: {
-                  Id: 21,
-                  FlightRouteIds: [7, 8, 17],
-                  FlightFareBasics: [
-                    {
-                      FlightRouteId: 7,
-                      FareBasic: "KHW0ZLMD",
-                      IsOnlyFareIdBasic: false,
-                    },
-                    {
-                      FlightRouteId: 8,
-                      FareBasic: "KHW0ZLMD",
-                      IsOnlyFareIdBasic: false,
-                    },
-                    {
-                      FlightRouteId: 17,
-                      FareBasic: "UKX0ZRME",
-                      IsOnlyFareIdBasic: true,
-                    },
-                  ],
-                  BookType: 4,
-                  BookCode: null,
-                  FlightNumber: null,
-                  SupplierType: 1,
-                  FareType: 1,
-                  Name: null,
-                  Type: 1,
-                  Code: null,
-                  CabinCodes: { "11": "K", "12": "K", "21": "U", "22": "U" },
-                  OfficeCode: "SHA396",
-                  TicketPrice: 9470,
-                  SettlePrice: 9470,
-                  SalesPrice: 9470,
-                  Tax: 2200,
-                  SettleTax: 0,
-                  Reward: 0,
-                  Discount: 0,
-                  Count: 1,
-                  Variables: { FareBasis: "KHW0ZLMD,UKX0ZRME" },
-                  Explain: null,
-                  FlightFareRules: [
-                    {
-                      RouteId: 7,
-                      Bags: [
-                        {
-                          FlightNumber: "DL6410",
-                          AllowedPieces: 2,
-                          AllowedWeight: 0,
-                          AllowedWeightUnit: "",
-                          FreeAllowedPieces: 1,
-                          FreeAllowedWeight: 0,
-                          FreeAllowedWeightUnit: "",
-                        },
-                      ],
-                      Variables: {
-                        RuleRef1:
-                          "key(RuleTariff::Rule::OWRT::Routing::Footnote1::Footnote2::PassengerType::FareType::OriginAddonTariff::OriginAddonFootnote1::OriginAddonFootnote2::DestinationAddonTariff::DestinationAddonFootnote1::DestinationAddonFootnote2::TravelAgencyCode::IataNumber::DepartmentCode::Origin::Destination::FareSource::FbrBaseTariff::FbrBaseRule::AccountCode::FbrBaseFareBasis::OriginAddonRouting::DestinationAddonRouting)",
-                        RuleRef2:
-                          "003::4MTR::2::1300::::::ADT::XAP::::::::::::::SHA396::08300843::::SHA::SEA::ATPCO::::::::::::",
-                      },
-                    },
-                    {
-                      RouteId: 8,
-                      Bags: [
-                        {
-                          FlightNumber: "DL128",
-                          AllowedPieces: 2,
-                          AllowedWeight: 0,
-                          AllowedWeightUnit: "",
-                          FreeAllowedPieces: 1,
-                          FreeAllowedWeight: 0,
-                          FreeAllowedWeightUnit: "",
-                        },
-                      ],
-                      Variables: {
-                        RuleRef1:
-                          "key(RuleTariff::Rule::OWRT::Routing::Footnote1::Footnote2::PassengerType::FareType::OriginAddonTariff::OriginAddonFootnote1::OriginAddonFootnote2::DestinationAddonTariff::DestinationAddonFootnote1::DestinationAddonFootnote2::TravelAgencyCode::IataNumber::DepartmentCode::Origin::Destination::FareSource::FbrBaseTariff::FbrBaseRule::AccountCode::FbrBaseFareBasis::OriginAddonRouting::DestinationAddonRouting)",
-                        RuleRef2:
-                          "003::4MTR::2::1300::::::ADT::XAP::::::::::::::SHA396::08300843::::SHA::SEA::ATPCO::::::::::::",
-                      },
-                    },
-                    {
-                      RouteId: 17,
-                      Bags: [
-                        {
-                          FlightNumber: "DL281",
-                          AllowedPieces: 2,
-                          AllowedWeight: 0,
-                          AllowedWeightUnit: "",
-                          FreeAllowedPieces: 1,
-                          FreeAllowedWeight: 0,
-                          FreeAllowedWeightUnit: "",
-                        },
-                        {
-                          FlightNumber: "DL6341",
-                          AllowedPieces: 2,
-                          AllowedWeight: 0,
-                          AllowedWeightUnit: "",
-                          FreeAllowedPieces: 1,
-                          FreeAllowedWeight: 0,
-                          FreeAllowedWeightUnit: "",
-                        },
-                      ],
-                      Variables: {
-                        RuleRef1:
-                          "key(RuleTariff::Rule::OWRT::Routing::Footnote1::Footnote2::PassengerType::FareType::OriginAddonTariff::OriginAddonFootnote1::OriginAddonFootnote2::DestinationAddonTariff::DestinationAddonFootnote1::DestinationAddonFootnote2::TravelAgencyCode::IataNumber::DepartmentCode::Origin::Destination::FareSource::FbrBaseTariff::FbrBaseRule::AccountCode::FbrBaseFareBasis::OriginAddonRouting::DestinationAddonRouting)",
-                        RuleRef2:
-                          "003::2MTR::2::7300::::::ADT::XAP::::::::::::::SHA396::08300843::::SEA::BKK::ATPCO::::::::::::",
-                      },
-                    },
-                  ],
-                  LowerSegment: null,
-                  InsuranceProducts: null,
-                  TicketTimeLimit: "2020-04-12T14:02:00",
-                  Percent: 0,
-                  IataTax: 434,
-                  YQYRTax: 1766,
-                  PlatingCarrier: "DL",
-                  Forms: null,
-                  TmcId: 0,
-                  TypeName: "经济舱",
-                  FareTypeName: "公布运价",
-                  SupplierTypeName: "Ibe",
-                  IsAllowOrder: false,
-                  Rules: null,
-                  FlightPolicy: null,
-                },
-              },
-              id: "73199181-6319-47",
-            },
-          },
-        ],
-        cabin: { label: "经济舱", value: 11 },
-        cabins: [
-          { label: "经济舱", value: 11 },
-          { label: "超级经济舱", value: 12 },
-          { label: "头等舱", value: 13 },
-          { label: "商务舱", value: 14 },
-          { label: "超级商务舱", value: 15 },
-          { label: "超级头等舱", value: 16 },
-        ],
-      } as any;
+      this.searchModel = MOCK_MultiCity_SEARCHMODEL;
     }
     this.setSearchModelSource(this.searchModel);
   }
@@ -2278,31 +589,39 @@ export class InternationalFlightService {
       this.setSearchModelSource(this.searchModel);
     }
   }
-  getFlightList(query: {
+  async getFlightList(query: {
     forceFetch: boolean;
     keepFilterCondition: boolean;
-  }): Observable<IResponse<FlightResultEntity>> {
+  }) {
     const m = this.searchModel;
-    const result: IResponse<FlightResultEntity> = {} as any;
-    result.Data = this.flightListResult;
     const { forceFetch, keepFilterCondition } = query;
-    if (!environment.production) {
-      result.Data = this.initFlightRouteSegments(
-        MockInternationalFlightListData as any
-      );
-      if (
-        !this.flightListResult ||
-        !this.flightListResult.FlightRoutes ||
-        !this.flightListResult.FlightRoutes.length
-      ) {
-        this.flightListResult = result.Data;
-        this.initParagraphCondition(result.Data);
+    await this.initSelfBookTypeBookInfos(forceFetch);
+    if (!environment.production && !forceFetch) {
+      let result = this.flightListResult;
+      if (!result || !result.FlightRoutes || !result.FlightRoutes.length) {
+        result = MockInternationalFlightListData as any;
+        this.flightPolicyResult = await this.checkRoutePolicy(result);
+        if (this.flightPolicyResult && this.flightPolicyResult.FlightFares) {
+          result.FlightFares = result.FlightFares.map((it) => {
+            const one = this.flightPolicyResult.FlightFares.find(
+              (i) => i.Id == it.Id
+            );
+            if (one) {
+              it.Rules = one.Rules;
+              it.IsAllowOrder = one.IsAllowOrder;
+            }
+            return it;
+          });
+        }
+        result = this.initFlightRouteSegments(result);
+        this.flightListResult = result;
+        this.initParagraphCondition(result);
       }
       if (!keepFilterCondition) {
-        this.initParagraphCondition(result.Data);
+        this.initParagraphCondition(result);
       }
-      result.Data = this.filterByCondition(result.Data);
-      return of(result);
+      result = this.filterByCondition(result);
+      return result;
     }
     if (!m || !forceFetch) {
       if (
@@ -2310,14 +629,22 @@ export class InternationalFlightService {
         this.flightListResult.FlightSegments &&
         this.flightListResult.FlightSegments.length
       ) {
-        const data = this.initFlightRouteSegments(this.flightListResult);
+        let result = this.flightListResult;
+        const data = this.initFlightRouteSegments(result);
         if (!keepFilterCondition) {
           this.initParagraphCondition(data);
         }
-        result.Data = this.filterByCondition(data);
-        return of(result);
+        result = this.filterByCondition(data);
+        return result;
       }
     }
+    this.setSearchModelSource({
+      ...m,
+      trips: m.trips.map((it) => {
+        it.bookInfo = null;
+        return it;
+      }),
+    });
     let date = this.calendarService.getMoment(0).format("YYYY-MM-DD");
     let fromAirports: string[];
     let toAirports: string[];
@@ -2356,19 +683,102 @@ export class InternationalFlightService {
     };
     req.IsShowLoading = true;
     req.LoadingMsg = "正在获取航班列表...";
-    return this.apiService.getResponse<FlightResultEntity>(req).pipe(
-      tap((r) => {
-        this.flightListResult = this.initFlightRouteSegments(r.Data);
-        this.initParagraphCondition(this.flightListResult);
+    return this.apiService
+      .getPromiseData<FlightResultEntity>(req)
+      .then((r) => {
+        this.flightListResult = r;
+        return this.checkRoutePolicy(this.flightListResult);
       })
-    );
+      .then((policyResult) => {
+        this.flightPolicyResult = policyResult;
+        if (policyResult && policyResult.FlightFares) {
+          this.flightListResult.FlightFares = this.flightListResult.FlightFares.map(
+            (it) => {
+              const one = policyResult.FlightFares.find((i) => i.Id == it.Id);
+              if (one) {
+                it.Rules = one.Rules;
+                it.IsAllowOrder = one.IsAllowOrder;
+              }
+              return it;
+            }
+          );
+        }
+        this.flightListResult = this.initFlightRouteSegments(
+          this.flightListResult
+        );
+        this.initParagraphCondition(this.flightListResult);
+        return this.flightListResult;
+      });
   }
-  private checkRoutePolicy() {
+  private async checkPolicy(result: FlightResultEntity) {
     const req = new RequestEntity();
-    req.Method = `TmcApiInternationalFlightUrl-Home-Index`;
+    req.Method = `TmcApiInternationalFlightUrl-Home-Check`;
     const bookInfos = this.getBookInfos();
     const notWhitelist = bookInfos.filter((it) => it.isNotWhitelist);
     const whitelist = bookInfos.filter((it) => !it.isNotWhitelist);
+    const m = this.getSearchModel();
+    if (!result || !result.FlightRoutes) {
+      if (!environment.production) {
+        result = this.flightListResult;
+      }
+    }
+    if (
+      !result ||
+      !result.FlightFares ||
+      !result.FlightRoutes ||
+      !result.FlightSegments
+    ) {
+      return result;
+    }
+    if (whitelist.length) {
+      req.Data = {
+        FlightRoutes: JSON.stringify(result.FlightRoutes),
+        FlightSegments: JSON.stringify(result.FlightSegments),
+        FlightFares: JSON.stringify(result.FlightFares),
+        PolicyIds: whitelist[0].passenger.Policy.Id,
+      };
+      result = await this.apiService.getPromiseData<FlightResultEntity>(req);
+    } else {
+      if (notWhitelist.length) {
+      }
+    }
+    return result;
+  }
+  private async checkRoutePolicy(result: FlightResultEntity) {
+    const req = new RequestEntity();
+    req.Method = `TmcApiInternationalFlightUrl-Home-CheckRoutePolicy`;
+    req.IsShowLoading = true;
+    req.LoadingMsg = "正在计算差标";
+    const bookInfos = this.getBookInfos();
+    const notWhitelist = bookInfos.filter((it) => it.isNotWhitelist);
+    const whitelist = bookInfos.filter((it) => !it.isNotWhitelist);
+    const m = this.getSearchModel();
+    if (!result || !result.FlightRoutes) {
+      if (!environment.production) {
+        result = this.flightListResult;
+      }
+    }
+    if (
+      !result ||
+      !result.FlightFares ||
+      !result.FlightRoutes ||
+      !result.FlightSegments
+    ) {
+      return result;
+    }
+    if (whitelist.length) {
+      req.Data = {
+        FlightRoutes: JSON.stringify(result.FlightRoutes),
+        FlightSegments: JSON.stringify(result.FlightSegments),
+        FlightFares: JSON.stringify(result.FlightFares),
+        PolicyIds: whitelist[0].passenger.Policy.Id,
+      };
+      result = await this.apiService.getPromiseData<FlightResultEntity>(req);
+    } else {
+      if (notWhitelist.length) {
+      }
+    }
+    return result;
   }
   private filterByCondition(data: FlightResultEntity) {
     const condition = this.getFilterCondition();
@@ -2460,24 +870,7 @@ export class InternationalFlightService {
     return data;
   }
   private initParagraphCondition(data: FlightResultEntity) {
-    let flightRoute: FlightRouteEntity;
-    let index = -1;
     const m = this.getSearchModel();
-    if (m) {
-      if (m.voyageType == FlightVoyageType.MultiCity) {
-        const one =
-          m.trips &&
-          m.trips
-            .slice(0)
-            .reverse()
-            .find((it) => !!it.bookInfo);
-        flightRoute =
-          one && one.bookInfo && one.bookInfo && one.bookInfo.flightRoute;
-        if (one && m.trips) {
-          index = m.trips.findIndex((it) => it.id == one.id);
-        }
-      }
-    }
     const condition = this.getFilterCondition();
     condition.airComponies = [];
     condition.fromAirports = [];
@@ -2486,19 +879,25 @@ export class InternationalFlightService {
     condition.timeSpan = { lower: 0, upper: 24 };
     condition.isDirectFly = false;
     if (data && data.FlightRoutesData) {
-      if (!flightRoute) {
+      const routeIds = m.trips
+        .filter((it) => !!it.bookInfo)
+        .map(
+          (it) =>
+            it.bookInfo && it.bookInfo.flightRoute && it.bookInfo.flightRoute.Id
+        )
+        .filter((it) => !!it);
+      if (!routeIds.length) {
         data.FlightRoutes = data.FlightRoutesData.filter(
           (r) => r.Paragraphs == 1
         );
       } else {
-        const fares = data.FlightFares.filter(
-          (it) =>
-            it.FlightRouteIds && it.FlightRouteIds[index] == flightRoute.Id
-        )
-          .map((it) => it.FlightRouteIds[index + 1])
-          .filter((it) => !!it);
+        const rids = routeIds.join(",");
+        const fares = data.FlightFares.filter((it) => {
+          const temp = it.FlightRouteIds || [];
+          return temp.slice(0, routeIds.length).join(",") === rids;
+        });
         data.FlightRoutes = data.FlightRoutesData.filter((it) =>
-          fares.some((f) => f == it.Id)
+          fares.some((f) => f.FlightRouteIds[routeIds.length] == it.Id)
         );
       }
       data.FlightRoutes.forEach((r) => {
@@ -2548,6 +947,7 @@ export class InternationalFlightService {
   }
   private initFlightRouteSegments(data: FlightResultEntity) {
     if (data && data.FlightSegments && data.FlightFares) {
+      const trips = this.getSearchModel().trips || [];
       data = { ...data };
       if (!data.FlightRoutesData || !data.FlightRoutesData.length) {
         data.FlightRoutesData = [...data.FlightRoutes];
@@ -2579,13 +979,38 @@ export class InternationalFlightService {
           const ffs = data.FlightFares.filter(
             (f) =>
               f.FlightRouteIds &&
-              f.FlightRouteIds.some((a) => a == flightRoute.Id)
+              f.FlightRouteIds.some((id) => id == flightRoute.Id)
           );
           let minPrice = Infinity;
           ffs.forEach((it) => {
             minPrice = Math.min(minPrice, +it.SalesPrice);
           });
-          flightRoute.flightFare = ffs.find((ff) => +ff.SalesPrice == minPrice);
+          flightRoute.flightFare = ffs.find(
+            (ff) => +ff.SalesPrice == +minPrice
+          );
+          if (
+            trips.length &&
+            trips[0].bookInfo &&
+            trips[0].bookInfo.flightRoute &&
+            trips[0].bookInfo.flightRoute.flightFare
+          ) {
+            flightRoute.flightFare.SalesPrice =
+              trips[0].bookInfo.flightRoute.flightFare.SalesPrice;
+          }
+          if (
+            this.flightPolicyResult &&
+            this.flightPolicyResult.FlightFares &&
+            flightRoute.flightFare
+          ) {
+            // 差标信息
+            const one = this.flightPolicyResult.FlightFares.find(
+              (it) => it.Id == flightRoute.flightFare.Id
+            );
+            if (one) {
+              flightRoute.flightFare.IsAllowOrder = one.IsAllowOrder;
+              flightRoute.flightFare.Rules = one.Rules;
+            }
+          }
           return flightRoute;
         });
       }

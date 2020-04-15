@@ -58,13 +58,23 @@
   <app-refresher slot="fixed" (ionRefresh)='doRefresh(true)'>
     <ion-refresher-content>正在刷新...</ion-refresher-content>
   </app-refresher>
-  <ng-container>
-    <div class="content-top">
-      <app-flight-list-item [flight]='flight' (transfer)='onTransfer(flight)' *ngFor='let flight of flightRoutes'
-        (click)='onSelectTrip(flight)'>
-      </app-flight-list-item>
+  <ion-list>
+    <div *ngFor='let flight of flightRoutes' style="border-bottom: 1px solid rgba(var(--ion-color-dark-rgb),0.13);">
+      <ng-container *ngIf='!isBeforeLastTrip else lastTpl'>
+        <app-flight-list-item [flight]='flight' (transfer)='onTransfer(flight)' (click)='onSelectTrip(flight)'>
+        </app-flight-list-item>
+      </ng-container>
+      <ng-template #lastTpl>
+        <app-flight-list-item [flight]='flight' (transfer)='onTransfer(flight)'>
+        </app-flight-list-item>
+        <div class="ion-text-end ion-margin-end">
+          <ion-button size='small' fill='solid' color='{{flight.flightFare?.Rules?"warning":"success"}}'>
+            <span style="color: white;">预订</span>
+          </ion-button>
+        </div>
+      </ng-template>
     </div>
-  </ng-container>
+  </ion-list>
   <ion-infinite-scroll (ionInfinite)='loadMore()'>
     <ion-infinite-scroll-content>正在加载...</ion-infinite-scroll-content>
   </ion-infinite-scroll>
@@ -93,8 +103,7 @@
       </ion-col>
       <ion-col (click)='onSortByPrice()'>
         <div>
-          <ion-icon color='{{condition?.price!="none"?"secondary":""}}' name="logo-yen"
-            style="font-size:1.3rem">
+          <ion-icon color='{{condition?.price!="none"?"secondary":""}}' name="logo-yen" style="font-size:1.3rem">
           </ion-icon>
         </div>
         <ion-text color='{{condition?.price!="none"?"secondary":""}}'>价格

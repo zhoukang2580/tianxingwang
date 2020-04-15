@@ -20,7 +20,7 @@ import { FlightRouteEntity } from "src/app/flight/models/flight/FlightRouteEntit
 import { FlightTransferComponent } from "../components/flight-transfer/flight-transfer.component";
 import { environment } from "src/environments/environment";
 import { AppHelper } from "src/app/appHelper";
-import { Router } from '@angular/router';
+import { Router } from "@angular/router";
 interface Iisblue {
   isshow: false;
 }
@@ -31,10 +31,11 @@ interface Iisblue {
 })
 export class FlightListPage implements OnInit, OnDestroy {
   private flightQuery: FlightResultEntity;
-  private subscription = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
   private pageSize = 12;
-  multipassShow=false;
+  isLoading = false;
+  multipassShow = false;
+  isBeforeLastTrip = false;
   searchModel: IInternationalFlightSearchModel;
   condition: IFilterCondition;
   @ViewChild(RefresherComponent, { static: true })
@@ -54,8 +55,7 @@ export class FlightListPage implements OnInit, OnDestroy {
     this.content.scrollToTop();
   }
   onSelectTrip(flightRoute: FlightRouteEntity) {
-    console.log(this.searchModel,"this.searchModel");
-    
+    console.log(this.searchModel, "this.searchModel");
     if (this.searchModel && this.searchModel.trips) {
       let trip = this.searchModel.trips.find((it) => !it.bookInfo);
       if (!trip) {
@@ -69,10 +69,9 @@ export class FlightListPage implements OnInit, OnDestroy {
         id: AppHelper.uuid(),
       };
       this.flightService.setSearchModelSource(this.searchModel);
-      trip = this.searchModel.trips.find((it) => !it.bookInfo);
-      if(!trip){
+      if (!trip) {
         this.router.navigate(["selected-trip-info"]);
-        return
+        return;
       }
       this.doRefresh();
     }
@@ -92,7 +91,6 @@ export class FlightListPage implements OnInit, OnDestroy {
   }
   ngOnInit() {
     this.doRefresh(environment.production);
-    this.subscriptions.push(this.subscription);
     this.subscriptions.push(
       this.flightService.getSearchModelSource().subscribe((s) => {
         this.searchModel = s;
@@ -101,9 +99,13 @@ export class FlightListPage implements OnInit, OnDestroy {
           if (!this.curTrip) {
             this.curTrip = s.trips[s.trips.length - 1];
           }
+          this.isBeforeLastTrip =
+            this.curTrip &&
+            this.curTrip ==
+              this.searchModel.trips[this.searchModel.trips.length - 1];
         }
-        if(s&&s.voyageType==3){
-        this.multipassShow=true;
+        if (s && s.voyageType == 3) {
+          this.multipassShow = true;
         }
       })
     );
@@ -112,12 +114,11 @@ export class FlightListPage implements OnInit, OnDestroy {
         this.condition = c;
       })
     );
-
   }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
-  doRefresh(loadFromServer = false, keepFilterCondition = false) {
+  async doRefresh(loadFromServer = false, keepFilterCondition = false) {
     this.flightRoutes = [];
     this.scroller.disabled = true;
     this.flightService.setFilterConditionSource({
@@ -125,26 +126,26 @@ export class FlightListPage implements OnInit, OnDestroy {
       time: "none",
       price: "none",
     });
-    this.subscription.unsubscribe();
-    this.subscription = this.flightService
+    if (this.isLoading) {
+      return;
+    }
+    this.isLoading = true;
+    this.flightQuery = await this.flightService
       .getFlightList({ forceFetch: loadFromServer, keepFilterCondition })
-      .pipe(
-        finalize(() => {
-          this.refresher.complete();
-        })
-      )
-      .subscribe((res) => {
-        console.log("list data", res.Data);
-        this.flightQuery = res.Data;
-        if (this.flightQuery && this.flightQuery.FlightRoutes) {
-          this.flightRoutes = this.flightQuery.FlightRoutes.slice(
-            0,
-            this.pageSize
-          );
-          this.scroller.disabled = this.flightRoutes.length < this.pageSize;
-        }
-        this.scrollToTop();
+      .finally(() => {
+        this.refresher.complete();
+        this.isLoading = false;
       });
+    console.log("list data", this.flightQuery);
+    if (this.flightQuery && this.flightQuery.FlightRoutes) {
+      this.flightRoutes = this.flightQuery.FlightRoutes.slice(0, this.pageSize);
+      this.scroller.disabled = this.flightRoutes.length < this.pageSize;
+    }
+    this.scrollToTop();
+    try {
+    } catch (e) {
+      AppHelper.alert(e);
+    }
   }
   loadMore() {
     if (this.flightQuery && this.flightQuery.FlightRoutes) {
