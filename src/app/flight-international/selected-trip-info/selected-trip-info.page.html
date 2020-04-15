@@ -1,10 +1,10 @@
 <ion-header>
   <ion-toolbar>
-      <ion-buttons slot='start'>
-          <app-back-button></app-back-button>
-        </ion-buttons>
+    <ion-buttons slot='start'>
+      <app-back-button></app-back-button>
+    </ion-buttons>
     <ion-title>已选行程</ion-title>
-    
+
   </ion-toolbar>
 </ion-header>
 
@@ -54,9 +54,19 @@
                   <img [src]="trip.bookInfo.fromSegment?.AirlineSrc">
                 </div>
                 <ion-text class="carriername" color="medium">
-                    {{trip.bookInfo.fromSegment?.CarrierName}}
-                    {{trip.bookInfo.fromSegment?.Number}} |
-                    {{trip.bookInfo.fromSegment.FlyTimeName}}
+                  {{trip.bookInfo.fromSegment?.CarrierName}}
+                  {{trip.bookInfo.fromSegment?.Number}} |
+                  {{trip.bookInfo.fromSegment.FlyTimeName}}
+                </ion-text>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="2">
+
+              </ion-col>
+              <ion-col style="display: flex;align-items: center;justify-content: flex-end;font-size: 0.9rem;">
+                 <ion-text color="medium" style="display: flex;align-items: center;" (click)="onSelectSeat()">
+                  选择舱位 <ion-icon name="chevron-forward-outline"></ion-icon>
                 </ion-text>
               </ion-col>
             </ion-row>
@@ -67,5 +77,5 @@
     <div class="footer">
       <ion-button color="secondary" style="height: 2.1em;" (click)="onReserve()">预 订</ion-button>
     </div>
-    </ng-container>
+  </ng-container>
 </ion-content>

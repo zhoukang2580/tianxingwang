@@ -28,6 +28,10 @@ const routes: Routes = [
     path: 'flight-ticket-reserve',
     loadChildren: () => import('./flight-ticket-reserve/flight-ticket-reserve.module').then( m => m.FlightTicketReservePageModule)
   },
+  {
+    path: 'choose-flight-seat',
+    loadChildren: () => import('./choose-flight-seat/choose-flight-seat.module').then( m => m.ChooseFlightSeatPageModule)
+  },
 ];
 
 @NgModule({

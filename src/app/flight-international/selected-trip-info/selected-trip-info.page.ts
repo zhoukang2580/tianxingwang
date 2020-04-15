@@ -44,5 +44,8 @@ export class SelectedTripInfoPage implements OnInit {
   onReserve(){
     this.router.navigate(["flight-ticket-reserve"]);
   }
+  onSelectSeat(){
+    this.router.navigate(["choose-flight-seat"]);
+  }
 
 }
