@@ -989,15 +989,6 @@ export class InternationalFlightService {
             (ff) => +ff.SalesPrice == +minPrice
           );
           if (
-            trips.length &&
-            trips[0].bookInfo &&
-            trips[0].bookInfo.flightRoute &&
-            trips[0].bookInfo.flightRoute.flightFare
-          ) {
-            flightRoute.flightFare.SalesPrice =
-              trips[0].bookInfo.flightRoute.flightFare.SalesPrice;
-          }
-          if (
             this.flightPolicyResult &&
             this.flightPolicyResult.FlightFares &&
             flightRoute.flightFare
