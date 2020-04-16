@@ -8,6 +8,7 @@ import { FlightTicketReservePageRoutingModule } from './flight-ticket-reserve-ro
 
 import { FlightTicketReservePage } from './flight-ticket-reserve.page';
 import { AppComponentsModule } from 'src/app/components/appcomponents.module';
+import { TmcComponentsModule } from 'src/app/tmc/components/tmcComponents.module';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { AppComponentsModule } from 'src/app/components/appcomponents.module';
     FormsModule,
     IonicModule,
     AppComponentsModule,
-    FlightTicketReservePageRoutingModule
+    FlightTicketReservePageRoutingModule,
+    TmcComponentsModule
   ],
   declarations: [FlightTicketReservePage]
 })
