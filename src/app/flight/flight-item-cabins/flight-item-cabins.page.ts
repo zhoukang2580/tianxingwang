@@ -219,6 +219,24 @@ export class FlightItemCabinsPage implements OnInit {
   }
   onShowMoreCabins() {
     this.vmCabins = this.economyClassCabins.concat(this.moreCabins);
+    this.moreCabins = [];
+    this.economyClassCabins = [];
+    this.vmCabins.forEach(it => {
+      if (it.Cabin) {
+        if (it.Cabin.Type == FlightCabinType.Y) {
+          this.economyClassCabins.push(it);
+        } else {
+          this.moreCabins.push(it);
+        }
+      }
+    });
+    this.economyClassCabins.sort((a, b) =>
+      b.Cabin && a.Cabin ? +a.Cabin.SalesPrice - +b.Cabin.SalesPrice : 0
+    );
+    this.moreCabins.sort((a, b) =>
+      a.Cabin && b.Cabin ? +a.Cabin.SalesPrice - +b.Cabin.SalesPrice : 0
+    );
+    this.vmCabins = this.economyClassCabins.concat(this.moreCabins);
     this.hasMoreCabins = false;
   }
   private initVmCabins(cabins: FlightPolicy[]) {
