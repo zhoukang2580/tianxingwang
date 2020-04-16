@@ -1032,10 +1032,7 @@ export class InternationalFlightService {
             flightRoute.ArrivalTime,
             flightRoute.FirstTime
           );
-          flightRoute.flyTime = this.getFlyTime(
-            flightRoute.ArrivalTime,
-            flightRoute.FirstTime
-          );
+          flightRoute.flyTime = this.getFlyTime(+flightRoute.Duration);
           return flightRoute;
         });
       }
@@ -1053,14 +1050,11 @@ export class InternationalFlightService {
     }
     return addDays;
   }
-  getFlyTime(arrivalTime: string, firstTime: string) {
-    const delta =
-      new Date(arrivalTime).getTime() - new Date(firstTime).getTime();
-    const t = delta / 1000;
+  getFlyTime(duration: number) {
     let flyTime = "";
     // tslint:disable-next-line: no-bitwise
-    const h = ~~(t / 3600);
-    const m = t / 60 - h * 60;
+    const h = ~~(duration / 60);
+    const m = duration - h * 60;
     if (h) {
       flyTime = `${h}h`;
     }

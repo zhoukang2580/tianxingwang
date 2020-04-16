@@ -202,7 +202,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   }
   onshowMyTrips() {
     this.condition = new SearchTicketConditionModel();
-    this.condition.pageIndex = 0;
+    this.condition.pageIndex = 1;
     this.isShowMyTrips = true;
     this.myTrips = [];
     this.loadMoreMyTrips();
@@ -222,7 +222,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         : this.activeTab.value == ProductItemType.hotel
         ? "Hotel"
         : "Train";
-    this.isLoading = this.condition.pageIndex < 1;
+    this.isLoading = this.condition.pageIndex <= 1;
     this.loadDataSub = this.orderService
       .getMyTrips(m)
       .pipe(
@@ -232,8 +232,14 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       )
       .subscribe(
         (res) => {
+          if (res && res.Data) {
+            this.condition.LastFlightId = res.Data.LastFlightId;
+            this.condition.LastHotelId = res.Data.LastHotelId;
+            this.condition.LastTime = res.Data.LastTime;
+            this.condition.LastTrainId = res.Data.LastTrainId;
+          }
           if (res && res.Data && res.Data.Trips) {
-            if (this.condition.pageIndex < 1 && res.Data.Trips.length) {
+            if (this.condition.pageIndex <=1  && res.Data.Trips.length) {
               this.myTripsTotalCount = res.Data.DataCount;
             }
             if (this.infiniteScroll) {

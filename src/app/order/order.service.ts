@@ -30,6 +30,7 @@ import { IFlightSegmentInfo } from "../flight/models/PassengerFlightInfo";
 import { AppHelper } from "../appHelper";
 import { OrderFlightTicketEntity } from "./models/OrderFlightTicketEntity";
 import { OrderTrainTicketEntity } from "./models/OrderTrainTicketEntity";
+import { TravelModel } from './models/TravelModel';
 export class OrderDetailModel {
   Histories: HistoryEntity[];
   Tasks: TaskEntity[];
@@ -177,7 +178,7 @@ export class OrderService {
     if (data.Type) {
       req["Type"] = data.Type;
     }
-    const result = this.apiService.getResponse<OrderModel>(req);
+    const result = this.apiService.getResponse<TravelModel>(req);
     return result;
   }
   refundFlightTicket(data: {

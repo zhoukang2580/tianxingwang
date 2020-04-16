@@ -28,8 +28,11 @@ export class SelectedTripInfoPage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
-  getFlyTime(arrival:string,fromTime:string){
-    return 
+  getFlyTime(duration: number) {
+    if (!duration) {
+      return "";
+    }
+    return this.flightService.getFlyTime(duration);
   }
   ngOnInit() {
     this.subscriptions.push(this.subscription);
