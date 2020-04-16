@@ -52,6 +52,7 @@ import { OrderTrainTicketEntity } from "../models/OrderTrainTicketEntity";
 import { OrderHotelType } from "../models/OrderHotelEntity";
 import { MOCK_TMC_DATA } from "../mock-data";
 import { OrderTravelPayType } from "../models/OrderTravelEntity";
+import { OrderFlightTicketType } from '../models/OrderFlightTicketType';
 
 export interface TabItem {
   label: string;
@@ -90,6 +91,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
   tikectId2OriginalTickets: {
     [ticketId: string]: OrderFlightTicketEntity[];
   } = {};
+  OrderFlightTicketStatusType = OrderFlightTicketStatusType;
   constructor(
     private plt: Platform,
     private route: ActivatedRoute,

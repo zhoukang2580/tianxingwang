@@ -185,12 +185,12 @@
                   </ion-col>
                   <ion-col>
                     <ion-text
-                      *ngIf='flightTicket.VariablesJsonObj.IsCustomApplyRefund&&!flightTicket.VariablesJsonObj.IsCustomApplyExchange; else showExchanging'>
+                      *ngIf='flightTicket.VariablesJsonObj.IsCustomApplyRefund&&!flightTicket.VariablesJsonObj.IsCustomApplyExchange&&flightTicket.Status != OrderFlightTicketStatusType.Refunded; else showExchanging'>
                       退票申请中
                     </ion-text>
                     <ng-template #showExchanging>
                       <ion-text *ngIf='!flightTicket.VariablesJsonObj.IsCustomApplyRefund
-                        &&flightTicket.VariablesJsonObj.IsCustomApplyExchange;else status'>改签申请中</ion-text>
+                        &&flightTicket.VariablesJsonObj.IsCustomApplyExchange&&flightTicket.Status != OrderFlightTicketStatusType.Refunded;else status'>改签申请中</ion-text>
                     </ng-template>
                     <ng-template #status>
                       {{flightTicket?.StatusName}}
@@ -551,12 +551,12 @@
                   </ion-col>
                   <ion-col>
                     <ion-text
-                      *ngIf='ticket.VariablesJsonObj.IsCustomApplyRefund&&!ticket.VariablesJsonObj.IsCustomApplyExchange;else showExchanging2'>
+                      *ngIf='ticket.VariablesJsonObj.IsCustomApplyRefund&&!ticket.VariablesJsonObj.IsCustomApplyExchange&&ticket.Status != OrderFlightTicketStatusType.Refunded;else showExchanging2'>
                       退票申请中
                     </ion-text>
                     <ng-template #showExchanging2>
-                        <ion-text *ngIf='!flightTicket.VariablesJsonObj.IsCustomApplyRefund
-                          &&flightTicket.VariablesJsonObj.IsCustomApplyExchange;else statuname'>改签申请中</ion-text>
+                        <ion-text *ngIf='!ticket.VariablesJsonObj.IsCustomApplyRefund
+                          &&ticket.VariablesJsonObj.IsCustomApplyExchange&&ticket.Status != OrderFlightTicketStatusType.Refunded;else statuname'>改签申请中</ion-text>
                       </ng-template>
                     <ng-template #statuname>
                       {{ticket?.StatusName}}
