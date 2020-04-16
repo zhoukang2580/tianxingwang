@@ -9,8 +9,12 @@ export class TtsService implements ITTS {
   private tts: ITTS;
   private showTip = false;
   private options: ITTSOptions = { locale: "zh-CN", rate: 1 } as ITTSOptions;
+  isForbiden = false;
   constructor(private plt: Platform) { }
   async speak(opt: ITTSOptions | string): Promise<void> {
+    if (this.isForbiden) {
+      return;
+    }
     await this.plt.ready();
     this.tts = window['TTS'];
     if (this.tts) {
@@ -23,15 +27,16 @@ export class TtsService implements ITTS {
           ...opt
         };
       }
-      return this.tts.speak(options).catch((e) => {
-        alert(JSON.stringify(e))
-        if (this.showTip) {
-          AppHelper.alert('请安装科大讯飞语音引擎，然后到设置->语言->语言和输入法中设置（高级）->文字转语音（TTS）输出，设置为科大讯飞（如果安装的不是科大讯飞，则选择别的语音引擎）');
-        }
-        AppHelper.alert("不再显示该消息？", true, "是", "否").then(ok => {
-          this.showTip = !ok;
-        })
-      });
+      return this.tts.speak(options)
+      // .catch((e) => {
+      //   alert(JSON.stringify(e))
+      //   if (this.showTip) {
+      //     AppHelper.alert('请安装科大讯飞语音引擎，然后到设置->语言->语言和输入法中设置（高级）->文字转语音（TTS）输出，设置为科大讯飞（如果安装的不是科大讯飞，则选择别的语音引擎）');
+      //   }
+      //   AppHelper.alert("不再显示该消息？", true, "是", "否").then(ok => {
+      //     this.showTip = !ok;
+      //   })
+      // });
     }
   };
   setTTSOptions(options: ITTSOptions) {
