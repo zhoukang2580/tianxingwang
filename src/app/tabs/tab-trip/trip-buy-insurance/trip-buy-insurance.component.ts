@@ -7,6 +7,8 @@ import { OrderTripModel } from "src/app/order/models/OrderTripModel";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { AppHelper } from "src/app/appHelper";
 import { IdentityService } from "src/app/services/identity/identity.service";
+import { Router } from '@angular/router';
+import { InsurancOpenUrlComponent } from '../insuranc-open-url/insuranc-open-url.component';
 
 @Component({
   selector: "app-trip-buy-insurance",
@@ -20,10 +22,31 @@ export class TripBuyInsuranceComponent implements OnInit {
     private modalCtrl: ModalController,
     private apiservice: ApiService,
     private identityService: IdentityService,
-    private tmcService: TmcService
+    private tmcService: TmcService,
+    private router: Router,
   ) {}
   back() {
     this.modalCtrl.getTop().then(t => t.dismiss());
+  }
+  async onShowProductDetail(insurance: InsuranceProductEntity, evt: CustomEvent) {
+    if (evt) {
+      evt.stopPropagation();
+    }
+    if (!insurance || !insurance.DetailUrl) {
+      return;
+    }
+    const m = await this.modalCtrl.create({
+      component: InsurancOpenUrlComponent,
+      componentProps: {
+        url: insurance.DetailUrl,
+        title: insurance.Name
+      },
+    });
+    m.present();
+    await m.onDidDismiss();
+    // this.router.navigate([AppHelper.getRoutePath("open-url")], {
+    //   queryParams: { url: insurance.DetailUrl, title: insurance.Name },
+    // });
   }
   ngOnInit() {}
   async payInsurance(key: string, tradeNo: string, evt?: CustomEvent) {
