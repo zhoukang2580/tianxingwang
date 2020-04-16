@@ -144,9 +144,9 @@
                     <ion-text color='light'>已满房</ion-text>
                   </ion-button>
                 </h4>
-                <ion-button color='secondary' (click)='onShowRoomDetails(room)'>
+                <ion-text color='secondary' (click)='onShowRoomDetails(room)'>
                   详情
-                </ion-button>
+                </ion-text>
                 <h3 class='ion-text-end' style="padding-bottom: 0.5em;margin-top: 1em;"
                   (click)='room["isShowRoomPlans"]=!room["isShowRoomPlans"]'>
                   <ion-text color='danger' *ngIf='getRoomLowestAvgPrice(room) as price'>

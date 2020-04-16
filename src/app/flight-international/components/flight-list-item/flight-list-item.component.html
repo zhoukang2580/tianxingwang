@@ -19,9 +19,7 @@
     <div class="ion-text-nowrap">
       <ion-text *ngIf="flight.isTransfer" class="fontSize" color="secondary" (click)="onTransfer($event)">
         ---<ion-text style="padding:0.1em">转机</ion-text>---</ion-text>
-      <ion-text *ngIf="!flight.isTransfer" class="fontSize">---<ion-text style="padding:0.1em">
-          直飞
-        </ion-text>---</ion-text>
+      <ion-text *ngIf="!flight.isTransfer" class="fontSize">---<ion-text style="padding:0.1em">直飞</ion-text>---</ion-text>
     </div>
   </ion-col>
   <ion-col>

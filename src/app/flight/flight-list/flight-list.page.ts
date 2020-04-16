@@ -75,6 +75,7 @@ import {
   CandeactivateGuard,
   CanComponentDeactivate
 } from "src/app/guards/candeactivate.guard";
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -210,6 +211,7 @@ export class FlightListPage
       this.isSelfBookType = await this.staffService.isSelfBookType();
       this.showAddPassenger = await this.canShowAddPassenger();
       console.log("this.route.queryParamMap", this.searchFlightModel, d);
+      // this.otherday=this.searchFlightModel.Date;
       if (d && d.get("doRefresh")) {
         this.doRefresh(true, false);
       }
@@ -263,12 +265,10 @@ export class FlightListPage
     if (go) {
       if (!this.vmFlights || !this.vmFlights.length) {
         let arrival = go.bookInfo.flightSegment.ArrivalTime || "";
-        console.log(go.bookInfo.flightSegment,"arrivalarrival");
-        
         arrival = moment(arrival)
           .add(1, "hours")
           .format("YYYY-MM-DD HH:mm");
-          if(this.day&&arrival.replace("T", " ").substring(0,10)==this.day){
+          if(arrival.replace("T", " ").substring(0,10)==this.day||this.searchFlightModel.Date==arrival.replace("T", " ").substring(0,10)){
             return `${arrival.replace("T", " ")}之后已无航班`;
           }
           return `无航班信息`;
