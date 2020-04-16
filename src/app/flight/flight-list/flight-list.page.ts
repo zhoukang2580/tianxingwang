@@ -211,7 +211,6 @@ export class FlightListPage
       this.isSelfBookType = await this.staffService.isSelfBookType();
       this.showAddPassenger = await this.canShowAddPassenger();
       console.log("this.route.queryParamMap", this.searchFlightModel, d);
-      // this.otherday=this.searchFlightModel.Date;
       if (d && d.get("doRefresh")) {
         this.doRefresh(true, false);
       }
