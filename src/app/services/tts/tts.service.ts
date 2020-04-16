@@ -18,9 +18,13 @@ export class TtsService implements ITTS {
       if (typeof opt === 'string') {
         options.text = opt;
       } else {
-        options = opt;
+        options = {
+          ...this.options,
+          ...opt
+        };
       }
-      return this.tts.speak(this.options).catch(() => {
+      return this.tts.speak(options).catch((e) => {
+        alert(JSON.stringify(e))
         if (this.showTip) {
           AppHelper.alert('请安装科大讯飞语音引擎，然后到设置->语言->语言和输入法中设置（高级）->文字转语音（TTS）输出，设置为科大讯飞（如果安装的不是科大讯飞，则选择别的语音引擎）');
         }
