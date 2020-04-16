@@ -60,19 +60,29 @@
   </app-refresher>
   <ion-list>
     <div *ngFor='let flight of flightRoutes' style="border-bottom: 1px solid rgba(var(--ion-color-dark-rgb),0.13);">
-      <ng-container *ngIf='!isBeforeLastTrip else lastTpl'>
-        <app-flight-list-item [flight]='flight' (transfer)='onTransfer(flight)' (click)='onSelectTrip(flight)'>
-        </app-flight-list-item>
-      </ng-container>
-      <ng-template #lastTpl>
-        <app-flight-list-item [flight]='flight' (transfer)='onTransfer(flight)'>
-        </app-flight-list-item>
-        <div class="ion-text-end ion-margin-end">
-          <ion-button size='small' fill='solid' color='{{flight.flightFare?.Rules?"warning":"success"}}'>
-            <span style="color: white;">预订</span>
-          </ion-button>
-        </div>
-      </ng-template>
+      <app-flight-list-item [flight]='flight' (transfer)='onTransfer(flight)'>
+      </app-flight-list-item>
+      <div class="book-trip">
+        <ng-container *ngIf='curTrip.idx==searchModel.trips.length-1 else showrulesTpl'>
+          <div>
+            {{searchModel?.cabin?.label}}
+          </div>
+          <div class="rules ion-margin-start">
+            退改签规则
+          </div>
+        </ng-container>
+        <ng-template #showrulesTpl>
+          <ion-text color='{{flight.flightFare?.Rules?"warning":"success"}}'>{{flight.flightFare?.Rules}}</ion-text>
+        </ng-template>
+        <ion-button size='small' fill='solid' (click)='onSelectTrip(flight)'
+          color='{{flight.flightFare?.Rules?"warning":"success"}}'>
+          <span style="color: white;">
+            <ng-container *ngIf='curTrip.idx!=searchModel.trips.length-1 else bookTpl'>设为第{{curTrip.idx+1}}程
+            </ng-container>
+            <ng-template #bookTpl>预订</ng-template>
+          </span>
+        </ion-button>
+      </div>
     </div>
   </ion-list>
   <ion-infinite-scroll (ionInfinite)='loadMore()'>

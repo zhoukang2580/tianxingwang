@@ -1,3 +1,4 @@
+import { FlightFareEntity } from './../flight/models/FlightFareEntity';
 import { Injectable } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
 import { FlightSegmentEntity } from "../flight/models/flight/FlightSegmentEntity";
@@ -35,12 +36,12 @@ import { CredentialsEntity } from "../tmc/models/CredentialsEntity";
 import { CredentialsType } from "../member/pipe/credential.pipe";
 export interface IFlightCabinType {
   label:
-    | "经济舱"
-    | "超级经济舱"
-    | "头等舱"
-    | "商务舱"
-    | "超级商务舱"
-    | "超级头等舱";
+  | "经济舱"
+  | "超级经济舱"
+  | "头等舱"
+  | "商务舱"
+  | "超级商务舱"
+  | "超级头等舱";
   value: FlightCabinInternationalType;
 }
 export enum FlightCabinInternationalType {
@@ -575,7 +576,7 @@ export class InternationalFlightService {
         const one = trips[idx];
         AppHelper.alert(
           `请完善第${idx + 1}程的${!one.fromCity ? "出发城市" : ""}${
-            !one.toCity ? "到达城市" : ""
+          !one.toCity ? "到达城市" : ""
           }`
         );
         return;
@@ -745,6 +746,7 @@ export class InternationalFlightService {
     return result;
   }
   private async checkRoutePolicy(result: FlightResultEntity) {
+    return result;
     const req = new RequestEntity();
     req.Method = `TmcApiInternationalFlightUrl-Home-CheckRoutePolicy`;
     req.IsShowLoading = true;
@@ -940,6 +942,9 @@ export class InternationalFlightService {
             });
           }
         }
+        const ids = m.trips.filter(it => !!it.bookInfo).map(it => it.bookInfo.flightRoute && it.bookInfo.flightRoute.Id).filter(it => !!it);
+        const flightFare = this.getFlightFare(data.FlightFares, ids);
+        if (flightFare) { r.flightFare = flightFare }
         return r;
       });
       this.setFilterConditionSource(condition);
@@ -976,48 +981,44 @@ export class InternationalFlightService {
           flightRoute.toSegment =
             flightRoute.FlightSegments[flightRoute.FlightSegments.length - 1];
           flightRoute.isTransfer = flightRoute.transferSegments.length > 1;
-          const ffs = data.FlightFares.filter(
-            (f) =>
-              f.FlightRouteIds &&
-              f.FlightRouteIds.some((id) => id == flightRoute.Id)
-          );
-          let minPrice = Infinity;
-          ffs.forEach((it) => {
-            minPrice = Math.min(minPrice, +it.SalesPrice);
-          });
-          flightRoute.flightFare = ffs.find(
-            (ff) => +ff.SalesPrice == +minPrice
-          );
-          if (
-            trips.length &&
-            trips[0].bookInfo &&
-            trips[0].bookInfo.flightRoute &&
-            trips[0].bookInfo.flightRoute.flightFare
-          ) {
-            flightRoute.flightFare.SalesPrice =
-              trips[0].bookInfo.flightRoute.flightFare.SalesPrice;
-          }
-          if (
-            this.flightPolicyResult &&
-            this.flightPolicyResult.FlightFares &&
-            flightRoute.flightFare
-          ) {
-            // 差标信息
-            const one = this.flightPolicyResult.FlightFares.find(
-              (it) => it.Id == flightRoute.flightFare.Id
-            );
-            if (one) {
-              flightRoute.flightFare.IsAllowOrder = one.IsAllowOrder;
-              flightRoute.flightFare.Rules = one.Rules;
-            }
-          }
+          flightRoute.flightFare = this.getFlightFare(data.FlightFares, [flightRoute.Id])
           return flightRoute;
         });
       }
     }
     return data;
   }
-
+  private getFlightFare(flightFares: FlightFareEntity[], routeIds: string[]) {
+    const ffs = flightFares.filter(
+      (f) => {
+        const ids = f.FlightRouteIds &&
+          f.FlightRouteIds;
+        return routeIds.length > 1 ? ids.slice(0, routeIds.length).join(",") == routeIds.join(',') : ids.some(id => id == routeIds[0])
+      }
+    );
+    let minPrice = Infinity;
+    ffs.forEach((it) => {
+      minPrice = Math.min(minPrice, +it.SalesPrice);
+    });
+    const flightFare = ffs.find(
+      (ff) => +ff.SalesPrice == +minPrice
+    );
+    if (
+      this.flightPolicyResult &&
+      this.flightPolicyResult.FlightFares &&
+      flightFare
+    ) {
+      // 差标信息
+      const one = this.flightPolicyResult.FlightFares.find(
+        (it) => it.Id == flightFare.Id
+      );
+      if (one) {
+        flightFare.IsAllowOrder = one.IsAllowOrder;
+        flightFare.Rules = one.Rules;
+      }
+    }
+    return flightFare;
+  }
   async getInternationalAirports(forceFetch = false) {
     let airports = await this.tmcService.getInternationalAirports(forceFetch);
     const countries = await this.getCountries(forceFetch);
@@ -1159,6 +1160,7 @@ export interface IInternationalFlightQuery {
 }
 export interface ITripInfo {
   id: string;
+  idx?: number;
   fromCity: TrafficlineEntity;
   date: string;
   toCity?: TrafficlineEntity;

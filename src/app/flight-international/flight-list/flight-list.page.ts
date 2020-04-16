@@ -35,7 +35,6 @@ export class FlightListPage implements OnInit, OnDestroy {
   private pageSize = 12;
   isLoading = false;
   multipassShow = false;
-  isBeforeLastTrip = false;
   searchModel: IInternationalFlightSearchModel;
   condition: IFilterCondition;
   @ViewChild(RefresherComponent, { static: true })
@@ -50,7 +49,7 @@ export class FlightListPage implements OnInit, OnDestroy {
     private flightService: InternationalFlightService,
     public modalController: ModalController,
     public popoverController: PopoverController
-  ) {}
+  ) { }
   private scrollToTop() {
     this.content.scrollToTop();
   }
@@ -69,6 +68,7 @@ export class FlightListPage implements OnInit, OnDestroy {
         id: AppHelper.uuid(),
       };
       this.flightService.setSearchModelSource(this.searchModel);
+      trip = this.searchModel.trips.find((it) => !it.bookInfo);
       if (!trip) {
         this.router.navigate(["selected-trip-info"]);
         return;
@@ -99,10 +99,7 @@ export class FlightListPage implements OnInit, OnDestroy {
           if (!this.curTrip) {
             this.curTrip = s.trips[s.trips.length - 1];
           }
-          this.isBeforeLastTrip =
-            this.curTrip &&
-            this.curTrip ==
-              this.searchModel.trips[this.searchModel.trips.length - 1];
+          this.curTrip.idx = s.trips.findIndex(it => it.id == this.curTrip.id);
         }
         if (s && s.voyageType == 3) {
           this.multipassShow = true;
@@ -204,7 +201,7 @@ export class FlightListPage implements OnInit, OnDestroy {
           (a.fromSegment &&
             b.fromSegment &&
             +a.fromSegment.TakeoffTimeStamp -
-              +b.fromSegment.TakeoffTimeStamp) ||
+            +b.fromSegment.TakeoffTimeStamp) ||
           0;
         return c.time == "asc" ? delta : -delta;
       });
