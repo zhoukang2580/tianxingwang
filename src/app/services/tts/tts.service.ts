@@ -5,7 +5,7 @@ import { AppHelper } from 'src/app/appHelper';
 @Injectable({
   providedIn: 'root'
 })
-export class TtsService implements ITTS {
+export class TTSService implements ITTS {
   private tts: ITTS;
   private showTip = false;
   private options: ITTSOptions = { locale: "zh-CN", rate: 1 } as ITTSOptions;
