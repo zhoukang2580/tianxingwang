@@ -269,7 +269,7 @@ export class StaffService {
       OrganizationName: data.organization.Name,
       CostCenterName: data.constCenter.Name,
       CostCenterId: data.constCenter.Id,
-      Country: data.country.Name,
+      Country: data.country.Code,
       CountryId: data.country.Id,
       CountryCode: data.country.Code,
       Name: data.name,

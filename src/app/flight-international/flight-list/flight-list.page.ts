@@ -49,14 +49,23 @@ export class FlightListPage implements OnInit, OnDestroy {
     private flightService: InternationalFlightService,
     public modalController: ModalController,
     public popoverController: PopoverController
-  ) { }
+  ) {}
   private scrollToTop() {
     this.content.scrollToTop();
   }
-  onSelectTrip(flightRoute: FlightRouteEntity) {
+  async onSelectTrip(flightRoute: FlightRouteEntity) {
     console.log(this.searchModel, "this.searchModel");
     if (this.searchModel && this.searchModel.trips) {
       let trip = this.searchModel.trips.find((it) => !it.bookInfo);
+      const isCheckPolicy = this.searchModel.trips.findIndex(
+        (it) => it == trip
+      );
+      if (isCheckPolicy) {
+        if (flightRoute.policy) {
+          AppHelper.alert(flightRoute.policy.Message || "不可预订");
+          return;
+        }
+      }
       if (!trip) {
         trip = this.searchModel.trips[this.searchModel.trips.length - 1];
       }
@@ -99,7 +108,9 @@ export class FlightListPage implements OnInit, OnDestroy {
           if (!this.curTrip) {
             this.curTrip = s.trips[s.trips.length - 1];
           }
-          this.curTrip.idx = s.trips.findIndex(it => it.id == this.curTrip.id);
+          this.curTrip.idx = s.trips.findIndex(
+            (it) => it.id == this.curTrip.id
+          );
         }
         if (s && s.voyageType == 3) {
           this.multipassShow = true;
@@ -201,7 +212,7 @@ export class FlightListPage implements OnInit, OnDestroy {
           (a.fromSegment &&
             b.fromSegment &&
             +a.fromSegment.TakeoffTimeStamp -
-            +b.fromSegment.TakeoffTimeStamp) ||
+              +b.fromSegment.TakeoffTimeStamp) ||
           0;
         return c.time == "asc" ? delta : -delta;
       });

@@ -20,7 +20,11 @@ export class FlightRouteEntity {
   FlightSegments: FlightSegmentEntity[];
   FromCountry: string; // CN";
   Id: string; //  1;
-  IsAllowOrder: false;
+  policy: {
+    IsAllowOrder: boolean;
+    IsIllegal: boolean;
+    Message: string;
+  };
   Key: string; // C4A3CF5E5BC5E7EAB8A1259DA38A943F";
   MaxDuration: string; //  100;
   Origin: string; // SHA";
@@ -31,4 +35,6 @@ export class FlightRouteEntity {
   TypeName: string; // 经济舱";
   Week: string; // 周三";
   YFare: number;
+  addDays?: number;
+  flyTime?: string;
 }

@@ -9,73 +9,71 @@
 </ion-header>
 
 <ion-content>
-  <ng-container>
-    <div *ngFor="let trip of this.searchModel?.trips;let i=index;">
-      <ion-row class="border-t">
-        <ion-col size="2" class="trip-number">
-           第{{i+1}}程
-        </ion-col>
-        <ion-col class="font-prime">
-          {{trip?.bookInfo?.fromSegment?.TakeoffTime?.replace("T"," ").substring(5,10)}}
-          {{trip?.fromCity?.CityName}}-{{trip?.toCity?.CityName}}
-        </ion-col>
-        <ion-col size="3.5" class="font-prime">
-          总时长{{trip.bookInfo.fromSegment.FlyTimeName}}
-        </ion-col>
-      </ion-row>
-      <ion-row style="background-color: var(--ion-color-light)">
-        <ion-col class="ion-padding">
-          <div>
-            <ion-row style="margin-bottom: 0.2em;">
-              <ion-col size="2" style="text-align:end">
-                {{trip?.bookInfo?.fromSegment?.TakeoffTime?.replace("T"," ").substring(10,16)}}
-              </ion-col>
-              <ion-col class="border-left">
-                {{trip.fromCity.Code}} {{trip.bookInfo.fromSegment?.FromAirportName}}
-                {{trip.bookInfo.fromSegment.FromTerminal}}
-              </ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col size="2" style="text-align:end">
-                {{trip?.bookInfo?.toSegment?.ArrivalTime?.replace("T"," ").substring(10,16)}}
-              </ion-col>
-              <ion-col class="border-left">
-                {{trip.fromCity.CityCode}} {{trip.bookInfo.toSegment?.ToAirportName}}
-                {{trip.bookInfo.toSegment.ToTerminal}}
-              </ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col size="2">
+  <ion-list *ngFor="let trip of this.searchModel?.trips;let i=index;">
+    <ion-row class="border-t">
+      <ion-col size="2" class="trip-number">
+         第{{i+1}}程
+      </ion-col>
+      <ion-col class="font-prime">
+        {{trip.bookInfo?.fromSegment?.TakeoffTime?.replace("T"," ").substring(5,10)}}
+        {{trip.fromCity?.CityName}}-{{trip?.toCity?.CityName}}
+      </ion-col>
+      <ion-col size="3.5" class="font-prime">
+        飞行时长 {{trip.bookInfo?.flightRoute?.flyTime}}
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col class="ion-padding">
+        <div>
+          <ion-row style="margin-bottom: 0.2em;">
+            <ion-col size="2" style="text-align:end">
+              {{trip?.bookInfo?.fromSegment?.TakeoffTime?.replace("T"," ").substring(10,16)}}
+            </ion-col>
+            <ion-col class="border-left">
+              {{trip.fromCity.Code}} {{trip.bookInfo.fromSegment?.FromAirportName}}
+              {{trip.bookInfo.fromSegment.FromTerminal}}
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="2" style="text-align:end">
+              {{trip?.bookInfo?.toSegment?.ArrivalTime?.replace("T"," ").substring(10,16)}}
+            </ion-col>
+            <ion-col class="border-left">
+              {{trip.fromCity?.CityCode}} {{trip.bookInfo?.toSegment?.ToAirportName}}
+              {{trip.bookInfo?.toSegment?.ToTerminal}}
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="2">
 
-              </ion-col>
+            </ion-col>
 
-              <ion-col style="display: flex;align-items: flex-end;">
-                <div class="padding-s">
-                  <img [src]="trip.bookInfo.fromSegment?.AirlineSrc">
-                </div>
-                <ion-text class="carriername" color="medium">
-                  {{trip.bookInfo.fromSegment?.CarrierName}}
-                  {{trip.bookInfo.fromSegment?.Number}} |
-                  {{trip.bookInfo.fromSegment.FlyTimeName}}
-                </ion-text>
-              </ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col size="2">
+            <ion-col style="display: flex;align-items: flex-end;">
+              <div class="padding-s">
+                <img [src]="trip.bookInfo?.fromSegment?.AirlineSrc">
+              </div>
+              <ion-text class="carriername" color="medium">
+                {{trip.bookInfo?.fromSegment?.CarrierName}}
+                {{trip.bookInfo?.fromSegment?.Number}} |
+                {{trip.bookInfo?.flightRoute?.flyTime}}
+              </ion-text>
+            </ion-col>
+          </ion-row>
+          <ion-row *ngIf=''>
+            <ion-col size="2">
 
-              </ion-col>
-              <ion-col style="display: flex;align-items: center;justify-content: flex-end;font-size: 0.9rem;">
-                 <ion-text color="medium" style="display: flex;align-items: center;" (click)="onSelectSeat()">
-                  选择舱位 <ion-icon name="chevron-forward-outline"></ion-icon>
-                </ion-text>
-              </ion-col>
-            </ion-row>
-          </div>
-        </ion-col>
-      </ion-row>
-    </div>
-    <div class="footer">
-      <ion-button color="secondary" style="height: 2.1em;" (click)="onReserve()">预 订</ion-button>
-    </div>
-  </ng-container>
+            </ion-col>
+            <ion-col style="display: flex;align-items: center;justify-content: flex-end;font-size: 0.9rem;">
+               <ion-text color="medium" style="display: flex;align-items: center;" (click)="onSelectSeat()">
+                选择舱位 <ion-icon name="chevron-forward-outline"></ion-icon>
+              </ion-text>
+            </ion-col>
+          </ion-row>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-list>
 </ion-content>
+<ion-footer class="ion-text-end ion-margin-end">
+  <ion-button color="secondary" size='small' (click)="onReserve()">确定</ion-button>
+</ion-footer>

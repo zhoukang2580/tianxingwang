@@ -1,16 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import { FlightRouteEntity } from 'src/app/flight/models/flight/FlightRouteEntity';
-import { IInternationalFlightSearchModel, InternationalFlightService, ITripInfo, IFilterCondition } from '../international-flight.service';
-import { AppHelper } from 'src/app/appHelper';
-import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import { FlightRouteEntity } from "src/app/flight/models/flight/FlightRouteEntity";
+import {
+  IInternationalFlightSearchModel,
+  InternationalFlightService,
+  ITripInfo,
+  IFilterCondition,
+} from "../international-flight.service";
+import { AppHelper } from "src/app/appHelper";
+import { Router } from "@angular/router";
+import { Subscription } from "rxjs";
 
 @Component({
-  selector: 'app-selected-trip-info',
-  templateUrl: './selected-trip-info.page.html',
-  styleUrls: ['./selected-trip-info.page.scss'],
+  selector: "app-selected-trip-info",
+  templateUrl: "./selected-trip-info.page.html",
+  styleUrls: ["./selected-trip-info.page.scss"],
 })
-export class SelectedTripInfoPage implements OnInit {
+export class SelectedTripInfoPage implements OnInit, OnDestroy {
   searchModel: IInternationalFlightSearchModel;
   private subscriptions: Subscription[] = [];
   private subscription = Subscription.EMPTY;
@@ -18,8 +23,14 @@ export class SelectedTripInfoPage implements OnInit {
   condition: IFilterCondition;
   constructor(
     private router: Router,
-    private flightService: InternationalFlightService,
-  ) { }
+    private flightService: InternationalFlightService
+  ) {}
+  ngOnDestroy() {
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
+  }
+  getFlyTime(arrival:string,fromTime:string){
+    return 
+  }
   ngOnInit() {
     this.subscriptions.push(this.subscription);
     this.subscriptions.push(
@@ -38,14 +49,12 @@ export class SelectedTripInfoPage implements OnInit {
         this.condition = c;
       })
     );
-    console.log(this.searchModel,"this.searchModel");
-
+    console.log(this.searchModel, "this.searchModel");
   }
-  onReserve(){
+  onReserve() {
     this.router.navigate(["flight-ticket-reserve"]);
   }
-  onSelectSeat(){
+  onSelectSeat() {
     this.router.navigate(["choose-flight-seat"]);
   }
-
 }

@@ -125,4 +125,5 @@ export class FlightFareEntity {
   /// 违规
   /// </summary>
   Rules: { [key: string]: string };
+  ruleMessage?: string;
 }

@@ -20,7 +20,6 @@
             {{trip?.fromCity?.CityName}} -- {{trip?.toCity?.CityName}}
             ({{trip.bookInfo.fromSegment?.AirlineName}})
             <div class="font-size">
-              <!-- {{trip.date}}  -->
               {{trip?.bookInfo?.fromSegment?.TakeoffTime?.replace("T"," ").substring(5,16)}} --
               {{trip?.bookInfo?.toSegment?.ArrivalTime?.replace("T"," ").substring(10,16)}}
               <span *ngIf="trip?.bookInfo?.toSegment?.Variables?.AddDaysTip>'0'">
@@ -33,7 +32,6 @@
   </ng-container>
   <ion-row class="row-top">
     <ion-col size="0.8">
-      <!-- logo -->
     </ion-col>
     <ion-col *ngIf="curTrip?.fromCity?.CountryCode?.toLowerCase()=='cn' else localTimeTpl">
       北京时间
@@ -60,28 +58,10 @@
   </app-refresher>
   <ion-list>
     <div *ngFor='let flight of flightRoutes' style="border-bottom: 1px solid rgba(var(--ion-color-dark-rgb),0.13);">
-      <app-flight-list-item [flight]='flight' (transfer)='onTransfer(flight)'>
+      <app-flight-list-item (click)='onSelectTrip(flight)' [flight]='flight' (transfer)='onTransfer(flight)'>
       </app-flight-list-item>
-      <div class="book-trip">
-        <ng-container *ngIf='curTrip.idx==searchModel.trips.length-1 else showrulesTpl'>
-          <div>
-            {{searchModel?.cabin?.label}}
-          </div>
-          <div class="rules ion-margin-start">
-            退改签规则
-          </div>
-        </ng-container>
-        <ng-template #showrulesTpl>
-          <ion-text color='{{flight.flightFare?.Rules?"warning":"success"}}'>{{flight.flightFare?.Rules}}</ion-text>
-        </ng-template>
-        <ion-button size='small' fill='solid' (click)='onSelectTrip(flight)'
-          color='{{flight.flightFare?.Rules?"warning":"success"}}'>
-          <span style="color: white;">
-            <ng-container *ngIf='curTrip.idx!=searchModel.trips.length-1 else bookTpl'>设为第{{curTrip.idx+1}}程
-            </ng-container>
-            <ng-template #bookTpl>预订</ng-template>
-          </span>
-        </ion-button>
+      <div *ngIf='(flight.policy?.Message||flight.flightFare.ruleMessage) as rule' style="font-size: 0.6rem;text-indent: 3em;">
+        <ion-text color='danger'>{{rule}}</ion-text>
       </div>
     </div>
   </ion-list>
