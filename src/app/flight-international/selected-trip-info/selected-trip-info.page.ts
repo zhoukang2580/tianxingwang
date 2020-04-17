@@ -5,10 +5,13 @@ import {
   InternationalFlightService,
   ITripInfo,
   IFilterCondition,
+  IInternationalFlightSegmentInfo,
 } from "../international-flight.service";
 import { AppHelper } from "src/app/appHelper";
-import { Router } from "@angular/router";
+import { Router, ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs";
+import { PassengerBookInfo } from "src/app/tmc/tmc.service";
+import { StaffService } from "src/app/hr/staff.service";
 
 @Component({
   selector: "app-selected-trip-info",
@@ -21,9 +24,13 @@ export class SelectedTripInfoPage implements OnInit, OnDestroy {
   private subscription = Subscription.EMPTY;
   curTrip: ITripInfo;
   condition: IFilterCondition;
+  isSelf = true;
+  passengers: PassengerBookInfo<IInternationalFlightSegmentInfo>[];
   constructor(
     private router: Router,
-    private flightService: InternationalFlightService
+    private flightService: InternationalFlightService,
+    private staffService: StaffService,
+    private route: ActivatedRoute
   ) {}
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
@@ -35,7 +42,19 @@ export class SelectedTripInfoPage implements OnInit, OnDestroy {
     return this.flightService.getFlyTime(duration);
   }
   ngOnInit() {
+    this.subscriptions.push(
+      this.route.queryParamMap.subscribe(() => {
+        this.staffService.isSelfBookType().then((is) => {
+          this.isSelf = is;
+        });
+      })
+    );
     this.subscriptions.push(this.subscription);
+    this.subscriptions.push(
+      this.flightService.getBookInfoSource().subscribe((infos) => {
+        this.passengers = infos;
+      })
+    );
     this.subscriptions.push(
       this.flightService.getSearchModelSource().subscribe((s) => {
         this.searchModel = s;

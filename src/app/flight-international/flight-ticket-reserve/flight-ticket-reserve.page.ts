@@ -1,23 +1,42 @@
-import { Component, OnInit } from '@angular/core';
-import { IInternationalFlightSearchModel, ITripInfo, IFilterCondition, InternationalFlightService } from '../international-flight.service';
-import { Subscription } from 'rxjs';
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import {
+  IInternationalFlightSearchModel,
+  ITripInfo,
+  IFilterCondition,
+  InternationalFlightService,
+  IInterFlightCombindInfo as ICombindInfo,
+} from "../international-flight.service";
+import { Subscription, Subject, BehaviorSubject } from "rxjs";
+import { ActivatedRoute } from "@angular/router";
 
 @Component({
-  selector: 'app-flight-ticket-reserve',
-  templateUrl: './flight-ticket-reserve.page.html',
-  styleUrls: ['./flight-ticket-reserve.page.scss'],
+  selector: "app-flight-ticket-reserve",
+  templateUrl: "./flight-ticket-reserve.page.html",
+  styleUrls: ["./flight-ticket-reserve.page.scss"],
 })
-export class FlightTicketReservePage implements OnInit {
+export class FlightTicketReservePage implements OnInit, OnDestroy {
   searchModel: IInternationalFlightSearchModel;
   private subscriptions: Subscription[] = [];
   private subscription = Subscription.EMPTY;
   curTrip: ITripInfo;
   condition: IFilterCondition;
-
+  error: any;
+  isCheckingPay = false;
+  totalPriceSource: Subject<number>;
+  vmCombindInfos: ICombindInfo[];
   constructor(
     private flightService: InternationalFlightService,
-  ) { }
-
+    private route: ActivatedRoute
+  ) {
+    this.totalPriceSource = new BehaviorSubject(0);
+  }
+  ngOnDestroy() {
+    this.subscriptions.push(
+      this.route.queryParamMap.subscribe(() => {
+        this.error = "";
+      })
+    );
+  }
   ngOnInit() {
     this.subscriptions.push(this.subscription);
     this.subscriptions.push(
@@ -36,7 +55,6 @@ export class FlightTicketReservePage implements OnInit {
         this.condition = c;
       })
     );
-    console.log(this.searchModel,"this.searchModel");
+    console.log(this.searchModel, "this.searchModel");
   }
-
 }
