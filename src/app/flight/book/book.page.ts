@@ -449,7 +449,7 @@ export class BookPage implements OnInit, AfterViewInit {
       tmcOutNumberInfo: ITmcOutNumberInfo;
       travelUrlInfo: TravelUrlInfo;
     },
-    item: IPassengerHotelBookInfo
+    item: IPassengerFlightBookInfo
   ) {
     item.tmcOutNumberInfos = arg.tmcOutNumberInfos;
     const data = arg.travelUrlInfo;
@@ -1544,7 +1544,7 @@ export class BookPage implements OnInit, AfterViewInit {
 
 // }
 
-interface IPassengerHotelBookInfo {
+interface IPassengerFlightBookInfo {
   arrivalHotelTime: string;
   creditCardInfo: {
     isShowCreditCard: boolean;
@@ -1573,7 +1573,7 @@ interface IPassengerHotelBookInfo {
   id: string;
   appovalStaff: StaffEntity;
   credentialStaff: StaffEntity;
-  bookInfo: PassengerBookInfo<IHotelInfo>;
+  bookInfo: PassengerBookInfo<IFlightSegmentInfo>;
   isOpenrules?: boolean;
   travelType: OrderTravelType;
   addContacts?: AddContact[];

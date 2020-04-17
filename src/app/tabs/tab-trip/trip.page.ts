@@ -31,7 +31,7 @@ import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
 import { OrderFlightTicketType } from "src/app/order/models/OrderFlightTicketType";
 import { environment } from "src/environments/environment";
 import { RefresherComponent } from "src/app/components/refresher";
-import { OrderFlightTicketStatusType } from 'src/app/order/models/OrderFlightTicketStatusType';
+import { OrderFlightTicketStatusType } from "src/app/order/models/OrderFlightTicketStatusType";
 @Component({
   selector: "app-trip",
   templateUrl: "trip.page.html",
@@ -68,6 +68,7 @@ export class TripPage implements OnInit, OnDestroy {
     this.isLoading = !this.searchCondition.LastTime;
     const req = new RequestEntity();
     req.Method = `TmcApiOrderUrl-Travel-List`;
+    this.searchCondition.PageIndex = 1;
     req.Data = this.searchCondition;
     // return of({ Status: true, Data: MockTripData } as any);
     return this.apiservice.getResponse<TravelModel>(req).pipe(
@@ -160,11 +161,10 @@ export class TripPage implements OnInit, OnDestroy {
       .subscribe((res) => {
         const trips = (res && res.Data && res.Data.Trips) || [];
         if (trips.length) {
-          this.trips = this.trips.concat(trips).map(trip => {
+          this.trips = this.trips.concat(trips).map((trip) => {
             trip = this.getVariablesJsonObj(trip);
-            return trip
+            return trip;
           });
-          this.searchCondition.PageIndex++;
         }
         if (this.infiniteScroll) {
           this.infiniteScroll.disabled =
@@ -207,12 +207,12 @@ export class TripPage implements OnInit, OnDestroy {
       trip.Type == "Flight"
         ? "flight"
         : trip.Type == "Train"
-          ? "train"
-          : trip.Type == "Hotel"
-            ? "hotel"
-            : trip.Type == "Car"
-              ? "car"
-              : "";
+        ? "train"
+        : trip.Type == "Hotel"
+        ? "hotel"
+        : trip.Type == "Car"
+        ? "car"
+        : "";
     if (tag) {
       this.router.navigate([AppHelper.getRoutePath(`${tag}-order-detail`)], {
         queryParams: { orderId: trip.OrderId },
@@ -220,7 +220,9 @@ export class TripPage implements OnInit, OnDestroy {
     }
   }
   private getVariablesJsonObj(trip: OrderTripModel) {
-    if (!trip) { return trip }
+    if (!trip) {
+      return trip;
+    }
     // <ng-container *ngIf="trip.VariablesJsonObj.IsCustomApplyRefund||trip.VariablesJsonObj.IsCustomApplyExchange||trip.Status!= OrderFlightTicketStatusType.Refunded">
     trip.VariablesJsonObj = trip.VariablesJsonObj || JSON.parse(trip.Variables);
     return trip;

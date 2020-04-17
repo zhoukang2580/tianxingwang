@@ -1,5 +1,6 @@
 import { FlightSegmentEntity } from "./FlightSegmentEntity";
 import { FlightFareEntity } from "../FlightFareEntity";
+import { FlightCabinEntity } from "./FlightCabinEntity";
 
 export class FlightRouteEntity {
   Airline: string; //  MU";
@@ -24,6 +25,7 @@ export class FlightRouteEntity {
     IsAllowOrder: boolean;
     IsIllegal: boolean;
     Message: string;
+    FlightCabin?: FlightFareEntity;
   };
   Key: string; // C4A3CF5E5BC5E7EAB8A1259DA38A943F";
   MaxDuration: string; //  100;

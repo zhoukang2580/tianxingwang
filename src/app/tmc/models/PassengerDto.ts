@@ -1,13 +1,17 @@
-import { OrderTravelPayType, OrderTravelType } from "../../order/models/OrderTravelEntity";
+import {
+  OrderTravelPayType,
+  OrderTravelType,
+} from "../../order/models/OrderTravelEntity";
 import { InsuranceProductEntity } from "src/app/insurance/models/InsuranceProductEntity";
 import { FlightSegmentEntity } from "src/app/flight/models/flight/FlightSegmentEntity";
 import { FlightCabinEntity } from "src/app/flight/models/flight/FlightCabinEntity";
 import { StaffEntity, PolicyEntity } from "src/app/hr/staff.service";
-import { CredentialsEntity } from './CredentialsEntity';
-import { OrderCardEntity } from 'src/app/order/models/OrderCardEntity';
-import { TrainEntity } from 'src/app/train/models/TrainEntity';
-import { RoomPlanEntity } from 'src/app/hotel/models/RoomPlanEntity';
-import { OrderHotelType } from 'src/app/order/models/OrderHotelEntity';
+import { CredentialsEntity } from "./CredentialsEntity";
+import { OrderCardEntity } from "src/app/order/models/OrderCardEntity";
+import { TrainEntity } from "src/app/train/models/TrainEntity";
+import { RoomPlanEntity } from "src/app/hotel/models/RoomPlanEntity";
+import { OrderHotelType } from "src/app/order/models/OrderHotelEntity";
+import { FlightFareEntity } from "src/app/flight/models/FlightFareEntity";
 export enum PassengerType {
   /// <summary>
   /// 成人
@@ -28,7 +32,7 @@ export enum PassengerType {
   /// <summary>
   /// 儿童
   /// </summary>
-  Soldier = 5
+  Soldier = 5,
 }
 export class PassengerDto {
   PassengerType: PassengerType;
@@ -54,6 +58,7 @@ export class PassengerDto {
   /// 舱位
   /// </summary>
   FlightCabin: FlightCabinEntity;
+  FlightFare: FlightFareEntity;
   /// <summary>
   /// 航班
   /// </summary>

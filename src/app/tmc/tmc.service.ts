@@ -411,8 +411,7 @@ export class TmcService {
     } = {} as any;
     const all: Promise<{ key: string; value: ITravelUrlResult }>[] = [];
     if (data && data.length) {
-      for (let i = 0; i < data.length; i++) {
-        const arg = data[i];
+      for (const arg of data) {
         const res = this.getTravelUrl(arg, isShowLoading).catch((_) => {
           return {
             key: arg.staffNumber,
@@ -1287,6 +1286,7 @@ export class InitialBookDtoModel {
   Tmc: TmcEntity;
   PayTypes: any;
   IllegalReasons: string[];
+  OutNumbers: { [key: string]: string[] };
   ExpenseTypes: string[];
   RoomPlans: {
     ClientId: string;

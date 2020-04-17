@@ -9,6 +9,8 @@ import {
   PassengerBookInfo,
   TmcService,
   FlightHotelTrainType,
+  InitialBookDtoModel,
+  IBookOrderResult,
 } from "../tmc/tmc.service";
 import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 import { CalendarService } from "../tmc/calendar.service";
@@ -34,6 +36,7 @@ import { StaffService } from "../hr/staff.service";
 import { MemberService } from "../member/member.service";
 import { CredentialsEntity } from "../tmc/models/CredentialsEntity";
 import { CredentialsType } from "../member/pipe/credential.pipe";
+import { OrderBookDto } from "../order/models/OrderBookDto";
 export interface IFlightCabinType {
   label:
     | "经济舱"
@@ -228,6 +231,98 @@ export class InternationalFlightService {
       }
     });
   }
+  async getInitializeBookDto(
+    bookDto: OrderBookDto
+  ): Promise<InitialBookDtoModel> {
+    const req = new RequestEntity();
+    req.Method = "TmcApiBookUrl-InternationalFlight-Initialize";
+    bookDto = {
+      ...bookDto,
+      Passengers: bookDto.Passengers.map((p) => {
+        if (p.Policy) {
+          p.Policy = {
+            ...p.Policy,
+            FlightDescription: null,
+            TrainDescription: null,
+            TrainSeatType: null,
+            TrainSeatTypeName: null,
+            TrainUpperSeatType: null,
+            TrainUpperSeatTypeArray: null,
+            TrainUpperSeatTypeName: null,
+            HotelDescription: null,
+            Setting: null,
+          };
+        }
+        if (p.FlightCabin) {
+          p.FlightCabin = {
+            ...p.FlightCabin,
+            // RefundChange: null,
+            Variables: null,
+          };
+        }
+        if (p.FlightSegment && p.FlightSegment.Cabins) {
+          p.FlightSegment = {
+            ...p.FlightSegment,
+            Cabins: p.FlightSegment.Cabins.map((c) => {
+              // c.RefundChange = null;
+              c.Variables = null;
+              return c;
+            }),
+          };
+        }
+        return p;
+      }),
+    };
+    req.Data = bookDto;
+    req.IsShowLoading = true;
+    req.Timeout = 60;
+    return this.apiService
+      .getPromiseData<InitialBookDtoModel>(req)
+      .then((res) => {
+        const bookInfos = this.getBookInfos();
+        res.IllegalReasons = res.IllegalReasons || [];
+        res.Insurances = res.Insurances || {};
+        res.ServiceFees = res.ServiceFees || ({} as any);
+        console.log("平均前", { ...res.ServiceFees });
+        // 后台计算服务费根据 item.passenger.AccountId 累加,所以现在需要给每一个 item.passenger.AccountId 平均服务费
+        const fees = {};
+        Object.keys(res.ServiceFees).forEach((k) => {
+          let count = 1;
+          const one = bookInfos.find((it) => it.id == k);
+          if (one && one.passenger) {
+            count = bookInfos.filter(
+              (it) =>
+                it.passenger &&
+                it.passenger.AccountId == one.passenger.AccountId
+            ).length;
+          }
+          fees[k] = +res.ServiceFees[k] / count;
+        });
+        console.log("平均后", fees);
+        res.ServiceFees = fees;
+        res.Staffs = res.Staffs || [];
+        res.Staffs = res.Staffs.map((it) => {
+          return {
+            ...it,
+            CredentialStaff: { ...it } as any,
+          };
+        });
+        res.Tmc = res.Tmc || ({} as any);
+        res.TravelFrom = res.TravelFrom || ({} as any);
+
+        return res;
+      });
+  }
+  async bookFlight(bookDto: OrderBookDto): Promise<IBookOrderResult> {
+    const req = new RequestEntity();
+    req.Method = "TmcApiBookUrl-InternationalFlight-Book";
+
+    bookDto.Channel = await this.tmcService.getChannel();
+    req.Data = bookDto;
+    req.IsShowLoading = true;
+    req.Timeout = 60;
+    return this.apiService.getPromiseData<IBookOrderResult>(req);
+  }
   isPassportHmTwPass(type: CredentialsType) {
     return (
       type == CredentialsType.Passport ||
@@ -281,10 +376,7 @@ export class InternationalFlightService {
     }
     return this.isInitializingSelfBookInfos.promise;
   }
-  private getPassengerCredentials(
-    accountIds: string[],
-    isShowLoading: boolean
-  ) {
+  getPassengerCredentials(accountIds: string[], isShowLoading?: boolean) {
     if (
       this.fetchPassengerCredentials &&
       this.fetchPassengerCredentials.promise
