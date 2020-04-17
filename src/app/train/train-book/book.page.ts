@@ -378,8 +378,8 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = this.isShowInsurances(
           bookInfo.bookInfo &&
-            bookInfo.bookInfo.trainEntity &&
-            bookInfo.bookInfo.trainEntity.StartTime
+          bookInfo.bookInfo.trainEntity &&
+          bookInfo.bookInfo.trainEntity.StartTime
         )
           ? insurances
           : [];
@@ -387,11 +387,11 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile,
-                };
-              })
+              return {
+                checked: idx == 0,
+                mobile,
+              };
+            })
             : [];
         if (this.searchTrainModel && this.searchTrainModel.isExchange) {
           if (
@@ -407,11 +407,11 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email,
-                };
-              })
+              return {
+                checked: idx == 0,
+                email,
+              };
+            })
             : [];
         if (this.searchTrainModel && this.searchTrainModel.isExchange) {
           if (
@@ -927,9 +927,9 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     const showErrorMsg = (msg: string, item: ITrainPassengerBookInfo) => {
       AppHelper.alert(
         `${
-          (item.credentialStaff && item.credentialStaff.Name) ||
-          (item.credential &&
-            item.credential.CheckFirstName + item.credential.CheckLastName)
+        (item.credentialStaff && item.credentialStaff.Name) ||
+        (item.credential &&
+          item.credential.CheckFirstName + item.credential.CheckLastName)
         } 【${item.credential && item.credential.Number}】 ${msg} 信息不能为空`
       );
     };
@@ -1014,7 +1014,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
           p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-        }`;
+          }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -1028,7 +1028,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
           p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-        }`;
+          }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -1235,8 +1235,11 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     if (!this.viewModel || !this.viewModel.combindInfos) {
       return false;
     }
+    const outnumbers = this.initialBookDto && this.initialBookDto.OutNumbers || {};
+
     this.viewModel.combindInfos.forEach((item) => {
       item.tmcOutNumberInfos.forEach((it) => {
+        it.labelDataList = outnumbers[it.label] || []
         if (it.isLoadNumber) {
           if (
             it.staffNumber &&
@@ -1260,16 +1263,18 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     if (result) {
       this.viewModel.combindInfos.forEach((item) =>
         item.tmcOutNumberInfos.forEach((info) => {
-          info.loadTravelUrlErrorMsg =
-            result[info.staffNumber] && result[info.staffNumber].Message;
-          info.travelUrlInfos =
-            result[info.staffNumber] && result[info.staffNumber].Data;
-          if (
-            !info.value &&
-            info.travelUrlInfos &&
-            info.travelUrlInfos.length
-          ) {
-            info.value = info.travelUrlInfos[0].TravelNumber;
+          if ((it => it.label.toLowerCase() == "travelnumber")) {
+            info.loadTravelUrlErrorMsg =
+              result[info.staffNumber] && result[info.staffNumber].Message;
+            info.travelUrlInfos =
+              result[info.staffNumber] && result[info.staffNumber].Data;
+            if (
+              !info.value &&
+              info.travelUrlInfos &&
+              info.travelUrlInfos.length
+            ) {
+              info.value = info.travelUrlInfos[0].TravelNumber;
+            }
           }
           info.isLoadingNumber = false;
         })

@@ -389,9 +389,11 @@ export class BookPage implements OnInit, AfterViewInit {
     if (!this.vmCombindInfos) {
       return false;
     }
+    const outnumbers = this.initialBookDtoModel && this.initialBookDtoModel.OutNumbers || {};
     this.vmCombindInfos.forEach((item) => {
       if (item.tmcOutNumberInfos) {
         item.tmcOutNumberInfos.forEach((it) => {
+          it.labelDataList = outnumbers[it.label] || []
           if (it.isLoadNumber) {
             if (
               it.staffNumber &&
@@ -412,17 +414,20 @@ export class BookPage implements OnInit, AfterViewInit {
       this.vmCombindInfos.forEach((item) => {
         if (item.tmcOutNumberInfos) {
           item.tmcOutNumberInfos.forEach((info) => {
-            info.loadTravelUrlErrorMsg =
-              result[info.staffNumber] && result[info.staffNumber].Message;
-            info.travelUrlInfos =
-              result[info.staffNumber] && result[info.staffNumber].Data;
-            if (
-              !info.value &&
-              info.travelUrlInfos &&
-              info.travelUrlInfos.length
-            ) {
-              info.value = info.travelUrlInfos[0].TravelNumber;
+            if ((it => it.label.toLowerCase() == "travelnumber")) {
+              info.loadTravelUrlErrorMsg =
+                result[info.staffNumber] && result[info.staffNumber].Message;
+              info.travelUrlInfos =
+                result[info.staffNumber] && result[info.staffNumber].Data;
+              if (
+                !info.value &&
+                info.travelUrlInfos &&
+                info.travelUrlInfos.length
+              ) {
+                info.value = info.travelUrlInfos[0].TravelNumber;
+              }
             }
+            info.isLoadingNumber = false;
           });
         }
       });
@@ -570,7 +575,7 @@ export class BookPage implements OnInit, AfterViewInit {
       info.tripType == TripType.departureTrip
         ? LanguageHelper.getDepartureTip()
         : LanguageHelper.getReturnTripTip()
-    }]`;
+      }]`;
   }
   back() {
     this.natCtrl.back();
@@ -789,12 +794,12 @@ export class BookPage implements OnInit, AfterViewInit {
     ) => {
       AppHelper.toast(
         `${
-          (item.credentialStaff && item.credentialStaff.Name) ||
-          (item.modal.credential &&
-            item.modal.credential.CheckFirstName +
-              item.modal.credential.CheckLastName)
+        (item.credentialStaff && item.credentialStaff.Name) ||
+        (item.modal.credential &&
+          item.modal.credential.CheckFirstName +
+          item.modal.credential.CheckLastName)
         } 【${
-          item.modal.credential && item.modal.credential.Number
+        item.modal.credential && item.modal.credential.Number
         }】 ${msg} 信息不能为空`,
         2000,
         "bottom"
@@ -899,7 +904,7 @@ export class BookPage implements OnInit, AfterViewInit {
           p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-        }`;
+          }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -913,7 +918,7 @@ export class BookPage implements OnInit, AfterViewInit {
           p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-        }`;
+          }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -1348,28 +1353,28 @@ export class BookPage implements OnInit, AfterViewInit {
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = this.isShowInsurances(
           item.bookInfo &&
-            item.bookInfo.flightSegment &&
-            item.bookInfo.flightSegment.TakeoffTime
+          item.bookInfo.flightSegment &&
+          item.bookInfo.flightSegment.TakeoffTime
         )
           ? insurances
           : [];
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile,
-                };
-              })
+              return {
+                checked: idx == 0,
+                mobile,
+              };
+            })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email,
-                };
-              })
+              return {
+                checked: idx == 0,
+                email,
+              };
+            })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {

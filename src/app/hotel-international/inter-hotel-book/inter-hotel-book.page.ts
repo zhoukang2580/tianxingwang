@@ -368,7 +368,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     }
     if (
       Tmc.InternationalHotelApprovalType ==
-        TmcApprovalType.ExceedPolicyApprover &&
+      TmcApprovalType.ExceedPolicyApprover &&
       this.getRuleMessage(item.bookInfo.bookInfo.roomPlan)
     ) {
       return true;
@@ -460,9 +460,9 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   ) {
     AppHelper.toast(
       `${(item.credentialStaff && item.credentialStaff.Name) ||
-        (item.credential &&
-          item.credential.CheckFirstName +
-            item.credential.CheckLastName)} 【${item.credential &&
+      (item.credential &&
+        item.credential.CheckFirstName +
+        item.credential.CheckLastName)} 【${item.credential &&
         item.credential.Number}】 ${msg} 信息不能为空`,
       2000,
       "bottom"
@@ -630,17 +630,17 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         p.OrderCard.SetVariable(
           "CredentialsName",
           combindInfo.creditCardPersionInfo &&
-            combindInfo.creditCardPersionInfo.name
+          combindInfo.creditCardPersionInfo.name
         );
         p.OrderCard.SetVariable(
           "CredentialsNumber",
           combindInfo.creditCardPersionInfo &&
-            combindInfo.creditCardPersionInfo.credentialNumber
+          combindInfo.creditCardPersionInfo.credentialNumber
         );
         p.OrderCard.SetVariable(
           "CredentialsType",
           combindInfo.creditCardPersionInfo &&
-            combindInfo.creditCardPersionInfo.credentialType
+          combindInfo.creditCardPersionInfo.credentialType
         );
         p.OrderCard.SetVariable(
           "Year",
@@ -772,7 +772,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-        }`;
+          }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -786,7 +786,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-        }`;
+          }`;
       }
       p.ExpenseType = combindInfo.expenseType;
       p.IllegalReason =
@@ -1057,20 +1057,20 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile
-                };
-              })
+              return {
+                checked: idx == 0,
+                mobile
+              };
+            })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email
-                };
-              })
+              return {
+                checked: idx == 0,
+                email
+              };
+            })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
@@ -1469,8 +1469,10 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     if (!this.combindInfos) {
       return false;
     }
+    const outnumbers = this.initialBookDto && this.initialBookDto.OutNumbers || {};
     this.combindInfos.forEach(item => {
       item.tmcOutNumberInfos.forEach(it => {
+        it.labelDataList = outnumbers[it.label] || [];
         if (it.isLoadNumber) {
           if (
             it.staffNumber &&
@@ -1489,17 +1491,20 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     if (result) {
       this.combindInfos.forEach(item =>
         item.tmcOutNumberInfos.forEach(info => {
-          info.loadTravelUrlErrorMsg =
-            result[info.staffNumber] && result[info.staffNumber].Message;
-          info.travelUrlInfos =
-            result[info.staffNumber] && result[info.staffNumber].Data;
-          if (
-            !info.value &&
-            info.travelUrlInfos &&
-            info.travelUrlInfos.length
-          ) {
-            info.value = info.travelUrlInfos[0].TravelNumber;
+          if ((it => it.label.toLowerCase() == "travelnumber")) {
+            info.loadTravelUrlErrorMsg =
+              result[info.staffNumber] && result[info.staffNumber].Message;
+            info.travelUrlInfos =
+              result[info.staffNumber] && result[info.staffNumber].Data;
+            if (
+              !info.value &&
+              info.travelUrlInfos &&
+              info.travelUrlInfos.length
+            ) {
+              info.value = info.travelUrlInfos[0].TravelNumber;
+            }
           }
+          info.isLoadingNumber = false;
         })
       );
     }

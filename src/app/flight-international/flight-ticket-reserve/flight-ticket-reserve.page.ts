@@ -74,6 +74,7 @@ import { OrderLinkmanDto } from "src/app/order/models/OrderLinkmanDto";
 import { SearchApprovalComponent } from "src/app/tmc/components/search-approval/search-approval.component";
 import { ProductItemType } from "src/app/tmc/models/ProductItems";
 import { Storage } from "@ionic/storage";
+import { TMC_FLIGHT_OUT_NUMBER } from '../mock-data';
 @Component({
   selector: "app-flight-ticket-reserve",
   templateUrl: "./flight-ticket-reserve.page.html",
@@ -291,6 +292,8 @@ export class FlightTicketReservePage
           this.ionRefresher.disabled = false;
         }, 300);
       }
+      // this.vmCombindInfos = TMC_FLIGHT_OUT_NUMBER;
+      // if (this.vmCombindInfos) { return; }
       if (byUser) {
         const ok = await AppHelper.alert(
           "刷新将重新初始化页面，是否刷新？",
@@ -365,9 +368,11 @@ export class FlightTicketReservePage
     if (!this.vmCombindInfos) {
       return false;
     }
+    const outnumbers = this.initialBookDtoModel && this.initialBookDtoModel.OutNumbers || {};
     this.vmCombindInfos.forEach((item) => {
       if (item.tmcOutNumberInfos) {
         item.tmcOutNumberInfos.forEach((it) => {
+          it.labelDataList = outnumbers[it.label] || []
           if (it.isLoadNumber) {
             if (
               it.staffNumber &&
@@ -388,17 +393,20 @@ export class FlightTicketReservePage
       this.vmCombindInfos.forEach((item) => {
         if (item.tmcOutNumberInfos) {
           item.tmcOutNumberInfos.forEach((info) => {
-            info.loadTravelUrlErrorMsg =
-              result[info.staffNumber] && result[info.staffNumber].Message;
-            info.travelUrlInfos =
-              result[info.staffNumber] && result[info.staffNumber].Data;
-            if (
-              !info.value &&
-              info.travelUrlInfos &&
-              info.travelUrlInfos.length
-            ) {
-              info.value = info.travelUrlInfos[0].TravelNumber;
+            if (info.label.toLowerCase() == 'travelnumber') {
+              info.loadTravelUrlErrorMsg =
+                result[info.staffNumber] && result[info.staffNumber].Message;
+              info.travelUrlInfos =
+                result[info.staffNumber] && result[info.staffNumber].Data;
+              if (
+                !info.value &&
+                info.travelUrlInfos &&
+                info.travelUrlInfos.length
+              ) {
+                info.value = info.travelUrlInfos[0].TravelNumber;
+              }
             }
+            info.isLoadingNumber = false;
           });
         }
       });
@@ -742,12 +750,12 @@ export class FlightTicketReservePage
     ) => {
       AppHelper.toast(
         `${
-          (item.credentialStaff && item.credentialStaff.Name) ||
-          (item.bookInfo.credential &&
-            item.bookInfo.credential.CheckFirstName +
-              item.bookInfo.credential.CheckLastName)
+        (item.credentialStaff && item.credentialStaff.Name) ||
+        (item.bookInfo.credential &&
+          item.bookInfo.credential.CheckFirstName +
+          item.bookInfo.credential.CheckLastName)
         } 【${
-          item.bookInfo.credential && item.bookInfo.credential.Number
+        item.bookInfo.credential && item.bookInfo.credential.Number
         }】 ${msg} 信息不能为空`,
         2000,
         "bottom"
@@ -852,7 +860,7 @@ export class FlightTicketReservePage
           p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-        }`;
+          }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -866,7 +874,7 @@ export class FlightTicketReservePage
           p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-        }`;
+          }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -1290,20 +1298,20 @@ export class FlightTicketReservePage
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile,
-                };
-              })
+              return {
+                checked: idx == 0,
+                mobile,
+              };
+            })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email,
-                };
-              })
+              return {
+                checked: idx == 0,
+                email,
+              };
+            })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {

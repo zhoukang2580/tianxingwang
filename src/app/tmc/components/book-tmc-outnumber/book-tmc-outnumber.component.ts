@@ -1,3 +1,4 @@
+import { flyInOut } from './../../../animations/flyInOut';
 import {
   EventEmitter,
   ElementRef,
@@ -5,9 +6,10 @@ import {
   QueryList,
   OnDestroy,
   AfterViewInit,
+  ViewChild,
 } from "@angular/core";
 import { TmcService } from "./../../tmc.service";
-import { PopoverController, IonInput } from "@ionic/angular";
+import { PopoverController, IonInput, IonList } from "@ionic/angular";
 import { Component, OnInit, Input, Output } from "@angular/core";
 import { TravelUrlInfo } from "../../tmc.service";
 import { SelectTravelNumberComponent } from "../select-travel-number-popover/select-travel-number-popover.component";
@@ -16,11 +18,13 @@ import { Subscription, fromEvent } from "rxjs";
   selector: "app-book-tmc-outnumber",
   templateUrl: "./book-tmc-outnumber.component.html",
   styleUrls: ["./book-tmc-outnumber.component.scss"],
+  animations: [flyInOut]
 })
 export class BookTmcOutnumberComponent
   implements OnInit, OnDestroy, AfterViewInit {
   private timer: any;
   private subscriptions: Subscription[] = [];
+
   nativeElement: HTMLElement;
   @Output() tmcOutNumber: EventEmitter<{
     tmcOutNumberInfos: ITmcOutNumberInfo[];
@@ -32,7 +36,7 @@ export class BookTmcOutnumberComponent
   @Input() tmcOutNumberInfos: ITmcOutNumberInfo[];
   vmTmcOutNumberInfos: ITmcOutNumberInfo[];
   travelNumbers: ITmcOutNumberInfo[];
-  @ViewChildren("numberInputEle") numberInputEles: QueryList<IonInput>;
+  @ViewChild("hintEl") hintEl: ElementRef<IonList>;
   hints: string[];
   constructor(
     private popoverCtrl: PopoverController,
@@ -42,9 +46,12 @@ export class BookTmcOutnumberComponent
     this.tmcOutNumber = new EventEmitter();
     this.nativeElement = el.nativeElement;
   }
-  onSelect(str: string) {
-    const one = this.tmcOutNumberInfos.find((it) => it.hasfocus);
+  onSelectText(str: string) {
+    console.log("onSelectText", str)
+    const one = this.tmcOutNumberInfos && this.tmcOutNumberInfos.find((it) => it.hasfocus);
+    this.hints = [];
     if (one) {
+      one.hasfocus = false;
       one.value = str;
       this.tmcOutNumber.emit({
         tmcOutNumberInfo: one,
@@ -55,8 +62,15 @@ export class BookTmcOutnumberComponent
       });
     }
   }
+  onFocus(n: ITmcOutNumberInfo) {
+    this.vmTmcOutNumberInfos = this.vmTmcOutNumberInfos.map(it => {
+      it.hasfocus = it.label == n.label;
+      return it;
+    })
+  }
   onBlur(arg: ITmcOutNumberInfo) {
     setTimeout(() => {
+      this.hints = [];
       arg.hasfocus = false;
       this.tmcOutNumber.emit({
         tmcOutNumberInfo: arg,
@@ -65,69 +79,24 @@ export class BookTmcOutnumberComponent
           TravelNumber: arg.value,
         } as any,
       });
-    }, 100);
+    }, 0);
   }
   onChange(arg: ITmcOutNumberInfo, evt: CustomEvent) {
-    arg.hasfocus = true;
     if (this.timer) {
       clearTimeout(this.timer);
     }
     this.timer = setTimeout(() => {
       const hints = (arg.labelDataList || []).filter((it) => !!it);
       this.hints = hints.filter((it) =>
-        evt.detail.value ? it.toLowerCase().includes(evt.detail.value) : true
+        evt.detail.value ? it.toLowerCase().includes(evt.detail.value.trim()) : true
       );
+      if (this.hints.length == 1 && this.hints[0] == arg.value) {
+        this.hints = [];
+      }
     }, 300);
   }
   ngAfterViewInit() {
-    this.numberInputEles.changes.subscribe(() => {
-      this.subscriptions.forEach((sub) => sub.unsubscribe());
-      this.numberInputEles
-        .filter((it) => it["el"] && it["el"].hasAttribute("has-data"))
-        .forEach((el) => {
-          this.subscriptions.push(
-            el.ionBlur.subscribe(() => {
-              const ele = document.getElementById("tmc-out-number-ele");
-              document.removeChild(ele);
-            })
-          );
-          this.subscriptions.push(
-            el.ionFocus.subscribe(() => {
-              const target = el["el"];
-              const p = target && target.parentElement;
-              if (target) {
-                const one = this.tmcOutNumberInfos.find(
-                  (it) => it.label == target.getAttribute("label")
-                );
-                if (one && one.labelDataList && one.labelDataList.length) {
-                  const rect = target.getBoundingClientRect();
-                  const prect = p.getBoundingClientRect();
-                  if (rect) {
-                    let ele = document.getElementById("tmc-out-number-ele");
-                    if (!ele) {
-                      ele = document.createElement("div");
-                      ele.id = "tmc-out-number-ele";
-                      ele.style.position = "absolute";
-                      ele.style.left = "0";
-                      ele.style.right = "0";
-                    }
-                    one.labelDataList.forEach((str, idx) => {
-                      const div = document.createElement("div");
-                      div.style.padding = "0.5em";
-                      if (idx != one.labelDataList.length - 1) {
-                        div.style.borderBottom = `rgba(var(--ion-color-dark-rgb),0.13)`;
-                      }
-                      div.textContent = str;
-                      ele.appendChild(div);
-                    });
-                    ele.style.top = rect.top + "px";
-                  }
-                }
-              }
-            })
-          );
-        });
-    });
+
   }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
