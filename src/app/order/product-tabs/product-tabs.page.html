@@ -64,10 +64,11 @@
         <ul *ngIf='myTrips?.length else nomoredate'>
           <li *ngFor='let trip of myTrips' (click)='goToDetailPage(trip.OrderId,orderModel.Type)'>
             <ng-container [ngSwitch]='trip.Type'>
-              <app-flight-trip *ngSwitchCase='"Flight"' [trip]="trip"></app-flight-trip>
+              <ng-container *ngSwitchCase='"Flight"'>
+                <app-flight-trip  [trip]="trip" *ngIf="!(trip.VariablesJsonObj&&trip.VariablesJsonObj.IsCustomApplyRefund)"></app-flight-trip>
+              </ng-container>
               <app-train-trip *ngSwitchCase='"Train"' [trip]="trip"></app-train-trip>
               <app-hotel-trip *ngSwitchCase='"Hotel"' [trip]="trip"></app-hotel-trip>
-              <!-- <app-flight-trip *ngSwitchCase='"Car"' [trip]="trip"></app-flight-trip> -->
             </ng-container>
           </li>
         </ul>

@@ -248,6 +248,10 @@ export class ProductTabsPage implements OnInit, OnDestroy {
             }
             if (res.Data.Trips.length) {
               this.myTrips = [...this.myTrips, ...res.Data.Trips];
+              this.myTrips = this.myTrips.map(trip => {
+                trip = this.getVariablesJsonObj(trip);
+                return trip
+              });
               this.condition.pageIndex++;
             }
           }
@@ -259,6 +263,12 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   }
   back() {
     this.backbtn.backToPrePage();
+  }
+  private getVariablesJsonObj(trip: OrderTripModel) {
+    if (!trip) { return trip }
+    // <ng-container *ngIf="trip.VariablesJsonObj.IsCustomApplyRefund||trip.VariablesJsonObj.IsCustomApplyExchange||trip.Status!= OrderFlightTicketStatusType.Refunded">
+    trip.VariablesJsonObj = trip.VariablesJsonObj || JSON.parse(trip.Variables);
+    return trip;
   }
   async openSearchModal() {
     const condition = new SearchTicketConditionModel();
